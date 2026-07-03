@@ -1,8 +1,8 @@
 import { Buffer } from 'node:buffer'
 
-import { ReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.ts'
-
 import { role_t, timeStamp_t } from './basedefs.ts'
+import { ReplyPreviewUpdater_t } from './chatLog.ts'
+
 
 /**
  * 单部分提示

@@ -2,8 +2,8 @@
  * 主页 shell 的客户端入口点。
  * 负责初始化和启动 Home shell 的核心逻辑。
  */
-import { runPreloadIfNotSaveData } from '../../scripts/lib/preloadUrls.mjs'
 import { showToast } from '../../scripts/features/toast.mjs'
+import { runPreloadIfNotSaveData } from '../../scripts/lib/preloadUrls.mjs'
 
 import { initializeApp, refreshApp } from './src/home.mjs'
 

@@ -145,7 +145,7 @@ export function buildFileManifest(params) {
 		contentHash: enc.contentHash,
 		ceMode,
 		parts: enc.parts.map(part => ({ hash: part.hash, size: part.size })),
-		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(),
 		meta,
 	})
 	if (!manifest) throw new Error('invalid manifest')
@@ -178,7 +178,7 @@ export function buildFileManifestFromEnc(params, enc) {
 		contentHash: enc.contentHash,
 		ceMode,
 		parts: enc.parts.map(part => ({ hash: part.hash, size: part.size })),
-		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(ceMode),
+		transferKeyDescriptor: transferKeyDescriptor || publicTransferKeyDescriptor(),
 		meta,
 	})
 	if (!manifest) throw new Error('invalid manifest')

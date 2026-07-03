@@ -21,8 +21,8 @@ const DEFAULT_COMPACT_TRIGGER = 100_000
  */
 export function socialRetentionPolicy(socialMeta = {}) {
 	return {
-		maxDepth: Math.max(256, Number(socialMeta.event_retention_depth) || DEFAULT_RETENTION_DEPTH),
-		maxMs: Math.max(3_600_000, Number(socialMeta.event_retention_ms) || DEFAULT_RETENTION_MS),
+		maxDepth: Math.max(256, Number(socialMeta.eventRetentionDepth ?? socialMeta.event_retention_depth) || DEFAULT_RETENTION_DEPTH),
+		maxMs: Math.max(3_600_000, Number(socialMeta.eventRetentionMs ?? socialMeta.event_retention_ms) || DEFAULT_RETENTION_MS),
 		compactTrigger: Math.max(256, Number(socialMeta.compactTriggerEventDepth) || DEFAULT_COMPACT_TRIGGER),
 	}
 }

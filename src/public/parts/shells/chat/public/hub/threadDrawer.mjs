@@ -28,7 +28,7 @@ import { syncChannelActionsContext } from './messages/messages.mjs'
 import { wireMessageReactions } from './messages/reactions.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 
-/** @type {{ groupId: string, parentChannelId: string, threadChannelId: string, parentEventId: string, messages: object[], reactionEvents: object[] } | null} */
+/** @type {{ groupId: string, parentChannelId: string, threadChannelId: string, parentEventId: string, messages: object[], reactions: Record<string, Record<string, { voters?: string[] }>> } | null} */
 let activeThread = null
 
 /** @returns {boolean} 子线程抽屉是否打开 */
@@ -88,27 +88,27 @@ export function closeThreadDrawer() {
 	wrap.setAttribute('hidden', '')
 	wrap.replaceChildren()
 	activeThread = null
-	syncChannelActionsContext()
+	syncChannelActionsContext(() => import('./messages/messages.mjs').then(m => m.loadMessages()))
 }
 
 /**
  * 组装子线程消息渲染选项。
  * @param {string} threadChannelId 子线程频道 ID
- * @param {object[]} reactionEvents 反应事件
+ * @param {Record<string, Record<string, { voters?: string[] }>>} reactions 聚合反应
  * @returns {object} 渲染选项
  */
-function threadMessageRenderOpts(threadChannelId, reactionEvents) {
-	const pinnedEventIds = hubStore.currentState?.pinsByChannel?.[threadChannelId]
-		? [...hubStore.currentState.pinsByChannel[threadChannelId]]
+function threadMessageRenderOpts(threadChannelId, reactions) {
+	const pinnedEventIds = hubStore.context.currentState?.pinsByChannel?.[threadChannelId]
+		? [...hubStore.context.currentState.pinsByChannel[threadChannelId]]
 		: []
 	return {
-		reactionEvents: reactionEvents || [],
-		viewerMemberId: hubStore.reactionRenderOpts.viewerMemberId,
-		canAddReactions: hubStore.reactionRenderOpts.canAddReactions,
-		viewerPubKeyHash: hubStore.currentState?.viewerMemberPubKeyHash || null,
+		reactions: reactions || {},
+		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
+		canAddReactions: hubStore.messages.reactionRenderOpts.canAddReactions,
+		viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
 		localCharIds: activeCharPartNames(),
-		canManageMessages: hubStore.reactionRenderOpts.canManageMessages,
-		canPinMessages: hubStore.reactionRenderOpts.canPinMessages,
+		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
+		canPinMessages: hubStore.messages.reactionRenderOpts.canPinMessages,
 		pinnedEventIds,
 		alwaysVisibleActions: false,
 		canCreateThreads: false,
@@ -124,9 +124,9 @@ async function renderThreadMessages(messageContainer) {
 	if (!activeThread) return
 	messageContainer.replaceChildren()
 	const { groupId, threadChannelId } = activeThread
-	const { messages, reactionEvents } = await getChannelMessages(groupId, threadChannelId, { limit: 80 })
+	const { messages, reactions } = await getChannelMessages(groupId, threadChannelId, { limit: 80 })
 	activeThread.messages = messages || []
-	activeThread.reactionEvents = reactionEvents || []
+	activeThread.reactions = reactions || {}
 	const rows = applyChannelDisplayChain(activeThread.messages)
 	if (!rows.length) {
 		await mountTemplate(messageContainer, 'hub/empty/idle', {})
@@ -139,7 +139,7 @@ async function renderThreadMessages(messageContainer) {
 		})
 		return
 	}
-	const opts = threadMessageRenderOpts(threadChannelId, activeThread.reactionEvents)
+	const opts = threadMessageRenderOpts(threadChannelId, activeThread.reactions)
 	let prevSender = null
 	let prevTs = 0
 	for (const message of rows) {
@@ -162,9 +162,9 @@ async function renderThreadMessages(messageContainer) {
 		groupId,
 		channelId: threadChannelId,
 		messages: rows,
-		reactionEvents: activeThread.reactionEvents,
-		viewerMemberId: hubStore.reactionRenderOpts.viewerMemberId,
-		canManageMessages: hubStore.reactionRenderOpts.canManageMessages,
+		reactions: activeThread.reactions,
+		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
+		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
 		/** @returns {Promise<void>} */
 		reload: () => renderThreadMessages(messageContainer),
 	})
@@ -228,7 +228,7 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 	if (!wrap) return
 	usingTemplates('/parts/shells:chat/src/templates')
 	try {
-		const channels = hubStore.currentState?.channels || {}
+		const channels = hubStore.context.currentState?.channels || {}
 		let threadChannelId = findThreadChannelId(channels, parentChannelId, parentEventId)
 		const createdNew = !threadChannelId
 		if (!threadChannelId)
@@ -240,9 +240,9 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 			threadChannelId,
 			parentEventId,
 			messages: [],
-			reactionEvents: [],
+			reactions: {},
 		}
-		hubStore.currentState = await getGroupState(groupId)
+		hubStore.context.currentState = await getGroupState(groupId)
 
 		wrap.removeAttribute('hidden')
 		wrap.replaceChildren()

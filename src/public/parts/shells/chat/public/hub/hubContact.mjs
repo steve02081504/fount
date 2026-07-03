@@ -21,7 +21,7 @@ export async function applyHubContactQuery(contactRaw) {
 	if (!isEntityHash128(entityHash)) return false
 
 	await loadGroups()
-	const bound = hubStore.groups.find(g => g.friendBinding?.entityHash === entityHash)?.friendBinding
+	const bound = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === entityHash)?.friendBinding
 	if (bound) {
 		await setMode('friends')
 		await enterFriendChat({ binding: bound })
@@ -45,7 +45,7 @@ export async function applyHubContactQuery(contactRaw) {
 
 	try {
 		const binding = await buildUserFriendBinding({ entityHash })
-		const existing = hubStore.groups.find(g => g.friendBinding?.entityHash === binding.entityHash)
+		const existing = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === binding.entityHash)
 		if (existing?.groupId) {
 			await setMode('friends')
 			await enterFriendChat({ groupId: existing.groupId, binding: existing.friendBinding || binding })

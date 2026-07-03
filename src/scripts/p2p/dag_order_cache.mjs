@@ -6,24 +6,11 @@ import { dirname } from 'node:path'
 
 import {
 	computeLocalTipsHash,
+	eventsToMetas,
 	sortedPrevEventIds,
 	topologicalCanonicalOrder,
 } from './dag/index.mjs'
 import { computeDagTipIdsFromEvents } from './governance_branch.mjs'
-
-/**
- * @param {object[]} events DAG 事件行
- * @returns {Array<{ id: string, prev_event_ids?: unknown, hlc?: object, node_id?: string, sender?: string }>} 拓扑排序用 meta
- */
-export function eventsToMetas(events) {
-	return events.map(event => ({
-		id: event.id,
-		prev_event_ids: event.prev_event_ids,
-		hlc: event.hlc,
-		node_id: event.node_id,
-		sender: event.sender,
-	}))
-}
 
 /**
  * 将新增事件按父指针插入已有拓扑序之后。

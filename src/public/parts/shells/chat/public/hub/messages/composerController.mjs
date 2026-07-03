@@ -7,13 +7,13 @@ import { hubStore } from '../core/state.mjs'
 export function refreshHubHeaderButtons() {
 	const filesButton = document.getElementById('hub-header-files-button')
 	if (filesButton)
-		if (hubStore.currentMode === 'groups' && hubStore.currentGroupId && hubStore.currentState?.isMember)
+		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember)
 			filesButton.removeAttribute('hidden')
 		else filesButton.setAttribute('hidden', '')
 
 	const settingsButton = document.getElementById('hub-header-settings-button')
 	if (settingsButton)
-		if (hubStore.currentMode === 'groups' && hubStore.currentGroupId)
+		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId)
 			settingsButton.removeAttribute('hidden')
 		else settingsButton.setAttribute('hidden', '')
 }
@@ -21,7 +21,7 @@ export function refreshHubHeaderButtons() {
 /** @returns {void} */
 export function enableComposer() {
 	const input = document.getElementById('hub-message-input')
-	const channelName = hubStore.currentState?.channels?.[hubStore.currentChannelId]?.name || hubStore.currentChannelId || ''
+	const channelName = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.name || hubStore.context.currentChannelId || ''
 	input.disabled = false
 	input.dataset.channel = channelName
 	input.removeAttribute('data-i18n')

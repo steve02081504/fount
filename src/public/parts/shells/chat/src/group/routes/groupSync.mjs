@@ -5,19 +5,33 @@
  * 【数据结构】物化 state 子集、reputation 表、peers roster、snapshot/checkpoint、GSH buffer stats。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
+import {
+	deleteArchivesBeforeMonth,
+	isArchiveCoverageComplete,
+	loadArchiveManifest,
+	summarizeArchiveStorage,
+} from '../../chat/archive/index.mjs'
+import { syncMissingArchiveMonths } from '../../chat/archive/syncMonths.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { compactGroup } from '../../chat/dag/queries.mjs'
+import { readQuarantineRows } from '../../chat/events/quarantine.mjs'
 import { isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
-import { catchUpGroupFromPeers, listFederationPeersForGroup, requestJoinSnapshotFromPeers } from '../../chat/federation/index.mjs'
+import {
+	catchUpGroupFromPeers,
+	listFederationPeersForGroup,
+	publishVolatileToFederation,
+	requestJoinSnapshotFromPeers,
+} from '../../chat/federation/index.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import { markGroupOfflineStarted } from '../../chat/federation/syncState.mjs'
@@ -26,10 +40,13 @@ import { listActiveFilesFromState } from '../../chat/files/groupFiles.mjs'
 import { userHasLocalGroupReplica } from '../../chat/lib/paths.mjs'
 import { getGroupMemberEntityHash } from '../../chat/lib/replica.mjs'
 import { getMaterializedSession } from '../../chat/session/dagSession.mjs'
+import { broadcastEvent } from '../../chat/stream/groupWsHub.mjs'
+import { groupWsRoomKeyForReplica } from '../../chat/stream/groupWsRooms.mjs'
 import { canGovSlash, canInChannel, governanceChannelId, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 import { loadGroupShunState, saveGroupShunState } from '../groupShunState.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 注册群状态、快照、压缩与联邦 catchup 路由。
@@ -38,9 +55,9 @@ import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerGroupSyncRoutes(router, authenticate) {
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/reputation\/slash$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/reputation/slash`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
 		const content = {
 			targetPubKeyHash: String(req.body?.targetPubKeyHash || '').trim().toLowerCase(),
 			claim: Number(req.body.claim ?? 0.25),
@@ -50,21 +67,18 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			if (req.body.proof?.eventId) content.proof = { eventId: String(req.body.proof.eventId).trim().toLowerCase() }
 		}
 		if (!content.targetPubKeyHash)
-			return res.status(400).json({ error: 'targetPubKeyHash required' })
+			throw httpError(400, 'targetPubKeyHash required')
 
 		const { state: slashState } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, slashState)
 		if (!memberKey)
-			return res.status(403).json({ error: 'Not a member' })
+			throw httpError(403, 'Not a member')
 		const member = slashState.members[memberKey]
 
 		if (!content.verified && !content.proof) {
 			if (!canGovSlash(slashState, member))
-				return res.status(403).json({ error: 'ADMIN or MANAGE_ROLES required' })
+				throw httpError(403, 'ADMIN or MANAGE_ROLES required')
 			const { sender } = await resolveLocalEventSigner(username, groupId)
-			const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
-			const { broadcastEvent } = await import('../../chat/stream/groupWsHub.mjs')
-			const { groupWsRoomKeyForReplica } = await import('../../chat/stream/groupWsRooms.mjs')
 			const alert = buildAndApplyUnverifiedSlashAlert(
 				sender,
 				content,
@@ -83,12 +97,12 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json({ applied: 1 })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/reputation\/reset$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/reputation/reset`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
 		const targetPubKeyHash = String(req.body?.targetPubKeyHash || '').trim().toLowerCase()
 		if (!targetPubKeyHash)
-			return res.status(400).json({ error: 'targetPubKeyHash required' })
+			throw httpError(400, 'targetPubKeyHash required')
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'reputation_reset',
 			timestamp: Date.now(),
@@ -97,15 +111,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json({ applied: 1 })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/reputation$/, authenticate, requireGroupMember(), async (req, res) => {
-		const { username, groupId } = req.groupContext
-		const { state } = await getState(username, groupId)
-
-		const reputation = loadReputation()
-		res.status(200).json({ reputation })
-	})
-
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/peers$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/peers`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 
 		const roster = await listFederationPeersForGroup(username, groupId)
@@ -116,13 +122,16 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			peers: roster.peers,
 			trustedPeers: stored.trustedPeers,
 			explorePeers: stored.explorePeers,
-			blockedPeers: stored.blockedPeers,
+			blockedPeers: stored.deniedNodes,
+			deniedNodes: stored.deniedNodes,
+			deniedSubjects: stored.deniedSubjects,
+			deniedEntities: stored.deniedEntities,
 		})
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/state$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/state`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
 		const { state, checkpoint } = await getState(username, groupId)
 		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 		const active = memberKey != null
@@ -170,13 +179,11 @@ export function registerGroupSyncRoutes(router, authenticate) {
 
 			return {
 				memberKey,
-				memberKind: isAgent ? 'agent' : 'user',
-				pubKeyHash: isAgent ? memberRow.ownerPubKeyHash : memberKey,
+				kind: isAgent ? 'agent' : 'user',
+				ownerPubKeyHash: isAgent ? memberRow.ownerPubKeyHash : undefined,
 				charname: isAgent ? memberRow.charname : null,
 				agentEntityHash: isAgent ? memberRow.agentEntityHash : null,
-				ownerPubKeyHash: isAgent ? memberRow.ownerPubKeyHash : null,
 				nodeHash: memberRow.homeNodeHash,
-				subjectHash: isAgent ? null : memberKey,
 				entityHash,
 				pubKeyHex: memberRow.pubKeyHex || null,
 				roles: memberRow.roles || ['@everyone'],
@@ -186,16 +193,30 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		}))
 
 		const bannedMembersList = Array.from(state.bannedMembers)
-			.map(pubKeyHash => ({ pubKeyHash: String(pubKeyHash) }))
+			.map(memberKey => ({ memberKey: String(memberKey) }))
 
 		const pinsByChannel = checkpoint?.overlay?.pins || {}
 
-		const { readQuarantineRows } = await import('../../chat/events/quarantine.mjs')
 		const quarantineRows = active ? await readQuarantineRows(username, groupId) : []
 
 		const hasLocalReplica = await userHasLocalGroupReplica(username, groupId)
 		const shunState = await loadGroupShunState(username, groupId)
-		const serializableState = {
+
+		/** @type {Record<string, object>} */
+		const channelCaps = {}
+		if (active) 
+			for (const channelId of Object.keys(channels))
+				channelCaps[channelId] = {
+					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
+					canCreateThreads: canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId)
+						|| canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, channelId),
+					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
+					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
+				}
+		
+
+		/** @type {object} */
+		const meta = {
 			groupId: state.groupId,
 			hasLocalReplica,
 			federationActive: isGroupFederationActive(state.groupSettings),
@@ -210,78 +231,75 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			memberCount: activeMembers.length,
 			membersRoot: state.membersRoot ?? null,
 			membersPagesCount: state.membersPagesCount ?? null,
-			isMember: active,
-			suspectedRemoved: shunState.suspectedRemoved,
-			shunnedBy: shunState.shunnedBy,
-			shunBannerDismissed: shunState.bannerDismissed,
-			myRoles: member?.roles || [],
-			viewerMemberPubKeyHash: active ? memberKey : null,
-			viewerEntityHash: active
-				? await getGroupMemberEntityHash(username, groupId).catch(() => null)
-				: null,
 			pinsByChannel,
 			consensusBranchTip: state.consensusBranchTip ?? null,
 			localViewBranchTip: state.localViewBranchTip ?? null,
 			governanceFork: !!state.governanceFork,
 			dagTips: state.dagTips,
-			pendingDecryptBuffer: getPendingDecryptBufferStats(username, groupId),
-			quarantineCount: quarantineRows.length,
 			fileFolders: state.fileFolders,
 			files: listActiveFilesFromState(state),
+			channelCaps,
 		}
+
 		if (active) {
 			const session = await getMaterializedSession(username, groupId)
-			serializableState.charPartNames = Object.keys(session.chars || {})
-			const channelCaps = {}
-			for (const channelId of Object.keys(channels))
-				channelCaps[channelId] = {
-					canEditList: canInChannel(state, member, PERMISSIONS.MANAGE_CHANNELS, channelId),
-					canCreateThreads: canInChannel(state, member, PERMISSIONS.CREATE_THREADS, channelId)
-						|| canInChannel(state, member, PERMISSIONS.SEND_MESSAGES, channelId),
-					canStream: canInChannel(state, member, PERMISSIONS.STREAM, channelId),
-					canManageMessages: canInChannel(state, member, PERMISSIONS.MANAGE_MESSAGES, channelId),
-				}
-			serializableState.channelCaps = channelCaps
+			meta.charPartNames = Object.keys(session.chars || {})
 		}
 		if (active && canInChannel(state, member, PERMISSIONS.MANAGE_ROLES, null)) {
-			serializableState.reputationLedger = state.reputationLedger.slice(-50)
-			serializableState.inviteEdges = state.inviteEdges.slice(0, 200)
+			meta.reputationLedger = state.reputationLedger.slice(-50)
+			meta.inviteEdges = state.inviteEdges.slice(0, 200)
 		}
 		if (active) {
-			const { isArchiveCoverageComplete, loadArchiveManifest } = await import('../../chat/archive/index.mjs')
 			const manifest = await loadArchiveManifest(username, groupId)
-			serializableState.archiveCoverage = {
+			meta.archiveCoverage = {
 				complete: isArchiveCoverageComplete(manifest),
 				channels: manifest.coverage || {},
 			}
 		}
-		res.status(200).json({ state: serializableState })
+
+		const viewer = {
+			isMember: active,
+			memberKey: active ? memberKey : null,
+			entityHash: active
+				? await getGroupMemberEntityHash(username, groupId).catch(() => null)
+				: null,
+			roles: member?.roles || [],
+			suspectedRemoved: shunState.suspectedRemoved,
+			shunnedBy: shunState.shunnedBy,
+			shunBannerDismissed: shunState.bannerDismissed,
+		}
+
+		const federation = {
+			pendingDecryptBuffer: getPendingDecryptBufferStats(username, groupId),
+			quarantineCount: quarantineRows.length,
+		}
+
+		res.status(200).json({ meta, viewer, federation })
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/snapshot$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/snapshot`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
 		const { checkpoint } = await getState(username, groupId)
 		res.status(200).json({ snapshot: checkpoint })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/compact$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/compact`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, member, groupId } = req.groupContext
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannelId(state)))
-			return res.status(403).json({ error: 'ADMIN required' })
+			throw httpError(403, 'ADMIN required')
 		res.status(200).json(await compactGroup(username, groupId))
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/rotate-room-secret$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/rotate-room-secret`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		if (!membership) return
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
 			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
-			return res.status(403).json({ error: 'ADMIN or MANAGE_ADMINS required' })
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		if (!isGroupFederationActive(state.groupSettings))
-			return res.status(409).json({ error: 'federation not active; invite a member first' })
+			throw httpError(409, 'federation not active; invite a member first')
 
 		const roomSecret = mintRoomSecret()
 		await appendSignedLocalEvent(username, groupId, {
@@ -294,15 +312,14 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json({ roomSecret })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/tuning$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/tuning`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		if (!membership) return
 		const { username, state, member } = membership
 		const channelId = governanceChannelId(state)
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
 			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
-			return res.status(403).json({ error: 'ADMIN or MANAGE_ADMINS required' })
+			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const patch = {}
 		const partitionCount = Number(req.body?.federationPartitionCount)
 		if (Number.isFinite(partitionCount))
@@ -314,7 +331,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (Number.isFinite(rtcJoinRate))
 			patch.rtcJoinRatePerMin = Math.max(4, Math.min(60, Math.floor(rtcJoinRate)))
 		if (!Object.keys(patch).length)
-			return res.status(400).json({ error: 'no valid tuning fields' })
+			throw httpError(400, 'no valid tuning fields')
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'group_settings_update',
 			timestamp: Date.now(),
@@ -324,10 +341,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json({ ok: true, patch })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/catchup$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/catchup`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId, { allowSuspectedRemoved: true })
-		if (!membership) return
 		const { username } = membership
 		const stats = await catchUpGroupFromPeers(username, groupId, {
 			waitMs: req.body.waitMs,
@@ -337,29 +353,27 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json({ ...stats, suspectedRemoved: shunState.suspectedRemoved, shunnedBy: shunState.shunnedBy })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/shun-dismiss$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/shun-dismiss`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const { username } = await getUserByReq(req)
 		const shunState = await loadGroupShunState(username, groupId)
 		if (!shunState.suspectedRemoved)
-			return res.status(409).json({ error: 'Not suspected removed' })
+			throw httpError(409, 'Not suspected removed')
 		const next = await saveGroupShunState(username, groupId, { bannerDismissed: true })
 		res.status(200).json({ bannerDismissed: next.bannerDismissed })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/offline-mark$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/offline-mark`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		if (!membership) return
 		const { username } = membership
 		const wallMs = Number(req.body?.wallMs) || Date.now()
 		res.status(200).json(await markGroupOfflineStarted(username, groupId, wallMs))
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/join-snapshot$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/join-snapshot`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId, { allowSuspectedRemoved: true })
-		if (!membership) return
 		const { username } = membership
 		const slot = await ensureFederationRoom(username, groupId)
 		if (!slot)
@@ -367,44 +381,38 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		res.status(200).json(await requestJoinSnapshotFromPeers(username, groupId, slot))
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/archive\/summary$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.get(`${GROUPS_PREFIX}/:groupId/archive/summary`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const { username } = await getUserByReq(req)
 		if (!await userHasLocalGroupReplica(username, groupId))
-			return res.status(404).json({ error: 'No local group replica' })
-		const { summarizeArchiveStorage } = await import('../../chat/archive/index.mjs')
+			throw httpError(404, 'No local group replica')
 		res.status(200).json({ files: await summarizeArchiveStorage(username, groupId) })
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/archive\/sync$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/archive/sync`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		if (!membership) return
 		const { username } = membership
-		const { ensureFederationRoom } = await import('../../chat/federation/room.mjs')
-		const { syncMissingArchiveMonths } = await import('../../chat/archive/syncMonths.mjs')
 		const slot = await ensureFederationRoom(username, groupId)
 		if (!slot)
-			return res.status(503).json({ error: 'federation room unavailable' })
+			throw httpError(503, 'federation room unavailable')
 		res.status(200).json(await syncMissingArchiveMonths(username, groupId, slot))
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/archive$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.delete(`${GROUPS_PREFIX}/:groupId/archive`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const { username } = await getUserByReq(req)
 		if (!await userHasLocalGroupReplica(username, groupId))
-			return res.status(404).json({ error: 'No local group replica' })
+			throw httpError(404, 'No local group replica')
 		const beforeMonth = String(req.query.before || '').trim()
 		if (!/^\d{4}-\d{2}$/.test(beforeMonth))
-			return res.status(400).json({ error: 'before must be YYYY-MM' })
-		const { deleteArchivesBeforeMonth } = await import('../../chat/archive/index.mjs')
+			throw httpError(400, 'before must be YYYY-MM')
 		res.status(200).json(await deleteArchivesBeforeMonth(username, groupId, beforeMonth))
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/federation\/rebind$/, authenticate, async (req, res) => {
-		const groupId = req.params[0]
+	router.post(`${GROUPS_PREFIX}/:groupId/federation/rebind`, authenticate, async (req, res) => {
+		const { groupId } = req.params
 		const membership = await resolveGroupMember(req, res, groupId)
-		if (!membership) return
 		const { username } = membership
 		const channelId = String(req.body?.channelId || '').trim() || null
 		const slot = await ensureFederationRoom(username, groupId, { channelId: channelId || undefined })

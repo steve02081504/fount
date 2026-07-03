@@ -105,7 +105,7 @@ export async function initGroupFileMasterKey(username, groupId) {
 }
 
 /**
- * 追加新的群文件主密钥（踢人/key_rotate 后调用）。
+ * 追加新的群文件主密钥（踢人/file_master_key_rotate 后调用）。
  * @param {string} username 本地账户名
  * @param {string} groupId 群 ID
  * @param {number} generation 新代数（应为 current + 1）
@@ -122,14 +122,14 @@ export async function appendFileMasterKey(username, groupId, generation, fileMas
 }
 
 /**
- * 从已落盘的 `member_kick` / `key_rotate` 事件推导并写入新 fileMasterKey。
+ * 从已落盘的 `member_kick` / `file_master_key_rotate` 事件推导并写入新 fileMasterKey。
  * @param {string} username 本地用户
  * @param {string} groupId 群 ID
  * @param {{ id: string, type: string, content?: { key_generation?: number, new_key_nonce?: string } }} event 签名事件
  * @returns {Promise<void>}
  */
 export async function applyFileMasterKeyRotationFromEvent(username, groupId, event) {
-	if (event.type !== 'member_kick' && event.type !== 'key_rotate') return
+	if (event.type !== 'member_kick' && event.type !== 'file_master_key_rotate') return
 	const c = event.content
 	const gen = c.key_generation
 	const nonce = c.new_key_nonce?.trim()

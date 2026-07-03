@@ -2,6 +2,8 @@
  * @ 提及 autocomplete（输入 @ 后弹出候选）。
  */
 
+import { formatHashShort } from '/scripts/lib/entity_hash.mjs'
+
 const API = '/api/parts/shells:social/mentions/suggest'
 
 /**
@@ -51,8 +53,8 @@ export function attachMentionAutocomplete(textarea) {
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			button.innerHTML = `
-				<strong>${row.displayName || row.entityHash.slice(0, 8)}</strong>
-				<small>${row.entityHash.slice(0, 12)}…</small>
+				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
+				<small>${formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })}</small>
 			`
 			panel.appendChild(button)
 		}

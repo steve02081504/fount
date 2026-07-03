@@ -1,4 +1,4 @@
-import { deliver } from './deliver.mjs'
+import { sendToNode } from './trust_graph.mjs'
 
 /**
  * Shell 定向发包（无信誉图参数）。
@@ -9,5 +9,5 @@ import { deliver } from './deliver.mjs'
  * @returns {Promise<boolean>} 是否已发送
  */
 export function sendToNodeHash(username, toNodeHash, actionName, payload) {
-	return deliver(username, toNodeHash, actionName, payload)
+	return sendToNode(username, toNodeHash, actionName, payload)
 }

@@ -227,8 +227,8 @@ export const SCENARIOS = [
 		sleeperTurnRound: 10,
 	},
 	{
-		id: 'suspect_cascade',
-		label: '怀疑声明级联',
+		id: 'social_mob_cascade',
+		label: 'Social 群体拉黑级联',
 		honestCount: 12,
 		behaviorDist: SOCIAL_HEAVY,
 		attacks: { social_mob: 6, false_accuser: 3, hint_poisoner: 2 },

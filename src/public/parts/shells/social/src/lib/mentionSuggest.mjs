@@ -2,6 +2,7 @@ import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '.
 import { getEntityProfile } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'
 
+import { formatHashShort } from './entityDisplay.mjs'
 import { listLocalAgentEntities } from './entityResolve.mjs'
 
 /**
@@ -38,7 +39,7 @@ export async function suggestMentions(username, query = '', limit = 20) {
 		const profile = await getEntityProfile(username, selfEntityHash)
 		pushSuggestion({
 			entityHash: selfEntityHash,
-			displayName: profile?.name || selfEntityHash.slice(0, 8),
+			displayName: profile?.name || formatHashShort(selfEntityHash, { headLen: 8, tailLen: 0, ellipsis: false }),
 			kind: 'self',
 		})
 	}
@@ -48,7 +49,7 @@ export async function suggestMentions(username, query = '', limit = 20) {
 		const profile = await getEntityProfile(username, entityHash)
 		pushSuggestion({
 			entityHash,
-			displayName: profile?.name || `${entityHash.slice(0, 8)}…`,
+			displayName: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0 }),
 			kind: 'following',
 		})
 	}

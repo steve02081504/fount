@@ -1,4 +1,4 @@
-import { reduceOperatorKeyRevoke, reduceOperatorKeyRotate, reduceSuspect } from 'fount/scripts/p2p/operator_key_chain.mjs'
+import { reduceOperatorKeyRevoke, reduceOperatorKeyRotate } from 'fount/scripts/p2p/operator_key_chain.mjs'
 import { socialPostKey } from 'fount/scripts/p2p/social/post_key.mjs'
 
 /**
@@ -18,7 +18,6 @@ export function createSocialTimelineState() {
 		followEvents: [],
 		following: new Set(),
 		blocked: new Set(),
-		suspected: new Set(),
 		operatorKeyHistory: [],
 		recoveryPubKeyHex: null,
 	}
@@ -147,8 +146,6 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	unfollow: reduceUnfollow,
 	block: reduceBlock,
 	unblock: reduceUnblock,
-	suspect: reduceSuspect,
-	unsuspect: reduceSuspect,
 	operator_key_rotate: reduceOperatorKeyRotate,
 	operator_key_revoke: reduceOperatorKeyRevoke,
 	state_summary: reduceSocialMeta,
@@ -182,7 +179,6 @@ export function finalizeSocialTimelineView(state, order) {
 		followEvents: state.followEvents,
 		following: [...state.following],
 		blocked: [...state.blocked],
-		suspected: [...state.suspected],
 		operatorKeyHistory: state.operatorKeyHistory,
 		recoveryPubKeyHex: state.recoveryPubKeyHex,
 		tipIds: order.length ? [order[order.length - 1]] : [],

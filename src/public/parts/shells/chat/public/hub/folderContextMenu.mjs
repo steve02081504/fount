@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/folderContextMenu.mjs
  * 【职责】左侧服务器栏「群组文件夹」的右键菜单：重命名、折叠/展开、解散文件夹。
- * 【原理】`showFolderContextMenu` 在点击位置挂一个单例菜单层，操作后改写 `hubStore.groupFoldersState.folders`，
+ * 【原理】`showFolderContextMenu` 在点击位置挂一个单例菜单层，操作后改写 `hubStore.sidebar.groupFoldersState.folders`，
  *   再 `persistGroupFolders` + `renderServerBar`（动态 import 规避与 serverBar 的循环依赖）。解散即把成员群移出文件夹。
  * 【数据结构】folder：{ id, name, nameIsDefault, groupIds[], collapsed }。
  * 【关联】../../../../scripts/i18n、serverBar、core/state。
@@ -59,7 +59,7 @@ export function showFolderContextMenu(event, folderIndex) {
 	event.stopPropagation()
 	dismissFolderContextMenu()
 
-	const folder = hubStore.groupFoldersState.folders?.[folderIndex]
+	const folder = hubStore.sidebar.groupFoldersState.folders?.[folderIndex]
 	if (!folder) return
 
 	const menu = document.createElement('ul')
@@ -89,7 +89,7 @@ export function showFolderContextMenu(event, folderIndex) {
 
 	menu.appendChild(menuItem(geti18n('chat.hub.folderDissolve'), async () => {
 		dismissFolderContextMenu()
-		hubStore.groupFoldersState.folders = (hubStore.groupFoldersState.folders || [])
+		hubStore.sidebar.groupFoldersState.folders = (hubStore.sidebar.groupFoldersState.folders || [])
 			.filter(item => item !== folder)
 		await commit()
 	}, 'text-error'))

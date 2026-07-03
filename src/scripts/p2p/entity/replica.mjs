@@ -1,6 +1,5 @@
 import { parseEntityHash } from '../entity_id.mjs'
-import { operatorEntityHashFromKeys } from '../node/identity.mjs'
-import { getNodeHash } from '../node_context.mjs'
+import { operatorEntityHashFromKeys, getNodeHash } from '../node/identity.mjs'
 
 /**
  * @param {string} recoveryPubKeyHex 64 hex recovery 公钥

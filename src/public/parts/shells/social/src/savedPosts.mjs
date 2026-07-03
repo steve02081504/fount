@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { getEntityProfile } from './feed.mjs'
+import { formatHashShort } from './lib/entityDisplay.mjs'
 import { savedPostsPath } from './paths.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { maybeDecryptPostContent } from './vault_crypto/vault.mjs'
@@ -24,13 +25,13 @@ async function enrichPostRef(username, ref) {
 	const content = await maybeDecryptPostContent(username, entityHash, post.content)
 	const profile = await getEntityProfile(username, entityHash)
 	let preview = ''
-	if (content?.protected) preview = '[protected]'
+	if (!content) preview = '[unavailable]'
 	else if (content?.text) preview = content.text.slice(0, 120)
 	else if (content?.mediaRefs?.length) preview = '[media]'
 	return {
 		...base,
 		preview,
-		authorName: profile?.name || `${entityHash.slice(0, 8)}…`,
+		authorName: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0 }),
 		savedAt: ref.savedAt,
 	}
 }

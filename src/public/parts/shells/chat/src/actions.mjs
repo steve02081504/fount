@@ -41,12 +41,12 @@ export const actions = {
 	 * 开始一个新的聊天会话。
 	 * @param {object} root0 - 参数对象。
 	 * @param {string} root0.user - 用户的名称。
-	 * @param {string} root0.charName - 要添加到新聊天的角色名称。
+	 * @param {string} root0.charname - 要添加到新聊天的角色名称。
 	 * @returns {Promise<string>} - 新聊天会话的ID。
 	 */
-	start: async ({ user, charName }) => {
+	start: async ({ user, charname }) => {
 		const groupId = await newGroup(user)
-		if (charName) await addchar(groupId, charName)
+		if (charname) await addchar(groupId, charname)
 		return groupId
 	},
 	/**
@@ -125,12 +125,12 @@ export const actions = {
 	 * 从聊天中移除一个角色。
 	 * @param {object} root0 - 参数对象。
 	 * @param {string} root0.groupId - 目标聊天的ID。
-	 * @param {string} root0.charName - 要移除的角色名称。
+	 * @param {string} root0.charname - 要移除的角色名称。
 	 * @returns {Promise<void>}
 	 */
-	'remove-char': ({ groupId, charName }) => {
-		if (!groupId || !charName) throw new Error('Group ID and character name are required.')
-		return removechar(groupId, charName)
+	'remove-char': ({ groupId, charname }) => {
+		if (!groupId || !charname) throw new Error('Group ID and character name are required.')
+		return removechar(groupId, charname)
 	},
 	/**
 	 * 为聊天设置用户角色。
@@ -190,25 +190,25 @@ export const actions = {
 	 * 设置角色的发言频率。
 	 * @param {object} root0 - 参数对象。
 	 * @param {string} root0.groupId - 目标聊天的ID。
-	 * @param {string} root0.charName - 要设置频率的角色的名称。
+	 * @param {string} root0.charname - 要设置频率的角色的名称。
 	 * @param {number} root0.frequency - 发言频率。
 	 * @returns {Promise<void>}
 	 */
-	'set-char-frequency': ({ groupId, charName, frequency }) => {
-		if (!groupId || !charName || frequency == null) throw new Error('Group ID, character name, and frequency are required.')
-		return setCharSpeakingFrequency(groupId, charName, frequency)
+	'set-char-frequency': ({ groupId, charname, frequency }) => {
+		if (!groupId || !charname || frequency == null) throw new Error('Group ID, character name, and frequency are required.')
+		return setCharSpeakingFrequency(groupId, charname, frequency)
 	},
 	/**
 	 * 触发角色回复。
 	 * @param {object} root0 - 参数。
 	 * @param {string} root0.groupId - 聊天ID。
-	 * @param {string} root0.charName - 角色名称。
+	 * @param {string} root0.charname - 角色名称。
 	 * @returns {Promise<void>}
 	 */
-	'trigger-reply': async ({ groupId, charName }) => {
+	'trigger-reply': async ({ groupId, charname }) => {
 		if (!groupId) throw new Error('Group ID is required.')
 		const channelId = await defaultChannelForGroup(groupId)
-		return triggerCharReply(groupId, channelId, charName || null)
+		return triggerCharReply(groupId, channelId, charname || null)
 	},
 	/**
 	 * §16：消费 `fount://run/shells:chat/dm;…` 深链，建联或打开已有 DM。

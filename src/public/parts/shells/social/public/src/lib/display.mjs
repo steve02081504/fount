@@ -1,3 +1,5 @@
+import { formatHashShort } from '/scripts/lib/entity_hash.mjs'
+
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 
 import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
@@ -12,7 +14,7 @@ const ENTITY_AVATAR_API = '/api/p2p/entities'
 export function entityHandle(entityHash) {
 	const hash = String(entityHash || '')
 	if (hash.length <= 12) return `@${hash}`
-	return `@${hash.slice(0, 8)}…${hash.slice(-4)}`
+	return formatHashShort(entityHash, { withAt: true, headLen: 8, tailLen: 4 })
 }
 
 /**
@@ -22,7 +24,7 @@ export function entityHandle(entityHash) {
  * @returns {string} 展示名
  */
 export function authorLabel(entityHash, profile) {
-	return profile?.name || `${entityHash.slice(0, 8)}…${entityHash.slice(-4)}`
+	return profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
 }
 
 /**

@@ -1,8 +1,8 @@
 /**
  * Social shell 前端入口。
  */
-import { geti18n, initTranslations } from '../../../scripts/i18n/index.mjs'
 import { usingTemplates } from '../../../scripts/features/template.mjs'
+import { geti18n, initTranslations } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
 
 import { createSocialContext } from './src/createContext.mjs'

@@ -15,9 +15,9 @@ async function loadViewerIdentity() {
 	const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
 	if (!resp.ok) return
 	const data = await resp.json()
-	hubStore.nodeHash = data.nodeHash || null
-	hubStore.operatorEntityHash = data.viewerEntityHash || null
-	hubStore.viewerEntityHash = data.viewerEntityHash || null
+	hubStore.viewer.nodeHash = data.nodeHash || null
+	hubStore.viewer.operatorEntityHash = data.viewerEntityHash || null
+	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
 }
 
 /** @returns {Promise<void>} 按 URL 进入好友/群频道视图 */
@@ -66,8 +66,8 @@ async function navigateHubFromLocation() {
 		await setMode('friends')
 		const { enterFriendChat } = await import('./friendChat.mjs')
 		const { buildCharFriendBinding } = await import('../src/friendBinding.mjs')
-		if (hubStore.nodeHash)
-			await enterFriendChat({ binding: await buildCharFriendBinding(hubStore.nodeHash, charParam) })
+		if (hubStore.viewer.nodeHash)
+			await enterFriendChat({ binding: await buildCharFriendBinding(hubStore.viewer.nodeHash, charParam) })
 		return
 	}
 
@@ -84,7 +84,7 @@ export async function initCore() {
 		await loadGroups()
 	}
 	catch (error) {
-		hubStore.groups = []
+		hubStore.sidebar.groups = []
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 	}
 	await navigateHubFromLocation()

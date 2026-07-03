@@ -5,11 +5,13 @@
  * 【数据结构】audit log entries、hasMore、total、AUDIT_LOG_EVENT_TYPES 过滤集。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/auditLog.mjs、access.mjs。
  */
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { AUDIT_LOG_EVENT_TYPES, listAuditLogEntries } from '../../chat/auditLog.mjs'
 import { canInChannel, governanceChannelId } from '../access.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 注册群审计日志路由（仅管理员可读）。
@@ -18,15 +20,15 @@ import { requireGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerAuditLogRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/audit-log$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/audit-log`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, governanceChannelId(state)))
-			return res.status(403).json({ error: 'ADMIN required' })
+			throw httpError(403, 'ADMIN required')
 
 		const typesRaw = String(req.query.types || '').trim()
 		const types = typesRaw ? typesRaw.split(',').map(t => t.trim()).filter(Boolean) : undefined
 		if (types?.some(t => !AUDIT_LOG_EVENT_TYPES.has(t)))
-			return res.status(400).json({ error: 'invalid audit log type filter' })
+			throw httpError(400, 'invalid audit log type filter')
 
 		const hasOffset = req.query.offset !== undefined && req.query.offset !== ''
 		const { entries, hasMore, total } = await listAuditLogEntries(username, groupId, {

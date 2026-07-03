@@ -1,9 +1,10 @@
 import { parseEntityHash } from 'fount/scripts/p2p/entity_id.mjs'
 import { applyNetworkHint } from 'fount/scripts/p2p/network.mjs'
 import { getEntityStore, isNodeInitialized } from 'fount/scripts/p2p/node/instance.mjs'
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 
 /** 前端 / live 烟测共用的「可发现」占位 entityHash（nodeHash 经 network hint 注册）。 */
-export const SEEDED_TEST_TARGET_HASH = 'a'.repeat(128)
+export const SEEDED_TEST_TARGET_HASH = placeholderEntityHash('a')
 
 /**
  * 将 SEEDED_TEST_TARGET_HASH 注册为可解析目标（network hint + 最小 profile）。

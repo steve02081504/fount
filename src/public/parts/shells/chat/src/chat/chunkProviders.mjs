@@ -3,7 +3,7 @@ import {
 	registerNodeHashProvider,
 	unregisterChunkProviders,
 } from '../../../../../../scripts/p2p/files/chunk_provider_registry.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 
 import { fetchCiphertextFromFederation } from './federation/chunks.mjs'
 

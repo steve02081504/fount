@@ -166,7 +166,7 @@ export default {
 						return result
 					}
 					case 'start':
-						params = { charName: args[1] }
+						params = { charname: args[1] }
 						result = await handleAction(user, command, params)
 						break
 					case 'asjson':
@@ -191,11 +191,11 @@ export default {
 					default: {
 						const [groupId, ...rest] = args.slice(1)
 						const paramMap = {
-							'remove-char': { charName: rest[0] },
+							'remove-char': { charname: rest[0] },
 							'set-persona': { personaName: rest[0] },
 							'set-world': { worldName: rest[0] },
-							'set-char-frequency': { charName: rest[0], frequency: parseFloat(rest[1]) },
-							'trigger-reply': { charName: rest[0] },
+							'set-char-frequency': { charname: rest[0], frequency: parseFloat(rest[1]) },
+							'trigger-reply': { charname: rest[0] },
 						}
 						params = { groupId, ...paramMap[command] }
 						result = await handleAction(user, command, params)

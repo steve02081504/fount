@@ -7,19 +7,19 @@ $gid = $null; $cid = $null
 Write-Host "=== 1. Mailbox summary (local observable) ===" -ForegroundColor Cyan
 Test-Case 'A GET chat/mailbox/summary' {
 	$r = Api $FedA GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 Test-Case 'B GET chat/mailbox/summary' {
 	$r = Api $FedB GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 Test-Case 'A GET p2p/mailbox/summary' {
 	$r = P2pApi $FedA GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 Test-Case 'B GET p2p/mailbox/summary' {
 	$r = P2pApi $FedB GET '/mailbox/summary'
-	$r.status -eq 200 -and $null -ne $r.json.pending
+	$r.status -eq 200 -and $null -ne $r.json.pendingCount
 }
 
 Write-Host "`n=== Setup: federated group ===" -ForegroundColor Cyan

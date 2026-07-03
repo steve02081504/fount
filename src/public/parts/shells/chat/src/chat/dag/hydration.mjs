@@ -12,14 +12,14 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
-import { readChannelMessagesForUser } from '../../group/queries.mjs'
-import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
 import {
 	channelMessageAgentText,
 	channelMessageEditText,
 	channelMessageShowText,
 	isTextChannelContent,
-} from '../lib/channelContent.mjs'
+} from '../../../public/src/lib/channelContent.mjs'
+import { readChannelMessagesForUser } from '../../group/queries.mjs'
+import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { chatLogEntry_t } from '../session/models.mjs'
@@ -124,7 +124,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
 	if (ref && !content.contentRefResolved)
 		return contentRefPlaceholder?.trim()
 			|| `[content_ref:${ref.contentHash?.trim().slice(0, 12) || '?'}…]`
-	if (content?.decryptFailed || isCkgEncryptedContent(content))
+	if (content?.decryptView?.failed || content?.decryptFailed || isCkgEncryptedContent(content))
 		return decryptUnavailableText
 	if (content?.type === 'vote')
 		return content.question?.trim() || decryptUnavailableText

@@ -91,7 +91,7 @@ function enqueueResolveFriendGroup(fn, signal) {
  */
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
-	const matches = hubStore.groups.filter(g => g.friendBinding?.entityHash === binding.entityHash)
+	const matches = hubStore.sidebar.groups.filter(g => g.friendBinding?.entityHash === binding.entityHash)
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
 	return matches[0].groupId ?? null
@@ -191,10 +191,10 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const displayName = binding.displayName || binding.charname || state.groupMeta?.name || groupId
 
 	hubStore.privateGroup.peerEntityHash = binding.entityHash
-	hubStore.privateGroup.charName = binding.charname || null
+	hubStore.privateGroup.charname = binding.charname || null
 	hubStore.privateGroup.groupId = groupId
-	hubStore.currentGroupId = groupId
-	hubStore.currentState = state
+	hubStore.context.currentGroupId = groupId
+	hubStore.context.currentState = state
 
 	hubStore.privateGroup.onEnterPrivateGroup({
 		entityHash: binding.entityHash,
@@ -304,7 +304,7 @@ export async function dispatchFriendChat(entity) {
 	if (entity.type !== 'user') return
 
 	const fed = await getFederationSettings()
-	const myPubKeyHex = String(fed?.identityPubKeyHex || '').trim().toLowerCase()
+	const myPubKeyHex = String(fed?.activePubKeyHex || '').trim().toLowerCase()
 	if (!isHex64(myPubKeyHex)) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return

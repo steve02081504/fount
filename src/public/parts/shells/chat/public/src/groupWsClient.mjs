@@ -3,7 +3,7 @@
  * 【职责】当前活跃群 WebSocket 单例：出站 send、入站 RPC 执行、错误处理与 stop_generation。
  * 【原理】setActiveWebSocket 绑定 Hub 打开的 socket；setInboundRpcExecutor 分发服务端推送；attachGroupWebSocketErrorHandlers 统一 toast。
  * 【数据结构】activeGroupWebSocket、inboundRpcExecutor 回调。
- * 【关联】wsUrl.mjs、channels/streaming.mjs；Hub WS 连接生命周期。
+ * 【关联】wsUrl.mjs；Hub WS 连接生命周期。
  */
 let activeGroupWebSocket = null
 
@@ -50,7 +50,7 @@ export function sendWebsocketMessage(message) {
 }
 
 /**
- * 请求服务端中止流式生成（chatLog UUID 与/或 DAG event id，§6.4）。
+ * 请求服务端中止流式生成（chatLog UUID 与/或 DAG event id）。
  * @param {string | { messageId?: string, dagEventId?: string }} target 停止目标
  * @returns {void}
  */

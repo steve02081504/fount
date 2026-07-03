@@ -49,9 +49,9 @@ export function invalidateHubPersonalFilter() {
  * @returns {Promise<void>}
  */
 export async function postPersonalBlock(targetEntityHash, block) {
-	const actingEntityHash = hubStore.operatorEntityHash
+	const actingEntityHash = hubStore.viewer.operatorEntityHash
 	if (!actingEntityHash) throw new Error('viewer entity required')
-	const resp = await fetch('/api/p2p/personal-block', {
+	const resp = await fetch('/api/parts/shells:social/profile/block', {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },

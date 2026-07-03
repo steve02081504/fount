@@ -3,15 +3,15 @@
  */
 import qrcode from 'https://esm.sh/qrcode-generator'
 
+import { hosturl_in_local_ip, ping } from '../../scripts/api/base.mjs'
+import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 import {
 	redirectToLoginInfo,
 	retrieveAndDecryptCredentials,
 	generateLoginInfoUrl,
 } from '../../scripts/host/credentialManager.mjs'
-import { hosturl_in_local_ip, ping } from '../../scripts/api/base.mjs'
 import { initTranslations } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
-import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 
 applyTheme()
 await initTranslations('access')

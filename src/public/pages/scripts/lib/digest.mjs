@@ -6,7 +6,7 @@ function bytesToHex(bytes) {
 	return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
-let nobleSha256Module
+const { sha256 } = await import(globalThis.Deno ? 'node:crypto' : 'https://esm.sh/@noble/hashes/sha256.js')
 
 /**
  * @param {ArrayBuffer|ArrayBufferView} data 字节输入
@@ -34,7 +34,6 @@ export async function sha256TextHex(text) {
  * @returns {Promise<string>} 小写 hex SHA-256
  */
 export async function sha256HexFromBlob(blob, chunkSize = 4 * 1024 * 1024) {
-	const { sha256 } = await (nobleSha256Module ??= import('https://esm.sh/@noble/hashes@1.7.1/sha256.js'))
 	const hasher = sha256.create()
 	for (let offset = 0; offset < blob.size; offset += chunkSize) {
 		const slice = blob.slice(offset, Math.min(offset + chunkSize, blob.size))

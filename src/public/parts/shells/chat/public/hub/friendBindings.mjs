@@ -34,10 +34,10 @@ export function isFriendBoundGroup(group) {
 }
 
 /**
- * @returns {typeof hubStore.groups} 未绑定好友的群列表
+ * @returns {typeof hubStore.sidebar.groups} 未绑定好友的群列表
  */
 export function getSidebarGroups() {
-	return hubStore.groups.filter(g => !isFriendBoundGroup(g))
+	return hubStore.sidebar.groups.filter(g => !isFriendBoundGroup(g))
 }
 
 /**
@@ -45,7 +45,7 @@ export function getSidebarGroups() {
  * @returns {FriendBinding | null} 该群的 `friendBinding`，未找到群时为 null
  */
 export function friendBindingForGroup(groupId) {
-	return resolveFriendBinding(hubStore.groups.find(g => g.groupId === groupId))
+	return resolveFriendBinding(hubStore.sidebar.groups.find(g => g.groupId === groupId))
 }
 
 /** @returns {boolean} 是否正在好友私聊会话中 */

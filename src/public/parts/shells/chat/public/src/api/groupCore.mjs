@@ -111,8 +111,15 @@ export async function createGroupInvite(groupId, opts = {}) {
  */
 export async function getGroupState(groupId) {
 	const data = await groupFetch(groupPath(groupId, 'state'), { method: 'GET' })
-	if (!data.state) throw new Error(data.error || 'Failed to fetch group state')
-	return data.state
+	const { meta = {}, viewer = {}, federation = {} } = data
+	return {
+		...meta,
+		...viewer,
+		...federation,
+		viewerMemberPubKeyHash: viewer.memberKey ?? null,
+		viewerEntityHash: viewer.entityHash ?? null,
+		myRoles: viewer.roles ?? [],
+	}
 }
 
 /**

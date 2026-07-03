@@ -15,7 +15,7 @@ import {
 	seedMemberReputationFromIntroducerPure,
 } from '../reputation_engine.mjs'
 import { REP_MAX } from '../reputation_math.mjs'
-import { applyFollowedBlockSignalPure, applyFollowedSuspectSignalPure, applySocialSuspectDecayAllPure } from '../reputation_social_engine.mjs'
+import { applyFollowedBlockSignalPure } from '../reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
 import {
 	resolveArchiveQuorumPeerMin,
@@ -709,22 +709,6 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
 				if ((mal.attack === 'sleeper' || mal.attack === 'key_thief') && round >= turnRound)
 					simObservePeerBehavior(obs.reputation, mal.id, 1.25, ctx.now, tunables.reputation)
-				if (mal.attack === 'social_mob' && round % 5 === 0) {
-					const honest = activeHonest.find(n => n.id !== obs.id)
-					if (honest)
-						applyFollowedSuspectSignalPure(
-							obs.reputation,
-							{
-								followerNodeHash: mal.id,
-								targetNodeHash: honest.id,
-								voterKey: `${mal.id}entity`,
-								action: 'suspect',
-								selfTrust: false,
-							},
-							ctx.now,
-							tunables.social,
-						)
-				}
 			}
 
 			if (scenario.keyRecoveryRound != null && round === scenario.keyRecoveryRound) {
@@ -820,12 +804,6 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			ctx.throttleRounds = (ctx.throttleRounds ?? 0) + 1
 		}
 	}
-
-	// 衰减恢复相：仅 suspect 软信号衰减；社交 block 不再自动退款
-	const decayWindows = scenario.decayWindows ?? 4
-	ctx.now += tunables.social.socialSuspectDecayMs * decayWindows + 1
-	for (const obs of observers)
-		applySocialSuspectDecayAllPure(obs.reputation, ctx.now, tunables.social)
 
 	return collectSnapshot(observers, nodes, tunables, groupSize, ctx)
 }

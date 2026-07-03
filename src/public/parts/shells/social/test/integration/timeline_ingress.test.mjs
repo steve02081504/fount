@@ -18,7 +18,7 @@ const getSession = createTestSession()
 const sync = await import('../../src/timeline/sync.mjs')
 const append = await import('../../src/timeline/append.mjs')
 const canon = await import('../../src/timeline/canonicalizeEvent.mjs')
-const { addBlocklistEntry, loadBlocklist, saveBlocklist } = await import('fount/scripts/p2p/blocklist.mjs')
+const { addDenylistEntry, loadDenylist, saveDenylist } = await import('fount/scripts/p2p/denylist.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
 const { agentEntityHash, encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
 const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
@@ -110,8 +110,8 @@ Deno.test('blocked sender (pubKeyHash) is rejected', async () => {
 	const seed = randomSeed()
 	const owner = ownerForSeed(seed)
 	const sender = pubKeyHash(publicKeyFromSeed(seed))
-	const blocklistBefore = loadBlocklist()
-	await addBlocklistEntry({ scope: 'subject', value: sender })
+	const blocklistBefore = loadDenylist()
+	await addDenylistEntry({ scope: 'subject', value: sender })
 	try {
 		const event = await makeRemoteSignedEvent(seed, owner, {
 			type: 'post', content: { text: 'blocked', visibility: 'public' },
@@ -119,7 +119,7 @@ Deno.test('blocked sender (pubKeyHash) is rejected', async () => {
 		assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), false)
 	}
 	finally {
-		saveBlocklist(blocklistBefore)
+		saveDenylist(blocklistBefore)
 	}
 })
 
@@ -203,7 +203,7 @@ Deno.test('operator-signed write to a locally-hosted agent timeline is accepted'
 	// 用 operator 的 federation identity 私钥代签（sender === operator subjectHash，而非 agent subjectHash）
 	const operatorSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
 	const event = await makeRemoteSignedEvent(operatorSecret, agentOwner, {
-		type: 'post', charId: charPartName, content: { text: 'agent post by operator', visibility: 'public' },
+		type: 'post', charPartName, content: { text: 'agent post by operator', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), true)
 })
@@ -217,7 +217,7 @@ Deno.test('foreign-key injection into a locally-hosted agent timeline is rejecte
 	const agentOwner = agentEntityHash(nodeHash, `chars/${charPartName}`)
 	const attackerSeed = randomSeed()
 	const event = await makeRemoteSignedEvent(attackerSeed, agentOwner, {
-		type: 'post', charId: charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
+		type: 'post', charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), false)
 })

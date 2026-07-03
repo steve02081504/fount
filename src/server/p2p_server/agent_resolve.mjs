@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { agentEntityHash, parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
 import { getUserDictionary } from '../auth.mjs'
 
 /**

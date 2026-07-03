@@ -1,6 +1,6 @@
 /**
  * dm/linkValidate 单测。
- * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/dm_link_validate.test.mjs
+ * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/pure/dm_link_validate.test.mjs
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

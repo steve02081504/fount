@@ -77,7 +77,7 @@ export async function showMessageContextMenu(event, row) {
 	const showTextActions = !!plainText.trim() && message.type === 'message'
 	const { currentChannelId } = hubStore
 	const showThreadRow = !!actions.groupId && !!actions.channelId && !!eventId
-		&& !!hubStore.currentState?.channelCaps?.[currentChannelId]?.canCreateThreads
+		&& !!hubStore.context.currentState?.channelCaps?.[currentChannelId]?.canCreateThreads
 	const showEdit = !!row.querySelector('.hub-message-action[data-action="edit"]')
 	const showDelete = !!row.querySelector('.hub-message-action[data-action="delete"]')
 	const showCopyIdRow = !!eventId

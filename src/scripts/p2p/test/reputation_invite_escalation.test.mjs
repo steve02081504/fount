@@ -27,7 +27,7 @@ Deno.test('repeat bad invites increase slash penalty on same introducer', () => 
 	const edges = [{ from: INTRO, to: BAD }]
 	applyDecayCollusionAfterSlashPure(data, BAD, edges, tunables)
 	const first = data.byNodeHash[INTRO].score
-	incrementBadInviteeCount(data, INTRO, 2, tunables)
+	incrementBadInviteeCount(data, INTRO, 2)
 	applyDecayCollusionAfterSlashPure(data, BAD, edges, tunables)
 	const second = data.byNodeHash[INTRO].score
 	assertEquals(first > 0.9, true)

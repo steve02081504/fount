@@ -1,6 +1,6 @@
 /**
  * 【文件】public/hub/serverBar.mjs
- * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `hubStore.groups`。
+ * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `hubStore.sidebar.groups`。
  * 【原理】`renderServerBar` 填充 `#hub-server-list`；支持拖拽排序与群组入口点击（委托给 `groupNav`）。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、../src/api/groupApi、core/domUtils、core/state、friendBindings、groupContextMenu、groupNav
@@ -33,7 +33,7 @@ export async function persistGroupFolders() {
 		method: 'PUT',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ folders: hubStore.groupFoldersState.folders }),
+		body: JSON.stringify({ folders: hubStore.sidebar.groupFoldersState.folders }),
 	}).catch(() => {})
 }
 
@@ -49,7 +49,7 @@ export function computeOrderedSidebarGroupIds() {
 	const used = new Set()
 	/** @type {string[]} */
 	const order = []
-	const folders = hubStore.groupFoldersState.folders || []
+	const folders = hubStore.sidebar.groupFoldersState.folders || []
 
 	if (folders.length) {
 		for (const folder of folders) {
@@ -98,7 +98,7 @@ function folderMiniIconsHtml(folder, byId) {
  * @returns {Promise<void>}
  */
 async function appendHubServerItem(parent, group) {
-	const active = group.groupId === hubStore.currentGroupId
+	const active = group.groupId === hubStore.context.currentGroupId
 	const el = await renderTemplate('hub/server/item', {
 		activeClass: active ? 'active' : '',
 		selectedClass: isGroupSelected(group.groupId) ? ' is-multi-selected' : '',
@@ -113,7 +113,7 @@ async function appendHubServerItem(parent, group) {
 
 /** 渲染左侧服务器/群组列表。 @returns {Promise<void>} */
 export async function renderServerBar() {
-	hubStore.sidebarGroupOrder = computeOrderedSidebarGroupIds()
+	hubStore.sidebar.sidebarGroupOrder = computeOrderedSidebarGroupIds()
 
 	const list = document.getElementById('hub-server-list')
 	list.replaceChildren()
@@ -127,7 +127,7 @@ export async function renderServerBar() {
 
 	const byId = new Map(sidebarGroups.map(g => [g.groupId, g]))
 	const used = new Set()
-	const folders = hubStore.groupFoldersState.folders || []
+	const folders = hubStore.sidebar.groupFoldersState.folders || []
 
 	if (folders.length) {
 		for (const [folderIndex, folder] of folders.entries()) {
@@ -192,14 +192,14 @@ export async function renderServerBar() {
 		head.addEventListener('click', (event) => {
 			event.stopPropagation()
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
-			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.groupFoldersState.folders.length) return
-			hubStore.groupFoldersState.folders[folderIndex].collapsed = !hubStore.groupFoldersState.folders[folderIndex].collapsed
+			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.sidebar.groupFoldersState.folders.length) return
+			hubStore.sidebar.groupFoldersState.folders[folderIndex].collapsed = !hubStore.sidebar.groupFoldersState.folders[folderIndex].collapsed
 			void persistGroupFolders()
 			void renderServerBar()
 		})
 		head.addEventListener('contextmenu', (event) => {
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
-			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.groupFoldersState.folders.length) return
+			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.sidebar.groupFoldersState.folders.length) return
 			showFolderContextMenu(event, folderIndex)
 		})
 	})
@@ -211,7 +211,7 @@ export async function loadGroups() {
 	const groupListPromise = getGroupList()
 	const foldersResponse = await fetch('/api/parts/shells:chat/group-folders', { credentials: 'include' })
 	const groupList = await groupListPromise
-	hubStore.groups = groupList
+	hubStore.sidebar.groups = groupList
 	const knownGroupIds = new Set(groupList.map(g => String(g.groupId || '').trim().toLowerCase()).filter(Boolean))
 	if (knownGroupIds.size) {
 		const bookmarks = await getChatBookmarks().catch(() => [])
@@ -223,7 +223,7 @@ export async function loadGroups() {
 	if (foldersResponse.ok) {
 		const payload = await foldersResponse.json()
 		const rawFolders = Array.isArray(payload.folders) ? payload.folders : []
-		hubStore.groupFoldersState = {
+		hubStore.sidebar.groupFoldersState = {
 			folders: rawFolders.map((folder, folderIndex) => ({
 				id: String(folder.id || '').trim() || `folder-${folderIndex}`,
 				name: String(folder.name || '').trim(),
@@ -233,6 +233,6 @@ export async function loadGroups() {
 			})),
 		}
 	}
-	else hubStore.groupFoldersState = { folders: [] }
+	else hubStore.sidebar.groupFoldersState = { folders: [] }
 	await renderServerBar()
 }

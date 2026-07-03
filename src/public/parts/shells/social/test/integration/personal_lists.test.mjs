@@ -3,6 +3,7 @@
  */
 /* global Deno */
 import { setPersonalHidden } from 'fount/scripts/p2p/personal_block.mjs'
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
@@ -17,7 +18,7 @@ const { canViewPost } = await import('../../src/feedVisibility.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
 const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
 
-const TARGET = 'b'.repeat(128)
+const TARGET = placeholderEntityHash('b')
 
 Deno.test('setPersonalBlock block then unblock updates materialized blocked', async () => {
 	const { username, operator } = await getSession()
@@ -38,7 +39,7 @@ Deno.test('handleInboundPersonalBlockEvent syncs followed owner block index', as
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const foreignOwner = encodeEntityHash('2'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, foreignOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'block', content: { targetEntityHash: TARGET } },
 	])
 

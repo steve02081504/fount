@@ -12,16 +12,16 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { putFileManifest } from '../../../../../../../scripts/p2p/entity/files/evfs.mjs'
 import { parseEvfsRef } from '../../../../../../../scripts/p2p/entity/files/evfs_ref.mjs'
 import { entityFileUrl } from '../../../../../../../scripts/p2p/entity/files/url.mjs'
-import { appendSignedLocalEvent } from '../dag/append.mjs'
-import { appendFileUploadEvent } from '../dag/channelOps.mjs'
-import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
-import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import {
 	channelMessageAgentText,
 	channelMessageContentObject,
 	channelMessageShowText,
 	textChannelContent,
-} from '../lib/channelContent.mjs'
+} from '../../../public/src/lib/channelContent.mjs'
+import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { appendFileUploadEvent } from '../dag/channelOps.mjs'
+import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
+import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**

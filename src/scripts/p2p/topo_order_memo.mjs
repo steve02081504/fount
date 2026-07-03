@@ -1,18 +1,4 @@
-import { topologicalCanonicalOrder } from './dag/index.mjs'
-
-/**
- * @param {object[]} events DAG 事件行
- * @returns {Array<{ id: string, prev_event_ids?: unknown, hlc?: object, node_id?: string, sender?: string }>} 拓扑 meta 列表
- */
-export function eventsToMetas(events) {
-	return events.map(event => ({
-		id: event.id,
-		prev_event_ids: event.prev_event_ids,
-		hlc: event.hlc,
-		node_id: event.node_id,
-		sender: event.sender,
-	}))
-}
+import { eventsToMetas, topologicalCanonicalOrder } from './dag/index.mjs'
 
 /** @type {Map<string, { fp: string, order: string[] }>} */
 const memoByKey = new Map()

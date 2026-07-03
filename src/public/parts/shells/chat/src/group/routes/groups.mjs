@@ -1,8 +1,8 @@
 /**
  * 【文件】group/routes/groups.mjs
- * 【职责】群生命周期 HTTP：列表、创建（含 DM 模板）、时间线切换与管理员删除本地 replica。
- * 【原理】GET 列表经 enumerateJoinedFederatedGroups；POST 普通群走 createGroup+initGroupFileMasterKey，DM 走 createEcdhDmGroup；timeline 委托 session/generation；DELETE 需 ADMIN/MANAGE_ADMINS。
- * 【数据结构】群列表行、201 响应（groupId/defaultChannelId）、timeline {current,total}、DM intro 证明字段。
+ * 【职责】群生命周期 HTTP：列表、创建（含 DM 模板）、RPG 分支切换与管理员删除本地 replica。
+ * 【原理】GET 列表经 enumerateJoinedFederatedGroups；POST 普通群走 createGroup+initGroupFileMasterKey，DM 走 createEcdhDmGroup；branch 委托 session/generation；DELETE 需 ADMIN/MANAGE_ADMINS。
+ * 【数据结构】群列表行、201 响应（groupId/defaultChannelId）、branch {current,total}、DM intro 证明字段。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/lifecycle、chat/dm、queries.mjs、access.mjs。
  */
 import { randomUUID } from 'node:crypto'
@@ -23,6 +23,7 @@ import { buildGroupPreview } from '../groupPreview.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
+import { GROUPS_PREFIX } from './path.mjs'
 
 /**
  * 注册群列表、创建与删除路由。
@@ -31,14 +32,14 @@ import { requireGroupMember } from './middleware.mjs'
  * @returns {void}
  */
 export function registerGroupLifecycleRoutes(router, authenticate) {
-	router.get(/^\/api\/parts\/shells:chat\/groups\/?$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const rows = await enumerateJoinedFederatedGroups(username)
 		rows.sort((left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0))
 		res.status(200).json(rows)
 	})
 
-	router.post(/^\/api\/parts\/shells:chat\/groups\/?$/, authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const body = req.body || {}
 		const template = String(body.template || '').trim().toLowerCase()
@@ -72,7 +73,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			})
 		}
 
-		const { normalizeFriendBinding } = await import('../../chat/lib/friendBinding.mjs')
+		const { normalizeFriendBinding } = await import('../../../public/src/friendBinding.mjs')
 		const friendBinding = normalizeFriendBinding(body.friendBinding)
 		if (friendBinding && !body.forceNew) {
 			const rows = await enumerateJoinedFederatedGroups(username)
@@ -109,13 +110,13 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		})
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/preview$/, authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/preview`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
-		const groupId = req.params[0]
+		const { groupId } = req.params
 		res.status(200).json(await buildGroupPreview(username, groupId))
 	})
 
-	router.get(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/timeline$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { groupId } = req.groupContext
 		const meta = await getActiveGroupRuntime(groupId)
 		if (!meta?.timeLines?.length)
@@ -126,19 +127,20 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		res.status(200).json({ current, total })
 	})
 
-	router.put(/^\/api\/parts\/shells:chat\/groups\/([^/]+)\/timeline$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.put(`${GROUPS_PREFIX}/:groupId/branch`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId } = req.groupContext
-		let { delta } = req.body || {}
-		if (delta === null) delta = Number.POSITIVE_INFINITY
+		const body = req.body || {}
+		let delta = body.delta
+		if (body.latest === true) delta = Number.POSITIVE_INFINITY
 		if (typeof delta !== 'number' || !Number.isFinite(delta))
-			return res.status(400).json({ error: 'delta required' })
+			return res.status(400).json({ error: 'delta or latest required' })
 
-		const channelId = String(req.body?.channelId || 'default').trim() || 'default'
+		const channelId = String(body.channelId || 'default').trim() || 'default'
 		const entry = await modifyTimeLine(groupId, channelId, delta)
 		res.status(200).json({ entry: await entry.toData(username) })
 	})
 
-	router.delete(/^\/api\/parts\/shells:chat\/groups\/([^/]+)$/, authenticate, requireGroupMember(), async (req, res) => {
+	router.delete(`${GROUPS_PREFIX}/:groupId`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, groupId, state, member } = req.groupContext
 		const permissionsChannelId = governanceChannelId(state)
 		const perms = calculateMemberPermissions(member, state.roles, permissionsChannelId, state.channelPermissions)
@@ -146,6 +148,6 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			return res.status(403).json({ error: 'Only admins can delete the group' })
 
 		await removeLocalGroupReplica(username, groupId)
-		res.status(200).json({})
+		res.status(200).json({ groupId, deleted: true })
 	})
 }

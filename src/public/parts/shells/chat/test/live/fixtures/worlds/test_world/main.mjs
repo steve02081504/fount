@@ -6,6 +6,9 @@ export default {
 	},
 	interfaces: {
 		chat: {
+			/**
+			 *
+			 */
 			GetPrompt: () => ({ text: [{ content: 'test world fixture', important: 0 }] }),
 		},
 	},

@@ -179,7 +179,7 @@ function initEditState(entityHash, profile) {
 async function handleSaveProfile() {
 	if (!editingEntityHash || !editingBaseProfile || !editDialog) return
 	persistActiveLocaleForm()
-	const groupId = hubStore.currentGroupId || undefined
+	const groupId = hubStore.context.currentGroupId || undefined
 	try {
 		const updates = {
 			localized: editingLocalized,
@@ -208,7 +208,7 @@ async function handleSaveProfile() {
  */
 export async function openHubProfileEdit(entityHash, opts = {}) {
 	const { fetchEntityProfileApi: fetchApi } = await import('../src/entityProfileApi.mjs')
-	const groupId = hubStore.currentGroupId || undefined
+	const groupId = hubStore.context.currentGroupId || undefined
 	const dialog = await ensureEditDialog()
 	const data = await fetchApi(entityHash, groupId)
 	if (!data?.profile) {

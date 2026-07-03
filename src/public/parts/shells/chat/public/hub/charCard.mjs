@@ -81,7 +81,7 @@ async function charAvatarHtml(name, avatarUrl) {
 async function renderCharInfoCardInner(name, details, { active }) {
 	usingTemplates('/parts/shells:chat/src/templates')
 	const entityHash = await charAgentEntityHash(name)
-	const groupId = hubStore.currentGroupId || undefined
+	const groupId = hubStore.context.currentGroupId || undefined
 	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name

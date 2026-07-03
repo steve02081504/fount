@@ -40,7 +40,7 @@ export function dismissGroupActionMenu() {
  * @returns {void}
  */
 function pruneGroupFoldersAfterLeave(leaving) {
-	for (const folder of hubStore.groupFoldersState.folders || [])
+	for (const folder of hubStore.sidebar.groupFoldersState.folders || [])
 		folder.groupIds = (folder.groupIds || []).filter(id => !leaving.has(id))
 }
 
@@ -50,7 +50,7 @@ function pruneGroupFoldersAfterLeave(leaving) {
  */
 function markGroupsLeaving(groupIds) {
 	const leaving = new Set(groupIds)
-	for (const group of hubStore.groups)
+	for (const group of hubStore.sidebar.groups)
 		if (leaving.has(group.groupId))
 			group.isLeaving = true
 }
@@ -61,7 +61,7 @@ function markGroupsLeaving(groupIds) {
  */
 function clearGroupsLeaving(groupIds) {
 	const leaving = new Set(groupIds)
-	for (const group of hubStore.groups)
+	for (const group of hubStore.sidebar.groups)
 		if (leaving.has(group.groupId))
 			delete group.isLeaving
 }
@@ -72,7 +72,7 @@ function clearGroupsLeaving(groupIds) {
  */
 function removeGroupsFromStore(groupIds) {
 	const leaving = new Set(groupIds)
-	hubStore.groups = hubStore.groups.filter(g => !leaving.has(g.groupId))
+	hubStore.sidebar.groups = hubStore.sidebar.groups.filter(g => !leaving.has(g.groupId))
 }
 
 /**
@@ -84,18 +84,18 @@ async function applyLeaveGroupsLocal(groupIds) {
 	const leaving = new Set(groupIds)
 	markGroupsLeaving(groupIds)
 	const touchesCurrent = [...leaving].some(
-		id => id === hubStore.currentGroupId || id === hubStore.privateGroup.groupId,
+		id => id === hubStore.context.currentGroupId || id === hubStore.privateGroup.groupId,
 	)
 	if (touchesCurrent) closeGroupWebSocket()
 	if (touchesCurrent) {
 		if (hubStore.privateGroup.groupId && leaving.has(hubStore.privateGroup.groupId))
 			clearPrivateGroupState()
-		const next = hubStore.groups.find(g => !leaving.has(g.groupId))?.groupId
+		const next = hubStore.sidebar.groups.find(g => !leaving.has(g.groupId))?.groupId
 		if (next) await selectGroup(next)
 		else {
-			hubStore.currentGroupId = null
-			hubStore.currentChannelId = null
-			hubStore.currentState = null
+			hubStore.context.currentGroupId = null
+			hubStore.context.currentChannelId = null
+			hubStore.context.currentState = null
 			const { setMode } = await import('./mode.mjs')
 			await setMode('friends')
 		}
@@ -169,7 +169,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 
 	const targets = targetGroupIds?.length ? targetGroupIds : [groupId]
 	const batch = targets.length > 1
-	const group = hubStore.groups.find(g => g.groupId === groupId)
+	const group = hubStore.sidebar.groups.find(g => g.groupId === groupId)
 	const groupName = group?.name || groupId
 
 	const menu = document.createElement('ul')
@@ -226,7 +226,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 			showToastI18n('success', 'chat.hub.groupContext.inviteCopied')
 		}
 		catch (err) {
-			showToastI18n('error', 'chat.hub.shareGroupFailed', { error: err.message })
+			handleUIError(err, 'chat.hub.shareGroupFailed')
 		}
 	})
 
@@ -268,7 +268,7 @@ export async function showGroupContextMenu(event, groupId) {
  * @returns {Promise<void>}
  */
 export async function showGroupHeaderMenu(anchorEl) {
-	const groupId = hubStore.currentGroupId
+	const groupId = hubStore.context.currentGroupId
 	if (!groupId || !(anchorEl instanceof HTMLElement)) return
 	const rect = anchorEl.getBoundingClientRect()
 	await mountGroupActionMenuAt(groupId, rect.left, rect.bottom + 4)
@@ -314,7 +314,7 @@ async function showAddCharDialog(groupId) {
 					closeModal()
 				}
 				catch (err) {
-					showToastI18n('error', 'chat.hub.operationFailed', { error: err.message })
+					handleUIError(err, 'chat.hub.operationFailed')
 				}
 			})
 		},

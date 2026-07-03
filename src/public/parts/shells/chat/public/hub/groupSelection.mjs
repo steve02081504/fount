@@ -7,9 +7,9 @@ import { hubStore } from './core/state.mjs'
  * @returns {string[]} 侧栏可见群 ID（内存顺序，与 serverBar 渲染一致）
  */
 export function orderedSidebarGroupIds() {
-	if (hubStore.sidebarGroupOrder.length)
-		return [...hubStore.sidebarGroupOrder]
-	return hubStore.groups
+	if (hubStore.sidebar.sidebarGroupOrder.length)
+		return [...hubStore.sidebar.sidebarGroupOrder]
+	return hubStore.sidebar.groups
 		.filter(g => !g.friendBinding?.entityHash)
 		.map(g => g.groupId)
 }
@@ -18,7 +18,7 @@ export function orderedSidebarGroupIds() {
  * @returns {string[]} 当前选中的群 ID 列表
  */
 export function getSelectedGroupIds() {
-	return [...hubStore.selectedGroupIds]
+	return [...hubStore.sidebar.selectedGroupIds]
 }
 
 /**
@@ -26,13 +26,13 @@ export function getSelectedGroupIds() {
  * @returns {boolean} 是否在多选集中
  */
 export function isGroupSelected(groupId) {
-	return hubStore.selectedGroupIds.has(groupId)
+	return hubStore.sidebar.selectedGroupIds.has(groupId)
 }
 
 /** @returns {void} */
 export function clearGroupSelection() {
-	hubStore.selectedGroupIds.clear()
-	hubStore.selectionAnchorGroupId = null
+	hubStore.sidebar.selectedGroupIds.clear()
+	hubStore.sidebar.selectionAnchorGroupId = null
 	syncGroupSelectionStyles()
 }
 
@@ -40,7 +40,7 @@ export function clearGroupSelection() {
 export function syncGroupSelectionStyles() {
 	document.querySelectorAll('#hub-server-list .hub-server-item[data-group-id]').forEach(el => {
 		const id = String(el.dataset.groupId || '').trim()
-		el.classList.toggle('is-multi-selected', hubStore.selectedGroupIds.has(id))
+		el.classList.toggle('is-multi-selected', hubStore.sidebar.selectedGroupIds.has(id))
 	})
 }
 
@@ -54,35 +54,35 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
 	if (!ids.includes(groupId)) return
 
 	if (mod.ctrl) {
-		if (hubStore.selectedGroupIds.has(groupId))
-			hubStore.selectedGroupIds.delete(groupId)
-		else hubStore.selectedGroupIds.add(groupId)
-		hubStore.selectionAnchorGroupId = groupId
+		if (hubStore.sidebar.selectedGroupIds.has(groupId))
+			hubStore.sidebar.selectedGroupIds.delete(groupId)
+		else hubStore.sidebar.selectedGroupIds.add(groupId)
+		hubStore.sidebar.selectionAnchorGroupId = groupId
 		syncGroupSelectionStyles()
 		return
 	}
 
 	if (mod.shift) {
-		const anchor = hubStore.selectionAnchorGroupId
+		const anchor = hubStore.sidebar.selectionAnchorGroupId
 		if (!anchor || !ids.includes(anchor)) {
-			hubStore.selectedGroupIds.clear()
-			hubStore.selectedGroupIds.add(groupId)
-			hubStore.selectionAnchorGroupId = groupId
+			hubStore.sidebar.selectedGroupIds.clear()
+			hubStore.sidebar.selectedGroupIds.add(groupId)
+			hubStore.sidebar.selectionAnchorGroupId = groupId
 			syncGroupSelectionStyles()
 			return
 		}
 		const a = ids.indexOf(anchor)
 		const b = ids.indexOf(groupId)
 		const [lo, hi] = a <= b ? [a, b] : [b, a]
-		hubStore.selectedGroupIds.clear()
-		for (let i = lo; i <= hi; i++) hubStore.selectedGroupIds.add(ids[i])
+		hubStore.sidebar.selectedGroupIds.clear()
+		for (let i = lo; i <= hi; i++) hubStore.sidebar.selectedGroupIds.add(ids[i])
 		syncGroupSelectionStyles()
 		return
 	}
 
-	hubStore.selectedGroupIds.clear()
-	hubStore.selectedGroupIds.add(groupId)
-	hubStore.selectionAnchorGroupId = groupId
+	hubStore.sidebar.selectedGroupIds.clear()
+	hubStore.sidebar.selectedGroupIds.add(groupId)
+	hubStore.sidebar.selectionAnchorGroupId = groupId
 	syncGroupSelectionStyles()
 }
 
@@ -93,7 +93,7 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
  */
 export function contextMenuTargetGroupIds(groupId) {
 	const id = String(groupId || '').trim()
-	if (hubStore.selectedGroupIds.size > 1 && hubStore.selectedGroupIds.has(id))
+	if (hubStore.sidebar.selectedGroupIds.size > 1 && hubStore.sidebar.selectedGroupIds.has(id))
 		return getSelectedGroupIds()
 	if (id) return [id]
 	return []
@@ -107,9 +107,9 @@ export function contextMenuTargetGroupIds(groupId) {
 export function primeContextMenuSelection(groupId) {
 	const id = String(groupId || '').trim()
 	if (!id) return
-	if (hubStore.selectedGroupIds.has(id)) return
+	if (hubStore.sidebar.selectedGroupIds.has(id)) return
 	clearGroupSelection()
-	hubStore.selectedGroupIds.add(id)
-	hubStore.selectionAnchorGroupId = id
+	hubStore.sidebar.selectedGroupIds.add(id)
+	hubStore.sidebar.selectionAnchorGroupId = id
 	syncGroupSelectionStyles()
 }

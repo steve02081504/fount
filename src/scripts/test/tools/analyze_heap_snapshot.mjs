@@ -26,7 +26,7 @@ for (let i = 0; i < nodes.length; i += fieldCount) {
 	const nameIdx = nodes[i + 1]
 	const selfSize = nodes[i + 3] || 0
 	const type = typeNames[typeIdx] || `type${typeIdx}`
-	const name = typeof nameIdx === 'number' && nameIdx >= 0 ? (strings[nameIdx] || '') : ''
+	const name = typeof nameIdx === 'number' && nameIdx >= 0 ? strings[nameIdx] || '' : ''
 	const key = `${type}\t${name.slice(0, 120)}`
 	const prev = byKey.get(key) || { count: 0, selfSize: 0 }
 	prev.count++

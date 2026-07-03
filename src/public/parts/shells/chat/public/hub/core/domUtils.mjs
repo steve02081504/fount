@@ -20,9 +20,9 @@ const charEntityHashCache = new Map()
  * @returns {string[]} 角色 part 名列表
  */
 export function activeCharPartNames() {
-	const names = new Set(hubStore.currentState?.charPartNames || [])
-	if (hubStore.privateGroup.charName)
-		names.add(String(hubStore.privateGroup.charName))
+	const names = new Set(hubStore.context.currentState?.charPartNames || [])
+	if (hubStore.privateGroup.charname)
+		names.add(String(hubStore.privateGroup.charname))
 	return [...names]
 }
 
@@ -71,13 +71,13 @@ export function resolveEntityHashForAuthorKey(key) {
 		if (charHash) return charHash
 		return null
 	}
-	const members = hubStore.currentState?.members || []
-	const member = members.find(m => String(m.pubKeyHash || '').toLowerCase() === raw)
+	const members = hubStore.context.currentState?.members || []
+	const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw)
 	if (member?.entityHash && isEntityHash128(member.entityHash))
 		return String(member.entityHash).toLowerCase()
-	const viewerPub = String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	if (viewerPub === raw && hubStore.viewerEntityHash)
-		return String(hubStore.viewerEntityHash).toLowerCase()
+	const viewerPub = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	if (viewerPub === raw && hubStore.viewer.viewerEntityHash)
+		return String(hubStore.viewer.viewerEntityHash).toLowerCase()
 	return null
 }
 
@@ -89,9 +89,9 @@ export function resolveEntityHashForAuthorKey(key) {
 export function memberDisplayNameForAuthorKey(key) {
 	const raw = String(key ?? '').trim()
 	if (!raw) return null
-	const members = hubStore.currentState?.members || []
+	const members = hubStore.context.currentState?.members || []
 	if (isHex64(raw)) {
-		const member = members.find(m => String(m.pubKeyHash || '').toLowerCase() === raw.toLowerCase())
+		const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw.toLowerCase())
 		if (member?.displayName) return String(member.displayName).trim()
 	}
 	return null

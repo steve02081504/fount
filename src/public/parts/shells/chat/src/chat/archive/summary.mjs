@@ -22,12 +22,13 @@ function eventViewForArchive(event, blockedSenders) {
  * 合并存档摘要：事件条数、末条 id、checkpoint、DAG 叶（§9 want 前握手）。
  * @param {object[]} events 本地 DAG 事件
  * @param {object | null} checkpoint `checkpoint.json` 或 null
- * @param {{ blockedPeers?: string[] }} [options] 拉黑主体省略正文
+ * @param {{ deniedSubjects?: string[], blockedPeers?: string[] }} [options] denylist subject scope（省略存档正文）
  * @returns {{ hash: string, eventCount: number, lastEventId: string, checkpointEventId: string, tips: string, tipsHash: string }} 存档摘要
  */
 export function computeArchiveSummary(events, checkpoint, options = {}) {
+	const deniedSubjects = options.deniedSubjects ?? options.blockedPeers ?? []
 	const blockedSenders = new Set(
-		(options.blockedPeers || []).map(id => String(id).trim().toLowerCase()).filter(Boolean),
+		deniedSubjects.map(id => String(id).trim().toLowerCase()).filter(Boolean),
 	)
 	const view = blockedSenders.size
 		? events.map(event => eventViewForArchive(event, blockedSenders))

@@ -40,11 +40,12 @@ export function createPostCardBuilder(deps) {
 		const actionPostId = item.targetPostId || item.postId
 		const actionKey = formatActionKey(actionEntity, actionPostId)
 		const originalAuthor = isRepost ? item.targetEntityHash : item.entityHash
-		const protectedLabel = geti18n('social.profile.protectedPost')
-		const text = item.post?.content?.text || (item.post?.content?.protected ? protectedLabel : '')
+		const decryptFailed = item.post?.decryptView?.failed
+		const decryptFailedLabel = geti18n('social.feed.decryptFailed')
+		const text = item.post?.content?.text || (decryptFailed ? decryptFailedLabel : '')
 		const contentAuthor = isRepost ? originalAuthor : item.entityHash
-		const html = item.post?.content?.protected
-			? `<em>${protectedLabel}</em>`
+		const html = decryptFailed
+			? `<em>${decryptFailedLabel}</em>`
 			: await renderMarkdown(text, contentAuthor)
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
@@ -53,13 +54,13 @@ export function createPostCardBuilder(deps) {
 		const visibilityIcon = visibilityCode === 'followers'
 			? `<span class="s-ic s-ic-lock post-visibility-icon" title="${geti18n('social.composer.visibilityFollowers')}" aria-label="${geti18n('social.composer.visibilityFollowers')}"></span>`
 			: `<span class="s-ic s-ic-globe post-visibility-icon" title="${geti18n('social.composer.visibilityPublic')}" aria-label="${geti18n('social.composer.visibilityPublic')}"></span>`
-		const mediaHtml = item.post?.content?.protected ? '' : renderMediaHtml(item.post?.content?.mediaRefs)
+		const mediaHtml = decryptFailed ? '' : renderMediaHtml(item.post?.content?.mediaRefs)
 		const quoteRef = item.post?.content?.quoteRef
-		const quoteHtml = quoteRef && !item.post?.content?.protected
+		const quoteHtml = quoteRef && !decryptFailed
 			? renderQuoteBlockHtml(geti18n, { ...quoteRef, text: quoteRef.text || '' })
 			: ''
 		const groupRef = item.post?.content?.groupRef
-		const groupRefHtml = groupRef && !item.post?.content?.protected
+		const groupRefHtml = groupRef && !decryptFailed
 			? renderGroupRefBlockHtml(groupRef)
 			: ''
 		const likedClass = item.viewerLiked ? ' liked' : ''
@@ -87,6 +88,9 @@ export function createPostCardBuilder(deps) {
 		const blockBtn = isOwn
 			? ''
 			: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
+		const hideBtn = isOwn
+			? ''
+			: `<button type="button" data-hide="${item.entityHash}"><span class="s-ic s-ic-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
 		const deleteBtn = isOwn
 			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
@@ -122,6 +126,7 @@ export function createPostCardBuilder(deps) {
 			replyCount: item.replyCount || 0,
 			entityHash: item.entityHash,
 			blockBtn,
+			hideBtn,
 			deleteBtn,
 		})
 		return /** @type {HTMLElement} */ card

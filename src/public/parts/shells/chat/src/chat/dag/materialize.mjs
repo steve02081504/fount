@@ -33,6 +33,7 @@ import {
 	invalidateTopologicalOrderMemo,
 	resolveTopologicalOrderMemoCached,
 } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
+import { mergeChannelMessagesForDisplay } from '../../../public/src/lib/messageMerge.mjs'
 import { archivePostsBeforeDagFold, trimMessagesJsonlToHotWindow } from '../archive/archiveBeforeFold.mjs'
 import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
@@ -40,7 +41,6 @@ import { findStaleUnreachableChannels } from '../channel/gc.mjs'
 import { enforceEventRetention } from '../events/retention.mjs'
 import { flushPendingRelay } from '../federation/pendingRelay.mjs'
 import { loadGovernanceBranchTip } from '../governance/branchStore.mjs'
-import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
 import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 

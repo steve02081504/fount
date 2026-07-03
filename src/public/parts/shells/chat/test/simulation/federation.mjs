@@ -108,11 +108,11 @@ export async function createChatFederationSim(options = {}) {
 				for (const event of sourceEvents) {
 					if (knownIds.has(String(event.id).toLowerCase())) continue
 					const status = await modules.remoteIngest.appendValidatedRemoteEvent(targetNode, groupId, event, { logFailures })
-					if (status === 'ok') {
+					if (status.status === 'applied') {
 						progressed = true
 						applied++
 					}
-					else if (status !== 'dup') failed++
+					else if (status.status !== 'duplicate') failed++
 				}
 			}
 			if (!progressed) break

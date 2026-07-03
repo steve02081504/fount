@@ -193,14 +193,14 @@ Deno.test('chat 3-node E2E', async t => {
 		assert(bReadA?.content?.content?.includes('top secret from owner'), 'B(authorized role) decrypts private message')
 		const cReadA = await channelMessage(NODE_C, groupId, PRIVATE_CHANNEL, secretA.id)
 		assert(cReadA, 'C received the private message frame (federated)')
-		assertEquals(cReadA.content?.decryptFailed, true, 'C(unauthorized) cannot decrypt private message')
+		assertEquals(cReadA?.decryptView?.failed, true, 'C(unauthorized) cannot decrypt private message')
 
 		// 授权非 owner（B）发帖：A 解密成功，C 不可——证明「仅授权角色」可发帖，而非仅 owner。
 		const secretB = await postMessage(NODE_B, groupId, PRIVATE_CHANNEL, 'secret reply from moderator', [NODE_A, NODE_C])
 		const aReadB = await channelMessage(NODE_A, groupId, PRIVATE_CHANNEL, secretB.id)
 		assert(aReadB?.content?.content?.includes('secret reply from moderator'), 'A decrypts B(authorized) private message')
 		const cReadB = await channelMessage(NODE_C, groupId, PRIVATE_CHANNEL, secretB.id)
-		assertEquals(cReadB?.content?.decryptFailed, true, 'C still cannot decrypt B private message')
+		assertEquals(cReadB?.decryptView?.failed, true, 'C still cannot decrypt B private message')
 
 		// 未授权写门控（DAG authz 层真断）：C 向私密频道发帖被 SEND_MESSAGES 拒绝。
 		// federation.mjs 的 postMessage 是联邦辅助函数；真实发帖 API 在 channelMessaging 模块。

@@ -1,9 +1,10 @@
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
-import { getNodeHash } from '../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../scripts/p2p/node/identity.mjs'
 import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
-import { SOCIAL_RPC_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
+import { SOCIAL_RPC_REQUEST_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
 import { listLocalTimelineOwners, loadViewerContext } from './feedHelpers.mjs'
+import { formatHashShort } from './lib/entityDisplay.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { buildFederatedTimelinePullResponse } from './timeline/sync.mjs'
 
@@ -27,14 +28,14 @@ export async function discoverAccounts(username, options = {}) {
 	const accounts = []
 	for (const entityHash of slice) {
 		const view = await getTimelineMaterialized(username, entityHash)
-		if (view.socialMeta?.isProtected) continue
+		if (view.socialMeta?.hideFromDiscovery) continue
 		if (!view.posts?.length && !view.socialMeta?.createdAt) continue
 		// listLocalTimelineOwners 含已同步的远端时间线；getProfile 对其返回派生默认资料，
 		// 不可用 ensureLocalEntityProfile（远端会抛错使探索接口 500）。
 		const profile = await getProfile(entityHash, username)
 		accounts.push({
 			entityHash,
-			name: profile?.name || entityHash.slice(0, 8),
+			name: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0, ellipsis: false }),
 			exploreBlurb: view.socialMeta?.exploreBlurb || '',
 			avatarUrl: profile?.avatar || null,
 		})
@@ -68,7 +69,7 @@ export async function discoverPosts(username, options = {}) {
 	for (const entityHash of owners) {
 		if (posts.length >= postLimit * POST_DISCOVER_SAMPLE_MULTIPLIER) break
 		const view = await getTimelineMaterialized(username, entityHash)
-		if (view.socialMeta?.isProtected) continue
+		if (view.socialMeta?.hideFromDiscovery) continue
 		for (const post of view.posts) {
 			if (post.content?.visibility === 'followers') continue
 			if (mediaOnly && !post.content?.mediaRefs?.length) continue
@@ -101,8 +102,8 @@ export async function discoverPosts(username, options = {}) {
 export async function discoverFollowGraph(username, entityHash, ingress = {}) {
 	const id = entityHash.toLowerCase()
 	const view = await getTimelineMaterialized(username, id)
-	if (view.socialMeta?.isProtected) {
-		const { getNodeHash } = await import('../../../../../scripts/p2p/node_context.mjs')
+	if (view.socialMeta?.hideFromDiscovery) {
+		const { getNodeHash } = await import('../../../../../scripts/p2p/node/identity.mjs')
 		const { resolveOperatorEntityHashForUser } = await import('../../../../../server/p2p_server/operator_identity.mjs')
 		const requesterNode = (ingress.requesterNodeHash || '').trim().toLowerCase()
 		const operator = await resolveOperatorEntityHashForUser(username)
@@ -152,7 +153,7 @@ export async function discoverWithNetwork(username, rpc) {
  * @returns {Promise<object | null>} RPC 响应体
  */
 export async function handleSocialRpc(username, rpc, ingress = {}) {
-	if (!SOCIAL_RPC_TYPES.has(rpc?.type)) return null
+	if (!SOCIAL_RPC_REQUEST_TYPES.has(rpc?.type)) return null
 	switch (rpc?.type) {
 		case 'social_discover_request': {
 			const scoped = ingress.requesterNodeHash

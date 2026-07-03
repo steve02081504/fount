@@ -17,11 +17,11 @@ Deno.test('dispatchMailboxRecordsToConsumers routes records by app', async () =>
 	 * @type {string[]}
 	 */
 	let seen = []
-	registerMailboxConsumer('test/a', 'chat', async (username, records) => {
+	registerMailboxConsumer('chat', async (username, records) => {
 		seen = records.map(r => r.id)
 		return ['a1']
 	})
-	registerMailboxConsumer('test/b', 'social', async () => ['b1'])
+	registerMailboxConsumer('social', async () => ['b1'])
 	try {
 		const delivered = await dispatchMailboxRecordsToConsumers(username, [
 			{ id: 'r1', app: 'chat', envelope: { type: 'message' } },
@@ -30,15 +30,15 @@ Deno.test('dispatchMailboxRecordsToConsumers routes records by app', async () =>
 		assertEquals(new Set(delivered), new Set(['a1']))
 	}
 	finally {
-		unregisterMailboxConsumer('test/a')
-		unregisterMailboxConsumer('test/b')
+		unregisterMailboxConsumer('chat')
+		unregisterMailboxConsumer('social')
 	}
 })
 
 Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids across apps', async () => {
 	const username = 'test-user'
-	registerMailboxConsumer('test/chat', 'chat', async (_username, records) => records.map(r => r.id))
-	registerMailboxConsumer('test/social', 'social', async (_username, records) => records.map(r => `social:${r.id}`))
+	registerMailboxConsumer('chat', async (_username, records) => records.map(r => r.id))
+	registerMailboxConsumer('social', async (_username, records) => records.map(r => `social:${r.id}`))
 	try {
 		const delivered = await dispatchMailboxRecordsToConsumers(username, [
 			{ id: 'c1', app: 'chat', envelope: { type: 'message' } },
@@ -47,18 +47,25 @@ Deno.test('dispatchMailboxRecordsToConsumers merges consumer ids across apps', a
 		assertEquals(new Set(delivered), new Set(['c1', 'social:s1']))
 	}
 	finally {
-		unregisterMailboxConsumer('test/chat')
-		unregisterMailboxConsumer('test/social')
+		unregisterMailboxConsumer('chat')
+		unregisterMailboxConsumer('social')
 	}
 })
 
 Deno.test('parseMailboxGive rejects records without envelope or app', () => {
-	assertEquals(parseMailboxGive({ records: [{ toPubKeyHash: RECIPIENT }] }), null)
-	assertEquals(parseMailboxGive({
+	const missingEnvelope = parseMailboxGive({ records: [{ toPubKeyHash: RECIPIENT }] })
+	assertEquals(missingEnvelope.ok, false)
+	if (!missingEnvelope.ok)
+		assertEquals(missingEnvelope.field, 'records[0].envelope')
+
+	const valid = parseMailboxGive({
 		records: [{
 			toPubKeyHash: RECIPIENT,
 			app: 'chat',
 			envelope: { id: 'e1' },
 		}],
-	})?.records.length, 1)
+	})
+	assertEquals(valid.ok, true)
+	if (valid.ok)
+		assertEquals(valid.value.records.length, 1)
 })

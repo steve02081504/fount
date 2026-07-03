@@ -196,7 +196,7 @@ export async function mergeChannelHistories(username, groupId, channelHistories)
 }
 
 /**
- * 按 `message_content_retention_ms` 裁某频道 messages JSONL（0 表示跳过）。
+ * 按 `messageContentRetentionMs` 裁某频道 messages JSONL（0 表示跳过）。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -225,11 +225,11 @@ export async function pruneChannelMessagesJsonlByTime(username, groupId, channel
  * 对所有频道应用消息正文保留策略。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {{ message_content_retention_ms?: unknown }} [groupSettings] 群设置
+ * @param {{ messageContentRetentionMs?: unknown }} [groupSettings] 群设置
  * @returns {Promise<void>}
  */
 export async function pruneAllChannelMessagesByRetention(username, groupId, groupSettings = {}) {
-	const ms = Number(groupSettings.message_content_retention_ms) || 0
+	const ms = Number(groupSettings.messageContentRetentionMs) || 0
 	if (ms <= 0) return
 	const cutoffWall = Date.now() - ms
 	const { state } = await getState(username, groupId)
@@ -251,7 +251,7 @@ export async function compactGroup(username, groupId) {
 	await pruneAllChannelMessagesByRetention(username, groupId, state.groupSettings)
 	return {
 		eventsPruned,
-		messageRetentionApplied: (Number(state.groupSettings?.message_content_retention_ms) || 0) > 0,
+		messageRetentionApplied: (Number(state.groupSettings?.messageContentRetentionMs) || 0) > 0,
 	}
 }
 
@@ -339,7 +339,7 @@ export async function compactAndPruneChannelMessages(username, groupId, channelI
 	const path = messagesPath(username, groupId, channelId)
 	const lines = await readJsonl(path, { sanitize: stripDagEventLocalExtensions })
 	const gs = (await getState(username, groupId)).state?.groupSettings || {}
-	const retentionMs = Number(gs.message_content_retention_ms) || 0
+	const retentionMs = Number(gs.messageContentRetentionMs) || 0
 	let kept = lines
 	if (retentionMs > 0) {
 		const cutoffWall = Date.now() - retentionMs

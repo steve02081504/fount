@@ -50,8 +50,6 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'unfollow',
 	'block',
 	'unblock',
-	'suspect',
-	'unsuspect',
 	'file_share',
 	'follow_approve',
 	'operator_key_rotate',
@@ -60,15 +58,25 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 ])
 
 /** @type {Set<string>} */
-export const SOCIAL_RPC_TYPES = new Set([
+export const SOCIAL_RPC_REQUEST_TYPES = new Set([
 	'social_discover_request',
-	'social_discover_response',
 	'social_post_discover_request',
-	'social_post_discover_response',
 	'social_follow_graph_request',
-	'social_follow_graph_response',
 	'social_on_mention',
-	'social_on_mention_response',
 	'social_timeline_pull_request',
+])
+
+/** @type {Set<string>} */
+export const SOCIAL_RPC_RESPONSE_TYPES = new Set([
+	'social_discover_response',
+	'social_post_discover_response',
+	'social_follow_graph_response',
+	'social_on_mention_response',
 	'social_timeline_pull_response',
+])
+
+/** @type {Set<string>} */
+export const SOCIAL_RPC_TYPES = new Set([
+	...SOCIAL_RPC_REQUEST_TYPES,
+	...SOCIAL_RPC_RESPONSE_TYPES,
 ])

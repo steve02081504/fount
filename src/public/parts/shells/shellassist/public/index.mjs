@@ -1,8 +1,8 @@
 /**
  * 终端助手 shell 的客户端逻辑。
  */
-import { initTranslations, geti18n, console } from '../../scripts/i18n/index.mjs'
 import { setTerminal } from '../../scripts/components/terminal.mjs'
+import { initTranslations, geti18n, console } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
 
 applyTheme()

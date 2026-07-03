@@ -24,7 +24,7 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
 	if (FEDERATION_PRIVATE_EVENT_TYPES.has(type)) return false
 	if (requesterContext.isOwner) return true
 
-	if (type === 'social_meta') return !requesterContext.isProtected
+	if (type === 'social_meta') return !requesterContext.hideFromDiscovery
 
 	if (type === 'post' || type === 'repost')
 		return canViewPost(

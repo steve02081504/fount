@@ -37,7 +37,8 @@ test.describe('Social post actions', () => {
 		await panel.locator('textarea').fill(comment)
 		await Promise.all([
 			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/repost')
+				res.url().includes('/api/parts/shells:social/posts/')
+				&& res.url().includes('/repost')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
@@ -54,7 +55,7 @@ test.describe('Social post actions', () => {
 		const card = await findPostCard(page, postId)
 		await openPostMoreMenu(card)
 		const translateRes = page.waitForResponse(res =>
-			res.url().includes('/api/parts/shells:social/profile/translate')
+			res.url().includes('/api/parts/shells:social/translate')
 			&& res.request().method() === 'POST'
 			&& res.status() === 200,
 		)

@@ -1,6 +1,6 @@
 /**
  * profile/syncFromPersona 单测。
- * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/profile_sync.test.mjs
+ * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/integration/profile_sync.test.mjs
  */
 /* global Deno */
 import { encodeEntityHash } from 'fount/scripts/p2p/entity_id.mjs'

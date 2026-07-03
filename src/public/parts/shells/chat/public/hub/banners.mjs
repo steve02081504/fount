@@ -49,19 +49,19 @@ export async function refreshDagForkBanner() {
 	const mergeButton = document.getElementById('hub-fork-merge-button')
 	const tipSelect = document.getElementById('hub-fork-tip-select')
 	if (!banner || !textEl) return
-	if (hubStore.currentMode !== 'groups' || !hubStore.currentGroupId || !hubStore.currentState?.isMember) {
+	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentState?.isMember) {
 		banner.setAttribute('hidden', '')
-		hubStore.dagTips = []
+		hubStore.federation.dagTips = []
 		return
 	}
 	const response = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(hubStore.currentGroupId)}/dag/tips`,
+		`/api/parts/shells:chat/groups/${encodeURIComponent(hubStore.context.currentGroupId)}/dag/tips`,
 		{ credentials: 'include' },
 	)
 	const data = await response.json()
 	const tips = Array.isArray(data.tips) ? data.tips : []
-	hubStore.dagTips = tips
-	const governanceFork = !!data.governanceFork || !!hubStore.currentState?.governanceFork
+	hubStore.federation.dagTips = tips
+	const governanceFork = !!data.governanceFork || !!hubStore.context.currentState?.governanceFork
 	if (tips.length < 2 && !governanceFork) {
 		banner.setAttribute('hidden', '')
 		return
@@ -74,7 +74,7 @@ export async function refreshDagForkBanner() {
 	if (mergeButton) mergeButton.disabled = tips.length < 2
 	refreshLocalViewBanner()
 	if (tipSelect) {
-		const preferred = data.consensusBranchTip || hubStore.currentState?.consensusBranchTip || ''
+		const preferred = data.consensusBranchTip || hubStore.context.currentState?.consensusBranchTip || ''
 		const tipConsensusScores = data.tipConsensusScores || {}
 		if (!tips.length)
 			tipSelect.innerHTML = ''
@@ -104,7 +104,7 @@ export async function refreshDagForkBanner() {
  * @returns {void}
  */
 export function setSyncBanner(on, opts) {
-	hubStore.syncBanner = {
+	hubStore.federation.syncBanner = {
 		visible: on,
 		i18nKey: opts?.i18nKey || 'chat.hub.banners.syncing',
 		params: opts?.params || {},
@@ -119,19 +119,19 @@ export function setSyncBanner(on, opts) {
 export function selectedForkTipId() {
 	const value = document.getElementById('hub-fork-tip-select')?.value?.trim().toLowerCase()
 	if (isHex64(value)) return value
-	return hubStore.dagTips[0]
+	return hubStore.federation.dagTips[0]
 }
 
 /** @returns {Promise<void>} */
 export async function refreshChannelPinsBar() {
 	const bar = document.getElementById('hub-channel-pins-bar')
 	if (!bar) return
-	if (hubStore.currentMode !== 'groups' || !hubStore.currentGroupId || !hubStore.currentChannelId) {
+	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) {
 		bar.setAttribute('hidden', '')
 		bar.innerHTML = ''
 		return
 	}
-	const ids = hubStore.currentState?.pinsByChannel?.[hubStore.currentChannelId]
+	const ids = hubStore.context.currentState?.pinsByChannel?.[hubStore.context.currentChannelId]
 	if (!Array.isArray(ids) || !ids.length) {
 		bar.setAttribute('hidden', '')
 		bar.innerHTML = ''

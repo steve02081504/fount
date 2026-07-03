@@ -32,7 +32,6 @@ function repRow(data, nodeId) {
 	if (Number.isFinite(row.lastOffenseAt))
 		out.lastOffenseAt = row.lastOffenseAt
 	if (row.socialBlocks) out.socialBlocks = row.socialBlocks
-	if (row.socialSuspects) out.socialSuspects = row.socialSuspects
 	if (row.baseline) out.baseline = row.baseline
 	if (Number.isFinite(row.quarantinedUntil))
 		out.quarantinedUntil = row.quarantinedUntil
@@ -135,14 +134,12 @@ export function adjustNodeReputation(data, nodeId, delta, now = Date.now(), tuna
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
  * @param {number} badDelta 坏邀请计数增量
- * @param {typeof reputationTunables} [tunables] tunables
  * @returns {void}
  */
-export function incrementBadInviteeCount(data, nodeId, badDelta = 1, tunables = reputationTunables) {
+export function incrementBadInviteeCount(data, nodeId, badDelta = 1) {
 	if (badDelta <= 0) return
 	const row = ensureRow(data, nodeId)
 	row.badInviteeCount = Math.max(0, Math.floor(Number(row.badInviteeCount ?? 0) + badDelta))
-	void tunables
 }
 
 /**
@@ -311,7 +308,7 @@ export function applyDecayCollusionAfterSlashPure(data, targetPubKeyHash, invite
 		if (!upstream.size) break
 
 		for (const node of upstream) {
-			incrementBadInviteeCount(data, node, 1, tunables)
+			incrementBadInviteeCount(data, node, 1)
 			const row = ensureRow(data, node)
 			const badCount = Number(row.badInviteeCount ?? 0)
 			maxBadSeen = Math.max(maxBadSeen, badCount)

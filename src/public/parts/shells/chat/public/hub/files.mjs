@@ -6,9 +6,9 @@
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、core/domUtils
  */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupApi.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 
 /** @type {string | null} */
 let selectedFolderId = null
@@ -206,16 +206,16 @@ export async function openFilesDrawer(drawer, handlers) {
 	}
 	setFilesDrawerOpen(true)
 	const host = document.getElementById('hub-files-list')
-	if (host) 
-		host.innerHTML = '<div class="text-sm opacity-60 py-8 text-center" data-i18n="chat.hub.filesLoading"></div>'
-	
+	if (host)
+		host.replaceChildren(await renderTemplate('hub/files/loading', {}))
+
 	try {
 		await refreshFilesDrawer(drawer, handlers)
 		wireFilesDrawer(drawer, handlers)
 	}
 	catch (error) {
 		setFilesDrawerOpen(false)
-		showToastI18n('error', 'chat.hub.filesLoadFailed', { error: error.message })
+		handleUIError(error, 'chat.hub.filesLoadFailed')
 	}
 }
 

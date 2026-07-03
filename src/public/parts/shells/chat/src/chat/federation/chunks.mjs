@@ -2,11 +2,12 @@
  * 【文件】federation/chunks.mjs
  * 【职责】§10.2 群文件密文块 P2P 复制：经 Trystero fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
  * 【原理】attachFedChunkHandlers 在 ensureFederationRoom 时挂载；本地 put 后 replicateChunkToRoster 广播，缺失时 fetchChunkFromRoster 广播 get 并等待 fed_chunk_data。replicateChunkToFederation 可等待 M_eff 个 ACK。createFederationSwarmStoragePlugin 在本地 miss 时回退联邦 fetch。
- * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pendingFetches 等待密文字节。
+ * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
  * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；scripts/p2p/reputation.mjs；scripts/p2p/storage_plugins.mjs。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { b64ToU8, u8ToB64 } from '../../../../../../../scripts/p2p/bytes_codec.mjs'
+import { registerChunkFetchWait, resolveChunkFetchWait } from '../../../../../../../scripts/p2p/chunk_fetch_pending.mjs'
 import {
 	assignChunksToPeers,
 	markChunkDone,
@@ -58,9 +59,6 @@ function registryKey(username, groupId) {
 
 /** @type {Map<string, { replicate: Function, fetch: Function }>} */
 const swarmApis = new Map()
-
-/** @type {Map<string, { resolve: (v: Uint8Array) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>} */
-const pendingFetches = new Map()
 
 /**
  * @param {string} username 用户
@@ -246,27 +244,23 @@ function replicateChunkToRoster(slot, chunkHash, data, bucketKey, opts = {}) {
  */
 function fetchChunkFromPeer(slot, username, groupId, chunkHash, peerId) {
 	const waitKey = compositeKey(username, groupId, chunkHash)
-	return new Promise((resolve, reject) => {
-		const timer = setTimeout(() => {
-			pendingFetches.delete(waitKey)
-			reject(new Error('fed_chunk_get timeout'))
-		}, FETCH_TIMEOUT_MS)
-		pendingFetches.set(waitKey, { resolve, reject, timer })
-		const payload = { chunkHash }
-		if (peerId) {
-			try { slot.sendToPeer(peerId, 'fed_chunk_get', payload) }
-			catch (error) { reject(error instanceof Error ? error : new Error(String(error))) }
-			return
+	const hash = String(chunkHash || '').trim().toLowerCase()
+	const { done } = registerChunkFetchWait(waitKey, hash, FETCH_TIMEOUT_MS, { rejectOnTimeout: true })
+	const payload = { chunkHash: hash }
+	if (peerId) {
+		try { slot.sendToPeer(peerId, 'fed_chunk_get', payload) }
+		catch (error) { return Promise.reject(error instanceof Error ? error : new Error(String(error))) }
+		return done
+	}
+	const roster = slot.getRoster()
+	for (const { peerId: targetPeerId } of roster)
+		try { slot.sendToPeer(targetPeerId, 'fed_chunk_get', payload) }
+		catch (err) {
+			console.error('federation: fed_chunk_get send failed', err)
+			void debugLog('federation', { scope: 'fed_chunk_get', peerId: targetPeerId, message: err?.message })
+				.catch(error => console.warn('federation: fed_chunk_get debugLog failed', error))
 		}
-		const roster = slot.getRoster()
-		for (const { peerId: targetPeerId } of roster)
-			try { slot.sendToPeer(targetPeerId, 'fed_chunk_get', payload) }
-			catch (err) {
-				console.error('federation: fed_chunk_get send failed', err)
-				void debugLog('federation', { scope: 'fed_chunk_get', peerId: targetPeerId, message: err?.message })
-					.catch(error => console.warn('federation: fed_chunk_get debugLog failed', error))
-			}
-	})
+	return done
 }
 
 /**
@@ -467,9 +461,11 @@ export function attachFedChunkHandlers(fedRoom) {
 		if (!CHUNK_HASH_RE.test(hash)) return
 		const b64 = String(data.dataB64 || '')
 		if (!b64) return
+		if (data.requestId) {
+			resolvePendingChunkFetch(data)
+			return
+		}
 		const waitKey = compositeKey(username, groupId, hash)
-		const pending = pendingFetches.get(waitKey)
-		if (!pending) return
 		let verified
 		try {
 			verified = verifiedChunkBytes(hash, b64ToU8(b64))
@@ -478,9 +474,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			return
 		}
 		if (!verified) return
-		clearTimeout(pending.timer)
-		pendingFetches.delete(waitKey)
-		pending.resolve(verified)
+		resolveChunkFetchWait(waitKey, hash, verified)
 	})
 
 	/**

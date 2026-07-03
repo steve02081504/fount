@@ -6,7 +6,7 @@
  * 【关联】../../../../../scripts/i18n、../../src/ui/channelDisplay、../../src/ui/emojiPicker、../../src/ui/reactionHandlers
  */
 import { promptI18n } from '../../../../../scripts/i18n/index.mjs'
-import { tallyReactionVoters } from '../../src/ui/channelDisplay.mjs'
+import { tallyReactionVotersFromMap } from '../../src/ui/channelDisplay.mjs'
 import { showEmojiPicker } from '../../src/ui/emojiPicker.mjs'
 import { createReactionHandlers } from '../../src/ui/reactionHandlers.mjs'
 
@@ -20,7 +20,7 @@ const wiredButtons = new WeakSet()
  * @param {string} channelView.groupId 群 ID
  * @param {string} channelView.channelId 频道 ID
  * @param {object[]} channelView.messages 当前频道消息行
- * @param {object[]} channelView.reactionEvents reaction DAG 行
+ * @param {Record<string, Record<string, { voters?: string[] }>>} channelView.reactions 当前页聚合反应
  * @param {string} channelView.viewerMemberId 本机成员键
  * @param {boolean} channelView.canManageMessages 是否可代删他人 reaction
  * @param {() => Promise<void>} channelView.reload 操作后刷新消息列表
@@ -32,13 +32,12 @@ export function wireMessageReactions(container, channelView) {
 		groupId,
 		channelId,
 		messages = [],
-		reactionEvents = [],
+		reactions = {},
 		viewerMemberId = 'local',
 		canManageMessages = false,
 		reload,
 	} = channelView
 	const { toggleReaction } = createReactionHandlers({ groupId, channelId })
-	const reactionTallyLines = [...messages, ...reactionEvents]
 
 	container.querySelectorAll('.hub-reactions [data-action="reaction"]').forEach(reactionButton => {
 		if (!(reactionButton instanceof HTMLButtonElement)) return
@@ -65,7 +64,7 @@ export function wireMessageReactions(container, channelView) {
 		if (canManageMessages)
 			reactionButton.addEventListener('contextmenu', async event => {
 				event.preventDefault()
-				const voters = tallyReactionVoters(reactionTallyLines, eventId, viewerMemberId)
+				const voters = tallyReactionVotersFromMap(reactions, eventId, viewerMemberId)
 				const detail = voters.get(emoji)
 				const otherVoters = (detail?.voters || []).filter(
 					voterKey => voterKey !== viewerMemberId && voterKey !== 'local',

@@ -9,7 +9,7 @@
 
 - **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). Suited to more viewers per publisher than browser WebRTC mesh.
 - **With external SFU URL**: iframe/embed path via `renderStreamingChannel`.
-- `public/src/channels/streaming.mjs` is legacy WebRTC mesh code (not used by Hub). Hub default path is av-relay via `renderWebRtcStreamingChannel` → `joinHubAvSession`, unless SFU is configured.
+- Hub default path is av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession`, unless SFU is configured.
 
 ## UI conventions
 
@@ -34,4 +34,7 @@
 - **Archive sync**: `POST .../archive/sync` triggers `syncMissingArchiveMonths` (federation `monthDigests` reputation arbitration via `pickArchiveMonthByReputation` / `pickNodeScoreFromReputation`, not an admin Seal); after join, `catchUpGroupFromPeers` order is: joinSnapshot (reputation checkpoint) → `syncMissingArchiveMonths` → gossip `wantIds`; remote manifest only unions month hints.
 - **Discovery**: an advert signature means "a member once claimed this"; indexing requires reputation or ≥2 independent node sources (see `discovery/index.mjs`); the Hub list shows abbreviated `sources`.
 - **Display**: Hub prefers `content.displayName` / `content.displayAvatar` on archived or folded posts, then live profile.
+- **Decrypt failure**: merged message rows use top-level `decryptView: { failed: true, pendingGeneration? }` with `content: null` (not inline `content.decryptFailed`). Archive `PostSnapshot` may still embed legacy `decryptView` on the snapshot object.
+- **Reactions API**: `GET …/messages` returns `{ messages, reactions }` where `reactions` is per-page emoji aggregation keyed by target event id (not synthetic `reactionEvents` rows).
+- **Group state**: `GET …/groups/:id/state` returns layered `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }` not raw `pubKeyHash` dictionary keys.
 - **Message navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`) and channel message load orchestration.

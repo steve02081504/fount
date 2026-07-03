@@ -27,7 +27,7 @@ export async function charAgentEntityHash(charname) {
  */
 export function isLocalWritableEntityHash(entityHash) {
 	const eh = String(entityHash || '').trim().toLowerCase()
-	const nodeHash = String(hubStore.nodeHash || '').trim().toLowerCase()
+	const nodeHash = String(hubStore.viewer.nodeHash || '').trim().toLowerCase()
 	if (!isEntityHash128(eh) || !nodeHash) return false
 	return eh.slice(0, 64) === nodeHash
 }
@@ -37,7 +37,7 @@ export function isLocalWritableEntityHash(entityHash) {
  * @returns {boolean} 是否为当前登录 viewer
  */
 export function isViewerEntityHash(entityHash) {
-	const viewer = String(hubStore.viewerEntityHash || '').trim().toLowerCase()
+	const viewer = String(hubStore.viewer.viewerEntityHash || '').trim().toLowerCase()
 	const eh = String(entityHash || '').trim().toLowerCase()
 	return !!viewer && viewer === eh
 }

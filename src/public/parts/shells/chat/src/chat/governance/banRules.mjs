@@ -3,7 +3,8 @@
  * 【职责】member_ban DAG 事件内容与物化态 banned* 集合的构建、解析及 unban 目标解析。
  * 【原理】ban 可指向 entityHash 或 nodeHash 作用域；blockEntriesFromBanContent 展开为 state 键；unban 时 member_unban 清理。联邦/本地 append 共用同一套规则，配合 peers 拉黑表。
  * 【数据结构】BanScope entity|node；content 含 targetMemberKey、targetEntityHash/targetNodeHash；state.bannedMembers/Entities/Nodes 为 Set。
- * 【关联】dag/authorizeEvent、peers.mjs、blocklist.mjs、entityId.mjs；scripts/p2p/event_types。
+ * 【关联】dag/authorizeEvent、peers.mjs、denylist.mjs、entityId.mjs；scripts/p2p/event_types。
+ * 术语：**ban**=群成员治理（member_ban）；写入 denylist 的 **deny** 为节点连接拒绝，非 Social **block**。
  */
 import { isEntityHash128, memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'

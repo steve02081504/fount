@@ -7,9 +7,6 @@ import { canonicalStringify } from './canonical_json.mjs'
 import { hashFromPubKeyHex } from './entity_id.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 
-/**
- *
- */
 export const OPERATOR_KEY_REVOKE_DOMAIN = 'fount-operator-key-revoke'
 
 /**
@@ -164,23 +161,6 @@ export function reduceOperatorKeyRevoke(state, event) {
 	
 	return state
 }
-
-/**
- * @param {object} state 物化状态
- * @param {object} event suspect/unsuspect 事件
- * @returns {object} 更新后状态
- */
-export function reduceSuspect(state, event) {
-	const target = String(event.content?.targetEntityHash || '').trim().toLowerCase()
-	if (!target) return state
-	state.suspected = state.suspected || new Set()
-	if (event.type === 'suspect')
-		state.suspected.add(target)
-	else
-		state.suspected.delete(target)
-	return state
-}
-
 /**
  * @param {object[]} events 时间线事件（拓扑序）
  * @returns {{ recoveryPubKeyHex: string | null, operatorKeyHistory: OperatorKeyHistoryEntry[] }} 折叠密钥链

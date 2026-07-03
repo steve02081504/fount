@@ -1,5 +1,5 @@
-import express from 'npm:express'
 import * as Sentry from 'npm:@sentry/node'
+import express from 'npm:express'
 import { WebSocketServer } from 'npm:ws'
 
 /**

@@ -41,7 +41,7 @@ export function setActiveModeTab(mode) {
  * @returns {Promise<void>}
  */
 export async function setMode(mode) {
-	hubStore.currentMode = mode
+	hubStore.context.currentMode = mode
 	setActiveModeTab(mode)
 	const container = document.getElementById('hub-channel-list')
 	await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
@@ -75,20 +75,20 @@ export async function setMode(mode) {
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
 	if (mode === 'friends')
-		if (isPrivateChatActive() && hubStore.currentState)
-			await renderHubChannelSidebar(hubStore.currentState)
+		if (isPrivateChatActive() && hubStore.context.currentState)
+			await renderHubChannelSidebar(hubStore.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
 
 	else if (mode === 'groups')
-		if (!hubStore.currentGroupId || !hubStore.currentState) {
+		if (!hubStore.context.currentGroupId || !hubStore.context.currentState) {
 			setPinsBookmarksWrapVisible(false)
 			updateStatusBanners()
 			container.innerHTML = ''
 		}
 		else {
-			await renderChannelList(hubStore.currentState)
-			await renderMemberList(hubStore.currentState)
-			await renderGroupInfoCard(hubStore.currentState)
+			await renderChannelList(hubStore.context.currentState)
+			await renderMemberList(hubStore.context.currentState)
+			await renderGroupInfoCard(hubStore.context.currentState)
 		}
 }

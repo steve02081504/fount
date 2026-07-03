@@ -6,7 +6,6 @@
 
 /**
  * @typedef {{
- *   app: string,
  *   handler: MailboxConsumer,
  * }} MailboxConsumerEntry
  */
@@ -15,21 +14,20 @@
 const consumers = new Map()
 
 /**
- * @param {string} consumerId 如 chat/dag
  * @param {string} app 应用名（与 record.app 匹配）
  * @param {MailboxConsumer} handler 返回已交付 record id 列表
  * @returns {void}
  */
-export function registerMailboxConsumer(consumerId, app, handler) {
-	consumers.set(String(consumerId), { app: String(app), handler })
+export function registerMailboxConsumer(app, handler) {
+	consumers.set(String(app), { handler })
 }
 
 /**
- * @param {string} consumerId 消费者 ID
+ * @param {string} app 应用名
  * @returns {void}
  */
-export function unregisterMailboxConsumer(consumerId) {
-	consumers.delete(String(consumerId))
+export function unregisterMailboxConsumer(app) {
+	consumers.delete(String(app))
 }
 
 /**
@@ -49,7 +47,7 @@ export async function dispatchMailboxRecordsToConsumers(username, records) {
 	}
 	/** @type {Set<string>} */
 	const delivered = new Set()
-	for (const { app, handler } of consumers.values()) {
+	for (const [app, { handler }] of consumers.entries()) {
 		const scoped = grouped.get(app)
 		if (!scoped?.length) continue
 		try {
@@ -58,7 +56,7 @@ export async function dispatchMailboxRecordsToConsumers(username, records) {
 		}
 		catch (err) {
 			console.error('mailbox: consumer batch failed, retry per record', err)
-			for (const row of scoped) 
+			for (const row of scoped)
 				try {
 					const ids = await handler(username, [row])
 					for (const id of ids || []) delivered.add(String(id))
@@ -66,7 +64,7 @@ export async function dispatchMailboxRecordsToConsumers(username, records) {
 				catch (rowErr) {
 					console.error('mailbox: consumer record failed', rowErr)
 				}
-			
+
 		}
 	}
 	return [...delivered]

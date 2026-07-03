@@ -96,12 +96,12 @@ export const governanceReducers = {
 	},
 
 	/**
-	 * 处理 `key_rotate` 事件：记录 GSH 密钥轮换事件。
+	 * 处理 `file_master_key_rotate` 事件：记录 GSH 密钥轮换事件。
 	 * @param {object} state 物化群状态
 	 * @param {object} event DAG 事件
 	 * @returns {object} 更新后的 state
 	 */
-	key_rotate(state, event) {
+	file_master_key_rotate(state, event) {
 		withGroupId(state, event)
 		recordFileMasterKeyRotation(state, event, 'rotate')
 		return state

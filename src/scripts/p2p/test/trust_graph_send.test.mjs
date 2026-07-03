@@ -1,3 +1,6 @@
+/**
+ * trust_graph sendToNode / user_room 定向投递单元测试。
+ */
 /* global Deno */
 import { Buffer } from 'node:buffer'
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
@@ -6,12 +9,13 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { deliver, deliverToUserRoomPeers } from '../deliver.mjs'
 import { initNode } from '../node/instance.mjs'
+import { sendToNode } from '../trust_graph.mjs'
+import { deliverToUserRoomPeers } from '../user_room.mjs'
 
-Deno.test('deliver returns false for blank target node hash', async () => {
-	assertEquals(await deliver('test-user', '', 'mailbox-give', {}), false)
-	assertEquals(await deliver('test-user', '   ', 'mailbox-give', {}), false)
+Deno.test('sendToNode returns false for blank target node hash', async () => {
+	assertEquals(await sendToNode('test-user', '', 'mailbox-give', {}), false)
+	assertEquals(await sendToNode('test-user', '   ', 'mailbox-give', {}), false)
 })
 
 Deno.test('deliverToUserRoomPeers returns 0 when user room is unavailable', async () => {

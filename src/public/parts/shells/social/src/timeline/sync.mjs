@@ -9,7 +9,7 @@ import { tryImportFollowApproveVault } from '../vault_crypto/followApproveImport
 
 import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
 import { filterEventsForFederatedPull } from './federationExport.mjs'
-import { invalidateTimelineMaterializedCache } from './materialize.mjs'
+import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
 
 /** 联邦 RPC 单次 pull 响应上限（客户端循环 afterEventId 直至空批）。 */
@@ -41,11 +41,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		const { following } = await loadFollowing(username)
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))
 	}
-	if (validated.row.type === 'suspect' || validated.row.type === 'unsuspect') {
-		const { following } = await loadFollowing(username)
-		const { handleInboundPersonalSuspectEvent } = await import('../personalSuspect.mjs')
-		await handleInboundPersonalSuspectEvent(username, entityHash, validated.row, new Set(following))
-	}
+	await maintainSocialTimeline(username, entityHash)
 	return true
 }
 

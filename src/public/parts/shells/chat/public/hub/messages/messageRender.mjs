@@ -23,7 +23,7 @@ import { getFountMessageMarkdownConvertor } from '../../src/lib/fountMessageMark
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
-import { resolveDisplayParentEventId, tallyReactions } from '../../src/ui/channelDisplay.mjs'
+import { resolveDisplayParentEventId, tallyReactionsFromMap } from '../../src/ui/channelDisplay.mjs'
 import { mountMdRevealButton } from '../../src/ui/mdRevealBtn.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
@@ -90,9 +90,8 @@ function isOwnViewerMessage(message, renderOpts) {
  * @returns {string} 展示用文本
  */
 export function getMessageText(message) {
-	if (message?.decryptView) return ''
+	if (message?.decryptView?.failed) return ''
 	const content = message?.content
-	if (content?.decryptFailed) return ''
 	return channelMessageShowText(content)
 }
 
@@ -110,20 +109,14 @@ export function getMessageEditText(message) {
  * @returns {Promise<string>} HTML 片段
  */
 async function renderDecryptBodyHtml(message) {
-	if (message?.decryptView) {
-		const pendingGen = message.decryptView.pending
+	if (message?.decryptView?.failed) {
+		const pendingGen = message.decryptView.pendingGeneration
 		return renderTemplateAsHtmlString('hub/messages/decrypt_body', {
 			mode: pendingGen != null ? 'pending' : 'failed',
 			generation: pendingGen,
 		})
 	}
-	const content = message?.content
-	if (!content?.decryptFailed) return ''
-	const pendingGen = content.pendingGeneration
-	return renderTemplateAsHtmlString('hub/messages/decrypt_body', {
-		mode: pendingGen != null ? 'pending' : 'failed',
-		generation: pendingGen,
-	})
+	return ''
 }
 
 /**
@@ -184,7 +177,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime) {
  */
 async function renderMessageFileIdsHtml(message) {
 	const fileIds = message.content?.fileIds
-	const groupId = hubStore.currentGroupId
+	const groupId = hubStore.context.currentGroupId
 	if (!groupId || !Array.isArray(fileIds) || !fileIds.length) return ''
 
 	const text = getMessageText(message)
@@ -291,8 +284,8 @@ async function renderGroupInviteBlock(message) {
 	const countHtml = memberCount != null && Number.isFinite(memberCount)
 		? await renderTemplateAsHtmlString('hub/messages/invite_member_count', { count: memberCount })
 		: ''
-	const settings = hubStore.currentState?.groupSettings
-	const roomSecret = content.groupId === hubStore.currentGroupId
+	const settings = hubStore.context.currentState?.groupSettings
+	const roomSecret = content.groupId === hubStore.context.currentGroupId
 		? settings?.roomSecret?.trim()
 		: ''
 	const joinUrl = roomSecret
@@ -351,15 +344,15 @@ async function renderVoteBlock(message, allMessages) {
 /**
  * @param {object} message 消息行
  * @param {object[]} allMessages 频道消息
- * @param {object[]} reactionEvents reaction 事件
+ * @param {Record<string, Record<string, { voters?: string[] }>>} reactionsMap 当前页聚合反应
  * @param {string} viewerMemberId 本机成员 pubKeyHash 或 `local`
  * @param {{ canAddReactions?: boolean }} [opts] 渲染选项
  * @returns {Promise<string>} HTML
  */
-export async function renderMessageReactionsHtml(message, allMessages, reactionEvents, viewerMemberId, opts = {}) {
+export async function renderMessageReactionsHtml(message, reactionsMap, viewerMemberId, opts = {}) {
 	const { eventId } = message
 	if (!eventId || message.type !== 'message') return ''
-	const reactions = tallyReactions([...allMessages, ...reactionEvents], eventId, viewerMemberId)
+	const reactions = tallyReactionsFromMap(reactionsMap, eventId, viewerMemberId)
 	if (!reactions.size && !opts.canAddReactions) return ''
 	const reactionRows = [...reactions.entries()].map(([emoji, { count, byMe }]) => ({
 		mineClass: byMe ? ' badge-primary' : '',
@@ -534,8 +527,7 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 
 	const reactionsHtml = generating ? '' : await renderMessageReactionsHtml(
 		message,
-		allMessages,
-		renderOpts.reactionEvents || [],
+		renderOpts.reactions || {},
 		renderOpts.viewerMemberId || 'local',
 		{ canAddReactions: !!renderOpts.canAddReactions && message.type === 'message' },
 	)
@@ -616,7 +608,7 @@ export function wireMessageMediaPlaceholders(container) {
 		const placeholder = event.target.closest('[data-media-placeholder]')
 		if (!placeholder || placeholder.dataset.mediaLoaded === '1') return
 		const fileId = placeholder.getAttribute('data-group-file-id')
-		const groupId = hubStore.currentGroupId
+		const groupId = hubStore.context.currentGroupId
 		if (!fileId || !groupId) return
 		event.preventDefault()
 		event.stopPropagation()

@@ -78,29 +78,24 @@ export function formatDmLinkUrl({ pubKeyHex, nonceBase64Url, introSignatureHex, 
 }
 
 /**
- * 将当前有效 nonce 同步到本节点 shellData（经 `PUT …/federation-settings` 的 `dmIntroNonce` 字段）。
+ * 将当前有效 nonce 同步到本节点 shellData（经 `PUT /api/p2p/federation` 的 `dmIntroNonce` 字段）。
  * @param {string} nonce base64url
- * @param {string} [identityPubKeyHex] 介绍者公钥 hex（写入联邦设置）
  * @returns {Promise<void>}
  */
-export async function syncDmIntroNonceToNode(nonce, identityPubKeyHex) {
+export async function syncDmIntroNonceToNode(nonce) {
 	const normalized = String(nonce || '').trim()
 	if (normalized.length < 16) throw new Error('dmIntro nonce too short')
-	/** @type {Record<string, string>} */
-	const body = { dmIntroNonce: normalized }
-	const pubKey = normalizePubKeyHex(identityPubKeyHex || '')
-	if (PUB_KEY_HEX_64.test(pubKey)) body.identityPubKeyHex = pubKey
-	await putFederationSettings(body)
+	await putFederationSettings({ dmIntroNonce: normalized })
 }
 
 /**
  * 客户端轮换 nonce 并同步到 Deno（§16）。
- * @param {{ persist?: boolean, identityPubKeyHex?: string }} [options] 同 `rotateDmLink`
+ * @param {{ persist?: boolean }} [options] 同 `rotateDmLink`
  * @returns {Promise<string>} 新 nonce
  */
 export async function rotateDmLinkAndSync(options = {}) {
 	const nonce = rotateDmLink(options)
-	await syncDmIntroNonceToNode(nonce, options.identityPubKeyHex)
+	await syncDmIntroNonceToNode(nonce)
 	return nonce
 }
 
@@ -114,7 +109,7 @@ export async function createDmLinkAndSync(options) {
 	const nonce = options.nonce || getDmLinkNonce()
 	const signFn = options.signFn || sign
 	const url = await createDmLink({ ...options, nonce, signFn })
-	await syncDmIntroNonceToNode(nonce, pubKey)
+	await syncDmIntroNonceToNode(nonce)
 	return url
 }
 

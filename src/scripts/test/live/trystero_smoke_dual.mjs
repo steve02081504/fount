@@ -2,8 +2,8 @@
  * 双进程 Trystero 连通烟测（各进程独立 selfId）。
  * 用法：deno run -A -c deno.json src/scripts/test/live/trystero_smoke_dual.mjs
  */
-import process from 'node:process'
 import { spawn } from 'node:child_process'
+import process from 'node:process'
 
 import { startTestNostrRelay, stopTestNostrRelay } from './nostr_relay.mjs'
 

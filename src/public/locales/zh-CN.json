@@ -1064,7 +1064,8 @@
 		"feed": {
 			"loadMore": "加载更多",
 			"refresh": "刷新动态",
-			"repostedBy": "${author} 转发了"
+			"repostedBy": "${author} 转发了",
+			"decryptFailed": "无法解密此帖"
 		},
 		"trending": {
 			"title": "热门话题",
@@ -1081,7 +1082,6 @@
 		"profile": {
 			"viewPosts": "查看动态",
 			"editInChat": "编辑资料",
-			"protectedPost": "受保护帖子",
 			"mediaOnly": "[媒体]",
 			"postCount": "${n} 条动态",
 			"following": "正在关注",
@@ -1131,6 +1131,7 @@
 			"reply": "${author} 回复了你的帖子",
 			"mention": "${author} 在动态中 @ 了你",
 			"like": "${author} 赞了你的帖子",
+			"repost": "${author} 转发了你的帖子",
 			"follow": "${author} 关注了你",
 			"view": "查看",
 			"markAllRead": "全部标为已读"
@@ -1158,8 +1159,12 @@
 		},
 		"blocklist": {
 			"title": "拉黑列表",
-			"empty": "暂无拉黑账户",
-			"unblock": "解除拉黑"
+			"hiddenTitle": "隐藏列表",
+			"empty": "暂无拉黑或隐藏条目",
+			"unblock": "解除拉黑",
+			"unhide": "取消隐藏",
+			"scopeEntity": "实体",
+			"scopeSubject": "主体"
 		},
 		"translate": {
 			"label": "译文："
@@ -1415,7 +1420,7 @@
 					"group_settings_update": "群设置",
 					"reputation_slash": "声誉扣减",
 					"reputation_reset": "声誉重置",
-					"key_rotate": "密钥轮换",
+					"file_master_key_rotate": "群文件主密钥轮换",
 					"peer_invite": "对等邀请",
 					"dag_tip_merge": "合并 DAG 分叉",
 					"message_delete": "删除消息",
@@ -1443,7 +1448,8 @@
 					"group_settings_update": "更新群设置",
 					"reputation_slash": "对 ${target} 扣减声誉（${claim}）",
 					"reputation_reset": "重置 ${target} 的声誉",
-					"key_rotate": "频道 ${channelName} 密钥轮换",
+					"file_master_key_rotate": "轮换群文件主密钥",
+					"channel_key_rotate": "频道 ${channelName} E2E 密钥轮换",
 					"peer_invite": "邀请对等节点 ${target}",
 					"dag_tip_merge": "合并 DAG 治理分叉",
 					"message_delete": "删除消息 ${targetEventId}",
@@ -2276,7 +2282,7 @@
 				"dmChar": "与角色私聊",
 				"dmUser": "发送私信",
 				"dmFed": "联邦私信",
-				"noFedIdentity": "请先在联邦设置中配置本机 identityPubKeyHex",
+				"noFedIdentity": "请先在联邦设置中配置本机 activePubKeyHex",
 				"peerNoIdentity": "对方无联邦身份，无法发起联邦私信",
 				"dmFailed": "无法打开私信：${error}",
 				"tagChar": "AI 角色",

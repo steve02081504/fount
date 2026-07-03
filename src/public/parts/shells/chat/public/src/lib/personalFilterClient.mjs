@@ -1,11 +1,8 @@
+import { filterSetsFromPersonalListEntries } from '../../../../../../../scripts/p2p/personal_block.mjs'
+
 import { parseEntityHash } from './entityHash.mjs'
 
-const EMPTY = {
-	blockedEntityHashes: [],
-	blockedSubjects: [],
-	hiddenEntityHashes: [],
-	hiddenSubjects: [],
-}
+const EMPTY = filterSetsFromPersonalListEntries([])
 
 /**
  * @param {object} filterSets loadPersonalFilterSets 结果
@@ -25,16 +22,11 @@ function isAuthorFilteredByPersonalSets(filterSets, authorEntityHash) {
 }
 
 /**
- * @param {object} [raw] API 响应
+ * @param {{ entries?: Array<{ scope?: string, kind?: string, value?: string }> }} [raw] API 响应
  * @returns {{ blockedEntityHashes: Set<string>, blockedSubjects: Set<string>, hiddenEntityHashes: Set<string>, hiddenSubjects: Set<string> }} 规范化过滤集
  */
-export function normalizePersonalFilterResponse(raw = EMPTY) {
-	return {
-		blockedEntityHashes: new Set(raw.blockedEntityHashes),
-		blockedSubjects: new Set(raw.blockedSubjects),
-		hiddenEntityHashes: new Set(raw.hiddenEntityHashes),
-		hiddenSubjects: new Set(raw.hiddenSubjects),
-	}
+export function normalizePersonalFilterResponse(raw = { entries: [] }) {
+	return filterSetsFromPersonalListEntries(raw?.entries)
 }
 
 /**
@@ -42,7 +34,7 @@ export function normalizePersonalFilterResponse(raw = EMPTY) {
  */
 export async function fetchPersonalFilterSets() {
 	const resp = await fetch('/api/p2p/personal-lists', { credentials: 'include' })
-	if (!resp.ok) return normalizePersonalFilterResponse()
+	if (!resp.ok) return EMPTY
 	return normalizePersonalFilterResponse(await resp.json())
 }
 

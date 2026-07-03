@@ -71,7 +71,7 @@ export async function loadEntityProfile(entityHash, options = {}) {
 		const cached = await fetchUserProfile(entityHash, { groupId: options.groupId })
 		if (cached) return cached
 	}
-	const data = await fetchEntityProfileApi(entityHash, options.groupId || hubStore.currentGroupId)
+	const data = await fetchEntityProfileApi(entityHash, options.groupId || hubStore.context.currentGroupId)
 	if (!data?.profile) return null
 	return cachedProfileFromApi(data.profile, entityHash)
 }

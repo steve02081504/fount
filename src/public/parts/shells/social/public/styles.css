@@ -78,6 +78,7 @@ body {
 .s-ic-translate { mask-image: url("https://api.iconify.design/mdi/translate.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/translate.svg"); }
 .s-ic-dm { mask-image: url("https://api.iconify.design/mdi/email-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/email-outline.svg"); }
 .s-ic-block { mask-image: url("https://api.iconify.design/mdi/block-helper.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/block-helper.svg"); }
+.s-ic-hide { mask-image: url("https://api.iconify.design/mdi/eye-off-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/eye-off-outline.svg"); }
 .s-ic-delete { mask-image: url("https://api.iconify.design/mdi/delete-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/delete-outline.svg"); }
 .s-ic-globe { mask-image: url("https://api.iconify.design/mdi/earth.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/earth.svg"); }
 .s-ic-lock { mask-image: url("https://api.iconify.design/mdi/lock-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/lock-outline.svg"); }

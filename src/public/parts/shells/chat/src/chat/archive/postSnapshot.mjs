@@ -4,9 +4,9 @@
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { channelMessageContentObject } from '../../../public/src/lib/channelContent.mjs'
+import { mergeChannelMessagesForDisplay } from '../../../public/src/lib/messageMerge.mjs'
 import { decryptEventContent } from '../channel_keys/content.mjs'
-import { channelMessageContentObject } from '../lib/channelContent.mjs'
-import { mergeChannelMessagesForDisplay } from '../lib/messageMerge.mjs'
 
 import { overlayPinsForChannel } from './hotPostsIndex.mjs'
 
@@ -71,11 +71,7 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const eventId = String(row.eventId).trim()
 	const channelId = String(row.channelId || 'default').trim()
 	const display = await resolveDisplaySnapshot(state, row, username, groupId)
-	const content = channelMessageContentObject({
-		...row.content,
-		displayName: display.name,
-		displayAvatar: display.avatar || undefined,
-	})
+	const content = row.content ? channelMessageContentObject(row.content) : null
 	const pins = overlayPinsForChannel(state.messageOverlay, channelId)
 	const prevIds = Array.isArray(row.prev_event_ids)
 		? [...row.prev_event_ids].map(id => String(id).trim().toLowerCase()).filter(isHex64)
@@ -89,6 +85,7 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 		charId: row.charId ?? null,
 		display,
 		content,
+		...row.decryptView ? { decryptView: row.decryptView } : {},
 		reactions: reactionsForMessage(state.messageOverlay, eventId),
 		pinned: pins.includes(eventId),
 		deleted: state.messageOverlay?.deletedIds?.has(eventId) || false,
@@ -97,31 +94,25 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 }
 
 /**
- * @param {number | null | undefined} pendingGeneration 待解密代次
- * @returns {object} 不可解密消息的归档 content 兜底
- */
-function archiveDecryptFailedContent(pendingGeneration) {
-	return {
-		type: 'text',
-		content: '',
-		decryptFailed: true,
-		pendingGeneration: pendingGeneration ?? null,
-	}
-}
-
-/**
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} row 合并后的 message 行
- * @returns {Promise<object>} 归档用 content（必有 type）
+ * @returns {Promise<{ content: object | null, decryptView?: object }>} 归档用正文
  */
 async function resolveArchiveMessageContent(username, groupId, channelId, row) {
-	if (row.decryptView)
-		return archiveDecryptFailedContent(row.decryptView.pending)
+	if (row.decryptView?.failed)
+		return { content: null, decryptView: row.decryptView }
 	const result = await decryptEventContent(username, groupId, channelId, row.content)
-	if (result.ok && result.content?.type) return result.content
-	return archiveDecryptFailedContent(result.generation)
+	if (result.ok && result.content?.type)
+		return { content: result.content }
+	return {
+		content: null,
+		decryptView: {
+			failed: true,
+			...result.generation != null ? { pendingGeneration: result.generation } : {},
+		},
+	}
 }
 
 /**
@@ -138,8 +129,12 @@ export async function buildPostSnapshotsFromLines(username, groupId, channelId, 
 	const out = []
 	for (const row of merged) {
 		if (row.type !== 'message') continue
-		const content = await resolveArchiveMessageContent(username, groupId, channelId, row)
-		out.push(await buildPostSnapshotFromRow({ ...row, content }, state, username, groupId))
+		const resolved = await resolveArchiveMessageContent(username, groupId, channelId, row)
+		out.push(await buildPostSnapshotFromRow({
+			...row,
+			content: resolved.content,
+			decryptView: resolved.decryptView ?? row.decryptView,
+		}, state, username, groupId))
 	}
 	return out
 }
@@ -159,6 +154,7 @@ export function postSnapshotToMessageLine(snap) {
 		timestamp: snap.timestamp,
 		hlc: snap.hlc,
 		content: snap.content,
+		...snap.decryptView ? { decryptView: snap.decryptView } : {},
 		...Array.isArray(snap.prev_event_ids) && snap.prev_event_ids.length
 			? { prev_event_ids: snap.prev_event_ids }
 			: {},

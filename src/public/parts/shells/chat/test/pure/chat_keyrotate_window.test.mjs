@@ -89,7 +89,7 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 			for (const node of [NODE_A, NODE_B, NODE_C]) {
 				const row = await sim.channelMessage(node, groupId, channelId, m.id)
 				assert(row, `${node} received window message from ${author}`)
-				assert(!row.content?.decryptFailed, `${node} decrypted window message from ${author}`)
+				assert(!row.decryptView?.failed, `${node} decrypted window message from ${author}`)
 				assert(String(row.content?.content || '').includes('in window'),
 					`${node} sees plaintext of ${author}'s window message`)
 			}
@@ -108,7 +108,7 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 		for (const id of windowMsgIds)
 			for (const node of [NODE_B, NODE_C]) {
 				const row = await sim.channelMessage(node, groupId, channelId, id)
-				assert(row && !row.content?.decryptFailed, `${node} still sees window message ${id} after adopt`)
+				assert(row && !row.decryptView?.failed, `${node} still sees window message ${id} after adopt`)
 			}
 	})
 })

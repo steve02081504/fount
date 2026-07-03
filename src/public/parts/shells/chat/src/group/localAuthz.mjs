@@ -1,17 +1,17 @@
 /**
  * 【文件】group/localAuthz.mjs
- * 【职责】校验经 POST /events 提交的本地未签名授权类 DAG 事件载荷与批次。
+ * 【职责】校验经 POST …/events/local 提交的本地未签名授权类 DAG 事件载荷与批次。
  * 【原理】LOCAL_APPEND_AUTHZ_TYPES 白名单；reputation_slash/reset 校验目标活跃成员；peer_invite 校验 from/to 与可选 fileKeyWraps；已签名行跳过本地校验。
  * 【数据结构】事件 type/content、物化 state.members、LOCAL_APPEND_AUTHZ_TYPES Set。
  * 【关联】被 group/routes/dag.mjs 在批量追加前调用；依赖 access.mjs、scripts/p2p/blocklist。
  */
-import { isPubKeyHashBlocked } from '../../../../../../scripts/p2p/blocklist.mjs'
+import { isPubKeyHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
 import { isSignedDagEventRow } from '../../../../../../scripts/p2p/wire_ingress.mjs'
 import { getState } from '../chat/dag/materialize.mjs'
 
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from './access.mjs'
 
-/** 仅允许通过 `POST .../events` 本地简体形追加的授权类 DAG 类型。 */
+/** 仅允许通过 `POST …/events/local` 本地简体形追加的授权类 DAG 类型。 */
 export const LOCAL_APPEND_AUTHZ_TYPES = new Set(['peer_invite', 'reputation_slash', 'reputation_reset'])
 
 /**

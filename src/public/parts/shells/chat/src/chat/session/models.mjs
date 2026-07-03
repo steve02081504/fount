@@ -115,6 +115,7 @@ export class timeSlice_t {
 
 /**
  * 代表聊天记录中的单条消息条目。
+ * 权威字段形状见 `src/decl/chatLog.ts`：`timeSlice` 存于 `extension.timeSlice`。
  */
 export class chatLogEntry_t {
 	/** @type {string} */
@@ -126,11 +127,22 @@ export class chatLogEntry_t {
 	content
 	content_for_show
 	content_for_edit
-	timeSlice = new timeSlice_t()
 	files = []
 	extension = {}
 	/** @type {boolean} */
 	is_generating = false
+
+	/** @returns {timeSlice_t} RPG 分支上下文（持久化在 extension.timeSlice） */
+	get timeSlice() {
+		if (!this.extension.timeSlice)
+			this.extension.timeSlice = new timeSlice_t()
+		return this.extension.timeSlice
+	}
+
+	/** @param {timeSlice_t} value RPG 分支上下文 */
+	set timeSlice(value) {
+		this.extension.timeSlice = value
+	}
 
 	/**
 	 * 创建空聊天日志条目并分配新 UUID。
@@ -146,12 +158,26 @@ export class chatLogEntry_t {
 	 */
 	toJSON() {
 		return {
-			...this,
-			timeSlice: this.timeSlice.toJSON(),
+			id: this.id,
+			name: this.name,
+			avatar: this.avatar,
+			time_stamp: this.time_stamp,
+			role: this.role,
+			content: this.content,
+			content_for_show: this.content_for_show,
+			content_for_edit: this.content_for_edit,
+			is_generating: this.is_generating,
 			files: this.files.map(file => ({
-				...file,
+				name: file.name,
+				mime_type: file.mime_type,
 				buffer: serializeFileBuffer(file.buffer),
-			}))
+				description: file.description,
+				...file.extension ? { extension: file.extension } : {},
+			})),
+			extension: {
+				...this.extension,
+				timeSlice: this.timeSlice.toJSON(),
+			},
 		}
 	}
 
@@ -163,8 +189,19 @@ export class chatLogEntry_t {
 	async toData(username) {
 		const operatorEntityHash = await resolveOperatorEntityHash(username)
 		return {
-			...this,
-			timeSlice: await this.timeSlice.toData(),
+			id: this.id,
+			name: this.name,
+			avatar: this.avatar,
+			time_stamp: this.time_stamp,
+			role: this.role,
+			content: this.content,
+			content_for_show: this.content_for_show,
+			content_for_edit: this.content_for_edit,
+			is_generating: this.is_generating,
+			extension: {
+				...this.extension,
+				timeSlice: await this.timeSlice.toData(),
+			},
 			files: await Promise.all(this.files.map(async file => {
 				if (typeof file.buffer === 'string' && parseEvfsRef(file.buffer))
 					return { ...file, buffer: file.buffer }
@@ -198,9 +235,19 @@ export class chatLogEntry_t {
 	 * @returns {Promise<chatLogEntry_t>} 条目实例
 	 */
 	static async fromJSON(json, username) {
+		const extension = { ...json.extension || {} }
+		extension.timeSlice = await timeSlice_t.fromJSON(extension.timeSlice || {}, username)
 		const instance = Object.assign(new chatLogEntry_t(), {
-			...json,
-			timeSlice: await timeSlice_t.fromJSON(json.timeSlice, username),
+			id: json.id,
+			name: json.name,
+			avatar: json.avatar,
+			time_stamp: json.time_stamp,
+			role: json.role,
+			content: json.content,
+			content_for_show: json.content_for_show,
+			content_for_edit: json.content_for_edit,
+			is_generating: json.is_generating,
+			extension,
 			files: (json.files || []).map(file => {
 				const buffer = file?.buffer
 				if (typeof buffer === 'string' && parseEvfsRef(buffer))

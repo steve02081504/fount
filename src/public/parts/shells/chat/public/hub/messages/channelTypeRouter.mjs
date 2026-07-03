@@ -3,7 +3,7 @@
  */
 import { getStreamingChannelAuth } from '../../src/api/groupApi.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
-import { renderListChannel, renderStreamingChannel, renderWebRtcStreamingChannel } from '../channels.mjs'
+import { renderListChannel, renderStreamingChannel, renderCodecsAvStreamingChannel } from '../channels.mjs'
 import { hubStore } from '../core/state.mjs'
 import { selectChannel, saveListChannelItems } from '../groupNav.mjs'
 import { leaveHubAvSession } from '../streamingAv.mjs'
@@ -17,22 +17,22 @@ import { leaveHubAvSession } from '../streamingAv.mjs'
 export async function loadNonTextChannel(container, channel) {
 	const channelType = channel?.type || 'text'
 	if (channelType === 'list')
-		await renderListChannel(container, hubStore.currentGroupId, hubStore.currentChannelId, channel, selectChannel, {
-			canEdit: !!hubStore.currentState?.channelCaps?.[hubStore.currentChannelId]?.canEditList,
+		await renderListChannel(container, hubStore.context.currentGroupId, hubStore.context.currentChannelId, channel, selectChannel, {
+			canEdit: !!hubStore.context.currentState?.channelCaps?.[hubStore.context.currentChannelId]?.canEditList,
 			onSave: saveListChannelItems,
 		})
 	else if (channelType === 'streaming') {
 		await leaveHubAvSession()
-		const groupSettings = hubStore.currentState?.groupSettings || {}
+		const groupSettings = hubStore.context.currentState?.groupSettings || {}
 		if (!groupSettings.streamingSfuWss?.trim())
-			await renderWebRtcStreamingChannel(container, channel, {
-				groupId: hubStore.currentGroupId,
-				channelId: hubStore.currentChannelId,
-				clientId: hubStore.currentState?.viewerMemberPubKeyHash || 'local',
+			await renderCodecsAvStreamingChannel(container, channel, {
+				groupId: hubStore.context.currentGroupId,
+				channelId: hubStore.context.currentChannelId,
+				clientId: hubStore.context.currentState?.viewerMemberPubKeyHash || 'local',
 			})
 		else {
-			const groupId = hubStore.currentGroupId
-			const channelId = hubStore.currentChannelId
+			const groupId = hubStore.context.currentGroupId
+			const channelId = hubStore.context.currentChannelId
 			const streamingViewPageUrl =
 				`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/streaming-view`
 			await renderStreamingChannel(container, channel, {
@@ -58,7 +58,7 @@ export async function loadNonTextChannel(container, channel) {
 	}
 	else return false
 
-	hubStore.lastMessageId = null
+	hubStore.messages.lastMessageId = null
 	refreshChannelPinsBar()
 	return true
 }

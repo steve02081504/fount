@@ -59,7 +59,7 @@ export async function sendHeartbeat(entityHash) {
  * @returns {Promise<void>}
  */
 export async function setMyStatus(status, options = {}) {
-	const entityHash = hubStore.viewerEntityHash
+	const entityHash = hubStore.viewer.viewerEntityHash
 	if (!entityHash) return
 	const resp = await fetch(`/api/p2p/entities/${encodeURIComponent(entityHash)}/status`, {
 		method: 'POST',
@@ -79,7 +79,7 @@ export async function setMyStatus(status, options = {}) {
 	invalidateUserProfileCache(entityHash)
 	const profile = await fetchUserProfile(entityHash, {
 		bypassCache: true,
-		groupId: hubStore.currentGroupId || undefined,
+		groupId: hubStore.context.currentGroupId || undefined,
 	})
 	await applyMyStatusUI(status, profile?.customStatus || '')
 	applySelfStatusToMemberList(status)
@@ -92,7 +92,7 @@ export async function setMyStatus(status, options = {}) {
 export async function refreshMyStatusFromProfile(entityHash) {
 	const profile = await fetchUserProfile(entityHash, {
 		bypassCache: true,
-		groupId: hubStore.currentGroupId || undefined,
+		groupId: hubStore.context.currentGroupId || undefined,
 	})
 	if (!profile) return
 	const stored = profile.status === 'offline' && MANUAL_STATUSES.includes(lastManualStatus)
@@ -143,7 +143,7 @@ export function startIdleWatcher() {
 			idleTimer = null
 			const restore = lastManualStatus === 'invisible' ? 'invisible' : lastManualStatus || 'online'
 			void setMyStatus(restore, { silent: true })
-			void sendHeartbeat(hubStore.viewerEntityHash)
+			void sendHeartbeat(hubStore.viewer.viewerEntityHash)
 		}
 	})
 }

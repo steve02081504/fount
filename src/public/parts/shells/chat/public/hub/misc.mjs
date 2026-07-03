@@ -23,7 +23,7 @@ export function setupPartDragDrop() {
 		event.preventDefault()
 		const partData = event?.dataTransfer?.getData?.('x-fount-part')
 		if (!partData) return
-		const groupId = hubStore.privateGroup.groupId || hubStore.currentGroupId
+		const groupId = hubStore.privateGroup.groupId || hubStore.context.currentGroupId
 		if (!groupId) {
 			showToastI18n('warning', 'chat.hub.noActiveChat')
 			return
@@ -32,7 +32,7 @@ export function setupPartDragDrop() {
 		if (!partType || !partName)
 			return showToastI18n('error', 'chat.dragAndDrop.invalidPartData')
 
-		const channelId = hubStore.currentChannelId || 'default'
+		const channelId = hubStore.context.currentChannelId || 'default'
 		try {
 			switch (partType) {
 				case 'chars':

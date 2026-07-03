@@ -2,7 +2,7 @@
  * 【文件】public/hub/serverBarDnd.mjs
  * 【职责】左侧服务器栏的群组拖拽：将群拖入/拖出文件夹、把两个群拖到一起创建文件夹（Discord 风格）。
  * 【原理】对 `renderServerBar` 渲染出的 `.hub-server-item[data-group-id]` 与 `.hub-folder-tile[data-folder-idx]`
- *   绑定 HTML5 拖放；落点判定后改写 `hubStore.groupFoldersState.folders`，归一化（移除空文件夹、解散单群文件夹），
+ *   绑定 HTML5 拖放；落点判定后改写 `hubStore.sidebar.groupFoldersState.folders`，归一化（移除空文件夹、解散单群文件夹），
  *   再 `persistGroupFolders` + `renderServerBar` 重绘。
  * 【数据结构】folder：{ id, name, nameIsDefault, groupIds[], collapsed }。
  * 【关联】serverBar（persistGroupFolders / renderServerBar）、core/state。
@@ -16,7 +16,7 @@ let draggedGroupId = null
  * @returns {Array<{ id: string, name: string, nameIsDefault?: boolean, groupIds: string[], collapsed?: boolean }>} 文件夹数组（按需初始化）
  */
 function folders() {
-	return hubStore.groupFoldersState.folders || (hubStore.groupFoldersState.folders = [])
+	return hubStore.sidebar.groupFoldersState.folders || (hubStore.sidebar.groupFoldersState.folders = [])
 }
 
 /**
@@ -42,7 +42,7 @@ function detachFromFolders(groupId) {
  * @returns {void}
  */
 function normalizeFolders() {
-	hubStore.groupFoldersState.folders = folders().filter(folder => (folder.groupIds || []).length >= 2)
+	hubStore.sidebar.groupFoldersState.folders = folders().filter(folder => (folder.groupIds || []).length >= 2)
 }
 
 /**

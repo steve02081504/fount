@@ -1,10 +1,14 @@
 import { Buffer } from 'node:buffer'
 
+import { ENTITY_HASH_RE, isEntityHash128, parseEntityHash } from '../../public/pages/scripts/lib/entity_hash.mjs'
+
 import { pubKeyHash, sha256TextHex } from './crypto.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 
-/** 128 位小写 hex：`nodeHash(64)` + `subjectHash(64)`。 */
-export const ENTITY_HASH_RE = /^[\da-f]{128}$/u
+/**
+ *
+ */
+export { ENTITY_HASH_RE, isEntityHash128, parseEntityHash }
 
 const AGENT_SUBJECT_PREFIX = 'fount:chat:agent:'
 
@@ -42,43 +46,12 @@ export function encodeEntityHash(nodeHash, subjectHash) {
 }
 
 /**
- * @param {unknown} entityHash 128 位 entityHash
- * @returns {{ entityHash: string, nodeHash: string, subjectHash: string } | null} 解析结果
- */
-export function parseEntityHash(entityHash) {
-	const raw = String(entityHash ?? '').trim().toLowerCase().replace(/^0x/iu, '')
-	if (!ENTITY_HASH_RE.test(raw)) return null
-	return {
-		entityHash: raw,
-		nodeHash: raw.slice(0, 64),
-		subjectHash: raw.slice(64, 128),
-	}
-}
-
-/**
- * @param {unknown} value 待校验值
- * @returns {boolean} 是否为合法 entityHash
- */
-export function isEntityHash128(value) {
-	return ENTITY_HASH_RE.test(String(value ?? '').trim().toLowerCase().replace(/^0x/iu, ''))
-}
-
-/**
  * @param {string} nodeHash 节点 hash
  * @param {string} charPartPath 角色 part 路径
  * @returns {string} agent entityHash
  */
 export function agentEntityHash(nodeHash, charPartPath) {
 	return encodeEntityHash(nodeHash, agentSubjectHash(charPartPath))
-}
-
-/**
- * @param {string} nodeHash 成员所属节点 hash
- * @param {string} pubKeyHex 32 字节公钥 hex（legacy：活跃钥；新部署请用 recovery）
- * @returns {string} user entityHash
- */
-export function userEntityHashFromPubKeyHex(nodeHash, pubKeyHex) {
-	return encodeEntityHash(nodeHash, hashFromPubKeyHex(pubKeyHex))
 }
 
 /**

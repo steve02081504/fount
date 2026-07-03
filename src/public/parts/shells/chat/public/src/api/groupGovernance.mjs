@@ -29,7 +29,7 @@ export async function blockOpposingForkBranch(groupId, acceptedTipId) {
 }
 
 /**
- * 追加用户级拉黑（`blocklist.json`）。
+ * 追加用户级拉黑（`denylist.json`）。
  * @param {string|{ scope: string, value: string, groupId?: string }} entry 主体或 `{ scope, value }`
  * @param {string} [groupId] 来源群 ID（`entry` 为字符串时使用）
  * @returns {Promise<void>}
@@ -38,14 +38,14 @@ export async function blockUser(entry, groupId) {
 	const body = entry?.scope
 		? { scope: entry.scope, value: entry.value, groupId: entry.groupId || groupId }
 		: { scope: 'subject', value: entry, groupId }
-	const response = await fetch('/api/p2p/blocklist', {
+	const response = await fetch('/api/p2p/denylist', {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body),
 	})
 	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'blocklist failed')
+	if (!response.ok) throw new Error(data.error || 'denylist failed')
 }
 
 /**
@@ -71,8 +71,8 @@ export async function setGovernanceBranch(groupId, tipId) {
  * @param {string} groupId 群 ID
  * @returns {Promise<object>} `{ reputation }`
  */
-export async function getGroupReputation(groupId) {
-	return groupFetch(groupPath(groupId, 'reputation'))
+export async function getGroupReputation() {
+	return groupFetch('/api/parts/shells:chat/reputation')
 }
 
 /**
@@ -122,10 +122,10 @@ export async function mergeDagTips(groupId) {
 /**
  * 手动轮换群 GSH 密钥。
  * @param {string} groupId 群 ID
- * @returns {Promise<object>} key-rotate 响应
+ * @returns {Promise<object>} file-key-rotate 响应
  */
 export async function rotateGroupKey(groupId) {
-	return groupFetch(groupPath(groupId, 'key-rotate'), { method: 'POST', json: {} })
+	return groupFetch(groupPath(groupId, 'file-key-rotate'), { method: 'POST', json: {} })
 }
 
 /**

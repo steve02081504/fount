@@ -196,7 +196,7 @@ export function checkEventPermission(state, event, senderHash) {
 			return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ROLES]
 				? { ok: true }
 				: { ok: false, reason: 'ADMIN or MANAGE_ROLES required' }
-		case 'key_rotate':
+		case 'file_master_key_rotate':
 			return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ADMINS]
 				? { ok: true }
 				: { ok: false, reason: 'ADMIN or MANAGE_ADMINS required' }

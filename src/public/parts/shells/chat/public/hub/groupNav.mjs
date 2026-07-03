@@ -3,7 +3,7 @@
  * 【职责】群组内导航：选群/选频道、渲染群信息卡、频道树、成员列表，并持久化列表频道项排序。
  * 【原理】selectGroup 拉取 state、connectGroupWebSocket、syncGroupFromNetwork；selectChannel 更新 hubStore 并 loadMessages；
  *   模板挂载 #hub-group-info、#hub-channel-list、#hub-member-list；导航时 updateHash 同步 URL。
- * 【数据结构】依赖 hubStore.currentGroupId/channelId/currentState；频道树来自 buildChannelTree。
+ * 【数据结构】依赖 hubStore.context.currentGroupId/channelId/currentState；频道树来自 buildChannelTree。
  * 【关联】hashNav、messages、groupStream、serverBar、banners、channels、chat。
  */
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
@@ -82,7 +82,7 @@ async function rebindFederationRoomQuiet(groupId, opts = {}) {
  * @returns {boolean} 好友模式下是否处于活跃私聊会话
  */
 export function isPrivateChatActive() {
-	return hubStore.currentMode === 'friends' && !!hubStore.privateGroup.groupId
+	return hubStore.context.currentMode === 'friends' && !!hubStore.privateGroup.groupId
 }
 
 /**
@@ -184,7 +184,7 @@ export async function renderChannelList(state) {
 	container.replaceChildren()
 	for (const catKey of Object.keys(groupsByCat)) {
 		const { category, categoryI18n, channels } = groupsByCat[catKey]
-		const isCollapsed = hubStore.collapsedCategories.has(catKey)
+		const isCollapsed = hubStore.sidebar.collapsedCategories.has(catKey)
 		container.appendChild(await renderTemplate('hub/nav/channel_category', {
 			collapsedClass: isCollapsed ? 'collapsed' : '',
 			category: escapeHtml(catKey),
@@ -194,7 +194,7 @@ export async function renderChannelList(state) {
 		if (!isCollapsed) {
 			const listHost = container.querySelector(`.hub-category[data-cat="${CSS.escape(catKey)}"] + .hub-category-channels`)
 			for (const channel of channels) {
-				const active = channel.id === hubStore.currentChannelId ? 'active' : ''
+				const active = channel.id === hubStore.context.currentChannelId ? 'active' : ''
 				const nested = channel.depth > 0 ? ' hub-channel-nested' : ''
 				listHost.appendChild(await renderTemplate('hub/nav/channel_item', {
 					activeClass: active ? 'active' : '',
@@ -210,9 +210,9 @@ export async function renderChannelList(state) {
 	container.querySelectorAll('.hub-category').forEach(el => {
 		el.addEventListener('click', () => {
 			const category = el.dataset.cat
-			if (hubStore.collapsedCategories.has(category)) hubStore.collapsedCategories.delete(category)
-			else hubStore.collapsedCategories.add(category)
-			void renderHubChannelSidebar(hubStore.currentState)
+			if (hubStore.sidebar.collapsedCategories.has(category)) hubStore.sidebar.collapsedCategories.delete(category)
+			else hubStore.sidebar.collapsedCategories.add(category)
+			void renderHubChannelSidebar(hubStore.context.currentState)
 		})
 	})
 	container.querySelectorAll('.hub-channel-item').forEach(el => {
@@ -223,9 +223,9 @@ export async function renderChannelList(state) {
 		})
 	})
 
-	const canManageChannels = Object.values(hubStore.currentState?.channelCaps || {})
+	const canManageChannels = Object.values(hubStore.context.currentState?.channelCaps || {})
 		.some(cap => cap?.canEditList)
-	if (canManageChannels && hubStore.currentGroupId) {
+	if (canManageChannels && hubStore.context.currentGroupId) {
 		const addChannelButton = document.createElement('button')
 		addChannelButton.type = 'button'
 		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 hub-channel-create-button'
@@ -240,7 +240,7 @@ export async function renderChannelList(state) {
  * @returns {Promise<void>}
  */
 async function showCreateChannelModal() {
-	const groupId = hubStore.currentGroupId
+	const groupId = hubStore.context.currentGroupId
 	if (!groupId) return
 	usingTemplates('/parts/shells:chat/src/templates')
 	await openDialogFromTemplate('channel_create_modal', {}, {
@@ -261,12 +261,12 @@ async function showCreateChannelModal() {
 					const channelId = await createChannel(groupId, name, type)
 					close()
 					setHubState('currentState', await getGroupState(groupId))
-					await renderHubChannelSidebar(hubStore.currentState)
+					await renderHubChannelSidebar(hubStore.context.currentState)
 					await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannelSuccess')
 				}
 				catch (error) {
-					showToastI18n('error', 'chat.hub.newChannelFailed', { error: error.message })
+					handleUIError(error, 'chat.hub.newChannelFailed')
 				}
 			})
 		},
@@ -292,7 +292,7 @@ async function syncGroupFromNetwork(groupId, opts = {}) {
 		return
 	}
 
-	if (hubStore.currentGroupId === groupId && hubStore.currentChannelId) {
+	if (hubStore.context.currentGroupId === groupId && hubStore.context.currentChannelId) {
 		setHubState('currentState', await getGroupState(groupId))
 		const { loadMessages } = await import('./messages/messages.mjs')
 		await loadMessages()
@@ -324,12 +324,12 @@ async function syncGroupFromNetwork(groupId, opts = {}) {
  */
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
-	const channel = hubStore.currentState?.channels?.[channelId]
+	const channel = hubStore.context.currentState?.channels?.[channelId]
 	if (!channel) {
 		setHubState('currentChannelId', null)
-		updateHash(hubStore.currentGroupId, null)
+		updateHash(hubStore.context.currentGroupId, null)
 		disableComposer('chat.hub.noChannel')
-		await renderHubChannelSidebar(hubStore.currentState)
+		await renderHubChannelSidebar(hubStore.context.currentState)
 		const { mountTemplate } = await import('../../../../scripts/features/template.mjs')
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/nav/side_muted', {
 			i18nKey: 'chat.hub.noChannels',
@@ -340,11 +340,11 @@ export async function selectChannel(channelId) {
 	setHubState('currentChannelId', channelId)
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
-	updateHash(hubStore.currentGroupId, channelId)
+	updateHash(hubStore.context.currentGroupId, channelId)
 	void warmCharEntityHashCache()
-	await renderHubChannelSidebar(hubStore.currentState)
-	if (hubStore.currentGroupId)
-		rebindFederationRoomQuiet(hubStore.currentGroupId, { channelId })
+	await renderHubChannelSidebar(hubStore.context.currentState)
+	if (hubStore.context.currentGroupId)
+		rebindFederationRoomQuiet(hubStore.context.currentGroupId, { channelId })
 	const channelType = channel.type || 'text'
 	document.getElementById('hub-channel-name-display').textContent = channel.name || channelId
 	const headerIcon = document.querySelector('.hub-main-header-icon')
@@ -352,24 +352,24 @@ export async function selectChannel(channelId) {
 
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
-	else if (hubStore.currentState?.suspectedRemoved)
+	else if (hubStore.context.currentState?.suspectedRemoved)
 		disableComposer('chat.hub.banners.suspectedRemovedComposer')
 	else
 		enableComposer()
 	const { loadMessages } = await import('./messages/messages.mjs')
-	hubStore.fileHandlers = createFileHandlers({
-		groupId: hubStore.currentGroupId,
+	hubStore.context.fileHandlers = createFileHandlers({
+		groupId: hubStore.context.currentGroupId,
 		showToastI18n,
 		/** @returns {Promise<void>} */
 		loadMessages: () => loadMessages(),
 		/** @returns {string | null} 当前频道 ID（文件上传权限） */
-		getUploadChannelId: () => hubStore.currentChannelId,
+		getUploadChannelId: () => hubStore.context.currentChannelId,
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
-		getCurrentState: () => hubStore.currentState,
+		getCurrentState: () => hubStore.context.currentState,
 	})
 	await loadMessages()
-	if (hubStore.currentGroupId && hubStore.currentChannelId && channelType === 'text')
-		connectGroupWebSocket(hubStore.currentGroupId, hubStore.currentChannelId)
+	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
+		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
 	updateStatusBanners()
 	void refreshPinsBookmarks()
 }
@@ -385,8 +385,8 @@ export async function renderMemberList(state) {
 	const members = (state.members || []).filter(member => {
 		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
 		const entityHash = member.entityHash
-			|| (String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase() === memberKey.toLowerCase()
-				? hubStore.viewerEntityHash
+			|| (String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase() === memberKey.toLowerCase()
+				? hubStore.viewer.viewerEntityHash
 				: '')
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
 	})
@@ -415,12 +415,12 @@ export async function renderMemberList(state) {
 			const displayName = String(member.displayName || '').trim()
 				|| (isAgent ? member.charname : '')
 				|| authorDisplayLabel(member.entityHash || memberKey)
-			const viewerHash = String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+			const viewerHash = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 			const avatarFor = member.entityHash
-				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewerEntityHash : '')
+				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
 				|| ''
 			const entityHash = member.entityHash
-				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewerEntityHash : '')
+				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
 				|| ''
 			const isAdmin = memberDisplaysAsAdmin(member, roleDefs)
 			const ownerAttr = isAgent && member.ownerPubKeyHash
@@ -459,7 +459,7 @@ export async function renderMemberList(state) {
  */
 async function refreshMemberDigestBar(state) {
 	const el = document.getElementById('hub-member-digest')
-	if (!hubStore.currentGroupId) return
+	if (!hubStore.context.currentGroupId) return
 	const expected = state?.membersRoot ?? null
 	if (!expected) {
 		el.innerHTML = ''
@@ -486,7 +486,7 @@ async function refreshMemberDigestBar(state) {
 	el.replaceChildren()
 	const row = document.createElement('div')
 	row.className = 'hub-member-digest-row'
-	const viewerEh = hubStore.viewerEntityHash
+	const viewerEh = hubStore.viewer.viewerEntityHash
 	if (viewerEh) {
 		const copyBtn = document.createElement('button')
 		copyBtn.type = 'button'
@@ -534,7 +534,7 @@ async function showGroupJoinRequiredState() {
 	const { disableComposer } = await import('./messages/composerController.mjs')
 	const { mountTemplate } = await import('../../../../scripts/features/template.mjs')
 	setHubState('currentChannelId', null)
-	updateHash(hubStore.currentGroupId, null)
+	updateHash(hubStore.context.currentGroupId, null)
 	disableComposer('chat.hub.noChannel')
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
 		i18nKey: 'chat.hub.groupJoinRequired',
@@ -556,7 +556,7 @@ async function ensureGroupMembership(groupId, state) {
 	const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
 		setHubState('currentState', state)
-		hubStore.currentMode = 'groups'
+		hubStore.context.currentMode = 'groups'
 		document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})
@@ -569,7 +569,7 @@ async function ensureGroupMembership(groupId, state) {
 		await showGroupJoinRequiredState()
 		return null
 	}
-	const pow = await resolvePowForJoin(groupId, state, hubStore.nodeHash || '')
+	const pow = await resolvePowForJoin(groupId, state, hubStore.viewer.nodeHash || '')
 	await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 	const joined = await getGroupState(groupId)
 	notifyHubGroupJoined(groupId)
@@ -591,7 +591,7 @@ async function syncGroupStateForHub(groupId, state, presetChannelId) {
 	})
 	void warmCharEntityHashCache()
 	if (state.viewerEntityHash)
-		hubStore.viewerEntityHash = state.viewerEntityHash
+		hubStore.viewer.viewerEntityHash = state.viewerEntityHash
 	const { refreshViewerHubPresentation } = await import('./init.mjs')
 	await refreshViewerHubPresentation()
 	if (state.viewerEntityHash) {
@@ -629,7 +629,7 @@ async function paintGroupHubChrome(state) {
 	}
 	await renderChannelList(state)
 	await renderMemberList(state)
-	hubStore.currentMode = 'groups'
+	hubStore.context.currentMode = 'groups'
 	document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
@@ -652,7 +652,7 @@ async function activateGroupChannel(state, presetChannelId) {
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
 		setHubState('currentChannelId', null)
-		updateHash(hubStore.currentGroupId, null)
+		updateHash(hubStore.context.currentGroupId, null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer('chat.hub.noChannel')
 		updateStatusBanners()
@@ -703,8 +703,8 @@ export async function selectGroup(groupId, presetChannelId = null) {
  * @returns {Promise<void>}
  */
 export async function saveListChannelItems(items) {
-	await updateChannelListItems(hubStore.currentGroupId, hubStore.currentChannelId, items)
-	setHubState('currentState', await getGroupState(hubStore.currentGroupId))
+	await updateChannelListItems(hubStore.context.currentGroupId, hubStore.context.currentChannelId, items)
+	setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
 }
 
 /**

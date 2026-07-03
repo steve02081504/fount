@@ -17,14 +17,14 @@ import { parseMailboxGive, parseMailboxPut, parseMailboxWant } from './parse.mjs
 export function attachMailboxWire(ctx, wire) {
 	wire.on('mailbox_put', (payload, peerId) => {
 		const put = parseMailboxPut(payload)
-		if (!put) return
-		void ingestMailboxPut(ctx, put, peerId).catch(err => console.error('mailbox: put ingest failed', err))
+		if (!put.ok) return
+		void ingestMailboxPut(ctx, put.value, peerId).catch(err => console.error('mailbox: put ingest failed', err))
 	})
 
 	wire.on('mailbox_want', (payload, peerId) => {
 		const want = parseMailboxWant(payload)
-		if (!want) return
-		void respondMailboxWant(ctx, want, (giveWire, targetPeerId) => {
+		if (!want.ok) return
+		void respondMailboxWant(ctx, want.value, (giveWire, targetPeerId) => {
 			try {
 				wire.send('mailbox_give', giveWire, targetPeerId)
 			}
@@ -34,7 +34,7 @@ export function attachMailboxWire(ctx, wire) {
 
 	wire.on('mailbox_give', payload => {
 		const give = parseMailboxGive(payload)
-		if (!give) return
-		void ingestMailboxGive(ctx, give).catch(err => console.error('mailbox: give ingest failed', err))
+		if (!give.ok) return
+		void ingestMailboxGive(ctx, give.value).catch(err => console.error('mailbox: give ingest failed', err))
 	})
 }

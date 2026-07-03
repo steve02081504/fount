@@ -1,41 +1,45 @@
+import { loadReputation } from '../../../../../../scripts/p2p/reputation.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { assignShellData, loadShellData } from '../../../../../../server/setting_loader.mjs'
+import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 
 /**
  * @param {import('npm:express').Router} router Express 路由
  * @returns {void}
  */
 export function registerPrefsRoutes(router) {
-	router.get('/api/parts/shells\\:chat/bookmarks', authenticate, async (req, res) => {
+	router.get(`${CHAT_API_PREFIX}/bookmarks`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(loadShellData(username, 'chat', 'bookmarks').entries || [])
+		res.status(200).json({ entries: loadShellData(username, 'chat', 'bookmarks').entries || [] })
 	})
-	router.put('/api/parts/shells\\:chat/bookmarks', authenticate, async (req, res) => {
+	router.put(`${CHAT_API_PREFIX}/bookmarks`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		assignShellData(username, 'chat', 'bookmarks', { entries: req.body.entries || [] })
-		res.status(200).json({})
+		const entries = req.body.entries || []
+		assignShellData(username, 'chat', 'bookmarks', { entries })
+		res.status(200).json({ entries })
 	})
 
-	router.get('/api/parts/shells\\:chat/group-folders', authenticate, async (req, res) => {
+	router.get(`${CHAT_API_PREFIX}/group-folders`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json({ folders: loadShellData(username, 'chat', 'groupFolders').folders || [] })
 	})
-	router.put('/api/parts/shells\\:chat/group-folders', authenticate, async (req, res) => {
+	router.put(`${CHAT_API_PREFIX}/group-folders`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		assignShellData(username, 'chat', 'groupFolders', { folders: req.body.folders || [] })
-		res.status(200).json({})
+		const folders = req.body.folders || []
+		assignShellData(username, 'chat', 'groupFolders', { folders })
+		res.status(200).json({ folders })
 	})
 
-	router.get('/api/parts/shells\\:chat/custom-emojis', authenticate, async (req, res) => {
+	router.get(`${CHAT_API_PREFIX}/custom-emojis`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json({ entries: loadShellData(username, 'chat', 'customEmojis').entries || [] })
 	})
-	router.put('/api/parts/shells\\:chat/custom-emojis', authenticate, async (req, res) => {
+	router.put(`${CHAT_API_PREFIX}/custom-emojis`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		assignShellData(username, 'chat', 'customEmojis', { entries: req.body.entries || [] })
 		res.status(200).json({ entries: req.body.entries || [] })
 	})
-	router.post('/api/parts/shells\\:chat/custom-emojis/save', authenticate, async (req, res) => {
+	router.post(`${CHAT_API_PREFIX}/custom-emojis/save`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const groupId = String(req.body.groupId || '').trim()
 		const emojiId = String(req.body.emojiId || '').trim()
@@ -54,10 +58,14 @@ export function registerPrefsRoutes(router) {
 		res.status(200).json({ entry: next })
 	})
 
-	router.get('/api/parts/shells\\:chat/emoji-usage/frequent', authenticate, async (req, res) => {
+	router.get(`${CHAT_API_PREFIX}/emoji-usage/frequent`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { listFrequentEmojis } = await import('../emojiUsage.mjs')
 		const limit = Math.min(64, Math.max(1, Number.parseInt(String(req.query?.limit ?? '32'), 10) || 32))
 		res.status(200).json({ entries: listFrequentEmojis(username, limit) })
+	})
+
+	router.get(`${CHAT_API_PREFIX}/reputation`, authenticate, async (_req, res) => {
+		res.status(200).json({ reputation: loadReputation() })
 	})
 }

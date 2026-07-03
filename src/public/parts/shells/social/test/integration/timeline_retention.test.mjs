@@ -18,7 +18,7 @@ Deno.test('chained ingest survives retention across repeated materialize', async
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('9'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'post', content: { text: 'remote authored', visibility: 'public' } },
 		{ type: 'post', content: { text: 'second post', visibility: 'public' } },
 	])

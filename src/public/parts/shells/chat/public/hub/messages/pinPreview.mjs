@@ -70,8 +70,8 @@ export async function resolvePinMessagePreview(groupId, channelId, eventId) {
 	const cached = previewCache.get(cacheKey)
 	if (cached) return cached
 
-	if (groupId === hubStore.currentGroupId && channelId === hubStore.currentChannelId) {
-		const message = hubStore.channelMessages.find(row => String(row.eventId) === normalizedEventId)
+	if (groupId === hubStore.context.currentGroupId && channelId === hubStore.context.currentChannelId) {
+		const message = hubStore.messages.channelMessages.find(row => String(row.eventId) === normalizedEventId)
 		const descriptor = message ? previewFromMessage(message) : { text: '' }
 		if (descriptor.text || descriptor.i18n) {
 			previewCache.set(cacheKey, descriptor)

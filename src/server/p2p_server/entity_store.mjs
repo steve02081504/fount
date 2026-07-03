@@ -189,7 +189,7 @@ export function operatorJsonPath(username) {
 
 /**
  * @param {string} username fount 登录名
- * @returns {Promise<{ identityPubKeyHex: string, identitySecretKeyHex?: string } | null>} operator 身份
+ * @returns {Promise<{ recoveryPubKeyHex: string, activePubKeyHex: string, activeSecretKeyHex?: string } | null>} operator 身份
  */
 export async function readOperatorIdentity(username) {
 	return readJsonFile(operatorJsonPath(username))

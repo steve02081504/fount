@@ -15,10 +15,10 @@ import { hubStore, setHubState, watchHubState } from './state.mjs'
 
 /** @returns {boolean} 是否显示明文侧车横幅 */
 function plaintextBannerVisible() {
-	const channel = hubStore.currentState?.channels?.[hubStore.currentChannelId]
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.isMember
+	const channel = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.isMember
 		&& channel?.syncScope === 'channel'
 }
 
@@ -29,10 +29,10 @@ function plaintextBannerI18n() {
 
 /** @returns {boolean} 是否显示隔离区横幅 */
 function quarantineBannerVisible() {
-	const count = Number(hubStore.currentState?.quarantineCount) || 0
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.isMember
+	const count = Number(hubStore.context.currentState?.quarantineCount) || 0
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.isMember
 		&& count > 0
 }
 
@@ -43,15 +43,15 @@ function quarantineBannerI18n() {
 
 /** @returns {Record<string, string>} dataset 插值 */
 function quarantineBannerDataset() {
-	return { count: String(Number(hubStore.currentState?.quarantineCount) || 0) }
+	return { count: String(Number(hubStore.context.currentState?.quarantineCount) || 0) }
 }
 
 /** @returns {boolean} 是否显示 GSH 缓冲横幅 */
 function gshBufferBannerVisible() {
-	const total = Number(hubStore.currentState?.gshBuffer?.total) || 0
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.isMember
+	const total = Number(hubStore.context.currentState?.gshBuffer?.total) || 0
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.isMember
 		&& total > 0
 }
 
@@ -62,16 +62,16 @@ function gshBufferBannerI18n() {
 
 /** @returns {Record<string, string>} dataset 插值 */
 function gshBufferBannerDataset() {
-	return { total: String(Number(hubStore.currentState?.gshBuffer?.total) || 0) }
+	return { total: String(Number(hubStore.context.currentState?.gshBuffer?.total) || 0) }
 }
 
 /** @returns {boolean} 是否显示冷归档缺口横幅 */
 function archiveCoverageBannerVisible() {
-	const coverage = hubStore.currentState?.archiveCoverage?.channels || {}
+	const coverage = hubStore.context.currentState?.archiveCoverage?.channels || {}
 	const hasKnownGap = Object.values(coverage).some(row => row?.complete === false)
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.isMember
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.isMember
 		&& hasKnownGap
 }
 
@@ -82,29 +82,29 @@ function archiveCoverageBannerI18n() {
 
 /** @returns {boolean} 是否显示联邦同步横幅 */
 function syncBannerVisible() {
-	return !!hubStore.syncBanner?.visible
+	return !!hubStore.federation.syncBanner?.visible
 }
 
 /** @returns {string} i18n 键 */
 function syncBannerI18n() {
-	return hubStore.syncBanner?.i18nKey || 'chat.hub.banners.syncing'
+	return hubStore.federation.syncBanner?.i18nKey || 'chat.hub.banners.syncing'
 }
 
 /** @returns {Record<string, string>} dataset 插值 */
 function syncBannerDataset() {
 	/** @type {Record<string, string>} */
 	const out = {}
-	for (const [k, v] of Object.entries(hubStore.syncBanner?.params || {}))
+	for (const [k, v] of Object.entries(hubStore.federation.syncBanner?.params || {}))
 		out[k] = String(v)
 	return out
 }
 
 /** @returns {boolean} 是否显示疑似被移出横幅 */
 function shunRemovedBannerVisible() {
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.suspectedRemoved
-		&& !hubStore.currentState?.shunBannerDismissed
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.suspectedRemoved
+		&& !hubStore.context.currentState?.shunBannerDismissed
 }
 
 /** @returns {string} i18n 键 */
@@ -114,19 +114,19 @@ function shunRemovedBannerI18n() {
 
 /** @returns {Record<string, string>} dataset 插值 */
 function shunRemovedBannerDataset() {
-	const count = Array.isArray(hubStore.currentState?.shunnedBy)
-		? hubStore.currentState.shunnedBy.length
+	const count = Array.isArray(hubStore.context.currentState?.shunnedBy)
+		? hubStore.context.currentState.shunnedBy.length
 		: 0
 	return { count: String(count) }
 }
 
 /** @returns {boolean} 是否显示本地视图分叉横幅 */
 function localViewBannerVisible() {
-	const consensus = hubStore.currentState?.consensusBranchTip || ''
-	const localView = hubStore.currentState?.localViewBranchTip || ''
-	return hubStore.currentMode === 'groups'
-		&& !!hubStore.currentGroupId
-		&& !!hubStore.currentState?.isMember
+	const consensus = hubStore.context.currentState?.consensusBranchTip || ''
+	const localView = hubStore.context.currentState?.localViewBranchTip || ''
+	return hubStore.context.currentMode === 'groups'
+		&& !!hubStore.context.currentGroupId
+		&& !!hubStore.context.currentState?.isMember
 		&& !!localView && !!consensus && localView !== consensus
 }
 
@@ -216,7 +216,7 @@ export function wireHubBannerBindings() {
 	watchHubState('currentChannelId', refreshBoundBanners)
 	watchHubState('currentState', refreshBoundBanners)
 	document.getElementById('hub-archive-sync-btn')?.addEventListener('click', () => {
-		const groupId = hubStore.currentGroupId
+		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/archive/sync`, {
 			method: 'POST',
@@ -227,7 +227,7 @@ export function wireHubBannerBindings() {
 		}).catch(console.error)
 	})
 	document.getElementById('hub-shun-keep-history-btn')?.addEventListener('click', () => {
-		const groupId = hubStore.currentGroupId
+		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/federation/shun-dismiss`, {
 			method: 'POST',
@@ -240,7 +240,7 @@ export function wireHubBannerBindings() {
 		}).catch(console.error)
 	})
 	document.getElementById('hub-shun-leave-btn')?.addEventListener('click', () => {
-		const groupId = hubStore.currentGroupId
+		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void import('../groupContextMenu.mjs').then(({ leaveGroupsOptimistic }) =>
 			leaveGroupsOptimistic([groupId]),

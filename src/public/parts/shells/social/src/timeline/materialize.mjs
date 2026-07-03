@@ -1,15 +1,15 @@
 import { createLruMap } from '../../../../../../scripts/memo.mjs'
 import { readJsonlTipId } from '../../../../../../scripts/p2p/dag/storage.mjs'
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { materializeFromEvents } from '../../../../../../scripts/p2p/timeline/materialize_runner.mjs'
+import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
+
+import { readTimelineEvents } from './append.mjs'
 import {
 	createSocialTimelineState,
 	finalizeSocialTimelineView,
 	SOCIAL_TIMELINE_REDUCERS,
 } from './reducers.mjs'
-import { materializeFromEvents } from '../../../../../../scripts/p2p/timeline/materialize_runner.mjs'
-import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
-
-import { readTimelineEvents } from './append.mjs'
 
 const TIMELINE_VIEW_CACHE_MAX = 256
 
@@ -80,7 +80,7 @@ function snapshotMatchesTip(cached, tipId) {
 }
 
 /**
- * 读取并物化时间线；tip 未变则命中 snapshot / 内存缓存。
+ * 读取并物化时间线（只读：不写 snapshot、不跑 retention）。
  * @param {string} username 用户
  * @param {string} entityHash 时间线 owner
  * @returns {Promise<object>} 物化视图
@@ -106,6 +106,22 @@ export async function getTimelineMaterialized(username, entityHash) {
 
 	const events = await readTimelineEvents(username, entityHash)
 	const view = materializeTimeline(events)
+	bucket.set(entityKey, { tipId, view })
+	timelineViewCache.touch(username, bucket)
+	return view
+}
+
+/**
+ * 显式维护：写 signed snapshot + 运行 retention（写路径或独立 endpoint 调用）。
+ * @param {string} username 用户
+ * @param {string} entityHash 时间线 owner
+ * @returns {Promise<object>} 落盘后的 signed snapshot
+ */
+export async function maintainSocialTimeline(username, entityHash) {
+	const entityKey = String(entityHash).toLowerCase()
+	const eventsPath = timelineEventsPath(username, entityHash)
+	const tipId = await readJsonlTipId(eventsPath)
+	const view = await getTimelineMaterialized(username, entityKey)
 	const snapshot = {
 		entityHash: entityKey,
 		checkpoint_event_id: tipId,
@@ -113,10 +129,11 @@ export async function getTimelineMaterialized(username, entityHash) {
 		...view,
 	}
 	const { rebuildSignedTimelineSnapshot } = await import('./rebuildCheckpoint.mjs')
-	const signedSnapshot = await rebuildSignedTimelineSnapshot(username, entityHash, snapshot)
+	const signedSnapshot = await rebuildSignedTimelineSnapshot(username, entityKey, snapshot)
+	const { runSocialTimelineMaintenance } = await import('./retention.mjs')
+	await runSocialTimelineMaintenance(username, entityKey, signedSnapshot, view.socialMeta)
+	const bucket = timelineCacheBucket(username)
 	bucket.set(entityKey, { tipId, view: signedSnapshot })
 	timelineViewCache.touch(username, bucket)
-	const { runSocialTimelineMaintenance } = await import('./retention.mjs')
-	await runSocialTimelineMaintenance(username, entityHash, signedSnapshot, view.socialMeta)
 	return signedSnapshot
 }

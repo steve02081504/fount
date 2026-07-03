@@ -11,6 +11,7 @@ import {
 	listGroupSessions,
 } from '../chat/session/crud.mjs'
 import { groupMetadatas } from '../chat/session/wsLifecycle.mjs'
+import { GROUPS_PREFIX } from '../group/routes/path.mjs'
 
 /**
  * @param {import('npm:express').Router} router Express 路由
@@ -27,7 +28,7 @@ export function registerSessionRoutes(router) {
 		const { username } = getUserByReq(req)
 		const owner = groupMetadatas.get(groupId)?.username
 		if (owner && owner !== username)
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		try {
 			await access(groupDir(username, groupId))
 		}
@@ -36,16 +37,16 @@ export function registerSessionRoutes(router) {
 		}
 		const [result] = await deleteGroup([groupId], username)
 		if (result?.error)
-			return res.status(500).json({ error: result.error })
+			throw httpError(500, result.error)
 		res.status(200).json({})
 	})
 
-	router.get('/api/parts/shells\\:chat/groups/:groupId/export', authenticate, async (req, res) => {
+	router.get(`${GROUPS_PREFIX}/:groupId/export`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		const owner = groupMetadatas.get(groupId)?.username
 		if (owner && owner !== username)
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		try {
 			await access(groupDir(username, groupId))
 		}
@@ -55,17 +56,17 @@ export function registerSessionRoutes(router) {
 		res.status(200).json(await exportGroupChat(groupId))
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/import', authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/import`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await importGroupChat(req.body, username))
 	})
 
-	router.post('/api/parts/shells\\:chat/groups/:groupId/copy', authenticate, async (req, res) => {
+	router.post(`${GROUPS_PREFIX}/:groupId/copy`, authenticate, async (req, res) => {
 		const { groupId } = req.params
 		const { username } = getUserByReq(req)
 		const owner = groupMetadatas.get(groupId)?.username
 		if (owner && owner !== username)
-			return res.status(403).json({ error: 'Permission denied' })
+			throw httpError(403, 'Permission denied')
 		try {
 			await access(groupDir(username, groupId))
 		}

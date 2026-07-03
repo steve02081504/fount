@@ -1,3 +1,4 @@
+import { formatHashShort } from '/scripts/lib/entity_hash.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
@@ -63,7 +64,7 @@ export async function confirmSaveModal(appContext) {
  * @returns {string} 作者展示片段
  */
 function savedAuthorLabel(name, entityHash) {
-	const label = name || `${entityHash.slice(0, 8)}…`
+	const label = name || formatHashShort(entityHash, { headLen: 8, tailLen: 0 })
 	return escapeHtml(label)
 }
 

@@ -5,6 +5,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
+import { createLazySession } from 'fount/scripts/test/fixtures.mjs'
 import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 
 /**
@@ -57,6 +58,5 @@ export async function resolveTestSession(boot) {
  */
 export function createTestSession(options = {}) {
 	const boot = createIntegrationBoot(options)
-	let session = null
-	return () => session ??= resolveTestSession(boot)
+	return createLazySession(() => resolveTestSession(boot))
 }

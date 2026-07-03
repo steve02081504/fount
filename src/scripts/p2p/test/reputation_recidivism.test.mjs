@@ -10,11 +10,6 @@ import {
 	incrementBadInviteeCount,
 	pruneReputationFile,
 } from '../reputation_engine.mjs'
-import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }
-import {
-	applyFollowedBlockSignalPure,
-	applySocialBlockDecayAllPure,
-} from '../reputation_social_engine.mjs'
 
 const tunables = defaultReputationTunables()
 const PEER = 'a'.repeat(64)
@@ -62,24 +57,9 @@ Deno.test('pruneReputationFile does not clear offense streak by time', () => {
 	assertEquals(data.byNodeHash[PEER].offenseStreak, 3)
 })
 
-Deno.test('social block does not auto-decay', () => {
-	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
-	const t0 = 1_000_000
-	applyFollowedBlockSignalPure(data, {
-		followerNodeHash: 'b'.repeat(64),
-		targetNodeHash: PEER,
-		voterKey: 'voter1',
-		action: 'block',
-		selfTrust: true,
-	}, t0, socialTunables)
-	const scoreAfterBlock = data.byNodeHash[PEER].score
-	applySocialBlockDecayAllPure(data, t0 + 86_400_000_000, socialTunables)
-	assertEquals(data.byNodeHash[PEER].score, scoreAfterBlock)
-})
-
 Deno.test('badInviteeCount increments and redeems via contribution', () => {
 	const data = ensureReputationShape({ byNodeHash: {}, wantUnknownHits: [], relayBumpSeen: [] })
-	incrementBadInviteeCount(data, PEER, 2, tunables)
+	incrementBadInviteeCount(data, PEER, 2)
 	assertEquals(data.byNodeHash[PEER].badInviteeCount, 2)
 	const perBad = tunables.inviteRedemptionCreditPerBad
 	for (let i = 0; i < Math.ceil(perBad * 2 / tunables.relayRepBump) + 1; i++)

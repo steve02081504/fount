@@ -67,16 +67,16 @@ export async function refreshPinsBookmarks() {
 	const pinsHost = document.getElementById('hub-pins-wrap')
 	const bookmarksHost = document.getElementById('hub-bookmarks-wrap')
 	if (!pinsHost || !bookmarksHost) return
-	if (hubStore.currentMode !== 'groups' || !hubStore.currentGroupId || !hubStore.currentState?.isMember) {
+	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentState?.isMember) {
 		setPinsBookmarksWrapVisible(false)
 		return
 	}
 	setPinsBookmarksWrapVisible(true)
-	const pinsBy = hubStore.currentState.pinsByChannel || {}
+	const pinsBy = hubStore.context.currentState.pinsByChannel || {}
 	const pinEntries = []
 	for (const [channelId, ids] of Object.entries(pinsBy)) {
 		if (!Array.isArray(ids) || !ids.length) continue
-		const channelName = hubStore.currentState.channels?.[channelId]?.name || channelId
+		const channelName = hubStore.context.currentState.channels?.[channelId]?.name || channelId
 		for (const eventId of ids) {
 			if (!eventId) continue
 			pinEntries.push({ channelId, channelName, eventId })
@@ -84,7 +84,7 @@ export async function refreshPinsBookmarks() {
 	}
 	const previews = await Promise.all(
 		pinEntries.map(({ channelId, eventId }) =>
-			resolvePinMessagePreview(hubStore.currentGroupId, channelId, eventId)),
+			resolvePinMessagePreview(hubStore.context.currentGroupId, channelId, eventId)),
 	)
 	pinsHost.replaceChildren()
 	if (pinEntries.length)
@@ -107,7 +107,7 @@ export async function refreshPinsBookmarks() {
 			const channelId = pinRow.getAttribute('data-pinned-message-channel')
 			const eventId = pinRow.getAttribute('data-pinned-message-event')
 			if (!channelId || !eventId) return
-			if (channelId !== hubStore.currentChannelId) await selectChannel(channelId)
+			if (channelId !== hubStore.context.currentChannelId) await selectChannel(channelId)
 			await scrollToMessageEventId(eventId)
 		})
 	})
@@ -116,10 +116,10 @@ export async function refreshPinsBookmarks() {
 			clickEvent.stopPropagation()
 			const channelId = unpinButton.getAttribute('data-pinned-message-channel')
 			const eventId = unpinButton.getAttribute('data-pinned-message-event')
-			if (!channelId || !eventId || !hubStore.currentGroupId) return
+			if (!channelId || !eventId || !hubStore.context.currentGroupId) return
 			unpinButton.disabled = true
-			await unpinMessage(hubStore.currentGroupId, channelId, eventId)
-			hubStore.currentState = await getGroupState(hubStore.currentGroupId)
+			await unpinMessage(hubStore.context.currentGroupId, channelId, eventId)
+			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
 			refreshPinsBookmarks()
 			refreshChannelPinsBar()
 			unpinButton.disabled = false
@@ -137,16 +137,16 @@ export async function refreshPinsBookmarks() {
 	}
 
 	// 仅收录可解析的真实群名（name 与 groupId 不同），避免侧栏出现裸 UUID。
-	const realGroupNames = new Map(hubStore.groups
+	const realGroupNames = new Map(hubStore.sidebar.groups
 		.filter(g => g?.groupId && g.name && g.name !== g.groupId)
 		.map(g => [normGroupId(g.groupId), g.name]))
-	const currentKey = normGroupId(hubStore.currentGroupId)
+	const currentKey = normGroupId(hubStore.context.currentGroupId)
 
 	const rows = valid.map(bookmark => ({
 		bookmark,
 		eventId: String(bookmark.eventId || '').trim(),
 		channelId: String(bookmark.channelId || '').trim(),
-		targetGroup: bookmark.groupId || hubStore.currentGroupId,
+		targetGroup: bookmark.groupId || hubStore.context.currentGroupId,
 	}))
 	const labels = await Promise.all(rows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
 		if (eventId && channelId && targetGroup) {
@@ -166,7 +166,7 @@ export async function refreshPinsBookmarks() {
 		const isOtherGroup = !!targetGroup && normGroupId(targetGroup) !== currentKey
 		const groupName = isOtherGroup ? realGroupNames.get(normGroupId(targetGroup)) || '' : ''
 		const channelName = channelId
-			? hubStore.currentState?.channels?.[channelId]?.name || (isOtherGroup ? '' : channelId)
+			? hubStore.context.currentState?.channels?.[channelId]?.name || (isOtherGroup ? '' : channelId)
 			: ''
 		const meta = escapeHtml(compactSidebarText([groupName, channelName].filter(Boolean).join(' · '), 40))
 		if (eventId || channelId) {
@@ -177,9 +177,9 @@ export async function refreshPinsBookmarks() {
 			].join('')
 			const line = await renderTemplate('hub/bookmarks/row_button', { title, titleI18nAttr, meta, dataAttrs })
 			line.querySelector('.hub-bookmark-row')?.addEventListener('click', async () => {
-				if (targetGroup && targetGroup !== hubStore.currentGroupId)
+				if (targetGroup && targetGroup !== hubStore.context.currentGroupId)
 					await selectGroup(targetGroup, channelId || undefined)
-				else if (channelId && channelId !== hubStore.currentChannelId)
+				else if (channelId && channelId !== hubStore.context.currentChannelId)
 					await selectChannel(channelId)
 				if (eventId) await scrollToMessageEventId(eventId)
 			})
@@ -192,7 +192,7 @@ export async function refreshPinsBookmarks() {
 		}
 		else {
 			const href = bookmark.href?.trim()
-				|| `#group:${encodeURIComponent(targetGroup || hubStore.currentGroupId)}:${encodeURIComponent(hubStore.currentChannelId || 'default')}`
+				|| `#group:${encodeURIComponent(targetGroup || hubStore.context.currentGroupId)}:${encodeURIComponent(hubStore.context.currentChannelId || 'default')}`
 			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta })
 			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
 				clickEvent.stopPropagation()

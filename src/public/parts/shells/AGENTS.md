@@ -24,6 +24,6 @@
 4. **Docs**: Add `public/llms.txt` for AI discovery.
 
 **Example**: See `src/public/parts/shells/shellassist/` for a complete reference.
-**Chat Hub** (federation UI): [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md) — local trust domain vs external ingress.
+**Chat Hub** (federation UI): [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md) — local trust domain vs external ingress. Node-level kick/ban uses `denylist.json` (`scripts/p2p/denylist.mjs`); Social personal block/hide is separate (`personal_block.mjs` / `personal_hide.mjs`).
 
 **See also**: [Root AGENTS.md](../../../../AGENTS.md)

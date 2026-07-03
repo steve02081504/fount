@@ -2,10 +2,10 @@
  * 用户设置 shell 的客户端逻辑。
  */
 import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/api/base.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
 import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
-import { showToastI18n } from '../../scripts/features/toast.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,

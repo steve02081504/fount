@@ -330,7 +330,7 @@ Deno.test('federation collapses to a single sync partition (one room per group)'
 })
 
 Deno.test('mergeChannelMessagesForDisplay marks edited messages', async () => {
-	const { mergeChannelMessagesForDisplay } = await import('../../src/chat/lib/messageMerge.mjs')
+	const { mergeChannelMessagesForDisplay } = await import('../../public/src/lib/messageMerge.mjs')
 	const baseId = 'a'.repeat(64)
 	const editId = 'b'.repeat(64)
 	const rows = [

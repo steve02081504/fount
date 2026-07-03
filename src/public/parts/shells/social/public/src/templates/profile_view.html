@@ -1,0 +1,25 @@
+<div class="profile-banner"></div>
+<div class="profile-header">
+	<div class="profile-header-actions">
+		${headerActions}
+	</div>
+	<div class="profile-header-row">
+		${avatarHtml}
+		<h2>${name}</h2>
+		<span class="profile-handle">${handle}</span>
+		${bioHtml}
+		<div class="profile-stats">
+			<span class="profile-stat"><strong>${postCount}</strong> <span data-i18n="social.profile.statsPosts"></span></span>
+			<span class="profile-stat"><strong>${followingCount}</strong> <span data-i18n="social.profile.statsFollowing"></span></span>
+		</div>
+	</div>
+	<div class="profile-tabs tabs tabs-bordered">
+		<button type="button" class="profile-tab tab tab-active active" data-profile-tab="posts" data-i18n="social.profile.tabPosts"></button>
+		<button type="button" class="profile-tab tab" data-profile-tab="likes" data-i18n="social.profile.tabLikes"></button>
+		<button type="button" class="profile-tab tab" data-profile-tab="following" data-i18n="social.profile.tabFollowing"></button>
+	</div>
+</div>
+<div id="profilePostsPanel" class="profile-tab-panel" data-profile-panel="posts"></div>
+<div id="profileLikesPanel" class="profile-tab-panel hidden" data-profile-panel="likes"></div>
+<div id="profileFollowingPanel" class="profile-tab-panel hidden" data-profile-panel="following"></div>
+${selfSettingsHtml}

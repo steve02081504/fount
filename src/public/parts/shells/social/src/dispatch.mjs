@@ -10,6 +10,7 @@ import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { getEntityProfile } from './feed.mjs'
 import { listReplicaUsernamesFollowing } from './following.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
+import { formatHashShort } from './lib/entityDisplay.mjs'
 import { listLocalAgentEntities, resolveSocialEntity } from './lib/entityResolve.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
@@ -23,7 +24,7 @@ import { commitTimelineEvent } from './timeline/append.mjs'
  */
 async function displayNameForEntity(entityHash, replicaUsername) {
 	const profile = replicaUsername ? await getEntityProfile(replicaUsername, entityHash) : null
-	return profile?.name || `${entityHash.slice(0, 8)}…${entityHash.slice(-4)}`
+	return profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
 }
 
 /**
@@ -66,7 +67,7 @@ function normalizeSocialHandlerResult(result) {
 async function publishEntityReply(username, authorEntityHash, content, charPartName = null) {
 	return commitTimelineEvent(username, authorEntityHash, {
 		type: 'post',
-		charId: charPartName,
+		charPartName,
 		content,
 	})
 }

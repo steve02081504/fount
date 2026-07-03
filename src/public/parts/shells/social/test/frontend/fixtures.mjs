@@ -148,7 +148,7 @@ export async function publishPostViaComposer(page, text, api = {}) {
 	await page.locator('#postText').fill(text)
 	const postWait = page.waitForResponse(res => {
 		if (res.request().method() !== 'POST' || res.status() !== 200) return false
-		return new URL(res.url()).pathname === '/api/parts/shells:social/profile/post'
+		return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
 	}, { timeout: 60_000 })
 	const feedWait = waitForFeedLoad(page)
 	await page.locator('#postBtn').click()
@@ -168,7 +168,7 @@ export async function publishPostViaComposer(page, text, api = {}) {
 export async function submitReplyViaPanel(page, panel) {
 	await Promise.all([
 		page.waitForResponse(res =>
-			res.url().includes('/api/parts/shells:social/profile/post')
+			res.url().includes('/api/parts/shells:social/posts')
 			&& res.request().method() === 'POST'
 			&& res.status() === 200,
 		{ timeout: 30_000 }),
@@ -307,7 +307,7 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
 		const key = encodeURIComponent(apiKey)
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
-				`${baseUrl}/api/parts/shells:social/profile/post?fount-apikey=${key}`,
+				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
 				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
 			)
 			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)

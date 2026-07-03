@@ -1,7 +1,6 @@
-/** 主观信誉标量运算（§0.3、§0.1）；持久化于节点目录 reputation.json。 */
-
 /**
- *
+ * 主观信誉公共 barrel：标量运算（reputation_math）、持久化与副作用（reputation_store）、Social 阈值（reputation_social）。
+ * 仿真与纯算子见 reputation_engine.mjs；按场景 pick 见 reputation_pick_score.mjs。
  */
 export {
 	REP_MIN,
@@ -13,7 +12,6 @@ export {
 	seedReputationFromIntro,
 } from './reputation_math.mjs'
 
-/** 信誉持久化与具体更新算子（节点目录，全局单分）；纯标量运算见上方。 */
 export {
 	loadReputation,
 	saveReputation,
@@ -33,17 +31,12 @@ export {
 	seedMemberReputationFromIntroducer,
 	relayBumpIsDuplicate,
 	applySocialBlockReputationSignal,
-	applySocialSuspectReputationSignal,
 } from './reputation_store.mjs'
 
-/**
- *
- */
 export {
 	SOCIAL_BLOCK_CLAIM,
 	SOCIAL_REP_HIDE_THRESHOLD,
 	SOCIAL_REP_DEMOTE_THRESHOLD,
-	applySocialBlockDecayAll,
 	shouldHideAuthorByReputation,
 	reputationSortPenalty,
 } from './reputation_social.mjs'

@@ -35,10 +35,10 @@ async function navigateFromHashInner() {
 		}
 
 		if (
-			hubStore.currentGroupId === groupId
+			hubStore.context.currentGroupId === groupId
 			&& channelId
-			&& channelId !== hubStore.currentChannelId
-			&& hubStore.currentState?.channels?.[channelId]
+			&& channelId !== hubStore.context.currentChannelId
+			&& hubStore.context.currentState?.channels?.[channelId]
 		) {
 			await selectChannel(channelId)
 			return

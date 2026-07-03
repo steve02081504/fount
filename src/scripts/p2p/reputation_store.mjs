@@ -34,9 +34,6 @@ const DATA_NAME = 'reputation'
  * }} ReputationFile
  */
 
-/**
- *
- */
 export { relayBumpIsDuplicate } from './reputation_relay_dedupe.mjs'
 
 /** @type {ReputationFile | null} */
@@ -310,13 +307,4 @@ export function pickNodeScore(nodeId) {
 export async function applySocialBlockReputationSignal(opts) {
 	const { applyFollowedBlockSignal } = await import('./reputation_social.mjs')
 	return applyFollowedBlockSignal(opts, mutateReputation)
-}
-
-/**
- * @param {object} opts applyFollowedSuspectSignal 参数
- * @returns {Promise<boolean>} 是否已应用
- */
-export async function applySocialSuspectReputationSignal(opts) {
-	const { applyFollowedSuspectSignal } = await import('./reputation_social.mjs')
-	return applyFollowedSuspectSignal(opts, mutateReputation)
 }

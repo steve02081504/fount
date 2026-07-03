@@ -1,5 +1,5 @@
 /**
- * Social dispatch：受保护帖 @ 提及与通知正文分离。
+ * Social dispatch：加密帖 @ 提及与通知正文分离。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -9,16 +9,16 @@ import { mentionSourceText, postTextForNotification } from '../../src/lib/postMe
 
 const MENTION_HASH = 'a'.repeat(128)
 
-Deno.test('protected post: mention scan uses plaintext, notification text is null', () => {
+Deno.test('encrypted post: no mention scan on ciphertext body', () => {
 	const post = {
 		content: {
-			protected: true,
-			text: `hello @${MENTION_HASH}`,
+			scheme: 'gsh',
+			postKeyId: 'key-1',
 		},
 	}
-	assertEquals(mentionSourceText(post), `hello @${MENTION_HASH}`)
+	assertEquals(mentionSourceText(post), '')
 	assertEquals(postTextForNotification(post), null)
-	assertEquals(extractMentionEntityHashes(mentionSourceText(post)).length, 1)
+	assertEquals(extractMentionEntityHashes(mentionSourceText(post)).length, 0)
 })
 
 Deno.test('public post: mention and notification text match', () => {

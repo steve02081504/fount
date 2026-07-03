@@ -21,7 +21,8 @@ async function withGroupChannelKeysLock(username, groupId, fn) {
 }
 
 /**
- * @typedef {{ current: number, generations: Array<{ gen: number, keyHex: string }> }} ChannelKeysFile
+ * @typedef {{ current: number, generations: Array<{ gen: number, keyHex: string }> }} ChannelKeyEntry
+ * @typedef {{ channels: Record<string, ChannelKeyEntry> }} ChannelKeysFile
  */
 
 /**
@@ -144,16 +145,15 @@ export async function applyChannelKeyRotateEvent(username, groupId, event, selfP
  * 从联邦补拉 `channelKeyWraps` 批量导入本机 K_ch。
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {Record<string, { generation?: number, wrap?: object }>} wrapsByChannel 频道 → wrap
+ * @param {Record<string, Array<{ generation?: number, wrap?: object }>>} wrapsByChannel 频道 → wrap 数组
  * @param {string} selfPubKeyHash 本机成员 pubKeyHash
  * @returns {Promise<number>} 成功导入的频道数
  */
 export async function applyChannelKeyWrapsFromPull(username, groupId, wrapsByChannel, selfPubKeyHash) {
 	if (!isPlainObject(wrapsByChannel)) return 0
 	let imported = 0
-	for (const [channelId, row] of Object.entries(wrapsByChannel)) {
-		/** @type {Array<{ generation?: number, wrap?: object }>} */
-		const entries = Array.isArray(row) ? row : [row]
+	for (const [channelId, entries] of Object.entries(wrapsByChannel)) {
+		if (!Array.isArray(entries)) continue
 		for (const entry of entries) {
 			const generation = Number(entry?.generation)
 			const wrap = entry?.wrap

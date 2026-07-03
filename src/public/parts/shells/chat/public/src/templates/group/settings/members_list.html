@@ -26,8 +26,8 @@ ${bannedMembers?.length ? `
 <h3 class="font-semibold text-sm mt-6 mb-2" data-i18n="chat.group.settingsPage.bannedTitle"></h3>
 ${bannedMembers.map(member => `
 <div class="flex items-center justify-between p-3 bg-base-300 rounded-lg">
-	<div class="font-medium truncate font-mono text-sm">${member.pubKeyHash}</div>
-	${showUnbanActions ? `<button class="btn btn-xs btn-outline" data-action="unban" data-username="${member.pubKeyHash}" data-i18n="chat.group.settingsPage.unban"></button>` : ''}
+	<div class="font-medium truncate font-mono text-sm">${member.memberKey}</div>
+	${showUnbanActions ? `<button class="btn btn-xs btn-outline" data-action="unban" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.unban"></button>` : ''}
 </div>
 `).join('')}
 ` : ''}

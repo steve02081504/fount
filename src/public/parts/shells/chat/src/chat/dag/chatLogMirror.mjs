@@ -8,8 +8,8 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
+import { channelMessageAgentText, textChannelContent } from '../../../public/src/lib/channelContent.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
-import { channelMessageAgentText, textChannelContent } from '../lib/channelContent.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
 import { getStorageForGroup } from '../storage.mjs'

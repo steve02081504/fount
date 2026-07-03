@@ -1,5 +1,5 @@
 /**
- * 频道域密钥 K_ch：HPKE 包装（X25519 ECIES）与 AES-GCM 消息信封（wire scheme: ckg）。
+ * 频道域密钥 K_ch：X25519 ECIES 包装与 AES-GCM 消息信封（wire scheme: ckg）。
  * 解密 payload 不可脱离外层 DAG Ed25519 签名上下文单独传递或信任。
  */
 import { Buffer } from 'node:buffer'
@@ -10,7 +10,7 @@ import { unwrapKeyEcies, wrapKeyEcies } from './key_crypto.mjs'
 /** @type {'ckg'} 频道消息 content 加密 scheme */
 export const CKG_SCHEME = 'ckg'
 
-/** @typedef {{ ephemPub: string, iv: string, ciphertext: string, authTag: string }} HpkeWrapBlob */
+/** @typedef {{ ephemPub: string, iv: string, ciphertext: string, authTag: string }} EciesWrapBlob */
 
 /**
  * 生成随机 32 字节频道密钥（hex）。
@@ -21,17 +21,17 @@ export function generateChannelKey() {
 }
 
 /**
- * HPKE 包装 K_ch 给成员 Ed25519 公钥。
+ * X25519 ECIES 包装 K_ch 给成员 Ed25519 公钥。
  * @param {string} channelKeyHex 32 字节 hex
  * @param {string} memberEdPubKeyHex 64 hex
- * @returns {HpkeWrapBlob} HPKE 包装结果
+ * @returns {EciesWrapBlob} ECIES 包装结果
  */
 export function wrapChannelKey(channelKeyHex, memberEdPubKeyHex) {
 	return wrapKeyEcies(channelKeyHex, memberEdPubKeyHex)
 }
 
 /**
- * @param {HpkeWrapBlob} wrap HPKE 密文
+ * @param {EciesWrapBlob} wrap ECIES 密文
  * @param {Uint8Array} myEdPrivKeySeed 32 字节 Ed25519 种子
  * @returns {string | null} K_ch hex
  */

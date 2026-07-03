@@ -1,8 +1,8 @@
 import { setUserSetting } from '../../../scripts/api/base.mjs'
-import { confirmI18n, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { unlockAchievement } from '../../../scripts/api/parts.mjs'
 import { onServerEvent } from '../../../scripts/api/server_events.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
+import { confirmI18n, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 
 import { partDetailsCache, partListsCache } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'

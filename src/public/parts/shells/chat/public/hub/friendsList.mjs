@@ -35,7 +35,7 @@ export async function loadFriendsList() {
 	await loadGroups()
 	/** @type {Map<string, FriendRow>} */
 	const byEntityHash = new Map()
-	for (const group of hubStore.groups) {
+	for (const group of hubStore.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
 		if (!binding) continue
 		const row = {

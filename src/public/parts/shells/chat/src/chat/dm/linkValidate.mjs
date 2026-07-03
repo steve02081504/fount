@@ -53,7 +53,7 @@ export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyH
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	const fed = await getFederationViewForUser(nodeUsername)
-	if (normalizePubKeyHex(fed.identityPubKeyHex) === introPk && !dmIntroNonceMatches(nodeUsername, nonce))
+	if (normalizePubKeyHex(fed.activePubKeyHex) === introPk && !dmIntroNonceMatches(nodeUsername, nonce))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
 	return { ok: true }

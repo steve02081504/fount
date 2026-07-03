@@ -33,13 +33,13 @@ function dismissChannelContextMenu() {
  * @returns {Promise<void>}
  */
 async function refreshChannelsAfterManage(channelId) {
-	const groupId = hubStore.currentGroupId
+	const groupId = hubStore.context.currentGroupId
 	if (!groupId) return
-	hubStore.currentState = await getGroupState(groupId)
-	await renderHubChannelSidebar(hubStore.currentState)
-	const stillExists = hubStore.currentState?.channels?.[channelId]
-	if (hubStore.currentChannelId === channelId && !stillExists) {
-		const fallback = hubStore.currentState?.groupSettings?.defaultChannelId || 'default'
+	hubStore.context.currentState = await getGroupState(groupId)
+	await renderHubChannelSidebar(hubStore.context.currentState)
+	const stillExists = hubStore.context.currentState?.channels?.[channelId]
+	if (hubStore.context.currentChannelId === channelId && !stillExists) {
+		const fallback = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
 		await selectChannel(fallback)
 	}
 }
@@ -54,13 +54,13 @@ export async function showChannelContextMenu(event, channelId) {
 	event.stopPropagation()
 	dismissChannelContextMenu()
 
-	const groupId = hubStore.currentGroupId
+	const groupId = hubStore.context.currentGroupId
 	if (!groupId || !channelId) return
 
-	const channel = hubStore.currentState?.channels?.[channelId]
+	const channel = hubStore.context.currentState?.channels?.[channelId]
 	const channelName = channel?.name || channelId
-	const caps = hubStore.currentState?.channelCaps?.[channelId]
-	const defaultChannelId = hubStore.currentState?.groupSettings?.defaultChannelId || 'default'
+	const caps = hubStore.context.currentState?.channelCaps?.[channelId]
+	const defaultChannelId = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const showRename = !!caps?.canEditList
 	const showSetDefault = showRename && channelId !== defaultChannelId
 	const showDelete = showRename

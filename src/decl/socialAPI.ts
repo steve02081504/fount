@@ -1,51 +1,268 @@
 /**
- * Social shell API 类型（与 shells/social/src 对齐）。
+ * Social shell API 类型（与 `shells/social/src` 运行时对齐）。
+ *
+ * 时间线骨架字段见 `DAGEvent`（`p2pAPI.ts`）；群物化状态不在此文件。
  */
 
-/** 帖子可见范围：公开或仅关注者。 */
+import type { DAGEvent, PersonalListEntry, PersonalListsResponse } from './p2pAPI.ts'
+
+/** 帖子可见范围：公开或仅关注者（followers 帖 GSH 加密）。 */
 export type SocialVisibility = 'public' | 'followers'
 
-/** 时间线 post 事件的 content 载荷。 */
-export interface SocialPostContent {
-	text?: string
-	mediaRefs?: Array<Record<string, unknown>>
-	replyTo?: { entityHash: string, postId: string }
-	quoteRef?: { entityHash: string, postId: string }
-	groupRef?: { groupId: string, channelId?: string }
-	lang?: string
-	visibility?: SocialVisibility
-	protected?: boolean
+/** 解密失败占位（`buildItem.withDecryptedPostContent`）。 */
+export interface SocialDecryptView {
+	failed: true
+	pendingGeneration?: number
 }
 
-/** 签名后的 Social 时间线事件（post / follow / meta 等）。 */
-export interface SocialTimelineEvent {
-	id: string
-	type: string
-	groupId: string
-	sender: string
-	charId?: string
-	timestamp: number
-	hlc: { wall: number, logical: number }
-	prev_event_ids: string[]
-	content: SocialPostContent | Record<string, unknown>
-	signature: string
+/** 帖文媒体引用（`groupEmoji`、vault 文件等）。 */
+export interface SocialMediaRef {
+	kind?: string
+	groupId?: string
+	emojiId?: string
+	contentHash?: string
+	shareId?: string
+	owner?: string
+	url?: string
+	[key: string]: unknown
 }
 
-/** 聚合 feed 中的单条帖子条目（含作者 entityHash 与 HLC 排序键）。 */
-export interface SocialFeedItem {
+/** 跨帖引用（回复 / 引用 / 群频道跳转）。 */
+export interface SocialPostRef {
 	entityHash: string
 	postId: string
-	post: SocialTimelineEvent
-	hlc: { wall: number, logical: number }
 }
 
-/** 本地收藏夹持久化结构（文件夹 + 未归档列表）。 */
+/**
+ *
+ */
+export interface SocialGroupRef {
+	groupId: string
+	channelId?: string
+}
+
+/** 时间线 `post` 事件的 content 载荷。 */
+export interface SocialPostContent {
+	text?: string
+	mediaRefs?: SocialMediaRef[]
+	replyTo?: SocialPostRef
+	quoteRef?: SocialPostRef
+	groupRef?: SocialGroupRef
+	lang?: string
+	visibility?: SocialVisibility
+}
+
+/** 探索/资料 meta（`social_meta` 物化字段，camelCase）。 */
+export interface SocialMeta {
+	exploreBlurb?: string
+	hideFromDiscovery?: boolean
+	createdAt?: number
+	recoveryPubKeyHex?: string
+	eventRetentionDepth?: number
+	eventRetentionMs?: number
+	compactTriggerEventDepth?: number
+	[key: string]: unknown
+}
+
+/** 互动类事件共有 target 字段。 */
+export interface SocialEngagementTarget {
+	targetEntityHash: string
+	targetPostId: string
+}
+
+/**
+ *
+ */
+export type SocialLikeContent = SocialEngagementTarget
+
+/**
+ *
+ */
+export interface SocialRepostContent extends SocialEngagementTarget {
+	comment?: string
+}
+
+/**
+ *
+ */
+export interface SocialFollowContent {
+	targetEntityHash: string
+}
+
+/**
+ *
+ */
+export interface SocialBlockContent {
+	targetEntityHash: string
+}
+
+/**
+ *
+ */
+export interface SocialPostDeleteContent {
+	targetPostId: string
+}
+
+/** 时间线事件类型字面量（`SOCIAL_TIMELINE_REDUCERS` 键 + 保留类型）。 */
+export type SocialTimelineEventType =
+	| 'social_meta'
+	| 'state_summary'
+	| 'post'
+	| 'post_delete'
+	| 'like'
+	| 'unlike'
+	| 'repost'
+	| 'follow'
+	| 'unfollow'
+	| 'follow_approve'
+	| 'block'
+	| 'unblock'
+	| 'operator_key_rotate'
+	| 'operator_key_revoke'
+	| 'file_share'
+
+/** 各事件 content 形状映射。 */
+export interface SocialTimelineEventContentMap {
+	social_meta: Partial<SocialMeta>
+	state_summary: Record<string, unknown>
+	post: SocialPostContent | Record<string, unknown>
+	post_delete: SocialPostDeleteContent
+	like: SocialLikeContent
+	unlike: SocialLikeContent
+	repost: SocialRepostContent
+	follow: SocialFollowContent
+	unfollow: SocialFollowContent
+	follow_approve: Record<string, unknown>
+	block: SocialBlockContent
+	unblock: SocialBlockContent
+	operator_key_rotate: Record<string, unknown>
+	operator_key_revoke: Record<string, unknown>
+	file_share: Record<string, unknown>
+}
+
+/** 单条 Social 时间线 DAG 事件（判别联合）。 */
+export type SocialTimelineEvent = {
+	[K in SocialTimelineEventType]: Omit<DAGEvent, 'type' | 'content' | 'charId'> & {
+		type: K
+		content: SocialTimelineEventContentMap[K]
+		charPartName?: string
+	}
+}[SocialTimelineEventType]
+
+/** 物化后的帖子（含 postId 别名）。 */
+export type SocialMaterializedPost = SocialTimelineEvent & { type: 'post', postId: string }
+
+/** Feed / profile 作者摘要（`authorProfileSummary.mjs`）。 */
+export interface SocialAuthorProfile {
+	name?: string
+	avatar?: string | null
+}
+
+/** 单条 feed 条目的互动计数（`createEngagementForPost`）。 */
+export interface SocialFeedEngagement {
+	likeCount: number
+	repostCount: number
+	replyCount: number
+	viewerLiked: boolean
+}
+
+/** Feed 条目公共字段。 */
+export interface SocialFeedItemBase extends SocialFeedEngagement {
+	hlc: { wall: number, logical: number }
+	authorProfile: SocialAuthorProfile | null
+}
+
+/** 原帖 feed 条目。 */
+export interface SocialPostFeedItem extends SocialFeedItemBase {
+	kind: 'post'
+	entityHash: string
+	postId: string
+	post: SocialMaterializedPost & {
+		content: SocialPostContent | null
+		decryptView?: SocialDecryptView
+	}
+}
+
+/** 转发 feed 条目（外层 postId 为 repost 事件 id）。 */
+export interface SocialRepostFeedItem extends SocialFeedItemBase {
+	kind: 'repost'
+	entityHash: string
+	postId: string
+	post: SocialMaterializedPost
+	targetEntityHash: string
+	targetPostId: string
+	repostComment: string
+}
+
+/**
+ *
+ */
+export type SocialFeedItem = SocialPostFeedItem | SocialRepostFeedItem
+
+/** `GET /feed` 等分页响应。 */
+export interface SocialFeedPage {
+	items: SocialFeedItem[]
+	nextCursor: string | null
+}
+
+/** 通知类型（`notifications.mjs`）。 */
+export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow'
+
+/** 通知条目固定 schema。 */
+export interface SocialNotificationItem {
+	type: SocialNotificationType
+	actorEntityHash: string
+	postId: string | null
+	targetPostId: string | null
+	at: number
+}
+
+/**
+ *
+ */
+export interface SocialNotificationsPage {
+	notifications: SocialNotificationItem[]
+	nextCursor: string | null
+	viewerEntityHash: string | null
+}
+
+/** @deprecated 使用 {@link PersonalListEntry}（`p2pAPI.ts`） */
+export type SocialPersonalListEntry = PersonalListEntry
+
+/** `GET …/profile/personal-lists` 与 P2P `/api/p2p/personal-lists` 共用。 */
+export type SocialPersonalListsResponse = PersonalListsResponse
+
+/** 关系写操作响应。 */
+export interface SocialFollowResponse {
+	entityHash: string
+	isFollowing: boolean
+}
+
+/**
+ *
+ */
+export interface SocialBlockResponse {
+	entityHash: string
+	actingEntityHash: string
+	blocked: boolean
+}
+
+/**
+ *
+ */
+export interface SocialHideResponse {
+	entityHash: string
+	actingEntityHash: string
+	hidden: boolean
+}
+
+/** 本地收藏夹持久化结构。 */
 export interface SavedPostsStore {
 	folders: Record<string, { name: string, posts: Array<{ entityHash: string, postId: string }> }>
 	unfiled: Array<{ entityHash: string, postId: string }>
 }
 
-/** 探索页展示的账号摘要。 */
+/** 探索页账号摘要。 */
 export interface SocialDiscoverAccount {
 	entityHash: string
 	name?: string
@@ -53,30 +270,34 @@ export interface SocialDiscoverAccount {
 	avatarUrl?: string | null
 }
 
-/** 探索页展示的帖子摘要。 */
+/** 探索页帖子摘要。 */
 export interface SocialDiscoverPost {
 	entityHash: string
 	postId: string
 	textSnippet?: string
-	mediaThumbs?: unknown[]
+	mediaThumbs?: SocialMediaRef[]
 	hlc: { wall: number, logical: number }
 }
 
-/** 联邦 RPC：请求探索账号列表。 */
+/** 联邦 RPC：请求/响应 type 分离（`SOCIAL_RPC_*_TYPES`）。 */
 export interface SocialRpcDiscoverRequest {
 	type: 'social_discover_request'
 	n?: number
 	cursor?: string
 }
 
-/** 联邦 RPC：探索账号列表响应。 */
+/**
+ *
+ */
 export interface SocialRpcDiscoverResponse {
 	type: 'social_discover_response'
 	accounts: SocialDiscoverAccount[]
 	nextCursor?: string | null
 }
 
-/** 联邦 RPC：请求探索帖子列表。 */
+/**
+ *
+ */
 export interface SocialRpcPostDiscoverRequest {
 	type: 'social_post_discover_request'
 	n?: number
@@ -84,14 +305,16 @@ export interface SocialRpcPostDiscoverRequest {
 	cursor?: string
 }
 
-/** 联邦 RPC：探索帖子列表响应。 */
+/**
+ *
+ */
 export interface SocialRpcPostDiscoverResponse {
 	type: 'social_post_discover_response'
 	posts: SocialDiscoverPost[]
 	nextCursor?: string | null
 }
 
-/** char.interfaces.social — 可选；未实现 OnMention 时默认走 chat.GetReply（类 bot）。 */
+/** char.interfaces.social — 可选；未实现 OnMention 时默认走 chat.GetReply。 */
 export interface SocialMentionEvent {
 	username: string
 	charPartName: string
@@ -100,11 +323,13 @@ export interface SocialMentionEvent {
 	postId: string
 	postText: string
 	mentionedEntityHash: string
-	replyTo: { entityHash: string, postId: string }
+	replyTo?: SocialPostRef
 	lang: string
 }
 
-/** 本地 agent 收到新关注时的回调载荷。 */
+/**
+ *
+ */
 export interface SocialFollowEvent {
 	username: string
 	charPartName: string
@@ -113,21 +338,27 @@ export interface SocialFollowEvent {
 	targetEntityHash: string
 }
 
-/** 所关注实体发新帖时通知 OnFollowerUpdate 的载荷。 */
+/**
+ *
+ */
 export interface SocialFollowerUpdateEvent {
 	username: string
 	charPartName: string
 	authorEntityHash: string
 	postId: string
 	postText: string
-	post: SocialTimelineEvent
+	post: SocialTimelineEvent & { type: 'post' }
 	viewerUsername: string
 }
 
-/** 返回 null 表示跳过；{ text, skip? } 显式控制。 */
+/**
+ *
+ */
 export type SocialHandlerResult = { text?: string, skip?: boolean } | null
 
-/** char.interfaces.social 可选方法集合。 */
+/**
+ *
+ */
 export interface SocialCharInterface {
 	OnMention?: (event: SocialMentionEvent) => Promise<SocialHandlerResult>
 	OnFollow?: (event: SocialFollowEvent) => Promise<void>

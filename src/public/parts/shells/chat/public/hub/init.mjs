@@ -54,14 +54,14 @@ const messagesApi = () => import('./messages/messages.mjs')
  * @returns {Promise<void>}
  */
 export async function refreshViewerHubPresentation() {
-	const entityHash = hubStore.viewerEntityHash
+	const entityHash = hubStore.viewer.viewerEntityHash
 	if (!entityHash) return
 	const profile = await fetchUserProfile(entityHash, {
-		groupId: hubStore.currentGroupId || undefined,
+		groupId: hubStore.context.currentGroupId || undefined,
 		bypassCache: true,
 	})
 	const label = profile?.name || entityHashLabel(entityHash) || '?'
-	hubStore.viewerDisplayName = label
+	hubStore.viewer.viewerDisplayName = label
 	const myAvatar = document.getElementById('hub-my-avatar')
 	const myName = document.getElementById('hub-my-name')
 	myAvatar.replaceChildren()
@@ -76,19 +76,19 @@ export async function refreshViewerHubPresentation() {
 async function loadMe() {
 	let data
 	try {
-		const qs = localeQueryString(hubStore.currentGroupId || undefined)
+		const qs = localeQueryString(hubStore.context.currentGroupId || undefined)
 		const resp = await fetch(`/api/p2p/viewer${qs ? `?${qs}` : ''}`, { credentials: 'include' })
 		if (!resp.ok) return
 		data = await resp.json()
 	} catch {
 		return
 	}
-	hubStore.nodeHash = data.nodeHash || null
-	hubStore.viewerEntityHash = data.viewerEntityHash || null
+	hubStore.viewer.nodeHash = data.nodeHash || null
+	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
 	await refreshViewerHubPresentation()
-	if (!hubStore.viewerEntityHash) return
+	if (!hubStore.viewer.viewerEntityHash) return
 	const { syncViewerPresence, startIdleWatcher } = await import('./hubStatus.mjs')
-	await syncViewerPresence(hubStore.viewerEntityHash)
+	await syncViewerPresence(hubStore.viewer.viewerEntityHash)
 	startIdleWatcher()
 }
 
@@ -118,35 +118,35 @@ function onEnterFriendChat(peer) {
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	if (!peer?.entityHash) {
-		hubStore.currentGroupId = null
-		hubStore.currentChannelId = null
-		hubStore.currentState = null
+		hubStore.context.currentGroupId = null
+		hubStore.context.currentChannelId = null
+		hubStore.context.currentState = null
 		updateFriendsHash()
 		void setMode('friends')
 		return
 	}
-	hubStore.currentMode = 'friends'
+	hubStore.context.currentMode = 'friends'
 	setActiveModeTab('friends')
 }
 
 /** @returns {string|null} 当前用户名 */
 function emojiGetUsername() {
-	return hubStore.viewerEntityHash
+	return hubStore.viewer.viewerEntityHash
 }
 
 /** @returns {{ groupId: string|null, channelId: string|null, privateGroupId: string|null }} 当前群/私聊上下文 */
 function emojiGetContext() {
 	const privateGroupId = hubStore.privateGroup.groupId
-	const groupId = hubStore.currentGroupId || privateGroupId
-	const channelId = hubStore.currentChannelId || hubStore.privateGroup.channelId
+	const groupId = hubStore.context.currentGroupId || privateGroupId
+	const channelId = hubStore.context.currentChannelId || hubStore.privateGroup.channelId
 	return { groupId, channelId, privateGroupId }
 }
 
 /**
- * @returns {typeof hubStore.groups} 已加入群列表
+ * @returns {typeof hubStore.sidebar.groups} 已加入群列表
  */
 function hubPickerGetGroups() {
-	return hubStore.groups
+	return hubStore.sidebar.groups
 }
 
 /**
@@ -260,7 +260,7 @@ async function wireHubHeavyFeatures() {
 		resetVolatileStreamState({ abortBackend: true })
 	})
 	setGroupStreamEndHandler(async () => {
-		if (hubStore.currentGroupId && hubStore.currentChannelId)
+		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
 			await scheduleChannelIncrementalRefresh({ immediate: true })
 		const container = document.getElementById('hub-messages')
 		if (container instanceof HTMLElement)
@@ -268,19 +268,19 @@ async function wireHubHeavyFeatures() {
 		scrollToBottom()
 	})
 	setGroupChannelRefreshHandler((options = {}) => {
-		if (hubStore.currentGroupId && hubStore.currentChannelId)
+		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
 			scheduleChannelIncrementalRefresh(options)
 	})
 	setGroupThreadChannelRefreshHandler(() => {
 		void refreshActiveThreadIfOpen()
 	})
 	setGroupMessageEditHandler(async targetId => {
-		if (hubStore.currentGroupId && hubStore.currentChannelId)
+		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
 			await applyChannelMessageEdit(targetId)
 		await refreshActiveThreadIfOpen()
 	})
 	setGroupMessageDeleteHandler(async targetId => {
-		if (hubStore.currentGroupId && hubStore.currentChannelId)
+		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
 			await applyChannelMessageDelete(targetId)
 		await refreshActiveThreadIfOpen()
 	})

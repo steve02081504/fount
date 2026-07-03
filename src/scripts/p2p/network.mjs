@@ -1,14 +1,24 @@
-import { loadBlocklist } from './blocklist.mjs'
+import { loadDenylist } from './denylist.mjs'
+import { isEntityHash128 } from './entity_id.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 import { isNodeInitialized } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 
 /**
+ * 联邦术语（Wave 6）：
+ * - **block**：Social 对外联邦公开拉黑（personal_block / timeline block 事件）
+ * - **hide**：纯本地隐藏（personal_hide，不联邦）
+ * - **deny**：节点连接拒绝（denylist.json，scope node/subject/entity）
+ * - **ban**：群成员治理（member_ban DAG + bannedMembers 物化态）
+ *
  * @typedef {{
  *   trustedPeers: string[]
  *   explorePeers: string[]
  *   blockedPeers: string[]
+ *   deniedNodes: string[]
+ *   deniedSubjects: string[]
+ *   deniedEntities: string[]
  *   lastRosterAt: number
  *   hintSources?: Map<string, string>
  * }} PeerPoolView
@@ -19,25 +29,6 @@ const MAX_EXPLORE = 500
 const MAX_HINTS = 256
 const MAX_HINTS_PER_SOURCE = 12
 const DEFAULT_EXPLORE_TTL_MS = 7 * 24 * 60 * 60 * 1000
-const NETWORK_SAVE_DEBOUNCE_MS = 300
-
-/** @type {ReturnType<typeof setTimeout> | null} */
-let networkSaveTimer = null
-
-/**
- * 防抖落盘 network.json，避免 roster 高频变动阻塞主线程。
- * @returns {void}
- */
-function scheduleNetworkSave() {
-	if (networkSaveTimer) return
-	networkSaveTimer = setTimeout(() => {
-		networkSaveTimer = null
-		const data = readNodeJsonSync(DATA_NAME)
-		if (data) writeNodeJsonSync(DATA_NAME, data)
-		invalidateTrustGraphCache()
-	}, NETWORK_SAVE_DEBOUNCE_MS)
-	if (typeof networkSaveTimer.unref === 'function') networkSaveTimer.unref()
-}
 
 /**
  * @typedef {{ nodeHash: string, source: string, kind: string, weight?: number, expiresAt: number, groupId?: string }} NetworkHint
@@ -113,7 +104,7 @@ export function saveNetwork(data) {
 	clean.hints = capHintsBySource(clean.hints.filter(h => !h.expiresAt || h.expiresAt > now)).slice(-MAX_HINTS)
 	clean.explorePeers = clean.explorePeers.slice(-MAX_EXPLORE)
 	writeNodeJsonSync(DATA_NAME, clean)
-	scheduleNetworkSave()
+	invalidateTrustGraphCache()
 }
 
 /**
@@ -243,26 +234,44 @@ export function mergeTrustedPeers(nodeHashes) {
 }
 
 /**
- * 节点级 network + 群 scope blocklist 视图（供 peer_pool 选取）。
- * @param {string} [groupId] 群 scope；空则仅全局拉黑
+ * @param {string} groupId 群 scope
+ * @param {'node' | 'subject' | 'entity'} scope denylist scope
+ * @returns {string[]} 规范化 value 列表
+ */
+function denyValuesForScope(groupId, scope) {
+	const gid = String(groupId || '').trim()
+	return [...new Set(
+		loadDenylist().blocked
+			.filter(entry => entry.scope === scope)
+			.filter(entry => scope === 'entity' || !entry.groupId || !gid || entry.groupId === gid)
+			.map(entry => entry.value),
+	)]
+}
+
+/**
+ * 节点级 network + 群 scope denylist 视图（供 peer_pool 选取）。
+ * deniedNodes 用于连接池过滤；deniedSubjects/deniedEntities 供入站校验。
+ * @param {string} [groupId] 群 scope；空则仅全局 deny
  * @returns {PeerPoolView} 连接池视图
  */
 export function loadPeerPoolView(groupId = '') {
 	const net = loadNetwork()
-	const gid = String(groupId || '').trim()
-	const blockedPeers = loadBlocklist().blocked
-		.filter(entry => !entry.groupId || !gid || entry.groupId === gid)
-		.map(entry => entry.value)
+	const deniedNodes = denyValuesForScope(groupId, 'node')
+	const deniedSubjects = denyValuesForScope(groupId, 'subject')
+	const deniedEntities = denyValuesForScope(groupId, 'entity')
 	/** @type {Map<string, string>} */
 	const hintSources = new Map()
-	for (const hint of net.hints) 
+	for (const hint of net.hints)
 		if (!hintSources.has(hint.nodeHash))
 			hintSources.set(hint.nodeHash, hint.source)
-	
+
 	return {
 		trustedPeers: net.trustedPeers,
 		explorePeers: net.explorePeers,
-		blockedPeers: [...new Set(blockedPeers)],
+		blockedPeers: deniedNodes,
+		deniedNodes,
+		deniedSubjects,
+		deniedEntities,
 		lastRosterAt: net.lastRosterAt,
 		hintSources,
 	}
@@ -271,9 +280,13 @@ export function loadPeerPoolView(groupId = '') {
 /**
  * @param {PeerPoolView} view 连接池视图
  * @param {string} key nodeHash / pubKeyHash / entityHash
- * @returns {boolean} 是否在 blockedPeers 中
+ * @returns {boolean} 是否命中 denylist（按 scope 匹配）
  */
 export function isPeerPoolKeyBlocked(view, key) {
 	const normalized = String(key || '').trim().toLowerCase()
-	return normalized ? view.blockedPeers.includes(normalized) : false
+	if (!normalized) return false
+	if (view.deniedNodes.includes(normalized)) return true
+	if (view.deniedSubjects.includes(normalized)) return true
+	if (isEntityHash128(normalized) && view.deniedEntities.includes(normalized)) return true
+	return false
 }

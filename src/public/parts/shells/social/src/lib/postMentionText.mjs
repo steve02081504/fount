@@ -18,6 +18,6 @@ export function mentionSourceText(post) {
  */
 export function postTextForNotification(post) {
 	const content = post?.content
-	if (content?.protected) return null
+	if (content?.scheme === 'gsh' && !content?.text) return null
 	return String(content?.text || '')
 }

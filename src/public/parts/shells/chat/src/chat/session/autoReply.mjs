@@ -5,8 +5,8 @@
  * 【数据结构】autoReplyFrequencyByChannel（Map<groupId\\0channelId, { messageCount }>）、state.groupSettings.autoReplyFrequency。
  * 【关联】triggerReply、partConfig.getCharListOfGroup、groupWsHub、DAG materialize。
  */
+import { channelMessageAgentText } from '../../../public/src/lib/channelContent.mjs'
 import { getState } from '../dag/materialize.mjs'
-import { channelMessageAgentText } from '../lib/channelContent.mjs'
 
 import { getCharListOfGroup } from './partConfig.mjs'
 import { isCharReplyInFlight, triggerCharReply } from './triggerReply.mjs'

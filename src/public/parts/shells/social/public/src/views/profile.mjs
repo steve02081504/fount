@@ -1,29 +1,78 @@
+import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
 
 /**
- * 渲染拉黑列表 UI。
+ * @param {object} appContext 应用上下文
+ * @returns {string} personal-lists 查询串
+ */
+function personalListsQuery(appContext) {
+	const actingEntityHash = appContext.state.viewerEntityHash
+	return actingEntityHash
+		? `?actingEntityHash=${encodeURIComponent(actingEntityHash)}`
+		: ''
+}
+
+/**
+ * 渲染拉黑/隐藏列表 UI。
  * @param {object} appContext 应用上下文
  * @param {HTMLElement} container 容器
  * @returns {Promise<void>}
  */
 export async function renderBlocklist(appContext, container) {
-	const data = await appContext.socialApi('/profile/personal-lists')
-	const blocked = data.blockedEntityHashes || []
-	if (!blocked.length) {
+	const data = await appContext.socialApi(`/profile/personal-lists${personalListsQuery(appContext)}`)
+	const entries = data.entries || []
+	const blocked = entries.filter(entry => entry.kind === 'block')
+	const hidden = entries.filter(entry => entry.kind === 'hide')
+	if (!blocked.length && !hidden.length) {
 		container.innerHTML = `<p class="hint">${escapeHtml(appContext.geti18n('social.blocklist.empty'))}</p>`
 		return
 	}
-	container.innerHTML = `<h3 class="section-title">${escapeHtml(appContext.geti18n('social.blocklist.title'))}</h3>`
-	for (const entityHash of blocked) {
-		const row = document.createElement('div')
-		row.className = 'blocklist-row'
-		row.innerHTML = `
-			<code class="entity-hash">${escapeHtml(entityHash)}</code>
-			<button type="button" class="profile-action-btn" data-unblock="${escapeHtml(entityHash)}">${escapeHtml(appContext.geti18n('social.blocklist.unblock'))}</button>
-		`
-		container.appendChild(row)
+	container.replaceChildren()
+	if (blocked.length) {
+		const heading = document.createElement('h3')
+		heading.className = 'section-title'
+		heading.textContent = appContext.geti18n('social.blocklist.title')
+		container.appendChild(heading)
+		for (const entry of blocked) {
+			const row = document.createElement('div')
+			row.className = 'blocklist-row'
+			const scopeLabel = entry.scope === 'subject'
+				? appContext.geti18n('social.blocklist.scopeSubject')
+				: appContext.geti18n('social.blocklist.scopeEntity')
+			const actionBtn = entry.scope === 'entity'
+				? `<button type="button" class="profile-action-btn" data-unblock="${escapeHtml(entry.value)}">${escapeHtml(appContext.geti18n('social.blocklist.unblock'))}</button>`
+				: ''
+			row.innerHTML = `
+				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
+				<code class="entity-hash">${escapeHtml(entry.value)}</code>
+				${actionBtn}
+			`
+			container.appendChild(row)
+		}
+	}
+	if (hidden.length) {
+		const heading = document.createElement('h3')
+		heading.className = 'section-title'
+		heading.textContent = appContext.geti18n('social.blocklist.hiddenTitle')
+		container.appendChild(heading)
+		for (const entry of hidden) {
+			const row = document.createElement('div')
+			row.className = 'blocklist-row'
+			const scopeLabel = entry.scope === 'subject'
+				? appContext.geti18n('social.blocklist.scopeSubject')
+				: appContext.geti18n('social.blocklist.scopeEntity')
+			const actionBtn = entry.scope === 'entity'
+				? `<button type="button" class="profile-action-btn" data-unhide="${escapeHtml(entry.value)}">${escapeHtml(appContext.geti18n('social.blocklist.unhide'))}</button>`
+				: ''
+			row.innerHTML = `
+				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
+				<code class="entity-hash">${escapeHtml(entry.value)}</code>
+				${actionBtn}
+			`
+			container.appendChild(row)
+		}
 	}
 }
 
@@ -130,50 +179,38 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 	])
 	const isSelf = appContext.state.viewerEntityHash && entityHash === appContext.state.viewerEntityHash
 	const container = document.getElementById('profileView')
-	const name = data.profile?.name || appContext.authorLabel(entityHash)
-	const handle = entityHandle(entityHash)
+	const name = escapeHtml(data.profile?.name || appContext.authorLabel(entityHash))
+	const handle = escapeHtml(entityHandle(entityHash))
 	const followingCount = (followingData.following || []).length
 
-	container.innerHTML = `
-		<div class="profile-banner"></div>
-		<div class="profile-header">
-			<div class="profile-header-actions">
-				${isSelf ? `
-					<a class="profile-action-btn" href="/parts/shells:chat/profile/">${escapeHtml(appContext.geti18n('social.profile.editInChat'))}</a>
-				` : `
-					<button type="button" class="profile-action-btn primary" data-follow="${escapeHtml(entityHash)}" data-is-following="${data.isFollowing ? '1' : '0'}">${escapeHtml(data.isFollowing ? appContext.geti18n('social.actions.following') : appContext.geti18n('social.actions.follow'))}</button>
-					<button type="button" class="profile-action-btn" data-dm="${escapeHtml(entityHash)}">${escapeHtml(appContext.geti18n('social.actions.dm'))}</button>
-				`}
-			</div>
-			<div class="profile-header-row">
-				${appContext.renderAvatarHtml(entityHash, data.profile, 'profile-avatar')}
-				<h2>${escapeHtml(name)}</h2>
-				<span class="profile-handle">${escapeHtml(handle)}</span>
-				${data.profile?.bio ? `<p class="profile-bio">${escapeHtml(data.profile.bio)}</p>` : ''}
-				<div class="profile-stats">
-					<span class="profile-stat"><strong>${data.postCount || 0}</strong> <span>${escapeHtml(appContext.geti18n('social.profile.statsPosts'))}</span></span>
-					<span class="profile-stat"><strong>${followingCount}</strong> <span>${escapeHtml(appContext.geti18n('social.profile.statsFollowing'))}</span></span>
-				</div>
-			</div>
-			<div class="profile-tabs tabs tabs-bordered">
-				<button type="button" class="profile-tab tab tab-active active" data-profile-tab="posts">${escapeHtml(appContext.geti18n('social.profile.tabPosts'))}</button>
-				<button type="button" class="profile-tab tab" data-profile-tab="likes">${escapeHtml(appContext.geti18n('social.profile.tabLikes'))}</button>
-				<button type="button" class="profile-tab tab" data-profile-tab="following">${escapeHtml(appContext.geti18n('social.profile.tabFollowing'))}</button>
-			</div>
-		</div>
-		<div id="profilePostsPanel" class="profile-tab-panel" data-profile-panel="posts"></div>
-		<div id="profileLikesPanel" class="profile-tab-panel hidden" data-profile-panel="likes"></div>
-		<div id="profileFollowingPanel" class="profile-tab-panel hidden" data-profile-panel="following"></div>
-		${isSelf ? `
-			<div class="profile-settings card">
-				<h3>${escapeHtml(appContext.geti18n('social.profile.exploreSettings'))}</h3>
-				<textarea id="exploreBlurbInput" rows="3">${escapeHtml(data.socialMeta?.exploreBlurb || '')}</textarea>
-				<label><input type="checkbox" id="exploreProtectedInput" ${data.socialMeta?.isProtected ? 'checked' : ''} /> ${escapeHtml(appContext.geti18n('social.profile.hideFromExplore'))}</label>
-				<button type="button" id="saveMetaBtn" class="profile-action-btn primary">${escapeHtml(appContext.geti18n('social.profile.saveExplore'))}</button>
-			</div>
-			<div id="blocklistSection" class="profile-settings card"></div>
-		` : ''}
-	`
+	const headerActions = isSelf
+		? await renderTemplateAsHtmlString('profile_header_actions_self', {})
+		: await renderTemplateAsHtmlString('profile_header_actions_other', {
+			entityHash: escapeHtml(entityHash),
+			isFollowing: data.isFollowing ? '1' : '0',
+			followLabel: escapeHtml(data.isFollowing
+				? appContext.geti18n('social.actions.following')
+				: appContext.geti18n('social.actions.follow')),
+		})
+	const avatarHtml = appContext.renderAvatarHtml(entityHash, data.profile, 'profile-avatar')
+	const bioHtml = data.profile?.bio ? `<p class="profile-bio">${escapeHtml(data.profile.bio)}</p>` : ''
+	const selfSettingsHtml = isSelf
+		? await renderTemplateAsHtmlString('profile_self_settings', {
+			exploreBlurb: escapeHtml(data.socialMeta?.exploreBlurb || ''),
+			hideChecked: data.socialMeta?.hideFromDiscovery ? 'checked' : '',
+		})
+		: ''
+
+	container.replaceChildren(await renderTemplate('profile_view', {
+		headerActions,
+		avatarHtml,
+		name,
+		handle,
+		bioHtml,
+		postCount: data.postCount || 0,
+		followingCount,
+		selfSettingsHtml,
+	}))
 
 	if (isSelf)
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
@@ -207,7 +244,7 @@ export async function loadProfile(appContext) {
  * @returns {Promise<void>}
  */
 export async function submitReply(appContext, entityHash, postId, text) {
-	await appContext.socialApi('/profile/post', {
+	await appContext.socialApi('/posts', {
 		method: 'POST',
 		body: JSON.stringify({
 			text,

@@ -94,15 +94,15 @@ export async function loadLocalFederationArchive(username, groupId, readJsonl) {
 		checkpoint = JSON.parse(await readFile(snapshotPath(username, groupId), 'utf8'))
 	}
 	catch { /* absent */ }
-	let blockedPeers = []
+	let deniedSubjects = []
 	try {
 		const peers = loadPeerPoolView( groupId)
-		blockedPeers = peers.blockedPeers || []
+		deniedSubjects = peers.deniedSubjects || []
 	}
 	catch { /* absent */ }
 	return {
 		events,
 		checkpoint,
-		summary: computeArchiveSummary(events, checkpoint, { blockedPeers }),
+		summary: computeArchiveSummary(events, checkpoint, { deniedSubjects }),
 	}
 }

@@ -1,8 +1,8 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { svgInliner } from '../../../../../scripts/lib/svgInliner.mjs'
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { defaultIcons, genericDefaultIcon } from '../constants.mjs'
 
 const itemModal = document.getElementById('item-modal')

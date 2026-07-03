@@ -14,6 +14,7 @@
 import path from 'node:path'
 
 import { buildPromptStruct } from 'fount/public/parts/shells/chat/src/prompt_struct/index.mjs'
+
 import { formatStr } from '../../../../../src/scripts/format.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../src/scripts/json_loader.mjs'
 import { loadAnyPreferredDefaultPart, loadPart } from '../../../../../src/server/parts_loader.mjs'

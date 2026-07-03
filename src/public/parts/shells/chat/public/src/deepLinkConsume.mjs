@@ -36,10 +36,10 @@ export async function applyChatRunUri(raw) {
 
 	const dm = parseDmRunUri(raw)
 	if (dm) {
-		const { identityPubKeyHex } = await getFederationSettings()
-		if (!isHex64(identityPubKeyHex))
-			throw new Error('configure identityPubKeyHex in federation settings first')
-		const data = await createDirectMessageByPubKeys(identityPubKeyHex, dm.pubKeyHex, {
+		const { activePubKeyHex } = await getFederationSettings()
+		if (!isHex64(activePubKeyHex))
+			throw new Error('configure activePubKeyHex in federation settings first')
+		const data = await createDirectMessageByPubKeys(activePubKeyHex, dm.pubKeyHex, {
 			dmIntroNonce: dm.nonce,
 			dmIntroSignatureHex: dm.introSignatureHex,
 		})

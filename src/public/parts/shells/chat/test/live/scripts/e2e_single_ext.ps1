@@ -139,12 +139,12 @@ Test-Case 'POST /compact' {
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$null -ne $r.json.eventsPruned
 }
-Test-Case 'POST /events (local batch peer_invite)' {
+Test-Case 'POST /events/local (local batch peer_invite)' {
 	$st = Api GET "/groups/$gid/state"
-	$selfHash = $st.json.state.viewerMemberPubKeyHash
+	$selfHash = $st.json.viewer.memberKey
 	if (-not $selfHash) { throw 'viewerMemberPubKeyHash missing' }
 	$fakePeer = ('b' * 64)
-	$r = Api POST "/groups/$gid/events" @{
+	$r = Api POST "/groups/$gid/events/local" @{
 		events = @(@{
 			type = 'peer_invite'
 			timestamp = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
@@ -154,8 +154,8 @@ Test-Case 'POST /events (local batch peer_invite)' {
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	[int]$r.json.applied -ge 1
 }
-Test-Case 'GET /timeline baseline' {
-	$r = Api GET "/groups/$gid/timeline"
+Test-Case 'GET /branch baseline' {
+	$r = Api GET "/groups/$gid/branch"
 	if ($r.status -ne 200) { throw "status $($r.status)" }
 	$script:tlBefore = @{ current = [int]$r.json.current; total = [int]$r.json.total }
 	$script:tlBefore.total -ge 1
@@ -164,37 +164,37 @@ if (-not $fbChar) { $script:fbChar = EnsureTestChar $gid }
 if ($fbChar) {
 	$null = WaitForCharMessageId $gid $cid $fbChar 90
 }
-Test-Case 'PUT /timeline delta +1' {
-	$r = Api PUT "/groups/$gid/timeline" @{ delta = 1; channelId = $cid }
+Test-Case 'PUT /branch delta +1' {
+	$r = Api PUT "/groups/$gid/branch" @{ delta = 1; channelId = $cid }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$script:tlDeltaPlus = $r
 	[bool]$r.json.entry
 }
-Test-Case 'GET /timeline after +1' {
+Test-Case 'GET /branch after +1' {
 	if ($script:tlDeltaPlus.json.entry) {
-		$g = Api GET "/groups/$gid/timeline"
+		$g = Api GET "/groups/$gid/branch"
 		if ($g.status -ne 200) { return $false }
 		[int]$g.json.current -ne $script:tlBefore.current -or [int]$g.json.total -gt $script:tlBefore.total
 	}
 	else {
 		$ok = PollUntil {
-			$g = Api GET "/groups/$gid/timeline"
+			$g = Api GET "/groups/$gid/branch"
 			$g.status -eq 200 -and (
 				[int]$g.json.current -ne $script:tlBefore.current -or
 				[int]$g.json.total -gt $script:tlBefore.total
 			)
 		} 45
 		if (-not $ok) { throw 'timeline did not change after delta +1' }
-		$script:tlAfterPlus = Api GET "/groups/$gid/timeline"
+		$script:tlAfterPlus = Api GET "/groups/$gid/branch"
 		$true
 	}
 }
-Test-Case 'PUT /timeline delta -1' {
-	$r = Api PUT "/groups/$gid/timeline" @{ delta = -1; channelId = $cid }
+Test-Case 'PUT /branch delta -1' {
+	$r = Api PUT "/groups/$gid/branch" @{ delta = -1; channelId = $cid }
 	$r.status -eq 200 -and [bool]$r.json.entry
 }
-Test-Case 'GET /timeline restored index' {
-	$g = Api GET "/groups/$gid/timeline"
+Test-Case 'GET /branch restored index' {
+	$g = Api GET "/groups/$gid/branch"
 	$g.status -eq 200 -and [int]$g.json.current -eq $script:tlBefore.current
 }
 Test-Case 'POST channel (to delete)' {
@@ -207,7 +207,7 @@ Test-Case 'DELETE /channels/:id (non-default)' {
 	$r = Api DELETE "/groups/$gid/channels/$delChId"
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$s = Api GET "/groups/$gid/state"
-	$null -eq $s.json.state.channels.$delChId
+	$null -eq $s.json.meta.channels.$delChId
 }
 
 # ---------------------------------------------------------------------------
@@ -482,7 +482,7 @@ $agentChar = RequireTestChar $gid
 $agentKey = $null
 Test-Case "agent member via POST char ($agentChar)" {
 	$s = Api GET "/groups/$gid/state"
-	$row = @($s.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
+	$row = @($s.json.meta.members | Where-Object { $_.charname -eq $agentChar })[0]
 	if (-not $row) { throw 'agent member row missing' }
 	$script:agentKey = $row.memberKey
 	[bool]$script:agentKey
@@ -491,7 +491,7 @@ Test-Case 'POST members/:key/ban (entity scope)' {
 	$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/ban" @{ banScope = 'entity' }
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$s = Api GET "/groups/$gid/state"
-	@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
+	@($s.json.meta.members | Where-Object { $_.memberKey -eq $agentKey }).Count -eq 0
 }
 Test-Case 'ban blocks agent trigger-reply' {
 	Invoke-WithAllowedNoise -Patterns 'char not found' -Script {
@@ -504,7 +504,7 @@ Test-Case 'POST members/:key/unban restores agent active' {
 	if ($r.status -ne 200) { throw "status $($r.status): $($r.raw)" }
 	$ok = PollUntil {
 		$s = Api GET "/groups/$gid/state"
-		@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -ge 1
+		@($s.json.meta.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -ge 1
 	} 20
 	if (-not $ok) { throw 'agent not active after unban' }
 	$true
@@ -513,7 +513,7 @@ Test-Case 'POST members/:key/kick removes agent member (owner may kick own agent
 	$r = Api POST "/groups/$gid/members/$([uri]::EscapeDataString($agentKey))/kick" @{}
 	if ($r.status -ne 200) { throw "kick $($r.status): $($r.raw)" }
 	$s = Api GET "/groups/$gid/state"
-	@($s.json.state.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
+	@($s.json.meta.members | Where-Object { $_.memberKey -eq $agentKey -and $_.status -eq 'active' }).Count -eq 0
 }
 # 非管理员踢人（403）由 chat/test/authorize_governance.test.mjs 覆盖；单用户 live 无法构造无 ADMIN 且非 owner 的踢人场景。
 # 在独立临时群上跑 owner-succession，避免把 MANAGE_ADMINS 从共享 ext 群转走影响后续用例。
@@ -526,17 +526,17 @@ Test-Case 'POST owner-succession (single admin → agent)' {
 		$ac = Api POST "/groups/$ogid/char" @{ charname = $agentChar; deferGreeting = $true }
 		if (-not (OkStatus $ac.status)) { throw "char add $($ac.status)" }
 		$s0 = Api GET "/groups/$ogid/state"
-		$agentRow = @($s0.json.state.members | Where-Object { $_.charname -eq $agentChar })[0]
-		if (-not $agentRow.pubKeyHash) { throw 'agent pubKeyHash missing' }
+		$agentRow = @($s0.json.meta.members | Where-Object { $_.charname -eq $agentChar })[0]
+		if (-not $agentRow.memberKey) { throw 'agent memberKey missing' }
 		$ballotId = "e2e-ext-os-$([guid]::NewGuid().ToString('N').Substring(0, 12))"
 		$r = Api POST "/groups/$ogid/owner-succession" @{
-			proposedOwnerPubKeyHash = $agentRow.pubKeyHash
+			proposedOwnerPubKeyHash = $agentRow.memberKey
 			ballotId                = $ballotId
 		}
 		if ($r.status -ne 200) { throw "succession $($r.status): $($r.raw)" }
-		if ($r.json.newOwnerPubKeyHash -ne $agentRow.pubKeyHash) { throw 'newOwnerPubKeyHash mismatch' }
+		if ($r.json.newOwnerPubKeyHash -ne $agentRow.memberKey) { throw 'newOwnerPubKeyHash mismatch' }
 		$s1 = Api GET "/groups/$ogid/state"
-		$s1.json.state.delegatedOwnerPubKeyHash -eq $agentRow.pubKeyHash
+		$s1.json.meta.delegatedOwnerPubKeyHash -eq $agentRow.memberKey
 	}
 	finally {
 		Api POST '/groups/leave' @{ groupIds = @($ogid) } | Out-Null

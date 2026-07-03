@@ -27,7 +27,7 @@ export async function makeRemoteSignedEvent(secretKey, ownerEntityHash, event) {
 		type: event.type,
 		groupId: timelineGroupId(ownerEntityHash),
 		sender,
-		charId: event.charId ?? null,
+		charPartName: event.charPartName ?? null,
 		timestamp: event.timestamp ?? Date.now(),
 		hlc: event.hlc ?? { wall: Date.now(), counter: 0, node: sender.slice(0, 8) },
 		prev_event_ids: event.prev_event_ids ?? [],

@@ -35,15 +35,15 @@ export async function showMemberContextMenu(event, memberEl) {
 	dismissMemberContextMenu()
 
 	const memberKey = memberEl.dataset.memberKey?.trim()
-	if (!memberKey || !hubStore.currentGroupId) return
+	if (!memberKey || !hubStore.context.currentGroupId) return
 	const displayName = memberEl.querySelector('.hub-member-name')?.textContent?.trim() || memberKey
-	const viewer = String(hubStore.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	const defaultChannelId = hubStore.currentState?.groupSettings?.defaultChannelId || 'default'
+	const viewer = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const defaultChannelId = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const isAgent = memberEl.dataset.memberKind === 'agent'
 	const ownerPubKeyHash = memberEl.dataset.ownerPubKeyHash?.trim().toLowerCase() || ''
 	const isOwnerOwnAgent = isAgent && ownerPubKeyHash === viewer
 	const perms = viewer && memberKey.toLowerCase() !== viewer
-		? await fetchViewerChannelPermissions(hubStore.currentState, hubStore.currentGroupId, defaultChannelId)
+		? await fetchViewerChannelPermissions(hubStore.context.currentState, hubStore.context.currentGroupId, defaultChannelId)
 		: {}
 	const showKick = memberKey.toLowerCase() !== viewer && (
 		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true
@@ -104,7 +104,7 @@ export async function showMemberContextMenu(event, memberEl) {
 			if (!confirmI18n('chat.hub.memberCtx.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: displayName })) return
-		const groupId = hubStore.currentGroupId
+		const groupId = hubStore.context.currentGroupId
 		const resp = await fetch(
 			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(memberKey)}/kick`,
 			{ method: 'POST', credentials: 'include' },
@@ -115,8 +115,8 @@ export async function showMemberContextMenu(event, memberEl) {
 			return
 		}
 		showToastI18n('success', 'chat.group.settingsPage.kickSuccess')
-		hubStore.currentState = await getGroupState(hubStore.currentGroupId)
-		void renderMemberList(hubStore.currentState)
+		hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+		void renderMemberList(hubStore.context.currentState)
 		closeOnce()
 	})
 	menu.querySelector('.hub-member-menu-ban')?.addEventListener('click', async () => {
@@ -125,10 +125,10 @@ export async function showMemberContextMenu(event, memberEl) {
 		if (!picked) return
 		const { banMemberWithScope } = await import('../src/api/groupApi.mjs')
 		try {
-			await banMemberWithScope(hubStore.currentGroupId, memberKey, picked)
+			await banMemberWithScope(hubStore.context.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settingsPage.banSuccess')
-			hubStore.currentState = await getGroupState(hubStore.currentGroupId)
-			void renderMemberList(hubStore.currentState)
+			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+			void renderMemberList(hubStore.context.currentState)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
@@ -141,8 +141,8 @@ export async function showMemberContextMenu(event, memberEl) {
 		try {
 			await postPersonalBlock(entityHash, true)
 			showToastI18n('success', 'chat.hub.memberCtx.personalBlockSuccess')
-			hubStore.currentState = await getGroupState(hubStore.currentGroupId)
-			void renderMemberList(hubStore.currentState)
+			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+			void renderMemberList(hubStore.context.currentState)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })

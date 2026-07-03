@@ -1,3 +1,4 @@
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import {
 	addSavedPost,
@@ -7,7 +8,6 @@ import {
 	deleteSavedFolder,
 	removeSavedPost,
 	renameSavedFolder,
-	saveSavedPosts,
 } from '../savedPosts.mjs'
 
 /**
@@ -19,11 +19,6 @@ export function registerSavedRoutes(router) {
 	router.get('/api/parts/shells\\:social/saved-posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json(await enrichSavedPosts(username, await loadSavedPosts(username)))
-	})
-
-	router.put('/api/parts/shells\\:social/saved-posts', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json(await saveSavedPosts(username, req.body))
 	})
 
 	router.post('/api/parts/shells\\:social/saved-posts/add', authenticate, async (req, res) => {
@@ -52,12 +47,12 @@ export function registerSavedRoutes(router) {
 		const folderId = String(body.folderId || '')
 		const name = String(body.name || '').trim()
 		if (!folderId || !name)
-			return res.status(400).json({ error: 'folderId and name required' })
+			throw httpError(400, 'folderId and name required')
 		try {
 			res.status(200).json(await renameSavedFolder(username, folderId, name))
 		}
 		catch {
-			res.status(404).json({ error: 'folder not found' })
+			throw httpError(404, 'folder not found')
 		}
 	})
 
@@ -65,7 +60,7 @@ export function registerSavedRoutes(router) {
 		const { username } = getUserByReq(req)
 		const folderId = String(req.body?.folderId || '')
 		if (!folderId)
-			return res.status(400).json({ error: 'folderId required' })
+			throw httpError(400, 'folderId required')
 		res.status(200).json(await deleteSavedFolder(username, folderId))
 	})
 }

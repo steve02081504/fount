@@ -31,7 +31,7 @@ async function initTestNode(seedByte) {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-timeline-ingest-'))
 	await mkdir(dir, { recursive: true })
 	await writeFile(join(dir, 'node.json'), JSON.stringify({ nodeSeedHex: Buffer.alloc(32, seedByte).toString('hex') }))
-	await writeFile(join(dir, 'blocklist.json'), JSON.stringify({ blocked: [] }))
+	await writeFile(join(dir, 'denylist.json'), JSON.stringify({ blocked: [] }))
 	initNode({ nodeDir: dir })
 	return dir
 }

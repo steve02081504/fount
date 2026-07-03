@@ -1,9 +1,8 @@
 /**
  * 【文件】src/chat/session.mjs
- * 【职责】chat 会话子系统的聚合入口：初始化内存 groupMetadatas、绑定进程卸载钩子，并导出本地 Char/World RPC 分发器工厂。
- * 【原理】模块加载时调用 initializeGroupMetadatas 与 bindSessionUnloadHooks（传入 deleteGroup/isVividGroup）；RPC 由 rpcDispatcher 工厂注入 getActiveGroupRuntime 与 getChatRequest，供 groupWsHub 在 WS 上代理远程角色/世界调用；不在此文件实现具体消息或生成逻辑。
- * 【数据结构】groupMetadatas Map（groupId → chatMetadata_t）、tryInvokeLocalCharRpc / tryInvokeLocalWorldRpc 函数引用。
- * 【关联】被 chat/stream/groupWsHub、联邦 RPC 路径 import；re-export rpcDispatcher 与 session/wsLifecycle、session/crud、session/generation。
+ * 【职责】chat 会话子系统 barrel：进程级初始化、联邦 Char/World RPC 分发，并 re-export session/ 常用入口。
+ * 【原理】模块加载时调用 initializeGroupMetadatas 与 bindSessionUnloadHooks；RPC 工厂注入 getActiveGroupRuntime / getChatRequest。
+ * 【关联】被 chat/stream/groupWsHub、联邦 RPC 路径 import；具体实现见 session/ 目录。
  */
 /** @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -29,3 +28,37 @@ export const tryInvokeLocalCharRpc = createCharRpcDispatcher(getActiveGroupRunti
  * 在本地群运行时尝试分发 World RPC（供联邦 `char_rpc` 入站回调）。
  */
 export const tryInvokeLocalWorldRpc = createWorldRpcDispatcher(getChatRequest)
+
+/**
+ *
+ */
+export { deleteGroup, newGroup, getInitialData } from './session/crud.mjs'
+/**
+ *
+ */
+export { getChatRequest, triggerCharReply, modifyTimeLine } from './session/generation.mjs'
+/**
+ *
+ */
+export {
+	getActiveGroupRuntime,
+	isLocallyOwnedGroup,
+	isVividGroup,
+} from './session/persistence.mjs'
+/**
+ *
+ */
+export { getGroupRuntime } from './session/runtime.mjs'
+/**
+ *
+ */
+export {
+	bindSessionUnloadHooks,
+	groupMetadatas,
+	initializeGroupMetadatas,
+	purgeGroupSession,
+} from './session/wsLifecycle.mjs'
+/**
+ *
+ */
+export { getMaterializedSession } from './session/dagSession.mjs'

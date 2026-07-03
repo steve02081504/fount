@@ -4,11 +4,10 @@ import {
 	deleteMailboxRecords,
 	takeMailboxForRecipient,
 } from '../../../../../../../scripts/p2p/mailbox/store.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node_context.mjs'
+import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
-import { appendValidatedRemoteEvent } from '../dag/remoteIngest.mjs'
+import { appendValidatedRemoteEvent, isRemoteIngestAccepted } from '../dag/remoteIngest.mjs'
 
-const CONSUMER_ID = 'chat/dag'
 const MAILBOX_APP_CHAT = 'chat'
 
 /**
@@ -24,7 +23,7 @@ async function consumeChatDagMailbox(username, records) {
 		const groupId = String(row.groupId || '').trim()
 		if (!groupId) continue
 		const status = await appendValidatedRemoteEvent(username, groupId, row.envelope, { logFailures: false })
-		if (status === 'ok' || status === 'dup') delivered.push(row.id)
+		if (isRemoteIngestAccepted(status)) delivered.push(row.id)
 	}
 	return delivered
 }
@@ -34,12 +33,12 @@ async function consumeChatDagMailbox(username, records) {
  * @returns {void}
  */
 export function registerChatMailboxConsumer() {
-	registerMailboxConsumer(CONSUMER_ID, MAILBOX_APP_CHAT, consumeChatDagMailbox)
+	registerMailboxConsumer(MAILBOX_APP_CHAT, consumeChatDagMailbox)
 }
 
 /** @returns {void} */
 export function unregisterChatMailboxConsumer() {
-	unregisterMailboxConsumer(CONSUMER_ID)
+	unregisterMailboxConsumer(MAILBOX_APP_CHAT)
 }
 
 /**

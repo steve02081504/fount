@@ -1,6 +1,7 @@
 /**
- * 按实体的个人拉黑/隐藏列表（Chat 与 Social 共享）。
- * 拉黑公开索引存于 entity store；隐藏纯本地永不联邦。
+ * 按实体的个人列表（Chat 与 Social 共享）。
+ * **block**：对外联邦公开拉黑（timeline block 事件 + personal_block 索引）；
+ * **hide**：纯本地隐藏（personal_hide.json，永不联邦）。
  */
 import { isWritableLocalEntity } from './entity/replica.mjs'
 import { parseEntityHash } from './entity_id.mjs'
@@ -61,12 +62,9 @@ export function matchesPersonalListEntries(entries, subject) {
 		for (const entry of entries)
 			if (entry.scope === 'entity' && entry.value === entity) return true
 		const parsed = parseEntityHash(entity)
-		if (parsed) 
-			for (const entry of entries) {
-				if (entry.scope === 'entity' && entry.value === parsed.entityHash) return true
+		if (parsed)
+			for (const entry of entries)
 				if (entry.scope === 'subject' && entry.value === parsed.subjectHash) return true
-			}
-		
 	}
 	if (isHex64(pk))
 		for (const entry of entries)
@@ -167,10 +165,11 @@ export async function rebuildPersonalBlockIndex(viewerEntityHash, blockedEntityH
 }
 
 /**
- * @param {string} viewerEntityHash 观看者实体
- * @returns {Promise<{ blockedEntityHashes: Set<string>, blockedSubjects: Set<string>, hiddenEntityHashes: Set<string>, hiddenSubjects: Set<string> }>} 过滤集
+ * 将 personal-lists API `{ entries }` 转为内存过滤集。
+ * @param {Array<{ scope?: string, kind?: string, value?: string }>} entries API 条目
+ * @returns {{ blockedEntityHashes: Set<string>, blockedSubjects: Set<string>, hiddenEntityHashes: Set<string>, hiddenSubjects: Set<string> }} 过滤集
  */
-export async function loadPersonalFilterSets(viewerEntityHash) {
+export function filterSetsFromPersonalListEntries(entries) {
 	/** @type {Set<string>} */
 	const blockedEntityHashes = new Set()
 	/** @type {Set<string>} */
@@ -179,22 +178,38 @@ export async function loadPersonalFilterSets(viewerEntityHash) {
 	const hiddenEntityHashes = new Set()
 	/** @type {Set<string>} */
 	const hiddenSubjects = new Set()
-	if (!viewerEntityHash) 
-		return { blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects }
-	
+	for (const entry of entries || []) {
+		const kind = String(entry?.kind || '').trim().toLowerCase()
+		const scope = String(entry?.scope || '').trim().toLowerCase()
+		const value = String(entry?.value || '').trim().toLowerCase()
+		if (!value || (scope !== 'entity' && scope !== 'subject')) continue
+		if (kind === 'block') 
+			if (scope === 'entity') blockedEntityHashes.add(value)
+			else blockedSubjects.add(value)
+		
+		else if (kind === 'hide') 
+			if (scope === 'entity') hiddenEntityHashes.add(value)
+			else hiddenSubjects.add(value)
+		
+	}
+	return { blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects }
+}
+
+/**
+ * @param {string} viewerEntityHash 观看者实体
+ * @returns {Promise<{ blockedEntityHashes: Set<string>, blockedSubjects: Set<string>, hiddenEntityHashes: Set<string>, hiddenSubjects: Set<string> }>} 过滤集
+ */
+export async function loadPersonalFilterSets(viewerEntityHash) {
+	if (!viewerEntityHash)
+		return filterSetsFromPersonalListEntries([])
 	const [blockedEntries, hiddenEntries] = await Promise.all([
 		loadPersonalBlockEntries(viewerEntityHash),
 		loadPersonalHideEntries(viewerEntityHash),
 	])
-	for (const entry of blockedEntries) 
-		if (entry.scope === 'entity') blockedEntityHashes.add(entry.value)
-		else blockedSubjects.add(entry.value)
-	
-	for (const entry of hiddenEntries) 
-		if (entry.scope === 'entity') hiddenEntityHashes.add(entry.value)
-		else hiddenSubjects.add(entry.value)
-	
-	return { blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects }
+	return filterSetsFromPersonalListEntries([
+		...blockedEntries.map(entry => ({ ...entry, kind: 'block' })),
+		...hiddenEntries.map(entry => ({ ...entry, kind: 'hide' })),
+	])
 }
 
 /**

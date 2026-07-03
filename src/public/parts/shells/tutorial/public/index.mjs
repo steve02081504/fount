@@ -4,8 +4,8 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 /* global confetti */
 
-import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
 import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAnyDefaultPart } from '../../scripts/api/parts.mjs'
+import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
 import { svgInliner } from '../../scripts/lib/svgInliner.mjs'
 import { applyTheme } from '../../scripts/theme/index.mjs'
 

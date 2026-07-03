@@ -125,7 +125,7 @@ export async function fetchAuthorProfile(authorKey, options = {}) {
  * @returns {void}
  */
 export function applySelfStatusToMemberList(status) {
-	const viewerEh = hubStore.viewerEntityHash
+	const viewerEh = hubStore.viewer.viewerEntityHash
 	if (!viewerEh) return
 	const root = document.getElementById('hub-member-list')
 	if (!root) return
@@ -182,7 +182,7 @@ export function applyAvatarsTo(rootEl) {
 		bindHoverCardAnchor(av, () => av.dataset.avatarFor)
 		if (av.dataset.avatarLoaded) return
 		av.dataset.avatarLoaded = '1'
-		void fetchAuthorProfile(profileKey, { groupId: hubStore.currentGroupId || undefined }).then((profile) => {
+		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
 			if (profile.avatar) {
 				const avatarVal = String(profile.avatar)
@@ -217,7 +217,7 @@ export async function hydrateAuthorLabels(rootEl) {
 		const key = au.dataset.authorKey?.trim()
 		if (!key || key === '?') return
 		tasks.push((async () => {
-			const profile = await fetchAuthorProfile(key, { groupId: hubStore.currentGroupId || undefined })
+			const profile = await fetchAuthorProfile(key, { groupId: hubStore.context.currentGroupId || undefined })
 			if (!profile?.name || au.dataset.authorKey !== key) return
 			au.textContent = profile.name
 		})())
@@ -268,7 +268,7 @@ export async function showHoverCardFor(authorKey, anchorEl) {
 	if (hoverCardBio) hoverCardBio.dataset.i18n = 'chat.hub.loading'
 	hoverCard.classList.add('show')
 
-	const profile = await fetchAuthorProfile(profileKey, { groupId: hubStore.currentGroupId || undefined })
+	const profile = await fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined })
 	if (hoverCardAvatar?.dataset.uname !== authorKey) return
 	if (profile) {
 		if (hoverCardName) hoverCardName.textContent = profile.name || displayName

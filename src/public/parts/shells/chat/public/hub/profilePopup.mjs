@@ -98,7 +98,7 @@ export async function resolveEntityFromAnchor(anchor) {
 	const displayKey = String(avatarFor || memberKey || authorHash || '').trim().toLowerCase()
 	if (!displayKey || displayKey === '?') return null
 
-	const members = hubStore.currentState?.members || []
+	const members = hubStore.context.currentState?.members || []
 	const memberRow = members.find(m =>
 		m.entityHash === displayKey
 		|| m.memberKey === displayKey
@@ -112,7 +112,7 @@ export async function resolveEntityFromAnchor(anchor) {
 		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
 	if (memberRow) return userEntityFromMember(memberRow)
 	if (isEntityHash128(displayKey)) {
-		const bound = hubStore.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
+		const bound = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
 		if (bound?.charname)
 			return await charEntityFromName(bound.charname, bound.displayName || bound.charname)
 		return {
@@ -141,7 +141,7 @@ export async function resolveEntityFromAnchor(anchor) {
  */
 async function paintProfilePopup(popup, entity) {
 	const { entityHash } = entity
-	const groupId = hubStore.currentGroupId || undefined
+	const groupId = hubStore.context.currentGroupId || undefined
 	const profile = entityHash
 		? await loadEntityProfile(entityHash, { bypassCache: true, groupId })
 		: null

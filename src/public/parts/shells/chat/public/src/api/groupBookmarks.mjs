@@ -13,7 +13,7 @@ export async function getChatBookmarks() {
 	const response = await fetch('/api/parts/shells:chat/bookmarks', { credentials: 'include' })
 	const data = await response.json()
 	if (!response.ok) throw new Error('Failed to fetch bookmarks')
-	return Array.isArray(data) ? data : []
+	return Array.isArray(data.entries) ? data.entries : []
 }
 
 /**

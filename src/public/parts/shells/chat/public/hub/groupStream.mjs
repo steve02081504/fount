@@ -26,7 +26,7 @@ let activeChannelId = null
  *   tracked: { content: string, content_for_show: string, files: Array },
  *   streamRenderer: StreamRenderer | null,
  *   reorder: { expectedSeq: number, chunks: Map<number, object[]> },
- *   charName: string,
+ *   charname: string,
  * }} VolatileStreamSlot
  */
 
@@ -125,10 +125,10 @@ function messageRowSelector(messageId) {
 
 /**
  * @param {string} streamId pendingStreamId
- * @param {string} [charName] 角色 id
+ * @param {string} [charname] 角色 id
  * @returns {VolatileStreamSlot} 流式槽
  */
-function getOrCreateStreamSlot(streamId, charName = '') {
+function getOrCreateStreamSlot(streamId, charname = '') {
 	const id = String(streamId || '').trim()
 	let slot = volatileStreams.get(id)
 	if (!slot) {
@@ -136,13 +136,13 @@ function getOrCreateStreamSlot(streamId, charName = '') {
 			tracked: { content: '', content_for_show: '', files: [] },
 			streamRenderer: null,
 			reorder: { expectedSeq: 1, chunks: new Map() },
-			charName,
+			charname,
 		}
 		volatileStreams.set(id, slot)
 		notifyGenerationActiveChange()
 	}
-	else if (charName && !slot.charName)
-		slot.charName = charName
+	else if (charname && !slot.charname)
+		slot.charname = charname
 	return slot
 }
 
@@ -170,8 +170,8 @@ function bindStreamRenderer(streamId) {
 	const bound = slot.streamRenderer
 	if (bound?.attachedTo === body && body.isConnected) return bound
 	slot.streamRenderer = new StreamRenderer(body)
-	if (!slot.charName)
-		slot.charName = row.getAttribute('data-char-id') || ''
+	if (!slot.charname)
+		slot.charname = row.getAttribute('data-char-id') || ''
 	flushReorderToRenderer(slot)
 	return slot.streamRenderer
 }
@@ -198,8 +198,8 @@ export function syncStreamingSlotsFromDom(container) {
 
 /** 重进频道时补拉服务端已缓冲的 stream_chunk（切走期间错过的 diff）。 */
 export function resumeActiveStreamBuffers() {
-	const groupId = hubStore.currentGroupId
-	const channelId = hubStore.currentChannelId
+	const groupId = hubStore.context.currentGroupId
+	const channelId = hubStore.context.currentChannelId
 	if (!groupId || !channelId || !volatileStreams.size) return
 	for (const streamId of [...volatileStreams.keys()]) 
 		void (async () => {
@@ -268,7 +268,7 @@ export function resetVolatileStreamState({ abortBackend = false } = {}) {
 		slot.streamRenderer = null
 	volatileStreams.clear()
 	streamIdsFetchingRow.clear()
-	hubStore.composerPendingId = null
+	hubStore.messages.composerPendingId = null
 	notifyGenerationActiveChange()
 }
 
@@ -379,10 +379,10 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 		}
 		if (main && channelMessage && !content?.is_generating)
 			maybeNotifyHubMessage({
-				groupName: hubStore.currentState?.groupMeta?.name || hubStore.currentGroupId,
-				channelName: hubStore.currentState?.channels?.[incomingChannelId]?.name || incomingChannelId,
+				groupName: hubStore.context.currentState?.groupMeta?.name || hubStore.context.currentGroupId,
+				channelName: hubStore.context.currentState?.channels?.[incomingChannelId]?.name || incomingChannelId,
 				message: channelMessage,
-				viewerPubKeyHash: hubStore.currentState?.viewerMemberPubKeyHash || null,
+				viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
 			})
 
 		dispatchChannelIncrementalRefresh(incomingChannelId, channelId, { immediate: true })
@@ -394,11 +394,11 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 		const eventChannelId = dagEvent?.channelId
 		const { main, thread } = hubChannelMatch(eventChannelId, channelId)
 		if (eventChannelId && !main && !thread) return
-		if (CHANNEL_STRUCTURE_DAG_TYPES.has(dagEvent?.type) && hubStore.currentGroupId) {
+		if (CHANNEL_STRUCTURE_DAG_TYPES.has(dagEvent?.type) && hubStore.context.currentGroupId) {
 			void (async () => {
 				try {
-					hubStore.currentState = await getGroupState(hubStore.currentGroupId)
-					await renderHubChannelSidebar(hubStore.currentState)
+					hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+					await renderHubChannelSidebar(hubStore.context.currentState)
 				}
 				catch { /* empty */ }
 			})()
@@ -514,7 +514,7 @@ export function connectGroupWebSocket(groupId, channelId) {
 			return
 	}
 	closeGroupWebSocket()
-	const ownerNodeHash = hubStore.nodeHash
+	const ownerNodeHash = hubStore.viewer.nodeHash
 	if (!ownerNodeHash) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return
@@ -525,10 +525,10 @@ export function connectGroupWebSocket(groupId, channelId) {
 	activeChannelId = channelId
 	setActiveWebSocket(socket)
 	socket.addEventListener('open', () => {
-		if (hubStore.nodeHash && socket.readyState === WebSocket.OPEN)
+		if (hubStore.viewer.nodeHash && socket.readyState === WebSocket.OPEN)
 			socket.send(JSON.stringify({
 				type: 'group_ws_rpc_identity',
-				clientNodeId: hubStore.nodeHash,
+				clientNodeId: hubStore.viewer.nodeHash,
 			}))
 	})
 	socket.addEventListener('message', event => {

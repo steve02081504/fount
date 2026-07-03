@@ -4,8 +4,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { normalizeBlocklist } from '../../../../../../scripts/p2p/blocklist.mjs'
 import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
+import { normalizeDenylist } from '../../../../../../scripts/p2p/denylist.mjs'
 import { isAuthorFilteredByPersonalSets } from '../../../../../../scripts/p2p/personal_block.mjs'
 import { canViewPost } from '../../src/feedVisibility.mjs'
 
@@ -79,8 +79,8 @@ Deno.test('materialize keeps all posts regardless of visibility', () => {
 	assertEquals(posts.length, 2)
 })
 
-Deno.test('blocklist entity scope from p2p normalizeBlocklist', () => {
+Deno.test('blocklist entity scope from p2p normalizeDenylist', () => {
 	const entity = `${'e'.repeat(128)}`
-	const list = normalizeBlocklist({ blocked: [{ scope: 'entity', value: entity }] })
+	const list = normalizeDenylist({ blocked: [{ scope: 'entity', value: entity }] })
 	assertEquals(list.blocked[0].value, entity)
 })

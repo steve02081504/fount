@@ -132,10 +132,10 @@
 				<span class="label-text" data-i18n="chat.group.settingsMessageRetention"></span>
 			</label>
 			<select id="message-content-retention-ms" class="select select-bordered">
-				<option value="0" ${!Number(currentState.groupSettings.message_content_retention_ms) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
-				<option value="2592000000" ${Number(currentState.groupSettings.message_content_retention_ms)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
-				<option value="7776000000" ${Number(currentState.groupSettings.message_content_retention_ms)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
-				<option value="31536000000" ${Number(currentState.groupSettings.message_content_retention_ms)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
+				<option value="0" ${!Number(currentState.groupSettings.messageContentRetentionMs) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
+				<option value="2592000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
+				<option value="7776000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
+				<option value="31536000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
 			</select>
 			<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsMessageRetentionHint"></p>
 		</div>
@@ -155,15 +155,15 @@
 		<div class="grid grid-cols-2 gap-3">
 			<div class="form-control">
 				<label class="label"><span class="label-text" data-i18n="chat.group.settingsEventRetentionDepth"></span></label>
-				<input type="number" id="event-retention-depth" class="input input-bordered" min="1000" max="500000" step="1000" value="${Number(currentState.groupSettings.event_retention_depth) || 200000}">
+				<input type="number" id="event-retention-depth" class="input input-bordered" min="1000" max="500000" step="1000" value="${Number(currentState.groupSettings.eventRetentionDepth) || 200000}">
 			</div>
 			<div class="form-control">
 				<label class="label"><span class="label-text" data-i18n="chat.group.settingsEventRetentionMs"></span></label>
 				<select id="event-retention-ms" class="select select-bordered">
-					<option value="0" ${!Number(currentState.groupSettings.event_retention_ms) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
-					<option value="2592000000" ${Number(currentState.groupSettings.event_retention_ms)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
-					<option value="7776000000" ${Number(currentState.groupSettings.event_retention_ms)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
-					<option value="31536000000" ${Number(currentState.groupSettings.event_retention_ms)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
+					<option value="0" ${!Number(currentState.groupSettings.eventRetentionMs) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
+					<option value="2592000000" ${Number(currentState.groupSettings.eventRetentionMs)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
+					<option value="7776000000" ${Number(currentState.groupSettings.eventRetentionMs)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
+					<option value="31536000000" ${Number(currentState.groupSettings.eventRetentionMs)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
 				</select>
 			</div>
 			<div class="form-control">

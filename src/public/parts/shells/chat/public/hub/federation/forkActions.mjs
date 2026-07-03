@@ -14,6 +14,7 @@ import {
 	mergeDagTips,
 	setGovernanceBranch,
 } from '../../src/api/groupApi.mjs'
+import { handleUIError } from '../../src/ui/errors.mjs'
 import { refreshDagForkBanner, selectedForkTipId } from '../banners.mjs'
 import { hubStore, setHubState } from '../core/state.mjs'
 import { loadMessages } from '../messages/messages.mjs'
@@ -24,18 +25,18 @@ import { loadMessages } from '../messages/messages.mjs'
  */
 export function wireForkActions() {
 	document.getElementById('hub-fork-branch-button')?.addEventListener('click', async () => {
-		if (!hubStore.currentGroupId) return
+		if (!hubStore.context.currentGroupId) return
 		const branchButton = document.getElementById('hub-fork-branch-button')
 		if (branchButton) branchButton.disabled = true
 		try {
-			await setGovernanceBranch(hubStore.currentGroupId, selectedForkTipId())
-			setHubState('currentState', await getGroupState(hubStore.currentGroupId))
+			await setGovernanceBranch(hubStore.context.currentGroupId, selectedForkTipId())
+			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
 			await loadMessages()
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.applyBranchOk')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.applyBranchFailed', { error: error.message })
+			handleUIError(error, 'chat.hub.applyBranchFailed')
 		}
 		finally {
 			if (branchButton) branchButton.disabled = false
@@ -43,18 +44,18 @@ export function wireForkActions() {
 	})
 
 	document.getElementById('hub-fork-auto-branch-button')?.addEventListener('click', async () => {
-		if (!hubStore.currentGroupId) return
+		if (!hubStore.context.currentGroupId) return
 		const autoBranchButton = document.getElementById('hub-fork-auto-branch-button')
 		if (autoBranchButton) autoBranchButton.disabled = true
 		try {
-			await setGovernanceBranch(hubStore.currentGroupId, null)
-			setHubState('currentState', await getGroupState(hubStore.currentGroupId))
+			await setGovernanceBranch(hubStore.context.currentGroupId, null)
+			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
 			await loadMessages()
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.autoBranchOk')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.autoBranchFailed', { error: error.message })
+			handleUIError(error, 'chat.hub.autoBranchFailed')
 		}
 		finally {
 			if (autoBranchButton) autoBranchButton.disabled = false
@@ -64,19 +65,19 @@ export function wireForkActions() {
 	const forkSplitModal = document.getElementById('hub-fork-split-modal')
 	const forkSplitName = document.getElementById('hub-fork-split-name')
 	document.getElementById('hub-fork-split-button')?.addEventListener('click', () => {
-		if (!hubStore.currentGroupId || !(forkSplitModal instanceof HTMLDialogElement)) return
+		if (!hubStore.context.currentGroupId || !(forkSplitModal instanceof HTMLDialogElement)) return
 		if (forkSplitName instanceof HTMLInputElement)
-			forkSplitName.value = `${hubStore.currentState?.groupMeta?.name || hubStore.currentGroupId} (fork)`
+			forkSplitName.value = `${hubStore.context.currentState?.groupMeta?.name || hubStore.context.currentGroupId} (fork)`
 		forkSplitModal.showModal()
 	})
 	document.getElementById('hub-fork-split-cancel-button')?.addEventListener('click', () => forkSplitModal?.close())
 	document.getElementById('hub-fork-split-submit-button')?.addEventListener('click', async () => {
-		if (!hubStore.currentGroupId) return
+		if (!hubStore.context.currentGroupId) return
 		const submitButton = document.getElementById('hub-fork-split-submit-button')
 		if (submitButton) submitButton.disabled = true
 		try {
 			const name = forkSplitName instanceof HTMLInputElement ? forkSplitName.value.trim() : ''
-			const data = await forkGroupAsNew(hubStore.currentGroupId, {
+			const data = await forkGroupAsNew(hubStore.context.currentGroupId, {
 				name: name || undefined,
 				tipId: selectedForkTipId(),
 			})
@@ -85,7 +86,7 @@ export function wireForkActions() {
 			location.reload()
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.forkSplitFailed', { error: error.message })
+			handleUIError(error, 'chat.hub.forkSplitFailed')
 		}
 		finally {
 			if (submitButton) submitButton.disabled = false
@@ -93,21 +94,21 @@ export function wireForkActions() {
 	})
 
 	document.getElementById('hub-fork-block-opposing-button')?.addEventListener('click', async () => {
-		if (!hubStore.currentGroupId) return
+		if (!hubStore.context.currentGroupId) return
 		const accepted = selectedForkTipId()
 		if (!accepted) return
 		if (!confirmI18n('chat.hub.blockOpposingConfirm')) return
 		const blockOpposingButton = document.getElementById('hub-fork-block-opposing-button')
 		if (blockOpposingButton) blockOpposingButton.disabled = true
 		try {
-			const { blocked } = await blockOpposingForkBranch(hubStore.currentGroupId, accepted)
+			const { blocked } = await blockOpposingForkBranch(hubStore.context.currentGroupId, accepted)
 			await loadMessages()
-			setHubState('currentState', await getGroupState(hubStore.currentGroupId))
+			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.blockOpposingOk', { count: blocked.length })
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.blockOpposingFailed', { error: error.message })
+			handleUIError(error, 'chat.hub.blockOpposingFailed')
 		}
 		finally {
 			if (blockOpposingButton) blockOpposingButton.disabled = false
@@ -115,18 +116,18 @@ export function wireForkActions() {
 	})
 
 	document.getElementById('hub-fork-merge-button')?.addEventListener('click', async () => {
-		if (!hubStore.currentGroupId) return
+		if (!hubStore.context.currentGroupId) return
 		const mergeButton = document.getElementById('hub-fork-merge-button')
 		if (mergeButton) mergeButton.disabled = true
 		try {
-			await mergeDagTips(hubStore.currentGroupId)
+			await mergeDagTips(hubStore.context.currentGroupId)
 			await loadMessages()
-			setHubState('currentState', await getGroupState(hubStore.currentGroupId))
+			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.mergeDagOk')
 		}
 		catch (error) {
-			showToastI18n('error', 'chat.hub.mergeDagFailed', { error: error?.message || String(error) })
+			handleUIError(error, 'chat.hub.mergeDagFailed')
 		}
 		finally {
 			if (mergeButton) mergeButton.disabled = false

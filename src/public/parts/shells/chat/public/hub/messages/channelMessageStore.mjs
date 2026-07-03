@@ -5,6 +5,7 @@ import {
 	getChannelMessages,
 	getPinContextMessages,
 } from '../../src/api/groupApi.mjs'
+import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { mergeChannelMessagesForDisplay } from '../../src/lib/messageMerge.mjs'
 import { compareHex64Asc } from '../../src/lib/pubKeyHex.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
@@ -17,12 +18,12 @@ import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'
  */
 export function setPendingScrollTarget(eventId) {
 	if (!eventId) {
-		hubStore.pendingScrollTarget = null
+		hubStore.messages.pendingScrollTarget = null
 		return
 	}
-	hubStore.pendingScrollTarget = {
-		groupId: hubStore.currentGroupId,
-		channelId: hubStore.currentChannelId,
+	hubStore.messages.pendingScrollTarget = {
+		groupId: hubStore.context.currentGroupId,
+		channelId: hubStore.context.currentChannelId,
 		eventId: String(eventId).trim(),
 	}
 }
@@ -31,20 +32,12 @@ export function setPendingScrollTarget(eventId) {
  * @returns {string | null} 消费并清除待滚动锚点（群/频道不匹配则丢弃）
  */
 export function consumePendingScrollTarget() {
-	const target = hubStore.pendingScrollTarget
-	hubStore.pendingScrollTarget = null
+	const target = hubStore.messages.pendingScrollTarget
+	hubStore.messages.pendingScrollTarget = null
 	if (!target?.eventId) return null
-	if (target.groupId !== hubStore.currentGroupId) return null
-	if (target.channelId !== hubStore.currentChannelId) return null
+	if (target.groupId !== hubStore.context.currentGroupId) return null
+	if (target.channelId !== hubStore.context.currentChannelId) return null
 	return target.eventId
-}
-
-/**
- * @param {string} eventId 消息 event id
- * @returns {string} 规范化小写 id
- */
-function normalizeEventId(eventId) {
-	return String(eventId || '').trim().toLowerCase()
 }
 
 /**
@@ -66,12 +59,12 @@ export function sortChannelRows(rows) {
  * @returns {void}
  */
 export function refreshChannelMessagesView(messageTextFn = null) {
-	let work = applyChannelDisplayChain(hubStore.channelMessagesSource)
+	let work = applyChannelDisplayChain(hubStore.messages.channelMessagesSource)
 	work = work.filter(row => !isHubMemberPersonallyFiltered('', row.authorPubKeyHash || row.sender))
-	const q = hubStore.channelSearchQuery
+	const q = hubStore.messages.channelSearchQuery
 	if (q && messageTextFn)
 		work = work.filter(row => messageTextFn(row).toLowerCase().includes(q))
-	hubStore.channelMessages = mergeChannelMessagesForDisplay(work)
+	hubStore.messages.channelMessages = mergeChannelMessagesForDisplay(work)
 }
 
 /**
@@ -81,7 +74,7 @@ export function refreshChannelMessagesView(messageTextFn = null) {
 export function findMessageViewIndex(eventId) {
 	const norm = normalizeEventId(eventId)
 	if (!norm) return -1
-	return hubStore.channelMessages.findIndex(
+	return hubStore.messages.channelMessages.findIndex(
 		row => normalizeEventId(row.eventId) === norm,
 	)
 }
@@ -94,14 +87,14 @@ export function findMessageViewIndex(eventId) {
 export function mergeRowsIntoSource(fetched) {
 	if (!Array.isArray(fetched) || !fetched.length) return { added: 0 }
 	const known = new Set(
-		hubStore.channelMessagesSource.map(row => String(row.eventId)).filter(Boolean),
+		hubStore.messages.channelMessagesSource.map(row => String(row.eventId)).filter(Boolean),
 	)
 	const fresh = fetched.filter(row => {
 		const id = String(row.eventId)
 		return id && !known.has(id)
 	})
 	if (!fresh.length) return { added: 0 }
-	hubStore.channelMessagesSource = sortChannelRows([...fresh, ...hubStore.channelMessagesSource])
+	hubStore.messages.channelMessagesSource = sortChannelRows([...fresh, ...hubStore.messages.channelMessagesSource])
 	return { added: fresh.length }
 }
 
@@ -132,8 +125,8 @@ export async function ensureMessageLoaded(eventId) {
 	const viewIndex = findMessageViewIndex(norm)
 	if (viewIndex >= 0) return { ok: true, viewIndex, source: 'cache' }
 
-	const groupId = hubStore.currentGroupId
-	const channelId = hubStore.currentChannelId
+	const groupId = hubStore.context.currentGroupId
+	const channelId = hubStore.context.currentChannelId
 	if (!groupId || !channelId) return { ok: false, viewIndex: -1, source: 'no-channel' }
 
 	let rows = []

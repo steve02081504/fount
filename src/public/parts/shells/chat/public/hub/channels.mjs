@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/channels.mjs
  * 【职责】非标准文本频道的主栏渲染：列表频道、流媒体频道与 WebRTC 流媒体壳层模板挂载。
- * 【原理】`renderListChannel`、`renderStreamingChannel`、`renderWebRtcStreamingChannel` 替换主消息区布局；列表频道内嵌项由 `messages` 管道渲染；流媒体频道展示直播占位而非聊天气泡。
+ * 【原理】`renderListChannel`、`renderStreamingChannel`、`renderCodecsAvStreamingChannel` 替换主消息区布局；列表频道内嵌项由 `messages` 管道渲染；流媒体频道展示直播占位而非聊天气泡。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、streamingAv。
  */
@@ -236,7 +236,7 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
  * @param {{ groupId: string, channelId: string, clientId: string }} opts 本机身份
  * @returns {Promise<void>}
  */
-export async function renderWebRtcStreamingChannel(container, channel, opts) {
+export async function renderCodecsAvStreamingChannel(container, channel, opts) {
 	await mountTemplate(container, 'hub/channels/stream_webrtc', {
 		...streamTitleData(channel),
 		presets: AV_PRESETS,

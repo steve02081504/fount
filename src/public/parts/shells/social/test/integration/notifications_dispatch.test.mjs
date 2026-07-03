@@ -2,6 +2,7 @@
  * 通知与 dispatch 主流程。
  */
 /* global Deno */
+import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
@@ -29,7 +30,7 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	const subject = pubKeyHash(publicKeyFromSeed(seed))
 	const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
 	await seedRemoteTimeline(username, seed, remoteOwner, [
-		{ type: 'social_meta', content: { isProtected: false, createdAt: 1 } },
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 		{ type: 'follow', content: { targetEntityHash: operator, rep_edge: 1 } },
 		{ type: 'like', content: { targetEntityHash: operator, targetPostId: parent.id } },
 		{ type: 'repost', content: { targetEntityHash: operator, targetPostId: parent.id, comment: 'nice' } },
@@ -44,9 +45,9 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 		} },
 	])
 
-	await following.setFollow(username, remoteOwner, true)
+	await following.setFollow(username, operator, remoteOwner, true)
 
-	const { notifications: rows, viewerEntityHash } = await notifications.buildNotifications(username, 50)
+	const { notifications: rows, viewerEntityHash } = await notifications.buildNotifications(username, { limit: 50 })
 	assertEquals(viewerEntityHash, operator)
 	const types = new Set(rows.map(r => r.type))
 	assert(types.has('like'))
@@ -54,6 +55,7 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	assert(types.has('follow'))
 	assert(types.has('reply'))
 	assert(types.has('mention'))
+	assert(rows.every(row => 'actorEntityHash' in row && row.postId !== undefined && row.targetPostId !== undefined))
 })
 
 Deno.test('dispatchPostMentions no-op when post has no mentions', async () => {
@@ -71,7 +73,7 @@ Deno.test('dispatchPostMentions no-op when post has no mentions', async () => {
 Deno.test('processSocialOnMentionRpc returns ok false for unknown entity', async () => {
 	const { username, operator } = await getSession()
 	const result = await dispatch.processSocialOnMentionRpc(username, {
-		targetEntityHash: 'f'.repeat(128),
+		targetEntityHash: placeholderEntityHash('f'),
 		authorEntityHash: operator,
 		postId: POST_ID,
 		postText: 'hi',

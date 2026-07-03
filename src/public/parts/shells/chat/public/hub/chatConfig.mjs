@@ -82,11 +82,11 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 				const { invalidateUserProfileCache } = await import('./presence.mjs')
 				const { refreshViewerHubPresentation } = await import('./init.mjs')
 				const { renderMemberList } = await import('./groupNav.mjs')
-				if (hubStore.viewerEntityHash)
-					invalidateUserProfileCache(hubStore.viewerEntityHash)
+				if (hubStore.viewer.viewerEntityHash)
+					invalidateUserProfileCache(hubStore.viewer.viewerEntityHash)
 				await refreshViewerHubPresentation()
-				if (hubStore.currentState)
-					await renderMemberList(hubStore.currentState)
+				if (hubStore.context.currentState)
+					await renderMemberList(hubStore.context.currentState)
 				showOverlayNotice('success', '', 'chat.hub.configSaved')
 			}
 			catch (err) {

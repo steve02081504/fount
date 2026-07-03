@@ -1,6 +1,6 @@
 /** §16：`fount://run/shells:chat/{dm|join};…` 组装与解析（与 protocolhandler 分号参数一致）。 */
 
-import { normalizePubKeyHex } from './pubKeyHex.mjs'
+import { normalizePubKeyHex } from '../../../public/src/lib/pubKeyHex.mjs'
 
 /**
  * chat shell 在 `fount://run/` 协议中的 part 路径标识。

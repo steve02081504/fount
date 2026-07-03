@@ -12,7 +12,7 @@ import path from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { putChunk } from '../../../../../../scripts/p2p/files/chunk_store.mjs'
-import { prefixedRandomId } from '../../../../../../scripts/p2p/id.mjs'
+import { prefixedRandomId } from '../../../../../../scripts/p2p/random_id.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
 
 const MAX_EMOJI_BYTES = 512 * 1024

@@ -42,7 +42,7 @@ export function initPrivateGroup({
 	privateGroup.applyAvatarsTo = applyAvatarsTo
 	privateGroup.onEnterPrivateGroup = onEnterPrivateGroup
 	/** @returns {string|null} 当前用户名 */
-	const getViewerDisplayName = () => hubStore.viewerDisplayName
+	const getViewerDisplayName = () => hubStore.viewer.viewerDisplayName
 	/** @param {string} charName 角色名 */
 	const onCharCardEnter = charName => { void enterPrivateGroup(charName) }
 	initCharCard({ applyAvatarsTo, getViewerDisplayName, onEnterPrivateGroup: onCharCardEnter })
@@ -65,7 +65,7 @@ export function setRefreshStopGenerationButton(fn) {
 export function clearPrivateGroupState() {
 	const { privateGroup } = hubStore
 	privateGroup.groupId = null
-	privateGroup.charName = null
+	privateGroup.charname = null
 	privateGroup.peerEntityHash = null
 	privateGroup.channelId = 'default'
 	privateGroup.refreshStopGenerationButton?.()
@@ -124,12 +124,12 @@ export async function enterPrivateGroup(charname, opts = {}) {
  * @returns {Promise<void>}
  */
 export async function openGroupSettingsModal(groupId) {
-	const charname = hubStore.privateGroup.charName || '?'
+	const charname = hubStore.privateGroup.charname || '?'
 	const friendBound = !!friendBindingForGroup(groupId)
 	const settingsRoot = await renderTemplate('hub/chat/char_settings', {
 		charname,
 		groupId,
-		logLength: hubStore.channelMessages.length,
+		logLength: hubStore.messages.channelMessages.length,
 		friendBound,
 	})
 	openOverlayModal({
