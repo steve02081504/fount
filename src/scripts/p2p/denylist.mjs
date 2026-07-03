@@ -286,9 +286,11 @@ export function removeGroupBlockedPeer(groupId, scope, value) {
 	if (!normScope || !id) return Promise.resolve()
 	return mutateDenylist(() => {
 		const list = loadDenylist()
-		list.blocked = list.blocked.filter(entry =>
-			!(entry.scope === normScope && entry.value === id && entry.groupId === groupId),
-		)
+		list.blocked = list.blocked.filter(entry => {
+			if (entry.scope !== normScope || entry.value !== id) return true
+			if (normScope === 'entity') return false
+			return entry.groupId !== groupId
+		})
 		saveDenylist(list)
 	})
 }
