@@ -3,12 +3,19 @@ import process from 'node:process'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { console, geti18n } from '../../i18n.mjs'
+import { ms } from '../../ms.mjs'
 
 /** 无 stdall 输出时终止 suite 的阈值（毫秒）。 */
-export const IDLE_TIMEOUT_MS = 10 * 60 * 1000
+export const IDLE_TIMEOUT_MS = ms('10m')
 
 /** watchdog 轮询间隔（毫秒）。 */
-export const WATCH_INTERVAL_MS = 30_000
+export const WATCH_INTERVAL_MS = ms('30s')
+
+/** 基于历史耗时的 watchdog 至少给 5 分钟，避免短基线 suite 被误杀。 */
+export const MIN_DURATION_TIMEOUT_MS = ms('5m')
+
+/** 历史耗时 watchdog 的倍数阈值。 */
+export const DURATION_WATCHDOG_MULTIPLIER = 2
 
 /**
  * @typedef {'idle' | 'duration' | null} WatchdogTrigger
@@ -47,6 +54,19 @@ function formatMs(ms) {
 }
 
 /**
+ * 计算基于历史成功耗时的 duration watchdog 上限。
+ * @param {number | undefined} baselineDurationMs 上次成功耗时
+ * @returns {number | null} 上限毫秒；无有效 baseline 时返回 null
+ */
+export function getDurationWatchdogLimitMs(baselineDurationMs) {
+	if (baselineDurationMs == null || baselineDurationMs <= 0) return null
+	return Math.max(
+		MIN_DURATION_TIMEOUT_MS,
+		DURATION_WATCHDOG_MULTIPLIER * baselineDurationMs,
+	)
+}
+
+/**
  * 判定是否应触发 watchdog 终止。
  * @param {object} state 当前状态
  * @param {number} state.now 当前时间戳
@@ -57,10 +77,8 @@ function formatMs(ms) {
  */
 export function evaluateWatchdog({ now, startedAt, lastActivityAt, baselineDurationMs }) {
 	if (now - lastActivityAt >= IDLE_TIMEOUT_MS) return 'idle'
-	if (baselineDurationMs != null && baselineDurationMs > 0) {
-		const elapsedMs = now - startedAt
-		if (elapsedMs >= 2 * baselineDurationMs) return 'duration'
-	}
+	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
+	if (durationLimitMs != null && now - startedAt >= durationLimitMs) return 'duration'
 	return null
 }
 
@@ -86,11 +104,12 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
 			elapsed: formatMs(elapsedMs),
 		})
 	}
+	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs) ?? 0
 	return geti18n('fountConsole.test.terminateDuration', {
 		label,
 		elapsed: formatMs(elapsedMs),
 		baseline: formatMs(baselineDurationMs ?? 0),
-		limit: formatMs(2 * (baselineDurationMs ?? 0)),
+		limit: formatMs(durationLimitMs),
 	})
 }
 

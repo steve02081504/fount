@@ -14,6 +14,7 @@ import {
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
 import { sleep } from 'fount/scripts/test/live/http.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 const groupTitle = 'FedCrossShell'
 let gid = null
@@ -51,7 +52,7 @@ await testCase('federation identity ready on A/B', async () => {
 	const fb = await P2pApi(FedB, 'GET', '/federation')
 	return fa.status === 200 && fb.status === 200 && fa.json.activePubKeyHex && fb.json.activePubKeyHex
 })
-await sleep(5000)
+await sleep(ms('5s'))
 
 console.log('\n=== Setup: A private group + emoji (B stays non-member) ===')
 await testCase('A creates invite-only group', async () => {
@@ -71,8 +72,8 @@ await testCase('A uploads group emoji', async () => {
 })
 
 await testCase('A seeds channel (federation metadata)', async () => {
-	await sleep(2000)
-	await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 6000 })
+	await sleep(ms('2s'))
+	await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 	emojiToken = `:[${gid}/${emojiId}]:`
 	const r = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
 		content: { type: 'text', content: `seed ${emojiToken}` },
@@ -107,7 +108,7 @@ await testCase('post event text retains emoji token', async () =>
 )
 
 console.log('\n=== B (non-member) emoji-content + private preview ===')
-await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 8000 })
+await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 
 await testCase('B GET /emoji-content without group membership', async () => {
 	let hash = postMediaRefs[0]?.contentHash
@@ -116,7 +117,7 @@ await testCase('B GET /emoji-content without group membership', async () => {
 	const hashQ = `?json=1&contentHash=${hash}`
 	const ok = await PollUntil(120, 5, async () => {
 		await Api(FedB, 'GET', `/groups/${gid}/preview`)
-		await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 3000 })
+		await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 		const r = await Api(FedB, 'GET', `/emoji-content/${gid}/${emojiId}${hashQ}`)
 		return r.status === 200 && Boolean(r.json.dataUrl)
 	})
@@ -130,7 +131,7 @@ await testCase('B GET /emoji-content without group membership', async () => {
 
 await testCase('B GET /groups/:id/preview as non-member', async () => {
 	const ok = await PollUntil(120, 4, async () => {
-		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 3000 })
+		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 		const r = await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		return r.status === 200 && r.json.isMember === false
 	})

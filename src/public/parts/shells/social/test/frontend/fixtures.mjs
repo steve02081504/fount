@@ -1,6 +1,7 @@
 import { Buffer } from 'node:buffer'
 
 import { request as playwrightRequest } from '@playwright/test'
+import { ms } from 'fount/scripts/ms.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
@@ -42,7 +43,7 @@ const collectedPageErrors = []
 baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	baseTest.setTimeout(180_000)
+	baseTest.setTimeout(ms('3m'))
 	collectedPageErrors.length = 0
 	page.on('pageerror', err => collectedPageErrors.push(String(err?.message || err)))
 	await page.addInitScript(() => {
@@ -78,9 +79,9 @@ baseTest.afterEach(async () => {
 export async function openSocialHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
 	await waitForSocialAppReady(page)
-	await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
+	await expect(page.locator('#feedView')).toBeVisible({ timeout: ms('30s') })
 	await expect(page.locator('#postBtn[data-i18n="social.composer.publish"]')).toBeVisible()
-	await expect(page.locator('#postBtn')).not.toHaveText('', { timeout: 30_000 })
+	await expect(page.locator('#postBtn')).not.toHaveText('', { timeout: ms('30s') })
 }
 
 /**
@@ -99,7 +100,7 @@ export async function openPostMoreMenu(card) {
  * @param {number} [timeout=60000] 等待毫秒数。
  * @returns {Promise<import('npm:@playwright/test').Response>} feed GET 响应。
  */
-export async function waitForFeedLoad(page, timeout = 60_000) {
+export async function waitForFeedLoad(page, timeout = ms('1m')) {
 	return page.waitForResponse(res => {
 		if (res.request().method() !== 'GET' || res.status() !== 200) return false
 		return new URL(res.url()).pathname === '/api/parts/shells:social/feed'
@@ -149,7 +150,7 @@ export async function publishPostViaComposer(page, text, api = {}) {
 	const postWait = page.waitForResponse(res => {
 		if (res.request().method() !== 'POST' || res.status() !== 200) return false
 		return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
-	}, { timeout: 60_000 })
+	}, { timeout: ms('1m') })
 	const feedWait = waitForFeedLoad(page)
 	await page.locator('#postBtn').click()
 	const postResponse = await postWait
@@ -171,7 +172,7 @@ export async function submitReplyViaPanel(page, panel) {
 			res.url().includes('/api/parts/shells:social/posts')
 			&& res.request().method() === 'POST'
 			&& res.status() === 200,
-		{ timeout: 30_000 }),
+		{ timeout: ms('30s') }),
 		panel.locator('[data-submit-reply]').click(),
 	])
 }
@@ -212,7 +213,7 @@ export async function findPostCard(page, postId, opts = {}) {
 	const feedCard = page.locator(`#feedView ${sel}`)
 	for (let attempt = 0; attempt < 2; attempt++) {
 		if (await feedCard.count() > 0) {
-			await expect(feedCard.first()).toBeVisible({ timeout: 15_000 })
+			await expect(feedCard.first()).toBeVisible({ timeout: ms('15s') })
 			return feedCard.first()
 		}
 		await refreshFeed(page)
@@ -220,7 +221,7 @@ export async function findPostCard(page, postId, opts = {}) {
 	if (allowProfileFallback) {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		const profileCard = page.locator(`#profileView ${sel}`)
-		await expect(profileCard.first()).toBeVisible({ timeout: 15_000 })
+		await expect(profileCard.first()).toBeVisible({ timeout: ms('15s') })
 		return profileCard.first()
 	}
 	throw new Error(`post ${postId} not found in feed (set allowProfileFallback to search profile)`)
@@ -250,7 +251,7 @@ async function pollSearchForPost(page, query, postId, trigger) {
 		const searchWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
-		}, { timeout: 60_000 })
+		}, { timeout: ms('1m') })
 		if (trigger === 'enter')
 			await page.locator('#feedSearchInput').press('Enter')
 		else if (await page.locator('#feedSearchBtn').isVisible())
@@ -261,7 +262,7 @@ async function pollSearchForPost(page, query, postId, trigger) {
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {
 			await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({
-				timeout: 10_000,
+				timeout: ms('10s'),
 			})
 			return
 		}

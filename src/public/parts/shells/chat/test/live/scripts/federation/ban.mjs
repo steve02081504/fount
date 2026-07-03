@@ -10,6 +10,7 @@ import {
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 if (!FedC) throw new Error('fed_ban requires FOUNT_TEST_NODE_COUNT >= 3')
 
@@ -38,7 +39,7 @@ await testCase('A POST members/:hash/ban entity', async () => {
 	const k = await Api(FedA, 'POST', `/groups/${gid}/members/${encodeURIComponent(bPub)}/ban`, { banScope: 'entity' })
 	if (k.status !== 200) throw new Error(`ban ${k.status}: ${k.raw}`)
 	await Api(FedA, 'POST', `/groups/${gid}/dag/merge-tips`, {})
-	await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 6000 })
+	await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 	return true
 })
 
@@ -57,14 +58,14 @@ await testCase('C catchup receives ban (third-party sync)', async () => {
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
 		
 		await Api(FedA, 'POST', `/groups/${gid}/dag/merge-tips`, {})
-		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 8000 })
+		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 		const ev = await Api(FedA, 'GET', `/groups/${gid}/events?limit=40`)
 		if (ev.status === 200) {
 			const banRows = ev.json.events?.filter(e => e.type === 'member_ban') ?? []
 			if (banRows.length) banEventId = banRows[banRows.length - 1].id
 		}
 		await Api(FedC, 'POST', `/groups/${gid}/federation/join-snapshot`, {})
-		const body = { waitMs: 10_000 }
+		const body = { waitMs: ms('10s') }
 		if (banEventId) body.extraWantIds = [banEventId]
 		await Api(FedC, 'POST', `/groups/${gid}/federation/catchup`, body)
 		await Api(FedC, 'POST', `/groups/${gid}/dag/merge-tips`, {})
@@ -82,7 +83,7 @@ await testCase('B catchup probes shunned by A and C -> suspectedRemoved', async 
 		for (const node of [FedB, FedA, FedC]) 
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
 		
-		const r = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 15_000 })
+		const r = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('15s') })
 		if (r.status !== 200) return false
 		if (r.json.suspectedRemoved === true) return true
 		const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
@@ -113,7 +114,7 @@ await testCase('B POST message rejected after suspectedRemoved (403)', async () 
 
 await testCase('A channel has no banned-attempt message', async () => {
 	const ok = await PollUntil(30, 3, async () => {
-		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 4000 })
+		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const m = await Api(FedA, 'GET', `/groups/${gid}/channels/${cid}/messages?limit=80`)
 		if (m.status !== 200) return false
 		return (m.json.messages?.filter(row => String(row.content?.content).includes('banned-attempt')).length ?? 0) === 0

@@ -5,6 +5,7 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { ms } from '../scripts/ms.mjs'
 import { timingFilePath } from '../scripts/test/core/paths.mjs'
 import {
 	loadTimingsForSuites,
@@ -14,7 +15,9 @@ import {
 } from '../scripts/test/core/timings.mjs'
 import {
 	evaluateWatchdog,
+	getDurationWatchdogLimitMs,
 	IDLE_TIMEOUT_MS,
+	MIN_DURATION_TIMEOUT_MS,
 } from '../scripts/test/runner/run_command.mjs'
 
 Deno.test('evaluateWatchdog idle when no recent output', () => {
@@ -27,12 +30,32 @@ Deno.test('evaluateWatchdog idle when no recent output', () => {
 })
 
 Deno.test('evaluateWatchdog duration when over 2x baseline', () => {
-	const now = 100_000
+	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
-		startedAt: now - 20_001,
-		lastActivityAt: now - 1_000,
-		baselineDurationMs: 10_000,
+		startedAt: now - ms('6m') - 1,
+		lastActivityAt: now - ms('1s'),
+		baselineDurationMs: ms('3m'),
+	}), 'duration')
+})
+
+Deno.test('getDurationWatchdogLimitMs enforces 5 minute minimum', () => {
+	assertEquals(getDurationWatchdogLimitMs(ms('23s')), MIN_DURATION_TIMEOUT_MS)
+})
+
+Deno.test('evaluateWatchdog duration waits for 5 minute minimum on short baseline', () => {
+	const now = 1_000_000
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - MIN_DURATION_TIMEOUT_MS + 1,
+		lastActivityAt: now - ms('1s'),
+		baselineDurationMs: ms('23s'),
+	}), null)
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - MIN_DURATION_TIMEOUT_MS,
+		lastActivityAt: now - ms('1s'),
+		baselineDurationMs: ms('23s'),
 	}), 'duration')
 })
 
@@ -42,7 +65,7 @@ Deno.test('evaluateWatchdog idle takes priority over duration', () => {
 		now,
 		startedAt: now - IDLE_TIMEOUT_MS - 1,
 		lastActivityAt: now - IDLE_TIMEOUT_MS,
-		baselineDurationMs: 1_000,
+		baselineDurationMs: ms('1s'),
 	}), 'idle')
 })
 
@@ -50,9 +73,9 @@ Deno.test('evaluateWatchdog null when within limits', () => {
 	const now = 100_000
 	assertEquals(evaluateWatchdog({
 		now,
-		startedAt: now - 5_000,
-		lastActivityAt: now - 1_000,
-		baselineDurationMs: 10_000,
+		startedAt: now - ms('5s'),
+		lastActivityAt: now - ms('1s'),
+		baselineDurationMs: ms('10s'),
 	}), null)
 })
 
@@ -61,8 +84,12 @@ Deno.test('evaluateWatchdog skips duration without baseline', () => {
 	assertEquals(evaluateWatchdog({
 		now,
 		startedAt: now - 999_999,
-		lastActivityAt: now - 1_000,
+		lastActivityAt: now - ms('1s'),
 	}), null)
+})
+
+Deno.test('getDurationWatchdogLimitMs keeps 2x baseline for long suites', () => {
+	assertEquals(getDurationWatchdogLimitMs(ms('4m')), ms('8m'))
 })
 
 Deno.test('timings read write and merge', async () => {
@@ -79,15 +106,15 @@ Deno.test('timings read write and merge', async () => {
 		}
 		assertEquals(await readTimings(repoRoot, 'shells/chat'), { items: {} })
 
-		const updated = recordSuiteSuccessTiming({ items: {} }, 'unit', 42_000)
+		const updated = recordSuiteSuccessTiming({ items: {} }, 'unit', ms('42s'))
 		await writeTimings(repoRoot, 'shells/chat', updated)
 
 		const raw = JSON.parse(await readFile(timingFilePath(repoRoot, 'shells/chat'), 'utf8'))
-		assertEquals(raw.items.unit.durationMs, 42_000)
+		assertEquals(raw.items.unit.durationMs, ms('42s'))
 		assertEquals(typeof raw.items.unit.recordedAt, 'string')
 
 		const loaded = await loadTimingsForSuites(repoRoot, [suite])
-		assertEquals(loaded.get('shells/chat')?.items.unit.durationMs, 42_000)
+		assertEquals(loaded.get('shells/chat')?.items.unit.durationMs, ms('42s'))
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

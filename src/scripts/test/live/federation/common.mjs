@@ -6,6 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
+import { ms } from '../../ms.mjs'
 import {
 	invokeMultipart,
 	invokeRequest,
@@ -166,7 +167,7 @@ export async function PollUntil(timeoutSec, intervalSec, probe) {
  * @param groupId
  * @param waitMs
  */
-export async function InvokeFedCatchupSync(node, groupId, waitMs = 6000) {
+export async function InvokeFedCatchupSync(node, groupId, waitMs = ms('6s')) {
 	await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs })
 	await Api(node, 'POST', `/groups/${groupId}/dag/merge-tips`, {})
 }
@@ -179,7 +180,7 @@ export async function InvokeFedCatchupSync(node, groupId, waitMs = 6000) {
  */
 export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec = 120) {
 	return PollUntil(timeoutSec, 3, async () => {
-		await InvokeFedCatchupSync(node, groupId, 5000)
+		await InvokeFedCatchupSync(node, groupId, ms('5s'))
 		const state = await Api(node, 'GET', `/groups/${groupId}/state`)
 		return state.status === 200
 			&& state.json?.viewer?.isMember === true
@@ -286,8 +287,8 @@ export async function AssertFedPeersReady(groupId) {
 	if (peersB.status !== 200) throw new Error(`NodeB peers probe failed: ${peersB.status}`)
 	console.log(`  NodeA peers: ${peersA.json?.peers?.length ?? 0} federationEnabled=${peersA.json?.federationEnabled}`)
 	console.log(`  NodeB peers: ${peersB.json?.peers?.length ?? 0} federationEnabled=${peersB.json?.federationEnabled}`)
-	const catchA = await Api(FedA, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 3000 })
-	const catchB = await Api(FedB, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 3000 })
+	const catchA = await Api(FedA, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('3s') })
+	const catchB = await Api(FedB, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('3s') })
 	if (catchA.status !== 200) throw new Error(`NodeA catchup probe failed: ${catchA.status}`)
 	if (catchB.status !== 200) throw new Error(`NodeB catchup probe failed: ${catchB.status}`)
 	console.log(`  NodeA catchup: federationActive=${catchA.json?.federationActive} tips=${catchA.json?.tipsCollected}`)
@@ -304,7 +305,7 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 	const groupId = group.groupId
 	const channelId = group.defaultChannelId
 	await Api(FedA, 'PUT', `/groups/${groupId}/settings`, { joinPolicy: 'open' })
-	const invite = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: 3_600_000 })).json
+	const invite = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })).json
 	let seedEventId = null
 	if (seedText)
 		seedEventId = (await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
@@ -325,14 +326,14 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 		const okJoin = await WaitFedMembers(FedA, groupId, need, 120)
 		if (!okJoin) throw new Error(`federation health gate after ${node.name} join: members>=${need}`)
 		await Api(node, 'POST', `/groups/${groupId}/federation/rebind`, {})
-		await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 8000 })
+		await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('8s') })
 	}
 	for (const node of [FedA, ...joinNodes])
 		await Api(node, 'POST', `/groups/${groupId}/federation/rebind`, {})
 
 	const meshOk = await PollUntil(90, 4, async () => {
 		for (const node of [FedA, ...joinNodes])
-			await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 6000 })
+			await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('6s') })
 
 		const state = await Api(FedA, 'GET', `/groups/${groupId}/state`)
 		return state.status === 200 && Number(state.json?.meta?.memberCount) >= minMembers
@@ -350,7 +351,7 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 	const groupId = group.groupId
 	const channelId = group.defaultChannelId
 	await Api(FedA, 'PUT', `/groups/${groupId}/settings`, { joinPolicy: 'open' })
-	const invite = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: 3_600_000 })).json
+	const invite = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })).json
 	let seedEventId = null
 	if (seedText)
 		seedEventId = (await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
@@ -366,16 +367,16 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 	let ok = await WaitFedMembers(FedB, groupId)
 	if (!ok)
 		ok = await PollUntil(60, 4, async () => {
-			await Api(FedA, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 6000 })
+			await Api(FedA, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('6s') })
 			await Api(FedA, 'POST', `/groups/${groupId}/dag/merge-tips`, {})
-			await Api(FedB, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: 6000 })
+			await Api(FedB, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('6s') })
 			await Api(FedB, 'POST', `/groups/${groupId}/dag/merge-tips`, {})
 			const state = await Api(FedB, 'GET', `/groups/${groupId}/state`)
 			return state.status === 200 && Number(state.json?.meta?.memberCount) >= 2
 		})
 
 	if (!ok) {
-		const inviteRetry = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: 3_600_000 })).json
+		const inviteRetry = (await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })).json
 		await Api(FedB, 'POST', `/groups/${groupId}/join`, {
 			roomSecret: inviteRetry.roomSecret,
 			signalingAppId: inviteRetry.signalingAppId,

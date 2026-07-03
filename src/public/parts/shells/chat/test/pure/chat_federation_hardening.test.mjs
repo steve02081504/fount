@@ -28,6 +28,7 @@ import {
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
 } from 'fount/scripts/p2p/schemas/federation_pull_wire.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'
@@ -50,7 +51,7 @@ import { parseGossipRequest } from '../../src/chat/federation/wireSchemas.mjs'
 
 registerChatEventTypeDefs()
 
-const GC_IDLE_MS = 30 * 24 * 3600 * 1000
+const GC_IDLE_MS = ms('30d')
 
 /**
  * 将字节序列编码为十六进制字符串。
@@ -69,7 +70,7 @@ Deno.test('messageRateEntityKey distinguishes user and char', () => {
 Deno.test('resolveMessageRateLimits clamps values', () => {
 	const limits = resolveMessageRateLimits({ messageRateLimitPerMin: 999, messageRateLimitWindowMs: 1000 })
 	assertEquals(limits.perMin, 120)
-	assertEquals(limits.windowMs, 10_000)
+	assertEquals(limits.windowMs, ms('10s'))
 })
 
 Deno.test('hasBypassRateLimit respects BYPASS_RATE_LIMIT permission', () => {

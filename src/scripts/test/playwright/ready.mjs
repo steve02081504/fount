@@ -3,6 +3,7 @@
  */
 import { HUB_SHELL_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
 import { STICKERS_PAGE_GATE } from 'fount/public/parts/shells/chat/public/stickers/gate.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { SOCIAL_APP_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
 
 /**
@@ -11,7 +12,7 @@ import { SOCIAL_APP_GATE } from 'fount/public/parts/shells/social/public/src/gat
  * @param {{ id: string, readyEvent: string, errorEvent: string, label: string, timeout?: number }} options gate 与标签
  * @returns {Promise<void>}
  */
-export async function waitForReadyGate(page, { id, readyEvent, errorEvent, label, timeout = 90_000 }) {
+export async function waitForReadyGate(page, { id, readyEvent, errorEvent, label, timeout = ms('90s') }) {
 	await page.waitForFunction(
 		({ id, readyEvent, errorEvent, label }) => {
 			const getState = globalThis.fount?.test?.getState
@@ -49,7 +50,7 @@ export function waitForSocialAppReady(page) {
 	return waitForReadyGate(page, {
 		...SOCIAL_APP_GATE,
 		label: 'Social',
-		timeout: 90_000,
+		timeout: ms('90s'),
 	})
 }
 
@@ -62,6 +63,6 @@ export function waitForStickersPageReady(page) {
 	return waitForReadyGate(page, {
 		...STICKERS_PAGE_GATE,
 		label: 'Stickers',
-		timeout: 60_000,
+		timeout: ms('1m'),
 	})
 }

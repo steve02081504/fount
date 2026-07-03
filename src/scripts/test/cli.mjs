@@ -11,6 +11,7 @@ import process from 'node:process'
 import { parseArgs } from 'node:util'
 
 import { geti18n } from '../i18n.mjs'
+import { ms } from '../ms.mjs'
 
 import {
 	listManifestIds,
@@ -91,7 +92,6 @@ function parseGroupSelectors(args, knownIds) {
 	return { groups }
 }
 
-const FIVE_MINUTES_MS = 5 * 60 * 1000
 process.exit(await (async () => {
 	const knownIds = listManifestIds(await loadAllSuites(REPO_ROOT))
 	const parsed = parseGroupSelectors(positionals, knownIds)
@@ -111,7 +111,7 @@ process.exit(await (async () => {
 		jobs: values.jobs ? Number(values.jobs) : undefined,
 		groups: parsed.groups,
 	})
-	if (Date.now() - runStarted > FIVE_MINUTES_MS)
+	if (Date.now() - runStarted > ms('5m'))
 		process.stdout.write('\x07\x07\x07')
 	return exitCode
 })())

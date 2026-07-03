@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
 import { console } from '../../i18n.mjs'
+import { ms } from '../../ms.mjs'
 import { resolveListenBind } from '../../net_listen.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
@@ -337,7 +338,7 @@ export class PortCollisionError extends Error {
  * @param {string} [expectedUsername] 预期用户名（防端口被其它 fount 实例占用）
  * @returns {Promise<void>} 就绪后 resolve
  */
-async function waitForPing(baseUrl, apiKey, timeoutMs = 120_000, expectedUsername = null) {
+async function waitForPing(baseUrl, apiKey, timeoutMs = ms('2m'), expectedUsername = null) {
 	const deadline = Date.now() + timeoutMs
 	while (Date.now() < deadline) {
 		try {
@@ -473,7 +474,7 @@ export async function launchNode(options = {}) {
 	if (!readyInfo?.baseUrl)
 		throw new Error(`node worker did not emit ready JSON (port ${port})`)
 
-	await waitForPing(readyInfo.baseUrl, apiKey, 120_000, username)
+	await waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username)
 
 	return {
 		baseUrl: readyInfo.baseUrl,
@@ -500,13 +501,13 @@ export async function stopNode(node) {
 	process.kill('SIGTERM')
 	await Promise.race([
 		new Promise(resolve => process.once('close', resolve)),
-		new Promise(resolve => setTimeout(resolve, 10_000)),
+		new Promise(resolve => setTimeout(resolve, ms('10s'))),
 	])
 	if (process.exitCode == null)
 		process.kill('SIGKILL')
 	await Promise.race([
 		new Promise(resolve => process.once('close', resolve)),
-		new Promise(resolve => setTimeout(resolve, 5_000)),
+		new Promise(resolve => setTimeout(resolve, ms('5s'))),
 	])
 	await collectNodeHeapSnapshots(pid)
 	if (!node.keepData && node.dataPath)

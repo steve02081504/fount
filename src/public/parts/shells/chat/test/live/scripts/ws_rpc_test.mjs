@@ -1,5 +1,6 @@
 // Group WebSocket RPC: rpc_call → rpc_end / rpc_error (wire 见 groupWsRpc.mjs)
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const BASE = requireLiveBaseUrl()
@@ -83,7 +84,7 @@ const ws = new WebSocket(wsUrl)
 const received = []
 let resolveDone
 const done = new Promise((res) => { resolveDone = res })
-const timeout = setTimeout(() => resolveDone('timeout'), 30_000)
+const timeout = setTimeout(() => resolveDone('timeout'), ms('30s'))
 
 /**
  * WebSocket 连接建立后发送 rpc_call。

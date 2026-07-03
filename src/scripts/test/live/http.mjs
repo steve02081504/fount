@@ -3,6 +3,8 @@
  */
 /* eslint-disable jsdoc/require-param-description, jsdoc/require-returns, jsdoc/require-returns-description, jsdoc/require-param-type -- live probe harness */
 
+import { ms } from '../../ms.mjs'
+
 /**
  * @typedef {{ base: string, key: string, name?: string, dataPath?: string, index?: number }} LiveNodeHandle
  */
@@ -92,7 +94,7 @@ export async function invokeMultipart(node, shell, method, path, fields, fileFie
 		form.append(key, String(value))
 	form.append(fileField, new Blob([fileBytes], { type: contentType }), fileName)
 	const controller = new AbortController()
-	const timer = setTimeout(() => controller.abort(), 120_000)
+	const timer = setTimeout(() => controller.abort(), ms('2m'))
 	try {
 		const response = await fetch(uri, { method, body: form, signal: controller.signal })
 		const raw = await response.text()

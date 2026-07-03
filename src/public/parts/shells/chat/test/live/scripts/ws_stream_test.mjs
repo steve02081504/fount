@@ -1,11 +1,12 @@
 // Group WebSocket stream: trigger-reply → stream_chunk and/or message_replaced finish
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
 const PREFERRED_CHARS = ['test_streamer', 'TestStreamer']
-const TIMEOUT_MS = 120_000
+const TIMEOUT_MS = ms('2m')
 
 /**
  * 调用 Chat shell HTTP API。

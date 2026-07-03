@@ -1,5 +1,6 @@
 import process from 'node:process'
 
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	Api,
 	AssertFedPeersReady,
@@ -25,7 +26,7 @@ console.log('\n=== 2. NodeA: set joinPolicy=open ===')
 await Api(FedA, 'PUT', `/groups/${groupId}/settings`, { joinPolicy: 'open' })
 
 console.log('\n=== 3. NodeA: create invite-ticket (get room creds) ===')
-const inv = await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: 3_600_000 })
+const inv = await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })
 if (inv.status !== 200 && inv.status !== 201) throw new Error(`invite-ticket failed: ${inv.status}`)
 const { signalingAppId, roomSecret, introducerPubKeyHash: introducer } = inv.json
 console.log(`signalingAppId=${signalingAppId}`)
@@ -58,7 +59,7 @@ const gotA1 = await WaitFedConverged(FedB, groupId, async () => {
 	const texts = msgs.json.messages?.map(row => row.content?.content) ?? []
 	console.log(`  NodeB sees ${texts.length} msgs: ${texts.join(' | ')}`)
 	return texts.some(t => String(t).includes('A1:'))
-}, 120, 3, 6000)
+}, 120, 3, ms('6s'))
 console.log(`NodeB received A1: ${gotA1 ? 'YES' : 'NO'}`)
 
 console.log('\n=== 8. NodeB: send message #B1 ===')

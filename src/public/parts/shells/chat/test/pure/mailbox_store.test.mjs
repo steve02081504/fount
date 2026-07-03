@@ -11,6 +11,7 @@ import {
 	pruneMailboxGlobalFair,
 } from 'fount/scripts/p2p/mailbox_prune.mjs'
 import { takeIncomingMailboxPutSlot } from 'fount/scripts/p2p/mailbox_rate.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const RECIPIENT_A = 'a'.repeat(64)
@@ -33,7 +34,7 @@ function syntheticRecord(to, from, i, payloadSize = 64) {
 		fromNodeHash: from,
 		envelope,
 		storedAt: i,
-		expiresAt: Date.now() + 86_400_000,
+		expiresAt: Date.now() + ms('24h'),
 		hop: 0,
 	}
 }
@@ -42,7 +43,7 @@ Deno.test('takeIncomingMailboxPutSlot rate limits per source node', () => {
 	const from = 'attacker-node'
 	let allowed = 0
 	for (let i = 0; i < 25; i++)
-		if (takeIncomingMailboxPutSlot(from, { maxPuts: 20, windowMs: 60_000 })) allowed++
+		if (takeIncomingMailboxPutSlot(from, { maxPuts: 20, windowMs: ms('1m') })) allowed++
 	assertEquals(allowed, 20)
 })
 

@@ -2,11 +2,12 @@
 import process from 'node:process'
 
 import { liveWsBaseUrl, requireLiveApiKey } from 'fount/scripts/test/live/env.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 const websocketUrl = `${liveWsBaseUrl()}/ws/parts/shells:social/feed?fount-apikey=${encodeURIComponent(requireLiveApiKey())}`
 
 const websocket = new WebSocket(websocketUrl)
-const timeout = setTimeout(() => { console.error('FAIL: ws timeout'); process.exit(1) }, 15_000)
+const timeout = setTimeout(() => { console.error('FAIL: ws timeout'); process.exit(1) }, ms('15s'))
 
 /**
  * WebSocket 连接建立。

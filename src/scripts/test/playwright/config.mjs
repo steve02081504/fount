@@ -1,5 +1,6 @@
 import { defineConfig } from '@playwright/test'
 
+import { ms } from '../../ms.mjs'
 import { playwrightOutputDir } from '../core/paths.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 
@@ -24,8 +25,8 @@ export async function createPlaywrightConfig({ testDir, overrides = {} }) {
 		testDir,
 		testMatch: '*.spec.mjs',
 		outputDir: playwrightOutputDir(REPO_ROOT, scope),
-		timeout: 60_000,
-		expect: { timeout: 20_000 },
+		timeout: ms('1m'),
+		expect: { timeout: ms('20s') },
 		workers: 1,
 		retries: process.env.CI ? 1 : 0,
 		reporter: process.env.CI ? 'github' : 'list',

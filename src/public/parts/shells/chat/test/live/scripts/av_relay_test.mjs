@@ -1,10 +1,11 @@
 // AV relay WebSocket: two clients in same room, 26-byte header + payload relay (avRelay.mjs)
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()
 const HEADER_SIZE = 26
-const TIMEOUT_MS = 20_000
+const TIMEOUT_MS = ms('20s')
 
 /**
  * 调用 Chat shell HTTP API。

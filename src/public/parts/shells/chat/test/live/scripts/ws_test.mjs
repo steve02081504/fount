@@ -2,6 +2,7 @@
 import process from 'node:process'
 
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 const baseUrl = requireLiveBaseUrl()
 const apiKey = requireLiveApiKey()
@@ -36,7 +37,7 @@ const websocket = new WebSocket(websocketUrl)
 const receivedTypes = []
 let finish
 const done = new Promise(resolve => { finish = resolve })
-const timeout = setTimeout(() => finish('timeout'), 20_000)
+const timeout = setTimeout(() => finish('timeout'), ms('20s'))
 
 /** WebSocket 连接建立后发送测试消息。 */
 websocket.onopen = async () => {

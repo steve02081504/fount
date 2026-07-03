@@ -5,6 +5,7 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { denoLiveRun } from 'fount/scripts/test/live/deno_run.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	Api,
 	ClearFedGroup,
@@ -132,7 +133,7 @@ await testCase('lower-pubkey node POST template=dm', async () => {
 
 console.log('\n=== 2. Peer joins DM (intro + room creds) ===')
 await testCase('invite-ticket room creds on creator', async () => {
-	const inv = await Api(creator, 'POST', `/groups/${gid}/invite-ticket`, { ttlMs: 3_600_000 })
+	const inv = await Api(creator, 'POST', `/groups/${gid}/invite-ticket`, { ttlMs: ms('1h') })
 	if (inv.status !== 201 && inv.status !== 200) throw new Error(`invite ${inv.status}`)
 	dmInv = inv.json
 	return Boolean(dmInv?.roomSecret)
@@ -155,8 +156,8 @@ await testCase('peer join with dmIntro proof', async () => {
 	if (!joined) throw new Error('join did not return 200')
 	if (joined.json?.defaultChannelId) cid = joined.json.defaultChannelId
 	return PollUntil(180, 4, async () => {
-		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 6000 })
-		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 6000 })
+		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
+		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		const st = await Api(joiner, 'GET', `/groups/${gid}/state`)
 		if (st.json.meta?.groupSettings?.defaultChannelId) 
@@ -173,7 +174,7 @@ await testCase('peer join with dmIntro proof', async () => {
 console.log('\n=== 3. Federation health gate ===')
 await testCase('joiner join-snapshot + catchup', async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/join-snapshot`, {})
-	const r = await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 25_000 })
+	const r = await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('25s') })
 	return r.status === 200
 })
 
@@ -183,13 +184,13 @@ await testCase('creator join-snapshot + catchup sees joiner', async () => {
 	const joinerHash = String(joinerSt.json.viewer?.memberKey ?? '')
 	if (!joinerHash) throw new Error('joiner viewerMemberPubKeyHash missing')
 	await Api(creator, 'POST', `/groups/${gid}/federation/join-snapshot`, {})
-	const r = await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 25_000 })
+	const r = await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('25s') })
 	if (r.status !== 200) throw new Error(`catchup ${r.status}`)
 	await Api(creator, 'POST', `/groups/${gid}/dag/merge-tips`, {})
-	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 12_000 })
+	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('12s') })
 	await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 	return PollUntil(120, 3, async () => {
-		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 8000 })
+		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 		await Api(creator, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		const s = await Api(creator, 'GET', `/groups/${gid}/state`)
 		if (s.status !== 200) return false
@@ -200,7 +201,7 @@ await testCase('creator join-snapshot + catchup sees joiner', async () => {
 await testCase('creator members>=2 after DM join', async () => WaitFedMembers(creator, gid, 2, 120))
 
 await testCase('joiner state has default channel', async () => PollUntil(90, 3, async () => {
-	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 4000 })
+	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 	const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
 	if (s.json.meta?.groupSettings?.defaultChannelId) 
 		cid = s.json.meta.groupSettings.defaultChannelId
@@ -228,14 +229,14 @@ await testCase('creator sends DM-A', async () => {
 })
 
 await testCase('joiner sees dm-A (catchup/live)', async () => PollUntil(90, 3, async () => {
-	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 3000 })
+	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 	const m = await Api(joiner, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return m.status === 200 && (m.json.messages?.filter(row => row.eventId === aMsg).length ?? 0) >= 1
 }))
 
 await testCase('joiner sends DM-B', async () => {
 	const ready = await PollUntil(90, 3, async () => {
-		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 4000 })
+		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
 		if (s.json.meta?.groupSettings?.defaultChannelId) 
 			cid = s.json.meta.groupSettings.defaultChannelId
@@ -256,7 +257,7 @@ await testCase('joiner sends DM-B', async () => {
 })
 
 await testCase('creator sees dm-B', async () => PollUntil(90, 3, async () => {
-	await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: 3000 })
+	await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 	const m = await Api(creator, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return m.status === 200 && (m.json.messages?.filter(row => row.eventId === bMsg).length ?? 0) >= 1
 }))

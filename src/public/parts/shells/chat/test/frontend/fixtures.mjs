@@ -1,9 +1,10 @@
 import { request as playwrightRequest } from '@playwright/test'
+import { ms } from 'fount/scripts/ms.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForHubShellReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-const HUB_INIT_TIMEOUT = 180_000
+const HUB_INIT_TIMEOUT = ms('3m')
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
@@ -52,11 +53,11 @@ export async function waitForHubShell(page, baseUrl, opts = {}) {
 		waitUntil,
 		timeout: HUB_INIT_TIMEOUT,
 	})
-	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
 	await expect(page.locator('#hub-add-server-button')).toBeVisible()
 	await waitForHubShellReady(page)
 	if (friendsMode && !page.url().includes('#group:'))
-		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 90_000 })
+		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: ms('90s') })
 }
 
 /**
@@ -107,14 +108,14 @@ export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
 	if (!page.url().includes('/parts/shells:chat/hub/'))
 		await waitForHubShell(page, baseUrl)
 	else {
-		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
 		await expect(page.locator('#hub-add-server-button')).toBeVisible()
 	}
 	await page.locator('#hub-add-server-button').click()
 	const createCard = page.locator('.server-action-picker-card[data-action="create"]')
-	await expect(createCard).toBeVisible({ timeout: 30_000 })
+	await expect(createCard).toBeVisible({ timeout: ms('30s') })
 	await createCard.click()
-	await expect(page.locator('#create-group-form')).toBeVisible({ timeout: 30_000 })
+	await expect(page.locator('#create-group-form')).toBeVisible({ timeout: ms('30s') })
 	await page.locator('#create-group-form input[name="name"]').fill(name)
 	if (opts.description)
 		await page.locator('#create-group-form textarea[name="description"]').fill(opts.description)
@@ -182,7 +183,7 @@ async function waitForGroupComposerReady(page, groupId) {
 	const input = page.locator('#hub-message-input')
 	for (let attempt = 0; attempt < 2; attempt++)
 		try {
-			await expect(input).toBeEnabled({ timeout: 30_000 })
+			await expect(input).toBeEnabled({ timeout: ms('30s') })
 			return
 		}
 		catch {
@@ -197,9 +198,9 @@ async function waitForGroupComposerReady(page, groupId) {
 		}
 
 	const serverItem = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)
-	await expect(serverItem).toBeVisible({ timeout: 60_000 })
+	await expect(serverItem).toBeVisible({ timeout: ms('1m') })
 	await serverItem.click()
-	await expect(input).toBeEnabled({ timeout: 60_000 })
+	await expect(input).toBeEnabled({ timeout: ms('1m') })
 }
 
 /**
@@ -216,7 +217,7 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 		hubUrlWithHash(baseUrl, `group:${encodedGroup}:${channelId}`),
 		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
-	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
+	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
 	await waitForHubShellReady(page)
 	await waitForGroupComposerReady(page, groupId)
 }
@@ -266,7 +267,7 @@ export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {
 		if (page.url().includes(`#${hashFrag}`)) {
 			const input = page.locator('#hub-message-input')
 			try {
-				await expect(input).toBeEnabled({ timeout: 15_000 })
+				await expect(input).toBeEnabled({ timeout: ms('15s') })
 				return { groupId, channelId: defaultChannelId }
 			}
 			catch { /* fall through to hash nav */ }
@@ -279,7 +280,7 @@ export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {
 }
 
 /** POST 响应等待上限（毫秒）；超时后改以 UI 消息行确认。 */
-const MESSAGE_POST_TIMEOUT = 20_000
+const MESSAGE_POST_TIMEOUT = ms('20s')
 
 /**
  * 通过 composer 发送消息并等待 API 成功。
@@ -309,7 +310,7 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
  */
 export async function expectMessageInChat(page, text) {
 	const row = page.locator('#hub-messages .hub-message').filter({ hasText: text })
-	await expect(row.first()).toBeVisible({ timeout: 60_000 })
+	await expect(row.first()).toBeVisible({ timeout: ms('1m') })
 	return row.first()
 }
 
@@ -373,8 +374,8 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
 		`${baseUrl}/parts/shells:chat/settings/#settings:${encodeURIComponent(groupId)}`,
 		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
-	await expect(page.locator('#group-settings-container')).toBeVisible({ timeout: 60_000 })
-	await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: 60_000 })
+	await expect(page.locator('#group-settings-container')).toBeVisible({ timeout: ms('1m') })
+	await expect(page.locator('body[data-settings-loaded="1"]')).toBeVisible({ timeout: ms('1m') })
 }
 /**
  * 通过 emoji-picker 浮层选取 Unicode 表情（避免穿透 shadow DOM）。
@@ -383,11 +384,11 @@ export async function openGroupSettingsPage(page, baseUrl, groupId) {
  * @returns {Promise<void>} 无返回值。
  */
 export async function pickEmojiFromPicker(page, emoji = '👍') {
-	await expect(page.locator('#emoji-picker-popup emoji-picker')).toBeVisible({ timeout: 30_000 })
+	await expect(page.locator('#emoji-picker-popup emoji-picker')).toBeVisible({ timeout: ms('30s') })
 	await page.locator('#emoji-picker-popup emoji-picker').evaluate((el, unicode) => {
 		el.dispatchEvent(new CustomEvent('emoji-click', { detail: { unicode } }))
 	}, emoji)
-	await expect(page.locator('#emoji-picker-popup')).toHaveCount(0, { timeout: 10_000 })
+	await expect(page.locator('#emoji-picker-popup')).toHaveCount(0, { timeout: ms('10s') })
 }
 
 /**

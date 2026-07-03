@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { ms } from '../../ms.mjs'
 import { u8ToB64 } from '../bytes_codec.mjs'
 import {
 	chunkBytesMatchHash,
@@ -33,7 +34,7 @@ function installChunkFetchWaiter(requestId) {
 	function captureChunk(data) {
 		resolved = data
 	}
-	const timer = setTimeout(() => pendingChunkFetches.delete(requestId), 60_000)
+	const timer = setTimeout(() => pendingChunkFetches.delete(requestId), ms('1m'))
 	pendingChunkFetches.set(requestId, {
 		expectedHash: HASH,
 		timer,
