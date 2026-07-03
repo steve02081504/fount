@@ -1,5 +1,5 @@
 import { publishPost } from './composer.mjs'
-import { parseSocialRunUri } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
 import { loadNotifications, markNotificationsSeen } from './views/notifications.mjs'

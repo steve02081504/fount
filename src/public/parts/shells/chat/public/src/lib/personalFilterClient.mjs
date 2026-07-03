@@ -1,4 +1,4 @@
-import { filterSetsFromPersonalListEntries } from '../../../../../../../scripts/p2p/personal_block.mjs'
+import { filterSetsFromPersonalListEntries } from '../../shared/personalFilter.mjs'
 
 import { parseEntityHash } from './entityHash.mjs'
 

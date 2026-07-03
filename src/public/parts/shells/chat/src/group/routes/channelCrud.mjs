@@ -5,7 +5,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { prefixedRandomId } from '../../../../../../../scripts/p2p/random_id.mjs'
-import { normalizeFriendBinding } from '../../../public/src/friendBinding.mjs'
+import { normalizeFriendBinding } from '../../../public/shared/friendBinding.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 
 import {

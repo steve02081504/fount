@@ -4,8 +4,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { parseSocialRunUri } from '../../../chat/public/src/lib/socialRunUri.mjs'
-import { formatSocialSearchHref } from '../../public/src/lib/runUri.mjs'
+import { parseSocialRunUri } from '../../../chat/public/shared/socialRunUri.mjs'
+import { formatSocialSearchHref } from '../../public/shared/runUri.mjs'
 
 Deno.test('formatSocialSearchHref encodes hashtag query', () => {
 	assertEquals(formatSocialSearchHref('#fount'), '/parts/shells:social/#search;fount')

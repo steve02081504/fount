@@ -17,7 +17,7 @@ import {
 	channelMessageContentObject,
 	channelMessageShowText,
 	textChannelContent,
-} from '../../../public/src/lib/channelContent.mjs'
+} from '../../../public/shared/channelContent.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { appendFileUploadEvent } from '../dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'

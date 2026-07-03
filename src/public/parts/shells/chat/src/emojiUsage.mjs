@@ -9,7 +9,7 @@
  */
 import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
 
-import { channelMessageText } from './public/src/lib/channelContent.mjs'
+import { channelMessageText } from '../public/shared/channelContent.mjs'
 
 const SHELL_DATANAME = 'emoji_usage'
 const MAX_STORED = 512

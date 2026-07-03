@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { ENTITY_HASH_RE, isEntityHash128, parseEntityHash } from '../../public/pages/scripts/lib/entity_hash.mjs'
+import { ENTITY_HASH_RE, entityHashLabel, formatHashShort, isEntityHash128, parseEntityHash } from './entity_hash.mjs'
 
 import { pubKeyHash, sha256TextHex } from './crypto.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
@@ -8,7 +8,7 @@ import { isHex64, normalizeHex64 } from './hexIds.mjs'
 /**
  *
  */
-export { ENTITY_HASH_RE, isEntityHash128, parseEntityHash }
+export { ENTITY_HASH_RE, entityHashLabel, formatHashShort, isEntityHash128, parseEntityHash }
 
 const AGENT_SUBJECT_PREFIX = 'fount:chat:agent:'
 

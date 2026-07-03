@@ -3,7 +3,7 @@
  */
 import { visit, SKIP } from 'https://esm.sh/unist-util-visit'
 
-import { expandChannelLinksInText } from '/parts/shells:chat/src/lib/expandChannelLinks.mjs'
+import { expandChannelLinksInText } from '/parts/shells:chat/shared/expandChannelLinks.mjs'
 import { formatSocialSearchHref } from '../src/lib/runUri.mjs'
 
 /** 话题标签（不含 Chat `#[group/channel]`）。 */

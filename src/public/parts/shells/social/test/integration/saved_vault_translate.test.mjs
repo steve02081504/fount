@@ -10,7 +10,7 @@ const getSession = createTestSession()
 
 const append = await import('../../src/timeline/append.mjs')
 const saved = await import('../../src/savedPosts.mjs')
-const vaultRoot = await import('../../src/vault.mjs')
+const vaultRoot = await import('../../src/socialVaultIndex.mjs')
 const translate = await import('../../src/translate.mjs')
 
 Deno.test('saved posts folder CRUD', async () => {

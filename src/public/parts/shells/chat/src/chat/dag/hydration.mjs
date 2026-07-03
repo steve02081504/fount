@@ -17,7 +17,7 @@ import {
 	channelMessageEditText,
 	channelMessageShowText,
 	isTextChannelContent,
-} from '../../../public/src/lib/channelContent.mjs'
+} from '../../../public/shared/channelContent.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'

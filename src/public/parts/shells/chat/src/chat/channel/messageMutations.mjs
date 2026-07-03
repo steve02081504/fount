@@ -8,7 +8,7 @@
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { HEX_ID_64 as EVENT_ID_HEX } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { channelMessageContentObject } from '../../../public/src/lib/channelContent.mjs'
+import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'
 import { readArchiveMonth } from '../archive/reader.mjs'

@@ -1,5 +1,5 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /**
  * 读取通知已读水位时间戳。

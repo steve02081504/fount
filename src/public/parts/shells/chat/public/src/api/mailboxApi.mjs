@@ -1,4 +1,4 @@
-import { CHAT_API_CLIENT_PREFIX } from '../../../src/group/routes/path.mjs'
+import { CHAT_API_CLIENT_PREFIX } from '../../shared/apiPaths.mjs'
 
 /**
  * 用户级 offline mailbox 摘要 API。

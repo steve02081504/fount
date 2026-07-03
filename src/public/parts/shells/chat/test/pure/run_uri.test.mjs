@@ -8,7 +8,7 @@ import {
 	CHAT_RUN_PART,
 	formatJoinRunUri,
 	parseJoinRunUri,
-} from '../../public/src/lib/runUri.mjs'
+} from '../../public/shared/runUri.mjs'
 
 Deno.test('formatJoinRunUri uses shells:chat prefix', () => {
 	const uri = formatJoinRunUri('gid', 'code')

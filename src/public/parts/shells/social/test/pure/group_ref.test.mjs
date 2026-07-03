@@ -7,12 +7,12 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	expandChannelLinksInText,
 	formatChatGroupHref,
-} from '../../../chat/public/src/lib/expandChannelLinks.mjs'
+} from '../../../chat/public/shared/expandChannelLinks.mjs'
 import {
 	formatGroupRefMarkdownToken,
 	groupRefLabel,
 	stripGroupRefMarkdownTokens,
-} from '../../public/src/lib/groupRef.mjs'
+} from '../../public/shared/groupRef.mjs'
 
 Deno.test('formatChatGroupHref encodes group and channel', () => {
 	const href = formatChatGroupHref('my group', 'ch 1')

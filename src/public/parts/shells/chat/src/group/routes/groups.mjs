@@ -73,7 +73,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 			})
 		}
 
-		const { normalizeFriendBinding } = await import('../../../public/src/friendBinding.mjs')
+		const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
 		const friendBinding = normalizeFriendBinding(body.friendBinding)
 		if (friendBinding && !body.forceNew) {
 			const rows = await enumerateJoinedFederatedGroups(username)

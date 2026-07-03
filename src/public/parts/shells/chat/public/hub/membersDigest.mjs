@@ -2,7 +2,7 @@
  * 【文件】public/hub/membersDigest.mjs
  * 【职责】成员列表 Merkle 摘要：为联邦成员同步计算活跃成员键根。
  */
-import { sha256Hex } from '/scripts/lib/digest.mjs'
+import { sha256Hex } from '../shared/digest.mjs'
 
 const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
 

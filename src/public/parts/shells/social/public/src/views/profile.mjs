@@ -1,7 +1,7 @@
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from '../lib/display.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /**
  * @param {object} appContext 应用上下文

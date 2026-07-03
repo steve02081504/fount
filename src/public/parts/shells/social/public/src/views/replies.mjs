@@ -1,4 +1,4 @@
-import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /**
  * 渲染帖子回复面板与回复 composer。

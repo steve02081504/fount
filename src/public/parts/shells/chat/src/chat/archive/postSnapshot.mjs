@@ -4,8 +4,8 @@
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { channelMessageContentObject } from '../../../public/src/lib/channelContent.mjs'
-import { mergeChannelMessagesForDisplay } from '../../../public/src/lib/messageMerge.mjs'
+import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
+import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
 import { decryptEventContent } from '../channel_keys/content.mjs'
 
 import { overlayPinsForChannel } from './hotPostsIndex.mjs'

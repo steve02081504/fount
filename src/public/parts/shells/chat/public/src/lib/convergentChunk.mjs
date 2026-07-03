@@ -2,7 +2,7 @@
  * 浏览器端收敛块哈希（与 `scripts/p2p/key_crypto.mjs` `encryptConvergentPlaintext` 对齐）。
  */
 
-import { sha256Hex } from '/scripts/lib/digest.mjs'
+import { sha256Hex } from '../../shared/digest.mjs'
 
 /**
  * @param {string} contentHashHex 明文 contentHash

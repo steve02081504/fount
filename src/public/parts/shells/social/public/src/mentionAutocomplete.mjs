@@ -2,7 +2,7 @@
  * @ 提及 autocomplete（输入 @ 后弹出候选）。
  */
 
-import { formatHashShort } from '/scripts/lib/entity_hash.mjs'
+import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 const API = '/api/parts/shells:social/mentions/suggest'
 

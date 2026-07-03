@@ -1,5 +1,5 @@
 import { parseActionKey } from '../lib/actionKey.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { formatSocialProfileRunUri } from '../lib/runUri.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 

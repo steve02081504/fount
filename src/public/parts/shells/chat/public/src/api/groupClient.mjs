@@ -5,7 +5,7 @@
  * 【数据结构】GROUPS_BASE 常量；groupFetch(path, RequestInit&{json?})、groupPath(groupId,...segments)、groupRequest(groupId, endpoint, method, body)。
  * 【关联】groupApi 及各子模块 re-export 的底层；后端 src/group/routes。
  */
-import { GROUPS_CLIENT_PREFIX } from '../../../src/group/routes/path.mjs'
+import { GROUPS_CLIENT_PREFIX } from '../../shared/apiPaths.mjs'
 
 const GROUPS_BASE = GROUPS_CLIENT_PREFIX
 

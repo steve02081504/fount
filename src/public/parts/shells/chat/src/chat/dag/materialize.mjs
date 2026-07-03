@@ -33,7 +33,7 @@ import {
 	invalidateTopologicalOrderMemo,
 	resolveTopologicalOrderMemoCached,
 } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
-import { mergeChannelMessagesForDisplay } from '../../../public/src/lib/messageMerge.mjs'
+import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
 import { archivePostsBeforeDagFold, trimMessagesJsonlToHotWindow } from '../archive/archiveBeforeFold.mjs'
 import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'

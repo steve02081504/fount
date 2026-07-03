@@ -1,8 +1,8 @@
-import { formatHashShort } from '/scripts/lib/entity_hash.mjs'
+import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 
-import { formatSocialProfileHref } from '/parts/shells:chat/src/lib/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 const ENTITY_AVATAR_API = '/api/p2p/entities'
 
