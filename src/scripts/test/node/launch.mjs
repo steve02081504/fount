@@ -14,6 +14,7 @@ import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
 
 import { console } from '../../i18n.mjs'
+import { resolveListenBind } from '../../net_listen.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
@@ -118,8 +119,7 @@ function isPortFree(port) {
 		const server = net.createServer()
 		server.unref()
 		server.on('error', () => resolve(false))
-		// 与 fount server.listen(port)（config.listen 为 null）一致，勿只测 127.0.0.1
-		server.listen(port, () => {
+		server.listen(resolveListenBind(null, port), () => {
 			server.close(() => resolve(true))
 		})
 	})
@@ -135,7 +135,7 @@ function holdPort(port) {
 		const server = net.createServer()
 		server.unref()
 		server.on('error', reject)
-		server.listen(port, () => resolve(server))
+		server.listen(resolveListenBind(null, port), () => resolve(server))
 	})
 }
 

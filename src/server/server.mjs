@@ -11,6 +11,7 @@ import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
+import { resolveListenBind } from '../scripts/net_listen.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
@@ -240,28 +241,38 @@ export async function init(start_config) {
 		 * @param {String} listenAddress 要监听的地址
 		 * @returns {Promise<Boolean>} 是否本地
 		 */
-		const listen = async (listenAddress) => await new Promise((resolve, reject) => {
+		const listen = (listenAddress) => bindServer(resolveListenBind(listenAddress, port)).catch(error => {
+			if (error.code === 'EADDRNOTAVAIL' && listenAddress == null)
+				return bindServer({ port })
+			throw error
+		})
+
+		/**
+		 * @param {import('node:net').ListenOptions} bind listen 绑定
+		 * @returns {Promise<boolean>} 是否仅 localhost 范围绑定
+		 */
+		const bindServer = (bind) => new Promise((resolve, reject) => {
 			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
 
-			const listen = [port, listenAddress].filter(Boolean)
+			/**
+			 * 监听回调
+			 * @returns {void}
+			 */
+			const onListening = () => {
+				SetTaskbarProgress(80)
+				const scheme = httpsConfig?.enabled ? 'https' : 'http'
+				console.logI18n(`fountConsole.server.showUrl.${scheme}`, { url: ansi_hosturl })
+				if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, scheme, mdnsConfig))
+				resolve(bind.host === 'localhost')
+			}
 
 			if (httpsConfig?.enabled)
 				server = https.createServer({
 					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
 					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
-				}, requestListener).listen(...listen, async () => {
-					SetTaskbarProgress(80)
-					console.logI18n('fountConsole.server.showUrl.https', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'https', mdnsConfig))
-					resolve(listenAddress == 'localhost')
-				})
+				}, requestListener).listen(bind, onListening)
 			else
-				server = http.createServer(requestListener).listen(...listen, async () => {
-					SetTaskbarProgress(80)
-					console.logI18n('fountConsole.server.showUrl.http', { url: ansi_hosturl })
-					if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, 'http', mdnsConfig))
-					resolve(listenAddress == 'localhost')
-				})
+				server = http.createServer(requestListener).listen(bind, onListening)
 
 			server.on('upgrade', upgradeListener)
 			server.on('error', (err) => {
