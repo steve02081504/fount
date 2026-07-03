@@ -211,6 +211,13 @@ export async function initAuth() {
 
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
+
+	// 设置定时任务
+	setInterval(() => {
+		cleanupRevokedTokens()
+		cleanupRefreshTokens()
+		cleanupLoginFailures()
+	}, ms('1h')).unref()
 }
 
 /**
@@ -1103,10 +1110,3 @@ function cleanupLoginFailures() {
 		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS) delete loginFailures[ip]
 		else loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
 }
-
-// 设置定时任务
-setInterval(() => {
-	cleanupRevokedTokens()
-	cleanupRefreshTokens()
-	cleanupLoginFailures()
-}, ms('1h')).unref()
