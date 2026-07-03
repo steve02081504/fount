@@ -1,7 +1,7 @@
 /**
  * fount test 聚合报告：落盘 noteworthy 输出并生成 report.md + report.json。
  */
-import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
 import { geti18n } from '../../i18n.mjs'
@@ -168,18 +168,58 @@ export class TestReportWriter {
 	 * @param {import('../core/manifest.mjs').SuiteDef[]} options.suites 选定 suite 有序列表
 	 * @param {string} options.runId 本次运行 id
 	 * @param {string} [options.command] 命令行摘要
+	 * @param {ReportSuiteSlot[]} [options.entries] 续跑时载入已有条目
 	 */
-	constructor({ repoRoot, suites, runId, command }) {
+	constructor({ repoRoot, suites, runId, command, entries }) {
 		this.repoRoot = repoRoot
 		this.root = reportDir(repoRoot)
 		this.runId = runId
 		this.command = command
 		/** @type {ReportSuiteSlot[]} */
-		this.entries = suites.map(suite => ({
+		this.entries = entries ?? suites.map(suite => ({
 			manifestId: suite.manifestId,
 			name: suite.name,
 			pending: true,
 		}))
+	}
+
+	/**
+	 * 从 report.json 恢复未完成报告。
+	 * @param {string} repoRoot 仓库根
+	 * @returns {Promise<{ writer: TestReportWriter, pendingIndices: { index: number, manifestId: string, name: string }[] } | null>} 写入器与 pending 下标；无报告时为 null
+	 */
+	static async resume(repoRoot) {
+		const root = reportDir(repoRoot)
+		const jsonPath = join(root, 'report.json')
+		let raw
+		try {
+			raw = await readFile(jsonPath, 'utf8')
+		}
+		catch (error) {
+			if (error?.code === 'ENOENT') return null
+			throw error
+		}
+
+		const { summary, suites } = JSON.parse(raw)
+		if (!Array.isArray(suites)) return null
+
+		const writer = new TestReportWriter({
+			repoRoot,
+			suites: [],
+			runId: summary.runId,
+			command: summary.command,
+			entries: suites,
+		})
+
+		/** @type {{ index: number, manifestId: string, name: string }[]} */
+		const pendingIndices = []
+		for (let index = 0; index < suites.length; index++) {
+			const entry = suites[index]
+			if ('pending' in entry)
+				pendingIndices.push({ index, manifestId: entry.manifestId, name: entry.name })
+		}
+
+		return { writer, pendingIndices }
 	}
 
 	/**
@@ -286,13 +326,13 @@ export async function writeTestReport({
 }
 
 /**
- * 根据套件条目构建可复制的重跑命令（按 manifest 分组，避免跨 manifest 误匹配 suite）。
+ * 根据套件条目构建单条可复制的重跑命令（分组冒号语法 + --gen-report）。
  * @param {ReportSuiteEntry[]} entries 待重跑条目
  * @param {string | null | undefined} [originalCommand] 原始命令（用于保留 -j）
- * @returns {string[]} 每行一条 fount test 命令
+ * @returns {string | null} fount test 命令
  */
-function buildReplayCommands(entries, originalCommand) {
-	if (!entries.length) return []
+function buildReplayCommand(entries, originalCommand) {
+	if (!entries.length) return null
 
 	/** @type {Map<string, string[]>} */
 	const byManifest = new Map()
@@ -308,11 +348,11 @@ function buildReplayCommands(entries, originalCommand) {
 		if (match) jobsSuffix = ` -j ${match[1]}`
 	}
 
-	return [...byManifest.entries()]
+	const groupTokens = [...byManifest.entries()]
 		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([manifestId, suiteNames]) =>
-			`fount test${jobsSuffix} ${manifestId} ${suiteNames.join(',')}`,
-		)
+		.map(([manifestId, suiteNames]) => `${manifestId}:${suiteNames.join(',')}`)
+
+	return `fount test --gen-report${jobsSuffix} ${groupTokens.join(' ')}`
 }
 
 /**
@@ -404,24 +444,29 @@ function buildMarkdown(summary, entries) {
 		for (const e of pending)
 			lines.push(`| ${e.manifestId}/${e.name} |`)
 		lines.push('')
+
+		if (!summary.complete) {
+			lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '')
+			lines.push('```shell')
+			lines.push('fount test --continue')
+			lines.push('```', '')
+		}
 	}
 
-	const replayCommands = buildReplayCommands(failed, summary.command)
-	if (replayCommands.length) {
+	const replayCommand = buildReplayCommand(failed, summary.command)
+	if (replayCommand) {
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionReplay')}`, '')
 		lines.push('```shell')
-		for (const cmd of replayCommands)
-			lines.push(cmd)
+		lines.push(replayCommand)
 		lines.push('```', '')
 	}
 
 	const imperfect = completed.filter(e => !e.passed || e.noisy)
-	const imperfectReplayCommands = buildReplayCommands(imperfect, summary.command)
-	if (imperfectReplayCommands.length && imperfect.length !== failed.length) {
+	const imperfectReplayCommand = buildReplayCommand(imperfect, summary.command)
+	if (imperfectReplayCommand && imperfect.length !== failed.length) {
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionReplayImperfect')}`, '')
 		lines.push('```shell')
-		for (const cmd of imperfectReplayCommands)
-			lines.push(cmd)
+		lines.push(imperfectReplayCommand)
 		lines.push('```', '')
 	}
 

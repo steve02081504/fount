@@ -9,6 +9,8 @@ alwaysApply: false
 ## Architecture
 
 - **Entry**: `fount test` → `src/scripts/test/runner/index.mjs` → per-suite manifest → Deno unit / Node integration / live drivers.
+- **CLI groups**: `manifest` or `manifest:suite1,suite2` (space-separated). PowerShell splits commas in `:suite` args into separate argv tokens — parser re-merges trailing tokens into the current group. Report replay commands use the same colon syntax in a single line with `--gen-report`.
+- **`--continue`**: reads `data/test/report/report.json` pending slots, runs only those suites, merges results back into the in-progress report (survives kill/reboot).
 - **Live driver**: `src/scripts/test/live/runner.mjs` spawns ephemeral fount nodes, injects `FOUNT_TEST_NODE_*_BASE_URL/KEY/DATA` env, runs suite via `deno run -c deno.json`, tears down after.
 - **Chat live suites**: `src/public/parts/shells/chat/test/live/run.mjs`; `denoLiveRun()` in `src/scripts/test/live/deno_run.mjs` builds argv.
 - **Shared libs**:

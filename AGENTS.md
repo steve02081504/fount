@@ -21,7 +21,7 @@
 - **New parts**: mimic `@src/public/parts/` or `@data/users/.../chars/`.
 - **I18n**: only edit `src/public/locales/zh-CN.json`; `update-locales.py` handles the rest.
 - **Lint**: `eslint --fix --quiet` (no `npx`). No logging unless error/warning.
-- **Testing**: `fount test` — self-contained, no running server needed. Uncommitted changes → diff-triggered suites; clean tree → `--since <commit>` or `--all`. Examples: `fount test shells/chat`, `fount test shells/chat unit`, `fount test p2p`. See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md) for live-probe traps and hung-run diagnosis.
+- **Testing**: `fount test` — self-contained, no running server needed. Uncommitted changes → diff-triggered suites; clean tree → `--since <commit>` or `--all`. Group syntax: `manifest` or `manifest:suite1,suite2` (space-separated groups). Examples: `fount test shells/chat`, `fount test shells/chat:unit`, `fount test p2p:sim shells/chat:unit`. `--continue` resumes pending suites from `data/test/report/report.json`. See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md) for live-probe traps and hung-run diagnosis.
 - **Logs**: `fount log` — streams main-process console (check before guessing from browser 404s).
 - **Server**: `fount server` (fg) / `fount background` (detached). Bare `fount` = `fount background; fount log`. `Test-FountRunning` before start/reboot, **not** before `fount test`.
 - **Restart**: `fount reboot` for backend/code/config changes. Frontend edits (Hub/UI/templates/styles) take effect on browser refresh.

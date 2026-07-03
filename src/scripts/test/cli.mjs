@@ -1,7 +1,9 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--since <commit>] [<manifest-ids> [<suite-selectors>]]
+ *   fount test [--all] [--gen-report] [--continue] [-j <n>] [--since <commit>] [<groups>...]
+ *
+ * 分组语法：manifest 或 manifest:suite1,suite2（空格分隔多组）
  */
 import 'fount/scripts/test/env.mjs'
 
@@ -25,6 +27,7 @@ const { positionals, values } = parseArgs({
 		since: { type: 'string' },
 		all: { type: 'boolean', default: false },
 		'gen-report': { type: 'boolean', default: false },
+		continue: { type: 'boolean', default: false },
 		jobs: { type: 'string', short: 'j' },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
@@ -36,7 +39,7 @@ if (values.help || positionals.includes('help')) {
 }
 
 /**
- * 逗号或空白分隔的 selector 列表（PowerShell 传参时逗号常被折叠为空格）。
+ * 逗号或空白分隔的 selector 列表（PowerShell 传参时逗号常被拆成独立 argv）。
  * @param {string} raw 原始片段
  * @returns {string[]} token 列表
  */
@@ -45,45 +48,68 @@ function splitSelectors(raw) {
 }
 
 /**
- * 解析 CLI 位置参数为 manifest / suite 指名。
- * @param {string[]} args 位置参数
- * @returns {Promise<{ manifestSelectors: string[] | undefined, suiteSelectors: string[] | undefined }>} 解析后的指名
+ * @typedef {{ manifestSelectors: string[], suiteSelectors: string[] }} GroupInput
  */
-async function parseCliSelectors(args) {
+
+/**
+ * 解析分组冒号语法 positional 参数。
+ * @param {string[]} args 位置参数
+ * @param {string[]} knownIds 已知 manifest id
+ * @returns {{ groups: GroupInput[] | undefined } | { error: 'unknownFirstToken', token: string }} 解析结果
+ */
+function parseGroupSelectors(args, knownIds) {
 	if (!args.length)
-		return { manifestSelectors: undefined, suiteSelectors: undefined }
+		return { groups: undefined }
 
-	const firstTokens = splitSelectors(args[0])
-	if (args.length >= 2) {
-		const suites = args.slice(1).flatMap(splitSelectors)
-		return {
-			manifestSelectors: firstTokens.length ? firstTokens : undefined,
-			suiteSelectors: suites.length ? suites : undefined,
+	/** @type {GroupInput[]} */
+	const groups = []
+	/** @type {GroupInput | null} */
+	let current = null
+
+	for (const token of args) 
+		if (token.includes(':')) {
+			const colon = token.indexOf(':')
+			current = {
+				manifestSelectors: [token.slice(0, colon)],
+				suiteSelectors: splitSelectors(token.slice(colon + 1)),
+			}
+			groups.push(current)
 		}
-	}
+		else {
+			const resolved = resolveManifestSelectors([token], knownIds)
+			if (resolved.manifestIds.length) {
+				current = { manifestSelectors: [token], suiteSelectors: [] }
+				groups.push(current)
+			}
+			else if (current)
+				current.suiteSelectors.push(...splitSelectors(token))
+			else
+				return { error: 'unknownFirstToken', token }
+		}
+	
 
-	if (firstTokens.length === 1)
-		return { manifestSelectors: firstTokens, suiteSelectors: undefined }
-
-	const knownIds = listManifestIds(await loadAllSuites(REPO_ROOT))
-	const resolved = resolveManifestSelectors(firstTokens, knownIds)
-	return {
-		manifestSelectors: resolved.manifestIds.length ? resolved.manifestIds : undefined,
-		suiteSelectors: resolved.unmatched.length ? resolved.unmatched : undefined,
-	}
+	return { groups }
 }
 
 const FIVE_MINUTES_MS = 5 * 60 * 1000
 process.exit(await (async () => {
-	const { manifestSelectors, suiteSelectors } = await parseCliSelectors(positionals)
+	const knownIds = listManifestIds(await loadAllSuites(REPO_ROOT))
+	const parsed = parseGroupSelectors(positionals, knownIds)
+
+	if ('error' in parsed) {
+		console.errorI18n('fountConsole.test.unknownManifestId', { ids: parsed.token })
+		console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
+		process.exit(2)
+	}
+
 	const runStarted = Date.now()
 	const exitCode = await runTests({
 		runAll: values.all,
 		since: values.since,
 		genReport: values['gen-report'],
+		continueRun: values.continue,
 		jobs: values.jobs ? Number(values.jobs) : undefined,
-		manifestSelectors,
-		suiteSelectors,
+		groups: parsed.groups,
 	})
 	if (Date.now() - runStarted > FIVE_MINUTES_MS)
 		process.stdout.write('\x07\x07\x07')

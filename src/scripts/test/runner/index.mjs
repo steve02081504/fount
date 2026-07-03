@@ -40,15 +40,94 @@ import { SuiteRunGate } from './scheduler.mjs'
 import { selectSuites, shouldTrackFailures } from './selection.mjs'
 
 /**
+ * CLI 传入的分组指名。
+ * @typedef {{ manifestSelectors: string[], suiteSelectors: string[] }} GroupInput
+ */
+
+/**
+ * 解析后的分组。
+ * @typedef {{ manifestIds: string[], suiteSelectors: string[] }} ResolvedGroup
+ */
+
+/**
  * runTests 入口选项。
  * @typedef {object} RunTestsOptions
  * @property {boolean} [runAll] 全量
  * @property {string} [since] diff 基准 commit
- * @property {string[]} [manifestSelectors] manifest 指名
- * @property {string[]} [suiteSelectors] suite id 或 name
+ * @property {GroupInput[]} [groups] 分组指名
  * @property {boolean} [genReport] 生成 data/test/report
+ * @property {boolean} [continueRun] 续跑未完成项
  * @property {number} [jobs] 全局并发上限
  */
+
+/**
+ * 将 CLI 分组解析为 manifest id 列表。
+ * @param {GroupInput[]} groupInputs 原始分组
+ * @param {string[]} knownIds 已知 manifest id
+ * @returns {{ groups: ResolvedGroup[], unmatched: string[] }} 解析后的分组与未匹配项
+ */
+function resolveGroups(groupInputs, knownIds) {
+	/** @type {ResolvedGroup[]} */
+	const groups = []
+	/** @type {string[]} */
+	const unmatched = []
+
+	for (const input of groupInputs) {
+		const resolved = resolveManifestSelectors(input.manifestSelectors, knownIds)
+		if (resolved.unmatched.length) {
+			unmatched.push(...resolved.unmatched)
+			continue
+		}
+		groups.push({
+			manifestIds: resolved.manifestIds,
+			suiteSelectors: input.suiteSelectors,
+		})
+	}
+
+	return { groups, unmatched }
+}
+
+/**
+ * 从解析后的分组过滤 suite 并去重。
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {ResolvedGroup[]} groups 解析后的分组
+ * @returns {import('../core/manifest.mjs').SuiteDef[]} 去重后的 suite 列表
+ */
+function filterFromGroups(allSuites, groups) {
+	const seen = new Map()
+	for (const group of groups) 
+		for (const suite of filterSuites(allSuites, {
+			manifestIds: group.manifestIds,
+			suiteSelectors: group.suiteSelectors.length ? group.suiteSelectors : undefined,
+		}))
+			seen.set(`${suite.manifestId}\0${suite.name}`, suite)
+	
+	return [...seen.values()]
+}
+
+/**
+ * 构造报告/日志用的命令行摘要。
+ * @param {RunTestsOptions} options 运行选项
+ * @returns {string} 命令行摘要
+ */
+function buildTestCommand(options) {
+	const parts = ['fount test']
+	if (options.runAll) parts.push('--all')
+	if (options.genReport) parts.push('--gen-report')
+	if (options.continueRun) parts.push('--continue')
+	if (options.jobs >= 1) parts.push('-j', String(options.jobs))
+	if (options.since) parts.push('--since', options.since)
+	if (options.groups?.length) 
+		for (const group of options.groups) {
+			const manifest = group.manifestSelectors[0]
+			if (group.suiteSelectors.length)
+				parts.push(`${manifest}:${group.suiteSelectors.join(',')}`)
+			else
+				parts.push(manifest)
+		}
+	
+	return parts.join(' ')
+}
 
 /**
  * 构造 suite 运行命令与环境变量。
@@ -64,7 +143,6 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget) {
 		FOUNT_TEST_KEEP_GOING: '1',
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
-		// 始终重置 FOUNT_TEST_ONLY，防止外层 shell 环境变量泄漏进子进程影响测试过滤。
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 	}
 	if (suite.heavy && globalBudget)
@@ -149,35 +227,40 @@ function printSuiteSummary(label, result, genReport, streamed = false) {
 }
 
 /**
+ * @param {import('./report.mjs').ReportSuiteSlot[]} entries 报告条目
+ * @returns {number} 退出码
+ */
+function exitCodeFromEntries(entries) {
+	const completed = entries.filter(e => !('pending' in e))
+	return completed.some(e => !e.passed) ? 1 : 0
+}
+
+/**
  * 主测试入口。
  * @param {RunTestsOptions} options 运行选项
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
 export async function runTests(options = {}) {
-	const genReport = options.genReport === true
+	const genReport = options.genReport === true || options.continueRun === true
 	const globalBudget = computeGlobalBudget(options.jobs)
 	const runId = new Date().toISOString().replace(/[.:]/g, '-')
 
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
 
-	let manifestIds
-	if (options.manifestSelectors?.length) {
-		const resolved = resolveManifestSelectors(options.manifestSelectors, knownIds)
-		if (resolved.unmatched.length) {
-			console.errorI18n('fountConsole.test.unknownManifestId', {
-				ids: resolved.unmatched.join(', '),
-			})
-			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
-			return 2
-		}
-		manifestIds = resolved.manifestIds
-		if (manifestIds.length !== options.manifestSelectors.length
-			|| options.manifestSelectors.some(selector => !knownIds.includes(selector)))
-			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
-	}
+	const [currentHash, uncommittedFiles] = await Promise.all([
+		computeUncommittedHash(REPO_ROOT),
+		getUncommittedFiles(REPO_ROOT),
+	])
 
-	const trackFailures = shouldTrackFailures(manifestIds)
+	if (options.continueRun)
+		return runContinue({
+			allSuites,
+			genReport,
+			globalBudget,
+			currentHash,
+			jobs: options.jobs,
+		})
 
 	const changed = await resolveChangedFiles({
 		repoRoot: REPO_ROOT,
@@ -185,17 +268,33 @@ export async function runTests(options = {}) {
 		since: options.since,
 	})
 
-	const [currentHash, uncommittedFiles] = await Promise.all([
-		computeUncommittedHash(REPO_ROOT),
-		getUncommittedFiles(REPO_ROOT),
-	])
-
+	/** @type {string[] | undefined} */
+	let manifestIds
 	let filtered = allSuites
-	if (manifestIds?.length || options.suiteSelectors?.length)
-		filtered = filterSuites(filtered, {
-			manifestIds,
-			suiteSelectors: options.suiteSelectors,
-		})
+	let explicitSuites = false
+
+	if (options.groups?.length) {
+		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds)
+		if (unmatched.length) {
+			console.errorI18n('fountConsole.test.unknownManifestId', {
+				ids: unmatched.join(', '),
+			})
+			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
+			return 2
+		}
+		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
+		explicitSuites = resolved.some(group => group.suiteSelectors.length)
+		filtered = filterFromGroups(allSuites, resolved)
+
+		if (options.groups.some(group => {
+			const sel = group.manifestSelectors[0]
+			const match = resolveManifestSelectors(group.manifestSelectors, knownIds)
+			return !knownIds.includes(sel) || match.manifestIds.length > 1
+		}))
+			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
+	}
+
+	const trackFailures = shouldTrackFailures(manifestIds)
 
 	const selection = await selectSuites({
 		repoRoot: REPO_ROOT,
@@ -204,7 +303,7 @@ export async function runTests(options = {}) {
 		changed,
 		runAll: options.runAll === true,
 		manifestIds,
-		suiteSelectors: options.suiteSelectors,
+		explicitSuites,
 		currentHash,
 		uncommittedFiles,
 	})
@@ -219,7 +318,7 @@ export async function runTests(options = {}) {
 
 	if (!selected.length) {
 		console.logI18n('fountConsole.test.noMatchingSuites')
-		if (options.suiteSelectors?.length) {
+		if (explicitSuites) {
 			const scope = manifestIds?.length
 				? allSuites.filter(s => manifestIds.includes(s.manifestId))
 				: allSuites
@@ -232,10 +331,8 @@ export async function runTests(options = {}) {
 	}
 
 	const streamLive = !genReport && selected.length === 1
-
 	const timingsByManifest = await loadTimingsForSuites(REPO_ROOT, selected)
 	const timingsDirty = new Set()
-
 	const manifestFailures = new Map()
 	let exitCode = 0
 
@@ -251,21 +348,11 @@ export async function runTests(options = {}) {
 	/** @type {TestReportWriter | null} */
 	let reportWriter = null
 	if (genReport) {
-		const commandParts = ['fount test']
-		if (options.runAll) commandParts.push('--all')
-		commandParts.push('--gen-report')
-		if (options.jobs >= 1) commandParts.push('-j', String(options.jobs))
-		if (options.since) commandParts.push('--since', options.since)
-		if (options.manifestSelectors?.length)
-			commandParts.push(options.manifestSelectors.join(','))
-		if (options.suiteSelectors?.length)
-			commandParts.push(options.suiteSelectors.join(','))
-
 		reportWriter = new TestReportWriter({
 			repoRoot: REPO_ROOT,
 			suites: selected,
 			runId,
-			command: commandParts.join(' '),
+			command: buildTestCommand(options),
 		})
 		const reportPath = await reportWriter.init()
 		console.logI18n('fountConsole.test.reportPath', {
@@ -274,7 +361,6 @@ export async function runTests(options = {}) {
 	}
 
 	/**
-	 * 并发执行 suite，收集有序结果。
 	 * @returns {Promise<void>}
 	 */
 	async function suiteWorker() {
@@ -301,7 +387,7 @@ export async function runTests(options = {}) {
 				})
 				printSuiteSummary(label, result, genReport, streamLive)
 				suiteResults[index] = { suite, result }
-				if (reportWriter) 
+				if (reportWriter)
 					await reportWriter.recordResult(index, {
 						suite,
 						passed: result.passed,
@@ -311,7 +397,6 @@ export async function runTests(options = {}) {
 						terminated: result.terminated,
 						terminateReason: result.terminateReason,
 					})
-				
 			}
 			finally {
 				release()
@@ -376,6 +461,145 @@ export async function runTests(options = {}) {
 			path: reportPath.replace(/\\/g, '/'),
 		})
 	}
+
+	return exitCode
+}
+
+/**
+ * 续跑 report.json 中 pending 的 suite。
+ * @param {object} params 参数
+ * @param {import('../core/manifest.mjs').SuiteDef[]} params.allSuites 全部 suite
+ * @param {boolean} params.genReport 是否写报告
+ * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} params.globalBudget 全局预算
+ * @param {string | null} params.currentHash 当前未提交 digest
+ * @param {number | undefined} params.jobs 并发上限
+ * @returns {Promise<number>} 进程退出码
+ */
+async function runContinue({ allSuites, genReport, globalBudget, currentHash, jobs }) {
+	const resumed = await TestReportWriter.resume(REPO_ROOT)
+	if (!resumed?.pendingIndices.length) {
+		console.logI18n('fountConsole.test.nothingToContinue')
+		return 0
+	}
+
+	const { writer: reportWriter, pendingIndices } = resumed
+	/** @type {{ suite: import('../core/manifest.mjs').SuiteDef, index: number }[]} */
+	const pendingRuns = []
+	for (const pending of pendingIndices) {
+		const suite = allSuites.find(s =>
+			s.manifestId === pending.manifestId && s.name === pending.name,
+		)
+		if (suite) pendingRuns.push({ suite, index: pending.index })
+	}
+
+	if (!pendingRuns.length) {
+		console.logI18n('fountConsole.test.nothingToContinue')
+		return 0
+	}
+
+	console.logI18n('fountConsole.test.continueResuming', { count: pendingRuns.length })
+
+	const manifestIds = [...new Set(reportWriter.entries.map(entry => entry.manifestId))]
+	const trackFailures = shouldTrackFailures(manifestIds)
+	const timingsByManifest = await loadTimingsForSuites(REPO_ROOT, pendingRuns.map(p => p.suite))
+	const timingsDirty = new Set()
+	const manifestFailures = new Map()
+	const retryByManifest = new Map()
+
+	const suiteConcurrency = computeConcurrency(
+		SUITE_MEM,
+		Number(process.env.FOUNT_TEST_SUITE_CONCURRENCY) || jobs,
+	)
+	const gate = new SuiteRunGate(suiteConcurrency)
+	let cursor = 0
+
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async function suiteWorker() {
+		while (cursor < pendingRuns.length) {
+			const runIndex = cursor++
+			const { suite, index } = pendingRuns[runIndex]
+			const release = await gate.acquire(suite)
+			try {
+				const runningKey = suite.heavy
+					? 'fountConsole.test.runningSuiteHeavy'
+					: 'fountConsole.test.runningSuite'
+				console.logI18n(runningKey, {
+					manifestId: suite.manifestId,
+					name: suite.name,
+				})
+				const label = `${suite.manifestId}/${suite.name}`
+				const baselineDurationMs = timingsByManifest.get(suite.manifestId)?.items?.[suite.name]?.durationMs
+				const result = await runSuite(suite, undefined, globalBudget, false, {
+					label,
+					baselineDurationMs,
+				})
+				printSuiteSummary(label, result, genReport, false)
+				await reportWriter.recordResult(index, {
+					suite,
+					passed: result.passed,
+					failedFiles: result.failedFiles,
+					output: result.output,
+					durationMs: result.durationMs,
+					terminated: result.terminated,
+					terminateReason: result.terminateReason,
+				})
+
+				if (result.passed) {
+					const record = timingsByManifest.get(suite.manifestId) ?? { items: {} }
+					timingsByManifest.set(
+						suite.manifestId,
+						recordSuiteSuccessTiming(record, suite.name, result.durationMs),
+					)
+					timingsDirty.add(suite.manifestId)
+				}
+
+				if (trackFailures) {
+					if (!manifestFailures.has(suite.manifestId))
+						manifestFailures.set(suite.manifestId,
+							(await readFailures(REPO_ROOT, suite.manifestId))?.items ?? [])
+					manifestFailures.set(suite.manifestId, mergeSuiteResult(
+						manifestFailures.get(suite.manifestId),
+						suite.name,
+						result.passed,
+						result.failedFiles.length ? result.failedFiles : undefined,
+					))
+				}
+			}
+			finally {
+				release()
+			}
+		}
+	}
+
+	await Promise.all(Array.from(
+		{ length: Math.min(suiteConcurrency, pendingRuns.length) },
+		() => suiteWorker(),
+	))
+
+	if (trackFailures) 
+		for (const manifestId of manifestFailures.keys()) {
+			const items = manifestFailures.get(manifestId) ?? []
+			await writeFailures(REPO_ROOT, manifestId, items, currentHash)
+			if (items.length)
+				console.logI18n('fountConsole.test.failuresSaved', {
+					path: relative(REPO_ROOT, failureFilePath(REPO_ROOT, manifestId)).replace(/\\/g, '/'),
+					count: items.length,
+				})
+			else if (retryByManifest.has(manifestId))
+				console.logI18n('fountConsole.test.failuresCleared', { manifestId })
+		}
+	
+
+	for (const manifestId of timingsDirty)
+		await writeTimings(REPO_ROOT, manifestId, timingsByManifest.get(manifestId) ?? { items: {} })
+
+	const exitCode = exitCodeFromEntries(reportWriter.entries)
+	const reportPath = await reportWriter.finalize(exitCode)
+	console.logI18n('fountConsole.test.reportPathFinal', {
+		path: reportPath.replace(/\\/g, '/'),
+	})
 
 	return exitCode
 }

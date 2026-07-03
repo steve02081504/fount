@@ -53,7 +53,7 @@ const EMPTY_SELECTION = { retryByManifest: new Map(), usingFailureRetry: false }
  * @param {{ mode: string, files: string[] }} params.changed 变更文件解析结果
  * @param {boolean} params.runAll 是否全量
  * @param {string[]} [params.manifestIds] manifest id 列表
- * @param {string[]} [params.suiteSelectors] suite 指名
+ * @param {boolean} [params.explicitSuites] 是否显式指名 suite（分组冒号语法）
  * @param {string | null} params.currentHash 当前未提交 digest
  * @param {string[]} params.uncommittedFiles 未提交路径列表
  * @returns {Promise<SuiteSelection>} 选择结果
@@ -65,12 +65,12 @@ export async function selectSuites({
 	changed,
 	runAll,
 	manifestIds,
-	suiteSelectors,
+	explicitSuites,
 	currentHash,
 	uncommittedFiles,
 }) {
 	// 全量或显式指名 suite 时，按用户给定子集执行，不与失败记录求交集。
-	if (runAll || suiteSelectors?.length)
+	if (runAll || explicitSuites)
 		return { action: 'run', suites: filtered, ...EMPTY_SELECTION }
 
 	const singleManifest = manifestIds?.length === 1 ? manifestIds[0] : undefined
