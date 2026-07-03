@@ -5,7 +5,7 @@
  * 【数据结构】textChannelContent、channelMessageContentObject；eventId、ballotId、timeline 游标。
  * 【关联】groupClient.mjs、lib/channelContent.mjs；MessagePipeline、Hub composer。
  */
-import { channelMessageContentObject, textChannelContent } from '../lib/channelContent.mjs'
+import { channelMessageContentObject, textChannelContent } from '../../shared/channelContent.mjs'
 
 import { groupFetch, groupPath } from './groupClient.mjs'
 

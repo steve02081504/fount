@@ -8,8 +8,8 @@
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/api/groupFriendBinding.mjs'
-import { buildCharFriendBinding } from '../src/friendBinding.mjs'
 
 import { initCharCard } from './charCard.mjs'
 import { mountChatConfigPanel } from './chatConfig.mjs'
@@ -100,7 +100,7 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 /**
  * 进入与指定角色的好友私聊（统一走群频道会话）。
  * @param {string} charname 角色名
- * @param {{groupId?: string, forceNew?: boolean, binding?: import('../src/friendBinding.mjs').FriendBinding}} [opts] 选项
+ * @param {{groupId?: string, forceNew?: boolean, binding?: import('../shared/friendBinding.mjs').FriendBinding}} [opts] 选项
  * @returns {Promise<void>}
  */
 export async function enterPrivateGroup(charname, opts = {}) {

@@ -7,11 +7,11 @@
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { isEntityHash128 } from '../shared/entityHash.mjs'
+import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../shared/friendBinding.mjs'
+import { isHex64 } from '../shared/pubKeyHex.mjs'
 import { createDirectMessageByPubKeys, getFederationSettings, getGroupState } from '../src/api/groupApi.mjs'
 import { setGroupFriendBinding } from '../src/api/groupFriendBinding.mjs'
-import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../src/friendBinding.mjs'
-import { isEntityHash128 } from '../src/lib/entityHash.mjs'
-import { isHex64 } from '../src/lib/pubKeyHex.mjs'
 import { handleUIError, toError } from '../src/ui/errors.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
@@ -48,8 +48,8 @@ async function chatRuntimeFetch(url, init = {}, signal) {
 }
 
 /**
- * @param {import('../src/friendBinding.mjs').FriendBinding | null} a 绑定 A
- * @param {import('../src/friendBinding.mjs').FriendBinding | null} b 绑定 B
+ * @param {import('../shared/friendBinding.mjs').FriendBinding | null} a 绑定 A
+ * @param {import('../shared/friendBinding.mjs').FriendBinding | null} b 绑定 B
  * @returns {boolean} 是否等价（领域键：entityHash + charname）
  */
 function friendBindingsEqual(a, b) {
@@ -86,7 +86,7 @@ function enqueueResolveFriendGroup(fn, signal) {
 
 /**
  * 查找已绑定该角色 entityHash 的好友群。
- * @param {import('../src/friendBinding.mjs').FriendBinding} binding 绑定
+ * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
  * @returns {Promise<string|null>} 群 ID
  */
 async function findExistingFriendGroup(binding) {
@@ -120,7 +120,7 @@ async function ensureCharOnGroup(groupId, charname, signal) {
 
 /**
  * 解析或新建好友群 ID（角色需 addchar；用户 DM 由调用方传入 groupId）。
- * @param {import('../src/friendBinding.mjs').FriendBinding} binding 绑定
+ * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
  * @param {{ groupId?: string, forceNew?: boolean }} opts 选项
  * @param {AbortSignal} signal 取消信号
  * @returns {Promise<string|null>} 群 ID；失败为 null
@@ -176,7 +176,7 @@ function resolvePrivateChannelId(state, preferredChannelId) {
 /**
  * 进入好友私聊：与用户 DM 相同，走群频道 + 群 WS；角色回复由服务端按群 char 列表触发。
  * @param {string} groupId 群 ID
- * @param {import('../src/friendBinding.mjs').FriendBinding} binding 绑定
+ * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
  * @param {AbortSignal} signal 取消信号
  * @param {string | null | undefined} [channelIdOpt] 目标频道（hash 或调用方指定）
  * @returns {Promise<void>}
@@ -236,7 +236,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 /**
  * @param {object} opts 选项
  * @param {string} [opts.groupId] 群 ID
- * @param {import('../src/friendBinding.mjs').FriendBinding} [opts.binding] 绑定
+ * @param {import('../shared/friendBinding.mjs').FriendBinding} [opts.binding] 绑定
  * @param {boolean} [opts.forceNew] 强制新建群（仅角色）
  * @param {string} [opts.channelId] 打开时选中的频道 ID
  * @returns {Promise<void>}

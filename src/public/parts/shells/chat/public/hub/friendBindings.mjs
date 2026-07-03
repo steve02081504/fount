@@ -8,7 +8,7 @@
 import { hubStore } from './core/state.mjs'
 
 /**
- * @typedef {import('../src/friendBinding.mjs').FriendBinding} FriendBinding
+ * @typedef {import('../shared/friendBinding.mjs').FriendBinding} FriendBinding
  */
 
 /**

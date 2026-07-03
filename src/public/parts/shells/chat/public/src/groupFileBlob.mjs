@@ -3,7 +3,7 @@
  * 【职责】群加密文件经 groupEntityHash EVFS 解密下载为 Blob URL。
  */
 import { entityFileUrl } from '/scripts/api/p2p/evfsMedia.mjs'
-import { groupEntityHash } from './lib/groupEntityHash.mjs'
+import { groupEntityHash } from '../shared/groupEntityHash.mjs'
 
 
 /**

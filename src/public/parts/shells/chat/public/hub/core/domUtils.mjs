@@ -5,10 +5,10 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../src/lib/entityHash、../../src/lib/entityId、../../src/lib/pubKeyHex、state
  */
-import { entityHashLabel, isEntityHash128 } from '../../src/lib/entityHash.mjs'
-import { agentEntityHash } from '../../src/lib/entityId.mjs'
+import { entityHashLabel, isEntityHash128 } from '../../shared/entityHash.mjs'
+import { agentEntityHash } from '../../shared/entityId.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { isHex64, normalizeHex64 } from '../../src/lib/pubKeyHex.mjs'
+import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
 
 import { hubStore } from './state.mjs'
 

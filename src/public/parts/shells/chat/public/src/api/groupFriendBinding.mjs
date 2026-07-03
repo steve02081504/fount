@@ -5,14 +5,14 @@
  * 【数据结构】FriendBinding { entityHash, displayName?, charname? }。
  * 【关联】friendBinding.mjs、groupClient.mjs；Hub 好友频道。
  */
-import { normalizeFriendBinding } from '../friendBinding.mjs'
+import { normalizeFriendBinding } from '../../shared/friendBinding.mjs'
 
 import { groupFetch, groupPath } from './groupClient.mjs'
 
 /**
  * 写入或清除群上的好友私聊绑定元数据（`group_meta_update`）。
  * @param {string} groupId 群 ID
- * @param {import('../friendBinding.mjs').FriendBinding | null} friendBinding 绑定；`null` 表示解绑
+ * @param {import('../../shared/friendBinding.mjs').FriendBinding | null} friendBinding 绑定；`null` 表示解绑
  * @returns {Promise<void>}
  */
 export async function setGroupFriendBinding(groupId, friendBinding) {

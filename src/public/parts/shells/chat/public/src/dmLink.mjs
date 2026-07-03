@@ -6,10 +6,11 @@
  * 【关联】lib/dmLinkSignature.mjs、groupApi、runUri.mjs、signer.mjs。
  */
 
+import { normalizePubKeyHex, PUB_KEY_HEX_64 } from '../shared/pubKeyHex.mjs'
+import { formatDmRunUri } from '../shared/runUri.mjs'
+
 import { putFederationSettings } from './api/groupApi.mjs'
 import { dmLinkSignableBytes } from './lib/dmLinkSignature.mjs'
-import { normalizePubKeyHex, PUB_KEY_HEX_64 } from './lib/pubKeyHex.mjs'
-import { formatDmRunUri } from './lib/runUri.mjs'
 import { sign } from './lib/signer.mjs'
 
 

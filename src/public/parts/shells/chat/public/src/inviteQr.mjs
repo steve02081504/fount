@@ -2,7 +2,7 @@
  * 【文件】public/src/inviteQr.mjs
  * 【职责】入群邀请 QR 与 run URI / protocol 分享链接组装。
  */
-import { formatJoinRunUri, wrapProtocolHttpsUrl } from './lib/runUri.mjs'
+import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../shared/runUri.mjs'
 
 /**
  * @param {string} url 完整入群 URL

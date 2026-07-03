@@ -10,10 +10,10 @@ import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPick
 import { mountDockedStickerPicker } from '../../../../scripts/components/stickerPicker.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { fetchStickerPayload } from '../providers/sticker.mjs'
+import { entityHashLabel } from '../shared/entityHash.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 import { setEmojiUrlResolver } from '../src/emojiCache.mjs'
 import { localeQueryString } from '../src/entityProfileApi.mjs'
-import { entityHashLabel } from '../src/lib/entityHash.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 

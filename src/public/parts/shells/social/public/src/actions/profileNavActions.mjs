@@ -1,4 +1,4 @@
-import { formatChatDmFromSocial } from '../lib/runUri.mjs'
+import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'

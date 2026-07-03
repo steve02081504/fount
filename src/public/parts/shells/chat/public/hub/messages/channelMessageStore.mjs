@@ -1,13 +1,13 @@
 /**
  * Hub 频道消息 Store：source 合并、展示链折叠、导航补拉（无 DOM）。
  */
+import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
+import { compareHex64Asc } from '../../shared/pubKeyHex.mjs'
 import {
 	getChannelMessages,
 	getPinContextMessages,
 } from '../../src/api/groupApi.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
-import { mergeChannelMessagesForDisplay } from '../../src/lib/messageMerge.mjs'
-import { compareHex64Asc } from '../../src/lib/pubKeyHex.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
 import { hubStore } from '../core/state.mjs'
 import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'

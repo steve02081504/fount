@@ -5,7 +5,7 @@
  * 【数据结构】mergedMessages[]、activeBranches、viewerMemberPubKeyHash。
  * 【关联】reactionHandlers；Hub messageRender。
  */
-import { isHex64 } from '../lib/pubKeyHex.mjs'
+import { isHex64 } from '../../shared/pubKeyHex.mjs'
 
 /**
  * 稳定比较两条 DAG 边（时间戳升序，其次 eventId 字典序）。

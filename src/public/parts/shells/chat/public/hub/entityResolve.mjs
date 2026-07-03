@@ -5,8 +5,8 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../src/friendBinding、../src/lib/entityHash、core/state
  */
-import { buildCharFriendBinding } from '../src/friendBinding.mjs'
-import { isEntityHash128 } from '../src/lib/entityHash.mjs'
+import { isEntityHash128 } from '../shared/entityHash.mjs'
+import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
 
 import { hubStore } from './core/state.mjs'
 

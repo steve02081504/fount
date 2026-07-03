@@ -1,6 +1,7 @@
 import { wireEmojiPickerButton } from '../../../../scripts/components/emojiPicker.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { groupRefLabel } from '../shared/groupRef.mjs'
 
 import { handleMainClick } from './actions.mjs'
 import {
@@ -12,7 +13,6 @@ import {
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
-import { groupRefLabel } from './lib/groupRef.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { loadFeed, runFeedSearch } from './views/feed.mjs'

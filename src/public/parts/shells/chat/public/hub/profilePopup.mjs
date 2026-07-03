@@ -10,8 +10,8 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { entityHashLabel, isEntityHash128 } from '../src/lib/entityHash.mjs'
-import { isHex64 } from '../src/lib/pubKeyHex.mjs'
+import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
+import { isHex64 } from '../shared/pubKeyHex.mjs'
 
 import { hubStore } from './core/state.mjs'
 import {

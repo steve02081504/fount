@@ -24,7 +24,7 @@ import { loadGroups } from './serverBar.mjs'
  * @property {string} key
  * @property {string} displayName
  * @property {string} [charname]
- * @property {import('../src/friendBinding.mjs').FriendBinding} binding
+ * @property {import('../shared/friendBinding.mjs').FriendBinding} binding
  * @property {object} session
  */
 

@@ -1,11 +1,11 @@
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
-
 import {
 	formatGroupRefMarkdownToken,
 	groupRefLabel,
 	renderGroupRefBlockHtml,
 	stripGroupRefMarkdownTokens,
-} from './lib/groupRef.mjs'
+} from '../shared/groupRef.mjs'
+
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 

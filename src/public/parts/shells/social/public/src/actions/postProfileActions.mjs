@@ -1,6 +1,6 @@
+import { formatSocialProfileRunUri } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
-import { formatSocialProfileRunUri } from '../lib/runUri.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'

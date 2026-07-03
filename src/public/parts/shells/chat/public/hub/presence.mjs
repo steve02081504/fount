@@ -6,11 +6,11 @@
  * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup
  */
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
+import { isEntityHash128 } from '../shared/entityHash.mjs'
 import {
 	cachedProfileFromApi,
 	fetchEntityProfileApi,
 } from '../src/entityProfileApi.mjs'
-import { isEntityHash128 } from '../src/lib/entityHash.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { mountAvatarCover } from './core/avatarCover.mjs'

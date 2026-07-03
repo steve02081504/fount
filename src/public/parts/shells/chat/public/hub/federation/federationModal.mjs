@@ -6,6 +6,7 @@
  */
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { isHex64, normalizeHex64, PUB_KEY_HEX_64 } from '../../shared/pubKeyHex.mjs'
 import {
 	getFederationSettings,
 	getGroupReputation,
@@ -18,7 +19,6 @@ import {
 } from '../../src/api/groupApi.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { isHex64, normalizeHex64, PUB_KEY_HEX_64 } from '../../src/lib/pubKeyHex.mjs'
 import { closeOverlayModal, openOverlayModal } from '../core/overlayModal.mjs'
 import { openDiscoveryPanel } from '../discoveryPanel.mjs'
 

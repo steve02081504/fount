@@ -1,8 +1,8 @@
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
+import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 
 import { formatActionKey } from './lib/actionKey.mjs'
 import { entityHandle } from './lib/display.mjs'
-import { renderGroupRefBlockHtml } from './lib/groupRef.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 

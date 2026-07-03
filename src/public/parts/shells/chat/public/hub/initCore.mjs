@@ -65,7 +65,7 @@ async function navigateHubFromLocation() {
 		const { setMode } = await import('./mode.mjs')
 		await setMode('friends')
 		const { enterFriendChat } = await import('./friendChat.mjs')
-		const { buildCharFriendBinding } = await import('../src/friendBinding.mjs')
+		const { buildCharFriendBinding } = await import('../shared/friendBinding.mjs')
 		if (hubStore.viewer.nodeHash)
 			await enterFriendChat({ binding: await buildCharFriendBinding(hubStore.viewer.nodeHash, charParam) })
 		return

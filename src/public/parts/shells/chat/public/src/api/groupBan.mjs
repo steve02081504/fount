@@ -5,7 +5,7 @@
  * 【数据结构】groupId、targetPubKeyHash、scope 选项。
  * 【关联】groupClient.mjs、groupGovernance.mjs、pubKeyHex.mjs。
  */
-import { isHex64 } from '../lib/pubKeyHex.mjs'
+import { isHex64 } from '../../shared/pubKeyHex.mjs'
 
 import { groupFetch, groupPath } from './groupClient.mjs'
 import { postReputationSlash } from './groupGovernance.mjs'

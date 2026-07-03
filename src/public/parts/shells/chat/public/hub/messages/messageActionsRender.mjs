@@ -7,7 +7,7 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../src/lib/channelContent、../../src/lib/emojiSvg、../core/domUtils、messageActionsUi、messageRender
  */
-import { channelMessageText } from '../../src/lib/channelContent.mjs'
+import { channelMessageText } from '../../shared/channelContent.mjs'
 import {
 	hubActionBookmarkIcon,
 	hubActionCopyHtmlIcon,

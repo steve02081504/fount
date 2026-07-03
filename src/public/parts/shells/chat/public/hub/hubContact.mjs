@@ -1,8 +1,8 @@
 /**
  * Hub 落地页 `?contact=<entityHash>`（Social「私信」等入口）。
  */
-import { buildCharFriendBinding, buildUserFriendBinding } from '../src/friendBinding.mjs'
-import { entityHashLabel, isEntityHash128 } from '../src/lib/entityHash.mjs'
+import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
+import { buildCharFriendBinding, buildUserFriendBinding } from '../shared/friendBinding.mjs'
 
 import { hubStore } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'

@@ -7,7 +7,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { isHex64 } from '../src/lib/pubKeyHex.mjs'
+import { isHex64 } from '../shared/pubKeyHex.mjs'
 
 import { refreshBoundBanners } from './core/bindings.mjs'
 import { hubStore } from './core/state.mjs'

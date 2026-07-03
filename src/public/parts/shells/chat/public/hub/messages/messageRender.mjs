@@ -9,6 +9,7 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/features/template.mjs'
+import { channelMessageEditText, channelMessageShowText } from '../../shared/channelContent.mjs'
 import { firstCustomEmojiRef } from '../../src/customEmojis.mjs'
 import { resolveEmojiUrlBestEffort } from '../../src/emojiCache.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../src/groupFileBlob.mjs'
@@ -18,7 +19,6 @@ import {
 	combineDisposers,
 } from '../../src/groupMode.mjs'
 import { buildInviteJoinShareUrl } from '../../src/inviteQr.mjs'
-import { channelMessageEditText, channelMessageShowText } from '../../src/lib/channelContent.mjs'
 import { getFountMessageMarkdownConvertor } from '../../src/lib/fountMessageMarkdown.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'

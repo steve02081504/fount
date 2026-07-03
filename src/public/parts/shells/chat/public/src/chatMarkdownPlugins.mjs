@@ -7,7 +7,7 @@
  */
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { expandChannelLinksInText } from './lib/expandChannelLinks.mjs'
+import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
 
 /**
  * 将聊天方言 `#[group/channel]`、`#[group]` 展开为 Markdown 链接（remark 阶段）。

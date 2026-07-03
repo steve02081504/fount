@@ -3,7 +3,7 @@
  */
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { expandChannelLinksInText } from '../src/lib/expandChannelLinks.mjs'
+import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
 
 const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 
