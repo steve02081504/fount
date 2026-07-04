@@ -30,7 +30,9 @@ export async function handlePostProfileActionsClick(appContext, target) {
 
 	const moreToggle = target.closest('[data-more-toggle]')
 	if (moreToggle instanceof HTMLElement && moreToggle.dataset.moreToggle) {
-		const menu = document.querySelector(`[data-more-menu="${moreToggle.dataset.moreToggle}"]`)
+		const card = moreToggle.closest('.post-card')
+		const menu = card?.querySelector(`[data-more-menu="${CSS.escape(moreToggle.dataset.moreToggle)}"]`)
+			|| document.querySelector(`[data-more-menu="${CSS.escape(moreToggle.dataset.moreToggle)}"]`)
 		if (menu instanceof HTMLElement) {
 			const willOpen = menu.classList.contains('hidden')
 			closePostMoreMenus(willOpen ? menu : null)

@@ -1,4 +1,5 @@
 import { initAuditLogPanel } from '../auditLogPanel.mjs'
+import { getGroupState } from '../api/groupCore.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
 
 import { renderArchiveStoragePanel } from './archiveTab.mjs'
@@ -16,12 +17,10 @@ import { resetPanelFlags } from './state.mjs'
  */
 export async function loadGroupSettings(ctx, groupId) {
 	ctx.groupId = groupId
-	const response = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/state`, { credentials: 'include' })
-	const data = await response.json()
-	if (!response.ok) throw new Error(data.error)
 	resetPanelFlags(ctx)
-	ctx.state = data.state
-	ctx.stateJson = data.state
+	const state = await getGroupState(groupId)
+	ctx.state = state
+	ctx.stateJson = state
 	ctx.settingsCaps = await resolveViewerSettingsCapabilities(ctx.state, groupId)
 	await updateSettingsTabsVisibility(ctx)
 	await renderGroupSettings(ctx)

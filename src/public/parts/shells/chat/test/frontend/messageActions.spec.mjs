@@ -26,15 +26,14 @@ test.describe('Chat message actions', () => {
 		await expect(page.locator('#hub-messages .hub-message').filter({ hasText: original })).toHaveCount(0, { timeout: 60_000 })
 	})
 
-	test('deletes an own message with shift shortcut', async ({ page, groupChannel }) => {
+	test('deletes an own message from context menu', async ({ page, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
 		const text = `del ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
-		await row.hover()
-		await page.keyboard.down('Shift')
-		await row.locator('.hub-message-action[data-action="delete"]').click()
-		await page.keyboard.up('Shift')
+		await row.click({ button: 'right' })
+		await expect(page.locator('[data-message-context-menu]')).toBeVisible({ timeout: 20_000 })
+		await page.locator('[data-message-context-menu] [data-action="delete"]').click()
 		await expect(messageRowByText(page, text)).toHaveCount(0, { timeout: 60_000 })
 	})
 
@@ -70,8 +69,10 @@ test.describe('Chat message actions', () => {
 		const row = await expectMessageInChat(page, text)
 		await row.hover()
 		await row.locator('.hub-message-action[data-action="bookmark"]').click()
-		await expect(page.locator('#hub-pins-bookmarks-wrap:not([hidden])')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('.hub-bookmark-row').filter({ hasText: text.slice(0, 20) }))
+		await expect(page.locator('#hub-bookmarks-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#hub-bookmarks-button').click()
+		await expect(page.locator('#hub-bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#hub-bookmarks-panel .hub-bookmark-row').filter({ hasText: text.slice(0, 20) }))
 			.toBeVisible({ timeout: 30_000 })
 	})
 
@@ -130,7 +131,10 @@ test.describe('Chat message actions', () => {
 		const row = await expectMessageInChat(page, anchor)
 		await row.hover()
 		await row.locator('.hub-message-action[data-action="bookmark"]').click()
-		const bookmarkRow = page.locator('.hub-bookmark-row').filter({ hasText: anchor.slice(0, 20) })
+		await expect(page.locator('#hub-bookmarks-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#hub-bookmarks-button').click()
+		await expect(page.locator('#hub-bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
+		const bookmarkRow = page.locator('#hub-bookmarks-panel .hub-bookmark-row').filter({ hasText: anchor.slice(0, 20) })
 		await expect(bookmarkRow).toBeVisible({ timeout: 30_000 })
 		await bookmarkRow.click()
 		await expect(row).toHaveClass(/ring-primary/, { timeout: 30_000 })

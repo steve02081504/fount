@@ -14,6 +14,7 @@ import { closePostMoreMenus } from './shared.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handlePostEngagementClick(appContext, target) {
+	const cardRoot = target.closest('.post-card') || document
 	const likeBtn = target.closest('[data-like]')
 	if (likeBtn instanceof HTMLElement && likeBtn.dataset.like) {
 		const parsed = parseActionKey(likeBtn.dataset.like)
@@ -30,12 +31,12 @@ export async function handlePostEngagementClick(appContext, target) {
 
 	const repostBtn = target.closest('[data-repost]')
 	if (repostBtn instanceof HTMLElement && repostBtn.dataset.repost)
-		queryByActionKey('data-repost-for', repostBtn.dataset.repost)?.classList.toggle('hidden')
+		queryByActionKey('data-repost-for', repostBtn.dataset.repost, cardRoot)?.classList.toggle('hidden')
 
 	const submitRepostBtn = target.closest('[data-submit-repost]')
 	if (submitRepostBtn instanceof HTMLElement && submitRepostBtn.dataset.submitRepost) {
 		const actionKey = submitRepostBtn.dataset.submitRepost
-		const panel = queryByActionKey('data-repost-for', actionKey)
+		const panel = queryByActionKey('data-repost-for', actionKey, cardRoot)
 		const textarea = panel?.querySelector('textarea')
 		const comment = textarea?.value.trim() || ''
 		const parsed = parseActionKey(actionKey)
@@ -74,7 +75,7 @@ export async function handlePostEngagementClick(appContext, target) {
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const panel = queryByActionKey('data-replies-for', actionKey)
+			const panel = queryByActionKey('data-replies-for', actionKey, cardRoot)
 			if (!panel) return false
 			panel.classList.toggle('hidden')
 			if (panel.dataset.loaded) return false
@@ -90,7 +91,7 @@ export async function handlePostEngagementClick(appContext, target) {
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const panel = queryByActionKey('data-replies-for', actionKey)
+			const panel = queryByActionKey('data-replies-for', actionKey, cardRoot)
 			const textarea = panel?.querySelector('textarea')
 			const text = textarea?.value.trim()
 			if (!text) return false

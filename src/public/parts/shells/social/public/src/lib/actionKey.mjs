@@ -26,8 +26,9 @@ export function parseActionKey(actionKey) {
  * 按 data 属性值查询 DOM（对 selector 中的特殊字符做 CSS.escape）。
  * @param {string} attr 属性名（如 `data-repost-for`）
  * @param {string} actionKey 属性值
+ * @param {ParentNode} [root=document] 查询根节点
  * @returns {Element | null} 匹配元素或 `null`
  */
-export function queryByActionKey(attr, actionKey) {
-	return document.querySelector(`[${attr}="${CSS.escape(actionKey)}"]`)
+export function queryByActionKey(attr, actionKey, root = document) {
+	return root.querySelector(`[${attr}="${CSS.escape(actionKey)}"]`)
 }

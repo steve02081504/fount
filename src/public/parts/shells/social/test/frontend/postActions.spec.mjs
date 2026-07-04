@@ -8,7 +8,7 @@ test.describe('Social post actions', () => {
 	test('dm from post card navigates to chat', async ({ page, baseUrl, apiKey, publishPost }) => {
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`dm-card ${Date.now()}`)
-		const card = await findPostCard(page, postId)
+		const card = await findPostCard(page, postId, { allowProfileFallback: true })
 		await openPostMoreMenu(card)
 		await card.locator(`[data-dm="${entityHash}"]`).click()
 		await expect(page).toHaveURL(
@@ -29,7 +29,7 @@ test.describe('Social post actions', () => {
 
 	test('submit repost appears in feed', async ({ page, publishPost }) => {
 		const { postId: originalId } = await publishPost(`repost-src ${Date.now()}`)
-		const card = await findPostCard(page, originalId)
+		const card = await findPostCard(page, originalId, { allowProfileFallback: true })
 		const repostKey = await card.locator('[data-repost]').getAttribute('data-repost')
 		const panel = card.locator(`[data-repost-for="${repostKey}"]`)
 		await card.locator('[data-repost]').click()
@@ -46,7 +46,7 @@ test.describe('Social post actions', () => {
 		])
 		await expect(panel).toHaveClass(/hidden/)
 		await page.locator('#feedRefreshBtn').click()
-		await expect(page.locator('#feedList .repost-banner', { hasText: comment })).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#feedList .repost-comment', { hasText: comment })).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('translate appends translated text block', async ({ page, publishPost }) => {
