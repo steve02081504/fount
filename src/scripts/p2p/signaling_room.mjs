@@ -78,35 +78,6 @@ export function buildTrysteroSignalingConfig({ appId, password, relayUrls }) {
 }
 
 /**
- * 已挂过静默 `error` handler 的共享 relay socket 集合。
- *
- * relay socket 是 trystero 进程级单例，会被所有房间复用；每次 join 都调用本函数时
- * 必须保证幂等，否则监听器会累积并触发 "AsyncEventEmitter memory leak" 警告。
- */
-const relaySocketsWithErrorHandler = new WeakSet()
-
-/**
- * 静默 Trystero Nostr relay socket `error` 事件，避免 ECONNRESET 刷屏。
- * 对每个 relay socket 仅注册一次 handler（幂等，避免监听器累积）。
- * @returns {Promise<void>}
- */
-export async function attachTrysteroRelayErrorHandlers() {
-	try {
-		const nostr = await import('npm:@trystero-p2p/nostr')
-		if (typeof nostr.getRelaySockets !== 'function') return
-		const sockets = nostr.getRelaySockets()
-		for (const [, socket] of Object.entries(sockets))
-			if (socket && typeof socket.on === 'function' && !relaySocketsWithErrorHandler.has(socket)) {
-				socket.on('error', error => {
-					void debugLog('p2p', { event: 'nostr_relay_socket_error', error: String(error) })
-				})
-				relaySocketsWithErrorHandler.add(socket)
-			}
-	}
-	catch { /* optional */ }
-}
-
-/**
  * 首次 join 后的落定窗口（毫秒）：Trystero 0.25 仅在 `!pool.isActive` 时 warmup offerPool。
  * 进程内尚无活跃信令 room 时，需留出该窗口让首次 warmup 落定。
  * 两常量设为相等即回退为固定窗口行为。
@@ -231,7 +202,6 @@ async function runSerializedJoin({ appId, roomId, buildJoinConfig }) {
 			return null
 		}
 		registerActiveSignalingRoom(room, normalizedAppId, normalizedRoomId)
-		await attachTrysteroRelayErrorHandlers()
 		void release()
 		return room
 	}
