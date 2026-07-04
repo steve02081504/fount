@@ -6,10 +6,10 @@ import { createServer } from 'node:http'
 
 import { WebSocketServer } from 'npm:ws'
 
-import { pickAvailablePort } from '../node/launch.mjs'
-
-/** @type {{ httpServer: import('node:http').Server, wss: WebSocketServer, relayUrl: string } | null} */
+/** @type {{ httpServer: import('node:http').Server, wss: WebSocketServer, relayUrl: string, port: number } | null} */
 let activeRelay = null
+/** @type {Promise<{ httpServer: import('node:http').Server, wss: WebSocketServer, relayUrl: string, port: number }> | null} */
+let pendingRelayStart = null
 /** 引用计数：多个并发 fed 套件共享同一 relay 实例，最后一个 stop 才真正关闭。 */
 let relayRefCount = 0
 
@@ -111,31 +111,59 @@ function handleClientMessage(ws, raw) {
  * @returns {Promise<{ relayUrl: string, port: number }>} relay 连接 URL 与端口
  */
 export async function startTestNostrRelay() {
-	relayRefCount++
-	if (activeRelay)
-		return { relayUrl: activeRelay.relayUrl, port: Number(new URL(activeRelay.relayUrl).port) }
+	if (activeRelay) {
+		relayRefCount++
+		return { relayUrl: activeRelay.relayUrl, port: activeRelay.port }
+	}
+	if (pendingRelayStart) {
+		const started = await pendingRelayStart
+		relayRefCount++
+		return { relayUrl: started.relayUrl, port: started.port }
+	}
 
-	const port = await pickAvailablePort(18_883)
-	const httpServer = createServer()
-	const wss = new WebSocketServer({ server: httpServer })
+	pendingRelayStart = (async () => {
+		const httpServer = createServer()
+		const wss = new WebSocketServer({ server: httpServer })
 
-	wss.on('connection', ws => {
-		/** @type {import('npm:ws').WebSocket & { subscriptions?: Array<{ id: string, filters: object[] }> }} */
-		const client = ws
-		client.subscriptions = []
-		client.on('message', raw => handleClientMessage(client, raw))
-		client.on('close', () => { client.subscriptions = [] })
-	})
+		wss.on('connection', ws => {
+			/** @type {import('npm:ws').WebSocket & { subscriptions?: Array<{ id: string, filters: object[] }> }} */
+			const client = ws
+			client.subscriptions = []
+			client.on('message', raw => handleClientMessage(client, raw))
+			client.on('close', () => { client.subscriptions = [] })
+		})
 
-	await new Promise((resolve, reject) => {
-		httpServer.once('error', reject)
-		httpServer.listen(port, '127.0.0.1', resolve)
-	})
+		await new Promise((resolve, reject) => {
+			httpServer.once('error', reject)
+			httpServer.listen(0, '127.0.0.1', resolve)
+		})
 
-	const relayUrl = `ws://127.0.0.1:${port}`
-	activeRelay = { httpServer, wss, relayUrl }
-	storedEvents = []
-	return { relayUrl, port }
+		const address = httpServer.address()
+		const port = typeof address === 'object' && address ? Number(address.port) : 0
+		if (!port)
+			throw new Error('test Nostr relay failed to bind a TCP port')
+		return {
+			httpServer,
+			wss,
+			relayUrl: `ws://127.0.0.1:${port}`,
+			port,
+		}
+	})()
+	try {
+		const started = await pendingRelayStart
+		activeRelay = {
+			httpServer: started.httpServer,
+			wss: started.wss,
+			relayUrl: started.relayUrl,
+			port: started.port,
+		}
+		storedEvents = []
+		relayRefCount++
+		return { relayUrl: started.relayUrl, port: started.port }
+	}
+	finally {
+		pendingRelayStart = null
+	}
 }
 
 /**

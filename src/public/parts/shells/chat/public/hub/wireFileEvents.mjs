@@ -1,5 +1,5 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { handleUIError } from '../../src/ui/errors.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
 
 import { addFilesFromEvent } from './composerFiles.mjs'

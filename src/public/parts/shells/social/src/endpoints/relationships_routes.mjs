@@ -26,8 +26,6 @@ export function registerRelationshipsRoutes(router) {
 		const target = String(req.body?.entityHash).toLowerCase()
 		if (!isEntityHash128(target))
 			throw httpError(400, 'invalid entityHash')
-		if (!await isKnownSocialTarget(username, target))
-			throw httpError(400, 'unknown entity')
 		const follow = req.body?.follow !== false
 		const acting = await resolveActingEntity(username, req.body?.actingEntityHash)
 		if (acting.error)

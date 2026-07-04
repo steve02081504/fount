@@ -1,9 +1,9 @@
-import { addDragAndDropSupport } from '../../src/ui/dragAndDrop.mjs'
+import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
 import {
 	pickPhoto,
 	selectedFiles,
 	toggleVoiceRecording,
-} from '../composerFiles.mjs'
+} from './composerFiles.mjs'
 
 /** @returns {void} */
 export function wireComposerEvents() {

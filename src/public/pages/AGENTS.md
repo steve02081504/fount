@@ -42,3 +42,4 @@ alwaysApply: false
 - **`terminal.mjs`**: `xterm.js` terminal wrapper.
 - **`regex.mjs`**: Regex parsing and escaping.
 - **`credentialManager.mjs`**: Secure credential encryption and transfer.
+- **`lib/digest.mjs`**: Keep SHA-256 helpers cross-runtime (Deno + browser). `sha256HexFromBlob` must stay chunked (do not regress to whole-file `arrayBuffer()`), and callers may pass custom chunk sizes for large-file memory control.

@@ -20,6 +20,7 @@ alwaysApply: false
 ## UI conventions
 
 - **Errors**: use `handleUIError` from `public/src/ui/errors.mjs` — toast + `console.error` + Sentry (all three). Do not catch with only `showToastI18n` alone. Background paths: `toError` + `console.error` + Sentry without toast.
+- **Relative imports**: files directly under `public/hub/` must reach shared frontend helpers with `../src/...`; using `../../src/...` resolves to `/parts/src/...` in the browser and hard-fails module loading.
 - No hardcoded user-visible strings; use `data-i18n` and `zh-CN.json`.
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
