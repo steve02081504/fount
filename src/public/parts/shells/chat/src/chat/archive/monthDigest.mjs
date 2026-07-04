@@ -334,7 +334,7 @@ export function syncArchivedEventIdsFromMonthBody(manifest, channelId, month, sn
  * @param {object} manifest archive manifest
  * @param {string} channelId 频道
  * @param {string} month `YYYY-MM`
- * @param {{ pickScore?: (peerNodeHash: string) => number, activeMemberCount?: number }} [opts] 测试可注入 pickScore；activeMemberCount 用于缩放 strictMin
+ * @param {{ pickScore?: (peerNodeHash: string) => number, activeMemberCount?: number, expectedTargetCount?: number }} [opts] 测试可注入 pickScore；activeMemberCount 用于缩放 strictMin；expectedTargetCount 为本次请求的联邦目标 peer 数
  * @returns {Promise<{ winner: object | null, digest: string, reason: string }>} 仲裁结果
  */
 export async function pickArchiveMonthByReputation(candidates, manifest, channelId, month, opts = {}) {
@@ -388,10 +388,14 @@ export async function pickArchiveMonthByReputation(candidates, manifest, channel
 	const candidatePeerCount = Math.max(...[...byDigest.values()].map(b => b.peers.length), 0)
 	const quorumN = Math.max(Number(opts.activeMemberCount) || 0, candidatePeerCount)
 	const strictMin = resolveArchiveQuorumPeerStrictMin(quorumN, archiveTunables)
+	const expectedTargetCount = Math.max(0, Math.floor(Number(opts.expectedTargetCount) || 0))
+	const completeResponses = candidates.filter(row => row.complete).length
+	const allTargetsResponded = expectedTargetCount > 0 && completeResponses >= expectedTargetCount
 	const soleHighRepDictator = best.bucket.peers.length === 1 && best.score > 0
 	const quorumOk = !soleHighRepDictator && (
 		best.score > 0
 		|| best.bucket.peers.length >= strictMin
+		|| allTargetsResponded
 	)
 	if (!quorumOk) return { winner: null, digest: '', reason: 'quorum_failed' }
 

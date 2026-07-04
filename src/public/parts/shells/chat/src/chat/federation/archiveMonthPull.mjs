@@ -319,7 +319,7 @@ export async function pullArchiveMonthQuorum(username, groupId, slot, channelId,
 		manifest,
 		channelId,
 		utcMonth,
-		{ activeMemberCount },
+		{ activeMemberCount, expectedTargetCount: targets.length },
 	)
 	if (!picked.winner) {
 		for (const row of candidates)

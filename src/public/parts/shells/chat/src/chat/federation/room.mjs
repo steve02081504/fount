@@ -218,7 +218,6 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				roomSecret: roomCreds.password,
 				members,
 			})
-			await room.start()
 			const fedOut = createFedOutQueue()
 			const peersSnap = loadPeerPoolView(groupId)
 			const rtcLimits = {
@@ -331,6 +330,8 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				senderRegistry,
 				wireActions,
 			})
+
+			await room.start()
 
 			if (getFederationPartitionRebindGen(username, groupId, partitionId) !== genAtJoin) {
 				unregisterChunkSwarm(username, groupId)

@@ -141,20 +141,25 @@ export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slo
  */
 export async function replicateGroupEmojiToFederation(username, groupId, emojiId, slot) {
 	if (!slot) return
-	const roster = slot.getRoster()
-	if (!roster.length) return
 	const local = await readGroupEmojiBinary(username, groupId, emojiId)
 	if (!local) return
 	if (!slot.sendEmojiData) return
 	const dataUrl = bufferToDataUrl(local.buffer, local.mimeType)
 	const payload = { emojiId, dataUrl, mimeType: local.mimeType }
-	for (const { peerId } of roster)
-		try {
-			slot.sendEmojiData(payload, peerId)
+	for (let attempt = 0; attempt < 6; attempt++) {
+		const roster = slot.getRoster()
+		if (roster.length) {
+			for (const { peerId } of roster)
+				try {
+					slot.sendEmojiData(payload, peerId)
+				}
+				catch (error) {
+					console.warn('federation: fed_emoji_data replicate failed', error)
+				}
+			return
 		}
-		catch (error) {
-			console.warn('federation: fed_emoji_data replicate failed', error)
-		}
+		await new Promise(resolve => setTimeout(resolve, 500))
+	}
 }
 
 /**
