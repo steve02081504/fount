@@ -20,7 +20,7 @@ await Api(FedB, 'POST', `/groups/${gid}/join`, {
 	signalingAppId: inv.signalingAppId,
 	introducerPubKeyHash: inv.introducerPubKeyHash,
 })
-console.log(`group=${gid} joined; firing events in warm window (fed_test-style timing)...`)
+console.log(`group=${gid} joined; firing events in warm window (fed_core-style timing)...`)
 await sleep(8000)
 
 console.log('\n--- firing events (warm) ---')

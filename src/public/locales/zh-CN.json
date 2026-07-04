@@ -348,7 +348,7 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--gen-report] [--continue] [-j <n>] [--since <commit>] [<groups>...]\n\n分组语法（空格分隔多组，每组 manifest 或 manifest:suite1,suite2）：\n  manifest          该 manifest 全部 suite\n  manifest:suite    指定 suite（逗号分隔多个；PowerShell 拆散时后续 token 自动归并到当前组）\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n有未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比指定 commit。\n指定 manifest 时启用失败记录（data/test/failures/）；裸组（无冒号 suite）若存在失败记录则仅重跑失败项；显式指名 suite 则直接按指名执行。\n\n--gen-report  将失败或有噪声输出的 suite 落盘，并生成 data/test/report/report.md 与 report.json（每完成一个 suite 即刷新）。\n--continue    续跑 report.json 中 pending 的 suite（进程被 kill/关机后恢复报告生成）。\n-j, --jobs    全局并发上限（默认为 CPU 线程数）。\n\n示例：\n  fount test\n  fount test --all --gen-report\n  fount test p2p:sim shells/chat:unit,e2e_single shells/social:e2e_single --gen-report\n  fount test shells/chat\n  fount test shells\n  fount test shells/chat:frontend\n  fount test shells/chat:unit,fed_test\n  fount test --continue\n  fount test --since abc1234",
+			"help": "用法：fount test [--all] [--gen-report] [--continue] [-j <n>] [--since <commit>] [<groups>...]\n\n分组语法（空格分隔多组，每组 manifest 或 manifest:suite1,suite2）：\n  manifest          该 manifest 全部 suite\n  manifest:suite    指定 suite（逗号分隔多个；PowerShell 拆散时后续 token 自动归并到当前组）\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n有未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比指定 commit。\n指定 manifest 时启用失败记录（data/test/failures/）；裸组（无冒号 suite）若存在失败记录则仅重跑失败项；显式指名 suite 则直接按指名执行。\n\n--gen-report  将失败或有噪声输出的 suite 落盘，并生成 data/test/report/report.md 与 report.json（每完成一个 suite 即刷新）。\n--continue    续跑 report.json 中 pending 的 suite（进程被 kill/关机后恢复报告生成）。\n-j, --jobs    全局并发上限（默认为 CPU 线程数）。\n\n示例：\n  fount test\n  fount test --all --gen-report\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single --gen-report\n  fount test shells/chat\n  fount test shells\n  fount test shells/chat:frontend\n  fount test shells/chat:pure,fed_core\n  fount test --continue\n  fount test --since abc1234",
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
@@ -376,7 +376,7 @@
 			"hashStaleAppendDiff": "未提交内容已变化，追加 diff 触发：+${count} 个套件",
 			"diffMode": "diff 模式：${fileCount} 个文件 — ${files}",
 			"noChangesHint": "无未提交变更且未指定 --since：仅重跑存在失败记录的套件。",
-			"tip": "提示：fount test --all | fount test --since <commit> | fount test shells/chat:unit",
+			"tip": "提示：fount test --all | fount test --since <commit> | fount test shells/chat:pure",
 			"nothingToContinue": "没有可续跑的未完成测试项。",
 			"continueResuming": "续跑 ${count} 个未完成套件",
 			"manifestNoDiffRunAll": "manifest ${manifestIds} 无 diff 触发项，将运行其全部套件。",

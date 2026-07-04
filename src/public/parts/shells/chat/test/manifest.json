@@ -1,8 +1,11 @@
 {
 	"id": "shells/chat",
 	"triggerSets": {
-		"shellLive": [
+		"shellPure": [
 			"src/public/parts/shells/chat/**",
+			"src/public/parts/shells/social/src/lib/emojiPostEmbed.mjs",
+			"src/scripts/p2p/**",
+			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
 			"src/server/parts_loader.mjs",
 			"src/public/pages/scripts/api/registries.mjs",
@@ -10,10 +13,19 @@
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/components/stickerPicker.mjs"
 		],
-		"shellUnit": [
+		"shellIntegration": [
 			"src/public/parts/shells/chat/**",
 			"src/scripts/p2p/**",
 			"src/server/p2p_server/**",
+			"src/server/registries.mjs",
+			"src/server/parts_loader.mjs",
+			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/features/markdown/extensions.mjs",
+			"src/public/pages/scripts/components/emojiPicker.mjs",
+			"src/public/pages/scripts/components/stickerPicker.mjs"
+		],
+		"shellLive": [
+			"src/public/parts/shells/chat/**",
 			"src/server/registries.mjs",
 			"src/server/parts_loader.mjs",
 			"src/public/pages/scripts/api/registries.mjs",
@@ -60,311 +72,44 @@
 	},
 	"suites": [
 		{
-			"name": "unit",
-			"heavy": true,
-			"trigger": "shellUnit",
+			"name": "pure",
+			"trigger": "shellPure",
 			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
+				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
-				"--ignore=src/public/parts/shells/chat/test/live",
-				"./src/public/parts/shells/chat/test/"
+				"./src/public/parts/shells/chat/test/pure/"
 			]
 		},
 		{
-			"name": "e2e_single",
-			"trigger": "shellLive",
+			"name": "integration",
+			"heavy": true,
+			"trigger": "shellIntegration",
 			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"e2e_single"
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/public/parts/shells/chat/test/integration/"
 			]
 		},
-		{
-			"name": "e2e_single_ext",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"e2e_single_ext"
-			]
-		},
-		{
-			"name": "smoke_chat",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"smoke_chat"
-			]
-		},
-		{
-			"name": "smoke_ai",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"smoke_ai"
-			]
-		},
-		{
-			"name": "ws_test",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"ws_test"
-			]
-		},
-		{
-			"name": "ws_rpc_test",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"ws_rpc_test"
-			]
-		},
-		{
-			"name": "ws_stream_test",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"ws_stream_test"
-			]
-		},
-		{
-			"name": "av_relay_test",
-			"trigger": "shellLive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"av_relay_test"
-			]
-		},
-		{
-			"name": "fed_test",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_test"
-			]
-		},
-		{
-			"name": "fed_e2e_ext",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_e2e_ext"
-			]
-		},
-		{
-			"name": "fed_dm",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_dm"
-			]
-		},
-		{
-			"name": "fed_archive_month",
-			"trigger": "fedArchive",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_archive_month"
-			]
-		},
-		{
-			"name": "fed_mailbox",
-			"trigger": "fedMailbox",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_mailbox"
-			]
-		},
-		{
-			"name": "fed_ban",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_ban"
-			]
-		},
-		{
-			"name": "fed_emoji",
-			"trigger": "fedEmoji",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_emoji"
-			]
-		},
-		{
-			"name": "fed_emoji_nonmember",
-			"trigger": "fedEmojiGroup",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_emoji_nonmember"
-			]
-		},
-		{
-			"name": "fed_emoji_nearcache",
-			"trigger": "fedEmojiNearcache",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_emoji_nearcache"
-			]
-		},
-		{
-			"name": "fed_file_transfer",
-			"trigger": "fedFileTransfer",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_file_transfer"
-			]
-		},
-		{
-			"name": "fed_control_plane",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_control_plane"
-			]
-		},
-		{
-			"name": "fed_reputation_owner",
-			"trigger": "fed",
-			"run": [
-				"deno",
-				"run",
-				"--allow-all",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/live/run.mjs",
-				"--suite",
-				"fed_reputation_owner"
-			]
-		},
-		{
-			"name": "frontend",
-			"trigger": "frontend",
-			"run": [
-				"deno",
-				"run",
-				"-A",
-				"-c",
-				"./deno.json",
-				"./src/public/parts/shells/chat/test/frontend/run.mjs"
-			]
-		}
+		{ "name": "e2e_single", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single"] },
+		{ "name": "e2e_single_ext", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single_ext"] },
+		{ "name": "smoke_chat", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_chat"] },
+		{ "name": "smoke_ai", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_ai"] },
+		{ "name": "ws", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws"] },
+		{ "name": "ws_rpc", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_rpc"] },
+		{ "name": "ws_stream", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_stream"] },
+		{ "name": "av_relay", "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "av_relay"] },
+		{ "name": "fed_core", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_core"] },
+		{ "name": "fed_e2e_ext", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_e2e_ext"] },
+		{ "name": "fed_dm", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_dm"] },
+		{ "name": "fed_archive_month", "trigger": "fedArchive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_archive_month"] },
+		{ "name": "fed_mailbox", "trigger": "fedMailbox", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_mailbox"] },
+		{ "name": "fed_ban", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_ban"] },
+		{ "name": "fed_emoji", "trigger": "fedEmoji", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji"] },
+		{ "name": "fed_emoji_nonmember", "trigger": "fedEmojiGroup", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nonmember"] },
+		{ "name": "fed_emoji_nearcache", "trigger": "fedEmojiNearcache", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nearcache"] },
+		{ "name": "fed_file_transfer", "trigger": "fedFileTransfer", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_file_transfer"] },
+		{ "name": "fed_control_plane", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_control_plane"] },
+		{ "name": "fed_reputation_owner", "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_reputation_owner"] },
+		{ "name": "frontend", "trigger": "frontend", "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/chat/test/frontend/run.mjs"] }
 	]
 }

@@ -33,8 +33,8 @@ const suites = {
 		run: denoLiveRun(join(scriptsDir, 'cross_shell_emoji.mjs')),
 		node: { loadParts: ['shells/social', 'shells/chat'] },
 	},
-	ws_test: {
-		run: denoLiveRun(join(scriptsDir, 'ws_test.mjs')),
+	ws: {
+		run: denoLiveRun(join(scriptsDir, 'ws.mjs')),
 		node: { loadParts: ['shells/social'] },
 	},
 }

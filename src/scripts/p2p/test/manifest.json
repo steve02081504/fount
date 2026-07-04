@@ -2,10 +2,24 @@
 	"id": "p2p",
 	"suites": [
 		{
-			"name": "unit",
+			"name": "pure",
 			"run": [
-				"deno", "test", "--allow-all", "-c", "./deno.json",
-				"./src/scripts/p2p/test/"
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/scripts/p2p/test/pure/"
+			],
+			"triggers": [
+				"src/scripts/p2p/**",
+				"src/server/p2p_server/**"
+			]
+		},
+		{
+			"name": "integration",
+			"heavy": true,
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/deno/serial.mjs",
+				"./src/scripts/p2p/test/integration/"
 			],
 			"triggers": [
 				"src/scripts/p2p/**",

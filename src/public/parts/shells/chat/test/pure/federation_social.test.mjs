@@ -9,7 +9,7 @@ import { peekPreferredRoomOverride, setFederationBootstrap, clearFederationBoots
 import { roomCredentialsFromGroupSettings } from '../../src/chat/federation/roomCredentials.mjs'
 import { markRoomCredentialsStale, isRoomCredentialsStale } from '../../src/chat/federation/roomCredentialsStale.mjs'
 
-const TEST_USER = '__fed_test_user__'
+const TEST_USER = '__fed_core_user__'
 
 Deno.test('room bootstrap override when stale', () => {
 	clearFederationBootstrap(TEST_USER, 'g1')
