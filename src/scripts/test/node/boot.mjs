@@ -161,18 +161,21 @@ export function defaultTestStarts({ web = false, p2p = false, jobs = false } = {
  * 启动 fount server（须先 writeNodeConfig）。
  * @param {object} options 选项
  * @param {string} options.dataPath data 根目录
- * @param {TestStarts} options.starts server starts
  * @param {() => never} [options.restarter] 重启回调
+ * @param {TestStarts} [options.starts] server starts；省略则使用测试默认预设
+ * @param {boolean} [options.needsOutput] 是否启用带输出的 server init 行为
  * @returns {Promise<boolean>} init 是否成功
  */
-export async function initFountNode({ dataPath, starts, restarter }) {
+export async function initFountNode({ dataPath, restarter, starts, needsOutput }) {
 	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
 	set_sentry_enabled(false)
 	set_start()
+	starts ??= defaultTestStarts()
 	return await init({
+		starts,
+		needs_output: needsOutput,
 		restartor: restarter ?? (() => process.exit(131)),
 		data_path: dataPath,
-		starts,
 	})
 }
 
@@ -185,10 +188,13 @@ export async function initFountNode({ dataPath, starts, restarter }) {
  * @property {string} [apiKey] API key（子进程 Web 节点）
  * @property {boolean} [web=false] 是否启动 Web
  * @property {boolean} [p2p=false] 是否启动 P2P
+ * @property {boolean} [jobs=false] Base.Jobs（仅 web 时有效）
  * @property {boolean} [minP2pNode=false] 初始化离线 P2P node 身份
  * @property {string[]} [loadParts] loadPart 列表
  * @property {string} [bootstrap] bootstrap 模块绝对路径
  * @property {(username: string) => Promise<void>} [afterInit] init 后钩子
+ * @property {TestStarts} [starts] 精确透传给 `init()`；省略则根据 web/p2p/jobs 使用测试预设
+ * @property {boolean} [needsOutput] 透传给 `init()` 的 `needs_output`
  * @property {boolean} [resetData=false] 启动前清空 dataPath
  */
 
@@ -206,10 +212,12 @@ export async function bootInProcess(options) {
 		username: options.username,
 		...options.apiKey ? { apiKey: options.apiKey } : {},
 	})
+	const starts = options.starts ?? defaultTestStarts(options)
 
 	if (!await initFountNode({
 		dataPath: options.dataPath,
-		starts: defaultTestStarts({ web: options.web, p2p: options.p2p }),
+		starts,
+		needsOutput: options.needsOutput,
 	}))
 		throw new Error('server init failed')
 
@@ -285,7 +293,6 @@ export async function bootHeadlessDataRoot(dataPath) {
 	writeNodeConfig(dataPath, { port: HEADLESS_CONFIG_PORT, username: 'headless-root', emptyUsers: true })
 	if (!await initFountNode({
 		dataPath,
-		starts: defaultTestStarts({ web: false, p2p: false }),
 	}))
 		throw new Error('server init failed')
 	await ensureMinP2pNode(dataPath)

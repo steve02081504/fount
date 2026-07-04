@@ -50,7 +50,8 @@ const { values } = parseArgs({
 		port: { type: 'string' },
 		user: { type: 'string' },
 		key: { type: 'string' },
-		p2p: { type: 'boolean', default: false },
+		starts: { type: 'string' },
+		'needs-output': { type: 'boolean', default: false },
 		'load-part': { type: 'string', multiple: true },
 		bootstrap: { type: 'string' },
 	},
@@ -59,6 +60,7 @@ const { values } = parseArgs({
 const dataPath = values['data-path']
 const username = values.user
 const loadParts = values['load-part'] ?? []
+const starts = JSON.parse(values.starts)
 
 if (!dataPath) {
 	console.errorI18n('fountConsole.test.nodeWorker.dataPathRequired')
@@ -83,8 +85,8 @@ try {
 		port: Number(values.port),
 		username,
 		apiKey: values.key,
-		web: true,
-		p2p: values.p2p,
+		starts,
+		needsOutput: values['needs-output'],
 		loadParts,
 		bootstrap: values.bootstrap,
 	})

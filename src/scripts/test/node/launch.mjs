@@ -21,6 +21,8 @@ import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 
+import { defaultTestStarts } from './boot.mjs'
+
 const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
 /** 测试节点默认 V8 老生代上限（MB）；0 表示不限制。 */
@@ -397,8 +399,10 @@ async function injectFixtures(dataPath, username, copies) {
  * @param {string} [options.username='CI-user'] 用户名
  * @param {string} [options.apiKey] API key；省略则按 port 生成
  * @param {FixtureCopy[]} [options.fixtureCopies] 启动前复制到用户目录的 fixture
+ * @param {import('./boot.mjs').TestStarts} [options.starts] 精确透传给测试 worker 内部 `init()` 的 `starts`
+ * @param {boolean} [options.needsOutput] 透传给测试 worker 内部 `init()` 的 `needs_output`
  * @param {string[]} [options.loadParts] 启动后要 load 的 partpath
- * @param {boolean} [options.p2p=false] 是否启用 P2P 子系统
+ * @param {boolean} [options.p2p=false] `starts.P2P` 简写；`starts` 已给出时忽略
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
  * @param {boolean} [options.captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
@@ -412,10 +416,11 @@ export async function launchNode(options = {}) {
 	const apiKey = options.apiKey ?? `fount-test-key-${port}`
 	const keepData = options.keepData ?? false
 	const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+	const starts = options.starts ?? defaultTestStarts({ web: true, p2p: options.p2p === true })
 	/** @type {Record<string, string>} */
 	const extraEnv = { ...options.extraEnv }
 	let usedTestRelay = false
-	if (options.p2p) {
+	if (starts.P2P === true) {
 		const { relayUrl } = await startTestNostrRelay()
 		extraEnv.FOUNT_TEST_RELAY_URLS = relayUrl
 		usedTestRelay = true
@@ -433,8 +438,10 @@ export async function launchNode(options = {}) {
 		'--port', String(port),
 		'--user', username,
 		'--key', apiKey,
+		'--starts', JSON.stringify(starts),
 	]
-	if (options.p2p) workerArgs.push('--p2p')
+	if (options.needsOutput)
+		workerArgs.push('--needs-output')
 	for (const part of options.loadParts ?? [])
 		workerArgs.push('--load-part', part)
 	if (options.bootstrap)
@@ -446,7 +453,7 @@ export async function launchNode(options = {}) {
 	let startupOutput = ''
 	let capturedOutput = ''
 	/**
-	 * @param {string | Uint8Array} chunk
+	 * @param {string | Uint8Array} chunk stdout/stderr 数据块
 	 * @returns {void}
 	 */
 	const onOutput = chunk => {
@@ -512,7 +519,13 @@ export async function launchNode(options = {}) {
 		pid: child.pid,
 		keepData,
 		usedTestRelay,
+		/**
+		 * @returns {string} 查看当前已捕获输出但不清空
+		 */
 		peekOutput: () => capturedOutput,
+		/**
+		 * @returns {string} 取出当前已捕获输出并清空缓冲
+		 */
 		takeOutput: () => {
 			const out = capturedOutput
 			capturedOutput = ''
