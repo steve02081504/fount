@@ -8,12 +8,15 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { ms } from '../scripts/ms.mjs'
 import { timingFilePath } from '../scripts/test/core/paths.mjs'
 import {
+	getSuiteBaselineDurationMs,
 	loadTimingsForSuites,
 	readTimings,
-	recordSuiteSuccessTiming,
+	recordSuiteBaselineTiming,
+	shouldRecordTimingBaseline,
 	writeTimings,
 } from '../scripts/test/core/timings.mjs'
 import {
+	DEFAULT_DURATION_TIMEOUT_MS,
 	evaluateWatchdog,
 	getDurationWatchdogLimitMs,
 	IDLE_TIMEOUT_MS,
@@ -79,17 +82,32 @@ Deno.test('evaluateWatchdog null when within limits', () => {
 	}), null)
 })
 
-Deno.test('evaluateWatchdog skips duration without baseline', () => {
+Deno.test('evaluateWatchdog uses default 30 minute limit without baseline', () => {
 	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
-		startedAt: now - 999_999,
+		startedAt: now - DEFAULT_DURATION_TIMEOUT_MS + 1,
 		lastActivityAt: now - ms('1s'),
 	}), null)
+	assertEquals(evaluateWatchdog({
+		now,
+		startedAt: now - DEFAULT_DURATION_TIMEOUT_MS,
+		lastActivityAt: now - ms('1s'),
+	}), 'duration')
 })
 
 Deno.test('getDurationWatchdogLimitMs keeps 2x baseline for long suites', () => {
 	assertEquals(getDurationWatchdogLimitMs(ms('4m')), ms('8m'))
+})
+
+Deno.test('getDurationWatchdogLimitMs falls back to default 30 minutes without baseline', () => {
+	assertEquals(getDurationWatchdogLimitMs(undefined), DEFAULT_DURATION_TIMEOUT_MS)
+})
+
+Deno.test('shouldRecordTimingBaseline records pass and non-terminated failure only', () => {
+	assertEquals(shouldRecordTimingBaseline({ passed: true, terminated: false }), true)
+	assertEquals(shouldRecordTimingBaseline({ passed: false, terminated: false }), true)
+	assertEquals(shouldRecordTimingBaseline({ passed: false, terminated: true }), false)
 })
 
 Deno.test('timings read write and merge', async () => {
@@ -106,15 +124,18 @@ Deno.test('timings read write and merge', async () => {
 		}
 		assertEquals(await readTimings(repoRoot, 'shells/chat'), { items: {} })
 
-		const updated = recordSuiteSuccessTiming({ items: {} }, 'unit', ms('42s'))
+		const updated = recordSuiteBaselineTiming({ items: {} }, 'unit', ms('42s'))
 		await writeTimings(repoRoot, 'shells/chat', updated)
 
 		const raw = JSON.parse(await readFile(timingFilePath(repoRoot, 'shells/chat'), 'utf8'))
-		assertEquals(raw.items.unit.durationMs, ms('42s'))
+		assertEquals(raw.items.unit.baselineDurationMs, ms('42s'))
 		assertEquals(typeof raw.items.unit.recordedAt, 'string')
 
 		const loaded = await loadTimingsForSuites(repoRoot, [suite])
-		assertEquals(loaded.get('shells/chat')?.items.unit.durationMs, ms('42s'))
+		assertEquals(getSuiteBaselineDurationMs(loaded.get('shells/chat'), 'unit'), ms('42s'))
+
+		const overwritten = recordSuiteBaselineTiming(updated, 'unit', ms('57s'))
+		assertEquals(getSuiteBaselineDurationMs(overwritten, 'unit'), ms('57s'))
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

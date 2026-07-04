@@ -14,6 +14,9 @@ export const WATCH_INTERVAL_MS = ms('30s')
 /** 基于历史耗时的 watchdog 至少给 5 分钟，避免短基线 suite 被误杀。 */
 export const MIN_DURATION_TIMEOUT_MS = ms('5m')
 
+/** 无历史基线时的默认最长运行时长。 */
+export const DEFAULT_DURATION_TIMEOUT_MS = ms('30m')
+
 /** 历史耗时 watchdog 的倍数阈值。 */
 export const DURATION_WATCHDOG_MULTIPLIER = 2
 
@@ -26,7 +29,7 @@ export const DURATION_WATCHDOG_MULTIPLIER = 2
  * @property {string} cwd 工作目录
  * @property {boolean} [stream=false] 是否实时转发 stdout/stderr
  * @property {string} [label] suite 标签（用于终止日志）
- * @property {number} [baselineDurationMs] 上次成功耗时（毫秒）
+ * @property {number} [baselineDurationMs] 最近一次可用基线耗时（毫秒）
  */
 
 /**
@@ -54,12 +57,12 @@ function formatMs(ms) {
 }
 
 /**
- * 计算基于历史成功耗时的 duration watchdog 上限。
- * @param {number | undefined} baselineDurationMs 上次成功耗时
- * @returns {number | null} 上限毫秒；无有效 baseline 时返回 null
+ * 计算基于最近一次可用基线耗时的 duration watchdog 上限。
+ * @param {number | undefined} baselineDurationMs 最近一次可用基线耗时
+ * @returns {number} 上限毫秒
  */
 export function getDurationWatchdogLimitMs(baselineDurationMs) {
-	if (baselineDurationMs == null || baselineDurationMs <= 0) return null
+	if (baselineDurationMs == null || baselineDurationMs <= 0) return DEFAULT_DURATION_TIMEOUT_MS
 	return Math.max(
 		MIN_DURATION_TIMEOUT_MS,
 		DURATION_WATCHDOG_MULTIPLIER * baselineDurationMs,
@@ -72,13 +75,13 @@ export function getDurationWatchdogLimitMs(baselineDurationMs) {
  * @param {number} state.now 当前时间戳
  * @param {number} state.startedAt 开始时间戳
  * @param {number} state.lastActivityAt 上次 stdall 活动时间戳
- * @param {number | undefined} [state.baselineDurationMs] 上次成功耗时
+ * @param {number | undefined} [state.baselineDurationMs] 最近一次可用基线耗时
  * @returns {WatchdogTrigger} 触发类型；null 表示继续
  */
 export function evaluateWatchdog({ now, startedAt, lastActivityAt, baselineDurationMs }) {
 	if (now - lastActivityAt >= IDLE_TIMEOUT_MS) return 'idle'
 	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
-	if (durationLimitMs != null && now - startedAt >= durationLimitMs) return 'duration'
+	if (now - startedAt >= durationLimitMs) return 'duration'
 	return null
 }
 
@@ -89,7 +92,7 @@ export function evaluateWatchdog({ now, startedAt, lastActivityAt, baselineDurat
  * @param {string} ctx.label suite 标签
  * @param {number} ctx.startedAt 开始时间戳
  * @param {number} ctx.lastActivityAt 上次活动时间戳
- * @param {number} [ctx.baselineDurationMs] 上次成功耗时
+ * @param {number} [ctx.baselineDurationMs] 最近一次可用基线耗时
  * @param {number} ctx.now 当前时间戳
  * @returns {string} 终止原因
  */
@@ -104,17 +107,23 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
 			elapsed: formatMs(elapsedMs),
 		})
 	}
-	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs) ?? 0
+	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
+	if (baselineDurationMs == null || baselineDurationMs <= 0)
+		return geti18n('fountConsole.test.terminateDurationDefault', {
+			label,
+			elapsed: formatMs(elapsedMs),
+			limit: formatMs(durationLimitMs),
+		})
 	return geti18n('fountConsole.test.terminateDuration', {
 		label,
 		elapsed: formatMs(elapsedMs),
-		baseline: formatMs(baselineDurationMs ?? 0),
+		baseline: formatMs(baselineDurationMs),
 		limit: formatMs(durationLimitMs),
 	})
 }
 
 /**
- * 执行子进程命令并捕获 stdall；含 idle / 2x baseline watchdog。
+ * 执行子进程命令并捕获 stdall；含 idle / duration watchdog。
  * @param {string[]} command 命令
  * @param {Record<string, string>} [extraEnv] 额外环境变量
  * @param {RunCommandOptions} options 执行选项

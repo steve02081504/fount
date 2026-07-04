@@ -29,8 +29,10 @@ import { failureFilePath } from '../core/paths.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	getSuiteBaselineDurationMs,
 	loadTimingsForSuites,
-	recordSuiteSuccessTiming,
+	recordSuiteBaselineTiming,
+	shouldRecordTimingBaseline,
 	writeTimings,
 } from '../core/timings.mjs'
 
@@ -158,7 +160,7 @@ function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget) {
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
  * @param {string} [watchdog.label] suite 标签
- * @param {number | undefined} [watchdog.baselineDurationMs] 上次成功耗时
+ * @param {number | undefined} [watchdog.baselineDurationMs] 最近一次可用基线耗时
  * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string, durationMs: number, terminated?: boolean, terminateReason?: string }>} 运行结果
  */
 async function runSuite(suite, onlyFiles, globalBudget, stream = false, watchdog = {}) {
@@ -380,7 +382,10 @@ export async function runTests(options = {}) {
 				const retryMap = retryByManifest.get(suite.manifestId)
 				const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
 				const label = `${suite.manifestId}/${suite.name}`
-				const baselineDurationMs = timingsByManifest.get(suite.manifestId)?.items?.[suite.name]?.durationMs
+				const baselineDurationMs = getSuiteBaselineDurationMs(
+					timingsByManifest.get(suite.manifestId),
+					suite.name,
+				)
 				const result = await runSuite(suite, onlyFiles, globalBudget, streamLive, {
 					label,
 					baselineDurationMs,
@@ -412,11 +417,11 @@ export async function runTests(options = {}) {
 	for (const { suite, result } of suiteResults) {
 		if (!result.passed) exitCode = 1
 
-		if (result.passed) {
+		if (shouldRecordTimingBaseline(result)) {
 			const record = timingsByManifest.get(suite.manifestId) ?? { items: {} }
 			timingsByManifest.set(
 				suite.manifestId,
-				recordSuiteSuccessTiming(record, suite.name, result.durationMs),
+				recordSuiteBaselineTiming(record, suite.name, result.durationMs),
 			)
 			timingsDirty.add(suite.manifestId)
 		}
@@ -530,7 +535,10 @@ async function runContinue({ allSuites, genReport, globalBudget, currentHash, jo
 					name: suite.name,
 				})
 				const label = `${suite.manifestId}/${suite.name}`
-				const baselineDurationMs = timingsByManifest.get(suite.manifestId)?.items?.[suite.name]?.durationMs
+				const baselineDurationMs = getSuiteBaselineDurationMs(
+					timingsByManifest.get(suite.manifestId),
+					suite.name,
+				)
 				const result = await runSuite(suite, undefined, globalBudget, false, {
 					label,
 					baselineDurationMs,
@@ -546,11 +554,11 @@ async function runContinue({ allSuites, genReport, globalBudget, currentHash, jo
 					terminateReason: result.terminateReason,
 				})
 
-				if (result.passed) {
+				if (shouldRecordTimingBaseline(result)) {
 					const record = timingsByManifest.get(suite.manifestId) ?? { items: {} }
 					timingsByManifest.set(
 						suite.manifestId,
-						recordSuiteSuccessTiming(record, suite.name, result.durationMs),
+						recordSuiteBaselineTiming(record, suite.name, result.durationMs),
 					)
 					timingsDirty.add(suite.manifestId)
 				}
