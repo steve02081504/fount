@@ -20,6 +20,8 @@ import { appendKeyRotateEvent } from '../../chat/dag/channelOps.mjs'
 import { adminPubKeyHashes } from '../../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
+import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
+import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
 import {
 	blockEntriesFromBanContent,
 	buildMemberBanContent,
@@ -38,6 +40,15 @@ import {
 import { registerGroupFileRoutes } from './groupFilesRoutes.mjs'
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
+
+async function rotateRoomSecretAfterModeration(username, groupId) {
+	await appendSignedLocalEvent(username, groupId, {
+		type: 'group_settings_update',
+		timestamp: Date.now(),
+		content: { roomSecret: mintRoomSecret() },
+	})
+	invalidateFederationRoomCache(username, groupId)
+}
 
 /**
  * 注册权限/治理/成员管理相关 HTTP 路由。
@@ -294,6 +305,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 				timestamp: Date.now(),
 				content: banContent,
 			})
+			await rotateRoomSecretAfterModeration(username, groupId)
 			await addGroupBlockedPeers(groupId, blockEntriesFromBanContent(banContent))
 			await addDenylistFromBanContent(banContent, groupId)
 			return res.status(200).json({})
@@ -313,6 +325,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 					timestamp: Date.now(),
 					content,
 				})
+				await rotateRoomSecretAfterModeration(username, groupId)
 				const newKey = deriveNextFileMasterKey(keyEntry.fileMasterKey, kickEvent.id, nonce)
 				await appendFileMasterKey(username, groupId, newGen, newKey)
 				await addGroupBlockedPeers(groupId, [{ scope: 'subject', value: resolvedTargetKey }])
@@ -325,6 +338,7 @@ export function registerGovernanceRoutes(router, authenticate) {
 			timestamp: Date.now(),
 			content,
 		})
+		await rotateRoomSecretAfterModeration(username, groupId)
 		const blockEntries = resolvedMember?.memberKind === 'agent'
 			? [{ scope: 'entity', value: resolvedMember.agentEntityHash }]
 			: [{ scope: 'subject', value: resolvedTargetKey }]

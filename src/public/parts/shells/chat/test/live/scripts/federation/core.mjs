@@ -28,7 +28,7 @@ await Api(FedA, 'PUT', `/groups/${groupId}/settings`, { joinPolicy: 'open' })
 console.log('\n=== 3. NodeA: create invite-ticket (get room creds) ===')
 const inv = await Api(FedA, 'POST', `/groups/${groupId}/invite-ticket`, { ttlMs: ms('1h') })
 if (inv.status !== 200 && inv.status !== 201) throw new Error(`invite-ticket failed: ${inv.status}`)
-const { signalingAppId, roomSecret, introducerPubKeyHash: introducer } = inv.json
+const { signalingAppId, roomSecret, introducerPubKeyHash: introducer, introducerNodeHash } = inv.json
 console.log(`signalingAppId=${signalingAppId}`)
 console.log(`roomSecret=${roomSecret.substring(0, Math.min(16, roomSecret.length))}...`)
 console.log(`introducer=${introducer}`)
@@ -43,6 +43,7 @@ const jr = await Api(FedB, 'POST', `/groups/${groupId}/join`, {
 	roomSecret,
 	signalingAppId,
 	introducerPubKeyHash: introducer,
+	introducerNodeHash,
 })
 if (jr.status !== 200) throw new Error(`join failed: ${jr.status} ${jr.raw}`)
 console.log(`join result: ${JSON.stringify(jr.json)}`)

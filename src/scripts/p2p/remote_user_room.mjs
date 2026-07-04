@@ -1,4 +1,4 @@
-import { USER_ROOM_SCOPE } from './identity_announce.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { closeLink, ensureLinkToNode, getLink } from './link_registry.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
 

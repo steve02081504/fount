@@ -249,6 +249,10 @@ export async function performMemberJoin(username, groupId, opts = {}) {
 	await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content })
 	const { state: afterJoin } = await getState(username, groupId)
 	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
+	invalidateFederationRoomCache(username, groupId)
+	await ensureFederationRoom(username, groupId).catch(error => {
+		console.error('performMemberJoin rebind federationRoom:', error)
+	})
 
 	// catch-up 内部已串联 joinSnapshot → archive 月份补齐 → gossip wantIds；延长 waitMs 并调度防抖重试以覆盖 信令会合与 member_join 传播竞态。
 	const { scheduleCatchUp } = await import('../federation/catchUpScheduler.mjs')

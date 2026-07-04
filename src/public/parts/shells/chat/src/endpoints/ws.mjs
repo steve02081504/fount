@@ -4,7 +4,6 @@ import { authenticate } from '../../../../../../server/auth.mjs'
 import {
 	handleClientWsControlFrame,
 	registerGroupUiSocket,
-	relayClientWebRtcSignal,
 } from '../chat/session/wsLifecycle.mjs'
 import { registerAvRelaySocket } from '../chat/stream/avRelay.mjs'
 import {
@@ -54,7 +53,6 @@ export function registerWsRoutes(router) {
 				const wireMessage = parseInboundJson(raw)
 				if (!wireMessage) return
 				if (handleClientWsControlFrame(wireMessage)) return
-				if (relayClientWebRtcSignal(groupId, wireMessage)) return
 				if (handleGroupSocketIdentityMessage(ws, wireMessage)) return
 				void handleGroupSocketRpcMessage(groupId, roomKey, ws, wireMessage)
 			})

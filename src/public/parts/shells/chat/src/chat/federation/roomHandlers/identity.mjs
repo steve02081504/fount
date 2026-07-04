@@ -1,6 +1,5 @@
 import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { buildIdentityAnnounce, verifyIdentityAnnounce } from '../../../../../../../../scripts/p2p/identity_announce.mjs'
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
 import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation.mjs'
@@ -11,7 +10,7 @@ import {
 	setRtcPeerSource,
 	takeRtcJoinSlot,
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { wireAction } from '../../../../../../../../scripts/p2p/trystero_wire_action.mjs'
+import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { loadFederationGroupSettings } from '../deps.mjs'
 import {
@@ -44,26 +43,6 @@ export function registerIdentityHandlers(roomContext) {
 		getSlot,
 	} = roomContext
 
-	const identity = wireAction(roomContext, 'identity_announce')
-	identity.on((data, peerId) => {
-		void verifyIdentityAnnounce(data, peerId).then(remoteNodeHash => {
-			if (!remoteNodeHash) {
-				void debugLog('federation', {
-					event: 'identity_announce_verify_failed',
-					groupId,
-					peerId,
-				})
-				return
-			}
-			const previousNodeId = peerToNode.get(peerId)
-			if (previousNodeId) nodeToPeer.delete(previousNodeId)
-			peerToNode.set(peerId, remoteNodeHash)
-			nodeToPeer.set(remoteNodeHash, peerId)
-			annotateRtcPeerNodeHash(key, peerId, remoteNodeHash, rtcLimits)
-			setRtcPeerSource(key, peerId, remoteNodeHash)
-		})
-	})
-
 	const fedPex = wireAction(roomContext, 'fed_pex')
 	fedPex.on((data, peerId) => {
 		if (!isFederationActionAllowedUnderLoad(key, 'fed_pex', rtcLimits)) return
@@ -82,6 +61,14 @@ export function registerIdentityHandlers(roomContext) {
 	})
 
 	room.onPeerJoin(peerId => {
+		const remoteNodeHash = normalizeHex64(peerId)
+		if (!isHex64(remoteNodeHash) || remoteNodeHash === nodeHash) return
+		const previousNodeId = peerToNode.get(peerId)
+		if (previousNodeId) nodeToPeer.delete(previousNodeId)
+		peerToNode.set(peerId, remoteNodeHash)
+		nodeToPeer.set(remoteNodeHash, peerId)
+		annotateRtcPeerNodeHash(key, peerId, remoteNodeHash, rtcLimits)
+		setRtcPeerSource(key, peerId, remoteNodeHash)
 		if (!takeRtcJoinSlot(key, peerId, rtcLimits, peerId)) {
 			void debugLog('federation', {
 				event: 'onPeerJoin_rtc_slot_denied',
@@ -90,11 +77,6 @@ export function registerIdentityHandlers(roomContext) {
 			})
 			return
 		}
-		fedOut.enqueue(3, () => {
-			void buildIdentityAnnounce()
-				.then(body => { identity.send(body, peerId) })
-				.catch(error => console.error('federation: identity_announce failed', error))
-		})
 		fedOut.enqueue(4, () => {
 			void import('../groupEmojiFederation.mjs').then(({ replicateGroupEmojisToPeer }) => {
 				const slot = getSlot()

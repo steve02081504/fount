@@ -1,64 +1,9 @@
 /* global Deno */
-import { Buffer } from 'node:buffer'
-
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { keyPairFromSeed, pubKeyHash } from '../../crypto.mjs'
 import { DEFAULT_ICE_SERVERS } from '../../ice_servers.mjs'
 import { createLink } from '../../link/link.mjs'
-
-/**
- * @param {number} fill
- * @returns {{ nodeHash: string, nodePubKey: string, secretKey: Uint8Array }}
- */
-function identity(fill) {
-	const { publicKey, secretKey } = keyPairFromSeed(Buffer.alloc(32, fill))
-	return {
-		nodeHash: pubKeyHash(publicKey),
-		nodePubKey: Buffer.from(publicKey).toString('hex'),
-		secretKey,
-	}
-}
-
-/**
- * @returns {{ left: { send: (message: unknown) => void, onRemote: (handler: (message: unknown) => void) => () => void }, right: { send: (message: unknown) => void, onRemote: (handler: (message: unknown) => void) => () => void } }}
- */
-function createSignalPair() {
-	let leftHandler = null
-	let rightHandler = null
-	const leftQueue = []
-	const rightQueue = []
-	return {
-		left: {
-			send(message) {
-				queueMicrotask(() => {
-					if (rightHandler === null) rightQueue.push(message)
-					else rightHandler(message)
-				})
-			},
-			onRemote(handler) {
-				leftHandler = handler
-				for (const message of leftQueue.splice(0))
-					queueMicrotask(() => handler(message))
-				return () => { leftHandler = null }
-			},
-		},
-		right: {
-			send(message) {
-				queueMicrotask(() => {
-					if (leftHandler === null) leftQueue.push(message)
-					else leftHandler(message)
-				})
-			},
-			onRemote(handler) {
-				rightHandler = handler
-				for (const message of rightQueue.splice(0))
-					queueMicrotask(() => handler(message))
-				return () => { rightHandler = null }
-			},
-		},
-	}
-}
+import { createSignalPair, identity } from './helpers.mjs'
 
 Deno.test({
 	name: 'link smoke completes handshake and identifies remote node',

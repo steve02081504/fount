@@ -90,7 +90,6 @@ export async function attachStreamVolatileSignature(username, payload) {
 
 /** 无签名规范的 VOLATILE 类型（联邦入站允许，但 `ai_stream_chunk` 等未定义签名的类型须拒绝）。 */
 const UNSIGNED_FED_VOLATILE_TYPES = new Set([
-	'webrtc_signal',
 	'reputation_slash_alert',
 ])
 

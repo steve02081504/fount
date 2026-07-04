@@ -1,24 +1,10 @@
 /* global Deno */
-import { Buffer } from 'node:buffer'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { keyPairFromSeed, pubKeyHash } from '../../crypto.mjs'
 import { registerDiscoveryProvider } from '../../discovery/index.mjs'
 import { createLinkRegistry } from '../../link_registry.mjs'
-
-/**
- * @param {number} fill
- * @returns {{ nodeHash: string, nodePubKey: string, secretKey: Uint8Array }}
- */
-function identity(fill) {
-	const { publicKey, secretKey } = keyPairFromSeed(Buffer.alloc(32, fill))
-	return {
-		nodeHash: pubKeyHash(publicKey),
-		nodePubKey: Buffer.from(publicKey).toString('hex'),
-		secretKey,
-	}
-}
+import { identity, waitFor } from './helpers.mjs'
 
 function createMockDiscoveryProvider() {
 	/** @type {Map<string, Set<Function>>} */
@@ -55,20 +41,6 @@ function createMockDiscoveryProvider() {
 	}
 }
 
-/**
- * @param {() => boolean} predicate
- * @param {number} timeoutMs
- * @returns {Promise<void>}
- */
-async function waitFor(predicate, timeoutMs) {
-	const deadline = Date.now() + timeoutMs
-	while (Date.now() < deadline) {
-		if (predicate()) return
-		await new Promise(resolve => setTimeout(resolve, 50))
-	}
-	throw new Error(`waitFor timeout after ${timeoutMs}ms`)
-}
-
 Deno.test({
 	name: 'link registry uses discovery bus for adverts and nodeHash dialing',
 	sanitizeOps: false,
@@ -77,8 +49,8 @@ Deno.test({
 		const unregister = registerDiscoveryProvider(createMockDiscoveryProvider())
 		const alice = identity(11)
 		const bob = identity(12)
-		const aliceRegistry = createLinkRegistry({ localIdentity: alice })
-		const bobRegistry = createLinkRegistry({ localIdentity: bob })
+		const aliceRegistry = createLinkRegistry({ localIdentity: alice, autoRegisterDiscoveryProviders: false })
+		const bobRegistry = createLinkRegistry({ localIdentity: bob, autoRegisterDiscoveryProviders: false })
 		const adverts = []
 		const received = []
 		const stopAdvert = await aliceRegistry.subscribeNodeAdvert(bob.nodeHash, nodeHash => adverts.push(nodeHash))

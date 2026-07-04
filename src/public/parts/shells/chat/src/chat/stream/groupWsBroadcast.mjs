@@ -22,7 +22,7 @@ function inferBroadcastPriority(payload) {
 	if (type === 'dag_event') return 0
 	if (type === 'channel_message') return 1
 	if (type === 'stream_chunk') return 2
-	if (['typing', 'ai_stream_chunk', 'webrtc_signal'].includes(type)) return 4
+	if (['typing', 'ai_stream_chunk'].includes(type)) return 4
 	return 2
 }
 

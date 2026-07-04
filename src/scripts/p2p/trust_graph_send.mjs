@@ -1,5 +1,5 @@
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
-import { USER_ROOM_SCOPE } from './identity_announce.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { sendToNodeLink } from './link_registry.mjs'
 import { getNodeHash } from './node/identity.mjs'
 import { isQuarantinedPure } from './reputation_engine.mjs'

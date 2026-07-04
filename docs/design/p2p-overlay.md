@@ -24,6 +24,20 @@
 - 群内在 P2 阶段保留一跳 gossip 补位，直到 P3 overlay 路由就位。
 - kick / ban 事件自动轮换 `roomSecret`。
 
+## 当前落地状态（2026-07-04）
+
+- `link/`、`link_registry.mjs`、`group_link_set.mjs`、`overlay/` 已落地并接入生产路径；`ensureLinkToNode` 现为直连优先、overlay 次之、discovery 再次之。
+- Chat 群联邦与 subfounts 已从 Trystero room 迁到 node/group scope；`identity_announce` 已退场，群授权改为 `group:` scope authorizer。
+- Trystero 专用模块与旧 `webrtc_signal` 联邦路径已移除；AV 继续保留服务端 `av-relay`，不走本轮迁移。
+- 发现层默认注册 `mdns` 与 `nostr`；Bluetooth provider 已有真实实现，但默认仅在 `FOUNT_ENABLE_BT_DISCOVERY=1` 时启用，且 Windows 默认 scan-only（可用 `FOUNT_BT_DISCOVERY_ROLE=dual` 强制双角色尝试）。
+- 房主房间现在会在 `group_link_set.start()` 里主动拉起 discovery runtime，不再等首次外拨；否则“只有自己一个成员”的新群会成为暗房，后续 joiner 持有正确 `roomSecret` 也拨不进来。
+- 新 discovery 栈已接回测试期 `relayOverride`（`FOUNT_TEST_RELAY_URLS`）；live 联邦双节点不再误打公网 relay。
+- `link/link.mjs` 已尊重 `trickleIceOff`：测试 / Windows 路径先等 ICE gather 完整再发最终 SDP，并对重复 signal 去重、对早到 ICE 延后处理，规避 `node-datachannel` 的 `without ICE transport` / duplicate-answer 竞态。
+- `group:` scope 现在放行一小撮“前成员 bootstrap 控制面” action（`fed_join_snapshot_*`、`fed_tip_*`、bootstrap/discovery relay），真正的数据/快照权限仍由各 handler 内部校验，避免“链路已通但成员尚未物化”时的冷启动死锁。
+- join 流已携带 `introducerNodeHash`（邀请票 / deep link / API / live 探针），joiner 可立即外拨 introducer，减少纯 discovery 冷启动窗口。
+- `p2p/live` 回归已稳定：`run.mjs` 逐文件子进程；`backpressure_smoke` 走 `createLink` 握手；`group_link_set_mock` 双侧 `start()` + 双向 link 等待。
+- 迁移收尾回归：`fount test p2p server` + `shells/chat:fed_core fed_e2e_ext fed_dm` 已通过（`fed_dm` 建议在长串 fed 套件后单独重跑，避免节点/文件锁导致的假挂起）。
+
 ## 分层
 
 1. 发现层：可插拔 provider 表，暴露 `advertise` / `subscribe` / `sendSignal` / `onSignal`。

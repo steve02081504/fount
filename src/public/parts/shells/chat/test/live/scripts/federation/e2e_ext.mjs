@@ -35,6 +35,7 @@ const jr = await Api(FedB, 'POST', `/groups/${gid}/join`, {
 	roomSecret: inv.roomSecret,
 	signalingAppId: inv.signalingAppId,
 	introducerPubKeyHash: inv.introducerPubKeyHash,
+	introducerNodeHash: inv.introducerNodeHash,
 })
 console.log(`join -> ${jr.status}`)
 if (jr.status !== 200) throw new Error(`B join failed: ${jr.status} ${jr.raw}`)

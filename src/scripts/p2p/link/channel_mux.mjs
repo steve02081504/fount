@@ -92,6 +92,7 @@ export function configureBufferedAmountLowThreshold(channel, thresholdBytes = CH
 export function onBufferedAmountLow(channel, cb) {
 	const handler = () => cb()
 	channel.addEventListener?.('bufferedamountlow', handler)
+	channel.onbufferedamountlow = handler
 	if (channel.bufferedAmountLow?.subscribe)
 		channel.bufferedAmountLow.subscribe(handler)
 	return () => {

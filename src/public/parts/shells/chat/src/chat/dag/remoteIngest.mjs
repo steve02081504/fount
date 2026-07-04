@@ -17,6 +17,8 @@ import { appendQuarantinedEvent, replayQuarantinedEvents } from '../events/quara
 import { canRelayFederatedEvent } from '../federation/acl.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
 import { enqueuePendingIngest, replayPendingIngestEvents } from '../federation/pendingIngest.mjs'
+import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
+import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
 import { hasSeenFederationEvent, markSeenFederationEvent } from '../federation/seen.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 
@@ -253,6 +255,12 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	if (!opts.skipQuarantineRelease) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
+	}
+	if (shouldRebindFederationRoomForEvent(wirePayload)) {
+		invalidateFederationRoomCache(username, groupId)
+		void ensureFederationRoom(username, groupId).catch(error => {
+			console.error('federation: remote rebind after roster event failed', error)
+		})
 	}
 	return finish(ingestResult('applied'))
 }

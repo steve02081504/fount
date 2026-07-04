@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/volatile.mjs
- * 【职责】将群 WebSocket 上的 VOLATILE 类消息（流分片、WebRTC 信令、信誉 slash 告警）经 Trystero fed_volatile 中继到稀疏联邦邻居，并在入站时转回本群 WS。
+ * 【职责】将群 WebSocket 上的 VOLATILE 类消息（流分片、信誉 slash 告警）经 fed_volatile 中继到稀疏联邦邻居，并在入站时转回本群 WS。
  * 【原理】publishVolatileToFederation 由 groupWsBroadcast 在广播后调用，仅当 groupFederationOwner 存在且联邦启用；信封含 nodeId、dedupeId、payload。入站验签 stream_chunk、去重后 broadcastEvent 带 fedInbound 防回环。优先级 10 在 outbound 队列最先被丢弃。
  * 【数据结构】FED_VOLATILE_WS_TYPES；信封 { nodeId, groupId, dedupeId, payload }。
  * 【关联】stream/groupWsHub、groupWsBroadcast、signing.mjs、reputation.mjs、room.mjs、registry groupFederationOwner。
@@ -16,7 +16,6 @@ import { groupFederationOwner } from './registry.mjs'
 /** 经联邦中继的 WS VOLATILE 类型（§6.4）。 */
 const FED_VOLATILE_WS_TYPES = new Set([
 	'stream_chunk',
-	'webrtc_signal',
 	'reputation_slash_alert',
 ])
 

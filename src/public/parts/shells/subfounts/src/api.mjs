@@ -1,23 +1,21 @@
 import { randomUUID } from 'node:crypto'
 import EventEmitter from 'node:events'
 import process from 'node:process'
-// V8 serialize/deserialize 不兼容 Trystero 的 JSON 传输，已改用直接传递
+// 远程执行直接传递原始值，不走 V8 serialize/deserialize。
 
-// Trystero Nostr 客户端在重连时会累加 listeners，提高上限避免警告
 EventEmitter.defaultMaxListeners = Math.max(EventEmitter.defaultMaxListeners, 30)
 
-// 捕获 Trystero Nostr 内部的 ECONNRESET 等网络瞬断错误，防止进程崩溃
 process.on('uncaughtException', (err) => {
 	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
-		return // 网络瞬断，Trystero 会自动重连
+		return
 	console.error('Uncaught exception:', err)
 	process.exit(1)
 })
 
-import { isNodeInitialized } from '../../../../../scripts/p2p/node/instance.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
+import { createScopedLinkRoom } from './link_room.mjs'
 
 /**
  * 设备信息类型
@@ -172,7 +170,6 @@ class RemoteSubfountExecutor extends SubfountExecutor {
 				}
 			}, 30000)
 
-			// 使用 Trystero 操作发送命令
 			const actionName = command.type === 'shell_exec' ? 'shell_exec' : 'run_code'
 			const [sendAction] = this.manager.actions.get(actionName)
 			sendAction({ ...command, requestId }, this.peerId).catch((error) => {
@@ -249,37 +246,28 @@ class UserSubfountManager {
 			executor: new LocalSubfountExecutor(this.username),
 		})
 
-		// 初始化 Trystero 房间
+		// 初始化分机 scope room
 		this.initRoom()
 	}
 
 	/**
-	 * 初始化 Trystero 房间。
+	 * 初始化分机 scope room。
 	 */
 	async initRoom() {
 		try {
-			// 离开现有房间（如果有）
 			if (this.room) {
-				this.room.leave()
-				/**
-				 * Trystero 房间实例
-				 * @type {any}
-				 */
+				void this.room.leave()
 				this.room = null
 				this.actions.clear()
 			}
 
 			const codesData = loadShellData(this.username, 'subfounts', 'connection_codes')
-			const { joinSignalingRoomWithDefaults } = await import('../../../../../scripts/p2p/signaling_room.mjs')
-			if (!isNodeInitialized())
-				throw new Error('P2P node not initialized — ensure initP2PServer ran before subfounts')
-			this.room = await joinSignalingRoomWithDefaults({
-				appId: 'fount-subfounts',
-				password: codesData.password,
-				roomId: this.hostPeerId,
+			this.room = createScopedLinkRoom({
+				scope: `subfount:${this.hostPeerId}`,
+				roomSecret: codesData.password,
 			})
+			await this.room.start()
 
-			// 设置操作处理程序
 			const actionNames = ['authenticate', 'device_info', 'response', 'run_code', 'callback', 'shell_exec']
 			for (const name of actionNames)
 				this.actions.set(name, this.room.makeAction(name))
@@ -371,7 +359,7 @@ class UserSubfountManager {
 
 		}
 		catch (error) {
-			console.error(`Failed to initialize Trystero room for user ${this.username}:`, error)
+			console.error(`Failed to initialize subfount scope room for user ${this.username}:`, error)
 		}
 	}
 
@@ -646,17 +634,14 @@ const userManagers = new Map()
 events.on('BeforeUserDeleted', ({ username }) => {
 	const manager = userManagers.get(username)
 	if (manager) {
-		// 离开 Trystero 房间
-		if (manager.room)
-			manager.room.leave()
+			if (manager.room)
+				void manager.room.leave()
 
-		// 关闭所有 UI WebSocket 连接
-		for (const ws of manager.uiSockets)
-			if (ws.readyState === ws.OPEN)
-				ws.close()
+			for (const ws of manager.uiSockets)
+				if (ws.readyState === ws.OPEN)
+					ws.close()
 
-		// 从映射中移除管理器
-		userManagers.delete(username)
+			userManagers.delete(username)
 	}
 })
 
@@ -683,7 +668,7 @@ export function getUserManager(username, hostPeerId = null) {
 	// 如果传入了 hostPeerId 且与现有不符，直接清理旧的
 	if (hostPeerId && existing && existing.hostPeerId !== hostPeerId) {
 		if (existing.room)
-			existing.room.leave()
+			void existing.room.leave()
 		userManagers.delete(username)
 		existing = null
 	}

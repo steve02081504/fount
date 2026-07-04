@@ -14,6 +14,7 @@ export function createMdnsDiscoveryProvider(opts = {}) {
 	const group = String(opts.group || DEFAULT_GROUP)
 	const socket = dgram.createSocket({ type: 'udp4', reuseAddr: true })
 	let bound = false
+	let bindPromise = null
 	/** @type {Map<string, Set<Function>>} */
 	const advertListeners = new Map()
 	/** @type {Map<string, Set<Function>>} */
@@ -21,27 +22,34 @@ export function createMdnsDiscoveryProvider(opts = {}) {
 
 	async function ensureBound() {
 		if (bound) return
-		await new Promise((resolve, reject) => {
-			socket.once('error', reject)
-			socket.bind(port, '0.0.0.0', () => {
-				socket.off('error', reject)
-				socket.addMembership(group)
-				socket.setMulticastTTL(1)
-				resolve()
-			})
-		})
-		socket.on('message', raw => {
-			let packet
-			try { packet = JSON.parse(String(raw)) } catch { return }
-			const listeners = packet.type === 'advert'
-				? advertListeners.get(String(packet.topic || ''))
-				: signalListeners.get(String(packet.topic || ''))
-			if (!listeners?.size) return
-			const bytes = Uint8Array.from(Buffer.from(String(packet.data || ''), 'base64'))
-			for (const listener of listeners)
-				listener(bytes, { provider: 'mdns' })
-		})
-		bound = true
+		if (!bindPromise)
+			bindPromise = (async () => {
+				await new Promise((resolve, reject) => {
+					socket.once('error', reject)
+					socket.bind(port, '0.0.0.0', () => {
+						socket.off('error', reject)
+						socket.addMembership(group)
+						socket.setMulticastTTL(1)
+						resolve()
+					})
+				})
+				socket.on('message', raw => {
+					let packet
+					try { packet = JSON.parse(String(raw)) } catch { return }
+					const listeners = packet.type === 'advert'
+						? advertListeners.get(String(packet.topic || ''))
+						: signalListeners.get(String(packet.topic || ''))
+					if (!listeners?.size) return
+					const bytes = Uint8Array.from(Buffer.from(String(packet.data || ''), 'base64'))
+					for (const listener of listeners)
+						listener(bytes, { provider: 'mdns' })
+				})
+				bound = true
+			})()
+				.finally(() => {
+					if (!bound) bindPromise = null
+				})
+		await bindPromise
 	}
 
 	async function multicast(type, topic, bytes) {

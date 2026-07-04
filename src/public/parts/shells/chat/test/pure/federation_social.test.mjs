@@ -7,15 +7,12 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { parseFedBootstrapRequest } from '../../src/chat/federation/bootstrap/wire.mjs'
 import { peekPreferredRoomOverride, setFederationBootstrap, clearFederationBootstrap } from '../../src/chat/federation/bootstrapStore.mjs'
 import { roomCredentialsFromGroupSettings } from '../../src/chat/federation/roomCredentials.mjs'
-import { markRoomCredentialsStale, isRoomCredentialsStale } from '../../src/chat/federation/roomCredentialsStale.mjs'
 
 const TEST_USER = '__fed_core_user__'
 
-Deno.test('room bootstrap override when stale', () => {
+Deno.test('room bootstrap override wins over stale dag creds', () => {
 	clearFederationBootstrap(TEST_USER, 'g1')
 	setFederationBootstrap(TEST_USER, 'g1', { roomSecret: 'new-secret' })
-	markRoomCredentialsStale(TEST_USER, 'g1')
-	assertEquals(isRoomCredentialsStale(TEST_USER, 'g1'), true)
 	const dag = roomCredentialsFromGroupSettings({ roomSecret: 'old-secret' })
 	const override = peekPreferredRoomOverride(TEST_USER, 'g1')
 	assertEquals(override?.roomSecret, 'new-secret')

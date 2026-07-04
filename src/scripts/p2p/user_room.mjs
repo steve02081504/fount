@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 
-import { USER_ROOM_SCOPE } from './identity_announce.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { listLinks, sendToNodeLink, subscribeScope, getLinkRegistry } from './link_registry.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
 import { ensureNodeDefaults, getNodeHash } from './node/identity.mjs'
@@ -8,10 +8,10 @@ import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
 
 /**
- * 在 TrysteroActionRegistry 上注册 fed_chunk_get / fed_chunk_data handler，
+ * 在 node scope action 表上注册 fed_chunk_get / fed_chunk_data handler，
  * 供用户房间（本地 + 远端）双向 chunk 传输使用。
  * @param {string} username replica 用户名
- * @param {import('./trystero_session.mjs').TrysteroActionRegistry} actions action 表
+ * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire action 表
  * @returns {void}
  */
 function attachUserRoomChunkHandlers(username, wire) {
@@ -81,10 +81,10 @@ async function ensureNodeScopeRuntime(ctx) {
 }
 
 /**
- * 用户级 Trystero 房间（`fount-node-{nodeHash}`），单节点单实例。
+ * 用户级 node scope 房间（`fount-node-{nodeHash}`），单节点单实例。
  *
  * @typedef {{
- *   trysteroRoomName: string
+ *   roomId: string
  *   roomSecret: string
  *   room: object
  *   sendToPeer: (peerId: string, actionName: string, payload: unknown) => void
@@ -106,7 +106,7 @@ registerFederationRoomProvider('user-room', () => {
 		getPeerIdByNodeHash: nodeHash => userRoomSlot.getPeerIdByNodeHash(nodeHash),
 		/**
 		 * @param {string} peerId 目标 peer
-		 * @param {string} actionName Trystero action
+		 * @param {string} actionName node scope action
 		 * @param {unknown} payload 载荷
 		 * @returns {void}
 		 */
@@ -115,7 +115,7 @@ registerFederationRoomProvider('user-room', () => {
 })
 
 /**
- * @returns {{ appId: string, password: string, roomId: string, nodeHash: string }} Trystero 参数
+ * @returns {{ appId: string, password: string, roomId: string, nodeHash: string }} 用户房间参数
  */
 export function resolveUserRoomCredentials() {
 	const nodeHash = getNodeHash()
@@ -143,7 +143,7 @@ export async function ensureUserRoom(ctx = {}) {
 			const creds = resolveUserRoomCredentials()
 			/** @type {UserRoomSlot} */
 			userRoomSlot = {
-				trysteroRoomName: creds.roomId,
+				roomId: creds.roomId,
 				roomSecret: creds.password,
 				room: null,
 				sendToPeer(peerId, actionName, payload) {
@@ -179,7 +179,7 @@ export function invalidateUserRoom() {
 
 /**
  * @param {string} username replica
- * @param {string} actionName Trystero action
+ * @param {string} actionName node scope action
  * @param {unknown} payload 载荷
  * @param {string | null} [exceptPeerId] 跳过的 peer
  * @param {number} [limit] 最多转发 peer 数

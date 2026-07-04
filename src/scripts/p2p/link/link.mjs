@@ -1,6 +1,7 @@
 import { ms } from '../../ms.mjs'
 import { createLruMap } from '../../memo.mjs'
 import { compareHex64Asc, normalizeHex64 } from '../hexIds.mjs'
+import { getSignalingRuntimeConfig } from '../node/instance.mjs'
 import {
 	CHANNEL_BULK,
 	CHANNEL_CONTROL,
@@ -62,6 +63,14 @@ function emitListeners(listeners, ...args) {
 }
 
 /**
+ * @param {unknown} error
+ * @returns {string}
+ */
+function formatErrorReason(error) {
+	return String(error?.message ?? error ?? 'unknown-error').replace(/\s+/g, ' ').slice(0, 240)
+}
+
+/**
  * @param {object} opts
  * @param {string | null} [opts.nodeHash]
  * @param {boolean} opts.initiator
@@ -79,10 +88,12 @@ export async function createLink(opts) {
 	const idleTimeoutMs = Number(opts.idleTimeoutMs) || ms('45s')
 	const handshakeTimeoutMs = Number(opts.handshakeTimeoutMs) || ms('10s')
 	const channelOpenTimeoutMs = Math.max(handshakeTimeoutMs, ms('30s'))
+	const trickleIceOff = getSignalingRuntimeConfig().trickleIceOff === true
 	const rtc = opts.rtc ?? await loadNodeRtcPolyfill()
 	const pc = new rtc.RTCPeerConnection(opts.iceServers?.length ? { iceServers: opts.iceServers } : undefined)
 	const targetNodeHash = normalizeHex64(opts.nodeHash || '')
 	const remoteSignalQueue = []
+	const seenRemoteSignals = createLruMap(1024)
 	let remoteDescriptionSet = false
 	let closed = false
 	let ready = false
@@ -282,8 +293,45 @@ export async function createLink(opts) {
 	async function applyRemoteDescription(description) {
 		await pc.setRemoteDescription(description)
 		remoteDescriptionSet = true
-		while (remoteSignalQueue.length)
-			await pc.addIceCandidate(remoteSignalQueue.shift())
+		await flushQueuedIceCandidates()
+	}
+
+	/**
+	 * @param {unknown} error
+	 * @returns {boolean}
+	 */
+	function shouldRetryQueuedIce(error) {
+		return /without ICE transport/i.test(String(error?.message ?? error ?? ''))
+	}
+
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async function waitForIceGatheringComplete() {
+		if (!trickleIceOff || pc.iceGatheringState === 'complete') return
+		const deadline = Date.now() + handshakeTimeoutMs
+		while (pc.iceGatheringState !== 'complete' && !closed && Date.now() < deadline)
+			await new Promise(resolve => setTimeout(resolve, 50))
+	}
+
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async function flushQueuedIceCandidates() {
+		if (!remoteDescriptionSet || !pc.localDescription) return
+		while (remoteSignalQueue.length) {
+			const candidate = remoteSignalQueue.shift()
+			try {
+				await pc.addIceCandidate(candidate)
+			}
+			catch (error) {
+				if (shouldRetryQueuedIce(error)) {
+					remoteSignalQueue.unshift(candidate)
+					return
+				}
+				throw error
+			}
+		}
 	}
 
 	/**
@@ -292,22 +340,40 @@ export async function createLink(opts) {
 	 */
 	async function handleRemoteSignal(message) {
 		if (closed || !message || typeof message !== 'object') return
+		const signalKey = JSON.stringify(message)
+		if (seenRemoteSignals.has(signalKey)) return
+		seenRemoteSignals.touch(signalKey, true)
 		if (message.type === 'description' && message.description) {
+			if (message.description.type === 'answer' && pc.signalingState === 'stable') return
 			await applyRemoteDescription(message.description)
 			if (message.description.type === 'offer') {
 				const answer = await pc.createAnswer()
 				await pc.setLocalDescription(answer)
-				await sendSignal({ type: 'description', description: answer?.toJSON?.() ?? answer })
+				await flushQueuedIceCandidates()
+				await waitForIceGatheringComplete()
+				await sendSignal({
+					type: 'description',
+					description: pc.localDescription?.toJSON?.() ?? pc.localDescription ?? answer,
+				})
 				await maybeSendAuth()
 			}
 			return
 		}
 		if (message.type === 'ice' && message.candidate) {
-			if (!remoteDescriptionSet) {
+			if (!remoteDescriptionSet || !pc.localDescription || pc.signalingState !== 'stable') {
 				remoteSignalQueue.push(message.candidate)
 				return
 			}
-			await pc.addIceCandidate(message.candidate)
+			try {
+				await pc.addIceCandidate(message.candidate)
+			}
+			catch (error) {
+				if (shouldRetryQueuedIce(error)) {
+					remoteSignalQueue.push(message.candidate)
+					return
+				}
+				throw error
+			}
 		}
 	}
 
@@ -404,15 +470,15 @@ export async function createLink(opts) {
 	}
 
 	unlistenRemote = opts.signal.onRemote(message => {
-		void handleRemoteSignal(message).catch(() => close('signal-error'))
+		void handleRemoteSignal(message).catch(error => close(`signal-error:${formatErrorReason(error)}`))
 	}) ?? null
 
 	attachIceCandidateListener(pc, event => {
-		if (!event.candidate) return
+		if (trickleIceOff || !event.candidate) return
 		void sendSignal({
 			type: 'ice',
 			candidate: typeof event.candidate.toJSON === 'function' ? event.candidate.toJSON() : event.candidate,
-		}).catch(() => close('signal-send-failed'))
+		}).catch(error => close(`signal-send-failed:${formatErrorReason(error)}`))
 	})
 	attachDataChannelListener(pc, event => {
 		void attachChannel(event.channel)
@@ -432,7 +498,11 @@ export async function createLink(opts) {
 		await attachChannel(pc.createDataChannel(CHANNEL_BULK))
 		const offer = await pc.createOffer()
 		await pc.setLocalDescription(offer)
-		await sendSignal({ type: 'description', description: offer?.toJSON?.() ?? offer })
+		await waitForIceGatheringComplete()
+		await sendSignal({
+			type: 'description',
+			description: pc.localDescription?.toJSON?.() ?? pc.localDescription ?? offer,
+		})
 	}
 
 	void maybeStartPostOpenFlow().catch(error => close(`open-flow-failed:${error?.message ?? error}`))
@@ -450,6 +520,9 @@ export async function createLink(opts) {
 			return () => downListeners.delete(cb)
 		},
 		close,
+		channel(name) {
+			return name === CHANNEL_CONTROL ? controlChannel : bulkChannel
+		},
 		stats() {
 			return {
 				ready,

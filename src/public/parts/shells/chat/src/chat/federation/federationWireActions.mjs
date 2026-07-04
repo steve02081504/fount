@@ -1,8 +1,7 @@
 /**
- * 群联邦 Trystero room 预注册的 wire action 名（连接建立时统一 subscribe）。
+ * 群联邦 group scope 预注册的 wire action 名（连接建立时统一 subscribe）。
  */
 export const FEDERATION_WIRE_ACTION_NAMES = [
-	'identity_announce',
 	'fed_pex',
 	'fed_partition_bridge',
 	'fed_bootstrap_request',

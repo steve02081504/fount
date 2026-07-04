@@ -53,7 +53,7 @@ export async function getGroupList() {
  * @param {string | null} [inviteCode] 邀请码
  * @param {{ dmIntroNonce?: string, dmIntroSignatureHex?: string, introducerPubKeyHash?: string }} [dmLinkProof] DM 深链引荐字段
  * @param {{ challenge: string, nonce: string } | null} [pow] PoW 入群证明
- * @param {{ signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string } | null} [fedBootstrap] 首次联邦房间凭证 口令与邀请人
+ * @param {{ signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string, introducerNodeHash?: string } | null} [fedBootstrap] 首次联邦房间凭证 口令与邀请人
  * @returns {Promise<void>}
  */
 export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, pow = null, fedBootstrap = null) {
@@ -68,6 +68,8 @@ export async function joinGroup(groupId, inviteCode = null, dmLinkProof = null, 
 	}
 	if (fedBootstrap?.introducerPubKeyHash)
 		json.introducerPubKeyHash = fedBootstrap.introducerPubKeyHash
+	if (fedBootstrap?.introducerNodeHash)
+		json.introducerNodeHash = fedBootstrap.introducerNodeHash
 	await groupFetch(groupPath(groupId, 'join'), { method: 'POST', json })
 }
 

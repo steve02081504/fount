@@ -1,6 +1,6 @@
 /**
  * 【文件】wsLifecycle.mjs — 群会话 WebSocket 生命周期与内存注册表
- * 【职责】维护 groupId→{ username, chatMetadata } 的全局 Map；启动时扫描用户 groups 目录预注册槽位；绑定 UI WebSocket、空闲卸载、purge；消费 stop_generation 控制帧；中继 WebRTC 信令到同群其它连接。
+ * 【职责】维护 groupId→{ username, chatMetadata } 的全局 Map；启动时扫描用户 groups 目录预注册槽位；绑定 UI WebSocket、空闲卸载、purge；消费 stop_generation 控制帧。
  * 【原理】registerGroupUiSocket 在连接建立时清除 30 分钟卸载定时器并注册到 groupWsHub；onGroupWsClose 在房间无连接时启动定时器（不中止进行中的生成）；purgeGroupSession 同步中止流式与生成任务。
  * 【数据结构】groupMetadatas（Map）、groupUnloadTimers（Map<groupId, Timeout>）、GROUP_UNLOAD_TIMEOUT；由 session.mjs 注入的 deleteGroupHook / isVividGroupHook。
  * 【关联】session.mjs、generationAbort.mjs、groupWsHub、groupWsRooms、crud.deleteGroup。
@@ -11,7 +11,7 @@ import { ms } from '../../../../../../../scripts/ms.mjs'
 import { getAllUserNames } from '../../../../../../../server/auth.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
-import { broadcastEvent, countGroupSockets, registerSocket } from '../stream/groupWsHub.mjs'
+import { countGroupSockets, registerSocket } from '../stream/groupWsHub.mjs'
 import {
 	registerGroupReplicaForUser,
 	resolveGroupWsRoomKey,
@@ -142,15 +142,3 @@ export function handleClientWsControlFrame(controlFrame) {
 	return true
 }
 
-/**
- * 中继客户端 WebRTC 信令（`webrtc_signal`）到同群其它 WS 连接。
- * @param {string} groupId 群组 ID
- * @param {object} wireMessage 已解析 JSON
- * @returns {boolean} true 表示已消费
- */
-export function relayClientWebRtcSignal(groupId, wireMessage) {
-	if (wireMessage?.type !== 'webrtc_signal') return false
-	if (!wireMessage.channelId || !wireMessage.from) return true
-	broadcastEvent(resolveGroupWsRoomKey(groupId), wireMessage)
-	return true
-}

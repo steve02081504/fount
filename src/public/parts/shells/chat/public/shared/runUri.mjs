@@ -38,13 +38,15 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
  * @param {string} [roomSecret] bootstrap 口令
  * @param {string} [introducerPubKeyHash] 邀请人公钥 hex
  * @param {string} [powAnchorRef] PoW 锚点
+ * @param {string} [introducerNodeHash] 邀请人 nodeHash
  * @returns {string} canonical join run URI
  */
-export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef) {
+export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
 	const segments = [groupId.trim(), inviteCode.trim()]
 	if (roomSecret?.trim()) segments.push(roomSecret.trim())
 	if (introducerPubKeyHash?.trim()) segments.push(normalizePubKeyHex(introducerPubKeyHash))
 	if (powAnchorRef?.trim()) segments.push(String(powAnchorRef).trim())
+	if (introducerNodeHash?.trim()) segments.push(normalizePubKeyHex(introducerNodeHash))
 	return buildRunUri('join', segments)
 }
 
@@ -90,12 +92,12 @@ export function parseDmRunUri(raw) {
 
 /**
  * @param {string} raw URI
- * @returns {{ groupId: string, inviteCode: string, roomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string } | null} join 载荷
+ * @returns {{ groupId: string, inviteCode: string, roomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string, introducerNodeHash?: string } | null} join 载荷
  */
 export function parseJoinRunUri(raw) {
 	const parsed = parseChatRunUri(raw)
 	if (!parsed || parsed.subcommand !== 'join') return null
-	const [groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef] = parsed.args
+	const [groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash] = parsed.args
 	if (!groupId) return null
 	return {
 		groupId,
@@ -103,5 +105,6 @@ export function parseJoinRunUri(raw) {
 		roomSecret: roomSecret?.trim() || undefined,
 		introducerPubKeyHash: introducerPubKeyHash?.trim() || undefined,
 		powAnchorRef: powAnchorRef?.trim() || undefined,
+		introducerNodeHash: introducerNodeHash?.trim() || undefined,
 	}
 }

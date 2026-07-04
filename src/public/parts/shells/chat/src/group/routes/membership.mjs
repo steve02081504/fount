@@ -23,6 +23,7 @@ import { activateGroupFederation, isGroupFederationActive } from '../../chat/fed
 import { roomCredentialsFromGroupSettings } from '../../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
+import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { governanceChannelId } from '../access.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
@@ -50,10 +51,11 @@ function groupHasBootstrapGenesis(state) {
  * @param {string} roomSecret 群房间传输密钥（写入 join 深链）
  * @param {string} introducerPubKeyHash 邀请人成员 pubKeyHash
  * @param {string | null} [powAnchorRef] PoW anchor 提示（写入 join 深链）
+ * @param {string | null} [introducerNodeHash] 邀请人 nodeHash（写入 join 深链）
  * @returns {Promise<string>} 本地化剪贴板文本
  */
-async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef) {
-	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef))
+async function buildInviteClipboardText(username, groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
+	const url = wrapProtocolHttpsUrl(formatJoinRunUri(groupId, code, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash))
 	return geti18nForUser(username, 'chat.group.settingsPage.inviteClipboard', {
 		groupId,
 		code,
@@ -121,6 +123,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			roomCreds.roomSecret,
 			introducerPubKeyHash,
 			powAnchorRef,
+			getLocalNodeHash(),
 		)
 		res.status(201).json({
 			...ticket,
@@ -128,6 +131,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			signalingAppId: roomCreds.signalingAppId,
 			roomSecret: roomCreds.roomSecret,
 			introducerPubKeyHash,
+			introducerNodeHash: getLocalNodeHash(),
 			powAnchors,
 			powAnchorRef,
 			dmSessionTag: state.groupMeta?.dmKind === 'ecdh'
@@ -139,7 +143,7 @@ export function registerMembershipRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/join`, authenticate, async (req, res) => {
 		const { username } = await getUserByReq(req)
 		const { groupId } = req.params
-		const { inviteCode, pow, introducerPubKeyHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
+		const { inviteCode, pow, introducerPubKeyHash, introducerNodeHash, reputationEdge, dmIntroNonce, dmIntroSignatureHex, roomSecret, signalingAppId, dmSessionTag, powAnchorRef, powAnchors } = req.body
 		const dmNonce = dmIntroNonce?.trim()
 		const dmSignatureHex = dmIntroSignatureHex?.trim().replace(/^0x/iu, '')
 		if (!!dmNonce !== !!dmSignatureHex)
@@ -157,6 +161,9 @@ export function registerMembershipRoutes(router, authenticate) {
 		let bootstrap
 		if (roomSecret) {
 			bootstrap = { signalingAppId, roomSecret }
+			const hintedNodeHash = normalizePubKeyHex(introducerNodeHash)
+			if (PUB_KEY_HEX_64.test(hintedNodeHash))
+				bootstrap.fromNodeId = hintedNodeHash
 			if (powAnchorRef?.trim()) bootstrap.powAnchorRef = String(powAnchorRef).trim()
 			if (Array.isArray(powAnchors) && powAnchors.length) bootstrap.powAnchors = powAnchors.map(String)
 			const hintedSessionTag = String(dmSessionTag || '').trim().toLowerCase()

@@ -7,6 +7,8 @@ import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeAppendHlcAndPrev } from '../../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
+import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
+import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
 import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 
@@ -83,6 +85,12 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 	if (opts.skipReleaseQuarantined !== true) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
+	}
+	if (shouldRebindFederationRoomForEvent(wirePayload)) {
+		invalidateFederationRoomCache(username, groupId)
+		void ensureFederationRoom(username, groupId).catch(error => {
+			console.error('federation: local rebind after roster event failed', error)
+		})
 	}
 
 	return wirePayload

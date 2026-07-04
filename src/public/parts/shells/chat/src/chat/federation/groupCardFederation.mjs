@@ -2,7 +2,7 @@
  * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
  */
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { wireAction } from '../../../../../../../scripts/p2p/trystero_wire_action.mjs'
+import { wireAction } from '../../../../../../../scripts/p2p/room_wire_action.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'

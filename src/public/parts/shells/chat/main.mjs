@@ -157,6 +157,7 @@ export default {
 							roomSecret: args[3] || '',
 							introducerPubKeyHash: args[4] || '',
 							powAnchorRef: args[5] || '',
+							introducerNodeHash: args[6] || '',
 						}
 						result = await handleAction(user, command, params)
 						const groupId = result?.groupId || args[1]

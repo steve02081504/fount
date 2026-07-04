@@ -57,7 +57,7 @@ export function updateFriendsHash() {
 /**
  * 读取并消费 sessionStorage 中待用的入群邀请与联邦 bootstrap。
  * @param {string} groupId 群组 ID
- * @returns {{ inviteCode: string | null, fedBootstrap: { signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string } | null }} 待消费邀请与 bootstrap
+ * @returns {{ inviteCode: string | null, fedBootstrap: { signalingAppId?: string, roomSecret?: string, introducerPubKeyHash?: string, introducerNodeHash?: string } | null }} 待消费邀请与 bootstrap
  */
 export function consumePendingJoin(groupId) {
 	const empty = { inviteCode: null, fedBootstrap: null }
@@ -71,11 +71,13 @@ export function consumePendingJoin(groupId) {
 	const inviteCode = pending.inviteCode?.trim() || null
 	const roomSecret = pending.roomSecret?.trim()
 	const introducerPubKeyHash = pending.introducerPubKeyHash?.trim()
-	const fedBootstrap = roomSecret || introducerPubKeyHash
+	const introducerNodeHash = pending.introducerNodeHash?.trim()
+	const fedBootstrap = roomSecret || introducerPubKeyHash || introducerNodeHash
 		? {
 			...roomSecret ? { roomSecret } : {},
 			...pending.signalingAppId?.trim() ? { signalingAppId: pending.signalingAppId.trim() } : {},
 			...introducerPubKeyHash ? { introducerPubKeyHash } : {},
+			...introducerNodeHash ? { introducerNodeHash } : {},
 		}
 		: null
 	return { inviteCode, fedBootstrap }

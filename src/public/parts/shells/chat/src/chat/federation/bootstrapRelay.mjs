@@ -19,7 +19,6 @@ import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
 import { getFederationPartitionSlot } from './registry.mjs'
 import { invalidateFederationRoomCache } from './room.mjs'
 import { roomCredentialsFromGroupSettings } from './roomCredentials.mjs'
-import { clearRoomCredentialsStale, markRoomCredentialsStale } from './roomCredentialsStale.mjs'
 
 /** @type {Map<string, { createdAt: number }>} */
 const recentBootstrapRequests = new Map()
@@ -140,7 +139,6 @@ export async function applyFedBootstrapResponse(username, groupId, response) {
 
 	// 口令未变时切勿 invalidate+rejoin：会断已有 WebRTC 且 offerPool 在负载下难以重握手。
 	if (slotAlreadyMatches) {
-		clearRoomCredentialsStale(username, groupId)
 		if (dagAlreadyMatches) {
 			const { clearFederationBootstrap } = await import('./bootstrapStore.mjs')
 			clearFederationBootstrap(username, groupId)
@@ -218,7 +216,6 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 	if (slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap))
 		return
 
-	markRoomCredentialsStale(username, groupId)
 	if (!activeSlot) return
 
 	const nodeHash = federationNodeHash(username)

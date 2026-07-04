@@ -3,6 +3,9 @@ import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:
 import process from 'node:process'
 
 import { createLruMap } from '../memo.mjs'
+import { createOverlayRouter } from './overlay/index.mjs'
+import { createBluetoothDiscoveryProvider } from './discovery/bt.mjs'
+import { createMdnsDiscoveryProvider } from './discovery/mdns.mjs'
 import { sha256Hex, keyPairFromSeed, pubKeyHash } from './crypto.mjs'
 import { mergeSignalingRelayUrls, createNostrDiscoveryProvider } from './discovery/nostr.mjs'
 import { advertiseTopic, listenSignals, listDiscoveryProviders, registerDiscoveryProvider, sendSignal, subscribeTopic } from './discovery/index.mjs'
@@ -11,6 +14,7 @@ import { DEFAULT_ICE_SERVERS } from './ice_servers.mjs'
 import { buildSignedAdvert, verifySignedAdvert } from './link/handshake.mjs'
 import { createLink, shouldCloseOwnInitiated } from './link/link.mjs'
 import { ensureNodeSeed, getNodeHash, getNodeTransportSettings } from './node/identity.mjs'
+import { getSignalingRuntimeConfig } from './node/instance.mjs'
 
 const SIGNAL_DOMAIN = 'fount-signal-v1'
 const NODE_TOPIC_DOMAIN = 'fount-rdv-node:'
@@ -161,6 +165,7 @@ function subscribeBucket(buckets, key, listener) {
  * @param {typeof createLink} [opts.createLink]
  * @param {RTCConfiguration['iceServers']} [opts.iceServers]
  * @param {number} [opts.maxActive]
+ * @param {boolean} [opts.autoRegisterDiscoveryProviders]
  * @returns {object}
  */
 export function createLinkRegistry(opts = {}) {
@@ -168,6 +173,7 @@ export function createLinkRegistry(opts = {}) {
 	const createLinkImpl = opts.createLink ?? createLink
 	const iceServers = opts.iceServers?.length ? opts.iceServers : DEFAULT_ICE_SERVERS
 	const maxActive = Math.max(4, Number(opts.maxActive) || 32)
+	const autoRegisterDiscoveryProviders = opts.autoRegisterDiscoveryProviders !== false
 	const selfTopic = nodeRendezvousTopic(localIdentity.nodeHash)
 	/** @type {Map<string, Awaited<ReturnType<typeof createLinkImpl>>>} */
 	const links = new Map()
@@ -189,6 +195,7 @@ export function createLinkRegistry(opts = {}) {
 	let runtimeStarted = false
 	let stopAdvert = null
 	let stopSignalListener = null
+	let overlayRouter = null
 
 	/**
 	 * @returns {Promise<void>}
@@ -196,10 +203,20 @@ export function createLinkRegistry(opts = {}) {
 	async function ensureDiscoveryRuntime() {
 		if (runtimeStarted) return
 		runtimeStarted = true
-		if (!listDiscoveryProviders().length && !(process.env.FOUNT_TEST === '1' && !process.env.FOUNT_TEST_RELAY_URLS))
-			registerDiscoveryProvider(createNostrDiscoveryProvider({
-				relayUrls: mergeSignalingRelayUrls(getNodeTransportSettings().relayUrls),
-			}))
+		if (autoRegisterDiscoveryProviders) {
+			const providerIds = new Set(listDiscoveryProviders().map(provider => provider.id))
+			if (!providerIds.has('mdns'))
+				registerDiscoveryProvider(createMdnsDiscoveryProvider())
+			if (!providerIds.has('bt') && process.env.FOUNT_ENABLE_BT_DISCOVERY === '1')
+				registerDiscoveryProvider(createBluetoothDiscoveryProvider())
+			if (!providerIds.has('nostr'))
+				// 测试环境通过 FOUNT_TEST_RELAY_URLS 注入共享 loopback relay；生产则回落到用户 relay + 默认公网 relay。
+				// 新 discovery 栈也必须尊重这层 runtime override，否则 live 双节点测试会各打各的公网 relay。
+				registerDiscoveryProvider(createNostrDiscoveryProvider({
+					relayUrls: getSignalingRuntimeConfig().relayOverride
+						?? mergeSignalingRelayUrls(getNodeTransportSettings().relayUrls),
+				}))
+		}
 		if (!listDiscoveryProviders().length) return
 		stopSignalListener = await listenSignals(selfTopic, bytes => {
 			void handleIncomingSignal(bytes).catch(() => {})
@@ -322,7 +339,7 @@ export function createLinkRegistry(opts = {}) {
 	 * @param {string} remoteNodeHash
 	 * @returns {Promise<Awaited<ReturnType<typeof createLinkImpl>> | null>}
 	 */
-	async function ensureLinkToNode(remoteNodeHash) {
+	async function ensureDirectLinkToNode(remoteNodeHash) {
 		await ensureDiscoveryRuntime()
 		const normalized = normalizeHex64(remoteNodeHash)
 		if (!normalized || normalized === localIdentity.nodeHash) return null
@@ -351,10 +368,52 @@ export function createLinkRegistry(opts = {}) {
 	 * @param {{ scope: string, action: string, payload: unknown }} envelope
 	 * @returns {Promise<boolean>}
 	 */
-	async function sendToNodeLink(remoteNodeHash, envelope) {
-		const link = await ensureLinkToNode(remoteNodeHash)
+	async function sendDirectToNodeLink(remoteNodeHash, envelope) {
+		const link = await ensureDirectLinkToNode(remoteNodeHash)
 		if (!link) return false
 		return await link.send(envelope)
+	}
+
+	function getOverlayRouter() {
+		if (overlayRouter) return overlayRouter
+		overlayRouter = createOverlayRouter({
+			localIdentity,
+			sendToNodeLink: sendDirectToNodeLink,
+			listLinks() {
+				return [...links.entries()].map(([nodeHash, link]) => ({ nodeHash, link }))
+			},
+			subscribeScope,
+		})
+		overlayRouter.onRelay((body, meta) => {
+			void dispatchEnvelope(meta.path[0], body, null).catch(() => {})
+		})
+		return overlayRouter
+	}
+
+	/**
+	 * @param {string} remoteNodeHash
+	 * @param {{ scope: string, action: string, payload: unknown }} envelope
+	 * @returns {Promise<boolean>}
+	 */
+	async function relayEnvelopeToNode(remoteNodeHash, envelope) {
+		if (!links.size || envelope?.scope === 'overlay') return false
+		try {
+			const path = await getOverlayRouter().discoverRoute(remoteNodeHash)
+			await getOverlayRouter().relay(path, envelope)
+			return true
+		}
+		catch {
+			return false
+		}
+	}
+
+	async function ensureLinkToNode(remoteNodeHash) {
+		return await ensureDirectLinkToNode(remoteNodeHash)
+	}
+
+	async function sendToNodeLink(remoteNodeHash, envelope) {
+		return await sendDirectToNodeLink(remoteNodeHash, envelope)
+			|| await relayEnvelopeToNode(remoteNodeHash, envelope)
 	}
 
 	/**
@@ -440,9 +499,12 @@ export function createLinkRegistry(opts = {}) {
 			})
 		},
 		recentAdverts,
+		relayEnvelopeToNode,
 		async shutdown() {
 			stopAdvert?.()
 			stopSignalListener?.()
+			overlayRouter?.close()
+			overlayRouter = null
 			for (const link of links.values())
 				await link.close('registry-shutdown')
 			links.clear()
@@ -468,6 +530,7 @@ export const getLink = (...args) => getLinkRegistry().getLink(...args)
 export const listLinks = (...args) => getLinkRegistry().listLinks(...args)
 export const closeLink = (...args) => getLinkRegistry().closeLink(...args)
 export const sendToNodeLink = (...args) => getLinkRegistry().sendToNodeLink(...args)
+export const relayEnvelopeToNode = (...args) => getLinkRegistry().relayEnvelopeToNode(...args)
 export const onLinkUp = (...args) => getLinkRegistry().onLinkUp(...args)
 export const onLinkDown = (...args) => getLinkRegistry().onLinkDown(...args)
 export const registerScopeInterest = (...args) => getLinkRegistry().registerScopeInterest(...args)

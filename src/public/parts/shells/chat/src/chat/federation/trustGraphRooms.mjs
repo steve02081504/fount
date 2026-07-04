@@ -1,17 +1,60 @@
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { registerScopeAuthorizer } from '../../../../../../../scripts/p2p/link_registry.mjs'
+import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'
 
-import { loadFederationGroupSettings } from './deps.mjs'
+import { loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
-import { forEachFederationPartitionSlot } from './registry.mjs'
+import { forEachFederationPartitionSlot, groupFederationOwner } from './registry.mjs'
+
+let unregisterGroupScopeAuthorizer = null
+
+const PREMEMBER_GROUP_ACTIONS = new Set([
+	'fed_bootstrap_request',
+	'fed_bootstrap_response',
+	'fed_join_snapshot_request',
+	'fed_join_snapshot_response',
+	'fed_tip_ping',
+	'fed_tip_pong',
+	'discovery_announce',
+	'discovery_query',
+	'discovery_query_response',
+])
+
+function isActiveMemberNodeHash(state, nodeHash) {
+	const normalizedNodeHash = normalizeHex64(nodeHash)
+	if (!normalizedNodeHash) return false
+	return Object.values(state?.members || {}).some(member =>
+		member?.status === 'active'
+		&& normalizeHex64(member?.homeNodeHash || member?.nodeHash) === normalizedNodeHash)
+}
+
+function isBootstrapJoinEnvelope(envelope) {
+	return envelope?.action === 'dag_event'
+		&& String(envelope?.payload?.type || '') === 'member_join'
+}
+
+function isPrememberBootstrapEnvelope(envelope) {
+	const action = String(envelope?.action || '').trim()
+	return PREMEMBER_GROUP_ACTIONS.has(action) || isBootstrapJoinEnvelope(envelope)
+}
 
 /**
  * Chat Load 时注册：向 trust_graph 暴露当前 federation sync 房间槽。
  * @returns {void}
  */
 export function registerChatFederationRoomProvider() {
+	unregisterGroupScopeAuthorizer?.()
+	unregisterGroupScopeAuthorizer = registerScopeAuthorizer('group:', async (scope, senderNodeHash, envelope) => {
+		const groupId = String(scope || '').slice('group:'.length).trim()
+		if (!groupId) return false
+		const owner = groupFederationOwner.get(groupId)
+		if (!owner) return false
+		const state = await loadFederationMaterializedState(owner, groupId)
+		return isActiveMemberNodeHash(state, senderNodeHash) || isPrememberBootstrapEnvelope(envelope)
+	})
 	registerFederationRoomProvider('chat', username => {
 		/** @type {import('../../../../../../../scripts/p2p/room_provider_registry.mjs').FederationRoomSlot[]} */
 		const slots = []
@@ -60,4 +103,6 @@ export function registerChatFederationRoomProvider() {
  */
 export function unregisterChatFederationRoomProvider() {
 	unregisterFederationRoomProvider('chat')
+	unregisterGroupScopeAuthorizer?.()
+	unregisterGroupScopeAuthorizer = null
 }

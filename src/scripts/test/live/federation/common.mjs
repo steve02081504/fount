@@ -362,6 +362,7 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 		roomSecret: invite.roomSecret,
 		signalingAppId: invite.signalingAppId,
 		introducerPubKeyHash: invite.introducerPubKeyHash,
+		introducerNodeHash: invite.introducerNodeHash,
 	})
 	if (join.status !== 200) throw new Error(`B join failed: ${join.status} ${join.raw}`)
 	let ok = await WaitFedMembers(FedB, groupId)
@@ -381,6 +382,7 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 			roomSecret: inviteRetry.roomSecret,
 			signalingAppId: inviteRetry.signalingAppId,
 			introducerPubKeyHash: inviteRetry.introducerPubKeyHash,
+			introducerNodeHash: inviteRetry.introducerNodeHash,
 		})
 		ok = await WaitFedMembers(FedB, groupId, 2, 120)
 	}

@@ -3,7 +3,7 @@
 /**
  * 独立 Subfount 客户端
  *
- * 此脚本通过 Trystero 连接到主 fount 实例
+ * 此脚本通过 fount 自带 P2P link scope 连接到主 fount 实例
  * 并执行主机发送的 JavaScript 代码。
  *
  * 首次使用:
@@ -21,9 +21,6 @@ import path from 'node:path'
 import process from 'node:process'
 import { setInterval, clearInterval, setTimeout } from 'node:timers'
 import { fileURLToPath } from 'node:url'
-// V8 serialize 不兼容 Trystero 的 JSON 传输，直接传递原始值
-
-// 捕获 信令内部网络瞬断错误，防止刷屏
 process.on('uncaughtException', (err) => {
 	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
 		return
@@ -53,10 +50,8 @@ else
 	catch { }
 
 
-// node_modules 检查已不再需要（werift 是纯 JS，无需原生构建）
-
 // --- 动态加载 npm 依赖 ---
-let exec, inquirer, on_shutdown, joinSignalingRoomWithDefaults
+let exec, inquirer, on_shutdown, createScopedLinkRoom
 try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
@@ -64,7 +59,7 @@ try {
 	const { initNode, isNodeInitialized } = await import('../../../../../scripts/p2p/node/instance.mjs')
 	if (!isNodeInitialized())
 		initNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
-	;({ joinSignalingRoomWithDefaults } = await import('../../../../../scripts/p2p/signaling_room.mjs'))
+	;({ createScopedLinkRoom } = await import('../src/link_room.mjs'))
 }
 catch (error) {
 	console.error('\nFailed to load dependencies:', error.message)
@@ -309,10 +304,8 @@ async function handleRunCode(message, peerId) {
 	await sendDeviceInfoToHost()
 
 	try {
-		// 导入 async_eval
 		const { async_eval } = await import('npm:@steve02081504/async-eval')
 
-		// 为通过 Trystero 的远程调用创建回调函数
 		let callback = null
 		if (callbackInfo && actions.sendCallback)
 			/**
@@ -326,10 +319,8 @@ async function handleRunCode(message, peerId) {
 				}, hostPeerId)
 			}
 
-		// 执行代码
 		const evalResult = await async_eval(script, { callback })
 
-		// 通过 Trystero 发送结果回传
 		await actions.sendResponse({
 			requestId,
 			payload: evalResult,
@@ -393,21 +384,19 @@ async function handleShellExec(message, peerId) {
 }
 
 /**
- * 通过 Trystero 连接到主机。
+ * 通过 scope room 连接到主机。
  */
-async function connectViaTrystero() {
+async function connectViaP2P() {
 	try {
 		console.log('Connecting to host...')
-		// 生成机器 ID（用于分配数字 ID）
 		deviceId = await generateDeviceId()
 
-		room = await joinSignalingRoomWithDefaults({
-			appId: 'fount-subfounts',
-			password,
-			roomId: hostRoomId,
+		room = createScopedLinkRoom({
+			scope: `subfount:${hostRoomId}`,
+			roomSecret: password,
 		})
+		await room.start()
 
-		// 设置操作处理程序
 		const actionMap = {
 			authenticate: ['sendAuth', 'getAuth'],
 			device_info: ['sendDeviceInfo', 'getDeviceInfo'],
@@ -423,7 +412,6 @@ async function connectViaTrystero() {
 			if (getName) actions[getName] = get
 		}
 
-		// 处理身份验证响应
 		actions.getAuth((data, peerId) => {
 			if (data.type === 'authenticated') {
 				authenticated = true
@@ -435,13 +423,12 @@ async function connectViaTrystero() {
 			else if (data.type === 'auth_error') {
 				console.log('✗ Authentication failed, retrying in 5 seconds...')
 				setTimeout(() => {
-					if (room) room.leave()
-					setTimeout(connectViaTrystero, 1000)
+					if (room) void room.leave()
+					setTimeout(connectViaP2P, 1000)
 				}, 5000)
 			}
 		})
 
-		// 处理运行代码和 shell 执行请求
 		/**
 		 * 创建已验证请求的处理函数。
 		 * @param {Function} handler - 请求处理函数。
@@ -453,7 +440,6 @@ async function connectViaTrystero() {
 		actions.getRunCode(handleAuthenticatedRequest(handleRunCode))
 		actions.getShellExec(handleAuthenticatedRequest(handleShellExec))
 
-		// 处理对等端加入（寻找主机并发送身份验证）
 		room.onPeerJoin((peerId) => {
 			if (!authenticated && actions.sendAuth && !hostPeerId) {
 				console.log('Host discovered, sending authentication...')
@@ -462,7 +448,6 @@ async function connectViaTrystero() {
 			}
 		})
 
-		// 处理对等端离开
 		room.onPeerLeave((peerId) => {
 			if (peerId === hostPeerId) {
 				console.log('✗ Disconnected from host')
@@ -476,16 +461,15 @@ async function connectViaTrystero() {
 	catch (error) {
 		console.error('Connection failed:', error.message)
 		console.log('Retrying in 5 seconds...')
-		setTimeout(connectViaTrystero, 5000)
+		setTimeout(connectViaP2P, 5000)
 	}
 }
 
-// 开始通过 Trystero 连接
-connectViaTrystero()
+connectViaP2P()
 
 // 处理优雅关闭
 on_shutdown(() => {
 	console.log('\nShutting down...')
 	clearInterval(deviceInfoUpdateInterval)
-	if (room) room.leave()
+	if (room) void room.leave()
 })

@@ -4,7 +4,7 @@
 
 /**
  * @typedef {object} FederationWireBinding
- * @property {ReturnType<import('../../../../../../../../scripts/p2p/trystero_session.mjs').createTrysteroActionRegistry>} wireActions
+ * @property {ReturnType<import('../../../../../../../../scripts/p2p/action_registry.mjs').createActionRegistry>} wireActions
  * @property {Map<string, Function>} senderRegistry
  */
 
@@ -69,7 +69,7 @@
 
 /**
  * @param {FederationRoomWireContext} wireContext 房间 join 期 wire 绑定
- * @returns {FederationRoomWireContext} Trystero wire 最小子集
+ * @returns {FederationRoomWireContext} 房间 wire 最小子集
  */
 export function pickWireContext(wireContext) {
 	return {

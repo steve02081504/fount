@@ -1,14 +1,15 @@
 /**
  * 联邦房间生命周期：按需 join 信令分区、注册 handler、暴露 FederationSlot。
  */
+import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { createActionRegistry } from '../../../../../../../scripts/p2p/action_registry.mjs'
+import { createGroupLinkSet } from '../../../../../../../scripts/p2p/group_link_set.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { createTrysteroActionRegistry } from '../../../../../../../scripts/p2p/trystero_session.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
 
 import { attachFedChunkHandlers, unregisterChunkSwarm } from './chunks.mjs'
-import { getFederationSettings } from './config.mjs'
-import { loadFederationGroupSettings, federationNodeHash, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, loadFederationMaterializedState, federationNodeHash, requireDagDeps } from './deps.mjs'
 import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
@@ -30,6 +31,7 @@ import {
 	setFederationPartitionInflight,
 	setFederationPartitionSlot,
 } from './registry.mjs'
+import { peekFederationBootstrap, peekPeerRoomHint } from './bootstrapStore.mjs'
 import { resolveGroupRoomCredentials } from './roomCredentials.mjs'
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'
@@ -47,7 +49,7 @@ const DEFAULT_ROOM_LEAVE_TIMEOUT_MS = 4000
  * @returns {boolean} slot 是否仍绑定同一 room
  */
 function partitionSlotMatchesCredentials(slot, roomCreds) {
-	return slot?.trysteroRoomName === roomCreds.roomId && slot?.roomSecret === roomCreds.password
+	return slot?.roomId === roomCreds.roomId && slot?.roomSecret === roomCreds.password
 }
 
 /**
@@ -200,27 +202,23 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 		const genAtJoin = getFederationPartitionRebindGen(username, groupId, partitionId)
 		const { readJsonl } = requireDagDeps()
 		const nodeHash = federationNodeHash(username)
-		const trysteroRoomName = roomCreds.roomId
+		const roomId = roomCreds.roomId
 		try {
 			const localEvents = await readJsonl(eventsPath(username, groupId))
 			warmSeenFromLocalEvents(username, groupId, localEvents)
-			const data = await getFederationSettings(username)
-			const customRelays = Array.isArray(data.relayUrls)
-				? data.relayUrls.map(url => String(url).trim()).filter(url => url.startsWith('wss://'))
-				: []
-			// 空 = 用默认中继（传 undefined 触发 buildTrysteroSignalingConfig 的默认回退）。
-			const relayUrls = customRelays.length ? customRelays : undefined
-			const { joinSignalingRoomWithDefaults } = await import('../../../../../../../scripts/p2p/signaling_room.mjs')
-			const { resolveIceServers } = await import('../../../../../../../scripts/p2p/ice_servers.mjs')
-			const room = await joinSignalingRoomWithDefaults({
-				appId: roomCreds.appId,
-				password: roomCreds.password,
-				roomId: trysteroRoomName,
-				relayUrls,
-				iceServers: resolveIceServers(groupSettings),
+			const members = Object.values((await loadFederationMaterializedState(username, groupId))?.members || {})
+				.map(member => normalizeHex64(member?.homeNodeHash || member?.nodeHash))
+				.filter(Boolean)
+			const bootstrapNodeHash = normalizeHex64(peekFederationBootstrap(username, groupId)?.fromNodeId)
+			const peerHintNodeHash = normalizeHex64(peekPeerRoomHint(username, groupId)?.fromNodeId)
+			if (bootstrapNodeHash) members.push(bootstrapNodeHash)
+			if (peerHintNodeHash) members.push(peerHintNodeHash)
+			const room = createGroupLinkSet({
+				groupId,
+				roomSecret: roomCreds.password,
+				members,
 			})
-			// join 命中硬超时（串行队列积压）：放弃本次，房间最终一致交由后续 ensureFederationRoom / catch-up 兜底。
-			if (!room) return null
+			await room.start()
 			const fedOut = createFedOutQueue()
 			const peersSnap = loadPeerPoolView(groupId)
 			const rtcLimits = {
@@ -235,7 +233,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 			const nodeToPeer = new Map()
 			/** @type {Map<string, Function>} */
 			const senderRegistry = new Map()
-			const wireActions = createTrysteroActionRegistry(room)
+			const wireActions = createActionRegistry(room)
 			wireActions.register(FEDERATION_WIRE_ACTION_NAMES)
 
 			/**
@@ -284,7 +282,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 
 			const slot = buildFederationSlot({
 				partitionId,
-				trysteroRoomName,
+				roomId,
 				room,
 				roomSecret: roomCreds.password,
 				groupId,

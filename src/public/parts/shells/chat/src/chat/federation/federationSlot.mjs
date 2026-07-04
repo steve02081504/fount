@@ -2,13 +2,12 @@
  * 联邦房间 FederationSlot：roomContext + 统一 send(action, payload, peerId)。
  */
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { leaveSignalingRoom } from '../../../../../../../scripts/p2p/signaling_room.mjs'
+import { pruneStaleRosterEntries } from '../../../../../../../scripts/p2p/peer_identity_maps.mjs'
 import { recordStalePeerPrune } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
-import { pruneStaleRosterEntries } from '../../../../../../../scripts/p2p/trystero_session.mjs'
 
 import { bindFedSender } from './outbound.mjs'
 
-/** @type {Record<string, [number, string]>} Trystero action → [priority, logLabel] */
+/** @type {Record<string, [number, string]>} group scope action → [priority, logLabel] */
 const FED_ACTION_SPECS = {
 	dag_event: [0, 'sendDag'],
 	gossip_request: [1, 'sendGossipRequest'],
@@ -29,7 +28,7 @@ const FED_ACTION_SPECS = {
 
 /**
  * @param {Map<string, Function>} senderRegistry wireAction 注册的 send 表
- * @param {string} actionName Trystero action
+ * @param {string} actionName group scope action
  * @returns {Function} send
  */
 function requireRegistrySender(senderRegistry, actionName) {
@@ -41,7 +40,7 @@ function requireRegistrySender(senderRegistry, actionName) {
 /**
  * @typedef {object} FederationRoomContext
  * @property {string} partitionId
- * @property {string} trysteroRoomName
+ * @property {string} roomId
  * @property {object} room
  * @property {string} roomSecret
  * @property {string} groupId
@@ -73,7 +72,7 @@ function requireRegistrySender(senderRegistry, actionName) {
 export function buildFederationSlot(roomContext) {
 	const {
 		partitionId,
-		trysteroRoomName,
+		roomId,
 		room,
 		roomSecret,
 		groupId,
@@ -93,7 +92,7 @@ export function buildFederationSlot(roomContext) {
 	let active = true
 
 	/**
-	 * 用 Trystero 实时连接表（room.getPeers）校正身份映射：剔除已无活连接的 peerId（自愈），并记录观测。
+	 * 用实时连接表（room.getPeers）校正身份映射：剔除已无活连接的 peerId（自愈），并记录观测。
 	 * roster/目标解析的唯一可信前置——杜绝向死 peer 发包（"no peer with id ... found" 静默丢失）。
 	 * @returns {void}
 	 */
@@ -123,7 +122,7 @@ export function buildFederationSlot(roomContext) {
 	/** @type {FederationSlot} */
 	const slot = {
 		partitionId,
-		trysteroRoomName,
+		roomId,
 		room,
 		roomSecret,
 		groupId,
@@ -141,7 +140,7 @@ export function buildFederationSlot(roomContext) {
 		},
 		/**
 		 * @param {string} targetNodeId 目标 nodeHash
-		 * @returns {string | null} Trystero peerId（仅在活连接时返回）
+		 * @returns {string | null} 在线 peerId（仅在活连接时返回）
 		 */
 		getPeerIdByNodeHash(targetNodeId) {
 			reconcileLivePeers()
@@ -149,13 +148,13 @@ export function buildFederationSlot(roomContext) {
 		},
 		/**
 		 * @param {string} peerId 目标 peer
-		 * @param {string} actionName Trystero action
+		 * @param {string} actionName group scope action
 		 * @param {unknown} payload 载荷
 		 * @returns {void}
 		 */
 		sendToPeer(peerId, actionName, payload) { getActionSender(actionName)(payload, peerId) },
 		/**
-		 * @param {string} actionName Trystero action
+		 * @param {string} actionName group scope action
 		 * @param {unknown} payload 载荷
 		 * @param {string | null} [peerId] 目标 peer；null 为广播
 		 * @returns {void}
@@ -177,9 +176,9 @@ export function buildFederationSlot(roomContext) {
 			cleanups.add(fn)
 		},
 		/**
-		 * 离开底层 Trystero 房间并清空 roster/映射，使旧 slot 干净失活。
+		 * 离开底层 group scope 房间并清空 roster/映射，使旧 slot 干净失活。
 		 *
-		 * 替换/失效 slot 时必须调用：否则旧 Trystero 房间仍在后台存活、peer 连在孤儿房间，
+		 * 替换/失效 slot 时必须调用：否则旧房间仍在后台存活、peer 连在孤儿房间，
 		 * 而新 slot 的 roster 为空 → /peers 空、出站发布落在无 peer 的当前 slot（live push 丢失）。
 		 * @returns {Promise<void>} teardown 完成
 		 */
@@ -192,7 +191,7 @@ export function buildFederationSlot(roomContext) {
 				catch (error) { console.error('federation: slot cleanup failed', error) }
 			cleanups.clear()
 			try {
-				await leaveSignalingRoom(room)
+				await room?.leave?.()
 			}
 			catch (error) {
 				console.error('federation: room leave failed', error)

@@ -15,6 +15,7 @@ await Api(FedB, 'POST', `/groups/${gid}/join`, {
 	roomSecret: inv.roomSecret,
 	signalingAppId: inv.signalingAppId,
 	introducerPubKeyHash: inv.introducerPubKeyHash,
+	introducerNodeHash: inv.introducerNodeHash,
 })
 console.log(`group=${gid} joined; waiting 14s for join-time catch-up to settle...`)
 await sleep(14_000)

@@ -1756,7 +1756,7 @@
 				"tip": "联邦 P2P 设置"
 			},
 			"federationTitle": "联邦 P2P 设置",
-			"federationSubtitle": "跨节点 DAG Gossip（Trystero Nostr + WebRTC）",
+			"federationSubtitle": "跨节点 DAG Gossip（Nostr/mDNS 发现 + WebRTC/Overlay）",
 			"federationLoadFailed": "加载失败：${error}",
 			"openDiscovery": "浏览群发现",
 			"discoveryRefresh": "刷新发现列表",

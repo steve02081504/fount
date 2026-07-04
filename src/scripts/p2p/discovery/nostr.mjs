@@ -39,6 +39,18 @@ function bytesToHex(bytes) {
 }
 
 /**
+ * @param {string} hex
+ * @returns {Uint8Array}
+ */
+function hexToBytes(hex) {
+	const normalized = String(hex || '').trim().toLowerCase()
+	const out = new Uint8Array(Math.floor(normalized.length / 2))
+	for (let index = 0; index < out.length; index++)
+		out[index] = parseInt(normalized.slice(index * 2, index * 2 + 2), 16)
+	return out
+}
+
+/**
  * @param {Uint8Array} bytes
  * @returns {string}
  */
@@ -66,7 +78,7 @@ async function signNostrEvent(kind, tags, content, secretKey) {
 	const created_at = Math.floor(Date.now() / 1000)
 	const serialized = JSON.stringify([0, pubkey, created_at, kind, tags, content])
 	const id = sha256Hex(serialized)
-	const sig = bytesToHex(await schnorr.sign(id, secretKey))
+	const sig = bytesToHex(await schnorr.sign(hexToBytes(id), secretKey))
 	return { id, pubkey, created_at, kind, tags, content, sig }
 }
 
@@ -98,15 +110,23 @@ function connectRelay(relayUrl) {
  * @returns {Promise<void>}
  */
 async function publishEvent(relayUrls, event) {
-	await Promise.all(relayUrls.map(async relayUrl => {
+	let published = false
+	let lastError = null
+	await Promise.allSettled(relayUrls.map(async relayUrl => {
 		const ws = await connectRelay(relayUrl)
 		try {
 			ws.send(JSON.stringify(['EVENT', event]))
+			published = true
+		}
+		catch (error) {
+			lastError = error
+			throw error
 		}
 		finally {
 			setTimeout(() => { try { ws.close() } catch { /* ignore */ } }, 250)
 		}
 	}))
+	if (!published) throw lastError || new Error('nostr: no relay accepted publish')
 }
 
 /**
@@ -143,8 +163,12 @@ export function createNostrDiscoveryProvider(opts = {}) {
 			let closed = false
 			const sockets = []
 			const subscriptionId = randomBytes(8).toString('hex')
+			let connected = 0
 			for (const relayUrl of relayUrls) {
-				const ws = await connectRelay(relayUrl)
+				let ws
+				try { ws = await connectRelay(relayUrl) }
+				catch { continue }
+				connected++
 				sockets.push(ws)
 				ws.addEventListener('message', event => {
 					if (closed) return
@@ -158,6 +182,7 @@ export function createNostrDiscoveryProvider(opts = {}) {
 				})
 				ws.send(JSON.stringify(['REQ', subscriptionId, { kinds: [NOSTR_ADVERT_KIND], '#t': [topic], '#x': ['advert'] }]))
 			}
+			if (!connected) throw new Error('nostr: no relay available for advert subscribe')
 			return () => {
 				closed = true
 				for (const ws of sockets)
@@ -177,8 +202,12 @@ export function createNostrDiscoveryProvider(opts = {}) {
 			let closed = false
 			const sockets = []
 			const subscriptionId = randomBytes(8).toString('hex')
+			let connected = 0
 			for (const relayUrl of relayUrls) {
-				const ws = await connectRelay(relayUrl)
+				let ws
+				try { ws = await connectRelay(relayUrl) }
+				catch { continue }
+				connected++
 				sockets.push(ws)
 				ws.addEventListener('message', event => {
 					if (closed) return
@@ -192,6 +221,7 @@ export function createNostrDiscoveryProvider(opts = {}) {
 				})
 				ws.send(JSON.stringify(['REQ', subscriptionId, { kinds: [NOSTR_SIGNAL_KIND], '#t': [topic], '#x': ['signal'] }]))
 			}
+			if (!connected) throw new Error('nostr: no relay available for signal subscribe')
 			return () => {
 				closed = true
 				for (const ws of sockets)

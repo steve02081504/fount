@@ -11,7 +11,6 @@ import {
 } from './bootstrapStore.mjs'
 import { loadFederationGroupSettings, requireDagDeps } from './deps.mjs'
 import { LOGIC_SYNC_PARTITION, partitionRoomName } from './partitions.mjs'
-import { isRoomCredentialsStale } from './roomCredentialsStale.mjs'
 
 /** 默认信令 App ID（创世 group_settings 写入同值）。 */
 export const DEFAULT_SIGNALING_APP_ID = 'fount-group-fed'
@@ -76,13 +75,7 @@ export async function resolveGroupRoomCredentials(username, groupId, partitionId
 	const settings = await loadFederationGroupSettings(username, groupId)
 	const fromDag = roomCredentialsFromGroupSettings(settings)
 	const override = peekPreferredRoomOverride(username, groupId)
-	const stale = isRoomCredentialsStale(username, groupId)
-
-	const useOverride = override?.roomSecret && (
-		stale
-		|| !fromDag
-		|| !credsEqual(fromDag, override)
-	)
+	const useOverride = override?.roomSecret && (!fromDag || !credsEqual(fromDag, override))
 
 	if (useOverride) {
 		const source = peekFederationBootstrap(username, groupId) ? 'bootstrap' : 'peer_hint'
@@ -96,7 +89,7 @@ export async function resolveGroupRoomCredentials(username, groupId, partitionId
 	}
 
 	if (fromDag) {
-		if (!stale && !peekPeerRoomHint(username, groupId))
+		if (!peekPeerRoomHint(username, groupId))
 			clearFederationBootstrap(username, groupId)
 		return {
 			appId: fromDag.signalingAppId,
@@ -132,8 +125,6 @@ export async function onRoomCredentialsSyncedFromDag(username, groupId, dagCreds
 	const override = peekPreferredRoomOverride(username, groupId)
 	if (!override || credsEqual(dagCreds, override))
 		clearFederationBootstrap(username, groupId)
-	const { clearRoomCredentialsStale } = await import('./roomCredentialsStale.mjs')
-	clearRoomCredentialsStale(username, groupId)
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')
 	const existing = getFederationPartitionSlot(username, groupId, LOGIC_SYNC_PARTITION)
