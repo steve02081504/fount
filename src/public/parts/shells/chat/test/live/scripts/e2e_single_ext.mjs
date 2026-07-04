@@ -13,7 +13,6 @@ const {
 	writeLiveSection,
 	writeLiveSummary,
 	completeLiveScript,
-	allowNoise,
 } = await createSingleNodeProbe()
 
 /** @type {string[]} */
@@ -90,6 +89,7 @@ await testCase('warm runtime (initial-data)', async () => {
 // ---------------------------------------------------------------------------
 writeLiveSection('A. Channels & messages (gaps)')
 let delChId = null
+let delGroupId = null
 const fbChar = await requireTestChar(gid)
 fbMsgId = await waitForCharMessageId(gid, cid, fbChar, 90)
 if (!fbMsgId) throw new Error(`char message required for feedback tests (char=${fbChar})`)
@@ -180,17 +180,25 @@ await testCase('GET /branch restored index', async () => {
 })
 
 await testCase('POST channel (to delete)', async () => {
-	const r = await api('POST', `/groups/${gid}/channels`, { name: 'ext-del', type: 'text', description: 'tmp' })
-	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
-	delChId = r.json.channelId
-	return Boolean(delChId)
+	const group = await api('POST', '/groups/', { name: 'E2E-ext-del', description: 'channel delete coverage' })
+	if (group.status !== 201) throw new Error(`group ${group.status}: ${group.raw}`)
+	delGroupId = group.json.groupId
+	createdGroups.push(delGroupId)
+	const channel = await api('POST', `/groups/${delGroupId}/channels`, { name: 'ext-del', type: 'text', description: 'tmp' })
+	if (channel.status !== 201) throw new Error(`channel ${channel.status}: ${channel.raw}`)
+	delChId = channel.json.channelId
+	return Boolean(delGroupId && delChId)
 })
 
 await testCase('DELETE /channels/:id (non-default)', async () => {
-	const r = await api('DELETE', `/groups/${gid}/channels/${delChId}`)
+	const r = await api('DELETE', `/groups/${delGroupId}/channels/${delChId}`)
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	const s = await api('GET', `/groups/${gid}/state`)
-	return s.json.meta?.channels?.[delChId] == null
+	const ok = await pollUntil(async () => {
+		const s = await api('GET', `/groups/${delGroupId}/state`)
+		return s.status === 200 && s.json.meta?.channels?.[delChId] == null
+	}, 20)
+	if (!ok) throw new Error('channel still present after delete')
+	return true
 })
 
 // ---------------------------------------------------------------------------
@@ -522,10 +530,8 @@ await testCase('POST members/:key/ban (entity scope)', async () => {
 })
 
 await testCase('ban blocks agent trigger-reply', async () => {
-	return allowNoise('char not found', async () => {
-		const r = await api('POST', `/groups/${gid}/channels/${cid}/trigger-reply`, { charname: agentChar })
-		return r.status !== 200
-	})
+	const r = await api('POST', `/groups/${gid}/channels/${cid}/trigger-reply`, { charname: agentChar })
+	return r.status !== 200
 })
 
 await testCase('POST members/:key/unban restores agent active', async () => {

@@ -2,6 +2,7 @@
  * dag/storage.mjs ENOENT 容错：cleanup 竞态下群目录已被删除，后台读流不应抛 unhandled error。
  */
 /* global Deno */
+import { writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -32,4 +33,11 @@ Deno.test('readJsonlStream survives cleanup race: file deleted mid-iteration', a
 	const after = []
 	for await (const row of readJsonlStream(path)) after.push(row)
 	assertEquals(after, [])
+})
+
+Deno.test('readJsonl skips torn trailing line and keeps prior rows', async () => {
+	const dir = Deno.makeTempDirSync()
+	const path = join(dir, 'events.jsonl')
+	await writeFile(path, `${JSON.stringify({ id: 'a' })}\n${JSON.stringify({ id: 'b' })}\n{"id":"c"`, 'utf8')
+	assertEquals(await readJsonl(path), [{ id: 'a' }, { id: 'b' }])
 })

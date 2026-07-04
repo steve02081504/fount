@@ -11,6 +11,7 @@ import { createHash } from 'node:crypto'
 import { channelMessageAgentText, textChannelContent } from '../../../public/shared/channelContent.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
+import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
 import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
 import { getStorageForGroup } from '../storage.mjs'
 
@@ -269,7 +270,8 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		if (event?.id) withDagEventId(entry, event.id)
 	}
 	catch (error) {
-		console.error(error)
+		if (!isExpectedTeardownRace(error))
+			console.error(error)
 	}
 }
 
@@ -296,7 +298,8 @@ export async function mirrorDeleteToDag(groupId, deletedEntry, username) {
 		})
 	}
 	catch (error) {
-		console.error(error)
+		if (!isExpectedTeardownRace(error))
+			console.error(error)
 	}
 }
 
@@ -327,6 +330,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 		})
 	}
 	catch (error) {
-		console.error(error)
+		if (!isExpectedTeardownRace(error))
+			console.error(error)
 	}
 }

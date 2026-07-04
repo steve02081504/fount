@@ -6,11 +6,15 @@ import { dirname } from 'node:path'
 import { createInterface } from 'node:readline'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
+import { setTimeout as sleep } from 'node:timers/promises'
 
 import { withAsyncMutex } from '../utils/async_mutex.mjs'
 
 /** 流式重写 JSONL 时分块写入的行数上限 */
 const WRITE_JSONL_CHUNK_LINES = 1000
+/** Windows 上 rename 可能被短暂占用，做几次短退避重试。 */
+const ATOMIC_RENAME_RETRY_DELAYS_MS = [0, 10, 25, 50, 100]
+const ATOMIC_RENAME_RETRY_CODES = new Set(['EPERM', 'EBUSY', 'EACCES'])
 
 /**
  * @param {string} filePath 目标路径
@@ -18,6 +22,56 @@ const WRITE_JSONL_CHUNK_LINES = 1000
  */
 function atomicTmpPath(filePath) {
 	return `${filePath}.tmp.${process.pid}.${randomUUID()}`
+}
+
+/**
+ * @param {string} tmp 临时文件路径
+ * @returns {Promise<void>}
+ */
+async function cleanupAtomicTmp(tmp) {
+	try { await unlink(tmp) } catch { /* ok */ }
+}
+
+/**
+ * 完成原子写的最终 rename；若目标目录已在 cleanup 中消失，则清理残余 tmp 后静默返回。
+ * @param {string} tmp 临时文件路径
+ * @param {string} filePath 最终目标路径
+ * @returns {Promise<boolean>} 是否已成功落到目标路径
+ */
+export async function finalizeAtomicRename(tmp, filePath) {
+	/** @type {NodeJS.ErrnoException | undefined} */
+	let lastError
+	for (const delayMs of ATOMIC_RENAME_RETRY_DELAYS_MS) {
+		if (delayMs) await sleep(delayMs)
+		try {
+			await rename(tmp, filePath)
+			return true
+		}
+		catch (err) {
+			lastError = err
+			if (ATOMIC_RENAME_RETRY_CODES.has(err?.code)) continue
+			break
+		}
+	}
+	await cleanupAtomicTmp(tmp)
+	if (lastError?.code === 'ENOENT') return false
+	throw lastError
+}
+
+/**
+ * @param {string} line JSONL 单行
+ * @param {(row: object) => object} sanitize 行净化
+ * @returns {object | null} 解析后的对象；坏行/空行返回 null
+ */
+function parseJsonlLine(line, sanitize) {
+	const trimmed = String(line).trim()
+	if (!trimmed) return null
+	try {
+		return sanitize(JSON.parse(trimmed))
+	}
+	catch {
+		return null
+	}
 }
 
 /**
@@ -30,7 +84,13 @@ export async function readJsonl(filePath, options = {}) {
 	try {
 		const text = await readFile(filePath, 'utf8')
 		const sanitize = options.sanitize ?? (row => row)
-		return text.split('\n').filter(Boolean).map(line => sanitize(JSON.parse(line)))
+		/** @type {object[]} */
+		const rows = []
+		for (const line of text.split('\n')) {
+			const row = parseJsonlLine(line, sanitize)
+			if (row) rows.push(row)
+		}
+		return rows
 	}
 	catch {
 		return []
@@ -53,12 +113,8 @@ export async function* readJsonlStream(filePath, options = {}) {
 	const lines = createInterface({ input, crlfDelay: Infinity })
 	try {
 		for await (const line of lines) {
-			const trimmed = String(line).trim()
-			if (!trimmed) continue
-			try {
-				yield sanitize(JSON.parse(trimmed))
-			}
-			catch { /* skip bad line */ }
+			const row = parseJsonlLine(line, sanitize)
+			if (row) yield row
 		}
 	}
 	catch (error) {
@@ -103,14 +159,7 @@ export async function rewriteJsonlKeeping(filePath, keep, options = {}) {
 	}
 	catch { /* source missing */ }
 	if (kept > 0 || dropped > 0)
-		try {
-			await rename(tmp, filePath)
-		}
-		catch (err) {
-			// 目录已被清理（测试 cleanup 竞态 / 删群路径），清理残余 tmp 文件后静默退出。
-			try { await unlink(tmp) } catch { /* ok */ }
-			if (err?.code !== 'ENOENT') throw err
-		}
+		await finalizeAtomicRename(tmp, filePath)
 	else
 		try { await writeFile(filePath, '', 'utf8') }
 		catch { /* ok */ }
@@ -174,7 +223,7 @@ export async function writeJsonl(filePath, records) {
 			yield `${JSON.stringify(rec)}\n`
 	}
 	await pipeline(Readable.from(lines()), createWriteStream(tmp, { encoding: 'utf8' }))
-	await rename(tmp, filePath)
+	await finalizeAtomicRename(tmp, filePath)
 }
 
 /**
@@ -235,7 +284,7 @@ export async function writeJsonAtomic(filePath, obj) {
 	await mkdir(dir, { recursive: true })
 	const tmp = atomicTmpPath(filePath)
 	await writeFile(tmp, JSON.stringify(obj, null, '\t'), 'utf8')
-	await rename(tmp, filePath)
+	await finalizeAtomicRename(tmp, filePath)
 }
 
 /**
@@ -256,7 +305,7 @@ export async function writeJsonAtomicSynced(filePath, obj) {
 	finally {
 		await fh.close()
 	}
-	await rename(tmp, filePath)
+	if (!await finalizeAtomicRename(tmp, filePath)) return
 	const outFh = await open(filePath, 'r+')
 	try {
 		await outFh.sync()

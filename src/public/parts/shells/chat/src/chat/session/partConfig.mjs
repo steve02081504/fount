@@ -14,6 +14,7 @@
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
+import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import {
@@ -70,17 +71,22 @@ function untrackPendingCharGreeting(groupId, charname) {
  * @param {string} groupId 群 ID
  * @param {string} charname 角色名
  * @param {string} username replica
- * @param {import('./models.mjs').chatMetadata_t} chatMetadata 群运行时
- * @param {object} timeSlice 时间片副本
+ * @param {string | undefined} greetingType 问候类型
  * @returns {Promise<void>}
  */
-async function runDeferredCharGreeting(groupId, charname, username, chatMetadata, timeSlice) {
+async function runDeferredCharGreeting(groupId, charname, username, greetingType) {
 	trackPendingCharGreeting(groupId, charname)
 	try {
-		await insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice)
+		if (groupMetadatas.get(groupId)?.username !== username) return
+		const chatMetadata = await getGroupRuntime(groupId, username)
+		if (!chatMetadata.LastTimeSlice.chars[charname]) return
+		const liveTimeSlice = chatMetadata.LastTimeSlice.copy()
+		liveTimeSlice.greeting_type = greetingType
+		await insertCharGreeting(groupId, charname, username, chatMetadata, liveTimeSlice)
 	}
 	catch (error) {
-		console.error(`deferred char greeting failed (${groupId}/${charname}):`, error)
+		if (!isExpectedTeardownRace(error))
+			console.error(`deferred char greeting failed (${groupId}/${charname}):`, error)
 	}
 	finally {
 		untrackPendingCharGreeting(groupId, charname)
@@ -211,7 +217,8 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		return greetingEntry
 	}
 	catch (error) {
-		console.error(error)
+		if (!isExpectedTeardownRace(error))
+			console.error(error)
 		return null
 	}
 }
@@ -250,7 +257,7 @@ export async function addchar(groupId, charname, replicaUsername, opts = {}) {
 	broadcastGroupEvent(groupId, { type: 'char_added', payload: { charname } })
 
 	if (opts.deferGreeting) {
-		void runDeferredCharGreeting(groupId, charname, username, chatMetadata, timeSlice)
+		void runDeferredCharGreeting(groupId, charname, username, timeSlice.greeting_type)
 		return null
 	}
 	return insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice)

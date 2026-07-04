@@ -13,6 +13,7 @@
 
 import { inspect } from 'node:util'
 
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { agentEntityHash, isEntityHash128, parseEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import {
@@ -427,7 +428,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 
 	const session = await getMaterializedSession(username, groupId)
 	const bind = getCharBind(session, charname)
-	if (!bind) throw new Error('char not found')
+	if (!bind) throw httpError(404, 'char not found')
 
 	if (!options.fromRpc && !isLocalNode(bind.homeNodeHash, username)) {
 		const personaForOther = session.personas?.[username]
@@ -452,7 +453,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 
 	const char = chatMetadata.LastTimeSlice.chars[charname]
 		|| await resolveChar(groupId, charname, username)
-	if (!char) throw new Error('char not found')
+	if (!char) throw httpError(404, 'char not found')
 
 	const flightKey = charReplyFlightKey(groupId, channelId, charname)
 	if (charReplyInFlight.has(flightKey)) return

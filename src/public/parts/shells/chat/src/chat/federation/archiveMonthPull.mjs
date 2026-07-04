@@ -2,10 +2,11 @@
  * 冷归档按月联邦拉取：PullAttestation + chunk meta + 多 peer 信誉 digest 仲裁。
  */
 import { randomUUID } from 'node:crypto'
-import { mkdir, rename, unlink } from 'node:fs/promises'
+import { mkdir, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
+import { finalizeAtomicRename } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
@@ -152,7 +153,7 @@ export async function applyArchiveMonthWinner(username, groupId, winner) {
 
 	const path = channelArchivePath(username, groupId, winner.channelId, winner.utcMonth)
 	await mkdir(dirname(path), { recursive: true })
-	await rename(tmpPath, path)
+	if (!await finalizeAtomicRename(tmpPath, path)) return { applied: false }
 
 	await mutateArchiveManifest(username, groupId, manifest => {
 		if (!manifest.channels[winner.channelId]) manifest.channels[winner.channelId] = { months: [] }
