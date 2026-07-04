@@ -107,7 +107,7 @@ async function collectNodeHeapSnapshots(pid) {
 
 /**
  * launchNode 返回的已就绪节点句柄。
- * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number, usedTestRelay?: boolean }} LaunchedNode
+ * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number, usedTestRelay?: boolean, peekOutput: () => string, takeOutput: () => string }} LaunchedNode
  */
 
 /**
@@ -401,6 +401,7 @@ async function injectFixtures(dataPath, username, copies) {
  * @param {boolean} [options.p2p=false] 是否启用 P2P 子系统
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
+ * @param {boolean} [options.captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
  * @param {(port: number) => Promise<void>} [options.releasePort] spawn 前释放该端口的持有 server
  * @param {Record<string, string>} [options.extraEnv] 额外注入子进程的环境变量（不影响父进程 process.env）
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
@@ -441,9 +442,22 @@ export async function launchNode(options = {}) {
 
 	await options.releasePort?.()
 
+	let captureEnabled = false
+	let startupOutput = ''
+	let capturedOutput = ''
+	/**
+	 * @param {string | Uint8Array} chunk
+	 * @returns {void}
+	 */
+	const onOutput = chunk => {
+		const text = String(chunk)
+		if (captureEnabled) capturedOutput += text
+		else startupOutput += text
+	}
+
 	const child = spawn('deno', workerArgs, {
 		cwd: REPO_ROOT,
-		stdio: ['ignore', 'pipe', 'inherit'],
+		stdio: ['ignore', 'pipe', options.captureOutput ? 'pipe' : 'inherit'],
 		env: {
 			...process.env,
 			FOUNT_TEST: '1',
@@ -453,6 +467,10 @@ export async function launchNode(options = {}) {
 			...extraEnv,
 		},
 	})
+	if (options.captureOutput) {
+		child.stdout.on('data', onOutput)
+		child.stderr?.on('data', onOutput)
+	}
 
 	let readyInfo = null
 	const readline = createInterface({ input: child.stdout })
@@ -470,11 +488,19 @@ export async function launchNode(options = {}) {
 	readline.close()
 	// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。
 	child.stdout.resume()
+	child.stderr?.resume?.()
 
 	if (!readyInfo?.baseUrl)
-		throw new Error(`node worker did not emit ready JSON (port ${port})`)
+		throw new Error(`node worker did not emit ready JSON (port ${port})\n${startupOutput}`.trimEnd())
 
-	await waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username)
+	try {
+		await waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username)
+	}
+	catch (error) {
+		if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`
+		throw error
+	}
+	captureEnabled = true
 
 	return {
 		baseUrl: readyInfo.baseUrl,
@@ -486,6 +512,12 @@ export async function launchNode(options = {}) {
 		pid: child.pid,
 		keepData,
 		usedTestRelay,
+		peekOutput: () => capturedOutput,
+		takeOutput: () => {
+			const out = capturedOutput
+			capturedOutput = ''
+			return out
+		},
 	}
 }
 
