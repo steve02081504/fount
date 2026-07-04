@@ -319,6 +319,7 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 			roomSecret: invite.roomSecret,
 			signalingAppId: invite.signalingAppId,
 			introducerPubKeyHash: invite.introducerPubKeyHash,
+			introducerNodeHash: invite.introducerNodeHash,
 		})
 		if (join.status !== 200) throw new Error(`${node.name} join failed: ${join.status} ${join.raw}`)
 		joined++

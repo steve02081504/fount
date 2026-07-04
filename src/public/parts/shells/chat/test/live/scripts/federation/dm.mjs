@@ -146,6 +146,7 @@ await testCase('peer join with dmIntro proof', async () => {
 			signalingAppId: dmInv.signalingAppId,
 			dmSessionTag: dmInv.dmSessionTag,
 			introducerPubKeyHash: intro.pubKeyHex,
+			introducerNodeHash: creatorPub,
 			dmIntroNonce: intro.dmIntroNonce,
 			dmIntroSignatureHex: intro.dmIntroSignatureHex,
 		})

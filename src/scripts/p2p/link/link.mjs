@@ -130,6 +130,7 @@ export async function createLink(opts) {
 		resolveReady = resolve
 		rejectReady = reject
 	})
+	void readyPromise.catch(() => {})
 
 	/**
 	 * @param {unknown} message

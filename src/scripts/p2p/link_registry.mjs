@@ -298,16 +298,21 @@ export function createLinkRegistry(opts = {}) {
 		const session = getOrCreateSignalSession(remoteNodeHash)
 		if (!links.has(remoteNodeHash) && !inflights.has(remoteNodeHash)) {
 			inflights.set(remoteNodeHash, (async () => {
-				const link = await createLinkImpl({
-					nodeHash: remoteNodeHash,
-					initiator: false,
-					signal: session,
-					iceServers,
-					localIdentity,
-				})
-				await link.ready
-				await registerResolvedLink(remoteNodeHash, link)
-				return link
+				try {
+					const link = await createLinkImpl({
+						nodeHash: remoteNodeHash,
+						initiator: false,
+						signal: session,
+						iceServers,
+						localIdentity,
+					})
+					await link.ready
+					await registerResolvedLink(remoteNodeHash, link)
+					return link
+				}
+				catch {
+					return null
+				}
 			})().finally(() => inflights.delete(remoteNodeHash)))
 		}
 		session.deliver(packet.body)
@@ -347,17 +352,22 @@ export function createLinkRegistry(opts = {}) {
 		if (inflights.has(normalized)) return await inflights.get(normalized)
 		const session = getOrCreateSignalSession(normalized)
 		const task = (async () => {
-			await trimToBudget()
-			const link = await createLinkImpl({
-				nodeHash: normalized,
-				initiator: true,
-				signal: session,
-				iceServers,
-				localIdentity,
-			})
-			await link.ready
-			await registerResolvedLink(normalized, link)
-			return link
+			try {
+				await trimToBudget()
+				const link = await createLinkImpl({
+					nodeHash: normalized,
+					initiator: true,
+					signal: session,
+					iceServers,
+					localIdentity,
+				})
+				await link.ready
+				await registerResolvedLink(normalized, link)
+				return link
+			}
+			catch {
+				return null
+			}
 		})().finally(() => inflights.delete(normalized))
 		inflights.set(normalized, task)
 		return await task
@@ -369,9 +379,16 @@ export function createLinkRegistry(opts = {}) {
 	 * @returns {Promise<boolean>}
 	 */
 	async function sendDirectToNodeLink(remoteNodeHash, envelope) {
-		const link = await ensureDirectLinkToNode(remoteNodeHash)
+		const normalized = normalizeHex64(remoteNodeHash)
+		if (!normalized) return false
+		const link = links.get(normalized)
 		if (!link) return false
-		return await link.send(envelope)
+		try {
+			return await link.send(envelope)
+		}
+		catch {
+			return false
+		}
 	}
 
 	function getOverlayRouter() {
