@@ -39,6 +39,23 @@ function disabledDefenseBundle() {
 }
 
 /**
+ * 构造 archive quorum 对比参数集。
+ * @param {number} peerMinFloor 收集阶段 floor
+ * @param {number} peerMinRatio 收集阶段 ratio
+ * @param {number} strictMinFloor 严格仲裁 floor
+ * @param {number} strictMinRatio 严格仲裁 ratio
+ * @returns {import('../tunables_bundle.mjs').TunablesBundle} 调整后的 bundle
+ */
+function archiveQuorumBundle(peerMinFloor, peerMinRatio, strictMinFloor, strictMinRatio) {
+	const bundle = loadDefaultTunables()
+	bundle.archive.archiveQuorumPeerMinFloor = peerMinFloor
+	bundle.archive.archiveQuorumPeerMinRatio = peerMinRatio
+	bundle.archive.archiveQuorumPeerStrictMinFloor = strictMinFloor
+	bundle.archive.archiveQuorumPeerStrictMinRatio = strictMinRatio
+	return bundle
+}
+
+/**
  * 仅看仿真指标的适应度（全部内生，无外生规则惩罚）。
  * @param {import('../tunables_bundle.mjs').TunablesBundle} bundle tunables
  * @param {number[]} [seeds] 种子
@@ -56,24 +73,24 @@ function simOnlyFitness(bundle, seeds = [1, 2, 3]) {
 	return total / Math.max(1, n)
 }
 
-Deno.test('default tunables improve sybil containment vs disabled', () => {
+Deno.test('default tunables improve malicious suppression vs disabled on sybil_heavy', () => {
 	const scenario = resolveScenarios('sybil_heavy')[0]
 	const defaults = canonicalTunables()
 	const disabled = disabledDefenseBundle()
-	let defaultSybil = 0
-	let disabledSybil = 0
+	let defaultSuppression = 0
+	let disabledSuppression = 0
 	for (const seed of [1, 2, 3]) {
-		defaultSybil += runSimulation(scenario, seed, defaults).sybilContainmentRate
-		disabledSybil += runSimulation(scenario, seed, disabled).sybilContainmentRate
+		defaultSuppression += runSimulation(scenario, seed, defaults).malSuppressionRate
+		disabledSuppression += runSimulation(scenario, seed, disabled).malSuppressionRate
 	}
-	const defaultAvg = defaultSybil / 3
-	const disabledAvg = disabledSybil / 3
+	const defaultAvg = defaultSuppression / 3
+	const disabledAvg = disabledSuppression / 3
 	assertEquals(
 		defaultAvg > disabledAvg,
 		true,
-		`default sybil ${defaultAvg} must exceed disabled ${disabledAvg}`,
+		`default suppression ${defaultAvg} must exceed disabled ${disabledAvg}`,
 	)
-	assertEquals(defaultAvg - disabledAvg >= 0.05, true)
+	assertEquals(defaultAvg - disabledAvg >= 0.15, true)
 })
 
 Deno.test('sybilContainmentRate is non-trivial on sybil_heavy', () => {
@@ -223,52 +240,40 @@ Deno.test('mailbox maxHop has interior optimum on churn_storm', () => {
 	assertEquals(midFit > highFit, true, `mid ${midFit} vs high ${highFit}`)
 })
 
-Deno.test('archive quorum strictMin improves defense vs permissive strictMin', () => {
-	const permissive = loadDefaultTunables()
-	permissive.archive.archiveQuorumPeerMinFloor = 1
-	permissive.archive.archiveQuorumPeerMinRatio = 0.01
-	permissive.archive.archiveQuorumPeerStrictMinFloor = 1
-	permissive.archive.archiveQuorumPeerStrictMinRatio = 0.01
-	const strict = loadDefaultTunables()
-	strict.archive.archiveQuorumPeerMinFloor = 2
-	strict.archive.archiveQuorumPeerMinRatio = 0.25
-	strict.archive.archiveQuorumPeerStrictMinFloor = 2
-	strict.archive.archiveQuorumPeerStrictMinRatio = 0.5
+Deno.test('over-strict archive quorum loses liveness on relay_mesh', () => {
+	const permissive = archiveQuorumBundle(1, 0.1, 1, 0.2)
+	const overStrict = archiveQuorumBundle(4, 0.8, 4, 0.95)
 
-	const scenario = resolveScenarios('digest_equivocation')[0]
-	let permissiveDef = 0
-	let strictDef = 0
+	const scenario = resolveScenarios('relay_mesh')[0]
+	let permissiveAcc = 0
+	let overStrictAcc = 0
 	for (const seed of [1, 2, 3, 4, 5]) {
-		permissiveDef += runSimulation(scenario, seed, permissive).archiveDefenseRate
-		strictDef += runSimulation(scenario, seed, strict).archiveDefenseRate
+		permissiveAcc += runSimulation(scenario, seed, permissive).archiveQuorumAccuracy
+		overStrictAcc += runSimulation(scenario, seed, overStrict).archiveQuorumAccuracy
 	}
 
-	assertEquals(strictDef / 5 > permissiveDef / 5, true, `strict ${strictDef / 5} vs permissive ${permissiveDef / 5}`)
-	assertEquals((strictDef - permissiveDef) / 5 >= 0.05, true)
+	assertEquals(
+		permissiveAcc / 5 > overStrictAcc / 5,
+		true,
+		`permissive ${permissiveAcc / 5} should exceed over-strict ${overStrictAcc / 5}`,
+	)
+	assertEquals((permissiveAcc - overStrictAcc) / 5 >= 0.5, true)
 })
 
-Deno.test('strictMin=1 loses archiveDefense on digest_equivocation (endogenous byzantine)', () => {
-	const strict = loadDefaultTunables()
-	strict.archive.archiveQuorumPeerMinFloor = 1
-	strict.archive.archiveQuorumPeerMinRatio = 0.01
-	strict.archive.archiveQuorumPeerStrictMinFloor = 1
-	strict.archive.archiveQuorumPeerStrictMinRatio = 0.01
+Deno.test('default archive quorum avoids the over-strict liveness cliff on relay_mesh', () => {
+	const defaults = loadDefaultTunables()
+	const overStrict = archiveQuorumBundle(4, 0.8, 4, 0.95)
 
-	const safe = loadDefaultTunables()
-	safe.archive.archiveQuorumPeerMinFloor = 2
-	safe.archive.archiveQuorumPeerMinRatio = 0.25
-	safe.archive.archiveQuorumPeerStrictMinFloor = 2
-	safe.archive.archiveQuorumPeerStrictMinRatio = 0.5
-
-	const scenario = resolveScenarios('digest_equivocation')[0]
-	const strictSnap = runSimulation(scenario, 7, strict)
-	const safeSnap = runSimulation(scenario, 7, safe)
+	const scenario = resolveScenarios('relay_mesh')[0]
+	const defaultSnap = runSimulation(scenario, 7, defaults)
+	const overStrictSnap = runSimulation(scenario, 7, overStrict)
 
 	assertEquals(
-		strictSnap.archiveDefenseRate <= safeSnap.archiveDefenseRate,
+		defaultSnap.archiveQuorumAccuracy > overStrictSnap.archiveQuorumAccuracy,
 		true,
-		`strict ${strictSnap.archiveDefenseRate} should be at most safe ${safeSnap.archiveDefenseRate}`,
+		`default ${defaultSnap.archiveQuorumAccuracy} should exceed over-strict ${overStrictSnap.archiveQuorumAccuracy}`,
 	)
+	assertEquals(defaultSnap.archiveQuorumAccuracy - overStrictSnap.archiveQuorumAccuracy >= 0.5, true)
 })
 
 Deno.test('key_thief and sleeper are containable on dedicated scenarios', () => {

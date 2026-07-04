@@ -27,6 +27,7 @@
 - **Restart**: `fount reboot` for backend/code/config changes. Frontend edits (Hub/UI/templates/styles) take effect on browser refresh.
 - **Debug dumps**: `debugLog(name, data)` → `debug_logs/` (`@src/scripts/debug_log.mjs` / `@src/public/pages/scripts/debug_log.mjs`).
 - **API test**: `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PS: `$env:FOUNT_API_KEY`, bash: `$FOUNT_API_KEY`).
+- **Subagent context handoff**: subagents do not inherit the parent chat's full reasoning or implicit context. Before delegating, explicitly provide the task definition, target paths/scope, relevant constraints, already-verified findings, what counts as direct evidence vs side clues, and the exact output you want back. Do not assume a subagent can infer missing background from the parent conversation.
 
 ## Specialized Guides
 
