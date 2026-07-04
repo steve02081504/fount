@@ -14,9 +14,14 @@ const dc1 = pc1.createDataChannel('test')
 await new Promise((resolve, reject) => {
 	const timer = setTimeout(() => reject(new Error('timeout')), 30_000)
 	pc2.onDataChannel.subscribe(ch => {
-		clearTimeout(timer)
-		console.warn('webrtc-smoke: data channel open', ch.label)
-		resolve(undefined)
+		void (async () => {
+			clearTimeout(timer)
+			console.warn('webrtc-smoke: data channel open', ch.label)
+			dc1.close()
+			await pc1.close()
+			await pc2.close()
+			resolve(undefined)
+		})().catch(reject)
 	})
 	void (async () => {
 		const offer = await pc1.createOffer()
