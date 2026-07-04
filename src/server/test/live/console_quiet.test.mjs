@@ -1,6 +1,7 @@
 /**
- * 回归：默认启动语义下，
- * 服务器 ready 后 10 秒内不应继续自行输出控制台日志。
+ * 回归：这里刻意模拟用户直接运行 `fount server` 的真实默认启动，
+ * 不走测试 harness 的静默 starts 预设，也不注入 loopback / mock relay。
+ * 目标是观察用户真实启动 fount 后 10 秒内是否有错误或噪声。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
