@@ -9,16 +9,16 @@ import { randomBytes } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
-import { parseArgs } from 'node:util'
 
 import { formatDmRunUri } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
 import { dmLinkSignableBytes } from 'fount/public/parts/shells/chat/src/chat/lib/dmLinkSignature.mjs'
 import { loadJsonFileIfExists, saveJsonFile } from 'fount/scripts/json_loader.mjs'
 import { sign } from 'fount/scripts/p2p/crypto.mjs'
 import { HEX_ID_64, normalizeHex64 } from 'fount/scripts/p2p/hexIds.mjs'
+import { parseArgsOrExit } from 'fount/scripts/test/core/parse_args_or_exit.mjs'
 
 
-const { values } = parseArgs({
+const { values } = parseArgsOrExit({
 	options: {
 		'data-path': { type: 'string' },
 		user: { type: 'string' },

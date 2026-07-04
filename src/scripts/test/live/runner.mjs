@@ -3,11 +3,11 @@
  */
 import { join } from 'node:path'
 import process from 'node:process'
-import { parseArgs } from 'node:util'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n.mjs'
+import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
 
 import { denoLiveRun } from './deno_run.mjs'
@@ -172,7 +172,7 @@ export async function runLiveSuite({
  * @returns {Promise<void>}
  */
 export async function runLiveSuiteCli({ suites, repoRoot, nodeA, nodeB, nodeFleet, defaultSuite }) {
-	const { values } = parseArgs({
+	const { values } = parseArgsOrExit({
 		options: {
 			suite: { type: 'string', default: defaultSuite },
 			list: { type: 'boolean', default: false },

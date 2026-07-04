@@ -8,11 +8,11 @@
 import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
-import { parseArgs } from 'node:util'
 
 import { geti18n } from '../i18n.mjs'
 import { ms } from '../ms.mjs'
 
+import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
 import {
 	listManifestIds,
 	loadAllSuites,
@@ -21,7 +21,7 @@ import {
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { runTests } from './runner/index.mjs'
 
-const { positionals, values } = parseArgs({
+const { positionals, values } = parseArgsOrExit({
 	args: process.argv.slice(2),
 	allowPositionals: true,
 	options: {

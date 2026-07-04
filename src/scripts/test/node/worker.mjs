@@ -5,11 +5,11 @@
 import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
-import { parseArgs } from 'node:util'
 import v8 from 'node:v8'
 
 import { hosturl } from '../../../server/server.mjs'
 import { console } from '../../i18n.mjs'
+import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 
 import { bootInProcess } from './boot.mjs'
 
@@ -44,7 +44,7 @@ if (nearOomHeapLimitBytes > 0 && Number.isFinite(heapSnapshotCount) && heapSnaps
 	timer.unref?.()
 }
 
-const { values } = parseArgs({
+const { values } = parseArgsOrExit({
 	options: {
 		'data-path': { type: 'string' },
 		port: { type: 'string' },

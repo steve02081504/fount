@@ -11,11 +11,11 @@ import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
-import { parseArgs } from 'node:util'
 
 import { console } from '../../i18n.mjs'
 import { ms } from '../../ms.mjs'
 import { resolveListenBind } from '../../net_listen.mjs'
+import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
@@ -562,7 +562,7 @@ export async function stopNode(node) {
 }
 
 if (import.meta.main) {
-	const { values } = parseArgs({
+	const { values } = parseArgsOrExit({
 		options: {
 			port: { type: 'string' },
 			data: { type: 'string' },
