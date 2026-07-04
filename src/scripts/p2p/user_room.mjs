@@ -1,21 +1,11 @@
 import { createHash } from 'node:crypto'
 
-import {
-	USER_ROOM_SCOPE,
-} from './identity_announce.mjs'
+import { USER_ROOM_SCOPE } from './identity_announce.mjs'
+import { listLinks, sendToNodeLink, subscribeScope, getLinkRegistry } from './link_registry.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
-import { recordExplorePeersFromRoster } from './network.mjs'
-import { ensureNodeDefaults, getNodeHash, getNodeTransportSettings } from './node/identity.mjs'
+import { ensureNodeDefaults, getNodeHash } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
-import { joinSignalingRoomWithDefaults, leaveSignalingRoom } from './signaling_room.mjs'
-import { recordStalePeerPrune } from './stale_peer_log.mjs'
-import {
-	attachIdentityAnnounceHandlers,
-	createPeerIdentityMaps,
-	createTrysteroActionRegistry,
-	parseRelayUrls,
-} from './trystero_session.mjs'
 
 /**
  * 在 TrysteroActionRegistry 上注册 fed_chunk_get / fed_chunk_data handler，
@@ -24,18 +14,18 @@ import {
  * @param {import('./trystero_session.mjs').TrysteroActionRegistry} actions action 表
  * @returns {void}
  */
-function attachUserRoomChunkHandlers(username, actions) {
+function attachUserRoomChunkHandlers(username, wire) {
 	import('./files/chunk_fetch.mjs').then(({ handleIncomingChunkGet, resolvePendingChunkFetch }) => {
-		actions.on('fed_chunk_get', (data, peerId) => {
+		wire.on('fed_chunk_get', (data, peerId) => {
 			void handleIncomingChunkGet(username, data, (resp) => {
-				try { actions.send('fed_chunk_data', resp, peerId) }
-				catch { /* peer disconnected */ }
+				try { wire.send('fed_chunk_data', resp, peerId) }
+				catch { /* disconnected */ }
 			}, peerId)
 		})
-		actions.on('fed_chunk_data', (data) => {
+		wire.on('fed_chunk_data', data => {
 			resolvePendingChunkFetch(data)
 		})
-	}).catch(error => console.error('p2p: failed to attach chunk handlers to user room', error))
+	}).catch(error => console.error('p2p: failed to attach chunk handlers to node scope', error))
 }
 
 /** @type {Promise<UserRoomSlot | null> | null} */
@@ -43,6 +33,52 @@ let userRoomInflight = null
 
 /** @type {UserRoomSlot | null} */
 export let userRoomSlot = null
+
+/** @type {Map<string, Set<(payload: unknown, peerId: string) => void>>} */
+const nodeActionHandlers = new Map()
+let nodeScopeCleanup = null
+
+/**
+ * @returns {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }}
+ */
+function createNodeScopeWire() {
+	return {
+		on(name, handler) {
+			const key = String(name)
+			if (!nodeActionHandlers.has(key)) nodeActionHandlers.set(key, new Set())
+			nodeActionHandlers.get(key).add(handler)
+		},
+		send(name, payload, peerId) {
+			if (!peerId) return
+			void sendToNodeLink(peerId, { scope: 'node', action: String(name), payload }).catch(() => {})
+		},
+	}
+}
+
+/**
+ * @returns {Array<{ peerId: string, remoteNodeHash: string }>}
+ */
+function activeLinkRoster() {
+	return listLinks().map(({ nodeHash }) => ({ peerId: nodeHash, remoteNodeHash: nodeHash }))
+}
+
+/**
+ * @param {{ replicaUsername?: string }} ctx
+ * @returns {Promise<void>}
+ */
+async function ensureNodeScopeRuntime(ctx) {
+	if (nodeScopeCleanup) return
+	nodeScopeCleanup = subscribeScope('node', (senderNodeHash, envelope) => {
+		const handlers = nodeActionHandlers.get(String(envelope?.action || ''))
+		if (!handlers?.size) return
+		for (const handler of handlers)
+			try { handler(envelope.payload, senderNodeHash) } catch { /* ignore */ }
+	})
+	const wire = createNodeScopeWire()
+	attachPartWire({ replicaUsername: ctx.replicaUsername }, wire)
+	attachMailboxWire({ replicaUsername: ctx.replicaUsername }, wire)
+	attachUserRoomChunkHandlers(ctx.replicaUsername || '', wire)
+}
 
 /**
  * 用户级 Trystero 房间（`fount-node-{nodeHash}`），单节点单实例。
@@ -102,64 +138,26 @@ export async function ensureUserRoom(ctx = {}) {
 
 	userRoomInflight = (async () => {
 		ensureNodeDefaults()
-		const creds = resolveUserRoomCredentials()
 		try {
-			const room = await joinSignalingRoomWithDefaults({
-				appId: creds.appId,
-				password: creds.password,
-				roomId: creds.roomId,
-				relayUrls: parseRelayUrls(getNodeTransportSettings()),
-			})
-			if (!room) {
-				console.error('p2p: user room join failed (timeout or signaling error)')
-				return null
-			}
-			const maps = createPeerIdentityMaps({
-				/** @returns {string[]} 当前活连接 peerId */
-				getLivePeerIds: () => Object.keys(room.getPeers?.() || {}),
-				/**
-				 * @param {Array<{ peerId: string, remoteNodeHash?: string }>} stale 被剔除的失效条目
-				 * @returns {void}
-				 */
-				onStalePruned: stale => recordStalePeerPrune('user_room', stale, { room: 'user_room' }),
-			})
-			const actions = createTrysteroActionRegistry(room)
-			attachIdentityAnnounceHandlers(room, maps, actions)
-
+			await ensureNodeScopeRuntime(ctx)
+			const creds = resolveUserRoomCredentials()
 			/** @type {UserRoomSlot} */
-			const slot = {
+			userRoomSlot = {
 				trysteroRoomName: creds.roomId,
 				roomSecret: creds.password,
-				room,
-				/**
-				 * @param {string} peerId 目标 peer
-				 * @param {string} actionName Trystero action
-				 * @param {unknown} payload 载荷
-				 * @returns {void}
-				 */
+				room: null,
 				sendToPeer(peerId, actionName, payload) {
-					try { actions.send(actionName, payload, peerId) }
-					catch { /* disconnected */ }
+					void sendToNodeLink(peerId, { scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
-				/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} 房间 roster */
-				getRoster: () => maps.getRoster(),
-				/**
-				 * @param {string} nodeHash 64 hex
-				 * @returns {string | null} peer id
-				 */
-				getPeerIdByNodeHash: nodeHash => maps.getPeerIdByNodeHash(nodeHash),
+				getRoster: () => activeLinkRoster(),
+				getPeerIdByNodeHash(nodeHash) {
+					return getLinkRegistry().getLink(nodeHash) ? String(nodeHash) : null
+				},
 			}
-
-			const wireCtx = { replicaUsername: ctx.replicaUsername }
-			attachPartWire(wireCtx, actions)
-			attachMailboxWire(wireCtx, actions)
-			attachUserRoomChunkHandlers(ctx.replicaUsername || '', actions)
-			userRoomSlot = slot
-			recordExplorePeersFromRoster(slot.getRoster(), '', 'user_room')
-			return slot
+			return userRoomSlot
 		}
 		catch (error) {
-			console.error('p2p: user room join failed', error)
+			console.error('p2p: node scope init failed', error)
 			userRoomSlot = null
 			return null
 		}
@@ -175,9 +173,6 @@ export async function ensureUserRoom(ctx = {}) {
  * @returns {void}
  */
 export function invalidateUserRoom() {
-	const slot = userRoomSlot
-	if (slot?.room && typeof slot.room.leave === 'function')
-		void Promise.resolve(leaveSignalingRoom(slot.room)).catch(error => console.error('p2p: user room leave failed', error))
 	userRoomSlot = null
 	userRoomInflight = null
 }
@@ -207,8 +202,8 @@ export async function deliverToUserRoomPeers(username, actionName, payload, exce
 	}
 	for (const { peerId } of peers)
 		try {
-			slot.sendToPeer(peerId, actionName, body)
-			sent++
+			if (await sendToNodeLink(peerId, { scope: 'node', action: String(actionName), payload: body }))
+				sent++
 			if (sent >= fanoutLimit) break
 		}
 		catch { /* disconnected */ }

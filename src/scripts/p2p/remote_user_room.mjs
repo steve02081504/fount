@@ -1,27 +1,6 @@
-/**
- * 远端用户房间：B 主动加入 A 的用户房间（`fount-node-{A's nodeHash}`），
- * 建立单向 P2P 连接，用于 TrustGraph CAS fanout（非成员 emoji 拉取等）。
- *
- * - 幂等：同一 targetNodeHash 只建立一个房间连接。
- * - 注册 FederationRoomProvider，使 listFederationRoomSlots 能枚举远端用户房间。
- * - 注册 fed_chunk_get / fed_chunk_data handler，支持双向 chunk 传输。
- */
-import { createHash } from 'node:crypto'
-
-import { handleIncomingChunkGet, resolvePendingChunkFetch } from './files/chunk_fetch.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
-import { attachMailboxWire } from './mailbox/wire.mjs'
-import { getNodeTransportSettings } from './node/identity.mjs'
-import { attachPartWire } from './part_wire.mjs'
+import { closeLink, ensureLinkToNode, getLink } from './link_registry.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
-import { joinSignalingRoomWithDefaults } from './signaling_room.mjs'
-import { recordStalePeerPrune } from './stale_peer_log.mjs'
-import {
-	attachIdentityAnnounceHandlers,
-	createPeerIdentityMaps,
-	createTrysteroActionRegistry,
-	parseRelayUrls,
-} from './trystero_session.mjs'
 
 /**
  * @typedef {{
@@ -48,78 +27,33 @@ registerFederationRoomProvider('remote-user-room', () => {
  * @returns {Promise<RemoteUserRoomSlot | null>} 房间槽
  */
 export async function ensureRemoteUserRoom(username, targetNodeHash) {
+	void username
 	const key = targetNodeHash.toLowerCase()
 	if (slots.has(key)) return slots.get(key) || null
 	const existing = inflights.get(key)
 	if (existing) return await existing
 
 	const task = (async () => {
-		const password = createHash('sha256').update(`fount-user-room:${key}`).digest('hex')
-		const roomId = `fount-node-${key}`
 		try {
-			const room = await joinSignalingRoomWithDefaults({
-				appId: 'fount-user-fed',
-				password,
-				roomId,
-				relayUrls: parseRelayUrls(getNodeTransportSettings()),
-			})
-			if (!room) {
+			const link = await ensureLinkToNode(key)
+			if (!link) {
 				slots.set(key, null)
 				return null
 			}
 
-			const maps = createPeerIdentityMaps({
-				/** @returns {string[]} 当前活连接 peerId */
-				getLivePeerIds: () => Object.keys(room.getPeers?.() || {}),
-				/**
-				 * @param {Array<{ peerId: string, remoteNodeHash?: string }>} stale 被剔除的失效条目
-				 * @returns {void}
-				 */
-				onStalePruned: stale => recordStalePeerPrune(`remote-user-room:${key}`, stale, { room: 'remote-user-room', targetNodeHash: key }),
-			})
-			const actions = createTrysteroActionRegistry(room)
-			attachIdentityAnnounceHandlers(room, maps, actions)
-
-			const wireCtx = { replicaUsername: username }
-			attachPartWire(wireCtx, actions)
-			attachMailboxWire(wireCtx, actions)
-
-			actions.on('fed_chunk_get', (data, peerId) => {
-				void handleIncomingChunkGet(username, data, (resp) => {
-					try { actions.send('fed_chunk_data', resp, peerId) }
-					catch { /* peer disconnected */ }
-				}, peerId)
-			})
-			actions.on('fed_chunk_data', (data) => {
-				resolvePendingChunkFetch(data)
-			})
-
 			/** @type {import('./room_provider_registry.mjs').FederationRoomSlot} */
 			const roomSlot = {
 				groupId: USER_ROOM_SCOPE,
-				/** @returns {Array<{ peerId: string, remoteNodeHash: string | undefined }>} roster */
-				getRoster: () => maps.getRoster(),
-				/**
-				 * @param {string} nh 目标节点 64 hex
-				 * @returns {string | null} peer id
-				 */
-				getPeerIdByNodeHash: nh => maps.getPeerIdByNodeHash(nh),
-				/**
-				 * @param {string} peerId 目标 peer
-				 * @param {string} actionName Trystero action
-				 * @param {unknown} payload 载荷
-				 * @returns {void}
-				 */
+				getRoster: () => getLink(key) ? [{ peerId: key, remoteNodeHash: key }] : [],
+				getPeerIdByNodeHash: nh => getLink(nh) ? String(nh) : null,
 				sendToPeer(peerId, actionName, payload) {
-					try { actions.send(actionName, payload, peerId) }
-					catch { /* peer disconnected */ }
+					void link.send({ scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
 			}
 
 			const slot = {
 				roomSlot,
-				/** @returns {void | Promise<void>} 离开房间 */
-				leave() { return room.leave?.() },
+				leave() { return closeLink(key, 'remote-user-room-release') },
 			}
 			slots.set(key, slot)
 			return slot

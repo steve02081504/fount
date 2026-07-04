@@ -34,6 +34,8 @@ alwaysApply: false
 
 **All new HTTP/WebSocket live tests must be Deno `.mjs` via `denoLiveRun(path)`.** PS is banned: dynamic scoping bugs (scriptblock variable resolution against invoker's stack causes infinite recursion in wrapped helpers), cross-platform incompatibility, inability to import `fount/*` modules (crypto, dm intro, p2p helpers), and PS footguns (`"$uri?foo"` null-conditional, `$env:VAR?.Trim()` wildcard, hung-run requiring attach-to-`pwsh`).
 
+**For `node-datachannel` / WebRTC live tests, isolate each `.test.mjs` in its own Deno child process.** On Windows + Deno 2.9.1, running multiple `node-datachannel` live files inside one `deno test` process can panic with `attempt to access Handle hosted by disposed Isolate`; use a small `run.mjs` launcher that shells out to `deno test <single-file>` per case.
+
 Hand-rerun: `deno run --allow-all -c deno.json <probe.mjs>` with env from a prior `fount test` log, or `deno run ... src/public/parts/shells/chat/test/live/run.mjs --suite smoke_chat`.
 
 ## Diagnosing a hung live test

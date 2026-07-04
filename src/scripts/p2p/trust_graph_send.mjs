@@ -1,5 +1,6 @@
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
 import { USER_ROOM_SCOPE } from './identity_announce.mjs'
+import { sendToNodeLink } from './link_registry.mjs'
 import { getNodeHash } from './node/identity.mjs'
 import { isQuarantinedPure } from './reputation_engine.mjs'
 import { loadReputation } from './reputation_store.mjs'
@@ -26,6 +27,9 @@ export async function sendToNode(username, targetNodeHash, actionName, payload, 
 	const targetNode = merged.get(target)
 	if (!targetNode?.scopeIds.length) return false
 	const selfNodeHash = getNodeHash()
+
+	if (await sendToNodeLink(target, { scope: 'node', action: String(actionName), payload }))
+		return true
 
 	const rooms = await listFederationRoomSlots(username)
 	const userRooms = rooms.filter(room => room.groupId === USER_ROOM_SCOPE)

@@ -36,6 +36,20 @@
 			"triggers": [
 				"src/scripts/p2p/sim/**"
 			]
+		},
+		{
+			"name": "live",
+			"heavy": true,
+			"run": [
+				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/p2p/test/live/run.mjs"
+			],
+			"triggers": [
+				"src/scripts/p2p/test/live/**",
+				"src/scripts/p2p/link/**",
+				"src/scripts/p2p/discovery/**",
+				"src/scripts/p2p/link_registry.mjs"
+			]
 		}
 	]
 }
