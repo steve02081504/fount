@@ -39,11 +39,17 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 
 	if (contentHash) {
 		await ensureFederationRoom(username, groupId).catch(() => null)
-		const chunk = await fetchChunk({
+		let chunk = await fetchChunk({
 			username,
 			ciphertextHash: contentHash,
 			groupId,
 		}).catch(() => null)
+		// 非成员无群联邦 swarm：群路径 miss 后改走 user-room / TrustGraph fanout
+		if (!chunk?.byteLength)
+			chunk = await fetchChunk({
+				username,
+				ciphertextHash: contentHash,
+			}).catch(() => null)
 		if (chunk?.byteLength) {
 			const buffer = Buffer.from(chunk)
 			await persistGroupEmojiFromDataUrl(

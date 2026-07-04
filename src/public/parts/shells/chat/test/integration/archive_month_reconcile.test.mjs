@@ -118,6 +118,15 @@ Deno.test('pickArchiveMonthByReputation requires reputation or strict peer count
 	)
 	assertEquals(weak.reason, 'quorum_failed')
 
+	const loneTarget = await pickArchiveMonthByReputation(
+		[await archiveMonthCandidate(body, 'c'.repeat(64))],
+		manifest,
+		'general',
+		'2024-01',
+		{ pickScore: zeroPickScore, expectedTargetCount: 1 },
+	)
+	assertEquals(loneTarget.reason, 'ok')
+
 	const strong = await pickArchiveMonthByReputation(
 		[
 			await archiveMonthCandidate(body, 'c'.repeat(64)),
