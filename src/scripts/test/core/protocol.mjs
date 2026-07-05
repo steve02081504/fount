@@ -10,7 +10,7 @@
  */
 import { realpathSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
-import { relative, resolve } from 'node:path'
+import { basename, dirname, relative, resolve } from 'node:path'
 import process from 'node:process'
 
 /**
@@ -20,7 +20,10 @@ import process from 'node:process'
  */
 function tryRealpath(p) {
 	try { return realpathSync(p) }
-	catch { return p }
+	catch {
+		try { return resolve(realpathSync(dirname(p)), basename(p)) }
+		catch { return resolve(p) }
+	}
 }
 
 /**

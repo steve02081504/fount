@@ -22,6 +22,6 @@ export const phases = [
 	},
 	{
 		name: 'tail',
-		testMatch: ['smoke.spec.mjs', 'views.spec.mjs'],
+		testMatch: ['smoke.spec.mjs', 'explore_notifications.spec.mjs'],
 	},
 ]

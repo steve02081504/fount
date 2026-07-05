@@ -34,6 +34,7 @@ export async function readFailures(repoRoot, manifestId) {
 		if (error?.code === 'ENOENT') return null
 		throw error
 	}
+	if (!raw.trim()) return null
 	const data = JSON.parse(raw)
 	if (!Array.isArray(data.items))
 		throw new Error(`invalid failure record for ${manifestId}: missing items array`)
