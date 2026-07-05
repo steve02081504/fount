@@ -27,7 +27,7 @@ import {
 	mergeDigestObservation,
 } from './archiveDigestClaims.mjs'
 import { markArchiveMonthIncomplete } from './archiveMonthMark.mjs'
-import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
 import {
 	archiveMonthQuorumSatisfied,
 	createFederationCollect,
@@ -252,7 +252,7 @@ async function noteArchiveDigestObservations(username, groupId, candidates, chan
  * @returns {Promise<{ applied: boolean, reason: string }>} 拉取结果
  */
 export async function pullArchiveMonthQuorum(username, groupId, slot, channelId, utcMonth) {
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster(),

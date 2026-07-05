@@ -16,7 +16,7 @@ import { listChannelMessages } from '../dag/queries.mjs'
 
 import { hasMaterializedAclSnapshot } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
-import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { createFederationCollect } from './federationCollect.mjs'
 import {
 	joinSnapshotWaitKey,
@@ -73,7 +73,7 @@ async function collectJoinSnapshotCandidates(collectPromise, pending) {
  * @returns {Promise<{ applied: boolean, channels: number }>} checkpoint 落盘且物化出 active 成员时为 applied:true
  */
 export async function applyJoinSnapshotResponse(username, groupId, envelope) {
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	if (envelope.requesterNodeHash !== nodeHash) return { applied: false, channels: 0 }
 	const inner = await unwrapPullEnvelopeForLocalMember(username, groupId, envelope)
 	if (!inner) return { applied: false, channels: 0 }
@@ -152,7 +152,7 @@ export async function handleJoinSnapshotRequest(username, groupId, request, peer
  */
 export async function requestJoinSnapshotFromPeers(username, groupId, slot) {
 	const { readJsonl } = requireDagDeps()
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const roster = slot.getRoster()

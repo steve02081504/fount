@@ -12,7 +12,7 @@ import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updat
 import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
-import { federationNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 
 /** 出站 fed_shun 限流：同群同请求方 30s 内至多一发。 */
@@ -179,7 +179,7 @@ export async function pushFedShunToHomeNode(username, groupId, targetHomeNodeHas
 		slot.fedOut,
 		(payload, targetPeerId) => slot.sendToPeer(targetPeerId, 'fed_shun', payload),
 		groupId,
-		federationNodeHash(username),
+		localNodeHash(),
 		home,
 		peerId,
 		reason,
@@ -266,7 +266,7 @@ export async function evaluateShunConsensus(username, groupId, opts = {}) {
 	const prev = opts.shunState ?? await loadGroupShunState(username, groupId)
 	// 从未收到任何 shun 且当前未疑似出局：无可评估，跳过物化与名册读取。
 	if (!prev.suspectedRemoved && !Object.keys(prev.shunsByNode).length) return prev
-	const selfNodeHash = federationNodeHash(username)
+	const selfNodeHash = localNodeHash()
 	const fedState = await loadFederationMaterializedState(username, groupId)
 	const rosterNodeHashes = opts.rosterNodeHashes !== undefined
 		? opts.rosterNodeHashes
@@ -343,7 +343,7 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 export async function probeShunViaTipPingToRosterPeers(username, groupId, slot) {
 	if (!slot?.send) return
 	const { readJsonl } = requireDagDeps()
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 	const ping = {
 		nodeHash,
@@ -370,7 +370,7 @@ export async function probeShunFromFederationPeers(username, groupId, slot, opts
 	if (!slot?.send) return
 	const waitMs = clampNumber(opts.waitMs ?? 1800, 200, 15_000)
 	const { readJsonl } = requireDagDeps()
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)
 	const roster = slot.getRoster()
 	const requestId = randomUUID()

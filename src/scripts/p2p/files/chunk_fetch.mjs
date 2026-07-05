@@ -18,15 +18,6 @@ import { fetchFederationChunk, resolveNodeHash } from './chunk_provider_registry
 import { getChunk, hasChunk, putChunk } from './chunk_store.mjs'
 
 /**
- *
- */
-export { chunkBytesMatchHash, verifiedChunkBytes } from './chunk_fetch_verify.mjs'
-/**
- *
- */
-export { MAX_PENDING_CHUNK_FETCHES, pendingChunkFetches, resolvePendingChunkFetch } from '../chunk_fetch_pending.mjs'
-
-/**
  * @typedef {{
  *   username: string,
  *   ciphertextHash: string,

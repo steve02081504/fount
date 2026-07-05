@@ -24,7 +24,7 @@ import {
 } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
 import { maybeRequestBootstrapAfterCatchup } from './bootstrapRelay.mjs'
-import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { requestMissingEventsGossip } from './gossip.mjs'
 import { requestJoinSnapshotFromPeers } from './joinSnapshot.mjs'
 import { sendPartitionBridgeFromSlot } from './partitionBridge.mjs'
@@ -103,7 +103,7 @@ function deliverToFederationTargets(slot, payload, targets, sendFn) {
  * @returns {Promise<void>}
  */
 export async function publishSignedEventToFederation(username, groupId, signPayload, opts = {}) {
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const materializedState = opts.state ?? await loadFederationMaterializedState(username, groupId)
 	if (!materializedState) return
 	const { groupSettings } = materializedState
@@ -195,7 +195,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const waitMs = clampNumber(opts.waitMs ?? 1600, 400, 30000)
 	// 本轮 catchup 期间因身份映射滞后被自愈剔除的失效 peer 数（观测：>0 说明 onPeerLeave 漏触发/换房残留）。
 	const stalePeersAtStart = getStalePeerPruneCount(groupId)
@@ -327,7 +327,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
  * @returns {Promise<{ selfNodeHash: string, federationEnabled: boolean, peers: object[] }>} 本机节点与对等端列表
  */
 export async function listFederationPeersForGroup(username, groupId) {
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	// 只读列表端点：房间初始化是有网络副作用的尽力而为操作，瞬时失败不应让 GET /peers 抛 500。
 	let slot = null
 	try {

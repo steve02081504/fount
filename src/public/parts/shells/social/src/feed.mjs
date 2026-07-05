@@ -18,7 +18,7 @@ import {
 	buildViewerLikedSet,
 	listKnownTimelineOwners,
 	loadViewerContext,
-} from './feedHelpers.mjs'
+} from './feed/helpers.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing } from './following.mjs'

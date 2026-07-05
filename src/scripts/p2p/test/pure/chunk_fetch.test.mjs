@@ -7,10 +7,12 @@ import { ms } from '../../../ms.mjs'
 import { u8ToB64 } from '../../bytes_codec.mjs'
 import {
 	chunkBytesMatchHash,
+	verifiedChunkBytes,
+} from '../../files/chunk_fetch_verify.mjs'
+import {
 	pendingChunkFetches,
 	resolvePendingChunkFetch,
-	verifiedChunkBytes,
-} from '../../files/chunk_fetch.mjs'
+} from '../../chunk_fetch_pending.mjs'
 
 const GOOD_BYTES = new TextEncoder().encode('chunk-payload')
 const HASH = createHash('sha256').update(GOOD_BYTES).digest('hex')

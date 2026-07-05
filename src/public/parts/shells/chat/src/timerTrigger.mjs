@@ -2,7 +2,7 @@ import { getTimers, removeTimer, setTimer } from '../../../../../server/timers.m
 
 import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { newGroup } from './chat/session/crud.mjs'
-import { triggerCharReply } from './chat/session/generation.mjs'
+import { triggerCharReply } from './chat/session/triggerReply.mjs'
 import { addchar } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
 

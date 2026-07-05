@@ -1,9 +1,8 @@
-import { loadPersonalFilterSets } from '../../../../../scripts/p2p/personal_block.mjs'
-import { socialPostKey } from '../../../../../scripts/p2p/social/post_key.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
-
-import { getTimelineMaterialized } from './timeline/materialize.mjs'
-import { getTimelineOwnerIndex, listLocalEntitiesForNode } from './timeline/ownerIndex.mjs'
+import { loadPersonalFilterSets } from '../../../../../../scripts/p2p/personal_block.mjs'
+import { socialPostKey } from '../../../../../../scripts/p2p/social/post_key.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getTimelineMaterialized } from '../timeline/materialize.mjs'
+import { getTimelineOwnerIndex, listLocalEntitiesForNode } from '../timeline/ownerIndex.mjs'
 
 /**
  * 列出磁盘上全部时间线 owner（探索/热搜用）。

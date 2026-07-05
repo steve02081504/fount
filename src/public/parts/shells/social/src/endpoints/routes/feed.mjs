@@ -1,8 +1,7 @@
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
-import { discoverWithNetwork } from '../discovery.mjs'
-import { buildHomeFeed } from '../feed.mjs'
-import { syncFollowingTimelines } from '../timeline/sync.mjs'
-import { registerFeedSocket } from '../ws/feedHub.mjs'
+import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
+import { buildHomeFeed } from '../../feed.mjs'
+import { syncFollowingTimelines } from '../../timeline/sync.mjs'
+import { registerFeedSocket } from '../../ws/feedHub.mjs'
 
 /**
  * 注册 feed 与 WebSocket 相关路由。
@@ -23,15 +22,6 @@ export function registerFeedRoutes(router) {
 		const { username } = getUserByReq(req)
 		await syncFollowingTimelines(username)
 		res.status(200).json({ synced: true })
-	})
-
-	router.get('/api/parts/shells\\:social/explore/posts', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json(await discoverWithNetwork(username, {
-			type: 'social_post_discover_request',
-			n: Number(req.query.limit) || 20,
-			mediaOnly: req.query.mediaOnly === 'true',
-		}))
 	})
 
 	router.ws('/ws/parts/shells\\:social/feed', authenticate, async (ws, req) => {

@@ -7,7 +7,7 @@ import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../
 import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
 import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
-import { federationNodeHash } from '../deps.mjs'
+import { localNodeHash } from '../deps.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
 import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'
 
@@ -45,7 +45,7 @@ function snapshotBucketKey(envelope, inner) {
  * @returns {Promise<void>}
  */
 export async function noteJoinSnapshotResponse(username, groupId, envelope, peerNodeHash) {
-	if (envelope.requesterNodeHash !== federationNodeHash(username)) return
+	if (envelope.requesterNodeHash !== localNodeHash()) return
 	const pending = pendingSnapshotPulls.get(joinSnapshotWaitKey(username, groupId, envelope.requestId))
 	if (!pending) return
 	const inner = await unwrapPullEnvelopeForLocalMember(username, groupId, envelope)

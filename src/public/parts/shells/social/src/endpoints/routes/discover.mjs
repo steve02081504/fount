@@ -1,14 +1,14 @@
-import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
-import { getReplicaFromReq } from '../../../../../../server/p2p_server/http_glue.mjs'
-import { discoverWithNetwork } from '../discovery.mjs'
-import { getEntityProfile } from '../feed.mjs'
-import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
-import { suggestMentions } from '../lib/mentionSuggest.mjs'
-import { buildNotifications } from '../notifications.mjs'
-import { searchPosts } from '../search.mjs'
-import { cacheTranslation, getCachedTranslation, translatePostText } from '../translate.mjs'
-import { buildTrendingHashtags } from '../trending/hashtags.mjs'
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getReplicaFromReq } from '../../../../../../../server/p2p_server/http_glue.mjs'
+import { discoverWithNetwork } from '../../discovery.mjs'
+import { getEntityProfile } from '../../feed.mjs'
+import { ensureOperatorSocialReady } from '../../lib/bootstrap.mjs'
+import { suggestMentions } from '../../lib/mentionSuggest.mjs'
+import { buildNotifications } from '../../notifications.mjs'
+import { searchPosts } from '../../search.mjs'
+import { cacheTranslation, getCachedTranslation, translatePostText } from '../../translate.mjs'
+import { buildTrendingHashtags } from '../../trending/hashtags.mjs'
 
 /**
  * 注册探索、搜索、通知、翻译与 @ 建议路由。
@@ -39,6 +39,15 @@ export function registerDiscoverRoutes(router) {
 		res.status(200).json(await discoverWithNetwork(username, {
 			type: 'social_discover_request',
 			n: Number(req.query.limit) || 20,
+		}))
+	})
+
+	router.get('/api/parts/shells\\:social/explore/posts', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await discoverWithNetwork(username, {
+			type: 'social_post_discover_request',
+			n: Number(req.query.limit) || 20,
+			mediaOnly: req.query.mediaOnly === 'true',
 		}))
 	})
 

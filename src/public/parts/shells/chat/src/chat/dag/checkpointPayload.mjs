@@ -12,11 +12,6 @@ import { checkpointSignerPubKeyHashes, serializeReactionsOverlay, serializeVotes
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
 
 /**
- *
- */
-export { signCheckpoint, verifyCheckpointSignature } from '../../../../../../../scripts/p2p/checkpoint_sign.mjs'
-
-/**
  * 本地快照 / epoch 锚点载荷（写入每用户 `groups/{id}/snapshot.json`），**非**全局 Home 检查点。
  */
 

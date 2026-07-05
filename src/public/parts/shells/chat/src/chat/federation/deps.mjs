@@ -36,10 +36,9 @@ export function requireDagDeps() {
 }
 
 /**
- * @param {string} username replica 登录名
  * @returns {string} 64 hex nodeHash
  */
-export function federationNodeHash(username) {
+export function localNodeHash() {
 	return getNodeHash()
 }
 

@@ -1,10 +1,9 @@
-import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
-import { commitTimelineEvent } from '../timeline/append.mjs'
-
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../../server/p2p_server/operator_identity.mjs'
+import { getVaultFileByShareId, registerVaultFile } from '../../socialVaultIndex.mjs'
+import { commitTimelineEvent } from '../../timeline/append.mjs'
 
 /**
  * 注册 vault 文件相关路由。

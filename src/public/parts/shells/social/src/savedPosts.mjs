@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
+import { httpError } from '../../../../../scripts/http_error.mjs'
 import { getEntityProfile } from './feed.mjs'
 import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
 import { savedPostsPath } from './paths.mjs'
@@ -160,7 +161,7 @@ export async function removeSavedPost(username, postRef, folderId = undefined) {
 export async function renameSavedFolder(username, folderId, name) {
 	const data = await loadSavedPosts(username)
 	const folder = data.folders[folderId]
-	if (!folder) throw new Error('folder not found')
+	if (!folder) throw httpError(404, 'folder not found')
 	folder.name = (name || folder.name).trim() || folder.name
 	return saveSavedPosts(username, data)
 }

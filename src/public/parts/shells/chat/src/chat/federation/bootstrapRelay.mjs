@@ -13,7 +13,7 @@ import {
 	setFederationBootstrap,
 	setPeerRoomHint,
 } from './bootstrapStore.mjs'
-import { federationNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
 import { getFederationPartitionSlot } from './registry.mjs'
@@ -215,7 +215,7 @@ export async function maybeRequestBootstrapAfterCatchup(username, groupId, catch
 
 	if (!activeSlot) return
 
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const { sender: requesterPubKeyHash } = await resolveLocalEventSigner(username, groupId)
 	await broadcastFedBootstrapRequest(activeSlot, username, groupId, nodeHash, requesterPubKeyHash)
 }

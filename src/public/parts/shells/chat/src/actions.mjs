@@ -9,7 +9,7 @@ import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { orchestrateDmFirstContact, performMemberJoin } from './chat/dm/index.mjs'
 import { getWorldName } from './chat/session/channelWorld.mjs'
 import { newGroup } from './chat/session/crud.mjs'
-import { triggerCharReply } from './chat/session/generation.mjs'
+import { triggerCharReply } from './chat/session/triggerReply.mjs'
 import { addUserReply } from './chat/session/messages.mjs'
 import {
 	addchar,

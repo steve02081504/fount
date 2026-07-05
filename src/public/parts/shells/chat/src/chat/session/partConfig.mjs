@@ -28,7 +28,8 @@ import {
 	getMaterializedSession,
 	sessionHasChar,
 } from './dagSession.mjs'
-import { addChatLogEntry, getChatRequest } from './generation.mjs'
+import { addChatLogEntry } from './chatLogAppend.mjs'
+import { getChatRequest } from './chatRequest.mjs'
 import { buildChatLogEntryFromCharReply } from './logEntries.mjs'
 import {
 	getGroupRuntime,

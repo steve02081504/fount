@@ -12,7 +12,7 @@ import {
 	buildViewerLikedSet,
 	listKnownTimelineOwners,
 	loadViewerContext,
-} from './feedHelpers.mjs'
+} from './feed/helpers.mjs'
 import { compareFeedItems } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'

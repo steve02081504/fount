@@ -10,7 +10,7 @@ import {
 	appendReactionEvent,
 	appendUnpinEvent,
 } from '../../chat/dag/channelOps.mjs'
-import { triggerCharReply } from '../../chat/session/generation.mjs'
+import { triggerCharReply } from '../../chat/session/triggerReply.mjs'
 
 import {
 	ensurePinPermission,

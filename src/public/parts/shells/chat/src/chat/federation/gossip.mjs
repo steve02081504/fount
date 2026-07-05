@@ -24,7 +24,7 @@ import {
 import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
-import { loadFederationGroupSettings, federationNodeHash, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, localNodeHash, requireDagDeps } from './deps.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import {
 	applyPullInner,
@@ -170,7 +170,7 @@ export function notifyGossipWaiters(username, groupId, receivedIds) {
  * @returns {Promise<void>}
  */
 export async function handleGossipResponse(username, groupId, data) {
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const envelope = parsePullResponseEnvelope(data)
 	if (!envelope) return
 	if (envelope.requesterNodeHash !== nodeHash) return
@@ -198,7 +198,7 @@ export async function handleGossipResponse(username, groupId, data) {
  */
 export async function requestMissingEventsGossip(username, groupId, query = {}) {
 	const { readJsonl } = requireDagDeps()
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const wantIds = [...new Set((query.wantIds || []).filter(isHex64))]
 
 	/**

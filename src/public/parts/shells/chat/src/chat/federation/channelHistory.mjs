@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 
 import { registerWireWait } from '../../../../../../../scripts/p2p/wire_wait.mjs'
 
-import { federationNodeHash } from './deps.mjs'
+import { localNodeHash } from './deps.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import { EVENT_ID_HEX, pendingChannelHistory } from './registry.mjs'
 import { parseChannelHistoryResponse } from './wireSchemas.mjs'
@@ -37,7 +37,7 @@ export async function requestChannelHistoryFromPeers(username, groupId, channelI
 	const slot = await ensureFederationRoom(username, groupId)
 	if (!slot?.send) return []
 
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const requestId = randomUUID()
 	const key = channelHistoryWaitKey(username, groupId, channelId, requestId)
 	const { promise } = registerWireWait(pendingChannelHistory, key, CHANNEL_HISTORY_WAIT_MS, () => [])
@@ -70,7 +70,7 @@ export async function requestChannelHistoryFromPeers(username, groupId, channelI
  * @returns {Promise<void>}
  */
 export async function handleChannelHistoryResponse(username, groupId, data) {
-	const parsed = parseChannelHistoryResponse(data, federationNodeHash(username))
+	const parsed = parseChannelHistoryResponse(data, localNodeHash())
 	if (!parsed) return
 
 	const { requestId, channelId, messages } = parsed

@@ -1,5 +1,5 @@
-import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
 import {
 	addSavedPost,
 	createSavedFolder,
@@ -8,7 +8,7 @@ import {
 	deleteSavedFolder,
 	removeSavedPost,
 	renameSavedFolder,
-} from '../savedPosts.mjs'
+} from '../../savedPosts.mjs'
 
 /**
  * 注册收藏帖与文件夹相关路由。
@@ -29,7 +29,9 @@ export function registerSavedRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/saved-posts/folders', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(await createSavedFolder(username, req.body?.name || 'Folder'))
+		const name = String(req.body?.name || '').trim()
+		if (!name) throw httpError(400, 'name required')
+		res.status(200).json(await createSavedFolder(username, name))
 	})
 
 	router.post('/api/parts/shells\\:social/saved-posts/remove', authenticate, async (req, res) => {
@@ -48,12 +50,7 @@ export function registerSavedRoutes(router) {
 		const name = String(body.name || '').trim()
 		if (!folderId || !name)
 			throw httpError(400, 'folderId and name required')
-		try {
-			res.status(200).json(await renameSavedFolder(username, folderId, name))
-		}
-		catch {
-			throw httpError(404, 'folder not found')
-		}
+		res.status(200).json(await renameSavedFolder(username, folderId, name))
 	})
 
 	router.post('/api/parts/shells\\:social/saved-posts/folders/delete', authenticate, async (req, res) => {

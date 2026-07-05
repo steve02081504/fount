@@ -43,7 +43,7 @@ export async function buildNotifications(username, options = {}) {
 		return { notifications: [], nextCursor: null, viewerEntityHash: null }
 
 	const { getEntityProfile } = await import('./feed.mjs')
-	const { listKnownTimelineOwners } = await import('./feedHelpers.mjs')
+	const { listKnownTimelineOwners } = await import('./feed/helpers.mjs')
 	const { extractMentionEntityHashes } = await import('./lib/mentions.mjs')
 	const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
 

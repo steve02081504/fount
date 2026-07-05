@@ -10,7 +10,7 @@ import { createHash } from 'node:crypto'
 import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
-import { federationNodeHash, loadFederationGroupSettings } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings } from './deps.mjs'
 import { groupFederationOwner } from './registry.mjs'
 
 /** 经联邦中继的 WS VOLATILE 类型（§6.4）。 */
@@ -65,7 +65,7 @@ export async function publishVolatileToFederation(groupId, payload) {
 	})
 	if (!slot?.send) return
 
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 
 	const { pickFederationTargetPeerIds } = await import('../../../../../../../scripts/p2p/peer_pool.mjs')
@@ -104,7 +104,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	const { payload } = envelope
 	if (!isFederableVolatilePayload(payload)) return
 
-	const nodeHash = federationNodeHash(username)
+	const nodeHash = localNodeHash()
 	if (envelopeNode === nodeHash) return
 
 	const remoteNodeHash = peerToNode.get(peerId) || envelopeNode

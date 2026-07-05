@@ -9,7 +9,7 @@ import { eventsPath } from '../lib/paths.mjs'
 import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
 
 import { attachFedChunkHandlers, unregisterChunkSwarm } from './chunks.mjs'
-import { loadFederationGroupSettings, loadFederationMaterializedState, federationNodeHash, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, loadFederationMaterializedState, localNodeHash, requireDagDeps } from './deps.mjs'
 import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'
@@ -201,7 +201,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 	const roomJoinTask = (async () => {
 		const genAtJoin = getFederationPartitionRebindGen(username, groupId, partitionId)
 		const { readJsonl } = requireDagDeps()
-		const nodeHash = federationNodeHash(username)
+		const nodeHash = localNodeHash()
 		const roomId = roomCreds.roomId
 		try {
 			const localEvents = await readJsonl(eventsPath(username, groupId))

@@ -11,8 +11,8 @@
 /** @typedef {import('../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { createCharRpcDispatcher, createWorldRpcDispatcher } from './rpcDispatcher.mjs'
+import { getChatRequest } from './session/chatRequest.mjs'
 import { deleteGroup } from './session/crud.mjs'
-import { getChatRequest } from './session/generation.mjs'
 import { getActiveGroupRuntime, isLocallyOwnedGroup, isVividGroup } from './session/persistence.mjs'
 import { bindSessionUnloadHooks, initializeGroupMetadatas } from './session/wsLifecycle.mjs'
 
@@ -36,7 +36,15 @@ export { deleteGroup, newGroup, getInitialData } from './session/crud.mjs'
 /**
  *
  */
-export { getChatRequest, triggerCharReply, modifyTimeLine } from './session/generation.mjs'
+export { getChatRequest } from './session/chatRequest.mjs'
+/**
+ *
+ */
+export { triggerCharReply } from './session/triggerReply.mjs'
+/**
+ *
+ */
+export { modifyTimeLine } from './session/timeLine.mjs'
 /**
  *
  */
