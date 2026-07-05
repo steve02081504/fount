@@ -2,13 +2,13 @@
  * 【文件】social/src/endpoints.mjs
  * 【职责】Social shell HTTP/WS 路由聚合入口。
  */
-import { registerDiscoverRoutes } from './endpoints/routes/discover.mjs'
-import { registerFeedRoutes } from './endpoints/routes/feed.mjs'
-import { registerPostsRoutes } from './endpoints/routes/posts.mjs'
-import { registerProfileRoutes } from './endpoints/routes/profile.mjs'
-import { registerRelationshipsRoutes } from './endpoints/routes/relationships.mjs'
-import { registerSavedRoutes } from './endpoints/routes/saved.mjs'
-import { registerVaultRoutes } from './endpoints/routes/vault.mjs'
+import { registerDiscoverRoutes } from './routes/discover.mjs'
+import { registerFeedRoutes } from './routes/feed.mjs'
+import { registerPostsRoutes } from './routes/posts.mjs'
+import { registerProfileRoutes } from './routes/profile.mjs'
+import { registerRelationshipsRoutes } from './routes/relationships.mjs'
+import { registerSavedRoutes } from './routes/saved.mjs'
+import { registerVaultRoutes } from './routes/vault.mjs'
 
 /**
  * 注册 Social shell 全部 HTTP/WS 路由。
