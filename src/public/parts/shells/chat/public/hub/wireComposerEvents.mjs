@@ -1,4 +1,5 @@
 import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
+
 import {
 	pickPhoto,
 	selectedFiles,

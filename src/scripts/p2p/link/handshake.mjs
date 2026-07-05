@@ -4,15 +4,20 @@ import { randomBytes } from 'node:crypto'
 import { keyPairFromSeed, pubKeyHash, sign, verify } from '../crypto.mjs'
 import { isHex64, normalizeHex64 } from '../hexIds.mjs'
 import { ensureNodeSeed, getNodeHash } from '../node/identity.mjs'
+
 import { normalizeDtlsFingerprint } from './sdp_fingerprint.mjs'
 
+/**
+ * Link 握手签名域标识符。
+ */
 export const LINK_HANDSHAKE_DOMAIN = 'fount-link-v1'
 
 /**
- * @param {string} peerNonce
- * @param {string} localFingerprint
- * @param {string} localNodeHash
- * @returns {Uint8Array}
+ * 构造 link auth 待签名字节串。
+ * @param {string} peerNonce 对端 hello 中的 nonce（64 位 hex）
+ * @param {string} localFingerprint 本地 DTLS fingerprint
+ * @param {string} localNodeHash 本地节点 nodeHash（64 位 hex）
+ * @returns {Uint8Array} 待签名消息字节
  */
 export function buildAuthMessage(peerNonce, localFingerprint, localNodeHash) {
 	const nonce = normalizeHex64(peerNonce)
@@ -28,8 +33,9 @@ export function buildAuthMessage(peerNonce, localFingerprint, localNodeHash) {
 }
 
 /**
- * @param {{ nodeHash?: string, nodePubKey?: string, nonce?: string }} [opts]
- * @returns {{ v: 1, nodeHash: string, nodePubKey: string, nonce: string }}
+ * 构造 link hello 握手包。
+ * @param {{ nodeHash?: string, nodePubKey?: string, nonce?: string }} [opts] 可选身份字段，省略则从本地节点种子推导
+ * @returns {{ v: 1, nodeHash: string, nodePubKey: string, nonce: string }} hello 对象
  */
 export function buildHello(opts = {}) {
 	let publicKey = null
@@ -48,10 +54,11 @@ export function buildHello(opts = {}) {
 }
 
 /**
- * @param {string} peerNonce
- * @param {string} localFingerprint
- * @param {{ secretKey?: Uint8Array, nodeHash?: string }} [opts]
- * @returns {Promise<{ sig: string }>}
+ * 对 link auth 消息签名。
+ * @param {string} peerNonce 对端 hello 中的 nonce
+ * @param {string} localFingerprint 本地 DTLS fingerprint
+ * @param {{ secretKey?: Uint8Array, nodeHash?: string }} [opts] 签名密钥与 nodeHash 覆盖
+ * @returns {Promise<{ sig: string }>} hex 签名
  */
 export async function buildAuth(peerNonce, localFingerprint, opts = {}) {
 	const seed = opts.secretKey
@@ -67,8 +74,9 @@ export async function buildAuth(peerNonce, localFingerprint, opts = {}) {
 }
 
 /**
- * @param {unknown} hello
- * @returns {{ v: 1, nodeHash: string, nodePubKey: string, nonce: string } | null}
+ * 解析并校验 hello 对象，无效时返回 null。
+ * @param {unknown} hello 原始 hello 载荷
+ * @returns {{ v: 1, nodeHash: string, nodePubKey: string, nonce: string } | null} 规范化 hello 或 null
  */
 export function parseHello(hello) {
 	const nodeHash = normalizeHex64(hello?.nodeHash)
@@ -86,11 +94,12 @@ export function parseHello(hello) {
 }
 
 /**
- * @param {unknown} hello
- * @param {unknown} auth
- * @param {string} expectedNonce
- * @param {string} remoteFingerprintFromSdp
- * @returns {Promise<string | null>}
+ * 验证对端 auth 签名，成功返回对端 nodeHash。
+ * @param {unknown} hello 对端 hello
+ * @param {unknown} auth 对端 auth（含 sig）
+ * @param {string} expectedNonce 本地 hello 发出的 nonce
+ * @param {string} remoteFingerprintFromSdp 从 SDP 提取的远端 DTLS fingerprint
+ * @returns {Promise<string | null>} 验证通过的 nodeHash，失败返回 null
  */
 export async function verifyAuth(hello, auth, expectedNonce, remoteFingerprintFromSdp) {
 	const parsedHello = parseHello(hello)
@@ -110,20 +119,22 @@ export async function verifyAuth(hello, auth, expectedNonce, remoteFingerprintFr
 }
 
 /**
- * @param {string} topic
- * @param {number} ts
- * @param {string} nodeHash
- * @returns {Uint8Array}
+ * 构造 discovery advert 待签名字节串。
+ * @param {string} topic 广播主题
+ * @param {number} ts 时间戳（毫秒）
+ * @param {string} nodeHash 节点 nodeHash
+ * @returns {Uint8Array} 待签名消息字节
  */
 export function buildAdvertMessage(topic, ts, nodeHash) {
 	return Buffer.from(`fount-advert-v1\0${String(topic)}\0${String(ts)}\0${normalizeHex64(nodeHash)}`, 'utf8')
 }
 
 /**
- * @param {string} topic
- * @param {number} [ts=Date.now()]
- * @param {{ secretKey?: Uint8Array, nodeHash?: string, nodePubKey?: string } | null} [opts]
- * @returns {Promise<{ nodeHash: string, nodePubKey: string, ts: number, sig: string }>}
+ * 构造带签名的 discovery advert。
+ * @param {string} topic 广播主题
+ * @param {number} [ts=Date.now()] 时间戳（毫秒）
+ * @param {{ secretKey?: Uint8Array, nodeHash?: string, nodePubKey?: string } | null} [opts] 签名身份，省略则用本地节点
+ * @returns {Promise<{ nodeHash: string, nodePubKey: string, ts: number, sig: string }>} 签名 advert
  */
 export async function buildSignedAdvert(topic, ts = Date.now(), opts = null) {
 	const seed = opts?.secretKey
@@ -145,11 +156,12 @@ export async function buildSignedAdvert(topic, ts = Date.now(), opts = null) {
 }
 
 /**
- * @param {string} topic
- * @param {unknown} advert
- * @param {number} [now=Date.now()]
- * @param {number} [maxSkewMs=10 * 60_000]
- * @returns {Promise<string | null>}
+ * 验证 discovery advert 签名与时间戳，成功返回发布者 nodeHash。
+ * @param {string} topic 期望的广播主题
+ * @param {unknown} advert 原始 advert 载荷
+ * @param {number} [now=Date.now()] 当前时间（毫秒）
+ * @param {number} [maxSkewMs=10 * 60_000] 允许的最大时钟偏差（毫秒）
+ * @returns {Promise<string | null>} 验证通过的 nodeHash，失败返回 null
  */
 export async function verifySignedAdvert(topic, advert, now = Date.now(), maxSkewMs = 10 * 60_000) {
 	const parsedHello = parseHello({ v: 1, nodeHash: advert?.nodeHash, nodePubKey: advert?.nodePubKey, nonce: '0'.repeat(64) })

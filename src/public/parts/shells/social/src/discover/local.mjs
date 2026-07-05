@@ -1,6 +1,5 @@
 import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
 import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
-
 import { listLocalTimelineOwners } from '../feed/helpers.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 

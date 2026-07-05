@@ -13,12 +13,22 @@ const SHA256 = await (async () => {
 	}
 	const { createHash } = await import('node:crypto')
 	return {
+		/**
+		 * @returns {{ update: (chunk: Uint8Array) => void, digest: () => Uint8Array }} 增量 SHA-256 上下文
+		 */
 		create() {
 			const hash = createHash('sha256')
 			return {
+				/**
+				 * @param {Uint8Array|ArrayBufferView} chunk 待哈希字节块
+				 * @returns {void}
+				 */
 				update(chunk) {
 					hash.update(chunk)
 				},
+				/**
+				 * @returns {Uint8Array} 最终摘要
+				 */
 				digest() {
 					return new Uint8Array(hash.digest())
 				},

@@ -1,5 +1,5 @@
-import { initAuditLogPanel } from '../auditLogPanel.mjs'
 import { getGroupState } from '../api/groupCore.mjs'
+import { initAuditLogPanel } from '../auditLogPanel.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
 
 import { renderArchiveStoragePanel } from './archiveTab.mjs'

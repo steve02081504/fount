@@ -1,5 +1,5 @@
-import { activateView } from './viewChrome.mjs'
 import { publishPost } from './composer.mjs'
+import { activateView } from './viewChrome.mjs'
 import { parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'

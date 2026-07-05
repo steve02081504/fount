@@ -4,18 +4,22 @@ import { schnorr } from 'npm:@noble/curves/secp256k1.js'
 
 import { sha256Hex } from '../crypto.mjs'
 
+/** 默认 Nostr 中继 URL 列表。 */
 export const DEFAULT_RELAY_URLS = [
 	'wss://relay.damus.io',
 	'wss://nos.lol',
 	'wss://relay.nostr.band',
 ]
 
+/** Nostr advert 事件 kind。 */
 export const NOSTR_ADVERT_KIND = 27235
+/** Nostr signal 事件 kind。 */
 export const NOSTR_SIGNAL_KIND = 27236
 
 /**
- * @param {string[] | undefined | null} userRelayUrls
- * @returns {string[]}
+ * 合并默认与用户配置的中继 URL（去重）。
+ * @param {string[] | undefined | null} userRelayUrls 用户自定义中继列表
+ * @returns {string[]} 合并后的中继 URL 列表
  */
 export function mergeSignalingRelayUrls(userRelayUrls) {
 	const seen = new Set()
@@ -31,16 +35,18 @@ export function mergeSignalingRelayUrls(userRelayUrls) {
 }
 
 /**
- * @param {Uint8Array} bytes
- * @returns {string}
+ * 字节数组转十六进制字符串。
+ * @param {Uint8Array} bytes 输入字节
+ * @returns {string} 小写 hex 字符串
  */
 function bytesToHex(bytes) {
 	return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
 /**
- * @param {string} hex
- * @returns {Uint8Array}
+ * 十六进制字符串转字节数组。
+ * @param {string} hex 输入 hex 字符串
+ * @returns {Uint8Array} 解码后的字节
  */
 function hexToBytes(hex) {
 	const normalized = String(hex || '').trim().toLowerCase()
@@ -51,27 +57,30 @@ function hexToBytes(hex) {
 }
 
 /**
- * @param {Uint8Array} bytes
- * @returns {string}
+ * 字节数组转 base64 字符串。
+ * @param {Uint8Array} bytes 输入字节
+ * @returns {string} base64 编码
  */
 function bytesToBase64(bytes) {
 	return btoa(String.fromCharCode(...bytes))
 }
 
 /**
- * @param {string} base64
- * @returns {Uint8Array}
+ * base64 字符串转字节数组。
+ * @param {string} base64 输入 base64 字符串
+ * @returns {Uint8Array} 解码后的字节
  */
 function base64ToBytes(base64) {
 	return Uint8Array.from(atob(base64).split('').map(ch => ch.charCodeAt(0)))
 }
 
 /**
- * @param {number} kind
- * @param {string[][]} tags
- * @param {string} content
- * @param {Uint8Array} secretKey
- * @returns {Promise<object>}
+ * 签名 Nostr 事件。
+ * @param {number} kind 事件 kind
+ * @param {string[][]} tags 事件标签
+ * @param {string} content 事件内容
+ * @param {Uint8Array} secretKey Schnorr 私钥
+ * @returns {Promise<object>} 已签名的 Nostr 事件对象
  */
 async function signNostrEvent(kind, tags, content, secretKey) {
 	const pubkey = bytesToHex(schnorr.getPublicKey(secretKey))
@@ -83,8 +92,9 @@ async function signNostrEvent(kind, tags, content, secretKey) {
 }
 
 /**
- * @param {string} relayUrl
- * @returns {Promise<WebSocket>}
+ * 连接 Nostr 中继 WebSocket。
+ * @param {string} relayUrl 中继 URL
+ * @returns {Promise<WebSocket>} 已打开的 WebSocket
  */
 function connectRelay(relayUrl) {
 	return new Promise((resolve, reject) => {
@@ -105,8 +115,9 @@ function connectRelay(relayUrl) {
 }
 
 /**
- * @param {string[]} relayUrls
- * @param {object} event
+ * 向多个中继发布 Nostr 事件。
+ * @param {string[]} relayUrls 中继 URL 列表
+ * @param {object} event 待发布事件
  * @returns {Promise<void>}
  */
 async function publishEvent(relayUrls, event) {
@@ -130,8 +141,9 @@ async function publishEvent(relayUrls, event) {
 }
 
 /**
- * @param {{ relayUrls?: string[] }} [opts]
- * @returns {import('./index.mjs').DiscoveryProvider}
+ * 创建 Nostr discovery provider。
+ * @param {{ relayUrls?: string[] }} [opts] 可选中继 URL 覆盖
+ * @returns {import('./index.mjs').DiscoveryProvider} Nostr 发现提供者
  */
 export function createNostrDiscoveryProvider(opts = {}) {
 	const relayUrls = mergeSignalingRelayUrls(opts.relayUrls)
@@ -140,8 +152,18 @@ export function createNostrDiscoveryProvider(opts = {}) {
 		id: 'nostr',
 		priority: 100,
 		caps: { canDiscover: true, canSignal: true, canRelay: false },
+		/**
+		 * 周期性向中继发布 advert 事件。
+		 * @param {string} topic advert topic
+		 * @param {Uint8Array} bytes advert 载荷
+		 * @returns {Promise<() => void>} 取消广播函数
+		 */
 		async advertise(topic, bytes) {
 			let closed = false
+			/**
+			 * 向中继发布当前 advert。
+			 * @returns {Promise<void>}
+			 */
 			const publish = async () => {
 				if (closed) return
 				const event = await signNostrEvent(
@@ -159,6 +181,12 @@ export function createNostrDiscoveryProvider(opts = {}) {
 				clearInterval(timer)
 			}
 		},
+		/**
+		 * 订阅中继上的 advert 事件。
+		 * @param {string} topic advert topic
+		 * @param {Function} onAdvert advert 回调
+		 * @returns {Promise<() => void>} 取消订阅函数
+		 */
 		async subscribe(topic, onAdvert) {
 			let closed = false
 			const sockets = []
@@ -189,6 +217,13 @@ export function createNostrDiscoveryProvider(opts = {}) {
 					try { ws.close() } catch { /* ignore */ }
 			}
 		},
+		/**
+		 * 向中继发布 signal 事件。
+		 * @param {string} topic 信令 topic
+		 * @param {string} to 目标节点标识
+		 * @param {Uint8Array} bytes 信令载荷
+		 * @returns {Promise<void>}
+		 */
 		async sendSignal(topic, to, bytes) {
 			const event = await signNostrEvent(
 				NOSTR_SIGNAL_KIND,
@@ -198,6 +233,12 @@ export function createNostrDiscoveryProvider(opts = {}) {
 			)
 			await publishEvent(relayUrls, event)
 		},
+		/**
+		 * 订阅中继上的 signal 事件。
+		 * @param {string} topic 信令 topic
+		 * @param {Function} onSignal 信令回调
+		 * @returns {Promise<() => void>} 取消订阅函数
+		 */
 		async onSignal(topic, onSignal) {
 			let closed = false
 			const sockets = []

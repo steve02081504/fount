@@ -2,8 +2,9 @@ import { randomUUID } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
-import { getEntityProfile } from './lib/entityProfile.mjs'
 import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
+
+import { getEntityProfile } from './lib/entityProfile.mjs'
 import { savedPostsPath } from './paths.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { maybeDecryptPostContent } from './vault_crypto/vault.mjs'

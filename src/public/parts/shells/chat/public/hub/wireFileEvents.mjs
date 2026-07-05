@@ -1,6 +1,6 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { handleUIError } from '../src/ui/errors.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 
 import { addFilesFromEvent } from './composerFiles.mjs'
 import { hubStore } from './core/state.mjs'

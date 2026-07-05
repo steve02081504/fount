@@ -5,12 +5,13 @@ import {
 } from '../../../../../../scripts/p2p/personal_block.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { buildProfileFeedItems, buildLikedFeedItems, listReplies } from '../feed.mjs'
-import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { loadFollowing } from '../following.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
+import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
 import { getTimelineMaterialized, maintainSocialTimeline } from '../timeline/materialize.mjs'
+
 import { routeEntityHash } from './shared.mjs'
 
 /**

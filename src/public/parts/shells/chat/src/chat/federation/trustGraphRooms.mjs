@@ -1,8 +1,8 @@
+import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { registerScopeAuthorizer } from '../../../../../../../scripts/p2p/link_registry.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../../../../scripts/p2p/peer_pool.mjs'
 import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { registerScopeAuthorizer } from '../../../../../../../scripts/p2p/link_registry.mjs'
-import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'
 
 import { loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
@@ -23,6 +23,11 @@ const PREMEMBER_GROUP_ACTIONS = new Set([
 	'discovery_query_response',
 ])
 
+/**
+ * @param {object | null | undefined} state 物化群状态
+ * @param {unknown} nodeHash 64 位 hex 节点 hash
+ * @returns {boolean} 是否为活跃成员的 home 节点
+ */
 function isActiveMemberNodeHash(state, nodeHash) {
 	const normalizedNodeHash = normalizeHex64(nodeHash)
 	if (!normalizedNodeHash) return false
@@ -31,11 +36,19 @@ function isActiveMemberNodeHash(state, nodeHash) {
 		&& normalizeHex64(member?.homeNodeHash || member?.nodeHash) === normalizedNodeHash)
 }
 
+/**
+ * @param {{ action?: unknown, payload?: { type?: unknown } } | null | undefined} envelope link 层信封
+ * @returns {boolean} 是否为 member_join 的 dag_event 引导包
+ */
 function isBootstrapJoinEnvelope(envelope) {
 	return envelope?.action === 'dag_event'
 		&& String(envelope?.payload?.type || '') === 'member_join'
 }
 
+/**
+ * @param {{ action?: unknown, payload?: { type?: unknown } } | null | undefined} envelope link 层信封
+ * @returns {boolean} 是否允许未入群成员发送的 bootstrap/discovery 动作
+ */
 function isPrememberBootstrapEnvelope(envelope) {
 	const action = String(envelope?.action || '').trim()
 	return PREMEMBER_GROUP_ACTIONS.has(action) || isBootstrapJoinEnvelope(envelope)

@@ -4,8 +4,9 @@
 const providers = new Map()
 
 /**
- * @param {DiscoveryProvider} provider
- * @returns {() => void}
+ * 注册 discovery provider。
+ * @param {DiscoveryProvider} provider 发现提供者
+ * @returns {() => void} 注销函数
  */
 export function registerDiscoveryProvider(provider) {
 	if (!provider?.id) throw new Error('p2p: discovery provider requires id')
@@ -14,7 +15,8 @@ export function registerDiscoveryProvider(provider) {
 }
 
 /**
- * @param {string} id
+ * 注销 discovery provider。
+ * @param {string} id 提供者 id
  * @returns {void}
  */
 export function unregisterDiscoveryProvider(id) {
@@ -22,16 +24,18 @@ export function unregisterDiscoveryProvider(id) {
 }
 
 /**
- * @returns {DiscoveryProvider[]}
+ * 列出已注册的 discovery provider（按 priority 排序）。
+ * @returns {DiscoveryProvider[]} 提供者列表
  */
 export function listDiscoveryProviders() {
 	return [...providers.values()].sort((left, right) => Number(left.priority || 0) - Number(right.priority || 0))
 }
 
 /**
- * @param {string} topic
- * @param {Uint8Array} bytes
- * @returns {Promise<() => void>}
+ * 通过所有可用 provider 广播 topic advert。
+ * @param {string} topic advert topic
+ * @param {Uint8Array} bytes advert 载荷
+ * @returns {Promise<() => void>} 统一取消函数
  */
 export async function advertiseTopic(topic, bytes) {
 	const cleanups = []
@@ -54,9 +58,10 @@ export async function advertiseTopic(topic, bytes) {
 }
 
 /**
- * @param {string} topic
- * @param {(bytes: Uint8Array, meta?: object) => void} onAdvert
- * @returns {Promise<() => void>}
+ * 通过所有可用 provider 订阅 topic advert。
+ * @param {string} topic advert topic
+ * @param {(bytes: Uint8Array, meta?: object) => void} onAdvert advert 回调
+ * @returns {Promise<() => void>} 统一取消函数
  */
 export async function subscribeTopic(topic, onAdvert) {
 	const cleanups = []
@@ -79,9 +84,10 @@ export async function subscribeTopic(topic, onAdvert) {
 }
 
 /**
- * @param {string} topic
- * @param {string} to
- * @param {Uint8Array} bytes
+ * 通过 discovery provider 发送信令。
+ * @param {string} topic 信令 topic
+ * @param {string} to 目标节点标识
+ * @param {Uint8Array} bytes 信令载荷
  * @returns {Promise<void>}
  */
 export async function sendSignal(topic, to, bytes) {
@@ -102,9 +108,10 @@ export async function sendSignal(topic, to, bytes) {
 }
 
 /**
- * @param {string} topic
- * @param {(bytes: Uint8Array, meta?: object) => void} onSignal
- * @returns {Promise<() => void>}
+ * 通过所有可用 provider 监听信令。
+ * @param {string} topic 信令 topic
+ * @param {(bytes: Uint8Array, meta?: object) => void} onSignal 信令回调
+ * @returns {Promise<() => void>} 统一取消函数
  */
 export async function listenSignals(topic, onSignal) {
 	const cleanups = []

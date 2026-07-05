@@ -2,9 +2,9 @@ import { getTimers, removeTimer, setTimer } from '../../../../../server/timers.m
 
 import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { newGroup } from './chat/session/crud.mjs'
-import { triggerCharReply } from './chat/session/triggerReply.mjs'
 import { addchar } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
+import { triggerCharReply } from './chat/session/triggerReply.mjs'
 
 /**
  * 构造定时器到期时注入聊天上下文的系统条目。

@@ -1,8 +1,8 @@
 /**
  * 联邦房间 FederationSlot：roomContext + 统一 send(action, payload, peerId)。
  */
-import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { pruneStaleRosterEntries } from '../../../../../../../scripts/p2p/peer_identity_maps.mjs'
+import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { recordStalePeerPrune } from '../../../../../../../scripts/p2p/stale_peer_log.mjs'
 
 import { bindFedSender } from './outbound.mjs'

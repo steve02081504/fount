@@ -1,8 +1,8 @@
-import process from 'node:process'
 import { Buffer } from 'node:buffer'
+import process from 'node:process'
 
-import { wrapRtcPeerConnectionForMdns } from '../rtc_mdns_filter.mjs'
 import { getSignalingRuntimeConfig } from '../node/instance.mjs'
+import { wrapRtcPeerConnectionForMdns } from '../rtc_mdns_filter.mjs'
 
 if (!globalThis.Buffer) globalThis.Buffer = Buffer
 if (!globalThis.process) globalThis.process = process
@@ -11,7 +11,8 @@ if (!globalThis.process) globalThis.process = process
 let rtcPromise = null
 
 /**
- * @returns {Promise<{ RTCPeerConnection: typeof RTCPeerConnection, RTCIceCandidate: typeof RTCIceCandidate }>}
+ * 加载 node-datachannel polyfill，并按配置包装 RTCPeerConnection。
+ * @returns {Promise<{ RTCPeerConnection: typeof RTCPeerConnection, RTCIceCandidate: typeof RTCIceCandidate }>} RTC 构造器
  */
 export async function loadNodeRtcPolyfill() {
 	if (rtcPromise) return await rtcPromise
@@ -27,8 +28,9 @@ export async function loadNodeRtcPolyfill() {
 }
 
 /**
- * @param {RTCPeerConnection} pc
- * @param {(event: { candidate: RTCIceCandidate | null }) => void} handler
+ * 绑定 ICE candidate 回调，兼容 onicecandidate 与 onIceCandidate.subscribe。
+ * @param {RTCPeerConnection} pc 对等连接
+ * @param {(event: { candidate: RTCIceCandidate | null }) => void} handler candidate 事件处理器
  * @returns {void}
  */
 export function attachIceCandidateListener(pc, handler) {
@@ -38,8 +40,9 @@ export function attachIceCandidateListener(pc, handler) {
 }
 
 /**
- * @param {RTCPeerConnection} pc
- * @param {(event: { channel: RTCDataChannel }) => void} handler
+ * 绑定远端 data channel 回调，兼容 ondatachannel 与 onDataChannel.subscribe。
+ * @param {RTCPeerConnection} pc 对等连接
+ * @param {(event: { channel: RTCDataChannel }) => void} handler data channel 事件处理器
  * @returns {void}
  */
 export function attachDataChannelListener(pc, handler) {
@@ -49,9 +52,10 @@ export function attachDataChannelListener(pc, handler) {
 }
 
 /**
- * @param {RTCDataChannel} channel
- * @param {'open' | 'close'} eventName
- * @param {number} timeoutMs
+ * 等待 data channel 进入 open 或 close 状态，超时则 reject。
+ * @param {RTCDataChannel} channel RTC 数据通道
+ * @param {'open' | 'close'} eventName 目标状态事件名
+ * @param {number} timeoutMs 超时毫秒数
  * @returns {Promise<void>}
  */
 export function waitForChannelState(channel, eventName, timeoutMs) {
@@ -68,10 +72,18 @@ export function waitForChannelState(channel, eventName, timeoutMs) {
 			cleanup()
 			reject(new Error(`p2p: data channel ${eventName} timeout after ${timeoutMs}ms`))
 		}, timeoutMs)
+		/**
+		 * 通道状态变化处理函数。
+		 * @returns {void}
+		 */
 		const handler = () => {
 			cleanup()
 			resolve()
 		}
+		/**
+		 * 移除监听器并清除超时定时器。
+		 * @returns {void}
+		 */
 		const cleanup = () => {
 			clearTimeout(timer)
 			channel.removeEventListener?.(eventName, handler)
@@ -85,8 +97,9 @@ export function waitForChannelState(channel, eventName, timeoutMs) {
 }
 
 /**
- * @param {unknown} data
- * @returns {Uint8Array}
+ * 将信令/消息数据统一转为 Uint8Array。
+ * @param {unknown} data 原始数据（字符串、ArrayBuffer、TypedArray 等）
+ * @returns {Uint8Array} 字节视图
  */
 export function signalDataToBytes(data) {
 	if (data instanceof Uint8Array) return data

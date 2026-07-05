@@ -1,8 +1,8 @@
 // Single-node WebSocket E2E: valid key receives live push on group channel.
 import process from 'node:process'
 
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const baseUrl = requireLiveBaseUrl()
 const apiKey = requireLiveApiKey()

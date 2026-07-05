@@ -10,13 +10,13 @@ import { join } from 'node:path'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { initTestP2pNode } from '../../test/helpers/node.mjs'
-import { deliverToUserRoomPeers } from '../../user_room.mjs'
 import {
 	createDefaultTrustGraphProvider,
 	DEFAULT_TRUST_GRAPH_OWNER,
 	registerTrustGraphProvider,
 	requireTrustGraphProvider,
 } from '../../trust_graph_registry.mjs'
+import { deliverToUserRoomPeers } from '../../user_room.mjs'
 
 Deno.test('sendToNode returns false for blank target node hash', async () => {
 	registerTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER, createDefaultTrustGraphProvider())

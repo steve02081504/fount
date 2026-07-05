@@ -5,8 +5,8 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { loadReputation, recordMessageRateViolation } from '../../reputation_store.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 
 const PEER = 'd'.repeat(64)
 

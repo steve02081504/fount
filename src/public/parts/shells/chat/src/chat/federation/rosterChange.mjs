@@ -7,8 +7,8 @@ const FEDERATION_ROSTER_EVENT_TYPES = new Set([
 ])
 
 /**
- * @param {{ type?: unknown, content?: unknown } | null | undefined} event
- * @returns {boolean}
+ * @param {{ type?: unknown, content?: unknown } | null | undefined} event DAG 事件
+ * @returns {boolean} 是否应因成员/房间密钥变更重绑 federation room
  */
 export function shouldRebindFederationRoomForEvent(event) {
 	const type = String(event?.type || '').trim()

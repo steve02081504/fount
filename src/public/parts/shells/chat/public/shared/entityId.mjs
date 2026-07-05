@@ -1,4 +1,5 @@
 import { AGENT_SUBJECT_PREFIX, encodeEntityHash } from '../../../../../../scripts/p2p/entity_id_parse.mjs'
+
 import { sha256Hex, sha256TextHex } from './digest.mjs'
 import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
 
@@ -29,6 +30,9 @@ export async function agentSubjectHash(charPartPath) {
  * @returns {string} 128 位 entityHash
  */
 
+/**
+ *
+ */
 export { encodeEntityHash }
 
 /**

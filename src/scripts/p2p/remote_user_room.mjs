@@ -46,19 +46,22 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 			const roomSlot = {
 				groupId: USER_ROOM_SCOPE,
 				/**
-				 *
+				 * 返回远端用户房间 roster（链路存在时含目标节点）。
+				 * @returns {Array<{ peerId: string, remoteNodeHash: string }>} roster 列表
 				 */
 				getRoster: () => getLink(key) ? [{ peerId: key, remoteNodeHash: key }] : [],
 				/**
-				 *
-				 * @param nh
+				 * 按 nodeHash 查找 peer id。
+				 * @param {string} nh 目标节点 64 hex
+				 * @returns {string | null} peer id；无链路时 null
 				 */
 				getPeerIdByNodeHash: nh => getLink(nh) ? String(nh) : null,
 				/**
-				 *
-				 * @param peerId
-				 * @param actionName
-				 * @param payload
+				 * 经 node scope 向远端 peer 发送 action。
+				 * @param {string} peerId 目标 peer id
+				 * @param {string} actionName action 名称
+				 * @param {unknown} payload 载荷
+				 * @returns {void}
 				 */
 				sendToPeer(peerId, actionName, payload) {
 					void link.send({ scope: 'node', action: String(actionName), payload }).catch(() => {})
@@ -68,7 +71,8 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 			const slot = {
 				roomSlot,
 				/**
-				 *
+				 * 关闭远端用户房间链路。
+				 * @returns {Promise<void>} 关闭完成
 				 */
 				leave() { return closeLink(key, 'remote-user-room-release') },
 			}

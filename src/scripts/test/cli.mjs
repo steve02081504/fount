@@ -12,12 +12,12 @@ import process from 'node:process'
 import { geti18n } from '../i18n.mjs'
 import { ms } from '../ms.mjs'
 
-import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
 import {
 	listManifestIds,
 	loadAllSuites,
 	resolveManifestSelectors,
 } from './core/manifest.mjs'
+import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
 import { runTests } from './runner/index.mjs'
 

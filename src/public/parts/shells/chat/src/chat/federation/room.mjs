@@ -1,13 +1,14 @@
 /**
  * 联邦房间生命周期：按需 join 信令分区、注册 handler、暴露 FederationSlot。
  */
-import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { createActionRegistry } from '../../../../../../../scripts/p2p/action_registry.mjs'
 import { createGroupLinkSet } from '../../../../../../../scripts/p2p/group_link_set.mjs'
+import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
 
+import { peekFederationBootstrap, peekPeerRoomHint } from './bootstrapStore.mjs'
 import { attachFedChunkHandlers, unregisterChunkSwarm } from './chunks.mjs'
 import { loadFederationGroupSettings, loadFederationMaterializedState, localNodeHash, requireDagDeps } from './deps.mjs'
 import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
@@ -31,7 +32,6 @@ import {
 	setFederationPartitionInflight,
 	setFederationPartitionSlot,
 } from './registry.mjs'
-import { peekFederationBootstrap, peekPeerRoomHint } from './bootstrapStore.mjs'
 import { resolveGroupRoomCredentials } from './roomCredentials.mjs'
 import { attachFederationRoomHandlers } from './roomHandlers/index.mjs'
 import { createFederationRoomHandlerBundle } from './roomHandlers/roomContext.mjs'

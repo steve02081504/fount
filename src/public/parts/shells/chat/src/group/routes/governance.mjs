@@ -19,9 +19,9 @@ import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOps.mjs'
 import { adminPubKeyHashes } from '../../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
-import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'
 import { mintRoomSecret } from '../../chat/federation/roomCredentials.mjs'
+import { getCurrentFileMasterKey, appendFileMasterKey } from '../../chat/file_keys/store.mjs'
 import {
 	blockEntriesFromBanContent,
 	buildMemberBanContent,
@@ -41,6 +41,12 @@ import { registerGroupFileRoutes } from './groupFilesRoutes.mjs'
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
+/**
+ * 治理操作后轮换 roomSecret 并失效 federation room 缓存。
+ * @param {string} username 登录名
+ * @param {string} groupId 群 id
+ * @returns {Promise<void>}
+ */
 async function rotateRoomSecretAfterModeration(username, groupId) {
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_settings_update',

@@ -15,6 +15,7 @@ process.on('uncaughtException', (err) => {
 import { events } from '../../../../../server/events.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
+
 import { createScopedLinkRoom } from './link_room.mjs'
 
 /**
@@ -634,14 +635,14 @@ const userManagers = new Map()
 events.on('BeforeUserDeleted', ({ username }) => {
 	const manager = userManagers.get(username)
 	if (manager) {
-			if (manager.room)
-				void manager.room.leave()
+		if (manager.room)
+			void manager.room.leave()
 
-			for (const ws of manager.uiSockets)
-				if (ws.readyState === ws.OPEN)
-					ws.close()
+		for (const ws of manager.uiSockets)
+			if (ws.readyState === ws.OPEN)
+				ws.close()
 
-			userManagers.delete(username)
+		userManagers.delete(username)
 	}
 })
 

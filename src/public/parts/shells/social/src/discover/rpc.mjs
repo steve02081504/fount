@@ -1,7 +1,7 @@
 import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { SOCIAL_RPC_REQUEST_TYPES } from '../../../../../../scripts/p2p/social_namespace.mjs'
-
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
+
 import { discoverAccounts, discoverFollowGraph, discoverPosts } from './local.mjs'
 
 /**

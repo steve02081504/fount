@@ -6,13 +6,13 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { ms } from '../../../ms.mjs'
 import { u8ToB64 } from '../../bytes_codec.mjs'
 import {
-	chunkBytesMatchHash,
-	verifiedChunkBytes,
-} from '../../files/chunk_fetch_verify.mjs'
-import {
 	pendingChunkFetches,
 	resolvePendingChunkFetch,
 } from '../../chunk_fetch_pending.mjs'
+import {
+	chunkBytesMatchHash,
+	verifiedChunkBytes,
+} from '../../files/chunk_fetch_verify.mjs'
 
 const GOOD_BYTES = new TextEncoder().encode('chunk-payload')
 const HASH = createHash('sha256').update(GOOD_BYTES).digest('hex')

@@ -3,8 +3,8 @@
  */
 import archiveTunables from '../../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
+import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
 import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
 import { localNodeHash } from '../deps.mjs'

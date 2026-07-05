@@ -5,16 +5,23 @@ import { DEFAULT_ICE_SERVERS } from '../../ice_servers.mjs'
 import { configureBufferedAmountLowThreshold, onBufferedAmountLow, readBufferedAmount } from '../../link/channel_mux.mjs'
 import { createLink } from '../../link/link.mjs'
 import { waitForChannelState } from '../../link/rtc.mjs'
+
 import { createSignalPair, identity } from './helpers.mjs'
 
 /**
- * @param {RTCDataChannel} channel
- * @param {number} timeoutMs
- * @returns {Promise<string>}
+ * 等待 data channel 收到一条消息。
+ * @param {RTCDataChannel} channel 目标 data channel
+ * @param {number} timeoutMs 超时毫秒数
+ * @returns {Promise<string>} 收到的消息文本
  */
 function waitForMessage(channel, timeoutMs) {
 	return new Promise((resolve, reject) => {
 		const timer = setTimeout(() => reject(new Error(`message timeout after ${timeoutMs}ms`)), timeoutMs)
+		/**
+		 * data channel 消息事件处理器。
+		 * @param {MessageEvent} event 消息事件
+		 * @returns {void}
+		 */
 		const handler = event => {
 			clearTimeout(timer)
 			const data = event?.data
@@ -30,7 +37,9 @@ function waitForMessage(channel, timeoutMs) {
 }
 
 /**
- * @param {RTCDataChannel} channel
+ * 等待 data channel bufferedamountlow 事件。
+ * @param {RTCDataChannel} channel 目标 data channel
+ * @param {number} timeoutMs 超时毫秒数
  * @returns {Promise<void>}
  */
 function waitForBufferedAmountLow(channel, timeoutMs) {
@@ -51,6 +60,10 @@ Deno.test({
 	name: 'node-datachannel exposes bufferedamountlow backpressure signals',
 	sanitizeOps: false,
 	sanitizeResources: false,
+	/**
+	 * 验证 node-datachannel 的 backpressure 信号。
+	 * @returns {Promise<void>}
+	 */
 	async fn() {
 		const alice = identity(31)
 		const bob = identity(32)

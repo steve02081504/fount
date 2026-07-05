@@ -6,6 +6,11 @@ import { assertEquals, assertRejects } from 'https://deno.land/std@0.224.0/asser
 import { keyPairFromSeed, pubKeyHash } from '../../crypto.mjs'
 import { createOverlayRouter } from '../../overlay/index.mjs'
 
+/**
+ * 从固定 seed 生成测试身份。
+ * @param {number} fill seed 填充字节值
+ * @returns {{ nodeHash: string, nodePubKey: string, secretKey: Uint8Array }} 节点身份
+ */
 function identity(fill) {
 	const { publicKey, secretKey } = keyPairFromSeed(Buffer.alloc(32, fill))
 	return {
@@ -15,24 +20,55 @@ function identity(fill) {
 	}
 }
 
+/**
+ * 创建 fake overlay 网络（内存 registry + 邻接表）。
+ * @param {Map<string, string[]>} edges 节点 → 邻居 nodeHash 列表
+ * @returns {{ makeRegistry: (localIdentity: { nodeHash: string, nodePubKey: string, secretKey: Uint8Array }) => object }} 网络工厂
+ */
 function createFakeNetwork(edges) {
 	const registries = new Map()
 	const listenersByNode = new Map()
 
+	/**
+	 * 查询节点的邻居列表。
+	 * @param {string} nodeHash 节点 hash
+	 * @returns {Array<{ nodeHash: string }>} 邻居描述
+	 */
 	function neighborsOf(nodeHash) {
 		return (edges.get(nodeHash) || []).map(target => ({ nodeHash: target }))
 	}
 
+	/**
+	 * 为本地身份创建 fake link registry。
+	 * @param {{ nodeHash: string, nodePubKey: string, secretKey: Uint8Array }} localIdentity 本地身份
+	 * @returns {object} fake registry 对象
+	 */
 	function makeRegistry(localIdentity) {
 		const scopeListeners = new Map()
 		const registry = {
 			localIdentity,
+			/**
+			 * 列出当前节点的链路邻居。
+			 * @returns {Array<{ nodeHash: string }>} 邻居列表
+			 */
 			listLinks: () => neighborsOf(localIdentity.nodeHash),
+			/**
+			 * 按 scope 前缀订阅 envelope。
+			 * @param {string} prefix scope 前缀
+			 * @param {Function} handler envelope 处理器
+			 * @returns {() => void} 取消订阅函数
+			 */
 			subscribeScope(prefix, handler) {
 				if (!scopeListeners.has(prefix)) scopeListeners.set(prefix, new Set())
 				scopeListeners.get(prefix).add(handler)
 				return () => scopeListeners.get(prefix)?.delete(handler)
 			},
+			/**
+			 * 向目标节点投递 envelope。
+			 * @param {string} targetNodeHash 目标节点 hash
+			 * @param {object} envelope 待投递 envelope
+			 * @returns {Promise<boolean>} 是否投递成功
+			 */
 			async sendToNodeLink(targetNodeHash, envelope) {
 				const target = registries.get(targetNodeHash)
 				if (!target) return false

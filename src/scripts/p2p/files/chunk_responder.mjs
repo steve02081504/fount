@@ -1,4 +1,5 @@
 import { resolvePendingChunkFetch } from '../chunk_fetch_pending.mjs'
+
 import { handleIncomingChunkGet } from './chunk_fetch.mjs'
 
 /**
@@ -56,6 +57,9 @@ export function attachTrustGraphFedChunkResponder(username, room, fedOut, guardG
 			if (!data || typeof data !== 'object') return
 			if (!String(data.requestId || '')) return
 			await handleFedChunkGetIngress(username, data, peerId, (resp, pid) => {
+				/**
+				 *
+				 */
 				const send = () => {
 					try { sendChunkData(resp, pid) }
 					catch (error) {

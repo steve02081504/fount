@@ -3,16 +3,16 @@
  * 本地 agent 须实现 interfaces.social（见 lib/charSocial.mjs）。
  * Social 账号 = Chat 账号 = fount P2P 实体，无需单独注册。
  */
-import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
 import { listLocalAgentEntities, resolveSocialEntity } from '../../../../../scripts/p2p/entity/hosting.mjs'
-import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
 import { SOCIAL_REP_HIDE_THRESHOLD } from '../../../../../scripts/p2p/reputation_social.mjs'
+import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
 import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social/follower_index.mjs'
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
-import { getEntityProfile } from './lib/entityProfile.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
+import { getEntityProfile } from './lib/entityProfile.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
@@ -47,7 +47,10 @@ async function invokeCharSocialInterface(username, charPartName, method, event) 
 	}))
 }
 
-/** @param {unknown} result social 接口返回值 */
+/**
+ * @param {unknown} result social 接口返回值
+ * @returns {{ text: string } | { skip: true }} 可发布文本或跳过标记
+ */
 function normalizeSocialHandlerResult(result) {
 	return result?.text ? { text: result.text } : { skip: true }
 }

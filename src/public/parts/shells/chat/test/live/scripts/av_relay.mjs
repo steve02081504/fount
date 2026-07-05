@@ -1,6 +1,6 @@
 // AV relay WebSocket: two clients in same room, 26-byte header + payload relay (avRelay.mjs)
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 
 const BASE = requireLiveBaseUrl()
 const KEY = requireLiveApiKey()

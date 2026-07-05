@@ -1,9 +1,10 @@
+import { listLocalAgentEntities } from '../../../../../../scripts/p2p/entity/hosting.mjs'
+import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { getEntityProfile } from './entityProfile.mjs'
 import { loadFollowing } from '../following.mjs'
 
-import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { listLocalAgentEntities } from '../../../../../../scripts/p2p/entity/hosting.mjs'
+import { getEntityProfile } from './entityProfile.mjs'
+
 
 /**
  * 返回发帖 @ 提及 autocomplete 候选列表。

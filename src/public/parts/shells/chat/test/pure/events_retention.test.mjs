@@ -5,8 +5,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { PERMISSION_ANCHOR_TYPES } from '../../src/chat/dag/eventTypes.mjs'
 import { computeRetentionKeepIds } from '../../../../../../scripts/p2p/retention_policy.mjs'
+import { PERMISSION_ANCHOR_TYPES } from '../../src/chat/dag/eventTypes.mjs'
 
 Deno.test('computeRetentionKeepIds keeps recent branch tail', () => {
 	const a = 'a'.repeat(64)

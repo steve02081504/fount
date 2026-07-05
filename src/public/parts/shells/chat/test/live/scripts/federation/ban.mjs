@@ -1,3 +1,4 @@
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	Api,
 	ClearFedGroup,
@@ -10,7 +11,6 @@ import {
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 
 if (!FedC) throw new Error('fed_ban requires FOUNT_TEST_NODE_COUNT >= 3')
 

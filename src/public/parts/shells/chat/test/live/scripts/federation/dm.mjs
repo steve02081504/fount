@@ -4,8 +4,8 @@ import { join as joinPath } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { denoLiveRun } from 'fount/scripts/test/live/deno_run.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { denoLiveRun } from 'fount/scripts/test/live/deno_run.mjs'
 import {
 	Api,
 	ClearFedGroup,

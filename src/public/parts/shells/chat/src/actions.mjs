@@ -9,7 +9,6 @@ import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { orchestrateDmFirstContact, performMemberJoin } from './chat/dm/index.mjs'
 import { getWorldName } from './chat/session/channelWorld.mjs'
 import { newGroup } from './chat/session/crud.mjs'
-import { triggerCharReply } from './chat/session/triggerReply.mjs'
 import { addUserReply } from './chat/session/messages.mjs'
 import {
 	addchar,
@@ -21,6 +20,7 @@ import {
 	setWorld,
 } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
+import { triggerCharReply } from './chat/session/triggerReply.mjs'
 import { enumerateJoinedFederatedGroups } from './group/queries.mjs'
 
 /**

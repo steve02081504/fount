@@ -1,6 +1,6 @@
 // Group WebSocket RPC: rpc_call → rpc_end / rpc_error (wire 见 groupWsRpc.mjs)
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
 import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const BASE = requireLiveBaseUrl()

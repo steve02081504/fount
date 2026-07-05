@@ -2,9 +2,9 @@
  * HLC skew 策略单元测试（Deno）。
  */
 /* global Deno */
+import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { ms } from 'fount/scripts/ms.mjs'
 import { classifyHlcSkewAction } from '../../src/chat/events/hlcPolicy.mjs'
 
 const HLC_TEST_MAX_SKEW_MS = ms('1m')

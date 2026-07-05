@@ -1,6 +1,6 @@
 import { collectSocialRpcMerged } from '../../../../../../scripts/p2p/part_wire_social_rpc.mjs'
-
 import { loadViewerContext } from '../feed/helpers.mjs'
+
 import { handleSocialRpc } from './rpc.mjs'
 
 /**

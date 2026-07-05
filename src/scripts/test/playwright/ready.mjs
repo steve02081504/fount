@@ -3,8 +3,8 @@
  */
 import { HUB_SHELL_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
 import { STICKERS_PAGE_GATE } from 'fount/public/parts/shells/chat/public/stickers/gate.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { SOCIAL_APP_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 /**
  * 在页面内等待 shell 就绪（内存状态 + 可选事件，不依赖 DOM attribute）。

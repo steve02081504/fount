@@ -3,6 +3,7 @@ import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hex
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
 import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
 import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
+import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
 import {
 	annotateRtcPeerNodeHash,
 	isFederationActionAllowedUnderLoad,
@@ -10,7 +11,6 @@ import {
 	setRtcPeerSource,
 	takeRtcJoinSlot,
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { loadFederationGroupSettings } from '../deps.mjs'
 import {

@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export {
 	ENTITY_HASH_RE,
 	entityHashLabel,

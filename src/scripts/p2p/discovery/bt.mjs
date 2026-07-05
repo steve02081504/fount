@@ -8,7 +8,8 @@ const MAX_ADVERT_BLOB_BYTES = 12 * 1024
 const PERIPHERAL_RESCAN_MS = 15_000
 
 /**
- * @returns {'scan' | 'dual'}
+ * 解析 Bluetooth 发现角色（scan / dual）。
+ * @returns {'scan' | 'dual'} 当前平台或环境变量指定的角色
  */
 function resolveBtRole() {
 	const override = String(process.env.FOUNT_BT_DISCOVERY_ROLE || '').trim().toLowerCase()
@@ -18,7 +19,8 @@ function resolveBtRole() {
 }
 
 /**
- * @returns {Promise<any>}
+ * 加载 Noble BLE central 库。
+ * @returns {Promise<any>} Noble 运行时实例
  */
 async function loadNoble() {
 	const mod = await import('npm:@stoprocent/noble')
@@ -27,7 +29,8 @@ async function loadNoble() {
 }
 
 /**
- * @returns {Promise<any>}
+ * 加载 Bleno BLE peripheral 库。
+ * @returns {Promise<any>} Bleno 运行时实例
  */
 async function loadBleno() {
 	const mod = await import('npm:@stoprocent/bleno')
@@ -36,8 +39,9 @@ async function loadBleno() {
 }
 
 /**
- * @param {Map<string, Uint8Array>} adverts
- * @returns {Buffer}
+ * 将 advert 映射序列化为可读 characteristic blob。
+ * @param {Map<string, Uint8Array>} adverts topic → payload 映射
+ * @returns {Buffer} JSON 序列化后的 advert blob
  */
 function serializeAdvertBlob(adverts) {
 	const entries = [...adverts.entries()].map(([topic, bytes]) => ({
@@ -51,8 +55,9 @@ function serializeAdvertBlob(adverts) {
 }
 
 /**
- * @param {Uint8Array | Buffer} raw
- * @returns {Array<{ topic: string, bytes: Uint8Array }>}
+ * 从 characteristic blob 解析 advert 列表。
+ * @param {Uint8Array | Buffer} raw 原始 blob 字节
+ * @returns {Array<{ topic: string, bytes: Uint8Array }>} 解析出的 advert 条目
  */
 function parseAdvertBlob(raw) {
 	try {
@@ -69,10 +74,11 @@ function parseAdvertBlob(raw) {
 }
 
 /**
- * @param {Map<string, Set<Function>>} bucket
- * @param {string} topic
- * @param {Function} listener
- * @returns {() => void}
+ * 向 topic bucket 注册监听器。
+ * @param {Map<string, Set<Function>>} bucket topic → 监听器集合
+ * @param {string} topic 订阅 topic
+ * @param {Function} listener advert 回调
+ * @returns {() => void} 取消订阅函数
  */
 function addListener(bucket, topic, listener) {
 	if (!bucket.has(topic)) bucket.set(topic, new Set())
@@ -91,7 +97,7 @@ function addListener(bucket, topic, listener) {
  * - 其他平台默认 dual：advertise + scan
  * - 通过固定 BLE service + read characteristic 传输完整 advert 列表，避免 31-byte 广告包限制
  *
- * @returns {import('./index.mjs').DiscoveryProvider}
+ * @returns {import('./index.mjs').DiscoveryProvider} Bluetooth 发现提供者
  */
 export function createBluetoothDiscoveryProvider() {
 	const role = resolveBtRole()
@@ -106,6 +112,10 @@ export function createBluetoothDiscoveryProvider() {
 	let scanningStarted = false
 	let advertisingStarted = false
 
+	/**
+	 * 初始化 peripheral（Bleno）运行时。
+	 * @returns {Promise<any|null>} Bleno 实例；scan 模式下为 null
+	 */
 	async function ensurePeripheralRuntime() {
 		if (role === 'scan') return null
 		if (blenoRuntime) return blenoRuntime
@@ -113,6 +123,13 @@ export function createBluetoothDiscoveryProvider() {
 		const characteristic = new bleno.Characteristic({
 			uuid: BT_CHARACTERISTIC_UUID,
 			properties: ['read'],
+			/**
+			 * BLE characteristic 读请求回调。
+			 * @param {*} _handle Bleno handle（未使用）
+			 * @param {number} offset 读取偏移
+			 * @param {Function} callback Bleno 结果回调
+			 * @returns {void}
+			 */
 			onReadRequest(_handle, offset, callback) {
 				try {
 					const blob = serializeAdvertBlob(adverts)
@@ -138,6 +155,10 @@ export function createBluetoothDiscoveryProvider() {
 		return bleno
 	}
 
+	/**
+	 * 刷新 BLE 广播状态。
+	 * @returns {Promise<void>}
+	 */
 	async function refreshAdvertising() {
 		if (role === 'scan') return
 		const bleno = await ensurePeripheralRuntime()
@@ -156,6 +177,11 @@ export function createBluetoothDiscoveryProvider() {
 		}
 	}
 
+	/**
+	 * 连接并读取远端 peripheral 的 advert characteristic。
+	 * @param {*} peripheral Noble peripheral 对象
+	 * @returns {Promise<void>}
+	 */
 	async function inspectPeripheral(peripheral) {
 		const inspectKey = String(peripheral?.id || peripheral?.address || '')
 		if (!inspectKey) return
@@ -185,6 +211,10 @@ export function createBluetoothDiscoveryProvider() {
 		}
 	}
 
+	/**
+	 * 启动 Noble 扫描运行时。
+	 * @returns {Promise<void>}
+	 */
 	async function ensureScanRuntime() {
 		if (scanningStarted) return
 		const noble = await loadNoble()
@@ -201,6 +231,12 @@ export function createBluetoothDiscoveryProvider() {
 		id: 'bt',
 		priority: 20,
 		caps: { canDiscover: true, canSignal: false, canRelay: false },
+		/**
+		 * 广播指定 topic 的 advert。
+		 * @param {string} topic advert topic
+		 * @param {Uint8Array} bytes advert 载荷
+		 * @returns {Promise<() => void>} 取消广播函数
+		 */
 		async advertise(topic, bytes) {
 			if (role === 'scan') return () => {}
 			adverts.set(String(topic), Uint8Array.from(bytes))
@@ -210,6 +246,12 @@ export function createBluetoothDiscoveryProvider() {
 				void refreshAdvertising().catch(() => {})
 			}
 		},
+		/**
+		 * 订阅指定 topic 的远端 advert。
+		 * @param {string} topic advert topic
+		 * @param {Function} onAdvert advert 回调
+		 * @returns {Promise<() => void>} 取消订阅函数
+		 */
 		async subscribe(topic, onAdvert) {
 			await ensureScanRuntime()
 			return addListener(advertListeners, String(topic), onAdvert)

@@ -1,11 +1,10 @@
 import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
-import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 import {
 	isAuthorFilteredByPersonalSets,
 } from '../../../../../scripts/p2p/personal_block.mjs'
-import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation_social.mjs'
+import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
 
 import {
 	buildPostFeedItem,

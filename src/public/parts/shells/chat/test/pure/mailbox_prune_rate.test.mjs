@@ -3,6 +3,7 @@
  */
 /* global Deno */
 
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	MAX_BUCKET_ENTRIES,
 	mailboxBucketKey,
@@ -11,7 +12,6 @@ import {
 	pruneMailboxGlobalFair,
 } from 'fount/scripts/p2p/mailbox_prune.mjs'
 import { takeIncomingMailboxPutSlot } from 'fount/scripts/p2p/mailbox_rate.mjs'
-import { ms } from 'fount/scripts/ms.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const RECIPIENT_A = 'a'.repeat(64)

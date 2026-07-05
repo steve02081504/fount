@@ -1,8 +1,8 @@
 // Social feed WebSocket smoke: connect and receive hello.
 import process from 'node:process'
 
-import { liveWsBaseUrl, requireLiveApiKey } from 'fount/scripts/test/live/env.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { liveWsBaseUrl, requireLiveApiKey } from 'fount/scripts/test/live/env.mjs'
 
 const websocketUrl = `${liveWsBaseUrl()}/ws/parts/shells:social/feed?fount-apikey=${encodeURIComponent(requireLiveApiKey())}`
 

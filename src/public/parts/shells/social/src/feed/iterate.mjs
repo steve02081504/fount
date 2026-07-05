@@ -1,7 +1,10 @@
 import { isEntityHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { pickNodeScore } from '../../../../../../scripts/p2p/reputation_store.mjs'
 import { shouldHideAuthorByReputation } from '../../../../../../scripts/p2p/reputation_social.mjs'
+import { pickNodeScore } from '../../../../../../scripts/p2p/reputation_store.mjs'
+import { canViewPost } from '../feedVisibility.mjs'
+import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
+import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { createEngagementForPost } from './buildItem.mjs'
 import {
@@ -9,14 +12,11 @@ import {
 	buildViewerLikedSet,
 	listKnownTimelineOwners,
 } from './helpers.mjs'
-import { canViewPost } from '../feedVisibility.mjs'
-import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
-import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 /**
  * @param {string} username 用户
  * @param {Iterable<string>} [owners] engagement 扫描范围
- * @returns {Promise<{ authorProfile: ReturnType<typeof createAuthorProfileLoader>, engagementForPost: ReturnType<typeof createEngagementForPost>, engagement: Awaited<ReturnType<typeof buildEngagementIndex>>, viewerLiked: Awaited<ReturnType<typeof buildViewerLikedSet>> }>}
+ * @returns {Promise<{ authorProfile: ReturnType<typeof createAuthorProfileLoader>, engagementForPost: ReturnType<typeof createEngagementForPost>, engagement: Awaited<ReturnType<typeof buildEngagementIndex>>, viewerLiked: Awaited<ReturnType<typeof buildViewerLikedSet>> }>} feed 条目构建上下文
  */
 export async function createFeedItemBuildContext(username, owners) {
 	const engagement = await buildEngagementIndex(username, owners)

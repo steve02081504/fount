@@ -1,5 +1,5 @@
-import chatBootstrap from '../../../node_bootstrap.mjs'
 import socialBootstrap from '../../../../../social/test/node_bootstrap.mjs'
+import chatBootstrap from '../../../node_bootstrap.mjs'
 
 /**
  * fed_emoji_nonmember 双 shell 节点 bootstrap。

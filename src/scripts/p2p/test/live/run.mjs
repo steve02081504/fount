@@ -1,6 +1,6 @@
 // todo: remove this file when https://github.com/denoland/deno/issues/35774 is fixed
-import process from 'node:process'
 import { dirname, join } from 'node:path'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { execFile } from 'npm:@steve02081504/exec'

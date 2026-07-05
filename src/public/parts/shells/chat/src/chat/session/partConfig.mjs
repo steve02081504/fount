@@ -17,6 +17,8 @@ import { getDefaultChannelId } from '../dag/queries.mjs'
 import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
+import { addChatLogEntry } from './chatLogAppend.mjs'
+import { getChatRequest } from './chatRequest.mjs'
 import {
 	appendAgentMemberJoin,
 	appendAgentMemberKick,
@@ -28,8 +30,6 @@ import {
 	getMaterializedSession,
 	sessionHasChar,
 } from './dagSession.mjs'
-import { addChatLogEntry } from './chatLogAppend.mjs'
-import { getChatRequest } from './chatRequest.mjs'
 import { buildChatLogEntryFromCharReply } from './logEntries.mjs'
 import {
 	getGroupRuntime,

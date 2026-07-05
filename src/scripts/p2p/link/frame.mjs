@@ -1,16 +1,38 @@
 import { randomBytes } from 'node:crypto'
 
+/**
+ * 二进制帧协议版本号。
+ */
 export const FRAME_VERSION = 1
+/**
+ * msgId 字段字节长度（128 位）。
+ */
 export const FRAME_MSG_ID_BYTES = 16
+/**
+ * 帧头字节长度：version(1) + msgId(16) + seq(4) + total(4)。
+ */
 export const FRAME_HEADER_BYTES = 1 + FRAME_MSG_ID_BYTES + 4 + 4
+/**
+ * 默认单帧最大 chunk 大小（15 KiB）。
+ */
 export const DEFAULT_MAX_FRAME_CHUNK_BYTES = 15 * 1024
+/**
+ * 重组后消息最大字节数（8 MiB）。
+ */
 export const DEFAULT_MAX_MESSAGE_BYTES = 8 * 1024 * 1024
+/**
+ * 同时进行中的分片消息数量上限。
+ */
 export const DEFAULT_MAX_PARTIAL_MESSAGES = 32
+/**
+ * 分片消息超时时间（毫秒）。
+ */
 export const DEFAULT_PARTIAL_TIMEOUT_MS = 30_000
 
 /**
- * @param {unknown} value
- * @returns {Uint8Array}
+ * 将输入规范化为 Uint8Array。
+ * @param {unknown} value 原始字节数据
+ * @returns {Uint8Array} 字节视图
  */
 function normalizeBytes(value) {
 	if (value instanceof Uint8Array) return value
@@ -20,8 +42,9 @@ function normalizeBytes(value) {
 }
 
 /**
- * @param {unknown} msgId
- * @returns {Uint8Array}
+ * 将 msgId 规范化为 16 字节 Uint8Array。
+ * @param {unknown} msgId hex 字符串或 16 字节 Uint8Array
+ * @returns {Uint8Array} 16 字节 msgId
  */
 function normalizeMsgIdBytes(msgId) {
 	if (msgId instanceof Uint8Array) {
@@ -36,25 +59,28 @@ function normalizeMsgIdBytes(msgId) {
 }
 
 /**
- * @param {Uint8Array} bytes
- * @returns {string}
+ * 将 msgId 字节转为 32 字符小写 hex。
+ * @param {Uint8Array} bytes 16 字节 msgId
+ * @returns {string} hex 字符串
  */
 export function msgIdBytesToHex(bytes) {
 	return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
 }
 
 /**
- * @returns {string}
+ * 生成随机 msgId hex 字符串。
+ * @returns {string} 32 字符 hex msgId
  */
 export function randomMsgIdHex() {
 	return msgIdBytesToHex(randomBytes(FRAME_MSG_ID_BYTES))
 }
 
 /**
- * @param {string | Uint8Array} msgId
- * @param {Uint8Array | ArrayBuffer | ArrayBufferView} bytes
- * @param {number} [maxChunkBytes=DEFAULT_MAX_FRAME_CHUNK_BYTES]
- * @returns {Uint8Array[]}
+ * 将消息体拆分为带帧头的二进制帧数组。
+ * @param {string | Uint8Array} msgId 消息 ID
+ * @param {Uint8Array | ArrayBuffer | ArrayBufferView} bytes 消息体字节
+ * @param {number} [maxChunkBytes=DEFAULT_MAX_FRAME_CHUNK_BYTES] 单帧最大 chunk 大小
+ * @returns {Uint8Array[]} 帧数组
  */
 export function encodeFrames(msgId, bytes, maxChunkBytes = DEFAULT_MAX_FRAME_CHUNK_BYTES) {
 	const body = normalizeBytes(bytes)
@@ -80,8 +106,9 @@ export function encodeFrames(msgId, bytes, maxChunkBytes = DEFAULT_MAX_FRAME_CHU
 }
 
 /**
- * @param {Uint8Array | ArrayBuffer | ArrayBufferView} frame
- * @returns {{ version: number, msgId: string, seq: number, total: number, chunk: Uint8Array }}
+ * 解析单帧二进制数据。
+ * @param {Uint8Array | ArrayBuffer | ArrayBufferView} frame 原始帧字节
+ * @returns {{ version: number, msgId: string, seq: number, total: number, chunk: Uint8Array }} 帧字段
  */
 export function decodeFrame(frame) {
 	const bytes = normalizeBytes(frame)
@@ -106,8 +133,9 @@ export function decodeFrame(frame) {
 }
 
 /**
- * @param {Uint8Array[]} chunks
- * @returns {Uint8Array}
+ * 按序拼接多个 chunk 为完整消息体。
+ * @param {Uint8Array[]} chunks 已排序的 chunk 数组
+ * @returns {Uint8Array} 拼接后的消息体
  */
 function concatChunks(chunks) {
 	const totalBytes = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0)
@@ -121,8 +149,9 @@ function concatChunks(chunks) {
 }
 
 /**
- * @param {{ maxMessageBytes?: number, maxPartials?: number, partialTimeoutMs?: number }} [opts]
- * @returns {{ push: (frame: Uint8Array | ArrayBuffer | ArrayBufferView, now?: number) => Uint8Array | null, prune: (now?: number) => string[], clear: () => void, size: () => number }}
+ * 创建分片消息重组器。
+ * @param {{ maxMessageBytes?: number, maxPartials?: number, partialTimeoutMs?: number }} [opts] 大小、并发分片数与超时配置
+ * @returns {{ push: (frame: Uint8Array | ArrayBuffer | ArrayBufferView, now?: number) => Uint8Array | null, prune: (now?: number) => string[], clear: () => void, size: () => number }} 重组器 API
  */
 export function createReassembler(opts = {}) {
 	const maxMessageBytes = Math.max(1024, Number(opts.maxMessageBytes) || DEFAULT_MAX_MESSAGE_BYTES)
@@ -132,7 +161,8 @@ export function createReassembler(opts = {}) {
 	const partials = new Map()
 
 	/**
-	 * @param {string} msgId
+	 * 丢弃指定 msgId 的分片状态。
+	 * @param {string} msgId 消息 ID
 	 * @returns {void}
 	 */
 	function drop(msgId) {
@@ -140,6 +170,12 @@ export function createReassembler(opts = {}) {
 	}
 
 	return {
+		/**
+		 * 喂入一帧，收齐全部分片时返回完整消息体。
+		 * @param {Uint8Array | ArrayBuffer | ArrayBufferView} frame 原始帧字节
+		 * @param {number} [now=Date.now()] 当前时间戳（毫秒）
+		 * @returns {Uint8Array | null} 完整消息体，未收齐时返回 null
+		 */
 		push(frame, now = Date.now()) {
 			const parsed = decodeFrame(frame)
 			if (!partials.has(parsed.msgId) && partials.size >= maxPartials)
@@ -177,6 +213,11 @@ export function createReassembler(opts = {}) {
 			}
 			return null
 		},
+		/**
+		 * 清理超时的分片消息。
+		 * @param {number} [now=Date.now()] 当前时间戳（毫秒）
+		 * @returns {string[]} 被丢弃的 msgId 列表
+		 */
 		prune(now = Date.now()) {
 			/** @type {string[]} */
 			const expired = []
@@ -187,9 +228,17 @@ export function createReassembler(opts = {}) {
 				}
 			return expired
 		},
+		/**
+		 * 清空所有进行中的分片状态。
+		 * @returns {void}
+		 */
 		clear() {
 			partials.clear()
 		},
+		/**
+		 * 返回当前进行中的分片消息数量。
+		 * @returns {number} 分片 msgId 数量
+		 */
 		size() {
 			return partials.size
 		},

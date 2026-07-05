@@ -1,7 +1,8 @@
-import { ms } from '../../ms.mjs'
 import { createLruMap } from '../../memo.mjs'
+import { ms } from '../../ms.mjs'
 import { compareHex64Asc, normalizeHex64 } from '../hexIds.mjs'
 import { getSignalingRuntimeConfig } from '../node/instance.mjs'
+
 import {
 	CHANNEL_BULK,
 	CHANNEL_CONTROL,
@@ -19,41 +20,50 @@ const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
 /**
- * @param {unknown} left
- * @param {unknown} right
- * @returns {boolean}
+ * 双 initiator 冲突时，nodeHash 较大的一方应主动关闭连接。
+ * @param {unknown} left 第一个 nodeHash
+ * @param {unknown} right 第二个 nodeHash
+ * @returns {boolean} 若 left 应关闭则 true
  */
 export function shouldCloseOwnInitiated(left, right) {
 	return compareHex64Asc(normalizeHex64(left), normalizeHex64(right)) > 0
 }
 
 /**
- * @param {unknown} data
- * @returns {string | null}
+ * 尝试将 channel 消息数据转为 UTF-8 字符串。
+ * @param {unknown} data 原始消息数据
+ * @returns {string | null} 解码后的字符串，无法解码时返回 null
  */
 function coerceString(data) {
 	if (typeof data === 'string') return data
-	if (data instanceof ArrayBuffer || ArrayBuffer.isView(data) || data instanceof Uint8Array) {
+	if (data instanceof ArrayBuffer || ArrayBuffer.isView(data) || data instanceof Uint8Array) 
 		try { return decoder.decode(signalDataToBytes(data)) }
 		catch { return null }
-	}
+	
 	return null
 }
 
 /**
- * @param {RTCDataChannel} channel
- * @param {(data: unknown) => void} handler
+ * 绑定 data channel message 回调，兼容 addEventListener/onmessage/onMessage。
+ * @param {RTCDataChannel} channel RTC 数据通道
+ * @param {(data: unknown) => void} handler 消息处理器
  * @returns {void}
  */
 function attachChannelMessageListener(channel, handler) {
 	channel.addEventListener?.('message', event => handler(event?.data))
+	/**
+	 * onmessage 回退处理器。
+	 * @param {MessageEvent} event 消息事件
+	 * @returns {void}
+	 */
 	channel.onmessage = event => handler(event?.data)
 	channel.onMessage?.subscribe(message => handler(message))
 }
 
 /**
- * @param {Set<Function>} listeners
- * @param {...unknown} args
+ * 依次调用监听器集合，忽略单个 listener 抛错。
+ * @param {Set<Function>} listeners 监听器集合
+ * @param {...unknown} args 传递给 listener 的参数
  * @returns {void}
  */
 function emitListeners(listeners, ...args) {
@@ -63,25 +73,27 @@ function emitListeners(listeners, ...args) {
 }
 
 /**
- * @param {unknown} error
- * @returns {string}
+ * 将错误对象格式化为短字符串，用于 close reason。
+ * @param {unknown} error 原始错误
+ * @returns {string} 最多 240 字符的单行 reason
  */
 function formatErrorReason(error) {
 	return String(error?.message ?? error ?? 'unknown-error').replace(/\s+/g, ' ').slice(0, 240)
 }
 
 /**
- * @param {object} opts
- * @param {string | null} [opts.nodeHash]
- * @param {boolean} opts.initiator
- * @param {{ send: (message: unknown) => void | Promise<void>, onRemote: (handler: (message: unknown) => void) => (() => void) | void }} opts.signal
- * @param {RTCConfiguration['iceServers']} [opts.iceServers]
- * @param {number} [opts.heartbeatMs]
- * @param {number} [opts.idleTimeoutMs]
- * @param {number} [opts.handshakeTimeoutMs]
- * @param {{ RTCPeerConnection: typeof RTCPeerConnection } | null} [opts.rtc]
- * @param {{ nodeHash?: string, nodePubKey?: string, secretKey?: Uint8Array, nonce?: string } | null} [opts.localIdentity]
- * @returns {Promise<{ ready: Promise<void>, get nodeHash(): string | null, send: (envelope: { scope: string, action: string, payload: unknown }) => Promise<boolean>, onEnvelope: (cb: (envelope: { scope: string, action: string, payload: unknown }, remoteNodeHash: string) => void) => () => void, onDown: (cb: (reason: string) => void) => () => void, close: (reason?: string) => Promise<void>, stats: () => object }>}
+ * 建立 P2P link：WebRTC 双通道、握手、分帧收发与心跳。
+ * @param {object} opts link 配置
+ * @param {string | null} [opts.nodeHash] 期望的对端 nodeHash，省略则不校验
+ * @param {boolean} opts.initiator 是否为连接发起方
+ * @param {{ send: (message: unknown) => void | Promise<void>, onRemote: (handler: (message: unknown) => void) => (() => void) | void }} opts.signal 信令收发接口
+ * @param {RTCConfiguration['iceServers']} [opts.iceServers] ICE 服务器列表
+ * @param {number} [opts.heartbeatMs] 心跳间隔（毫秒）
+ * @param {number} [opts.idleTimeoutMs] 无入站流量超时（毫秒）
+ * @param {number} [opts.handshakeTimeoutMs] 握手超时（毫秒）
+ * @param {{ RTCPeerConnection: typeof RTCPeerConnection } | null} [opts.rtc] RTC 构造器，省略则加载 polyfill
+ * @param {{ nodeHash?: string, nodePubKey?: string, secretKey?: Uint8Array, nonce?: string } | null} [opts.localIdentity] 本地握手身份
+ * @returns {Promise<{ ready: Promise<void>, get nodeHash(): string | null, send: (envelope: { scope: string, action: string, payload: unknown }) => Promise<boolean>, onEnvelope: (cb: (envelope: { scope: string, action: string, payload: unknown }, remoteNodeHash: string) => void) => () => void, onDown: (cb: (reason: string) => void) => () => void, close: (reason?: string) => Promise<void>, stats: () => object }>} link 句柄
  */
 export async function createLink(opts) {
 	const heartbeatMs = Number(opts.heartbeatMs) || ms('15s')
@@ -133,7 +145,8 @@ export async function createLink(opts) {
 	void readyPromise.catch(() => {})
 
 	/**
-	 * @param {unknown} message
+	 * 经信令通道发送消息。
+	 * @param {unknown} message 信令载荷
 	 * @returns {Promise<void>}
 	 */
 	async function sendSignal(message) {
@@ -141,21 +154,24 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @returns {string | null}
+	 * 从本地 SDP 提取 DTLS fingerprint。
+	 * @returns {string | null} 本地 fingerprint，未就绪时返回 null
 	 */
 	function localFingerprint() {
 		return extractDtlsFingerprint(pc.localDescription?.sdp || '')
 	}
 
 	/**
-	 * @returns {string | null}
+	 * 从远端 SDP 提取 DTLS fingerprint。
+	 * @returns {string | null} 远端 fingerprint，未就绪时返回 null
 	 */
 	function remoteFingerprint() {
 		return extractDtlsFingerprint(pc.remoteDescription?.sdp || '')
 	}
 
 	/**
-	 * @param {RTCDataChannel} channel
+	 * 为通道配置背压泵：低水位时 flush 发送队列。
+	 * @param {RTCDataChannel} channel RTC 数据通道
 	 * @returns {void}
 	 */
 	function attachBackpressurePump(channel) {
@@ -169,6 +185,7 @@ export async function createLink(opts) {
 	}
 
 	/**
+	 * 收到远端 hello 后发送 auth 签名。
 	 * @returns {Promise<void>}
 	 */
 	async function maybeSendAuth() {
@@ -180,6 +197,7 @@ export async function createLink(opts) {
 	}
 
 	/**
+	 * 握手完成后启动心跳/idle 检测并 resolve ready。
 	 * @returns {Promise<void>}
 	 */
 	async function maybeFinishHandshake() {
@@ -197,14 +215,15 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {RTCDataChannel} channel
+	 * 绑定分帧入站：JSON 控制消息或二进制帧重组为 envelope。
+	 * @param {RTCDataChannel} channel RTC 数据通道
 	 * @returns {void}
 	 */
 	function attachFramedIngress(channel) {
 		attachChannelMessageListener(channel, data => {
 			lastInboundAt = Date.now()
 			const maybeText = coerceString(data)
-			if (maybeText && maybeText.startsWith('{')) {
+			if (maybeText && maybeText.startsWith('{')) 
 				try {
 					const parsed = JSON.parse(maybeText)
 					void handleRawControlMessage(parsed)
@@ -213,7 +232,7 @@ export async function createLink(opts) {
 				catch {
 					/* fall through to binary path */
 				}
-			}
+			
 			let bytes
 			try {
 				bytes = signalDataToBytes(data)
@@ -246,7 +265,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {{ sig: string }} auth
+	 * 验证远端 auth 并完成握手。
+	 * @param {{ sig: string }} auth 远端 auth 载荷
 	 * @returns {Promise<void>}
 	 */
 	async function handleAuth(auth) {
@@ -267,7 +287,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {unknown} message
+	 * 处理 control 通道上的 JSON hello/auth 消息。
+	 * @param {unknown} message 原始 JSON 对象
 	 * @returns {Promise<void>}
 	 */
 	async function handleRawControlMessage(message) {
@@ -282,13 +303,14 @@ export async function createLink(opts) {
 			await maybeSendAuth()
 			return
 		}
-		if (message.type === 'auth') {
+		if (message.type === 'auth') 
 			await handleAuth(message)
-		}
+		
 	}
 
 	/**
-	 * @param {RTCSessionDescriptionInit | RTCSessionDescription} description
+	 * 应用远端 SDP 并 flush 排队的 ICE candidate。
+	 * @param {RTCSessionDescriptionInit | RTCSessionDescription} description 远端会话描述
 	 * @returns {Promise<void>}
 	 */
 	async function applyRemoteDescription(description) {
@@ -298,14 +320,16 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {unknown} error
-	 * @returns {boolean}
+	 * 判断 ICE 错误是否应重试排队 candidate。
+	 * @param {unknown} error addIceCandidate 抛出的错误
+	 * @returns {boolean} 应重新入队则 true
 	 */
 	function shouldRetryQueuedIce(error) {
 		return /without ICE transport/i.test(String(error?.message ?? error ?? ''))
 	}
 
 	/**
+	 * trickle ICE 关闭时等待 ICE gathering 完成。
 	 * @returns {Promise<void>}
 	 */
 	async function waitForIceGatheringComplete() {
@@ -316,6 +340,7 @@ export async function createLink(opts) {
 	}
 
 	/**
+	 * 将排队的远端 ICE candidate 依次加入 PeerConnection。
 	 * @returns {Promise<void>}
 	 */
 	async function flushQueuedIceCandidates() {
@@ -336,7 +361,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {unknown} message
+	 * 处理远端信令：SDP description 与 ICE candidate。
+	 * @param {unknown} message 信令消息对象
 	 * @returns {Promise<void>}
 	 */
 	async function handleRemoteSignal(message) {
@@ -379,7 +405,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {RTCDataChannel} channel
+	 * 绑定 data channel 并配置入站/背压。
+	 * @param {RTCDataChannel} channel RTC 数据通道
 	 * @returns {Promise<void>}
 	 */
 	async function attachChannel(channel) {
@@ -396,6 +423,7 @@ export async function createLink(opts) {
 	}
 
 	/**
+	 * 双通道就绪后初始化发送队列并发送 hello。
 	 * @returns {Promise<void>}
 	 */
 	async function maybeStartPostOpenFlow() {
@@ -404,11 +432,16 @@ export async function createLink(opts) {
 			waitForChannelState(controlChannel, 'open', channelOpenTimeoutMs),
 			waitForChannelState(bulkChannel, 'open', channelOpenTimeoutMs),
 		])
-		if (!sendQueues) {
+		if (!sendQueues) 
 			sendQueues = createChannelSendQueues({
+				/**
+				 * 按名称返回 control 或 bulk 通道。
+				 * @param {'control' | 'bulk'} name 通道名
+				 * @returns {RTCDataChannel | null | undefined} 对应通道实例
+				 */
 				getChannel: name => name === CHANNEL_CONTROL ? controlChannel : bulkChannel,
 			})
-		}
+		
 		if (!helloSent) {
 			handshakeTimer = setTimeout(() => { void close('handshake-timeout') }, handshakeTimeoutMs)
 			helloSent = true
@@ -419,7 +452,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {object} body
+	 * 经 control 通道发送 JSON hello/auth。
+	 * @param {object} body hello 或 auth 字段
 	 * @returns {Promise<void>}
 	 */
 	async function sendRawControl(body) {
@@ -429,8 +463,9 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {{ scope: string, action: string, payload: unknown }} envelope
-	 * @returns {Promise<boolean>}
+	 * 发送 envelope：分帧后经发送队列发出。
+	 * @param {{ scope: string, action: string, payload: unknown }} envelope 业务信封
+	 * @returns {Promise<boolean>} 发送成功 true，link 未就绪或已关闭 false
 	 */
 	async function send(envelope) {
 		await readyPromise
@@ -451,7 +486,8 @@ export async function createLink(opts) {
 	}
 
 	/**
-	 * @param {string} [reason='closed']
+	 * 关闭 link 并清理资源。
+	 * @param {string} [reason='closed'] 关闭原因
 	 * @returns {Promise<void>}
 	 */
 	async function close(reason = 'closed') {
@@ -487,6 +523,10 @@ export async function createLink(opts) {
 			.catch(error => close(`channel-attach-failed:${error?.message ?? error}`))
 	})
 
+	/**
+	 * PeerConnection 状态变化时触发 close。
+	 * @returns {void}
+	 */
 	pc.onconnectionstatechange = () => {
 		if (pc.connectionState === 'failed' || pc.connectionState === 'closed' || pc.connectionState === 'disconnected') {
 			reconnectCount++
@@ -509,21 +549,48 @@ export async function createLink(opts) {
 	void maybeStartPostOpenFlow().catch(error => close(`open-flow-failed:${error?.message ?? error}`))
 	return {
 		ready: readyPromise,
+		/**
+		 * 握手完成后确认的远端 nodeHash。
+		 * @returns {string | null} 远端 nodeHash
+		 */
 		get nodeHash() { return remoteNodeHash },
+		/**
+		 * 本端是否为连接发起方。
+		 * @returns {boolean} initiator 标志
+		 */
 		get initiator() { return !!opts.initiator },
 		send,
+		/**
+		 * 订阅业务 envelope 入站。
+		 * @param {(envelope: { scope: string, action: string, payload: unknown }, remoteNodeHash: string) => void} cb 回调
+		 * @returns {() => void} 取消订阅函数
+		 */
 		onEnvelope(cb) {
 			envelopeListeners.add(cb)
 			return () => envelopeListeners.delete(cb)
 		},
+		/**
+		 * 订阅 link 断开事件。
+		 * @param {(reason: string) => void} cb 回调
+		 * @returns {() => void} 取消订阅函数
+		 */
 		onDown(cb) {
 			downListeners.add(cb)
 			return () => downListeners.delete(cb)
 		},
 		close,
+		/**
+		 * 按名称获取底层 data channel（调试用）。
+		 * @param {'control' | 'bulk'} name 通道名
+		 * @returns {RTCDataChannel | null} 通道实例
+		 */
 		channel(name) {
 			return name === CHANNEL_CONTROL ? controlChannel : bulkChannel
 		},
+		/**
+		 * 返回 link 运行时统计快照。
+		 * @returns {object} 连接状态、计数与缓冲信息
+		 */
 		stats() {
 			return {
 				ready,

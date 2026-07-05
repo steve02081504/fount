@@ -113,7 +113,10 @@ export function getActiveVolatileStreamIds() {
 	return [...volatileStreams.keys()]
 }
 
-/** @returns {string} 流式预览行 CSS 选择器 */
+/**
+ * @param {string} messageId 消息 event id
+ * @returns {string} 流式预览行 CSS 选择器
+ */
 function streamingMessageRowSelector(messageId) {
 	const selector = messageIdSelector(messageId)
 	return selector ? `${selector}[data-streaming]` : ''

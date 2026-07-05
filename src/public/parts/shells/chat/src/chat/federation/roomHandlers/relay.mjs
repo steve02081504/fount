@@ -1,25 +1,25 @@
-import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
+import {
+	parseDiscoveryAnnounce,
+	parseDiscoveryQuery,
+	parseDiscoveryQueryResponse,
+} from '../../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
+import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {
 	handleFedArchiveMonthWant,
 	noteFedArchiveMonthResponse,
 } from '../archiveMonthPull.mjs'
 import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archiveMonthWire.mjs'
+import { parseFedBootstrapRequest, parseFedBootstrapResponse } from '../bootstrap/wire.mjs'
 import {
 	applyFedBootstrapResponse,
 	handleFedBootstrapRequest,
 } from '../bootstrapRelay.mjs'
-import { parseFedBootstrapRequest, parseFedBootstrapResponse } from '../bootstrap/wire.mjs'
 import {
 	handleDiscoveryQuery,
 	ingestDiscoveryAnnounce,
 } from '../discoveryRelay.mjs'
-import {
-	parseDiscoveryAnnounce,
-	parseDiscoveryQuery,
-	parseDiscoveryQueryResponse,
-} from '../../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
 import { handleJoinSnapshotRequest } from '../joinSnapshot.mjs'
 import { bindFedSender } from '../outbound.mjs'
 import { noteJoinSnapshotResponse } from '../pull/joinSnapshotPick.mjs'

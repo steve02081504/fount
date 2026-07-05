@@ -1,7 +1,6 @@
 import { Buffer } from 'node:buffer'
 
 import { pubKeyHash, sha256TextHex } from './crypto.mjs'
-import { isHex64, normalizeHex64 } from './hexIds.mjs'
 import {
 	AGENT_SUBJECT_PREFIX,
 	encodeEntityHash,
@@ -11,7 +10,11 @@ import {
 	isEntityHash128,
 	parseEntityHash,
 } from './entity_id_parse.mjs'
+import { isHex64, normalizeHex64 } from './hexIds.mjs'
 
+/**
+ *
+ */
 export {
 	AGENT_SUBJECT_PREFIX,
 	encodeEntityHash,

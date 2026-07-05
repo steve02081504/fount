@@ -49,14 +49,16 @@ export function registerUserRoomNodeScopeHook(hook) {
 }
 
 /**
- * @returns {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }}
+ * 创建 node scope 的 on/send wire 表。
+ * @returns {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire 接口
  */
 function createNodeScopeWire() {
 	return {
 		/**
-		 *
-		 * @param name
-		 * @param handler
+		 * 注册 node scope action handler。
+		 * @param {string} name action 名称
+		 * @param {(payload: unknown, peerId: string) => void} handler 入站回调
+		 * @returns {void}
 		 */
 		on(name, handler) {
 			const key = String(name)
@@ -64,10 +66,11 @@ function createNodeScopeWire() {
 			nodeActionHandlers.get(key).add(handler)
 		},
 		/**
-		 *
-		 * @param name
-		 * @param payload
-		 * @param peerId
+		 * 向指定 peer 发送 node scope action。
+		 * @param {string} name action 名称
+		 * @param {unknown} payload 载荷
+		 * @param {string | null} peerId 目标 peer id
+		 * @returns {void}
 		 */
 		send(name, payload, peerId) {
 			if (!peerId) return
@@ -77,14 +80,16 @@ function createNodeScopeWire() {
 }
 
 /**
- * @returns {Array<{ peerId: string, remoteNodeHash: string }>}
+ * 返回当前所有活跃链路的 roster。
+ * @returns {Array<{ peerId: string, remoteNodeHash: string }>} 在线 peer 列表
  */
 function activeLinkRoster() {
 	return listLinks().map(({ nodeHash }) => ({ peerId: nodeHash, remoteNodeHash: nodeHash }))
 }
 
 /**
- * @param {{ replicaUsername?: string }} ctx
+ * 初始化 node scope 订阅与 wire 派发（幂等）。
+ * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @returns {Promise<void>}
  */
 async function ensureNodeScopeRuntime(ctx) {
@@ -173,21 +178,24 @@ export async function ensureUserRoom(ctx = {}) {
 				roomSecret: creds.password,
 				room: null,
 				/**
-				 *
-				 * @param peerId
-				 * @param actionName
-				 * @param payload
+				 * 经 node scope 向 peer 发送 action。
+				 * @param {string} peerId 目标 peer id
+				 * @param {string} actionName action 名称
+				 * @param {unknown} payload 载荷
+				 * @returns {void}
 				 */
 				sendToPeer(peerId, actionName, payload) {
 					void sendToNodeLink(peerId, { scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
 				/**
-				 *
+				 * 返回当前活跃链路 roster。
+				 * @returns {Array<{ peerId: string, remoteNodeHash: string }>} 在线 peer 列表
 				 */
 				getRoster: () => activeLinkRoster(),
 				/**
-				 *
-				 * @param nodeHash
+				 * 按 nodeHash 查找 peer id。
+				 * @param {string} nodeHash 目标节点 64 hex
+				 * @returns {string | null} peer id；无链路时 null
 				 */
 				getPeerIdByNodeHash(nodeHash) {
 					return getLinkRegistry().getLink(nodeHash) ? String(nodeHash) : null

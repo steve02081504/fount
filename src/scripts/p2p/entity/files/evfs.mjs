@@ -11,7 +11,6 @@ import { assembleManifestPlaintext } from '../../files/transfer_key.mjs'
 import { readDagManifestPlaintext, resolveTransferKeyDeps } from '../../files/transfer_key_registry.mjs'
 import { getEntityStore } from '../../node/instance.mjs'
 
-import { findReplicaHostingEntityFiles } from './replica_host_cache.mjs'
 
 /**
  * @param {string} ownerEntityHash owner

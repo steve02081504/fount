@@ -8,6 +8,7 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdir, stat } from 'node:fs/promises'
 
+import { signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint_sign.mjs'
 import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
@@ -45,7 +46,6 @@ import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath 
 import { safeReadJson } from '../lib/utils.mjs'
 
 import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
-import { signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint_sign.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'
 import {
 	applyEvent,

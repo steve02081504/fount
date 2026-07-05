@@ -3,12 +3,16 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { DEFAULT_ICE_SERVERS } from '../../ice_servers.mjs'
 import { createLink } from '../../link/link.mjs'
+
 import { createSignalPair, identity } from './helpers.mjs'
 
 Deno.test({
 	name: 'link smoke completes handshake and identifies remote node',
 	sanitizeOps: false,
 	sanitizeResources: false,
+	/**
+	 *
+	 */
 	async fn() {
 		const alice = identity(1)
 		const bob = identity(2)
