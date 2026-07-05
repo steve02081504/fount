@@ -15,7 +15,6 @@
 		},
 		{
 			"name": "live",
-			"heavy": true,
 			"run": [
 				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
 				"./src/server/test/live/"
@@ -25,7 +24,8 @@
 				"src/server/**",
 				"src/scripts/test/node/**",
 				"src/scripts/WsAbleRouter.mjs",
-				"src/scripts/ms.mjs"
+				"src/scripts/ms.mjs",
+				"src/server/web_server/resources.mjs"
 			]
 		}
 	]

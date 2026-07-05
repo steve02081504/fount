@@ -55,7 +55,7 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
  * @returns {Promise<boolean>} 是否为可信作者
  */
 export async function isTrusted(pubKeyHash) {
-	const response = await fetch('/api/user/trusted-authors', { credentials: 'include' })
+	const response = await fetch('/api/parts/shells:chat/trusted-authors', { credentials: 'include' })
 	if (!response.ok) return false
 	const data = await response.json()
 	return (data.hashes || []).includes((pubKeyHash || '').toLowerCase())

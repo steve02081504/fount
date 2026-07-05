@@ -4,7 +4,7 @@ import process from 'node:process'
 import * as Sentry from 'npm:@sentry/deno'
 import { VirtualConsole } from 'npm:@steve02081504/virtual-console'
 
-import { console, geti18n } from '../../scripts/i18n.mjs'
+import { console, geti18n } from '../../scripts/i18n/index.mjs'
 import { getLoadedPartList, getPartList, loadPart, getPartDetails } from '../parts_loader.mjs'
 import { restartor } from '../server.mjs'
 

@@ -4,7 +4,7 @@ import {
 } from '../../scripts/p2p/inbound_registry.mjs'
 import { isPartInvokeResponse, normalizePartpath } from '../../scripts/p2p/part_invoke.mjs'
 import { isPlainObject } from '../../scripts/p2p/wire_ingress.mjs'
-import { getAllUserNames } from '../auth.mjs'
+import { getAllUserNames } from '../auth/index.mjs'
 import { loadPart, hasPartMain } from '../parts_loader.mjs'
 
 /**

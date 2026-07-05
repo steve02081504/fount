@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { authenticate } from '../../../../../../server/auth.mjs'
+import { authenticate } from '../../../../../../server/auth/index.mjs'
 import { betterSendFile } from '../../../../../../server/web_server/resources.mjs'
 import { getReplicaFromReq } from '../chat/lib/replica.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../upload/fromRequest.mjs'

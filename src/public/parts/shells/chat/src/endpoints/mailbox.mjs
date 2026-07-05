@@ -1,5 +1,5 @@
 import { pubKeyHash } from '../../../../../../scripts/p2p/crypto.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getFederationSettings } from '../chat/federation/config.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 

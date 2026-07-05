@@ -1,74 +1,45 @@
 /**
- * fount test 聚合报告：落盘 noteworthy 输出并生成 report.md + report.json。
+ * 单次运行报告：data/test/report.md + report.json
  */
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
-import { join, relative } from 'node:path'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
-import { geti18n } from '../../i18n.mjs'
-import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
-import {
-	reportDir,
-	reportFailuresLogDir,
-	reportWarningsLogDir,
-	TEST_DATA_REL,
-} from '../core/paths.mjs'
+import { geti18n } from '../../i18n/bare.mjs'
+import { detectNoiseHits } from '../core/output_filter.mjs'
+import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL } from '../core/paths.mjs'
+import { suiteKey } from '../core/state.mjs'
+
+/**
+ * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
+ */
 
 /**
  * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
+ * @typedef {import('../core/state.mjs').SuiteStateEntry} SuiteStateEntry
  */
 
 /**
- * @typedef {object} SuiteRunRecord
- * @property {SuiteDef} suite
- * @property {boolean} passed
- * @property {string[]} failedFiles
- * @property {string} output
- * @property {number} durationMs
- * @property {boolean} [terminated]
- * @property {string} [terminateReason]
- */
-
-/**
- * @typedef {object} PendingSuiteEntry
+ * @typedef {object} ReportSlot
  * @property {string} manifestId
  * @property {string} name
- * @property {true} pending
- */
-
-/**
- * @typedef {object} ReportSuiteEntry
- * @property {string} manifestId
- * @property {string} name
- * @property {boolean} passed
- * @property {number} durationMs
- * @property {boolean} noisy
- * @property {string[]} noiseHits
- * @property {string[]} failedFiles
- * @property {string | null} logPath 相对 report 目录（如 ./logs/warnings/...）
+ * @property {'pending' | 'done'} state
+ * @property {SuiteStateEntry['status']} [status]
+ * @property {number | null} [durationMs]
+ * @property {string[]} [failedFiles]
+ * @property {string[]} [noiseHits]
+ * @property {string | null} [logPath]
+ * @property {string[]} [blockedBy]
  * @property {boolean} [terminated]
- * @property {string} [terminateReason]
+ * @property {string | null} [terminateReason]
+ * @property {ContinueReason} [continueReason]
  */
 
-/** @typedef {PendingSuiteEntry | ReportSuiteEntry} ReportSuiteSlot */
-
 /**
- * 将 manifestId/suite 名转为安全日志文件名。
- * @param {string} manifestId manifest id
- * @param {string} suiteName suite 名
- * @returns {string} 文件名（含 .log）
- */
-function logFileName(manifestId, suiteName) {
-	const safeManifest = manifestId.replace(/[/\\]/g, '_')
-	const safeSuite = suiteName.replace(/[/:\\]/g, '_')
-	return `${safeSuite}.log`
-}
-
-/**
- * 格式化毫秒为可读时长。
  * @param {number} ms 毫秒
- * @returns {string} 如 "1m 23s"
+ * @returns {string} 可读时长
  */
 function formatDuration(ms) {
+	if (ms == null) return '—'
 	if (ms < 1000) return geti18n('fountConsole.test.report.durationMs', { ms })
 	const sec = Math.round(ms / 1000)
 	if (sec < 60) return geti18n('fountConsole.test.report.durationSec', { sec })
@@ -80,187 +51,148 @@ function formatDuration(ms) {
 }
 
 /**
- * @param {ReportSuiteSlot} entry suite 条目
- * @returns {entry is ReportSuiteEntry} 是否已完成
+ * 单次运行报告写入器。
  */
-function isCompletedEntry(entry) {
-	return !('pending' in entry)
-}
-
-/**
- * 将单次 suite 运行结果落盘并生成条目。
- * @param {string} repoRoot 仓库根
- * @param {string} root report 根目录
- * @param {SuiteRunRecord} record 运行记录
- * @returns {Promise<ReportSuiteEntry>} 报告条目
- */
-async function buildSuiteEntry(repoRoot, root, {
-	suite, passed, failedFiles, output, durationMs, terminated, terminateReason,
-}) {
-	const noiseHits = detectNoiseHits(output)
-	const noisy = noiseHits.length > 0
-	const noteworthy = !passed || noisy
-	/** @type {string | null} */
-	let logPath = null
-
-	if (noteworthy && output) {
-		const subdir = passed ? reportWarningsLogDir(repoRoot) : reportFailuresLogDir(repoRoot)
-		const manifestDir = join(subdir, suite.manifestId.replace(/[/\\]/g, '_'))
-		await mkdir(manifestDir, { recursive: true })
-		const logAbs = join(manifestDir, logFileName(suite.manifestId, suite.name))
-		await writeFile(logAbs, stripNoiseMarkers(output), 'utf8')
-		logPath = `./${relative(root, logAbs).replace(/\\/g, '/')}`
-	}
-
-	return {
-		manifestId: suite.manifestId,
-		name: suite.name,
-		passed,
-		durationMs,
-		noisy,
-		noiseHits,
-		failedFiles,
-		logPath,
-		terminated,
-		terminateReason,
-	}
-}
-
-/**
- * 根据当前条目列表计算汇总。
- * @param {object} options 选项
- * @param {string} options.runId 运行 id
- * @param {string | null | undefined} options.command 命令
- * @param {number | null} options.exitCode 退出码（运行中为 null）
- * @param {ReportSuiteSlot[]} options.entries 全部槽位（含 pending）
- * @returns {object} summary
- */
-function buildSummary({ runId, command, exitCode, entries }) {
-	const completed = entries.filter(isCompletedEntry)
-	const passedCount = completed.filter(e => e.passed).length
-	const failedCount = completed.filter(e => !e.passed).length
-	const noiseCount = completed.filter(e => e.passed && e.noisy).length
-
-	return {
-		runId,
-		command: command ?? null,
-		exitCode,
-		complete: exitCode !== null,
-		total: entries.length,
-		completed: completed.length,
-		passed: passedCount,
-		failed: failedCount,
-		noisyPassed: noiseCount,
-		durationMs: completed.reduce((sum, e) => sum + e.durationMs, 0),
-	}
-}
-
-/**
- * 增量测试报告写入器：每完成一个 suite 即刷新 report.md + report.json。
- */
-export class TestReportWriter {
+export class RunReportWriter {
 	/** @type {Promise<void>} */
 	#writeChain = Promise.resolve()
 
 	/**
 	 * @param {object} options 选项
 	 * @param {string} options.repoRoot 仓库根
-	 * @param {import('../core/manifest.mjs').SuiteDef[]} options.suites 选定 suite 有序列表
-	 * @param {string} options.runId 本次运行 id
-	 * @param {string} [options.command] 命令行摘要
-	 * @param {ReportSuiteSlot[]} [options.entries] 续跑时载入已有条目
+	 * @param {SuiteDef[]} options.suites 本次运行 suite 有序列表
+	 * @param {string} options.runId 运行 id
+	 * @param {string} options.command 命令摘要
+	 * @param {string} options.commitHash HEAD
+	 * @param {string | null} options.uncommittedHash 未提交 digest
+	 * @param {ReportSlot[]} [options.slots] 续跑时载入
+	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 续跑原因
 	 */
-	constructor({ repoRoot, suites, runId, command, entries }) {
+	constructor({ repoRoot, suites, runId, command, commitHash, uncommittedHash, slots, continueReasons }) {
 		this.repoRoot = repoRoot
-		this.root = reportDir(repoRoot)
 		this.runId = runId
 		this.command = command
-		/** @type {ReportSuiteSlot[]} */
-		this.entries = entries ?? suites.map(suite => ({
-			manifestId: suite.manifestId,
-			name: suite.name,
-			pending: true,
-		}))
+		this.commitHash = commitHash
+		this.uncommittedHash = uncommittedHash
+		/** @type {ReportSlot[]} */
+		this.slots = slots ?? suites.map(suite => {
+			const key = suiteKey(suite.manifestId, suite.name)
+			return {
+				manifestId: suite.manifestId,
+				name: suite.name,
+				state: 'pending',
+				continueReason: continueReasons?.get(key),
+			}
+		})
+		this.startedAt = new Date().toISOString()
+		this.finishedAt = null
+		this.exitCode = null
 	}
 
 	/**
-	 * 从 report.json 恢复未完成报告。
 	 * @param {string} repoRoot 仓库根
-	 * @returns {Promise<{ writer: TestReportWriter, pendingIndices: { index: number, manifestId: string, name: string }[] } | null>} 写入器与 pending 下标；无报告时为 null
+	 * @returns {Promise<RunReportWriter | null>} 未完成报告写入器；无则 null
 	 */
 	static async resume(repoRoot) {
-		const root = reportDir(repoRoot)
-		const jsonPath = join(root, 'report.json')
 		let raw
 		try {
-			raw = await readFile(jsonPath, 'utf8')
+			raw = await readFile(reportJsonPath(repoRoot), 'utf8')
 		}
 		catch (error) {
 			if (error?.code === 'ENOENT') return null
 			throw error
 		}
-
-		const { summary, suites } = JSON.parse(raw)
-		if (!Array.isArray(suites)) return null
-
-		const writer = new TestReportWriter({
+		const data = JSON.parse(raw)
+		if (!Array.isArray(data.slots) || data.finishedAt) return null
+		return new RunReportWriter({
 			repoRoot,
 			suites: [],
-			runId: summary.runId,
-			command: summary.command,
-			entries: suites,
+			runId: data.runId,
+			command: data.command,
+			commitHash: data.commitHash,
+			uncommittedHash: data.uncommittedHash ?? null,
+			slots: data.slots,
 		})
-
-		/** @type {{ index: number, manifestId: string, name: string }[]} */
-		const pendingIndices = []
-		for (let index = 0; index < suites.length; index++) {
-			const entry = suites[index]
-			if ('pending' in entry)
-				pendingIndices.push({ index, manifestId: entry.manifestId, name: entry.name })
-		}
-
-		return { writer, pendingIndices }
 	}
 
 	/**
-	 * 初始化报告目录并写入 pending 状态。
-	 * @returns {Promise<string>} report.md 绝对路径
+	 * @returns {Promise<string>} report.md 路径
 	 */
 	async init() {
-		await rm(this.root, { recursive: true, force: true })
-		await mkdir(join(this.root, 'logs', 'failures'), { recursive: true })
-		await mkdir(join(this.root, 'logs', 'warnings'), { recursive: true })
-		return this.#flush(null)
+		await mkdir(join(this.repoRoot, TEST_DATA_REL), { recursive: true })
+		return this.#flush()
 	}
 
 	/**
-	 * 记录单个 suite 结果并刷新报告。
-	 * @param {number} index suite 在选定列表中的下标
-	 * @param {SuiteRunRecord} record 运行记录
+	 * @param {number} index 槽位下标
+	 * @param {SuiteStateEntry} entry 现状条目
 	 * @returns {Promise<void>}
 	 */
-	recordResult(index, record) {
+	recordResult(index, entry) {
 		return this.#enqueue(async () => {
-			this.entries[index] = await buildSuiteEntry(this.repoRoot, this.root, record)
-			await this.#writeFiles(null)
+			const slot = this.slots[index]
+			this.slots[index] = {
+				...slot,
+				state: 'done',
+				status: entry.status,
+				durationMs: entry.durationMs,
+				failedFiles: entry.failedFiles,
+				noiseHits: entry.noiseHits,
+				logPath: entry.logPath,
+				blockedBy: entry.blockedBy,
+				terminated: entry.terminated,
+				terminateReason: entry.terminateReason,
+			}
+			await this.#writeFiles()
 		})
 	}
 
 	/**
-	 * 写入最终退出码。
-	 * @param {number} exitCode 进程退出码
-	 * @returns {Promise<string>} report.md 绝对路径
+	 * @param {number} exitCode 退出码
+	 * @returns {Promise<string>} report.md 路径
 	 */
 	finalize(exitCode) {
 		return this.#enqueue(async () => {
-			await this.#writeFiles(exitCode)
-			return join(this.root, 'report.md')
+			this.exitCode = exitCode
+			this.finishedAt = new Date().toISOString()
+			await this.#writeFiles()
+			return reportMarkdownPath(this.repoRoot)
 		})
 	}
 
 	/**
-	 * @param {() => Promise<string>} fn 串行化执行的写盘任务
-	 * @returns {Promise<string>} fn 的返回值
+	 * @returns {{ index: number, manifestId: string, name: string }[]} pending 槽位
+	 */
+	get pendingSlots() {
+		/** @type {{ index: number, manifestId: string, name: string }[]} */
+		const pending = []
+		for (let index = 0; index < this.slots.length; index++) {
+			const slot = this.slots[index]
+			if (slot.state === 'pending')
+				pending.push({ index, manifestId: slot.manifestId, name: slot.name })
+		}
+		return pending
+	}
+
+	/**
+	 * @param {Map<string, ContinueReason>} continueReasons suite 键 -> 续跑原因
+	 * @returns {Promise<void>}
+	 */
+	stampContinueReasons(continueReasons) {
+		return this.#enqueue(async () => {
+			for (let index = 0; index < this.slots.length; index++) {
+				const slot = this.slots[index]
+				const reason = continueReasons.get(suiteKey(slot.manifestId, slot.name))
+				if (reason)
+					this.slots[index] = { ...slot, continueReason: reason }
+			}
+			await this.#writeFiles()
+		})
+	}
+
+	/**
+	 * @param {() => Promise<void>} fn 任务
+	 * @returns {Promise<void>}
 	 */
 	#enqueue(fn) {
 		const next = this.#writeChain.then(fn)
@@ -269,114 +201,50 @@ export class TestReportWriter {
 	}
 
 	/**
-	 * @param {number | null} exitCode 退出码（null 表示仍在运行）
-	 * @returns {Promise<string>} report.md 绝对路径
+	 * @returns {Promise<string>} report.md 路径
 	 */
-	async #flush(exitCode) {
-		await this.#writeFiles(exitCode)
-		return join(this.root, 'report.md')
+	async #flush() {
+		await this.#writeFiles()
+		return reportMarkdownPath(this.repoRoot)
 	}
 
 	/**
-	 * @param {number | null} exitCode 退出码（null 表示仍在运行）
 	 * @returns {Promise<void>}
 	 */
-	async #writeFiles(exitCode) {
-		const summary = buildSummary({
+	async #writeFiles() {
+		const completed = this.slots.filter(slot => slot.state === 'done')
+		const payload = {
 			runId: this.runId,
 			command: this.command,
-			exitCode,
-			entries: this.entries,
-		})
-		const reportJson = { summary, suites: this.entries }
-		const jsonPath = join(this.root, 'report.json')
-		await writeFile(jsonPath, `${JSON.stringify(reportJson, null, '\t')}\n`, 'utf8')
-		const mdPath = join(this.root, 'report.md')
-		await writeFile(mdPath, buildMarkdown(summary, this.entries), 'utf8')
+			commitHash: this.commitHash,
+			uncommittedHash: this.uncommittedHash,
+			startedAt: this.startedAt,
+			finishedAt: this.finishedAt,
+			exitCode: this.exitCode,
+			slots: this.slots,
+		}
+		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
+		await writeFile(reportMarkdownPath(this.repoRoot), buildRunMarkdown(payload, completed), 'utf8')
 	}
 }
 
 /**
- * 生成并写入聚合报告（先清空 data/test/report/）。
- * @param {object} options 选项
- * @param {string} options.repoRoot 仓库根
- * @param {SuiteRunRecord[]} options.results 全部 suite 结果（有序）
- * @param {string} options.runId 本次运行 id
- * @param {string} [options.command] 命令行摘要
- * @param {number} options.exitCode 进程退出码
- * @returns {Promise<string>} report.md 绝对路径
- */
-export async function writeTestReport({
-	repoRoot,
-	results,
-	runId,
-	command,
-	exitCode,
-}) {
-	const writer = new TestReportWriter({
-		repoRoot,
-		suites: results.map(({ suite }) => suite),
-		runId,
-		command,
-	})
-	await writer.init()
-	for (let index = 0; index < results.length; index++)
-		await writer.recordResult(index, results[index])
-	return writer.finalize(exitCode)
-}
-
-/**
- * 根据套件条目构建单条可复制的重跑命令（分组冒号语法 + --gen-report）。
- * @param {ReportSuiteEntry[]} entries 待重跑条目
- * @param {string | null | undefined} [originalCommand] 原始命令（用于保留 -j）
- * @returns {string | null} fount test 命令
- */
-function buildReplayCommand(entries, originalCommand) {
-	if (!entries.length) return null
-
-	/** @type {Map<string, string[]>} */
-	const byManifest = new Map()
-	for (const e of entries) {
-		const names = byManifest.get(e.manifestId) ?? []
-		names.push(e.name)
-		byManifest.set(e.manifestId, names)
-	}
-
-	let jobsSuffix = ''
-	if (originalCommand) {
-		const match = originalCommand.match(/\s-j\s+(\d+)/)
-		if (match) jobsSuffix = ` -j ${match[1]}`
-	}
-
-	const groupTokens = [...byManifest.entries()]
-		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([manifestId, suiteNames]) => `${manifestId}:${suiteNames.join(',')}`)
-
-	return `fount test --gen-report${jobsSuffix} ${groupTokens.join(' ')}`
-}
-
-/**
- * 生成 report.md 正文。
  * @param {object} summary 汇总
- * @param {string} summary.runId 运行 id
- * @param {string | null} summary.command 命令
- * @param {number | null} summary.exitCode 退出码（运行中为 null）
- * @param {boolean} summary.complete 是否已全部完成
- * @param {number} summary.total 总数
- * @param {number} summary.completed 已完成数
- * @param {number} summary.passed 通过数
- * @param {number} summary.failed 失败数
- * @param {number} summary.noisyPassed 通过但有噪声数
- * @param {number} summary.durationMs 总耗时
- * @param {ReportSuiteSlot[]} entries suite 条目
- * @returns {string} markdown
+ * @param {ReportSlot[]} completed 已完成槽位
+ * @returns {string} markdown 正文
  */
-function buildMarkdown(summary, entries) {
-	const exitLabel = summary.complete
-		? (summary.exitCode === 0
+function buildRunMarkdown(summary, completed) {
+	const passed = completed.filter(s => s.status === 'passed').length
+	const failed = completed.filter(s => s.status === 'failed').length
+	const noisy = completed.filter(s => s.status === 'noisy').length
+	const blocked = completed.filter(s => s.status === 'blocked').length
+	const durationMs = completed.reduce((sum, s) => sum + (s.durationMs ?? 0), 0)
+	const exitLabel = summary.finishedAt == null
+		? geti18n('fountConsole.test.report.exitInProgress')
+		: (summary.exitCode === 0
 			? geti18n('fountConsole.test.report.exitPassed')
 			: geti18n('fountConsole.test.report.exitFailed')) + ` (${summary.exitCode})`
-		: geti18n('fountConsole.test.report.exitInProgress')
+
 	const lines = [
 		`# ${geti18n('fountConsole.test.report.title')}`,
 		'',
@@ -385,90 +253,194 @@ function buildMarkdown(summary, entries) {
 		`| ${geti18n('fountConsole.test.report.fieldRunId')} | \`${summary.runId}\` |`,
 		`| ${geti18n('fountConsole.test.report.fieldCommand')} | \`${summary.command ?? geti18n('fountConsole.test.report.commandDefault')}\` |`,
 		`| ${geti18n('fountConsole.test.report.fieldExit')} | ${exitLabel} |`,
-		`| ${geti18n('fountConsole.test.report.fieldProgress')} | ${geti18n('fountConsole.test.report.progressFormat', { completed: summary.completed, total: summary.total })} |`,
-		`| ${geti18n('fountConsole.test.report.fieldSuites')} | ${geti18n('fountConsole.test.report.suitesFormat', { passed: summary.passed, completed: summary.completed })} |`,
-		`| ${geti18n('fountConsole.test.report.fieldFailed')} | ${summary.failed} |`,
-		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${summary.noisyPassed} |`,
-		`| ${geti18n('fountConsole.test.report.fieldDuration')} | ${formatDuration(summary.durationMs)} |`,
+		`| ${geti18n('fountConsole.test.report.fieldProgress')} | ${geti18n('fountConsole.test.report.progressFormat', { completed: completed.length, total: summary.slots.length })} |`,
+		`| ${geti18n('fountConsole.test.report.fieldSuites')} | ${geti18n('fountConsole.test.report.suitesFormat', { passed, completed: completed.length })} |`,
+		`| ${geti18n('fountConsole.test.report.fieldFailed')} | ${failed} |`,
+		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${noisy} |`,
+		`| ${geti18n('fountConsole.test.state.columnBlocked')} | ${blocked} |`,
+		`| ${geti18n('fountConsole.test.report.fieldDuration')} | ${formatDuration(durationMs)} |`,
 		'',
-		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report/` }),
+		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
 		'',
 	]
 
-	const completed = entries.filter(isCompletedEntry)
-	const failed = completed.filter(e => !e.passed)
-	if (failed.length) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionFailed')}`, '')
-		for (const e of failed) {
-			lines.push(`### ${e.manifestId}/${e.name}`, '')
-			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(e.durationMs)}`)
-			if (e.terminateReason)
-				lines.push(`- ${geti18n('fountConsole.test.report.labelTerminateReason')}: ${e.terminateReason}`)
-			if (e.logPath) lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${e.logPath}](${e.logPath})`)
-			if (e.noiseHits.length) lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${e.noiseHits.join(', ')}`)
-			if (e.failedFiles.length) {
-				lines.push(`- ${geti18n('fountConsole.test.report.labelFailedFiles')}:`)
-				for (const f of e.failedFiles) lines.push(`  - \`${f}\``)
-			}
-			lines.push('')
-		}
-	}
+	appendContinueReasons(lines, summary)
 
-	const noisyPassed = completed.filter(e => e.passed && e.noisy)
-	if (noisyPassed.length) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionNoisyPassed')}`, '')
-		for (const e of noisyPassed) {
-			lines.push(`### ${e.manifestId}/${e.name}`, '')
-			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(e.durationMs)}`)
-			lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${e.noiseHits.join(', ')}`)
-			if (e.logPath) lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${e.logPath}](${e.logPath})`)
-			lines.push('')
-		}
-	}
+	appendSection(lines, geti18n('fountConsole.test.report.sectionFailed'), completed.filter(s => s.status === 'failed'))
+	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
+	appendSection(lines, geti18n('fountConsole.test.report.sectionNoisyPassed'), completed.filter(s => s.status === 'noisy'))
+	appendSilentPassed(lines, completed.filter(s => s.status === 'passed'))
 
-	const allPassed = completed.filter(e => e.passed && !e.noisy)
-	if (allPassed.length) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionSilentPassed')}`, '')
-		lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} | ${geti18n('fountConsole.test.report.columnDuration')} |`)
-		lines.push('| --- | --- |')
-		for (const e of allPassed)
-			lines.push(`| ${e.manifestId}/${e.name} | ${formatDuration(e.durationMs)} |`)
-		lines.push('')
-	}
-
-	const pending = entries.filter(e => 'pending' in e)
+	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionPending')}`, '')
-		lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} |`)
-		lines.push('| --- |')
-		for (const e of pending)
-			lines.push(`| ${e.manifestId}/${e.name} |`)
+		for (const slot of pending)
+			lines.push(`- ${slot.manifestId}/${slot.name}`)
 		lines.push('')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test --continue', '```', '')
+	}
 
-		if (!summary.complete) {
-			lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '')
-			lines.push('```shell')
-			lines.push('fount test --continue')
-			lines.push('```', '')
+	return lines.join('\n')
+}
+
+/**
+ * @param {string | null | undefined} hash digest
+ * @returns {string} 短 hash 展示
+ */
+function shortHash(hash) {
+	if (!hash) return '—'
+	return hash.length > 12 ? `${hash.slice(0, 8)}…` : hash
+}
+
+/**
+ * @param {ContinueReason} reason 续跑原因
+ * @returns {string} 可读原因标签
+ */
+function formatContinueReasonLabel(reason) {
+	switch (reason.kind) {
+		case 'pending_from_previous_report':
+			return geti18n('fountConsole.test.report.reasonPending')
+		case 'imperfect_failed':
+			return geti18n('fountConsole.test.report.reasonImperfectFailed')
+		case 'imperfect_noisy':
+			return geti18n('fountConsole.test.report.reasonImperfectNoisy')
+		case 'imperfect_blocked':
+			return geti18n('fountConsole.test.report.reasonImperfectBlocked')
+		case 'missing_state_record':
+			return geti18n('fountConsole.test.report.reasonMissingRecord')
+		case 'outdated_trigger_hit':
+			return geti18n('fountConsole.test.report.reasonOutdatedTrigger')
+		case 'dependency_required':
+			return geti18n('fountConsole.test.report.reasonDependencyRequired', {
+				requiredBy: reason.requiredBy ?? '—',
+			})
+	}
+	throw new Error(`unknown continue reason kind: ${reason.kind}`)
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ContinueReason} reason 续跑原因
+ */
+function appendContinueReasonEvidence(lines, reason) {
+	if (reason.fromCommit != null || reason.toCommit)
+		lines.push(`- ${geti18n('fountConsole.test.report.labelCommitRange')}: \`${shortHash(reason.fromCommit)}\` → \`${shortHash(reason.toCommit)}\``)
+	if (reason.fromUncommittedHash != null || reason.toUncommittedHash != null) {
+		const from = shortHash(reason.fromUncommittedHash)
+		const to = shortHash(reason.toUncommittedHash)
+		if (from !== to)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelUncommittedHashRange')}: \`${from}\` → \`${to}\``)
+	}
+	if (reason.blockedBy?.length)
+		lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${reason.blockedBy.join(', ')}`)
+	if (reason.matchedTriggers?.length) {
+		lines.push(`- ${geti18n('fountConsole.test.report.labelMatchedTriggers')}:`)
+		for (const trigger of reason.matchedTriggers) lines.push(`  - \`${trigger}\``)
+	}
+	if (reason.matchedPaths?.length) {
+		lines.push(`- ${geti18n('fountConsole.test.report.labelMatchedPaths')}:`)
+		for (const path of reason.matchedPaths) lines.push(`  - \`${path}\``)
+	}
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {object} summary 汇总
+ */
+function appendContinueReasons(lines, summary) {
+	const slots = summary.slots.filter(slot => slot.continueReason)
+	if (!slots.length) return
+
+	lines.push(`## ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '')
+	for (const slot of slots) {
+		lines.push(`### ${slot.manifestId}/${slot.name}`, '')
+		lines.push(`- ${geti18n('fountConsole.test.report.labelContinueReason')}: ${formatContinueReasonLabel(slot.continueReason)}`)
+		appendContinueReasonEvidence(lines, slot.continueReason)
+		lines.push('')
+	}
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {string} title 标题
+ * @param {ReportSlot[]} entries 条目
+ */
+function appendSection(lines, title, entries) {
+	if (!entries.length) return
+	lines.push(`## ${title}`, '')
+	for (const entry of entries) {
+		lines.push(`### ${entry.manifestId}/${entry.name}`, '')
+		lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
+		if (entry.blockedBy?.length)
+			lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${entry.blockedBy.join(', ')}`)
+		if (entry.terminateReason)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelTerminateReason')}: ${entry.terminateReason}`)
+		if (entry.logPath)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${entry.logPath}](${entry.logPath})`)
+		if (entry.noiseHits?.length)
+			lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${entry.noiseHits.join(', ')}`)
+		if (entry.failedFiles?.length) {
+			lines.push(`- ${geti18n('fountConsole.test.report.labelFailedFiles')}:`)
+			for (const file of entry.failedFiles) lines.push(`  - \`${file}\``)
 		}
+		lines.push('')
 	}
+}
 
-	const replayCommand = buildReplayCommand(failed, summary.command)
-	if (replayCommand) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionReplay')}`, '')
-		lines.push('```shell')
-		lines.push(replayCommand)
-		lines.push('```', '')
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ReportSlot[]} entries 条目
+ */
+function appendSilentPassed(lines, entries) {
+	if (!entries.length) return
+	lines.push(`## ${geti18n('fountConsole.test.report.sectionSilentPassed')}`, '')
+	lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} | ${geti18n('fountConsole.test.report.columnDuration')} |`)
+	lines.push('| --- | --- |')
+	for (const entry of entries)
+		lines.push(`| ${entry.manifestId}/${entry.name} | ${formatDuration(entry.durationMs)} |`)
+	lines.push('')
+}
+
+/**
+ * @param {ReportSlot[]} slots 槽位
+ * @returns {number} 进程退出码
+ */
+export function exitCodeFromSlots(slots) {
+	const completed = slots.filter(slot => slot.state === 'done')
+	return completed.some(slot => slot.status !== 'passed') ? 1 : 0
+}
+
+/**
+ * @param {SuiteDef[]} suites suite 列表
+ * @returns {string | null} 可复制重跑命令
+ */
+export function buildReplayCommand(suites) {
+	if (!suites.length) return null
+	/** @type {Map<string, string[]>} */
+	const byManifest = new Map()
+	for (const suite of suites) {
+		const names = byManifest.get(suite.manifestId) ?? []
+		names.push(suite.name)
+		byManifest.set(suite.manifestId, names)
 	}
+	const groupTokens = [...byManifest.entries()]
+		.sort(([a], [b]) => a.localeCompare(b))
+		.map(([manifestId, suiteNames]) => `${manifestId}:${suiteNames.join(',')}`)
+	return `fount test ${groupTokens.join(' ')}`
+}
 
-	const imperfect = completed.filter(e => !e.passed || e.noisy)
-	const imperfectReplayCommand = buildReplayCommand(imperfect, summary.command)
-	if (imperfectReplayCommand && imperfect.length !== failed.length) {
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionReplayImperfect')}`, '')
-		lines.push('```shell')
-		lines.push(imperfectReplayCommand)
-		lines.push('```', '')
-	}
+/**
+ * @param {string} output 输出
+ * @returns {string[]} 噪声命中列表
+ */
+export function detectReportNoiseHits(output) {
+	return detectNoiseHits(output)
+}
 
-	return `${lines.join('\n')}`
+/**
+ * @param {SuiteDef} suite suite
+ * @returns {string} 标签
+ */
+export function labelForSuite(suite) {
+	return suiteKey(suite.manifestId, suite.name)
 }

@@ -3,7 +3,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { betterSendFile } from '../../../../../../../server/web_server/resources.mjs'
 import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../../chat/federation/room.mjs'

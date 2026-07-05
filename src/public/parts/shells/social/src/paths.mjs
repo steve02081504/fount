@@ -1,5 +1,5 @@
 import { timelineGroupId } from '../../../../../scripts/p2p/social_namespace.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 /**
  * 返回指定 entity 时间线目录路径。

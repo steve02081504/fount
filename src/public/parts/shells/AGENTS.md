@@ -22,10 +22,10 @@ alwaysApply: false
 
 ## Implementation
 
-1. Backend: `main.mjs` + `src/endpoints.mjs`. Use `authenticate` middleware from `@src/server/auth.mjs`.
+1. Backend: `main.mjs` + `src/endpoints.mjs`. Use `authenticate` middleware from `@src/server/auth/index.mjs`.
 2. Frontend: `public/index.html` — include `/preload.mjs`, `/base.css`, `/base.mjs`.
 3. Use shared scripts from `@src/public/pages/scripts/`.
 4. Add `public/llms.txt` for AI discovery.
 
 **Example**: `src/public/parts/shells/shellassist/`.
-**Chat Hub** (federation UI): [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md) — local trust domain vs external ingress. Node-level kick/ban: `denylist.json` (`scripts/p2p/denylist.mjs`); Social personal block/hide: `personal_block.mjs`/`personal_hide.mjs`.
+**Chat Hub**: [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md).

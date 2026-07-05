@@ -1,4 +1,4 @@
-import { console } from '../../scripts/i18n.mjs'
+import { console } from '../../scripts/i18n/index.mjs'
 import { currentGitCommit } from '../autoupdate.mjs'
 import { events } from '../events.mjs'
 

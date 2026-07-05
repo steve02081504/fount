@@ -6,11 +6,11 @@
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/runUri.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'

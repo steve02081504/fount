@@ -3,7 +3,7 @@ import express from 'npm:express'
 
 import { sentrytunnel } from '../../scripts/sentrytunnel.mjs'
 import { WsAbleApp, WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
-import { auth_request } from '../auth.mjs'
+import { auth_request } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 
 import { registerEndpoints } from './endpoints.mjs'

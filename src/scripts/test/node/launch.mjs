@@ -1,6 +1,7 @@
 /**
  * 测试用 fount 节点启动工具（编程 API + CLI）。
  */
+/* global Deno */
 import 'fount/scripts/test/env.mjs'
 
 import { spawn } from 'node:child_process'
@@ -12,7 +13,7 @@ import process from 'node:process'
 import { createInterface } from 'node:readline'
 import { fileURLToPath } from 'node:url'
 
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
 import { resolveListenBind } from '../../net_listen.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
@@ -20,8 +21,10 @@ import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
+import { appendBoundedTail } from '../runner/run_command.mjs'
+import { scheduleHeapSnapshotAnalysis } from '../schedule_heap_snapshot_analysis.mjs'
 
-import { defaultTestStarts } from './boot.mjs'
+import { defaultTestStarts } from './starts.mjs'
 
 const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
@@ -96,6 +99,7 @@ async function collectNodeHeapSnapshots(pid) {
 			await rename(src, dest)
 			saved.push(dest)
 			console.warnI18n('fountConsole.test.heapSnapshotSaved', { path: dest })
+			scheduleHeapSnapshotAnalysis(dest)
 		}
 		catch { /* snapshot may have been removed already */ }
 	}
@@ -403,6 +407,7 @@ async function injectFixtures(dataPath, username, copies) {
  * @param {boolean} [options.needsOutput] 透传给测试 worker 内部 `init()` 的 `needs_output`
  * @param {string[]} [options.loadParts] 启动后要 load 的 partpath
  * @param {boolean} [options.p2p=false] `starts.P2P` 简写；`starts` 已给出时忽略
+ * @param {boolean} [options.minP2pNode=false] 无 WebRTC 栈时初始化离线 P2P 身份
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
  * @param {boolean} [options.captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
@@ -447,11 +452,14 @@ export async function launchNode(options = {}) {
 		workerArgs.push('--load-part', part)
 	if (options.bootstrap)
 		workerArgs.push('--bootstrap', resolve(options.bootstrap))
+	if (options.minP2pNode)
+		workerArgs.push('--min-p2p-node')
 	if (p2pRelayUrl)
 		workerArgs.push('--p2p-relay-url', p2pRelayUrl)
 
 	await options.releasePort?.()
 
+	const denoBin = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
 	let captureEnabled = false
 	let startupOutput = ''
 	let capturedOutput = ''
@@ -461,16 +469,17 @@ export async function launchNode(options = {}) {
 	 */
 	const onOutput = chunk => {
 		const text = String(chunk)
-		if (captureEnabled) capturedOutput += text
-		else startupOutput += text
+		if (captureEnabled) capturedOutput = appendBoundedTail(capturedOutput, text)
+		else startupOutput = appendBoundedTail(startupOutput, text)
 	}
 
-	const child = spawn('deno', workerArgs, {
+	const child = spawn(denoBin, workerArgs, {
 		cwd: REPO_ROOT,
 		stdio: ['ignore', 'pipe', options.captureOutput ? 'pipe' : 'inherit'],
 		env: {
 			...process.env,
 			FOUNT_TEST: '1',
+			FOUNT_TEST_NODE_WORKER: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
 			FOUNT_TEST_NODE_HEAP_MB: String(resolveTestNodeHeapMb()),
 			FOUNT_TEST_HEAP_SNAPSHOT_COUNT: String(resolveHeapSnapshotCount()),

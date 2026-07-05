@@ -12,7 +12,7 @@ import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 import { computeConcurrency, readBudgetFromEnv, UNIT_MEM, concurrencyFromBudget } from '../core/concurrency.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {

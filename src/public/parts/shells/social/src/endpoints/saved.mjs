@@ -1,5 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import {
 	addSavedPost,
 	createSavedFolder,

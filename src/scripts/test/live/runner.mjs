@@ -6,9 +6,10 @@ import process from 'node:process'
 
 import { execFile } from 'npm:@steve02081504/exec'
 
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { launchNode, stopNode } from '../node/launch.mjs'
+import { appendBoundedTail } from '../runner/run_command.mjs'
 
 import { denoLiveRun } from './deno_run.mjs'
 
@@ -26,29 +27,34 @@ const FEDERATION_CLEANUP = join('src', 'scripts', 'test', 'live', 'federation', 
 async function runCommand(repoRoot, command, env, options = {}) {
 	const { stream = false } = options
 	const [executable, ...args] = command
+	let outputTail = ''
 	/** @type {import('npm:@steve02081504/exec').ExecOptions & object} */
 	const execOptions = {
 		cwd: repoRoot,
 		env: { ...process.env, ...env },
+		no_output_record: true,
+		/**
+		 * @param {string | Uint8Array} data stdout 片段
+		 * @returns {void}
+		 */
+		on_stdout: data => {
+			const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
+			outputTail = appendBoundedTail(outputTail, text)
+			if (stream) process.stdout.write(data)
+		},
+		/**
+		 * @param {string | Uint8Array} data stderr 片段
+		 * @returns {void}
+		 */
+		on_stderr: data => {
+			const text = typeof data === 'string' ? data : new TextDecoder().decode(data)
+			outputTail = appendBoundedTail(outputTail, text)
+			if (stream) process.stderr.write(data)
+		},
 	}
-	if (stream) 
-		Object.assign(execOptions, {
-			/**
-			 * 转发子进程标准输出。
-			 * @param {string | Uint8Array} data 标准输出片段
-			 * @returns {void}
-			 */
-			on_stdout: data => process.stdout.write(data),
-			/**
-			 * 转发子进程标准错误。
-			 * @param {string | Uint8Array} data 标准错误片段
-			 * @returns {void}
-			 */
-			on_stderr: data => process.stderr.write(data),
-		})
-	
-	const output = await execFile(executable, args, execOptions)
-	return { code: output.code, output: output.stdall }
+
+	const result = await execFile(executable, args, execOptions)
+	return { code: result.code ?? 1, output: outputTail }
 }
 
 /**

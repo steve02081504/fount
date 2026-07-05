@@ -7,7 +7,8 @@ import fs from 'node:fs'
 import os from 'node:os'
 import process from 'node:process'
 
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
+import { set_sentry_enabled } from '../scripts/sentry_state.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
 
@@ -27,7 +28,6 @@ import { enableAutoUpdate, disableAutoUpdate } from './autoupdate.mjs'
 import { __dirname, set_start } from './base.mjs'
 import { startIdleCheck, stopIdleCheck } from './idle.mjs'
 import { PauseAllJobs, ReStartJobs } from './jobs.mjs'
-import { set_sentry_enabled } from './sentry_state.mjs'
 import { init } from './server.mjs'
 import { startTimerHeartbeat, stopTimerHeartbeat } from './timers.mjs'
 

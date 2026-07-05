@@ -1,7 +1,7 @@
 import { access } from 'node:fs/promises'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
 import {
 	copyGroupChat,

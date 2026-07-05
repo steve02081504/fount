@@ -11,13 +11,13 @@ import {
 	respondAuthResult,
 	REFRESH_TOKEN_EXPIRY_DURATION,
 	verifyPassword,
-} from '../../../../../server/auth.mjs'
+} from '../../../../../server/auth/index.mjs'
 import {
 	listWebAuthnCredentials,
 	removeWebAuthnCredential,
 	webauthnRegistrationBegin,
 	webauthnRegistrationComplete,
-} from '../../../../../server/webauthn.mjs'
+} from '../../../../../server/auth/webauthn.mjs'
 
 import {
 	getAvailableEditorById,

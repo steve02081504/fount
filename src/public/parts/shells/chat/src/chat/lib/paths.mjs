@@ -7,7 +7,7 @@
  */
 import { join } from 'node:path'
 
-import { getUserDictionary } from '../../../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../../../server/auth/index.mjs'
 
 /**
  * 聊天 shell 根目录：`{userDict}/shells/chat`

@@ -3,11 +3,12 @@ import fs from 'node:fs'
 import cors from 'npm:cors'
 
 import { debugLog } from '../../scripts/debug_log.mjs'
-import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n.mjs'
+import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n/index.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
+import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -27,8 +28,6 @@ import {
 } from '../parts_loader.mjs'
 import { getRegistry } from '../registries.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
-import { loadTrustedAuthorHashes, saveTrustedAuthorHashes } from '../trustedAuthors.mjs'
-import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -277,16 +276,6 @@ export function registerEndpoints(router) {
 
 		const user = await verifyApiKey(apiKey)
 		res.status(200).json({ valid: !!user })
-	})
-
-	router.get('/api/user/trusted-authors', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json({ hashes: loadTrustedAuthorHashes(username) })
-	})
-	router.put('/api/user/trusted-authors', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const hashes = saveTrustedAuthorHashes(username, req.body.hashes)
-		res.status(200).json({ hashes })
 	})
 
 	router.get('/api/whoami', authenticate, async (req, res) => {

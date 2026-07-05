@@ -6,14 +6,13 @@ import { setInterval, setTimeout } from 'node:timers'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
-import { httpError } from '../scripts/http_error.mjs'
-import { console } from '../scripts/i18n.mjs'
-import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { ms, msstr } from '../scripts/ms.mjs'
-
-import { __dirname } from './base.mjs'
-import { events } from './events.mjs'
-import { config, save_config, data_path } from './server.mjs'
+import { console } from '../../scripts/i18n/bare.mjs'
+import { httpError } from '../../scripts/http_error.mjs'
+import { loadJsonFile } from '../../scripts/json_loader.mjs'
+import { ms, msstr } from '../../scripts/ms.mjs'
+import { __dirname } from '../base.mjs'
+import { events } from '../events.mjs'
+import { config, save_config, data_path } from '../server.mjs'
 
 let hash, verify, Algorithm
 const argon2Loaded = import('npm:@node-rs/argon2').catch(async error => {

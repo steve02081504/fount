@@ -1,4 +1,4 @@
-import { getUserByReq } from '../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../server/auth/index.mjs'
 
 /**
  * WebSocket：鉴权失败或 handler 抛错时关闭连接。

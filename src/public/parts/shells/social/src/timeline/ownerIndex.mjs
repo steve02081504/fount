@@ -2,7 +2,7 @@ import { readdir } from 'node:fs/promises'
 
 import { createLruMap } from '../../../../../../scripts/memo.mjs'
 import { isEntityHash128, parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getUserDictionary } from '../../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 const INDEX_CACHE_MAX = 64
 

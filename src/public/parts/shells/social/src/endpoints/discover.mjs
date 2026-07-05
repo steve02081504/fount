@@ -1,5 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getReplicaFromReq } from '../../../../../../server/p2p_server/http_glue.mjs'
 import { discoverWithNetwork } from '../discover/network.mjs'
 import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'

@@ -10,19 +10,18 @@ import { join } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
+import { set_sentry_enabled } from 'fount/scripts/sentry_state.mjs'
 import { set_start } from 'fount/server/base.mjs'
-import { set_sentry_enabled } from 'fount/server/sentry_state.mjs'
 import { init } from 'fount/server/server.mjs'
 
 import { HEADLESS_CONFIG_PORT } from '../core/ports.mjs'
 
+import { defaultTestStarts } from './starts.mjs'
+
 /** 测试节点用户默认 locale（与 `localesFromRequest` 无用户偏好时的回退一致）。 */
 const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
 
-/**
- * server starts 预设选项。
- * @typedef {{ Web?: boolean, IPC?: boolean, Tray?: boolean, DiscordRPC?: boolean, Base?: boolean | object, P2P?: boolean }} TestStarts
- */
+/** @typedef {import('./starts.mjs').TestStarts} TestStarts */
 
 /**
  * writeNodeConfig 的配置选项。
@@ -122,39 +121,6 @@ export function writeNodeConfig(dataPath, options) {
 	fs.mkdirSync(dataPath, { recursive: true })
 	fs.mkdirSync(join(dataPath, 'p2p', 'chunks'), { recursive: true })
 	fs.writeFileSync(configPath, JSON.stringify(config, null, '\t'))
-}
-
-/**
- * 测试用 server starts 预设。
- * @param {object} [options] 选项
- * @param {boolean} [options.web=false] 是否启动 Web
- * @param {boolean} [options.p2p=false] 是否启动 P2P
- * @param {boolean} [options.jobs=false] Base.Jobs（仅 web 时有效）
- * @returns {TestStarts} starts 对象
- */
-export function defaultTestStarts({ web = false, p2p = false, jobs = false } = {}) {
-	if (!web)
-		return {
-			IPC: false,
-			Tray: false,
-			DiscordRPC: false,
-			Web: false,
-			P2P: p2p,
-			Base: false,
-		}
-	return {
-		IPC: false,
-		Tray: false,
-		DiscordRPC: false,
-		Web: true,
-		P2P: p2p,
-		Base: {
-			Jobs: jobs,
-			Timers: false,
-			Idle: false,
-			AutoUpdate: false,
-		},
-	}
 }
 
 /**

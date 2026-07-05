@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { nicerWriteFileSync } from '../../../../../scripts/nicerWriteFile.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 /**
  * 获取用户自定义主题的存储目录路径，如果不存在则创建。

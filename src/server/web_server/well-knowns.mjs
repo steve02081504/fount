@@ -1,4 +1,4 @@
-import { authenticate } from '../auth.mjs'
+import { authenticate } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 import { config } from '../server.mjs'
 

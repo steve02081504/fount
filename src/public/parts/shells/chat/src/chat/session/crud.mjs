@@ -11,7 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { events } from '../../../../../../../server/events.mjs'
 import { skip_report } from '../../../../../../../server/server.mjs'
 import { createGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'

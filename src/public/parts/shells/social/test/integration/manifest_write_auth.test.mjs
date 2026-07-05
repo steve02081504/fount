@@ -19,7 +19,7 @@ const { agentEntityHash, encodeEntityHash } = await import('fount/scripts/p2p/en
 const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
 const { getOperatorSecretKey, resolveOperatorEntityHashForUser } =
 	await import('fount/server/p2p_server/operator_identity.mjs')
-const { getUserDictionary } = await import('fount/server/auth.mjs')
+const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 
 Deno.test('operator may write own user timeline', async () => {
 	const { username } = await getSession()

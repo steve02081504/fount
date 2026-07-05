@@ -15,7 +15,6 @@
 		},
 		{
 			"name": "integration",
-			"heavy": true,
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
@@ -40,7 +39,6 @@
 		},
 		{
 			"name": "live",
-			"heavy": true,
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/p2p/test/live/run.mjs"

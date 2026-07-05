@@ -1,6 +1,6 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'

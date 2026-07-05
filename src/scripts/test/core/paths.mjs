@@ -19,43 +19,43 @@ export function testDataRoot(repoRoot) {
 }
 
 /**
- * 返回失败列表目录路径。
+ * 返回综合测试现状库目录。
  * @param {string} repoRoot 仓库根
- * @returns {string} 失败列表目录
+ * @returns {string} data/test/state 绝对路径
  */
-export function failuresDir(repoRoot) {
-	return join(testDataRoot(repoRoot), 'failures')
+export function stateDir(repoRoot) {
+	return join(testDataRoot(repoRoot), 'state')
 }
 
 /**
- * 返回指定 manifest 的失败记录 JSON 路径。
+ * 返回综合测试现状库 JSON 路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/state/main.json
+ */
+export function stateFilePath(repoRoot) {
+	return join(stateDir(repoRoot), 'main.json')
+}
+
+/**
+ * 返回综合测试现状库 Markdown 路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/state/main.md
+ */
+export function stateMarkdownPath(repoRoot) {
+	return join(stateDir(repoRoot), 'main.md')
+}
+
+/**
+ * 返回 suite 失败日志绝对路径。
  * @param {string} repoRoot 仓库根
  * @param {string} manifestId manifest id
- * @returns {string} 失败记录 JSON 路径
+ * @param {string} suiteName suite 名
+ * @returns {string} data/test/state/logs/<manifestId>/<suite>.log
  */
-export function failureFilePath(repoRoot, manifestId) {
-	const segments = manifestId.split('/')
-	return join(failuresDir(repoRoot), ...segments.slice(0, -1), `${segments.at(-1)}.json`)
-}
-
-/**
- * 返回 suite 成功耗时记录目录路径。
- * @param {string} repoRoot 仓库根
- * @returns {string} 耗时记录目录
- */
-export function timingsDir(repoRoot) {
-	return join(testDataRoot(repoRoot), 'timings')
-}
-
-/**
- * 返回指定 manifest 的成功耗时记录 JSON 路径。
- * @param {string} repoRoot 仓库根
- * @param {string} manifestId manifest id
- * @returns {string} 耗时记录 JSON 路径
- */
-export function timingFilePath(repoRoot, manifestId) {
-	const segments = manifestId.split('/')
-	return join(timingsDir(repoRoot), ...segments.slice(0, -1), `${segments.at(-1)}.json`)
+export function stateLogPath(repoRoot, manifestId, suiteName) {
+	const safeManifest = manifestId.replace(/[/\\]/g, '_')
+	const safeSuite = suiteName.replace(/[/:\\]/g, '_')
+	return join(stateDir(repoRoot), 'logs', safeManifest, `${safeSuite}.log`)
 }
 
 /**
@@ -70,30 +70,21 @@ export function playwrightOutputDir(repoRoot, manifestId = 'default') {
 }
 
 /**
- * 返回聚合报告根目录（固定覆盖写）。
+ * 返回单次运行报告 Markdown 路径。
  * @param {string} repoRoot 仓库根
- * @returns {string} data/test/report 绝对路径
+ * @returns {string} data/test/report.md
  */
-export function reportDir(repoRoot) {
-	return join(testDataRoot(repoRoot), 'report')
+export function reportMarkdownPath(repoRoot) {
+	return join(testDataRoot(repoRoot), 'report.md')
 }
 
 /**
- * 返回报告内失败日志目录。
+ * 返回单次运行报告 JSON 路径。
  * @param {string} repoRoot 仓库根
- * @returns {string} data/test/report/logs/failures
+ * @returns {string} data/test/report.json
  */
-export function reportFailuresLogDir(repoRoot) {
-	return join(reportDir(repoRoot), 'logs', 'failures')
-}
-
-/**
- * 返回报告内噪声日志目录。
- * @param {string} repoRoot 仓库根
- * @returns {string} data/test/report/logs/warnings
- */
-export function reportWarningsLogDir(repoRoot) {
-	return join(reportDir(repoRoot), 'logs', 'warnings')
+export function reportJsonPath(repoRoot) {
+	return join(testDataRoot(repoRoot), 'report.json')
 }
 
 /**

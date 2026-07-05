@@ -8,7 +8,7 @@ import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { getMemoryUsage } from '../scripts/gc.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { resolveListenBind } from '../scripts/net_listen.mjs'
@@ -18,7 +18,7 @@ import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_pro
 import { setWindowTitle, getWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
-import { initAuth } from './auth.mjs'
+import { initAuth } from './auth/index.mjs'
 import { __dirname, baseScriptLoadedTime, startTime } from './base.mjs'
 import { info } from './info.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'

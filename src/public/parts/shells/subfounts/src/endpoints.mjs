@@ -1,6 +1,6 @@
 import crypto from 'node:crypto'
 
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { loadShellData, saveShellData } from '../../../../../server/setting_loader.mjs'
 
 import {

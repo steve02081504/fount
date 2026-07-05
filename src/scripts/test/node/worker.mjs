@@ -5,11 +5,11 @@
 import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
-import v8 from 'node:v8'
 
 import { hosturl } from '../../../server/server.mjs'
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
+import { installNearOomHeapSnapshot } from '../heap_snapshot_watch.mjs'
 
 import { bootInProcess } from './boot.mjs'
 
@@ -29,20 +29,10 @@ function resolveNearOomHeapLimitBytes() {
 	return heapMb * 1024 * 1024
 }
 
-const nearOomHeapLimitBytes = resolveNearOomHeapLimitBytes()
-const heapSnapshotCount = Number(process.env.FOUNT_TEST_HEAP_SNAPSHOT_COUNT ?? 2)
-if (nearOomHeapLimitBytes > 0 && Number.isFinite(heapSnapshotCount) && heapSnapshotCount > 0) {
-	let snapshotsWritten = 0
-	const timer = setInterval(() => {
-		const { used_heap_size: usedBytes } = v8.getHeapStatistics()
-		const ratio = usedBytes / nearOomHeapLimitBytes
-		if (ratio < 0.95 || snapshotsWritten >= heapSnapshotCount) return
-		snapshotsWritten++
-		const path = v8.writeHeapSnapshot()
-		console.warn(`test-node: near-OOM heap snapshot ${snapshotsWritten}/${heapSnapshotCount}: ${path}`)
-	}, 2000)
-	timer.unref?.()
-}
+installNearOomHeapSnapshot({
+	resolveLimitBytes: resolveNearOomHeapLimitBytes,
+	label: 'test-node',
+})
 
 const { values } = parseArgsOrExit({
 	options: {
@@ -53,7 +43,9 @@ const { values } = parseArgsOrExit({
 		starts: { type: 'string' },
 		'needs-output': { type: 'boolean', default: false },
 		'load-part': { type: 'string', multiple: true },
+		bootstrap: { type: 'string' },
 		'p2p-relay-url': { type: 'string' },
+		'min-p2p-node': { type: 'boolean', default: false },
 	},
 })
 
@@ -90,6 +82,7 @@ try {
 		loadParts,
 		bootstrap: values.bootstrap,
 		...values['p2p-relay-url'] ? { p2pRelayUrl: values['p2p-relay-url'] } : {},
+		minP2pNode: values['min-p2p-node'],
 	})
 }
 catch (error) {

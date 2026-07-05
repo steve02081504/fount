@@ -23,7 +23,7 @@ const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto
 const { agentEntityHash, encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
 const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
 const { getOperatorSecretKey } = await import('fount/server/p2p_server/operator_identity.mjs')
-const { getUserDictionary } = await import('fount/server/auth.mjs')
+const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 
 /**
  * 为给定种子构造一个 user 风格的 owner entityHash（nodeHash 任意 + sender subjectHash）。

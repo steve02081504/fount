@@ -3,8 +3,8 @@ import cors from 'npm:cors'
 import express from 'npm:express'
 import fileUpload from 'npm:express-fileupload'
 
-import { console } from '../../scripts/i18n.mjs'
-import { auth_request } from '../auth.mjs'
+import { console } from '../../scripts/i18n/index.mjs'
+import { auth_request } from '../auth/index.mjs'
 import { info } from '../info.mjs'
 import { webRequestHappened } from '../server.mjs'
 

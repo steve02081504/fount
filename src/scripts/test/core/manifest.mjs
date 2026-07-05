@@ -4,7 +4,10 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
+import { attachDependencies } from './deps.mjs'
 import { matchGlob } from './glob.mjs'
+import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
+import { parseManifestResources } from './resources.mjs'
 /**
  * manifest 中单个 suite 的解析结果。
  * @typedef {object} SuiteDef
@@ -14,7 +17,11 @@ import { matchGlob } from './glob.mjs'
  * @property {string[]} run 执行命令
  * @property {string[]} triggers 触发 glob
  * @property {string} manifestPath 相对仓库根的 manifest 路径
- * @property {boolean} heavy 独占调度（如 unit 套件，避免 node_modules 竞争）
+ * @property {boolean} heavy 满核独占（仅 `p2p/sim` 等）；其余用 `resources`
+ * @property {{ memMb?: number, cpuPct?: number } | undefined} resources 声明资源；缺省由 `resources.mjs` 推断
+ * @property {string[]} [dependsOn] manifest 中的依赖指名
+ * @property {{ manifestId: string, name: string }[]} [dependencies] 解析后的依赖
+ * @property {import('./trigger_filter.mjs').TriggerFilter} [triggerFilter] 忽略规则覆写
  */
 
 /**
@@ -103,6 +110,7 @@ export async function loadAllSuites(repoRoot) {
 
 		const relManifest = relative(repoRoot, manifestPath).replace(/\\/g, '/')
 		const triggerSets = manifest.triggerSets ?? {}
+		const manifestTriggerFilter = manifest.triggerFilter
 		for (const suite of manifest.suites || []) {
 			if (!suite.name)
 				throw new Error(`suite missing "name" in ${relManifest}`)
@@ -114,10 +122,15 @@ export async function loadAllSuites(repoRoot) {
 				triggers: resolveSuiteTriggers(suite, triggerSets),
 				manifestPath: relManifest,
 				heavy: suite.heavy === true,
+				resources: parseManifestResources(suite.resources),
+				dependsOn: suite.dependsOn
+					? Array.isArray(suite.dependsOn) ? suite.dependsOn : [suite.dependsOn]
+					: undefined,
+				triggerFilter: mergeTriggerFilter(manifestTriggerFilter, suite.triggerFilter),
 			})
 		}
 	}
-	return suites
+	return attachDependencies(suites)
 }
 
 /**
@@ -131,19 +144,20 @@ export function selectSuitesByDiff(mode, files, allSuites) {
 	if (mode === 'all')
 		return allSuites
 
-	const infraHit = files.some(f =>
+	if (!files.length) return []
+
+	const infraHit = filterTriggerRelevantFiles(files).some(f =>
 		f.startsWith(INFRA_PREFIX)
 		|| f.startsWith('.github/workflows/verify_shells.'),
 	)
 	if (infraHit) return allSuites
 
-	if (files.some(f => f.endsWith('/test/manifest.json')))
-		return allSuites
-
 	/** @type {SuiteDef[]} */
 	const selected = []
 	for (const suite of allSuites) {
-		const hit = suite.triggers.some(pat => files.some(f => matchGlob(pat, f)))
+		const relevant = filterTriggerRelevantFiles(files, suite.triggerFilter)
+		if (!relevant.length) continue
+		const hit = suite.triggers.some(pat => relevant.some(f => matchGlob(pat, f)))
 		if (hit) selected.push(suite)
 	}
 	return selected
@@ -153,9 +167,10 @@ export function selectSuitesByDiff(mode, files, allSuites) {
  * suite 是否匹配指名 selector（id 或 name；支持 glob 与前缀展开）。
  * @param {SuiteDef} suite suite
  * @param {string} selector 指名
+ * @param {{ prefixExpand?: boolean }} [options] prefixExpand 为 false 时仅精确匹配与显式 glob
  * @returns {boolean} 是否匹配
  */
-export function suiteMatchesSelector(suite, selector) {
+export function suiteMatchesSelector(suite, selector, { prefixExpand = true } = {}) {
 	const sel = selector.trim()
 	if (!sel) return false
 
@@ -166,7 +181,7 @@ export function suiteMatchesSelector(suite, selector) {
 	const patterns = []
 	if (sel.includes('*') || sel.includes('?'))
 		patterns.push(sel)
-	else
+	else if (prefixExpand)
 		patterns.push(`${sel}*`, `${sel}_*`)
 
 	return patterns.some(pat => fields.some(field => matchGlob(pat, field)))
@@ -178,14 +193,15 @@ export function suiteMatchesSelector(suite, selector) {
  * @param {object} filter 过滤条件
  * @param {string[]} [filter.manifestIds] manifest id 列表
  * @param {string[]} [filter.suiteSelectors] suite id 或 name
+ * @param {{ prefixExpand?: boolean }} [options] 传给 suiteMatchesSelector
  * @returns {SuiteDef[]} 过滤后的 suite
  */
-export function filterSuites(suites, { manifestIds, suiteSelectors }) {
+export function filterSuites(suites, { manifestIds, suiteSelectors }, { prefixExpand = true } = {}) {
 	let out = suites
 	if (manifestIds?.length)
 		out = out.filter(s => manifestIds.includes(s.manifestId))
 	if (suiteSelectors?.length)
-		out = out.filter(s => suiteSelectors.some(sel => suiteMatchesSelector(s, sel)))
+		out = out.filter(s => suiteSelectors.some(sel => suiteMatchesSelector(s, sel, { prefixExpand })))
 	return out
 }
 

@@ -26,17 +26,14 @@ alwaysApply: false
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - State: `hubStore` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
 
-## Message storage (hot / archive / DAG)
+## Message storage & APIs
 
-- **Hot**: `groups/{groupId}/snapshot.json` (`hot_posts` latest N + pin ±N; checkpoint payload), `messages/{channelId}.jsonl` slim cache.
-- **Cold archive**: `groups/{groupId}/archive/{channelId}/{YYYY-MM}.jsonl` — plaintext `PostSnapshot` (final content, reactions, display name/avatar).
-- **DAG WAL**: `events.jsonl` — foldable process events (`message_edit`, reactions, pin/unpin); archived `message` rows removed only after cold archive + `dagFoldAfterArchive`.
-- **Read path**: `listChannelMessages({ includeArchive: true })` merges hot + archive; `before` pagination may call `requestChannelHistoryFromPeers` on local miss.
-- **Cleanup**: any user with a local group replica may delete local cold months via settings → `DELETE .../archive?before=YYYY-MM` (does not prune DAG).
-- **Archive sync**: `POST .../archive/sync` → `syncMissingArchiveMonths`; after join, `catchUpGroupFromPeers` order: joinSnapshot (reputation checkpoint) → `syncMissingArchiveMonths` → gossip `wantIds`; remote manifest only unions month hints.
-- **Discovery**: advert signature = "a member once claimed this"; indexing requires reputation or ≥2 independent node sources.
+Backend storage model (hot / cold archive / DAG, federation sync): [archive guide](../../src/chat/archive/AGENTS.md).
+
+Hub-facing API shapes:
+
+- **Decrypt failure**: merged rows use top-level `decryptView: { failed: true, pendingGeneration? }` with `content: null`.
+- **Reactions**: `GET …/messages` returns `{ messages, reactions }` — per-page emoji aggregation keyed by target event id.
+- **Group state**: `GET …/groups/:id/state` → `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }`.
 - **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
-- **Decrypt failure**: merged rows use top-level `decryptView: { failed: true, pendingGeneration? }` with `content: null`. Archive `PostSnapshot` may embed legacy `decryptView` on the snapshot object.
-- **Reactions API**: `GET …/messages` returns `{ messages, reactions }` — per-page emoji aggregation keyed by target event id (not `reactionEvents` rows).
-- **Group state**: `GET …/groups/:id/state` → `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }` not raw `pubKeyHash` dict keys.
-- **Message navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
+- **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).

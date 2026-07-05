@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import express from 'npm:express'
 
-import { auth_request } from '../auth.mjs'
+import { auth_request } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 
 import { handleLlmsTxt } from './llms.txt.mjs'
@@ -55,6 +55,8 @@ export function registerResources(router) {
 	})
 	watchFrontendChanges('/scripts/test', __dirname + '/src/scripts/test')
 	router.use('/scripts/test', express.static(__dirname + '/src/scripts/test'))
+	watchFrontendChanges('/scripts/p2p', __dirname + '/src/scripts/p2p')
+	router.use('/scripts/p2p', express.static(__dirname + '/src/scripts/p2p'))
 	watchFrontendChanges('/', __dirname + '/src/public/pages')
 	router.use(express.static(__dirname + '/src/public/pages'))
 }

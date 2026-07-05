@@ -12,7 +12,7 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/gov
 import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { isSignedDagEventRow } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { mergeDagTips } from '../../chat/dag/lifecycle.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'

@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url'
 
 import fs from 'npm:fs-extra'
 
-import { authenticate, getUserByReq, getUserDictionary } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq, getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { unlockAchievement } from '../../achievements/src/api.mjs'
 
 /**

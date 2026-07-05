@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { __dirname } from '../../../../../server/base.mjs'
 import { loadRegistryJsonEntries } from '../../../../../server/registries.mjs'
 import { loadTempData } from '../../../../../server/setting_loader.mjs'

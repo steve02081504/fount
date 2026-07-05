@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 
 /**
  * @param {import('npm:express').Router} router Express 路由

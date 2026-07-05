@@ -4,7 +4,7 @@ import path from 'node:path'
 import { parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
 import { createFsEntityStore } from '../../scripts/p2p/entity_store.mjs'
 import { readJsonFile, writeJsonFile } from '../../scripts/p2p/utils/json_io.mjs'
-import { getAllUserNames, getUserDictionary } from '../auth.mjs'
+import { getAllUserNames, getUserDictionary } from '../auth/index.mjs'
 
 /**
  * fount 多用户 EntityStore：实体仍存于各用户 `{userDict}/entities/{entityHash}/`。

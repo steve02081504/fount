@@ -1,5 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getWorldName } from '../chat/session/channelWorld.mjs'
 import { getInitialData } from '../chat/session/crud.mjs'
 import {

@@ -1,4 +1,4 @@
-import { getAllUserNames } from '../auth.mjs'
+import { getAllUserNames } from '../auth/index.mjs'
 
 /**
  * @returns {string[]} 本机应接收 P2P 通知的 replica 登录名

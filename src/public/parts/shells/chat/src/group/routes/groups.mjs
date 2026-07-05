@@ -9,7 +9,7 @@ import { randomUUID } from 'node:crypto'
 
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'

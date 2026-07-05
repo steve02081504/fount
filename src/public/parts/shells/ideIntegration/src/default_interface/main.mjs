@@ -4,9 +4,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
-import { getUserByUsername } from '../../../../../../server/auth.mjs'
+import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import { createBufferedLineBasedStream } from '../../../chat/src/stream/index.mjs'
 

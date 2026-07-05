@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
@@ -40,7 +40,7 @@ export function registerPostsRoutes(router) {
 		const draftContent = {
 			text: String(req.body.text),
 			mediaRefs: [
-				...req.body.mediaRefs,
+				...(req.body.mediaRefs ?? []),
 				...await buildEmojiMediaRefsForPost(username, String(req.body.text)),
 			],
 			replyTo: req.body.replyTo,

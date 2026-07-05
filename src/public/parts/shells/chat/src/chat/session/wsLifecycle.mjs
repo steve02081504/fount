@@ -8,7 +8,7 @@
 import fs from 'node:fs'
 
 import { ms } from '../../../../../../../scripts/ms.mjs'
-import { getAllUserNames } from '../../../../../../../server/auth.mjs'
+import { getAllUserNames } from '../../../../../../../server/auth/index.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { countGroupSockets, registerSocket } from '../stream/groupWsBroadcast.mjs'

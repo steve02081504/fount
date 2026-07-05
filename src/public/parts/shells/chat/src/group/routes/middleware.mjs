@@ -6,7 +6,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 import { loadGroupShunState } from '../groupShunState.mjs'

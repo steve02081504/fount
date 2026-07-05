@@ -17,6 +17,9 @@ const liveFixtures = join(liveDir, 'fixtures')
 const scriptsDir = join(liveDir, 'scripts')
 const fedScripts = join(scriptsDir, 'federation')
 
+/** 单节点 live 套件：不启 WebRTC/P2P 栈，仅离线 node 身份（避免 node-datachannel 与 p2p:live 叠加 OOM）。 */
+const SINGLE_NODE_LIVE = { p2p: false, minP2pNode: true }
+
 /** 联邦 live 套件默认双节点；个别套件可声明更大 fedNodes。 */
 const FED_LIVE_MAX_NODES = 6
 const { ports, releasePort } = await resolveLiveNodeFleet(FED_LIVE_MAX_NODES)
@@ -63,16 +66,16 @@ function chatFedNodeConfig(index, extra = {}) {
 }
 
 /** Chat live 测试 suite 表。 */
-/** @type {Record<string, { fed?: boolean, run: string[] }>} */
+/** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
 const suites = {
-	e2e_single: { run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')) },
-	e2e_single_ext: { run: denoLiveRun(join(scriptsDir, 'e2e_single_ext.mjs')) },
-	smoke_chat: { run: denoLiveRun(join(scriptsDir, 'smoke_chat.mjs')) },
-	smoke_ai: { run: denoLiveRun(join(scriptsDir, 'smoke_ai.mjs')) },
-	ws: { run: denoLiveRun(join(scriptsDir, 'ws.mjs')) },
-	ws_rpc: { run: denoLiveRun(join(scriptsDir, 'ws_rpc.mjs')) },
-	ws_stream: { run: denoLiveRun(join(scriptsDir, 'ws_stream.mjs')) },
-	av_relay: { run: denoLiveRun(join(scriptsDir, 'av_relay.mjs')) },
+	e2e_single: { run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')), node: SINGLE_NODE_LIVE },
+	e2e_single_ext: { run: denoLiveRun(join(scriptsDir, 'e2e_single_ext.mjs')), node: SINGLE_NODE_LIVE },
+	smoke_chat: { run: denoLiveRun(join(scriptsDir, 'smoke_chat.mjs')), node: SINGLE_NODE_LIVE },
+	smoke_ai: { run: denoLiveRun(join(scriptsDir, 'smoke_ai.mjs')), node: SINGLE_NODE_LIVE },
+	ws: { run: denoLiveRun(join(scriptsDir, 'ws.mjs')), node: SINGLE_NODE_LIVE },
+	ws_rpc: { run: denoLiveRun(join(scriptsDir, 'ws_rpc.mjs')), node: SINGLE_NODE_LIVE },
+	ws_stream: { run: denoLiveRun(join(scriptsDir, 'ws_stream.mjs')), node: SINGLE_NODE_LIVE },
+	av_relay: { run: denoLiveRun(join(scriptsDir, 'av_relay.mjs')), node: SINGLE_NODE_LIVE },
 	fed_core: { fed: true, run: denoLiveRun(join(fedScripts, 'core.mjs')) },
 	fed_e2e_ext: { fed: true, run: denoLiveRun(join(fedScripts, 'e2e_ext.mjs')) },
 	fed_dm: { fed: true, run: denoLiveRun(join(fedScripts, 'dm.mjs')) },

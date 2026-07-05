@@ -19,6 +19,7 @@ export async function createChatFederationSim(options = {}) {
 	const runTag = options.runTag ?? `fed_${Date.now().toString(36)}`
 	const dataRoot = options.dataPath ?? join(tmpdir(), `fount_${runTag}`)
 	await bootHeadlessDataRoot(dataRoot)
+	await import('../../src/chat/dag/index.mjs')
 
 	const modules = {
 		lifecycle: await import('../../src/chat/dag/lifecycle.mjs'),

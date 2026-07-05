@@ -1,7 +1,7 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--gen-report] [--continue] [-j <n>] [--since <commit>] [<groups>...]
+ *   fount test [--all] [--continue] [--outdated] [--no-parallel] [--since <commit>] [<groups>...]
  *
  * 分组语法：manifest 或 manifest:suite1,suite2（空格分隔多组）
  */
@@ -9,7 +9,7 @@ import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
 
-import { geti18n } from '../i18n.mjs'
+import { geti18n } from '../i18n/bare.mjs'
 import { ms } from '../ms.mjs'
 
 import {
@@ -27,9 +27,9 @@ const { positionals, values } = parseArgsOrExit({
 	options: {
 		since: { type: 'string' },
 		all: { type: 'boolean', default: false },
-		'gen-report': { type: 'boolean', default: false },
 		continue: { type: 'boolean', default: false },
-		jobs: { type: 'string', short: 'j' },
+		outdated: { type: 'boolean', default: false },
+		'no-parallel': { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
 })
@@ -67,7 +67,7 @@ function parseGroupSelectors(args, knownIds) {
 	/** @type {GroupInput | null} */
 	let current = null
 
-	for (const token of args) 
+	for (const token of args)
 		if (token.includes(':')) {
 			const colon = token.indexOf(':')
 			current = {
@@ -87,7 +87,7 @@ function parseGroupSelectors(args, knownIds) {
 			else
 				return { error: 'unknownFirstToken', token }
 		}
-	
+
 
 	return { groups }
 }
@@ -106,9 +106,9 @@ process.exit(await (async () => {
 	const exitCode = await runTests({
 		runAll: values.all,
 		since: values.since,
-		genReport: values['gen-report'],
 		continueRun: values.continue,
-		jobs: values.jobs ? Number(values.jobs) : undefined,
+		outdated: values.outdated,
+		noParallel: values['no-parallel'],
 		groups: parsed.groups,
 	})
 	if (Date.now() - runStarted > ms('5m'))

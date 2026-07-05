@@ -16,7 +16,7 @@ import {
 	unregisterReplicaUsernamesProvider,
 } from '../../../../scripts/p2p/social/follower_index_registry.mjs'
 import { registerOperatorKeyChainProvider } from '../../../../scripts/p2p/timeline/write_auth.mjs'
-import { getAllUserNames } from '../../../../server/auth.mjs'
+import { getAllUserNames } from '../../../../server/auth/index.mjs'
 
 import { handleSocialRpc } from './src/discover/rpc.mjs'
 import { setEndpoints } from './src/endpoints.mjs'

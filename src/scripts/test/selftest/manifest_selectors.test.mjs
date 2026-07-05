@@ -12,6 +12,8 @@ const fedTest = {
 	triggers: [],
 	manifestPath: 'src/public/parts/shells/chat/test/manifest.json',
 	heavy: false,
+	dependsOn: ['p2p:sim'],
+	dependencies: [{ manifestId: 'p2p', name: 'sim' }],
 }
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */
@@ -19,6 +21,8 @@ const fedDm = {
 	...fedTest,
 	name: 'fed_dm',
 	id: 'fed_dm',
+	dependsOn: undefined,
+	dependencies: [],
 }
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */
@@ -27,6 +31,8 @@ const pureSuite = {
 	name: 'pure',
 	id: 'pure',
 	heavy: true,
+	dependsOn: undefined,
+	dependencies: [],
 }
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */
@@ -34,6 +40,29 @@ const e2eSingle = {
 	...fedTest,
 	name: 'e2e_single',
 	id: 'e2e_single',
+	dependsOn: undefined,
+	dependencies: [],
+}
+
+/** @type {import('../core/manifest.mjs').SuiteDef} */
+const fedEmoji = {
+	...fedTest,
+	name: 'fed_emoji',
+	id: 'fed_emoji',
+	dependsOn: ['fed_core'],
+	dependencies: [{ manifestId: 'shells/chat', name: 'fed_core' }],
+}
+
+/** @type {import('../core/manifest.mjs').SuiteDef} */
+const fedEmojiNonmember = {
+	...fedTest,
+	name: 'fed_emoji_nonmember',
+	id: 'fed_emoji_nonmember',
+	dependsOn: ['fed_core', 'fed_emoji'],
+	dependencies: [
+		{ manifestId: 'shells/chat', name: 'fed_core' },
+		{ manifestId: 'shells/chat', name: 'fed_emoji' },
+	],
 }
 
 Deno.test('suiteMatchesSelector exact id/name', () => {
@@ -65,4 +94,19 @@ Deno.test('filterSuites applies glob selectors', () => {
 		suiteSelectors: ['fed_*'],
 	})
 	assertEquals(filtered.map(s => s.id).sort(), ['fed_core', 'fed_dm'])
+})
+
+Deno.test('filterSuites prefixExpand false matches exact dependsOn names only', () => {
+	const suites = [fedEmoji, fedEmojiNonmember]
+	const exact = filterSuites(suites, {
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['fed_emoji'],
+	}, { prefixExpand: false })
+	assertEquals(exact.map(s => s.id), ['fed_emoji'])
+
+	const expanded = filterSuites(suites, {
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['fed_emoji'],
+	})
+	assertEquals(expanded.map(s => s.id).sort(), ['fed_emoji', 'fed_emoji_nonmember'])
 })

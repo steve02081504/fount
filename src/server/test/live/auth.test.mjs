@@ -25,7 +25,7 @@ Deno.test('verifyApiKey accepts valid key and rejects invalid or revoked', async
 			web: false,
 			resetData: true,
 		})
-		const { verifyApiKey, revokeApiKey } = await import('../../auth.mjs')
+		const { verifyApiKey, revokeApiKey } = await import('../../auth/index.mjs')
 		assert(await verifyApiKey(apiKey))
 		assertEquals((await verifyApiKey(apiKey))?.username, username)
 		assertEquals(await verifyApiKey('totally-invalid-key'), null)

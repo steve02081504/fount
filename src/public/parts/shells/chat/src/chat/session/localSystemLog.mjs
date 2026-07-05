@@ -1,7 +1,7 @@
 /**
  * 仅本机 chatLog 系统提示（不入 DAG、不联邦）。
  */
-import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'

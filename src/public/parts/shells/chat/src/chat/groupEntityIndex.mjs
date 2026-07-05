@@ -4,7 +4,7 @@ import path from 'node:path'
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { groupEntityHash } from '../../../../../../scripts/p2p/entity/group_entity.mjs'
 import { registerGroupIdResolver, unregisterGroupIdResolver } from '../../../../../../scripts/p2p/entity/group_entity_index_registry.mjs'
-import { getUserDictionary } from '../../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 const OWNER_ID = 'chat'
 

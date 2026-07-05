@@ -5,13 +5,13 @@ import { cpus, freemem } from 'node:os'
 import process from 'node:process'
 
 const MiB = 1024 * 1024
-const GiB = 1024 * MiB
+/**
+ *
+ */
+export { MiB }
 
 /** unit 单文件子进程内存估算（pure ~100MB，integration headless ~300MB）。 */
 export const UNIT_MEM = 250 * MiB
-
-/** suite 子进程内存估算（联邦双节点最重 ~1.6GB）。 */
-export const SUITE_MEM = 1.5 * GiB
 
 /** 仅使用空闲内存的比例，为 OS 与其他进程保留余量。 */
 export const MEM_HEADROOM = 0.7
@@ -28,14 +28,11 @@ export const BUDGET_MEM_ENV = 'FOUNT_TEST_BUDGET_MEM'
  */
 
 /**
- * 计算全局 CPU/内存预算。
- * @param {number | undefined} jobsOverride -j / --jobs 覆盖值
+ * 计算全局 CPU/内存预算（供 serial.mjs 内文件并行下放）。
  * @returns {GlobalBudget} 预算
  */
-export function computeGlobalBudget(jobsOverride) {
-	const cores = jobsOverride >= 1 ? Math.floor(jobsOverride) : cpus().length
-	const memBytes = Math.floor(freemem() * MEM_HEADROOM)
-	return { cores, memBytes }
+export function computeGlobalBudget() {
+	return { cores: cpus().length, memBytes: Math.floor(freemem() * MEM_HEADROOM) }
 }
 
 /**

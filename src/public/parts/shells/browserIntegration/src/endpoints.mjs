@@ -3,7 +3,7 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import { is_local_ip_from_req } from '../../../../../scripts/ratelimit.mjs'
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
 import {

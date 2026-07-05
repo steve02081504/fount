@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 
-import { getUserDictionary } from '../../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 import { loadViewerContext } from '../feed/helpers.mjs'
 import { iterateVisiblePosts } from '../feed/iterate.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'

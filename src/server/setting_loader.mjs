@@ -4,7 +4,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../scripts/json_loader.mjs'
 
-import { getUserDictionary } from './auth.mjs'
+import { getUserDictionary } from './auth/index.mjs'
 import { events } from './events.mjs'
 
 

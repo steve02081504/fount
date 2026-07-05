@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { buildHomeFeed } from '../feed.mjs'
 import { syncFollowingTimelines } from '../timeline/sync.mjs'
 import { registerFeedSocket } from '../ws/feedHub.mjs'

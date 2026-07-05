@@ -3,7 +3,7 @@ import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
 } from '../../../../../../scripts/p2p/personal_block.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { buildProfileFeedItems, buildLikedFeedItems, listReplies } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'

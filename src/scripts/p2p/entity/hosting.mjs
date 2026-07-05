@@ -124,7 +124,7 @@ export async function registerDefaultAgentHosting() {
 	const fs = await import('node:fs')
 	const path = await import('node:path')
 	const { resolveAgentCharPartName } = await import('fount/server/p2p_server/agent_resolve.mjs')
-	const { getUserDictionary } = await import('fount/server/auth.mjs')
+	const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 	registerAgentCharResolver(resolveAgentCharPartName)
 	registerListLocalAgentsProvider(username =>
 		scanLocalAgentEntitiesFromChars(username, getUserDictionary, fs, path))

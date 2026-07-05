@@ -1,5 +1,4 @@
 import fs from 'node:fs'
-import path from 'node:path'
 import process from 'node:process'
 import { setInterval } from 'node:timers'
 
@@ -7,29 +6,36 @@ import { exec } from 'npm:@steve02081504/exec'
 import { console as baseConsole } from 'npm:@steve02081504/virtual-console'
 import supportsAnsi from 'npm:supports-ansi'
 
-import { getUserByUsername } from '../server/auth.mjs'
-import { __dirname } from '../server/base.mjs'
-import { events } from '../server/events.mjs'
-import { getRegistry } from '../server/registries.mjs'
-import { loadData, saveData } from '../server/setting_loader.mjs'
-import { sendEventToAll } from '../server/web_server/event_dispatcher.mjs'
-
-import { loadJsonFile } from './json_loader.mjs'
-import { ms } from './ms.mjs'
-import { escapeRegExp } from './regex.mjs'
+import { __dirname } from '../../server/base.mjs'
+import { loadJsonFile } from '../json_loader.mjs'
+import { ms } from '../ms.mjs'
+import { escapeRegExp } from '../regex.mjs'
 
 /**
  * 区域设置数据
- * @typedef {import('../decl/locale_data.ts').LocaleData} LocaleData
+ * @typedef {import('../../decl/locale_data.ts').LocaleData} LocaleData
  * 区域设置键
- * @typedef {import('../decl/locale_data.ts').LocaleKey} LocaleKey
+ * @typedef {import('../../decl/locale_data.ts').LocaleKey} LocaleKey
  * 无参数的区域设置键
- * @typedef {import('../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithoutParams} LocaleKeyWithoutParams
  * 有参数的区域设置键
- * @typedef {import('../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyWithParams} LocaleKeyWithParams
  * 对应键的区域设置参数类型
- * @typedef {import('../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
+ * @typedef {import('../../decl/locale_data.ts').LocaleKeyParams} LocaleKeyParams
  */
+
+/** @type {Set<(locale: string) => void>} */
+const localeFileChangeListeners = new Set()
+
+/**
+ * locale JSON 文件变更时回调（由 index.mjs 注册 server 广播等）。
+ * @param {(locale: string) => void} fn 回调
+ * @returns {() => void} 取消注册
+ */
+export function onLocaleFileChanged(fn) {
+	localeFileChangeListeners.add(fn)
+	return () => localeFileChangeListeners.delete(fn)
+}
 
 /**
  * 导出的控制台对象。
@@ -60,18 +66,16 @@ export function getbestlocale(preferredlocaleList, localeList) {
 	const available = new Set(localeList.map(l => l?.id ?? l).filter(Boolean))
 
 	for (const preferred of preferredlocaleList ?? []) {
-		// 1. 完全匹配
 		if (available.has(preferred))
 			return preferred
 
-		// 2. 部分匹配 (例如, 'en' 来自 'en-US')
 		const prefix = preferred.split('-')[0]
 		for (const locale of available)
 			if (locale.startsWith(prefix))
 				return locale
 	}
 
-	return 'en-UK' // 默认
+	return 'en-UK'
 }
 
 const fountLocaleCache = {}
@@ -85,48 +89,6 @@ export function getLocaleData(localeList) {
 	const resultLocale = getbestlocale(localeList, fountLocaleList)
 	return fountLocaleCache[resultLocale] ?? loadJsonFile(__dirname + `/src/public/locales/${resultLocale}.json`)
 }
-/**
- * 获取用户的区域设置数据。
- * @param {string} username - 用户的用户名。
- * @param {string[]} preferredlocaleList - 首选区域设置的列表。
- * @returns {Promise<LocaleData>} 一个解析为区域设置数据的承诺。
- */
-export async function getLocaleDataForUser(username, preferredlocaleList) {
-	if (!username) return getLocaleData(preferredlocaleList)
-	const effectivePreferred = [
-		...getUserByUsername(username)?.locales ?? [],
-		...preferredlocaleList ?? [],
-	]
-	const result = {
-		...getLocaleData(effectivePreferred)
-	}
-	const partsLocaleCache = loadData(username, 'parts_locales_cache')
-	for (const entry of getRegistry(username, 'locales', { resolve: 'fs' }).sort((a, b) => (a.level ?? 0) - (b.level ?? 0))) {
-		const fsPath = entry.path
-		if (!fs.existsSync(fsPath)) continue
-		/** @type {LocaleData} */
-		let partdata
-		if (fs.statSync(fsPath).isDirectory()) {
-			const localeFiles = fs.readdirSync(fsPath).filter(f => f.endsWith('.json'))
-			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => f.slice(0, -5)))
-			partsLocaleCache[entry.partpath] ??= {}
-			partdata = partsLocaleCache[entry.partpath][resultLocale]
-				??= loadJsonFile(path.join(fsPath, `${resultLocale}.json`))
-		}
-		else
-			partdata = loadJsonFile(fsPath)
-		Object.assign(result, partdata)
-	}
-	saveData(username, 'parts_locales_cache')
-	return result
-}
-events.on('part-loaded', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
-})
-events.on('part-uninstalled', ({ username, partpath }) => {
-	delete loadData(username, 'parts_locales_cache')?.[partpath]
-	saveData(username, 'parts_locales_cache')
-})
 
 /**
  * 本地主机上所有可用区域设置的列表。
@@ -153,14 +115,12 @@ fs.watch(`${__dirname}/src/public/locales`, (event, filename) => {
 	const locale = filename.slice(0, -5)
 	console.log(`Detected change in ${filename}.`)
 
-	// 清除已更改文件的缓存（如果存在）
 	if (!fountLocaleCache[locale]) return
 	delete fountLocaleCache[locale]
 	localhostLocaleData = getLocaleData(localhostLocales)
-	sendEventToAll('locale-updated', null)
-})
+	for (const fn of localeFileChangeListeners) fn(locale)
+}).unref()
 
-// 疯狂星期四V我50（fount test 时禁用，避免误导自动化调查）
 if (!process.env.FOUNT_TEST && localhostLocales[0] === 'zh-CN')
 	setInterval(() => {
 		if (new Date().getDay() === 4)
@@ -185,9 +145,9 @@ function getNestedValue(obj, key) {
 	return value
 }
 
-/** ANSI 紫色（品红）。 */
 const ANSI_MAGENTA = '\x1b[35m'
 const ANSI_RESET = '\x1b[0m'
+
 /**
  * OSC 8 超链接：\x1b]8;;url\x1b\\text\x1b]8;;\x1b\\
  * @param {string} url - 链接的 URL。
@@ -226,11 +186,7 @@ function applyInterpolationToPlainSegment(segment, params, terminal) {
 
 /**
  * 对单条翻译字符串做插值（链接、占位符、反引号）。
- * 默认（terminal=false）返回原文：链接保留 markdown 文字，反引号保持原样，不施加 ANSI。
- * 若 terminal 且 supportsAnsi：链接用 OSC 8，`xxx` 用 ANSI 紫色。
- * 字面义占位符：`\${foo}` 渲染为 `${foo}`，且不当作参数插值。
- * 若 translation 非字符串（如嵌套对象），则原样返回。
- * @template TTranslation - 翻译字符串或嵌套对象的类型。
+ * @template TTranslation
  * @param {TTranslation} translation - 原始翻译字符串或嵌套对象。
  * @param {Record<string, any>} params - 插值参数。
  * @param {boolean} [terminal] - 是否渲染为终端序列（ANSI 链接与紫色反引号）。
@@ -272,10 +228,9 @@ function applyParamsToTranslation(translation, params, terminal = false) {
 function createI18nArrayProxy(arr, params, terminal = false) {
 	return new Proxy(arr, {
 		/**
-		 * 获取翻译数组代理的值。
-		 * @param {string[]} target - 原始翻译字符串数组。
-		 * @param {string} prop - 属性名。
-		 * @returns {string} - 属性值。
+		 * @param {string[]} target 原始数组
+		 * @param {string | symbol} prop 属性名
+		 * @returns {unknown} 属性值
 		 */
 		get(target, prop) {
 			if (prop === 'toString')
@@ -293,22 +248,7 @@ function createI18nArrayProxy(arr, params, terminal = false) {
 		},
 	})
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
- */
+
 /**
  * 获取区域设置数据中的翻译文本。
  * @param {LocaleData} localeData - 区域设置数据。
@@ -325,22 +265,7 @@ function baseGeti18n(localeData, key, params = {}, terminal = false) {
 	}
 	return applyParamsToTranslation(translation, params, terminal)
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
- */
+
 /**
  * 根据首选区域设置列表和翻译键获取翻译后的文本。
  * @param {string[]} localeList - 区域设置列表。
@@ -351,48 +276,18 @@ function baseGeti18n(localeData, key, params = {}, terminal = false) {
 export function geti18nForLocales(localeList, key, params = {}) {
 	return baseGeti18n(getLocaleData(localeList), key, params)
 }
+
 /**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string}
+ * 从已合并的 LocaleData 对象取翻译。
+ * @param {LocaleData} localeData 区域设置数据
+ * @param {LocaleKey} key 翻译键
+ * @param {object} [params] 插值参数
+ * @returns {string} 翻译文本
  */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
- */
-/**
- * 根据用户名和翻译键获取翻译后的文本。
- * @param {string} username - 用户名。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
- * @returns {string} - 翻译后的文本。
- */
-export async function geti18nForUser(username, key, params = {}) {
-	return baseGeti18n(await getLocaleDataForUser(username, localhostLocales), key, params)
+export function geti18nFromLocaleData(localeData, key, params = {}) {
+	return baseGeti18n(localeData, key, params)
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
- */
+
 /**
  * 根据提供的键（key）获取翻译后的文本。
  * @param {LocaleKey} key - 翻译键。
@@ -402,25 +297,9 @@ export async function geti18nForUser(username, key, params = {}) {
 export function geti18n(key, params = {}) {
 	return baseGeti18n(localhostLocaleData, key, params)
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string}
- */
+
 /**
  * 获取渲染为终端序列的翻译文本（链接用 OSC 8，`xxx` 用 ANSI 紫色）。
- * 终端不支持 ANSI 时回退为原文。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值（例如 {name: "John"}）。
  * @returns {string} - 渲染为终端序列的翻译文本。
@@ -428,6 +307,7 @@ export function geti18n(key, params = {}) {
 export function geti18nForTerminal(key, params = {}) {
 	return baseGeti18n(localhostLocaleData, key, params, true)
 }
+
 /**
  * 将值转换为字符串。
  * @param {any} value - 要转换的值。
@@ -436,27 +316,12 @@ export function geti18nForTerminal(key, params = {}) {
 function toString(value) {
 	return value + ''
 }
+
+/* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type -- console.*I18n 与原生 console 签名一致 */
 /**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
-/**
- * 使用 i18n 打印参考消息。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ *
+ * @param key
+ * @param params
  */
 console.infoI18n = (key, params = {}) => {
 	try {
@@ -466,27 +331,11 @@ console.infoI18n = (key, params = {}) => {
 		console.stackFrameSkipCount--
 	}
 }
+
 /**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 使用 i18n 打印日志消息。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ *
+ * @param key
+ * @param params
  */
 console.logI18n = (key, params = {}) => {
 	try {
@@ -496,27 +345,11 @@ console.logI18n = (key, params = {}) => {
 		console.stackFrameSkipCount--
 	}
 }
+
 /**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
-/**
- * 使用 i18n 打印警告消息。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ *
+ * @param key
+ * @param params
  */
 console.warnI18n = (key, params = {}) => {
 	try {
@@ -526,27 +359,11 @@ console.warnI18n = (key, params = {}) => {
 		console.stackFrameSkipCount--
 	}
 }
+
 /**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
-/**
- * 使用 i18n 打印错误消息。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ *
+ * @param key
+ * @param params
  */
 console.errorI18n = (key, params = {}) => {
 	try {
@@ -556,28 +373,12 @@ console.errorI18n = (key, params = {}) => {
 		console.stackFrameSkipCount--
 	}
 }
+
 /**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
-/**
- * 使用 i18n 在新行上打印消息。
- * @param {string} id - 新行的唯一标识符。
- * @param {LocaleKey} key - 翻译键。
- * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ *
+ * @param id
+ * @param key
+ * @param params
  */
 console.freshLineI18n = (id, key, params = {}) => {
 	try {
@@ -587,22 +388,7 @@ console.freshLineI18n = (id, key, params = {}) => {
 		console.stackFrameSkipCount--
 	}
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {void}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {void}
- */
+
 /**
  * 使用 i18n 显示警报。
  * @param {LocaleKey} key - 翻译键。
@@ -612,22 +398,7 @@ console.freshLineI18n = (id, key, params = {}) => {
 export function alertI18n(key, params = {}) {
 	return alert(toString(geti18n(key, params)))
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {string | null}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {string | null}
- */
+
 /**
  * 使用 i18n 显示提示。
  * @param {LocaleKey} key - 翻译键。
@@ -637,22 +408,7 @@ export function alertI18n(key, params = {}) {
 export function promptI18n(key, params = {}) {
 	return prompt(toString(geti18n(key, params)))
 }
-/**
- * 无参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithoutParams} TKey
- * @param {TKey} key
- * @param {Record<string, any>} [params]
- * @returns {boolean}
- */
-/**
- * 有参数的本地化键重载
- * @overload
- * @template {LocaleKeyWithParams} TKey
- * @param {TKey} key
- * @param {LocaleKeyParams[TKey]} params
- * @returns {boolean}
- */
+
 /**
  * 使用 i18n 显示确认。
  * @param {LocaleKey} key - 翻译键。

@@ -1,4 +1,4 @@
-import { geti18n, console } from '../../scripts/i18n.mjs'
+import { geti18n, console } from '../../scripts/i18n/index.mjs'
 
 /**
  * mDNS 服务实例。

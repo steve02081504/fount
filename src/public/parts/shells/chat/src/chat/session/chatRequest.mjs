@@ -12,10 +12,10 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 
-import { localhostLocales } from '../../../../../../../scripts/i18n.mjs'
+import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { getUserByUsername } from '../../../../../../../server/auth.mjs'
+import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {

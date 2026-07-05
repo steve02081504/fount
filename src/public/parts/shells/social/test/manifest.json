@@ -47,7 +47,7 @@
 			"src/public/parts/shells/social/test/frontend/**",
 			"src/scripts/test/playwright/**",
 			"src/scripts/test/ready_gate.mjs",
-			"src/server/auth.mjs",
+			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
 		]
 	},
@@ -63,7 +63,7 @@
 		},
 		{
 			"name": "integration",
-			"heavy": true,
+			"dependsOn": ["server:live"],
 			"trigger": "shellIntegration",
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
@@ -71,9 +71,9 @@
 				"./src/public/parts/shells/social/test/integration/"
 			]
 		},
-		{ "name": "e2e_single", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"], "trigger": "shellLive" },
-		{ "name": "ws", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"], "trigger": "ws" },
-		{ "name": "cross_shell_emoji", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"], "trigger": "crossShellEmoji" },
-		{ "name": "frontend", "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"], "trigger": "frontend" }
+		{ "name": "e2e_single", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"], "trigger": "shellLive" },
+		{ "name": "ws", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"], "trigger": "ws" },
+		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "e2e_single", "shells/chat:pure", "shells/chat:e2e_single"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"], "trigger": "crossShellEmoji" },
+		{ "name": "frontend", "dependsOn": ["server:live", "e2e_single"], "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"], "trigger": "frontend" }
 	]
 }

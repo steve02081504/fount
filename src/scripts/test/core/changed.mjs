@@ -8,7 +8,7 @@ import process from 'node:process'
 
 import { exec } from 'npm:@steve02081504/exec'
 
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 
 /**
  * 收集工作区未提交变更（含未跟踪文件）。
@@ -52,18 +52,44 @@ export async function computeUncommittedHash(repoRoot) {
 }
 
 /**
+ * 返回当前 HEAD commit hash。
+ * @param {string} repoRoot 仓库根
+ * @returns {Promise<string>} commit hash
+ */
+export async function getHeadCommitHash(repoRoot) {
+	const output = await exec('git rev-parse HEAD', { cwd: repoRoot })
+	if (output.code !== 0 || !output.stdout.trim())
+		throw new Error('git rev-parse HEAD failed')
+	return output.stdout.trim()
+}
+
+/**
  * 对比两个 git ref 获取变更文件列表。
  * @param {string} repoRoot 仓库根
  * @param {string} base 基准 ref
  * @param {string} [head='HEAD'] 目标 ref
  * @returns {Promise<string[]>} 变更文件相对路径
  */
-async function diffRefs(repoRoot, base, head = 'HEAD') {
+export async function diffRefs(repoRoot, base, head = 'HEAD') {
 	const output = await exec(`git diff --name-only ${base} ${head}`, { cwd: repoRoot })
 	if (output.code !== 0 || !output.stdout.trim()) return []
 	return output.stdout.trim().split('\n').map(path => path.replace(/\\/g, '/'))
 }
 
+/**
+ * 收集 suite 自记录 commit 以来可能影响的变更文件（含未提交）。
+ * @param {string} repoRoot 仓库根
+ * @param {string | null | undefined} recordedCommit 上次运行时的 HEAD
+ * @param {string[]} uncommittedFiles 未提交文件
+ * @returns {Promise<string[]>} 变更文件列表
+ */
+export async function collectChangesSinceRecord(repoRoot, recordedCommit, uncommittedFiles) {
+	const files = new Set(uncommittedFiles)
+	if (recordedCommit)
+		for (const file of await diffRefs(repoRoot, recordedCommit))
+			files.add(file)
+	return [...files]
+}
 /**
  * 解析变更文件列表。
  * @param {object} options 选项

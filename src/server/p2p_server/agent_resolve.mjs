@@ -3,7 +3,7 @@ import path from 'node:path'
 
 import { agentEntityHash, parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
 import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
-import { getUserDictionary } from '../auth.mjs'
+import { getUserDictionary } from '../auth/index.mjs'
 
 /**
  * @param {string} replicaUsername replica 所有者

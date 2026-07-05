@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { auth_request, getUserByReq } from '../auth.mjs'
+import { auth_request, getUserByReq } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 import { getPartList } from '../parts_loader.mjs'
 

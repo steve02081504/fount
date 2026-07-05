@@ -7,7 +7,8 @@ import { getProfile, updateProfile } from '../../scripts/p2p/entity/profile.mjs'
 import { isEntityHash128 } from '../../scripts/p2p/entity_id.mjs'
 import { assertSafeEvfsLogicalPath } from '../../scripts/p2p/evfs_logical_path.mjs'
 import { applyAvatarToAllLocales } from '../../server/p2p_server/localized.mjs'
-import { isAllowedImageUpload, pickUploadedFile } from '../multipart_upload.mjs'
+
+import { isAllowedImageUpload, pickUploadedFile } from './multipart_upload.mjs'
 
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024
 

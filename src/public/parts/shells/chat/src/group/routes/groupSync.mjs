@@ -11,7 +11,7 @@ import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { getUserByReq } from '../../../../../../../server/auth.mjs'
+import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
 import {
 	deleteArchivesBeforeMonth,

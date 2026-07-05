@@ -1,38 +1,69 @@
-import { console } from '../../i18n.mjs'
-import {
-	failuresToSuiteMap,
-	listFailedManifests,
-	readFailures,
-} from '../core/failures.mjs'
+import { console } from '../../i18n/bare.mjs'
+import { collectChangesSinceRecord } from '../core/changed.mjs'
+import { expandWithDependencies, listImperfectSuites, listOutdatedSuites } from '../core/deps.mjs'
 import { selectSuitesByDiff } from '../core/manifest.mjs'
+import {
+	suiteKey,
+} from '../core/state.mjs'
+
+import {
+	buildContinueReasonsForSuites,
+	pendingContinueReason,
+} from './continue_reason.mjs'
+import { RunReportWriter } from './report.mjs'
 
 /**
- * suite 选择结果。
- * @typedef {object} SuiteSelection
- * @property {'run' | 'exit'} action
- * @property {number} [code]
- * @property {import('../core/manifest.mjs').SuiteDef[]} [suites]
- * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
- * @property {boolean} [usingFailureRetry]
+ * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
+ * @typedef {import('../core/state.mjs').TestState} TestState
  */
 
 /**
- * 按 suite 身份去重（manifestId + name）。
- * @param {import('../core/manifest.mjs').SuiteDef[]} suites 候选 suite
- * @returns {import('../core/manifest.mjs').SuiteDef[]} 去重后的 suite
+ * @typedef {object} SuiteSelection
+ * @property {'run' | 'exit'} action
+ * @property {number} [code]
+ * @property {SuiteDef[]} [suites]
+ * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
+ * @property {RunReportWriter} [reportWriter]
+ * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'outdated'} [mode]
+ * @property {Map<string, import('./continue_reason.mjs').ContinueReason>} [continueReasons]
+ */
+
+/**
+ * @param {SuiteDef[]} suites 候选 suite
+ * @returns {SuiteDef[]} 去重后的 suite
  */
 function dedupeSuites(suites) {
 	const map = new Map()
 	for (const suite of suites)
-		map.set(`${suite.manifestId}\0${suite.name}`, suite)
+		map.set(suiteKey(suite.manifestId, suite.name), suite)
 	return [...map.values()]
 }
 
 /**
- * 从失败记录构建重跑 suite 列表。
- * @param {import('../core/manifest.mjs').SuiteDef[]} candidates 候选 suite
- * @param {Map<string, Map<string, string[] | undefined>>} retryByManifest 失败映射
- * @returns {import('../core/manifest.mjs').SuiteDef[]} 待重跑 suite
+ * @param {TestState} state 现状库
+ * @param {string[] | undefined} manifestIds manifest 范围
+ * @returns {Map<string, Map<string, string[] | undefined>>} manifest -> suite -> 失败文件
+ */
+function buildRetryByManifest(state, manifestIds) {
+	/** @type {Map<string, Map<string, string[] | undefined>>} */
+	const retryByManifest = new Map()
+	for (const [key, entry] of Object.entries(state.suites)) {
+		if (entry.status !== 'failed' && entry.status !== 'noisy') continue
+		const slash = key.indexOf('/')
+		const manifestId = key.slice(0, slash)
+		if (manifestIds?.length && !manifestIds.includes(manifestId)) continue
+		const name = key.slice(slash + 1)
+		const map = retryByManifest.get(manifestId) ?? new Map()
+		map.set(name, entry.failedFiles?.length ? entry.failedFiles : undefined)
+		retryByManifest.set(manifestId, map)
+	}
+	return retryByManifest
+}
+
+/**
+ * @param {SuiteDef[]} candidates 候选
+ * @param {Map<string, Map<string, string[] | undefined>>} retryByManifest 重跑映射
+ * @returns {SuiteDef[]} 待重跑 suite
  */
 function suitesFromFailureRetry(candidates, retryByManifest) {
 	const retryManifestIds = [...retryByManifest.keys()]
@@ -42,20 +73,123 @@ function suitesFromFailureRetry(candidates, retryByManifest) {
 	)
 }
 
-const EMPTY_SELECTION = { retryByManifest: new Map(), usingFailureRetry: false }
+/**
+ * @param {string} repoRoot 仓库根
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @param {TestState} state 现状库
+ * @returns {Promise<Map<string, string[]>>} suite 键 -> 自记录 commit 以来变更文件
+ */
+export async function buildChangedSinceRecordMap(repoRoot, allSuites, state) {
+	/** @type {Map<string, string[]>} */
+	const map = new Map()
+	await Promise.all(allSuites.map(async suite => {
+		const key = suiteKey(suite.manifestId, suite.name)
+		const entry = state.suites[key]
+		map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
+	}))
+	return map
+}
 
 /**
- * 选择本次应执行的 suite 集合。
+ * @param {object} params 参数
+ * @param {string} params.repoRoot 仓库根
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {TestState} params.state 现状库
+ * @param {string} params.commitHash HEAD
+ * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
+ * @returns {Promise<SuiteSelection>} 选择结果
+ */
+export async function selectContinue({
+	repoRoot,
+	allSuites,
+	state,
+	commitHash,
+	uncommittedHash,
+	changedSinceRecordByKey,
+}) {
+	const resumed = await RunReportWriter.resume(repoRoot)
+	if (resumed?.pendingSlots.length) {
+		const pendingRuns = resumed.pendingSlots
+			.map(pending => ({
+				suite: allSuites.find(s => s.manifestId === pending.manifestId && s.name === pending.name),
+				index: pending.index,
+			}))
+			.filter(item => item.suite)
+			.sort((a, b) => a.index - b.index)
+		if (pendingRuns.length) {
+			/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
+			const continueReasons = new Map()
+			for (const item of pendingRuns)
+				continueReasons.set(suiteKey(item.suite.manifestId, item.suite.name), pendingContinueReason())
+			return {
+				action: 'run',
+				mode: 'continue-pending',
+				suites: pendingRuns.map(item => item.suite),
+				reportWriter: resumed,
+				retryByManifest: new Map(),
+				continueReasons,
+			}
+		}
+	}
+
+	const imperfect = listImperfectSuites(allSuites, state, commitHash, uncommittedHash, changedSinceRecordByKey)
+	if (imperfect.length)
+		return {
+			action: 'run',
+			mode: 'continue-imperfect',
+			suites: imperfect,
+			retryByManifest: buildRetryByManifest(state),
+			continueReasons: buildContinueReasonsForSuites(
+				imperfect, state, commitHash, uncommittedHash, changedSinceRecordByKey,
+			),
+		}
+
+	return { action: 'exit', code: 0 }
+}
+
+/**
+ * @param {object} params 参数
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {TestState} params.state 现状库
+ * @param {SuiteDef[]} [params.filtered] 过滤范围
+ * @param {string} params.commitHash HEAD
+ * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
+ * @returns {SuiteSelection} 选择结果
+ */
+export function selectOutdated({
+	allSuites,
+	state,
+	filtered,
+	commitHash,
+	uncommittedHash,
+	changedSinceRecordByKey,
+}) {
+	const scope = filtered ?? allSuites
+	const outdated = listOutdatedSuites(scope, state, commitHash, uncommittedHash, changedSinceRecordByKey)
+	return {
+		action: 'run',
+		mode: 'outdated',
+		suites: outdated,
+		retryByManifest: new Map(),
+	}
+}
+
+/**
  * @param {object} params 选择参数
  * @param {string} params.repoRoot 仓库根
- * @param {import('../core/manifest.mjs').SuiteDef[]} params.allSuites 全部 suite
- * @param {import('../core/manifest.mjs').SuiteDef[]} params.filtered manifest/suite 过滤后
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {SuiteDef[]} params.filtered manifest/suite 过滤后
  * @param {{ mode: string, files: string[] }} params.changed 变更文件解析结果
  * @param {boolean} params.runAll 是否全量
  * @param {string[]} [params.manifestIds] manifest id 列表
- * @param {boolean} [params.explicitSuites] 是否显式指名 suite（分组冒号语法）
- * @param {string | null} params.currentHash 当前未提交 digest
+ * @param {boolean} [params.explicitSuites] 是否显式指名 suite
+ * @param {string} params.commitHash 当前 HEAD
+ * @param {string | null} params.uncommittedHash 当前未提交 digest
  * @param {string[]} params.uncommittedFiles 未提交路径列表
+ * @param {TestState} params.state 现状库
+ * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
  * @returns {Promise<SuiteSelection>} 选择结果
  */
 export async function selectSuites({
@@ -66,30 +200,21 @@ export async function selectSuites({
 	runAll,
 	manifestIds,
 	explicitSuites,
-	currentHash,
+	commitHash,
+	uncommittedHash,
 	uncommittedFiles,
+	state,
+	changedSinceRecordByKey,
 }) {
-	// 全量或显式指名 suite 时，按用户给定子集执行，不与失败记录求交集。
 	if (runAll || explicitSuites)
-		return { action: 'run', suites: filtered, ...EMPTY_SELECTION }
-
-	const singleManifest = manifestIds?.length === 1 ? manifestIds[0] : undefined
-	const failureManifestIds = singleManifest
-		? [singleManifest]
-		: manifestIds?.length
-			? []
-			: await listFailedManifests(repoRoot)
-
-	const retryByManifest = new Map()
-	const failureRecords = new Map()
-	for (const manifestId of failureManifestIds) {
-		const record = await readFailures(repoRoot, manifestId)
-		if (record?.items.length) {
-			retryByManifest.set(manifestId, failuresToSuiteMap(record))
-			failureRecords.set(manifestId, record)
+		return {
+			action: 'run',
+			mode: 'normal',
+			suites: filtered,
+			retryByManifest: buildRetryByManifest(state, manifestIds),
 		}
-	}
 
+	const retryByManifest = buildRetryByManifest(state, manifestIds)
 	const usingFailureRetry = retryByManifest.size > 0
 	let selected = filtered
 
@@ -100,9 +225,13 @@ export async function selectSuites({
 			count: selected.length,
 		})
 
-		const hashStale = uncommittedFiles.length > 0 && [...failureRecords.values()].some(record =>
-			record.uncommittedHash == null || record.uncommittedHash !== currentHash,
-		)
+		const hashStale = uncommittedFiles.length > 0 && [...retryByManifest.keys()].some(manifestId => {
+			for (const [key, entry] of Object.entries(state.suites)) {
+				if (!key.startsWith(`${manifestId}/`)) continue
+				if (entry.uncommittedHash == null || entry.uncommittedHash !== uncommittedHash) return true
+			}
+			return false
+		})
 		if (hashStale && changed.mode === 'diff' && changed.files.length) {
 			const merged = dedupeSuites([...selected, ...selectSuitesByDiff(changed.mode, changed.files, filtered)])
 			console.logI18n('fountConsole.test.hashStaleAppendDiff', {
@@ -122,7 +251,7 @@ export async function selectSuites({
 	else if (changed.mode === 'none' && !manifestIds?.length) {
 		console.logI18n('fountConsole.test.noChangesHint')
 		console.logI18n('fountConsole.test.tip')
-		if (!failureManifestIds.length) return { action: 'exit', code: 0 }
+		if (!usingFailureRetry) return { action: 'exit', code: 0 }
 		selected = suitesFromFailureRetry(allSuites, retryByManifest)
 		if (!selected.length) return { action: 'exit', code: 0 }
 	}
@@ -131,14 +260,21 @@ export async function selectSuites({
 			manifestIds: manifestIds.join(','),
 		})
 
-	return { action: 'run', suites: selected, retryByManifest, usingFailureRetry }
+	return {
+		action: 'run',
+		mode: 'normal',
+		suites: selected,
+		retryByManifest,
+	}
 }
 
 /**
- * 是否启用失败列表读写。
- * @param {string[] | undefined} manifestIds manifest id 列表
- * @returns {boolean} 是否跟踪失败
+ * @param {SuiteDef[]} selected 已选 suite
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @param {TestState} state 现状库
+ * @param {object} ctx 依赖扩展上下文
+ * @returns {SuiteDef[]} 扩展并拓扑排序后的 suite
  */
-export function shouldTrackFailures(manifestIds) {
-	return (manifestIds?.length ?? 0) >= 1
+export function finalizeSelection(selected, allSuites, state, ctx) {
+	return expandWithDependencies(selected, allSuites, state, ctx)
 }

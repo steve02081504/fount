@@ -1,9 +1,8 @@
 /**
  * 用户级 trustedAuthors（settings/trustedAuthors.json），chat / social 共用。
  */
-import { isHex64 } from '../scripts/p2p/hexIds.mjs'
-
-import { loadData, saveData } from './setting_loader.mjs'
+import { isHex64 } from '../../../../../scripts/p2p/hexIds.mjs'
+import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 
 const DATANAME = 'trustedAuthors'
 

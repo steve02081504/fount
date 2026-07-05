@@ -21,7 +21,7 @@ import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
 } from '../../scripts/p2p/personal_block.mjs'
-import { authenticate, getUserByReq } from '../auth.mjs'
+import { authenticate, getUserByReq } from '../auth/index.mjs'
 import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } from '../p2p_server/http_glue.mjs'
 import {
 	getFederationViewForUser,

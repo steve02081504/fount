@@ -5,7 +5,7 @@ import {
 } from '../../scripts/p2p/entity/replica.mjs'
 import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
 import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_registry.mjs'
-import { getUserByReq } from '../auth.mjs'
+import { getUserByReq } from '../auth/index.mjs'
 
 import { getRecoveryPubKeyHex, resolveOperatorEntityHashForUser } from './operator_identity.mjs'
 

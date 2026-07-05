@@ -7,7 +7,7 @@ import open from 'npm:open'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { in_docker, in_termux } from '../scripts/env.mjs'
-import { console, geti18n } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n/bare.mjs'
 import { __dirname } from '../server/base.mjs'
 import { hosturl, restartor, setDefaultStuff } from '../server/server.mjs'
 

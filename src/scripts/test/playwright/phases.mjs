@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pathToFileURL } from 'node:url'
 
-import { console } from '../../i18n.mjs'
+import { console } from '../../i18n/bare.mjs'
 import {
 	isIncludedInTestOnly,
 	parseTestOnlyEnv,

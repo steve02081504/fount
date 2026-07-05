@@ -9,6 +9,7 @@ import { registerGroupsRuntimeRoutes } from './endpoints/groups_runtime.mjs'
 import { registerMailboxRoutes } from './endpoints/mailbox.mjs'
 import { registerPrefsRoutes } from './endpoints/prefs.mjs'
 import { registerSessionRoutes } from './endpoints/sessions.mjs'
+import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
 import { registerWsRoutes } from './endpoints/ws.mjs'
 import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpoints.mjs'
 
@@ -26,4 +27,5 @@ export function setEndpoints(router) {
 	registerWsRoutes(router)
 	registerGroupsRuntimeRoutes(router)
 	registerSessionRoutes(router)
+	registerTrustedAuthorsRoutes(router)
 }

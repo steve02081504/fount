@@ -1,4 +1,4 @@
-import { getUserDictionary } from '../../../server/auth.mjs'
+import { getUserDictionary } from '../../../server/auth/index.mjs'
 
 /**
  * @param {string} username replica

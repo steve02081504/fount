@@ -9,7 +9,7 @@ import { randomUUID } from 'node:crypto'
 import { access, mkdir, readFile } from 'node:fs/promises'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { geti18nForUser } from '../../../../../../../scripts/i18n.mjs'
+import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from '../../../../../../../scripts/p2p/constants.mjs'
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
