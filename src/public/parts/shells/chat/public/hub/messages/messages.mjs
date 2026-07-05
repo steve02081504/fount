@@ -92,14 +92,14 @@ export async function submitComposer() {
 	}
 }
 
-watchHubState('focusedMessageEventId', eventId => {
+watchHubState('messages.focusedMessageEventId', eventId => {
 	if (!eventId) return
-	void scrollToMessageEventId(String(eventId)).finally(() => setHubState('focusedMessageEventId', null))
+	void scrollToMessageEventId(String(eventId)).finally(() => setHubState('messages.focusedMessageEventId', null))
 })
 
 /** @param {string | null} eventId @returns {void} */
 export function focusMessageEventId(eventId) {
-	setHubState('focusedMessageEventId', eventId ? String(eventId).trim() : null)
+	setHubState('messages.focusedMessageEventId', eventId ? String(eventId).trim() : null)
 }
 
 /**

@@ -15,16 +15,8 @@ import { USER_ROOM_SCOPE } from './room_scopes.mjs'
  * @returns {void}
  */
 function attachUserRoomChunkHandlers(username, wire) {
-	import('./files/chunk_fetch.mjs').then(({ handleIncomingChunkGet, resolvePendingChunkFetch }) => {
-		wire.on('fed_chunk_get', (data, peerId) => {
-			void handleIncomingChunkGet(username, data, (resp) => {
-				try { wire.send('fed_chunk_data', resp, peerId) }
-				catch { /* disconnected */ }
-			}, peerId)
-		})
-		wire.on('fed_chunk_data', data => {
-			resolvePendingChunkFetch(data)
-		})
+	import('./files/chunk_responder.mjs').then(({ attachNodeScopeFedChunkResponder }) => {
+		attachNodeScopeFedChunkResponder(username, wire)
 	}).catch(error => console.error('p2p: failed to attach chunk handlers to node scope', error))
 }
 

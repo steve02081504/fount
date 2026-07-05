@@ -18,7 +18,7 @@ import {
 import { registerOperatorKeyChainProvider } from '../../../../scripts/p2p/timeline/write_auth.mjs'
 import { getAllUserNames } from '../../../../server/auth.mjs'
 
-import { handleSocialRpc } from './src/discovery.mjs'
+import { handleSocialRpc } from './src/discover/rpc.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'

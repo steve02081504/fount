@@ -9,13 +9,19 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { initNode } from '../../node/instance.mjs'
-import { sendToNode } from '../../trust_graph_send.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { deliverToUserRoomPeers } from '../../user_room.mjs'
+import {
+	createDefaultTrustGraphProvider,
+	DEFAULT_TRUST_GRAPH_OWNER,
+	registerTrustGraphProvider,
+	requireTrustGraphProvider,
+} from '../../trust_graph_registry.mjs'
 
 Deno.test('sendToNode returns false for blank target node hash', async () => {
-	assertEquals(await sendToNode('test-user', '', 'mailbox-give', {}), false)
-	assertEquals(await sendToNode('test-user', '   ', 'mailbox-give', {}), false)
+	registerTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER, createDefaultTrustGraphProvider())
+	assertEquals(await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).sendToNode('test-user', '', 'mailbox-give', {}), false)
+	assertEquals(await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).sendToNode('test-user', '   ', 'mailbox-give', {}), false)
 })
 
 Deno.test('deliverToUserRoomPeers returns 0 when user room is unavailable', async () => {
@@ -23,7 +29,7 @@ Deno.test('deliverToUserRoomPeers returns 0 when user room is unavailable', asyn
 	try {
 		await mkdir(dir, { recursive: true })
 		await writeFile(join(dir, 'node.json'), JSON.stringify({ nodeSeedHex: Buffer.alloc(32, 3).toString('hex') }))
-		initNode({ nodeDir: dir })
+		initTestP2pNode({ nodeDir: dir })
 		assertEquals(await deliverToUserRoomPeers('__no_such_user__', 'mailbox-give', { x: 1 }), 0)
 	}
 	finally {

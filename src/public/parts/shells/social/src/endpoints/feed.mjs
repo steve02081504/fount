@@ -1,7 +1,7 @@
-import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
-import { buildHomeFeed } from '../../feed.mjs'
-import { syncFollowingTimelines } from '../../timeline/sync.mjs'
-import { registerFeedSocket } from '../../ws/feedHub.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
+import { buildHomeFeed } from '../feed.mjs'
+import { syncFollowingTimelines } from '../timeline/sync.mjs'
+import { registerFeedSocket } from '../ws/feedHub.mjs'
 
 /**
  * 注册 feed 与 WebSocket 相关路由。

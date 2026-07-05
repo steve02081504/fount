@@ -2,7 +2,7 @@ import { normalizeHex64 } from '../hexIds.mjs'
 import { allowMailboxRelayForTier } from '../mailbox_importance.mjs'
 import { takeIncomingMailboxPutSlot } from '../mailbox_rate.mjs'
 import { getNodeTransportSettings, getNodeHash } from '../node/identity.mjs'
-import { sendToNode } from '../trust_graph_send.mjs'
+import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from '../trust_graph_registry.mjs'
 import { deliverToUserRoomPeers, ensureUserRoom } from '../user_room.mjs'
 
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'
@@ -80,7 +80,7 @@ export async function deliverOrStoreMailboxPut(username, opts) {
 	const stored = await storeMailboxRecord(record)
 	const toNodeHash = opts.toNodeHash?.trim().toLowerCase()
 	const delivered = toNodeHash && isMailboxRecordWithinSizeLimit(record)
-		? await sendToNode(username, toNodeHash, 'mailbox_put', { nodeHash, record })
+		? await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).sendToNode(username, toNodeHash, 'mailbox_put', { nodeHash, record })
 		: false
 
 	let relayed = 0

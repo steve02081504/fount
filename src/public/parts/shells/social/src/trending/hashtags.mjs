@@ -1,14 +1,9 @@
 import { readFile } from 'node:fs/promises'
 
-import { isEntityHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { pickNodeScore } from '../../../../../../scripts/p2p/reputation_store.mjs'
-import { shouldHideAuthorByReputation } from '../../../../../../scripts/p2p/reputation_social.mjs'
 import { getUserDictionary } from '../../../../../../server/auth.mjs'
-import { listKnownTimelineOwners, loadViewerContext } from '../feed/helpers.mjs'
-import { canViewPost } from '../feedVisibility.mjs'
+import { loadViewerContext } from '../feed/helpers.mjs'
+import { iterateVisiblePosts } from '../feed/iterate.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
-import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 /**
  * 判断本地是否持有可读时间线 events.jsonl。
@@ -39,20 +34,11 @@ export async function buildTrendingHashtags(username, options = {}) {
 	/** @type {Map<string, number>} */
 	const counts = new Map()
 
-	for (const entityHash of await listKnownTimelineOwners(username)) {
-		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked(entityHash)) continue
-		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue
+	for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
 		if (!await timelineExists(username, entityHash)) continue
-		const view = await getTimelineMaterialized(username, entityHash)
-		for (const post of view.posts) {
-			const enriched = { ...post, entityHash }
-			if (!canViewPost(enriched, viewerContext))
-				continue
-			if (!post.content?.text) continue
-			for (const tag of extractHashtagsFromText(post.content?.text))
-				counts.set(tag, (counts.get(tag) || 0) + 1)
-		}
+		if (!post.content?.text) continue
+		for (const tag of extractHashtagsFromText(post.content?.text))
+			counts.set(tag, (counts.get(tag) || 0) + 1)
 	}
 
 	const tags = [...counts.entries()]

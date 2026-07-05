@@ -30,7 +30,7 @@ export function wireForkActions() {
 		if (branchButton) branchButton.disabled = true
 		try {
 			await setGovernanceBranch(hubStore.context.currentGroupId, selectedForkTipId())
-			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
+			setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
 			await loadMessages()
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.applyBranchOk')
@@ -49,7 +49,7 @@ export function wireForkActions() {
 		if (autoBranchButton) autoBranchButton.disabled = true
 		try {
 			await setGovernanceBranch(hubStore.context.currentGroupId, null)
-			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
+			setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
 			await loadMessages()
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.autoBranchOk')
@@ -103,7 +103,7 @@ export function wireForkActions() {
 		try {
 			const { blocked } = await blockOpposingForkBranch(hubStore.context.currentGroupId, accepted)
 			await loadMessages()
-			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
+			setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.blockOpposingOk', { count: blocked.length })
 		}
@@ -122,7 +122,7 @@ export function wireForkActions() {
 		try {
 			await mergeDagTips(hubStore.context.currentGroupId)
 			await loadMessages()
-			setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
+			setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
 			await refreshDagForkBanner()
 			showToastI18n('success', 'chat.hub.mergeDagOk')
 		}

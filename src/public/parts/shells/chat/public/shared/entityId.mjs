@@ -1,7 +1,6 @@
+import { AGENT_SUBJECT_PREFIX, encodeEntityHash } from '../../../../../../scripts/p2p/entity_id_parse.mjs'
 import { sha256Hex, sha256TextHex } from './digest.mjs'
 import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
-
-const AGENT_SUBJECT_PREFIX = 'fount:chat:agent:'
 
 /**
  * @param {unknown} pubKeyHex 32 字节公钥 hex
@@ -29,13 +28,8 @@ export async function agentSubjectHash(charPartPath) {
  * @param {string} subjectHash 主体 hash（64 hex）
  * @returns {string} 128 位 entityHash
  */
-export function encodeEntityHash(nodeHash, subjectHash) {
-	const node = normalizeHex64(nodeHash)
-	const subject = normalizeHex64(subjectHash)
-	if (!isHex64(node) || !isHex64(subject))
-		throw new Error('invalid entity hash parts')
-	return node + subject
-}
+
+export { encodeEntityHash }
 
 /**
  * @param {string} nodeHash 节点 hash

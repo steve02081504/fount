@@ -159,36 +159,22 @@ export function watchHubPath(path, listener) {
 }
 
 /**
- * 订阅 Hub 关键字段（支持点分路径；旧扁平键名映射到嵌套路径）。
- * @param {string} key 字段名或点分路径
+ * 订阅 Hub 嵌套字段（点分路径）。
+ * @param {string} path 点分路径
  * @param {(value: unknown) => void} listener 变更回调
  * @returns {() => void} 取消订阅函数
  */
-export function watchHubState(key, listener) {
-	const legacyMap = {
-		currentGroupId: 'context.currentGroupId',
-		currentChannelId: 'context.currentChannelId',
-		currentState: 'context.currentState',
-		focusedMessageEventId: 'messages.focusedMessageEventId',
-	}
-	const path = legacyMap[key] || key
+export function watchHubState(path, listener) {
 	return watchHubPath(path, listener)
 }
 
 /**
  * 设置 Hub 字段并触发订阅回调（值未变化时不触发）。
- * @param {string} key 字段名或点分路径
+ * @param {string} path 点分路径
  * @param {unknown} value 新值
  * @returns {void}
  */
-export function setHubState(key, value) {
-	const legacyMap = {
-		currentGroupId: 'context.currentGroupId',
-		currentChannelId: 'context.currentChannelId',
-		currentState: 'context.currentState',
-		focusedMessageEventId: 'messages.focusedMessageEventId',
-	}
-	const path = legacyMap[key] || key
+export function setHubState(path, value) {
 	setHubPathValue(path, value)
 }
 
@@ -198,11 +184,5 @@ export function setHubState(key, value) {
  * @returns {unknown} 当前字段值
  */
 export function getHubState(path) {
-	const legacyMap = {
-		currentGroupId: 'context.currentGroupId',
-		currentChannelId: 'context.currentChannelId',
-		currentState: 'context.currentState',
-		focusedMessageEventId: 'messages.focusedMessageEventId',
-	}
-	return getHubPathValue(legacyMap[path] || path)
+	return getHubPathValue(path)
 }

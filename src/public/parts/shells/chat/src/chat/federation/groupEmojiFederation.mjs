@@ -139,10 +139,10 @@ export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId) 
 		pendingFetches.set(key, { resolve, timer })
 	})
 	const { ensureUserRoom, deliverToUserRoomPeers } = await import('../../../../../../../scripts/p2p/user_room.mjs')
-	const { fanoutToTopNodes } = await import('../../../../../../../scripts/p2p/trust_graph_send.mjs')
+	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('../../../../../../../scripts/p2p/trust_graph_registry.mjs')
 	await ensureUserRoom({ replicaUsername: username })
 	await deliverToUserRoomPeers(username, 'fed_emoji_want', payload)
-	await fanoutToTopNodes(username, 'fed_emoji_want', payload, 6)
+	await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'fed_emoji_want', payload, 6)
 	return await resultPromise
 }
 

@@ -21,7 +21,7 @@ import {
 	storeMailboxRecord,
 } from '../../mailbox/store.mjs'
 import { ensureNodeDefaults } from '../../node/identity.mjs'
-import { initNode } from '../../node/instance.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 
 const RECIPIENT = 'a'.repeat(64)
 const FROM_NODE = 'b'.repeat(64)
@@ -34,7 +34,7 @@ const USER = 'mailbox-integrate-user'
  */
 async function withTempNodeDir(testFn) {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-mailbox-int-'))
-	initNode({ nodeDir: dir })
+	initTestP2pNode({ nodeDir: dir })
 	await mkdir(join(dir, 'mailbox'), { recursive: true })
 	ensureNodeDefaults()
 	try {

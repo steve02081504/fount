@@ -7,7 +7,6 @@ export const CHAT_API_PREFIX = '/api/parts/shells\\:chat'
 export {
 	CHAT_API_CLIENT_PREFIX,
 	GROUPS_CLIENT_PREFIX,
-	groupApiPath,
 } from '../../../public/shared/apiPaths.mjs'
 
 /** 群集合 REST 前缀（Express 路由注册）。 */

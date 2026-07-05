@@ -420,9 +420,10 @@ export async function launchNode(options = {}) {
 	/** @type {Record<string, string>} */
 	const extraEnv = { ...options.extraEnv }
 	let usedTestRelay = false
+	let p2pRelayUrl
 	if (starts.P2P === true) {
 		const { relayUrl } = await startTestNostrRelay()
-		extraEnv.FOUNT_TEST_RELAY_URLS = relayUrl
+		p2pRelayUrl = relayUrl
 		usedTestRelay = true
 	}
 
@@ -446,6 +447,8 @@ export async function launchNode(options = {}) {
 		workerArgs.push('--load-part', part)
 	if (options.bootstrap)
 		workerArgs.push('--bootstrap', resolve(options.bootstrap))
+	if (p2pRelayUrl)
+		workerArgs.push('--p2p-relay-url', p2pRelayUrl)
 
 	await options.releasePort?.()
 

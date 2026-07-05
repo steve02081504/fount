@@ -210,7 +210,7 @@ export function createLinkRegistry(opts = {}) {
 			if (!providerIds.has('bt') && process.env.FOUNT_ENABLE_BT_DISCOVERY === '1')
 				registerDiscoveryProvider(createBluetoothDiscoveryProvider())
 			if (!providerIds.has('nostr'))
-				// 测试环境通过 FOUNT_TEST_RELAY_URLS 注入共享 loopback relay；生产则回落到用户 relay + 默认公网 relay。
+				// 测试通过 initNode({ signaling: { relayOverride } }) 注入共享 loopback relay；生产则回落到用户 relay + 默认公网 relay。
 				// 新 discovery 栈也必须尊重这层 runtime override，否则 live 双节点测试会各打各的公网 relay。
 				registerDiscoveryProvider(createNostrDiscoveryProvider({
 					relayUrls: getSignalingRuntimeConfig().relayOverride

@@ -1,6 +1,8 @@
+import { loadFollowingForActor } from '../following.mjs'
 import { loadPersonalFilterSets } from '../../../../../../scripts/p2p/personal_block.mjs'
 import { socialPostKey } from '../../../../../../scripts/p2p/social/post_key.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { loadFollowing } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { getTimelineOwnerIndex, listLocalEntitiesForNode } from '../timeline/ownerIndex.mjs'
 
@@ -22,21 +24,8 @@ export async function listLocalTimelineOwners(username, options = {}) {
  * @returns {Promise<string[]>} 已知时间线 owner
  */
 export async function listKnownTimelineOwners(username) {
-	const operator = await resolveOperatorEntityHash(username)
-	if (!operator) return []
-	const view = await getTimelineMaterialized(username, operator)
-	return [...new Set([...view.following.map(id => id.toLowerCase()), operator.toLowerCase()])]
-}
-
-/**
- * @param {string} username 用户
- * @param {'known' | 'local'} [scope='known'] known=关注+自己；local=磁盘全部
- * @returns {Promise<string[]>} 时间线 owner 列表
- */
-export async function listTimelineOwners(username, scope = 'known') {
-	return scope === 'local'
-		? listLocalTimelineOwners(username)
-		: listKnownTimelineOwners(username)
+	const { following } = await loadFollowing(username)
+	return following
 }
 
 /**
@@ -102,10 +91,9 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
 	const following = new Set(
 		viewer
-			? (await getTimelineMaterialized(username, viewer)).following.map(id => id.toLowerCase())
+			? (await loadFollowingForActor(username, viewer)).following.map(id => id.toLowerCase())
 			: [],
 	)
-	if (viewer) following.add(viewer.toLowerCase())
 	const personalFilter = viewer
 		? await loadPersonalFilterSets(viewer)
 		: {

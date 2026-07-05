@@ -9,9 +9,7 @@ import {
 import { FEDERATION_CHUNK_FETCH_FANOUT_K } from '../constants.mjs'
 import { ensureLinkToNode, listLinks } from '../link_registry.mjs'
 import { loadNetwork } from '../network.mjs'
-import { buildMergedGraph } from '../trust_graph_build.mjs'
 import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from '../trust_graph_registry.mjs'
-import { sendToNode } from '../trust_graph_send.mjs'
 
 import { verifiedChunkBytes } from './chunk_fetch_verify.mjs'
 import { fetchFederationChunk, resolveNodeHash } from './chunk_provider_registry.mjs'
@@ -74,13 +72,14 @@ export async function fetchChunk(context) {
 		chunkHash: hash,
 		ownerEntityHash: context.ownerEntityHash,
 	}
-	const graph = await buildMergedGraph(username)
+	const graph = await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).buildMergedGraph(username)
 	const peerTargets = chunkFetchPeerTargets()
 	await Promise.all(peerTargets.map(nodeHash => ensureLinkToNode(nodeHash).catch(() => null)))
+	const tg = requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER)
 	// 已直连 / follow hint peer 可能不在 trust-graph top-K（非成员 emoji CAS / Social 预览路径）。
 	for (const nodeHash of peerTargets)
-		void sendToNode(username, nodeHash, 'fed_chunk_get', payload, graph)
-	await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(
+		void tg.sendToNode(username, nodeHash, 'fed_chunk_get', payload, graph)
+	await tg.fanoutToTopNodes(
 		username,
 		'fed_chunk_get',
 		payload,

@@ -45,7 +45,7 @@ alwaysApply: false
 
 **If `node-datachannel` init fails with `prebuild-install ... EBUSY` on Windows, treat it as an environment file-lock issue first.** Stop other Deno / `fount test` jobs that may still hold `node_modules/.deno/node-datachannel/**/node_datachannel.node`, then retry; do not misclassify that as a sim/live logic regression.
 
-**When a federated live test shows `federationEnabled=true` but `peers=0`, check runtime bootstrap before touching DAG logic.** The common regressions are: (1) the new discovery path stopped honoring `FOUNT_TEST_RELAY_URLS` / runtime `relayOverride`, so each node no longer shares the loopback relay; or (2) owner rooms never called `registry.ensureRuntime()` on startup, so the room exists but never advertises/listens until the first outbound dial.
+**When a federated live test shows `federationEnabled=true` but `peers=0`, check runtime bootstrap before touching DAG logic.** The common regressions are: (1) the test node worker stopped passing `--p2p-relay-url` / `initNode({ signaling: { relayOverride } })`, so each node no longer shares the loopback relay; or (2) owner rooms never called `registry.ensureRuntime()` on startup, so the room exists but never advertises/listens until the first outbound dial.
 
 **When `peers=1` but both sides stay at `members=1`, suspect pre-member bootstrap ACL, not transport.** The link is already up; the usual blocker is that group scope authorization still rejects bootstrap control-plane actions (`fed_join_snapshot_*`, `fed_tip_*`, bootstrap/discovery relay actions) before the remote member has fully materialized, causing a deadlock where transport is healthy but catchup can never complete.
 

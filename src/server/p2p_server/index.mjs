@@ -14,14 +14,14 @@ import { getInfoDefaultsForEntity, localesFromRequest } from './presentation.mjs
 import { pickPrimaryReplica } from './user_notify.mjs'
 
 /**
- * @param {{ dataPath: string }} options fount 数据根目录
+ * @param {{ dataPath: string, signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} options fount 数据根目录
  * @returns {Promise<void>}
  */
-export async function initP2PServer({ dataPath }) {
+export async function initP2PServer({ dataPath, signaling }) {
 	const nodeDir = path.join(dataPath, 'p2p', 'node')
 	await mkdir(nodeDir, { recursive: true })
 	const entityStore = createFountEntityStore()
-	initNode({ nodeDir, entityStore })
+	initNode({ nodeDir, entityStore, ...signaling ? { signaling } : {} })
 	const { createDefaultTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
 	const { registerTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())

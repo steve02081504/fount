@@ -176,7 +176,8 @@ Deno.test('remote author profile + posts do not break feed/discover', async () =
 		{ type: 'post', content: { text: 'remote authored post', visibility: 'public' } },
 	])
 
-	const profile = await feed.getEntityProfile(username, remoteOwner)
+	const entityProfile = await import('../../src/lib/entityProfile.mjs')
+	const profile = await entityProfile.getEntityProfile(username, remoteOwner)
 	assert(profile, 'remote profile should resolve to derived defaults')
 
 	await following.setFollow(username, operator, remoteOwner, true)
@@ -217,7 +218,8 @@ Deno.test('remote entity profile uses subjectHash placeholder not local persona'
 
 	const { resolvePersonaPresentation } = await import('fount/server/p2p_server/presentation.mjs')
 	const personaName = (await resolvePersonaPresentation(username)).displayName
-	const profile = await feed.getEntityProfile(username, remoteOwner)
+	const entityProfile = await import('../../src/lib/entityProfile.mjs')
+	const profile = await entityProfile.getEntityProfile(username, remoteOwner)
 	const placeholder = `${subject.slice(0, 8)}…${subject.slice(-4)}`
 	assert(profile?.name === placeholder, 'remote profile falls back to subjectHash placeholder')
 	assert(profile?.name !== personaName, 'remote profile must not reuse local persona name')

@@ -10,19 +10,16 @@ import { reputationSortPenalty, shouldHideAuthorByReputation } from '../../../..
 import {
 	buildPostFeedItem,
 	buildRepostFeedItem,
-	createEngagementForPost,
 	withDecryptedPostContent,
 } from './feed/buildItem.mjs'
 import {
-	buildEngagementIndex,
-	buildViewerLikedSet,
 	listKnownTimelineOwners,
 	loadViewerContext,
 } from './feed/helpers.mjs'
+import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing } from './following.mjs'
-import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
@@ -80,10 +77,8 @@ export async function buildHomeFeed(username, options = {}) {
 	const viewerContext = await loadViewerContext(username)
 	const feedSources = new Set(following)
 
-	const engagement = await buildEngagementIndex(username, feedSources)
-	const viewerLiked = await buildViewerLikedSet(username)
-	const authorProfile = createAuthorProfileLoader(username)
-	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
+	const viewerContext = await loadViewerContext(username)
+	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username, feedSources)
 	const feedItemBuildContext = { authorProfile, engagementForPost }
 
 	/** @type {{ candidates: object[], index: number }[]} */
@@ -183,14 +178,8 @@ export async function buildProfileFeedItems(username, entityHash) {
 		return { entityHash, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const engagement = await buildEngagementIndex(username)
-	const viewerLiked = await buildViewerLikedSet(username)
-	const authorProfile = createAuthorProfileLoader(username)
-	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
+	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username)
 	const feedItemBuildContext = { authorProfile, engagementForPost }
-
-	const view = await getTimelineMaterialized(username, entityHash)
-	if (!view.posts?.length)
 		return { entityHash, items: [] }
 
 	/** @type {object[]} */
@@ -219,10 +208,7 @@ export async function buildLikedFeedItems(username, entityHash) {
 		return { entityHash, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const engagement = await buildEngagementIndex(username)
-	const viewerLiked = await buildViewerLikedSet(username)
-	const authorProfile = createAuthorProfileLoader(username)
-	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
+	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username)
 	const feedItemBuildContext = { authorProfile, engagementForPost }
 
 	const view = await getTimelineMaterialized(username, entityHash)
@@ -279,17 +265,4 @@ export async function listReplies(username, entityHash, postId) {
 		return rw - lw
 	})
 	return replies
-}
-
-/**
- * 获取 entity 的 Chat profile（必要时自动创建本地资料）。
- * @param {string} username 用户
- * @param {string} entityHash 目标
- * @returns {Promise<object | null>} chat entities profile
- */
-export async function getEntityProfile(username, entityHash) {
-	if (!isEntityHash128(entityHash)) return null
-	// getProfile 对本地实体会自动落盘创建，对远端实体返回派生默认资料；
-	// 不可用 ensureLocalEntityProfile（其对非本地实体抛错），否则查看远端账户会 500。
-	return getProfile(entityHash, username)
 }

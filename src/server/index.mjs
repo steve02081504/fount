@@ -16,8 +16,8 @@ import { setWindowTitle } from '../scripts/title.mjs'
  * @returns {void}
  */
 function rejectTestEnvInProductionEntry() {
-	if (process.env.FOUNT_TEST === '1' || String(process.env.FOUNT_TEST_RELAY_URLS || '').trim()) {
-		console.error('FOUNT_TEST / FOUNT_TEST_RELAY_URLS must not be set when starting production server (src/server/index.mjs)')
+	if (process.env.FOUNT_TEST === '1') {
+		console.error('FOUNT_TEST must not be set when starting production server (src/server/index.mjs)')
 		process.exit(1)
 	}
 }

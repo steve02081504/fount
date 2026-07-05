@@ -17,8 +17,7 @@ import {
 } from '../../../../../../../scripts/p2p/chunk_fetch_scheduler.mjs'
 import { compositeKey } from '../../../../../../../scripts/p2p/composite_key.mjs'
 import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/constants.mjs'
-import { handleIncomingChunkGet } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
-import { resolvePendingChunkFetch } from '../../../../../../../scripts/p2p/chunk_fetch_pending.mjs'
+import { handleFedChunkGetIngress, handleFedChunkDataIngress } from '../../../../../../../scripts/p2p/files/chunk_responder.mjs'
 import { verifiedChunkBytes } from '../../../../../../../scripts/p2p/files/chunk_fetch_verify.mjs'
 import { getChunk, hasChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from '../../../../../../../scripts/p2p/hexIds.mjs'
@@ -423,14 +422,14 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (!CHUNK_HASH_RE.test(hash)) return
 			const requestId = String(data.requestId || '')
 			if (requestId) {
-				await handleIncomingChunkGet(username, data, (resp, pid) => {
+				await handleFedChunkGetIngress(username, data, peerId, (resp, pid) => {
 					try {
 						sendChunkData(resp, pid)
 					}
 					catch (error) {
 						console.warn('federation: fed_chunk_get response failed', error)
 					}
-				}, peerId)
+				})
 				return
 			}
 			const loc = `local:${groupId}/chunks/${hash}.bin`
@@ -464,7 +463,7 @@ export function attachFedChunkHandlers(fedRoom) {
 		const b64 = String(data.dataB64 || '')
 		if (!b64) return
 		if (data.requestId) {
-			resolvePendingChunkFetch(data)
+			handleFedChunkDataIngress(data)
 			return
 		}
 		const waitKey = compositeKey(username, groupId, hash)
@@ -508,30 +507,14 @@ export function attachFedChunkHandlers(fedRoom) {
  * @returns {void}
  */
 export function attachTrustGraphChunkHandlers(username, room, fedOut, rtcLimits = {}, roomKey = '') {
-	const [sendChunkData, getChunkData] = room.makeAction('fed_chunk_data')
-	const [, getChunkGet] = room.makeAction('fed_chunk_get')
-
-	getChunkGet((data, peerId) => {
-		if (!isFederationActionAllowedUnderLoad(roomKey, 'fed_chunk_get', rtcLimits)) return
-		void (async () => {
-			if (!isPlainObject(data)) return
-			const requestId = String(data.requestId || '')
-			if (!requestId) return
-			await handleIncomingChunkGet(username, data, (resp, pid) => {
-				fedOut.enqueue(6, () => {
-					try {
-						sendChunkData(resp, pid)
-					}
-					catch (error) {
-						console.warn('federation: trust-graph chunk response failed', error)
-					}
-				})
-			}, peerId)
-		})().catch(error => console.warn('federation: trust-graph chunk handler failed', error))
-	})
-
-	getChunkData(data => {
-		if (!isPlainObject(data) || !data.requestId) return
-		resolvePendingChunkFetch(data)
-	})
+	import('../../../../../../../scripts/p2p/files/chunk_responder.mjs').then(({ attachTrustGraphFedChunkResponder }) => {
+		attachTrustGraphFedChunkResponder(
+			username,
+			room,
+			fedOut,
+			isFederationActionAllowedUnderLoad,
+			rtcLimits,
+			roomKey,
+		)
+	}).catch(error => console.warn('federation: failed to attach trust-graph chunk handlers', error))
 }

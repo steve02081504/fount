@@ -1,23 +1,8 @@
-import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
-import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
-import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
-import { shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation_social.mjs'
-
-import {
-	buildPostFeedItem,
-	createEngagementForPost,
-} from './feed/buildItem.mjs'
-import {
-	buildEngagementIndex,
-	buildViewerLikedSet,
-	listKnownTimelineOwners,
-	loadViewerContext,
-} from './feed/helpers.mjs'
+import { buildPostFeedItem } from './feed/buildItem.mjs'
+import { loadViewerContext } from './feed/helpers.mjs'
+import { createFeedItemBuildContext, iterateVisiblePosts } from './feed/iterate.mjs'
 import { compareFeedItems } from './feedMerge.mjs'
-import { canViewPost } from './feedVisibility.mjs'
-import { createAuthorProfileLoader } from './lib/authorProfileSummary.mjs'
 import { postMatchesQuery } from './lib/postQuery.mjs'
-import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
  * 在已知时间线中搜索可见帖子（关注 + 自身）。
@@ -34,27 +19,13 @@ export async function searchPosts(username, options = {}) {
 		return { query, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const engagement = await buildEngagementIndex(username)
-	const viewerLiked = await buildViewerLikedSet(username)
-	const authorProfile = createAuthorProfileLoader(username)
-	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
-	const feedItemBuildContext = { authorProfile, engagementForPost }
+	const feedItemBuildContext = await createFeedItemBuildContext(username)
 
 	/** @type {object[]} */
 	const items = []
-	for (const entityHash of await listKnownTimelineOwners(username)) {
-		if (!isEntityHash128(entityHash)) continue
-		if (isEntityHashBlocked(entityHash)) continue
-		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue
-		const view = await getTimelineMaterialized(username, entityHash)
-		if (!view.posts?.length) continue
-		for (const post of view.posts) {
-			if (!postMatchesQuery(post, query)) continue
-			const enriched = { ...post, entityHash }
-			if (!canViewPost(enriched, viewerContext))
-				continue
-			items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
-		}
+	for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
+		if (!postMatchesQuery(post, query)) continue
+		items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
 	}
 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)

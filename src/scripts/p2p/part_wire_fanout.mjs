@@ -8,7 +8,7 @@ import {
 	TIMELINE_FANOUT_LIMIT,
 } from './part_wire_common.mjs'
 import { pendingPartInvoke } from './part_wire_ingress.mjs'
-import { fanoutToTopNodes } from './trust_graph_send.mjs'
+import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from './trust_graph_registry.mjs'
 
 /** @typedef {import('./part_invoke.mjs').PartInvokeResponse} PartInvokeResponse */
 
@@ -39,7 +39,7 @@ export async function collectPartInvokeResponses(username, partpath, invoke, tim
 		pendingPartInvoke.set(requestId, { responses, finish, maxResponses, respondedPeers: new Set() })
 	})
 
-	const sent = await fanoutToTopNodes(username, 'part_invoke', buildPartInvokePayload({
+	const sent = await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'part_invoke', buildPartInvokePayload({
 		partpath,
 		invoke,
 		nodeHash,
@@ -59,7 +59,7 @@ export async function collectPartInvokeResponses(username, partpath, invoke, tim
  * @returns {Promise<number>} 发送次数
  */
 export async function publishTimelineEvent(username, entityHash, signedEvent) {
-	return fanoutToTopNodes(username, 'part_timeline_put', {
+	return requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'part_timeline_put', {
 		nodeHash: getNodeHash(),
 		partpath: getShellPartpath('social'),
 		timelineEntityHash: entityHash.toLowerCase(),
@@ -78,7 +78,7 @@ export async function publishTimelineEvent(username, entityHash, signedEvent) {
  * @returns {Promise<number>} 发送次数
  */
 export async function fanoutPartInvoke(username, partpath, invoke, limit, nodeHash, groupId) {
-	return fanoutToTopNodes(username, 'part_invoke', buildPartInvokePayload({
+	return requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'part_invoke', buildPartInvokePayload({
 		partpath,
 		invoke,
 		nodeHash,

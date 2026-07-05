@@ -212,9 +212,9 @@ let wired = false
 export function wireHubBannerBindings() {
 	if (wired) return
 	wired = true
-	watchHubState('currentGroupId', refreshBoundBanners)
-	watchHubState('currentChannelId', refreshBoundBanners)
-	watchHubState('currentState', refreshBoundBanners)
+	watchHubState('context.currentGroupId', refreshBoundBanners)
+	watchHubState('context.currentChannelId', refreshBoundBanners)
+	watchHubState('context.currentState', refreshBoundBanners)
 	document.getElementById('hub-archive-sync-btn')?.addEventListener('click', () => {
 		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
@@ -222,7 +222,7 @@ export function wireHubBannerBindings() {
 			method: 'POST',
 			credentials: 'include',
 		}).then(async () => {
-			setHubState('currentState', await getGroupState(groupId))
+			setHubState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
 		}).catch(console.error)
 	})
@@ -235,7 +235,7 @@ export function wireHubBannerBindings() {
 			headers: { 'Content-Type': 'application/json' },
 			body: '{}',
 		}).then(async () => {
-			setHubState('currentState', await getGroupState(groupId))
+			setHubState('context.currentState', await getGroupState(groupId))
 			refreshBoundBanners()
 		}).catch(console.error)
 	})

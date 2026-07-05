@@ -53,7 +53,7 @@ const { values } = parseArgsOrExit({
 		starts: { type: 'string' },
 		'needs-output': { type: 'boolean', default: false },
 		'load-part': { type: 'string', multiple: true },
-		bootstrap: { type: 'string' },
+		'p2p-relay-url': { type: 'string' },
 	},
 })
 
@@ -89,6 +89,7 @@ try {
 		needsOutput: values['needs-output'],
 		loadParts,
 		bootstrap: values.bootstrap,
+		...values['p2p-relay-url'] ? { p2pRelayUrl: values['p2p-relay-url'] } : {},
 	})
 }
 catch (error) {

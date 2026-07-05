@@ -1,5 +1,5 @@
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../../server/auth.mjs'
+import { httpError } from '../../../../../../scripts/http_error.mjs'
+import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import {
 	addSavedPost,
 	createSavedFolder,
@@ -8,7 +8,7 @@ import {
 	deleteSavedFolder,
 	removeSavedPost,
 	renameSavedFolder,
-} from '../../savedPosts.mjs'
+} from '../savedPosts.mjs'
 
 /**
  * 注册收藏帖与文件夹相关路由。

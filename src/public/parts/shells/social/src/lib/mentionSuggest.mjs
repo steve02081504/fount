@@ -1,5 +1,5 @@
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { getEntityProfile } from '../feed.mjs'
+import { getEntityProfile } from './entityProfile.mjs'
 import { loadFollowing } from '../following.mjs'
 
 import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'

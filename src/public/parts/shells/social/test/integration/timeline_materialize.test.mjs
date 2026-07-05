@@ -14,7 +14,7 @@ const append = await import('../../src/timeline/append.mjs')
 const materialize = await import('../../src/timeline/materialize.mjs')
 const following = await import('../../src/following.mjs')
 const socialMeta = await import('../../src/socialMeta.mjs')
-const feed = await import('../../src/feed.mjs')
+const entityProfile = await import('../../src/lib/entityProfile.mjs')
 const { resolveOperatorEntityHashForUser } = await import('fount/server/p2p_server/operator_identity.mjs')
 
 const TARGET_A = placeholderEntityHash('a')
@@ -118,7 +118,7 @@ Deno.test('updateSocialMeta patches hideFromDiscovery/exploreBlurb', async () =>
 
 Deno.test('getEntityProfile returns profile for operator', async () => {
 	const { username, operator } = await getSession()
-	const profile = await feed.getEntityProfile(username, operator)
+	const profile = await entityProfile.getEntityProfile(username, operator)
 	assert(profile, 'operator profile should auto-create')
 })
 

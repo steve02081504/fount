@@ -11,7 +11,7 @@ import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
-import { getEntityProfile } from './feed.mjs'
+import { getEntityProfile } from './lib/entityProfile.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'

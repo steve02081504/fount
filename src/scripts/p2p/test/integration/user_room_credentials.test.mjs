@@ -8,7 +8,7 @@ import { join } from 'node:path'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { nodeHashFromSeed } from '../../entity/node_hash.mjs'
-import { initNode } from '../../node/instance.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 
 Deno.test('resolveUserRoomCredentials derives deterministic room secret', async () => {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-user-room-'))
@@ -16,7 +16,7 @@ Deno.test('resolveUserRoomCredentials derives deterministic room secret', async 
 		await mkdir(dir, { recursive: true })
 		const seedHex = Buffer.alloc(32, 7).toString('hex')
 		await writeFile(join(dir, 'node.json'), JSON.stringify({ nodeSeedHex: seedHex }))
-		initNode({ nodeDir: dir })
+		initTestP2pNode({ nodeDir: dir })
 		const nodeHash = nodeHashFromSeed(seedHex)
 		const { resolveUserRoomCredentials } = await import('../../user_room.mjs')
 		const creds = resolveUserRoomCredentials()

@@ -122,9 +122,9 @@ export async function backToFriendsList() {
 	const { loadFriendsList, renderFriendsColumn } = await import('./friendsList.mjs')
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	setHubState('currentGroupId', null)
-	setHubState('currentChannelId', null)
-	setHubState('currentState', null)
+	setHubState('context.currentGroupId', null)
+	setHubState('context.currentChannelId', null)
+	setHubState('context.currentState', null)
 	updateFriendsHash()
 	disableComposer('chat.hub.composerDisabled')
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
@@ -260,7 +260,7 @@ async function showCreateChannelModal() {
 				try {
 					const channelId = await createChannel(groupId, name, type)
 					close()
-					setHubState('currentState', await getGroupState(groupId))
+					setHubState('context.currentState', await getGroupState(groupId))
 					await renderHubChannelSidebar(hubStore.context.currentState)
 					await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannelSuccess')
@@ -293,7 +293,7 @@ async function syncGroupFromNetwork(groupId, opts = {}) {
 	}
 
 	if (hubStore.context.currentGroupId === groupId && hubStore.context.currentChannelId) {
-		setHubState('currentState', await getGroupState(groupId))
+		setHubState('context.currentState', await getGroupState(groupId))
 		const { loadMessages } = await import('./messages/messages.mjs')
 		await loadMessages()
 	}
@@ -326,7 +326,7 @@ export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
 	const channel = hubStore.context.currentState?.channels?.[channelId]
 	if (!channel) {
-		setHubState('currentChannelId', null)
+		setHubState('context.currentChannelId', null)
 		updateHash(hubStore.context.currentGroupId, null)
 		disableComposer('chat.hub.noChannel')
 		await renderHubChannelSidebar(hubStore.context.currentState)
@@ -337,7 +337,7 @@ export async function selectChannel(channelId) {
 		updateStatusBanners()
 		return
 	}
-	setHubState('currentChannelId', channelId)
+	setHubState('context.currentChannelId', channelId)
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
 	updateHash(hubStore.context.currentGroupId, channelId)
@@ -533,7 +533,7 @@ function canAutoJoinGroup(state, pendingJoin, inviteCode) {
 async function showGroupJoinRequiredState() {
 	const { disableComposer } = await import('./messages/composerController.mjs')
 	const { mountTemplate } = await import('../../../../scripts/features/template.mjs')
-	setHubState('currentChannelId', null)
+	setHubState('context.currentChannelId', null)
 	updateHash(hubStore.context.currentGroupId, null)
 	disableComposer('chat.hub.noChannel')
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
@@ -555,7 +555,7 @@ async function ensureGroupMembership(groupId, state) {
 	const pendingJoin = consumePendingJoin(groupId)
 	const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
-		setHubState('currentState', state)
+		setHubState('context.currentState', state)
 		hubStore.context.currentMode = 'groups'
 		document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
@@ -585,7 +585,7 @@ async function ensureGroupMembership(groupId, state) {
  * @returns {Promise<object>} 同步后的 state
  */
 async function syncGroupStateForHub(groupId, state, presetChannelId) {
-	setHubState('currentState', state)
+	setHubState('context.currentState', state)
 	rebindFederationRoomQuiet(groupId, {
 		channelId: presetChannelId || state.groupSettings?.defaultChannelId || null,
 	})
@@ -607,7 +607,7 @@ async function syncGroupStateForHub(groupId, state, presetChannelId) {
 		setSyncBanner(false)
 	if (needsHeavySync) {
 		state = await getGroupState(groupId)
-		setHubState('currentState', state)
+		setHubState('context.currentState', state)
 	}
 	return state
 }
@@ -651,7 +651,7 @@ async function activateGroupChannel(state, presetChannelId) {
 		: state.groupSettings?.defaultChannelId || channelIds[0] || null
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
-		setHubState('currentChannelId', null)
+		setHubState('context.currentChannelId', null)
 		updateHash(hubStore.context.currentGroupId, null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer('chat.hub.noChannel')
@@ -674,7 +674,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
-	setHubState('currentGroupId', groupId)
+	setHubState('context.currentGroupId', groupId)
 	updateHash(groupId, presetChannelId)
 	try {
 		let state = await getGroupState(groupId)
@@ -704,7 +704,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
  */
 export async function saveListChannelItems(items) {
 	await updateChannelListItems(hubStore.context.currentGroupId, hubStore.context.currentChannelId, items)
-	setHubState('currentState', await getGroupState(hubStore.context.currentGroupId))
+	setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
 }
 
 /**

@@ -16,14 +16,6 @@ export function registerTrustGraphProvider(ownerId, impl) {
 	providersByOwner.set(String(ownerId), impl)
 }
 
-/**
- * @param {string} ownerId 注册方
- * @returns {void}
- */
-export function unregisterTrustGraphProvider(ownerId) {
-	providersByOwner.delete(String(ownerId))
-}
-
 /** @returns {void} */
 export function clearTrustGraphProvider() {
 	providersByOwner.clear()

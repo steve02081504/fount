@@ -10,7 +10,7 @@ import { pubKeyHash, publicKeyFromSeed } from '../../crypto.mjs'
 import { SOCIAL_TIMELINE_ROW_OPTS } from '../../dag/canonicalize_presets.mjs'
 import { canonicalizeSignedRow } from '../../dag/canonicalizeRow.mjs'
 import { encodeEntityHash } from '../../entity_id.mjs'
-import { initNode } from '../../node/instance.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { timelineGroupId } from '../../social_namespace.mjs'
 import { signTimelineEvent } from '../../timeline/append_core.mjs'
 import { validateRemoteTimelineEvent } from '../../timeline/remote_ingest.mjs'
@@ -32,7 +32,7 @@ async function initTestNode(seedByte) {
 	await mkdir(dir, { recursive: true })
 	await writeFile(join(dir, 'node.json'), JSON.stringify({ nodeSeedHex: Buffer.alloc(32, seedByte).toString('hex') }))
 	await writeFile(join(dir, 'denylist.json'), JSON.stringify({ blocked: [] }))
-	initNode({ nodeDir: dir })
+	initTestP2pNode({ nodeDir: dir })
 	return dir
 }
 

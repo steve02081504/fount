@@ -47,17 +47,7 @@ function attachDecryptView(row) {
 			},
 		}
 	}
-	const content = row.content
-	if (!content?.decryptFailed) return row
-	const { decryptFailed, pendingGeneration, ...rest } = content
-	return {
-		...row,
-		content: Object.keys(rest).length ? rest : null,
-		decryptView: {
-			failed: true,
-			...pendingGeneration != null ? { pendingGeneration } : {},
-		},
-	}
+	return row
 }
 
 /**

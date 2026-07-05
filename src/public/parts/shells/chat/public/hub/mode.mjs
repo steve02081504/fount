@@ -61,9 +61,9 @@ export async function setMode(mode) {
 
 	if (mode === 'friends' && !keepPrivateGroupSession) {
 		updateFriendsHash()
-		setHubState('currentGroupId', null)
-		setHubState('currentChannelId', null)
-		setHubState('currentState', null)
+		setHubState('context.currentGroupId', null)
+		setHubState('context.currentChannelId', null)
+		setHubState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer('chat.hub.composerDisabled')
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {

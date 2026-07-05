@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { initNode } from '../../node/instance.mjs'
+import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { isQuarantinedPure } from '../../reputation_engine.mjs'
 import { loadReputation, observePeerBehavior } from '../../reputation_store.mjs'
 
@@ -13,7 +13,7 @@ const PEER = 'c'.repeat(64)
 
 Deno.test('observePeerBehavior awaits reputation mutation before returning', async () => {
 	const dir = await mkdtemp(join(tmpdir(), 'fount-rep-'))
-	initNode({ nodeDir: dir })
+	initTestP2pNode({ nodeDir: dir })
 	await mkdir(dir, { recursive: true })
 	try {
 		for (let i = 0; i < 6; i++)
