@@ -21,7 +21,7 @@ import {
 	unwrapContentKey,
 	wrapContentKey,
 } from '../../../../../../../scripts/p2p/key_crypto.mjs'
-import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { getState } from '../dag/materialize.mjs'
 import {

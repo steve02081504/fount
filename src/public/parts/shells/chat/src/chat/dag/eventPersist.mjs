@@ -15,7 +15,7 @@ import {
 	applyReputationResetToScores,
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
-} from '../../../../../../../scripts/p2p/reputation.mjs'
+} from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import {
 	CKG_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,

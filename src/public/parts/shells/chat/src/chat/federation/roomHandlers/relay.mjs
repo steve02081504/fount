@@ -9,16 +9,17 @@ import { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from '../archi
 import {
 	applyFedBootstrapResponse,
 	handleFedBootstrapRequest,
-	parseFedBootstrapRequest,
-	parseFedBootstrapResponse,
 } from '../bootstrapRelay.mjs'
+import { parseFedBootstrapRequest, parseFedBootstrapResponse } from '../bootstrap/wire.mjs'
 import {
 	handleDiscoveryQuery,
 	ingestDiscoveryAnnounce,
+} from '../discoveryRelay.mjs'
+import {
 	parseDiscoveryAnnounce,
 	parseDiscoveryQuery,
 	parseDiscoveryQueryResponse,
-} from '../discoveryRelay.mjs'
+} from '../../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
 import { handleJoinSnapshotRequest } from '../joinSnapshot.mjs'
 import { bindFedSender } from '../outbound.mjs'
 import { noteJoinSnapshotResponse } from '../pull/joinSnapshotPick.mjs'

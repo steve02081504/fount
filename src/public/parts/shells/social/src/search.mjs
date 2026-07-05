@@ -1,6 +1,7 @@
 import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
 import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
-import { pickNodeScore, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation.mjs'
+import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation_social.mjs'
 
 import {
 	buildPostFeedItem,

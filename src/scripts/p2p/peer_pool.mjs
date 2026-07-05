@@ -5,7 +5,8 @@
  */
 
 import { loadPeerPoolView, mergeNetworkPeerPools } from './network.mjs'
-import { clampReputationScore, loadReputation } from './reputation.mjs'
+import { clampReputationScore } from './reputation_math.mjs'
+import { loadReputation } from './reputation_store.mjs'
 
 /**
  * 解析联邦池槽位参数（从 groupSettings 读取，含低功耗缩减）。

@@ -1,4 +1,3 @@
-import { listReplicaUsernamesFollowing as listFollowersFromIndex } from '../../../../../scripts/p2p/social/follower_index.mjs'
 import { applyFollowNetworkHints } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
@@ -57,8 +56,3 @@ export async function setFollow(username, actingEntityHash, entityHash, follow) 
 	if (follow) return [...following, id]
 	return following.filter(hash => hash !== id)
 }
-
-/**
- *
- */
-export { listFollowersFromIndex as listReplicaUsernamesFollowing }

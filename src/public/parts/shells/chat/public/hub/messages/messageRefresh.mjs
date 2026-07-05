@@ -34,6 +34,7 @@ import {
 } from './messageScroll.mjs'
 import {
 	mergeIncrementalChannelBatch,
+	messageIdSelector,
 	reactionsSignature,
 	refreshChannelView,
 	updateLastMessageId,
@@ -56,7 +57,7 @@ async function patchReactionRows(container, reactions, reload) {
 	for (const message of hubStore.messages.channelMessages) {
 		if (message.type !== 'message' || !message.eventId) continue
 		const eventId = String(message.eventId)
-		const row = container.querySelector(`[data-message-id="${typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(eventId) : eventId}"]`)
+		const row = container.querySelector(messageIdSelector(eventId))
 		if (!row) continue
 		const html = await renderMessageReactionsHtml(
 			message,

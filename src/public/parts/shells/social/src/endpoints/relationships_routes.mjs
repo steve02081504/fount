@@ -6,7 +6,7 @@ import { getFederationViewForUser } from '../../../../../../server/p2p_server/op
 import { dispatchFollowEvent } from '../dispatch.mjs'
 import { setFollow } from '../following.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
-import { resolveSocialEntity } from '../lib/entityResolve.mjs'
+import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 import { setPersonalBlock } from '../personalBlock.mjs'

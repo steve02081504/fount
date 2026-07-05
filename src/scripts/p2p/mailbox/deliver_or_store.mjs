@@ -2,7 +2,7 @@ import { normalizeHex64 } from '../hexIds.mjs'
 import { allowMailboxRelayForTier } from '../mailbox_importance.mjs'
 import { takeIncomingMailboxPutSlot } from '../mailbox_rate.mjs'
 import { getNodeTransportSettings, getNodeHash } from '../node/identity.mjs'
-import { sendToNode } from '../trust_graph.mjs'
+import { sendToNode } from '../trust_graph_send.mjs'
 import { deliverToUserRoomPeers, ensureUserRoom } from '../user_room.mjs'
 
 import { resolveMailboxRoutingForPeerCount } from './settings.mjs'

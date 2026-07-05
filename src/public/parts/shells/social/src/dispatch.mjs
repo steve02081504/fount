@@ -3,15 +3,16 @@
  * 本地 agent 须实现 interfaces.social（见 lib/charSocial.mjs）。
  * Social 账号 = Chat 账号 = fount P2P 实体，无需单独注册。
  */
-import { pickNodeScore, SOCIAL_REP_HIDE_THRESHOLD } from '../../../../../scripts/p2p/reputation.mjs'
+import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
+import { listLocalAgentEntities, resolveSocialEntity } from '../../../../../scripts/p2p/entity/hosting.mjs'
+import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { SOCIAL_REP_HIDE_THRESHOLD } from '../../../../../scripts/p2p/reputation_social.mjs'
+import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social/follower_index.mjs'
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
 import { getEntityProfile } from './feed.mjs'
-import { listReplicaUsernamesFollowing } from './following.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
-import { formatHashShort } from './lib/entityDisplay.mjs'
-import { listLocalAgentEntities, resolveSocialEntity } from './lib/entityResolve.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
@@ -38,7 +39,7 @@ async function displayNameForEntity(entityHash, replicaUsername) {
 async function invokeCharSocialInterface(username, charPartName, method, event) {
 	const char = await ensureCharSocialInterface(username, charPartName)
 	const handler = char?.interfaces?.social?.[method]
-	if (typeof handler !== 'function') return null
+	if (!handler) return null
 	return normalizeSocialHandlerResult(await handler({
 		username,
 		charPartName,
@@ -46,14 +47,9 @@ async function invokeCharSocialInterface(username, charPartName, method, event) 
 	}))
 }
 
-/**
- * @param {unknown} result social 接口返回值
- * @returns {{ text?: string, skip?: boolean }} 统一结果
- */
+/** @param {unknown} result social 接口返回值 */
 function normalizeSocialHandlerResult(result) {
-	if (!result || result.skip) return { skip: true }
-	if (result.text) return result
-	return { skip: true }
+	return result?.text ? { text: result.text } : { skip: true }
 }
 
 /**
@@ -154,7 +150,7 @@ export async function dispatchPostMentions(posterUsername, authorEntityHash, pos
 		})
 		if (local.handled) continue
 
-		const { collectSocialRpcResponses } = await import('../../../../../scripts/p2p/part_wire.mjs')
+		const { collectSocialRpcResponses } = await import('../../../../../scripts/p2p/part_wire_social_rpc.mjs')
 		void collectSocialRpcResponses(posterUsername, {
 			type: 'social_on_mention',
 			targetEntityHash: targetHash,

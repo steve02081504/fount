@@ -1,6 +1,6 @@
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 
-import { resolveSocialEntity } from './entityResolve.mjs'
+import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 
 /**
  * 解析写操作 acting 实体（operator 或本地 agent）。

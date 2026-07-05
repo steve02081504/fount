@@ -4,7 +4,7 @@ import { loadNetwork } from '../../../../../../scripts/p2p/network.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { getEntityStore, isNodeInitialized } from '../../../../../../scripts/p2p/node/instance.mjs'
 
-import { findHostingReplicaUsername, resolveSocialEntity } from './entityResolve.mjs'
+import { findHostingReplicaUsername, resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 
 /**
  * @param {string} nodeHash 64 hex

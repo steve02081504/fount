@@ -34,9 +34,6 @@ function bootstrapCooldownKey(username, groupId) {
 	return `${username}\0${groupId}`
 }
 
-/** 重导出 bootstrap wire 解析函数。 */
-export { parseFedBootstrapRequest, parseFedBootstrapResponse } from './bootstrap/wire.mjs'
-
 /**
  * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} a 凭证 A
  * @param {{ signalingAppId?: string, roomSecret?: string } | null | undefined} b 凭证 B

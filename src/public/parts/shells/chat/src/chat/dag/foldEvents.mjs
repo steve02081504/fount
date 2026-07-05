@@ -9,10 +9,7 @@ import { archivedMessageIdSet, loadArchiveManifest } from '../archive/index.mjs'
 import { archiveSettingsFromGroup } from '../archive/settings.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
-/**
- *
- */
-export { FOLDABLE_PROCESS_EVENT_TYPES, shouldDropDagEvent } from './foldPolicy.mjs'
+import { shouldDropDagEvent } from './foldPolicy.mjs'
 
 /**
  * @param {string} username replica
@@ -22,14 +19,13 @@ export { FOLDABLE_PROCESS_EVENT_TYPES, shouldDropDagEvent } from './foldPolicy.m
  * @returns {Promise<{ dropped: number, kept: number }>} 统计
  */
 export async function foldDagProcessEvents(username, groupId, hotPosts, groupSettings = {}) {
-	const { shouldDropDagEvent: shouldDrop } = await import('./foldPolicy.mjs')
 	const settings = archiveSettingsFromGroup(groupSettings)
 	const manifest = await loadArchiveManifest(username, groupId)
 	const archivedIds = archivedMessageIdSet(manifest)
 	const protectedHotIds = allProtectedHotEventIds(hotPosts)
 	const path = eventsPath(username, groupId)
 	const { kept, dropped } = await rewriteJsonlKeeping(path, row =>
-		!shouldDrop(row, archivedIds, protectedHotIds, settings.dagFoldAfterArchive),
+		!shouldDropDagEvent(row, archivedIds, protectedHotIds, settings.dagFoldAfterArchive),
 	{ sanitize: stripDagEventLocalExtensions },
 	)
 	invalidateTopologicalOrderMemo(`${username}:${groupId}`)

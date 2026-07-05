@@ -2,7 +2,7 @@
  * 跨观察者归档 digest 声明：联邦 gossip 对质等价欺骗。
  */
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { mutateArchiveManifest } from '../archive/index.mjs'
 
 /**

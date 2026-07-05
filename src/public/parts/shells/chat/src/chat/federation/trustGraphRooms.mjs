@@ -1,6 +1,6 @@
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { registerScopeAuthorizer } from '../../../../../../../scripts/p2p/link_registry.mjs'
 import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'

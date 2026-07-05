@@ -5,15 +5,9 @@
 import { readFile } from 'node:fs/promises'
 
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import {
-	computeRetentionKeepIds,
-} from '../../../../../../../scripts/p2p/retention_policy.mjs'
 import { enforceDagRetention } from '../../../../../../../scripts/p2p/timeline/retention_runner.mjs'
 import { PERMISSION_ANCHOR_TYPES } from '../dag/eventTypes.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
-
-/** 自 `p2p/retention_policy` 再导出。 */
-export { computeRetentionKeepIds }
 
 /**
  * @param {string} username replica

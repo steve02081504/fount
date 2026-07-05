@@ -25,7 +25,7 @@ import {
 import {
 	loadUserStickerCollection,
 	saveUserStickerCollection,
-} from './collection/index.mjs'
+} from './collection/store.mjs'
 
 /** @typedef {import('../../../../../../decl/chatAuxAPI.ts').StickerPack} StickerPack */
 /** @typedef {import('../../../../../../decl/chatAuxAPI.ts').Sticker} Sticker */

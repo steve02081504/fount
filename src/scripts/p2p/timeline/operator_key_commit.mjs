@@ -9,7 +9,7 @@ import { canonicalizeSignedRow } from '../dag/canonicalizeRow.mjs'
 import { appendJsonlSynced, readJsonl } from '../dag/storage.mjs'
 import { parseEntityHash } from '../entity_id.mjs'
 import { getNodeHash } from '../node/identity.mjs'
-import { publishTimelineEvent } from '../part_wire.mjs'
+import { publishTimelineEvent } from '../part_wire_fanout.mjs'
 import { timelineGroupId } from '../social_namespace.mjs'
 
 import { computeAppendHlcAndPrev, signTimelineEvent } from './append_core.mjs'

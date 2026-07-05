@@ -12,6 +12,7 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeNotifyHubMessage } from './hubNotifications.mjs'
+import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
 
 /** @type {WebSocket | null} */
@@ -112,15 +113,10 @@ export function getActiveVolatileStreamIds() {
 	return [...volatileStreams.keys()]
 }
 
-/**
- * @param {string} messageId 消息 eventId
- * @returns {string} CSS 选择器
- */
-function messageRowSelector(messageId) {
-	const id = String(messageId || '')
-	if (!id) return ''
-	const escaped = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id
-	return `[data-message-id="${escaped}"][data-streaming]`
+/** @returns {string} 流式预览行 CSS 选择器 */
+function streamingMessageRowSelector(messageId) {
+	const selector = messageIdSelector(messageId)
+	return selector ? `${selector}[data-streaming]` : ''
 }
 
 /**
@@ -164,7 +160,7 @@ function flushReorderToRenderer(slot) {
 function bindStreamRenderer(streamId) {
 	const slot = volatileStreams.get(streamId)
 	if (!slot) return null
-	const row = document.querySelector(messageRowSelector(streamId))
+	const row = document.querySelector(streamingMessageRowSelector(streamId))
 	const body = row?.querySelector('[data-streaming-body]')
 	if (!(body instanceof HTMLElement)) return null
 	const bound = slot.streamRenderer
@@ -191,7 +187,7 @@ export function syncStreamingSlotsFromDom(container) {
 		bindStreamRenderer(streamId)
 	}
 	for (const streamId of [...volatileStreams.keys()])
-		if (!root.querySelector(messageRowSelector(streamId)))
+		if (!root.querySelector(streamingMessageRowSelector(streamId)))
 			removeVolatileStream(streamId)
 	resumeActiveStreamBuffers()
 }
@@ -324,7 +320,7 @@ function finishVolatileStreamPreview(streamId) {
  * @returns {Promise<void>}
  */
 async function appendStreamSlices(streamId, sequence, slices, eventChannelId) {
-	if (!document.querySelector(messageRowSelector(streamId)) && !streamIdsFetchingRow.has(streamId)) {
+	if (!document.querySelector(streamingMessageRowSelector(streamId)) && !streamIdsFetchingRow.has(streamId)) {
 		streamIdsFetchingRow.add(streamId)
 		dispatchChannelIncrementalRefresh(eventChannelId, activeChannelId || eventChannelId || '', { immediate: true })
 	}
@@ -334,7 +330,7 @@ async function appendStreamSlices(streamId, sequence, slices, eventChannelId) {
 	bindStreamRenderer(streamId)
 	flushReorderToRenderer(slot)
 
-	document.querySelector(messageRowSelector(streamId))
+	document.querySelector(streamingMessageRowSelector(streamId))
 		?.querySelector('.hub-streaming-typing')?.remove()
 
 	const container = document.getElementById('hub-messages')

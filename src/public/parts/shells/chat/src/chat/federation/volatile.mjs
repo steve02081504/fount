@@ -3,11 +3,11 @@
  * 【职责】将群 WebSocket 上的 VOLATILE 类消息（流分片、信誉 slash 告警）经 fed_volatile 中继到稀疏联邦邻居，并在入站时转回本群 WS。
  * 【原理】publishVolatileToFederation 由 groupWsBroadcast 在广播后调用，仅当 groupFederationOwner 存在且联邦启用；信封含 nodeId、dedupeId、payload。入站验签 stream_chunk、去重后 broadcastEvent 带 fedInbound 防回环。优先级 10 在 outbound 队列最先被丢弃。
  * 【数据结构】FED_VOLATILE_WS_TYPES；信封 { nodeId, groupId, dedupeId, payload }。
- * 【关联】stream/groupWsHub、groupWsBroadcast、signing.mjs、reputation.mjs、room.mjs、registry groupFederationOwner。
+ * 【关联】stream/groupWsHub、groupWsBroadcast、signing.mjs、reputation_store.mjs、room.mjs、registry groupFederationOwner。
  */
 import { createHash } from 'node:crypto'
 
-import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 
 import { federationNodeHash, loadFederationGroupSettings } from './deps.mjs'

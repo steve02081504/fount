@@ -2,8 +2,8 @@ import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '.
 import { getEntityProfile } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'
 
-import { formatHashShort } from './entityDisplay.mjs'
-import { listLocalAgentEntities } from './entityResolve.mjs'
+import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { listLocalAgentEntities } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 
 /**
  * 返回发帖 @ 提及 autocomplete 候选列表。

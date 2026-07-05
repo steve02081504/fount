@@ -22,7 +22,7 @@ export async function initP2PServer({ dataPath }) {
 	await mkdir(nodeDir, { recursive: true })
 	const entityStore = createFountEntityStore()
 	initNode({ nodeDir, entityStore })
-	const { createDefaultTrustGraphProvider } = await import('../../scripts/p2p/trust_graph.mjs')
+	const { createDefaultTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
 	const { registerTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
 	registerEntityPresentationProvider(getInfoDefaultsForEntity)

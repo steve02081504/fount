@@ -8,7 +8,7 @@ import { createInterface } from 'node:readline'
 import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
 import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { pickNodeScoreFromReputation } from '../../../../../../../scripts/p2p/reputation_pick_score.mjs'
 import {
 	resolveArchiveQuorumPeerMin,

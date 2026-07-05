@@ -56,6 +56,6 @@ export function isTwoPartyCharDialogue() {
 export function messageIdSelector(messageId) {
 	const eventId = String(messageId || '')
 	if (!eventId) return ''
-	const escaped = typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(eventId) : eventId
+	const escaped = CSS.escape(eventId)
 	return `[data-message-id="${escaped}"]`
 }

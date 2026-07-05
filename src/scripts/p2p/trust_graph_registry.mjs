@@ -1,7 +1,10 @@
+import { buildMergedGraph, pickTopNodes } from './trust_graph_build.mjs'
+import { fanoutToTopNodes, sendToNode } from './trust_graph_send.mjs'
+
 /** @type {Map<string, import('./trust_graph_registry.mjs').TrustGraphProvider>} */
 const providersByOwner = new Map()
 
-/** 用户级 P2P trust graph（scripts/p2p/trust_graph.mjs 注册） */
+/** 用户级 P2P trust graph（registerTrustGraphProvider 注册） */
 export const DEFAULT_TRUST_GRAPH_OWNER = 'default'
 
 /**
@@ -37,3 +40,7 @@ export function requireTrustGraphProvider(ownerId = DEFAULT_TRUST_GRAPH_OWNER) {
 	return impl
 }
 
+/** @returns {import('./trust_graph_registry.mjs').TrustGraphProvider} 默认 trust graph 实现 */
+export function createDefaultTrustGraphProvider() {
+	return { buildMergedGraph, pickTopNodes, sendToNode, fanoutToTopNodes }
+}

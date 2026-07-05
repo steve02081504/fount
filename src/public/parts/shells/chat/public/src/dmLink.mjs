@@ -10,7 +10,7 @@ import { normalizePubKeyHex, PUB_KEY_HEX_64 } from '../shared/pubKeyHex.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
 import { putFederationSettings } from './api/groupApi.mjs'
-import { dmLinkSignableBytes } from './lib/dmLinkSignature.mjs'
+import { dmLinkSignableBytes } from '/parts/shells:chat/shared/dmLinkSignature.mjs'
 import { sign } from './lib/signer.mjs'
 
 

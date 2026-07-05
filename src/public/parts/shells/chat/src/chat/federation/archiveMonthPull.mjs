@@ -9,7 +9,7 @@ import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.j
 import { finalizeAtomicRename } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,
@@ -38,11 +38,6 @@ import {
 	validateActivePullAttestationForGroup,
 } from './pullAttestation.mjs'
 import { loadGroupSyncState } from './syncState.mjs'
-
-/**
- *
- */
-export { parseFedArchiveMonthResponse, parseFedArchiveMonthWant } from './archiveMonthWire.mjs'
 
 const WAIT_MS = 5000
 

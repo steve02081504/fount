@@ -1,4 +1,5 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
+import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialSearchHref } from '../../shared/runUri.mjs'
 import { entityHandle } from '../lib/display.mjs'
@@ -185,12 +186,7 @@ export async function clearFeedSearch(appContext) {
 export async function openSearchView(appContext, query) {
 	const q = String(query || '').trim()
 	if (!q) return
-	for (const button of document.querySelectorAll('.nav-btn'))
-		button.classList.toggle('active', button.dataset.view === 'feed')
-	for (const section of document.querySelectorAll('.view'))
-		section.classList.add('hidden')
-	document.getElementById('feedView')?.classList.remove('hidden')
-	document.getElementById('composer')?.classList.remove('hidden')
+	activateView('feed')
 	const input = document.getElementById('feedSearchInput')
 	if (input instanceof HTMLInputElement)
 		input.value = q

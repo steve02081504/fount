@@ -6,7 +6,7 @@ import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
-import { resolveSocialEntity } from '../lib/entityResolve.mjs'
+import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
@@ -22,8 +22,8 @@ export function registerPostsRoutes(router) {
 	router.post('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
-		const body = req.body || {}
-		const requested = body.entityHash ? String(body.entityHash).toLowerCase() : ''
+		const body = req.body
+		const requested = body.entityHash?.toLowerCase() ?? ''
 		const acting = await resolveActingEntity(username, body.actingEntityHash, {
 			invalidMessage: 'can only post as your operator or local agent entities',
 			missingMessage: 'configure Chat federation identity first (same P2P entity as Social)',
@@ -47,7 +47,7 @@ export function registerPostsRoutes(router) {
 		const draftContent = {
 			text: postText,
 			mediaRefs: [
-				...Array.isArray(body.mediaRefs) ? body.mediaRefs : [],
+				...body.mediaRefs,
 				...emojiMediaRefs,
 			],
 			replyTo: body.replyTo,

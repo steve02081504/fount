@@ -8,7 +8,7 @@ import {
 	TIMELINE_FANOUT_LIMIT,
 } from './part_wire_common.mjs'
 import { pendingPartInvoke } from './part_wire_ingress.mjs'
-import { fanoutToTopNodes } from './trust_graph.mjs'
+import { fanoutToTopNodes } from './trust_graph_send.mjs'
 
 /** @typedef {import('./part_invoke.mjs').PartInvokeResponse} PartInvokeResponse */
 

@@ -3,7 +3,7 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../../scripts/p2p/
 import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { widenExploreFromTrustedAnchors } from '../../../../../../../../scripts/p2p/network.mjs'
 import { pickFederationTargetPeerIds } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
-import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation.mjs'
+import { bumpReputationOnRelay, recordGossipAllUnknownWant } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
 import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
 import { takeIncomingWantIdsSlot } from '../../../../../../../../scripts/p2p/want_ids.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'

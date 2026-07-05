@@ -11,9 +11,6 @@ import { listUserGroups } from '../lib/userGroups.mjs'
 
 import { loadFederationGroupSettings } from './deps.mjs'
 
-/** 重导出 discovery wire 解析函数。 */
-export { parseDiscoveryAnnounce, parseDiscoveryQuery, parseDiscoveryQueryResponse } from '../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
-
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID

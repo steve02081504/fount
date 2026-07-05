@@ -3,7 +3,7 @@
  * 【职责】§10.2 群文件密文块 P2P 复制：经 Trystero fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
  * 【原理】attachFedChunkHandlers 在 ensureFederationRoom 时挂载；本地 put 后 replicateChunkToRoster 广播，缺失时 fetchChunkFromRoster 广播 get 并等待 fed_chunk_data。replicateChunkToFederation 可等待 M_eff 个 ACK。createFederationSwarmStoragePlugin 在本地 miss 时回退联邦 fetch。
  * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
- * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；scripts/p2p/reputation.mjs；scripts/p2p/storage_plugins.mjs。
+ * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；scripts/p2p/reputation_store.mjs；scripts/p2p/storage_plugins.mjs。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { b64ToU8, u8ToB64 } from '../../../../../../../scripts/p2p/bytes_codec.mjs'
@@ -20,7 +20,7 @@ import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/con
 import { handleIncomingChunkGet, resolvePendingChunkFetch, verifiedChunkBytes } from '../../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { getChunk, hasChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'

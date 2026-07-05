@@ -1,4 +1,4 @@
-import { loadReputation } from '../../../../../../scripts/p2p/reputation.mjs'
+import { loadReputation } from '../../../../../../scripts/p2p/reputation_store.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth.mjs'
 import { assignShellData, loadShellData } from '../../../../../../server/setting_loader.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'

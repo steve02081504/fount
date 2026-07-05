@@ -12,7 +12,7 @@ import { sign } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
 import { formatDmRunUri } from '../../../public/shared/runUri.mjs'
-import { dmLinkSignableBytes } from '../lib/dmLinkSignature.mjs'
+import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
 
 const STORE_KEY = 'dmIntro'
 

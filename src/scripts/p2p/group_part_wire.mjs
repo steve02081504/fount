@@ -1,4 +1,4 @@
-import { attachPartWire } from './part_wire.mjs'
+import { attachPartWire } from './part_wire_ingress.mjs'
 import { isPlainObject } from './wire_ingress.mjs'
 
 /**
@@ -13,9 +13,9 @@ function assertGroupContext(data, groupId) {
 }
 
 /**
- * @param {import('./part_wire.mjs').PartWireAdapter} wire 底层适配器
+ * @param {import('./part_wire_ingress.mjs').PartWireAdapter} wire 底层适配器
  * @param {string} groupId 群 ID
- * @returns {import('./part_wire.mjs').PartWireAdapter['on']} 注入 groupId 的 on 包装
+ * @returns {import('./part_wire_ingress.mjs').PartWireAdapter['on']} 注入 groupId 的 on 包装
  */
 function wrapWireOn(wire, groupId) {
 	return (name, handler) => {
@@ -31,7 +31,7 @@ function wrapWireOn(wire, groupId) {
  * 群联邦房间挂载 part_wire（要求线载荷带 `groupId`）。
  * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {string} groupId 群 ID
- * @param {import('./part_wire.mjs').PartWireAdapter} wire Trystero 适配器
+ * @param {import('./part_wire_ingress.mjs').PartWireAdapter} wire Trystero 适配器
  * @param {{ allowPartInvoke?: (payload: object) => boolean }} [options] 入站过滤
  * @returns {void}
  */

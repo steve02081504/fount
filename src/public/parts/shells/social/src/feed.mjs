@@ -4,7 +4,8 @@ import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 import {
 	isAuthorFilteredByPersonalSets,
 } from '../../../../../scripts/p2p/personal_block.mjs'
-import { pickNodeScore, reputationSortPenalty, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation.mjs'
+import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { reputationSortPenalty, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation_social.mjs'
 
 import {
 	buildPostFeedItem,

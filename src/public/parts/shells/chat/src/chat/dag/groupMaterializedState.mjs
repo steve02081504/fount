@@ -4,7 +4,7 @@ import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../sc
 import { createEmptySessionState } from './reducers/helpers.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 
-/** @typedef {import('../../../../../../../decl/p2pAPI.ts').GroupState} GroupState */
+/** @typedef {import('../../../../../../../decl/p2pAPI.ts').RuntimeGroupState} RuntimeGroupState */
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
 
 /**

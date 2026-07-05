@@ -1,6 +1,6 @@
 import { registerManifestAcl, unregisterManifestAcl } from '../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
 
-import { canViewVaultFile } from './vault_acl.mjs'
+import { canViewVaultFile } from './vaultAcl.mjs'
 
 const OWNER_ID = 'social'
 

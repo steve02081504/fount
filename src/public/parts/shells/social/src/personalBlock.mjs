@@ -1,5 +1,5 @@
 import { rebuildPersonalBlockIndex } from '../../../../../scripts/p2p/personal_block.mjs'
-import { applySocialBlockReputationSignal } from '../../../../../scripts/p2p/reputation.mjs'
+import { applySocialBlockReputationSignal } from '../../../../../scripts/p2p/reputation_store.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
 import { commitTimelineEvent } from './timeline/append.mjs'

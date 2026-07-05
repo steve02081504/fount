@@ -28,7 +28,7 @@ import {
 	selectAuthzBranchTip,
 	selectConsensusBranchTip,
 } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import {
 	invalidateTopologicalOrderMemo,
 	resolveTopologicalOrderMemoCached,

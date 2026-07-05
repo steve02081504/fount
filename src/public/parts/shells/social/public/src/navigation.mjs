@@ -1,3 +1,4 @@
+import { activateView } from './viewChrome.mjs'
 import { publishPost } from './composer.mjs'
 import { parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { loadExplore } from './views/explore.mjs'
@@ -19,7 +20,7 @@ export async function refreshVisiblePosts(appContext) {
 			await runFeedSearch(appContext)
 		else {
 			appContext.state.feedCursor = null
-			await loadFeed(appContext, false, { skipSync: true })
+			await loadFeed(appContext, false)
 		}
 
 	if (profileVisible && appContext.state.profileEntityHash)
@@ -33,12 +34,7 @@ export async function refreshVisiblePosts(appContext) {
  * @returns {Promise<void>}
  */
 export async function switchView(appContext, view) {
-	for (const button of document.querySelectorAll('.nav-btn'))
-		button.classList.toggle('active', button.dataset.view === view)
-	for (const section of document.querySelectorAll('.view'))
-		section.classList.add('hidden')
-	document.getElementById(`${view}View`)?.classList.remove('hidden')
-	document.getElementById('composer')?.classList.toggle('hidden', view !== 'feed')
+	activateView(view)
 	if (view === 'feed') {
 		if (!appContext.state.activeFeedSearchQuery) {
 			appContext.state.feedCursor = null
@@ -73,11 +69,7 @@ export async function applyIncomingNavigation(appContext) {
 	if (hashParsed?.entityHash && hashParsed.subcommand === 'profile') {
 		const viewer = await appContext.socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
 		appContext.state.viewerEntityHash = viewer.viewerEntityHash
-		for (const button of document.querySelectorAll('.nav-btn'))
-			button.classList.toggle('active', button.dataset.view === 'profile')
-		for (const section of document.querySelectorAll('.view'))
-			section.classList.add('hidden')
-		document.getElementById('profileView')?.classList.remove('hidden')
+		activateView('profile')
 		document.getElementById('composer')?.classList.add('hidden')
 		await loadProfileFor(appContext, hashParsed.entityHash.toLowerCase(), hashParsed.postId || null)
 		return true

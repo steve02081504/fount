@@ -5,7 +5,7 @@ import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
-import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire.mjs'
+import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire_fanout.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
 import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'

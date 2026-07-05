@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto'
 import { listLinks, sendToNodeLink, subscribeScope, getLinkRegistry } from './link_registry.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
 import { ensureNodeDefaults, getNodeHash } from './node/identity.mjs'
-import { attachPartWire } from './part_wire.mjs'
+import { attachPartWire } from './part_wire_ingress.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
 import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 
@@ -236,7 +236,7 @@ export function invalidateUserRoom() {
  * @returns {Promise<number>} 实际转发的 peer 数
  */
 export async function deliverToUserRoomPeers(username, actionName, payload, exceptPeerId = null, limit) {
-	const { USER_ROOM_PEER_FANOUT_DEFAULT } = await import('./part_wire.mjs')
+	const { USER_ROOM_PEER_FANOUT_DEFAULT } = await import('./part_wire_common.mjs')
 	const fanoutLimit = limit ?? USER_ROOM_PEER_FANOUT_DEFAULT
 	const slot = await ensureUserRoom({ replicaUsername: username })
 	if (!slot) return 0

@@ -23,7 +23,7 @@ Deno.test('isPartInvokeResponse rejects empty and ambiguous shapes', () => {
 })
 
 Deno.test('part wire does not import shell parts', async () => {
-	const url = new URL('../../part_wire.mjs', import.meta.url)
+	const url = new URL('../../part_wire_ingress.mjs', import.meta.url)
 	const text = await readFile(fileURLToPath(url), 'utf8')
 	assert(!text.includes('public/parts/shells/social'))
 	assert(!text.includes('public/parts/shells/chat'))

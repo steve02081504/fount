@@ -33,11 +33,6 @@ import {
 import { resolveShunForPubKeyRequester, sendFedShun } from './shun.mjs'
 
 /**
- *
- */
-export { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
-
-/**
  * 入群快照响应中每频道附带的历史消息条数上限。
  */
 export const JOIN_SNAPSHOT_PER_CHANNEL = 500

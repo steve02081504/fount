@@ -3,13 +3,13 @@
  * 【职责】Social shell HTTP/WS 路由聚合入口。
  * 【原理】按域装配 feed / discover / profile / posts / relationships / saved / vault 子模块。
  */
-import { registerDiscoverRoutes } from './endpoints/discover_routes.mjs'
-import { registerFeedRoutes } from './endpoints/feed_routes.mjs'
-import { registerPostsRoutes } from './endpoints/posts_routes.mjs'
-import { registerProfileRoutes } from './endpoints/profile_routes.mjs'
-import { registerRelationshipsRoutes } from './endpoints/relationships_routes.mjs'
-import { registerSavedRoutes } from './endpoints/saved_routes.mjs'
-import { registerVaultRoutes } from './endpoints/vault_routes.mjs'
+import { registerDiscoverRoutes } from './endpoints/discover/index.mjs'
+import { registerFeedRoutes } from './endpoints/feed/index.mjs'
+import { registerPostsRoutes } from './endpoints/posts/index.mjs'
+import { registerProfileRoutes } from './endpoints/profile/index.mjs'
+import { registerRelationshipsRoutes } from './endpoints/relationships/index.mjs'
+import { registerSavedRoutes } from './endpoints/saved/index.mjs'
+import { registerVaultRoutes } from './endpoints/vault/index.mjs'
 
 /**
  * 注册 Social shell 全部 HTTP/WS 路由。

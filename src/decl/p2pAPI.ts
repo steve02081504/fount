@@ -415,9 +415,6 @@ export interface SerializedGroupState extends GroupStateCore {
 	bannedNodes: string[]
 }
 
-/** @deprecated 使用 {@link RuntimeGroupState} */
-export type GroupState = RuntimeGroupState
-
 /**
  *
  */

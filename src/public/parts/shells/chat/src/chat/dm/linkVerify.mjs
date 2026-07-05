@@ -9,7 +9,7 @@ import { Buffer } from 'node:buffer'
 
 import { verify } from '../../../../../../../scripts/p2p/crypto.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { dmLinkSignableBytes } from '../lib/dmLinkSignature.mjs'
+import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
 
 /**
  * 校验「介绍方」对 DM Link nonce 的自证签名（§16）。

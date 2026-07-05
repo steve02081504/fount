@@ -1,10 +1,10 @@
 import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
 import { getNodeHash } from '../../../../../scripts/p2p/node/identity.mjs'
-import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire.mjs'
+import { collectSocialRpcMerged } from '../../../../../scripts/p2p/part_wire_social_rpc.mjs'
 import { SOCIAL_RPC_REQUEST_TYPES } from '../../../../../scripts/p2p/social_namespace.mjs'
 
 import { listLocalTimelineOwners, loadViewerContext } from './feedHelpers.mjs'
-import { formatHashShort } from './lib/entityDisplay.mjs'
+import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 import { buildFederatedTimelinePullResponse } from './timeline/sync.mjs'
 

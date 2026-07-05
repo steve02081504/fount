@@ -6,7 +6,7 @@ import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation.mjs'
+import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { extractInboundSignedEvent } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {

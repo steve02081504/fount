@@ -2,7 +2,7 @@ import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
 import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
 import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
-import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation.mjs'
+import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
 import {
 	annotateRtcPeerNodeHash,
 	isFederationActionAllowedUnderLoad,

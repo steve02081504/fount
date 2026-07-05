@@ -10,7 +10,7 @@ import { join } from 'node:path'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { initNode } from '../../node/instance.mjs'
-import { sendToNode } from '../../trust_graph.mjs'
+import { sendToNode } from '../../trust_graph_send.mjs'
 import { deliverToUserRoomPeers } from '../../user_room.mjs'
 
 Deno.test('sendToNode returns false for blank target node hash', async () => {

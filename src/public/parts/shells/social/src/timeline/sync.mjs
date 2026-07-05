@@ -1,5 +1,5 @@
 import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { collectSocialRpcMerged } from '../../../../../../scripts/p2p/part_wire.mjs'
+import { collectSocialRpcMerged } from '../../../../../../scripts/p2p/part_wire_social_rpc.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
 import { validateRemoteTimelineEvent } from '../../../../../../scripts/p2p/timeline/remote_ingest.mjs'
 import { loadFollowing } from '../following.mjs'
