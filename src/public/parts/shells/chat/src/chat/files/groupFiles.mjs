@@ -1,3 +1,10 @@
+/**
+ * 【文件】files/groupFiles.mjs
+ * 【职责】群文件分块加解密、上传/下载、联邦复制与 DAG file_upload/delete 编排（§10）。
+ * 【原理】GSH 收敛加密 + wrapContentKey；blobStore 本地密文缓存；replicateChunkToFederation；权限查 UPLOAD_FILES。
+ * 【数据结构】uploadMeta、parts[]、storageLocator blob:/federation:；fileMetaFromState 物化索引。
+ * 【关联】blobStore、chunkReplicationAck、reputation、dag/channelOps、federation/chunks。
+ */
 import { Buffer } from 'node:buffer'
 
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
@@ -46,9 +53,9 @@ import {
 } from './downloadTasks.mjs'
 
 /**
- * @param {object} state ?????
- * @param {string} [channelId] ?????????????
- * @returns {string} ?? `UPLOAD_FILES` ??????? ID
+ * @param {object} state 物化群状态
+ * @param {string} [channelId] 目标频道；缺省为群默认频道
+ * @returns {string} 用于 `UPLOAD_FILES` 权限检查的频道 ID
  */
 export function uploadPermissionChannelId(state, channelId) {
 	const trimmed = String(channelId || '').trim()
@@ -57,17 +64,17 @@ export function uploadPermissionChannelId(state, channelId) {
 }
 
 /**
- * @param {string} locator ?????
- * @returns {boolean} ??? `blob:{ciphertextHash}`
+ * @param {string} locator 存储定位符
+ * @returns {boolean} 是否为 `blob:{ciphertextHash}`
  */
 function isBlobLocator(locator) {
 	return BLOB_STORAGE_LOCATOR_RE.test(String(locator || '').trim())
 }
 
 /**
- * ????? fileId ??????
- * @param {{ fileId?: string, data?: string }} body ???
- * @returns {{ fileId: string, data: Uint8Array }} fileId ???
+ * 解析上传用 fileId 与分块明文。
+ * @param {{ fileId?: string, data?: string }} body 请求体
+ * @returns {{ fileId: string, data: Uint8Array }} fileId 与明文
  */
 export function parseChunkBody(body) {
 	const fileId = body.fileId?.trim()
@@ -77,17 +84,17 @@ export function parseChunkBody(body) {
 }
 
 /**
- * @param {unknown} value ????
- * @returns {'convergent'|'random'} ????
+ * @param {unknown} value 传入模式
+ * @returns {'convergent'|'random'} 规范模式
  */
 export function normalizeCeMode(value) {
 	return String(value || '').trim().toLowerCase() === 'random' ? 'random' : 'convergent'
 }
 
 /**
- * ? `blob:` ????? hex ???????
- * @param {string} storageLocator ?????
- * @returns {string | null} ?? hex ? null
+ * 从 `blob:` 定位符或裸 hex 解析密文哈希。
+ * @param {string} storageLocator 存储定位符
+ * @returns {string | null} 小写 hex 或 null
  */
 function ciphertextHashFromLocator(storageLocator) {
 	const m = String(storageLocator || '').match(BLOB_STORAGE_LOCATOR_RE)
@@ -95,12 +102,12 @@ function ciphertextHashFromLocator(storageLocator) {
 }
 
 /**
- * ????????????? S3/P2P ???? `blobs/` ???????10.2??
- * @param {string} username ??
- * @param {string} groupId ? ID
- * @param {string} ciphertextHash ????
- * @param {Uint8Array} raw ??
- * @param {object} [groupSettings] ???
+ * 将密文写入群分块目录与可选 S3/P2P 插件（与 `blobs/` 收敛库并行，§10.2）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} ciphertextHash 密文哈希
+ * @param {Uint8Array} raw 密文
+ * @param {object} [groupSettings] 群设置
  * @returns {Promise<void>}
  */
 async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHash, raw, groupSettings = {}) {
@@ -120,11 +127,11 @@ async function mirrorCiphertextToStorageBackends(username, groupId, ciphertextHa
 }
 
 /**
- * ? blob ? ???? ? P2P ?? ? ?? S3 ????????10.2/10.3??
- * @param {string} username ??
- * @param {string} groupId ? ID
+ * 按 blob → 本地分块 → P2P 邻居 → 联邦 S3 顺序解析密文（§10.2/10.3）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
  * @param {string} storageLocator `blob:{hash}`
- * @returns {Promise<Buffer>} ??
+ * @returns {Promise<Buffer>} 密文
  */
 async function resolveCiphertextRaw(username, groupId, storageLocator) {
 	const hash = ciphertextHashFromLocator(storageLocator)
@@ -177,8 +184,8 @@ async function resolveCiphertextRaw(username, groupId, storageLocator) {
 }
 
 /**
- * ???? manifest ???
- * @param {object} part ????
+ * 校验单块 manifest 字段。
+ * @param {object} part 分块描述
  * @returns {void}
  */
 function assertFilePartManifest(part) {
@@ -195,8 +202,8 @@ function assertFilePartManifest(part) {
 }
 
 /**
- * ?? `file_upload` DAG ???????? `parts[]` ????
- * @param {object} body ???
+ * 校验 `file_upload` DAG 必填字段（单块或 `parts[]` 多块）。
+ * @param {object} body 请求体
  * @returns {void}
  */
 export function assertFileUploadBody(body) {
@@ -220,11 +227,11 @@ export function assertFileUploadBody(body) {
 }
 
 /**
- * ?????????10.3????????? `blobs/{ciphertextHash}`?
- * @param {string} username ??
- * @param {string} groupId ?
- * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, channelId?: string, ceMode?: string }} opts ???????
- * @returns {Promise<object>} manifest ???contentHash?ciphertextHash?wrappedKey ??
+ * 上传收敛密文块（§10.3）：同明文跨群复用 `blobs/{ciphertextHash}`。
+ * @param {string} username 用户
+ * @param {string} groupId 群
+ * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, channelId?: string, ceMode?: string }} opts 明文与可选代数
+ * @returns {Promise<object>} manifest 字段（contentHash、ciphertextHash、wrappedKey 等）
  */
 export async function putEncryptedChunk(username, groupId, opts) {
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
@@ -283,11 +290,11 @@ export async function putEncryptedChunk(username, groupId, opts) {
 }
 
 /**
- * ?????????? wrappedKey ?????10.3 ?? have-it?????????
- * @param {string} username ??
- * @param {string} groupId ?
- * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, ceMode?: string }} opts ??????? content/ciphertext ???
- * @returns {Promise<object | null>} manifest??????? `null`
+ * 密文块已存在时仅登记 wrappedKey 与引用（§10.3 预检 have-it，跳过重复上传）。
+ * @param {string} username 用户
+ * @param {string} groupId 群
+ * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, ceMode?: string }} opts 明文（用于推导 content/ciphertext 哈希）
+ * @returns {Promise<object | null>} manifest；本地无密文时 `null`
  */
 export async function registerEncryptedChunkIfPresent(username, groupId, opts) {
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
@@ -320,12 +327,12 @@ export async function registerEncryptedChunkIfPresent(username, groupId, opts) {
 }
 
 /**
- * ? manifest ????????? `parts[]` ????10.3??
- * @param {string} username ??
- * @param {string} groupId ? ID
- * @param {object} meta ?????
- * @param {string} [blamePeerKey] ????????????
- * @returns {Promise<Uint8Array>} ??
+ * 按 manifest 解密整文件（单块或 `parts[]` 拼接，§10.3）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} meta 文件元数据
+ * @param {string} [blamePeerKey] 解密失败时扣信誉的责任方
+ * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 	const parts = Array.isArray(meta?.parts) ? meta.parts : null
@@ -419,7 +426,7 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 	}
 	if (!meta?.storageLocator || !meta?.contentHash)
 		throw new Error('file metadata incomplete')
-	// ????????????? download-status ??????????????????????? done??
+	// 单块文件也维护下载任务，使 download-status 能反映真实完成状态（本地命中或经联邦拉取后标记 done）。
 	const fileId = String(meta?.fileId || '').trim()
 	const chunkHash = String(meta?.ciphertextHash || '').trim().toLowerCase()
 	const singleHash = isHex64(chunkHash) ? chunkHash : ciphertextHashFromLocator(meta.storageLocator)
@@ -456,14 +463,14 @@ export async function getDecryptedFile(username, groupId, meta, blamePeerKey) {
 }
 
 /**
- * ?? `blob:` ?????????
- * @param {string} username ??
- * @param {string} groupId ?
+ * 读取 `blob:` 密文并解密为明文。
+ * @param {string} username 用户
+ * @param {string} groupId 群
  * @param {string} storageLocator `blob:{ciphertextHash}`
- * @param {string} contentHashHex ?? SHA-256
- * @param {{ ceMode?: string, wrappedKey?: { iv: string, ciphertext: string, authTag: string } | null, keyGeneration?: number | null, fileId?: string }} [options] ????
- * @param {string} [blamePeerKey] ????????????
- * @returns {Promise<Uint8Array>} ??
+ * @param {string} contentHashHex 明文 SHA-256
+ * @param {{ ceMode?: string, wrappedKey?: { iv: string, ciphertext: string, authTag: string } | null, keyGeneration?: number | null, fileId?: string }} [options] 解密选项
+ * @param {string} [blamePeerKey] 解密失败时扣信誉的责任方
+ * @returns {Promise<Uint8Array>} 明文
  */
 export async function getDecryptedChunk(username, groupId, storageLocator, contentHashHex, options = {}, blamePeerKey) {
 	const contentHash = String(contentHashHex || '').trim().toLowerCase()
@@ -509,10 +516,10 @@ export async function getDecryptedChunk(username, groupId, storageLocator, conte
 }
 
 /**
- * ????? fileIndex ???????
- * @param {object} state ???
- * @param {string} fileId ?? ID
- * @returns {object | null} ???
+ * 从物化状态 fileIndex 取文件元数据。
+ * @param {object} state 群状态
+ * @param {string} fileId 文件 ID
+ * @returns {object | null} 索引项
  */
 export function fileMetaFromState(state, fileId) {
 	const fileIndex = state.messageOverlay?.fileIndex
@@ -522,17 +529,17 @@ export function fileMetaFromState(state, fileId) {
 }
 
 /**
- * ?? fileIndex ????????????? Hub ??????
- * @param {object} state ?????
- * @returns {Array<{ fileId: string, name?: string, size?: number, mimeType?: string, folderId?: string | null }>} ????
+ * 物化 fileIndex 中未逻辑删除的文件列表（供 Hub 文件侧栏）。
+ * @param {object} state 群物化状态
+ * @returns {Array<{ fileId: string, name?: string, size?: number, mimeType?: string, folderId?: string | null }>} 文件摘要
  */
 export function listActiveFilesFromState(state) {
 	const fileIndex = state.messageOverlay?.fileIndex
 	if (!fileIndex) return []
 	const rows = []
 	/**
-	 * @param {string} fileId DAG ?? ID
-	 * @param {object} meta `fileIndex` ???? `deleted`?`name`?`size` ??
+	 * @param {string} fileId DAG 文件 ID
+	 * @param {object} meta `fileIndex` 条目（含 `deleted`、`name`、`size` 等）
 	 * @returns {void}
 	 */
 	const push = (fileId, meta) => {
@@ -554,10 +561,10 @@ export function listActiveFilesFromState(state) {
 }
 
 /**
- * `file_delete` ??? blob ????10.4??
- * @param {string} username ??
- * @param {object} meta ?????
- * @returns {Promise<{ released: number, deleted: number }>} ?????????
+ * `file_delete` 后释放 blob 引用（§10.4）。
+ * @param {string} username 用户
+ * @param {object} meta 文件元数据
+ * @returns {Promise<{ released: number, deleted: number }>} 释放与物理删除计数
  */
 export async function releaseFileStorageRefs(username, meta) {
 	if (!meta) return { released: 0, deleted: 0 }
@@ -576,10 +583,10 @@ export async function releaseFileStorageRefs(username, meta) {
 }
 
 /**
- * ?? file_upload ?????? groupEntityHash EVFS manifest?
+ * 将群 file_upload 元数据同步为 groupEntityHash EVFS manifest。
  * @param {string} username replica
- * @param {string} groupId ? ID
- * @param {object} uploadMeta DAG file_upload ??
+ * @param {string} groupId 群 ID
+ * @param {object} uploadMeta DAG file_upload 摘要
  * @returns {Promise<object | null>} manifest
  */
 export async function syncGroupFileManifest(username, groupId, uploadMeta) {
