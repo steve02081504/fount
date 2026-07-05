@@ -14,6 +14,7 @@ import {
 	loadGroupEmojiManifest,
 	persistGroupEmojiFromDataUrl,
 	readGroupEmojiBinary,
+	upsertGroupEmojiManifestEntry,
 } from '../../group/groupEmojis.mjs'
 
 import { bindFedSender } from './outbound.mjs'
@@ -98,6 +99,28 @@ export async function handleFedEmojiData(username, groupId, data) {
 }
 
 /**
+ * 处理入站 `fed_emoji_manifest`：合并远端 manifest 条目（contentHash 等元数据）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {unknown} data 载荷
+ * @returns {Promise<void>}
+ */
+export async function handleFedEmojiManifest(username, groupId, data) {
+	if (!isPlainObject(data)) return
+	const emojiId = String(data.emojiId || '').trim()
+	if (!emojiId) return
+	await upsertGroupEmojiManifestEntry(username, groupId, {
+		emojiId,
+		name: data.name,
+		mimeType: data.mimeType,
+		ext: data.ext,
+		animated: data.animated,
+		contentHash: data.contentHash,
+		uploadedBy: 'federation',
+	}).catch(error => console.warn('federation: fed_emoji_manifest persist failed', error))
+}
+
+/**
  * 经 user-room node scope 向已连接 / trust-graph 邻居索要群表情（非成员预览路径）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
@@ -151,6 +174,13 @@ export function attachUserRoomEmojiHandlers(username, wire) {
 		void handleFedEmojiData(username, groupId, data)
 			.catch(error => console.warn('federation: user-room fed_emoji_data failed', error))
 	})
+	wire.on('fed_emoji_manifest', data => {
+		if (!isPlainObject(data)) return
+		const groupId = String(data.groupId || '').trim()
+		if (!groupId) return
+		void handleFedEmojiManifest(username, groupId, data)
+			.catch(error => console.warn('federation: user-room fed_emoji_manifest failed', error))
+	})
 }
 
 /**
@@ -188,6 +218,61 @@ export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slo
 }
 
 /**
+ * 经 user-room 向已连接邻居推送 manifest（群 roster 未就绪时的补充路径）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} entry manifest 条目
+ * @returns {Promise<void>}
+ */
+export async function replicateGroupEmojiManifestToUserRoom(username, groupId, entry) {
+	if (!entry?.emojiId) return
+	const { deliverToUserRoomPeers } = await import('../../../../../../../scripts/p2p/user_room.mjs')
+	await deliverToUserRoomPeers(username, 'fed_emoji_manifest', {
+		groupId,
+		emojiId: entry.emojiId,
+		name: entry.name,
+		mimeType: entry.mimeType,
+		ext: entry.ext,
+		animated: entry.animated,
+		contentHash: entry.contentHash,
+	})
+}
+
+/**
+ * 向联邦邻居广播群表情 manifest 条目（轻量，供对端清单 / CAS 路径）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} entry manifest 条目
+ * @param {object | null} slot 联邦槽
+ * @returns {Promise<void>}
+ */
+export async function replicateGroupEmojiManifestToFederation(username, groupId, entry, slot) {
+	if (!slot?.sendEmojiManifest || !entry?.emojiId) return
+	const payload = {
+		emojiId: entry.emojiId,
+		name: entry.name,
+		mimeType: entry.mimeType,
+		ext: entry.ext,
+		animated: entry.animated,
+		contentHash: entry.contentHash,
+	}
+	for (let attempt = 0; attempt < 120; attempt++) {
+		const roster = slot.getRoster()
+		if (roster.length) {
+			for (const { peerId } of roster)
+				try {
+					slot.sendEmojiManifest(payload, peerId)
+				}
+				catch (error) {
+					console.warn('federation: fed_emoji_manifest replicate failed', error)
+				}
+			return
+		}
+		await new Promise(resolve => setTimeout(resolve, 500))
+	}
+}
+
+/**
  * 上传后向邻居推送群表情数据（best-effort）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
@@ -202,7 +287,7 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
 	if (!slot.sendEmojiData) return
 	const dataUrl = bufferToDataUrl(local.buffer, local.mimeType)
 	const payload = { emojiId, dataUrl, mimeType: local.mimeType }
-	for (let attempt = 0; attempt < 6; attempt++) {
+	for (let attempt = 0; attempt < 120; attempt++) {
 		const roster = slot.getRoster()
 		if (roster.length) {
 			for (const { peerId } of roster)
@@ -219,10 +304,10 @@ export async function replicateGroupEmojiToFederation(username, groupId, emojiId
 }
 
 /**
- * 新 peer 入房时向其推送本群全部表情（供非成员预览 /emoji-content 路径）。
+ * 新 peer 入房时向其推送本群全部表情 manifest + 二进制。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {string} peerId Trystero peer
+ * @param {string} peerId 对端 nodeHash
  * @param {object | null} slot 联邦槽
  * @returns {Promise<void>}
  */
@@ -232,6 +317,20 @@ export async function replicateGroupEmojisToPeer(username, groupId, peerId, slot
 	for (const entry of entries) {
 		const emojiId = String(entry?.emojiId || '').trim()
 		if (!emojiId) continue
+		if (slot.sendEmojiManifest)
+			try {
+				slot.sendEmojiManifest({
+					emojiId,
+					name: entry.name,
+					mimeType: entry.mimeType,
+					ext: entry.ext,
+					animated: entry.animated,
+					contentHash: entry.contentHash,
+				}, peerId)
+			}
+			catch (error) {
+				console.warn('federation: fed_emoji_manifest peer replicate failed', error)
+			}
 		const local = await readGroupEmojiBinary(username, groupId, emojiId)
 		if (!local) continue
 		try {
@@ -256,7 +355,9 @@ export function attachFedEmojiHandlers(roomContext) {
 	const { username, groupId, key, fedOut, rtcLimits, peerToNode, isBlockedPeer, slot } = roomContext
 	const emojiWant = wireAction(roomContext, 'fed_emoji_want')
 	const emojiData = wireAction(roomContext, 'fed_emoji_data')
+	const emojiManifest = wireAction(roomContext, 'fed_emoji_manifest')
 	const sendEmojiData = bindFedSender(fedOut, 6, 'fed_emoji_data', emojiData.send)
+	const sendEmojiManifest = bindFedSender(fedOut, 6, 'fed_emoji_manifest', emojiManifest.send)
 
 	emojiWant.on((data, peerId) => {
 		void handleFedEmojiWant(username, groupId, data, peerId, sendEmojiData, isBlockedPeer, peerToNode)
@@ -268,6 +369,11 @@ export function attachFedEmojiHandlers(roomContext) {
 			.catch(error => console.warn('federation: fed_emoji_data handler failed', error))
 	})
 
+	emojiManifest.on(data => {
+		void handleFedEmojiManifest(username, groupId, data)
+			.catch(error => console.warn('federation: fed_emoji_manifest handler failed', error))
+	})
+
 	slot.sendEmojiWant = bindFedSender(
 		fedOut,
 		6,
@@ -276,6 +382,7 @@ export function attachFedEmojiHandlers(roomContext) {
 		() => isFederationActionAllowedUnderLoad(key, 'fed_emoji_want', rtcLimits),
 	)
 	slot.sendEmojiData = sendEmojiData
+	slot.sendEmojiManifest = sendEmojiManifest
 
 	/**
 	 * @param {string} emojiId 表情 ID
@@ -283,6 +390,14 @@ export function attachFedEmojiHandlers(roomContext) {
 	 */
 	slot.requestGroupEmoji = function requestGroupEmoji(emojiId) {
 		return requestGroupEmojiFromPeers(username, groupId, emojiId, slot)
+	}
+
+	/**
+	 * @param {object} entry manifest 条目
+	 * @returns {Promise<void>}
+	 */
+	slot.replicateGroupEmojiManifest = function replicateGroupEmojiManifest(entry) {
+		return replicateGroupEmojiManifestToFederation(username, groupId, entry, slot)
 	}
 
 	/**

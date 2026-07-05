@@ -25,6 +25,7 @@ import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { compactGroup } from '../../chat/dag/queries.mjs'
 import { readQuarantineRows } from '../../chat/events/quarantine.mjs'
+import { pullOfflineStartUtcMonthArchives } from '../../chat/federation/archiveMonthPull.mjs'
 import { isGroupFederationActive } from '../../chat/federation/groupFederation.mjs'
 import {
 	catchUpGroupFromPeers,
@@ -396,7 +397,12 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const slot = await ensureFederationRoom(username, groupId)
 		if (!slot)
 			throw httpError(503, 'federation room unavailable')
-		res.status(200).json(await syncMissingArchiveMonths(username, groupId, slot))
+		const offline = await pullOfflineStartUtcMonthArchives(username, groupId, slot)
+		const missing = await syncMissingArchiveMonths(username, groupId, slot)
+		res.status(200).json({
+			pulled: offline.pulled + missing.pulled,
+			incomplete: offline.incomplete + missing.incomplete,
+		})
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/archive`, authenticate, async (req, res) => {

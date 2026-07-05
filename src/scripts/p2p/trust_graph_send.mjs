@@ -1,10 +1,10 @@
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
-import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { sendToNodeLink } from './link_registry.mjs'
 import { getNodeHash } from './node/identity.mjs'
 import { isQuarantinedPure } from './reputation_engine.mjs'
 import { loadReputation } from './reputation_store.mjs'
 import { listFederationRoomSlots } from './room_provider_registry.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import trustGraphTunables from './trust_graph.tunables.json' with { type: 'json' }
 import { buildMergedGraph } from './trust_graph_build.mjs'
 import { pickTopFromGraph } from './trust_graph_engine.mjs'
@@ -23,13 +23,15 @@ export async function sendToNode(username, targetNodeHash, actionName, payload, 
 	const target = normalizeHex64(targetNodeHash) || String(targetNodeHash || '').trim().toLowerCase()
 	if (!isHex64(target)) return false
 	await ensureUserRoom({ replicaUsername: username })
+
+	// 已直连 peer 不经 trust-graph scope 也应能收发 node scope action（非成员 CAS chunk / follow hint 等）
+	if (await sendToNodeLink(target, { scope: 'node', action: String(actionName), payload }))
+		return true
+
 	const merged = graph ?? await buildMergedGraph(username)
 	const targetNode = merged.get(target)
 	if (!targetNode?.scopeIds.length) return false
 	const selfNodeHash = getNodeHash()
-
-	if (await sendToNodeLink(target, { scope: 'node', action: String(actionName), payload }))
-		return true
 
 	const rooms = await listFederationRoomSlots(username)
 	const userRooms = rooms.filter(room => room.groupId === USER_ROOM_SCOPE)

@@ -13,6 +13,7 @@ export const FEDERATION_WIRE_ACTION_NAMES = [
 	'fed_archive_digest_obs',
 	'fed_emoji_want',
 	'fed_emoji_data',
+	'fed_emoji_manifest',
 	'fed_group_card_want',
 	'fed_group_card_data',
 	'fed_chunk_get',

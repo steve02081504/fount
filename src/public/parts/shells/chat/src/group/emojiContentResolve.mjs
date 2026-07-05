@@ -5,9 +5,12 @@ import { Buffer } from 'node:buffer'
 
 import { fetchChunk } from '../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { isHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
+import { ensureUserRoom } from '../../../../../../scripts/p2p/user_room.mjs'
+import { getState } from '../chat/dag/materialize.mjs'
 import { requestGroupEmojiFromUserRoom } from '../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../chat/federation/room.mjs'
 
+import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
 import {
 	computeEmojiContentHash,
 	getGroupEmojiEntry,
@@ -15,6 +18,21 @@ import {
 	readGroupEmojiBinary,
 	storeEmojiInCas,
 } from './groupEmojis.mjs'
+
+/**
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {Promise<boolean>} 本机是否为活跃成员
+ */
+async function isLocalActiveGroupMember(username, groupId) {
+	try {
+		const { state } = await getState(username, groupId)
+		return Boolean(await resolveActiveMemberKeyForLocalUser(username, groupId, state))
+	}
+	catch {
+		return false
+	}
+}
 
 /**
  * @param {string} username 用户
@@ -39,12 +57,16 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 	const mimeType = entry?.mimeType || 'image/png'
 
 	if (contentHash) {
-		await ensureFederationRoom(username, groupId).catch(() => null)
-		let chunk = await fetchChunk({
-			username,
-			ciphertextHash: contentHash,
-			groupId,
-		}).catch(() => null)
+		await ensureUserRoom({ replicaUsername: username }).catch(() => null)
+		const isMember = await isLocalActiveGroupMember(username, groupId)
+		const slot = isMember ? await ensureFederationRoom(username, groupId).catch(() => null) : null
+		let chunk = slot
+			? await fetchChunk({
+				username,
+				ciphertextHash: contentHash,
+				groupId,
+			}).catch(() => null)
+			: null
 		// 非成员无群联邦 swarm：群路径 miss 后改走 user-room / TrustGraph fanout
 		if (!chunk?.byteLength)
 			chunk = await fetchChunk({
@@ -74,7 +96,9 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 		if (local) return local
 	}
 
-	const slot = await ensureFederationRoom(username, groupId).catch(() => null)
+	const isMember = await isLocalActiveGroupMember(username, groupId)
+	const slot = isMember ? await ensureFederationRoom(username, groupId).catch(() => null) : null
+	await ensureUserRoom({ replicaUsername: username }).catch(() => null)
 	const fetched = slot?.requestGroupEmoji
 		? await slot.requestGroupEmoji(emojiId)
 		: null

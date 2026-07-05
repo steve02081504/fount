@@ -215,7 +215,37 @@ export async function deleteGroupEmoji(username, groupId, emojiId) {
 }
 
 /**
- * 从 P2P 拉取结果写入本地存储。
+ * 合并联邦同步的 manifest 条目（可无本地二进制）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {object} entry manifest 片段（至少含 emojiId）
+ * @returns {Promise<object>} 合并后的条目
+ */
+export async function upsertGroupEmojiManifestEntry(username, groupId, entry) {
+	const emojiId = String(entry?.emojiId || '').trim()
+	if (!emojiId) throw new Error('emojiId required')
+	const entries = await loadGroupEmojiManifest(username, groupId)
+	const existing = entries.find(row => row?.emojiId === emojiId)
+	const merged = {
+		...existing || {
+			emojiId,
+			name: emojiId,
+			mimeType: 'image/png',
+			ext: '.png',
+			animated: false,
+			uploadedAt: Date.now(),
+			uploadedBy: 'federation',
+		},
+		...entry,
+		emojiId,
+	}
+	if (existing) Object.assign(existing, merged)
+	else entries.push(merged)
+	await saveGroupEmojiManifest(username, groupId, entries)
+	return merged
+}
+
+/**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} emojiId 表情 ID

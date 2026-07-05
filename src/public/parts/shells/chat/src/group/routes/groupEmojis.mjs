@@ -5,6 +5,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { getUserByReq } from '../../../../../../../server/auth.mjs'
 import { betterSendFile } from '../../../../../../../server/web_server/resources.mjs'
+import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../../chat/federation/room.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../upload/fromRequest.mjs'
 import { governanceChannelId } from '../access.mjs'
@@ -79,6 +80,9 @@ export function registerGroupEmojiRoutes(router, authenticate) {
 			req.body?.name,
 		)
 		const slot = await ensureFederationRoom(username, groupId)
+		void replicateGroupEmojiManifestToUserRoom(username, groupId, entry).catch(() => { })
+		if (slot?.replicateGroupEmojiManifest)
+			void slot.replicateGroupEmojiManifest(entry).catch(() => { })
 		if (slot?.replicateGroupEmoji)
 			void slot.replicateGroupEmoji(entry.emojiId).catch(() => { })
 		res.status(201).json({ entry })
