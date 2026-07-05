@@ -310,7 +310,7 @@ export async function init(start_config) {
 	SetTaskbarProgress(88)
 	if (starts.P2P) {
 		const { initP2PServer } = await import('./p2p_server/index.mjs')
-		await initP2PServer({ dataPath: data_path, signaling: start_config.p2p_signaling })
+		await initP2PServer({ dataPath: data_path, signaling: start_config.P2P?.signaling })
 	}
 	if (starts.Base) {
 		console.freshLineI18n('server start', 'fountConsole.server.ready')

@@ -164,10 +164,10 @@ export function defaultTestStarts({ web = false, p2p = false, jobs = false } = {
  * @param {() => never} [options.restarter] 重启回调
  * @param {TestStarts} [options.starts] server starts；省略则使用测试默认预设
  * @param {boolean} [options.needsOutput] 是否启用带输出的 server init 行为
- * @param {import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig} [options.p2pSignaling] initNode 信令配置
+ * @param {{ signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} [options.P2P] initP2PServer 配置
  * @returns {Promise<boolean>} init 是否成功
  */
-export async function initFountNode({ dataPath, restarter, starts, needsOutput, p2pSignaling }) {
+export async function initFountNode({ dataPath, restarter, starts, needsOutput, P2P }) {
 	process.env.FOUNT_DENO_START_TIME ??= new Date().toISOString()
 	set_sentry_enabled(false)
 	set_start()
@@ -177,7 +177,7 @@ export async function initFountNode({ dataPath, restarter, starts, needsOutput, 
 		needs_output: needsOutput,
 		restartor: restarter ?? (() => process.exit(131)),
 		data_path: dataPath,
-		...p2pSignaling ? { p2p_signaling: p2pSignaling } : {},
+		...P2P ? { P2P } : {},
 	})
 }
 
@@ -197,7 +197,8 @@ export async function initFountNode({ dataPath, restarter, starts, needsOutput, 
  * @property {(username: string) => Promise<void>} [afterInit] init 后钩子
  * @property {TestStarts} [starts] 精确透传给 `init()`；省略则根据 web/p2p/jobs 使用测试预设
  * @property {boolean} [needsOutput] 透传给 `init()` 的 `needs_output`
- * @property {string} [p2pRelayUrl] 测试 loopback nostr relay（P2P live 注入）
+ * @property {string} [p2pRelayUrl] 测试 loopback nostr relay（P2P live 注入；等价于 `P2P.signaling`）
+ * @property {{ signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} [P2P] initP2PServer 配置
  * @property {boolean} [resetData=false] 启动前清空 dataPath
  */
 
@@ -216,15 +217,15 @@ export async function bootInProcess(options) {
 		...options.apiKey ? { apiKey: options.apiKey } : {},
 	})
 	const starts = options.starts ?? defaultTestStarts(options)
-	const p2pSignaling = options.p2pRelayUrl
-		? (await import('./p2p_signaling.mjs')).testSignalingFromRelayUrls(options.p2pRelayUrl)
-		: options.p2pSignaling
+	const P2P = options.p2pRelayUrl
+		? { signaling: (await import('./p2p_signaling.mjs')).testSignalingFromRelayUrls(options.p2pRelayUrl) }
+		: options.P2P
 
 	if (!await initFountNode({
 		dataPath: options.dataPath,
 		starts,
 		needsOutput: options.needsOutput,
-		...p2pSignaling ? { p2pSignaling } : {},
+		...P2P ? { P2P } : {},
 	}))
 		throw new Error('server init failed')
 
