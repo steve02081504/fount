@@ -10,11 +10,6 @@ import {
 } from './timeSliceParts.mjs'
 
 /**
- * 忽略部件路径不存在导致的加载错误（自 timeSliceParts 再导出）。
- */
-export { ignoreMissingPartLoadError }
-
-/**
  * 从持久化 JSON 恢复时间切片字段并加载部件 API。
  * @param {object} json 序列化对象
  * @param {string} username 所属用户

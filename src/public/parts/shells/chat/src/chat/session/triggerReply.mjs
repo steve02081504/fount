@@ -26,7 +26,7 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { finishStreamBuffer } from '../stream/groupWsHub.mjs'
+import { finishStreamBuffer } from '../stream/groupWsStreamBuffer.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { createCharPreviewStream } from './charPreviewStream.mjs'

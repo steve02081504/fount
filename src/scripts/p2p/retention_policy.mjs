@@ -5,10 +5,6 @@ import {
 	descendantClosureFromTip,
 } from './governance_branch.mjs'
 
-
-/** 裁剪时不得早于最早一条权限锚点事件（§7.1）。 */
-export { getPermissionAnchorTypes }
-
 /**
  * @param {string[]} order 拓扑序 id 列表
  * @param {Map<string, object>} byId id → 事件

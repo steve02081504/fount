@@ -19,13 +19,13 @@ export async function searchPosts(username, options = {}) {
 		return { query, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const feedItemBuildContext = await createFeedItemBuildContext(username)
+	const itemContext = await createFeedItemBuildContext(username)
 
 	/** @type {object[]} */
 	const items = []
 	for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
 		if (!postMatchesQuery(post, query)) continue
-		items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
+		items.push(await buildPostFeedItem(username, entityHash, post, itemContext))
 	}
 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)

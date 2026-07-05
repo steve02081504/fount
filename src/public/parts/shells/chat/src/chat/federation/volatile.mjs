@@ -122,7 +122,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 		return
 	}
 
-	const { broadcastEvent } = await import('../stream/groupWsHub.mjs')
+	const { broadcastEvent } = await import('../stream/groupWsBroadcast.mjs')
 	const { groupWsRoomKeyForReplica } = await import('../stream/groupWsRooms.mjs')
 	broadcastEvent(groupWsRoomKeyForReplica(groupId), { ...payload, fedInbound: true })
 }

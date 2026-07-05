@@ -8,11 +8,6 @@ import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */
 
 /**
- * 重导出聊天 reducer 表与空会话状态工厂。
- */
-export { CHAT_EVENT_REDUCERS, createEmptySessionState }
-
-/**
  * 将 overlay 选民键规范为小写十六进制字符串。
  * @param {unknown} value checkpoint overlay 选民键
  * @returns {string} 规范化后的 hex 键

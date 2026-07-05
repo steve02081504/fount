@@ -34,11 +34,6 @@ const DATA_NAME = 'reputation'
  * }} ReputationFile
  */
 
-/**
- *
- */
-export { relayBumpIsDuplicate } from './reputation_relay_dedupe.mjs'
-
 /** @type {ReputationFile | null} */
 let reputationCache = null
 

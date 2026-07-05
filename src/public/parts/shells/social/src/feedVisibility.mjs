@@ -8,7 +8,7 @@ import { isAuthorFilteredByPersonalSets } from '../../../../../scripts/p2p/perso
  */
 export function canViewPost(post, viewerContext) {
 	const authorEntity = post.entityHash.toLowerCase()
-	if (viewerContext.personalFilter && isAuthorFilteredByPersonalSets(viewerContext.personalFilter, authorEntity))
+	if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, authorEntity))
 		return false
 	const visibility = post.content?.visibility || 'public'
 	if (visibility === 'public') return true

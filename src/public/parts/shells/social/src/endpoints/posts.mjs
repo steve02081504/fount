@@ -22,13 +22,12 @@ export function registerPostsRoutes(router) {
 	router.post('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
-		const body = req.body
-		const requested = body.entityHash?.toLowerCase() ?? ''
-		let entityHash = await resolveActingEntity(username, body.actingEntityHash, {
+		const requested = req.body.entityHash?.toLowerCase() ?? ''
+		let entityHash = await resolveActingEntity(username, req.body.actingEntityHash, {
 			invalidMessage: 'can only post as your operator or local agent entities',
 			missingMessage: 'configure Chat federation identity first (same P2P entity as Social)',
 		})
-		let charPartName = body.charPartName || null
+		let charPartName = req.body.charPartName || null
 		if (requested) {
 			const resolved = await resolveSocialEntity(requested, username)
 			if (!resolved?.local || resolved.replicaUsername !== username)
@@ -37,26 +36,23 @@ export function registerPostsRoutes(router) {
 			if (resolved.kind === 'agent') charPartName = resolved.charPartName
 		}
 		await ensureEntitySocialReady(username, entityHash)
-		const visibility = body.visibility === 'followers' ? 'followers' : 'public'
-		const postKeyId = randomUUID()
-		const postText = String(body.text)
-		const emojiMediaRefs = await buildEmojiMediaRefsForPost(username, postText)
+		const visibility = req.body.visibility === 'followers' ? 'followers' : 'public'
 		const draftContent = {
-			text: postText,
+			text: String(req.body.text),
 			mediaRefs: [
-				...body.mediaRefs,
-				...emojiMediaRefs,
+				...req.body.mediaRefs,
+				...await buildEmojiMediaRefsForPost(username, String(req.body.text)),
 			],
-			replyTo: body.replyTo,
-			quoteRef: body.quoteRef,
-			groupRef: body.groupRef,
-			lang: body.lang || 'zh-CN',
+			replyTo: req.body.replyTo,
+			quoteRef: req.body.quoteRef,
+			groupRef: req.body.groupRef,
+			lang: req.body.lang || 'zh-CN',
 			visibility,
 		}
 		const signed = await commitTimelineEvent(username, entityHash, {
 			type: 'post',
 			charPartName,
-			content: await maybeEncryptPostContent(username, entityHash, postKeyId, draftContent, visibility),
+			content: await maybeEncryptPostContent(username, entityHash, randomUUID(), draftContent, visibility),
 		})
 		await dispatchPostMentions(username, entityHash, signed)
 		await dispatchPostFollowerUpdates(entityHash, signed)
@@ -66,9 +62,8 @@ export function registerPostsRoutes(router) {
 
 	router.delete('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const body = req.body
-		const actingEntity = await resolveActingEntity(username, body.actingEntityHash)
-		const targetPostId = String(body.postId)
+		const actingEntity = await resolveActingEntity(username, req.body.actingEntityHash)
+		const targetPostId = String(req.body.postId)
 		if (!targetPostId) throw httpError(400, 'postId required')
 		const event = await commitTimelineEvent(username, actingEntity, {
 			type: 'post_delete',

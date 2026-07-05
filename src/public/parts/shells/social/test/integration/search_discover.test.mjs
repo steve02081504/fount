@@ -10,7 +10,7 @@ const getSession = createTestSession()
 
 const append = await import('../../src/timeline/append.mjs')
 const search = await import('../../src/search.mjs')
-const discovery = await import('../../src/discovery.mjs')
+const discoverLocal = await import('../../src/discover/local.mjs')
 const trending = await import('../../src/trending/hashtags.mjs')
 
 Deno.test('searchPosts finds operator post by hashtag', async () => {
@@ -38,7 +38,7 @@ Deno.test('discoverPosts samples public posts', async () => {
 		content: { text: 'discover sample post', visibility: 'public' },
 	}, { fanout: false })
 
-	const { posts } = await discovery.discoverPosts(username, { n: 20 })
+	const { posts } = await discoverLocal.discoverPosts(username, { n: 20 })
 	assert(posts.some(p => p.entityHash === operator))
 })
 
@@ -49,7 +49,7 @@ Deno.test('discoverPosts skips followers-only visibility', async () => {
 		content: { text: 'discoverSecretFollowersOnly', visibility: 'followers' },
 	}, { fanout: false })
 
-	const { posts } = await discovery.discoverPosts(username, { n: 50 })
+	const { posts } = await discoverLocal.discoverPosts(username, { n: 50 })
 	assert(!posts.some(p => p.textSnippet?.includes('discoverSecretFollowersOnly')))
 })
 

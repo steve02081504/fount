@@ -9,7 +9,7 @@ alwaysApply: false
 ## Trust model
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
-- **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs` (`ingestRemoteTimelineEvent`), `src/discovery.mjs` (`handleSocialRpc`); outbound filtering in `src/timeline/federationExport.mjs`.
+- **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs` (`ingestRemoteTimelineEvent`), `src/discover/rpc.mjs` (`handleSocialRpc`); outbound filtering in `src/timeline/federationExport.mjs`.
 - **Follow list**: no sidecar JSON; `following` materialized from operator timeline (implicit self-follow); reverse lookups via `{dataPath}/p2p/node/social/follower_index/buckets/{hexPrefix}.json` (LRU hot cache).
 - **Personal block/hide** (Chat + Social shared): public `block`/`unblock` timeline events → `personal_block.json` + reputation propagation; private `hide` → `personal_hide.json` only. List APIs: `GET /api/p2p/personal-lists`, `GET …/profile/personal-lists` → `{ entries: [{ scope, value, kind: 'block'|'hide' }] }`. Group kick/ban = node `denylist.json` (separate).
 - **HTTP routes**: writes at `POST …/posts`, `POST …/posts/:entityHash/:postId/like|repost`, `DELETE …/posts`; relationships at `POST …/relationships/follow|block|hide|follow-approve`. Profile namespace read-only (+ `POST …/profile/meta` for `hideFromDiscovery`/`exploreBlurb`). Types: `src/decl/socialAPI.ts`.

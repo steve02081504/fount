@@ -9,7 +9,7 @@ import { registerAvRelaySocket } from '../chat/stream/avRelay.mjs'
 import {
 	handleGroupSocketIdentityMessage,
 	handleGroupSocketRpcMessage,
-} from '../chat/stream/groupWsHub.mjs'
+} from '../chat/stream/groupWsRpc.mjs'
 import { runAuthenticatedWs } from '../ws_auth.mjs'
 
 /**

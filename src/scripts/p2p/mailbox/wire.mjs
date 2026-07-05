@@ -24,7 +24,7 @@ export function attachMailboxWire(ctx, wire) {
 	wire.on('mailbox_want', (payload, peerId) => {
 		const want = parseMailboxWant(payload)
 		if (!want.ok) return
-		void respondMailboxWant(ctx, want.value, (giveWire, targetPeerId) => {
+		void respondMailboxWant(want.value, (giveWire, targetPeerId) => {
 			try {
 				wire.send('mailbox_give', giveWire, targetPeerId)
 			}

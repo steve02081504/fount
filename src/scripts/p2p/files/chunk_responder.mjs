@@ -1,4 +1,5 @@
-import { handleIncomingChunkGet, resolvePendingChunkFetch } from './chunk_fetch.mjs'
+import { resolvePendingChunkFetch } from '../chunk_fetch_pending.mjs'
+import { handleIncomingChunkGet } from './chunk_fetch.mjs'
 
 /**
  * @param {string} username replica 用户名

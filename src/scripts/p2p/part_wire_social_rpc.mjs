@@ -38,8 +38,3 @@ export async function collectSocialRpcMerged(username, rpc, timeoutMs = 2500, ma
 	const results = await collectSocialRpcResponses(username, rpc, timeoutMs, maxResponses)
 	return { data: partInvokeDataRows(results), errors: partInvokeErrorMessages(results) }
 }
-
-/**
- *
- */
-export { partInvokeDataRows, partInvokeErrorMessages } from './part_wire_common.mjs'

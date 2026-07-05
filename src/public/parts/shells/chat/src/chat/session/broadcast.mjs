@@ -11,7 +11,7 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { broadcastEvent } from '../stream/groupWsHub.mjs'
+import { broadcastEvent } from '../stream/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica, resolveGroupWsRoomKey } from '../stream/groupWsRooms.mjs'
 import { attachStreamVolatileSignature } from '../stream/signing.mjs'
 

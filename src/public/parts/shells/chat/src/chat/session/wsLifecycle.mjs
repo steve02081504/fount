@@ -11,7 +11,7 @@ import { ms } from '../../../../../../../scripts/ms.mjs'
 import { getAllUserNames } from '../../../../../../../server/auth.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
-import { countGroupSockets, registerSocket } from '../stream/groupWsHub.mjs'
+import { countGroupSockets, registerSocket } from '../stream/groupWsBroadcast.mjs'
 import {
 	registerGroupReplicaForUser,
 	resolveGroupWsRoomKey,

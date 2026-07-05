@@ -178,7 +178,7 @@ Deno.test('respondMailboxWant omits quarantine records', async () => {
 		 * @type {string[]}
 		 */
 		const sentIds = []
-		await respondMailboxWant({ replicaUsername: USER }, { toPubKeyHash: RECIPIENT }, (give) => {
+		await respondMailboxWant({ toPubKeyHash: RECIPIENT }, (give) => {
 			for (const row of give.records || [])
 				sentIds.push(row.id)
 		}, 'peer-1')

@@ -3,7 +3,7 @@
  */
 import { createBufferedSyncPreviewUpdater } from '../../stream/bufferedUpdater.mjs'
 import { generateDiff } from '../../stream/diff.mjs'
-import { bufferStreamChunk } from '../stream/groupWsHub.mjs'
+import { bufferStreamChunk } from '../stream/groupWsStreamBuffer.mjs'
 
 import { broadcastSignedGroupVolatile } from './broadcast.mjs'
 

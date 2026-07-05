@@ -138,13 +138,12 @@ export async function ingestMailboxPut(ctx, put, peerId = '') {
 }
 
 /**
- * @param {{ replicaUsername?: string }} ctx 入站上下文
  * @param {object} want mailbox_want 载荷
  * @param {(payload: unknown, peerId: string) => void} sendGive mailbox_give 发送回调
  * @param {string} peerId 请求方 peer
  * @returns {Promise<void>}
  */
-export async function respondMailboxWant(ctx, want, sendGive, peerId) {
+export async function respondMailboxWant(want, sendGive, peerId) {
 	const { getMailboxRecords, takeMailboxForRecipient } = await import('./store.mjs')
 	const recipient = normalizeHex64(want.toPubKeyHash)
 	if (!recipient) return

@@ -53,9 +53,7 @@ function isHiddenByAuthorReputation(entityHash) {
  * @returns {Promise<object | null>} 可见帖子或 null
  */
 async function resolveVisiblePost(username, entityHash, postId, viewerContext) {
-	const view = await getTimelineMaterialized(username, entityHash)
-	if (!view.posts?.length && !view.postById) return null
-	const post = view.postById?.[postId]
+	const post = (await getTimelineMaterialized(username, entityHash)).postById?.[postId]
 	if (!post) return null
 	const enriched = { ...post, entityHash }
 	if (!canViewPost(enriched, viewerContext))
@@ -76,10 +74,7 @@ export async function buildHomeFeed(username, options = {}) {
 	const { following } = await loadFollowing(username)
 	const viewerContext = await loadViewerContext(username)
 	const feedSources = new Set(following)
-
-	const viewerContext = await loadViewerContext(username)
-	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username, feedSources)
-	const feedItemBuildContext = { authorProfile, engagementForPost }
+	const itemContext = await createFeedItemBuildContext(username, feedSources)
 
 	/** @type {{ candidates: object[], index: number }[]} */
 	const streams = []
@@ -141,10 +136,10 @@ export async function buildHomeFeed(username, options = {}) {
 		if (candidate.kind === 'repost') {
 			const originalPost = await resolveVisiblePost(username, candidate.originalEntityHash, candidate.originalPostId, viewerContext)
 			if (originalPost)
-				item = await buildRepostFeedItem(candidate, originalPost, feedItemBuildContext)
+				item = await buildRepostFeedItem(candidate, originalPost, itemContext)
 		}
 		else
-			item = await buildPostFeedItem(username, candidate.entityHash, candidate.post, feedItemBuildContext)
+			item = await buildPostFeedItem(username, candidate.entityHash, candidate.post, itemContext)
 
 		if (!item) continue
 		const key = feedItemCursorKey(item)
@@ -178,9 +173,8 @@ export async function buildProfileFeedItems(username, entityHash) {
 		return { entityHash, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username)
-	const feedItemBuildContext = { authorProfile, engagementForPost }
-		return { entityHash, items: [] }
+	const itemContext = await createFeedItemBuildContext(username)
+	const view = await getTimelineMaterialized(username, entityHash)
 
 	/** @type {object[]} */
 	const items = []
@@ -189,7 +183,7 @@ export async function buildProfileFeedItems(username, entityHash) {
 		const enriched = { ...post, entityHash }
 		if (!canViewPost(enriched, viewerContext))
 			continue
-		items.push(await buildPostFeedItem(username, entityHash, post, feedItemBuildContext))
+		items.push(await buildPostFeedItem(username, entityHash, post, itemContext))
 	}
 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)
@@ -208,9 +202,7 @@ export async function buildLikedFeedItems(username, entityHash) {
 		return { entityHash, items: [] }
 
 	const viewerContext = await loadViewerContext(username)
-	const { authorProfile, engagementForPost } = await createFeedItemBuildContext(username)
-	const feedItemBuildContext = { authorProfile, engagementForPost }
-
+	const itemContext = await createFeedItemBuildContext(username)
 	const view = await getTimelineMaterialized(username, entityHash)
 	if (!view.likes?.length)
 		return { entityHash, items: [] }
@@ -224,7 +216,7 @@ export async function buildLikedFeedItems(username, entityHash) {
 		if (!isEntityHash128(targetEntityHash) || targetPostId == null) continue
 		const post = await resolveVisiblePost(username, targetEntityHash, String(targetPostId), viewerContext)
 		if (!post) continue
-		items.push(await buildPostFeedItem(username, targetEntityHash, post, feedItemBuildContext))
+		items.push(await buildPostFeedItem(username, targetEntityHash, post, itemContext))
 	}
 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)

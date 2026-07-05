@@ -1,7 +1,7 @@
 /**
  * 【文件】group/routes/groupFilesRoutes.mjs
  * 【职责】群文件 HTTP 路由（chunks/files CRUD、下载状态）。
- * 【关联】chat/files/groupFilesOps.mjs 领域逻辑；由 governance.mjs mount。
+ * 【关联】chat/files/groupFiles.mjs；由 governance.mjs mount。
  */
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
@@ -19,7 +19,7 @@ import {
 	registerEncryptedChunkIfPresent,
 	syncGroupFileManifest,
 	uploadPermissionChannelId,
-} from '../../chat/files/groupFilesOps.mjs'
+} from '../../chat/files/groupFiles.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 
 import { GROUPS_PREFIX } from './path.mjs'

@@ -1,5 +1,5 @@
-import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
-import { getProfile } from '../../../../../scripts/p2p/entity/profile.mjs'
+import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
 
 /**
  * @param {string} username replica 用户名

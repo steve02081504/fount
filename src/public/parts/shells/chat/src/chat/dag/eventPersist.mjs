@@ -30,7 +30,7 @@ import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
-import { broadcastEvent } from '../stream/groupWsHub.mjs'
+import { broadcastEvent } from '../stream/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
 
 import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
