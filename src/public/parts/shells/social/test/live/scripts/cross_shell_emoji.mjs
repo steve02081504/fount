@@ -11,6 +11,7 @@ import {
 	RootApi,
 	ShellApi,
 	testCase,
+	WarmupFedNodeLinks,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
 import { sleep } from 'fount/scripts/test/live/http.mjs'
@@ -52,6 +53,7 @@ await testCase('federation identity ready on A/B', async () => {
 	const fb = await P2pApi(FedB, 'GET', '/federation')
 	return fa.status === 200 && fb.status === 200 && fa.json.activePubKeyHex && fb.json.activePubKeyHex
 })
+await WarmupFedNodeLinks([FedA, FedB])
 await sleep(ms('5s'))
 
 console.log('\n=== Setup: A private group + emoji (B stays non-member) ===')

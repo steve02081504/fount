@@ -80,7 +80,14 @@ const suites = {
 	fed_mailbox: { fed: true, run: denoLiveRun(join(fedScripts, 'mailbox.mjs')) },
 	fed_ban: { fed: true, fedNodes: 3, run: denoLiveRun(join(fedScripts, 'ban.mjs')) },
 	fed_emoji: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji.mjs')) },
-	fed_emoji_nonmember: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji_nonmember.mjs')) },
+	fed_emoji_nonmember: {
+		fed: true,
+		run: denoLiveRun(join(fedScripts, 'emoji_nonmember.mjs')),
+		node: {
+			loadParts: ['shells/chat', 'shells/social'],
+			bootstrap: join(fedScripts, 'emoji_nonmember_bootstrap.mjs'),
+		},
+	},
 	fed_emoji_nearcache: { fed: true, run: denoLiveRun(join(fedScripts, 'emoji_nearcache.mjs')) },
 	fed_file_transfer: { fed: true, run: denoLiveRun(join(fedScripts, 'file_transfer.mjs')) },
 	fed_control_plane: { fed: true, run: denoLiveRun(join(fedScripts, 'control_plane.mjs')) },

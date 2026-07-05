@@ -9,10 +9,14 @@ import {
 	InvokeFedCatchupSync,
 	P2pApi,
 	PollUntil,
+	ShellApi,
 	testCase,
 	WaitFedConverged,
+	WarmupFedNodeLinks,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
+import { sleep } from 'fount/scripts/test/live/http.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 
 let gid = null
 let cid = null
@@ -20,22 +24,22 @@ let emojiId = null
 let emojiContentHash = null
 
 console.log('\n=== P2P warmup (user-room for fed_chunk_get fanout) ===')
-let aNodeHash = null
 await testCase('federation identity ready on A/B', async () => {
 	const fa = await P2pApi(FedA, 'GET', '/federation')
 	const fb = await P2pApi(FedB, 'GET', '/federation')
-	aNodeHash = fa.json.nodeHash
 	return fa.status === 200 && fb.status === 200 && fa.json.activePubKeyHex && fb.json.activePubKeyHex
 })
 
-if (aNodeHash) {
-	await P2pApi(FedB, 'POST', '/federation/connect-node', { targetNodeHash: aNodeHash })
-	const connected = await PollUntil(30, 2, async () => {
-		const fb = await P2pApi(FedB, 'GET', '/federation')
-		return fb.status === 200
-	})
-	if (!connected) throw new Error('B failed to connect to A user-room for non-member emoji path')
-}
+await WarmupFedNodeLinks([FedA, FedB])
+await sleep(ms('5s'))
+
+console.log('\n=== Setup: B follows A (TrustGraph CAS fanout for non-member emoji) ===')
+await testCase('B follows A operator entity', async () => {
+	const viewerA = (await ShellApi(FedA, 'social', 'GET', '/viewer')).json.viewerEntityHash
+	if (!viewerA) throw new Error('no viewerEntityHash on A')
+	const r = await ShellApi(FedB, 'social', 'POST', '/relationships/follow', { entityHash: viewerA, follow: true })
+	return r.status === 200
+})
 
 console.log('\n=== Setup: A creates group + emoji (B does not join) ===')
 await testCase('A creates group (B stays non-member)', async () => {

@@ -5,8 +5,8 @@
  * 【数据结构】载荷 { emojiId, dataUrl?, mimeType? }；等待键 username\0groupId\0emojiId。
  * 【关联】room.mjs、group/groupEmojis.mjs、wire_ingress.mjs、governance/peers 拉黑检查。
  */
-import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { wireAction } from '../../../../../../../scripts/p2p/room_wire_action.mjs'
+import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
 import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
 import {
@@ -95,6 +95,62 @@ export async function handleFedEmojiData(username, groupId, data) {
 	// 无论清单条目是否已存在，始终写入本地二进制（防止清单已同步但文件未下载时丢弃 push 数据）
 	await persistGroupEmojiFromDataUrl(username, groupId, emojiId, dataUrl, mimeType)
 		.catch(error => console.warn('federation: fed_emoji_data persist failed', error))
+}
+
+/**
+ * 经 user-room node scope 向已连接 / trust-graph 邻居索要群表情（非成员预览路径）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} emojiId 表情 ID
+ * @returns {Promise<{ dataUrl: string, mimeType: string } | null>} 对端返回的 data URL，超时为 null
+ */
+export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId) {
+	if (!consumeEmojiWant(waitKey(username, groupId, EMOJI_WANT_BUCKET_KEY))) return null
+	const key = waitKey(username, groupId, emojiId)
+	const payload = { groupId, emojiId }
+	const resultPromise = new Promise(resolve => {
+		const timer = setTimeout(() => {
+			pendingFetches.delete(key)
+			resolve(null)
+		}, FETCH_TIMEOUT_MS)
+		pendingFetches.set(key, { resolve, timer })
+	})
+	const { ensureUserRoom, deliverToUserRoomPeers } = await import('../../../../../../../scripts/p2p/user_room.mjs')
+	const { fanoutToTopNodes } = await import('../../../../../../../scripts/p2p/trust_graph_send.mjs')
+	await ensureUserRoom({ replicaUsername: username })
+	await deliverToUserRoomPeers(username, 'fed_emoji_want', payload)
+	await fanoutToTopNodes(username, 'fed_emoji_want', payload, 6)
+	return await resultPromise
+}
+
+/**
+ * 在 node scope user-room 注册 fed_emoji_want / fed_emoji_data（非成员不经群联邦房间拉表情）。
+ * @param {string} username replica 用户名
+ * @param {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }} wire node scope 派发
+ * @returns {void}
+ */
+export function attachUserRoomEmojiHandlers(username, wire) {
+	wire.on('fed_emoji_want', (data, peerId) => {
+		if (!isPlainObject(data)) return
+		const groupId = String(data.groupId || '').trim()
+		if (!groupId) return
+		void handleFedEmojiWant(
+			username,
+			groupId,
+			data,
+			peerId,
+			(payload, targetPeerId) => wire.send('fed_emoji_data', { ...payload, groupId }, targetPeerId),
+			() => false,
+			new Map(),
+		).catch(error => console.warn('federation: user-room fed_emoji_want failed', error))
+	})
+	wire.on('fed_emoji_data', data => {
+		if (!isPlainObject(data)) return
+		const groupId = String(data.groupId || '').trim()
+		if (!groupId) return
+		void handleFedEmojiData(username, groupId, data)
+			.catch(error => console.warn('federation: user-room fed_emoji_data failed', error))
+	})
 }
 
 /**

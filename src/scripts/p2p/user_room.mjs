@@ -1,11 +1,11 @@
 import { createHash } from 'node:crypto'
 
-import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { listLinks, sendToNodeLink, subscribeScope, getLinkRegistry } from './link_registry.mjs'
 import { attachMailboxWire } from './mailbox/wire.mjs'
 import { ensureNodeDefaults, getNodeHash } from './node/identity.mjs'
 import { attachPartWire } from './part_wire.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 
 /**
  * 在 node scope action 表上注册 fed_chunk_get / fed_chunk_data handler，
@@ -36,18 +36,47 @@ export let userRoomSlot = null
 
 /** @type {Map<string, Set<(payload: unknown, peerId: string) => void>>} */
 const nodeActionHandlers = new Map()
+/** @type {Set<(username: string, wire: { on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }) => void>} */
+const nodeScopeWireHooks = new Set()
+/** @type {string} */
+let nodeScopeReplicaUsername = ''
+/** @type {ReturnType<typeof createNodeScopeWire> | null} */
+let nodeScopeWire = null
 let nodeScopeCleanup = null
+
+/**
+ * Chat 等非 P2P 模块可向 node scope 注册 fed_emoji 等 handler（避免 p2p→shell 硬依赖）。
+ * @param {(username: string, wire: { on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }) => void} hook 注册回调
+ * @returns {() => void} 取消注册
+ */
+export function registerUserRoomNodeScopeHook(hook) {
+	nodeScopeWireHooks.add(hook)
+	if (nodeScopeWire)
+		try { hook(nodeScopeReplicaUsername, nodeScopeWire) } catch { /* ignore */ }
+	return () => nodeScopeWireHooks.delete(hook)
+}
 
 /**
  * @returns {{ on: (name: string, handler: (payload: unknown, peerId: string) => void) => void, send: (name: string, payload: unknown, peerId: string | null) => void }}
  */
 function createNodeScopeWire() {
 	return {
+		/**
+		 *
+		 * @param name
+		 * @param handler
+		 */
 		on(name, handler) {
 			const key = String(name)
 			if (!nodeActionHandlers.has(key)) nodeActionHandlers.set(key, new Set())
 			nodeActionHandlers.get(key).add(handler)
 		},
+		/**
+		 *
+		 * @param name
+		 * @param payload
+		 * @param peerId
+		 */
 		send(name, payload, peerId) {
 			if (!peerId) return
 			void sendToNodeLink(peerId, { scope: 'node', action: String(name), payload }).catch(() => {})
@@ -68,6 +97,7 @@ function activeLinkRoster() {
  */
 async function ensureNodeScopeRuntime(ctx) {
 	if (nodeScopeCleanup) return
+	nodeScopeReplicaUsername = String(ctx.replicaUsername || nodeScopeReplicaUsername || '')
 	nodeScopeCleanup = subscribeScope('node', (senderNodeHash, envelope) => {
 		const handlers = nodeActionHandlers.get(String(envelope?.action || ''))
 		if (!handlers?.size) return
@@ -75,9 +105,12 @@ async function ensureNodeScopeRuntime(ctx) {
 			try { handler(envelope.payload, senderNodeHash) } catch { /* ignore */ }
 	})
 	const wire = createNodeScopeWire()
+	nodeScopeWire = wire
 	attachPartWire({ replicaUsername: ctx.replicaUsername }, wire)
 	attachMailboxWire({ replicaUsername: ctx.replicaUsername }, wire)
 	attachUserRoomChunkHandlers(ctx.replicaUsername || '', wire)
+	for (const hook of nodeScopeWireHooks)
+		try { hook(ctx.replicaUsername || '', wire) } catch { /* ignore */ }
 }
 
 /**
@@ -139,6 +172,7 @@ export async function ensureUserRoom(ctx = {}) {
 	userRoomInflight = (async () => {
 		ensureNodeDefaults()
 		try {
+			await getLinkRegistry().ensureRuntime()
 			await ensureNodeScopeRuntime(ctx)
 			const creds = resolveUserRoomCredentials()
 			/** @type {UserRoomSlot} */
@@ -146,10 +180,23 @@ export async function ensureUserRoom(ctx = {}) {
 				roomId: creds.roomId,
 				roomSecret: creds.password,
 				room: null,
+				/**
+				 *
+				 * @param peerId
+				 * @param actionName
+				 * @param payload
+				 */
 				sendToPeer(peerId, actionName, payload) {
 					void sendToNodeLink(peerId, { scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
+				/**
+				 *
+				 */
 				getRoster: () => activeLinkRoster(),
+				/**
+				 *
+				 * @param nodeHash
+				 */
 				getPeerIdByNodeHash(nodeHash) {
 					return getLinkRegistry().getLink(nodeHash) ? String(nodeHash) : null
 				},
@@ -175,6 +222,9 @@ export async function ensureUserRoom(ctx = {}) {
 export function invalidateUserRoom() {
 	userRoomSlot = null
 	userRoomInflight = null
+	nodeScopeWire = null
+	nodeScopeReplicaUsername = ''
+	nodeScopeCleanup = null
 }
 
 /**

@@ -230,6 +230,11 @@ export async function bootInProcess(options) {
 			await loadPart(options.username, part)
 	}
 
+	if (starts.P2P && options.loadParts?.length) {
+		const { ensureUserRoom } = await import('fount/scripts/p2p/user_room.mjs')
+		await ensureUserRoom({ replicaUsername: options.username })
+	}
+
 	if (options.bootstrap) {
 		const module = await import(pathToFileURL(options.bootstrap).href)
 		await module.default(options.username)

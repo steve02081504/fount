@@ -313,6 +313,8 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 		})).json?.event?.id
 
 	const minMembers = 1 + joinNodes.length
+	await WarmupFedNodeLinks([FedA, ...joinNodes])
+	await Api(FedA, 'POST', `/groups/${groupId}/federation/rebind`, {})
 	let joined = 0
 	for (const node of joinNodes) {
 		const join = await Api(node, 'POST', `/groups/${groupId}/join`, {
@@ -344,6 +346,25 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 }
 
 /**
+ * 双端互拨 user-room，减少 join / CAS 路径冷启动失败。
+ * @param {LiveNodeHandle[]} nodes
+ * @returns {Promise<void>}
+ */
+export async function WarmupFedNodeLinks(nodes) {
+	/** @type {Array<{ node: LiveNodeHandle, nodeHash: string }>} */
+	const identities = []
+	for (const node of nodes) {
+		const view = await P2pApi(node, 'GET', '/federation')
+		if (view.status === 200 && view.json.nodeHash)
+			identities.push({ node, nodeHash: String(view.json.nodeHash).trim().toLowerCase() })
+	}
+	for (const { node, nodeHash } of identities)
+		for (const { node: peer, nodeHash: peerHash } of identities)
+			if (peer.name !== node.name)
+				await P2pApi(node, 'POST', '/federation/connect-node', { targetNodeHash: peerHash })
+}
+
+/**
  * @param {string} name @param {string | null} seedText
  * @param seedText
  */
@@ -358,6 +379,9 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 		seedEventId = (await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
 			content: { type: 'text', content: seedText },
 		})).json?.event?.id
+
+	await WarmupFedNodeLinks([FedA, FedB])
+	await Api(FedA, 'POST', `/groups/${groupId}/federation/rebind`, {})
 
 	const join = await Api(FedB, 'POST', `/groups/${groupId}/join`, {
 		roomSecret: invite.roomSecret,

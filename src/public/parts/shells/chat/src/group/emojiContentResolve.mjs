@@ -5,6 +5,7 @@ import { Buffer } from 'node:buffer'
 
 import { fetchChunk } from '../../../../../../scripts/p2p/files/chunk_fetch.mjs'
 import { isHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
+import { requestGroupEmojiFromUserRoom } from '../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../chat/federation/room.mjs'
 
 import {
@@ -77,13 +78,16 @@ export async function resolveGroupEmojiContent(username, groupId, emojiId, optio
 	const fetched = slot?.requestGroupEmoji
 		? await slot.requestGroupEmoji(emojiId)
 		: null
-	if (fetched?.dataUrl) {
+	const userRoomFetched = fetched?.dataUrl
+		? fetched
+		: await requestGroupEmojiFromUserRoom(username, groupId, emojiId)
+	if (userRoomFetched?.dataUrl) {
 		await persistGroupEmojiFromDataUrl(
 			username,
 			groupId,
 			emojiId,
-			fetched.dataUrl,
-			fetched.mimeType,
+			userRoomFetched.dataUrl,
+			userRoomFetched.mimeType,
 		).catch(() => { })
 		return readGroupEmojiBinary(username, groupId, emojiId)
 	}

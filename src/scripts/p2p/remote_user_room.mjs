@@ -1,6 +1,7 @@
-import { USER_ROOM_SCOPE } from './room_scopes.mjs'
 import { closeLink, ensureLinkToNode, getLink } from './link_registry.mjs'
 import { registerFederationRoomProvider } from './room_provider_registry.mjs'
+import { USER_ROOM_SCOPE } from './room_scopes.mjs'
+import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 
 /**
  * @typedef {{
@@ -44,8 +45,21 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 			/** @type {import('./room_provider_registry.mjs').FederationRoomSlot} */
 			const roomSlot = {
 				groupId: USER_ROOM_SCOPE,
+				/**
+				 *
+				 */
 				getRoster: () => getLink(key) ? [{ peerId: key, remoteNodeHash: key }] : [],
+				/**
+				 *
+				 * @param nh
+				 */
 				getPeerIdByNodeHash: nh => getLink(nh) ? String(nh) : null,
+				/**
+				 *
+				 * @param peerId
+				 * @param actionName
+				 * @param payload
+				 */
 				sendToPeer(peerId, actionName, payload) {
 					void link.send({ scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
@@ -53,9 +67,13 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 
 			const slot = {
 				roomSlot,
+				/**
+				 *
+				 */
 				leave() { return closeLink(key, 'remote-user-room-release') },
 			}
 			slots.set(key, slot)
+			invalidateTrustGraphCache()
 			return slot
 		}
 		catch (error) {
