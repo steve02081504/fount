@@ -142,8 +142,10 @@ function printSuiteSummary(label, result, streamed = false) {
 		console.log(noisy
 			? geti18n('fountConsole.test.passedWithNoise', { label })
 			: geti18n('fountConsole.test.passed', { label }))
-	else
+	else if (result.terminated)
 		console.error(geti18n('fountConsole.test.failed', { label }))
+	else
+		console.error(geti18n('fountConsole.test.failedWithCode', { label, code: result.exitCode }))
 }
 
 /**

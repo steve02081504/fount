@@ -53,7 +53,7 @@ export function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
- * @returns {Promise<{ passed: boolean, failedFiles: string[], output: string, durationMs: number, peakMemMb?: number, avgCpuPct?: number, terminated?: boolean, terminateReason?: string }>} 运行结果
+ * @returns {Promise<{ passed: boolean, exitCode: number, failedFiles: string[], output: string, durationMs: number, peakMemMb?: number, avgCpuPct?: number, terminated?: boolean, terminateReason?: string }>} 运行结果
  */
 export async function runSuite(suite, onlyFiles, globalBudget, stream = false, watchdog = {}) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
@@ -69,6 +69,7 @@ export async function runSuite(suite, onlyFiles, globalBudget, stream = false, w
 		})
 		return {
 			passed: code === 0 && !terminated,
+			exitCode: code,
 			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
 			output: filterTestOutput(output),
 			durationMs: Date.now() - started,

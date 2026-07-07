@@ -352,6 +352,7 @@
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
+			"failedWithCode": "失败：${label}（退出码 ${code}）",
 			"passedLabel": "通过",
 			"failedLabel": "失败",
 			"noiseHits": "（噪声：${hits}）",
