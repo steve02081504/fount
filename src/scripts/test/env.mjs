@@ -10,6 +10,9 @@ import { installNearOomHeapSnapshot } from './heap_snapshot_watch.mjs'
 
 process.env.FOUNT_TEST ??= '1'
 
+/** deno panic 时输出完整 Rust 栈帧；子进程 spawn 时继承 process.env。 */
+process.env.RUST_BACKTRACE ??= 'full'
+
 for (const event of ['uncaughtException', 'unhandledRejection', 'error']) {
 	unset_shutdown_listener(event)
 	process.on(event, err => console.error(`${event}:`, err))

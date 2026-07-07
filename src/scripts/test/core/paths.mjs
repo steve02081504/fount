@@ -95,3 +95,12 @@ export function reportJsonPath(repoRoot) {
 export function heapSnapshotDir(repoRoot) {
 	return join(testDataRoot(repoRoot), 'heapsnapshots')
 }
+
+/**
+ * 返回 Deno panic 上报去重记录路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/deno_panics.json 绝对路径
+ */
+export function denoPanicRecordPath(repoRoot) {
+	return join(testDataRoot(repoRoot), 'deno_panics.json')
+}

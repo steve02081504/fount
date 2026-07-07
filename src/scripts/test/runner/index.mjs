@@ -10,6 +10,7 @@ import {
 	resolveChangedFiles,
 } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
+import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/deps.mjs'
 import {
 	filterSuites,
@@ -431,6 +432,11 @@ export async function runTests(options = {}) {
 			baselineDurationMs,
 		})
 		printSuiteSummary(label, result, streamLive)
+
+		// testkit 自测会拿 panic 文本做 fixture，跳过以免误报上游 issue。
+		if (suite.manifestId !== 'testkit')
+			await reportDenoPanic({ repoRoot: REPO_ROOT, output: result.output, label, commitHash })
+				.catch(error => console.error(error))
 
 		const entry = await upsertSuiteRun({
 			repoRoot: REPO_ROOT,

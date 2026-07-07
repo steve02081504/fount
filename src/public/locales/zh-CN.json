@@ -396,6 +396,14 @@
 			"silentPassedMany": "${count} 个测试文件通过。",
 			"ciNoDiffFallback": "CI：未检测到 diff，回退为运行全部套件",
 			"noFrontendPhasesMatched": "没有匹配 FOUNT_TEST_ONLY 的前端测试阶段",
+			"denoPanic": {
+				"detected": "检测到 Deno 崩溃：${label}（位置 ${signature}）",
+				"alreadyReported": "该 Deno 崩溃已上报过，跳过：${signature}",
+				"ghUnavailable": "gh 不可用或未登录，仅本地记录 Deno 崩溃：${signature}",
+				"published": "已向 Deno 提交崩溃 issue：${url}",
+				"duplicate": "上游已存在重复崩溃，跳过上报：${upstream}",
+				"publishFailed": "Deno 崩溃 issue 发布失败：${signature}"
+			},
 			"nodeWorker": {
 				"dataPathRequired": "测试节点 worker：缺少 --data-path",
 				"portRequired": "测试节点 worker：缺少 --port（请通过 launch.mjs 启动）",
