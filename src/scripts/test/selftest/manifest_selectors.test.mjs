@@ -103,10 +103,21 @@ Deno.test('filterSuites prefixExpand false matches exact dependsOn names only', 
 		suiteSelectors: ['fed_emoji'],
 	}, { prefixExpand: false })
 	assertEquals(exact.map(s => s.id), ['fed_emoji'])
+})
 
-	const expanded = filterSuites(suites, {
+Deno.test('filterSuites exact suite name does not prefix-expand', () => {
+	const suites = [fedEmoji, fedEmojiNonmember]
+	// `fed_emoji` 本身即完整 suite 名，只应选中它自己，不拉入 fed_emoji_nonmember。
+	const exact = filterSuites(suites, {
 		manifestIds: ['shells/chat'],
 		suiteSelectors: ['fed_emoji'],
+	})
+	assertEquals(exact.map(s => s.id), ['fed_emoji'])
+
+	// 非完整名的前缀仍展开。
+	const expanded = filterSuites(suites, {
+		manifestIds: ['shells/chat'],
+		suiteSelectors: ['fed_emo'],
 	})
 	assertEquals(expanded.map(s => s.id).sort(), ['fed_emoji', 'fed_emoji_nonmember'])
 })

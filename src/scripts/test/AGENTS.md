@@ -17,6 +17,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 - **`--outdated`**: trigger-relevant files changed since the recorded commit, plus never-run suites.
 - **`--no-parallel`**: serial execution. Default: [resource-scheduling.md](docs/resource-scheduling.md). **Prefer `--no-parallel`** for local verification and `--continue` reruns while Deno parallel scheduling is flaky.
 - **`dependsOn`**: runtime gate (`manifest:suite` or same-manifest name). Unmet deps → `blocked`. Exact selector match (`prefixExpand: false`).
+- **Suite selectors** (`manifest:suite`): a selector that is itself a full suite id/name is exact — `shells/chat:fed_emoji` runs only `fed_emoji`, never `fed_emoji_nearcache`/`_nonmember`. Prefix expansion (`fed` → `fed_*`) only kicks in when no suite is named exactly that. Explicit `*`/`?` always globs. (Dependencies still pull in via `dependsOn`, that's not prefix matching.)
 - **Ordering & dispatch**: manifest list order, `report.md` slot order, and serial-vs-parallel dispatch share the same topo + tie-break rules; under `--no-parallel` execution order = report list order. Details: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after.
 

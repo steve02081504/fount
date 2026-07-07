@@ -200,8 +200,17 @@ export function filterSuites(suites, { manifestIds, suiteSelectors }, { prefixEx
 	let out = suites
 	if (manifestIds?.length)
 		out = out.filter(s => manifestIds.includes(s.manifestId))
-	if (suiteSelectors?.length)
-		out = out.filter(s => suiteSelectors.some(sel => suiteMatchesSelector(s, sel, { prefixExpand })))
+	if (suiteSelectors?.length) {
+		// 精确命中某个 suite id/name 的 selector 不再前缀展开：
+		// `fed_emoji` 只选 fed_emoji，而 `fed`（无同名 suite）仍展开为 fed_* / fed_*_*。
+		const expandBySelector = new Map(suiteSelectors.map(sel => {
+			const trimmed = sel.trim()
+			const hasExact = out.some(s => s.id === trimmed || s.name === trimmed)
+			return [sel, prefixExpand && !hasExact]
+		}))
+		out = out.filter(s => suiteSelectors.some(sel =>
+			suiteMatchesSelector(s, sel, { prefixExpand: expandBySelector.get(sel) })))
+	}
 	return out
 }
 
