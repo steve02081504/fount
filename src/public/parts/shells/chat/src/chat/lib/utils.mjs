@@ -7,6 +7,7 @@
  */
 import fs from 'node:fs'
 import { readFile, rm, unlink } from 'node:fs/promises'
+import { setTimeout as sleep } from 'node:timers/promises'
 
 /**
  * 判断是否为文件或目录不存在的 Node 错误。
@@ -78,17 +79,30 @@ export function safeUnlinkSync(path) {
 	}
 }
 
+/** Windows 上删目录树时若仍有句柄占用会短暂抛 EPERM/EBUSY，做几次退避重试。 */
+const RM_RETRY_DELAYS_MS = [10, 25, 50, 100, 200]
+const RM_TRANSIENT_CODES = new Set(['EPERM', 'EBUSY', 'EACCES', 'ENOTEMPTY'])
+
 /**
- * `rm`；仅忽略 `ENOENT`。
+ * `rm`；忽略 `ENOENT`，并对 Windows 句柄占用类瞬时错误退避重试。
  * @param {string} path 文件或目录路径
  * @param {import('node:fs').RmOptions} [options] 传给 `fs.promises.rm` 的选项
  * @returns {Promise<void>} 删除完成或目标已不存在
  */
 export async function safeRm(path, options) {
-	try {
-		await rm(path, options)
+	/** @type {NodeJS.ErrnoException | undefined} */
+	let lastError
+	for (let attempt = 0; attempt <= RM_RETRY_DELAYS_MS.length; attempt++) {
+		if (attempt) await sleep(RM_RETRY_DELAYS_MS[attempt - 1])
+		try {
+			await rm(path, options)
+			return
+		}
+		catch (e) {
+			if (isEnoent(e)) return
+			lastError = /** @type {NodeJS.ErrnoException} */ (e)
+			if (!RM_TRANSIENT_CODES.has(lastError.code)) throw lastError
+		}
 	}
-	catch (e) {
-		if (!isEnoent(e)) throw /** @type {Error} */ e
-	}
+	throw lastError
 }

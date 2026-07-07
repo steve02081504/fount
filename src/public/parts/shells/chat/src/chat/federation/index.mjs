@@ -16,6 +16,7 @@ import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../script
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'
+import { readQuarantineRows } from '../events/quarantine.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import {
@@ -34,6 +35,7 @@ import {
 	partitionForOutboundEvent,
 	pickLocalRelayPartition,
 } from './partitions.mjs'
+import { readPendingIngestRows } from './pendingIngest.mjs'
 import { enqueuePendingRelay } from './pendingRelay.mjs'
 import { EVENT_ID_HEX, forEachFederationRoomSlotInGroup, getFederationPartitionSlot } from './registry.mjs'
 import { ensureFederationPartitionRoom, ensureFederationRoom } from './room.mjs'
@@ -240,17 +242,23 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 	void syncMissingArchiveMonths(username, groupId, slot).catch(console.error)
 
 	// 补齐要把 DAG 缺口补到“无悬挂父引用”为止：远端 tip 本地缺失 ∪ 本地事件 prev_event_ids 指向的本地缺失父（有叶无链）。
+	// 关键：延迟桶（pending_ingest / quarantine）里的事件同样引用尚缺的父，但它们并不在 events.jsonl 中，
+	// 若只扫 events.jsonl，则「因缺父而入延迟桶的 dag_tip_merge」其祖先永不进 wantSet——跨节点合并链补齐永久死锁。
 	/**
 	 * @param {Map<string, object>} byId 本地 id→事件
+	 * @param {object[]} deferredRows pending/quarantine 桶内事件行
 	 * @param {boolean} includeExtra 是否并入显式 extraWantIds（仅首轮）
 	 * @returns {string[]} 去重后的待补 id（祖先闭包）
 	 */
-	const computeWantSet = (byId, includeExtra) => {
+	const computeWantSet = (byId, deferredRows, includeExtra) => {
 		const wantSet = new Set()
 		for (const tipId of remoteTips)
 			if (!byId.has(tipId)) wantSet.add(tipId)
 		for (const event of byId.values())
 			for (const parentId of sortedPrevEventIds(event.prev_event_ids))
+				if (!byId.has(parentId)) wantSet.add(parentId)
+		for (const row of deferredRows)
+			for (const parentId of sortedPrevEventIds(row?.event?.prev_event_ids))
 				if (!byId.has(parentId)) wantSet.add(parentId)
 		if (includeExtra)
 			for (const eventId of opts.extraWantIds || [])
@@ -265,26 +273,48 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 			byId.set(event.id, event)
 		return byId
 	}
+	/** @returns {Promise<object[]>} pending_ingest 与 quarantine 两桶内的事件行（含 prev 悬挂引用） */
+	const readDeferredRows = async () => [
+		...await readPendingIngestRows(username, groupId).catch(() => []),
+		...await readQuarantineRows(username, groupId).catch(() => []),
+	]
+	/**
+	 * @param {Map<string, object>} byId events.jsonl id 集合
+	 * @param {object[]} deferredRows 延迟桶行
+	 * @returns {Set<string>} 本地已知（含延迟桶）事件 id——用于「进展」判定，避免拉回的事件仅落延迟桶时被误判为无进展而提前停迭代。
+	 */
+	const knownIdSet = (byId, deferredRows) => {
+		const ids = new Set(byId.keys())
+		for (const row of deferredRows)
+			if (row?.event?.id) ids.add(String(row.event.id))
+		return ids
+	}
 
 	// 迭代补洞：拉取→落盘→重扫新暴露的缺失父→再拉，直到 wantSet 空 / 达上限 / 无进展 / 命中退避。
 	const MAX_CATCHUP_ITERS = 8
 	const wantedEver = new Set()
 	let currentById = eventsById
+	let currentDeferred = await readDeferredRows()
+	let knownIds = knownIdSet(currentById, currentDeferred)
 	let eventsFilled = 0
 	let wantIdsStillMissing = 0
 	let wantIdsRateLimited = isWantIdsInBackoff(wantIdsGroupKey( groupId))
 	for (let iter = 0; iter < MAX_CATCHUP_ITERS; iter++) {
-		const wantIds = computeWantSet(currentById, iter === 0)
+		const wantIds = computeWantSet(currentById, currentDeferred, iter === 0)
 		if (!wantIds.length) break
 		for (const id of wantIds) wantedEver.add(id)
 		const result = await requestMissingEventsGossip(username, groupId, { wantIds, awaitGossip: true })
 		if (result.rateLimited) wantIdsRateLimited = true
 		wantIdsStillMissing = result.stillMissing.length
 		currentById = await reloadEventsById()
-		const filledThisIter = wantIds.reduce((n, id) => currentById.has(id) ? n + 1 : n, 0)
-		eventsFilled += filledThisIter
-		// 无进展（本轮未补回任何已索要 id）或命中退避：停止迭代，余量交由调度器/心跳后续兜底。
-		if (wantIdsRateLimited || filledThisIter <= 0) break
+		currentDeferred = await readDeferredRows()
+		const nextKnownIds = knownIdSet(currentById, currentDeferred)
+		eventsFilled += wantIds.reduce((n, id) => currentById.has(id) ? n + 1 : n, 0)
+		// 进展 = 本轮索要的 id 有任何一个新落地（events.jsonl 或延迟桶皆算）；仅落延迟桶也是真进展（其祖先下轮才会暴露）。
+		const madeProgress = wantIds.some(id => nextKnownIds.has(id) && !knownIds.has(id))
+		knownIds = nextKnownIds
+		// 无进展或命中退避：停止迭代，余量交由调度器/心跳后续兜底。
+		if (wantIdsRateLimited || !madeProgress) break
 	}
 	// gossip 补洞后仍存在无法拉齐的远端 tip（真落后：缺链事件已被对端归档/GC，gossip 拿不到）→ 升级 joinSnapshot。
 	// 本端领先或已同步时 wantIdsStillMissing===0，跳过昂贵的快照仲裁，避免活跃 DAG 下每轮 catchup 空转死等。

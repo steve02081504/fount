@@ -1,30 +1,30 @@
-import { Buffer } from 'node:buffer'
-import process from 'node:process'
-
 import { getSignalingRuntimeConfig } from '../node/instance.mjs'
 import { wrapRtcPeerConnectionForMdns } from '../rtc_mdns_filter.mjs'
 
-if (!globalThis.Buffer) globalThis.Buffer = Buffer
-if (!globalThis.process) globalThis.process = process
-
-/** @type {Promise<{ RTCPeerConnection: typeof RTCPeerConnection, RTCIceCandidate: typeof RTCIceCandidate }> | null} */
-let rtcPromise = null
+/**
+ * 注册进程退出时销毁 libdatachannel 全部原生资源（仅一次）。
+ * libdatachannel 的原生线程在 pc.close() 后仍需时间回收；进程退出时若原生资源未同步销毁，
+ * Windows 上会触发堆损坏（退出码 0xC0000374）。
+ * 用 Deno 的 `unload` 而非 `npm:on-shutdown`：`unload` 是运行时自身的退出钩子，在 FFI/原生资源
+ * 被回收前的正确时机同步触发；`on-shutdown` 依赖 Node process 退出事件，在 Deno 下是兼容垫片，
+ * 触发点偏晚且与原生线程回收竞争，跑不到 libdatachannel 销毁之前，故仍会崩。=
+ */
+const { cleanup = undefined } = await import('npm:node-datachannel').catch(console.error)
+globalThis.addEventListener('unload', () => { try {
+	cleanup?.()
+} catch { /* already torn down */ }})
 
 /**
  * 加载 node-datachannel polyfill，并按配置包装 RTCPeerConnection。
  * @returns {Promise<{ RTCPeerConnection: typeof RTCPeerConnection, RTCIceCandidate: typeof RTCIceCandidate }>} RTC 构造器
  */
 export async function loadNodeRtcPolyfill() {
-	if (rtcPromise) return await rtcPromise
-	rtcPromise = (async () => {
-		const mod = await import('npm:node-datachannel/polyfill')
-		const { mdnsPolicy } = getSignalingRuntimeConfig()
-		return {
-			RTCPeerConnection: wrapRtcPeerConnectionForMdns(mod.RTCPeerConnection, mod.RTCIceCandidate, mdnsPolicy),
-			RTCIceCandidate: mod.RTCIceCandidate,
-		}
-	})()
-	return await rtcPromise
+	const mod = await import('npm:node-datachannel/polyfill')
+	const { mdnsPolicy } = getSignalingRuntimeConfig()
+	return {
+		RTCPeerConnection: wrapRtcPeerConnectionForMdns(mod.RTCPeerConnection, mod.RTCIceCandidate, mdnsPolicy),
+		RTCIceCandidate: mod.RTCIceCandidate,
+	}
 }
 
 /**
@@ -35,8 +35,9 @@ export async function loadNodeRtcPolyfill() {
  */
 export function attachIceCandidateListener(pc, handler) {
 	pc.onicecandidate = handler
-	if (pc.onIceCandidate?.subscribe)
-		pc.onIceCandidate.subscribe(candidate => handler({ candidate: candidate ?? null }))
+	pc.onIceCandidate?.subscribe?.(candidate =>
+		handler({ candidate: candidate ?? null })
+	)
 }
 
 /**
@@ -47,8 +48,7 @@ export function attachIceCandidateListener(pc, handler) {
  */
 export function attachDataChannelListener(pc, handler) {
 	pc.ondatachannel = handler
-	if (pc.onDataChannel?.subscribe)
-		pc.onDataChannel.subscribe(channel => handler({ channel }))
+	pc.onDataChannel?.subscribe?.(channel => handler({ channel }))
 }
 
 /**

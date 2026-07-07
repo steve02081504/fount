@@ -6,6 +6,7 @@ import {
 	FedB,
 	InitializeOpenGroupJoin,
 	testCase,
+	WaitFedConverged,
 	WaitFedMembers,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -78,16 +79,24 @@ await testCase('B GET /discovery sees index', async () => {
 
 console.log('\n=== 4. POST events remote verify (B ingests A-signed row) ===')
 await testCase('B applies signed event from A via POST /events/signed', async () => {
-	const events = await Api(FedA, 'GET', `/groups/${groupId}/events?limit=5`)
-	if (events.status !== 200) throw new Error(`events ${events.status}`)
-	const row = events.json.events?.find(e => e.signature && e.id)
-	if (!row) throw new Error('no signed event on A')
-	const eventId = String(row.id)
+	// A 追加一条全新签名事件，取回其完整签名行。
+	const posted = await Api(FedA, 'POST', `/groups/${groupId}/channels/${channelId}/messages`, {
+		content: { type: 'text', content: 'signed-ingest-target' },
+	})
+	if (posted.status !== 201) throw new Error(`send ${posted.status}`)
+	const eventId = String(posted.json.event?.id)
+	const aEvents = await Api(FedA, 'GET', `/groups/${groupId}/events?limit=50`)
+	const row = aEvents.json.events?.find(e => e.id === eventId)
+	if (!row) throw new Error('posted event missing on A')
+
+	// 经 /events/signed 显式推送；随后允许 catchup 补齐其祖先，断言 B 恰好落盘一条。
 	const response = await Api(FedB, 'POST', `/groups/${groupId}/events/signed`, { events: [row] })
 	if (response.status !== 200) throw new Error(`ingest ${response.status}: ${response.raw}`)
-	const onB = await Api(FedB, 'GET', `/groups/${groupId}/events?limit=20`)
-	if (onB.status !== 200) throw new Error(`B events ${onB.status}`)
-	return (onB.json.events?.filter(e => e.id === eventId).length ?? 0) === 1
+
+	return WaitFedConverged(FedB, groupId, async () => {
+		const onB = await Api(FedB, 'GET', `/groups/${groupId}/events?limit=50`)
+		return (onB.json.events?.filter(e => e.id === eventId).length ?? 0) === 1
+	})
 })
 
 await ClearFedGroup(groupId)

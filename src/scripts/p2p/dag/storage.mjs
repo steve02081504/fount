@@ -274,6 +274,23 @@ export async function appendJsonlSynced(filePath, record) {
 }
 
 /**
+ * 写入原子临时文件；若父目录已在 cleanup 竞态中消失（ENOENT）则返回 false。
+ * @param {string} tmp 临时文件路径
+ * @param {string} data 文件内容
+ * @returns {Promise<boolean>} 是否已写入
+ */
+async function writeAtomicTmp(tmp, data) {
+	try {
+		await writeFile(tmp, data, 'utf8')
+		return true
+	}
+	catch (err) {
+		if (err?.code === 'ENOENT') return false
+		throw err
+	}
+}
+
+/**
  * 原子写入 JSON 文件（临时文件 + rename）。
  * @param {string} filePath 目标路径
  * @param {object} obj 可 JSON 序列化对象
@@ -283,7 +300,7 @@ export async function writeJsonAtomic(filePath, obj) {
 	const dir = dirname(filePath)
 	await mkdir(dir, { recursive: true })
 	const tmp = atomicTmpPath(filePath)
-	await writeFile(tmp, JSON.stringify(obj, null, '\t'), 'utf8')
+	if (!await writeAtomicTmp(tmp, JSON.stringify(obj, null, '\t'))) return
 	await finalizeAtomicRename(tmp, filePath)
 }
 
@@ -297,7 +314,7 @@ export async function writeJsonAtomicSynced(filePath, obj) {
 	const dir = dirname(filePath)
 	await mkdir(dir, { recursive: true })
 	const tmp = atomicTmpPath(filePath)
-	await writeFile(tmp, JSON.stringify(obj, null, '\t'), 'utf8')
+	if (!await writeAtomicTmp(tmp, JSON.stringify(obj, null, '\t'))) return
 	const fh = await open(tmp, 'r+')
 	try {
 		await fh.sync()
