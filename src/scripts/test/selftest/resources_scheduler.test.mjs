@@ -177,3 +177,21 @@ Deno.test('ResourceRunGate serial mode runs one light suite at a time', async ()
 	await waitB
 	assert(bReady)
 })
+
+Deno.test('ResourceRunGate serial mode admits waiters FIFO, not by footprint', async () => {
+	// 队首体量小、队尾体量大：串行必须按插入顺序（报告序）放行，而非资源择优。
+	const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial: true })
+	const small = stubSuite({ name: 'pure', resources: { memMb: 100, cpuPct: 5 } })
+	const big = stubSuite({ name: 'fed_core', resources: { memMb: 1800, cpuPct: 90 } })
+
+	/** @type {string[]} */
+	const admitted = []
+	const waitSmall = gate.acquire(small).then(release => { admitted.push('small'); return release })
+	const waitBig = gate.acquire(big).then(release => { admitted.push('big'); return release })
+
+	const releaseSmall = await waitSmall
+	assertEquals(admitted, ['small'])
+	releaseSmall()
+	await waitBig
+	assertEquals(admitted, ['small', 'big'])
+})

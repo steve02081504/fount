@@ -11,6 +11,12 @@ Suite parallelism is governed by `ResourceRunGate` (`runner/scheduler.mjs`):
 
 No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism both use `computeGlobalBudget()` (CPU thread count + `freemem × 0.7`).
 
+## Ordering & dispatch
+
+- **Manifest list order** (`listManifestIds`): dependencies first; otherwise fewer dependents → first, fewer dependencies → first, fewer `/` → first, shorter string → first, then lexicographic.
+- **`report.md` slot order** (`RunReportWriter` / `topoSortSuites`): same rules at suite level, tie-broken by whole-repo counts.
+- **Dispatch order**: `selected` is pre-sorted to report-slot order once. `DependencyRunCoordinator` feeds ready suites to `ResourceRunGate` in that order. `--no-parallel` → gate admits FIFO, so execution order = report list order. Parallel → coordinator re-sorts the ready set by `suiteSchedulePriority` and the gate bin-packs (`#fillScore`), since concurrent order is fuzzy. The gate's `serial` flag is the single source of truth (coordinator reads `gate.serial`).
+
 ## Per-suite footprint
 
 Effective demand = max of three sources (`resolveSuiteResources`):

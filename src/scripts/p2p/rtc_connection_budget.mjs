@@ -6,7 +6,7 @@
 const budgets = new Map()
 
 /** 单来源最多占用的非 trusted 槽位比例 */
-const MAX_SOURCE_SLOT_FRACTION = 0.25
+export const MAX_SOURCE_SLOT_FRACTION = 0.25
 
 /** 默认 trusted 保留比例 */
 const DEFAULT_TRUSTED_RESERVE_FRACTION = 0.25

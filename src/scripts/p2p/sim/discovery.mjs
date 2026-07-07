@@ -1,13 +1,19 @@
 /**
  * 发现拓扑子模型：单 relay rendezvous + RTC 连接预算 + explore 源配额 + trusted 锚点。
  */
+import { resolveRtcBudgetLimits } from '../rtc_connection_budget.mjs'
+
 import { buildRankedNeighborAdj } from './graph_adj.mjs'
 
-/** 单 explore 源最多占用的 room 槽位（对齐 peer_pool EXPLORE_MAX_PER_SOURCE） */
+/**
+ * 单 explore 源最多占用的 room 槽位（对齐 peer_pool EXPLORE_MAX_PER_SOURCE）。
+ * peer_pool 会拖入 node 存储的 fs 依赖，不宜进 sim 热路径，故此处保留常量，
+ * 由 fidelity.test.mjs 断言其与真实值一致以守住漂移。
+ */
 export const EXPLORE_MAX_PER_SOURCE = 3
 
-/** 默认 RTC room 并发连接上限 */
-export const DEFAULT_RTC_MAX_ACTIVE = 32
+/** 默认 RTC room 并发连接上限（派生自真实 rtc_connection_budget 默认 maxActive） */
+export const DEFAULT_RTC_MAX_ACTIVE = resolveRtcBudgetLimits().maxActive
 
 /**
  * @typedef {{

@@ -34,6 +34,7 @@
 | Task | Guide |
 | --- | --- |
 | P2P / federation / trust graph / Mailbox / Chat crypto / EVFS | [src/scripts/p2p/AGENTS.md](src/scripts/p2p/AGENTS.md) |
+| P2P tunables simulation / co-evolution (fidelity boundary) | [src/scripts/p2p/sim/AGENTS.md](src/scripts/p2p/sim/AGENTS.md) |
 | Frontend page logic (shared scripts, i18n, theming, templates) | [src/public/pages/AGENTS.md](src/public/pages/AGENTS.md) |
 | Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
 | Plugin (`GetPrompt` / `TweakPrompt` / `ReplyHandler`) | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |

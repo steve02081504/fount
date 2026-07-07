@@ -123,6 +123,7 @@
    - `{ v, nodeHash, nodePubKey, nonce }`
 2. 收到对方 `hello` 后各发 `auth`
    - `sig = sign("fount-link-v1\0" + peerNonce + "\0" + localDtlsFingerprint + "\0" + localNodeHash)`
+   - **顺序无关**：`hello`/`auth` 分属 control 通道上的两帧，双向同时建连时对端可能先收到 `auth` 后收到 `hello`（发起方 `localDescription` 早就绪，收到本方 `hello` 即回 `auth`，而其自身 `hello` 要等 data channel open 才发）。收到早到的 `auth` 必须**暂存**，待 `hello` 到达后补校验，绝不能丢弃——否则应答方 `remoteAuthVerified` 永为 false，握手超时坍塌，联邦 `members>=2` 永不满足。
 3. 验证规则
    - `pubKeyHash(nodePubKey) === nodeHash`
    - 签名通过

@@ -54,7 +54,6 @@ export class ResourceRunGate {
 	 * @returns {boolean} 当前余量是否足够（非 heavy）
 	 */
 	#canFit(need) {
-		if (this.serial) return this.usedMemBytes === 0 && this.usedCpuPct === 0
 		if (this.usedMemBytes + resourcesMemBytes(need) > this.memBudgetBytes) return false
 		if (this.usedCpuPct + need.cpuPct > this.cpuBudgetPct) return false
 		return true
@@ -71,16 +70,38 @@ export class ResourceRunGate {
 		return Math.min(memAfter / this.memBudgetBytes, cpuAfter / this.cpuBudgetPct)
 	}
 
+	/**
+	 * 立即放行一个 waiter：heavy 占独占位，其余从余量扣减其资源。
+	 * @param {GateWaiter} w waiter
+	 */
+	#admit(w) {
+		if (w.suite.heavy) {
+			this.exclusiveRunning = true
+			w.resolve(() => this.#releaseExclusive())
+			return
+		}
+		const need = this.#needs(w.suite)
+		this.usedMemBytes += resourcesMemBytes(need)
+		this.usedCpuPct += need.cpuPct
+		w.resolve(() => this.#releaseSlot(need))
+	}
+
 	/** 在余量内尽可能多地按填缝分数唤醒 waiter。 */
 	#tryAdmit() {
 		if (this.exclusiveRunning) return
 
+		// 串行：机器空闲时按插入顺序（= 报告拓扑序）放行队首，不做资源择优。
+		if (this.serial) {
+			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return
+			const w = this.waiters.shift()
+			if (w) this.#admit(w)
+			return
+		}
+
 		if (this.usedMemBytes === 0 && this.usedCpuPct === 0) {
 			const heavyIdx = this.waiters.findIndex(w => w.suite.heavy)
 			if (heavyIdx >= 0) {
-				const [w] = this.waiters.splice(heavyIdx, 1)
-				this.exclusiveRunning = true
-				w.resolve(() => this.#releaseExclusive())
+				this.#admit(this.waiters.splice(heavyIdx, 1)[0])
 				return
 			}
 		}
@@ -101,12 +122,7 @@ export class ResourceRunGate {
 			}
 			if (bestIdx < 0) break
 
-			const [w] = this.waiters.splice(bestIdx, 1)
-			const need = this.#needs(w.suite)
-			this.usedMemBytes += resourcesMemBytes(need)
-			this.usedCpuPct += need.cpuPct
-			w.resolve(() => this.#releaseSlot(need))
-			if (this.serial) break
+			this.#admit(this.waiters.splice(bestIdx, 1)[0])
 		}
 	}
 

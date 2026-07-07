@@ -15,6 +15,7 @@ import {
 	sortManifestIds,
 	topoSortSuites,
 } from '../core/deps.mjs'
+import { MiB } from '../core/concurrency.mjs'
 import { listManifestIds, loadAllSuites, selectSuitesByDiff } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
@@ -28,6 +29,7 @@ import {
 	writeStateMarkdown,
 } from '../core/state.mjs'
 import { DependencyRunCoordinator } from '../runner/dependency_scheduler.mjs'
+import { ResourceRunGate } from '../runner/scheduler.mjs'
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */
 function suite(manifestId, name, dependsOn = []) {
@@ -682,6 +684,41 @@ Deno.test('DependencyRunCoordinator treats green upstream as resolved without ru
 		return { passed: true }
 	})
 	assertEquals(ran, ['shells/chat/frontend'])
+})
+
+Deno.test('DependencyRunCoordinator serial runs in report order, parallel packs biggest first', async () => {
+	// 独立 suite，无依赖；suites 数组顺序 = 报告拓扑序。资源体量刻意与之相反。
+	const light = { ...suite('p2p', 'pure'), resources: { memMb: 300, cpuPct: 10 } }
+	const big = { ...suite('shells/chat', 'integration'), resources: { memMb: 1800, cpuPct: 25 } }
+	const suites = [light, big]
+	const state = { suites: {} }
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(suites.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(suites.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+
+	/**
+	 * @param {boolean} serial 是否串行
+	 * @returns {Promise<string[]>} 实际运行顺序
+	 */
+	async function runOrder(serial) {
+		const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial })
+		/** @type {string[]} */
+		const ran = []
+		await new DependencyRunCoordinator({ suites, state, ctx, gate }).runAll(async outcome => {
+			if (outcome.kind === 'run') ran.push(suiteKey(outcome.suite.manifestId, outcome.suite.name))
+			return { passed: true }
+		})
+		return ran
+	}
+
+	// 串行：gate FIFO 放行 → 严格按报告顺序。
+	assertEquals(await runOrder(true), ['p2p/pure', 'shells/chat/integration'])
+	// 并行：coordinator 按资源体量降序派发（BFD），重的先跑，证明二者确实分叉。
+	assertEquals(await runOrder(false), ['shells/chat/integration', 'p2p/pure'])
 })
 
 Deno.test('chat frontend test change only selects frontend suite', async () => {

@@ -362,6 +362,18 @@ export async function runTests(options = {}) {
 		await reportWriter.stampContinueReasons(continueReasons)
 	}
 
+	/** @type {Map<string, number>} */
+	const reportIndexByKey = new Map()
+	for (let index = 0; index < reportWriter.slots.length; index++) {
+		const slot = reportWriter.slots[index]
+		reportIndexByKey.set(suiteKey(slot.manifestId, slot.name), index)
+	}
+	// 派发顺序对齐报告槽位（拓扑序）：coordinator 保持此顺序喂给 gate，
+	// gate 串行时按 FIFO（即报告顺序）放行，并行时再按资源体量填箱。
+	selected.sort((a, b) =>
+		reportIndexByKey.get(suiteKey(a.manifestId, a.name))
+		- reportIndexByKey.get(suiteKey(b.manifestId, b.name)))
+
 	const gate = new ResourceRunGate(
 		globalBudget.memBytes,
 		suite => state.suites[suiteKey(suite.manifestId, suite.name)],
@@ -375,12 +387,6 @@ export async function runTests(options = {}) {
 	})
 
 	const retryByManifest = selection.retryByManifest ?? new Map()
-	/** @type {Map<string, number>} */
-	const reportIndexByKey = new Map()
-	for (let index = 0; index < reportWriter.slots.length; index++) {
-		const slot = reportWriter.slots[index]
-		reportIndexByKey.set(suiteKey(slot.manifestId, slot.name), index)
-	}
 
 	await coordinator.runAll(async outcome => {
 		const { suite } = outcome

@@ -25,7 +25,6 @@ import { ResourceRunGate } from './scheduler.mjs'
  * @typedef {object} ScheduledRunOutcome
  * @property {'run' | 'blocked'} kind
  * @property {SuiteDef} suite
- * @property {number} index
  * @property {string[]} [blockedBy]
  */
 
@@ -45,8 +44,8 @@ export class DependencyRunCoordinator {
 		this.state = state
 		this.ctx = ctx
 		this.gate = gate
-		/** @type {Map<string, number>} */
-		this.indexByKey = new Map(suites.map((suite, index) => [suiteKey(suite.manifestId, suite.name), index]))
+		/** @type {Set<string>} 本次运行选中的 suite 键；用于区分“同批依赖”与“需查现状库的外部依赖” */
+		this.selectedKeys = new Set(suites.map(suite => suiteKey(suite.manifestId, suite.name)))
 		/** @type {Set<string>} */
 		this.resolvedKeys = new Set()
 	}
@@ -68,23 +67,25 @@ export class DependencyRunCoordinator {
 				continue
 			}
 
-			ready.sort((a, b) => this.#dispatchPriority(b) - this.#dispatchPriority(a))
+			// 并行时按资源体量填箱择优（BFD）；串行时保持 #listReady 的报告拓扑序，
+			// 交给 gate 按 FIFO 逐个放行。
+			if (!this.gate.serial)
+				ready.sort((a, b) => this.#dispatchPriority(b) - this.#dispatchPriority(a))
 
 			for (const suite of ready) {
 				const key = suiteKey(suite.manifestId, suite.name)
-				const index = this.indexByKey.get(key)
 				const blockedBy = listUnsatisfiedDependencies(suite, this.state, this.ctx)
 
 				const task = (async () => {
 					try {
 						if (blockedBy.length) {
-							await handler({ kind: 'blocked', suite, index, blockedBy })
+							await handler({ kind: 'blocked', suite, blockedBy })
 							return
 						}
 
 						const release = await this.gate.acquire(suite)
 						try {
-							const result = await handler({ kind: 'run', suite, index })
+							const result = await handler({ kind: 'run', suite })
 							if (result.passed) this.ctx.runGreenKeys.add(key)
 						}
 						finally {
@@ -138,7 +139,7 @@ export class DependencyRunCoordinator {
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
 			if (this.resolvedKeys.has(depKey)) continue
-			if (!this.indexByKey.has(depKey)) {
+			if (!this.selectedKeys.has(depKey)) {
 				const depSuite = this.ctx.byKey.get(depKey)
 				const entry = this.state.suites[depKey]
 				const outdated = depSuite

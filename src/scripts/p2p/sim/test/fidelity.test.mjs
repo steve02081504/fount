@@ -1,13 +1,44 @@
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { EXPLORE_MAX_PER_SOURCE as PEER_POOL_EXPLORE_MAX } from '../../peer_pool.mjs'
+import { MAX_SOURCE_SLOT_FRACTION, resolveRtcBudgetLimits } from '../../rtc_connection_budget.mjs'
 import { normalizeAttackGenome, randomAttackGenome } from '../attack_space.mjs'
+import { DEFAULT_RTC_MAX_ACTIVE, EXPLORE_MAX_PER_SOURCE as SIM_EXPLORE_MAX } from '../discovery.mjs'
 import { fitnessFromSnapshot, evaluateTunablesAgainstAttacks, evaluateManyAgainstAttacks, DEFAULT_WEIGHTS } from '../metrics.mjs'
 import { runSimulation } from '../model.mjs'
 import { createRng } from '../rng.mjs'
 import { resolveScenarios } from '../scenarios.mjs'
 import { defaultConcurrency, shutdownSimPool } from '../sim_pool.mjs'
+import { createTransportState, DEFAULT_SIGNALING_SOURCES } from '../transport.mjs'
 import { loadDefaultTunables } from '../tunables_bundle.mjs'
+
+// 真实网络层里注册的发现/信令 provider id（link_registry：mdns + nostr，bluetooth 默认关闭）
+const REAL_SIGNALING_PROVIDER_IDS = new Set(['mdns', 'nostr', 'bluetooth'])
+
+Deno.test('sim RTC budget constants track rtc_connection_budget defaults', () => {
+	const limits = resolveRtcBudgetLimits()
+	assertEquals(DEFAULT_RTC_MAX_ACTIVE, limits.maxActive)
+
+	const state = createTransportState()
+	assertEquals(state.rtcMaxActive, limits.maxActive)
+	assertEquals(state.maxJoinsPerMin, limits.maxJoinsPerMin)
+	assertEquals(state.overloadCooldownMs, limits.overloadCooldownMs)
+	assertEquals(state.trustedReserveFraction, limits.trustedReserveFraction)
+	assertEquals(state.minTrustedReserved, limits.minTrustedReserved)
+	assertEquals(state.sourceSlotFraction, MAX_SOURCE_SLOT_FRACTION)
+})
+
+Deno.test('sim explore source quota tracks peer_pool', () => {
+	assertEquals(SIM_EXPLORE_MAX, PEER_POOL_EXPLORE_MAX)
+})
+
+Deno.test('sim signaling sources are real provider ids (no stale tracker)', () => {
+	assert(DEFAULT_SIGNALING_SOURCES.length > 0)
+	assert(!DEFAULT_SIGNALING_SOURCES.includes('tracker'), 'tracker 已不是真实 provider')
+	for (const src of DEFAULT_SIGNALING_SOURCES)
+		assert(REAL_SIGNALING_PROVIDER_IDS.has(src), `未知信令源 ${src}`)
+})
 
 const CASES = [
 	{ scenarioId: 'balanced', seed: 1 },

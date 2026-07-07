@@ -112,6 +112,8 @@ export async function createLink(opts) {
 	let helloSent = false
 	let authSent = false
 	let remoteAuthVerified = false
+	/** @type {object | null} 早于 remoteHello 到达的 auth（发送方在发出自身 hello 前即回 auth 时会乱序），暂存待 hello 到达后校验。 */
+	let pendingAuth = null
 	let lastInboundAt = Date.now()
 	let lastOutboundAt = 0
 	let sentFrames = 0
@@ -260,7 +262,12 @@ export async function createLink(opts) {
 	 * @returns {Promise<void>}
 	 */
 	async function handleAuth(auth) {
-		if (!remoteHello) return
+		// auth 依赖 remoteHello 里的 nonce/pubKey 才能校验；对端可能在发出自身 hello 之前就先回了 auth
+		// （initiator 收到我方 hello 即 maybeSendAuth，其 localDescription 早已就绪）。此时暂存，待 hello 到达补校验。
+		if (!remoteHello) {
+			pendingAuth = auth
+			return
+		}
 		const fingerprint = remoteFingerprint()
 		const verifiedNodeHash = await verifyAuth(remoteHello, auth, localHello?.nonce, fingerprint)
 		if (!verifiedNodeHash) {
@@ -291,11 +298,15 @@ export async function createLink(opts) {
 			}
 			remoteHello = parsed
 			await maybeSendAuth()
+			if (pendingAuth) {
+				const bufferedAuth = pendingAuth
+				pendingAuth = null
+				await handleAuth(bufferedAuth)
+			}
 			return
 		}
-		if (message.type === 'auth') 
+		if (message.type === 'auth')
 			await handleAuth(message)
-		
 	}
 
 	/**

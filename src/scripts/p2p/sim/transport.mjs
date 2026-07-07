@@ -1,22 +1,33 @@
 /**
  * 传输/信令层子模型：RTC 连接预算 + 信令源多样性（软加成，不强制多来源）。
+ * 预算默认值直接派生自真实 rtc_connection_budget.mjs，避免与生产代码人肉脱钩。
  */
+import { MAX_SOURCE_SLOT_FRACTION, resolveRtcBudgetLimits } from '../rtc_connection_budget.mjs'
+
 import { buildRankedNeighborAdj } from './graph_adj.mjs'
+
+/** 默认注册的信令/发现源（对齐真实 link_registry：mdns + nostr，bluetooth 默认关闭） */
+export const DEFAULT_SIGNALING_SOURCES = Object.freeze(['mdns', 'nostr'])
 
 /**
  * @returns {object} 传输状态
  */
 export function createTransportState() {
+	const limits = resolveRtcBudgetLimits()
 	return {
-		rtcMaxActive: 32,
-		maxJoinsPerMin: 12,
+		rtcMaxActive: limits.maxActive,
+		maxJoinsPerMin: limits.maxJoinsPerMin,
+		overloadCooldownMs: limits.overloadCooldownMs,
+		trustedReserveFraction: limits.trustedReserveFraction,
+		minTrustedReserved: limits.minTrustedReserved,
+		sourceSlotFraction: MAX_SOURCE_SLOT_FRACTION,
 		overloadUntil: 0,
 		joinTimestamps: [],
 		active: new Set(),
 		sourceByPeer: new Map(),
 		trustedPeers: new Set(),
 		hintsByObserver: new Map(),
-		signalingSources: ['tracker', 'nostr'],
+		signalingSources: [...DEFAULT_SIGNALING_SOURCES],
 	}
 }
 
@@ -53,28 +64,29 @@ export function transportHintWeight(state, observerId, peerId, sourceId, weight 
  * @returns {boolean} 是否占槽成功
  */
 export function takeTransportJoinSlot(state, peerId, sourceId, now = Date.now()) {
+	const cooldown = state.overloadCooldownMs ?? 15_000
 	if (now < state.overloadUntil) return false
 	state.joinTimestamps = state.joinTimestamps.filter(t => now - t < 60_000)
 	if (state.joinTimestamps.length >= state.maxJoinsPerMin) {
-		state.overloadUntil = now + 15_000
+		state.overloadUntil = now + cooldown
 		return false
 	}
 	if (peerId && state.active.has(peerId)) return true
 	const isTrusted = peerId && state.trustedPeers.has(peerId)
-	const trustedReserved = Math.max(3, Math.floor(state.rtcMaxActive * 0.25))
+	const trustedReserved = Math.max(state.minTrustedReserved ?? 3, Math.floor(state.rtcMaxActive * (state.trustedReserveFraction ?? 0.25)))
 	const maxNonTrusted = Math.max(1, state.rtcMaxActive - trustedReserved)
 	const nonTrusted = [...state.active].filter(id => !state.trustedPeers.has(id)).length
 	if (!isTrusted) {
 		const sameSource = [...state.sourceByPeer.values()].filter(s => s === sourceId).length
-		const sourceCap = Math.max(1, Math.floor(state.rtcMaxActive * 0.25))
+		const sourceCap = Math.max(1, Math.floor(state.rtcMaxActive * (state.sourceSlotFraction ?? 0.25)))
 		if (sameSource >= sourceCap) return false
 		if (nonTrusted >= maxNonTrusted && state.active.size >= state.rtcMaxActive) {
-			state.overloadUntil = now + 15_000
+			state.overloadUntil = now + cooldown
 			return false
 		}
 	}
 	if (state.active.size >= state.rtcMaxActive && !isTrusted) {
-		state.overloadUntil = now + 15_000
+		state.overloadUntil = now + cooldown
 		return false
 	}
 	state.joinTimestamps.push(now)

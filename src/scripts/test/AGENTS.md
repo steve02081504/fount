@@ -17,8 +17,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 - **`--outdated`**: trigger-relevant files changed since the recorded commit, plus never-run suites.
 - **`--no-parallel`**: serial execution. Default: [resource-scheduling.md](docs/resource-scheduling.md). **Prefer `--no-parallel`** for local verification and `--continue` reruns while Deno parallel scheduling is flaky.
 - **`dependsOn`**: runtime gate (`manifest:suite` or same-manifest name). Unmet deps → `blocked`. Exact selector match (`prefixExpand: false`).
-- **Manifest list order**: `listManifestIds` — dependencies first; otherwise fewer dependents → first, fewer dependencies → first, fewer `/` → first, shorter string → first, then lexicographic.
-- **`report.md` slot order**: `RunReportWriter` / `topoSortSuites` — same rules (suite-level; tie-break by whole-repo counts).
+- **Ordering & dispatch**: manifest list order, `report.md` slot order, and serial-vs-parallel dispatch share the same topo + tie-break rules; under `--no-parallel` execution order = report list order. Details: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after.
 
 ### Framework libs
@@ -59,7 +58,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - Deno `.mjs` via `denoLiveRun(path)` or a part-local `run.mjs` — no PowerShell probes.
 - Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse (common on Windows). **`p2p:live`** needs `node-datachannel` native build — run once after clone: `deno install --allow-scripts=npm:node-datachannel --entrypoint ./src/scripts/p2p/test/live/link_smoke.test.mjs` (requires `deno.json` `"nodeModulesDir": "auto"`). **Symptom when missing**: the addon dir under `node_modules/.deno/node-datachannel@*/` is empty (postinstall skipped), nodes still boot fine, but every federation suite fails with `peers: 0` / `members>=2` gate never satisfied. Verify the fix with `deno test --no-check --allow-all -c ./deno.json ./src/scripts/p2p/test/live/link_smoke.test.mjs`.
 - Single-node: `{ p2p: false, minP2pNode: true }`. P2P signaling: [p2p/docs/signaling.md](../p2p/docs/signaling.md).
-- Federation live probes: reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (they bundle `WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). A hand-rolled bare join (create → invite → join) with no warmup/rebind will hang at `members>=2`. Even with the helper, two-node membership convergence stays flaky on Windows (ICE/signaling); a single failed `fed_core` run is not necessarily a regression — rerun before assuming code broke.
+- Federation live probes: reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (they bundle `WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). A hand-rolled bare join (create → invite → join) with no warmup/rebind will hang at `members>=2`. A `members>=2` hang is usually a real link/handshake or ICE bug, not flakiness — inspect handshake/ICE logs before rerunning (signaling traps: [p2p/docs/signaling.md](../p2p/docs/signaling.md)).
 
 ## Operator tools
 
