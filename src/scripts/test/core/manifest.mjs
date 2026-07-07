@@ -4,7 +4,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { join, relative } from 'node:path'
 
-import { attachDependencies } from './deps.mjs'
+import { attachDependencies, sortManifestIds } from './deps.mjs'
 import { matchGlob } from './glob.mjs'
 import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
 import { parseManifestResources } from './resources.mjs'
@@ -211,16 +211,17 @@ export function filterSuites(suites, { manifestIds, suiteSelectors }, { prefixEx
  * @returns {string[]} 排序后的 manifest id
  */
 export function listManifestIds(suites) {
-	return [...new Set(suites.map(s => s.manifestId))].sort()
+	return sortManifestIds([...new Set(suites.map(s => s.manifestId))], suites)
 }
 
 /**
  * 将 CLI manifest 指名解析为具体 id 列表（精确匹配、自动 `${id}/*`、glob）。
  * @param {string[]} selectors 用户输入的指名
  * @param {string[]} knownIds 已知 manifest id
+ * @param {SuiteDef[]} allSuites 全部 suite（用于依赖排序）
  * @returns {{ manifestIds: string[], unmatched: string[] }} 解析结果
  */
-export function resolveManifestSelectors(selectors, knownIds) {
+export function resolveManifestSelectors(selectors, knownIds, allSuites) {
 	/** @type {string[]} */
 	const resolved = []
 	/** @type {string[]} */
@@ -253,7 +254,7 @@ export function resolveManifestSelectors(selectors, knownIds) {
 	}
 
 	return {
-		manifestIds: [...new Set(resolved)].sort(),
+		manifestIds: sortManifestIds([...new Set(resolved)], allSuites),
 		unmatched,
 	}
 }

@@ -4,8 +4,9 @@ import process from 'node:process'
 import { execFile } from 'npm:@steve02081504/exec'
 
 import { console, geti18n } from '../../i18n/bare.mjs'
-import { ProcessUsageTracker } from '../core/proc_sample.mjs'
 import { ms } from '../../ms.mjs'
+import { formatDuration } from '../core/format_duration.mjs'
+import { ProcessUsageTracker } from '../core/proc_sample.mjs'
 
 /** 无 stdall 输出时终止 suite 的阈值（毫秒）。 */
 export const IDLE_TIMEOUT_MS = ms('10m')
@@ -13,8 +14,8 @@ export const IDLE_TIMEOUT_MS = ms('10m')
 /** watchdog 轮询间隔（毫秒）。 */
 export const WATCH_INTERVAL_MS = ms('30s')
 
-/** 基于历史耗时的 watchdog 至少给 5 分钟，避免短基线 suite 被误杀。 */
-export const MIN_DURATION_TIMEOUT_MS = ms('5m')
+/** 基于历史耗时的 watchdog 至少给 15 分钟；多阶段 Playwright frontend 常需 10m+。 */
+export const MIN_DURATION_TIMEOUT_MS = ms('15m')
 
 /** 无历史基线时的默认最长运行时长。 */
 export const DEFAULT_DURATION_TIMEOUT_MS = ms('30m')
@@ -72,22 +73,6 @@ function decodeChunk(data) {
 }
 
 /**
- * 格式化毫秒为可读时长（复用 report 文案）。
- * @param {number} ms 毫秒
- * @returns {string} 可读时长
- */
-function formatMs(ms) {
-	if (ms < 1000) return geti18n('fountConsole.test.report.durationMs', { ms })
-	const sec = Math.round(ms / 1000)
-	if (sec < 60) return geti18n('fountConsole.test.report.durationSec', { sec })
-	const min = Math.floor(sec / 60)
-	const rem = sec % 60
-	return rem
-		? geti18n('fountConsole.test.report.durationMinSec', { min, sec: rem })
-		: geti18n('fountConsole.test.report.durationMin', { min })
-}
-
-/**
  * 计算基于最近一次可用基线耗时的 duration watchdog 上限。
  * @param {number | undefined} baselineDurationMs 最近一次可用基线耗时
  * @returns {number} 上限毫秒
@@ -135,21 +120,21 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
 			label,
 			minutes: Math.round(IDLE_TIMEOUT_MS / 60_000),
 			idleSec,
-			elapsed: formatMs(elapsedMs),
+			elapsed: formatDuration(elapsedMs),
 		})
 	}
 	const durationLimitMs = getDurationWatchdogLimitMs(baselineDurationMs)
 	if (baselineDurationMs == null || baselineDurationMs <= 0)
 		return geti18n('fountConsole.test.terminateDurationDefault', {
 			label,
-			elapsed: formatMs(elapsedMs),
-			limit: formatMs(durationLimitMs),
+			elapsed: formatDuration(elapsedMs),
+			limit: formatDuration(durationLimitMs),
 		})
 	return geti18n('fountConsole.test.terminateDuration', {
 		label,
-		elapsed: formatMs(elapsedMs),
-		baseline: formatMs(baselineDurationMs),
-		limit: formatMs(durationLimitMs),
+		elapsed: formatDuration(elapsedMs),
+		baseline: formatDuration(baselineDurationMs),
+		limit: formatDuration(durationLimitMs),
 	})
 }
 
@@ -188,6 +173,9 @@ export async function runCommand(command, extraEnv = {}, options) {
 		usageTracker.sample().finally(() => { usageSampling = false })
 	}, WATCH_INTERVAL_MS)
 
+	/**
+	 *
+	 */
 	const usageResult = () => usageTracker.finish()
 
 	const watchdog = setInterval(() => {
@@ -219,6 +207,10 @@ export async function runCommand(command, extraEnv = {}, options) {
 		env: { ...process.env, ...extraEnv },
 		signal: abortController.signal,
 		no_output_record: true,
+		/**
+		 *
+		 * @param child
+		 */
 		on_spawn: child => usageTracker.setRootFromChild(child),
 		/**
 		 * @param {string | Uint8Array} data stdout 片段

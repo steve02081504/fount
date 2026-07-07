@@ -56,9 +56,10 @@ function splitSelectors(raw) {
  * 解析分组冒号语法 positional 参数。
  * @param {string[]} args 位置参数
  * @param {string[]} knownIds 已知 manifest id
+ * @param {import('./core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
  * @returns {{ groups: GroupInput[] | undefined } | { error: 'unknownFirstToken', token: string }} 解析结果
  */
-function parseGroupSelectors(args, knownIds) {
+function parseGroupSelectors(args, knownIds, allSuites) {
 	if (!args.length)
 		return { groups: undefined }
 
@@ -77,7 +78,7 @@ function parseGroupSelectors(args, knownIds) {
 			groups.push(current)
 		}
 		else {
-			const resolved = resolveManifestSelectors([token], knownIds)
+			const resolved = resolveManifestSelectors([token], knownIds, allSuites)
 			if (resolved.manifestIds.length) {
 				current = { manifestSelectors: [token], suiteSelectors: [] }
 				groups.push(current)
@@ -93,8 +94,9 @@ function parseGroupSelectors(args, knownIds) {
 }
 
 process.exit(await (async () => {
-	const knownIds = listManifestIds(await loadAllSuites(REPO_ROOT))
-	const parsed = parseGroupSelectors(positionals, knownIds)
+	const allSuites = await loadAllSuites(REPO_ROOT)
+	const knownIds = listManifestIds(allSuites)
+	const parsed = parseGroupSelectors(positionals, knownIds, allSuites)
 
 	if ('error' in parsed) {
 		console.errorI18n('fountConsole.test.unknownManifestId', { ids: parsed.token })

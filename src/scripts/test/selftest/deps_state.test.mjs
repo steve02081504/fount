@@ -8,13 +8,17 @@ import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.
 import {
 	detectDependencyCycle,
 	expandWithDependencies,
+	expandWithDependents,
+	listCommitStaleSuites,
 	listUnsatisfiedDependencies,
 	resolveSuiteDependencies,
+	sortManifestIds,
 	topoSortSuites,
 } from '../core/deps.mjs'
-import { loadAllSuites } from '../core/manifest.mjs'
+import { listManifestIds, loadAllSuites, selectSuitesByDiff } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	isDependencySatisfied,
 	isSuiteGreen,
 	isSuiteOutdated,
 	readState,
@@ -23,6 +27,7 @@ import {
 	writeState,
 	writeStateMarkdown,
 } from '../core/state.mjs'
+import { DependencyRunCoordinator } from '../runner/dependency_scheduler.mjs'
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */
 function suite(manifestId, name, dependsOn = []) {
@@ -76,6 +81,62 @@ Deno.test('topoSortSuites orders dependencies first', () => {
 	assertEquals(sorted.map(s => suiteKey(s.manifestId, s.name)), ['p2p/sim', 'shells/chat/fed_core'])
 })
 
+Deno.test('sortManifestIds orders dependency before dependent', () => {
+	const all = [
+		suite('p2p', 'sim'),
+		suite('shells/chat', 'fed_core', ['p2p:sim']),
+		suite('server', 'live'),
+	]
+	assertEquals(
+		sortManifestIds(['shells/chat', 'p2p', 'server'], all),
+		['server', 'p2p', 'shells/chat'],
+	)
+})
+
+Deno.test('topoSortSuites tie-breaks by dependent count then dep count then locale', () => {
+	const all = [
+		suite('a', 'one'),
+		suite('b', 'one'),
+		suite('c', 'one', ['a:one']),
+		suite('d', 'one', ['a:one', 'b:one']),
+	]
+	assertEquals(
+		topoSortSuites(all).map(s => suiteKey(s.manifestId, s.name)),
+		['b/one', 'a/one', 'c/one', 'd/one'],
+	)
+})
+
+Deno.test('sortManifestIds tie-breaks by dependent count then dep count then locale', () => {
+	const all = [
+		suite('a', 'one'),
+		suite('b', 'one'),
+		suite('c', 'one', ['a:one']),
+		suite('d', 'one', ['a:one', 'b:one']),
+	]
+	assertEquals(
+		sortManifestIds(['a', 'b', 'c', 'd'], all),
+		['b', 'a', 'c', 'd'],
+	)
+})
+
+Deno.test('topoSortSuites reorders reversed input', () => {
+	const all = [
+		suite('p2p', 'sim'),
+		suite('shells/chat', 'fed_core', ['p2p:sim']),
+	]
+	assertEquals(
+		topoSortSuites([all[1], all[0]], all).map(s => suiteKey(s.manifestId, s.name)),
+		['p2p/sim', 'shells/chat/fed_core'],
+	)
+})
+
+Deno.test('listManifestIds uses dependency-aware order', async () => {
+	const all = await loadAllSuites(REPO_ROOT)
+	const ids = listManifestIds(all)
+	assertEquals(ids.includes('p2p') && ids.includes('shells/chat'), true)
+	assertEquals(ids.indexOf('p2p') < ids.indexOf('shells/chat'), true)
+})
+
 Deno.test('detectDependencyCycle reports cycle', () => {
 	const a = suite('a', 'one', ['b:two'])
 	const b = suite('b', 'two', ['a:one'])
@@ -98,7 +159,7 @@ Deno.test('expandWithDependencies pulls unsatisfied deps', () => {
 	}
 	const expanded = expandWithDependencies([all[1]], all, state, ctx)
 	assertEquals(
-		expanded.map(s => suiteKey(s.manifestId, s.name)),
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['shells/chat/pure', 'shells/social/cross_shell_emoji'],
 	)
 })
@@ -220,6 +281,407 @@ Deno.test('isSuiteGreen requires passed fingerprint and fresh triggers', () => {
 	assertEquals(isSuiteGreen({ ...entry, status: 'blocked' }, 'abc', null, false), false)
 })
 
+Deno.test('expandWithDependents pulls downstream when parent is outdated', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'smoke_chat', ['server:live']),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	all[1].triggers = ['src/public/parts/shells/chat/**']
+	const state = {
+		suites: {
+			'shells/chat/smoke_chat': {
+				status: 'passed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const changedSinceRecordByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
+	changedSinceRecordByKey.set('shells/chat/smoke_chat', ['src/public/parts/shells/chat/src/foo.mjs'])
+	const ctx = {
+		commitHash: 'abc',
+		changedSinceRecordByKey,
+	}
+	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	assertEquals(
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)).sort(),
+		['shells/chat/e2e_single', 'shells/chat/frontend', 'shells/chat/smoke_chat'].sort(),
+	)
+})
+
+Deno.test('expandWithDependents skips downstream when parent is green and fresh', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'smoke_chat', ['server:live']),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	const state = {
+		suites: {
+			'shells/chat/smoke_chat': {
+				status: 'passed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+	}
+	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	assertEquals(
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
+		['shells/chat/smoke_chat'],
+	)
+})
+
+Deno.test('explicit suite selection does not pull downstream federation tree', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('p2p', 'sim'),
+		suite('p2p', 'live'),
+		suite('shells/chat', 'fed_core', ['server:live', 'p2p:sim', 'p2p:live']),
+		suite('shells/chat', 'fed_e2e_ext', ['fed_core']),
+	]
+	const state = {
+		suites: {
+			'server/live': {
+				status: 'passed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+			'p2p/sim': {
+				status: 'passed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	assertEquals(
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
+		['p2p/live'],
+	)
+})
+
+Deno.test('expandWithDependencies skips upstream when only uncommittedHash drifted', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	const passed = {
+		status: 'passed',
+		commitHash: 'abc',
+		uncommittedHash: 'old-digest',
+		ranAt: '',
+		durationMs: 1,
+		failedFiles: [],
+		noiseHits: [],
+		logPath: null,
+	}
+	const state = {
+		suites: {
+			'server/live': passed,
+			'shells/chat/e2e_single': passed,
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: 'new-digest',
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	assertEquals(isSuiteGreen(passed, 'abc', 'new-digest', false), false)
+	assertEquals(isDependencySatisfied(passed, false), true)
+	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
+})
+
+Deno.test('expandWithDependencies skips green upstream deps', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	const passed = {
+		status: 'passed',
+		commitHash: 'abc',
+		uncommittedHash: null,
+		ranAt: '',
+		durationMs: 1,
+		failedFiles: [],
+		noiseHits: [],
+		logPath: null,
+	}
+	const state = {
+		suites: {
+			'server/live': passed,
+			'shells/chat/e2e_single': passed,
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
+})
+
+Deno.test('isDependencySatisfied accepts noisy upstream', () => {
+	const noisy = {
+		status: 'noisy',
+		commitHash: 'abc',
+		uncommittedHash: null,
+		ranAt: '',
+		durationMs: 1,
+		failedFiles: [],
+		noiseHits: ['warn'],
+		logPath: './logs/server/live.log',
+	}
+	assertEquals(isDependencySatisfied(noisy, false), true)
+	assertEquals(isDependencySatisfied(noisy, true), false)
+	assertEquals(isDependencySatisfied({ ...noisy, status: 'failed' }, false), false)
+	assertEquals(isDependencySatisfied({ ...noisy, commitHash: 'old' }, false), true)
+})
+
+Deno.test('expandWithDependencies skips upstream when only commit drifted', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	const passed = {
+		status: 'passed',
+		commitHash: 'old-commit',
+		uncommittedHash: null,
+		ranAt: '',
+		durationMs: 1,
+		failedFiles: [],
+		noiseHits: [],
+		logPath: null,
+	}
+	const state = {
+		suites: {
+			'server/live': passed,
+			'shells/chat/e2e_single': passed,
+		},
+	}
+	const ctx = {
+		commitHash: 'new-head',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	assertEquals(isDependencySatisfied(passed, false), true)
+	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
+})
+
+Deno.test('listCommitStaleSuites lists passed suites with commit drift only', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'frontend', ['server:live']),
+	]
+	const state = {
+		suites: {
+			'server/live': {
+				status: 'passed',
+				commitHash: 'old',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+			'shells/chat/frontend': {
+				status: 'failed',
+				commitHash: 'old',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: ['a.mjs'],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const changed = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
+	assertEquals(
+		listCommitStaleSuites(all, state, 'new-head', changed).map(s => suiteKey(s.manifestId, s.name)),
+		['server/live'],
+	)
+})
+
+Deno.test('listUnsatisfiedDependencies when dep is noisy', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'frontend', ['server:live']),
+	]
+	const state = {
+		suites: {
+			'server/live': {
+				status: 'noisy',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: ['warn'],
+				logPath: './logs/server/live.log',
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	assertEquals(listUnsatisfiedDependencies(all[1], state, ctx), [])
+})
+
+Deno.test('expandWithDependencies skips noisy upstream deps', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'e2e_single', ['server:live']),
+		suite('shells/chat', 'frontend', ['server:live', 'e2e_single']),
+	]
+	const noisy = {
+		status: 'noisy',
+		commitHash: 'abc',
+		uncommittedHash: null,
+		ranAt: '',
+		durationMs: 1,
+		failedFiles: [],
+		noiseHits: ['warn'],
+		logPath: './logs/server/live.log',
+	}
+	const state = {
+		suites: {
+			'server/live': noisy,
+			'shells/chat/e2e_single': noisy,
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
+})
+
+Deno.test('DependencyRunCoordinator treats green upstream as resolved without running', async () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'frontend', ['server:live']),
+	]
+	const state = {
+		suites: {
+			'server/live': {
+				status: 'passed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	/**
+	 * @returns {Promise<() => void>} release callback
+	 */
+	async function mockAcquire() {
+		return () => {}
+	}
+	const gate = { acquire: mockAcquire }
+	const coordinator = new DependencyRunCoordinator({
+		suites: [all[1]],
+		state,
+		ctx,
+		gate,
+	})
+	/** @type {string[]} */
+	const ran = []
+	await coordinator.runAll(async outcome => {
+		if (outcome.kind === 'run')
+			ran.push(suiteKey(outcome.suite.manifestId, outcome.suite.name))
+		return { passed: true }
+	})
+	assertEquals(ran, ['shells/chat/frontend'])
+})
+
+Deno.test('chat frontend test change only selects frontend suite', async () => {
+	const all = await loadAllSuites(REPO_ROOT)
+	const chat = all.filter(s => s.manifestId === 'shells/chat')
+	const hit = selectSuitesByDiff(
+		'diff',
+		['src/public/parts/shells/chat/test/frontend/phases.mjs'],
+		chat,
+	)
+	assertEquals(hit.map(s => s.name), ['frontend'])
+})
+
+Deno.test('social integration test change only selects integration suite', async () => {
+	const all = await loadAllSuites(REPO_ROOT)
+	const social = all.filter(s => s.manifestId === 'shells/social')
+	const hit = selectSuitesByDiff(
+		'diff',
+		['src/public/parts/shells/social/test/integration/posts_http.test.mjs'],
+		social,
+	)
+	assertEquals(hit.map(s => s.name), ['integration'])
+})
+
 Deno.test('expandWithDependencies pulls server:live for shell frontend', () => {
 	const all = [
 		suite('server', 'live'),
@@ -235,7 +697,7 @@ Deno.test('expandWithDependencies pulls server:live for shell frontend', () => {
 	}
 	const expanded = expandWithDependencies([all[1]], all, state, ctx)
 	assertEquals(
-		expanded.map(s => suiteKey(s.manifestId, s.name)),
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['server/live', 'shells/chat/frontend'],
 	)
 })

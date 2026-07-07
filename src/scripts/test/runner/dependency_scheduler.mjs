@@ -3,7 +3,7 @@
  */
 import { listUnsatisfiedDependencies } from '../core/deps.mjs'
 import { suiteSchedulePriority } from '../core/resources.mjs'
-import { suiteKey } from '../core/state.mjs'
+import { isDependencySatisfied, isSuiteOutdated, suiteKey } from '../core/state.mjs'
 
 import { ResourceRunGate } from './scheduler.mjs'
 
@@ -137,7 +137,17 @@ export class DependencyRunCoordinator {
 	#dependenciesResolved(suite) {
 		for (const dep of suite.dependencies ?? []) {
 			const depKey = suiteKey(dep.manifestId, dep.name)
-			if (!this.resolvedKeys.has(depKey)) return false
+			if (this.resolvedKeys.has(depKey)) continue
+			if (!this.indexByKey.has(depKey)) {
+				const depSuite = this.ctx.byKey.get(depKey)
+				const entry = this.state.suites[depKey]
+				const outdated = depSuite
+					? isSuiteOutdated(depSuite, entry, this.ctx.changedSinceRecordByKey.get(depKey) ?? [])
+					: true
+				if (isDependencySatisfied(entry, outdated))
+					continue
+			}
+			return false
 		}
 		return true
 	}

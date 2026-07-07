@@ -12,8 +12,8 @@ import {
 	nextBaselineMemMb,
 } from './baseline.mjs'
 import { collectChangesSinceRecord } from './changed.mjs'
+import { formatDuration } from './format_duration.mjs'
 import { matchGlob } from './glob.mjs'
-import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
 import {
 	stateDir,
@@ -22,6 +22,7 @@ import {
 	stateMarkdownPath,
 	TEST_DATA_REL,
 } from './paths.mjs'
+import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
 
 /**
  * @typedef {'passed' | 'failed' | 'noisy' | 'blocked'} SuiteStatus
@@ -90,15 +91,6 @@ export async function writeState(repoRoot, state) {
 }
 
 /**
- * @param {TestState} state 现状库
- * @param {string} key suite 键
- * @returns {SuiteStateEntry | undefined} 条目
- */
-export function getSuiteEntry(state, key) {
-	return state.suites[key]
-}
-
-/**
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
  * @returns {{ matchedTriggers: string[], matchedPaths: string[] }} trigger 命中证据
@@ -150,7 +142,7 @@ export function isSuiteOutdated(suite, entry, changedSinceRecord) {
  * @param {string | null} uncommittedHash 当前未提交 digest
  * @returns {boolean} 指纹是否匹配
  */
-export function fingerprintMatches(entry, commitHash, uncommittedHash) {
+function fingerprintMatches(entry, commitHash, uncommittedHash) {
 	if (!entry?.commitHash) return false
 	if (entry.commitHash !== commitHash) return false
 	return (entry.uncommittedHash ?? null) === (uncommittedHash ?? null)
@@ -170,28 +162,16 @@ export function isSuiteGreen(entry, commitHash, uncommittedHash, outdated) {
 }
 
 /**
- * @param {TestState} state 现状库
- * @returns {string[]} 不完美 suite 键
+ * 上游依赖是否已满足（门禁用）：passed/noisy + trigger 未过时；不要求 commit / uncommittedHash 一致。
+ * commit 漂移本身不拉间接依赖；仅显式指名或 `--continue` 无历史不完美项时重跑 commit 陈旧 suite。
+ * 通过但有噪声仍放行下游；`--continue` 仍会重跑 noisy 以清理噪声。
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @param {boolean} outdated trigger 是否过时
+ * @returns {boolean} 是否可作为上游门禁
  */
-export function listImperfectSuiteKeys(state) {
-	return Object.entries(state.suites)
-		.filter(([, entry]) => entry.status === 'failed' || entry.status === 'noisy' || entry.status === 'blocked')
-		.map(([key]) => key)
-}
-
-/**
- * @param {TestState} state 现状库
- * @param {string | undefined} manifestId 限定 manifest
- * @returns {string[]} 失败 suite 键
- */
-export function listFailedSuiteKeys(state, manifestId) {
-	return Object.entries(state.suites)
-		.filter(([key, entry]) => {
-			if (entry.status !== 'failed' && entry.status !== 'noisy' && entry.status !== 'blocked') return false
-			if (!manifestId) return true
-			return key.startsWith(`${manifestId}/`)
-		})
-		.map(([key]) => key)
+export function isDependencySatisfied(entry, outdated) {
+	if (!entry || outdated) return false
+	return entry.status === 'passed' || entry.status === 'noisy'
 }
 
 /**
@@ -343,12 +323,10 @@ export async function upsertSuiteRun({
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
  * @param {string[]} uncommittedFiles 未提交文件
  * @returns {Promise<Set<string>>} 陈旧 suite 键
  */
-export async function collectOutdatedSuiteKeys(repoRoot, allSuites, state, commitHash, uncommittedHash, uncommittedFiles) {
+export async function collectOutdatedSuiteKeys(repoRoot, allSuites, state, uncommittedFiles) {
 	const outdated = new Set()
 	for (const suite of allSuites) {
 		const key = suiteKey(suite.manifestId, suite.name)
@@ -362,22 +340,6 @@ export async function collectOutdatedSuiteKeys(repoRoot, allSuites, state, commi
 			outdated.add(key)
 	}
 	return outdated
-}
-
-/**
- * @param {number} ms 毫秒
- * @returns {string} 可读时长
- */
-function formatDuration(ms) {
-	if (ms == null) return '—'
-	if (ms < 1000) return geti18n('fountConsole.test.report.durationMs', { ms })
-	const sec = Math.round(ms / 1000)
-	if (sec < 60) return geti18n('fountConsole.test.report.durationSec', { sec })
-	const min = Math.floor(sec / 60)
-	const rem = sec % 60
-	return rem
-		? geti18n('fountConsole.test.report.durationMinSec', { min, sec: rem })
-		: geti18n('fountConsole.test.report.durationMin', { min })
 }
 
 /**
@@ -417,7 +379,7 @@ function buildDependencyMermaid(allSuites, state, outdatedKeys) {
 			const depEntry = state.suites[depKey]
 			if (entry?.status === 'blocked' && entry.blockedBy?.includes(depKey))
 				blockedEdgeIndexes.push(edgeIndex)
-			else if (depEntry && depEntry.status !== 'passed')
+			else if (depEntry && depEntry.status !== 'passed' && depEntry.status !== 'noisy')
 				blockedEdgeIndexes.push(edgeIndex)
 			edgeIndex++
 		}
@@ -507,15 +469,11 @@ export async function writeStateMarkdown(repoRoot, allSuites, state, outdatedKey
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
  * @param {string[]} uncommittedFiles 未提交文件
  * @returns {Promise<Set<string>>} 陈旧 suite 键并写入 main.md
  */
-export async function refreshStateMarkdown(repoRoot, allSuites, state, commitHash, uncommittedHash, uncommittedFiles) {
-	const outdatedKeys = await collectOutdatedSuiteKeys(
-		repoRoot, allSuites, state, commitHash, uncommittedHash, uncommittedFiles,
-	)
+export async function refreshStateMarkdown(repoRoot, allSuites, state, uncommittedFiles) {
+	const outdatedKeys = await collectOutdatedSuiteKeys(repoRoot, allSuites, state, uncommittedFiles)
 	await writeStateMarkdown(repoRoot, allSuites, state, outdatedKeys)
 	return outdatedKeys
 }

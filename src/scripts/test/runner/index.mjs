@@ -10,6 +10,7 @@ import {
 	resolveChangedFiles,
 } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
+import { topoSortSuites } from '../core/deps.mjs'
 import {
 	filterSuites,
 	listManifestIds,
@@ -27,13 +28,17 @@ import {
 	writeState,
 } from '../core/state.mjs'
 
-import { dependencyContinueReason } from './continue_reason.mjs'
+import {
+	buildDiffSelectionReasons,
+	stampExpansionReasons,
+} from './continue_reason.mjs'
 import { DependencyRunCoordinator } from './dependency_scheduler.mjs'
 import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildChangedSinceRecordMap,
 	finalizeSelection,
+	rebuildReportSlotReasons,
 	selectContinue,
 	selectOutdated,
 	selectSuites,
@@ -55,16 +60,17 @@ import { runSuite } from './suite_run.mjs'
 /**
  * @param {GroupInput[]} groupInputs 原始分组
  * @param {string[]} knownIds 已知 manifest id
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
  * @returns {{ groups: ResolvedGroup[], unmatched: string[] }} 解析后的分组与未匹配项
  */
-function resolveGroups(groupInputs, knownIds) {
+function resolveGroups(groupInputs, knownIds, allSuites) {
 	/** @type {ResolvedGroup[]} */
 	const groups = []
 	/** @type {string[]} */
 	const unmatched = []
 
 	for (const input of groupInputs) {
-		const resolved = resolveManifestSelectors(input.manifestSelectors, knownIds)
+		const resolved = resolveManifestSelectors(input.manifestSelectors, knownIds, allSuites)
 		if (resolved.unmatched.length) {
 			unmatched.push(...resolved.unmatched)
 			continue
@@ -168,7 +174,7 @@ export async function runTests(options = {}) {
 	let explicitSuites = false
 
 	if (options.groups?.length) {
-		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds)
+		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds, allSuites)
 		if (unmatched.length) {
 			console.errorI18n('fountConsole.test.unknownManifestId', {
 				ids: unmatched.join(', '),
@@ -182,11 +188,14 @@ export async function runTests(options = {}) {
 
 		if (options.groups.some(group => {
 			const sel = group.manifestSelectors[0]
-			const match = resolveManifestSelectors(group.manifestSelectors, knownIds)
+			const match = resolveManifestSelectors(group.manifestSelectors, knownIds, allSuites)
 			return !knownIds.includes(sel) || match.manifestIds.length > 1
 		}))
 			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
 	}
+
+	/** @type {{ mode: string, files: string[] } | undefined} */
+	let changedForReasons
 
 	/** @type {Awaited<ReturnType<typeof selectSuites>>} */
 	let selection
@@ -207,14 +216,14 @@ export async function runTests(options = {}) {
 			console.logI18n('fountConsole.test.continueResuming', { count: selection.suites.length })
 		else if (selection.mode === 'continue-imperfect')
 			console.logI18n('fountConsole.test.continueImperfect', { count: selection.suites.length })
+		else if (selection.mode === 'continue-commit-stale')
+			console.logI18n('fountConsole.test.continueCommitStale', { count: selection.suites.length })
 	}
 	else if (options.outdated) {
 		selection = selectOutdated({
 			allSuites,
 			state,
 			filtered,
-			commitHash,
-			uncommittedHash,
 			changedSinceRecordByKey,
 		})
 		console.logI18n('fountConsole.test.outdatedSelected', { count: selection.suites.length })
@@ -225,6 +234,7 @@ export async function runTests(options = {}) {
 			runAll: options.runAll,
 			since: options.since,
 		})
+		changedForReasons = changed
 		selection = await selectSuites({
 			repoRoot: REPO_ROOT,
 			allSuites,
@@ -255,7 +265,7 @@ export async function runTests(options = {}) {
 				? allSuites.filter(s => manifestIds.includes(s.manifestId))
 				: allSuites
 			console.errorI18n('fountConsole.test.available', {
-				ids: scope.map(s => s.id).join(', '),
+				ids: topoSortSuites(scope, allSuites).map(s => s.id).join(', '),
 			})
 			return 2
 		}
@@ -263,28 +273,62 @@ export async function runTests(options = {}) {
 	}
 
 	const preExpansionKeys = new Set(selected.map(s => suiteKey(s.manifestId, s.name)))
+	const preExpansionSuites = [...selected]
 	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 
-	if (selection.mode !== 'continue-pending')
-		selected = finalizeSelection(selected, allSuites, state, {
+	/** @type {Map<string, string>} */
+	let expansionProvenance = new Map()
+	if (selection.mode !== 'continue-pending') {
+		const expanded = finalizeSelection(selected, allSuites, state, {
 			commitHash,
 			uncommittedHash,
 			changedSinceRecordByKey,
 			runGreenKeys: new Set(),
 			byKey,
+		}, { explicitSuites })
+		selected = expanded.suites
+		expansionProvenance = expanded.provenance
+	}
+
+	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
+	const continueReasons = new Map(selection.continueReasons ?? [])
+	if (!explicitSuites && selection.mode === 'normal'
+		&& changedForReasons?.mode === 'diff' && changedForReasons.files.length)
+		for (const [key, reason] of buildDiffSelectionReasons(
+			preExpansionSuites, changedForReasons.files, commitHash, uncommittedHash,
+		))
+			continueReasons.set(key, reason)
+
+	if (selection.mode !== 'continue-pending')
+		stampExpansionReasons(continueReasons, selected, preExpansionKeys, expansionProvenance, {
+			explicitSuites,
+			state,
+			ctx: { commitHash, uncommittedHash, changedSinceRecordByKey, byKey },
 		})
 
-	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason} | undefined} */
-	const continueReasons = selection.continueReasons
-	if (continueReasons && selection.mode === 'continue-imperfect')
-		for (const suite of selected) {
-			const key = suiteKey(suite.manifestId, suite.name)
-			if (continueReasons.has(key)) continue
-			const requiredBy = [...preExpansionKeys].find(parentKey =>
-				byKey.get(parentKey)?.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === key),
-			)
-			continueReasons.set(key, dependencyContinueReason(requiredBy))
+	let reportWriter = selection.reportWriter
+	if (reportWriter?.slots.length) {
+		const slotSuites = reportWriter.slots
+			.map(slot => byKey.get(suiteKey(slot.manifestId, slot.name)))
+			.filter(Boolean)
+		if (slotSuites.length) {
+			const { reasons } = rebuildReportSlotReasons({
+				command: reportWriter.command ?? command,
+				allSuites,
+				slots: slotSuites,
+				state,
+				ctx: {
+					commitHash,
+					uncommittedHash,
+					changedSinceRecordByKey,
+					runGreenKeys: new Set(),
+					byKey,
+				},
+			})
+			for (const [key, reason] of reasons)
+				continueReasons.set(key, reason)
 		}
+	}
 
 	const runGreenKeys = new Set()
 	const depCtx = {
@@ -297,23 +341,23 @@ export async function runTests(options = {}) {
 
 	const streamLive = options.noParallel === true
 
-	let reportWriter = selection.reportWriter
 	if (!reportWriter) {
 		reportWriter = new RunReportWriter({
 			repoRoot: REPO_ROOT,
 			suites: selected,
+			allSuites,
 			runId,
 			command,
 			commitHash,
 			uncommittedHash,
-			continueReasons,
+			continueReasons: continueReasons.size ? continueReasons : undefined,
 		})
 		const reportPath = await reportWriter.init()
 		console.logI18n('fountConsole.test.reportPath', {
 			path: reportPath.replace(/\\/g, '/'),
 		})
 	}
-	else if (continueReasons?.size) {
+	else if (continueReasons.size) {
 		reportWriter.command = command
 		await reportWriter.stampContinueReasons(continueReasons)
 	}
@@ -393,12 +437,12 @@ export async function runTests(options = {}) {
 		await writeState(REPO_ROOT, state)
 		if (index != null) await reportWriter.recordResult(index, entry)
 
-		return { passed: entry.status === 'passed' }
+		return { passed: result.passed }
 	})
 
 	const exitCode = exitCodeFromSlots(reportWriter.slots)
 	const reportPath = await reportWriter.finalize(exitCode)
-	await refreshStateMarkdown(REPO_ROOT, allSuites, state, commitHash, uncommittedHash, uncommittedFiles)
+	await refreshStateMarkdown(REPO_ROOT, allSuites, state, uncommittedFiles)
 	console.logI18n('fountConsole.test.reportPathFinal', {
 		path: reportPath.replace(/\\/g, '/'),
 	})

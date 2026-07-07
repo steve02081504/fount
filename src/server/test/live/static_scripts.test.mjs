@@ -10,6 +10,8 @@ import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/n
 const BROWSER_SCRIPTS = [
 	'/scripts/lib/entity_hash.mjs',
 	'/scripts/lib/digest.mjs',
+	'/scripts/p2p/hexIds.mjs',
+	'/scripts/p2p/entity_id_parse.mjs',
 	'/scripts/test/ready_gate.mjs',
 ]
 

@@ -5,12 +5,14 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
-import { detectNoiseHits } from '../core/output_filter.mjs'
+import { topoSortSuites } from '../core/deps.mjs'
+import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL } from '../core/paths.mjs'
 import { suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
+ * @typedef {import('./continue_reason.mjs').ContinueReasonKind} ContinueReasonKind
  */
 
 /**
@@ -35,22 +37,6 @@ import { suiteKey } from '../core/state.mjs'
  */
 
 /**
- * @param {number} ms 毫秒
- * @returns {string} 可读时长
- */
-function formatDuration(ms) {
-	if (ms == null) return '—'
-	if (ms < 1000) return geti18n('fountConsole.test.report.durationMs', { ms })
-	const sec = Math.round(ms / 1000)
-	if (sec < 60) return geti18n('fountConsole.test.report.durationSec', { sec })
-	const min = Math.floor(sec / 60)
-	const rem = sec % 60
-	return rem
-		? geti18n('fountConsole.test.report.durationMinSec', { min, sec: rem })
-		: geti18n('fountConsole.test.report.durationMin', { min })
-}
-
-/**
  * 单次运行报告写入器。
  */
 export class RunReportWriter {
@@ -60,7 +46,8 @@ export class RunReportWriter {
 	/**
 	 * @param {object} options 选项
 	 * @param {string} options.repoRoot 仓库根
-	 * @param {SuiteDef[]} options.suites 本次运行 suite 有序列表
+	 * @param {SuiteDef[]} options.suites 本次运行 suite 列表
+	 * @param {SuiteDef[]} [options.allSuites] 全库 suite（排序 tie-break；默认同 suites）
 	 * @param {string} options.runId 运行 id
 	 * @param {string} options.command 命令摘要
 	 * @param {string} options.commitHash HEAD
@@ -68,14 +55,14 @@ export class RunReportWriter {
 	 * @param {ReportSlot[]} [options.slots] 续跑时载入
 	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 续跑原因
 	 */
-	constructor({ repoRoot, suites, runId, command, commitHash, uncommittedHash, slots, continueReasons }) {
+	constructor({ repoRoot, suites, allSuites, runId, command, commitHash, uncommittedHash, slots, continueReasons }) {
 		this.repoRoot = repoRoot
 		this.runId = runId
 		this.command = command
 		this.commitHash = commitHash
 		this.uncommittedHash = uncommittedHash
 		/** @type {ReportSlot[]} */
-		this.slots = slots ?? suites.map(suite => {
+		this.slots = slots ?? topoSortSuites(suites, allSuites ?? suites).map(suite => {
 			const key = suiteKey(suite.manifestId, suite.name)
 			return {
 				manifestId: suite.manifestId,
@@ -293,11 +280,12 @@ function shortHash(hash) {
 }
 
 /**
- * @param {ContinueReason} reason 续跑原因
- * @returns {string} 可读原因标签
+ * @param {ContinueReasonKind | string} kind 原因类型
+ * @param {{ strict?: boolean }} [opts] strict 时未知 kind 抛错
+ * @returns {string} 可读标签
  */
-function formatContinueReasonLabel(reason) {
-	switch (reason.kind) {
+function formatReasonKindLabel(kind, { strict = false } = {}) {
+	switch (kind) {
 		case 'pending_from_previous_report':
 			return geti18n('fountConsole.test.report.reasonPending')
 		case 'imperfect_failed':
@@ -310,36 +298,76 @@ function formatContinueReasonLabel(reason) {
 			return geti18n('fountConsole.test.report.reasonMissingRecord')
 		case 'outdated_trigger_hit':
 			return geti18n('fountConsole.test.report.reasonOutdatedTrigger')
+		case 'diff_trigger_hit':
+			return geti18n('fountConsole.test.report.reasonDiffTrigger')
+		case 'explicit_selected':
+			return geti18n('fountConsole.test.report.reasonExplicitSelected')
+		case 'commit_mismatch':
+			return geti18n('fountConsole.test.report.reasonCommitMismatch')
 		case 'dependency_required':
-			return geti18n('fountConsole.test.report.reasonDependencyRequired', {
-				requiredBy: reason.requiredBy ?? '—',
-			})
+			return geti18n('fountConsole.test.report.reasonDependencyRequired')
 	}
-	throw new Error(`unknown continue reason kind: ${reason.kind}`)
+	if (strict)
+		throw new Error(`unknown continue reason kind: ${kind}`)
+	return kind
+}
+
+/**
+ * @param {ContinueReason} reason 续跑原因
+ * @returns {string} 可读原因标签
+ */
+function formatContinueReasonLabel(reason) {
+	return formatReasonKindLabel(reason.kind, { strict: true })
 }
 
 /**
  * @param {string[]} lines 行缓冲
  * @param {ContinueReason} reason 续跑原因
+ * @param {number} [depth] 嵌套深度（gate 子原因）
  */
-function appendContinueReasonEvidence(lines, reason) {
+function appendContinueReasonEvidence(lines, reason, depth = 0) {
+	const indent = depth ? '  '.repeat(depth) : ''
 	if (reason.fromCommit != null || reason.toCommit)
-		lines.push(`- ${geti18n('fountConsole.test.report.labelCommitRange')}: \`${shortHash(reason.fromCommit)}\` → \`${shortHash(reason.toCommit)}\``)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelCommitRange')}: \`${shortHash(reason.fromCommit)}\` → \`${shortHash(reason.toCommit)}\``)
 	if (reason.fromUncommittedHash != null || reason.toUncommittedHash != null) {
 		const from = shortHash(reason.fromUncommittedHash)
 		const to = shortHash(reason.toUncommittedHash)
 		if (from !== to)
-			lines.push(`- ${geti18n('fountConsole.test.report.labelUncommittedHashRange')}: \`${from}\` → \`${to}\``)
+			lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelUncommittedHashRange')}: \`${from}\` → \`${to}\``)
 	}
 	if (reason.blockedBy?.length)
-		lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${reason.blockedBy.join(', ')}`)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${reason.blockedBy.join(', ')}`)
 	if (reason.matchedTriggers?.length) {
-		lines.push(`- ${geti18n('fountConsole.test.report.labelMatchedTriggers')}:`)
-		for (const trigger of reason.matchedTriggers) lines.push(`  - \`${trigger}\``)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedTriggers')}:`)
+		for (const trigger of reason.matchedTriggers) lines.push(`${indent}  - \`${trigger}\``)
 	}
 	if (reason.matchedPaths?.length) {
-		lines.push(`- ${geti18n('fountConsole.test.report.labelMatchedPaths')}:`)
-		for (const path of reason.matchedPaths) lines.push(`  - \`${path}\``)
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedPaths')}:`)
+		for (const path of reason.matchedPaths) lines.push(`${indent}  - \`${path}\``)
+	}
+}
+
+/**
+ * @param {string[]} lines 行缓冲
+ * @param {ContinueReason} reason 依赖扩展原因
+ */
+function appendDependencyReasonDetail(lines, reason) {
+	if (reason.rootKey && reason.rootKind)
+		lines.push(`- ${geti18n('fountConsole.test.report.labelRootCause')}: ${formatReasonKindLabel(reason.rootKind)}（\`${reason.rootKey}\`）`)
+	else if (reason.requiredBy)
+		lines.push(`- ${geti18n('fountConsole.test.report.labelDirectRequiredBy')}: \`${reason.requiredBy}\``)
+	if (reason.inclusionPath?.length)
+		lines.push(`- ${geti18n('fountConsole.test.report.labelInclusionPath')}: ${reason.inclusionPath.map(k => `\`${k}\``).join(' → ')}`)
+	if (reason.pull && reason.requiredBy) {
+		const requiredBy = `\`${reason.requiredBy}\``
+		const pullLabel = reason.pull === 'upstream'
+			? geti18n('fountConsole.test.report.labelPullUpstream', { requiredBy })
+			: geti18n('fountConsole.test.report.labelPullDownstream', { requiredBy })
+		lines.push(`- ${pullLabel}`)
+	}
+	if (reason.gate) {
+		lines.push(`- ${geti18n('fountConsole.test.report.labelGateReason')}: ${formatReasonKindLabel(reason.gate.kind)}`)
+		appendContinueReasonEvidence(lines, reason.gate, 1)
 	}
 }
 
@@ -354,8 +382,12 @@ function appendContinueReasons(lines, summary) {
 	lines.push(`## ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '')
 	for (const slot of slots) {
 		lines.push(`### ${slot.manifestId}/${slot.name}`, '')
-		lines.push(`- ${geti18n('fountConsole.test.report.labelContinueReason')}: ${formatContinueReasonLabel(slot.continueReason)}`)
-		appendContinueReasonEvidence(lines, slot.continueReason)
+		if (slot.continueReason.kind === 'dependency_required')
+			appendDependencyReasonDetail(lines, slot.continueReason)
+		else {
+			lines.push(`- ${geti18n('fountConsole.test.report.labelContinueReason')}: ${formatContinueReasonLabel(slot.continueReason)}`)
+			appendContinueReasonEvidence(lines, slot.continueReason)
+		}
 		lines.push('')
 	}
 }
@@ -408,39 +440,4 @@ function appendSilentPassed(lines, entries) {
 export function exitCodeFromSlots(slots) {
 	const completed = slots.filter(slot => slot.state === 'done')
 	return completed.some(slot => slot.status !== 'passed') ? 1 : 0
-}
-
-/**
- * @param {SuiteDef[]} suites suite 列表
- * @returns {string | null} 可复制重跑命令
- */
-export function buildReplayCommand(suites) {
-	if (!suites.length) return null
-	/** @type {Map<string, string[]>} */
-	const byManifest = new Map()
-	for (const suite of suites) {
-		const names = byManifest.get(suite.manifestId) ?? []
-		names.push(suite.name)
-		byManifest.set(suite.manifestId, names)
-	}
-	const groupTokens = [...byManifest.entries()]
-		.sort(([a], [b]) => a.localeCompare(b))
-		.map(([manifestId, suiteNames]) => `${manifestId}:${suiteNames.join(',')}`)
-	return `fount test ${groupTokens.join(' ')}`
-}
-
-/**
- * @param {string} output 输出
- * @returns {string[]} 噪声命中列表
- */
-export function detectReportNoiseHits(output) {
-	return detectNoiseHits(output)
-}
-
-/**
- * @param {SuiteDef} suite suite
- * @returns {string} 标签
- */
-export function labelForSuite(suite) {
-	return suiteKey(suite.manifestId, suite.name)
 }

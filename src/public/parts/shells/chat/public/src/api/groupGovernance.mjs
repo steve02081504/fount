@@ -67,12 +67,16 @@ export async function setGovernanceBranch(groupId, tipId) {
 }
 
 /**
- * 读取群主观信誉表。
- * @param {string} groupId 群 ID
+ * 读取群主观信誉表（节点级 `/reputation`，不在 `groups/` 下）。
  * @returns {Promise<object>} `{ reputation }`
  */
 export async function getGroupReputation() {
-	return groupFetch('/api/parts/shells:chat/reputation')
+	const response = await fetch('/api/parts/shells:chat/reputation', { credentials: 'include' })
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({}))
+		throw new Error(data.error || `HTTP ${response.status}`)
+	}
+	return response.json()
 }
 
 /**

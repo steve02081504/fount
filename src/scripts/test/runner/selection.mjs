@@ -1,14 +1,22 @@
 import { console } from '../../i18n/bare.mjs'
 import { collectChangesSinceRecord } from '../core/changed.mjs'
-import { expandWithDependencies, listImperfectSuites, listOutdatedSuites } from '../core/deps.mjs'
-import { selectSuitesByDiff } from '../core/manifest.mjs'
+import {
+	expandWithDependencies,
+	expandWithDependents,
+	listCommitStaleSuites,
+	listImperfectSuites,
+	listOutdatedSuites,
+} from '../core/deps.mjs'
+import { filterSuites, listManifestIds, resolveManifestSelectors, selectSuitesByDiff } from '../core/manifest.mjs'
 import {
 	suiteKey,
 } from '../core/state.mjs'
 
 import {
+	buildCommitStaleReasonsForSuites,
 	buildContinueReasonsForSuites,
 	pendingContinueReason,
+	stampExpansionReasons,
 } from './continue_reason.mjs'
 import { RunReportWriter } from './report.mjs'
 
@@ -24,7 +32,7 @@ import { RunReportWriter } from './report.mjs'
  * @property {SuiteDef[]} [suites]
  * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
  * @property {RunReportWriter} [reportWriter]
- * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'outdated'} [mode]
+ * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'continue-commit-stale' | 'outdated'} [mode]
  * @property {Map<string, import('./continue_reason.mjs').ContinueReason>} [continueReasons]
  */
 
@@ -145,6 +153,18 @@ export async function selectContinue({
 			),
 		}
 
+	const commitStale = listCommitStaleSuites(allSuites, state, commitHash, changedSinceRecordByKey)
+	if (commitStale.length)
+		return {
+			action: 'run',
+			mode: 'continue-commit-stale',
+			suites: commitStale,
+			retryByManifest: new Map(),
+			continueReasons: buildCommitStaleReasonsForSuites(
+				commitStale, state, commitHash, uncommittedHash,
+			),
+		}
+
 	return { action: 'exit', code: 0 }
 }
 
@@ -153,8 +173,6 @@ export async function selectContinue({
  * @param {SuiteDef[]} params.allSuites 全部 suite
  * @param {TestState} params.state 现状库
  * @param {SuiteDef[]} [params.filtered] 过滤范围
- * @param {string} params.commitHash HEAD
- * @param {string | null} params.uncommittedHash 未提交 digest
  * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
  * @returns {SuiteSelection} 选择结果
  */
@@ -162,12 +180,10 @@ export function selectOutdated({
 	allSuites,
 	state,
 	filtered,
-	commitHash,
-	uncommittedHash,
 	changedSinceRecordByKey,
 }) {
 	const scope = filtered ?? allSuites
-	const outdated = listOutdatedSuites(scope, state, commitHash, uncommittedHash, changedSinceRecordByKey)
+	const outdated = listOutdatedSuites(scope, state, changedSinceRecordByKey)
 	return {
 		action: 'run',
 		mode: 'outdated',
@@ -269,12 +285,89 @@ export async function selectSuites({
 }
 
 /**
+ * 从 report 命令摘要解析初选 suite。
+ * @param {string} command 命令摘要
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @returns {{ seedSuites: SuiteDef[], explicitSuites: boolean }} 初选与是否显式指名
+ */
+export function parseCommandSeedSuites(command, allSuites) {
+	/** @type {{ manifestSelectors: string[], suiteSelectors: string[] }[]} */
+	const groups = []
+	for (const token of command.trim().split(/\s+/)) {
+		if (token === 'fount' || token === 'test' || token.startsWith('--')) continue
+		if (token.includes(':')) {
+			const colon = token.indexOf(':')
+			groups.push({
+				manifestSelectors: [token.slice(0, colon)],
+				suiteSelectors: token.slice(colon + 1).split(',').filter(Boolean),
+			})
+		}
+		else
+			groups.push({ manifestSelectors: [token], suiteSelectors: [] })
+	}
+	if (!groups.length)
+		return { seedSuites: [], explicitSuites: false }
+
+	const knownIds = listManifestIds(allSuites)
+	/** @type {SuiteDef[]} */
+	const seedSuites = []
+	const explicitSuites = groups.some(g => g.suiteSelectors.length > 0)
+	for (const group of groups) {
+		const resolved = resolveManifestSelectors(group.manifestSelectors, knownIds, allSuites)
+		for (const suite of filterSuites(allSuites, {
+			manifestIds: resolved.manifestIds,
+			suiteSelectors: group.suiteSelectors.length ? group.suiteSelectors : undefined,
+		}))
+			seedSuites.push(suite)
+	}
+	return { seedSuites, explicitSuites }
+}
+
+/**
+ * 为报告内全部槽位重算扩展 provenance 与触发原因。
+ * @param {object} params 参数
+ * @param {string} params.command 命令摘要
+ * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {SuiteDef[]} params.slots 报告槽位对应 suite
+ * @param {TestState} params.state 现状库
+ * @param {object} params.ctx 依赖扩展上下文
+ * @returns {{ provenance: Map<string, string>, seedKeys: Set<string>, explicitSuites: boolean, reasons: Map<string, import('./continue_reason.mjs').ContinueReason> }} 重算结果
+ */
+export function rebuildReportSlotReasons({ command, allSuites, slots, state, ctx }) {
+	const { seedSuites, explicitSuites } = parseCommandSeedSuites(command, allSuites)
+	const seedKeys = new Set(seedSuites.map(s => suiteKey(s.manifestId, s.name)))
+	const { provenance } = finalizeSelection(seedSuites, allSuites, state, ctx, { explicitSuites })
+	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
+	const reasons = new Map()
+	stampExpansionReasons(reasons, slots, seedKeys, provenance, {
+		explicitSuites,
+		state,
+		ctx,
+	})
+	return { provenance, seedKeys, explicitSuites, reasons }
+}
+
+/**
  * @param {SuiteDef[]} selected 已选 suite
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {object} ctx 依赖扩展上下文
- * @returns {SuiteDef[]} 扩展并拓扑排序后的 suite
+ * @param {object} [options] 选项
+ * @param {boolean} [options.explicitSuites] 是否显式指名 suite
+ * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
  */
-export function finalizeSelection(selected, allSuites, state, ctx) {
-	return expandWithDependencies(selected, allSuites, state, ctx)
+export function finalizeSelection(selected, allSuites, state, ctx, options = {}) {
+	/** @type {Map<string, string>} */
+	const provenance = new Map()
+	let suites = selected
+	if (!options.explicitSuites) {
+		const expanded = expandWithDependents(selected, allSuites, state, ctx)
+		suites = expanded.suites
+		for (const [key, parent] of expanded.provenance)
+			provenance.set(key, parent)
+	}
+	const upstream = expandWithDependencies(suites, allSuites, state, ctx)
+	for (const [key, parent] of upstream.provenance)
+		provenance.set(key, parent)
+	return { suites: upstream.suites, provenance }
 }

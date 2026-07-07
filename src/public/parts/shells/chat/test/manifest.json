@@ -1,8 +1,21 @@
 {
 	"id": "shells/chat",
 	"triggerSets": {
-		"shellPure": [
-			"src/public/parts/shells/chat/**",
+		"shellBackend": [
+			"src/public/parts/shells/chat/src/**",
+			"src/public/parts/shells/chat/main.mjs",
+			"src/public/parts/shells/chat/fount.json",
+			"src/public/parts/shells/chat/locales.json"
+		],
+		"shellLiveCommon": [
+			"src/server/registries.mjs",
+			"src/server/parts_loader.mjs",
+			"src/public/pages/scripts/api/registries.mjs",
+			"src/public/pages/scripts/features/markdown/extensions.mjs",
+			"src/public/pages/scripts/components/emojiPicker.mjs",
+			"src/public/pages/scripts/components/stickerPicker.mjs"
+		],
+		"shellPureExtra": [
 			"src/public/parts/shells/social/src/lib/emojiPostEmbed.mjs",
 			"src/scripts/p2p/**",
 			"src/server/p2p_server/**",
@@ -13,8 +26,7 @@
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/components/stickerPicker.mjs"
 		],
-		"shellIntegration": [
-			"src/public/parts/shells/chat/**",
+		"shellIntegrationExtra": [
 			"src/scripts/p2p/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
@@ -24,42 +36,98 @@
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/components/stickerPicker.mjs"
 		],
-		"shellLive": [
-			"src/public/parts/shells/chat/**",
-			"src/server/registries.mjs",
-			"src/server/parts_loader.mjs",
-			"src/public/pages/scripts/api/registries.mjs",
-			"src/public/pages/scripts/features/markdown/extensions.mjs",
-			"src/public/pages/scripts/components/emojiPicker.mjs",
-			"src/public/pages/scripts/components/stickerPicker.mjs"
+		"shellPureTests": [
+			"src/public/parts/shells/chat/test/pure/**"
+		],
+		"shellIntegrationTests": [
+			"src/public/parts/shells/chat/test/integration/**"
+		],
+		"shellLiveInfra": [
+			"src/public/parts/shells/chat/test/live/run.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/reset_fed_env.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/tools/**"
+		],
+		"liveSmokeChat": [
+			"src/public/parts/shells/chat/test/live/scripts/smoke_chat.mjs"
+		],
+		"liveSmokeAi": [
+			"src/public/parts/shells/chat/test/live/scripts/smoke_ai.mjs"
+		],
+		"liveE2eSingle": [
+			"src/public/parts/shells/chat/test/live/scripts/e2e_single.mjs"
+		],
+		"liveE2eSingleExt": [
+			"src/public/parts/shells/chat/test/live/scripts/e2e_single_ext.mjs"
+		],
+		"liveWs": [
+			"src/public/parts/shells/chat/test/live/scripts/ws.mjs"
+		],
+		"liveWsRpc": [
+			"src/public/parts/shells/chat/test/live/scripts/ws_rpc.mjs"
+		],
+		"liveWsStream": [
+			"src/public/parts/shells/chat/test/live/scripts/ws_stream.mjs"
+		],
+		"liveAvRelay": [
+			"src/public/parts/shells/chat/test/live/scripts/av_relay.mjs"
 		],
 		"fed": [
-			"src/public/parts/shells/chat/src/chat/federation/**"
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/core.mjs"
 		],
 		"fedArchive": [
 			"src/public/parts/shells/chat/src/chat/federation/**",
-			"src/public/parts/shells/chat/src/chat/archive/**"
+			"src/public/parts/shells/chat/src/chat/archive/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/archive_month.mjs"
 		],
 		"fedMailbox": [
 			"src/public/parts/shells/chat/src/chat/federation/**",
-			"src/public/parts/shells/chat/src/chat/mailbox/**"
+			"src/public/parts/shells/chat/src/chat/mailbox/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/mailbox.mjs"
 		],
 		"fedEmoji": [
 			"src/public/parts/shells/chat/src/chat/federation/**",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
-			"src/public/parts/shells/chat/src/group/groupPreview.mjs"
+			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/emoji.mjs"
 		],
 		"fedEmojiGroup": [
 			"src/public/parts/shells/chat/src/group/**",
-			"src/server/registries.mjs"
+			"src/server/registries.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nonmember_bootstrap.mjs"
 		],
 		"fedEmojiNearcache": [
 			"src/public/parts/shells/chat/src/group/**",
-			"src/scripts/p2p/files/**"
+			"src/scripts/p2p/files/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/emoji_nearcache.mjs"
 		],
 		"fedFileTransfer": [
 			"src/public/parts/shells/chat/src/chat/federation/**",
-			"src/scripts/p2p/files/**"
+			"src/scripts/p2p/files/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/file_transfer.mjs"
+		],
+		"fedE2eExt": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/e2e_ext.mjs"
+		],
+		"fedDm": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/dm.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/fed_dm_probe.mjs",
+			"src/public/parts/shells/chat/test/live/scripts/federation/dm_intro_helper.mjs"
+		],
+		"fedBan": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/ban.mjs"
+		],
+		"fedControlPlane": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/control_plane.mjs"
+		],
+		"fedReputationOwner": [
+			"src/public/parts/shells/chat/src/chat/federation/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/reputation_owner.mjs"
 		],
 		"frontend": [
 			"src/public/parts/shells/chat/public/**",
@@ -73,7 +141,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": "shellPure",
+			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests"],
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
@@ -83,33 +151,33 @@
 		{
 			"name": "integration",
 			"dependsOn": ["server:live"],
-			"trigger": "shellIntegration",
+			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests"],
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/chat/test/integration/"
 			]
 		},
-		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_chat"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single"] },
-		{ "name": "e2e_single_ext", "dependsOn": ["server:live", "e2e_single"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single_ext"] },
-		{ "name": "smoke_chat", "dependsOn": ["server:live"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_chat"] },
-		{ "name": "smoke_ai", "dependsOn": ["server:live", "smoke_chat"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_ai"] },
-		{ "name": "ws", "dependsOn": ["server:live", "smoke_chat"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws"] },
-		{ "name": "ws_rpc", "dependsOn": ["server:live", "ws"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_rpc"] },
-		{ "name": "ws_stream", "dependsOn": ["server:live", "ws_rpc"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_stream"] },
-		{ "name": "av_relay", "dependsOn": ["server:live", "ws"], "trigger": "shellLive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "av_relay"] },
-		{ "name": "fed_core", "dependsOn": ["server:live", "p2p:sim", "p2p:live"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_core"] },
-		{ "name": "fed_e2e_ext", "dependsOn": ["fed_core"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_e2e_ext"] },
-		{ "name": "fed_dm", "dependsOn": ["fed_core"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_dm"] },
-		{ "name": "fed_archive_month", "dependsOn": ["fed_core"], "trigger": "fedArchive", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_archive_month"] },
-		{ "name": "fed_mailbox", "dependsOn": ["fed_core"], "trigger": "fedMailbox", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_mailbox"] },
-		{ "name": "fed_ban", "dependsOn": ["fed_core"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_ban"] },
-		{ "name": "fed_emoji", "dependsOn": ["fed_core"], "trigger": "fedEmoji", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji"] },
-		{ "name": "fed_emoji_nonmember", "dependsOn": ["fed_core", "fed_emoji"], "trigger": "fedEmojiGroup", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nonmember"] },
-		{ "name": "fed_emoji_nearcache", "dependsOn": ["fed_core", "fed_emoji"], "trigger": "fedEmojiNearcache", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nearcache"] },
-		{ "name": "fed_file_transfer", "dependsOn": ["fed_core"], "trigger": "fedFileTransfer", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_file_transfer"] },
-		{ "name": "fed_control_plane", "dependsOn": ["fed_core"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_control_plane"] },
-		{ "name": "fed_reputation_owner", "dependsOn": ["fed_core"], "trigger": "fed", "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_reputation_owner"] },
+		{ "name": "smoke_chat", "dependsOn": ["server:live"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveSmokeChat"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_chat"] },
+		{ "name": "smoke_ai", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveSmokeAi"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "smoke_ai"] },
+		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single"] },
+		{ "name": "e2e_single_ext", "dependsOn": ["server:live", "e2e_single"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveE2eSingleExt"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single_ext"] },
+		{ "name": "ws", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws"] },
+		{ "name": "ws_rpc", "dependsOn": ["server:live", "ws"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWsRpc"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_rpc"] },
+		{ "name": "ws_stream", "dependsOn": ["server:live", "ws_rpc"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWsStream"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_stream"] },
+		{ "name": "av_relay", "dependsOn": ["server:live", "ws"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveAvRelay"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "av_relay"] },
+		{ "name": "fed_core", "dependsOn": ["server:live", "p2p:sim", "p2p:live"], "trigger": ["shellLiveInfra", "fed"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_core"] },
+		{ "name": "fed_e2e_ext", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedE2eExt"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_e2e_ext"] },
+		{ "name": "fed_dm", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedDm"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_dm"] },
+		{ "name": "fed_archive_month", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedArchive"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_archive_month"] },
+		{ "name": "fed_mailbox", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedMailbox"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_mailbox"] },
+		{ "name": "fed_ban", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedBan"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_ban"] },
+		{ "name": "fed_emoji", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedEmoji"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji"] },
+		{ "name": "fed_emoji_nonmember", "dependsOn": ["fed_core", "fed_emoji"], "trigger": ["shellLiveInfra", "fedEmojiGroup"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nonmember"] },
+		{ "name": "fed_emoji_nearcache", "dependsOn": ["fed_core", "fed_emoji"], "trigger": ["shellLiveInfra", "fedEmojiNearcache"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_emoji_nearcache"] },
+		{ "name": "fed_file_transfer", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedFileTransfer"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_file_transfer"] },
+		{ "name": "fed_control_plane", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedControlPlane"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_control_plane"] },
+		{ "name": "fed_reputation_owner", "dependsOn": ["fed_core"], "trigger": ["shellLiveInfra", "fedReputationOwner"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_reputation_owner"] },
 		{ "name": "frontend", "dependsOn": ["server:live", "e2e_single"], "trigger": "frontend", "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/chat/test/frontend/run.mjs"] }
 	]
 }

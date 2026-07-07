@@ -1,8 +1,13 @@
 {
 	"id": "shells/social",
 	"triggerSets": {
-		"shellPure": [
-			"src/public/parts/shells/social/**",
+		"shellBackend": [
+			"src/public/parts/shells/social/src/**",
+			"src/public/parts/shells/social/main.mjs",
+			"src/public/parts/shells/social/fount.json",
+			"src/public/parts/shells/social/locales.json"
+		],
+		"shellPureExtra": [
 			"src/public/parts/shells/chat/public/markdown_ext/**",
 			"src/scripts/p2p/**",
 			"src/server/p2p_server/**",
@@ -12,8 +17,7 @@
 			"src/public/pages/scripts/components/stickerPicker.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
 		],
-		"shellIntegration": [
-			"src/public/parts/shells/social/**",
+		"shellIntegrationExtra": [
 			"src/public/parts/shells/chat/public/markdown_ext/**",
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
@@ -25,22 +29,39 @@
 			"src/public/pages/scripts/components/stickerPicker.mjs",
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
 		],
-		"shellLive": [
-			"src/public/parts/shells/social/**"
+		"shellPureTests": [
+			"src/public/parts/shells/social/test/pure/**"
 		],
-		"ws": [
-			"src/public/parts/shells/social/**",
-			"src/server/registries.mjs",
-			"src/public/pages/scripts/api/registries.mjs"
+		"shellIntegrationTests": [
+			"src/public/parts/shells/social/test/integration/**"
 		],
-		"crossShellEmoji": [
-			"src/public/parts/shells/social/**",
+		"shellLiveInfra": [
+			"src/public/parts/shells/social/test/live/run.mjs",
+			"src/public/parts/shells/social/test/afterInit.mjs"
+		],
+		"liveSmokeSocial": [
+			"src/public/parts/shells/social/test/live/scripts/smoke_social.mjs"
+		],
+		"liveE2eSingle": [
+			"src/public/parts/shells/social/test/live/scripts/e2e_single.mjs"
+		],
+		"liveWs": [
+			"src/public/parts/shells/social/test/live/scripts/ws.mjs"
+		],
+		"crossShellEmojiExtra": [
 			"src/public/parts/shells/chat/public/markdown_ext/**",
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
 			"src/server/registries.mjs",
 			"src/public/pages/scripts/api/registries.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs"
+		],
+		"liveCrossShellEmoji": [
+			"src/public/parts/shells/social/test/live/scripts/cross_shell_emoji.mjs"
+		],
+		"wsExtra": [
+			"src/server/registries.mjs",
+			"src/public/pages/scripts/api/registries.mjs"
 		],
 		"frontend": [
 			"src/public/parts/shells/social/public/**",
@@ -54,7 +75,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": "shellPure",
+			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests"],
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
@@ -64,17 +85,17 @@
 		{
 			"name": "integration",
 			"dependsOn": ["server:live"],
-			"trigger": "shellIntegration",
+			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests"],
 			"run": [
 				"deno", "run", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/public/parts/shells/social/test/integration/"
 			]
 		},
-		{ "name": "smoke_social", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "smoke_social"], "trigger": "shellLive" },
-		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_social"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"], "trigger": "shellLive" },
-		{ "name": "ws", "dependsOn": ["server:live", "smoke_social"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"], "trigger": "ws" },
-		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "smoke_social", "shells/chat:fed_core", "shells/chat:fed_emoji"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"], "trigger": "crossShellEmoji" },
-		{ "name": "frontend", "dependsOn": ["server:live", "smoke_social", "e2e_single"], "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"], "trigger": "frontend" }
+		{ "name": "smoke_social", "dependsOn": ["server:live"], "trigger": ["shellBackend", "shellLiveInfra", "liveSmokeSocial"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "smoke_social"] },
+		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_social"], "trigger": ["shellBackend", "shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"] },
+		{ "name": "ws", "dependsOn": ["server:live", "smoke_social"], "trigger": ["shellBackend", "wsExtra", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"] },
+		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "smoke_social", "shells/chat:fed_core", "shells/chat:fed_emoji"], "trigger": ["shellBackend", "crossShellEmojiExtra", "shellLiveInfra", "liveCrossShellEmoji"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"] },
+		{ "name": "frontend", "dependsOn": ["server:live", "smoke_social", "e2e_single"], "trigger": "frontend", "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"] }
 	]
 }
