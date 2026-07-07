@@ -13,7 +13,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 - **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
 - **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid.
-- **Run report**: `data/test/report.md` + `report.json` — last run only; non-specified suites show a **trigger reason** (`continueReason`). `--continue`: [continue-report.md](docs/continue-report.md).
+- **Run report**: `data/test/report.md` + `report.json` — last run only. **Trigger reasons** (`continueReason`) are split into `data/test/triggered-reasons.md` (linked from `report.md`); `report.json` still carries per-slot reasons. `--continue`: [continue-report.md](docs/continue-report.md).
 - **`--outdated`**: trigger-relevant files changed since the recorded commit, plus never-run suites.
 - **`--no-parallel`**: serial execution. Default: [resource-scheduling.md](docs/resource-scheduling.md). **Prefer `--no-parallel`** for local verification and `--continue` reruns while Deno parallel scheduling is flaky.
 - **`dependsOn`**: runtime gate (`manifest:suite` or same-manifest name). Unmet deps → `blocked`. Exact selector match (`prefixExpand: false`).

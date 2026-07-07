@@ -450,6 +450,7 @@
 				"labelFailedFiles": "失败文件",
 				"labelTerminateReason": "终止原因",
 				"sectionContinueReasons": "触发原因",
+				"continueReasonsLink": "触发原因：详见 [${path}](${path})",
 				"labelContinueReason": "原因",
 				"reasonPending": "上次运行中断，待续跑",
 				"reasonImperfectFailed": "历史失败",

@@ -1,6 +1,6 @@
 # Run report — trigger reasons
 
-Per-slot `continueReason` in `data/test/report.json` and a **Trigger reasons** section in `report.md` explain why each suite was included — not only for `--continue`.
+Per-slot `continueReason` in `data/test/report.json` and a **Trigger reasons** file (`data/test/triggered-reasons.md`, linked from `report.md` with a single line) explain why each suite was included — not only for `--continue`. The details are split out to keep `report.md` scannable; `triggered-reasons.md` is removed when no slot carries a reason.
 
 Implementation: `src/scripts/test/runner/continue_reason.mjs`, stamped by `RunReportWriter` / `runner/index.mjs`.
 
@@ -38,7 +38,7 @@ Dependency expansion may add suites not in the seed set; those get `dependency_r
 | `commit_mismatch` | Passed at a different commit (seed only: explicit selection or `--continue` with no imperfect suites) |
 | `dependency_required` | Pulled in by dependency expansion — includes `rootKey`, `inclusionPath`, `pull`, and `gate` |
 
-## Evidence fields (report markdown)
+## Evidence fields (`triggered-reasons.md`)
 
 - **Root cause** / **inclusion path** / **pull direction** / **gate reason** — for `dependency_required` (root seed reason, chain from seed, upstream vs downstream, why the dep gate was not green).
 - **Commit range** / **uncommitted digest range** — fingerprint drift.

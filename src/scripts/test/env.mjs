@@ -10,6 +10,9 @@ import { installNearOomHeapSnapshot } from './heap_snapshot_watch.mjs'
 
 process.env.FOUNT_TEST ??= '1'
 
+/** 测试统一锁定 zh-CN，保证报告与 i18n 字符串断言稳定（bare.mjs 以 LANG 为首选，子进程继承 process.env）。 */
+process.env.LANG = 'zh-CN'
+
 /** deno panic 时输出完整 Rust 栈帧；子进程 spawn 时继承 process.env。 */
 process.env.RUST_BACKTRACE ??= 'full'
 

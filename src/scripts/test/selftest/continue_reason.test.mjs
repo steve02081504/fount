@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { reportJsonPath, reportMarkdownPath } from '../core/paths.mjs'
+import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { collectTriggerEvidence, suiteKey } from '../core/state.mjs'
 import {
 	buildCommitStaleContinueReason,
@@ -275,10 +275,12 @@ Deno.test('RunReportWriter lists pending slots without inline reasons', async ()
 		const md = await readFile(reportMarkdownPath(repoRoot), 'utf8')
 		assertStringIncludes(md, '## 待运行')
 		assertStringIncludes(md, '- server/live')
-		assertStringIncludes(md, '## 触发原因')
-		assertStringIncludes(md, '直接纳入方')
+		assertStringIncludes(md, '触发原因：详见 [./triggered-reasons.md]')
 		if (md.includes('server/live — '))
 			throw new Error('pending section should not inline trigger reasons')
+		const reasons = await readFile(triggeredReasonsMarkdownPath(repoRoot), 'utf8')
+		assertStringIncludes(reasons, '# 触发原因')
+		assertStringIncludes(reasons, '直接纳入方')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })
@@ -400,10 +402,10 @@ Deno.test('RunReportWriter renders rich dependency trigger reasons', async () =>
 			continueReasons,
 		})
 		await writer.init()
-		const md = await readFile(reportMarkdownPath(repoRoot), 'utf8')
-		assertStringIncludes(md, '根因: 显式指名（`shells/chat/frontend`）')
-		assertStringIncludes(md, '纳入链')
-		assertStringIncludes(md, '需跑原因: state 无记录，自动补跑')
+		const reasons = await readFile(triggeredReasonsMarkdownPath(repoRoot), 'utf8')
+		assertStringIncludes(reasons, '根因: 显式指名（`shells/chat/frontend`）')
+		assertStringIncludes(reasons, '纳入链')
+		assertStringIncludes(reasons, '需跑原因: state 无记录，自动补跑')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })
@@ -440,9 +442,11 @@ Deno.test('RunReportWriter persists continueReason in report.json and markdown',
 		assertEquals(json.slots[0].continueReason.matchedPaths, ['src/scripts/test/foo.mjs'])
 
 		const md = await readFile(reportMarkdownPath(repoRoot), 'utf8')
-		assertStringIncludes(md, '触发原因')
-		assertStringIncludes(md, 'trigger 命中')
-		assertStringIncludes(md, 'src/scripts/test/foo.mjs')
+		assertStringIncludes(md, '触发原因：详见 [./triggered-reasons.md]')
+		const reasons = await readFile(triggeredReasonsMarkdownPath(repoRoot), 'utf8')
+		assertStringIncludes(reasons, '# 触发原因')
+		assertStringIncludes(reasons, 'trigger 命中')
+		assertStringIncludes(reasons, 'src/scripts/test/foo.mjs')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })
@@ -487,9 +491,9 @@ Deno.test('RunReportWriter.stampContinueReasons updates pending slots on resume'
 		assertEquals(json.slots[1].continueReason, { kind: 'pending_from_previous_report' })
 		assertEquals(json.command, 'fount test --continue')
 
-		const md = await readFile(reportMarkdownPath(repoRoot), 'utf8')
-		assertStringIncludes(md, '触发原因')
-		assertStringIncludes(md, '上次运行中断')
+		const reasons = await readFile(triggeredReasonsMarkdownPath(repoRoot), 'utf8')
+		assertStringIncludes(reasons, '# 触发原因')
+		assertStringIncludes(reasons, '上次运行中断')
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

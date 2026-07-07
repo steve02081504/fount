@@ -88,6 +88,21 @@ export function reportJsonPath(repoRoot) {
 }
 
 /**
+ * 单次运行报告触发原因分离文件名（相对 report.md 同目录）。
+ * @type {string}
+ */
+export const TRIGGERED_REASONS_FILE = 'triggered-reasons.md'
+
+/**
+ * 返回单次运行报告触发原因 Markdown 路径。
+ * @param {string} repoRoot 仓库根
+ * @returns {string} data/test/triggered-reasons.md
+ */
+export function triggeredReasonsMarkdownPath(repoRoot) {
+	return join(testDataRoot(repoRoot), TRIGGERED_REASONS_FILE)
+}
+
+/**
  * 返回测试节点近 OOM 堆快照目录。
  * @param {string} repoRoot 仓库根
  * @returns {string} data/test/heapsnapshots 绝对路径

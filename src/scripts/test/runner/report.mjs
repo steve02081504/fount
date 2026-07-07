@@ -1,13 +1,13 @@
 /**
  * 单次运行报告：data/test/report.md + report.json
  */
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
 import { topoSortSuites } from '../core/deps.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
-import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL } from '../core/paths.mjs'
+import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { suiteKey } from '../core/state.mjs'
 
 /**
@@ -211,6 +211,11 @@ export class RunReportWriter {
 			slots: this.slots,
 		}
 		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
+		const reasonsMarkdown = buildContinueReasonsMarkdown(payload)
+		if (reasonsMarkdown)
+			await writeFile(triggeredReasonsMarkdownPath(this.repoRoot), reasonsMarkdown, 'utf8')
+		else
+			await rm(triggeredReasonsMarkdownPath(this.repoRoot), { force: true })
 		await writeFile(reportMarkdownPath(this.repoRoot), buildRunMarkdown(payload, completed), 'utf8')
 	}
 }
@@ -251,7 +256,7 @@ function buildRunMarkdown(summary, completed) {
 		'',
 	]
 
-	appendContinueReasons(lines, summary)
+	appendContinueReasonsLink(lines, summary)
 
 	appendSection(lines, geti18n('fountConsole.test.report.sectionFailed'), completed.filter(s => s.status === 'failed'))
 	appendSection(lines, geti18n('fountConsole.test.state.sectionBlocked'), completed.filter(s => s.status === 'blocked'))
@@ -372,16 +377,27 @@ function appendDependencyReasonDetail(lines, reason) {
 }
 
 /**
+ * 主报告中仅保留一句触发原因链接，详情落到独立文件。
  * @param {string[]} lines 行缓冲
  * @param {object} summary 汇总
  */
-function appendContinueReasons(lines, summary) {
-	const slots = summary.slots.filter(slot => slot.continueReason)
-	if (!slots.length) return
+function appendContinueReasonsLink(lines, summary) {
+	if (!summary.slots.some(slot => slot.continueReason)) return
+	lines.push(geti18n('fountConsole.test.report.continueReasonsLink', { path: `./${TRIGGERED_REASONS_FILE}` }), '')
+}
 
-	lines.push(`## ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '')
+/**
+ * 构建触发原因独立文件正文；无原因返回空串。
+ * @param {object} summary 汇总
+ * @returns {string} markdown 正文
+ */
+function buildContinueReasonsMarkdown(summary) {
+	const slots = summary.slots.filter(slot => slot.continueReason)
+	if (!slots.length) return ''
+
+	const lines = [`# ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '']
 	for (const slot of slots) {
-		lines.push(`### ${slot.manifestId}/${slot.name}`, '')
+		lines.push(`## ${slot.manifestId}/${slot.name}`, '')
 		if (slot.continueReason.kind === 'dependency_required')
 			appendDependencyReasonDetail(lines, slot.continueReason)
 		else {
@@ -390,6 +406,7 @@ function appendContinueReasons(lines, summary) {
 		}
 		lines.push('')
 	}
+	return lines.join('\n')
 }
 
 /**
@@ -402,7 +419,8 @@ function appendSection(lines, title, entries) {
 	lines.push(`## ${title}`, '')
 	for (const entry of entries) {
 		lines.push(`### ${entry.manifestId}/${entry.name}`, '')
-		lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
+		if (entry.status !== 'blocked')
+			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
 		if (entry.blockedBy?.length)
 			lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${entry.blockedBy.join(', ')}`)
 		if (entry.terminateReason)
