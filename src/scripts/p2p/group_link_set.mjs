@@ -6,6 +6,9 @@ import {
 	encryptSignalPacket,
 	getLinkRegistry,
 } from './link_registry.mjs'
+import { loadPeerPoolView } from './network.mjs'
+import { resolveFederationPoolLimits, selectLinkTargetsFromMembers } from './peer_pool.mjs'
+import { loadReputation } from './reputation_store.mjs'
 
 /**
  * 创建基于 link registry 的群组联邦房间。
@@ -13,6 +16,7 @@ import {
  * @param {string} opts.groupId 群组 id
  * @param {string} opts.roomSecret 房间密钥（用于 rendezvous topic）
  * @param {string[]} opts.members 初始成员 nodeHash 列表
+ * @param {object} [opts.groupSettings] 群设置（连接预算：trustedPeerSlots/explorePeerSlots/maxPeers 等）
  * @returns {{ groupId: string, scope: string, start: () => Promise<void>, leave: () => Promise<void>, getRoster: () => Array<{ peerId: string, remoteNodeHash: string }>, getPeerIdByNodeHash: (nodeHash: string) => string | null, sendToPeer: (peerId: string, actionName: string, payload: unknown) => Promise<boolean>, send: (actionName: string, payload: unknown, peerId?: string | null) => Promise<number>, onEnvelope: (cb: (senderNodeHash: string, envelope: object) => void) => () => void, onPeerJoin: (cb: (peerId: string) => void) => () => void, onPeerLeave: (cb: (peerId: string) => void) => () => void, getPeers: () => Record<string, true>, makeAction: (name: string) => [(payload: unknown, peerId?: string | string[] | null) => Promise<void>, (handler: (payload: unknown, peerId: string) => void) => void], registerCleanup: (fn: () => void) => void, isActive: () => boolean }} 群组 link set 接口
  */
 export function createGroupLinkSet(opts) {
@@ -23,6 +27,11 @@ export function createGroupLinkSet(opts) {
 	const topic = groupRendezvousTopic(opts.roomSecret)
 	const members = new Set((Array.isArray(opts.members) ? opts.members : []).map(String))
 	const selfNodeHash = registry.localIdentity.nodeHash
+	const groupSettings = opts.groupSettings ?? {}
+	// 初始成员是调用方明确知道的引导集合（如 introducer/creator/seed），作为必连锚点保证引导期连通。
+	const initialAnchors = new Set(members)
+	/** @type {ReturnType<typeof setTimeout> | null} */
+	let dialTimer = null
 	/** @type {Set<Function>} */
 	const cleanups = new Set()
 	/** @type {Set<Function>} */
@@ -90,6 +99,39 @@ export function createGroupLinkSet(opts) {
 		if (!normalized || normalized === selfNodeHash || members.has(normalized)) return
 		members.add(normalized)
 		registry.registerScopeInterest(scope, [...members])
+		// 若链路先于"得知其群成员身份"建立（如 warmup/连节点先连上，之后才收到其群 advert/envelope），
+		// onLinkUp 当时因 !members.has 被跳过，这里补发 peer-join，触发 bootstrap flush（member_join 自证推送）。
+		if (registry.getLink(normalized)) notePeerJoin(normalized)
+		scheduleDial()
+	}
+
+	/**
+	 * 依信任稀疏池从当前成员选出建链目标（top-K 信任 + 随机 explore + 初始锚点必连），拨号未连接者。
+	 * 不主动断连（超预算由 registry 全局 trimToBudget 兜底）。
+	 * @returns {void}
+	 */
+	function selectAndDial() {
+		if (!autoconnect || !active) return
+		const targets = selectLinkTargetsFromMembers({
+			members,
+			selfNodeHash,
+			rep: loadReputation(),
+			peers: loadPeerPoolView(groupId),
+			limits: resolveFederationPoolLimits(groupSettings),
+			anchors: initialAnchors,
+		})
+		for (const nodeHash of targets)
+			if (nodeHash !== selfNodeHash && !registry.getLink(nodeHash))
+				void registry.ensureLinkToNode(nodeHash).catch(() => null)
+	}
+
+	/**
+	 * 去抖触发一次建链目标重算（成员变化时调用，避免频繁重算）。
+	 * @returns {void}
+	 */
+	function scheduleDial() {
+		if (!autoconnect || !active || dialTimer) return
+		dialTimer = setTimeout(() => { dialTimer = null; selectAndDial() }, 200)
 	}
 
 	/**
@@ -147,17 +189,14 @@ export function createGroupLinkSet(opts) {
 			if (packet?.type !== 'advert' || !packet.body) return
 			const verifiedNodeHash = await verifySignedAdvert(topic, packet.body)
 			if (!verifiedNodeHash || verifiedNodeHash === selfNodeHash) return
+			// 发现新成员：并入成员集并去抖重算稀疏建链目标（notePeerCandidate 内部会 scheduleDial）。
 			notePeerCandidate(verifiedNodeHash)
-			await registry.ensureLinkToNode(verifiedNodeHash).catch(() => null)
 		}))
 		registerCleanup(await advertiseTopic(topic, encryptSignalPacket(topic, {
 			type: 'advert',
 			body: await buildSignedAdvert(topic, Date.now(), registry.localIdentity),
 		})))
-		if (autoconnect)
-			for (const memberNodeHash of members)
-				if (memberNodeHash !== selfNodeHash)
-					void registry.ensureLinkToNode(memberNodeHash).catch(() => null)
+		if (autoconnect) selectAndDial()
 		for (const { peerId } of activeRoster())
 			notePeerJoin(peerId)
 	}
@@ -173,6 +212,7 @@ export function createGroupLinkSet(opts) {
 		async leave() {
 			if (!active) return
 			active = false
+			if (dialTimer) { clearTimeout(dialTimer); dialTimer = null }
 			registry.releaseScopeInterest(scope)
 			for (const cleanup of cleanups)
 				try { cleanup() } catch { /* ignore */ }

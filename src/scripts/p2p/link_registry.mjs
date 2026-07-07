@@ -12,7 +12,7 @@ import { mergeSignalingRelayUrls, createNostrDiscoveryProvider } from './discove
 import { compareHex64Asc, normalizeHex64 } from './hexIds.mjs'
 import { DEFAULT_ICE_SERVERS } from './ice_servers.mjs'
 import { buildSignedAdvert, verifySignedAdvert } from './link/handshake.mjs'
-import { createLink, shouldCloseOwnInitiated } from './link/link.mjs'
+import { createLink } from './link/link.mjs'
 import { ensureNodeSeed, getNodeHash, getNodeTransportSettings } from './node/identity.mjs'
 import { getSignalingRuntimeConfig } from './node/instance.mjs'
 import { createOverlayRouter } from './overlay/index.mjs'
@@ -206,9 +206,9 @@ export function createLinkRegistry(opts = {}) {
 	const selfTopic = nodeRendezvousTopic(localIdentity.nodeHash)
 	/** @type {Map<string, Awaited<ReturnType<typeof createLinkImpl>>>} */
 	const links = new Map()
-	/** @type {Map<string, Promise<Awaited<ReturnType<typeof createLinkImpl>> | null>>} */
+	/** @type {Map<string, Promise<Awaited<ReturnType<typeof createLinkImpl>> | null>>} 按 nodeHash 去重的主动外拨 */
 	const inflights = new Map()
-	/** @type {Map<string, ReturnType<typeof createBufferedSignalSession>>} */
+	/** @type {Map<string, ReturnType<typeof createBufferedSignalSession>>} 按 connId 索引的信令会话（每条 PC 一个方向） */
 	const signalSessions = new Map()
 	/** @type {Map<string, Set<string>>} */
 	const scopeInterests = new Map()
@@ -258,27 +258,45 @@ export function createLinkRegistry(opts = {}) {
 	}
 
 	/**
-	 * 获取或创建到远端节点的信令会话。
+	 * 为单条 PC 创建按 connId 标记的信令会话。出站信令都带上 connId，
+	 * 使同一对节点的两个方向（各自一条 PC）在信令层互不串扰。
 	 * @param {string} remoteNodeHash 远端节点 64 hex
+	 * @param {string} connId 连接标识
 	 * @returns {ReturnType<typeof createBufferedSignalSession>} 信令会话
 	 */
-	function getOrCreateSignalSession(remoteNodeHash) {
+	function createConnSession(remoteNodeHash, connId) {
 		const normalized = normalizeHex64(remoteNodeHash)
-		let session = signalSessions.get(normalized)
-		if (session) return session
-		session = createBufferedSignalSession(async message => {
-			await sendSignal(
-				nodeRendezvousTopic(normalized),
-				normalized,
-				encryptSignalPacket(nodeRendezvousTopic(normalized), {
-					type: 'signal',
-					from: localIdentity.nodeHash,
-					body: message,
-				}),
-			)
+		const topic = nodeRendezvousTopic(normalized)
+		return createBufferedSignalSession(async message => {
+			await sendSignal(topic, normalized, encryptSignalPacket(topic, {
+				type: 'signal',
+				from: localIdentity.nodeHash,
+				connId,
+				body: message,
+			}))
 		})
-		signalSessions.set(normalized, session)
-		return session
+	}
+
+	/**
+	 * 判断信令 body 是否为发起方 offer（据此决定入站是否新建应答 PC）。
+	 * @param {unknown} body 信令 body
+	 * @returns {boolean} 是 offer 则 true
+	 */
+	function isOfferSignalBody(body) {
+		return !!body && typeof body === 'object'
+			&& body.type === 'description'
+			&& body.description?.type === 'offer'
+	}
+
+	/**
+	 * 保留由较小 nodeHash 发起的那条链（两端对任意一条链算出一致结论），用于双 PC glare 择一。
+	 * @param {Awaited<ReturnType<typeof createLinkImpl>>} link 链路实例
+	 * @param {string} remoteNodeHash 远端节点 64 hex
+	 * @returns {boolean} 本条链应保留则 true
+	 */
+	function linkIsPreferred(link, remoteNodeHash) {
+		const cmp = compareHex64Asc(localIdentity.nodeHash, remoteNodeHash)
+		return link.initiator ? cmp < 0 : cmp > 0
 	}
 
 	/**
@@ -292,14 +310,18 @@ export function createLinkRegistry(opts = {}) {
 			void dispatchEnvelope(senderNodeHash, envelope, link).catch(() => {})
 		})
 		link.onDown(reason => {
-			if (links.get(remoteNodeHash) === link) links.delete(remoteNodeHash)
+			// 只有关闭的是当前规范链路才对外报 linkDown；双 PC 并存期关掉的败者不应误发 peer-leave。
+			const wasCanonical = links.get(remoteNodeHash) === link
+			if (!wasCanonical) return
+			links.delete(remoteNodeHash)
 			for (const listener of linkDownListeners)
 				try { listener(remoteNodeHash, reason) } catch { /* ignore */ }
 		})
 	}
 
 	/**
-	 * 注册已建立的链路并处理 glare 冲突。
+	 * 注册已建立的链路，并做双 PC glare 择一：同一对节点若因双向同时发起而建成两条 PC，
+	 * 保留由较小 nodeHash 发起的那条（两端一致），关闭另一条。单条链路（常态）直接安装。
 	 * @param {string} remoteNodeHash 远端节点 64 hex
 	 * @param {Awaited<ReturnType<typeof createLinkImpl>>} candidate 候选链路
 	 * @returns {Promise<void>}
@@ -307,16 +329,40 @@ export function createLinkRegistry(opts = {}) {
 	async function registerResolvedLink(remoteNodeHash, candidate) {
 		const normalized = normalizeHex64(remoteNodeHash)
 		const existing = links.get(normalized)
-		if (existing && existing !== candidate) 
-			if (candidate.initiator && shouldCloseOwnInitiated(localIdentity.nodeHash, normalized))
-				await candidate.close('glare-loser')
-			else
-				await existing.close('replaced-by-new-link')
-		
+		// 已有规范链且候选不优先：候选出局，保留现有。
+		if (existing && existing !== candidate && !linkIsPreferred(candidate, normalized)) {
+			await candidate.close('glare-loser')
+			return
+		}
+		// 候选胜出（或无现有）：先把 candidate 设为规范链，再关旧链——
+		// 这样旧链 onDown 时 links.get 已指向 candidate，不会被误判为规范链而对外报 linkDown。
 		links.set(normalized, candidate)
 		wireLink(normalized, candidate)
+		if (existing && existing !== candidate)
+			await existing.close('glare-replaced')
 		for (const listener of linkUpListeners)
 			try { listener(normalized, candidate) } catch { /* ignore */ }
+	}
+
+	/**
+	 * 为一条 connId 会话建 PC 并走 glare 择一：建 link → 绑 onDown 清 session → ready → registerResolvedLink。
+	 * initiator 侧建链前先 trimToBudget 腾预算。出错则清理该 connId 会话。
+	 * @param {{ remoteNodeHash: string, connId: string, session: ReturnType<typeof createBufferedSignalSession>, initiator: boolean }} opts 建链参数
+	 * @returns {Promise<Awaited<ReturnType<typeof createLinkImpl>> | null>} 当前规范链（本条可能因 glare 被关，取 links 现值）；失败 null
+	 */
+	async function buildConnLink({ remoteNodeHash, connId, session, initiator }) {
+		try {
+			if (initiator) await trimToBudget()
+			const link = await createLinkImpl({ nodeHash: remoteNodeHash, initiator, signal: session, iceServers, localIdentity })
+			link.onDown(() => signalSessions.delete(connId))
+			await link.ready
+			await registerResolvedLink(remoteNodeHash, link)
+			return links.get(remoteNodeHash) ?? null
+		}
+		catch {
+			signalSessions.delete(connId)
+			return null
+		}
 	}
 
 	/**
@@ -328,27 +374,17 @@ export function createLinkRegistry(opts = {}) {
 		const packet = decryptSignalPacket(selfTopic, bytes)
 		if (!packet || packet.type !== 'signal') return
 		const remoteNodeHash = normalizeHex64(packet.from)
-		if (!remoteNodeHash || remoteNodeHash === localIdentity.nodeHash) return
-		const session = getOrCreateSignalSession(remoteNodeHash)
-		if (!links.has(remoteNodeHash) && !inflights.has(remoteNodeHash)) 
-			inflights.set(remoteNodeHash, (async () => {
-				try {
-					const link = await createLinkImpl({
-						nodeHash: remoteNodeHash,
-						initiator: false,
-						signal: session,
-						iceServers,
-						localIdentity,
-					})
-					await link.ready
-					await registerResolvedLink(remoteNodeHash, link)
-					return link
-				}
-				catch {
-					return null
-				}
-			})().finally(() => inflights.delete(remoteNodeHash)))
-		
+		const connId = String(packet.connId || '')
+		if (!remoteNodeHash || remoteNodeHash === localIdentity.nodeHash || !connId) return
+		let session = signalSessions.get(connId)
+		if (!session) {
+			// 只有全新的 offer 才开一条独立应答 PC；answer/ice 若无对应 connId 会话则是迟到/无效帧，丢弃。
+			// 应答 PC 按 connId 独立创建，不受按 nodeHash 去重的 inflight 阻挡——这是支持双向同时建链的关键。
+			if (!isOfferSignalBody(packet.body)) return
+			session = createConnSession(remoteNodeHash, connId)
+			signalSessions.set(connId, session)
+			void buildConnLink({ remoteNodeHash, connId, session, initiator: false })
+		}
 		session.deliver(packet.body)
 	}
 
@@ -387,25 +423,13 @@ export function createLinkRegistry(opts = {}) {
 		if (!normalized || normalized === localIdentity.nodeHash) return null
 		if (links.has(normalized)) return links.get(normalized)
 		if (inflights.has(normalized)) return await inflights.get(normalized)
-		const session = getOrCreateSignalSession(normalized)
-		const task = (async () => {
-			try {
-				await trimToBudget()
-				const link = await createLinkImpl({
-					nodeHash: normalized,
-					initiator: true,
-					signal: session,
-					iceServers,
-					localIdentity,
-				})
-				await link.ready
-				await registerResolvedLink(normalized, link)
-				return link
-			}
-			catch {
-				return null
-			}
-		})().finally(() => inflights.delete(normalized))
+		// 想连就直拨（单向零额外成本）；若对端也在同时拨，双方各建一条 PC，由 registerResolvedLink 择一。
+		// buildConnLink 成功时返回的是规范链而非本条 candidate——glare 双 PC 择一时本条可能是被关闭的败者。
+		const connId = randomBytes(16).toString('hex')
+		const session = createConnSession(normalized, connId)
+		signalSessions.set(connId, session)
+		const task = buildConnLink({ remoteNodeHash: normalized, connId, session, initiator: true })
+			.finally(() => inflights.delete(normalized))
 		inflights.set(normalized, task)
 		return await task
 	}

@@ -36,8 +36,7 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 
 	const task = (async () => {
 		try {
-			const link = await ensureLinkToNode(key)
-			if (!link) {
+			if (!await ensureLinkToNode(key)) {
 				slots.set(key, null)
 				return null
 			}
@@ -57,14 +56,15 @@ export async function ensureRemoteUserRoom(username, targetNodeHash) {
 				 */
 				getPeerIdByNodeHash: nh => getLink(nh) ? String(nh) : null,
 				/**
-				 * 经 node scope 向远端 peer 发送 action。
+				 * 经 node scope 向远端 peer 发送 action。始终走当前规范链路（`getLink`），
+				 * 因为 glare 双 PC 择一后最初返回的链路可能已被关闭，规范链在 registry 内。
 				 * @param {string} peerId 目标 peer id
 				 * @param {string} actionName action 名称
 				 * @param {unknown} payload 载荷
 				 * @returns {void}
 				 */
 				sendToPeer(peerId, actionName, payload) {
-					void link.send({ scope: 'node', action: String(actionName), payload }).catch(() => {})
+					void getLink(key)?.send({ scope: 'node', action: String(actionName), payload }).catch(() => {})
 				},
 			}
 

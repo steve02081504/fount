@@ -5,6 +5,7 @@
  */
 
 import { loadPeerPoolView, mergeNetworkPeerPools } from './network.mjs'
+import { isQuarantinedPure } from './reputation_engine.mjs'
 import { clampReputationScore } from './reputation_math.mjs'
 import { loadReputation } from './reputation_store.mjs'
 
@@ -197,6 +198,42 @@ export function selectPeerIdsFromPool({ roster, peers, rep, limits, selfNodeHash
 	}
 
 	return [...outPeerIds].slice(0, limits.maxPeers)
+}
+
+/**
+ * 从群成员集合选出应主动建链的 nodeHash（top-K 信任 + M 随机 explore + 强制锚点必连）。
+ * 与 selectPeerIdsFromPool 不同：候选是"已知成员 nodeHash"（未必在线），输出用于 ensureLinkToNode 的 nodeHash。
+ * 这让大群不再全网状 autoconnect，而是每节点只连少数信任节点 + 随机若干条以保图连通。
+ *
+ * @param {{
+ *   members: Iterable<string>,
+ *   selfNodeHash: string,
+ *   rep: { byNodeHash?: Record<string, { score?: number, quarantinedUntil?: number }> },
+ *   peers: { trustedPeers: string[], explorePeers: string[], blockedPeers: string[], hintSources?: Map<string, string> },
+ *   limits: ReturnType<typeof resolveFederationPoolLimits>,
+ *   anchors?: Iterable<string>,
+ * }} opts 选取参数（members、selfNodeHash、rep、peers、limits、anchors）
+ * @returns {string[]} 应建链的 nodeHash 列表（去重）
+ */
+export function selectLinkTargetsFromMembers({ members, selfNodeHash, rep, peers, limits, anchors = [] }) {
+	const self = String(selfNodeHash || '')
+	const blocked = new Set(peers?.blockedPeers || [])
+	const now = Date.now()
+	const candidates = [...new Set([...members].map(id => String(id)))]
+		.filter(id => id && id !== self && !blocked.has(id) && !isQuarantinedPure(rep, id, now))
+	const ranked = candidates.slice().sort((a, b) => repScore(b, rep) - repScore(a, rep))
+	const candidateSet = new Set(candidates)
+	// 锚点（如 introducer/creator/seed）必连、且不占 trustedSlots——保证引导期连通。
+	const forced = [...new Set([...anchors].map(id => String(id)))].filter(id => candidateSet.has(id))
+	const chosen = new Set(forced)
+	// trusted 槽只从非锚点候选填：既有 trusted 优先保留，再按信誉补至 trustedSlots。
+	const nonForced = ranked.filter(id => !chosen.has(id))
+	for (const id of mergeTrustedWithAnchors(peers?.trustedPeers || [], nonForced, limits))
+		chosen.add(id)
+	const remaining = ranked.filter(id => !chosen.has(id))
+	for (const id of selectExploreWithSourceQuota(remaining, peers?.hintSources, limits.exploreSlots))
+		chosen.add(id)
+	return [...chosen]
 }
 
 /**

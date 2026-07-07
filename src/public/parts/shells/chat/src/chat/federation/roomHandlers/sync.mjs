@@ -88,6 +88,30 @@ export function registerSyncHandlers(roomContext) {
 	}
 
 	const dag = wireAction(roomContext, 'dag_event')
+
+	// 稀疏网状多跳转发：本次为首见事件且 ingest 判定签名通过（applied/pending/quarantined；invalid 不转发，
+	// 避免放大伪造事件）时，把已剥离本地扩展的事件转发给稀疏池目标（剔除发送方）。首见门
+	// tryMarkSeenFederationEvent 已保证每节点每事件仅转发一次，故不会成环。不因转发做任何信誉惩罚。
+	/**
+	 * @param {object} signedEvent 已 ingest 的入站签名事件
+	 * @param {string} fromPeerId 发送方 peerId（转发时剔除）
+	 * @returns {Promise<void>}
+	 */
+	const forwardDagEvent = async (signedEvent, fromPeerId) => {
+		const roster = [...peerToNode.entries()]
+			.filter(([pid]) => pid !== fromPeerId)
+			.map(([pid, remoteNodeHash]) => ({ peerId: pid, remoteNodeHash }))
+		if (!roster.length) return
+		const targets = await pickFederationTargetPeerIds(groupId, roster, groupSettings, nodeHash)
+		if (!targets.length) return
+		const stripped = stripDagEventLocalExtensions(signedEvent)
+		fedOut.enqueue(2, () => {
+			for (const targetPeerId of targets)
+				try { dag.send(stripped, targetPeerId) }
+				catch (error) { console.error('federation: dag_event forward failed', error) }
+		})
+	}
+
 	dag.on((data, peerId) => {
 		const signedEvent = extractInboundSignedEvent(data, groupId)
 		if (!signedEvent) return
@@ -106,6 +130,8 @@ export function registerSyncHandlers(roomContext) {
 			// live 漏帧快速补洞：该事件引用了本地缺失的父事件 ⇒ 调度有界补齐（scheduler 自带防抖/冷却/退避硬闸，dag_event 高频也不放大负载）。
 			if (remoteTipsRevealLocalGap(signedEvent.prev_event_ids))
 				scheduleCatchUp(username, groupId)
+			if (result?.status === 'applied' || result?.status === 'pending' || result?.status === 'quarantined')
+				await forwardDagEvent(signedEvent, peerId)
 		})().catch(console.error)
 	})
 

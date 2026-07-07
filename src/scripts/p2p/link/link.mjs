@@ -1,6 +1,6 @@
 import { createLruMap } from '../../memo.mjs'
 import { ms } from '../../ms.mjs'
-import { compareHex64Asc, normalizeHex64 } from '../hexIds.mjs'
+import { normalizeHex64 } from '../hexIds.mjs'
 import { getSignalingRuntimeConfig } from '../node/instance.mjs'
 
 import {
@@ -18,16 +18,6 @@ import { extractDtlsFingerprint } from './sdp_fingerprint.mjs'
 
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
-
-/**
- * 双 initiator 冲突时，nodeHash 较大的一方应主动关闭连接。
- * @param {unknown} left 第一个 nodeHash
- * @param {unknown} right 第二个 nodeHash
- * @returns {boolean} 若 left 应关闭则 true
- */
-export function shouldCloseOwnInitiated(left, right) {
-	return compareHex64Asc(normalizeHex64(left), normalizeHex64(right)) > 0
-}
 
 /**
  * 尝试将 channel 消息数据转为 UTF-8 字符串。

@@ -407,8 +407,10 @@ function appendSection(lines, title, entries) {
 			lines.push(`- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${entry.blockedBy.join(', ')}`)
 		if (entry.terminateReason)
 			lines.push(`- ${geti18n('fountConsole.test.report.labelTerminateReason')}: ${entry.terminateReason}`)
-		if (entry.logPath)
-			lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${entry.logPath}](${entry.logPath})`)
+		if (entry.logPath) {
+			const logLink = `./state/${entry.logPath.replace(/^\.\//, '')}`
+			lines.push(`- ${geti18n('fountConsole.test.report.labelLog')}: [${logLink}](${logLink})`)
+		}
 		if (entry.noiseHits?.length)
 			lines.push(`- ${geti18n('fountConsole.test.report.labelNoise')}: ${entry.noiseHits.join(', ')}`)
 		if (entry.failedFiles?.length) {

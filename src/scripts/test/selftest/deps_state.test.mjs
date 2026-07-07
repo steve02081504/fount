@@ -93,6 +93,30 @@ Deno.test('sortManifestIds orders dependency before dependent', () => {
 	)
 })
 
+Deno.test('topoSortSuites tie-breaks by slash count then length before locale', () => {
+	const all = [
+		suite('p2p', 'sim'),
+		suite('aa', 'sim'),
+		suite('shells/chat', 'sim'),
+	]
+	assertEquals(
+		topoSortSuites(all).map(s => suiteKey(s.manifestId, s.name)),
+		['aa/sim', 'p2p/sim', 'shells/chat/sim'],
+	)
+})
+
+Deno.test('sortManifestIds tie-breaks by slash count then length before locale', () => {
+	const all = [
+		suite('p2p', 'sim'),
+		suite('aa', 'sim'),
+		suite('shells/chat', 'sim'),
+	]
+	assertEquals(
+		sortManifestIds(['shells/chat', 'p2p', 'aa'], all),
+		['aa', 'p2p', 'shells/chat'],
+	)
+})
+
 Deno.test('topoSortSuites tie-breaks by dependent count then dep count then locale', () => {
 	const all = [
 		suite('a', 'one'),

@@ -10,6 +10,7 @@ const files = [
 	'link_smoke.test.mjs',
 	'backpressure_smoke.test.mjs',
 	'link_registry_mock.test.mjs',
+	'link_glare_two_pc.test.mjs',
 	'group_link_set_mock.test.mjs',
 ]
 

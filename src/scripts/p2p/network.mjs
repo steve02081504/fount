@@ -1,7 +1,7 @@
 import { loadDenylist } from './denylist.mjs'
 import { isEntityHash128 } from './entity_id.mjs'
 import { isHex64, normalizeHex64 } from './hexIds.mjs'
-import { isNodeInitialized } from './node/instance.mjs'
+import { getNodeDir, isNodeInitialized } from './node/instance.mjs'
 import { readNodeJsonSync, writeNodeJsonSync } from './node/storage.mjs'
 import { invalidateTrustGraphCache } from './trust_graph_cache.mjs'
 
@@ -29,6 +29,11 @@ const MAX_EXPLORE = 500
 const MAX_HINTS = 256
 const MAX_HINTS_PER_SOURCE = 12
 const DEFAULT_EXPLORE_TTL_MS = 7 * 24 * 60 * 60 * 1000
+
+/** @type {ReturnType<typeof normalizeNetwork> | null} network.json 内存缓存（唯一写路径 saveNetwork 负责刷新） */
+let networkCache = null
+/** @type {string | null} 缓存所属 nodeDir（切换节点/未初始化时失效） */
+let networkCacheNodeDir = null
 
 /**
  * @typedef {{ nodeHash: string, source: string, kind: string, weight?: number, expiresAt: number, groupId?: string }} NetworkHint
@@ -68,10 +73,15 @@ export function normalizeNetwork(raw) {
 }
 
 /**
+ * 节点级 P2P 网络（内存缓存；热路径 loadPeerPoolView 每首见事件都会调用，避免每次同步读盘）。
  * @returns {{ trustedPeers: string[], explorePeers: string[], hints: NetworkHint[], lastRosterAt: number }} 节点级 P2P 网络
  */
 export function loadNetwork() {
-	return normalizeNetwork(readNodeJsonSync(DATA_NAME))
+	const nodeDir = isNodeInitialized() ? getNodeDir() : ''
+	if (networkCache && networkCacheNodeDir === nodeDir) return networkCache
+	networkCacheNodeDir = nodeDir
+	networkCache = normalizeNetwork(readNodeJsonSync(DATA_NAME))
+	return networkCache
 }
 
 /**
@@ -104,6 +114,8 @@ export function saveNetwork(data) {
 	clean.hints = capHintsBySource(clean.hints.filter(h => !h.expiresAt || h.expiresAt > now)).slice(-MAX_HINTS)
 	clean.explorePeers = clean.explorePeers.slice(-MAX_EXPLORE)
 	writeNodeJsonSync(DATA_NAME, clean)
+	networkCache = clean
+	networkCacheNodeDir = isNodeInitialized() ? getNodeDir() : ''
 	invalidateTrustGraphCache()
 }
 

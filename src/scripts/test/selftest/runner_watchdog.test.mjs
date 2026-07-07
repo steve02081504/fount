@@ -37,17 +37,17 @@ Deno.test('evaluateWatchdog duration when over 2x baseline', () => {
 	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
-		startedAt: now - ms('6m') - 1,
+		startedAt: now - ms('21m') - 1,
 		lastActivityAt: now - ms('1s'),
-		baselineDurationMs: ms('3m'),
+		baselineDurationMs: ms('10m'),
 	}), 'duration')
 })
 
-Deno.test('getDurationWatchdogLimitMs enforces 5 minute minimum', () => {
+Deno.test('getDurationWatchdogLimitMs enforces 15 minute minimum', () => {
 	assertEquals(getDurationWatchdogLimitMs(ms('23s')), MIN_DURATION_TIMEOUT_MS)
 })
 
-Deno.test('evaluateWatchdog duration waits for 5 minute minimum on short baseline', () => {
+Deno.test('evaluateWatchdog duration waits for 15 minute minimum on short baseline', () => {
 	const now = 1_000_000
 	assertEquals(evaluateWatchdog({
 		now,
@@ -98,7 +98,7 @@ Deno.test('evaluateWatchdog uses default 30 minute limit without baseline', () =
 })
 
 Deno.test('getDurationWatchdogLimitMs keeps 2x baseline for long suites', () => {
-	assertEquals(getDurationWatchdogLimitMs(ms('4m')), ms('8m'))
+	assertEquals(getDurationWatchdogLimitMs(ms('10m')), ms('20m'))
 })
 
 Deno.test('getDurationWatchdogLimitMs falls back to default 30 minutes without baseline', () => {

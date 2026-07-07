@@ -12,7 +12,6 @@ import {
 	verifyAuth,
 	verifySignedAdvert,
 } from '../../link/handshake.mjs'
-import { shouldCloseOwnInitiated } from '../../link/link.mjs'
 
 const FINGERPRINT = 'aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99:aa:bb:cc:dd:ee:ff:00:11:22:33:44:55:66:77:88:99'
 
@@ -64,9 +63,4 @@ Deno.test('advert signatures verify against topic and timestamp', async () => {
 		nodePubKey: Buffer.from(publicKey).toString('hex'),
 	})
 	assertEquals(await verifySignedAdvert(topic, advert, 1234), nodeHash)
-})
-
-Deno.test('shouldCloseOwnInitiated keeps lower nodeHash initiator', () => {
-	assertEquals(shouldCloseOwnInitiated('f'.repeat(64), '0'.repeat(64)), true)
-	assertEquals(shouldCloseOwnInitiated('0'.repeat(64), 'f'.repeat(64)), false)
 })

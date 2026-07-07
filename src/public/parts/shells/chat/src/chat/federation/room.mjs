@@ -217,6 +217,7 @@ export async function ensureFederationPartitionRoom(username, groupId, partition
 				groupId,
 				roomSecret: roomCreds.password,
 				members,
+				groupSettings,
 			})
 			const fedOut = createFedOutQueue()
 			const peersSnap = loadPeerPoolView(groupId)

@@ -279,22 +279,6 @@ export async function TestFedHasChannel(node, groupId, channelId) {
 	return state.status === 200 && state.json?.meta?.channels?.[channelId] != null
 }
 
-/** @param {string} groupId */
-export async function AssertFedPeersReady(groupId) {
-	const peersA = await Api(FedA, 'GET', `/groups/${groupId}/peers`)
-	const peersB = await Api(FedB, 'GET', `/groups/${groupId}/peers`)
-	if (peersA.status !== 200) throw new Error(`NodeA peers probe failed: ${peersA.status}`)
-	if (peersB.status !== 200) throw new Error(`NodeB peers probe failed: ${peersB.status}`)
-	console.log(`  NodeA peers: ${peersA.json?.peers?.length ?? 0} federationEnabled=${peersA.json?.federationEnabled}`)
-	console.log(`  NodeB peers: ${peersB.json?.peers?.length ?? 0} federationEnabled=${peersB.json?.federationEnabled}`)
-	const catchA = await Api(FedA, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('3s') })
-	const catchB = await Api(FedB, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs: ms('3s') })
-	if (catchA.status !== 200) throw new Error(`NodeA catchup probe failed: ${catchA.status}`)
-	if (catchB.status !== 200) throw new Error(`NodeB catchup probe failed: ${catchB.status}`)
-	console.log(`  NodeA catchup: federationActive=${catchA.json?.federationActive} tips=${catchA.json?.tipsCollected}`)
-	console.log(`  NodeB catchup: federationActive=${catchB.json?.federationActive} tips=${catchB.json?.tipsCollected}`)
-}
-
 /**
  * @param {string} name @param {string | null} seedText @param {LiveNodeHandle[]} joinNodes
  * @param seedText

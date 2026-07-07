@@ -154,6 +154,28 @@ function topoSortKeys(keys, deps, compareTieBreak) {
 }
 
 /**
+ * 拓扑并列 tie-break：被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
+ * @param {string} a 键
+ * @param {string} b 键
+ * @param {Map<string, number>} dependentCount 被依赖计数
+ * @param {Map<string, number>} depCount 依赖计数
+ * @returns {number}
+ */
+function compareTopoTieBreak(a, b, dependentCount, depCount) {
+	const depByA = dependentCount.get(a) ?? 0
+	const depByB = dependentCount.get(b) ?? 0
+	if (depByA !== depByB) return depByA - depByB
+	const depA = depCount.get(a) ?? 0
+	const depB = depCount.get(b) ?? 0
+	if (depA !== depB) return depA - depB
+	const slashA = (a.match(/\//g) ?? []).length
+	const slashB = (b.match(/\//g) ?? []).length
+	if (slashA !== slashB) return slashA - slashB
+	if (a.length !== b.length) return a.length - b.length
+	return a.localeCompare(b)
+}
+
+/**
  * 全库 suite 依赖计数（tie-break 用）。
  * @param {SuiteDef[]} allSuites 全部 suite
  * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number> }}
@@ -184,27 +206,19 @@ function buildSuiteMetrics(allSuites) {
 }
 
 /**
- * subset 内 suite 直接依赖边。
+ * suite 直接依赖边（越界边由 topoSortKeys 内部按 keySet 过滤）。
  * @param {SuiteDef[]} suites 待排序 suite
  * @returns {Map<string, Set<string>>}
  */
-function buildSubsetSuiteDeps(suites) {
-	const byKey = new Map(suites.map(s => [suiteKey(s.manifestId, s.name), s]))
-	/** @type {Map<string, Set<string>>} */
-	const deps = new Map([...byKey.keys()].map(k => [k, new Set()]))
-	for (const suite of suites) {
-		const from = suiteKey(suite.manifestId, suite.name)
-		for (const dep of suite.dependencies ?? []) {
-			const to = suiteKey(dep.manifestId, dep.name)
-			if (!byKey.has(to)) continue
-			deps.get(from).add(to)
-		}
-	}
-	return deps
+function buildSuiteDeps(suites) {
+	return new Map(suites.map(suite => [
+		suiteKey(suite.manifestId, suite.name),
+		new Set((suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name))),
+	]))
 }
 
 /**
- * suite 排序：依赖在前；无依赖边时按被依赖数少→前、依赖数少→前、`manifestId/name` 字典序。
+ * suite 排序：依赖在前；无依赖边时按被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
  * @param {SuiteDef[]} suites 待排序 suite
  * @param {SuiteDef[]} [allSuites] 全库 suite（tie-break 计数范围；默认同 suites）
  * @returns {SuiteDef[]} 排序结果
@@ -214,24 +228,13 @@ export function topoSortSuites(suites, allSuites = suites) {
 
 	const byKey = new Map(suites.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const { depCount, dependentCount } = buildSuiteMetrics(allSuites)
-	const deps = buildSubsetSuiteDeps(suites)
+	const deps = buildSuiteDeps(suites)
 
-	/**
-	 * @param {string} a suite 键
-	 * @param {string} b suite 键
-	 * @returns {number}
-	 */
-	function compareTieBreak(a, b) {
-		const depByA = dependentCount.get(a) ?? 0
-		const depByB = dependentCount.get(b) ?? 0
-		if (depByA !== depByB) return depByA - depByB
-		const depA = depCount.get(a) ?? 0
-		const depB = depCount.get(b) ?? 0
-		if (depA !== depB) return depA - depB
-		return a.localeCompare(b)
-	}
-
-	const sortedKeys = topoSortKeys([...byKey.keys()], deps, compareTieBreak)
+	const sortedKeys = topoSortKeys(
+		[...byKey.keys()],
+		deps,
+		(a, b) => compareTopoTieBreak(a, b, dependentCount, depCount),
+	)
 	return sortedKeys.map(key => byKey.get(key))
 }
 
@@ -264,7 +267,7 @@ function buildManifestGraph(suites) {
 }
 
 /**
- * manifest id 排序：被依赖者在前；无依赖边时按被依赖数少→前、依赖数少→前、字典序。
+ * manifest id 排序：被依赖者在前；无依赖边时按被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
  * @param {string[]} manifestIds 待排序 id
  * @param {SuiteDef[]} suites 全部 suite（用于解析跨 manifest 依赖）
  * @returns {string[]} 排序结果
@@ -275,32 +278,11 @@ export function sortManifestIds(manifestIds, suites) {
 
 	const { depCount, dependentCount, deps } = buildManifestGraph(suites)
 
-	/**
-	 * @param {string} a manifest id
-	 * @param {string} b manifest id
-	 * @returns {number} 排序比较
-	 */
-	function compareTieBreak(a, b) {
-		const depByA = dependentCount.get(a) ?? 0
-		const depByB = dependentCount.get(b) ?? 0
-		if (depByA !== depByB) return depByA - depByB
-		const depA = depCount.get(a) ?? 0
-		const depB = depCount.get(b) ?? 0
-		if (depA !== depB) return depA - depB
-		return a.localeCompare(b)
-	}
-
-	const idSet = new Set(unique)
-	/** @type {Map<string, Set<string>>} */
-	const subsetDeps = new Map(unique.map(id => [id, new Set()]))
-	for (const id of unique) 
-		for (const dep of deps.get(id) ?? []) {
-			if (!idSet.has(dep)) continue
-			subsetDeps.get(id).add(dep)
-		}
-	
-
-	return topoSortKeys(unique, subsetDeps, compareTieBreak)
+	return topoSortKeys(
+		unique,
+		deps,
+		(a, b) => compareTopoTieBreak(a, b, dependentCount, depCount),
+	)
 }
 
 /**
