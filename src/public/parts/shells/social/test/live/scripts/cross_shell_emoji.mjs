@@ -83,8 +83,8 @@ await testCase('A seeds channel (federation metadata)', async () => {
 	return r.status === 200 || r.status === 201
 })
 
-console.log('\n=== A posts Social feed with emoji token ===')
-await testCase('A POST /posts with group emoji token', async () => {
+console.log('\n=== A posts Social feed with group emoji token ===')
+await testCase('A feed post embeds groupEmoji mediaRef and retains token', async () => {
 	const viewer = (await ShellApi(FedA, 'social', 'GET', '/viewer')).json.viewerEntityHash
 	if (!viewer) throw new Error('no viewerEntityHash')
 	const text = `cross-shell feed ${emojiToken}`
@@ -99,15 +99,10 @@ await testCase('A POST /posts with group emoji token', async () => {
 	postMediaRefs = r.json.event?.content?.mediaRefs?.filter(ref => ref.kind === 'groupEmoji') ?? []
 	postText = r.json.event?.content?.text
 	return Boolean(postId)
+		&& postMediaRefs.length >= 1
+		&& Boolean(postMediaRefs[0]?.contentHash)
+		&& String(postText ?? '').includes(emojiToken)
 })
-
-await testCase('post event embeds groupEmoji mediaRef with contentHash', async () =>
-	postMediaRefs.length >= 1 && Boolean(postMediaRefs[0]?.contentHash),
-)
-
-await testCase('post event text retains emoji token', async () =>
-	String(postText ?? '').includes(emojiToken),
-)
 
 console.log('\n=== B (non-member) emoji-content + private preview ===')
 await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })

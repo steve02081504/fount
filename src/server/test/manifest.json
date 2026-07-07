@@ -25,7 +25,8 @@
 				"src/scripts/test/node/**",
 				"src/scripts/WsAbleRouter.mjs",
 				"src/scripts/ms.mjs",
-				"src/server/web_server/resources.mjs"
+				"src/server/web_server/resources.mjs",
+				"src/public/pages/scripts/**"
 			]
 		}
 	]

@@ -150,7 +150,8 @@ export async function runFrontendPhases({
 					ranSpecPaths,
 				}))
 
-				if (!keepGoing) {
+				const failFast = phase.project === 'shell' || phase.project === 'smoke'
+				if (!keepGoing || failFast) {
 					await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
 					return code
 				}

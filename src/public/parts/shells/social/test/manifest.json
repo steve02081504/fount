@@ -46,7 +46,7 @@
 			"src/public/parts/shells/social/public/**",
 			"src/public/parts/shells/social/test/frontend/**",
 			"src/scripts/test/playwright/**",
-			"src/scripts/test/ready_gate.mjs",
+			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
 		]
@@ -71,9 +71,10 @@
 				"./src/public/parts/shells/social/test/integration/"
 			]
 		},
-		{ "name": "e2e_single", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"], "trigger": "shellLive" },
-		{ "name": "ws", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"], "trigger": "ws" },
-		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "e2e_single", "shells/chat:pure", "shells/chat:e2e_single"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"], "trigger": "crossShellEmoji" },
-		{ "name": "frontend", "dependsOn": ["server:live", "e2e_single"], "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"], "trigger": "frontend" }
+		{ "name": "smoke_social", "dependsOn": ["server:live"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "smoke_social"], "trigger": "shellLive" },
+		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_social"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"], "trigger": "shellLive" },
+		{ "name": "ws", "dependsOn": ["server:live", "smoke_social"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"], "trigger": "ws" },
+		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "smoke_social", "shells/chat:fed_core", "shells/chat:fed_emoji"], "run": ["deno", "run", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"], "trigger": "crossShellEmoji" },
+		{ "name": "frontend", "dependsOn": ["server:live", "smoke_social", "e2e_single"], "run": ["deno", "run", "-A", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"], "trigger": "frontend" }
 	]
 }

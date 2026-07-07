@@ -53,10 +53,7 @@ export function registerResources(router) {
 		}
 		return next()
 	})
-	watchFrontendChanges('/scripts/test', __dirname + '/src/scripts/test')
-	router.use('/scripts/test', express.static(__dirname + '/src/scripts/test'))
-	watchFrontendChanges('/scripts/p2p', __dirname + '/src/scripts/p2p')
-	router.use('/scripts/p2p', express.static(__dirname + '/src/scripts/p2p'))
+	// 你绝不应该在这里不通知人类就随便开洞，这里不是拉屎的地方——如果你需要在前端暴露代码，使用 `src/public/pages/scripts` 目录。
 	watchFrontendChanges('/', __dirname + '/src/public/pages')
 	router.use(express.static(__dirname + '/src/public/pages'))
 }

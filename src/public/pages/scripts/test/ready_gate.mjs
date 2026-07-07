@@ -9,20 +9,8 @@
 const states = new Map()
 
 /**
- * @param {string} id 信号 id（`fount:{id}-ready` / `fount:{id}-error` 事件名）
- * @returns {{ id: string, readyEvent: string, errorEvent: string }} gate 事件 spec
- */
-export function readyGateSpec(id) {
-	return {
-		id,
-		readyEvent: `fount:${id}-ready`,
-		errorEvent: `fount:${id}-error`,
-	}
-}
-
-/**
- * @param {ReturnType<typeof readyGateSpec>} spec gate 定义
- * @returns {ReturnType<typeof readyGateSpec> & { markPending: () => void, markReady: () => void, markFailed: (error: Error) => void }} 可 mark 的 gate 实例
+ * @param {{ id: string, readyEvent: string, errorEvent: string }} spec gate 定义
+ * @returns {typeof spec & { markPending: () => void, markReady: () => void, markFailed: (error: Error) => void }} 可 mark 的 gate 实例
  */
 export function createReadyGate(spec) {
 	const { id, readyEvent, errorEvent } = spec
@@ -56,7 +44,7 @@ export function createReadyGate(spec) {
  * @param {string} id gate id
  * @returns {{ status: ReadyGateStatus, message?: string }} 当前 gate 状态
  */
-export function getReadyGateState(id) {
+function getReadyGateState(id) {
 	return states.get(id) ?? { status: 'pending' }
 }
 

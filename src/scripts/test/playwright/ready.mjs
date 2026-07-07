@@ -7,14 +7,14 @@ import { SOCIAL_APP_GATE } from 'fount/public/parts/shells/social/public/src/gat
 import { ms } from 'fount/scripts/ms.mjs'
 
 /**
- * 在页面内等待 shell 就绪（内存状态 + 可选事件，不依赖 DOM attribute）。
+ * 在页面内等待 shell 就绪（轮询内存状态，不依赖 DOM attribute）。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
- * @param {{ id: string, readyEvent: string, errorEvent: string, label: string, timeout?: number }} options gate 与标签
+ * @param {{ id: string, label: string, timeout?: number }} options gate id 与标签
  * @returns {Promise<void>}
  */
-export async function waitForReadyGate(page, { id, readyEvent, errorEvent, label, timeout = ms('90s') }) {
+export async function waitForReadyGate(page, { id, label, timeout = ms('90s') }) {
 	await page.waitForFunction(
-		({ id, readyEvent, errorEvent, label }) => {
+		({ id, label }) => {
 			const getState = globalThis.fount?.test?.getState
 			if (getState) {
 				const s = getState(id)
@@ -24,7 +24,7 @@ export async function waitForReadyGate(page, { id, readyEvent, errorEvent, label
 			}
 			return false
 		},
-		{ id, readyEvent, errorEvent, label },
+		{ id, label },
 		{ timeout },
 	)
 }

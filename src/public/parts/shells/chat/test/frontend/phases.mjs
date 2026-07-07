@@ -7,6 +7,7 @@
  * @type {Array<{ name: string, testMatch: string | string[] }>}
  */
 export const phases = [
+	{ name: 'shell', testMatch: ['smoke.spec.mjs'] },
 	{ name: 'deeplink', testMatch: ['deepLink.spec.mjs'] },
 	{
 		name: 'hub-ui',
@@ -14,5 +15,5 @@ export const phases = [
 	},
 	{ name: 'hub', testMatch: ['hubE2E.spec.mjs'] },
 	{ name: 'secondary', testMatch: ['secondaryPages.spec.mjs'] },
-	{ name: 'shell', testMatch: ['smoke.spec.mjs', 'profile.spec.mjs'] },
+	{ name: 'profile', testMatch: ['profile.spec.mjs'] },
 ]

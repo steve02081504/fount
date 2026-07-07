@@ -24,6 +24,10 @@ const releaseHeldNodeBPort = () => releasePort(nodeBPort)
 /** Social live 测试 suite 表。 */
 /** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
 const suites = {
+	smoke_social: {
+		run: denoLiveRun(join(scriptsDir, 'smoke_social.mjs')),
+		node: { loadParts: ['shells/social'], p2p: false, minP2pNode: true },
+	},
 	e2e_single: {
 		run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')),
 		node: { loadParts: ['shells/social'] },

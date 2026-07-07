@@ -270,15 +270,19 @@ Deno.test('listUnsatisfiedDependencies blocks shell live when server:live failed
 	assertEquals(missing, ['server/live'])
 })
 
-Deno.test('listUnsatisfiedDependencies blocks social cross_shell_emoji when social e2e_single failed', () => {
+Deno.test('listUnsatisfiedDependencies blocks social cross_shell_emoji when fed_core failed', () => {
 	const all = [
 		suite('server', 'live'),
-		suite('shells/social', 'e2e_single', ['server:live']),
-		suite('shells/social', 'cross_shell_emoji', ['server:live', 'e2e_single', 'shells/chat:pure', 'shells/chat:e2e_single']),
+		suite('p2p', 'sim'),
+		suite('p2p', 'live'),
+		suite('shells/social', 'smoke_social', ['server:live']),
+		suite('shells/chat', 'fed_core', ['server:live', 'p2p:sim', 'p2p:live']),
+		suite('shells/chat', 'fed_emoji', ['fed_core']),
+		suite('shells/social', 'cross_shell_emoji', ['server:live', 'smoke_social', 'shells/chat:fed_core', 'shells/chat:fed_emoji']),
 	]
 	const state = {
 		suites: {
-			'shells/social/e2e_single': {
+			'shells/chat/fed_core': {
 				status: 'failed',
 				commitHash: 'abc',
 				uncommittedHash: null,
@@ -286,7 +290,43 @@ Deno.test('listUnsatisfiedDependencies blocks social cross_shell_emoji when soci
 				durationMs: 1,
 				failedFiles: [],
 				noiseHits: ['Error'],
-				logPath: './logs/shells_social/e2e_single.log',
+				logPath: './logs/shells_chat/fed_core.log',
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+		runGreenKeys: new Set(),
+		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
+	}
+	const missing = listUnsatisfiedDependencies(all[6], state, ctx)
+	assertEquals(missing, [
+		'server/live',
+		'shells/social/smoke_social',
+		'shells/chat/fed_core',
+		'shells/chat/fed_emoji',
+	])
+})
+
+Deno.test('listUnsatisfiedDependencies blocks social e2e_single when smoke_social failed', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/social', 'smoke_social', ['server:live']),
+		suite('shells/social', 'e2e_single', ['server:live', 'smoke_social']),
+	]
+	const state = {
+		suites: {
+			'shells/social/smoke_social': {
+				status: 'failed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: [],
+				noiseHits: ['Error'],
+				logPath: './logs/shells_social/smoke_social.log',
 			},
 		},
 	}
@@ -298,12 +338,7 @@ Deno.test('listUnsatisfiedDependencies blocks social cross_shell_emoji when soci
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
 	const missing = listUnsatisfiedDependencies(all[2], state, ctx)
-	assertEquals(missing, [
-		'server/live',
-		'shells/social/e2e_single',
-		'shells/chat/pure',
-		'shells/chat/e2e_single',
-	])
+	assertEquals(missing, ['server/live', 'shells/social/smoke_social'])
 })
 
 Deno.test('listUnsatisfiedDependencies blocks fed_core when p2p live failed', () => {

@@ -36,12 +36,6 @@ export function resolveBrowserImportSpec(repoRoot, importerFile, spec) {
 	if (spec.startsWith('https://') || spec.startsWith('http://') || spec.startsWith('npm:') || spec.startsWith('node:'))
 		return null
 
-	if (spec.startsWith('/scripts/test/')) {
-		const rel = spec.slice('/scripts/test/'.length)
-		const candidate = path.join(repoRoot, 'src/scripts/test', rel)
-		return existsSync(candidate) ? candidate : null
-	}
-
 	if (spec.startsWith('/scripts/')) {
 		const rel = spec.slice('/scripts/'.length)
 		const candidate = path.join(pagesScriptsRoot(repoRoot), rel)
