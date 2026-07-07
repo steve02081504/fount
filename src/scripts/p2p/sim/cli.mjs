@@ -1,13 +1,13 @@
-#!/usr/bin/env -S deno run -A
+#!/usr/bin/env -S deno run --allow-scripts --allow-all
 /* global Deno */
 /**
  * P2P 参数模拟器 + 挖矿器 CLI。
  *
  * 用法:
- *   deno run -A src/scripts/p2p/sim/cli.mjs sim --scenario balanced
- *   deno run -A src/scripts/p2p/sim/cli.mjs mine --generations 20
- *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m
- *   deno run -A src/scripts/p2p/sim/cli.mjs mine --duration 5m --no-apply
+ *   deno run --allow-scripts --allow-all src/scripts/p2p/sim/cli.mjs sim --scenario balanced
+ *   deno run --allow-scripts --allow-all src/scripts/p2p/sim/cli.mjs mine --generations 20
+ *   deno run --allow-scripts --allow-all src/scripts/p2p/sim/cli.mjs mine --duration 5m
+ *   deno run --allow-scripts --allow-all src/scripts/p2p/sim/cli.mjs mine --duration 5m --no-apply
  */
 import { applyTunablesBundle } from './apply.mjs'
 import { normalizeAttackGenome } from './attack_space.mjs'

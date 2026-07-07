@@ -1,6 +1,6 @@
 /**
  * auditLog 单测。
- * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/pure/audit_log.test.mjs
+ * 复测：deno test --no-check --allow-scripts --allow-all src/public/parts/shells/chat/test/pure/audit_log.test.mjs
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

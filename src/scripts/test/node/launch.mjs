@@ -436,7 +436,7 @@ export async function launchNode(options = {}) {
 
 	const v8FlagsArg = buildTestNodeV8FlagsArg()
 	const workerArgs = [
-		'run', '--allow-all',
+		'run', '--allow-scripts', '--allow-all',
 		...v8FlagsArg ? [v8FlagsArg] : [],
 		'-c', join(REPO_ROOT, 'deno.json'),
 		workerPath,

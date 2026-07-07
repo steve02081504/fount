@@ -4,7 +4,7 @@
 		{
 			"name": "pure",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/scripts/p2p/test/pure/"
 			],
@@ -16,7 +16,7 @@
 		{
 			"name": "integration",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/scripts/p2p/test/integration/"
 			],
@@ -29,7 +29,7 @@
 			"name": "sim",
 			"heavy": true,
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
 				"./src/scripts/p2p/sim/test/"
 			],
@@ -40,7 +40,7 @@
 		{
 			"name": "live",
 			"run": [
-				"deno", "run", "--allow-all", "-c", "./deno.json",
+				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/p2p/test/live/run.mjs"
 			],
 			"triggers": [

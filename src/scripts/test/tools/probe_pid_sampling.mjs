@@ -1,6 +1,6 @@
 /**
  * Compare pidusage vs node-os-utils on a live subprocess tree.
- * deno run --allow-all -c ./deno.json ./src/scripts/test/tools/probe_pid_sampling.mjs
+ * deno run --allow-scripts --allow-all -c ./deno.json ./src/scripts/test/tools/probe_pid_sampling.mjs
  */
 import process from 'node:process'
 

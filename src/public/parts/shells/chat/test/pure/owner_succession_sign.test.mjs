@@ -1,6 +1,6 @@
 /**
  * owner_succession 选票签名单测。
- * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/pure/owner_succession_sign.test.mjs
+ * 复测：deno test --no-check --allow-scripts --allow-all src/public/parts/shells/chat/test/pure/owner_succession_sign.test.mjs
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'

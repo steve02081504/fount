@@ -16,7 +16,7 @@ const files = [
 
 for (const file of files) {
 	const path = join(liveDir, file)
-	const result = await execFile('deno', ['test', '--no-check', '--allow-all', '-c', './deno.json', path], {
+	const result = await execFile('deno', ['test', '--no-check', '--allow-scripts', '--allow-all', '-c', './deno.json', path], {
 		cwd: join(liveDir, '..', '..', '..', '..', '..'),
 	})
 	process.stdout.write(result.stdall)

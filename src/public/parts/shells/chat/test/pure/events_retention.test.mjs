@@ -1,6 +1,6 @@
 /**
  * events/retention 单测：保留策略 keepIds。
- * 复测：deno test --no-check --allow-all src/public/parts/shells/chat/test/pure/events_retention.test.mjs
+ * 复测：deno test --no-check --allow-scripts --allow-all src/public/parts/shells/chat/test/pure/events_retention.test.mjs
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

@@ -10,5 +10,5 @@ import { REPO_ROOT } from '../core/repo_root.mjs'
  * @returns {string[]} deno run 命令 argv
  */
 export function denoLiveRun(scriptPath) {
-	return ['deno', 'run', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), scriptPath]
+	return ['deno', 'run', '--allow-scripts', '--allow-all', '-c', join(REPO_ROOT, 'deno.json'), scriptPath]
 }

@@ -4,7 +4,7 @@
 		{
 			"name": "selftest",
 			"run": [
-				"deno", "test", "--no-check", "--allow-all", "-c", "./deno.json",
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/selftest/"
 			],
 			"triggers": [

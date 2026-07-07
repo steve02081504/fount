@@ -47,7 +47,7 @@ When `run` includes `serial.mjs`, `suite_run.mjs` injects `FOUNT_TEST_BUDGET_COR
 Compare `pidusage` vs `node-os-utils process.byPid` on a live tree:
 
 ```bash
-deno run --allow-all -c ./deno.json ./src/scripts/test/tools/probe_pid_sampling.mjs
+deno run --allow-scripts --allow-all -c ./deno.json ./src/scripts/test/tools/probe_pid_sampling.mjs
 ```
 
 Selftests: `fount test testkit` (`selftest/resources_scheduler.test.mjs`, `selftest/proc_sample.test.mjs`).
