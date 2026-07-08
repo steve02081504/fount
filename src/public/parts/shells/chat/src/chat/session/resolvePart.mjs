@@ -9,9 +9,11 @@ import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { createRemoteCharProxy } from '../federation/remoteProxy.mjs'
 import { createRemoteWorldProxy } from '../federation/remoteWorldProxy.mjs'
 
+import { BUILTIN_WORLD } from './builtinParts.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
 import { invokeGroupRpc } from './rpcInvoke.mjs'
 import { getCharBind, isLocalNode } from './runtime.mjs'
+import { ignoreMissingPartLoadError } from './timeSliceParts.mjs'
 
 /**
  * @param {string} groupId 群 ID
@@ -43,16 +45,18 @@ export async function resolveChar(groupId, charname, replicaUsername) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} replicaUsername 当前 replica
- * @returns {Promise<import('../../../../../../../decl/worldAPI.ts').WorldAPI_t | null>} 本地或远端世界 API
+ * @returns {Promise<import('../../../../../../../decl/worldAPI.ts').WorldAPI_t>} 本地、远端或内置极小世界
  */
 export async function resolveWorld(groupId, channelId, replicaUsername) {
 	const session = await getMaterializedSession(replicaUsername, groupId)
 	const bind = session.channelWorlds?.[channelId] || session.world
-	if (!bind?.worldname) return null
+	if (!bind?.worldname) return BUILTIN_WORLD
 
 	const owner = bind.ownerUsername || replicaUsername
-	if (isLocalNode(bind.homeNodeHash, replicaUsername))
-		return loadPart(owner, `worlds/${bind.worldname}`)
+	if (isLocalNode(bind.homeNodeHash, replicaUsername)) {
+		const world = await loadPart(owner, `worlds/${bind.worldname}`).catch(ignoreMissingPartLoadError)
+		return world || BUILTIN_WORLD
+	}
 
 	const memberId = `${owner}:world:${bind.worldname}`
 	return createRemoteWorldProxy(memberId, bind.homeNodeHash, {}, (method, args) =>

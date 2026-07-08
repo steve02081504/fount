@@ -1,7 +1,5 @@
 /**
- * Social 事件分发：@ 任意 P2P 实体；本地 agent 通过 char.interfaces.social 响应。
- * 本地 agent 须实现 interfaces.social（见 lib/charSocial.mjs）。
- * Social 账号 = Chat 账号 = fount P2P 实体，无需单独注册。
+ * Social 事件分发：@ 任意 P2P 实体；本地 agent 经 social OnMention 或 chat.GetReply 回退响应。
  */
 import { listLocalAgentEntities, resolveSocialEntity } from '../../../../../scripts/p2p/entity/hosting.mjs'
 import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
@@ -11,6 +9,12 @@ import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
+import {
+	buildMentionChatReplyRequest,
+	loadCharForMention,
+	replyTextFromMentionGetReply,
+} from './lib/chatMentionFallback.mjs'
+import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
@@ -64,6 +68,7 @@ function normalizeSocialHandlerResult(result) {
  * @returns {Promise<object>} 签名 post 事件
  */
 async function publishEntityReply(username, authorEntityHash, content, charPartName = null) {
+	await ensureEntitySocialReady(username, authorEntityHash)
 	return commitTimelineEvent(username, authorEntityHash, {
 		type: 'post',
 		charPartName,
@@ -80,25 +85,54 @@ async function publishEntityReply(username, authorEntityHash, content, charPartN
 async function handleLocalAgentOnMention(target, mentionEvent) {
 	if (!target?.local || target.kind !== 'agent' || !target.replicaUsername || !target.charPartName)
 		return { handled: false, published: false }
-	const custom = await invokeCharSocialInterface(
-		target.replicaUsername,
-		target.charPartName,
-		'OnMention',
-		{ ...mentionEvent, mentionedEntityHash: target.entityHash },
-	)
-	if (!custom || custom.skip || !custom.text) return { handled: true, published: false }
-	await publishEntityReply(
-		target.replicaUsername,
-		target.entityHash,
-		{
-			text: custom.text,
-			replyTo: mentionEvent.replyTo,
-			visibility: 'public',
-			lang: mentionEvent.lang,
-		},
-		target.charPartName,
-	)
-	return { handled: true, published: true }
+
+	const { replicaUsername: username, charPartName, entityHash } = target
+	const char = await loadCharForMention(username, charPartName)
+	if (!char) return { handled: true, published: false }
+
+	const onMention = char?.interfaces?.social?.OnMention
+	if (onMention) {
+		const custom = normalizeSocialHandlerResult(await onMention({
+			username,
+			charPartName,
+			...mentionEvent,
+			mentionedEntityHash: entityHash,
+		}))
+		if (custom?.text) {
+			await publishEntityReply(
+				username,
+				entityHash,
+				{
+					text: custom.text,
+					replyTo: mentionEvent.replyTo,
+					visibility: 'public',
+					lang: mentionEvent.lang,
+				},
+				charPartName,
+			)
+			return { handled: true, published: true }
+		}
+		if (custom?.skip) return { handled: true, published: false }
+	}
+
+	const request = buildMentionChatReplyRequest(username, charPartName, char, mentionEvent)
+	const fallbackText = await replyTextFromMentionGetReply(char, request)
+	if (fallbackText) {
+		await publishEntityReply(
+			username,
+			entityHash,
+			{
+				text: fallbackText,
+				replyTo: mentionEvent.replyTo,
+				visibility: 'public',
+				lang: mentionEvent.lang,
+			},
+			charPartName,
+		)
+		return { handled: true, published: true }
+	}
+
+	return { handled: true, published: false }
 }
 
 /**
@@ -108,7 +142,7 @@ async function handleLocalAgentOnMention(target, mentionEvent) {
  * @returns {Promise<{ ok: boolean, published?: boolean }>} 处理结果
  */
 export async function processSocialOnMentionRpc(hostingUsername, rpc) {
-	const target = resolveSocialEntity(rpc.targetEntityHash, hostingUsername)
+	const target = await resolveSocialEntity(rpc.targetEntityHash, hostingUsername)
 	const result = await handleLocalAgentOnMention(target, {
 		authorEntityHash: rpc.authorEntityHash,
 		authorDisplayName: rpc.authorDisplayName,
@@ -142,7 +176,7 @@ export async function dispatchPostMentions(posterUsername, authorEntityHash, pos
 		if (targetHash === authorEntityHash.toLowerCase()) continue
 		if (authorRep < SOCIAL_REP_HIDE_THRESHOLD) continue
 		applyMentionNetworkHint(posterUsername, targetHash)
-		const target = resolveSocialEntity(targetHash)
+		const target = await resolveSocialEntity(targetHash)
 		const local = await handleLocalAgentOnMention(target, {
 			authorEntityHash,
 			authorDisplayName: authorLabel,
@@ -175,7 +209,7 @@ export async function dispatchPostMentions(posterUsername, authorEntityHash, pos
  * @returns {Promise<void>}
  */
 export async function dispatchFollowEvent(followerUsername, followerEntityHash, targetEntityHash) {
-	const target = resolveSocialEntity(targetEntityHash)
+	const target = await resolveSocialEntity(targetEntityHash)
 	if (!target?.local || target.kind !== 'agent' || !target.replicaUsername || !target.charPartName)
 		return
 

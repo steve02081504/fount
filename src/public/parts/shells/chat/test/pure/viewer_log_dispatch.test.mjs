@@ -3,6 +3,7 @@ import { agentEntityHash } from 'fount/scripts/p2p/entity_id.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
+	applyPersonaChatLogView,
 	applyWorldChatLogView,
 	resolveViewerRoles,
 } from '../../src/chat/session/viewerLog.mjs'
@@ -104,6 +105,76 @@ Deno.test('applyWorldChatLogView does not call GetChatLogForCharname for user vi
 		channelId: 'c',
 	}), baseLog)
 	assertEquals(legacyCalled, false)
+})
+
+Deno.test('applyPersonaChatLogView filters via GetChatLogForViewer', async () => {
+	const filtered = [baseLog[0]]
+	const arg = {
+		chat_log: baseLog,
+		user: {
+			interfaces: {
+				chat: {
+					/**
+					 * @returns {Promise<object[]>} 过滤结果
+					 */
+					GetChatLogForViewer: async () => filtered,
+				},
+			},
+		},
+	}
+	assertEquals(await applyPersonaChatLogView(arg, {
+		kind: 'user',
+		memberId: 'm1',
+		ownerUsername: 'u',
+		channelId: 'c',
+	}), filtered)
+})
+
+Deno.test('applyPersonaChatLogView passes through without hook', async () => {
+	const arg = {
+		chat_log: baseLog,
+		user: { interfaces: { chat: {} } },
+	}
+	assertEquals(await applyPersonaChatLogView(arg, {
+		kind: 'user',
+		memberId: 'm1',
+		ownerUsername: 'u',
+		channelId: 'c',
+	}), baseLog)
+})
+
+Deno.test('projectViewerEntriesToRows drops hidden and rewrites text', async () => {
+	const { projectViewerEntriesToRows } = await import('../../src/chat/session/viewerLogProject.mjs')
+	const rawLines = [
+		{
+			type: 'message',
+			eventId: 'e1',
+			content: { type: 'text', content: 'keep-me' },
+		},
+		{
+			type: 'message',
+			eventId: 'e2',
+			content: { type: 'text', content: 'hide-me' },
+		},
+		{
+			type: 'message',
+			eventId: 'e3',
+			content: { type: 'text', content: 'rewrite-src' },
+		},
+		{
+			type: 'vote_cast',
+			eventId: 'v1',
+			content: { ballotId: 'e1', choice: 'a' },
+		},
+	]
+	const entries = [
+		{ content: 'keep-me', extension: { dagEventId: 'e1' } },
+		{ content: 'rewrite-dst', content_for_show: 'rewrite-dst', extension: { dagEventId: 'e3' } },
+	]
+	const rows = projectViewerEntriesToRows(rawLines, entries)
+	assertEquals(rows.map(row => row.eventId), ['e1', 'e3', 'v1'])
+	assertEquals(rows[1].content.content, 'rewrite-dst')
+	assertEquals(rows[1].extension.viewerRewritten, true)
 })
 
 Deno.test('resolveViewerRoles: char and user paths from members', async () => {

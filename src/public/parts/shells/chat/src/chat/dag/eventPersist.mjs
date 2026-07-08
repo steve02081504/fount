@@ -57,7 +57,7 @@ async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayl
 	if (displayContent?.is_generating) return
 	const { resolveWorld } = await import('../session/resolvePart.mjs')
 	const world = await resolveWorld(groupId, channelId, username)
-	const afterHook = world?.interfaces?.chat?.AfterAddChatLogEntry
+	const afterHook = world.interfaces.chat.AfterAddChatLogEntry
 	if (!afterHook) return
 	const charname = signPayload.charId
 		|| displayContent?.charId

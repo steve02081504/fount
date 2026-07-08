@@ -33,7 +33,7 @@ import {
 import { chatLogEntry_t } from './models.mjs'
 import { resolveChar, resolveLocalPlugins, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
-import { applyWorldChatLogView, buildViewer, resolveViewerRoles } from './viewerLog.mjs'
+import { applyPersonaChatLogView, applyWorldChatLogView, buildViewer, resolveViewerRoles } from './viewerLog.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /**
@@ -158,7 +158,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 				replicaUsername,
 			))
 		},
-		world: resolvedWorld ?? undefined,
+		world: resolvedWorld,
 		char: charPart,
 		user: playerPart,
 		other_chars,
@@ -190,6 +190,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		roles: member_roles,
 	})
 	chatReplyRequest.chat_log = await applyWorldChatLogView(chatReplyRequest, viewer)
+	chatReplyRequest.chat_log = await applyPersonaChatLogView(chatReplyRequest, viewer)
 
 	if (charname && charPart) {
 		const cap = charPart.contextLength ?? charPart.extension?.contextLength

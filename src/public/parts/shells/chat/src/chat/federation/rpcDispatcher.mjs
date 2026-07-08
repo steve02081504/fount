@@ -1,23 +1,21 @@
 /**
- * 【文件】src/chat/rpcDispatcher.mjs
- * 【职责】在群 WebSocket RPC 通道上，将远程 memberId 映射到本节点已加载的 Char/World part 并执行对应 interfaces 方法。
- * 【原理】createCharRpcDispatcher / createWorldRpcDispatcher 经本地绑定判定；世界侧含 GetChatLogForViewer 与 legacy GetChatLogForCharname；结果统一为 `{ kind: result|not_local|method_not_found|error }`。
- * 【数据结构】memberId（`owner:charname` / `owner:world:worldname`）、method/args、chatMetadata.LastTimeSlice.chars、RPC kind 判别联合类型、normalizeRpcErrorCode 错误码表。
- * 【关联】被 session.mjs 导出 tryInvokeLocal*；被 chat/stream/groupWsHub 调用；依赖 session/dagSession、session/runtime、session/generation、viewerLog。
+ * 【文件】federation/rpcDispatcher.mjs
+ * 【职责】群联邦 RPC 服务端分发：将 memberId 映射到本机 Char/World part 并执行 interfaces 方法。
+ * 【原理】createCharRpcDispatcher / createWorldRpcDispatcher 经本地绑定判定；结果 `{ kind: result|not_local|method_not_found|error }`。
+ * 【关联】session.mjs 导出 tryInvokeLocal*；groupWsRpc、roomHandlers/rpc、remoteWorldProxy。
  */
-import { loadPart } from '../../../../../../server/parts_loader.mjs'
+import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 
-import { resolveChannelId } from './lib/channelId.mjs'
-import { normalizeJsonBoundaryValue } from './lib/jsonBoundary.mjs'
-import { getMaterializedSession } from './session/dagSession.mjs'
-import { getCharBind, isLocalNode } from './session/runtime.mjs'
-import { isSerializableRequest } from './session/serializableRequest.mjs'
+import { resolveChannelId } from '../lib/channelId.mjs'
+import { normalizeJsonBoundaryValue } from '../lib/jsonBoundary.mjs'
+import { getMaterializedSession } from '../session/dagSession.mjs'
+import { getCharBind, isLocalNode } from '../session/runtime.mjs'
+import { isSerializableRequest } from '../session/serializableRequest.mjs'
 
 /**
- * 解析可能的嵌套方法路径（如 `chat.tools.pick`）。
  * @param {unknown} root 根对象
  * @param {string} path 点号路径
- * @returns {Function | null} 命中的可调用函数
+ * @returns {Function | null}
  */
 function resolveNestedCallable(root, path) {
 	if (!root || !String(path || '').trim()) return null
@@ -30,9 +28,8 @@ function resolveNestedCallable(root, path) {
 }
 
 /**
- * 将内部异常映射为对外稳定的 RPC 错误码。
  * @param {unknown} err 原始异常
- * @returns {string} 规范化后的错误码
+ * @returns {string}
  */
 function normalizeRpcErrorCode(err) {
 	const code = err?.code
@@ -46,7 +43,7 @@ function normalizeRpcErrorCode(err) {
 /**
  * @param {string} method 方法名
  * @param {unknown} value RPC 返回值
- * @returns {{ kind: 'result', value: unknown }} 归一化后的成功结果
+ * @returns {{ kind: 'result', value: unknown }}
  */
 function resultOk(method, value) {
 	return {
@@ -56,21 +53,11 @@ function resultOk(method, value) {
 }
 
 /**
- * 创建本地 Char RPC 分发器。
- * @param {Function} getActiveGroupRuntime 加载群 AI runtime 的函数
- * @param {Function} getChatRequest 构造 chatReplyRequest 的函数
+ * @param {Function} getActiveGroupRuntime 加载群 AI runtime
+ * @param {Function} getChatRequest 构造 chatReplyRequest
  * @returns {Function} tryInvokeLocalCharRpc
  */
 export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
-	/**
-	 * 尝试在本节点群会话上调用指定 `memberId` 对应角色的 Char 方法（用于 WS RPC）。
-	 *
-	 * @param {string} groupId 群组 id
-	 * @param {string} memberId `username:charname`
-	 * @param {string} method 方法名（如 `GetReply`、`GetPrompt`）
-	 * @param {unknown[]} [args] 已 JSON 反序列化的参数表
-	 * @returns {Promise<{ kind: 'result', value: unknown } | { kind: 'not_local' } | { kind: 'method_not_found' } | { kind: 'error', message: string, code: string }>} RPC 分发结果
-	 */
 	return async function tryInvokeLocalCharRpc(groupId, memberId, method, args = []) {
 		let list
 		try {
@@ -102,10 +89,6 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 			if (!char) return { kind: 'not_local' }
 		}
 
-		/**
-		 * 从 RPC 参数列表首项的 extension/channelId 推断目标频道 id。
-		 * @returns {string | null} 频道 id，无法推断时为 null
-		 */
 		const inferChannelId = () => {
 			const firstArg = list[0]
 			const fromExtension = resolveChannelId(firstArg?.extension?.channelId, '')
@@ -164,7 +147,7 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 				case 'GetReply': {
 					const serial = list[0]
 					if (isSerializableRequest(serial)) {
-						const { triggerCharReply } = await import('./session/triggerReply.mjs')
+						const { triggerCharReply } = await import('../session/triggerReply.mjs')
 						void triggerCharReply(
 							serial.groupId,
 							serial.channelId,
@@ -218,16 +201,9 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 
 /**
  * @param {Function} getChatRequest 构造 chatReplyRequest
- * @returns {Function} tryInvokeLocalWorldRpc 世界 RPC 分发器
+ * @returns {Function} tryInvokeLocalWorldRpc
  */
 export function createWorldRpcDispatcher(getChatRequest) {
-	/**
-	 * @param {string} groupId 群 ID
-	 * @param {string} memberId `owner:world:worldname`
-	 * @param {string} method 方法名
-	 * @param {unknown[]} [args] 已 JSON 反序列化的参数表
-	 * @returns {Promise<{ kind: 'result', value: unknown } | { kind: 'not_local' } | { kind: 'method_not_found' } | { kind: 'error', message: string, code: string }>} RPC 分发结果
-	 */
 	return async function tryInvokeLocalWorldRpc(groupId, memberId, method, args = []) {
 		let list
 		try {
@@ -241,7 +217,7 @@ export function createWorldRpcDispatcher(getChatRequest) {
 			}
 		}
 
-		const chatData = await import('./session/wsLifecycle.mjs').then(m => m.groupMetadatas.get(groupId))
+		const chatData = await import('../session/wsLifecycle.mjs').then(m => m.groupMetadatas.get(groupId))
 		const owner = chatData?.username
 		if (!owner) return { kind: 'not_local' }
 
@@ -261,13 +237,14 @@ export function createWorldRpcDispatcher(getChatRequest) {
 		const world = await loadPart(bind.ownerUsername || owner, `worlds/${worldname}`)
 		if (!world) return { kind: 'not_local' }
 
-		/** @returns {string | null} 从 RPC 参数推断频道 id */
 		const inferChannelId = () => {
 			const first = list[0]
 			const fromExtension = resolveChannelId(first?.extension?.channelId, '')
 			if (fromExtension) return fromExtension
 			const fromReply = resolveChannelId(first?.chatReplyRequest?.extension?.channelId, '')
 			if (fromReply) return fromReply
+			const fromViewer = resolveChannelId(first?.channelId, '')
+			if (fromViewer) return fromViewer
 			return null
 		}
 
@@ -281,6 +258,25 @@ export function createWorldRpcDispatcher(getChatRequest) {
 					if (!fn) return { kind: 'method_not_found' }
 					const request = await getChatRequest(groupId, undefined, inferChannelId(), { replicaUsername: owner })
 					return resultOk(method, await fn(request, Number(list[1]) || 0))
+				}
+				case 'GetPrompt': {
+					const fn = world.interfaces?.chat?.GetPrompt
+					if (!fn) return { kind: 'method_not_found' }
+					const request = list[0] || await getChatRequest(groupId, list[1], inferChannelId(), { replicaUsername: owner })
+					return resultOk(method, await fn(request))
+				}
+				case 'GetGroupPrompt': {
+					const fn = world.interfaces?.chat?.GetGroupPrompt
+					if (!fn) return { kind: 'method_not_found' }
+					const request = list[0] || await getChatRequest(groupId, undefined, inferChannelId(), { replicaUsername: owner })
+					return resultOk(method, await fn(request))
+				}
+				case 'TweakPrompt': {
+					const fn = world.interfaces?.chat?.TweakPrompt
+					if (!fn) return resultOk(method, null)
+					const request = list[0] || await getChatRequest(groupId, list[4], inferChannelId(), { replicaUsername: owner })
+					await fn(request, list[1], list[2], Number(list[3]) || 0)
+					return resultOk(method, null)
 				}
 				case 'GetSpeakingOrder': {
 					const fn = world.interfaces?.chat?.GetSpeakingOrder
@@ -311,6 +307,13 @@ export function createWorldRpcDispatcher(getChatRequest) {
 					if (!fn) return { kind: 'method_not_found' }
 					const request = list[0] || await getChatRequest(groupId, list[1], inferChannelId(), { replicaUsername: owner })
 					return resultOk(method, await fn(request, list[1]))
+				}
+				case 'GetCharReply': {
+					const fn = world.interfaces?.chat?.GetCharReply
+					if (!fn) return { kind: 'method_not_found' }
+					const charname = String(list[1] || '')
+					const request = list[0] || await getChatRequest(groupId, charname, inferChannelId(), { replicaUsername: owner })
+					return resultOk(method, await fn(request, charname))
 				}
 				case 'AddChatLogEntry':
 				case 'AfterAddChatLogEntry':

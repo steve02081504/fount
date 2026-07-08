@@ -29,7 +29,7 @@ alwaysApply: false
 - **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry (remark/rehype plugins, CSS, init hooks).
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()` of registry modules.
-- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers consuming `emoji`/`sticker` registries; Hub mounts via `mountDockedEmojiPicker`/`mountDockedStickerPicker`. Docked options use full names: `pickerElement`, `gridElement`, `triggerButton`, `tabsElement`, `inputElement` — not `*El`/`*Btn`. **JS 变量、HTML `id`、i18n 键**均用完整词（`*Button`/`*Element`/`*Context`）；**DaisyUI 等外部 UI 库的 `class="btn …"` 保持不动**。
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers consuming `emoji`/`sticker` registries; Hub mounts via `mountDockedEmojiPicker`/`mountDockedStickerPicker`. Docked options use full names: `pickerElement`, `gridElement`, `triggerButton`, `tabsElement`, `inputElement` — not `*El`/`*Btn`. **JS variable names, HTML `id`s, and i18n keys** use full words (`*Button`/`*Element`/`*Context`); leave external UI-library classes (e.g. DaisyUI's `class="btn …"`) untouched.
 - **`svgInliner.mjs`**: Inlines SVGs for CSS `currentColor` styling.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n` attributes, `geti18n`, `loadPreferredLangs`, `savePreferredLangs`.
 - **`i18n_base.mjs`**: Internal (imported only by `i18n.mjs`): `userPreferredLanguages` (host app) vs `fountUserPreferredLanguages` (static GitHub Pages).

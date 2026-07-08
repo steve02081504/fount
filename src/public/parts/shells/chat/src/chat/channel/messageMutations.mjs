@@ -41,6 +41,13 @@ export function channelMessageTargetId(line) {
 export async function findChannelMessageRow(username, groupId, channelId, eventId) {
 	const eventIdNorm = String(eventId).trim().toLowerCase()
 	if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventIdNorm)) return null
+
+	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
+	const hot = lines.find(row =>
+		row.type === 'message' && String(row.eventId).toLowerCase() === eventIdNorm,
+	)
+	if (hot) return hot
+
 	const { state } = await getState(username, groupId)
 	const indexed = state.messageSenderIndex?.[eventIdNorm]
 	if (indexed && String(indexed.channelId) === String(channelId))
@@ -51,12 +58,6 @@ export async function findChannelMessageRow(username, groupId, channelId, eventI
 			charId: indexed.charId || null,
 			content: { charOwner: indexed.charOwner || null },
 		}
-
-	const lines = await readJsonl(messagesPath(username, groupId, channelId), { sanitize: stripDagEventLocalExtensions })
-	const hot = lines.find(row =>
-		row.type === 'message' && String(row.eventId).toLowerCase() === eventIdNorm,
-	)
-	if (hot) return hot
 
 	const manifest = await loadArchiveManifest(username, groupId)
 	if (!isEventArchivedInManifest(manifest, channelId, eventIdNorm)) return null

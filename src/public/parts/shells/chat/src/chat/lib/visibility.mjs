@@ -1,9 +1,10 @@
 /**
  * 【文件】lib/visibility.mjs
- * 【职责】频道消息可见性 ACL：按 visibility.roles / visibility.members 与查看者 memberId、roles 做 OR 语义判定。
- * 【原理】canViewMessage 无 visibility 则全员可见；roles 与 members 任一匹配即通过。用于列表过滤与 WS 推送裁剪，不替代 DAG 授权门控。
+ * 【职责】频道消息 visibility ACL：按 visibility.roles / visibility.members 与查看者 memberId、roles 做 OR 语义判定。
+ * 【原理】canViewMessage 无 visibility 则全员可见；roles 与 members 任一匹配即通过。
+ * 【当前用途】仅 prompt_struct 组装路径（entryVisibleForPrompt）；读路径 viewer 化由 world/persona GetChatLogForViewer 负责。
  * 【数据结构】visibility { roles?: string[], members?: string[] }；viewer { memberId, roles, charId? }。
- * 【关联】channel/postMessage、dag/queries 列表、Hub 渲染。
+ * 【关联】prompt_struct/index.mjs。
  */
 
 /**

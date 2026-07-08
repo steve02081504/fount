@@ -1,4 +1,4 @@
-import { chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
@@ -165,40 +165,31 @@ export class WorldAPI_t {
 			 */
 			GetCharReply?: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t | null>
 			/**
-			 * 编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<chatReply_t>} - 编辑后的聊天回复。
+			 * 频道消息编辑前：可改写 edited 或 reject（DAG 写路径唯一语义）。
 			 */
-			MessageEdit?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<chatReply_t>
+			MessageEdit?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				eventId: string
+				original: object
+				edited: channelMessageContent_t
+				memberId?: string
+			}) => Promise<{
+				edited?: channelMessageContent_t
+				reject?: string
+			} | channelMessageContent_t | undefined>
 			/**
-			 * 正在编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
+			 * 频道消息删除前：reject 拒绝删除。
 			 */
-			MessageEditing?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<void>
-			/**
-			 * 删除消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
-			 */
-			MessageDelete?: (arg: {
-				index: number
-				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
-				extension?: any
-			}) => Promise<void>
+			MessageDelete?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				eventId: string
+				original: object
+				memberId?: string
+			}) => Promise<{ reject?: string } | undefined>
 		}
 	}
 }

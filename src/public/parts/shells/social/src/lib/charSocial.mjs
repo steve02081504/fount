@@ -1,5 +1,5 @@
 /**
- * 加载具备 interfaces.social 的角色 part。
+ * 加载具备 interfaces.social 的角色 part（OnFollow 等须显式 social 接口）。
  */
 import { loadPart } from '../../../../../../server/parts_loader.mjs'
 

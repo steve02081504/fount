@@ -3,7 +3,7 @@ import {
 	mountTemplate,
 } from '../../../../../scripts/features/template.mjs'
 import {
-	getChannelMessages,
+	getChannelViewLog,
 } from '../../src/api/groupApi.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
@@ -245,7 +245,7 @@ export async function loadMessages(reload, syncCtx) {
 	try {
 		hubStore.messages.composerPendingId = null
 		hubStore.messages.channelOlderExhausted = false
-		const { messages, reactions } = await getChannelMessages(
+		const { messages, reactions } = await getChannelViewLog(
 			hubStore.context.currentGroupId,
 			hubStore.context.currentChannelId,
 			{ limit: 50 },
@@ -294,7 +294,7 @@ export async function refreshChannelMessagesIncremental(reload, syncCtx) {
 	if (hubStore.messages.lastMessageId)
 		options.since = hubStore.messages.lastMessageId
 
-	const { messages, reactions } = await getChannelMessages(
+	const { messages, reactions } = await getChannelViewLog(
 		hubStore.context.currentGroupId,
 		hubStore.context.currentChannelId,
 		options,

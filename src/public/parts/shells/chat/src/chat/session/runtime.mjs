@@ -11,6 +11,7 @@ import { ensureGroup } from '../dag/lifecycle.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { registerGroupReplicaForUser } from '../stream/groupWsRooms.mjs'
 
+import { BUILTIN_WORLD } from './builtinParts.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
 import { chatMetadata_t, timeSlice_t } from './models.mjs'
 import { loadPlayerForReplica, loadPluginsForReplica } from './timeSliceParts.mjs'
@@ -73,6 +74,8 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 		slice.world = await loadPart(owner, `worlds/${worldBind.worldname}`)
 		slice.world_id = worldBind.worldname
 	}
+	else
+		slice.world = BUILTIN_WORLD
 
 	Object.assign(slice, await loadPlayerForReplica(replicaUsername, session?.personas))
 	Object.assign(slice.plugins, await loadPluginsForReplica(replicaUsername, session?.plugins))

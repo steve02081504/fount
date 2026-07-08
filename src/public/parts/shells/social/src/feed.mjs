@@ -12,7 +12,7 @@ import {
 	withDecryptedPostContent,
 } from './feed/buildItem.mjs'
 import {
-	listKnownTimelineOwners,
+	listFollowedTimelineOwners,
 	loadViewerContext,
 } from './feed/helpers.mjs'
 import { createFeedItemBuildContext } from './feed/iterate.mjs'
@@ -234,7 +234,7 @@ export async function listReplies(username, entityHash, postId) {
 	/** @type {object[]} */
 	const replies = []
 
-	for (const author of await listKnownTimelineOwners(username)) {
+	for (const author of await listFollowedTimelineOwners(username)) {
 		if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
 		if (isHiddenByAuthorReputation(author)) continue
 		const view = await getTimelineMaterialized(username, author)

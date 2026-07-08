@@ -6,7 +6,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { buildPromptStruct } from '../../../../../src/public/parts/shells/chat/src/prompt_struct/index.mjs'
-import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/stream/toolBlocks.mjs'
+import { defineToolUseBlocks } from '../../../../../src/public/parts/shells/chat/src/streaming_text/toolBlocks.mjs'
 import { __dirname } from '../../../../../src/server/base.mjs'
 import { loadPart, loadAnyPreferredDefaultPart } from '../../../../../src/server/parts_loader.mjs'
 

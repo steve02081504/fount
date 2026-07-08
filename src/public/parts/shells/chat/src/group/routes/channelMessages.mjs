@@ -15,11 +15,17 @@ import {
 	appendChannelMessageEdit,
 	appendChannelMessageFeedback,
 	CHANNEL_MESSAGE_EVENT_ID_RE,
+	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
+import {
+	applyChannelMessageDeleteHooks,
+	applyChannelMessageEditHooks,
+} from '../../chat/channel/channelUserHooks.mjs'
 import { postChannelMessage } from '../../chat/channel/postMessage.mjs'
 import { decryptEventContent } from '../../chat/channel_keys/content.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
+import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
 import { getBufferedStreamChunks } from '../../chat/stream/groupWsStreamBuffer.mjs'
 import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
@@ -79,7 +85,12 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		ensureChannel(state, channelId)
 
 		const contentObj = channelMessageContentObject(rawContent)
-		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, contentObj)
+		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
+		if (!row) throw httpError(404, 'message not found')
+		const finalContent = await applyChannelMessageEditHooks(
+			username, groupId, channelId, eventId, row, contentObj,
+		)
+		const event = await appendChannelMessageEdit(username, groupId, channelId, eventId, finalContent)
 		res.status(200).json({ event })
 	})
 
@@ -93,6 +104,9 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, channelId)
 
+		const row = await findChannelMessageRow(username, groupId, channelId, eventId)
+		if (!row) throw httpError(404, 'message not found')
+		await applyChannelMessageDeleteHooks(username, groupId, channelId, eventId, row)
 		const event = await appendChannelMessageDelete(username, groupId, channelId, eventId)
 		res.status(200).json({ event })
 	})
@@ -160,6 +174,24 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const reactions = await readChannelReactionsForMessages(
 			username, groupId, channelId, messages.map(m => m.eventId).filter(Boolean),
 		)
+		res.status(200).json({ messages, reactions })
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/view-log`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const { since, before, limit } = req.query
+
+		const membership = await resolveGroupMember(req, res, groupId)
+		const { username, state, member } = membership
+		ensureChannel(state, channelId)
+		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
+
+		const { messages, visibleEventIds } = await readViewerChannelMessages(username, groupId, channelId, {
+			since: since || undefined,
+			before: before || undefined,
+			limit,
+		}, { kind: 'user' })
+		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, visibleEventIds)
 		res.status(200).json({ messages, reactions })
 	})
 

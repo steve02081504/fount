@@ -155,6 +155,29 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
 }
 
 /**
+ * 拉取 viewer 过滤后的频道消息（Hub 主视图；与 getChannelMessages 同形 DTO）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {{ since?: string, before?: string, limit?: number }} [options] 游标与条数限制
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>> }>} 消息与反应
+ */
+export async function getChannelViewLog(groupId, channelId, options = {}) {
+	const params = new URLSearchParams()
+	if (options.since) params.append('since', options.since)
+	if (options.before) params.append('before', options.before)
+	if (options.limit) params.append('limit', String(options.limit))
+	const query = params.toString()
+	const data = await groupFetch(
+		`${groupPath(groupId, 'channels', channelId, 'view-log')}${query ? `?${query}` : ''}`,
+		{ method: 'GET' },
+	)
+	return {
+		messages: data.messages || [],
+		reactions: data.reactions || {},
+	}
+}
+
+/**
  * 拉取置顶消息 ±N 邻域（冷归档 + 热区）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

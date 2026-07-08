@@ -89,7 +89,7 @@ export async function handleAutoReply(groupId, channelId, replyFrequency, lastSp
 	const channelWorld = await resolveWorld(groupId, effectiveChannelId, username)
 	const session = await getMaterializedSession(username, groupId)
 
-	if (channelWorld?.interfaces?.chat?.GetSpeakingOrder)
+	if (channelWorld.interfaces.chat.GetSpeakingOrder)
 		try {
 			const speakingOrderRequest = {
 				groupId,
@@ -224,7 +224,15 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			supported_functions: request.supported_functions,
 		}
 
-		const charReply = await request.char.interfaces.chat.GetReply(request)
+		const getCharReply = request.world?.interfaces?.chat?.GetCharReply
+		let charReply
+		if (getCharReply) {
+			charReply = await getCharReply(request, request.char_id)
+			if (charReply === null)
+				charReply = await request.char.interfaces.chat.GetReply(request)
+		}
+		else
+			charReply = await request.char.interfaces.chat.GetReply(request)
 
 		if (charReply === null) {
 			stream.abort('Generation result was null.')

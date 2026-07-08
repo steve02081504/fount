@@ -76,7 +76,7 @@ function applyEntryRewriteToContent(content, entry) {
  */
 export async function runWorldAddChatLogEntryHook(username, groupId, channelId, content, entry, charname = null) {
 	const world = await resolveWorld(groupId, channelId, username)
-	const hook = world?.interfaces?.chat?.AddChatLogEntry
+	const hook = world.interfaces.chat.AddChatLogEntry
 	if (!hook) return { content: channelMessageContentObject(content), entry: entry || entryForWorldHook(content, entry) }
 
 	// 动态 import：避免 messageCommit ↔ chatRequest ↔ chatLogAppend ↔ chatLogMirror 环依赖

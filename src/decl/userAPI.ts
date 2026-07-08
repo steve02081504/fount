@@ -1,4 +1,4 @@
-import { channelMessageContent_t, chatReplyRequest_t, chatReply_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReplyRequest_t, chatReply_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -106,46 +106,40 @@ export class UserAPI_t {
 				reject?: string
 			} | undefined>
 			/**
-			 * 获取聊天记录。
+			 * 按观察者返回人格主观滤镜下的聊天记录（正式主接口；不篡改 DAG 真相）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {chatViewer_t} viewer - 统一观察者身份。
 			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
 			 */
-			GetChatLog?: (arg: chatReplyRequest_t) => Promise<chatLogEntry_t[]>
+			GetChatLogForViewer?: (arg: chatReplyRequest_t, viewer: chatViewer_t) => Promise<chatLogEntry_t[]>
 			/**
-			 * 编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<chatReply_t>} - 编辑后的聊天回复。
+			 * 真人编辑前拦截：可改写 edited，或通过 reject 拒绝（服务端语义）。
 			 */
-			MessageEdit?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<chatReply_t>
+			BeforeUserEdit?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				eventId: string
+				original: object
+				edited: channelMessageContent_t
+			}) => Promise<{
+				edited?: channelMessageContent_t
+				reject?: string
+			} | undefined>
 			/**
-			 * 正在编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
+			 * 真人删除前拦截：reject 拒绝删除。
 			 */
-			MessageEditing?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<void>
-			/**
-			 * 删除消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
-			 */
-			MessageDelete?: (arg: {
-				index: number
-				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
-				extension?: any
-			}) => Promise<void>
+			BeforeUserDelete?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				eventId: string
+				original: object
+			}) => Promise<{ reject?: string } | undefined>
 		}
 	}
 }

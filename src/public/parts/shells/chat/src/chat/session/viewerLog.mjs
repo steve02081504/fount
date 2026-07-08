@@ -1,9 +1,9 @@
 /**
- * 【文件】viewerLog.mjs — world chat_log 视图统一分发与 viewer 角色解析
- * 【职责】applyWorldChatLogView 按 GetChatLogForViewer → legacy GetChatLogForCharname 分发；resolveViewerRoles 从物化 members 取 roles；buildViewer 构造 chatViewer_t。
- * 【原理】正式接口以 viewer 为键；老 world 仅实现 GetChatLogForCharname 时 char viewer 回退；无实现则透传。user 成员键走 local_signer_seed → pubKeyHash，不拿 operator entityHash 直接查 members。
+ * 【文件】viewerLog.mjs — world/persona chat_log 视图统一分发与 viewer 角色解析
+ * 【职责】applyWorldChatLogView / applyPersonaChatLogView；resolveViewerRoles 从物化 members 取 roles；buildViewer 构造 chatViewer_t。
+ * 【原理】正式接口以 viewer 为键；老 world 仅实现 GetChatLogForCharname 时 char viewer 回退；顺序固定为 world（客观）→ persona（主观）。D6 后 world/user 恒存在。
  * 【数据结构】chatViewer_t；state.members[memberKey].roles。
- * 【关联】chatRequest、worldAPI、group/access、prompt_struct visibility。
+ * 【关联】chatRequest、materializeViewerLog、worldAPI、userAPI、group/access、prompt_struct visibility。
  */
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
@@ -55,8 +55,7 @@ export function buildViewer(fields) {
  * @returns {Promise<chatLogEntry_t[]>} 视图化后的日志
  */
 export async function applyWorldChatLogView(arg, viewer) {
-	const worldChat = arg.world?.interfaces?.chat
-	if (!worldChat) return arg.chat_log
+	const worldChat = arg.world.interfaces.chat
 
 	if (worldChat.GetChatLogForViewer)
 		return await worldChat.GetChatLogForViewer(arg, viewer)
@@ -65,4 +64,16 @@ export async function applyWorldChatLogView(arg, viewer) {
 		return await worldChat.GetChatLogForCharname(arg, viewer.charname)
 
 	return arg.chat_log
+}
+
+/**
+ * 对 chat_log 应用 persona 主观滤镜（GetChatLogForViewer）。
+ * @param {chatReplyRequest_t} arg 已组装的回复请求（含 user / chat_log；应已过 world 滤镜）
+ * @param {chatViewer_t} viewer 观察者
+ * @returns {Promise<chatLogEntry_t[]>} 视图化后的日志
+ */
+export async function applyPersonaChatLogView(arg, viewer) {
+	const fn = arg.user.interfaces.chat.GetChatLogForViewer
+	if (!fn) return arg.chat_log
+	return await fn(arg, viewer)
 }

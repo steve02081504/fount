@@ -42,14 +42,14 @@ export async function buildNotifications(username, options = {}) {
 	if (!viewerEntityHash)
 		return { notifications: [], nextCursor: null, viewerEntityHash: null }
 
-	const { listKnownTimelineOwners } = await import('./feed/helpers.mjs')
+	const { listFollowedTimelineOwners } = await import('./feed/helpers.mjs')
 	const { extractMentionEntityHashes } = await import('./lib/mentions.mjs')
 	const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
 
 	/** @type {object[]} */
 	const notifications = []
 
-	for (const owner of await listKnownTimelineOwners(username)) {
+	for (const owner of await listFollowedTimelineOwners(username)) {
 		const view = await getTimelineMaterialized(username, owner)
 		for (const post of view.posts) {
 			const at = Number(post.hlc.wall)

@@ -24,7 +24,8 @@ import { appendFileUploadEvent } from '../dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
-import { getActiveGroupRuntime } from '../session/persistence.mjs'
+import { getMaterializedSession } from '../session/dagSession.mjs'
+import { loadPlayerForReplica } from '../session/timeSliceParts.mjs'
 
 import { commitChannelMessageEvent } from './messageCommit.mjs'
 
@@ -171,12 +172,12 @@ function normalizeChannelMessageContent(content, maxBytes) {
  * @returns {Promise<{ content: object, files: Array<{ name?: string, mime_type?: string, buffer: Buffer }> | undefined }>} 改写结果
  */
 async function applyBeforeUserSend(username, groupId, channelId, content, files) {
-	const chatMetadata = await getActiveGroupRuntime(groupId)
-	const player = chatMetadata?.LastTimeSlice?.player
-	const beforeSend = player?.interfaces?.chat?.BeforeUserSend
+	// 按发送者 replica 解析 persona（勿用 getActiveGroupRuntime：联邦仿真里槽位可能属于别的 replica）
+	const session = await getMaterializedSession(username, groupId)
+	const { player, player_id: personaname } = await loadPlayerForReplica(username, session.personas)
+	const beforeSend = player.interfaces.chat.BeforeUserSend
 	if (!beforeSend) return { content, files }
 
-	const personaname = chatMetadata.LastTimeSlice.player_id
 	const memberId = await resolveOperatorEntityHash(username) || ''
 	const result = await beforeSend({
 		groupId,

@@ -10,7 +10,7 @@ import { createEngagementForPost } from './buildItem.mjs'
 import {
 	buildEngagementIndex,
 	buildViewerLikedSet,
-	listKnownTimelineOwners,
+	listFollowedTimelineOwners,
 } from './helpers.mjs'
 
 /**
@@ -31,7 +31,7 @@ export async function createFeedItemBuildContext(username, owners) {
  * @returns {AsyncGenerator<string>} 可见时间线 owner
  */
 export async function* iterateVisibleTimelineOwners(username) {
-	for (const entityHash of await listKnownTimelineOwners(username)) {
+	for (const entityHash of await listFollowedTimelineOwners(username)) {
 		if (!isEntityHash128(entityHash)) continue
 		if (isEntityHashBlocked(entityHash)) continue
 		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue

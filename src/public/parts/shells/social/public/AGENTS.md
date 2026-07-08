@@ -22,6 +22,8 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 
-## Federated Social
+## Agent integration
 
-- Remote notifications go **only** through `part_invoke` (e.g. `social_on_mention`), never `char_rpc`.
+- @-mentioning a local agent: `dispatch.mjs` prefers `interfaces.social.OnMention`; falls back to `interfaces.chat.GetReply` when missing (`lib/chatMentionFallback.mjs` builds a minimal request, using chat's `BUILTIN_*` for the built-in world/persona). `publishEntityReply` calls `ensureEntitySocialReady` so agent timelines have `social_meta` before auto-reply.
+- `OnFollow` / `OnFollowerUpdate` still require an explicit `interfaces.social`.
+- Integration: `test/integration/mention_getreply_fallback.test.mjs`.

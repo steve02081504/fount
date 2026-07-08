@@ -3,6 +3,8 @@
  */
 import { getAllDefaultParts, getAnyDefaultPart, loadPart } from '../../../../../../../server/parts_loader.mjs'
 
+import { BUILTIN_PERSONA, BUILTIN_WORLD } from './builtinParts.mjs'
+
 /**
  * 部件路径缺失或模块未找到时忽略；其余错误继续抛出。
  * @param {unknown} error 捕获值
@@ -49,23 +51,27 @@ export async function loadCharMapFromNames(username, charNames) {
 /**
  * @param {string} username 用户
  * @param {string | undefined} personaname 人格名
- * @returns {Promise<{ player_id?: string, player?: unknown }>} 人格字段或空对象
+ * @returns {Promise<{ player_id?: string, player: import('../../../../../../../decl/userAPI.ts').UserAPI_t }>} 人格字段（恒有 player）
  */
 export async function loadPlayerFields(username, personaname) {
-	if (!personaname) return {}
+	if (!personaname) return { player: BUILTIN_PERSONA }
 	const player = await loadPart(username, `personas/${personaname}`).catch(ignoreMissingPartLoadError)
-	return player ? { player_id: personaname, player } : {}
+	return player
+		? { player_id: personaname, player }
+		: { player: BUILTIN_PERSONA }
 }
 
 /**
  * @param {string} username 用户
  * @param {string | undefined} worldname 世界名
- * @returns {Promise<{ world_id?: string, world?: unknown }>} 世界字段或空对象
+ * @returns {Promise<{ world_id?: string, world: import('../../../../../../../decl/worldAPI.ts').WorldAPI_t }>} 世界字段（恒有 world）
  */
 export async function loadWorldFields(username, worldname) {
-	if (!worldname) return {}
+	if (!worldname) return { world: BUILTIN_WORLD }
 	const world = await loadPart(username, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
-	return world ? { world_id: worldname, world } : {}
+	return world
+		? { world_id: worldname, world }
+		: { world: BUILTIN_WORLD }
 }
 
 /**

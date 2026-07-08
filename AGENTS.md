@@ -38,8 +38,8 @@
 | Frontend page logic (shared scripts, i18n, theming, templates) | [src/public/pages/AGENTS.md](src/public/pages/AGENTS.md) |
 | Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
 | Chat session viewer / member_roles | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |
-| Chat/Social roadmap / 交互拓扑基线（reply 生成归 char；persona=真人 I/O 中间层） | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
-| World 分布形态（local/replicated/hosted、WorldChatHost、world_op） | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
+| Chat/Social roadmap / interaction topology baseline (reply generation belongs to char; persona = human I/O middleware) | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
+| World distribution model (local/replicated/hosted, WorldChatHost, world_op) | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
 | Plugin (`GetPrompt` / `TweakPrompt` / `ReplyHandler`) | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |
 | Chat Hub frontend | [src/public/parts/shells/chat/public/hub/AGENTS.md](src/public/parts/shells/chat/public/hub/AGENTS.md) |
 | Chat cold archive | [src/public/parts/shells/chat/src/chat/archive/AGENTS.md](src/public/parts/shells/chat/src/chat/archive/AGENTS.md) |

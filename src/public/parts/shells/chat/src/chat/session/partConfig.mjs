@@ -145,7 +145,6 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 
 	// LastTimeSlice.world 只反映默认频道；问候必须按 channelId 解析
 	const world = await resolveWorld(groupId, channelId, username)
-	if (!world) return null
 	chatMetadata.LastTimeSlice.world = world
 	chatMetadata.LastTimeSlice.world_id = worldname
 

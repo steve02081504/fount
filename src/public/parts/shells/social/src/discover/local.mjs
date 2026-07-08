@@ -1,6 +1,6 @@
 import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
 import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { listLocalTimelineOwners } from '../feed/helpers.mjs'
+import { listLocalTimelineDirs } from '../feed/helpers.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 /** 遍历 owner 时多采样的倍数，供后续 shuffle 截断以保证随机性。 */
@@ -19,7 +19,7 @@ export async function discoverAccounts(username, options = {}) {
 	const accountLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const cursor = (options.cursor || '').toLowerCase()
 	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
-	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix })
+	const owners = await listLocalTimelineDirs(username, { nodeHashPrefix })
 	const start = cursor ? Math.max(0, owners.indexOf(cursor) + 1) : 0
 	const slice = owners.slice(start, start + accountLimit)
 	/** @type {object[]} */
@@ -55,7 +55,7 @@ export async function discoverPosts(username, options = {}) {
 	const postLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
 	const mediaOnly = Boolean(options.mediaOnly)
 	const nodeHashPrefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
-	const owners = await listLocalTimelineOwners(username, { nodeHashPrefix })
+	const owners = await listLocalTimelineDirs(username, { nodeHashPrefix })
 	/** @type {object[]} */
 	const posts = []
 

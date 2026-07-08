@@ -54,8 +54,8 @@ export async function buildPromptStruct(
 		locales,
 	}
 
-	if (world?.interfaces?.chat?.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
-	if (user?.interfaces?.chat) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
+	if (world.interfaces.chat.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
+	if (user.interfaces.chat) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
 	if (char?.interfaces?.chat) promptStruct.char_prompt = char.interfaces.chat.GetPrompt(args)
 	for (const otherCharName of Object.keys(other_chars))
 		promptStruct.other_chars_prompts[otherCharName] = other_chars[otherCharName].interfaces.chat?.GetPromptForOther?.(args)
@@ -63,7 +63,7 @@ export async function buildPromptStruct(
 		promptStruct.plugin_prompts[pluginName] = plugins[pluginName].interfaces.chat?.GetPrompt?.(args)
 
 	promptStruct.world_prompt = await promptStruct.world_prompt
-	if (world?.interfaces?.chat?.GetGroupPrompt) {
+	if (world.interfaces.chat.GetGroupPrompt) {
 		const groupPrompt = await world.interfaces.chat.GetGroupPrompt(args)
 		if (groupPrompt?.public)
 			promptStruct.world_prompt.text.push({
@@ -87,8 +87,8 @@ export async function buildPromptStruct(
 		promptStruct.plugin_prompts[pluginName] = await promptStruct.plugin_prompts[pluginName]
 
 	while (detail_level--) await Promise.all([
-		world?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),
-		user?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.user_prompt, detail_level),
+		world.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),
+		user.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.user_prompt, detail_level),
 		char?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.char_prompt, detail_level),
 		...Object.keys(other_chars).map(otherCharName => other_chars[otherCharName].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_chars_prompts[otherCharName], detail_level)),
 		...Object.keys(plugins).map(pluginName => plugins[pluginName].interfaces.chat?.TweakPrompt?.(args, promptStruct, promptStruct.plugin_prompts[pluginName], detail_level))

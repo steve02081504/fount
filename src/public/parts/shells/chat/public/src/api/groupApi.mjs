@@ -36,6 +36,7 @@ export {
 	deleteChannelMessage,
 	editChannelMessage,
 	getChannelMessages,
+	getChannelViewLog,
 	getPinContextMessages,
 	getStreamBufferChunks,
 	getChatBranch,

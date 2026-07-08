@@ -56,10 +56,10 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			 * @returns {Promise<chatReply_t | null>} 群问候语回复或 null
 			 */
 			GetGroupGreeting: (replyRequest, greetingIndex) => invokeRemote('GetGroupGreeting', [replyRequest, greetingIndex]),
-			/**
-			 * @param {object} request 发言顺序上下文（含 chatReplyRequest 等）
-			 * @returns {AsyncIterable<object>} 远端返回的发言轮次异步迭代器
-			 */
+			GetPrompt: replyRequest => invokeRemote('GetPrompt', [replyRequest]),
+			GetGroupPrompt: replyRequest => invokeRemote('GetGroupPrompt', [replyRequest]),
+			TweakPrompt: (replyRequest, promptStruct, myPrompt, detailLevel) =>
+				invokeRemote('TweakPrompt', [replyRequest, promptStruct, myPrompt, detailLevel]),
 			GetSpeakingOrder: async request => {
 				const turns = await invokeRemote('GetSpeakingOrder', [request])
 				const list = Array.isArray(turns) ? turns : []
@@ -84,11 +84,7 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			 * @returns {Promise<chatLogEntry_t[]>} 指定角色的聊天记录
 			 */
 			GetChatLogForCharname: (replyRequest, charname) => invokeRemote('GetChatLogForCharname', [replyRequest, charname]),
-			/**
-			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
-			 * @param {chatLogEntry_t} entry 聊天记录条目
-			 * @returns {Promise<void>}
-			 */
+			GetCharReply: (replyRequest, charname) => invokeRemote('GetCharReply', [replyRequest, charname]),
 			AddChatLogEntry: (replyRequest, entry) => invokeRemote('AddChatLogEntry', [replyRequest, entry]),
 			/**
 			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求

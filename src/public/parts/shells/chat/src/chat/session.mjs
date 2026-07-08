@@ -10,7 +10,7 @@
 /** @typedef {import('../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { createCharRpcDispatcher, createWorldRpcDispatcher } from './rpcDispatcher.mjs'
+import { createCharRpcDispatcher, createWorldRpcDispatcher } from './federation/rpcDispatcher.mjs'
 import { getChatRequest } from './session/chatRequest.mjs'
 import { deleteGroup } from './session/crud.mjs'
 import { getActiveGroupRuntime, isLocallyOwnedGroup, isVividGroup } from './session/persistence.mjs'

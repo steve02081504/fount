@@ -9,6 +9,7 @@ import { getPartList } from '../../../../scripts/api/parts.mjs'
 import { mountTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { getGroupChatConfig, groupRequest } from '../src/api/groupApi.mjs'
+import { triggerChannelReply } from '../src/api/groupChannel.mjs'
 
 import { showOverlayNotice } from './core/overlayModal.mjs'
 import { hubStore } from './core/state.mjs'
@@ -156,7 +157,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 				const charname = forceReplyButton.dataset.char
 				if (!charname) return
 				try {
-					await groupRequest(groupId, 'trigger-reply', 'POST', { charname, channelId })
+					await triggerChannelReply(groupId, channelId, charname)
 					showOverlayNotice('success', '', 'chat.hub.configSaved')
 				}
 				catch (err) {

@@ -11,7 +11,7 @@ import { getTimelineOwnerIndex, listLocalEntitiesForNode } from '../timeline/own
  * @param {{ nodeHashPrefix?: string | null }} [options] 仅返回该 nodeHash 托管的 entity
  * @returns {Promise<string[]>} 本地 timelines 目录下的 entityHash
  */
-export async function listLocalTimelineOwners(username, options = {}) {
+export async function listLocalTimelineDirs(username, options = {}) {
 	const prefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
 	if (prefix) return listLocalEntitiesForNode(username, prefix)
 	return [...(await getTimelineOwnerIndex(username)).all]
@@ -22,7 +22,7 @@ export async function listLocalTimelineOwners(username, options = {}) {
  * @param {string} username 用户
  * @returns {Promise<string[]>} 已知时间线 owner
  */
-export async function listKnownTimelineOwners(username) {
+export async function listFollowedTimelineOwners(username) {
 	const { following } = await loadFollowing(username)
 	return following
 }
@@ -52,7 +52,7 @@ export async function buildEngagementIndex(username, owners = null) {
 	/** @type {Map<string, number>} */
 	const replies = new Map()
 
-	const ownerList = owners ? [...owners] : await listKnownTimelineOwners(username)
+	const ownerList = owners ? [...owners] : await listFollowedTimelineOwners(username)
 	for (const owner of ownerList) {
 		const view = await getTimelineMaterialized(username, owner)
 		for (const like of view.likes)
