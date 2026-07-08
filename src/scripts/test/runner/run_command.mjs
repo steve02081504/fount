@@ -173,9 +173,7 @@ export async function runCommand(command, extraEnv = {}, options) {
 		usageTracker.sample().finally(() => { usageSampling = false })
 	}, WATCH_INTERVAL_MS)
 
-	/**
-	 *
-	 */
+	/** @returns {{ peakMemMb?: number, avgCpuPct?: number }} 采样汇总 */
 	const usageResult = () => usageTracker.finish()
 
 	const watchdog = setInterval(() => {
@@ -208,8 +206,8 @@ export async function runCommand(command, extraEnv = {}, options) {
 		signal: abortController.signal,
 		no_output_record: true,
 		/**
-		 *
-		 * @param child
+		 * @param {import('node:child_process').ChildProcess} child spawn 子进程
+		 * @returns {void}
 		 */
 		on_spawn: child => usageTracker.setRootFromChild(child),
 		/**

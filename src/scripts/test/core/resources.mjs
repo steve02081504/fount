@@ -22,8 +22,8 @@ import { MiB } from './concurrency.mjs'
 export function parseManifestResources(raw) {
 	if (!raw || typeof raw !== 'object') return {}
 	return {
-		...(Number.isFinite(raw.memMb) && raw.memMb > 0 ? { memMb: Math.floor(raw.memMb) } : {}),
-		...(Number.isFinite(raw.cpuPct) && raw.cpuPct >= 0 ? { cpuPct: Math.min(100, raw.cpuPct) } : {}),
+		...Number.isFinite(raw.memMb) && raw.memMb > 0 ? { memMb: Math.floor(raw.memMb) } : {},
+		...Number.isFinite(raw.cpuPct) && raw.cpuPct >= 0 ? { cpuPct: Math.min(100, raw.cpuPct) } : {},
 	}
 }
 
@@ -95,7 +95,7 @@ export function suiteSchedulePriority(suite, entry) {
 /**
  * suite 是否通过 serial.mjs 在内部并行跑多文件（应下放 CPU/内存预算）。
  * @param {SuiteDef} suite suite
- * @returns {boolean}
+ * @returns {boolean} 是否经 serial.mjs 内部并行多文件
  */
 export function suiteUsesSerialRunner(suite) {
 	return suite.run.some(arg => String(arg).includes('serial.mjs'))

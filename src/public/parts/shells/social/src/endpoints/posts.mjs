@@ -40,7 +40,7 @@ export function registerPostsRoutes(router) {
 		const draftContent = {
 			text: String(req.body.text),
 			mediaRefs: [
-				...(req.body.mediaRefs ?? []),
+				...req.body.mediaRefs ?? [],
 				...await buildEmojiMediaRefsForPost(username, String(req.body.text)),
 			],
 			replyTo: req.body.replyTo,

@@ -159,7 +159,7 @@ function topoSortKeys(keys, deps, compareTieBreak) {
  * @param {string} b 键
  * @param {Map<string, number>} dependentCount 被依赖计数
  * @param {Map<string, number>} depCount 依赖计数
- * @returns {number}
+ * @returns {number} 排序比较值（<0 表示 a 在前）
  */
 function compareTopoTieBreak(a, b, dependentCount, depCount) {
 	const depByA = dependentCount.get(a) ?? 0
@@ -178,7 +178,7 @@ function compareTopoTieBreak(a, b, dependentCount, depCount) {
 /**
  * 全库 suite 依赖计数（tie-break 用）。
  * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number> }}
+ * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number> }} 各 suite 的依赖数与被依赖数
  */
 function buildSuiteMetrics(allSuites) {
 	/** @type {Map<string, number>} */
@@ -208,7 +208,7 @@ function buildSuiteMetrics(allSuites) {
 /**
  * suite 直接依赖边（越界边由 topoSortKeys 内部按 keySet 过滤）。
  * @param {SuiteDef[]} suites 待排序 suite
- * @returns {Map<string, Set<string>>}
+ * @returns {Map<string, Set<string>>} suite 键 → 直接依赖键集合
  */
 function buildSuiteDeps(suites) {
 	return new Map(suites.map(suite => [
@@ -241,7 +241,7 @@ export function topoSortSuites(suites, allSuites = suites) {
 /**
  * 从 suite 依赖构建 manifest 级图（同 manifest 内边忽略）。
  * @param {SuiteDef[]} suites 全部 suite
- * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number>, deps: Map<string, Set<string>> }}
+ * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number>, deps: Map<string, Set<string>> }} manifest 级依赖计数与边
  */
 function buildManifestGraph(suites) {
 	const ids = [...new Set(suites.map(s => s.manifestId))]

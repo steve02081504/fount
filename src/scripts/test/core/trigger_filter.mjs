@@ -23,17 +23,17 @@ const DEFAULT_IGNORE_PATTERNS = [
 
 /**
  * Merge manifest- and suite-level triggerFilter.
- * @param {TriggerFilter | undefined} manifestFilter
- * @param {TriggerFilter | undefined} suiteFilter
- * @returns {TriggerFilter | undefined}
+ * @param {TriggerFilter | undefined} manifestFilter manifest-level filter
+ * @param {TriggerFilter | undefined} suiteFilter suite-level filter (overrides manifest)
+ * @returns {TriggerFilter | undefined} merged filter, or undefined when defaults apply unchanged
  */
 export function mergeTriggerFilter(manifestFilter, suiteFilter) {
 	if (!manifestFilter && !suiteFilter) return undefined
 	const m = manifestFilter ?? {}
 	const s = suiteFilter ?? {}
 	const ignoreDefaults = s.ignoreDefaults ?? m.ignoreDefaults ?? true
-	const ignore = [...(m.ignore ?? []), ...(s.ignore ?? [])]
-	const unignore = [...(m.unignore ?? []), ...(s.unignore ?? [])]
+	const ignore = [...m.ignore ?? [], ...s.ignore ?? []]
+	const unignore = [...m.unignore ?? [], ...s.unignore ?? []]
 	if (ignoreDefaults !== false && !ignore.length && !unignore.length)
 		return undefined
 	/** @type {TriggerFilter} */
@@ -45,8 +45,8 @@ export function mergeTriggerFilter(manifestFilter, suiteFilter) {
 
 /**
  * @param {string} path repo-relative path
- * @param {TriggerFilter | undefined} [filter]
- * @returns {boolean}
+ * @param {TriggerFilter | undefined} [filter] merged trigger filter
+ * @returns {boolean} true when the path counts as a trigger-relevant change
  */
 function isTriggerRelevantPath(path, filter) {
 	if (filter?.unignore?.some(pat => matchGlob(pat, path)))
@@ -62,8 +62,8 @@ function isTriggerRelevantPath(path, filter) {
 
 /**
  * @param {string[]} files changed paths
- * @param {TriggerFilter | undefined} [filter]
- * @returns {string[]}
+ * @param {TriggerFilter | undefined} [filter] merged trigger filter
+ * @returns {string[]} paths that survive filtering (trigger-relevant)
  */
 export function filterTriggerRelevantFiles(files, filter) {
 	return files.filter(file => isTriggerRelevantPath(file, filter))

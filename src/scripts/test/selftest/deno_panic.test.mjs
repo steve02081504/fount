@@ -24,7 +24,7 @@ const SAMPLE = [
 	'View stack trace at:',
 	'https://panic.deno.com/v2.9.1/x86_64-pc-windows-msvc/abc123',
 	'',
-	"thread 'tokio-runtime-worker' (69808) panicked at C:\\Users\\runneradmin\\.cargo\\registry\\v8-149.4.0\\src\\handle.rs:628:9:",
+	'thread \'tokio-runtime-worker\' (69808) panicked at C:\\Users\\runneradmin\\.cargo\\registry\\v8-149.4.0\\src\\handle.rs:628:9:',
 	'attempt to access Handle hosted by disposed Isolate',
 	'stack backtrace:',
 ].join('\n')

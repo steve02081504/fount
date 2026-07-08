@@ -32,7 +32,7 @@ export function nextBaselineEma(current, sample, emaN, opts = {}) {
 /**
  * @param {number | null | undefined} current 当前基线 ms
  * @param {number | null | undefined} durationMs 本次耗时
- * @returns {number | null}
+ * @returns {number | null} 新基线 ms
  */
 export function nextBaselineDurationMs(current, durationMs) {
 	return nextBaselineEma(current, durationMs, BASELINE_EMA_DURATION, { min: 0, allowZero: false })
@@ -41,7 +41,7 @@ export function nextBaselineDurationMs(current, durationMs) {
 /**
  * @param {number | null | undefined} current 当前基线 MB
  * @param {number | null | undefined} measuredMb 本次峰值 MB
- * @returns {number | null}
+ * @returns {number | null} 新基线 MB
  */
 export function nextBaselineMemMb(current, measuredMb) {
 	const sample = measuredMb == null ? null : Math.ceil(measuredMb)
@@ -51,7 +51,7 @@ export function nextBaselineMemMb(current, measuredMb) {
 /**
  * @param {number | null | undefined} current 当前基线 %
  * @param {number | null | undefined} avgCpuPct 本次运行期间平均全机 CPU %
- * @returns {number | null}
+ * @returns {number | null} 新基线 %
  */
 export function nextBaselineCpuPct(current, avgCpuPct) {
 	const sample = avgCpuPct == null ? null : Math.round(avgCpuPct * 10) / 10

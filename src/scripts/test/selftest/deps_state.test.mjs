@@ -5,6 +5,7 @@ import { join } from 'node:path'
 
 import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { MiB } from '../core/concurrency.mjs'
 import {
 	detectDependencyCycle,
 	expandWithDependencies,
@@ -14,7 +15,6 @@ import {
 	sortManifestIds,
 	topoSortSuites,
 } from '../core/deps.mjs'
-import { MiB } from '../core/concurrency.mjs'
 import { listManifestIds, loadAllSuites, selectSuitesByDiff } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {

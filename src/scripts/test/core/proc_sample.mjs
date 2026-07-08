@@ -12,7 +12,8 @@ import { meanSample } from './baseline.mjs'
 let osUtilsModule = null
 
 /**
- * @returns {Promise<import('npm:node-os-utils').default>}
+ * 惰性加载并缓存 node-os-utils 实例。
+ * @returns {Promise<import('npm:node-os-utils').default>} OSUtils 单例
  */
 async function getOsUtils() {
 	if (!osUtilsModule) {
@@ -26,7 +27,7 @@ async function getOsUtils() {
 /**
  * @param {object[]} list node-os-utils ProcessInfo[]
  * @param {number} rootPid 根 PID
- * @returns {number[]}
+ * @returns {number[]} 根及其全部子孙 PID
  */
 export function treePidsFromProcessList(list, rootPid) {
 	/** @type {Map<number, number[]>} */
@@ -53,8 +54,9 @@ export function treePidsFromProcessList(list, rootPid) {
 }
 
 /**
+ * Windows 下经 PowerShell 枚举进程树 PID（回退路径）。
  * @param {number} rootPid 根 PID
- * @returns {Promise<number[]>}
+ * @returns {Promise<number[]>} 根及其全部子孙 PID
  */
 async function collectTreePidsWindows(rootPid) {
 	try {
@@ -138,7 +140,7 @@ export async function samplePidsUsage(pids) {
 /**
  * pidusage 多核 CPU% 压到调度语义 0–100。
  * @param {number} cpu pidusage 聚合 cpu
- * @returns {number}
+ * @returns {number} 归一化后的 0–100 CPU%
  */
 export function normalizePidusageCpuPct(cpu) {
 	const cores = Math.max(1, os.cpus().length)
@@ -174,7 +176,7 @@ export class ProcessUsageTracker {
 	}
 
 	/**
-	 * @returns {{ peakMemMb?: number, avgCpuPct?: number }}
+	 * @returns {{ peakMemMb?: number, avgCpuPct?: number }} 采样汇总（峰值内存 MB、平均 CPU%）
 	 */
 	finish() {
 		const peakMemMb = this.#memBytesSamples.length

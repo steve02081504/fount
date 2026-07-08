@@ -49,13 +49,19 @@ class MockDataChannel {
 		this._listeners = new Map()
 	}
 
-	/** @param {string} type 事件名 @param {Function} handler 处理器 */
+	/**
+	 * @param {string} type 事件名
+	 * @param {Function} handler 处理器
+	 */
 	addEventListener(type, handler) {
 		if (!this._listeners.has(type)) this._listeners.set(type, new Set())
 		this._listeners.get(type).add(handler)
 	}
 
-	/** @param {string} type 事件名 @param {Function} handler 处理器 */
+	/**
+	 * @param {string} type 事件名
+	 * @param {Function} handler 处理器
+	 */
 	removeEventListener(type, handler) {
 		this._listeners.get(type)?.delete(handler)
 	}
@@ -65,6 +71,7 @@ class MockDataChannel {
 		this.sent.push(typeof data === 'string' ? data : Buffer.from(data).toString('utf8'))
 	}
 
+	/** 关闭通道。 */
 	close() {
 		this.readyState = 'closed'
 	}
@@ -77,11 +84,14 @@ class MockDataChannel {
 
 /**
  * answerer 侧最小 RTCPeerConnection mock：收到 offer 后就绪双通道，答复 answer。
+ * @returns {{ RTCPeerConnection: typeof MockPC, getInstance: () => MockPC | null }} rtc 工厂与实例取回器
  */
 function createAnswererRtc() {
 	/** @type {MockPC | null} */
 	let instance = null
+	/** 最小 RTCPeerConnection mock。 */
 	class MockPC {
+		/** 初始化为已连接的稳定状态。 */
 		constructor() {
 			this.localDescription = null
 			this.remoteDescription = null
@@ -121,10 +131,16 @@ function createAnswererRtc() {
 			else this.signalingState = 'stable'
 		}
 
-		async addIceCandidate() { /* trickle 关闭时不经此路径 */ }
+		/** trickle 关闭时不经此路径。 */
+		async addIceCandidate() { }
+		/** 标记连接关闭。 */
 		async close() { this.connectionState = 'closed' }
 	}
-	return { RTCPeerConnection: MockPC, getInstance: () => instance }
+	return {
+		RTCPeerConnection: MockPC,
+		/** @returns {MockPC | null} 最近创建的 mock 实例 */
+		getInstance: () => instance,
+	}
 }
 
 Deno.test({
@@ -145,7 +161,10 @@ Deno.test({
 		const signal = {
 			/** @param {unknown} _message 出站信令（answer/ice，测试中忽略） */
 			send(_message) {},
-			/** @param {(message: unknown) => void} handler 入站信令处理器 @returns {() => void} */
+			/**
+			 * @param {(message: unknown) => void} handler 入站信令处理器
+			 * @returns {() => void} 取消订阅
+			 */
 			onRemote(handler) { signalHandler = handler; return () => { signalHandler = null } },
 		}
 

@@ -3,10 +3,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { applyBudgetToEnv } from '../core/concurrency.mjs'
-import { suiteUsesSerialRunner } from '../core/resources.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
 import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { suiteUsesSerialRunner } from '../core/resources.mjs'
 
 import { runCommand } from './run_command.mjs'
 

@@ -6,8 +6,8 @@ import { join, relative } from 'node:path'
 
 import { attachDependencies, sortManifestIds } from './deps.mjs'
 import { matchGlob } from './glob.mjs'
-import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
 import { parseManifestResources } from './resources.mjs'
+import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
 /**
  * manifest 中单个 suite 的解析结果。
  * @typedef {object} SuiteDef

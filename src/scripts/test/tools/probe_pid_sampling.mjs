@@ -14,7 +14,8 @@ const INTERVAL_MS = 500
 let osu = null
 
 /**
- *
+ * 惰性加载并缓存 node-os-utils 实例。
+ * @returns {Promise<import('npm:node-os-utils').default>} OSUtils 单例
  */
 async function getOsu() {
 	if (!osu) {
@@ -26,7 +27,9 @@ async function getOsu() {
 }
 
 /**
- * @param {number[]} pids
+ * 用 node-os-utils 逐 PID 聚合 CPU/内存。
+ * @param {number[]} pids 进程 ID 列表
+ * @returns {Promise<{ ok: boolean, cpu: number, memBytes: number, count: number, errors?: string }>} 聚合结果
  */
 async function sampleOsUtils(pids) {
 	const osutils = await getOsu()
@@ -61,9 +64,11 @@ async function sampleOsUtils(pids) {
 }
 
 /**
- * @param {() => boolean} alive
- * @param {() => number | undefined} getRootPid
- * @param {string} label
+ * 在 alive() 为真期间周期性采样并打印 pidusage 与 node-os-utils 对比。
+ * @param {() => boolean} alive 是否继续采样
+ * @param {() => number | undefined} getRootPid 取当前根 PID
+ * @param {string} label 输出标签
+ * @returns {Promise<{ ticks: object[], puCpu: number | null, ouCpu: number | null }>} 采样序列与平均 CPU%
  */
 async function sampleWhileRunning(alive, getRootPid, label) {
 	/** @type {{ pidusage: object, osutils: object, treeSize: number }[]} */
@@ -85,9 +90,9 @@ async function sampleWhileRunning(alive, getRootPid, label) {
 	}
 
 	/**
-	 *
-	 * @param arr
-	 * @param pick
+	 * @param {object[]} arr 采样数组
+	 * @param {(item: object) => number | null} pick 取值函数
+	 * @returns {number | null} 有限值的算术均值
 	 */
 	const avg = (arr, pick) => {
 		const vals = arr.map(pick).filter(v => v != null && Number.isFinite(v))
@@ -130,13 +135,13 @@ let running = true
 const runPromise = execFile(process.execPath, ['eval', worker], {
 	no_output_record: true,
 	/**
-	 *
-	 * @param child
+	 * @param {import('node:child_process').ChildProcess} child spawn 子进程
+	 * @returns {void}
 	 */
 	on_spawn: child => { rootPid = child.pid ?? undefined },
 	/**
-	 *
-	 * @param d
+	 * @param {string | Uint8Array} d stdout 片段
+	 * @returns {void}
 	 */
 	on_stdout: d => process.stdout.write(d),
 })
@@ -159,8 +164,8 @@ child.on('exit', c => process.exit(c ?? 0));
 const nestedPromise = execFile(process.execPath, ['eval', spawnScript], {
 	no_output_record: true,
 	/**
-	 *
-	 * @param child
+	 * @param {import('node:child_process').ChildProcess} child spawn 子进程
+	 * @returns {void}
 	 */
 	on_spawn: child => { rootPid = child.pid ?? undefined },
 })

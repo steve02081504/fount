@@ -100,7 +100,7 @@ export async function safeRm(path, options) {
 		}
 		catch (e) {
 			if (isEnoent(e)) return
-			lastError = /** @type {NodeJS.ErrnoException} */ (e)
+			lastError = /** @type {NodeJS.ErrnoException} */ e
 			if (!RM_TRANSIENT_CODES.has(lastError.code)) throw lastError
 		}
 	}
