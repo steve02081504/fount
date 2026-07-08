@@ -41,10 +41,9 @@ export function pendingContinueReason() {
  * @param {string} commitHash 当前 HEAD
  * @param {string | null} uncommittedHash 当前未提交 digest
  * @param {string[]} changedFiles 自记录以来的变更
- * @param {'imperfect' | 'gate'} mode imperfect：须不完美；gate：须门禁未满足
- * @returns {ContinueReason} 触发原因
+ * @returns {ContinueReason | null} 触发原因；suite 完美/门禁已满足则返回 null
  */
-function buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles, mode) {
+function buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles) {
 	const outdated = isSuiteOutdated(suite, entry, changedFiles)
 
 	if (!entry)
@@ -90,10 +89,7 @@ function buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, chan
 		}
 	}
 
-	const label = `${suite.manifestId}/${suite.name}`
-	throw new Error(mode === 'imperfect'
-		? `buildImperfectContinueReason: ${label} is not imperfect`
-		: `buildDepGateReason: ${label} is dependency-satisfied`)
+	return null
 }
 
 /**
@@ -105,7 +101,10 @@ function buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, chan
  * @returns {ContinueReason} 不完美 suite 的续跑原因
  */
 export function buildImperfectContinueReason(suite, entry, commitHash, uncommittedHash, changedFiles) {
-	return buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles, 'imperfect')
+	const reason = buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles)
+	if (!reason)
+		throw new Error(`buildImperfectContinueReason: ${suite.manifestId}/${suite.name} is not imperfect`)
+	return reason
 }
 
 /**
@@ -206,10 +205,10 @@ export function inferPullDirection(key, requiredBy, byKey) {
  * @param {string} commitHash HEAD
  * @param {string | null} uncommittedHash 未提交 digest
  * @param {string[]} changedFiles 自记录以来的变更
- * @returns {ContinueReason} 依赖门禁未满足的具体原因
+ * @returns {ContinueReason | null} 依赖门禁未满足的具体原因；已满足则 null
  */
 export function buildDepGateReason(suite, entry, commitHash, uncommittedHash, changedFiles) {
-	return buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles, 'gate')
+	return buildSuiteTriggerReason(suite, entry, commitHash, uncommittedHash, changedFiles)
 }
 
 /**
@@ -248,6 +247,13 @@ export function buildDependencyContinueReason({
 	if (!gateSuite)
 		throw new Error(`buildDependencyContinueReason: missing suite ${gateKey}`)
 
+	const gate = buildDepGateReason(
+		gateSuite,
+		state.suites[gateKey],
+		context.commitHash,
+		context.uncommittedHash,
+		context.changedSinceRecordByKey.get(gateKey) ?? [],
+	)
 	/** @type {ContinueReason} */
 	const reason = {
 		kind: 'dependency_required',
@@ -256,13 +262,7 @@ export function buildDependencyContinueReason({
 		rootKey,
 		rootKind: rootReason?.kind,
 		inclusionPath,
-		gate: buildDepGateReason(
-			gateSuite,
-			state.suites[gateKey],
-			context.commitHash,
-			context.uncommittedHash,
-			context.changedSinceRecordByKey.get(gateKey) ?? [],
-		),
+		gate: gate ?? undefined,
 	}
 	return reason
 }

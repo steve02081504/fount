@@ -167,7 +167,7 @@ Deno.test('buildDepGateReason detects outdated trigger hit', () => {
 	assertEquals(reason.matchedPaths, ['src/public/parts/shells/chat/foo.mjs'])
 })
 
-Deno.test('buildDepGateReason rejects commit-only drift', () => {
+Deno.test('buildDepGateReason ignores commit-only drift', () => {
 	const s = suite('server', 'live')
 	const entry = {
 		status: 'passed',
@@ -179,14 +179,8 @@ Deno.test('buildDepGateReason rejects commit-only drift', () => {
 		noiseHits: [],
 		logPath: null,
 	}
-	let threw = false
-	try {
-		buildDepGateReason(s, entry, 'new-head', null, [])
-	}
-	catch {
-		threw = true
-	}
-	assertEquals(threw, true)
+	const reason = buildDepGateReason(s, entry, 'new-head', null, [])
+	assertEquals(reason, null)
 })
 
 Deno.test('buildDiffSelectionReasons maps trigger evidence', () => {
