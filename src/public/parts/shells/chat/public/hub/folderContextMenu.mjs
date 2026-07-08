@@ -11,13 +11,13 @@ import { geti18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 import { hubStore } from './core/state.mjs'
 
 /** @type {HTMLElement | null} */
-let openMenuEl = null
+let openMenuElement = null
 
 /** 关闭已打开的文件夹菜单。 @returns {void} */
 export function dismissFolderContextMenu() {
-	if (!openMenuEl) return
-	openMenuEl.remove()
-	openMenuEl = null
+	if (!openMenuElement) return
+	openMenuElement.remove()
+	openMenuElement = null
 }
 
 /**
@@ -95,7 +95,7 @@ export function showFolderContextMenu(event, folderIndex) {
 	}, 'text-error'))
 
 	document.body.appendChild(menu)
-	openMenuEl = menu
+	openMenuElement = menu
 
 	/** @returns {void} */
 	const closeOnce = () => {

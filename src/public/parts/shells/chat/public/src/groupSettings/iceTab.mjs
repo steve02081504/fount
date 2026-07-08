@@ -2,7 +2,7 @@ import { renderTemplate } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @param {object} [entry] ICE 行
  * @returns {Promise<HTMLElement>} 可编辑的 ICE 配置行
  */
@@ -17,12 +17,12 @@ async function buildIceServerRow(entry = {}) {
 	return row
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function wireIceServersEditor(ctx) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function wireIceServersEditor(context) {
 	const host = document.getElementById('ice-servers-host')
 	if (!host) return
-	const list = Array.isArray(ctx.state?.groupSettings?.iceServers)
-		? ctx.state.groupSettings.iceServers
+	const list = Array.isArray(context.state?.groupSettings?.iceServers)
+		? context.state.groupSettings.iceServers
 		: [{ urls: 'stun:stun.l.google.com:19302' }]
 	host.replaceChildren(...await Promise.all(list.map(entry => buildIceServerRow(entry))))
 	document.getElementById('ice-servers-add')?.addEventListener('click', async () => {

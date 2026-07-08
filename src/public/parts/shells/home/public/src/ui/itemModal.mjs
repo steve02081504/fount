@@ -80,15 +80,15 @@ export async function showItemModal(part) {
 	})
 
 	itemModal.addEventListener('close', () => {
-		const tiltEl = itemModalContent.querySelector('.modal-image-wrapper')
-		if (tiltEl && tiltEl.vanillaTilt)
-			tiltEl.vanillaTilt.destroy()
+		const tiltElement = itemModalContent.querySelector('.modal-image-wrapper')
+		if (tiltElement && tiltElement.vanillaTilt)
+			tiltElement.vanillaTilt.destroy()
 	}, { once: true })
 
 	const actionsContainer = modalView.querySelector('.modal-actions-container')
 	const buttons = createActionButtons(part, part.interfaces || []) // Pass the part object
 
-	buttons.forEach(btn => actionsContainer.appendChild(btn))
+	buttons.forEach(button => actionsContainer.appendChild(button))
 
 	setTimeout(() => {
 		const containerRect = actionsContainer.getBoundingClientRect()

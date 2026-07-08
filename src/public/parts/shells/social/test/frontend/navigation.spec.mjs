@@ -32,14 +32,14 @@ test.describe('Social navigation', () => {
 		const input = page.locator('#feedSearchInput')
 		await input.fill(`#${tag}`)
 		await input.press('Enter')
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 
 		await input.fill(`__no-match-${Date.now()}__`)
 		await input.press('Enter')
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeHidden({ timeout: 30_000 })
 
-		await page.locator('#feedSearchClearBtn').click()
+		await page.locator('#feedSearchClearButton').click()
 		await expect(input).toHaveValue('')
 		await expectPostInFeed(page, postId)
 	})

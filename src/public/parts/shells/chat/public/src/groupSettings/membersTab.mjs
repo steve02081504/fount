@@ -7,39 +7,39 @@ import { unbanMember } from '../api/groupApi.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @param {string} username 成员公钥哈希
  * @returns {Promise<void>}
  */
-async function kickMember(ctx, username) {
-	const viewerKey = String(ctx.state?.viewerMemberPubKeyHash || '').toLowerCase()
+async function kickMember(context, username) {
+	const viewerKey = String(context.state?.viewerMemberPubKeyHash || '').toLowerCase()
 	if (viewerKey && username.toLowerCase() === viewerKey)
 		if (!confirmI18n('chat.group.settingsPage.kickSelfNodeWarning', { name: username })) return
 
 	if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: username })) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}/members/${encodeURIComponent(username)}/kick`, {
+	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/members/${encodeURIComponent(username)}/kick`, {
 		method: 'POST',
 		credentials: 'include'
 	})
 	if (!resp.ok) throw new Error(resp.statusText)
 	showToastI18n('success', 'chat.group.settingsPage.kickSuccess')
-	await ctx.reload(ctx.groupId)
+	await context.reload(context.groupId)
 }
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @param {string} username 成员公钥哈希
  * @returns {Promise<void>}
  */
-async function banMember(ctx, username) {
+async function banMember(context, username) {
 	const { pickBanScope } = await import('../../hub/banScopePicker.mjs')
 	const picked = await pickBanScope({ displayName: username })
 	if (!picked) return
 	try {
 		const { banMemberWithScope } = await import('../api/groupBan.mjs')
-		await banMemberWithScope(ctx.groupId, username, picked)
+		await banMemberWithScope(context.groupId, username, picked)
 		showToastI18n('success', 'chat.group.settingsPage.banSuccess')
-		await ctx.reload(ctx.groupId)
+		await context.reload(context.groupId)
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.group.settingsPage.banFailed', { error: error.message })
@@ -47,54 +47,54 @@ async function banMember(ctx, username) {
 }
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @param {string} username 成员公钥哈希
  * @returns {Promise<void>}
  */
-async function unbanMemberAction(ctx, username) {
+async function unbanMemberAction(context, username) {
 	if (!confirmI18n('chat.group.settingsPage.unbanConfirm', { name: username })) return
 	try {
-		await unbanMember(ctx.groupId, username)
+		await unbanMember(context.groupId, username)
 		showToastI18n('success', 'chat.group.settingsPage.unbanSuccess')
-		await ctx.reload(ctx.groupId)
+		await context.reload(context.groupId)
 	}
 	catch (error) {
 		showToastI18n('error', 'chat.group.settingsPage.unbanFailed', { error: error.message })
 	}
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function renderMembers(ctx) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function renderMembers(context) {
 	const container = document.getElementById('members-list')
 	if (!container) return
-	if (!ctx.settingsCaps?.isMember) {
+	if (!context.settingsCaps?.isMember) {
 		container.replaceChildren()
 		return
 	}
 
-	ctx.membersController?.abort()
-	ctx.membersController = new AbortController()
-	const { signal } = ctx.membersController
+	context.membersController?.abort()
+	context.membersController = new AbortController()
+	const { signal } = context.membersController
 
-	const memberRows = Array.isArray(ctx.state.members) ? ctx.state.members : []
+	const memberRows = Array.isArray(context.state.members) ? context.state.members : []
 	const members = memberRows.map(member => {
 		const memberKey = member.memberKey || member.agentEntityHash || member.pubKeyHash || ''
 		const roles = member.roles || ['@everyone']
 		const displayName = String(member.displayName || '').trim()
 			|| authorDisplayLabel(member.entityHash || memberKey)
 		const isAgent = member.memberKind === 'agent'
-		const roleDefs = ctx.state?.roles || {}
+		const roleDefs = context.state?.roles || {}
 		return {
 			memberKey: escapeHtml(memberKey),
 			displayName: escapeHtml(displayName),
 			initial: escapeHtml(displayName.charAt(0).toUpperCase() || '?'),
-			rolesLabel: escapeHtml(roles.map(roleId => ctx.state.roles[roleId]?.name || roleId).join(' / ') || '@everyone'),
+			rolesLabel: escapeHtml(roles.map(roleId => context.state.roles[roleId]?.name || roleId).join(' / ') || '@everyone'),
 			isAdmin: memberDisplaysAsAdmin(member, roleDefs),
 			isAgent,
 		}
 	})
 
-	const bannedRows = Array.isArray(ctx.state.bannedMembers) ? ctx.state.bannedMembers : []
+	const bannedRows = Array.isArray(context.state.bannedMembers) ? context.state.bannedMembers : []
 	const bannedMembers = bannedRows.map(member => ({
 		memberKey: escapeHtml(member.memberKey || ''),
 	}))
@@ -102,15 +102,15 @@ export async function renderMembers(ctx) {
 	await mountTemplate(container, 'group/settings/members_list', {
 		members,
 		bannedMembers,
-		showModerationActions: ctx.settingsCaps?.canModerateMembers === true,
-		showUnbanActions: ctx.settingsCaps?.canUnbanMembers === true,
+		showModerationActions: context.settingsCaps?.canModerateMembers === true,
+		showUnbanActions: context.settingsCaps?.canUnbanMembers === true,
 	})
 
 	container.addEventListener('click', async (clickEvent) => {
 		const memberActionButton = clickEvent.target.closest('[data-action="kick"],[data-action="ban"],[data-action="unban"]')
 		if (!memberActionButton) return
-		if (memberActionButton.dataset.action === 'kick') await kickMember(ctx, memberActionButton.dataset.username)
-		else if (memberActionButton.dataset.action === 'ban') await banMember(ctx, memberActionButton.dataset.username)
-		else await unbanMemberAction(ctx, memberActionButton.dataset.username)
+		if (memberActionButton.dataset.action === 'kick') await kickMember(context, memberActionButton.dataset.username)
+		else if (memberActionButton.dataset.action === 'ban') await banMember(context, memberActionButton.dataset.username)
+		else await unbanMemberAction(context, memberActionButton.dataset.username)
 	}, { signal })
 }

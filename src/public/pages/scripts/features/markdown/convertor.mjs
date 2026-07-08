@@ -716,17 +716,17 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
 const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
 
-const createCopyBtn = (text) => {
+const createCopyButton = (text) => {
 	const encoded = encodeURIComponent(text).replace(/'/g, '%27')
 	const copyAction = \`\\
 event.stopPropagation()
-const btn = this
+const button = this
 navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
-	btn.innerHTML = \${JSON.stringify(successSvg)}
-	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
+	button.innerHTML = \${JSON.stringify(successSvg)}
+	setTimeout(() => button.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-							? `btn.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
-							: 'btn.parentElement.dataset.i18n = \'code_block.copied\''
+							? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
+							: 'button.parentElement.dataset.i18n = \'code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone
@@ -754,7 +754,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.error)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-error bg-error/50 border-error/50 relative pr-10">
-	\${createCopyBtn(result.error)}
+	\${createCopyButton(result.error)}
 	<div>
 		<div class="font-bold">Error</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.errorHtml || '<code>'+escapeHtml(result.error)+'</code>'}</pre>
@@ -764,7 +764,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.output)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-info bg-info/40 border-info/40 relative pr-10">
-	\${createCopyBtn(result.output)}
+	\${createCopyButton(result.output)}
 	<div>
 		<div class="font-bold">Output</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.outputHtml || '<code>'+escapeHtml(result.output)+'</code>'}</pre>
@@ -776,7 +776,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 <details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
 	<summary class="collapse-title font-bold text-sm">Assembly</summary>
 	<div class="collapse-content relative pr-10">
-		\${createCopyBtn(result.asm)}
+		\${createCopyButton(result.asm)}
 		<pre class="font-mono text-xs overflow-x-auto">\${result.asmHtml || '<code>'+escapeHtml(result.asm)+'</code>'}</pre>
 	</div>
 </details>
@@ -784,7 +784,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.result)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-success bg-success/40 border-success/40 relative pr-10">
-	\${createCopyBtn(result.result)}
+	\${createCopyButton(result.result)}
 	<div>
 		<div class="font-bold">Result</div>
 		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap">\${result.resultHtml || '<code>'+escapeHtml(result.result)+'</code>'}</pre>
@@ -821,7 +821,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 }).catch(e => {
 	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
-	\${createCopyBtn(e.stack)}
+	\${createCopyButton(e.stack)}
 	<div>
 		<div class="font-bold">Execution Error</div>
 		<pre class="text-xs overflow-x-auto whitespace-pre-wrap"><code>\${e.stack}</code></pre>

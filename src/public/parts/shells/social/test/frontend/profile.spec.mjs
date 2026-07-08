@@ -48,7 +48,7 @@ test.describe('Social profile', () => {
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			page.locator('#saveMetaBtn').click(),
+			page.locator('#saveMetaButton').click(),
 		])
 		const metaJson = await metaResponse.json()
 		expect(metaJson).toHaveProperty('socialMeta')
@@ -80,17 +80,17 @@ test.describe('Social profile', () => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
 		await waitForSocialAppReady(page)
-		const followBtn = page.locator(`[data-follow="${dummy}"]`)
-		await expect(followBtn).toBeVisible({ timeout: 20_000 })
+		const followButton = page.locator(`[data-follow="${dummy}"]`)
+		await expect(followButton).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/relationships/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			followBtn.click(),
+			followButton.click(),
 		])
-		await expect(followBtn).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
+		await expect(followButton).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await page.locator('[data-profile-tab="following"]').click()
 		await expect(page.locator('#profileFollowingPanel')).toBeVisible({ timeout: 20_000 })
@@ -100,18 +100,18 @@ test.describe('Social profile', () => {
 		await page.goto(`${baseUrl}/parts/shells:social/`)
 		await waitForSocialAppReady(page)
 		await page.evaluate(eh => { window.location.hash = `profile;${eh}` }, dummy)
-		const unfollowBtn = page.locator(`[data-follow="${dummy}"]`)
-		await expect(unfollowBtn).toBeVisible({ timeout: 30_000 })
-		await expect(unfollowBtn).toHaveAttribute('data-is-following', '1', { timeout: 10_000 })
+		const unfollowButton = page.locator(`[data-follow="${dummy}"]`)
+		await expect(unfollowButton).toBeVisible({ timeout: 30_000 })
+		await expect(unfollowButton).toHaveAttribute('data-is-following', '1', { timeout: 10_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/relationships/follow')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			{ timeout: 60_000 }),
-			unfollowBtn.click(),
+			unfollowButton.click(),
 		])
-		await expect(unfollowBtn).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
+		await expect(unfollowButton).toHaveAttribute('data-is-following', '0', { timeout: 20_000 })
 	})
 
 	test('dm button navigates to chat contact link smoke', async ({ page, baseUrl }) => {

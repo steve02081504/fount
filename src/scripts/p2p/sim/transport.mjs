@@ -102,7 +102,7 @@ export function takeTransportJoinSlot(state, peerId, sourceId, now = Date.now())
  * @param {string} observerId 观察者
  * @param {string[]} friendlyIds 友善节点
  * @param {(id: string) => number} scoreOf 信誉分
- * @param {number} [now=Date.now()] 当前时间（仿真须传 ctx.now，与 takeTransportJoinSlot 同一时钟）
+ * @param {number} [now=Date.now()] 当前时间（仿真须传 simulationContext.now，与 takeTransportJoinSlot 同一时钟）
  * @returns {{ reach: number, diversity: number, throttleOk: number }} 传输指标
  */
 export function transportMetrics(state, observerId, friendlyIds, scoreOf, now = Date.now()) {

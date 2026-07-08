@@ -10,7 +10,7 @@ import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
 
 import { peekFederationBootstrap, peekPeerRoomHint } from './bootstrapStore.mjs'
 import { attachFedChunkHandlers, unregisterChunkSwarm } from './chunks.mjs'
-import { loadFederationGroupSettings, loadFederationMaterializedState, localNodeHash, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, loadFederationMaterializedState, localNodeHash, requireDagDeps } from './dagDependencies.mjs'
 import { publishDiscoveryAnnounceForGroup } from './discoveryRelay.mjs'
 import { buildFederationSlot } from './federationSlot.mjs'
 import { FEDERATION_WIRE_ACTION_NAMES } from './federationWireActions.mjs'

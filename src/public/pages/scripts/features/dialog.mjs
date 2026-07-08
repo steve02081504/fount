@@ -42,24 +42,24 @@ export function pickFromDialog(templateName, data = {}, options = {}) {
 
 	return new Promise((resolve, reject) => {
 		openDialogFromTemplate(templateName, data, {
-			/** @param {HTMLDialogElement} dialogEl 对话框 */
-			onReady: dialogEl => {
+			/** @param {HTMLDialogElement} dialogElement 对话框 */
+			onReady: dialogElement => {
 				/** @param {unknown} value 用户选择结果 */
 				const finish = value => {
-					dialogEl.close()
+					dialogElement.close()
 					resolve(value)
 				}
-				dialogEl.addEventListener('cancel', () => finish(null), { once: true })
+				dialogElement.addEventListener('cancel', () => finish(null), { once: true })
 				for (const sel of cancelSelectors)
-					dialogEl.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
-				for (const btn of dialogEl.querySelectorAll(resolveOn))
-					btn.addEventListener('click', () => {
+					dialogElement.querySelector(sel)?.addEventListener('click', () => finish(null), { once: true })
+				for (const button of dialogElement.querySelectorAll(resolveOn))
+					button.addEventListener('click', () => {
 						finish(options.mapResult
-							? options.mapResult(dialogEl, btn.getAttribute('data-dialog-resolve')
-								|| btn.getAttribute('data-action')
+							? options.mapResult(dialogElement, button.getAttribute('data-dialog-resolve')
+								|| button.getAttribute('data-action')
 								|| 'ok')
-							: btn.getAttribute('data-dialog-resolve')
-								|| btn.getAttribute('data-action')
+							: button.getAttribute('data-dialog-resolve')
+								|| button.getAttribute('data-action')
 								|| 'ok')
 					}, { once: true })
 			},

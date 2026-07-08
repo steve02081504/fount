@@ -21,14 +21,14 @@ import { shouldConfirmDelete } from './messageActionsUi.mjs'
 import { getMessageText } from './messageRender.mjs'
 
 /** @type {HTMLElement | null} */
-let openMenuEl = null
+let openMenuElement = null
 
 /** @returns {void} */
 export function dismissMessageContextMenu() {
-	if (!openMenuEl) return
-	openMenuEl.hidePopover?.()
-	openMenuEl.remove()
-	openMenuEl = null
+	if (!openMenuElement) return
+	openMenuElement.hidePopover?.()
+	openMenuElement.remove()
+	openMenuElement = null
 }
 
 /**
@@ -93,7 +93,7 @@ export async function showMessageContextMenu(event, row) {
 	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
 	document.body.appendChild(menu)
 	menu.showPopover?.()
-	openMenuEl = menu
+	openMenuElement = menu
 
 	/**
 	 * 关闭消息右键菜单并移除文档级监听。

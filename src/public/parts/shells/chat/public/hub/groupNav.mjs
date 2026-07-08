@@ -229,7 +229,7 @@ export async function renderChannelList(state) {
 		const addChannelButton = document.createElement('button')
 		addChannelButton.type = 'button'
 		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 hub-channel-create-button'
-		addChannelButton.dataset.i18n = 'chat.hub.newChannelBtn'
+		addChannelButton.dataset.i18n = 'chat.hub.newChannelButton'
 		addChannelButton.addEventListener('click', () => void showCreateChannelModal())
 		container.appendChild(addChannelButton)
 	}
@@ -488,17 +488,17 @@ async function refreshMemberDigestBar(state) {
 	row.className = 'hub-member-digest-row'
 	const viewerEh = hubStore.viewer.viewerEntityHash
 	if (viewerEh) {
-		const copyBtn = document.createElement('button')
-		copyBtn.type = 'button'
-		copyBtn.className = 'hub-member-digest-copy'
-		copyBtn.dataset.i18n = 'chat.hub.copyEntityId'
-		copyBtn.title = viewerEh
-		copyBtn.addEventListener('click', async (clickEvent) => {
+		const copyButton = document.createElement('button')
+		copyButton.type = 'button'
+		copyButton.className = 'hub-member-digest-copy'
+		copyButton.dataset.i18n = 'chat.hub.copyEntityId'
+		copyButton.title = viewerEh
+		copyButton.addEventListener('click', async (clickEvent) => {
 			clickEvent.stopPropagation()
 			await navigator.clipboard.writeText(viewerEh)
 			showToastI18n('success', 'chat.hub.copyEntityIdOk')
 		})
-		row.appendChild(copyBtn)
+		row.appendChild(copyButton)
 	}
 	const label = document.createElement('span')
 	label.className = 'hub-member-digest-label'
@@ -560,9 +560,9 @@ async function ensureGroupMembership(groupId, state) {
 		document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})
-		const groupNameEl = document.getElementById('hub-group-name-display')
-		groupNameEl.textContent = ''
-		groupNameEl.dataset.i18n = 'chat.hub.groupTag'
+		const groupNameElement = document.getElementById('hub-group-name-display')
+		groupNameElement.textContent = ''
+		groupNameElement.dataset.i18n = 'chat.hub.groupTag'
 		await renderChannelList(state)
 		await renderMemberList(state)
 		await renderGroupInfoCard(state)
@@ -618,14 +618,14 @@ async function syncGroupStateForHub(groupId, state, presetChannelId) {
  * @returns {Promise<void>}
  */
 async function paintGroupHubChrome(state) {
-	const groupNameEl = document.getElementById('hub-group-name-display')
+	const groupNameElement = document.getElementById('hub-group-name-display')
 	if (state.groupMeta.name) {
-		delete groupNameEl.dataset.i18n
-		groupNameEl.textContent = state.groupMeta.name
+		delete groupNameElement.dataset.i18n
+		groupNameElement.textContent = state.groupMeta.name
 	}
 	else {
-		groupNameEl.textContent = ''
-		groupNameEl.dataset.i18n = 'chat.hub.groupTag'
+		groupNameElement.textContent = ''
+		groupNameElement.dataset.i18n = 'chat.hub.groupTag'
 	}
 	await renderChannelList(state)
 	await renderMemberList(state)

@@ -1,7 +1,7 @@
 /**
- * 【文件】public/src/ui/mdRevealBtn.mjs
+ * 【文件】public/src/ui/mdRevealButton.mjs
  * 【职责】不可信 Markdown「点击揭示」按钮挂载（离屏安全 UX）。
- * 【原理】mountMdRevealButton 懒加载模板 profile/md_reveal_btn；onClick 回调由 groupMode 传入。
+ * 【原理】mountMdRevealButton 懒加载模板 hub/messages/md_reveal_button；onClick 回调由 groupMode 传入。
  * 【数据结构】templatesReady 标志、parent HTMLElement。
  * 【关联】groupMode.mjs、template.mjs。
  */

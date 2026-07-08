@@ -5,7 +5,7 @@ import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../
 import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'
 
-import { loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
+import { loadFederationGroupSettings, loadFederationMaterializedState } from './dagDependencies.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
 import { forEachFederationPartitionSlot, groupFederationOwner } from './registry.mjs'
 

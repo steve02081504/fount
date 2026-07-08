@@ -13,7 +13,7 @@ import { applyFileKeyGrant, buildFileKeyGrant } from '../file_keys/historicalGra
 import { snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 
-import { requireDagDeps } from './deps.mjs'
+import { requireDagDeps } from './dagDependencies.mjs'
 import { wrapPullResponseInner, unwrapPullResponseEnvelope } from './pullResponse.mjs'
 
 /**

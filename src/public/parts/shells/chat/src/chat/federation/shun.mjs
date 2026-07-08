@@ -12,7 +12,7 @@ import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updat
 import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
-import { localNodeHash, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 
 /** 出站 fed_shun 限流：同群同请求方 30s 内至多一发。 */

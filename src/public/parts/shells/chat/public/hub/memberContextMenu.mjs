@@ -15,32 +15,32 @@ import { renderMemberList } from './groupNav.mjs'
 import { resolveEntityFromAnchor } from './profilePopup.mjs'
 
 /** @type {HTMLElement | null} */
-let openMenuEl = null
+let openMenuElement = null
 
 /** @returns {void} */
 function dismissMemberContextMenu() {
-	if (!openMenuEl) return
-	openMenuEl.remove()
-	openMenuEl = null
+	if (!openMenuElement) return
+	openMenuElement.remove()
+	openMenuElement = null
 }
 
 /**
  * @param {MouseEvent} event 右键事件
- * @param {HTMLElement} memberEl `.hub-member-item` 行
+ * @param {HTMLElement} memberElement `.hub-member-item` 行
  * @returns {Promise<void>}
  */
-export async function showMemberContextMenu(event, memberEl) {
+export async function showMemberContextMenu(event, memberElement) {
 	event.preventDefault()
 	event.stopPropagation()
 	dismissMemberContextMenu()
 
-	const memberKey = memberEl.dataset.memberKey?.trim()
+	const memberKey = memberElement.dataset.memberKey?.trim()
 	if (!memberKey || !hubStore.context.currentGroupId) return
-	const displayName = memberEl.querySelector('.hub-member-name')?.textContent?.trim() || memberKey
+	const displayName = memberElement.querySelector('.hub-member-name')?.textContent?.trim() || memberKey
 	const viewer = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 	const defaultChannelId = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
-	const isAgent = memberEl.dataset.memberKind === 'agent'
-	const ownerPubKeyHash = memberEl.dataset.ownerPubKeyHash?.trim().toLowerCase() || ''
+	const isAgent = memberElement.dataset.memberKind === 'agent'
+	const ownerPubKeyHash = memberElement.dataset.ownerPubKeyHash?.trim().toLowerCase() || ''
 	const isOwnerOwnAgent = isAgent && ownerPubKeyHash === viewer
 	const perms = viewer && memberKey.toLowerCase() !== viewer
 		? await fetchViewerChannelPermissions(hubStore.context.currentState, hubStore.context.currentGroupId, defaultChannelId)
@@ -49,7 +49,7 @@ export async function showMemberContextMenu(event, memberEl) {
 		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true
 	)
 	const showBan = !!perms.BAN_MEMBERS && memberKey.toLowerCase() !== viewer
-	const entityHash = memberEl.dataset.entityHash?.trim() || ''
+	const entityHash = memberElement.dataset.entityHash?.trim() || ''
 	const showPersonalBlock = memberKey.toLowerCase() !== viewer && !!entityHash
 	const showCopyEntity = !!entityHash
 
@@ -58,7 +58,7 @@ export async function showMemberContextMenu(event, memberEl) {
 	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
 	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity, showPersonalBlock }))
 	document.body.appendChild(menu)
-	openMenuEl = menu
+	openMenuElement = menu
 
 	/**
 	 * 关闭成员右键菜单并移除文档级监听。
@@ -89,7 +89,7 @@ export async function showMemberContextMenu(event, memberEl) {
 	})
 	menu.querySelector('.hub-member-menu-dm')?.addEventListener('click', () => {
 		void (async () => {
-			const entity = await resolveEntityFromAnchor(memberEl)
+			const entity = await resolveEntityFromAnchor(memberElement)
 			if (entity) {
 				dismissMemberContextMenu()
 				await dispatchFriendChat(entity)
@@ -101,7 +101,7 @@ export async function showMemberContextMenu(event, memberEl) {
 	})
 	menu.querySelector('.hub-member-menu-kick')?.addEventListener('click', async () => {
 		if (memberKey.toLowerCase() === viewer.toLowerCase())
-			if (!confirmI18n('chat.hub.memberCtx.kickSelfNodeWarning', { name: displayName })) return
+			if (!confirmI18n('chat.hub.memberContext.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: displayName })) return
 		const groupId = hubStore.context.currentGroupId
@@ -136,11 +136,11 @@ export async function showMemberContextMenu(event, memberEl) {
 		closeOnce()
 	})
 	menu.querySelector('.hub-member-menu-personal-block')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.memberCtx.personalBlockConfirm', { name: displayName })) return
+		if (!confirmI18n('chat.hub.memberContext.personalBlockConfirm', { name: displayName })) return
 		const { postPersonalBlock } = await import('./personalFilter.mjs')
 		try {
 			await postPersonalBlock(entityHash, true)
-			showToastI18n('success', 'chat.hub.memberCtx.personalBlockSuccess')
+			showToastI18n('success', 'chat.hub.memberContext.personalBlockSuccess')
 			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
 			void renderMemberList(hubStore.context.currentState)
 		}

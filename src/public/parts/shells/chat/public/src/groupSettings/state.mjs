@@ -39,12 +39,12 @@ export function createGroupSettingsContext() {
 
 /**
  * 切换群或重载前重置懒加载面板标记。
- * @param {GroupSettingsContext} ctx 群设置上下文
+ * @param {GroupSettingsContext} context 群设置上下文
  * @returns {void}
  */
-export function resetPanelFlags(ctx) {
-	ctx.auditPanelReady = false
-	ctx.channelPermsReady = false
-	ctx.emojisPanelReady = false
+export function resetPanelFlags(context) {
+	context.auditPanelReady = false
+	context.channelPermsReady = false
+	context.emojisPanelReady = false
 	disposeAuditLogPanel()
 }

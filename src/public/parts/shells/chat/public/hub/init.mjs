@@ -153,7 +153,7 @@ function hubPickerGetGroups() {
  * 构建表情选择器上下文（每次打开 picker 时刷新当前群）。
  * @returns {{ groupId: string|null, getGroups: typeof hubPickerGetGroups }} 提供商上下文
  */
-function hubEmojiPickerCtx() {
+function hubEmojiPickerContext() {
 	return {
 		groupId: emojiGetContext().groupId,
 		getGroups: hubPickerGetGroups,
@@ -236,15 +236,15 @@ async function wireHubHeavyFeatures() {
 	 * 刷新停止生成按钮的可见状态。
 	 * @returns {void}
 	 */
-	function refreshStopBtn() {
-		const stopBtn = document.getElementById('hub-stop-generation-button')
-		const sendBtn = document.getElementById('hub-send-button')
+	function refreshStopButton() {
+		const stopButton = document.getElementById('hub-stop-generation-button')
+		const sendButton = document.getElementById('hub-send-button')
 		const active = getActiveVolatileStreamIds().length > 0
-		stopBtn.toggleAttribute('hidden', !active)
-		sendBtn.removeAttribute('hidden')
+		stopButton.toggleAttribute('hidden', !active)
+		sendButton.removeAttribute('hidden')
 	}
 
-	setRefreshStopGenerationButton(refreshStopBtn)
+	setRefreshStopGenerationButton(refreshStopButton)
 
 	initPrivateGroup({
 		enableComposer,
@@ -254,7 +254,7 @@ async function wireHubHeavyFeatures() {
 		onEnterPrivateGroup: onEnterFriendChat,
 	})
 
-	setGenerationActiveChangeHandler(refreshStopBtn)
+	setGenerationActiveChangeHandler(refreshStopButton)
 
 	document.getElementById('hub-stop-generation-button')?.addEventListener('click', () => {
 		resetVolatileStreamState({ abortBackend: true })
@@ -297,36 +297,36 @@ async function wireHubHeavyFeatures() {
  * @returns {Promise<void>}
  */
 async function wireHubPickers() {
-	const emojiPickerEl = document.getElementById('hub-emoji-picker')
-	const emojiTabsEl = document.getElementById('hub-emoji-tabs')
-	const emojiGridEl = document.getElementById('hub-emoji-grid')
+	const emojiPickerElement = document.getElementById('hub-emoji-picker')
+	const emojiTabsElement = document.getElementById('hub-emoji-tabs')
+	const emojiGridElement = document.getElementById('hub-emoji-grid')
 	const emojiButton = document.getElementById('hub-emoji-button')
-	const stickerPickerEl = document.getElementById('hub-sticker-picker')
-	const stickerGridEl = document.getElementById('hub-sticker-grid')
+	const stickerPickerElement = document.getElementById('hub-sticker-picker')
+	const stickerGridElement = document.getElementById('hub-sticker-grid')
 	const stickerButton = document.getElementById('hub-sticker-button')
 	const messageInput = document.getElementById('hub-message-input')
 
-	if (emojiPickerEl && emojiTabsEl && emojiGridEl && emojiButton) {
+	if (emojiPickerElement && emojiTabsElement && emojiGridElement && emojiButton) {
 		await mountDockedEmojiPicker({
-			pickerEl: emojiPickerEl,
-			tabsEl: emojiTabsEl,
-			gridEl: emojiGridEl,
-			triggerBtn: emojiButton,
-			inputEl: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
-			closeWhenOpening: stickerPickerEl,
-			getPickerContext: hubEmojiPickerCtx,
+			pickerElement: emojiPickerElement,
+			tabsElement: emojiTabsElement,
+			gridElement: emojiGridElement,
+			triggerButton: emojiButton,
+			inputElement: messageInput instanceof HTMLTextAreaElement ? messageInput : undefined,
+			closeWhenOpening: stickerPickerElement,
+			getPickerContext: hubEmojiPickerContext,
 		})
-		wireHubGroupEmojiStickerGestures(emojiGridEl, emojiPickerEl, sendPickedEmojiAsSticker)
+		wireHubGroupEmojiStickerGestures(emojiGridElement, emojiPickerElement, sendPickedEmojiAsSticker)
 	}
 	
 
-	if (stickerPickerEl && stickerGridEl && stickerButton) 
+	if (stickerPickerElement && stickerGridElement && stickerButton) 
 		await mountDockedStickerPicker({
-			pickerEl: stickerPickerEl,
-			gridEl: stickerGridEl,
-			triggerBtn: stickerButton,
-			closeWhenOpening: emojiPickerEl,
-			ctx: {},
+			pickerElement: stickerPickerElement,
+			gridElement: stickerGridElement,
+			triggerButton: stickerButton,
+			closeWhenOpening: emojiPickerElement,
+			context: {},
 			onSelect: sendPickedHubSticker,
 		})
 	

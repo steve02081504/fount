@@ -215,7 +215,7 @@ const POP_DEFS = [
 function closeAllPinsBookmarksPanels() {
 	for (const { button, panel } of POP_DEFS) {
 		document.getElementById(panel)?.setAttribute('hidden', '')
-		const btn = document.getElementById(button)
+		const button = document.getElementById(button)
 		btn?.classList.remove('is-open')
 		btn?.setAttribute('aria-expanded', 'false')
 	}

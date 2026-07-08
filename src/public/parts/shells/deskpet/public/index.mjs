@@ -16,7 +16,7 @@ import {
 } from './src/endpoints.mjs'
 
 const charSelectDropdown = document.getElementById('char-select-dropdown')
-const startPetButton = document.getElementById('start-pet-btn')
+const startPetButton = document.getElementById('start-pet-button')
 const runningPetsList = document.getElementById('running-pets-list')
 
 let charList = []

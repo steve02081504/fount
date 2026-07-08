@@ -77,11 +77,11 @@ function leaveCommitOpts(secretKey, state) {
  * 追加 `member_leave`（优先 checkpoint tip；无 snapshot 时回退标准 append）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ state: object, sender: string, secretKey: Uint8Array }} ctx 退群上下文
+ * @param {{ state: object, sender: string, secretKey: Uint8Array }} context 退群上下文
  * @returns {Promise<void>}
  */
-export async function appendMemberLeaveFast(username, groupId, ctx) {
-	const { state, sender, secretKey } = ctx
+export async function appendMemberLeaveFast(username, groupId, context) {
+	const { state, sender, secretKey } = context
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 	const prevFromCheckpoint = prevTipIdsFromCheckpoint(checkpoint)
 	if (!prevFromCheckpoint.length) {

@@ -51,17 +51,17 @@ async function handleRunPart(parts) {
 	const partpath = parts[1].replaceAll(':', '/')
 	const args = parts.slice(2).join('/').split(';').map(decodeURIComponent)
 
-	const messageEl = document.getElementById('message')
-	const progressEl = document.querySelector('.progress')
+	const messageElement = document.getElementById('message')
+	const progressElement = document.querySelector('.progress')
 
 	const confirmed = await new Promise(resolve => {
 		const confirmation_modal = document.getElementById('confirmation_modal')
 		const confirmation_message = document.getElementById('confirmation_message')
-		const confirm_btn = document.getElementById('confirm_btn')
-		const cancel_btn = document.getElementById('cancel_btn')
+		const confirmButton = document.getElementById('confirm_button')
+		const cancelButton = document.getElementById('cancel_button')
 
-		messageEl.style.display = 'none'
-		progressEl.style.display = 'none'
+		messageElement.style.display = 'none'
+		progressElement.style.display = 'none'
 
 		confirmation_message.dataset.i18n = 'protocolhandler.runPart.confirm.message'
 		confirmation_message.dataset.partpath = partpath
@@ -71,7 +71,7 @@ async function handleRunPart(parts) {
 		 * 确认按钮点击事件。
 		 * @returns {void}
 		 */
-		confirm_btn.onclick = () => {
+		confirmButton.onclick = () => {
 			confirmation_modal.close()
 			resolve(true)
 		}
@@ -79,7 +79,7 @@ async function handleRunPart(parts) {
 		 * 取消按钮点击事件。
 		 * @returns {void}
 		 */
-		cancel_btn.onclick = () => {
+		cancelButton.onclick = () => {
 			confirmation_modal.close()
 			resolve(false)
 		}
@@ -101,12 +101,12 @@ async function handleRunPart(parts) {
 
 	if (!confirmed) return goBack()
 
-	messageEl.style.display = 'block'
-	progressEl.style.display = 'block'
-	messageEl.dataset.i18n = 'protocolhandler.processing'
-	const errorActionsEl = document.getElementById('error_actions')
-	const retryBtn = document.getElementById('retry_btn')
-	const backBtn = document.getElementById('back_btn')
+	messageElement.style.display = 'block'
+	progressElement.style.display = 'block'
+	messageElement.dataset.i18n = 'protocolhandler.processing'
+	const errorActionsElement = document.getElementById('error_actions')
+	const retryButton = document.getElementById('retry_button')
+	const backButton = document.getElementById('back_button')
 
 	/**
 	 * 显示运行错误：隐藏进度条，显示错误信息与重试/返回按钮。
@@ -114,10 +114,10 @@ async function handleRunPart(parts) {
 	 * @returns {void}
 	 */
 	const showRunError = (error) => {
-		progressEl.style.display = 'none'
-		messageEl.dataset.i18n = 'protocolhandler.runPart.commandError'
-		messageEl.dataset.error = String(error?.message ?? error)
-		errorActionsEl.hidden = false
+		progressElement.style.display = 'none'
+		messageElement.dataset.i18n = 'protocolhandler.runPart.commandError'
+		messageElement.dataset.error = String(error?.message ?? error)
+		errorActionsElement.hidden = false
 	}
 
 	/**
@@ -127,8 +127,8 @@ async function handleRunPart(parts) {
 	const doRun = async () => {
 		try {
 			await runPart(partpath, args)
-			progressEl.style.display = 'none'
-			messageEl.dataset.i18n = 'protocolhandler.runPart.commandSent'
+			progressElement.style.display = 'none'
+			messageElement.dataset.i18n = 'protocolhandler.runPart.commandSent'
 			setTimeout(goBack, 2000)
 		}
 		catch (error) {
@@ -141,14 +141,14 @@ async function handleRunPart(parts) {
 	 * 重试按钮点击事件。
 	 * @returns {void}
 	 */
-	retryBtn.onclick = () => {
-		errorActionsEl.hidden = true
-		progressEl.style.display = 'block'
-		messageEl.dataset.i18n = 'protocolhandler.processing'
-		delete messageEl.dataset.error
+	retryButton.onclick = () => {
+		errorActionsElement.hidden = true
+		progressElement.style.display = 'block'
+		messageElement.dataset.i18n = 'protocolhandler.processing'
+		delete messageElement.dataset.error
 		doRun()
 	}
-	backBtn.onclick = goBack
+	backButton.onclick = goBack
 
 	doRun()
 }

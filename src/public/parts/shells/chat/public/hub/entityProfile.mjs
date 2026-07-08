@@ -84,15 +84,15 @@ export async function loadEntityProfile(entityHash, options = {}) {
 export async function paintEntityProfileUi(root, profile) {
 	if (!root || !profile) return
 	const name = profile.name || '?'
-	const nameEl = root.querySelector('[data-entity-profile-name]')
-	if (nameEl) nameEl.textContent = name
-	const letterEl = root.querySelector('[data-entity-profile-letter]')
-	if (letterEl) letterEl.textContent = avatarInitial(name)
-	const avatarEl = root.querySelector('[data-entity-profile-avatar]')
-	if (avatarEl instanceof HTMLElement)
-		avatarEl.style.background = avatarColor(name)
-	if (profile.avatar && avatarEl instanceof HTMLElement)
-		await mountAvatarCover(avatarEl, profile.avatar, '')
+	const nameElement = root.querySelector('[data-entity-profile-name]')
+	if (nameElement) nameElement.textContent = name
+	const letterElement = root.querySelector('[data-entity-profile-letter]')
+	if (letterElement) letterElement.textContent = avatarInitial(name)
+	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
+	if (avatarElement instanceof HTMLElement)
+		avatarElement.style.background = avatarColor(name)
+	if (profile.avatar && avatarElement instanceof HTMLElement)
+		await mountAvatarCover(avatarElement, profile.avatar, '')
 	applyBioElement(root.querySelector('[data-entity-profile-bio]'), profileDescriptionText(profile))
 	paintProfileTags(root.querySelector('[data-entity-profile-tags]'), profile.tags)
 	const statusDot = root.querySelector('[data-entity-profile-status-dot]')
@@ -103,21 +103,21 @@ export async function paintEntityProfileUi(root, profile) {
 }
 
 /**
- * @param {HTMLElement} descriptionEl Markdown 容器
+ * @param {HTMLElement} descriptionElement Markdown 容器
  * @param {string} bio 简介
  * @returns {Promise<void>}
  */
-export async function paintBioMarkdown(descriptionEl, bio) {
-	if (!(descriptionEl instanceof HTMLElement)) return
+export async function paintBioMarkdown(descriptionElement, bio) {
+	if (!(descriptionElement instanceof HTMLElement)) return
 	const text = String(bio || '').trim()
 	if (!text) {
-		descriptionEl.replaceChildren()
-		descriptionEl.dataset.i18n = 'chat.hub.charDescriptionEmpty'
+		descriptionElement.replaceChildren()
+		descriptionElement.dataset.i18n = 'chat.hub.charDescriptionEmpty'
 		return
 	}
-	delete descriptionEl.dataset.i18n
-	descriptionEl.className = 'hub-char-description-md markdown-body'
-	descriptionEl.replaceChildren(await renderMarkdown(text))
+	delete descriptionElement.dataset.i18n
+	descriptionElement.className = 'hub-char-description-md markdown-body'
+	descriptionElement.replaceChildren(await renderMarkdown(text))
 }
 
 /**

@@ -8,26 +8,25 @@ import { renderMediaHtml } from './mediaRender.mjs'
 
 /**
  * 创建 feed 帖子卡片构建函数（闭包注入依赖）。
- * @param {object} deps 依赖
- * @param {() => string | null} deps.getViewerEntityHash 当前观看者
- * @param {(key: string, params?: object) => string} deps.geti18n i18n 函数
- * @param {Function} deps.authorLabel 作者展示名
- * @param {Function} deps.renderAvatarHtml 头像 HTML
- * @param {Function} deps.formatTime 时间格式化
- * @param {Function} deps.renderMarkdown Markdown 渲染
- * @param {Function} deps.renderQuoteBlockHtml 引用块 HTML
+ * @param {object} options 依赖
+ * @param {() => string | null} options.getViewerEntityHash 当前观看者
+ * @param {(key: string, params?: object) => string} options.geti18n i18n 函数
+ * @param {Function} options.authorLabel 作者展示名
+ * @param {Function} options.renderAvatarHtml 头像 HTML
+ * @param {Function} options.formatTime 时间格式化
+ * @param {Function} options.renderMarkdown Markdown 渲染
+ * @param {Function} options.renderQuoteBlockHtml 引用块 HTML
  * @returns {(item: object) => Promise<HTMLElement>} 构建帖子卡片
  */
-export function createPostCardBuilder(deps) {
-	const {
-		getViewerEntityHash,
-		geti18n,
-		authorLabel,
-		renderAvatarHtml,
-		formatTime,
-		renderMarkdown,
-		renderQuoteBlockHtml,
-	} = deps
+export function createPostCardBuilder({
+	getViewerEntityHash,
+	geti18n,
+	authorLabel,
+	renderAvatarHtml,
+	formatTime,
+	renderMarkdown,
+	renderQuoteBlockHtml,
+}) {
 
 	/**
 	 * 将单条 feed 条目渲染为帖子卡片 DOM。
@@ -85,13 +84,13 @@ export function createPostCardBuilder(deps) {
 		const headerAvatarProfile = isRepost ? null : item.authorProfile
 		const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
 		const postTime = formatTime(geti18n, item.post?.hlc?.wall)
-		const blockBtn = isOwn
+		const blockButton = isOwn
 			? ''
 			: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
-		const hideBtn = isOwn
+		const hideButton = isOwn
 			? ''
 			: `<button type="button" data-hide="${item.entityHash}"><span class="s-ic s-ic-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
-		const deleteBtn = isOwn
+		const deleteButton = isOwn
 			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
 
@@ -125,9 +124,9 @@ export function createPostCardBuilder(deps) {
 			repostCount: item.repostCount || 0,
 			replyCount: item.replyCount || 0,
 			entityHash: item.entityHash,
-			blockBtn,
-			hideBtn,
-			deleteBtn,
+			blockButton,
+			hideButton,
+			deleteButton,
 		})
 		return /** @type {HTMLElement} */ card
 	}

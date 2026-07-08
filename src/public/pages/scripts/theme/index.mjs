@@ -183,14 +183,14 @@ async function unloadCustomMjs() {
  * @returns {void}
  */
 function injectCustomStyle(css) {
-	let styleEl = document.getElementById(CUSTOM_STYLE_ID)
-	if (!styleEl) {
-		styleEl = document.createElement('style')
-		styleEl.id = CUSTOM_STYLE_ID
-		document.head.appendChild(styleEl)
+	let styleElement = document.getElementById(CUSTOM_STYLE_ID)
+	if (!styleElement) {
+		styleElement = document.createElement('style')
+		styleElement.id = CUSTOM_STYLE_ID
+		document.head.appendChild(styleElement)
 	}
-	if (styleEl.textContent !== css)
-		styleEl.textContent = css
+	if (styleElement.textContent !== css)
+		styleElement.textContent = css
 }
 
 /**
@@ -198,8 +198,8 @@ function injectCustomStyle(css) {
  * @returns {void}
  */
 function removeCustomStyle() {
-	const styleEl = document.getElementById(CUSTOM_STYLE_ID)
-	if (styleEl) styleEl.remove()
+	const styleElement = document.getElementById(CUSTOM_STYLE_ID)
+	if (styleElement) styleElement.remove()
 }
 
 /**

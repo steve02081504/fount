@@ -26,13 +26,13 @@ import { clearPrivateGroupState } from './privateGroup.mjs'
 import { renderServerBar } from './serverBar.mjs'
 
 /** @type {HTMLElement | null} */
-let openMenuEl = null
+let openMenuElement = null
 
 /** 关闭已打开的群操作菜单。 @returns {void} */
 export function dismissGroupActionMenu() {
-	if (!openMenuEl) return
-	openMenuEl.remove()
-	openMenuEl = null
+	if (!openMenuElement) return
+	openMenuElement.remove()
+	openMenuElement = null
 }
 
 /**
@@ -181,16 +181,16 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	if (batch) {
 		const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 		const li = document.createElement('li')
-		const btn = document.createElement('button')
-		btn.type = 'button'
-		btn.className = 'hub-group-menu-leave-batch text-error'
-		btn.textContent = await geti18n('chat.hub.groupContext.leaveBatch', { count: targets.length })
-		li.appendChild(btn)
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'hub-group-menu-leave-batch text-error'
+		button.textContent = await geti18n('chat.hub.groupContext.leaveBatch', { count: targets.length })
+		li.appendChild(button)
 		menu.appendChild(li)
 	}
 	else menu.appendChild(await renderTemplate('hub/modals/group_context_menu', { groupId }))
 	document.body.appendChild(menu)
-	openMenuEl = menu
+	openMenuElement = menu
 
 	/**
 	 * 关闭群右键菜单并移除文档级监听。
@@ -264,13 +264,13 @@ export async function showGroupContextMenu(event, groupId) {
 
 /**
  * 在群名标题下方显示群操作下拉菜单。
- * @param {HTMLElement} anchorEl `#hub-group-header`
+ * @param {HTMLElement} anchorElement `#hub-group-header`
  * @returns {Promise<void>}
  */
-export async function showGroupHeaderMenu(anchorEl) {
+export async function showGroupHeaderMenu(anchorElement) {
 	const groupId = hubStore.context.currentGroupId
-	if (!groupId || !(anchorEl instanceof HTMLElement)) return
-	const rect = anchorEl.getBoundingClientRect()
+	if (!groupId || !(anchorElement instanceof HTMLElement)) return
+	const rect = anchorElement.getBoundingClientRect()
 	await mountGroupActionMenuAt(groupId, rect.left, rect.bottom + 4)
 }
 

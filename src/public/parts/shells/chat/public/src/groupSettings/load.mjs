@@ -11,36 +11,36 @@ import { renderPermissionSettings } from './permissionsTab.mjs'
 import { resetPanelFlags } from './state.mjs'
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @param {string} groupId 群 ID
  * @returns {Promise<void>}
  */
-export async function loadGroupSettings(ctx, groupId) {
-	ctx.groupId = groupId
-	resetPanelFlags(ctx)
+export async function loadGroupSettings(context, groupId) {
+	context.groupId = groupId
+	resetPanelFlags(context)
 	const state = await getGroupState(groupId)
-	ctx.state = state
-	ctx.stateJson = state
-	ctx.settingsCaps = await resolveViewerSettingsCapabilities(ctx.state, groupId)
-	await updateSettingsTabsVisibility(ctx)
-	await renderGroupSettings(ctx)
-	await renderArchiveStoragePanel(ctx)
-	await renderPermissionSettings(ctx)
-	await renderMembers(ctx)
+	context.state = state
+	context.stateJson = state
+	context.settingsCaps = await resolveViewerSettingsCapabilities(context.state, groupId)
+	await updateSettingsTabsVisibility(context)
+	await renderGroupSettings(context)
+	await renderArchiveStoragePanel(context)
+	await renderPermissionSettings(context)
+	await renderMembers(context)
 }
 
 /**
- * @param {import('./state.mjs').GroupSettingsContext} ctx 群设置上下文
+ * @param {import('./state.mjs').GroupSettingsContext} context 群设置上下文
  * @returns {Promise<void>}
  */
-export async function updateSettingsTabsVisibility(ctx) {
-	if (!ctx.settingsCaps) return
+export async function updateSettingsTabsVisibility(context) {
+	if (!context.settingsCaps) return
 	const map = {
-		permissions: ctx.settingsCaps.canManageRoles,
-		'channel-perms': ctx.settingsCaps.canManageChannelPerms,
-		members: ctx.settingsCaps.isMember,
-		emojis: ctx.settingsCaps.isMember,
-		audit: ctx.settingsCaps.canViewAudit,
+		permissions: context.settingsCaps.canManageRoles,
+		'channel-perms': context.settingsCaps.canManageChannelPerms,
+		members: context.settingsCaps.isMember,
+		emojis: context.settingsCaps.isMember,
+		audit: context.settingsCaps.canViewAudit,
 	}
 	for (const [tabId, visible] of Object.entries(map)) {
 		const tab = document.querySelector(`.tabs .tab[data-tab="${tabId}"]`)
@@ -53,11 +53,11 @@ export async function updateSettingsTabsVisibility(ctx) {
 	}
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function ensureAuditLogPanel(ctx) {
-	if (!ctx.groupId || ctx.auditPanelReady) return
-	ctx.auditPanelReady = true
-	await initAuditLogPanel(ctx.groupId)
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function ensureAuditLogPanel(context) {
+	if (!context.groupId || context.auditPanelReady) return
+	context.auditPanelReady = true
+	await initAuditLogPanel(context.groupId)
 }
 
 /**

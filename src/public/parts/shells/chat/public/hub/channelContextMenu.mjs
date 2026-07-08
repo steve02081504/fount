@@ -19,13 +19,13 @@ import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar, selectChannel } from './groupNav.mjs'
 
 /** @type {HTMLElement | null} */
-let openMenuEl = null
+let openMenuElement = null
 
 /** @returns {void} */
 function dismissChannelContextMenu() {
-	if (!openMenuEl) return
-	openMenuEl.remove()
-	openMenuEl = null
+	if (!openMenuElement) return
+	openMenuElement.remove()
+	openMenuElement = null
 }
 
 /**
@@ -75,7 +75,7 @@ export async function showChannelContextMenu(event, channelId) {
 		showDelete,
 	}))
 	document.body.appendChild(menu)
-	openMenuEl = menu
+	openMenuElement = menu
 
 	/**
 	 * 关闭频道右键菜单并移除文档级监听。
@@ -94,7 +94,7 @@ export async function showChannelContextMenu(event, channelId) {
 	menu.querySelector('.hub-channel-menu-copy-link')?.addEventListener('click', async () => {
 		const url = `${window.location.origin}/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`
 		await navigator.clipboard.writeText(url)
-		showToastI18n('success', 'chat.hub.channelCtx.copyLinkDone')
+		showToastI18n('success', 'chat.hub.channelContext.copyLinkDone')
 		closeOnce()
 	})
 
@@ -108,7 +108,7 @@ export async function showChannelContextMenu(event, channelId) {
 		}
 		try {
 			await updateChannel(groupId, channelId, { name: trimmed })
-			showToastI18n('success', 'chat.hub.channelCtx.renameOk')
+			showToastI18n('success', 'chat.hub.channelContext.renameOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {
@@ -120,7 +120,7 @@ export async function showChannelContextMenu(event, channelId) {
 	menu.querySelector('.hub-channel-menu-set-default')?.addEventListener('click', async () => {
 		try {
 			await setDefaultChannel(groupId, channelId)
-			showToastI18n('success', 'chat.hub.channelCtx.setDefaultOk')
+			showToastI18n('success', 'chat.hub.channelContext.setDefaultOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {
@@ -130,10 +130,10 @@ export async function showChannelContextMenu(event, channelId) {
 	})
 
 	menu.querySelector('.hub-channel-menu-delete')?.addEventListener('click', async () => {
-		if (!confirmI18n('chat.hub.channelCtx.deleteConfirm', { name: channelName })) return
+		if (!confirmI18n('chat.hub.channelContext.deleteConfirm', { name: channelName })) return
 		try {
 			await deleteChannel(groupId, channelId)
-			showToastI18n('success', 'chat.hub.channelCtx.deleteOk')
+			showToastI18n('success', 'chat.hub.channelContext.deleteOk')
 			await refreshChannelsAfterManage(channelId)
 		}
 		catch (error) {

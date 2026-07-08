@@ -90,7 +90,7 @@ export async function loadSaved(appContext) {
 	container.innerHTML = `
 		<div class="saved-toolbar card">
 			<input type="text" id="newFolderName" placeholder="${escapeHtml(appContext.geti18n('social.saved.newFolderPlaceholder'))}" />
-			<button type="button" id="createFolderBtn">${escapeHtml(appContext.geti18n('social.saved.createFolder'))}</button>
+			<button type="button" id="createFolderButton">${escapeHtml(appContext.geti18n('social.saved.createFolder'))}</button>
 		</div>
 	`
 	if (Object.keys(data.folders || {}).length) {

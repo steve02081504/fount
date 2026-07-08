@@ -25,7 +25,7 @@ export async function handleComposerFeedClick(appContext, target) {
 		if (groupSelect instanceof HTMLSelectElement)
 			groupSelect.value = ''
 	}
-	if (target.closest('#feedRefreshBtn')) {
+	if (target.closest('#feedRefreshButton')) {
 		appContext.state.activeFeedSearchQuery = null
 		const searchInput = document.getElementById('feedSearchInput')
 		if (searchInput instanceof HTMLInputElement) searchInput.value = ''
@@ -34,10 +34,10 @@ export async function handleComposerFeedClick(appContext, target) {
 		await loadFeed(appContext, false)
 		updateFeedSearchChrome(appContext)
 	}
-	if (target.closest('#feedSearchBtn'))
+	if (target.closest('#feedSearchButton'))
 		await runFeedSearch(appContext)
-	if (target.closest('#feedSearchClearBtn'))
+	if (target.closest('#feedSearchClearButton'))
 		await clearFeedSearch(appContext)
-	if (target.closest('#notificationsMarkAllBtn'))
+	if (target.closest('#notificationsMarkAllButton'))
 		markNotificationsSeen(appContext)
 }

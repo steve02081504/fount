@@ -4,8 +4,8 @@
 
 const passwordConfirmationModal = document.getElementById('passwordConfirmationModal')
 const confirmationPasswordInput = document.getElementById('confirmationPassword')
-const confirmPasswordBtn = document.getElementById('confirmPasswordBtn')
-const cancelPasswordBtn = document.getElementById('cancelPasswordBtn')
+const confirmPasswordButton = document.getElementById('confirmPasswordButton')
+const cancelPasswordButton = document.getElementById('cancelPasswordButton')
 
 /**
  * 密码确认弹窗的 Promise 控制柄。
@@ -66,7 +66,7 @@ export function requestPasswordConfirmation() {
 	})
 }
 
-confirmPasswordBtn.addEventListener('click', () => {
+confirmPasswordButton.addEventListener('click', () => {
 	const ctx = passwordConfirmationContext
 	const password = confirmationPasswordInput.value
 	passwordConfirmationContext = null
@@ -74,7 +74,7 @@ confirmPasswordBtn.addEventListener('click', () => {
 	passwordConfirmationModal.close()
 })
 
-cancelPasswordBtn.addEventListener('click', () => {
+cancelPasswordButton.addEventListener('click', () => {
 	passwordConfirmationContext?.reject?.(Object.assign(new Error('Password confirmation cancelled by user.'), {
 		name: 'PasswordConfirmationCancelledError',
 	}))

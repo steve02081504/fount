@@ -45,10 +45,10 @@ export function refreshQuarantineBanner() {
 /** @returns {Promise<void>} */
 export async function refreshDagForkBanner() {
 	const banner = document.getElementById('hub-fork-banner')
-	const textEl = document.getElementById('hub-fork-banner-text')
+	const textElement = document.getElementById('hub-fork-banner-text')
 	const mergeButton = document.getElementById('hub-fork-merge-button')
 	const tipSelect = document.getElementById('hub-fork-tip-select')
-	if (!banner || !textEl) return
+	if (!banner || !textElement) return
 	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentState?.isMember) {
 		banner.setAttribute('hidden', '')
 		hubStore.federation.dagTips = []
@@ -67,10 +67,10 @@ export async function refreshDagForkBanner() {
 		return
 	}
 	banner.removeAttribute('hidden')
-	textEl.dataset.i18n = governanceFork && tips.length < 2
+	textElement.dataset.i18n = governanceFork && tips.length < 2
 		? 'chat.hub.banners.forkGovernance'
 		: 'chat.hub.banners.forkTips'
-	textEl.dataset.count = String(tips.length)
+	textElement.dataset.count = String(tips.length)
 	if (mergeButton) mergeButton.disabled = tips.length < 2
 	refreshLocalViewBanner()
 	if (tipSelect) {

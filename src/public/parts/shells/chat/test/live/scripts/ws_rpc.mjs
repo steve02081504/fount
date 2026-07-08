@@ -108,19 +108,19 @@ ws.onopen = () => {
  * @returns {void}
  */
 function onWsMessage(ev) {
-	let msg
-	try { msg = JSON.parse(ev.data) } catch { return }
-	received.push(msg.type)
-	if (msg.requestId !== requestId) return
-	if (msg.type === 'rpc_end') {
-		console.log(`rpc_end result keys=${msg.result && typeof msg.result === 'object' ? Object.keys(msg.result).join(',') : typeof msg.result}`)
+	let message
+	try { message = JSON.parse(ev.data) } catch { return }
+	received.push(message.type)
+	if (message.requestId !== requestId) return
+	if (message.type === 'rpc_end') {
+		console.log(`rpc_end result keys=${message.result?.constructor === Object ? Object.keys(message.result).join(',') : typeof message.result}`)
 		clearTimeout(timeout)
 		resolveDone('ok')
 	}
-	if (msg.type === 'rpc_error') {
-		console.log(`rpc_error code=${msg.code} error=${msg.error}`)
+	if (message.type === 'rpc_error') {
+		console.log(`rpc_error code=${message.code} error=${message.error}`)
 		clearTimeout(timeout)
-		resolveDone(`error:${msg.code}`)
+		resolveDone(`error:${message.code}`)
 	}
 }
 ws.onmessage = onWsMessage

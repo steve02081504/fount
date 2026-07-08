@@ -71,10 +71,10 @@ function appendStickerGridItem(grid, sticker) {
 
 /**
  * @typedef {object} DockedStickerPickerOptions
- * @property {HTMLElement} pickerEl
- * @property {HTMLElement} gridEl
- * @property {HTMLElement} triggerBtn
- * @property {object} [ctx]
+ * @property {HTMLElement} pickerElement
+ * @property {HTMLElement} gridElement
+ * @property {HTMLElement} triggerButton
+ * @property {object} [context]
  * @property {(sticker: { stickerId: string, stickerUrl: string }) => Promise<void>} onSelect
  * @property {HTMLElement} [closeWhenOpening]
  */
@@ -84,7 +84,7 @@ function appendStickerGridItem(grid, sticker) {
  * @returns {Promise<null | { reload: () => Promise<void> }>} 控制器或 null（无提供商）
  */
 export async function mountDockedStickerPicker(options) {
-	const { pickerEl, gridEl, triggerBtn, ctx: pickerContext = {}, onSelect, closeWhenOpening } = options
+	const { pickerElement, gridElement, triggerButton, context: pickerContext = {}, onSelect, closeWhenOpening } = options
 	const provider = await resolveStickerProvider()
 	if (!provider) return null
 
@@ -94,7 +94,7 @@ export async function mountDockedStickerPicker(options) {
 	 * @returns {Promise<void>}
 	 */
 	async function reload() {
-		gridEl.replaceChildren()
+		gridElement.replaceChildren()
 		try {
 			const result = await loadProviderStickers(provider, pickerContext)
 			if (!result.stickers.length) {
@@ -103,13 +103,13 @@ export async function mountDockedStickerPicker(options) {
 				empty.dataset.i18n = result.showMarketLink
 					? 'chat.hub.stickersEmptyWithMarket'
 					: 'chat.hub.stickersEmpty'
-				gridEl.appendChild(empty)
+				gridElement.appendChild(empty)
 				hasLoadedStickers = true
 				return
 			}
 
 			for (const sticker of result.stickers)
-				appendStickerGridItem(gridEl, sticker)
+				appendStickerGridItem(gridElement, sticker)
 			hasLoadedStickers = true
 		}
 		catch (err) {
@@ -117,34 +117,34 @@ export async function mountDockedStickerPicker(options) {
 			const fail = document.createElement('div')
 			fail.className = 'hub-sticker-load-failed'
 			fail.textContent = err?.message || 'load failed'
-			gridEl.appendChild(fail)
+			gridElement.appendChild(fail)
 		}
 	}
 
-	triggerBtn.addEventListener('click', event => {
+	triggerButton.addEventListener('click', event => {
 		event.stopPropagation()
 		closeWhenOpening?.classList.remove('show')
-		pickerEl.classList.toggle('show')
-		if (pickerEl.classList.contains('show') && !hasLoadedStickers)
+		pickerElement.classList.toggle('show')
+		if (pickerElement.classList.contains('show') && !hasLoadedStickers)
 			void reload()
 	})
 
-	gridEl.addEventListener('click', event => {
+	gridElement.addEventListener('click', event => {
 		const stickerItem = event.target.closest('.hub-sticker-item')
 		if (!stickerItem) return
 		const sticker = {
 			stickerId: stickerItem.dataset.stickerId,
 			stickerUrl: stickerItem.dataset.stickerUrl,
 		}
-		pickerEl.classList.remove('show')
+		pickerElement.classList.remove('show')
 		void onSelect(sticker)
 	})
 
 	document.addEventListener('click', event => {
-		if (pickerEl.classList.contains('show')
-			&& !pickerEl.contains(event.target)
-			&& !triggerBtn.contains(event.target))
-			pickerEl.classList.remove('show')
+		if (pickerElement.classList.contains('show')
+			&& !pickerElement.contains(event.target)
+			&& !triggerButton.contains(event.target))
+			pickerElement.classList.remove('show')
 	})
 
 	return { reload }

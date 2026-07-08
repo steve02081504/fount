@@ -24,7 +24,7 @@ import {
 import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
-import { loadFederationGroupSettings, localNodeHash, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, localNodeHash, requireDagDeps } from './dagDependencies.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import {
 	applyPullInner,

@@ -15,12 +15,12 @@ import { closePostMoreMenus } from './shared.mjs'
  */
 export async function handlePostEngagementClick(appContext, target) {
 	const cardRoot = target.closest('.post-card') || document
-	const likeBtn = target.closest('[data-like]')
-	if (likeBtn instanceof HTMLElement && likeBtn.dataset.like) {
-		const parsed = parseActionKey(likeBtn.dataset.like)
+	const likeButton = target.closest('[data-like]')
+	if (likeButton instanceof HTMLElement && likeButton.dataset.like) {
+		const parsed = parseActionKey(likeButton.dataset.like)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const liked = likeBtn.dataset.liked === '1'
+			const liked = likeButton.dataset.liked === '1'
 			await appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
 				method: 'POST',
 				body: JSON.stringify({ like: !liked }),
@@ -29,13 +29,13 @@ export async function handlePostEngagementClick(appContext, target) {
 		}
 	}
 
-	const repostBtn = target.closest('[data-repost]')
-	if (repostBtn instanceof HTMLElement && repostBtn.dataset.repost)
-		queryByActionKey('data-repost-for', repostBtn.dataset.repost, cardRoot)?.classList.toggle('hidden')
+	const repostButton = target.closest('[data-repost]')
+	if (repostButton instanceof HTMLElement && repostButton.dataset.repost)
+		queryByActionKey('data-repost-for', repostButton.dataset.repost, cardRoot)?.classList.toggle('hidden')
 
-	const submitRepostBtn = target.closest('[data-submit-repost]')
-	if (submitRepostBtn instanceof HTMLElement && submitRepostBtn.dataset.submitRepost) {
-		const actionKey = submitRepostBtn.dataset.submitRepost
+	const submitRepostButton = target.closest('[data-submit-repost]')
+	if (submitRepostButton instanceof HTMLElement && submitRepostButton.dataset.submitRepost) {
+		const actionKey = submitRepostButton.dataset.submitRepost
 		const panel = queryByActionKey('data-repost-for', actionKey, cardRoot)
 		const textarea = panel?.querySelector('textarea')
 		const comment = textarea?.value.trim() || ''
@@ -52,12 +52,12 @@ export async function handlePostEngagementClick(appContext, target) {
 		}
 	}
 
-	const quoteBtn = target.closest('[data-quote]')
-	if (quoteBtn instanceof HTMLElement && quoteBtn.dataset.quote) {
-		const parsed = parseActionKey(quoteBtn.dataset.quote)
+	const quoteButton = target.closest('[data-quote]')
+	if (quoteButton instanceof HTMLElement && quoteButton.dataset.quote) {
+		const parsed = parseActionKey(quoteButton.dataset.quote)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const card = quoteBtn.closest('.post-card')
+			const card = quoteButton.closest('.post-card')
 			const text = decodeURIComponent(card?.dataset.postText || '')
 			appContext.state.pendingQuoteRef = { entityHash, postId, text }
 			await refreshQuotePreview(appContext)
@@ -69,9 +69,9 @@ export async function handlePostEngagementClick(appContext, target) {
 		}
 	}
 
-	const repliesBtn = target.closest('[data-replies]')
-	if (repliesBtn instanceof HTMLElement && repliesBtn.dataset.replies) {
-		const actionKey = repliesBtn.dataset.replies
+	const repliesButton = target.closest('[data-replies]')
+	if (repliesButton instanceof HTMLElement && repliesButton.dataset.replies) {
+		const actionKey = repliesButton.dataset.replies
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
@@ -85,9 +85,9 @@ export async function handlePostEngagementClick(appContext, target) {
 		}
 	}
 
-	const submitReplyBtn = target.closest('[data-submit-reply]')
-	if (submitReplyBtn instanceof HTMLElement && submitReplyBtn.dataset.submitReply) {
-		const actionKey = submitReplyBtn.dataset.submitReply
+	const submitReplyButton = target.closest('[data-submit-reply]')
+	if (submitReplyButton instanceof HTMLElement && submitReplyButton.dataset.submitReply) {
+		const actionKey = submitReplyButton.dataset.submitReply
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
@@ -105,10 +105,10 @@ export async function handlePostEngagementClick(appContext, target) {
 		}
 	}
 
-	const translateBtn = target.closest('[data-translate]')
-	if (translateBtn instanceof HTMLElement) {
-		const cardBody = translateBtn.closest('.post-card')?.querySelector('.body')
-		const card = translateBtn.closest('.post-card')
+	const translateButton = target.closest('[data-translate]')
+	if (translateButton instanceof HTMLElement) {
+		const cardBody = translateButton.closest('.post-card')?.querySelector('.body')
+		const card = translateButton.closest('.post-card')
 		if (!cardBody || !card) return false
 		const text = decodeURIComponent(card.dataset.postText || '')
 		const result = await appContext.socialApi('/translate', {

@@ -5,7 +5,7 @@ import {
 	expandWithDependents,
 	listImperfectSuites,
 	listOutdatedSuites,
-} from '../core/deps.mjs'
+} from '../core/dependencies.mjs'
 import { filterSuites, listManifestIds, resolveManifestSelectors, selectSuitesByDiff } from '../core/manifest.mjs'
 import {
 	suiteKey,
@@ -316,23 +316,23 @@ export function parseCommandSeedSuites(command, allSuites) {
  * @param {SuiteDef[]} params.allSuites 全部 suite
  * @param {SuiteDef[]} params.slots 报告槽位对应 suite
  * @param {TestState} params.state 现状库
- * @param {object} params.ctx 依赖扩展上下文
+ * @param {object} params.context 依赖扩展上下文
  * @returns {{ provenance: Map<string, string>, seedKeys: Set<string>, explicitSuites: boolean, reasons: Map<string, import('./continue_reason.mjs').ContinueReason> }} 重算结果
  */
-export function rebuildReportSlotReasons({ command, allSuites, slots, state, ctx }) {
+export function rebuildReportSlotReasons({ command, allSuites, slots, state, context }) {
 	const { seedSuites, explicitSuites } = parseCommandSeedSuites(command, allSuites)
 	const seedKeys = new Set(seedSuites.map(s => suiteKey(s.manifestId, s.name)))
 	// 续跑（`fount test --continue`）持久化的命令不含显式种子，此时 provenance 无从谈起，
 	// 报告槽位应保留既有的续跑原因（pending / imperfect 等），无需按依赖链重标。
 	if (!seedKeys.size)
 		return { provenance: new Map(), seedKeys, explicitSuites, reasons: new Map() }
-	const { provenance } = finalizeSelection(seedSuites, allSuites, state, ctx, { explicitSuites })
+	const { provenance } = finalizeSelection(seedSuites, allSuites, state, context, { explicitSuites })
 	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
 	const reasons = new Map()
 	stampExpansionReasons(reasons, slots, seedKeys, provenance, {
 		explicitSuites,
 		state,
-		ctx,
+		context,
 	})
 	return { provenance, seedKeys, explicitSuites, reasons }
 }
@@ -341,22 +341,22 @@ export function rebuildReportSlotReasons({ command, allSuites, slots, state, ctx
  * @param {SuiteDef[]} selected 已选 suite
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {object} ctx 依赖扩展上下文
+ * @param {object} context 依赖扩展上下文
  * @param {object} [options] 选项
  * @param {boolean} [options.explicitSuites] 是否显式指名 suite
  * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
  */
-export function finalizeSelection(selected, allSuites, state, ctx, options = {}) {
+export function finalizeSelection(selected, allSuites, state, context, options = {}) {
 	/** @type {Map<string, string>} */
 	const provenance = new Map()
 	let suites = selected
 	if (!options.explicitSuites) {
-		const expanded = expandWithDependents(selected, allSuites, state, ctx)
+		const expanded = expandWithDependents(selected, allSuites, state, context)
 		suites = expanded.suites
 		for (const [key, parent] of expanded.provenance)
 			provenance.set(key, parent)
 	}
-	const upstream = expandWithDependencies(suites, allSuites, state, ctx)
+	const upstream = expandWithDependencies(suites, allSuites, state, context)
 	for (const [key, parent] of upstream.provenance)
 		provenance.set(key, parent)
 	return { suites: upstream.suites, provenance }

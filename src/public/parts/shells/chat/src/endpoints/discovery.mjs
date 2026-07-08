@@ -16,7 +16,7 @@ export function registerDiscoveryRoutes(router) {
 	router.post('/api/parts/shells\\:chat/discovery/refresh', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { publishDiscoveryAnnounceAllGroups } = await import('../chat/federation/discoveryRelay.mjs')
-		const { localNodeHash } = await import('../chat/federation/deps.mjs')
+		const { localNodeHash } = await import('../chat/federation/dagDependencies.mjs')
 		await publishDiscoveryAnnounceAllGroups(username, localNodeHash())
 		res.status(200).json({})
 	})

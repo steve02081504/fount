@@ -9,7 +9,7 @@ import {
 } from '../discovery/index.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 
-import { loadFederationGroupSettings } from './deps.mjs'
+import { loadFederationGroupSettings } from './dagDependencies.mjs'
 
 /**
  * @param {string} username 用户

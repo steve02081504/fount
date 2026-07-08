@@ -202,9 +202,9 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		displayName,
 	})
 
-	const groupNameEl = document.getElementById('hub-group-name-display')
-	delete groupNameEl.dataset.i18n
-	groupNameEl.textContent = displayName
+	const groupNameElement = document.getElementById('hub-group-name-display')
+	delete groupNameElement.dataset.i18n
+	groupNameElement.textContent = displayName
 	if (binding.charname) {
 		const details = await getCharDetails(binding.charname)
 		throwIfAborted(signal)

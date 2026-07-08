@@ -17,20 +17,20 @@ async function resolveEmojiProvider() {
 }
 
 /**
- * @param {HTMLTextAreaElement | HTMLInputElement} inputEl 输入框
+ * @param {HTMLTextAreaElement | HTMLInputElement} inputElement 输入框
  * @param {string} token 待插入文本
  * @returns {void}
  */
-function insertAtCursor(inputEl, token) {
-	const cursorPos = inputEl.selectionStart ?? inputEl.value.length
-	inputEl.value = inputEl.value.substring(0, cursorPos) + token + inputEl.value.substring(cursorPos)
-	inputEl.focus()
+function insertAtCursor(inputElement, token) {
+	const cursorPos = inputElement.selectionStart ?? inputElement.value.length
+	inputElement.value = inputElement.value.substring(0, cursorPos) + token + inputElement.value.substring(cursorPos)
+	inputElement.focus()
 }
 
 /**
  * @param {HTMLElement} panel 浮动面板
  * @param {HTMLElement} anchor 定位锚点
- * @param {{ panelWidth?: number, heightOffset?: number }} [opts] 尺寸选项
+ * @param {{ panelWidth?: number, heightOffset?: number }} [options] 尺寸选项
  * @returns {void}
  */
 function positionFloatingPanel(panel, anchor, { panelWidth = 320, heightOffset = 280 } = {}) {
@@ -134,12 +134,12 @@ function renderGridMessage(grid, i18nKey) {
 }
 
 /**
- * @param {HTMLElement} tabsEl 标签容器
+ * @param {HTMLElement} tabsElement 标签容器
  * @param {string} tabId 标签 id
  * @returns {void}
  */
-function setActiveTabButton(tabsEl, tabId) {
-	for (const tabButton of tabsEl.querySelectorAll('.hub-emoji-tab'))
+function setActiveTabButton(tabsElement, tabId) {
+	for (const tabButton of tabsElement.querySelectorAll('.hub-emoji-tab'))
 		tabButton.classList.toggle('active', tabButton.dataset.tab === tabId)
 }
 
@@ -167,11 +167,11 @@ async function renderEmojiTabGrid(provider, tab, grid, pickerContext) {
 
 /**
  * @typedef {object} DockedEmojiPickerOptions
- * @property {HTMLElement} pickerEl
- * @property {HTMLElement} tabsEl
- * @property {HTMLElement} gridEl
- * @property {HTMLElement} triggerBtn
- * @property {HTMLTextAreaElement | HTMLInputElement} [inputEl]
+ * @property {HTMLElement} pickerElement
+ * @property {HTMLElement} tabsElement
+ * @property {HTMLElement} gridElement
+ * @property {HTMLElement} triggerButton
+ * @property {HTMLTextAreaElement | HTMLInputElement} [inputElement]
  * @property {object} [pickerContext]
  * @property {() => object} [getPickerContext] 每次刷新时取最新上下文
  * @property {(token: string) => void} [onInsert]
@@ -185,7 +185,7 @@ async function renderEmojiTabGrid(provider, tab, grid, pickerContext) {
  */
 export async function mountDockedEmojiPicker(options) {
 	const {
-		pickerEl, tabsEl, gridEl, triggerBtn, inputEl,
+		pickerElement, tabsElement, gridElement, triggerButton, inputElement,
 		pickerContext = {}, getPickerContext, onInsert, closeWhenOpening,
 	} = options
 
@@ -206,7 +206,7 @@ export async function mountDockedEmojiPicker(options) {
 	 */
 	function setActiveTab(tabId) {
 		activeTabId = tabId
-		setActiveTabButton(tabsEl, tabId)
+		setActiveTabButton(tabsElement, tabId)
 	}
 
 	/**
@@ -216,27 +216,27 @@ export async function mountDockedEmojiPicker(options) {
 		const liveContext = resolvePickerContext()
 		const tabs = await provider.listTabs(liveContext)
 		const prevTab = activeTabId
-		tabsEl.replaceChildren()
+		tabsElement.replaceChildren()
 		for (const tab of tabs)
-			tabsEl.appendChild(renderTabButton(tab, provider, prevTab))
+			tabsElement.appendChild(renderTabButton(tab, provider, prevTab))
 
-		const tabExists = prevTab && tabsEl.querySelector(`[data-tab="${CSS.escape(prevTab)}"]`)
+		const tabExists = prevTab && tabsElement.querySelector(`[data-tab="${CSS.escape(prevTab)}"]`)
 		const tabId = tabExists ? prevTab : tabs[0]?.id ?? null
 		if (!tabId) return
 		setActiveTab(tabId)
 		const tab = tabs.find(tab => tab.id === tabId)
-		if (tab) await renderEmojiTabGrid(provider, tab, gridEl, liveContext)
+		if (tab) await renderEmojiTabGrid(provider, tab, gridElement, liveContext)
 	}
 
-	triggerBtn.addEventListener('click', event => {
+	triggerButton.addEventListener('click', event => {
 		event.stopPropagation()
 		closeWhenOpening?.classList.remove('show')
-		pickerEl.classList.toggle('show')
-		if (pickerEl.classList.contains('show'))
+		pickerElement.classList.toggle('show')
+		if (pickerElement.classList.contains('show'))
 			void refresh()
 	})
 
-	tabsEl.addEventListener('click', event => {
+	tabsElement.addEventListener('click', event => {
 		const tabButton = event.target.closest('[data-tab]')
 		if (!tabButton) return
 		const tabId = tabButton.dataset.tab
@@ -245,33 +245,33 @@ export async function mountDockedEmojiPicker(options) {
 			const liveContext = resolvePickerContext()
 			const tabs = await provider.listTabs(liveContext)
 			const tab = tabs.find(tab => tab.id === tabId)
-			if (tab) await renderEmojiTabGrid(provider, tab, gridEl, liveContext)
+			if (tab) await renderEmojiTabGrid(provider, tab, gridElement, liveContext)
 		})()
 	})
 
-	gridEl.addEventListener('click', event => {
+	gridElement.addEventListener('click', event => {
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (groupButton) {
 			const ref = groupButton.dataset.groupEmojiRef || ''
-			if (inputEl) insertAtCursor(inputEl, ref)
+			if (inputElement) insertAtCursor(inputElement, ref)
 			else if (ref) onInsert?.(ref)
-			pickerEl.classList.remove('show')
+			pickerElement.classList.remove('show')
 			return
 		}
 
 		const gridButton = event.target.closest('[data-emoji]')
 		if (!gridButton?.dataset.emoji) return
 		const { emoji } = gridButton.dataset
-		if (inputEl) insertAtCursor(inputEl, emoji)
+		if (inputElement) insertAtCursor(inputElement, emoji)
 		else onInsert?.(emoji)
-		pickerEl.classList.remove('show')
+		pickerElement.classList.remove('show')
 	})
 
 	document.addEventListener('click', event => {
-		if (pickerEl.classList.contains('show')
-			&& !pickerEl.contains(event.target)
-			&& !triggerBtn.contains(event.target))
-			pickerEl.classList.remove('show')
+		if (pickerElement.classList.contains('show')
+			&& !pickerElement.contains(event.target)
+			&& !triggerButton.contains(event.target))
+			pickerElement.classList.remove('show')
 	})
 
 	return { refresh }
@@ -295,35 +295,35 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;'
 	positionFloatingPanel(panel, anchor)
 
-	const tabsEl = document.createElement('div')
-	tabsEl.className = 'hub-emoji-tabs'
-	const gridEl = document.createElement('div')
-	gridEl.className = 'hub-emoji-grid'
-	panel.append(tabsEl, gridEl)
+	const tabsElement = document.createElement('div')
+	tabsElement.className = 'hub-emoji-tabs'
+	const gridElement = document.createElement('div')
+	gridElement.className = 'hub-emoji-grid'
+	panel.append(tabsElement, gridElement)
 	document.body.appendChild(panel)
 
 	const tabs = await provider.listTabs(pickerContext)
 	let activeTabId = tabs[0]?.id
 	for (const tab of tabs)
-		tabsEl.appendChild(renderTabButton(tab, provider, activeTabId))
+		tabsElement.appendChild(renderTabButton(tab, provider, activeTabId))
 	if (activeTabId) {
 		const tab = tabs.find(tab => tab.id === activeTabId)
-		if (tab) await renderEmojiTabGrid(provider, tab, gridEl, pickerContext)
+		if (tab) await renderEmojiTabGrid(provider, tab, gridElement, pickerContext)
 	}
 
-	tabsEl.addEventListener('click', event => {
+	tabsElement.addEventListener('click', event => {
 		const tabButton = event.target.closest('[data-tab]')
 		if (!tabButton) return
 		activeTabId = tabButton.dataset.tab
-		setActiveTabButton(tabsEl, activeTabId)
+		setActiveTabButton(tabsElement, activeTabId)
 		void (async () => {
 			const liveTabs = await provider.listTabs(pickerContext)
 			const tab = liveTabs.find(tab => tab.id === activeTabId)
-			if (tab) await renderEmojiTabGrid(provider, tab, gridEl, pickerContext)
+			if (tab) await renderEmojiTabGrid(provider, tab, gridElement, pickerContext)
 		})()
 	})
 
-	gridEl.addEventListener('click', event => {
+	gridElement.addEventListener('click', event => {
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (groupButton) {
 			onInsert(groupButton.dataset.groupEmojiRef || '')

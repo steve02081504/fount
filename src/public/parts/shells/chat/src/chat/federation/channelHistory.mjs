@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 
 import { registerWireWait } from '../../../../../../../scripts/p2p/wire_wait.mjs'
 
-import { localNodeHash } from './deps.mjs'
+import { localNodeHash } from './dagDependencies.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'
 import { EVENT_ID_HEX, pendingChannelHistory } from './registry.mjs'
 import { parseChannelHistoryResponse } from './wireSchemas.mjs'

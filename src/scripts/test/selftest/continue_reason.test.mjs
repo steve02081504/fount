@@ -83,13 +83,13 @@ Deno.test('stampExpansionReasons uses provenance and marks explicit seeds', () =
 	/** @type {Map<string, import('../runner/continue_reason.mjs').ContinueReason>} */
 	const reasons = new Map()
 	const state = { suites: {} }
-	const ctx = {
+	const context = {
 		commitHash: 'head1',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(selected.map(s => [suiteKey(s.manifestId, s.name), []])),
 		byKey: new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	stampExpansionReasons(reasons, selected, seeds, provenance, { explicitSuites: true, state, ctx })
+	stampExpansionReasons(reasons, selected, seeds, provenance, { explicitSuites: true, state, context })
 	assertEquals(reasons.get('shells/chat/frontend')?.kind, 'explicit_selected')
 	assertEquals(reasons.get('shells/chat/e2e_single')?.requiredBy, 'shells/chat/frontend')
 	assertEquals(reasons.get('shells/chat/smoke_chat')?.requiredBy, 'shells/chat/e2e_single')
@@ -117,7 +117,7 @@ Deno.test('buildDependencyContinueReason traces root, path, and gate', () => {
 		reasons,
 		seedKeys: seeds,
 		state,
-		ctx: {
+		context: {
 			commitHash: 'head1',
 			uncommittedHash: null,
 			changedSinceRecordByKey: new Map([['shells/chat/smoke_chat', []]]),

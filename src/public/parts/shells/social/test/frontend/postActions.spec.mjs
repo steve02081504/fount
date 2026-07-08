@@ -20,11 +20,11 @@ test.describe('Social post actions', () => {
 	test('like and unlike toggle', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`like-toggle ${Date.now()}`)
 		const card = await findPostCard(page, postId)
-		const likeBtn = card.locator('.like-btn')
-		await likeBtn.click()
-		await expect(likeBtn).toHaveAttribute('data-liked', '1', { timeout: 20_000 })
-		await likeBtn.click()
-		await expect(likeBtn).toHaveAttribute('data-liked', '0', { timeout: 20_000 })
+		const likeButton = card.locator('.like-btn')
+		await likeButton.click()
+		await expect(likeButton).toHaveAttribute('data-liked', '1', { timeout: 20_000 })
+		await likeButton.click()
+		await expect(likeButton).toHaveAttribute('data-liked', '0', { timeout: 20_000 })
 	})
 
 	test('submit repost appears in feed', async ({ page, publishPost }) => {
@@ -45,7 +45,7 @@ test.describe('Social post actions', () => {
 			panel.locator('[data-submit-repost]').click(),
 		])
 		await expect(panel).toHaveClass(/hidden/)
-		await page.locator('#feedRefreshBtn').click()
+		await page.locator('#feedRefreshButton').click()
 		await expect(page.locator('#feedList .repost-comment', { hasText: comment })).toBeVisible({ timeout: 30_000 })
 	})
 
@@ -73,7 +73,7 @@ test.describe('Social post actions', () => {
 		const card = await findPostCard(page, postId)
 		await card.locator('[data-save]').click()
 		await expect(page.locator('#saveModal')).toBeVisible({ timeout: 20_000 })
-		await page.locator('#saveConfirmBtn').click()
+		await page.locator('#saveConfirmButton').click()
 		await expect(page.locator('#saveModal')).toBeHidden({ timeout: 10_000 })
 		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })

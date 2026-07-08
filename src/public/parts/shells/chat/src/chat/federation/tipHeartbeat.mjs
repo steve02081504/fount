@@ -9,7 +9,7 @@ import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/gov
 import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
-import { requireDagDeps } from './deps.mjs'
+import { requireDagDeps } from './dagDependencies.mjs'
 
 /** 默认心跳间隔。 */
 const TIP_HEARTBEAT_INTERVAL_MS = 20_000

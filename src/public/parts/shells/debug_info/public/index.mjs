@@ -17,10 +17,10 @@ const versionIndicator = document.getElementById('version-indicator'),
 	systemInfoTable = document.getElementById('system-info-table'),
 	backendChecks = document.getElementById('backend-checks'),
 	frontendChecks = document.getElementById('frontend-checks'),
-	copyBtn = document.getElementById('copy-btn'),
-	updateBtn = document.getElementById('update-btn'),
-	updateBtnIcon = document.getElementById('update-btn-icon'),
-	updateBtnLabel = document.getElementById('update-btn-label')
+	copyButton = document.getElementById('copy-button'),
+	updateButton = document.getElementById('update-button'),
+	updateButtonIcon = document.getElementById('update-button-icon'),
+	updateButtonLabel = document.getElementById('update-button-label')
 
 const debugData = {
 	timestamp: new Date().toISOString(),
@@ -80,7 +80,7 @@ async function fetchVersionInfo() {
 		versionIndicator.dataset.i18n = 'debug_info.versionStatus.checkFailed'
 		isUpToDate = null
 	}
-	refreshUpdateBtn()
+	refreshUpdateButton()
 }
 
 onServerEvent('server-updated', () => { fetchVersionInfo(); fetchSystemInfo() })
@@ -145,20 +145,20 @@ const UPTODATE_ICON = 'https://api.iconify.design/line-md/confirm.svg'
 /**
  * 根据当前版本状态和自动更新配置刷新更新按钮的样式与可用性。
  */
-function refreshUpdateBtn() {
+function refreshUpdateButton() {
 	const upToDate = isUpToDate === true
-	updateBtn.disabled = !(isUpToDate === false && autoUpdateEnabled)
-	if (updateBtnIcon) updateBtnIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
-	if (updateBtnLabel) updateBtnLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.updateNow'
+	updateButton.disabled = !(isUpToDate === false && autoUpdateEnabled)
+	if (updateButtonIcon) updateButtonIcon.src = upToDate ? UPTODATE_ICON : UPDATE_ICON
+	if (updateButtonLabel) updateButtonLabel.dataset.i18n = upToDate ? 'debug_info.alreadyLatest' : 'debug_info.updateNow'
 }
 
 /**
  * 将更新按钮切换为"重启中"状态（禁用并显示加载图标）。
  */
-function setUpdateBtnRestarting() {
-	updateBtn.disabled = true
-	if (updateBtnIcon) updateBtnIcon.src = LOADING_ICON
-	if (updateBtnLabel) updateBtnLabel.dataset.i18n = 'debug_info.updateRestarting'
+function setUpdateButtonRestarting() {
+	updateButton.disabled = true
+	if (updateButtonIcon) updateButtonIcon.src = LOADING_ICON
+	if (updateButtonLabel) updateButtonLabel.dataset.i18n = 'debug_info.updateRestarting'
 }
 
 /**
@@ -171,10 +171,10 @@ async function fetchAutoUpdateStatus() {
 	} catch {
 		autoUpdateEnabled = false
 	}
-	refreshUpdateBtn()
+	refreshUpdateButton()
 }
 
-copyBtn.addEventListener('click', () => {
+copyButton.addEventListener('click', () => {
 	const { timestamp, version, system, connectivity } = debugData
 	const { os, cpu, memory } = system
 	const report = `\
@@ -208,23 +208,23 @@ ${connectivity.frontend.map(check => `${check.name}: ${check.status} (${check.du
 		.catch(() => showToastI18n('error', 'debug_info.copyFailed'))
 })
 
-updateBtn.addEventListener('click', async () => {
-	updateBtn.disabled = true
+updateButton.addEventListener('click', async () => {
+	updateButton.disabled = true
 	try {
 		const { ok, data } = await postRestart()
 		if (ok) {
-			setUpdateBtnRestarting()
+			setUpdateButtonRestarting()
 			showToastI18n('success', 'debug_info.updateSuccess')
 		} else if (data.error === 'auto_update_disabled') {
 			showToastI18n('warning', 'debug_info.autoUpdateNotEnabled')
 			await fetchAutoUpdateStatus()
 		} else {
 			showToastI18n('error', 'debug_info.updateFailed')
-			refreshUpdateBtn()
+			refreshUpdateButton()
 		}
 	} catch {
 		showToastI18n('error', 'debug_info.updateFailed')
-		refreshUpdateBtn()
+		refreshUpdateButton()
 	}
 })
 

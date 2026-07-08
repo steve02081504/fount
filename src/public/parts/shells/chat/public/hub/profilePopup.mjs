@@ -149,25 +149,25 @@ async function paintProfilePopup(popup, entity) {
 	if (profile)
 		await paintEntityProfileUi(popup, profile)
 	else {
-		const nameEl = popup.querySelector('[data-entity-profile-name]')
-		if (nameEl) nameEl.textContent = entity.displayName || '?'
+		const nameElement = popup.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = entity.displayName || '?'
 	}
 
-	const tagEl = popup.querySelector('[data-profile-popup-entity-tag]')
-	if (tagEl)
+	const tagElement = popup.querySelector('[data-profile-popup-entity-tag]')
+	if (tagElement)
 		if (isViewerEntityHash(entityHash))
-			tagEl.dataset.i18n = 'chat.hub.profilePopup.tagLocal'
+			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagLocal'
 		else if (entity.charname)
-			tagEl.dataset.i18n = 'chat.hub.profilePopup.tagChar'
+			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagChar'
 		else
-			tagEl.dataset.i18n = 'chat.hub.profilePopup.tagFed'
+			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagFed'
 
 
-	const editBtn = popup.querySelector('[data-profile-popup-edit]')
-	const dmBtn = popup.querySelector('[data-profile-popup-dm]')
-	const socialBtn = popup.querySelector('[data-profile-popup-social]')
+	const editButton = popup.querySelector('[data-profile-popup-edit]')
+	const dmButton = popup.querySelector('[data-profile-popup-dm]')
+	const socialButton = popup.querySelector('[data-profile-popup-social]')
 
-	if (editBtn instanceof HTMLButtonElement && entityHash)
+	if (editButton instanceof HTMLButtonElement && entityHash)
 		wireProfileEditButton(popup, entityHash, {
 			/**
 			 * 资料保存后刷新弹窗与侧栏角色卡。
@@ -184,17 +184,17 @@ async function paintProfilePopup(popup, entity) {
 			},
 		})
 
-	if (dmBtn instanceof HTMLButtonElement) {
+	if (dmButton instanceof HTMLButtonElement) {
 		const isSelf = isViewerEntityHash(entityHash)
 		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
-		dmBtn.hidden = !canDm
-		dmBtn.dataset.i18n = entity.charname
+		dmButton.hidden = !canDm
+		dmButton.dataset.i18n = entity.charname
 			? 'chat.hub.profilePopup.dmChar'
 			: 'chat.hub.profilePopup.dmFed'
 	}
 
-	if (socialBtn instanceof HTMLButtonElement)
-		socialBtn.hidden = !isEntityHash128(entityHash)
+	if (socialButton instanceof HTMLButtonElement)
+		socialButton.hidden = !isEntityHash128(entityHash)
 
 }
 

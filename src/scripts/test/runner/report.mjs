@@ -5,7 +5,7 @@ import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
-import { topoSortSuites } from '../core/deps.mjs'
+import { topoSortSuites } from '../core/dependencies.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'

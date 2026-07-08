@@ -16,7 +16,7 @@ import { listChannelMessages } from '../dag/queries.mjs'
 
 import { hasMaterializedAclSnapshot } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
-import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { createFederationCollect } from './federationCollect.mjs'
 import {
 	joinSnapshotWaitKey,

@@ -187,12 +187,12 @@ export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles =
 }
 
 /**
- * @param {HTMLElement|null|undefined} rowEl 消息行
+ * @param {HTMLElement|null|undefined} rowElement 消息行
  * @param {string} innerHtml 编辑区 HTML
  * @returns {HTMLElement|null} 插入后的编辑区根节点
  */
-export async function appendEditArea(rowEl, innerHtml) {
-	if (!rowEl) return null
+export async function appendEditArea(rowElement, innerHtml) {
+	if (!rowElement) return null
 	const wrapHtml = await renderTemplateAsHtmlString('hub/messages/edit_wrap_shell', {
 		innerHtml,
 		fadeMs: EDIT_FADE_MS,
@@ -200,7 +200,7 @@ export async function appendEditArea(rowEl, innerHtml) {
 	const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(wrapHtml)
 	const editWrap = frag.firstElementChild
 	if (!(editWrap instanceof HTMLElement)) return null
-	rowEl.appendChild(editWrap)
+	rowElement.appendChild(editWrap)
 	requestAnimationFrame(() => { editWrap.style.opacity = '1' })
 	return editWrap
 }

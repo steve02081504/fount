@@ -1127,7 +1127,7 @@
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
-			"composeBtn": "发布",
+			"composeButton": "发布",
 			"addMedia": "添加媒体",
 			"visibilityPublic": "公开",
 			"visibilityFollowers": "仅关注者"
@@ -1916,7 +1916,7 @@
 			},
 			"shareGroupOk": "已分享群组邀请卡片",
 			"messageActionFailed": "操作失败：${error}",
-			"inviteJoinBtn": "加入群组",
+			"inviteJoinButton": "加入群组",
 			"inviteLinkNeedsRoomSecret": "本群尚未启用联邦同步，请重新生成邀请链接后再分享。",
 			"inviteCardMembers": "${count} 名成员",
 			"syncFailed": "联邦同步失败：${error}",
@@ -2309,7 +2309,7 @@
 			},
 			"syncTruncated": "DAG 增量未拉全，可稍后重试或提高 limit",
 			"syncTruncatedHint": "DAG 历史过长，可稍后重试或提高 limit",
-			"newChannelBtn": "新建频道",
+			"newChannelButton": "新建频道",
 			"newChannelSuccess": "频道已创建",
 			"newChannelFailed": "创建频道失败",
 			"newChannelTitle": "新建频道",
@@ -2360,7 +2360,7 @@
 				"tagFed": "联邦成员",
 				"tagLocal": "本机账户"
 			},
-			"channelCtx": {
+			"channelContext": {
 				"copyLinkDone": "频道链接已复制",
 				"rename": "重命名频道",
 				"renameOk": "频道已重命名",
@@ -2368,9 +2368,10 @@
 				"deleteOk": "频道已删除",
 				"deleteConfirm": "确定删除频道「${name}」吗？此操作不可撤销。",
 				"setDefault": "设为默认频道",
-				"setDefaultOk": "已设为默认频道"
+				"setDefaultOk": "已设为默认频道",
+				"copyLink": "复制频道链接"
 			},
-			"memberCtx": {
+			"memberContext": {
 				"copyName": "复制显示名",
 				"copyPubKey": "复制公钥哈希",
 				"copyEntityId": "复制实体 ID",
@@ -2385,7 +2386,7 @@
 				"banEntity": "封禁实体（128 位 entityHash）",
 				"banNode": "封禁节点（homeNodeHash）"
 			},
-			"messageCtx": {
+			"messageContext": {
 				"edit": "编辑消息",
 				"delete": "删除消息"
 			},
@@ -3171,10 +3172,10 @@
 			"creationDateLabel": "账户创建日期:",
 			"folderSizeLabel": "用户数据大小:",
 			"folderPathLabel": "用户数据路径:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "复制路径"
 			},
-			"copyPathBtnIcon": {
+			"copyPathButtonIcon": {
 				"alt": "复制图标"
 			},
 			"copiedAlert": "路径已复制到剪贴板！",

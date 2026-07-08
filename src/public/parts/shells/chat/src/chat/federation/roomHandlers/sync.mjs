@@ -10,7 +10,7 @@ import { extractInboundSignedEvent } from '../../../../../../../../scripts/p2p/w
 import { evaluateArchiveHandshake, loadLocalFederationArchive, wireArchiveSummary } from '../archiveHandshake.mjs'
 import { scheduleCatchUp } from '../catchUpScheduler.mjs'
 import { handleChannelHistoryResponse } from '../channelHistory.mjs'
-import { loadFederationMaterializedState, requireDagDeps } from '../deps.mjs'
+import { loadFederationMaterializedState, requireDagDeps } from '../dagDependencies.mjs'
 import {
 	buildGossipForwardPlan,
 	enqueueGossipForward,

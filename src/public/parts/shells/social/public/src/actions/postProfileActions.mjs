@@ -11,15 +11,15 @@ import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handlePostProfileActionsClick(appContext, target) {
-	const copyLinkBtn = target.closest('[data-copy-link]')
-	if (copyLinkBtn instanceof HTMLElement && copyLinkBtn.dataset.copyLink) {
-		const parsed = parseActionKey(copyLinkBtn.dataset.copyLink)
+	const copyLinkButton = target.closest('[data-copy-link]')
+	if (copyLinkButton instanceof HTMLElement && copyLinkButton.dataset.copyLink) {
+		const parsed = parseActionKey(copyLinkButton.dataset.copyLink)
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			const runUri = formatSocialProfileRunUri(entityHash, postId)
 			const pageUrl = `${window.location.origin}${formatSocialProfileHref(entityHash, postId)}`
 			await copyTextToClipboard(`${runUri}\n${pageUrl}`)
-			const label = copyLinkBtn.querySelector('[data-i18n="social.actions.copyLink"]')
+			const label = copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]')
 			if (label) label.textContent = appContext.geti18n('social.actions.copied')
 			setTimeout(() => {
 				if (label) label.textContent = appContext.geti18n('social.actions.copyLink')
@@ -41,11 +41,11 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		return true
 	}
 
-	const deleteBtn = target.closest('button[data-delete]')
-	if (deleteBtn instanceof HTMLElement && deleteBtn.dataset.delete) {
+	const deleteButton = target.closest('button[data-delete]')
+	if (deleteButton instanceof HTMLElement && deleteButton.dataset.delete) {
 		await appContext.socialApi('/posts', {
 			method: 'DELETE',
-			body: JSON.stringify({ postId: deleteBtn.dataset.delete }),
+			body: JSON.stringify({ postId: deleteButton.dataset.delete }),
 		})
 		await refreshVisiblePosts(appContext)
 		closePostMoreMenus()

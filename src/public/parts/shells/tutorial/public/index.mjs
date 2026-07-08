@@ -12,7 +12,7 @@ import { applyTheme } from '../../scripts/theme/index.mjs'
 applyTheme()
 
 const tutorialModal = document.getElementById('tutorialModal')
-const startTutorialBtn = document.getElementById('startTutorial')
+const startTutorialButton = document.getElementById('startTutorial')
 const progressBar = document.getElementById('progressBar')
 const progressText = document.getElementById('progressText')
 const tutorialEnd = document.getElementById('tutorialEnd')
@@ -190,7 +190,7 @@ function handleMobileClick() {
 
 await initTranslations('tutorial')
 
-startTutorialBtn.addEventListener('click', () => {
+startTutorialButton.addEventListener('click', () => {
 	tutorialModal.classList.add('hidden')
 	hideTutorialEnd()
 

@@ -16,7 +16,7 @@ test.describe('Social deep links', () => {
 		await page.goto(`${baseUrl}/parts/shells:social/#search;${encodeURIComponent(tag)}`)
 		await waitForSocialAppReady(page)
 		await expect(page.locator('#feedView')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
@@ -26,7 +26,7 @@ test.describe('Social deep links', () => {
 		const { postId } = await publishPost(`query search #${tag}`)
 		await page.goto(`${baseUrl}/parts/shells:social/?q=${encodeURIComponent(`#${tag}`)}`)
 		await waitForSocialAppReady(page)
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 		await searchAndExpectPost(page, `#${tag}`, postId)
 	})
 
@@ -52,6 +52,6 @@ test.describe('Social deep links', () => {
 		await page.evaluate(query => {
 			location.hash = `search;${encodeURIComponent(query)}`
 		}, tag)
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 30_000 })
 	})
 })

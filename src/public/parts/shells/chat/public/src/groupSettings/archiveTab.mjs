@@ -5,16 +5,16 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatArchiveBytes } from './shared.mjs'
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function renderArchiveStoragePanel(ctx) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function renderArchiveStoragePanel(context) {
 	const container = document.getElementById('group-archive-container')
-	if (!container || !ctx.groupId) return
-	const canManageArchive = ctx.settingsCaps?.canManageArchive === true
+	if (!container || !context.groupId) return
+	const canManageArchive = context.settingsCaps?.canManageArchive === true
 	let archiveRowsHtml = ''
 	if (canManageArchive)
 		try {
 			const resp = await fetch(
-				`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}/archive/summary`,
+				`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/archive/summary`,
 				{ credentials: 'include' },
 			)
 			const data = await resp.json()
@@ -28,7 +28,7 @@ export async function renderArchiveStoragePanel(ctx) {
 		catch { /* summary miss */ }
 
 	await mountTemplate(container, 'group/settings/archive_storage_panel', {
-		currentState: ctx.state,
+		currentState: context.state,
 		canManageArchive,
 		archiveRowsHtml,
 	})
@@ -43,7 +43,7 @@ export async function renderArchiveStoragePanel(ctx) {
 		if (deleteArchiveButton instanceof HTMLButtonElement) deleteArchiveButton.disabled = true
 		try {
 			const resp = await fetch(
-				`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}/archive?before=${encodeURIComponent(raw)}`,
+				`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/archive?before=${encodeURIComponent(raw)}`,
 				{ method: 'DELETE', credentials: 'include' },
 			)
 			const data = await resp.json()
@@ -51,7 +51,7 @@ export async function renderArchiveStoragePanel(ctx) {
 			showToastI18n('success', 'chat.group.settingsArchiveDeleteOk', {
 				files: String(data.deletedFiles ?? 0),
 			})
-			await renderArchiveStoragePanel(ctx)
+			await renderArchiveStoragePanel(context)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.group.settingsArchiveDeleteFailed', { error: error.message })

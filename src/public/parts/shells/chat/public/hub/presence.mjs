@@ -48,20 +48,20 @@ export function applyStatusDot(el, status) {
 }
 
 /**
- * @param {HTMLElement | null} bioEl 简介容器
+ * @param {HTMLElement | null} bioElement 简介容器
  * @param {string} [bio] 简介正文
  * @returns {void}
  */
-export function applyBioElement(bioEl, bio) {
-	if (!bioEl) return
+export function applyBioElement(bioElement, bio) {
+	if (!bioElement) return
 	const text = String(bio || '').trim()
 	if (text) {
-		delete bioEl.dataset.i18n
-		bioEl.textContent = text
+		delete bioElement.dataset.i18n
+		bioElement.textContent = text
 	}
 	else {
-		bioEl.textContent = ''
-		bioEl.dataset.i18n = 'chat.hub.bioEmpty'
+		bioElement.textContent = ''
+		bioElement.dataset.i18n = 'chat.hub.bioEmpty'
 	}
 }
 
@@ -171,11 +171,11 @@ export function bindHoverCardAnchor(el, getUname) {
 
 /**
  * 为容器内头像占位符加载图片并绑定资料卡锚点。
- * @param {HTMLElement} rootEl 消息或成员列表根节点
+ * @param {HTMLElement} rootElement 消息或成员列表根节点
  * @returns {void}
  */
-export function applyAvatarsTo(rootEl) {
-	rootEl.querySelectorAll('[data-avatar-for]').forEach((av) => {
+export function applyAvatarsTo(rootElement) {
+	rootElement.querySelectorAll('[data-avatar-for]').forEach((av) => {
 		const authorKey = av.dataset.avatarFor
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
@@ -200,20 +200,20 @@ export function applyAvatarsTo(rootEl) {
 			if (dot) applyStatusDot(dot, profile.status)
 		})
 	})
-	rootEl.querySelectorAll('.hub-message-author, .hub-system-author').forEach((au) => {
+	rootElement.querySelectorAll('.hub-message-author, .hub-system-author').forEach((au) => {
 		bindHoverCardAnchor(au, () => au.dataset.authorKey || au.textContent.trim())
 	})
-	void hydrateAuthorLabels(rootEl)
+	void hydrateAuthorLabels(rootElement)
 }
 
 /**
  * 异步将消息作者名替换为资料卡 displayName（保留 data-author-key）。
- * @param {HTMLElement} rootEl 消息列表根节点
+ * @param {HTMLElement} rootElement 消息列表根节点
  * @returns {Promise<void>}
  */
-export async function hydrateAuthorLabels(rootEl) {
+export async function hydrateAuthorLabels(rootElement) {
 	const tasks = []
-	rootEl.querySelectorAll('.hub-message-author[data-author-key]').forEach((au) => {
+	rootElement.querySelectorAll('.hub-message-author[data-author-key]').forEach((au) => {
 		const key = au.dataset.authorKey?.trim()
 		if (!key || key === '?') return
 		tasks.push((async () => {
@@ -233,15 +233,15 @@ let hoverCardHideTimer = null
 /**
  * 在鼠标锚点附近展示用户资料悬浮卡并异步加载信息。
  * @param {string} authorKey 发送者键（pubKeyHash / entityHash / 角色名）
- * @param {HTMLElement} anchorEl 用于定位的锚点元素
+ * @param {HTMLElement} anchorElement 用于定位的锚点元素
  * @returns {Promise<void>}
  */
-export async function showHoverCardFor(authorKey, anchorEl) {
+export async function showHoverCardFor(authorKey, anchorElement) {
 	if (!authorKey || !hoverCard) return
 	clearTimeout(hoverCardHideTimer)
 	if (hoverCard.classList.contains('show') && hoverCard.dataset.uname === authorKey) return
 	hoverCard.dataset.uname = authorKey
-	const rect = anchorEl.getBoundingClientRect()
+	const rect = anchorElement.getBoundingClientRect()
 	let left = rect.right + 8
 	let {top} = rect
 	if (left + 280 > window.innerWidth) left = rect.left - 288

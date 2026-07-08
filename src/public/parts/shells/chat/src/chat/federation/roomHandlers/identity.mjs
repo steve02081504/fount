@@ -12,7 +12,7 @@ import {
 	takeRtcJoinSlot,
 } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
 import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { loadFederationGroupSettings } from '../deps.mjs'
+import { loadFederationGroupSettings } from '../dagDependencies.mjs'
 import {
 	shouldDropPartitionBridgeUnderLoad,
 	takePartitionBridgeForwardSlot,

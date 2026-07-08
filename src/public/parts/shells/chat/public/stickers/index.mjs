@@ -249,22 +249,22 @@ async function showPackDetail(packId) {
 async function renderPackDetail(pack) {
 	document.getElementById('detail-pack-name').textContent = pack.name
 
-	const descriptionEl = document.getElementById('detail-pack-description')
+	const descriptionElement = document.getElementById('detail-pack-description')
 	if (pack.description) {
-		descriptionEl.textContent = pack.description
-		descriptionEl.removeAttribute('data-i18n')
+		descriptionElement.textContent = pack.description
+		descriptionElement.removeAttribute('data-i18n')
 	} else {
-		descriptionEl.textContent = ''
-		descriptionEl.dataset.i18n = 'stickers.noDescription'
+		descriptionElement.textContent = ''
+		descriptionElement.dataset.i18n = 'stickers.noDescription'
 	}
 
-	const authorEl = document.getElementById('detail-pack-author')
-	authorEl.dataset.i18n = 'stickers.authorLabel'
-	authorEl.dataset.author = pack.authorEntityHash
+	const authorElement = document.getElementById('detail-pack-author')
+	authorElement.dataset.i18n = 'stickers.authorLabel'
+	authorElement.dataset.author = pack.authorEntityHash
 
-	const countEl = document.getElementById('detail-pack-count')
-	countEl.dataset.i18n = 'stickers.stickerCount'
-	countEl.dataset.count = String(pack.stickers.length)
+	const countElement = document.getElementById('detail-pack-count')
+	countElement.dataset.i18n = 'stickers.stickerCount'
+	countElement.dataset.count = String(pack.stickers.length)
 
 	const stickersContainer = document.getElementById('detail-stickers-container')
 	stickersContainer.innerHTML = ''

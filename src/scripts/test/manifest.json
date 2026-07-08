@@ -26,14 +26,14 @@
 			]
 		},
 		{
-			"name": "deps_state",
+			"name": "dependencies_state",
 			"run": [
 				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
-				"./src/scripts/test/selftest/deps_state.test.mjs"
+				"./src/scripts/test/selftest/dependencies_state.test.mjs"
 			],
 			"triggers": [
-				"src/scripts/test/selftest/deps_state.test.mjs",
-				"src/scripts/test/core/deps.mjs",
+				"src/scripts/test/selftest/dependencies_state.test.mjs",
+				"src/scripts/test/core/dependencies.mjs",
 				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/core/manifest.mjs",
 				"src/scripts/test/core/concurrency.mjs",
@@ -66,7 +66,7 @@
 				"src/scripts/test/selftest/selection.test.mjs",
 				"src/scripts/test/runner/selection.mjs",
 				"src/scripts/test/runner/continue_reason.mjs",
-				"src/scripts/test/core/deps.mjs",
+				"src/scripts/test/core/dependencies.mjs",
 				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/core/manifest.mjs"
 			]

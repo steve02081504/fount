@@ -9,7 +9,7 @@ import {
 	peekPeerRoomHint,
 	peekPreferredRoomOverride,
 } from './bootstrapStore.mjs'
-import { loadFederationGroupSettings, requireDagDeps } from './deps.mjs'
+import { loadFederationGroupSettings, requireDagDeps } from './dagDependencies.mjs'
 import { LOGIC_SYNC_PARTITION, partitionRoomName } from './partitions.mjs'
 
 /** 默认信令 App ID（创世 group_settings 写入同值）。 */

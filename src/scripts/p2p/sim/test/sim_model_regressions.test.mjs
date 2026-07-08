@@ -54,9 +54,9 @@ Deno.test('verifiedForgery is per-observer not global', () => {
 	const scenario = { honestCount: 10, groupSize: 12, behaviorDist: { archiveSubmitRate: { mean: 0.2 } } }
 	const observerA = { id: 'o1', trustedPeers: ['t1', 't2'] }
 	const observerB = { id: 'o2', trustedPeers: ['t1', 't2'] }
-	const ctx = { verifiedForgeryByObserver: new Map([['o1', new Set(['m1'])]]) }
-	assertEquals(integrityDefendsAgainst(attacker, observerA, scenario, ctx), true)
-	assertEquals(integrityDefendsAgainst(attacker, observerB, scenario, ctx), false)
+	const simulationContext = { verifiedForgeryByObserver: new Map([['o1', new Set(['m1'])]]) }
+	assertEquals(integrityDefendsAgainst(attacker, observerA, scenario, simulationContext), true)
+	assertEquals(integrityDefendsAgainst(attacker, observerB, scenario, simulationContext), false)
 	assertEquals(observerHasLocalReplica(observerB, scenario), true)
 })
 

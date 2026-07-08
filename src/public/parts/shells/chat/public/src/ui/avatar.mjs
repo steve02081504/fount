@@ -22,7 +22,7 @@ export function createAvatarElement(name, avatarUrl) {
 	/**
 	 * @returns {HTMLDivElement} 双字母圆形占位元素
 	 */
-	function buildInitialsEl() {
+	function buildInitialsElement() {
 		const el = document.createElement('div')
 		el.className = `${frameClass} flex items-center justify-center text-xs font-bold text-white`
 		el.style.backgroundColor = avatarColor(displayName)
@@ -31,7 +31,7 @@ export function createAvatarElement(name, avatarUrl) {
 	}
 
 	if (!trimmed)
-		return buildInitialsEl()
+		return buildInitialsElement()
 
 	const img = document.createElement('img')
 	img.src = trimmed
@@ -42,7 +42,7 @@ export function createAvatarElement(name, avatarUrl) {
 	 * @returns {void}
 	 */
 	img.onerror = () => {
-		img.replaceWith(buildInitialsEl())
+		img.replaceWith(buildInitialsElement())
 	}
 	return img
 }

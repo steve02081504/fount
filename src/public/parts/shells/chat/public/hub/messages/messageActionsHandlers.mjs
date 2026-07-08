@@ -266,10 +266,10 @@ export function bindChannelMessageActions(container) {
 	container.addEventListener('click', async (clickEvent) => {
 		const actions = getChannelMessageActionsContext()
 		if (!actions) return
-		const retryBtn = /** @type {HTMLElement} */ clickEvent.target.closest('[data-retry-send]')
-		if (retryBtn?.dataset.retrySend) {
+		const retryButton = /** @type {HTMLElement} */ clickEvent.target.closest('[data-retry-send]')
+		if (retryButton?.dataset.retrySend) {
 			clickEvent.stopPropagation()
-			const tempId = retryBtn.dataset.retrySend
+			const tempId = retryButton.dataset.retrySend
 			try {
 				const { retryFailedPendingMessage } = await import('./messages.mjs')
 				await retryFailedPendingMessage(tempId)

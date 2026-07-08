@@ -86,8 +86,8 @@ export async function wireHubAvToolbar(toolbar, handlers) {
 		const off = handlers.onVideo()
 		byRole.video.dataset.i18n = off ? 'chat.hub.streamAvVideoOn' : 'chat.hub.streamAvVideo'
 	})
-	toolbar.dataset.avJoinBtn = '1'
-	toolbar.dataset.avLeaveBtn = '1'
+	toolbar.dataset.avJoinButton = '1'
+	toolbar.dataset.avLeaveButton = '1'
 }
 
 /**

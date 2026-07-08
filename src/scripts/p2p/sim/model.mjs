@@ -59,17 +59,17 @@ const REACH_ATTACK_KINDS = new Set(['eclipse', 'targeted_eclipse', 'hint_poisone
 const DISCOVERY_MUTATING_ATTACKS = new Set(['eclipse', 'targeted_eclipse'])
 
 /**
- * @param {object} ctx 仿真上下文
+ * @param {object} simulationContext 仿真上下文
  * @param {import('./model.mjs').SimObserver} obs 观察者
  * @param {import('./model.mjs').SimNode} m 恶意节点
  * @param {number} reachHarm cleanReach - discReach
  * @returns {number} 归因 reach 伤害
  */
-function attackReachHarmForNode(ctx, obs, m, reachHarm) {
+function attackReachHarmForNode(simulationContext, obs, m, reachHarm) {
 	if (!REACH_ATTACK_KINDS.has(m.attack ?? '') || reachHarm <= 0) return 0
 	if (m.attack === 'hint_poisoner')
 		return obs.injectedHints.some(h => h.nodeHash === m.id && h.source === 'poison') ? reachHarm : 0
-	const poisonSet = ctx.discovery?.poisonedByAttacker?.get(obs.id)
+	const poisonSet = simulationContext.discovery?.poisonedByAttacker?.get(obs.id)
 	return poisonSet?.has(m.id) ? reachHarm : 0
 }
 
@@ -118,43 +118,43 @@ function activeSideFromBehavior(behavior, rng) {
 
 /**
  * 每回合更新 churn/掉线集合。
- * @param {object} ctx 仿真上下文
+ * @param {object} simulationContext 仿真上下文
  * @param {SimNode[]} nodes 全部节点
  * @param {() => number} rng 随机源
  * @param {import('./scenarios.mjs').SimScenario} scenario 场景
  * @returns {void}
  */
-function updateChurnOffline(ctx, nodes, rng, scenario) {
+function updateChurnOffline(simulationContext, nodes, rng, scenario) {
 	const churnRate = scenario.churnRate ?? 0
 	const offlineRate = scenario.offlineRate ?? 0
 	if (!churnRate && !offlineRate) return
 
-	for (const id of [...ctx.offlineSet])
+	for (const id of [...simulationContext.offlineSet])
 		if (rng() < churnRate * 0.6)
-			ctx.offlineSet.delete(id)
+			simulationContext.offlineSet.delete(id)
 
 	for (const n of nodes) {
 		if (n.kind === 'malicious' || n.newcomer) continue
 		if (rng() < offlineRate)
-			ctx.offlineSet.add(n.id)
+			simulationContext.offlineSet.add(n.id)
 	}
 
 	// 定向 eclipse 分区：受害节点强制离线
-	if (ctx.eclipseVictims)
-		for (const id of ctx.eclipseVictims)
-			ctx.offlineSet.add(id)
+	if (simulationContext.eclipseVictims)
+		for (const id of simulationContext.eclipseVictims)
+			simulationContext.offlineSet.add(id)
 }
 
 /**
  * 给诚实节点注入瞬时误伤信号（hide 阈值接近 0 时 falsePositive 自然升高）。
- * @param {object} ctx 仿真上下文
+ * @param {object} simulationContext 仿真上下文
  * @param {SimObserver} obs 观察者
  * @param {SimNode[]} activeHonest 活跃诚实节点
  * @param {() => number} rng 随机源
  * @param {TunablesBundle} tunables 参数
  * @returns {void}
  */
-function injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables) {
+function injectTransientFalsePositive(simulationContext, obs, activeHonest, rng, tunables) {
 	if (rng() > 0.12) return
 	const victim = pickOne(rng, activeHonest.filter(n => n.id !== obs.id))
 	if (!victim) return
@@ -173,7 +173,7 @@ function injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables) {
  * @param {number} seed 种子
  * @param {TunablesBundle} tunables 候选参数
  * @param {import('./attack_space.mjs').AttackGenome} [attackGenome] 攻击基因
- * @returns {{ nodes: SimNode[], observers: SimObserver[], inviteEdges: Array<{ from: string, to: string }>, ctx: object }} 初始世界状态
+ * @returns {{ nodes: SimNode[], observers: SimObserver[], inviteEdges: Array<{ from: string, to: string }>, simulationContext: object }} 初始世界状态
  */
 export function buildWorld(scenario, seed, tunables, attackGenome) {
 	const rng = createRng(seed)
@@ -356,7 +356,7 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 		return collusionRingByCluster.get(node.clusterId ?? node.id) ?? []
 	}
 
-	const ctx = {
+	const simulationContext = {
 		nodes,
 		observers,
 		inviteEdges,
@@ -397,19 +397,19 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
 
 	const roster = nodes.filter(n => !n.newcomer).map(n => n.id)
 	for (const obs of observers) {
-		ctx.propagationByObserver.set(obs.id, createPropagationState())
-		initObserverDiscovery(ctx.discovery, obs.id, obs.trustedPeers, roster, rng)
+		simulationContext.propagationByObserver.set(obs.id, createPropagationState())
+		initObserverDiscovery(simulationContext.discovery, obs.id, obs.trustedPeers, roster, rng)
 		const transport = createTransportState()
 		for (const peerId of obs.trustedPeers)
 			transport.trustedPeers.add(peerId)
-		ctx.transportByObserver.set(obs.id, transport)
+		simulationContext.transportByObserver.set(obs.id, transport)
 	}
 
-	return { nodes, observers, inviteEdges, ctx }
+	return { nodes, observers, inviteEdges, simulationContext }
 }
 
 /**
- * @param {object} ctx 仿真上下文
+ * @param {object} simulationContext 仿真上下文
  * @param {SimNode} peer 友善节点
  * @param {SimObserver} observer 观察者
  * @param {'social' | 'chat'} side 活跃侧
@@ -418,9 +418,9 @@ export function buildWorld(scenario, seed, tunables, attackGenome) {
  * @param {() => number} rng 随机源
  * @returns {void}
  */
-function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
+function runFriendlyBehavior(simulationContext, peer, observer, side, round, tunables, rng) {
 	if (peer.kind === 'relay') {
-		bumpReputationOnRelayPure(observer.reputation, peer.id, `relay:${round}:${peer.id}`, ctx.now, tunables.reputation)
+		bumpReputationOnRelayPure(observer.reputation, peer.id, `relay:${round}:${peer.id}`, simulationContext.now, tunables.reputation)
 		return
 	}
 	if (peer.kind === 'lurker') {
@@ -433,7 +433,7 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
 	if (side === 'social') {
 		if (behaviorRoll(rng, peer.behavior, 'burstPostRate'))
 			recordMessageRateViolationPure(observer.reputation, peer.id, tunables.reputation, 0.35)
-		const other = ctx.nodes.find(n => n.kind === 'honest' && n.id !== peer.id && n.id !== observer.id)
+		const other = simulationContext.nodes.find(n => n.kind === 'honest' && n.id !== peer.id && n.id !== observer.id)
 		if (other && behaviorRoll(rng, peer.behavior, 'blockProneness'))
 			applyFollowedBlockSignalPure(
 				observer.reputation,
@@ -444,13 +444,13 @@ function runFriendlyBehavior(ctx, peer, observer, side, round, tunables, rng) {
 					action: 'unblock',
 					selfTrust: false,
 				},
-				ctx.now,
+				simulationContext.now,
 				tunables.social,
 			)
 	}
 	else {
 		if (behaviorRoll(rng, peer.behavior, 'relayRate'))
-			bumpReputationOnRelayPure(observer.reputation, peer.id, `chat:${round}:${peer.id}`, ctx.now, tunables.reputation)
+			bumpReputationOnRelayPure(observer.reputation, peer.id, `chat:${round}:${peer.id}`, simulationContext.now, tunables.reputation)
 		if (behaviorRoll(rng, peer.behavior, 'chunkServeRate'))
 			bumpChunkStorageReputationPure(observer.reputation, peer.id, tunables.reputation)
 	}
@@ -654,7 +654,7 @@ function federationSaturatingReach(topLiveCount, honestRelayOnline, churnStress 
  * @returns {import('./metrics.mjs').SimSnapshot} 仿真结束快照
  */
 export function runSimulation(scenario, seed, tunables, attackGenome) {
-	const { nodes, observers, inviteEdges, ctx } = buildWorld(scenario, seed, tunables, attackGenome)
+	const { nodes, observers, inviteEdges, simulationContext } = buildWorld(scenario, seed, tunables, attackGenome)
 	const rng = createRng((seed + 0x9E3779B9) >>> 0)
 	const rounds = scenario.rounds ?? 40
 	const groupSize = scenario.groupSize ?? 8
@@ -667,10 +667,10 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 	const socialConfirmable = malicious.filter(n => n.attack === 'spammer' || n.attack === 'social_mob')
 
 	for (let round = 0; round < rounds; round++) {
-		ctx.now += 60_000
-		ctx.round = round
-		updateChurnOffline(ctx, nodes, rng, scenario)
-		const onlineNodes = nodes.filter(n => !ctx.offlineSet.has(n.id))
+		simulationContext.now += 60_000
+		simulationContext.round = round
+		updateChurnOffline(simulationContext, nodes, rng, scenario)
+		const onlineNodes = nodes.filter(n => !simulationContext.offlineSet.has(n.id))
 		const onlineFriendlyIds = onlineNodes
 			.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker')
 			.map(n => n.id)
@@ -680,22 +680,22 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			let discReachCache = null
 
 			for (const peer of obs.trustedPeers.slice(0, 2))
-				if (!ctx.offlineSet.has(peer))
-					bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, ctx.now, tunables.reputation)
+				if (!simulationContext.offlineSet.has(peer))
+					bumpReputationOnRelayPure(obs.reputation, peer, `trusted:${round}:${peer}`, simulationContext.now, tunables.reputation)
 
-			for (const node of friendly.filter(n => n.id !== obs.id && !ctx.offlineSet.has(n.id))) {
+			for (const node of friendly.filter(n => n.id !== obs.id && !simulationContext.offlineSet.has(n.id))) {
 				if (node.behavior && !behaviorRoll(rng, node.behavior, 'onlineStability')) continue
 				const side = node.kind === 'honest' && node.behavior
 					? activeSideFromBehavior(node.behavior, rng)
 					: 'chat'
-				runFriendlyBehavior(ctx, node, obs, side, round, tunables, rng)
+				runFriendlyBehavior(simulationContext, node, obs, side, round, tunables, rng)
 			}
 
 			for (const mal of malicious) {
-				if (ctx.offlineSet.has(mal.id)) continue
+				if (simulationContext.offlineSet.has(mal.id)) continue
 				if (discReachCache == null) 
 					discReachCache = discoveryReach(
-						ctx.discovery,
+						simulationContext.discovery,
 						obs.id,
 						onlineFriendlyIds,
 						id => obs.reputation.byNodeHash[id]?.score ?? 0,
@@ -703,36 +703,36 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 					)
 				
 				if (!attackReachesObserver(discReachCache, rng)) continue
-				runAttack(ctx, mal, obs, rng, round, tunables)
+				runAttack(simulationContext, mal, obs, rng, round, tunables)
 				if (DISCOVERY_MUTATING_ATTACKS.has(mal.attack ?? ''))
 					discReachCache = null
-				const turnRound = mal.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
+				const turnRound = mal.sleeperTurnRound ?? simulationContext.sleeperTurnRound ?? 15
 				if ((mal.attack === 'sleeper' || mal.attack === 'key_thief') && round >= turnRound)
-					simObservePeerBehavior(obs.reputation, mal.id, 1.25, ctx.now, tunables.reputation)
+					simObservePeerBehavior(obs.reputation, mal.id, 1.25, simulationContext.now, tunables.reputation)
 			}
 
 			if (scenario.keyRecoveryRound != null && round === scenario.keyRecoveryRound) {
 				for (const kt of malicious.filter(n => n.attack === 'key_thief'))
 					applyReputationResetToScoresPure(obs.reputation, kt.id)
-				ctx.keyRecoveryApplied = true
+				simulationContext.keyRecoveryApplied = true
 			}
 
-			const propState = ctx.propagationByObserver.get(obs.id)
+			const propState = simulationContext.propagationByObserver.get(obs.id)
 			if (propState) 
 				tickPropagation(propState, round, (target, sender, claim, verified) => {
 					applySubjectiveSlashPure(obs.reputation, target, sender, claim, verified, tunables.reputation)
 				}, (senderId) => (obs.reputation.byNodeHash[senderId]?.score ?? 0) / REP_MAX, 0.35, rng)
 			
 
-			injectTransientFalsePositive(ctx, obs, activeHonest, rng, tunables)
+			injectTransientFalsePositive(simulationContext, obs, activeHonest, rng, tunables)
 
 			// 诚实节点的正常 churn 也会偶发「全未知 want」。wantUnknownThreshold 太低时
 			// 这些诚实请求会被误判为 eclipse 而扣分（falsePositive），构成阈值的下行压力。
 			if (round % 3 === 0)
 				for (const h of activeHonest.filter(n => n.id !== obs.id).slice(0, 2)) {
-					const penalized = recordGossipAllUnknownWantPure(obs.reputation, h.id, ctx.now, tunables.reputation)
-					if (penalized && ctx.discovery?.poisonedByAttacker?.has(obs.id))
-						recoverDiscoveryFromAnchors(ctx.discovery, obs.id)
+					const penalized = recordGossipAllUnknownWantPure(obs.reputation, h.id, simulationContext.now, tunables.reputation)
+					if (penalized && simulationContext.discovery?.poisonedByAttacker?.has(obs.id))
+						recoverDiscoveryFromAnchors(simulationContext.discovery, obs.id)
 				}
 
 			// 可验证审计：对有密码学证据的作恶（伪造归档、惰性分片）发起 verified slash，
@@ -740,10 +740,10 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			if (round % 4 === 0) {
 				for (const bad of verifiableBad) {
 					applySubjectiveSlashPure(obs.reputation, bad.id, obs.id, tunables.reputation.slashVerifiedDefaultClaim, true, tunables.reputation)
-					let verified = ctx.verifiedForgeryByObserver.get(obs.id)
+					let verified = simulationContext.verifiedForgeryByObserver.get(obs.id)
 					if (!verified) {
 						verified = new Set()
-						ctx.verifiedForgeryByObserver.set(obs.id, verified)
+						simulationContext.verifiedForgeryByObserver.set(obs.id, verified)
 					}
 					verified.add(bad.id)
 				}
@@ -761,7 +761,7 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 				applyFollowedBlockSignalPure(
 					obs.reputation,
 					{ followerNodeHash: obs.id, targetNodeHash: confirmed.id, voterKey: `${obs.id}entity`, action: 'block', selfTrust: true },
-					ctx.now,
+					simulationContext.now,
 					tunables.social,
 				)
 			}
@@ -773,7 +773,7 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			}
 
 			for (const h of activeHonest.filter(n => n.behavior && activeSideFromBehavior(n.behavior, rng) === 'chat').slice(0, 2))
-				if (!ctx.offlineSet.has(h.id) && behaviorRoll(rng, h.behavior, 'archiveSubmitRate'))
+				if (!simulationContext.offlineSet.has(h.id) && behaviorRoll(rng, h.behavior, 'archiveSubmitRate'))
 					bumpChunkStorageReputationPure(obs.reputation, h.id, tunables.reputation)
 
 			// 累积 churn 下 mailbox 可达率
@@ -784,28 +784,28 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
 			function scoreOfRound(id) {
 				return obs.reputation.byNodeHash[id]?.score ?? 0
 			}
-			const mailRound = simulateMailbox(obs, nodes, tunables, scoreOfRound, ctx.offlineSet)
-			ctx.churnReachAccum += mailRound.reach
-			ctx.churnMailboxCostAccum += mailRound.cost
-			ctx.churnReachRounds++
+			const mailRound = simulateMailbox(obs, nodes, tunables, scoreOfRound, simulationContext.offlineSet)
+			simulationContext.churnReachAccum += mailRound.reach
+			simulationContext.churnMailboxCostAccum += mailRound.cost
+			simulationContext.churnReachRounds++
 		}
 
 		for (const obs of observers) {
-			const transport = ctx.transportByObserver?.get(obs.id)
+			const transport = simulationContext.transportByObserver?.get(obs.id)
 			if (!transport) continue
 			const throttleOk = transportMetrics(
 				transport,
 				obs.id,
 				onlineFriendlyIds,
 				id => obs.reputation.byNodeHash[id]?.score ?? 0,
-				ctx.now,
+				simulationContext.now,
 			).throttleOk
-			ctx.throttleOkAccum = (ctx.throttleOkAccum ?? 0) + throttleOk
-			ctx.throttleRounds = (ctx.throttleRounds ?? 0) + 1
+			simulationContext.throttleOkAccum = (simulationContext.throttleOkAccum ?? 0) + throttleOk
+			simulationContext.throttleRounds = (simulationContext.throttleRounds ?? 0) + 1
 		}
 	}
 
-	return collectSnapshot(observers, nodes, tunables, groupSize, ctx)
+	return collectSnapshot(observers, nodes, tunables, groupSize, simulationContext)
 }
 
 /**
@@ -813,10 +813,10 @@ export function runSimulation(scenario, seed, tunables, attackGenome) {
  * @param {SimNode[]} nodes 全部节点
  * @param {TunablesBundle} tunables 候选参数
  * @param {number} groupSize 群规模
- * @param {object} [ctx] 仿真上下文（churn 累积、等价欺骗记录）
+ * @param {object} [simulationContext] 仿真上下文（churn 累积、等价欺骗记录）
  * @returns {import('./metrics.mjs').SimSnapshot} 指标快照
  */
-function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
+function collectSnapshot(observers, nodes, tunables, groupSize, simulationContext = {}) {
 	const malicious = nodes.filter(n => n.kind === 'malicious')
 	const honest = nodes.filter(n => n.kind === 'honest' && !n.compromised)
 	const relays = nodes.filter(n => n.kind === 'relay' || n.kind === 'lurker')
@@ -826,8 +826,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const keyThieves = malicious.filter(n => n.attack === 'key_thief')
 	const sleepers = malicious.filter(n => n.attack === 'sleeper')
 	const equivocators = malicious.filter(n => n.attack === 'equivocator')
-	const offlineSet = ctx.offlineSet ?? new Set()
-	const hasEquivocation = equivocators.length > 0 || (ctx.equivocationByObserver?.size ?? 0) > 0
+	const offlineSet = simulationContext.offlineSet ?? new Set()
+	const hasEquivocation = equivocators.length > 0 || (simulationContext.equivocationByObserver?.size ?? 0) > 0
 
 	let malSuppressed = 0
 	let malTotal = 0
@@ -871,8 +871,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const hideThreshold = tunables.social.socialRepHideThreshold
 	const onlineNodes = nodes.filter(n => !offlineSet.has(n.id))
 	/** @type {Map<string, SimNode[]>} */
-	const collusionByCluster = ctx.collusionRingByCluster ?? new Map()
-	if (!ctx.collusionRingByCluster) 
+	const collusionByCluster = simulationContext.collusionRingByCluster ?? new Map()
+	if (!simulationContext.collusionRingByCluster) 
 		for (const m of malicious) {
 			if (m.attack !== 'collusion') continue
 			const key = m.clusterId ?? m.id
@@ -911,8 +911,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		const hints = [...discoveryHints, ...obs.injectedHints]
 
 		const top = pickTop({
-			trustedPeers: obs.trustedPeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
-			explorePeers: obs.explorePeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
+			trustedPeers: obs.trustedPeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, simulationContext.now ?? Date.now())),
+			explorePeers: obs.explorePeers.filter(id => !offlineSet.has(id) && !simIsPeerQuarantined(obs.reputation, id, simulationContext.now ?? Date.now())),
 			hints,
 			roomRosters: [{
 				scopeId: 'sim-group',
@@ -921,7 +921,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			}],
 			scoreOf: rawScoreOf,
 			quarantinedNodeHashes: new Set(
-				Object.keys(obs.reputation.byNodeHash || {}).filter(id => simIsPeerQuarantined(obs.reputation, id, ctx.now ?? Date.now())),
+				Object.keys(obs.reputation.byNodeHash || {}).filter(id => simIsPeerQuarantined(obs.reputation, id, simulationContext.now ?? Date.now())),
 			),
 		}, undefined, tunables.trustGraph)
 
@@ -938,7 +938,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 			? honestScores[Math.floor(honestScores.length / 2)]
 			: 0
 
-		const churnStress = (ctx.scenario?.churnRate ?? 0) + (ctx.scenario?.offlineRate ?? 0)
+		const churnStress = (simulationContext.scenario?.churnRate ?? 0) + (simulationContext.scenario?.offlineRate ?? 0)
 
 		const fedReach = federationSaturatingReach(topLive.length, honestRelayOnline, churnStress)
 		federationReach += fedReach
@@ -947,8 +947,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		const friendlyIds = onlineNodes.filter(n => n.kind === 'honest' || n.kind === 'relay' || n.kind === 'lurker').map(n => n.id)
 		const maxHop = tunables.mailbox.maxHop
-		const cleanReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, maxHop, true)
-		const discReach = discoveryReach(ctx.discovery, obs.id, friendlyIds, scoreOf, maxHop, false)
+		const cleanReach = discoveryReach(simulationContext.discovery, obs.id, friendlyIds, scoreOf, maxHop, true)
+		const discReach = discoveryReach(simulationContext.discovery, obs.id, friendlyIds, scoreOf, maxHop, false)
 		const observerReachHarm = Math.max(0, cleanReach - discReach)
 
 		const highRepMalInTop = topMal.filter(n => scoreOf(n.nodeHash) >= honestMedian).length
@@ -977,7 +977,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 				impact.count++
 				if (topSet.has(m.id) && scoreOf(m.id) >= honestMedian)
 					impact.topKSum++
-				const attributed = attackReachHarmForNode(ctx, obs, m, observerReachHarm)
+				const attributed = attackReachHarmForNode(simulationContext, obs, m, observerReachHarm)
 				impact.reachSum += attributed
 			}
 		}
@@ -1017,7 +1017,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const f of forgers) {
 			archiveTotal++
-			const cryptoOk = integrityDefendsAgainst(f, obs, ctx.scenario ?? {}, ctx)
+			const cryptoOk = integrityDefendsAgainst(f, obs, simulationContext.scenario ?? {}, simulationContext)
 			if (cryptoOk || isMaliciousSuppressed(f, scoreOf, hideThreshold, honestMedian))
 				archiveDefended++
 		}
@@ -1029,8 +1029,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		}
 
 		for (const sl of sleepers) {
-			const turnRound = sl.sleeperTurnRound ?? ctx.sleeperTurnRound ?? 15
-			if ((ctx.scenario?.rounds ?? 40) > turnRound) {
+			const turnRound = sl.sleeperTurnRound ?? simulationContext.sleeperTurnRound ?? 15
+			if ((simulationContext.scenario?.rounds ?? 40) > turnRound) {
 				sleeperTotal++
 				if (isMaliciousSuppressed(sl, scoreOf, hideThreshold, honestMedian))
 					sleeperReacted++
@@ -1039,7 +1039,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 		for (const eq of equivocators) {
 			equivocationTotal++
-			const cryptoOk = integrityDefendsAgainst(eq, obs, ctx.scenario ?? {}, ctx)
+			const cryptoOk = integrityDefendsAgainst(eq, obs, simulationContext.scenario ?? {}, simulationContext)
 			if (cryptoOk || isMaliciousSuppressed(eq, scoreOf, hideThreshold, honestMedian))
 				equivocationDefended++
 		}
@@ -1059,18 +1059,18 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 		mailboxCost += mail.cost
 		nodeOverload += mail.overload
 		idealReach += simulateMailbox(obs, nodes, idealTunables, scoreOf, new Set()).reach
-		const scenarioMeta = ctx.scenario ?? {}
+		const scenarioMeta = simulationContext.scenario ?? {}
 		let quorumAcc = simulateArchiveQuorum(nodes, tunables, scoreOf, groupSize, hasEquivocation)
 		if (observerHasLocalReplica(obs, scenarioMeta))
 			quorumAcc = blendArchiveQuorumAccuracy(quorumAcc, 1)
 		archiveQuorum += quorumAcc
 
 		const tMetrics = transportMetrics(
-			ctx.transportByObserver?.get(obs.id) ?? createTransportState(),
+			simulationContext.transportByObserver?.get(obs.id) ?? createTransportState(),
 			obs.id,
 			friendlyIds,
 			scoreOf,
-			ctx.now ?? Date.now(),
+			simulationContext.now ?? Date.now(),
 		)
 		transportReach += tMetrics.reach
 		signalingDiversity += tMetrics.diversity
@@ -1078,13 +1078,13 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	}
 
 	const nObs = Math.max(1, observers.length)
-	const joinThrottleRate = ctx.throttleRounds
-		? (ctx.throttleOkAccum ?? 0) / ctx.throttleRounds
+	const joinThrottleRate = simulationContext.throttleRounds
+		? (simulationContext.throttleOkAccum ?? 0) / simulationContext.throttleRounds
 		: joinThrottle / nObs
 
 	// churn 可达率：回合内累积的 mailbox reach 均值；无 churn 时退化为 mailboxReachRate
-	const churnReachRate = ctx.churnReachRounds
-		? ctx.churnReachAccum / ctx.churnReachRounds
+	const churnReachRate = simulationContext.churnReachRounds
+		? simulationContext.churnReachAccum / simulationContext.churnReachRounds
 		: mailboxReach / nObs
 
 	const idealReachRate = idealReach / nObs
@@ -1097,8 +1097,8 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 	const vMult = tunables.reputation.slashVerifiedMultiplier
 	const verifiedSlashScale = 0.35 + 0.65 * Math.min(1, vMult / 0.35)
 	const malSuppressionRate = Math.max(0, rawMalSuppression * (1 - malAmpAvg * 0.85) * verifiedSlashScale)
-	const mailboxCostAvg = ctx.churnReachRounds
-		? ctx.churnMailboxCostAccum / ctx.churnReachRounds
+	const mailboxCostAvg = simulationContext.churnReachRounds
+		? simulationContext.churnMailboxCostAccum / simulationContext.churnReachRounds
 		: mailboxCost / nObs
 
 	/** @type {NonNullable<import('./metrics.mjs').SimSnapshot['byAttackDefense']>} */
@@ -1122,7 +1122,7 @@ function collectSnapshot(observers, nodes, tunables, groupSize, ctx = {}) {
 
 	const joinDelay = honestJoinDelayPenalty(
 		resolvePowFloorBits(tunables.admission),
-		ctx.scenario?.rounds ?? 40,
+		simulationContext.scenario?.rounds ?? 40,
 	)
 
 	return {

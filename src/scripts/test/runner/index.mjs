@@ -12,7 +12,7 @@ import {
 } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
-import { topoSortSuites } from '../core/deps.mjs'
+import { topoSortSuites } from '../core/dependencies.mjs'
 import {
 	filterSuites,
 	listManifestIds,
@@ -334,7 +334,7 @@ export async function runTests(options = {}) {
 		stampExpansionReasons(continueReasons, selected, preExpansionKeys, expansionProvenance, {
 			explicitSuites,
 			state,
-			ctx: { commitHash, uncommittedHash, changedSinceRecordByKey, byKey },
+			context: { commitHash, uncommittedHash, changedSinceRecordByKey, byKey },
 		})
 
 	let reportWriter = selection.reportWriter
@@ -348,7 +348,7 @@ export async function runTests(options = {}) {
 				allSuites,
 				slots: slotSuites,
 				state,
-				ctx: {
+				context: {
 					commitHash,
 					uncommittedHash,
 					changedSinceRecordByKey,
@@ -362,7 +362,7 @@ export async function runTests(options = {}) {
 	}
 
 	const runGreenKeys = new Set()
-	const depCtx = {
+	const dependencyContext = {
 		commitHash,
 		uncommittedHash,
 		changedSinceRecordByKey,
@@ -413,7 +413,7 @@ export async function runTests(options = {}) {
 	const coordinator = new DependencyRunCoordinator({
 		suites: selected,
 		state,
-		ctx: depCtx,
+		context: dependencyContext,
 		gate,
 	})
 

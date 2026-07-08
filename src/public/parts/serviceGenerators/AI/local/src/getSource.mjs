@@ -102,17 +102,17 @@ function buildLlamaSessionOptions(sessionBase, contextSequence) {
 /**
  * 构建 prompt 调用选项
  * @param {object} config - 配置。
- * @param {object} ctx - 上下文。
- * @param {AbortSignal} [ctx.signal] - 中断信号。
- * @param {(r: {content: string, files: any[]}) => void} [ctx.previewUpdater] - 流式预览。
- * @param {{content: string, files: any[]}} [ctx.result] - 结果累加对象。
- * @param {boolean} [ctx.useStream] - 是否流式。
- * @param {number} [ctx.contextSize] - 上下文 token 上限。
- * @param {(chunk: object) => void} [ctx.onResponseChunk] - 响应分块（用于 logprobs 等）。
+ * @param {object} context - 上下文。
+ * @param {AbortSignal} [context.signal] - 中断信号。
+ * @param {(r: {content: string, files: any[]}) => void} [context.previewUpdater] - 流式预览。
+ * @param {{content: string, files: any[]}} [context.result] - 结果累加对象。
+ * @param {boolean} [context.useStream] - 是否流式。
+ * @param {number} [context.contextSize] - 上下文 token 上限。
+ * @param {(chunk: object) => void} [context.onResponseChunk] - 响应分块（用于 logprobs 等）。
  * @returns {object} 传给 `session.prompt` 的选项（含流式回调等）。
  */
-function buildPromptCallOptions(config, ctx) {
-	const { signal, previewUpdater, result, useStream, contextSize, onResponseChunk } = ctx
+function buildPromptCallOptions(config, context) {
+	const { signal, previewUpdater, result, useStream, contextSize, onResponseChunk } = context
 	const merged = {
 		...config.prompt_options,
 		signal,

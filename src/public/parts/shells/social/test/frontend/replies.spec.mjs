@@ -9,9 +9,9 @@ test.describe('Social replies', () => {
 	test('replies panel loads and accepts a reply', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`reply-target ${Date.now()}`)
 		const card = await findPostCard(page, postId)
-		const repliesBtn = card.locator('[data-replies]')
-		const actionKey = await repliesBtn.getAttribute('data-replies')
-		await repliesBtn.click()
+		const repliesButton = card.locator('[data-replies]')
+		const actionKey = await repliesButton.getAttribute('data-replies')
+		await repliesButton.click()
 		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
 		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
 		await expect(panel).not.toHaveClass(/hidden/)
@@ -24,13 +24,13 @@ test.describe('Social replies', () => {
 	test('replies panel toggles closed', async ({ page, publishPost }) => {
 		const { postId } = await publishPost(`reply-toggle ${Date.now()}`)
 		const card = await findPostCard(page, postId)
-		const repliesBtn = card.locator('[data-replies]')
-		const actionKey = await repliesBtn.getAttribute('data-replies')
+		const repliesButton = card.locator('[data-replies]')
+		const actionKey = await repliesButton.getAttribute('data-replies')
 		// 同一 postId 可能在 feed 出现多张卡片；面板须限定在当前卡片内
 		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
-		await repliesBtn.click()
+		await repliesButton.click()
 		await expect(panel).not.toHaveClass(/hidden/)
-		await repliesBtn.click()
+		await repliesButton.click()
 		await expect(panel).toHaveClass(/hidden/)
 	})
 })

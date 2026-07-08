@@ -12,10 +12,10 @@ import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.
  * @returns {void}
  */
 export function updateFeedSearchChrome(appContext) {
-	const clearBtn = document.getElementById('feedSearchClearBtn')
+	const clearButton = document.getElementById('feedSearchClearButton')
 	const loadMore = document.getElementById('feedLoadMore')
 	const hasSearch = !!appContext.state.activeFeedSearchQuery
-	clearBtn?.classList.toggle('hidden', !hasSearch)
+	clearButton?.classList.toggle('hidden', !hasSearch)
 	loadMore?.classList.toggle('hidden', hasSearch || !appContext.state.feedCursor)
 }
 
@@ -112,8 +112,8 @@ export async function loadFeed(appContext, append = false) {
 	const list = document.getElementById('feedList')
 	if (!list) return
 	if (!append && !items.length) {
-		const emptyEl = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
-		list.replaceChildren(emptyEl)
+		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
+		list.replaceChildren(emptyElement)
 	}
 	else if (!append) list.replaceChildren(...cards.filter(Boolean))
 	else for (const card of cards)
@@ -134,8 +134,8 @@ export async function runFeedSearch(appContext) {
 	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
 	if (q.length < 2) {
 		const list = document.getElementById('feedList')
-		const emptyEl = list ? await renderTemplate('feed_empty', { emptyKey: 'social.search.tooShort' }) : null
-		if (list && emptyEl) list.replaceChildren(emptyEl)
+		const emptyElement = list ? await renderTemplate('feed_empty', { emptyKey: 'social.search.tooShort' }) : null
+		if (list && emptyElement) list.replaceChildren(emptyElement)
 		appContext.state.activeFeedSearchQuery = null
 		updateFeedSearchChrome(appContext)
 		return
@@ -147,18 +147,18 @@ export async function runFeedSearch(appContext) {
 	const list = document.getElementById('feedList')
 	if (!list) return
 	const items = data.items || []
-	const [hintEl, ...cardEls] = await Promise.all([
+	const [hintElement, ...cardEls] = await Promise.all([
 		renderTemplate('feed_search_hint', {}),
 		...items.map(item => appContext.buildPostCard(item).catch(() => null)),
 	])
 	if (appContext.state.activeFeedSearchQuery !== q) return
 	if (!items.length) {
-		const emptyEl = await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' })
-		list.replaceChildren(hintEl, emptyEl)
+		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' })
+		list.replaceChildren(hintElement, emptyElement)
 	} else {
 		const container = document.createElement('div')
 		for (const card of cardEls) if (card) container.appendChild(card)
-		list.replaceChildren(hintEl, container)
+		list.replaceChildren(hintElement, container)
 	}
 	updateFeedSearchChrome(appContext)
 }

@@ -15,12 +15,12 @@ import {
 import { parseSettingsGroupIdFromHash } from './groupSettings/shared.mjs'
 import { createGroupSettingsContext } from './groupSettings/state.mjs'
 
-const settingsCtx = createGroupSettingsContext()
+const settingsContext = createGroupSettingsContext()
 /**
  * @param {string} groupId 群 ID
  * @returns {Promise<void>}
  */
-settingsCtx.reload = groupId => loadGroupSettingsImpl(settingsCtx, groupId)
+settingsContext.reload = groupId => loadGroupSettingsImpl(settingsContext, groupId)
 
 /**
  * 初始化群设置页，从 hash 读取群 ID 并加载数据。
@@ -30,7 +30,7 @@ export async function initGroupSettings() {
 	await initTranslations('chat')
 	usingTemplates('/parts/shells:chat/src/templates')
 	const groupId = parseSettingsGroupIdFromHash()
-	if (groupId) await loadGroupSettingsImpl(settingsCtx, groupId)
+	if (groupId) await loadGroupSettingsImpl(settingsContext, groupId)
 }
 
 /**
@@ -38,25 +38,25 @@ export async function initGroupSettings() {
  * @returns {Promise<void>}
  */
 export async function loadGroupSettings(groupId) {
-	return loadGroupSettingsImpl(settingsCtx, groupId)
+	return loadGroupSettingsImpl(settingsContext, groupId)
 }
 
 /** @returns {Promise<void>} */
 export async function updateSettingsTabsVisibility() {
-	return updateSettingsTabsVisibilityImpl(settingsCtx)
+	return updateSettingsTabsVisibilityImpl(settingsContext)
 }
 
 /** @returns {Promise<void>} */
 export async function ensureAuditLogPanel() {
-	return ensureAuditLogPanelImpl(settingsCtx)
+	return ensureAuditLogPanelImpl(settingsContext)
 }
 
 /** @returns {Promise<void>} */
 export async function ensureChannelPermissionsPanel() {
-	return ensureChannelPermissionsPanelImpl(settingsCtx)
+	return ensureChannelPermissionsPanelImpl(settingsContext)
 }
 
 /** @returns {Promise<void>} */
 export async function ensureGroupEmojisPanel() {
-	return ensureGroupEmojisPanelImpl(settingsCtx)
+	return ensureGroupEmojisPanelImpl(settingsContext)
 }

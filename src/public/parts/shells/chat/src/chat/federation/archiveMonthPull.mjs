@@ -27,7 +27,7 @@ import {
 	mergeDigestObservation,
 } from './archiveDigestClaims.mjs'
 import { markArchiveMonthIncomplete } from './archiveMonthMark.mjs'
-import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState } from './dagDependencies.mjs'
 import {
 	archiveMonthQuorumSatisfied,
 	createFederationCollect,

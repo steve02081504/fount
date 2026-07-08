@@ -1,5 +1,5 @@
 /**
- * 【文件】federation/deps.mjs
+ * 【文件】federation/dagDependencies.mjs
  * 【职责】联邦模块与 DAG 子系统的依赖注入点：在 chat 启动时由 dag/index 注入 nodeId、读盘、远端事件落盘与物化状态查询，避免 federation 与 dag 循环 import。
  * 【原理】initFederationDagDeps 写入进程级 dagDeps；requireDagDeps 在房间 join 或 gossip 前强制校验已注入。loadFederationMaterializedState 代理 getStateForFederation 供 ACL、频道历史、gossip 新鲜加入判断使用。
  * 【数据结构】FederationDagDeps：getNodeHash、readJsonl、appendValidatedRemoteEvent、ingestRemoteEvent、可选 getStateForFederation；物化 state 含 members、groupSettings、channels。
@@ -20,10 +20,10 @@
 export let dagDeps = null
 
 /**
- * @param {FederationDagDeps} deps DAG 依赖集合
+ * @param {FederationDagDeps} dagDependencies DAG 依赖集合
  */
-export function initFederationDagDeps(deps) {
-	dagDeps = deps
+export function initFederationDagDeps(dagDependencies) {
+	dagDeps = dagDependencies
 }
 
 /**

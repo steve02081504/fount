@@ -74,12 +74,12 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 		tabsHost.append(tabButton)
 	}
 
-	const addBtn = document.createElement('button')
-	addBtn.type = 'button'
-	addBtn.className = 'hub-profile-locale-tab hub-profile-locale-tab-add'
-	addBtn.textContent = '+'
-	addBtn.addEventListener('click', () => callbacks.onAdd())
-	tabsHost.append(addBtn)
+	const addButton = document.createElement('button')
+	addButton.type = 'button'
+	addButton.className = 'hub-profile-locale-tab hub-profile-locale-tab-add'
+	addButton.textContent = '+'
+	addButton.addEventListener('click', () => callbacks.onAdd())
+	tabsHost.append(addButton)
 }
 
 /**

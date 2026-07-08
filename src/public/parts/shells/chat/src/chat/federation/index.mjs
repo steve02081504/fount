@@ -3,7 +3,7 @@
  * 【职责】联邦对外门面：已签名 DAG 事件出站中继、与邻居交换 DAG 叶并触发 wantIds 补洞、gossip 拉取缺失事件，以及列出当前 Trystero 房内对等端。
  * 【原理】出站经 ensureFederationRoom 取得 Trystero Nostr 房间槽，由 peerPool 稀疏选取目标 peer（无邻居时房内广播）；入站补洞先发 fed_tip_ping/pong 收集远端 tips，再 requestMissingEventsGossip。ACL 门控事件在物化快照未就绪时入 pendingRelay 队列而非立即中继。
  * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
- * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、deps.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
+ * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
@@ -25,7 +25,7 @@ import {
 } from './acl.mjs'
 import { wireArchiveSummary, loadLocalFederationArchive } from './archiveHandshake.mjs'
 import { maybeRequestBootstrapAfterCatchup } from './bootstrapRelay.mjs'
-import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { requestMissingEventsGossip } from './gossip.mjs'
 import { requestJoinSnapshotFromPeers } from './joinSnapshot.mjs'
 import { sendPartitionBridgeFromSlot } from './partitionBridge.mjs'

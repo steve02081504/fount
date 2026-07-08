@@ -14,7 +14,7 @@ import {
 	resolveSuiteDependencies,
 	sortManifestIds,
 	topoSortSuites,
-} from '../core/deps.mjs'
+} from '../core/dependencies.mjs'
 import { listManifestIds, loadAllSuites, selectSuitesByDiff } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
@@ -177,14 +177,14 @@ Deno.test('expandWithDependencies pulls unsatisfied deps', () => {
 		suite('shells/chat', 'pure'),
 	]
 	const state = { suites: {} }
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const expanded = expandWithDependencies([all[1]], all, state, ctx)
+	const expanded = expandWithDependencies([all[1]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['shells/chat/pure', 'shells/social/cross_shell_emoji'],
@@ -210,14 +210,14 @@ Deno.test('listUnsatisfiedDependencies when dep not green', () => {
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const missing = listUnsatisfiedDependencies(all[1], state, ctx)
+	const missing = listUnsatisfiedDependencies(all[1], state, context)
 	assertEquals(missing, ['p2p/sim'])
 })
 
@@ -385,12 +385,12 @@ Deno.test('expandWithDependents pulls only one downstream level when parent is o
 	}
 	const changedSinceRecordByKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
 	changedSinceRecordByKey.set('shells/chat/smoke_chat', ['src/public/parts/shells/chat/src/foo.mjs'])
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		changedSinceRecordByKey,
 	}
 	// 只拉一层：smoke_chat 的直接下游是 e2e_single；frontend 只依赖 e2e_single，属第二层，不纳入。
-	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	const expanded = expandWithDependents([all[1]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)).sort(),
 		['shells/chat/e2e_single', 'shells/chat/smoke_chat'].sort(),
@@ -417,12 +417,12 @@ Deno.test('expandWithDependents does not pull downstream on failure without trig
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 	}
 	// 仅 failed、无 trigger 命中：不向下传播（修复必改文件 → 届时靠 trigger 拉起）。
-	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	const expanded = expandWithDependents([all[1]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['shells/chat/smoke_chat'],
@@ -450,11 +450,11 @@ Deno.test('expandWithDependents skips downstream when parent is green and fresh'
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 	}
-	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	const expanded = expandWithDependents([all[1]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['shells/chat/smoke_chat'],
@@ -493,14 +493,14 @@ Deno.test('explicit suite selection does not pull downstream federation tree', (
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	const expanded = expandWithDependencies([all[2]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['p2p/live'],
@@ -529,7 +529,7 @@ Deno.test('expandWithDependencies skips upstream when only uncommittedHash drift
 			'shells/chat/e2e_single': passed,
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: 'new-digest',
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
@@ -538,7 +538,7 @@ Deno.test('expandWithDependencies skips upstream when only uncommittedHash drift
 	}
 	assertEquals(isSuiteGreen(passed, 'abc', 'new-digest', false), false)
 	assertEquals(isDependencySatisfied(passed, false), true)
-	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	const expanded = expandWithDependencies([all[2]], all, state, context)
 	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
 })
 
@@ -564,14 +564,14 @@ Deno.test('expandWithDependencies skips green upstream deps', () => {
 			'shells/chat/e2e_single': passed,
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	const expanded = expandWithDependencies([all[2]], all, state, context)
 	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
 })
 
@@ -614,7 +614,7 @@ Deno.test('expandWithDependencies skips upstream when only commit drifted', () =
 			'shells/chat/e2e_single': passed,
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'new-head',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
@@ -622,7 +622,7 @@ Deno.test('expandWithDependencies skips upstream when only commit drifted', () =
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
 	assertEquals(isDependencySatisfied(passed, false), true)
-	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	const expanded = expandWithDependencies([all[2]], all, state, context)
 	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
 })
 
@@ -645,14 +645,14 @@ Deno.test('listUnsatisfiedDependencies when dep is noisy', () => {
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	assertEquals(listUnsatisfiedDependencies(all[1], state, ctx), [])
+	assertEquals(listUnsatisfiedDependencies(all[1], state, context), [])
 })
 
 Deno.test('expandWithDependencies skips noisy upstream deps', () => {
@@ -677,14 +677,14 @@ Deno.test('expandWithDependencies skips noisy upstream deps', () => {
 			'shells/chat/e2e_single': noisy,
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const expanded = expandWithDependencies([all[2]], all, state, ctx)
+	const expanded = expandWithDependencies([all[2]], all, state, context)
 	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
 })
 
@@ -707,7 +707,7 @@ Deno.test('DependencyRunCoordinator treats green upstream as resolved without ru
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
@@ -724,7 +724,7 @@ Deno.test('DependencyRunCoordinator treats green upstream as resolved without ru
 	const coordinator = new DependencyRunCoordinator({
 		suites: [all[1]],
 		state,
-		ctx,
+		context,
 		gate,
 	})
 	/** @type {string[]} */
@@ -743,7 +743,7 @@ Deno.test('DependencyRunCoordinator serial runs in report order, parallel packs 
 	const big = { ...suite('shells/chat', 'integration'), resources: { memMb: 1800, cpuPct: 25 } }
 	const suites = [light, big]
 	const state = { suites: {} }
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(suites.map(s => [suiteKey(s.manifestId, s.name), []])),
@@ -759,7 +759,7 @@ Deno.test('DependencyRunCoordinator serial runs in report order, parallel packs 
 		const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial })
 		/** @type {string[]} */
 		const ran = []
-		await new DependencyRunCoordinator({ suites, state, ctx, gate }).runAll(async outcome => {
+		await new DependencyRunCoordinator({ suites, state, context, gate }).runAll(async outcome => {
 			if (outcome.kind === 'run') ran.push(suiteKey(outcome.suite.manifestId, outcome.suite.name))
 			return { passed: true }
 		})
@@ -800,14 +800,14 @@ Deno.test('expandWithDependencies pulls server:live for shell frontend', () => {
 		suite('shells/chat', 'frontend', ['server:live']),
 	]
 	const state = { suites: {} }
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const expanded = expandWithDependencies([all[1]], all, state, ctx)
+	const expanded = expandWithDependencies([all[1]], all, state, context)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
 		['server/live', 'shells/chat/frontend'],
@@ -833,14 +833,14 @@ Deno.test('listUnsatisfiedDependencies blocks shell live when server:live failed
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const missing = listUnsatisfiedDependencies(all[1], state, ctx)
+	const missing = listUnsatisfiedDependencies(all[1], state, context)
 	assertEquals(missing, ['server/live'])
 })
 
@@ -868,14 +868,14 @@ Deno.test('listUnsatisfiedDependencies blocks social cross_shell_emoji when fed_
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const missing = listUnsatisfiedDependencies(all[6], state, ctx)
+	const missing = listUnsatisfiedDependencies(all[6], state, context)
 	assertEquals(missing, [
 		'server/live',
 		'shells/social/smoke_social',
@@ -904,14 +904,14 @@ Deno.test('listUnsatisfiedDependencies blocks social e2e_single when smoke_socia
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const missing = listUnsatisfiedDependencies(all[2], state, ctx)
+	const missing = listUnsatisfiedDependencies(all[2], state, context)
 	assertEquals(missing, ['server/live', 'shells/social/smoke_social'])
 })
 
@@ -936,14 +936,14 @@ Deno.test('listUnsatisfiedDependencies blocks fed_core when p2p live failed', ()
 			},
 		},
 	}
-	const ctx = {
+	const context = {
 		commitHash: 'abc',
 		uncommittedHash: null,
 		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
 		runGreenKeys: new Set(),
 		byKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), s])),
 	}
-	const missing = listUnsatisfiedDependencies(all[3], state, ctx)
+	const missing = listUnsatisfiedDependencies(all[3], state, context)
 	assertEquals(missing, ['server/live', 'p2p/sim', 'p2p/live'])
 })
 

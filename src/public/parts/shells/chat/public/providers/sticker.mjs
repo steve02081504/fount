@@ -17,11 +17,11 @@ export async function fetchStickerPayload(url) {
 }
 
 /**
- * @param {object} [ctx] picker 上下文（未使用）
+ * @param {object} [context] picker 上下文（未使用）
  * @returns {Promise<{ stickers: object[], showMarketLink?: boolean }>} 贴纸列表与空态提示
  */
-async function loadStickers(ctx) {
-	void ctx
+async function loadStickers(context) {
+	void context
 	const collResp = await fetch('/api/parts/shells:chat/stickers/collection', { credentials: 'include' })
 	if (!collResp.ok) throw new Error('Failed')
 	const collData = await collResp.json()
@@ -60,11 +60,11 @@ async function loadStickers(ctx) {
 }
 
 /**
- * @param {object} ctx picker 上下文
+ * @param {object} context picker 上下文
  * @returns {Promise<object[]>} 贴纸包列表（单 collection 包）
  */
-async function listPacks(ctx) {
-	const { stickers } = await loadStickers(ctx)
+async function listPacks(context) {
+	const { stickers } = await loadStickers(context)
 	return [{
 		id: 'collection',
 		label: 'Stickers',

@@ -41,13 +41,13 @@ export async function renderBlocklist(appContext, container) {
 			const scopeLabel = entry.scope === 'subject'
 				? appContext.geti18n('social.blocklist.scopeSubject')
 				: appContext.geti18n('social.blocklist.scopeEntity')
-			const actionBtn = entry.scope === 'entity'
+			const actionButton = entry.scope === 'entity'
 				? `<button type="button" class="profile-action-btn" data-unblock="${escapeHtml(entry.value)}">${escapeHtml(appContext.geti18n('social.blocklist.unblock'))}</button>`
 				: ''
 			row.innerHTML = `
 				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
 				<code class="entity-hash">${escapeHtml(entry.value)}</code>
-				${actionBtn}
+				${actionButton}
 			`
 			container.appendChild(row)
 		}
@@ -63,13 +63,13 @@ export async function renderBlocklist(appContext, container) {
 			const scopeLabel = entry.scope === 'subject'
 				? appContext.geti18n('social.blocklist.scopeSubject')
 				: appContext.geti18n('social.blocklist.scopeEntity')
-			const actionBtn = entry.scope === 'entity'
+			const actionButton = entry.scope === 'entity'
 				? `<button type="button" class="profile-action-btn" data-unhide="${escapeHtml(entry.value)}">${escapeHtml(appContext.geti18n('social.blocklist.unhide'))}</button>`
 				: ''
 			row.innerHTML = `
 				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
 				<code class="entity-hash">${escapeHtml(entry.value)}</code>
-				${actionBtn}
+				${actionButton}
 			`
 			container.appendChild(row)
 		}

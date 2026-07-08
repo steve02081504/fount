@@ -37,11 +37,11 @@ async function createUploadProgress(fileName) {
 		root.className = 'px-3 py-2 border-t border-base-300 bg-base-200/80 text-sm'
 		host.prepend(root)
 	}
-	const nameEl = root.querySelector('[data-upload-name]')
-	const pctEl = root.querySelector('[data-upload-pct]')
-	const barEl = root.querySelector('[data-upload-bar]')
-	const labelEl = root.querySelector('[data-upload-label]')
-	if (nameEl) nameEl.textContent = fileName
+	const nameElement = root.querySelector('[data-upload-name]')
+	const pctElement = root.querySelector('[data-upload-pct]')
+	const barElement = root.querySelector('[data-upload-bar]')
+	const labelElement = root.querySelector('[data-upload-label]')
+	if (nameElement) nameElement.textContent = fileName
 	root.hidden = false
 
 	return {
@@ -51,12 +51,12 @@ async function createUploadProgress(fileName) {
 		 */
 		set(percent, labelKey) {
 			const p = Math.max(0, Math.min(100, Math.round(percent)))
-			if (barEl instanceof HTMLProgressElement) {
-				barEl.value = p
-				barEl.max = 100
+			if (barElement instanceof HTMLProgressElement) {
+				barElement.value = p
+				barElement.max = 100
 			}
-			if (pctEl) pctEl.textContent = `${p}%`
-			if (labelEl && labelKey) labelEl.dataset.i18n = labelKey
+			if (pctElement) pctElement.textContent = `${p}%`
+			if (labelElement && labelKey) labelElement.dataset.i18n = labelKey
 		},
 		/**
 		 * 上传成功，移除进度条 DOM。

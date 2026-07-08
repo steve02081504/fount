@@ -55,14 +55,14 @@ async function triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip
  * @param {string} username 用户名
  * @param {string} uid 定时器 ID
  * @param {object} callbackdata 回调数据
- * @param {object} deps 来自 timer 插件的依赖
- * @param {string} deps.pluginPath timer 插件路径
- * @param {(groupId: string, char_id: string, entry: object) => void} deps.setPendingNotification 写入待注入通知
+ * @param {object} dependencies 来自 timer 插件的依赖
+ * @param {string} dependencies.pluginPath timer 插件路径
+ * @param {(groupId: string, char_id: string, entry: object) => void} dependencies.setPendingNotification 写入待注入通知
  * @returns {Promise<void>}
  */
-async function triggerViaNewGroup(username, uid, callbackdata, deps) {
+async function triggerViaNewGroup(username, uid, callbackdata, dependencies) {
 	const { char_id, reason, chatLogSnip } = callbackdata
-	const { pluginPath, setPendingNotification } = deps
+	const { pluginPath, setPendingNotification } = dependencies
 	const groupId = await newGroup(username)
 	await addchar(groupId, char_id, username)
 	setPendingNotification(groupId, char_id, makeTimerSystemEntry(reason, chatLogSnip, char_id))
@@ -87,22 +87,22 @@ async function triggerViaNewGroup(username, uid, callbackdata, deps) {
  * @param {string} username 用户名
  * @param {string} uid 定时器 ID
  * @param {object} callbackdata 回调数据
- * @param {object} deps 来自 timer 插件的依赖
- * @param {string} deps.pluginPath timer 插件路径
- * @param {(groupId: string, char_id: string, entry: object) => void} deps.setPendingNotification 写入待注入通知
+ * @param {object} dependencies 来自 timer 插件的依赖
+ * @param {string} dependencies.pluginPath timer 插件路径
+ * @param {(groupId: string, char_id: string, entry: object) => void} dependencies.setPendingNotification 写入待注入通知
  * @returns {Promise<'group' | 'new' | false>} 回落方式，或失败
  */
-export async function handleTimerGroupFallback(username, uid, callbackdata, deps) {
+export async function handleTimerGroupFallback(username, uid, callbackdata, dependencies) {
 	const { char_id, groupId, reason, chatLogSnip } = callbackdata
 
 	if (groupId) try {
-		if (await triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, deps.setPendingNotification))
+		if (await triggerViaGroupId(username, groupId, char_id, reason, chatLogSnip, dependencies.setPendingNotification))
 			return 'group'
 	}
 	catch (e) { console.error('timer: 通过 groupId 触发失败，尝试新建群', e) }
 
 	try {
-		await triggerViaNewGroup(username, uid, callbackdata, deps)
+		await triggerViaNewGroup(username, uid, callbackdata, dependencies)
 		return 'new'
 	}
 	catch (e) {

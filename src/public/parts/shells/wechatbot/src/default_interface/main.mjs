@@ -498,19 +498,19 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	}
 
 	/**
-	 * 微信 Bot 主循环：长轮询拉取更新、去重入站消息并驱动回复，直至 ctx.signal 中止。
-	 * @param {object} ctx 运行上下文。
-	 * @param {() => Promise<any>} ctx.getUpdates 拉取消息更新的方法。
-	 * @param {(body: object) => Promise<void>} ctx.sendMessage 发送消息的方法。
-	 * @param {any} {(params: { mediaType: number, toUserId: string, fileBuffer: Buffer | Uint8Array | ArrayBuffer, cdnBaseUrl?: string }) => Promise<any>} ctx.uploadMedia
-	 * @param {AbortSignal} ctx.signal 中止信号。
+	 * 微信 Bot 主循环：长轮询拉取更新、去重入站消息并驱动回复，直至 context.signal 中止。
+	 * @param {object} context 运行上下文。
+	 * @param {() => Promise<any>} context.getUpdates 拉取消息更新的方法。
+	 * @param {(body: object) => Promise<void>} context.sendMessage 发送消息的方法。
+	 * @param {any} {(params: { mediaType: number, toUserId: string, fileBuffer: Buffer | Uint8Array | ArrayBuffer, cdnBaseUrl?: string }) => Promise<any>} context.uploadMedia
+	 * @param {AbortSignal} context.signal 中止信号。
 	 * @param {object} config 配置对象。
 	 * @returns {Promise<void>}
 	 */
-	async function SimpleWechatBotMain(ctx, config) {
+	async function SimpleWechatBotMain(context, config) {
 		const MAX_MESSAGE_DEPTH = config.MaxMessageDepth || 40
 		const wechatPromptDisplayName = String(config.OwnerPromptName ?? '').trim() || ownerUsername
-		const cdnBaseUrl = ctx.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
+		const cdnBaseUrl = context.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
 		/** 长轮询游标：服务端返回的 get_updates_buf，用于接续拉取。 */
 		let getUpdatesCursor = ''
 		let longPollTimeoutMs = DEFAULT_LONG_POLL_TIMEOUT_MS
@@ -536,7 +536,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			const chunks = splitWechatText(text || '')
 			for (const chunk of chunks) {
 				if (!chunk.trim()) continue
-				await ctx.sendMessage({
+				await context.sendMessage({
 					msg: {
 						from_user_id: '',
 						to_user_id: toUserId,
@@ -564,7 +564,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				try {
 					file = await convertFileToWechatCompatible(rawFile)
 					const uploadMediaType = detectUploadMediaType(file)
-					const uploadResult = await ctx.uploadMedia({
+					const uploadResult = await context.uploadMedia({
 						mediaType: uploadMediaType,
 						toUserId,
 						fileBuffer: file.buffer,
@@ -577,7 +577,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 						fileSize: uploadResult.rawSize,
 						ciphertextSize: uploadResult.ciphertextSize,
 					})
-					await ctx.sendMessage({
+					await context.sendMessage({
 						msg: {
 							from_user_id: '',
 							to_user_id: toUserId,
@@ -659,7 +659,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			const text = extractInboundText(wxMsg)
 			const name = wxMsg.message_type === MessageType.BOT ? botCharname : wechatPromptDisplayName
 			const files = (await Promise.all(
-				(wxMsg.item_list || []).map(item => downloadAndDecryptMediaItem(item, cdnBaseUrl, ctx.signal))
+				(wxMsg.item_list || []).map(item => downloadAndDecryptMediaItem(item, cdnBaseUrl, context.signal))
 			)).filter(Boolean)
 			return {
 				time_stamp: wxMsg.create_time_ms ?? Date.now(),
@@ -767,7 +767,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			catch (error) {
 				console.error('[SimpleWechat] 回复失败:', error)
 				try {
-					await ctx.sendMessage({
+					await context.sendMessage({
 						msg: {
 							from_user_id: '',
 							to_user_id: toUserId,
@@ -787,19 +787,19 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		}
 
 		try {
-			while (!ctx.signal.aborted) {
+			while (!context.signal.aborted) {
 				let resp
 				try {
-					resp = await ctx.getUpdates({ get_updates_buf: getUpdatesCursor, timeoutMs: longPollTimeoutMs })
+					resp = await context.getUpdates({ get_updates_buf: getUpdatesCursor, timeoutMs: longPollTimeoutMs })
 				}
 				catch (error) {
-					if (ctx.signal.aborted) break
+					if (context.signal.aborted) break
 					console.error('[SimpleWechat] getUpdates 错误:', error)
 					await new Promise(resolve => setTimeout(resolve, 2000))
 					continue
 				}
 
-				if (ctx.signal.aborted) break
+				if (context.signal.aborted) break
 
 				if (resp?.errcode === -14)
 					throw new Error('微信会话已失效（errcode -14），请重新完成渠道登录并更新 Token。')
@@ -860,12 +860,12 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	return {
 		/**
 		 * 启动微信 Bot 主循环。
-		 * @param {object} ctx 运行上下文。
+		 * @param {object} context 运行上下文。
 		 * @param {object} config 配置对象。
 		 * @returns {Promise<void>}
 		 */
-		OnceClientReady: async (ctx, config) => {
-			SimpleWechatBotMain(ctx, config)
+		OnceClientReady: async (context, config) => {
+			SimpleWechatBotMain(context, config)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

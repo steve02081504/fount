@@ -26,4 +26,5 @@ An in-process simulation that co-evolves **tunables** (`*.tunables.json`) agains
 
 ## Determinism
 
-- Everything is seeded via `rng.mjs` (`createRng`). `runSimulation(scenario, seed, tunables, genome)` must be pure/deterministic — `fidelity.test.mjs` asserts serial == parallel == batched snapshots byte-for-byte. Never introduce wall-clock or unseeded randomness; use `ctx.now` (virtual clock, advances 60s/round).
+- Everything is seeded via `rng.mjs` (`createRng`). `runSimulation(scenario, seed, tunables, genome)` must be pure/deterministic — `fidelity.test.mjs` asserts serial == parallel == batched snapshots byte-for-byte. Never introduce wall-clock or unseeded randomness; use `simulationContext.now` (virtual clock, advances 60s/round).
+- **Naming**: round state object is `simulationContext` (not `ctx`); `buildWorld` returns `{ simulationContext }`.

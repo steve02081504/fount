@@ -188,14 +188,14 @@ function applyBannerBinding(binding) {
 	const show = binding.visible()
 	if (show) el.removeAttribute('hidden')
 	else el.setAttribute('hidden', '')
-	const textEl = binding.textId ? document.getElementById(binding.textId) : null
-	if (textEl && show) {
-		if (binding.i18n) textEl.dataset.i18n = binding.i18n()
+	const textElement = binding.textId ? document.getElementById(binding.textId) : null
+	if (textElement && show) {
+		if (binding.i18n) textElement.dataset.i18n = binding.i18n()
 		if (binding.dataset) {
-			for (const k of Object.keys(textEl.dataset))
-				if (k !== 'i18n') delete textEl.dataset[k]
+			for (const k of Object.keys(textElement.dataset))
+				if (k !== 'i18n') delete textElement.dataset[k]
 			for (const [k, v] of Object.entries(binding.dataset()))
-				textEl.dataset[k] = v
+				textElement.dataset[k] = v
 		}
 	}
 }
@@ -215,7 +215,7 @@ export function wireHubBannerBindings() {
 	watchHubState('context.currentGroupId', refreshBoundBanners)
 	watchHubState('context.currentChannelId', refreshBoundBanners)
 	watchHubState('context.currentState', refreshBoundBanners)
-	document.getElementById('hub-archive-sync-btn')?.addEventListener('click', () => {
+	document.getElementById('hub-archive-sync-button')?.addEventListener('click', () => {
 		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/archive/sync`, {
@@ -226,7 +226,7 @@ export function wireHubBannerBindings() {
 			refreshBoundBanners()
 		}).catch(console.error)
 	})
-	document.getElementById('hub-shun-keep-history-btn')?.addEventListener('click', () => {
+	document.getElementById('hub-shun-keep-history-button')?.addEventListener('click', () => {
 		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/federation/shun-dismiss`, {
@@ -239,7 +239,7 @@ export function wireHubBannerBindings() {
 			refreshBoundBanners()
 		}).catch(console.error)
 	})
-	document.getElementById('hub-shun-leave-btn')?.addEventListener('click', () => {
+	document.getElementById('hub-shun-leave-button')?.addEventListener('click', () => {
 		const groupId = hubStore.context.currentGroupId
 		if (!groupId) return
 		void import('../groupContextMenu.mjs').then(({ leaveGroupsOptimistic }) =>

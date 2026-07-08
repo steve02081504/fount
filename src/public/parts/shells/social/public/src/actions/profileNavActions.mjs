@@ -21,7 +21,7 @@ function actingFields(appContext) {
  * @returns {Promise<void>}
  */
 export async function handleProfileNavClick(appContext, target) {
-	if (target.closest('#saveMetaBtn')) {
+	if (target.closest('#saveMetaButton')) {
 		await appContext.socialApi('/profile/meta', {
 			method: 'POST',
 			body: JSON.stringify({
@@ -34,10 +34,10 @@ export async function handleProfileNavClick(appContext, target) {
 			await loadProfileFor(appContext, appContext.state.profileEntityHash)
 	}
 
-	const followBtn = target.closest('[data-follow]')
-	if (followBtn instanceof HTMLElement && followBtn.dataset.follow) {
-		const entityHash = followBtn.dataset.follow
-		const wasFollowing = followBtn.dataset.isFollowing === '1'
+	const followButton = target.closest('[data-follow]')
+	if (followButton instanceof HTMLElement && followButton.dataset.follow) {
+		const entityHash = followButton.dataset.follow
+		const wasFollowing = followButton.dataset.isFollowing === '1'
 		await appContext.socialApi('/relationships/follow', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, follow: !wasFollowing, ...actingFields(appContext) }),
@@ -48,47 +48,47 @@ export async function handleProfileNavClick(appContext, target) {
 			await loadExplore(appContext)
 	}
 
-	const blockBtn = target.closest('[data-block]')
-	if (blockBtn instanceof HTMLElement && blockBtn.dataset.block) {
+	const blockButton = target.closest('[data-block]')
+	if (blockButton instanceof HTMLElement && blockButton.dataset.block) {
 		await appContext.socialApi('/relationships/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: blockBtn.dataset.block, block: true, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: blockButton.dataset.block, block: true, ...actingFields(appContext) }),
 		})
 		await refreshVisiblePosts(appContext)
 		closePostMoreMenus()
 	}
 
-	const hideBtn = target.closest('[data-hide]')
-	if (hideBtn instanceof HTMLElement && hideBtn.dataset.hide) {
+	const hideButton = target.closest('[data-hide]')
+	if (hideButton instanceof HTMLElement && hideButton.dataset.hide) {
 		await appContext.socialApi('/relationships/hide', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: hideBtn.dataset.hide, hide: true, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: hideButton.dataset.hide, hide: true, ...actingFields(appContext) }),
 		})
 		await refreshVisiblePosts(appContext)
 		closePostMoreMenus()
 	}
 
-	const unblockBtn = target.closest('[data-unblock]')
-	if (unblockBtn instanceof HTMLElement && unblockBtn.dataset.unblock) {
+	const unblockButton = target.closest('[data-unblock]')
+	if (unblockButton instanceof HTMLElement && unblockButton.dataset.unblock) {
 		await appContext.socialApi('/relationships/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: unblockBtn.dataset.unblock, block: false, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: unblockButton.dataset.unblock, block: false, ...actingFields(appContext) }),
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}
 
-	const unhideBtn = target.closest('[data-unhide]')
-	if (unhideBtn instanceof HTMLElement && unhideBtn.dataset.unhide) {
+	const unhideButton = target.closest('[data-unhide]')
+	if (unhideButton instanceof HTMLElement && unhideButton.dataset.unhide) {
 		await appContext.socialApi('/relationships/hide', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: unhideBtn.dataset.unhide, hide: false, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: unhideButton.dataset.unhide, hide: false, ...actingFields(appContext) }),
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}
 
-	const dmBtn = target.closest('[data-dm]')
-	if (dmBtn instanceof HTMLElement && dmBtn.dataset.dm)
-		window.location.href = formatChatDmFromSocial(dmBtn.dataset.dm)
+	const dmButton = target.closest('[data-dm]')
+	if (dmButton instanceof HTMLElement && dmButton.dataset.dm)
+		window.location.href = formatChatDmFromSocial(dmButton.dataset.dm)
 
 	const profileTab = target.closest('[data-profile-tab]')
 	if (profileTab instanceof HTMLElement && profileTab.dataset.profileTab) {

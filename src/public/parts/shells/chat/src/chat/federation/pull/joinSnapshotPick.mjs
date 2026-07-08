@@ -7,7 +7,7 @@ import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p
 import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
 import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
 import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
-import { localNodeHash } from '../deps.mjs'
+import { localNodeHash } from '../dagDependencies.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
 import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'
 

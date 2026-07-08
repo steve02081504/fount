@@ -10,11 +10,11 @@ import { collectIceServersFromDom, wireIceServersEditor } from './iceTab.mjs'
 import { wireInvitePanel } from './inviteTab.mjs'
 import { readApiError } from './shared.mjs'
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function showOwnerSuccessionModal(ctx) {
-	if (!ctx.groupId) return
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function showOwnerSuccessionModal(context) {
+	if (!context.groupId) return
 	usingTemplates('/parts/shells:chat/src/templates')
-	const viewerPubKeyHash = String(ctx.stateJson?.viewerMemberPubKeyHash || '').trim().toLowerCase()
+	const viewerPubKeyHash = String(context.stateJson?.viewerMemberPubKeyHash || '').trim().toLowerCase()
 	await openDialogFromTemplate('group/modals/owner_succession', {
 		viewerPubKeyHash: escapeHtml(viewerPubKeyHash),
 	}, {
@@ -41,13 +41,13 @@ export async function showOwnerSuccessionModal(ctx) {
 				}
 				if (submitButton instanceof HTMLButtonElement) submitButton.disabled = true
 				try {
-					await submitOwnerSuccession(ctx.groupId, {
+					await submitOwnerSuccession(context.groupId, {
 						proposedOwnerPubKeyHash,
 						ballotId: crypto.randomUUID(),
 					})
 					showToastI18n('success', 'chat.group.settingsPage.ownerSuccessionOk')
 					closeModal()
-					await ctx.reload(ctx.groupId)
+					await context.reload(context.groupId)
 				}
 				catch (error) {
 					showToastI18n('error', 'chat.group.settingsPage.ownerSuccessionFailed', { error: error.message })
@@ -60,13 +60,13 @@ export async function showOwnerSuccessionModal(ctx) {
 	})
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function saveGroupSettings(ctx) {
-	if (!ctx.settingsCaps?.canEditGroupSettings) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function saveGroupSettings(context) {
+	if (!context.settingsCaps?.canEditGroupSettings) {
 		showToastI18n('error', 'chat.group.settingsPage.governanceDenied')
 		return
 	}
-	const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}/meta`, {
+	const metaResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/meta`, {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -78,7 +78,7 @@ export async function saveGroupSettings(ctx) {
 	if (!metaResponse.ok) throw new Error(await readApiError(metaResponse))
 
 	const gossipTtl = Number.parseInt(document.getElementById('gossip-ttl').value, 10)
-	const settingsResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}/settings`, {
+	const settingsResponse = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}/settings`, {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',
@@ -130,25 +130,25 @@ export async function saveGroupSettings(ctx) {
 	})
 	if (!settingsResponse.ok) throw new Error(await readApiError(settingsResponse))
 
-	const partitionEl = document.getElementById('federation-partition-count')
-	if (partitionEl) {
+	const partitionElement = document.getElementById('federation-partition-count')
+	if (partitionElement) {
 		const tuningPatch = collectFederationTuningPatch()
 		if (Object.keys(tuningPatch).length)
-			await postFederationTuning(ctx.groupId, tuningPatch)
+			await postFederationTuning(context.groupId, tuningPatch)
 	}
 
 	showToastI18n('success', 'chat.group.settingsPage.saveSuccess')
-	await ctx.reload(ctx.groupId)
+	await context.reload(context.groupId)
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function deleteGroup(ctx) {
-	if (!ctx.settingsCaps?.canDeleteGroup) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function deleteGroup(context) {
+	if (!context.settingsCaps?.canDeleteGroup) {
 		showToastI18n('error', 'chat.group.settingsPage.governanceDenied')
 		return
 	}
 	if (!confirmI18n('chat.group.settingsPage.deleteConfirm')) return
-	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(ctx.groupId)}`, {
+	const resp = await fetch(`/api/parts/shells:chat/groups/${encodeURIComponent(context.groupId)}`, {
 		method: 'DELETE',
 		credentials: 'include'
 	})
@@ -158,15 +158,15 @@ export async function deleteGroup(ctx) {
 	window.location.href = '/parts/shells:chat/hub/'
 }
 
-/** @param {import('./state.mjs').GroupSettingsContext} ctx @returns {Promise<void>} */
-export async function renderGroupSettings(ctx) {
+/** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */
+export async function renderGroupSettings(context) {
 	const { appendTemplate } = await import('../../../../../../scripts/features/template.mjs')
 	const container = document.getElementById('group-settings-container')
-	if (!container || !ctx.settingsCaps) return
+	if (!container || !context.settingsCaps) return
 
 	container.replaceChildren()
 
-	if (!ctx.settingsCaps.isMember) {
+	if (!context.settingsCaps.isMember) {
 		await appendTemplate(container, 'group/settings/settings_panel_denied', {
 			messageKey: 'chat.group.settingsPage.notMember',
 		})
@@ -174,36 +174,36 @@ export async function renderGroupSettings(ctx) {
 	}
 
 	await appendTemplate(container, 'group/settings/basic_panel_overview', {
-		currentState: ctx.state,
+		currentState: context.state,
 	})
 
-	if (ctx.settingsCaps.showGovernancePanel) {
+	if (context.settingsCaps.showGovernancePanel) {
 		await appendTemplate(container, 'group/settings/basic_panel', {
-			currentState: ctx.state,
-			showFullSettings: ctx.settingsCaps.canEditGroupSettings,
-			showDeleteGroup: ctx.settingsCaps.canDeleteGroup,
-			showKeyRotate: ctx.settingsCaps.canKeyRotate,
-			showFedTuning: ctx.settingsCaps.canFedTuning,
-			showOwnerSuccession: ctx.settingsCaps.canOwnerSuccession,
+			currentState: context.state,
+			showFullSettings: context.settingsCaps.canEditGroupSettings,
+			showDeleteGroup: context.settingsCaps.canDeleteGroup,
+			showKeyRotate: context.settingsCaps.canKeyRotate,
+			showFedTuning: context.settingsCaps.canFedTuning,
+			showOwnerSuccession: context.settingsCaps.canOwnerSuccession,
 		})
-		await wireIceServersEditor(ctx)
+		await wireIceServersEditor(context)
 		document.getElementById('save-group-settings')?.addEventListener('click', () => {
-			void saveGroupSettings(ctx)
+			void saveGroupSettings(context)
 		})
 		document.getElementById('group-settings-delete-group-button')?.addEventListener('click', () => {
-			void deleteGroup(ctx)
+			void deleteGroup(context)
 		})
 	}
 
-	if (ctx.settingsCaps.canInviteMembers) {
+	if (context.settingsCaps.canInviteMembers) {
 		await appendTemplate(container, 'group/settings/invite_panel', {})
-		wireInvitePanel(ctx)
+		wireInvitePanel(context)
 	}
 
 	document.getElementById('group-settings-key-rotate-button')?.addEventListener('click', async () => {
-		if (!ctx.groupId || !confirmI18n('chat.group.settingsPage.keyRotateConfirm')) return
+		if (!context.groupId || !confirmI18n('chat.group.settingsPage.keyRotateConfirm')) return
 		try {
-			const result = await rotateGroupKey(ctx.groupId)
+			const result = await rotateGroupKey(context.groupId)
 			showToastI18n('success', 'chat.group.settingsPage.keyRotateOk')
 			const generation = Number(result?.generation)
 			const maxGenerations = Number(result?.maxGenerations) || 64
@@ -212,13 +212,13 @@ export async function renderGroupSettings(ctx) {
 					generation: String(generation),
 					maxGenerations: String(maxGenerations),
 				})
-			await ctx.reload(ctx.groupId)
+			await context.reload(context.groupId)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.group.settingsPage.keyRotateFailed', { error: error.message })
 		}
 	})
 	document.getElementById('group-settings-owner-succession-button')?.addEventListener('click', () => {
-		void showOwnerSuccessionModal(ctx)
+		void showOwnerSuccessionModal(context)
 	})
 }

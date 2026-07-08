@@ -774,16 +774,16 @@ export async function displayFunctionButtons() {
 			titleSpan.textContent = info.title
 
 			const classes = ['btn', 'btn-ghost', 'btn-sm', 'flex', 'items-center', 'justify-start', ...item.classes?.split(' ') || []]
-			const btn = document.createElement('a')
-			btn.classList.add(...classes)
-			if (item.style) btn.style.cssText = item.style
-			btn.appendChild(iconSpan)
-			btn.appendChild(titleSpan)
+			const button = document.createElement('a')
+			button.classList.add(...classes)
+			if (item.style) button.style.cssText = item.style
+			button.appendChild(iconSpan)
+			button.appendChild(titleSpan)
 
-			if (item.action) btn.addEventListener('click', () => async_eval(item.action, { geti18n }))
-			else if (item.url) btn.href = item.url
+			if (item.action) button.addEventListener('click', () => async_eval(item.action, { geti18n }))
+			else if (item.url) button.href = item.url
 
-			li.appendChild(btn)
+			li.appendChild(button)
 		}
 		return li
 	}
@@ -826,7 +826,7 @@ export async function displayFunctionButtons() {
 	searchInput.addEventListener('input', () => {
 		if (!searchInput.value) return renderMenu(allItems)
 		const filterFn = compileFilter(searchInput.value)
-		renderMenu(leafItems.filter(btn => filterFn(geti18n(btn.info))))
+		renderMenu(leafItems.filter(button => filterFn(geti18n(button.info))))
 	})
 
 	renderMenu(allItems)

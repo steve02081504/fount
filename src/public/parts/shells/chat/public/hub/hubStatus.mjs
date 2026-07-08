@@ -24,7 +24,7 @@ let idleTimer = null
 /** @type {string} */
 let lastManualStatus = 'online'
 /** @type {HTMLElement | null} */
-let openStatusMenuEl = null
+let openStatusMenuElement = null
 
 const MANUAL_STATUSES = ['online', 'idle', 'dnd', 'invisible']
 
@@ -150,18 +150,18 @@ export function startIdleWatcher() {
 
 /** @returns {void} */
 function dismissStatusMenu() {
-	if (!openStatusMenuEl) return
-	openStatusMenuEl.remove()
-	openStatusMenuEl = null
+	if (!openStatusMenuElement) return
+	openStatusMenuElement.remove()
+	openStatusMenuElement = null
 }
 
 /**
- * @param {HTMLElement} anchorEl user bar 或状态行
+ * @param {HTMLElement} anchorElement user bar 或状态行
  * @returns {Promise<void>}
  */
-export async function showStatusMenu(anchorEl) {
+export async function showStatusMenu(anchorElement) {
 	dismissStatusMenu()
-	const rect = anchorEl.getBoundingClientRect()
+	const rect = anchorElement.getBoundingClientRect()
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
 	menu.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top - 4}px;transform:translateY(-100%);min-width:11rem;`
@@ -186,16 +186,16 @@ export async function showStatusMenu(anchorEl) {
 	}
 
 	const profileLi = document.createElement('li')
-	const profileBtn = document.createElement('a')
-	profileBtn.href = '/parts/shells:chat/profile'
-	profileBtn.className = 'px-3 py-2 text-sm'
-	profileBtn.textContent = await geti18n('chat.hub.profileLinkTitle.title')
-	profileBtn.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
-	profileLi.append(profileBtn)
+	const profileButton = document.createElement('a')
+	profileButton.href = '/parts/shells:chat/profile'
+	profileButton.className = 'px-3 py-2 text-sm'
+	profileButton.textContent = await geti18n('chat.hub.profileLinkTitle.title')
+	profileButton.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
+	profileLi.append(profileButton)
 	menu.append(profileLi)
 
 	document.body.append(menu)
-	openStatusMenuEl = menu
+	openStatusMenuElement = menu
 
 	/**
 	 * 关闭在线状态菜单并移除文档级点击监听。

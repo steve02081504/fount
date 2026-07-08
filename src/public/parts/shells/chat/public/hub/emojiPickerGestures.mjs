@@ -2,12 +2,12 @@ const GROUP_EMOJI_LONG_PRESS_MS = 500
 
 /**
  * Hub 群表情长按 / 右键：作为贴纸发送（不渗入共享 emojiPicker）。
- * @param {HTMLElement} gridEl 表情网格
- * @param {HTMLElement} pickerEl 选择器根节点
+ * @param {HTMLElement} gridElement 表情网格
+ * @param {HTMLElement} pickerElement 选择器根节点
  * @param {(item: object) => Promise<void>} onSendAsSticker 发送贴纸回调
  * @returns {void}
  */
-export function wireHubGroupEmojiStickerGestures(gridEl, pickerEl, onSendAsSticker) {
+export function wireHubGroupEmojiStickerGestures(gridElement, pickerElement, onSendAsSticker) {
 	/** @type {ReturnType<typeof setTimeout> | null} */
 	let longPressTimer = null
 	let longPressFired = false
@@ -34,7 +34,7 @@ export function wireHubGroupEmojiStickerGestures(gridEl, pickerEl, onSendAsStick
 		}
 	}
 
-	gridEl.addEventListener('pointerdown', event => {
+	gridElement.addEventListener('pointerdown', event => {
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (!groupButton) return
 		longPressFired = false
@@ -42,14 +42,14 @@ export function wireHubGroupEmojiStickerGestures(gridEl, pickerEl, onSendAsStick
 		longPressTimer = setTimeout(() => {
 			longPressFired = true
 			clearLongPress()
-			void onSendAsSticker(groupEmojiItem(groupButton)).then(() => pickerEl.classList.remove('show'))
+			void onSendAsSticker(groupEmojiItem(groupButton)).then(() => pickerElement.classList.remove('show'))
 		}, GROUP_EMOJI_LONG_PRESS_MS)
 	})
 
 	for (const type of ['pointerup', 'pointercancel'])
-		gridEl.addEventListener(type, clearLongPress)
+		gridElement.addEventListener(type, clearLongPress)
 
-	gridEl.addEventListener('click', event => {
+	gridElement.addEventListener('click', event => {
 		if (!longPressFired) return
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (!groupButton) return
@@ -58,13 +58,13 @@ export function wireHubGroupEmojiStickerGestures(gridEl, pickerEl, onSendAsStick
 		event.stopImmediatePropagation()
 	}, true)
 
-	gridEl.addEventListener('contextmenu', event => {
+	gridElement.addEventListener('contextmenu', event => {
 		const groupButton = event.target.closest('[data-group-emoji-ref]')
 		if (!groupButton) return
 		event.preventDefault()
 		event.stopPropagation()
 		clearLongPress()
 		longPressFired = true
-		void onSendAsSticker(groupEmojiItem(groupButton)).then(() => pickerEl.classList.remove('show'))
+		void onSendAsSticker(groupEmojiItem(groupButton)).then(() => pickerElement.classList.remove('show'))
 	})
 }

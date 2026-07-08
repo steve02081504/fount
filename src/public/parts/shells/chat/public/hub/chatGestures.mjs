@@ -91,7 +91,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 	}
 
 	/** @type {WeakMap<HTMLElement, { startX: number, startY: number, dragging: boolean, handled: boolean }>} */
-	const swipeStateByEl = new WeakMap()
+	const swipeStateByElement = new WeakMap()
 
 	/**
 	 * @param {HTMLElement} container 消息列表根节点
@@ -110,7 +110,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 			const lastChar = findLastCharMessage(container)
 			if (target !== lastChar) return
 			if (event.touches.length !== 1) return
-			swipeStateByEl.set(target, {
+			swipeStateByElement.set(target, {
 				startX: event.touches[0].clientX,
 				startY: event.touches[0].clientY,
 				dragging: true,
@@ -124,7 +124,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 				? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 				: null
 			if (!(target instanceof HTMLElement)) return
-			const state = swipeStateByEl.get(target)
+			const state = swipeStateByElement.get(target)
 			if (!state?.dragging || event.touches.length !== 1) return
 			const deltaX = event.touches[0].clientX - state.startX
 			const deltaY = event.touches[0].clientY - state.startY
@@ -137,7 +137,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 				? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 				: null
 			if (!(target instanceof HTMLElement)) return
-			const state = swipeStateByEl.get(target)
+			const state = swipeStateByElement.get(target)
 			if (!state?.dragging || state.handled || event.changedTouches.length !== 1) {
 				if (state) state.dragging = false
 				return
@@ -165,7 +165,7 @@ export function createChatGestures({ getGroupId, getChannelId, reloadMessages })
 				? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 				: null
 			if (target instanceof HTMLElement) {
-				const state = swipeStateByEl.get(target)
+				const state = swipeStateByElement.get(target)
 				if (state) state.dragging = false
 			}
 		}

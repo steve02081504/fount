@@ -151,19 +151,19 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 		/**
 		 * Telegram 相册（media_group）合并缓冲。
-		 * @type {Map<string, { messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }>}
+		 * @type {Map<string, { messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, context: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }>}
 		 */
 		const telegramMediaGroupBuffers = new Map()
 
 		/**
 		 * 将入站日志写入频道缓冲并按规则触发 `GetReply` 与 Telegram 发送。
-		 * @param {TelegrafContext} ctx - 当前 Telegraf 上下文（相册 flush 时为该组最后一条分片的上下文）。
+		 * @param {TelegrafContext} context - 当前 Telegraf 上下文（相册 flush 时为该组最后一条分片的上下文）。
 		 * @param {string} logicalChannelId - 逻辑频道 ID（chat 与 topic 拼接）。
 		 * @param {import('./tools.mjs').chatLogEntry_t_simple | null} fountEntry - 已转换的聊天日志条目；为 null 时直接返回。
-		 * @param {import('npm:telegraf/typings/core/types/typegram').Message[]} triggerMessages - 用于判断是否 @bot 等的原始 Telegram 消息列表（单条时为 `[ctx.message]`，相册为整组 batch）。
+		 * @param {import('npm:telegraf/typings/core/types/typegram').Message[]} triggerMessages - 用于判断是否 @bot 等的原始 Telegram 消息列表（单条时为 `[context.message]`，相册为整组 batch）。
 		 * @returns {Promise<void>}
 		 */
-		async function processAfterIncomingEntry(ctx, logicalChannelId, fountEntry, triggerMessages) {
+		async function processAfterIncomingEntry(context, logicalChannelId, fountEntry, triggerMessages) {
 			if (!fountEntry) return
 
 			ChannelChatLogs[logicalChannelId] ??= []
@@ -177,9 +177,9 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 			let shouldReply = interfaceConfig.ReplyToAllMessages
 			if (!shouldReply)
-				if (ctx.chat.type === 'private')
+				if (context.chat.type === 'private')
 					shouldReply = true
-				else if (ctx.chat.type === 'group' || ctx.chat.type === 'supergroup')
+				else if (context.chat.type === 'group' || context.chat.type === 'supergroup')
 					outer: for (const triggerMessage of triggerMessages) {
 						const originalMessageText = triggerMessage.text || triggerMessage.caption || ''
 						if (botInfo.username && originalMessageText.toLowerCase().includes(`@${botInfo.username.toLowerCase()}`)) {
@@ -205,7 +205,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			if (!shouldReply) return
 
 			try {
-				await tryFewTimes(() => ctx.telegram.sendChatAction(ctx.chat.id, 'typing', {
+				await tryFewTimes(() => context.telegram.sendChatAction(context.chat.id, 'typing', {
 					...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
 				}))
 
@@ -223,8 +223,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							const htmlContent = aiMarkdownToTelegramHtml(intermediateClean)
 							const textParts = splitTelegramReply(htmlContent)
 							for (const part of textParts)
-								lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendMessage(
-									ctx.chat.id,
+								lastSentIntermediateMsg = await tryFewTimes(() => context.telegram.sendMessage(
+									context.chat.id,
 									part,
 									{
 										...DefaultParseModeOptions,
@@ -233,8 +233,8 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 								))
 						}
 						for (const stickerId of intermediateStickerIds) try {
-							lastSentIntermediateMsg = await tryFewTimes(() => ctx.telegram.sendSticker(
-								ctx.chat.id,
+							lastSentIntermediateMsg = await tryFewTimes(() => context.telegram.sendSticker(
+								context.chat.id,
 								stickerId,
 								{
 									...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
@@ -245,7 +245,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						}
 
 						if (lastSentIntermediateMsg) {
-							const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, undefined, userDisplayNameCache)
+							const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(context, { message: lastSentIntermediateMsg }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, undefined, userDisplayNameCache)
 							if (fountEntryForBotReply) {
 								ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
 								while (ChannelChatLogs[logicalChannelId].length > maxDepth) {
@@ -270,13 +270,13 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					return {
 						supported_functions: { markdown: true, files: true, add_message: true },
 						username: ownerUsername,
-						chat_name: ctx.chat.type === 'private' ?
+						chat_name: context.chat.type === 'private' ?
 							`TG_DM_${logicalChannelId}` :
-							`TG_Group_${ctx.chat.title || ctx.chat.id}${triggerMsg.message_thread_id ? `_Topic_${triggerMsg.message_thread_id}` : ''}`,
+							`TG_Group_${context.chat.title || context.chat.id}${triggerMsg.message_thread_id ? `_Topic_${triggerMsg.message_thread_id}` : ''}`,
 						char_id: botCharname,
 						Charname: botDisplayName,
-						UserCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
-						ReplyToCharname: ctx.from.first_name || ctx.from.username || `User_${ctx.from.id}`,
+						UserCharname: context.from.first_name || context.from.username || `User_${context.from.id}`,
+						ReplyToCharname: context.from.first_name || context.from.username || `User_${context.from.id}`,
 						locales: localhostLocales,
 						time: new Date(),
 						world: null,
@@ -299,14 +299,14 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						extension: {
 							platform: 'telegram',
 							trigger_message_id: triggerMsg.message_id,
-							chat_id: ctx.chat.id,
+							chat_id: context.chat.id,
 							message_thread_id: triggerMsg.message_thread_id,
-							user_id: ctx.from.id,
-							username_tg: ctx.from.username,
-							first_name_tg: ctx.from.first_name,
-							last_name_tg: ctx.from.last_name,
-							chat_type_tg: ctx.chat.type,
-							chat_title_tg: ctx.chat.title,
+							user_id: context.from.id,
+							username_tg: context.from.username,
+							first_name_tg: context.from.first_name,
+							last_name_tg: context.from.last_name,
+							chat_type_tg: context.chat.type,
+							chat_title_tg: context.chat.title,
 							telegram_trigger_message_obj: triggerMsg
 						}
 					}
@@ -354,24 +354,24 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							let sentMsg
 							try {
 								if (fileItem.filename?.match(/\.(jpeg|jpg|png|gif|webp)$/i))
-									sentMsg = await tryFewTimes(() => ctx.replyWithPhoto({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
+									sentMsg = await tryFewTimes(() => context.replyWithPhoto({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								else if (fileItem.filename?.match(/\.(mp3|ogg|wav|m4a)$/i))
-									sentMsg = await tryFewTimes(() => ctx.replyWithAudio({ source: fileItem.source, filename: fileItem.filename }, { ...sendOptionsWithCaption, title: fileItem.filename }))
+									sentMsg = await tryFewTimes(() => context.replyWithAudio({ source: fileItem.source, filename: fileItem.filename }, { ...sendOptionsWithCaption, title: fileItem.filename }))
 								else if (fileItem.filename?.match(/\.(mp4|mov|avi|mkv)$/i))
-									sentMsg = await tryFewTimes(() => ctx.replyWithVideo({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
+									sentMsg = await tryFewTimes(() => context.replyWithVideo({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								else
-									sentMsg = await tryFewTimes(() => ctx.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
+									sentMsg = await tryFewTimes(() => context.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 							}
 							catch (e) {
 								console.error(`[TelegramDefaultInterface] 发送文件 ${fileItem.filename} 失败:`, e)
 								try {
-									sentMsg = await tryFewTimes(() => ctx.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
+									sentMsg = await tryFewTimes(() => context.replyWithDocument({ source: fileItem.source, filename: fileItem.filename }, sendOptionsWithCaption))
 								}
 								catch (e2) {
 									console.error(`[TelegramDefaultInterface] 作为文档发送 ${fileItem.filename} 也失败:`, e2)
 									const fallbackText = `[文件发送失败: ${fileItem.filename}]${captionAiMarkdown ? '\n' + captionAiMarkdown : ''}`.trim()
 									if (fallbackText) try {
-										sentMsg = await tryFewTimes(() => ctx.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
+										sentMsg = await tryFewTimes(() => context.reply(escapeHTML(fallbackText.substring(0, 4000)), baseSendOptionsForReply))
 									} catch (e3) {
 										console.error('[TelegramDefaultInterface] 发送文件失败的回退消息也失败:', e3)
 									}
@@ -383,7 +383,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 							const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
 							const textParts = splitTelegramReply(htmlContent)
 							for (const part of textParts) try {
-								const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
+								const sentMsg = await tryFewTimes(() => context.reply(part, baseSendOptionsForReply))
 								if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 							} catch (e) { console.error('[TelegramDefaultInterface] 发送剩余HTML文本失败:', e) }
 						}
@@ -392,7 +392,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						const htmlContent = aiMarkdownToTelegramHtml(aiMarkdownContent)
 						const textParts = splitTelegramReply(htmlContent)
 						for (const part of textParts) try {
-							const sentMsg = await tryFewTimes(() => ctx.reply(part, baseSendOptionsForReply))
+							const sentMsg = await tryFewTimes(() => context.reply(part, baseSendOptionsForReply))
 							if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 						} catch (e) { console.error('[TelegramDefaultInterface] 发送HTML文本消息失败:', e) }
 					}
@@ -401,7 +401,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 						...triggerMsg.message_thread_id && { message_thread_id: triggerMsg.message_thread_id }
 					}
 					for (const stickerId of stickerIds) try {
-						const sentMsg = await tryFewTimes(() => ctx.telegram.sendSticker(ctx.chat.id, stickerId, stickerSendOptions))
+						const sentMsg = await tryFewTimes(() => context.telegram.sendSticker(context.chat.id, stickerId, stickerSendOptions))
 						if (sentMsg && !firstSentTelegramMessage) firstSentTelegramMessage = sentMsg
 					} catch (e) {
 						console.error('[TelegramDefaultInterface] 发送贴纸消息失败:', e)
@@ -410,7 +410,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					if (firstSentTelegramMessage && aiFinalReply) {
 						aiReplyObjectCache[firstSentTelegramMessage.message_id] = aiFinalReply
 
-						const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(ctx, { message: firstSentTelegramMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
+						const fountEntryForBotReply = await TelegramMessageToFountChatLogEntry(context, { message: firstSentTelegramMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache)
 
 						if (fountEntryForBotReply) {
 							ChannelChatLogs[logicalChannelId].push(fountEntryForBotReply)
@@ -427,7 +427,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				console.error(`[TelegramDefaultInterface] 处理消息并回复时出错 (chat ${logicalChannelId}, message ${triggerMsg.message_id}):`, error)
 				console.error('[TelegramDefaultInterface] 错误堆栈:', error.stack)
 				try {
-					await tryFewTimes(() => ctx.reply(escapeHTML(errorMessageText)))
+					await tryFewTimes(() => context.reply(escapeHTML(errorMessageText)))
 				} catch (replyError) {
 					console.error('[TelegramDefaultInterface] 发送错误消息也失败:', replyError)
 				}
@@ -436,7 +436,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 
 		/**
 		 * 重置相册合并防抖定时器，到期后调用 `flushTelegramMediaGroup`。
-		 * @param {{ messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, ctx: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }} state - 当前缓冲状态。
+		 * @param {{ messages: import('npm:telegraf/typings/core/types/typegram').Message[], logicalChannelId: string, context: TelegrafContext, timer: ReturnType<typeof setTimeout>|null }} state - 当前缓冲状态。
 		 * @param {string} bufferKey - 与 `telegramMediaGroupBuffers` 中键一致。
 		 * @returns {void}
 		 */
@@ -460,10 +460,10 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			const batch = [...state.messages]
 			state.messages.length = 0
 			try {
-				const mergedCtx = state.ctx
+				const mergedContext = state.context
 				const fountEntry = await telegramMediaGroupMessagesToFountChatLogEntry(
-					mergedCtx, batch, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache)
-				await processAfterIncomingEntry(mergedCtx, state.logicalChannelId, fountEntry, batch)
+					mergedContext, batch, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache)
+				await processAfterIncomingEntry(mergedContext, state.logicalChannelId, fountEntry, batch)
 				if (state.messages.length)
 					scheduleMediaGroupFlush(state, bufferKey)
 				else
@@ -476,15 +476,15 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			}
 		}
 
-		bot.on('edited_message', async ctx_generic => {
+		bot.on('edited_message', async context_generic => {
 			/**
 			 * 收窄后的编辑消息上下文。
 			 * @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.EditedMessageUpdate>}
 			 */
-			const ctx = ctx_generic
-			if (!ctx.update?.edited_message) return
+			const context = context_generic
+			if (!context.update?.edited_message) return
 
-			const editedMessage = ctx.update.edited_message
+			const editedMessage = context.update.edited_message
 			const logicalChannelId = constructLogicalChannelIdForDefault(editedMessage.chat.id, editedMessage.message_thread_id)
 
 			if (editedMessage.chat.type === 'private' && String(editedMessage.from?.id) !== String(interfaceConfig.OwnerUserID))
@@ -498,7 +498,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					const idx = state.messages.findIndex(m => m.message_id === editedMessage.message_id)
 					if (idx >= 0) state.messages[idx] = editedMessage
 					else state.messages.push(editedMessage)
-					state.ctx = ctx
+					state.context = context
 					scheduleMediaGroupFlush(state, bufferKey)
 					return
 				}
@@ -507,40 +507,40 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			const channelLogs = ChannelChatLogs[logicalChannelId]
 			if (!channelLogs) return
 
-			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, { message: editedMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
+			const fountEntry = await TelegramMessageToFountChatLogEntry(context, { message: editedMessage }, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
 			if (!fountEntry) return
 
 			applyTelegramMessageUpdateToChannelLog(channelLogs, fountEntry)
 		})
 
-		bot.on('message', async ctx_generic => {
+		bot.on('message', async context_generic => {
 			/**
 			 * 收窄后的普通消息上下文。
 			 * @type {import('npm:telegraf').NarrowedContext<TelegrafContext, import('npm:telegraf').Types.Update.MessageUpdate>}
 			 */
-			const ctx = ctx_generic
-			const logicalChannelId = constructLogicalChannelIdForDefault(ctx.chat.id, ctx.message.message_thread_id)
+			const context = context_generic
+			const logicalChannelId = constructLogicalChannelIdForDefault(context.chat.id, context.message.message_thread_id)
 
-			if (ctx.chat.type === 'private' && String(ctx.from.id) !== String(interfaceConfig.OwnerUserID))
+			if (context.chat.type === 'private' && String(context.from.id) !== String(interfaceConfig.OwnerUserID))
 				return
-			if (ctx.from.is_bot) return
+			if (context.from.is_bot) return
 
-			if (ctx.message.media_group_id) {
-				const bufferKey = `${botInfo.id}:${logicalChannelId}:${ctx.message.media_group_id}`
+			if (context.message.media_group_id) {
+				const bufferKey = `${botInfo.id}:${logicalChannelId}:${context.message.media_group_id}`
 				let state = telegramMediaGroupBuffers.get(bufferKey)
 				if (!state) {
-					state = { messages: [], logicalChannelId, ctx, timer: null }
+					state = { messages: [], logicalChannelId, context, timer: null }
 					telegramMediaGroupBuffers.set(bufferKey, state)
 				}
-				state.ctx = ctx
-				if (!state.messages.some(m => m.message_id === ctx.message.message_id))
-					state.messages.push(ctx.message)
+				state.context = context
+				if (!state.messages.some(m => m.message_id === context.message.message_id))
+					state.messages.push(context.message)
 				scheduleMediaGroupFlush(state, bufferKey)
 				return
 			}
 
-			const fountEntry = await TelegramMessageToFountChatLogEntry(ctx, ctx, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
-			await processAfterIncomingEntry(ctx, logicalChannelId, fountEntry, [ctx.message])
+			const fountEntry = await TelegramMessageToFountChatLogEntry(context, context, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache)
+			await processAfterIncomingEntry(context, logicalChannelId, fountEntry, [context.message])
 		})
 
 		bot.catch((err, ctx_err) => {

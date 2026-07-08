@@ -181,8 +181,8 @@ async function renderThreadMessages(messageContainer) {
  */
 function wireThreadComposer(drawer, messageContainer) {
 	const input = drawer.querySelector('[data-thread-input]')
-	const sendBtn = drawer.querySelector('[data-thread-send]')
-	if (!(input instanceof HTMLInputElement) || !(sendBtn instanceof HTMLButtonElement)) return
+	const sendButton = drawer.querySelector('[data-thread-send]')
+	if (!(input instanceof HTMLInputElement) || !(sendButton instanceof HTMLButtonElement)) return
 
 	/**
 	 * @returns {Promise<void>}
@@ -191,7 +191,7 @@ function wireThreadComposer(drawer, messageContainer) {
 		if (!activeThread) return
 		const text = input.value.trim()
 		if (!text) return
-		sendBtn.disabled = true
+		sendButton.disabled = true
 		try {
 			await sendGroupMessage(activeThread.groupId, activeThread.threadChannelId, text)
 			input.value = ''
@@ -201,11 +201,11 @@ function wireThreadComposer(drawer, messageContainer) {
 			showToastI18n('error', 'chat.hub.sendFailed', { error: error.message })
 		}
 		finally {
-			sendBtn.disabled = false
+			sendButton.disabled = false
 		}
 	}
 
-	sendBtn.addEventListener('click', () => { void submit() })
+	sendButton.addEventListener('click', () => { void submit() })
 	// 子线程为单行 input：Enter 发送；主 composer 为 Ctrl/Cmd+Enter 发送（见 composerKeys.mjs）
 	input.addEventListener('keydown', (event) => {
 		if (event.key === 'Enter' && !event.shiftKey) {
@@ -247,9 +247,9 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 		wrap.removeAttribute('hidden')
 		wrap.replaceChildren()
 		const drawer = await mountTemplate(wrap, 'thread_drawer', {})
-		const titleEl = drawer.querySelector('[data-thread-title]')
-		if (titleEl)
-			titleEl.textContent = title || `thread:${parentEventId.slice(0, 12)}`
+		const titleElement = drawer.querySelector('[data-thread-title]')
+		if (titleElement)
+			titleElement.textContent = title || `thread:${parentEventId.slice(0, 12)}`
 		drawer.querySelector('[data-thread-close]')?.addEventListener('click', closeThreadDrawer)
 		const messageContainer = drawer.querySelector('[data-thread-msgbox]')
 		if (messageContainer instanceof HTMLElement) {

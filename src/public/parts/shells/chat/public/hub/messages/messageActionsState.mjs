@@ -8,7 +8,7 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 /** @type {object | null} */
-let channelActionsCtx = null
+let channelActionsContext = null
 
 /** @type {Promise<void>} */
 let deletionQueue = Promise.resolve()
@@ -22,14 +22,14 @@ export const activeFeedbackEdits = new Map()
  * @returns {void}
  */
 export function setChannelMessageActionsContext(actions) {
-	channelActionsCtx = actions
+	channelActionsContext = actions
 }
 
 /**
  * @returns {object | null} 当前操作上下文
  */
 export function getChannelMessageActionsContext() {
-	return channelActionsCtx
+	return channelActionsContext
 }
 
 /**
@@ -38,9 +38,9 @@ export function getChannelMessageActionsContext() {
  * @returns {void}
  */
 export function appendChannelActionMessage(message) {
-	if (!channelActionsCtx) return
-	const list = channelActionsCtx.messages
-	channelActionsCtx.messages = Array.isArray(list) ? [...list, message] : [message]
+	if (!channelActionsContext) return
+	const list = channelActionsContext.messages
+	channelActionsContext.messages = Array.isArray(list) ? [...list, message] : [message]
 }
 
 /**

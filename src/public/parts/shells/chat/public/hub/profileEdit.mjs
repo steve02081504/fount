@@ -86,9 +86,9 @@ function persistActiveLocaleForm() {
 function loadActiveLocaleForm() {
 	const slice = editingLocalized[activeLocaleKey] || {}
 	const defaults = editingInfoDefaults || {}
-	const nameEl = editDialog?.querySelector('#hub-profile-edit-name')
-	if (nameEl instanceof HTMLInputElement)
-		nameEl.value = slice.name ?? ''
+	const nameElement = editDialog?.querySelector('#hub-profile-edit-name')
+	if (nameElement instanceof HTMLInputElement)
+		nameElement.value = slice.name ?? ''
 	const desc = editDialog?.querySelector('#hub-profile-edit-description-markdown')
 	if (desc instanceof HTMLTextAreaElement)
 		desc.value = slice.description_markdown ?? slice.description ?? ''

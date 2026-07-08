@@ -66,7 +66,7 @@ Deno.test('rebuildReportSlotReasons stamps explicit seed and its pulled dependen
 		allSuites: all,
 		slots: all,
 		state,
-		ctx: freshCtx(all),
+		context: freshCtx(all),
 	})
 	assertEquals([...seedKeys], ['shells/chat/frontend'])
 	assertEquals(reasons.get('shells/chat/frontend')?.kind, 'explicit_selected')
@@ -81,7 +81,7 @@ Deno.test('rebuildReportSlotReasons keeps continue slots untouched when no seed'
 		allSuites: all,
 		slots: all,
 		state,
-		ctx: freshCtx(all),
+		context: freshCtx(all),
 	})
 	assertEquals(seedKeys.size, 0)
 	assertEquals(provenance.size, 0)

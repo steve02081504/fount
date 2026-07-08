@@ -29,10 +29,10 @@ function escapeHtml(s) {
 }
 
 /**
- * @param {object} ctx picker 上下文
+ * @param {object} context picker 上下文
  * @returns {Promise<object[]>} 最近使用 emoji 项
  */
-async function loadRecentItems(ctx) {
+async function loadRecentItems(context) {
 	const entries = await fetchFrequentEmojis(FREQUENT_EMOJI_LIMIT)
 	/** @type {object[]} */
 	const items = []
@@ -79,10 +79,10 @@ async function loadGroupItems(targetGroupId) {
 }
 
 /**
- * @param {object} ctx picker 上下文
+ * @param {object} context picker 上下文
  * @returns {Promise<object[]>} 标签页描述列表
  */
-async function listTabs(ctx) {
+async function listTabs(context) {
 	/** @type {object[]} */
 	const tabs = [{
 		id: RECENT_EMOJI_TAB_KEY,
@@ -91,8 +91,8 @@ async function listTabs(ctx) {
 		i18nKey: 'chat.hub.recentEmojiTab',
 	}]
 
-	const currentGroupId = ctx?.groupId ?? null
-	const allGroups = ctx?.getGroups?.() ?? []
+	const currentGroupId = context?.groupId ?? null
+	const allGroups = context?.getGroups?.() ?? []
 	const ordered = []
 	if (currentGroupId) {
 		const current = allGroups.find(g => g.groupId === currentGroupId)
@@ -131,12 +131,12 @@ async function listTabs(ctx) {
 
 /**
  * @param {object} tab 标签页
- * @param {object} ctx picker 上下文
+ * @param {object} context picker 上下文
  * @returns {Promise<{ items: object[], emptyI18n?: string, errorI18n?: string }>} 网格项与空态 i18n
  */
-async function loadTabItems(tab, ctx) {
+async function loadTabItems(tab, context) {
 	if (tab.id === RECENT_EMOJI_TAB_KEY) {
-		const items = await loadRecentItems(ctx)
+		const items = await loadRecentItems(context)
 		if (!items.length)
 			return { items: [], emptyI18n: 'chat.hub.recentEmojisEmpty' }
 		return { items }

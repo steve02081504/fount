@@ -226,26 +226,26 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
 
 /**
  * 从上下文中取出 Telegram Bot API 客户端。
- * @param {import('npm:telegraf').Context} ctx - Telegraf 上下文。
- * @returns {import('npm:telegraf').Telegram | undefined} `ctx.telegram` 或等价 accessor。
+ * @param {import('npm:telegraf').Context} context - Telegraf 上下文。
+ * @returns {import('npm:telegraf').Telegram | undefined} `context.telegram` 或等价 accessor。
  */
-function getTelegramApiFromCtx(ctx) {
-	return ctx.telegram || (ctx.botInfo ? ctx : null)?.telegram
+function getTelegramApiFromContext(context) {
+	return context.telegram || (context.botInfo ? context : null)?.telegram
 }
 
 /**
  * 为单条消息构造惰性下载任务数组（每个元素为返回单文件或 `undefined` 的异步函数）。
- * @param {import('npm:telegraf').Context} ctx - Telegraf 上下文。
+ * @param {import('npm:telegraf').Context} context - Telegraf 上下文。
  * @param {TelegramMessageType} message - Telegram 消息对象。
  * @returns {TelegramLazyFileLoader_t[]} 每个元素为「执行时下载单附件」的异步函数。
  */
-export function createLazyTelegramMessageFileLoaders(ctx, message) {
+export function createLazyTelegramMessageFileLoaders(context, message) {
 	/**
 	 * Telegram 附件懒加载器列表。
 	 * @type {TelegramLazyFileLoader_t[]}
 	 */
 	const loaders = []
-	const telegramApi = getTelegramApiFromCtx(ctx)
+	const telegramApi = getTelegramApiFromContext(context)
 	if (!telegramApi) {
 		console.warn('[TelegramDefaultInterface] telegram API object not found in context for file processing.')
 		return loaders
@@ -517,7 +517,7 @@ function mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache) {
 
 /**
  * 将同一相册（`media_group_id` 相同）的多条 Telegram 消息合并为一条 `chatLogEntry_t_simple`。
- * @param {import('npm:telegraf').Context} ctx - Telegraf 上下文。
+ * @param {import('npm:telegraf').Context} context - Telegraf 上下文。
  * @param {TelegramMessageType[]} messages - 同一媒体组的消息（调用方已按接收去重）。
  * @param {TelegramBotInfo} botInfo - bot 信息。
  * @param {any} interfaceConfig - 接口配置。
@@ -527,7 +527,7 @@ function mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache) {
  * @param {Record<number, string>} [userDisplayNameCache={}] - 用户显示名缓存（由上层闭包注入）。
  * @returns {Promise<chatLogEntry_t_simple | null>} 合并成功返回一条日志；无有效正文与附件且无缓存正文时返回 null。
  */
-export async function telegramMediaGroupMessagesToFountChatLogEntry(ctx, messages, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
+export async function telegramMediaGroupMessagesToFountChatLogEntry(context, messages, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
 	if (!messages?.length) return null
 
 	const sorted = [...messages].sort((a, b) => a.message_id - b.message_id)
@@ -564,7 +564,7 @@ export async function telegramMediaGroupMessagesToFountChatLogEntry(ctx, message
 
 	const botDisplayName = (await getPartInfo(charAPI))?.name || botCharname
 	const { contentParts, content } = extractMediaGroupContentParts(sorted, botInfo, interfaceConfig)
-	const files = sorted.flatMap(m => createLazyTelegramMessageFileLoaders(ctx, m))
+	const files = sorted.flatMap(m => createLazyTelegramMessageFileLoaders(context, m))
 	const { mergedAiReply, mergedAiReplyExtension } = mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache)
 
 	const isFromOwner = role === 'user'
@@ -606,7 +606,7 @@ export async function telegramMediaGroupMessagesToFountChatLogEntry(ctx, message
 
 /**
  * 将 Telegram 的消息上下文转换为 fount 的聊天日志条目格式。
- * @param {import('npm:telegraf').Context} ctx - Telegraf 的消息上下文.
+ * @param {import('npm:telegraf').Context} context - Telegraf 的消息上下文.
  * @param {import('npm:telegraf').NarrowedContext<import('npm:telegraf').Context, import('npm:telegraf').Types.Update.MessageUpdate> | { message: TelegramMessageType }} messageHolder - 包含 message 对象的上下文或包装器.
  * @param {TelegramBotInfo} botInfo - bot自身的信息。
  * @param {any} interfaceConfig - 接口配置 (例如 OwnerUserID)。
@@ -617,7 +617,7 @@ export async function telegramMediaGroupMessagesToFountChatLogEntry(ctx, message
  * @param {Record<number, string>} [userDisplayNameCache={}] - 用户显示名缓存（由上层闭包注入）。
  * @returns {Promise<chatLogEntry_t_simple | null>} 转换后的聊天日志条目，或 null。
  */
-export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
+export async function TelegramMessageToFountChatLogEntry(context, messageHolder, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
 	if (!messageHolder || !messageHolder.message) return null
 
 	const { message } = messageHolder
@@ -668,7 +668,7 @@ export async function TelegramMessageToFountChatLogEntry(ctx, messageHolder, bot
 
 	const isFromOwner = role === 'user'
 
-	const files = createLazyTelegramMessageFileLoaders(ctx, message)
+	const files = createLazyTelegramMessageFileLoaders(context, message)
 
 	if (!content.trim() && !files.length && !cachedAIReply)
 		return null

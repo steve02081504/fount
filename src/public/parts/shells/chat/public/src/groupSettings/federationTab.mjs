@@ -3,11 +3,11 @@
  * @returns {Record<string, number>} 联邦调优字段补丁
  */
 export function collectFederationTuningPatch() {
-	const partitionEl = document.getElementById('federation-partition-count')
-	if (!partitionEl) return {}
+	const partitionElement = document.getElementById('federation-partition-count')
+	if (!partitionElement) return {}
 	/** @type {{ federationPartitionCount?: number, rtcConnectionBudgetMax?: number, rtcJoinRatePerMin?: number }} */
 	const tuningPatch = {}
-	const partitionCount = Number.parseInt(partitionEl.value, 10)
+	const partitionCount = Number.parseInt(partitionElement.value, 10)
 	if (Number.isFinite(partitionCount))
 		tuningPatch.federationPartitionCount = partitionCount
 	const rtcBudget = Number.parseInt(

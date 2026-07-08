@@ -80,8 +80,8 @@ export async function openSocialHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
 	await waitForSocialAppReady(page)
 	await expect(page.locator('#feedView')).toBeVisible({ timeout: ms('30s') })
-	await expect(page.locator('#postBtn[data-i18n="social.composer.publish"]')).toBeVisible()
-	await expect(page.locator('#postBtn')).not.toHaveText('', { timeout: ms('30s') })
+	await expect(page.locator('#postButton[data-i18n="social.composer.publish"]')).toBeVisible()
+	await expect(page.locator('#postButton')).not.toHaveText('', { timeout: ms('30s') })
 }
 
 /**
@@ -152,7 +152,7 @@ export async function publishPostViaComposer(page, text, api = {}) {
 		return new URL(res.url()).pathname === '/api/parts/shells:social/posts'
 	}, { timeout: ms('1m') })
 	const feedWait = waitForFeedLoad(page)
-	await page.locator('#postBtn').click()
+	await page.locator('#postButton').click()
 	const postResponse = await postWait
 	const postJson = await postResponse.json()
 	await feedWait
@@ -196,7 +196,7 @@ export function postIdFromResponse(postJson) {
 async function refreshFeed(page) {
 	await Promise.all([
 		waitForFeedLoad(page),
-		page.locator('#feedRefreshBtn').click(),
+		page.locator('#feedRefreshButton').click(),
 	])
 }
 
@@ -254,8 +254,8 @@ async function pollSearchForPost(page, query, postId, trigger) {
 		}, { timeout: ms('1m') })
 		if (trigger === 'enter')
 			await page.locator('#feedSearchInput').press('Enter')
-		else if (await page.locator('#feedSearchBtn').isVisible())
-			await page.locator('#feedSearchBtn').click()
+		else if (await page.locator('#feedSearchButton').isVisible())
+			await page.locator('#feedSearchButton').click()
 		else
 			await page.locator('#feedSearchInput').press('Enter')
 		const searchRes = await searchWait

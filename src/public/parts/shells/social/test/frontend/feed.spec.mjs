@@ -24,7 +24,7 @@ test.describe('Social feed', () => {
 				&& res.request().method() === 'GET'
 				&& res.status() === 200,
 			),
-			page.locator('#feedRefreshBtn').click(),
+			page.locator('#feedRefreshButton').click(),
 		])
 		expect(await feedResponse.json()).toHaveProperty('items')
 		await expectPostInFeed(page, postId)
@@ -40,7 +40,7 @@ test.describe('Social feed', () => {
 		const tag = `enter${Date.now()}`
 		const { postId } = await publishPost(`enter-search #${tag}`)
 		await searchViaEnterAndExpectPost(page, `#${tag}`, postId)
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('short search shows too-short hint', async ({ page }) => {
@@ -55,14 +55,14 @@ test.describe('Social feed', () => {
 		await publishPost(`trending-b #${tag}`)
 		await Promise.all([
 			waitForFeedLoad(page),
-			page.locator('#feedRefreshBtn').click(),
+			page.locator('#feedRefreshButton').click(),
 		])
 		const trending = page.locator('#feedTrending')
 		await expect(trending).toBeVisible({ timeout: 30_000 })
 		const tagLink = trending.locator('a.trending-tag', { hasText: `#${tag}` })
 		await expect(tagLink).toBeVisible({ timeout: 30_000 })
 		await tagLink.click()
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
@@ -70,7 +70,7 @@ test.describe('Social feed', () => {
 		const tag = `clear${Date.now()}`
 		const { postId } = await publishPost(`clear-feed #${tag}`)
 		await searchAndExpectPost(page, `#${tag}`, postId)
-		await page.locator('#feedSearchClearBtn').click()
+		await page.locator('#feedSearchClearButton').click()
 		await expect(page.locator('#feedSearchInput')).toHaveValue('')
 		await expectPostInFeed(page, postId)
 	})
@@ -81,10 +81,10 @@ test.describe('Social feed', () => {
 		await searchAndExpectPost(page, `#${tag}`, postId)
 		await Promise.all([
 			waitForFeedLoad(page),
-			page.locator('#feedRefreshBtn').click(),
+			page.locator('#feedRefreshButton').click(),
 		])
 		await expect(page.locator('#feedSearchInput')).toHaveValue('')
-		await expect(page.locator('#feedSearchClearBtn')).toBeHidden()
+		await expect(page.locator('#feedSearchClearButton')).toBeHidden()
 		await expectPostInFeed(page, postId)
 	})
 
@@ -93,7 +93,7 @@ test.describe('Social feed', () => {
 		const { postId } = await publishPost(`see #${tag} here`)
 		const card = await findPostCard(page, postId)
 		await card.locator('a[href*="#search"]').filter({ hasText: `#${tag}` }).click()
-		await expect(page.locator('#feedSearchClearBtn')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 

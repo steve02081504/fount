@@ -19,17 +19,17 @@ export function observerHasLocalReplica(observer, scenario) {
  * @param {import('./model.mjs').SimNode} attacker 攻击节点
  * @param {import('./model.mjs').SimObserver} observer 观察者
  * @param {import('./scenarios.mjs').SimScenario} scenario 场景
- * @param {object} ctx 仿真上下文
+ * @param {object} simulationContext 仿真上下文
  * @returns {boolean} 完整性层是否已证伪该攻击（defense≈1）
  */
-export function integrityDefendsAgainst(attacker, observer, scenario, ctx) {
+export function integrityDefendsAgainst(attacker, observer, scenario, simulationContext) {
 	if (!observerHasLocalReplica(observer, scenario)) return false
 	if (attacker.attack === 'equivocator') {
 		const key = `${attacker.id}:${observer.id}`
-		return (ctx.equivocationByObserver?.get(key) ?? 0) > 0
+		return (simulationContext.equivocationByObserver?.get(key) ?? 0) > 0
 	}
 	if (attacker.attack === 'archive_forger' || attacker.attack === 'lazy_chunk')
-		return ctx.verifiedForgeryByObserver?.get(observer.id)?.has(attacker.id) === true
+		return simulationContext.verifiedForgeryByObserver?.get(observer.id)?.has(attacker.id) === true
 	return false
 }
 

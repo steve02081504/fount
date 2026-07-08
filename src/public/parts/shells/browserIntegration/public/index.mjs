@@ -178,17 +178,17 @@ async function handleAddScript(e) {
 autorunScriptForm.addEventListener('submit', handleAddScript)
 
 autorunScriptList.addEventListener('click', e => {
-	const viewBtn = e.target.closest('.view-script-btn')
-	if (viewBtn) {
+	const viewButton = e.target.closest('.view-script-btn')
+	if (viewButton) {
 		e.preventDefault()
-		showViewScriptModal(viewBtn.dataset.scriptId)
+		showViewScriptModal(viewButton.dataset.scriptId)
 		return
 	}
 
-	const deleteBtn = e.target.closest('.delete-script-btn')
-	if (deleteBtn) {
+	const deleteButton = e.target.closest('.delete-script-btn')
+	if (deleteButton) {
 		e.preventDefault()
-		handleDeleteScript(deleteBtn.dataset.scriptId)
+		handleDeleteScript(deleteButton.dataset.scriptId)
 	}
 })
 

@@ -31,7 +31,7 @@ test.describe('Social saved posts', () => {
 				&& res.request().method() === 'POST',
 			{ timeout: 60_000 },
 			),
-			page.locator('#createFolderBtn').click(),
+			page.locator('#createFolderButton').click(),
 		])
 		expect(folderResponse.ok()).toBe(true)
 		const folderJson = await folderResponse.json()
@@ -95,7 +95,7 @@ test.describe('Social saved posts', () => {
 				res.url().includes('/api/parts/shells:social/saved-posts/folders')
 				&& res.request().method() === 'POST',
 			),
-			page.locator('#createFolderBtn').click(),
+			page.locator('#createFolderButton').click(),
 		])
 		const renamed = `renamed-${Date.now()}`
 		page.once('dialog', async dialog => {

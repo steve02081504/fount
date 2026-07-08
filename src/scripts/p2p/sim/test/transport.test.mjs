@@ -40,7 +40,7 @@ Deno.test('transportMetrics tracks signaling diversity', () => {
 Deno.test('transportMetrics throttle uses simulation clock not wall clock', () => {
 	const state = createTransportState()
 	const simStart = Date.now()
-	// 40 回合后 ctx.now 比墙钟超前约 2.4M ms，overloadUntil 落在虚拟时间轴上
+	// 40 回合后 simulationContext.now 比墙钟超前约 2.4M ms，overloadUntil 落在虚拟时间轴上
 	state.overloadUntil = simStart + 2_400_000
 	const atWall = transportMetrics(state, 'obs', ['obs'], () => 0.5)
 	assertEquals(atWall.throttleOk, 0)

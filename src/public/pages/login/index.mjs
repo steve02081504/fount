@@ -19,19 +19,19 @@ import { initPasswordCharFeedback } from './passwordCharFeedback.mjs'
 
 const form = document.getElementById('auth-form')
 const formTitle = document.getElementById('form-title')
-const submitBtn = document.getElementById('submit-btn')
+const submitButton = document.getElementById('submit-button')
 const toggleLink = document.getElementById('toggle-link')
 const confirmPasswordGroup = document.getElementById('confirm-password-group')
 const errorMessage = document.getElementById('error-message')
 const verificationCodeGroup = document.getElementById('verification-code-group')
-const sendVerificationCodeBtn = document.getElementById('send-verification-code-btn')
+const sendVerificationCodeButton = document.getElementById('send-verification-code-button')
 const passwordStrengthFeedback = document.getElementById('password-strength-feedback')
 const usernameInput = document.getElementById('username')
 const passwordInput = document.getElementById('password')
 const confirmPasswordInput = document.getElementById('confirm-password')
 const verificationCodeInput = document.getElementById('verification-code')
 const webauthnLoginRow = document.getElementById('webauthn-login-row')
-const webauthnLoginBtn = document.getElementById('webauthn-login-btn')
+const webauthnLoginButton = document.getElementById('webauthn-login-button')
 
 /**
  * WebAuthn 认证启动函数，未加载时为 null。
@@ -156,7 +156,7 @@ function updateFormDisplay() {
 	const formType = isLoginForm ? 'login' : 'register'
 
 	formTitle.dataset.i18n = `auth.${formType}.title`
-	submitBtn.dataset.i18n = `auth.${formType}.submitButton`
+	submitButton.dataset.i18n = `auth.${formType}.submitButton`
 	const [toggleText, toggleButton] = toggleLink.children
 	toggleText.dataset.i18n = `auth.${formType}.toggleLink.textContent`
 	toggleButton.dataset.i18n = `auth.${formType}.toggleLink.link`
@@ -171,7 +171,7 @@ function updateFormDisplay() {
 
 	if (isLoginForm) {
 		verificationCodeSent = false
-		sendVerificationCodeBtn.disabled = false
+		sendVerificationCodeButton.disabled = false
 	}
 }
 
@@ -325,18 +325,18 @@ async function handleSendVerificationCode() {
 			verificationCodeSent = true
 			sendCodeCooldown = true
 			let timeLeft = 60
-			sendVerificationCodeBtn.disabled = true
-			sendVerificationCodeBtn.textContent = `${timeLeft}s`
+			sendVerificationCodeButton.disabled = true
+			sendVerificationCodeButton.textContent = `${timeLeft}s`
 			const countdown = setInterval(() => {
 				timeLeft--
 				if (timeLeft <= 0) {
 					clearInterval(countdown)
-					sendVerificationCodeBtn.disabled = false
-					sendVerificationCodeBtn.dataset.i18n = 'auth.sendCodeButton'
+					sendVerificationCodeButton.disabled = false
+					sendVerificationCodeButton.dataset.i18n = 'auth.sendCodeButton'
 					sendCodeCooldown = false
 				}
 				else
-					sendVerificationCodeBtn.textContent = `${timeLeft}s`
+					sendVerificationCodeButton.textContent = `${timeLeft}s`
 			}, 1000)
 		}
 		else if (response.status === 429)
@@ -430,8 +430,8 @@ async function handleFormSubmit(event) {
 function setupEventListeners() {
 	toggleLink.addEventListener('click', handleToggleClick)
 	form.addEventListener('submit', handleFormSubmit)
-	sendVerificationCodeBtn.addEventListener('click', handleSendVerificationCode)
-	webauthnLoginBtn.addEventListener('click', handleWebAuthnLogin)
+	sendVerificationCodeButton.addEventListener('click', handleSendVerificationCode)
+	webauthnLoginButton.addEventListener('click', handleWebAuthnLogin)
 	usernameInput.addEventListener('input', () => passwordCharFeedback?.refresh())
 	passwordInput.addEventListener('input', () => {
 		passwordCharFeedback?.refresh()
@@ -522,18 +522,18 @@ async function initializeApp() {
 	if (shouldAutoLogin) {
 		if (!isLoginForm) toggleForm()
 		if (powCaptcha) try {
-			submitBtn.disabled = true
-			submitBtn.dataset.i18n = 'pow_captcha.verifying'
+			submitButton.disabled = true
+			submitButton.dataset.i18n = 'pow_captcha.verifying'
 			await powCaptcha.solve()
 		} catch (err) {
 			console.error('POW captcha solve error:', err)
 			showLoginMessage({ i18nKey: 'auth.error.powError' })
 			return
 		} finally {
-			submitBtn.disabled = false
+			submitButton.disabled = false
 			updateFormDisplay()
 		}
-		submitBtn.click()
+		submitButton.click()
 	}
 }
 

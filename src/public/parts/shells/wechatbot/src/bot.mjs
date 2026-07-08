@@ -52,8 +52,8 @@ async function startBot(config, char, username, charname) {
 
 	await ensureWechatInterface(char, username, charname)
 
-	const ctx = { ...api, signal: abortController.signal, cdnBaseUrl }
-	await char.interfaces.wechat.OnceClientReady(ctx, config.config)
+	const context = { ...api, signal: abortController.signal, cdnBaseUrl }
+	await char.interfaces.wechat.OnceClientReady(context, config.config)
 
 	return {
 		/**

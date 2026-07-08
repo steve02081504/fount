@@ -90,10 +90,10 @@ async function renderAuditRow(entry) {
 		sender: escapeHtml(entry.sender || '—'),
 	})
 	const type = String(entry.type || '')
-	const typeEl = row.querySelector('[data-audit-type]')
-	const summaryEl = row.querySelector('[data-audit-summary]')
-	applyDatasetI18n(typeEl, `chat.group.auditLog.type.${type}`)
-	applyDatasetI18n(summaryEl, `chat.group.auditLog.event.${type}`, entry.params || {})
+	const typeElement = row.querySelector('[data-audit-type]')
+	const summaryElement = row.querySelector('[data-audit-summary]')
+	applyDatasetI18n(typeElement, `chat.group.auditLog.type.${type}`)
+	applyDatasetI18n(summaryElement, `chat.group.auditLog.event.${type}`, entry.params || {})
 	return row
 }
 

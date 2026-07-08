@@ -256,12 +256,12 @@ function renderApiKey() {
 			showToastI18n('success', 'ide_integration.apiKeyCopied')
 		})
 	} else {
-		const btn = document.createElement('button')
-		btn.type = 'button'
-		btn.className = 'btn btn-primary'
-		btn.dataset.i18n = 'ide_integration.generateApiKeyButton'
-		btn.addEventListener('click', generateApiKey)
-		section.appendChild(btn)
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'btn btn-primary'
+		button.dataset.i18n = 'ide_integration.generateApiKeyButton'
+		button.addEventListener('click', generateApiKey)
+		section.appendChild(button)
 	}
 }
 

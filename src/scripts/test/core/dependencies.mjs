@@ -110,11 +110,11 @@ export function detectDependencyCycle(suites) {
 /**
  * Kahn 拓扑排序；并列时由 compareTieBreak 决定先后。
  * @param {string[]} keys 待排序键
- * @param {Map<string, Set<string>>} deps 键 -> 直接依赖键（仅 subset 内边）
+ * @param {Map<string, Set<string>>} dependencyEdges 键 -> 直接依赖键（仅 subset 内边）
  * @param {(a: string, b: string) => number} compareTieBreak 无依赖边时的比较
  * @returns {string[]} 排序后的键
  */
-function topoSortKeys(keys, deps, compareTieBreak) {
+function topoSortKeys(keys, dependencyEdges, compareTieBreak) {
 	const unique = [...new Set(keys)]
 	if (unique.length <= 1) return unique
 
@@ -124,7 +124,7 @@ function topoSortKeys(keys, deps, compareTieBreak) {
 	/** @type {Map<string, Set<string>>} */
 	const adj = new Map(unique.map(k => [k, new Set()]))
 	for (const key of unique) 
-		for (const dep of deps.get(key) ?? []) {
+		for (const dep of dependencyEdges.get(key) ?? []) {
 			if (!keySet.has(dep)) continue
 			adj.get(dep).add(key)
 			inDegree.set(key, inDegree.get(key) + 1)
@@ -210,7 +210,7 @@ function buildSuiteMetrics(allSuites) {
  * @param {SuiteDef[]} suites 待排序 suite
  * @returns {Map<string, Set<string>>} suite 键 → 直接依赖键集合
  */
-function buildSuiteDeps(suites) {
+function buildSuiteDependencyEdges(suites) {
 	return new Map(suites.map(suite => [
 		suiteKey(suite.manifestId, suite.name),
 		new Set((suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name))),
@@ -228,11 +228,11 @@ export function topoSortSuites(suites, allSuites = suites) {
 
 	const byKey = new Map(suites.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const { depCount, dependentCount } = buildSuiteMetrics(allSuites)
-	const deps = buildSuiteDeps(suites)
+	const dependencyEdges = buildSuiteDependencyEdges(suites)
 
 	const sortedKeys = topoSortKeys(
 		[...byKey.keys()],
-		deps,
+		dependencyEdges,
 		(a, b) => compareTopoTieBreak(a, b, dependentCount, depCount),
 	)
 	return sortedKeys.map(key => byKey.get(key))
@@ -241,7 +241,7 @@ export function topoSortSuites(suites, allSuites = suites) {
 /**
  * 从 suite 依赖构建 manifest 级图（同 manifest 内边忽略）。
  * @param {SuiteDef[]} suites 全部 suite
- * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number>, deps: Map<string, Set<string>> }} manifest 级依赖计数与边
+ * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number>, dependencyEdges: Map<string, Set<string>> }} manifest 级依赖计数与边
  */
 function buildManifestGraph(suites) {
 	const ids = [...new Set(suites.map(s => s.manifestId))]
@@ -250,20 +250,20 @@ function buildManifestGraph(suites) {
 	/** @type {Map<string, number>} */
 	const dependentCount = new Map(ids.map(id => [id, 0]))
 	/** @type {Map<string, Set<string>>} */
-	const deps = new Map(ids.map(id => [id, new Set()]))
+	const dependencyEdges = new Map(ids.map(id => [id, new Set()]))
 
 	for (const suite of suites) 
 		for (const dep of suite.dependencies ?? []) {
 			if (dep.manifestId === suite.manifestId) continue
 			const from = suite.manifestId
 			const to = dep.manifestId
-			if (deps.get(from).has(to)) continue
-			deps.get(from).add(to)
+			if (dependencyEdges.get(from).has(to)) continue
+			dependencyEdges.get(from).add(to)
 			depCount.set(from, depCount.get(from) + 1)
 			dependentCount.set(to, dependentCount.get(to) + 1)
 		}
 	
-	return { depCount, dependentCount, deps }
+	return { depCount, dependentCount, dependencyEdges }
 }
 
 /**
@@ -276,11 +276,11 @@ export function sortManifestIds(manifestIds, suites) {
 	const unique = [...new Set(manifestIds)]
 	if (unique.length <= 1) return unique
 
-	const { depCount, dependentCount, deps } = buildManifestGraph(suites)
+	const { depCount, dependentCount, dependencyEdges } = buildManifestGraph(suites)
 
 	return topoSortKeys(
 		unique,
-		deps,
+		dependencyEdges,
 		(a, b) => compareTopoTieBreak(a, b, dependentCount, depCount),
 	)
 }
@@ -290,11 +290,11 @@ export function sortManifestIds(manifestIds, suites) {
  * @param {SuiteDef[]} selected 已选 suite
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {object} ctx 上下文
- * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 各 suite 自记录以来的变更
+ * @param {object} context 上下文
+ * @param {Map<string, string[]>} context.changedSinceRecordByKey 各 suite 自记录以来的变更
  * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
  */
-export function expandWithDependents(selected, allSuites, state, ctx) {
+export function expandWithDependents(selected, allSuites, state, context) {
 	/** @type {Map<string, string>} */
 	const provenance = new Map()
 	const needed = new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
@@ -314,7 +314,7 @@ export function expandWithDependents(selected, allSuites, state, ctx) {
 	// 纯 commit 漂移更不传播；更深层留待其自身 trigger 命中时再传播。
 	for (const suite of selected) {
 		const key = suiteKey(suite.manifestId, suite.name)
-		if (!isSuiteOutdated(suite, state.suites[key], ctx.changedSinceRecordByKey.get(key) ?? []))
+		if (!isSuiteOutdated(suite, state.suites[key], context.changedSinceRecordByKey.get(key) ?? []))
 			continue
 		for (const dependent of dependentsByKey.get(key) ?? []) {
 			const depKey = suiteKey(dependent.manifestId, dependent.name)
@@ -331,11 +331,11 @@ export function expandWithDependents(selected, allSuites, state, ctx) {
  * @param {SuiteDef[]} selected 已选 suite
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {object} ctx 上下文
- * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 各 suite 自记录以来的变更
+ * @param {object} context 上下文
+ * @param {Map<string, string[]>} context.changedSinceRecordByKey 各 suite 自记录以来的变更
  * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展并拓扑排序后的 suite 与纳入原因
  */
-export function expandWithDependencies(selected, allSuites, state, ctx) {
+export function expandWithDependencies(selected, allSuites, state, context) {
 	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const needed = new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
 	/** @type {Map<string, string>} */
@@ -352,7 +352,7 @@ export function expandWithDependencies(selected, allSuites, state, ctx) {
 			if (!depSuite)
 				throw new Error(`missing dependency suite ${depKey} required by ${suite.manifestId}/${suite.name}`)
 			const entry = state.suites[depKey]
-			const outdated = isSuiteOutdated(depSuite, entry, ctx.changedSinceRecordByKey.get(depKey) ?? [])
+			const outdated = isSuiteOutdated(depSuite, entry, context.changedSinceRecordByKey.get(depKey) ?? [])
 			if (isDependencySatisfied(entry, outdated))
 				continue
 			needed.set(depKey, depSuite)
@@ -373,22 +373,22 @@ export function expandWithDependencies(selected, allSuites, state, ctx) {
  * 列出未满足的依赖键。
  * @param {SuiteDef} suite suite
  * @param {TestState} state 现状库
- * @param {object} ctx 上下文
- * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 变更映射
- * @param {Set<string>} ctx.runGreenKeys 本次已通过
- * @param {Map<string, SuiteDef>} ctx.byKey 全部 suite 映射
+ * @param {object} context 上下文
+ * @param {Map<string, string[]>} context.changedSinceRecordByKey 变更映射
+ * @param {Set<string>} context.runGreenKeys 本次已通过
+ * @param {Map<string, SuiteDef>} context.byKey 全部 suite 映射
  * @returns {string[]} 未满足依赖键
  */
-export function listUnsatisfiedDependencies(suite, state, ctx) {
+export function listUnsatisfiedDependencies(suite, state, context) {
 	/** @type {string[]} */
 	const missing = []
 	for (const dep of suite.dependencies ?? []) {
 		const depKey = suiteKey(dep.manifestId, dep.name)
-		if (ctx.runGreenKeys.has(depKey)) continue
-		const depSuite = ctx.byKey.get(depKey)
+		if (context.runGreenKeys.has(depKey)) continue
+		const depSuite = context.byKey.get(depKey)
 		const entry = state.suites[depKey]
 		const outdated = depSuite
-			? isSuiteOutdated(depSuite, entry, ctx.changedSinceRecordByKey.get(depKey) ?? [])
+			? isSuiteOutdated(depSuite, entry, context.changedSinceRecordByKey.get(depKey) ?? [])
 			: true
 		if (isDependencySatisfied(entry, outdated))
 			continue

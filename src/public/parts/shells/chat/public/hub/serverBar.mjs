@@ -133,7 +133,7 @@ export async function renderServerBar() {
 		for (const [folderIndex, folder] of folders.entries()) {
 			const collapsed = !!folder.collapsed
 			const mini = folderMiniIconsHtml(folder, byId)
-			const folderEl = await renderTemplate('hub/server/folder', {
+			const folderElement = await renderTemplate('hub/server/folder', {
 				folderIndex,
 				openClass: collapsed ? '' : ' is-open',
 				ariaExpanded: collapsed ? 'false' : 'true',
@@ -142,7 +142,7 @@ export async function renderServerBar() {
 				folderName: escapeHtml(folder.name),
 				folderNameI18nAttr: folder.nameIsDefault ? ' data-i18n="chat.hub.folderDefault"' : '',
 			})
-			list.appendChild(folderEl)
+			list.appendChild(folderElement)
 			if (!collapsed) {
 				const itemsHost = list.querySelector(`.hub-folder-wrap[data-folder-idx="${folderIndex}"] .hub-folder-items`)
 				for (const groupId of folder.groupIds) {

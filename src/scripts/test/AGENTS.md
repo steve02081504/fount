@@ -30,7 +30,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | `live/http.mjs` | fetch, multipart, `PollUntil` / `sleep` |
 | `live/env.mjs` | `FOUNT_TEST_BASE_URL` / `FOUNT_API_KEY` |
 | `core/state.mjs` | state DB read/write/upsert |
-| `core/deps.mjs` | `dependsOn` resolve, topo sort, expansion |
+| `core/dependencies.mjs` | `dependsOn` resolve, topo sort, expansion |
 | `core/deno_panic.mjs` | detect `Deno has panicked` in suite output → gh auto-issue |
 | `runner/suite_run.mjs` | `buildSuiteInvocation` / `runSuite` |
 | `runner/continue_reason.mjs` | `--continue` slot reasons → report |
@@ -70,3 +70,4 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report** (`core/deno_panic.mjs`): a suite emitting `Deno has panicked. This is a bug in Deno.` triggers `parseDenoPanic` (extracts `panicked at <file>:<line>:<col>` + Deno version). If `gh` is installed & authed, files an issue on `denoland/deno` (English body: log excerpt + version + fount commit hash); if an upstream issue already matches, it only records locally and skips. Dedup lives in `data/test/deno_panics.json`, keyed by `file:line:col`; the file also stores the Deno version and is wiped on version drift. `testkit` self-tests are skipped so panic fixtures never fire real reports. Override target repo for testing via `FOUNT_DENO_PANIC_REPO` (e.g. point at `steve02081504/fount`, then close the probe issue).
 - **Selftests**: `selftest/` — `fount test testkit`. One suite per `*.test.mjs` (suite name = file basename, e.g. `fount test testkit:continue_reason`); each suite's `triggers` point at the framework modules it exercises so `--outdated`/failure-retry stay per-file. Any edit under `src/scripts/test/**` still hits the infra escape hatch (`selectSuitesByDiff` → `infraHit` runs **all** manifests), so per-suite triggers matter for `--outdated`/explicit selection, not plain diff. Keep manifest id `testkit` — the panic auto-report skip (`runner/index.mjs`) keys on it.
+- **Naming**: prefer readable identifiers in framework code — `context` not `ctx`, module `core/dependencies.mjs` not `deps.mjs`, topo maps named `dependencyEdges` not `deps`.

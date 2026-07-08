@@ -1,7 +1,7 @@
 /**
  * 依赖感知 suite 调度：依赖完成后按 footprint 优先派发，未满足则 blocked。
  */
-import { listUnsatisfiedDependencies } from '../core/deps.mjs'
+import { listUnsatisfiedDependencies } from '../core/dependencies.mjs'
 import { suiteSchedulePriority } from '../core/resources.mjs'
 import { isDependencySatisfied, isSuiteOutdated, suiteKey } from '../core/state.mjs'
 
@@ -36,13 +36,13 @@ export class DependencyRunCoordinator {
 	 * @param {object} options 选项
 	 * @param {SuiteDef[]} options.suites 拓扑有序待运行 suite
 	 * @param {TestState} options.state 现状库
-	 * @param {DependencyRunContext} options.ctx 运行上下文
+	 * @param {DependencyRunContext} options.context 运行上下文
 	 * @param {ResourceRunGate} options.gate 并发闸门
 	 */
-	constructor({ suites, state, ctx, gate }) {
+	constructor({ suites, state, context, gate }) {
 		this.suites = suites
 		this.state = state
-		this.ctx = ctx
+		this.context = context
 		this.gate = gate
 		/** @type {Set<string>} 本次运行选中的 suite 键；用于区分“同批依赖”与“需查现状库的外部依赖” */
 		this.selectedKeys = new Set(suites.map(suite => suiteKey(suite.manifestId, suite.name)))
@@ -74,7 +74,7 @@ export class DependencyRunCoordinator {
 
 			for (const suite of ready) {
 				const key = suiteKey(suite.manifestId, suite.name)
-				const blockedBy = listUnsatisfiedDependencies(suite, this.state, this.ctx)
+				const blockedBy = listUnsatisfiedDependencies(suite, this.state, this.context)
 
 				const task = (async () => {
 					try {
@@ -86,7 +86,7 @@ export class DependencyRunCoordinator {
 						const release = await this.gate.acquire(suite)
 						try {
 							const result = await handler({ kind: 'run', suite })
-							if (result.passed) this.ctx.runGreenKeys.add(key)
+							if (result.passed) this.context.runGreenKeys.add(key)
 						}
 						finally {
 							release()
@@ -140,10 +140,10 @@ export class DependencyRunCoordinator {
 			const depKey = suiteKey(dep.manifestId, dep.name)
 			if (this.resolvedKeys.has(depKey)) continue
 			if (!this.selectedKeys.has(depKey)) {
-				const depSuite = this.ctx.byKey.get(depKey)
+				const depSuite = this.context.byKey.get(depKey)
 				const entry = this.state.suites[depKey]
 				const outdated = depSuite
-					? isSuiteOutdated(depSuite, entry, this.ctx.changedSinceRecordByKey.get(depKey) ?? [])
+					? isSuiteOutdated(depSuite, entry, this.context.changedSinceRecordByKey.get(depKey) ?? [])
 					: true
 				if (isDependencySatisfied(entry, outdated))
 					continue

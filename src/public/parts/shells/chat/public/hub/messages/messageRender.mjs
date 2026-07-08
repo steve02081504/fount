@@ -24,7 +24,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
 import { resolveDisplayParentEventId, tallyReactionsFromMap } from '../../src/ui/channelDisplay.mjs'
-import { mountMdRevealButton } from '../../src/ui/mdRevealBtn.mjs'
+import { mountMdRevealButton } from '../../src/ui/mdRevealButton.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 
@@ -460,13 +460,13 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 	const remoteBadge = message.isRemote
 		? await renderTemplateAsHtmlString('hub/messages/remote_badge', {})
 		: ''
-	const trustBtn = message.isRemote && message.authorPubKeyHash
+	const trustButton = message.isRemote && message.authorPubKeyHash
 		? await renderTemplateAsHtmlString('hub/messages/trust_author_button', { pubKeyHash: escapeHtml(message.authorPubKeyHash) })
 		: ''
-	const blockBtn = message.isRemote && message.authorPubKeyHash
+	const blockButton = message.isRemote && message.authorPubKeyHash
 		? await renderTemplateAsHtmlString('hub/messages/block_author_button', { pubKeyHash: escapeHtml(message.authorPubKeyHash) })
 		: ''
-	const saveEmojiBtn = emojiRef
+	const saveEmojiButton = emojiRef
 		? await renderTemplateAsHtmlString('hub/messages/save_emoji_button', {
 			groupId: escapeHtml(emojiRef.groupId),
 			emojiId: escapeHtml(emojiRef.emojiId),
@@ -483,9 +483,9 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 		timeI18nAttr: timeI18nAttrFragment(timeAttrs),
 		timeText: escapeHtml(timeAttrs.timeText),
 		remoteBadge,
-		trustBtn,
-		blockBtn,
-		saveEmojiBtn,
+		trustButton,
+		blockButton,
+		saveEmojiButton,
 		typingLabelHtml,
 	})
 	const refHtml = generating ? '' : await renderMessageRefBlockHtml(message, allMessages)

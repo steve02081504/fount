@@ -3,9 +3,9 @@
  * 【职责】群 UI 通用安全钩子：离屏 embed 守卫、不可信 Markdown 揭示按钮、本地物化视图提示键。
  * 【原理】attachOffscreenEmbedGuard 监听 visibility；attachUntrustedMarkdownOffscreenGuard 延迟渲染。
  * 【数据结构】无全局状态；回调 onReveal。
- * 【关联】ui/mdRevealBtn.mjs、chatMarkdownConvertor；Hub 消息渲染。
+ * 【关联】ui/mdRevealButton.mjs、chatMarkdownConvertor；Hub 消息渲染。
  */
-import { mountMdRevealButton } from './ui/mdRevealBtn.mjs'
+import { mountMdRevealButton } from './ui/mdRevealButton.mjs'
 
 /**
  * 群壳模式与 §17 离屏安全：Hub / 群 UI 可复用。
@@ -58,7 +58,7 @@ export function attachOffscreenEmbedGuard(root) {
 /**
  * §17：未信任远端 Markdown 离屏时卸除 DOM，回屏须点击确认后再渲染。
  * @param {HTMLElement} bubble 消息正文气泡
- * @param {{ onReveal: () => void }} opts 用户确认后回调（重新 hydrate）
+ * @param {{ onReveal: () => void }} options 用户确认后回调（重新 hydrate）
  * @returns {() => void} 断开观察器
  */
 export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
@@ -69,7 +69,7 @@ export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
 	 * 在气泡离屏且已 hydrate 时挂载「显示 Markdown」按钮。
 	 * @returns {void}
 	 */
-	const showRevealBtn = () => {
+	const showRevealButton = () => {
 		if (bubble.querySelector('.hub-markdown-reveal-button')) return
 		void mountMdRevealButton(bubble, onReveal)
 	}
@@ -81,7 +81,7 @@ export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
 				if (intersectionEntry.isIntersecting) continue
 				if (bubble.dataset.mdHydrated === '1') {
 					bubble.dataset.mdStash = bubble.innerHTML
-					showRevealBtn()
+					showRevealButton()
 				}
 			}
 		},

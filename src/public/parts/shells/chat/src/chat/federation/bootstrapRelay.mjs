@@ -13,7 +13,7 @@ import {
 	setFederationBootstrap,
 	setPeerRoomHint,
 } from './bootstrapStore.mjs'
-import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './deps.mjs'
+import { localNodeHash, loadFederationGroupSettings, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'
 import { catchUpGroupFromPeers } from './index.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
 import { getFederationPartitionSlot } from './registry.mjs'

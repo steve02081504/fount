@@ -102,8 +102,8 @@ test.describe('Social secondary views', () => {
 		await panel.locator('textarea').fill(`markall-reply ${Date.now()}`)
 		await submitReplyViaPanel(page, panel)
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
-		await expect(page.locator('#notificationsMarkAllBtn')).toBeVisible({ timeout: 20_000 })
-		await page.locator('#notificationsMarkAllBtn').click()
+		await expect(page.locator('#notificationsMarkAllButton')).toBeVisible({ timeout: 20_000 })
+		await page.locator('#notificationsMarkAllButton').click()
 		await expect(page.locator('#notificationsBadge')).toHaveClass(/hidden/, { timeout: 20_000 })
 	})
 
@@ -143,7 +143,7 @@ test.describe('Social secondary views', () => {
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			page.locator('#saveMetaBtn').click(),
+			page.locator('#saveMetaButton').click(),
 		])
 		const snippet = `explore-blurb-post ${Date.now()}`
 		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()

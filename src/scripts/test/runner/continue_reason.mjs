@@ -221,11 +221,11 @@ export function buildDepGateReason(suite, entry, commitHash, uncommittedHash, ch
  * @param {Map<string, ContinueReason>} params.reasons 已写入原因
  * @param {Set<string>} params.seedKeys 初选 suite 键
  * @param {TestState} params.state 现状库
- * @param {object} params.ctx 指纹上下文
- * @param {string} params.ctx.commitHash HEAD
- * @param {string | null} params.ctx.uncommittedHash 未提交 digest
- * @param {Map<string, string[]>} params.ctx.changedSinceRecordByKey 变更映射
- * @param {Map<string, SuiteDef>} params.ctx.byKey 全部 suite
+ * @param {object} params.context 指纹上下文
+ * @param {string} params.context.commitHash HEAD
+ * @param {string | null} params.context.uncommittedHash 未提交 digest
+ * @param {Map<string, string[]>} params.context.changedSinceRecordByKey 变更映射
+ * @param {Map<string, SuiteDef>} params.context.byKey 全部 suite
  * @returns {ContinueReason} 依赖扩展纳入（含根因、纳入链、门禁原因）
  */
 export function buildDependencyContinueReason({
@@ -236,9 +236,9 @@ export function buildDependencyContinueReason({
 	reasons,
 	seedKeys,
 	state,
-	ctx,
+	context,
 }) {
-	const byKey = ctx.byKey ?? new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const byKey = context.byKey ?? new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const rootKey = resolveRootKeyFromProvenance(key, provenance, seedKeys)
 	const rootReason = reasons.get(rootKey)
 	const pull = inferPullDirection(key, requiredBy, byKey)
@@ -259,9 +259,9 @@ export function buildDependencyContinueReason({
 		gate: buildDepGateReason(
 			gateSuite,
 			state.suites[gateKey],
-			ctx.commitHash,
-			ctx.uncommittedHash,
-			ctx.changedSinceRecordByKey.get(gateKey) ?? [],
+			context.commitHash,
+			context.uncommittedHash,
+			context.changedSinceRecordByKey.get(gateKey) ?? [],
 		),
 	}
 	return reason
@@ -327,13 +327,13 @@ export function findDirectRequiredBy(key, selected, seedKeys) {
  * @param {object} options 选项
  * @param {boolean} [options.explicitSuites] 是否显式指名
  * @param {TestState} options.state 现状库
- * @param {object} options.ctx 指纹上下文
- * @param {string} options.ctx.commitHash HEAD
- * @param {string | null} options.ctx.uncommittedHash 未提交 digest
- * @param {Map<string, string[]>} options.ctx.changedSinceRecordByKey 变更映射
- * @param {Map<string, SuiteDef>} options.ctx.byKey 全部 suite
+ * @param {object} options.context 指纹上下文
+ * @param {string} options.context.commitHash HEAD
+ * @param {string | null} options.context.uncommittedHash 未提交 digest
+ * @param {Map<string, string[]>} options.context.changedSinceRecordByKey 变更映射
+ * @param {Map<string, SuiteDef>} options.context.byKey 全部 suite
  */
-export function stampExpansionReasons(reasons, selected, seedKeys, provenance, { explicitSuites = false, state, ctx }) {
+export function stampExpansionReasons(reasons, selected, seedKeys, provenance, { explicitSuites = false, state, context }) {
 	for (const key of seedKeys)
 		if (explicitSuites && !reasons.has(key))
 			reasons.set(key, explicitSelectedReason())
@@ -351,7 +351,7 @@ export function stampExpansionReasons(reasons, selected, seedKeys, provenance, {
 			reasons,
 			seedKeys,
 			state,
-			ctx,
+			context,
 		}))
 	}
 }

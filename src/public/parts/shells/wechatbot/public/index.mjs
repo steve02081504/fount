@@ -25,7 +25,7 @@ import {
 const configEditorContainer = document.getElementById('config-editor')
 const apiBaseUrlInput = document.getElementById('api-base-url')
 const qrStartButton = document.getElementById('qr-start')
-const qrStatusEl = document.getElementById('qr-status')
+const qrStatusElement = document.getElementById('qr-status')
 const qrWrap = document.getElementById('qr-wrap')
 const qrContainer = document.getElementById('qr-img')
 
@@ -420,7 +420,7 @@ function stopQrPoll() {
  */
 async function handleQrPollResult(result) {
 	if (result.status === 'scanned')
-		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.scanned')
+		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.scanned')
 
 	if (result.qrcodeContent)
 		renderQrCode(result.qrcodeContent)
@@ -435,12 +435,12 @@ async function handleQrPollResult(result) {
 			isDirty = true
 
 		showToastI18n('success', 'wechat_bots.qrLogin.success')
-		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.success')
+		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.success')
 	}
 
 	if (result.done && result.error) {
 		qrWrap.classList.add('hidden')
-		qrStatusEl.textContent = ''
+		qrStatusElement.textContent = ''
 		showToast('error', String(result.error))
 	}
 }
@@ -479,18 +479,18 @@ async function handleQrStart() {
 		return
 	}
 	stopQrPoll()
-	qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.waiting')
+	qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.waiting')
 	qrWrap.classList.add('hidden')
 	try {
 		const result = await startWechatQrLogin(selectedBot)
 		if (!result.sessionKey)
 			throw new Error(result.message || 'no sessionKey')
 		renderQrCode(result.qrcodeContent)
-		qrStatusEl.textContent = geti18n('wechat_bots.qrLogin.scanPrompt')
+		qrStatusElement.textContent = geti18n('wechat_bots.qrLogin.scanPrompt')
 		startQrPolling(result.sessionKey)
 	}
 	catch (error) {
-		qrStatusEl.textContent = ''
+		qrStatusElement.textContent = ''
 		showToast('error', error.message)
 	}
 }

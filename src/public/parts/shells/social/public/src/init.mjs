@@ -77,14 +77,14 @@ function connectFeedWebSocket(appContext) {
 export async function bootstrapSocialApp(appContext) {
 	socialGate.markPending()
 	try {
-		document.getElementById('postBtn')?.addEventListener('click', () => { void afterPublishPost(appContext) })
-		document.getElementById('composeNavBtn')?.addEventListener('click', () => {
+		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost(appContext) })
+		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void switchView(appContext, 'feed')
 			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
 			document.getElementById('postText')?.focus()
 		})
 		const postText = document.getElementById('postText')
-		wireEmojiPickerButton(document.getElementById('emojiPickBtn'), token => {
+		wireEmojiPickerButton(document.getElementById('emojiPickButton'), token => {
 			if (!(postText instanceof HTMLTextAreaElement)) return
 			const start = postText.selectionStart ?? postText.value.length
 			const end = postText.selectionEnd ?? start
@@ -104,9 +104,9 @@ export async function bootstrapSocialApp(appContext) {
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return
-			if (target.closest('#saveConfirmBtn'))
+			if (target.closest('#saveConfirmButton'))
 				await confirmSaveModal(appContext)
-			if (target.closest('#saveCancelBtn'))
+			if (target.closest('#saveCancelButton'))
 				closeSaveModal(appContext)
 		})
 		for (const button of document.querySelectorAll('.nav-btn[data-view]'))
@@ -129,17 +129,17 @@ export async function bootstrapSocialApp(appContext) {
 			postLang: 'social.a11y.postLang',
 			feedTrending: 'social.a11y.trendingHashtags',
 			saveFolderSelect: 'social.a11y.saveFolderSelect',
-			feedRefreshBtn: 'social.feed.refresh',
-			feedSearchClearBtn: 'social.search.clear',
+			feedRefreshButton: 'social.feed.refresh',
+			feedSearchClearButton: 'social.search.clear',
 		})) {
 			const el = document.getElementById(id)
 			if (el) el.setAttribute('aria-label', appContext.geti18n(key))
 		}
-		const refreshBtn = document.getElementById('feedRefreshBtn')
-		if (refreshBtn) {
+		const refreshButton = document.getElementById('feedRefreshButton')
+		if (refreshButton) {
 			const refreshLabel = appContext.geti18n('social.feed.refresh')
-			refreshBtn.setAttribute('data-tip', refreshLabel)
-			refreshBtn.setAttribute('title', refreshLabel)
+			refreshButton.setAttribute('data-tip', refreshLabel)
+			refreshButton.setAttribute('title', refreshLabel)
 		}
 
 		document.getElementById('linkGroupSelect')?.addEventListener('change', event => {
@@ -178,7 +178,7 @@ export async function bootstrapSocialApp(appContext) {
 		document.getElementById('feedSearchInput')?.addEventListener('input', event => {
 			const input = event.target
 			if (!(input instanceof HTMLInputElement)) return
-			document.getElementById('feedSearchClearBtn')?.classList.toggle('hidden', !input.value.trim())
+			document.getElementById('feedSearchClearButton')?.classList.toggle('hidden', !input.value.trim())
 		})
 
 		socialGate.markReady()
