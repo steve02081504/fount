@@ -122,6 +122,19 @@
 				"src/scripts/test/core/deno_panic.mjs",
 				"src/scripts/test/core/paths.mjs"
 			]
+		},
+		{
+			"name": "run_timing",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/run_timing.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/run_timing.test.mjs",
+				"src/scripts/test/core/run_timing.mjs",
+				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/runner/index.mjs"
+			]
 		}
 	]
 }

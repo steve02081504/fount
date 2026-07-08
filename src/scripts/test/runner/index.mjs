@@ -2,7 +2,7 @@ import 'fount/scripts/test/env.mjs'
 
 import process from 'node:process'
 
-import { console, geti18n } from '../../i18n/bare.mjs'
+import { console, geti18n, geti18nForTerminal } from '../../i18n/bare.mjs'
 import {
 	digestFileHashes,
 	getHeadCommitHash,
@@ -21,6 +21,7 @@ import {
 } from '../core/manifest.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { formatExpectedDuration } from '../core/run_timing.mjs'
 import {
 	computeSuiteTriggerHash,
 	getSuiteBaselineDurationMs,
@@ -151,6 +152,24 @@ function printSuiteSummary(label, result, streamed = false) {
 		console.error(geti18n('fountConsole.test.failed', { label }))
 	else
 		console.error(geti18n('fountConsole.test.failedWithCode', { label, code: result.exitCode }))
+}
+
+/**
+ * @param {object} params 参数
+ * @param {string} params.manifestId manifest id
+ * @param {string} params.name suite 名
+ * @param {boolean} [params.heavy] 高负载
+ * @param {string | null | undefined} [params.expected] 预期耗时
+ * @returns {string} 正在运行行
+ */
+function formatRunningSuiteMessage({ manifestId, name, heavy, expected }) {
+	let msg = geti18nForTerminal('fountConsole.test.runningSuite.base', { manifestId, name })
+	/** @type {string[]} */
+	const parts = []
+	if (heavy) parts.push(geti18nForTerminal('fountConsole.test.runningSuite.heavy'))
+	if (expected) parts.push(geti18nForTerminal('fountConsole.test.runningSuite.expected', { expected }))
+	if (parts.length) msg += `（${parts.join('，')}）`
+	return msg
 }
 
 /**
@@ -438,18 +457,18 @@ export async function runTests(options = {}) {
 			return { passed: prev.status !== 'failed' }
 		}
 
-		const runningKey = suite.heavy
-			? 'fountConsole.test.runningSuiteHeavy'
-			: 'fountConsole.test.runningSuite'
-		console.logI18n(runningKey, {
+		const baselineDurationMs = getSuiteBaselineDurationMs(prev)
+		const expected = formatExpectedDuration(baselineDurationMs)
+		console.log(formatRunningSuiteMessage({
 			manifestId: suite.manifestId,
 			name: suite.name,
-		})
+			heavy: !!suite.heavy,
+			expected,
+		}))
 		console.log('>>', suite.run.join(' '))
 
 		const retryMap = retryByManifest.get(suite.manifestId)
 		const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
-		const baselineDurationMs = getSuiteBaselineDurationMs(prev)
 		const result = await runSuite(suite, onlyFiles, globalBudget, streamLive, {
 			label,
 			baselineDurationMs,

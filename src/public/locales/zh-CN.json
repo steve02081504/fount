@@ -367,8 +367,11 @@
 			"blocked": "阻塞：${label}（依赖未过：${deps}）",
 			"continueImperfect": "重跑 ${count} 个不完美套件",
 			"outdatedSelected": "已选择 ${count} 个陈旧/未跑过的套件",
-			"runningSuite": "\n>>> 正在运行 ${manifestId}/${name}",
-			"runningSuiteHeavy": "\n>>> 正在运行 ${manifestId}/${name}（高负载）",
+			"runningSuite": {
+				"base": "\n>>> 正在运行 ${manifestId}/${name}",
+				"heavy": "高负载",
+				"expected": "预期 ${expected}"
+			},
 			"reusedSuite": "\n>>> 复用 ${manifestId}/${name}（trigger 未变，沿用上次 ${status}）",
 			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
@@ -428,6 +431,9 @@
 				"fieldFailed": "失败数",
 				"fieldNoisyPassed": "通过但有噪声",
 				"fieldReused": "复用数",
+				"fieldSuiteSumDuration": "套件累计耗时",
+				"fieldWallClock": "总耗时",
+				"fieldParallelRate": "并行率",
 				"fieldDuration": "耗时",
 				"commandDefault": "（默认）",
 				"exitPassed": "通过",

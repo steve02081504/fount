@@ -8,6 +8,7 @@ import { geti18n } from '../../i18n/bare.mjs'
 import { topoSortSuites } from '../core/deps.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
+import { formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
 import { suiteKey } from '../core/state.mjs'
 
 /**
@@ -204,6 +205,10 @@ export class RunReportWriter {
 	 */
 	async #writeFiles() {
 		const completed = this.slots.filter(slot => slot.state === 'done')
+		const timing = summarizeRunTiming(completed, {
+			startedAt: this.startedAt,
+			finishedAt: this.finishedAt,
+		})
 		const payload = {
 			runId: this.runId,
 			command: this.command,
@@ -212,6 +217,9 @@ export class RunReportWriter {
 			startedAt: this.startedAt,
 			finishedAt: this.finishedAt,
 			exitCode: this.exitCode,
+			suiteSumMs: timing.suiteSumMs,
+			wallClockMs: timing.wallClockMs,
+			parallelRatePct: timing.parallelRatePct,
 			slots: this.slots,
 		}
 		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
@@ -235,8 +243,7 @@ function buildRunMarkdown(summary, completed) {
 	const noisy = completed.filter(s => s.status === 'noisy').length
 	const blocked = completed.filter(s => s.status === 'blocked').length
 	const reused = completed.filter(s => s.reused).length
-	// 复用未真正耗时，只累计真跑的槽位，避免虚增本次时长。
-	const durationMs = completed.reduce((sum, s) => sum + (s.reused ? 0 : s.durationMs ?? 0), 0)
+	const { suiteSumMs, wallClockMs: totalMs, parallelRatePct: ratePct } = summarizeRunTiming(completed, summary)
 	const exitLabel = summary.finishedAt == null
 		? geti18n('fountConsole.test.report.exitInProgress')
 		: (summary.exitCode === 0
@@ -257,7 +264,9 @@ function buildRunMarkdown(summary, completed) {
 		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${noisy} |`,
 		`| ${geti18n('fountConsole.test.state.columnBlocked')} | ${blocked} |`,
 		`| ${geti18n('fountConsole.test.report.fieldReused')} | ${reused} |`,
-		`| ${geti18n('fountConsole.test.report.fieldDuration')} | ${formatDuration(durationMs)} |`,
+		`| ${geti18n('fountConsole.test.report.fieldSuiteSumDuration')} | ${formatDuration(suiteSumMs)} |`,
+		`| ${geti18n('fountConsole.test.report.fieldWallClock')} | ${formatDuration(totalMs)} |`,
+		`| ${geti18n('fountConsole.test.report.fieldParallelRate')} | ${formatParallelRatePct(ratePct)} |`,
 		'',
 		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
 		'',
