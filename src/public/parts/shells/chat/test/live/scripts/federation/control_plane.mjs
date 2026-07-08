@@ -5,6 +5,7 @@ import {
 	FedA,
 	FedB,
 	InitializeOpenGroupJoin,
+	TestFedHasMessage,
 	testCase,
 	WaitFedConverged,
 	WaitFedMembers,
@@ -93,10 +94,7 @@ await testCase('B applies signed event from A via POST /events/signed', async ()
 	const response = await Api(FedB, 'POST', `/groups/${groupId}/events/signed`, { events: [row] })
 	if (response.status !== 200) throw new Error(`ingest ${response.status}: ${response.raw}`)
 
-	return WaitFedConverged(FedB, groupId, async () => {
-		const onB = await Api(FedB, 'GET', `/groups/${groupId}/events?limit=50`)
-		return (onB.json.events?.filter(e => e.id === eventId).length ?? 0) === 1
-	})
+	return WaitFedConverged(FedB, groupId, async () => TestFedHasMessage(FedB, groupId, channelId, eventId))
 })
 
 await ClearFedGroup(groupId)
