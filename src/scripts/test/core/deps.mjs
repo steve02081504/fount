@@ -286,12 +286,11 @@ export function sortManifestIds(manifestIds, suites) {
 }
 
 /**
- * 父项 trigger 过时或历史不完美时，沿 dependsOn 反向纳入下游。
+ * 父项 trigger 过时时，沿 dependsOn 反向纳入其直接下游（仅一层）。
  * @param {SuiteDef[]} selected 已选 suite
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {object} ctx 上下文
- * @param {string} ctx.commitHash HEAD
  * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 各 suite 自记录以来的变更
  * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
  */
@@ -310,26 +309,18 @@ export function expandWithDependents(selected, allSuites, state, ctx) {
 			dependentsByKey.set(depKey, list)
 		}
 
-	/** @type {SuiteDef[]} */
-	const expandFrom = []
+	// 只在 trigger 命中（outdated）时向下传播，且只纳入直接依赖者（一层）：
+	// 修复必改文件、必命中 trigger，故无需靠 failed/noisy/blocked 或 ranAt 连累下游，
+	// 纯 commit 漂移更不传播；更深层留待其自身 trigger 命中时再传播。
 	for (const suite of selected) {
 		const key = suiteKey(suite.manifestId, suite.name)
-		const entry = state.suites[key]
-		const outdated = isSuiteOutdated(suite, entry, ctx.changedSinceRecordByKey.get(key) ?? [])
-		if (outdated || entry?.status === 'failed' || entry?.status === 'noisy' || entry?.status === 'blocked')
-			expandFrom.push(suite)
-	}
-
-	const queue = [...expandFrom]
-	while (queue.length) {
-		const suite = queue.shift()
-		const key = suiteKey(suite.manifestId, suite.name)
+		if (!isSuiteOutdated(suite, state.suites[key], ctx.changedSinceRecordByKey.get(key) ?? []))
+			continue
 		for (const dependent of dependentsByKey.get(key) ?? []) {
 			const depKey = suiteKey(dependent.manifestId, dependent.name)
 			if (needed.has(depKey)) continue
 			needed.set(depKey, dependent)
 			provenance.set(depKey, key)
-			queue.push(dependent)
 		}
 	}
 
@@ -341,10 +332,7 @@ export function expandWithDependents(selected, allSuites, state, ctx) {
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {object} ctx 上下文
- * @param {string} ctx.commitHash HEAD
- * @param {string | null} ctx.uncommittedHash 未提交 digest
  * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 各 suite 自记录以来的变更
- * @param {Set<string>} ctx.runGreenKeys 本次运行已通过键
  * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展并拓扑排序后的 suite 与纳入原因
  */
 export function expandWithDependencies(selected, allSuites, state, ctx) {
@@ -386,8 +374,6 @@ export function expandWithDependencies(selected, allSuites, state, ctx) {
  * @param {SuiteDef} suite suite
  * @param {TestState} state 现状库
  * @param {object} ctx 上下文
- * @param {string} ctx.commitHash HEAD
- * @param {string | null} ctx.uncommittedHash 未提交 digest
  * @param {Map<string, string[]>} ctx.changedSinceRecordByKey 变更映射
  * @param {Set<string>} ctx.runGreenKeys 本次已通过
  * @param {Map<string, SuiteDef>} ctx.byKey 全部 suite 映射
@@ -426,24 +412,6 @@ export function listImperfectSuites(allSuites, state, commitHash, uncommittedHas
 		const outdated = isSuiteOutdated(suite, entry, changedSinceRecordByKey.get(key) ?? [])
 		if (isSuiteGreen(entry, commitHash, uncommittedHash, outdated)) return false
 		return !entry || entry.status === 'failed' || entry.status === 'noisy' || entry.status === 'blocked' || outdated
-	})
-}
-
-/**
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {string} commitHash HEAD
- * @param {Map<string, string[]>} changedSinceRecordByKey 变更映射
- * @returns {SuiteDef[]} 仅 commit 漂移、trigger 仍新鲜的 passed suite
- */
-export function listCommitStaleSuites(allSuites, state, commitHash, changedSinceRecordByKey) {
-	return allSuites.filter(suite => {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const entry = state.suites[key]
-		if (!entry?.commitHash || entry.commitHash === commitHash) return false
-		if (entry.status !== 'passed') return false
-		const outdated = isSuiteOutdated(suite, entry, changedSinceRecordByKey.get(key) ?? [])
-		return !outdated
 	})
 }
 

@@ -3,7 +3,6 @@ import { collectChangesSinceRecord } from '../core/changed.mjs'
 import {
 	expandWithDependencies,
 	expandWithDependents,
-	listCommitStaleSuites,
 	listImperfectSuites,
 	listOutdatedSuites,
 } from '../core/deps.mjs'
@@ -13,7 +12,6 @@ import {
 } from '../core/state.mjs'
 
 import {
-	buildCommitStaleReasonsForSuites,
 	buildContinueReasonsForSuites,
 	pendingContinueReason,
 	stampExpansionReasons,
@@ -32,7 +30,7 @@ import { RunReportWriter } from './report.mjs'
  * @property {SuiteDef[]} [suites]
  * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
  * @property {RunReportWriter} [reportWriter]
- * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'continue-commit-stale' | 'outdated'} [mode]
+ * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'outdated'} [mode]
  * @property {Map<string, import('./continue_reason.mjs').ContinueReason>} [continueReasons]
  */
 
@@ -150,18 +148,6 @@ export async function selectContinue({
 			retryByManifest: buildRetryByManifest(state),
 			continueReasons: buildContinueReasonsForSuites(
 				imperfect, state, commitHash, uncommittedHash, changedSinceRecordByKey,
-			),
-		}
-
-	const commitStale = listCommitStaleSuites(allSuites, state, commitHash, changedSinceRecordByKey)
-	if (commitStale.length)
-		return {
-			action: 'run',
-			mode: 'continue-commit-stale',
-			suites: commitStale,
-			retryByManifest: new Map(),
-			continueReasons: buildCommitStaleReasonsForSuites(
-				commitStale, state, commitHash, uncommittedHash,
 			),
 		}
 
@@ -336,6 +322,10 @@ export function parseCommandSeedSuites(command, allSuites) {
 export function rebuildReportSlotReasons({ command, allSuites, slots, state, ctx }) {
 	const { seedSuites, explicitSuites } = parseCommandSeedSuites(command, allSuites)
 	const seedKeys = new Set(seedSuites.map(s => suiteKey(s.manifestId, s.name)))
+	// 续跑（`fount test --continue`）持久化的命令不含显式种子，此时 provenance 无从谈起，
+	// 报告槽位应保留既有的续跑原因（pending / imperfect 等），无需按依赖链重标。
+	if (!seedKeys.size)
+		return { provenance: new Map(), seedKeys, explicitSuites, reasons: new Map() }
 	const { provenance } = finalizeSelection(seedSuites, allSuites, state, ctx, { explicitSuites })
 	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
 	const reasons = new Map()

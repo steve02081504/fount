@@ -307,8 +307,6 @@ function formatReasonKindLabel(kind, { strict = false } = {}) {
 			return geti18n('fountConsole.test.report.reasonDiffTrigger')
 		case 'explicit_selected':
 			return geti18n('fountConsole.test.report.reasonExplicitSelected')
-		case 'commit_mismatch':
-			return geti18n('fountConsole.test.report.reasonCommitMismatch')
 		case 'dependency_required':
 			return geti18n('fountConsole.test.report.reasonDependencyRequired')
 	}

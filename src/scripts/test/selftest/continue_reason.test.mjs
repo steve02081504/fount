@@ -8,7 +8,6 @@ import { assertEquals, assertStringIncludes } from 'https://deno.land/std@0.224.
 import { reportJsonPath, reportMarkdownPath, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
 import { collectTriggerEvidence, suiteKey } from '../core/state.mjs'
 import {
-	buildCommitStaleContinueReason,
 	buildContinueReasonsForSuites,
 	buildDepGateReason,
 	buildDependencyContinueReason,
@@ -188,28 +187,6 @@ Deno.test('buildDepGateReason rejects commit-only drift', () => {
 		threw = true
 	}
 	assertEquals(threw, true)
-})
-
-Deno.test('buildCommitStaleContinueReason maps commit drift', () => {
-	assertEquals(
-		buildCommitStaleContinueReason({
-			status: 'passed',
-			commitHash: 'abc123',
-			uncommittedHash: 'old',
-			ranAt: '',
-			durationMs: 1,
-			failedFiles: [],
-			noiseHits: [],
-			logPath: null,
-		}, 'def456', 'new'),
-		{
-			kind: 'commit_mismatch',
-			fromCommit: 'abc123',
-			toCommit: 'def456',
-			fromUncommittedHash: 'old',
-			toUncommittedHash: 'new',
-		},
-	)
 })
 
 Deno.test('buildDiffSelectionReasons maps trigger evidence', () => {

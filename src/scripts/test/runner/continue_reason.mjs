@@ -7,7 +7,7 @@ import { collectTriggerEvidence, isSuiteOutdated, suiteKey } from '../core/state
  */
 
 /**
- * @typedef {'pending_from_previous_report' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'missing_state_record' | 'outdated_trigger_hit' | 'diff_trigger_hit' | 'explicit_selected' | 'commit_mismatch' | 'dependency_required'} ContinueReasonKind
+ * @typedef {'pending_from_previous_report' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'missing_state_record' | 'outdated_trigger_hit' | 'diff_trigger_hit' | 'explicit_selected' | 'dependency_required'} ContinueReasonKind
  */
 
 /**
@@ -213,39 +213,6 @@ export function buildDepGateReason(suite, entry, commitHash, uncommittedHash, ch
 }
 
 /**
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
- * @returns {ContinueReason} 仅 commit 漂移的续跑原因
- */
-export function buildCommitStaleContinueReason(entry, commitHash, uncommittedHash) {
-	return {
-		kind: 'commit_mismatch',
-		fromCommit: entry?.commitHash ?? null,
-		toCommit: commitHash,
-		fromUncommittedHash: entry?.uncommittedHash ?? null,
-		toUncommittedHash: uncommittedHash,
-	}
-}
-
-/**
- * @param {SuiteDef[]} suites suite 列表
- * @param {TestState} state 现状库
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
- * @returns {Map<string, ContinueReason>} suite 键 -> commit 陈旧原因
- */
-export function buildCommitStaleReasonsForSuites(suites, state, commitHash, uncommittedHash) {
-	/** @type {Map<string, ContinueReason>} */
-	const map = new Map()
-	for (const suite of suites) {
-		const key = suiteKey(suite.manifestId, suite.name)
-		map.set(key, buildCommitStaleContinueReason(state.suites[key], commitHash, uncommittedHash))
-	}
-	return map
-}
-
-/**
  * @param {object} params 参数
  * @param {string} params.key 目标 suite 键
  * @param {string} params.requiredBy 直接纳入方
@@ -305,7 +272,7 @@ export function buildDependencyContinueReason({
  * @param {string} key 目标 suite 键
  * @param {SuiteDef[]} selected 最终选中 suite
  * @param {Set<string>} seedKeys 扩展前初选 suite 键
- * @returns {string} 直接纳入方 suite 键
+ * @returns {string | null} 直接纳入方 suite 键；追溯不到（该槽位相对当前种子是孤立根）返回 null
  */
 export function findDirectRequiredBy(key, selected, seedKeys) {
 	const byKey = new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
@@ -329,39 +296,26 @@ export function findDirectRequiredBy(key, selected, seedKeys) {
 		return min
 	}
 
-	/** @type {string[]} */
-	const consumers = []
-	for (const suite of selected) {
-		const sk = suiteKey(suite.manifestId, suite.name)
-		if (suite.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === key))
-			consumers.push(sk)
-	}
+	const depKeys = (byKey.get(key)?.dependencies ?? [])
+		.map(dep => suiteKey(dep.manifestId, dep.name))
+		.filter(depKey => selectedKeys.has(depKey))
 
-	const suite = byKey.get(key)
-	/** @type {{ depKey: string, hops: number }[]} */
-	const depCandidates = []
-	for (const dep of suite?.dependencies ?? []) {
-		const depKey = suiteKey(dep.manifestId, dep.name)
-		if (!selectedKeys.has(depKey)) continue
-		depCandidates.push({ depKey, hops: hopsToSeed(depKey, new Set()) })
-	}
-	if (depCandidates.length) {
-		const finite = depCandidates.filter(d => d.hops < Infinity)
-		if (finite.length) {
-			finite.sort((a, b) => a.hops - b.hops)
-			return finite[0].depKey
-		}
-	}
+	// 1) 本项作为「被下游 seed 拉起的上游」：取路由到 seed 最近的依赖
+	const finiteDeps = depKeys
+		.map(depKey => ({ depKey, hops: hopsToSeed(depKey, new Set()) }))
+		.filter(d => d.hops < Infinity)
+		.sort((a, b) => a.hops - b.hops)
+	if (finiteDeps.length) return finiteDeps[0].depKey
 
-	if (consumers.length) {
-		consumers.sort((a, b) => hopsToSeed(a, new Set()) - hopsToSeed(b, new Set()))
-		return consumers[0]
-	}
+	// 2) 本项作为「被上游 outdated 拉起的下游」：取离 seed 最近的消费者
+	const consumers = selected
+		.filter(s => s.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === key))
+		.map(s => suiteKey(s.manifestId, s.name))
+		.sort((a, b) => hopsToSeed(a, new Set()) - hopsToSeed(b, new Set()))
+	if (consumers.length) return consumers[0]
 
-	if (depCandidates.length)
-		return depCandidates[0].depKey
-
-	throw new Error(`findDirectRequiredBy: no inclusion path for ${key}`)
+	// 3) 兜底：任一依赖；相对当前种子孤立则 null
+	return depKeys[0] ?? null
 }
 
 /**
@@ -388,6 +342,7 @@ export function stampExpansionReasons(reasons, selected, seedKeys, provenance, {
 		const key = suiteKey(suite.manifestId, suite.name)
 		if (seedKeys.has(key) || reasons.has(key)) continue
 		const requiredBy = provenance.get(key) ?? findDirectRequiredBy(key, selected, seedKeys)
+		if (!requiredBy) continue
 		reasons.set(key, buildDependencyContinueReason({
 			key,
 			requiredBy,

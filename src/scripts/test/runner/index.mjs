@@ -219,8 +219,6 @@ export async function runTests(options = {}) {
 			console.logI18n('fountConsole.test.continueResuming', { count: selection.suites.length })
 		else if (selection.mode === 'continue-imperfect')
 			console.logI18n('fountConsole.test.continueImperfect', { count: selection.suites.length })
-		else if (selection.mode === 'continue-commit-stale')
-			console.logI18n('fountConsole.test.continueCommitStale', { count: selection.suites.length })
 	}
 	else if (options.outdated) {
 		selection = selectOutdated({

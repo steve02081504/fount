@@ -17,12 +17,13 @@ Implementation: `src/scripts/test/runner/continue_reason.mjs`, stamped by `RunRe
 
 1. **Pending slots** — unfinished slots from the last report (`pending_from_previous_report`).
 2. **Imperfect suites** — failed, noisy, blocked, missing state record, or trigger-outdated at the current fingerprint.
-3. **Commit-stale suites** — passed at an older commit with trigger-fresh triggers (`commit_mismatch`); only when steps 1–2 found nothing.
 
-Dependency expansion may add suites not in the seed set; those get `dependency_required` with a best-effort `requiredBy` key (transitive reverse-walk to the nearest seed suite). **Commit drift alone never activates indirectly pulled suites** — only failed / missing / trigger-outdated upstream deps expand.
+There is **no** commit-stale step: a suite that merely drifted commit (no trigger hit) is never re-run.
+
+Dependency expansion may add suites not in the seed set; those get `dependency_required` with a best-effort `requiredBy` key (transitive reverse-walk to the nearest seed suite). **Commit drift alone never activates indirectly pulled suites** — only trigger-outdated / failed / missing upstream deps gate. Downstream expansion (`expandWithDependents`) fires only on trigger-outdated parents and pulls a single level.
 
 - **Upstream pull** — child suite selected but a non-green dependency must run first (`requiredBy` = the user/diff-selected suite that ultimately needed it).
-- **Downstream pull** — parent suite was outdated and `expandWithDependents` added a dependent (`requiredBy` = the outdated parent).
+- **Downstream pull** — parent suite was trigger-outdated and `expandWithDependents` added a direct dependent one level down (`requiredBy` = the outdated parent).
 
 ## Reason kinds
 
@@ -35,7 +36,6 @@ Dependency expansion may add suites not in the seed set; those get `dependency_r
 | `missing_state_record` | No entry in `state/main.json` |
 | `outdated_trigger_hit` | Trigger files changed since the recorded commit |
 | `diff_trigger_hit` | Included by uncommitted diff trigger matching |
-| `commit_mismatch` | Passed at a different commit (seed only: explicit selection or `--continue` with no imperfect suites) |
 | `dependency_required` | Pulled in by dependency expansion — includes `rootKey`, `inclusionPath`, `pull`, and `gate` |
 
 ## Evidence fields (`triggered-reasons.md`)

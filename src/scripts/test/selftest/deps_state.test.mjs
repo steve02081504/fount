@@ -9,7 +9,6 @@ import {
 	detectDependencyCycle,
 	expandWithDependencies,
 	expandWithDependents,
-	listCommitStaleSuites,
 	listUnsatisfiedDependencies,
 	resolveSuiteDependencies,
 	sortManifestIds,
@@ -307,7 +306,7 @@ Deno.test('isSuiteGreen requires passed fingerprint and fresh triggers', () => {
 	assertEquals(isSuiteGreen({ ...entry, status: 'blocked' }, 'abc', null, false), false)
 })
 
-Deno.test('expandWithDependents pulls downstream when parent is outdated', () => {
+Deno.test('expandWithDependents pulls only one downstream level when parent is outdated', () => {
 	const all = [
 		suite('server', 'live'),
 		suite('shells/chat', 'smoke_chat', ['server:live']),
@@ -335,10 +334,43 @@ Deno.test('expandWithDependents pulls downstream when parent is outdated', () =>
 		commitHash: 'abc',
 		changedSinceRecordByKey,
 	}
+	// 只拉一层：smoke_chat 的直接下游是 e2e_single；frontend 只依赖 e2e_single，属第二层，不纳入。
 	const expanded = expandWithDependents([all[1]], all, state, ctx)
 	assertEquals(
 		expanded.suites.map(s => suiteKey(s.manifestId, s.name)).sort(),
-		['shells/chat/e2e_single', 'shells/chat/frontend', 'shells/chat/smoke_chat'].sort(),
+		['shells/chat/e2e_single', 'shells/chat/smoke_chat'].sort(),
+	)
+})
+
+Deno.test('expandWithDependents does not pull downstream on failure without trigger', () => {
+	const all = [
+		suite('server', 'live'),
+		suite('shells/chat', 'smoke_chat', ['server:live']),
+		suite('shells/chat', 'e2e_single', ['server:live', 'smoke_chat']),
+	]
+	const state = {
+		suites: {
+			'shells/chat/smoke_chat': {
+				status: 'failed',
+				commitHash: 'abc',
+				uncommittedHash: null,
+				ranAt: '',
+				durationMs: 1,
+				failedFiles: ['a.mjs'],
+				noiseHits: [],
+				logPath: null,
+			},
+		},
+	}
+	const ctx = {
+		commitHash: 'abc',
+		changedSinceRecordByKey: new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])),
+	}
+	// 仅 failed、无 trigger 命中：不向下传播（修复必改文件 → 届时靠 trigger 拉起）。
+	const expanded = expandWithDependents([all[1]], all, state, ctx)
+	assertEquals(
+		expanded.suites.map(s => suiteKey(s.manifestId, s.name)),
+		['shells/chat/smoke_chat'],
 	)
 })
 
@@ -537,42 +569,6 @@ Deno.test('expandWithDependencies skips upstream when only commit drifted', () =
 	assertEquals(isDependencySatisfied(passed, false), true)
 	const expanded = expandWithDependencies([all[2]], all, state, ctx)
 	assertEquals(expanded.suites.map(s => suiteKey(s.manifestId, s.name)), ['shells/chat/frontend'])
-})
-
-Deno.test('listCommitStaleSuites lists passed suites with commit drift only', () => {
-	const all = [
-		suite('server', 'live'),
-		suite('shells/chat', 'frontend', ['server:live']),
-	]
-	const state = {
-		suites: {
-			'server/live': {
-				status: 'passed',
-				commitHash: 'old',
-				uncommittedHash: null,
-				ranAt: '',
-				durationMs: 1,
-				failedFiles: [],
-				noiseHits: [],
-				logPath: null,
-			},
-			'shells/chat/frontend': {
-				status: 'failed',
-				commitHash: 'old',
-				uncommittedHash: null,
-				ranAt: '',
-				durationMs: 1,
-				failedFiles: ['a.mjs'],
-				noiseHits: [],
-				logPath: null,
-			},
-		},
-	}
-	const changed = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
-	assertEquals(
-		listCommitStaleSuites(all, state, 'new-head', changed).map(s => suiteKey(s.manifestId, s.name)),
-		['server/live'],
-	)
 })
 
 Deno.test('listUnsatisfiedDependencies when dep is noisy', () => {
