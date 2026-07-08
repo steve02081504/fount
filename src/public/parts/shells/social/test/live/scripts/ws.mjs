@@ -1,18 +1,18 @@
-// Social feed WebSocket: hello + live post push after HTTP write.
+// Social feed WebSocket: hello + post push + notification + reconnect.
 import process from 'node:process'
 
 import { ms } from 'fount/scripts/ms.mjs'
 import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { waitForWsFrame } from 'fount/scripts/test/live/wsHarness.mjs'
 
 const baseUrl = requireLiveBaseUrl()
 const apiKey = requireLiveApiKey()
 
 /**
- * 调用 Social shell HTTP API。
  * @param {string} method HTTP 方法
  * @param {string} path 相对路径
  * @param {object} [body] JSON 请求体
- * @returns {Promise<{ status: number, json: object | null }>} HTTP 状态与 JSON 体
+ * @returns {Promise<{ status: number, json: object | null }>}
  */
 async function socialApi(method, path, body) {
 	const separator = path.includes('?') ? '&' : '?'
@@ -30,48 +30,67 @@ if (viewer.status !== 200 || !viewer.json?.viewerEntityHash) {
 	process.exit(1)
 }
 const entityHash = viewer.json.viewerEntityHash
+const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:social/feed?fount-apikey=${encodeURIComponent(apiKey)}`
 
-const websocketUrl = `${liveWsBaseUrl()}/ws/parts/shells:social/feed?fount-apikey=${encodeURIComponent(apiKey)}`
-const websocket = new WebSocket(websocketUrl)
-const receivedTypes = []
-let finish
-const done = new Promise(resolve => { finish = resolve })
-const timeout = setTimeout(() => finish('timeout'), ms('20s'))
-
-/** WS 连接建立后发帖，等待 post 推送。 */
-websocket.onopen = async () => {
-	console.log('WS open; posting...')
-	const post = await socialApi('POST', '/posts', {
-		entityHash,
-		text: `ws-push ${Date.now()}`,
-		visibility: 'public',
-		lang: 'zh-CN',
-	})
-	console.log(`post -> ${post.status}`)
-	if (post.status !== 200) finish('post_failed')
+const postRun = await waitForWsFrame({
+	url: wsUrl,
+	types: ['post'],
+	timeoutMs: ms('20s'),
+	trigger: async () => {
+		const post = await socialApi('POST', '/posts', {
+			entityHash,
+			text: `ws-push ${Date.now()}`,
+			visibility: 'public',
+			lang: 'zh-CN',
+		})
+		if (post.status !== 200) throw new Error(`post failed ${post.status}`)
+	},
+})
+if (!postRun.ok) {
+	console.error('FAIL: post push', postRun.types)
+	process.exit(1)
 }
-/**
- * 记录收到的 WS 帧类型；hello 与 post 均满足通过条件。
- * @param {MessageEvent} event WebSocket 消息
- * @returns {void}
- */
-websocket.onmessage = event => {
-	const frame = JSON.parse(String(event.data))
-	receivedTypes.push(frame.type)
-	if (frame.type === 'hello') console.log('PASS: received hello')
-	if (frame.type === 'post') {
-		console.log('PASS: received post push')
-		clearTimeout(timeout)
-		finish('ok')
-	}
-}
-/**
- * @param {Event} error WebSocket 错误
- * @returns {void}
- */
-websocket.onerror = error => console.error('FAIL: ws error', error)
+console.log('PASS: post push', postRun.types)
 
-const result = await done
-websocket.close()
-console.log(`\nWS result=${result} types=[${[...new Set(receivedTypes)].join(', ')}]`)
-process.exit(result === 'ok' ? 0 : 1)
+const seedPost = await socialApi('POST', '/posts', {
+	entityHash,
+	text: `ws-like-target ${Date.now()}`,
+	visibility: 'public',
+	lang: 'zh-CN',
+})
+const postId = seedPost.json?.event?.id
+if (seedPost.status !== 200 || !postId) {
+	console.error('FAIL: seed post for notification', seedPost.status)
+	process.exit(1)
+}
+
+const notificationRun = await waitForWsFrame({
+	url: wsUrl,
+	types: ['notification'],
+	timeoutMs: ms('20s'),
+	trigger: async () => {
+		const like = await socialApi('POST', `/posts/${entityHash}/${postId}/like`, {
+			like: true,
+			actingEntityHash: entityHash,
+		})
+		if (like.status !== 200) throw new Error(`like failed ${like.status}`)
+	},
+})
+if (!notificationRun.ok) {
+	console.error('FAIL: notification push', notificationRun.types)
+	process.exit(1)
+}
+console.log('PASS: notification push', notificationRun.types)
+
+const reconnectRun = await waitForWsFrame({
+	url: wsUrl,
+	types: ['hello'],
+	timeoutMs: ms('10s'),
+})
+if (!reconnectRun.ok) {
+	console.error('FAIL: reconnect hello', reconnectRun.types)
+	process.exit(1)
+}
+console.log('PASS: reconnect hello')
+
+process.exit(0)

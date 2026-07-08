@@ -11,6 +11,7 @@ import { isNodeInitialized, getEntityStore } from './node/instance.mjs'
 /** @typedef {'subject' | 'entity'} PersonalListScope */
 
 const HIDE_JSON = 'personal_hide.json'
+const MUTE_JSON = 'personal_mute.json'
 const BLOCK_INDEX_JSON = 'personal_block.json'
 
 /**
@@ -84,6 +85,16 @@ export async function loadPersonalHideEntries(viewerEntityHash) {
 
 /**
  * @param {string} viewerEntityHash 观看者实体
+ * @returns {Promise<Array<{ scope: PersonalListScope, value: string }>>} 静音条目
+ */
+export async function loadPersonalMuteEntries(viewerEntityHash) {
+	if (!isNodeInitialized()) return []
+	const data = await getEntityStore().readEntityJson(viewerEntityHash, MUTE_JSON)
+	return normalizePersonalListEntries(data?.muted || [])
+}
+
+/**
+ * @param {string} viewerEntityHash 观看者实体
  * @returns {Promise<Array<{ scope: PersonalListScope, value: string }>>} 拉黑条目
  */
 export async function loadPersonalBlockEntries(viewerEntityHash) {
@@ -117,11 +128,14 @@ export async function isBlockedBy(viewerEntityHash, subject) {
  */
 export async function isFilteredByPersonalLists(viewerEntityHash, subject) {
 	if (!viewerEntityHash) return false
-	const [blocked, hidden] = await Promise.all([
+	const [blocked, hidden, muted] = await Promise.all([
 		loadPersonalBlockEntries(viewerEntityHash),
 		loadPersonalHideEntries(viewerEntityHash),
+		loadPersonalMuteEntries(viewerEntityHash),
 	])
-	return matchesPersonalListEntries(blocked, subject) || matchesPersonalListEntries(hidden, subject)
+	return matchesPersonalListEntries(blocked, subject)
+		|| matchesPersonalListEntries(hidden, subject)
+		|| matchesPersonalListEntries(muted, subject)
 }
 
 /**
@@ -143,6 +157,36 @@ export async function setPersonalHidden(viewerEntityHash, targetEntityHash, hide
 		: current.filter(entry => !addKeys.has(`${entry.scope}:${entry.value}`))
 	await store.writeEntityJson(viewerEntityHash, HIDE_JSON, { hidden: next })
 	return hide
+}
+
+/**
+ * @param {string} viewerEntityHash 本地可写实体
+ * @param {string} targetEntityHash 目标
+ * @param {boolean} mute true=静音
+ * @returns {Promise<boolean>} 当前是否静音
+ */
+export async function setPersonalMuted(viewerEntityHash, targetEntityHash, mute) {
+	if (!isWritableLocalEntity(viewerEntityHash)) throw new Error('entity not writable on this replica')
+	const target = String(targetEntityHash || '').trim().toLowerCase()
+	if (!parseEntityHash(target)) throw new Error('invalid targetEntityHash')
+	const store = getEntityStore()
+	const current = normalizePersonalListEntries((await store.readEntityJson(viewerEntityHash, MUTE_JSON))?.muted || [])
+	const addEntries = entriesForTargetEntityHash(target)
+	const addKeys = new Set(addEntries.map(e => `${e.scope}:${e.value}`))
+	const next = mute
+		? normalizePersonalListEntries([...current, ...addEntries])
+		: current.filter(entry => !addKeys.has(`${entry.scope}:${entry.value}`))
+	await store.writeEntityJson(viewerEntityHash, MUTE_JSON, { muted: next })
+	return mute
+}
+
+/**
+ * @param {string} viewerEntityHash 观看者实体
+ * @param {object} subject 待检主体
+ * @returns {Promise<boolean>} 是否被静音
+ */
+export async function isMutedBy(viewerEntityHash, subject) {
+	return matchesPersonalListEntries(await loadPersonalMuteEntries(viewerEntityHash), subject)
 }
 
 /**
@@ -178,6 +222,10 @@ export function filterSetsFromPersonalListEntries(entries) {
 	const hiddenEntityHashes = new Set()
 	/** @type {Set<string>} */
 	const hiddenSubjects = new Set()
+	/** @type {Set<string>} */
+	const mutedEntityHashes = new Set()
+	/** @type {Set<string>} */
+	const mutedSubjects = new Set()
 	for (const entry of entries || []) {
 		const kind = String(entry?.kind || '').trim().toLowerCase()
 		const scope = String(entry?.scope || '').trim().toLowerCase()
@@ -190,9 +238,12 @@ export function filterSetsFromPersonalListEntries(entries) {
 		else if (kind === 'hide') 
 			if (scope === 'entity') hiddenEntityHashes.add(value)
 			else hiddenSubjects.add(value)
+		else if (kind === 'mute')
+			if (scope === 'entity') mutedEntityHashes.add(value)
+			else mutedSubjects.add(value)
 		
 	}
-	return { blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects }
+	return { blockedEntityHashes, blockedSubjects, hiddenEntityHashes, hiddenSubjects, mutedEntityHashes, mutedSubjects }
 }
 
 /**
@@ -202,13 +253,15 @@ export function filterSetsFromPersonalListEntries(entries) {
 export async function loadPersonalFilterSets(viewerEntityHash) {
 	if (!viewerEntityHash)
 		return filterSetsFromPersonalListEntries([])
-	const [blockedEntries, hiddenEntries] = await Promise.all([
+	const [blockedEntries, hiddenEntries, mutedEntries] = await Promise.all([
 		loadPersonalBlockEntries(viewerEntityHash),
 		loadPersonalHideEntries(viewerEntityHash),
+		loadPersonalMuteEntries(viewerEntityHash),
 	])
 	return filterSetsFromPersonalListEntries([
 		...blockedEntries.map(entry => ({ ...entry, kind: 'block' })),
 		...hiddenEntries.map(entry => ({ ...entry, kind: 'hide' })),
+		...mutedEntries.map(entry => ({ ...entry, kind: 'mute' })),
 	])
 }
 
@@ -220,11 +273,13 @@ export async function loadPersonalFilterSets(viewerEntityHash) {
 export function isAuthorFilteredByPersonalSets(filterSets, authorEntityHash) {
 	const entity = String(authorEntityHash || '').trim().toLowerCase()
 	if (!entity) return false
-	if (filterSets.blockedEntityHashes.has(entity) || filterSets.hiddenEntityHashes.has(entity))
+	if (filterSets.blockedEntityHashes.has(entity) || filterSets.hiddenEntityHashes.has(entity) || filterSets.mutedEntityHashes?.has(entity))
 		return true
 	const parsed = parseEntityHash(entity)
 	if (!parsed) return false
-	if (filterSets.blockedSubjects.has(parsed.subjectHash) || filterSets.hiddenSubjects.has(parsed.subjectHash))
+	if (filterSets.blockedSubjects.has(parsed.subjectHash)
+		|| filterSets.hiddenSubjects.has(parsed.subjectHash)
+		|| filterSets.mutedSubjects?.has(parsed.subjectHash))
 		return true
 	return false
 }

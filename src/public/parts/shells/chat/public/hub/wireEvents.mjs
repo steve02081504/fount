@@ -5,12 +5,14 @@
 import { wireComposerEvents } from './wireComposerEvents.mjs'
 import { handleMessageFileDownloadClick, wireFileEvents } from './wireFileEvents.mjs'
 import { wireHeaderEvents, wireShiftKeyHint } from './wireHeaderEvents.mjs'
+import { wireHubSearchPanel } from './search.mjs'
 import { handleMessageBubbleClick } from './wireMessageBubbleEvents.mjs'
 import { handleVoteOptionClick, wireVoteEvents } from './wireVoteEvents.mjs'
 
 /** 注册 Hub 页面 DOM 事件委托。 @returns {void} */
 export function wireEvents() {
 	wireHeaderEvents()
+	wireHubSearchPanel()
 	wireComposerEvents()
 	wireFileEvents()
 	wireVoteEvents()

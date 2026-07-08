@@ -64,6 +64,7 @@ export const SOCIAL_RPC_REQUEST_TYPES = new Set([
 	'social_follow_graph_request',
 	'social_on_mention',
 	'social_timeline_pull_request',
+	'social_report',
 ])
 
 /** @type {Set<string>} */
@@ -73,6 +74,7 @@ export const SOCIAL_RPC_RESPONSE_TYPES = new Set([
 	'social_follow_graph_response',
 	'social_on_mention_response',
 	'social_timeline_pull_response',
+	'social_report_response',
 ])
 
 /** @type {Set<string>} */

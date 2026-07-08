@@ -50,6 +50,7 @@ export interface SocialPostContent {
 	groupRef?: SocialGroupRef
 	lang?: string
 	visibility?: SocialVisibility
+	contentWarning?: string
 }
 
 /** 探索/资料 meta（`social_meta` 物化字段，camelCase）。 */

@@ -73,6 +73,7 @@ const suites = {
 	smoke_chat: { run: denoLiveRun(join(scriptsDir, 'smoke_chat.mjs')), node: SINGLE_NODE_LIVE },
 	smoke_ai: { run: denoLiveRun(join(scriptsDir, 'smoke_ai.mjs')), node: SINGLE_NODE_LIVE },
 	ws: { run: denoLiveRun(join(scriptsDir, 'ws.mjs')), node: SINGLE_NODE_LIVE },
+	ws_read_marker: { run: denoLiveRun(join(scriptsDir, 'ws_read_marker.mjs')), node: SINGLE_NODE_LIVE },
 	ws_rpc: { run: denoLiveRun(join(scriptsDir, 'ws_rpc.mjs')), node: SINGLE_NODE_LIVE },
 	ws_stream: { run: denoLiveRun(join(scriptsDir, 'ws_stream.mjs')), node: SINGLE_NODE_LIVE },
 	av_relay: { run: denoLiveRun(join(scriptsDir, 'av_relay.mjs')), node: SINGLE_NODE_LIVE },

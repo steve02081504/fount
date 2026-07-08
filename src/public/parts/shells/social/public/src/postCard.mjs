@@ -2,6 +2,7 @@ import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 
 import { formatActionKey } from './lib/actionKey.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from './lib/display.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
@@ -41,11 +42,19 @@ export function createPostCardBuilder({
 		const originalAuthor = isRepost ? item.targetEntityHash : item.entityHash
 		const decryptFailed = item.post?.decryptView?.failed
 		const decryptFailedLabel = geti18n('social.feed.decryptFailed')
+		const contentWarning = item.post?.content?.contentWarning?.trim()
 		const text = item.post?.content?.text || (decryptFailed ? decryptFailedLabel : '')
 		const contentAuthor = isRepost ? originalAuthor : item.entityHash
-		const html = decryptFailed
+		let bodyHtml = decryptFailed
 			? `<em>${decryptFailedLabel}</em>`
 			: await renderMarkdown(text, contentAuthor)
+		if (contentWarning && !decryptFailed) {
+			bodyHtml = `<div class="content-warning-wrap" data-cw-collapsed="1">
+				<div class="content-warning-label">${escapeHtml(contentWarning)}</div>
+				<button type="button" class="content-warning-reveal" data-i18n="social.feed.revealContent">${geti18n('social.feed.revealContent')}</button>
+				<div class="content-warning-body hidden">${bodyHtml}</div>
+			</div>`
+		}
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
 		const label = authorLabel(item.entityHash, item.authorProfile)
@@ -90,6 +99,12 @@ export function createPostCardBuilder({
 		const hideButton = isOwn
 			? ''
 			: `<button type="button" data-hide="${item.entityHash}"><span class="s-ic s-ic-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
+		const muteButton = isOwn
+			? ''
+			: `<button type="button" data-mute="${item.entityHash}"><span class="s-ic s-ic-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
+		const reportButton = isOwn
+			? ''
+			: `<button type="button" data-report="${actionKey}"><span class="s-ic s-ic-report" aria-hidden="true"></span><span data-i18n="social.actions.report"></span></button>`
 		const deleteButton = isOwn
 			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
@@ -115,7 +130,7 @@ export function createPostCardBuilder({
 			quoteHtml,
 			groupRefHtml,
 			mediaHtml,
-			bodyHtml: html,
+			bodyHtml,
 			likedClass,
 			actionKey,
 			likedFlag: item.viewerLiked ? '1' : '0',
@@ -126,6 +141,8 @@ export function createPostCardBuilder({
 			entityHash: item.entityHash,
 			blockButton,
 			hideButton,
+			muteButton,
+			reportButton,
 			deleteButton,
 		})
 		return /** @type {HTMLElement} */ card

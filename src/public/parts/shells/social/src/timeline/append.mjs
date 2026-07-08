@@ -123,6 +123,8 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 	await maintainSocialTimeline(username, entityHash)
 	const { appendInboxFromTimelineEvent } = await import('../inbox.mjs')
 	await appendInboxFromTimelineEvent(username, entityHash, row)
+	const { indexTimelineEventForSearch } = await import('../searchIndex.mjs')
+	await indexTimelineEventForSearch(username, entityHash, row)
 	return row
 }
 

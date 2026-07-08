@@ -6,6 +6,7 @@ import { wirePinsBookmarksPanels } from './pinsBookmarks.mjs'
 import { wirePresenceInteractions } from './presence.mjs'
 import { openGroupSettingsModal } from './privateGroup.mjs'
 import { wireProfilePopupDismiss } from './profilePopup.mjs'
+import { scheduleHubMessageSearch } from './search.mjs'
 
 /** @returns {void} */
 export function wireHeaderEvents() {
@@ -18,10 +19,21 @@ export function wireHeaderEvents() {
 	})
 
 	document.getElementById('hub-header-search').addEventListener('input', (event) => {
-		const query = event.target.value.trim().toLowerCase()
+		const query = event.target.value.trim()
+		const queryLower = query.toLowerCase()
 		const chType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
 		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && chType === 'text') {
-			hubStore.messages.channelSearchQuery = query || null
+			if (query.length >= 2) {
+				hubStore.messages.channelSearchQuery = null
+				scheduleHubMessageSearch(query)
+				void (async () => {
+					const { refreshChannelViewDom } = await import('./messages/messages.mjs')
+					const container = document.getElementById('hub-messages')
+					await refreshChannelViewDom(container, false)
+				})()
+				return
+			}
+			hubStore.messages.channelSearchQuery = queryLower || null
 			void (async () => {
 				const { refreshChannelViewDom } = await import('./messages/messages.mjs')
 				const container = document.getElementById('hub-messages')
@@ -30,7 +42,7 @@ export function wireHeaderEvents() {
 			return
 		}
 		document.querySelectorAll('#hub-messages .hub-message, #hub-messages .hub-char-entry, #hub-messages .hub-system-message').forEach((element) => {
-			element.style.display = !query || (element.textContent || '').toLowerCase().includes(query) ? '' : 'none'
+			element.style.display = !queryLower || (element.textContent || '').toLowerCase().includes(queryLower) ? '' : 'none'
 		})
 	})
 	document.getElementById('hub-header-search').addEventListener('focus', (event) => {

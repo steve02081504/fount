@@ -258,6 +258,12 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 	}
 	if (isNewLine)
 		await appendJsonlSynced(channelMessagesPath, messageLine)
+	if (PERSIST_MESSAGE_TYPES.has(signPayload.type))
+		void import('../search/index.mjs').then(({ indexChannelMessageLine }) =>
+			indexChannelMessageLine(username, groupId, channelId, messageLine),
+		).catch(error => {
+			console.error('search index update failed:', error)
+		})
 	broadcastEvent(roomKey, {
 		type: 'channel_message',
 		channelId,

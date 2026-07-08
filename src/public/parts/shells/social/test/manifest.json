@@ -10,6 +10,7 @@
 		"shellPureExtra": [
 			"src/public/parts/shells/chat/public/markdown_ext/**",
 			"src/scripts/p2p/**",
+			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
 			"src/public/pages/scripts/api/registries.mjs",
@@ -22,6 +23,7 @@
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
 			"src/scripts/p2p/**",
+			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
 			"src/public/pages/scripts/api/registries.mjs",

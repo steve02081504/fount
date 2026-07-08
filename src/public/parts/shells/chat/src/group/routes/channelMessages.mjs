@@ -32,6 +32,8 @@ import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
+import { searchGroupMessages } from '../../chat/search/index.mjs'
+import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
 
 import {
 	ensureCanInChannel,
@@ -303,6 +305,22 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const content = responseEvent.content || {}
 		recordEmojiUsageFromMessageContent(username, content)
 		res.status(201).json({ event: responseEvent })
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/search`, authenticate, async (req, res) => {
+		const { groupId } = req.params
+		const membership = await resolveGroupMember(req, res, groupId)
+		const { username } = membership
+		const query = String(req.query.q || '').trim()
+		if (query.length < 2)
+			throw httpError(400, 'query must be at least 2 characters')
+		const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+		res.status(200).json(await searchGroupMessages(username, groupId, {
+			q: query,
+			channelId: req.query.channelId ? String(req.query.channelId) : undefined,
+			limit: Number(req.query.limit) || 30,
+			viewerEntityHash,
+		}))
 	})
 
 }

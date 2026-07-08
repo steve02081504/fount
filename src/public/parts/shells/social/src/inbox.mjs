@@ -7,6 +7,7 @@ import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_
 import { appendJsonlSynced, readJsonl } from '../../../../../scripts/p2p/dag/storage.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
+import { isMutedBy } from '../../../../../scripts/p2p/personal_block.mjs'
 
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { canWriteTimeline } from './timeline/append.mjs'
@@ -136,6 +137,7 @@ export function setNotificationsSeenAt(username, entityHash, at) {
 export async function appendInboxFromTimelineEvent(username, timelineOwner, event) {
 	for (const row of deriveInboxNotifications(timelineOwner, event)) {
 		if (!await canWriteTimeline(username, row.recipient)) continue
+		if (await isMutedBy(row.recipient, { entityHash: row.actorEntityHash })) continue
 		const dir = inboxDir(username, row.recipient)
 		fs.mkdirSync(dir, { recursive: true })
 		const { recipient, ...notification } = row

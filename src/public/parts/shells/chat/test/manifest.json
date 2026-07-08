@@ -28,6 +28,7 @@
 		],
 		"shellIntegrationExtra": [
 			"src/scripts/p2p/**",
+			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
 			"src/server/parts_loader.mjs",
@@ -61,6 +62,9 @@
 		],
 		"liveWs": [
 			"src/public/parts/shells/chat/test/live/scripts/ws.mjs"
+		],
+		"liveWsReadMarker": [
+			"src/public/parts/shells/chat/test/live/scripts/ws_read_marker.mjs"
 		],
 		"liveWsRpc": [
 			"src/public/parts/shells/chat/test/live/scripts/ws_rpc.mjs"
@@ -163,6 +167,7 @@
 		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single"] },
 		{ "name": "e2e_single_ext", "dependsOn": ["server:live", "e2e_single"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveE2eSingleExt"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "e2e_single_ext"] },
 		{ "name": "ws", "dependsOn": ["server:live", "smoke_chat"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws"] },
+		{ "name": "ws_read_marker", "dependsOn": ["server:live", "ws"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWsReadMarker"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_read_marker"] },
 		{ "name": "ws_rpc", "dependsOn": ["server:live", "ws"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWsRpc"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_rpc"] },
 		{ "name": "ws_stream", "dependsOn": ["server:live", "ws_rpc"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveWsStream"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "ws_stream"] },
 		{ "name": "av_relay", "dependsOn": ["server:live", "ws"], "trigger": ["shellBackend", "shellLiveCommon", "shellLiveInfra", "liveAvRelay"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "av_relay"] },

@@ -80,7 +80,7 @@ Body：`exploreBlurb?`、`hideFromDiscovery?`、`actingEntityHash?` — 追加 `
 跨已知时间线的回复聚合。
 
 ### `GET /api/parts/shells:social/profile/personal-lists`
-Query：`actingEntityHash?`。返回 `{ entries: [{ scope, value, kind: 'block'|'hide' }] }`（Chat Hub 与 Social 共享）。
+Query：`actingEntityHash?`。返回 `{ entries: [{ scope, value, kind: 'block'|'hide'|'mute' }] }`（Chat Hub 与 Social 共享）。
 
 ---
 
@@ -110,6 +110,15 @@ Body：`entityHash`、`block?`、`actingEntityHash?`。写入公开联邦 `block
 
 ### `POST /api/parts/shells:social/relationships/hide`
 Body：`entityHash`、`hide?`、`actingEntityHash?`。纯本地 `personal_hide.json`，不联邦。
+
+### `POST /api/parts/shells:social/relationships/mute`
+Body：`entityHash`、`mute?`、`actingEntityHash?`。纯本地 `personal_mute.json`，不联邦；过滤 feed 并压制来自该作者的通知。
+
+### `POST /api/parts/shells:social/governance/report`
+Body：`targetEntityHash`、`targetPostId?`、`reason`（≥2 字符）、`category`（`spam`|`abuse`|`illegal`|`other`）。签名后本地审计 `reports_sent.jsonl`，并 RPC 投递至内容 owner 节点 `governance/reports.jsonl`。
+
+### `GET /api/parts/shells:social/governance/reports`
+Query：`limit`。读本机收到的举报队列（审核 UI 后置）。
 
 ### `POST /api/parts/shells:social/relationships/follow-approve`
 Body：`followerPubKeyHex`、`actingEntityHash?` — 为关注者签发 GSH vault H。

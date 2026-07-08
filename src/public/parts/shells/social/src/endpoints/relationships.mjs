@@ -1,7 +1,7 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { setPersonalHidden } from '../../../../../../scripts/p2p/personal_block.mjs'
+import { setPersonalHidden, setPersonalMuted } from '../../../../../../scripts/p2p/personal_block.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { dispatchFollowEvent } from '../dispatch.mjs'
@@ -80,6 +80,21 @@ export function registerRelationshipsRoutes(router) {
 		})
 		const hidden = await setPersonalHidden(actingEntity, target, hide)
 		res.status(200).json({ entityHash: target, actingEntityHash: actingEntity, hidden })
+	})
+
+	router.post('/api/parts/shells\\:social/relationships/mute', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const target = String(req.body?.entityHash).toLowerCase()
+		if (!isEntityHash128(target))
+			throw httpError(400, 'invalid entityHash')
+		if (!await isKnownSocialTarget(username, target))
+			throw httpError(400, 'unknown entity')
+		const mute = req.body?.mute !== false
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash, {
+			invalidMessage: 'can only mute as your operator or local agent entities',
+		})
+		await setPersonalMuted(actingEntity, target, mute)
+		res.status(200).json({ entityHash: target, actingEntityHash: actingEntity, muted: mute })
 	})
 
 	router.post('/api/parts/shells\\:social/relationships/follow-approve', authenticate, async (req, res) => {

@@ -1137,7 +1137,8 @@
 			"refresh": "刷新动态",
 			"newPosts": "有新动态，点击查看",
 			"repostedBy": "${author} 转发了",
-			"decryptFailed": "无法解密此帖"
+			"decryptFailed": "无法解密此帖",
+			"revealContent": "显示内容"
 		},
 		"trending": {
 			"title": "热门话题",
@@ -1178,6 +1179,8 @@
 			"dm": "发私信",
 			"block": "拉黑",
 			"hide": "隐藏",
+			"mute": "静音",
+			"report": "举报",
 			"follow": "关注",
 			"following": "已关注",
 			"replies": "评论",
@@ -1877,7 +1880,9 @@
 				"title": "书签"
 			},
 			"search": {
-				"placeholder": "搜索消息…"
+				"placeholder": "搜索消息…",
+				"noResults": "无结果",
+				"failed": "搜索失败"
 			},
 			"membersTitle": {
 				"title": "成员"

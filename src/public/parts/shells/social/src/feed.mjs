@@ -19,6 +19,7 @@ import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing } from './following.mjs'
+import { queryReplyIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
@@ -233,22 +234,36 @@ export async function listReplies(username, entityHash, postId) {
 	const viewerContext = await loadViewerContext(username)
 	/** @type {object[]} */
 	const replies = []
+	const refs = await queryReplyIndex(username, entityHash, postId)
 
-	for (const author of await listFollowedTimelineOwners(username)) {
+	for (const ref of refs) {
+		const author = ref.entityHash
 		if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
 		if (isHiddenByAuthorReputation(author)) continue
 		const view = await getTimelineMaterialized(username, author)
-		if (!view.posts?.length) continue
-		for (const post of view.posts) {
-			const replyTo = post.content?.replyTo
-			if (!replyTo) continue
-			if (replyTo.entityHash?.toLowerCase() !== entityHash.toLowerCase()) continue
-			if (replyTo.postId !== postId) continue
-			if (!canViewPost({ ...post, entityHash: author }, viewerContext))
-				continue
-			replies.push({ entityHash: author, post })
-		}
+		const post = view.postById?.[ref.postId] || view.posts?.find(row => row.id === ref.postId)
+		if (!post) continue
+		if (!canViewPost({ ...post, entityHash: author }, viewerContext)) continue
+		replies.push({ entityHash: author, post })
 	}
+
+	if (!replies.length) 
+		for (const author of await listFollowedTimelineOwners(username)) {
+			if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
+			if (isHiddenByAuthorReputation(author)) continue
+			const view = await getTimelineMaterialized(username, author)
+			if (!view.posts?.length) continue
+			for (const post of view.posts) {
+				const replyTo = post.content?.replyTo
+				if (!replyTo) continue
+				if (replyTo.entityHash?.toLowerCase() !== entityHash.toLowerCase()) continue
+				if (replyTo.postId !== postId) continue
+				if (!canViewPost({ ...post, entityHash: author }, viewerContext))
+					continue
+				replies.push({ entityHash: author, post })
+			}
+		}
+	
 
 	replies.sort((left, right) => {
 		const lw = Number(left.post.hlc.wall)

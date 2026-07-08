@@ -51,6 +51,33 @@ export function savedPostsPath(username) {
 }
 
 /**
+ * Social 全文搜索与辅助索引根目录。
+ * @param {string} username replica
+ * @returns {string} search 目录
+ */
+export function socialSearchIndexPath(username) {
+	return `${getUserDictionary(username)}/shells/social/search`
+}
+
+/**
+ * 回复反向索引文件。
+ * @param {string} username replica
+ * @returns {string} replies.json 路径
+ */
+export function socialReplyIndexPath(username) {
+	return `${socialSearchIndexPath(username)}/replies.json`
+}
+
+/**
+ * 话题计数物化文件。
+ * @param {string} username replica
+ * @returns {string} trending.json 路径
+ */
+export function socialTrendingIndexPath(username) {
+	return `${socialSearchIndexPath(username)}/trending.json`
+}
+
+/**
  * 返回时间线对应的 DAG groupId。
  * @param {string} entityHash 128 hex
  * @returns {string} DAG groupId

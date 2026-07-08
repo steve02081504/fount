@@ -208,6 +208,21 @@ export async function getPinContextMessages(groupId, channelId, pinEventId) {
 }
 
 /**
+ * 跨频道搜索群消息。
+ * @param {string} groupId 群 ID
+ * @param {string} query 查询（至少 2 字符）
+ * @param {{ channelId?: string, limit?: number }} [opts] 选项
+ * @returns {Promise<{ query: string, items: object[] }>}
+ */
+export async function searchGroupChannelMessages(groupId, query, opts = {}) {
+	const params = new URLSearchParams({ q: query })
+	if (opts.channelId) params.set('channelId', opts.channelId)
+	if (opts.limit) params.set('limit', String(opts.limit))
+	const data = await groupFetch(`${encodeURIComponent(groupId)}/search?${params}`, { method: 'GET' })
+	return { query: data.query || query, items: data.items || [] }
+}
+
+/**
  * 拉取进行中流的已缓冲分片（WS 晚加入时补流式显示）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

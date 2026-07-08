@@ -2,6 +2,7 @@
  * 【文件】social/src/endpoints.mjs
  * 【职责】Social shell HTTP/WS 路由聚合入口。
  */
+import { registerGovernanceRoutes } from './endpoints/governance.mjs'
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
 import { registerNotificationRoutes } from './endpoints/notifications.mjs'
@@ -29,6 +30,7 @@ export function setEndpoints(router) {
 	registerProfileRoutes(router)
 	registerPostsRoutes(router)
 	registerRelationshipsRoutes(router)
+	registerGovernanceRoutes(router)
 	registerSavedRoutes(router)
 	registerVaultRoutes(router)
 }

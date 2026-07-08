@@ -1477,3 +1477,30 @@ body {
 		left: auto;
 	}
 }
+
+.content-warning-wrap {
+	border: 1px solid color-mix(in srgb, var(--s-accent) 35%, transparent);
+	border-radius: 8px;
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	background: color-mix(in srgb, var(--s-accent) 8%, transparent);
+}
+
+.content-warning-label {
+	font-size: 13px;
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.content-warning-reveal {
+	border: 1px solid var(--s-border);
+	background: var(--s-bg-secondary);
+	color: var(--s-text);
+	border-radius: 6px;
+	padding: 4px 10px;
+	cursor: pointer;
+}
+
+.content-warning-body.hidden {
+	display: none;
+}

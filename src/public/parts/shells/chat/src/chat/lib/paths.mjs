@@ -105,6 +105,16 @@ export function messagesPath(username, groupId, channelId) {
 }
 
 /**
+ * 群级全文搜索索引目录。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {string} search 索引根目录
+ */
+export function groupSearchIndexPath(username, groupId) {
+	return join(groupDir(username, groupId), 'search')
+}
+
+/**
  * 频道按月冷归档 JSONL。
  * @param {string} username replica
  * @param {string} groupId 群 ID

@@ -1,4 +1,5 @@
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
+import { parseActionKey } from '../lib/actionKey.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { loadExplore } from '../views/explore.mjs'
@@ -75,6 +76,34 @@ export async function handleProfileNavClick(appContext, target) {
 			body: JSON.stringify({ entityHash: hideButton.dataset.hide, hide: true, ...actingFields(appContext) }),
 		})
 		await refreshVisiblePosts(appContext)
+		closePostMoreMenus()
+	}
+
+	const muteButton = target.closest('[data-mute]')
+	if (muteButton instanceof HTMLElement && muteButton.dataset.mute) {
+		await appContext.socialApi('/relationships/mute', {
+			method: 'POST',
+			body: JSON.stringify({ entityHash: muteButton.dataset.mute, mute: true, ...actingFields(appContext) }),
+		})
+		await refreshVisiblePosts(appContext)
+		closePostMoreMenus()
+	}
+
+	const reportButton = target.closest('[data-report]')
+	if (reportButton instanceof HTMLElement && reportButton.dataset.report) {
+		const parsed = parseActionKey(reportButton.dataset.report)
+		if (parsed) {
+			await appContext.socialApi('/governance/report', {
+				method: 'POST',
+				body: JSON.stringify({
+					targetEntityHash: parsed.entityHash,
+					targetPostId: parsed.postId,
+					reason: 'user report',
+					category: 'other',
+					...actingFields(appContext),
+				}),
+			})
+		}
 		closePostMoreMenus()
 	}
 

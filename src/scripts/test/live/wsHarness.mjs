@@ -34,3 +34,52 @@ export function pickPreferredChar(list, preferred) {
 export function failLiveWsPrecondition(reason) {
 	finishLiveWs(false, reason)
 }
+
+/**
+ * 等待 WebSocket 帧（live 探针共用）。
+ * @param {object} options 选项
+ * @param {string} options.url WebSocket URL
+ * @param {string[]} options.types 期望帧 type 列表（任一命中即成功）
+ * @param {() => void | Promise<void>} [options.trigger] 连接后触发动作
+ * @param {number} [options.timeoutMs=20000] 超时毫秒
+ * @returns {Promise<{ ok: boolean, types: string[], frames: object[] }>}
+ */
+export function waitForWsFrame(options) {
+	const {
+		url,
+		types,
+		trigger,
+		timeoutMs = 20_000,
+	} = options
+	return new Promise(resolve => {
+		const websocket = new WebSocket(url)
+		/** @type {object[]} */
+		const frames = []
+		/** @type {string[]} */
+		const receivedTypes = []
+		let settled = false
+		const finish = (ok) => {
+			if (settled) return
+			settled = true
+			clearTimeout(timeout)
+			try { websocket.close() } catch { /* ok */ }
+			resolve({ ok, types: [...new Set(receivedTypes)], frames })
+		}
+		const timeout = setTimeout(() => finish(false), timeoutMs)
+		websocket.onopen = async () => {
+			try {
+				if (trigger) await trigger()
+			}
+			catch {
+				finish(false)
+			}
+		}
+		websocket.onmessage = event => {
+			const frame = JSON.parse(String(event.data))
+			frames.push(frame)
+			if (frame?.type) receivedTypes.push(frame.type)
+			if (types.includes(frame.type)) finish(true)
+		}
+		websocket.onerror = () => finish(false)
+	})
+}

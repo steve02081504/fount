@@ -1,28 +1,10 @@
-import { readFile } from 'node:fs/promises'
-
-import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
+import { readTrendingHashtagCounts } from '../searchIndex.mjs'
 import { loadViewerContext } from '../feed/helpers.mjs'
 import { iterateVisiblePosts } from '../feed/iterate.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
 
 /**
- * 判断本地是否持有可读时间线 events.jsonl。
- * @param {string} username 用户
- * @param {string} entityHash 时间线 owner
- * @returns {Promise<boolean>} 本地是否持有时间线
- */
-async function timelineExists(username, entityHash) {
-	try {
-		await readFile(`${getUserDictionary(username)}/shells/social/timelines/${entityHash}/events.jsonl`, 'utf8')
-		return true
-	}
-	catch {
-		return false
-	}
-}
-
-/**
- * 从观看者可见帖子统计热门话题。
+ * 从观看者可见帖子统计热门话题（索引计数优先，空则回退扫描）。
  * @param {string} username 用户
  * @param {object} [options] 选项
  * @param {number} [options.limit=12] 返回条数
@@ -30,14 +12,16 @@ async function timelineExists(username, entityHash) {
  */
 export async function buildTrendingHashtags(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 12, 1), 32)
+	const indexed = await readTrendingHashtagCounts(username, limit)
+	if (indexed.tags.length) return indexed
+
 	const viewerContext = await loadViewerContext(username)
 	/** @type {Map<string, number>} */
 	const counts = new Map()
 
-	for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
-		if (!await timelineExists(username, entityHash)) continue
+	for await (const { post } of iterateVisiblePosts(username, viewerContext)) {
 		if (!post.content?.text) continue
-		for (const tag of extractHashtagsFromText(post.content?.text))
+		for (const tag of extractHashtagsFromText(post.content.text))
 			counts.set(tag, (counts.get(tag) || 0) + 1)
 	}
 
