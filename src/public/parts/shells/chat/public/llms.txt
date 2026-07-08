@@ -142,7 +142,9 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 写入 `events.jsonl` 并物化为 `state.session`：`session_char_bind` / `session_char_unbind` / `session_world_bind` / `session_world_bind_channel` / `session_world_clear` / `session_persona_set` / `session_plugin_add` / `session_plugin_remove` / `session_char_frequency_set`。频道 `message` 可含 `content.sessionSnapshot` 供历史水合。
 
-**Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`）；shell `decl/chatLog.ts` 仅 re-export。
+**写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content：全员 `displayName`/`displayAvatar`；生成类另附 `sessionSnapshot`/`chatLogEntryId`。内存 `chatLog` 仅为 hydration 缓存。
+
+**Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`；含 `channelMessageContent_t` / `file_t`）；shell `decl/chatLog.ts` 仅 re-export。persona `BeforeUserSend` 见 `src/decl/userAPI.ts`。
 
 **跨节点 RPC**：群 WS `group_ws_rpc_identity`（`clientNodeId` = 本机 node UUID）+ `rpc_call`（`targetNodeId` 定向）。角色 `memberId`=`owner:charname`；世界 `owner:world:worldname`。`GetReply` 参数为 `SerializableRequest` `{ groupId, channelId, charname, replicaUsername, personaForOther? }`；执行端本地 `getChatRequest` 后生成并 mirror DAG。插件仅本机 `session.plugins[replica]`。
 
@@ -176,7 +178,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/messages` | 发 DAG `message`；需 `SEND_MESSAGES` |
+| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES` |
 | GET | `/messages` | 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（当前页消息的 emoji 聚合） |
 | PUT | `/messages/:eventId` | DAG `message_edit`；body `{ content: object }` |
 | DELETE | `/messages/:eventId` | DAG `message_delete` |

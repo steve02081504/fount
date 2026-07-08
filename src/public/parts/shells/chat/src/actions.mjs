@@ -1,15 +1,16 @@
 /**
  * 【文件】src/actions.mjs
  * 【职责】定义 chat shell 可通过 CLI、IPC 与 fount://run 深链调用的命令表 actions，是无 HTTP 时的程序化入口。
- * 【原理】各 action 校验参数后委托 session/crud、messages、partConfig、generation、dm 编排等；默认频道由 getActiveGroupRuntime + getDefaultChannelId 解析；send/tail/trigger-reply 等操作在群 runtime 上读写 chatLog；dm/join 分别调用 orchestrateDmFirstContact / performMemberJoin 完成联邦入群流程。
+ * 【原理】各 action 校验参数后委托 session/crud、partConfig、generation、dm 编排等；默认频道由 getActiveGroupRuntime + getDefaultChannelId 解析；send 经 postChannelMessage（与 Hub 同入口）落 DAG；tail/trigger-reply 等读 runtime / 调 generation；dm/join 分别调用 orchestrateDmFirstContact / performMemberJoin。
  * 【数据结构】actions 对象（键为命令名）、chatInfo（asjson）、message（send）、Serializable 深链字段（introPubKeyHex/dmIntroNonce 等）。
- * 【关联】被 main.mjs handleAction 动态 import；依赖 chat/session、chat/dm、group/queries 等后端模块。
+ * 【关联】被 main.mjs handleAction 动态 import；依赖 channel/postMessage、chat/session、chat/dm、group/queries 等。
  */
+import { postChannelMessage } from './chat/channel/postMessage.mjs'
+import { getState } from './chat/dag/materialize.mjs'
 import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { orchestrateDmFirstContact, performMemberJoin } from './chat/dm/index.mjs'
 import { getWorldName } from './chat/session/channelWorld.mjs'
 import { newGroup } from './chat/session/crud.mjs'
-import { addUserReply } from './chat/session/messages.mjs'
 import {
 	addchar,
 	getCharListOfGroup,
@@ -95,16 +96,26 @@ export const actions = {
 	 */
 	list: ({ user }) => enumerateJoinedFederatedGroups(user),
 	/**
-	 * 向指定的聊天会话发送消息。
+	 * 向指定的聊天会话发送消息（DAG-first，与 Hub 同一入口）。
 	 * @param {object} root0 - 参数对象。
 	 * @param {string} root0.groupId - 目标聊天的ID。
 	 * @param {object} root0.message - 要发送的消息对象。
-	 * @returns {Promise<void>}
+	 * @returns {Promise<{ event: object, fileIds: string[] }>} DAG 消息事件
 	 */
 	send: async ({ groupId, message }) => {
 		if (!groupId || !message) throw new Error('Group ID and message are required for send command.')
-		const channelId = await defaultChannelForGroup(groupId)
-		return addUserReply(groupId, channelId, message)
+		const meta = await getActiveGroupRuntime(groupId)
+		if (!meta) throw new Error('Group not found')
+		const channelId = await getDefaultChannelId(meta.username, groupId)
+		const { state } = await getState(meta.username, groupId)
+		const text = typeof message === 'string'
+			? message
+			: message.content ?? message.text ?? ''
+		return postChannelMessage(meta.username, groupId, channelId, {
+			text: String(text),
+			files: message.files,
+			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
+		})
 	},
 	/**
 	 * 获取聊天会话的最后几条消息。

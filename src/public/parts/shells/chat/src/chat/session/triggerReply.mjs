@@ -1,7 +1,7 @@
 /**
  * 【文件】triggerReply.mjs — 角色回复触发、生成执行与多轮自动对话
  * 【职责】triggerCharReply 启动占位条目与 DAG generating 占位；executeGeneration 调用 char.GetReply 并 finalize；getCharReplyFrequency/handleAutoReply 实现发言顺序与加权轮询；跨机角色走 invokeGroupRpc。
- * 【原理】charReplyInFlight 防同 group+channel+char 并发；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走世界 AfterAddChatLogEntry 或 handleAutoReply；本机 bind 外发 RPC 带 buildSerializableRequest。
+ * 【原理】charReplyInFlight 防同 group+channel+char 并发；流式经 charPreviewStream 发签名 stream_chunk（slices）；结束后走 handleAutoReply（AfterAddChatLogEntry 已收归 DAG persist）；本机 bind 外发 RPC 带 buildSerializableRequest。
  * 【数据结构】charReplyInFlight（Set）、占位 chatLogEntry_t（is_generating、extension.dagEventId/groupChannelId）、replyFrequency 表。
  * 【关联】generationAbort、charPreviewStream、chatRequest、logEntries、dag/chatLogMirror、rpcInvoke。
  */
@@ -261,10 +261,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		const savedEntry = await finalizeEntry(finalEntry, false)
 		const replyFrequency = await getCharReplyFrequency(groupId)
 		const savedChannelId = savedEntry.extension?.groupChannelId || null
-		if (savedEntry.extension.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-			await savedEntry.extension.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, savedChannelId), replyFrequency)
-		else
-			await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.extension.timeSlice.charname ?? null)
+		await handleAutoReply(groupId, savedChannelId, replyFrequency, savedEntry.extension.timeSlice.charname ?? null)
 	}
 	catch (error) {
 		if (error.name === 'AbortError') {

@@ -7,6 +7,8 @@ export {
 	chatLogEntry_t,
 	type chatLog_t,
 	type chatViewer_t,
+	type channelMessageContent_t,
+	type file_t,
 	type ChatLogTimeSlice,
 	type ReplyPreviewUpdater_t,
 	type CharReplyPreviewUpdater_t,

@@ -1,9 +1,9 @@
 /**
  * 【文件】`dag/eventPersist.mjs` — 事件落盘后的副作用管线。
- * 【职责】WebSocket 广播 DAG/频道消息、写频道 `messages.jsonl`、刷新 checkpoint、触发信誉/GSH/自动回复等钩子。
- * 【原理】非消息类事件仅重建 checkpoint；消息类解密展示内容后双播 `dag_event` 与 `channel_message`；信誉与 GSH 轮换在物化状态可用后异步应用。
+ * 【职责】WebSocket 广播 DAG/频道消息、写频道 `messages.jsonl`、刷新 checkpoint、触发信誉/GSH/自动回复与 world AfterAddChatLogEntry。
+ * 【原理】非消息类事件仅重建 checkpoint；消息类解密展示内容后双播 `dag_event` 与 `channel_message`；AfterAddChatLogEntry 在 message 落盘后唯一触发。
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
- * 【关联】`materialize.mjs`、`events/meta.mjs`、`../stream/groupWsHub.mjs`、`../session/autoReply.mjs`。
+ * 【关联】`materialize.mjs`、`events/meta.mjs`、`../stream/groupWsHub.mjs`、`../session/autoReply.mjs`、`../session/chatRequest.mjs`。
  */
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
@@ -44,6 +44,30 @@ const PERSIST_MESSAGE_TYPES = new Set([
 	'vote_cast', 'pin_message', 'unpin_message',
 ])
 
+/**
+ * message 落盘后唯一触发 world AfterAddChatLogEntry。
+ * @param {string} username 用户名
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} signPayload 已签名事件
+ * @param {unknown} displayContent 解密后展示 content（message）或 message_edit 的 newContent
+ * @returns {Promise<void>}
+ */
+async function invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, displayContent) {
+	if (displayContent?.is_generating) return
+	const { resolveWorld } = await import('../session/resolvePart.mjs')
+	const world = await resolveWorld(groupId, channelId, username)
+	const afterHook = world?.interfaces?.chat?.AfterAddChatLogEntry
+	if (!afterHook) return
+	const charname = signPayload.charId
+		|| displayContent?.charId
+		|| null
+	const { getChatRequest } = await import('../session/chatRequest.mjs')
+	const { getCharReplyFrequency } = await import('../session/triggerReply.mjs')
+	const request = await getChatRequest(groupId, charname || undefined, channelId, { replicaUsername: username })
+	const replyFrequency = await getCharReplyFrequency(groupId)
+	await afterHook(request, replyFrequency)
+}
 /**
  * @param {object} signPayload 已落盘事件
  * @returns {string} 目标成员 pubKeyHash（小写 hex），无效时为空串
@@ -235,10 +259,27 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		message: { ...messageLine, content: displayContent },
 	})
 	await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
-	if (signPayload.type === 'message')
+	if (signPayload.type === 'message') {
 		void import('../session/autoReply.mjs').then(({ maybeAutoTriggerCharReply }) =>
 			maybeAutoTriggerCharReply(username, groupId, channelId, displayContent, signPayload),
 		).catch(error => {
 			console.error('maybeAutoTriggerCharReply failed:', error)
 		})
+		try {
+			await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, displayContent)
+		}
+		catch (error) {
+			console.error('AfterAddChatLogEntry failed:', error)
+		}
+	}
+	else if (signPayload.type === 'message_edit') {
+		const edited = displayContent?.newContent ?? displayContent
+		if (edited && !edited.is_generating)
+			try {
+				await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, edited)
+			}
+			catch (error) {
+				console.error('AfterAddChatLogEntry failed:', error)
+			}
+	}
 }

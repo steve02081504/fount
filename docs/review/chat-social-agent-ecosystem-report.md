@@ -2,12 +2,16 @@
 
 生成时间：`2026-07-04`
 
+> **定位修正（2026-07-08）**：本报告早期版本把"runtime 主链收回宿主"当作核心处方，这个表述不准确，已修正。**回复生成流程从来就是 char 的活，从没打算把它从 char 拿走**——`char.GetReply` 是且始终是唯一的回复生成入口。报告指出的真实问题是 `buildPromptStruct → StructCall → tool loop` 工具链在各 char 模板间**重复**，正确处方是把它沉淀为宿主侧**共享库**供 char 主动取用（详见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 的交互拓扑基线与 F1），而不是宿主接管生成。下文相关章节已按此口径改写。
+>
+> 同时补记一般交互拓扑，作为评价三代系统的统一参照：人类通过网页或 CLI 与 persona 交互（读历史 / 写新内容）；world 通过发起 API 调用与 persona、char 交互，并通过 API 调用使用 chat 的存储与 p2p 层；char 内部调用 AI 或插件完成回复。非常规形态（char 不靠 AI、persona 全自动回复、char hack 进别的 char）是被允许的特性。
+
 ## 摘要
 
 这次调研的核心结论有三条：
 
 1. 旧 `chat``C:\Users\steve02081504\Downloads\chat` 不是“简单薄壳”，而是一个 **parts 共治的聊天宿主**。它把 `char / world / persona / plugin` 放在同一层协作，`prompt_struct` 和 `chatReplyRequest` 是这套设计的核心。
-2. 新版 `chat``src/public/parts/shells/chat/` 真正升级的是 **联邦化、可治理、可托管的会话宿主能力**，不是统一的 agent runtime。它把 `group / channel / member / session DAG / federation / remote proxy` 做大了，但 prompt/provider/tool loop 仍大量留在 `char.interfaces.chat.GetReply()` 背后。
+2. 新版 `chat``src/public/parts/shells/chat/` 真正升级的是 **联邦化、可治理、可托管的会话宿主能力**，不是统一的 agent runtime。它把 `group / channel / member / session DAG / federation / remote proxy` 做大了；prompt/provider/tool loop 留在 `char.interfaces.chat.GetReply()` 背后（这个归属是设计意图——回复生成是 char 的活），欠的是把这条工具链沉淀成共享库。
 3. `social``src/public/parts/shells/social/` 更像 **agent 的公开身份层、分发层、发现层、通知层**，不是主 runtime。它适合做 agent 的“前台和广场”，不适合直接取代 `chat` 作为“后台和发动机”。
 
 一句话概括：
@@ -163,25 +167,24 @@
 
 新版 `chat` 的最大问题不是功能少，而是 **升级方向不均衡**。
 
-宿主层做大了，但 agent runtime 没有同步收口到宿主。
+宿主底盘做大了，但 runtime 工具链没有同步沉淀成可复用的公共层。
 
-目前从代码看，真正的主链更像这样：
+目前从代码看，真正的主链是这样（这个分工本身是**设计意图**，不是缺陷）：
 
 1. shell 负责 session、stream、DAG、RPC、federation
 2. shell 构造 `chatReplyRequest`
-3. shell 最终仍然调用 `char.interfaces.chat.GetReply(request)`
-4. prompt 组装、`AIsource.StructCall`、plugin tool loop 仍大量留在 `char` 侧
+3. shell 调用 `char.interfaces.chat.GetReply(request)`——回复生成是 char 的活，就该在这
+4. prompt 组装、`AIsource.StructCall`、plugin tool loop 以复制粘贴形态散落在各 char 模板里——**这才是问题**
 
-这带来几个直接后果：
+工具链不沉淀带来的直接后果：
 
-- 宿主无法统一治理 provider 选择
-- 宿主无法统一治理 tool contract
-- 宿主无法统一治理重试、审计、权限与可观测性
-- parts 扩展点看似统一，实际执行链仍旧分散
+- provider 选择、tool contract、重试/审计/可观测性没有一个“用了就有”的库层落点，每个 char 各写一遍
+- char 模板臃肿，行为一致性靠人肉对齐
+- parts 扩展点看似统一，执行链的公共部分在各 char 里重复漂移
 
-所以，新版 `chat` 不是“已经有统一 agent runtime”，而是：
+所以，新版 `chat` 的准确诊断是：
 
-**宿主已经现代化，runtime 还停留在旧范式。**
+**宿主已经现代化，runtime 工具链还没库化——缺的是共享库，不是宿主接管。**
 
 ## 五、旧 `chat` vs 新版 `chat`
 
@@ -235,19 +238,19 @@
 新版 `chat`：
 
 - `transport / session / federation` 明显更强
-- `prompt / provider / tool / memory` 没有同步统一
-- runtime 仍然分散在 `char` 实现里
+- `prompt / provider / tool / memory` 的公共实现没有同步沉淀
+- runtime 工具链仍以复制粘贴形态分散在各 `char` 实现里（生成责任在 char 是对的，重复实现是不对的）
 
 准确说，新版在聊天模型抽象上不是单向升级，而是：
 
-**底盘升级，模型 runtime 未完成收口。**
+**底盘升级，runtime 工具链未完成库化。**
 
 ## 六、新版 `chat` 的问题分级
 
 ### 架构级问题
 
-1. **runtime 归属分裂**  
-   shell 管 session/RPC/stream/DAG，`char` 还在管 prompt/provider/tool loop。
+1. **runtime 工具链未库化**  
+   shell 管 session/RPC/stream/DAG，`char` 管 prompt/provider/tool loop——归属本身正确（回复生成是 char 的活），问题在这条工具链没有共享库形态，各 char 模板重复实现。
 
 2. **上下文真相分裂**  
    DAG、sidecar、runtime cache、persisted prelude 都在承担一部分上下文权威。
@@ -277,8 +280,8 @@
 1. **恢复 parts 的对称协作地位**  
    `char / world / persona / plugin` 应重新更接近同层一等公民，而不是能力边界参差不齐。
 
-2. **把 runtime 主链收回宿主**  
-   `buildPromptStruct -> AIsource.StructCall -> ReplyHandler/GetReplyPreviewUpdater` 这条链，不应长期躲在 `char` 模板里。
+2. **把 runtime 主链沉淀为宿主侧共享库**  
+   `buildPromptStruct -> AIsource.StructCall -> ReplyHandler/GetReplyPreviewUpdater` 这条链，不应以复制粘贴形态散落在各 `char` 模板里——做成 shell 出品的库，char 主动 import 组合进自己的 `GetReply`。生成责任不动，重复代码消失。
 
 3. **恢复更清晰的会话心智模型**  
    新版可以保留 DAG / federation / snapshot，但最好把“哪一层是真正的会话真相”收得更明确。
@@ -404,7 +407,7 @@
 
 但如果只问一个问题：
 
-**“谁适合做主 agent runtime？”**
+**“谁适合做 agent 的主宿主？”**
 
 目前答案仍然是：
 
@@ -412,8 +415,8 @@
 - 更不是 `social`
 - 只能是新版 `chat`
 
-前提是：**新版 `chat` 必须把现在仍分散在 `char` 里的 runtime 主链真正收回来。**
+前提是：**新版 `chat` 要把现在以复制粘贴形态散落在各 `char` 模板里的 runtime 工具链沉淀成共享库。**
 
-否则它会长期停在一个尴尬状态：
+注意分寸：回复生成本身留在 char——那是 char 的活，agent 的灵魂**就该**长在各个 char 里。宿主要提供的是让每个灵魂不必重新发明躯干的库，而不是把灵魂收编。否则新版 `chat` 会长期停在一个尴尬状态：
 
-**底盘很大，宿主很强，但灵魂仍散落在各个 char 里。**
+**底盘很大，宿主很强，但每个 char 都在重复造同一副骨架。**

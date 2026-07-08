@@ -2,6 +2,10 @@
 
 生成时间：`2026-07-04`
 
+> **状态更新（2026-07-08）**：本设计的第一、二阶段已随 M1 完工——`chatViewer_t` 与 `WorldAPI.chat.GetChatLogForViewer` 已进 decl（`src/decl/chatLog.ts` / `src/decl/worldAPI.ts`），`applyWorldChatLogView` 落在 `src/chat/session/viewerLog.mjs`，agent 路径已走统一分发，`remoteWorldProxy` / `rpcDispatcher` 已补 RPC case，回归测试在 `test/pure/viewer_log_dispatch.test.mjs` 与 `test/integration/viewer_chatlog_parity.test.mjs`。落地时按计划**未新增** `GetChatLogForUsername`（仓库无存量实现，跳过过渡态）。第三阶段（human 对称读口 view-log）排在 M3。
+>
+> 另注两点边界，避免误读本设计：其一，viewer 对称只管"谁看到什么"，**回复生成始终是 char 的活**，world 通过 API 调用喂视图/贡献 prompt，与 char 的生成职责互不侵犯（见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 交互拓扑基线）。其二，`GetChatLogForViewer` 的执行位置取决于 world 的分布形态（[world-distribution-spec.md](../design/world-distribution-spec.md)）：hosted 下由权威主机出所有 viewer 的视图（主机知道全部真相）；local / replicated 下每台机器给自己托管的 viewer 出视图。
+
 ## 摘要
 
 当前 `world` 能正式改写 agent 侧 `chat_log`，但 human 侧主读路径并不会经过同一套 world 逻辑。这导致系统语义上默认“人类看原始物化结果，agent 看被世界加工过的视图”，属于对 human 的隐性优待。

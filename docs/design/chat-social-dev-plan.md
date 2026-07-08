@@ -2,22 +2,48 @@
 
 生成时间：`2026-07-08`
 
+> 本文档只包含**基线与规划**，不维护实施状态。各批次做没做、做到哪，以仓库代码与各 shell 测试为准，不要指望本文档同步。
+
 ## 定位与输入
 
-本文档是 chat / social 两个 shell 的中期开发总纲，整合以下四份调研的结论，并以 `2026-07-08` 的代码现状重新核实过每一条事实：
+本文档是 chat / social 两个 shell 的中期开发总纲，整合以下调研与设计的结论，并以 `2026-07-08` 的代码现状重新核实过每一条事实：
 
 - [chat-social-agent-ecosystem-report.md](../review/chat-social-agent-ecosystem-report.md)：三代 chat/social 生态定位对比
 - [world-viewer-chatlog-parity.md](../review/world-viewer-chatlog-parity.md)：world viewer 对称模型设计
 - [persona-human-io-parity-design.md](../review/persona-human-io-parity-design.md)：persona 劫持真人 I/O 设计
 - [social-chat-production-readiness.md](../review/social-chat-production-readiness.md)：生产成熟度评估
+- [world-distribution-spec.md](world-distribution-spec.md)：world 分布形态规范（去中心化 WorldAPI）
 
 一句话总纲：
 
-**chat 的底盘（联邦/DAG/加密/归档）已经成型，接下来的主线是把"视角"（world/persona/viewer）和"运行时"（prompt/provider/tool loop）收回宿主；social 的主线是把读路径从"现算扫描"升级为"持久索引"，并补齐治理与远端 agent 接纳。**
+**chat 的底盘（联邦/DAG/加密/归档）已经成型，接下来的主线是把"视角"（world/persona/viewer）收回宿主、把 world 从单主机托管解放为可声明的分布形态、把 runtime 工具链沉淀成 char 可复用的宿主侧共享库（回复生成本身始终是 char 的活）；social 的主线是把读路径从"现算扫描"升级为"持久索引"，并补齐治理与远端 agent 接纳。**
 
 ---
 
-## 一、现状快照（已核实）
+## 〇、交互拓扑基线（谁和谁说话）
+
+所有工作流的设计都以下面这条**一般交互逻辑**为基线。它描述的是常规形态下各方的职责边界：
+
+- **人类 ↔ persona**：人类通过网页或 CLI 与 persona 交互——读取历史、写入新内容。persona 是真人 I/O 的一等中间层（工作流 B 就是把这条拓扑落实为服务端语义），human UI 不是绕过 part 系统的裸通道。
+- **world → persona / char**：world 通过发起 API 调用与 persona 和 char 交互（喂视图 `GetChatLogForViewer`、贡献 prompt、裁决发言顺序、代发回复 `GetCharReply` 等）。
+- **world → chat 存储 / p2p 层**：world 通过发起 API 调用使用 chat 的存储与 p2p 层（工作流 G 的 `WorldChatHost`：共享状态经 DAG、私有数据落本地、经统一写路径投递消息/触发回复）。
+- **char 内部**：char 调用 AI 或插件完成回复。**回复生成流程从始至终就是 char 的活，从没打算把它从 char 拿走**——shell 提供的是宿主底盘和可复用的 runtime 库，不是接管。
+
+不一般的情况是**被允许的特性，不是需要修复的偏差**：
+
+- char 可以完全不依靠 AI（规则机器人、echo、桥接外部系统）；
+- persona 可以全自动回复（human 席位后面根本没有人）；
+- char 可以 hack 进别的 char 里为所欲为。
+
+系统不预设"human 席位后面必须是真人、char 席位后面必须是 AI"。接口约定的是**席位的职责**（谁产出回复、谁过滤视图），不是席位背后的实现方式。
+
+为了让这条拓扑**无例外地恒成立**，user 未设置 persona、chat 未绑定 world 时，shell 以内置极小实现凑数（D6）：钩子全透传的空 persona / 空 world，而不是满地 null 判断。
+
+---
+
+## 一、基线快照（规划撰写时点核实，冻结不更新）
+
+> 本节是规划立项时的动机记录，**冻结在撰写时点**：某行描述的问题被后续批次解决后，本节不改。判断"这条还是不是现状"请直接看代码。
 
 ### chat
 
@@ -29,7 +55,9 @@
 | `member_roles` 在 `chatReplyRequest` 中**恒为空数组**，导致 `prompt_struct` 里基于角色的 visibility 过滤实际无效 | `chatRequest.mjs` L125/L159、`src/prompt_struct/index.mjs` L209 |
 | `userAPI.chat.GetChatLog` 悬空零调用；`WorldAPI.chat.GetCharReply` 悬空零调用 | `src/decl/userAPI.ts`、`src/decl/worldAPI.ts` |
 | `remoteWorldProxy` 缺 `GetPrompt` / `TweakPrompt` / `GetGroupPrompt` / `GetCharReply` / `MessageEditing` | `src/chat/federation/remoteWorldProxy.mjs` |
-| runtime 主链（`buildPromptStruct` → `AIsource.StructCall` → plugin `ReplyHandler` loop）仍在 char 模板侧；shell 只调 `char.GetReply(request)` | `src/chat/session/triggerReply.mjs` L227、char 模板 `main.mjs` |
+| world 绑定强制 `homeNodeHash` 单主机托管，主机离线则全群 world 钩子 `REMOTE_UNAVAILABLE` | `src/chat/dag/sessionEventValidate.mjs`、`src/chat/session/resolvePart.mjs` |
+| 未绑定 world / 未设置 persona 时，管线各处以 `world?.interfaces?.chat?.X` / persona 判空特判绕过，"没有世界/人格"是满地 null 分支而非一个极小实现 | `resolvePart.mjs`、`chatRequest.mjs`、`eventPersist.mjs` 等 |
+| runtime 主链（`buildPromptStruct` → `AIsource.StructCall` → plugin `ReplyHandler` loop）在 char 模板侧、shell 只调 `char.GetReply(request)`——归属正确（回复生成是 char 的活），问题是这条链以复制粘贴形态在各模板重复，待 F1 库化 | `src/chat/session/triggerReply.mjs` L227、char 模板 `main.mjs` |
 | 存在**双写路径**：Hub `postChannelMessage`（DAG-first）与 session `addUserReply`/`addChatLogEntry`（chatLog-first + mirror），钩子与自动回复触发点不一致 | `postMessage.mjs` vs `src/chat/session/messages.mjs` + `chatLogAppend.mjs` |
 | 频道 HTTP edit/delete 走 DAG mutation，不经过 session 层的 world/user `MessageEdit/Delete` 钩子——同一"编辑消息"有两套语义 | `channelMessages.mjs` vs `session/messages.mjs` |
 | 搜索是纯前端子串过滤，无后端索引 | `public/hub/wireHeaderEvents.mjs`、`channelMessageStore.mjs` |
@@ -101,7 +129,7 @@ viewer 化本身依赖角色语义可用。DAG 物化的 `state.members[memberKe
 
 ## 三、工作流 B：Persona 加固（human I/O parity）
 
-目标：persona 从"给 AI 看的用户设定 + 展示身份"升级为**真人输入/输出链路的一等中间层**。方案采用 [persona-human-io-parity-design.md](../review/persona-human-io-parity-design.md)，依赖工作流 A 的 viewer 抽象。
+目标：persona 从"给 AI 看的用户设定 + 展示身份"升级为**真人输入/输出链路的一等中间层**——这正是交互拓扑基线里"人类通过网页或 CLI 和 persona 交互"的服务端落点。persona 全自动回复（席位后面没有人）是被允许的形态，钩子设计不得假设"human 输入必来自真人"。方案采用 [persona-human-io-parity-design.md](../review/persona-human-io-parity-design.md)，依赖工作流 A 的 viewer 抽象。
 
 ### B1. 输入侧：`BeforeUserSend`
 
@@ -202,6 +230,20 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 - 补 `GetPrompt` / `TweakPrompt` / `GetGroupPrompt` / `GetChatLogForViewer` 的 RPC 代理与 `rpcDispatcher` 对应 case，使远端 world 在 prompt 组装阶段成为完整参与者（这是"parts 联邦能力对称"的 world 半边；plugin/persona 的联邦对称属于 F 期）。
 - `MessageEditing` 视 D1 合并后的钩子布局决定是否代理。
+- 注意与工作流 G 的关系：这些代理只服务 hosted 形态；local / replicated world 本机执行，不走 RPC。
+
+### D6. 内置极小 persona / world（null-object 兜底）
+
+现状：未绑定 world / 未设置 persona 时，`resolveWorld` 返 null、persona 缺位，管线各处以 `world?.interfaces?.chat?.X` 可选链和 persona 判空绕过。交互拓扑基线说"人类通过 persona 交互、world 参与视图与 prompt"，null 分支让这条拓扑处处留例外。
+
+方案：chat shell 内置两个极小实现凑数，解析时以它们代替 null：
+
+- **极小 world**：`distribution: 'local'`（天然无主机依赖），钩子全透传——`GetChatLogForViewer` 返回原 log，prompt 贡献为空。"没有世界"也是一种世界：空规则。
+- **极小 persona**：`BeforeUserSend` 透传、`GetChatLogForViewer` 恒等、`GetPrompt` 空。human 席位永远经过一个 persona，哪怕是什么都不做的那个。
+
+收益：拓扑无例外、钩子调用点删光判空特判（简洁高效优先，不留防御性分支）；viewer 管线（A3/B2）可以假设 world/persona 恒存在，物化函数少一半条件路径。
+
+注意：极小实现是 shell 内部对象，不是磁盘上的 part——不参与安装/卸载，不进 bind 事件，`resolveWorld`/persona 解析在"未绑定"时直接返回它。
 
 ---
 
@@ -236,23 +278,51 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 ---
 
-## 七、工作流 F：未来开发规划（方向性）
+## 七、工作流 G：world 分布形态（去中心化 WorldAPI）
+
+完整设计见 [world-distribution-spec.md](world-distribution-spec.md)。这里只放结论与排期。
+
+现状问题：world 只有"单主机托管"一种存在方式（bind 强制 `homeNodeHash`，非本机一律 RPC 代理），**world 主机不在线，全群 world 钩子瘫痪**——即使这个 world 干的活（如默认 fount world 的"总结上文 + 前端渲染知识"）本质是本机语义、完全允许不同机子运行不同内容。
+
+方案：world 显式声明分布形态 `distribution: 'local' | 'replicated' | 'hosted'`（缺省 `hosted`，存量零破坏）：
+
+| 形态 | 语义 | 典型 |
+| --- | --- | --- |
+| `local` | 每 replica 本机执行，无共享状态，各机内容允许不同 | 默认 fount world |
+| `replicated` | 每 replica 本机执行；公共状态经 DAG `world_op` 事件共识（确定性折叠、LWW KV + 原始 op log），私有数据（角色背包）本地处理 | 规则型 RPG |
+| `hosted` | 单一权威主机，现状语义原样保留 | 狼人杀 / 跑团单一 DM（隐藏真相必须单点） |
+
+配套新增 `WorldChatHost`：world 对 chat 存储 / p2p 层的正式调用面（`state` DAG 共享状态、`localData` 本机私有、`postSystemMessage`/`triggerCharReply` 走统一写路径），补齐交互拓扑基线里"world → chat 存储 / p2p 层"这条目前没有正式接口的通道。
+
+工作项（测试随批走，不单列）：
+
+- **G1** 声明与分发：decl 字段 + bind 事件校验分支 + `resolveWorld` 三分支（未绑定/未安装回退 D6 的内置极小 world）；fount world 标 `local`。配套测试：local 本机执行与未安装回退、hosted 回归（缺省 distribution 走原路径）。
+- **G2** 状态通道：`world_op` 事件 + 通用 reducer + `WorldChatHost` + `ChatHostConnected` 钩子 + 入站尺寸清扫。配套测试：replicated 双 replica 收敛、越权 op 折叠层忽略、超限 payload 入站拒收。
+
+依赖极少（仅依赖 D6 的极小 world 兜底，不依赖 A-E 其他项；`resolveWorld` 与 D1 写路径改动无交集），排为 M7/M8，可提前与 M3+ 并行。
+
+---
+
+## 八、工作流 F：未来开发规划（方向性）
 
 按依赖顺序排列，均为 A-E 完成后的下一阶段。
 
-### F1. runtime 主链收口宿主
+### F1. runtime 工具链沉淀为宿主侧共享库
 
-生态报告的核心判断：宿主已现代化，runtime 还在 char 模板里。目标是把 `buildPromptStruct → AIsource.StructCall → plugin ReplyHandler loop` 这条链收回 shell。
+先立边界：**回复生成是 char 的活，`char.GetReply` 是且始终是唯一的回复生成入口，shell 不接管、不代跑。** 生态报告里"runtime 主链收回宿主"的旧表述不准确，已按此修正。
 
-- 路线：shell 提供默认 runtime 执行器（`src/chat/session/` 下），`char.GetReply` 变为可选覆盖——char 未实现时 shell 用 char 声明的 AIsource + prompt 接口直接跑默认链；实现了则保持完全控制权。
-- 收益：宿主统一治理 provider 选择、tool contract、重试/审计/可观测性；char 模板大幅缩水（easychar 模板即是默认链的雏形）。
+真正要做的是消除**重复**而不是转移**责任**：`buildPromptStruct → AIsource.StructCall → plugin ReplyHandler loop` 这条链目前以复制粘贴形态散落在各 char 模板里，应沉淀为 shell 出品的共享 runtime 库（`src/chat/session/` 或独立 lib）：
+
+- char 主动 import / 组合这套库来实现自己的 `GetReply`（easychar 模板即是这条默认链的雏形，改为薄薄一层对库的调用）；不想用的 char 继续从零自建，完全控制权不变。
+- provider 选择、tool contract、重试/审计/可观测性做成**库层能力**，char 用了库就自然获得，而不是宿主强制治理。
+- 收益：char 模板大幅缩水、行为一致性提升，且不改变"char 对自己的回复负全责"的架构事实。
 - 这是大改动，单独立项设计，不与 A-E 混做。
 
 ### F2. parts 联邦对称
 
 - persona 跨节点从"特判透传"（`extension.otherPersona`）升级为正式 remote persona proxy。
 - plugin 联邦参与（至少 prompt 贡献侧）。
-- 依赖 F1：runtime 收口后 shell 才有统一位置代理这些调用。
+- 依赖 F1：共享 runtime 库普及后，prompt 组装有统一的库层位置挂这些远端代理（而不是每个 char 各接一遍）。
 
 ### F3. social ↔ chat 结构化桥
 
@@ -279,7 +349,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 ---
 
-## 八、里程碑与依赖
+## 九、里程碑与依赖
 
 ```mermaid
 graph LR
@@ -287,24 +357,28 @@ graph LR
 	A --> B[B: persona I/O]
 	D1[D1: 统一写路径] --> B
 	A --> C1[C1: Hub 切 view-log]
+	D6[D6: 极小 persona/world] --> G1[G1: world 分布形态声明]
 	E1[E1: 未读/通知] --> C[C: 前端改进]
 	E2[E2: 搜索索引] --> C
-	D[D: 代码清理] --> F1[F1: runtime 收口]
+	G1 --> G2[G2: world_op + WorldChatHost]
+	D[D: 代码清理] --> F1[F1: runtime 共享库]
 	F1 --> F2[F2: parts 联邦对称]
 	F1 --> F3[F3: social-chat 桥]
 	F4[F4: 远端 agent 接纳]
 ```
 
-建议批次（每批可独立合入、独立验收）：
+建议批次（每批可独立合入、独立验收；完成状态看代码，本表不维护）：
 
 | 批次 | 内容 | 说明 |
 | --- | --- | --- |
 | M1 | A4 + A1 + A2（模型层 + agent 路径统一分发） | 小步、无行为破坏，老 world 兼容 |
 | M2 | B1（BeforeUserSend）+ D1（统一写路径） | 两者动同一片代码，一起做省两遍手术 |
-| M3 | A3 + B2（materialize 层 + view-log API + persona 过滤）+ C1.1（Hub 切读口） | viewer 化闭环 |
+| M3 | A3 + B2（materialize 层 + view-log API + persona 过滤）+ D6（极小 persona/world 兜底） + C1.1（Hub 切读口） | viewer 化闭环；D6 让物化层免判空 |
 | M4 | B3 + D2 + D3 + D4 + D5（edit/delete 钩子、悬空清理、目录整理、文档对齐、remoteWorldProxy 补齐） | 清理批 |
 | M5 | E1 + C 相关前端（未读/通知 + badge/乐观更新/WS 增量） | 产品化第一批 |
 | M6 | E2 + E3 + E4（搜索索引、治理最小集、live 测试） | 产品化第二批 |
+| M7 | G1（world 分布形态声明与分发） | 依赖 D6；与 M3-M6 无文件冲突，可提前并行 |
+| M8 | G2（world_op + WorldChatHost） | 依赖 M7 |
 | F 期 | F1 → F2/F3，F4/F5 并行 | 各自单独立项设计 |
 
 ### 测试策略

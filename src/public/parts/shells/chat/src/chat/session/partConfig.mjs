@@ -31,6 +31,7 @@ import {
 	sessionHasChar,
 } from './dagSession.mjs'
 import { buildChatLogEntryFromCharReply } from './logEntries.mjs'
+import { resolveWorld } from './resolvePart.mjs'
 import {
 	getGroupRuntime,
 	getSessionCharNames,
@@ -142,8 +143,11 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 
 	if (!worldname) return null
 
-	const { world } = chatMetadata.LastTimeSlice
+	// LastTimeSlice.world 只反映默认频道；问候必须按 channelId 解析
+	const world = await resolveWorld(groupId, channelId, username)
 	if (!world) return null
+	chatMetadata.LastTimeSlice.world = world
+	chatMetadata.LastTimeSlice.world_id = worldname
 
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
 	if (world.interfaces.chat.GetGreeting && !chatMetadata.chatLog.length)
@@ -168,7 +172,9 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}
-	catch {
+	catch (error) {
+		if (!isExpectedTeardownRace(error))
+			console.error('setWorld greeting failed:', error)
 		return null
 	}
 }
@@ -191,25 +197,22 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice) {
 	const char = timeSlice.chars[charname]
 	if (!char) return null
-	const getGreeting = timeSlice.greeting_type === 'single'
-		? char.interfaces?.chat?.GetGreeting
-		: timeSlice.greeting_type === 'group'
-			? char.interfaces?.chat?.GetGroupGreeting
-			: null
+	const getGreeting = timeSlice.greeting_type === 'group'
+		? char.interfaces?.chat?.GetGroupGreeting || char.interfaces?.chat?.GetGreeting
+		: char.interfaces?.chat?.GetGreeting
 	if (!getGreeting) return null
 	const request = await getChatRequest(groupId, charname, await getDefaultChannelId(username, groupId), { replicaUsername: username })
 	try {
 		const result = await getGreeting(request, 0)
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
-		if (greetingEntry.extension.timeSlice?.greeting_type) {
-			greetingEntry.extension = {
-				...greetingEntry.extension || {},
-				isGreeting: true,
-				greetingType: greetingEntry.extension.timeSlice.greeting_type,
-			}
-			delete greetingEntry.extension.timeSlice.greeting_type
+		greetingEntry.extension = {
+			...greetingEntry.extension || {},
+			isGreeting: true,
+			greetingType: timeSlice.greeting_type || greetingEntry.extension?.timeSlice?.greeting_type,
 		}
+		if (greetingEntry.extension.timeSlice?.greeting_type)
+			delete greetingEntry.extension.timeSlice.greeting_type
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}

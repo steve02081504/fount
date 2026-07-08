@@ -1,7 +1,7 @@
 /**
  * 【文件】chatLogAppend.mjs — 聊天日志追加与 DAG 同步入口
- * 【职责】将 chatLogEntry 写入内存元数据、持久化 context sidecar；同步到 DAG；角色消息发系统通知；触发世界 AfterAddChatLogEntry 或自动回复频率链。
- * 【原理】appendLogCore 优先走 world.interfaces.chat.AddChatLogEntry，否则 push 到 chatLog 并更新 timeLines/LastTimeSlice；addChatLogEntry 完整路径含成就、通知与后续钩子；addChatLogEntryImport 跳过广播与自动回复，供批量导入。
+ * 【职责】将 chatLogEntry 写入内存元数据、持久化 context sidecar；同步到 DAG；角色消息发系统通知。
+ * 【原理】appendLogCore 恒定 push 到 chatLog（内存 = hydration 缓存）；world AddChatLogEntry/AfterAddChatLogEntry 改由 messageCommit / broadcastAndPersist 唯一触发。
  * 【数据结构】chatMetadata.chatLog、entry.extension.groupChannelId、侧车 channelId。
  * 【关联】persistence、chatRequest、triggerReply、dag/chatLogMirror、broadcast（间接）、generation 再导出。
  */
@@ -20,9 +20,7 @@ import {
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar } from '../lib/contextSidecar.mjs'
 
-import { getChatRequest } from './chatRequest.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
-import { getCharReplyFrequency } from './triggerReply.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /**
@@ -33,10 +31,7 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  * @returns {Promise<void>}
  */
 async function appendLogCore(groupId, chatMetadata, entry) {
-	if (entry.extension.timeSlice.world?.interfaces?.chat?.AddChatLogEntry)
-		await entry.extension.timeSlice.world.interfaces.chat.AddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), entry)
-	else
-		chatMetadata.chatLog.push(entry)
+	chatMetadata.chatLog.push(entry)
 
 	const sidecarChannel = await resolveGroupChannelId(chatMetadata.username, groupId, entry.extension?.groupChannelId)
 	await persistLogContextSidecar(chatMetadata.username, groupId, sidecarChannel, entry)
@@ -47,7 +42,7 @@ async function appendLogCore(groupId, chatMetadata, entry) {
 }
 
 /**
- * 追加聊天日志并触发 DAG 同步、通知与自动回复。
+ * 追加聊天日志并同步 DAG（world 钩子在 commit / persist 层触发）。
  * @param {string} groupId 群 ID
  * @param {object} entry 日志条目
  * @returns {Promise<object>} 写入后的条目
@@ -73,10 +68,6 @@ export async function addChatLogEntry(groupId, entry) {
 				url: `/parts/shells:chat/hub/#group:${groupId}:default`,
 			},
 		}, `/parts/shells:chat/hub/#group:${groupId}:default`)
-
-	const replyFrequency = await getCharReplyFrequency(groupId)
-	if (entry.extension.timeSlice.world?.interfaces?.chat?.AfterAddChatLogEntry)
-		await entry.extension.timeSlice.world.interfaces.chat.AfterAddChatLogEntry(await getChatRequest(groupId, undefined, entry.extension?.groupChannelId || null), replyFrequency)
 
 	return entry
 }

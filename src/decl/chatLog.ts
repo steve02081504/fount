@@ -102,6 +102,32 @@ export type chatViewer_t = {
 }
 
 /**
+ * 频道消息附件（发帖 / BeforeUserSend）。
+ */
+export type file_t = {
+	name?: string
+	mime_type?: string
+	buffer: Buffer | string
+	description?: string
+}
+
+/**
+ * 频道消息 content（与 `public/shared/channelContent.mjs` 对齐；允许扩展字段）。
+ */
+export type channelMessageContent_t = {
+	type: 'text' | 'sticker' | 'vote' | 'group_invite'
+	content?: string
+	content_for_show?: string
+	content_for_edit?: string
+	displayName?: string
+	displayAvatar?: string
+	fileIds?: string[]
+	fileCount?: number
+	isAutoTrigger?: boolean
+	[key: string]: unknown
+}
+
+/**
  * 聊天回复请求（Part API / GetReply 上下文）。
  */
 export class chatReplyRequest_t {

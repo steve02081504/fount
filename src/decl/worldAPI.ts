@@ -141,14 +141,14 @@ export class WorldAPI_t {
 			 */
 			GetChatLogForCharname?: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
 			/**
-			 * 添加聊天记录条目。
+			 * 消息落 DAG 前：可改写 entry 内容，或抛错/返回含 reject 语义拒绝（与 BeforeUserSend 对称的 world 侧）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {chatLogEntry_t} entry - 聊天记录条目。
-			 * @returns {Promise<void>}
+			 * @param {chatLogEntry_t} entry - 拟落盘的聊天记录条目（可就地/返回改写）。
+			 * @returns {Promise<chatLogEntry_t | void>} - 改写后的条目；void 表示使用入参 entry。
 			 */
-			AddChatLogEntry?: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => Promise<void>
+			AddChatLogEntry?: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => Promise<chatLogEntry_t | void>
 			/**
-			 * 添加聊天记录条目后调用。
+			 * 消息落 DAG 并 persist 之后调用（唯一触发点在 broadcastAndPersist）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @param {object[]} freq_data - 频率数据。
 			 * @returns {Promise<void>}

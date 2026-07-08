@@ -2,6 +2,10 @@
 
 生成时间：`2026-07-04`
 
+> **注记（2026-07-08 时点）**：`BeforeUserSend` 已进 `src/decl/userAPI.ts` 声明；接入统一写路径属 dev plan 批次 M2，输出侧 viewer 过滤（persona `GetChatLogForViewer`）与 edit/delete 前置钩子属 M3 / M4。实施进度以代码为准，本文档不追踪。
+>
+> 定位对齐（见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 交互拓扑基线）：本设计就是"人类通过网页或 CLI 和 persona 交互（读取历史或写入新内容）"这条拓扑的服务端落点——persona 是真人 I/O 的一等中间层。注意两个不假设：不假设 human 席位后面是真人（**persona 全自动回复是被允许的特性**，`BeforeUserSend` 的语义是"human 席位的发送前策略"而非"真人验证"）；不侵犯 char 的职责（persona 只管 user 侧 I/O 与主观视图，回复生成是 char 的活）。
+
 ## 摘要
 
 当前 `persona` 在 `chat` 里的职责主要是：

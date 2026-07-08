@@ -1,18 +1,18 @@
 /**
  * 【文件】`dag/chatLogMirror.mjs` — 内存 chatLog 与 DAG 双向镜像。
  * 【职责】将用户/角色聊天条目同步为 `message`/`message_edit`/`message_delete` 事件；支持流式占位与终稿编辑链。
- * 【原理】非流式直接 `message`；流式先 `is_generating` 占位再 `message_edit` 终稿或 `message_delete` 取消；超大正文转 `content_ref` 外置存储；`extension.dagEventId` 关联 chatLog 行与 DAG 节点。
- * 【数据结构】DAG `content` 含 `chatLogEntryId`、`sessionSnapshot`、`content_ref` 等；镜像上下文含 `channelIdForDag`、`sender`（pubKeyHash）。
- * 【关联】`append.mjs`、`lifecycle.mjs`、`hydration.mjs`、`../session/sessionSnapshot.mjs`。
+ * 【原理】非流式与 greeting 经 `commitChannelMessageEvent` 落盘（world AddChatLogEntry pre-DAG）；流式占位 skipWorldHook 后由 finalize 再钩；终稿 `message_edit`；超大正文转 `content_ref`；`extension.dagEventId` 关联 chatLog 与 DAG。
+ * 【数据结构】canonical DAG `content`：全员 displayName/displayAvatar；生成类另附 chatLogEntryId、sessionSnapshot；亦可 `content_ref`。
+ * 【关联】`../channel/messageCommit.mjs`、`append.mjs`、`lifecycle.mjs`、`hydration.mjs`、`../session/sessionSnapshot.mjs`。
  */
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
 import { channelMessageAgentText, textChannelContent } from '../../../public/shared/channelContent.mjs'
+import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { isExpectedTeardownRace } from '../lib/expectedTeardownRace.mjs'
-import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
 import { getStorageForGroup } from '../storage.mjs'
 
 
@@ -78,14 +78,6 @@ async function resolveMirrorContext(entry, username, groupId) {
 }
 
 /**
- * @param {object} entry 聊天条目
- * @param {string} eventId DAG 事件 id
- */
-function withDagEventId(entry, eventId) {
-	entry.extension = { ...entry.extension || {}, dagEventId: eventId }
-}
-
-/**
  * §6.4 / §13：流式开始 — DAG `message` 占位（`is_generating: true`）。
  * @param {string} groupId 聊天 ID
  * @param {object} entry 占位条目（须已有 `id`）
@@ -96,28 +88,25 @@ export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
 	try {
 		if (!username || !entry?.id) return null
 		if (entry.extension.timeSlice?.greeting_type) return null
-		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
-		const sessionSnapshot = await exportSessionSnapshot(username, groupId, channelIdForDag)
-		const event = await appendSignedLocalEvent(username, groupId, {
-			type: 'message',
+		const { channelIdForDag, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
+		const event = await commitChannelMessageEvent({
+			username,
+			groupId,
 			channelId: channelIdForDag,
 			timestamp,
 			charId,
+			entry,
+			origin: 'char',
+			skipWorldHook: true,
 			content: {
 				type: 'text',
 				content: '',
-				chatLogEntryId: entry.id,
 				role: entry.role || 'char',
 				is_generating: true,
-				charOwner: sender,
 				charId,
-				sessionSnapshot,
 			},
 		})
-		if (event?.id) {
-			withDagEventId(entry, event.id)
-			return event.id
-		}
+		if (event?.id) return event.id
 	}
 	catch (error) {
 		console.error('appendDagGeneratingPlaceholder failed:', error)
@@ -222,8 +211,19 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 			await cancelGeneratingPlaceholder(groupId, entry, username, targetId)
 			return
 		}
-		const { channelIdForDag, sender } = await resolveMirrorContext(entry, username, groupId)
-		const newContent = await buildFinalMessageContent(username, groupId, entry, text, sender)
+		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
+		let newContent = await buildFinalMessageContent(username, groupId, entry, text, sender)
+		const { runWorldAddChatLogEntryHook } = await import('../channel/messageCommit.mjs')
+		const hooked = await runWorldAddChatLogEntryHook(
+			username,
+			groupId,
+			channelIdForDag,
+			newContent,
+			entry,
+			charId || entry.extension?.timeSlice?.charname || null,
+		)
+		newContent = hooked.content
+		if (typeof hooked.entry?.content === 'string') entry.content = hooked.entry.content
 		await appendFinalEditWithRetry(username, groupId, {
 			type: 'message_edit',
 			channelId: channelIdForDag,
@@ -252,22 +252,25 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 export async function syncChatLogEntryToDag(groupId, entry, username) {
 	try {
 		if (entry.is_generating) return
-		if (entry.extension.timeSlice?.greeting_type) return
 		if (!username) return
 		const text = entryContentToMirrorText(entry)
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
 		const content = await buildFinalMessageContent(username, groupId, entry, text, sender)
-		content.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelIdForDag)
-		const event = await appendSignedLocalEvent(username, groupId, {
-			type: 'message',
+		const isGreeting = !!entry.extension?.isGreeting
+			|| !!entry.extension?.greetingType
+			|| !!entry.extension.timeSlice?.greeting_type
+		await commitChannelMessageEvent({
+			username,
+			groupId,
 			channelId: channelIdForDag,
-			timestamp,
-			charId,
 			content,
+			charId,
+			timestamp,
+			entry,
+			origin: isGreeting ? 'greeting' : entry.role === 'char' ? 'char' : 'human',
 		})
-		if (event?.id) withDagEventId(entry, event.id)
 	}
 	catch (error) {
 		if (!isExpectedTeardownRace(error))

@@ -1,4 +1,4 @@
-import { chatReplyRequest_t, chatReply_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReplyRequest_t, chatReply_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -87,6 +87,24 @@ export class UserAPI_t {
 			 * @returns {Promise<void>} - 无返回值。
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
+			/**
+			 * 真人发送前拦截：可改写 input/files，或通过 reject 拒绝（服务端语义）。
+			 * @param {object} ctx - 发送上下文。
+			 * @returns {Promise<{ input?: channelMessageContent_t, files?: file_t[], reject?: string } | undefined>} - 改写/拒绝；undefined 透传。
+			 */
+			BeforeUserSend?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				input: channelMessageContent_t
+				files?: file_t[]
+			}) => Promise<{
+				input?: channelMessageContent_t
+				files?: file_t[]
+				reject?: string
+			} | undefined>
 			/**
 			 * 获取聊天记录。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

@@ -49,6 +49,7 @@ export function invalidateGroupRuntime(groupId) {
 export async function buildTimeSliceFromSession(session, replicaUsername, groupId, channelId) {
 	const slice = new timeSlice_t()
 	const localNode = getLocalNodeHash()
+	const effectiveChannelId = channelId || 'default'
 
 	/**
 	 * @param {string} charname 角色名
@@ -65,9 +66,8 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 	for (const [charname, bind] of Object.entries(session?.chars || {}))
 		await bindChar(charname, bind)
 
-	const worldBind = channelId && session?.channelWorlds?.[channelId]
-		? session.channelWorlds[channelId]
-		: session?.world
+	const worldBind = session?.channelWorlds?.[effectiveChannelId]
+		|| session?.world
 	if (worldBind?.worldname && worldBind.homeNodeHash === localNode) {
 		const owner = worldBind.ownerUsername || replicaUsername
 		slice.world = await loadPart(owner, `worlds/${worldBind.worldname}`)

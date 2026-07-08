@@ -1,9 +1,9 @@
 /**
- * 【文件】messages.mjs — 用户消息与消息 CRUD（增删改反馈）
- * 【职责】addUserReply 装配用户条目并走 addChatLogEntry；deleteMessage/editMessage/setMessageFeedback 维护内存日志、广播 WS 事件、镜像 DAG 与 sidecar 一致性。
- * 【原理】删除/编辑优先委托世界或角色/人格的 chat 接口钩子，无钩子则默认 splice 或重建条目；编辑后按 char/user 分支 buildChatLogEntryFrom*；反馈写入 entry.extension.feedback 并 mirrorFeedbackToDag。
+ * 【文件】messages.mjs — 消息 CRUD（删改反馈）
+ * 【职责】deleteMessage/editMessage/setMessageFeedback 维护内存日志、广播 WS 事件、镜像 DAG 与 sidecar 一致性。
+ * 【原理】删除/编辑优先委托世界或角色/人格的 chat 接口钩子，无钩子则默认 splice 或重建条目；编辑后按 char/user 分支 buildChatLogEntryFrom*；反馈写入 entry.extension.feedback 并 mirrorFeedbackToDag。human 发消息已收口到 postChannelMessage。
  * 【数据结构】chatLog 索引、chatLogEntry_t、extension.feedback / groupChannelId。
- * 【关联】generation（addChatLogEntry）、broadcast、logEntries、generationFeedback、dag/chatLogMirror、generationAbort。
+ * 【关联】broadcast、logEntries、generationFeedback、dag/chatLogMirror、generationAbort、channel/postMessage。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -11,7 +11,6 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	mirrorDeleteToDag,
 	mirrorEditToDag,
@@ -21,7 +20,6 @@ import { resolveChannelId } from '../lib/channelId.mjs'
 import { deleteLogContextSidecar } from '../lib/contextSidecar.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
-import { addChatLogEntry } from './chatLogAppend.mjs'
 import { abortGenerationByMessageId } from './generationAbort.mjs'
 import { mirrorFeedbackToDag } from './generationFeedback.mjs'
 import {
@@ -31,30 +29,6 @@ import {
 import { timeSlice_t } from './models.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
-
-/**
- * 添加用户消息到聊天日志（含群频道扩展）。
- * @param {string} groupId 聊天 ID
- * @param {string} channelId 群频道 ID
- * @param {object} object 用户回复载荷（content、files 等）
- * @returns {Promise<chatLogEntry_t>} 新条目
- */
-export async function addUserReply(groupId, channelId, object) {
-	const chatMetadata = await getActiveGroupRuntime(groupId)
-	if (!chatMetadata) throw new Error('Group not found')
-
-	const timeSlice = chatMetadata.LastTimeSlice.copy()
-	const user = chatMetadata.LastTimeSlice.player
-
-	void unlockAchievement(chatMetadata.username, 'shells/chat', 'first_chat')
-	if (object.files?.some?.(file => file.mime_type?.startsWith('image/')))
-		void unlockAchievement(chatMetadata.username, 'shells/chat', 'photo_chat')
-
-	return addChatLogEntry(groupId, await buildChatLogEntryFromUserMessage({
-		...object,
-		groupChannelId: object.groupChannelId || channelId,
-	}, timeSlice, user, timeSlice.player_id, chatMetadata.username))
-}
 
 /**
  * 删除指定索引消息：调用世界/角色/用户 MessageDelete 钩子或默认 splice。

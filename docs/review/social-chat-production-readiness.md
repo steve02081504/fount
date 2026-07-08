@@ -2,6 +2,8 @@
 
 生成时间：`2026-07-04`
 
+> **后续注记（2026-07-08）**：本报告的"必须补"清单已编入 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)（工作流 C / E，排期 M5 / M6；实施进度以代码为准，文档不追踪）。另补一条本报告未覆盖的健壮性缺口：world 目前是单主机托管，主机离线即全群 world 钩子瘫痪——去中心化方案见 [world-distribution-spec.md](../design/world-distribution-spec.md)（工作流 G）。
+
 ## 摘要
 
 结论先行：`fount` 当前的 `chat` / `social` 已经明显超出玩具项目，底层协议、联邦同步、冷热分层存储、权限/加密、测试意识都比常见 hobby 社交项目扎实得多；但如果标准是 `QQ` / `Discord` / `Mastodon` / `Twitter` 这类“生产级成品”，当前仍然**不属于同一成熟度层级**。
