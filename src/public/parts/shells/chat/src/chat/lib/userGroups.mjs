@@ -1,9 +1,7 @@
 /**
  * 【文件】src/chat/lib/userGroups.mjs
- * 【职责】用户群列表索引：扫描数据目录汇总可见群 ID 与元数据。
- * 【原理】读各 chat 目录 settings.json，过滤已删除/无权限项。
- * 【数据结构】UserGroupSummary：groupId、title、updatedAt、unread。
- * 【关联】group/queries、session/crud、public hub groupNav。
+ * 【职责】用户群列表索引：扫描 `shells/chat/groups/` 目录汇总可见群 ID。
+ * 【关联】group/queries.enumerateJoinedFederatedGroups、session/crud、public hub groupNav。
  */
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'

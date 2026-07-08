@@ -16,6 +16,7 @@ import { getState } from '../chat/dag/materialize.mjs'
 import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolve.mjs'
 import { eventsPath, snapshotPath } from '../chat/lib/paths.mjs'
 import { listUserGroups } from '../chat/lib/userGroups.mjs'
+import { loadReadMarkers, summarizeGroupUnread } from '../chat/lib/readMarkers.mjs'
 import { safeReadJson } from '../chat/lib/utils.mjs'
 import { tallyVoteChoices } from '../chat/lib/voteTally.mjs'
 
@@ -97,10 +98,12 @@ function markStaleGeneratingMessages(lines, idleMs = DEFAULT_STREAM_GENERATING_I
  * @returns {Promise<object[]>} 群列表行
  */
 export async function enumerateJoinedFederatedGroups(username) {
+	const readMarkers = loadReadMarkers(username)
 	const rows = []
 	for (const groupId of await listUserGroups(username)) {
 		const state = await loadGroupListState(username, groupId)
 		if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) continue
+		const { unreadCount, channelUnread } = summarizeGroupUnread(state, readMarkers[groupId] || {})
 		rows.push({
 			groupId,
 			name: state.groupMeta?.name || groupId,
@@ -111,6 +114,8 @@ export async function enumerateJoinedFederatedGroups(username) {
 			channelCount: Object.keys(state.channels).length,
 			lastMessageTime: await lastGroupListActivityMs(username, groupId),
 			friendBinding: state.groupMeta?.friendBinding || null,
+			unreadCount,
+			channelUnread,
 		})
 	}
 

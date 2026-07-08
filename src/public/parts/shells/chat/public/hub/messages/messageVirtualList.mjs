@@ -1,5 +1,6 @@
 import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
+	renderTemplate,
 } from '../../../../../scripts/features/template.mjs'
 import {
 	getChannelMessages,
@@ -44,12 +45,14 @@ export function destroyChannelVirtualList() {
  * @returns {Promise<HTMLElement>} 渲染后的消息元素
  */
 async function renderChannelMessageElement(message, index) {
+	if (message.type === 'unread_divider')
+		return renderTemplate('hub/messages/unread_divider', {})
 	const prev = index > 0 ? hubStore.messages.channelMessages[index - 1] : null
 	const lastId = hubStore.messages.channelMessages.at(-1)?.eventId
 	const block = await renderChannelMessageBlock(
 		message,
-		prev?.charId ?? prev?.sender ?? null,
-		prev?.timestamp || 0,
+		prev?.type === 'unread_divider' ? null : (prev?.charId ?? prev?.sender ?? null),
+		prev?.type === 'unread_divider' ? 0 : (prev?.timestamp || 0),
 		hubStore.messages.channelMessages,
 		{ ...messageRenderOpts(), lastMessageEventId: lastId },
 	)

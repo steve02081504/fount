@@ -39,5 +39,5 @@ export async function handleComposerFeedClick(appContext, target) {
 	if (target.closest('#feedSearchClearButton'))
 		await clearFeedSearch(appContext)
 	if (target.closest('#notificationsMarkAllButton'))
-		markNotificationsSeen(appContext)
+		void markNotificationsSeen(appContext)
 }

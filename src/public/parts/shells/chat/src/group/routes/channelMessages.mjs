@@ -25,8 +25,11 @@ import { postChannelMessage } from '../../chat/channel/postMessage.mjs'
 import { decryptEventContent } from '../../chat/channel_keys/content.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
+import { getChannelReadMarker, setChannelReadMarker } from '../../chat/lib/readMarkers.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
 import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
+import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
+import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
@@ -192,7 +195,35 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			limit,
 		}, { kind: 'user' })
 		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, visibleEventIds)
-		res.status(200).json({ messages, reactions })
+		const readMarker = getChannelReadMarker(username, groupId, channelId)
+		res.status(200).json({ messages, reactions, readMarker })
+	})
+
+	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/read-marker`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const { eventId: rawEventId, seq: rawSeq } = req.body || {}
+		const eventId = String(rawEventId || '').trim().toLowerCase()
+		const seq = Number(rawSeq)
+		if (!CHANNEL_MESSAGE_EVENT_ID_RE.test(eventId))
+			throw httpError(400, 'invalid eventId')
+		if (!Number.isFinite(seq) || seq < 0)
+			throw httpError(400, 'invalid seq')
+
+		const membership = await resolveGroupMember(req, res, groupId)
+		const { username, state, member } = membership
+		ensureChannel(state, channelId)
+		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
+
+		setChannelReadMarker(username, groupId, channelId, { eventId, seq })
+		const readMarker = getChannelReadMarker(username, groupId, channelId)
+		broadcastEvent(groupWsRoomKeyForReplica(groupId), {
+			type: 'read_marker',
+			username,
+			groupId,
+			channelId,
+			readMarker,
+		})
+		res.status(200).json({ readMarker })
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/batch-get`, authenticate, async (req, res) => {

@@ -12,6 +12,10 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeNotifyHubMessage } from './hubNotifications.mjs'
+import {
+	bumpChannelUnread,
+	handleReadMarkerWire,
+} from './unread.mjs'
 import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
 
@@ -357,10 +361,19 @@ const CHANNEL_STRUCTURE_DAG_TYPES = new Set([
 function handleGroupHubWireMessage(wireMessage, channelId) {
 	if (!wireMessage?.type) return
 
+	if (wireMessage.type === 'read_marker') {
+		handleReadMarkerWire(wireMessage)
+		return
+	}
+
 	if (wireMessage.type === 'channel_message') {
 		const incomingChannelId = wireMessage.channelId
 		const { main, thread } = hubChannelMatch(incomingChannelId, channelId)
-		if (!main && !thread) return
+		if (!main && !thread) {
+			if (hubStore.context.currentGroupId)
+				bumpChannelUnread(hubStore.context.currentGroupId, incomingChannelId)
+			return
+		}
 		const channelMessage = wireMessage.message
 		if (channelMessage?.type === 'message_edit') {
 			const targetId = String(channelMessage.content?.targetId || '').trim()

@@ -7,7 +7,7 @@ import {
 	renderQuoteBlockHtml as renderQuoteBlockHtmlWithI18n,
 } from './lib/display.mjs'
 import { createPostCardBuilder } from './postCard.mjs'
-import { NOTIFICATIONS_SEEN_KEY, socialState } from './state.mjs'
+import { socialState } from './state.mjs'
 
 /**
  * 创建 Social 前端应用上下文对象。
@@ -53,6 +53,5 @@ export function createSocialContext(geti18n) {
 		formatTime,
 		renderMarkdown,
 		renderQuoteBlockHtml,
-		NOTIFICATIONS_SEEN_KEY,
 	}
 }

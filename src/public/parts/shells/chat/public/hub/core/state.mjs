@@ -47,8 +47,14 @@ export const hubStore = {
 		focusedMessageEventId: null,
 		/** 虚拟列表重建时的 scoped 滚动锚点 */
 		pendingScrollTarget: null,
+		/** 服务端已读水位 */
+		readMarker: null,
+		/** 首条未读 message eventId（展示分割线） */
+		firstUnreadEventId: null,
 	},
 	viewer: {
+		/** replica 登录名（read-marker 多端同步过滤） */
+		username: null,
 		/** 顶栏/侧栏展示名（非身份键） */
 		viewerDisplayName: null,
 		nodeHash: null,

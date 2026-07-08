@@ -27,3 +27,9 @@ alwaysApply: false
 - @-mentioning a local agent: `dispatch.mjs` prefers `interfaces.social.OnMention`; falls back to `interfaces.chat.GetReply` when missing (`lib/chatMentionFallback.mjs` builds a minimal request, using chat's `BUILTIN_*` for the built-in world/persona). `publishEntityReply` calls `ensureEntitySocialReady` so agent timelines have `social_meta` before auto-reply.
 - `OnFollow` / `OnFollowerUpdate` still require an explicit `interfaces.social`.
 - Integration: `test/integration/mention_getreply_fallback.test.mjs`.
+
+## Notifications inbox (M5)
+
+- **Storage**: per-recipient `{dataPath}/p2p/node/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
+- **API**: `GET /notifications` reads inbox via `buildNotifications` (`unreadCount` from seen watermark); `GET/PUT /notifications/seen`.
+- **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; `POST /posts` pushes `{ type: 'post', … }`. Frontend badge uses `unreadCount` + WS increment in `public/src/init.mjs`.

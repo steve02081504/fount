@@ -1,4 +1,6 @@
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getNotificationsSeenAt, setNotificationsSeenAt } from '../inbox.mjs'
 import { buildNotifications } from '../notifications.mjs'
 
 /**
@@ -13,5 +15,26 @@ export function registerNotificationRoutes(router) {
 			limit: Number(req.query.limit) || 30,
 			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
 		}))
+	})
+
+	router.get('/api/parts/shells\\:social/notifications/seen', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+		if (!viewerEntityHash)
+			return res.status(200).json({ seenAt: 0, viewerEntityHash: null })
+		res.status(200).json({
+			seenAt: getNotificationsSeenAt(username, viewerEntityHash),
+			viewerEntityHash,
+		})
+	})
+
+	router.put('/api/parts/shells\\:social/notifications/seen', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+		if (!viewerEntityHash)
+			return res.status(400).json({ error: 'identity required' })
+		const at = Number(req.body?.at) || Date.now()
+		setNotificationsSeenAt(username, viewerEntityHash, at)
+		res.status(200).json({ seenAt: at, viewerEntityHash })
 	})
 }

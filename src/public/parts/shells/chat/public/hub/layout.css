@@ -10,6 +10,7 @@
 
 .hub-server-item {
 	position: relative;
+	position: relative;
 	width: 48px;
 	height: 48px;
 	overflow: hidden;
@@ -133,6 +134,53 @@
 
 .hub-server-item:hover .hub-server-tooltip {
 	opacity: 1;
+}
+
+.hub-unread-badge {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border-radius: 999px;
+	background: hsl(var(--er));
+	color: hsl(var(--erc));
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 18px;
+	text-align: center;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.hub-channel-item .hub-unread-badge {
+	position: static;
+	min-width: 16px;
+	height: 16px;
+	line-height: 16px;
+	font-size: 10px;
+	flex-shrink: 0;
+}
+
+.hub-unread-divider {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 12px 0;
+	color: hsl(var(--er));
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.hub-unread-divider::before,
+.hub-unread-divider::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: hsl(var(--er) / 0.45);
 }
 
 .hub-server-divider {

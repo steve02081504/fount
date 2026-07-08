@@ -1,13 +1,9 @@
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
-/**
- * @param {object} row 通知条目
- * @returns {string} 分页游标
- */
-export function notificationCursor(row) {
-	return `${row.at}:${row.actorEntityHash}:${row.type}:${row.postId ?? ''}:${row.targetPostId ?? ''}`
-}
+import { readInboxNotifications, notificationCursor } from './inbox.mjs'
+
+export { notificationCursor }
 
 /**
  * @param {string} type 通知类型
@@ -28,14 +24,28 @@ function notificationRow(type, actorEntityHash, at, postId, targetPostId) {
 }
 
 /**
- * 构建观看者的 Social 通知列表。
+ * 构建观看者的 Social 通知列表（inbox 持久层）。
  * @param {string} username 用户
  * @param {object} [options] 分页选项
  * @param {number} [options.limit=30] 条数上限
  * @param {string} [options.cursor] 分页游标
- * @returns {Promise<{ notifications: object[], nextCursor: string | null, viewerEntityHash: string | null }>} 通知列表
+ * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number, viewerEntityHash: string | null }>} 通知列表
  */
 export async function buildNotifications(username, options = {}) {
+	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+	if (!viewerEntityHash)
+		return { notifications: [], nextCursor: null, unreadCount: 0, viewerEntityHash: null }
+	const page = await readInboxNotifications(username, viewerEntityHash, options)
+	return { ...page, viewerEntityHash }
+}
+
+/**
+ * 旧版全量扫描通知（仅 rebuildInbox 使用）。
+ * @param {string} username 用户
+ * @param {object} [options] 分页选项
+ * @returns {Promise<{ notifications: object[], nextCursor: string | null, viewerEntityHash: string | null }>}
+ */
+export async function buildNotificationsLegacy(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	const cursor = options.cursor ? String(options.cursor) : null
 	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null

@@ -3,7 +3,7 @@ import { activateView } from './viewChrome.mjs'
 import { parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
-import { loadNotifications, markNotificationsSeen } from './views/notifications.mjs'
+import { loadNotifications } from './views/notifications.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
 
@@ -42,9 +42,8 @@ export async function switchView(appContext, view) {
 		}
 		updateFeedSearchChrome(appContext)
 	}
-	if (view === 'notifications') markNotificationsSeen(appContext)
-	if (view === 'explore') await loadExplore(appContext)
 	if (view === 'notifications') await loadNotifications(appContext)
+	if (view === 'explore') await loadExplore(appContext)
 	if (view === 'saved') await loadSaved(appContext)
 	if (view === 'profile') await loadProfile(appContext)
 }

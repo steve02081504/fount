@@ -174,7 +174,22 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
 	return {
 		messages: data.messages || [],
 		reactions: data.reactions || {},
+		readMarker: data.readMarker || null,
 	}
+}
+
+/**
+ * 更新频道已读水位。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {{ eventId: string, seq: number }} marker 已读水位
+ * @returns {Promise<{ readMarker: { eventId: string, seq: number } }>}
+ */
+export async function putChannelReadMarker(groupId, channelId, marker) {
+	return groupFetch(groupPath(groupId, 'channels', channelId, 'read-marker'), {
+		method: 'PUT',
+		json: marker,
+	})
 }
 
 /**

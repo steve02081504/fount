@@ -15,13 +15,14 @@ import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
-import { loadFeed, runFeedSearch } from './views/feed.mjs'
-import { updateNotificationBadge } from './views/notifications.mjs'
+import { loadFeed, runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
+import { bumpNotificationBadge, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 
 const socialGate = createReadyGate(SOCIAL_APP_GATE)
 
 const FEED_WS_TIMEOUT_MS = 30_000
+const FEED_WS_RECONNECT_MAX_MS = 30_000
 
 /**
  * 更新 composer 区当前用户头像。
@@ -35,37 +36,56 @@ function refreshComposerAvatar(appContext) {
 }
 
 /**
- * 建立 feed WebSocket 并等待 open。
+ * 处理 feed WebSocket 消息。
  * @param {object} appContext 应用上下文
- * @returns {Promise<WebSocket>} 已 open 的 feed WebSocket
+ * @param {object | null} message 解析后的 WS 载荷
+ * @returns {void}
  */
-function connectFeedWebSocket(appContext) {
+function handleFeedWebSocketMessage(appContext, message) {
+	if (!message?.type || message.type === 'hello') return
+	if (message.type === 'post')
+		showFeedNewPostsBanner(appContext)
+	else if (message.type === 'notification')
+		bumpNotificationBadge(appContext)
+	else {
+		const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
+		if (feedVisible && !appContext.state.activeFeedSearchQuery)
+			showFeedNewPostsBanner(appContext)
+	}
+}
+
+/**
+ * 建立 feed WebSocket（带断线重连）。
+ * @param {object} appContext 应用上下文
+ * @param {number} [attempt=0] 重连次数
+ * @returns {void}
+ */
+function connectFeedWebSocket(appContext, attempt = 0) {
 	const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/parts/shells:social/feed`
-	return new Promise((resolve, reject) => {
-		const ws = new WebSocket(url)
-		const timer = setTimeout(() => {
-			ws.close()
-			reject(new Error('feed WebSocket open timeout'))
-		}, FEED_WS_TIMEOUT_MS)
-		ws.addEventListener('open', () => {
-			clearTimeout(timer)
-			resolve(ws)
-		}, { once: true })
-		ws.addEventListener('error', () => {
-			clearTimeout(timer)
-			reject(new Error('feed WebSocket failed'))
-		}, { once: true })
-		ws.addEventListener('message', event => {
-			let message = null
-			try { message = JSON.parse(event.data) } catch { /* ignore */ }
-			if (message?.type === 'hello') return
-			const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
-			if (feedVisible && !appContext.state.activeFeedSearchQuery)
-				void loadFeed(appContext, false)
-			else if (feedVisible && appContext.state.activeFeedSearchQuery)
-				void runFeedSearch(appContext)
-			void updateNotificationBadge(appContext)
-		})
+	const ws = new WebSocket(url)
+	appContext.state.feedWs = ws
+	const timer = setTimeout(() => {
+		ws.close()
+	}, FEED_WS_TIMEOUT_MS)
+	ws.addEventListener('open', () => {
+		clearTimeout(timer)
+		appContext.state.feedWsAttempt = 0
+	}, { once: true })
+	ws.addEventListener('error', () => {
+		clearTimeout(timer)
+	}, { once: true })
+	ws.addEventListener('message', event => {
+		let message = null
+		try { message = JSON.parse(event.data) } catch { /* ignore */ }
+		handleFeedWebSocketMessage(appContext, message)
+	})
+	ws.addEventListener('close', () => {
+		if (appContext.state.feedWs !== ws) return
+		appContext.state.feedWs = null
+		const nextAttempt = (appContext.state.feedWsAttempt ?? attempt) + 1
+		appContext.state.feedWsAttempt = nextAttempt
+		const delay = Math.min(FEED_WS_RECONNECT_MAX_MS, 1000 * 2 ** Math.min(nextAttempt, 5))
+		setTimeout(() => connectFeedWebSocket(appContext, nextAttempt), delay)
 	})
 }
 
@@ -182,9 +202,7 @@ export async function bootstrapSocialApp(appContext) {
 		})
 
 		socialGate.markReady()
-		void connectFeedWebSocket(appContext).catch(err => {
-			console.error(err)
-		})
+		connectFeedWebSocket(appContext)
 	}
 	catch (error) {
 		socialGate.markFailed(error)

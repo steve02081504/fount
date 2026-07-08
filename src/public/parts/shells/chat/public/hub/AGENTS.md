@@ -38,3 +38,8 @@ Hub-facing API shapes:
 - **Group state**: `GET …/groups/:id/state` → `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }`.
 - **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
 - **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
+
+## Unread (M5)
+
+- **Model**: `channel.messageSeq` (materialized on group state) minus per-user `readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
+- **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`, group list sort by unread; earliest-unread divider in `messages/messageShared.mjs`. Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.

@@ -18,6 +18,17 @@ export function reactionsSignature(reactions) {
 /** @returns {void} */
 export function refreshChannelView() {
 	refreshChannelMessagesView(getMessageText)
+	const dividerId = hubStore.messages.firstUnreadEventId
+	if (!dividerId) return
+	const msgs = hubStore.messages.channelMessages
+	const idx = msgs.findIndex(row => row.eventId === dividerId)
+	if (idx <= 0) return
+	if (msgs[idx - 1]?.type === 'unread_divider') return
+	hubStore.messages.channelMessages = [
+		...msgs.slice(0, idx),
+		{ type: 'unread_divider', eventId: `unread:${dividerId}` },
+		...msgs.slice(idx),
+	]
 }
 
 /** @returns {void} */

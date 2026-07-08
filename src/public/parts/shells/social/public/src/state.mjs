@@ -10,7 +10,7 @@ export const socialState = {
 	savedFoldersCache: {},
 	pendingSave: null,
 	activeFeedSearchQuery: null,
+	/** 服务端通知已读水位（毫秒） */
+	notificationsSeenAt: null,
+	lastNotificationUnreadCount: 0,
 }
-
-/** localStorage 键：通知已读水位（毫秒时间戳）。 */
-export const NOTIFICATIONS_SEEN_KEY = 'social.notificationsSeenAt'

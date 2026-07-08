@@ -1,24 +1,45 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
+/** @type {number | null} */
+let badgeUnreadCount = null
+
 /**
- * 读取通知已读水位时间戳。
+ * 确保已读水位已自服务端加载。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<number>} 已读水位
+ */
+export async function ensureNotificationsSeenAt(appContext) {
+	if (Number.isFinite(appContext.state.notificationsSeenAt))
+		return appContext.state.notificationsSeenAt
+	const data = await appContext.socialApi('/notifications/seen').catch(() => ({ seenAt: 0 }))
+	appContext.state.notificationsSeenAt = Number(data.seenAt) || 0
+	return appContext.state.notificationsSeenAt
+}
+
+/**
+ * 读取通知已读水位时间戳（内存缓存）。
  * @param {object} appContext 应用上下文
  * @returns {number} 已读水位
  */
 export function getNotificationsSeenAt(appContext) {
-	return Number(localStorage.getItem(appContext.NOTIFICATIONS_SEEN_KEY)) || 0
+	return Number(appContext.state.notificationsSeenAt) || 0
 }
 
 /**
  * 标记通知已读并更新角标。
  * @param {object} appContext 应用上下文
  * @param {number} [at=Date.now()] 时间戳
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function markNotificationsSeen(appContext, at = Date.now()) {
-	localStorage.setItem(appContext.NOTIFICATIONS_SEEN_KEY, String(at))
-	void updateNotificationBadge(appContext)
+export async function markNotificationsSeen(appContext, at = Date.now()) {
+	await appContext.socialApi('/notifications/seen', {
+		method: 'PUT',
+		body: JSON.stringify({ at }),
+	})
+	appContext.state.notificationsSeenAt = at
+	badgeUnreadCount = 0
+	await updateNotificationBadge(appContext)
 }
 
 /**
@@ -40,9 +61,11 @@ function notificationIconClass(type) {
  * @returns {Promise<void>}
  */
 export async function updateNotificationBadge(appContext) {
-	const data = await appContext.socialApi('/notifications?limit=50').catch(() => ({ notifications: [] }))
-	const seenAt = getNotificationsSeenAt(appContext)
-	const unread = (data.notifications || []).filter(row => row.at > seenAt).length
+	const data = await appContext.socialApi('/notifications?limit=1').catch(() => ({ unreadCount: 0 }))
+	const unread = Number.isFinite(badgeUnreadCount)
+		? badgeUnreadCount
+		: Number(data.unreadCount) || 0
+	badgeUnreadCount = null
 	const label = unread > 99 ? '99+' : String(unread)
 	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {
 		const badge = document.getElementById(badgeId)
@@ -53,6 +76,18 @@ export async function updateNotificationBadge(appContext) {
 		}
 		else badge.classList.add('hidden')
 	}
+}
+
+/**
+ * WS 推送通知时递增 badge（避免整页拉 /notifications）。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function bumpNotificationBadge(appContext) {
+	const current = badgeUnreadCount ?? appContext.state.lastNotificationUnreadCount ?? 0
+	badgeUnreadCount = current + 1
+	appContext.state.lastNotificationUnreadCount = badgeUnreadCount
+	void updateNotificationBadge(appContext)
 }
 
 /**
@@ -75,11 +110,13 @@ function notificationHref(appContext, row) {
  * @returns {Promise<void>}
  */
 export async function loadNotifications(appContext) {
+	await ensureNotificationsSeenAt(appContext)
 	const data = await appContext.socialApi('/notifications?limit=40')
 	const container = document.getElementById('notificationsView')
 	const toolbar = document.getElementById('notificationsToolbar')
 	const seenAt = getNotificationsSeenAt(appContext)
 	const rows = data.notifications || []
+	appContext.state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
 	container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())
 	if (!rows.length) {
 		if (toolbar) toolbar.classList.add('hidden')
@@ -87,7 +124,7 @@ export async function loadNotifications(appContext) {
 		empty.className = 'empty'
 		empty.textContent = appContext.geti18n('social.empty.notifications')
 		container.appendChild(empty)
-		markNotificationsSeen(appContext)
+		await markNotificationsSeen(appContext)
 		return
 	}
 	if (toolbar) toolbar.classList.remove('hidden')
@@ -117,6 +154,5 @@ export async function loadNotifications(appContext) {
 		`
 		container.appendChild(card)
 	}
-	markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())
-	await updateNotificationBadge(appContext)
+	await markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())
 }

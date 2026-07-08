@@ -28,6 +28,7 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
+import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
@@ -229,6 +230,10 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			sidecarContent = null
 		}
 	}
+	const channelMessagesPath = messagesPath(username, groupId, channelId)
+	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })
+	const messageIdNorm = String(signPayload.id).trim().toLowerCase()
+	const isNewLine = !existingMessageLines.some(row => String(row.eventId).trim().toLowerCase() === messageIdNorm)
 	const messageLine = {
 		eventId: signPayload.id,
 		type: signPayload.type,
@@ -239,6 +244,9 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		hlc: signPayload.hlc,
 		prev_event_ids: sortedPrevEventIds(signPayload.prev_event_ids),
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
+		...(signPayload.type === 'message' && isNewLine
+			? { seq: nextChannelMessageSeq(existingMessageLines) }
+			: {}),
 		...decryptResult && !decryptResult.ok
 			? {
 				decryptView: {
@@ -248,10 +256,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 			}
 			: {},
 	}
-	const channelMessagesPath = messagesPath(username, groupId, channelId)
-	const existingMessageLines = await readJsonl(channelMessagesPath, { sanitize: stripDagEventLocalExtensions })
-	const messageIdNorm = String(signPayload.id).trim().toLowerCase()
-	if (!existingMessageLines.some(row => String(row.eventId).trim().toLowerCase() === messageIdNorm))
+	if (isNewLine)
 		await appendJsonlSynced(channelMessagesPath, messageLine)
 	broadcastEvent(roomKey, {
 		type: 'channel_message',

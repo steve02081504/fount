@@ -1,4 +1,5 @@
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
+import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
@@ -38,14 +39,23 @@ export async function handleProfileNavClick(appContext, target) {
 	if (followButton instanceof HTMLElement && followButton.dataset.follow) {
 		const entityHash = followButton.dataset.follow
 		const wasFollowing = followButton.dataset.isFollowing === '1'
-		await appContext.socialApi('/relationships/follow', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, follow: !wasFollowing, ...actingFields(appContext) }),
-		})
-		if (appContext.state.profileEntityHash === entityHash)
-			await loadProfileFor(appContext, entityHash)
-		else
-			await loadExplore(appContext)
+		const prevText = followButton.textContent
+		followButton.textContent = appContext.geti18n(wasFollowing ? 'social.actions.follow' : 'social.actions.following')
+		followButton.dataset.isFollowing = wasFollowing ? '0' : '1'
+		try {
+			await runSocialWrite('follow', () => appContext.socialApi('/relationships/follow', {
+				method: 'POST',
+				body: JSON.stringify({ entityHash, follow: !wasFollowing, ...actingFields(appContext) }),
+			}))
+			if (appContext.state.profileEntityHash === entityHash)
+				await loadProfileFor(appContext, entityHash)
+			else
+				await loadExplore(appContext)
+		}
+		catch {
+			followButton.textContent = prevText
+			followButton.dataset.isFollowing = wasFollowing ? '1' : '0'
+		}
 	}
 
 	const blockButton = target.closest('[data-block]')

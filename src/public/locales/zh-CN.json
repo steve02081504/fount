@@ -1135,6 +1135,7 @@
 		"feed": {
 			"loadMore": "加载更多",
 			"refresh": "刷新动态",
+			"newPosts": "有新动态，点击查看",
 			"repostedBy": "${author} 转发了",
 			"decryptFailed": "无法解密此帖"
 		},
@@ -1183,7 +1184,12 @@
 			"copyLink": "复制链接",
 			"copied": "已复制",
 			"more": "更多",
-			"share": "分享"
+			"share": "分享",
+			"likeFailed": "点赞失败：${error}",
+			"repostFailed": "转发失败：${error}",
+			"replyFailed": "回复失败：${error}",
+			"followFailed": "关注失败：${error}",
+			"saveFailed": "收藏失败：${error}"
 		},
 		"aside": {
 			"suggested": "推荐关注"
@@ -2169,6 +2175,7 @@
 				"aria-label": "移除书签"
 			},
 			"loadMessagesFailed": "加载消息失败：${error}",
+			"unreadDivider": "新消息",
 			"noUsername": "未获取用户名",
 			"stickersEmpty": "暂无贴纸",
 			"stickersMarketLink": "前往贴纸广场安装",

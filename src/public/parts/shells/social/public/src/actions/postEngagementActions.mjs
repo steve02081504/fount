@@ -2,6 +2,12 @@ import { renderTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
+import {
+	applyLikeButtonOptimistic,
+	bumpRepostCount,
+	rollbackLikeButton,
+	runSocialWrite,
+} from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts, switchView } from '../navigation.mjs'
 import { submitReply } from '../views/profile.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
@@ -21,11 +27,16 @@ export async function handlePostEngagementClick(appContext, target) {
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			const liked = likeButton.dataset.liked === '1'
-			await appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
-				method: 'POST',
-				body: JSON.stringify({ like: !liked }),
-			})
-			await refreshVisiblePosts(appContext)
+			const snapshot = applyLikeButtonOptimistic(likeButton, !liked)
+			try {
+				await runSocialWrite('like', () => appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
+					method: 'POST',
+					body: JSON.stringify({ like: !liked }),
+				}))
+			}
+			catch {
+				rollbackLikeButton(likeButton, snapshot)
+			}
 		}
 	}
 
@@ -42,13 +53,19 @@ export async function handlePostEngagementClick(appContext, target) {
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			await appContext.socialApi(`/posts/${entityHash}/${postId}/repost`, {
-				method: 'POST',
-				body: JSON.stringify({ comment }),
-			})
-			if (textarea) textarea.value = ''
-			panel?.classList.add('hidden')
-			await refreshVisiblePosts(appContext)
+			const card = submitRepostButton.closest('.post-card')
+			const prevRepost = card ? bumpRepostCount(card, 1) : 0
+			try {
+				await runSocialWrite('repost', () => appContext.socialApi(`/posts/${entityHash}/${postId}/repost`, {
+					method: 'POST',
+					body: JSON.stringify({ comment }),
+				}))
+				if (textarea) textarea.value = ''
+				panel?.classList.add('hidden')
+			}
+			catch {
+				if (card) bumpRepostCount(card, -1)
+			}
 		}
 	}
 
@@ -95,13 +112,15 @@ export async function handlePostEngagementClick(appContext, target) {
 			const textarea = panel?.querySelector('textarea')
 			const text = textarea?.value.trim()
 			if (!text) return false
-			await submitReply(appContext, entityHash, postId, text)
-			textarea.value = ''
-			const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
-			await renderRepliesPanel(appContext, panel, data.replies || [])
-			panel.dataset.loaded = '1'
-			panel.classList.remove('hidden')
-			await refreshVisiblePosts(appContext)
+			try {
+				await runSocialWrite('reply', () => submitReply(appContext, entityHash, postId, text))
+				textarea.value = ''
+				const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
+				await renderRepliesPanel(appContext, panel, data.replies || [])
+				panel.dataset.loaded = '1'
+				panel.classList.remove('hidden')
+			}
+			catch { /* toast 已展示 */ }
 		}
 	}
 

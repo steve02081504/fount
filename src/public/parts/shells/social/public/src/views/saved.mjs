@@ -1,5 +1,6 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
+import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
@@ -46,16 +47,23 @@ export async function openSaveModal(appContext, entityHash, postId, button) {
 export async function confirmSaveModal(appContext) {
 	if (!appContext.state.pendingSave) return
 	const folderId = document.getElementById('saveFolderSelect')?.value || undefined
-	await appContext.socialApi('/saved-posts/add', {
-		method: 'POST',
-		body: JSON.stringify({
-			entityHash: appContext.state.pendingSave.entityHash,
-			postId: appContext.state.pendingSave.postId,
-			folderId: folderId || undefined,
-		}),
-	})
-	appContext.state.pendingSave.button.textContent = appContext.geti18n('social.actions.saved')
-	closeSaveModal(appContext)
+	const { button } = appContext.state.pendingSave
+	const prevText = button.textContent
+	button.textContent = appContext.geti18n('social.actions.saved')
+	try {
+		await runSocialWrite('save', () => appContext.socialApi('/saved-posts/add', {
+			method: 'POST',
+			body: JSON.stringify({
+				entityHash: appContext.state.pendingSave.entityHash,
+				postId: appContext.state.pendingSave.postId,
+				folderId: folderId || undefined,
+			}),
+		}))
+		closeSaveModal(appContext)
+	}
+	catch {
+		button.textContent = prevText
+	}
 }
 
 /**

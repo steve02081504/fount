@@ -42,6 +42,8 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))
 	}
 	await maintainSocialTimeline(username, entityHash)
+	const { appendInboxFromTimelineEvent } = await import('../inbox.mjs')
+	await appendInboxFromTimelineEvent(username, entityHash, validated.row)
 	return true
 }
 

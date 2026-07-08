@@ -21,6 +21,7 @@ function inferBroadcastPriority(payload) {
 	const type = payload?.type
 	if (type === 'dag_event') return 0
 	if (type === 'channel_message') return 1
+	if (type === 'read_marker') return 2
 	if (type === 'stream_chunk') return 2
 	if (['typing', 'ai_stream_chunk'].includes(type)) return 4
 	return 2

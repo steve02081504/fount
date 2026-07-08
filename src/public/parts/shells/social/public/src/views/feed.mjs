@@ -89,6 +89,28 @@ export async function loadTrendingHashtags(appContext) {
 	aside.appendChild(list)
 }
 
+/**
+ * 显示「有新帖」横幅（WS 增量，不重置 feed cursor）。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function showFeedNewPostsBanner(appContext) {
+	const feedView = document.getElementById('feedView')
+	if (!feedView || feedView.classList.contains('hidden')) return
+	if (appContext.state.activeFeedSearchQuery) return
+	if (document.getElementById('feedNewPostsBanner')) return
+	const banner = document.createElement('button')
+	banner.type = 'button'
+	banner.id = 'feedNewPostsBanner'
+	banner.className = 'feed-new-posts-banner btn btn-primary btn-sm'
+	banner.textContent = appContext.geti18n('social.feed.newPosts')
+	banner.addEventListener('click', () => {
+		banner.remove()
+		void loadFeed(appContext, false)
+	})
+	document.getElementById('feedList')?.before(banner)
+}
+
 let feedGeneration = 0
 
 /**

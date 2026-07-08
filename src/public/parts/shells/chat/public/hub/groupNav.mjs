@@ -52,6 +52,7 @@ import { refreshPinsBookmarks } from './pinsBookmarks.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
+import { formatUnreadBadgeHtml, getChannelUnreadCount, markCurrentChannelRead } from './unread.mjs'
 import { isThreadChannel } from './threadDrawer.mjs'
 
 /**
@@ -193,9 +194,15 @@ export async function renderChannelList(state) {
 		}))
 		if (!isCollapsed) {
 			const listHost = container.querySelector(`.hub-category[data-cat="${CSS.escape(catKey)}"] + .hub-category-channels`)
-			for (const channel of channels) {
+			const sortedChannels = [...channels].sort((left, right) => {
+				const leftSeq = Number(state.channels?.[left.id]?.messageSeq) || 0
+				const rightSeq = Number(state.channels?.[right.id]?.messageSeq) || 0
+				return rightSeq - leftSeq
+			})
+			for (const channel of sortedChannels) {
 				const active = channel.id === hubStore.context.currentChannelId ? 'active' : ''
 				const nested = channel.depth > 0 ? ' hub-channel-nested' : ''
+				const groupId = hubStore.context.currentGroupId
 				listHost.appendChild(await renderTemplate('hub/nav/channel_item', {
 					activeClass: active ? 'active' : '',
 					nestedClass: nested,
@@ -203,6 +210,9 @@ export async function renderChannelList(state) {
 					paddingLeft: String(12 + channel.depth * 14),
 					iconHtml: await channelTypeIconHtml(channel.type || 'text'),
 					channelName: escapeHtml(channel.name || channel.id),
+					unreadBadgeHtml: groupId
+						? formatUnreadBadgeHtml(getChannelUnreadCount(groupId, channel.id))
+						: '',
 				}))
 			}
 		}
@@ -368,6 +378,8 @@ export async function selectChannel(channelId) {
 		getCurrentState: () => hubStore.context.currentState,
 	})
 	await loadMessages()
+	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
+		void markCurrentChannelRead().catch(() => {})
 	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
 	updateStatusBanners()

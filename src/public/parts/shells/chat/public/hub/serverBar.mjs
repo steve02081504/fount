@@ -15,6 +15,7 @@ import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
 import { selectGroup } from './groupNav.mjs'
+import { formatUnreadBadgeHtml } from './unread.mjs'
 import {
 	clearGroupSelection,
 	handleGroupItemModifierClick,
@@ -107,6 +108,7 @@ async function appendHubServerItem(parent, group) {
 		activeStyle: active ? '' : avatarColor(group.name),
 		avatarLabel: escapeHtml(avatarInitial(group.name)),
 		groupName: escapeHtml(group.name),
+		unreadBadgeHtml: formatUnreadBadgeHtml(group.unreadCount),
 	})
 	parent.appendChild(el)
 }
@@ -211,7 +213,9 @@ export async function loadGroups() {
 	const groupListPromise = getGroupList()
 	const foldersResponse = await fetch('/api/parts/shells:chat/group-folders', { credentials: 'include' })
 	const groupList = await groupListPromise
-	hubStore.sidebar.groups = groupList
+	hubStore.sidebar.groups = groupList.sort(
+		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
+	)
 	const knownGroupIds = new Set(groupList.map(g => String(g.groupId || '').trim().toLowerCase()).filter(Boolean))
 	if (knownGroupIds.size) {
 		const bookmarks = await getChatBookmarks().catch(() => [])

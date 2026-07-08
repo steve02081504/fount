@@ -11,13 +11,19 @@ import { handleUIError } from '../../src/ui/errors.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { hubStore } from '../core/state.mjs'
 import {
+	firstUnreadEventId,
+	markCurrentChannelRead,
+} from '../unread.mjs'
+import {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
 } from '../groupStream.mjs'
 import { isThreadDrawerOpen } from '../threadDrawer.mjs'
 
 import {
+	consumePendingScrollTarget,
 	fetchRowsForMessageEvent,
+	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
 import {
 	scheduleDebouncedChannelRefresh,
@@ -245,7 +251,7 @@ export async function loadMessages(reload, syncCtx) {
 	try {
 		hubStore.messages.composerPendingId = null
 		hubStore.messages.channelOlderExhausted = false
-		const { messages, reactions } = await getChannelViewLog(
+		const { messages, reactions, readMarker } = await getChannelViewLog(
 			hubStore.context.currentGroupId,
 			hubStore.context.currentChannelId,
 			{ limit: 50 },
@@ -253,6 +259,8 @@ export async function loadMessages(reload, syncCtx) {
 		hubStore.messages.channelReactions = reactions || {}
 		hubStore.messages.reactionsEtag = reactionsSignature(reactions)
 		hubStore.messages.channelMessagesSource = messages
+		hubStore.messages.readMarker = readMarker || null
+		hubStore.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
 		refreshChannelView()
 		await refreshReactionPerms()
 		syncCtx()
@@ -262,9 +270,29 @@ export async function loadMessages(reload, syncCtx) {
 			return
 		}
 		container.innerHTML = ''
+		if (hubStore.messages.firstUnreadEventId)
+			setPendingScrollTarget(hubStore.messages.firstUnreadEventId)
+		else
+			consumePendingScrollTarget()
 		initChannelVirtualList(container, reload)
 		updateLastMessageId()
-		scrollToBottom()
+		if (hubStore.messages.firstUnreadEventId) {
+			// 滚到首条未读；用户滚到底后标记已读
+			const onScroll = () => {
+				const el = getMessagesContainer()
+				if (!el) return
+				const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80
+				if (nearBottom) {
+					el.removeEventListener('scroll', onScroll)
+					void markCurrentChannelRead()
+				}
+			}
+			getMessagesContainer()?.addEventListener('scroll', onScroll, { passive: true })
+		}
+		else {
+			scrollToBottom()
+			void markCurrentChannelRead()
+		}
 		refreshChannelPinsBar()
 	}
 	catch (err) {

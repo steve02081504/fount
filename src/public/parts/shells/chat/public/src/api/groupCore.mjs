@@ -44,6 +44,8 @@ export async function getGroupList() {
 		channelCount: row.channelCount,
 		lastMessageTime: row.lastMessageTime,
 		friendBinding: row.friendBinding ?? null,
+		unreadCount: Number(row.unreadCount) || 0,
+		channelUnread: row.channelUnread || {},
 	}))
 }
 

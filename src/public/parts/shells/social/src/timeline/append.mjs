@@ -121,6 +121,8 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 	invalidateTimelineOwnerIndex(username)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, row)
 	await maintainSocialTimeline(username, entityHash)
+	const { appendInboxFromTimelineEvent } = await import('../inbox.mjs')
+	await appendInboxFromTimelineEvent(username, entityHash, row)
 	return row
 }
 

@@ -11,8 +11,12 @@ export const messageReducers = {
 	message(state, event) {
 		withGroupId(state, event)
 		const eventId = event.id
+		const channelId = event.channelId || 'default'
+		if (state.channels[channelId]) {
+			state.channels[channelId].messageSeq = (Number(state.channels[channelId].messageSeq) || 0) + 1
+			state.channels[channelId].lastEventId = eventId
+		}
 		if (isHex64(eventId)) {
-			const channelId = event.channelId || 'default'
 			const charOwner = event.content?.charOwner
 			state.messageSenderIndex[eventId] = {
 				sender: event.sender,

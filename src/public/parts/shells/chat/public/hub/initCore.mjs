@@ -12,9 +12,16 @@ import { parseHash } from './core/urlHash.mjs'
 
 /** @returns {Promise<void>} 拉取 viewer 到 hubStore（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
-	const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
-	if (!resp.ok) return
-	const data = await resp.json()
+	const [viewerResp, whoamiResp] = await Promise.all([
+		fetch('/api/p2p/viewer', { credentials: 'include' }),
+		fetch('/api/whoami', { credentials: 'include' }),
+	])
+	if (whoamiResp.ok) {
+		const whoami = await whoamiResp.json()
+		hubStore.viewer.username = whoami.username || null
+	}
+	if (!viewerResp.ok) return
+	const data = await viewerResp.json()
 	hubStore.viewer.nodeHash = data.nodeHash || null
 	hubStore.viewer.operatorEntityHash = data.viewerEntityHash || null
 	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
