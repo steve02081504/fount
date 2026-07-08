@@ -9,13 +9,9 @@ import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social
 import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
-import {
-	buildMentionChatReplyRequest,
-	loadCharForMention,
-	replyTextFromMentionGetReply,
-} from './lib/chatMentionFallback.mjs'
 import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
+import { mentionFallbackReplyText } from './lib/chatMentionFallback.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
@@ -87,52 +83,33 @@ async function handleLocalAgentOnMention(target, mentionEvent) {
 		return { handled: false, published: false }
 
 	const { replicaUsername: username, charPartName, entityHash } = target
-	const char = await loadCharForMention(username, charPartName)
+	const char = await loadPart(username, `chars/${charPartName}`)
 	if (!char) return { handled: true, published: false }
 
-	const onMention = char?.interfaces?.social?.OnMention
-	if (onMention) {
-		const custom = normalizeSocialHandlerResult(await onMention({
+	// OnMention 为正式接口；缺失时回退 chat.GetReply（最小 chatReplyRequest）
+	const onMention = char.interfaces?.social?.OnMention
+	const text = onMention
+		? normalizeSocialHandlerResult(await onMention({
 			username,
 			charPartName,
 			...mentionEvent,
 			mentionedEntityHash: entityHash,
-		}))
-		if (custom?.text) {
-			await publishEntityReply(
-				username,
-				entityHash,
-				{
-					text: custom.text,
-					replyTo: mentionEvent.replyTo,
-					visibility: 'public',
-					lang: mentionEvent.lang,
-				},
-				charPartName,
-			)
-			return { handled: true, published: true }
-		}
-		if (custom?.skip) return { handled: true, published: false }
-	}
+		})).text
+		: await mentionFallbackReplyText(username, charPartName, char, mentionEvent)
+	if (!text) return { handled: true, published: false }
 
-	const request = buildMentionChatReplyRequest(username, charPartName, char, mentionEvent)
-	const fallbackText = await replyTextFromMentionGetReply(char, request)
-	if (fallbackText) {
-		await publishEntityReply(
-			username,
-			entityHash,
-			{
-				text: fallbackText,
-				replyTo: mentionEvent.replyTo,
-				visibility: 'public',
-				lang: mentionEvent.lang,
-			},
-			charPartName,
-		)
-		return { handled: true, published: true }
-	}
-
-	return { handled: true, published: false }
+	await publishEntityReply(
+		username,
+		entityHash,
+		{
+			text,
+			replyTo: mentionEvent.replyTo,
+			visibility: 'public',
+			lang: mentionEvent.lang,
+		},
+		charPartName,
+	)
+	return { handled: true, published: true }
 }
 
 /**

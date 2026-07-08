@@ -1,9 +1,9 @@
 /**
  * 角色生成中的 Hub 流式预览：对 reply 快照做 diff，经签名 `stream_chunk` 广播并写入服务端短缓冲。
  */
-import { createBufferedSyncPreviewUpdater } from '../../streaming_text/bufferedUpdater.mjs'
-import { generateDiff } from '../../streaming_text/diff.mjs'
-import { bufferStreamChunk } from '../stream/groupWsStreamBuffer.mjs'
+import { createBufferedSyncPreviewUpdater } from '../../streaming/bufferedUpdater.mjs'
+import { generateDiff } from '../../streaming/diff.mjs'
+import { bufferStreamChunk } from '../ws/groupWsStreamBuffer.mjs'
 
 import { broadcastSignedGroupVolatile } from './broadcast.mjs'
 

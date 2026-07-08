@@ -1,5 +1,5 @@
 /**
- * 【文件】stream/groupWsRpc.mjs
+ * 【文件】ws/groupWsRpc.mjs
  * 【职责】群 WebSocket RPC 中继：浏览器 rpc_call 本地执行或带 targetNodeId 转发；进程内等待 rpc_end/rpc_error；接联邦 char_rpc_response。
  * 【原理】handleGroupSocketRpcMessage 解析请求后 tryInvokeLocalChar/World 或写入 rpcRelayAwaiting 超时表；relayOrConsumeRpcResponse 匹配 requestId 唤醒等待或继续 WS 转发。identity 消息登记 clientNodeId 供定向 RPC 验收。
  * 【数据结构】rpcRelayAwaiting、serverProcessRpcWaiters Map；消息 { type, requestId, memberId, method, args, targetNodeId? }。

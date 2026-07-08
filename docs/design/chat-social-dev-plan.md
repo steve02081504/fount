@@ -85,7 +85,7 @@
 
 ### A1. 模型层
 
-- `src/decl/chatLog.ts`（或 worldAPI.ts）新增 `chatViewer_t`：
+- `src/decl/chatLog.ts` 新增 `chatViewer_t`（shell `decl/chatLog.ts` re-export，worldAPI 经此引入）：
 
 ```ts
 type chatViewer_t = {
@@ -150,7 +150,7 @@ BeforeUserSend?: (ctx: {
 ### B2. 输出侧：persona viewer 过滤
 
 - `userAPI.chat.GetChatLog`（现悬空）**废弃删除**，替换为 `GetChatLogForViewer(arg, viewer)`，与 world 同签名。
-- 在 `materializeViewerChatLog()` 中的固定顺序：base log → world `GetChatLogForViewer`（客观世界规则）→ persona `GetChatLogForViewer`（用户主观滤镜）→ UI DTO。
+- 在 `materializeViewerChatLog()` 中的固定顺序：base log → world `GetChatLogForViewer`（客观世界规则）→ persona `GetChatLogForViewer`（用户主观滤镜）→ UI DTO。同一 world→persona 顺序也作用于 agent prompt 路径（`getChatRequest`）。
 - 原则：persona 只影响观察视图与 prompt 视图，不篡改底层 DAG 真相。
 
 ### B3. edit/delete 前置钩子
@@ -186,7 +186,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 1. **错误反馈统一**：互动操作（like/repost/reply/follow）失败时给 toast，消除 `.catch(() => default)` 静默降级；`showToastI18n` 已有基建，复用即可。
 2. **乐观更新**：like/repost/save 先改本地计数与状态再发请求，失败回滚，不再每次 `refreshVisiblePosts` 整段刷新。
-3. **WS 增量更新**：`init.mjs` 收到 `{ type: 'post', entityHash, postId }` 后做单帖插入/提示"有新帖"横幅，而不是整页 reload feed；通知 badge 由 WS 事件驱动。
+3. **WS 增量更新**：`init.mjs` 收到 `{ type: 'post', entityHash, postId }` 后做单帖插入/提示"有新帖"横幅，而不是当前的全量重拉 feed（`loadFeed`）；通知 badge 由 WS 事件驱动。
 4. **分页补齐**：feed 无限滚动（IntersectionObserver 替代 load-more 按钮）；notifications 用后端已有的 cursor 做 load more；profile posts 分页。
 5. **通知已读**：切到 E1 的服务端水位后，多端一致。
 
@@ -216,7 +216,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 ### D3. 目录与命名整理
 
 - `rpcDispatcher.mjs` 从 `src/chat/` 根挪进 `src/chat/federation/`（它本质是 group RPC 的服务端分发）。
-- `src/stream/`（通用 diff/buffer）与 `src/chat/stream/`（群 WS）命名撞车：前者更名（如 `src/streaming_text/`）或并入 lib。
+- `src/stream/`（通用 diff/buffer）与 `src/chat/stream/`（群 WS）命名撞车：已定名前者 `src/streaming/`、后者 `src/chat/ws/`。
 - `visibility.mjs` 文件头注释改为与实际一致（当前仅 prompt 路径使用）；待 A3 后它会真正参与读路径，届时再更新。
 - social：`endpoints/discover.mjs` 拆出 search/notifications/translate/viewer 各自路由文件；`feed/helpers.mjs` 的 `listKnownTimelineOwners`（=following）与 `listLocalTimelineOwners`（=磁盘目录）改名以区分语义（如 `listFollowedTimelineOwners` / `listLocalTimelineDirs`）。
 
@@ -229,7 +229,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 ### D5. remoteWorldProxy 补齐
 
 - 补 `GetPrompt` / `TweakPrompt` / `GetGroupPrompt` / `GetChatLogForViewer` 的 RPC 代理与 `rpcDispatcher` 对应 case，使远端 world 在 prompt 组装阶段成为完整参与者（这是"parts 联邦能力对称"的 world 半边；plugin/persona 的联邦对称属于 F 期）。
-- `MessageEditing` 视 D1 合并后的钩子布局决定是否代理。
+- world 侧编辑钩子定名 `MessageEdit` / `MessageDelete`（charAPI 的 `MessageEditing` 是另一套历史命名，不混用），一并代理。
 - 注意与工作流 G 的关系：这些代理只服务 hosted 形态；local / replicated world 本机执行，不走 RPC。
 
 ### D6. 内置极小 persona / world（null-object 兜底）
@@ -296,7 +296,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 工作项（测试随批走，不单列）：
 
-- **G1** 声明与分发：decl 字段 + bind 事件校验分支 + `resolveWorld` 三分支（未绑定/未安装回退 D6 的内置极小 world）；fount world 标 `local`。配套测试：local 本机执行与未安装回退、hosted 回归（缺省 distribution 走原路径）。
+- **G1** 声明与分发：decl 字段 + bind 事件校验分支 + `resolveWorld` 三分支（未绑定/未安装回退 D6 的内置极小 world，其已自带 `distribution: 'local'` 运行时属性）；fount world 标 `local`。配套测试：local 本机执行与未安装回退、hosted 回归（缺省 distribution 走原路径）。
 - **G2** 状态通道：`world_op` 事件 + 通用 reducer + `WorldChatHost` + `ChatHostConnected` 钩子 + 入站尺寸清扫。配套测试：replicated 双 replica 收敛、越权 op 折叠层忽略、超限 payload 入站拒收。
 
 依赖极少（仅依赖 D6 的极小 world 兜底，不依赖 A-E 其他项；`resolveWorld` 与 D1 写路径改动无交集），排为 M7/M8，可提前与 M3+ 并行。
@@ -311,7 +311,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 
 先立边界：**回复生成是 char 的活，`char.GetReply` 是且始终是唯一的回复生成入口，shell 不接管、不代跑。** 生态报告里"runtime 主链收回宿主"的旧表述不准确，已按此修正。
 
-真正要做的是消除**重复**而不是转移**责任**：`buildPromptStruct → AIsource.StructCall → plugin ReplyHandler loop` 这条链目前以复制粘贴形态散落在各 char 模板里，应沉淀为 shell 出品的共享 runtime 库（`src/chat/session/` 或独立 lib）：
+真正要做的是消除**重复**而不是转移**责任**：`buildPromptStruct` 本身已是 shell 共享导出（`src/prompt_struct/`），真正以复制粘贴形态散落在各 char 模板里的是围绕它的 `AIsource.StructCall` + plugin `ReplyHandler` regen 循环，应沉淀为 shell 出品的共享 runtime 库（`src/chat/session/` 或独立 lib）：
 
 - char 主动 import / 组合这套库来实现自己的 `GetReply`（easychar 模板即是这条默认链的雏形，改为薄薄一层对库的调用）；不想用的 char 继续从零自建，完全控制权不变。
 - provider 选择、tool contract、重试/审计/可观测性做成**库层能力**，char 用了库就自然获得，而不是宿主强制治理。

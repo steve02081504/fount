@@ -9,7 +9,7 @@
  */
 export function writePathHookState() {
 	const key = '__fount_write_path_hook_state__'
-	if (!globalThis[key]) {
+	if (!globalThis[key]) 
 		globalThis[key] = {
 			addCalls: [],
 			afterCalls: [],
@@ -24,6 +24,6 @@ export function writePathHookState() {
 				this.beforeSendCalls.length = 0
 			},
 		}
-	}
+	
 	return globalThis[key]
 }

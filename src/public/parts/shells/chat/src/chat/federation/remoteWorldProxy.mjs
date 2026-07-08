@@ -38,7 +38,15 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			err.code = 'REMOTE_UNAVAILABLE'
 			throw err
 		}
-		const rpcResult = await rpcCall(method, encodeWireJson(args, `rpc.args:${method}`))
+		let rpcResult
+		try {
+			rpcResult = await rpcCall(method, encodeWireJson(args, `rpc.args:${method}`))
+		}
+		catch (error) {
+			// world 钩子全部可选：远端未实现等价于本地未定义该钩子
+			if (error?.code === 'METHOD_NOT_FOUND') return undefined
+			throw error
+		}
 		return encodeWireJson(rpcResult ?? null, `rpc.result:${method}`)
 	}
 
@@ -56,10 +64,29 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			 * @returns {Promise<chatReply_t | null>} 群问候语回复或 null
 			 */
 			GetGroupGreeting: (replyRequest, greetingIndex) => invokeRemote('GetGroupGreeting', [replyRequest, greetingIndex]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @returns {Promise<object | undefined>} 世界单人 prompt 片段
+			 */
 			GetPrompt: replyRequest => invokeRemote('GetPrompt', [replyRequest]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @returns {Promise<object | undefined>} 世界群 prompt 片段
+			 */
 			GetGroupPrompt: replyRequest => invokeRemote('GetGroupPrompt', [replyRequest]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {object} promptStruct 完整 prompt 结构
+			 * @param {object} myPrompt 世界自身的 prompt 片段
+			 * @param {number} detailLevel 细节级别
+			 * @returns {Promise<object | undefined>} 调整后的 prompt 结构
+			 */
 			TweakPrompt: (replyRequest, promptStruct, myPrompt, detailLevel) =>
 				invokeRemote('TweakPrompt', [replyRequest, promptStruct, myPrompt, detailLevel]),
+			/**
+			 * @param {chatReplyRequest_t} request 聊天回复请求
+			 * @returns {Promise<AsyncIterable<object>>} 发言轮次序列
+			 */
 			GetSpeakingOrder: async request => {
 				const turns = await invokeRemote('GetSpeakingOrder', [request])
 				const list = Array.isArray(turns) ? turns : []
@@ -84,7 +111,17 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			 * @returns {Promise<chatLogEntry_t[]>} 指定角色的聊天记录
 			 */
 			GetChatLogForCharname: (replyRequest, charname) => invokeRemote('GetChatLogForCharname', [replyRequest, charname]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {string} charname 被代言的角色
+			 * @returns {Promise<chatReply_t | null | undefined>} 世界代角色的回复；nullish 表示放行
+			 */
 			GetCharReply: (replyRequest, charname) => invokeRemote('GetCharReply', [replyRequest, charname]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {chatLogEntry_t} entry 即将落盘的条目
+			 * @returns {Promise<object | undefined>} 世界改写/拒绝结果
+			 */
 			AddChatLogEntry: (replyRequest, entry) => invokeRemote('AddChatLogEntry', [replyRequest, entry]),
 			/**
 			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求

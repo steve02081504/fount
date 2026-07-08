@@ -1,5 +1,5 @@
 /**
- * M4：仅 chat.GetReply、无 social.OnMention。
+ * 仅 chat.GetReply、无 social.OnMention。
  */
 export default {
 	info: {
@@ -8,6 +8,7 @@ export default {
 	},
 	interfaces: {
 		chat: {
+			/** @returns {Promise<object>} 固定回复 */
 			GetReply: async () => ({ content: 'mention-getreply-fallback' }),
 		},
 	},

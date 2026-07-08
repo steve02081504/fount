@@ -1,5 +1,5 @@
 /**
- * 【文件】src/stream/bufferedUpdater.mjs
+ * 【文件】src/streaming/bufferedUpdater.mjs
  * 【职责】把高频异步预览更新器包装为同步接口，合并连续 reply 快照并在单链 Promise 上串行 drain，避免 UI/WS 背压。
  * 【原理】update 时用 structuredClone 覆盖 lastReply 并调度 drain；drain 通过 pending 链保证同一时刻仅一个 asyncPreviewUpdater 在执行，错误经 handleError 吞掉不阻断队列。
  * 【数据结构】lastReply（content/content_for_show/files）、drainScheduled 标志、pending Promise 链。

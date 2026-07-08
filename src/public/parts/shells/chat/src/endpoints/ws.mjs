@@ -5,11 +5,11 @@ import {
 	handleClientWsControlFrame,
 	registerGroupUiSocket,
 } from '../chat/session/wsLifecycle.mjs'
-import { registerAvRelaySocket } from '../chat/stream/avRelay.mjs'
+import { registerAvRelaySocket } from '../chat/ws/avRelay.mjs'
 import {
 	handleGroupSocketIdentityMessage,
 	handleGroupSocketRpcMessage,
-} from '../chat/stream/groupWsRpc.mjs'
+} from '../chat/ws/groupWsRpc.mjs'
 import { runAuthenticatedWs } from '../ws_auth.mjs'
 
 /**
@@ -44,7 +44,7 @@ export function registerWsRoutes(router) {
 			if (normalizeHex64(ownerNodeHash) !== localNodeHash) return void ws.close()
 			const { getState } = await import('../chat/dag/materialize.mjs')
 			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
-			const { groupWsRoomKey } = await import('../chat/stream/groupWsRooms.mjs')
+			const { groupWsRoomKey } = await import('../chat/ws/groupWsRooms.mjs')
 			const { state } = await getState(username, groupId)
 			if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return void ws.close()
 			const roomKey = groupWsRoomKey(localNodeHash, groupId)

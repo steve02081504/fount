@@ -22,7 +22,7 @@ export function invalidateAllFederationRoomsForUser(username) {
 
 events.on('federation-settings-changed', ({ username }) => {
 	invalidateAllFederationRoomsForUser(username)
-	void import('../stream/signing.mjs')
+	void import('../ws/signing.mjs')
 		.then(module => module.invalidateStreamSignerCache(username))
 		.catch(error => console.warn('federation: invalidateStreamSignerCache failed', error))
 })

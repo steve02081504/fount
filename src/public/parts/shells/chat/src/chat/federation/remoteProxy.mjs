@@ -1,9 +1,9 @@
 /**
  * 【文件】federation/remoteProxy.mjs
  * 【职责】为不在本机运行的角色/世界构造 RPC 代理（CharAPI/WorldAPI 子集），经群 WebSocket rpc_call 或 Trystero char_rpc 调用远端节点。
- * 【原理】createRemoteCharProxy 用 Symbol 标记代理对象；rpcCall 组装 requestId/memberId/method，带 targetNodeId（从 sourceHost 解析 UUID）定向到指定联邦节点。shouldAcceptDirectedGroupRpc 防止 WS 误执行非本 clientNodeId 的请求。与 room char_rpc 及 stream/groupWsRpc 闭环。
+ * 【原理】createRemoteCharProxy 用 Symbol 标记代理对象；rpcCall 组装 requestId/memberId/method，带 targetNodeId（从 sourceHost 解析 UUID）定向到指定联邦节点。shouldAcceptDirectedGroupRpc 防止 WS 误执行非本 clientNodeId 的请求。与 room char_rpc 及 ws/groupWsRpc 闭环。
  * 【数据结构】REMOTE_PROXY_SYMBOL；GROUP_RPC_TARGET_NODE_ID_KEY；代理内部缓存 interfaces 形状。
- * 【关联】charRpc.mjs、stream/groupWsRpc.mjs、session tryInvokeLocal*、lib/jsonBoundary.mjs、remoteWorldProxy.mjs。
+ * 【关联】charRpc.mjs、ws/groupWsRpc.mjs、session tryInvokeLocal*、lib/jsonBoundary.mjs、remoteWorldProxy.mjs。
  */
 /** @typedef {import('../../../../../../decl/basedefs.ts').locale_t} locale_t */
 /** @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
@@ -18,7 +18,7 @@ import { encodeWireJson } from '../lib/wireJson.mjs'
 /** 标记 `createRemoteCharProxy` 生成的对象，供 `isRemoteProxy` 识别。 */
 export const REMOTE_PROXY_SYMBOL = Symbol.for('fount.remoteCharProxy')
 
-/** 群 WebSocket `rpc_call` 定向字段名（与 `stream/groupWsHub.mjs` / 浏览器端一致）。 */
+/** 群 WebSocket `rpc_call` 定向字段名（与 `ws/groupWsRpc.mjs` / 浏览器端一致）。 */
 export const GROUP_RPC_TARGET_NODE_ID_KEY = 'targetNodeId'
 
 const UUID_V4_RE = /^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/iu

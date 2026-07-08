@@ -1,5 +1,5 @@
 /**
- * 【文件】src/stream/lineBasedStream.mjs
+ * 【文件】src/streaming/lineBasedStream.mjs
  * 【职责】实现「按行稳定、末行流动」的增量流式策略，适配仅支持 append 的 ACP 等协议，并在内容回退时插入 `---` 分隔。
  * 【原理】processUpdate 只推送已换行完成的 stableText；若 stable 前缀与 covered 不一致则发 `---` 重同步；finish 对齐 displayContent 剩余尾部并经 pacedStream 推出；createBufferedLineBasedStream 外包 bufferedUpdater 使 update 同步化。
  * 【数据结构】sentText/coveredText/sentFileCount、reply（content_for_show/content/files）、lineStream `{ update, finish }`。

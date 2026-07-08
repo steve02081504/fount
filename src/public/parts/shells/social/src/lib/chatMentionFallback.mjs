@@ -1,26 +1,19 @@
 /**
- * OnMention 无 social handler 时回退 chat.GetReply 的最小 chatReplyRequest 构造。
+ * OnMention 无 social handler 时回退 chat.GetReply：构造最小 chatReplyRequest 并取回复正文。
  */
-import { loadPart } from '../../../../../../server/parts_loader.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../../chat/src/chat/session/builtinParts.mjs'
-
-/**
- * @param {string} username replica
- * @param {string} charPartName chars 目录名
- * @returns {Promise<object | null>} char part
- */
-export async function loadCharForMention(username, charPartName) {
-	return loadPart(username, `chars/${charPartName}`)
-}
 
 /**
  * @param {string} username replica
  * @param {string} charPartName chars 目录名
  * @param {object} char char part
  * @param {object} mentionEvent OnMention 载荷
- * @returns {object} 最小 chatReplyRequest
+ * @returns {Promise<string | null>} 回复正文；char 无 GetReply 或回复为空时 null
  */
-export function buildMentionChatReplyRequest(username, charPartName, char, mentionEvent) {
+export async function mentionFallbackReplyText(username, charPartName, char, mentionEvent) {
+	const getReply = char.interfaces?.chat?.GetReply
+	if (!getReply) return null
+
 	const now = new Date()
 	const entry = {
 		name: mentionEvent.authorDisplayName || 'user',
@@ -35,7 +28,7 @@ export function buildMentionChatReplyRequest(username, charPartName, char, menti
 		},
 	}
 	const charInfo = char.info?.['zh-CN'] || char.info?.['en-US'] || {}
-	return {
+	const request = {
 		supported_functions: {
 			markdown: true,
 			mathjax: false,
@@ -71,20 +64,12 @@ export function buildMentionChatReplyRequest(username, charPartName, char, menti
 				authorEntityHash: mentionEvent.authorEntityHash,
 			},
 		},
+		/** @returns {Promise<null>} social 回退请求不支持追加消息 */
 		AddChatLogEntry: async () => null,
+		/** @returns {Promise<object>} 原样返回请求自身（无会话可刷新） */
 		Update: async function update() { return this },
 	}
-}
 
-/**
- * @param {object} char char part
- * @param {object} request chatReplyRequest
- * @returns {Promise<string | null>} 回复正文
- */
-export async function replyTextFromMentionGetReply(char, request) {
-	const getReply = char?.interfaces?.chat?.GetReply
-	if (!getReply) return null
 	const reply = await getReply(request)
-	const text = reply?.content != null ? String(reply.content).trim() : ''
-	return text || null
+	return String(reply?.content ?? '').trim() || null
 }

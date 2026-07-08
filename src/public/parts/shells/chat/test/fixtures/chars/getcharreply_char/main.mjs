@@ -1,5 +1,5 @@
 /**
- * M4：GetCharReply 回落测试用 char（不应被调用）。
+ * GetCharReply 回落测试用 char（不应被调用）。
  */
 export default {
 	info: {
@@ -8,6 +8,9 @@ export default {
 	},
 	interfaces: {
 		chat: {
+			/**
+			 *
+			 */
 			GetReply: async () => {
 				throw new Error('char GetReply must not run when world GetCharReply returns')
 			},

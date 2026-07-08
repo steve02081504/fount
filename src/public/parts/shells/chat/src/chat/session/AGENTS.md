@@ -19,6 +19,7 @@ alwaysApply: false
 - Human: `materializeViewerLog.mjs` → `GET …/view-log`; projects back to row DTOs (hides discarded entries, applies rewrite overrides, `viewerRewritten`); raw `GET …/messages` is preserved separately.
 - Hub: `loadMessages` / incremental refresh go through `getChannelViewLog`; navigation backfill can still use raw batch-get / pin-context.
 - Federation: `federation/remoteWorldProxy.mjs` + `federation/rpcDispatcher.mjs`; the world side exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`.
+- **Optional-hook degradation across RPC**: the proxy defines every method, so "remote didn't implement it" surfaces as a `METHOD_NOT_FOUND` RPC error — `invokeRemote` catches it and returns `undefined`, making a missing remote hook indistinguishable from a locally-undefined one. Callers therefore uniformly use `hook?.(…) ?? fallback`. The dispatcher throws `METHOD_NOT_FOUND` for local parts lacking the method instead of falling through to network RPC.
 
 ## D6 built-in minimal world / persona
 
@@ -58,11 +59,11 @@ alwaysApply: false
 - Integration: `test/integration/viewer_human_viewlog.test.mjs` (view-log, persona, ordering, D6)
 - Integration: `test/integration/write_path_unification.test.mjs` (single point for `BeforeUserSend` + Add/After; `triggerCharReply` is fire-and-forget, so wait for `After` before asserting)
 
-## Edit/delete hooks (M4, channel-native)
+## Edit/delete hooks (channel-native)
 
 - **Sole Hub path**: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` (persona `BeforeUserEdit`/`BeforeUserDelete` → world `MessageEdit`/`MessageDelete`) → `messageMutations.appendChannelMessage*`.
 - Persona resolution is the same as `BeforeUserSend` (the sender's replica via `loadPlayerForReplica`).
 - `session/messages.mjs`'s `editMessage` has been removed; `deleteMessage` only does abort-placeholder cleanup.
-- `triggerReply`: a non-null `world.GetCharReply` replies on the world's behalf; `null` falls back to `char.GetReply`.
-- Fixture counters: `test/fixtures/m4_hook_state.mjs` (same `globalThis` pattern as M2).
-- Integration: `test/integration/m4_cleanup_hooks.test.mjs`.
+- `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)` — nullish result (missing hook, remote METHOD_NOT_FOUND, or explicit null) falls through to the char itself.
+- Fixture counters: `test/fixtures/edit_path_hook_state.mjs` (same `globalThis` pattern as the write path).
+- Integration: `test/integration/edit_path_hooks.test.mjs`.

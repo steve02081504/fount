@@ -241,24 +241,16 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 		}
 	}
 
-	const baseText = content.type === 'text'
-		? channelMessageAgentText(content)
-		: channelMessageShowText(content)
-	const textParts = [baseText, ...inlineMarkers].filter(Boolean)
-	if (inlineMarkers.length && content.type === 'text') {
-		const previousContent = channelMessageContentObject(content)
-		const extra = { ...previousContent }
-		for (const key of ['type', 'content', 'content_for_show', 'content_for_edit'])
-			delete extra[key]
-		content = textChannelContent(textParts.join('\n'), {
-			content_for_show: previousContent.content_for_show,
-			content_for_edit: previousContent.content_for_edit,
+	if (inlineMarkers.length) {
+		const isText = content.type === 'text'
+		const baseText = isText ? channelMessageAgentText(content) : channelMessageShowText(content)
+		const { type, content: previousText, content_for_show, content_for_edit, ...extra } = channelMessageContentObject(content)
+		content = textChannelContent([baseText, ...inlineMarkers].filter(Boolean).join('\n'), {
 			...extra,
+			...isText && { content_for_show, content_for_edit },
 		})
 	}
-	else if (inlineMarkers.length && content.type !== 'text') 
-		content = textChannelContent(textParts.join('\n'), { ...content, type: undefined })
-	
+
 	if (fileIds.length)
 		content = { ...content, fileIds, fileCount: fileIds.length }
 

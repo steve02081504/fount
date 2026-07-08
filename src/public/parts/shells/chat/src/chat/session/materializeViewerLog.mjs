@@ -14,23 +14,19 @@ import {
 	buildChatLogEntriesFromChannelLines,
 	loadDagHydrationI18n,
 } from '../dag/hydration.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
 import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
+
 
 import { resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
 import {
 	applyPersonaChatLogView,
 	applyWorldChatLogView,
-	buildViewer,
 	resolveViewerRoles,
 } from './viewerLog.mjs'
 import { projectViewerEntriesToRows } from './viewerLogProject.mjs'
-
-/**
- *
- */
-export { projectViewerEntriesToRows } from './viewerLogProject.mjs'
 
 /**
  * 物化 viewer 视角下的 chat_log（不投影 DTO）。
@@ -44,7 +40,6 @@ export { projectViewerEntriesToRows } from './viewerLogProject.mjs'
 export async function materializeViewerChatLog(username, groupId, channelId, viewerFields = { kind: 'user' }, pagination = {}) {
 	const chatMetadata = await getGroupRuntime(groupId, username)
 	const timeSlice = chatMetadata.LastTimeSlice
-	const { getState } = await import('../dag/materialize.mjs')
 	const { state } = await getState(username, groupId)
 
 	const member_roles = viewerFields.roles
@@ -59,15 +54,16 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 			? viewerFields.entityHash || agentEntityHash(getLocalNodeHash(), `chars/${viewerFields.charname}`)
 			: await getOperatorEntityHash(username))
 
-	const viewer = buildViewer({
+	/** @type {chatViewer_t} */
+	const viewer = {
 		kind: viewerFields.kind,
 		memberId: memberId || '',
 		ownerUsername: viewerFields.ownerUsername || username,
 		channelId,
-		...viewerFields.charname ? { charname: viewerFields.charname } : {},
-		...viewerFields.entityHash ? { entityHash: viewerFields.entityHash } : {},
+		...viewerFields.charname && { charname: viewerFields.charname },
+		...viewerFields.entityHash && { entityHash: viewerFields.entityHash },
 		roles: member_roles,
-	})
+	}
 
 	const rawLines = await readChannelMessagesForUser(username, groupId, channelId, pagination)
 	const i18n = await loadDagHydrationI18n(username)

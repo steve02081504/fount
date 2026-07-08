@@ -13,7 +13,7 @@ import { buildAvRelayWebSocketUrl } from '../src/wsUrl.mjs'
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
  *
- * 帧头 26 字节，与 {@link ../../../src/chat/stream/avRelay.mjs} 一致：
+ * 帧头 26 字节，与 {@link ../../../src/chat/ws/avRelay.mjs} 一致：
  *   [0] frame_type 0=video 1=audio
  */
 

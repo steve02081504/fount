@@ -83,8 +83,8 @@ async function appendLocalEvents(username, groupId, events) {
 				throw httpError(403, 'ADMIN or MANAGE_ROLES required')
 			const { sender } = await resolveLocalEventSigner(username, groupId)
 			const { publishVolatileToFederation } = await import('../../chat/federation/index.mjs')
-			const { broadcastEvent } = await import('../../chat/stream/groupWsBroadcast.mjs')
-			const { groupWsRoomKeyForReplica } = await import('../../chat/stream/groupWsRooms.mjs')
+			const { broadcastEvent } = await import('../../chat/ws/groupWsBroadcast.mjs')
+			const { groupWsRoomKeyForReplica } = await import('../../chat/ws/groupWsRooms.mjs')
 			const alert = buildAndApplyUnverifiedSlashAlert(
 				sender,
 				content,

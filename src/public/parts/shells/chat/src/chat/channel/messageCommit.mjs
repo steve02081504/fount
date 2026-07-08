@@ -20,11 +20,9 @@ import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
 
 /**
  * @param {object} content 频道消息 content
- * @param {object | null | undefined} entry 可选 chatLog 条目
  * @returns {object} 轻量 hook 用条目
  */
-function entryForWorldHook(content, entry) {
-	if (entry) return entry
+function entryForWorldHook(content) {
 	const text = channelMessageAgentText(content) || String(content?.content || '')
 	return {
 		id: '',
@@ -77,12 +75,12 @@ function applyEntryRewriteToContent(content, entry) {
 export async function runWorldAddChatLogEntryHook(username, groupId, channelId, content, entry, charname = null) {
 	const world = await resolveWorld(groupId, channelId, username)
 	const hook = world.interfaces.chat.AddChatLogEntry
-	if (!hook) return { content: channelMessageContentObject(content), entry: entry || entryForWorldHook(content, entry) }
+	if (!hook) return { content: channelMessageContentObject(content), entry: entry || entryForWorldHook(content) }
 
 	// 动态 import：避免 messageCommit ↔ chatRequest ↔ chatLogAppend ↔ chatLogMirror 环依赖
 	const { getChatRequest } = await import('../session/chatRequest.mjs')
 	const request = await getChatRequest(groupId, charname || undefined, channelId, { replicaUsername: username })
-	let hookEntry = entryForWorldHook(content, entry)
+	let hookEntry = entry || entryForWorldHook(content)
 	const rewritten = await hook(request, hookEntry)
 	if (rewritten != null) hookEntry = rewritten
 	if (hookEntry?.reject)

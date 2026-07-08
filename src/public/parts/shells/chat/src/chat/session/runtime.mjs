@@ -9,9 +9,8 @@ import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { hydrateChatLogFromDag } from '../dag/hydration.mjs'
 import { ensureGroup } from '../dag/lifecycle.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
-import { registerGroupReplicaForUser } from '../stream/groupWsRooms.mjs'
+import { registerGroupReplicaForUser } from '../ws/groupWsRooms.mjs'
 
-import { BUILTIN_WORLD } from './builtinParts.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
 import { chatMetadata_t, timeSlice_t } from './models.mjs'
 import { loadPlayerForReplica, loadPluginsForReplica } from './timeSliceParts.mjs'
@@ -67,6 +66,7 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 	for (const [charname, bind] of Object.entries(session?.chars || {}))
 		await bindChar(charname, bind)
 
+	// 非本机/未绑定时保留构造缺省 BUILTIN_WORLD
 	const worldBind = session?.channelWorlds?.[effectiveChannelId]
 		|| session?.world
 	if (worldBind?.worldname && worldBind.homeNodeHash === localNode) {
@@ -74,8 +74,6 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 		slice.world = await loadPart(owner, `worlds/${worldBind.worldname}`)
 		slice.world_id = worldBind.worldname
 	}
-	else
-		slice.world = BUILTIN_WORLD
 
 	Object.assign(slice, await loadPlayerForReplica(replicaUsername, session?.personas))
 	Object.assign(slice.plugins, await loadPluginsForReplica(replicaUsername, session?.plugins))

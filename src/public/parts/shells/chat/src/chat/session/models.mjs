@@ -27,6 +27,7 @@ function serializeFileBuffer(buffer) {
 	return String(buffer)
 }
 
+import { BUILTIN_PERSONA, BUILTIN_WORLD } from './builtinParts.mjs'
 import { createNewChatMetadata } from './factory.mjs'
 import { hydrateTimeSlice } from './hydrate.mjs'
 
@@ -38,12 +39,12 @@ export class timeSlice_t {
 	chars = {}
 	/** @type {Record<string, PluginAPI_t>} */
 	plugins = {}
-	/** @type {WorldAPI_t} */
-	world
+	/** @type {WorldAPI_t} 缺省内置极小世界（D6：拓扑无例外） */
+	world = BUILTIN_WORLD
 	/** @type {string} */
 	world_id
-	/** @type {UserAPI_t} */
-	player
+	/** @type {UserAPI_t} 缺省内置极小人格 */
+	player = BUILTIN_PERSONA
 	/** @type {string} */
 	player_id
 	/** @type {Record<string, any>} */

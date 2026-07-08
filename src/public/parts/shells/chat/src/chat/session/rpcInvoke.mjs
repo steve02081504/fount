@@ -8,7 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { sendRpcToNode } from '../federation/remoteProxy.mjs'
-import { awaitServerRpcResponse } from '../stream/groupWsRpc.mjs'
+import { awaitServerRpcResponse } from '../ws/groupWsRpc.mjs'
 
 import { groupMetadatas } from './wsLifecycle.mjs'
 
@@ -27,11 +27,17 @@ export async function invokeGroupRpc(groupId, replicaUsername, opts) {
 		const { tryInvokeLocalCharRpc, tryInvokeLocalWorldRpc } = await import('../session.mjs')
 		const local = partKind === 'char'
 			? await tryInvokeLocalCharRpc(groupId, memberId, method, args)
-			: await tryInvokeLocalWorldRpc(groupId, method, args)
+			: await tryInvokeLocalWorldRpc(groupId, memberId, method, args)
 		if (local.kind === 'result') return local.value
 		if (local.kind === 'error') {
 			const err = new Error(local.message || 'RPC error')
 			err.code = local.code || 'EXECUTION_ERROR'
+			throw err
+		}
+		// 部件在本机但没有该方法：终止而非转发网络（远端同样不会有）
+		if (local.kind === 'method_not_found') {
+			const err = new Error(`method not found: ${method}`)
+			err.code = 'METHOD_NOT_FOUND'
 			throw err
 		}
 	}

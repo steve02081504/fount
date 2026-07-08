@@ -1,5 +1,5 @@
 /**
- * 【文件】src/stream/toolBlocks.mjs
+ * 【文件】src/streaming/toolBlocks.mjs
  * 【职责】在 Char 回复预览链中解析工具调用定界符（成对 start/end），将未完成块渲染为占位、已完成块渲染为结果，并支持内联工具异步执行缓存。
  * 【原理】defineToolUseBlocks 用命名捕获组正则替换 content_for_show；defineInlineToolUses 对 content 中每个匹配 exec 一次并缓存 Promise/Error，pending 时显示「正在调用工具」；占位文案经 getChatI18n 按 html/markdown 能力分支。
  * 【数据结构】toolPairs/toolDefs、args.extension.streamInlineToolsResults（Map id→Promise[]）、CharReplyPreviewUpdater_t 链式 next。

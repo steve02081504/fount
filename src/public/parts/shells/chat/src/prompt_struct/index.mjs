@@ -55,14 +55,15 @@ export async function buildPromptStruct(
 	}
 
 	if (world.interfaces.chat.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
-	if (user.interfaces.chat) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
+	if (user.interfaces.chat.GetPrompt) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
 	if (char?.interfaces?.chat) promptStruct.char_prompt = char.interfaces.chat.GetPrompt(args)
 	for (const otherCharName of Object.keys(other_chars))
 		promptStruct.other_chars_prompts[otherCharName] = other_chars[otherCharName].interfaces.chat?.GetPromptForOther?.(args)
 	for (const pluginName of Object.keys(plugins))
 		promptStruct.plugin_prompts[pluginName] = plugins[pluginName].interfaces.chat?.GetPrompt?.(args)
 
-	promptStruct.world_prompt = await promptStruct.world_prompt
+	// 远端 world 未实现 GetPrompt 时（METHOD_NOT_FOUND → undefined）保持空贡献
+	promptStruct.world_prompt = await promptStruct.world_prompt ?? getSinglePartPrompt()
 	if (world.interfaces.chat.GetGroupPrompt) {
 		const groupPrompt = await world.interfaces.chat.GetGroupPrompt(args)
 		if (groupPrompt?.public)

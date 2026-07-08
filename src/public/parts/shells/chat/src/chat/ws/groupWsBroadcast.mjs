@@ -1,5 +1,5 @@
 /**
- * 【文件】stream/groupWsBroadcast.mjs
+ * 【文件】ws/groupWsBroadcast.mjs
  * 【职责】向群 WebSocket 房间广播 JSON 消息，按优先级排队发送；VOLATILE 拥塞时丢弃低优先级；联邦启用时同步 publishVolatileToFederation。
  * 【原理】registerSocket 将 ws 加入 groupSockets Set；broadcastEvent 序列化后 per-socket 微任务队列 flush，cap 48。inferBroadcastPriority：dag_event=0，频道消息=1，stream_chunk 等=4。与 Trystero 出站队列设计对称但独立。
  * 【数据结构】groupSockets: Map<roomKey, Set<WebSocket>>；wsOutboundQueues WeakMap→{ serializedPayload, priority, seq }[]。

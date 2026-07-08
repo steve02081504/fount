@@ -30,7 +30,7 @@ import { getLocalNodeHash } from '../lib/replica.mjs'
 import { safeRm } from '../lib/utils.mjs'
 import { invalidateKnownMemberIndex } from '../mailbox/memberIndex.mjs'
 import { purgeGroupSession } from '../session/wsLifecycle.mjs'
-import { dropGroupReplicaRegistration } from '../stream/groupWsRooms.mjs'
+import { dropGroupReplicaRegistration } from '../ws/groupWsRooms.mjs'
 
 import { appendEvent } from './append.mjs'
 import { checkEventPermission } from './authorizeEvent.mjs'

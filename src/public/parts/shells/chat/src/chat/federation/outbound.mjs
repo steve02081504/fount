@@ -3,7 +3,7 @@
  * 【职责】单 Trystero 房间出站优先级队列（§6.4）：合并微任务刷盘发送，拥塞时丢弃低优先级尾部，避免 DAG 被 VOLATILE 淹没。
  * 【原理】createFedOutQueue 按 priority 升序、seq FIFO 插入；queueMicrotask 批量 flush。priority 0=DAG、1=gossip 请求、2=gossip/频道历史应答、3=identity/PEX/tip、10=fed_volatile。超长队列 pop 尾部。
  * 【数据结构】队列项 { priority, seq, run }；FED_OUT_CAP=64。
- * 【关联】room.mjs 构造 FederationSlot 各 send* 方法；与 stream/groupWsBroadcast 的 WS 出站优先级设计对称。
+ * 【关联】room.mjs 构造 FederationSlot 各 send* 方法；与 ws/groupWsBroadcast 的 WS 出站优先级设计对称。
  */
 const FED_OUT_CAP = 64
 

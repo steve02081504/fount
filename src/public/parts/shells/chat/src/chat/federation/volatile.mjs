@@ -3,7 +3,7 @@
  * 【职责】将群 WebSocket 上的 VOLATILE 类消息（流分片、信誉 slash 告警）经 fed_volatile 中继到稀疏联邦邻居，并在入站时转回本群 WS。
  * 【原理】publishVolatileToFederation 由 groupWsBroadcast 在广播后调用，仅当 groupFederationOwner 存在且联邦启用；信封含 nodeId、dedupeId、payload。入站验签 stream_chunk、去重后 broadcastEvent 带 fedInbound 防回环。优先级 10 在 outbound 队列最先被丢弃。
  * 【数据结构】FED_VOLATILE_WS_TYPES；信封 { nodeId, groupId, dedupeId, payload }。
- * 【关联】stream/groupWsHub、groupWsBroadcast、signing.mjs、reputation_store.mjs、room.mjs、registry groupFederationOwner。
+ * 【关联】ws/groupWsRpc.mjs、groupWsBroadcast、signing.mjs、reputation_store.mjs、room.mjs、registry groupFederationOwner。
  */
 import { createHash } from 'node:crypto'
 
@@ -114,7 +114,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 	const dedupeKey = `${String(envelopeNode || remoteNodeHash)}:${String(envelope.dedupeId || '')}`
 	if (!takeFedVolatileDedupe(dedupeKey)) return
 
-	const { verifyStreamChunkVolatile } = await import('../stream/signing.mjs')
+	const { verifyStreamChunkVolatile } = await import('../ws/signing.mjs')
 	if (!await verifyStreamChunkVolatile(payload)) return
 
 	if (payload.type === 'reputation_slash_alert') {
@@ -122,7 +122,7 @@ export async function handleIncomingFedVolatile(username, groupId, data, peerId,
 		return
 	}
 
-	const { broadcastEvent } = await import('../stream/groupWsBroadcast.mjs')
-	const { groupWsRoomKeyForReplica } = await import('../stream/groupWsRooms.mjs')
+	const { broadcastEvent } = await import('../ws/groupWsBroadcast.mjs')
+	const { groupWsRoomKeyForReplica } = await import('../ws/groupWsRooms.mjs')
 	broadcastEvent(groupWsRoomKeyForReplica(groupId), { ...payload, fedInbound: true })
 }

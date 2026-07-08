@@ -3,7 +3,7 @@
  * 逻辑与 ImportHandlers/MCP/Template 相同，但参数化（不依赖文件状态）。
  */
 import { createMCPClient } from '../../../../ImportHandlers/MCP/engine/mcp_client.mjs'
-import { defineToolUseBlocks } from '../../../../shells/chat/src/streaming_text/index.mjs'
+import { defineToolUseBlocks } from '../../../../shells/chat/src/streaming/index.mjs'
 
 /**
  * 将 ACP McpServer 配置转换为 createMCPClient 所需格式。

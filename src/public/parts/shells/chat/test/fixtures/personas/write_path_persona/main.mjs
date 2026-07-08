@@ -13,6 +13,9 @@ function hookState() {
 	return globalThis[HOOK_KEY]
 }
 
+/**
+ *
+ */
 export default {
 	info: {
 		'zh-CN': {

@@ -1,5 +1,5 @@
 /**
- * 【文件】src/stream/diff.mjs
+ * 【文件】src/streaming/diff.mjs
  * 【职责】在流式预览或 WS 增量推送时，计算相邻消息快照之间的最小差异切片，减少重复传输全文。
  * 【原理】文本字段优先检测前缀追加（append）；否则找最长公共前缀后 emit rewrite_tail；content 与 content_for_show 可合并为单条 append；files 仅在长度或 name 变化时 emit set_files。
  * 【数据结构】diff slice：`{ type: 'append', add }`、`{ type: 'rewrite_tail', index, content, field? }`、`{ type: 'set_files', files }`。

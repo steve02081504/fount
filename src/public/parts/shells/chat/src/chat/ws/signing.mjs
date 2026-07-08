@@ -1,5 +1,5 @@
 /**
- * 【文件】stream/signing.mjs
+ * 【文件】ws/signing.mjs
  * 【职责】群 WebSocket VOLATILE 流分片（stream_chunk）的 Ed25519 签名与验签，密钥来自联邦 identity 种子。
  * 【原理】resolveStreamSigner 缓存用户级 keyPair；attachStreamVolatileSignature 在广播前签名；verifyStreamChunkVolatile 供 WS 入站与 federation/volatile 入站复用。配置变更时 invalidateStreamSignerCache。
  * 【数据结构】signerCache Map→{ pubKeyHex, pubKeyHash, secretKey, signChunk }；chunk 含 senderPubKey、signature。

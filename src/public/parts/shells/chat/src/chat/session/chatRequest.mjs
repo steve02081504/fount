@@ -33,7 +33,7 @@ import {
 import { chatLogEntry_t } from './models.mjs'
 import { resolveChar, resolveLocalPlugins, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
-import { applyPersonaChatLogView, applyWorldChatLogView, buildViewer, resolveViewerRoles } from './viewerLog.mjs'
+import { applyPersonaChatLogView, applyWorldChatLogView, resolveViewerRoles } from './viewerLog.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /**
@@ -64,17 +64,9 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const UserCharname = userinfo.name || timeSlice.player_id || replicaUsername
 
 	const { state } = await getState(replicaUsername, groupId)
-	const session = state.session || {
-		chars: {},
-		world: null,
-		channelWorlds: {},
-		personas: {},
-		plugins: {},
-		charFrequencies: {},
-	}
 	const member_roles = await resolveViewerRoles(state, { charname, replicaUsername, groupId })
 	const other_chars = {}
-	for (const name of Object.keys(session.chars || {})) {
+	for (const name of Object.keys(state.session?.chars || {})) {
 		if (name === charname) continue
 		const other = await resolveChar(groupId, name, replicaUsername)
 		if (other) other_chars[name] = other
@@ -96,7 +88,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const resolvedWorld = await resolveWorld(groupId, effectiveChannelId, replicaUsername)
 	const plugins = await resolveLocalPlugins(groupId, replicaUsername)
 
-	let chatLogForRequest = chatMetadata.chatLog
 	const lines = await readChannelMessagesForUser(replicaUsername, groupId, effectiveChannelId, { limit: 500 })
 	const i18n = await loadDagHydrationI18n(replicaUsername)
 	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
@@ -108,7 +99,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		replicaUsername,
 		groupId,
 	)
-	chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
+	const chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
 	const memberId = charname
@@ -181,14 +172,15 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			logEntry,
 		)
 
-	const viewer = buildViewer({
+	/** @type {import('../../../../../../../decl/chatLog.ts').chatViewer_t} */
+	const viewer = {
 		kind: charname ? 'char' : 'user',
 		memberId,
 		ownerUsername: replicaUsername,
 		channelId: effectiveChannelId,
-		...charname ? { charname, entityHash: memberId } : {},
+		...charname && { charname, entityHash: memberId },
 		roles: member_roles,
-	})
+	}
 	chatReplyRequest.chat_log = await applyWorldChatLogView(chatReplyRequest, viewer)
 	chatReplyRequest.chat_log = await applyPersonaChatLogView(chatReplyRequest, viewer)
 

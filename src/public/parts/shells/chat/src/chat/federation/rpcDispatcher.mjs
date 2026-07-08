@@ -5,7 +5,6 @@
  * 【关联】session.mjs 导出 tryInvokeLocal*；groupWsRpc、roomHandlers/rpc、remoteWorldProxy。
  */
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
-
 import { resolveChannelId } from '../lib/channelId.mjs'
 import { normalizeJsonBoundaryValue } from '../lib/jsonBoundary.mjs'
 import { getMaterializedSession } from '../session/dagSession.mjs'
@@ -15,7 +14,7 @@ import { isSerializableRequest } from '../session/serializableRequest.mjs'
 /**
  * @param {unknown} root 根对象
  * @param {string} path 点号路径
- * @returns {Function | null}
+ * @returns {Function | null} 路径命中的可调用对象，否则 null
  */
 function resolveNestedCallable(root, path) {
 	if (!root || !String(path || '').trim()) return null
@@ -29,7 +28,7 @@ function resolveNestedCallable(root, path) {
 
 /**
  * @param {unknown} err 原始异常
- * @returns {string}
+ * @returns {string} 规范化后的 RPC 错误码
  */
 function normalizeRpcErrorCode(err) {
 	const code = err?.code
@@ -43,7 +42,7 @@ function normalizeRpcErrorCode(err) {
 /**
  * @param {string} method 方法名
  * @param {unknown} value RPC 返回值
- * @returns {{ kind: 'result', value: unknown }}
+ * @returns {{ kind: 'result', value: unknown }} 规范化后的成功结果
  */
 function resultOk(method, value) {
 	return {
@@ -89,6 +88,9 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 			if (!char) return { kind: 'not_local' }
 		}
 
+		/**
+		 * @returns {string | null} 从参数中推断的频道 ID
+		 */
 		const inferChannelId = () => {
 			const firstArg = list[0]
 			const fromExtension = resolveChannelId(firstArg?.extension?.channelId, '')
@@ -237,6 +239,9 @@ export function createWorldRpcDispatcher(getChatRequest) {
 		const world = await loadPart(bind.ownerUsername || owner, `worlds/${worldname}`)
 		if (!world) return { kind: 'not_local' }
 
+		/**
+		 * @returns {string | null} 从参数中推断的频道 ID
+		 */
 		const inferChannelId = () => {
 			const first = list[0]
 			const fromExtension = resolveChannelId(first?.extension?.channelId, '')

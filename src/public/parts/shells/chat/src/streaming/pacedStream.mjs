@@ -1,5 +1,5 @@
 /**
- * 【文件】src/stream/pacedStream.mjs
+ * 【文件】src/streaming/pacedStream.mjs
  * 【职责】在无真实 token 流时，按加权字符长度与上次 push 间隔模拟「打字机」节奏，将整段文本拆块回调 onChunk。
  * 【原理】computeWeightedLength 对 CJK 计 2、其余 1；push 将文本按行分配 generationTimeMs，每行再按权重切 numChunks 个 setTimeout；generation 自增可 cancel 丢弃未触发定时器；支持 AbortSignal 中止。
  * 【数据结构】createPacedFakeStream 返回 `{ push, cancel }`、内部 generation/lastCallTime/pending。

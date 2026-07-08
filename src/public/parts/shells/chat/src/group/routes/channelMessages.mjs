@@ -11,22 +11,22 @@ import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds
 import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import {
+	applyChannelMessageDeleteHooks,
+	applyChannelMessageEditHooks,
+} from '../../chat/channel/channelUserHooks.mjs'
+import {
 	appendChannelMessageDelete,
 	appendChannelMessageEdit,
 	appendChannelMessageFeedback,
 	CHANNEL_MESSAGE_EVENT_ID_RE,
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
-import {
-	applyChannelMessageDeleteHooks,
-	applyChannelMessageEditHooks,
-} from '../../chat/channel/channelUserHooks.mjs'
 import { postChannelMessage } from '../../chat/channel/postMessage.mjs'
 import { decryptEventContent } from '../../chat/channel_keys/content.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
-import { getBufferedStreamChunks } from '../../chat/stream/groupWsStreamBuffer.mjs'
+import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
 import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 

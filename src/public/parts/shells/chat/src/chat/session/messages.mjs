@@ -15,7 +15,6 @@ import { resolveChannelId } from '../lib/channelId.mjs'
 import { deleteLogContextSidecar } from '../lib/contextSidecar.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
-import { BUILTIN_PERSONA, BUILTIN_WORLD } from './builtinParts.mjs'
 import { abortGenerationByMessageId } from './generationAbort.mjs'
 import { mirrorFeedbackToDag } from './generationFeedback.mjs'
 import { timeSlice_t } from './models.mjs'
@@ -34,11 +33,8 @@ export async function deleteMessage(groupId, index) {
 	if (!chatMetadata.chatLog[index]) throw new Error('Invalid index')
 
 	const entry = chatMetadata.chatLog[index]
-	if (entry) {
-		abortGenerationByMessageId(entry.id)
-		const sidecarChannelId = resolveChannelId(entry.extension?.groupChannelId)
-		deleteLogContextSidecar(chatMetadata.username, groupId, sidecarChannelId, entry.id)
-	}
+	abortGenerationByMessageId(entry.id)
+	deleteLogContextSidecar(chatMetadata.username, groupId, resolveChannelId(entry.extension?.groupChannelId), entry.id)
 
 	chatMetadata.chatLog.splice(index, 1)
 
@@ -49,13 +45,9 @@ export async function deleteMessage(groupId, index) {
 		chatMetadata.timeLineIndex = 0
 	}
 
-	if (chatMetadata.chatLog.length)
-		chatMetadata.LastTimeSlice = last.extension.timeSlice
-	else {
-		chatMetadata.LastTimeSlice = new timeSlice_t()
-		chatMetadata.LastTimeSlice.world = BUILTIN_WORLD
-		chatMetadata.LastTimeSlice.player = BUILTIN_PERSONA
-	}
+	chatMetadata.LastTimeSlice = chatMetadata.chatLog.length
+		? last.extension.timeSlice
+		: new timeSlice_t()
 
 	broadcastGroupEvent(groupId, { type: 'message_deleted', payload: { index } })
 

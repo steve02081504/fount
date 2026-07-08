@@ -13,7 +13,7 @@ import { loadPlayerForReplica } from '../session/timeSliceParts.mjs'
 /**
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @returns {Promise<{ player: object, personaname?: string, memberId: string }>}
+ * @returns {Promise<{ player: object, personaname?: string, memberId: string }>} 发送者 persona 上下文
  */
 async function resolvePersonaContext(username, groupId) {
 	const session = await getMaterializedSession(username, groupId)
@@ -28,13 +28,9 @@ async function resolvePersonaContext(username, groupId) {
  * @returns {object} 规范化 content
  */
 function normalizeEditedResult(result, fallback) {
-	if (!result) return fallback
-	if (typeof result === 'object' && result !== null && 'reject' in result && result.reject)
-		throw httpError(400, String(result.reject))
-	if (typeof result === 'object' && result !== null && 'edited' in result && result.edited != null)
-		return channelMessageContentObject(result.edited)
-	if (typeof result === 'object' && result !== null && ('type' in result || 'content' in result))
-		return channelMessageContentObject(result)
+	if (result?.reject) throw httpError(400, String(result.reject))
+	if (result?.edited != null) return channelMessageContentObject(result.edited)
+	if (result?.type || result?.content) return channelMessageContentObject(result)
 	return fallback
 }
 
@@ -68,7 +64,7 @@ export async function applyChannelMessageEditHooks(username, groupId, channelId,
 	}
 
 	const world = await resolveWorld(groupId, channelId, username)
-	const worldEdit = world.interfaces?.chat?.MessageEdit
+	const worldEdit = world.interfaces.chat.MessageEdit
 	if (worldEdit) {
 		const worldResult = await worldEdit({ ...baseCtx, edited: content })
 		content = normalizeEditedResult(worldResult, content)
@@ -106,7 +102,7 @@ export async function applyChannelMessageDeleteHooks(username, groupId, channelI
 	}
 
 	const world = await resolveWorld(groupId, channelId, username)
-	const worldDelete = world.interfaces?.chat?.MessageDelete
+	const worldDelete = world.interfaces.chat.MessageDelete
 	if (worldDelete) {
 		const worldResult = await worldDelete(baseCtx)
 		if (worldResult?.reject)

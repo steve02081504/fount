@@ -1,5 +1,5 @@
 /**
- * M4：OnMention 缺失时回退 chat.GetReply。
+ * OnMention 缺失时回退 chat.GetReply。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

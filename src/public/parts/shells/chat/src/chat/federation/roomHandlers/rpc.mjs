@@ -91,7 +91,7 @@ export function registerRpcHandlers(roomContext) {
 	})
 	charRpcResponse.on(data => {
 		if (!isPlainObject(data)) return
-		void import('../../stream/groupWsRpc.mjs').then(({ relayOrConsumeRpcResponse }) => {
+		void import('../../ws/groupWsRpc.mjs').then(({ relayOrConsumeRpcResponse }) => {
 			relayOrConsumeRpcResponse(data)
 		}).catch(console.error)
 	})

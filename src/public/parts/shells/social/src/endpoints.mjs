@@ -4,7 +4,7 @@
  */
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
-import { registerNotificationRoutes } from './endpoints/notificationsRoutes.mjs'
+import { registerNotificationRoutes } from './endpoints/notifications.mjs'
 import { registerPostsRoutes } from './endpoints/posts.mjs'
 import { registerProfileRoutes } from './endpoints/profile.mjs'
 import { registerRelationshipsRoutes } from './endpoints/relationships.mjs'

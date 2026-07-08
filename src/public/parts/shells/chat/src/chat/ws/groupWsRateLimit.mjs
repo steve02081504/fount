@@ -1,5 +1,5 @@
 /**
- * 【文件】stream/groupWsRateLimit.mjs
+ * 【文件】ws/groupWsRateLimit.mjs
  * 【职责】群 WebSocket 接入防护：按 IP 滑动窗口限流。
  * 【原理】checkWsRateLimit 维护 ipWsRequests 计数。
  * 【数据结构】ipWsRequests Map。

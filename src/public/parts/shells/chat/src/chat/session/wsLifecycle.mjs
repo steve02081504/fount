@@ -11,11 +11,11 @@ import { ms } from '../../../../../../../scripts/ms.mjs'
 import { getAllUserNames } from '../../../../../../../server/auth/index.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
-import { countGroupSockets, registerSocket } from '../stream/groupWsBroadcast.mjs'
+import { countGroupSockets, registerSocket } from '../ws/groupWsBroadcast.mjs'
 import {
 	registerGroupReplicaForUser,
 	resolveGroupWsRoomKey,
-} from '../stream/groupWsRooms.mjs'
+} from '../ws/groupWsRooms.mjs'
 
 import { abortAllGenerations, abortGenerationByMessageId } from './generationAbort.mjs'
 

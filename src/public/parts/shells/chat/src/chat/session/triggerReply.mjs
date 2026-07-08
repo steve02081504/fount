@@ -26,7 +26,7 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { finishStreamBuffer } from '../stream/groupWsStreamBuffer.mjs'
+import { finishStreamBuffer } from '../ws/groupWsStreamBuffer.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
 import { createCharPreviewStream } from './charPreviewStream.mjs'
@@ -224,15 +224,9 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			supported_functions: request.supported_functions,
 		}
 
-		const getCharReply = request.world?.interfaces?.chat?.GetCharReply
-		let charReply
-		if (getCharReply) {
-			charReply = await getCharReply(request, request.char_id)
-			if (charReply === null)
-				charReply = await request.char.interfaces.chat.GetReply(request)
-		}
-		else
-			charReply = await request.char.interfaces.chat.GetReply(request)
+		// world 可代角色回复（GetCharReply 返回 null 表示放行给 char 本体）
+		const charReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
+			?? await request.char.interfaces.chat.GetReply(request)
 
 		if (charReply === null) {
 			stream.abort('Generation result was null.')

@@ -3,7 +3,7 @@
  * 【职责】WebSocket 广播 DAG/频道消息、写频道 `messages.jsonl`、刷新 checkpoint、触发信誉/GSH/自动回复与 world AfterAddChatLogEntry。
  * 【原理】非消息类事件仅重建 checkpoint；消息类解密展示内容后双播 `dag_event` 与 `channel_message`；AfterAddChatLogEntry 在 message 落盘后唯一触发。
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
- * 【关联】`materialize.mjs`、`events/meta.mjs`、`../stream/groupWsHub.mjs`、`../session/autoReply.mjs`、`../session/chatRequest.mjs`。
+ * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`../session/autoReply.mjs`、`../session/chatRequest.mjs`。
  */
 import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
@@ -30,8 +30,8 @@ import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
-import { broadcastEvent } from '../stream/groupWsBroadcast.mjs'
-import { groupWsRoomKeyForReplica } from '../stream/groupWsRooms.mjs'
+import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
+import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
 
 import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
@@ -259,27 +259,22 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		message: { ...messageLine, content: displayContent },
 	})
 	await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
-	if (signPayload.type === 'message') {
+	if (signPayload.type === 'message')
 		void import('../session/autoReply.mjs').then(({ maybeAutoTriggerCharReply }) =>
 			maybeAutoTriggerCharReply(username, groupId, channelId, displayContent, signPayload),
 		).catch(error => {
 			console.error('maybeAutoTriggerCharReply failed:', error)
 		})
+
+	// message 落盘即触发；message_edit 仅终稿（newContent 非流式占位）触发
+	const afterHookContent = signPayload.type === 'message'
+		? displayContent
+		: displayContent?.newContent ?? displayContent
+	if (signPayload.type === 'message' || signPayload.type === 'message_edit' && afterHookContent && !afterHookContent.is_generating)
 		try {
-			await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, displayContent)
+			await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, afterHookContent)
 		}
 		catch (error) {
 			console.error('AfterAddChatLogEntry failed:', error)
 		}
-	}
-	else if (signPayload.type === 'message_edit') {
-		const edited = displayContent?.newContent ?? displayContent
-		if (edited && !edited.is_generating)
-			try {
-				await invokeAfterAddChatLogEntry(username, groupId, channelId, signPayload, edited)
-			}
-			catch (error) {
-				console.error('AfterAddChatLogEntry failed:', error)
-			}
-	}
 }

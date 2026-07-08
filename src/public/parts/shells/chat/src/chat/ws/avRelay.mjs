@@ -1,9 +1,9 @@
 /**
- * 【文件】stream/avRelay.mjs
+ * 【文件】ws/avRelay.mjs
  * 【职责】Hub 音视频频道二进制帧 WebSocket 透传中继（非 JSON DAG）：同房间多客户端互转 26 字节头+载荷，附带简单带宽计数。
  * 【原理】registerAvRelaySocket 按 roomId 分房；入站二进制帧原样转发同房其他 ws；文本控制消息 peer_count。与群 JSON WS、Trystero P2P 分离，降低 AV 延迟。
  * 【数据结构】帧头 26B：frame_type、flags、seq、captureMs 等；rooms Map<roomId, Map<ws,{bytesSec,resetAt}>>。
- * 【关联】独立 AV WS 路由；stream/auth 令牌鉴权观看侧；不参与 federation/volatile JSON 信封。
+ * 【关联】独立 AV WS 路由；ws/auth 令牌鉴权观看侧；不参与 federation/volatile JSON 信封。
  */
 import { Buffer } from 'node:buffer'
 

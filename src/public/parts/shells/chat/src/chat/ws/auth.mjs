@@ -1,5 +1,5 @@
 /**
- * 【文件】stream/auth.mjs
+ * 【文件】ws/auth.mjs
  * 【职责】基于群 GSH 派生密钥的流媒体观看令牌：mint/verify HMAC token，并组装嵌入播放 URL。
  * 【原理】deriveStreamingAuthKey(H, groupId) 得 HMAC 密钥；token 为 sessionId.expiresAt.mac（base64url）。verify 校验过期与 MAC，供 Hub/SFU 侧鉴权观看 VOLATILE 流。
  * 【数据结构】token 三段点分；DEFAULT_TTL_MS 默认 1h。

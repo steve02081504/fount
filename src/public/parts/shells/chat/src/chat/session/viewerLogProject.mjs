@@ -8,25 +8,8 @@
 import {
 	channelMessageAgentText,
 	channelMessageShowText,
-	isTextChannelContent,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
-
-/**
- * @param {chatLogEntry_t} entry 日志条目
- * @returns {string} 展示文本
- */
-function entryDisplayText(entry) {
-	return String(entry.content_for_show ?? entry.content ?? '')
-}
-
-/**
- * @param {chatLogEntry_t} entry 日志条目
- * @returns {string} agent 文本
- */
-function entryAgentText(entry) {
-	return String(entry.content ?? '')
-}
 
 /**
  * 将 viewer 过滤后的 entries 投影回频道消息行 DTO。
@@ -52,21 +35,17 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 		if (!eventId || !byEventId.has(eventId)) continue
 
 		const entry = byEventId.get(eventId)
-		const content = line.content
-		if (!content || typeof content !== 'object') {
-			out.push(line)
-			continue
-		}
-
-		if (!isTextChannelContent(content)) {
+		const { content } = line
+		// decryptView 失败行 content 为 null；非 text 类（贴纸/投票等）不做正文改写
+		if (content?.type !== 'text') {
 			out.push(line)
 			continue
 		}
 
 		const originalAgent = channelMessageAgentText(content)
 		const originalShow = channelMessageShowText(content)
-		const nextAgent = entryAgentText(entry)
-		const nextShow = entryDisplayText(entry)
+		const nextAgent = String(entry.content ?? '')
+		const nextShow = String(entry.content_for_show ?? entry.content ?? '')
 		const rewritten = nextAgent !== originalAgent || nextShow !== originalShow
 
 		if (!rewritten) {
