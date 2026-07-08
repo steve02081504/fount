@@ -1,9 +1,9 @@
 /**
  * 【文件】src/chat/rpcDispatcher.mjs
  * 【职责】在群 WebSocket RPC 通道上，将远程 memberId 映射到本节点已加载的 Char/World part 并执行对应 interfaces 方法。
- * 【原理】createCharRpcDispatcher 经 getActiveGroupRuntime 与 getCharBind 判定是否本地；支持嵌套路径 method、GetReply 的 serializableRequest 转 triggerCharReply、以及 UpdateInfo/GetPrompt/onMessage 等固定分支；结果统一为 `{ kind: result|not_local|method_not_found|error }` 供 groupWsHub 回写 WS。
- * 【数据结构】memberId（`owner:charname`）、method/args、chatMetadata.LastTimeSlice.chars、RPC kind 判别联合类型、normalizeRpcErrorCode 错误码表。
- * 【关联】被 session.mjs 导出 tryInvokeLocal*；被 chat/stream/groupWsHub 调用；依赖 session/dagSession、session/runtime、session/generation。
+ * 【原理】createCharRpcDispatcher / createWorldRpcDispatcher 经本地绑定判定；世界侧含 GetChatLogForViewer 与 legacy GetChatLogForCharname；结果统一为 `{ kind: result|not_local|method_not_found|error }`。
+ * 【数据结构】memberId（`owner:charname` / `owner:world:worldname`）、method/args、chatMetadata.LastTimeSlice.chars、RPC kind 判别联合类型、normalizeRpcErrorCode 错误码表。
+ * 【关联】被 session.mjs 导出 tryInvokeLocal*；被 chat/stream/groupWsHub 调用；依赖 session/dagSession、session/runtime、session/generation、viewerLog。
  */
 import { loadPart } from '../../../../../../server/parts_loader.mjs'
 
@@ -293,6 +293,18 @@ export function createWorldRpcDispatcher(getChatRequest) {
 					else if (order)
 						turns.push(...order)
 					return resultOk(method, turns)
+				}
+				case 'GetChatLogForViewer': {
+					const fn = world.interfaces?.chat?.GetChatLogForViewer
+					if (!fn) return { kind: 'method_not_found' }
+					const viewer = list[1]
+					const request = list[0] || await getChatRequest(
+						groupId,
+						viewer?.charname,
+						inferChannelId() || viewer?.channelId || null,
+						{ replicaUsername: owner },
+					)
+					return resultOk(method, await fn(request, viewer))
 				}
 				case 'GetChatLogForCharname': {
 					const fn = world.interfaces?.chat?.GetChatLogForCharname

@@ -1,13 +1,14 @@
 /**
  * 【文件】federation/remoteWorldProxy.mjs
  * 【职责】为远端世界（world 成员）构造 WorldAPI 聊天接口代理，方法调用转发到与 remoteProxy 相同的 RPC 通道。
- * 【原理】createRemoteWorldProxy 按 interfaces.chat 开关挂载 GetGreeting/GetSpeakingOrder 等；invokeRemote 经 rpcCall 往返并做 JSON 边界 normalize。REMOTE_WORLD_PROXY_SYMBOL 供类型识别。
+ * 【原理】createRemoteWorldProxy 按 interfaces.chat 开关挂载 GetGreeting/GetSpeakingOrder/GetChatLogForViewer 等；invokeRemote 经 rpcCall 往返并做 JSON 边界 normalize。REMOTE_WORLD_PROXY_SYMBOL 供类型识别。
  * 【数据结构】proxy { info, interfaces.chat? }；Symbol 附着 { memberId, sourceHost }。
- * 【关联】remoteProxy.mjs、charRpc/room、session world RPC、decl/worldAPI.ts。
+ * 【关联】remoteProxy.mjs、charRpc/room、session world RPC、decl/worldAPI.ts、viewerLog。
  */
 /** @typedef {import('../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
 /** @typedef {import('../../../../../decl/chatLog.ts').chatReply_t} chatReply_t */
 /** @typedef {import('../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
+/** @typedef {import('../../../../../decl/chatLog.ts').chatViewer_t} chatViewer_t */
 /** @typedef {import('../../../../../decl/prompt_struct.ts').chatLogEntry_t} chatLogEntry_t */
 
 import { encodeWireJson } from '../lib/wireJson.mjs'
@@ -71,6 +72,12 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 					},
 				}
 			},
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {chatViewer_t} viewer 观察者
+			 * @returns {Promise<chatLogEntry_t[]>} 观察者视图下的聊天记录
+			 */
+			GetChatLogForViewer: (replyRequest, viewer) => invokeRemote('GetChatLogForViewer', [replyRequest, viewer]),
 			/**
 			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
 			 * @param {string} charname 角色名称

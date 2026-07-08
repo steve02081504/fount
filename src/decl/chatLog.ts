@@ -89,6 +89,19 @@ export interface ChatLogTimeSlice {
 }
 
 /**
+ * 统一观察者身份：world / persona 视图分发以此为准，不再以 username/charname 特判。
+ */
+export type chatViewer_t = {
+	kind: 'user' | 'char'
+	memberId: string
+	ownerUsername: string
+	channelId: string
+	charname?: string
+	roles?: string[]
+	entityHash?: string
+}
+
+/**
  * 聊天回复请求（Part API / GetReply 上下文）。
  */
 export class chatReplyRequest_t {
@@ -113,6 +126,8 @@ export class chatReplyRequest_t {
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
 	timelines: chatLogEntry_t[]
+	/** 当前 viewer 在群内的角色 id 列表（供 prompt visibility 等使用） */
+	member_roles?: string[]
 	AddChatLogEntry?: (entry: chatReply_t) => Promise<chatLogEntry_t>
 	Update?: () => Promise<chatReplyRequest_t>
 	world: WorldAPI_t

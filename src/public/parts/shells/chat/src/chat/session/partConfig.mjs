@@ -191,19 +191,15 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 async function insertCharGreeting(groupId, charname, username, chatMetadata, timeSlice) {
 	const char = timeSlice.chars[charname]
 	if (!char) return null
+	const getGreeting = timeSlice.greeting_type === 'single'
+		? char.interfaces?.chat?.GetGreeting
+		: timeSlice.greeting_type === 'group'
+			? char.interfaces?.chat?.GetGroupGreeting
+			: null
+	if (!getGreeting) return null
 	const request = await getChatRequest(groupId, charname, await getDefaultChannelId(username, groupId), { replicaUsername: username })
 	try {
-		let result
-		switch (timeSlice.greeting_type) {
-			case 'single':
-				result = await char.interfaces.chat.GetGreeting(request, 0)
-				break
-			case 'group':
-				result = await char.interfaces.chat.GetGroupGreeting(request, 0)
-				break
-			default:
-				return null
-		}
+		const result = await getGreeting(request, 0)
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		if (greetingEntry.extension.timeSlice?.greeting_type) {

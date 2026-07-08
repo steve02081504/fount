@@ -1,4 +1,4 @@
-import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
@@ -127,7 +127,14 @@ export class WorldAPI_t {
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
-			 * 获取指定角色名称的聊天记录。
+			 * 按观察者返回世界视图下的聊天记录（正式主接口）。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {chatViewer_t} viewer - 统一观察者身份。
+			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
+			 */
+			GetChatLogForViewer?: (arg: chatReplyRequest_t, viewer: chatViewer_t) => Promise<chatLogEntry_t[]>
+			/**
+			 * Legacy sugar：仅按本地 charname 改写 chat_log。新 world 应实现 GetChatLogForViewer。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @param {string} charname - 角色名称。
 			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。

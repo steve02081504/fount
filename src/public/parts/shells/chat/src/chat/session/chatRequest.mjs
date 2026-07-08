@@ -1,9 +1,9 @@
 /**
  * 【文件】chatRequest.mjs — 角色 GetReply 用的 chatReplyRequest 构建
  * 【职责】getChatRequest 组装 decl/chatLog 定义的 prompt 结构：合并内存 prelude、DAG 频道消息水合的 chat_log、解析的世界/角色/插件、侧车 logContext 与可选跨机 persona。
- * 【原理】readChannelMessagesForUser + buildChatLogEntriesFromChannelLines 构成主日志；resolveChar/World/LocalPlugins 支持联邦；世界可裁剪 GetChatLogForCharname；角色 contextLength 截断；extension 含 groupId/channelId/memberId entity hash。
- * 【数据结构】chatReplyRequest_t（chat_log、timelines、AddChatLogEntry、Update、supported_functions、extension）。
- * 【关联】runtime、resolvePart、hydration、group/queries、generation、triggerReply。
+ * 【原理】readChannelMessagesForUser + buildChatLogEntriesFromChannelLines 构成主日志；resolveChar/World/LocalPlugins 支持联邦；applyWorldChatLogView 按 viewer 裁剪；member_roles 从物化 members 注入；角色 contextLength 截断；extension 含 groupId/channelId/memberId entity hash。
+ * 【数据结构】chatReplyRequest_t（chat_log、timelines、AddChatLogEntry、Update、supported_functions、extension、member_roles）。
+ * 【关联】runtime、resolvePart、hydration、group/queries、generation、triggerReply、viewerLog。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -22,17 +22,18 @@ import {
 	buildChatLogEntriesFromChannelLines,
 	loadDagHydrationI18n,
 } from '../dag/hydration.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
 import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
 
-import { getMaterializedSession } from './dagSession.mjs'
 import {
 	buildChatLogEntryFromCharReply,
 } from './logEntries.mjs'
 import { chatLogEntry_t } from './models.mjs'
 import { resolveChar, resolveLocalPlugins, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
+import { applyWorldChatLogView, buildViewer, resolveViewerRoles } from './viewerLog.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /**
@@ -62,7 +63,16 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	const charinfo = charPart ? await getPartInfo(charPart, locales) || {} : {}
 	const UserCharname = userinfo.name || timeSlice.player_id || replicaUsername
 
-	const session = await getMaterializedSession(replicaUsername, groupId)
+	const { state } = await getState(replicaUsername, groupId)
+	const session = state.session || {
+		chars: {},
+		world: null,
+		channelWorlds: {},
+		personas: {},
+		plugins: {},
+		charFrequencies: {},
+	}
+	const member_roles = await resolveViewerRoles(state, { charname, replicaUsername, groupId })
 	const other_chars = {}
 	for (const name of Object.keys(session.chars || {})) {
 		if (name === charname) continue
@@ -71,7 +81,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	}
 
 	let effectiveChannelId = resolveChannelId(channelId, '')
-	if (!effectiveChannelId) 
+	if (!effectiveChannelId)
 		for (let index = chatMetadata.chatLog.length - 1; index >= 0; index--) {
 			const fromLog = resolveChannelId(chatMetadata.chatLog[index].extension?.groupChannelId, '')
 			if (fromLog) {
@@ -79,7 +89,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 				break
 			}
 		}
-	
+
 	if (!effectiveChannelId)
 		effectiveChannelId = await resolveGroupChannelId(replicaUsername, groupId, null)
 
@@ -100,6 +110,10 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	)
 	chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
+
+	const memberId = charname
+		? agentEntityHash(getLocalNodeHash(), `chars/${charname}`)
+		: await getOperatorEntityHash(replicaUsername)
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
@@ -122,7 +136,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		locales,
 		chat_log: chatLogForRequest,
 		timelines: chatMetadata.timeLines,
-		member_roles: [],
+		member_roles,
 		/**
 		 * @returns {Promise<object>} 刷新后的请求上下文
 		 */
@@ -153,10 +167,8 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		extension: {
 			groupId,
 			channelId: effectiveChannelId,
-			memberId: charname
-				? agentEntityHash(getLocalNodeHash(), `chars/${charname}`)
-				: await getOperatorEntityHash(replicaUsername),
-			member_roles: [],
+			memberId,
+			member_roles,
 			personaForOther: options.personaForOther || undefined,
 		},
 	}
@@ -169,8 +181,15 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			logEntry,
 		)
 
-	if (resolvedWorld?.interfaces?.chat?.GetChatLogForCharname && charname)
-		chatReplyRequest.chat_log = await resolvedWorld.interfaces.chat.GetChatLogForCharname(chatReplyRequest, charname)
+	const viewer = buildViewer({
+		kind: charname ? 'char' : 'user',
+		memberId,
+		ownerUsername: replicaUsername,
+		channelId: effectiveChannelId,
+		...charname ? { charname, entityHash: memberId } : {},
+		roles: member_roles,
+	})
+	chatReplyRequest.chat_log = await applyWorldChatLogView(chatReplyRequest, viewer)
 
 	if (charname && charPart) {
 		const cap = charPart.contextLength ?? charPart.extension?.contextLength
