@@ -4,9 +4,10 @@ import process from 'node:process'
 
 import { console, geti18n } from '../../i18n/bare.mjs'
 import {
-	computeUncommittedHash,
+	digestFileHashes,
 	getHeadCommitHash,
 	getUncommittedFiles,
+	hashUncommittedFiles,
 	resolveChangedFiles,
 } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
@@ -21,7 +22,9 @@ import {
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	computeSuiteTriggerHash,
 	getSuiteBaselineDurationMs,
+	isSuiteReusable,
 	readState,
 	refreshStateMarkdown,
 	suiteKey,
@@ -56,6 +59,7 @@ import { runSuite } from './suite_run.mjs'
  * @property {boolean} [continueRun]
  * @property {boolean} [outdated]
  * @property {boolean} [noParallel]
+ * @property {boolean} [force]
  */
 
 /**
@@ -112,6 +116,7 @@ function buildTestCommand(options) {
 	if (options.continueRun) parts.push('--continue')
 	if (options.outdated) parts.push('--outdated')
 	if (options.noParallel) parts.push('--no-parallel')
+	if (options.force) parts.push('--force')
 	if (options.since) parts.push('--since', options.since)
 	if (options.groups?.length)
 		for (const group of options.groups) {
@@ -160,16 +165,22 @@ export async function runTests(options = {}) {
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
 
-	const [commitHash, uncommittedHash, uncommittedFiles, state] = await Promise.all([
+	const [commitHash, uncommittedFiles, state] = await Promise.all([
 		getHeadCommitHash(REPO_ROOT),
-		computeUncommittedHash(REPO_ROOT),
 		getUncommittedFiles(REPO_ROOT),
 		readState(REPO_ROOT),
 	])
+	// 未提交文件内容只读一次：全局指纹与各 suite 的 trigger 复用指纹共享这张表。
+	const uncommittedHashes = await hashUncommittedFiles(REPO_ROOT, uncommittedFiles)
+	const uncommittedHash = digestFileHashes(uncommittedHashes, uncommittedFiles)
 
-	const changedSinceRecordByKey = await buildChangedSinceRecordMap(REPO_ROOT, allSuites, state)
-	for (const [key, files] of changedSinceRecordByKey)
-		changedSinceRecordByKey.set(key, [...new Set([...files, ...uncommittedFiles])])
+	// committedChangedByKey：仅 commit 层变更（复用判定用它区分「commit 命中 trigger」与
+	// 「未提交内容变化」，避免把长期 dirty 但两次运行间未改动的文件误判为变更）。
+	// changedSinceRecordByKey：再叠加未提交文件，供选择/outdated/continue 使用。
+	const committedChangedByKey = await buildChangedSinceRecordMap(REPO_ROOT, allSuites, state)
+	const changedSinceRecordByKey = new Map(
+		[...committedChangedByKey].map(([key, files]) => [key, [...new Set([...files, ...uncommittedFiles])]]),
+	)
 
 	/** @type {string[] | undefined} */
 	let manifestIds
@@ -413,6 +424,20 @@ export async function runTests(options = {}) {
 			return { passed: false }
 		}
 
+		const key = suiteKey(suite.manifestId, suite.name)
+		const prev = state.suites[key]
+		const triggerHash = computeSuiteTriggerHash(suite, uncommittedHashes)
+		if (isSuiteReusable(suite, prev, committedChangedByKey.get(key) ?? [], triggerHash, options.force)) {
+			console.logI18n('fountConsole.test.reusedSuite', {
+				manifestId: suite.manifestId,
+				name: suite.name,
+				status: prev.status,
+			})
+			if (index != null) await reportWriter.recordResult(index, prev, { reused: true })
+			// 复用失败仍算失败 → 下游被 blocked；passed/noisy 计入 runGreenKeys 放行下游。
+			return { passed: prev.status !== 'failed' }
+		}
+
 		const runningKey = suite.heavy
 			? 'fountConsole.test.runningSuiteHeavy'
 			: 'fountConsole.test.runningSuite'
@@ -424,9 +449,7 @@ export async function runTests(options = {}) {
 
 		const retryMap = retryByManifest.get(suite.manifestId)
 		const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
-		const baselineDurationMs = getSuiteBaselineDurationMs(
-			state.suites[suiteKey(suite.manifestId, suite.name)],
-		)
+		const baselineDurationMs = getSuiteBaselineDurationMs(prev)
 		const result = await runSuite(suite, onlyFiles, globalBudget, streamLive, {
 			label,
 			baselineDurationMs,
@@ -445,6 +468,7 @@ export async function runTests(options = {}) {
 			result,
 			commitHash,
 			uncommittedHash,
+			triggerHash,
 		})
 		await writeState(REPO_ROOT, state)
 		if (index != null) await reportWriter.recordResult(index, entry)

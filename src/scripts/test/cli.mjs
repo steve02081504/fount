@@ -1,7 +1,7 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--continue] [--outdated] [--no-parallel] [--since <commit>] [<groups>...]
+ *   fount test [--all] [--continue] [--outdated] [--no-parallel] [--force] [--since <commit>] [<groups>...]
  *
  * 分组语法：manifest 或 manifest:suite1,suite2（空格分隔多组）
  */
@@ -30,6 +30,7 @@ const { positionals, values } = parseArgsOrExit({
 		continue: { type: 'boolean', default: false },
 		outdated: { type: 'boolean', default: false },
 		'no-parallel': { type: 'boolean', default: false },
+		force: { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
 	},
 })
@@ -111,6 +112,7 @@ process.exit(await (async () => {
 		continueRun: values.continue,
 		outdated: values.outdated,
 		noParallel: values['no-parallel'],
+		force: values.force,
 		groups: parsed.groups,
 	})
 	if (Date.now() - runStarted > ms('5m'))

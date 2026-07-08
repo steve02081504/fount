@@ -34,6 +34,7 @@ import { suiteKey } from '../core/state.mjs'
  * @property {boolean} [terminated]
  * @property {string | null} [terminateReason]
  * @property {ContinueReason} [continueReason]
+ * @property {boolean} [reused] 本次未真跑、沿用上次结果
  */
 
 /**
@@ -113,9 +114,11 @@ export class RunReportWriter {
 	/**
 	 * @param {number} index 槽位下标
 	 * @param {SuiteStateEntry} entry 现状条目
+	 * @param {object} [options] 选项
+	 * @param {boolean} [options.reused] 是否复用上次结果
 	 * @returns {Promise<void>}
 	 */
-	recordResult(index, entry) {
+	recordResult(index, entry, { reused = false } = {}) {
 		return this.#enqueue(async () => {
 			const slot = this.slots[index]
 			this.slots[index] = {
@@ -129,6 +132,7 @@ export class RunReportWriter {
 				blockedBy: entry.blockedBy,
 				terminated: entry.terminated,
 				terminateReason: entry.terminateReason,
+				reused,
 			}
 			await this.#writeFiles()
 		})
@@ -230,7 +234,9 @@ function buildRunMarkdown(summary, completed) {
 	const failed = completed.filter(s => s.status === 'failed').length
 	const noisy = completed.filter(s => s.status === 'noisy').length
 	const blocked = completed.filter(s => s.status === 'blocked').length
-	const durationMs = completed.reduce((sum, s) => sum + (s.durationMs ?? 0), 0)
+	const reused = completed.filter(s => s.reused).length
+	// 复用未真正耗时，只累计真跑的槽位，避免虚增本次时长。
+	const durationMs = completed.reduce((sum, s) => sum + (s.reused ? 0 : s.durationMs ?? 0), 0)
 	const exitLabel = summary.finishedAt == null
 		? geti18n('fountConsole.test.report.exitInProgress')
 		: (summary.exitCode === 0
@@ -250,6 +256,7 @@ function buildRunMarkdown(summary, completed) {
 		`| ${geti18n('fountConsole.test.report.fieldFailed')} | ${failed} |`,
 		`| ${geti18n('fountConsole.test.report.fieldNoisyPassed')} | ${noisy} |`,
 		`| ${geti18n('fountConsole.test.state.columnBlocked')} | ${blocked} |`,
+		`| ${geti18n('fountConsole.test.report.fieldReused')} | ${reused} |`,
 		`| ${geti18n('fountConsole.test.report.fieldDuration')} | ${formatDuration(durationMs)} |`,
 		'',
 		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
@@ -416,7 +423,8 @@ function appendSection(lines, title, entries) {
 	if (!entries.length) return
 	lines.push(`## ${title}`, '')
 	for (const entry of entries) {
-		lines.push(`### ${entry.manifestId}/${entry.name}`, '')
+		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
+		lines.push(`### ${entry.manifestId}/${entry.name}${reusedMark}`, '')
 		if (entry.status !== 'blocked')
 			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
 		if (entry.blockedBy?.length)
@@ -446,8 +454,10 @@ function appendSilentPassed(lines, entries) {
 	lines.push(`## ${geti18n('fountConsole.test.report.sectionSilentPassed')}`, '')
 	lines.push(`| ${geti18n('fountConsole.test.report.columnSuite')} | ${geti18n('fountConsole.test.report.columnDuration')} |`)
 	lines.push('| --- | --- |')
-	for (const entry of entries)
-		lines.push(`| ${entry.manifestId}/${entry.name} | ${formatDuration(entry.durationMs)} |`)
+	for (const entry of entries) {
+		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
+		lines.push(`| ${entry.manifestId}/${entry.name}${reusedMark} | ${formatDuration(entry.durationMs)} |`)
+	}
 	lines.push('')
 }
 

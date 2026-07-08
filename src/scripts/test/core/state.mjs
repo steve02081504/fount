@@ -11,7 +11,7 @@ import {
 	nextBaselineDurationMs,
 	nextBaselineMemMb,
 } from './baseline.mjs'
-import { collectChangesSinceRecord } from './changed.mjs'
+import { collectChangesSinceRecord, digestFileHashes } from './changed.mjs'
 import { formatDuration } from './format_duration.mjs'
 import { matchGlob } from './glob.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
@@ -35,6 +35,7 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  * @property {string | null} uncommittedHash
  * @property {string | null} ranAt
  * @property {number | null} durationMs
+ * @property {string | null} [triggerHash] 运行时 trigger 相关未提交文件内容 digest；用于重跑复用判定
  * @property {number | null} [baselineDurationMs]
  * @property {number | null} [baselineMemMb] 采样峰值内存基线（MB，EMA）
  * @property {number | null} [baselineCpuPct] 运行期间平均全机 CPU %（EMA）
@@ -162,6 +163,35 @@ export function isSuiteGreen(entry, commitHash, uncommittedHash, outdated) {
 }
 
 /**
+ * 对 suite 命中的未提交文件内容取 digest；无相关未提交文件返回 null。
+ * committed 内容由 commit diff 单独判定，无需读取；此处只覆盖工作区未提交部分，
+ * 且直接复用预算好的内容哈希表，不再自行读盘。
+ * @param {SuiteDef} suite suite
+ * @param {Map<string, string>} uncommittedHashes 未提交文件内容 digest 表（rel -> digest）
+ * @returns {string | null} trigger 内容指纹
+ */
+export function computeSuiteTriggerHash(suite, uncommittedHashes) {
+	const relevant = collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths
+	return digestFileHashes(uncommittedHashes, relevant)
+}
+
+/**
+ * 重跑时能否直接复用上次结果：上次有真实结果（passed/failed/noisy）+ 自上次运行以来
+ * commit 变更未命中 trigger + 未提交 trigger 文件内容 digest 一致。`--force` 一律不复用。
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @param {string[]} committedChanged 自记录 commit 以来的 commit 变更（不含未提交）
+ * @param {string | null} currentTriggerHash 当前 trigger 内容指纹
+ * @param {boolean} force 是否强制真跑
+ * @returns {boolean} 是否复用
+ */
+export function isSuiteReusable(suite, entry, committedChanged, currentTriggerHash, force) {
+	if (force || !entry || entry.status === 'blocked') return false
+	if (suiteTriggersHit(suite, committedChanged)) return false
+	return (entry.triggerHash ?? null) === (currentTriggerHash ?? null)
+}
+
+/**
  * 上游依赖是否已满足（门禁用）：passed/noisy + trigger 未过时；不要求 commit / uncommittedHash 一致。
  * commit 漂移本身不拉间接依赖；仅显式指名或 `--continue` 无历史不完美项时重跑 commit 陈旧 suite。
  * 通过但有噪声仍放行下游；`--continue` 仍会重跑 noisy 以清理噪声。
@@ -239,6 +269,7 @@ async function deleteFailureLog(repoRoot, logPath) {
  * @param {string[]} [params.blockedBy] 阻塞来源
  * @param {string} params.commitHash HEAD
  * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {string | null} [params.triggerHash] 本次运行的 trigger 内容指纹；缺省沿用 prev
  * @returns {Promise<SuiteStateEntry>} 新条目
  */
 export async function upsertSuiteRun({
@@ -249,6 +280,7 @@ export async function upsertSuiteRun({
 	blockedBy,
 	commitHash,
 	uncommittedHash,
+	triggerHash,
 }) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const prev = state.suites[key]
@@ -262,6 +294,7 @@ export async function upsertSuiteRun({
 			uncommittedHash: prev?.uncommittedHash ?? null,
 			ranAt: new Date().toISOString(),
 			durationMs: null,
+			triggerHash: prev?.triggerHash ?? null,
 			baselineDurationMs: prev?.baselineDurationMs ?? null,
 			baselineMemMb: prev?.baselineMemMb ?? null,
 			baselineCpuPct: prev?.baselineCpuPct ?? null,
@@ -306,6 +339,7 @@ export async function upsertSuiteRun({
 		uncommittedHash,
 		ranAt: new Date().toISOString(),
 		durationMs: result.durationMs,
+		triggerHash: triggerHash !== undefined ? triggerHash : prev?.triggerHash ?? null,
 		baselineDurationMs,
 		baselineMemMb,
 		baselineCpuPct,

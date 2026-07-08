@@ -18,9 +18,11 @@ import {
 import { listManifestIds, loadAllSuites, selectSuitesByDiff } from '../core/manifest.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import {
+	computeSuiteTriggerHash,
 	isDependencySatisfied,
 	isSuiteGreen,
 	isSuiteOutdated,
+	isSuiteReusable,
 	readState,
 	suiteKey,
 	upsertSuiteRun,
@@ -304,6 +306,59 @@ Deno.test('isSuiteGreen requires passed fingerprint and fresh triggers', () => {
 	assertEquals(isSuiteGreen(entry, 'abc', null, false), true)
 	assertEquals(isSuiteGreen(entry, 'abc', null, true), false)
 	assertEquals(isSuiteGreen({ ...entry, status: 'blocked' }, 'abc', null, false), false)
+})
+
+Deno.test('isSuiteReusable reuses any real result when triggers untouched, force disables', () => {
+	const s = suite('shells/chat', 'pure')
+	s.triggers = ['src/public/parts/shells/chat/**']
+	const base = {
+		commitHash: 'abc',
+		uncommittedHash: null,
+		ranAt: '',
+		durationMs: 1,
+		triggerHash: 'h1',
+		failedFiles: [],
+		noiseHits: [],
+		logPath: null,
+	}
+	const passed = { ...base, status: 'passed' }
+	const failed = { ...base, status: 'failed' }
+	const noisy = { ...base, status: 'noisy' }
+
+	// 无 commit trigger 命中 + triggerHash 一致 → passed/failed/noisy 都复用（失败也复用）。
+	assertEquals(isSuiteReusable(s, passed, [], 'h1', false), true)
+	assertEquals(isSuiteReusable(s, failed, [], 'h1', false), true)
+	assertEquals(isSuiteReusable(s, noisy, [], 'h1', false), true)
+
+	// --force 一律不复用。
+	assertEquals(isSuiteReusable(s, passed, [], 'h1', true), false)
+	// blocked 非真实结果 → 不复用。
+	assertEquals(isSuiteReusable(s, { ...base, status: 'blocked' }, [], 'h1', false), false)
+	// commit 变更命中 trigger → 不复用。
+	assertEquals(isSuiteReusable(s, passed, ['src/public/parts/shells/chat/foo.mjs'], 'h1', false), false)
+	// 未提交 trigger 内容变化（triggerHash 不一致）→ 不复用。
+	assertEquals(isSuiteReusable(s, passed, [], 'h2', false), false)
+	assertEquals(isSuiteReusable(s, passed, [], null, false), false)
+	// 无记录 → 不复用。
+	assertEquals(isSuiteReusable(s, undefined, [], null, false), false)
+})
+
+Deno.test('computeSuiteTriggerHash digests only trigger-matched uncommitted files', () => {
+	const s = suite('shells/chat', 'pure')
+	s.triggers = ['src/public/parts/shells/chat/**']
+	const rel = 'src/public/parts/shells/chat/foo.mjs'
+
+	// 无相关未提交文件 → null。
+	assertEquals(computeSuiteTriggerHash(s, new Map([['README.md', 'x']])), null)
+
+	const h1 = computeSuiteTriggerHash(s, new Map([[rel, 'v1'], ['README.md', 'x']]))
+	assertEquals(typeof h1, 'string')
+	// 命中文件内容变化 → 指纹变化。
+	const h2 = computeSuiteTriggerHash(s, new Map([[rel, 'v2'], ['README.md', 'x']]))
+	assertEquals(h1 === h2, false)
+	// 只有非命中文件变化 → 指纹不变。
+	const h3 = computeSuiteTriggerHash(s, new Map([[rel, 'v1'], ['README.md', 'y']]))
+	assertEquals(h1 === h3, true)
 })
 
 Deno.test('expandWithDependents pulls only one downstream level when parent is outdated', () => {

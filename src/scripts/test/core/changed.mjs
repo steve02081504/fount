@@ -2,7 +2,7 @@
  * 解析本次测试应考虑的 git 变更文件列表。
  */
 import { createHash } from 'node:crypto'
-import { readFile, stat } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import process from 'node:process'
 
@@ -27,28 +27,46 @@ export async function getUncommittedFiles(repoRoot) {
 }
 
 /**
+ * 逐个读取未提交文件内容算 digest；删除的记 'deleted'。一次读取即可供全局哈希与
+ * 各 suite 的 trigger 哈希共享，避免同一文件被反复读。
+ * @param {string} repoRoot 仓库根
+ * @param {string[]} uncommittedFiles 未提交文件（正斜杠相对路径）
+ * @returns {Promise<Map<string, string>>} rel -> 内容 digest（或 'deleted'）
+ */
+export async function hashUncommittedFiles(repoRoot, uncommittedFiles) {
+	const entries = await Promise.all(uncommittedFiles.map(async rel => {
+		try {
+			return [rel, createHash('sha256').update(await readFile(join(repoRoot, rel))).digest('hex')]
+		}
+		catch (error) {
+			if (error?.code === 'ENOENT') return [rel, 'deleted']
+			throw error
+		}
+	}))
+	return new Map(entries)
+}
+
+/**
+ * 把「rel -> 内容 digest」的一个子集折叠成单一指纹；子集为空返回 null。
+ * @param {Map<string, string>} hashes 全量内容 digest 表
+ * @param {string[]} relPaths 参与折叠的相对路径
+ * @returns {string | null} 指纹
+ */
+export function digestFileHashes(hashes, relPaths) {
+	const sorted = [...relPaths].sort()
+	if (!sorted.length) return null
+	const parts = sorted.map(rel => `${rel}:${hashes.get(rel) ?? 'deleted'}`)
+	return createHash('sha256').update(parts.join('\n')).digest('hex')
+}
+
+/**
  * 对工作区未提交文件内容计算 digest；无未提交文件时返回 null。
  * @param {string} repoRoot 仓库根
  * @returns {Promise<string | null>} digest
  */
 export async function computeUncommittedHash(repoRoot) {
 	const files = await getUncommittedFiles(repoRoot)
-	if (!files.length) return null
-
-	const parts = []
-	for (const relativePath of [...files].sort()) {
-		const absolutePath = join(repoRoot, relativePath)
-		try {
-			await stat(absolutePath)
-			const digest = createHash('sha256').update(await readFile(absolutePath)).digest('hex')
-			parts.push(`${relativePath}:${digest}`)
-		}
-		catch (error) {
-			if (error?.code === 'ENOENT') parts.push(`${relativePath}:deleted`)
-			else throw error
-		}
-	}
-	return createHash('sha256').update(parts.join('\n')).digest('hex')
+	return digestFileHashes(await hashUncommittedFiles(repoRoot, files), files)
 }
 
 /**

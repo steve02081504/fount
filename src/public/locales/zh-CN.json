@@ -348,7 +348,7 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--continue] [--outdated] [--no-parallel] [--since <commit>] [<groups>...]\n\n分组语法（空格分隔多组，每组 manifest 或 manifest:suite1,suite2）：\n  manifest          该 manifest 全部 suite\n  manifest:suite    指定 suite（逗号分隔多个；PowerShell 拆散时后续 token 自动归并到当前组）\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n有未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比指定 commit。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\n裸组（无冒号 suite）若 state 中存在失败/噪声项则优先重跑；显式指名 suite 则直接按指名执行。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked，底层修好后须实际重跑。\n\n--continue    优先续跑 report.json pending；否则重跑不完美项；都没有则报没事可做。\n--outdated    重验 trigger 文件自上次记录 commit 以来有变更的 suite，以及从未跑过的新 suite。\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n\n示例：\n  fount test\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test shells/chat\n  fount test shells/chat:frontend\n  fount test --continue\n  fount test --outdated\n  fount test --since abc1234",
+			"help": "用法：fount test [--all] [--continue] [--outdated] [--no-parallel] [--force] [--since <commit>] [<groups>...]\n\n分组语法（空格分隔多组，每组 manifest 或 manifest:suite1,suite2）：\n  manifest          该 manifest 全部 suite\n  manifest:suite    指定 suite（逗号分隔多个；PowerShell 拆散时后续 token 自动归并到当前组）\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n有未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比指定 commit。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\n裸组（无冒号 suite）若 state 中存在失败/噪声项则优先重跑；显式指名 suite 则直接按指名执行。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked，底层修好后须实际重跑。\n\n--continue    优先续跑 report.json pending；否则重跑不完美项；都没有则报没事可做。\n--outdated    重验 trigger 文件自上次记录 commit 以来有变更的 suite，以及从未跑过的新 suite。\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认重跑时 trigger 文件内容自上次运行未变的 suite（含失败）直接沿用上次结果、不刷新时间，--force 强制真跑。\n\n示例：\n  fount test\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test shells/chat\n  fount test shells/chat:frontend\n  fount test --continue\n  fount test --outdated\n  fount test --since abc1234",
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
@@ -369,6 +369,7 @@
 			"outdatedSelected": "已选择 ${count} 个陈旧/未跑过的套件",
 			"runningSuite": "\n>>> 正在运行 ${manifestId}/${name}",
 			"runningSuiteHeavy": "\n>>> 正在运行 ${manifestId}/${name}（高负载）",
+			"reusedSuite": "\n>>> 复用 ${manifestId}/${name}（trigger 未变，沿用上次 ${status}）",
 			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
 			"terminated": "超时终止：${label} — ${reason}",
@@ -426,6 +427,7 @@
 				"fieldSuites": "套件",
 				"fieldFailed": "失败数",
 				"fieldNoisyPassed": "通过但有噪声",
+				"fieldReused": "复用数",
 				"fieldDuration": "耗时",
 				"commandDefault": "（默认）",
 				"exitPassed": "通过",
@@ -443,6 +445,7 @@
 				"sectionReplayImperfect": "重跑不完美项",
 				"columnSuite": "套件",
 				"columnDuration": "耗时",
+				"labelReused": "（复用）",
 				"labelDuration": "耗时",
 				"labelLog": "日志",
 				"labelNoise": "噪声",
