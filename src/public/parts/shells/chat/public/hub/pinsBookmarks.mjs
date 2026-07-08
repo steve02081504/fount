@@ -5,7 +5,7 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、../src/api/groupApi、banners、core/domUtils、core/state、groupNav、messages/messages、messages/pinPreview。
  */
-import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import {
 	getChatBookmarks,
 	getGroupState,
@@ -215,9 +215,9 @@ const POP_DEFS = [
 function closeAllPinsBookmarksPanels() {
 	for (const { button, panel } of POP_DEFS) {
 		document.getElementById(panel)?.setAttribute('hidden', '')
-		const button = document.getElementById(button)
-		btn?.classList.remove('is-open')
-		btn?.setAttribute('aria-expanded', 'false')
+		const buttonElement = document.getElementById(button)
+		buttonElement?.classList.remove('is-open')
+		buttonElement?.setAttribute('aria-expanded', 'false')
 	}
 }
 

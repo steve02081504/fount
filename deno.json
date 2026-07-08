@@ -3,7 +3,8 @@
 	"lock": false,
 	"minimumDependencyAge": {
 		"exclude": [
-			"npm:@steve02081504/*"
+			"npm:@steve02081504/*",
+			"npm:eslint-plugin-remove-duplicates"
 		]
 	},
 	"unstable": [

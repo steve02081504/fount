@@ -1,0 +1,38 @@
+{
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"icon": {
+				"color": "terminal.ansiMagenta",
+				"id": "checklist"
+			},
+			"label": "dev env setup",
+			"type": "shell",
+			"command": "deno run -A ./src/runner/dev_env_setup.mjs",
+			"runOptions": {
+				"runOn": "folderOpen"
+			},
+			"problemMatcher": {
+				"owner": "fount",
+				"pattern": {
+					"regexp": "^\\s*✘\\s+(.*)$",
+					"message": 1
+				}
+			}
+		},
+		{
+			"icon": {
+				"color": "terminal.ansiYellow",
+				"id": "check"
+			},
+			"label": "lint",
+			"type": "shell",
+			"command": "deno run -A npm:eslint --quiet .",
+			"problemMatcher": [
+				"$eslint-stylish"
+			]
+		},
+	]
+}
