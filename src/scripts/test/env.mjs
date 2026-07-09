@@ -16,13 +16,12 @@ process.env.LANG = 'zh-CN'
 /** deno panic 时输出完整 Rust 栈帧；子进程 spawn 时继承 process.env。 */
 process.env.RUST_BACKTRACE ??= 'full'
 
-for (const event of ['uncaughtException', 'unhandledRejection', 'error']) {
-	unset_shutdown_listener(event)
-	process.on(event, err => console.error(`${event}:`, err))
-}
-
 /** 测试节点 worker 自带堆上限；orchestrator / live driver 用 heap_size_limit 或 FOUNT_TEST_ORCHESTRATOR_HEAP_MB。 */
 if (!process.env.FOUNT_TEST_NODE_WORKER) {
+	for (const event of ['uncaughtException', 'unhandledRejection', 'error']) {
+		unset_shutdown_listener(event)
+		process.on(event, err => console.error(`${event}:`, err))
+	}
 	const rawMb = process.env.FOUNT_TEST_ORCHESTRATOR_HEAP_MB
 	installNearOomHeapSnapshot({
 		/** @returns {number} 堆上限字节 */

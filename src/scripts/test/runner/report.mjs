@@ -189,6 +189,19 @@ export class RunReportWriter {
 	}
 
 	/**
+	 * @returns {ReturnType<typeof summarizeEstimate> | null} 待运行套件的剩余预估
+	 */
+	summarizePendingEstimate() {
+		const pendingSlots = this.slots.filter(slot => slot.state === 'pending')
+		if (!pendingSlots.length || !this.estimatePlan || !this.estimateOptions) return null
+		const tasks = pendingSlots
+			.map(slot => this.estimatePlan.get(suiteKey(slot.manifestId, slot.name)))
+			.filter(Boolean)
+		if (!tasks.length) return null
+		return summarizeEstimate(tasks, this.estimateOptions)
+	}
+
+	/**
 	 * @param {Map<string, EstimateTask>} plan suite 键 -> 预估任务
 	 * @param {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number }} options 调度选项
 	 * @returns {Promise<void>}

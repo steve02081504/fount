@@ -176,6 +176,20 @@ function formatRunningSuiteMessage({ manifestId, name, heavy, expected }) {
 }
 
 /**
+ * @param {import('./report.mjs').RunReportWriter} reportWriter 报告写入器
+ */
+function logPendingEstimate(reportWriter) {
+	const estimate = reportWriter.summarizePendingEstimate()
+	if (!estimate) return
+	const completed = reportWriter.slots.filter(slot => slot.state === 'done').length
+	console.logI18n('fountConsole.test.estimatedRemaining', {
+		eta: formatDuration(estimate.etaMs),
+		completed,
+		total: reportWriter.slots.length,
+	})
+}
+
+/**
  * @param {RunTestsOptions} options 运行选项
  * @returns {Promise<number>} 进程退出码
  */
@@ -447,6 +461,11 @@ export async function runTests(options = {}) {
 			})
 	}
 
+	const recordSuiteResult = async (index, entry, reused = false) => {
+		if (index != null) await reportWriter.recordResult(index, entry, { reused })
+		logPendingEstimate(reportWriter)
+	}
+
 	const gate = new ResourceRunGate(
 		globalBudget.memBytes,
 		suite => state.suites[suiteKey(suite.manifestId, suite.name)],
@@ -481,7 +500,7 @@ export async function runTests(options = {}) {
 				uncommittedHash,
 			})
 			await writeState(REPO_ROOT, state)
-			if (index != null) await reportWriter.recordResult(index, entry)
+			if (index != null) await recordSuiteResult(index, entry)
 			return { passed: false }
 		}
 
@@ -494,7 +513,7 @@ export async function runTests(options = {}) {
 				name: suite.name,
 				status: prev.status,
 			})
-			if (index != null) await reportWriter.recordResult(index, prev, { reused: true })
+			if (index != null) await recordSuiteResult(index, prev, true)
 			// 复用失败仍算失败 → 下游被 blocked；passed/noisy 计入 runGreenKeys 放行下游。
 			return { passed: prev.status !== 'failed' }
 		}
@@ -532,7 +551,7 @@ export async function runTests(options = {}) {
 			triggerHash,
 		})
 		await writeState(REPO_ROOT, state)
-		if (index != null) await reportWriter.recordResult(index, entry)
+		if (index != null) await recordSuiteResult(index, entry)
 
 		return { passed: result.passed }
 	})

@@ -374,6 +374,7 @@
 			},
 			"reusedSuite": "\n>>> 复用 ${manifestId}/${name}（trigger 未变，沿用上次 ${status}）",
 			"estimatedRun": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
+			"estimatedRemaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
 			"estimatedRunSerialHint": "并行可省 ≈ ${savings}（去掉 --no-parallel）",
 			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
 			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
@@ -489,9 +490,11 @@
 				"labelMatchedTriggers": "命中 trigger",
 				"labelMatchedPaths": "命中路径",
 				"durationMs": "${ms} 毫秒",
-				"durationSec": "${sec} 秒",
-				"durationMin": "${min} 分钟",
-				"durationMinSec": "${min} 分 ${sec} 秒"
+				"durationUnitSec": "${n} 秒",
+				"durationUnitMin": "${n} 分",
+				"durationUnitMinute": "${n} 分钟",
+				"durationUnitHour": "${n} 小时",
+				"durationUnitDay": "${n} 天"
 			},
 			"state": {
 				"title": "fount 测试现状",

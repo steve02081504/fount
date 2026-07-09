@@ -37,7 +37,7 @@ export function iconifyImg(icon, opts = {}) {
 /** Hub empty-state icons */
 export const hubEmptyChatIcon = iconifyImg('line-md/chat-round', { class: 'hub-empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：挥手图标 HTML */
-export const hubEmptyWaveIcon = iconifyImg('line-md/waving', { class: 'hub-empty-icon-img', width: 48, height: 48 })
+export const hubEmptyWaveIcon = iconifyImg('mdi/hand-wave-outline', { class: 'hub-empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：角色列表图标 HTML */
 export const hubEmptyCharsIcon = iconifyImg('mdi/robot-outline', { class: 'hub-empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：频道/列表图标 HTML */
