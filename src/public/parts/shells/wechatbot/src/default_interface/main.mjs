@@ -18,7 +18,7 @@ import {
 	parseInboundAesKey,
 } from '../wechat_api.mjs'
 
-ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => '') || (await import('npm:@ffmpeg-installer/ffmpeg')).default.path)
+ffmpeg.setFfmpegPath(await where_command('ffmpeg') || (await import('npm:@ffmpeg-installer/ffmpeg')).default.path)
 
 /**
  * 聊天回复类型别名。
