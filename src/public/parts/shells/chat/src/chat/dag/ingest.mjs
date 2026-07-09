@@ -19,8 +19,8 @@ import { eventsPath } from '../lib/paths.mjs'
 import { assertEventPermission } from './authorizeEvent.mjs'
 import { getState } from './materialize.mjs'
 import { validateSessionEventContent } from './sessionEventValidate.mjs'
-import { validateWorldOpContent } from './worldOpEventValidate.mjs'
 import { PUB_KEY_HASH_HEX } from './validator.mjs'
+import { validateWorldStateContent } from './worldStateEventValidate.mjs'
 
 /**
  * @param {unknown} ref content_ref 对象
@@ -58,8 +58,8 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 		return
 	}
 
-	if (event.type === 'world_op')
-		validateWorldOpContent(event)
+	if (event.type === 'world_state')
+		validateWorldStateContent(event)
 
 	if (event.type === 'member_join')
 		await validateJoinPolicy(state, event, replicaUsername, { source: opts.source })

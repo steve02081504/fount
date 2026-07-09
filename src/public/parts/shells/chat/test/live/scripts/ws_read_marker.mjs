@@ -12,7 +12,7 @@ const apiKey = requireLiveApiKey()
  * @param {string} method HTTP 方法
  * @param {string} path 相对路径
  * @param {object} [body] JSON 请求体
- * @returns {Promise<{ status: number, json: object | null }>}
+ * @returns {Promise<{ status: number, json: object | null }>} HTTP 状态码与解析后的 JSON（失败时为 null）
  */
 async function chatApi(method, path, body) {
 	const separator = path.includes('?') ? '&' : '?'
@@ -45,6 +45,9 @@ const markerRun = await waitForWsFrame({
 	url: wsUrl,
 	types: ['read_marker'],
 	timeoutMs: ms('20s'),
+	/**
+	 *
+	 */
 	trigger: async () => {
 		const marker = await chatApi('PUT', `/groups/${groupId}/channels/${channelId}/read-marker`, {
 			eventId,

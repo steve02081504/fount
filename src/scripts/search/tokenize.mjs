@@ -36,10 +36,10 @@ export function tokenizeForIndex(text) {
 	for (const match of raw.matchAll(HASHTAG_RE))
 		stripped = stripped.replace(match[0], ' ')
 
-	for (const match of stripped.matchAll(CJK_RE)) {
+	for (const match of stripped.matchAll(CJK_RE)) 
 		for (const token of cjkBigrams(match[0]))
 			tokens.add(token)
-	}
+	
 
 	const latinOnly = stripped.replace(CJK_RE, ' ')
 	for (const match of latinOnly.matchAll(WORD_RE))

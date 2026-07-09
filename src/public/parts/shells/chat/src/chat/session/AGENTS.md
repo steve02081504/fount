@@ -17,6 +17,7 @@ alwaysApply: false
 - **Fixed order**: base → world (objective) → persona (subjective).
 - Agent: `getChatRequest` builds the viewer, then runs the two steps above.
 - Human: `materializeViewerLog.mjs` → `GET …/view-log`; projects back to row DTOs (hides discarded entries, applies rewrite overrides, `viewerRewritten`); raw `GET …/messages` is preserved separately.
+- **visibility ACL parity**: `lib/visibility.mjs` `entryVisibleToViewer` (per-entry `visibility` roles/members + `charVisibility` char whitelist) runs in **both** final views — prompt assembly (`prompt_struct` `entryVisibleForPrompt`) and view-log base layer (`materializeViewerChatLog`, before the world hook). Raw `/messages` deliberately does not filter (moderation/audit surface).
 - **view-log pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` means the raw DAG page hit `limit` (before persona/world filtering). When filtering yields an empty page but `hasMore`, Hub advances with `oldestRawEventId` — do not peer-inject raw rows from the client (`dag/queries` already backfills on before-miss).
 - Hub: `loadMessages` / incremental refresh go through `getChannelViewLog`; navigation backfill can still use raw batch-get / pin-context.
 - Federation: `federation/remoteWorldProxy.mjs` + `federation/rpcDispatcher.mjs`; the world side exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`.
@@ -29,23 +30,24 @@ alwaysApply: false
 - Their hooks either pass everything through or contribute nothing; they deliberately **do not implement** `GetSpeakingOrder` / `GetCharReply` / `GetGreeting` / `MessageEdit`(`Delete`) (implementing any of these would replace the default path).
 - The pipeline can assume `world` / `user`/`player` are always objects, except in federation `rpcDispatcher`'s `not_local` branch.
 
-## World distribution (M7 / G1)
+## World distribution
 
-- `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'`（缺省 `hosted`）；bind 时从绑定者本机已安装的 world part 读出并写入 `session_world_bind*` 的 `content.distribution`。
-- `resolveWorld` 三分支（`session.channelWorlds[channelId] || session.world` 上的 `distribution`，缺省 `hosted`）：
-  - **`local`**：`loadPart(replicaUsername, worlds/…)`；未装 → `BUILTIN_WORLD`（永不 RPC）。
-  - **`replicated`**：本机装了 → `loadPart(replicaUsername, …)`；未装 → `createRemoteWorldProxy(homeNodeHash)`（种子主机回退）。
-  - **`hosted`**（现状）：`isLocalNode(homeNodeHash)` → `loadPart(ownerUsername, …)`；否则 RPC。
-- 入站校验（`sessionEventValidate.mjs`）：`hosted`/`replicated` 必填 `homeNodeHash`；`local` 可缺省。
-- 默认 fount world 已标 `distribution: 'local'`。
+- `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'` (default `hosted`); on bind, read from the binder's locally installed world part and written into `session_world_bind*`'s `content.distribution`.
+- `resolveWorld` three branches (on `distribution` from `session.channelWorlds[channelId] || session.world`, default `hosted`):
+  - **`local`**: `loadPart(replicaUsername, worlds/…)`; not installed → `BUILTIN_WORLD` (never RPC).
+  - **`replicated`**: locally installed → `loadPart(replicaUsername, …)`; not installed → `createRemoteWorldProxy(homeNodeHash)` (seed-host fallback).
+  - **`hosted`** (current default): `isLocalNode(homeNodeHash)` → `loadPart(ownerUsername, …)`; otherwise RPC.
+- Inbound validation (`sessionEventValidate.mjs`): `hosted`/`replicated` require `homeNodeHash`; `local` may omit it.
+- Default fount world is marked `distribution: 'local'`.
 
-## World shared state + WorldChatHost (M8 / G2)
+## World shared state + WorldChatHost
 
-- DAG 事件 `world_op`：`content { worldname, op: 'set'|'del', key, value? }`；物化到 `state.worldStates[worldname][key]`（shell 通用 LWW reducer，`dag/reducers/worldOps.mjs`）。
-- `WorldChatHost`（`session/worldHost.mjs`）：`state`（DAG 共享）、`localData`（`worlds/{worldname}/chat_data/{groupId}.json` 本机私有）、`triggerCharReply`、`postSystemMessage`、`listMembers`/`listChannels`。
-- `WorldAPI.chat.ChatHostConnected(host)`：本机 `resolveWorld` 加载 part 时惰性接线一次（`ensureWorldHostConnected`）；`BUILTIN_WORLD` 与 `remoteWorldProxy` 不接。
-- 联邦入站 `world_op`：`aclGated`（active member）+ `remoteIngest` 64KB content 清扫；本机写不受限。越权语义由 world 折叠层（`state.log()` 自定义 fold）裁决，非 shell reducer。
-- 测试：`test/pure/world_op_*.test.mjs`；`test/integration/world_op_state.test.mjs`；fixture `test/fixtures/worlds/replicated_world`。
+- DAG event `world_state`: `content { worldname, action: 'set'|'delete', key, value? }`; materialized to `state.worldStates[worldname][key]` (shell-level LWW reducer, `dag/reducers/worldState.mjs`). **State is group-scoped** with no channel dimension — use key conventions for channel scope (e.g. `chan/{channelId}/...`).
+- **Layered semantics**: shell LWW reducer is world-agnostic and performs no ACL — unauthorized ops are still folded into `state.get`; ignoring unauthorized ops is the world's fold layer (`state.log()` custom fold) responsibility.
+- `WorldChatHost` (`session/worldHost.mjs`): `state` (DAG shared), `localData` (`worlds/{worldname}/chat_data/{groupId}.json` node-private), `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`.
+- `WorldAPI.chat.ChatHostConnected(host)`: wired lazily once when `resolveWorld` loads the part locally (`ensureWorldHostConnected`); `BUILTIN_WORLD` and `remoteWorldProxy` do not wire.
+- Federation inbound `world_state`: `aclGated` (active member) + `remoteIngest` 64KB content limit; local writes are unrestricted. ACL enforcement is the world's fold layer responsibility, not the shell reducer.
+- Tests: `test/pure/world_state_*.test.mjs`; `test/integration/world_state.test.mjs`; fixture `test/fixtures/worlds/replicated_world`.
 
 ## member_roles
 
@@ -60,14 +62,14 @@ alwaysApply: false
 - `setWorld` greeting resolves the world per `channelId` via `resolveWorld`; don't just read `LastTimeSlice.world` (that only reflects the default channel).
 - Integration test fixtures may skip implementing greeting; reuse `test/fixtures/chars|worlds/*` when one is needed.
 
-## Write path (DAG-first, M2)
+## Write path (DAG-first)
 
 - **Sole human entry point**: `postChannelMessage` (Hub HTTP + CLI `actions.send`). Persona `BeforeUserSend` rewrites/rejects before persisting.
 - **`BeforeUserSend` resolution**: resolve the persona for the **sender's** `username` via `getMaterializedSession` + `loadPlayerForReplica` — **do not** use `getActiveGroupRuntime` (in federation simulations a group slot may belong to a different replica and lack `LastTimeSlice`).
 - **Persistence facade**: `channel/messageCommit.mjs` → world `AddChatLogEntry` (pre-DAG transform/reject) → canonical content → `appendSignedLocalEvent`.
 - **Sole `After` trigger point**: `broadcastAndPersist` awaits `AfterAddChatLogEntry` for `message` and finalized `message_edit`; char/greeting flow through the same pipeline via `syncChatLogEntryToDag` / `finalizeDagGeneratingMessage`.
 - Canonical content: everyone gets `displayName`/`displayAvatar`; generated entries also attach `sessionSnapshot`/`chatLogEntryId`.
-- Fixture hook counters: use `globalThis` (once a part is copied into a user directory, it can no longer relatively import a helper from the test repo). See `test/fixtures/write_path_hook_state.mjs` (test side) and the fixture `main.mjs`'s inline `hookState()` using the same key (still works after being copied into a user's `worlds/`/`personas/`).
+- Fixture hook counters: use `globalThis` (once a part is copied into a user directory, it can no longer relatively import a helper from the test repo). See `test/fixtures/write_path_hook_state.mjs` (test side) and the fixture `main.mjs`'s inline `hookState()` using the same key.
 - Fixtures **must not** `import '../write_path_hook_state.mjs'` or similar relative paths — resolution breaks once installed into a user directory.
 - Pure-test projection: only import `viewerLogProject.mjs` (don't pull in the session I/O graph via `materializeViewerLog`).
 
@@ -86,6 +88,6 @@ alwaysApply: false
 - `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)` — nullish result (missing hook, remote METHOD_NOT_FOUND, or explicit null) falls through to the char itself.
 - Fixture counters: `test/fixtures/edit_path_hook_state.mjs` (same `globalThis` pattern as the write path).
 - Integration: `test/integration/edit_path_hooks.test.mjs`.
-- Pure: `test/pure/world_op_reducer.test.mjs`, `test/pure/world_op_validate.test.mjs`
-- Integration: `test/integration/world_op_state.test.mjs`, `test/integration/world_distribution.test.mjs`
+- Pure: `test/pure/world_state_reducer.test.mjs`, `test/pure/world_state_validate.test.mjs`
+- Integration: `test/integration/world_state.test.mjs`, `test/integration/world_distribution.test.mjs`
 - HTTP route integration (`launchNode` + scenario bootstrap): `test/integration/routes_http.test.mjs`, env `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`.

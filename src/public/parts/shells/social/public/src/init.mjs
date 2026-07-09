@@ -15,7 +15,7 @@ import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
-import { loadFeed, runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
+import { runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
 import { bumpNotificationBadge, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 

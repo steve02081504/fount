@@ -48,7 +48,7 @@ export function registerPostsRoutes(router) {
 			groupRef: req.body.groupRef,
 			lang: req.body.lang || 'zh-CN',
 			visibility,
-			...(req.body.contentWarning ? { contentWarning: String(req.body.contentWarning).trim().slice(0, 200) } : {}),
+			...req.body.contentWarning ? { contentWarning: String(req.body.contentWarning).trim().slice(0, 200) } : {},
 		}
 		const signed = await commitTimelineEvent(username, entityHash, {
 			type: 'post',

@@ -150,7 +150,7 @@ export async function init(start_config) {
 	if (starts.Web) starts.Web = Object.assign({ mDNS: true }, starts.Web)
 	let logoPromise
 	if (starts.Base) {
-		for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
+		if (!process.env.FOUNT_TEST) for (const event of ['error', 'unhandledRejection', 'uncaughtException']) {
 			unset_shutdown_listener(event)
 			process.on(event, handleError)
 		}

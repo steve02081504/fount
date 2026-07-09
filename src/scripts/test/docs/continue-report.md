@@ -2,46 +2,45 @@
 
 Per-slot `continueReason` in `data/test/report.json` and a **Trigger reasons** file (`data/test/triggered-reasons.md`, linked from `report.md` with a single line) explain why each suite was included — not only for `--continue`. The details are split out to keep `report.md` scannable; `triggered-reasons.md` is removed when no slot carries a reason.
 
-Implementation: `src/scripts/test/runner/continue_reason.mjs`, stamped by `RunReportWriter` / `runner/index.mjs`.
+Implementation: `src/scripts/test/runner/continue_reason.mjs` formats reasons from the **plan** built by `core/plan.mjs`; goals come from `runner/selection.mjs`.
+
+## Decision model (verdict + plan)
+
+1. **`buildVerdicts`** (`core/verdict.mjs`) — one pass over all suites: `green` / `noisy` / `red` / `unknown` from state entries + git content freshness (commits since `entry.commitHash` + trigger-relevant uncommitted digest vs `entry.triggerHash`). This is the **only** freshness definition.
+2. **Goals** — mode-specific `Set<key>` (`--continue`, diff, explicit, `--outdated`, `--all`).
+3. **`buildPlan`** — single topo scan over goals + pulled dependencies → each slot is `reuse` | `run` | `blocked` with provenance (who pulled whom).
+
+Report slots, ETA estimate, dispatch, and trigger reasons all read the **same** plan — no second gate implementation.
 
 ## When reasons are stamped
 
 | Scenario | Kinds |
 | --- | --- |
-| `--continue` pending slots | `pending_from_previous_report` |
-| `--continue` imperfect suites | `imperfect_*`, `outdated_trigger_hit`, … |
-| Explicit suite + dependency expansion | `explicit_selected` on named suites; `dependency_required` on non-green upstream only |
-| Diff selection (no explicit suite names) | `diff_trigger_hit` on diff-selected suites; `dependency_required` on expanded deps |
+| `--continue` | `imperfect_*`, `stale_content`, `missing_state_record` on goal suites |
+| `--outdated` | `stale_content` on goal suites |
+| Explicit suite + dependency pull | `explicit_selected`; `dependency_required` on pulled deps |
+| Diff selection | `diff_trigger_hit`; `diff_dependent` on one-level downstream; `dependency_required` on pulled deps |
 
-## Selection order (`--continue`)
-
-1. **Pending slots** — unfinished slots from the last report (`pending_from_previous_report`).
-2. **Imperfect suites** — failed, noisy, blocked, missing state record, or trigger-outdated at the current fingerprint.
-
-There is **no** commit-stale step: a suite that merely drifted commit (no trigger hit) is never re-run.
-
-Dependency expansion may add suites not in the seed set; those get `dependency_required` with a best-effort `requiredBy` key (transitive reverse-walk to the nearest seed suite). **Commit drift alone never activates indirectly pulled suites** — only trigger-outdated / failed / missing upstream deps gate. Downstream expansion (`expandWithDependents`) fires only on trigger-outdated parents and pulls a single level.
-
-- **Upstream pull** — child suite selected but a non-green dependency must run first (`requiredBy` = the user/diff-selected suite that ultimately needed it).
-- **Downstream pull** — parent suite was trigger-outdated and `expandWithDependents` added a direct dependent one level down (`requiredBy` = the outdated parent).
+There is **no** `pending_from_previous_report`: interrupted runs resume via `--continue` re-deriving goals from verdicts (unfinished work is `unknown`).
 
 ## Reason kinds
 
 | `kind` | Meaning |
 | --- | --- |
-| `pending_from_previous_report` | Slot was still `pending` when the prior run stopped |
 | `imperfect_failed` | Last state entry was `failed` |
 | `imperfect_noisy` | Last state entry was `noisy` |
 | `imperfect_blocked` | Last state entry was `blocked` |
 | `missing_state_record` | No entry in `state/main.json` |
-| `outdated_trigger_hit` | Trigger files changed since the recorded commit |
+| `stale_content` | Content changed since last run (verdict `unknown`) |
 | `diff_trigger_hit` | Included by uncommitted diff trigger matching |
-| `dependency_required` | Pulled in by dependency expansion — includes `rootKey`, `inclusionPath`, `pull`, and `gate` |
+| `diff_dependent` | One-level downstream of a diff trigger hit |
+| `explicit_selected` | User named this suite |
+| `dependency_required` | Pulled in by plan expansion — includes `requiredBy` |
+| `failure_retry` | Narrowed re-run of failed files (run-time, not selection) |
 
 ## Evidence fields (`triggered-reasons.md`)
 
-- **Root cause** / **inclusion path** / **pull direction** / **gate reason** — for `dependency_required` (root seed reason, chain from seed, upstream vs downstream, why the dep gate was not green).
-- **Commit range** / **uncommitted digest range** — fingerprint drift.
-- **Blocked by** — for `imperfect_blocked`.
-- **Matched triggers** / **matched paths** — for `outdated_trigger_hit` (from `collectTriggerEvidence` in `core/state.mjs`).
-- **Required by** — for `dependency_required`.
+- **Required by** — for `dependency_required` / `diff_dependent` (provenance from plan).
+- **Commit range** / **uncommitted digest range** — for `stale_content`.
+- **Blocked by** — for `imperfect_blocked` and plan `blocked` slots.
+- **Matched triggers** / **matched paths** — for `diff_trigger_hit`.

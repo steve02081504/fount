@@ -3,7 +3,7 @@
  *
  *   fount test [--all] [--continue] [--outdated] [--no-parallel] [--force] [--since <commit>] [<groups>...]
  *
- * 分组语法：manifest 或 manifest:suite1,suite2（空格分隔多组）
+ * 分组语法：manifest、manifest:suite、manifest/suite（空格分隔多组）
  */
 import 'fount/scripts/test/env.mjs'
 
@@ -19,6 +19,7 @@ import {
 } from './core/manifest.mjs'
 import { parseArgsOrExit } from './core/parse_args_or_exit.mjs'
 import { REPO_ROOT } from './core/repo_root.mjs'
+import { isBareSuiteContinuation, resolveSelector } from './core/selector.mjs'
 import { runTests } from './runner/index.mjs'
 
 const { positionals, values } = parseArgsOrExit({
@@ -41,9 +42,9 @@ if (values.help || positionals.includes('help')) {
 }
 
 /**
- * 逗号或空白分隔的 selector 列表（PowerShell 传参时逗号常被拆成独立 argv）。
- * @param {string} raw 原始片段
- * @returns {string[]} token 列表
+ * 将 CLI 选择器字符串按逗号/空白切分。
+ * @param {string} raw 原始选择器串
+ * @returns {string[]} 非空 token 列表
  */
 function splitSelectors(raw) {
 	return raw.split(/[,\s]+/).map(token => token.trim()).filter(Boolean)
@@ -54,11 +55,11 @@ function splitSelectors(raw) {
  */
 
 /**
- * 解析分组冒号语法 positional 参数。
- * @param {string[]} args 位置参数
+ * 解析 CLI positional 为 manifest/suite 分组输入。
+ * @param {string[]} args CLI positional
  * @param {string[]} knownIds 已知 manifest id
  * @param {import('./core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
- * @returns {{ groups: GroupInput[] | undefined } | { error: 'unknownFirstToken', token: string }} 解析结果
+ * @returns {{ groups: GroupInput[] | undefined }} 分组输入；无 positional 时为 undefined
  */
 function parseGroupSelectors(args, knownIds, allSuites) {
 	if (!args.length)
@@ -69,27 +70,27 @@ function parseGroupSelectors(args, knownIds, allSuites) {
 	/** @type {GroupInput | null} */
 	let current = null
 
-	for (const token of args)
-		if (token.includes(':')) {
-			const colon = token.indexOf(':')
+	for (const token of args) {
+		const resolved = resolveSelector(token, knownIds)
+		if (resolved) {
 			current = {
-				manifestSelectors: [token.slice(0, colon)],
-				suiteSelectors: splitSelectors(token.slice(colon + 1)),
+				manifestSelectors: [resolved.manifestId],
+				suiteSelectors: resolved.suiteSelectors,
 			}
 			groups.push(current)
-		}
-		else {
-			const resolved = resolveManifestSelectors([token], knownIds, allSuites)
-			if (resolved.manifestIds.length) {
-				current = { manifestSelectors: [token], suiteSelectors: [] }
-				groups.push(current)
-			}
-			else if (current)
-				current.suiteSelectors.push(...splitSelectors(token))
-			else
-				return { error: 'unknownFirstToken', token }
+			continue
 		}
 
+		const manifestResolved = resolveManifestSelectors([token], knownIds, allSuites)
+		if (manifestResolved.manifestIds.length) {
+			current = { manifestSelectors: [token], suiteSelectors: [] }
+			groups.push(current)
+		}
+		else if (isBareSuiteContinuation(token, knownIds) && current)
+			current.suiteSelectors.push(...splitSelectors(token))
+		else
+			return { error: 'unknownFirstToken', token }
+	}
 
 	return { groups }
 }

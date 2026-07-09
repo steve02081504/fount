@@ -1,6 +1,6 @@
 /**
  * 【文件】worldHost.mjs — WorldChatHost：world 对 chat 存储 / p2p 层的正式调用面
- * 【职责】state（DAG world_op LWW）、localData（本机私有 JSON）、triggerCharReply、postSystemMessage、群只读摘要。
+ * 【职责】state（DAG world_state LWW）、localData（本机私有 JSON）、triggerCharReply、postSystemMessage、群只读摘要。
  * 【原理】state 写经 appendSignedLocalEvent；读自物化 worldStates；ChatHostConnected 惰性接线一次。
  * 【关联】append.mjs、materialize.mjs、postMessage.mjs、triggerReply.mjs、resolvePart.mjs。
  */
@@ -42,15 +42,6 @@ function localDataPath(replicaUsername, groupId, worldname) {
 }
 
 /**
- * @param {object} hlc HLC JSON
- * @returns {number} 排序键
- */
-function hlcSortKey(hlc) {
-	if (!hlc || typeof hlc.wall !== 'number') return 0
-	return hlc.wall * 1_000_000 + (hlc.logical || 0)
-}
-
-/**
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} worldname 世界名
@@ -89,9 +80,9 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 	 */
 	async function stateSet(key, value) {
 		await appendSignedLocalEvent(replicaUsername, groupId, {
-			type: 'world_op',
+			type: 'world_state',
 			timestamp: Date.now(),
-			content: { worldname, op: 'set', key, value },
+			content: { worldname, action: 'set', key, value },
 		})
 	}
 
@@ -101,15 +92,15 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 	 */
 	async function stateDel(key) {
 		await appendSignedLocalEvent(replicaUsername, groupId, {
-			type: 'world_op',
+			type: 'world_state',
 			timestamp: Date.now(),
-			content: { worldname, op: 'del', key },
+			content: { worldname, action: 'delete', key },
 		})
 	}
 
 	/**
 	 * @param {string} [sinceEventId] 起始 event id（不含）；缺省返回全部
-	 * @returns {Promise<import('../../../../../../../decl/worldAPI.ts').worldOpEvent_t[]>} HLC 全序 op 序列
+	 * @returns {Promise<import('../../../../../../../decl/worldAPI.ts').worldStateEvent_t[]>} HLC 全序状态写入序列
 	 */
 	async function stateLog(sinceEventId) {
 		const rows = await readJsonl(eventsPath(replicaUsername, groupId), {
@@ -117,32 +108,30 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 		})
 		const since = sinceEventId ? String(sinceEventId).trim().toLowerCase() : ''
 		let pastSince = !since
-		const ops = []
+		const writes = []
 		for (const row of rows) {
 			if (!pastSince) {
 				if (String(row.id).trim().toLowerCase() === since)
 					pastSince = true
 				continue
 			}
-			if (row.type !== 'world_op') continue
+			if (row.type !== 'world_state') continue
 			const content = row.content || {}
 			if (String(content.worldname || '').trim() !== worldname) continue
-			ops.push({
+			writes.push({
 				eventId: row.id,
 				hlc: row.hlc,
 				sender: row.sender,
-				channelId: row.channelId,
 				content: {
 					worldname: content.worldname,
-					op: content.op,
+					action: content.action,
 					key: content.key,
 					...content.value !== undefined ? { value: content.value } : {},
 				},
 			})
 		}
-		ops.sort((a, b) => hlcSortKey(a.hlc) - hlcSortKey(b.hlc)
-			|| HLC.fromJSON(a.hlc).compare(HLC.fromJSON(b.hlc)))
-		return ops
+		writes.sort((a, b) => HLC.fromJSON(a.hlc).compare(HLC.fromJSON(b.hlc)))
+		return writes
 	}
 
 	/**

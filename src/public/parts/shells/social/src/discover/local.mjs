@@ -3,8 +3,8 @@ import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { listLocalTimelineDirs } from '../feed/helpers.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
-/** 遍历 owner 时多采样的倍数，供后续 shuffle 截断以保证随机性。 */
-const POST_DISCOVER_SAMPLE_MULTIPLIER = 3
+/** 每个 owner 最多纳入探索候选的帖子数（物化视图已按新→旧）。 */
+const POSTS_PER_OWNER = 20
 
 /**
  * 探索页推荐公开账户（跳过受保护时间线）。
@@ -49,7 +49,7 @@ export async function discoverAccounts(username, options = {}) {
  * @param {number} [options.n=20] 返回帖子数
  * @param {boolean} [options.mediaOnly=false] 仅含媒体
  * @param {string | null} [options.nodeHashPrefix] 仅该 nodeHash 托管的 entity；缺省为全部已知 owner
- * @returns {Promise<{ posts: object[] }>} 随机帖子样本
+ * @returns {Promise<{ posts: object[] }>} 按时间新→旧的公开帖
  */
 export async function discoverPosts(username, options = {}) {
 	const postLimit = Math.min(Math.max(Number(options.n) || 20, 1), 100)
@@ -60,9 +60,9 @@ export async function discoverPosts(username, options = {}) {
 	const posts = []
 
 	for (const entityHash of owners) {
-		if (posts.length >= postLimit * POST_DISCOVER_SAMPLE_MULTIPLIER) break
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (view.socialMeta?.hideFromDiscovery) continue
+		let taken = 0
 		for (const post of view.posts) {
 			if (post.content?.visibility === 'followers') continue
 			if (mediaOnly && !post.content?.mediaRefs?.length) continue
@@ -73,13 +73,16 @@ export async function discoverPosts(username, options = {}) {
 				mediaThumbs: post.content?.mediaRefs?.slice(0, 4) || [],
 				hlc: post.hlc,
 			})
+			if (++taken >= POSTS_PER_OWNER) break
 		}
 	}
 
-	for (let index = posts.length - 1; index > 0; index--) {
-		const randomIndex = Math.floor(Math.random() * (index + 1))
-		;[posts[index], posts[randomIndex]] = [posts[randomIndex], posts[index]]
-	}
+	posts.sort((earlier, later) => {
+		const earlierWall = earlier.hlc?.wall || 0
+		const laterWall = later.hlc?.wall || 0
+		if (earlierWall !== laterWall) return laterWall - earlierWall
+		return String(later.postId).localeCompare(String(earlier.postId))
+	})
 
 	return { posts: posts.slice(0, postLimit) }
 }

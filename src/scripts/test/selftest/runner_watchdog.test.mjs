@@ -142,27 +142,34 @@ Deno.test('state baseline timing via upsertSuiteRun', async () => {
 	}
 })
 
-Deno.test('RunReportWriter tracks pending slots for continue', async () => {
+Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-report-test-'))
 	try {
-		const suites = [{
-			manifestId: 'testkit',
-			name: 'selftest',
-			id: 'selftest',
-			run: [],
-			triggers: [],
-			manifestPath: '',
-			heavy: false,
+		const planSlots = [{
+			key: 'testkit/selftest',
+			suite: {
+				manifestId: 'testkit',
+				name: 'selftest',
+				id: 'selftest',
+				run: [],
+				triggers: [],
+				manifestPath: '',
+				heavy: false,
+			},
+			action: 'run',
+			goal: true,
 		}]
 		const writer = new RunReportWriter({
 			repoRoot,
-			suites,
+			planSlots,
 			runId: 'run-1',
 			command: 'fount test testkit',
 			commitHash: 'abc',
 			uncommittedHash: null,
 		})
 		await writer.init()
+		const rawPending = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
+		assertEquals(rawPending.slots[0].state, 'pending')
 		await writer.recordResult(0, {
 			status: 'passed',
 			commitHash: 'abc',
@@ -174,23 +181,9 @@ Deno.test('RunReportWriter tracks pending slots for continue', async () => {
 			logPath: null,
 		})
 		await writer.finalize(0)
-		const resumed = await RunReportWriter.resume(repoRoot)
-		assertEquals(resumed, null)
-
-		const writer2 = new RunReportWriter({
-			repoRoot,
-			suites,
-			runId: 'run-2',
-			command: 'fount test testkit',
-			commitHash: 'abc',
-			uncommittedHash: null,
-		})
-		await writer2.init()
-		const raw = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
-		assertEquals(raw.slots[0].state, 'pending')
-		const resumed2 = await RunReportWriter.resume(repoRoot)
-		assertEquals(resumed2?.pendingSlots.length, 1)
-		assertEquals(exitCodeFromSlots(resumed2.slots.filter(s => s.state === 'done')), 0)
+		const rawDone = JSON.parse(await readFile(reportJsonPath(repoRoot), 'utf8'))
+		assertEquals(rawDone.finishedAt != null, true)
+		assertEquals(exitCodeFromSlots(rawDone.slots), 0)
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })

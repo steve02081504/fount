@@ -2,32 +2,11 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { selectSuitesByDiff } from '../core/manifest.mjs'
-import { collectTriggerEvidence, isSuiteOutdated } from '../core/state.mjs'
+import { collectTriggerEvidence } from '../core/state.mjs'
 import { filterTriggerRelevantFiles, mergeTriggerFilter } from '../core/trigger_filter.mjs'
+import { isContentFresh } from '../core/verdict.mjs'
 
-/** @type {import('../core/manifest.mjs').SuiteDef} */
-function suite(manifestId, name, triggers) {
-	return {
-		manifestId,
-		name,
-		id: name,
-		run: [],
-		triggers,
-		manifestPath: '',
-		heavy: false,
-	}
-}
-
-const passedEntry = {
-	status: 'passed',
-	commitHash: 'abc',
-	uncommittedHash: null,
-	ranAt: '',
-	durationMs: 1,
-	failedFiles: [],
-	noiseHits: [],
-	logPath: null,
-}
+import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
 Deno.test('filterTriggerRelevantFiles drops docs and metadata', () => {
 	const ignored = [
@@ -45,19 +24,19 @@ Deno.test('filterTriggerRelevantFiles drops docs and metadata', () => {
 	)
 })
 
-Deno.test('isSuiteOutdated stays fresh when only docs or manifest change', () => {
-	const s = suite('shells/chat', 'pure', ['src/public/parts/shells/chat/**'])
+Deno.test('isContentFresh stays fresh when only docs or manifest change', () => {
+	const s = makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] })
 	const changed = [
 		'src/public/parts/shells/chat/public/hub/AGENTS.md',
 		'src/public/parts/shells/chat/test/manifest.json',
 	]
-	assertEquals(isSuiteOutdated(s, passedEntry, changed), false)
+	assertEquals(isContentFresh(s, makeStateEntry(), changed, new Map()), true)
 })
 
 Deno.test('selectSuitesByDiff skips doc-only changes', () => {
 	const all = [
-		suite('shells/chat', 'pure', ['src/public/parts/shells/chat/**']),
-		suite('p2p', 'pure', ['src/scripts/p2p/**']),
+		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
+		makeSuite('p2p', 'pure', { triggers: ['src/scripts/p2p/**'] }),
 	]
 	const docOnly = [
 		'src/public/parts/shells/chat/test/manifest.json',
@@ -68,8 +47,8 @@ Deno.test('selectSuitesByDiff skips doc-only changes', () => {
 
 Deno.test('selectSuitesByDiff still matches code and test infra changes', () => {
 	const all = [
-		suite('shells/chat', 'pure', ['src/public/parts/shells/chat/**']),
-		suite('p2p', 'pure', ['src/scripts/p2p/**']),
+		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
+		makeSuite('p2p', 'pure', { triggers: ['src/scripts/p2p/**'] }),
 	]
 	assertEquals(
 		selectSuitesByDiff('diff', ['src/public/parts/shells/chat/src/foo.mjs'], all).map(s => s.name),
@@ -83,9 +62,9 @@ Deno.test('selectSuitesByDiff still matches code and test infra changes', () => 
 
 Deno.test('triggerFilter unignore restores md for one suite only', () => {
 	const mdPath = 'src/public/parts/shells/chat/public/hub/guide.md'
-	const defaultSuite = suite('shells/chat', 'pure', ['src/public/parts/shells/chat/**'])
+	const defaultSuite = makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] })
 	const mdSuite = {
-		...suite('shells/chat', 'docs', ['src/public/parts/shells/chat/**']),
+		...makeSuite('shells/chat', 'docs', { triggers: ['src/public/parts/shells/chat/**'] }),
 		triggerFilter: { unignore: ['src/public/parts/shells/chat/**/*.md'] },
 	}
 	assertEquals(filterTriggerRelevantFiles([mdPath]), [])

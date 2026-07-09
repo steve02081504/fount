@@ -4,7 +4,10 @@
 import { MiB } from './concurrency.mjs'
 import { resolveSuiteResources } from './resources.mjs'
 import { parallelRatePct as calcParallelRatePct } from './run_timing.mjs'
-import { getSuiteBaselineDurationMs, suiteKey } from './state.mjs'
+import {
+	getSuiteBaselineDurationMs,
+	suiteKey,
+} from './state.mjs'
 
 /** 关键路径上每个套件的派发/spawn 开销（毫秒）。 */
 export const GAP_OVERHEAD_MS = 130
@@ -21,6 +24,7 @@ export const GAP_OVERHEAD_MS = 130
  * @property {string} name
  * @property {number | null} durationMs
  * @property {boolean} reused
+ * @property {boolean} blocked 预计因依赖未满足瞬间 blocked（计 0 耗时）
  * @property {number} memMb
  * @property {number} cpuPct
  * @property {boolean} heavy
@@ -38,7 +42,7 @@ export const GAP_OVERHEAD_MS = 130
  * @returns {number} 有效耗时（毫秒）
  */
 function taskDurationMs(task) {
-	return task.reused ? 0 : task.durationMs ?? 0
+	return task.reused || task.blocked ? 0 : task.durationMs ?? 0
 }
 
 /**
@@ -56,11 +60,36 @@ export function buildEstimateTask(suite, entry, { reused = false } = {}) {
 		name: suite.name,
 		durationMs: reused ? 0 : getSuiteBaselineDurationMs(entry) ?? null,
 		reused,
+		blocked: false,
 		memMb: resources.memMb,
 		cpuPct: resources.cpuPct,
 		heavy: !!suite.heavy,
 		deps: (suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
 	}
+}
+
+/**
+ * @param {import('./plan.mjs').PlanSlot[]} slots 计划槽位（拓扑序）
+ * @param {import('./state.mjs').TestState} state 现状库
+ * @returns {EstimateTask[]} 预估任务
+ */
+export function buildEstimateTasksFromPlan(slots, state) {
+	return slots.map(slot => {
+		const entry = state.suites[slot.key]
+		const resources = resolveSuiteResources(slot.suite, entry)
+		return {
+			key: slot.key,
+			manifestId: slot.suite.manifestId,
+			name: slot.suite.name,
+			durationMs: slot.action === 'reuse' ? 0 : getSuiteBaselineDurationMs(entry) ?? null,
+			reused: slot.action === 'reuse',
+			blocked: slot.action === 'blocked',
+			memMb: resources.memMb,
+			cpuPct: resources.cpuPct,
+			heavy: !!slot.suite.heavy,
+			deps: (slot.suite.dependencies ?? []).map(dep => suiteKey(dep.manifestId, dep.name)),
+		}
+	})
 }
 
 /**
@@ -273,5 +302,8 @@ export function summarizeEstimate(tasks, { serial, memBudgetBytes, cpuBudgetPct 
 		savingsMs,
 		gapCount,
 		parallelGapCount,
+		runCount: tasks.filter(task => !task.reused && !task.blocked).length,
+		reusedCount: tasks.filter(task => task.reused).length,
+		blockedCount: tasks.filter(task => task.blocked).length,
 	}
 }

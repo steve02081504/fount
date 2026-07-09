@@ -15,8 +15,10 @@ process.env.LANG = 'zh-CN'
 /** deno panic 时输出完整 Rust 栈帧；子进程 spawn 时继承 process.env。 */
 process.env.RUST_BACKTRACE ??= 'full'
 
-/** 测试节点 worker 自带 v8 flags；orchestrator / live driver 在此启用近 OOM 快照。 */
-if (!process.env.FOUNT_TEST_NODE_WORKER) {
+/** 近 OOM 堆快照：worker 写 CWD、父进程 collect；orchestrator 直接搬迁到 heapsnapshots/。 */
+if (process.env.FOUNT_TEST_NODE_WORKER)
+	installNearOomHeapSnapshot({})
+else {
 	for (const event of ['uncaughtException', 'unhandledRejection', 'error']) {
 		unset_shutdown_listener(event)
 		process.on(event, err => console.error(`${event}:`, err))

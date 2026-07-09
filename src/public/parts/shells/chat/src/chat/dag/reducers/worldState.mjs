@@ -25,30 +25,27 @@ function ensureWorldStateBucket(state, worldname) {
 }
 
 /** @type {Record<string, (state: object, event: object) => object>} */
-export const worldOpReducers = {
+export const worldStateReducers = {
 	/**
-	 * 处理 `world_op` 事件：按 HLC 全序 LWW 折叠到 `state.worldStates[worldname]`。
+	 * 处理 `world_state` 事件：按 HLC 全序 LWW 折叠到 `state.worldStates[worldname]`。
 	 * @param {object} state 物化群状态
 	 * @param {object} event DAG 事件
 	 * @returns {object} 更新后的 state
 	 */
-	world_op(state, event) {
+	world_state(state, event) {
 		withGroupId(state, event)
-		const content = event.content || {}
-		const worldname = String(content.worldname || '').trim()
-		const key = String(content.key || '').trim()
-		const op = String(content.op || '').trim()
-		if (!worldname || !key || !op) return state
+		const { worldname, action, key, value } = event.content
+		if (!worldname?.trim() || !key?.trim() || !action) return state
 
-		const bucket = ensureWorldStateBucket(state, worldname)
-		const existing = bucket[key]
+		const bucket = ensureWorldStateBucket(state, worldname.trim())
+		const existing = bucket[key.trim()]
 		const hlc = event.hlc
 		if (!hlc || compareHlcJson(hlc, existing?.hlc) < 0) return state
 
-		if (op === 'del')
-			bucket[key] = { deleted: true, hlc }
-		else if (op === 'set')
-			bucket[key] = { value: content.value, hlc }
+		if (action === 'delete')
+			bucket[key.trim()] = { deleted: true, hlc }
+		else if (action === 'set')
+			bucket[key.trim()] = { value, hlc }
 
 		return state
 	},

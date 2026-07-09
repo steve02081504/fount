@@ -26,14 +26,14 @@ import { decryptEventContent } from '../../chat/channel_keys/content.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import { getChannelReadMarker, setChannelReadMarker } from '../../chat/lib/readMarkers.mjs'
+import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
+import { searchGroupMessages } from '../../chat/search/index.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
-import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
+import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
 import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
-import { searchGroupMessages } from '../../chat/search/index.mjs'
-import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
 
 import {
 	ensureCanInChannel,

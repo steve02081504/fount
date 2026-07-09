@@ -1,7 +1,7 @@
-import { readTrendingHashtagCounts } from '../searchIndex.mjs'
 import { loadViewerContext } from '../feed/helpers.mjs'
 import { iterateVisiblePosts } from '../feed/iterate.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
+import { readTrendingHashtagCounts } from '../searchIndex.mjs'
 
 /**
  * 从观看者可见帖子统计热门话题（索引计数优先，空则回退扫描）。

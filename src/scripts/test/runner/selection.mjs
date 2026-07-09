@@ -1,37 +1,24 @@
 import { console } from '../../i18n/bare.mjs'
 import { collectChangesSinceRecord } from '../core/changed.mjs'
-import {
-	expandWithDependencies,
-	expandWithDependents,
-	listImperfectSuites,
-	listOutdatedSuites,
-} from '../core/dependencies.mjs'
-import { filterSuites, listManifestIds, resolveManifestSelectors, selectSuitesByDiff } from '../core/manifest.mjs'
-import {
-	suiteKey,
-} from '../core/state.mjs'
-
-import {
-	buildContinueReasonsForSuites,
-	pendingContinueReason,
-	stampExpansionReasons,
-} from './continue_reason.mjs'
-import { RunReportWriter } from './report.mjs'
+import { expandDiffDependents } from '../core/dependencies.mjs'
+import { selectSuitesByDiff } from '../core/manifest.mjs'
+import { collectTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
  * @typedef {import('../core/state.mjs').TestState} TestState
+ * @typedef {import('../core/verdict.mjs').Verdict} Verdict
+ * @typedef {import('./continue_reason.mjs').GoalEvidence} GoalEvidence
  */
 
 /**
- * @typedef {object} SuiteSelection
+ * @typedef {object} GoalSelection
  * @property {'run' | 'exit'} action
  * @property {number} [code]
- * @property {SuiteDef[]} [suites]
+ * @property {Set<string>} [goalKeys]
+ * @property {Map<string, GoalEvidence>} [goalEvidenceByKey]
  * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
- * @property {RunReportWriter} [reportWriter]
- * @property {'normal' | 'continue-pending' | 'continue-imperfect' | 'outdated'} [mode]
- * @property {Map<string, import('./continue_reason.mjs').ContinueReason>} [continueReasons]
+ * @property {'normal' | 'continue' | 'outdated'} [mode]
  */
 
 /**
@@ -50,11 +37,11 @@ function dedupeSuites(suites) {
  * @param {string[] | undefined} manifestIds manifest 范围
  * @returns {Map<string, Map<string, string[] | undefined>>} manifest -> suite -> 失败文件
  */
-function buildRetryByManifest(state, manifestIds) {
+export function buildRetryByManifest(state, manifestIds) {
 	/** @type {Map<string, Map<string, string[] | undefined>>} */
 	const retryByManifest = new Map()
 	for (const [key, entry] of Object.entries(state.suites)) {
-		if (entry.status !== 'failed' && entry.status !== 'noisy') continue
+		if (!['failed', 'noisy'].includes(entry.status)) continue
 		const slash = key.indexOf('/')
 		const manifestId = key.slice(0, slash)
 		if (manifestIds?.length && !manifestIds.includes(manifestId)) continue
@@ -69,14 +56,14 @@ function buildRetryByManifest(state, manifestIds) {
 /**
  * @param {SuiteDef[]} candidates 候选
  * @param {Map<string, Map<string, string[] | undefined>>} retryByManifest 重跑映射
- * @returns {SuiteDef[]} 待重跑 suite
+ * @returns {Set<string>} 待重跑 suite 键
  */
-function suitesFromFailureRetry(candidates, retryByManifest) {
+function goalKeysFromFailureRetry(candidates, retryByManifest) {
 	const retryManifestIds = [...retryByManifest.keys()]
 	const allowedSuites = new Set([...retryByManifest.values()].flatMap(map => [...map.keys()]))
-	return candidates.filter(suite =>
-		retryManifestIds.includes(suite.manifestId) && allowedSuites.has(suite.name),
-	)
+	return new Set(candidates
+		.filter(suite => retryManifestIds.includes(suite.manifestId) && allowedSuites.has(suite.name))
+		.map(suite => suiteKey(suite.manifestId, suite.name)))
 }
 
 /**
@@ -85,7 +72,7 @@ function suitesFromFailureRetry(candidates, retryByManifest) {
  * @param {TestState} state 现状库
  * @returns {Promise<Map<string, string[]>>} suite 键 -> 自记录 commit 以来变更文件
  */
-export async function buildChangedSinceRecordMap(repoRoot, allSuites, state) {
+export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 	/** @type {Map<string, string[]>} */
 	const map = new Map()
 	await Promise.all(allSuites.map(async suite => {
@@ -97,90 +84,143 @@ export async function buildChangedSinceRecordMap(repoRoot, allSuites, state) {
 }
 
 /**
- * @param {object} params 参数
- * @param {string} params.repoRoot 仓库根
- * @param {SuiteDef[]} params.allSuites 全部 suite
- * @param {TestState} params.state 现状库
- * @param {string} params.commitHash HEAD
- * @param {string | null} params.uncommittedHash 未提交 digest
- * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
- * @returns {Promise<SuiteSelection>} 选择结果
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @returns {Set<string>} --continue 目标键
  */
-export async function selectContinue({
-	repoRoot,
-	allSuites,
-	state,
-	commitHash,
-	uncommittedHash,
-	changedSinceRecordByKey,
-}) {
-	const resumed = await RunReportWriter.resume(repoRoot)
-	if (resumed?.pendingSlots.length) {
-		const pendingRuns = resumed.pendingSlots
-			.map(pending => ({
-				suite: allSuites.find(s => s.manifestId === pending.manifestId && s.name === pending.name),
-				index: pending.index,
-			}))
-			.filter(item => item.suite)
-			.sort((a, b) => a.index - b.index)
-		if (pendingRuns.length) {
-			/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
-			const continueReasons = new Map()
-			for (const item of pendingRuns)
-				continueReasons.set(suiteKey(item.suite.manifestId, item.suite.name), pendingContinueReason())
-			return {
-				action: 'run',
-				mode: 'continue-pending',
-				suites: pendingRuns.map(item => item.suite),
-				reportWriter: resumed,
-				retryByManifest: new Map(),
-				continueReasons,
-			}
+export function goalContinue(verdicts) {
+	return new Set([...verdicts.entries()]
+		.filter(([, verdict]) => verdict.kind !== 'green')
+		.map(([key]) => key))
+}
+
+/**
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {SuiteDef[]} scope 过滤范围
+ * @returns {Set<string>} --outdated 目标键
+ */
+export function goalOutdated(verdicts, scope) {
+	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	return new Set([...verdicts.entries()]
+		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown')
+		.map(([key]) => key))
+}
+
+/**
+ * @param {string[]} changedFiles 变更文件
+ * @param {SuiteDef[]} scope 过滤范围
+ * @param {SuiteDef[]} allSuites 全部 suite（一层下游扩展）
+ * @param {string} commitHash HEAD
+ * @param {string | null} uncommittedHash 未提交 digest
+ * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 目标键与触发证据
+ */
+export function goalDiff(changedFiles, scope, allSuites, commitHash, uncommittedHash) {
+	const hit = selectSuitesByDiff('diff', changedFiles, scope)
+	const hitKeys = new Set(hit.map(s => suiteKey(s.manifestId, s.name)))
+	const goalKeys = expandDiffDependents(hitKeys, allSuites)
+	/** @type {Map<string, GoalEvidence>} */
+	const goalEvidenceByKey = new Map()
+	for (const suite of allSuites) {
+		const key = suiteKey(suite.manifestId, suite.name)
+		if (!goalKeys.has(key)) continue
+		if (hitKeys.has(key)) {
+			const evidence = collectTriggerEvidence(suite, changedFiles)
+			if (evidence.matchedPaths.length)
+				goalEvidenceByKey.set(key, {
+					kind: 'diff_trigger_hit',
+					toCommit: commitHash,
+					toUncommittedHash: uncommittedHash,
+					...evidence,
+				})
 		}
+		else
+			goalEvidenceByKey.set(key, { kind: 'diff_dependent', parentKey: [...hitKeys].find(hk =>
+				suite.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === hk)) ?? null })
 	}
+	return { goalKeys, goalEvidenceByKey }
+}
 
-	const imperfect = listImperfectSuites(allSuites, state, commitHash, uncommittedHash, changedSinceRecordByKey)
-	if (imperfect.length)
-		return {
-			action: 'run',
-			mode: 'continue-imperfect',
-			suites: imperfect,
-			retryByManifest: buildRetryByManifest(state),
-			continueReasons: buildContinueReasonsForSuites(
-				imperfect, state, commitHash, uncommittedHash, changedSinceRecordByKey,
-			),
-		}
-
-	return { action: 'exit', code: 0 }
+/**
+ * @param {SuiteDef[]} suites 显式选中 suite
+ * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 目标键与显式证据
+ */
+export function goalExplicit(suites) {
+	const goalKeys = new Set(suites.map(s => suiteKey(s.manifestId, s.name)))
+	const goalEvidenceByKey = new Map([...goalKeys].map(key => [key, { kind: 'explicit_selected' }]))
+	return { goalKeys, goalEvidenceByKey }
 }
 
 /**
  * @param {object} params 参数
- * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {Map<string, Verdict>} params.verdicts 裁决表
  * @param {TestState} params.state 现状库
- * @param {SuiteDef[]} [params.filtered] 过滤范围
- * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
- * @returns {SuiteSelection} 选择结果
+ * @param {string} params.commitHash HEAD
+ * @param {string | null} params.uncommittedHash 未提交 digest
+ * @param {Map<string, string[]>} params.committedChangedByKey commit 变更
+ * @returns {GoalSelection} 选择结果
  */
-export function selectOutdated({
-	allSuites,
-	state,
-	filtered,
-	changedSinceRecordByKey,
-}) {
-	const scope = filtered ?? allSuites
-	const outdated = listOutdatedSuites(scope, state, changedSinceRecordByKey)
+export function selectContinue({ verdicts, state, commitHash, uncommittedHash, committedChangedByKey }) {
+	const goalKeys = goalContinue(verdicts)
+	if (!goalKeys.size)
+		return { action: 'exit', code: 0 }
+
+	/** @type {Map<string, GoalEvidence>} */
+	const goalEvidenceByKey = new Map()
+	for (const key of goalKeys) {
+		const entry = state.suites[key]
+		if (!entry) {
+			goalEvidenceByKey.set(key, {
+				kind: 'missing_state_record',
+				toCommit: commitHash,
+				toUncommittedHash: uncommittedHash,
+			})
+			continue
+		}
+		const drift = {
+			fromCommit: entry.commitHash,
+			toCommit: commitHash,
+			fromUncommittedHash: entry.uncommittedHash ?? null,
+			toUncommittedHash: uncommittedHash,
+		}
+		if (entry.status === 'failed')
+			goalEvidenceByKey.set(key, { kind: 'imperfect_failed', ...drift })
+		else if (entry.status === 'noisy')
+			goalEvidenceByKey.set(key, { kind: 'imperfect_noisy', ...drift })
+		else if (entry.status === 'blocked')
+			goalEvidenceByKey.set(key, { kind: 'imperfect_blocked', blockedBy: entry.blockedBy, ...drift })
+		else if (verdicts.get(key)?.kind === 'unknown')
+			goalEvidenceByKey.set(key, { kind: 'stale_content', ...drift })
+	}
+
+	return {
+		action: 'run',
+		mode: 'continue',
+		goalKeys,
+		goalEvidenceByKey,
+		retryByManifest: buildRetryByManifest(state),
+	}
+}
+
+/**
+ * @param {object} params 参数
+ * @param {Map<string, Verdict>} params.verdicts 裁决表
+ * @param {SuiteDef[]} [params.filtered] 过滤范围
+ * @returns {GoalSelection} 选择结果
+ */
+export function selectOutdated({ verdicts, filtered }) {
+	const scope = filtered ?? []
+	const goalKeys = goalOutdated(verdicts, scope)
+	const evidenceByKey = new Map([...goalKeys].map(key => [key, { kind: 'stale_content' }]))
 	return {
 		action: 'run',
 		mode: 'outdated',
-		suites: outdated,
+		goalKeys,
+		goalEvidenceByKey: evidenceByKey,
 		retryByManifest: new Map(),
 	}
 }
 
 /**
  * @param {object} params 选择参数
- * @param {string} params.repoRoot 仓库根
  * @param {SuiteDef[]} params.allSuites 全部 suite
  * @param {SuiteDef[]} params.filtered manifest/suite 过滤后
  * @param {{ mode: string, files: string[] }} params.changed 变更文件解析结果
@@ -191,11 +231,9 @@ export function selectOutdated({
  * @param {string | null} params.uncommittedHash 当前未提交 digest
  * @param {string[]} params.uncommittedFiles 未提交路径列表
  * @param {TestState} params.state 现状库
- * @param {Map<string, string[]>} params.changedSinceRecordByKey 变更映射
- * @returns {Promise<SuiteSelection>} 选择结果
+ * @returns {GoalSelection} 选择结果
  */
-export async function selectSuites({
-	repoRoot,
+export function selectSuites({
 	allSuites,
 	filtered,
 	changed,
@@ -206,44 +244,49 @@ export async function selectSuites({
 	uncommittedHash,
 	uncommittedFiles,
 	state,
-	changedSinceRecordByKey,
 }) {
 	if (runAll || explicitSuites)
 		return {
 			action: 'run',
 			mode: 'normal',
-			suites: filtered,
+			...goalExplicit(filtered),
 			retryByManifest: buildRetryByManifest(state, manifestIds),
 		}
 
 	const retryByManifest = buildRetryByManifest(state, manifestIds)
-	const usingFailureRetry = retryByManifest.size > 0
-	let selected = filtered
+	/** @type {Set<string>} */
+	let goalKeys = new Set()
+	/** @type {Map<string, GoalEvidence>} */
+	let goalEvidenceByKey = new Map()
 
-	if (usingFailureRetry) {
-		selected = suitesFromFailureRetry(filtered, retryByManifest)
+	if (retryByManifest.size) {
+		goalKeys = goalKeysFromFailureRetry(filtered, retryByManifest)
+		for (const key of goalKeys)
+			goalEvidenceByKey.set(key, { kind: 'failure_retry' })
 		console.logI18n('fountConsole.test.failureRetry', {
 			manifests: [...retryByManifest.keys()].join(', '),
-			count: selected.length,
+			count: goalKeys.size,
 		})
 
-		const hashStale = uncommittedFiles.length > 0 && [...retryByManifest.keys()].some(manifestId => {
-			for (const [key, entry] of Object.entries(state.suites)) {
-				if (!key.startsWith(`${manifestId}/`)) continue
-				if (entry.uncommittedHash == null || entry.uncommittedHash !== uncommittedHash) return true
-			}
-			return false
-		})
+		const hashStale = uncommittedFiles.length > 0 && [...retryByManifest.keys()].some(manifestId =>
+			Object.entries(state.suites).some(([key, entry]) =>
+				key.startsWith(`${manifestId}/`) && entry.uncommittedHash !== uncommittedHash))
 		if (hashStale && changed.mode === 'diff' && changed.files.length) {
-			const merged = dedupeSuites([...selected, ...selectSuitesByDiff(changed.mode, changed.files, filtered)])
+			const diff = goalDiff(changed.files, filtered, allSuites, commitHash, uncommittedHash)
+			const before = goalKeys.size
+			for (const key of diff.goalKeys) goalKeys.add(key)
+			for (const [key, evidence] of diff.goalEvidenceByKey)
+				if (!goalEvidenceByKey.has(key))
+					goalEvidenceByKey.set(key, evidence)
 			console.logI18n('fountConsole.test.hashStaleAppendDiff', {
-				count: merged.length - selected.length,
+				count: goalKeys.size - before,
 			})
-			selected = merged
 		}
 	}
 	else if (changed.mode === 'diff' && changed.files.length) {
-		selected = selectSuitesByDiff(changed.mode, changed.files, filtered)
+		const diff = goalDiff(changed.files, filtered, allSuites, commitHash, uncommittedHash)
+		goalKeys = diff.goalKeys
+		goalEvidenceByKey = diff.goalEvidenceByKey
 		console.logI18n('fountConsole.test.diffMode', {
 			fileCount: changed.files.length,
 			files: changed.files.slice(0, 12).join(', ')
@@ -253,111 +296,22 @@ export async function selectSuites({
 	else if (changed.mode === 'none' && !manifestIds?.length) {
 		console.logI18n('fountConsole.test.noChangesHint')
 		console.logI18n('fountConsole.test.tip')
-		if (!usingFailureRetry) return { action: 'exit', code: 0 }
-		selected = suitesFromFailureRetry(allSuites, retryByManifest)
-		if (!selected.length) return { action: 'exit', code: 0 }
+		return { action: 'exit', code: 0 }
 	}
-	else if (changed.mode === 'none' && manifestIds?.length)
+	else if (changed.mode === 'none' && manifestIds?.length) {
 		console.logI18n('fountConsole.test.manifestNoDiffRunAll', {
 			manifestIds: manifestIds.join(','),
 		})
+		const explicit = goalExplicit(filtered)
+		goalKeys = explicit.goalKeys
+		goalEvidenceByKey = explicit.goalEvidenceByKey
+	}
 
 	return {
 		action: 'run',
 		mode: 'normal',
-		suites: selected,
+		goalKeys,
+		goalEvidenceByKey,
 		retryByManifest,
 	}
-}
-
-/**
- * 从 report 命令摘要解析初选 suite。
- * @param {string} command 命令摘要
- * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {{ seedSuites: SuiteDef[], explicitSuites: boolean }} 初选与是否显式指名
- */
-export function parseCommandSeedSuites(command, allSuites) {
-	/** @type {{ manifestSelectors: string[], suiteSelectors: string[] }[]} */
-	const groups = []
-	for (const token of command.trim().split(/\s+/)) {
-		if (token === 'fount' || token === 'test' || token.startsWith('--')) continue
-		if (token.includes(':')) {
-			const colon = token.indexOf(':')
-			groups.push({
-				manifestSelectors: [token.slice(0, colon)],
-				suiteSelectors: token.slice(colon + 1).split(',').filter(Boolean),
-			})
-		}
-		else
-			groups.push({ manifestSelectors: [token], suiteSelectors: [] })
-	}
-	if (!groups.length)
-		return { seedSuites: [], explicitSuites: false }
-
-	const knownIds = listManifestIds(allSuites)
-	/** @type {SuiteDef[]} */
-	const seedSuites = []
-	const explicitSuites = groups.some(g => g.suiteSelectors.length > 0)
-	for (const group of groups) {
-		const resolved = resolveManifestSelectors(group.manifestSelectors, knownIds, allSuites)
-		for (const suite of filterSuites(allSuites, {
-			manifestIds: resolved.manifestIds,
-			suiteSelectors: group.suiteSelectors.length ? group.suiteSelectors : undefined,
-		}))
-			seedSuites.push(suite)
-	}
-	return { seedSuites, explicitSuites }
-}
-
-/**
- * 为报告内全部槽位重算扩展 provenance 与触发原因。
- * @param {object} params 参数
- * @param {string} params.command 命令摘要
- * @param {SuiteDef[]} params.allSuites 全部 suite
- * @param {SuiteDef[]} params.slots 报告槽位对应 suite
- * @param {TestState} params.state 现状库
- * @param {object} params.context 依赖扩展上下文
- * @returns {{ provenance: Map<string, string>, seedKeys: Set<string>, explicitSuites: boolean, reasons: Map<string, import('./continue_reason.mjs').ContinueReason> }} 重算结果
- */
-export function rebuildReportSlotReasons({ command, allSuites, slots, state, context }) {
-	const { seedSuites, explicitSuites } = parseCommandSeedSuites(command, allSuites)
-	const seedKeys = new Set(seedSuites.map(s => suiteKey(s.manifestId, s.name)))
-	// 续跑（`fount test --continue`）持久化的命令不含显式种子，此时 provenance 无从谈起，
-	// 报告槽位应保留既有的续跑原因（pending / imperfect 等），无需按依赖链重标。
-	if (!seedKeys.size)
-		return { provenance: new Map(), seedKeys, explicitSuites, reasons: new Map() }
-	const { provenance } = finalizeSelection(seedSuites, allSuites, state, context, { explicitSuites })
-	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
-	const reasons = new Map()
-	stampExpansionReasons(reasons, slots, seedKeys, provenance, {
-		explicitSuites,
-		state,
-		context,
-	})
-	return { provenance, seedKeys, explicitSuites, reasons }
-}
-
-/**
- * @param {SuiteDef[]} selected 已选 suite
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {object} context 依赖扩展上下文
- * @param {object} [options] 选项
- * @param {boolean} [options.explicitSuites] 是否显式指名 suite
- * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
- */
-export function finalizeSelection(selected, allSuites, state, context, options = {}) {
-	/** @type {Map<string, string>} */
-	const provenance = new Map()
-	let suites = selected
-	if (!options.explicitSuites) {
-		const expanded = expandWithDependents(selected, allSuites, state, context)
-		suites = expanded.suites
-		for (const [key, parent] of expanded.provenance)
-			provenance.set(key, parent)
-	}
-	const upstream = expandWithDependencies(suites, allSuites, state, context)
-	for (const [key, parent] of upstream.provenance)
-		provenance.set(key, parent)
-	return { suites: upstream.suites, provenance }
 }

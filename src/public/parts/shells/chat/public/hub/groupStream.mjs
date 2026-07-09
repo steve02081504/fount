@@ -12,12 +12,12 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeNotifyHubMessage } from './hubNotifications.mjs'
+import { messageIdSelector } from './messages/messageShared.mjs'
+import { getActiveThreadChannelId } from './threadDrawer.mjs'
 import {
 	bumpChannelUnread,
 	handleReadMarkerWire,
 } from './unread.mjs'
-import { messageIdSelector } from './messages/messageShared.mjs'
-import { getActiveThreadChannelId } from './threadDrawer.mjs'
 
 /** @type {WebSocket | null} */
 let groupWebSocket = null

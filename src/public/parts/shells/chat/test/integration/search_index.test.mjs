@@ -2,8 +2,6 @@
  * Chat 全文搜索索引与 API（落盘 eventPersist 异步索引钩子回归）。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
-
 import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession({ minP2pNode: true })
@@ -48,5 +46,4 @@ Deno.test('searchGroupMessages finds posted text via eventPersist auto-index and
 		const afterDelete = await searchGroupMessages(username, groupId, { q: token, limit: 10 })
 		return !afterDelete.items.some(item => item.eventId === eventId)
 	})
-	assertEquals(true, true)
 })

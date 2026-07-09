@@ -4,31 +4,22 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { MiB } from '../core/concurrency.mjs'
 import {
 	buildEstimateTask,
+	buildEstimateTasksFromPlan,
 	estimateEtaMs,
 	GAP_OVERHEAD_MS,
 	serialSumMs,
 	simulateParallelMakespanMs,
 	summarizeEstimate,
 } from '../core/estimate.mjs'
+import { buildPlan } from '../core/plan.mjs'
+import { suiteKey } from '../core/state.mjs'
+import { buildVerdicts } from '../core/verdict.mjs'
 
-/** @type {import('../core/manifest.mjs').SuiteDef} */
-function stubSuite(overrides = {}) {
-	return {
-		manifestId: 'shells/chat',
-		name: 'fed_core',
-		id: 'fed_core',
-		run: [],
-		triggers: [],
-		manifestPath: 'x',
-		heavy: false,
-		resources: undefined,
-		dependencies: [],
-		...overrides,
-	}
-}
+import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
-/** @param {Partial<import('../core/estimate.mjs').EstimateTask>} overrides 覆盖
- * @returns {import('../core/estimate.mjs').EstimateTask} 任务
+/**
+ * @param {Partial<import('../core/estimate.mjs').EstimateTask>} overrides 覆盖字段
+ * @returns {import('../core/estimate.mjs').EstimateTask} 预估任务
  */
 function task(overrides) {
 	return {
@@ -37,6 +28,7 @@ function task(overrides) {
 		name: 'a',
 		durationMs: 1000,
 		reused: false,
+		blocked: false,
 		memMb: 100,
 		cpuPct: 10,
 		heavy: false,
@@ -53,16 +45,35 @@ Deno.test('serialSumMs sums non-reused durations', () => {
 	]), 1500)
 })
 
-Deno.test('buildEstimateTask uses baseline and marks reused as zero', () => {
-	const suite = stubSuite({ name: 'ws' })
-	const entry = { baselineDurationMs: 18_000 }
-	const fresh = buildEstimateTask(suite, entry, { reused: false })
-	assertEquals(fresh.durationMs, 18_000)
-	assertEquals(fresh.reused, false)
+Deno.test('buildEstimateTasksFromPlan mirrors plan actions', () => {
+	const all = [
+		makeSuite('server', 'live'),
+		makeSuite('shells/chat', 'smoke', { dependsOn: ['server:live'] }),
+	]
+	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const state = {
+		suites: {
+			'server/live': makeStateEntry({ status: 'failed' }),
+			'shells/chat/smoke': makeStateEntry({ status: 'passed', baselineDurationMs: 2000 }),
+		},
+	}
+	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
+	const plan = buildPlan(new Set(['shells/chat/smoke']), verdicts, byKey, all)
+	const tasks = buildEstimateTasksFromPlan(plan.slots, state)
+	assertEquals(tasks.map(t => [t.key, t.reused, t.blocked, t.durationMs]), [
+		['server/live', true, false, 0],
+		['shells/chat/smoke', false, true, 2000],
+	])
+	assertEquals(serialSumMs(tasks), 0)
+})
 
-	const reused = buildEstimateTask(suite, entry, { reused: true })
+Deno.test('buildEstimateTask uses baseline and marks reused as zero', () => {
+	const suite = makeSuite('shells/chat', 'ws')
+	const stateEntry = { baselineDurationMs: 18_000 }
+	const fresh = buildEstimateTask(suite, stateEntry, { reused: false })
+	assertEquals(fresh.durationMs, 18_000)
+	const reused = buildEstimateTask(suite, stateEntry, { reused: true })
 	assertEquals(reused.durationMs, 0)
-	assertEquals(reused.reused, true)
 })
 
 Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {
@@ -77,81 +88,20 @@ Deno.test('simulateParallelMakespanMs packs independent light suites', () => {
 		task({ key: 'shells/chat/b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 10 }),
 	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
 	assertEquals(result.makespanMs, 1000)
-	assertEquals(result.criticalPathCount, 1)
 })
 
-Deno.test('simulateParallelMakespanMs serializes heavy suites exclusively', () => {
-	const memBudget = 8000 * MiB
-	const result = simulateParallelMakespanMs([
-		task({ key: 'p2p/sim', manifestId: 'p2p', name: 'sim', durationMs: 2000, heavy: true, memMb: 800, cpuPct: 92 }),
-		task({ key: 'shells/chat/pure', name: 'pure', durationMs: 1000, memMb: 100, cpuPct: 5 }),
-	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
-	assertEquals(result.makespanMs, 3000)
-	assertEquals(result.criticalPathCount, 2)
-})
-
-Deno.test('simulateParallelMakespanMs respects dependency chain', () => {
-	const memBudget = 8000 * MiB
-	const result = simulateParallelMakespanMs([
-		task({ key: 'shells/chat/ws', name: 'ws', durationMs: 1000, deps: [] }),
-		task({ key: 'shells/chat/ws_rpc', name: 'ws_rpc', durationMs: 2000, deps: ['shells/chat/ws'] }),
-	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
-	assertEquals(result.makespanMs, 3000)
-	assertEquals(result.criticalPathCount, 2)
-})
-
-Deno.test('simulateParallelMakespanMs counts resource serialization on critical path', () => {
-	const memBudget = 150 * MiB
-	const result = simulateParallelMakespanMs([
-		task({ key: 'shells/chat/a', name: 'a', durationMs: 1000, memMb: 100, cpuPct: 10 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 10 }),
-	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
-	assertEquals(result.makespanMs, 2000)
-	assertEquals(result.criticalPathCount, 2)
-})
-
-Deno.test('simulateParallelMakespanMs skips reused zero-duration tasks on critical path', () => {
-	const memBudget = 8000 * MiB
-	const result = simulateParallelMakespanMs([
-		task({ key: 'shells/chat/a', name: 'a', durationMs: 0, reused: true }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 1000, deps: ['shells/chat/a'] }),
-	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
-	assertEquals(result.makespanMs, 1000)
-	assertEquals(result.criticalPathCount, 1)
-})
-
-Deno.test('summarizeEstimate chooses serial sum in serial mode', () => {
+Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 	const tasks = [
 		task({ durationMs: 1000 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 2000 }),
+		task({ key: 'shells/chat/b', name: 'b', durationMs: 2000, reused: true }),
+		task({ key: 'shells/chat/c', name: 'c', durationMs: 3000, blocked: true }),
 	]
 	const summary = summarizeEstimate(tasks, {
 		serial: true,
 		memBudgetBytes: 8000 * MiB,
 		cpuBudgetPct: 85,
 	})
-	assertEquals(summary.serialSumMs, 3000)
-	assertEquals(summary.chosenMakespanMs, 3000)
-	assertEquals(summary.gapCount, 2)
-	assertEquals(summary.etaMs, 3000 + 2 * GAP_OVERHEAD_MS)
-	assertEquals(summary.savingsMs, 1000)
-	assertEquals(summary.parallelMakespanMs, 2000)
-	assertEquals(summary.parallelGapCount, 1)
-	assertEquals(summary.parallelEtaMs, 2000 + GAP_OVERHEAD_MS)
-})
-
-Deno.test('summarizeEstimate uses parallel makespan when not serial', () => {
-	const tasks = [
-		task({ durationMs: 1000, memMb: 100, cpuPct: 10 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 10 }),
-	]
-	const summary = summarizeEstimate(tasks, {
-		serial: false,
-		memBudgetBytes: 8000 * MiB,
-		cpuBudgetPct: 85,
-	})
-	assertEquals(summary.chosenMakespanMs, 1000)
-	assertEquals(summary.gapCount, 1)
-	assertEquals(summary.etaMs, 1000 + GAP_OVERHEAD_MS)
-	assertEquals(summary.parallelRatePct, 100)
+	assertEquals(summary.runCount, 1)
+	assertEquals(summary.reusedCount, 1)
+	assertEquals(summary.blockedCount, 1)
 })

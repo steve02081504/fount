@@ -1,7 +1,7 @@
 /**
  * 【文件】materializeViewerLog.mjs — human/agent 对称的 viewer chat_log 物化
- * 【职责】readChannelMessages → hydrate → world/persona filter → 投影回频道行 DTO（view-log）。
- * 【原理】顺序固定：base → world（客观）→ persona（主观）。投影见 viewerLogProject.mjs。
+ * 【职责】readChannelMessages → hydrate → visibility ACL → world/persona filter → 投影回频道行 DTO（view-log）。
+ * 【原理】顺序固定：base（含 canViewMessage ACL，与 prompt_struct 对称）→ world（客观）→ persona（主观）。投影见 viewerLogProject.mjs。
  * 【数据结构】materializeViewerChatLog 返回 { entries, rawLines, viewer }；readViewerChannelMessages 返回 Hub DTO。
  * 【关联】viewerLog、viewerLogProject、hydration、group/queries、channelMessages view-log 路由。
  */
@@ -17,6 +17,7 @@ import {
 import { getState } from '../dag/materialize.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
 import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
+import { entryVisibleToViewer } from '../lib/visibility.mjs'
 
 
 import { resolveWorld } from './resolvePart.mjs'
@@ -84,12 +85,16 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 			logEntry,
 		)
 
+	// base 层 visibility ACL：与 prompt_struct 的 entryVisibleForPrompt 对称（agent LLM 视图与 human view-log 同规则）
+	const aclViewer = { memberId: viewer.memberId, roles: member_roles, charId: viewer.charname }
+	const visibleEntries = channelEntries.filter(entry => entryVisibleToViewer(entry, aclViewer))
+
 	const world = await resolveWorld(groupId, channelId, username)
 	const player = timeSlice.player
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const arg = {
-		chat_log: channelEntries,
+		chat_log: visibleEntries,
 		world,
 		user: player,
 		member_roles,
@@ -136,8 +141,6 @@ export async function readViewerChannelMessages(username, groupId, channelId, pa
 		.filter(row => row.type === 'message' && row.eventId)
 		.map(row => String(row.eventId))
 	const oldestRawEventId = rawLines[0]?.eventId ? String(rawLines[0].eventId) : null
-	const hasMore = pagination.before
-		? rawLines.length >= pageLimit
-		: rawLines.length >= pageLimit
+	const hasMore = rawLines.length >= pageLimit
 	return { messages, visibleEventIds, hasMore, oldestRawEventId }
 }

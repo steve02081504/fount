@@ -11,14 +11,14 @@ import { handleUIError } from '../../src/ui/errors.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { hubStore } from '../core/state.mjs'
 import {
-	firstUnreadEventId,
-	markCurrentChannelRead,
-} from '../unread.mjs'
-import {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
 } from '../groupStream.mjs'
 import { isThreadDrawerOpen } from '../threadDrawer.mjs'
+import {
+	firstUnreadEventId,
+	markCurrentChannelRead,
+} from '../unread.mjs'
 
 import {
 	consumePendingScrollTarget,
@@ -276,23 +276,9 @@ export async function loadMessages(reload, syncCtx) {
 			consumePendingScrollTarget()
 		initChannelVirtualList(container, reload)
 		updateLastMessageId()
-		if (hubStore.messages.firstUnreadEventId) {
-			// 滚到首条未读；用户滚到底后标记已读
-			const onScroll = () => {
-				const el = getMessagesContainer()
-				if (!el) return
-				const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 80
-				if (nearBottom) {
-					el.removeEventListener('scroll', onScroll)
-					void markCurrentChannelRead()
-				}
-			}
-			getMessagesContainer()?.addEventListener('scroll', onScroll, { passive: true })
-		}
-		else {
-			scrollToBottom()
-			void markCurrentChannelRead()
-		}
+		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
+		if (!hubStore.messages.firstUnreadEventId) scrollToBottom()
+		await markCurrentChannelRead().catch(() => {})
 		refreshChannelPinsBar()
 	}
 	catch (err) {

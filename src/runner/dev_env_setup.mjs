@@ -1,6 +1,7 @@
 import fs from 'node:fs'
-import { where_command, exec } from "npm:@steve02081504/exec"
-import { console } from "npm:@steve02081504/virtual-console"
+
+import { where_command, exec } from 'npm:@steve02081504/exec'
+import { console } from 'npm:@steve02081504/virtual-console'
 
 console.log(...eval(fs.readFileSync(new URL('../../imgs/icon.js', import.meta.url), 'utf8')))
 let all_setted = true
@@ -16,12 +17,12 @@ for (const command of [
 		get_description: 'run fount and itll be auto-installed',
 	},
 	{
-		command: "gh",
+		command: 'gh',
 		description: 'github cli, used to create issues and PRs automatically',
 		get_description: 'install from https://github.com/cli/cli/releases',
 		next: [
 			async () => {
-				const { stdall } = await exec("gh auth status")
+				const { stdall } = await exec('gh auth status')
 				if (stdall.includes('Logged in')) console.log('  ✔ gh logged in')
 				else {
 					console.log('  ✘ gh not logged in')
@@ -53,7 +54,17 @@ else console.log('❌ Some commands are not correctly configured, please check t
 if (!fs.existsSync('./data/test/report.md')) {
 	console.log('🔥 Creating test cache...')
 	await exec('fount test --continue --no-parallel', {
+		/**
+		 * 透传子进程 stdout。
+		 * @param {string} data 输出块
+		 * @returns {void}
+		 */
 		on_stdout: (data) => process.stdout.write(data),
+		/**
+		 * 透传子进程 stderr。
+		 * @param {string} data 输出块
+		 * @returns {void}
+		 */
 		on_stderr: (data) => process.stderr.write(data)
 	})
 	console.log('🥳 Test cache created successfully')

@@ -8,7 +8,7 @@ import {
 	rollbackLikeButton,
 	runSocialWrite,
 } from '../lib/socialWrite.mjs'
-import { refreshVisiblePosts, switchView } from '../navigation.mjs'
+import { switchView } from '../navigation.mjs'
 import { submitReply } from '../views/profile.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
 
@@ -119,6 +119,8 @@ export async function handlePostEngagementClick(appContext, target) {
 				await renderRepliesPanel(appContext, panel, data.replies || [])
 				panel.dataset.loaded = '1'
 				panel.classList.remove('hidden')
+				const countElement = queryByActionKey('data-replies', actionKey, cardRoot)?.querySelector('.action-count')
+				if (countElement) countElement.textContent = String((data.replies || []).length)
 			}
 			catch { /* toast 已展示 */ }
 		}

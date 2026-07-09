@@ -60,7 +60,7 @@ export function channelUnreadCount(channelState, marker) {
 /**
  * @param {object} state 物化群 state
  * @param {Record<string, { eventId: string, seq: number }>} groupMarkers 本群各频道 marker
- * @returns {{ unreadCount: number, channelUnread: Record<string, number> }}
+ * @returns {{ unreadCount: number, channelUnread: Record<string, number> }} 群总未读与各频道未读映射
  */
 export function summarizeGroupUnread(state, groupMarkers = {}) {
 	/** @type {Record<string, number>} */

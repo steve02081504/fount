@@ -20,20 +20,7 @@ import {
 } from '../core/resources.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
 
-/** @type {import('../core/manifest.mjs').SuiteDef} */
-function stubSuite(overrides = {}) {
-	return {
-		manifestId: 'shells/chat',
-		name: 'fed_core',
-		id: 'fed_core',
-		run: [],
-		triggers: [],
-		manifestPath: 'x',
-		heavy: false,
-		resources: undefined,
-		...overrides,
-	}
-}
+import { makeSuite } from './fixtures.mjs'
 
 Deno.test('nextBaselineEma smooths with fixed window N', () => {
 	assertEquals(nextBaselineEma(null, 100, 4), 100)
@@ -56,12 +43,12 @@ Deno.test('parseManifestResources accepts partial fields', () => {
 })
 
 Deno.test('inferDefaultResources maps fed and sim profiles', () => {
-	assertEquals(inferDefaultResources(stubSuite({ name: 'fed_core' })), { memMb: 1400, cpuPct: 35 })
-	assertEquals(inferDefaultResources(stubSuite({ manifestId: 'p2p', name: 'sim' })), { memMb: 800, cpuPct: 92 })
+	assertEquals(inferDefaultResources(makeSuite('shells/chat', 'fed_core')), { memMb: 1400, cpuPct: 35 })
+	assertEquals(inferDefaultResources(makeSuite('p2p', 'sim')), { memMb: 800, cpuPct: 92 })
 })
 
 Deno.test('resolveSuiteResources merges manifest, defaults, and sampled baseline', () => {
-	const suite = stubSuite({ resources: { memMb: 1000 } })
+	const suite = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 1000 } })
 	assertEquals(resolveSuiteResources(suite, undefined), { memMb: 1400, cpuPct: 35 })
 	assertEquals(
 		resolveSuiteResources(suite, { baselineMemMb: 2200, baselineCpuPct: 55 }),
@@ -70,15 +57,15 @@ Deno.test('resolveSuiteResources merges manifest, defaults, and sampled baseline
 })
 
 Deno.test('suiteSchedulePriority prefers larger footprint', () => {
-	const fed = stubSuite({ name: 'fed_core' })
-	const pure = stubSuite({ name: 'pure' })
+	const fed = makeSuite('shells/chat', 'fed_core')
+	const pure = makeSuite('shells/chat', 'pure')
 	assert(suiteSchedulePriority(fed, undefined) > suiteSchedulePriority(pure, undefined))
 })
 
 Deno.test('ResourceRunGate heavy suite runs exclusively', async () => {
 	const gate = new ResourceRunGate(8000 * MiB)
-	const heavy = stubSuite({ manifestId: 'p2p', name: 'sim', heavy: true })
-	const light = stubSuite({ name: 'pure', resources: { memMb: 100, cpuPct: 5 } })
+	const heavy = makeSuite('p2p', 'sim', { heavy: true })
+	const light = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
 
 	const releaseHeavy = await gate.acquire(heavy)
 	assert(gate.exclusiveRunning)
@@ -95,9 +82,9 @@ Deno.test('ResourceRunGate heavy suite runs exclusively', async () => {
 
 Deno.test('ResourceRunGate packs by mem and cpu pct', async () => {
 	const gate = new ResourceRunGate(3000 * MiB)
-	const a = stubSuite({ name: 'fed_core' })
-	const b = stubSuite({ name: 'fed_dm' })
-	const c = stubSuite({ name: 'fed_ban' })
+	const a = makeSuite('shells/chat', 'fed_core')
+	const b = makeSuite('shells/chat', 'fed_dm')
+	const c = makeSuite('shells/chat', 'fed_ban')
 
 	const releaseA = await gate.acquire(a)
 	const releaseB = await gate.acquire(b)
@@ -114,14 +101,14 @@ Deno.test('ResourceRunGate packs by mem and cpu pct', async () => {
 	assertEquals(cReady, true)
 
 	releaseB()
-	await await gate.acquire(stubSuite({ name: 'pure', resources: { memMb: 100, cpuPct: 5 } }))
+	await await gate.acquire(makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } }))
 	assertEquals(resourcesMemBytes({ memMb: 100, cpuPct: 5 }), 100 * MiB)
 })
 
 Deno.test('ResourceRunGate blocks when cpu budget exhausted', async () => {
 	const gate = new ResourceRunGate(8000 * MiB)
-	const hot = stubSuite({ resources: { memMb: 200, cpuPct: 50 } })
-	const warm = stubSuite({ name: 'fed_core', resources: { memMb: 200, cpuPct: 40 } })
+	const hot = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 200, cpuPct: 50 } })
+	const warm = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 200, cpuPct: 40 } })
 
 	const releaseHot = await gate.acquire(hot)
 	assertEquals(gate.usedCpuPct, 50)
@@ -139,16 +126,8 @@ Deno.test('ResourceRunGate blocks when cpu budget exhausted', async () => {
 
 Deno.test('ResourceRunGate fill-gap packs mem-heavy with cpu-heavy in parallel', async () => {
 	const gate = new ResourceRunGate(2200 * MiB)
-	const memHeavy = stubSuite({
-		name: 'custom_mem',
-		manifestId: 'testkit',
-		resources: { memMb: 1800, cpuPct: 10 },
-	})
-	const cpuHeavy = stubSuite({
-		name: 'custom_cpu',
-		manifestId: 'testkit',
-		resources: { memMb: 200, cpuPct: 60 },
-	})
+	const memHeavy = makeSuite('testkit', 'custom_mem', { resources: { memMb: 1800, cpuPct: 10 } })
+	const cpuHeavy = makeSuite('testkit', 'custom_cpu', { resources: { memMb: 200, cpuPct: 60 } })
 
 	const releaseMem = await gate.acquire(memHeavy)
 	assertEquals(gate.usedMemBytes, 1800 * MiB)
@@ -163,8 +142,8 @@ Deno.test('ResourceRunGate fill-gap packs mem-heavy with cpu-heavy in parallel',
 
 Deno.test('ResourceRunGate serial mode runs one light suite at a time', async () => {
 	const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial: true })
-	const a = stubSuite({ name: 'pure', resources: { memMb: 100, cpuPct: 5 } })
-	const b = stubSuite({ name: 'fed_core', resources: { memMb: 100, cpuPct: 5 } })
+	const a = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
+	const b = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 100, cpuPct: 5 } })
 
 	const releaseA = await gate.acquire(a)
 	const waitB = gate.acquire(b)
@@ -181,8 +160,8 @@ Deno.test('ResourceRunGate serial mode runs one light suite at a time', async ()
 Deno.test('ResourceRunGate serial mode admits waiters FIFO, not by footprint', async () => {
 	// 队首体量小、队尾体量大：串行必须按插入顺序（报告序）放行，而非资源择优。
 	const gate = new ResourceRunGate(8000 * MiB, () => undefined, { serial: true })
-	const small = stubSuite({ name: 'pure', resources: { memMb: 100, cpuPct: 5 } })
-	const big = stubSuite({ name: 'fed_core', resources: { memMb: 1800, cpuPct: 90 } })
+	const small = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
+	const big = makeSuite('shells/chat', 'fed_core', { resources: { memMb: 1800, cpuPct: 90 } })
 
 	/** @type {string[]} */
 	const admitted = []

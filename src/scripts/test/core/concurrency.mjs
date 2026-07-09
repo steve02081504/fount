@@ -4,6 +4,9 @@
 import { cpus, freemem } from 'node:os'
 import process from 'node:process'
 
+/**
+ *
+ */
 export const MiB = 1024 * 1024
 
 /** unit 单文件子进程内存估算（pure ~100MB，integration headless ~300MB）。 */

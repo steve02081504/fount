@@ -31,7 +31,7 @@ Deno.test('searchPosts returns empty for short query', async () => {
 	assertEquals(items.length, 0)
 })
 
-Deno.test('discoverPosts samples public posts', async () => {
+Deno.test('discoverPosts returns public posts newest-first', async () => {
 	const { username, operator } = await getSession()
 	await append.commitTimelineEvent(username, operator, {
 		type: 'post',

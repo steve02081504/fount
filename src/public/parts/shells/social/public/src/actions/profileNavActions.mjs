@@ -1,7 +1,7 @@
+import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { removePostsByAuthor, restoreRemovedPosts, runSocialWrite } from '../lib/socialWrite.mjs'
-import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
 

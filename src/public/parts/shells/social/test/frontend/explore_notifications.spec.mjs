@@ -156,7 +156,10 @@ test.describe('Social secondary views', () => {
 	test('explore post author opens profile with saved blurb', async ({ page, publishPost }) => {
 		const blurb = `explore-visible ${Date.now()}`
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
 		await page.locator('#exploreBlurbInput').fill(blurb)
+		// 先前用例可能把 hideFromDiscovery 拨成 true；保存 meta 会原样写回，导致探索页看不到新帖
+		await page.locator('#exploreProtectedInput').setChecked(false)
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/meta')
@@ -168,7 +171,13 @@ test.describe('Social secondary views', () => {
 		const snippet = `explore-blurb-post ${Date.now()}`
 		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		await publishPost(snippet)
-		await page.locator('.side-nav .nav-btn[data-view="explore"]').click()
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/explore/posts')
+				&& res.status() === 200,
+			),
+			page.locator('.side-nav .nav-btn[data-view="explore"]').click(),
+		])
 		const postCard = page.locator('#exploreView .explore-post-card', { hasText: snippet }).first()
 		await expect(postCard).toBeVisible({ timeout: 30_000 })
 		await postCard.locator('a.author-name').click()

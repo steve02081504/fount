@@ -32,13 +32,9 @@ export function bindFeedInfiniteScroll(appContext) {
 	const sentinel = ensureScrollSentinel(list, 'feedScrollSentinel')
 	bindInfiniteScroll({
 		sentinel,
-		/**
-		 *
-		 */
+		/** @returns {boolean} feed 是否仍有下一页 */
 		hasMore: () => !!appContext.state.feedCursor,
-		/**
-		 *
-		 */
+		/** @returns {Promise<void>} 追加加载下一页 feed */
 		onLoad: () => loadFeed(appContext, true),
 	})
 }

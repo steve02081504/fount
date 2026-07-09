@@ -127,7 +127,7 @@ export function buildPostBody(appContext) {
 		mediaRefs: appContext.state.pendingMediaRefs,
 		visibility: document.getElementById('postVisibility').value,
 		lang: document.getElementById('postLang').value.trim() || 'zh-CN',
-		...(contentWarning ? { contentWarning } : {}),
+		...contentWarning ? { contentWarning } : {},
 	}
 	if (appContext.state.pendingQuoteRef)
 		body.quoteRef = {

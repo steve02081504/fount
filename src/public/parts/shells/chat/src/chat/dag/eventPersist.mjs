@@ -28,8 +28,8 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
-import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
+import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
@@ -244,9 +244,9 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		hlc: signPayload.hlc,
 		prev_event_ids: sortedPrevEventIds(signPayload.prev_event_ids),
 		receivedAt: await getEventReceivedAt(username, groupId, signPayload.id) ?? Date.now(),
-		...(signPayload.type === 'message' && isNewLine
+		...signPayload.type === 'message' && isNewLine
 			? { seq: nextChannelMessageSeq(existingMessageLines) }
-			: {}),
+			: {},
 		...decryptResult && !decryptResult.ok
 			? {
 				decryptView: {

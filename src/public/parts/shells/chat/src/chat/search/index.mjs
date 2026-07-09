@@ -1,6 +1,6 @@
-import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
-import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
 import { loadPersonalFilterSets, matchesPersonalListEntries } from '../../../../../../../scripts/p2p/personal_block.mjs'
+import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
+import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
 import { loadArchiveManifest } from '../archive/index.mjs'
 import { readArchiveAsMessageLines } from '../archive/reader.mjs'
 import { groupSearchIndexPath } from '../lib/paths.mjs'
@@ -115,7 +115,7 @@ function messageMatchesQuery(query, text) {
  * @param {string} [options.channelId] 限定频道
  * @param {number} [options.limit=30] 上限
  * @param {string} [options.viewerEntityHash] 观看者实体（personal filter）
- * @returns {Promise<{ query: string, items: object[] }>}
+ * @returns {Promise<{ query: string, items: object[] }>} 规范化查询串与命中消息列表
  */
 export async function searchGroupMessages(username, groupId, options = {}) {
 	const query = String(options.q || '').trim()
@@ -141,15 +141,20 @@ export async function searchGroupMessages(username, groupId, options = {}) {
 		shardKeys: channelIds,
 		query,
 		limit: limit * 3,
+		/**
+		 * 倒排索引候选二次校验（子串 + 个人过滤）。
+		 * @param {object} doc 索引文档行
+		 * @returns {boolean} 是否保留该命中
+		 */
 		verify: doc => {
 			if (!messageMatchesQuery(query, doc.text)) return false
 			if (!personalFilter) return true
 			const sender = String(doc.fields?.sender || '').trim().toLowerCase()
 			return !matchesPersonalListEntries([
-				...([...personalFilter.blockedSubjects].map(value => ({ scope: 'subject', value }))),
-				...([...personalFilter.hiddenSubjects].map(value => ({ scope: 'subject', value }))),
-				...([...personalFilter.blockedEntityHashes].map(value => ({ scope: 'entity', value }))),
-				...([...personalFilter.hiddenEntityHashes].map(value => ({ scope: 'entity', value }))),
+				...[...personalFilter.blockedSubjects].map(value => ({ scope: 'subject', value })),
+				...[...personalFilter.hiddenSubjects].map(value => ({ scope: 'subject', value })),
+				...[...personalFilter.blockedEntityHashes].map(value => ({ scope: 'entity', value })),
+				...[...personalFilter.hiddenEntityHashes].map(value => ({ scope: 'entity', value })),
 			], { pubKeyHash: sender })
 		},
 	})

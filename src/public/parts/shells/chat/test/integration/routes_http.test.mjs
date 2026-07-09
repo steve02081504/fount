@@ -20,7 +20,7 @@ const CHAT_PREFIX = '/api/parts/shells:chat'
  * @param {string} method HTTP 方法
  * @param {string} path 相对 chat API 路径
  * @param {object} [body] JSON body
- * @returns {Promise<Response>}
+ * @returns {Promise<Response>} fetch 响应
  */
 function chatFetch(node, method, path, body) {
 	const sep = path.includes('?') ? '&' : '?'
@@ -35,7 +35,7 @@ function chatFetch(node, method, path, body) {
 /**
  * @param {string} scenario bootstrap 场景名
  * @param {object[]} fixtureCopies launchNode fixtureCopies
- * @returns {Promise<{ node: object, setup: object }>}
+ * @returns {Promise<{ node: object, setup: object }>} 已启动节点与 bootstrap 写入的 setup
  */
 async function launchScenario(scenario, fixtureCopies) {
 	const port = await pickAvailablePort(29331)

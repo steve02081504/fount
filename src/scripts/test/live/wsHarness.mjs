@@ -42,7 +42,7 @@ export function failLiveWsPrecondition(reason) {
  * @param {string[]} options.types 期望帧 type 列表（任一命中即成功）
  * @param {() => void | Promise<void>} [options.trigger] 连接后触发动作
  * @param {number} [options.timeoutMs=20000] 超时毫秒
- * @returns {Promise<{ ok: boolean, types: string[], frames: object[] }>}
+ * @returns {Promise<{ ok: boolean, types: string[], frames: object[] }>} 是否在超时前收到期望帧
  */
 export function waitForWsFrame(options) {
 	const {
@@ -58,6 +58,11 @@ export function waitForWsFrame(options) {
 		/** @type {string[]} */
 		const receivedTypes = []
 		let settled = false
+		/**
+		 * 结束等待并关闭连接。
+		 * @param {boolean} ok 是否视为成功
+		 * @returns {void}
+		 */
 		const finish = (ok) => {
 			if (settled) return
 			settled = true
@@ -66,6 +71,7 @@ export function waitForWsFrame(options) {
 			resolve({ ok, types: [...new Set(receivedTypes)], frames })
 		}
 		const timeout = setTimeout(() => finish(false), timeoutMs)
+		/** @returns {Promise<void>} 连接建立后执行 trigger */
 		websocket.onopen = async () => {
 			try {
 				if (trigger) await trigger()
@@ -74,12 +80,18 @@ export function waitForWsFrame(options) {
 				finish(false)
 			}
 		}
+		/**
+		 * 解析入站帧并检查是否命中期望 type。
+		 * @param {MessageEvent} event WebSocket message 事件
+		 * @returns {void}
+		 */
 		websocket.onmessage = event => {
 			const frame = JSON.parse(String(event.data))
 			frames.push(frame)
 			if (frame?.type) receivedTypes.push(frame.type)
 			if (types.includes(frame.type)) finish(true)
 		}
+		/** @returns {void} 连接错误时结束等待 */
 		websocket.onerror = () => finish(false)
 	})
 }

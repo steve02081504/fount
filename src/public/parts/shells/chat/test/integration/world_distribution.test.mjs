@@ -171,6 +171,34 @@ Deno.test('M7 replicated: 本机执行 + 未装节点走 remoteWorldProxy', asyn
 		assert(worldB !== BUILTIN_WORLD)
 		assert(typeof worldB.interfaces.chat.GetChatLogForViewer === 'function')
 	})
+
+	await t.step('proxy → rpcDispatcher 真往返（进程内环回，代 WS 传输）', async () => {
+		// 登记 owner 槽位后 invokeGroupRpc 本机优先分支命中 tryInvokeLocalWorldRpc：
+		// 走真实的 memberId 解析 → bind 判定 → loadPart → JSON 边界 normalize 全链，仅略过 WS 帧本身。
+		const { groupMetadatas } = await import('../../src/chat/session/wsLifecycle.mjs')
+		groupMetadatas.set(groupId, { username: NODE_A, chatMetadata: null })
+
+		globalThis[REPLICATED_HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
+		const worldB = await resolveWorld(groupId, channelId, NODE_B)
+		assert(worldB[REMOTE_WORLD_PROXY_SYMBOL])
+
+		const prompt = await worldB.interfaces.chat.GetPrompt({})
+		assert(String(prompt?.text?.[0]?.content || '').includes('replicated-world-prompt-marker'))
+		assertEquals(globalThis[REPLICATED_HOOK_KEY].promptCalls, 1, '应执行 NODE_A 侧的 world part')
+
+		const chatLog = [{ content: 'rpc-roundtrip-entry', role: 'user' }]
+		const viewed = await worldB.interfaces.chat.GetChatLogForViewer(
+			{ chat_log: chatLog },
+			{ kind: 'user', memberId: 'x', ownerUsername: NODE_B, channelId },
+		)
+		assertEquals(viewed.length, 1)
+		assertEquals(viewed[0].content, 'rpc-roundtrip-entry')
+
+		// 远端未实现的钩子经 METHOD_NOT_FOUND 降级为 undefined（等价本地缺钩子）
+		assertEquals(await worldB.interfaces.chat.GetGreeting({}, 0), undefined)
+
+		groupMetadatas.delete(groupId)
+	})
 })
 
 Deno.test('M7 hosted: 未装 world 的 replica 不加载 hosted part（sim 同 nodeHash）', async () => {

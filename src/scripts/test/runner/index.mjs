@@ -14,7 +14,7 @@ import {
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
-import { buildEstimateTask, summarizeEstimate } from '../core/estimate.mjs'
+import { buildEstimateTasksFromPlan, summarizeEstimate } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import {
 	filterSuites,
@@ -23,30 +23,26 @@ import {
 	resolveManifestSelectors,
 } from '../core/manifest.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
+import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
 import {
-	computeSuiteTriggerHash,
 	getSuiteBaselineDurationMs,
-	isSuiteReusable,
 	readState,
+	refreshEntryFingerprint,
 	refreshStateMarkdown,
 	suiteKey,
 	upsertSuiteRun,
 	writeState,
 } from '../core/state.mjs'
+import { buildVerdicts } from '../core/verdict.mjs'
 
-import {
-	buildDiffSelectionReasons,
-	stampExpansionReasons,
-} from './continue_reason.mjs'
-import { DependencyRunCoordinator } from './dependency_scheduler.mjs'
+import { buildReasonsFromPlan } from './continue_reason.mjs'
+import { PlanRunCoordinator } from './dependency_scheduler.mjs'
 import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
-	buildChangedSinceRecordMap,
-	finalizeSelection,
-	rebuildReportSlotReasons,
+	buildCommittedChangedByKey,
 	selectContinue,
 	selectOutdated,
 	selectSuites,
@@ -67,10 +63,11 @@ import { runSuite } from './suite_run.mjs'
  */
 
 /**
- * @param {GroupInput[]} groupInputs 原始分组
+ * 将 CLI 分组输入解析为 manifest id 列表。
+ * @param {import('../cli.mjs').GroupInput[]} groupInputs CLI 分组输入
  * @param {string[]} knownIds 已知 manifest id
  * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
- * @returns {{ groups: ResolvedGroup[], unmatched: string[] }} 解析后的分组与未匹配项
+ * @returns {{ groups: ResolvedGroup[], unmatched: string[] }} 已解析分组与未匹配 id
  */
 function resolveGroups(groupInputs, knownIds, allSuites) {
 	/** @type {ResolvedGroup[]} */
@@ -94,8 +91,9 @@ function resolveGroups(groupInputs, knownIds, allSuites) {
 }
 
 /**
+ * 按多组 manifest/suite 选择器过滤并去重 suite。
  * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
- * @param {ResolvedGroup[]} groups 解析后的分组
+ * @param {ResolvedGroup[]} groups 已解析分组
  * @returns {import('../core/manifest.mjs').SuiteDef[]} 去重后的 suite 列表
  */
 function filterFromGroups(allSuites, groups) {
@@ -111,8 +109,9 @@ function filterFromGroups(allSuites, groups) {
 }
 
 /**
+ * 根据 RunTestsOptions 拼出等效 CLI 命令串（日志/报告用）。
  * @param {RunTestsOptions} options 运行选项
- * @returns {string} 命令行摘要
+ * @returns {string} 如 `fount test --continue shells/chat`
  */
 function buildTestCommand(options) {
 	const parts = ['fount test']
@@ -134,9 +133,11 @@ function buildTestCommand(options) {
 }
 
 /**
- * @param {string} label suite 标签
- * @param {Awaited<ReturnType<typeof runSuite>>} result 运行结果
- * @param {boolean} [streamed] 输出是否已在运行期间实时转发
+ * 打印单个 suite 的通过/失败/噪声摘要。
+ * @param {string} label 展示标签（manifest:suite）
+ * @param {import('./suite_run.mjs').SuiteRunResult} result 子进程结果
+ * @param {boolean} [streamed=false] 输出是否已实时打印
+ * @returns {void}
  */
 function printSuiteSummary(label, result, streamed = false) {
 	const noiseHits = detectNoiseHits(result.output)
@@ -158,12 +159,13 @@ function printSuiteSummary(label, result, streamed = false) {
 }
 
 /**
- * @param {object} params 参数
- * @param {string} params.manifestId manifest id
- * @param {string} params.name suite 名
- * @param {boolean} [params.heavy] 高负载
- * @param {string | null | undefined} [params.expected] 预期耗时
- * @returns {string} 正在运行行
+ * 格式化「正在运行」控制台行（含 heavy/预期耗时后缀）。
+ * @param {object} root0 suite 元数据
+ * @param {string} root0.manifestId manifest id
+ * @param {string} root0.name suite 名
+ * @param {boolean} [root0.heavy] 是否 heavy
+ * @param {string} [root0.expected] 预期耗时展示串
+ * @returns {string} 本地化运行提示
  */
 function formatRunningSuiteMessage({ manifestId, name, heavy, expected }) {
 	let msg = geti18nForTerminal('fountConsole.test.runningSuite.base', { manifestId, name })
@@ -176,11 +178,13 @@ function formatRunningSuiteMessage({ manifestId, name, heavy, expected }) {
 }
 
 /**
- * @param {import('./report.mjs').RunReportWriter} reportWriter 报告写入器
+ * 打印待完成 slot 的 ETA 估算。
+ * @param {import('./report.mjs').ReportWriter} reportWriter 报告写入器
+ * @returns {void}
  */
 function logPendingEstimate(reportWriter) {
 	const estimate = reportWriter.summarizePendingEstimate()
-	if (!estimate) return
+	if (!estimate || !estimate.runCount) return
 	const completed = reportWriter.slots.filter(slot => slot.state === 'done').length
 	console.logI18n('fountConsole.test.estimatedRemaining', {
 		eta: formatDuration(estimate.etaMs),
@@ -190,33 +194,47 @@ function logPendingEstimate(reportWriter) {
 }
 
 /**
- * @param {RunTestsOptions} options 运行选项
+ * 找出 verdict 未知但 state 仍标 passed 的陈旧 suite 键。
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {Map<string, import('../core/verdict.mjs').Verdict>} verdicts 当前裁决
+ * @param {import('../core/state.mjs').TestState} state 现状库
+ * @returns {Set<string>} 需标陈旧的 suite 键
+ */
+function buildStaleKeys(allSuites, verdicts, state) {
+	return new Set(allSuites
+		.filter(suite => {
+			const key = suiteKey(suite.manifestId, suite.name)
+			const verdict = verdicts.get(key)
+			return verdict?.kind === 'unknown' && state.suites[key]?.status === 'passed'
+		})
+		.map(suite => suiteKey(suite.manifestId, suite.name)))
+}
+
+/**
+ * 测试运行主入口：选择 suite、调度执行、写报告与 state。
+ * @param {RunTestsOptions} [options={}] 运行选项
  * @returns {Promise<number>} 进程退出码
  */
 export async function runTests(options = {}) {
 	const globalBudget = computeGlobalBudget()
+	// --no-parallel：套件串行的同时把 serial.mjs 内文件并发压到 1，避免 Windows 抢 node_modules 锁
+	if (options.noParallel) globalBudget.cores = 1
 	const runId = new Date().toISOString().replace(/[.:]/g, '-')
 	const command = buildTestCommand(options)
 
 	const allSuites = await loadAllSuites(REPO_ROOT)
 	const knownIds = listManifestIds(allSuites)
+	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 
 	const [commitHash, uncommittedFiles, state] = await Promise.all([
 		getHeadCommitHash(REPO_ROOT),
 		getUncommittedFiles(REPO_ROOT),
 		readState(REPO_ROOT),
 	])
-	// 未提交文件内容只读一次：全局指纹与各 suite 的 trigger 复用指纹共享这张表。
 	const uncommittedHashes = await hashUncommittedFiles(REPO_ROOT, uncommittedFiles)
 	const uncommittedHash = digestFileHashes(uncommittedHashes, uncommittedFiles)
-
-	// committedChangedByKey：仅 commit 层变更（复用判定用它区分「commit 命中 trigger」与
-	// 「未提交内容变化」，避免把长期 dirty 但两次运行间未改动的文件误判为变更）。
-	// changedSinceRecordByKey：再叠加未提交文件，供选择/outdated/continue 使用。
-	const committedChangedByKey = await buildChangedSinceRecordMap(REPO_ROOT, allSuites, state)
-	const changedSinceRecordByKey = new Map(
-		[...committedChangedByKey].map(([key, files]) => [key, [...new Set([...files, ...uncommittedFiles])]]),
-	)
+	const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
+	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
 
 	/** @type {string[] | undefined} */
 	let manifestIds
@@ -244,37 +262,25 @@ export async function runTests(options = {}) {
 			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
 	}
 
-	/** @type {{ mode: string, files: string[] } | undefined} */
-	let changedForReasons
-
-	/** @type {Awaited<ReturnType<typeof selectSuites>>} */
+	/** @type {import('./selection.mjs').GoalSelection} */
 	let selection
 	if (options.continueRun) {
-		selection = await selectContinue({
-			repoRoot: REPO_ROOT,
-			allSuites,
+		selection = selectContinue({
+			verdicts,
 			state,
 			commitHash,
 			uncommittedHash,
-			changedSinceRecordByKey,
+			committedChangedByKey,
 		})
 		if (selection.action === 'exit') {
 			console.logI18n('fountConsole.test.nothingToContinue')
 			return selection.code ?? 0
 		}
-		if (selection.mode === 'continue-pending')
-			console.logI18n('fountConsole.test.continueResuming', { count: selection.suites.length })
-		else if (selection.mode === 'continue-imperfect')
-			console.logI18n('fountConsole.test.continueImperfect', { count: selection.suites.length })
+		console.logI18n('fountConsole.test.continueImperfect', { count: selection.goalKeys.size })
 	}
 	else if (options.outdated) {
-		selection = selectOutdated({
-			allSuites,
-			state,
-			filtered,
-			changedSinceRecordByKey,
-		})
-		console.logI18n('fountConsole.test.outdatedSelected', { count: selection.suites.length })
+		selection = selectOutdated({ verdicts, filtered })
+		console.logI18n('fountConsole.test.outdatedSelected', { count: selection.goalKeys.size })
 	}
 	else {
 		const changed = await resolveChangedFiles({
@@ -282,9 +288,7 @@ export async function runTests(options = {}) {
 			runAll: options.runAll,
 			since: options.since,
 		})
-		changedForReasons = changed
-		selection = await selectSuites({
-			repoRoot: REPO_ROOT,
+		selection = selectSuites({
 			allSuites,
 			filtered,
 			changed,
@@ -295,18 +299,17 @@ export async function runTests(options = {}) {
 			uncommittedHash,
 			uncommittedFiles,
 			state,
-			changedSinceRecordByKey,
 		})
 		if (selection.action === 'exit') return selection.code ?? 0
 	}
 
-	let selected = selection.suites ?? []
+	const goalKeys = selection.goalKeys ?? new Set()
 	console.logI18n('fountConsole.test.selectedSuites', {
-		selected: selected.length,
+		selected: goalKeys.size,
 		total: allSuites.length,
 	})
 
-	if (!selected.length) {
+	if (!goalKeys.size) {
 		console.logI18n('fountConsole.test.noMatchingSuites')
 		if (explicitSuites) {
 			const scope = manifestIds?.length
@@ -320,127 +323,34 @@ export async function runTests(options = {}) {
 		return 0
 	}
 
-	const preExpansionKeys = new Set(selected.map(s => suiteKey(s.manifestId, s.name)))
-	const preExpansionSuites = [...selected]
-	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
+	const plan = buildPlan(
+		goalKeys,
+		verdicts,
+		byKey,
+		allSuites,
+		selection.goalEvidenceByKey ?? new Map(),
+		options.force,
+	)
+	const continueReasons = buildReasonsFromPlan(plan)
 
-	/** @type {Map<string, string>} */
-	let expansionProvenance = new Map()
-	if (selection.mode !== 'continue-pending') {
-		const expanded = finalizeSelection(selected, allSuites, state, {
-			commitHash,
-			uncommittedHash,
-			changedSinceRecordByKey,
-			runGreenKeys: new Set(),
-			byKey,
-		}, { explicitSuites })
-		selected = expanded.suites
-		expansionProvenance = expanded.provenance
-	}
-
-	/** @type {Map<string, import('./continue_reason.mjs').ContinueReason>} */
-	const continueReasons = new Map(selection.continueReasons ?? [])
-	if (!explicitSuites && selection.mode === 'normal'
-		&& changedForReasons?.mode === 'diff' && changedForReasons.files.length)
-		for (const [key, reason] of buildDiffSelectionReasons(
-			preExpansionSuites, changedForReasons.files, commitHash, uncommittedHash,
-		))
-			continueReasons.set(key, reason)
-
-	if (selection.mode !== 'continue-pending')
-		stampExpansionReasons(continueReasons, selected, preExpansionKeys, expansionProvenance, {
-			explicitSuites,
-			state,
-			context: { commitHash, uncommittedHash, changedSinceRecordByKey, byKey },
-		})
-
-	let reportWriter = selection.reportWriter
-	if (reportWriter?.slots.length) {
-		const slotSuites = reportWriter.slots
-			.map(slot => byKey.get(suiteKey(slot.manifestId, slot.name)))
-			.filter(Boolean)
-		if (slotSuites.length) {
-			const { reasons } = rebuildReportSlotReasons({
-				command: reportWriter.command ?? command,
-				allSuites,
-				slots: slotSuites,
-				state,
-				context: {
-					commitHash,
-					uncommittedHash,
-					changedSinceRecordByKey,
-					runGreenKeys: new Set(),
-					byKey,
-				},
-			})
-			for (const [key, reason] of reasons)
-				continueReasons.set(key, reason)
-		}
-	}
-
-	const runGreenKeys = new Set()
-	const dependencyContext = {
+	const reportWriter = new RunReportWriter({
+		repoRoot: REPO_ROOT,
+		planSlots: plan.slots,
+		runId,
+		command,
 		commitHash,
 		uncommittedHash,
-		changedSinceRecordByKey,
-		runGreenKeys,
-		byKey,
-	}
+		continueReasons: continueReasons.size ? continueReasons : undefined,
+	})
+	const reportPath = await reportWriter.init()
+	console.logI18n('fountConsole.test.reportPath', {
+		path: reportPath.replace(/\\/g, '/'),
+	})
 
-	const streamLive = options.noParallel === true
-
-	if (!reportWriter) {
-		reportWriter = new RunReportWriter({
-			repoRoot: REPO_ROOT,
-			suites: selected,
-			allSuites,
-			runId,
-			command,
-			commitHash,
-			uncommittedHash,
-			continueReasons: continueReasons.size ? continueReasons : undefined,
-		})
-		const reportPath = await reportWriter.init()
-		console.logI18n('fountConsole.test.reportPath', {
-			path: reportPath.replace(/\\/g, '/'),
-		})
-	}
-	else if (continueReasons.size) {
-		reportWriter.command = command
-		await reportWriter.stampContinueReasons(continueReasons)
-	}
-
-	/** @type {Map<string, number>} */
-	const reportIndexByKey = new Map()
-	for (let index = 0; index < reportWriter.slots.length; index++) {
-		const slot = reportWriter.slots[index]
-		reportIndexByKey.set(suiteKey(slot.manifestId, slot.name), index)
-	}
-	// 派发顺序对齐报告槽位（拓扑序）：coordinator 保持此顺序喂给 gate，
-	// gate 串行时按 FIFO（即报告顺序）放行，并行时再按资源体量填箱。
-	selected.sort((a, b) =>
-		reportIndexByKey.get(suiteKey(a.manifestId, a.name))
-		- reportIndexByKey.get(suiteKey(b.manifestId, b.name)))
-
+	const reportIndexByKey = new Map(plan.slots.map((slot, index) => [slot.key, index]))
 	const estimateSerial = options.noParallel === true
-	/** @type {Map<string, import('../core/estimate.mjs').EstimateTask>} */
-	const estimatePlan = new Map()
-	for (const slot of reportWriter.slots) {
-		if (slot.state !== 'pending') continue
-		const key = suiteKey(slot.manifestId, slot.name)
-		const suite = byKey.get(key)
-		if (!suite) continue
-		const prev = state.suites[key]
-		const triggerHash = computeSuiteTriggerHash(suite, uncommittedHashes)
-		const reused = isSuiteReusable(
-			suite,
-			prev,
-			committedChangedByKey.get(key) ?? [],
-			triggerHash,
-			options.force,
-		)
-		estimatePlan.set(key, buildEstimateTask(suite, prev, { reused }))
-	}
+	const estimateTasks = buildEstimateTasksFromPlan(plan.slots, state)
+	const estimatePlan = new Map(estimateTasks.map(task => [task.key, task]))
 	const estimateOptions = {
 		serial: estimateSerial,
 		memBudgetBytes: globalBudget.memBytes,
@@ -448,22 +358,50 @@ export async function runTests(options = {}) {
 	}
 	await reportWriter.setEstimatePlan(estimatePlan, estimateOptions)
 
-	const pendingEstimateTasks = [...estimatePlan.values()]
-	if (pendingEstimateTasks.length) {
-		const estimate = summarizeEstimate(pendingEstimateTasks, estimateOptions)
-		console.logI18n('fountConsole.test.estimatedRun', {
-			eta: formatDuration(estimate.etaMs),
-			rate: formatParallelRatePct(estimate.parallelRatePct),
-		})
-		if (estimateSerial && estimate.savingsMs > 0)
-			console.logI18n('fountConsole.test.estimatedRunSerialHint', {
-				savings: formatDuration(estimate.savingsMs),
+	if (estimateTasks.length) {
+		const estimate = summarizeEstimate(estimateTasks, estimateOptions)
+		if (estimate.runCount) {
+			if (estimateSerial) {
+				console.logI18n('fountConsole.test.estimatedRunSerial', {
+					eta: formatDuration(estimate.etaMs),
+				})
+				if (Math.abs(estimate.savingsMs) > 100)
+					console.logI18n('fountConsole.test.estimatedRunSerialHint', {
+						eta: formatDuration(estimate.parallelEtaMs),
+						rate: formatParallelRatePct(estimate.parallelRatePct),
+						savings: formatDuration(estimate.savingsMs),
+					})
+			}
+			else
+				console.logI18n('fountConsole.test.estimatedRun', {
+					eta: formatDuration(estimate.etaMs),
+					rate: formatParallelRatePct(estimate.parallelRatePct),
+				})
+			if (estimate.reusedCount || estimate.blockedCount)
+				console.logI18n('fountConsole.test.estimatedRunSkipped', {
+					reused: estimate.reusedCount,
+					blocked: estimate.blockedCount,
+				})
+		}
+		else
+			console.logI18n('fountConsole.test.noRealRunPlanned', {
+				reused: estimate.reusedCount,
+				blocked: estimate.blockedCount,
 			})
 	}
 
-	const recordSuiteResult = async (index, entry, reused = false) => {
+	/**
+	 * 记录 slot 结果并可选打印剩余 ETA。
+	 * @param {number | null} index report slot 下标
+	 * @param {object} entry 写入 state/report 的条目
+	 * @param {object} [root0] 选项
+	 * @param {boolean} [root0.reused=false] 是否为复用（非真跑）
+	 * @param {boolean} [root0.logEstimate=true] 是否打印 ETA
+	 * @returns {Promise<void>}
+	 */
+	const recordSuiteResult = async (index, entry, { reused = false, logEstimate = true } = {}) => {
 		if (index != null) await reportWriter.recordResult(index, entry, { reused })
-		logPendingEstimate(reportWriter)
+		if (logEstimate) logPendingEstimate(reportWriter)
 	}
 
 	const gate = new ResourceRunGate(
@@ -471,51 +409,52 @@ export async function runTests(options = {}) {
 		suite => state.suites[suiteKey(suite.manifestId, suite.name)],
 		{ serial: options.noParallel === true },
 	)
-	const coordinator = new DependencyRunCoordinator({
-		suites: selected,
+	const coordinator = new PlanRunCoordinator({
+		slots: plan.slots,
 		state,
-		context: dependencyContext,
 		gate,
 	})
 
 	const retryByManifest = selection.retryByManifest ?? new Map()
+	const streamLive = options.noParallel === true
 
-	await coordinator.runAll(async outcome => {
-		const { suite } = outcome
+	await coordinator.runAll(async slot => {
+		const { suite } = slot
 		const label = `${suite.manifestId}/${suite.name}`
-		const index = reportIndexByKey.get(suiteKey(suite.manifestId, suite.name))
+		const key = slot.key
+		const index = reportIndexByKey.get(key)
+		const prev = state.suites[key]
+		const verdict = verdicts.get(key)
 
-		if (outcome.kind === 'blocked') {
+		if (slot.action === 'reuse') {
+			console.logI18n('fountConsole.test.reusedSuite', {
+				manifestId: suite.manifestId,
+				name: suite.name,
+				status: prev.status,
+			})
+			refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict?.triggerHash ?? null)
+			await writeState(REPO_ROOT, state)
+			if (index != null) await recordSuiteResult(index, prev, { reused: true, logEstimate: false })
+			return { passed: prev.status !== 'failed' }
+		}
+
+		if (slot.action === 'blocked') {
 			console.errorI18n('fountConsole.test.blocked', {
 				label,
-				deps: outcome.blockedBy.join(', '),
+				deps: slot.blockedBy.join(', '),
 			})
 			const entry = await upsertSuiteRun({
 				repoRoot: REPO_ROOT,
 				state,
 				suite,
 				result: { passed: false, failedFiles: [], output: '', durationMs: 0 },
-				blockedBy: outcome.blockedBy,
+				blockedBy: slot.blockedBy,
 				commitHash,
 				uncommittedHash,
 			})
 			await writeState(REPO_ROOT, state)
-			if (index != null) await recordSuiteResult(index, entry)
+			if (index != null) await recordSuiteResult(index, entry, { logEstimate: false })
 			return { passed: false }
-		}
-
-		const key = suiteKey(suite.manifestId, suite.name)
-		const prev = state.suites[key]
-		const triggerHash = computeSuiteTriggerHash(suite, uncommittedHashes)
-		if (isSuiteReusable(suite, prev, committedChangedByKey.get(key) ?? [], triggerHash, options.force)) {
-			console.logI18n('fountConsole.test.reusedSuite', {
-				manifestId: suite.manifestId,
-				name: suite.name,
-				status: prev.status,
-			})
-			if (index != null) await recordSuiteResult(index, prev, true)
-			// 复用失败仍算失败 → 下游被 blocked；passed/noisy 计入 runGreenKeys 放行下游。
-			return { passed: prev.status !== 'failed' }
 		}
 
 		const baselineDurationMs = getSuiteBaselineDurationMs(prev)
@@ -536,7 +475,6 @@ export async function runTests(options = {}) {
 		})
 		printSuiteSummary(label, result, streamLive)
 
-		// testkit 自测会拿 panic 文本做 fixture，跳过以免误报上游 issue。
 		if (suite.manifestId !== 'testkit')
 			await reportDenoPanic({ repoRoot: REPO_ROOT, output: result.output, label, commitHash })
 				.catch(error => console.error(error))
@@ -548,7 +486,7 @@ export async function runTests(options = {}) {
 			result,
 			commitHash,
 			uncommittedHash,
-			triggerHash,
+			triggerHash: verdict?.triggerHash ?? null,
 		})
 		await writeState(REPO_ROOT, state)
 		if (index != null) await recordSuiteResult(index, entry)
@@ -557,10 +495,16 @@ export async function runTests(options = {}) {
 	})
 
 	const exitCode = exitCodeFromSlots(reportWriter.slots)
-	const reportPath = await reportWriter.finalize(exitCode)
-	await refreshStateMarkdown(REPO_ROOT, allSuites, state, uncommittedFiles)
+	const finalReportPath = await reportWriter.finalize(exitCode)
+	await refreshStateMarkdown(REPO_ROOT, allSuites, state, buildStaleKeys(allSuites, verdicts, state))
+
+	const completedSlots = reportWriter.slots.filter(slot => slot.state === 'done')
+	if (exitCode !== 0 && completedSlots.length
+		&& completedSlots.every(slot => slot.reused || slot.status === 'blocked'))
+		console.logI18n('fountConsole.test.allReusedHint')
+
 	console.logI18n('fountConsole.test.reportPathFinal', {
-		path: reportPath.replace(/\\/g, '/'),
+		path: finalReportPath.replace(/\\/g, '/'),
 	})
 	console.logI18n('fountConsole.test.statePathFinal', {
 		path: 'data/test/state/main.md',

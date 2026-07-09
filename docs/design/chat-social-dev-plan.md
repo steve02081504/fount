@@ -289,7 +289,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 | 形态 | 语义 | 典型 |
 | --- | --- | --- |
 | `local` | 每 replica 本机执行，无共享状态，各机内容允许不同 | 默认 fount world |
-| `replicated` | 每 replica 本机执行；公共状态经 DAG `world_op` 事件共识（确定性折叠、LWW KV + 原始 op log），私有数据（角色背包）本地处理 | 规则型 RPG |
+| `replicated` | 每 replica 本机执行；公共状态经 DAG `world_state` 事件共识（确定性折叠、LWW KV + 原始写入 log），私有数据（角色背包）本地处理 | 规则型 RPG |
 | `hosted` | 单一权威主机，现状语义原样保留 | 狼人杀 / 跑团单一 DM（隐藏真相必须单点） |
 
 配套新增 `WorldChatHost`：world 对 chat 存储 / p2p 层的正式调用面（`state` DAG 共享状态、`localData` 本机私有、`postSystemMessage`/`triggerCharReply` 走统一写路径），补齐交互拓扑基线里"world → chat 存储 / p2p 层"这条目前没有正式接口的通道。
@@ -297,7 +297,7 @@ B1（输入拦截，独立可做）→ B2（依赖 A3 的 materialize 层）→ 
 工作项（测试随批走，不单列）：
 
 - **G1** 声明与分发：decl 字段 + bind 事件校验分支 + `resolveWorld` 三分支（未绑定/未安装回退 D6 的内置极小 world，其已自带 `distribution: 'local'` 运行时属性）；fount world 标 `local`。配套测试：local 本机执行与未安装回退、hosted 回归（缺省 distribution 走原路径）。
-- **G2** 状态通道：`world_op` 事件 + 通用 reducer + `WorldChatHost` + `ChatHostConnected` 钩子 + 入站尺寸清扫。配套测试：replicated 双 replica 收敛、越权 op 折叠层忽略、超限 payload 入站拒收。
+- **G2** 状态通道：`world_state` 事件 + 通用 reducer + `WorldChatHost` + `ChatHostConnected` 钩子 + 入站尺寸清扫。配套测试：replicated 双 replica 收敛、越权写入被折叠层忽略、超限 payload 入站拒收。
 
 依赖极少（仅依赖 D6 的极小 world 兜底，不依赖 A-E 其他项；`resolveWorld` 与 D1 写路径改动无交集），排为 M7/M8，可提前与 M3+ 并行。
 
@@ -360,7 +360,7 @@ graph LR
 	D6[D6: 极小 persona/world] --> G1[G1: world 分布形态声明]
 	E1[E1: 未读/通知] --> C[C: 前端改进]
 	E2[E2: 搜索索引] --> C
-	G1 --> G2[G2: world_op + WorldChatHost]
+	G1 --> G2[G2: world_state + WorldChatHost]
 	D[D: 代码清理] --> F1[F1: runtime 共享库]
 	F1 --> F2[F2: parts 联邦对称]
 	F1 --> F3[F3: social-chat 桥]
@@ -378,7 +378,7 @@ graph LR
 | M5 | E1 + C 相关前端（未读/通知 + badge/乐观更新/WS 增量） | 产品化第一批 |
 | M6 | E2 + E3 + E4（搜索索引、治理最小集、live 测试） | 产品化第二批 |
 | M7 | G1（world 分布形态声明与分发） | 依赖 D6；与 M3-M6 无文件冲突，可提前并行 |
-| M8 | G2（world_op + WorldChatHost） | 依赖 M7 |
+| M8 | G2（world_state + WorldChatHost） | 依赖 M7 |
 | F 期 | F1 → F2/F3，F4/F5 并行 | 各自单独立项设计 |
 
 ### 测试策略

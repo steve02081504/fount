@@ -15,8 +15,8 @@ import { materializeFromCheckpoint } from '../chat/dag/groupMaterializedState.mj
 import { getState } from '../chat/dag/materialize.mjs'
 import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolve.mjs'
 import { eventsPath, snapshotPath } from '../chat/lib/paths.mjs'
-import { listUserGroups } from '../chat/lib/userGroups.mjs'
 import { loadReadMarkers, summarizeGroupUnread } from '../chat/lib/readMarkers.mjs'
+import { listUserGroups } from '../chat/lib/userGroups.mjs'
 import { safeReadJson } from '../chat/lib/utils.mjs'
 import { tallyVoteChoices } from '../chat/lib/voteTally.mjs'
 

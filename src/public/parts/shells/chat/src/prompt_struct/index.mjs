@@ -2,7 +2,7 @@
  * 【文件】src/prompt_struct/index.mjs
  * 【职责】为角色/世界/插件私聊与群聊生成统一 prompt_struct：聚合各 Part 的 GetPrompt、过滤可见消息、构建 timelines。
  * 【原理】buildPromptStruct 并行 await 各 interfaces.chat.GetPrompt；世界可附加 GetGroupPrompt.public；
- *   chat_log 经 canViewMessage 过滤；detail_level 控制附加字段深度。与 decl/prompt_struct.ts 类型对齐供 LLM 调用链使用。
+ *   chat_log 经 entryVisibleToViewer（visibility ACL + charVisibility 白名单）过滤；detail_level 控制附加字段深度。与 decl/prompt_struct.ts 类型对齐供 LLM 调用链使用。
  * 【数据结构】prompt_struct_t：char_prompt、user_prompt、world_prompt、other_chars_prompts、plugin_prompts、chat_log、timelines、locales 等。
  * 【关联】session/generation、triggerReply 调用；依赖 visibility.mjs 与 char/world/user API。
  */
@@ -13,7 +13,7 @@
 /** @typedef {import('../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../../../../../decl/chatLog.ts').chatReplyRequest_t} chatReplyRequest_t */
 
-import { canViewMessage } from '../chat/lib/visibility.mjs'
+import { entryVisibleToViewer } from '../chat/lib/visibility.mjs'
 
 /**
  * 获取单部分提示。
@@ -203,15 +203,13 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
  * @returns {boolean} 是否纳入 prompt 聊天记录
  */
 function entryVisibleForPrompt(entry, prompt) {
-	const vis = entry.visibility
-	if (!vis) return true
+	if (!entry.visibility && !entry.charVisibility?.length) return true
 	const viewer = {
 		memberId: prompt.extension?.memberId || (prompt.char_id ? `${prompt.username}:${prompt.char_id}` : prompt.username),
 		roles: prompt.member_roles || [],
 		charId: prompt.char_id,
 	}
-	if (!vis.roles?.length && !vis.members?.length) return true
-	return canViewMessage(vis, viewer)
+	return entryVisibleToViewer(entry, viewer)
 }
 
 /**

@@ -51,6 +51,40 @@ test.describe('Chat message actions', () => {
 		await expect(messageRowByText(page, drop)).toBeHidden({ timeout: 30_000 })
 	})
 
+	test('header search hits backend index and jumps to result', async ({ page, groupChannel }) => {
+		const { groupId, channelId } = groupChannel
+		// 单词 token（索引按 latin word 分词，避免连字符被拆开后两条都命中）
+		const needle = `searchneedle${Date.now()}`
+		const keep = `${needle} backend hit`
+		const drop = `searchother${Date.now()} backend miss`
+		await sendMessageViaComposer(page, groupId, channelId, keep)
+		await sendMessageViaComposer(page, groupId, channelId, drop)
+		await expectMessageInChat(page, keep)
+
+		const searchInput = page.locator('#hub-header-search')
+		const resultRow = page.locator('#hub-search-results .hub-search-result').filter({ hasText: needle })
+		// 索引增量更新可能滞后于落盘：重填输入框重发后端查询直到命中
+		await expect(async () => {
+			await searchInput.fill('')
+			const searchResponse = page.waitForResponse(
+				res => new URL(res.url()).pathname.endsWith(`/groups/${encodeURIComponent(groupId)}/search`)
+					&& res.status() === 200,
+				{ timeout: 10_000 },
+			)
+			await searchInput.fill(needle)
+			const { items } = await (await searchResponse).json()
+			expect(items.some(item => String(item.text || '').includes(needle))).toBe(true)
+		}).toPass({ timeout: 120_000 })
+
+		await expect(resultRow.first()).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#hub-search-results .hub-search-result').filter({ hasText: 'backend miss' }))
+			.toHaveCount(0)
+
+		await resultRow.first().click()
+		await expect(page.locator('#hub-search-results')).toBeHidden({ timeout: 30_000 })
+		await expect(messageRowByText(page, keep)).toBeVisible({ timeout: 30_000 })
+	})
+
 	test('pins a message to channel bar', async ({ page, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
 		const text = `pin-target ${Date.now()}`

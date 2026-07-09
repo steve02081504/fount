@@ -1,36 +1,14 @@
 /**
- * 测试 suite 依赖解析、拓扑排序与扩展。
+ * 测试 suite 依赖解析与拓扑排序。
  */
 import { filterSuites } from './manifest.mjs'
-import { isDependencySatisfied, isSuiteGreen, isSuiteOutdated, suiteKey } from './state.mjs'
+import { parseDependsOnEntry } from './selector.mjs'
+import { suiteKey } from './state.mjs'
 
 /**
  * @typedef {import('./manifest.mjs').SuiteDef} SuiteDef
- * @typedef {import('./state.mjs').TestState} TestState
  * @typedef {{ manifestId: string, name: string }} SuiteRef
  */
-
-/**
- * 解析 dependsOn 条目为具体 suite 引用。
- * @param {string} raw 原始 dependsOn
- * @param {string} ownerManifestId 所属 manifest
- * @returns {{ manifestSelectors: string[], suiteSelectors: string[] }} 解析结果
- */
-function parseDependsOnEntry(raw, ownerManifestId) {
-	const token = raw.trim()
-	if (!token) return { manifestSelectors: [], suiteSelectors: [] }
-	if (token.includes(':')) {
-		const colon = token.indexOf(':')
-		return {
-			manifestSelectors: [token.slice(0, colon)],
-			suiteSelectors: token.slice(colon + 1).split(/[,\s]+/).map(s => s.trim()).filter(Boolean),
-		}
-	}
-	return {
-		manifestSelectors: [ownerManifestId],
-		suiteSelectors: [token],
-	}
-}
 
 /**
  * 解析单个 suite 的 dependsOn 为具体引用列表。
@@ -41,12 +19,13 @@ function parseDependsOnEntry(raw, ownerManifestId) {
 export function resolveSuiteDependencies(suite, allSuites) {
 	if (!suite.dependsOn?.length) return []
 
+	const knownManifestIds = [...new Set(allSuites.map(s => s.manifestId))]
 	const refs = new Map()
 	for (const raw of suite.dependsOn) {
-		const parsed = parseDependsOnEntry(raw, suite.manifestId)
+		const parsed = parseDependsOnEntry(raw, suite.manifestId, knownManifestIds)
 		const matched = filterSuites(allSuites, {
 			manifestIds: parsed.manifestSelectors,
-			suiteSelectors: parsed.suiteSelectors,
+			suiteSelectors: parsed.suiteSelectors.length ? parsed.suiteSelectors : undefined,
 		}, { prefixExpand: false })
 		if (!matched.length)
 			throw new Error(`dependsOn "${raw}" in ${suite.manifestId}/${suite.name} matched no suites`)
@@ -123,13 +102,12 @@ function topoSortKeys(keys, dependencyEdges, compareTieBreak) {
 	const inDegree = new Map(unique.map(k => [k, 0]))
 	/** @type {Map<string, Set<string>>} */
 	const adj = new Map(unique.map(k => [k, new Set()]))
-	for (const key of unique) 
+	for (const key of unique)
 		for (const dep of dependencyEdges.get(key) ?? []) {
 			if (!keySet.has(dep)) continue
 			adj.get(dep).add(key)
 			inDegree.set(key, inDegree.get(key) + 1)
 		}
-	
 
 	/** @type {string[]} */
 	const ready = unique.filter(k => inDegree.get(k) === 0)
@@ -155,11 +133,11 @@ function topoSortKeys(keys, dependencyEdges, compareTieBreak) {
 
 /**
  * 拓扑并列 tie-break：被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
- * @param {string} a 键
- * @param {string} b 键
+ * @param {string} a suite 键 A
+ * @param {string} b suite 键 B
  * @param {Map<string, number>} dependentCount 被依赖计数
  * @param {Map<string, number>} depCount 依赖计数
- * @returns {number} 排序比较值（<0 表示 a 在前）
+ * @returns {number} 比较结果（负数表示 a 在前）
  */
 function compareTopoTieBreak(a, b, dependentCount, depCount) {
 	const depByA = dependentCount.get(a) ?? 0
@@ -176,9 +154,9 @@ function compareTopoTieBreak(a, b, dependentCount, depCount) {
 }
 
 /**
- * 全库 suite 依赖计数（tie-break 用）。
- * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number> }} 各 suite 的依赖数与被依赖数
+ * 统计全库 suite 的依赖/被依赖边数（tie-break 用）。
+ * @param {import('./manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number> }} 出度与入度计数
  */
 function buildSuiteMetrics(allSuites) {
 	/** @type {Map<string, number>} */
@@ -206,9 +184,9 @@ function buildSuiteMetrics(allSuites) {
 }
 
 /**
- * suite 直接依赖边（越界边由 topoSortKeys 内部按 keySet 过滤）。
- * @param {SuiteDef[]} suites 待排序 suite
- * @returns {Map<string, Set<string>>} suite 键 → 直接依赖键集合
+ * 构建 suite 依赖邻接表（值为依赖方 suite 键集合）。
+ * @param {import('./manifest.mjs').SuiteDef[]} suites 参与构图的 suite
+ * @returns {Map<string, Set<string>>} suite 键 → 其 dependsOn 键集合
  */
 function buildSuiteDependencyEdges(suites) {
 	return new Map(suites.map(suite => [
@@ -218,7 +196,7 @@ function buildSuiteDependencyEdges(suites) {
 }
 
 /**
- * suite 排序：依赖在前；无依赖边时按被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
+ * suite 排序：依赖在前。
  * @param {SuiteDef[]} suites 待排序 suite
  * @param {SuiteDef[]} [allSuites] 全库 suite（tie-break 计数范围；默认同 suites）
  * @returns {SuiteDef[]} 排序结果
@@ -239,9 +217,9 @@ export function topoSortSuites(suites, allSuites = suites) {
 }
 
 /**
- * 从 suite 依赖构建 manifest 级图（同 manifest 内边忽略）。
- * @param {SuiteDef[]} suites 全部 suite
- * @returns {{ depCount: Map<string, number>, dependentCount: Map<string, number>, dependencyEdges: Map<string, Set<string>> }} manifest 级依赖计数与边
+ * 构建 manifest 级依赖图（跨 manifest dependsOn 边）。
+ * @param {import('./manifest.mjs').SuiteDef[]} suites 参与构图的 suite
+ * @returns {Map<string, Set<string>>} manifest id → 其依赖 manifest id 集合
  */
 function buildManifestGraph(suites) {
 	const ids = [...new Set(suites.map(s => s.manifestId))]
@@ -252,7 +230,7 @@ function buildManifestGraph(suites) {
 	/** @type {Map<string, Set<string>>} */
 	const dependencyEdges = new Map(ids.map(id => [id, new Set()]))
 
-	for (const suite of suites) 
+	for (const suite of suites)
 		for (const dep of suite.dependencies ?? []) {
 			if (dep.manifestId === suite.manifestId) continue
 			const from = suite.manifestId
@@ -262,14 +240,14 @@ function buildManifestGraph(suites) {
 			depCount.set(from, depCount.get(from) + 1)
 			dependentCount.set(to, dependentCount.get(to) + 1)
 		}
-	
+
 	return { depCount, dependentCount, dependencyEdges }
 }
 
 /**
- * manifest id 排序：被依赖者在前；无依赖边时按被依赖数少→前、依赖数少→前、`/` 少→前、字符串短→前、字典序。
+ * manifest id 排序：被依赖者在前。
  * @param {string[]} manifestIds 待排序 id
- * @param {SuiteDef[]} suites 全部 suite（用于解析跨 manifest 依赖）
+ * @param {SuiteDef[]} suites 全部 suite
  * @returns {string[]} 排序结果
  */
 export function sortManifestIds(manifestIds, suites) {
@@ -286,145 +264,18 @@ export function sortManifestIds(manifestIds, suites) {
 }
 
 /**
- * 父项 trigger 过时时，沿 dependsOn 反向纳入其直接下游（仅一层）。
- * @param {SuiteDef[]} selected 已选 suite
+ * trigger 命中的 suite 的直接下游（一层）。
+ * @param {Set<string>} hitKeys trigger 命中键
  * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {object} context 上下文
- * @param {Map<string, string[]>} context.changedSinceRecordByKey 各 suite 自记录以来的变更
- * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展结果与纳入原因
+ * @returns {Set<string>} 扩展后的键集
  */
-export function expandWithDependents(selected, allSuites, state, context) {
-	/** @type {Map<string, string>} */
-	const provenance = new Map()
-	const needed = new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
-
-	/** @type {Map<string, SuiteDef[]>} */
-	const dependentsByKey = new Map()
-	for (const suite of allSuites)
-		for (const dep of suite.dependencies ?? []) {
-			const depKey = suiteKey(dep.manifestId, dep.name)
-			const list = dependentsByKey.get(depKey) ?? []
-			list.push(suite)
-			dependentsByKey.set(depKey, list)
-		}
-
-	// 只在 trigger 命中（outdated）时向下传播，且只纳入直接依赖者（一层）：
-	// 修复必改文件、必命中 trigger，故无需靠 failed/noisy/blocked 或 ranAt 连累下游，
-	// 纯 commit 漂移更不传播；更深层留待其自身 trigger 命中时再传播。
-	for (const suite of selected) {
+export function expandDiffDependents(hitKeys, allSuites) {
+	const expanded = new Set(hitKeys)
+	for (const suite of allSuites) {
 		const key = suiteKey(suite.manifestId, suite.name)
-		if (!isSuiteOutdated(suite, state.suites[key], context.changedSinceRecordByKey.get(key) ?? []))
-			continue
-		for (const dependent of dependentsByKey.get(key) ?? []) {
-			const depKey = suiteKey(dependent.manifestId, dependent.name)
-			if (needed.has(depKey)) continue
-			needed.set(depKey, dependent)
-			provenance.set(depKey, key)
-		}
+		if (expanded.has(key)) continue
+		if (suite.dependencies?.some(dep => hitKeys.has(suiteKey(dep.manifestId, dep.name))))
+			expanded.add(key)
 	}
-
-	return { suites: [...needed.values()], provenance }
-}
-
-/**
- * @param {SuiteDef[]} selected 已选 suite
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {object} context 上下文
- * @param {Map<string, string[]>} context.changedSinceRecordByKey 各 suite 自记录以来的变更
- * @returns {{ suites: SuiteDef[], provenance: Map<string, string> }} 扩展并拓扑排序后的 suite 与纳入原因
- */
-export function expandWithDependencies(selected, allSuites, state, context) {
-	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
-	const needed = new Map(selected.map(s => [suiteKey(s.manifestId, s.name), s]))
-	/** @type {Map<string, string>} */
-	const provenance = new Map()
-
-	const queue = [...needed.values()]
-	while (queue.length) {
-		const suite = queue.shift()
-		const parentKey = suiteKey(suite.manifestId, suite.name)
-		for (const dep of suite.dependencies ?? []) {
-			const depKey = suiteKey(dep.manifestId, dep.name)
-			if (needed.has(depKey)) continue
-			const depSuite = byKey.get(depKey)
-			if (!depSuite)
-				throw new Error(`missing dependency suite ${depKey} required by ${suite.manifestId}/${suite.name}`)
-			const entry = state.suites[depKey]
-			const outdated = isSuiteOutdated(depSuite, entry, context.changedSinceRecordByKey.get(depKey) ?? [])
-			if (isDependencySatisfied(entry, outdated))
-				continue
-			needed.set(depKey, depSuite)
-			provenance.set(depKey, parentKey)
-			queue.push(depSuite)
-		}
-	}
-
-	const suites = [...needed.values()]
-	const cycle = detectDependencyCycle(suites)
-	if (cycle)
-		throw new Error(`dependency cycle detected: ${cycle}`)
-
-	return { suites: topoSortSuites(suites, allSuites), provenance }
-}
-
-/**
- * 列出未满足的依赖键。
- * @param {SuiteDef} suite suite
- * @param {TestState} state 现状库
- * @param {object} context 上下文
- * @param {Map<string, string[]>} context.changedSinceRecordByKey 变更映射
- * @param {Set<string>} context.runGreenKeys 本次已通过
- * @param {Map<string, SuiteDef>} context.byKey 全部 suite 映射
- * @returns {string[]} 未满足依赖键
- */
-export function listUnsatisfiedDependencies(suite, state, context) {
-	/** @type {string[]} */
-	const missing = []
-	for (const dep of suite.dependencies ?? []) {
-		const depKey = suiteKey(dep.manifestId, dep.name)
-		if (context.runGreenKeys.has(depKey)) continue
-		const depSuite = context.byKey.get(depKey)
-		const entry = state.suites[depKey]
-		const outdated = depSuite
-			? isSuiteOutdated(depSuite, entry, context.changedSinceRecordByKey.get(depKey) ?? [])
-			: true
-		if (isDependencySatisfied(entry, outdated))
-			continue
-		missing.push(depKey)
-	}
-	return missing
-}
-
-/**
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
- * @param {Map<string, string[]>} changedSinceRecordByKey 变更映射
- * @returns {SuiteDef[]} 当前指纹下不完美的 suite
- */
-export function listImperfectSuites(allSuites, state, commitHash, uncommittedHash, changedSinceRecordByKey) {
-	return allSuites.filter(suite => {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const entry = state.suites[key]
-		const outdated = isSuiteOutdated(suite, entry, changedSinceRecordByKey.get(key) ?? [])
-		if (isSuiteGreen(entry, commitHash, uncommittedHash, outdated)) return false
-		return !entry || entry.status === 'failed' || entry.status === 'noisy' || entry.status === 'blocked' || outdated
-	})
-}
-
-/**
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {Map<string, string[]>} changedSinceRecordByKey 变更映射
- * @returns {SuiteDef[]} 陈旧或未跑过的 suite
- */
-export function listOutdatedSuites(allSuites, state, changedSinceRecordByKey) {
-	return allSuites.filter(suite => {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const entry = state.suites[key]
-		return isSuiteOutdated(suite, entry, changedSinceRecordByKey.get(key) ?? [])
-	})
+	return expanded
 }

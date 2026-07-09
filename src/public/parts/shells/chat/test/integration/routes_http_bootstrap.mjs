@@ -12,6 +12,9 @@ const PERSONA_EDIT = 'edit_path_persona'
 const PERSONA_WRITE = 'write_path_persona'
 
 /**
+ * @param {string} username replica 登录名
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
  * @param {string} text 消息正文
  * @returns {Promise<void>}
  */

@@ -1,4 +1,4 @@
-import { channelMessageContent_t, chatReplyRequest_t, chatReply_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReplyRequest_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'

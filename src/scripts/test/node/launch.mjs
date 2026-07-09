@@ -20,7 +20,7 @@ import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
-import { buildV8FlagsArg, collectHeapSnapshots, resolveHeapSnapshotCount } from '../heap_snapshot.mjs'
+import { buildV8FlagsArg, collectHeapSnapshots } from '../heap_snapshot.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
@@ -44,7 +44,7 @@ function resolveTestNodeHeapMb() {
 }
 
 /**
- * 构造 deno run 的 --v8-flags 参数（堆上限 + 近 OOM 快照）。
+ * 构造 deno run 的 --v8-flags 参数（堆上限；近 OOM 快照由 worker 内 env.mjs 调用 v8 API 启用）。
  * @returns {string | null} --v8-flags=... 或 null
  */
 function buildTestNodeV8FlagsArg() {
@@ -52,8 +52,6 @@ function buildTestNodeV8FlagsArg() {
 	const flags = []
 	const heapMb = resolveTestNodeHeapMb()
 	if (heapMb > 0) flags.push(`--max-old-space-size=${heapMb}`)
-	const snapshotCount = resolveHeapSnapshotCount()
-	if (snapshotCount > 0) flags.push(`--heapsnapshot-near-heap-limit=${snapshotCount}`)
 	return buildV8FlagsArg(flags)
 }
 
@@ -456,6 +454,18 @@ export async function launchNode(options = {}) {
 		child.stderr?.on('data', onOutput)
 	}
 
+	/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
+	const childExited = new Promise(resolve => {
+		child.once('exit', code => resolve(code ?? -1))
+	})
+	/**
+	 * @returns {Promise<never>} worker 在就绪前退出即抛错（fail-fast，免等 ping 超时）
+	 */
+	const failOnEarlyExit = async () => {
+		const code = await childExited
+		throw new Error(`node worker exited with code ${code} before ready (port ${port})\n${startupOutput}`.trimEnd())
+	}
+
 	let readyInfo = null
 	const readline = createInterface({ input: child.stdout })
 	for await (const line of readline) {
@@ -475,10 +485,13 @@ export async function launchNode(options = {}) {
 	child.stderr?.resume?.()
 
 	if (!readyInfo?.baseUrl)
-		throw new Error(`node worker did not emit ready JSON (port ${port})\n${startupOutput}`.trimEnd())
+		await failOnEarlyExit()
 
 	try {
-		await waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username)
+		await Promise.race([
+			waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username),
+			failOnEarlyExit(),
+		])
 	}
 	catch (error) {
 		if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`

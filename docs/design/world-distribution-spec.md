@@ -28,7 +28,7 @@
 | distribution | 运行位置 | 共享状态 | 隐藏真相 | 典型 |
 | --- | --- | --- | --- | --- |
 | `local` | 每个 replica 本机 | 无（各自为政） | 无 | 默认 fount world |
-| `replicated` | 每个 replica 本机 | DAG `world_op` 事件 | 无（共享状态全员可见） | 规则型 RPG |
+| `replicated` | 每个 replica 本机 | DAG `world_state` 事件 | 无（共享状态全员可见） | 规则型 RPG |
 | `hosted` | `homeNodeHash` 单机 | 主机私有，按需播报 | 有（主机独占） | 狼人杀 / 跑团 DM（现状语义） |
 
 三形态共用同一套 `WorldAPI.interfaces.chat.*` 钩子，差别只在**钩子在哪台机器上执行、共享状态经过哪条通道**。
@@ -42,13 +42,13 @@
 
 ### replicated：p2p 副本共识世界
 
-- 每个 replica 本机执行钩子（同 local），但公共世界状态通过 DAG `world_op` 事件共享，全群收敛到同一份状态。
+- 每个 replica 本机执行钩子（同 local），但公共世界状态通过 DAG `world_state` 事件共享，全群收敛到同一份状态。
 - **职责切分**：
   - 共享状态（任务进度、世界事件、公共资源）→ `host.state`（DAG 权威，见下文 WorldChatHost）。
   - 私有数据（某角色的背包、某玩家的本地缓存）→ `host.localData`（world 自己的数据目录，不进 DAG）。
-- **确定性要求**：从 `world_op` 序列折叠出状态的逻辑必须确定（同一 op 序列 → 同一状态）。不确定的计算（AI 调用、随机数、时钟）不允许放在折叠路径里；正确做法是**由发起者算完、把结果作为 op 签名落 DAG**，其他节点信任该 op 或自行重算校验。
+- **确定性要求**：从 `world_state` 序列折叠出状态的逻辑必须确定（同一 op 序列 → 同一状态）。不确定的计算（AI 调用、随机数、时钟）不允许放在折叠路径里；正确做法是**由发起者算完、把结果作为 op 签名落 DAG**，其他节点信任该 op 或自行重算校验。
 - **权限语义在 world 折叠层裁决**：DAG/网络层只做它已经在做的事——签名校验、格式规整、payload 尺寸清扫（对非本机入站的必要清扫）。"这个成员有没有资格发这条 op"是世界规则，由 world 在折叠时决定接受还是忽略，shell 不代管。
-- **副作用幂等**：`AfterAddChatLogEntry` 等落盘后钩子在每个 replica 各自触发一次；replicated world 的副作用要么是本机幂等的（刷新本机缓存），要么经 `world_op` 写共享状态（同 key LWW 天然收敛）。
+- **副作用幂等**：`AfterAddChatLogEntry` 等落盘后钩子在每个 replica 各自触发一次；replicated world 的副作用要么是本机幂等的（刷新本机缓存），要么经 `world_state` 写共享状态（同 key LWW 天然收敛）。
 - 未安装该 world 的节点：回退 RPC 到 bind 里的 `homeNodeHash`（首绑者充当种子主机），行为退化为 hosted——所以 replicated 是 hosted 的严格超集，不会比现状更糟。
 
 ### hosted：单一权威主机（现状语义，保留不动）
@@ -110,16 +110,16 @@ type WorldChatHost_t = {
 	groupId: string
 	replicaUsername: string
 
-	/** 共享世界状态：DAG 权威，world_op 事件承载。 */
+	/** 共享世界状态：DAG 权威，world_state 事件承载。 */
 	state: {
-		/** LWW KV 读（折叠自 world_op set/del，按 HLC 收敛）。 */
+		/** LWW KV 读（折叠自 world_state set/delete，按 HLC 收敛）。 */
 		get(key: string): Promise<unknown>
 		entries(): Promise<Record<string, unknown>>
-		/** 写 = 追加签名 world_op 事件，经现有 append → broadcastAndPersist → 联邦同步。 */
+		/** 写 = 追加签名 world_state 事件，经现有 append → broadcastAndPersist → 联邦同步。 */
 		set(key: string, value: unknown): Promise<void>
 		del(key: string): Promise<void>
-		/** 原始 op 序列（HLC 全序），供需要自定义折叠语义的 world 自己 fold。 */
-		log(sinceEventId?: string): Promise<worldOpEvent_t[]>
+		/** 原始状态写入序列（HLC 全序），供需要自定义折叠语义的 world 自己 fold。 */
+		log(sinceEventId?: string): Promise<worldStateEvent_t[]>
 	}
 
 	/** 本机私有数据：world 自己的数据目录 JSON，不进 DAG。 */
@@ -146,30 +146,30 @@ interfaces.chat.ChatHostConnected?: (host: WorldChatHost_t) => Promise<void>
 
 要点：
 
-- `state.set/del` 落的是**当前 replica 成员签名**的 `world_op` 事件——replicated 下每台机器以自己的成员身份写，hosted 下只有主机在写。谁写的一目了然，权限裁决材料齐全。
+- `state.set/del` 落的是**当前 replica 成员签名**的 `world_state` 事件——replicated 下每台机器以自己的成员身份写，hosted 下只有主机在写。谁写的一目了然，权限裁决材料齐全。
 - `postSystemMessage` / `triggerCharReply` 复用统一写路径与 `triggerCharReply()`，不开旁门。
 - 不做能力洁癖：host 对象经 `chatReplyRequest` 间接可达也无妨，char hack 进别的 char 为所欲为本来就是被允许的特性；我们只保证"正门存在且好走"。
 
-## `world_op` 事件与通用 reducer
+## `world_state` 事件与通用 reducer
 
-新增 DAG 事件类型 `world_op`：
+新增 DAG 事件类型 `world_state`：
 
 ```ts
 {
-	type: 'world_op',
-	channelId?: string,          // 缺省为群级状态
+	type: 'world_state',
 	content: {
 		worldname: string,
-		op: 'set' | 'del',
+		action: 'set' | 'delete',
 		key: string,
-		value?: unknown,          // op === 'set' 时必填
+		value?: unknown,          // action === 'set' 时必填
 	}
 }
 ```
 
 - **通用 reducer**（shell 侧，`dag/reducers/` 新增）：物化到 `state.worldStates[worldname]`，`set/del` 按 HLC 全序做 LWW。reducer 保持世界无关——shell 不解释 value 语义。
+- **状态为群级**：shell 不做频道级隔离；需要频道作用域的 world 用键约定自理（如 `chan/{channelId}/...`）——与"key 语义归 world"一致，reducer 不多长一个维度。
 - **原始 log 保留**：需要非 LWW 语义（计数器、集合合并、回合制指令流）的 world 用 `state.log()` 自己折叠，折叠规则是 world 代码的一部分（这就是"客户端共识"：共识 = 相同代码 + 相同 op 序列）。
-- **网络层清扫**（唯一需要防御的边界，遵循仓库信任惯例）：远端入站 `world_op` 沿用现有签名 / 成员校验 / HLC skew 管线（`remoteIngest.mjs`），额外加 content 尺寸上限（建议 64KB，超限拒收）。语义有效性不在网络层裁决。
+- **网络层清扫**（唯一需要防御的边界，遵循仓库信任惯例）：远端入站 `world_state` 沿用现有签名 / 成员校验 / HLC skew 管线（`remoteIngest.mjs`），额外加 content 尺寸上限（建议 64KB，超限拒收）。语义有效性不在网络层裁决。
 - 非消息类事件，`broadcastAndPersist` 现有分支已覆盖（仅重建 checkpoint，不进 messages.jsonl）。
 
 ## 与现有钩子的关系
@@ -210,11 +210,11 @@ interfaces.chat.ChatHostConnected?: (host: WorldChatHost_t) => Promise<void>
 依赖 dev plan 的 D6（内置极小 world，`resolveWorld` 兜底）先行；除此之外依赖极少（不依赖 A-E 工作流；`resolveWorld` 一处与 D1 的写路径改动无交集）。测试随批走：
 
 1. **G1 声明与分发**（dev plan 批次 M7）：`WorldAPI_t.distribution` decl + bind 事件字段与校验分支 + `resolveWorld` 三分支。默认 fount world 标 `local`。存量行为零变化（缺省 hosted）。配套测试：local fixture 本机执行与未安装回退极小 world；hosted 回归（现有联邦矩阵已覆盖大半）。
-2. **G2 状态通道**（dev plan 批次 M8）：`world_op` 事件类型 + 通用 reducer + `WorldChatHost` 模块（`src/chat/session/worldHost.mjs`）+ `ChatHostConnected` 钩子接线 + 入站尺寸清扫。配套测试：replicated fixture world 两 replica 写 op、断言状态收敛与越权 op 被折叠层忽略、超限 payload 入站拒收。
+2. **G2 状态通道**（dev plan 批次 M8）：`world_state` 事件类型 + 通用 reducer + `WorldChatHost` 模块（`src/chat/session/worldHost.mjs`）+ `ChatHostConnected` 钩子接线 + 入站尺寸清扫。配套测试：replicated fixture world 两 replica 写 op、断言状态收敛与越权 op 被折叠层忽略、超限 payload 入站拒收。
 
 ## 验收
 
 - local world 绑定后，主机离线，其他成员的 chat 功能（含 agent 回复）不受影响；各机 world 钩子本机生效；未安装节点回退极小 world，行为等同无 world。
 - replicated 双 replica：A 机 `state.set`，B 机 `state.get` 收敛到同值；B 机伪造越权 op，A 机折叠层忽略且不炸。
 - hosted 行为与现状完全一致（缺省 distribution 的存量 bind 事件走原路径）。
-- `world_op` 超限 payload 被入站清扫拒收，本机写不受限制（本机信任自己）。
+- `world_state` 超限 payload 被入站清扫拒收，本机写不受限制（本机信任自己）。

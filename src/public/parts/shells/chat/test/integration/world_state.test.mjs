@@ -1,11 +1,12 @@
 /**
- * M8：world_op 状态通道 + WorldChatHost 集成测试。
+ * M8：world_state 状态通道 + WorldChatHost 集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
+import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createChatFederationSim } from '../simulation/federation.mjs'
@@ -27,7 +28,7 @@ async function seedWorldFixture(dataRoot, username, worldname) {
 	await cp(from, to, { recursive: true })
 }
 
-Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 64KB 拒收', async t => {
+Deno.test('M8 world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 64KB 拒收', async t => {
 	const sim = await createChatFederationSim()
 	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
 	const NODE_A = nodeName('A')
@@ -40,7 +41,7 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
 	await modules.lifecycle.createGroup(NODE_A, {
 		groupId,
-		name: 'world-op-state',
+		name: 'world-state',
 		ownerPubKeyHash: ownerSigner.sender,
 		secretKey: ownerSigner.secretKey,
 		defaultChannelId: channelId,
@@ -56,8 +57,8 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 	const { appendSessionWorldBind } = await import('../../src/chat/session/dagSession.mjs')
 	const { resolveWorld } = await import('../../src/chat/session/resolvePart.mjs')
 	const { createWorldChatHost, resetWorldHostConnectedCacheForTests } = await import('../../src/chat/session/worldHost.mjs')
-	const { WORLD_OP_CONTENT_MAX_BYTES } = await import('../../src/chat/dag/remoteIngest.mjs')
-	const { foldAuthorizedValue } = await import(join(dataRoot, 'users', NODE_A, 'worlds', REPLICATED_WORLD, 'main.mjs'))
+	const { WORLD_STATE_CONTENT_MAX_BYTES } = await import('../../src/chat/dag/remoteIngest.mjs')
+	const { foldAuthorizedValue } = await import(pathToFileURL(join(dataRoot, 'users', NODE_A, 'worlds', REPLICATED_WORLD, 'main.mjs')).href)
 
 	await appendSessionWorldBind(NODE_A, groupId, REPLICATED_WORLD)
 	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
@@ -81,7 +82,7 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 		assertEquals(stateB.worldStates[REPLICATED_WORLD].weather.value, 'rain')
 	})
 
-	await t.step('越权 op 落 DAG 但折叠层忽略', async () => {
+	await t.step('越权写入落 DAG 但折叠层忽略', async () => {
 		globalThis[HOOK_KEY] = { hostConnected: 0, host: null, lastFoldIgnored: 0 }
 		const protectedKey = `protected/${ownerSigner.sender}/gold`
 		const hostA = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
@@ -90,12 +91,12 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 
 		const { sender, secretKey } = await modules.localSigner.getLocalSignerForNewGroup(NODE_B, groupId)
 		await modules.append.appendEvent(NODE_B, groupId, {
-			type: 'world_op',
+			type: 'world_state',
 			sender,
 			timestamp: Date.now(),
 			content: {
 				worldname: REPLICATED_WORLD,
-				op: 'set',
+				action: 'set',
 				key: protectedKey,
 				value: 9999,
 			},
@@ -105,10 +106,13 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 		const hostA2 = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
 		assertEquals(await foldAuthorizedValue(hostA2, protectedKey), 100)
 		assert(globalThis[HOOK_KEY].lastFoldIgnored >= 1)
+		// 分层语义锁定：shell LWW reducer 世界无关、不裁权限——state.get 返回越权后值；
+		// "忽略越权写入" 是 world 折叠层（state.log 自定义 fold）的职责，见上一断言。
+		assertEquals(await hostA2.state.get(protectedKey), 9999)
 	})
 
 	await t.step('联邦入站超 64KB 拒收，本机写不受限', async () => {
-		const bigValue = 'x'.repeat(WORLD_OP_CONTENT_MAX_BYTES)
+		const bigValue = 'x'.repeat(WORLD_STATE_CONTENT_MAX_BYTES)
 		const hostA = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
 		await hostA.state.set('big_local', bigValue)
 
@@ -116,10 +120,14 @@ Deno.test('M8 world_op: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 			sanitize: modules.strip.stripDagEventLocalExtensions,
 		})
 		const bigEvent = [...eventsA].reverse().find(event =>
-			event.type === 'world_op' && event.content?.key === 'big_local')
+			event.type === 'world_state' && event.content?.key === 'big_local')
 		assert(bigEvent)
 
-		const ingest = await modules.remoteIngest.appendValidatedRemoteEvent(NODE_B, groupId, bigEvent)
+		const ingest = await allowNoise(
+			'federation: drop remote event \\(content too large\\)',
+			() => modules.remoteIngest.appendValidatedRemoteEvent(NODE_B, groupId, bigEvent),
+			{ drainMs: 0 },
+		)
 		assertEquals(ingest.status, 'invalid')
 		assertEquals(ingest.reason, 'content_too_large')
 

@@ -25,13 +25,13 @@ export function wallClockMs(summary, nowMs = Date.now()) {
 
 /**
  * 并行率 = 未复用套件耗时之和 / 总墙钟时间 × 100% − 100%。
- * 串行约 0%；并行越高越正。
+ * 串行约 0%；并行越高越正。无真跑耗时（全复用/全阻塞）时无意义，返回 null。
  * @param {number} suiteSumMs 未复用套件耗时之和
  * @param {number | null} totalMs 墙钟总耗时
  * @returns {number | null} 并行率（百分点，可负）
  */
 export function parallelRatePct(suiteSumMs, totalMs) {
-	if (totalMs == null || totalMs <= 0) return null
+	if (!suiteSumMs || totalMs == null || totalMs <= 0) return null
 	return suiteSumMs / totalMs * 100 - 100
 }
 

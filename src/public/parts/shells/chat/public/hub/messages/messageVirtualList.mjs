@@ -48,8 +48,8 @@ async function renderChannelMessageElement(message, index) {
 	const lastId = hubStore.messages.channelMessages.at(-1)?.eventId
 	const block = await renderChannelMessageBlock(
 		message,
-		prev?.type === 'unread_divider' ? null : (prev?.charId ?? prev?.sender ?? null),
-		prev?.type === 'unread_divider' ? 0 : (prev?.timestamp || 0),
+		prev?.type === 'unread_divider' ? null : prev?.charId ?? prev?.sender ?? null,
+		prev?.type === 'unread_divider' ? 0 : prev?.timestamp || 0,
 		hubStore.messages.channelMessages,
 		{ ...messageRenderOpts(), lastMessageEventId: lastId },
 	)

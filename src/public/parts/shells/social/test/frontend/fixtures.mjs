@@ -6,8 +6,8 @@ import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
 import { FOREIGN_FE_AUTHOR_HASH } from '../seedForeignFeedAuthor.mjs'
+import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
@@ -215,11 +215,13 @@ export async function findPostCard(page, postId, opts = {}) {
 	const allowProfileFallback = opts.allowProfileFallback === true
 	const sel = `[data-post-id="${postId}"]`
 	const feedCard = page.locator(`#feedView ${sel}`)
-	for (let attempt = 0; attempt < 2; attempt++) {
-		if (await feedCard.count() > 0) {
-			await expect(feedCard.first()).toBeVisible({ timeout: ms('15s') })
+	for (let attempt = 0; attempt < 3; attempt++) {
+		try {
+			// feed GET 返回后 DOM 渲染是异步的；等可见而非查 count，避免竞态
+			await expect(feedCard.first()).toBeVisible({ timeout: ms('5s') })
 			return feedCard.first()
 		}
+		catch { /* 未渲染或不在本页，刷新重试 */ }
 		await refreshFeed(page)
 	}
 	if (allowProfileFallback) {
@@ -435,9 +437,7 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 			{ data: { text: `notif-seed-parent-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
 		)
 		if (!parentRes.ok()) throw new Error(`parent post failed: ${parentRes.status()}`)
-		const parentJson = await parentRes.json()
-		const postId = parentJson.id || parentJson.post?.id || parentJson.postId
-		if (!postId) throw new Error('parent postId missing')
+		const postId = postIdFromResponse(await parentRes.json())
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,

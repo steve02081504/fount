@@ -29,6 +29,8 @@ Deno.test('parallelRatePct is suite sum over wall clock minus 100%', () => {
 	assertEquals(parallelRatePct(1000, 1000), 0)
 	assertEquals(parallelRatePct(900, 1000), -10)
 	assertEquals(parallelRatePct(1000, 0), null)
+	// 全复用/全阻塞（无真跑耗时）时并行率无意义。
+	assertEquals(parallelRatePct(0, 1000), null)
 })
 
 Deno.test('formatParallelRatePct rounds to whole percent', () => {

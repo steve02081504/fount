@@ -23,16 +23,7 @@ export function wireHeaderEvents() {
 		const queryLower = query.toLowerCase()
 		const chType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
 		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && chType === 'text') {
-			if (query.length >= 2) {
-				hubStore.messages.channelSearchQuery = null
-				scheduleHubMessageSearch(query)
-				void (async () => {
-					const { refreshChannelViewDom } = await import('./messages/messages.mjs')
-					const container = document.getElementById('hub-messages')
-					await refreshChannelViewDom(container, false)
-				})()
-				return
-			}
+			if (query.length >= 2) scheduleHubMessageSearch(query)
 			hubStore.messages.channelSearchQuery = queryLower || null
 			void (async () => {
 				const { refreshChannelViewDom } = await import('./messages/messages.mjs')

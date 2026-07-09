@@ -40,6 +40,11 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 		username,
 		tempDirPrefix: 'fount_world_chat_host_',
 		minP2pNode: true,
+		/**
+		 * 种子 fixture 前确保 operator 公钥就绪。
+		 * @param {string} user replica 登录名
+		 * @returns {Promise<void>}
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 			await ensureOperatorPubKey(user)

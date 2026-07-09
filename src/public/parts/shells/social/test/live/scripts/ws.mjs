@@ -12,7 +12,7 @@ const apiKey = requireLiveApiKey()
  * @param {string} method HTTP 方法
  * @param {string} path 相对路径
  * @param {object} [body] JSON 请求体
- * @returns {Promise<{ status: number, json: object | null }>}
+ * @returns {Promise<{ status: number, json: object | null }>} HTTP 状态码与解析后的 JSON（失败时为 null）
  */
 async function socialApi(method, path, body) {
 	const separator = path.includes('?') ? '&' : '?'
@@ -36,6 +36,9 @@ const postRun = await waitForWsFrame({
 	url: wsUrl,
 	types: ['post'],
 	timeoutMs: ms('20s'),
+	/**
+	 *
+	 */
 	trigger: async () => {
 		const post = await socialApi('POST', '/posts', {
 			entityHash,
@@ -68,6 +71,9 @@ const notificationRun = await waitForWsFrame({
 	url: wsUrl,
 	types: ['notification'],
 	timeoutMs: ms('20s'),
+	/**
+	 *
+	 */
 	trigger: async () => {
 		const like = await socialApi('POST', `/posts/${entityHash}/${postId}/like`, {
 			like: true,

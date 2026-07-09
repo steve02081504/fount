@@ -6,7 +6,7 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createIntegrationBoot } from '../harness.mjs'
 
@@ -38,6 +38,11 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 		username,
 		tempDirPrefix: 'fount_viewer_roles_',
 		minP2pNode: true,
+		/**
+		 * 种子 fixture 前确保 operator 公钥就绪。
+		 * @param {string} user replica 登录名
+		 * @returns {Promise<void>}
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -99,4 +104,25 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 		.map(row => String(row.content?.content || ''))
 	assert(humanTexts.some(text => text.includes('public hello')))
 	assert(!humanTexts.some(text => text.includes('staff-only secret marker')))
+
+	// entry.visibility ACL：base 层与 prompt_struct 同规则——无角色 human 的 view-log 隐藏、raw 可见、有角色 char 可见
+	const ACL_MARKER = 'visibility-acl secret'
+	await appendSignedLocalEvent(username, groupId, {
+		type: 'message',
+		channelId,
+		timestamp: Date.now(),
+		content: { type: 'text', content: ACL_MARKER, visibility: { roles: ['moderator'] } },
+	})
+
+	const { messages: humanAfterAcl } = await readViewerChannelMessages(username, groupId, channelId, { limit: 20 })
+	assert(!humanAfterAcl.some(row => String(row.content?.content || '').includes(ACL_MARKER)))
+
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const rawLines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+	assert(rawLines.some(row => String(row.content?.content || '').includes(ACL_MARKER)))
+
+	const { messages: charViewLog } = await readViewerChannelMessages(
+		username, groupId, channelId, { limit: 20 }, { kind: 'char', charname: CHAR },
+	)
+	assert(charViewLog.some(row => String(row.content?.content || '').includes(ACL_MARKER)))
 })

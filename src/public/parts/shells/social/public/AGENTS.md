@@ -21,6 +21,7 @@ alwaysApply: false
 - No hardcoded user-visible strings; use `data-i18n` with `zh-CN.json` (`social.*` keys).
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
+- Explore posts (`discoverPosts`) are newest-first (not random).
 
 ## Feed / profile pagination (C2.4)
 
@@ -37,6 +38,6 @@ alwaysApply: false
 
 ## Notifications inbox (M5)
 
-- **Storage**: per-recipient `{dataPath}/p2p/node/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
+- **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
 - **API**: `GET /notifications` reads inbox via `buildNotifications` (`unreadCount` from seen watermark); `GET/PUT /notifications/seen`.
 - **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; `POST /posts` pushes `{ type: 'post', … }`. Frontend badge uses `unreadCount` + WS increment in `public/src/init.mjs`.

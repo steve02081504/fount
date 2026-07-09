@@ -1,11 +1,10 @@
 /**
  * 单次运行报告：data/test/report.md + report.json
  */
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
-import { topoSortSuites } from '../core/dependencies.mjs'
 import { summarizeEstimate } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
@@ -14,13 +13,8 @@ import { suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
- * @typedef {import('./continue_reason.mjs').ContinueReasonKind} ContinueReasonKind
  * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
- */
-
-/**
- * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
- * @typedef {import('../core/state.mjs').SuiteStateEntry} SuiteStateEntry
+ * @typedef {import('../core/plan.mjs').PlanSlot} PlanSlot
  */
 
 /**
@@ -50,31 +44,26 @@ export class RunReportWriter {
 	/**
 	 * @param {object} options 选项
 	 * @param {string} options.repoRoot 仓库根
-	 * @param {SuiteDef[]} options.suites 本次运行 suite 列表
-	 * @param {SuiteDef[]} [options.allSuites] 全库 suite（排序 tie-break；默认同 suites）
+	 * @param {PlanSlot[]} options.planSlots 计划槽位
 	 * @param {string} options.runId 运行 id
 	 * @param {string} options.command 命令摘要
 	 * @param {string} options.commitHash HEAD
 	 * @param {string | null} options.uncommittedHash 未提交 digest
-	 * @param {ReportSlot[]} [options.slots] 续跑时载入
-	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 续跑原因
+	 * @param {Map<string, ContinueReason>} [options.continueReasons] suite 键 -> 触发原因
 	 */
-	constructor({ repoRoot, suites, allSuites, runId, command, commitHash, uncommittedHash, slots, continueReasons }) {
+	constructor({ repoRoot, planSlots, runId, command, commitHash, uncommittedHash, continueReasons }) {
 		this.repoRoot = repoRoot
 		this.runId = runId
 		this.command = command
 		this.commitHash = commitHash
 		this.uncommittedHash = uncommittedHash
 		/** @type {ReportSlot[]} */
-		this.slots = slots ?? topoSortSuites(suites, allSuites ?? suites).map(suite => {
-			const key = suiteKey(suite.manifestId, suite.name)
-			return {
-				manifestId: suite.manifestId,
-				name: suite.name,
-				state: 'pending',
-				continueReason: continueReasons?.get(key),
-			}
-		})
+		this.slots = planSlots.map(slot => ({
+			manifestId: slot.suite.manifestId,
+			name: slot.suite.name,
+			state: 'pending',
+			continueReason: continueReasons?.get(slot.key),
+		}))
 		this.startedAt = new Date().toISOString()
 		this.finishedAt = null
 		this.exitCode = null
@@ -82,32 +71,6 @@ export class RunReportWriter {
 		this.estimatePlan = null
 		/** @type {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number } | null} */
 		this.estimateOptions = null
-	}
-
-	/**
-	 * @param {string} repoRoot 仓库根
-	 * @returns {Promise<RunReportWriter | null>} 未完成报告写入器；无则 null
-	 */
-	static async resume(repoRoot) {
-		let raw
-		try {
-			raw = await readFile(reportJsonPath(repoRoot), 'utf8')
-		}
-		catch (error) {
-			if (error?.code === 'ENOENT') return null
-			throw error
-		}
-		const data = JSON.parse(raw)
-		if (!Array.isArray(data.slots) || data.finishedAt) return null
-		return new RunReportWriter({
-			repoRoot,
-			suites: [],
-			runId: data.runId,
-			command: data.command,
-			commitHash: data.commitHash,
-			uncommittedHash: data.uncommittedHash ?? null,
-			slots: data.slots,
-		})
 	}
 
 	/**
@@ -244,7 +207,7 @@ export class RunReportWriter {
 		const pendingSlots = this.slots.filter(slot => slot.state === 'pending')
 		/** @type {ReturnType<typeof summarizeEstimate> | null} */
 		let estimate = null
-		/** @type {Record<string, { reused: boolean, durationMs: number | null }> | null} */
+		/** @type {Record<string, { reused: boolean, blocked: boolean, durationMs: number | null }> | null} */
 		let estimateTasks = null
 		if (pendingSlots.length && this.estimatePlan && this.estimateOptions) {
 			const tasks = pendingSlots
@@ -254,7 +217,7 @@ export class RunReportWriter {
 				estimate = summarizeEstimate(tasks, this.estimateOptions)
 				estimateTasks = Object.fromEntries(tasks.map(task => [
 					task.key,
-					{ reused: task.reused, durationMs: task.durationMs },
+					{ reused: task.reused, blocked: task.blocked, durationMs: task.durationMs },
 				]))
 			}
 		}
@@ -320,7 +283,8 @@ function buildRunMarkdown(summary, completed) {
 		`| ${geti18n('fountConsole.test.report.fieldParallelRate')} | ${formatParallelRatePct(ratePct)} |`,
 	]
 
-	if (summary.estimate)
+	// 剩余全是复用/预计阻塞时 ETA≈0，无信息量，略去。
+	if (summary.estimate?.runCount)
 		lines.push(
 			`| ${geti18n('fountConsole.test.report.fieldEstimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
 			`| ${geti18n('fountConsole.test.report.fieldEstimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
@@ -342,7 +306,7 @@ function buildRunMarkdown(summary, completed) {
 	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionPending')}`, '')
-		if (summary.estimate) {
+		if (summary.estimate?.runCount) {
 			lines.push(geti18n('fountConsole.test.report.pendingEstimate', {
 				eta: formatDuration(summary.estimate.etaMs),
 			}))
@@ -360,12 +324,14 @@ function buildRunMarkdown(summary, completed) {
 		for (const slot of pending) {
 			const key = suiteKey(slot.manifestId, slot.name)
 			const task = summary.estimateTasks?.[key]
-			const reusedMark = task?.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
-			const expected = task?.reused ? null : formatExpectedDuration(task?.durationMs ?? null)
+			let mark = ''
+			if (task?.reused) mark = ` ${geti18n('fountConsole.test.report.labelReused')}`
+			else if (task?.blocked) mark = ` ${geti18n('fountConsole.test.report.labelExpectedBlocked')}`
+			const expected = mark ? null : formatExpectedDuration(task?.durationMs ?? null)
 			const expectedMark = expected
 				? ` — ${geti18n('fountConsole.test.report.pendingItemExpected', { expected })}`
 				: ''
-			lines.push(`- ${slot.manifestId}/${slot.name}${reusedMark}${expectedMark}`)
+			lines.push(`- ${slot.manifestId}/${slot.name}${mark}${expectedMark}`)
 		}
 		lines.push('')
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test --continue', '```', '')
@@ -400,8 +366,6 @@ function shortHash(hash) {
  */
 function formatReasonKindLabel(kind, { strict = false } = {}) {
 	switch (kind) {
-		case 'pending_from_previous_report':
-			return geti18n('fountConsole.test.report.reasonPending')
 		case 'imperfect_failed':
 			return geti18n('fountConsole.test.report.reasonImperfectFailed')
 		case 'imperfect_noisy':
@@ -410,12 +374,16 @@ function formatReasonKindLabel(kind, { strict = false } = {}) {
 			return geti18n('fountConsole.test.report.reasonImperfectBlocked')
 		case 'missing_state_record':
 			return geti18n('fountConsole.test.report.reasonMissingRecord')
-		case 'outdated_trigger_hit':
-			return geti18n('fountConsole.test.report.reasonOutdatedTrigger')
+		case 'stale_content':
+			return geti18n('fountConsole.test.report.reasonStaleContent')
 		case 'diff_trigger_hit':
 			return geti18n('fountConsole.test.report.reasonDiffTrigger')
+		case 'diff_dependent':
+			return geti18n('fountConsole.test.report.reasonDiffDependent')
 		case 'explicit_selected':
 			return geti18n('fountConsole.test.report.reasonExplicitSelected')
+		case 'failure_retry':
+			return geti18n('fountConsole.test.report.reasonFailureRetry')
 		case 'dependency_required':
 			return geti18n('fountConsole.test.report.reasonDependencyRequired')
 	}
@@ -464,23 +432,8 @@ function appendContinueReasonEvidence(lines, reason, depth = 0) {
  * @param {ContinueReason} reason 依赖扩展原因
  */
 function appendDependencyReasonDetail(lines, reason) {
-	if (reason.rootKey && reason.rootKind)
-		lines.push(`- ${geti18n('fountConsole.test.report.labelRootCause')}: ${formatReasonKindLabel(reason.rootKind)}（\`${reason.rootKey}\`）`)
-	else if (reason.requiredBy)
+	if (reason.requiredBy)
 		lines.push(`- ${geti18n('fountConsole.test.report.labelDirectRequiredBy')}: \`${reason.requiredBy}\``)
-	if (reason.inclusionPath?.length)
-		lines.push(`- ${geti18n('fountConsole.test.report.labelInclusionPath')}: ${reason.inclusionPath.map(k => `\`${k}\``).join(' → ')}`)
-	if (reason.pull && reason.requiredBy) {
-		const requiredBy = `\`${reason.requiredBy}\``
-		const pullLabel = reason.pull === 'upstream'
-			? geti18n('fountConsole.test.report.labelPullUpstream', { requiredBy })
-			: geti18n('fountConsole.test.report.labelPullDownstream', { requiredBy })
-		lines.push(`- ${pullLabel}`)
-	}
-	if (reason.gate) {
-		lines.push(`- ${geti18n('fountConsole.test.report.labelGateReason')}: ${formatReasonKindLabel(reason.gate.kind)}`)
-		appendContinueReasonEvidence(lines, reason.gate, 1)
-	}
 }
 
 /**

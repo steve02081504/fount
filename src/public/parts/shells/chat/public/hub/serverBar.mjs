@@ -15,7 +15,6 @@ import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
 import { selectGroup } from './groupNav.mjs'
-import { formatUnreadBadgeHtml } from './unread.mjs'
 import {
 	clearGroupSelection,
 	handleGroupItemModifierClick,
@@ -24,6 +23,7 @@ import {
 	syncGroupSelectionStyles,
 } from './groupSelection.mjs'
 import { attachServerBarDnd } from './serverBarDnd.mjs'
+import { formatUnreadBadgeHtml } from './unread.mjs'
 
 /**
  * 持久化当前文件夹布局到后端。

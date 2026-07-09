@@ -47,12 +47,13 @@ function collectTestFiles(directory) {
 /**
  * 在子进程中执行 deno test 并捕获 stdall。
  * @param {string[]} command 可执行文件与参数
- * @returns {Promise<{ code: number, output: string }>} 退出码与合并输出
+ * @returns {Promise<{ code: number, output: string, signal: string | null }>} 退出码与合并输出
  */
 async function runCaptured(command) {
 	const [executable, ...rest] = command
 	const result = await execFile(executable, rest, { cwd: REPO_ROOT })
-	return { code: result.code ?? 1, output: result.stdall }
+	const code = typeof result.code === 'number' ? result.code : (result.signal ? 1 : 0)
+	return { code, output: result.stdall, signal: result.signal ?? null }
 }
 
 if (!args.length) {
@@ -94,19 +95,31 @@ const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith
  * @param {string} file 测试文件绝对路径
  * @param {number} code 退出码
  * @param {string} output stdall
+ * @param {string | null} [signal] 终止信号
  * @returns {void}
  */
-function recordResult(file, code, output) {
+function recordResult(file, code, output, signal = null) {
 	const noisy = outputHasNoise(output)
-	if (code !== 0 || noisy) process.stdout.write(output)
+	const rel = toRepoRelative(REPO_ROOT, file)
+	if (code !== 0 || noisy) {
+		process.stdout.write(output)
+		if (code !== 0) {
+			const hint = signal ? ` signal=${signal}` : ''
+			process.stdout.write(`[serial] ${rel} exited ${code}${hint}\n`)
+		}
+	}
+	else {
+		// 静默通过也打一行，避免 --no-parallel 流式模式下 idle watchdog 误杀长套件
+		process.stdout.write(`[serial] ok ${rel}\n`)
+		silentPassed++
+	}
 	if (code !== 0) {
-		failed.push(toRepoRelative(REPO_ROOT, file))
+		failed.push(rel)
 		if (!keepGoing) stopped = true
 	}
-	else if (!noisy) silentPassed++
 }
 
-// 预热：deno cache 填充 npm/node_modules，避免 Windows 并行争锁
+// 预热：deno cache 填充 npm/node_modules
 if (filteredFiles.length > 0) {
 	const { code, output } = await runCaptured([
 		'deno', 'cache', '--allow-scripts', '-c', './deno.json', ...filteredFiles,
@@ -126,8 +139,8 @@ async function worker() {
 		const index = cursor++
 		if (index >= filteredFiles.length) break
 		const file = filteredFiles[index]
-		const { code, output } = await runCaptured(['deno', ...denoBase, file])
-		recordResult(file, code, output)
+		const { code, output, signal } = await runCaptured(['deno', ...denoBase, file])
+		recordResult(file, code, output, signal)
 		if (stopped) return
 	}
 }

@@ -48,13 +48,13 @@ export function createPostCardBuilder({
 		let bodyHtml = decryptFailed
 			? `<em>${decryptFailedLabel}</em>`
 			: await renderMarkdown(text, contentAuthor)
-		if (contentWarning && !decryptFailed) {
+		if (contentWarning && !decryptFailed) 
 			bodyHtml = `<div class="content-warning-wrap" data-cw-collapsed="1">
 				<div class="content-warning-label">${escapeHtml(contentWarning)}</div>
 				<button type="button" class="content-warning-reveal" data-i18n="social.feed.revealContent">${geti18n('social.feed.revealContent')}</button>
 				<div class="content-warning-body hidden">${bodyHtml}</div>
 			</div>`
-		}
+		
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
 		const label = authorLabel(item.entityHash, item.authorProfile)

@@ -68,7 +68,7 @@ export function writeNodeConfig(dataPath, options) {
 		const apiKeyHash = crypto.createHash('sha256').update(key).digest('hex')
 		const apiJti = `${username}-test-key-jti`
 
-		if (!config.data.users[username]) 
+		if (!config.data.users[username])
 			config.data.users[username] = {
 				username,
 				createdAt: Date.now(),
@@ -86,7 +86,7 @@ export function writeNodeConfig(dataPath, options) {
 				defaultParts: {},
 				timers: {},
 			}
-		
+
 		const user = config.data.users[username]
 		if (!user.auth.apiKeys.some(row => row.jti === apiJti))
 			user.auth.apiKeys.push({
@@ -251,6 +251,34 @@ export async function startTestServer(options) {
 	})
 	return { dataDir: row.dataPath, username: row.username }
 }
+
+/**
+ * in-process server 测试默认关闭 Deno ops/resource sanitize。
+ * 进程退出时 server 定时器/句柄仍在，sanitize 会把「全绿」判成 exit 1。
+ * harness 在模块顶层 import boot 时即打补丁，早于后续 `Deno.test(...)` 注册。
+ * @returns {void}
+ */
+function patchDenoTestSanitizeOff() {
+	const original = Deno.test
+	/**
+	 * @param {...unknown} args Deno.test 参数
+	 * @returns {unknown} 原 Deno.test 返回值
+	 */
+	Deno.test = (...args) => {
+		const [first, second, third] = args
+		if (typeof first === 'object' && first !== null && typeof first !== 'function')
+			return original({ sanitizeOps: false, sanitizeResources: false, ...first })
+		if (typeof first === 'string' && typeof second === 'object' && typeof third === 'function')
+			return original(first, { sanitizeOps: false, sanitizeResources: false, ...second }, third)
+		if (typeof first === 'string' && typeof second === 'function')
+			return original({ name: first, fn: second, sanitizeOps: false, sanitizeResources: false })
+		if (typeof first === 'function')
+			return original({ fn: first, sanitizeOps: false, sanitizeResources: false })
+		return original(...args)
+	}
+}
+
+patchDenoTestSanitizeOff()
 
 /**
  * 单文件内复用的惰性 server 启动器。

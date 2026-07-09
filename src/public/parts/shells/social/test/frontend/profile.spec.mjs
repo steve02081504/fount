@@ -92,6 +92,8 @@ test.describe('Social profile', () => {
 		])
 		await expect(followButton).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		// switchView→loadProfile 会 replaceChildren；等自资料渲染完再切 tab，否则点击会被冲掉
+		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
 		await page.locator('[data-profile-tab="following"]').click()
 		await expect(page.locator('#profileFollowingPanel')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('#profileFollowingPanel .following-link')).toContainText(dummy.slice(0, 8))

@@ -11,7 +11,7 @@ import {
 	nextBaselineDurationMs,
 	nextBaselineMemMb,
 } from './baseline.mjs'
-import { collectChangesSinceRecord, digestFileHashes } from './changed.mjs'
+import { digestFileHashes } from './changed.mjs'
 import { formatDuration } from './format_duration.mjs'
 import { matchGlob } from './glob.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from './output_filter.mjs'
@@ -126,46 +126,7 @@ export function suiteTriggersHit(suite, changedFiles) {
 }
 
 /**
- * @param {SuiteDef} suite suite
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {string[]} changedSinceRecord 自记录 commit 以来的变更
- * @returns {boolean} 是否陈旧
- */
-export function isSuiteOutdated(suite, entry, changedSinceRecord) {
-	if (!entry) return true
-	if (!changedSinceRecord.length) return false
-	return suiteTriggersHit(suite, changedSinceRecord)
-}
-
-/**
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {string} commitHash 当前 HEAD
- * @param {string | null} uncommittedHash 当前未提交 digest
- * @returns {boolean} 指纹是否匹配
- */
-function fingerprintMatches(entry, commitHash, uncommittedHash) {
-	if (!entry?.commitHash) return false
-	if (entry.commitHash !== commitHash) return false
-	return (entry.uncommittedHash ?? null) === (uncommittedHash ?? null)
-}
-
-/**
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {string} commitHash 当前 HEAD
- * @param {string | null} uncommittedHash 当前未提交 digest
- * @param {boolean} outdated 是否陈旧
- * @returns {boolean} 是否处于当前指纹下的通过态
- */
-export function isSuiteGreen(entry, commitHash, uncommittedHash, outdated) {
-	if (!entry || outdated) return false
-	if (entry.status !== 'passed') return false
-	return fingerprintMatches(entry, commitHash, uncommittedHash)
-}
-
-/**
  * 对 suite 命中的未提交文件内容取 digest；无相关未提交文件返回 null。
- * committed 内容由 commit diff 单独判定，无需读取；此处只覆盖工作区未提交部分，
- * 且直接复用预算好的内容哈希表，不再自行读盘。
  * @param {SuiteDef} suite suite
  * @param {Map<string, string>} uncommittedHashes 未提交文件内容 digest 表（rel -> digest）
  * @returns {string | null} trigger 内容指纹
@@ -176,32 +137,19 @@ export function computeSuiteTriggerHash(suite, uncommittedHashes) {
 }
 
 /**
- * 重跑时能否直接复用上次结果：上次有真实结果（passed/failed/noisy）+ 自上次运行以来
- * commit 变更未命中 trigger + 未提交 trigger 文件内容 digest 一致。`--force` 一律不复用。
- * @param {SuiteDef} suite suite
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {string[]} committedChanged 自记录 commit 以来的 commit 变更（不含未提交）
- * @param {string | null} currentTriggerHash 当前 trigger 内容指纹
- * @param {boolean} force 是否强制真跑
- * @returns {boolean} 是否复用
+ * 复用后把条目指纹对齐到当前 HEAD / 工作区（内容已验证一致）。
+ * @param {TestState} state 现状库
+ * @param {string} key suite 键
+ * @param {string} commitHash HEAD
+ * @param {string | null} uncommittedHash 未提交 digest
+ * @param {string | null} triggerHash trigger 内容指纹
  */
-export function isSuiteReusable(suite, entry, committedChanged, currentTriggerHash, force) {
-	if (force || !entry || entry.status === 'blocked') return false
-	if (suiteTriggersHit(suite, committedChanged)) return false
-	return (entry.triggerHash ?? null) === (currentTriggerHash ?? null)
-}
-
-/**
- * 上游依赖是否已满足（门禁用）：passed/noisy + trigger 未过时；不要求 commit / uncommittedHash 一致。
- * commit 漂移本身不拉间接依赖；仅显式指名或 `--continue` 无历史不完美项时重跑 commit 陈旧 suite。
- * 通过但有噪声仍放行下游；`--continue` 仍会重跑 noisy 以清理噪声。
- * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {boolean} outdated trigger 是否过时
- * @returns {boolean} 是否可作为上游门禁
- */
-export function isDependencySatisfied(entry, outdated) {
-	if (!entry || outdated) return false
-	return entry.status === 'passed' || entry.status === 'noisy'
+export function refreshEntryFingerprint(state, key, commitHash, uncommittedHash, triggerHash) {
+	const entry = state.suites[key]
+	if (!entry) return
+	entry.commitHash = commitHash
+	entry.uncommittedHash = uncommittedHash
+	entry.triggerHash = triggerHash
 }
 
 /**
@@ -357,23 +305,11 @@ export async function upsertSuiteRun({
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {string[]} uncommittedFiles 未提交文件
+ * @param {Set<string>} staleKeys 内容已变的 suite 键（裁决 unknown 且曾有 passed 记录等）
  * @returns {Promise<Set<string>>} 陈旧 suite 键
  */
-export async function collectOutdatedSuiteKeys(repoRoot, allSuites, state, uncommittedFiles) {
-	const outdated = new Set()
-	for (const suite of allSuites) {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const entry = state.suites[key]
-		const changedSinceRecord = await collectChangesSinceRecord(
-			repoRoot,
-			entry?.commitHash ?? null,
-			uncommittedFiles,
-		)
-		if (isSuiteOutdated(suite, entry, changedSinceRecord))
-			outdated.add(key)
-	}
-	return outdated
+export async function collectStaleSuiteKeys(repoRoot, allSuites, state, staleKeys) {
+	return staleKeys
 }
 
 /**
@@ -387,10 +323,10 @@ function mermaidNodeId(key) {
 /**
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {Set<string>} outdatedKeys 陈旧键
+ * @param {Set<string>} staleKeys 内容已变 suite 键
  * @returns {string} mermaid 源码
  */
-function buildDependencyMermaid(allSuites, state, outdatedKeys) {
+function buildDependencyMermaid(allSuites, state, staleKeys) {
 	const lines = ['flowchart TD']
 	const classAssignments = []
 	let edgeIndex = 0
@@ -400,7 +336,7 @@ function buildDependencyMermaid(allSuites, state, outdatedKeys) {
 		const key = suiteKey(suite.manifestId, suite.name)
 		const entry = state.suites[key]
 		let visualStatus = 'unknown'
-		if (outdatedKeys.has(key)) visualStatus = 'outdated'
+		if (staleKeys.has(key)) visualStatus = 'outdated'
 		else if (!entry) visualStatus = 'unknown'
 		else visualStatus = entry.status
 
@@ -438,10 +374,10 @@ function buildDependencyMermaid(allSuites, state, outdatedKeys) {
 /**
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {Set<string>} outdatedKeys 陈旧键
+ * @param {Set<string>} staleKeys 内容已变 suite 键
  * @returns {string} markdown
  */
-export function buildStateMarkdown(allSuites, state, outdatedKeys) {
+export function buildStateMarkdown(allSuites, state, staleKeys) {
 	const lines = [
 		`# ${geti18n('fountConsole.test.state.title')}`,
 		'',
@@ -450,7 +386,7 @@ export function buildStateMarkdown(allSuites, state, outdatedKeys) {
 		`## ${geti18n('fountConsole.test.state.sectionDependencyTree')}`,
 		'',
 		'```mermaid',
-		buildDependencyMermaid(allSuites, state, outdatedKeys),
+		buildDependencyMermaid(allSuites, state, staleKeys),
 		'```',
 		'',
 		`## ${geti18n('fountConsole.test.state.sectionOverview')}`,
@@ -467,7 +403,7 @@ export function buildStateMarkdown(allSuites, state, outdatedKeys) {
 	for (const key of keys) {
 		const entry = state.suites[key]
 		let status = entry?.status ?? geti18n('fountConsole.test.state.statusUnknown')
-		if (outdatedKeys.has(key) && entry?.status === 'passed')
+		if (staleKeys.has(key) && entry?.status === 'passed')
 			status = geti18n('fountConsole.test.state.statusOutdated')
 		else if (!entry)
 			status = geti18n('fountConsole.test.state.statusUnknown')
@@ -490,12 +426,13 @@ export function buildStateMarkdown(allSuites, state, outdatedKeys) {
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
  * @param {Set<string>} outdatedKeys 陈旧键
+ * @param {Set<string>} staleKeys 状态库中已过时但仍标 passed 的 suite 键
  * @returns {Promise<string>} main.md 绝对路径
  */
-export async function writeStateMarkdown(repoRoot, allSuites, state, outdatedKeys) {
+export async function writeStateMarkdown(repoRoot, allSuites, state, staleKeys) {
 	await mkdir(stateDir(repoRoot), { recursive: true })
 	const path = stateMarkdownPath(repoRoot)
-	await writeFile(path, buildStateMarkdown(allSuites, state, outdatedKeys), 'utf8')
+	await writeFile(path, buildStateMarkdown(allSuites, state, staleKeys), 'utf8')
 	return path
 }
 
@@ -503,11 +440,10 @@ export async function writeStateMarkdown(repoRoot, allSuites, state, outdatedKey
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {string[]} uncommittedFiles 未提交文件
+ * @param {Set<string>} staleKeys 内容已变 suite 键
  * @returns {Promise<Set<string>>} 陈旧 suite 键并写入 main.md
  */
-export async function refreshStateMarkdown(repoRoot, allSuites, state, uncommittedFiles) {
-	const outdatedKeys = await collectOutdatedSuiteKeys(repoRoot, allSuites, state, uncommittedFiles)
-	await writeStateMarkdown(repoRoot, allSuites, state, outdatedKeys)
-	return outdatedKeys
+export async function refreshStateMarkdown(repoRoot, allSuites, state, staleKeys) {
+	await writeStateMarkdown(repoRoot, allSuites, state, staleKeys)
+	return staleKeys
 }

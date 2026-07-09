@@ -1,7 +1,7 @@
+import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '../lib/infiniteScroll.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { entityHandle } from '../lib/display.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /**
@@ -88,7 +88,9 @@ function bindProfilePostsInfiniteScroll(appContext, entityHash, container) {
 	const sentinel = ensureScrollSentinel(container, 'profilePostsScrollSentinel')
 	bindInfiniteScroll({
 		sentinel,
+		/** @returns {boolean} 个人帖列表是否仍有下一页 */
 		hasMore: () => !!appContext.state.profilePostsCursor,
+		/** @returns {Promise<void>} 追加渲染下一页帖子 */
 		onLoad: () => renderProfilePosts(appContext, entityHash, container, null, true),
 	})
 }

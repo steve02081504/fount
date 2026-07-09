@@ -4,7 +4,7 @@
  */
 const HOOK_KEY = '__fount_replicated_world_hook_state__'
 
-/** 键格式 `protected/{senderPubKeyHash}/...`：仅该 sender 的 op 参与折叠。 */
+/** 键格式 `protected/{senderPubKeyHash}/...`：仅该 sender 的写入参与折叠。 */
 const PROTECTED_PREFIX = 'protected/'
 
 /**
@@ -22,25 +22,25 @@ function hookState() {
 }
 
 /**
- * 按成员身份折叠 world_op log（演示 replicated 权限语义）。
+ * 按成员身份折叠 world_state log（演示 replicated 权限语义）。
  * @param {import('../../../../../../../../../decl/worldAPI.ts').WorldChatHost_t} host WorldChatHost
  * @param {string} key 状态键
  * @returns {Promise<unknown>} 折叠后的值
  */
 export async function foldAuthorizedValue(host, key) {
-	const ops = await host.state.log()
+	const writes = await host.state.log()
 	let value
-	for (const op of ops) {
-		if (op.content.key !== key) continue
+	for (const write of writes) {
+		if (write.content.key !== key) continue
 		if (key.startsWith(PROTECTED_PREFIX)) {
 			const allowedSender = key.slice(PROTECTED_PREFIX.length).split('/')[0]?.toLowerCase()
-			if (allowedSender && op.sender?.toLowerCase() !== allowedSender) {
+			if (allowedSender && write.sender?.toLowerCase() !== allowedSender) {
 				hookState().lastFoldIgnored++
 				continue
 			}
 		}
-		if (op.content.op === 'del') value = undefined
-		else if (op.content.op === 'set') value = op.content.value
+		if (write.content.action === 'delete') value = undefined
+		else if (write.content.action === 'set') value = write.content.value
 	}
 	return value
 }

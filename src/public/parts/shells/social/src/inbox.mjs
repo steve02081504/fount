@@ -5,9 +5,9 @@ import fs from 'node:fs'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../scripts/p2p/dag/storage.mjs'
+import { isMutedBy } from '../../../../../scripts/p2p/personal_block.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
-import { isMutedBy } from '../../../../../scripts/p2p/personal_block.mjs'
 
 import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { canWriteTimeline } from './timeline/append.mjs'
@@ -56,7 +56,7 @@ export function inboxReadPath(username, entityHash) {
  * @param {string | null | undefined} targetPostId 目标帖 id
  * @returns {object} 规范化通知条目
  */
-function inboxRow(type, actorEntityHash, at, postId, targetPostId) {
+export function normalizeNotificationRow(type, actorEntityHash, at, postId, targetPostId) {
 	return {
 		type,
 		actorEntityHash: actorEntityHash.toLowerCase(),
@@ -81,26 +81,26 @@ export function deriveInboxNotifications(timelineOwner, event) {
 	if (event.type === 'post') {
 		const replyTo = event.content?.replyTo
 		if (replyTo?.entityHash?.toLowerCase())
-			rows.push({ recipient: replyTo.entityHash.toLowerCase(), ...inboxRow('reply', owner, at, event.id, replyTo.postId) })
+			rows.push({ recipient: replyTo.entityHash.toLowerCase(), ...normalizeNotificationRow('reply', owner, at, event.id, replyTo.postId) })
 		for (const mention of extractMentionEntityHashes(event.content?.text || '')) {
 			if (mention === owner) continue
-			rows.push({ recipient: mention, ...inboxRow('mention', owner, at, event.id, null) })
+			rows.push({ recipient: mention, ...normalizeNotificationRow('mention', owner, at, event.id, null) })
 		}
 	}
 	if (event.type === 'like') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
 		if (target)
-			rows.push({ recipient: target, ...inboxRow('like', owner, at, null, event.content?.targetPostId ?? null) })
+			rows.push({ recipient: target, ...normalizeNotificationRow('like', owner, at, null, event.content?.targetPostId ?? null) })
 	}
 	if (event.type === 'repost') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
 		if (target)
-			rows.push({ recipient: target, ...inboxRow('repost', owner, at, null, event.content?.targetPostId ?? null) })
+			rows.push({ recipient: target, ...normalizeNotificationRow('repost', owner, at, null, event.content?.targetPostId ?? null) })
 	}
 	if (event.type === 'follow') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
 		if (target && target !== owner)
-			rows.push({ recipient: target, ...inboxRow('follow', owner, at, null, null) })
+			rows.push({ recipient: target, ...normalizeNotificationRow('follow', owner, at, null, null) })
 	}
 	return rows
 }

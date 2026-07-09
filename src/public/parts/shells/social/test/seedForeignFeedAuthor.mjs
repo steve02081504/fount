@@ -8,7 +8,7 @@ import { getEntityStore } from 'fount/scripts/p2p/node/instance.mjs'
 import { seedRemoteTimeline } from './federation/remote_timeline.mjs'
 
 /** 前端治理菜单烟测用的固定远程作者种子（32 字节）。 */
-export const FOREIGN_FE_SEED = new Uint8Array(Buffer.from('0123456789abcdef0123456789abcdef', 'hex'))
+export const FOREIGN_FE_SEED = new Uint8Array(Buffer.from('0123456789abcdef'.repeat(4), 'hex'))
 
 const subject = pubKeyHash(publicKeyFromSeed(FOREIGN_FE_SEED))
 
@@ -21,7 +21,7 @@ export const FOREIGN_FE_POST_MARKER = 'fe-foreign-governance-post'
 /**
  * 为前端测试 ingest 一条远程作者公开帖（供 mute/hide/report 菜单烟测）。
  * @param {string} username 测试 replica 登录名
- * @returns {Promise<{ entityHash: string, postId: string }>}
+ * @returns {Promise<{ entityHash: string, postId: string }>} 远程作者实体与帖子 ID
  */
 export async function seedForeignFeedAuthorPost(username) {
 	applyNetworkHint({

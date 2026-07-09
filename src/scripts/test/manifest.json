@@ -150,6 +150,7 @@
 			"triggers": [
 				"src/scripts/test/selftest/estimate.test.mjs",
 				"src/scripts/test/core/estimate.mjs",
+				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/runner/scheduler.mjs",
 				"src/scripts/test/core/resources.mjs",
 				"src/scripts/test/core/baseline.mjs",

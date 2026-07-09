@@ -2,13 +2,13 @@
  * 共享搜索引擎纯测试。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { indexDocument, queryIndex, removeDocument, patchShardMeta } from 'fount/scripts/search/invertedIndex.mjs'
 import { tokenizeForIndex, tokenizeForQuery } from 'fount/scripts/search/tokenize.mjs'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 Deno.test('tokenize mixes cjk bigrams and latin words', () => {
 	const tokens = tokenizeForIndex('你好世界 hello #tag')
@@ -39,6 +39,11 @@ Deno.test('queryIndex verifies substring truth after bigram recall', async () =>
 			shardKeys: ['s1'],
 			query: '测试文本',
 			limit: 10,
+			/**
+			 * 倒排索引候选二次校验。
+			 * @param {object} doc 索引文档行
+			 * @returns {boolean} 正文是否包含查询子串
+			 */
 			verify: doc => doc.text.includes('测试文本'),
 		})
 		assertEquals(hits.length, 1)
@@ -49,6 +54,11 @@ Deno.test('queryIndex verifies substring truth after bigram recall', async () =>
 			shardKeys: ['s1'],
 			query: '测试文本',
 			limit: 10,
+			/**
+			 * 倒排索引候选二次校验。
+			 * @param {object} doc 索引文档行
+			 * @returns {boolean} 正文是否包含查询子串
+			 */
 			verify: doc => doc.text.includes('测试文本'),
 		})
 		assertEquals(afterRemove.length, 0)

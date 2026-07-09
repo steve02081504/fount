@@ -37,7 +37,7 @@ import { showChannelContextMenu } from './channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from './channels.mjs'
 import { authorDisplayLabel, avatarColor, avatarInitial, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
-import { consumePendingJoin, inviteCodeFromUrl, updateFriendsHash, updateHash } from './core/urlHash.mjs'
+import { consumePendingJoin, inviteCodeFromUrl, parseHash, updateFriendsHash, updateHash } from './core/urlHash.mjs'
 import { resetFilesDrawerWire } from './files.mjs'
 import {
 	closeGroupWebSocket,
@@ -52,8 +52,8 @@ import { refreshPinsBookmarks } from './pinsBookmarks.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
-import { formatUnreadBadgeHtml, getChannelUnreadCount, markCurrentChannelRead } from './unread.mjs'
 import { isThreadChannel } from './threadDrawer.mjs'
+import { formatUnreadBadgeHtml, getChannelUnreadCount } from './unread.mjs'
 
 /**
  * 后台重绑联邦分区房间；失败写入 debug 日志，不打扰切频道 UX。
@@ -379,8 +379,6 @@ export async function selectChannel(channelId) {
 	})
 	await loadMessages()
 	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
-		void markCurrentChannelRead().catch(() => {})
-	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
 	updateStatusBanners()
 	void refreshPinsBookmarks()
@@ -673,6 +671,17 @@ async function activateGroupChannel(state, presetChannelId) {
 }
 
 /**
+ * 同群 hash 已指向另一频道时采纳 hash（selectGroup 长 await 期间用户/深链可能已改地址栏）。
+ * @param {string} groupId 当前群
+ * @param {string | null} fallback 预设频道
+ * @returns {string | null} 应激活的频道
+ */
+function channelIdFromHashOr(groupId, fallback) {
+	const { groupId: hashGroupId, channelId } = parseHash()
+	return hashGroupId === groupId && channelId ? channelId : fallback
+}
+
+/**
  * 选中群组：入群、同步、渲染频道/成员并进入默认频道。
  * @param {string} groupId 群组 ID
  * @param {string | null} [presetChannelId] URL 或深链指定的频道
@@ -681,21 +690,22 @@ async function activateGroupChannel(state, presetChannelId) {
 export async function selectGroup(groupId, presetChannelId = null) {
 	if (!groupId) return
 	await loadGroups()
+	let channelId = channelIdFromHashOr(groupId, presetChannelId)
 	clearPinPreviewCache()
 	clearPrivateGroupState()
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
 	setHubState('context.currentGroupId', groupId)
-	updateHash(groupId, presetChannelId)
+	updateHash(groupId, channelId)
 	try {
 		let state = await getGroupState(groupId)
 		const memberState = await ensureGroupMembership(groupId, state)
 		if (!memberState) return
 		state = memberState
-		state = await syncGroupStateForHub(groupId, state, presetChannelId)
+		state = await syncGroupStateForHub(groupId, state, channelId)
 		await paintGroupHubChrome(state)
-		await activateGroupChannel(state, presetChannelId)
+		await activateGroupChannel(state, channelIdFromHashOr(groupId, channelId))
 	}
 	catch (error) {
 		setPinsBookmarksWrapVisible(false)

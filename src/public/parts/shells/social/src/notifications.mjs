@@ -1,27 +1,12 @@
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
-import { readInboxNotifications, notificationCursor } from './inbox.mjs'
-
-export { notificationCursor }
+import { readInboxNotifications, notificationCursor, normalizeNotificationRow } from './inbox.mjs'
 
 /**
- * @param {string} type 通知类型
- * @param {string} actorEntityHash 动作来源
- * @param {number} at 时间戳
- * @param {string | null | undefined} postId 相关帖 id
- * @param {string | null | undefined} targetPostId 目标帖 id
- * @returns {object} 规范化通知条目
+ *
  */
-function notificationRow(type, actorEntityHash, at, postId, targetPostId) {
-	return {
-		type,
-		actorEntityHash: actorEntityHash.toLowerCase(),
-		postId: postId ?? null,
-		targetPostId: targetPostId ?? null,
-		at,
-	}
-}
+export { notificationCursor }
 
 /**
  * 构建观看者的 Social 通知列表（inbox 持久层）。
@@ -43,7 +28,7 @@ export async function buildNotifications(username, options = {}) {
  * 旧版全量扫描通知（仅 rebuildInbox 使用）。
  * @param {string} username 用户
  * @param {object} [options] 分页选项
- * @returns {Promise<{ notifications: object[], nextCursor: string | null, viewerEntityHash: string | null }>}
+ * @returns {Promise<{ notifications: object[], nextCursor: string | null, viewerEntityHash: string | null }>} 分页通知与观看者实体
  */
 export async function buildNotificationsLegacy(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
@@ -65,14 +50,14 @@ export async function buildNotificationsLegacy(username, options = {}) {
 			const at = Number(post.hlc.wall)
 			const replyTo = post.content?.replyTo
 			if (replyTo?.entityHash?.toLowerCase() === viewerEntityHash)
-				notifications.push(notificationRow('reply', owner, at, post.id, replyTo.postId))
+				notifications.push(normalizeNotificationRow('reply', owner, at, post.id, replyTo.postId))
 
 			if (owner !== viewerEntityHash && extractMentionEntityHashes(post.content?.text || '').includes(viewerEntityHash))
-				notifications.push(notificationRow('mention', owner, at, post.id, null))
+				notifications.push(normalizeNotificationRow('mention', owner, at, post.id, null))
 		}
 		for (const like of view.likes) {
 			if ((like.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) continue
-			notifications.push(notificationRow(
+			notifications.push(normalizeNotificationRow(
 				'like',
 				owner,
 				Number(like.hlc.wall),
@@ -82,7 +67,7 @@ export async function buildNotificationsLegacy(username, options = {}) {
 		}
 		for (const repost of view.reposts) {
 			if ((repost.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) continue
-			notifications.push(notificationRow(
+			notifications.push(normalizeNotificationRow(
 				'repost',
 				owner,
 				Number(repost.hlc.wall),
@@ -95,7 +80,7 @@ export async function buildNotificationsLegacy(username, options = {}) {
 				if (String(follow.content?.targetEntityHash || '').toLowerCase() !== viewerEntityHash) return max
 				return Math.max(max, Number(follow.hlc.wall))
 			}, 0)
-			notifications.push(notificationRow('follow', owner, at, null, null))
+			notifications.push(normalizeNotificationRow('follow', owner, at, null, null))
 		}
 	}
 

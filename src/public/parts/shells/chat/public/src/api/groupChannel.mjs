@@ -185,7 +185,7 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ eventId: string, seq: number }} marker 已读水位
- * @returns {Promise<{ readMarker: { eventId: string, seq: number } }>}
+ * @returns {Promise<{ readMarker: { eventId: string, seq: number } }>} 服务端确认后的已读水位
  */
 export async function putChannelReadMarker(groupId, channelId, marker) {
 	return groupFetch(groupPath(groupId, 'channels', channelId, 'read-marker'), {
@@ -214,7 +214,7 @@ export async function getPinContextMessages(groupId, channelId, pinEventId) {
  * @param {string} groupId 群 ID
  * @param {string} query 查询（至少 2 字符）
  * @param {{ channelId?: string, limit?: number }} [opts] 选项
- * @returns {Promise<{ query: string, items: object[] }>}
+ * @returns {Promise<{ query: string, items: object[] }>} 规范化查询串与命中列表
  */
 export async function searchGroupChannelMessages(groupId, query, opts = {}) {
 	const params = new URLSearchParams({ q: query })

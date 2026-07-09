@@ -4,15 +4,14 @@ import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
-/** world_op 事件 content 形状（DAG 权威共享状态）。 */
-export type worldOpEvent_t = {
+/** world_state 事件 content 形状（DAG 权威共享状态，群级；频道作用域用键约定如 `chan/{channelId}/...`）。 */
+export type worldStateEvent_t = {
 	eventId: string
 	hlc: { wall: number, logical: number }
 	sender: string
-	channelId?: string
 	content: {
 		worldname: string
-		op: 'set' | 'del'
+		action: 'set' | 'delete'
 		key: string
 		value?: unknown
 	}
@@ -49,7 +48,7 @@ export type WorldChatHost_t = {
 		entries(): Promise<Record<string, unknown>>
 		set(key: string, value: unknown): Promise<void>
 		del(key: string): Promise<void>
-		log(sinceEventId?: string): Promise<worldOpEvent_t[]>
+		log(sinceEventId?: string): Promise<worldStateEvent_t[]>
 	}
 	localData: {
 		get(key: string): Promise<unknown>

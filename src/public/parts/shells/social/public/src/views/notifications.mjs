@@ -66,10 +66,9 @@ function notificationIconClass(type) {
  * @returns {Promise<void>}
  */
 export async function updateNotificationBadge(appContext) {
-	const data = await appContext.socialApi('/notifications?limit=1').catch(() => ({ unreadCount: 0 }))
 	const unread = Number.isFinite(badgeUnreadCount)
 		? badgeUnreadCount
-		: Number(data.unreadCount) || 0
+		: Number((await appContext.socialApi('/notifications?limit=1').catch(() => ({ unreadCount: 0 }))).unreadCount) || 0
 	badgeUnreadCount = null
 	const label = unread > 99 ? '99+' : String(unread)
 	for (const badgeId of ['notificationsBadge', 'mobileNotificationsBadge']) {
@@ -157,7 +156,9 @@ export function bindNotificationsInfiniteScroll(appContext) {
 	const sentinel = ensureScrollSentinel(container, 'notificationsScrollSentinel')
 	bindInfiniteScroll({
 		sentinel,
+		/** @returns {boolean} 通知列表是否仍有下一页 */
 		hasMore: () => !!appContext.state.notificationsCursor,
+		/** @returns {Promise<void>} 追加加载下一页通知 */
 		onLoad: () => loadNotifications(appContext, true),
 	})
 }

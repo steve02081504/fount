@@ -2,10 +2,10 @@
  * 【文件】public/hub/wireEvents.mjs
  * 【职责】Hub 页 DOM 事件委托薄聚合。
  */
+import { wireHubSearchPanel } from './search.mjs'
 import { wireComposerEvents } from './wireComposerEvents.mjs'
 import { handleMessageFileDownloadClick, wireFileEvents } from './wireFileEvents.mjs'
 import { wireHeaderEvents, wireShiftKeyHint } from './wireHeaderEvents.mjs'
-import { wireHubSearchPanel } from './search.mjs'
 import { handleMessageBubbleClick } from './wireMessageBubbleEvents.mjs'
 import { handleVoteOptionClick, wireVoteEvents } from './wireVoteEvents.mjs'
 

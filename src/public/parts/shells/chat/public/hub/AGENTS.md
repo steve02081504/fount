@@ -39,7 +39,10 @@ Hub-facing API shapes:
 - **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
 - **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
 
-## Unread (M5)
+## Unread
 
 - **Model**: `channel.messageSeq` (materialized on group state) minus per-user `readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
-- **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`, group list sort by unread; earliest-unread divider in `messages/messageShared.mjs`. Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.
+- **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`; sidebar group list sorts by `lastMessageTime`, unread as badge only; earliest-unread divider in `messages/messageShared.mjs` (renders only when at least one read message precedes it). Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.
+- **Open = read**: `loadMessages` calls `markCurrentChannelRead` immediately on opening a text channel (no wait for scroll bottom); `firstUnreadEventId` is retained this session as the divider anchor and recalculated from the new marker on next load.
+- **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
+- **Frontend E2E**: `test/frontend/unread.spec.mjs` (badge + divider + clear-on-read).
