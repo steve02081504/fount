@@ -6,14 +6,16 @@ import { join } from 'node:path'
 
 import { geti18n } from '../../i18n/bare.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
+import { summarizeEstimate } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { reportJsonPath, reportMarkdownPath, TEST_DATA_REL, TRIGGERED_REASONS_FILE, triggeredReasonsMarkdownPath } from '../core/paths.mjs'
-import { formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
+import { formatExpectedDuration, formatParallelRatePct, summarizeRunTiming } from '../core/run_timing.mjs'
 import { suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
  * @typedef {import('./continue_reason.mjs').ContinueReasonKind} ContinueReasonKind
+ * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
  */
 
 /**
@@ -76,6 +78,10 @@ export class RunReportWriter {
 		this.startedAt = new Date().toISOString()
 		this.finishedAt = null
 		this.exitCode = null
+		/** @type {Map<string, EstimateTask> | null} */
+		this.estimatePlan = null
+		/** @type {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number } | null} */
+		this.estimateOptions = null
 	}
 
 	/**
@@ -183,6 +189,19 @@ export class RunReportWriter {
 	}
 
 	/**
+	 * @param {Map<string, EstimateTask>} plan suite 键 -> 预估任务
+	 * @param {{ serial: boolean, memBudgetBytes: number, cpuBudgetPct: number }} options 调度选项
+	 * @returns {Promise<void>}
+	 */
+	setEstimatePlan(plan, options) {
+		return this.#enqueue(async () => {
+			this.estimatePlan = plan
+			this.estimateOptions = options
+			await this.#writeFiles()
+		})
+	}
+
+	/**
 	 * @param {() => Promise<void>} fn 任务
 	 * @returns {Promise<void>}
 	 */
@@ -209,6 +228,23 @@ export class RunReportWriter {
 			startedAt: this.startedAt,
 			finishedAt: this.finishedAt,
 		})
+		const pendingSlots = this.slots.filter(slot => slot.state === 'pending')
+		/** @type {ReturnType<typeof summarizeEstimate> | null} */
+		let estimate = null
+		/** @type {Record<string, { reused: boolean, durationMs: number | null }> | null} */
+		let estimateTasks = null
+		if (pendingSlots.length && this.estimatePlan && this.estimateOptions) {
+			const tasks = pendingSlots
+				.map(slot => this.estimatePlan.get(suiteKey(slot.manifestId, slot.name)))
+				.filter(Boolean)
+			if (tasks.length) {
+				estimate = summarizeEstimate(tasks, this.estimateOptions)
+				estimateTasks = Object.fromEntries(tasks.map(task => [
+					task.key,
+					{ reused: task.reused, durationMs: task.durationMs },
+				]))
+			}
+		}
 		const payload = {
 			runId: this.runId,
 			command: this.command,
@@ -220,6 +256,8 @@ export class RunReportWriter {
 			suiteSumMs: timing.suiteSumMs,
 			wallClockMs: timing.wallClockMs,
 			parallelRatePct: timing.parallelRatePct,
+			estimate,
+			estimateTasks,
 			slots: this.slots,
 		}
 		await writeFile(reportJsonPath(this.repoRoot), `${JSON.stringify(payload, null, '\t')}\n`, 'utf8')
@@ -267,10 +305,19 @@ function buildRunMarkdown(summary, completed) {
 		`| ${geti18n('fountConsole.test.report.fieldSuiteSumDuration')} | ${formatDuration(suiteSumMs)} |`,
 		`| ${geti18n('fountConsole.test.report.fieldWallClock')} | ${formatDuration(totalMs)} |`,
 		`| ${geti18n('fountConsole.test.report.fieldParallelRate')} | ${formatParallelRatePct(ratePct)} |`,
+	]
+
+	if (summary.estimate)
+		lines.push(
+			`| ${geti18n('fountConsole.test.report.fieldEstimatedRemaining')} | ${formatEstimatePoint(summary.estimate.etaMs)} |`,
+			`| ${geti18n('fountConsole.test.report.fieldEstimatedParallelRate')} | ${formatParallelRatePct(summary.estimate.parallelRatePct)} |`,
+		)
+
+	lines.push(
 		'',
 		geti18n('fountConsole.test.report.artifacts', { path: `${TEST_DATA_REL}/report.md` }),
 		'',
-	]
+	)
 
 	appendContinueReasonsLink(lines, summary)
 
@@ -282,13 +329,46 @@ function buildRunMarkdown(summary, completed) {
 	const pending = summary.slots.filter(slot => slot.state === 'pending')
 	if (pending.length) {
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionPending')}`, '')
-		for (const slot of pending)
-			lines.push(`- ${slot.manifestId}/${slot.name}`)
+		if (summary.estimate) {
+			lines.push(geti18n('fountConsole.test.report.pendingEstimate', {
+				eta: formatDuration(summary.estimate.etaMs),
+			}))
+			if (summary.estimate.serial) {
+				lines.push(geti18n('fountConsole.test.report.pendingParallelEstimate', {
+					eta: formatDuration(summary.estimate.parallelEtaMs),
+					rate: formatParallelRatePct(summary.estimate.parallelRatePct),
+				}))
+				lines.push(geti18n('fountConsole.test.report.pendingSavings', {
+					savings: formatDuration(summary.estimate.savingsMs),
+				}))
+			}
+			lines.push('')
+		}
+		for (const slot of pending) {
+			const key = suiteKey(slot.manifestId, slot.name)
+			const task = summary.estimateTasks?.[key]
+			const reusedMark = task?.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
+			const expected = task?.reused ? null : formatExpectedDuration(task?.durationMs ?? null)
+			const expectedMark = expected
+				? ` — ${geti18n('fountConsole.test.report.pendingItemExpected', { expected })}`
+				: ''
+			lines.push(`- ${slot.manifestId}/${slot.name}${reusedMark}${expectedMark}`)
+		}
 		lines.push('')
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test --continue', '```', '')
 	}
 
 	return lines.join('\n')
+}
+
+/**
+ * @param {number} etaMs 预估耗时（毫秒）
+ * @returns {string} 可读单点 ETA
+ */
+function formatEstimatePoint(etaMs) {
+	return geti18n('fountConsole.test.report.estimatePoint', {
+		eta: formatDuration(etaMs),
+	})
 }
 
 /**

@@ -3,6 +3,7 @@ import 'fount/scripts/test/env.mjs'
 import process from 'node:process'
 
 import { console, geti18n, geti18nForTerminal } from '../../i18n/bare.mjs'
+import { CPU_BUDGET_PCT } from '../core/baseline.mjs'
 import {
 	digestFileHashes,
 	getHeadCommitHash,
@@ -13,6 +14,8 @@ import {
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
+import { buildEstimateTask, summarizeEstimate } from '../core/estimate.mjs'
+import { formatDuration } from '../core/format_duration.mjs'
 import {
 	filterSuites,
 	listManifestIds,
@@ -21,7 +24,7 @@ import {
 } from '../core/manifest.mjs'
 import { detectNoiseHits, stripNoiseMarkers } from '../core/output_filter.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
-import { formatExpectedDuration } from '../core/run_timing.mjs'
+import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
 import {
 	computeSuiteTriggerHash,
 	getSuiteBaselineDurationMs,
@@ -404,6 +407,45 @@ export async function runTests(options = {}) {
 	selected.sort((a, b) =>
 		reportIndexByKey.get(suiteKey(a.manifestId, a.name))
 		- reportIndexByKey.get(suiteKey(b.manifestId, b.name)))
+
+	const estimateSerial = options.noParallel === true
+	/** @type {Map<string, import('../core/estimate.mjs').EstimateTask>} */
+	const estimatePlan = new Map()
+	for (const slot of reportWriter.slots) {
+		if (slot.state !== 'pending') continue
+		const key = suiteKey(slot.manifestId, slot.name)
+		const suite = byKey.get(key)
+		if (!suite) continue
+		const prev = state.suites[key]
+		const triggerHash = computeSuiteTriggerHash(suite, uncommittedHashes)
+		const reused = isSuiteReusable(
+			suite,
+			prev,
+			committedChangedByKey.get(key) ?? [],
+			triggerHash,
+			options.force,
+		)
+		estimatePlan.set(key, buildEstimateTask(suite, prev, { reused }))
+	}
+	const estimateOptions = {
+		serial: estimateSerial,
+		memBudgetBytes: globalBudget.memBytes,
+		cpuBudgetPct: CPU_BUDGET_PCT,
+	}
+	await reportWriter.setEstimatePlan(estimatePlan, estimateOptions)
+
+	const pendingEstimateTasks = [...estimatePlan.values()]
+	if (pendingEstimateTasks.length) {
+		const estimate = summarizeEstimate(pendingEstimateTasks, estimateOptions)
+		console.logI18n('fountConsole.test.estimatedRun', {
+			eta: formatDuration(estimate.etaMs),
+			rate: formatParallelRatePct(estimate.parallelRatePct),
+		})
+		if (estimateSerial && estimate.savingsMs > 0)
+			console.logI18n('fountConsole.test.estimatedRunSerialHint', {
+				savings: formatDuration(estimate.savingsMs),
+			})
+	}
 
 	const gate = new ResourceRunGate(
 		globalBudget.memBytes,

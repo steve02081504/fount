@@ -52,6 +52,7 @@
 				"src/scripts/test/selftest/continue_reason.test.mjs",
 				"src/scripts/test/runner/continue_reason.mjs",
 				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/core/estimate.mjs",
 				"src/scripts/test/core/state.mjs",
 				"src/scripts/test/core/paths.mjs"
 			]
@@ -132,8 +133,24 @@
 			"triggers": [
 				"src/scripts/test/selftest/run_timing.test.mjs",
 				"src/scripts/test/core/run_timing.mjs",
+				"src/scripts/test/core/estimate.mjs",
 				"src/scripts/test/runner/report.mjs",
 				"src/scripts/test/runner/index.mjs"
+			]
+		},
+		{
+			"name": "estimate",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/estimate.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/estimate.test.mjs",
+				"src/scripts/test/core/estimate.mjs",
+				"src/scripts/test/runner/scheduler.mjs",
+				"src/scripts/test/core/resources.mjs",
+				"src/scripts/test/core/baseline.mjs",
+				"src/scripts/test/core/run_timing.mjs"
 			]
 		}
 	]
