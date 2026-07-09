@@ -4,6 +4,24 @@
 import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
+const WORLD_DISTRIBUTIONS = new Set(['local', 'replicated', 'hosted'])
+
+/**
+ * 校验 session_world_bind / session_world_bind_channel 的 distribution 与 homeNodeHash 规则。
+ * @param {object} content 事件 content
+ * @param {string} label 错误前缀
+ * @returns {void}
+ */
+function validateWorldBindContent(content, label) {
+	if (!content.worldname?.trim()) throw new Error(`${label}: worldname required`)
+	if (!content.ownerUsername?.trim()) throw new Error(`${label}: ownerUsername required`)
+	const distribution = content.distribution?.trim() || 'hosted'
+	if (content.distribution != null && content.distribution !== '' && !WORLD_DISTRIBUTIONS.has(distribution))
+		throw new Error(`${label}: invalid distribution`)
+	if (distribution !== 'local' && !content.homeNodeHash?.trim())
+		throw new Error(`${label}: homeNodeHash required`)
+}
+
 /**
  * 校验 session_* / agent_reply_frequency_set DAG 事件 content 形状（联邦入站）。
  * @param {object} event 事件体
@@ -21,16 +39,12 @@ export function validateSessionEventContent(event) {
 			break
 		}
 		case 'session_world_bind': {
-			if (!content.worldname?.trim()) throw new Error('session_world_bind: worldname required')
-			if (!content.ownerUsername?.trim()) throw new Error('session_world_bind: ownerUsername required')
-			if (!content.homeNodeHash?.trim()) throw new Error('session_world_bind: homeNodeHash required')
+			validateWorldBindContent(content, 'session_world_bind')
 			break
 		}
 		case 'session_world_bind_channel': {
 			if (!isChannelIdValid(content.channelId)) throw new Error('session_world_bind_channel: channelId required')
-			if (!content.worldname?.trim()) throw new Error('session_world_bind_channel: worldname required')
-			if (!content.ownerUsername?.trim()) throw new Error('session_world_bind_channel: ownerUsername required')
-			if (!content.homeNodeHash?.trim()) throw new Error('session_world_bind_channel: homeNodeHash required')
+			validateWorldBindContent(content, 'session_world_bind_channel')
 			break
 		}
 		case 'session_world_clear': {

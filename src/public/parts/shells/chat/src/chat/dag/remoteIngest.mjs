@@ -29,6 +29,21 @@ import { validateIngestAuthz } from './ingest.mjs'
 import { getState } from './materialize.mjs'
 import { unsignedEventFields, validateSignature } from './validator.mjs'
 
+/** 联邦入站 world_op content 尺寸上限（本机写不受限）。 */
+export const WORLD_OP_CONTENT_MAX_BYTES = 64 * 1024
+
+/**
+ * @param {string} type 事件 type
+ * @param {unknown} content 事件 content
+ * @returns {void}
+ */
+function assertFederatedWorldOpContentSize(type, content) {
+	if (type !== 'world_op') return
+	const bytes = new TextEncoder().encode(JSON.stringify(content ?? {})).byteLength
+	if (bytes > WORLD_OP_CONTENT_MAX_BYTES)
+		throw new Error(`world_op content exceeds ${WORLD_OP_CONTENT_MAX_BYTES} bytes`)
+}
+
 /** @typedef {{ status: 'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending', reason?: string }} RemoteIngestResult */
 
 /** @type {Map<string, Promise<RemoteIngestResult>>} */
@@ -207,6 +222,14 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 			await appendQuarantinedEvent(username, groupId, wirePayload, 'hlc_skew')
 		})
 		return finish(ingestResult('quarantined', 'hlc_skew'))
+	}
+
+	try {
+		assertFederatedWorldOpContentSize(String(wirePayload.type), wirePayload.content)
+	}
+	catch (error) {
+		if (logFailures) console.error('federation: drop remote event (content too large)', error)
+		return finish(ingestResult('invalid', 'content_too_large'))
 	}
 
 	try {

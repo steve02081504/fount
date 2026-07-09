@@ -145,6 +145,10 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 写入 `events.jsonl` 并物化为 `state.session`：`session_char_bind` / `session_char_unbind` / `session_world_bind` / `session_world_bind_channel` / `session_world_clear` / `session_persona_set` / `session_plugin_add` / `session_plugin_remove` / `session_char_frequency_set`。频道 `message` 可含 `content.sessionSnapshot` 供历史水合。
 
+`world_op`：共享世界状态（`content`: `worldname`, `op` (`set`|`del`), `key`, `value?`）；物化到 `state.worldStates[worldname]`（HLC LWW）。replicated/hosted world 经 `WorldChatHost.state` 读写；`localData` 为本机私有 JSON。联邦入站 content 上限 64KB。
+
+`session_world_bind` / `session_world_bind_channel` 的 `content` 含 `worldname`、`ownerUsername`、`homeNodeHash`（`local` 分布可缺省）、`distribution`（`'local' | 'replicated' | 'hosted'`，绑定者从本机 world part 读出，缺省 `hosted`）。`resolveWorld` 按 `distribution` 决定本机执行或 RPC；未绑定/未安装时回退内置 `BUILTIN_WORLD`（`distribution: 'local'`）。
+
 **写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content：全员 `displayName`/`displayAvatar`；生成类另附 `sessionSnapshot`/`chatLogEntryId`。内存 `chatLog` 仅为 hydration 缓存。
 
 **Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`；含 `channelMessageContent_t` / `file_t` / `chatViewer_t`）；shell `decl/chatLog.ts` 仅 re-export。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。

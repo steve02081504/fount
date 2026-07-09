@@ -14,6 +14,22 @@ import { getMaterializedSession } from './dagSession.mjs'
 import { invokeGroupRpc } from './rpcInvoke.mjs'
 import { getCharBind, isLocalNode } from './runtime.mjs'
 import { ignoreMissingPartLoadError } from './timeSliceParts.mjs'
+import { ensureWorldHostConnected } from './worldHost.mjs'
+
+/**
+ * 本机加载 world part 后惰性接线 ChatHostConnected。
+ * @param {string} groupId 群 ID
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} worldname 世界名
+ * @param {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t | null | undefined} world 已加载 part；缺省回退 BUILTIN_WORLD
+ * @returns {Promise<import('../../../../../../../decl/worldAPI.ts').WorldAPI_t>} 本机 world 或 BUILTIN_WORLD
+ */
+async function finalizeLocalWorld(groupId, replicaUsername, worldname, world) {
+	const resolved = world || BUILTIN_WORLD
+	if (world)
+		await ensureWorldHostConnected(replicaUsername, groupId, worldname, world)
+	return resolved
+}
 
 /**
  * @param {string} groupId 群 ID
@@ -52,13 +68,35 @@ export async function resolveWorld(groupId, channelId, replicaUsername) {
 	const bind = session.channelWorlds?.[channelId] || session.world
 	if (!bind?.worldname) return BUILTIN_WORLD
 
+	const distribution = bind.distribution || 'hosted'
 	const owner = bind.ownerUsername || replicaUsername
-	if (isLocalNode(bind.homeNodeHash, replicaUsername)) {
-		const world = await loadPart(owner, `worlds/${bind.worldname}`).catch(ignoreMissingPartLoadError)
-		return world || BUILTIN_WORLD
+	const worldname = bind.worldname
+
+	if (distribution === 'local') {
+		const world = await loadPart(replicaUsername, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
+		return finalizeLocalWorld(groupId, replicaUsername, worldname, world)
 	}
 
-	const memberId = `${owner}:world:${bind.worldname}`
+	if (distribution === 'replicated') {
+		const world = await loadPart(replicaUsername, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
+		if (world) return finalizeLocalWorld(groupId, replicaUsername, worldname, world)
+		const memberId = `${owner}:world:${worldname}`
+		return createRemoteWorldProxy(memberId, bind.homeNodeHash, {}, (method, args) =>
+			invokeGroupRpc(groupId, replicaUsername, {
+				memberId,
+				method,
+				args,
+				targetNodeId: bind.homeNodeHash,
+				partKind: 'world',
+			}))
+	}
+
+	if (isLocalNode(bind.homeNodeHash, replicaUsername)) {
+		const world = await loadPart(owner, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
+		return finalizeLocalWorld(groupId, replicaUsername, worldname, world)
+	}
+
+	const memberId = `${owner}:world:${worldname}`
 	return createRemoteWorldProxy(memberId, bind.homeNodeHash, {}, (method, args) =>
 		invokeGroupRpc(groupId, replicaUsername, {
 			memberId,

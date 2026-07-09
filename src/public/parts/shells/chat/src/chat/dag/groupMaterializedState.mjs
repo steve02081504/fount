@@ -169,6 +169,7 @@ export function emptyMaterializedState() {
 		delegatedOwnerPubKeyHash: null,
 		ownerHeartbeats: {},
 		session: createEmptySessionState(),
+		worldStates: {},
 	}
 }
 
@@ -217,6 +218,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		fileMasterKeyRotations: structuredClone(membersRecord.fileMasterKeyRotations || []),
 		messageSenderIndex: structuredClone(membersRecord.messageSenderIndex || {}),
 		session: structuredClone(membersRecord.session),
+		worldStates: structuredClone(membersRecord.worldStates || {}),
 	}
 }
 

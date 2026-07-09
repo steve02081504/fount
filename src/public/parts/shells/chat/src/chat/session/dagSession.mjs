@@ -2,10 +2,13 @@
  * 【文件】dagSession.mjs — DAG 物化 session 读取与 session_* / 成员 agent 事件追加
  */
 import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
+
+import { ignoreMissingPartLoadError } from './timeSliceParts.mjs'
 
 /**
  * @param {string} replicaUsername 本地 replica 所有者
@@ -33,6 +36,17 @@ export function sessionOwnerBinding(replicaUsername) {
 		ownerUsername: replicaUsername,
 		homeNodeHash: getLocalNodeHash(),
 	}
+}
+
+/**
+ * 从本机已安装的 world part 读出 distribution（缺省 hosted）。
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} worldname 世界名
+ * @returns {Promise<'local' | 'replicated' | 'hosted'>} 分布形态
+ */
+async function readWorldDistribution(replicaUsername, worldname) {
+	const world = await loadPart(replicaUsername, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
+	return world?.distribution || 'hosted'
 }
 
 /**
@@ -115,11 +129,12 @@ export async function appendSessionWorldBind(replicaUsername, groupId, worldname
 		return
 	}
 	const bind = sessionOwnerBinding(replicaUsername)
+	const distribution = await readWorldDistribution(replicaUsername, worldname)
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_world_bind',
 		sender: replicaUsername,
 		timestamp: Date.now(),
-		content: { worldname, scope: 'group', ...bind },
+		content: { worldname, scope: 'group', distribution, ...bind },
 	}, appendOpts)
 }
 
@@ -141,11 +156,12 @@ export async function appendSessionChannelWorldBind(replicaUsername, groupId, ch
 		return
 	}
 	const bind = sessionOwnerBinding(replicaUsername)
+	const distribution = await readWorldDistribution(replicaUsername, worldname)
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_world_bind_channel',
 		sender: replicaUsername,
 		timestamp: Date.now(),
-		content: { channelId, worldname, ...bind },
+		content: { channelId, worldname, distribution, ...bind },
 	})
 }
 

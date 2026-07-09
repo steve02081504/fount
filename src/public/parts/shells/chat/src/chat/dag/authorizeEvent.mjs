@@ -217,6 +217,8 @@ export function checkEventPermission(state, event, senderHash) {
 			if (entry.charOwner && entry.charOwner === sender) return { ok: true }
 			return { ok: false, reason: 'message_edit denied' }
 		}
+		case 'world_op':
+			return { ok: true }
 		case 'dag_tip_merge':
 			// 纯拓扑合并：reducer 对物化状态无副作用，且 ingest 强制 prev_event_ids 覆盖全部当前 tips
 			// （只能"并入所有分支"，无法选择性偏袒某支来操纵共识选支）。若要求 MANAGE_CHANNELS，会与

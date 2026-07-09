@@ -28,6 +28,24 @@ alwaysApply: false
 - Their hooks either pass everything through or contribute nothing; they deliberately **do not implement** `GetSpeakingOrder` / `GetCharReply` / `GetGreeting` / `MessageEdit`(`Delete`) (implementing any of these would replace the default path).
 - The pipeline can assume `world` / `user`/`player` are always objects, except in federation `rpcDispatcher`'s `not_local` branch.
 
+## World distribution (M7 / G1)
+
+- `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'`（缺省 `hosted`）；bind 时从绑定者本机已安装的 world part 读出并写入 `session_world_bind*` 的 `content.distribution`。
+- `resolveWorld` 三分支（`session.channelWorlds[channelId] || session.world` 上的 `distribution`，缺省 `hosted`）：
+  - **`local`**：`loadPart(replicaUsername, worlds/…)`；未装 → `BUILTIN_WORLD`（永不 RPC）。
+  - **`replicated`**：本机装了 → `loadPart(replicaUsername, …)`；未装 → `createRemoteWorldProxy(homeNodeHash)`（种子主机回退）。
+  - **`hosted`**（现状）：`isLocalNode(homeNodeHash)` → `loadPart(ownerUsername, …)`；否则 RPC。
+- 入站校验（`sessionEventValidate.mjs`）：`hosted`/`replicated` 必填 `homeNodeHash`；`local` 可缺省。
+- 默认 fount world 已标 `distribution: 'local'`。
+
+## World shared state + WorldChatHost (M8 / G2)
+
+- DAG 事件 `world_op`：`content { worldname, op: 'set'|'del', key, value? }`；物化到 `state.worldStates[worldname][key]`（shell 通用 LWW reducer，`dag/reducers/worldOps.mjs`）。
+- `WorldChatHost`（`session/worldHost.mjs`）：`state`（DAG 共享）、`localData`（`worlds/{worldname}/chat_data/{groupId}.json` 本机私有）、`triggerCharReply`、`postSystemMessage`、`listMembers`/`listChannels`。
+- `WorldAPI.chat.ChatHostConnected(host)`：本机 `resolveWorld` 加载 part 时惰性接线一次（`ensureWorldHostConnected`）；`BUILTIN_WORLD` 与 `remoteWorldProxy` 不接。
+- 联邦入站 `world_op`：`aclGated`（active member）+ `remoteIngest` 64KB content 清扫；本机写不受限。越权语义由 world 折叠层（`state.log()` 自定义 fold）裁决，非 shell reducer。
+- 测试：`test/pure/world_op_*.test.mjs`；`test/integration/world_op_state.test.mjs`；fixture `test/fixtures/worlds/replicated_world`。
+
 ## member_roles
 
 - `getChatRequest` / materialize inject `state.members[*].roles` from the materialized state, both at the top level and into `extension.member_roles`.
@@ -67,3 +85,5 @@ alwaysApply: false
 - `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)` — nullish result (missing hook, remote METHOD_NOT_FOUND, or explicit null) falls through to the char itself.
 - Fixture counters: `test/fixtures/edit_path_hook_state.mjs` (same `globalThis` pattern as the write path).
 - Integration: `test/integration/edit_path_hooks.test.mjs`.
+- Pure: `test/pure/world_op_reducer.test.mjs`, `test/pure/world_op_validate.test.mjs`
+- Integration: `test/integration/world_op_state.test.mjs`, `test/integration/world_distribution.test.mjs`

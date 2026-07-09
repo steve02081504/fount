@@ -4,6 +4,63 @@ import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
+/** world_op 事件 content 形状（DAG 权威共享状态）。 */
+export type worldOpEvent_t = {
+	eventId: string
+	hlc: { wall: number, logical: number }
+	sender: string
+	channelId?: string
+	content: {
+		worldname: string
+		op: 'set' | 'del'
+		key: string
+		value?: unknown
+	}
+}
+
+/**
+ *
+ */
+export type memberSummary_t = {
+	memberKey: string
+	memberKind?: string
+	charname?: string
+	ownerUsername?: string
+	homeNodeHash?: string
+	roles?: string[]
+}
+
+/**
+ *
+ */
+export type channelSummary_t = {
+	channelId: string
+	name?: string
+	type?: string
+}
+
+/** world 对 chat 存储 / p2p 层的正式调用面。 */
+export type WorldChatHost_t = {
+	groupId: string
+	replicaUsername: string
+	worldname: string
+	state: {
+		get(key: string): Promise<unknown>
+		entries(): Promise<Record<string, unknown>>
+		set(key: string, value: unknown): Promise<void>
+		del(key: string): Promise<void>
+		log(sinceEventId?: string): Promise<worldOpEvent_t[]>
+	}
+	localData: {
+		get(key: string): Promise<unknown>
+		set(key: string, value: unknown): Promise<void>
+	}
+	triggerCharReply(channelId: string, charname: string): Promise<void>
+	postSystemMessage(channelId: string, content: channelMessageContent_t): Promise<void>
+	listMembers(): Promise<memberSummary_t[]>
+	listChannels(): Promise<channelSummary_t[]>
+}
+
 /**
  * 世界API接口
  * @class WorldAPI_t
@@ -14,6 +71,10 @@ export class WorldAPI_t {
 	 * 世界 API 的详细信息。
 	 */
 	info: info_t
+	/**
+	 * 分布形态；缺省 'hosted'（兼容现状）。由 world part 自行声明。
+	 */
+	distribution?: 'local' | 'replicated' | 'hosted'
 	/**
 	 * 仅在安装时调用，如果失败，将删除此世界文件夹下的所有文件。
 	 * @param {object} stat - 状态对象。
@@ -190,6 +251,12 @@ export class WorldAPI_t {
 				original: object
 				memberId?: string
 			}) => Promise<{ reject?: string } | undefined>
+			/**
+			 * 绑定/加载时调用一次；world 自行持有 host 引用（计时器、任意钩子内可用）。
+			 * @param {WorldChatHost_t} host chat 存储与 p2p 正式调用面
+			 * @returns {Promise<void>}
+			 */
+			ChatHostConnected?: (host: WorldChatHost_t) => Promise<void>
 		}
 	}
 }

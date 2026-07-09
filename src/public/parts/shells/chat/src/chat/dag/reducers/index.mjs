@@ -6,6 +6,7 @@ import { memberReducers } from './members.mjs'
 import { messageReducers } from './messages.mjs'
 import { roleReducers } from './roles.mjs'
 import { sessionReducers } from './sessions.mjs'
+import { worldOpReducers } from './worldOps.mjs'
 
 /** Chat 群 DAG 事件 reducer 表（物化用）。 */
 export const CHAT_EVENT_REDUCERS = {
@@ -17,4 +18,5 @@ export const CHAT_EVENT_REDUCERS = {
 	...fileReducers,
 	...governanceReducers,
 	...sessionReducers,
+	...worldOpReducers,
 }

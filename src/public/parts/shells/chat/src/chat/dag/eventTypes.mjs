@@ -61,6 +61,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	session_persona_set: {},
 	session_plugin_add: {},
 	session_plugin_remove: {},
+	world_op: { aclGated: true },
 }
 
 /**

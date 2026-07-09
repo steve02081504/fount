@@ -87,6 +87,7 @@ export function buildCheckpointPayload({
 		pexHints: [...materializedState.pexHints || []].filter(hint => String(hint).trim()),
 		messageSenderIndex: JSON.parse(JSON.stringify(materializedState.messageSenderIndex || {})),
 		session: JSON.parse(JSON.stringify(materializedState.session || {})),
+		worldStates: JSON.parse(JSON.stringify(materializedState.worldStates || {})),
 	}
 
 	const tips = (Array.isArray(dag_tip_ids) ? dag_tip_ids : []).filter(isHex64)

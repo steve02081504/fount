@@ -37,6 +37,7 @@ let username
  * @type {WorldAPI_t}
  */
 export default {
+	distribution: 'local',
 	info,
 	/**
 	 * 加载函数，在世界被加载时调用。

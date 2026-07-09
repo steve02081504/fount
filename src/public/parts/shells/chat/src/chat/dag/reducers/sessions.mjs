@@ -15,6 +15,7 @@ export const sessionReducers = {
 			worldname: String(event.content?.worldname || '').trim(),
 			ownerUsername: String(event.content?.ownerUsername || '').trim(),
 			homeNodeHash: event.content?.homeNodeHash || '',
+			distribution: event.content?.distribution || 'hosted',
 		}
 		return state
 	},
@@ -34,6 +35,7 @@ export const sessionReducers = {
 				worldname: String(event.content?.worldname || '').trim(),
 				ownerUsername: String(event.content?.ownerUsername || '').trim(),
 				homeNodeHash: event.content?.homeNodeHash || '',
+				distribution: event.content?.distribution || 'hosted',
 			}
 
 		return state
