@@ -6,6 +6,7 @@ import {
 	openSocialHome,
 	findPostCard,
 	submitReplyViaPanel,
+	seedNotificationsViaReplies,
 } from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
@@ -120,6 +121,25 @@ test.describe('Social secondary views', () => {
 		await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
 		await waitForSocialAppReady(page)
 		await expect(page.locator('#notificationsBadge:not(.hidden)')).toBeVisible({ timeout: 10_000 })
+	})
+
+	test('notifications infinite scroll loads next page', async ({ page, baseUrl, apiKey }) => {
+		await seedNotificationsViaReplies(baseUrl, apiKey, 41)
+		await openSocialHome(page, baseUrl)
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		await expect(page.locator('#notificationsView .notification-card').first())
+			.toBeVisible({ timeout: 30_000 })
+		const initialCount = await page.locator('#notificationsView .notification-card').count()
+		const [notifResponse] = await Promise.all([
+			page.waitForResponse(res => {
+				if (res.request().method() !== 'GET' || res.status() !== 200) return false
+				const url = new URL(res.url())
+				return url.pathname === '/api/parts/shells:social/notifications' && url.searchParams.has('cursor')
+			}, { timeout: 30_000 }),
+			page.locator('#notificationsScrollSentinel').scrollIntoViewIfNeeded(),
+		])
+		expect(await notifResponse.json()).toHaveProperty('notifications')
+		await expect(page.locator('#notificationsView .notification-card')).not.toHaveCount(initialCount, { timeout: 15_000 })
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

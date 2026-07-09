@@ -114,3 +114,103 @@ Deno.test('M7 world distribution: local 本机执行 + 未装回退 BUILTIN + ho
 		assertEquals(filtered[0].content, 'visible')
 	})
 })
+
+const REPLICATED_WORLD = 'replicated_world'
+const REPLICATED_HOOK_KEY = '__fount_replicated_world_hook_state__'
+
+Deno.test('M7 replicated: 本机执行 + 未装节点走 remoteWorldProxy', async t => {
+	const sim = await createChatFederationSim()
+	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
+	const NODE_A = nodeName('A')
+	const NODE_B = nodeName('B')
+	const channelId = 'default'
+
+	await seedWorldFixture(dataRoot, NODE_A, REPLICATED_WORLD)
+
+	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
+	await modules.lifecycle.createGroup(NODE_A, {
+		groupId,
+		name: 'world-replicated',
+		ownerPubKeyHash: ownerSigner.sender,
+		secretKey: ownerSigner.secretKey,
+		defaultChannelId: channelId,
+		enableGroupFederation: false,
+	})
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await joinGroup(NODE_B, NODE_A, groupId, 'invite-repl')
+	await federate(NODE_B, [NODE_A], groupId)
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+
+	const { appendSessionWorldBind } = await import('../../src/chat/session/dagSession.mjs')
+	const { resolveWorld } = await import('../../src/chat/session/resolvePart.mjs')
+	const { REMOTE_WORLD_PROXY_SYMBOL } = await import('../../src/chat/federation/remoteWorldProxy.mjs')
+
+	await appendSessionWorldBind(NODE_A, groupId, REPLICATED_WORLD)
+	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+
+	await t.step('replicated bind 写入 distribution', async () => {
+		const session = (await stateOf(NODE_A, groupId)).session
+		assertEquals(session.world.distribution, 'replicated')
+		assertEquals(session.world.worldname, REPLICATED_WORLD)
+	})
+
+	await t.step('本机已装 replicated world 本机执行', async () => {
+		globalThis[REPLICATED_HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
+		const worldA = await resolveWorld(groupId, channelId, NODE_A)
+		const prompt = await worldA.interfaces.chat.GetPrompt({})
+		assert(String(prompt?.text?.[0]?.content || '').includes('replicated-world-prompt-marker'))
+		assertEquals(globalThis[REPLICATED_HOOK_KEY].promptCalls, 1)
+		assertEquals(globalThis[REPLICATED_HOOK_KEY].hostConnected, 1)
+		assert(!worldA[REMOTE_WORLD_PROXY_SYMBOL])
+	})
+
+	await t.step('未装 replicated world 的节点走 remoteWorldProxy', async () => {
+		const worldB = await resolveWorld(groupId, channelId, NODE_B)
+		assert(worldB[REMOTE_WORLD_PROXY_SYMBOL])
+		assert(worldB !== BUILTIN_WORLD)
+		assert(typeof worldB.interfaces.chat.GetChatLogForViewer === 'function')
+	})
+})
+
+Deno.test('M7 hosted: 未装 world 的 replica 不加载 hosted part（sim 同 nodeHash）', async () => {
+	const sim = await createChatFederationSim()
+	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
+	const NODE_A = nodeName('A')
+	const NODE_B = nodeName('B')
+	const channelId = 'default'
+
+	await seedWorldFixture(dataRoot, NODE_A, HOSTED_WORLD)
+
+	const ownerSigner = await modules.localSigner.getLocalSignerForNewGroup(NODE_A, groupId)
+	await modules.lifecycle.createGroup(NODE_A, {
+		groupId,
+		name: 'world-hosted-remote',
+		ownerPubKeyHash: ownerSigner.sender,
+		secretKey: ownerSigner.secretKey,
+		defaultChannelId: channelId,
+		enableGroupFederation: false,
+	})
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await joinGroup(NODE_B, NODE_A, groupId, 'invite-hr')
+	await federate(NODE_B, [NODE_A], groupId)
+	await modules.materialize.rebuildAndSaveCheckpoint(NODE_A, groupId, { checkpointOwnerSecretKey: ownerSigner.secretKey })
+	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+
+	const { appendSessionWorldBind } = await import('../../src/chat/session/dagSession.mjs')
+	const { resolveWorld } = await import('../../src/chat/session/resolvePart.mjs')
+	const { REMOTE_WORLD_PROXY_SYMBOL } = await import('../../src/chat/federation/remoteWorldProxy.mjs')
+
+	await appendSessionWorldBind(NODE_A, groupId, HOSTED_WORLD)
+	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+
+	const worldA = await resolveWorld(groupId, channelId, NODE_A)
+	assert(typeof worldA.interfaces.chat.GetChatLogForViewer === 'function')
+	assert(String(worldA.info?.['zh-CN']?.name || '').includes('Viewer'))
+
+	// 进程内 sim 共享 nodeHash：B 未单独 seed fixture 仍可通过 loadPart 加载 hosted world（非 proxy）。
+	const worldB = await resolveWorld(groupId, channelId, NODE_B)
+	assert(typeof worldB.interfaces.chat.GetChatLogForViewer === 'function')
+	assert(String(worldB.info?.['zh-CN']?.name || '').includes('Viewer'))
+	assert(!worldB[REMOTE_WORLD_PROXY_SYMBOL])
+})

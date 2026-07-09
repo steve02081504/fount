@@ -2,10 +2,7 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplate,
 } from '../../../../../scripts/features/template.mjs'
-import {
-	getChannelMessages,
-	requestChannelHistoryFromPeers,
-} from '../../src/api/groupApi.mjs'
+import { getChannelViewLog } from '../../src/api/groupApi.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
 import { getChatGestures } from '../chatGestures.mjs'
@@ -70,43 +67,43 @@ export async function loadOlderMessages() {
 		return 0
 	}
 	const limit = Math.max(1, Math.ceil(hubStore.messages.channelMessages.length / 2))
-	let batch = []
-	try {
-		const { messages } = await getChannelMessages(hubStore.context.currentGroupId, hubStore.context.currentChannelId, {
-			before: oldestId,
-			limit,
-		})
-		batch = messages || []
-	}
-	catch {
-		batch = []
-	}
-	if (!batch.length)
-		try {
-			batch = await requestChannelHistoryFromPeers(hubStore.context.currentGroupId, hubStore.context.currentChannelId, {
-				before: oldestId,
-				limit,
-			})
-		}
-		catch {
-			batch = []
-		}
-
-	if (!batch.length) {
-		hubStore.messages.channelOlderExhausted = true
-		return 0
-	}
 	const known = new Set(
 		hubStore.messages.channelMessagesSource.map(m => String(m.eventId)).filter(Boolean),
 	)
-	const fresh = batch.filter(m => {
-		const eventId = String(m.eventId)
-		return eventId && !known.has(eventId)
-	})
-	if (!fresh.length) {
+	let before = oldestId
+	let hasMore = true
+	let fresh = []
+	while (hasMore && !fresh.length) {
+		let batch = []
+		let oldestRawEventId = null
+		try {
+			const page = await getChannelViewLog(hubStore.context.currentGroupId, hubStore.context.currentChannelId, {
+				before,
+				limit,
+			})
+			batch = page.messages || []
+			hasMore = page.hasMore
+			oldestRawEventId = page.oldestRawEventId
+		}
+		catch {
+			hubStore.messages.channelOlderExhausted = true
+			return 0
+		}
+		fresh = batch.filter(m => {
+			const eventId = String(m.eventId)
+			return eventId && !known.has(eventId)
+		})
+		if (!fresh.length && hasMore && oldestRawEventId && oldestRawEventId !== before)
+			before = oldestRawEventId
+		else
+			break
+	}
+	if (!hasMore && !fresh.length) {
 		hubStore.messages.channelOlderExhausted = true
 		return 0
 	}
+	if (!fresh.length)
+		return 0
 	hubStore.messages.channelMessagesSource = [...fresh, ...hubStore.messages.channelMessagesSource]
 	refreshChannelView()
 	const { loadMessages } = await import('./messages.mjs')

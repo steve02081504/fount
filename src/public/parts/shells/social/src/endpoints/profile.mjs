@@ -54,7 +54,10 @@ export function registerProfileRoutes(router) {
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(await buildProfileFeedItems(username, routeEntityHash(req.params)))
+		res.status(200).json(await buildProfileFeedItems(username, routeEntityHash(req.params), {
+			limit: Number(req.query.limit) || 30,
+			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+		}))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/likes', authenticate, async (req, res) => {

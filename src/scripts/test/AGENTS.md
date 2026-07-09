@@ -40,7 +40,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | Kind | Meaning |
 | --- | --- |
 | `pure/` | Zero I/O |
-| `integration/` | Single-process; no real HTTP/WS node |
+| `integration/` | Single-process; no real HTTP/WS node (exception: `launchNode` HTTP route suites — see below) |
 | `live/` | Real fount node + HTTP/WS |
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
@@ -65,6 +65,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - Single-node: `{ p2p: false, minP2pNode: true }`. P2P signaling: [p2p/docs/signaling.md](../p2p/docs/signaling.md).
 - Federation live probes: reuse `InitializeOpenGroupJoin` / `InitializeOpenGroupJoinMulti` from `live/federation/common.mjs` (they bundle `WarmupFedNodeLinks` → `rebind` → members gate → re-invite fallback). A hand-rolled bare join (create → invite → join) with no warmup/rebind will hang at `members>=2`. A `members>=2` hang is usually a real link/handshake or ICE bug, not flakiness — inspect handshake/ICE logs before rerunning (signaling traps: [p2p/docs/signaling.md](../p2p/docs/signaling.md)).
 - Federation convergence assertions should prefer semantic helpers (`TestFedHasMessage`, `TestFedHasReaction`, etc.) over raw `GET /events?limit=...` scans: event streams are paged/windowed and can miss the target row even when ingestion succeeded, causing false negatives.
+- **HTTP route integration (`launchNode`)**: spawn an isolated node (`fount/scripts/test/node/launch.mjs`), seed fixtures via env scenario + bootstrap worker (e.g. `shells/chat` `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`), then `fetch` against `http://127.0.0.1:{port}/api/parts/shells:chat/...?fount-apikey=…`. Mirrors Social `posts_http.test.mjs` but for multi-route / view-log pagination coverage.
 
 ## Operator tools
 

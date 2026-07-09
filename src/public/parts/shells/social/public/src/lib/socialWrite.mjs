@@ -59,3 +59,34 @@ export function bumpRepostCount(cardRoot, delta) {
 	repostBtn.textContent = String(Math.max(0, prev + delta))
 	return prev
 }
+
+/**
+ * 乐观移除指定作者的全部帖子卡片。
+ * @param {string} entityHash 作者 entityHash
+ * @returns {HTMLElement[]} 被移除的节点（用于回滚）
+ */
+export function removePostsByAuthor(entityHash) {
+	const norm = String(entityHash || '').trim().toLowerCase()
+	/** @type {HTMLElement[]} */
+	const removed = []
+	for (const card of document.querySelectorAll('.post-card[data-author-entity]')) {
+		if (!(card instanceof HTMLElement)) continue
+		if (String(card.dataset.authorEntity || '').trim().toLowerCase() !== norm) continue
+		removed.push(card)
+		card.remove()
+	}
+	return removed
+}
+
+/**
+ * 回滚 removePostsByAuthor 移除的卡片。
+ * @param {HTMLElement[]} cards 被移除的卡片
+ * @param {HTMLElement | null} anchor 插入锚点（缺省追加到 feedList）
+ * @returns {void}
+ */
+export function restoreRemovedPosts(cards, anchor = null) {
+	const list = anchor || document.getElementById('feedList') || document.getElementById('profilePostsPanel')
+	if (!list) return
+	for (const card of cards)
+		list.appendChild(card)
+}

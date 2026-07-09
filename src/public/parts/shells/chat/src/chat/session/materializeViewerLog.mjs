@@ -108,19 +108,36 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 }
 
 /**
+ * 解析 view-log 分页 limit（与 readChannelMessagesForUser 一致）。
+ * @param {string | number | undefined} rawLimit query limit
+ * @returns {number} 有效 page limit，1–500
+ */
+function resolveViewerPageLimit(rawLimit) {
+	const messageLimit = rawLimit != null && rawLimit !== '' ? Number(rawLimit) : undefined
+	return Number.isFinite(messageLimit) && messageLimit > 0
+		? Math.min(messageLimit, 500)
+		: 200
+}
+
+/**
  * view-log 主入口：物化 + 投影 + 准备 reactions 用的可见 eventIds。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: string | number, eventIds?: string[] }} [pagination] 分页
  * @param {Partial<chatViewer_t> & Pick<chatViewer_t, 'kind'>} [viewerFields] 观察者（缺省本机 user）
- * @returns {Promise<{ messages: object[], visibleEventIds: string[] }>} Hub 兼容 DTO
+ * @returns {Promise<{ messages: object[], visibleEventIds: string[], hasMore: boolean, oldestRawEventId: string | null }>} Hub 兼容 DTO
  */
 export async function readViewerChannelMessages(username, groupId, channelId, pagination = {}, viewerFields = { kind: 'user' }) {
+	const pageLimit = resolveViewerPageLimit(pagination.limit)
 	const { entries, rawLines } = await materializeViewerChatLog(username, groupId, channelId, viewerFields, pagination)
 	const messages = projectViewerEntriesToRows(rawLines, entries)
 	const visibleEventIds = messages
 		.filter(row => row.type === 'message' && row.eventId)
 		.map(row => String(row.eventId))
-	return { messages, visibleEventIds }
+	const oldestRawEventId = rawLines[0]?.eventId ? String(rawLines[0].eventId) : null
+	const hasMore = pagination.before
+		? rawLines.length >= pageLimit
+		: rawLines.length >= pageLimit
+	return { messages, visibleEventIds, hasMore, oldestRawEventId }
 }

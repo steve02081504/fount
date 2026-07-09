@@ -97,20 +97,18 @@ test.describe('Social feed', () => {
 		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
-	test('load more fetches next feed page', async ({ page, baseUrl, apiKey }) => {
+	test('infinite scroll fetches next feed page', async ({ page, baseUrl, apiKey }) => {
 		await seedPostsViaApi(baseUrl, apiKey, 31, 'loadmore')
 		await openSocialHome(page, baseUrl)
-		const loadMore = page.locator('#feedLoadMore')
-		await expect(loadMore).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 60_000 })
 		const initialCount = await page.locator('#feedList [data-post-id]').count()
-		// 等待含 cursor= 的 load more 请求（区分普通刷新）
 		const [feedResponse] = await Promise.all([
 			page.waitForResponse(res => {
 				if (res.request().method() !== 'GET' || res.status() !== 200) return false
 				const url = new URL(res.url())
 				return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
 			}, { timeout: 30_000 }),
-			loadMore.click(),
+			page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded(),
 		])
 		const data = await feedResponse.json()
 		expect(data).toHaveProperty('items')

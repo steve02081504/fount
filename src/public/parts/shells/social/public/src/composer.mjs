@@ -121,11 +121,13 @@ export async function loadGroupPickerOptions(appContext) {
  * @returns {object} 发帖 body
  */
 export function buildPostBody(appContext) {
+	const contentWarning = document.getElementById('postContentWarning')?.value?.trim() || ''
 	const body = {
 		text: document.getElementById('postText').value.trim(),
 		mediaRefs: appContext.state.pendingMediaRefs,
 		visibility: document.getElementById('postVisibility').value,
 		lang: document.getElementById('postLang').value.trim() || 'zh-CN',
+		...(contentWarning ? { contentWarning } : {}),
 	}
 	if (appContext.state.pendingQuoteRef)
 		body.quoteRef = {
@@ -176,6 +178,9 @@ export async function publishPost(appContext) {
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''
+	const cwInput = document.getElementById('postContentWarning')
+	if (cwInput instanceof HTMLInputElement)
+		cwInput.value = ''
 	appContext.state.pendingMediaRefs = []
 	appContext.state.pendingQuoteRef = null
 	appContext.state.pendingGroupRef = null

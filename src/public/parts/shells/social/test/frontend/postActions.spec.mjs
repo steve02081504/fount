@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash, openPostMoreMenu } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash, openPostMoreMenu, findForeignAuthorPostCard, FOREIGN_FE_AUTHOR_HASH } from './fixtures.mjs'
 
 test.describe('Social post actions', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
@@ -77,5 +77,49 @@ test.describe('Social post actions', () => {
 		await expect(page.locator('#saveModal')).toBeHidden({ timeout: 10_000 })
 		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+	})
+
+	test('report shows success toast', async ({ page, baseUrl, apiKey }) => {
+		const card = await findForeignAuthorPostCard(page, baseUrl, apiKey)
+		await openPostMoreMenu(card)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/governance/report')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			card.locator('[data-report]').click(),
+		])
+		await expect(page.locator('#toast-container .alert-success')).toBeVisible({ timeout: 10_000 })
+	})
+
+	test('hide removes foreign author posts optimistically', async ({ page, baseUrl, apiKey }) => {
+		const card = await findForeignAuthorPostCard(page, baseUrl, apiKey)
+		await openPostMoreMenu(card)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/relationships/hide')
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			card.locator('[data-hide]').click(),
+		])
+		await expect(page.locator(`#feedList .post-card[data-author-entity="${FOREIGN_FE_AUTHOR_HASH}"]`))
+			.toHaveCount(0, { timeout: 10_000 })
+	})
+
+	test('delete removes own post optimistically', async ({ page, publishPost }) => {
+		const { postId } = await publishPost(`delete-opt ${Date.now()}`)
+		const card = await findPostCard(page, postId)
+		await openPostMoreMenu(card)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes('/api/parts/shells:social/posts')
+				&& res.request().method() === 'DELETE'
+				&& res.status() === 200,
+			),
+			card.locator('[data-delete]').click(),
+		])
+		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 10_000 })
 	})
 })

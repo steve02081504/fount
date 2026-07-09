@@ -74,3 +74,23 @@ Deno.test('contentWarning persists on post content', async () => {
 	const post = view.postById?.[row.id] || view.posts.find(p => p.id === row.id)
 	assertEquals(post?.content?.contentWarning, 'sensitive')
 })
+
+Deno.test('social_report RPC handler ingests signed report', async () => {
+	const { username, operator } = await getSession()
+	const { signLocalReport, listReceivedReports } = await import('../../src/governance/report.mjs')
+	const { handleSocialRpc } = await import('../../src/discover/rpc.mjs')
+
+	const signed = await signLocalReport(username, {
+		targetEntityHash: operator,
+		targetPostId: null,
+		reason: 'federated spam marker',
+		category: 'spam',
+		reporterEntityHash: operator,
+	})
+	const resp = await handleSocialRpc(username, { type: 'social_report', report: signed })
+	assertEquals(resp?.type, 'social_report_response')
+	assertEquals(resp?.ok, true)
+
+	const { reports } = await listReceivedReports(username, { limit: 10 })
+	assert(reports.some(row => row.reason === 'federated spam marker'))
+})

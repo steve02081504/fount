@@ -355,6 +355,17 @@ body {
 	color: var(--social-muted);
 }
 
+.composer-cw {
+	margin-top: 0.35rem;
+	width: 100%;
+}
+
+.scroll-sentinel {
+	height: 1px;
+	width: 100%;
+	pointer-events: none;
+}
+
 .composer-toolbar {
 	display: flex;
 	align-items: center;

@@ -10,13 +10,14 @@ const PROTECTED_PREFIX = 'protected/'
 /**
  * @returns {{
  *   hostConnected: number,
+ *   promptCalls: number,
  *   host: import('../../../../../../../../../decl/worldAPI.ts').WorldChatHost_t | null,
  *   lastFoldIgnored: number,
  * }} 调用计数与 host 引用
  */
 function hookState() {
 	if (!globalThis[HOOK_KEY])
-		globalThis[HOOK_KEY] = { hostConnected: 0, host: null, lastFoldIgnored: 0 }
+		globalThis[HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
 	return globalThis[HOOK_KEY]
 }
 
@@ -77,6 +78,17 @@ export default {
 				const state = hookState()
 				state.hostConnected++
 				state.host = host
+			},
+			/**
+			 * @returns {Promise<object>} 带标记的 prompt
+			 */
+			GetPrompt: async () => {
+				hookState().promptCalls++
+				return {
+					text: [{ content: 'replicated-world-prompt-marker', important: 0 }],
+					additional_chat_log: [],
+					extension: {},
+				}
 			},
 			/**
 			 * @param {object} arg chatReplyRequest

@@ -159,7 +159,7 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: number }} [options] 游标与条数限制
- * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>> }>} 消息与反应
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>>, readMarker: object | null, hasMore: boolean, oldestRawEventId: string | null }>} 消息与反应
  */
 export async function getChannelViewLog(groupId, channelId, options = {}) {
 	const params = new URLSearchParams()
@@ -175,6 +175,8 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
 		messages: data.messages || [],
 		reactions: data.reactions || {},
 		readMarker: data.readMarker || null,
+		hasMore: !!data.hasMore,
+		oldestRawEventId: data.oldestRawEventId ? String(data.oldestRawEventId) : null,
 	}
 }
 

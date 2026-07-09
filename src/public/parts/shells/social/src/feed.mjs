@@ -162,15 +162,17 @@ export async function buildHomeFeed(username, options = {}) {
 }
 
 /**
- * 构建资料页帖子列表（与首页 feed 同构）。
+ * 构建资料页帖子列表（与首页 feed 同构，支持 cursor 分页）。
  * @param {string} username 用户
  * @param {string} entityHash 资料页 owner
- * @returns {Promise<{ entityHash: string, items: object[] }>} 与首页 feed 同构的帖子列表
+ * @param {{ limit?: number, cursor?: string }} [options] 分页
+ * @returns {Promise<{ entityHash: string, items: object[], nextCursor: string | null }>} 与首页 feed 同构的帖子列表
  */
-export async function buildProfileFeedItems(username, entityHash) {
+export async function buildProfileFeedItems(username, entityHash, options = {}) {
+	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	entityHash = entityHash.trim().toLowerCase()
 	if (!isEntityHash128(entityHash))
-		return { entityHash, items: [] }
+		return { entityHash, items: [], nextCursor: null }
 
 	const viewerContext = await loadViewerContext(username)
 	const itemContext = await createFeedItemBuildContext(username)
@@ -187,7 +189,18 @@ export async function buildProfileFeedItems(username, entityHash) {
 	}
 
 	items.sort((left, right) => compareFeedItems(left, right) * -1)
-	return { entityHash, items }
+
+	let start = 0
+	if (options.cursor) {
+		const cursor = String(options.cursor).trim().toLowerCase()
+		const index = items.findIndex(item => String(item.postId || '').toLowerCase() === cursor)
+		start = index >= 0 ? index + 1 : 0
+	}
+	const page = items.slice(start, start + limit)
+	const nextCursor = page.length === limit && start + limit < items.length
+		? String(page[page.length - 1].postId)
+		: null
+	return { entityHash, items: page, nextCursor }
 }
 
 /**

@@ -1,7 +1,7 @@
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
-import { runSocialWrite } from '../lib/socialWrite.mjs'
-import { refreshVisiblePosts } from '../navigation.mjs'
+import { removePostsByAuthor, restoreRemovedPosts, runSocialWrite } from '../lib/socialWrite.mjs'
+import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
 
@@ -14,6 +14,24 @@ import { closePostMoreMenus } from './shared.mjs'
 function actingFields(appContext) {
 	const actingEntityHash = appContext.state.viewerEntityHash
 	return actingEntityHash ? { actingEntityHash } : {}
+}
+
+/**
+ * 乐观隐藏作者帖子，失败回滚。
+ * @param {string} entityHash 作者
+ * @param {() => Promise<void>} write 写请求
+ * @param {string} failKey i18n 失败键
+ * @returns {Promise<void>}
+ */
+async function optimisticAuthorFilter(entityHash, write, failKey) {
+	const removed = removePostsByAuthor(entityHash)
+	closePostMoreMenus()
+	try {
+		await runSocialWrite(failKey, write)
+	}
+	catch {
+		restoreRemovedPosts(removed)
+	}
 }
 
 /**
@@ -61,50 +79,51 @@ export async function handleProfileNavClick(appContext, target) {
 
 	const blockButton = target.closest('[data-block]')
 	if (blockButton instanceof HTMLElement && blockButton.dataset.block) {
-		await appContext.socialApi('/relationships/block', {
+		const entityHash = blockButton.dataset.block
+		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: blockButton.dataset.block, block: true, ...actingFields(appContext) }),
-		})
-		await refreshVisiblePosts(appContext)
-		closePostMoreMenus()
+			body: JSON.stringify({ entityHash, block: true, ...actingFields(appContext) }),
+		}), 'block')
 	}
 
 	const hideButton = target.closest('[data-hide]')
 	if (hideButton instanceof HTMLElement && hideButton.dataset.hide) {
-		await appContext.socialApi('/relationships/hide', {
+		const entityHash = hideButton.dataset.hide
+		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/hide', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: hideButton.dataset.hide, hide: true, ...actingFields(appContext) }),
-		})
-		await refreshVisiblePosts(appContext)
-		closePostMoreMenus()
+			body: JSON.stringify({ entityHash, hide: true, ...actingFields(appContext) }),
+		}), 'hide')
 	}
 
 	const muteButton = target.closest('[data-mute]')
 	if (muteButton instanceof HTMLElement && muteButton.dataset.mute) {
-		await appContext.socialApi('/relationships/mute', {
+		const entityHash = muteButton.dataset.mute
+		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/mute', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: muteButton.dataset.mute, mute: true, ...actingFields(appContext) }),
-		})
-		await refreshVisiblePosts(appContext)
-		closePostMoreMenus()
+			body: JSON.stringify({ entityHash, mute: true, ...actingFields(appContext) }),
+		}), 'mute')
 	}
 
 	const reportButton = target.closest('[data-report]')
 	if (reportButton instanceof HTMLElement && reportButton.dataset.report) {
 		const parsed = parseActionKey(reportButton.dataset.report)
 		if (parsed) {
-			await appContext.socialApi('/governance/report', {
-				method: 'POST',
-				body: JSON.stringify({
-					targetEntityHash: parsed.entityHash,
-					targetPostId: parsed.postId,
-					reason: 'user report',
-					category: 'other',
-					...actingFields(appContext),
-				}),
-			})
+			closePostMoreMenus()
+			try {
+				await runSocialWrite('report', () => appContext.socialApi('/governance/report', {
+					method: 'POST',
+					body: JSON.stringify({
+						targetEntityHash: parsed.entityHash,
+						targetPostId: parsed.postId,
+						reason: 'user report',
+						category: 'other',
+						...actingFields(appContext),
+					}),
+				}))
+				showToastI18n('success', 'social.actions.reportSubmitted')
+			}
+			catch { /* toast in runSocialWrite */ }
 		}
-		closePostMoreMenus()
 	}
 
 	const unblockButton = target.closest('[data-unblock]')

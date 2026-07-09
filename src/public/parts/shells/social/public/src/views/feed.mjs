@@ -2,6 +2,7 @@ import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialSearchHref } from '../../shared/runUri.mjs'
 import { entityHandle } from '../lib/display.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '../lib/infiniteScroll.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
@@ -13,10 +14,33 @@ import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.
  */
 export function updateFeedSearchChrome(appContext) {
 	const clearButton = document.getElementById('feedSearchClearButton')
-	const loadMore = document.getElementById('feedLoadMore')
 	const hasSearch = !!appContext.state.activeFeedSearchQuery
 	clearButton?.classList.toggle('hidden', !hasSearch)
-	loadMore?.classList.toggle('hidden', hasSearch || !appContext.state.feedCursor)
+}
+
+/**
+ * 绑定 feed 无限滚动。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function bindFeedInfiniteScroll(appContext) {
+	const list = document.getElementById('feedList')
+	if (!list || appContext.state.activeFeedSearchQuery) {
+		disconnectInfiniteScroll()
+		return
+	}
+	const sentinel = ensureScrollSentinel(list, 'feedScrollSentinel')
+	bindInfiniteScroll({
+		sentinel,
+		/**
+		 *
+		 */
+		hasMore: () => !!appContext.state.feedCursor,
+		/**
+		 *
+		 */
+		onLoad: () => loadFeed(appContext, true),
+	})
 }
 
 /**
@@ -141,7 +165,7 @@ export async function loadFeed(appContext, append = false) {
 	else for (const card of cards)
 		if (card) list.appendChild(card)
 
-	document.getElementById('feedLoadMore')?.classList.toggle('hidden', !appContext.state.feedCursor)
+	bindFeedInfiniteScroll(appContext)
 	void loadTrendingHashtags(appContext)
 	void loadSuggestedAccounts(appContext)
 }
@@ -155,6 +179,7 @@ export async function runFeedSearch(appContext) {
 	const input = document.getElementById('feedSearchInput')
 	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
 	if (q.length < 2) {
+		disconnectInfiniteScroll()
 		const list = document.getElementById('feedList')
 		const emptyElement = list ? await renderTemplate('feed_empty', { emptyKey: 'social.search.tooShort' }) : null
 		if (list && emptyElement) list.replaceChildren(emptyElement)
@@ -164,6 +189,7 @@ export async function runFeedSearch(appContext) {
 	}
 	appContext.state.activeFeedSearchQuery = q
 	appContext.state.feedCursor = null
+	disconnectInfiniteScroll()
 	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=40`)
 	if (appContext.state.activeFeedSearchQuery !== q) return
 	const list = document.getElementById('feedList')
@@ -192,6 +218,7 @@ export async function runFeedSearch(appContext) {
  */
 export async function clearFeedSearch(appContext) {
 	appContext.state.activeFeedSearchQuery = null
+	disconnectInfiniteScroll()
 	const input = document.getElementById('feedSearchInput')
 	if (input instanceof HTMLInputElement) input.value = ''
 	appContext.state.feedCursor = null

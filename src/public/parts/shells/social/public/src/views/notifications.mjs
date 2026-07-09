@@ -1,8 +1,13 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '../lib/infiniteScroll.mjs'
+
 /** @type {number | null} */
 let badgeUnreadCount = null
+
+/** @type {boolean} */
+let notificationsLoading = false
 
 /**
  * 确保已读水位已自服务端加载。
@@ -105,54 +110,104 @@ function notificationHref(appContext, row) {
 }
 
 /**
- * 加载并渲染通知列表。
+ * 渲染单条通知卡片。
  * @param {object} appContext 应用上下文
- * @returns {Promise<void>}
+ * @param {object} row 通知条目
+ * @param {number} seenAt 已读水位
+ * @returns {HTMLElement} 卡片
  */
-export async function loadNotifications(appContext) {
-	await ensureNotificationsSeenAt(appContext)
-	const data = await appContext.socialApi('/notifications?limit=40')
+function renderNotificationCard(appContext, row, seenAt) {
+	const card = document.createElement('article')
+	card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
+	const label = appContext.authorLabel(row.actorEntityHash)
+	let message = ''
+	if (row.type === 'reply') message = appContext.geti18n('social.notifications.reply', { author: label })
+	else if (row.type === 'mention') message = appContext.geti18n('social.notifications.mention', { author: label })
+	else if (row.type === 'like') message = appContext.geti18n('social.notifications.like', { author: label })
+	else if (row.type === 'repost') message = appContext.geti18n('social.notifications.repost', { author: label })
+	else if (row.type === 'follow') message = appContext.geti18n('social.notifications.follow', { author: label })
+	const href = notificationHref(appContext, row)
+	card.innerHTML = `
+		<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
+		<div class="notification-body">
+			<div class="post-header-row">
+				${appContext.renderAvatarHtml(row.actorEntityHash, { name: label })}
+				<div>
+					<div class="notification-type">${escapeHtml(message)}</div>
+					<span class="post-meta">${escapeHtml(appContext.formatTime(row.at))}</span>
+				</div>
+			</div>
+			<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(appContext.geti18n('social.notifications.view'))}</a>
+		</div>
+	`
+	return card
+}
+
+/**
+ * 绑定通知列表无限滚动。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function bindNotificationsInfiniteScroll(appContext) {
 	const container = document.getElementById('notificationsView')
-	const toolbar = document.getElementById('notificationsToolbar')
-	const seenAt = getNotificationsSeenAt(appContext)
-	const rows = data.notifications || []
-	appContext.state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
-	container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())
-	if (!rows.length) {
-		if (toolbar) toolbar.classList.add('hidden')
-		const empty = document.createElement('div')
-		empty.className = 'empty'
-		empty.textContent = appContext.geti18n('social.empty.notifications')
-		container.appendChild(empty)
-		await markNotificationsSeen(appContext)
+	if (!container) {
+		disconnectInfiniteScroll()
 		return
 	}
-	if (toolbar) toolbar.classList.remove('hidden')
-	for (const row of rows) {
-		const card = document.createElement('article')
-		card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
-		const label = appContext.authorLabel(row.actorEntityHash)
-		let message = ''
-		if (row.type === 'reply') message = appContext.geti18n('social.notifications.reply', { author: label })
-		else if (row.type === 'mention') message = appContext.geti18n('social.notifications.mention', { author: label })
-		else if (row.type === 'like') message = appContext.geti18n('social.notifications.like', { author: label })
-		else if (row.type === 'repost') message = appContext.geti18n('social.notifications.repost', { author: label })
-		else if (row.type === 'follow') message = appContext.geti18n('social.notifications.follow', { author: label })
-		const href = notificationHref(appContext, row)
-		card.innerHTML = `
-			<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
-			<div class="notification-body">
-				<div class="post-header-row">
-					${appContext.renderAvatarHtml(row.actorEntityHash, { name: label })}
-					<div>
-						<div class="notification-type">${escapeHtml(message)}</div>
-						<span class="post-meta">${escapeHtml(appContext.formatTime(row.at))}</span>
-					</div>
-				</div>
-				<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(appContext.geti18n('social.notifications.view'))}</a>
-			</div>
-		`
-		container.appendChild(card)
+	const sentinel = ensureScrollSentinel(container, 'notificationsScrollSentinel')
+	bindInfiniteScroll({
+		sentinel,
+		hasMore: () => !!appContext.state.notificationsCursor,
+		onLoad: () => loadNotifications(appContext, true),
+	})
+}
+
+/**
+ * 加载并渲染通知列表。
+ * @param {object} appContext 应用上下文
+ * @param {boolean} [append=false] 追加下一页
+ * @returns {Promise<void>}
+ */
+export async function loadNotifications(appContext, append = false) {
+	if (notificationsLoading) return
+	notificationsLoading = true
+	try {
+		await ensureNotificationsSeenAt(appContext)
+		const cursorQuery = append && appContext.state.notificationsCursor
+			? `&cursor=${encodeURIComponent(appContext.state.notificationsCursor)}`
+			: ''
+		const data = await appContext.socialApi(`/notifications?limit=40${cursorQuery}`)
+		const container = document.getElementById('notificationsView')
+		const toolbar = document.getElementById('notificationsToolbar')
+		const seenAt = getNotificationsSeenAt(appContext)
+		const rows = data.notifications || []
+		appContext.state.notificationsCursor = data.nextCursor || null
+		appContext.state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
+
+		if (!append) {
+			container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())
+			if (!rows.length) {
+				if (toolbar) toolbar.classList.add('hidden')
+				const empty = document.createElement('div')
+				empty.className = 'empty'
+				empty.textContent = appContext.geti18n('social.empty.notifications')
+				container.appendChild(empty)
+				await markNotificationsSeen(appContext)
+				disconnectInfiniteScroll()
+				return
+			}
+		}
+
+		if (toolbar) toolbar.classList.toggle('hidden', !append && !rows.length)
+		for (const row of rows)
+			container.insertBefore(renderNotificationCard(appContext, row, seenAt), document.getElementById('notificationsScrollSentinel'))
+
+		if (!append)
+			await markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())
+
+		bindNotificationsInfiniteScroll(appContext)
 	}
-	await markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())
+	finally {
+		notificationsLoading = false
+	}
 }

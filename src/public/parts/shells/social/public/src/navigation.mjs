@@ -42,7 +42,10 @@ export async function switchView(appContext, view) {
 		}
 		updateFeedSearchChrome(appContext)
 	}
-	if (view === 'notifications') await loadNotifications(appContext)
+	if (view === 'notifications') {
+		appContext.state.notificationsCursor = null
+		await loadNotifications(appContext, false)
+	}
 	if (view === 'explore') await loadExplore(appContext)
 	if (view === 'saved') await loadSaved(appContext)
 	if (view === 'profile') await loadProfile(appContext)

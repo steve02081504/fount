@@ -22,6 +22,13 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 
+## Feed / profile pagination (C2.4)
+
+- Shared infinite scroll: `public/src/lib/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`, `#feedScrollSentinel` / `#notificationsScrollSentinel` / profile panel sentinel).
+- Feed / notifications / profile posts paginate via backend `nextCursor`; search mode calls `disconnectInfiniteScroll()` (no cursor append).
+- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts; report success → `social.actions.reportSubmitted`.
+- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=`), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/report/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
+
 ## Agent integration
 
 - @-mentioning a local agent: `dispatch.mjs` prefers `interfaces.social.OnMention`; falls back to `interfaces.chat.GetReply` when missing (`lib/chatMentionFallback.mjs` builds a minimal request, using chat's `BUILTIN_*` for the built-in world/persona). `publishEntityReply` calls `ensureEntitySocialReady` so agent timelines have `social_meta` before auto-reply.

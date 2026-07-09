@@ -17,6 +17,7 @@ alwaysApply: false
 - **Fixed order**: base → world (objective) → persona (subjective).
 - Agent: `getChatRequest` builds the viewer, then runs the two steps above.
 - Human: `materializeViewerLog.mjs` → `GET …/view-log`; projects back to row DTOs (hides discarded entries, applies rewrite overrides, `viewerRewritten`); raw `GET …/messages` is preserved separately.
+- **view-log pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` means the raw DAG page hit `limit` (before persona/world filtering). When filtering yields an empty page but `hasMore`, Hub advances with `oldestRawEventId` — do not peer-inject raw rows from the client (`dag/queries` already backfills on before-miss).
 - Hub: `loadMessages` / incremental refresh go through `getChannelViewLog`; navigation backfill can still use raw batch-get / pin-context.
 - Federation: `federation/remoteWorldProxy.mjs` + `federation/rpcDispatcher.mjs`; the world side exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`.
 - **Optional-hook degradation across RPC**: the proxy defines every method, so "remote didn't implement it" surfaces as a `METHOD_NOT_FOUND` RPC error — `invokeRemote` catches it and returns `undefined`, making a missing remote hook indistinguishable from a locally-undefined one. Callers therefore uniformly use `hook?.(…) ?? fallback`. The dispatcher throws `METHOD_NOT_FOUND` for local parts lacking the method instead of falling through to network RPC.
@@ -87,3 +88,4 @@ alwaysApply: false
 - Integration: `test/integration/edit_path_hooks.test.mjs`.
 - Pure: `test/pure/world_op_reducer.test.mjs`, `test/pure/world_op_validate.test.mjs`
 - Integration: `test/integration/world_op_state.test.mjs`, `test/integration/world_distribution.test.mjs`
+- HTTP route integration (`launchNode` + scenario bootstrap): `test/integration/routes_http.test.mjs`, env `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`.

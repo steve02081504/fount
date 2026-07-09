@@ -1,7 +1,7 @@
 import { formatSocialProfileRunUri } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
+import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
-import { refreshVisiblePosts } from '../navigation.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
 
@@ -43,12 +43,21 @@ export async function handlePostProfileActionsClick(appContext, target) {
 
 	const deleteButton = target.closest('button[data-delete]')
 	if (deleteButton instanceof HTMLElement && deleteButton.dataset.delete) {
-		await appContext.socialApi('/posts', {
-			method: 'DELETE',
-			body: JSON.stringify({ postId: deleteButton.dataset.delete }),
-		})
-		await refreshVisiblePosts(appContext)
+		const card = deleteButton.closest('.post-card')
+		const parent = card?.parentElement
+		const next = card?.nextSibling
+		card?.remove()
 		closePostMoreMenus()
+		try {
+			await runSocialWrite('delete', () => appContext.socialApi('/posts', {
+				method: 'DELETE',
+				body: JSON.stringify({ postId: deleteButton.dataset.delete }),
+			}))
+		}
+		catch {
+			if (card && parent)
+				parent.insertBefore(card, next)
+		}
 	}
 
 	return false

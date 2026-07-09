@@ -1130,7 +1130,8 @@
 			"composeButton": "发布",
 			"addMedia": "添加媒体",
 			"visibilityPublic": "公开",
-			"visibilityFollowers": "仅关注者"
+			"visibilityFollowers": "仅关注者",
+			"contentWarning": "内容警告（可选）"
 		},
 		"feed": {
 			"loadMore": "加载更多",
@@ -1192,7 +1193,13 @@
 			"repostFailed": "转发失败：${error}",
 			"replyFailed": "回复失败：${error}",
 			"followFailed": "关注失败：${error}",
-			"saveFailed": "收藏失败：${error}"
+			"saveFailed": "收藏失败：${error}",
+			"blockFailed": "拉黑失败：${error}",
+			"hideFailed": "隐藏失败：${error}",
+			"muteFailed": "静音失败：${error}",
+			"reportFailed": "举报失败：${error}",
+			"deleteFailed": "删除失败：${error}",
+			"reportSubmitted": "举报已提交"
 		},
 		"aside": {
 			"suggested": "推荐关注"

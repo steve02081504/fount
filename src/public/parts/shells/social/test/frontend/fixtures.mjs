@@ -7,12 +7,16 @@ import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
+import { FOREIGN_FE_AUTHOR_HASH } from '../seedForeignFeedAuthor.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
 /** 经 bootstrap 注册 network hint 的可发现测试目标（follow/block 烟测）。 */
 export const DUMMY_ENTITY_HASH = SEEDED_TEST_TARGET_HASH
+
+/** bootstrap 联邦 ingest 的远程作者（治理菜单烟测）。 */
+export { FOREIGN_FE_AUTHOR_HASH }
 
 /**
  * Social 前端 E2E 测试套件（扩展 publishPost fixture）。
@@ -366,6 +370,88 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
 		const data = await res.json()
 		if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
 		return data.viewerEntityHash
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 通过 API 关注指定 entity。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} entityHash - 目标 entityHash。
+ * @returns {Promise<void>}
+ */
+export async function followEntityViaApi(baseUrl, apiKey, entityHash) {
+	const req = await playwrightRequest.newContext()
+	try {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:social/relationships/follow?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: { entityHash, follow: true } },
+		)
+		if (!res.ok()) throw new Error(`follow failed: ${res.status()}`)
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 关注 bootstrap 远程作者并刷新 feed，返回其帖子卡片定位器。
+ * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @returns {Promise<import('npm:@playwright/test').Locator>} 远程作者帖子卡片。
+ */
+export async function findForeignAuthorPostCard(page, baseUrl, apiKey) {
+	await followEntityViaApi(baseUrl, apiKey, FOREIGN_FE_AUTHOR_HASH)
+	const [feedResponse] = await Promise.all([
+		waitForFeedLoad(page),
+		page.locator('#feedRefreshButton').click(),
+	])
+	await feedResponse.json()
+	const card = page.locator(`#feedList .post-card[data-author-entity="${FOREIGN_FE_AUTHOR_HASH}"]`).first()
+	await expect(card).toBeVisible({ timeout: 30_000 })
+	return card
+}
+
+/**
+ * 通过 API 批量回复以生成通知（用于通知分页烟测）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} [count=41] - 回复数量。
+ * @returns {Promise<void>}
+ */
+export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
+	const req = await playwrightRequest.newContext()
+	const key = encodeURIComponent(apiKey)
+	try {
+		const viewerRes = await req.get(`${baseUrl}/api/parts/shells:social/viewer?fount-apikey=${key}`)
+		if (!viewerRes.ok()) throw new Error(`viewer failed: ${viewerRes.status()}`)
+		const { viewerEntityHash } = await viewerRes.json()
+		const parentRes = await req.post(
+			`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
+			{ data: { text: `notif-seed-parent-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
+		)
+		if (!parentRes.ok()) throw new Error(`parent post failed: ${parentRes.status()}`)
+		const parentJson = await parentRes.json()
+		const postId = parentJson.id || parentJson.post?.id || parentJson.postId
+		if (!postId) throw new Error('parent postId missing')
+		for (let index = 0; index < count; index++) {
+			const res = await req.post(
+				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
+				{
+					data: {
+						text: `notif-seed-reply-${index}-${Date.now()}`,
+						visibility: 'public',
+						lang: 'zh-CN',
+						replyTo: { entityHash: viewerEntityHash, postId },
+					},
+				},
+			)
+			if (!res.ok()) throw new Error(`reply seed failed: ${res.status()}`)
+		}
 	}
 	finally {
 		await req.dispose()

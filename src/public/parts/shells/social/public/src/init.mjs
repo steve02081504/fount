@@ -119,7 +119,6 @@ export async function bootstrapSocialApp(appContext) {
 			await addComposerMedia(appContext, input.files)
 			input.value = ''
 		})
-		document.getElementById('feedLoadMore')?.addEventListener('click', () => { void loadFeed(appContext, true) })
 		document.getElementById('app')?.addEventListener('click', event => { void handleMainClick(appContext, event) })
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event

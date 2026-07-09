@@ -13,7 +13,7 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import {
 	createChannelThread,
-	getChannelMessages,
+	getChannelViewLog,
 	getGroupState,
 	sendGroupMessage,
 } from '../src/api/groupApi.mjs'
@@ -124,7 +124,7 @@ async function renderThreadMessages(messageContainer) {
 	if (!activeThread) return
 	messageContainer.replaceChildren()
 	const { groupId, threadChannelId } = activeThread
-	const { messages, reactions } = await getChannelMessages(groupId, threadChannelId, { limit: 80 })
+	const { messages, reactions } = await getChannelViewLog(groupId, threadChannelId, { limit: 80 })
 	activeThread.messages = messages || []
 	activeThread.reactions = reactions || {}
 	const rows = applyChannelDisplayChain(activeThread.messages)

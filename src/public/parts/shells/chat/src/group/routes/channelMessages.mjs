@@ -191,14 +191,14 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		ensureChannel(state, channelId)
 		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
 
-		const { messages, visibleEventIds } = await readViewerChannelMessages(username, groupId, channelId, {
+		const { messages, visibleEventIds, hasMore, oldestRawEventId } = await readViewerChannelMessages(username, groupId, channelId, {
 			since: since || undefined,
 			before: before || undefined,
 			limit,
 		}, { kind: 'user' })
 		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, visibleEventIds)
 		const readMarker = getChannelReadMarker(username, groupId, channelId)
-		res.status(200).json({ messages, reactions, readMarker })
+		res.status(200).json({ messages, reactions, readMarker, hasMore, oldestRawEventId })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/read-marker`, authenticate, async (req, res) => {

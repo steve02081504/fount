@@ -1,4 +1,5 @@
 import { ensureSocialTestReady } from './afterInit.mjs'
+import { seedForeignFeedAuthorPost } from './seedForeignFeedAuthor.mjs'
 import { seedKnownTestEntityTarget } from './seedKnownEntity.mjs'
 
 /**
@@ -8,4 +9,5 @@ import { seedKnownTestEntityTarget } from './seedKnownEntity.mjs'
 export default async function bootstrap(username) {
 	await ensureSocialTestReady(username)
 	await seedKnownTestEntityTarget()
+	await seedForeignFeedAuthorPost(username)
 }
