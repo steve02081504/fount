@@ -5,7 +5,7 @@
 import 'fount/scripts/test/env.mjs'
 
 import { spawn } from 'node:child_process'
-import { cp, mkdir, mkdtemp, readdir, rename, rm } from 'node:fs/promises'
+import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
 import net from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -20,9 +20,9 @@ import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { buildV8FlagsArg, collectHeapSnapshots, resolveHeapSnapshotCount } from '../heap_snapshot.mjs'
 import { startTestNostrRelay, stopTestNostrRelay } from '../live/nostr_relay.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
-import { scheduleHeapSnapshotAnalysis } from '../schedule_heap_snapshot_analysis.mjs'
 
 import { defaultTestStarts } from './starts.mjs'
 
@@ -30,9 +30,6 @@ const workerPath = join(dirname(fileURLToPath(import.meta.url)), 'worker.mjs')
 
 /** 测试节点默认 V8 老生代上限（MB）；0 表示不限制。 */
 const DEFAULT_TEST_NODE_HEAP_MB = 1024
-
-/** 近 OOM 时默认写入的堆快照份数。 */
-const DEFAULT_HEAP_SNAPSHOT_COUNT = 2
 
 /**
  * 解析测试节点 V8 堆上限（MB）；0 表示不注入 --max-old-space-size。
@@ -47,25 +44,17 @@ function resolveTestNodeHeapMb() {
 }
 
 /**
- * 解析近 OOM 堆快照份数。
- * @returns {number} 快照份数；0 表示禁用
- */
-function resolveHeapSnapshotCount() {
-	const raw = process.env.FOUNT_TEST_HEAP_SNAPSHOT_COUNT
-	if (raw === '' || raw === '0') return 0
-	const parsed = Number(raw ?? DEFAULT_HEAP_SNAPSHOT_COUNT)
-	return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_HEAP_SNAPSHOT_COUNT
-}
-
-/**
- * 构造 deno run 的 --v8-flags 参数（低内存上限）。
- * 近 OOM 快照由 worker 轮询 used_heap / FOUNT_TEST_NODE_HEAP_MB（Deno 无 setHeapSnapshotNearHeapLimit）。
+ * 构造 deno run 的 --v8-flags 参数（堆上限 + 近 OOM 快照）。
  * @returns {string | null} --v8-flags=... 或 null
  */
 function buildTestNodeV8FlagsArg() {
+	/** @type {string[]} */
+	const flags = []
 	const heapMb = resolveTestNodeHeapMb()
-	if (heapMb <= 0) return null
-	return `--v8-flags=--max-old-space-size=${heapMb}`
+	if (heapMb > 0) flags.push(`--max-old-space-size=${heapMb}`)
+	const snapshotCount = resolveHeapSnapshotCount()
+	if (snapshotCount > 0) flags.push(`--heapsnapshot-near-heap-limit=${snapshotCount}`)
+	return buildV8FlagsArg(flags)
 }
 
 /**
@@ -74,35 +63,13 @@ function buildTestNodeV8FlagsArg() {
  * @returns {Promise<string[]>} 已搬运的快照绝对路径
  */
 async function collectNodeHeapSnapshots(pid) {
-	if (!Number.isFinite(pid) || pid <= 0) return []
-	const needle = `.${pid}.`
-	/** @type {string[]} */
-	const matched = []
-	try {
-		for (const name of await readdir(REPO_ROOT)) {
-			if (!name.startsWith('Heap.') || !name.endsWith('.heapsnapshot')) continue
-			if (!name.includes(needle)) continue
-			matched.push(join(REPO_ROOT, name))
-		}
-	}
-	catch { return [] }
-	if (!matched.length) return []
-
-	const destDir = heapSnapshotDir(REPO_ROOT)
-	await mkdir(destDir, { recursive: true })
-	/** @type {string[]} */
-	const saved = []
-	for (const src of matched) {
-		const base = src.slice(REPO_ROOT.length + 1)
-		const dest = join(destDir, base)
-		try {
-			await rename(src, dest)
-			saved.push(dest)
-			console.warnI18n('fountConsole.test.heapSnapshotSaved', { path: dest })
-			scheduleHeapSnapshotAnalysis(dest)
-		}
-		catch { /* snapshot may have been removed already */ }
-	}
+	const saved = await collectHeapSnapshots({
+		pid,
+		destDir: heapSnapshotDir(REPO_ROOT),
+		cwd: REPO_ROOT,
+	})
+	for (const dest of saved)
+		console.warnI18n('fountConsole.test.heapSnapshotSaved', { path: dest })
 	return saved
 }
 
@@ -481,8 +448,6 @@ export async function launchNode(options = {}) {
 			FOUNT_TEST: '1',
 			FOUNT_TEST_NODE_WORKER: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
-			FOUNT_TEST_NODE_HEAP_MB: String(resolveTestNodeHeapMb()),
-			FOUNT_TEST_HEAP_SNAPSHOT_COUNT: String(resolveHeapSnapshotCount()),
 			...extraEnv,
 		},
 	})

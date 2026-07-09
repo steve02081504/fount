@@ -9,30 +9,8 @@ import process from 'node:process'
 import { hosturl } from '../../../server/server.mjs'
 import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
-import { installNearOomHeapSnapshot } from '../heap_snapshot_watch.mjs'
 
 import { bootInProcess } from './boot.mjs'
-
-/** 与 launch.mjs 中 --max-old-space-size 默认值一致。 */
-const DEFAULT_TEST_NODE_HEAP_MB = 1024
-
-/**
- * 近 OOM 判定用的堆上限（字节）。
- * Deno 的 heap_size_limit 会高于 --max-old-space-size 的实际 OOM 线，须用配置值。
- * @returns {number} 0 表示未设上限、不启用近 OOM 快照
- */
-function resolveNearOomHeapLimitBytes() {
-	const raw = process.env.FOUNT_TEST_NODE_HEAP_MB
-	if (raw === '' || raw === '0') return 0
-	const parsed = Number(raw)
-	const heapMb = Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_TEST_NODE_HEAP_MB
-	return heapMb * 1024 * 1024
-}
-
-installNearOomHeapSnapshot({
-	resolveLimitBytes: resolveNearOomHeapLimitBytes,
-	label: 'test-node',
-})
 
 const { values } = parseArgsOrExit({
 	options: {
