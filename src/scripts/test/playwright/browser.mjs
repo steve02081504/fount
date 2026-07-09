@@ -6,18 +6,16 @@ import { where_command } from '@steve02081504/exec'
  * @throws {Error} PATH 上找不到 chrome/msedge 时
  */
 export async function resolveBrowserUseOptions() {
-	for (const command of ['chrome', 'msedge'])
-		try {
-			const executablePath = await where_command(command)
-			if (executablePath)
-				return {
-					launchOptions: {
-						executablePath,
-						args: ['--disable-features=BackForwardCache'],
-					},
-				}
-		}
-		catch { /* try next */ }
+	for (const command of ['chrome', 'msedge']) {
+		const executablePath = await where_command(command)
+		if (executablePath)
+			return {
+				launchOptions: {
+					executablePath,
+					args: ['--disable-features=BackForwardCache'],
+				},
+			}
+	}
 
 	throw new Error('Playwright: no Chrome/Edge on PATH.')
 }
