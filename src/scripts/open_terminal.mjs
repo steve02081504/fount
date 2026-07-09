@@ -46,12 +46,7 @@ export async function spawnFountLog() {
 		['alacritty', ['-e', fountScript, 'log']],
 	]
 	for (const [command, args] of terminals) {
-		try {
-			await where_command(command)
-		}
-		catch {
-			continue
-		}
+		if (!await where_command(command)) continue
 		await launchDetachedProgram({ command, args, cwd: fountDir, env: spawnEnv })
 		return
 	}

@@ -432,7 +432,7 @@ system:
 							// 如果仍然不支持，尝试使用 ffmpeg 转换
 							if (!supportedFileTypes.includes(mime_type)) {
 								// 设置 ffmpeg 路径，在系统中找不到则使用 npm 安装的 ffmpeg
-								ffmpeg.setFfmpegPath(await where_command('ffmpeg').catch(() => 0) || await import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path))
+								ffmpeg.setFfmpegPath(await where_command('ffmpeg') || await import('npm:@ffmpeg-installer/ffmpeg').then(m => m.default.path))
 
 								const [type] = mime_type.split('/')
 								let targetMimeType = null

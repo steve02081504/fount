@@ -39,11 +39,7 @@ let detectEditorsPromise
  * @returns {Promise<boolean>} - 是否可用。
  */
 async function commandOnPath(command) {
-	try {
-		return Boolean(await where_command(command))
-	} catch {
-		return false
-	}
+	return Boolean(await where_command(command))
 }
 
 /**
