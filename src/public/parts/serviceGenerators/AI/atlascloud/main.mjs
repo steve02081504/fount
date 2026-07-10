@@ -48,7 +48,7 @@ const atlasCloudHomepage = 'https://www.atlascloud.ai/?utm_source=github&utm_med
 const configTemplate = {
 	name: 'Atlas Cloud',
 	url: 'https://api.atlascloud.ai/v1/chat/completions',
-	model: 'deepseek-ai/DeepSeek-V3-0324',
+	model: 'qwen/qwen3.5-flash',
 	apikey: process.env.ATLASCLOUD_API_KEY || '',
 	model_arguments: {
 		temperature: 1,
