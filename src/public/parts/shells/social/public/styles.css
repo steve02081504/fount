@@ -445,7 +445,7 @@ body {
 .feed-search-input {
 	flex: 1;
 	width: 100%;
-	padding: 0.65rem 2.5rem 0.65rem 2.5rem;
+	padding: 0.65rem 2.5rem;
 	border: none;
 	border-radius: 999px;
 	background: var(--social-bg-soft);
