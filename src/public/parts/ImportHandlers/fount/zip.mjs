@@ -15,13 +15,10 @@ let sevenZipPathCache
  */
 async function get7zPath() {
 	if (sevenZipPathCache) return sevenZipPathCache
-	try {
-		return sevenZipPathCache = await where_command('7z')
-	}
-	catch (err) {
-		const sevenBin = await import('npm:7zip-bin-full')
-		return sevenZipPathCache = sevenBin.default?.path7z
-	}
+	sevenZipPathCache = await where_command('7z')
+	if (sevenZipPathCache) return sevenZipPathCache
+	const sevenBin = await import('npm:7zip-bin-full')
+	return sevenZipPathCache = sevenBin.default?.path7z
 }
 
 /**
