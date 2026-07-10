@@ -12,7 +12,7 @@ import {
 } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { avatarColor, avatarInitial } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import {
 	loadEntityProfile,
@@ -91,15 +91,18 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const memberList = document.getElementById('hub-member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
+	const charAvatarSeed = entityHash || name
 	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
 
 	await mountTemplate(memberList, sidebarTpl, {
 		charName,
 		charAvatarHtml: charAvatarInner,
-		avatarBg: avatarColor(charDisplayName),
+		avatarBg: avatarColor(charAvatarSeed),
+		avatarTextColor: avatarTextColor(charAvatarSeed),
 		viewerDisplayName: viewerDisplayName ? escapeHtml(viewerDisplayName) : '',
 		viewerEntityHash: viewerEntityHash ? escapeHtml(viewerEntityHash) : '',
-		myAvatarBg: viewerDisplayName ? avatarColor(viewerDisplayName) : '',
+		myAvatarBg: viewerEntityHash ? avatarColor(viewerEntityHash) : '',
+		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
 		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
 	})
 
@@ -116,7 +119,8 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		charNameRaw: escapeHtml(name),
 		entityHash: escapeHtml(entityHash || ''),
 		charAvatarHtml: charAvatarInner,
-		avatarBg: avatarColor(charDisplayName),
+		avatarBg: avatarColor(charAvatarSeed),
+		avatarTextColor: avatarTextColor(charAvatarSeed),
 		descriptionPreview: '',
 	})
 

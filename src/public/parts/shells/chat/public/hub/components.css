@@ -217,7 +217,6 @@
 	justify-content: center;
 	font-weight: 700;
 	font-size: 15px;
-	color: var(--hub-on-accent);
 	flex-shrink: 0;
 	overflow: hidden;
 	user-select: none;

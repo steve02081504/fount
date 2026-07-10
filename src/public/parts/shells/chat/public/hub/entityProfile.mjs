@@ -9,8 +9,8 @@ import { renderMarkdown } from '../../../../scripts/features/markdown/index.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { mountAvatarCover } from './core/avatarCover.mjs'
-import { avatarColor, avatarInitial } from './core/domUtils.mjs'
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
+import { avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { isLocalWritableEntityHash } from './entityResolve.mjs'
 import {
@@ -86,13 +86,21 @@ export async function paintEntityProfileUi(root, profile) {
 	const name = profile.name || '?'
 	const nameElement = root.querySelector('[data-entity-profile-name]')
 	if (nameElement) nameElement.textContent = name
-	const letterElement = root.querySelector('[data-entity-profile-letter]')
-	if (letterElement) letterElement.textContent = avatarInitial(name)
+	const avatarSeed = root.dataset?.entityHash || root.dataset?.entityProfileHash || name
 	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
 	if (avatarElement instanceof HTMLElement)
-		avatarElement.style.background = avatarColor(name)
-	if (profile.avatar && avatarElement instanceof HTMLElement)
-		await mountAvatarCover(avatarElement, profile.avatar, '')
+		await applyProfileAvatarToHost(avatarElement, {
+			seed: avatarSeed,
+			label: name,
+			avatar: profile.avatar,
+			emojiFontSize: '28px',
+			letterClass: 'hub-avatar-letter',
+		})
+	const letterElement = root.querySelector('[data-entity-profile-letter]')
+	if (letterElement instanceof HTMLElement) {
+		letterElement.textContent = avatarInitial(name)
+		letterElement.hidden = !!profile.avatar
+	}
 	applyBioElement(root.querySelector('[data-entity-profile-bio]'), profileDescriptionText(profile))
 	paintProfileTags(root.querySelector('[data-entity-profile-tags]'), profile.tags)
 	const statusDot = root.querySelector('[data-entity-profile-status-dot]')

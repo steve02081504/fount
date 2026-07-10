@@ -14,13 +14,12 @@ import { entityHashLabel } from '../shared/entityHash.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 import { setEmojiUrlResolver } from '../src/emojiCache.mjs'
 import { localeQueryString } from '../src/entityProfileApi.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
 import { getChatGestures } from './chatGestures.mjs'
-import { mountAvatarCover } from './core/avatarCover.mjs'
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { wireHubBannerBindings } from './core/bindings.mjs'
-import { avatarColor, avatarInitial } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { wireHubGroupEmojiStickerGestures } from './emojiPickerGestures.mjs'
@@ -65,11 +64,18 @@ export async function refreshViewerHubPresentation() {
 	const myAvatar = document.getElementById('hub-my-avatar')
 	const myName = document.getElementById('hub-my-name')
 	myAvatar.replaceChildren()
+	myAvatar.dataset.avatarSeed = entityHash
 	myAvatar.textContent = avatarInitial(label)
-	myAvatar.style.background = avatarColor(label)
+	myAvatar.style.background = avatarColor(entityHash)
+	myAvatar.style.color = avatarTextColor(entityHash)
 	myName.textContent = label
 	if (profile?.avatar)
-		await mountAvatarCover(myAvatar, profile.avatar, escapeHtml(label))
+		await applyProfileAvatarToHost(myAvatar, {
+			seed: entityHash,
+			label,
+			avatar: profile.avatar,
+			emojiFontSize: '18px',
+		})
 }
 
 /** @returns {Promise<void>} 加载当前 viewer（nodeHash + entityHash）到顶栏 */

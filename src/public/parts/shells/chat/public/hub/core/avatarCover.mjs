@@ -1,19 +1,92 @@
 /**
- * 【文件】public/hub/core/avatarCover.mjs
- * 【职责】在圆角头像容器内挂载铺满的封面图模板（Hub 顶栏与资料卡共用）。
- * 【原理】`mountAvatarCover` 向 `.hub-avatar` 等宿主注入 `hub/avatar/cover_img` 模板节点。
- * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../../../../../scripts/template
+ * Hub 头像宿主绘制：hash 文字占位 + profile 图片/表情，消息/成员/悬浮卡/资料弹层共用。
  */
-import { mountTemplate } from '../../../../../scripts/features/template.mjs'
+import {
+	avatarColor,
+	avatarInitial,
+	avatarTextColor,
+	isAvatarImageUrl,
+} from '/scripts/lib/hashAvatar.mjs'
 
 /**
- * 在圆角头像容器内挂载铺满的封面图。
- * @param {HTMLElement} host 头像宿主（如 `.hub-avatar`）
- * @param {string} src 图片 URL
- * @param {string} alt 替代文本（已转义或由调用方保证安全）
+ *
+ */
+export { isAvatarImageUrl }
+
+/**
+ * 将宿主重置为 hash 文字占位头像。
+ * @param {HTMLElement} host 圆形容器
+ * @param {{ seed?: string, label?: string, letterId?: string, letterClass?: string }} opts 绘制选项
+ * @returns {HTMLSpanElement} 字母节点
+ */
+export function paintHashAvatarHost(host, { seed, label, letterId, letterClass = 'hub-avatar-letter' }) {
+	const avatarSeed = String(seed || label || '?')
+	const displayLabel = String(label || avatarSeed)
+	host.dataset.avatarSeed = avatarSeed
+	host.replaceChildren()
+	const letter = document.createElement('span')
+	if (letterId) letter.id = letterId
+	if (letterClass) letter.className = letterClass
+	letter.textContent = avatarInitial(displayLabel)
+	host.appendChild(letter)
+	host.style.background = avatarColor(avatarSeed)
+	host.style.color = avatarTextColor(avatarSeed)
+	return letter
+}
+
+/**
+ * 在 hash 占位基础上应用 profile.avatar（URL 图 / 表情文本；加载失败回退字母）。
+ * @param {HTMLElement} host 圆形容器
+ * @param {{ seed?: string, label?: string, avatar?: string | null, emojiFontSize?: string, letterId?: string, letterClass?: string }} opts 绘制选项
  * @returns {Promise<void>}
  */
-export async function mountAvatarCover(host, src, alt) {
-	await mountTemplate(host, 'hub/avatar/cover_img', { src, alt })
+export async function applyProfileAvatarToHost(host, opts) {
+	const {
+		seed,
+		label,
+		avatar,
+		emojiFontSize = '20px',
+		letterId,
+		letterClass,
+	} = opts
+	const letter = paintHashAvatarHost(host, { seed, label, letterId, letterClass })
+	const avatarVal = String(avatar || '').trim()
+	if (!avatarVal) return
+
+	if (isAvatarImageUrl(avatarVal)) {
+		const img = document.createElement('img')
+		img.src = avatarVal
+		img.alt = String(label || '')
+		img.style.cssText = 'width:100%;height:100%;object-fit:cover;'
+		img.addEventListener('error', () => {
+			img.remove()
+			letter.hidden = false
+		}, { once: true })
+		img.addEventListener('load', () => {
+			letter.hidden = true
+		}, { once: true })
+		host.appendChild(img)
+		return
+	}
+
+	host.textContent = avatarVal
+	host.style.fontSize = emojiFontSize
+	host.style.background = avatarColor(String(seed || label || '?'))
+	host.style.color = avatarTextColor(String(seed || label || '?'))
+}
+
+/**
+ * 在圆角头像容器内挂载铺满的封面图（兼容旧调用；失败时保留 hash 字母）。
+ * @param {HTMLElement} host 头像宿主
+ * @param {string} src 图片 URL
+ * @param {string} alt 替代文本
+ * @param {{ seed?: string }} [opts] 可选身份 seed（缺省读 host.dataset.avatarSeed）
+ * @returns {Promise<void>}
+ */
+export async function mountAvatarCover(host, src, alt, opts = {}) {
+	await applyProfileAvatarToHost(host, {
+		seed: opts.seed || host.dataset?.avatarSeed,
+		label: alt,
+		avatar: src,
+	})
 }

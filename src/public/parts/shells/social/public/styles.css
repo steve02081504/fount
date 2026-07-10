@@ -652,6 +652,29 @@ body {
 	background: var(--social-bg-soft);
 }
 
+.author-avatar.hash-avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 0.95rem;
+	line-height: 1;
+	overflow: hidden;
+	position: relative;
+}
+
+.author-avatar.hash-avatar .hash-avatar-img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.author-avatar.hash-avatar:has(.hash-avatar-img) .hash-avatar-letter {
+	visibility: hidden;
+}
+
 .author-avatar.profile-avatar {
 	width: 80px;
 	height: 80px;

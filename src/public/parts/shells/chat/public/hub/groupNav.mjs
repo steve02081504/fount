@@ -35,7 +35,7 @@ import {
 } from './banners.mjs'
 import { showChannelContextMenu } from './channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from './channels.mjs'
-import { authorDisplayLabel, avatarColor, avatarInitial, warmCharEntityHashCache } from './core/domUtils.mjs'
+import { authorDisplayLabel, avatarColor, avatarInitial, avatarTextColor, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
 import { consumePendingJoin, inviteCodeFromUrl, parseHash, updateFriendsHash, updateHash } from './core/urlHash.mjs'
 import { resetFilesDrawerWire } from './files.mjs'
@@ -149,7 +149,8 @@ export async function renderGroupInfoCard(state) {
 	const displayName = meta.name || ''
 	const description = meta.description ?? ''
 	await mountTemplate(host, 'hub/nav/info_card', {
-		avatarColor: avatarColor(displayName || '?'),
+		avatarColor: avatarColor(hubStore.context.currentGroupId || displayName || '?'),
+		avatarTextColor: avatarTextColor(hubStore.context.currentGroupId || displayName || '?'),
 		avatarInitial: escapeHtml(avatarInitial(displayName || '?')),
 		groupName: escapeHtml(displayName),
 		nameI18nAttr: displayName ? '' : ' data-i18n="chat.hub.groupTag"',
@@ -436,6 +437,7 @@ export async function renderMemberList(state) {
 			const ownerAttr = isAgent && member.ownerPubKeyHash
 				? ` data-owner-pub-key-hash="${escapeHtml(member.ownerPubKeyHash)}"`
 				: ''
+			const avatarSeed = entityHash || memberKey || (isAgent ? member.charname : '') || displayName
 			listHost.appendChild(await renderTemplate('hub/nav/member_item', {
 				adminClass: isAdmin ? ' is-admin' : '',
 				charClass: isAgent ? ' hub-member-item-char' : '',
@@ -445,7 +447,8 @@ export async function renderMemberList(state) {
 				avatarFor: escapeHtml(avatarFor),
 				memberKey: escapeHtml(memberKey),
 				entityHash: escapeHtml(entityHash),
-				avatarColor: avatarColor(displayName),
+				avatarColor: avatarColor(avatarSeed),
+				avatarTextColor: avatarTextColor(avatarSeed),
 				avatarInitial: escapeHtml(avatarInitial(displayName)),
 			}))
 		}

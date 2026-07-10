@@ -4,11 +4,51 @@
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
 import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
+import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { decryptEventContent } from '../channel_keys/content.mjs'
 
 import { overlayPinsForChannel } from './hotPostsIndex.mjs'
+
+/**
+ * 角色消息展示快照：查 agent 成员 + 角色 part，不用 sender（宿主人类）profile。
+ * @param {object} state 物化群状态
+ * @param {string} charId 角色 part 名
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {Promise<{ name: string, avatar: string | null }>} 展示快照
+ */
+async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
+	const charname = String(charId).trim()
+	const agentKey = resolveActiveAgentMemberKeyByCharname(state, charname)
+	const agent = agentKey ? state.members[agentKey] : null
+	let name = ''
+	let avatar = null
+
+	const owner = String(agent?.ownerUsername || username).trim()
+	try {
+		const { info } = await getPartDetails(owner, `chars/${charname}`) || {}
+		if (info?.name) name = String(info.name).trim()
+		if (info?.avatar) avatar = String(info.avatar).trim() || null
+	}
+	catch { /* part miss */ }
+
+	if (!name || !avatar) {
+		const entityHash = agent ? memberEntityHash(agent) : null
+		if (entityHash)
+			try {
+				const profile = await getProfile(entityHash, username, { groupId })
+				if (!name && profile?.name) name = String(profile.name).trim()
+				if (!avatar && profile?.avatar) avatar = String(profile.avatar).trim() || null
+			}
+			catch { /* profile miss */ }
+	}
+
+	if (!name) name = charname
+	return { name, avatar }
+}
 
 /**
  * @param {object} state 物化群状态
@@ -18,21 +58,23 @@ import { overlayPinsForChannel } from './hotPostsIndex.mjs'
  * @returns {Promise<{ name: string, avatar: string | null }>} 展示快照
  */
 export async function resolveDisplaySnapshot(state, row, username, groupId) {
-	const sender = String(row.sender || '').trim().toLowerCase()
 	const charId = row.charId ? String(row.charId).trim() : null
+	if (charId)
+		return resolveCharDisplaySnapshot(state, charId, username, groupId)
+
+	const sender = String(row.sender || '').trim().toLowerCase()
 	const member = sender ? state.members?.[sender] : null
 	let name = member?.displayName?.trim() || ''
 	let avatar = null
 	const entityHash = member ? memberEntityHash(member) : null
-	if (entityHash) 
+	if (entityHash)
 		try {
 			const profile = await getProfile(entityHash, username, { groupId })
 			if (profile?.name) name = String(profile.name).trim()
 			if (profile?.avatar) avatar = String(profile.avatar).trim() || null
 		}
 		catch { /* profile miss */ }
-	
-	if (!name && charId) name = charId
+
 	if (!name && isHex64(sender)) name = `${sender.slice(0, 8)}…${sender.slice(-4)}`
 	if (!name) name = '?'
 	return { name, avatar }

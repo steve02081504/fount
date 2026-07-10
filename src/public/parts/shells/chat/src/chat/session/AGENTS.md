@@ -69,6 +69,7 @@ alwaysApply: false
 - **Persistence facade**: `channel/messageCommit.mjs` → world `AddChatLogEntry` (pre-DAG transform/reject) → canonical content → `appendSignedLocalEvent`.
 - **Sole `After` trigger point**: `broadcastAndPersist` awaits `AfterAddChatLogEntry` for `message` and finalized `message_edit`; char/greeting flow through the same pipeline via `syncChatLogEntryToDag` / `finalizeDagGeneratingMessage`.
 - Canonical content: everyone gets `displayName`/`displayAvatar`; generated entries also attach `sessionSnapshot`/`chatLogEntryId`.
+- **Char display snapshot**: `resolveDisplaySnapshot` with `charId` resolves agent part info (not `sender` persona). Streaming finalize (`finalizeDagGeneratingMessage`) and `mergeChannelMessagesForDisplay` must preserve `displayName`/`displayAvatar` through `message_edit` — placeholder-only snapshots are wrong for final bubbles.
 - Fixture hook counters: use `globalThis` (once a part is copied into a user directory, it can no longer relatively import a helper from the test repo). See `test/fixtures/write_path_hook_state.mjs` (test side) and the fixture `main.mjs`'s inline `hookState()` using the same key.
 - Fixtures **must not** `import '../write_path_hook_state.mjs'` or similar relative paths — resolution breaks once installed into a user directory.
 - Pure-test projection: only import `viewerLogProject.mjs` (don't pull in the session I/O graph via `materializeViewerLog`).

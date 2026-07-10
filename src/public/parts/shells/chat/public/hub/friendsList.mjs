@@ -11,7 +11,7 @@ import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
-import { avatarColor, avatarInitial } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
@@ -87,7 +87,8 @@ async function friendRowTemplateData(friend, details) {
 			displayName: friend.displayName,
 			subtitle,
 			activeClass: active ? ' active' : '',
-			avatarBg: avatarColor(friend.displayName),
+			avatarBg: avatarColor(friend.key),
+			avatarTextColor: avatarTextColor(friend.key),
 			avatarInner: escapeHtml(avatarInitial(friend.displayName)),
 		}
 
@@ -101,7 +102,8 @@ async function friendRowTemplateData(friend, details) {
 		displayName,
 		subtitle,
 		activeClass: active ? ' active' : '',
-		avatarBg: avatarColor(friend.charname),
+		avatarBg: avatarColor(friend.key),
+		avatarTextColor: avatarTextColor(friend.key),
 		avatarInner: avatarUrl
 			? `<img src="${escapeHtml(avatarUrl)}" alt="" class="hub-char-list-avatar-img" />`
 			: escapeHtml(avatarInitial(friend.charname)),

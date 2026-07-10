@@ -348,6 +348,42 @@ Deno.test('mergeChannelMessagesForDisplay marks edited messages', async () => {
 	assertEquals(merged[0].content.content, 'edited')
 })
 
+Deno.test('mergeChannelMessagesForDisplay preserves displayName from message_edit', async () => {
+	const { mergeChannelMessagesForDisplay } = await import('../../public/shared/messageMerge.mjs')
+	const baseId = 'a'.repeat(64)
+	const rows = [
+		{
+			type: 'message',
+			eventId: baseId,
+			content: {
+				type: 'text',
+				content: '',
+				displayName: 'host',
+				displayAvatar: '👤',
+				is_generating: true,
+			},
+		},
+		{
+			type: 'message_edit',
+			eventId: 'b'.repeat(64),
+			content: {
+				targetId: baseId,
+				newContent: {
+					type: 'text',
+					content: 'char reply',
+					displayName: '写路径 Agent',
+					displayAvatar: '🤖',
+					is_generating: false,
+				},
+			},
+		},
+	]
+	const merged = mergeChannelMessagesForDisplay(rows)
+	assertEquals(merged[0].content.displayName, '写路径 Agent')
+	assertEquals(merged[0].content.displayAvatar, '🤖')
+	assertEquals(merged[0].content.content, 'char reply')
+})
+
 Deno.test('channel GC skips default channel', () => {
 	const nowMs = 1_700_000_000_000
 	const state = {

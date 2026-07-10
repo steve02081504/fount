@@ -5,12 +5,23 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../src/lib/entityHash、../../src/lib/entityId、../../src/lib/pubKeyHex、state
  */
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import {
+	avatarColor,
+	avatarInitial,
+	avatarTextColor,
+	hashAvatarStyle,
+} from '/scripts/lib/hashAvatar.mjs'
 import { entityHashLabel, isEntityHash128 } from '../../shared/entityHash.mjs'
 import { agentEntityHash } from '../../shared/entityId.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
 
 import { hubStore } from './state.mjs'
+
+/**
+ *
+ */
+export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 
 /** @type {Map<string, string>} 角色 part 名 → agent entityHash */
 const charEntityHashCache = new Map()
@@ -32,13 +43,27 @@ export function activeCharPartNames() {
  * @returns {Promise<void>}
  */
 export async function warmCharEntityHashCache(charNames = activeCharPartNames()) {
-	const { nodeHash } = hubStore
-	if (!nodeHash) return
+	const members = hubStore.context.currentState?.members || []
+	/** @type {Map<string, { nodeHash?: string, agentEntityHash?: string, entityHash?: string }>} */
+	const agentByChar = new Map()
+	for (const member of members) {
+		if (member?.kind !== 'agent') continue
+		const charname = String(member.charname || '').trim().toLowerCase()
+		if (charname) agentByChar.set(charname, member)
+	}
 	for (const raw of charNames) {
 		const name = String(raw || '').trim()
 		if (!name || charEntityHashCache.has(name)) continue
+		const member = agentByChar.get(name.toLowerCase())
+		const cachedHash = member?.agentEntityHash || member?.entityHash
+		if (cachedHash && isEntityHash128(String(cachedHash))) {
+			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
+			continue
+		}
+		const node = member?.nodeHash || hubStore.nodeHash
+		if (!node) continue
 		try {
-			charEntityHashCache.set(name, await agentEntityHash(nodeHash, `chars/${name}`))
+			charEntityHashCache.set(name, await agentEntityHash(node, `chars/${name}`))
 		}
 		catch {
 			/* 忽略无效角色名 */
@@ -65,13 +90,20 @@ export function charEntityHashFromCache(charname) {
 export function resolveEntityHashForAuthorKey(key) {
 	const raw = String(key ?? '').trim().toLowerCase()
 	if (!raw) return null
+	const members = hubStore.context.currentState?.members || []
 	if (isEntityHash128(raw)) return raw
 	if (!isHex64(raw)) {
+		const agent = members.find(member =>
+			member?.kind === 'agent'
+			&& String(member.charname || '').toLowerCase() === raw.toLowerCase())
+		if (agent?.entityHash && isEntityHash128(agent.entityHash))
+			return String(agent.entityHash).toLowerCase()
+		if (agent?.agentEntityHash && isEntityHash128(agent.agentEntityHash))
+			return String(agent.agentEntityHash).toLowerCase()
 		const charHash = charEntityHashFromCache(raw)
 		if (charHash) return charHash
 		return null
 	}
-	const members = hubStore.context.currentState?.members || []
 	const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw)
 	if (member?.entityHash && isEntityHash128(member.entityHash))
 		return String(member.entityHash).toLowerCase()
@@ -94,6 +126,11 @@ export function memberDisplayNameForAuthorKey(key) {
 		const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw.toLowerCase())
 		if (member?.displayName) return String(member.displayName).trim()
 	}
+	const agent = members.find(member =>
+		member?.kind === 'agent'
+		&& String(member.charname || '').toLowerCase() === raw.toLowerCase())
+	if (agent?.displayName) return String(agent.displayName).trim()
+	if (agent?.charname) return String(agent.charname).trim()
 	return null
 }
 
@@ -126,36 +163,6 @@ export function authorPresentationKeys(authorKey) {
 	const displayName = authorDisplayLabel(key)
 	const profileKey = resolveEntityHashForAuthorKey(key) || key
 	return { displayName, profileKey }
-}
-
-/** 头像调色板（daisyUI 语义色 CSS 变量名） */
-const AVATAR_COLOR_VARS = [
-	'--color-primary', '--color-error', '--color-warning', '--color-success',
-	'--color-accent', '--color-secondary', '--color-info', '--color-neutral',
-]
-
-/**
- * 根据名称生成稳定的头像背景色。
- * @param {string} [name] 用户名或展示名
- * @returns {string} CSS 颜色值
- */
-export function avatarColor(name) {
-	let hash = 0
-	const label = name || ''
-	for (let charIndex = 0; charIndex < label.length; charIndex++)
-		hash = label.charCodeAt(charIndex) + ((hash << 5) - hash)
-	const varName = AVATAR_COLOR_VARS[Math.abs(hash) % AVATAR_COLOR_VARS.length]
-	const resolved = getComputedStyle(document.documentElement).getPropertyValue(varName).trim()
-	return resolved || `var(${varName})`
-}
-
-/**
- * 取名称首字符作为头像占位字母。
- * @param {string} [name] 用户名或展示名
- * @returns {string} 单个大写字母
- */
-export function avatarInitial(name) {
-	return (name || '?').charAt(0).toUpperCase()
 }
 
 /**

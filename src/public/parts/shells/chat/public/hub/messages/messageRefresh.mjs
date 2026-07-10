@@ -51,6 +51,49 @@ import {
 	initChannelVirtualList,
 } from './messageVirtualList.mjs'
 
+/** @type {Map<string, { messages: object[], reactions: object, reactionsEtag: string, readMarker: object | null, firstUnreadEventId: string | null }>} */
+const channelViewCache = new Map()
+
+/**
+ * @param {string | null | undefined} groupId 群 ID
+ * @param {string | null | undefined} channelId 频道 ID
+ * @returns {string | null} 缓存键
+ */
+function channelCacheKey(groupId, channelId) {
+	if (!groupId || !channelId) return null
+	return `${groupId}:${channelId}`
+}
+
+/** @returns {void} */
+function saveChannelViewCache() {
+	const key = channelCacheKey(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
+	if (!key || !hubStore.messages.channelMessagesSource.length) return
+	channelViewCache.set(key, {
+		messages: hubStore.messages.channelMessagesSource,
+		reactions: hubStore.messages.channelReactions,
+		reactionsEtag: hubStore.messages.reactionsEtag,
+		readMarker: hubStore.messages.readMarker,
+		firstUnreadEventId: hubStore.messages.firstUnreadEventId,
+	})
+}
+
+/**
+ * @param {string | null | undefined} groupId 群 ID
+ * @param {string | null | undefined} channelId 频道 ID
+ * @returns {boolean} 是否命中缓存
+ */
+function restoreChannelViewCache(groupId, channelId) {
+	const key = channelCacheKey(groupId, channelId)
+	const cached = key ? channelViewCache.get(key) : null
+	if (!cached?.messages?.length) return false
+	hubStore.messages.channelReactions = cached.reactions
+	hubStore.messages.reactionsEtag = cached.reactionsEtag
+	hubStore.messages.channelMessagesSource = cached.messages
+	hubStore.messages.readMarker = cached.readMarker
+	hubStore.messages.firstUnreadEventId = cached.firstUnreadEventId
+	return true
+}
+
 /**
  * @param {HTMLElement} container 消息列表容器
  * @param {Record<string, Record<string, { voters?: string[] }>>} reactions 反应映射
@@ -239,21 +282,30 @@ export async function loadMessages(reload, syncCtx) {
 	const searchInput = document.getElementById('hub-header-search')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 	const container = getMessagesContainer()
-	const channel = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]
-	if (!hubStore.context.currentChannelId || !channel) {
+	const groupId = hubStore.context.currentGroupId
+	const channelId = hubStore.context.currentChannelId
+	const channel = hubStore.context.currentState?.channels?.[channelId]
+	if (!channelId || !channel) {
 		destroyChannelVirtualList()
 		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
 		return
 	}
-	await mountTemplate(container, 'hub/empty/loading', {})
 	destroyChannelVirtualList()
+	const hadStale = restoreChannelViewCache(groupId, channelId)
+	if (hadStale) {
+		refreshChannelView()
+		await refreshReactionPerms()
+		initChannelVirtualList(container, reload)
+	}
+	else
+		await mountTemplate(container, 'hub/empty/loading', {})
 	if (await loadNonTextChannel(container, channel)) return
 	try {
 		hubStore.messages.composerPendingId = null
 		hubStore.messages.channelOlderExhausted = false
 		const { messages, reactions, readMarker } = await getChannelViewLog(
-			hubStore.context.currentGroupId,
-			hubStore.context.currentChannelId,
+			groupId,
+			channelId,
 			{ limit: 50 },
 		)
 		hubStore.messages.channelReactions = reactions || {}
@@ -265,21 +317,26 @@ export async function loadMessages(reload, syncCtx) {
 		await refreshReactionPerms()
 		syncCtx()
 		if (!messages.length) {
+			destroyChannelVirtualList()
+			channelViewCache.delete(channelCacheKey(groupId, channelId) || '')
 			await mountTemplate(container, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
 			hubStore.messages.lastMessageId = null
 			return
 		}
-		container.innerHTML = ''
 		if (hubStore.messages.firstUnreadEventId)
 			setPendingScrollTarget(hubStore.messages.firstUnreadEventId)
 		else
 			consumePendingScrollTarget()
-		initChannelVirtualList(container, reload)
+		if (hubStore.messages.channelMessagePipeline)
+			await hubStore.messages.channelMessagePipeline.refresh()
+		else
+			initChannelVirtualList(container, reload)
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
 		if (!hubStore.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(() => {})
 		refreshChannelPinsBar()
+		saveChannelViewCache()
 	}
 	catch (err) {
 		const error = handleUIError(err, 'chat.hub.loadMessagesFailed')

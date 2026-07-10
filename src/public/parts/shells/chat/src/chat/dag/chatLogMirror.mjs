@@ -224,6 +224,18 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 		)
 		newContent = hooked.content
 		if (typeof hooked.entry?.content === 'string') entry.content = hooked.entry.content
+		const { buildCanonicalMessageContent } = await import('../channel/messageCommit.mjs')
+		newContent = await buildCanonicalMessageContent(
+			username,
+			groupId,
+			channelIdForDag,
+			newContent,
+			{
+				charId,
+				entry,
+				origin: entry.role === 'char' ? 'char' : 'human',
+			},
+		)
 		await appendFinalEditWithRetry(username, groupId, {
 			type: 'message_edit',
 			channelId: channelIdForDag,
@@ -319,7 +331,20 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 		if (entry.extension.timeSlice?.greeting_type) return
 		const targetId = entry.extension?.dagEventId
 		if (!targetId) return
-		const { channelIdForDag, sender } = await resolveMirrorContext(entry, username, groupId)
+		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
+		let newContent = await buildFinalMessageContent(username, groupId, entry, entryContentToMirrorText(entry), sender)
+		const { buildCanonicalMessageContent } = await import('../channel/messageCommit.mjs')
+		newContent = await buildCanonicalMessageContent(
+			username,
+			groupId,
+			channelIdForDag,
+			newContent,
+			{
+				charId,
+				entry,
+				origin: entry.role === 'char' ? 'char' : 'human',
+			},
+		)
 		await appendSignedLocalEvent(username, groupId, {
 			type: 'message_edit',
 			channelId: channelIdForDag,
@@ -327,7 +352,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 			content: {
 				targetId,
 				targetSender: sender,
-				newContent: await buildFinalMessageContent(username, groupId, entry, entryContentToMirrorText(entry), sender),
+				newContent,
 				chatLogEntryId: originalEntryId,
 			},
 		})

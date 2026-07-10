@@ -11,10 +11,9 @@ import {
 	cachedProfileFromApi,
 	fetchEntityProfileApi,
 } from '../src/entityProfileApi.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { mountAvatarCover } from './core/avatarCover.mjs'
-import { authorDisplayLabel, authorPresentationKeys, avatarColor, avatarInitial, resolveEntityHashForAuthorKey, warmCharEntityHashCache } from './core/domUtils.mjs'
+import { applyProfileAvatarToHost, paintHashAvatarHost } from './core/avatarCover.mjs'
+import { authorDisplayLabel, authorPresentationKeys, resolveEntityHashForAuthorKey, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { dismissProfilePopup, resolveEntityFromAnchor, showProfilePopup } from './profilePopup.mjs'
 
@@ -184,18 +183,12 @@ export function applyAvatarsTo(rootElement) {
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
-			if (profile.avatar) {
-				const avatarVal = String(profile.avatar)
-				const isUrl = avatarVal.startsWith('http') || avatarVal.startsWith('/') || avatarVal.startsWith('data:')
-				if (isUrl)
-					void mountAvatarCover(av, avatarVal, escapeHtml(profile.name || authorDisplayLabel(authorKey)))
-				else {
-					// 表情或文字头像：直接替换为文本内容
-					av.textContent = avatarVal
-					av.style.fontSize = '20px'
-					av.style.background = ''
-				}
-			}
+			if (profile.avatar)
+				void applyProfileAvatarToHost(av, {
+					seed: profileKey,
+					label: profile.name || authorDisplayLabel(authorKey),
+					avatar: profile.avatar,
+				})
 			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})
@@ -254,14 +247,16 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 	const hoverCardName = document.getElementById('hover-card-name')
 	const hoverCardStatusText = document.getElementById('hover-card-status-text')
 	const hoverCardStatusDot = document.getElementById('hover-card-status-dot')
-	const hoverCardAvatarLetter = document.getElementById('hover-card-avatar-letter')
 	const hoverCardAvatar = document.getElementById('hover-card-avatar')
 	const hoverCardBio = document.getElementById('hover-card-bio')
-	if (hoverCardAvatarLetter) hoverCardAvatarLetter.textContent = avatarInitial(displayName)
-	if (hoverCardAvatar) {
-		hoverCardAvatar.style.background = avatarColor(displayName)
+	if (hoverCardAvatar instanceof HTMLElement)
+		paintHashAvatarHost(hoverCardAvatar, {
+			seed: profileKey,
+			label: displayName,
+			letterId: 'hover-card-avatar-letter',
+		})
+	if (hoverCardAvatar instanceof HTMLElement)
 		hoverCardAvatar.dataset.uname = authorKey
-	}
 	if (hoverCardName) hoverCardName.textContent = displayName
 	if (hoverCardStatusText) hoverCardStatusText.textContent = ''
 	applyStatusDot(hoverCardStatusDot, 'offline')
@@ -272,8 +267,14 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 	if (hoverCardAvatar?.dataset.uname !== authorKey) return
 	if (profile) {
 		if (hoverCardName) hoverCardName.textContent = profile.name || displayName
-		if (profile.avatar && hoverCardAvatar instanceof HTMLElement)
-			await mountAvatarCover(hoverCardAvatar, profile.avatar, '')
+		if (hoverCardAvatar instanceof HTMLElement)
+			await applyProfileAvatarToHost(hoverCardAvatar, {
+				seed: profileKey,
+				label: profile.name || displayName,
+				avatar: profile.avatar,
+				emojiFontSize: '32px',
+				letterId: 'hover-card-avatar-letter',
+			})
 		applyStatusDot(hoverCardStatusDot, profile.status)
 		if (hoverCardStatusText)
 			hoverCardStatusText.textContent = await formatStatusLabel(profile.status, profile.customStatus)

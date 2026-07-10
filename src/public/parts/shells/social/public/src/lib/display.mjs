@@ -1,3 +1,9 @@
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import {
+	avatarInitial,
+	hashAvatarStyle,
+} from '/scripts/lib/hashAvatar.mjs'
+
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
@@ -38,15 +44,26 @@ export function entityAvatarUrl(entityHash, profile) {
 }
 
 /**
- * 渲染作者头像 `<img>` HTML。
+ * 渲染作者头像 HTML（图片优先，失败或无图时用 hash 文字头像）。
  * @param {string} entityHash 实体 hash
  * @param {object} [profile] 可选资料
  * @param {string} [sizeClass=''] 尺寸 class
  * @returns {string} 头像 HTML
  */
 export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
+	const seed = String(entityHash || '').trim() || '?'
+	const label = profile?.name || seed
+	const { background, color } = hashAvatarStyle(seed)
+	const initial = escapeHtml(avatarInitial(label))
+	const cls = `author-avatar hash-avatar ${sizeClass}`.trim()
 	const url = entityAvatarUrl(entityHash, profile)
-	return `<img class="author-avatar ${sizeClass}" src="${url}" alt="" loading="lazy" onerror="this.classList.add('hidden')" />`
+	if (!profile?.avatar) 
+		return `<div class="${cls}" style="background:${background};color:${color}">${initial}</div>`
+	
+	return `<div class="${cls}" style="background:${background};color:${color}">`
+		+ `<span class="hash-avatar-letter">${initial}</span>`
+		+ `<img class="hash-avatar-img" src="${escapeHtml(url)}" alt="" loading="lazy" onerror="this.remove()" />`
+		+ '</div>'
 }
 
 /**

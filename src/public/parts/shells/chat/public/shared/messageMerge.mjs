@@ -12,13 +12,16 @@ function mergeMessageContent(base, patch) {
 		return { ...base, ...patch }
 	if (!isTextChannelContent(base) || !isTextChannelContent(patch))
 		throw new Error('text edit patch requires type text message')
-	return channelMessageContentObject(textChannelContent(
-		String(patch.content ?? base.content ?? ''),
-		{
-			content_for_show: patch.content_for_show ?? base.content_for_show,
-			content_for_edit: patch.content_for_edit ?? base.content_for_edit,
-		},
-	))
+	const baseObj = channelMessageContentObject(base)
+	const patchObj = channelMessageContentObject(patch)
+	return channelMessageContentObject({
+		...baseObj,
+		...textChannelContent(String(patchObj.content ?? baseObj.content ?? ''), {
+			content_for_show: patchObj.content_for_show ?? baseObj.content_for_show,
+			content_for_edit: patchObj.content_for_edit ?? baseObj.content_for_edit,
+		}),
+		...patchObj,
+	})
 }
 
 /**

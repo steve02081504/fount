@@ -25,7 +25,8 @@ import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
 import { resolveDisplayParentEventId, tallyReactionsFromMap } from '../../src/ui/channelDisplay.mjs'
 import { mountMdRevealButton } from '../../src/ui/mdRevealButton.mjs'
-import { authorPresentationKeys, avatarColor, avatarInitial, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
+import { isFirstMessageInAuthorGroup } from '/scripts/lib/hashAvatar.mjs'
+import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 
 import { renderMessageActionsHtml } from './messageActionsRender.mjs'
@@ -375,6 +376,7 @@ export async function renderMessageReactionsHtml(message, reactionsMap, viewerMe
  * @param {string} options.rowAttrs 行 data-* 属性 HTML
  * @param {string} options.avatarFor 头像 data-avatar-for
  * @param {string} options.avatarBg 头像背景色
+ * @param {string} options.avatarTextColor 头像文字色
  * @param {string} options.avatarHtml 头像占位文字
  * @param {string} options.headerHtml chat-header 内容
  * @param {string} options.contentHtml chat-bubble 内容
@@ -390,6 +392,7 @@ async function renderMessageRowShell({
 	rowAttrs,
 	avatarFor,
 	avatarBg,
+	avatarTextColor,
 	avatarHtml,
 	headerHtml,
 	contentHtml,
@@ -402,6 +405,7 @@ async function renderMessageRowShell({
 	const avatarBlock = await renderTemplateAsHtmlString('hub/messages/avatar_block', {
 		avatarFor,
 		avatarBg: avatarBg ?? avatarColor(avatarFor),
+		avatarTextColor: avatarTextColor ?? avatarTextColor(avatarFor),
 		avatarHtml,
 	})
 	return renderTemplateAsHtmlString('hub/messages/message_row', {
@@ -421,17 +425,18 @@ async function renderMessageRowShell({
 /**
  * 渲染单条频道消息块。
  * @param {object} message 消息
- * @param {string|null} prevSender 上一条发送者
+ * @param {string|null} prevAuthorKey 上一条作者键（charId ?? sender）
  * @param {number} prevTime 上一条时间戳
  * @param {object[]} [allMessages] 频道全部行
  * @param {object} [renderOpts] 反应渲染选项
  * @returns {Promise<{ html: string, sender: string|null, time: number }>} 单条 HTML 与分组游标
  */
-export async function renderChannelMessageBlock(message, prevSender, prevTime, allMessages = [], renderOpts = {}) {
+export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime, allMessages = [], renderOpts = {}) {
 	const generating = isChannelMessageGenerating(message)
 	const sender = message.sender ?? '?'
 	const time = message.hlc?.wall ?? 0
-	const isFirst = sender !== prevSender || (time - prevTime) > 5 * 60 * 1000
+	const authorKey = message.charId ?? sender
+	const isFirst = isFirstMessageInAuthorGroup(authorKey, prevAuthorKey, time, prevTime)
 	const isOwn = isOwnViewerMessage(message, renderOpts)
 	const align = isOwn ? 'chat-end' : 'chat-start'
 	const bubbleClass = isOwn ? 'chat-bubble-primary' : 'chat-bubble-neutral'
@@ -440,7 +445,6 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 		? ` data-author-pubkey-hash="${escapeHtml(message.authorPubKeyHash)}"`
 		: ''
 	const charAttr = message.charId ? ` data-char-id="${escapeHtml(String(message.charId))}"` : ''
-	const authorKey = message.charId ?? sender
 	const snapDisplay = message.content?.displayName || message.extension?.display?.name
 	const snapAvatar = message.content?.displayAvatar || message.extension?.display?.avatar
 	const presentation = authorPresentationKeys(authorKey)
@@ -552,7 +556,8 @@ export async function renderChannelMessageBlock(message, prevSender, prevTime, a
 			bubbleClass,
 			rowAttrs,
 			avatarFor: avatarKey,
-			avatarBg: avatarColor(displayAuthor),
+			avatarBg: avatarColor(avatarKey),
+			avatarTextColor: avatarTextColor(avatarKey),
 			avatarHtml: snapAvatar
 				? `<img src="${escapeHtml(String(snapAvatar))}" class="w-full h-full object-cover rounded-full" alt="" />`
 				: escapeHtml(avatarInitial(displayAuthor)),

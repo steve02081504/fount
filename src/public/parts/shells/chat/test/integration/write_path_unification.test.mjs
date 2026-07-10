@@ -6,7 +6,7 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assert, assertEquals, assertRejects, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assert, assertEquals, assertNotEquals, assertRejects, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { writePathHookState } from '../fixtures/write_path_hook_state.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
@@ -170,5 +170,9 @@ Deno.test('triggerCharReply finalize fires Add/After once on message_edit', asyn
 	assertEquals(hooks.addCalls[0]?.content, 'write_path_agent reply')
 
 	const messages = await listMessages(username, groupId, channelId)
-	assert(messages.some(row => String(row.content?.content || '').includes('write_path_agent reply')))
+	const charReply = messages.find(row => String(row.content?.content || '').includes('write_path_agent reply'))
+	assert(charReply, 'char reply on DAG')
+	assertEquals(charReply.content?.displayName, '写路径 Agent')
+	assertEquals(charReply.content?.displayAvatar, '🤖')
+	assertNotEquals(charReply.content?.displayName, '写路径测试人格')
 })
