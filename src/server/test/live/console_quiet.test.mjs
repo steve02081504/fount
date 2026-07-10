@@ -1,7 +1,7 @@
 /**
- * 回归：这里刻意模拟用户直接运行 `fount server` 的真实默认启动，
+ * 回归：模拟用户直接运行 `fount server` 的真实默认启动（`starts: {}` → server.mjs 全开），
  * 不走测试 harness 的静默 starts 预设，也不注入 loopback / mock relay。
- * 目标是观察用户真实启动 fount 后 10 秒内是否有错误或噪声。
+ * IPC 端口由 harness 写入 `starts.IPC.port`，可与并行 live 节点共存。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

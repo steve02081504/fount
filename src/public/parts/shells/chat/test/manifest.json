@@ -1,6 +1,10 @@
 {
 	"id": "shells/chat",
 	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
+		],
 		"shellBackend": [
 			"src/public/parts/shells/chat/src/**",
 			"src/public/parts/shells/chat/main.mjs",
@@ -46,7 +50,9 @@
 		"shellLiveInfra": [
 			"src/public/parts/shells/chat/test/live/run.mjs",
 			"src/public/parts/shells/chat/test/live/scripts/reset_fed_env.mjs",
-			"src/public/parts/shells/chat/test/live/scripts/tools/**"
+			"src/public/parts/shells/chat/test/live/scripts/tools/**",
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
 		],
 		"liveSmokeChat": [
 			"src/public/parts/shells/chat/test/live/scripts/smoke_chat.mjs"
@@ -145,7 +151,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests"],
+			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests", "testFramework"],
 			"run": [
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
@@ -155,7 +161,7 @@
 		{
 			"name": "integration",
 			"dependsOn": ["server:live"],
-			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests"],
+			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests", "testFramework"],
 			"run": [
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",

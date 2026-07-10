@@ -68,7 +68,7 @@ if (!okStatus(add.status)) {
 }
 
 const msg = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'ws-stream probe' },
+	content: { type: 'text', content: 'ws-stream probe', isAutoTrigger: true },
 })
 if (!okStatus(msg.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
@@ -89,6 +89,8 @@ const received = []
 let pendingStreamId = null
 let sawStreamChunk = false
 let sawFinish = false
+/** @type {Promise<string | void> | null} */
+let triggerReplyTask = null
 let resolveDone
 const done = new Promise((res) => { resolveDone = res })
 const timeout = setTimeout(() => resolveDone('timeout'), TIMEOUT_MS)
@@ -109,14 +111,15 @@ function maybeResolve() {
  */
 ws.onopen = () => {
 	console.log(`WS open; trigger-reply char=${charname}`)
-	setTimeout(async () => {
+	triggerReplyTask = (async () => {
+		await new Promise(r => { setTimeout(r, 750) })
 		const tr = await chatApi('POST', `/groups/${gid}/channels/${cid}/trigger-reply`, { charname })
 		console.log(`trigger-reply -> ${tr.status}`)
 		if (tr.status !== 200) {
 			clearTimeout(timeout)
 			resolveDone(`trigger:${tr.status}`)
 		}
-	}, 750)
+	})()
 }
 /**
  * 处理 WebSocket 流式回复与完成事件。
@@ -188,6 +191,7 @@ if (result === 'ok' && sawStreamChunk) {
 	console.log(`dagFinalized=${dagFinalized}`)
 }
 
+if (triggerReplyTask) await triggerReplyTask.catch(() => {})
 await chatApi('DELETE', `/groups/${gid}`)
 
 console.log(`result=${result} stream=${sawStreamChunk} finish=${sawFinish} types=[${[...new Set(received)].join(', ')}]`)

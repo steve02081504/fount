@@ -45,15 +45,35 @@ function collectTestFiles(directory) {
 }
 
 /**
- * 在子进程中执行 deno test 并捕获 stdall。
+ * 在子进程中执行 deno test 并捕获 stdall；实时转发 stdall 以免 orchestrator idle watchdog 误杀。
  * @param {string[]} command 可执行文件与参数
  * @returns {Promise<{ code: number, output: string, signal: string | null }>} 退出码与合并输出
  */
 async function runCaptured(command) {
 	const [executable, ...rest] = command
-	const result = await execFile(executable, rest, { cwd: REPO_ROOT })
-	const code = typeof result.code === 'number' ? result.code : (result.signal ? 1 : 0)
-	return { code, output: result.stdall, signal: result.signal ?? null }
+	let output = ''
+	const result = await execFile(executable, rest, {
+		cwd: REPO_ROOT,
+		no_output_record: true,
+		/**
+		 * @param {string | Uint8Array} data stdout 片段
+		 * @returns {void}
+		 */
+		on_stdout: data => {
+			process.stdout.write(data)
+			output += typeof data === 'string' ? data : new TextDecoder().decode(data)
+		},
+		/**
+		 * @param {string | Uint8Array} data stderr 片段
+		 * @returns {void}
+		 */
+		on_stderr: data => {
+			process.stderr.write(data)
+			output += typeof data === 'string' ? data : new TextDecoder().decode(data)
+		},
+	})
+	const code = typeof result.code === 'number' ? result.code : result.signal ? 1 : 0
+	return { code, output, signal: result.signal ?? null }
 }
 
 if (!args.length) {
@@ -101,12 +121,12 @@ const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith
 function recordResult(file, code, output, signal = null) {
 	const noisy = outputHasNoise(output)
 	const rel = toRepoRelative(REPO_ROOT, file)
-	if (code !== 0 || noisy) {
-		process.stdout.write(output)
-		if (code !== 0) {
-			const hint = signal ? ` signal=${signal}` : ''
-			process.stdout.write(`[serial] ${rel} exited ${code}${hint}\n`)
-		}
+	if (code !== 0) {
+		const hint = signal ? ` signal=${signal}` : ''
+		process.stdout.write(`[serial] ${rel} exited ${code}${hint}\n`)
+	}
+	else if (noisy) {
+		// 已通过但含噪声：输出已在 runCaptured 中实时转发
 	}
 	else {
 		// 静默通过也打一行，避免 --no-parallel 流式模式下 idle watchdog 误杀长套件
@@ -121,13 +141,12 @@ function recordResult(file, code, output, signal = null) {
 
 // 预热：deno cache 填充 npm/node_modules
 if (filteredFiles.length > 0) {
+	process.stdout.write('[serial] warming deno cache...\n')
 	const { code, output } = await runCaptured([
 		'deno', 'cache', '--allow-scripts', '-c', './deno.json', ...filteredFiles,
 	])
-	if (code !== 0) {
-		process.stdout.write(output)
+	if (code !== 0)
 		process.exit(code)
-	}
 }
 
 /**

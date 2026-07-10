@@ -169,7 +169,7 @@ export async function init(start_config) {
 
 	if (starts.IPC) {
 		const { IPCManager } = await ipcModulePromise
-		if (!await new IPCManager().startServer()) {
+		if (!await new IPCManager().startServer(Object(starts.IPC))) {
 			ClearTaskbarProgress()
 			return 'already_running'
 		}

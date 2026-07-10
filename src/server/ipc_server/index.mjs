@@ -8,7 +8,8 @@ import { console, geti18n } from '../../scripts/i18n/index.mjs'
 import { getLoadedPartList, getPartList, loadPart, getPartDetails } from '../parts_loader.mjs'
 import { restartor } from '../server.mjs'
 
-const IPC_PORT = 16698 // 选择一个不太可能冲突的端口
+/** 生产默认 IPC 监听端口（单实例 CLI 发现用）。 */
+export const DEFAULT_IPC_PORT = 16698
 
 /**
  * 处理 IPC 命令。
@@ -82,9 +83,10 @@ export class IPCManager {
 
 	/**
 	 * 启动 IPC 服务器。
+	 * @param {{ port?: number }} [options] 监听选项
 	 * @returns {Promise<boolean>} 如果服务器成功启动，则解析为 true，否则为 false。
 	 */
-	async startServer() {
+	async startServer({ port = DEFAULT_IPC_PORT } = {}) {
 		this.serverV6 = net.createServer(socket => {
 			this.handleConnection(socket)
 		})
@@ -99,7 +101,7 @@ export class IPCManager {
 		 * @param {string} address - 要监听的地址。
 		 * @returns {Promise<boolean>} 如果服务器成功启动，则解析为 true，否则为 false。
 		 */
-		const startServer = (server, address) => {
+		const listen = (server, address) => {
 			return new Promise((resolve, reject) => {
 				server.on('error', async err => {
 					if (['EADDRINUSE', 'EACCES'].includes(err.code)) resolve(false)
@@ -107,12 +109,12 @@ export class IPCManager {
 					else reject(err)
 				})
 
-				server.listen(IPC_PORT, address, _ => resolve(true))
+				server.listen(port, address, _ => resolve(true))
 			})
 		}
 		return Promise.all([
-			startServer(this.serverV6, '::1'),
-			startServer(this.serverV4, '127.0.0.1'),
+			listen(this.serverV6, '::1'),
+			listen(this.serverV4, '127.0.0.1'),
 		]).then(async results => {
 			const result = results.some(result => result === true)
 			if (result) console.freshLineI18n('server start', 'fountConsole.ipc.serverStarted')
@@ -157,11 +159,12 @@ export class IPCManager {
 	 * 向 IPC 服务器发送命令。
 	 * @param {string} type - 命令类型。
 	 * @param {object} data - 命令数据。
+	 * @param {{ port?: number }} [options] 连接选项
 	 * @returns {Promise<any>} 一个解析为服务器响应的承诺。
 	 */
-	static async sendCommand(type, data) {
+	static async sendCommand(type, data, { port = DEFAULT_IPC_PORT } = {}) {
 		return new Promise((resolve, reject) => {
-			const client = net.createConnection({ port: IPC_PORT })
+			const client = net.createConnection({ port })
 
 			let responseData = ''
 

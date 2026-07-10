@@ -30,8 +30,11 @@ import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
  */
 async function loadGroupListState(username, groupId) {
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
-	if (checkpoint?.members_record)
-		return materializeFromCheckpoint(checkpoint)
+	if (checkpoint?.members_record) {
+		const fromCheckpoint = materializeFromCheckpoint(checkpoint)
+		if (await resolveActiveMemberKeyForLocalUser(username, groupId, fromCheckpoint))
+			return fromCheckpoint
+	}
 	const { state } = await getState(username, groupId, { skipLeftPurge: true })
 	return state
 }

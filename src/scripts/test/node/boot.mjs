@@ -14,9 +14,9 @@ import { set_sentry_enabled } from 'fount/scripts/sentry_state.mjs'
 import { set_start } from 'fount/server/base.mjs'
 import { init } from 'fount/server/server.mjs'
 
-import { HEADLESS_CONFIG_PORT } from '../core/ports.mjs'
+import { HEADLESS_CONFIG_PORT, pickAvailableIpcPort } from '../core/ports.mjs'
 
-import { defaultTestStarts } from './starts.mjs'
+import { assignIpcPort, defaultTestStarts, ipcPortFromStarts, ipcStartsEnabled } from './starts.mjs'
 
 /** 测试节点用户默认 locale（与 `localesFromRequest` 无用户偏好时的回退一致）。 */
 const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
@@ -177,22 +177,29 @@ export async function bootInProcess(options) {
 	if (options.resetData)
 		fs.rmSync(options.dataPath, { recursive: true, force: true })
 
+	const starts = options.starts ?? defaultTestStarts(options)
+	let ipcPort = ipcPortFromStarts(starts)
+	if (ipcStartsEnabled(starts) && ipcPort == null)
+		ipcPort = assignIpcPort(starts, await pickAvailableIpcPort())
+
 	writeNodeConfig(options.dataPath, {
 		port: options.port,
 		username: options.username,
 		...options.apiKey ? { apiKey: options.apiKey } : {},
 	})
-	const starts = options.starts ?? defaultTestStarts(options)
 	const P2P = options.p2pRelayUrl
 		? { signaling: (await import('./p2p_signaling.mjs')).testSignalingFromRelayUrls(options.p2pRelayUrl) }
 		: options.P2P
 
-	if (!await initFountNode({
+	const initResult = await initFountNode({
 		dataPath: options.dataPath,
 		starts,
 		needsOutput: options.needsOutput,
 		...P2P ? { P2P } : {},
-	}))
+	})
+	if (initResult === 'already_running')
+		throw new Error(`server init failed: IPC port ${ipcPort ?? '(default)'} already in use`)
+	if (!initResult)
 		throw new Error('server init failed')
 
 	if (options.minP2pNode)
@@ -266,8 +273,11 @@ function patchDenoTestSanitizeOff() {
 	 */
 	Deno.test = (...args) => {
 		const [first, second, third] = args
-		if (typeof first === 'object' && first !== null && typeof first !== 'function')
-			return original({ sanitizeOps: false, sanitizeResources: false, ...first })
+		if (typeof first === 'object' && first !== null && typeof first !== 'function') {
+			const def = { sanitizeOps: false, sanitizeResources: false, ...first }
+			if (typeof second === 'function') def.fn = second
+			return original(def)
+		}
 		if (typeof first === 'string' && typeof second === 'object' && typeof third === 'function')
 			return original(first, { sanitizeOps: false, sanitizeResources: false, ...second }, third)
 		if (typeof first === 'string' && typeof second === 'function')
