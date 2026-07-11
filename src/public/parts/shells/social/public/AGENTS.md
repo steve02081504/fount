@@ -25,7 +25,7 @@ alwaysApply: false
 
 ## Feed / profile pagination (C2.4)
 
-- Shared infinite scroll: `public/src/lib/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`, `#feedScrollSentinel` / `#notificationsScrollSentinel` / profile panel sentinel).
+- Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`).
 - Feed / notifications / profile posts paginate via backend `nextCursor`; search mode calls `disconnectInfiniteScroll()` (no cursor append).
 - Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts; report success → `social.actions.reportSubmitted`.
 - Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=`), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/report/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
@@ -39,5 +39,6 @@ alwaysApply: false
 ## Notifications inbox (M5)
 
 - **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
+- **Read model**: `GET /notifications` aggregates high-frequency like/repost/follow rows; `unreadCount` counts aggregated cards. Optional `?types=mention,like` filter.
 - **API**: `GET /notifications` reads inbox via `buildNotifications` (`unreadCount` from seen watermark); `GET/PUT /notifications/seen`.
-- **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; `POST /posts` pushes `{ type: 'post', … }`. Frontend badge uses `unreadCount` + WS increment in `public/src/init.mjs`.
+- **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; frontend merges by `aggregateKey` when inbox view is open.

@@ -8,6 +8,7 @@ import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
+import { insertComposerMention } from './mentionAutocomplete.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { hubStore } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
@@ -52,11 +53,12 @@ export async function showMemberContextMenu(event, memberElement) {
 	const entityHash = memberElement.dataset.entityHash?.trim() || ''
 	const showPersonalBlock = memberKey.toLowerCase() !== viewer && !!entityHash
 	const showCopyEntity = !!entityHash
+	const showMention = memberKey.toLowerCase() !== viewer && !!entityHash
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
 	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
-	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity, showPersonalBlock }))
+	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity, showPersonalBlock, showMention }))
 	document.body.appendChild(menu)
 	openMenuElement = menu
 
@@ -85,6 +87,10 @@ export async function showMemberContextMenu(event, memberElement) {
 	menu.querySelector('.hub-member-menu-copy-entity')?.addEventListener('click', async () => {
 		await navigator.clipboard.writeText(entityHash)
 		showToastI18n('success', 'chat.hub.copyEntityIdOk')
+		closeOnce()
+	})
+	menu.querySelector('.hub-member-menu-mention')?.addEventListener('click', () => {
+		insertComposerMention(entityHash)
 		closeOnce()
 	})
 	menu.querySelector('.hub-member-menu-dm')?.addEventListener('click', () => {

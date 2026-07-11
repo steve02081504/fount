@@ -12,6 +12,8 @@ const BROWSER_SCRIPTS = [
 	'/scripts/lib/digest.mjs',
 	'/scripts/p2p/hexIds.mjs',
 	'/scripts/p2p/entity_id_parse.mjs',
+	'/scripts/p2p/mentions.mjs',
+	'/scripts/infiniteScroll.mjs',
 	'/scripts/test/ready_gate.mjs',
 ]
 

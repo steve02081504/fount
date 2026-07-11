@@ -1,6 +1,6 @@
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { getNotificationsSeenAt, setNotificationsSeenAt } from '../inbox.mjs'
+import { getNotificationsSeenAt, parseNotificationTypesFilter, setNotificationsSeenAt } from '../inbox.mjs'
 import { buildNotifications } from '../notifications.mjs'
 
 /**
@@ -14,6 +14,7 @@ export function registerNotificationRoutes(router) {
 		res.status(200).json(await buildNotifications(username, {
 			limit: Number(req.query.limit) || 30,
 			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
+			types: parseNotificationTypesFilter(req.query.types),
 		}))
 	})
 

@@ -1,9 +1,9 @@
 /**
  * 【文件】public/hub/mode.mjs
- * 【职责】Hub 左侧主模式切换：「群组」与「好友」两套布局的激活、数据加载与 composer 状态清理。
- * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode('friends')` 渲染好友列并隐藏群相关侧栏元素；切到好友模式时 `disableComposer` 并取消频道增量定时器。
+ * 【职责】Hub 左侧主模式切换：「群组」「好友」「提及」三套布局的激活、数据加载与 composer 状态清理。
+ * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / mentions。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav。
+ * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav、mentionsView。
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 
@@ -25,8 +25,8 @@ import {
 } from './privateGroup.mjs'
 
 /**
- * 高亮左侧「群组 / 好友」模式切换按钮。
- * @param {'groups' | 'friends'} mode 主栏模式
+ * 高亮左侧「群组 / 好友 / 提及」模式切换按钮。
+ * @param {'groups' | 'friends' | 'mentions'} mode 主栏模式
  * @returns {void}
  */
 export function setActiveModeTab(mode) {
@@ -36,13 +36,25 @@ export function setActiveModeTab(mode) {
 }
 
 /**
- * 切换 Hub 主模式（群组 / 好友）。
- * @param {'groups' | 'friends'} mode 目标模式
+ * 切换 Hub 主模式（群组 / 好友 / 提及）。
+ * @param {'groups' | 'friends' | 'mentions'} mode 目标模式
  * @returns {Promise<void>}
  */
 export async function setMode(mode) {
+	if (mode !== 'mentions') {
+		const { closeMentionsInboxView } = await import('./mentionsView.mjs')
+		closeMentionsInboxView()
+	}
+
 	hubStore.context.currentMode = mode
 	setActiveModeTab(mode)
+
+	if (mode === 'mentions') {
+		const { activateMentionsView } = await import('./mentionsView.mjs')
+		await activateMentionsView()
+		return
+	}
+
 	const container = document.getElementById('hub-channel-list')
 	await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
 	document.getElementById('hub-member-list').innerHTML = ''
@@ -80,7 +92,7 @@ export async function setMode(mode) {
 		else
 			await renderFriendsColumn(await loadFriendsList())
 
-	else if (mode === 'groups')
+	else if (mode === 'groups') 
 		if (!hubStore.context.currentGroupId || !hubStore.context.currentState) {
 			setPinsBookmarksWrapVisible(false)
 			updateStatusBanners()
@@ -91,4 +103,5 @@ export async function setMode(mode) {
 			await renderMemberList(hubStore.context.currentState)
 			await renderGroupInfoCard(hubStore.context.currentState)
 		}
+	
 }

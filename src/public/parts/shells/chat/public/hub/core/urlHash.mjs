@@ -7,6 +7,9 @@ import { PENDING_INVITE_STORAGE_KEY } from '../../src/pendingInviteStorage.mjs'
 /** 好友列表模式的 hash 片段（`#friends`）。 */
 export const FRIENDS_HASH = 'friends'
 
+/** @mention 收件箱模式的 hash 片段（`#mentions`）。 */
+export const MENTIONS_HASH = 'mentions'
+
 /**
  * 从 `location.hash` 解析当前群组与频道。
  * @returns {{ groupId: string | null, channelId: string | null }} 解析结果
@@ -33,6 +36,11 @@ export function isFriendsHash() {
 	return window.location.hash.slice(1) === FRIENDS_HASH
 }
 
+/** @returns {boolean} 当前 hash 是否为 @mention 收件箱 */
+export function isMentionsHash() {
+	return window.location.hash.slice(1) === MENTIONS_HASH
+}
+
 /**
  * 将当前群组/频道写入 hash（`#group:id:channel`）。
  * @param {string} groupId 群组 ID
@@ -51,6 +59,13 @@ export function updateHash(groupId, channelId) {
 export function updateFriendsHash() {
 	if (window.location.hash.slice(1) === FRIENDS_HASH) return
 	const url = `${window.location.pathname}${window.location.search}#${FRIENDS_HASH}`
+	history.replaceState(null, '', url)
+}
+
+/** 将 hash 设为 @mention 收件箱（`#mentions`）。 @returns {void} */
+export function updateMentionsHash() {
+	if (window.location.hash.slice(1) === MENTIONS_HASH) return
+	const url = `${window.location.pathname}${window.location.search}#${MENTIONS_HASH}`
 	history.replaceState(null, '', url)
 }
 

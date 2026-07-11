@@ -1,5 +1,6 @@
 import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
 
+import { attachHubMentionAutocomplete } from './mentionAutocomplete.mjs'
 import {
 	pickPhoto,
 	selectedFiles,
@@ -10,6 +11,7 @@ import {
 export function wireComposerEvents() {
 	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-message-input')
 	addDragAndDropSupport(messageInput, selectedFiles, document.getElementById('hub-attachment-preview'))
+	attachHubMentionAutocomplete(messageInput)
 
 	document.getElementById('hub-voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()

@@ -4,11 +4,15 @@
  * 【原理】setEndpoints(router) 在 authenticate 之后挂路由：REST 读写 shellData；群联邦路由见 group/endpoints.mjs；本子模块按域装配 prefs / discovery / mailbox / sessions / WS 等。
  * 【关联】被 main.mjs Load 调用；聚合 endpoints/*、profile、stickers。
  */
+import { authenticate } from '../../../../../server/auth/index.mjs'
+
 import { registerDiscoveryRoutes } from './endpoints/discovery.mjs'
 import { registerGroupsRuntimeRoutes } from './endpoints/groups_runtime.mjs'
 import { registerMailboxRoutes } from './endpoints/mailbox.mjs'
+import { registerMentionRoutes } from './endpoints/mentions.mjs'
 import { registerPrefsRoutes } from './endpoints/prefs.mjs'
 import { registerSessionRoutes } from './endpoints/sessions.mjs'
+import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
 import { registerWsRoutes } from './endpoints/ws.mjs'
 import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpoints.mjs'
@@ -24,8 +28,11 @@ export function setEndpoints(router) {
 	registerPrefsRoutes(router)
 	registerDiscoveryRoutes(router)
 	registerMailboxRoutes(router)
+	registerMentionRoutes(router)
 	registerWsRoutes(router)
 	registerGroupsRuntimeRoutes(router)
 	registerSessionRoutes(router)
 	registerTrustedAuthorsRoutes(router)
+	if (process.env.FOUNT_TEST === '1' || process.env.FOUNT_TEST_ISOLATED === '1')
+		registerTestSeedRoutes(router, authenticate)
 }

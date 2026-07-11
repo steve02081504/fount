@@ -1,24 +1,155 @@
 /**
- * 【文件】inbox.mjs — 通知持久 inbox（append-only JSONL + 服务端已读水位）。
+ * 【文件】inbox.mjs — 通知持久 inbox（append-only JSONL + 服务端已读水位 + 读取层聚合）。
  */
 import fs from 'node:fs'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../scripts/p2p/dag/storage.mjs'
+import { extractMentionEntityHashes } from '../../../../../scripts/p2p/mentions.mjs'
 import { isMutedBy } from '../../../../../scripts/p2p/personal_block.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
-import { extractMentionEntityHashes } from './lib/mentions.mjs'
 import { canWriteTimeline } from './timeline/append.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
+/** @type {Set<string>} */
+export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow'])
+
 /**
- * @param {object} row 通知条目
+ *
+ */
+export const FOLLOW_AGGREGATE_WINDOW_MS = 86_400_000
+/**
+ *
+ */
+export const SNIPPET_MAX_LEN = 120
+/**
+ *
+ */
+export const MAX_DISPLAY_ACTORS = 3
+
+/**
+ * @param {string | undefined | null} typesParam 逗号分隔类型
+ * @returns {string[] | null} 合法类型列表；无参数时为 null（不过滤）
+ */
+export function parseNotificationTypesFilter(typesParam) {
+	if (!typesParam) return null
+	const types = String(typesParam).split(',')
+		.map(type => type.trim().toLowerCase())
+		.filter(type => VALID_NOTIFICATION_TYPES.has(type))
+	return types.length ? types : null
+}
+
+/**
+ * @param {string | null | undefined} text 原文
+ * @param {number} [maxLen=120] 最大长度
+ * @returns {string | null} 摘要
+ */
+export function notificationSnippet(text, maxLen = SNIPPET_MAX_LEN) {
+	if (!text) return null
+	const plain = String(text)
+		.replace(/```[\s\S]*?```/g, ' ')
+		.replace(/`[^`]*`/g, ' ')
+		.replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+		.replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+		.replace(/[#>*_\-\n\r]+/g, ' ')
+		.replace(/\s+/g, ' ')
+		.trim()
+	if (!plain) return null
+	return plain.length <= maxLen ? plain : `${plain.slice(0, maxLen - 1)}…`
+}
+
+/**
+ * @param {object} row 原始通知行
+ * @returns {string} 原始去重键
+ */
+export function rawNotificationCursor(row) {
+	return `${row.at}:${row.actorEntityHash}:${row.type}:${row.postId ?? ''}:${row.targetPostId ?? ''}`
+}
+
+/**
+ * @param {object} row 通知条目（原始或聚合）
  * @returns {string} 分页游标
  */
 export function notificationCursor(row) {
-	return `${row.at}:${row.actorEntityHash}:${row.type}:${row.postId ?? ''}:${row.targetPostId ?? ''}`
+	if (row.aggregateKey)
+		return `${row.at}:${row.aggregateKey}`
+	return rawNotificationCursor(row)
+}
+
+/**
+ * @param {object} row 通知行
+ * @param {string} viewerEntityHash 收件人
+ * @returns {string} 聚合键
+ */
+export function computeAggregateKey(row, viewerEntityHash) {
+	const type = row.type
+	if (type === 'like' || type === 'repost') {
+		const target = (row.targetEntityHash || viewerEntityHash || '').toLowerCase()
+		return `${type}:${target}:${row.targetPostId ?? ''}`
+	}
+	if (type === 'follow') {
+		const bucket = Math.floor(Number(row.at) / FOLLOW_AGGREGATE_WINDOW_MS)
+		return `follow:${bucket}`
+	}
+	return `${type}:${row.actorEntityHash}:${row.postId ?? ''}:${row.targetPostId ?? ''}`
+}
+
+/**
+ * @param {object[]} rows 原始通知行（已去重）
+ * @param {string} viewerEntityHash 收件人
+ * @returns {object[]} 聚合后的展示通知
+ */
+export function aggregateNotificationRows(rows, viewerEntityHash) {
+	/** @type {Map<string, object>} */
+	const groups = new Map()
+	for (const row of rows) {
+		const key = row.aggregateKey || computeAggregateKey(row, viewerEntityHash)
+		const at = Number(row.at) || 0
+		let group = groups.get(key)
+		if (!group) {
+			/** @type {Map<string, { entityHash: string, at: number }>} */
+			const actorMap = new Map([[row.actorEntityHash, { entityHash: row.actorEntityHash, at }]])
+			group = {
+				type: row.type,
+				actorEntityHash: row.actorEntityHash,
+				latestActorEntityHash: row.actorEntityHash,
+				postId: row.postId ?? null,
+				targetPostId: row.targetPostId ?? null,
+				targetEntityHash: row.targetEntityHash ?? null,
+				snippet: row.snippet ?? null,
+				at,
+				actorMap,
+				actorCount: 1,
+				aggregateKey: key,
+			}
+			groups.set(key, group)
+			continue
+		}
+		group.at = Math.max(group.at, at)
+		if (!group.snippet && row.snippet) group.snippet = row.snippet
+		if (!group.targetEntityHash && row.targetEntityHash) group.targetEntityHash = row.targetEntityHash
+		const prev = group.actorMap.get(row.actorEntityHash)
+		if (!prev || at > prev.at) group.actorMap.set(row.actorEntityHash, { entityHash: row.actorEntityHash, at })
+		group.actorCount = group.actorMap.size
+		const sortedActors = [...group.actorMap.values()].sort((left, right) => right.at - left.at)
+		const latest = sortedActors[0]
+		if (latest) {
+			group.actorEntityHash = latest.entityHash
+			group.latestActorEntityHash = latest.entityHash
+		}
+	}
+	return [...groups.values()]
+		.map(group => {
+			const sortedActors = [...group.actorMap.values()].sort((left, right) => right.at - left.at)
+			const { actorMap, ...rest } = group
+			return {
+				...rest,
+				actors: sortedActors.slice(0, MAX_DISPLAY_ACTORS),
+			}
+		})
+		.sort((left, right) => right.at - left.at)
 }
 
 /**
@@ -54,16 +185,48 @@ export function inboxReadPath(username, entityHash) {
  * @param {number} at 时间戳
  * @param {string | null | undefined} postId 相关帖 id
  * @param {string | null | undefined} targetPostId 目标帖 id
+ * @param {string | null | undefined} [targetEntityHash] 目标帖 owner
+ * @param {string | null | undefined} [snippet] 摘要
  * @returns {object} 规范化通知条目
  */
-export function normalizeNotificationRow(type, actorEntityHash, at, postId, targetPostId) {
+export function normalizeNotificationRow(type, actorEntityHash, at, postId, targetPostId, targetEntityHash = null, snippet = null) {
 	return {
 		type,
 		actorEntityHash: actorEntityHash.toLowerCase(),
 		postId: postId ?? null,
 		targetPostId: targetPostId ?? null,
+		targetEntityHash: targetEntityHash?.toLowerCase() ?? null,
+		snippet: snippet ?? null,
 		at,
 	}
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} timelineOwner 事件 timeline owner
+ * @param {object} event 签名事件
+ * @param {object} row 推导出的通知行
+ * @returns {Promise<string | null>} 摘要
+ */
+async function resolveNotificationSnippet(username, timelineOwner, event, row) {
+	if (event.type === 'post')
+		return notificationSnippet(event.content?.text || '')
+	if (event.type === 'like' || event.type === 'repost') {
+		const targetOwner = (event.content?.targetEntityHash || '').toLowerCase()
+		const targetPostId = event.content?.targetPostId
+		if (!targetOwner || !targetPostId) return null
+		const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
+		const view = await getTimelineMaterialized(username, targetOwner)
+		const post = view.posts.find(entry => entry.id === targetPostId)
+		return notificationSnippet(post?.content?.text || '')
+	}
+	if (row.type === 'reply' && row.targetPostId && row.targetEntityHash) {
+		const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
+		const view = await getTimelineMaterialized(username, row.targetEntityHash)
+		const post = view.posts.find(entry => entry.id === row.targetPostId)
+		return notificationSnippet(post?.content?.text || '')
+	}
+	return null
 }
 
 /**
@@ -75,13 +238,18 @@ export function normalizeNotificationRow(type, actorEntityHash, at, postId, targ
 export function deriveInboxNotifications(timelineOwner, event) {
 	const owner = timelineOwner.toLowerCase()
 	const at = Number(event.hlc?.wall) || Number(event.timestamp) || Date.now()
-	/** @type {Array<{ recipient: string, type: string, actorEntityHash: string, postId: string | null, targetPostId: string | null, at: number }>} */
+	/** @type {Array<{ recipient: string, type: string, actorEntityHash: string, postId: string | null, targetPostId: string | null, targetEntityHash: string | null, snippet: string | null, at: number }>} */
 	const rows = []
 
 	if (event.type === 'post') {
 		const replyTo = event.content?.replyTo
-		if (replyTo?.entityHash?.toLowerCase())
-			rows.push({ recipient: replyTo.entityHash.toLowerCase(), ...normalizeNotificationRow('reply', owner, at, event.id, replyTo.postId) })
+		if (replyTo?.entityHash?.toLowerCase()) {
+			const recipient = replyTo.entityHash.toLowerCase()
+			rows.push({
+				recipient,
+				...normalizeNotificationRow('reply', owner, at, event.id, replyTo.postId, recipient),
+			})
+		}
 		for (const mention of extractMentionEntityHashes(event.content?.text || '')) {
 			if (mention === owner) continue
 			rows.push({ recipient: mention, ...normalizeNotificationRow('mention', owner, at, event.id, null) })
@@ -90,12 +258,18 @@ export function deriveInboxNotifications(timelineOwner, event) {
 	if (event.type === 'like') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
 		if (target)
-			rows.push({ recipient: target, ...normalizeNotificationRow('like', owner, at, null, event.content?.targetPostId ?? null) })
+			rows.push({
+				recipient: target,
+				...normalizeNotificationRow('like', owner, at, null, event.content?.targetPostId ?? null, target),
+			})
 	}
 	if (event.type === 'repost') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
 		if (target)
-			rows.push({ recipient: target, ...normalizeNotificationRow('repost', owner, at, null, event.content?.targetPostId ?? null) })
+			rows.push({
+				recipient: target,
+				...normalizeNotificationRow('repost', owner, at, null, event.content?.targetPostId ?? null, target),
+			})
 	}
 	if (event.type === 'follow') {
 		const target = (event.content?.targetEntityHash || '').toLowerCase()
@@ -136,46 +310,56 @@ export function setNotificationsSeenAt(username, entityHash, at) {
  */
 export async function appendInboxFromTimelineEvent(username, timelineOwner, event) {
 	for (const row of deriveInboxNotifications(timelineOwner, event)) {
+		if (row.actorEntityHash === row.recipient) continue
 		if (!await canWriteTimeline(username, row.recipient)) continue
 		if (await isMutedBy(row.recipient, { entityHash: row.actorEntityHash })) continue
-		const dir = inboxDir(username, row.recipient)
+		const snippet = await resolveNotificationSnippet(username, timelineOwner, event, row)
+		const { recipient, ...baseRow } = row
+		const dir = inboxDir(username, recipient)
 		fs.mkdirSync(dir, { recursive: true })
-		const { recipient, ...notification } = row
+		const notification = {
+			...baseRow,
+			snippet,
+			aggregateKey: computeAggregateKey({ ...row, snippet }, recipient),
+		}
 		await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
 	}
 }
 
 /**
- * 从 inbox JSONL 读通知页。
+ * 从 inbox JSONL 读通知页（聚合后分页）。
  * @param {string} username 用户
  * @param {string} viewerEntityHash 观看者 entityHash
- * @param {{ limit?: number, cursor?: string | null }} [options] 分页
+ * @param {{ limit?: number, cursor?: string | null, types?: string[] | null }} [options] 分页与过滤
  * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number }>} 通知页与未读数
  */
 export async function readInboxNotifications(username, viewerEntityHash, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	const cursor = options.cursor ? String(options.cursor) : null
+	const types = options.types ?? null
 	const seenAt = getNotificationsSeenAt(username, viewerEntityHash)
 	const rows = await readJsonl(inboxEventsPath(username, viewerEntityHash)).catch(() => [])
 	const deduped = []
 	const seen = new Set()
-	for (const row of [...rows].sort((left, right) => Number(right.at) - Number(left.at))) {
-		const key = notificationCursor(row)
+	for (const row of rows) {
+		const key = rawNotificationCursor(row)
 		if (seen.has(key)) continue
 		seen.add(key)
 		deduped.push(row)
 	}
+	const filtered = types?.length ? deduped.filter(row => types.includes(row.type)) : deduped
+	const aggregated = aggregateNotificationRows(filtered, viewerEntityHash)
 	let startIndex = 0
 	if (cursor) {
-		startIndex = deduped.findIndex(row => notificationCursor(row) === cursor) + 1
-		if (startIndex <= 0) startIndex = deduped.length
+		startIndex = aggregated.findIndex(row => notificationCursor(row) === cursor) + 1
+		if (startIndex <= 0) startIndex = aggregated.length
 	}
-	const page = deduped.slice(startIndex, startIndex + limit)
-	const nextCursor = page.length === limit && startIndex + limit < deduped.length
+	const page = aggregated.slice(startIndex, startIndex + limit)
+	const nextCursor = page.length === limit && startIndex + limit < aggregated.length
 		? notificationCursor(page[page.length - 1])
 		: null
-	const unreadCount = deduped.filter(row => Number(row.at) > seenAt).length
+	const unreadCount = aggregated.filter(row => Number(row.at) > seenAt).length
 	return { notifications: page, nextCursor, unreadCount }
 }
 
@@ -193,7 +377,7 @@ export async function rebuildInbox(username) {
 	const legacy = await buildNotificationsLegacy(username, { limit: 10_000 })
 	let written = 0
 	fs.mkdirSync(dir, { recursive: true })
-	for (const row of legacy.notifications.sort((a, b) => a.at - b.at)) {
+	for (const row of legacy.notifications.sort((left, right) => left.at - right.at)) {
 		await appendJsonlSynced(inboxEventsPath(username, viewerEntityHash), row)
 		written++
 	}

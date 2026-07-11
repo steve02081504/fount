@@ -12,6 +12,7 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeNotifyHubMessage } from './hubNotifications.mjs'
+import { maybeBumpMentionsBadgeFromWire } from './mentionsInbox.mjs'
 import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
 import {
@@ -368,13 +369,14 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 
 	if (wireMessage.type === 'channel_message') {
 		const incomingChannelId = wireMessage.channelId
+		const channelMessage = wireMessage.message
+		maybeBumpMentionsBadgeFromWire(wireMessage)
 		const { main, thread } = hubChannelMatch(incomingChannelId, channelId)
 		if (!main && !thread) {
 			if (hubStore.context.currentGroupId)
 				bumpChannelUnread(hubStore.context.currentGroupId, incomingChannelId)
 			return
 		}
-		const channelMessage = wireMessage.message
 		if (channelMessage?.type === 'message_edit') {
 			const targetId = String(channelMessage.content?.targetId || '').trim()
 			if (targetId) {
@@ -393,8 +395,7 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 			maybeNotifyHubMessage({
 				groupName: hubStore.context.currentState?.groupMeta?.name || hubStore.context.currentGroupId,
 				channelName: hubStore.context.currentState?.channels?.[incomingChannelId]?.name || incomingChannelId,
-				message: channelMessage,
-				viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
+				wireMessage,
 			})
 
 		dispatchChannelIncrementalRefresh(incomingChannelId, channelId, { immediate: true })

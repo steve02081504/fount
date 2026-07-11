@@ -342,6 +342,7 @@ async function wireHubPickers() {
 export async function init() {
 	setupMisc()
 	setupHubNotifications()
+	void import('./mentionsInbox.mjs').then(({ updateMentionsBadge }) => updateMentionsBadge())
 	wireHubBannerBindings()
 	void loadMe()
 	await wireHubHeavyFeatures()

@@ -26,6 +26,8 @@ import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { governanceChannelId } from '../access.mjs'
 
+import { suggestGroupMentions } from '../lib/mentionSuggest.mjs'
+
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
 
@@ -96,6 +98,12 @@ export function registerMembershipRoutes(router, authenticate) {
 			membersPagesCount: pageCount,
 			membersRoot: state.membersRoot ?? null,
 		})
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/mentions/suggest`, authenticate, requireGroupMember(), async (req, res) => {
+		const { username } = getUserByReq(req)
+		const { groupId } = req.groupContext
+		res.status(200).json(await suggestGroupMentions(username, groupId, String(req.query.q || ''), Number(req.query.limit) || 20))
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/invite-ticket`, authenticate, async (req, res) => {

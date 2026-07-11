@@ -14,6 +14,7 @@ export { notificationCursor }
  * @param {object} [options] 分页选项
  * @param {number} [options.limit=30] 条数上限
  * @param {string} [options.cursor] 分页游标
+ * @param {string[] | null} [options.types] 类型过滤
  * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number, viewerEntityHash: string | null }>} 通知列表
  */
 export async function buildNotifications(username, options = {}) {
@@ -38,7 +39,7 @@ export async function buildNotificationsLegacy(username, options = {}) {
 		return { notifications: [], nextCursor: null, viewerEntityHash: null }
 
 	const { listFollowedTimelineOwners } = await import('./feed/helpers.mjs')
-	const { extractMentionEntityHashes } = await import('./lib/mentions.mjs')
+	const { extractMentionEntityHashes } = await import('../../../../../scripts/p2p/mentions.mjs')
 	const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
 
 	/** @type {object[]} */

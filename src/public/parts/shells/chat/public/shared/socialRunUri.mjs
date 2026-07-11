@@ -1,12 +1,16 @@
+const SOCIAL_SHELL_PATH = '/parts/shells:social/'
+
 const SOCIAL_RUN_PART = 'shells:social'
 
 /**
+ * Social shell 实体资料页 hash 链接。
  * @param {string} entityHash 128 位 entityHash
  * @param {string} [postId] 帖子 id
- * @returns {string} 浏览器 hash 链接
+ * @returns {string} 浏览器路径（含 hash）
  */
 export function formatSocialProfileHref(entityHash, postId) {
-	return `/parts/shells:social/#${postId ? `profile;${entityHash};${postId}` : `profile;${entityHash}`}`
+	const hash = postId ? `profile;${entityHash};${postId}` : `profile;${entityHash}`
+	return `${SOCIAL_SHELL_PATH}#${hash}`
 }
 
 /**

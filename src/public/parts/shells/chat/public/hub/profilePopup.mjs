@@ -13,6 +13,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { isHex64 } from '../shared/pubKeyHex.mjs'
 
+import { formatSocialProfileHref } from '../shared/socialRunUri.mjs'
 import { hubStore } from './core/state.mjs'
 import {
 	loadEntityProfile,
@@ -234,7 +235,7 @@ export async function showProfilePopup(entity) {
 
 	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {
 		if (!isEntityHash128(entity.entityHash)) return
-		window.location.href = `/parts/shells:social/#profile;${entity.entityHash}`
+		window.location.href = formatSocialProfileHref(entity.entityHash)
 	})
 
 	await paintProfilePopup(popup, entity)

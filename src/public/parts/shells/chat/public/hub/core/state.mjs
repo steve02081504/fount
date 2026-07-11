@@ -62,6 +62,9 @@ export const hubStore = {
 		operatorEntityHash: null,
 		viewerEntityHash: null,
 	},
+	mentions: {
+		unreadCount: 0,
+	},
 	/** `enterFriendChat` 进行中；`setMode('friends')` 时保留私聊会话 */
 	friendChatEntering: false,
 	/** 角色私聊或用户 DM；用户 DM 复用 `context.currentGroupId` 拉频道消息。 */

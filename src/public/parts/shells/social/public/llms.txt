@@ -44,9 +44,11 @@ Query：`limit`。账户发现（本地 + 邻居 RPC 合并）。
 Query：`limit`、`mediaOnly=true`。帖子发现。
 
 ### `GET /api/parts/shells:social/notifications`
-Query：`limit`（默认 30，最大 100）、`cursor`（分页游标）。
+Query：`limit`（默认 30，最大 100）、`cursor`（分页游标）、`types`（可选，逗号分隔：`reply,mention,like,repost,follow`）。
 
-响应：`{ notifications[], nextCursor, viewerEntityHash }`。每条固定字段：`{ type, actorEntityHash, postId, targetPostId, at }`（不适用时为 null）。类型：`reply` | `mention` | `like` | `repost` | `follow`。
+响应：`{ notifications[], nextCursor, unreadCount, viewerEntityHash }`。读取层按目标聚合高频互动（like/repost 按目标帖、follow 按 24h 窗口）；`unreadCount` 为聚合卡片未读数。
+
+每条字段：`{ type, actorEntityHash, postId, targetPostId, at }` 必填；可选 `targetEntityHash`, `snippet`, `actors[]`, `actorCount`, `latestActorEntityHash`, `aggregateKey`。类型：`reply` | `mention` | `like` | `repost` | `follow`。
 
 ### `POST /api/parts/shells:social/translate`
 Body：`{ text, targetLang }` — 帖子翻译（缓存于用户侧）。

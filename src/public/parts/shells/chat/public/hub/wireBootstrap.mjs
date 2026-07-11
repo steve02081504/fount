@@ -37,7 +37,7 @@ function wireComposerControls() {
 	})
 }
 
-/** 注册左侧群组/好友模式切换（惰性加载 setMode）。 @returns {void} */
+/** 注册左侧群组/好友/提及模式切换（统一走 setMode）。 @returns {void} */
 function wireModeTabsEarly() {
 	document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 		el.addEventListener('click', () => {

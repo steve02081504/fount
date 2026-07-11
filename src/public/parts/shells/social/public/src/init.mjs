@@ -16,7 +16,7 @@ import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
-import { bumpNotificationBadge, updateNotificationBadge } from './views/notifications.mjs'
+import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 
 const socialGate = createReadyGate(SOCIAL_APP_GATE)
@@ -45,8 +45,10 @@ function handleFeedWebSocketMessage(appContext, message) {
 	if (!message?.type || message.type === 'hello') return
 	if (message.type === 'post')
 		showFeedNewPostsBanner(appContext)
-	else if (message.type === 'notification')
-		bumpNotificationBadge(appContext)
+	else if (message.type === 'notification') {
+		if (!mergeIncomingNotification(appContext, message.notification))
+			bumpNotificationBadge(appContext)
+	}
 	else {
 		const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
 		if (feedVisible && !appContext.state.activeFeedSearchQuery)

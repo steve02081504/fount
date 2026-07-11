@@ -4,9 +4,10 @@ import {
 	test,
 	expect,
 	openSocialHome,
-	findPostCard,
-	submitReplyViaPanel,
-	seedNotificationsViaReplies,
+	fetchViewerEntityHash,
+	injectForeignLike,
+	seedInboxLikes,
+	seedInboxMentions,
 } from './fixtures.mjs'
 
 test.describe('Social secondary views', () => {
@@ -64,27 +65,26 @@ test.describe('Social secondary views', () => {
 			.toBeVisible({ timeout: 20_000 })
 	})
 
-	test('reply generates notification', async ({ page, publishPost }) => {
+	test('notifications view loads inbox tabs', async ({ page }) => {
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		await expect(page.locator('#notificationsView')).toBeVisible()
+		await expect(page.locator('.inbox-filter-tabs [data-notif-filter="all"]')).toBeVisible()
+		await expect(page.locator('.inbox-filter-tabs [data-notif-filter="like"]')).toBeVisible()
+	})
+
+	test('like generates notification', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`notif-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId, { allowProfileFallback: true })
-		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
-		await card.locator('[data-replies]').click()
-		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
-		await panel.locator('textarea').fill(`notif-reply ${Date.now()}`)
-		await submitReplyViaPanel(page, panel)
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView .notification-card').first())
 			.toBeVisible({ timeout: 20_000 })
 	})
 
-	test('notification view link opens profile', async ({ page, publishPost }) => {
+	test('notification view link opens profile', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`notif-link ${Date.now()}`)
-		const card = await findPostCard(page, postId, { allowProfileFallback: true })
-		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
-		await card.locator('[data-replies]').click()
-		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
-		await panel.locator('textarea').fill(`notif-link-reply ${Date.now()}`)
-		await submitReplyViaPanel(page, panel)
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		const notifCard = page.locator('#notificationsView .notification-card').first()
@@ -94,37 +94,91 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('notifications mark all read clears badge', async ({ page, publishPost }) => {
+	test('notifications mark all read clears badge', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`markall-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId, { allowProfileFallback: true })
-		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
-		await card.locator('[data-replies]').click()
-		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
-		await panel.locator('textarea').fill(`markall-reply ${Date.now()}`)
-		await submitReplyViaPanel(page, panel)
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsMarkAllButton')).toBeVisible({ timeout: 20_000 })
 		await page.locator('#notificationsMarkAllButton').click()
 		await expect(page.locator('#notificationsBadge')).toHaveClass(/hidden/, { timeout: 20_000 })
 	})
 
-	test('notification badge shows unread count before opening view', async ({ page, baseUrl, publishPost }) => {
+	test('notification badge shows unread count before opening view', async ({ page, baseUrl, publishPost, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`badge-parent ${Date.now()}`)
-		const card = await findPostCard(page, postId, { allowProfileFallback: true })
-		const actionKey = await card.locator('[data-replies]').getAttribute('data-replies')
-		await card.locator('[data-replies]').click()
-		const panel = card.locator(`[data-replies-for="${actionKey}"]`)
-		await panel.locator('textarea').fill(`badge-reply ${Date.now()}`)
-		await submitReplyViaPanel(page, panel)
-		// 重载页面：init 阶段会调用 updateNotificationBadge，此时 seenAt=0
-		// 且回复通知已存在，徽章应在打开通知视图之前就显示
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
 		await waitForSocialAppReady(page)
 		await expect(page.locator('#notificationsBadge:not(.hidden)')).toBeVisible({ timeout: 10_000 })
 	})
 
+	test('inbox like tab filters notifications', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const { postId } = await publishPost(`tab-like ${Date.now()}`)
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
+		await seedInboxMentions(baseUrl, apiKey, 1)
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		await expect(page.locator('#notificationsView .notification-card').first()).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-mention').first()).toBeVisible()
+		await Promise.all([
+			page.waitForResponse(res => {
+				const url = new URL(res.url())
+				return url.pathname === '/api/parts/shells:social/notifications'
+					&& url.searchParams.get('types') === 'like'
+					&& res.status() === 200
+			}),
+			page.locator('.inbox-filter-tabs [data-notif-filter="like"]').click(),
+		])
+		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-mention')).toHaveCount(0)
+		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-like').first()).toBeVisible()
+		await expect(page.locator('#notificationsView .notification-card', {
+			has: page.locator(`a.notification-view-link[href*="${postId}"]`),
+		}).first()).toBeVisible()
+	})
+
+	test('aggregated like copy shows actor count', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const { postId } = await publishPost(`agg-like ${Date.now()}`)
+		await seedInboxLikes(baseUrl, apiKey, viewerEntityHash, postId, 2)
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		const card = page.locator('#notificationsView .notification-card', {
+			has: page.locator(`a.notification-view-link[href*="${postId}"]`),
+		}).first()
+		await expect(card).toBeVisible({ timeout: 20_000 })
+		await expect(card).toHaveAttribute('data-actor-count', '2')
+		await expect(card.locator('.notification-type')).toContainText('和')
+	})
+
+	test('notification snippet is visible on inbox card', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const { postId } = await publishPost(`snippet-parent ${Date.now()}`)
+		await seedInboxLikes(baseUrl, apiKey, viewerEntityHash, postId, 1)
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		const card = page.locator('#notificationsView .notification-card', {
+			has: page.locator(`a.notification-view-link[href*="${postId}"]`),
+		}).first()
+		await expect(card).toBeVisible({ timeout: 20_000 })
+		await expect(card.locator('.notification-snippet')).toContainText('aggregated like target')
+	})
+
+	test('WS notification merges into existing aggregated card', async ({ page, publishPost, baseUrl, apiKey }) => {
+		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const { postId } = await publishPost(`ws-merge ${Date.now()}`)
+		await seedInboxLikes(baseUrl, apiKey, viewerEntityHash, postId, 1)
+		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
+		const cardForPost = page.locator('#notificationsView .notification-card', {
+			has: page.locator(`a.notification-view-link[href*="${postId}"]`),
+		})
+		await expect(cardForPost.first()).toBeVisible({ timeout: 20_000 })
+		await expect(cardForPost.first()).toHaveAttribute('data-actor-count', '1')
+		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
+		await expect(cardForPost.first()).toHaveAttribute('data-actor-count', '2', { timeout: 20_000 })
+		await expect(cardForPost).toHaveCount(1)
+	})
+
 	test('notifications infinite scroll loads next page', async ({ page, baseUrl, apiKey }) => {
-		await seedNotificationsViaReplies(baseUrl, apiKey, 41)
+		await seedInboxMentions(baseUrl, apiKey, 41)
 		await openSocialHome(page, baseUrl)
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView .notification-card').first())

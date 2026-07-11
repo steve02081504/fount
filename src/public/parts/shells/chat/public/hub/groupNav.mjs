@@ -692,15 +692,18 @@ function channelIdFromHashOr(groupId, fallback) {
  */
 export async function selectGroup(groupId, presetChannelId = null) {
 	if (!groupId) return
-	await loadGroups()
-	let channelId = channelIdFromHashOr(groupId, presetChannelId)
+	const channelId = channelIdFromHashOr(groupId, presetChannelId)
 	clearPinPreviewCache()
 	clearPrivateGroupState()
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
 	setHubState('context.currentGroupId', groupId)
+	setHubState('context.currentState', null)
 	updateHash(groupId, channelId)
+	const { setMode } = await import('./mode.mjs')
+	await setMode('groups')
+	await loadGroups()
 	try {
 		let state = await getGroupState(groupId)
 		const memberState = await ensureGroupMembership(groupId, state)

@@ -13,4 +13,6 @@ export const socialState = {
 	/** 服务端通知已读水位（毫秒） */
 	notificationsSeenAt: null,
 	lastNotificationUnreadCount: 0,
+	/** 收件箱 Tab：`all` | `mention` | `reply` | `like` | `follow` | `repost` */
+	notificationsFilter: 'all',
 }

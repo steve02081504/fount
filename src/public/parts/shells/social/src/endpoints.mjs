@@ -2,6 +2,8 @@
  * 【文件】social/src/endpoints.mjs
  * 【职责】Social shell HTTP/WS 路由聚合入口。
  */
+import { authenticate } from '../../../../../server/auth/index.mjs'
+
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
 import { registerExploreRoutes } from './endpoints/explore.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
@@ -13,6 +15,7 @@ import { registerRelationshipsRoutes } from './endpoints/relationships.mjs'
 import { registerSavedRoutes } from './endpoints/saved.mjs'
 import { registerSearchRoutes } from './endpoints/search.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
+import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerVaultRoutes } from './endpoints/vault.mjs'
 import { registerViewerRoutes } from './endpoints/viewer.mjs'
 
@@ -35,4 +38,6 @@ export function setEndpoints(router) {
 	registerGovernanceRoutes(router)
 	registerSavedRoutes(router)
 	registerVaultRoutes(router)
+	if (process.env.FOUNT_TEST === '1' || process.env.FOUNT_TEST_ISOLATED === '1')
+		registerTestSeedRoutes(router, authenticate)
 }

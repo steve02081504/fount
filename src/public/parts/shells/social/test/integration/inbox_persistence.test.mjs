@@ -1,7 +1,10 @@
 /**
- * M5：inbox 持久化 + 已读水位 + buildNotifications unreadCount。
+ * M5：inbox 持久化 + 已读水位 + buildNotifications unreadCount + 聚合读模型。
  */
 /* global Deno */
+import fs from 'node:fs'
+import { writeFile } from 'node:fs/promises'
+
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
@@ -15,6 +18,7 @@ const inbox = await import('../../src/inbox.mjs')
 const following = await import('../../src/following.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
 const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { appendJsonlSynced } = await import('fount/scripts/p2p/dag/storage.mjs')
 
 Deno.test('inbox written on ingest and seen watermark clears unreadCount', async () => {
 	const { username, operator } = await getSession()
@@ -44,7 +48,34 @@ Deno.test('inbox written on ingest and seen watermark clears unreadCount', async
 	assertEquals(after.unreadCount, 0)
 })
 
-Deno.test('local commit writes inbox for reply recipient', async () => {
+Deno.test('local commit writes inbox for remote reply recipient', async () => {
+	const { username, operator } = await getSession()
+	const target = await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: 'parent', visibility: 'public' },
+	}, { fanout: false })
+
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
+	await seedRemoteTimeline(username, seed, remoteOwner, [
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
+		{
+			type: 'post',
+			content: {
+				text: 'remote reply body',
+				visibility: 'public',
+				replyTo: { entityHash: operator, postId: target.id },
+			},
+		},
+	])
+	await following.setFollow(username, operator, remoteOwner, true)
+
+	const { notifications: rows } = await notifications.buildNotifications(username, { limit: 10 })
+	assert(rows.some(row => row.type === 'reply' && row.targetPostId === target.id))
+})
+
+Deno.test('self reply does not write inbox notification', async () => {
 	const { username, operator } = await getSession()
 	const target = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
@@ -61,7 +92,78 @@ Deno.test('local commit writes inbox for reply recipient', async () => {
 	}, { fanout: false })
 
 	const { notifications: rows } = await notifications.buildNotifications(username, { limit: 10 })
-	assert(rows.some(row => row.type === 'reply' && row.targetPostId === target.id))
+	assert(!rows.some(row => row.type === 'reply' && row.targetPostId === target.id))
+})
+
+Deno.test('aggregateNotificationRows merges 1000 likes on one target', () => {
+	const viewer = 'a'.repeat(128)
+	const rows = Array.from({ length: 1000 }, (_, index) => ({
+		type: 'like',
+		actorEntityHash: `b${String(index).padStart(127, '0')}`,
+		postId: null,
+		targetPostId: 'post-1',
+		targetEntityHash: viewer,
+		at: index,
+	}))
+	const aggregated = inbox.aggregateNotificationRows(rows, viewer)
+	assertEquals(aggregated.length, 1)
+	assertEquals(aggregated[0].actorCount, 1000)
+})
+
+Deno.test('inbox read aggregates seeded likes into one card', async () => {
+	const { username, operator } = await getSession()
+	const parent = await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: 'aggregate target', visibility: 'public' },
+	}, { fanout: false })
+
+	fs.rmSync(inbox.inboxDir(username, operator), { recursive: true, force: true })
+	const eventsPath = inbox.inboxEventsPath(username, operator)
+	fs.mkdirSync(inbox.inboxDir(username, operator), { recursive: true })
+	const lines = []
+	for (let index = 0; index < 12; index++) 
+		lines.push(JSON.stringify({
+			type: 'like',
+			actorEntityHash: `c${String(index).padStart(127, '0')}`,
+			postId: null,
+			targetPostId: parent.id,
+			targetEntityHash: operator,
+			snippet: 'aggregate target',
+			at: index,
+		}))
+	
+	await writeFile(eventsPath, `${lines.join('\n')}\n`, 'utf8')
+
+	const page = await inbox.readInboxNotifications(username, operator, { limit: 10 })
+	assertEquals(page.notifications.length, 1)
+	assertEquals(page.notifications[0].actorCount, 12)
+	assertEquals(page.unreadCount, 1)
+})
+
+Deno.test('types filter limits aggregated inbox page', async () => {
+	const { username, operator } = await getSession()
+	const eventsPath = inbox.inboxEventsPath(username, operator)
+	const actorA = encodeEntityHash('4'.repeat(64), pubKeyHash(publicKeyFromSeed(randomSeed())))
+	const actorB = encodeEntityHash('4'.repeat(64), pubKeyHash(publicKeyFromSeed(randomSeed())))
+	await appendJsonlSynced(eventsPath, {
+		type: 'mention',
+		actorEntityHash: actorA,
+		postId: 'post-mention',
+		targetPostId: null,
+		at: Date.now(),
+	})
+	await appendJsonlSynced(eventsPath, {
+		type: 'like',
+		actorEntityHash: actorB,
+		postId: null,
+		targetPostId: 'post-like',
+		targetEntityHash: operator,
+		at: Date.now() - 1,
+	})
+
+	const mentions = await inbox.readInboxNotifications(username, operator, { limit: 10, types: ['mention'] })
+	assertEquals(mentions.notifications.length, 1)
+	assertEquals(mentions.notifications[0].type, 'mention')
 })
 
 Deno.test('appendInboxFromTimelineEvent pushes notification over feed WS', async () => {
@@ -102,20 +204,35 @@ Deno.test('appendInboxFromTimelineEvent pushes notification over feed WS', async
 			content: { text: 'ws parent', visibility: 'public' },
 		}, { fanout: false })
 
-		await append.commitTimelineEvent(username, operator, {
-			type: 'post',
-			content: {
-				text: 'ws reply',
-				visibility: 'public',
-				replyTo: { entityHash: operator, postId: parent.id },
-			},
-		}, { fanout: false })
+		const seed = randomSeed()
+		const subject = pubKeyHash(publicKeyFromSeed(seed))
+		const remoteOwner = encodeEntityHash('4'.repeat(64), subject)
+		await seedRemoteTimeline(username, seed, remoteOwner, [
+			{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
+			{ type: 'like', content: { targetEntityHash: operator, targetPostId: parent.id } },
+		])
+		await following.setFollow(username, operator, remoteOwner, true)
 
 		const notificationFrame = sent.map(text => JSON.parse(text)).find(frame => frame.type === 'notification')
 		assert(notificationFrame, 'notification WS frame')
-		assertEquals(notificationFrame.notification.type, 'reply')
+		assertEquals(notificationFrame.notification.type, 'like')
+		assert(notificationFrame.notification.aggregateKey, 'aggregateKey on WS payload')
 	}
 	finally {
 		mockSocket.close()
 	}
+})
+
+Deno.test('notificationSnippet strips markdown noise', () => {
+	assertEquals(inbox.notificationSnippet('# Title\n\n**bold** text'), 'Title bold text')
+})
+
+Deno.test('aggregateNotificationRows keeps reply rows separate', () => {
+	const viewer = 'a'.repeat(128)
+	const rows = [
+		{ type: 'reply', actorEntityHash: 'b'.repeat(128), postId: 'p1', targetPostId: 't1', at: 2 },
+		{ type: 'reply', actorEntityHash: 'c'.repeat(128), postId: 'p2', targetPostId: 't2', at: 1 },
+	]
+	const aggregated = inbox.aggregateNotificationRows(rows, viewer)
+	assertEquals(aggregated.length, 2)
 })

@@ -10,6 +10,7 @@ import {
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/features/template.mjs'
 import { channelMessageEditText, channelMessageShowText } from '../../shared/channelContent.mjs'
+import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../../shared/expandMentions.mjs'
 import { firstCustomEmojiRef } from '../../src/customEmojis.mjs'
 import { resolveEmojiUrlBestEffort } from '../../src/emojiCache.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../src/groupFileBlob.mjs'
@@ -699,8 +700,10 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	}
 
 	try {
+		const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
+		const markdown = expandMentionsInMarkdown(raw, labelMap)
 		const processor = await getFountMessageMarkdownConvertor(trusted)
-		const html = String(await processor.process({ value: raw, data: { cache: {} } }))
+		const html = String(await processor.process({ value: markdown, data: { cache: {} } }))
 		bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 		delete bubble.dataset.mdRaw
 		bubble.dataset.mdHydrated = '1'

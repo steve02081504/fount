@@ -4,7 +4,7 @@ import {
 	syncGroupRefInComposer,
 } from '../composer.mjs'
 import { clearFeedSearch, loadFeed, runFeedSearch, updateFeedSearchChrome } from '../views/feed.mjs'
-import { markNotificationsSeen } from '../views/notifications.mjs'
+import { markNotificationsSeen, setNotificationFilter } from '../views/notifications.mjs'
 
 /**
  * 处理发帖框与 Feed 顶栏相关点击。
@@ -40,4 +40,7 @@ export async function handleComposerFeedClick(appContext, target) {
 		await clearFeedSearch(appContext)
 	if (target.closest('#notificationsMarkAllButton'))
 		void markNotificationsSeen(appContext)
+	const filterButton = target.closest('[data-notif-filter]')
+	if (filterButton instanceof HTMLButtonElement && filterButton.dataset.notifFilter)
+		void setNotificationFilter(appContext, filterButton.dataset.notifFilter)
 }

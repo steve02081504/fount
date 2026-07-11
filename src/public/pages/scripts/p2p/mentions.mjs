@@ -1,15 +1,14 @@
 /**
- * Social @ 提及：目标为 P2P 实体（128 位 entityHash），而非 char 名。
- * 与 remarkExpandSocialLinks 一致：@<128 hex>
+ * 浏览器侧 @ 提及解析（与 `src/scripts/p2p/mentions.mjs` 对齐）。
  */
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128 } from './entity_id_parse.mjs'
 
 /** @type {RegExp} 匹配 @ 后接 128 位 hex entityHash */
 const MENTION_ENTITY_RE = /@([\da-f]{128})/giu
 
 /**
- * 从帖子正文提取 @ 提及的 entityHash 列表。
- * @param {string} text 帖子正文
+ * 从正文提取 @ 提及的 entityHash 列表。
+ * @param {string} text 正文
  * @returns {string[]} 去重后的 entityHash（小写）
  */
 export function extractMentionEntityHashes(text) {

@@ -392,6 +392,57 @@ export async function pickEmojiFromPicker(page, emoji = '👍') {
 }
 
 /**
+ * 拉取本机 operator entityHash。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @returns {Promise<string>} viewer entityHash。
+ */
+export async function fetchViewerEntityHash(baseUrl, apiKey) {
+	const req = await playwrightRequest.newContext()
+	try {
+		const res = await req.get(
+			`${baseUrl}/api/p2p/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
+		const data = await res.json()
+		if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
+		return data.viewerEntityHash
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 注入一条 @viewer 的 mention inbox 条目及对应频道消息（FOUNT_TEST 专用）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {{ groupId: string, channelId?: string, text?: string }} opts - 目标群/频道与预览正文。
+ * @returns {Promise<{ eventId: string, text: string, groupId: string, channelId: string }>} 种子数据。
+ */
+export async function seedMentionInbox(baseUrl, apiKey, opts) {
+	const req = await playwrightRequest.newContext()
+	const key = encodeURIComponent(apiKey)
+	try {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:chat/test/mention-inbox?fount-apikey=${key}`,
+			{
+				data: {
+					groupId: opts.groupId,
+					channelId: opts.channelId,
+					text: opts.text,
+				},
+			},
+		)
+		if (!res.ok()) throw new Error(`mention-inbox seed failed: ${res.status()}`)
+		return res.json()
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
  * 扩展 groupChannel：打开 Hub 并进入新建测试群默认频道。
  */
 export const test = baseTest.extend({

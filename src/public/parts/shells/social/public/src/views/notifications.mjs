@@ -1,7 +1,7 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '../lib/infiniteScroll.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 
 /** @type {number | null} */
 let badgeUnreadCount = null
@@ -58,6 +58,62 @@ function notificationIconClass(type) {
 	if (type === 'repost') return 's-ic-notif-repost'
 	if (type === 'follow') return 's-ic-notif-follow'
 	return 's-ic-bell'
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @returns {string} types 查询参数
+ */
+function notificationsTypesQuery(appContext) {
+	const filter = appContext.state.notificationsFilter
+	if (!filter || filter === 'all') return ''
+	return `&types=${encodeURIComponent(filter)}`
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {object} row 通知条目
+ * @returns {string} 动作文案
+ */
+function notificationMessage(appContext, row) {
+	const actorCount = Number(row.actorCount) || 1
+	const primaryLabel = appContext.authorLabel(row.actorEntityHash)
+	const actors = Array.isArray(row.actors) && row.actors.length
+		? row.actors
+		: [{ entityHash: row.actorEntityHash }]
+	const secondaryLabel = actors.length > 1
+		? appContext.authorLabel(actors[1].entityHash)
+		: primaryLabel
+	const type = row.type
+	const singleKey = `social.notifications.${type}`
+	if (actorCount <= 1)
+		return appContext.geti18n(singleKey, { author: primaryLabel })
+	if (actorCount === 2 && type !== 'follow') {
+		const twoKey = `social.inbox.aggregated.${type}Two`
+		return appContext.geti18n(twoKey, { author1: primaryLabel, author2: secondaryLabel })
+	}
+	const aggregateKey = `social.inbox.aggregated.${type}`
+	return appContext.geti18n(aggregateKey, {
+		author1: primaryLabel,
+		author2: secondaryLabel,
+		count: String(actorCount),
+	})
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {object} row 通知条目
+ * @returns {string} 头像 HTML
+ */
+function notificationAvatarsHtml(appContext, row) {
+	const actors = Array.isArray(row.actors) && row.actors.length
+		? row.actors.slice(0, 3)
+		: [{ entityHash: row.actorEntityHash }]
+	if (actors.length <= 1)
+		return appContext.renderAvatarHtml(actors[0].entityHash, { name: appContext.authorLabel(actors[0].entityHash) })
+	return `<div class="notification-avatars stacked">${actors.map(actor =>
+		appContext.renderAvatarHtml(actor.entityHash, { name: appContext.authorLabel(actor.entityHash) }),
+	).join('')}</div>`
 }
 
 /**
@@ -118,28 +174,128 @@ function notificationHref(appContext, row) {
 function renderNotificationCard(appContext, row, seenAt) {
 	const card = document.createElement('article')
 	card.className = `notification-card${row.at > seenAt ? ' unread' : ''}`
-	const label = appContext.authorLabel(row.actorEntityHash)
-	let message = ''
-	if (row.type === 'reply') message = appContext.geti18n('social.notifications.reply', { author: label })
-	else if (row.type === 'mention') message = appContext.geti18n('social.notifications.mention', { author: label })
-	else if (row.type === 'like') message = appContext.geti18n('social.notifications.like', { author: label })
-	else if (row.type === 'repost') message = appContext.geti18n('social.notifications.repost', { author: label })
-	else if (row.type === 'follow') message = appContext.geti18n('social.notifications.follow', { author: label })
+	if (row.aggregateKey) card.dataset.aggregateKey = row.aggregateKey
+	card.dataset.actorCount = String(Number(row.actorCount) || 1)
+	card.dataset.at = String(Number(row.at) || 0)
+	const message = notificationMessage(appContext, row)
 	const href = notificationHref(appContext, row)
+	const snippet = row.snippet
+		? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>`
+		: ''
 	card.innerHTML = `
 		<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
 		<div class="notification-body">
 			<div class="post-header-row">
-				${appContext.renderAvatarHtml(row.actorEntityHash, { name: label })}
+				${notificationAvatarsHtml(appContext, row)}
 				<div>
 					<div class="notification-type">${escapeHtml(message)}</div>
 					<span class="post-meta">${escapeHtml(appContext.formatTime(row.at))}</span>
 				</div>
 			</div>
+			${snippet}
 			<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(appContext.geti18n('social.notifications.view'))}</a>
 		</div>
 	`
 	return card
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @returns {boolean} 通知视图是否可见
+ */
+function notificationsViewActive() {
+	return !document.getElementById('notificationsView')?.classList.contains('hidden')
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {object} row 通知条目
+ * @returns {boolean} 是否应被当前 Tab 过滤掉
+ */
+function notificationFilteredOut(appContext, row) {
+	const filter = appContext.state.notificationsFilter
+	return !!(filter && filter !== 'all' && row.type !== filter)
+}
+
+/**
+ * 将 WS 推送通知合并进当前列表。
+ * @param {object} appContext 应用上下文
+ * @param {object} notification 原始通知
+ * @returns {boolean} 是否已处理（合并或插入）
+ */
+export function mergeIncomingNotification(appContext, notification) {
+	if (!notificationsViewActive() || notificationFilteredOut(appContext, notification))
+		return false
+	const container = document.getElementById('notificationsView')
+	if (!container) return false
+	container.querySelector('.empty')?.remove()
+	const toolbar = document.getElementById('notificationsToolbar')
+	if (toolbar) toolbar.classList.remove('hidden')
+	const seenAt = getNotificationsSeenAt(appContext)
+	const aggregateKey = notification.aggregateKey
+	const existing = aggregateKey
+		? container.querySelector(`.notification-card[data-aggregate-key="${CSS.escape(aggregateKey)}"]`)
+		: null
+	if (existing instanceof HTMLElement) {
+		const knownActors = new Set(
+			(existing.dataset.knownActors || notification.actorEntityHash)
+				.split(',').filter(Boolean),
+		)
+		const isNewActor = !knownActors.has(notification.actorEntityHash)
+		if (isNewActor) knownActors.add(notification.actorEntityHash)
+		const actorCount = Math.max(Number(existing.dataset.actorCount) || 1, knownActors.size)
+		const at = Math.max(Number(existing.dataset.at) || 0, Number(notification.at) || 0)
+		const merged = {
+			...notification,
+			actorCount,
+			at,
+			actors: [
+				{ entityHash: notification.actorEntityHash, at: notification.at },
+				...Array.isArray(notification.actors) ? notification.actors : [],
+			].slice(0, 3),
+			snippet: notification.snippet || existing.querySelector('.notification-snippet')?.textContent || null,
+		}
+		const fresh = renderNotificationCard(appContext, merged, seenAt)
+		fresh.dataset.knownActors = [...knownActors].join(',')
+		existing.replaceWith(fresh)
+		container.prepend(fresh)
+		return true
+	}
+	const card = renderNotificationCard(appContext, {
+		...notification,
+		actorCount: 1,
+		actors: [{ entityHash: notification.actorEntityHash, at: notification.at }],
+	}, seenAt)
+	card.dataset.knownActors = notification.actorEntityHash
+	const sentinel = document.getElementById('notificationsScrollSentinel')
+	container.insertBefore(card, sentinel)
+	return true
+}
+
+/**
+ * 同步 Tab 激活态。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function syncNotificationFilterTabs(appContext) {
+	const filter = appContext.state.notificationsFilter || 'all'
+	for (const button of document.querySelectorAll('[data-notif-filter]')) {
+		if (!(button instanceof HTMLButtonElement)) continue
+		button.classList.toggle('active', button.dataset.notifFilter === filter)
+	}
+}
+
+/**
+ * 切换通知 Tab 并重新加载。
+ * @param {object} appContext 应用上下文
+ * @param {string} filter 过滤类型
+ * @returns {Promise<void>}
+ */
+export async function setNotificationFilter(appContext, filter) {
+	appContext.state.notificationsFilter = filter
+	appContext.state.notificationsCursor = null
+	syncNotificationFilterTabs(appContext)
+	await loadNotifications(appContext, false)
 }
 
 /**
@@ -174,10 +330,11 @@ export async function loadNotifications(appContext, append = false) {
 	notificationsLoading = true
 	try {
 		await ensureNotificationsSeenAt(appContext)
+		syncNotificationFilterTabs(appContext)
 		const cursorQuery = append && appContext.state.notificationsCursor
 			? `&cursor=${encodeURIComponent(appContext.state.notificationsCursor)}`
 			: ''
-		const data = await appContext.socialApi(`/notifications?limit=40${cursorQuery}`)
+		const data = await appContext.socialApi(`/notifications?limit=40${cursorQuery}${notificationsTypesQuery(appContext)}`)
 		const container = document.getElementById('notificationsView')
 		const toolbar = document.getElementById('notificationsToolbar')
 		const seenAt = getNotificationsSeenAt(appContext)
@@ -200,8 +357,12 @@ export async function loadNotifications(appContext, append = false) {
 		}
 
 		if (toolbar) toolbar.classList.toggle('hidden', !append && !rows.length)
-		for (const row of rows)
-			container.insertBefore(renderNotificationCard(appContext, row, seenAt), document.getElementById('notificationsScrollSentinel'))
+		for (const row of rows) {
+			const card = renderNotificationCard(appContext, row, seenAt)
+			if (Array.isArray(row.actors))
+				card.dataset.knownActors = row.actors.map(actor => actor.entityHash).join(',')
+			container.insertBefore(card, document.getElementById('notificationsScrollSentinel'))
+		}
 
 		if (!append)
 			await markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())

@@ -209,13 +209,25 @@ export interface SocialFeedPage {
 /** 通知类型（`notifications.mjs`）。 */
 export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow'
 
-/** 通知条目固定 schema。 */
+/** 聚合展示 actor 摘要。 */
+export interface SocialNotificationActor {
+	entityHash: string
+	at: number
+}
+
+/** 通知条目固定 schema（读取层可返回聚合字段）。 */
 export interface SocialNotificationItem {
 	type: SocialNotificationType
 	actorEntityHash: string
 	postId: string | null
 	targetPostId: string | null
+	targetEntityHash?: string | null
+	snippet?: string | null
 	at: number
+	actors?: SocialNotificationActor[]
+	actorCount?: number
+	latestActorEntityHash?: string | null
+	aggregateKey?: string | null
 }
 
 /**
@@ -224,6 +236,7 @@ export interface SocialNotificationItem {
 export interface SocialNotificationsPage {
 	notifications: SocialNotificationItem[]
 	nextCursor: string | null
+	unreadCount: number
 	viewerEntityHash: string | null
 }
 

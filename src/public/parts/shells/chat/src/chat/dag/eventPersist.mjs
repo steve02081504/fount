@@ -28,6 +28,7 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
+import { maybeAppendMentionInbox, mentionedEntityHashesInMessageLine } from '../lib/mentionInbox.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
@@ -264,10 +265,18 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		).catch(error => {
 			console.error('search index update failed:', error)
 		})
+	if (signPayload.type === 'message' || signPayload.type === 'message_edit')
+		void maybeAppendMentionInbox(username, groupId, channelId, messageLine).catch(error => {
+			console.error('mention inbox update failed:', error)
+		})
+	const mentionedEntityHashes = signPayload.type === 'message' || signPayload.type === 'message_edit'
+		? mentionedEntityHashesInMessageLine(messageLine)
+		: []
 	broadcastEvent(roomKey, {
 		type: 'channel_message',
 		channelId,
 		message: { ...messageLine, content: displayContent },
+		mentionedEntityHashes,
 	})
 	await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
 	if (signPayload.type === 'message')

@@ -419,10 +419,34 @@ export async function findForeignAuthorPostCard(page, baseUrl, apiKey) {
 }
 
 /**
- * 通过 API 批量回复以生成通知（用于通知分页烟测）。
+ * 注入远程作者点赞，生成 viewer 收件箱通知。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {number} [count=41] - 回复数量。
+ * @param {string} targetEntityHash - 被赞帖作者。
+ * @param {string} targetPostId - 被赞帖 id。
+ * @returns {Promise<void>}
+ */
+export async function injectForeignLike(baseUrl, apiKey, targetEntityHash, targetPostId) {
+	const req = await playwrightRequest.newContext()
+	const key = encodeURIComponent(apiKey)
+	try {
+		await followEntityViaApi(baseUrl, apiKey, FOREIGN_FE_AUTHOR_HASH)
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:social/test/foreign-like?fount-apikey=${key}`,
+			{ data: { targetEntityHash, targetPostId } },
+		)
+		if (!res.ok()) throw new Error(`foreign-like failed: ${res.status()}`)
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 通过 API 批量远程点赞以生成通知（用于通知分页烟测）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} [count=41] - 通知卡片数量。
  * @returns {Promise<void>}
  */
 export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
@@ -432,26 +456,69 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 		const viewerRes = await req.get(`${baseUrl}/api/parts/shells:social/viewer?fount-apikey=${key}`)
 		if (!viewerRes.ok()) throw new Error(`viewer failed: ${viewerRes.status()}`)
 		const { viewerEntityHash } = await viewerRes.json()
-		const parentRes = await req.post(
-			`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-			{ data: { text: `notif-seed-parent-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
-		)
-		if (!parentRes.ok()) throw new Error(`parent post failed: ${parentRes.status()}`)
-		const postId = postIdFromResponse(await parentRes.json())
 		for (let index = 0; index < count; index++) {
-			const res = await req.post(
+			const parentRes = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-				{
-					data: {
-						text: `notif-seed-reply-${index}-${Date.now()}`,
-						visibility: 'public',
-						lang: 'zh-CN',
-						replyTo: { entityHash: viewerEntityHash, postId },
-					},
-				},
+				{ data: { text: `notif-seed-parent-${index}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
 			)
-			if (!res.ok()) throw new Error(`reply seed failed: ${res.status()}`)
+			if (!parentRes.ok()) throw new Error(`parent post failed: ${parentRes.status()}`)
+			const postId = postIdFromResponse(await parentRes.json())
+			await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		}
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ *
+ * @param baseUrl
+ * @param apiKey
+ * @param targetEntityHash
+ * @param targetPostId
+ * @param count
+ */
+/**
+ * 直接写入 like 收件箱行（聚合烟测加速路径）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {string} targetEntityHash - 被赞帖作者。
+ * @param {string} targetPostId - 被赞帖 id。
+ * @param {number} [count=2] - like 行数。
+ * @returns {Promise<void>}
+ */
+export async function seedInboxLikes(baseUrl, apiKey, targetEntityHash, targetPostId, count = 2) {
+	const req = await playwrightRequest.newContext()
+	const key = encodeURIComponent(apiKey)
+	try {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:social/test/inbox-likes?fount-apikey=${key}`,
+			{ data: { targetEntityHash, targetPostId, count } },
+		)
+		if (!res.ok()) throw new Error(`inbox-likes failed: ${res.status()}`)
+	}
+	finally {
+		await req.dispose()
+	}
+}
+
+/**
+ * 直接写入 mention 收件箱行（分页烟测加速路径）。
+ * @param {string} baseUrl - 测试根 URL。
+ * @param {string} apiKey - API 密钥。
+ * @param {number} [count=41] - 行数。
+ * @returns {Promise<void>}
+ */
+export async function seedInboxMentions(baseUrl, apiKey, count = 41) {
+	const req = await playwrightRequest.newContext()
+	const key = encodeURIComponent(apiKey)
+	try {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:social/test/inbox-mentions?fount-apikey=${key}`,
+			{ data: { count } },
+		)
+		if (!res.ok()) throw new Error(`inbox-mentions failed: ${res.status()}`)
 	}
 	finally {
 		await req.dispose()

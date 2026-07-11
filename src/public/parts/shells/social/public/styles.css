@@ -1176,6 +1176,19 @@ body {
 }
 
 /* Notifications */
+.inbox-filter-tabs {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	padding: 0 1rem 0.75rem;
+	border-bottom: 1px solid var(--social-border);
+}
+
+.inbox-filter-tab.active {
+	background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+	color: var(--color-primary);
+}
+
 .notification-card {
 	display: flex;
 	gap: 0.75rem;
@@ -1197,6 +1210,21 @@ body {
 .notification-body {
 	flex: 1;
 	min-width: 0;
+}
+
+.notification-avatars.stacked {
+	display: flex;
+	align-items: center;
+}
+
+.notification-avatars.stacked > * {
+	margin-left: -0.35rem;
+	border: 2px solid var(--color-base-100, #fff);
+	border-radius: 9999px;
+}
+
+.notification-avatars.stacked > *:first-child {
+	margin-left: 0;
 }
 
 .notification-type {

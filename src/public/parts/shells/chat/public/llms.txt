@@ -113,6 +113,9 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 |------|------|------|
 | GET/PUT | `/trusted-authors` | 不安全渲染可信作者 `pubKeyHash[]` |
 | GET/PUT | `/bookmarks` | `{ entries: [{ groupId, channelId, eventId, title?, href? }] }` |
+| GET | `/mentions?limit=&cursor=` | 跨群 @我 inbox `{ mentions[], nextCursor, unreadCount }`（newest-first） |
+| GET/PUT | `/mentions/seen` | 全局 @mention 已读水位 `{ seenAt }` |
+| GET | `/groups/:groupId/mentions/suggest?q=&limit=` | 群内 @ autocomplete `{ suggestions: [{ entityHash, displayName, memberKey, kind }] }` |
 | GET/PUT | `/group-folders` | Hub 侧栏文件夹 `{ folders: [...] }` |
 | GET/PUT | `/custom-emojis` | 用户自定义表情 |
 | POST | `/custom-emojis/save` | 保存他人表情到库 |

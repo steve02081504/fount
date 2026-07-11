@@ -1139,7 +1139,7 @@
 		"nav": {
 			"feed": "首页",
 			"explore": "探索",
-			"notifications": "通知",
+			"notifications": "收件箱",
 			"saved": "收藏",
 			"profile": "我的"
 		},
@@ -1241,6 +1241,24 @@
 			"follow": "${author} 关注了你",
 			"view": "查看",
 			"markAllRead": "全部标为已读"
+		},
+		"inbox": {
+			"tabs": {
+				"all": "全部",
+				"mention": "提及",
+				"reply": "回复",
+				"like": "赞",
+				"follow": "关注",
+				"repost": "转发"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} 等 ${count} 人赞了你的帖子",
+				"likeTwo": "${author1} 和 ${author2} 赞了你的帖子",
+				"repost": "${author1}、${author2} 等 ${count} 人转发了你的帖子",
+				"repostTwo": "${author1} 和 ${author2} 转发了你的帖子",
+				"follow": "${author1}、${author2} 等 ${count} 人关注了你",
+				"followTwo": "${author1} 和 ${author2} 关注了你"
+			}
 		},
 		"replies": {
 			"placeholder": "写回复…",
@@ -1723,7 +1741,7 @@
 			"remoteTyping": "${name} 正在输入…",
 			"remoteTypingTwo": "${name1}、${name2} 正在输入…",
 			"remoteTypingMany": "${name} 和另外 ${count} 人正在输入…",
-			"mentionEmpty": "（无可用角色，请先在与该聊天会话中添加角色）",
+			"mentionEmpty": "（无匹配成员）",
 			"localAiLabel": "本机角色：",
 			"forceTriggerOne": {
 				"title": "强制触发 ${name} 发言"
@@ -1846,6 +1864,16 @@
 			"friendsTooltip": {
 				"title": "好友",
 				"tip": "好友"
+			},
+			"mentionsTooltip": {
+				"title": "@提及",
+				"tip": "跨群 @我"
+			},
+			"mentions": {
+				"title": "提及",
+				"empty": "暂无 @ 你的消息",
+				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
+				"composerDisabled": "在提及收件箱中无法发送消息"
 			},
 			"federationTooltip": {
 				"title": "联邦 P2P 设置",
@@ -2411,6 +2439,7 @@
 			},
 			"memberContext": {
 				"copyName": "复制显示名",
+				"mention": "提及",
 				"copyPubKey": "复制公钥哈希",
 				"copyEntityId": "复制实体 ID",
 				"dm": "发送私信",

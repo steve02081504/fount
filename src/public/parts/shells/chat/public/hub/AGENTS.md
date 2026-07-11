@@ -46,3 +46,11 @@ Hub-facing API shapes:
 - **Open = read**: `loadMessages` calls `markCurrentChannelRead` immediately on opening a text channel (no wait for scroll bottom); `firstUnreadEventId` is retained this session as the divider anchor and recalculated from the new marker on next load.
 - **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
 - **Frontend E2E**: `test/frontend/unread.spec.mjs` (badge + divider + clear-on-read).
+
+## @mention inbox
+
+- **Storage**: `{userDictionary}/shells/chat/mention-inbox/events.jsonl` + `read.json`（全局 seenAt 水位，独立于频道 read-marker）。增量写：`src/chat/lib/mentionInbox.mjs` → `maybeAppendMentionInbox`（挂于 `dag/eventPersist.mjs` message / message_edit 落盘）。
+- **Syntax**: 正文 `@128hex entityHash`；Hub 渲染/composer 展示 displayName（`shared/expandMentions.mjs`、`hub/mentionAutocomplete.mjs`）。
+- **API**: `GET /mentions`（newest-first + cursor）、`GET/PUT /mentions/seen`；群内 autocomplete `GET …/groups/:id/mentions/suggest`。
+- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/mentionsView.mjs`，经 `setMode('mentions')`）；badge 由 WS `channel_message` 检测 @本机 operator 递增。
+- **Mention 展示**：`shared/expandMentions.mjs` 在 markdown 处理前展开；实体链接用 `shared/socialRunUri.mjs` 的 `formatSocialProfileHref`。

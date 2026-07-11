@@ -13,7 +13,7 @@ import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
 import { mentionFallbackReplyText } from './lib/chatMentionFallback.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
-import { extractMentionEntityHashes } from './lib/mentions.mjs'
+import { extractMentionEntityHashes } from '../../../../../scripts/p2p/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
 
