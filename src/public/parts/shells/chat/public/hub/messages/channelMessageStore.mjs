@@ -14,16 +14,18 @@ import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'
 
 /**
  * @param {string | null} eventId 目标 eventId；null 清除
+ * @param {string | null} [groupId] 群 ID（默认当前群）
+ * @param {string | null} [channelId] 频道 ID（默认当前频道）
  * @returns {void}
  */
-export function setPendingScrollTarget(eventId) {
+export function setPendingScrollTarget(eventId, groupId = hubStore.context.currentGroupId, channelId = hubStore.context.currentChannelId) {
 	if (!eventId) {
 		hubStore.messages.pendingScrollTarget = null
 		return
 	}
 	hubStore.messages.pendingScrollTarget = {
-		groupId: hubStore.context.currentGroupId,
-		channelId: hubStore.context.currentChannelId,
+		groupId,
+		channelId,
 		eventId: String(eventId).trim(),
 	}
 }

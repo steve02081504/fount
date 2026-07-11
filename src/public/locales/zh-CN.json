@@ -2139,9 +2139,7 @@
 			},
 			"saveStickerOk": "贴纸已加入你的贴纸库",
 			"saveStickerFailed": "保存贴纸失败：${error}",
-			"revealRemoteMd": {
-				"title": "加载远端消息内容"
-			},
+			"revealRemoteMd": "展开全文",
 			"voteModalTitle": "发起投票",
 			"voteModalSubmit": "创建投票",
 			"voteCreateFailed": "创建投票失败：${error}",

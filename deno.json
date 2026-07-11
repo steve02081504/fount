@@ -41,8 +41,7 @@
 		"npm:@steve02081504/exec": "npm:@steve02081504/exec@^0.0.6",
 		"npm:on-shutdown": "npm:on-shutdown@^0.0.4",
 		"npm:fs-extra": "npm:fs-extra@^11.3.2",
-		"npm:file-type": "npm:file-type@^21.0.0",
-		"npm:@steve02081504/exec": "npm:@steve02081504/exec@^0.0.6"
+		"npm:file-type": "npm:file-type@^21.0.0"
 	},
 	"lint": {
 		"exclude": [

@@ -32,6 +32,35 @@ import { hubStore } from '../core/state.mjs'
 
 import { renderMessageActionsHtml } from './messageActionsRender.mjs'
 
+/** 未信任远端 Markdown 预览字数（与 mention inbox `textPreview` 对齐）。 */
+const UNTRUSTED_REMOTE_PREVIEW_LEN = 120
+
+/**
+ * @param {string} text 原始正文
+ * @param {number} maxLen 上限
+ * @returns {string} 截断后正文（超长加省略号）
+ */
+function truncateTextPreview(text, maxLen) {
+	const s = String(text || '')
+	if (s.length <= maxLen) return s
+	const cut = s.slice(0, maxLen)
+	const lastSpace = cut.lastIndexOf(' ')
+	const body = lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut
+	return `${body}…`
+}
+
+/**
+ * @param {HTMLElement} bubble 正文气泡
+ * @param {string} markdown 已展开 @ 的 Markdown
+ * @param {boolean} trusted 是否可信作者（决定 pipeline）
+ * @returns {Promise<void>}
+ */
+async function applyMarkdownToBubble(bubble, markdown, trusted) {
+	const processor = await getFountMessageMarkdownConvertor(trusted)
+	const html = String(await processor.process({ value: markdown, data: { cache: {} } }))
+	bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
+}
+
 /**
  * @param {string} url 已转义 URL
  * @returns {string} 属性用 URL
@@ -689,25 +718,33 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	const isRemote = row.hasAttribute('data-is-remote')
 	const authorPubKeyHash = bubble.dataset.mdAuthor || ''
 	const trusted = !isRemote || await isTrustedAuthor(String(authorPubKeyHash))
-
-	if (!trusted && bubble.dataset.mdRevealed !== '1') {
-		await mountMdRevealButton(bubble, () => {
-			bubble.dataset.mdRevealed = '1'
-			void hydrateMessageMarkdown(container, messageId)
-		})
-		bubble.dataset.mdUntrusted = '1'
-		return
-	}
+	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
 
 	try {
-		const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
-		const markdown = expandMentionsInMarkdown(raw, labelMap)
-		const processor = await getFountMessageMarkdownConvertor(trusted)
-		const html = String(await processor.process({ value: markdown, data: { cache: {} } }))
-		bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
-		delete bubble.dataset.mdRaw
+		if (trusted || bubble.dataset.mdRevealed === '1') {
+			await applyMarkdownToBubble(bubble, expandMentionsInMarkdown(raw, labelMap), trusted)
+			delete bubble.dataset.mdRaw
+			bubble.dataset.mdHydrated = '1'
+			bubble.dataset.mdPreview = '0'
+			wireBubbleOffscreenGuards(bubble, trusted, messageId, container)
+			return
+		}
+
+		const previewRaw = truncateTextPreview(raw, UNTRUSTED_REMOTE_PREVIEW_LEN)
+		const canExpand = raw.length > UNTRUSTED_REMOTE_PREVIEW_LEN
+		await applyMarkdownToBubble(bubble, expandMentionsInMarkdown(previewRaw, labelMap), false)
 		bubble.dataset.mdHydrated = '1'
-		wireBubbleOffscreenGuards(bubble, trusted, messageId, container)
+		bubble.dataset.mdPreview = canExpand ? '1' : '0'
+		bubble.dataset.mdUntrusted = '1'
+
+		if (canExpand) {
+			await mountMdRevealButton(bubble, () => {
+				bubble.dataset.mdRevealed = '1'
+				void hydrateMessageMarkdown(container, messageId)
+			})
+		}
+
+		wireBubbleOffscreenGuards(bubble, false, messageId, container)
 	}
 	catch { /* 保留 escape 占位 */ }
 }

@@ -70,3 +70,12 @@ export function messageIdSelector(messageId) {
 	const escaped = CSS.escape(eventId)
 	return `[data-message-id="${escaped}"]`
 }
+
+/**
+ * @param {string} messageId 消息 eventId
+ * @returns {string} 消息行 CSS 选择器（排除反应条等同 id 节点）
+ */
+export function hubMessageRowSelector(messageId) {
+	const idSel = messageIdSelector(messageId)
+	return idSel ? `.hub-message${idSel}` : ''
+}

@@ -1,7 +1,7 @@
 import { hubStore } from '../core/state.mjs'
 
-import { ensureMessageLoaded } from './channelMessageStore.mjs'
-import { messageIdSelector, refreshChannelView } from './messageShared.mjs'
+import { ensureMessageLoaded, findMessageViewIndex } from './channelMessageStore.mjs'
+import { hubMessageRowSelector, messageIdSelector, refreshChannelView } from './messageShared.mjs'
 import { rebuildVirtualListAtEvent } from './messageVirtualList.mjs'
 
 /** @type {HTMLElement | null} */
@@ -64,7 +64,7 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 	const container = getMessagesContainer()
 	if (!container) return
 
-	const sel = messageIdSelector(norm)
+	const sel = hubMessageRowSelector(norm)
 	let row = sel ? container.querySelector(sel) : null
 	if (row instanceof HTMLElement) {
 		highlightMessageRow(row)
@@ -83,9 +83,19 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 		return
 	}
 
-	if (hubStore.messages.channelMessages.length) {
-		setPendingHighlightEventId(norm)
+	if (!hubStore.messages.channelMessages.length) return
+
+	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+
+	setPendingHighlightEventId(norm)
+
+	if (findMessageViewIndex(norm) >= 0 && hubStore.messages.channelMessagePipeline) {
+		await hubStore.messages.channelMessagePipeline.refresh()
+	}
+	else {
 		rebuildVirtualListAtEvent(container, norm, reload)
+		if (hubStore.messages.channelMessagePipeline)
+			await hubStore.messages.channelMessagePipeline.refresh()
 	}
 
 	row = sel ? container.querySelector(sel) : null

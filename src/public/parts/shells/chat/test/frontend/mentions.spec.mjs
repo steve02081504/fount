@@ -5,7 +5,6 @@ import {
 	test,
 	expect,
 	seedMentionInbox,
-	expectMessageInChat,
 } from './fixtures.mjs'
 
 test.describe('Mention inbox', () => {
@@ -14,7 +13,7 @@ test.describe('Mention inbox', () => {
 	test('seeded @mention shows badge, inbox list, and jump to message', async ({ page, baseUrl, apiKey, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
 		const marker = `mentions-e2e ${Date.now()}`
-		await seedMentionInbox(baseUrl, apiKey, {
+		const { eventId } = await seedMentionInbox(baseUrl, apiKey, {
 			groupId,
 			channelId,
 			text: marker,
@@ -33,9 +32,11 @@ test.describe('Mention inbox', () => {
 			.toBeVisible({ timeout: ms('1m') })
 
 		await page.locator('#hub-mentions-list .hub-mention-row').first().click()
+		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`), { timeout: ms('2m') })
 		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: ms('2m') })
-		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`))
-		await expectMessageInChat(page, marker)
+		const messageRow = page.locator(`#hub-messages .hub-message[data-message-id="${eventId}"]`)
+		await expect(messageRow).toBeVisible({ timeout: ms('2m') })
+		await expect(messageRow).toContainText(marker)
 		await expect(badge).toBeHidden({ timeout: ms('1m') })
 	})
 })

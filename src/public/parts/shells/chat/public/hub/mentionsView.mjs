@@ -116,9 +116,10 @@ function wireMentionRowClicks(host) {
 		const eventId = row.dataset.eventId
 		if (!groupId || !channelId || !eventId) return
 		void (async () => {
-			const { selectGroup, selectChannel } = await import('./groupNav.mjs')
+			const { selectGroup } = await import('./groupNav.mjs')
+			const { setPendingScrollTarget } = await import('./messages/channelMessageStore.mjs')
+			setPendingScrollTarget(eventId, groupId, channelId)
 			await selectGroup(groupId, channelId)
-			await selectChannel(channelId)
 			await scrollToMessageEventId(eventId)
 		})()
 	})

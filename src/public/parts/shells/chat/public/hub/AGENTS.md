@@ -10,6 +10,7 @@ alwaysApply: false
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
 - **External untrusted**: Trystero wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `src/scripts/p2p/wire_ingress.mjs`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `src/scripts/p2p/schemas/*`.
+- **Untrusted remote Markdown**: `messageRender.hydrateOneMarkdown` 默认用 untrusted pipeline 渲染前 120 字预览（与 mention `textPreview` 对齐）；超长显示「展开全文」；已信任作者仍走 trusted pipeline（`allowDangerousHtml`）。
 
 ## Streaming AV
 

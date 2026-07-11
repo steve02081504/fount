@@ -56,7 +56,7 @@ export function attachOffscreenEmbedGuard(root) {
 }
 
 /**
- * §17：未信任远端 Markdown 离屏时卸除 DOM，回屏须点击确认后再渲染。
+ * §17：未信任远端 Markdown 离屏时挂「展开全文」；回屏点击后再 hydrate 完整内容。
  * @param {HTMLElement} bubble 消息正文气泡
  * @param {{ onReveal: () => void }} options 用户确认后回调（重新 hydrate）
  * @returns {() => void} 断开观察器
