@@ -15,7 +15,7 @@ import {
 	seedMemberReputationFromIntroducerPure,
 } from '../reputation_engine.mjs'
 import { REP_MAX } from '../reputation_math.mjs'
-import { applyFollowedBlockSignalPure } from '../reputation_social_engine.mjs'
+import { applyFollowedBlockSignalPure } from '../../../public/parts/shells/social/src/federation/reputation_social_engine.mjs'
 import { pickTop } from '../trust_graph_engine.mjs'
 import {
 	resolveArchiveQuorumPeerMin,

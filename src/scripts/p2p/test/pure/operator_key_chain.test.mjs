@@ -9,7 +9,6 @@ import {
 	activeSenderHashFromPubKeyHex,
 	createGenesisKeyHistory,
 	foldOperatorKeyHistoryFromEvents,
-	isOperatorTimelineWriteAuthorized,
 	isRecoverySender,
 	isValidActiveSender,
 	recoverySubjectHashFromPubKeyHex,
@@ -32,18 +31,9 @@ Deno.test('foldOperatorKeyHistoryFromEvents tracks rotate', () => {
 	const recoveryHex = Buffer.from(recovery.publicKey).toString('hex')
 	const activeHex = Buffer.from(active.publicKey).toString('hex')
 	const events = [
-		{ type: 'social_meta', content: { recoveryPubKeyHex: recoveryHex } },
 		{ type: 'operator_key_rotate', content: { generation: 0, activePubKeyHex: activeHex }, hlc: { wall: 1 }, timestamp: 1 },
 	]
 	const folded = foldOperatorKeyHistoryFromEvents(events)
-	assertEquals(folded.recoveryPubKeyHex, recoveryHex)
+	assertEquals(folded.recoveryPubKeyHex, null)
 	assertEquals(folded.operatorKeyHistory.length, 1)
-	assertEquals(isOperatorTimelineWriteAuthorized({
-		entityHash: 'a'.repeat(128),
-		sender: activeSenderHashFromPubKeyHex(activeHex),
-		eventType: 'post',
-		eventContent: {},
-		recoveryPubKeyHex: recoveryHex,
-		operatorKeyHistory: folded.operatorKeyHistory,
-	}), true)
 })

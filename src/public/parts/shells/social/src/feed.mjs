@@ -3,7 +3,7 @@ import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
 import {
 	isAuthorFilteredByPersonalSets,
 } from '../../../../../scripts/p2p/personal_block.mjs'
-import { reputationSortPenalty, shouldHideAuthorByReputation } from '../../../../../scripts/p2p/reputation_social.mjs'
+import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
 import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
 
 import {

@@ -1,12 +1,12 @@
 /**
  * Social 事件分发：@ 任意 P2P 实体；本地 agent 经 social OnMention 或 chat.GetReply 回退响应。
  */
-import { listLocalAgentEntities, resolveSocialEntity } from '../../../../../scripts/p2p/entity/hosting.mjs'
+import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
 import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
-import { SOCIAL_REP_HIDE_THRESHOLD } from '../../../../../scripts/p2p/reputation_social.mjs'
+import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
 import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
-import { listReplicaUsernamesFollowing } from '../../../../../scripts/p2p/social/follower_index.mjs'
-import { applyMentionNetworkHint } from '../../../../../scripts/p2p/social/network_hints.mjs'
+import { listReplicaUsernamesFollowing } from './federation/follower_index.mjs'
+import { applyMentionNetworkHint } from './federation/network_hints.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
 import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
@@ -164,7 +164,7 @@ export async function dispatchPostMentions(posterUsername, authorEntityHash, pos
 		})
 		if (local.handled) continue
 
-		const { collectSocialRpcResponses } = await import('../../../../../scripts/p2p/part_wire_social_rpc.mjs')
+		const { collectSocialRpcResponses } = await import('./federation/part_wire_rpc.mjs')
 		void collectSocialRpcResponses(posterUsername, {
 			type: 'social_on_mention',
 			targetEntityHash: targetHash,

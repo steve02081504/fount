@@ -12,7 +12,7 @@ import './src/chat/federation/config.mjs'
 import {
 	registerDefaultAgentHosting,
 	unregisterDefaultAgentHosting,
-} from '../../../../scripts/p2p/entity/hosting.mjs'
+} from '../../../../server/p2p_server/agent_hosting.mjs'
 import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from '../../../../scripts/p2p/entity/session_snapshot_registry.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from '../../../../scripts/p2p/p2p_viewer_registry.mjs'
 import {

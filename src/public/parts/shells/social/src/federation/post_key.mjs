@@ -1,4 +1,4 @@
-import { compositeKey } from '../composite_key.mjs'
+import { compositeKey } from '../../../../../../scripts/p2p/composite_key.mjs'
 
 /**
  * Social 帖子/互动 Map 键（entityHash + postId）。

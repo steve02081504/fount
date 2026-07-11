@@ -171,22 +171,17 @@ export function reduceOperatorKeyRevoke(state, event) {
 export function foldOperatorKeyHistoryFromEvents(events) {
 	/** @type {OperatorKeyHistoryEntry[]} */
 	let operatorKeyHistory = []
-	let recoveryPubKeyHex = null
-	/** @type {object} */
-	let state = { operatorKeyHistory }
 	for (const event of events || []) {
-		if (event.type === 'social_meta' && isHex64(normalizeHex64(event.content?.recoveryPubKeyHex || '')))
-			recoveryPubKeyHex = normalizeHex64(event.content.recoveryPubKeyHex)
 		if (event.type === 'operator_key_rotate') {
-			state = reduceOperatorKeyRotate(state, event)
+			const state = reduceOperatorKeyRotate({ operatorKeyHistory }, event)
 			operatorKeyHistory = state.operatorKeyHistory
 		}
 		if (event.type === 'operator_key_revoke') {
-			state = reduceOperatorKeyRevoke(state, event)
+			const state = reduceOperatorKeyRevoke({ operatorKeyHistory }, event)
 			operatorKeyHistory = state.operatorKeyHistory
 		}
 	}
-	return { recoveryPubKeyHex, operatorKeyHistory }
+	return { recoveryPubKeyHex: null, operatorKeyHistory }
 }
 
 /**
@@ -203,43 +198,3 @@ export function operatorKeyRevokeSignBytes(revokeBody) {
 	return Buffer.from(`${OPERATOR_KEY_REVOKE_DOMAIN}\0${canonicalStringify(body)}`, 'utf8')
 }
 
-/**
- * @param {object} params 授权参数
- * @param {string} params.entityHash 时间线 owner
- * @param {string} params.sender 事件 sender pubKeyHash
- * @param {string} params.eventType 事件 type
- * @param {object} [params.eventContent] 事件 content
- * @param {string | null} params.recoveryPubKeyHex recovery 公钥
- * @param {OperatorKeyHistoryEntry[]} params.operatorKeyHistory 密钥历史
- * @returns {boolean} 是否授权写入
- */
-export function isOperatorTimelineWriteAuthorized({
-	entityHash,
-	sender,
-	eventType,
-	eventContent,
-	recoveryPubKeyHex,
-	operatorKeyHistory,
-}) {
-	const normalizedSender = normalizeHex64(sender)
-	if (!isHex64(normalizedSender) || !recoveryPubKeyHex) return false
-
-	if (eventType === 'operator_key_rotate') {
-		const generation = Number(eventContent?.generation)
-		if (generation === 0)
-			return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-		const prevGen = Number(eventContent?.prevGeneration ?? generation - 1)
-		const prevActive = resolveActiveKeyAtGeneration(operatorKeyHistory, prevGen)
-		if (!prevActive || isActiveGenerationRevoked(operatorKeyHistory, prevGen)) return false
-		return activeSenderHashFromPubKeyHex(prevActive) === normalizedSender
-	}
-
-	if (eventType === 'operator_key_revoke')
-		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-
-	if (eventType === 'social_meta')
-		return isRecoverySender(recoveryPubKeyHex, normalizedSender)
-			|| isValidActiveSender(operatorKeyHistory, recoveryPubKeyHex, normalizedSender)
-
-	return isValidActiveSender(operatorKeyHistory, recoveryPubKeyHex, normalizedSender)
-}

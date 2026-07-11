@@ -56,10 +56,9 @@ try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
 	;({ on_shutdown } = await import('npm:on-shutdown'))
-	const { initNode, isNodeInitialized } = await import('../../../../../scripts/p2p/node/instance.mjs')
-	if (!isNodeInitialized())
-		initNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
-	;({ createScopedLinkRoom } = await import('../src/link_room.mjs'))
+	const subfountP2p = await import('fount/scripts/p2p/subfount.mjs')
+	await subfountP2p.initSubfountP2p({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
+	createScopedLinkRoom = subfountP2p.createScopedLinkRoom
 }
 catch (error) {
 	console.error('\nFailed to load dependencies:', error.message)

@@ -16,7 +16,7 @@ import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.m
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { createDefaultRoles } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'

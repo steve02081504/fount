@@ -3,11 +3,11 @@
  * 【职责】按事件类型与频道/治理权限位判断 sender 是否可执行；供 ingest 与联邦 ACL 共用。
  * 【原理】从物化 `state` 解析 `memberChannelPermissions`；消息编辑/删除结合 `messageSenderIndex` 与 overlay 删除集；`group_settings_update` 区分委托 owner 与全量设置变更。
  * 【数据结构】`checkEventPermission` 返回 `{ ok, reason? }`；`eventChannelId` 归一化频道 id。
- * 【关联】`ingest.mjs`、`materialize.mjs`、`scripts/p2p/permissions.mjs`。
+ * 【关联】`ingest.mjs`、`materialize.mjs`、`permissions/chat.mjs`。
  */
 import { agentEntityHash, isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { governanceChannelId } from '../../group/access.mjs'
 
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'

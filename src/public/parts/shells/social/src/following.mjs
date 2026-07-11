@@ -1,4 +1,4 @@
-import { applyFollowNetworkHints } from '../../../../../scripts/p2p/social/network_hints.mjs'
+import { applyFollowNetworkHints } from './federation/network_hints.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
 import { commitTimelineEvent } from './timeline/append.mjs'

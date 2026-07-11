@@ -40,7 +40,7 @@ export async function createChatFederationSim(options = {}) {
 
 	if (options.withGovernance !== false) {
 		modules.authorize = await import('../../src/chat/dag/authorizeEvent.mjs')
-		modules.perms = await import('fount/scripts/p2p/permissions.mjs')
+		modules.perms = await import('fount/public/parts/shells/chat/src/permissions/chat.mjs')
 		modules.dag = await import('fount/scripts/p2p/governance_branch.mjs')
 	}
 

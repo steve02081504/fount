@@ -6,13 +6,32 @@ alwaysApply: false
 
 # P2P / Federation / Entity Files Guide
 
+## Package layers (`@steve02081504/fount-p2p`)
+
+- **L0** cross-runtime pure：`hexIds`、`entity_id_parse`、`mentions`（真源 `pages/scripts/p2p/`，backend re-export）
+- **L1** crypto & wire：`crypto`、`key_crypto`、`channel_crypto`（domain-key 信封）、`wire_ingress`、`schemas/*`
+- **L2** node runtime：`initNode`、`node/identity`、`entity_store`、`denylist`、`reputation_store`
+- **L3** transport：`discovery/*`、`link/*`、`link_registry`、`rooms/scoped_link`、`user_room`、`group_link_set`
+- **L4** federation：`trust_graph_*`、`mailbox/*`、`dag/*`、`part_wire_*`、registry 族、EVFS
+
+**包外（shell 注册，p2p 不 import）**：
+
+- Social 联邦：`shells/social/src/federation/`（namespace、RPC、follower index、remote ingest、reputation social）
+- Chat 权限预设：`shells/chat/src/permissions/chat.mjs`（基于 `permissions/evaluator.mjs`）
+- Agent hosting bootstrap：`server/p2p_server/agent_hosting.mjs`
+- Subfount 最小接入：`import { initSubfountP2p, createScopedLinkRoom } from 'fount/scripts/p2p/subfount.mjs'`
+
+生产代码 import 边界：`test/integration/p2p_shell_import_guard.test.mjs`（禁 shell/server、`social_rpc` 字面量等）。
+
+**测试**：`fount test p2p --no-parallel`（Windows 上并行 Deno 子进程易损坏 `node_modules`，见 [denoland/deno#35804](https://github.com/denoland/deno/issues/35804)）。
+
 ## Trust boundaries
 
 - **Untrusted ingress**: discovery adverts/signals, link/overlay envelopes, group WebSocket federation frames, `remoteIngest`, `part_timeline_put`/`part_invoke` — validation and `canonicalize*` happen ONLY at this boundary.
 - **Trusted after disk**: once read from `events.jsonl`, only `stripDagEventLocalExtensions` runs; reducer/Hub/Social UI do NOT re-run hex canonicalization.
 - **P2P identity & node data**: singleton `{dataPath}/p2p/node/` — `node.json`, `network.json`, `denylist.json`, `reputation.json`; operator keypair at `{userDict}/settings/operator.json`; entity profile `{userDict}/entities/{entityHash}/profile.json`. HTTP routes in `src/server/web_server/p2p_endpoints.mjs` (`/api/p2p/federation`, `/network`, `/denylist`, `/personal-lists`, `/entities/*`, `/viewer`). Does not depend on shell Load.
 - **TrustGraph fanout**: Social timeline/chunk exploration → `requireTrustGraphProvider().fanoutToTopNodes`; **targeted packets** (Mailbox) → `sendToNode`/User Room, never fanout. `sendToNode` tries `sendToNodeLink` before trust-graph `scopeIds` gate so follow/connect-node peers can answer `fed_chunk_get` even when not yet in merged graph scopes. Group rooms via `registerFederationRoomProvider` (Chat Load); P2P layer does not import Chat. User room password = `sha256('fount-user-room:' + nodeHash)`. Discovery auto-registers `mdns` + `nostr`; Bluetooth gated by `FOUNT_ENABLE_BT_DISCOVERY=1` (scan-only on Windows unless `FOUNT_BT_DISCOVERY_ROLE=dual`).
-- **Group room startup invariant**: `group_link_set.start()` must call `registry.ensureRuntime()` before group-topic subscribe/advertise — otherwise creator-only rooms never listen for joiners.
+- **Group room startup invariant**: `group_link_set.start()` / `rooms/scoped_link.start()` must call `registry.ensureRuntime()` before topic subscribe/advertise.
 - **User-room startup invariant**: `ensureUserRoom()` must call `registry.ensureRuntime()` on first init — otherwise node-topic advert/listen never starts.
 - **Signaling & linking**: `link.mjs` is a stateless dumb pipe (no perfect-negotiation/rollback). Peers dial directly; a true simultaneous dial builds two PCs and deterministically keeps the one initiated by the smaller nodeHash (glare resolution keyed by `connId`). `group_link_set` is **not** a full mesh — `selectLinkTargetsFromMembers` (`peer_pool`) picks top-K trusted + random explore + mandatory initial anchors within budget, never proactively cutting. `dag_event` is relayed once on first sight (valid signature only) to speed DAG convergence, with no reputation penalty. Full mechanics + edge cases (glare, sparse linking, dag_event relay, Windows ICE, live-test relay override): [docs/signaling.md](docs/signaling.md).
 - **Mailbox**: store-and-forward at `{dataPath}/p2p/node/mailbox/store.jsonl`; `sendToNode`/`deliverOrStoreMailboxPut`; parts consume via `registerMailboxConsumer`. `GET /api/p2p/mailbox/summary` → `{ pendingCount }`. Routing: `node.json` → `mailbox.maxHop`/`relayFanout*`/`wantFanout` (halved when `batterySaver`).
@@ -27,7 +46,7 @@ alwaysApply: false
 ## Subjective reputation (`reputation.json`)
 
 - **Single global score per peer** at `{dataPath}/p2p/node/reputation.json` (`byNodeHash[id].score` in `[-1, 1]`). No per-group scopes.
-- **Social public block → reputation**: followed entity emits `block`/`unblock` → `applySocialBlockReputationSignal` penalizes **blocked entity's nodeHash**; `selfTrust` on local block uses full weight.
+- **Social public block → reputation**: Social Load 注册 `registerBlockReputationHandler`；`applySocialBlockReputationSignal` 经 handler 传导。
 - **Per-entity personal lists**: `personal_block.mjs` — public block index (`personal_block.json`); private hide (`personal_hide.json`, never federated).
 - **Subjective slash**: `reputation_slash`/VOLATILE `reputation_slash_alert` adjust target's **global** score via `subjectiveSlashPenalty(claim, repSender, rep_max_eff)` — influence scales with sender trust. Do not remove this weighting.
 - **Anti-Sybil**: `applyDecayCollusionAfterSlash` penalizes invite-chain upstream after slash/kick/ban.

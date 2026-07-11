@@ -1,5 +1,5 @@
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 import { createEmptySessionState } from './reducers/helpers.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'

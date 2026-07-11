@@ -12,7 +12,7 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession()
 
-const { isTimelineWriteAuthorized } = await import('../../../../../../scripts/p2p/timeline/write_auth.mjs')
+const { isTimelineWriteAuthorized } = await import('../../src/federation/write_auth.mjs')
 const append = await import('../../src/timeline/append.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
 const { agentEntityHash, encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')

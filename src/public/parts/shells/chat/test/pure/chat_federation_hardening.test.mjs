@@ -23,7 +23,7 @@ import {
 	messageRateEntityKey,
 	resolveMessageRateLimits,
 } from 'fount/scripts/p2p/message_rate_limit.mjs'
-import { PERMISSIONS } from 'fount/scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import {
 	parseJoinSnapshotRequest,
 	parseJoinSnapshotResponse,

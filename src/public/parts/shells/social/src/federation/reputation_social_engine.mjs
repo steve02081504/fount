@@ -6,10 +6,10 @@ import {
 	computeRepMaxEff,
 	REP_MAX,
 	subjectiveSlashPenalty,
-} from './reputation_math.mjs'
+} from '../../../../../../scripts/p2p/reputation_math.mjs'
 import socialTunables from './reputation_social.tunables.json' with { type: 'json' }
 
-/** @typedef {import('./reputation_store.mjs').ReputationFile} ReputationFile */
+/** @typedef {import('../../../../../../scripts/p2p/reputation_store.mjs').ReputationFile} ReputationFile */
 
 /**
  * @returns {typeof socialTunables} 默认 tunables

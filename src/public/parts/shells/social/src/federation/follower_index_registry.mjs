@@ -17,7 +17,7 @@ export function registerFollowingScanProvider(provider) {
 }
 
 /**
- * Social Load 时注册：枚举本实例 replica 登录名（避免 p2p 层依赖 server/auth）。
+ * Social Load 时注册：枚举本实例 replica 登录名。
  * @param {() => Iterable<string>} provider 用户名枚举
  * @returns {void}
  */
@@ -26,7 +26,7 @@ export function registerReplicaUsernamesProvider(provider) {
 }
 
 /**
- * Social Load 时注册：由 server 解析 operator entityHash（p2p 层不 import server）。
+ * Social Load 时注册：由 server 解析 operator entityHash。
  * @param {(username: string) => Promise<string | null>} provider 解析函数
  * @returns {void}
  */

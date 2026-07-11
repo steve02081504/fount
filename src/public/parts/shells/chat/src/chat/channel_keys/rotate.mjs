@@ -1,6 +1,6 @@
 import { generateChannelKey, wrapChannelKey } from '../../../../../../../scripts/p2p/channel_crypto.mjs'
 import { HEX_ID_64 as PUB_KEY_HEX_64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { calculateMemberPermissions, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 /**
  * @param {object} state 物化群状态

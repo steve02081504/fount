@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { saveFileManifest, storeManifestParts } from '../../../../../scripts/p2p/entity/files/evfs.mjs'
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from '../../../../../scripts/p2p/files/assemble.mjs'
-import { vaultGroupId } from '../../../../../scripts/p2p/social_namespace.mjs'
+import { vaultGroupId } from './federation/namespace.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 import { loadVaultMasterKey } from './vault_crypto/vault.mjs'

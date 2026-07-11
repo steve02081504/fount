@@ -5,7 +5,7 @@ import admissionTunables from '../admission.tunables.json' with { type: 'json' }
 import archiveTunables from '../archive.tunables.json' with { type: 'json' }
 import mailboxTunables from '../mailbox/mailbox.tunables.json' with { type: 'json' }
 import reputationTunables from '../reputation.tunables.json' with { type: 'json' }
-import socialTunables from '../reputation_social.tunables.json' with { type: 'json' }
+import socialTunables from '../../../public/parts/shells/social/src/federation/reputation_social.tunables.json' with { type: 'json' }
 import trustGraphTunables from '../trust_graph.tunables.json' with { type: 'json' }
 
 /**
@@ -23,7 +23,7 @@ import trustGraphTunables from '../trust_graph.tunables.json' with { type: 'json
 export const TUNABLES_PATHS = Object.freeze({
 	reputation: new URL('../reputation.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	trustGraph: new URL('../trust_graph.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
-	social: new URL('../reputation_social.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
+	social: new URL('../../../public/parts/shells/social/src/federation/reputation_social.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	mailbox: new URL('../mailbox/mailbox.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	archive: new URL('../archive.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),
 	admission: new URL('../admission.tunables.json', import.meta.url).pathname.replace(/\\/g, '/'),

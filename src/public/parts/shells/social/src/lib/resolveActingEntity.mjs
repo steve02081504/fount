@@ -1,5 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { resolveSocialEntity } from '../../../../../../scripts/p2p/entity/hosting.mjs'
+import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 
 /**

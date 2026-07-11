@@ -26,6 +26,23 @@ import { recordWantIdsBackoff, wantIdsPeerKey } from './want_ids.mjs'
 
 const DATA_NAME = 'reputation'
 
+/** @type {((opts: object) => Promise<boolean>) | null} */
+let blockReputationHandler = null
+
+/**
+ * Social shell Load 时注册：公开 block/unblock → 信誉传导。
+ * @param {(opts: object) => Promise<boolean>} handler
+ * @returns {void}
+ */
+export function registerBlockReputationHandler(handler) {
+	blockReputationHandler = handler
+}
+
+/** @returns {void} */
+export function unregisterBlockReputationHandler() {
+	blockReputationHandler = null
+}
+
 /**
  * @typedef {{
  *   byNodeHash: Record<string, { score: number, offenseStreak?: number, lastOffenseAt?: number, socialBlocks?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
@@ -44,7 +61,7 @@ let reputationCacheNodeDir = null
  * @param {(data: ReputationFile) => void | Promise<void>} mutator 突变
  * @returns {Promise<void>}
  */
-function mutateReputation(mutator) {
+export function mutateReputation(mutator) {
 	return withAsyncMutex('reputation', async () => {
 		const data = loadReputation()
 		await mutator(data)
@@ -303,6 +320,6 @@ export function pickNodeScore(nodeId) {
  * @returns {Promise<boolean>} 是否已应用
  */
 export async function applySocialBlockReputationSignal(opts) {
-	const { applyFollowedBlockSignal } = await import('./reputation_social.mjs')
-	return applyFollowedBlockSignal(opts, mutateReputation)
+	if (!blockReputationHandler) return false
+	return blockReputationHandler(opts)
 }

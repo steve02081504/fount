@@ -7,7 +7,7 @@ import {
 	generateFileMasterKey,
 	wrapKeyEcies,
 } from '../../../../../../scripts/p2p/key_crypto.mjs'
-import { vaultGroupId } from '../../../../../../scripts/p2p/social_namespace.mjs'
+import { vaultGroupId } from '../federation/namespace.mjs'
 import { vaultStatePath } from '../paths.mjs'
 
 /** @type {'gsh'} followers 帖文 content 加密 scheme */

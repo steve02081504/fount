@@ -4,7 +4,7 @@
  * 【关联】chat/files/groupFiles.mjs；由 governance.mjs mount。
  */
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../../chat/dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
@@ -31,7 +31,7 @@ import { GROUPS_PREFIX } from './path.mjs'
  * @param {(req: import('npm:express').Request) => Promise<{ username: string }>} getUserByReq 解析用户
  * @param {(username: string, groupId: string) => Promise<{ state: object }>} getState 物化状态
  * @param {(state: object, member: object, permission: string, channelId: string) => boolean} canInChannel 权限检查
- * @param {typeof import('../../../../../../../scripts/p2p/permissions.mjs').PERMISSIONS} PERMISSIONS 权限常量
+ * @param {typeof import('../../../../../../../permissions/chat.mjs').PERMISSIONS} PERMISSIONS 权限常量
  * @returns {void}
  */
 export function registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS) {

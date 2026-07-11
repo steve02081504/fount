@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
-import { socialPostKey } from '../../../../../scripts/p2p/social/post_key.mjs'
+import { socialPostKey } from './federation/post_key.mjs'
 import { withAsyncMutex } from '../../../../../scripts/p2p/utils/async_mutex.mjs'
 import { indexDocument, getShardMeta, queryIndex, removeDocument } from '../../../../../scripts/search/invertedIndex.mjs'
 

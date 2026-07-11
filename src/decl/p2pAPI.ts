@@ -71,7 +71,7 @@ export interface GroupSessionState {
 	charFrequencies: Record<string, number>
 }
 
-// ---- Permissions（`scripts/p2p/permissions.mjs`）----
+// ---- Permissions（`shells/chat/src/permissions/chat.mjs`；通用引擎见 `scripts/p2p/permissions/`）----
 
 /** 内置权限名；持久化位图顺序见 `PERMISSION_ORDER`，禁止重排。 */
 export type PermissionName =
@@ -98,7 +98,7 @@ export type PermissionName =
 export type PermissionFlags = Record<PermissionName, boolean>
 
 /**
- * 权限位图：`encodePermissions` / `decodePermissions` 在 `permissions.mjs` 中与上式互转。
+ * 权限位图：`encodePermissions` / `decodePermissions` 在 `shells/chat/src/permissions/chat.mjs` 中与上式互转。
  * 仅用于内存求值与 checkpoint 内部存储，JSON 序列化时用 PermissionFlags Record。
  */
 export type PermissionBitmap = bigint

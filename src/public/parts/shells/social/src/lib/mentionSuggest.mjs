@@ -1,4 +1,4 @@
-import { listLocalAgentEntities } from '../../../../../../scripts/p2p/entity/hosting.mjs'
+import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { loadFollowing } from '../following.mjs'

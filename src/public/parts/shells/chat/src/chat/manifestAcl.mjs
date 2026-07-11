@@ -3,7 +3,7 @@ import {
 	unregisterManifestAcl,
 } from '../../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
 import { groupIdFromGroupEntity } from '../../../../../../scripts/p2p/entity/group_entity.mjs'
-import { PERMISSIONS } from '../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../group/access.mjs'
 
 import { getState } from './dag/materialize.mjs'

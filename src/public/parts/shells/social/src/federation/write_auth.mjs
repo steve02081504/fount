@@ -1,15 +1,16 @@
 /**
  * Social 时间线写入授权（联邦入站 untrusted 边界）。
  */
-import { resolveSocialEntity } from '../entity/hosting.mjs'
-import { parseEntityHash } from '../entity_id.mjs'
-import { isHex64, normalizeHex64 } from '../hexIds.mjs'
+import { isHex64, normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
+import { isValidActiveSender } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
 import {
 	foldOperatorKeyHistoryFromEvents,
 	isOperatorTimelineWriteAuthorized,
-	isValidActiveSender,
-} from '../operator_key_chain.mjs'
-import { getOperatorEntityHashProvider } from '../social/follower_index_registry.mjs'
+} from './operator_key_auth.mjs'
+import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+
+import { resolveSocialEntity } from './hosting.mjs'
+import { getOperatorEntityHashProvider } from './follower_index_registry.mjs'
 
 /**
  * sender 是否为本机某 agent 实体的合法 operator 活跃钥。
@@ -71,7 +72,7 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 		? folded.operatorKeyHistory
 		: opts.operatorKeyHistory || []
 
-	if (recoveryPubKeyHex && operatorKeyHistory.length) 
+	if (recoveryPubKeyHex && operatorKeyHistory.length)
 		if (isOperatorTimelineWriteAuthorized({
 			entityHash: parsed.entityHash,
 			sender: normalizedSender,
@@ -81,7 +82,6 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 			operatorKeyHistory,
 		}))
 			return true
-	
 
 	if (normalizedSender === parsed.subjectHash)
 		return true

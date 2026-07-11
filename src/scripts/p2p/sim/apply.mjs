@@ -11,7 +11,7 @@ import { normalizeBundle, sanitizeBundle } from './space.mjs'
 const MODULE_URLS = {
 	reputation: new URL('../reputation.tunables.json', import.meta.url),
 	trustGraph: new URL('../trust_graph.tunables.json', import.meta.url),
-	social: new URL('../reputation_social.tunables.json', import.meta.url),
+	social: new URL('../../../public/parts/shells/social/src/federation/reputation_social.tunables.json', import.meta.url),
 	mailbox: new URL('../mailbox/mailbox.tunables.json', import.meta.url),
 	archive: new URL('../archive.tunables.json', import.meta.url),
 	admission: new URL('../admission.tunables.json', import.meta.url),

@@ -1,5 +1,5 @@
 import { reduceOperatorKeyRevoke, reduceOperatorKeyRotate } from 'fount/scripts/p2p/operator_key_chain.mjs'
-import { socialPostKey } from 'fount/scripts/p2p/social/post_key.mjs'
+import { socialPostKey } from '../federation/post_key.mjs'
 
 /**
  * Social 时间线物化 reducer 表。

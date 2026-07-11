@@ -9,7 +9,7 @@ import { readFile } from 'node:fs/promises'
 
 import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { hasPermission, PERMISSIONS } from '../../../../../../scripts/p2p/permissions.mjs'
+import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { localSignerSeedPath } from '../chat/lib/paths.mjs'
 
 /**

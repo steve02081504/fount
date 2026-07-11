@@ -13,7 +13,7 @@ import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from '../../../../../../../scripts/p2p/key_crypto.mjs'
 import { verifyOwnerSuccessionThreshold } from '../../../../../../../scripts/p2p/owner_succession_ballot.mjs'
-import { calculateMemberPermissions, hasPermission, PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOps.mjs'

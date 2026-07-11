@@ -1,5 +1,5 @@
 /**
- * 频道域密钥 K_ch：X25519 ECIES 包装与 AES-GCM 消息信封（wire scheme: ckg）。
+ * Domain-key 信封：X25519 ECIES 包装与 AES-GCM 消息载荷（wire scheme 由消费方定义，如 ckg）。
  * 解密 payload 不可脱离外层 DAG Ed25519 签名上下文单独传递或信任。
  */
 import { Buffer } from 'node:buffer'

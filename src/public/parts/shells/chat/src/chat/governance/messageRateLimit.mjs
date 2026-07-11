@@ -4,7 +4,7 @@
 import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { messageRateEntityKey } from '../../../../../../../scripts/p2p/message_rate_limit.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { memberChannelPermissions } from '../dag/groupMaterializedState.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 

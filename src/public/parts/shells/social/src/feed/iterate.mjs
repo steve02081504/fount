@@ -1,6 +1,6 @@
 import { isEntityHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
 import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { shouldHideAuthorByReputation } from '../../../../../../scripts/p2p/reputation_social.mjs'
+import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
 import { pickNodeScore } from '../../../../../../scripts/p2p/reputation_store.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'

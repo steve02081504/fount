@@ -6,7 +6,7 @@
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/auditLog.mjs、access.mjs。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { AUDIT_LOG_EVENT_TYPES, listAuditLogEntries } from '../../chat/auditLog.mjs'
 import { canInChannel, governanceChannelId } from '../access.mjs'
 

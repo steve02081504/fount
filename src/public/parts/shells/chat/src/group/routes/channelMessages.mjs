@@ -8,7 +8,7 @@ import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import {
 	applyChannelMessageDeleteHooks,

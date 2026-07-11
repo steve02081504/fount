@@ -1,4 +1,4 @@
-import { timelineGroupId } from '../../../../../scripts/p2p/social_namespace.mjs'
+import { timelineGroupId } from './federation/namespace.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 /**

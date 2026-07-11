@@ -2,25 +2,11 @@ import { isPlainObject } from './wire_ingress.mjs'
 
 const PARTPATH_RE = /^[\w-]+(?:\/[\w-]+)*$/
 
-/** @typedef {'social_rpc' | 'timeline_put'} PartInvokeKind */
+/** @typedef {string} PartInvokeKind */
 
 /**
- * @typedef {object} SocialRpcInvoke
- * @property {'social_rpc'} kind
- * @property {string} type social RPC 方法名
+ * @typedef {object & { kind: PartInvokeKind }} PartInvoke
  */
-
-/**
- * @typedef {object} TimelinePutInvoke
- * @property {'timeline_put'} kind
- * @property {string} timelineEntityHash
- * @property {object} event
- * @property {string} [partpath]
- * @property {string} [nodeHash]
- * @property {string} [groupId]
- */
-
-/** @typedef {SocialRpcInvoke | TimelinePutInvoke | (object & { kind: PartInvokeKind })} PartInvoke */
 
 /** @typedef {{ message: string, code: string }} PartInvokeError */
 
@@ -38,7 +24,7 @@ const PARTPATH_RE = /^[\w-]+(?:\/[\w-]+)*$/
 
 /**
  * @typedef {object} SocialRpcPartInvokeResponse
- * @property {object} result social RPC 响应体
+ * @property {object} result RPC 响应体
  */
 
 /**
@@ -91,5 +77,5 @@ export function normalizePartpath(value) {
 export function isPartInvoke(value) {
 	if (!isPlainObject(value)) return false
 	const kind = value.kind
-	return kind === 'social_rpc' || kind === 'timeline_put'
+	return typeof kind === 'string' && kind.length > 0
 }

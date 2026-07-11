@@ -10,10 +10,10 @@ import { pubKeyHash, publicKeyFromSeed } from '../../crypto.mjs'
 import { SOCIAL_TIMELINE_ROW_OPTS } from '../../dag/canonicalize_presets.mjs'
 import { canonicalizeSignedRow } from '../../dag/canonicalizeRow.mjs'
 import { encodeEntityHash } from '../../entity_id.mjs'
-import { timelineGroupId } from '../../social_namespace.mjs'
+import { timelineGroupId } from '../../../../public/parts/shells/social/src/federation/namespace.mjs'
 import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { signTimelineEvent } from '../../timeline/append_core.mjs'
-import { validateRemoteTimelineEvent } from '../../timeline/remote_ingest.mjs'
+import { validateRemoteTimelineEvent } from '../../../../public/parts/shells/social/src/federation/remote_ingest.mjs'
 
 /**
  * @param {object} event 签名事件

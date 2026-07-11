@@ -1,10 +1,10 @@
 import path from 'node:path'
 
-import { createLruMap } from '../utils/lru.mjs'
-import { writeJsonAtomic } from '../dag/storage.mjs'
-import { parseEntityHash } from '../entity_id.mjs'
-import { getNodeDir } from '../node/instance.mjs'
-import { withAsyncMutex } from '../utils/async_mutex.mjs'
+import { writeJsonAtomic } from '../../../../../../scripts/p2p/dag/storage.mjs'
+import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { getNodeDir } from '../../../../../../scripts/p2p/node/instance.mjs'
+import { withAsyncMutex } from '../../../../../../scripts/p2p/utils/async_mutex.mjs'
+import { createLruMap } from '../../../../../../scripts/p2p/utils/lru.mjs'
 
 import { getFollowingScanProvider, getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
 

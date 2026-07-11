@@ -5,7 +5,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { resolveIceServers } from '../../../../../../../scripts/p2p/ice_servers.mjs'
-import { PERMISSIONS } from '../../../../../../../scripts/p2p/permissions.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { appendStreamingSession } from '../../chat/dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/ws/auth.mjs'

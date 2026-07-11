@@ -1,7 +1,7 @@
 import {
 	registerDefaultAgentHosting,
 	unregisterDefaultAgentHosting,
-} from '../../../../scripts/p2p/entity/hosting.mjs'
+} from '../../../../server/p2p_server/agent_hosting.mjs'
 import { parseEntityHash } from '../../../../scripts/p2p/entity_id.mjs'
 import {
 	registerShellPartpath,
@@ -14,9 +14,15 @@ import {
 	unregisterFollowingScanProvider,
 	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
-} from '../../../../scripts/p2p/social/follower_index_registry.mjs'
-import { registerOperatorKeyChainProvider } from '../../../../scripts/p2p/timeline/write_auth.mjs'
+} from './src/federation/follower_index_registry.mjs'
+import { registerOperatorKeyChainProvider } from './src/federation/write_auth.mjs'
+import { applyFollowedBlockSignal } from './src/federation/reputation_social.mjs'
 import { getAllUserNames } from '../../../../server/auth/index.mjs'
+import {
+	registerBlockReputationHandler,
+	unregisterBlockReputationHandler,
+	mutateReputation,
+} from '../../../../scripts/p2p/reputation_store.mjs'
 
 import { handleSocialRpc } from './src/discover/rpc.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
@@ -93,6 +99,7 @@ export default {
 			const view = await getTimelineMaterialized(username, operator)
 			return view.following
 		})
+		registerBlockReputationHandler(opts => applyFollowedBlockSignal(opts, mutateReputation))
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
 		await registerDefaultAgentHosting()
@@ -104,6 +111,7 @@ export default {
 		unregisterOperatorEntityHashProvider()
 		unregisterReplicaUsernamesProvider()
 		unregisterFollowingScanProvider()
+		unregisterBlockReputationHandler()
 		unregisterSocialManifestAcl()
 		unregisterSocialManifestTransfer()
 		unregisterDefaultAgentHosting()

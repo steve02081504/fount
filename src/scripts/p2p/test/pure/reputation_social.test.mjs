@@ -12,7 +12,7 @@ import {
 	matchesPersonalListEntries,
 	normalizePersonalListEntries,
 } from '../../personal_block.mjs'
-import { applyFollowedBlockSignal } from '../../reputation_social.mjs'
+import { applyFollowedBlockSignal } from '../../../../public/parts/shells/social/src/federation/reputation_social.mjs'
 
 const NODE_A = 'a'.repeat(64)
 const NODE_B = 'b'.repeat(64)

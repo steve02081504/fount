@@ -21,7 +21,7 @@
 - **New parts**: mimic `@src/public/parts/` or `@data/users/.../chars/`.
 - **I18n**: only edit `src/public/locales/zh-CN.json`; `update-locales.py` handles the rest.
 - **Lint**: `eslint --fix --quiet` (no `npx`). No logging unless error/warning.
-- **Testing**: `fount test` — self-contained, no running server needed. Group syntax: `manifest` or `manifest:suite1,suite2`. See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
+- **Testing**: `fount test` — self-contained, no running server needed. Group syntax: `manifest` or `manifest:suite1,suite2`. **Windows / local verification: prefer `fount test --no-parallel`** — parallel Deno children contend on `node_modules` (`nodeModulesDir: auto`, `lock: false`) and can corrupt the tree or flake ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
 - **Logs**: `fount log` — streams main-process console (check before guessing from browser 404s).
 - **Server**: `fount server` (fg) / `fount background` (detached). Bare `fount` = `fount background; fount log`. `Test-FountRunning` before start/reboot, **not** before `fount test`.
 - **Restart**: `fount reboot` for backend/code/config changes. Frontend edits take effect on browser refresh.
