@@ -11,7 +11,7 @@ Diff selection (`selectSuitesByDiff`), `--outdated`, and continue-report trigger
 | `**/docs/**`, `**/*.md`, `*.md` | docs and root-level markdown |
 | `**/llms.txt` | llms context files |
 
-Test-infra changes under `src/scripts/test/` still rerun every suite when the filtered path hits that prefix.
+Test-infra changes under `src/scripts/test/` auto-select **`testkit`** suites plus any suite whose manifest trigger explicitly watches the changed path — not the whole repo.
 
 ## `triggerFilter` field
 

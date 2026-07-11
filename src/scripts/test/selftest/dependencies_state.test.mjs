@@ -4,6 +4,7 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	detectDependencyCycle,
 	expandDiffDependents,
+	expandImperfectDependents,
 	resolveSuiteDependencies,
 	sortManifestIds,
 	topoSortSuites,
@@ -129,6 +130,17 @@ Deno.test('buildPlan pulls unsatisfied upstream into plan', () => {
 	assertEquals(plan.slots.map(s => s.action), ['run', 'run'])
 })
 
+Deno.test('expandImperfectDependents adds one downstream level', () => {
+	const all = [
+		makeSuite('shells/chat', 'parent'),
+		makeSuite('shells/chat', 'child', { dependsOn: ['parent'] }),
+		makeSuite('shells/chat', 'grandchild', { dependsOn: ['child'] }),
+	]
+	const imperfect = new Set(['shells/chat/parent'])
+	const expanded = expandImperfectDependents(imperfect, all)
+	assertEquals([...expanded].sort(), ['shells/chat/child', 'shells/chat/parent'])
+})
+
 Deno.test('expandDiffDependents adds one downstream level', () => {
 	const all = [
 		makeSuite('shells/chat', 'parent'),
@@ -138,6 +150,25 @@ Deno.test('expandDiffDependents adds one downstream level', () => {
 	const hit = new Set(['shells/chat/parent'])
 	const expanded = expandDiffDependents(hit, all)
 	assertEquals([...expanded].sort(), ['shells/chat/child', 'shells/chat/parent'])
+})
+
+Deno.test('serial.mjs change stales pure but not live when triggers partitioned', () => {
+	const pure = makeSuite('shells/chat', 'pure', {
+		triggers: [
+			'src/scripts/test/deno/serial.mjs',
+			'src/public/parts/shells/chat/test/pure/**',
+		],
+	})
+	const live = makeSuite('shells/chat', 'smoke_chat', {
+		triggers: [
+			'src/public/parts/shells/chat/test/live/run.mjs',
+			'src/public/parts/shells/chat/test/live/scripts/smoke_chat.mjs',
+		],
+	})
+	const entry = makeStateEntry()
+	const changed = ['src/scripts/test/deno/serial.mjs']
+	assertEquals(isContentFresh(pure, entry, changed, new Map()), false)
+	assertEquals(isContentFresh(live, entry, changed, new Map()), true)
 })
 
 Deno.test('verdictAllowsDownstream accepts green and noisy only', () => {

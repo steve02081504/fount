@@ -16,6 +16,8 @@ import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter
  * @property {string} id suite 指名 id（默认同 name）
  * @property {string[]} run 执行命令
  * @property {string[]} triggers 触发 glob
+ * @property {string[]} [triggerRefs] manifest trigger set 引用名
+ * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
  * @property {string} manifestPath 相对仓库根的 manifest 路径
  * @property {boolean} heavy 满核独占（仅 `p2p/sim` 等）；其余用 `resources`
  * @property {{ memMb?: number, cpuPct?: number } | undefined} resources 声明资源；缺省由 `resources.mjs` 推断
@@ -23,6 +25,16 @@ import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter
  * @property {{ manifestId: string, name: string }[]} [dependencies] 解析后的依赖
  * @property {import('./trigger_filter.mjs').TriggerFilter} [triggerFilter] 忽略规则覆写
  */
+
+/**
+ * 解析 suite 的 trigger set 引用名。
+ * @param {object} suite manifest 中的 suite 条目
+ * @returns {string[]} trigger set 引用
+ */
+function resolveSuiteTriggerRefs(suite) {
+	if (!suite.trigger) return []
+	return Array.isArray(suite.trigger) ? suite.trigger : [suite.trigger]
+}
 
 /**
  * 解析 suite 的 trigger 引用为 glob 模式列表。
@@ -114,12 +126,19 @@ export async function loadAllSuites(repoRoot) {
 		for (const suite of manifest.suites || []) {
 			if (!suite.name)
 				throw new Error(`suite missing "name" in ${relManifest}`)
+			const triggerRefs = resolveSuiteTriggerRefs(suite)
+			/** @type {Record<string, string[]>} */
+			const triggerSetPatterns = {}
+			for (const ref of triggerRefs)
+				triggerSetPatterns[ref] = triggerSets[ref]
 			suites.push({
 				manifestId,
 				name: suite.name,
 				id: suite.id?.trim() || suite.name,
 				run: suite.run,
 				triggers: resolveSuiteTriggers(suite, triggerSets),
+				triggerRefs,
+				triggerSetPatterns: triggerRefs.length ? triggerSetPatterns : undefined,
 				manifestPath: relManifest,
 				heavy: suite.heavy === true,
 				resources: parseManifestResources(suite.resources),
@@ -146,11 +165,24 @@ export function selectSuitesByDiff(mode, files, allSuites) {
 
 	if (!files.length) return []
 
-	const infraHit = filterTriggerRelevantFiles(files).some(f =>
+	const relevant = filterTriggerRelevantFiles(files)
+	const infraHit = relevant.some(f =>
 		f.startsWith(INFRA_PREFIX)
 		|| f.startsWith('.github/workflows/verify_shells.'),
 	)
-	if (infraHit) return allSuites
+	if (infraHit) {
+		/** @type {Map<string, SuiteDef>} */
+		const selected = new Map()
+		for (const suite of allSuites) {
+			if (suite.manifestId === 'testkit')
+				selected.set(`${suite.manifestId}/${suite.name}`, suite)
+			const suiteRelevant = filterTriggerRelevantFiles(files, suite.triggerFilter)
+			if (!suiteRelevant.length) continue
+			if (suite.triggers.some(pat => suiteRelevant.some(f => matchGlob(pat, f))))
+				selected.set(`${suite.manifestId}/${suite.name}`, suite)
+		}
+		return [...selected.values()]
+	}
 
 	/** @type {SuiteDef[]} */
 	const selected = []

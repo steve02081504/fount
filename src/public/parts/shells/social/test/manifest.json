@@ -1,6 +1,10 @@
 {
 	"id": "shells/social",
 	"triggerSets": {
+		"testFramework": [
+			"src/scripts/test/deno/serial.mjs",
+			"src/scripts/test/node/boot.mjs"
+		],
 		"shellBackend": [
 			"src/public/parts/shells/social/src/**",
 			"src/public/parts/shells/social/main.mjs",
@@ -9,7 +13,9 @@
 		],
 		"shellPureExtra": [
 			"src/public/parts/shells/chat/public/markdown_ext/**",
-			"src/scripts/p2p/**",
+			"src/scripts/p2p/dag/**",
+			"src/scripts/p2p/denylist.mjs",
+			"src/scripts/p2p/personal_block.mjs",
 			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
@@ -22,7 +28,7 @@
 			"src/public/parts/shells/chat/public/markdown_ext/**",
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
-			"src/scripts/p2p/**",
+			"src/scripts/p2p/personal_block.mjs",
 			"src/scripts/search/**",
 			"src/server/p2p_server/**",
 			"src/server/registries.mjs",
@@ -77,7 +83,7 @@
 	"suites": [
 		{
 			"name": "pure",
-			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests"],
+			"trigger": ["shellBackend", "shellPureExtra", "shellPureTests", "testFramework"],
 			"run": [
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",
@@ -87,7 +93,7 @@
 		{
 			"name": "integration",
 			"dependsOn": ["server:live"],
-			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests"],
+			"trigger": ["shellBackend", "shellIntegrationExtra", "shellIntegrationTests", "testFramework"],
 			"run": [
 				"deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json",
 				"./src/scripts/test/deno/serial.mjs",

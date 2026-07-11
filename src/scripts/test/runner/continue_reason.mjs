@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'stale_content' | 'diff_trigger_hit' | 'diff_dependent' | 'explicit_selected' | 'failure_retry' | 'dependency_required'} GoalEvidenceKind
+ * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'imperfect_dependent' | 'stale_content' | 'diff_trigger_hit' | 'diff_dependent' | 'explicit_selected' | 'failure_retry' | 'dependency_required'} GoalEvidenceKind
  */
 
 /**
@@ -14,6 +14,7 @@
  * @property {string | null} [fromUncommittedHash]
  * @property {string | null} [toUncommittedHash]
  * @property {string[]} [matchedTriggers]
+ * @property {string[]} [matchedTriggerSets]
  * @property {string[]} [matchedPaths]
  * @property {string[]} [blockedBy]
  * @property {string | null} [parentKey] diff 一层下游的父键

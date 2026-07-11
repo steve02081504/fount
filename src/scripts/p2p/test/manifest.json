@@ -10,7 +10,9 @@
 			],
 			"triggers": [
 				"src/scripts/p2p/**",
-				"src/server/p2p_server/**"
+				"src/server/p2p_server/**",
+				"src/scripts/test/deno/serial.mjs",
+				"src/scripts/test/node/boot.mjs"
 			]
 		},
 		{
@@ -22,7 +24,9 @@
 			],
 			"triggers": [
 				"src/scripts/p2p/**",
-				"src/server/p2p_server/**"
+				"src/server/p2p_server/**",
+				"src/scripts/test/deno/serial.mjs",
+				"src/scripts/test/node/boot.mjs"
 			]
 		},
 		{
@@ -34,7 +38,9 @@
 				"./src/scripts/p2p/sim/test/"
 			],
 			"triggers": [
-				"src/scripts/p2p/sim/**"
+				"src/scripts/p2p/sim/**",
+				"src/scripts/test/deno/serial.mjs",
+				"src/scripts/test/node/boot.mjs"
 			]
 		},
 		{

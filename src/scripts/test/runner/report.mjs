@@ -372,6 +372,8 @@ function formatReasonKindLabel(kind, { strict = false } = {}) {
 			return geti18n('fountConsole.test.report.reasonImperfectNoisy')
 		case 'imperfect_blocked':
 			return geti18n('fountConsole.test.report.reasonImperfectBlocked')
+		case 'imperfect_dependent':
+			return geti18n('fountConsole.test.report.reasonImperfectDependent')
 		case 'missing_state_record':
 			return geti18n('fountConsole.test.report.reasonMissingRecord')
 		case 'stale_content':
@@ -417,6 +419,10 @@ function appendContinueReasonEvidence(lines, reason, depth = 0) {
 	}
 	if (reason.blockedBy?.length)
 		lines.push(`${indent}- ${geti18n('fountConsole.test.state.labelBlockedBy')}: ${reason.blockedBy.join(', ')}`)
+	if (reason.matchedTriggerSets?.length) {
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedTriggerSets')}:`)
+		for (const setName of reason.matchedTriggerSets) lines.push(`${indent}  - \`${setName}\``)
+	}
 	if (reason.matchedTriggers?.length) {
 		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedTriggers')}:`)
 		for (const trigger of reason.matchedTriggers) lines.push(`${indent}  - \`${trigger}\``)

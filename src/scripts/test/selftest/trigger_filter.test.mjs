@@ -47,6 +47,7 @@ Deno.test('selectSuitesByDiff skips doc-only changes', () => {
 
 Deno.test('selectSuitesByDiff still matches code and test infra changes', () => {
 	const all = [
+		makeSuite('testkit', 'state', { triggers: ['src/scripts/test/core/state.mjs'] }),
 		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
 		makeSuite('p2p', 'pure', { triggers: ['src/scripts/p2p/**'] }),
 	]
@@ -55,8 +56,8 @@ Deno.test('selectSuitesByDiff still matches code and test infra changes', () => 
 		['pure'],
 	)
 	assertEquals(
-		selectSuitesByDiff('diff', ['src/scripts/test/core/state.mjs'], all).length,
-		all.length,
+		selectSuitesByDiff('diff', ['src/scripts/test/core/state.mjs'], all).map(s => `${s.manifestId}/${s.name}`).sort(),
+		['testkit/state'],
 	)
 })
 

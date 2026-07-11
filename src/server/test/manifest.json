@@ -21,12 +21,15 @@
 			],
 			"triggers": [
 				"src/server/test/live/**",
-				"src/server/**",
-				"src/scripts/test/node/**",
-				"src/scripts/WsAbleRouter.mjs",
+				"src/server/auth/**",
+				"src/server/web_server/**",
+				"src/scripts/test/node/launch.mjs",
+				"src/scripts/test/node/boot.mjs",
+				"src/scripts/test/core/allowNoise.mjs",
+				"src/scripts/test/core/url.mjs",
 				"src/scripts/ms.mjs",
-				"src/server/web_server/resources.mjs",
-				"src/public/pages/scripts/**"
+				"src/scripts/WsAbleRouter.mjs",
+				"src/server/web_server/resources.mjs"
 			]
 		}
 	]

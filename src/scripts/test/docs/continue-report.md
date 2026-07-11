@@ -16,12 +16,12 @@ Report slots, ETA estimate, dispatch, and trigger reasons all read the **same** 
 
 | Scenario | Kinds |
 | --- | --- |
-| `--continue` | `imperfect_*`, `stale_content`, `missing_state_record` on goal suites |
+| `--continue` | `imperfect_*`, `imperfect_dependent`, `missing_state_record` on goal suites |
 | `--outdated` | `stale_content` on goal suites |
 | Explicit suite + dependency pull | `explicit_selected`; `dependency_required` on pulled deps |
-| Diff selection | `diff_trigger_hit`; `diff_dependent` on one-level downstream; `dependency_required` on pulled deps |
+| Diff selection | `diff_trigger_hit`; `dependency_required` on pulled deps |
 
-There is **no** `pending_from_previous_report`: interrupted runs resume via `--continue` re-deriving goals from verdicts (unfinished work is `unknown`).
+There is **no** `pending_from_previous_report`: interrupted runs resume via `--continue` re-deriving goals from imperfect verdicts (stale `unknown` uses `--outdated`).
 
 ## Reason kinds
 
@@ -30,17 +30,17 @@ There is **no** `pending_from_previous_report`: interrupted runs resume via `--c
 | `imperfect_failed` | Last state entry was `failed` |
 | `imperfect_noisy` | Last state entry was `noisy` |
 | `imperfect_blocked` | Last state entry was `blocked` |
+| `imperfect_dependent` | One-level downstream of an imperfect parent |
 | `missing_state_record` | No entry in `state/main.json` |
-| `stale_content` | Content changed since last run (verdict `unknown`) |
-| `diff_trigger_hit` | Included by uncommitted diff trigger matching |
-| `diff_dependent` | One-level downstream of a diff trigger hit |
+| `stale_content` | Content changed since last run (verdict `unknown`; `--outdated` only) |
+| `diff_trigger_hit` | Included by diff trigger matching |
 | `explicit_selected` | User named this suite |
 | `dependency_required` | Pulled in by plan expansion — includes `requiredBy` |
 | `failure_retry` | Narrowed re-run of failed files (run-time, not selection) |
 
 ## Evidence fields (`triggered-reasons.md`)
 
-- **Required by** — for `dependency_required` / `diff_dependent` (provenance from plan).
-- **Commit range** / **uncommitted digest range** — for `stale_content`.
+- **Required by** — for `dependency_required` (provenance from plan).
+- **Commit range** / **uncommitted digest range** — for `stale_content` and imperfect kinds.
 - **Blocked by** — for `imperfect_blocked` and plan `blocked` slots.
-- **Matched triggers** / **matched paths** — for `diff_trigger_hit`.
+- **Matched trigger set** / **matched triggers** / **matched paths** — for `stale_content` and `diff_trigger_hit`.

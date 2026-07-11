@@ -1,8 +1,8 @@
 import { console } from '../../i18n/bare.mjs'
 import { collectChangesSinceRecord } from '../core/changed.mjs'
-import { expandDiffDependents } from '../core/dependencies.mjs'
+import { expandImperfectDependents } from '../core/dependencies.mjs'
 import { selectSuitesByDiff } from '../core/manifest.mjs'
-import { collectTriggerEvidence, suiteKey } from '../core/state.mjs'
+import { collectStaleTriggerEvidence, collectTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
@@ -20,17 +20,6 @@ import { collectTriggerEvidence, suiteKey } from '../core/state.mjs'
  * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
  * @property {'normal' | 'continue' | 'outdated'} [mode]
  */
-
-/**
- * @param {SuiteDef[]} suites 候选 suite
- * @returns {SuiteDef[]} 去重后的 suite
- */
-function dedupeSuites(suites) {
-	const map = new Map()
-	for (const suite of suites)
-		map.set(suiteKey(suite.manifestId, suite.name), suite)
-	return [...map.values()]
-}
 
 /**
  * @param {TestState} state 现状库
@@ -85,12 +74,34 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 
 /**
  * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {TestState} state 现状库
+ * @returns {Set<string>} imperfect 目标键（不含 stale passed）
+ */
+export function goalImperfectKeys(verdicts, state) {
+	/** @type {Set<string>} */
+	const keys = new Set()
+	for (const [key, verdict] of verdicts) {
+		if (verdict.kind === 'green') continue
+		const entry = state.suites[key]
+		if (!entry) {
+			keys.add(key)
+			continue
+		}
+		if (verdict.kind === 'unknown' && entry.status === 'passed')
+			continue
+		keys.add(key)
+	}
+	return keys
+}
+
+/**
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {TestState} state 现状库
+ * @param {SuiteDef[]} allSuites 全部 suite
  * @returns {Set<string>} --continue 目标键
  */
-export function goalContinue(verdicts) {
-	return new Set([...verdicts.entries()]
-		.filter(([, verdict]) => verdict.kind !== 'green')
-		.map(([key]) => key))
+export function goalContinue(verdicts, state, allSuites) {
+	return expandImperfectDependents(goalImperfectKeys(verdicts, state), allSuites)
 }
 
 /**
@@ -108,33 +119,25 @@ export function goalOutdated(verdicts, scope) {
 /**
  * @param {string[]} changedFiles 变更文件
  * @param {SuiteDef[]} scope 过滤范围
- * @param {SuiteDef[]} allSuites 全部 suite（一层下游扩展）
  * @param {string} commitHash HEAD
  * @param {string | null} uncommittedHash 未提交 digest
  * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 目标键与触发证据
  */
-export function goalDiff(changedFiles, scope, allSuites, commitHash, uncommittedHash) {
+export function goalDiff(changedFiles, scope, commitHash, uncommittedHash) {
 	const hit = selectSuitesByDiff('diff', changedFiles, scope)
-	const hitKeys = new Set(hit.map(s => suiteKey(s.manifestId, s.name)))
-	const goalKeys = expandDiffDependents(hitKeys, allSuites)
+	const goalKeys = new Set(hit.map(s => suiteKey(s.manifestId, s.name)))
 	/** @type {Map<string, GoalEvidence>} */
 	const goalEvidenceByKey = new Map()
-	for (const suite of allSuites) {
+	for (const suite of hit) {
 		const key = suiteKey(suite.manifestId, suite.name)
-		if (!goalKeys.has(key)) continue
-		if (hitKeys.has(key)) {
-			const evidence = collectTriggerEvidence(suite, changedFiles)
-			if (evidence.matchedPaths.length)
-				goalEvidenceByKey.set(key, {
-					kind: 'diff_trigger_hit',
-					toCommit: commitHash,
-					toUncommittedHash: uncommittedHash,
-					...evidence,
-				})
-		}
-		else
-			goalEvidenceByKey.set(key, { kind: 'diff_dependent', parentKey: [...hitKeys].find(hk =>
-				suite.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === hk)) ?? null })
+		const evidence = collectTriggerEvidence(suite, changedFiles)
+		if (evidence.matchedPaths.length)
+			goalEvidenceByKey.set(key, {
+				kind: 'diff_trigger_hit',
+				toCommit: commitHash,
+				toUncommittedHash: uncommittedHash,
+				...evidence,
+			})
 	}
 	return { goalKeys, goalEvidenceByKey }
 }
@@ -153,13 +156,14 @@ export function goalExplicit(suites) {
  * @param {object} params 参数
  * @param {Map<string, Verdict>} params.verdicts 裁决表
  * @param {TestState} params.state 现状库
+ * @param {SuiteDef[]} params.allSuites 全部 suite
  * @param {string} params.commitHash HEAD
  * @param {string | null} params.uncommittedHash 未提交 digest
- * @param {Map<string, string[]>} params.committedChangedByKey commit 变更
  * @returns {GoalSelection} 选择结果
  */
-export function selectContinue({ verdicts, state, commitHash, uncommittedHash, committedChangedByKey }) {
-	const goalKeys = goalContinue(verdicts)
+export function selectContinue({ verdicts, state, allSuites, commitHash, uncommittedHash }) {
+	const imperfectKeys = goalImperfectKeys(verdicts, state)
+	const goalKeys = expandImperfectDependents(imperfectKeys, allSuites)
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0 }
 
@@ -167,28 +171,37 @@ export function selectContinue({ verdicts, state, commitHash, uncommittedHash, c
 	const goalEvidenceByKey = new Map()
 	for (const key of goalKeys) {
 		const entry = state.suites[key]
-		if (!entry) {
-			goalEvidenceByKey.set(key, {
-				kind: 'missing_state_record',
-				toCommit: commitHash,
-				toUncommittedHash: uncommittedHash,
-			})
-			continue
-		}
-		const drift = {
+		const drift = entry ? {
 			fromCommit: entry.commitHash,
 			toCommit: commitHash,
 			fromUncommittedHash: entry.uncommittedHash ?? null,
 			toUncommittedHash: uncommittedHash,
+		} : {
+			toCommit: commitHash,
+			toUncommittedHash: uncommittedHash,
 		}
-		if (entry.status === 'failed')
-			goalEvidenceByKey.set(key, { kind: 'imperfect_failed', ...drift })
-		else if (entry.status === 'noisy')
-			goalEvidenceByKey.set(key, { kind: 'imperfect_noisy', ...drift })
-		else if (entry.status === 'blocked')
-			goalEvidenceByKey.set(key, { kind: 'imperfect_blocked', blockedBy: entry.blockedBy, ...drift })
-		else if (verdicts.get(key)?.kind === 'unknown')
-			goalEvidenceByKey.set(key, { kind: 'stale_content', ...drift })
+		if (!entry) {
+			goalEvidenceByKey.set(key, { kind: 'missing_state_record', ...drift })
+			continue
+		}
+		if (imperfectKeys.has(key)) {
+			if (entry.status === 'failed')
+				goalEvidenceByKey.set(key, { kind: 'imperfect_failed', ...drift })
+			else if (entry.status === 'noisy')
+				goalEvidenceByKey.set(key, { kind: 'imperfect_noisy', ...drift })
+			else if (entry.status === 'blocked')
+				goalEvidenceByKey.set(key, { kind: 'imperfect_blocked', blockedBy: entry.blockedBy, ...drift })
+			else
+				goalEvidenceByKey.set(key, { kind: 'imperfect_failed', ...drift })
+			continue
+		}
+		goalEvidenceByKey.set(key, {
+			kind: 'imperfect_dependent',
+			parentKey: [...imperfectKeys].find(hk =>
+				allSuites.find(s => suiteKey(s.manifestId, s.name) === key)
+					?.dependencies?.some(dep => suiteKey(dep.manifestId, dep.name) === hk)) ?? null,
+			...drift,
+		})
 	}
 
 	return {
@@ -204,12 +217,47 @@ export function selectContinue({ verdicts, state, commitHash, uncommittedHash, c
  * @param {object} params 参数
  * @param {Map<string, Verdict>} params.verdicts 裁决表
  * @param {SuiteDef[]} [params.filtered] 过滤范围
+ * @param {SuiteDef[]} [params.allSuites] 全部 suite
+ * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
+ * @param {string} [params.commitHash] HEAD
+ * @param {string | null} [params.uncommittedHash] 未提交 digest
+ * @param {TestState} [params.state] 现状库
  * @returns {GoalSelection} 选择结果
  */
-export function selectOutdated({ verdicts, filtered }) {
+export function selectOutdated({
+	verdicts,
+	filtered,
+	allSuites = [],
+	committedChangedByKey = new Map(),
+	commitHash,
+	uncommittedHash,
+	state,
+}) {
 	const scope = filtered ?? []
 	const goalKeys = goalOutdated(verdicts, scope)
-	const evidenceByKey = new Map([...goalKeys].map(key => [key, { kind: 'stale_content' }]))
+	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
+	/** @type {Map<string, GoalEvidence>} */
+	const evidenceByKey = new Map()
+	for (const key of goalKeys) {
+		const suite = byKey.get(key)
+		const entry = state?.suites[key]
+		const changed = committedChangedByKey.get(key) ?? []
+		const triggerEvidence = suite ? collectStaleTriggerEvidence(suite, changed) : {}
+		const drift = entry ? {
+			fromCommit: entry.commitHash,
+			toCommit: commitHash,
+			fromUncommittedHash: entry.uncommittedHash ?? null,
+			toUncommittedHash: uncommittedHash,
+		} : {
+			toCommit: commitHash,
+			toUncommittedHash: uncommittedHash,
+		}
+		evidenceByKey.set(key, {
+			kind: 'stale_content',
+			...triggerEvidence,
+			...drift,
+		})
+	}
 	return {
 		action: 'run',
 		mode: 'outdated',
@@ -272,7 +320,7 @@ export function selectSuites({
 			Object.entries(state.suites).some(([key, entry]) =>
 				key.startsWith(`${manifestId}/`) && entry.uncommittedHash !== uncommittedHash))
 		if (hashStale && changed.mode === 'diff' && changed.files.length) {
-			const diff = goalDiff(changed.files, filtered, allSuites, commitHash, uncommittedHash)
+			const diff = goalDiff(changed.files, filtered, commitHash, uncommittedHash)
 			const before = goalKeys.size
 			for (const key of diff.goalKeys) goalKeys.add(key)
 			for (const [key, evidence] of diff.goalEvidenceByKey)
@@ -284,7 +332,7 @@ export function selectSuites({
 		}
 	}
 	else if (changed.mode === 'diff' && changed.files.length) {
-		const diff = goalDiff(changed.files, filtered, allSuites, commitHash, uncommittedHash)
+		const diff = goalDiff(changed.files, filtered, commitHash, uncommittedHash)
 		goalKeys = diff.goalKeys
 		goalEvidenceByKey = diff.goalEvidenceByKey
 		console.logI18n('fountConsole.test.diffMode', {

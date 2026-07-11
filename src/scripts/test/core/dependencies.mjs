@@ -264,10 +264,28 @@ export function sortManifestIds(manifestIds, suites) {
 }
 
 /**
+ * imperfect 命中的 suite 的直接下游（一层）。
+ * @param {Set<string>} imperfectKeys imperfect 键
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @returns {Set<string>} 扩展后的键集
+ */
+export function expandImperfectDependents(imperfectKeys, allSuites) {
+	const expanded = new Set(imperfectKeys)
+	for (const suite of allSuites) {
+		const key = suiteKey(suite.manifestId, suite.name)
+		if (expanded.has(key)) continue
+		if (suite.dependencies?.some(dep => imperfectKeys.has(suiteKey(dep.manifestId, dep.name))))
+			expanded.add(key)
+	}
+	return expanded
+}
+
+/**
  * trigger 命中的 suite 的直接下游（一层）。
  * @param {Set<string>} hitKeys trigger 命中键
  * @param {SuiteDef[]} allSuites 全部 suite
  * @returns {Set<string>} 扩展后的键集
+ * @deprecated diff 选择不再扩展下游；保留供测试对照
  */
 export function expandDiffDependents(hitKeys, allSuites) {
 	const expanded = new Set(hitKeys)

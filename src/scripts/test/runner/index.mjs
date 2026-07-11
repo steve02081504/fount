@@ -268,9 +268,9 @@ export async function runTests(options = {}) {
 		selection = selectContinue({
 			verdicts,
 			state,
+			allSuites,
 			commitHash,
 			uncommittedHash,
-			committedChangedByKey,
 		})
 		if (selection.action === 'exit') {
 			console.logI18n('fountConsole.test.nothingToContinue')
@@ -279,7 +279,15 @@ export async function runTests(options = {}) {
 		console.logI18n('fountConsole.test.continueImperfect', { count: selection.goalKeys.size })
 	}
 	else if (options.outdated) {
-		selection = selectOutdated({ verdicts, filtered })
+		selection = selectOutdated({
+			verdicts,
+			filtered,
+			allSuites,
+			committedChangedByKey,
+			commitHash,
+			uncommittedHash,
+			state,
+		})
 		console.logI18n('fountConsole.test.outdatedSelected', { count: selection.goalKeys.size })
 	}
 	else {

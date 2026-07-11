@@ -118,6 +118,39 @@ export function collectTriggerEvidence(suite, changedFiles) {
 /**
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
+ * @returns {{ matchedTriggerSets: string[], matchedTriggers: string[], matchedPaths: string[] }} trigger set 命中证据
+ */
+export function collectStaleTriggerEvidence(suite, changedFiles) {
+	const globEvidence = collectTriggerEvidence(suite, changedFiles)
+	if (!suite.triggerSetPatterns)
+		return { matchedTriggerSets: [], ...globEvidence }
+
+	const relevant = filterTriggerRelevantFiles(changedFiles, suite.triggerFilter)
+	/** @type {string[]} */
+	const matchedTriggerSets = []
+	/** @type {string[]} */
+	const setPaths = []
+	for (const [ref, patterns] of Object.entries(suite.triggerSetPatterns)) {
+		/** @type {string[]} */
+		const hits = []
+		for (const pat of patterns)
+			hits.push(...relevant.filter(file => matchGlob(pat, file)))
+		const unique = [...new Set(hits)]
+		if (unique.length) {
+			matchedTriggerSets.push(ref)
+			setPaths.push(...unique)
+		}
+	}
+	return {
+		matchedTriggerSets,
+		matchedTriggers: globEvidence.matchedTriggers,
+		matchedPaths: [...new Set([...setPaths, ...globEvidence.matchedPaths])],
+	}
+}
+
+/**
+ * @param {SuiteDef} suite suite
+ * @param {string[]} changedFiles 变更文件
  * @returns {boolean} trigger 是否命中
  */
 export function suiteTriggersHit(suite, changedFiles) {

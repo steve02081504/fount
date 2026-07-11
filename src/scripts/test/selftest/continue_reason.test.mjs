@@ -6,9 +6,9 @@ import { resolveSelector } from '../core/selector.mjs'
 import { suiteKey } from '../core/state.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
 import { buildReasonsFromPlan } from '../runner/continue_reason.mjs'
-import { goalContinue, goalDiff } from '../runner/selection.mjs'
+import { goalContinue, goalDiff, goalImperfectKeys } from '../runner/selection.mjs'
 
-import { makeSuite } from './fixtures.mjs'
+import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
 Deno.test('resolveSelector accepts colon and slash forms', () => {
 	const known = ['server', 'shells/chat']
@@ -18,22 +18,45 @@ Deno.test('resolveSelector accepts colon and slash forms', () => {
 	assertEquals(resolveSelector('server', known), { manifestId: 'server', suiteSelectors: [] })
 })
 
-Deno.test('goalContinue selects non-green verdicts', () => {
+Deno.test('goalImperfectKeys skips stale passed suites', () => {
+	const state = {
+		suites: {
+			'a/x': makeStateEntry({ status: 'passed' }),
+			'b/y': makeStateEntry({ status: 'failed' }),
+		},
+	}
 	const verdicts = new Map([
-		['a/x', { kind: 'green', fresh: true, triggerHash: null }],
+		['a/x', { kind: 'unknown', fresh: false, triggerHash: null }],
 		['b/y', { kind: 'red', fresh: true, triggerHash: null }],
-		['c/z', { kind: 'unknown', fresh: false, triggerHash: null }],
 	])
-	assertEquals([...goalContinue(verdicts)].sort(), ['b/y', 'c/z'])
+	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['b/y'])
 })
 
-Deno.test('goalDiff expands one downstream level', () => {
+Deno.test('goalContinue expands one imperfect downstream level', () => {
 	const all = [
 		makeSuite('shells/chat', 'parent'),
 		makeSuite('shells/chat', 'child', { dependsOn: ['parent'] }),
 	]
-	const { goalKeys } = goalDiff(['src/shells/chat/parent.mjs'], all, all, 'head', null)
-	assertEquals([...goalKeys].sort(), ['shells/chat/child', 'shells/chat/parent'])
+	const state = {
+		suites: {
+			'shells/chat/parent': makeStateEntry({ status: 'failed' }),
+			'shells/chat/child': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const verdicts = new Map([
+		['shells/chat/parent', { kind: 'red', fresh: true, triggerHash: null }],
+		['shells/chat/child', { kind: 'green', fresh: true, triggerHash: null }],
+	])
+	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat/child', 'shells/chat/parent'])
+})
+
+Deno.test('goalDiff selects direct trigger hits only', () => {
+	const scope = [
+		makeSuite('shells/chat', 'parent', { triggers: ['src/shells/chat/parent.mjs'] }),
+		makeSuite('shells/chat', 'child', { dependsOn: ['parent'], triggers: ['src/shells/chat/child.mjs'] }),
+	]
+	const { goalKeys } = goalDiff(['src/shells/chat/parent.mjs'], scope, 'head', null)
+	assertEquals([...goalKeys], ['shells/chat/parent'])
 })
 
 Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {
