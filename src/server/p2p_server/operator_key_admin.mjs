@@ -1,12 +1,12 @@
 import { Buffer } from 'node:buffer'
 
-import { sign } from '../../scripts/p2p/crypto.mjs'
-import { isHex64, normalizeHex64 } from '../../scripts/p2p/hexIds.mjs'
-import { operatorKeyRevokeSignBytes } from '../../scripts/p2p/operator_key_chain.mjs'
 import {
 	commitOperatorKeyRevoke,
 	commitOperatorKeyRotate,
-} from '../../scripts/p2p/timeline/operator_key_commit.mjs'
+} from '../../public/parts/shells/social/src/timeline/operator_key_commit.mjs'
+import { sign } from '../../scripts/p2p/crypto.mjs'
+import { isHex64, normalizeHex64 } from '../../scripts/p2p/hexIds.mjs'
+import { operatorKeyRevokeSignBytes } from '../../scripts/p2p/operator_key_chain.mjs'
 
 import {
 	commitActiveKeyRotation as persistActiveRotation,

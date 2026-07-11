@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { createLruMap } from '../../memo.mjs'
+import { createLruMap } from '../utils/lru.mjs'
 import { pubKeyHash, sign, verify } from '../crypto.mjs'
 import { randomMsgIdHex } from '../link/frame.mjs'
 

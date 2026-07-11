@@ -1,11 +1,9 @@
 import { randomUUID } from 'node:crypto'
 
 import { getNodeHash } from './node/identity.mjs'
-import { getShellPartpath } from './part_path_registry.mjs'
 import {
 	buildPartInvokePayload,
 	PART_INVOKE_FANOUT_DEFAULT,
-	TIMELINE_FANOUT_LIMIT,
 } from './part_wire_common.mjs'
 import { pendingPartInvoke } from './part_wire_ingress.mjs'
 import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from './trust_graph_registry.mjs'
@@ -50,21 +48,6 @@ export async function collectPartInvokeResponses(username, partpath, invoke, tim
 	if (pending && sent === 0) pending.finish()
 
 	return waitForResponses
-}
-
-/**
- * @param {string} username 用户
- * @param {string} entityHash owner
- * @param {object} signedEvent 签名事件
- * @returns {Promise<number>} 发送次数
- */
-export async function publishTimelineEvent(username, entityHash, signedEvent) {
-	return requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'part_timeline_put', {
-		nodeHash: getNodeHash(),
-		partpath: getShellPartpath('social'),
-		timelineEntityHash: entityHash.toLowerCase(),
-		event: signedEvent,
-	}, TIMELINE_FANOUT_LIMIT)
 }
 
 /**

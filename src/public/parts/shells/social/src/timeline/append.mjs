@@ -5,7 +5,6 @@ import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/
 import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
 import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
-import { publishTimelineEvent } from '../../../../../../scripts/p2p/part_wire_fanout.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../../../../../../scripts/p2p/social/follower_index.mjs'
 import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
 import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'
@@ -18,6 +17,7 @@ import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 
 import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
+import { publishTimelineEvent } from './fanout.mjs'
 import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
 
@@ -218,26 +218,6 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 }
 
 /**
- * 主动轮换活跃 operator 钥：上一代活跃钥签名 rotate 事件。
- * @param {string} username replica
- * @param {string} entityHash operator entityHash
- * @param {object} rotation 新钥与代际
- * @returns {Promise<object>} rotate 事件
+ *
  */
-export async function commitOperatorKeyRotate(username, entityHash, rotation) {
-	const { commitOperatorKeyRotate: commit } = await import('../../../../../../scripts/p2p/timeline/operator_key_commit.mjs')
-	return commit(username, entityHash, rotation)
-}
-
-/**
- * recovery 钥签发 revoke + 新活跃钥。
- * @param {string} username replica
- * @param {string} entityHash operator entityHash
- * @param {object} revokeBody 吊销正文
- * @param {Uint8Array} recoverySecretKey recovery 私钥
- * @returns {Promise<object>} revoke 事件
- */
-export async function commitOperatorKeyRevoke(username, entityHash, revokeBody, recoverySecretKey) {
-	const { commitOperatorKeyRevoke: commit } = await import('../../../../../../scripts/p2p/timeline/operator_key_commit.mjs')
-	return commit(username, entityHash, revokeBody, recoverySecretKey)
-}
+export { commitOperatorKeyRotate, commitOperatorKeyRevoke } from './operator_key_commit.mjs'

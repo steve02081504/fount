@@ -2,7 +2,7 @@
  * 60 秒令牌桶限速（fed_chunk / fed_emoji 等 want-data 线共用）。
  */
 
-import { createLruMap } from '../memo.mjs'
+import { createLruMap } from './utils/lru.mjs'
 
 const WINDOW_MS = 60_000
 const BUCKET_MAP_MAX = 5000

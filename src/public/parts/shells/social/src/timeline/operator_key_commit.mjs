@@ -1,20 +1,15 @@
 import { Buffer } from 'node:buffer'
 
-import {
-	getOperatorSecretKey,
-} from '../../../server/p2p_server/operator_identity.mjs'
-import { pubKeyHash, publicKeyFromSeed } from '../crypto.mjs'
-import { SOCIAL_TIMELINE_ROW_OPTS } from '../dag/canonicalize_presets.mjs'
-import { canonicalizeSignedRow } from '../dag/canonicalizeRow.mjs'
-import { appendJsonlSynced, readJsonl } from '../dag/storage.mjs'
-import { parseEntityHash } from '../entity_id.mjs'
-import { getNodeHash } from '../node/identity.mjs'
-import { publishTimelineEvent } from '../part_wire_fanout.mjs'
-import { timelineGroupId } from '../social_namespace.mjs'
+import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
+import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
+import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
+import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
+import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
-import { computeAppendHlcAndPrev, signTimelineEvent } from './append_core.mjs'
-import { operatorTimelineEventsPath } from './paths.mjs'
-
+import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
+import { publishTimelineEvent } from './fanout.mjs'
 
 const NODE_ID = 'social-local'
 
@@ -49,14 +44,6 @@ async function assertWritableOperatorTimeline(username, entityHash) {
 }
 
 /**
- * @param {object} event 签名事件
- * @returns {object} canonical 行
- */
-function canonicalizeLocalTimelineEvent(event) {
-	return canonicalizeSignedRow(event, SOCIAL_TIMELINE_ROW_OPTS)
-}
-
-/**
  * @param {string} username replica
  * @param {string} entityHash operator entityHash
  * @param {object} event 未签名事件
@@ -65,8 +52,8 @@ function canonicalizeLocalTimelineEvent(event) {
  */
 async function appendSignedOperatorTimelineEvent(username, entityHash, event, secretKey) {
 	await assertWritableOperatorTimeline(username, entityHash)
-	const groupId = timelineGroupId(entityHash)
-	const previous = await readJsonl(operatorTimelineEventsPath(username, entityHash))
+	const groupId = groupIdForTimeline(entityHash)
+	const previous = await readJsonl(timelineEventsPath(username, entityHash))
 	const { hlc, prev_event_ids } = computeAppendHlcAndPrev(previous, event)
 	const { sender } = timelineSignerFromSecret(secretKey)
 	const base = {
@@ -82,7 +69,7 @@ async function appendSignedOperatorTimelineEvent(username, entityHash, event, se
 	}
 	const signed = await signTimelineEvent(base, secretKey)
 	const row = canonicalizeLocalTimelineEvent(signed)
-	await appendJsonlSynced(operatorTimelineEventsPath(username, entityHash), row)
+	await appendJsonlSynced(timelineEventsPath(username, entityHash), row)
 	return row
 }
 

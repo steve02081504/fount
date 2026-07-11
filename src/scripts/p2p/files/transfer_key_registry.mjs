@@ -24,6 +24,28 @@ export function registerDagManifestPlaintextReader(ownerId, reader) {
 	dagPlaintextReadersByOwner.set(String(ownerId), reader)
 }
 
+/** @type {Array<{ ownerId: string, match: (manifest: import('./manifest.mjs').FileManifest) => boolean }>} */
+const manifestOwnerMatchers = []
+
+/**
+ * @param {string} ownerId 注册方
+ * @param {(manifest: import('./manifest.mjs').FileManifest) => boolean} match manifest 匹配谓词
+ * @returns {void}
+ */
+export function registerManifestOwnerMatcher(ownerId, match) {
+	manifestOwnerMatchers.push({ ownerId: String(ownerId), match })
+}
+
+/**
+ * @param {string} ownerId 注册方
+ * @returns {void}
+ */
+export function unregisterManifestOwnerMatchers(ownerId) {
+	const id = String(ownerId)
+	for (let i = manifestOwnerMatchers.length - 1; i >= 0; i--)
+		if (manifestOwnerMatchers[i].ownerId === id) manifestOwnerMatchers.splice(i, 1)
+}
+
 /**
  * @param {string} ownerId 注册方
  * @returns {void}
@@ -32,22 +54,24 @@ export function unregisterTransferKeyDeps(ownerId) {
 	const key = String(ownerId)
 	transferDepsByOwner.delete(key)
 	dagPlaintextReadersByOwner.delete(key)
+	unregisterManifestOwnerMatchers(key)
 }
 
 /** @returns {void} */
 export function clearTransferKeyRegistry() {
 	transferDepsByOwner.clear()
 	dagPlaintextReadersByOwner.clear()
+	manifestOwnerMatchers.length = 0
 }
 
 /**
- * 从 manifest 推断 transfer key 注册方 id。
+ * 从 manifest 推断 transfer key 注册方 id（按 registerManifestOwnerMatcher 注册顺序匹配）。
  * @param {import('./manifest.mjs').FileManifest} manifest manifest
  * @returns {string | null} ownerId
  */
 export function resolveManifestTransferOwnerId(manifest) {
-	if (Array.isArray(manifest.meta?.dagParts) && manifest.meta?.groupId) return 'chat'
-	if (manifest.transferKeyDescriptor?.type === 'vault-wrap') return 'social'
+	for (const { ownerId, match } of manifestOwnerMatchers)
+		if (match(manifest)) return ownerId
 	return null
 }
 

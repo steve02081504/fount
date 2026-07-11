@@ -1,4 +1,4 @@
-import { createLruMap } from '../../memo.mjs'
+import { createLruMap } from '../utils/lru.mjs'
 import { ms } from '../../ms.mjs'
 import { normalizeHex64 } from '../hexIds.mjs'
 import { getSignalingRuntimeConfig } from '../node/instance.mjs'

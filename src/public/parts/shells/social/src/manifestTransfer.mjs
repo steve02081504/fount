@@ -1,4 +1,5 @@
 import {
+	registerManifestOwnerMatcher,
 	registerTransferKeyDeps,
 	unregisterTransferKeyDeps,
 } from '../../../../../scripts/p2p/files/transfer_key_registry.mjs'
@@ -12,6 +13,7 @@ const OWNER_ID = 'social'
  * @returns {void}
  */
 export function registerSocialManifestTransfer() {
+	registerManifestOwnerMatcher(OWNER_ID, manifest => manifest.transferKeyDescriptor?.type === 'vault-wrap')
 	registerTransferKeyDeps(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica

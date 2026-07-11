@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import {
 	registerDagManifestPlaintextReader,
+	registerManifestOwnerMatcher,
 	registerTransferKeyDeps,
 	unregisterTransferKeyDeps,
 } from '../../../../../../scripts/p2p/files/transfer_key_registry.mjs'
@@ -16,6 +17,7 @@ const OWNER_ID = 'chat'
  * @returns {void}
  */
 export function registerChatManifestTransfer() {
+	registerManifestOwnerMatcher(OWNER_ID, manifest => Array.isArray(manifest.meta?.dagParts) && !!manifest.meta?.groupId)
 	registerTransferKeyDeps(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica

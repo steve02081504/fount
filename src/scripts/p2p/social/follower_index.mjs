@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import { createLruMap } from '../../memo.mjs'
+import { createLruMap } from '../utils/lru.mjs'
 import { writeJsonAtomic } from '../dag/storage.mjs'
 import { parseEntityHash } from '../entity_id.mjs'
 import { getNodeDir } from '../node/instance.mjs'

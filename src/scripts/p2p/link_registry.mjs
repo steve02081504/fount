@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
 import process from 'node:process'
 
-import { createLruMap } from '../memo.mjs'
+import { createLruMap } from './utils/lru.mjs'
 
 import { sha256Hex, keyPairFromSeed } from './crypto.mjs'
 import { createBluetoothDiscoveryProvider } from './discovery/bt.mjs'
