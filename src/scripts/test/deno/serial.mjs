@@ -139,16 +139,6 @@ function recordResult(file, code, output, signal = null) {
 	}
 }
 
-// 预热：deno cache 填充 npm/node_modules
-if (filteredFiles.length > 0) {
-	process.stdout.write('[serial] warming deno cache...\n')
-	const { code, output } = await runCaptured([
-		'deno', 'cache', '--allow-scripts', '-c', './deno.json', ...filteredFiles,
-	])
-	if (code !== 0)
-		process.exit(code)
-}
-
 /**
  * worker-pool 消费游标，并发跑单文件 deno test。
  * @returns {Promise<void>}
