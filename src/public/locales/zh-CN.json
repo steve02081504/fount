@@ -549,7 +549,7 @@
 				"localBranchAhead": "本地分支领先于远程分支。无需更新。",
 				"branchesDiverged": "本地和远程分支已分叉。强制更新中...",
 				"notOnBranch": "不在分支上，切换到 'master'...",
-				"noUpstreamBranch": "警告：没有为分支 '${branch}' 配置上游分支。正在将上游设置为 'origin/master'。",
+				"noUpstreamBranch": "警告：没有为分支 '${branch}' 配置上游分支，使用 '${remote}'。",
 				"dirtyWorkingDirectory": "警告：工作目录存在未提交的更改。请在更新前暂存或提交。",
 				"notInstalled": "未安装 Git，正在尝试安装...",
 				"notInstalledSkippingPull": "未安装 Git，跳过 `git pull`",

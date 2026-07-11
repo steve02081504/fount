@@ -1738,16 +1738,17 @@ fount_upgrade() {
 		return 1
 	fi
 
-	local remoteBranch
+	local remoteBranch candidateRemote
 	remoteBranch=$(invoke_git_for_fount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null)
 	if [ -z "$remoteBranch" ]; then
-		if ! fount_git_ref_exists origin/master; then
-			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' 'origin/master' >&2
+		candidateRemote="origin/$currentBranch"
+		if ! fount_git_ref_exists "$candidateRemote"; then
+			print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$candidateRemote" >&2
 			return 1
 		fi
-		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" >&2
-		invoke_git_for_fount branch --set-upstream-to origin/master "$currentBranch"
-		remoteBranch="origin/master"
+		print_i18n_yellow 'git.noUpstreamBranch' 'branch' "$currentBranch" 'remote' "$candidateRemote" >&2
+		invoke_git_for_fount branch --set-upstream-to "$candidateRemote" "$currentBranch"
+		remoteBranch="$candidateRemote"
 	fi
 	if ! fount_git_ref_exists "$remoteBranch"; then
 		print_i18n_yellow 'git.remoteRefUnavailable' 'ref' "$remoteBranch" >&2

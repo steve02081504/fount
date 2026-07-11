@@ -1155,13 +1155,14 @@ function fount_upgrade {
 
 	$remoteBranch = Invoke-GitForFount rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>$null
 	if (-not $remoteBranch) {
-		if (-not (Test-FountGitRef 'origin/master')) {
-			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = 'origin/master' })
+		$candidateRemote = "origin/$currentBranch"
+		if (-not (Test-FountGitRef $candidateRemote)) {
+			Write-Warning (Get-I18n -key 'git.remoteRefUnavailable' -params @{ ref = $candidateRemote })
 			return
 		}
-		Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{branch = $currentBranch })
-		Invoke-GitForFount branch --set-upstream-to origin/master
-		$remoteBranch = 'origin/master'
+		Write-Warning (Get-I18n -key 'git.noUpstreamBranch' -params @{ branch = $currentBranch; remote = $candidateRemote })
+		Invoke-GitForFount branch --set-upstream-to $candidateRemote
+		$remoteBranch = $candidateRemote
 	}
 
 	if (-not (Test-FountGitRef $remoteBranch)) {
