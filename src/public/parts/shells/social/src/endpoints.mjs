@@ -3,6 +3,7 @@
  * 【职责】Social shell HTTP/WS 路由聚合入口。
  */
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
+import { registerExploreRoutes } from './endpoints/explore.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
 import { registerGovernanceRoutes } from './endpoints/governance.mjs'
 import { registerNotificationRoutes } from './endpoints/notifications.mjs'
@@ -22,6 +23,7 @@ import { registerViewerRoutes } from './endpoints/viewer.mjs'
  */
 export function setEndpoints(router) {
 	registerFeedRoutes(router)
+	registerExploreRoutes(router)
 	registerDiscoverRoutes(router)
 	registerSearchRoutes(router)
 	registerNotificationRoutes(router)

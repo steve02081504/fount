@@ -63,16 +63,7 @@ live `ws` suite 已覆盖发帖 push、通知 push、断线重连（`test/live/s
 
 ---
 
-## 二、代码清理余项
-
-M4 主体已合入；仅剩低优先级整理：
-
-- social `endpoints/discover.mjs` 仍承载 explore 路由，search / notifications / translate / viewer 已各自拆出——explore 可再拆为独立文件，与 `discover/` 后端模块对齐命名。
-- 各文件头注释随实现变更持续同步（fount 惯例）。
-
----
-
-## 三、工作流 F：下一阶段（方向性）
+## 二、工作流 F：下一阶段（方向性）
 
 按依赖顺序排列。A–G 与 M1–M8 已完成，以下为 F 期主线。
 
@@ -118,7 +109,7 @@ M4 主体已合入；仅剩低优先级整理：
 
 ---
 
-## 四、里程碑与依赖
+## 三、里程碑与依赖
 
 ```mermaid
 graph LR
