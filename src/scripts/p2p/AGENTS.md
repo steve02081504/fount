@@ -8,22 +8,20 @@ alwaysApply: false
 
 ## Package layers (`@steve02081504/fount-p2p`)
 
-- **L0** cross-runtime pure：`hexIds`、`entity_id_parse`、`mentions`（真源 `pages/scripts/p2p/`，backend re-export）
-- **L1** crypto & wire：`crypto`、`key_crypto`、`channel_crypto`（domain-key 信封）、`wire_ingress`、`schemas/*`
-- **L2** node runtime：`initNode`、`node/identity`、`entity_store`、`denylist`、`reputation_store`
-- **L3** transport：`discovery/*`、`link/*`、`link_registry`、`rooms/scoped_link`、`user_room`、`group_link_set`
-- **L4** federation：`trust_graph_*`、`mailbox/*`、`dag/*`、`part_wire_*`、registry 族、EVFS
+- **L0** cross-runtime pure: `hexIds`, `entity_id_parse`, `mentions` (canonical source in `pages/scripts/p2p/`, backend re-exports)
+- **L1** crypto & wire: `crypto`, `key_crypto`, `channel_crypto` (domain-key envelope), `wire_ingress`, `schemas/*`
+- **L2** node runtime: `initNode`, `node/identity`, `entity_store`, `denylist`, `reputation_store`
+- **L3** transport: `discovery/*`, `link/*`, `link_registry`, `rooms/scoped_link`, `user_room`, `group_link_set`
+- **L4** federation: `trust_graph_*`, `mailbox/*`, `dag/*`, `part_wire_*`, registry family, EVFS
 
-**包外（shell 注册，p2p 不 import）**：
+**Outside the package (shell-registered; p2p does not import):**
 
-- Social 联邦：`shells/social/src/federation/`（namespace、RPC、follower index、remote ingest、reputation social）
-- Chat 权限预设：`shells/chat/src/permissions/chat.mjs`（基于 `permissions/evaluator.mjs`）
-- Agent hosting bootstrap：`server/p2p_server/agent_hosting.mjs`
-- Subfount 最小接入：`import { initSubfountP2p, createScopedLinkRoom } from 'fount/scripts/p2p/subfount.mjs'`
+- Social federation: `shells/social/src/federation/` (namespace, RPC, follower index, remote ingest, reputation social)
+- Chat permission presets: `shells/chat/src/permissions/chat.mjs` (based on `permissions/evaluator.mjs`)
+- Agent hosting bootstrap: `server/p2p_server/agent_hosting.mjs`
+- Subfount minimal entry: `import { initSubfountP2p, createScopedLinkRoom } from 'fount/scripts/p2p/subfount.mjs'`
 
-生产代码 import 边界：`test/integration/p2p_shell_import_guard.test.mjs`（禁 shell/server、`social_rpc` 字面量等）。
-
-**测试**：`fount test p2p --no-parallel`（Windows 上并行 Deno 子进程易损坏 `node_modules`，见 [denoland/deno#35804](https://github.com/denoland/deno/issues/35804)）。
+Production import boundary guard: `test/integration/p2p_shell_import_guard.test.mjs` (bans shell/server, `social_rpc` literal, etc.).
 
 ## Trust boundaries
 
@@ -46,7 +44,7 @@ alwaysApply: false
 ## Subjective reputation (`reputation.json`)
 
 - **Single global score per peer** at `{dataPath}/p2p/node/reputation.json` (`byNodeHash[id].score` in `[-1, 1]`). No per-group scopes.
-- **Social public block → reputation**: Social Load 注册 `registerBlockReputationHandler`；`applySocialBlockReputationSignal` 经 handler 传导。
+- **Social public block → reputation**: Social Load registers `registerBlockReputationHandler`; `applySocialBlockReputationSignal` propagates via handler.
 - **Per-entity personal lists**: `personal_block.mjs` — public block index (`personal_block.json`); private hide (`personal_hide.json`, never federated).
 - **Subjective slash**: `reputation_slash`/VOLATILE `reputation_slash_alert` adjust target's **global** score via `subjectiveSlashPenalty(claim, repSender, rep_max_eff)` — influence scales with sender trust. Do not remove this weighting.
 - **Anti-Sybil**: `applyDecayCollusionAfterSlash` penalizes invite-chain upstream after slash/kick/ban.

@@ -10,7 +10,7 @@ alwaysApply: false
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
 - **External untrusted**: Trystero wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `src/scripts/p2p/wire_ingress.mjs`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `src/scripts/p2p/schemas/*`.
-- **Untrusted remote Markdown**: `messageRender.hydrateOneMarkdown` 默认用 untrusted pipeline 渲染前 120 字预览（与 mention `textPreview` 对齐）；超长显示「展开全文」；已信任作者仍走 trusted pipeline（`allowDangerousHtml`）。
+- **Untrusted remote Markdown**: `messageRender.hydrateOneMarkdown` renders the first 120 chars as preview via the untrusted pipeline (aligned with mention `textPreview`); overflow shows an expand button; trusted authors still use the trusted pipeline (`allowDangerousHtml`).
 
 ## Streaming AV
 
@@ -50,8 +50,8 @@ Hub-facing API shapes:
 
 ## @mention inbox
 
-- **Storage**: `{userDictionary}/shells/chat/mention-inbox/events.jsonl` + `read.json`（全局 seenAt 水位，独立于频道 read-marker）。增量写：`src/chat/lib/mentionInbox.mjs` → `maybeAppendMentionInbox`（挂于 `dag/eventPersist.mjs` message / message_edit 落盘）。
-- **Syntax**: 正文 `@128hex entityHash`；Hub 渲染/composer 展示 displayName（`shared/expandMentions.mjs`、`hub/mentionAutocomplete.mjs`）。
-- **API**: `GET /mentions`（newest-first + cursor）、`GET/PUT /mentions/seen`；群内 autocomplete `GET …/groups/:id/mentions/suggest`。
-- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/mentionsView.mjs`，经 `setMode('mentions')`）；badge 由 WS `channel_message` 检测 @本机 operator 递增。
-- **Mention 展示**：`shared/expandMentions.mjs` 在 markdown 处理前展开；实体链接用 `shared/socialRunUri.mjs` 的 `formatSocialProfileHref`。
+- **Storage**: `{userDictionary}/shells/chat/mention-inbox/events.jsonl` + `read.json` (global `seenAt` watermark, independent of channel read-markers). Incremental write: `src/chat/lib/mentionInbox.mjs` → `maybeAppendMentionInbox` (hooked into `dag/eventPersist.mjs` on `message`/`message_edit` persist).
+- **Syntax**: `@128hex entityHash` in message body; Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
+- **API**: `GET /mentions` (newest-first + cursor), `GET/PUT /mentions/seen`; group autocomplete at `GET …/groups/:id/mentions/suggest`.
+- **Hub**: server bar `@` button + `#mentions` list (`hub/mentionsView.mjs`, via `setMode('mentions')`); badge incremented by WS `channel_message` when the local operator is @-mentioned.
+- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.

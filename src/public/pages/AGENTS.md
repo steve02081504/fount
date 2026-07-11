@@ -37,7 +37,7 @@ alwaysApply: false
 ## Components & Utilities
 
 - **`virtualList.mjs`**: High-performance virtual scrolling.
-- **`infiniteScroll.mjs`**: `IntersectionObserver` 分页列表：`ensureScrollSentinel` 放哨兵，`bindInfiniteScroll` 接近底部时调 `onLoad`；切视图用 `disconnectInfiniteScroll`（全局单 observer）。
+- **`infiniteScroll.mjs`**: `IntersectionObserver`-based pagination: `ensureScrollSentinel` places sentinel element, `bindInfiniteScroll` calls `onLoad` as the bottom approaches; use `disconnectInfiniteScroll` when switching views (single global observer).
 - **`search.mjs`**: Live filtering and searchable dropdowns.
 - **`jsonEditor.mjs`**: `vanilla-jsoneditor` wrapper.
 - **`terminal.mjs`**: `xterm.js` terminal wrapper.
@@ -47,9 +47,9 @@ alwaysApply: false
 
 ## P2P (browser)
 
-`scripts/p2p/` — 浏览器侧联邦原语镜像（与 `src/scripts/p2p/` 对齐）；shell `public/**` 用绝对路径 `/scripts/p2p/...` 引用。
+`scripts/p2p/` — browser-side federation primitives mirroring `src/scripts/p2p/`; shell `public/**` must import via absolute `/scripts/p2p/...` URLs.
 
-- **`p2p/entity_id_parse.mjs`**: `isEntityHash128` 等 entityHash 校验/解析。
-- **`p2p/hexIds.mjs`**: 64 位 hex id 规范化。
-- **`p2p/mentions.mjs`**: `extractMentionEntityHashes(text)` — 正文 `@128hex` 提取。
-- **Social profile 链接**：`formatSocialProfileHref` 由 Chat `shared/socialRunUri.mjs` 导出；Social shell 经 `/parts/shells:chat/shared/socialRunUri.mjs` 引用。
+- **`p2p/entity_id_parse.mjs`**: `isEntityHash128` and other entityHash validation/parsing helpers.
+- **`p2p/hexIds.mjs`**: 64-bit hex id canonicalization.
+- **`p2p/mentions.mjs`**: `extractMentionEntityHashes(text)` — extracts `@128hex` entity hashes from message body.
+- **Social profile links**: `formatSocialProfileHref` exported from Chat `shared/socialRunUri.mjs`; Social shell references it via `/parts/shells:chat/shared/socialRunUri.mjs`.

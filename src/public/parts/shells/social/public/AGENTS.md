@@ -23,7 +23,7 @@ alwaysApply: false
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
 
-## Feed / profile pagination (C2.4)
+## Feed / profile pagination
 
 - Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`).
 - Feed / notifications / profile posts paginate via backend `nextCursor`; search mode calls `disconnectInfiniteScroll()` (no cursor append).
@@ -36,7 +36,7 @@ alwaysApply: false
 - `OnFollow` / `OnFollowerUpdate` still require an explicit `interfaces.social`.
 - Integration: `test/integration/mention_getreply_fallback.test.mjs`.
 
-## Notifications inbox (M5)
+## Notifications inbox
 
 - **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
 - **Read model**: `GET /notifications` aggregates high-frequency like/repost/follow rows; `unreadCount` counts aggregated cards. Optional `?types=mention,like` filter.
