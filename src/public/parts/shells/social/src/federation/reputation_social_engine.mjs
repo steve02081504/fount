@@ -36,27 +36,27 @@ export function applyFollowedBlockSignalPure(data, opts, now = Date.now(), tunab
 	const selfTrust = !!opts.selfTrust
 
 	const row = data.byNodeHash[targetNodeHash] || { score: 0 }
-	row.socialBlocks ??= {}
+	row.blockPenalties ??= {}
 
 	if (isBlock) {
-		if (row.socialBlocks[voterKey]) return false
+		if (row.blockPenalties[voterKey]) return false
 		const repMaxEff = computeRepMaxEff(data)
 		const repSender = selfTrust
 			? REP_MAX
 			: Number(data.byNodeHash[followerNodeHash]?.score ?? 0)
 		const penalty = subjectiveSlashPenalty(tunables.socialBlockClaim, repSender, repMaxEff, selfTrust)
 		row.score = clampReputationScore(Number(row.score ?? 0) - penalty)
-		row.socialBlocks[voterKey] = { penalty, appliedAt: now, decayedRefund: 0 }
+		row.blockPenalties[voterKey] = { penalty, appliedAt: now, decayedRefund: 0 }
 		data.byNodeHash[targetNodeHash] = row
 		return true
 	}
 
-	const record = row.socialBlocks[voterKey]
+	const record = row.blockPenalties[voterKey]
 	if (!record) return false
 	const remaining = Number(record.penalty) - Number(record.decayedRefund || 0)
 	if (remaining > 0)
 		row.score = clampReputationScore(Number(row.score ?? 0) + remaining)
-	delete row.socialBlocks[voterKey]
+	delete row.blockPenalties[voterKey]
 	data.byNodeHash[targetNodeHash] = row
 	return true
 }

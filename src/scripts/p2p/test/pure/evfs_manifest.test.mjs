@@ -4,7 +4,11 @@
 /* global Deno */
 import { assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { groupEntityHash, isGroupEntityHash, GROUP_SENTINEL_NODE_HASH } from '../../entity/group_entity.mjs'
+import {
+	isLogicalEntityHash,
+	logicalEntityHash,
+	LOGICAL_ENTITY_SENTINEL_NODE_HASH,
+} from '../../entity/logical_entity.mjs'
 import { assertSafeEvfsLogicalPath } from '../../evfs_logical_path.mjs'
 import { encryptPlaintextToParts, buildFileManifest } from '../../files/assemble.mjs'
 import { normalizeFileManifest } from '../../files/manifest.mjs'
@@ -12,11 +16,12 @@ import { assembleManifestPlaintext } from '../../files/transfer_key.mjs'
 
 const TEST_ENTITY = `${'a'.repeat(64)}${'b'.repeat(64)}`
 const TEST_GROUP = 'test-group-uuid'
+const TEST_GROUP_SUBJECT = `fount:chat:group:${TEST_GROUP}`
 
-Deno.test('groupEntityHash uses sentinel node', () => {
-	const eh = groupEntityHash(TEST_GROUP)
-	assertEquals(eh.slice(0, 64), GROUP_SENTINEL_NODE_HASH)
-	assertEquals(isGroupEntityHash(eh), true)
+Deno.test('logicalEntityHash uses sentinel node', () => {
+	const eh = logicalEntityHash(TEST_GROUP_SUBJECT)
+	assertEquals(eh.slice(0, 64), LOGICAL_ENTITY_SENTINEL_NODE_HASH)
+	assertEquals(isLogicalEntityHash(eh), true)
 })
 
 Deno.test('convergent encrypt-decrypt roundtrip via manifest', async () => {

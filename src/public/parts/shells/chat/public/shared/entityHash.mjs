@@ -7,4 +7,4 @@ export {
 export {
 	entityHashLabel,
 	formatHashShort,
-} from '../../../../../../public/pages/scripts/lib/entity_hash.mjs'
+} from '/scripts/lib/entity_hash.mjs'

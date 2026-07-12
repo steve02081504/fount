@@ -56,8 +56,8 @@ try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
 	;({ on_shutdown } = await import('npm:on-shutdown'))
-	const subfountP2p = await import('fount/scripts/p2p/subfount.mjs')
-	await subfountP2p.initSubfountP2p({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
+	const subfountP2p = await import('fount/scripts/p2p/index.mjs')
+	await subfountP2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
 	createScopedLinkRoom = subfountP2p.createScopedLinkRoom
 }
 catch (error) {

@@ -1,7 +1,7 @@
 /**
  * 扫描帖子正文中的群表情 token 并提取 contentHash 引用。
  */
-import { resolveGroupEmojiPostEmbedProvider } from 'fount/scripts/p2p/group_emoji/post_embed_registry.mjs'
+import { resolveGroupEmojiPostEmbedProvider } from 'fount/public/parts/shells/chat/src/chat/lib/groupEmojiPostEmbedRegistry.mjs'
 
 const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)]:/g
 

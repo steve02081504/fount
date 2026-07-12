@@ -1,12 +1,14 @@
 import {
 	registerManifestAcl,
+	registerManifestAclMatcher,
 	unregisterManifestAcl,
+	unregisterManifestAclMatcher,
 } from '../../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
-import { groupIdFromGroupEntity } from '../../../../../../scripts/p2p/entity/group_entity.mjs'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../group/access.mjs'
 
 import { getState } from './dag/materialize.mjs'
+import { groupIdFromGroupEntity, isGroupEntityHash } from './lib/groupEntity.mjs'
 
 const OWNER_ID = 'chat'
 
@@ -15,6 +17,9 @@ const OWNER_ID = 'chat'
  * @returns {void}
  */
 export function registerChatManifestAcl() {
+	registerManifestAclMatcher(OWNER_ID, (_manifest, ownerEntityHash) =>
+		isGroupEntityHash(ownerEntityHash) ? 'file-master-key-wrap' : null,
+	)
 	registerManifestAcl('file-master-key-wrap', OWNER_ID, async (manifestContext, logicalPath) => {
 		const groupId = manifestContext.manifest?.transferKeyDescriptor?.groupId
 			|| await groupIdFromGroupEntity(manifestContext.ownerEntityHash, manifestContext.replicaUsername)
@@ -33,5 +38,6 @@ export function registerChatManifestAcl() {
 
 /** @returns {void} */
 export function unregisterChatManifestAcl() {
+	unregisterManifestAclMatcher(OWNER_ID)
 	unregisterManifestAcl('file-master-key-wrap', OWNER_ID)
 }

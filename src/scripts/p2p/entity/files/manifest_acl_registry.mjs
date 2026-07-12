@@ -5,6 +5,9 @@
 /** @type {Map<string, { ownerId: string, handler: (context: ManifestAclContext, logicalPath?: string) => Promise<boolean> }>} */
 const handlersByType = new Map()
 
+/** @type {Map<string, { ownerId: string, match: (manifest: import('../../files/manifest.mjs').FileManifest | null | undefined, ownerEntityHash: string) => string | null }>} */
+const matchersByOwner = new Map()
+
 /**
  * @typedef {{
  *   replicaUsername: string,
@@ -41,9 +44,40 @@ export function unregisterManifestAcl(type, ownerId) {
 		handlersByType.delete(key)
 }
 
+/**
+ * @param {string} ownerId 注册方
+ * @param {(manifest: import('../../files/manifest.mjs').FileManifest | null | undefined, ownerEntityHash: string) => string | null} match ACL type 匹配
+ * @returns {void}
+ */
+export function registerManifestAclMatcher(ownerId, match) {
+	matchersByOwner.set(String(ownerId), { ownerId: String(ownerId), match })
+}
+
+/**
+ * @param {string} ownerId 注册方
+ * @returns {void}
+ */
+export function unregisterManifestAclMatcher(ownerId) {
+	matchersByOwner.delete(String(ownerId))
+}
+
 /** @returns {void} */
 export function clearManifestAclRegistry() {
 	handlersByType.clear()
+	matchersByOwner.clear()
+}
+
+/**
+ * @param {import('../../files/manifest.mjs').FileManifest | null | undefined} manifest manifest
+ * @param {string} ownerEntityHash owner
+ * @returns {string | null} ACL type
+ */
+export function resolveManifestAclType(manifest, ownerEntityHash) {
+	for (const { match } of matchersByOwner.values()) {
+		const type = match(manifest, ownerEntityHash)
+		if (type) return type
+	}
+	return null
 }
 
 /**

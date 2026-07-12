@@ -22,7 +22,7 @@ export function defaultReputationTunables() {
 /**
  * @param {ReputationFile} data 信誉表
  * @param {string} nodeId 64 hex
- * @returns {{ score: number, offenseStreak?: number, lastOffenseAt?: number, socialBlocks?: Record<string, object> }} 节点行
+ * @returns {{ score: number, offenseStreak?: number, lastOffenseAt?: number, blockPenalties?: Record<string, object> }} 节点行
  */
 function repRow(data, nodeId) {
 	const row = data.byNodeHash[nodeId] || { score: 0 }
@@ -31,7 +31,7 @@ function repRow(data, nodeId) {
 		out.offenseStreak = row.offenseStreak
 	if (Number.isFinite(row.lastOffenseAt))
 		out.lastOffenseAt = row.lastOffenseAt
-	if (row.socialBlocks) out.socialBlocks = row.socialBlocks
+	if (row.blockPenalties) out.blockPenalties = row.blockPenalties
 	if (row.baseline) out.baseline = row.baseline
 	if (Number.isFinite(row.quarantinedUntil))
 		out.quarantinedUntil = row.quarantinedUntil

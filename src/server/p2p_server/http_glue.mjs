@@ -1,5 +1,4 @@
-import { groupIdFromGroupEntity } from '../../scripts/p2p/entity/group_entity.mjs'
-import { resolveGroupIdFromEntityHash } from '../../scripts/p2p/entity/group_entity_index_registry.mjs'
+import { resolveLogicalEntityId } from '../../scripts/p2p/entity/logical_entity_id_registry.mjs'
 import {
 	resolveLocalOperatorEntityHash,
 } from '../../scripts/p2p/entity/replica.mjs'
@@ -59,13 +58,13 @@ export async function canReadEntityStats(replicaUsername, operatorEntityHash, en
 	if (entityHash === operatorEntityHash) return true
 	if (await isWritableLocalEntityForUser(replicaUsername, entityHash)) return true
 
-	const groupId = groupIdOpt || await groupIdFromGroupEntity(entityHash, replicaUsername)
+	const groupId = groupIdOpt || await resolveLogicalEntityId(replicaUsername, entityHash)
 	if (!groupId) return false
 
 	const viewerMemberHash = await resolveGroupMemberEntityHash(replicaUsername, groupId)
 	if (!viewerMemberHash) return false
 	if (entityHash === viewerMemberHash) return true
 
-	const entityGroupId = await resolveGroupIdFromEntityHash(replicaUsername, entityHash)
+	const entityGroupId = await resolveLogicalEntityId(replicaUsername, entityHash)
 	return entityGroupId === groupId
 }

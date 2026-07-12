@@ -1,9 +1,19 @@
 /**
  * Social 时间线事件入库 canonicalize。
  */
-import { SOCIAL_TIMELINE_ROW_OPTS } from '../../../../../../scripts/p2p/dag/canonicalize_presets.mjs'
 import { canonicalizeSignedRow } from '../../../../../../scripts/p2p/dag/canonicalizeRow.mjs'
 import { validateRemoteEventShape } from '../../../../../../scripts/p2p/schemas/remote_event.mjs'
+
+/** Social 时间线 canonicalize 选项 */
+export const SOCIAL_TIMELINE_ROW_OPTS = {
+	contentHexKeys: new Set([
+		'targetPostId',
+		'targetId',
+	]),
+	entityHashKeys: new Set([
+		'targetEntityHash',
+	]),
+}
 
 /**
  * @param {object} event 签名事件

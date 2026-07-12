@@ -30,7 +30,7 @@ const DATA_NAME = 'reputation'
 let blockReputationHandler = null
 
 /**
- * Social shell Load 时注册：公开 block/unblock → 信誉传导。
+ * Shell Load 时注册：公开 block/unblock → 信誉传导。
  * @param {(opts: object) => Promise<boolean>} handler
  * @returns {void}
  */
@@ -45,7 +45,7 @@ export function unregisterBlockReputationHandler() {
 
 /**
  * @typedef {{
- *   byNodeHash: Record<string, { score: number, offenseStreak?: number, lastOffenseAt?: number, socialBlocks?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
+ *   byNodeHash: Record<string, { score: number, offenseStreak?: number, lastOffenseAt?: number, blockPenalties?: Record<string, { penalty: number, appliedAt: number, decayedRefund?: number }> }>
  *   wantUnknownHits: Array<{ peerNodeHash: string, t: number }>
  *   relayBumpSeen: Array<{ peerNodeHash: string, key: string, t: number }>
  * }} ReputationFile
@@ -319,7 +319,7 @@ export function pickNodeScore(nodeId) {
  * @param {object} opts applyFollowedBlockSignal 参数
  * @returns {Promise<boolean>} 是否已应用
  */
-export async function applySocialBlockReputationSignal(opts) {
+export async function applyBlockReputationSignal(opts) {
 	if (!blockReputationHandler) return false
 	return blockReputationHandler(opts)
 }

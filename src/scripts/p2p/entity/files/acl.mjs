@@ -1,7 +1,7 @@
-import { isGroupEntityHash } from '../group_entity.mjs'
+import { isLogicalEntityHash } from '../logical_entity.mjs'
 import { isWritableLocalEntity } from '../replica.mjs'
 
-import { checkManifestAcl } from './manifest_acl_registry.mjs'
+import { checkManifestAcl, resolveManifestAclType } from './manifest_acl_registry.mjs'
 
 /**
  * @param {string} replicaUsername 请求 replica
@@ -10,11 +10,12 @@ import { checkManifestAcl } from './manifest_acl_registry.mjs'
  * @returns {Promise<boolean>} 是否允许读
  */
 export async function canReadManifest(replicaUsername, ownerEntityHash, manifest) {
-	if (manifest.transferKeyDescriptor?.type === 'vault-wrap')
-		return checkManifestAcl('vault-wrap', { replicaUsername, ownerEntityHash, manifest })
+	const type = resolveManifestAclType(manifest, ownerEntityHash)
+	if (type)
+		return checkManifestAcl(type, { replicaUsername, ownerEntityHash, manifest })
 
-	if (isGroupEntityHash(ownerEntityHash))
-		return checkManifestAcl('file-master-key-wrap', { replicaUsername, ownerEntityHash, manifest })
+	if (isLogicalEntityHash(ownerEntityHash))
+		return false
 
 	return true
 }
@@ -26,7 +27,12 @@ export async function canReadManifest(replicaUsername, ownerEntityHash, manifest
  * @returns {Promise<boolean>} 是否允许写
  */
 export async function canWriteManifestPath(replicaUsername, ownerEntityHash, logicalPath) {
-	if (isGroupEntityHash(ownerEntityHash))
-		return checkManifestAcl('file-master-key-wrap', { replicaUsername, ownerEntityHash, manifest: /** @type {any} */ {} }, logicalPath)
+	const type = resolveManifestAclType(null, ownerEntityHash)
+	if (type)
+		return checkManifestAcl(type, { replicaUsername, ownerEntityHash, manifest: /** @type {any} */ {} }, logicalPath)
+
+	if (isLogicalEntityHash(ownerEntityHash))
+		return false
+
 	return isWritableLocalEntity(ownerEntityHash)
 }

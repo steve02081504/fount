@@ -35,9 +35,11 @@ Deno.test('p2p production code import boundary', async () => {
 			violations.push(`${rel}: social_rpc literal`)
 		if (/getShellPartpath\(\s*['"]social['"]\s*\)/u.test(text))
 			violations.push(`${rel}: getShellPartpath('social')`)
+		if (/fount:chat:/u.test(text))
+			violations.push(`${rel}: fount:chat: literal`)
 		if (/fount:chat:agent:/u.test(text))
 			violations.push(`${rel}: fount:chat:agent: literal`)
-		if (/\bagentEntityHash\b/u.test(text) && !rel.includes('canonicalize_presets'))
+		if (/\bagentEntityHash\b/u.test(text))
 			violations.push(`${rel}: agentEntityHash literal`)
 		for (const match of text.matchAll(/from\s+['"]([^'"]+)['"]/gu)) {
 			const spec = match[1]

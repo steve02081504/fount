@@ -21,11 +21,18 @@ export function unregisterMaterializedSessionProvider(ownerId) {
 /**
  * @param {string} replicaUsername replica
  * @param {string} groupId 群 ID
- * @param {string} [ownerId='chat'] 注册方 id
+ * @param {string} [ownerId] 注册方 id；省略时遍历所有 provider
  * @returns {Promise<object | null>} 物化会话
  */
-export async function getMaterializedSession(replicaUsername, groupId, ownerId = 'chat') {
-	const provider = providersByOwner.get(String(ownerId))
-	if (!provider) return null
-	return provider(replicaUsername, groupId)
+export async function getMaterializedSession(replicaUsername, groupId, ownerId) {
+	if (ownerId != null) {
+		const provider = providersByOwner.get(String(ownerId))
+		if (!provider) return null
+		return provider(replicaUsername, groupId)
+	}
+	for (const provider of providersByOwner.values()) {
+		const session = await provider(replicaUsername, groupId)
+		if (session) return session
+	}
+	return null
 }

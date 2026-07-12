@@ -1,4 +1,9 @@
-import { registerManifestAcl, unregisterManifestAcl } from '../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
+import {
+	registerManifestAcl,
+	registerManifestAclMatcher,
+	unregisterManifestAcl,
+	unregisterManifestAclMatcher,
+} from '../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
 
 import { canViewVaultFile } from './vaultAcl.mjs'
 
@@ -9,6 +14,9 @@ const OWNER_ID = 'social'
  * @returns {void}
  */
 export function registerSocialManifestAcl() {
+	registerManifestAclMatcher(OWNER_ID, manifest =>
+		manifest?.transferKeyDescriptor?.type === 'vault-wrap' ? 'vault-wrap' : null,
+	)
 	registerManifestAcl('vault-wrap', OWNER_ID, async context =>
 		canViewVaultFile(context.replicaUsername, context.ownerEntityHash, context.manifest),
 	)
@@ -16,5 +24,6 @@ export function registerSocialManifestAcl() {
 
 /** @returns {void} */
 export function unregisterSocialManifestAcl() {
+	unregisterManifestAclMatcher(OWNER_ID)
 	unregisterManifestAcl('vault-wrap', OWNER_ID)
 }

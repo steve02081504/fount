@@ -1,7 +1,7 @@
 import {
 	registerGroupEmojiPostEmbedProvider,
 	unregisterGroupEmojiPostEmbedProvider,
-} from 'fount/scripts/p2p/group_emoji/post_embed_registry.mjs'
+} from './lib/groupEmojiPostEmbedRegistry.mjs'
 
 import { resolveGroupEmojiContent } from '../group/emojiContentResolve.mjs'
 import { storeEmojiInCas } from '../group/groupEmojis.mjs'

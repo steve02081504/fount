@@ -80,7 +80,7 @@ Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks
 		selfTrust: true,
 	}, mutate)
 	assertEquals(Number(data.byNodeHash[NODE_B]?.score ?? 0) < 0, true)
-	const penalty = data.byNodeHash[NODE_B].socialBlocks?.[USER_ENTITY]?.penalty
+	const penalty = data.byNodeHash[NODE_B].blockPenalties?.[USER_ENTITY]?.penalty
 	assertEquals(typeof penalty, 'number')
 	await applyFollowedBlockSignal({
 		followerEntityHash: USER_ENTITY,
@@ -89,7 +89,7 @@ Deno.test('applyFollowedBlockSignal selfTrust penalizes target node and unblocks
 		selfTrust: true,
 	}, mutate)
 	assertEquals(data.byNodeHash[NODE_B]?.score ?? 0, 0)
-	assertEquals(data.byNodeHash[NODE_B]?.socialBlocks?.[USER_ENTITY], undefined)
+	assertEquals(data.byNodeHash[NODE_B]?.blockPenalties?.[USER_ENTITY], undefined)
 })
 
 Deno.test('applyFollowedBlockSignal dedupes repeated block from same follower', async () => {

@@ -1,10 +1,14 @@
-import { sha256TextHex } from '../crypto.mjs'
-import { encodeEntityHash, parseEntityHash } from '../entity_id.mjs'
+import {
+	isLogicalEntityHash,
+	logicalEntityHash,
+	LOGICAL_ENTITY_SENTINEL_NODE_HASH,
+} from '../../../../../../../scripts/p2p/entity/logical_entity.mjs'
+import { resolveLogicalEntityId } from '../../../../../../../scripts/p2p/entity/logical_entity_id_registry.mjs'
 
-const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
+export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
 
-/** @type {string} 逻辑群实体 sentinel nodeHash（非物理节点绑定） */
-export const GROUP_SENTINEL_NODE_HASH = '0'.repeat(64)
+/** @deprecated 使用 LOGICAL_ENTITY_SENTINEL_NODE_HASH */
+export const GROUP_SENTINEL_NODE_HASH = LOGICAL_ENTITY_SENTINEL_NODE_HASH
 
 /**
  * @param {string} groupId 群 ID
@@ -13,7 +17,7 @@ export const GROUP_SENTINEL_NODE_HASH = '0'.repeat(64)
 export function groupEntityHash(groupId) {
 	const id = String(groupId || '').trim()
 	if (!id) throw new Error('groupId required')
-	return encodeEntityHash(GROUP_SENTINEL_NODE_HASH, sha256TextHex(`${GROUP_SUBJECT_PREFIX}${id}`))
+	return logicalEntityHash(`${GROUP_SUBJECT_PREFIX}${id}`)
 }
 
 /**
@@ -21,9 +25,7 @@ export function groupEntityHash(groupId) {
  * @returns {boolean} 是否为 group entity
  */
 export function isGroupEntityHash(entityHash) {
-	const parsed = parseEntityHash(entityHash)
-	if (!parsed) return false
-	return parsed.nodeHash === GROUP_SENTINEL_NODE_HASH
+	return isLogicalEntityHash(entityHash)
 }
 
 /**
@@ -34,8 +36,7 @@ export function isGroupEntityHash(entityHash) {
 export async function groupIdFromGroupEntity(entityHash, username) {
 	if (!isGroupEntityHash(entityHash)) return null
 	if (!username) return null
-	const { resolveGroupIdFromEntityHash } = await import('./group_entity_index_registry.mjs')
-	return resolveGroupIdFromEntityHash(username, String(entityHash).trim().toLowerCase())
+	return resolveLogicalEntityId(username, String(entityHash).trim().toLowerCase())
 }
 
 /**

@@ -7,13 +7,23 @@ import { join } from 'node:path'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { pubKeyHash, publicKeyFromSeed } from '../../crypto.mjs'
-import { SOCIAL_TIMELINE_ROW_OPTS } from '../../dag/canonicalize_presets.mjs'
 import { canonicalizeSignedRow } from '../../dag/canonicalizeRow.mjs'
 import { encodeEntityHash } from '../../entity_id.mjs'
 import { timelineGroupId } from '../../../../public/parts/shells/social/src/federation/namespace.mjs'
 import { initTestP2pNode } from '../../test/helpers/node.mjs'
 import { signTimelineEvent } from '../../timeline/append_core.mjs'
 import { validateRemoteTimelineEvent } from '../../../../public/parts/shells/social/src/federation/remote_ingest.mjs'
+
+/** Social 时间线 canonicalize 选项（测试内联） */
+const SOCIAL_TIMELINE_ROW_OPTS = {
+	contentHexKeys: new Set([
+		'targetPostId',
+		'targetId',
+	]),
+	entityHashKeys: new Set([
+		'targetEntityHash',
+	]),
+}
 
 /**
  * @param {object} event 签名事件

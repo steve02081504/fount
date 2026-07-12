@@ -1,5 +1,5 @@
 import { rebuildPersonalBlockIndex } from '../../../../../scripts/p2p/personal_block.mjs'
-import { applySocialBlockReputationSignal } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { applyBlockReputationSignal } from '../../../../../scripts/p2p/reputation_store.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
 import { commitTimelineEvent } from './timeline/append.mjs'
@@ -24,7 +24,7 @@ export async function setPersonalBlock(username, actingEntityHash, targetEntityH
 	await rebuildPersonalBlockIndex(actor, view.blocked || [])
 	const operator = await resolveOperatorEntityHash(username)
 	const selfTrust = operator?.toLowerCase() === actor
-	await applySocialBlockReputationSignal({
+	await applyBlockReputationSignal({
 		followerEntityHash: actor,
 		targetEntityHash: target,
 		action: block ? 'block' : 'unblock',
@@ -48,7 +48,7 @@ export async function handleInboundPersonalBlockEvent(username, ownerEntityHash,
 	if (!target) return
 	const view = await getTimelineMaterialized(username, owner)
 	await rebuildPersonalBlockIndex(owner, view.blocked || [])
-	await applySocialBlockReputationSignal({
+	await applyBlockReputationSignal({
 		followerEntityHash: owner,
 		targetEntityHash: target,
 		action: event.type === 'block' ? 'block' : 'unblock',
