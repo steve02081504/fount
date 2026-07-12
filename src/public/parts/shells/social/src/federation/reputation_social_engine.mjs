@@ -7,6 +7,7 @@ import {
 	REP_MAX,
 	subjectiveSlashPenalty,
 } from '../../../../../../scripts/p2p/reputation_math.mjs'
+
 import socialTunables from './reputation_social.tunables.json' with { type: 'json' }
 
 /** @typedef {import('../../../../../../scripts/p2p/reputation_store.mjs').ReputationFile} ReputationFile */

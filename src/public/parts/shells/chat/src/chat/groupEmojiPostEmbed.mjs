@@ -1,10 +1,11 @@
+
+import { resolveGroupEmojiContent } from '../group/emojiContentResolve.mjs'
+import { storeEmojiInCas } from '../group/groupEmojis.mjs'
+
 import {
 	registerGroupEmojiPostEmbedProvider,
 	unregisterGroupEmojiPostEmbedProvider,
 } from './lib/groupEmojiPostEmbedRegistry.mjs'
-
-import { resolveGroupEmojiContent } from '../group/emojiContentResolve.mjs'
-import { storeEmojiInCas } from '../group/groupEmojis.mjs'
 
 const OWNER_ID = 'chat'
 

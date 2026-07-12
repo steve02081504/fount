@@ -31,7 +31,7 @@ let blockReputationHandler = null
 
 /**
  * Shell Load 时注册：公开 block/unblock → 信誉传导。
- * @param {(opts: object) => Promise<boolean>} handler
+ * @param {(opts: object) => Promise<boolean>} handler block/unblock 信誉传导回调
  * @returns {void}
  */
 export function registerBlockReputationHandler(handler) {

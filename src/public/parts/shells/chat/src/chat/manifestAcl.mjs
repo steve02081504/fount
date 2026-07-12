@@ -1,10 +1,11 @@
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
 import {
 	registerManifestAcl,
 	registerManifestAclMatcher,
 	unregisterManifestAcl,
 	unregisterManifestAclMatcher,
 } from '../../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../group/access.mjs'
 
 import { getState } from './dag/materialize.mjs'

@@ -5,6 +5,9 @@ import {
 } from '../../../../../../../scripts/p2p/entity/logical_entity.mjs'
 import { resolveLogicalEntityId } from '../../../../../../../scripts/p2p/entity/logical_entity_id_registry.mjs'
 
+/**
+ *
+ */
 export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
 
 /** @deprecated 使用 LOGICAL_ENTITY_SENTINEL_NODE_HASH */

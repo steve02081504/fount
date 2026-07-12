@@ -5,6 +5,9 @@ import { canonicalizeRowContent, canonicalizeSignedRow } from '../../../../../..
 import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
 import { validateRemoteEventShape } from '../../../../../../../scripts/p2p/schemas/remote_event.mjs'
 
+/**
+ *
+ */
 export const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
 
 /** Chat content 内 hex64 字段名 */
