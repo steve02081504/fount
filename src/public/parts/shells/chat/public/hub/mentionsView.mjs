@@ -1,5 +1,5 @@
 /**
- * Hub 跨群 @mention 收件箱视图（#mentions）。
+ * Hub 跨群 inbox 视图（#mentions）。
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -18,6 +18,11 @@ let nextCursor = null
 
 /** @type {boolean} */
 let loading = false
+
+/** @type {string} */
+let activeKind = 'mention'
+
+const INBOX_KINDS = ['mention', 'message', 'care', 'vote_closed']
 
 /**
  * @param {number} at 毫秒时间戳
@@ -82,7 +87,7 @@ async function loadMentionsPage() {
 		const data = await fetchMentionsPage({
 			limit: 30,
 			cursor: nextCursor || undefined,
-			kinds: ['mention'],
+			kinds: [activeKind],
 		})
 		const host = document.getElementById('hub-mentions-list')
 		if (!host) return
@@ -91,9 +96,7 @@ async function loadMentionsPage() {
 		bindInfiniteScroll({
 			root: host.closest('.hub-mentions-scroll') || null,
 			sentinel: ensureScrollSentinel(host, 'hubMentionsScrollSentinel'),
-			/** @returns {boolean} 是否还有下一页 */
 			hasMore: () => !!nextCursor,
-			/** @returns {Promise<void>} 加载下一页 */
 			onLoad: () => loadMentionsPage(),
 		})
 		if (!host.querySelector('.hub-mention-row') && !nextCursor)
@@ -127,6 +130,19 @@ function wireMentionRowClicks(host) {
 }
 
 /**
+ * @param {string} kind inbox kind
+ * @returns {Promise<void>}
+ */
+async function switchInboxKind(kind) {
+	if (!INBOX_KINDS.includes(kind) || kind === activeKind) return
+	activeKind = kind
+	nextCursor = null
+	for (const tab of document.querySelectorAll('.hub-mentions-tab'))
+		tab.classList.toggle('hub-mentions-tab-active', tab.dataset.kind === kind)
+	await loadMentionsPage()
+}
+
+/**
  * 渲染并进入 #mentions 收件箱（由 setMode('mentions') 调用）。
  * @returns {Promise<void>}
  */
@@ -138,6 +154,8 @@ export async function activateMentionsView() {
 	hubStore.context.currentGroupId = null
 	hubStore.context.currentChannelId = null
 	hubStore.context.currentState = null
+	activeKind = 'mention'
+	nextCursor = null
 
 	const channelList = document.getElementById('hub-channel-list')
 	if (channelList)
@@ -152,6 +170,9 @@ export async function activateMentionsView() {
 			<div class="hub-mentions-panel-title" data-i18n="chat.hub.mentions.title"></div>
 			<div class="hub-mentions-tabs" role="tablist">
 				<button type="button" class="hub-mentions-tab hub-mentions-tab-active" data-kind="mention" data-i18n="chat.hub.mentions.tabMention"></button>
+				<button type="button" class="hub-mentions-tab" data-kind="message" data-i18n="chat.hub.mentions.tabMessage"></button>
+				<button type="button" class="hub-mentions-tab" data-kind="care" data-i18n="chat.hub.mentions.tabCare"></button>
+				<button type="button" class="hub-mentions-tab" data-kind="vote_closed" data-i18n="chat.hub.mentions.tabVoteClosed"></button>
 			</div>
 			<div class="hub-mentions-scroll">
 				<div id="hub-mentions-list" class="hub-mentions-list"></div>
@@ -163,12 +184,13 @@ export async function activateMentionsView() {
 	disableComposer('chat.hub.mentions.composerDisabled')
 	refreshHubHeaderButtons()
 
-	nextCursor = null
 	const listHost = document.getElementById('hub-mentions-list')
 	if (listHost && !listHost.dataset.wired) {
 		listHost.dataset.wired = '1'
 		wireMentionRowClicks(listHost)
 	}
+	for (const tab of document.querySelectorAll('.hub-mentions-tab'))
+		tab.addEventListener('click', () => void switchInboxKind(tab.dataset.kind || 'mention'))
 	await loadMentionsPage()
 	await markMentionsSeen()
 }

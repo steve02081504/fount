@@ -1,6 +1,9 @@
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { assignShellData, loadShellData } from '../../../../../../server/setting_loader.mjs'
+import { listCared, setCared } from '../chat/lib/care.mjs'
+import { loadNotifyPrefs, saveNotifyPrefs } from '../chat/lib/notifyPrefs.mjs'
+import { resolveChatRecipient } from '../chat/lib/recipient.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 
 /**
@@ -67,5 +70,27 @@ export function registerPrefsRoutes(router) {
 
 	router.get(`${CHAT_API_PREFIX}/reputation`, authenticate, async (_req, res) => {
 		res.status(200).json({ reputation: loadReputation() })
+	})
+
+	router.get(`${CHAT_API_PREFIX}/care`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const ownerEntityHash = await resolveChatRecipient(username, req.query.ownerEntityHash)
+		res.status(200).json({ cared: await listCared(username, ownerEntityHash) })
+	})
+	router.put(`${CHAT_API_PREFIX}/care`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const ownerEntityHash = await resolveChatRecipient(username, req.body.ownerEntityHash)
+		await setCared(username, ownerEntityHash, req.body.targetEntityHash, req.body.cared !== false)
+		res.status(200).json({ cared: await listCared(username, ownerEntityHash) })
+	})
+
+	router.get(`${CHAT_API_PREFIX}/notify-prefs`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json({ prefs: loadNotifyPrefs(username) })
+	})
+	router.put(`${CHAT_API_PREFIX}/notify-prefs`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		saveNotifyPrefs(username, req.body.prefs || {})
+		res.status(200).json({ prefs: loadNotifyPrefs(username) })
 	})
 }

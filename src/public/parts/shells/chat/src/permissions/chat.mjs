@@ -21,6 +21,7 @@ export const PERMISSIONS = {
 	UPLOAD_FILES: 'UPLOAD_FILES',
 	MANAGE_FILES: 'MANAGE_FILES',
 	PIN_MESSAGES: 'PIN_MESSAGES',
+	MENTION_EVERYONE: 'MENTION_EVERYONE',
 	ADMIN: 'ADMIN',
 	BYPASS_RATE_LIMIT: 'BYPASS_RATE_LIMIT',
 }
@@ -84,6 +85,7 @@ export function createDefaultRoles() {
 				MANAGE_ADMINS: true,
 				ADMIN: true,
 				BYPASS_RATE_LIMIT: true,
+				MENTION_EVERYONE: true,
 			},
 			isDefault: false,
 			isHoisted: true,
@@ -95,6 +97,7 @@ export function createDefaultRoles() {
 			permissions: {
 				ADMIN: true,
 				BYPASS_RATE_LIMIT: true,
+				MENTION_EVERYONE: true,
 			},
 			isDefault: false,
 			isHoisted: true,

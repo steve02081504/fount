@@ -34,7 +34,6 @@ import {
 	setGroupStreamEndHandler,
 	setGroupThreadChannelRefreshHandler,
 } from './groupStream.mjs'
-import { setupHubNotifications } from './hubNotifications.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setupMisc } from './misc.mjs'
 import { setActiveModeTab, setMode } from './mode.mjs'
@@ -341,7 +340,6 @@ async function wireHubPickers() {
 /** @returns {Promise<void>} Hub 页面入口初始化（重型特性；导航由 initCore 完成） */
 export async function init() {
 	setupMisc()
-	setupHubNotifications()
 	void import('./mentionsInbox.mjs').then(({ updateMentionsBadge }) => updateMentionsBadge())
 	wireHubBannerBindings()
 	void loadMe()

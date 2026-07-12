@@ -22,6 +22,7 @@ const CKG_ENVELOPE_KEYS = new Set(['scheme', 'channelId', 'generation', 'payload
  * @type {Record<string, string[]>}
  */
 export const CKG_PLAINTEXT_CONTENT_FIELDS = {
+	message: ['type', 'deadline', 'question', 'options'],
 	message_edit: ['targetId'],
 }
 

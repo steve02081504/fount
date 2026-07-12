@@ -762,6 +762,24 @@ self.addEventListener('periodicsync', event => {
 		event.waitUntil(cleanupExpiredCache())
 })
 
+self.addEventListener('push', event => {
+	event.waitUntil((async () => {
+		let payload = {}
+		try {
+			payload = event.data?.json?.() || {}
+		}
+		catch { /* empty */ }
+		const title = payload.title || 'fount'
+		const options = {
+			body: payload.body || '',
+			tag: payload.tag,
+			icon: '/favicon.ico',
+			data: { url: payload.url || '/' },
+		}
+		await self.registration.showNotification(title, options)
+	})())
+})
+
 self.addEventListener('notificationclick', event => {
 	event.notification.close()
 	const urlToOpen = event.notification.data?.url

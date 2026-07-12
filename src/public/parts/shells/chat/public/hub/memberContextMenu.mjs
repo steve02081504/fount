@@ -9,6 +9,7 @@ import { getGroupState } from '../src/api/groupApi.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { insertComposerMention } from './mentionAutocomplete.mjs'
+import { isCared, setCared } from '../shared/care.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { hubStore } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
@@ -91,6 +92,18 @@ export async function showMemberContextMenu(event, memberElement) {
 	})
 	menu.querySelector('.hub-member-menu-mention')?.addEventListener('click', () => {
 		insertComposerMention(entityHash)
+		closeOnce()
+	})
+	menu.querySelector('.hub-member-menu-care')?.addEventListener('click', () => {
+		void (async () => {
+			const owner = hubStore.viewer?.operatorEntityHash
+			if (!owner || !entityHash) return
+			const cared = await isCared(owner, entityHash)
+			await setCared(owner, entityHash, !cared)
+			showToastI18n('success', cared ? 'chat.hub.memberContext.careRemoved' : 'chat.hub.memberContext.careAdded')
+		})().catch(error => {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		})
 		closeOnce()
 	})
 	menu.querySelector('.hub-member-menu-dm')?.addEventListener('click', () => {

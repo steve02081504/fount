@@ -7,10 +7,10 @@ import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
 
 const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 
-const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)]:/g
+const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)\](?!:)/g
 
 /**
- * remark：展开 `:[group/emoji]:` 与 `#[group/channel]`。
+ * remark：展开 `:[group/emoji]` 与 `#[group/channel]`。
  * @returns {(tree: import('npm:@types/mdast').Root) => void} remark 插件。
  */
 function remarkChatDialect() {

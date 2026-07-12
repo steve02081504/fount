@@ -135,7 +135,7 @@ function normalizeChannelMessageContent(content, maxBytes) {
 	const normalized = channelMessageContentObject(content)
 	if (normalized.type === 'sticker') {
 		const emojiRef = String(normalized.emojiRef || '').trim()
-		if (emojiRef && /:\[[\w.-]+\/[\w.-]+]:/.test(emojiRef))
+		if (emojiRef && /:\[[\w.-]+\/[\w.-]+\](?!:)/.test(emojiRef))
 			return {
 				type: 'sticker',
 				emojiRef,

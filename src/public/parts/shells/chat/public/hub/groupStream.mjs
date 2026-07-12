@@ -11,10 +11,10 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
-import { maybeNotifyHubMessage } from './hubNotifications.mjs'
 import { maybeBumpMentionsBadgeFromWire } from './mentionsInbox.mjs'
 import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
+import { handleVoteClosedWire } from './wireVoteEvents.mjs'
 import {
 	bumpChannelUnread,
 	handleReadMarkerWire,
@@ -362,6 +362,11 @@ const CHANNEL_STRUCTURE_DAG_TYPES = new Set([
 function handleGroupHubWireMessage(wireMessage, channelId) {
 	if (!wireMessage?.type) return
 
+	if (wireMessage.type === 'vote_closed') {
+		handleVoteClosedWire(wireMessage, channelId)
+		return
+	}
+
 	if (wireMessage.type === 'read_marker') {
 		handleReadMarkerWire(wireMessage)
 		return
@@ -391,12 +396,6 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 			dispatchChannelIncrementalRefresh(incomingChannelId, channelId, { immediate: true })
 			return
 		}
-		if (main && channelMessage && !content?.is_generating)
-			maybeNotifyHubMessage({
-				groupName: hubStore.context.currentState?.groupMeta?.name || hubStore.context.currentGroupId,
-				channelName: hubStore.context.currentState?.channels?.[incomingChannelId]?.name || incomingChannelId,
-				wireMessage,
-			})
 
 		dispatchChannelIncrementalRefresh(incomingChannelId, channelId, { immediate: true })
 		return

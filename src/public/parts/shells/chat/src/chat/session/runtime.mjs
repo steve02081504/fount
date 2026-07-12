@@ -10,6 +10,7 @@ import { hydrateChatLogFromDag } from '../dag/hydration.mjs'
 import { ensureGroup } from '../dag/lifecycle.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { registerGroupReplicaForUser } from '../ws/groupWsRooms.mjs'
+import { scheduleVoteDeadlines } from '../lib/voteDeadlineWatcher.mjs'
 
 import { getMaterializedSession } from './dagSession.mjs'
 import { chatMetadata_t, timeSlice_t } from './models.mjs'
@@ -26,6 +27,7 @@ export function registerGroupRuntime(groupId, replicaUsername) {
 	if (!groupMetadatas.has(groupId))
 		groupMetadatas.set(groupId, { username: replicaUsername, chatMetadata: null })
 	registerGroupReplicaForUser(groupId)
+	void scheduleVoteDeadlines(replicaUsername, groupId)
 }
 
 /**

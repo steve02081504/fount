@@ -65,9 +65,9 @@ function baseState(overrides = {}) {
 	}
 }
 
-Deno.test('plaintextCkgContentFields exposes targetId for message_edit only', () => {
+Deno.test('plaintextCkgContentFields exposes targetId for message_edit; vote metadata for message', () => {
 	assertEquals(plaintextCkgContentFields('message_edit'), ['targetId'])
-	assertEquals(plaintextCkgContentFields('message'), [])
+	assertEquals(plaintextCkgContentFields('message'), ['type', 'deadline', 'question', 'options'])
 })
 
 Deno.test('message_edit ckg envelope keeps targetId plaintext and encrypts the body', () => {
@@ -89,11 +89,24 @@ Deno.test('message_edit ckg envelope keeps targetId plaintext and encrypts the b
 	assertEquals(decryptLikeRead(envelope), content)
 })
 
-Deno.test('message ckg envelope encrypts whole content (no plaintext fields)', () => {
+Deno.test('message ckg envelope keeps type plaintext and encrypts user body', () => {
 	const content = { type: 'text', content: 'hello' }
 	const envelope = encryptLikeAppend(content, plaintextCkgContentFields('message'))
-	assertEquals(clearFieldsFromCkgEnvelope(envelope), {})
+	assertEquals(clearFieldsFromCkgEnvelope(envelope), { type: 'text' })
+	assertEquals(envelope.content, undefined)
 	assertEquals(decryptLikeRead(envelope), content)
+})
+
+Deno.test('vote message ckg envelope keeps ballot metadata plaintext', () => {
+	const content = {
+		type: 'vote',
+		question: 'pick one',
+		options: ['a', 'b'],
+		deadline: '2099-01-01T00:00:00.000Z',
+	}
+	const envelope = encryptLikeAppend(content, plaintextCkgContentFields('message'))
+	assertEquals(clearFieldsFromCkgEnvelope(envelope), content)
+	assert(isCkgEncryptedContent(envelope))
 })
 
 Deno.test('authorizeEvent reads targetId from encrypted message_edit and authorizes author', () => {

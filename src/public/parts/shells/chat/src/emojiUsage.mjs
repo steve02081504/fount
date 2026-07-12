@@ -1,6 +1,6 @@
 /**
  * 【文件】src/emojiUsage.mjs
- * 【职责】按用户统计 Unicode 与群自定义表情（:[groupId/emojiId]:）的使用频次，供选择器「常用」排序。
+ * 【职责】按用户统计 Unicode 与群自定义表情（:[groupId/emojiId]）的使用频次，供选择器「常用」排序。
  * 【原理】数据存于 shell data（dataname emoji_usage），键 u:{unicode} 或 g:{groupId}/{emojiId}；
  *   每次 recordEmojiUsage 递增 count 并更新 lastUsedAt；超过 MAX_STORED(512) 时按 count、lastUsedAt 淘汰最少使用的条目。
  *   recordEmojiUsageFromMessageContent 从发送的 channel content 正则提取（sticker 类型走 emojiRef）。
@@ -13,7 +13,7 @@ import { channelMessageText } from '../public/shared/channelContent.mjs'
 const SHELL_DATANAME = 'emoji_usage'
 const MAX_STORED = 512
 
-const CUSTOM_EMOJI_REF = /:\[([\w.-]+)\/([\w.-]+)]:/g
+const CUSTOM_EMOJI_REF = /:\[([\w.-]+)\/([\w.-]+)\](?!:)/g
 const UNICODE_EMOJI = /\p{Extended_Pictographic}/gu
 
 /**

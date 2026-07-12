@@ -31,6 +31,7 @@ import { skip_report, config, save_config } from '../server.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
+import { addPushSubscription, getVapidPublicKey, removePushSubscription } from '../notify/webPush.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
 import { registerP2pEndpoints } from './p2p_endpoints.mjs'
 import { betterSendFile } from './resources.mjs'
@@ -136,6 +137,20 @@ export function registerEndpoints(router) {
 			is_local_ip,
 			hosturl_in_local_ip,
 		})
+	})
+
+	router.get('/api/notify/vapid-public-key', cors(), async (_req, res) => {
+		res.status(200).json({ publicKey: await getVapidPublicKey() })
+	})
+	router.post('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await addPushSubscription(username, req.body)
+		res.status(204).end()
+	})
+	router.delete('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await removePushSubscription(username, req.body?.endpoint)
+		res.status(204).end()
 	})
 
 	router.post('/api/pow/challenge', async (req, res) => {

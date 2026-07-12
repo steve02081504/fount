@@ -1,4 +1,5 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { removePostsByAuthor, restoreRemovedPosts, runSocialWrite } from '../lib/socialWrite.mjs'
@@ -74,6 +75,25 @@ export async function handleProfileNavClick(appContext, target) {
 		catch {
 			followButton.textContent = prevText
 			followButton.dataset.isFollowing = wasFollowing ? '1' : '0'
+		}
+	}
+
+	const careButton = target.closest('[data-care]')
+	if (careButton instanceof HTMLElement && careButton.dataset.care) {
+		const entityHash = careButton.dataset.care
+		const owner = appContext.state.viewerEntityHash
+		if (!owner) return
+		const wasCared = careButton.dataset.isCared === '1'
+		const prevText = careButton.textContent
+		careButton.textContent = appContext.geti18n(wasCared ? 'social.actions.care' : 'social.actions.careRemove')
+		careButton.dataset.isCared = wasCared ? '0' : '1'
+		try {
+			await setCared(owner, entityHash, !wasCared)
+			showToastI18n('success', wasCared ? 'social.actions.careRemoved' : 'social.actions.careAdded')
+		}
+		catch {
+			careButton.textContent = prevText
+			careButton.dataset.isCared = wasCared ? '1' : '0'
 		}
 	}
 

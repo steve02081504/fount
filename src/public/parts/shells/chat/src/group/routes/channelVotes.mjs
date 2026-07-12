@@ -65,6 +65,8 @@ export function registerChannelVoteRoutes(router, authenticate) {
 			timestamp: Date.now(),
 			content: { type: 'vote', question, options, deadline: voteDeadline },
 		})
+		const { scheduleVoteDeadlines } = await import('../../chat/lib/voteDeadlineWatcher.mjs')
+		void scheduleVoteDeadlines(username, groupId)
 		res.status(201).json({ event, ballotId: event.id })
 	})
 

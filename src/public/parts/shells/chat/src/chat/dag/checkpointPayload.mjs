@@ -86,6 +86,7 @@ export function buildCheckpointPayload({
 		fileMasterKeyRotations: JSON.parse(JSON.stringify(materializedState.fileMasterKeyRotations || [])),
 		pexHints: [...materializedState.pexHints || []].filter(hint => String(hint).trim()),
 		messageSenderIndex: JSON.parse(JSON.stringify(materializedState.messageSenderIndex || {})),
+		voteBallots: JSON.parse(JSON.stringify(materializedState.voteBallots || {})),
 		session: JSON.parse(JSON.stringify(materializedState.session || {})),
 		worldStates: JSON.parse(JSON.stringify(materializedState.worldStates || {})),
 	}

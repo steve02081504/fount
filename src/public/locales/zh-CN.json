@@ -1203,6 +1203,10 @@
 			"report": "举报",
 			"follow": "关注",
 			"following": "已关注",
+			"care": "特别关心",
+			"careRemove": "取消特别关心",
+			"careAdded": "已加入特别关心",
+			"careRemoved": "已取消特别关心",
 			"replies": "评论",
 			"copyLink": "复制链接",
 			"copied": "已复制",
@@ -1872,10 +1876,29 @@
 			"mentions": {
 				"title": "提及",
 				"tabMention": "@提及",
-				"empty": "暂无 @ 你的消息",
+				"tabMessage": "全部消息",
+				"tabCare": "特别关心",
+				"tabVoteClosed": "投票结束",
+				"empty": "暂无消息",
 				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
 				"composerDisabled": "在提及收件箱中无法发送消息"
 			},
+			"notifyPrefs": {
+				"title": "通知设置",
+				"mode": "通知模式",
+				"modeAll": "全部消息",
+				"modeMentions": "仅 @ 与提及",
+				"modeNothing": "不通知",
+				"suppressEveryone": "忽略 @everyone 与 @here",
+				"suppressRoles": "忽略角色组 @",
+				"mute": "静音",
+				"muteOff": "关闭",
+				"mute1h": "1 小时",
+				"mute8h": "8 小时",
+				"muteForever": "直到手动开启",
+				"saved": "通知设置已保存"
+			},
+			"voteClosed": "已结束",
 			"federationTooltip": {
 				"title": "联邦 P2P 设置",
 				"tip": "联邦 P2P 设置"
@@ -2354,6 +2377,7 @@
 			"noActiveChat": "请先打开一个会话再拖入部件",
 			"groupContext": {
 				"manage": "管理群",
+				"notifyPrefs": "通知设置",
 				"invite": "邀请他人",
 				"inviteCopied": "邀请链接已复制到剪贴板",
 				"addChar": "添加角色",
@@ -2423,10 +2447,13 @@
 				"dmFailed": "无法打开私信：${error}",
 				"tagChar": "AI 角色",
 				"tagFed": "联邦成员",
-				"tagLocal": "本机账户"
+				"tagLocal": "本机账户",
+				"care": "特别关心",
+				"careRemove": "取消特别关心"
 			},
 			"channelContext": {
 				"copyLinkDone": "频道链接已复制",
+				"notifyPrefs": "频道通知设置",
 				"rename": "重命名频道",
 				"renameOk": "频道已重命名",
 				"delete": "删除频道",
@@ -2439,6 +2466,9 @@
 			"memberContext": {
 				"copyName": "复制显示名",
 				"mention": "提及",
+				"care": "特别关心",
+				"careAdded": "已加入特别关心",
+				"careRemoved": "已取消特别关心",
 				"copyPubKey": "复制公钥哈希",
 				"copyEntityId": "复制实体 ID",
 				"dm": "发送私信",

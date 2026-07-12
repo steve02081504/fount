@@ -8,6 +8,10 @@
 	height: 0;
 }
 
+.hub-server-item.is-muted {
+	opacity: 0.45;
+}
+
 .hub-server-item {
 	position: relative;
 	position: relative;

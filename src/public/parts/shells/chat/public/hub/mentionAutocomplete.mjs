@@ -47,9 +47,12 @@ export function attachHubMentionAutocomplete(textarea) {
 			button.type = 'button'
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
+			const subtitle = row.entityHash
+				? formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })
+				: (row.memberCount != null ? `${row.memberCount}` : '')
 			button.innerHTML = `
 				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
-				<small>${formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })}</small>
+				<small>${subtitle}</small>
 			`
 			panel.appendChild(button)
 		}
@@ -84,13 +87,24 @@ export function attachHubMentionAutocomplete(textarea) {
 	function currentMention() {
 		const pos = textarea.selectionStart
 		const before = textarea.value.slice(0, pos)
-		const match = before.match(/@([\da-f]{0,128})$/iu)
+		const match = before.match(/@(?:\[([^\]]*))?$/u)
 		if (!match) return null
 		return {
-			query: match[1] || '',
+			query: match[1] ?? '',
 			start: pos - match[0].length,
 			end: pos,
 		}
+	}
+
+	/**
+	 * @param {object} row 选中候选
+	 * @returns {string} 插入 token
+	 */
+	function mentionTokenForRow(row) {
+		if (row.kind === 'role' && row.roleId) return `@[role:${row.roleId}]`
+		if (row.kind === 'everyone') return '@[everyone]'
+		if (row.kind === 'here') return '@[here]'
+		return `@[${row.entityHash}]`
 	}
 
 	/**
@@ -99,7 +113,7 @@ export function attachHubMentionAutocomplete(textarea) {
 	 */
 	function apply(row) {
 		if (!mentionRange) return
-		const mention = `@${row.entityHash}`
+		const mention = mentionTokenForRow(row)
 		textarea.value = textarea.value.slice(0, mentionRange.start)
 			+ mention
 			+ ' '
@@ -179,7 +193,7 @@ export function insertComposerMention(entityHash) {
 	if (!textarea || textarea.disabled) return
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash) return
-	const mention = `@${hash} `
+	const mention = `@[${hash}] `
 	const start = textarea.selectionStart ?? textarea.value.length
 	const end = textarea.selectionEnd ?? start
 	textarea.value = textarea.value.slice(0, start) + mention + textarea.value.slice(end)

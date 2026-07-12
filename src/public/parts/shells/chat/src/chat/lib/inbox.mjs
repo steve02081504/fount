@@ -134,13 +134,14 @@ export async function listLocalRecipientsInGroup(username, state) {
 
 /**
  * @param {string} recipientEntityHash 收件人
+ * @param {string} kind inbox kind
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {object} state 物化群状态
  * @returns {object | null} inbox 行；无正文时为 null
  */
-export function deriveChatInboxMentionRow(recipientEntityHash, groupId, channelId, messageLine, state) {
+function deriveChatInboxRowFromMessage(recipientEntityHash, kind, groupId, channelId, messageLine, state) {
 	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
 	if (!recipient) return null
 	const eventId = mentionTargetEventId(messageLine)
@@ -152,7 +153,7 @@ export function deriveChatInboxMentionRow(recipientEntityHash, groupId, channelI
 	if (authorEntityHash === recipient) return null
 	const at = Number(messageLine.hlc?.wall || messageLine.timestamp || messageLine.receivedAt || Date.now())
 	return {
-		kind: 'mention',
+		kind,
 		groupId,
 		channelId,
 		eventId,
@@ -163,6 +164,63 @@ export function deriveChatInboxMentionRow(recipientEntityHash, groupId, channelI
 	}
 }
 
+/**
+ * @param {string} recipientEntityHash 收件人
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} messageLine 频道消息行
+ * @param {object} state 物化群状态
+ * @returns {object | null} inbox 行；无正文时为 null
+ */
+export function deriveChatInboxMentionRow(recipientEntityHash, groupId, channelId, messageLine, state) {
+	return deriveChatInboxRowFromMessage(recipientEntityHash, 'mention', groupId, channelId, messageLine, state)
+}
+
+/**
+ * @param {string} recipientEntityHash 收件人
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} messageLine 频道消息行
+ * @param {object} state 物化群状态
+ * @returns {object | null}
+ */
+export function deriveChatInboxMessageRow(recipientEntityHash, groupId, channelId, messageLine, state) {
+	return deriveChatInboxRowFromMessage(recipientEntityHash, 'message', groupId, channelId, messageLine, state)
+}
+
+/**
+ * @param {string} recipientEntityHash 收件人
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {object} messageLine 频道消息行
+ * @param {object} state 物化群状态
+ * @returns {object | null}
+ */
+export function deriveChatInboxCareRow(recipientEntityHash, groupId, channelId, messageLine, state) {
+	return deriveChatInboxRowFromMessage(recipientEntityHash, 'care', groupId, channelId, messageLine, state)
+}
+
+/**
+ * @param {string} recipientEntityHash 收件人
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} ballotId 投票 ID
+ * @param {object} [extra] 附加字段
+ * @returns {object} vote_closed 行
+ */
+export function deriveChatInboxVoteClosedRow(recipientEntityHash, groupId, channelId, ballotId, extra = {}) {
+	return {
+		kind: 'vote_closed',
+		groupId,
+		channelId,
+		eventId: String(ballotId || '').trim().toLowerCase(),
+		authorEntityHash: String(extra.authorEntityHash || '').trim().toLowerCase() || 'system',
+		authorDisplayName: extra.authorDisplayName || 'vote',
+		textPreview: String(extra.textPreview || '').slice(0, 120),
+		at: Number(extra.at) || Date.now(),
+		...extra.ballotId ? { ballotId: extra.ballotId } : {},
+	}
+}
 /**
  * @param {string} username 用户
  * @param {string} recipientEntityHash 收件人 entityHash

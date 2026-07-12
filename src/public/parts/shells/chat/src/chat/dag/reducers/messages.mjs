@@ -1,4 +1,5 @@
 import { isHex64, withGroupId } from './helpers.mjs'
+import { isVoteBallotClosed } from '../../lib/voteBallots.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const messageReducers = {
@@ -25,6 +26,16 @@ export const messageReducers = {
 				channelId,
 			}
 		}
+		if (event.content?.type === 'vote') {
+			state.voteBallots ??= {}
+			state.voteBallots[eventId] = {
+				channelId,
+				deadline: event.content.deadline || null,
+				question: event.content.question || '',
+				options: event.content.options || [],
+				sender: event.sender,
+			}
+		}
 		return state
 	},
 
@@ -39,6 +50,7 @@ export const messageReducers = {
 		const { targetId } = event.content
 		state.messageOverlay.deletedIds.add(targetId)
 		delete state.messageSenderIndex[targetId]
+		if (state.voteBallots) delete state.voteBallots[targetId]
 		return state
 	},
 
@@ -152,6 +164,9 @@ export const messageReducers = {
 	vote_cast(state, event) {
 		withGroupId(state, event)
 		const { ballotId, choice } = event.content
+		const ballot = state.voteBallots?.[ballotId]
+		if (isVoteBallotClosed(ballot, Number(event.hlc?.wall || event.timestamp || Date.now())))
+			return state
 		if (!state.messageOverlay.votes.has(ballotId))
 			state.messageOverlay.votes.set(ballotId, new Map())
 		state.messageOverlay.votes.get(ballotId).set(event.sender, String(choice))

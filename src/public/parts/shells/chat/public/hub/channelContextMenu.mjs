@@ -16,6 +16,7 @@ import {
 } from '../src/api/groupChannel.mjs'
 
 import { hubStore } from './core/state.mjs'
+import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { renderHubChannelSidebar, selectChannel } from './groupNav.mjs'
 
 /** @type {HTMLElement | null} */
@@ -90,6 +91,11 @@ export async function showChannelContextMenu(event, channelId) {
 		document.addEventListener('click', closeOnce, true)
 		document.addEventListener('contextmenu', closeOnce, true)
 	}, 0)
+
+	menu.querySelector('.hub-channel-menu-notify')?.addEventListener('click', () => {
+		closeOnce()
+		void openChannelNotifyPrefsDialog(groupId, channelId)
+	})
 
 	menu.querySelector('.hub-channel-menu-copy-link')?.addEventListener('click', async () => {
 		const url = `${window.location.origin}/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`

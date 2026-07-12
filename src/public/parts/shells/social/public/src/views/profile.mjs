@@ -3,6 +3,7 @@ import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } fr
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
+import { isCared } from '/parts/shells:chat/shared/care.mjs'
 
 /**
  * @param {object} appContext 应用上下文
@@ -211,6 +212,9 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 	const handle = escapeHtml(entityHandle(entityHash))
 	const followingCount = (followingData.following || []).length
 
+	const cared = appContext.state.viewerEntityHash
+		? await isCared(appContext.state.viewerEntityHash, entityHash)
+		: false
 	const headerActions = isSelf
 		? await renderTemplateAsHtmlString('profile_header_actions_self', {})
 		: await renderTemplateAsHtmlString('profile_header_actions_other', {
@@ -219,6 +223,10 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 			followLabel: escapeHtml(data.isFollowing
 				? appContext.geti18n('social.actions.following')
 				: appContext.geti18n('social.actions.follow')),
+			isCared: cared ? '1' : '0',
+			careLabel: escapeHtml(cared
+				? appContext.geti18n('social.actions.careRemove')
+				: appContext.geti18n('social.actions.care')),
 		})
 	const avatarHtml = appContext.renderAvatarHtml(entityHash, data.profile, 'profile-avatar')
 	const bioHtml = data.profile?.bio ? `<p class="profile-bio">${escapeHtml(data.profile.bio)}</p>` : ''

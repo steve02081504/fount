@@ -13,6 +13,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { isHex64 } from '../shared/pubKeyHex.mjs'
 
+import { isCared, setCared } from '../shared/care.mjs'
 import { formatSocialProfileHref } from '../shared/socialRunUri.mjs'
 import { hubStore } from './core/state.mjs'
 import {
@@ -196,6 +197,34 @@ async function paintProfilePopup(popup, entity) {
 
 	if (socialButton instanceof HTMLButtonElement)
 		socialButton.hidden = !isEntityHash128(entityHash)
+
+	const careButton = popup.querySelector('[data-profile-popup-care]')
+	if (careButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const owner = hubStore.viewer?.operatorEntityHash
+		const canCare = !isSelf && isEntityHash128(entityHash) && !!owner
+		careButton.hidden = !canCare
+		if (canCare) {
+			const cared = await isCared(owner, entityHash)
+			careButton.dataset.i18n = cared
+				? 'chat.hub.profilePopup.careRemove'
+				: 'chat.hub.profilePopup.care'
+			careButton.onclick = () => {
+				void (async () => {
+					const next = !await isCared(owner, entityHash)
+					await setCared(owner, entityHash, next)
+					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
+					careButton.dataset.i18n = next
+						? 'chat.hub.profilePopup.careRemove'
+						: 'chat.hub.profilePopup.care'
+					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+					careButton.textContent = geti18n(careButton.dataset.i18n)
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
+		}
+	}
 
 }
 

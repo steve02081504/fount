@@ -160,6 +160,7 @@ export function emptyMaterializedState() {
 		pexHints: [],
 		messageOverlay: emptyMessageOverlay(),
 		messageSenderIndex: {},
+		voteBallots: {},
 		checkpoint_event_id: null,
 		epoch_id: 0,
 		epoch_root_hash: null,
@@ -217,6 +218,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		inviteEdges: structuredClone(membersRecord.inviteEdges),
 		fileMasterKeyRotations: structuredClone(membersRecord.fileMasterKeyRotations || []),
 		messageSenderIndex: structuredClone(membersRecord.messageSenderIndex || {}),
+		voteBallots: structuredClone(membersRecord.voteBallots || {}),
 		session: structuredClone(membersRecord.session),
 		worldStates: structuredClone(membersRecord.worldStates || {}),
 	}

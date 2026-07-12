@@ -83,10 +83,10 @@ export function attachMentionAutocomplete(textarea) {
 	function currentMention() {
 		const pos = textarea.selectionStart
 		const before = textarea.value.slice(0, pos)
-		const match = before.match(/@([\da-f]{0,128})$/iu)
+		const match = before.match(/@(?:\[([^\]]*))?$/u)
 		if (!match) return null
 		return {
-			query: match[1] || '',
+			query: match[1] ?? '',
 			start: pos - match[0].length,
 			end: pos,
 		}
@@ -99,7 +99,7 @@ export function attachMentionAutocomplete(textarea) {
 	 */
 	function apply(row) {
 		if (!mentionRange) return
-		const mention = `@${row.entityHash}`
+		const mention = `@[${row.entityHash}]`
 		textarea.value = textarea.value.slice(0, mentionRange.start)
 			+ mention
 			+ textarea.value.slice(mentionRange.end)

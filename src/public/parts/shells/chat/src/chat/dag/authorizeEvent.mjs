@@ -9,6 +9,7 @@ import { agentEntityHash } from '../lib/entity.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 import { governanceChannelId } from '../../group/access.mjs'
 
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
@@ -205,7 +206,14 @@ export function checkEventPermission(state, event, senderHash) {
 			return govPerms[PERMISSIONS.INVITE_MEMBERS]
 				? { ok: true }
 				: { ok: false, reason: 'INVITE_MEMBERS denied' }
-		case 'vote_cast':
+		case 'vote_cast': {
+			if (!channelPerms[PERMISSIONS.SEND_MESSAGES])
+				return { ok: false, reason: 'SEND_MESSAGES denied' }
+			const ballot = state.voteBallots?.[event.content?.ballotId]
+			if (isVoteBallotClosed(ballot, Number(event.hlc?.wall || event.timestamp || Date.now())))
+				return { ok: false, reason: 'vote closed' }
+			return { ok: true }
+		}
 		case 'message':
 			return channelPerms[PERMISSIONS.SEND_MESSAGES]
 				? { ok: true }

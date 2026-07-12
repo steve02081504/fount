@@ -348,6 +348,7 @@ async function renderVoteBlock(message, allMessages) {
 	const ballotId = escapeHtml(String(message.eventId))
 	const counts = tallyVoteChoices(allMessages, message.eventId)
 	const total = [...counts.values()].reduce((sum, count) => sum + count, 0)
+	const closed = content.deadline && Date.parse(content.deadline) <= Date.now()
 	const deadlineHtml = content.deadline
 		? await renderTemplateAsHtmlString('hub/messages/vote_deadline', { deadline: String(content.deadline) })
 		: ''
@@ -360,6 +361,7 @@ async function renderVoteBlock(message, allMessages) {
 			label: escapeHtml(key),
 			count: voteCount,
 			percent,
+			disabled: closed ? 'disabled' : '',
 		}
 	})
 	const questionHtml = question || '<span data-i18n="chat.hub.messagePrefixVote"></span>'
@@ -369,6 +371,8 @@ async function renderVoteBlock(message, allMessages) {
 		deadlineHtml,
 		voteOptions,
 		total,
+		closedClass: closed ? ' hub-vote-block--closed' : '',
+		closedLabel: closed ? '<div class="hub-vote-closed-label" data-i18n="chat.hub.voteClosed"></div>' : '',
 	})
 }
 

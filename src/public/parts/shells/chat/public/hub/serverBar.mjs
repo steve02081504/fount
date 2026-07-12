@@ -11,6 +11,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
+import { isGroupMutedInSidebar, loadNotifyPrefs } from '../shared/notifyPrefs.mjs'
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
@@ -98,12 +99,14 @@ function folderMiniIconsHtml(folder, byId) {
  * @param {{ groupId: string, name: string, isLeaving?: boolean }} group 群组摘要
  * @returns {Promise<void>}
  */
-async function appendHubServerItem(parent, group) {
+async function appendHubServerItem(parent, group, notifyPrefs = {}) {
 	const active = group.groupId === hubStore.context.currentGroupId
+	const mutedClass = isGroupMutedInSidebar(notifyPrefs, group.groupId, group) ? ' is-muted' : ''
 	const el = await renderTemplate('hub/server/item', {
 		activeClass: active ? 'active' : '',
 		selectedClass: isGroupSelected(group.groupId) ? ' is-multi-selected' : '',
 		leavingClass: group.isLeaving ? ' is-leaving' : '',
+		mutedClass,
 		groupId: escapeHtml(group.groupId),
 		activeStyle: active ? '' : avatarColor(group.name),
 		avatarLabel: escapeHtml(avatarInitial(group.name)),
@@ -130,6 +133,7 @@ export async function renderServerBar() {
 	const byId = new Map(sidebarGroups.map(g => [g.groupId, g]))
 	const used = new Set()
 	const folders = hubStore.sidebar.groupFoldersState.folders || []
+	const notifyPrefs = await loadNotifyPrefs().catch(() => ({}))
 
 	if (folders.length) {
 		for (const [folderIndex, folder] of folders.entries()) {
@@ -151,7 +155,7 @@ export async function renderServerBar() {
 					const group = byId.get(groupId)
 					if (!group) continue
 					used.add(groupId)
-					await appendHubServerItem(itemsHost, group)
+					await appendHubServerItem(itemsHost, group, notifyPrefs)
 				}
 			}
 			else
@@ -160,11 +164,11 @@ export async function renderServerBar() {
 		}
 		const ungrouped = sidebarGroups.filter(g => !used.has(g.groupId))
 		for (const group of ungrouped)
-			await appendHubServerItem(list, group)
+			await appendHubServerItem(list, group, notifyPrefs)
 	}
 	else
 		for (const group of sidebarGroups)
-			await appendHubServerItem(list, group)
+			await appendHubServerItem(list, group, notifyPrefs)
 
 
 	list.querySelectorAll('.hub-server-item[data-group-id]').forEach(el => {

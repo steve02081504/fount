@@ -24,6 +24,7 @@ import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection
 import { closeGroupWebSocket } from './groupStream.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { renderServerBar } from './serverBar.mjs'
+import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -209,6 +210,11 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	menu.querySelector('.hub-group-menu-manage')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
 		navigateToGroupSettings(groupId)
+	})
+
+	menu.querySelector('.hub-group-menu-notify')?.addEventListener('click', () => {
+		dismissGroupActionMenu()
+		void openGroupNotifyPrefsDialog(groupId)
 	})
 
 	menu.querySelector('.hub-group-menu-invite')?.addEventListener('click', async () => {
