@@ -13,7 +13,7 @@
 
 方法：以仓库代码、`charAPI.ts`、`session/AGENTS.md` 与集成测试为准；**不引用开发规划文档的实施状态**——下文只陈述「代码里有什么 / 没有什么」，并在第六节给出**目标架构**（待落地）。
 
-关联审阅：[README.md](./README.md)、[human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md)、[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)。
+关联审阅：[README.md](./README.md)、[human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md)、[human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md)、[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)。
 
 ---
 

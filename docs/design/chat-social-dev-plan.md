@@ -13,6 +13,7 @@
 相关规范：
 
 - [world-distribution-spec.md](world-distribution-spec.md)：world 分布形态（**已落地**）
+- [human-agent-operational-parity-review.md](../review/human-agent-operational-parity-review.md)：人类 / agent 操作平权缺口与目标架构（**待落地**）
 - [chat-platform-trigger-unification-review.md](../review/chat-platform-trigger-unification-review.md)：chat / 平台 bot 触发统一缺口与目标架构（**待落地**）
 
 一句话总纲：

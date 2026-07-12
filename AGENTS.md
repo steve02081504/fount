@@ -39,6 +39,7 @@
 | Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
 | Chat session viewer / member_roles | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |
 | Chat/Social roadmap / interaction topology baseline (reply generation belongs to char; persona = human I/O middleware) | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
+| Human / agent operational parity (North Star + gap matrix; actingEntity / delegated signing) | [docs/review/human-agent-operational-parity-review.md](docs/review/human-agent-operational-parity-review.md) |
 | World distribution model (local/replicated/hosted, WorldChatHost, world_state) | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
 | Plugin (`GetPrompt` / `TweakPrompt` / `ReplyHandler`) | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |
 | Chat Hub frontend | [src/public/parts/shells/chat/public/hub/AGENTS.md](src/public/parts/shells/chat/public/hub/AGENTS.md) |

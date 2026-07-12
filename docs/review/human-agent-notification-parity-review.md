@@ -16,7 +16,7 @@
 
 方法：以仓库代码、shell `AGENTS.md`、集成测试为准；**不引用开发规划文档的实施状态**——下文只陈述「代码里有什么 / 没有什么」，并在第六节给出**目标方向**（待落地）。
 
-关联审阅：[README.md](./README.md)、[chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md)、[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)。
+关联审阅：[README.md](./README.md)、[human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md)（操作平权总览）、[chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md)、[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)。
 
 ---
 
