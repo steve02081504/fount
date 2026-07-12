@@ -1,6 +1,6 @@
 # Chat / Social 开发规划
 
-更新：`2026-07-11`
+更新：`2026-07-12`
 
 > 本文档只包含**基线与前瞻规划**，不维护实施状态。各批次做没做、做到哪，以仓库代码与各 shell 测试为准。
 >
@@ -12,17 +12,18 @@
 
 相关规范：
 
-- [world-distribution-spec.md](world-distribution-spec.md)：world 分布形态规范（已落地）
+- [world-distribution-spec.md](world-distribution-spec.md)：world 分布形态（**已落地**）
+- [chat-platform-trigger-unification-review.md](../review/chat-platform-trigger-unification-review.md)：chat / 平台 bot 触发统一缺口与目标架构（**待落地**）
 
 一句话总纲：
 
-**chat / social 的底盘（viewer 对称、统一写路径、world 分布、未读/搜索/治理 inbox）已成型；接下来的主线是 F 期：runtime 库化、parts 联邦对称、social↔chat 结构化桥、远端 agent 接纳，以及若干产品化增强（Web Push、跨群搜索、审核 UI、WS 真增量）。**
+**chat / social 的底盘（viewer 对称、统一写路径、world 分布、未读/搜索/治理 inbox）已成型；接下来的主线是 F 期：runtime 库化、parts 联邦对称、social↔chat 结构化桥、触发调度统一、远端 agent 接纳，以及若干产品化增强（Web Push、跨群搜索、审核 UI、WS 真增量）。**
 
 ---
 
 ## 〇、交互拓扑基线（谁和谁说话）
 
-所有工作流的设计都以下面这条**一般交互逻辑**为基线。它描述的是常规形态下各方的职责边界：
+所有工作流的设计都以下面这条**一般交互逻辑**为基线：
 
 - **人类 ↔ persona**：人类通过网页或 CLI 与 persona 交互——读取历史、写入新内容。persona 是真人 I/O 的一等中间层，human UI 不是绕过 part 系统的裸通道。
 - **world → persona / char**：world 通过发起 API 调用与 persona 和 char 交互（喂视图 `GetChatLogForViewer`、贡献 prompt、裁决发言顺序、代发回复 `GetCharReply` 等）。
@@ -35,7 +36,7 @@
 - persona 可以全自动回复（human 席位后面根本没有人）；
 - char 可以 hack 进别的 char 里为所欲为。
 
-系统不预设"human 席位后面必须是真人、char 席位后面必须是 AI"。接口约定的是**席位的职责**（谁产出回复、谁过滤视图），不是席位背后的实现方式。
+系统不预设「human 席位后面必须是真人、char 席位后面必须是 AI」。接口约定的是**席位的职责**（谁产出回复、谁过滤视图），不是席位背后的实现方式。
 
 **D6 已落地**：未绑定 world / 未设置 persona 时，shell 以内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）代替 null，拓扑无例外。
 
@@ -51,15 +52,15 @@ inbox / 未读水位已在两端落地；**系统级推送**仍是空白（chat 
 
 ### E+2. chat 跨群搜索
 
-群内倒排索引与 Hub 搜索 API 已落地（`src/chat/search/`）；**跨群 inbox 检索**仍缺——`searchGroupMessages` 绑定 `groupId`，无统一全局入口。
+群内倒排索引与 Hub 搜索 API 已落地；**跨群 inbox 检索**仍缺——`searchGroupMessages` 绑定 `groupId`，无统一全局入口。
 
 ### E+3. social 审核队列 UI
 
-`report` / `mute` / `contentWarning` 数据语义与 API 已立（`src/governance/report.mjs`）；**审核后台 UI** 后置，F 期先把运营面做出来。
+`report` / `mute` / `contentWarning` 数据语义与 API 已立；**审核后台 UI** 后置，F 期先把运营面做出来。
 
 ### E+4. social WS 真增量
 
-live `ws` suite 已覆盖发帖 push、通知 push、断线重连（`test/live/scripts/ws.mjs`）。前端仍是「有新帖横幅 → 用户点重拉」而非单帖 DOM 插入；`init.mjs` 收到 `{ type: 'post' }` 后应拉取单帖并 prepend，消除整段 `loadFeed`。
+live `ws` suite 已覆盖发帖 push、通知 push、断线重连。前端仍是「有新帖横幅 → 用户点重拉」而非单帖 DOM 插入；收到 `{ type: 'post' }` 后应拉取单帖并 prepend，消除整段 `loadFeed`。
 
 ---
 
@@ -71,39 +72,53 @@ live `ws` suite 已覆盖发帖 push、通知 push、断线重连（`test/live/s
 
 先立边界：**回复生成是 char 的活，`char.GetReply` 是且始终是唯一的回复生成入口，shell 不接管、不代跑。**
 
-真正要做的是消除**重复**而不是转移**责任**：`buildPromptStruct` 本身已是 shell 共享导出（`src/prompt_struct/`），真正以复制粘贴形态散落在各 char 模板里的是围绕它的 `AIsource.StructCall` + plugin `ReplyHandler` regen 循环，应沉淀为 shell 出品的共享 runtime 库（`src/chat/session/` 或独立 lib）：
+真正要做的是消除**重复**而不是转移**责任**：`buildPromptStruct` 本身已是 shell 共享导出，真正以复制粘贴形态散落在各 char 模板里的是围绕它的 `AIsource.StructCall` + plugin `ReplyHandler` regen 循环，应沉淀为 shell 出品的共享 runtime 库：
 
 - char 主动 import / 组合这套库来实现自己的 `GetReply`（easychar 模板即是这条默认链的雏形，改为薄薄一层对库的调用）；不想用的 char 继续从零自建，完全控制权不变。
 - provider 选择、tool contract、重试/审计/可观测性做成**库层能力**，char 用了库就自然获得，而不是宿主强制治理。
-- 收益：char 模板大幅缩水、行为一致性提升，且不改变"char 对自己的回复负全责"的架构事实。
+- 收益：char 模板大幅缩水、行为一致性提升，且不改变「char 对自己的回复负全责」的架构事实。
 - 这是大改动，单独立项设计。
 
 ### F2. parts 联邦对称
 
-- persona 跨节点从"特判透传"（`extension.otherPersona`）升级为正式 remote persona proxy。
+- persona 跨节点从「特判透传」（`extension.otherPersona`）升级为正式 remote persona proxy。
 - plugin 联邦参与（至少 prompt 贡献侧）。
-- 依赖 F1：共享 runtime 库普及后，prompt 组装有统一的库层位置挂这些远端代理（而不是每个 char 各接一遍）。
+- 依赖 F1：共享 runtime 库普及后，prompt 组装有统一的库层位置挂这些远端代理。
 
 ### F3. social ↔ chat 结构化桥
 
 按生态报告的边界原则：social 只传结构化 ingress，chat 只产出结构化草稿。
 
 - `social → chat`：OnMention 无 handler 时回退 `chat.GetReply` **已落地**（`chatMentionFallback.mjs`）；下一阶段是把 mention 升级为专用 channel / 一次性会话的**结构化 ingress**，而非最小 reply 文本。
-- `chat → social`：char 在 chat 会话中产出"发帖草稿"结构化输出，经确认后走 social `POST /posts`。
-- 不把 persona/world/plugin 塞进 social 主语义层；当前仅有前端深链（`runUri.mjs`、`groupRef.mjs`），无后端结构化桥。
+- `chat → social`：char 在 chat 会话中产出「发帖草稿」结构化输出，经确认后走 social `POST /posts`。
+- 不把 persona/world/plugin 塞进 social 主语义层；当前仅有前端深链，无后端结构化桥。
 
 ### F4. 远端 agent 的 social 接纳
 
-- 补跨节点 `nodeHash → operator` 身份链（p2p 信任图扩展），让远端托管 agent 的 timeline ingress 可被授权，解除 `timeline_ingress.test.mjs` 中的拒绝现状。
-- 属于 p2p 层工作，见 `src/scripts/p2p/AGENTS.md`。
+- 补跨节点 `nodeHash → operator` 身份链（p2p 信任图扩展），让远端托管 agent 的 timeline ingress 可被授权。
+- 属于 p2p 层工作，见 `src/server/p2p_server/AGENTS.md`。
 
 ### F5. 可观测性
 
 - 现有 Sentry 之上补关键指标：联邦同步失败率、DAG 追补延迟、WS 连接数、生成耗时分布。以 debugLog/内部计数起步，不引重型 APM。
 
+### F6. chat / 平台 bot 触发调度统一
+
+> 缺口与目标架构详见 [chat-platform-trigger-unification-review.md](../review/chat-platform-trigger-unification-review.md)。
+
+当前三条互不连通的调度路径：内置 chat `autoReply.mjs`、TG/DC `default_interface`、角色自研 `bot_core/trigger.mjs`（如龙胆）。`charAPI.interfaces.chat.onMessage` 已声明，但**未掌管新消息入站主路径**。
+
+目标：
+
+- **平台 bot 界面退化为消息格式转换 + 投递进 chat 统一写路径**；是否发言由 chat 侧 `onMessage` 等触发器一处掌管。
+- 平台差异（emoji/sticker → TG HTML / DC embed）下沉到 char 的 `interfaces.telegram` / `interfaces.discord` 格式钩子。
+- TG/DC `default_interface` 删除内置 GetReply 路径，改为 bridge ingress + 出站订阅。
+
+与 F3 同属「agent 一等公民」主题，但可独立批次推进（T0–T4 见审阅报告第七节）。
+
 ### 明确不做（本规划周期内）
 
-- ActivityPub 兼容层：与自研联邦路线冲突，成本高收益不明，仅在目标转向公开联邦生态时重估。
+- ActivityPub 兼容层：与自研联邦路线冲突，成本高收益不明。
 - 移动推送/多端 native：无移动端载体。
 - 大厂级 AV/直播产品化：现有 relay/streaming channel 维持现状。
 
@@ -118,6 +133,7 @@ graph LR
 	E2[E+2: 跨群搜索]
 	E3[E+3: 审核 UI]
 	F1[F1: runtime 共享库]
+	F6[F6: 触发调度统一]
 	F1 --> F2[F2: parts 联邦对称]
 	F1 --> F3[F3: social-chat 桥]
 	F4[F4: 远端 agent 接纳]
@@ -129,12 +145,14 @@ graph LR
 | --- | --- | --- |
 | M9 | E+4 + E+3 | social 前端手感 + 审核 UI，可独立合入 |
 | M10 | E+1 + E+2 | 推送与 chat 跨群搜索，共享 inbox/索引基建 |
-| F 期 | F1 → F2/F3，F4/F5 并行 | 各自单独立项设计 |
+| M11 | F6 T0–T2 | 触发统一：onMessage 入站 + bridge ingress + TG 默认 bot 改造 |
+| F 期 | F1 → F2/F3，F4/F5/F6 T3+ 并行 | 各自单独立项设计 |
 
 ### 测试策略
 
 - 每个批次配套集成测试进各 shell 的 `test/manifest.json`（`fount test` 自包含，无需跑服务器）。
-- E+4：live `ws` suite 补「发帖 → WS → 前端 DOM 可见单帖」断言（Playwright 或 live harness）。
+- E+4：live `ws` suite 补「发帖 → WS → 前端 DOM 可见单帖」断言。
+- F6：扩展 `autoReply` / bridge ingress 集成测试；龙胆三端 trigger 行为一致回归。
 - F4：扩展 `timeline_ingress.test.mjs` 覆盖授权后的远端 agent 写入。
 
 ---

@@ -1,17 +1,19 @@
 # fount Chat 与工业化 IM 差距审阅
 
-生成时间：`2026-07-11`
+最后核对：`2026-07-12`
 
 ## 范围
 
 对照：Signal、Discord、Tox、QQ、微信、Line。对象：`shells:chat` + `src/scripts/p2p/`。方法：代码与 `llms.txt` 为准；不引用开发规划。
+
+关联审阅：[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)、[human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md)、[chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md)。
 
 ---
 
 ## 差距摘要
 
 1. **载体与触达**：无原生客户端；无 Web Push/APNs/FCM；密码学身份无中心化恢复；联系人靠 P2P 发现/邀请码；节点离线时收信体验弱于商业 IM 的常驻代理。
-2. **消息手感**：语音消息未开放；无转发/定时/阅后即焚；无单条已读回执；搜索仅群内；无跨群 inbox 检索；无 unfurl/正文翻译；线程为子频道而非内嵌 quote-reply；@mention 未形成完整通知链。
+2. **消息手感**：语音消息已开放（Hub 录音→附件）；无转发/定时/阅后即焚；无单条已读回执；搜索仅群内；无跨群 inbox 检索；无 unfurl/正文翻译；线程为子频道而非内嵌 quote-reply；@mention 有 operator 跨群 inbox，但无 Web Push、无角色组 @、与 char trigger 仍分裂（见 [human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md)）。
 3. **规模与 AV**：单进程 av-relay + 稀疏 WebRTC 网状，无区域 SFU 集群；无消息投递 SLA。
 4. **平台与运营**：无举报审核闭环、自动审核、企业 SSO/合规导出、Bot 商店；无支付/小程序生态；social↔chat 仅前端深链；persona/plugin 无正式跨节点代理。
 
@@ -25,7 +27,7 @@
 | 协议 | 联邦群/DM、DAG、CKG 频道加密、热/冷归档、Mailbox |
 | 频道 | 文本/列表/流媒体频道、角色权限、ban/kick、反应/置顶/投票/贴纸/表情、子频道线程、fork/信誉/denylist |
 | 读写 | `view-log` viewer 对称、统一写路径、persona/world 钩子、world 分布与 `WorldChatHost` |
-| Hub | 未读水位+badge、群内倒排搜索、浏览器 Notification（页在后台时）、WebCodecs av-relay |
+| Hub | 未读水位+badge、跨群 @ mention inbox（operator）、群内倒排搜索、浏览器 Notification（条件极窄）、WebCodecs av-relay、语音消息（录音附件） |
 | 联邦 | 群/消息/文件 sync、`remoteWorldProxy` world RPC |
 
 证据：`public/llms.txt`、`session/AGENTS.md`、`hub/AGENTS.md`、`src/scripts/p2p/AGENTS.md`。
@@ -41,7 +43,7 @@
 | 客户端 | iOS/Android/桌面原生 | Web Hub；需自跑 fount |
 | 账号恢复 | 手机/邮箱/OAuth、云端换机 | operator 密钥；无「忘密码」中心化恢复 |
 | 联系人发现 | 通讯录、扫码、推荐 | mDNS/Nostr、邀请码/深链 |
-| 后台通知 | 系统推送、锁屏可达 | `hubNotifications.mjs`：仅浏览器 Notification；**无 Web Push/Service Worker** |
+| 后台通知 | 系统推送、锁屏可达 | `hubNotifications.mjs`：仅浏览器 `Notification`；**无 Web Push/Service Worker 订阅** |
 | 常驻收信 | 云端/手机代理 | 本机节点在线；离线靠 Mailbox |
 | 云备份 | 聊天记录上云 | 本地 DAG；无托管备份产品面 |
 
@@ -54,15 +56,15 @@
 | 功能 | 工业常见 | fount |
 | --- | --- | --- |
 | 线程 | 主频道内 quote-reply | 独立子频道（`threadDrawer.mjs`） |
-| @mention | 通知 + 未读 @ 汇总 | 主要服务 char 自动回复（`autoReply.mjs`） |
+| @mention | 通知 + 未读 @ 汇总 + 推送 | 跨群 `@entityHash` inbox（operator）+ badge；**无**角色组 @；`@Charname` 走 char trigger 不进 inbox |
 | presence | 集群级实时 | profile status + heartbeat，轻量 |
-| 搜索 | 统一全局入口 | 按群 API + Hub 顶栏前端子串过滤并存（`channelSearchQuery`） |
+| 搜索 | 统一全局入口 | 按群 API + Hub 顶栏前端子串过滤并存 |
 
 ### 缺失或偏弱
 
 | 功能 | 说明 |
 | --- | --- |
-| 语音消息 | `#hub-voice-button` 仍 `disabled` |
+| 语音消息 | **有**：Hub `#hub-voice-button` 录音→`.wav` 附件（`composerFiles.mjs`）；非工业 IM 级按住说话/波形/转写 |
 | 转发 | 无用户级「转到另一会话」 |
 | 定时发送 | 无 |
 | 阅后即焚 | 无 |
@@ -71,6 +73,7 @@
 | 富链接预览 | 无 oEmbed 级 unfurl |
 | 正文翻译 | 无 |
 | 内联回复 | 无线程外 quote-reply 气泡 |
+| 投票生命周期 | 有创建/投票；**无** `vote_closed`、截止禁投、结束通知 |
 
 ---
 
@@ -153,13 +156,14 @@
 | 原生移动端 | 无 |
 | 系统后台推送 | 部分（浏览器 Notification only） |
 | 手机号/通讯录发现 | 无 |
-| 语音消息 | 无 |
+| 语音消息（工业 UX 级） | 部分（Hub 录音附件） |
 | 消息转发 / 定时 / 阅后即焚 | 无 |
 | 单条已读回执 | 无 |
 | 跨群/全账号搜索 | 无 |
 | 富链接 unfurl / 正文翻译 | 无 |
 | 内嵌 quote-reply 线程 | 部分（子频道） |
-| @mention 通知链 | 部分 |
+| @mention 完整通知链 | 部分（inbox 有；push/角色组/agent 平权缺） |
+| 投票结束/更新通知 | 无 |
 | 大规模 AV / SFU | 部分 |
 | 消息投递 SLA | 无 |
 | 举报审核闭环 / 自动审核 | 弱/无 |
@@ -195,6 +199,7 @@
 | Discord 级社区 | 大规模 AV、Bot OAuth、内嵌回复 UX、全局搜索、unfurl |
 | Signal 级隐私 | 元数据面、明文侧车、联邦参与者可见性 |
 | 联邦 parts 完整度 | remote persona/plugin、social↔chat 后端桥 |
+| human+agent 对等体验 | 统一 @ 语义与收件人模型（见 notification 审阅） |
 
 ---
 
@@ -208,8 +213,9 @@
 | P2P | `src/scripts/p2p/AGENTS.md` |
 | 搜索 | `src/public/parts/shells/chat/src/chat/search/index.mjs` |
 | 未读 | `src/public/parts/shells/chat/src/chat/lib/readMarkers.mjs` |
+| @ inbox | `src/public/parts/shells/chat/src/chat/lib/mentionInbox.mjs` |
 | 通知 | `src/public/parts/shells/chat/public/hub/hubNotifications.mjs` |
-| 语音按钮 | `src/public/parts/shells/chat/public/hub/index.html` |
+| 语音 | `src/public/parts/shells/chat/public/hub/composerFiles.mjs` |
 | social 深链 | `src/public/parts/shells/chat/public/shared/socialRunUri.mjs` |
 
 ---

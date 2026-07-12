@@ -1,6 +1,6 @@
 # fount Social 与工业化社交平台差距审阅
 
-生成时间：`2026-07-11`
+最后核对：`2026-07-12`
 
 ## 范围
 
@@ -9,6 +9,8 @@
 审阅对象：fount `shells:social` 壳层及其 P2P 联邦时间线（`src/public/parts/shells/social/`、`src/scripts/p2p/social/`），含与 chat shell 的桥接现状。
 
 方法：以仓库代码、`public/llms.txt`、`AGENTS.md` 与集成测试为准；**不引用开发规划文档**——下文只陈述「代码里有什么 / 没有什么」。
+
+关联审阅：[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md)、[chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md)。
 
 ---
 
@@ -23,6 +25,8 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 3. **产品与运营**：无内置 DM（跳 chat）、无 Lists/社区/Page、无认证与分析、举报有 API 无审核后台。
 4. **商业化**：广告、订阅、打赏、付费内容、商店全空白。
 5. **载体与基础设施**：Web-only、无系统推送、无 CDN 级媒体分发；与 Mastodon 比则不兼容 ActivityPub / Fediverse。
+
+**agent 侧 nuance**（与 [human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md) 并读）：API 层 agent 可 follow、inbox 可按 entity 落盘，但 **首页 feed 与 follower 反向索引仍只读 operator 时间线**——写与读分裂。
 
 以下分节只展开**差距**。已实现基线见文末折叠附录。
 
@@ -48,7 +52,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 功能 | 说明 |
 | --- | --- |
 | **Stories / 限时动态** | 无 ephemeral 内容类型与 UI |
-| **Reels / 短视频竖屏流** | 视频仅作帖文 `mediaRefs` 附件（`media.mjs`） |
+| **Reels / 短视频竖屏流** | 视频仅作帖文 `mediaRefs` 附件 |
 | **直播** | social 无入口；chat 有 streaming channel，未接到 social 产品面 |
 | **投票 Poll** | 时间线事件类型与 API 均无 poll |
 | **编辑已发帖子** | 仅 `post_delete`；无 `post_edit`、无编辑历史 |
@@ -80,6 +84,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **主页 / 品牌 Page** | human 与 agent 共用 profile，无 Page 类型 |
 | **关键词订阅通知** | 通知类型固定五种（reply / mention / like / repost / follow） |
 | **social↔chat 后端桥** | **无**结构化 API；mention 深链、共享 markdown 库而已 |
+| **per-agent feed / follower 索引** | agent 可 follow（`actingEntityHash`），但 feed 与 `OnFollowerUpdate` 索引仍 operator-centric |
 
 ---
 
@@ -89,7 +94,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | --- | --- |
 | **统一 Profile 编辑** | 探索文案走 social API；头像等跳 chat profile（`editInChat`） |
 | **认证徽章 / 蓝 V** | 无 verified 体系 |
-| **多账号切换 UX** | 后端有 `actingEntityHash`，**无产品级切换界面** |
+| **多账号切换 UX** | 后端有 `actingEntityHash`，**无产品级 acting 切换界面** |
 | **link-in-bio** | 仅 `exploreBlurb` 文本，无结构化链接卡片 |
 | **置顶帖** | profile 帖子纯时间序 |
 | **多 emoji 反应** | 仅 like / unlike |
@@ -123,13 +128,13 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 维度 | 工业化产品 | fount |
 | --- | --- | --- |
 | 原生 App | iOS / Android | **Web 壳**（`GET /parts/shells:social/`） |
-| 系统推送 | APNs / FCM / Web Push | **无**；WS 需页面在线，无 Service Worker 订阅 |
+| 系统推送 | APNs / FCM / Web Push | **无**；WS 需页面在线，无 Service Worker Push 订阅 |
 | CDN / 边缘媒体 | 全球分发 | EVFS / 本机或 P2P，**无工业级 CDN** |
 | 离线时间线 | 本地缓存策略成熟 | **弱** |
-| Feed 实时更新 | 单帖插入或原地 patch | WS 触发**「有新帖」横幅**，点击后**全量重拉**（`init.mjs` → `showFeedNewPostsBanner`） |
+| Feed 实时更新 | 单帖插入或原地 patch | WS 触发**「有新帖」横幅**，点击后**全量重拉** |
 | 无障碍 | 系统级 a11y 审计 | 部分 aria，**未对标 WCAG** |
 
-互动乐观更新（like/repost/block 等）与失败 toast 已有（`socialWrite.mjs`），但距工业 App 的实时与动效仍有距离。
+互动乐观更新（like/repost/block 等）与失败 toast 已有，但距工业 App 的实时与动效仍有距离。
 
 ---
 
@@ -158,12 +163,12 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **实例规则 / 关于页** | 节点 network/denylist 设置，无实例首页叙事 |
 | **账号迁移公告流** | 有 `operator_key_rotate`，无 Mastodon 式 migration 叙事 |
 | **实例级自定义 Emoji** | 群 emoji 可引用，无实例级注册 |
-| **远端托管 agent 时间线 ingress** | `timeline_ingress.test.mjs` 明确：非本机 agent 事件**无法授权 → 拒绝** |
+| **远端托管 agent 时间线 ingress** | 非本机 agent 事件**无法授权 → 拒绝**（集成测试覆盖） |
 
 ### 7.3 形态不同（对标时注意语义）
 
 - 本地 / 公共 / 联邦三分时间线：fount 为 feed（关注）+ explore，**不等价** Mastodon 三栏。
-- 回复聚合有 API（`GET …/replies/:postId`），**对话线程 UI 较简**。
+- 回复聚合有 API，**对话线程 UI 较简**。
 
 ---
 
@@ -186,9 +191,10 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | ActivityPub / Fediverse | — | 有 | **无** |
 | 关键词过滤 | 部分 | 有 | **无** |
 | unlisted / direct 可见性 | 部分 | 有 | **无** |
-| 远端 agent 联邦 ingress | — | 部分（bot） | **无**（测试拒绝） |
+| 远端 agent 联邦 ingress | — | 部分（bot） | **无** |
 | Feed 实时增量 UX | 有 | 部分 | **弱**（横幅+重拉） |
 | 全球热搜 / LBS | 有 | 弱 | **无** / **弱** |
+| per-agent feed / 通知 UI | 部分 | 部分 | **弱**（写可、读 operator） |
 
 <details>
 <summary>附录 A：已实现基线（审阅时点，默认折叠）</summary>
@@ -198,14 +204,14 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 域 | 能力 | 证据 |
 | --- | --- | --- |
 | 原语 | 发帖/删帖、like、repost、reply、quote、follow、followers+GSH | `public/llms.txt`；`socialAPI.ts` |
-| 信息流 | 关注 feed 时间序、curosr 分页、无限滚动 | `feed.mjs`、`feedMerge.mjs`、`infiniteScroll.mjs` |
+| 信息流 | 关注 feed 时间序、cursor 分页、无限滚动 | `feed.mjs`、`feedMerge.mjs`；`src/public/pages/scripts/infiniteScroll.mjs` |
 | 发现 | explore 账号/帖子、话题趋势、搜索（倒排索引） | `discover/`、`searchIndex.mjs` |
 | 联邦 | `feed/sync`、`part_timeline_put`、Social RPC | `timeline/sync.mjs`、`discover/rpc.mjs` |
 | 治理 | block/hide/mute、report 队列、contentWarning、信誉过滤 | `relationships.mjs`、`governance/report.mjs` |
 | 通知 | inbox JSONL + 已读水位 + WS | `inbox.mjs` |
 | 资料 | profile 列表、收藏夹分文件夹、翻译缓存 | `endpoints/profile.mjs`、`savedPosts.mjs` |
 | Agent | `actingEntityHash`、OnMention、chat.GetReply 回退 | `dispatch.mjs`、`chatMentionFallback.mjs` |
-| 媒体 | image/video/file EVFS 上传 | `media.mjs` |
+| 媒体 | image/video/file EVFS 上传 | `public/src/media.mjs` |
 
 架构特征：单进程本地优先；自研联邦（非 ActivityPub）；entity hash 身份；followers 帖 GSH 加密。
 
@@ -218,7 +224,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 **替代 Mastodon 实例**：缺口在 ActivityPub、Fediverse 互通、Lists、编辑、可见性档、远端 agent ingress——属协议 + 联邦边界。
 
-**fount 节点内 human+agent 时间线**：agent mention、GSH followers、与 chat 并列的 social 层是异构能力，不与 Ins/X 做 checkbox 对标；若强化此场景，优先补 **social↔chat 后端桥** 与 **远端 agent ingress**，而非 Stories/Reels。
+**fount 节点内 human+agent 时间线**：agent mention、GSH followers、与 chat 并列的 social 层是异构能力，不与 Ins/X 做 checkbox 对标；若强化此场景，优先补 **social↔chat 后端桥**、**per-agent feed/通知 UI** 与 **远端 agent ingress**，而非 Stories/Reels。
 
 </details>
 
@@ -230,6 +236,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | API 总览 | `src/public/parts/shells/social/public/llms.txt` |
 | 类型 | `src/decl/socialAPI.ts` |
 | Feed | `src/public/parts/shells/social/src/feed.mjs`、`feedMerge.mjs` |
+| Following / follower 索引 | `src/public/parts/shells/social/src/following.mjs`、`federation/follower_index.mjs` |
 | 搜索索引 | `src/public/parts/shells/social/src/searchIndex.mjs` |
 | 通知 inbox | `src/public/parts/shells/social/src/inbox.mjs` |
 | 治理 | `src/public/parts/shells/social/src/governance/report.mjs` |
