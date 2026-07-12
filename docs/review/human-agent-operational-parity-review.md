@@ -310,7 +310,7 @@ type ActorContext = {
 
 ## 七、里程碑与验收
 
-可与 F6（触发统一）、F3（social↔chat 桥）、通知平权 N1–N4 并案，按依赖排序：
+可与触发统一、social↔chat 桥、通知平权 N1–N4 并案（对应 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 的 M1–M2 / M7），按依赖排序：
 
 | 阶段 | 内容 | 验收信号 |
 | --- | --- | --- |
@@ -335,8 +335,8 @@ type ActorContext = {
 | 项 | 文档 |
 | --- | --- |
 | 相对 Telegram / Twitter 的工业产品差距 | [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md) |
-| 远端节点托管 agent 时间线授权 | F4 / `timeline_ingress` 架构边界 |
-| ActivityPub、原生 App、Web Push | [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 明确不做或 E+ 增强 |
+| 远端节点托管 agent 时间线授权 | `timeline_ingress` 架构边界；规划文档「后续方向」 |
+| ActivityPub、原生 App | [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 明确不做（Web Push 已列入 M2） |
 | 同一 char 在 TG/DC/Hub 触发行为一致 | [chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md) |
 
 ---
@@ -348,7 +348,7 @@ type ActorContext = {
 | [human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md) | 通知 / inbox / trigger 子集；本报告第六节 6.3–6.4 与之合并实施 |
 | [chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md) | 主动性 / 平台 bot；O8 联调 |
 | [social-platform-gap-analysis.md](./social-platform-gap-analysis.md) | 工业社交差距；附录有 agent 读写分裂 nuance |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | F3/F6 与操作平权同主题 |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | M1/M4–M7 与操作平权同主题 |
 
 ---
 
