@@ -5,24 +5,7 @@
 import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-const BASE = '/api/parts/shells:subfounts'
-
-/**
- * @param {object} node launchNode 句柄
- * @param {string} method HTTP 方法
- * @param {string} path API 相对路径
- * @param {object} [body] JSON body
- * @returns {Promise<Response>} fetch 响应
- */
-function subfountFetch(node, method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const url = `${node.baseUrl}${BASE}${path}${sep}fount-apikey=${encodeURIComponent(node.apiKey)}`
-	return fetch(url, {
-		method,
-		headers: body ? { 'content-type': 'application/json' } : undefined,
-		body: body ? JSON.stringify(body) : undefined,
-	})
-}
+import { subfountFetch } from './helpers/subfount_http.mjs'
 
 /**
  * @returns {Promise<object>} 已启动的测试节点

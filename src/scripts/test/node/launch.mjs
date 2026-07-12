@@ -78,7 +78,7 @@ async function collectNodeHeapSnapshots(pid) {
 
 /**
  * launchNode 返回的已就绪节点句柄。
- * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number, usedTestRelay?: boolean, peekOutput: () => string, takeOutput: () => string }} LaunchedNode
+ * @typedef {{ baseUrl: string, apiKey: string, username: string, port: number, dataPath: string, process: import('node:child_process').ChildProcess, pid: number, usedTestRelay?: boolean, p2pRelayUrl?: string, peekOutput: () => string, takeOutput: () => string }} LaunchedNode
  */
 
 /**
@@ -509,6 +509,7 @@ export async function launchNode(options = {}) {
 		pid: child.pid,
 		keepData,
 		usedTestRelay,
+		p2pRelayUrl,
 		/**
 		 * @returns {string} 查看当前已捕获输出但不清空
 		 */
