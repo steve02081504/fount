@@ -8,20 +8,27 @@ alwaysApply: false
 
 ## Package layers (`@steve02081504/fount-p2p`)
 
-- **L0** cross-runtime pure: `hexIds`, `entity_id_parse`, `mentions` (canonical source in `pages/scripts/p2p/`, backend re-exports)
-- **L1** crypto & wire: `crypto`, `key_crypto`, `channel_crypto` (domain-key envelope), `wire_ingress`, `schemas/*`
-- **L2** node runtime: `initNode`, `node/identity`, `entity_store`, `denylist`, `reputation_store`
-- **L3** transport: `discovery/*`, `link/*`, `link_registry`, `rooms/scoped_link`, `user_room`, `group_link_set`
-- **L4** federation: `trust_graph_*`, `mailbox/*`, `dag/*`, `part_wire_*`, registry family, EVFS
+- **L0** cross-runtime pure（包内真源）：`hexIds`、`entity_id_parse`（仅寻址原语）、`entity_id`（`hashFromPubKeyHex` / `userEntityHashFrom*`）
+- **L1** crypto & wire：`crypto`、`key_crypto`、`channel_crypto`（domain-key 信封）、`wire_ingress`、`schemas/*`
+- **L2** node runtime：`initNode`、`node/identity`、`entity_store`、`denylist`、`reputation_store`
+- **L3** transport：`discovery/*`、`link/*`、`link_registry`、`rooms/scoped_link`、`user_room`、`group_link_set`
+- **L4** federation：`trust_graph_*`、`mailbox/*`、`dag/*`、`part_wire_*`、registry 族、EVFS
 
-**Outside the package (shell-registered; p2p does not import):**
+**包外（shell / 前端；p2p 不 import）：**
 
-- Social federation: `shells/social/src/federation/` (namespace, RPC, follower index, remote ingest, reputation social)
-- Chat permission presets: `shells/chat/src/permissions/chat.mjs` (based on `permissions/evaluator.mjs`)
-- Agent hosting bootstrap: `server/p2p_server/agent_hosting.mjs`
-- Subfount minimal entry: `import { initSubfountP2p, createScopedLinkRoom } from 'fount/scripts/p2p/subfount.mjs'`
+- **Chat 语义**：`shells/chat/src/chat/lib/entity.mjs`（`AGENT_SUBJECT_PREFIX` / `agentEntityHash` / `memberEntityHash`）、`agentHosting.mjs`（经 `entity/hosting_registry` 注册 char 扫描/解析）
+- **前端展示/提及**：`pages/scripts/lib/entity_hash.mjs`（`formatHashShort`）、`pages/scripts/p2p/mentions.mjs`（`extractMentionEntityHashes`）；浏览器镜像 `pages/scripts/p2p/{hexIds,entity_id_parse}.mjs` 带 `// TODO: esm.sh` 待发布后对齐包
+- Social federation：`shells/social/src/federation/`（namespace、RPC、follower index、remote ingest、reputation social）
+- Chat 权限预设：`shells/chat/src/permissions/chat.mjs`（基于 `permissions/evaluator.mjs`）
+- Subfount 最小接入：`import { initSubfountP2p, createScopedLinkRoom } from 'fount/scripts/p2p/subfount.mjs'` 或门面 `import { startNode } from 'fount/scripts/p2p/index.mjs'`
 
-Production import boundary guard: `test/integration/p2p_shell_import_guard.test.mjs` (bans shell/server, `social_rpc` literal, etc.).
+**门面**：`index.mjs` 导出 `startNode`（= `initNode` + `ensureNodeDefaults` + `ensureRuntime`）、`createScopedLinkRoom`、`createGroupLinkSet`、`ensureUserRoom`、`registerDiscoveryProvider` 等常用路径；重子系统仍走 subpath。
+
+**发布 TODO**：源码保留 Deno `npm:` 前缀供 monorepo 测试；发布 npm 时改裸 specifier 并去除 `npm:`。
+
+生产 import 边界：`test/integration/p2p_shell_import_guard.test.mjs`（禁 shell/server、禁逃出包根、`fount:chat:agent:`/`agentEntityHash` 字面量等）。
+
+**测试**：`fount test p2p --no-parallel`（Windows 上并行 Deno 子进程易损坏 `node_modules`，见 [denoland/deno#35804](https://github.com/denoland/deno/issues/35804)）。
 
 ## Trust boundaries
 

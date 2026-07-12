@@ -1,13 +1,11 @@
-/**
- * Chat / Social Load 共用：注册本机 agent 解析与枚举。
- */
 import {
 	registerAgentCharResolver,
 	registerListLocalAgentsProvider,
 	unregisterAgentCharResolver,
 	unregisterListLocalAgentsProvider,
-} from '../../scripts/p2p/entity/hosting_registry.mjs'
-import { scanLocalAgentEntitiesFromChars } from '../../scripts/p2p/entity/hosting.mjs'
+} from '../../../../../../../scripts/p2p/entity/hosting_registry.mjs'
+
+import { resolveAgentCharPartName, scanLocalAgentEntitiesFromChars } from './entity.mjs'
 
 /**
  * @returns {Promise<void>}
@@ -15,9 +13,9 @@ import { scanLocalAgentEntitiesFromChars } from '../../scripts/p2p/entity/hostin
 export async function registerDefaultAgentHosting() {
 	const fs = await import('node:fs')
 	const path = await import('node:path')
-	const { resolveAgentCharPartName } = await import('./agent_resolve.mjs')
-	const { getUserDictionary } = await import('../auth/index.mjs')
-	registerAgentCharResolver(resolveAgentCharPartName)
+	const { getUserDictionary } = await import('../../../../../../../server/auth/index.mjs')
+	registerAgentCharResolver((username, entityHash) =>
+		resolveAgentCharPartName(username, entityHash, getUserDictionary, fs, path))
 	registerListLocalAgentsProvider(username =>
 		scanLocalAgentEntitiesFromChars(username, getUserDictionary, fs, path))
 }

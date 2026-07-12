@@ -2,7 +2,7 @@
  * 帖子终态快照（冷归档 / Hub 深历史）。
  */
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
-import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { memberEntityHash } from '../lib/entity.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'

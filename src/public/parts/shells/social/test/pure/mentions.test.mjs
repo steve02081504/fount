@@ -4,7 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { extractMentionEntityHashes } from '../../../../../../scripts/p2p/mentions.mjs'
+import { extractMentionEntityHashes } from 'fount/public/pages/scripts/p2p/mentions.mjs'
 
 const SAMPLE_HASH = 'a'.repeat(128)
 

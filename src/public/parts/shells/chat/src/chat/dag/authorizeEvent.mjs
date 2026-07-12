@@ -5,7 +5,8 @@
  * 【数据结构】`checkEventPermission` 返回 `{ ok, reason? }`；`eventChannelId` 归一化频道 id。
  * 【关联】`ingest.mjs`、`materialize.mjs`、`permissions/chat.mjs`。
  */
-import { agentEntityHash, isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
+import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { governanceChannelId } from '../../group/access.mjs'

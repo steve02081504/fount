@@ -7,7 +7,7 @@ import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
 import { recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
-import { resolveAgentCharPartName } from '../../../../../../server/p2p_server/agent_resolve.mjs'
+import { getAgentCharResolver } from '../../../../../../scripts/p2p/entity/hosting_registry.mjs'
 import {
 	consumePendingRecoverySecret,
 	getOperatorSecretKey,
@@ -75,7 +75,8 @@ export async function canWriteTimeline(username, entityHash) {
 	const recoveryPub = await getRecoveryPubKeyHex(username)
 	if (parsed.subjectHash === recoverySubjectHashFromPubKeyHex(recoveryPub)) return true
 	if (parsed.subjectHash === activeSender) return true
-	return resolveAgentCharPartName(username, parsed.entityHash) !== null
+	const resolveAgentCharPartName = getAgentCharResolver()
+	return resolveAgentCharPartName?.(username, parsed.entityHash) != null
 }
 
 /**

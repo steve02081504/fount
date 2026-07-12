@@ -1,4 +1,5 @@
-import { agentEntityHash, isEntityHash128 } from '../../../../../../../../scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from '../../lib/entity.mjs'
+import { isEntityHash128 } from '../../../../../../../../scripts/p2p/entity_id.mjs'
 
 import {
 	applyBanContent,

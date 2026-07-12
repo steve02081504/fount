@@ -1,5 +1,5 @@
 /**
- * 浏览器侧 @ 提及解析（与 `src/scripts/p2p/mentions.mjs` 对齐）。
+ * 浏览器侧 @ 提及解析（真源；后端 social/chat src 相对引用本文件）。
  */
 import { isEntityHash128 } from './entity_id_parse.mjs'
 

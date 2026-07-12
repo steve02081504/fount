@@ -1,7 +1,7 @@
 /**
  * 【文件】dagSession.mjs — DAG 物化 session 读取与 session_* / 成员 agent 事件追加
  */
-import { agentEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'

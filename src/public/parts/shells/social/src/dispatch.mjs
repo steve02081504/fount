@@ -2,7 +2,7 @@
  * Social 事件分发：@ 任意 P2P 实体；本地 agent 经 social OnMention 或 chat.GetReply 回退响应。
  */
 import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
-import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
+import { formatHashShort } from 'fount/public/pages/scripts/lib/entity_hash.mjs'
 import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
 import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
 import { listReplicaUsernamesFollowing } from './federation/follower_index.mjs'
@@ -13,7 +13,7 @@ import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { ensureCharSocialInterface } from './lib/charSocial.mjs'
 import { mentionFallbackReplyText } from './lib/chatMentionFallback.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
-import { extractMentionEntityHashes } from '../../../../../scripts/p2p/mentions.mjs'
+import { extractMentionEntityHashes } from 'fount/public/pages/scripts/p2p/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
 

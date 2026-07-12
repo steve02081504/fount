@@ -7,7 +7,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
-import { memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { memberEntityHash } from '../../chat/lib/entity.mjs'
 import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'

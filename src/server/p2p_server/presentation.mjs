@@ -5,7 +5,7 @@ import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
 import { getUserByUsername } from '../auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../parts_loader.mjs'
 
-import { resolveAgentCharPartName } from './agent_resolve.mjs'
+import { getAgentCharResolver } from '../../scripts/p2p/entity/hosting_registry.mjs'
 
 /** 无自定义头像时的默认用户图 */
 export const DEFAULT_USER_AVATAR = 'https://api.iconify.design/line-md/person.svg'
@@ -99,7 +99,8 @@ function infoLiToDefaults(li) {
  * @returns {Promise<object>} 来自 part getInfo 的默认展示字段
  */
 export async function getInfoDefaultsForEntity(replicaUsername, entityHash, locales) {
-	const charname = resolveAgentCharPartName(replicaUsername, entityHash)
+	const resolveAgentCharPartName = getAgentCharResolver()
+	const charname = resolveAgentCharPartName?.(replicaUsername, entityHash) ?? null
 	if (charname) {
 		const details = await getPartDetails(replicaUsername, `chars/${charname}`).catch(() => null) || {}
 		const li = getLocalizedInfo(details.info, locales) || getLocalizedInfo(details.info, ['']) || {}

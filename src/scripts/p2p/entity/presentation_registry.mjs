@@ -1,7 +1,9 @@
+/** @typedef {{ query?: { locales?: string | string[] } }} ExpressLikeRequest */
+
 /** @type {((replicaUsername: string, entityHash: string, locales: string[]) => Promise<object>) | null} */
 let infoDefaultsProvider = null
 
-/** @type {((req: import('npm:express').Request, replicaUsername: string) => string[]) | null} */
+/** @type {((req: ExpressLikeRequest, replicaUsername: string) => string[]) | null} */
 let localesFromRequestProvider = null
 
 /**
@@ -13,7 +15,7 @@ export function registerEntityPresentationProvider(provider) {
 }
 
 /**
- * @param {(req: import('npm:express').Request, replicaUsername: string) => string[]} provider 请求区域设置解析器
+ * @param {(req: ExpressLikeRequest, replicaUsername: string) => string[]} provider 请求区域设置解析器
  * @returns {void}
  */
 export function registerLocalesFromRequestProvider(provider) {
@@ -32,7 +34,7 @@ export async function resolveInfoDefaultsForEntity(replicaUsername, entityHash, 
 }
 
 /**
- * @param {import('npm:express').Request} req HTTP 请求
+ * @param {ExpressLikeRequest} req HTTP 请求
  * @param {string} replicaUsername 查看者 replica
  * @returns {string[]} 区域设置列表
  */

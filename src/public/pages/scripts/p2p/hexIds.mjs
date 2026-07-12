@@ -1,3 +1,4 @@
+// TODO: fount-p2p 发布后改为 esm.sh 导入包内容，删除本地副本
 /** 64 位小写十六进制（DAG 事件 id、公钥哈希等）。 */
 export const HEX_ID_64 = /^[\da-f]{64}$/u
 

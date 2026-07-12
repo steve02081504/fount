@@ -1,5 +1,5 @@
 import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { formatHashShort } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { formatHashShort } from 'fount/public/pages/scripts/lib/entity_hash.mjs'
 import { listLocalTimelineDirs } from '../feed/helpers.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 

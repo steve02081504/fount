@@ -16,7 +16,7 @@ const CHAR = 'mention_getreply_agent'
 const getSession = createTestSession()
 const append = await import('../../src/timeline/append.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
-const { agentEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
 const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 

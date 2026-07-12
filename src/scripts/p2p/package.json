@@ -1,15 +1,29 @@
 {
 	"name": "@steve02081504/fount-p2p",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Fount federation P2P layer — link, trust graph, mailbox, DAG, EVFS.",
 	"type": "module",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/steve02081504/fount.git",
+		"directory": "src/scripts/p2p"
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"files": [
+		"**/*.mjs",
+		"**/*.json",
+		"!test/**",
+		"!sim/**"
+	],
 	"exports": {
 		".": "./index.mjs",
 		"./crypto": "./crypto.mjs",
 		"./hexIds": "./hexIds.mjs",
 		"./entity_id": "./entity_id.mjs",
 		"./entity_id_parse": "./entity_id_parse.mjs",
-		"./mentions": "./mentions.mjs",
 		"./canonical_json": "./canonical_json.mjs",
 		"./wire_ingress": "./wire_ingress.mjs",
 		"./node/instance": "./node/instance.mjs",
@@ -37,9 +51,18 @@
 		"./reputation_store": "./reputation_store.mjs",
 		"./room_provider_registry": "./room_provider_registry.mjs",
 		"./event_type_registry": "./event_type_registry.mjs",
-		"./utils/lru": "./utils/lru.mjs"
+		"./entity/hosting_registry": "./entity/hosting_registry.mjs",
+		"./utils/lru": "./utils/lru.mjs",
+		"./utils/duration": "./utils/duration.mjs",
+		"./utils/debug_log": "./utils/debug_log.mjs"
 	},
 	"dependencies": {
-		"@noble/curves": "^1.9.0"
+		"@noble/curves": "^1.9.0",
+		"node-datachannel": "^0.11.0"
+	},
+	"optionalDependencies": {
+		"@aws-sdk/client-s3": "^3.0.0",
+		"@stoprocent/bleno": "^0.11.0",
+		"@stoprocent/noble": "^1.9.0"
 	}
 }

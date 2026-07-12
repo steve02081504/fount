@@ -1,12 +1,18 @@
-import {
-	registerDefaultAgentHosting,
-	unregisterDefaultAgentHosting,
-} from '../../../../server/p2p_server/agent_hosting.mjs'
+import { getAgentCharResolver } from '../../../../scripts/p2p/entity/hosting_registry.mjs'
 import { parseEntityHash } from '../../../../scripts/p2p/entity_id.mjs'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
 } from '../../../../scripts/p2p/part_path_registry.mjs'
+import {
+	registerBlockReputationHandler,
+	unregisterBlockReputationHandler,
+	mutateReputation,
+} from '../../../../scripts/p2p/reputation_store.mjs'
+import { getAllUserNames } from '../../../../server/auth/index.mjs'
+
+import { handleSocialRpc } from './src/discover/rpc.mjs'
+import { setEndpoints } from './src/endpoints.mjs'
 import {
 	registerFollowingScanProvider,
 	registerOperatorEntityHashProvider,
@@ -15,17 +21,8 @@ import {
 	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
 } from './src/federation/follower_index_registry.mjs'
-import { registerOperatorKeyChainProvider } from './src/federation/write_auth.mjs'
 import { applyFollowedBlockSignal } from './src/federation/reputation_social.mjs'
-import { getAllUserNames } from '../../../../server/auth/index.mjs'
-import {
-	registerBlockReputationHandler,
-	unregisterBlockReputationHandler,
-	mutateReputation,
-} from '../../../../scripts/p2p/reputation_store.mjs'
-
-import { handleSocialRpc } from './src/discover/rpc.mjs'
-import { setEndpoints } from './src/endpoints.mjs'
+import { registerOperatorKeyChainProvider } from './src/federation/write_auth.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'
 import { getTimelineMaterialized } from './src/timeline/materialize.mjs'
@@ -100,9 +97,12 @@ export default {
 			return view.following
 		})
 		registerBlockReputationHandler(opts => applyFollowedBlockSignal(opts, mutateReputation))
+		if (!getAgentCharResolver()) {
+			const { registerDefaultAgentHosting } = await import('../chat/src/chat/lib/agentHosting.mjs')
+			await registerDefaultAgentHosting()
+		}
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
-		await registerDefaultAgentHosting()
 		setEndpoints(router)
 	},
 	/** 卸载 Social shell。 */
@@ -114,7 +114,6 @@ export default {
 		unregisterBlockReputationHandler()
 		unregisterSocialManifestAcl()
 		unregisterSocialManifestTransfer()
-		unregisterDefaultAgentHosting()
 	},
 	interfaces: {
 		web: {},

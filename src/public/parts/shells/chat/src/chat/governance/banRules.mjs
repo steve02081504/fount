@@ -6,7 +6,8 @@
  * 【关联】dag/authorizeEvent、peers.mjs、denylist.mjs、entityId.mjs；scripts/p2p/event_types。
  * 术语：**ban**=群成员治理（member_ban）；写入 denylist 的 **deny** 为节点连接拒绝，非 Social **block**。
  */
-import { isEntityHash128, memberEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { memberEntityHash } from '../lib/entity.mjs'
+import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
 import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
 

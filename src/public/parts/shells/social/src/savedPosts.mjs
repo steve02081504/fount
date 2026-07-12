@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
-import { formatHashShort } from '../../../../../scripts/p2p/entity_id.mjs'
+import { formatHashShort } from 'fount/public/pages/scripts/lib/entity_hash.mjs'
 
 import { getEntityProfile } from './lib/entityProfile.mjs'
 import { savedPostsPath } from './paths.mjs'

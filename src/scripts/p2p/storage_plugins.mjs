@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer'
 import { mkdir, writeFile, readFile, unlink } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { debugLog } from '../debug_log.mjs'
+import { debugLog } from './utils/debug_log.mjs'
 
 /**
  * @param {unknown} error 存储删除错误

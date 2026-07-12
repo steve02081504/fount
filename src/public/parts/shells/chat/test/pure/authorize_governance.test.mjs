@@ -2,7 +2,7 @@
  * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；agent 仅 owner 或 ADMIN 可踢。
  */
 /* global Deno */
-import { agentEntityHash } from 'fount/scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'

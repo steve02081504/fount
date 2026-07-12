@@ -4,7 +4,7 @@
  * 设计取向：不做兜底，只把「身份映射滞后于真实连接」这一异常**实时记录到发生地点**（群/房间 + peerId + nodeHash），
  * 便于回溯 onPeerLeave 为何漏触发。计数可经 catchup stats 暴露给测试，落盘记录可在 debug_logs/ 直接 grep。
  */
-import { debugLog } from '../debug_log.mjs'
+import { debugLog } from './utils/debug_log.mjs'
 
 /** @type {Map<string, number>} scopeId → 累计剔除条目数 */
 const pruneCounts = new Map()

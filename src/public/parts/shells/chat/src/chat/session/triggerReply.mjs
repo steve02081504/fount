@@ -14,7 +14,8 @@
 import { inspect } from 'node:util'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { agentEntityHash, isEntityHash128, parseEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
+import { isEntityHash128, parseEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import {
 	appendDagGeneratingPlaceholder,

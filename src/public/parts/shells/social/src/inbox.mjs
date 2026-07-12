@@ -5,7 +5,7 @@ import fs from 'node:fs'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { appendJsonlSynced, readJsonl } from '../../../../../scripts/p2p/dag/storage.mjs'
-import { extractMentionEntityHashes } from '../../../../../scripts/p2p/mentions.mjs'
+import { extractMentionEntityHashes } from 'fount/public/pages/scripts/p2p/mentions.mjs'
 import { isMutedBy } from '../../../../../scripts/p2p/personal_block.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'

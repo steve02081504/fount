@@ -1,5 +1,5 @@
 /* global Deno */
-import { agentEntityHash } from 'fount/scripts/p2p/entity_id.mjs'
+import { agentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createEmptySessionState } from '../../src/chat/dag/reducers/helpers.mjs'
