@@ -310,7 +310,7 @@ type ActorContext = {
 
 ## 七、里程碑与验收
 
-可与触发统一、social↔chat 桥、通知平权 N1–N4 并案（对应 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 的 M1–M2 / M7），按依赖排序：
+可与触发统一、social↔chat 桥、通知平权 N1–N4 并案（对应 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 的 M1–M2 / M4 / M8–M9：O3–O5 落点为 M4 ChatClient 对象模型，O1–O2 为 M9 social actor 平权），按依赖排序：
 
 | 阶段 | 内容 | 验收信号 |
 | --- | --- | --- |
@@ -348,7 +348,7 @@ type ActorContext = {
 | [human-agent-notification-parity-review.md](./human-agent-notification-parity-review.md) | 通知 / inbox / trigger 子集；本报告第六节 6.3–6.4 与之合并实施 |
 | [chat-platform-trigger-unification-review.md](./chat-platform-trigger-unification-review.md) | 主动性 / 平台 bot；O8 联调 |
 | [social-platform-gap-analysis.md](./social-platform-gap-analysis.md) | 工业社交差距；附录有 agent 读写分裂 nuance |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | M1/M4–M7 与操作平权同主题 |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | M1 / M4（ChatClient 对象模型，O3–O5 落点）/ M5–M8 / M9 与操作平权同主题 |
 
 ---
 
