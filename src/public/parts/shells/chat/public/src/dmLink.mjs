@@ -6,7 +6,7 @@
  * 【关联】lib/dmLinkSignature.mjs、groupApi、runUri.mjs、signer.mjs。
  */
 
-import { normalizePubKeyHex, PUB_KEY_HEX_64 } from '../shared/pubKeyHex.mjs'
+import { normalizeHex64, PUB_KEY_HEX_64 } from '../shared/pubKeyHex.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
 import { putFederationSettings } from './api/groupApi.mjs'
@@ -106,7 +106,7 @@ export async function rotateDmLinkAndSync(options = {}) {
  * @returns {Promise<string>} `fount://run/…/dm;…`
  */
 export async function createDmLinkAndSync(options) {
-	const pubKey = normalizePubKeyHex(options.pubKeyHex)
+	const pubKey = normalizeHex64(options.pubKeyHex)
 	const nonce = options.nonce || getDmLinkNonce()
 	const signFn = options.signFn || sign
 	const url = await createDmLink({ ...options, nonce, signFn })
@@ -126,7 +126,7 @@ export async function createDmLinkAndSync(options) {
  * @returns {Promise<string>} canonical run URI
  */
 export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nonce }) {
-	const pubKey = normalizePubKeyHex(pubKeyHex)
+	const pubKey = normalizeHex64(pubKeyHex)
 	if (!PUB_KEY_HEX_64.test(pubKey)) throw new Error('invalid pubKeyHex')
 
 	const nonceBase64Url = nonce || getDmLinkNonce()

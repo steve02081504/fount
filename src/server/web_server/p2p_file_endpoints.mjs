@@ -6,7 +6,7 @@ import { entityFileUrl, profileAvatarFileUrl } from 'npm:@steve02081504/fount-p2
 import { getProfile, updateProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
-import { applyAvatarToAllLocales } from '../../server/p2p_server/localized.mjs'
+import { applyAvatarToAllLocales } from '../../server/p2p_server/presentation.mjs'
 
 import { isAllowedImageUpload, pickUploadedFile } from './multipart_upload.mjs'
 

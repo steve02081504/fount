@@ -1,4 +1,5 @@
 import { parseActionKey } from '../lib/actionKey.mjs'
+import { confirmAction, promptText } from '../lib/dialog.mjs'
 import { loadSaved, openSaveModal } from '../views/saved.mjs'
 
 /**
@@ -10,18 +11,18 @@ import { loadSaved, openSaveModal } from '../views/saved.mjs'
 export async function handleSavedClick(appContext, target) {
 	const renameFolderButton = target.closest('[data-rename-folder]')
 	if (renameFolderButton instanceof HTMLElement && renameFolderButton.dataset.renameFolder) {
-		const name = window.prompt(appContext.geti18n('social.saved.renameFolderPrompt'), '')
-		if (!name?.trim()) return
+		const name = await promptText(appContext.geti18n('social.saved.renameFolderPrompt'))
+		if (!name) return
 		await appContext.socialApi('/saved-posts/folders/rename', {
 			method: 'POST',
-			body: JSON.stringify({ folderId: renameFolderButton.dataset.renameFolder, name: name.trim() }),
+			body: JSON.stringify({ folderId: renameFolderButton.dataset.renameFolder, name }),
 		})
 		await loadSaved(appContext)
 	}
 
 	const deleteFolderButton = target.closest('[data-delete-folder]')
 	if (deleteFolderButton instanceof HTMLElement && deleteFolderButton.dataset.deleteFolder) {
-		if (!window.confirm(appContext.geti18n('social.saved.deleteFolderConfirm'))) return
+		if (!await confirmAction(appContext.geti18n('social.saved.deleteFolderConfirm'))) return
 		await appContext.socialApi('/saved-posts/folders/delete', {
 			method: 'POST',
 			body: JSON.stringify({ folderId: deleteFolderButton.dataset.deleteFolder }),

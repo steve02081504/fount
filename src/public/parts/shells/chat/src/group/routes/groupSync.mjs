@@ -12,7 +12,7 @@ import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
-import { localesFromRequest } from '../../../../../../../server/p2p_server/localized.mjs'
+import { localesFromRequest } from '../../../../../../../server/p2p_server/presentation.mjs'
 import {
 	deleteArchivesBeforeMonth,
 	isArchiveCoverageComplete,

@@ -1,7 +1,6 @@
 import {
 	isLogicalEntityHash,
 	logicalEntityHash,
-	LOGICAL_ENTITY_SENTINEL_NODE_HASH,
 } from 'npm:@steve02081504/fount-p2p/entity/logical_entity'
 import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
 
@@ -9,9 +8,6 @@ import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logi
  *
  */
 export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
-
-/** @deprecated 使用 LOGICAL_ENTITY_SENTINEL_NODE_HASH */
-export const GROUP_SENTINEL_NODE_HASH = LOGICAL_ENTITY_SENTINEL_NODE_HASH
 
 /**
  * @param {string} groupId 群 ID

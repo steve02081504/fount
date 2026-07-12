@@ -309,7 +309,7 @@ export function createFileHandlers(hub) {
 				).catch(() => { })
 
 			const fileIdForEvfs = String(meta?.fileId || '').trim()
-			const entityHash = await groupEntityHash(groupId)
+			const entityHash = groupEntityHash(groupId)
 			const plainResponse = await fetch(entityFileUrl(entityHash, `chat/${fileIdForEvfs}`), { credentials: 'include' })
 			if (!plainResponse.ok) {
 				handleUIError(new Error('downloadGroupFile decrypt failed'), 'chat.hub.fileDownloadFailed')

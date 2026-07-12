@@ -13,7 +13,7 @@ import { groupEntityHash } from '../shared/groupEntityHash.mjs'
  * @returns {Promise<string | null>} Blob URL；失败时为 null
  */
 export async function fetchGroupFileAsBlobUrl(groupId, fileId) {
-	const entityHash = await groupEntityHash(groupId)
+	const entityHash = groupEntityHash(groupId)
 	const logicalPath = `chat/${fileId}`
 	const response = await fetch(entityFileUrl(entityHash, logicalPath), { credentials: 'include' })
 	if (!response.ok) return null

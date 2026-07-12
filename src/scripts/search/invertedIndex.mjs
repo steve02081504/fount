@@ -1,8 +1,8 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { appendJsonlSynced, readJsonl } from '../p2p/dag/storage.mjs'
-import { withAsyncMutex } from '../p2p/utils/async_mutex.mjs'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { TOKENIZER_VERSION, tokenizeForQuery } from './tokenize.mjs'
 

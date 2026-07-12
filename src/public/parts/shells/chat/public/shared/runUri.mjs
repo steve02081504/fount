@@ -1,4 +1,4 @@
-import { normalizePubKeyHex } from './pubKeyHex.mjs'
+import { normalizeHex64 } from './pubKeyHex.mjs'
 
 /** @type {string} */
 export const CHAT_RUN_PART = 'shells:chat'
@@ -24,7 +24,7 @@ function buildRunUri(subcommand, segments) {
  */
 export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, nodeUrl }) {
 	const segments = [
-		normalizePubKeyHex(pubKeyHex),
+		normalizeHex64(pubKeyHex),
 		nonceBase64Url,
 		String(introSignatureHex || '').trim().replace(/^0x/iu, ''),
 	]
@@ -44,9 +44,9 @@ export function formatDmRunUri({ pubKeyHex, nonceBase64Url, introSignatureHex, n
 export function formatJoinRunUri(groupId, inviteCode, roomSecret, introducerPubKeyHash, powAnchorRef, introducerNodeHash) {
 	const segments = [groupId.trim(), inviteCode.trim()]
 	if (roomSecret?.trim()) segments.push(roomSecret.trim())
-	if (introducerPubKeyHash?.trim()) segments.push(normalizePubKeyHex(introducerPubKeyHash))
+	if (introducerPubKeyHash?.trim()) segments.push(normalizeHex64(introducerPubKeyHash))
 	if (powAnchorRef?.trim()) segments.push(String(powAnchorRef).trim())
-	if (introducerNodeHash?.trim()) segments.push(normalizePubKeyHex(introducerNodeHash))
+	if (introducerNodeHash?.trim()) segments.push(normalizeHex64(introducerNodeHash))
 	return buildRunUri('join', segments)
 }
 

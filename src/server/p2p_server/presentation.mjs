@@ -1,5 +1,4 @@
 import { getLocalizedInfo } from '../../scripts/locale.mjs'
-import { isPlaceholderDisplayName } from 'npm:@steve02081504/fount-p2p/entity/localized_core'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getUserByUsername } from '../auth/index.mjs'
@@ -125,4 +124,8 @@ export async function getInfoDefaultsForEntity(replicaUsername, entityHash, loca
 /**
  *
  */
-export { isPlaceholderDisplayName }
+export {
+	isPlaceholderDisplayName,
+	normalizeLocalizedMap,
+	applyAvatarToAllLocales,
+} from 'npm:@steve02081504/fount-p2p/entity/localized_core'

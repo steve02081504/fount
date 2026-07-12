@@ -1,34 +1,15 @@
-/** 128 位 entityHash 解析与展示（无 Node 依赖，前后端/P2P 共用）。 */
+/** entityHash 解析与展示（前后端/P2P 共用）。 */
+export {
+	ENTITY_HASH_RE,
+	isEntityHash128,
+	parseEntityHash,
+} from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
 
-/** 128 位小写 hex：`nodeHash(64)` + `subjectHash(64)`。 */
-export const ENTITY_HASH_RE = /^[\da-f]{128}$/u
-
-/**
- * @param {unknown} value 待校验值
- * @returns {boolean} 是否为合法 128 位 hex
- */
-export function isEntityHash128(value) {
-	const raw = String(value ?? '').trim().toLowerCase().replace(/^0x/iu, '')
-	return ENTITY_HASH_RE.test(raw)
-}
-
-/**
- * @param {unknown} entityHash 128 位 entityHash
- * @returns {{ entityHash: string, nodeHash: string, subjectHash: string } | null} 解析结果；非法时 null
- */
-export function parseEntityHash(entityHash) {
-	const raw = String(entityHash ?? '').trim().toLowerCase().replace(/^0x/iu, '')
-	if (!ENTITY_HASH_RE.test(raw)) return null
-	return {
-		entityHash: raw,
-		nodeHash: raw.slice(0, 64),
-		subjectHash: raw.slice(64, 128),
-	}
-}
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
 
 /**
  * @param {unknown} hash entityHash 或其它 hex 字符串
- * @param {{ withAt?: boolean, headLen?: number, tailLen?: number, useSubject?: boolean, ellipsis?: boolean }} [opts] 展示选项（@ 前缀、头尾长度、是否用 subjectHash）
+ * @param {{ withAt?: boolean, headLen?: number, tailLen?: number, useSubject?: boolean, ellipsis?: boolean }} [opts] 展示选项
  * @returns {string} 短标签
  */
 export function formatHashShort(hash, opts = {}) {
@@ -40,10 +21,6 @@ export function formatHashShort(hash, opts = {}) {
 		ellipsis = true,
 	} = opts
 
-	/**
-	 * @param {string} label 已格式化的标签
-	 * @returns {string} 带可选 @ 前缀的标签
-	 */
 	const prefix = label => withAt ? `@${label}` : label
 
 	if (useSubject) {
@@ -70,7 +47,7 @@ export function formatHashShort(hash, opts = {}) {
 
 /**
  * @param {unknown} entityHash 128 位 entityHash
- * @returns {string} 用于顶栏/列表的短标签（subjectHash 8…4）
+ * @returns {string} 顶栏/列表短标签（subjectHash 8…4）
  */
 export function entityHashLabel(entityHash) {
 	return formatHashShort(entityHash, { useSubject: true, headLen: 8, tailLen: 4 })
