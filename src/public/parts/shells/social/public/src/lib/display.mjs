@@ -2,7 +2,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import {
 	avatarInitial,
 	hashAvatarStyle,
-} from '/scripts/lib/hashAvatar.mjs'
+} from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'

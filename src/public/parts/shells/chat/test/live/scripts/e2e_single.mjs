@@ -1,7 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns, jsdoc/require-param-description, jsdoc/require-param-type */
 import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helpers.mjs'
 
 const THUMBS_UP = '\u{1F44D}'
@@ -439,7 +438,7 @@ if (availChar) {
 		return r.status === 200
 	})
 }
-else 
+else
 	skipCase('POST char add', 'no test char installed')
 
 

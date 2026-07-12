@@ -1,7 +1,5 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-description */
-
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,

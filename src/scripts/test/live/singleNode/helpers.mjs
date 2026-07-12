@@ -1,7 +1,6 @@
 /**
  * 单节点 live 探针共用断言与汇总。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns, jsdoc/require-returns-description, jsdoc/require-param-type -- live probe harness */
 import process from 'node:process'
 
 import { allowNoise } from '../../core/allowNoise.mjs'

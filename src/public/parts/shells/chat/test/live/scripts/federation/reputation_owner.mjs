@@ -1,6 +1,5 @@
 import { randomUUID } from 'node:crypto'
 
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns, jsdoc/require-param-description, jsdoc/require-param-type */
 import {
 	Api,
 	ClearFedGroup,
@@ -29,7 +28,7 @@ const found = await WaitFedConverged(FedA, groupId, async () => {
 	}
 	return false
 }, 120, 3, 4000)
-if (!found || !resolvedTarget) 
+if (!found || !resolvedTarget)
 	throw new Error('B member pubkey not resolved after join — federation setup incomplete')
 
 const targetPubKeyHash = resolvedTarget

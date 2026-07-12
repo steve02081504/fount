@@ -14,6 +14,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 import { computeConcurrency, readBudgetFromEnv, UNIT_MEM, concurrencyFromBudget } from '../core/concurrency.mjs'
+import { isDenoTeardownCrashAfterGreenTests } from '../core/deno_panic.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {
 	isIncludedInTestOnly,
@@ -22,6 +23,7 @@ import {
 	writeFailuresOutFile,
 } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
+import { childEnv } from '../env.mjs'
 
 const args = process.argv.slice(2)
 
@@ -54,6 +56,7 @@ async function runCaptured(command) {
 	let output = ''
 	const result = await execFile(executable, rest, {
 		cwd: REPO_ROOT,
+		env: childEnv(),
 		no_output_record: true,
 		/**
 		 * @param {string | Uint8Array} data stdout 片段
@@ -119,11 +122,16 @@ const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith
  * @returns {void}
  */
 function recordResult(file, code, output, signal = null) {
+	const teardownCrash = isDenoTeardownCrashAfterGreenTests(code, output)
 	const noisy = outputHasNoise(output)
 	const rel = toRepoRelative(REPO_ROOT, file)
-	if (code !== 0) {
+	if (code !== 0 && !teardownCrash) {
 		const hint = signal ? ` signal=${signal}` : ''
 		process.stdout.write(`[serial] ${rel} exited ${code}${hint}\n`)
+	}
+	else if (code !== 0 && teardownCrash) {
+		process.stdout.write(`[serial] ok ${rel} (deno teardown crash after pass)\n`)
+		silentPassed++
 	}
 	else if (noisy) {
 		// 已通过但含噪声：输出已在 runCaptured 中实时转发
@@ -133,7 +141,7 @@ function recordResult(file, code, output, signal = null) {
 		process.stdout.write(`[serial] ok ${rel}\n`)
 		silentPassed++
 	}
-	if (code !== 0) {
+	if (code !== 0 && !teardownCrash) {
 		failed.push(rel)
 		if (!keepGoing) stopped = true
 	}

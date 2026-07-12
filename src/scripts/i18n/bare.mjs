@@ -317,7 +317,6 @@ function toString(value) {
 	return value + ''
 }
 
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type -- console.*I18n 与原生 console 签名一致 */
 /**
  *
  * @param key

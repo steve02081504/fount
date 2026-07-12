@@ -5,7 +5,7 @@ import fs from 'node:fs'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { extractMentionEntityHashes } from 'fount/public/pages/scripts/lib/mentions.mjs'
+import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
@@ -324,7 +324,7 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
-		const { notifyUser } = await import('fount/server/notify/notify.mjs')
+		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
 		void notifyUser(username, {
 			title: row.type,
 			body: String(snippet || row.type || ''),

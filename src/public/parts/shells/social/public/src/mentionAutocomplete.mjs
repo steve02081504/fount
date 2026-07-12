@@ -100,7 +100,7 @@ export function attachMentionAutocomplete(textarea) {
 	 */
 	function apply(row) {
 		if (!mentionRange) return
-		const mention = `@[${row.entityHash}]`
+		const mention = `@[hash:${row.entityHash}]`
 		textarea.value = textarea.value.slice(0, mentionRange.start)
 			+ mention
 			+ textarea.value.slice(mentionRange.end)

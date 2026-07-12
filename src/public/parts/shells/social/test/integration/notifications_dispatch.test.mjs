@@ -40,7 +40,7 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 			replyTo: { entityHash: operator, postId: parent.id },
 		} },
 		{ type: 'post', content: {
-			text: `hello @${operator} there`,
+			text: `hello @[hash:${operator}] there`,
 			visibility: 'public',
 		} },
 	])

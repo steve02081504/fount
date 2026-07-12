@@ -2,9 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { ChannelType } from 'npm:discord.js'
 
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-description */
-
-const FOUNT_ENTITY_MENTION_RE = /@\[([0-9a-f]{128})\]/gi
+const FOUNT_ENTITY_MENTION_RE = /@\[hash:([0-9a-f]{128})\]/gi
 
 /**
  * @param {Function} func 异步函数
@@ -246,7 +244,7 @@ export async function rewriteDiscordMentionsToFount(username, text) {
 	for (const match of matches.reverse()) {
 		const userId = match[1]
 		const hash = await resolveBridgeIdentity(username, 'discord', userId, '')
-		const token = `@[${hash}]`
+		const token = `@[hash:${hash}]`
 		result = result.slice(0, match.index) + token + result.slice(match.index + match[0].length)
 	}
 	result = result.replace(/<@&\d+>/g, '@[everyone]')

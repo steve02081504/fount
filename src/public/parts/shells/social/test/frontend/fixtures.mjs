@@ -6,8 +6,11 @@ import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-import { FOREIGN_FE_AUTHOR_HASH } from '../seedForeignFeedAuthor.mjs'
-import { SEEDED_TEST_TARGET_HASH } from '../seedKnownEntity.mjs'
+import {
+	FOREIGN_FE_AUTHOR_HASH,
+	FOREIGN_FE_POST_MARKER,
+	SEEDED_TEST_TARGET_HASH,
+} from './seedConstants.mjs'
 
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME

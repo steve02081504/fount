@@ -104,7 +104,7 @@ export function attachHubMentionAutocomplete(textarea) {
 		if (row.kind === 'role' && row.roleId) return `@[role:${row.roleId}]`
 		if (row.kind === 'everyone') return '@[everyone]'
 		if (row.kind === 'here') return '@[here]'
-		return `@[${row.entityHash}]`
+		return `@[hash:${row.entityHash}]`
 	}
 
 	/**
@@ -193,7 +193,7 @@ export function insertComposerMention(entityHash) {
 	if (!textarea || textarea.disabled) return
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash) return
-	const mention = `@[${hash}] `
+	const mention = `@[hash:${hash}] `
 	const start = textarea.selectionStart ?? textarea.value.length
 	const end = textarea.selectionEnd ?? start
 	textarea.value = textarea.value.slice(0, start) + mention + textarea.value.slice(end)

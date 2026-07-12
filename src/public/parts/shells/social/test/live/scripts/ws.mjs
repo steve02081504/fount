@@ -75,11 +75,11 @@ const notificationRun = await waitForWsFrame({
 	 *
 	 */
 	trigger: async () => {
-		const like = await socialApi('POST', `/posts/${entityHash}/${postId}/like`, {
-			like: true,
-			actingEntityHash: entityHash,
+		const foreignLike = await socialApi('POST', '/test/foreign-like', {
+			targetEntityHash: entityHash,
+			targetPostId: postId,
 		})
-		if (like.status !== 200) throw new Error(`like failed ${like.status}`)
+		if (foreignLike.status !== 200) throw new Error(`foreign-like failed ${foreignLike.status}`)
 	},
 })
 if (!notificationRun.ok) {

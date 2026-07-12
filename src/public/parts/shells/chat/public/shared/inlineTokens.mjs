@@ -1,5 +1,5 @@
-/** inline token 唯一 tokenizer（chat/social 共用）。 */
-import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
+/** inline token 唯一 tokenizer（chat/social 共用；勿用 /scripts/ 绝对路径）。 */
+import { isEntityHash128 } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id_parse'
 
 /** @typedef {'entity' | 'role' | 'everyone' | 'emoji' | 'channel'} InlineTokenKind */
 
@@ -9,6 +9,8 @@ const INLINE_TOKEN_RE = /@\[([^\]]+)\]|#\[([\w.-]+)\/([\w.-]+)\]|#\[([\w.-]+)\](
 
 /**
  * @param {string} mentionBody @[] 内正文
+ * @param {number} start token 起始偏移
+ * @param {number} end token 结束偏移
  * @returns {InlineToken | null}
  */
 function parseBracketMention(mentionBody, start, end) {
@@ -18,8 +20,11 @@ function parseBracketMention(mentionBody, start, end) {
 		return { kind: 'everyone', body, start, end }
 	if (body.startsWith('role:'))
 		return { kind: 'role', body: body.slice('role:'.length), start, end }
-	if (isEntityHash128(body.toLowerCase()))
-		return { kind: 'entity', body: body.toLowerCase(), start, end }
+	if (body.startsWith('hash:')) {
+		const hash = body.slice('hash:'.length).trim().toLowerCase()
+		if (isEntityHash128(hash))
+			return { kind: 'entity', body: hash, start, end }
+	}
 	return null
 }
 

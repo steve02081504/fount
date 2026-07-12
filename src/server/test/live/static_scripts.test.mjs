@@ -8,11 +8,11 @@ import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/n
 
 /** @type {string[]} */
 const BROWSER_SCRIPTS = [
-	'/scripts/lib/entity_hash.mjs',
-	'/scripts/lib/digest.mjs',
-	'/npm:@steve02081504/fount-p2p/core/hexIds',
-	'/npm:@steve02081504/fount-p2p/core/entity_id_parse',
-	'/npm:@steve02081504/fount-p2p/mentions',
+	'/parts/shells:chat/shared/entityHash.mjs',
+	'/parts/shells:chat/shared/digest.mjs',
+	'/parts/shells:chat/shared/mentions.mjs',
+	'/parts/shells:chat/shared/inlineTokens.mjs',
+	'/parts/shells:chat/shared/hashAvatar.mjs',
 	'/scripts/infiniteScroll.mjs',
 	'/scripts/test/ready_gate.mjs',
 ]

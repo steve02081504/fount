@@ -1,4 +1,4 @@
-import { mentionsEntity } from 'fount/public/pages/scripts/lib/mentions.mjs'
+import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getState } from '../dag/materialize.mjs'
 import { memberEntityHash } from './entity.mjs'

@@ -1,7 +1,6 @@
 /**
  * L4 联邦 live 探针共用库（支持 FOUNT_TEST_NODE_COUNT 个节点）。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns, jsdoc/require-returns-description, jsdoc/require-param-type -- live probe harness */
 import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'

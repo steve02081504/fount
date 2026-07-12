@@ -12,8 +12,17 @@ process.env.FOUNT_TEST ??= '1'
 /** 测试统一锁定 zh-CN，保证报告与 i18n 字符串断言稳定（bare.mjs 以 LANG 为首选，子进程继承 process.env）。 */
 process.env.LANG = 'zh-CN'
 
-/** deno panic 时输出完整 Rust 栈帧；子进程 spawn 时继承 process.env。 */
-process.env.RUST_BACKTRACE ??= 'full'
+/** deno panic 时输出完整 Rust 栈帧；子进程 spawn 须经 childEnv() 显式传递。 */
+process.env.RUST_BACKTRACE = 'full'
+
+/**
+ * 测试子进程环境：继承当前 process.env 并强制 RUST_BACKTRACE=full。
+ * @param {Record<string, string>} [extra] 额外变量
+ * @returns {Record<string, string>} spawn env
+ */
+export function childEnv(extra = {}) {
+	return { ...process.env, RUST_BACKTRACE: 'full', ...extra }
+}
 
 /** 近 OOM 堆快照：worker 写 CWD、父进程 collect；orchestrator 直接搬迁到 heapsnapshots/。 */
 if (process.env.FOUNT_TEST_NODE_WORKER)

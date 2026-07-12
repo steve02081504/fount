@@ -786,7 +786,7 @@ export function splitTelegramReply(reply, split_length = 4096) {
 	return messages.filter(line => line.trim().length)
 }
 
-const FOUNT_ENTITY_MENTION_RE = /@\[([0-9a-f]{128})\]/gi
+const FOUNT_ENTITY_MENTION_RE = /@\[hash:([0-9a-f]{128})\]/gi
 
 /**
  * UTF-16 码元长度（Telegram entity offset 用）。
@@ -818,7 +818,7 @@ export async function rewriteTelegramMentionsToFount(username, text, entities) {
 			entity.user.id,
 			entity.user.first_name || entity.user.username || '',
 		)
-		const token = `@[${hash}]`
+		const token = `@[hash:${hash}]`
 		const chars = Array.from(result)
 		chars.splice(entity.offset, entity.length, ...Array.from(token))
 		result = chars.join('')

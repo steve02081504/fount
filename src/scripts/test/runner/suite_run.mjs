@@ -41,6 +41,7 @@ export function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
+		RUST_BACKTRACE: 'full',
 	}
 	if (suiteUsesSerialRunner(suite) && globalBudget)
 		applyBudgetToEnv(env, globalBudget)

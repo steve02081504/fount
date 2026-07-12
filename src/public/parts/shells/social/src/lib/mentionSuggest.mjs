@@ -1,5 +1,5 @@
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
-import { formatHashShort } from 'fount/public/pages/scripts/lib/entity_hash.mjs'
+import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { loadFollowing } from '../following.mjs'
 

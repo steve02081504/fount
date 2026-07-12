@@ -738,7 +738,7 @@ function deleteApiKeyHash(hash) {
  * 按明文 API Key 撤销（调用方负责鉴权；无 key 时入口可用 jti 查 hash 后调 deleteApiKeyHash）。
  * @param {string} apiKey - API 密钥明文。
  * @returns {void}
- * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ * @throws {import('../../scripts/http_error.mjs').HttpError} 密钥不存在时。
  */
 export function revokeApiKey(apiKey) {
 	if (!apiKey) return
@@ -752,7 +752,7 @@ export function revokeApiKey(apiKey) {
  * @param {string} username - 密钥所有者用户名。
  * @param {string} jti - API 密钥 JTI。
  * @returns {void}
- * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ * @throws {import('../../scripts/http_error.mjs').HttpError} 密钥不存在时。
  */
 export function revokeApiKeyByJti(username, jti) {
 	const hash = Object.keys(config.data.apiKeys).find(h =>

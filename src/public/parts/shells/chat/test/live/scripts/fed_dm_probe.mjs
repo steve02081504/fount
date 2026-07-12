@@ -1,5 +1,4 @@
 /* global Deno */
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns, jsdoc/require-param-description, jsdoc/require-param-type */
 import { join as joinPath } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -109,13 +108,13 @@ const sB = await Api(joiner, 'GET', `/groups/${gid}/state`)
 
 console.log('\n=== A state ===')
 console.log(`status=${sA.status} isMember=${sA.json.viewer?.isMember} memberCount=${sA.json.meta?.memberCount} defaultChannel=${sA.json.meta?.groupSettings?.defaultChannelId}`)
-for (const m of sA.json.meta?.members ?? []) 
+for (const m of sA.json.meta?.members ?? [])
 	console.log(` A-member ${m.memberKey} roles=${(m.roles ?? []).join(',')} status=${m.status}`)
 
 
 console.log('\n=== B state ===')
 console.log(`status=${sB.status} isMember=${sB.json.viewer?.isMember} memberCount=${sB.json.meta?.memberCount} defaultChannel=${sB.json.meta?.groupSettings?.defaultChannelId}`)
-for (const m of sB.json.meta?.members ?? []) 
+for (const m of sB.json.meta?.members ?? [])
 	console.log(` B-member ${m.memberKey} roles=${(m.roles ?? []).join(',')} status=${m.status}`)
 
 
@@ -125,18 +124,18 @@ const evB = await Api(joiner, 'GET', `/groups/${gid}/events?limit=200`)
 console.log('\n=== A events ===')
 for (const e of evA.json.events ?? []) {
 	let extra = ''
-	if (e.type === 'member_join') 
+	if (e.type === 'member_join')
 		extra = ` sender=${e.sender} intro=${e.content?.introducerPubKeyHash} dmNonce=${String(e.content?.dmIntroNonce ?? '')}`
-	
+
 	console.log(` A-ev ${e.type} id=${String(e.id).slice(0, 8)}${extra}`)
 }
 
 console.log('\n=== B events ===')
 for (const e of evB.json.events ?? []) {
 	let extra = ''
-	if (e.type === 'member_join') 
+	if (e.type === 'member_join')
 		extra = ` sender=${e.sender} intro=${e.content?.introducerPubKeyHash} dmNonce=${String(e.content?.dmIntroNonce ?? '')}`
-	
+
 	console.log(` B-ev ${e.type} id=${String(e.id).slice(0, 8)}${extra}`)
 }
 

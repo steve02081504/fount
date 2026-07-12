@@ -26,7 +26,7 @@ import { tallyVoteChoices } from '../../src/lib/voteTally.mjs'
 import { isTrustedAuthor } from '../../src/trustedAuthors.mjs'
 import { resolveDisplayParentEventId, tallyReactionsFromMap } from '../../src/ui/channelDisplay.mjs'
 import { mountMdRevealButton } from '../../src/ui/mdRevealButton.mjs'
-import { isFirstMessageInAuthorGroup } from '/scripts/lib/hashAvatar.mjs'
+import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 

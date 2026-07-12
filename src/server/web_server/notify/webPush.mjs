@@ -3,9 +3,9 @@ import path from 'node:path'
 
 import webpush from 'npm:web-push'
 
-import { getUserDictionary } from '../auth/index.mjs'
-import { data_path } from '../server.mjs'
-import { loadJsonFileIfExists, saveJsonFile } from '../../scripts/json_loader.mjs'
+import { getUserDictionary } from '../../auth/index.mjs'
+import { data_path } from '../../server.mjs'
+import { loadJsonFileIfExists, saveJsonFile } from '../../../scripts/json_loader.mjs'
 
 const VAPID_PATH = () => path.join(data_path, 'notify', 'vapid.json')
 

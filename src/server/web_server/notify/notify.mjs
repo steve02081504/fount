@@ -1,5 +1,4 @@
-import { sendEventToUser } from '../web_server/event_dispatcher.mjs'
-
+import { sendEventToUser } from '../event_dispatcher.mjs'
 import { sendWebPush } from './webPush.mjs'
 
 /**

@@ -11,7 +11,7 @@ P2P 核心在 npm 包 [**@steve02081504/fount-p2p**](https://www.npmjs.com/packa
 ## Import 约定
 
 - **Deno / shell / server**：`npm:@steve02081504/fount-p2p/...`（`deno.json` 映射 `@^0.0.0`）
-- **浏览器 public**：`https://esm.sh/@steve02081504/fount-p2p@0.0.0/...`
+- **浏览器 public**：`https://esm.sh/@steve02081504/fount-p2p/...`
 - **归档 tunables JSON**：`npm:@steve02081504/fount-p2p/dag/tunables.json` → 映射到 `shells/chat/src/chat/lib/archive.tunables.json`（与包内 `dag/tunables.json` 同步）
 
 ## fount 侧职责
@@ -23,7 +23,7 @@ P2P 核心在 npm 包 [**@steve02081504/fount-p2p**](https://www.npmjs.com/packa
 | Chat 联邦 / DAG / 加密 | `shells/chat/src/chat/` |
 | Social 时间线联邦 | `shells/social/src/federation/`, `timeline/` |
 | S3 / 多副本群文件后端 | `shells/chat/src/chat/lib/remoteStoragePlugins.mjs` |
-| 前端 entityHash / mentions | `shells/chat/public/shared/`, `pages/scripts/lib/mentions.mjs` |
+| 前端 entityHash / mentions | `shells/chat/public/shared/` |
 
 ## Trust boundaries
 

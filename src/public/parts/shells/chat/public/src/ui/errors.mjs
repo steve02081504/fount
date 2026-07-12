@@ -5,7 +5,7 @@
  * 【数据结构】error、i18nKey、toastParams。
  * 【关联】@sentry/browser、toast.mjs；Hub、groupFileUpload、reactionHandlers。
  */
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 /**
  * @param {Error} err 上报目标

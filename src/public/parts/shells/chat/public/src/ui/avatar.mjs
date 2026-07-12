@@ -9,7 +9,7 @@ import {
 	avatarColor,
 	avatarInitial,
 	avatarTextColor,
-} from '/scripts/lib/hashAvatar.mjs'
+} from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
  * 群聊等场景下的圆形头像：有 URL 时用图片，失败或无 URL 时用 hash 文字头像。

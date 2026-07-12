@@ -1,7 +1,7 @@
 /**
  * 投票 ballot 截止与关票通知。
  */
-import { notifyUser } from 'fount/server/notify/notify.mjs'
+import { notifyUser } from 'fount/server/web_server/notify/notify.mjs'
 
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'

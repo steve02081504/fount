@@ -1,7 +1,6 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns, jsdoc/require-param-description, jsdoc/require-param-type */
 import { TEST_PNG_BYTES, testPngDataUrl } from 'fount/scripts/test/live/http.mjs'
 import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helpers.mjs'
 

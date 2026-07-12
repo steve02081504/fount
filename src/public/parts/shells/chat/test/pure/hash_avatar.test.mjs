@@ -9,7 +9,7 @@ import {
 	hashAvatarStyle,
 	isFirstMessageInAuthorGroup,
 	MESSAGE_AVATAR_GROUP_GAP_MS,
-} from '../../../../../pages/scripts/lib/hashAvatar.mjs'
+} from 'fount/public/parts/shells/chat/public/shared/hashAvatar.mjs'
 
 const SEED = 'a'.repeat(128)
 
@@ -57,7 +57,7 @@ Deno.test('isFirstMessageInAuthorGroup: first message always shows avatar', () =
 })
 
 Deno.test('isAvatarImageUrl distinguishes URL from emoji avatar', async () => {
-	const { isAvatarImageUrl } = await import('../../../../../pages/scripts/lib/hashAvatar.mjs')
+	const { isAvatarImageUrl } = await import('fount/public/parts/shells/chat/public/shared/hashAvatar.mjs')
 	assertEquals(isAvatarImageUrl('https://x.test/a.png'), true)
 	assertEquals(isAvatarImageUrl('/api/foo'), true)
 	assertEquals(isAvatarImageUrl('🤖'), false)

@@ -8,8 +8,8 @@ Deno.test('notifyUser falls back to web push when subscription exists', async ()
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
 
-	const { addPushSubscription } = await import('../../../../../../server/notify/webPush.mjs')
-	const { notifyUser } = await import('../../../../../../server/notify/notify.mjs')
+	const { addPushSubscription } = await import('../../../../../../server/web_server/notify/webPush.mjs')
+	const { notifyUser } = await import('../../../../../../server/web_server/notify/notify.mjs')
 
 	const endpoint = `https://push.test/${crypto.randomUUID()}`
 	await addPushSubscription(username, {

@@ -7,19 +7,20 @@ import {
 	extractMentionRoleIds,
 	hasEveryoneToken,
 	hasHereToken,
-} from 'fount/public/pages/scripts/lib/mentions.mjs'
-import { parseInlineTokens } from 'fount/public/pages/scripts/lib/inlineTokens.mjs'
+} from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { parseInlineTokens } from 'fount/public/parts/shells/chat/public/shared/inlineTokens.mjs'
 
 const HASH = 'a'.repeat(128)
 
 Deno.test('parseInlineTokens parses new mention syntax', () => {
-	const tokens = parseInlineTokens(`hi @[${HASH}] @[role:admin] @[everyone] @[here] :[g/e] #[grp/ch]`)
+	const tokens = parseInlineTokens(`hi @[hash:${HASH}] @[role:admin] @[everyone] @[here] :[g/e] #[grp/ch]`)
 	assertEquals(tokens.map(token => token.kind), ['entity', 'role', 'everyone', 'everyone', 'emoji', 'channel'])
 })
 
 Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
 	assertEquals(extractMentionEntityHashes(`@${HASH}`), [])
-	assertEquals(extractMentionEntityHashes(`@[${HASH}]`), [HASH])
+	assertEquals(extractMentionEntityHashes(`@[hash:${HASH}]`), [HASH])
+	assertEquals(extractMentionEntityHashes(`@[${HASH}]`), [])
 })
 
 Deno.test('buildMentionsStructure respects permission and ingress', () => {

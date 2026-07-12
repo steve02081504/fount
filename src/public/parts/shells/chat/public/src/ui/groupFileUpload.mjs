@@ -5,7 +5,7 @@
  * 【数据结构】hub { groupId, state }、上传进度、file meta。
  * 【关联】federationUpload.mjs、groupFileBlob.mjs、errors.mjs。
  */
-import { sha256HexFromBlob } from '/scripts/lib/digest.mjs'
+import { sha256HexFromBlob } from '../../shared/digest.mjs'
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { entityFileUrl } from '/scripts/api/p2p/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'

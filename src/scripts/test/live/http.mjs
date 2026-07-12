@@ -1,7 +1,6 @@
 /**
  * live HTTP 探针底层 fetch 封装（单节点与联邦共用）。
  */
-/* eslint-disable jsdoc/require-param-description, jsdoc/require-returns, jsdoc/require-returns-description, jsdoc/require-param-type -- live probe harness */
 
 import { ms } from '../../ms.mjs'
 

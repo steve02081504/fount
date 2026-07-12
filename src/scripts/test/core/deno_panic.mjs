@@ -26,13 +26,19 @@ const DENO_REPO = process.env.FOUNT_DENO_PANIC_REPO || 'denoland/deno'
 /** issue body 中携带的 log 尾部上限（字符）。 */
 const LOG_EXCERPT_MAX = 20000
 
+/** GitHub issue 标题上限（字符）。 */
+export const GH_ISSUE_TITLE_MAX = 256
+
+/** 自动上报 issue 标题前缀。 */
+export const GH_ISSUE_TITLE_PREFIX = '[fount auto-report] Deno panic: '
+
 /**
  * @typedef {object} ParsedPanic
  * @property {string} file 崩溃源码文件
  * @property {number} line 行号
  * @property {number} col 列号
  * @property {string} signature 去重签名（file:line:col）
- * @property {string} message 崩溃信息（panicked at 下一行）
+ * @property {string} message 崩溃信息（panicked at 之后至 stack backtrace 之前，空白折叠）
  * @property {string | null} version Deno 版本（输出内自述）
  * @property {string | null} platform 平台串
  * @property {string | null} args 启动参数串
@@ -50,10 +56,20 @@ export function parseDenoPanic(output) {
 	const text = removeTerminalSequences(output)
 	if (!text.includes(PANIC_MARKER)) return null
 
-	const at = text.match(/panicked at (.+):(\d+):(\d+):[^\n]*\n\s*(.*)/)
+	const at = text.match(/panicked at (.+):(\d+):(\d+):[^\n]*\n/)
 	if (!at) return null
 
-	const [, file, lineStr, colStr, message] = at
+	const [, file, lineStr, colStr] = at
+	const panicLineEnd = at.index + at[0].length
+	const backtraceIdx = text.indexOf('\nstack backtrace:', panicLineEnd)
+	let rawMessage
+	if (backtraceIdx >= 0)
+		rawMessage = text.slice(panicLineEnd, backtraceIdx)
+	else {
+		const nextThread = text.indexOf('\nthread \'', panicLineEnd)
+		rawMessage = nextThread >= 0 ? text.slice(panicLineEnd, nextThread) : text.slice(panicLineEnd)
+	}
+	const message = rawMessage.replace(/\n\s*/g, ' ').trim()
 	const version = text.match(/^Version:\s*(.+)$/m)?.[1]?.trim() ?? null
 	const platform = text.match(/^Platform:\s*(.+)$/m)?.[1]?.trim() ?? null
 	const args = text.match(/^Args:\s*(.+)$/m)?.[1]?.trim() ?? null
@@ -68,13 +84,70 @@ export function parseDenoPanic(output) {
 		line: Number(lineStr),
 		col: Number(colStr),
 		signature: `${file.trim()}:${lineStr}:${colStr}`,
-		message: (message ?? '').trim(),
+		message,
 		version,
 		platform,
 		args,
 		stackUrl,
 		excerpt,
 	}
+}
+
+/**
+ * 将自动上报标题适配 GitHub 256 字上限：先缩 summary 内括号，仍超则截断 summary。
+ * @param {string} summary message 或 signature
+ * @param {string} version Deno 版本
+ * @returns {string} 标题
+ */
+export function fitGhIssueTitle(summary, version) {
+	const suffix = ` (${version})`
+	let title = `${GH_ISSUE_TITLE_PREFIX}${summary}${suffix}`
+	if ([...title].length <= GH_ISSUE_TITLE_MAX) return title
+
+	const shrunk = summary.replace(/\([^)]*\)/g, '(…)')
+	title = `${GH_ISSUE_TITLE_PREFIX}${shrunk}${suffix}`
+	if ([...title].length <= GH_ISSUE_TITLE_MAX) return title
+
+	const ellipsis = '…'
+	const budget = GH_ISSUE_TITLE_MAX
+		- [...GH_ISSUE_TITLE_PREFIX].length
+		- [...suffix].length
+		- [...ellipsis].length
+	const truncated = [...shrunk].slice(0, Math.max(0, budget)).join('') + ellipsis
+	return `${GH_ISSUE_TITLE_PREFIX}${truncated}${suffix}`
+}
+
+/** Windows STATUS_HEAP_CORRUPTION：Deno 2.9.x 在 napi 模块析构时偶发，测试本身可能已全部通过。 */
+const WINDOWS_DENO_TEARDOWN_EXIT = -1073740940
+
+/**
+ * 从 deno test 输出取最后一次 `N passed | M failed` 摘要里的 failed 数；无摘要时 null。
+ * @param {string} output 子进程 stdall
+ * @returns {number | null} failed 数
+ */
+export function denoTestSummaryFailedCount(output) {
+	const text = removeTerminalSequences(output)
+	const matches = [...text.matchAll(/\|\s*(\d+)\s+passed\s*\|\s*(\d+)\s+failed/gu)]
+	if (!matches.length) return null
+	return Number(matches.at(-1)[2])
+}
+
+/**
+ * 子进程非零退出但 deno test 摘要为 0 failed，且为 Deno panic / Windows 析构崩溃。
+ * @param {number} code 退出码
+ * @param {string} output 子进程 stdall
+ * @returns {boolean} 是否视为 teardown 噪声
+ */
+export function isDenoTeardownCrashAfterGreenTests(code, output) {
+	if (code === 0) return false
+	const failedCount = denoTestSummaryFailedCount(output)
+	if (failedCount !== null && failedCount !== 0) return false
+	if (parseDenoPanic(output)) return true
+	if (code !== WINDOWS_DENO_TEARDOWN_EXIT) return false
+	if (failedCount === 0) return true
+	// Deno 可能在打印 `ok | N passed | 0 failed` 摘要前即 Windows 堆损坏退出。
+	const text = removeTerminalSequences(output)
+	return !/\bFAILED\b/.test(text)
 }
 
 /**
@@ -265,7 +338,7 @@ export async function reportDenoPanic({ repoRoot, output, label, commitHash }) {
 		return
 	}
 
-	const title = `[fount auto-report] Deno panic: ${panic.message || panic.signature} (${version})`
+	const title = fitGhIssueTitle(panic.message || panic.signature, version)
 	const issueUrl = await ghCreateIssue(DENO_REPO, title, buildIssueBody(panic, version, commitHash))
 
 	record.panics[panic.signature] = {

@@ -4,12 +4,12 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { extractMentionEntityHashes } from 'fount/public/pages/scripts/lib/mentions.mjs'
+import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 const SAMPLE_HASH = 'a'.repeat(128)
 
 Deno.test('extractMentionEntityHashes finds bracketed 128-hex mentions', () => {
-	const text = `hi @[${SAMPLE_HASH}] and @[${'b'.repeat(128)}]`
+	const text = `hi @[hash:${SAMPLE_HASH}] and @[hash:${'b'.repeat(128)}]`
 	const found = extractMentionEntityHashes(text)
 	assertEquals(found.length, 2)
 	assertEquals(found[0], SAMPLE_HASH)
@@ -22,6 +22,6 @@ Deno.test('extractMentionEntityHashes ignores bare @128hex legacy syntax', () =>
 })
 
 Deno.test('extractMentionEntityHashes dedupes', () => {
-	const text = `@[${SAMPLE_HASH}] @[${SAMPLE_HASH.toUpperCase()}]`
+	const text = `@[hash:${SAMPLE_HASH}] @[hash:${SAMPLE_HASH.toUpperCase()}]`
 	assertEquals(extractMentionEntityHashes(text).length, 1)
 })

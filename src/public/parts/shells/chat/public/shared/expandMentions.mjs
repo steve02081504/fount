@@ -1,7 +1,7 @@
 /**
  * 将正文中的 `@[...]` 展开为 Markdown 链接（展示 displayName / 角色名）。
  */
-import { parseInlineTokens } from '/scripts/lib/inlineTokens.mjs'
+import { parseInlineTokens } from './inlineTokens.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { formatHashShort } from './entityHash.mjs'

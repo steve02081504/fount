@@ -31,7 +31,7 @@ import { skip_report, config, save_config } from '../server.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
-import { addPushSubscription, getVapidPublicKey, removePushSubscription } from '../notify/webPush.mjs'
+import { addPushSubscription, getVapidPublicKey, removePushSubscription } from './notify/webPush.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
 import { registerP2pEndpoints } from './p2p_endpoints.mjs'
 import { betterSendFile } from './resources.mjs'

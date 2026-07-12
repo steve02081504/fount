@@ -43,8 +43,7 @@ alwaysApply: false
 - **`terminal.mjs`**: `xterm.js` terminal wrapper.
 - **`regex.mjs`**: Regex parsing and escaping.
 - **`credentialManager.mjs`**: Secure credential encryption and transfer.
-- **`lib/digest.mjs`**: Cross-runtime SHA-256 helpers (Deno + browser).
 
 ## P2P（浏览器）
 
-`@steve02081504/fount-p2p` 经 `esm.sh` 导入；shell `public/**` 内共享模块见 `shells/chat/public/shared/`。提及解析：`pages/scripts/lib/mentions.mjs`。
+`@steve02081504/fount-p2p` 经 `esm.sh` 导入；Chat/Social 共用原语见 `shells/chat/public/shared/`（`entityHash`、`digest`、`mentions`、`inlineTokens`、`hashAvatar` 等）。

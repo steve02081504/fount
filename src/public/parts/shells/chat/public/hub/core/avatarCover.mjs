@@ -6,7 +6,7 @@ import {
 	avatarInitial,
 	avatarTextColor,
 	isAvatarImageUrl,
-} from '/scripts/lib/hashAvatar.mjs'
+} from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
  *

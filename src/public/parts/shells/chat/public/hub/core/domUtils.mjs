@@ -11,7 +11,7 @@ import {
 	avatarInitial,
 	avatarTextColor,
 	hashAvatarStyle,
-} from '/scripts/lib/hashAvatar.mjs'
+} from '/parts/shells:chat/shared/hashAvatar.mjs'
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from '../../shared/entityHash.mjs'
 import { agentEntityHash } from '../../shared/entityId.mjs'

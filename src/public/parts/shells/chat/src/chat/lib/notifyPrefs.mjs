@@ -1,4 +1,4 @@
-import { mentionsEntity } from 'fount/public/pages/scripts/lib/mentions.mjs'
+import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
 

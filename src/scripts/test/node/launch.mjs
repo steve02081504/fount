@@ -446,6 +446,7 @@ export async function launchNode(options = {}) {
 			FOUNT_TEST: '1',
 			FOUNT_TEST_NODE_WORKER: '1',
 			FOUNT_DENO_START_TIME: new Date().toISOString(),
+			RUST_BACKTRACE: 'full',
 			...extraEnv,
 		},
 	})

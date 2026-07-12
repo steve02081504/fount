@@ -1,5 +1,8 @@
-import { logicalEntityHash } from 'npm:@steve02081504/fount-p2p/entity/logical_entity'
+import { logicalEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/entity/logical_entity'
 
+/**
+ *
+ */
 export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
 
 /**

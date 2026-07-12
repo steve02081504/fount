@@ -1,5 +1,5 @@
-import { buildMentionsStructure } from 'fount/public/pages/scripts/lib/mentions.mjs'
-import { notifyUser } from 'fount/server/notify/notify.mjs'
+import { buildMentionsStructure } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { notifyUser } from 'fount/server/web_server/notify/notify.mjs'
 
 import { hasPermission, PERMISSIONS } from '../../permissions/chat.mjs'
 import { isCaredBy } from '../lib/care.mjs'

@@ -1,5 +1,4 @@
 /* global Deno */
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns, jsdoc/require-param-description, jsdoc/require-param-type */
 import { join as joinPath } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -99,11 +98,11 @@ console.log(`DM creator=${creator.name} (lower pubkey)`)
 for (const node of [creator, joiner]) {
 	const list = await Api(node, 'GET', '/groups/')
 	if (list.status !== 200) continue
-	for (const row of list.json ?? []) 
-		if (String(row.name ?? '').startsWith('DM ·')) 
+	for (const row of list.json ?? [])
+		if (String(row.name ?? '').startsWith('DM ·'))
 			await Api(node, 'DELETE', `/groups/${row.groupId}`)
-		
-	
+
+
 }
 const dmReady = await PollUntil(10, 0.5, async () => {
 	const list = await Api(creator, 'GET', '/groups/')
@@ -161,9 +160,9 @@ await testCase('peer join with dmIntro proof', async () => {
 		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		const st = await Api(joiner, 'GET', `/groups/${gid}/state`)
-		if (st.json.meta?.groupSettings?.defaultChannelId) 
+		if (st.json.meta?.groupSettings?.defaultChannelId)
 			cid = st.json.meta.groupSettings.defaultChannelId
-		
+
 		else if (st.json.meta?.channels) {
 			const chNames = Object.keys(st.json.meta.channels)
 			if (chNames.length >= 1) cid = chNames[0]
@@ -204,9 +203,9 @@ await testCase('creator members>=2 after DM join', async () => WaitFedMembers(cr
 await testCase('joiner state has default channel', async () => PollUntil(90, 3, async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 	const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
-	if (s.json.meta?.groupSettings?.defaultChannelId) 
+	if (s.json.meta?.groupSettings?.defaultChannelId)
 		cid = s.json.meta.groupSettings.defaultChannelId
-	
+
 	else if (s.json.meta?.channels) {
 		const chNames = Object.keys(s.json.meta.channels)
 		if (chNames.length >= 1) cid = chNames[0]
@@ -239,9 +238,9 @@ await testCase('joiner sends DM-B', async () => {
 	const ready = await PollUntil(90, 3, async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
-		if (s.json.meta?.groupSettings?.defaultChannelId) 
+		if (s.json.meta?.groupSettings?.defaultChannelId)
 			cid = s.json.meta.groupSettings.defaultChannelId
-		
+
 		else if (s.json.meta?.channels) {
 			const chNames = Object.keys(s.json.meta.channels)
 			if (chNames.length >= 1) cid = chNames[0]

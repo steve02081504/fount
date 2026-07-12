@@ -36,7 +36,7 @@ Deno.test('dispatchPostMentions falls back to chat.GetReply when OnMention missi
 	const agentHash = await seedMentionAgentChar(username)
 	const post = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: `ping @${agentHash}`, visibility: 'public' },
+		content: { text: `ping @[hash:${agentHash}]`, visibility: 'public' },
 	}, { fanout: false })
 
 	await dispatch.dispatchPostMentions(username, operator, post)
