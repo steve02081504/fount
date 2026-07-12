@@ -73,7 +73,7 @@ export interface GroupSessionState {
 
 // ---- Permissions（`shells/chat/src/permissions/chat.mjs`；通用引擎见 npm fount-p2p permissions）----
 
-/** 内置权限名；持久化位图顺序见 `PERMISSION_ORDER`，禁止重排。 */
+/** 内置权限名；内存位图位序见 `PERMISSION_ORDER`（落盘为 PermissionFlags Record，非 bitmap，顺序随意）。 */
 export type PermissionName =
 	| 'VIEW_CHANNEL'
 	| 'SEND_MESSAGES'
@@ -98,8 +98,8 @@ export type PermissionName =
 export type PermissionFlags = Record<PermissionName, boolean>
 
 /**
- * 权限位图：`encodePermissions` / `decodePermissions` 在 `shells/chat/src/permissions/chat.mjs` 中与上式互转。
- * 仅用于内存求值与 checkpoint 内部存储，JSON 序列化时用 PermissionFlags Record。
+ * 权限位图：`encodePermissions` / `decodePermissions`（`shells/chat/src/permissions/chat.mjs`）仅内存求值用。
+ * DAG / checkpoint / federation 一律 PermissionFlags Record。
  */
 export type PermissionBitmap = bigint
 
