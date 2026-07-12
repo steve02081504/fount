@@ -217,7 +217,7 @@ export function createRemoteCharProxy(memberId, sourceHost, interfaces = {}, rpc
 			 */
 			GetReply: replyRequest => invokeRemote('GetReply', [replyRequest]),
 			/**
-			 * @param {{ chatReplyRequest: chatReplyRequest_t, onlineCount: number }} event 新消息事件上下文
+			 * @param {object} event 新消息事件上下文（可序列化：message / mentions / group / channel）
 			 * @returns {Promise<boolean>} true 表示该 char 想要发言
 			 */
 			onMessage: event => invokeRemote('onMessage', [event]).then(Boolean),

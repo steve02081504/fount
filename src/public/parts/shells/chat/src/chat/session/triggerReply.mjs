@@ -46,12 +46,16 @@ import { resolveChar, resolveWorld } from './resolvePart.mjs'
 import { invokeGroupRpc } from './rpcInvoke.mjs'
 import { getCharBind, getGroupRuntime, isLocalNode } from './runtime.mjs'
 import { buildSerializableRequest } from './serializableRequest.mjs'
+import {
+	autoReplyBucketKey,
+	buildOnMessageEvent,
+	consumeAutoReplyToken,
+	loadAutoReplySettings,
+} from './replyThrottle.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /** @type {Set<string>} 进行中的角色生成（groupId\\0channelId\\0charname） */
 const charReplyInFlight = new Set()
-/** @type {Map<string, { tokens: number }>} 角色自动回复桶状态 */
-const autoReplyBuckets = new Map()
 
 /**
  * @param {string} groupId 群 ID
@@ -297,10 +301,7 @@ export async function getCharReplyFrequency(groupId) {
 	if (!chatMetadata) throw new Error('Group not found')
 	const result = [{ charname: null, frequency: 1 }]
 	const defaultChannelId = await getDefaultChannelId(chatMetadata.username, groupId)
-	const { state } = await getState(chatMetadata.username, groupId)
-	const bucketEnabled = !!state?.groupSettings?.autoReplyTokenBucketEnabled
-	const bucketBurst = Math.max(1, Number(state?.groupSettings?.autoReplyTokenBurst) || 2)
-	const bucketRefill = Math.max(0.1, Number(state?.groupSettings?.autoReplyTokenRefillPerMessage) || 0.5)
+	const settings = await loadAutoReplySettings(chatMetadata.username, groupId)
 	const session = await getMaterializedSession(chatMetadata.username, groupId)
 
 	for (const charname of Object.keys(session.chars || {})) {
@@ -309,27 +310,19 @@ export async function getCharReplyFrequency(groupId) {
 		if (!char) continue
 		let frequency = session.charFrequencies?.[charname] ?? 1
 		if (char.interfaces?.chat?.onMessage) {
-			const bucketKey = `${groupId}\0${defaultChannelId}\0${charname}`
-			if (bucketEnabled) {
-				const row = autoReplyBuckets.get(bucketKey) || { tokens: bucketBurst }
-				row.tokens = Math.min(bucketBurst, row.tokens + bucketRefill)
-				autoReplyBuckets.set(bucketKey, row)
-				if (row.tokens < 1) {
+			const bucketKey = autoReplyBucketKey(groupId, defaultChannelId, charname)
+			if (settings.enabled) {
+				const { allowed } = consumeAutoReplyToken(bucketKey, settings)
+				if (!allowed) {
 					frequency = 0
 					continue
 				}
 			}
-			const onlineCount = Object.keys(session.chars || {}).length + 1
-			const spoke = await char.interfaces.chat.onMessage({
-				chatReplyRequest: await getChatRequest(groupId, charname, defaultChannelId, { replicaUsername: chatMetadata.username }),
-				onlineCount,
-			}).catch(() => false)
+			const event = await buildOnMessageEvent(chatMetadata.username, groupId, defaultChannelId, charname)
+			const spoke = await char.interfaces.chat.onMessage(event).catch(() => false)
 			frequency = spoke ? 1e6 : 0
-			if (bucketEnabled && spoke) {
-				const row = autoReplyBuckets.get(bucketKey) || { tokens: bucketBurst }
-				row.tokens = Math.max(0, row.tokens - 1)
-				autoReplyBuckets.set(bucketKey, row)
-			}
+			if (settings.enabled && spoke)
+				consumeAutoReplyToken(bucketKey, settings)
 		}
 		if (frequency > 0)
 			result.push({ charname, frequency })

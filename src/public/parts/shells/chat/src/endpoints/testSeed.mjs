@@ -1,5 +1,5 @@
 /**
- * FOUNT_TEST 专用：Playwright 注入跨群 @mention（经 broadcastAndPersist → maybeAppendMentionInbox）。
+ * FOUNT_TEST 专用：Playwright 注入跨群 @mention（经 broadcastAndPersist → dispatchMessageFanout）。
  */
 import { randomBytes } from 'node:crypto'
 

@@ -50,8 +50,8 @@ Hub-facing API shapes:
 
 ## @mention inbox
 
-- **Storage**: `{userDictionary}/shells/chat/mention-inbox/events.jsonl` + `read.json` (global `seenAt` watermark, independent of channel read-markers). Incremental write: `src/chat/lib/mentionInbox.mjs` → `maybeAppendMentionInbox` (hooked into `dag/eventPersist.mjs` on `message`/`message_edit` persist).
+- **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json`（per-recipient 已读水位）。增量写：`src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs`（`eventPersist` 在 `message`/`message_edit` 落盘后调用）。
 - **Syntax**: `@128hex entityHash` in message body; Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
-- **API**: `GET /mentions` (newest-first + cursor), `GET/PUT /mentions/seen`; group autocomplete at `GET …/groups/:id/mentions/suggest`.
-- **Hub**: server bar `@` button + `#mentions` list (`hub/mentionsView.mjs`, via `setMode('mentions')`); badge incremented by WS `channel_message` when the local operator is @-mentioned.
+- **API**: `GET /inbox`（`recipientEntityHash` 缺省 operator）、`GET/PUT /inbox/seen`；群内 autocomplete 仍为 `GET …/groups/:id/mentions/suggest`。
+- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/mentionsView.mjs`）；badge 由 WS `channel_message.mentions.entityHashes` 驱动。
 - **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.

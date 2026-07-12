@@ -1871,6 +1871,7 @@
 			},
 			"mentions": {
 				"title": "提及",
+				"tabMention": "@提及",
 				"empty": "暂无 @ 你的消息",
 				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
 				"composerDisabled": "在提及收件箱中无法发送消息"

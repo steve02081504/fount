@@ -3,7 +3,7 @@
  * 【职责】WebSocket 广播 DAG/频道消息、写频道 `messages.jsonl`、刷新 checkpoint、触发信誉/GSH/自动回复与 world AfterAddChatLogEntry。
  * 【原理】非消息类事件仅重建 checkpoint；消息类解密展示内容后双播 `dag_event` 与 `channel_message`；AfterAddChatLogEntry 在 message 落盘后唯一触发。
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
- * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`../session/autoReply.mjs`、`../session/chatRequest.mjs`。
+ * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
@@ -28,7 +28,7 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
-import { maybeAppendMentionInbox, mentionedEntityHashesInMessageLine } from '../lib/mentionInbox.mjs'
+import { dispatchMessageFanout } from './messageFanout.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
@@ -157,7 +157,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 已持久化的签名事件对象
- * @param {{ checkpointOwnerSecretKey?: Uint8Array }} [persistOpts] checkpoint 签名私钥
+ * @param {{ checkpointOwnerSecretKey?: Uint8Array, ingress?: 'live' | 'backfill' }} [persistOpts] checkpoint 签名私钥与 fanout ingress
  * @returns {Promise<void>}
  */
 export async function broadcastAndPersist(username, groupId, signPayload, persistOpts = {}) {
@@ -265,27 +265,23 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		).catch(error => {
 			console.error('search index update failed:', error)
 		})
-	if (signPayload.type === 'message' || signPayload.type === 'message_edit')
-		void maybeAppendMentionInbox(username, groupId, channelId, messageLine).catch(error => {
-			console.error('mention inbox update failed:', error)
-		})
-	const mentionedEntityHashes = signPayload.type === 'message' || signPayload.type === 'message_edit'
-		? mentionedEntityHashesInMessageLine(messageLine)
-		: []
+	let fanoutMentions = { entityHashes: [], roleIds: [], everyone: false }
+	if (signPayload.type === 'message' || signPayload.type === 'message_edit') {
+		const ingress = persistOpts.ingress === 'backfill' ? 'backfill' : 'live'
+		const fanout = await dispatchMessageFanout(username, groupId, channelId, messageLine, { ingress })
+			.catch(error => {
+				console.error('message fanout failed:', error)
+				return { mentions: fanoutMentions }
+			})
+		fanoutMentions = fanout.mentions
+	}
 	broadcastEvent(roomKey, {
 		type: 'channel_message',
 		channelId,
 		message: { ...messageLine, content: displayContent },
-		mentionedEntityHashes,
+		mentions: fanoutMentions,
 	})
 	await rebuildAndSaveCheckpoint(username, groupId, { ...persistOpts, skipChannelGc: true })
-	if (signPayload.type === 'message')
-		void import('../session/autoReply.mjs').then(({ maybeAutoTriggerCharReply }) =>
-			maybeAutoTriggerCharReply(username, groupId, channelId, displayContent, signPayload),
-		).catch(error => {
-			console.error('maybeAutoTriggerCharReply failed:', error)
-		})
-
 	// message 落盘即触发；message_edit 仅终稿（newContent 非流式占位）触发
 	const afterHookContent = signPayload.type === 'message'
 		? displayContent

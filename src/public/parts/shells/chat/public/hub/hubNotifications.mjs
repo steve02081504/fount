@@ -17,7 +17,7 @@ export function setupHubNotifications() {
  * @param {object} [opts] 消息上下文
  * @param {string} [opts.groupName] 群名
  * @param {string} [opts.channelName] 频道名
- * @param {object} [opts.wireMessage] 频道 WS 帧（含 message、mentionedEntityHashes）
+ * @param {object} [opts.wireMessage] 频道 WS 帧（含 message、mentions）
  * @returns {void}
  */
 export function maybeNotifyHubMessage(opts = {}) {

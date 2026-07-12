@@ -38,7 +38,7 @@ async function publishSignedEvent(username, groupId, wirePayload, opts, publishO
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object} wirePayload canonical 签名事件
- * @param {{ checkpointOwnerSecretKey?: Uint8Array, publishFederation?: boolean, skipCheckpointRebuild?: boolean, federationState?: object, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number }} [opts] 落盘选项
+ * @param {{ checkpointOwnerSecretKey?: Uint8Array, publishFederation?: boolean, skipCheckpointRebuild?: boolean, federationState?: object, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number, ingress?: 'live' | 'backfill' }} [opts] 落盘选项
  * @returns {Promise<'ok' | 'dup'>} `dup` 表示同 eventId 已落盘（锁内原子判定）
  */
 export async function commitSignedChatEvent(username, groupId, wirePayload, opts = {}) {
@@ -49,6 +49,7 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opts
 		checkpointOwnerSecretKey: opts.checkpointOwnerSecretKey,
 		skipCheckpointRebuild: opts.skipCheckpointRebuild,
 		skipGenesisSideEffects: opts.skipGenesisSideEffects,
+		ingress: opts.ingress,
 	}
 
 	const committed = await withGroupWriteLock(username, groupId, async () => {

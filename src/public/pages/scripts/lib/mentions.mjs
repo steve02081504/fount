@@ -18,3 +18,14 @@ export function extractMentionEntityHashes(text) {
 	}
 	return [...new Set(mentions)]
 }
+
+/**
+ * @param {{ entityHashes?: string[] }} mentions mentions 结构
+ * @param {string} entityHash 待查实体
+ * @returns {boolean} 是否直接 @ 命中
+ */
+export function mentionsEntity(mentions, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	if (!hash || !mentions?.entityHashes?.length) return false
+	return mentions.entityHashes.some(entry => String(entry).trim().toLowerCase() === hash)
+}

@@ -172,11 +172,31 @@ export class CharAPI_t {
 			/**
 			 * 新消息到达时触发（event hook，非 PascalCase RPC 方法），角色决定是否主动发言。
 			 * 返回 true 表示发言，false 表示不发言。
-			 * 典型实现：return Math.random() < (1 / onlineCount) * talkativeness * 2
-			 * @param {object} event - 事件上下文 { chatReplyRequest: chatReplyRequest_t, onlineCount: number }
+			 * @param {object} event - 事件上下文（可序列化事实：message / mentions / group / channel）
 			 * @returns {Promise<boolean>}
 			 */
-			onMessage?: (event: { chatReplyRequest: chatReplyRequest_t, onlineCount: number }) => Promise<boolean>
+			onMessage?: (event: {
+				chatReplyRequest: chatReplyRequest_t
+				message: chatLogEntry_t
+				mentions: {
+					entityHashes: string[]
+					roleIds: string[]
+					everyone: boolean
+				}
+				group: {
+					groupId: string
+					name: string
+					kind: 'group' | 'dm'
+					boundPeerEntityHash?: string
+					bridge?: { platform: string, platformChatId: string }
+					memberCount: number
+				}
+				channel: {
+					channelId: string
+					name: string
+					kind: 'text' | 'thread'
+				}
+			}) => Promise<boolean>
 			/**
 			 * 编辑消息。
 			 * @param {object} arg - 参数对象。

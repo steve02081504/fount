@@ -3,7 +3,7 @@
  */
 import { hubStore } from './core/state.mjs'
 
-const MENTIONS_API = '/api/parts/shells:chat/mentions'
+const INBOX_API = '/api/parts/shells:chat/inbox'
 
 /** @type {number | null} */
 let badgeUnreadCount = null
@@ -12,15 +12,17 @@ let badgeUnreadCount = null
  * @param {object} options 分页参数
  * @param {number} [options.limit] 条数
  * @param {string} [options.cursor] 游标
- * @returns {Promise<{ mentions: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
+ * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
  */
 export async function fetchMentionsPage(options = {}) {
 	const params = new URLSearchParams()
 	if (options.limit) params.set('limit', String(options.limit))
 	if (options.cursor) params.set('cursor', String(options.cursor))
+	if (options.recipientEntityHash) params.set('recipientEntityHash', String(options.recipientEntityHash))
+	if (options.kinds?.length) params.set('kinds', options.kinds.join(','))
 	const query = params.toString()
-	const response = await fetch(`${MENTIONS_API}${query ? `?${query}` : ''}`, { credentials: 'include' })
-	if (!response.ok) throw new Error(`mentions ${response.status}`)
+	const response = await fetch(`${INBOX_API}${query ? `?${query}` : ''}`, { credentials: 'include' })
+	if (!response.ok) throw new Error(`inbox ${response.status}`)
 	return response.json()
 }
 
@@ -28,12 +30,12 @@ export async function fetchMentionsPage(options = {}) {
  * @param {number} [at] 已读水位毫秒
  * @returns {Promise<number>} 写入的 seenAt
  */
-export async function markMentionsSeen(at = Date.now()) {
-	await fetch(`${MENTIONS_API}/seen`, {
+export async function markMentionsSeen(at = Date.now(), options = {}) {
+	await fetch(`${INBOX_API}/seen`, {
 		method: 'PUT',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ at }),
+		body: JSON.stringify({ at, recipientEntityHash: options?.recipientEntityHash }),
 	})
 	badgeUnreadCount = 0
 	await updateMentionsBadge()
@@ -69,14 +71,14 @@ export function bumpMentionsBadge() {
 }
 
 /**
- * WS `channel_message` 是否 @ 本机 viewer（依赖服务端 `mentionedEntityHashes`）。
+ * WS `channel_message` 是否 @ 本机 viewer（依赖服务端 `mentions` 结构）。
  * @param {object} wireMessage 频道 WS 帧
  * @returns {boolean} 是否 @ 本机 viewer
  */
 export function wireMessageMentionsViewer(wireMessage) {
 	const viewerHash = String(hubStore.viewer.viewerEntityHash || hubStore.viewer.operatorEntityHash || '').toLowerCase()
 	if (!viewerHash || !wireMessage) return false
-	const hashes = wireMessage.mentionedEntityHashes
+	const hashes = wireMessage.mentions?.entityHashes
 	if (!Array.isArray(hashes) || !hashes.map(hash => String(hash).toLowerCase()).includes(viewerHash)) return false
 	const sender = String(wireMessage.message?.sender || '').toLowerCase()
 	const viewerMember = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()

@@ -82,10 +82,11 @@ async function loadMentionsPage() {
 		const data = await fetchMentionsPage({
 			limit: 30,
 			cursor: nextCursor || undefined,
+			kinds: ['mention'],
 		})
 		const host = document.getElementById('hub-mentions-list')
 		if (!host) return
-		await paintMentionRows(host, data.mentions || [], !nextCursor)
+		await paintMentionRows(host, data.items || [], !nextCursor)
 		nextCursor = data.nextCursor
 		bindInfiniteScroll({
 			root: host.closest('.hub-mentions-scroll') || null,
@@ -149,6 +150,9 @@ export async function activateMentionsView() {
 	messagesHost.innerHTML = `
 		<div class="hub-mentions-panel">
 			<div class="hub-mentions-panel-title" data-i18n="chat.hub.mentions.title"></div>
+			<div class="hub-mentions-tabs" role="tablist">
+				<button type="button" class="hub-mentions-tab hub-mentions-tab-active" data-kind="mention" data-i18n="chat.hub.mentions.tabMention"></button>
+			</div>
 			<div class="hub-mentions-scroll">
 				<div id="hub-mentions-list" class="hub-mentions-list"></div>
 			</div>

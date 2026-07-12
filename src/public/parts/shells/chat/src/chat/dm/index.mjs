@@ -21,6 +21,7 @@ import { buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
 import { initGroupFileMasterKey, getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
+import { registerGroupRuntime } from '../session/runtime.mjs'
 
 import { computeDmRoomLabelFromPubKeys } from './labels.mjs'
 import { validateDmIntroLinkProof } from './linkValidate.mjs'
@@ -76,6 +77,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 		enableGroupFederation: true,
 	})
 	const {groupId} = result
+	registerGroupRuntime(groupId, username)
 	await initGroupFileMasterKey(username, groupId)
 	// 仿 session/crud.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，
 	// 末尾统一做一次 rebuildAndSaveCheckpoint，避免 DM 建群放大成多次 checkpoint 阻塞写路径。

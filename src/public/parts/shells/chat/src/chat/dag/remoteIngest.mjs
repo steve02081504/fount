@@ -95,6 +95,7 @@ export async function releaseQuarantinedEvents(username, groupId) {
 			skipQuarantineAppend: true,
 			skipPendingIngestAppend: true,
 			skipSeenDedup: true,
+			ingress: 'backfill',
 		}),
 	)
 }
@@ -113,6 +114,7 @@ export async function releasePendingIngestEvents(username, groupId) {
 			skipQuarantineAppend: true,
 			skipPendingIngestAppend: true,
 			skipSeenDedup: true,
+			ingress: 'backfill',
 		}),
 	)
 }
@@ -122,7 +124,7 @@ export async function releasePendingIngestEvents(username, groupId) {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
- * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean }} [opts] 日志、隔离/入站暂缓重放与写入选项
+ * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean, ingress?: 'live' | 'backfill' }} [opts] 日志、隔离/入站暂缓重放与写入选项
  * @returns {Promise<RemoteIngestResult>} 写入结果；`applied` 为新链节落盘，`duplicate` 为已摄入
  */
 export async function appendValidatedRemoteEvent(username, groupId, signPayload, opts = {}) {
@@ -273,7 +275,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		return finish(ingestResult('invalid', 'authz'))
 	}
 
-	if (await commitSignedChatEvent(username, groupId, wirePayload) === 'dup')
+	if (await commitSignedChatEvent(username, groupId, wirePayload, { ingress: opts.ingress }) === 'dup')
 		return finish(ingestResult('duplicate', 'event_id'))
 	if (!opts.skipQuarantineRelease) {
 		await releaseQuarantinedEvents(username, groupId)

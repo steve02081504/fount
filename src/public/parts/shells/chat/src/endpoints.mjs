@@ -9,7 +9,7 @@ import { authenticate } from '../../../../../server/auth/index.mjs'
 import { registerDiscoveryRoutes } from './endpoints/discovery.mjs'
 import { registerGroupsRuntimeRoutes } from './endpoints/groups_runtime.mjs'
 import { registerMailboxRoutes } from './endpoints/mailbox.mjs'
-import { registerMentionRoutes } from './endpoints/mentions.mjs'
+import { registerInboxRoutes } from './endpoints/inbox.mjs'
 import { registerPrefsRoutes } from './endpoints/prefs.mjs'
 import { registerSessionRoutes } from './endpoints/sessions.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
@@ -28,7 +28,7 @@ export function setEndpoints(router) {
 	registerPrefsRoutes(router)
 	registerDiscoveryRoutes(router)
 	registerMailboxRoutes(router)
-	registerMentionRoutes(router)
+	registerInboxRoutes(router)
 	registerWsRoutes(router)
 	registerGroupsRuntimeRoutes(router)
 	registerSessionRoutes(router)
