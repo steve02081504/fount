@@ -24,7 +24,7 @@ import { createWechatApi, DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
  */
 async function ensureWechatInterface(char, username, charname) {
 	if (!char.interfaces.wechat) {
-		const { createSimpleWechatInterface } = await import('./default_interface/main.mjs')
+		const { createSimpleWechatInterface } = await import('./default_interface.mjs')
 		char.interfaces.wechat = createSimpleWechatInterface(char, username, charname)
 	}
 }

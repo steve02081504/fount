@@ -1,4 +1,4 @@
-import { getTelegramBotForChar } from '../../shells/telegrambot/src/default_interface/main.mjs'
+import { getTelegramBotForChar } from '../../shells/telegrambot/src/default_interface.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 

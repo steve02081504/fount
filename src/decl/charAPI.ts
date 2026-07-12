@@ -4,6 +4,7 @@ import { Telegraf } from 'npm:telegraf'
 import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { info_t, locale_t, role_t, timeStamp_t } from './basedefs.ts'
+import { chatLogEntry_t as chatLogEntry_full_t } from './chatLog.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 import { SocialCharInterface } from './socialAPI.ts'
 
@@ -237,55 +238,37 @@ export class CharAPI_t {
 		 * Telegram 机器人接口。
 		 */
 		telegram?: {
-			/**
-			 * 设置 Telegram 机器人。
-			 * @param {Telegraf} bot - Telegraf 机器人实例。
-			 * @param {any} config - 配置。
-			 * @returns {Promise<void>}
-			 */
 			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
 			GetBotConfigTemplate?: () => Promise<any>;
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
 		 * Discord 机器人接口。
 		 */
 		discord?: {
-			/**
-			 * Discord 网关意图（Gateway Intents）配置。
-			 */
 			Intents?: DiscordGatewayIntentBits[]
-			/**
-			 * Discord 部分对象（Partials）配置。
-			 */
 			Partials?: DiscordPartials[]
-			/**
-			 * 在 Discord 客户端准备好后调用一次。
-			 * @param {DiscordClient} client - Discord 客户端。
-			 * @param {any} config - 配置。
-			 * @returns {Promise<void>}
-			 */
-			OnceClientReady: (client: DiscordClient, config: any) => Promise<void>
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
-			GetBotConfigTemplate: () => Promise<any>
+			OnceClientReady?: (client: DiscordClient, config: any) => Promise<void>
+			GetBotConfigTemplate?: () => Promise<any>
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
 		 * 微信机器人（iLink Bot HTTP 长轮询等，用于将角色接入微信侧对话）。
 		 */
 		wechat?: {
-			/**
-			 * 启动长轮询会话：ctx 含 getUpdates、sendMessage、signal 等。
-			 * @param {object} ctx - 网关 API 与中止信号。
-			 * @param {any} config - 机器人 JSON 配置（OwnerWeChatId 等）。
-			 * @returns {Promise<void>}
-			 */
-			OnceClientReady: (ctx: {
+			OnceClientReady?: (ctx: {
 				getUpdates: (params: { get_updates_buf?: string, timeoutMs?: number }) => Promise<any>
 				sendMessage: (body: object) => Promise<void>
 				getConfig: (params: { ilinkUserId: string, contextToken?: string }) => Promise<any>
@@ -304,11 +287,14 @@ export class CharAPI_t {
 				}>
 				signal: AbortSignal
 			}, config: any) => Promise<void>
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
-			GetBotConfigTemplate: () => Promise<any>
+			GetBotConfigTemplate?: () => Promise<any>
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
 		 * 浏览器集成接口。

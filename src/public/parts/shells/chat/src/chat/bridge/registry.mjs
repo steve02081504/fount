@@ -170,3 +170,30 @@ export function listBridgeGroupMappings(username) {
 		groupId: mapping.groupId,
 	}))
 }
+
+/**
+ * fount channelId → 平台会话/子频道反查（出站统一入口）。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {string} channelId fount 频道 ID
+ * @returns {{ platformChatId: string, platformThreadId?: string } | null} 平台会话与子频道
+ */
+export function lookupBridgePlatformChannel(username, groupId, channelId) {
+	const groupKey = findBridgeGroupKeyByGroupId(username, groupId)
+	if (!groupKey) return null
+	const colon = groupKey.indexOf(':')
+	if (colon < 0) return null
+	const platformChatId = groupKey.slice(colon + 1)
+	const mapping = loadBridgesDoc(username).mappings[groupKey]
+	if (!mapping?.channels) return { platformChatId }
+
+	const normalizedChannelId = String(channelId || 'default').trim() || 'default'
+	for (const [threadKey, mappedChannelId] of Object.entries(mapping.channels))
+		if (mappedChannelId === normalizedChannelId)
+			return {
+				platformChatId,
+				...threadKey !== 'default' ? { platformThreadId: threadKey } : {},
+			}
+
+	return { platformChatId }
+}

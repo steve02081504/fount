@@ -244,3 +244,105 @@ Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () =>
 	assert(calls.includes('typing'))
 	assert(calls.includes('invite'))
 })
+
+Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolves thread', async () => {
+	const username = `bridge-dc-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_discord_',
+		minP2pNode: true,
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { lookupBridgePlatformChannel, resolveBridgeChannel } = await import('../../src/chat/bridge/registry.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+
+	const guildId = '900100'
+	const discordChannelId = '900101'
+	const event = await postBridgeMessage(username, {
+		platform: 'discord',
+		platformChatId: guildId,
+		platformThreadId: discordChannelId,
+		platformMessageId: 'dc-msg-1',
+		chatKind: 'group',
+		chatName: 'Test Guild',
+		author: { platformUserId: '111', displayName: 'Alice' },
+		text: 'discord bridge hello',
+		timestamp: Date.now(),
+	})
+
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'discord',
+		platformChatId: guildId,
+	})
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const defaultChannelId = await getDefaultChannelId(username, groupId)
+	const resolved = lookupBridgePlatformChannel(username, groupId, defaultChannelId)
+	assertEquals(resolved?.platformChatId, guildId)
+
+	const { channelId: fountThreadChannelId } = await resolveBridgeChannel(username, {
+		platform: 'discord',
+		platformChatId: guildId,
+		platformThreadId: discordChannelId,
+	})
+	const mapped = lookupBridgePlatformChannel(username, groupId, fountThreadChannelId)
+	assertEquals(mapped?.platformChatId, guildId)
+	assertEquals(mapped?.platformThreadId, discordChannelId)
+
+	const messages = await readChannelMessagesForUser(username, groupId, fountThreadChannelId, { limit: 10 })
+	assert(messages.some(row => row.eventId === event.id))
+})
+
+Deno.test('wechat synthetic DTO persists to DAG', async () => {
+	const username = `bridge-wx-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_wechat_',
+		minP2pNode: true,
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+
+	const peerId = 'wx-peer-001'
+	const event = await postBridgeMessage(username, {
+		platform: 'wechat',
+		platformChatId: peerId,
+		platformMessageId: 'wx-msg-1',
+		chatKind: 'dm',
+		chatName: 'WeChat DM',
+		author: { platformUserId: peerId, displayName: 'Owner' },
+		text: 'wechat bridge ping',
+		timestamp: Date.now(),
+	})
+
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'wechat',
+		platformChatId: peerId,
+		chatKind: 'dm',
+	})
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const channelId = await getDefaultChannelId(username, groupId)
+	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 10 })
+	assert(messages.some(row => row.eventId === event.id))
+})
+
+Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () => {
+	const username = `bridge-dcfmt-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_dcfmt_',
+		minP2pNode: true,
+	})
+	await ensureServer()
+
+	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
+	const { rewriteDiscordMentionsToFount } = await import('../../../discordbot/src/format.mjs')
+	const hash = bridgeEntityHash('discord', '555')
+	const out = await rewriteDiscordMentionsToFount(username, 'see <@555>')
+	assertEquals(out, `see @[${hash}]`)
+})

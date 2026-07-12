@@ -1,4 +1,4 @@
-import { console } from '../../../../../../scripts/i18n/bare.mjs'
+import { console } from '../../../../../scripts/i18n/bare.mjs'
 
 /* eslint-disable jsdoc/require-param-description, jsdoc/require-param-type, jsdoc/require-returns, jsdoc/require-returns-description */
 import {
@@ -47,6 +47,29 @@ async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 }
 
 /**
+ * @param {object} messageLine DAG 消息行
+ * @param {string} charname 角色名
+ * @returns {object}
+ */
+function messageLineToReplyEntry(messageLine, charname) {
+	const content = messageLine?.content || {}
+	return {
+		name: charname,
+		role: 'char',
+		content: typeof content === 'string' ? content : content.text || '',
+		content_for_show: typeof content === 'string' ? content : content.text || '',
+		time_stamp: messageLine?.hlc?.wall || Date.now(),
+		files: (messageLine?.files || []).map(file => ({
+			name: file.name,
+			mime_type: file.mime_type,
+			buffer: file.buffer,
+			description: file.description || '',
+		})),
+		extension: { dagEventId: messageLine?.eventId },
+	}
+}
+
+/**
  * @param {number | string} chatId chat id
  * @param {number | undefined} threadId thread id
  * @returns {string}
@@ -81,7 +104,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		const { registerBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
 		const { postBridgeEdit, postBridgeMessage } = await import('../../chat/src/chat/bridge/ingress.mjs')
 		const { registerBridgeOutbound } = await import('../../chat/src/chat/bridge/outbound.mjs')
-		const { listBridgeGroupMappings } = await import('../../chat/src/chat/bridge/registry.mjs')
+		const { listBridgeGroupMappings, lookupBridgePlatformChannel } = await import('../../chat/src/chat/bridge/registry.mjs')
 		const { channelMessageAgentText } = await import('../../chat/public/shared/channelContent.mjs')
 
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
@@ -161,11 +184,50 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		async function ensureOutboundHandler(groupId, bridge) {
 			if (outboundRegistered.has(groupId)) return
 			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
-				const platformChatId = bridge.platformChatId
-				const threadKey = channelId !== 'default' ? channelId : undefined
+				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
+				const platformChatId = platformChannel?.platformChatId ?? bridge.platformChatId
+				const threadKey = platformChannel?.platformThreadId
 				const rawText = channelMessageAgentText(messageLine.content) || ''
 				const plainText = await restoreFountMentionsInText(ownerUsername, rawText)
+				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
 				const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(plainText)
+
+				/**
+				 *
+				 * @param payload
+				 */
+				const sendPayload = async payload => {
+					let firstId = null
+					if (payload.text?.trim()) {
+						const { text, entities } = await buildTelegramTextAndEntities(ownerUsername, payload.text)
+						const html = aiMarkdownToTelegramHtml(text)
+						const parts = splitTelegramReply(html)
+						for (const part of parts) {
+							const sent = await tryFewTimes(() => bot.telegram.sendMessage(platformChatId, part, {
+								...DefaultParseModeOptions,
+								...threadKey ? { message_thread_id: Number(threadKey) } : {},
+								...entities.length ? { entities } : {},
+							}))
+							if (!firstId) firstId = sent.message_id
+						}
+					}
+					for (const stickerId of payload.stickerIds || []) {
+						const sent = await tryFewTimes(() => bot.telegram.sendSticker(platformChatId, stickerId, {
+							...threadKey ? { message_thread_id: Number(threadKey) } : {},
+						}))
+						if (!firstId) firstId = sent.message_id
+					}
+					return { platformMessageId: firstId ?? undefined }
+				}
+
+				const handled = await charAPI.interfaces.telegram?.FormatOutboundReply?.(replyEntry, {
+					platform: 'telegram',
+					send: sendPayload,
+					chatId: platformChatId,
+					threadId: threadKey,
+				})
+				if (handled) return {}
+
 				let firstMessageId = null
 				if (cleanMarkdown.trim()) {
 					const { text, entities } = await buildTelegramTextAndEntities(ownerUsername, cleanMarkdown)
@@ -235,6 +297,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * @returns {Promise<void>}
 		 */
 		async function ingestDto(dto) {
+			await charAPI.interfaces.telegram?.TweakInboundDto?.(dto)
 			await postBridgeMessage(ownerUsername, dto)
 			const { ensureBridgeGroup } = await import('../../chat/src/chat/bridge/registry.mjs')
 			const { getState } = await import('../../chat/src/chat/dag/materialize.mjs')
@@ -259,6 +322,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 			const dto = await telegramMessageToBridgeDto(context, editedMessage, botInfo, ownerUsername)
 			if (!dto) return
 			try {
+				await charAPI.interfaces.telegram?.TweakInboundDto?.(dto)
 				await postBridgeEdit(ownerUsername, dto)
 			}
 			catch (error) {
