@@ -6,6 +6,7 @@
  */
 import { authenticate } from '../../../../../server/auth/index.mjs'
 
+import { registerBridgeRoutes } from './endpoints/bridge.mjs'
 import { registerDiscoveryRoutes } from './endpoints/discovery.mjs'
 import { registerGroupsRuntimeRoutes } from './endpoints/groups_runtime.mjs'
 import { registerMailboxRoutes } from './endpoints/mailbox.mjs'
@@ -26,6 +27,7 @@ export function setEndpoints(router) {
 	registerStickerRoutesUnderChat(router, '/api/parts/shells:chat/stickers')
 
 	registerPrefsRoutes(router)
+	registerBridgeRoutes(router)
 	registerDiscoveryRoutes(router)
 	registerMailboxRoutes(router)
 	registerInboxRoutes(router)

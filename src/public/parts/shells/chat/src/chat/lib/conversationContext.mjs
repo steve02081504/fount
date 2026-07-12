@@ -51,7 +51,7 @@ function countActiveMembers(state) {
  */
 export async function buildConversationContext(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
-	const isDm = state.groupMeta?.dmKind === 'ecdh'
+	const isDm = state.groupMeta?.dmKind === 'ecdh' || state.groupSettings?.bridge?.chatKind === 'dm'
 	const channel = state.channels?.[channelId]
 	return {
 		group: {

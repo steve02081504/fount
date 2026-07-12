@@ -27,7 +27,9 @@ export function saveNotifyPrefs(username, prefs) {
  * @returns {'dm' | 'group'} 群种类
  */
 export function groupKindFromState(state) {
-	return state?.groupMeta?.dmKind === 'ecdh' ? 'dm' : 'group'
+	if (state?.groupMeta?.dmKind === 'ecdh') return 'dm'
+	if (state?.groupSettings?.bridge?.chatKind === 'dm') return 'dm'
+	return 'group'
 }
 
 /**

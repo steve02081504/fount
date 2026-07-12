@@ -5,10 +5,10 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`./messageFanout.mjs`、`../session/chatRequest.mjs`。
  */
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { applyNetworkHint, mergeNetworkPeerPools } from 'npm:@steve02081504/fount-p2p/node/network'
 import {
 	applyDecayCollusionAfterSlash,
@@ -16,6 +16,7 @@ import {
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
 } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
 import {
 	CKG_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,
@@ -28,7 +29,6 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
-import { dispatchMessageFanout } from './messageFanout.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
@@ -38,6 +38,7 @@ import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
 import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from './materialize.mjs'
+import { dispatchMessageFanout } from './messageFanout.mjs'
 import { resolveTargetMemberKey } from './reducers/helpers.mjs'
 
 /** 写入频道消息流 JSONL 的事件类型。 */
@@ -293,4 +294,10 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		catch (error) {
 			console.error('AfterAddChatLogEntry failed:', error)
 		}
+	if (signPayload.type === 'message' && signPayload.charId) {
+		const { notifyBridgeOutbound } = await import('../bridge/outbound.mjs')
+		void notifyBridgeOutbound(username, groupId, channelId, messageLine).catch(error => {
+			console.error('notifyBridgeOutbound failed:', error)
+		})
+	}
 }

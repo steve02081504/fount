@@ -1,6 +1,7 @@
 import { buildMentionsStructure } from 'fount/public/pages/scripts/lib/mentions.mjs'
 import { notifyUser } from 'fount/server/notify/notify.mjs'
 
+import { hasPermission, PERMISSIONS } from '../../permissions/chat.mjs'
 import { isCaredBy } from '../lib/care.mjs'
 import {
 	appendChatInbox,
@@ -9,7 +10,7 @@ import {
 	deriveChatInboxMessageRow,
 	listLocalRecipientsInGroup,
 	mentionTextFromMessageLine,
-	resolveAuthorFromSender,
+	resolveAuthorFromMessageLine,
 } from '../lib/inbox.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import {
@@ -17,7 +18,6 @@ import {
 	shouldNotifyHumanForMessage,
 } from '../lib/notifyPrefs.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
-import { hasPermission, PERMISSIONS } from '../../permissions/chat.mjs'
 import { runTriggerPipeline } from '../session/triggerPipeline.mjs'
 
 import { getState } from './materialize.mjs'
@@ -76,7 +76,7 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 	const recipients = await listLocalRecipientsInGroup(username, state)
 	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
 	const senderKey = String(messageLine.sender || '').trim().toLowerCase()
-	const { authorEntityHash, authorDisplayName } = resolveAuthorFromSender(state, senderKey)
+	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	const groupName = state.groupMeta?.name || groupId
 	const channelName = state.channels?.[channelId]?.name || channelId
 

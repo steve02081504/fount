@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
+import { getPartInfo } from '../../../../../../src/scripts/locale.mjs'
 
 /**
  * Telegram bot 信息类型
@@ -16,7 +16,7 @@ import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
  */
 /**
  * 角色 API 类型别名。
- * @typedef {import('../../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
+ * @typedef {import('../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
  */
 /**
  * fount 聊天日志条目基类类型别名。
@@ -784,4 +784,221 @@ export function splitTelegramReply(reply, split_length = 4096) {
 
 
 	return messages.filter(line => line.trim().length)
+}
+
+const FOUNT_ENTITY_MENTION_RE = /@\[([0-9a-f]{128})\]/gi
+
+/**
+ * UTF-16 码元长度（Telegram entity offset 用）。
+ * @param {string} text 文本
+ * @returns {number} UTF-16 码元数
+ */
+function utf16Length(text) {
+	return [...text].reduce((sum, ch) => sum + (ch.codePointAt(0) > 0xffff ? 2 : 1), 0)
+}
+
+/**
+ * 将 Telegram text_mention 实体改写为 fount `@[hash]` token。
+ * @param {string} username replica
+ * @param {string | undefined} text 原始正文
+ * @param {TelegramMessageEntity[] | undefined} entities 实体列表
+ * @returns {Promise<string>} 改写后正文
+ */
+export async function rewriteTelegramMentionsToFount(username, text, entities) {
+	if (!text || !entities?.length) return text || ''
+	const { resolveBridgeIdentity } = await import('../../chat/src/chat/bridge/identity.mjs')
+	const sorted = [...entities]
+		.filter(entity => entity.type === 'text_mention' && entity.user?.id != null)
+		.sort((a, b) => b.offset - a.offset)
+	let result = text
+	for (const entity of sorted) {
+		const hash = await resolveBridgeIdentity(
+			username,
+			'telegram',
+			entity.user.id,
+			entity.user.first_name || entity.user.username || '',
+		)
+		const token = `@[${hash}]`
+		const chars = Array.from(result)
+		chars.splice(entity.offset, entity.length, ...Array.from(token))
+		result = chars.join('')
+	}
+	return result
+}
+
+/**
+ * 出站：fount `@[hash]` → Telegram 纯文本 + text_mention entities。
+ * @param {string} username replica
+ * @param {string} text 含 fount token 的正文
+ * @returns {Promise<{ text: string, entities: TelegramMessageEntity[] }>} 出站文本与实体
+ */
+export async function buildTelegramTextAndEntities(username, text) {
+	const { lookupBridgeEntityReverse } = await import('../../chat/src/chat/bridge/identity.mjs')
+	/** @type {TelegramMessageEntity[]} */
+	const entities = []
+	let output = ''
+	let lastIndex = 0
+	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'gi')
+	for (const match of text.matchAll(re)) {
+		const start = match.index ?? 0
+		output += text.slice(lastIndex, start)
+		const hash = String(match[1]).toLowerCase()
+		const rev = lookupBridgeEntityReverse(username, hash)
+		if (rev?.platform === 'telegram') {
+			const mentionText = rev.displayName || `User_${rev.platformUserId}`
+			const offset = utf16Length(output)
+			entities.push({
+				type: 'text_mention',
+				offset,
+				length: utf16Length(mentionText),
+				user: {
+					id: Number(rev.platformUserId),
+					is_bot: false,
+					first_name: mentionText,
+				},
+			})
+			output += mentionText
+		}
+		else 
+			output += rev?.displayName || hash.slice(64, 72)
+		
+		lastIndex = start + match[0].length
+	}
+	output += text.slice(lastIndex)
+	return { text: output, entities }
+}
+
+/**
+ * 出站：fount `@[hash]` 还原为可读文本（无 entities）。
+ * @param {string} username replica
+ * @param {string} text 正文
+ * @returns {Promise<string>} 还原后正文
+ */
+export async function restoreFountMentionsInText(username, text) {
+	if (!text) return ''
+	const { lookupBridgeEntityReverse } = await import('../../chat/src/chat/bridge/identity.mjs')
+	const re = new RegExp(FOUNT_ENTITY_MENTION_RE.source, 'gi')
+	let result = ''
+	let lastIndex = 0
+	for (const match of text.matchAll(re)) {
+		const start = match.index ?? 0
+		result += text.slice(lastIndex, start)
+		const hash = String(match[1]).toLowerCase()
+		const rev = lookupBridgeEntityReverse(username, hash)
+		if (rev?.platform === 'telegram')
+			result += `@${rev.displayName || rev.platformUserId}`
+		else
+			result += rev?.displayName || hash.slice(64, 72)
+		lastIndex = start + match[0].length
+	}
+	result += text.slice(lastIndex)
+	return result
+}
+
+/**
+ * @param {import('npm:telegraf').Context} context Telegraf 上下文
+ * @param {TelegramMessageType} message Telegram 消息
+ * @param {TelegramBotInfo} botInfo bot 信息
+ * @param {string} ownerUsername replica
+ * @returns {Promise<object | null>} bridge DTO
+ */
+export async function telegramMessageToBridgeDto(context, message, botInfo, ownerUsername) {
+	if (!message?.from) return null
+	const rawText = message.text || message.caption || ''
+	const entities = message.entities || message.caption_entities
+	let text = await rewriteTelegramMentionsToFount(ownerUsername, rawText, entities)
+	if (message.sticker) {
+		const { sticker } = message
+		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`
+		text = [text, stickerDesc].filter(Boolean).join('\n\n')
+	}
+	const lazyFiles = createLazyTelegramMessageFileLoaders(context, message)
+	/** @type {Array<{ name?: string, mime_type?: string, buffer: Buffer }>} */
+	const files = []
+	for (const loader of lazyFiles) {
+		if (typeof loader !== 'function') continue
+		const loaded = await loader()
+		if (loaded?.buffer?.byteLength)
+			files.push({
+				name: loaded.name || 'file',
+				mime_type: loaded.mime_type || 'application/octet-stream',
+				buffer: loaded.buffer,
+			})
+	}
+	if (!text.trim() && !files.length) return null
+
+	const displayName = [
+		message.from.first_name,
+		message.from.last_name,
+	].filter(Boolean).join(' ').trim()
+		|| message.from.username
+		|| `User_${message.from.id}`
+
+	return {
+		platform: 'telegram',
+		platformChatId: message.chat.id,
+		platformThreadId: message.message_thread_id,
+		platformMessageId: message.message_id,
+		chatKind: message.chat.type === 'private' ? 'dm' : 'group',
+		chatName: message.chat.title || String(message.chat.id),
+		author: {
+			platformUserId: message.from.id,
+			displayName,
+		},
+		text,
+		files: files.length ? files : undefined,
+		replyToPlatformMessageId: message.reply_to_message?.message_id,
+		timestamp: (message.edit_date ?? message.date) * 1000,
+	}
+}
+
+/**
+ * 相册合并为单条 bridge DTO。
+ * @param {import('npm:telegraf').Context} context Telegraf 上下文
+ * @param {TelegramMessageType[]} messages 相册分片
+ * @param {string} ownerUsername replica
+ * @returns {Promise<object | null>} bridge DTO
+ */
+export async function telegramMediaGroupToBridgeDto(context, messages, ownerUsername) {
+	if (!messages?.length) return null
+	const sorted = [...messages].sort((a, b) => a.message_id - b.message_id)
+	const primary = sorted[0]
+	const { content } = extractMediaGroupContentParts(sorted, undefined, {})
+	const text = content
+	const files = sorted.flatMap(message => createLazyTelegramMessageFileLoaders(context, message))
+	const resolvedFiles = []
+	for (const loader of files) {
+		if (typeof loader !== 'function') continue
+		const loaded = await loader()
+		if (loaded?.buffer?.byteLength)
+			resolvedFiles.push({
+				name: loaded.name || 'file',
+				mime_type: loaded.mime_type || 'application/octet-stream',
+				buffer: loaded.buffer,
+			})
+	}
+	if (!text.trim() && !resolvedFiles.length) return null
+	const from = primary.from
+	const displayName = [
+		from.first_name,
+		from.last_name,
+	].filter(Boolean).join(' ').trim()
+		|| from.username
+		|| `User_${from.id}`
+	return {
+		platform: 'telegram',
+		platformChatId: primary.chat.id,
+		platformThreadId: primary.message_thread_id,
+		platformMessageId: primary.message_id,
+		chatKind: primary.chat.type === 'private' ? 'dm' : 'group',
+		chatName: primary.chat.title || String(primary.chat.id),
+		author: {
+			platformUserId: from.id,
+			displayName,
+		},
+		text,
+		files: resolvedFiles.length ? resolvedFiles : undefined,
+		replyToPlatformMessageId: sorted.find(message => message.reply_to_message)?.reply_to_message?.message_id,
+		timestamp: Math.max(...sorted.map(message => (message.edit_date ?? message.date) * 1000)),
+	}
 }

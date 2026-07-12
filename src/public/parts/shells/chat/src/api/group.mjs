@@ -115,6 +115,13 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async createInvite() {
 			const state = await loadGroupState(ctx, groupId)
+			const bridge = state.groupSettings?.bridge
+			if (bridge?.platform && bridge?.platformChatId) {
+				const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
+				return requireBridgeOp(bridge.platform, 'createInvite')({
+					platformChatId: bridge.platformChatId,
+				})
+			}
 			const ticket = await mintGroupInviteTicket(ctx.username, groupId)
 			const roomCreds = isGroupFederationActive(state.groupSettings)
 				? roomCredentialsFromGroupSettings(state.groupSettings)

@@ -112,6 +112,24 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
 }
 
 /**
+ * 从消息行解析作者（桥接消息优先 extension.bridge 归因）。
+ * @param {object} state 物化群状态
+ * @param {object} messageLine 频道消息行
+ * @returns {{ authorEntityHash: string | null, authorDisplayName: string }}
+ */
+export function resolveAuthorFromMessageLine(state, messageLine) {
+	const bridge = messageLine?.content?.extension?.bridge
+	if (bridge?.authorEntityHash) {
+		return {
+			authorEntityHash: String(bridge.authorEntityHash).trim().toLowerCase(),
+			authorDisplayName: String(bridge.authorDisplayName || '').trim() || 'unknown',
+		}
+	}
+	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
+	return resolveAuthorFromSender(state, senderKey)
+}
+
+/**
  * 枚举群内本机收件人：operator + 本节点托管 agent 成员。
  * @param {string} username replica
  * @param {object} state 物化群状态
@@ -149,7 +167,7 @@ function deriveChatInboxRowFromMessage(recipientEntityHash, kind, groupId, chann
 	const text = mentionTextFromMessageLine(messageLine)
 	if (!text) return null
 	const senderKey = String(messageLine.sender || '').trim().toLowerCase()
-	const { authorEntityHash, authorDisplayName } = resolveAuthorFromSender(state, senderKey)
+	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	if (authorEntityHash === recipient) return null
 	const at = Number(messageLine.hlc?.wall || messageLine.timestamp || messageLine.receivedAt || Date.now())
 	return {

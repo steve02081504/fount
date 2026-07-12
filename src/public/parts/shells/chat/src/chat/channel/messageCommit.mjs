@@ -102,6 +102,10 @@ export async function runWorldAddChatLogEntryHook(username, groupId, channelId, 
  */
 export async function buildCanonicalMessageContent(username, groupId, channelId, content, opts = {}) {
 	const { charId = null, entry = null, origin = 'human' } = opts
+	const base = channelMessageContentObject(content)
+	if (origin === 'bridge')
+		return base
+
 	const [{ sender }, { state }] = await Promise.all([
 		resolveLocalEventSigner(username, groupId),
 		getState(username, groupId),
@@ -113,7 +117,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
 		groupId,
 	)
 	const canonical = channelMessageContentObject({
-		...channelMessageContentObject(content),
+		...base,
 		displayName: display.name,
 		...display.avatar ? { displayAvatar: display.avatar } : {},
 	})
@@ -139,7 +143,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
  *   charId?: string | null,
  *   timestamp?: number,
  *   entry?: object | null,
- *   origin?: 'human' | 'char' | 'greeting',
+ *   origin?: 'human' | 'char' | 'greeting' | 'bridge',
  *   skipWorldHook?: boolean,
  * }} args 落盘参数
  * @returns {Promise<object>} 已签名 DAG 事件
