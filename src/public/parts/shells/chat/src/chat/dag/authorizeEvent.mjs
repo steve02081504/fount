@@ -5,12 +5,13 @@
  * 【数据结构】`checkEventPermission` 返回 `{ ok, reason? }`；`eventChannelId` 归一化频道 id。
  * 【关联】`ingest.mjs`、`materialize.mjs`、`permissions/chat.mjs`。
  */
-import { agentEntityHash } from '../lib/entity.mjs'
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
+
 import { governanceChannelId } from '../../group/access.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
+import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
 import { manageAdminsPubKeyHashes, memberChannelPermissions } from './groupMaterializedState.mjs'
@@ -41,6 +42,26 @@ function isMessageDeleted(state, targetId) {
 }
 
 /**
+ * 委托写路径：带 actingAgentEntityHash 时权限按 agent 成员行求值。
+ * @param {object} state 物化群状态
+ * @param {{ content?: object }} event DAG 事件
+ * @param {string} senderHash 签名者 pubKeyHash
+ * @returns {{ ok: boolean, reason?: string, permissionMemberKey: string }} 权限成员键
+ */
+function resolvePermissionMemberKey(state, event, senderHash) {
+	const sender = String(senderHash || '').trim().toLowerCase()
+	const actingAgent = String(event.content?.actingAgentEntityHash || '').trim().toLowerCase()
+	if (!actingAgent) return { ok: true, permissionMemberKey: sender }
+
+	const member = state.members[actingAgent]
+	if (!member || member.memberKind !== 'agent' || member.status !== 'active')
+		return { ok: false, reason: 'invalid actingAgentEntityHash' }
+	if (String(member.ownerPubKeyHash || '').trim().toLowerCase() !== sender)
+		return { ok: false, reason: 'actingAgentEntityHash sender mismatch' }
+	return { ok: true, permissionMemberKey: actingAgent }
+}
+
+/**
  * @param {{ channelId?: string }} event DAG 事件
  * @returns {string} 权限求值用的频道 ID
  */
@@ -64,10 +85,13 @@ export function checkEventPermission(state, event, senderHash) {
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
 		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
+	const delegation = resolvePermissionMemberKey(state, event, sender)
+	if (!delegation.ok) return { ok: false, reason: delegation.reason }
+	const permissionMemberKey = delegation.permissionMemberKey
 
 	const channelId = eventChannelId(event)
-	const channelPerms = memberChannelPermissions(state, sender, channelId)
-	const govPerms = memberChannelPermissions(state, sender, governanceChannelId(state))
+	const channelPerms = memberChannelPermissions(state, permissionMemberKey, channelId)
+	const govPerms = memberChannelPermissions(state, permissionMemberKey, governanceChannelId(state))
 
 	switch (type) {
 		case 'member_join': {

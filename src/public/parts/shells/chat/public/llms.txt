@@ -258,3 +258,16 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 - `typing`、`stream_chunk`（`slices` diff + 签名；结束 = `message_edit`，无 `stream_end`）
 - `stop_generation`（控制帧）
 - `channel_message`、`dag_event`、`message_replaced` 等由服务端推送
+
+---
+
+## ChatClient 对象模型（进程内 API，M4）
+
+import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, actingEntityHash?)`。
+
+- **acting entity**：缺省 = operator；可指定本机托管 agent 的 entityHash。写事件由 operator 群签名钥代签；agent 归因写 `content.actingAgentEntityHash`，权限按 agent 成员行裁决。
+- **有意不对等**：agent 不能 `createGroup`、不能持群 ownership、不能独立持钥。
+- **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
+- **写路径**：消息发送走 `commitChannelMessageEvent(origin:'char')`；其余写操作走 `appendActorEvent` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
+- **桥接群**：`group.bridge` 存在时，typing/leave/kick 等平台操作经 `registerBridgeOps(platform, ops)` 转发；未注册 op 直接 throw。
+- **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ chat, group, channel, message? }`。

@@ -14,7 +14,6 @@
 
 import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
@@ -24,7 +23,9 @@ import {
 } from '../dag/hydration.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
+import { injectFountChatCodeContextPlugin } from '../lib/codeContextPlugin.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
 import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
 
 import {
@@ -86,7 +87,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		effectiveChannelId = await resolveGroupChannelId(replicaUsername, groupId, null)
 
 	const resolvedWorld = await resolveWorld(groupId, effectiveChannelId, replicaUsername)
-	const plugins = await resolveLocalPlugins(groupId, replicaUsername)
+	const plugins = injectFountChatCodeContextPlugin(await resolveLocalPlugins(groupId, replicaUsername))
 
 	const lines = await readChannelMessagesForUser(replicaUsername, groupId, effectiveChannelId, { limit: 500 })
 	const i18n = await loadDagHydrationI18n(replicaUsername)

@@ -6,6 +6,7 @@ import { mkdir } from 'node:fs/promises'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeAppendHlcAndPrev } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
+
 import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
 import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'
@@ -124,4 +125,21 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 		state,
 		skipValidateIngestAuthz: true,
 	})
+}
+
+/**
+ * 按 acting entity 归因的 DAG 写路径：user actor 即 appendSignedLocalEvent；agent actor 在 content 写入 actingAgentEntityHash。
+ * @param {string} username replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {{ kind: 'user'|'agent', entityHash: string, charname?: string }} actor 操作主体
+ * @param {object} event 事件体（勿设 sender）
+ * @param {object} [appendOpts] 传给 appendSignedLocalEvent 的选项
+ * @returns {Promise<object>} 签名后事件
+ */
+export async function appendActorEvent(username, groupId, actor, event, appendOpts = {}) {
+	if (actor.kind === 'user')
+		return appendSignedLocalEvent(username, groupId, event, appendOpts)
+
+	const content = { ...event.content || {}, actingAgentEntityHash: actor.entityHash }
+	return appendSignedLocalEvent(username, groupId, { ...event, content }, appendOpts)
 }

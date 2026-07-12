@@ -324,6 +324,13 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
+		const { notifyUser } = await import('fount/server/notify/notify.mjs')
+		void notifyUser(username, {
+			title: row.type,
+			body: String(snippet || row.type || ''),
+			url: '/parts/shells:social/',
+			tag: `social:${row.type}:${recipient}`,
+		})
 	}
 }
 
