@@ -7,20 +7,20 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { parsePullResponseEnvelope } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
+import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import {
 	batchWantIds,
 	takeOutgoingWantIdsSlot,
-} from '../../../../../../../scripts/p2p/want_ids.mjs'
-import { extractInboundSignedEvent } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/want_ids'
+import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import {
 	finishMultiWireWaiters,
 	notifyMultiWireWaitersByPrefix,
 	registerMultiWireWait,
-} from '../../../../../../../scripts/p2p/wire_wait.mjs'
+} from 'npm:@steve02081504/fount-p2p/wire/wait'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'

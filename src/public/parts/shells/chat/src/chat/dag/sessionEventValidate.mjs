@@ -1,7 +1,7 @@
 /**
  * 【文件】`dag/sessionEventValidate.mjs` — `session_*` / 本地元数据 DAG 事件内容校验。
  */
-import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
 const WORLD_DISTRIBUTIONS = new Set(['local', 'replicated', 'hosted'])

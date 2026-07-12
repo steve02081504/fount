@@ -3,7 +3,7 @@ import {
 	registerManifestAclMatcher,
 	unregisterManifestAcl,
 	unregisterManifestAclMatcher,
-} from '../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/files/manifest_acl_registry'
 
 import { canViewVaultFile } from './vaultAcl.mjs'
 

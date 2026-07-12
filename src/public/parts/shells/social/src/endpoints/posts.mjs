@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'

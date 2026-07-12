@@ -19,8 +19,8 @@ export function randomSeed() {
  * @returns {Promise<object>} 已签名事件对象。
  */
 export async function makeRemoteSignedEvent(secretKey, ownerEntityHash, event) {
-	const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-	const { signTimelineEvent } = await import('fount/scripts/p2p/timeline/append_core.mjs')
+	const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+	const { signTimelineEvent } = await import('npm:@steve02081504/fount-p2p/timeline/append_core')
 	const { timelineGroupId } = await import('fount/public/parts/shells/social/src/federation/namespace.mjs')
 	const sender = pubKeyHash(publicKeyFromSeed(secretKey))
 	return signTimelineEvent({

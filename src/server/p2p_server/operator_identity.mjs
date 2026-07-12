@@ -1,16 +1,16 @@
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
-import { keyPairFromSeed } from '../../scripts/p2p/crypto.mjs'
-import { resolveLocalOperatorEntityHash } from '../../scripts/p2p/entity/replica.mjs'
-import { isHex64, normalizeHex64 } from '../../scripts/p2p/hexIds.mjs'
+import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { resolveLocalOperatorEntityHash } from 'npm:@steve02081504/fount-p2p/entity/replica'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	ensureNodeDefaults,
 	getNodeHash,
 	getNodeTransportSettings,
 	saveNodeTransportSettings,
-} from '../../scripts/p2p/node/identity.mjs'
-import { createGenesisKeyHistory } from '../../scripts/p2p/operator_key_chain.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/identity'
+import { createGenesisKeyHistory } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
 import { events } from '../events.mjs'
 import { assignShellData } from '../setting_loader.mjs'
 

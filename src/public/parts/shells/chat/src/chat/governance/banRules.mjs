@@ -7,8 +7,8 @@
  * 术语：**ban**=群成员治理（member_ban）；写入 denylist 的 **deny** 为节点连接拒绝，非 Social **block**。
  */
 import { memberEntityHash } from '../lib/entity.mjs'
-import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
 
 /** @typedef {'entity' | 'node'} BanScope */

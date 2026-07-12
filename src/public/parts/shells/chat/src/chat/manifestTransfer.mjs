@@ -5,7 +5,7 @@ import {
 	registerManifestOwnerMatcher,
 	registerTransferKeyDeps,
 	unregisterTransferKeyDeps,
-} from '../../../../../../scripts/p2p/files/transfer_key_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
 
 import { getFileMasterKeyByGeneration, getCurrentFileMasterKey } from './file_keys/store.mjs'
 import { getDecryptedFile } from './files/groupFiles.mjs'

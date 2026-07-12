@@ -8,13 +8,13 @@ import {
 	isValidActiveSender,
 	resolveActiveKeyAtGeneration,
 	isActiveGenerationRevoked,
-} from '../../../../../../scripts/p2p/operator_key_chain.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 /**
  * 折叠时间线事件中的 recovery 公钥与 operator 密钥链（含 social_meta）。
  * @param {object[]} events 时间线事件（拓扑序）
- * @returns {{ recoveryPubKeyHex: string | null, operatorKeyHistory: import('../../../../../../scripts/p2p/operator_key_chain.mjs').OperatorKeyHistoryEntry[] }}
+ * @returns {{ recoveryPubKeyHex: string | null, operatorKeyHistory: import('npm:@steve02081504/fount-p2p/federation/operator_key_chain').OperatorKeyHistoryEntry[] }}
  */
 export function foldOperatorKeyHistoryFromEvents(events) {
 	let recoveryPubKeyHex = null
@@ -36,7 +36,7 @@ export function foldOperatorKeyHistoryFromEvents(events) {
  * @param {string} params.eventType 事件 type
  * @param {object} [params.eventContent] 事件 content
  * @param {string | null} params.recoveryPubKeyHex recovery 公钥
- * @param {import('../../../../../../scripts/p2p/operator_key_chain.mjs').OperatorKeyHistoryEntry[]} params.operatorKeyHistory 密钥历史
+ * @param {import('npm:@steve02081504/fount-p2p/federation/operator_key_chain').OperatorKeyHistoryEntry[]} params.operatorKeyHistory 密钥历史
  * @returns {boolean} 是否授权写入
  */
 export function isOperatorTimelineWriteAuthorized({

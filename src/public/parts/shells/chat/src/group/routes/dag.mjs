@@ -6,12 +6,12 @@
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag/*、chat/governance、localAuthz.mjs、access.mjs。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadReputation, buildAndApplyUnverifiedSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { isSignedDagEventRow } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
+import { HEX_ID_64 as PUB_KEY_HEX_64, isHex64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadReputation, buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { isSignedDagEventRow } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { mergeDagTips } from '../../chat/dag/lifecycle.mjs'
@@ -128,8 +128,8 @@ export function registerDagRoutes(router, authenticate) {
 		const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 		const tips = computeDagTipIdsFromEvents(events)
 		const { checkpoint } = await getState(username, groupId)
-		const { computeLocalTipsHash } = await import('../../../../../../../scripts/p2p/dag/index.mjs')
-		const { computeTipAuthzScores, computeTipConsensusScores } = await import('../../../../../../../scripts/p2p/governance_branch.mjs')
+		const { computeLocalTipsHash } = await import('npm:@steve02081504/fount-p2p/dag/index')
+		const { computeTipAuthzScores, computeTipConsensusScores } = await import('npm:@steve02081504/fount-p2p/governance/branch')
 		const eventsById = new Map()
 		for (const event of events)
 			if (event?.id) eventsById.set(String(event.id), event)

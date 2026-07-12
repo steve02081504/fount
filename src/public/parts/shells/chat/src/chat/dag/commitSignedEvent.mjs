@@ -1,8 +1,8 @@
 /**
  * 已验签 Chat DAG 事件落盘 + 广播 + 联邦发布（local / federation 共用）。
  */
-import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { recordEventReceivedAt } from '../events/meta.mjs'
 import { publishSignedEventToFederation } from '../federation/index.mjs'
 import { recordMessageRate } from '../governance/rateLimitState.mjs'

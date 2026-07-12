@@ -5,7 +5,7 @@ import {
 	registerManifestAclMatcher,
 	unregisterManifestAcl,
 	unregisterManifestAclMatcher,
-} from '../../../../../../scripts/p2p/entity/files/manifest_acl_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/files/manifest_acl_registry'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../group/access.mjs'
 
 import { getState } from './dag/materialize.mjs'

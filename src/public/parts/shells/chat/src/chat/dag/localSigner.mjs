@@ -7,7 +7,7 @@
  */
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 
-import { pubKeyHash, publicKeyFromSeed, randomKeyPair } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { pubKeyHash, publicKeyFromSeed, randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { groupDir, localSignerSeedPath } from '../lib/paths.mjs'
 

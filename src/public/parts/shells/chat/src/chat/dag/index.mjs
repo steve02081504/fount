@@ -5,8 +5,8 @@
  * 【数据结构】无本地状态；注入对象含函数句柄与 `getStateForFederation` 回调。
  * 【关联】`../federation/dagDependencies.mjs`、`materialize.mjs`、`remoteIngest.mjs`、`storage.mjs`。
  */
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { initFederationDagDeps } from '../federation/dagDependencies.mjs'
 
 

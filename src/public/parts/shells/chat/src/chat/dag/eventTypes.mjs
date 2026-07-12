@@ -3,7 +3,7 @@
 import {
 	registerEventTypeDefs,
 	unregisterEventTypeDefs,
-} from '../../../../../../../scripts/p2p/event_type_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/registries/event_type'
 
 const OWNER_ID = 'chat'
 

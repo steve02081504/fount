@@ -1,9 +1,9 @@
 import { findHostingReplicaUsername, resolveSocialEntity } from '../federation/hosting.mjs'
-import { isEntityHash128, parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
-import { loadNetwork } from '../../../../../../scripts/p2p/network.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
-import { getEntityStore, isNodeInitialized } from '../../../../../../scripts/p2p/node/instance.mjs'
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadNetwork } from 'npm:@steve02081504/fount-p2p/node/network'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { getEntityStore, isNodeInitialized } from 'npm:@steve02081504/fount-p2p/node/instance'
 
 
 /**

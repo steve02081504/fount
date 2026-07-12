@@ -1,8 +1,8 @@
 /**
  * Social 引导：账号即 Chat 联邦 P2P 实体，首次访问时自动准备 timeline + profile。
  */
-import { ensureLocalEntityProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { isWritableLocalEntity } from '../../../../../../scripts/p2p/entity/replica.mjs'
+import { ensureLocalEntityProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/entity/replica'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { ensureSocialMeta } from '../timeline/append.mjs'
 

@@ -8,7 +8,7 @@
 import { mkdir, readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { writeJsonAtomic } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { eventMetaPath } from '../lib/paths.mjs'
 
 /**

@@ -15,7 +15,7 @@ const vault = await import('../../src/vault_crypto/vault.mjs')
 const followApprove = await import('../../src/vault_crypto/followApprove.mjs')
 const append = await import('../../src/timeline/append.mjs')
 const fedExport = await import('../../src/timeline/federationExport.mjs')
-const { publicKeyFromSeed, pubKeyHash } = await import('fount/scripts/p2p/crypto.mjs')
+const { publicKeyFromSeed, pubKeyHash } = await import('npm:@steve02081504/fount-p2p/crypto')
 
 Deno.test('maybeEncryptPostContent roundtrips via maybeDecryptPostContent', async () => {
 	const { username, operator } = await getSession()
@@ -84,7 +84,7 @@ Deno.test('encrypted followers post exports ciphertext to owner pull', async () 
 	}, { fanout: false })
 
 	const all = await append.readTimelineEvents(username, operator)
-	const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
+	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 	const exported = await fedExport.filterEventsForFederatedPull(username, operator, all, getNodeHash())
 	const cipherPost = all.find(e => e.type === 'post' && e.content?.postKeyId === postKeyId)
 	assert(cipherPost)

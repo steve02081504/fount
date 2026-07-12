@@ -2,7 +2,7 @@
  * 个人 block / hide 写路径。
  */
 /* global Deno */
-import { setPersonalHidden } from 'fount/scripts/p2p/personal_block.mjs'
+import { setPersonalHidden } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
@@ -15,8 +15,8 @@ const personalBlock = await import('../../src/personalBlock.mjs')
 const materialize = await import('../../src/timeline/materialize.mjs')
 const { loadViewerContext } = await import('../../src/feed/helpers.mjs')
 const { canViewPost } = await import('../../src/feedVisibility.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 
 const TARGET = placeholderEntityHash('b')
 

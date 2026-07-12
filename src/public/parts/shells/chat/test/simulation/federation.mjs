@@ -33,15 +33,15 @@ export async function createChatFederationSim(options = {}) {
 		localSigner: await import('../../src/chat/dag/localSigner.mjs'),
 		replica: await import('../../src/chat/lib/replica.mjs'),
 		paths: await import('../../src/chat/lib/paths.mjs'),
-		storage: await import('fount/scripts/p2p/dag/storage.mjs'),
-		strip: await import('fount/scripts/p2p/dag/strip_extensions.mjs'),
+		storage: await import('npm:@steve02081504/fount-p2p/dag/storage'),
+		strip: await import('npm:@steve02081504/fount-p2p/dag/strip_extensions'),
 		state: await import('../../src/chat/dag/groupMaterializedState.mjs'),
 	}
 
 	if (options.withGovernance !== false) {
 		modules.authorize = await import('../../src/chat/dag/authorizeEvent.mjs')
 		modules.perms = await import('fount/public/parts/shells/chat/src/permissions/chat.mjs')
-		modules.dag = await import('fount/scripts/p2p/governance_branch.mjs')
+		modules.dag = await import('npm:@steve02081504/fount-p2p/governance/branch')
 	}
 
 	/**

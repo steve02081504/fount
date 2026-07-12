@@ -1,10 +1,10 @@
-import { registerMailboxConsumer, unregisterMailboxConsumer } from '../../../../../../../scripts/p2p/mailbox/consumer_registry.mjs'
-import { publishMailboxRecord, requestMailboxFromNetwork } from '../../../../../../../scripts/p2p/mailbox/deliver_or_store.mjs'
+import { registerMailboxConsumer, unregisterMailboxConsumer } from 'npm:@steve02081504/fount-p2p/mailbox/consumer_registry'
+import { publishMailboxRecord, requestMailboxFromNetwork } from 'npm:@steve02081504/fount-p2p/mailbox/deliver_or_store'
 import {
 	deleteMailboxRecords,
 	takeMailboxForRecipient,
-} from '../../../../../../../scripts/p2p/mailbox/store.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
+} from 'npm:@steve02081504/fount-p2p/mailbox/store'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { appendValidatedRemoteEvent, isRemoteIngestAccepted } from '../dag/remoteIngest.mjs'
 

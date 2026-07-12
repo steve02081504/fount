@@ -13,7 +13,7 @@ import path from 'node:path'
 
 import { geti18nForUser } from '../../../../../../scripts/i18n/index.mjs'
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-import { putChunk } from '../../../../../../scripts/p2p/files/chunk_store.mjs'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 import {
 	entityStickerPackDir,

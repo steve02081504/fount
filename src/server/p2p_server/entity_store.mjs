@@ -1,21 +1,21 @@
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
-import { parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
-import { createFsEntityStore } from '../../scripts/p2p/entity_store.mjs'
-import { readJsonFile, writeJsonFile } from '../../scripts/p2p/utils/json_io.mjs'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { createFsEntityStore } from 'npm:@steve02081504/fount-p2p/node/entity_store'
+import { readJsonFile, writeJsonFile } from 'npm:@steve02081504/fount-p2p/utils/json_io'
 import { getAllUserNames, getUserDictionary } from '../auth/index.mjs'
 
 /**
  * fount 多用户 EntityStore：实体仍存于各用户 `{userDict}/entities/{entityHash}/`。
- * @returns {import('../../scripts/p2p/entity_store.mjs').EntityStore} 跨用户路由的 EntityStore
+ * @returns {import('npm:@steve02081504/fount-p2p/node/entity_store').EntityStore} 跨用户路由的 EntityStore
  */
 export function createFountEntityStore() {
 	const fsStores = new Map()
 
 	/**
 	 * @param {string} username fount 登录名
-	 * @returns {import('../../scripts/p2p/entity_store.mjs').EntityStore} 该用户目录下的 fs store
+	 * @returns {import('npm:@steve02081504/fount-p2p/node/entity_store').EntityStore} 该用户目录下的 fs store
 	 */
 	function storeForUser(username) {
 		let store = fsStores.get(username)

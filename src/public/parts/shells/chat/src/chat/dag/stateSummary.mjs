@@ -1,9 +1,9 @@
 import { createHash } from 'node:crypto'
 
-import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
-import { findLastEventOfType } from '../../../../../../../scripts/p2p/dag/event_query.mjs'
-import { computeLocalTipsHash, computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
+import { findLastEventOfType } from 'npm:@steve02081504/fount-p2p/dag/event_query'
+import { computeLocalTipsHash, computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { appendSignedLocalEvent } from './append.mjs'

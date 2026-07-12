@@ -5,8 +5,8 @@
  * 【数据结构】隔离行 `{ event, reason, quarantinedAt }`；`tryIngest` 返回与 `appendValidatedRemoteEvent` 相同的状态码。
  * 【关联】`events/hlcPolicy.mjs`、`remoteIngest.mjs`、`p2p/dag/storage.mjs`、`dag/groupLock.mjs`。
  */
-import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { quarantinePath } from '../lib/paths.mjs'
 
 /**

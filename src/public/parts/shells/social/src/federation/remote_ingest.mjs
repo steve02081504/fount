@@ -1,9 +1,9 @@
 /**
  * Social 时间线远程入站验证链（不含磁盘写入）。
  */
-import { computeEventId, eventBodyForSign } from '../../../../../../scripts/p2p/dag/index.mjs'
-import { isPubKeyHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
-import { verifyTimelineRemoteSignature } from '../../../../../../scripts/p2p/timeline/verify_remote.mjs'
+import { computeEventId, eventBodyForSign } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { isPubKeyHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { verifyTimelineRemoteSignature } from 'npm:@steve02081504/fount-p2p/timeline/verify_remote'
 
 import { SOCIAL_TIMELINE_EVENT_TYPES, timelineGroupId } from './namespace.mjs'
 import { isTimelineWriteAuthorized } from './write_auth.mjs'

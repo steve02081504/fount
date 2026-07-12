@@ -1,4 +1,4 @@
-import { runTimelineMaintenance } from '../../../../../../scripts/p2p/timeline/retention_runner.mjs'
+import { runTimelineMaintenance } from 'npm:@steve02081504/fount-p2p/timeline/retention_runner'
 import { timelineEventsPath } from '../paths.mjs'
 
 import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'

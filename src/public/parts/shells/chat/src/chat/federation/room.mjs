@@ -1,10 +1,10 @@
 /**
  * 联邦房间生命周期：按需 join 信令分区、注册 handler、暴露 FederationSlot。
  */
-import { createActionRegistry } from '../../../../../../../scripts/p2p/action_registry.mjs'
-import { createGroupLinkSet } from '../../../../../../../scripts/p2p/group_link_set.mjs'
-import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
+import { createActionRegistry } from 'npm:@steve02081504/fount-p2p/registries/action'
+import { createGroupLinkSet } from 'npm:@steve02081504/fount-p2p/transport/group_link_set'
+import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { eventsPath } from '../lib/paths.mjs'
 import { onFederationRoomReadyForMailbox } from '../mailbox/ingest.mjs'
 

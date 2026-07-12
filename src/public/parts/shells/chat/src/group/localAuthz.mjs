@@ -5,8 +5,8 @@
  * 【数据结构】事件 type/content、物化 state.members、LOCAL_APPEND_AUTHZ_TYPES Set。
  * 【关联】被 group/routes/dag.mjs 在批量追加前调用；依赖 access.mjs、scripts/p2p/blocklist。
  */
-import { isPubKeyHashBlocked } from '../../../../../../scripts/p2p/denylist.mjs'
-import { isSignedDagEventRow } from '../../../../../../scripts/p2p/wire_ingress.mjs'
+import { isPubKeyHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { isSignedDagEventRow } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { getState } from '../chat/dag/materialize.mjs'
 
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from './access.mjs'

@@ -2,7 +2,7 @@ import {
 	CKG_SCHEME,
 	decryptWithChannelKey,
 	encryptWithChannelKey,
-} from '../../../../../../../scripts/p2p/channel_crypto.mjs'
+} from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { recordPendingChannelDecrypt } from '../file_keys/buffer.mjs'
 
 import { getChannelKeyHex, loadChannelKeysFile } from './store.mjs'

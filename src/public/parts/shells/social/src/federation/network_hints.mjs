@@ -1,5 +1,5 @@
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { applyNetworkHint } from '../../../../../../scripts/p2p/network.mjs'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { applyNetworkHint } from 'npm:@steve02081504/fount-p2p/node/network'
 
 /**
  * 关注/取关后为被关注实体的 nodeHash 写入 explore 扩边 hint。
@@ -18,7 +18,7 @@ export function applyFollowNetworkHints(username, targetEntityHash, follow) {
 		kind: 'follow',
 		weight: 0.25,
 	})
-	import('../../../../../../scripts/p2p/remote_user_room.mjs').then(({ ensureRemoteUserRoom }) =>
+	import('npm:@steve02081504/fount-p2p/transport/remote_user_room').then(({ ensureRemoteUserRoom }) =>
 		ensureRemoteUserRoom(username, parsed.nodeHash),
 	).catch(err => console.warn('social: ensureRemoteUserRoom after follow failed', err))
 }

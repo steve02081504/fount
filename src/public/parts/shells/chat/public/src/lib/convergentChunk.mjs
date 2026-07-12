@@ -1,5 +1,5 @@
 /**
- * 浏览器端收敛块哈希（与 `scripts/p2p/key_crypto.mjs` `encryptConvergentPlaintext` 对齐）。
+ * 浏览器端收敛块哈希（与 `npm:@steve02081504/fount-p2p/crypto/key` `encryptConvergentPlaintext` 对齐）。
  */
 
 import { sha256Hex } from '../../shared/digest.mjs'

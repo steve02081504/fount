@@ -1,10 +1,10 @@
 /**
  * 联邦补拉 HPKE 响应构建与应用。
  */
-import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { invalidateTopologicalOrderMemo } from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
-import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { invalidateTopologicalOrderMemo } from 'npm:@steve02081504/fount-p2p/federation/topo_order_memo'
+import { extractInboundSignedEvent, isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { mergeRemoteArchiveManifestHints } from '../archive/index.mjs'
 import { verifyRemoteCheckpoint } from '../dag/checkpointPayload.mjs'
 import { getState } from '../dag/materialize.mjs'

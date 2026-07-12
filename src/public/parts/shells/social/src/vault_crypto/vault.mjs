@@ -6,7 +6,7 @@ import {
 	deriveSocialPostKey,
 	generateFileMasterKey,
 	wrapKeyEcies,
-} from '../../../../../../scripts/p2p/key_crypto.mjs'
+} from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { vaultGroupId } from '../federation/namespace.mjs'
 import { vaultStatePath } from '../paths.mjs'
 

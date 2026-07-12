@@ -5,9 +5,9 @@ export {
 	ENTITY_HASH_RE,
 	isEntityHash128,
 	parseEntityHash,
-} from '../../../../../../scripts/p2p/entity_id_parse.mjs'
+} from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
 
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id_parse.mjs'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
 
 /**
  * @param {unknown} hash entityHash 或其它 hex 字符串

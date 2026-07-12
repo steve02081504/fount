@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
-import { MEMBERS_PAGE_SIZE } from '../../../../../../../../scripts/p2p/constants.mjs'
-import { isEntityHash128 } from '../../../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { sanitizeIceServersForSettings } from '../../../../../../../../scripts/p2p/ice_servers.mjs'
+import { MEMBERS_PAGE_SIZE } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { sanitizeIceServersForSettings } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 
 const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
 

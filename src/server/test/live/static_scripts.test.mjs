@@ -10,9 +10,9 @@ import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/n
 const BROWSER_SCRIPTS = [
 	'/scripts/lib/entity_hash.mjs',
 	'/scripts/lib/digest.mjs',
-	'/scripts/p2p/hexIds.mjs',
-	'/scripts/p2p/entity_id_parse.mjs',
-	'/scripts/p2p/mentions.mjs',
+	'/npm:@steve02081504/fount-p2p/core/hexIds',
+	'/npm:@steve02081504/fount-p2p/core/entity_id_parse',
+	'/npm:@steve02081504/fount-p2p/mentions',
 	'/scripts/infiniteScroll.mjs',
 	'/scripts/test/ready_gate.mjs',
 ]

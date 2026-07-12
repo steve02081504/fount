@@ -13,12 +13,12 @@ import {
 	registerDefaultAgentHosting,
 	unregisterDefaultAgentHosting,
 } from './src/chat/lib/agentHosting.mjs'
-import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from '../../../../scripts/p2p/entity/session_snapshot_registry.mjs'
-import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from '../../../../scripts/p2p/p2p_viewer_registry.mjs'
+import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from 'npm:@steve02081504/fount-p2p/entity/session_snapshot_registry'
+import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
-} from '../../../../scripts/p2p/part_path_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'

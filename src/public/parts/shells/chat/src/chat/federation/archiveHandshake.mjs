@@ -3,13 +3,13 @@
  * 【职责】gossip/wantIds 前的存档摘要握手：判断对端 archiveSummary 与本机 DAG 是否可对齐，并加载本地 events+checkpoint 生成应答用摘要。
  * 【原理】evaluateArchiveHandshake 比较摘要 tipsHash、hash、lastEventId 与 wantIds 命中；严格对齐时全 unknown want 可记信誉惩罚。wireArchiveSummary 将 computeArchiveSummary 结果序列化为联邦 gossip 载荷。
  * 【数据结构】archiveSummary { hash, eventCount, lastEventId, checkpointEventId, tips, tipsHash }；loadLocalFederationArchive 返回 events、checkpoint、summary。
- * 【关联】gossip.mjs、room.mjs tip ping、gossip 转发；scripts/p2p/archive_summary.mjs、lib/paths.mjs eventsPath/snapshotPath。
+ * 【关联】gossip.mjs、room.mjs tip ping、gossip 转发；npm:@steve02081504/fount-p2p/archive_summary.mjs、lib/paths eventsPath/snapshotPath。
  */
 import { readFile } from 'node:fs/promises'
 
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { computeArchiveSummary } from '../archive/summary.mjs'
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 

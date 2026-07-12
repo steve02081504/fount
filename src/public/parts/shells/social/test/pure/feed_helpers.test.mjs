@@ -4,9 +4,9 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
-import { normalizeDenylist } from '../../../../../../scripts/p2p/denylist.mjs'
-import { isAuthorFilteredByPersonalSets } from '../../../../../../scripts/p2p/personal_block.mjs'
+import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { normalizeDenylist } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { isAuthorFilteredByPersonalSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { canViewPost } from '../../src/feedVisibility.mjs'
 
 /**

@@ -42,9 +42,9 @@ Deno.test('parseManifestResources accepts partial fields', () => {
 	assertEquals(parseManifestResources({ cpuPct: 150 }), { cpuPct: 100 })
 })
 
-Deno.test('inferDefaultResources maps fed and sim profiles', () => {
+Deno.test('inferDefaultResources maps fed profiles', () => {
 	assertEquals(inferDefaultResources(makeSuite('shells/chat', 'fed_core')), { memMb: 1400, cpuPct: 35 })
-	assertEquals(inferDefaultResources(makeSuite('p2p', 'sim')), { memMb: 800, cpuPct: 92 })
+	assertEquals(inferDefaultResources(makeSuite('shells/chat', 'fed_ban')), { memMb: 1600, cpuPct: 45 })
 })
 
 Deno.test('resolveSuiteResources merges manifest, defaults, and sampled baseline', () => {
@@ -64,7 +64,7 @@ Deno.test('suiteSchedulePriority prefers larger footprint', () => {
 
 Deno.test('ResourceRunGate heavy suite runs exclusively', async () => {
 	const gate = new ResourceRunGate(8000 * MiB)
-	const heavy = makeSuite('p2p', 'sim', { heavy: true })
+	const heavy = makeSuite('shells/chat', 'fed_ban', { heavy: true })
 	const light = makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } })
 
 	const releaseHeavy = await gate.acquire(heavy)

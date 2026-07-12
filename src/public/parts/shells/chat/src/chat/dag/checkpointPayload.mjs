@@ -1,11 +1,11 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
-import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
-import { verifyCheckpointSignature } from '../../../../../../../scripts/p2p/checkpoint_sign.mjs'
-import { computeLocalTipsHash, merkleRoot } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
+import { verifyCheckpointSignature } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
+import { computeLocalTipsHash, merkleRoot } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { checkpointSignerPubKeyHashes, serializeReactionsOverlay, serializeVotesOverlay } from './groupMaterializedState.mjs'
 

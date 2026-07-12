@@ -1,7 +1,7 @@
 /**
  * 进行中角色回复的 VOLATILE 分片内存缓冲（晚加入 WS / HTTP 补拉）。
  */
-import { createVolatileStreamBuffer } from '../../../../../../../scripts/p2p/volatile_streams.mjs'
+import { createVolatileStreamBuffer } from 'npm:@steve02081504/fount-p2p/federation/volatile_streams'
 
 /** @type {Map<string, ReturnType<typeof createVolatileStreamBuffer>>} */
 const streamBuffers = new Map()

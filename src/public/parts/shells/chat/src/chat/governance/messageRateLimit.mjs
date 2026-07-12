@@ -1,9 +1,9 @@
 /**
  * 群级消息发送限速：按用户 pubKeyHash 与 agent charId 分别计数。
  */
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { messageRateEntityKey } from '../../../../../../../scripts/p2p/message_rate_limit.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { messageRateEntityKey } from 'npm:@steve02081504/fount-p2p/federation/message_rate_limit'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { memberChannelPermissions } from '../dag/groupMaterializedState.mjs'
 import { eventsPath } from '../lib/paths.mjs'

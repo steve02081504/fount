@@ -7,8 +7,8 @@ import { mkdir, readdir, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
 import { isChannelIdValid, resolveChannelId } from './channelId.mjs'
 import { groupDir, eventsPath, sidecarPath } from './paths.mjs'

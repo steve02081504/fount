@@ -17,7 +17,7 @@ const getSession = createTestSession()
 const append = await import('../../src/timeline/append.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
+const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 
 /**

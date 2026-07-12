@@ -130,7 +130,7 @@ export function writeNodeConfig(dataPath, options) {
  * @param {() => never} [options.restarter] 重启回调
  * @param {TestStarts} [options.starts] server starts；省略则使用测试默认预设
  * @param {boolean} [options.needsOutput] 是否启用带输出的 server init 行为
- * @param {{ signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} [options.P2P] initP2PServer 配置
+ * @param {{ signaling?: import('npm:@steve02081504/fount-p2p/node/signaling_config').SignalingRuntimeConfig }} [options.P2P] initP2PServer 配置
  * @returns {Promise<boolean>} init 是否成功
  */
 export async function initFountNode({ dataPath, restarter, starts, needsOutput, P2P }) {
@@ -164,7 +164,7 @@ export async function initFountNode({ dataPath, restarter, starts, needsOutput, 
  * @property {TestStarts} [starts] 精确透传给 `init()`；省略则根据 web/p2p/jobs 使用测试预设
  * @property {boolean} [needsOutput] 透传给 `init()` 的 `needs_output`
  * @property {string} [p2pRelayUrl] 测试 loopback nostr relay（P2P live 注入；等价于 `P2P.signaling`）
- * @property {{ signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} [P2P] initP2PServer 配置
+ * @property {{ signaling?: import('npm:@steve02081504/fount-p2p/node/signaling_config').SignalingRuntimeConfig }} [P2P] initP2PServer 配置
  * @property {boolean} [resetData=false] 启动前清空 dataPath
  */
 
@@ -212,7 +212,7 @@ export async function bootInProcess(options) {
 	}
 
 	if (starts.P2P && options.loadParts?.length) {
-		const { ensureUserRoom } = await import('fount/scripts/p2p/user_room.mjs')
+		const { ensureUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
 		await ensureUserRoom({ replicaUsername: options.username })
 	}
 
@@ -321,9 +321,9 @@ export async function bootHeadlessDataRoot(dataPath) {
  * @returns {Promise<void>}
  */
 async function ensureMinP2pNode(dataPath) {
-	const { isNodeInitialized } = await import('fount/scripts/p2p/node/instance.mjs')
+	const { isNodeInitialized } = await import('npm:@steve02081504/fount-p2p/node/instance')
 	const { createFountEntityStore } = await import('fount/server/p2p_server/entity_store.mjs')
-	const { initTestP2pNode } = await import('fount/scripts/p2p/test/helpers/node.mjs')
+	const { initTestP2pNode } = await import('./p2p_node.mjs')
 	if (!isNodeInitialized()) {
 		const nodeDir = join(dataPath, 'p2p', 'node')
 		fs.mkdirSync(nodeDir, { recursive: true })

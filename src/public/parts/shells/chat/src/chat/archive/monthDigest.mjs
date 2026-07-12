@@ -5,16 +5,16 @@ import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { createInterface } from 'node:readline'
 
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
-import { canonicalStringify } from '../../../../../../../scripts/p2p/canonical_json.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickNodeScoreFromReputation } from '../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
+import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pickNodeScoreFromReputation } from 'npm:@steve02081504/fount-p2p/reputation/pick_score'
+import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import {
 	resolveArchiveQuorumPeerMin,
 	resolveArchiveQuorumPeerStrictMin,
 	resolveArchiveQuorumThresholds,
-} from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
+} from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import { archiveMonthKey } from './settings.mjs'

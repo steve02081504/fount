@@ -1,17 +1,17 @@
 import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { loadPeerPoolView } from '../../../../../../../../scripts/p2p/network.mjs'
-import { mergePexNodeHints } from '../../../../../../../../scripts/p2p/peer_pool.mjs'
-import { bumpReputationOnRelay } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
-import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
+import { mergePexNodeHints } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { bumpReputationOnRelay } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
 import {
 	annotateRtcPeerNodeHash,
 	isFederationActionAllowedUnderLoad,
 	releaseRtcPeer,
 	setRtcPeerSource,
 	takeRtcJoinSlot,
-} from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
+} from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { loadFederationGroupSettings } from '../dagDependencies.mjs'
 import {
 	shouldDropPartitionBridgeUnderLoad,
@@ -94,7 +94,7 @@ export function registerIdentityHandlers(roomContext) {
 					catch (error) { console.error('federation: fed_pex failed', error) }
 				})
 		})().catch(error => console.error('federation: onPeerJoin pex failed', error))
-		void import('../../../../../../../../scripts/p2p/trust_graph_cache.mjs').then(({ invalidateTrustGraphCache }) => {
+		void import('npm:@steve02081504/fount-p2p/trust_graph/cache').then(({ invalidateTrustGraphCache }) => {
 			invalidateTrustGraphCache()
 		}).catch(error => console.warn('federation: invalidateTrustGraphCache failed on join', error))
 	})
@@ -141,7 +141,7 @@ export function registerIdentityHandlers(roomContext) {
 		if (remoteNodeHash) nodeToPeer.delete(remoteNodeHash)
 		peerToNode.delete(peerId)
 		releaseRtcPeer(key, peerId)
-		void import('../../../../../../../../scripts/p2p/trust_graph_cache.mjs').then(({ invalidateTrustGraphCache }) => {
+		void import('npm:@steve02081504/fount-p2p/trust_graph/cache').then(({ invalidateTrustGraphCache }) => {
 			invalidateTrustGraphCache()
 		}).catch(error => console.warn('federation: invalidateTrustGraphCache failed on leave', error))
 	})

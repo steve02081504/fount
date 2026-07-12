@@ -8,19 +8,19 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdir, stat } from 'node:fs/promises'
 
-import { signCheckpoint } from '../../../../../../../scripts/p2p/checkpoint_sign.mjs'
-import { EPOCH_CHAIN_MAX } from '../../../../../../../scripts/p2p/constants.mjs'
-import { pubKeyHash, publicKeyFromSeed } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { readJsonl, writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
+import { EPOCH_CHAIN_MAX } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { readJsonl, writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import {
 	buildOrderCachePayload,
 	deleteOrderCache,
 	readOrderCache,
 	resolveEventTopologicalOrder,
 	writeOrderCache,
-} from '../../../../../../../scripts/p2p/dag_order_cache.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/dag_order_cache'
 import {
 	authzFoldOrderIds,
 	computeDagTipIdsFromEvents,
@@ -28,12 +28,12 @@ import {
 	hasGovernanceFork,
 	selectAuthzBranchTip,
 	selectConsensusBranchTip,
-} from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
+} from 'npm:@steve02081504/fount-p2p/governance/branch'
+import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import {
 	invalidateTopologicalOrderMemo,
 	resolveTopologicalOrderMemoCached,
-} from '../../../../../../../scripts/p2p/topo_order_memo.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/topo_order_memo'
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
 import { archivePostsBeforeDagFold, trimMessagesJsonlToHotWindow } from '../archive/archiveBeforeFold.mjs'
 import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'

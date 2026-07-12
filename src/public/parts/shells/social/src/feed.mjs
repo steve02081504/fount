@@ -1,10 +1,10 @@
-import { isEntityHashBlocked } from '../../../../../scripts/p2p/denylist.mjs'
-import { isEntityHash128 } from '../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	isAuthorFilteredByPersonalSets,
-} from '../../../../../scripts/p2p/personal_block.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
-import { pickNodeScore } from '../../../../../scripts/p2p/reputation_store.mjs'
+import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import {
 	buildPostFeedItem,

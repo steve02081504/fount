@@ -4,7 +4,7 @@
 import {
 	getProfile,
 	updateProfile,
-} from '../../../../../../scripts/p2p/entity/profile.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/profile'
 import {
 	getInfoDefaultsForEntity,
 	normalizeLocalizedMap,

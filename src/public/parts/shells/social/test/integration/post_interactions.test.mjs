@@ -17,8 +17,8 @@ const feed = await import('../../src/feed.mjs')
 const following = await import('../../src/following.mjs')
 const { loadViewerContext } = await import('../../src/feed/helpers.mjs')
 const { canViewPost } = await import('../../src/feedVisibility.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 
 Deno.test('repost materializes and appears in home feed', async () => {
 	const { username, operator } = await getSession()

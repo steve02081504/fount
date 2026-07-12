@@ -1,4 +1,4 @@
-import { pubKeyHash } from '../../../../../../scripts/p2p/crypto.mjs'
+import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getFederationSettings } from '../chat/federation/config.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
@@ -10,7 +10,7 @@ import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 export function registerMailboxRoutes(router) {
 	router.get(`${CHAT_API_PREFIX}/mailbox/summary`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const { countMailboxPendingForRecipient } = await import('../../../../../../scripts/p2p/mailbox/store.mjs')
+		const { countMailboxPendingForRecipient } = await import('npm:@steve02081504/fount-p2p/mailbox/store')
 		const fed = await getFederationSettings(username)
 		const activePubKeyHex = String(fed?.activePubKeyHex || '').trim()
 		if (!activePubKeyHex)

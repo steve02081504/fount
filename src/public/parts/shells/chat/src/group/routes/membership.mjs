@@ -8,7 +8,7 @@
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { memberEntityHash } from '../../chat/lib/entity.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/runUri.mjs'

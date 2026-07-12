@@ -4,9 +4,9 @@
 import { randomUUID } from 'node:crypto'
 
 import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
-import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
+import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
 import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
@@ -236,7 +236,7 @@ export function rosterNodeHashesFromSlot(slot) {
  * @returns {Promise<string[] | null>} nodeHash 列表或 null
  */
 async function loadRosterNodeHashes(username, groupId) {
-	const { isNodeInitialized } = await import('../../../../../../../scripts/p2p/node/instance.mjs')
+	const { isNodeInitialized } = await import('npm:@steve02081504/fount-p2p/node/instance')
 	if (!isNodeInitialized()) return null
 	const { getFederationPartitionSlot } = await import('./registry.mjs')
 	const { LOGIC_SYNC_PARTITION } = await import('./partitions.mjs')

@@ -47,13 +47,6 @@ export function inferDefaultResources(suite) {
 			return { memMb: 900, cpuPct: 22 }
 	}
 
-	if (manifestId === 'p2p') {
-		if (name === 'sim') return { memMb: 800, cpuPct: 92 }
-		if (name === 'live') return { memMb: 400, cpuPct: 18 }
-		if (name === 'integration') return { memMb: 400, cpuPct: 15 }
-		if (name === 'pure') return { memMb: 300, cpuPct: 10 }
-	}
-
 	if (manifestId === 'server' && name === 'live') return { memMb: 500, cpuPct: 20 }
 
 	return { memMb: 400, cpuPct: 15 }

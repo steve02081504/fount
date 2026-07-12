@@ -1,7 +1,7 @@
 /** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history、fed_shun、partition bridge。 */
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { parsePullAttestation } from '../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
-import { extractInboundSignedEvent, isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { parsePullAttestation } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+import { extractInboundSignedEvent, isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
 import { PARTITION_BRIDGE_ACTIONS } from './partitionBridge.mjs'
@@ -41,7 +41,7 @@ export function parseFedTipPong(payload) {
 
 /**
  * @param {unknown} payload gossip_request 载荷
- * @returns {{ wantIds: string[], ttl: number, requesterNodeHash: string, archiveSummary: unknown, attestation: import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation } | null} 解析结果
+ * @returns {{ wantIds: string[], ttl: number, requesterNodeHash: string, archiveSummary: unknown, attestation: import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation } | null} 解析结果
  */
 export function parseGossipRequest(payload) {
 	if (!isPlainObject(payload)) return null
@@ -78,7 +78,7 @@ export function parseFedShun(payload, groupId) {
  * @param {unknown} payload channel_history_want 载荷
  * @param {string} localNodeHash 本节点 hash
  * @param {string} groupId 群 ID（attestation 校验用）
- * @returns {{ requesterNodeHash: string, requestId: string, channelId: string, before?: string, limit: number, attestation: import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation } | null} 解析结果
+ * @returns {{ requesterNodeHash: string, requestId: string, channelId: string, before?: string, limit: number, attestation: import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation } | null} 解析结果
  */
 export function parseChannelHistoryWant(payload, localNodeHash, groupId) {
 	if (!isPlainObject(payload)) return null

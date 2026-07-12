@@ -1,14 +1,14 @@
-import { getAgentCharResolver } from '../../../../scripts/p2p/entity/hosting_registry.mjs'
-import { parseEntityHash } from '../../../../scripts/p2p/entity_id.mjs'
+import { getAgentCharResolver } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
-} from '../../../../scripts/p2p/part_path_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import {
 	registerBlockReputationHandler,
 	unregisterBlockReputationHandler,
 	mutateReputation,
-} from '../../../../scripts/p2p/reputation_store.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getAllUserNames } from '../../../../server/auth/index.mjs'
 
 import { handleSocialRpc } from './src/discover/rpc.mjs'

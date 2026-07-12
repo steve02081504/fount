@@ -3,14 +3,14 @@
  * 【职责】按用户 shellData 与群物化设置选择群文件块存储后端（本地目录、S3、联邦多副本或 P2P swarm）。
  * 【原理】loadStorageConfig 读 chat/storage；getStorageForGroup 依 type 与 fileReplicationFactor 在 createLocal/S3/Federated/P2pSwarm 插件间切换；`type: local` 用本地目录，默认/未指定时用 P2P swarm（需 groupId）；getFederatedChunkStorage 独立提供多 S3 回退拉取。
  * 【数据结构】storage 配置 `{ type, s3?, federated? }`、groupSettings.fileReplicationFactor、groupScope.groupId、shellChatRoot 基路径。
- * 【关联】被 DAG 文件读写、联邦 chunks 使用；依赖 scripts/p2p/storage_plugins 与 chat/federation/chunks.mjs。
+ * 【关联】被 DAG 文件读写、联邦 chunks 使用；本地插件来自 npm fount-p2p，S3/联邦插件见 lib/remoteStoragePlugins.mjs。
  */
 
+import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 import {
 	createFederatedChunksPlugin,
-	createLocalStoragePlugin,
 	createS3StoragePlugin,
-} from '../../../../../../scripts/p2p/storage_plugins.mjs'
+} from './lib/remoteStoragePlugins.mjs'
 import { loadShellData } from '../../../../../../server/setting_loader.mjs'
 
 import { createFederationSwarmStoragePlugin } from './federation/chunks.mjs'
@@ -85,7 +85,7 @@ export function getStorageForGroup(username, groupSettings = {}, groupScope = {}
  * 若节点配置了 `federated` 副本，返回多 S3 插件（与主插件选择无关，供回退拉取）。
  * @param {string} username 用户名
  * @param {{ fileReplicationFactor?: unknown }} [groupSettings] 物化群设置
- * @returns {import('../../../../../../scripts/p2p/storage_plugins.mjs').GroupStoragePlugin | null} 插件或 null
+ * @returns {import('npm:@steve02081504/fount-p2p/node/storage_plugins').GroupStoragePlugin | null} 插件或 null
  */
 export function getFederatedChunkStorage(username, groupSettings = {}) {
 	const cfg = loadStorageConfig(username)

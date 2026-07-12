@@ -1,5 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 /**
  * @param {import('npm:express').Request['params']} params 路由 params

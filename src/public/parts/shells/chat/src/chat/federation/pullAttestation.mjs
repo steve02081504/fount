@@ -3,11 +3,11 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed, sign, verify } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
-/** @typedef {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} PullAttestation */
+/** @typedef {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} PullAttestation */
 
 const ATTESTATION_MAX_SKEW_MS = 5 * 60 * 1000
 const PULL_MEMBER_STATUSES = new Set(['active', 'left', 'kicked'])
@@ -100,7 +100,7 @@ export function resolveMemberEdPubKeyHex(state, requesterPubKeyHash) {
 /**
  * @param {object | null | undefined} state 物化群状态
  * @param {string} groupId 群 ID
- * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
+ * @param {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} attestation attestation
  * @returns {Promise<boolean>} 是否通过成员资格与签名校验
  */
 export async function validatePullAttestationForGroup(state, groupId, attestation) {
@@ -114,7 +114,7 @@ export async function validatePullAttestationForGroup(state, groupId, attestatio
  * 仅校验 attestation 签名（不要求 active）；被 ban 成员仍可证明身份以接收 fed_shun。
  * @param {object | null | undefined} state 物化群状态
  * @param {string} groupId 群 ID
- * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
+ * @param {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} attestation attestation
  * @returns {Promise<boolean>} 签名是否有效
  */
 export async function verifyPullAttestationSignatureForMember(state, groupId, attestation) {
@@ -138,7 +138,7 @@ export function isActivePullMember(state, requesterPubKeyHash) {
 /**
  * @param {object | null | undefined} state 物化群状态
  * @param {string} groupId 群 ID
- * @param {import('../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs').PullAttestation} attestation attestation
+ * @param {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} attestation attestation
  * @returns {Promise<boolean>} active 成员 + 签名校验
  */
 export async function validateActivePullAttestationForGroup(state, groupId, attestation) {

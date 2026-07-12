@@ -8,8 +8,8 @@
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 
-import { sign } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
+import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
 import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
 import { formatDmRunUri } from '../../../public/shared/runUri.mjs'

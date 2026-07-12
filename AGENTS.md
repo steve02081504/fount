@@ -33,8 +33,8 @@
 
 | Task | Guide |
 | --- | --- |
-| P2P / federation / trust graph / Mailbox / Chat crypto / EVFS | [src/scripts/p2p/AGENTS.md](src/scripts/p2p/AGENTS.md) |
-| P2P tunables simulation / co-evolution (fidelity boundary) | [src/scripts/p2p/sim/AGENTS.md](src/scripts/p2p/sim/AGENTS.md) |
+| P2P / federation / trust graph / Mailbox / Chat crypto / EVFS | [src/server/p2p_server/AGENTS.md](src/server/p2p_server/AGENTS.md) |
+| P2P 包源码 / sim / 包内测试 | [fount-p2p](https://github.com/steve02081504/fount-p2p)（npm `@steve02081504/fount-p2p`） |
 | Frontend page logic (shared scripts, i18n, theming, templates) | [src/public/pages/AGENTS.md](src/public/pages/AGENTS.md) |
 | Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
 | Chat session viewer / member_roles | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |

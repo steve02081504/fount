@@ -5,11 +5,11 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
-import { finalizeAtomicRename } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation_store.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
+import { finalizeAtomicRename } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { penalizeArchiveServeMismatch } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,

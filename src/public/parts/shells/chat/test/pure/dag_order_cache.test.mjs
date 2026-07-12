@@ -6,7 +6,7 @@ import {
 	buildOrderCachePayload,
 	mergeTopologicalOrder,
 	resolveEventTopologicalOrder,
-} from 'fount/scripts/p2p/dag_order_cache.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/dag_order_cache'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 

@@ -3,9 +3,9 @@
  */
 import { mkdir } from 'node:fs/promises'
 
-import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { nextHlc } from '../../../../../../../scripts/p2p/hlc.mjs'
+import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'
 import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { groupDir, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'

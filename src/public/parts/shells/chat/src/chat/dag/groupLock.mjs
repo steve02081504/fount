@@ -3,8 +3,8 @@
  */
 import { AsyncLocalStorage } from 'node:async_hooks'
 
-import { compositeKey } from '../../../../../../../scripts/p2p/composite_key.mjs'
-import { withAsyncMutex } from '../../../../../../../scripts/p2p/utils/async_mutex.mjs'
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 /** @type {AsyncLocalStorage<Set<string>>} 当前异步上下文中已持有的群写锁键 */
 const heldGroupLocks = new AsyncLocalStorage()

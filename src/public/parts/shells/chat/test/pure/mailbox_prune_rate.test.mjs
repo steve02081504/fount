@@ -10,8 +10,8 @@ import {
 	mailboxRecordBytes,
 	pruneMailboxBuckets,
 	pruneMailboxGlobalFair,
-} from 'fount/scripts/p2p/mailbox_prune.mjs'
-import { takeIncomingMailboxPutSlot } from 'fount/scripts/p2p/mailbox_rate.mjs'
+} from 'npm:@steve02081504/fount-p2p/mailbox/prune'
+import { takeIncomingMailboxPutSlot } from 'npm:@steve02081504/fount-p2p/mailbox/rate'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const RECIPIENT_A = 'a'.repeat(64)

@@ -3,7 +3,7 @@
  */
 import { writeFile } from 'node:fs/promises'
 
-import { readJsonlStream } from '../../../../../../../scripts/p2p/dag/storage.mjs'
+import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { findChannelMessageRow } from '../channel/messageMutations.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { channelArchivePath } from '../lib/paths.mjs'

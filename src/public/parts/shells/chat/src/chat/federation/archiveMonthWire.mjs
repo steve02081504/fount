@@ -1,8 +1,8 @@
 /**
  * 冷归档按月联邦 wire 解析（无 DAG/peerPool 依赖，供单元测试 import）。
  */
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { parseArchiveMonthWireParts } from '../archive/monthChunks.mjs'
 
 /**

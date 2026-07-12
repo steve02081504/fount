@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { normalizeHex64, isHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
-import { unwrapKeyEcies } from '../../../../../../scripts/p2p/key_crypto.mjs'
-import { isPlainObject } from '../../../../../../scripts/p2p/wire_ingress.mjs'
+import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { normalizeHex64, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 
 import { saveVaultMasterKey } from './vault.mjs'

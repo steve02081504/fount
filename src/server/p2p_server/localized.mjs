@@ -11,4 +11,4 @@ export {
 export {
 	normalizeLocalizedMap,
 	applyAvatarToAllLocales,
-} from '../../scripts/p2p/entity/localized_core.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/localized_core'

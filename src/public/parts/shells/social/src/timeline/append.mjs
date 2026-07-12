@@ -1,13 +1,13 @@
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
-import { recoverySubjectHashFromPubKeyHex } from '../../../../../../scripts/p2p/operator_key_chain.mjs'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { recoverySubjectHashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
-import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
-import { getAgentCharResolver } from '../../../../../../scripts/p2p/entity/hosting_registry.mjs'
+import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
+import { getAgentCharResolver } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
 import {
 	consumePendingRecoverySecret,
 	getOperatorSecretKey,

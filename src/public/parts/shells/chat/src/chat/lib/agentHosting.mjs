@@ -3,7 +3,7 @@ import {
 	registerListLocalAgentsProvider,
 	unregisterAgentCharResolver,
 	unregisterListLocalAgentsProvider,
-} from '../../../../../../../scripts/p2p/entity/hosting_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
 
 import { resolveAgentCharPartName, scanLocalAgentEntitiesFromChars } from './entity.mjs'
 

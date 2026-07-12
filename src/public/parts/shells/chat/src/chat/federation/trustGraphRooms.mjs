@@ -1,9 +1,9 @@
-import { normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { registerScopeAuthorizer } from '../../../../../../../scripts/p2p/link_registry.mjs'
-import { loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { resolveFederationPoolLimits, selectPeerIdsFromPool } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { loadReputation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { registerFederationRoomProvider, unregisterFederationRoomProvider } from '../../../../../../../scripts/p2p/room_provider_registry.mjs'
+import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { registerScopeAuthorizer } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
+import { resolveFederationPoolLimits, selectPeerIdsFromPool } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { registerFederationRoomProvider, unregisterFederationRoomProvider } from 'npm:@steve02081504/fount-p2p/registries/room_provider'
 
 import { loadFederationGroupSettings, loadFederationMaterializedState } from './dagDependencies.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
@@ -69,7 +69,7 @@ export function registerChatFederationRoomProvider() {
 		return isActiveMemberNodeHash(state, senderNodeHash) || isPrememberBootstrapEnvelope(envelope)
 	})
 	registerFederationRoomProvider('chat', username => {
-		/** @type {import('../../../../../../../scripts/p2p/room_provider_registry.mjs').FederationRoomSlot[]} */
+		/** @type {import('npm:@steve02081504/fount-p2p/registries/room_provider').FederationRoomSlot[]} */
 		const slots = []
 		forEachFederationPartitionSlot(username, (groupId, partitionId, slot) => {
 			if (partitionId !== LOGIC_SYNC_PARTITION || !slot) return

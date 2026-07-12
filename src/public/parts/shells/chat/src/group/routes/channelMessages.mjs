@@ -7,7 +7,7 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import {

@@ -3,9 +3,9 @@
  * 【职责】方案3 兜底调度器：把入站发现的“本地落后”信号（tip 对比落差、dag_event 缺父）防抖+冷却地汇聚成有界的 catchUpGroupFromPeers 调用，修复实时推送漏帧后的最终一致性。
  * 【原理】每 (username, groupId) 一个槽：~1.5s 防抖合并高频信号；两次真实补齐间至少 ~15s 冷却（冷却期内的需求延后到冷却结束再执行一次，不丢需求）；wantIds 退避中直接硬闸跳过，避免补齐风暴。补齐本身仍由 catchUpGroupFromPeers 走既有校验管线，本模块只决定“何时触发”。
  * 【数据结构】scheduleByKey: Map<`${username}\0${groupId}`, { timer, lastRunAt }>。
- * 【关联】被 roomHandlers/sync.mjs 的 fed_tip_ping/pong 与 dag_event handler 调用；触发 index.mjs catchUpGroupFromPeers；硬闸读 scripts/p2p/want_ids.mjs。
+ * 【关联】被 roomHandlers/sync.mjs 的 fed_tip_ping/pong 与 dag_event handler 调用；触发 index.mjs catchUpGroupFromPeers；硬闸读 npm:@steve02081504/fount-p2p/federation/want_ids。
  */
-import { isWantIdsInBackoff, wantIdsGroupKey } from '../../../../../../../scripts/p2p/want_ids.mjs'
+import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
 
 import { catchUpGroupFromPeers } from './index.mjs'
 

@@ -1,10 +1,10 @@
-import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
 import {
 	parseDiscoveryAnnounce,
 	parseDiscoveryQuery,
 	parseDiscoveryQueryResponse,
-} from '../../../../../../../../scripts/p2p/schemas/discovery_wire.mjs'
-import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from '../../../../../../../../scripts/p2p/schemas/federation_pull_wire.mjs'
+} from 'npm:@steve02081504/fount-p2p/schemas/discovery'
+import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {
 	handleFedArchiveMonthWant,

@@ -3,11 +3,11 @@
  * 【职责】基于群 GSH 派生密钥的流媒体观看令牌：mint/verify HMAC token，并组装嵌入播放 URL。
  * 【原理】deriveStreamingAuthKey(H, groupId) 得 HMAC 密钥；token 为 sessionId.expiresAt.mac（base64url）。verify 校验过期与 MAC，供 Hub/SFU 侧鉴权观看 VOLATILE 流。
  * 【数据结构】token 三段点分；DEFAULT_TTL_MS 默认 1h。
- * 【关联】file_keys/store.mjs、scripts/p2p/key_crypto.mjs；与 signing 的 stream_chunk 验签互补（观看权 vs 内容完整性）。
+ * 【关联】file_keys/store.mjs、npm:@steve02081504/fount-p2p/crypto/key；与 signing 的 stream_chunk 验签互补（观看权 vs 内容完整性）。
  */
 import { createHmac, randomBytes } from 'node:crypto'
 
-import { deriveStreamingAuthKey } from '../../../../../../../scripts/p2p/key_crypto.mjs'
+import { deriveStreamingAuthKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 const DEFAULT_TTL_MS = 3_600_000
 

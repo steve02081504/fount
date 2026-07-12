@@ -5,10 +5,10 @@
  * 【数据结构】载荷 { emojiId, dataUrl?, mimeType? }；等待键 username\0groupId\0emojiId。
  * 【关联】room.mjs、group/groupEmojis.mjs、wire_ingress.mjs、governance/peers 拉黑检查。
  */
-import { wireAction } from '../../../../../../../scripts/p2p/room_wire_action.mjs'
-import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 import {
 	bufferToDataUrl,
 	loadGroupEmojiManifest,
@@ -138,8 +138,8 @@ export async function requestGroupEmojiFromUserRoom(username, groupId, emojiId) 
 		}, FETCH_TIMEOUT_MS)
 		pendingFetches.set(key, { resolve, timer })
 	})
-	const { ensureUserRoom, deliverToUserRoomPeers } = await import('../../../../../../../scripts/p2p/user_room.mjs')
-	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('../../../../../../../scripts/p2p/trust_graph_registry.mjs')
+	const { ensureUserRoom, deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
+	const { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	await ensureUserRoom({ replicaUsername: username })
 	await deliverToUserRoomPeers(username, 'fed_emoji_want', payload)
 	await requireTrustGraphProvider(DEFAULT_TRUST_GRAPH_OWNER).fanoutToTopNodes(username, 'fed_emoji_want', payload, 6)
@@ -226,7 +226,7 @@ export async function requestGroupEmojiFromPeers(username, groupId, emojiId, slo
  */
 export async function replicateGroupEmojiManifestToUserRoom(username, groupId, entry) {
 	if (!entry?.emojiId) return
-	const { deliverToUserRoomPeers } = await import('../../../../../../../scripts/p2p/user_room.mjs')
+	const { deliverToUserRoomPeers } = await import('npm:@steve02081504/fount-p2p/transport/user_room')
 	await deliverToUserRoomPeers(username, 'fed_emoji_manifest', {
 		groupId,
 		emojiId: entry.emojiId,

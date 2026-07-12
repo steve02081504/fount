@@ -13,7 +13,7 @@ Deno.test('filterTriggerRelevantFiles drops docs and metadata', () => {
 		'README.md',
 		'src/public/parts/shells/chat/public/hub/AGENTS.md',
 		'src/public/parts/shells/chat/test/manifest.json',
-		'src/scripts/p2p/docs/signaling.md',
+		'src/server/p2p_server/AGENTS.md',
 		'src/public/parts/shells/chat/public/llms.txt',
 	]
 	for (const path of ignored)
@@ -36,11 +36,11 @@ Deno.test('isContentFresh stays fresh when only docs or manifest change', () => 
 Deno.test('selectSuitesByDiff skips doc-only changes', () => {
 	const all = [
 		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
-		makeSuite('p2p', 'pure', { triggers: ['src/scripts/p2p/**'] }),
+		makeSuite('server', 'live', { triggers: ['src/server/**'] }),
 	]
 	const docOnly = [
 		'src/public/parts/shells/chat/test/manifest.json',
-		'src/scripts/p2p/AGENTS.md',
+		'src/server/p2p_server/AGENTS.md',
 	]
 	assertEquals(selectSuitesByDiff('diff', docOnly, all), [])
 })
@@ -49,7 +49,7 @@ Deno.test('selectSuitesByDiff still matches code and test infra changes', () => 
 	const all = [
 		makeSuite('testkit', 'state', { triggers: ['src/scripts/test/core/state.mjs'] }),
 		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
-		makeSuite('p2p', 'pure', { triggers: ['src/scripts/p2p/**'] }),
+		makeSuite('server', 'live', { triggers: ['src/server/**'] }),
 	]
 	assertEquals(
 		selectSuitesByDiff('diff', ['src/public/parts/shells/chat/src/foo.mjs'], all).map(s => s.name),

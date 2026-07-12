@@ -7,8 +7,8 @@
  */
 import { createHash } from 'node:crypto'
 
-import { applyVolatileSlashAlert } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { applyVolatileSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { localNodeHash, loadFederationGroupSettings } from './dagDependencies.mjs'
 import { groupFederationOwner } from './registry.mjs'
@@ -68,7 +68,7 @@ export async function publishVolatileToFederation(groupId, payload) {
 	const nodeHash = localNodeHash()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 
-	const { pickFederationTargetPeerIds } = await import('../../../../../../../scripts/p2p/peer_pool.mjs')
+	const { pickFederationTargetPeerIds } = await import('npm:@steve02081504/fount-p2p/transport/peer_pool')
 	const targets = await pickFederationTargetPeerIds(groupId,
 		slot.getRoster?.() || [],
 		groupSettings,

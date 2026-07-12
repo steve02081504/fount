@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto'
 
-import { createDedupeSlot } from '../../../../../../../scripts/p2p/dedupe_slot.mjs'
-import { isRtcRoomOverloaded } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
+import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
+import { isRtcRoomOverloaded } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 
 const takeBridgeDedupeSlot = createDedupeSlot({ maxSize: 5000, ttlMs: 30_000 })
 const DEFAULT_BRIDGE_TTL = 2

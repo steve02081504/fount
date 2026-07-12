@@ -3,7 +3,7 @@
  * 【职责】群文件 HTTP 路由（chunks/files CRUD、下载状态）。
  * 【关联】chat/files/groupFiles.mjs；由 governance.mjs mount。
  */
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../../chat/dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'

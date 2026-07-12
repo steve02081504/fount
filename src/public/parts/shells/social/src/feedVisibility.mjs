@@ -1,4 +1,4 @@
-import { isAuthorFilteredByPersonalSets } from '../../../../../scripts/p2p/personal_block.mjs'
+import { isAuthorFilteredByPersonalSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 /**
  * 根据可见性与个人拉黑/隐藏/关注关系判断帖子是否对观看者可见。

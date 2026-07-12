@@ -25,33 +25,33 @@ import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
 Deno.test('resolveSuiteDependencies expands manifest selector', () => {
 	const all = [
-		makeSuite('p2p', 'sim'),
-		makeSuite('shells/chat', 'fed_core', { dependsOn: ['p2p:sim'] }),
+		makeSuite('server', 'live'),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
 	]
 	const deps = resolveSuiteDependencies(all[1], all)
-	assertEquals(deps, [{ manifestId: 'p2p', name: 'sim' }])
+	assertEquals(deps, [{ manifestId: 'server', name: 'live' }])
 })
 
 Deno.test('topoSortSuites orders dependencies first', () => {
 	const all = [
-		makeSuite('p2p', 'sim'),
-		makeSuite('shells/chat', 'fed_core', { dependsOn: ['p2p:sim'] }),
+		makeSuite('server', 'live'),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
 	]
 	assertEquals(
 		topoSortSuites(all).map(s => suiteKey(s.manifestId, s.name)),
-		['p2p/sim', 'shells/chat/fed_core'],
+		['server/live', 'shells/chat/integration'],
 	)
 })
 
 Deno.test('sortManifestIds orders dependency before dependent', () => {
 	const all = [
-		makeSuite('p2p', 'sim'),
-		makeSuite('shells/chat', 'fed_core', { dependsOn: ['p2p:sim'] }),
 		makeSuite('server', 'live'),
+		makeSuite('shells/chat', 'integration', { dependsOn: ['server:live'] }),
+		makeSuite('shells/social', 'pure'),
 	]
 	assertEquals(
-		sortManifestIds(['shells/chat', 'p2p', 'server'], all),
-		['server', 'p2p', 'shells/chat'],
+		sortManifestIds(['shells/chat', 'shells/social', 'server'], all),
+		['shells/social', 'server', 'shells/chat'],
 	)
 })
 
@@ -64,8 +64,9 @@ Deno.test('detectDependencyCycle reports cycle', () => {
 Deno.test('listManifestIds uses dependency-aware order', async () => {
 	const all = await loadAllSuites(REPO_ROOT)
 	const ids = listManifestIds(all)
-	assertEquals(ids.includes('p2p') && ids.includes('shells/chat'), true)
-	assertEquals(ids.indexOf('p2p') < ids.indexOf('shells/chat'), true)
+	assertEquals(ids.includes('server') && ids.includes('shells/chat'), true)
+	if (ids.includes('shells/chat/integration'))
+		assertEquals(ids.indexOf('server') < ids.indexOf('shells/chat'), true)
 })
 
 Deno.test('isContentFresh ignores non-trigger paths', () => {

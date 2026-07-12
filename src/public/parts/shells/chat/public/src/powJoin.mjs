@@ -1,15 +1,15 @@
 /**
  * 【文件】public/src/powJoin.mjs
  * 【职责】入群 Proof-of-Work：无状态自验证，绑定群近期 DAG tip/checkpoint root。
- * 【原理】浏览器端实现；下列纯函数/常量与后端 `scripts/p2p/join_pow.mjs`、
+ * 【原理】浏览器端实现；下列纯函数/常量与后端 `npm:@steve02081504/fount-p2p/governance/join_pow`、
  *   `src/chat/governance/joinPowAnchors.mjs` 保持一致（后端依赖 node:crypto，不可直接 import 到浏览器）。
  */
 
-/** 默认 epoch 窗口（1 小时），与 `scripts/p2p/join_pow.mjs` 一致。 */
+/** 默认 epoch 窗口（1 小时），与 `npm:@steve02081504/fount-p2p/governance/join_pow` 一致。 */
 const JOIN_POW_DEFAULT_EPOCH_MS = 3_600_000
 
 /**
- * 计算 SHA-256 hex 的实际前导零 bit 数，与 `scripts/p2p/join_pow.mjs` 的 `countAchievedLeadingZeroBits` 一致。
+ * 计算 SHA-256 hex 的实际前导零 bit 数，与 `npm:@steve02081504/fount-p2p/governance/join_pow` 的 `countAchievedLeadingZeroBits` 一致。
  * @param {string} hexHash SHA-256 hex
  * @returns {number} 实际达成的前导零 bit 数 0..256
  */

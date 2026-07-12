@@ -1,8 +1,8 @@
 import { appendFile, mkdir, readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { withAsyncMutex } from '../../../../../../../scripts/p2p/utils/async_mutex.mjs'
+import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { archiveManifestPath, channelArchivePath } from '../lib/paths.mjs'
 
 import { archiveMonthKey } from './settings.mjs'

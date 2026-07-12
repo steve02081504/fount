@@ -1,5 +1,5 @@
 import { AGENT_SUBJECT_PREFIX } from './agentConstants.mjs'
-import { encodeEntityHash } from '../../../../../../scripts/p2p/entity_id_parse.mjs'
+import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id_parse'
 
 import { sha256Hex, sha256TextHex } from './digest.mjs'
 import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'

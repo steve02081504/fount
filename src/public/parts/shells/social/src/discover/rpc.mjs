@@ -1,4 +1,4 @@
-import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { SOCIAL_RPC_REQUEST_TYPES } from '../federation/namespace.mjs'
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
 

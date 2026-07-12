@@ -2,8 +2,8 @@ import {
 	isLogicalEntityHash,
 	logicalEntityHash,
 	LOGICAL_ENTITY_SENTINEL_NODE_HASH,
-} from '../../../../../../../scripts/p2p/entity/logical_entity.mjs'
-import { resolveLogicalEntityId } from '../../../../../../../scripts/p2p/entity/logical_entity_id_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/logical_entity'
+import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
 
 /**
  *

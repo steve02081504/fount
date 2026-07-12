@@ -1,5 +1,5 @@
-import { normalizeHex64 } from '../../../../../../scripts/p2p/hexIds.mjs'
-import { parseInboundJson } from '../../../../../../scripts/p2p/wire_ingress.mjs'
+import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { parseInboundJson } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import {
 	handleClientWsControlFrame,

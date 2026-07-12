@@ -1,4 +1,4 @@
-import { HLC } from '../../../../../../../../scripts/p2p/hlc.mjs'
+import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
 
 import { withGroupId } from './helpers.mjs'
 

@@ -1,9 +1,9 @@
 /**
  * Chat 群 DAG 事件入库 canonicalize（形状规范化，非权限校验）。
  */
-import { canonicalizeRowContent, canonicalizeSignedRow } from '../../../../../../../scripts/p2p/dag/canonicalizeRow.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { validateRemoteEventShape } from '../../../../../../../scripts/p2p/schemas/remote_event.mjs'
+import { canonicalizeRowContent, canonicalizeSignedRow } from 'npm:@steve02081504/fount-p2p/dag/canonicalize_row'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { validateRemoteEventShape } from 'npm:@steve02081504/fount-p2p/schemas/remote_event'
 
 /**
  *

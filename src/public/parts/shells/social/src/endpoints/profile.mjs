@@ -2,7 +2,7 @@ import { httpError } from '../../../../../../scripts/http_error.mjs'
 import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
-} from '../../../../../../scripts/p2p/personal_block.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { buildProfileFeedItems, buildLikedFeedItems, listReplies } from '../feed.mjs'
 import { loadFollowing } from '../following.mjs'

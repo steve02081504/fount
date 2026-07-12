@@ -5,7 +5,7 @@ import {
 	getProfile,
 	updateProfile,
 	updateStatus as setEntityStatus,
-} from '../../../../../../scripts/p2p/entity/profile.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/profile'
 import { normalizeLocalizedMap } from '../../../../../../server/p2p_server/localized.mjs'
 import { getOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 

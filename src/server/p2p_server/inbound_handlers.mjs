@@ -1,9 +1,9 @@
 import {
 	registerDeliveryInboundHandler,
 	registerRpcInboundHandler,
-} from '../../scripts/p2p/inbound_registry.mjs'
-import { isPartInvokeResponse, normalizePartpath } from '../../scripts/p2p/part_invoke.mjs'
-import { isPlainObject } from '../../scripts/p2p/wire_ingress.mjs'
+} from 'npm:@steve02081504/fount-p2p/registries/inbound'
+import { isPartInvokeResponse, normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { getAllUserNames } from '../auth/index.mjs'
 import { loadPart, hasPartMain } from '../parts_loader.mjs'
 
@@ -12,7 +12,7 @@ import { loadPart, hasPartMain } from '../parts_loader.mjs'
  * @param {string} partpath part 路径
  * @param {object} data 调用载荷
  * @param {{ requesterNodeHash?: string | null }} ingress 入站元数据
- * @returns {Promise<import('../../scripts/p2p/part_invoke.mjs').PartInvokeResponse | null>} 部件响应
+ * @returns {Promise<import('npm:@steve02081504/fount-p2p/wire/part_invoke').PartInvokeResponse | null>} 部件响应
  */
 async function invokePartForUser(username, partpath, data, ingress = {}) {
 	const path = normalizePartpath(partpath)

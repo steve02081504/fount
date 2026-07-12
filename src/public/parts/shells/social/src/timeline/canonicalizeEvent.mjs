@@ -1,8 +1,8 @@
 /**
  * Social 时间线事件入库 canonicalize。
  */
-import { canonicalizeSignedRow } from '../../../../../../scripts/p2p/dag/canonicalizeRow.mjs'
-import { validateRemoteEventShape } from '../../../../../../scripts/p2p/schemas/remote_event.mjs'
+import { canonicalizeSignedRow } from 'npm:@steve02081504/fount-p2p/dag/canonicalize_row'
+import { validateRemoteEventShape } from 'npm:@steve02081504/fount-p2p/schemas/remote_event'
 
 /** Social 时间线 canonicalize 选项 */
 export const SOCIAL_TIMELINE_ROW_OPTS = {

@@ -11,8 +11,8 @@ import {
 	mapGet,
 	mapHas,
 	mapSet,
-} from '../../../../../../../scripts/p2p/composite_key.mjs'
-import { EVENT_ID_HEX } from '../../../../../../../scripts/p2p/dag/index.mjs'
+} from 'npm:@steve02081504/fount-p2p/core/composite_key'
+import { EVENT_ID_HEX } from 'npm:@steve02081504/fount-p2p/dag/index'
 
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'
 

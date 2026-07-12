@@ -8,10 +8,10 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { DEFAULT_MAX_CATCHUP_EVENTS } from '../../../../../../../scripts/p2p/constants.mjs'
-import { topologicalCanonicalOrder } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { DEFAULT_MAX_CATCHUP_EVENTS } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
@@ -386,6 +386,6 @@ export async function pruneEventsJsonlAfterCheckpoint(username, groupId, checkpo
 	if (!tipId || !checkpoint?.members_record)
 		return { pruned: false, kept: 0, dropped: 0 }
 
-	const { pruneEventsJsonlAfterCheckpoint: pruneFile } = await import('../../../../../../../scripts/p2p/timeline/prune.mjs')
+	const { pruneEventsJsonlAfterCheckpoint: pruneFile } = await import('npm:@steve02081504/fount-p2p/timeline/prune')
 	return pruneFile(eventsPath(username, groupId), checkpoint, stripDagEventLocalExtensions)
 }

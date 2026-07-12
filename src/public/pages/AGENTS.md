@@ -45,11 +45,6 @@ alwaysApply: false
 - **`credentialManager.mjs`**: Secure credential encryption and transfer.
 - **`lib/digest.mjs`**: Cross-runtime SHA-256 helpers (Deno + browser).
 
-## P2P (browser)
+## P2P（浏览器）
 
-`scripts/p2p/` — browser-side federation primitives mirroring `src/scripts/p2p/`; shell `public/**` must import via absolute `/scripts/p2p/...` URLs.
-
-- **`p2p/entity_id_parse.mjs`**: `isEntityHash128` and other entityHash validation/parsing helpers.
-- **`p2p/hexIds.mjs`**: 64-bit hex id canonicalization.
-- **`p2p/mentions.mjs`**: `extractMentionEntityHashes(text)` — extracts `@128hex` entity hashes from message body.
-- **Social profile links**: `formatSocialProfileHref` exported from Chat `shared/socialRunUri.mjs`; Social shell references it via `/parts/shells:chat/shared/socialRunUri.mjs`.
+`@steve02081504/fount-p2p` 经 `esm.sh` 导入；shell `public/**` 内共享模块见 `shells/chat/public/shared/`。提及解析：`pages/scripts/lib/mentions.mjs`。

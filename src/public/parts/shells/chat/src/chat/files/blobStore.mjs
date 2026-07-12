@@ -9,8 +9,8 @@ import { Buffer } from 'node:buffer'
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { writeJsonAtomic } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { shellChatRoot } from '../lib/paths.mjs'
 
 /**

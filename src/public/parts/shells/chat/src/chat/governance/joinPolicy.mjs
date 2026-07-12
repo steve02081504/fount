@@ -3,10 +3,10 @@
  * 【职责】统一校验 member_join 入群策略：开放、仅邀请码、PoW 质询、创世角色限制等，供本地 append 与联邦入站共用。
  * 【原理】读取物化 state.groupSettings.joinPolicy；invite 模式比对 inviteCode；pow 模式调用无状态 verifyJoinPow（绑定近期 DAG tip）；genesis 模式限制首几笔事件角色。失败则拒绝事件落盘。
  * 【数据结构】join 事件 content 含 inviteCode、powSolution { anchorRef, epoch, nonce, joinerNodeHash? }；state.groupSettings.joinPolicy 字符串枚举。
- * 【关联】scripts/p2p/join_pow.mjs、joinPowAnchors.mjs、inviteTickets.mjs、dag/append、room ingest。
+ * 【关联】npm:@steve02081504/fount-p2p/governance/join_pow.mjs、joinPowAnchors.mjs、inviteTickets、dag/append、room ingest。
  */
-import { normalizeHex64 as normalizePubKeyHex } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from '../../../../../../../scripts/p2p/join_pow.mjs'
+import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
 
 import { collectJoinPowAnchors, joinPowExemptAsHistoricalReplay } from './joinPowAnchors.mjs'

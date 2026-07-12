@@ -1,11 +1,11 @@
-import { sha256TextHex } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { sha256TextHex } from 'npm:@steve02081504/fount-p2p/crypto'
 import {
 	encodeEntityHash,
 	isEntityHash128,
 	parseEntityHash,
-} from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
+} from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 /** agent subject 前缀（与 Chat 角色路径绑定）。 */
 export const AGENT_SUBJECT_PREFIX = 'fount:chat:agent:'

@@ -1,8 +1,8 @@
 /**
  * checkpoint `hot_posts` 索引：每频道最新 N + pin ±N。
  */
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { messagesPath } from '../lib/paths.mjs'
 
 /**

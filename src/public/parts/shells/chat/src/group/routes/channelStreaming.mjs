@@ -4,7 +4,7 @@
  * 【关联】被 channels.mjs 聚合注册。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { resolveIceServers } from '../../../../../../../scripts/p2p/ice_servers.mjs'
+import { resolveIceServers } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { appendStreamingSession } from '../../chat/dag/channelOps.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'

@@ -4,7 +4,7 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { registerWireWait } from '../../../../../../../scripts/p2p/wire_wait.mjs'
+import { registerWireWait } from 'npm:@steve02081504/fount-p2p/wire/wait'
 
 import { localNodeHash } from './dagDependencies.mjs'
 import { signPullAttestation } from './pullAttestation.mjs'

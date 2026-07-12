@@ -1,9 +1,9 @@
 /**
  * 帖子终态快照（冷归档 / Hub 深历史）。
  */
-import { getProfile } from '../../../../../../../scripts/p2p/entity/profile.mjs'
+import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 import { memberEntityHash } from '../lib/entity.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'

@@ -2,9 +2,9 @@
  * FOUNT_TEST 专用：Playwright / live 探针注入联邦互动通知。
  */
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { appendJsonlSynced } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { encodeEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { seedRemoteTimeline, randomSeed } from '../../test/federation/remote_timeline.mjs'

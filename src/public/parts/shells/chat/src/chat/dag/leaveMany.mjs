@@ -1,7 +1,7 @@
 /**
  * 批量退群：单请求内按有限并发处理多个群。
  */
-import { mapPool } from '../../../../../../../scripts/p2p/utils/map_pool.mjs'
+import { mapPool } from 'npm:@steve02081504/fount-p2p/utils/map_pool'
 import { CHAT_LEAVE_BATCH_MAX } from '../lib/batchLimits.mjs'
 
 

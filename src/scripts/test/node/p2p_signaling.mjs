@@ -1,4 +1,4 @@
-import { defaultSignalingRuntimeConfig } from 'fount/scripts/p2p/node/signaling_config.mjs'
+import { defaultSignalingRuntimeConfig } from 'npm:@steve02081504/fount-p2p/node/signaling_config'
 
 /**
  * @param {string} url relay URL
@@ -33,7 +33,7 @@ export function parseLoopbackRelayOverride(raw) {
 
 /**
  * @param {string | string[] | undefined} relayUrls 单 URL 或逗号分隔
- * @returns {import('fount/scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig} 测试信令配置
+ * @returns {import('npm:@steve02081504/fount-p2p/node/signaling_config').SignalingRuntimeConfig} 测试信令配置
  */
 export function testSignalingFromRelayUrls(relayUrls) {
 	const raw = Array.isArray(relayUrls) ? relayUrls.join(',') : relayUrls

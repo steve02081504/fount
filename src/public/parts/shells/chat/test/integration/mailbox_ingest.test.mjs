@@ -15,7 +15,7 @@ const { ensureServer, username } = createIntegrationBoot({
 
 Deno.test('chat mailbox consumer skips records without envelope', async () => {
 	await ensureServer()
-	const { dispatchMailboxRecordsToConsumers } = await import('fount/scripts/p2p/mailbox/consumer_registry.mjs')
+	const { dispatchMailboxRecordsToConsumers } = await import('npm:@steve02081504/fount-p2p/mailbox/consumer_registry')
 	const {
 		registerChatMailboxConsumer,
 		unregisterChatMailboxConsumer,
@@ -33,7 +33,7 @@ Deno.test('chat mailbox consumer skips records without envelope', async () => {
 
 Deno.test('chat mailbox consumer skips records without groupId', async () => {
 	await ensureServer()
-	const { dispatchMailboxRecordsToConsumers } = await import('fount/scripts/p2p/mailbox/consumer_registry.mjs')
+	const { dispatchMailboxRecordsToConsumers } = await import('npm:@steve02081504/fount-p2p/mailbox/consumer_registry')
 	const {
 		registerChatMailboxConsumer,
 		unregisterChatMailboxConsumer,
@@ -50,7 +50,7 @@ Deno.test('chat mailbox consumer skips records without groupId', async () => {
 
 Deno.test('chat mailbox ingestMailboxGive drops quarantine tier records', async () => {
 	await ensureServer()
-	const { ingestMailboxGive } = await import('fount/scripts/p2p/mailbox/deliver_or_store.mjs')
+	const { ingestMailboxGive } = await import('npm:@steve02081504/fount-p2p/mailbox/deliver_or_store')
 	const count = await ingestMailboxGive({ replicaUsername: username }, {
 		records: [{
 			id: 'rec-q',

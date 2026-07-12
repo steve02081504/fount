@@ -1,7 +1,7 @@
 import {
 	getNodeTransportSettings,
 	saveNodeTransportSettings,
-} from '../../../../../../../scripts/p2p/node/identity.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/identity'
 import { events } from '../../../../../../../server/events.mjs'
 import {
 	ensureOperatorPubKey,

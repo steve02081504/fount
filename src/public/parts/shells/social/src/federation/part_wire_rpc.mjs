@@ -1,10 +1,10 @@
-import { getShellPartpath } from '../../../../../../scripts/p2p/part_path_registry.mjs'
+import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import {
 	partInvokeDataRows,
 	partInvokeErrorMessages,
 	PART_INVOKE_FANOUT_DEFAULT,
-} from '../../../../../../scripts/p2p/part_wire_common.mjs'
-import { collectPartInvokeResponses } from '../../../../../../scripts/p2p/part_wire_fanout.mjs'
+} from 'npm:@steve02081504/fount-p2p/wire/part_common'
+import { collectPartInvokeResponses } from 'npm:@steve02081504/fount-p2p/wire/part_fanout'
 
 /**
  * @param {object} rpc social RPC 体（不含 kind）
@@ -19,7 +19,7 @@ export function wrapSocialRpc(rpc) {
  * @param {object} rpc social RPC 体
  * @param {number} [timeoutMs=2500] 超时
  * @param {number} [maxResponses=6] 最多响应数
- * @returns {Promise<import('../../../../../../scripts/p2p/part_invoke.mjs').PartInvokeResponse[]>} 邻居 PartInvokeResponse
+ * @returns {Promise<import('npm:@steve02081504/fount-p2p/wire/part_invoke').PartInvokeResponse[]>} 邻居 PartInvokeResponse
  */
 export function collectSocialRpcResponses(username, rpc, timeoutMs = 2500, maxResponses = PART_INVOKE_FANOUT_DEFAULT) {
 	return collectPartInvokeResponses(username, getShellPartpath('social'), wrapSocialRpc(rpc), timeoutMs, maxResponses)

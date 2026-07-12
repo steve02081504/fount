@@ -1,4 +1,4 @@
-import { registerUserRoomNodeScopeHook } from '../../../../../../../scripts/p2p/user_room.mjs'
+import { registerUserRoomNodeScopeHook } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 
 import { attachUserRoomEmojiHandlers } from './groupEmojiFederation.mjs'
 

@@ -9,8 +9,8 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession()
 const materialize = await import('../../src/timeline/materialize.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 
 Deno.test('chained ingest survives retention across repeated materialize', async () => {
 	const { username } = await getSession()

@@ -12,8 +12,8 @@ const fedTest = {
 	triggers: [],
 	manifestPath: 'src/public/parts/shells/chat/test/manifest.json',
 	heavy: false,
-	dependsOn: ['p2p:sim'],
-	dependencies: [{ manifestId: 'p2p', name: 'sim' }],
+	dependsOn: ['server:live'],
+	dependencies: [{ manifestId: 'server', name: 'live' }],
 }
 
 /** @type {import('../core/manifest.mjs').SuiteDef} */

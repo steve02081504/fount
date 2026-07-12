@@ -8,10 +8,10 @@ import { unlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-import { FEDERATION_CHUNK_MAX_BYTES } from '../../../../../../../scripts/p2p/constants.mjs'
-import { encryptPlaintextToMultiParts } from '../../../../../../../scripts/p2p/files/assemble.mjs'
-import { putChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { encryptPlaintextToMultiParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import {
 	digestArchiveMonthBody,

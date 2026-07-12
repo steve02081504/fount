@@ -3,8 +3,8 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { unwrapKeyEcies, wrapKeyEcies } from '../../../../../../../scripts/p2p/key_crypto.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { unwrapKeyEcies, wrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
 import { flushPendingDecryptAfterFileKeyRotation } from './buffer.mjs'

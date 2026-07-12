@@ -2,7 +2,7 @@ import {
 	registerManifestOwnerMatcher,
 	registerTransferKeyDeps,
 	unregisterTransferKeyDeps,
-} from '../../../../../scripts/p2p/files/transfer_key_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
 
 import { loadVaultMasterKey } from './vault_crypto/vault.mjs'
 

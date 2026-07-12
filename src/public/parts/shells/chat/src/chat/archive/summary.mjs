@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto'
 
-import { computeLocalTipsHash } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { computeDagTipIdsFromEvents } from '../../../../../../../scripts/p2p/governance_branch.mjs'
+import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 const BODY_ARCHIVE_TYPES = new Set(['message', 'message_edit'])
 

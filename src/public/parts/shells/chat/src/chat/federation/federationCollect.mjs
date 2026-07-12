@@ -1,7 +1,7 @@
 /**
  * 联邦多 peer 应答收集：超时、全量收齐、quorum 提前结束。
  */
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 /**
  * @param {Array<{ complete?: boolean, digest?: string, verified?: boolean }>} candidates 月拉候选

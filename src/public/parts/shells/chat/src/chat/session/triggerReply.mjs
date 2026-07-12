@@ -15,7 +15,7 @@ import { inspect } from 'node:util'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { agentEntityHash } from '../lib/entity.mjs'
-import { isEntityHash128, parseEntityHash } from '../../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import {
 	appendDagGeneratingPlaceholder,

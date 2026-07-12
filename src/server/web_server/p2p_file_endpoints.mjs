@@ -1,11 +1,11 @@
 import { Readable } from 'node:stream'
 
-import { canReadManifest, canWriteManifestPath } from '../../scripts/p2p/entity/files/acl.mjs'
-import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from '../../scripts/p2p/entity/files/evfs.mjs'
-import { entityFileUrl, profileAvatarFileUrl } from '../../scripts/p2p/entity/files/url.mjs'
-import { getProfile, updateProfile } from '../../scripts/p2p/entity/profile.mjs'
-import { isEntityHash128 } from '../../scripts/p2p/entity_id.mjs'
-import { assertSafeEvfsLogicalPath } from '../../scripts/p2p/evfs_logical_path.mjs'
+import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/entity/files/acl'
+import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
+import { entityFileUrl, profileAvatarFileUrl } from 'npm:@steve02081504/fount-p2p/entity/files/url'
+import { getProfile, updateProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
 import { applyAvatarToAllLocales } from '../../server/p2p_server/localized.mjs'
 
 import { isAllowedImageUpload, pickUploadedFile } from './multipart_upload.mjs'

@@ -1,4 +1,4 @@
-import { loadPersonalFilterSets } from '../../../../../../scripts/p2p/personal_block.mjs'
+import { loadPersonalFilterSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { loadFollowing, loadFollowingForActor } from '../following.mjs'

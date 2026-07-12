@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash, publicKeyFromSeed } from 'fount/scripts/p2p/crypto.mjs'
-import { encodeEntityHash } from 'fount/scripts/p2p/entity_id.mjs'
-import { applyNetworkHint } from 'fount/scripts/p2p/network.mjs'
-import { getEntityStore } from 'fount/scripts/p2p/node/instance.mjs'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { applyNetworkHint } from 'npm:@steve02081504/fount-p2p/node/network'
+import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
 import { seedRemoteTimeline } from './federation/remote_timeline.mjs'
 

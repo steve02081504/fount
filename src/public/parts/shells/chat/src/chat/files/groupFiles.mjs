@@ -8,11 +8,11 @@
 import { Buffer } from 'node:buffer'
 
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
-import { b64ToU8 } from '../../../../../../../scripts/p2p/bytes_codec.mjs'
-import { saveFileManifest, storeManifestParts } from '../../../../../../../scripts/p2p/entity/files/evfs.mjs'
-import { getChunk, hasChunk, putChunk } from '../../../../../../../scripts/p2p/files/chunk_store.mjs'
-import { normalizeFileManifest } from '../../../../../../../scripts/p2p/files/manifest.mjs'
-import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { b64ToU8 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
+import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
+import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest'
+import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	decryptConvergentCiphertext,
 	decryptRandomCiphertext,
@@ -21,9 +21,9 @@ import {
 	encryptRandomPlaintext,
 	unwrapContentKey,
 	wrapContentKey,
-} from '../../../../../../../scripts/p2p/key_crypto.mjs'
-import { penalizeChunkStorageFailure } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { createLocalStoragePlugin } from '../../../../../../../scripts/p2p/storage_plugins.mjs'
+} from 'npm:@steve02081504/fount-p2p/crypto/key'
+import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 import { getState } from '../dag/materialize.mjs'
 import {
 	fetchChunksFromRoster,
@@ -597,7 +597,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	const ceMode = normalizeCeMode(uploadMeta.ceMode)
 	const keyGen = uploadMeta.key_generation
 
-	/** @type {import('../../../../../../../scripts/p2p/files/manifest.mjs').FileManifest | null} */
+	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest').FileManifest | null} */
 	let manifest = null
 
 	if (Array.isArray(uploadMeta.parts) && uploadMeta.parts.length) 

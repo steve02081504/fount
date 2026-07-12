@@ -1,5 +1,5 @@
 /**
- * P2P 基础设施与 Chat 群物化状态类型（与 `src/scripts/p2p/`、`shells/chat/src/chat/dag/` 对齐）。
+ * P2P 基础设施与 Chat 群物化状态类型（与 `npm:@steve02081504/fount-p2p`、`shells/chat/src/chat/dag/` 对齐）。
  *
  * Chat 专用会话类型见 `src/decl/chatLog.ts`；Social 时间线见 `src/decl/socialAPI.ts`。
  */
@@ -71,7 +71,7 @@ export interface GroupSessionState {
 	charFrequencies: Record<string, number>
 }
 
-// ---- Permissions（`shells/chat/src/permissions/chat.mjs`；通用引擎见 `scripts/p2p/permissions/`）----
+// ---- Permissions（`shells/chat/src/permissions/chat.mjs`；通用引擎见 npm fount-p2p permissions）----
 
 /** 内置权限名；持久化位图顺序见 `PERMISSION_ORDER`，禁止重排。 */
 export type PermissionName =

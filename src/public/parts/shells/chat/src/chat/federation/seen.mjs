@@ -6,7 +6,7 @@
  * 【关联】room.mjs dag_event 入站、index 出站前可选检查；scripts/p2p/hexIds isHex64。
  */
 
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { EVENT_ID_HEX, getPendingTipExchange } from './registry.mjs'
 

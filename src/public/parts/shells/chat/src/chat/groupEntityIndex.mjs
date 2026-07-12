@@ -5,7 +5,7 @@ import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../scripts/js
 import {
 	registerLogicalEntityIdResolver,
 	unregisterLogicalEntityIdResolver,
-} from '../../../../../../scripts/p2p/entity/logical_entity_id_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 import { groupEntityHash } from './lib/groupEntity.mjs'

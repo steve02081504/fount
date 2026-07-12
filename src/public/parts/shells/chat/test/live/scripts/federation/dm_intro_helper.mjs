@@ -13,8 +13,8 @@ import process from 'node:process'
 import { dmLinkSignableBytes } from 'fount/public/parts/shells/chat/public/shared/dmLinkSignature.mjs'
 import { formatDmRunUri } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
 import { loadJsonFileIfExists, saveJsonFile } from 'fount/scripts/json_loader.mjs'
-import { sign } from 'fount/scripts/p2p/crypto.mjs'
-import { HEX_ID_64, normalizeHex64 } from 'fount/scripts/p2p/hexIds.mjs'
+import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
+import { HEX_ID_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parseArgsOrExit } from 'fount/scripts/test/core/parse_args_or_exit.mjs'
 
 

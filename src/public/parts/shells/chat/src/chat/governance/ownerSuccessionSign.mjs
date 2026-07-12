@@ -7,9 +7,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed, sign } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { isHex64, isSignatureHex128 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { ownerSuccessionBallotSignBytes } from '../../../../../../../scripts/p2p/owner_succession_ballot.mjs'
+import { publicKeyFromSeed, sign } from 'npm:@steve02081504/fount-p2p/crypto'
+import { isHex64, isSignatureHex128 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { ownerSuccessionBallotSignBytes } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
 /**

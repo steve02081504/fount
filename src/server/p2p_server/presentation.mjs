@@ -1,11 +1,11 @@
 import { getLocalizedInfo } from '../../scripts/locale.mjs'
-import { isPlaceholderDisplayName } from '../../scripts/p2p/entity/localized_core.mjs'
-import { parseEntityHash } from '../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
+import { isPlaceholderDisplayName } from 'npm:@steve02081504/fount-p2p/entity/localized_core'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getUserByUsername } from '../auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../parts_loader.mjs'
 
-import { getAgentCharResolver } from '../../scripts/p2p/entity/hosting_registry.mjs'
+import { getAgentCharResolver } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
 
 /** 无自定义头像时的默认用户图 */
 export const DEFAULT_USER_AVATAR = 'https://api.iconify.design/line-md/person.svg'
@@ -36,7 +36,7 @@ export function localesFromRequest(req, replicaUsername) {
  */
 export async function resolvePersonanameForReplica(replicaUsername, groupId) {
 	if (groupId) {
-		const { getMaterializedSession } = await import('../../scripts/p2p/entity/session_snapshot_registry.mjs')
+		const { getMaterializedSession } = await import('npm:@steve02081504/fount-p2p/entity/session_snapshot_registry')
 		try {
 			const session = await getMaterializedSession(replicaUsername, groupId)
 			const fromSession = session.personas?.[replicaUsername]

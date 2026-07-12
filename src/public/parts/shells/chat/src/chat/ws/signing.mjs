@@ -3,19 +3,19 @@
  * 【职责】群 WebSocket VOLATILE 流分片（stream_chunk）的 Ed25519 签名与验签，密钥来自联邦 identity 种子。
  * 【原理】resolveStreamSigner 缓存用户级 keyPair；attachStreamVolatileSignature 在广播前签名；verifyStreamChunkVolatile 供 WS 入站与 federation/volatile 入站复用。配置变更时 invalidateStreamSignerCache。
  * 【数据结构】signerCache Map→{ pubKeyHex, pubKeyHash, secretKey, signChunk }；chunk 含 senderPubKey、signature。
- * 【关联】federation/config.mjs、volatile.mjs、groupWsBroadcast；scripts/p2p/stream_volatile_signature.mjs。
+ * 【关联】federation/config.mjs、volatile.mjs、groupWsBroadcast；npm:@steve02081504/fount-p2p/wire/volatile_signature。
  */
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	boundStreamSlices,
 	signStreamSignatureHex,
 	streamChunkSignBytes,
 	streamKeyPairFromUserSeed,
 	verifyStreamSignatureHex,
-} from '../../../../../../../scripts/p2p/stream_volatile_signature.mjs'
+} from 'npm:@steve02081504/fount-p2p/wire/volatile_signature'
 import { getFederationIdentitySecret } from '../federation/config.mjs'
 
 /** @type {Map<string, { pubKeyHex: string, pubKeyHash: string, secretKey: Uint8Array }>} */

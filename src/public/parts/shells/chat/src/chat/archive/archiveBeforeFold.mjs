@@ -1,8 +1,8 @@
 /**
  * 物化维护：在 DAG 折叠前将非热区帖写入冷归档。
  */
-import { readJsonl, rewriteJsonlKeeping } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { readJsonl, rewriteJsonlKeeping } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { messagesPath } from '../lib/paths.mjs'
 
 import { allProtectedHotEventIds } from './hotPosts.mjs'

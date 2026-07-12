@@ -6,11 +6,11 @@ import {
 	computeRepMaxEff,
 	REP_MAX,
 	subjectiveSlashPenalty,
-} from '../../../../../../scripts/p2p/reputation_math.mjs'
+} from 'npm:@steve02081504/fount-p2p/reputation/math'
 
 import socialTunables from './reputation_social.tunables.json' with { type: 'json' }
 
-/** @typedef {import('../../../../../../scripts/p2p/reputation_store.mjs').ReputationFile} ReputationFile */
+/** @typedef {import('npm:@steve02081504/fount-p2p/node/reputation_store').ReputationFile} ReputationFile */
 
 /**
  * @returns {typeof socialTunables} 默认 tunables

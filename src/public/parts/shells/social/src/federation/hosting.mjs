@@ -4,9 +4,9 @@
 import {
 	getAgentCharResolver,
 	getListLocalAgentsProvider,
-} from '../../../../../../scripts/p2p/entity/hosting_registry.mjs'
-import { isEntityHash128, parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
 

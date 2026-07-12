@@ -5,9 +5,9 @@
  * 【数据结构】CHANNEL_MESSAGE_EVENT_ID_RE；message_edit/delete 的 content.targetId、newContent。
  * 【关联】dag/append、materialize、paths messagesPath；Hub messageActions。
  */
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { HEX_ID_64 as EVENT_ID_HEX } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { HEX_ID_64 as EVENT_ID_HEX } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import { isEventArchivedInManifest, loadArchiveManifest } from '../archive/index.mjs'
 import { postSnapshotToMessageLine } from '../archive/postSnapshot.mjs'

@@ -4,9 +4,9 @@ import {
 	commitOperatorKeyRevoke,
 	commitOperatorKeyRotate,
 } from '../../public/parts/shells/social/src/timeline/operator_key_commit.mjs'
-import { sign } from '../../scripts/p2p/crypto.mjs'
-import { isHex64, normalizeHex64 } from '../../scripts/p2p/hexIds.mjs'
-import { operatorKeyRevokeSignBytes } from '../../scripts/p2p/operator_key_chain.mjs'
+import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { operatorKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
 
 import {
 	commitActiveKeyRotation as persistActiveRotation,

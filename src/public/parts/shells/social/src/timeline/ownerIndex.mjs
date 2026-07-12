@@ -1,7 +1,7 @@
 import { readdir } from 'node:fs/promises'
 
 import { createLruMap } from '../../../../../../scripts/memo.mjs'
-import { isEntityHash128, parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 const INDEX_CACHE_MAX = 64

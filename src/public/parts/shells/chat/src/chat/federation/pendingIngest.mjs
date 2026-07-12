@@ -9,8 +9,8 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { pendingIngestPath } from '../lib/paths.mjs'
 
 /** 单群 pending_ingest 最大行数（超出时丢弃最老行）。 */

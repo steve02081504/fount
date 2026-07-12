@@ -2,8 +2,8 @@ import { resolveActingEntity } from '../../public/parts/shells/social/src/lib/re
 import {
 	addDenylistEntry,
 	loadDenylist,
-} from '../../scripts/p2p/denylist.mjs'
-import { localesFromRequest } from '../../scripts/p2p/entity/presentation_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { localesFromRequest } from 'npm:@steve02081504/fount-p2p/entity/presentation_registry'
 import {
 	computeEffectiveStatus,
 	ensureLocalEntityProfile,
@@ -12,15 +12,15 @@ import {
 	recordHeartbeat,
 	updateProfile,
 	updateStatus,
-} from '../../scripts/p2p/entity/profile.mjs'
-import { isEntityHash128 } from '../../scripts/p2p/entity_id.mjs'
-import { isHex64 } from '../../scripts/p2p/hexIds.mjs'
-import { loadNetwork } from '../../scripts/p2p/network.mjs'
-import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { loadNetwork } from 'npm:@steve02081504/fount-p2p/node/network'
+import { resolveGroupMemberEntityHash } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
 import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
-} from '../../scripts/p2p/personal_block.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { authenticate, getUserByReq } from '../auth/index.mjs'
 import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } from '../p2p_server/http_glue.mjs'
 import {
@@ -69,7 +69,7 @@ export function registerP2pEndpoints(router) {
 		const targetNodeHash = String(req.body?.targetNodeHash || '').trim().toLowerCase()
 		if (!isHex64(targetNodeHash))
 			return res.status(400).json({ error: 'invalid targetNodeHash' })
-		const { ensureRemoteUserRoom } = await import('../../scripts/p2p/remote_user_room.mjs')
+		const { ensureRemoteUserRoom } = await import('npm:@steve02081504/fount-p2p/transport/remote_user_room')
 		const slot = await ensureRemoteUserRoom(username, targetNodeHash)
 		res.status(200).json({ targetNodeHash, connected: !!slot })
 	})
@@ -156,7 +156,7 @@ export function registerP2pEndpoints(router) {
 
 	router.get('/api/p2p/mailbox/summary', authenticate, async (req, res) => {
 		void getUserByReq(req)
-		const { countMailboxPending } = await import('../../scripts/p2p/mailbox/store.mjs')
+		const { countMailboxPending } = await import('npm:@steve02081504/fount-p2p/mailbox/store')
 		const pendingCount = await countMailboxPending()
 		res.status(200).json({ pendingCount })
 	})

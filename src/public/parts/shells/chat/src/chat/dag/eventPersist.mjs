@@ -5,17 +5,17 @@
  * 【数据结构】`messageLine` 含 `eventId`、`hlc`、`prev_event_ids`、`receivedAt`；房间键来自 `groupWsRoomKeyForReplica`。
  * 【关联】`materialize.mjs`、`events/meta.mjs`、`../ws/groupWsRpc.mjs`、`../session/autoReply.mjs`、`../session/chatRequest.mjs`。
  */
-import { sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { appendJsonlSynced, readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { isHex64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { applyNetworkHint, mergeNetworkPeerPools } from '../../../../../../../scripts/p2p/network.mjs'
+import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { applyNetworkHint, mergeNetworkPeerPools } from 'npm:@steve02081504/fount-p2p/node/network'
 import {
 	applyDecayCollusionAfterSlash,
 	applyReputationResetToScores,
 	applySubjectiveSlashFromEvent,
 	seedMemberReputationFromIntroducer,
-} from '../../../../../../../scripts/p2p/reputation_store.mjs'
+} from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import {
 	CKG_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,
@@ -106,7 +106,7 @@ async function applyReputationHooks(username, groupId, signPayload, materialized
 		await decayAfterSlash()
 		if (signPayload.type === 'member_ban') {
 			const { blockEntriesFromBanContent } = await import('../governance/banRules.mjs')
-			const { addGroupBlockedPeers, addDenylistFromBanContent } = await import('../../../../../../../scripts/p2p/denylist.mjs')
+			const { addGroupBlockedPeers, addDenylistFromBanContent } = await import('npm:@steve02081504/fount-p2p/node/denylist')
 			const state = await materializedState()
 			const entries = blockEntriesFromBanContent(signPayload.content)
 			const targetKey = resolveTargetMemberKey(signPayload.content)

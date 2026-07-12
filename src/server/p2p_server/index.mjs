@@ -4,9 +4,9 @@ import path from 'node:path'
 import {
 	registerEntityPresentationProvider,
 	registerLocalesFromRequestProvider,
-} from '../../scripts/p2p/entity/presentation_registry.mjs'
-import { initNode } from '../../scripts/p2p/node/instance.mjs'
-import { ensureUserRoom } from '../../scripts/p2p/user_room.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/presentation_registry'
+import { initNode } from 'npm:@steve02081504/fount-p2p/node/instance'
+import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 
 import { createFountEntityStore } from './entity_store.mjs'
 import { registerP2PInboundHandlers } from './inbound_handlers.mjs'
@@ -14,7 +14,7 @@ import { getInfoDefaultsForEntity, localesFromRequest } from './presentation.mjs
 import { pickPrimaryReplica } from './user_notify.mjs'
 
 /**
- * @param {{ dataPath: string, signaling?: import('../../scripts/p2p/node/signaling_config.mjs').SignalingRuntimeConfig }} options fount 数据根目录
+ * @param {{ dataPath: string, signaling?: import('npm:@steve02081504/fount-p2p/node/signaling_config').SignalingRuntimeConfig }} options fount 数据根目录
  * @returns {Promise<void>}
  */
 export async function initP2PServer({ dataPath, signaling }) {
@@ -22,8 +22,8 @@ export async function initP2PServer({ dataPath, signaling }) {
 	await mkdir(nodeDir, { recursive: true })
 	const entityStore = createFountEntityStore()
 	initNode({ nodeDir, entityStore, ...signaling ? { signaling } : {} })
-	const { createDefaultTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
-	const { registerTrustGraphProvider } = await import('../../scripts/p2p/trust_graph_registry.mjs')
+	const { createDefaultTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
+	const { registerTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
 	registerEntityPresentationProvider(getInfoDefaultsForEntity)
 	registerLocalesFromRequestProvider(localesFromRequest)

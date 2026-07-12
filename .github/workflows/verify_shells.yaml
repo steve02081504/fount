@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'src/public/parts/shells/**'
-      - 'src/scripts/p2p/**'
+      - 'deno.json'
       - 'src/server/p2p_server/**'
       - '.github/workflows/verify_shells.yaml'
       - '.github/workflows/verify_shells.mjs'

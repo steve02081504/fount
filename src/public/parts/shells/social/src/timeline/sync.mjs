@@ -1,4 +1,4 @@
-import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'

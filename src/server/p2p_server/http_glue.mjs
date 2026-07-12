@@ -1,9 +1,9 @@
-import { resolveLogicalEntityId } from '../../scripts/p2p/entity/logical_entity_id_registry.mjs'
+import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
 import {
 	resolveLocalOperatorEntityHash,
-} from '../../scripts/p2p/entity/replica.mjs'
-import { getNodeHash } from '../../scripts/p2p/node/identity.mjs'
-import { resolveGroupMemberEntityHash } from '../../scripts/p2p/p2p_viewer_registry.mjs'
+} from 'npm:@steve02081504/fount-p2p/entity/replica'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { resolveGroupMemberEntityHash } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
 import { getUserByReq } from '../auth/index.mjs'
 
 import { getRecoveryPubKeyHex, resolveOperatorEntityHashForUser } from './operator_identity.mjs'
@@ -40,7 +40,7 @@ export async function getReplicaFromReq(req) {
  * @returns {Promise<boolean>} 当前用户是否可写该实体
  */
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
-	const { isWritableLocalEntity } = await import('../../scripts/p2p/entity/replica.mjs')
+	const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/entity/replica')
 	if (!isWritableLocalEntity(entityHash)) return false
 	const recoveryPub = await getRecoveryPubKeyHex(replicaUsername)
 	const operatorHash = resolveLocalOperatorEntityHash(recoveryPub)

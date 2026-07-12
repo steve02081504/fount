@@ -6,8 +6,8 @@
  * 【关联】`ingest.mjs`、`materialize.mjs`、`permissions/chat.mjs`。
  */
 import { agentEntityHash } from '../lib/entity.mjs'
-import { isEntityHash128 } from '../../../../../../../scripts/p2p/entity_id.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { governanceChannelId } from '../../group/access.mjs'
 

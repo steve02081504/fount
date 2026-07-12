@@ -16,9 +16,9 @@ const append = await import('../../src/timeline/append.mjs')
 const notifications = await import('../../src/notifications.mjs')
 const inbox = await import('../../src/inbox.mjs')
 const following = await import('../../src/following.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
-const { appendJsonlSynced } = await import('fount/scripts/p2p/dag/storage.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+const { appendJsonlSynced } = await import('npm:@steve02081504/fount-p2p/dag/storage')
 
 Deno.test('inbox written on ingest and seen watermark clears unreadCount', async () => {
 	const { username, operator } = await getSession()

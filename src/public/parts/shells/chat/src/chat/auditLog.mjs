@@ -6,10 +6,10 @@
  * 【数据结构】条目 { id, type, sender, at, channelId, params }；查询 q 支持 before 游标、offset/limit、types 过滤；默认 limit 50、上限 200。
  * 【关联】group 路由或 endpoints 调用 listAuditLogEntries；依赖 dag/materialize、dag/storage、p2p/governance_branch。
  */
-import { topologicalCanonicalOrder } from '../../../../../../scripts/p2p/dag/index.mjs'
-import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { authzFoldOrderIds } from '../../../../../../scripts/p2p/governance_branch.mjs'
+import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { authzFoldOrderIds } from 'npm:@steve02081504/fount-p2p/governance/branch'
 
 import { GOVERNANCE_AUTHZ_TYPES } from './dag/eventTypes.mjs'
 import { getState } from './dag/materialize.mjs'

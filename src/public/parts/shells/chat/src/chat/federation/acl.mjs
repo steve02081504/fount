@@ -3,7 +3,7 @@
  * 【职责】联邦中继与本地落盘的 ACL 门控：区分「可写入 events.jsonl」「可立即中继」「应暂缓入 pending_relay」三类决策。
  * 【原理】授权类事件类型在物化 members 快照为空时：member_join 可落盘，其余 gated 类型入站走 pendingIngest、出站走 pendingRelay；有快照则 checkEventPermission。batterySaver 且无快照时拒绝中继 gated 事件。
  * 【数据结构】event：{ type, sender }；state：物化群状态含 members、groupSettings.batterySaver。
- * 【关联】pendingRelay.mjs、pendingIngest.mjs、index.mjs publishSignedEventToFederation、room ingest；dag/authorizeEvent.mjs、scripts/p2p/event_types.mjs。
+ * 【关联】pendingRelay.mjs、pendingIngest.mjs、index.mjs publishSignedEventToFederation、room ingest；dag/authorizeEvent.mjs、npm:@steve02081504/fount-p2p/event_types。
  */
 import { checkEventPermission } from '../dag/authorizeEvent.mjs'
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from '../dag/eventTypes.mjs'

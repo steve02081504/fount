@@ -1,6 +1,6 @@
 import { memoizePromise } from '../../../../../../scripts/memo.mjs'
-import { getProfile } from '../../../../../../scripts/p2p/entity/profile.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 /**
  * 单次 feed/search 构建内的作者资料摘要加载（请求级 memo，不跨请求共享）。

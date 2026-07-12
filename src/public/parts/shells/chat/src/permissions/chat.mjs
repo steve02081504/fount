@@ -1,7 +1,7 @@
 /**
  * Chat 群权限预设（Discord 式频道覆写语义）。
  */
-import { createLayeredEvaluator } from 'fount/scripts/p2p/permissions/evaluator.mjs'
+import { createLayeredEvaluator } from 'npm:@steve02081504/fount-p2p/permissions'
 
 /** 内置权限能力 */
 export const PERMISSIONS = {

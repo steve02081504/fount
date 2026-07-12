@@ -8,7 +8,7 @@ import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
-import { mapDelete, mapGet, mapSet } from '../scripts/p2p/composite_key.mjs'
+import { mapDelete, mapGet, mapSet } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { doProfile } from '../scripts/profiler.mjs'
 
 import { getAllUsers, getUserByUsername, getUserDictionary } from './auth/index.mjs'

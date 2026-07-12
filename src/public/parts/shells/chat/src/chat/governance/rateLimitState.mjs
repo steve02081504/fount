@@ -5,7 +5,7 @@ import { createLruMap } from '../../../../../../../scripts/memo.mjs'
 import {
 	messageRateEntityKey,
 	resolveMessageRateLimits,
-} from '../../../../../../../scripts/p2p/message_rate_limit.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/message_rate_limit'
 
 const BUCKETS_BY_GROUP_MAX = 1024
 

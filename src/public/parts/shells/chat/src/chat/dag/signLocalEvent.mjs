@@ -3,12 +3,12 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed, sign } from '../../../../../../../scripts/p2p/crypto.mjs'
+import { publicKeyFromSeed, sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import {
 	computeEventId,
 	signPayloadBytes,
-} from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { getNodeHash } from '../../../../../../../scripts/p2p/node/identity.mjs'
+} from 'npm:@steve02081504/fount-p2p/dag/index'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import {
 	classifyHlcSkewAction,
 	resolveHlcMaxSkewMs,

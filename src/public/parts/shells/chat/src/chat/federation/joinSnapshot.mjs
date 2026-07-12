@@ -4,9 +4,9 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import archiveTunables from '../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
-import { pickFederationTargetPeerIds } from '../../../../../../../scripts/p2p/peer_pool.mjs'
-import { resolveArchiveQuorumPeerMin } from '../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
+import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { isSignedBaseCheckpoint } from '../dag/checkpointPayload.mjs'

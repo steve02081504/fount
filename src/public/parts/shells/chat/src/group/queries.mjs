@@ -7,9 +7,9 @@
  */
 import { stat } from 'node:fs/promises'
 
-import { DEFAULT_STREAM_GENERATING_IDLE_MS } from '../../../../../../scripts/p2p/constants.mjs'
-import { readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../scripts/p2p/dag/strip_extensions.mjs'
+import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { mergeChannelMessagesForDisplay } from '../../public/shared/messageMerge.mjs'
 import { materializeFromCheckpoint } from '../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../chat/dag/materialize.mjs'

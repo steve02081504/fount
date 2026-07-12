@@ -1,5 +1,5 @@
 import { agentEntityHash } from '../../lib/entity.mjs'
-import { isEntityHash128 } from '../../../../../../../../scripts/p2p/entity_id.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 import {
 	applyBanContent,

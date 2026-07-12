@@ -4,7 +4,7 @@
 import { access, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/utils.mjs'
 

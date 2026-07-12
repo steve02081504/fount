@@ -4,7 +4,7 @@
 
 /**
  * @typedef {object} FederationWireBinding
- * @property {ReturnType<import('../../../../../../../../scripts/p2p/action_registry.mjs').createActionRegistry>} wireActions
+ * @property {ReturnType<import('npm:@steve02081504/fount-p2p/registries/action').createActionRegistry>} wireActions
  * @property {Map<string, Function>} senderRegistry
  */
 

@@ -1,11 +1,11 @@
 /**
  * 入群 checkpoint 多 peer 信誉仲裁（与冷归档月拉同构）。
  */
-import archiveTunables from '../../../../../../../../scripts/p2p/archive.tunables.json' with { type: 'json' }
-import { isHex64 } from '../../../../../../../../scripts/p2p/hexIds.mjs'
-import { pickNodeScoreFromReputation } from '../../../../../../../../scripts/p2p/reputation_pick_score.mjs'
-import { penalizeArchiveServeMismatch, loadReputation } from '../../../../../../../../scripts/p2p/reputation_store.mjs'
-import { resolveArchiveQuorumPeerMin } from '../../../../../../../../scripts/p2p/tunables_resolve.mjs'
+import archiveTunables from '../../lib/archive.tunables.json' with { type: 'json' }
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pickNodeScoreFromReputation } from 'npm:@steve02081504/fount-p2p/reputation/pick_score'
+import { penalizeArchiveServeMismatch, loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
 import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
 import { localNodeHash } from '../dagDependencies.mjs'
 import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'

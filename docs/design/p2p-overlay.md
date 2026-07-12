@@ -51,10 +51,10 @@
 
 ### 删除
 
-- `src/scripts/p2p/signaling_room.mjs`
-- `src/scripts/p2p/trystero_session.mjs`
-- `src/scripts/p2p/trystero_wire_action.mjs`
-- `src/scripts/p2p/identity_announce.mjs`
+- `src/npm:@steve02081504/fount-p2p/signaling_room.mjs`
+- `src/npm:@steve02081504/fount-p2p/trystero_session.mjs`
+- `src/npm:@steve02081504/fount-p2p/trystero_wire_action.mjs`
+- `src/npm:@steve02081504/fount-p2p/identity_announce.mjs`
 - `src/public/parts/shells/chat/src/chat/federation/room.mjs`
 - `src/public/parts/shells/chat/src/chat/federation/federationSlot.mjs`
 - `src/public/parts/shells/chat/src/chat/federation/partitions.mjs`
@@ -66,17 +66,17 @@
 - `src/scripts/p2p/link/`
 - `src/scripts/p2p/discovery/`
 - `src/scripts/p2p/overlay/`
-- `src/scripts/p2p/link_registry.mjs`
-- `src/scripts/p2p/group_link_set.mjs`
+- `src/npm:@steve02081504/fount-p2p/transport/link_registry.mjs`
+- `src/npm:@steve02081504/fount-p2p/transport/group_link_set.mjs`
 
 ### 保留但换后端
 
-- `src/scripts/p2p/trust_graph_send.mjs`
-- `src/scripts/p2p/rtc_connection_budget.mjs`
+- `src/npm:@steve02081504/fount-p2p/trust_graph/send.mjs`
+- `src/npm:@steve02081504/fount-p2p/transport/rtc_connection_budget.mjs`
 - `src/scripts/p2p/mailbox/**`
 - `src/scripts/p2p/part_wire*.mjs`
 - `src/scripts/p2p/files/chunk_fetch*.mjs`
-- `src/scripts/p2p/network.mjs`
+- `src/npm:@steve02081504/fount-p2p/node/network.mjs`
 
 ## 线协议
 
@@ -219,12 +219,12 @@ advertise 统一格式：
 
 ### P0：link 层
 
-- `src/scripts/p2p/link/frame.mjs`
-- `src/scripts/p2p/link/handshake.mjs`
-- `src/scripts/p2p/link/sdp_fingerprint.mjs`
-- `src/scripts/p2p/link/channel_mux.mjs`
-- `src/scripts/p2p/link/rtc.mjs`
-- `src/scripts/p2p/link/link.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/frame.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/handshake.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/sdp_fingerprint.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/channel_mux.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/rtc.mjs`
+- `src/npm:@steve02081504/fount-p2p/link/link.mjs`
 
 验收：
 
@@ -235,9 +235,9 @@ advertise 统一格式：
 
 ### P1：link_registry + discovery
 
-- `src/scripts/p2p/link_registry.mjs`
-- `src/scripts/p2p/discovery/index.mjs`
-- `src/scripts/p2p/discovery/nostr.mjs`
+- `src/npm:@steve02081504/fount-p2p/transport/link_registry.mjs`
+- `src/npm:@steve02081504/fount-p2p/discovery/index.mjs`
+- `src/npm:@steve02081504/fount-p2p/discovery/nostr.mjs`
 
 验收：
 

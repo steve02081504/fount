@@ -56,7 +56,7 @@ try {
 	;({ exec } = await import('npm:@steve02081504/exec'))
 	;({ default: inquirer } = await import('npm:inquirer'))
 	;({ on_shutdown } = await import('npm:on-shutdown'))
-	const subfountP2p = await import('fount/scripts/p2p/index.mjs')
+	const subfountP2p = await import('npm:@steve02081504/fount-p2p/index')
 	await subfountP2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
 	createScopedLinkRoom = subfountP2p.createScopedLinkRoom
 }

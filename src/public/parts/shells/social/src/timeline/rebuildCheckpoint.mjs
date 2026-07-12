@@ -1,7 +1,7 @@
 import { Buffer } from 'node:buffer'
 
-import { signCheckpoint } from '../../../../../../scripts/p2p/checkpoint_sign.mjs'
-import { writeJsonAtomicSynced } from '../../../../../../scripts/p2p/dag/storage.mjs'
+import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
+import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { timelineSnapshotPath } from '../paths.mjs'
 

@@ -14,8 +14,8 @@ const append = await import('../../src/timeline/append.mjs')
 const notifications = await import('../../src/notifications.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const following = await import('../../src/following.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 
 const POST_ID = 'd'.repeat(64)
 

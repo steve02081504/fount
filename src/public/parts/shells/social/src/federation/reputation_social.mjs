@@ -1,4 +1,4 @@
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import socialTunables from './reputation_social.tunables.json' with { type: 'json' }
 import {
 	applyFollowedBlockSignalPure,
@@ -21,7 +21,7 @@ export const SOCIAL_REP_DEMOTE_THRESHOLD = socialTunables.socialRepDemoteThresho
  * @param {string} opts.targetEntityHash 被拉黑实体
  * @param {'block' | 'unblock'} opts.action 动作
  * @param {boolean} [opts.selfTrust] 自己拉黑时满信任权重
- * @param {(mutator: (data: import('../../../../../../scripts/p2p/reputation_store.mjs').ReputationFile) => void | Promise<void>) => Promise<void>} mutateReputation 突变器
+ * @param {(mutator: (data: import('npm:@steve02081504/fount-p2p/node/reputation_store').ReputationFile) => void | Promise<void>) => Promise<void>} mutateReputation 突变器
  * @returns {Promise<boolean>} 是否已应用
  */
 export async function applyFollowedBlockSignal(opts, mutateReputation) {

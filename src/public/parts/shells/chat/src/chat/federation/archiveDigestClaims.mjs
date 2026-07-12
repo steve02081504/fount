@@ -1,8 +1,8 @@
 /**
  * 跨观察者归档 digest 声明：联邦 gossip 对质等价欺骗。
  */
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { penalizeArchiveServeMismatch } from '../../../../../../../scripts/p2p/reputation_store.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { penalizeArchiveServeMismatch } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { mutateArchiveManifest } from '../archive/index.mjs'
 
 /**

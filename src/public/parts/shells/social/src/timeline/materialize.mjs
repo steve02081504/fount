@@ -1,7 +1,7 @@
 import { createLruMap } from '../../../../../../scripts/memo.mjs'
-import { readJsonlTipId } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { materializeFromEvents } from '../../../../../../scripts/p2p/timeline/materialize_runner.mjs'
+import { readJsonlTipId } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { materializeFromEvents } from 'npm:@steve02081504/fount-p2p/timeline/materialize_runner'
 import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
 
 import { readTimelineEvents } from './append.mjs'

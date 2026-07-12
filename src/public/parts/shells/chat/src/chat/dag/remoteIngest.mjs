@@ -2,12 +2,12 @@
  * 【文件】`dag/remoteIngest.mjs` — 联邦/远程 DAG 事件入库。
  */
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
-import { computeEventId } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { isSubjectBannedByState, isSubjectBlocked } from '../../../../../../../scripts/p2p/denylist.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
-import { isPeerPoolKeyBlocked, loadPeerPoolView } from '../../../../../../../scripts/p2p/network.mjs'
-import { recordMessageRateViolation } from '../../../../../../../scripts/p2p/reputation_store.mjs'
-import { extractInboundSignedEvent } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { computeEventId } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { isSubjectBannedByState, isSubjectBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
+import { recordMessageRateViolation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {
 	classifyHlcSkewAction,

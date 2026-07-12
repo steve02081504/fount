@@ -2,8 +2,8 @@
 import { Buffer } from 'node:buffer'
 
 
-import { FEDERATION_CHUNK_MAX_BYTES } from 'fount/scripts/p2p/constants.mjs'
-import { encryptPlaintextToMultiParts } from 'fount/scripts/p2p/files/assemble.mjs'
+import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { encryptPlaintextToMultiParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { wirePartsFromEncParts } from '../../src/chat/archive/monthChunks.mjs'

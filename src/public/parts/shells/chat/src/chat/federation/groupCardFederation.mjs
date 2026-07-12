@@ -1,10 +1,10 @@
 /**
  * 联邦群卡片拉取：fed_group_card_want / fed_group_card_data。
  */
-import { wireAction } from '../../../../../../../scripts/p2p/room_wire_action.mjs'
-import { isFederationActionAllowedUnderLoad } from '../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { isPlainObject } from '../../../../../../../scripts/p2p/wire_ingress.mjs'
-import { consumeWireRateBucket } from '../../../../../../../scripts/p2p/wire_rate_bucket.mjs'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
 import { getState } from '../../chat/dag/materialize.mjs'
 
 import { bindFedSender } from './outbound.mjs'

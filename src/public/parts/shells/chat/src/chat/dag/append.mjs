@@ -3,9 +3,9 @@
  */
 import { mkdir } from 'node:fs/promises'
 
-import { readJsonl } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { stripDagEventLocalExtensions } from '../../../../../../../scripts/p2p/dag/strip_extensions.mjs'
-import { computeAppendHlcAndPrev } from '../../../../../../../scripts/p2p/timeline/append_core.mjs'
+import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { computeAppendHlcAndPrev } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 import { CKG_ENCRYPT_EVENT_TYPES, encryptEventContent, isCkgEncryptedContent, plaintextCkgContentFields } from '../channel_keys/content.mjs'
 import { ensureFederationRoom, invalidateFederationRoomCache } from '../federation/room.mjs'
 import { shouldRebindFederationRoomForEvent } from '../federation/rosterChange.mjs'

@@ -4,9 +4,9 @@
 import { mkdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-import { chunkFetchProgress } from '../../../../../../../scripts/p2p/chunk_fetch_scheduler.mjs'
-import { writeJsonAtomicSynced } from '../../../../../../../scripts/p2p/dag/storage.mjs'
-import { isHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { chunkFetchProgress } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
+import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { groupDir } from '../lib/paths.mjs'
 
 /**

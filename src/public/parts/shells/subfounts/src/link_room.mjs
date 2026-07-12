@@ -1,1 +1,1 @@
-export { createScopedLinkRoom } from '../../../../../scripts/p2p/rooms/scoped_link.mjs'
+export { createScopedLinkRoom } from 'npm:@steve02081504/fount-p2p/rooms/scoped_link'

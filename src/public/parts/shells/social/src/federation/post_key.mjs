@@ -1,4 +1,4 @@
-import { compositeKey } from '../../../../../../scripts/p2p/composite_key.mjs'
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 
 /**
  * Social 帖子/互动 Map 键（entityHash + postId）。

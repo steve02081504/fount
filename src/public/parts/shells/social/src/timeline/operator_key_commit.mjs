@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { appendJsonlSynced, readJsonl } from '../../../../../../scripts/p2p/dag/storage.mjs'
-import { parseEntityHash } from '../../../../../../scripts/p2p/entity_id.mjs'
-import { getNodeHash } from '../../../../../../scripts/p2p/node/identity.mjs'
-import { computeAppendHlcAndPrev, signTimelineEvent } from '../../../../../../scripts/p2p/timeline/append_core.mjs'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 

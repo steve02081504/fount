@@ -2,7 +2,7 @@
  * Social 治理最小集：mute / report / contentWarning。
  */
 /* global Deno */
-import { setPersonalMuted, isMutedBy } from 'fount/scripts/p2p/personal_block.mjs'
+import { setPersonalMuted, isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
@@ -13,7 +13,7 @@ const TARGET = placeholderEntityHash('b')
 
 Deno.test('mute filters feed via personal lists', async () => {
 	const { username, operator } = await getSession()
-	const { isAuthorFilteredByPersonalSets, loadPersonalFilterSets } = await import('fount/scripts/p2p/personal_block.mjs')
+	const { isAuthorFilteredByPersonalSets, loadPersonalFilterSets } = await import('npm:@steve02081504/fount-p2p/node/personal_block')
 	const { canViewPost } = await import('../../src/feedVisibility.mjs')
 	const { loadViewerContext } = await import('../../src/feed/helpers.mjs')
 

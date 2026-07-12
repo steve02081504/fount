@@ -7,8 +7,8 @@
  */
 import { readFile } from 'node:fs/promises'
 
-import { pubKeyHash, publicKeyFromSeed } from '../../../../../../scripts/p2p/crypto.mjs'
-import { isEntityHash128 } from '../../../../../../scripts/p2p/entity_id.mjs'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { localSignerSeedPath } from '../chat/lib/paths.mjs'
 

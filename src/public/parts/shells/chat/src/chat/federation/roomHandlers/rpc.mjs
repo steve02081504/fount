@@ -1,7 +1,7 @@
-import { attachGroupPartWire } from '../../../../../../../../scripts/p2p/group_part_wire.mjs'
-import { wireAction } from '../../../../../../../../scripts/p2p/room_wire_action.mjs'
-import { isFederationActionAllowedUnderLoad } from '../../../../../../../../scripts/p2p/rtc_connection_budget.mjs'
-import { isPlainObject } from '../../../../../../../../scripts/p2p/wire_ingress.mjs'
+import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/group_part'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { encodeWireJson } from '../../lib/wireJson.mjs'
 import {
 	buildRpcErrorResponse,

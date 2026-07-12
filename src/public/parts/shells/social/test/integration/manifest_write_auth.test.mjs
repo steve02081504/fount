@@ -14,10 +14,10 @@ const getSession = createTestSession()
 
 const { isTimelineWriteAuthorized } = await import('../../src/federation/write_auth.mjs')
 const append = await import('../../src/timeline/append.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
-const { getNodeHash } = await import('fount/scripts/p2p/node/identity.mjs')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 const { getOperatorSecretKey, resolveOperatorEntityHashForUser } =
 	await import('fount/server/p2p_server/operator_identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')

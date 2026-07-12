@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { socialPostKey } from './federation/post_key.mjs'
-import { withAsyncMutex } from '../../../../../scripts/p2p/utils/async_mutex.mjs'
+import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { indexDocument, getShardMeta, queryIndex, removeDocument } from '../../../../../scripts/search/invertedIndex.mjs'
 
 import { extractHashtagsFromText } from './lib/hashtags.mjs'

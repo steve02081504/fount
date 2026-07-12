@@ -10,8 +10,8 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession()
 
-const { pubKeyHash, publicKeyFromSeed } = await import('fount/scripts/p2p/crypto.mjs')
-const { encodeEntityHash } = await import('fount/scripts/p2p/entity_id.mjs')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 
 const append = await import('../../src/timeline/append.mjs')
 const sync = await import('../../src/timeline/sync.mjs')

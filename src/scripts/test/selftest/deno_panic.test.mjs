@@ -12,7 +12,7 @@ import { denoPanicRecordPath } from '../core/paths.mjs'
 const MARKER = ['Deno has', 'panicked. This is a bug in Deno.'].join(' ')
 
 const SAMPLE = [
-	'running 1 test from ./src/scripts/p2p/test/live/backpressure_smoke.test.mjs',
+	'running 1 test from ./src/public/parts/shells/chat/test/live/scripts/ws_stream.test.mjs',
 	'============================================================',
 	MARKER,
 	'Please report this at https://github.com/denoland/deno/issues/new.',

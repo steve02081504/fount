@@ -9,26 +9,26 @@ import {
 	publicKeyFromSeed,
 	randomKeyPair,
 	sign,
-} from 'fount/scripts/p2p/crypto.mjs'
+} from 'npm:@steve02081504/fount-p2p/crypto'
 import {
 	computeTipConsensusScores,
 	selectConsensusBranchTip,
-} from 'fount/scripts/p2p/governance_branch.mjs'
+} from 'npm:@steve02081504/fount-p2p/governance/branch'
 import {
 	DEFAULT_ICE_SERVERS,
 	resolveIceServers,
 	sanitizeIceServersForSettings,
-} from 'fount/scripts/p2p/ice_servers.mjs'
+} from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 import {
 	messageRateEntityKey,
 	resolveMessageRateLimits,
-} from 'fount/scripts/p2p/message_rate_limit.mjs'
+} from 'npm:@steve02081504/fount-p2p/federation/message_rate_limit'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import {
 	parseJoinSnapshotRequest,
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
-} from 'fount/scripts/p2p/schemas/federation_pull_wire.mjs'
+} from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'

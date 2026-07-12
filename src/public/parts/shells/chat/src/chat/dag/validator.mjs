@@ -7,9 +7,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash, publicKeyFromSeed, verify } from '../../../../../../../scripts/p2p/crypto.mjs'
-import { signPayloadBytes, sortedPrevEventIds } from '../../../../../../../scripts/p2p/dag/index.mjs'
-import { HEX_ID_64, normalizeHex64 } from '../../../../../../../scripts/p2p/hexIds.mjs'
+import { pubKeyHash, publicKeyFromSeed, verify } from 'npm:@steve02081504/fount-p2p/crypto'
+import { signPayloadBytes, sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
+import { HEX_ID_64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 /**
  * 发件人 pubKeyHash 的 64 位小写 hex 校验正则。

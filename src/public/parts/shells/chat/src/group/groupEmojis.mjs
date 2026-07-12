@@ -11,8 +11,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-import { putChunk } from '../../../../../../scripts/p2p/files/chunk_store.mjs'
-import { prefixedRandomId } from '../../../../../../scripts/p2p/random_id.mjs'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { groupDir } from '../chat/lib/paths.mjs'
 
 const MAX_EMOJI_BYTES = 512 * 1024
