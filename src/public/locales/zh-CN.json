@@ -1207,6 +1207,9 @@
 			"careRemove": "取消特别关心",
 			"careAdded": "已加入特别关心",
 			"careRemoved": "已取消特别关心",
+			"setAlias": "设置别名",
+			"setAliasPrompt": "设置本地别名（留空清除）：",
+			"aliasSaved": "别名已更新",
 			"replies": "评论",
 			"copyLink": "复制链接",
 			"copied": "已复制",
@@ -2229,6 +2232,7 @@
 			"settingsModalTitle": "设置",
 			"modalClose": "关闭",
 			"groupTag": "群组",
+			"groupUnnamed": "未命名群 ·${suffix}",
 			"groupHeaderMenu": {
 				"title": "群菜单：设置、邀请等"
 			},
@@ -2384,6 +2388,9 @@
 				"addCharLabel": "选择角色",
 				"addCharSubmit": "添加",
 				"noChars": "没有可用的角色",
+				"setAlias": "设置群别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）：",
+				"aliasSaved": "群别名已更新",
 				"leave": "退出群",
 				"leaveConfirm": "确定要退出群「${name}」吗？你将无法再查看此群消息。",
 				"leaveOk": "已退出群组",
@@ -2449,7 +2456,9 @@
 				"tagFed": "联邦成员",
 				"tagLocal": "本机账户",
 				"care": "特别关心",
-				"careRemove": "取消特别关心"
+				"careRemove": "取消特别关心",
+				"setAlias": "设置别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）："
 			},
 			"channelContext": {
 				"copyLinkDone": "频道链接已复制",
@@ -2469,6 +2478,9 @@
 				"care": "特别关心",
 				"careAdded": "已加入特别关心",
 				"careRemoved": "已取消特别关心",
+				"setAlias": "设置别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）：",
+				"aliasSaved": "别名已更新",
 				"copyPubKey": "复制公钥哈希",
 				"copyEntityId": "复制实体 ID",
 				"dm": "发送私信",

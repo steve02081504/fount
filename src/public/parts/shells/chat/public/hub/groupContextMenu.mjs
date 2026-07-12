@@ -18,6 +18,8 @@ import { createGroupInvite, groupRequest, leaveGroups } from '../src/api/groupAp
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
+import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
+import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { navigateToGroupSettings, selectGroup } from './groupNav.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
@@ -239,6 +241,27 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	menu.querySelector('.hub-group-menu-add-char')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
 		await showAddCharDialog(groupId)
+	})
+
+	menu.querySelector('.hub-group-menu-alias')?.addEventListener('click', () => {
+		dismissGroupActionMenu()
+		void (async () => {
+			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+			const next = prompt(geti18n('chat.hub.groupContext.setAliasPrompt', { name: groupName }), aliasForGroup(groupId))
+			if (next == null) return
+			await setGroupAlias(groupId, next)
+			showToastI18n('success', 'chat.hub.groupContext.aliasSaved')
+			await renderServerBar()
+			if (hubStore.context.currentGroupId === groupId) {
+				const nameElement = document.getElementById('hub-group-name-display')
+				if (nameElement) {
+					delete nameElement.dataset.i18n
+					nameElement.textContent = await groupDisplayName(groupId, group?.name)
+				}
+			}
+		})().catch(error => {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		})
 	})
 
 	menu.querySelector('.hub-group-menu-leave-batch')?.addEventListener('click', async () => {

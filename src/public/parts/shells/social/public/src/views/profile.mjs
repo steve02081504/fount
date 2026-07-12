@@ -208,7 +208,7 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 	])
 	const isSelf = appContext.state.viewerEntityHash && entityHash === appContext.state.viewerEntityHash
 	const container = document.getElementById('profileView')
-	const name = escapeHtml(data.profile?.name || appContext.authorLabel(entityHash))
+	const name = escapeHtml(appContext.authorLabel(entityHash, data.profile))
 	const handle = escapeHtml(entityHandle(entityHash))
 	const followingCount = (followingData.following || []).length
 

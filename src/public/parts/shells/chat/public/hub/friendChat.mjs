@@ -7,6 +7,7 @@
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../shared/friendBinding.mjs'
 import { isHex64 } from '../shared/pubKeyHex.mjs'
@@ -188,7 +189,8 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const state = await getGroupState(groupId)
 	throwIfAborted(signal)
 	const resolvedChannelId = resolvePrivateChannelId(state, channelIdOpt)
-	const displayName = binding.displayName || binding.charname || state.groupMeta?.name || groupId
+	const displayName = aliasForEntity(binding.entityHash)
+		|| binding.displayName || binding.charname || state.groupMeta?.name || groupId
 
 	hubStore.privateGroup.peerEntityHash = binding.entityHash
 	hubStore.privateGroup.charname = binding.charname || null

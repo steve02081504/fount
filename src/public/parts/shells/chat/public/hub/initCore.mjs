@@ -5,6 +5,7 @@
  */
 import { usingTemplates } from '../../../../scripts/features/template.mjs'
 import { initTranslations } from '../../../../scripts/i18n/index.mjs'
+import { loadAliases } from '../shared/aliases.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { hubStore } from './core/state.mjs'
@@ -86,6 +87,7 @@ export async function initCore() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	await initTranslations('chat')
 	await loadViewerIdentity()
+	await loadAliases().catch(() => {})
 	try {
 		const { loadGroups } = await import('./serverBar.mjs')
 		await loadGroups()

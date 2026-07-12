@@ -10,7 +10,8 @@ import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPick
 import { mountDockedStickerPicker } from '../../../../scripts/components/stickerPicker.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { fetchStickerPayload } from '../providers/sticker.mjs'
-import { entityHashLabel } from '../shared/entityHash.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 import { setEmojiUrlResolver } from '../src/emojiCache.mjs'
 import { localeQueryString } from '../src/entityProfileApi.mjs'
@@ -58,7 +59,11 @@ export async function refreshViewerHubPresentation() {
 		groupId: hubStore.context.currentGroupId || undefined,
 		bypassCache: true,
 	})
-	const label = profile?.name || entityHashLabel(entityHash) || '?'
+	const label = resolveDisplayName({
+		entityHash,
+		alias: aliasForEntity(entityHash),
+		profileName: profile?.name,
+	})
 	hubStore.viewer.viewerDisplayName = label
 	const myAvatar = document.getElementById('hub-my-avatar')
 	const myName = document.getElementById('hub-my-name')

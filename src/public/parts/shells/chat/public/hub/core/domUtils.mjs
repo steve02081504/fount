@@ -12,6 +12,7 @@ import {
 	avatarTextColor,
 	hashAvatarStyle,
 } from '/scripts/lib/hashAvatar.mjs'
+import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from '../../shared/entityHash.mjs'
 import { agentEntityHash } from '../../shared/entityId.mjs'
 import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
@@ -142,6 +143,11 @@ export function memberDisplayNameForAuthorKey(key) {
 export function authorDisplayLabel(key) {
 	const raw = String(key ?? '').trim()
 	if (!raw || raw === '?') return '?'
+	const entityHash = resolveEntityHashForAuthorKey(raw)
+	if (entityHash) {
+		const alias = aliasForEntity(entityHash)
+		if (alias) return alias
+	}
 	const fromMember = memberDisplayNameForAuthorKey(raw)
 	if (fromMember) return fromMember
 	if (isEntityHash128(raw)) return entityHashLabel(raw)
@@ -151,6 +157,21 @@ export function authorDisplayLabel(key) {
 	}
 	if (raw.length > 28) return `${raw.slice(0, 12)}…${raw.slice(-4)}`
 	return raw
+}
+
+/**
+ * 群展示名：本地别名 → 群自命名 → 「未命名群 ·xxxx」兜底。
+ * @param {string} groupId 群 ID
+ * @param {string} [name] 群 state 中的 name（无名时后端回落为 groupId）
+ * @returns {Promise<string>} 展示名
+ */
+export async function groupDisplayName(groupId, name) {
+	const alias = aliasForGroup(groupId)
+	if (alias) return alias
+	const raw = String(name || '').trim()
+	if (raw && raw !== String(groupId || '')) return raw
+	const { geti18n } = await import('/scripts/i18n/index.mjs')
+	return geti18n('chat.hub.groupUnnamed', { suffix: String(groupId || '').slice(-4) })
 }
 
 /**

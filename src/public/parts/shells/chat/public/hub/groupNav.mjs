@@ -35,7 +35,7 @@ import {
 } from './banners.mjs'
 import { showChannelContextMenu } from './channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from './channels.mjs'
-import { authorDisplayLabel, avatarColor, avatarInitial, avatarTextColor, warmCharEntityHashCache } from './core/domUtils.mjs'
+import { authorDisplayLabel, avatarColor, avatarInitial, avatarTextColor, groupDisplayName, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
 import { consumePendingJoin, inviteCodeFromUrl, parseHash, updateFriendsHash, updateHash } from './core/urlHash.mjs'
 import { resetFilesDrawerWire } from './files.mjs'
@@ -146,14 +146,15 @@ export async function backToFriendsList() {
 export async function renderGroupInfoCard(state) {
 	const host = document.getElementById('hub-info-card-host')
 	const meta = state?.groupMeta || {}
-	const displayName = meta.name || ''
+	const groupId = hubStore.context.currentGroupId
+	const displayName = await groupDisplayName(groupId, meta.name)
 	const description = meta.description ?? ''
 	await mountTemplate(host, 'hub/nav/info_card', {
-		avatarColor: avatarColor(hubStore.context.currentGroupId || displayName || '?'),
-		avatarTextColor: avatarTextColor(hubStore.context.currentGroupId || displayName || '?'),
+		avatarColor: avatarColor(groupId || displayName || '?'),
+		avatarTextColor: avatarTextColor(groupId || displayName || '?'),
 		avatarInitial: escapeHtml(avatarInitial(displayName || '?')),
 		groupName: escapeHtml(displayName),
-		nameI18nAttr: displayName ? '' : ' data-i18n="chat.hub.groupTag"',
+		nameI18nAttr: '',
 		description: escapeHtml(description),
 		descriptionI18nAttr: description ? '' : ' data-i18n="chat.hub.groupDescriptionEmpty"',
 	})
@@ -632,14 +633,8 @@ async function syncGroupStateForHub(groupId, state, presetChannelId) {
  */
 async function paintGroupHubChrome(state) {
 	const groupNameElement = document.getElementById('hub-group-name-display')
-	if (state.groupMeta.name) {
-		delete groupNameElement.dataset.i18n
-		groupNameElement.textContent = state.groupMeta.name
-	}
-	else {
-		groupNameElement.textContent = ''
-		groupNameElement.dataset.i18n = 'chat.hub.groupTag'
-	}
+	delete groupNameElement.dataset.i18n
+	groupNameElement.textContent = await groupDisplayName(hubStore.context.currentGroupId, state.groupMeta.name)
 	await renderChannelList(state)
 	await renderMemberList(state)
 	hubStore.context.currentMode = 'groups'

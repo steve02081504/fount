@@ -9,9 +9,11 @@ import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { getChatBookmarks, getGroupList, saveChatBookmarks } from '../src/api/groupApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { avatarColor, avatarInitial } from './core/domUtils.mjs'
+import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
+import { aliasForGroup } from '../shared/aliases.mjs'
 import { isGroupMutedInSidebar, loadNotifyPrefs } from '../shared/notifyPrefs.mjs'
+
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
@@ -88,7 +90,7 @@ function folderMiniIconsHtml(folder, byId) {
 	if (!groups.length)
 		return { html: '<span class="hub-folder-mini-icon hub-folder-mini-empty"></span>', modifier: ' hub-folder-mini--single' }
 	const html = groups.map(group =>
-		`<span class="hub-folder-mini-icon" style="background:${avatarColor(group.name)};">${escapeHtml(avatarInitial(group.name))}</span>`,
+		`<span class="hub-folder-mini-icon" style="background:${avatarColor(group.groupId)};">${escapeHtml(avatarInitial(aliasForGroup(group.groupId) || group.name))}</span>`,
 	).join('')
 	return { html, modifier: groups.length === 1 ? ' hub-folder-mini--single' : '' }
 }
@@ -102,15 +104,16 @@ function folderMiniIconsHtml(folder, byId) {
 async function appendHubServerItem(parent, group, notifyPrefs = {}) {
 	const active = group.groupId === hubStore.context.currentGroupId
 	const mutedClass = isGroupMutedInSidebar(notifyPrefs, group.groupId, group) ? ' is-muted' : ''
+	const displayName = await groupDisplayName(group.groupId, group.name)
 	const el = await renderTemplate('hub/server/item', {
 		activeClass: active ? 'active' : '',
 		selectedClass: isGroupSelected(group.groupId) ? ' is-multi-selected' : '',
 		leavingClass: group.isLeaving ? ' is-leaving' : '',
 		mutedClass,
 		groupId: escapeHtml(group.groupId),
-		activeStyle: active ? '' : avatarColor(group.name),
-		avatarLabel: escapeHtml(avatarInitial(group.name)),
-		groupName: escapeHtml(group.name),
+		activeStyle: active ? '' : avatarColor(group.groupId),
+		avatarLabel: escapeHtml(avatarInitial(displayName)),
+		groupName: escapeHtml(displayName),
 		unreadBadgeHtml: formatUnreadBadgeHtml(group.unreadCount),
 	})
 	parent.appendChild(el)

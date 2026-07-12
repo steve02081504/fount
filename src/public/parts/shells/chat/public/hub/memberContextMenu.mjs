@@ -9,6 +9,7 @@ import { getGroupState } from '../src/api/groupApi.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { insertComposerMention } from './mentionAutocomplete.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { hubStore } from './core/state.mjs'
@@ -101,6 +102,21 @@ export async function showMemberContextMenu(event, memberElement) {
 			const cared = await isCared(owner, entityHash)
 			await setCared(owner, entityHash, !cared)
 			showToastI18n('success', cared ? 'chat.hub.memberContext.careRemoved' : 'chat.hub.memberContext.careAdded')
+		})().catch(error => {
+			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+		})
+		closeOnce()
+	})
+	menu.querySelector('.hub-member-menu-alias')?.addEventListener('click', () => {
+		void (async () => {
+			if (!entityHash) return
+			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+			const next = prompt(geti18n('chat.hub.memberContext.setAliasPrompt', { name: displayName }), aliasForEntity(entityHash))
+			if (next == null) return
+			await setEntityAlias(entityHash, next)
+			showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+			void renderMemberList(hubStore.context.currentState)
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		})

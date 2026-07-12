@@ -1,4 +1,5 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
+import { aliasForEntity, setEntityAlias } from '/parts/shells:chat/shared/aliases.mjs'
 import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
@@ -94,6 +95,18 @@ export async function handleProfileNavClick(appContext, target) {
 		catch {
 			careButton.textContent = prevText
 			careButton.dataset.isCared = wasCared ? '1' : '0'
+		}
+	}
+
+	const aliasButton = target.closest('[data-set-alias]')
+	if (aliasButton instanceof HTMLElement && aliasButton.dataset.setAlias) {
+		const entityHash = aliasButton.dataset.setAlias
+		const next = prompt(appContext.geti18n('social.actions.setAliasPrompt'), aliasForEntity(entityHash))
+		if (next != null) {
+			await setEntityAlias(entityHash, next)
+			showToastI18n('success', 'social.actions.aliasSaved')
+			if (appContext.state.profileEntityHash === entityHash)
+				await loadProfileFor(appContext, entityHash)
 		}
 	}
 

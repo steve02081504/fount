@@ -84,6 +84,18 @@ export function registerPrefsRoutes(router) {
 		res.status(200).json({ cared: await listCared(username, ownerEntityHash) })
 	})
 
+	router.get(`${CHAT_API_PREFIX}/aliases`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const data = loadShellData(username, 'chat', 'aliases')
+		res.status(200).json({ entities: data.entities || {}, groups: data.groups || {} })
+	})
+	router.put(`${CHAT_API_PREFIX}/aliases`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const doc = { entities: req.body.entities || {}, groups: req.body.groups || {} }
+		assignShellData(username, 'chat', 'aliases', doc)
+		res.status(200).json(doc)
+	})
+
 	router.get(`${CHAT_API_PREFIX}/notify-prefs`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json({ prefs: loadNotifyPrefs(username) })

@@ -2,6 +2,7 @@
  * @ 提及 autocomplete（输入 @ 后弹出候选）。
  */
 
+import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 const API = '/api/parts/shells:social/mentions/suggest'
@@ -53,7 +54,7 @@ export function attachMentionAutocomplete(textarea) {
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			button.innerHTML = `
-				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
+				<strong>${aliasForEntity(row.entityHash) || row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
 				<small>${formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })}</small>
 			`
 			panel.appendChild(button)

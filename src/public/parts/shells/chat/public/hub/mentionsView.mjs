@@ -5,6 +5,9 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 
+import { aliasForEntity } from '../shared/aliases.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { MENTIONS_HASH, updateMentionsHash } from './core/urlHash.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
@@ -48,8 +51,12 @@ async function renderMentionRow(row) {
 	button.dataset.groupId = row.groupId
 	button.dataset.channelId = row.channelId
 	button.dataset.eventId = row.eventId
-	const author = escapeHtml(row.authorDisplayName || row.authorEntityHash?.slice(64, 72) || '?')
-	const groupName = escapeHtml(row.groupName || row.groupId)
+	const author = escapeHtml(resolveDisplayName({
+		entityHash: row.authorEntityHash,
+		alias: aliasForEntity(row.authorEntityHash),
+		profileName: row.authorDisplayName,
+	}))
+	const groupName = escapeHtml(await groupDisplayName(row.groupId, row.groupName))
 	const channelName = escapeHtml(row.channelName || row.channelId)
 	const preview = escapeHtml(String(row.textPreview || ''))
 	const time = escapeHtml(formatMentionTime(row.at))

@@ -4,6 +4,7 @@ import {
 	hashAvatarStyle,
 } from '/scripts/lib/hashAvatar.mjs'
 
+import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
@@ -30,7 +31,7 @@ export function entityHandle(entityHash) {
  * @returns {string} 展示名
  */
 export function authorLabel(entityHash, profile) {
-	return profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
+	return aliasForEntity(entityHash) || profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
 }
 
 /**

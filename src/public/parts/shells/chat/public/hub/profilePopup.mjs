@@ -13,7 +13,9 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { isHex64 } from '../shared/pubKeyHex.mjs'
 
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { formatSocialProfileHref } from '../shared/socialRunUri.mjs'
 import { hubStore } from './core/state.mjs'
 import {
@@ -39,7 +41,8 @@ export function dismissProfilePopup() {
 function userEntityFromMember(member) {
 	const entityHash = String(member?.entityHash || '').trim().toLowerCase()
 	const pubKeyHash = String(member?.pubKeyHash || '').trim().toLowerCase()
-	const displayName = String(member?.displayName || '').trim()
+	const displayName = aliasForEntity(entityHash)
+		|| String(member?.displayName || '').trim()
 		|| (entityHash ? entityHashLabel(entityHash) : '')
 		|| (pubKeyHash ? `${pubKeyHash.slice(0, 8)}…${pubKeyHash.slice(-4)}` : '?')
 	return {
@@ -122,7 +125,7 @@ export async function resolveEntityFromAnchor(anchor) {
 			charname: null,
 			pubKeyHash: null,
 			pubKeyHex: null,
-			displayName: entityHashLabel(displayKey),
+			displayName: resolveDisplayName({ entityHash: displayKey, alias: aliasForEntity(displayKey) }),
 		}
 	}
 	if (isHex64(displayKey))
@@ -153,6 +156,12 @@ async function paintProfilePopup(popup, entity) {
 	else {
 		const nameElement = popup.querySelector('[data-entity-profile-name]')
 		if (nameElement) nameElement.textContent = entity.displayName || '?'
+	}
+
+	const alias = aliasForEntity(entityHash)
+	if (alias) {
+		const nameElement = popup.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = alias
 	}
 
 	const tagElement = popup.querySelector('[data-profile-popup-entity-tag]')
@@ -197,6 +206,25 @@ async function paintProfilePopup(popup, entity) {
 
 	if (socialButton instanceof HTMLButtonElement)
 		socialButton.hidden = !isEntityHash128(entityHash)
+
+	const aliasButton = popup.querySelector('[data-profile-popup-alias]')
+	if (aliasButton instanceof HTMLButtonElement) {
+		aliasButton.hidden = !isEntityHash128(entityHash)
+		if (!aliasButton.hidden)
+			aliasButton.onclick = () => {
+				void (async () => {
+					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+					const current = popup.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
+					const next = prompt(geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }), aliasForEntity(entityHash))
+					if (next == null) return
+					await setEntityAlias(entityHash, next)
+					showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+					await paintProfilePopup(popup, entity)
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
+	}
 
 	const careButton = popup.querySelector('[data-profile-popup-care]')
 	if (careButton instanceof HTMLButtonElement) {

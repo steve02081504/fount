@@ -3,7 +3,9 @@
  */
 import { parseInlineTokens } from '/scripts/lib/inlineTokens.mjs'
 
+import { aliasForEntity } from './aliases.mjs'
 import { formatHashShort } from './entityHash.mjs'
+import { disambiguateLabels } from './nameResolve.mjs'
 import { formatSocialProfileHref } from './socialRunUri.mjs'
 
 
@@ -13,21 +15,25 @@ import { formatSocialProfileHref } from './socialRunUri.mjs'
  * @returns {Map<string, string>} entityHash → 展示名
  */
 export function buildMentionLabelMap(members = [], viewer = {}) {
+	/** @type {Array<{ entityHash: string, label: string }>} */
+	const items = []
+	const seen = new Set()
+	const push = (hash, name) => {
+		const key = String(hash || '').trim().toLowerCase()
+		if (!key || seen.has(key)) return
+		seen.add(key)
+		const label = aliasForEntity(key) || String(name || '').trim()
+			|| formatHashShort(key, { headLen: 8, tailLen: 0, ellipsis: false })
+		items.push({ entityHash: key, label })
+	}
+	for (const member of members)
+		push(member.entityHash, member.displayName || member.profile?.name || member.charname)
+	push(viewer.viewerEntityHash, viewer.viewerDisplayName)
+
+	const labels = disambiguateLabels(items)
 	/** @type {Map<string, string>} */
 	const map = new Map()
-	for (const member of members) {
-		const hash = String(member.entityHash || '').trim().toLowerCase()
-		if (!hash) continue
-		const label = String(member.displayName || member.profile?.name || member.charname || '').trim()
-			|| formatHashShort(hash, { headLen: 8, tailLen: 0, ellipsis: false })
-		map.set(hash, label)
-	}
-	const viewerHash = String(viewer.viewerEntityHash || '').trim().toLowerCase()
-	if (viewerHash && !map.has(viewerHash)) {
-		const label = String(viewer.viewerDisplayName || '').trim()
-			|| formatHashShort(viewerHash, { headLen: 8, tailLen: 0, ellipsis: false })
-		map.set(viewerHash, label)
-	}
+	items.forEach((item, index) => map.set(item.entityHash, labels[index]))
 	return map
 }
 

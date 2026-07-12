@@ -1,5 +1,6 @@
 import { wireEmojiPickerButton } from '../../../../scripts/components/emojiPicker.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
+import { loadAliases } from '/parts/shells:chat/shared/aliases.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { groupRefLabel } from '../shared/groupRef.mjs'
 
@@ -99,6 +100,7 @@ function connectFeedWebSocket(appContext, attempt = 0) {
 export async function bootstrapSocialApp(appContext) {
 	socialGate.markPending()
 	try {
+		await loadAliases().catch(() => {})
 		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost(appContext) })
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void switchView(appContext, 'feed')

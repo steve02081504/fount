@@ -2,6 +2,7 @@
  * 【文件】public/hub/core/urlHash.mjs
  * 【职责】Hub 地址栏 hash 与邀请码工具：`#group:…` / `#friends` 的解析、写入及入群邀请消费。
  */
+import { groupIdForAlias } from '../../shared/aliases.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from '../../src/pendingInviteStorage.mjs'
 
 /** 好友列表模式的 hash 片段（`#friends`）。 */
@@ -21,8 +22,10 @@ export function parseHash() {
 	const sep = rest.indexOf(':')
 	if (sep < 0) return { groupId: null, channelId: null }
 	try {
-		const groupId = decodeURIComponent(rest.slice(0, sep))
+		const rawGroup = decodeURIComponent(rest.slice(0, sep))
 		const channelId = rest.slice(sep + 1)
+		// `@别名` 前缀：用本地别名反查 canonical groupId（写入端仍写 groupId）
+		const groupId = rawGroup.startsWith('@') ? groupIdForAlias(rawGroup.slice(1)) : rawGroup
 		if (!groupId || !channelId) return { groupId: null, channelId: null }
 		return { groupId, channelId }
 	}
