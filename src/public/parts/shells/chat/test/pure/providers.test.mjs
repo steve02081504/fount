@@ -10,12 +10,12 @@ import stickerProvider from '../../public/providers/sticker.mjs'
 Deno.test('emoji provider tokenForSelection handles unicode and group refs', () => {
 	assertEquals(emojiProvider.tokenForSelection({ unicode: '👍' }), '👍')
 	assertEquals(
-		emojiProvider.tokenForSelection({ groupId: 'g1', emojiId: 'e1', emojiRef: ':[g1/e1]' }),
-		':[g1/e1]',
+		emojiProvider.tokenForSelection({ groupId: 'g1', emojiId: 'e1', emojiRef: ':[g1/e1]:' }),
+		':[g1/e1]:',
 	)
 	assertEquals(
 		emojiProvider.tokenForSelection({ groupId: 'g2', emojiId: 'e2' }),
-		':[g2/e2]',
+		':[g2/e2]:',
 	)
 })
 

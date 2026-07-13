@@ -3,7 +3,7 @@
  */
 import { resolveGroupEmojiPostEmbedProvider } from 'fount/public/parts/shells/chat/src/chat/lib/groupEmojiPostEmbedRegistry.mjs'
 
-const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)\](?!:)/g
+const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)\]:/g
 
 /**
  * @param {string} text 帖子正文

@@ -5,7 +5,7 @@ import { isEntityHash128 } from 'https://esm.sh/@steve02081504/fount-p2p/core/en
 
 /** @typedef {{ kind: InlineTokenKind, body: string, start: number, end: number }} InlineToken */
 
-const INLINE_TOKEN_RE = /@\[([^\]]+)\]|#\[([\w.-]+)\/([\w.-]+)\]|#\[([\w.-]+)\](?!\/\w)|:\[([\w.-]+)\/([\w.-]+)\](?!:)/giu
+const INLINE_TOKEN_RE = /@\[([^\]]+)\]|#\[([\w.-]+)\/([\w.-]+)\]|#\[([\w.-]+)\](?!\/\w)|:\[([\w.-]+)\/([\w.-]+)\]:/giu
 
 /**
  * @param {string} mentionBody @[] 内正文

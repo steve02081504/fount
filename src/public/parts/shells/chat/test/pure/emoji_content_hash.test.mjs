@@ -35,7 +35,7 @@ Deno.test('emoji content hash for non-member reuse path', () => {
 })
 
 Deno.test('scanEmojiTokens finds group emoji markers', () => {
-	const refs = scanEmojiTokens('hello :[g1/e1] world :[g2/e2]')
+	const refs = scanEmojiTokens('hello :[g1/e1]: world :[g2/e2]:')
 	assertEquals(refs.length, 2)
 	assertEquals(refs[0], { groupId: 'g1', emojiId: 'e1' })
 })

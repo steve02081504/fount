@@ -90,38 +90,42 @@ test.describe('Social saved posts', () => {
 		await page.locator('.side-nav .nav-btn[data-view="saved"]').click()
 		const folderName = `rename-folder-${Date.now()}`
 		await page.locator('#newFolderName').fill(folderName)
-		await Promise.all([
+		const [folderResponse] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/saved-posts/folders')
 				&& res.request().method() === 'POST',
 			),
 			page.locator('#createFolderButton').click(),
 		])
+		const folderJson = await folderResponse.json()
+		const folderId = Object.keys(folderJson.folders || {}).find(
+			id => folderJson.folders[id]?.name === folderName,
+		)
+		expect(folderId).toBeTruthy()
 		const renamed = `renamed-${Date.now()}`
-		page.once('dialog', async dialog => {
-			expect(dialog.type()).toBe('prompt')
-			await dialog.accept(renamed)
-		})
+		await page.locator(`[data-rename-folder="${folderId}"]`).click()
+		const promptDialog = page.locator('dialog.modal').last()
+		await expect(promptDialog).toBeVisible({ timeout: 20_000 })
+		await promptDialog.locator('#promptInput').fill(renamed)
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/saved-posts/folders/rename')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			page.locator('[data-rename-folder]').first().click(),
+			promptDialog.locator('[data-dialog-resolve]').click(),
 		])
 		await expect(page.locator('#savedView').filter({ hasText: renamed })).toBeVisible({ timeout: 20_000 })
-		page.once('dialog', async dialog => {
-			expect(dialog.type()).toBe('confirm')
-			await dialog.accept()
-		})
+		await page.locator(`[data-delete-folder="${folderId}"]`).click()
+		const confirmDialog = page.locator('dialog.modal').last()
+		await expect(confirmDialog).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/saved-posts/folders/delete')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			page.locator('[data-delete-folder]').first().click(),
+			confirmDialog.locator('[data-dialog-resolve]').click(),
 		])
 		await expect(page.locator('#savedView').filter({ hasText: renamed })).toHaveCount(0, { timeout: 20_000 })
 	})

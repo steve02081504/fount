@@ -1,18 +1,16 @@
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash, openPostMoreMenu, findForeignAuthorPostCard, FOREIGN_FE_AUTHOR_HASH } from './fixtures.mjs'
+import { test, expect, openSocialHome, findPostCard, openPostMoreMenu, findForeignAuthorPostCard, FOREIGN_FE_AUTHOR_HASH } from './fixtures.mjs'
 
 test.describe('Social post actions', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
 	})
 
-	test('dm from post card navigates to chat', async ({ page, baseUrl, apiKey, publishPost }) => {
-		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		const { postId } = await publishPost(`dm-card ${Date.now()}`)
-		const card = await findPostCard(page, postId, { allowProfileFallback: true })
+	test('dm from post card navigates to chat', async ({ page, baseUrl, apiKey }) => {
+		const card = await findForeignAuthorPostCard(page, baseUrl, apiKey)
 		await openPostMoreMenu(card)
-		await card.locator(`[data-dm="${entityHash}"]`).click()
+		await card.locator(`[data-dm="${FOREIGN_FE_AUTHOR_HASH}"]`).click()
 		await expect(page).toHaveURL(
-			new RegExp(`/parts/shells:chat/hub/\\?contact=${entityHash}`),
+			new RegExp(`/parts/shells:chat/hub/\\?contact=${FOREIGN_FE_AUTHOR_HASH}`),
 			{ timeout: 20_000 },
 		)
 	})

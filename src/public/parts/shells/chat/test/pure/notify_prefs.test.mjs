@@ -1,6 +1,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { setCared } from '../../src/chat/lib/care.mjs'
 import {
 	describeMentionHit,
 	isNotifyMuted,
@@ -8,7 +9,6 @@ import {
 	shouldNotifyHumanForMessage,
 	saveNotifyPrefs,
 } from '../../src/chat/lib/notifyPrefs.mjs'
-import { setCared } from '../../src/chat/lib/care.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const GROUP = 'g1'
@@ -16,13 +16,19 @@ const CHANNEL = 'default'
 const OPERATOR = 'b'.repeat(128)
 const AUTHOR = 'c'.repeat(128)
 
-Deno.test('resolveEffectiveNotifyPrefs defaults dm to all', () => {
-	const prefs = resolveEffectiveNotifyPrefs('unused-user', GROUP, CHANNEL, { groupMeta: { dmKind: 'ecdh' } })
+Deno.test('resolveEffectiveNotifyPrefs defaults dm to all', async () => {
+	const username = `np-dm-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
+	await ensureServer()
+	const prefs = resolveEffectiveNotifyPrefs(username, GROUP, CHANNEL, { groupMeta: { dmKind: 'ecdh' } })
 	assertEquals(prefs.mode, 'all')
 })
 
-Deno.test('resolveEffectiveNotifyPrefs defaults group to mentions', () => {
-	const prefs = resolveEffectiveNotifyPrefs('unused-user', GROUP, CHANNEL, { groupMeta: {} })
+Deno.test('resolveEffectiveNotifyPrefs defaults group to mentions', async () => {
+	const username = `np-grp-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
+	await ensureServer()
+	const prefs = resolveEffectiveNotifyPrefs(username, GROUP, CHANNEL, { groupMeta: {} })
 	assertEquals(prefs.mode, 'mentions')
 })
 

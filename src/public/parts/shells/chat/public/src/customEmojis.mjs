@@ -39,7 +39,7 @@ export async function saveCustomEmojiFromRef(groupId, emojiId) {
 	return data.entry
 }
 
-const EMOJI_TOKEN = /:\[([^/]+)\/([^\]]+)\](?!:)/g
+const EMOJI_TOKEN = /:\[([^/]+)\/([^\]]+)\]:/g
 
 /**
  * 从消息正文中提取首个自定义表情引用。

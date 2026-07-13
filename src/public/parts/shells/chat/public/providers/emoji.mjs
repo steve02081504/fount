@@ -38,7 +38,7 @@ async function loadRecentItems(context) {
 	const items = []
 	for (const entry of entries) {
 		if (entry.kind === 'custom' && entry.groupId && entry.emojiId) {
-			const emojiRef = `:[${entry.groupId}/${entry.emojiId}]`
+			const emojiRef = `:[${entry.groupId}/${entry.emojiId}]:`
 			items.push({
 				kind: 'custom',
 				groupId: entry.groupId,
@@ -66,7 +66,7 @@ async function loadGroupItems(targetGroupId) {
 	const data = await resp.json()
 	if (!resp.ok) throw new Error(data.error || 'load failed')
 	return (data.entries || []).map(entry => {
-		const emojiRef = `:[${targetGroupId}/${entry.emojiId}]`
+		const emojiRef = `:[${targetGroupId}/${entry.emojiId}]:`
 		return {
 			kind: 'custom',
 			groupId: targetGroupId,
@@ -171,7 +171,7 @@ function tokenForSelection(item) {
 	if (item.unicode) return item.unicode
 	if (item.emojiRef) return item.emojiRef
 	if (item.groupId && item.emojiId)
-		return `:[${item.groupId}/${item.emojiId}]`
+		return `:[${item.groupId}/${item.emojiId}]:`
 	return ''
 }
 
