@@ -270,4 +270,4 @@ import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatCli
 - **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
 - **写路径**：消息发送走 `commitChannelMessageEvent(origin:'char')`；其余写操作走 `appendActorEvent` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
 - **桥接群**：`group.bridge` 存在时，typing/leave/kick 等平台操作经 `registerBridgeOps(platform, ops)` 转发；未注册 op 直接 throw。
-- **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ chat, group, channel, message? }`。
+- **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ fount: { chat, group, channel, message? } }`；平台插件另注入 `{ discord }` / `{ telegram }` / `{ wechat }` 命名空间（桥接群经 `getNativeContext` 水合原生对象）。沙箱不暴露 `bridgeOps`。

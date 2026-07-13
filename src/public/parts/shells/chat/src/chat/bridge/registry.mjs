@@ -78,9 +78,8 @@ export async function resolveBridgeChannel(username, { platform, platformChatId,
 	let channelId = mapping.channels?.[threadKey]
 	if (channelId) return { groupId: mapping.groupId, channelId }
 
-	if (threadKey === 'default') 
+	if (threadKey === 'default')
 		channelId = 'default'
-	
 	else {
 		channelId = prefixedRandomId('channel_')
 		await appendSignedLocalEvent(username, mapping.groupId, {

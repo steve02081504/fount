@@ -48,6 +48,8 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
 
+**pure/ 边界**：被测模块勿静态 `import` `src/server/**`（会拖入 P2P/native 图，Windows 下 Deno 子进程 exit 可挂起）。必须触达 server 时用动态 import，或改 integration 套件。
+
 Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 
 ## Manifest fields

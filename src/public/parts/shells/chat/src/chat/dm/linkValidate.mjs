@@ -6,7 +6,6 @@
  * 【关联】dm/linkVerify、dm/intro、lib/dmLinkSignature、dm/index；Trystero 房间 dm:{sessionTag}。
  */
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { getFederationViewForUser } from '../../../../../../../server/p2p_server/operator_identity.mjs'
 
 import { dmIntroNonceMatches } from './intro.mjs'
 import { verifyDmLinkSignature } from './linkVerify.mjs'
@@ -52,6 +51,7 @@ export async function validateDmIntroLinkProof(nodeUsername, state, introPubKeyH
 	if (introMemberId && !dmIntroNonceMatches(introMemberId, nonce))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }
 
+	const { getFederationViewForUser } = await import('../../../../../../../server/p2p_server/operator_identity.mjs')
 	const fed = await getFederationViewForUser(nodeUsername)
 	if (normalizePubKeyHex(fed.activePubKeyHex) === introPk && !dmIntroNonceMatches(nodeUsername, nonce))
 		return { ok: false, error: 'dm intro link nonce expired or rotated' }

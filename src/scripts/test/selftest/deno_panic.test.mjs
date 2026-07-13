@@ -145,6 +145,7 @@ Deno.test('isDenoTeardownCrashAfterGreenTests treats Windows exit without summar
 		'follow then seeded remote post is pullable via federation RPC ... ok (133ms)',
 	].join('\n')
 	assertEquals(isDenoTeardownCrashAfterGreenTests(-1073740940, output), true)
+	assertEquals(isDenoTeardownCrashAfterGreenTests(-1073741819, output), true)
 	assertEquals(isDenoTeardownCrashAfterGreenTests(-1073740940, `${output}\nsomething ... FAILED (1ms)`), false)
 })
 

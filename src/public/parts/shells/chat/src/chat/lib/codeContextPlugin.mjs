@@ -1,3 +1,4 @@
+import { findTriggerChatLogEntry } from './codeBridgeContext.mjs'
 import { agentEntityHash } from './entity.mjs'
 import { getLocalNodeHash } from './replica.mjs'
 
@@ -13,11 +14,10 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 			async GetJSCodePrompt(args) {
 				const actorLabel = args.char_id ? `agent char "${args.char_id}"` : 'operator'
 				return [
-					'你可以使用 fount 原生 ChatClient 对象操作当前群（跨平台统一契约）：',
-					'- `chat`: ChatClient（acting entity = 当前 ' + actorLabel + '）',
-					'- `group`: 当前群 Group',
-					'- `channel`: 当前频道 Channel',
-					'- `message`: 触发本次生成的消息 Message（若可解析）',
+					'JS 沙箱变量 `fount`（跨平台统一 ChatClient）：',
+					'- `fount.chat` — ChatClient（acting = 当前 ' + actorLabel + '）',
+					'- `fount.group` / `fount.channel` — 当前群与频道',
+					'- `fount.message` — 触发本次生成的 Message（可解析时）',
 					'写方法权限按 acting 成员角色裁决；agent 不能建群或独立持钥。',
 				].join('\n')
 			},
@@ -40,9 +40,7 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 				const group = await chat.group(groupId)
 				const channel = await group.channel(channelId)
 
-				const triggerEntry = [...args.chat_log || []]
-					.reverse()
-					.find(entry => entry.role !== 'char' && entry.extension?.dagEventId)
+				const triggerEntry = findTriggerChatLogEntry(args.chat_log)
 				let message
 				if (triggerEntry) {
 					const { group: groupProjection, channel: channelProjection } =
@@ -57,7 +55,14 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 					})
 				}
 
-				return { chat, group, channel, ...message ? { message } : {} }
+				return {
+					fount: {
+						chat,
+						group,
+						channel,
+						...message ? { message } : {},
+					},
+				}
 			},
 		},
 	},

@@ -1,5 +1,12 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
-
+import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import {
+	bridgeIngestDto,
+	messageLineToReplyEntry,
+	primeOutboundRegistered,
+} from '../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
+import { registerBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,
@@ -10,8 +17,8 @@ import {
 	WechatMessageType,
 	wechatMessageHasContent,
 	wechatMessageToBridgeDto,
-} from './format.mjs'
-import { DEFAULT_LONG_POLL_TIMEOUT_MS, DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'
+} from '../format.mjs'
+import { DEFAULT_LONG_POLL_TIMEOUT_MS, DEFAULT_WECHAT_ILINK_BASE } from '../wechat_api.mjs'
 
 /**
  * @typedef {import('../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t
@@ -23,63 +30,31 @@ const charWechatRuntimeRegistry = {}
 /**
  * @param {string} username replica
  * @param {string} charname 角色名
- * @returns {object | undefined}
+ * @returns {object | undefined} 运行中 Bot 门面对象
  */
 export function getWechatRuntimeForChar(username, charname) {
 	return charWechatRuntimeRegistry[username]?.[charname]
 }
 
 /**
- * @param {object} messageLine DAG 消息行
- * @param {string} charname 角色名
- * @returns {object}
- */
-function messageLineToReplyEntry(messageLine, charname) {
-	const content = messageLine?.content || {}
-	return {
-		name: charname,
-		role: 'char',
-		content: typeof content === 'string' ? content : content.text || '',
-		content_for_show: typeof content === 'string' ? content : content.text || '',
-		time_stamp: messageLine?.hlc?.wall || Date.now(),
-		files: (messageLine?.files || []).map(file => ({
-			name: file.name,
-			mime_type: file.mime_type,
-			buffer: file.buffer,
-			description: file.description || '',
-		})),
-		extension: { dagEventId: messageLine?.eventId },
-	}
-}
-
-/**
  * @param {CharAPI_t} charAPI 角色 API
  * @param {string} ownerUsername replica
  * @param {string} botCharname 角色名
- * @returns {{ OnceClientReady: Function, GetBotConfigTemplate: Function }}
+ * @returns {{ OnceClientReady: Function, GetBotConfigTemplate: Function }} 微信壳层接口对象
  */
 export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname) {
 	/**
-	 *
+	 * @returns {{ OwnerWeChatId: string, OwnerPromptName: string }} 默认 bot 配置模板
 	 */
 	function GetSimpleBotConfigTemplate() {
-		return {
-			OwnerWeChatId: 'your_wechat_ilink_user_id',
-			OwnerPromptName: '',
-		}
+		return { OwnerWeChatId: 'your_wechat_ilink_user_id', OwnerPromptName: '' }
 	}
 
 	/**
 	 * @param {object} context 运行上下文
-	 * @param {object} interfaceConfig 配置
+	 * @param {{ OwnerWeChatId: string, OwnerPromptName?: string }} interfaceConfig 配置
 	 */
 	async function SimpleWechatBotMain(context, interfaceConfig) {
-		const { registerBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-		const { postBridgeMessage } = await import('../../chat/src/chat/bridge/ingress.mjs')
-		const { registerBridgeOutbound } = await import('../../chat/src/chat/bridge/outbound.mjs')
-		const { listBridgeGroupMappings } = await import('../../chat/src/chat/bridge/registry.mjs')
-		const { channelMessageAgentText } = await import('../../chat/public/shared/channelContent.mjs')
-
 		const cdnBaseUrl = context.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
 		const ownerDisplayName = String(interfaceConfig.OwnerPromptName ?? '').trim() || ownerUsername
 		let getUpdatesCursor = ''
@@ -93,9 +68,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 
 		registerBridgeOps('wechat', {
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
+			 * @param {{ platformChatId: string | number }} params 平台会话
 			 */
 			sendTyping: async ({ platformChatId }) => {
 				await context.sendTyping({
@@ -104,14 +77,10 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				})
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<{ platformChatId: string | number }>} 平台定位
 			 */
-			getNativeContext: async ({ platformChatId }) => ({
-				wechat_api: charWechatRuntimeRegistry[ownerUsername]?.[botCharname],
-				platformChatId,
-			}),
+			getNativeContext: async ({ platformChatId }) => ({ platformChatId }),
 		})
 
 		/**
@@ -175,29 +144,23 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		const wechatApiFacade = {
 			ownerWeChatId: interfaceConfig.OwnerWeChatId || '',
 			/**
-			 *
-			 */
-			getChatLogs: () => [],
-			/**
-			 *
-			 * @param textOrPayload
+			 * @param {string | { text: string, toUserId?: string, contextToken?: string }} textOrPayload 文本或载荷
 			 */
 			sendText: async textOrPayload => {
 				const payload = typeof textOrPayload === 'string' ? { text: textOrPayload } : textOrPayload || {}
 				const toUserId = String(payload.toUserId || lastToUserId || '').trim()
 				const contextToken = String(payload.contextToken ?? lastContextToken ?? '').trim()
-				if (!toUserId) throw new Error('wechat_api.sendText: 需要 OwnerWeChatId 或先入站消息')
+				if (!toUserId) throw new Error('wechat.sendText: 需要 OwnerWeChatId 或先入站消息')
 				await sendWechatTextChunks(toUserId, contextToken, payload.text)
 			},
 			/**
-			 *
-			 * @param filesOrPayload
+			 * @param {any[] | { files: any[], toUserId?: string, contextToken?: string }} filesOrPayload 文件或载荷
 			 */
 			sendFiles: async filesOrPayload => {
 				const payload = Array.isArray(filesOrPayload) ? { files: filesOrPayload } : filesOrPayload || {}
 				const toUserId = String(payload.toUserId || lastToUserId || '').trim()
 				const contextToken = String(payload.contextToken ?? lastContextToken ?? '').trim()
-				if (!toUserId) throw new Error('wechat_api.sendFiles: 需要 OwnerWeChatId 或先入站消息')
+				if (!toUserId) throw new Error('wechat.sendFiles: 需要 OwnerWeChatId 或先入站消息')
 				await sendWechatFilesToUser(toUserId, contextToken, payload.files || [])
 			},
 		}
@@ -207,7 +170,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 
 		/**
 		 * @param {string} groupId 群 ID
-		 * @param {object} bridge 桥接设置
+		 * @param {{ platformChatId: string }} bridge 桥接设置
 		 */
 		async function ensureOutboundHandler(groupId, bridge) {
 			if (outboundRegistered.has(groupId)) return
@@ -224,8 +187,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 				}))
 
 				/**
-				 *
-				 * @param payload
+				 * @param {{ text?: string, files?: object[] }} payload 出站载荷
+				 * @returns {Promise<{ platformMessageId: string }>} 占位平台消息 id
 				 */
 				const sendPayload = async payload => {
 					if (payload.text != null)
@@ -235,12 +198,11 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 					return { platformMessageId: crypto.randomUUID() }
 				}
 
-				const handled = await charAPI.interfaces.wechat?.FormatOutboundReply?.(replyEntry, {
+				if (await charAPI.interfaces.wechat?.FormatOutboundReply?.(replyEntry, {
 					platform: 'wechat',
 					send: sendPayload,
 					chatId: toUserId,
-				})
-				if (handled) return {}
+				})) return {}
 
 				if (rawText.trim())
 					await sendWechatTextChunks(toUserId, contextToken, rawText)
@@ -251,26 +213,13 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			outboundRegistered.add(groupId)
 		}
 
-		for (const { groupId } of listBridgeGroupMappings(ownerUsername))
-			outboundRegistered.add(groupId)
+		primeOutboundRegistered(outboundRegistered, ownerUsername)
 
 		/**
-		 * @param {object} dto DTO
+		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await charAPI.interfaces.wechat?.TweakInboundDto?.(dto)
-			await postBridgeMessage(ownerUsername, dto)
-			const { ensureBridgeGroup } = await import('../../chat/src/chat/bridge/registry.mjs')
-			const { getState } = await import('../../chat/src/chat/dag/materialize.mjs')
-			const { groupId } = await ensureBridgeGroup(ownerUsername, {
-				platform: dto.platform,
-				platformChatId: dto.platformChatId,
-				chatKind: dto.chatKind,
-				name: dto.chatName,
-			})
-			const { state } = await getState(ownerUsername, groupId)
-			if (state.groupSettings?.bridge)
-				await ensureOutboundHandler(groupId, state.groupSettings.bridge)
+			await bridgeIngestDto(ownerUsername, charAPI, 'wechat', dto, ensureOutboundHandler)
 		}
 
 		try {
@@ -333,12 +282,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 						ownerDisplayName,
 					)
 					if (!dto) continue
-					try {
-						await ingestDto(dto)
-					}
-					catch (error) {
-						console.error('[WechatBridge] postBridgeMessage failed:', error)
-					}
+					try { await ingestDto(dto) }
+					catch (error) { console.error('[WechatBridge] postBridgeMessage failed:', error) }
 				}
 			}
 		}
@@ -353,9 +298,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 
 	return {
 		/**
-		 *
-		 * @param context
-		 * @param config
+		 * @param {object} context 运行上下文
+		 * @param {{ OwnerWeChatId: string, OwnerPromptName?: string }} config 配置
 		 */
 		OnceClientReady: async (context, config) => {
 			await SimpleWechatBotMain(context, config)

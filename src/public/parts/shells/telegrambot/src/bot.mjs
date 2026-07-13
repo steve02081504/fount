@@ -75,7 +75,7 @@ export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
 	// 如果角色没有定义 telegram 接口，则使用默认接口
 	if (!char.interfaces.telegram) {
-		const { createSimpleTelegramInterface } = await import('./default_interface.mjs')
+		const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
 		char.interfaces.telegram = await createSimpleTelegramInterface(char, username, charname)
 	}
 	// 调用角色接口的 GetBotConfigTemplate 方法，如果不存在则返回空对象
@@ -127,7 +127,7 @@ export async function runBot(username, botname) {
 		const char = await loadPart(username, 'chars/' + config.char)
 		// 如果角色没有定义 telegram 接口，则使用默认接口
 		if (!char.interfaces.telegram) {
-			const { createSimpleTelegramInterface } = await import('./default_interface.mjs')
+			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
 			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
 		}
 		return await startTelegrafBot(config, char)

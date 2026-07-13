@@ -119,6 +119,8 @@ export function fitGhIssueTitle(summary, version) {
 
 /** Windows STATUS_HEAP_CORRUPTION：Deno 2.9.x 在 napi 模块析构时偶发，测试本身可能已全部通过。 */
 const WINDOWS_DENO_TEARDOWN_EXIT = -1073740940
+/** Windows STATUS_ACCESS_VIOLATION：teardown 阶段 native 析构偶发，测试本身可能已全部通过。 */
+const WINDOWS_DENO_ACCESS_VIOLATION_EXIT = -1073741819
 
 /**
  * 从 deno test 输出取最后一次 `N passed | M failed` 摘要里的 failed 数；无摘要时 null。
@@ -143,7 +145,7 @@ export function isDenoTeardownCrashAfterGreenTests(code, output) {
 	const failedCount = denoTestSummaryFailedCount(output)
 	if (failedCount !== null && failedCount !== 0) return false
 	if (parseDenoPanic(output)) return true
-	if (code !== WINDOWS_DENO_TEARDOWN_EXIT) return false
+	if (code !== WINDOWS_DENO_TEARDOWN_EXIT && code !== WINDOWS_DENO_ACCESS_VIOLATION_EXIT) return false
 	if (failedCount === 0) return true
 	// Deno 可能在打印 `ok | N passed | 0 failed` 摘要前即 Windows 堆损坏退出。
 	const text = removeTerminalSequences(output)

@@ -226,8 +226,8 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 
 	const request = await getChatRequest(groupId, CHAR_FIXTURE, channelId, { replicaUsername: username })
 	const ctx = await FOUNT_CHAT_CODE_CONTEXT_PLUGIN.interfaces.code_execution.GetJSCodeContext(request)
-	assert(ctx.chat)
-	assert(ctx.group)
-	assert(ctx.channel)
-	assertEquals(ctx.chat.entityHash, agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`).toLowerCase())
+	assert(ctx.fount?.chat)
+	assert(ctx.fount?.group)
+	assert(ctx.fount?.channel)
+	assertEquals(ctx.fount.chat.entityHash, agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`).toLowerCase())
 })

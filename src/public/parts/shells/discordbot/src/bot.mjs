@@ -88,7 +88,7 @@ export function getBotConfig(username, botname) {
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
 	if (!char.interfaces.discord) {
-		const { createSimpleDiscordInterface } = await import('./default_interface.mjs')
+		const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
 		char.interfaces.discord = await createSimpleDiscordInterface(char, username, charname)
 	}
 	return await char.interfaces.discord?.GetBotConfigTemplate?.() || {}
@@ -133,7 +133,7 @@ export async function runBot(username, botname) {
 		if (!Object.keys(config).length) throw new Error(`Bot ${botname} not found`)
 		const char = await loadPart(username, 'chars/' + config.char)
 		if (!char.interfaces.discord) {
-			const { createSimpleDiscordInterface } = await import('./default_interface.mjs')
+			const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
 			char.interfaces.discord = await createSimpleDiscordInterface(char, username, config.char)
 		}
 		const client = await startBot(config, char)

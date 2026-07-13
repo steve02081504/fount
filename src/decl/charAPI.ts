@@ -235,39 +235,56 @@ export class CharAPI_t {
 			}) => Promise<void>
 		},
 		/**
-		 * Telegram 机器人接口。
+		 * Telegram 机器人接口（壳层 bridge 模式：BotSetup 注册 ops 与 outbound）。
 		 */
 		telegram?: {
+			/** Telegraf 启动时注册 bridge ops 与 outbound handler。 */
 			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
+			/** 返回默认 bot JSON 配置模板。 */
 			GetBotConfigTemplate?: () => Promise<any>;
+			/**
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
+			 */
 			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
 				platform: string
 				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
 				chatId: string | number
 				threadId?: string | number
 			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
 			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
-		 * Discord 机器人接口。
+		 * Discord 机器人接口（壳层 bridge 模式：OnceClientReady 注册 ops 与 outbound）。
 		 */
 		discord?: {
+			/** Discord Gateway Intents。 */
 			Intents?: DiscordGatewayIntentBits[]
+			/** Discord Partials。 */
 			Partials?: DiscordPartials[]
+			/** Client ready 后注册 bridge ops 与事件监听。 */
 			OnceClientReady?: (client: DiscordClient, config: any) => Promise<void>
+			/** 返回默认 bot JSON 配置模板。 */
 			GetBotConfigTemplate?: () => Promise<any>
+			/**
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
+			 */
 			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
 				platform: string
 				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
 				chatId: string | number
 				threadId?: string | number
 			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
 			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
-		 * 微信机器人（iLink Bot HTTP 长轮询等，用于将角色接入微信侧对话）。
+		 * 微信机器人（iLink Bot HTTP 长轮询，壳层 bridge 模式）。
 		 */
 		wechat?: {
+			/**
+			 * 长轮询主循环：ctx 含 getUpdates、sendMessage、uploadMedia、signal 等。
+			 */
 			OnceClientReady?: (ctx: {
 				getUpdates: (params: { get_updates_buf?: string, timeoutMs?: number }) => Promise<any>
 				sendMessage: (body: object) => Promise<void>
@@ -287,13 +304,18 @@ export class CharAPI_t {
 				}>
 				signal: AbortSignal
 			}, config: any) => Promise<void>
+			/** 返回默认 bot JSON 配置模板。 */
 			GetBotConfigTemplate?: () => Promise<any>
+			/**
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
+			 */
 			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
 				platform: string
 				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
 				chatId: string | number
 				threadId?: string | number
 			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
 			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**

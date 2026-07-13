@@ -31,7 +31,7 @@ Deno.test({
 	const { baseUrl } = node
 	try {
 		for (const path of BROWSER_SCRIPTS) {
-			const res = await fetch(`${baseUrl}${path}`)
+			const res = await fetch(`${baseUrl}${path}?fount-apikey=${encodeURIComponent(node.apiKey)}`)
 			assertEquals(res.status, 200, path)
 			const body = await res.text()
 			assertEquals(body.includes('export'), true, `${path} should be an ES module`)

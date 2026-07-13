@@ -1,9 +1,12 @@
-import { agentEntityHash } from '../lib/entity.mjs'
-import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
-import { getState } from '../dag/materialize.mjs'
-import { getLocalNodeHash } from '../lib/replica.mjs'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
+import { getState } from '../dag/materialize.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
+import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
+
+
+import { getMaterializedSession } from './dagSession.mjs'
 import { getCharListOfGroup } from './partConfig.mjs'
 import {
 	autoReplyBucketKey,
@@ -12,7 +15,6 @@ import {
 	loadAutoReplySettings,
 	tickAutoReplyFrequency,
 } from './replyThrottle.mjs'
-import { getMaterializedSession } from './dagSession.mjs'
 import { resolveChar } from './resolvePart.mjs'
 import { isCharReplyInFlight, triggerCharReply } from './triggerReply.mjs'
 
@@ -83,6 +85,14 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, mess
 }
 
 /**
+ * @param {Error} error 触发失败原因
+ */
+function logTriggerCharReplyFailure(error) {
+	if (error?.http_code === 404 && String(error?.message || '').includes('char not found')) return
+	console.error('runTriggerPipeline triggerCharReply failed:', error)
+}
+
+/**
  * 入站消息触发管线：意愿 → 节流 → 裁决。
  * @param {string} username replica
  * @param {string} groupId 群 ID
@@ -125,15 +135,11 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 
 	for (const charname of mentionedChars) {
 		if (isCharReplyInFlight(groupId, channelId, charname)) continue
-		void triggerCharReply(groupId, channelId, charname).catch(error => {
-			console.error('runTriggerPipeline triggerCharReply failed:', error)
-		})
+		void triggerCharReply(groupId, channelId, charname).catch(logTriggerCharReplyFailure)
 	}
 
 	if (!willing.length) return
 	const next = pickNextCharForReply(willing)
 	if (!next || isCharReplyInFlight(groupId, channelId, next)) return
-	void triggerCharReply(groupId, channelId, next).catch(error => {
-		console.error('runTriggerPipeline triggerCharReply failed:', error)
-	})
+	void triggerCharReply(groupId, channelId, next).catch(logTriggerCharReplyFailure)
 }

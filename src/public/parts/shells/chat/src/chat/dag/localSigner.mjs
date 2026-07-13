@@ -8,6 +8,7 @@
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { pubKeyHash, publicKeyFromSeed, randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
+
 import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { groupDir, localSignerSeedPath } from '../lib/paths.mjs'
 
@@ -48,8 +49,11 @@ async function loadOrCreateLocalSignerSeed(username, groupId) {
 		return secretKey
 	}
 	catch {
-		const raw = await readFile(path)
-		if (raw.length >= 32) return new Uint8Array(raw.buffer, raw.byteOffset, 32)
+		try {
+			const raw = await readFile(path)
+			if (raw.length >= 32) return new Uint8Array(raw.buffer, raw.byteOffset, 32)
+		}
+		catch { /* concurrent create lost race */ }
 		return secretKey
 	}
 }

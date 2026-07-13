@@ -1,12 +1,22 @@
 import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js'
 
 import { console } from '../../../../../scripts/i18n/bare.mjs'
-
+import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { postBridgeDelete, postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
+import {
+	bridgeIngestDto,
+	messageLineToReplyEntry,
+	primeOutboundRegistered,
+	tryFewTimes,
+} from '../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
+import { registerBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
 import {
 	discordMessageToBridgeDto,
 	restoreFountMentionsForDiscord,
 	splitDiscordReply,
-} from './format.mjs'
+} from '../format.mjs'
 
 /**
  * @typedef {import('npm:discord.js').Client} DiscordClient
@@ -19,167 +29,99 @@ const charClientRegistry = {}
 /**
  * @param {string} username replica
  * @param {string} charname 角色名
- * @returns {DiscordClient | undefined}
+ * @returns {DiscordClient | undefined} 已连接的 Client，未接入时为 undefined
  */
 export function getDiscordClientForChar(username, charname) {
 	return charClientRegistry[username]?.[charname]
 }
 
 /**
- * @param {Function} func 异步函数
- * @param {{ times?: number, WhenFailsWaitFor?: number }} [options] 重试选项
- * @returns {Promise<unknown>}
- */
-async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
-	let lastError
-	for (let i = 0; i < times; i++) try {
-		return await func()
-	}
-	catch (error) {
-		lastError = error
-		if (i < times - 1) await new Promise(resolve => setTimeout(resolve, WhenFailsWaitFor))
-	}
-	throw lastError
-}
-
-/**
- * @param {object} messageLine DAG 消息行
- * @param {string} charname 角色名
- * @returns {object} chatLogEntry 形状
- */
-function messageLineToReplyEntry(messageLine, charname) {
-	const content = messageLine?.content || {}
-	return {
-		name: charname,
-		role: 'char',
-		content: typeof content === 'string' ? content : content.text || '',
-		content_for_show: typeof content === 'string' ? content : content.text || '',
-		time_stamp: messageLine?.hlc?.wall || Date.now(),
-		files: (messageLine?.files || []).map(file => ({
-			name: file.name,
-			mime_type: file.mime_type,
-			buffer: file.buffer,
-			description: file.description || '',
-		})),
-		extension: { dagEventId: messageLine?.eventId },
-	}
-}
-
-/**
  * @param {CharAPI_t} charAPI 角色 API
  * @param {string} ownerUsername replica
  * @param {string} botCharname 角色名
- * @returns {Promise<object>}
+ * @returns {Promise<object>} Discord 壳层接口对象（Intents、OnceClientReady 等）
  */
 export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCharname) {
 	/**
-	 *
+	 * @returns {{ OwnerUserName: string }} 默认 bot 配置模板
 	 */
 	function GetSimpleBotConfigTemplate() {
-		return {
-			OwnerUserName: 'your_discord_username',
-		}
+		return { OwnerUserName: 'your_discord_username' }
 	}
 
 	/**
 	 * @param {DiscordClient} client Discord 客户端
-	 * @param {object} interfaceConfig 配置
+	 * @param {{ OwnerUserName: string }} interfaceConfig 配置
 	 */
 	async function SimpleDiscordBotMain(client, interfaceConfig) {
-		const { registerBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-		const { postBridgeDelete, postBridgeEdit, postBridgeMessage } = await import('../../chat/src/chat/bridge/ingress.mjs')
-		const { registerBridgeOutbound } = await import('../../chat/src/chat/bridge/outbound.mjs')
-		const { listBridgeGroupMappings, lookupBridgePlatformChannel } = await import('../../chat/src/chat/bridge/registry.mjs')
-		const { channelMessageAgentText } = await import('../../chat/public/shared/channelContent.mjs')
-
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
 		registerBridgeOps('discord', {
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
-			 * @param root0.platformThreadId
+			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */
 			sendTyping: async ({ platformChatId, platformThreadId }) => {
-				const channel = platformThreadId
-					? await client.channels.fetch(String(platformThreadId))
-					: await client.channels.fetch(String(platformChatId))
+				const channel = await client.channels.fetch(String(platformThreadId || platformChatId))
 				if (channel?.isTextBased?.()) await channel.sendTyping()
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
-			 * @param root0.platformUserId
+			 * @param {{ platformChatId: string | number, platformUserId: string | number }} params 平台会话与用户
 			 */
 			kickMember: async ({ platformChatId, platformUserId }) => {
 				const guild = await client.guilds.fetch(String(platformChatId))
 				await guild.members.kick(String(platformUserId))
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
-			 * @param root0.platformUserId
+			 * @param {{ platformChatId: string | number, platformUserId: string | number }} params 平台会话与用户
 			 */
 			unbanMember: async ({ platformChatId, platformUserId }) => {
 				const guild = await client.guilds.fetch(String(platformChatId))
 				await guild.members.unban(String(platformUserId))
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<string>} 邀请链接
 			 */
 			createInvite: async ({ platformChatId }) => {
 				const guild = await client.guilds.fetch(String(platformChatId))
-				const invites = await guild.invites.fetch()
-				const first = invites.first()
+				const first = (await guild.invites.fetch()).first()
 				if (first?.url) return first.url
 				const channel = guild.channels.cache.find(ch => ch.isTextBased?.())
 				if (!channel) throw new Error('discord createInvite: no text channel')
-				const invite = await channel.createInvite({ maxAge: 0, maxUses: 0 })
-				return invite.url
+				return (await channel.createInvite({ maxAge: 0, maxUses: 0 })).url
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
+			 * @param {{ platformChatId: string | number }} params 平台会话
 			 */
 			leaveChat: async ({ platformChatId }) => {
-				const guild = await client.guilds.fetch(String(platformChatId))
-				await guild.leave()
+				await (await client.guilds.fetch(String(platformChatId))).leave()
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformUserId
+			 * @param {{ platformUserId: string | number }} params 平台用户
+			 * @returns {Promise<{ platformChatId: string }>} DM 频道 id
 			 */
 			openDm: async ({ platformUserId }) => {
-				const user = await client.users.fetch(String(platformUserId))
-				const dm = await user.createDM()
+				const dm = await (await client.users.fetch(String(platformUserId))).createDM()
 				return { platformChatId: dm.id }
 			},
 			/**
-			 *
-			 * @param root0
-			 * @param root0.platformChatId
-			 * @param root0.platformMessageId
+			 * 水合 discord.js 原生 channel / message / guild（code_execution 消费）。
+			 * @param {{ platformChatId: string | number, platformMessageId?: string | number, platformThreadId?: string | number }} params 平台定位
+			 * @returns {Promise<{ channel: object, message: object | null, guild: object | null }>} 原生对象
 			 */
-			getNativeContext: async ({ platformChatId, platformMessageId }) => {
-				const channel = await client.channels.fetch(String(platformChatId))
+			getNativeContext: async ({ platformChatId, platformMessageId, platformThreadId }) => {
+				const channel = await client.channels.fetch(String(platformThreadId || platformChatId))
 				const message = platformMessageId
-					? await channel.messages.fetch(String(platformMessageId))
+					? await channel.messages?.fetch?.(String(platformMessageId))
 					: null
-				return { discord_client: client, channel, message, guild: channel?.guild }
+				return { channel, message, guild: channel?.guild ?? null }
 			},
 		})
 
 		/**
 		 * @param {string} groupId 群 ID
-		 * @param {object} bridge 桥接设置
+		 * @param {{ platformChatId: string }} bridge 桥接设置
 		 */
 		async function ensureOutboundHandler(groupId, bridge) {
 			if (outboundRegistered.has(groupId)) return
@@ -201,35 +143,31 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				}))
 
 				/**
-				 *
-				 * @param payload
+				 * @param {object} payload Discord send 载荷
+				 * @returns {Promise<{ platformMessageId: string }>} 首条平台消息 id
 				 */
-				const sendPayload = async payload => {
-					const sent = await tryFewTimes(() => channel.send(payload))
-					return { platformMessageId: sent.id }
-				}
+				const sendPayload = async payload => ({
+					platformMessageId: (await tryFewTimes(() => channel.send(payload))).id,
+				})
 
-				const handled = await charAPI.interfaces.discord?.FormatOutboundReply?.(replyEntry, {
+				if (await charAPI.interfaces.discord?.FormatOutboundReply?.(replyEntry, {
 					platform: 'discord',
 					send: sendPayload,
 					chatId: platformChatId,
 					threadId: platformThreadId,
-				})
-				if (handled) return {}
+				})) return {}
 
 				let firstMessageId = null
 				const textChunks = splitDiscordReply(plainText)
 				const fileChunks = []
-				const MAX_FILES = 10
-				for (let i = 0; i < files.length; i += MAX_FILES)
-					fileChunks.push(files.slice(i, i + MAX_FILES))
+				for (let i = 0; i < files.length; i += 10)
+					fileChunks.push(files.slice(i, i + 10))
 
 				if (!textChunks.length && !fileChunks.length) return {}
 
 				for (let i = 0; i < textChunks.length; i++) {
-					const isLastText = i === textChunks.length - 1
 					const payload = { content: textChunks[i] }
-					if (isLastText && fileChunks.length) payload.files = fileChunks.shift()
+					if (i === textChunks.length - 1 && fileChunks.length) payload.files = fileChunks.shift()
 					const sent = await tryFewTimes(() => channel.send(payload))
 					if (!firstMessageId) firstMessageId = sent.id
 				}
@@ -242,31 +180,18 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			outboundRegistered.add(groupId)
 		}
 
-		for (const { groupId } of listBridgeGroupMappings(ownerUsername))
-			outboundRegistered.add(groupId)
+		primeOutboundRegistered(outboundRegistered, ownerUsername)
 
 		/**
-		 * @param {object} dto DTO
+		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await charAPI.interfaces.discord?.TweakInboundDto?.(dto)
-			await postBridgeMessage(ownerUsername, dto)
-			const { ensureBridgeGroup } = await import('../../chat/src/chat/bridge/registry.mjs')
-			const { getState } = await import('../../chat/src/chat/dag/materialize.mjs')
-			const { groupId } = await ensureBridgeGroup(ownerUsername, {
-				platform: dto.platform,
-				platformChatId: dto.platformChatId,
-				chatKind: dto.chatKind,
-				name: dto.chatName,
-			})
-			const { state } = await getState(ownerUsername, groupId)
-			if (state.groupSettings?.bridge)
-				await ensureOutboundHandler(groupId, state.groupSettings.bridge)
+			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler)
 		}
 
 		/**
 		 * @param {import('npm:discord.js').Message} message Discord 消息
-		 * @returns {boolean}
+		 * @returns {boolean} 是否应写入 bridge
 		 */
 		function shouldAcceptMessage(message) {
 			if (message.author?.bot) return false
@@ -279,12 +204,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			if (!shouldAcceptMessage(message)) return
 			const dto = await discordMessageToBridgeDto(message, client, ownerUsername)
 			if (!dto) return
-			try {
-				await ingestDto(dto)
-			}
-			catch (error) {
-				console.error('[DiscordBridge] postBridgeMessage failed:', error)
-			}
+			try { await ingestDto(dto) }
+			catch (error) { console.error('[DiscordBridge] postBridgeMessage failed:', error) }
 		})
 
 		client.on(Events.MessageUpdate, async (_oldMessage, newMessage) => {
@@ -295,28 +216,21 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				await charAPI.interfaces.discord?.TweakInboundDto?.(dto)
 				await postBridgeEdit(ownerUsername, dto)
 			}
-			catch (error) {
-				console.error('[DiscordBridge] postBridgeEdit failed:', error)
-			}
+			catch (error) { console.error('[DiscordBridge] postBridgeEdit failed:', error) }
 		})
 
 		client.on(Events.MessageDelete, async message => {
 			if (!message.channelId || !message.id) return
 			const isDm = message.channel?.type === ChannelType.DM
-			const platformChatId = isDm
-				? message.channelId
-				: message.guildId || message.channelId
 			try {
 				await postBridgeDelete(ownerUsername, {
 					platform: 'discord',
-					platformChatId,
+					platformChatId: isDm ? message.channelId : message.guildId || message.channelId,
 					platformThreadId: isDm ? undefined : message.channelId,
 					platformMessageId: message.id,
 				})
 			}
-			catch (error) {
-				console.error('[DiscordBridge] postBridgeDelete failed:', error)
-			}
+			catch (error) { console.error('[DiscordBridge] postBridgeDelete failed:', error) }
 		})
 	}
 
@@ -335,9 +249,8 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		],
 		Partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember, Partials.Reaction],
 		/**
-		 *
-		 * @param client
-		 * @param config
+		 * @param {DiscordClient} client Discord 客户端
+		 * @param {{ OwnerUserName: string }} config 配置
 		 */
 		OnceClientReady: async (client, config) => {
 			charClientRegistry[ownerUsername] ??= {}
