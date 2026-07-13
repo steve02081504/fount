@@ -72,6 +72,26 @@ export function createChatClient(ctx) {
 				eventId: message.eventId || message.id || message.extension?.dagEventId,
 			}, event.mentions)
 		},
+		/**
+		 * @returns {Promise<object[]>} 本 user 运行中的 BridgeBot 列表
+		 */
+		async bridgeBots() {
+			const { listBridgeBots } = await import('../chat/bridge/ops.mjs')
+			return listBridgeBots(ctx.username).map(row => ({
+				platform: row.platform,
+				botname: row.botname,
+				/**
+				 * @returns {Promise<void>} 停止该 bot 实例
+				 */
+				async stop() {
+					const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
+					await requireBridgeOp(ctx.username, {
+						platform: row.platform,
+						botname: row.botname,
+					}, 'stopSelf')()
+				},
+			}))
+		},
 	}
 }
 

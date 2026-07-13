@@ -1,6 +1,7 @@
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { newGroup } from '../session/crud.mjs'
 
 import {
@@ -23,16 +24,32 @@ export function getBridgeGroupMapping(username, groupKey) {
 /**
  * 确保平台会话映射到 fount 群（不存在则建群并写 bridge 标记）。
  * @param {string} username replica
- * @param {{ platform: string, platformChatId: string | number, chatKind?: 'dm' | 'group', name?: string }} args 参数
+ * @param {{ platform: string, platformChatId: string | number, chatKind?: 'dm' | 'group', name?: string, botname?: string }} args 参数
  * @returns {Promise<{ groupId: string, mapping: object }>} 群 ID 与映射行
  */
-export async function ensureBridgeGroup(username, { platform, platformChatId, chatKind = 'group', name }) {
+export async function ensureBridgeGroup(username, { platform, platformChatId, chatKind = 'group', name, botname }) {
 	const key = bridgeGroupKey(platform, platformChatId)
 	const doc = loadBridgesDoc(username)
 	let mapping = doc.mappings[key]
 	if (mapping?.groupId) {
 		if (!mapping.channels) mapping.channels = { default: 'default' }
 		if (!mapping.messageMap) mapping.messageMap = []
+		if (botname) {
+			const { state } = await getState(username, mapping.groupId)
+			const current = state.groupSettings?.bridge
+			if (current && String(current.botname || '') !== String(botname)) 
+				await appendSignedLocalEvent(username, mapping.groupId, {
+					type: 'group_settings_update',
+					timestamp: Date.now(),
+					content: {
+						bridge: {
+							...current,
+							botname: String(botname),
+						},
+					},
+				})
+			
+		}
 		return { groupId: mapping.groupId, mapping }
 	}
 
@@ -45,6 +62,7 @@ export async function ensureBridgeGroup(username, { platform, platformChatId, ch
 				platform: String(platform),
 				platformChatId: String(platformChatId),
 				chatKind,
+				...botname ? { botname: String(botname) } : {},
 			},
 		},
 	})

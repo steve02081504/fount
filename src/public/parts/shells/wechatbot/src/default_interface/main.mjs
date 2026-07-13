@@ -6,7 +6,7 @@ import {
 	primeOutboundRegistered,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
-import { registerBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,
@@ -53,8 +53,9 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 	/**
 	 * @param {object} context 运行上下文
 	 * @param {{ OwnerWeChatId: string, OwnerPromptName?: string }} interfaceConfig 配置
+	 * @param {string} botname bot 实例名
 	 */
-	async function SimpleWechatBotMain(context, interfaceConfig) {
+	async function SimpleWechatBotMain(context, interfaceConfig, botname) {
 		const cdnBaseUrl = context.cdnBaseUrl || DEFAULT_WECHAT_ILINK_BASE
 		const ownerDisplayName = String(interfaceConfig.OwnerPromptName ?? '').trim() || ownerUsername
 		let getUpdatesCursor = ''
@@ -66,7 +67,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
-		registerBridgeOps('wechat', {
+		registerBridgeOps(ownerUsername, 'wechat', botname, {
 			/**
 			 * @param {{ platformChatId: string | number }} params 平台会话
 			 */
@@ -81,6 +82,22 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			 * @returns {Promise<{ platformChatId: string | number }>} 平台定位
 			 */
 			getNativeContext: async ({ platformChatId }) => ({ platformChatId }),
+			/** @returns {Promise<void>} 停止本 bot 实例 */
+			stopSelf: async () => {
+				const { stopBot } = await import('../bot.mjs')
+				await stopBot(ownerUsername, botname)
+			},
+		}, {
+			charname: botCharname,
+			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
+			teardown: async () => {
+				for (const groupId of outboundRegistered)
+					unregisterBridgeOutbound(ownerUsername, groupId)
+				outboundRegistered.clear()
+				delete charWechatRuntimeRegistry[ownerUsername]?.[botCharname]
+				if (charWechatRuntimeRegistry[ownerUsername] && !Object.keys(charWechatRuntimeRegistry[ownerUsername]).length)
+					delete charWechatRuntimeRegistry[ownerUsername]
+			},
 		})
 
 		/**
@@ -219,7 +236,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'wechat', dto, ensureOutboundHandler)
+			await bridgeIngestDto(ownerUsername, charAPI, 'wechat', dto, ensureOutboundHandler, botname)
 		}
 
 		try {
@@ -300,9 +317,10 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		/**
 		 * @param {object} context 运行上下文
 		 * @param {{ OwnerWeChatId: string, OwnerPromptName?: string }} config 配置
+		 * @param {string} botname bot 实例名
 		 */
-		OnceClientReady: async (context, config) => {
-			await SimpleWechatBotMain(context, config)
+		OnceClientReady: async (context, config, botname) => {
+			await SimpleWechatBotMain(context, config, botname)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

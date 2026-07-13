@@ -20,7 +20,7 @@ function bridgeContext(state) {
 export async function dispatchBridgeTyping(ctx, groupId, state, channelId) {
 	const bridge = bridgeContext(state)
 	if (!bridge) return
-	await requireBridgeOp(bridge.platform, 'sendTyping')({
+	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'sendTyping')({
 		platformChatId: bridge.platformChatId,
 		platformThreadId: channelId !== 'default' ? channelId : undefined,
 	})
@@ -35,7 +35,7 @@ export async function dispatchBridgeTyping(ctx, groupId, state, channelId) {
 export async function dispatchBridgeLeave(ctx, groupId, state) {
 	const bridge = bridgeContext(state)
 	if (!bridge) return
-	await requireBridgeOp(bridge.platform, 'leaveChat')({
+	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'leaveChat')({
 		platformChatId: bridge.platformChatId,
 	})
 }
@@ -53,7 +53,7 @@ export async function dispatchBridgeMemberKick(ctx, groupId, state, targetMember
 	if (!bridge) return
 	const platformUserId = memberRow?.platformUserId || memberRow?.extension?.bridge?.platformUserId
 	if (!platformUserId) throw new Error('bridge member kick requires platformUserId')
-	await requireBridgeOp(bridge.platform, 'kickMember')({
+	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'kickMember')({
 		platformChatId: bridge.platformChatId,
 		platformUserId,
 	})

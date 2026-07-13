@@ -213,7 +213,7 @@ Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () =>
 
 	/** @type {string[]} */
 	const calls = []
-	registerBridgeOps('telegram', {
+	registerBridgeOps(username, 'telegram', 'ops-bot', {
 		sendTyping: async () => { calls.push('typing') },
 		createInvite: async () => {
 			calls.push('invite')
@@ -225,6 +225,7 @@ Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () =>
 		platform: 'telegram',
 		platformChatId: 700003,
 		platformMessageId: 31,
+		botname: 'ops-bot',
 		author: { platformUserId: 1, displayName: 'u' },
 		text: 'ops',
 	})

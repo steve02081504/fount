@@ -1,4 +1,4 @@
-import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate } from './bot.mjs'
+import { runBot, stopBot, getBotList, setBotConfig, deleteBotConfig, getBotConfig as getPartData, getBotConfigTemplate, getRunningBotList } from './bot.mjs'
 
 /**
  * 断言机器人名称。
@@ -36,8 +36,10 @@ export const actions = {
 	 * @param {{ user: string, botname: string }} root0 参数对象。
 	 * @returns {string} 删除结果消息。
 	 */
-	delete: ({ user, botname }) => {
+	delete: async ({ user, botname }) => {
 		assertBotname(botname, 'delete')
+		if (getRunningBotList(user).includes(botname))
+			await stopBot(user, botname)
 		deleteBotConfig(user, botname)
 		return `Bot '${botname}' deleted.`
 	},

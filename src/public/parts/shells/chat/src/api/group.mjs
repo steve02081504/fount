@@ -30,6 +30,24 @@ export function createGroup(ctx, groupId, projection) {
 		memberCount: projection.memberCount ?? 0,
 		bridge: projection.bridge,
 		/**
+		 * @returns {object | undefined} 服务本群的 BridgeBot
+		 */
+		bridgeBot() {
+			const bridge = projection.bridge
+			if (!bridge?.platform || !bridge?.botname) return undefined
+			return {
+				platform: bridge.platform,
+				botname: bridge.botname,
+				/**
+				 * @returns {Promise<void>} 停止本 bot 实例
+				 */
+				async stop() {
+					const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
+					await requireBridgeOp(ctx.username, bridge, 'stopSelf')()
+				},
+			}
+		},
+		/**
 		 * @returns {Promise<object[]>} 频道列表
 		 */
 		async channels() {
@@ -62,6 +80,33 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async members(opts = {}) {
 			const state = await loadGroupState(ctx, groupId)
+			const bridge = state.groupSettings?.bridge
+			if (bridge?.platform && bridge?.botname) {
+				const { resolveBridgeOps } = await import('../chat/bridge/ops.mjs')
+				const { resolveBridgeIdentity } = await import('../chat/bridge/identity.mjs')
+				const listMembers = resolveBridgeOps(ctx.username, {
+					platform: bridge.platform,
+					botname: bridge.botname,
+				})?.listMembers
+				if (typeof listMembers !== 'function')
+					throw new Error(`bridge op not registered: ${bridge.platform}:${bridge.botname}.listMembers`)
+				const rows = await listMembers({ platformChatId: bridge.platformChatId })
+				const members = await Promise.all((rows || []).map(async row => {
+					const entityHash = await resolveBridgeIdentity(
+						ctx.username,
+						bridge.platform,
+						row.platformUserId,
+						row.displayName,
+					)
+					return createMember(ctx, groupId, entityHash, {
+						memberKind: 'user',
+						displayName: row.displayName || entityHash.slice(64, 72),
+						platformUserId: String(row.platformUserId),
+						extension: { bridge: { platformUserId: String(row.platformUserId) } },
+					})
+				}))
+				return { page: 1, pageCount: 1, members }
+			}
 			const { members: slice, page, pageCount } = paginateActiveMembers(state, opts)
 			return {
 				page,
@@ -118,7 +163,7 @@ export function createGroup(ctx, groupId, projection) {
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.platformChatId) {
 				const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
-				return requireBridgeOp(bridge.platform, 'createInvite')({
+				return requireBridgeOp(ctx.username, bridge, 'createInvite')({
 					platformChatId: bridge.platformChatId,
 				})
 			}

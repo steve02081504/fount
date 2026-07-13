@@ -8,7 +8,7 @@ import {
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
-import { registerBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
 import {
 	aiMarkdownToTelegramHtml,
@@ -65,14 +65,15 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	/**
 	 * @param {TelegrafInstance} bot Telegraf
 	 * @param {{ OwnerUserID: string, MediaGroupFlushMs?: number }} interfaceConfig 配置
+	 * @param {string} botname bot 实例名
 	 */
-	async function SimpleTelegramBotSetup(bot, interfaceConfig) {
+	async function SimpleTelegramBotSetup(bot, interfaceConfig, botname) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const DefaultParseModeOptions = { parse_mode: 'HTML' }
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
-		registerBridgeOps('telegram', {
+		registerBridgeOps(ownerUsername, 'telegram', botname, {
 			/**
 			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */
@@ -121,6 +122,33 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 				threadId: platformThreadId,
 				messageId: platformMessageId,
 			}),
+			/** @returns {Promise<void>} 停止本 bot 实例 */
+			stopSelf: async () => {
+				const { stopBot } = await import('../bot.mjs')
+				await stopBot(ownerUsername, botname)
+			},
+			/**
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<Array<{ platformUserId: string | number, displayName: string }>>} 管理员列表
+			 */
+			listMembers: async ({ platformChatId }) => {
+				const admins = await bot.telegram.getChatAdministrators(platformChatId)
+				return admins.map(admin => ({
+					platformUserId: admin.user.id,
+					displayName: admin.user.first_name || admin.user.username || String(admin.user.id),
+				}))
+			},
+		}, {
+			charname: botCharname,
+			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
+			teardown: async () => {
+				for (const groupId of outboundRegistered)
+					unregisterBridgeOutbound(ownerUsername, groupId)
+				outboundRegistered.clear()
+				delete charBotRegistry[ownerUsername]?.[botCharname]
+				if (charBotRegistry[ownerUsername] && !Object.keys(charBotRegistry[ownerUsername]).length)
+					delete charBotRegistry[ownerUsername]
+			},
 		})
 
 		/**
@@ -236,7 +264,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'telegram', dto, ensureOutboundHandler)
+			await bridgeIngestDto(ownerUsername, charAPI, 'telegram', dto, ensureOutboundHandler, botname)
 		}
 
 		bot.on('edited_message', async context => {
@@ -292,11 +320,12 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		/**
 		 * @param {TelegrafInstance} bot Telegraf
 		 * @param {{ OwnerUserID: string, MediaGroupFlushMs?: number }} config 配置
+		 * @param {string} botname bot 实例名
 		 */
-		BotSetup: async (bot, config) => {
+		BotSetup: async (bot, config, botname) => {
 			charBotRegistry[ownerUsername] ??= {}
 			charBotRegistry[ownerUsername][botCharname] = bot
-			await SimpleTelegramBotSetup(bot, config)
+			await SimpleTelegramBotSetup(bot, config, botname)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，含残余缺口 G1–G4）；**M7 曾判定无法实施**——缺「停止 bot 运行」与「operator 平台身份认领」两块地基，本版以 M7a / M7b 补齐设计，M7 映射表已按龙胆真实能力清单逐项对照实际 API 重写。M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，含残余缺口 G1–G4）；**M7a 已落地**（as-built 见 M7a 节）；M7b 未动工；M7 龙胆迁移待 M7a+M7b+G1；M8–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -161,63 +161,21 @@ onMessage?: (event: {
 
 ---
 
-## M7a — 地基：bot 生命周期一等化
+## M7a — 地基：bot 生命周期一等化（as-built）
 
-### 现状锚点
+> 落地：`2026-07-13`。测试：`chat/test/integration/bridge_lifecycle.test.mjs` + 既有 bridge/chat_client 集成测试更新。
 
-- 壳层 per-botname 生命周期**已有**：`bot_configs.json`（键 botname → `{ token, char, config }`，一 bot 实例绑一 char）；`src/bot.mjs` 的 `runBot(username, botname)` / `stopBot`（停平台连接 + 清 `*_cache` + `EndJob`）/ `pauseBot`（不 `EndJob`，供 `ReStartJobs` 恢复）；HTTP `POST /api/parts/shells:{shell}/stop` body `{ botname }`；CLI `actions.stop`。
-- **断层**：
-  - `registerBridgeOps(platform, ops)` 是 **per-platform 单例**（`bridge/ops.mjs` 全局 Map 键仅 platform）——同平台第二个 bot 启动即覆盖第一个的 ops（闭包绑着各自的 Telegraf/Client 实例，先者失效）。
-  - `stopBot` 不注销任何 bridge 侧状态：`bridgeOpsRegistry`、`outboundHandlers`、`charBotRegistry` / `charClientRegistry` / `charWechatRuntimeRegistry` 全部残留，插件可拿到已停实例。
-  - `deletebotconfig`：telegram 先 stop，discord / wechat 不 stop（不一致）。
-  - char 侧**无任何「停止」操作面**——龙胆 `platformAPI.destroySelf()` 直接停 Telegraf/discord.js，绕开壳清理（不清 cache、不 `EndJob`）。
+| 模块 | 实际落点 | 关键导出 / 方法 |
+| --- | --- | --- |
+| per-bot ops | `chat/src/chat/bridge/ops.mjs` | `registerBridgeOps(username, platform, botname, ops, { teardown?, charname? })` / `unregisterBridgeOps` / `resolveBridgeOps(username, { platform, botname })` / `requireBridgeOp(username, bridge, op)` / `listBridgeBots(username)` |
+| botname 入账 | `chat/src/chat/bridge/registry.mjs::ensureBridgeGroup` | 建群与换 bot 服务时写 `settings.bridge.botname`；`postBridgeMessage` / `bridgeIngestDto` 透传 `dto.botname` |
+| ChatClient 操作面 | `chat/src/api/group.mjs` / `client.mjs` | `group.bridgeBot()` → `{ platform, botname, stop() }`；`client.bridgeBots()`；桥接群 `group.members()` 分派 `listMembers` op + `resolveBridgeIdentity` |
+| 壳层接线 | 三壳 `default_interface/main.mjs` + `bot.mjs` | `BotSetup`/`OnceClientReady` 第三参 `botname`；注册 `stopSelf`/`listMembers`（WX 无 listMembers）；`stopBot`/`pauseBot` 调 `unregisterBridgeOps`；`deletebotconfig` 三壳统一先 stop |
 
-### 7a.1 bridgeOps 粒度修正（per-bot）
-
-`chat/src/chat/bridge/ops.mjs` 重写：
-
-```js
-export function registerBridgeOps(username, platform, botname, ops)
-export function unregisterBridgeOps(username, platform, botname)
-export function resolveBridgeOps(username, { platform, botname })
-export function requireBridgeOp(username, bridge, op)   // bridge = group settings.bridge；未注册 → throw
-export function listBridgeBots(username)                 // → [{ platform, botname, ops }]
-```
-
-- registry 键 `${username}:${platform}:${botname}`。
-- `ensureBridgeGroup` 的群 `settings.bridge` 增记 `botname`（该群由哪个 bot 实例服务；同一平台会话换 bot 服务时后写者更新）。对象层与 code_execution 的 ops 分派从 `group.bridge` 取 `(platform, botname)`，消费点（`api/group.mjs` / `api/channel.mjs` / `codeBridgeContext` / `*-api` 插件）同步新签名。
-- 三壳注册点（`Simple*BotSetup` / `Simple*BotMain`）改传 botname。
-
-### 7a.2 ops 契约扩展
-
-```js
-// 新增（全部可选，与既有 op 同级）：
-// stopSelf()                                   // 停止本 bot 实例——壳实现 = stopBot(username, botname)
-// listMembers({ platformChatId }) → [{ platformUserId, displayName }]
-//   // DC 全量成员、TG 仅管理员可枚举、WX 不注册；Group.members() 在桥接群分派至此，
-//   // 结果经 resolveBridgeIdentity 映射成员 entityHash（主人在场检查的地基）
-```
-
-`stopSelf` 语义 = 完整壳级停止：停平台连接、清运行时 cache、`EndJob`、`unregisterBridgeOps`、清该 bot 服务群的 `outboundHandlers`、清 `char*Registry` 条目。**自裁走它就不再是「裸断连接」**。
-
-### 7a.3 ChatClient 操作面
-
-- `Group.bridge` 投影含 `botname`；新增 `group.bridgeBot()` → `BridgeBot { platform, botname, stop() }`（非桥接群 → `undefined`；`stop()` = `requireBridgeOp(..., 'stopSelf')()`）。
-- `ChatClient` 新增 `client.bridgeBots()` → 本 user 全部运行中 bridge bot 的 `BridgeBot[]`（枚举 `listBridgeBots`）。
-- 粒度语义（写进 `llms.txt`）：仅退群 = `group.leave()`；停当前平台接入 = `group.bridgeBot().stop()`；char 全下线 = 遍历 `client.bridgeBots()` 逐个 `stop()`。不提供 char 级杀进程。
-
-### 7a.4 壳层生命周期收尾
-
-- `stopBot` / `pauseBot` 统一调 `unregisterBridgeOps` + 清 outbound + 清 char 注册表（pause 同样清运行态，恢复时 `runBot` 重建）。
-- `deletebotconfig` 三壳统一先 stop。
-- Shell `Unload` 保持空（bot 生命周期归 Job 体系，与 part 卸载解耦，现状即合理）。
-
-### 验收
-
-- 同平台两个 bot 并行：各自群的 ops 路由到各自实例，互不覆盖。
-- `stopBot` 后：`requireBridgeOp` throw、outbound 不再送达、`get*ForChar` 返回空；`runBot` 后全部恢复。
-- agent actor 经 `group.bridgeBot().stop()` 停掉 mock bot：mock 的 `stopSelf` 被调、`EndJob` 发生、registry 清空。
-- `client.bridgeBots()` 枚举与运行实例一致。
+- registry 键 `${username}:${platform}:${botname}`；`unregisterBridgeOps` 先删条目再跑 `teardown`（清该 bot 的 outbound handler + `char*Registry` 条目）。
+- `stopSelf` = 壳级 `stopBot(username, botname)`（停连接 + 清 cache + `unregisterBridgeOps` + `EndJob`）。
+- `listMembers`：TG = `getChatAdministrators`；DC = guild 全量成员；WX 未注册 → 桥接群 `members()` throw。
+- 粒度语义：`group.leave()` = 仅退群；`group.bridgeBot().stop()` = 停单 bot 实例；`client.bridgeBots()` 逐 `stop()` = char 全平台下线。无 char 级杀进程。
 
 ---
 

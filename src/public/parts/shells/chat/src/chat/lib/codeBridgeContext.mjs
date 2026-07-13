@@ -27,7 +27,7 @@ export function bridgeMetaFromChatLogEntry(entry) {
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<{ platform: string, platformChatId: string, platformThreadId?: string } | null>} 非桥接群为 null
+ * @returns {Promise<{ platform: string, platformChatId: string, platformThreadId?: string, botname?: string } | null>} 非桥接群为 null
  */
 export async function resolveBridgePlatformIds(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
@@ -38,6 +38,7 @@ export async function resolveBridgePlatformIds(username, groupId, channelId) {
 	return {
 		platform: String(bridge.platform),
 		platformChatId: mapped?.platformChatId ?? String(bridge.platformChatId),
+		...bridge.botname ? { botname: String(bridge.botname) } : {},
 		...mapped?.platformThreadId ? { platformThreadId: mapped.platformThreadId } : {},
 	}
 }
@@ -55,7 +56,9 @@ export async function hydrateBridgeNativeContext(username, groupId, channelId, t
 	if (!ids) return null
 
 	const platformMessageId = bridgeMetaFromChatLogEntry(triggerEntry)?.platformMessageId
-	const getNativeContext = resolveBridgeOps(ids.platform)?.getNativeContext
+	const getNativeContext = ids.botname
+		? resolveBridgeOps(username, { platform: ids.platform, botname: ids.botname })?.getNativeContext
+		: undefined
 	if (!getNativeContext)
 		return { ...ids, platformMessageId }
 

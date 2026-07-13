@@ -39,9 +39,10 @@ async function ensureWechatInterface(char, username, charname) {
  * @param {CharAPI_t} char 角色实例。
  * @param {string} username 用户名。
  * @param {string} charname 角色名称。
+ * @param {string} botname bot 实例名。
  * @returns {Promise<void>}
  */
-async function startBot(config, char, username, charname) {
+async function startBot(config, char, username, charname, botname) {
 	const abortController = new AbortController()
 	const cdnBaseUrl = config.apiBaseUrl?.trim() || DEFAULT_WECHAT_ILINK_BASE
 	const api = createWechatApi({
@@ -53,7 +54,7 @@ async function startBot(config, char, username, charname) {
 	await ensureWechatInterface(char, username, charname)
 
 	const context = { ...api, signal: abortController.signal, cdnBaseUrl }
-	await char.interfaces.wechat.OnceClientReady(context, config.config)
+	await char.interfaces.wechat.OnceClientReady(context, config.config, botname)
 
 	return {
 		/**
@@ -166,7 +167,7 @@ export async function runBot(username, botname) {
 			throw new Error('微信 Bot 需要 Token：请使用扫码登录或粘贴 Bot Token')
 
 		const char = await loadPart(username, 'chars/' + config.char)
-		return startBot(config, char, username, config.char)
+		return startBot(config, char, username, config.char, botname)
 	})()
 
 	try {
@@ -188,6 +189,8 @@ export async function runBot(username, botname) {
  */
 export async function stopBot(username, botname) {
 	await destroyBotSession(username, botname)
+	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+	await unregisterBridgeOps(username, 'wechat', botname)
 	EndJob(username, 'shells/wechatbot', botname)
 }
 
@@ -199,6 +202,8 @@ export async function stopBot(username, botname) {
  */
 export async function pauseBot(username, botname) {
 	await destroyBotSession(username, botname)
+	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+	await unregisterBridgeOps(username, 'wechat', botname)
 }
 
 on_shutdown(() => Promise.all(

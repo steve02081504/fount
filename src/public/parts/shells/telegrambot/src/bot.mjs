@@ -22,16 +22,17 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * 启动 Telegram Bot。
  * @param {{ token: string, char: string, config: any }} botConfig - 从 bot_configs.json 加载的bot配置。
  * @param {CharAPI_t} char - 加载后的角色 API 对象。
+ * @param {string} botname - bot 实例名。
  * @returns {Promise<import('npm:telegraf').Telegraf>} Telegraf 实例。
  */
-async function startTelegrafBot(botConfig, char) {
+async function startTelegrafBot(botConfig, char, botname) {
 	// 创建 Telegraf 实例
 	const bot = new Telegraf(botConfig.token)
 
 	// 允许角色自定义其 Telegram 接口的设置
 	// char.interfaces.telegram 是角色 manifest.json 中定义的 telegram 接口
 	// botConfig.config 是用户在前端UI的JSON编辑器中为此特定bot实例配置的内容
-	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config)
+	await char.interfaces.telegram?.BotSetup?.(bot, botConfig.config, botname)
 	const me = await bot.telegram.getMe()
 
 	// 启动bot
@@ -130,7 +131,7 @@ export async function runBot(username, botname) {
 			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
 			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
 		}
-		return await startTelegrafBot(config, char)
+		return await startTelegrafBot(config, char, botname)
 	})()
 
 	try {
@@ -161,9 +162,9 @@ export async function stopBot(username, botname) {
 		await botCache[botname].stop('SIGINT')
 	}
 	finally {
-		// 无论停止是否成功，都从缓存中移除
 		delete botCache[botname]
-		// 在 fount 任务系统中标记此bot任务已结束
+		const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+		await unregisterBridgeOps(username, 'telegram', botname)
 		EndJob(username, 'shells/telegrambot', botname)
 	}
 }
@@ -183,6 +184,8 @@ export async function pauseBot(username, botname) {
 	}
 	finally {
 		delete botCache[botname]
+		const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+		await unregisterBridgeOps(username, 'telegram', botname)
 	}
 }
 on_shutdown(async () => {

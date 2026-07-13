@@ -59,16 +59,19 @@ export function primeOutboundRegistered(outboundRegistered, ownerUsername) {
  * @param {'discord' | 'telegram' | 'wechat'} platform 平台
  * @param {object} dto 桥接 DTO
  * @param {(groupId: string, bridge: object) => Promise<void>} ensureOutboundHandler 出站注册
+ * @param {string} [botname] 服务该群的 bot 实例名
  * @returns {Promise<void>}
  */
-export async function bridgeIngestDto(ownerUsername, charAPI, platform, dto, ensureOutboundHandler) {
+export async function bridgeIngestDto(ownerUsername, charAPI, platform, dto, ensureOutboundHandler, botname) {
 	await charAPI.interfaces[platform]?.TweakInboundDto?.(dto)
+	if (botname) dto.botname = botname
 	await postBridgeMessage(ownerUsername, dto)
 	const { groupId } = await ensureBridgeGroup(ownerUsername, {
 		platform: dto.platform,
 		platformChatId: dto.platformChatId,
 		chatKind: dto.chatKind,
 		name: dto.chatName,
+		botname,
 	})
 	const { state } = await getState(ownerUsername, groupId)
 	if (state.groupSettings?.bridge)

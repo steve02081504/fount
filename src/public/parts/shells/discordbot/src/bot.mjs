@@ -20,9 +20,10 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  * 	config: any
  * }} config - 机器人配置
  * @param {CharAPI_t} char - 角色 API
+ * @param {string} botname - bot 实例名
  * @returns {Promise<import('npm:discord.js').Client>} - Discord 客户端实例
  */
-async function startBot(config, char) {
+async function startBot(config, char, botname) {
 	const client = new Client({
 		intents: char.interfaces.discord?.Intents || [
 			GatewayIntentBits.Guilds,
@@ -46,7 +47,7 @@ async function startBot(config, char) {
 	})
 
 	client.once(Events.ClientReady, async client => {
-		await char.interfaces.discord?.OnceClientReady(client, config.config)
+		await char.interfaces.discord?.OnceClientReady(client, config.config, botname)
 		console.infoI18n('fountConsole.botStarted', {
 			platform: 'Discord',
 			botusername: client.user.username,
@@ -136,7 +137,7 @@ export async function runBot(username, botname) {
 			const { createSimpleDiscordInterface } = await import('./default_interface/main.mjs')
 			char.interfaces.discord = await createSimpleDiscordInterface(char, username, config.char)
 		}
-		const client = await startBot(config, char)
+		const client = await startBot(config, char, botname)
 		return client
 	})()
 
@@ -167,6 +168,8 @@ export async function stopBot(username, botname) {
 		delete botCache[botname]
 	}
 
+	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+	await unregisterBridgeOps(username, 'discord', botname)
 	EndJob(username, 'shells/discordbot', botname)
 }
 
@@ -186,6 +189,8 @@ export async function pauseBot(username, botname) {
 	} finally {
 		delete botCache[botname]
 	}
+	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
+	await unregisterBridgeOps(username, 'discord', botname)
 }
 on_shutdown(async () => {
 	for (const username of getAllUserNames())

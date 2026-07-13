@@ -164,7 +164,7 @@ Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const calls = []
-	registerBridgeOps('mock', {
+	registerBridgeOps(username, 'mock', 'bridge-bot', {
 		sendTyping: async payload => { calls.push(['typing', payload]) },
 		leaveChat: async payload => { calls.push(['leave', payload]) },
 	})
@@ -174,7 +174,7 @@ Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_settings_update',
 		timestamp: Date.now(),
-		content: { bridge: { platform: 'mock', platformChatId: 'plat-chat-1', chatKind: 'group' } },
+		content: { bridge: { platform: 'mock', platformChatId: 'plat-chat-1', chatKind: 'group', botname: 'bridge-bot' } },
 	})
 
 	const client = await getChatClient(username)
@@ -188,9 +188,10 @@ Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
 })
 
 Deno.test('unregistered bridge op throws', async () => {
+	const username = `cc-unreg-${crypto.randomUUID().slice(0, 8)}`
 	const { requireBridgeOp } = await import('../../src/chat/bridge/ops.mjs')
 	assertThrows(
-		() => requireBridgeOp('missing', 'sendTyping'),
+		() => requireBridgeOp(username, { platform: 'missing', botname: 'nope' }, 'sendTyping'),
 		Error,
 		'bridge op not registered',
 	)

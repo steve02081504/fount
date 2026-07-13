@@ -10,7 +10,7 @@ import {
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
-import { registerBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
 import {
 	discordMessageToBridgeDto,
@@ -52,12 +52,13 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 	/**
 	 * @param {DiscordClient} client Discord 客户端
 	 * @param {{ OwnerUserName: string }} interfaceConfig 配置
+	 * @param {string} botname bot 实例名
 	 */
-	async function SimpleDiscordBotMain(client, interfaceConfig) {
+	async function SimpleDiscordBotMain(client, interfaceConfig, botname) {
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
-		registerBridgeOps('discord', {
+		registerBridgeOps(ownerUsername, 'discord', botname, {
 			/**
 			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */
@@ -116,6 +117,34 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					? await channel.messages?.fetch?.(String(platformMessageId))
 					: null
 				return { channel, message, guild: channel?.guild ?? null }
+			},
+			/** @returns {Promise<void>} 停止本 bot 实例 */
+			stopSelf: async () => {
+				const { stopBot } = await import('../bot.mjs')
+				await stopBot(ownerUsername, botname)
+			},
+			/**
+			 * @param {{ platformChatId: string | number }} params 平台会话
+			 * @returns {Promise<Array<{ platformUserId: string, displayName: string }>>} 成员列表
+			 */
+			listMembers: async ({ platformChatId }) => {
+				const guild = await client.guilds.fetch(String(platformChatId))
+				const members = await guild.members.fetch()
+				return [...members.values()].map(member => ({
+					platformUserId: member.user.id,
+					displayName: member.displayName || member.user.username || member.user.id,
+				}))
+			},
+		}, {
+			charname: botCharname,
+			/** @returns {Promise<void>} 清理 outbound 与 char 注册表 */
+			teardown: async () => {
+				for (const groupId of outboundRegistered)
+					unregisterBridgeOutbound(ownerUsername, groupId)
+				outboundRegistered.clear()
+				delete charClientRegistry[ownerUsername]?.[botCharname]
+				if (charClientRegistry[ownerUsername] && !Object.keys(charClientRegistry[ownerUsername]).length)
+					delete charClientRegistry[ownerUsername]
 			},
 		})
 
@@ -186,7 +215,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler)
+			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler, botname)
 		}
 
 		/**
@@ -251,11 +280,12 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		/**
 		 * @param {DiscordClient} client Discord 客户端
 		 * @param {{ OwnerUserName: string }} config 配置
+		 * @param {string} botname bot 实例名
 		 */
-		OnceClientReady: async (client, config) => {
+		OnceClientReady: async (client, config, botname) => {
 			charClientRegistry[ownerUsername] ??= {}
 			charClientRegistry[ownerUsername][botCharname] = client
-			await SimpleDiscordBotMain(client, config)
+			await SimpleDiscordBotMain(client, config, botname)
 		},
 		GetBotConfigTemplate: GetSimpleBotConfigTemplate,
 	}

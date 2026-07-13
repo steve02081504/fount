@@ -154,6 +154,7 @@ export async function postBridgeMessage(username, dto) {
 		platformChatId,
 		chatKind,
 		name: dto.chatName,
+		botname: dto.botname,
 	})
 	const { groupId, channelId } = await resolveBridgeChannel(username, {
 		platform,

@@ -269,5 +269,6 @@ import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatCli
 - **有意不对等**：agent 不能 `createGroup`、不能持群 ownership、不能独立持钥。
 - **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
 - **写路径**：消息发送走 `commitChannelMessageEvent(origin:'char')`；其余写操作走 `appendActorEvent` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
-- **桥接群**：`group.bridge` 存在时，typing/leave/kick 等平台操作经 `registerBridgeOps(platform, ops)` 转发；未注册 op 直接 throw。
+- **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；typing/leave/kick/createInvite 等平台操作经 `requireBridgeOp(username, group.bridge, op)` 分派到 per-bot 注册表（键 `${username}:${platform}:${botname}`）；未注册 op 直接 throw。壳层 `registerBridgeOps(username, platform, botname, ops, { teardown, charname })`；`stopBot`/`pauseBot` 调 `unregisterBridgeOps` 触发 teardown（清 outbound + char 注册表）。
+- **bot 生命周期操作面**：`group.bridgeBot()` → `{ platform, botname, stop() }`（`stop()` = `stopSelf` op = 壳级 `stopBot`）；`client.bridgeBots()` 枚举运行中实例。粒度：退群 = `group.leave()`；停单 bot = `group.bridgeBot().stop()`；全平台下线 = 遍历 `client.bridgeBots()` 逐停。无 char 级杀进程。
 - **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ fount: { chat, group, channel, message? } }`；平台插件另注入 `{ discord }` / `{ telegram }` / `{ wechat }` 命名空间（桥接群经 `getNativeContext` 水合原生对象）。沙箱不暴露 `bridgeOps`。
