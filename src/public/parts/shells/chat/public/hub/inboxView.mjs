@@ -11,7 +11,7 @@ import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { MENTIONS_HASH, updateMentionsHash } from './core/urlHash.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
-import { fetchMentionsPage, markMentionsSeen } from './mentionsInbox.mjs'
+import { fetchInboxPage, markInboxSeen } from './inboxClient.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -31,7 +31,7 @@ const INBOX_KINDS = ['mention', 'message', 'care', 'vote_closed']
  * @param {number} at 毫秒时间戳
  * @returns {string} 本地化时间字符串
  */
-function formatMentionTime(at) {
+function formatInboxTime(at) {
 	const date = new Date(Number(at) || Date.now())
 	const now = new Date()
 	const sameDay = date.toDateString() === now.toDateString()
@@ -44,7 +44,7 @@ function formatMentionTime(at) {
  * @param {object} row inbox 行
  * @returns {Promise<HTMLElement>} 可点击行按钮
  */
-async function renderMentionRow(row) {
+async function renderInboxRow(row) {
 	const button = document.createElement('button')
 	button.type = 'button'
 	button.className = 'hub-mention-row'
@@ -59,7 +59,7 @@ async function renderMentionRow(row) {
 	const groupName = escapeHtml(await groupDisplayName(row.groupId, row.groupName))
 	const channelName = escapeHtml(row.channelName || row.channelId)
 	const preview = escapeHtml(String(row.textPreview || ''))
-	const time = escapeHtml(formatMentionTime(row.at))
+	const time = escapeHtml(formatInboxTime(row.at))
 	button.innerHTML = `
 		<div class="hub-mention-row-head">
 			<strong>${author}</strong>
@@ -77,34 +77,34 @@ async function renderMentionRow(row) {
  * @param {boolean} replace 是否替换
  * @returns {Promise<void>}
  */
-async function paintMentionRows(host, rows, replace = false) {
+async function paintInboxRows(host, rows, replace = false) {
 	if (replace) host.replaceChildren()
 	for (const row of rows)
-		host.appendChild(await renderMentionRow(row))
+		host.appendChild(await renderInboxRow(row))
 	ensureScrollSentinel(host, 'hubMentionsScrollSentinel')
 }
 
 /**
  * @returns {Promise<void>}
  */
-async function loadMentionsPage() {
+async function loadInboxPage() {
 	if (loading) return
 	loading = true
 	try {
-		const data = await fetchMentionsPage({
+		const data = await fetchInboxPage({
 			limit: 30,
 			cursor: nextCursor || undefined,
 			kinds: [activeKind],
 		})
 		const host = document.getElementById('hub-mentions-list')
 		if (!host) return
-		await paintMentionRows(host, data.items || [], !nextCursor)
+		await paintInboxRows(host, data.items || [], !nextCursor)
 		nextCursor = data.nextCursor
 		bindInfiniteScroll({
 			root: host.closest('.hub-mentions-scroll') || null,
 			sentinel: ensureScrollSentinel(host, 'hubMentionsScrollSentinel'),
 			hasMore: () => !!nextCursor,
-			onLoad: () => loadMentionsPage(),
+			onLoad: () => loadInboxPage(),
 		})
 		if (!host.querySelector('.hub-mention-row') && !nextCursor)
 			host.innerHTML = '<div class="hub-mentions-empty" data-i18n="chat.hub.mentions.empty"></div>'
@@ -118,7 +118,7 @@ async function loadMentionsPage() {
  * @param {HTMLElement} host 列表根
  * @returns {void}
  */
-function wireMentionRowClicks(host) {
+function wireInboxRowClicks(host) {
 	host.addEventListener('click', event => {
 		const row = event.target instanceof HTMLElement ? event.target.closest('.hub-mention-row') : null
 		if (!row) return
@@ -146,14 +146,14 @@ async function switchInboxKind(kind) {
 	nextCursor = null
 	for (const tab of document.querySelectorAll('.hub-mentions-tab'))
 		tab.classList.toggle('hub-mentions-tab-active', tab.dataset.kind === kind)
-	await loadMentionsPage()
+	await loadInboxPage()
 }
 
 /**
  * 渲染并进入 #mentions 收件箱（由 setMode('mentions') 调用）。
  * @returns {Promise<void>}
  */
-export async function activateMentionsView() {
+export async function activateInboxView() {
 	updateMentionsHash()
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
@@ -194,21 +194,21 @@ export async function activateMentionsView() {
 	const listHost = document.getElementById('hub-mentions-list')
 	if (listHost && !listHost.dataset.wired) {
 		listHost.dataset.wired = '1'
-		wireMentionRowClicks(listHost)
+		wireInboxRowClicks(listHost)
 	}
 	for (const tab of document.querySelectorAll('.hub-mentions-tab'))
 		tab.addEventListener('click', () => void switchInboxKind(tab.dataset.kind || 'mention'))
-	await loadMentionsPage()
-	await markMentionsSeen()
+	await loadInboxPage()
+	await markInboxSeen()
 }
 
-/** @returns {boolean} 当前是否为 mentions 模式 */
-export function isMentionsModeActive() {
+/** @returns {boolean} 当前是否为 mentions/inbox 模式 */
+export function isInboxModeActive() {
 	return hubStore.context.currentMode === 'mentions' || window.location.hash.slice(1) === MENTIONS_HASH
 }
 
 /** @returns {void} */
-export function closeMentionsInboxView() {
+export function closeInboxView() {
 	disconnectInfiniteScroll()
 	nextCursor = null
 }

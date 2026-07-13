@@ -452,3 +452,164 @@ Deno.test('bridge group without DM does not fallback-trigger chars without onMes
 	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
 	assert(!messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker))))
 })
+
+Deno.test('postBridgeEdit updates content and mention inbox', async () => {
+	const username = `bridge-edit-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_edit_',
+		minP2pNode: true,
+	})
+	await ensureServer()
+
+	const { postBridgeMessage, postBridgeEdit } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+
+	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
+	assert(operatorHash)
+
+	const platformChatId = 920001
+	const platformMessageId = 601
+	const author = { platformUserId: 7001, displayName: 'Editor' }
+	const event = await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId,
+		author,
+		text: `hello @[entity:${operatorHash}]`,
+		timestamp: Date.now(),
+	})
+
+	const { groupId } = await ensureBridgeGroup(username, { platform: 'telegram', platformChatId })
+	const channelId = await getDefaultChannelId(username, groupId)
+	const inboxBefore = await listChatInbox(username, operatorHash, { kinds: ['mention'] })
+	assert(inboxBefore.items.some(row => row.eventId === event.id))
+
+	await postBridgeEdit(username, {
+		platform: 'telegram',
+		platformChatId,
+		platformMessageId,
+		author,
+		text: `edited @[entity:${operatorHash}] ping`,
+		timestamp: Date.now(),
+	})
+
+	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+	const row = messages.find(m => m.eventId === event.id)
+	assert(row)
+	assert(String(row.content?.content || '').includes('edited'))
+	assert(String(row.content?.content || '').includes(`@[entity:${operatorHash}]`))
+
+	await waitUntil(async () => {
+		const inbox = await listChatInbox(username, operatorHash, { kinds: ['mention'] })
+		return inbox.items.some(item =>
+			item.eventId === event.id && String(item.textPreview || '').includes('edited'),
+		)
+	})
+})
+
+Deno.test('postBridgeDelete removes message from channel display', async () => {
+	const username = `bridge-del-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_del_',
+		minP2pNode: true,
+	})
+	await ensureServer()
+
+	const { postBridgeMessage, postBridgeDelete } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+
+	const platformChatId = 920002
+	const platformMessageId = 602
+	const event = await postBridgeMessage(username, {
+		platform: 'discord',
+		platformChatId,
+		platformMessageId,
+		chatKind: 'group',
+		author: { platformUserId: '8001', displayName: 'Deleter' },
+		text: 'delete me soon',
+		timestamp: Date.now(),
+	})
+
+	const { groupId } = await ensureBridgeGroup(username, { platform: 'discord', platformChatId })
+	const channelId = await getDefaultChannelId(username, groupId)
+	assert((await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 }))
+		.some(row => row.eventId === event.id))
+
+	await postBridgeDelete(username, {
+		platform: 'discord',
+		platformChatId,
+		platformMessageId,
+	})
+
+	const after = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+	assert(!after.some(row => row.eventId === event.id))
+})
+
+Deno.test('full chain: postBridgeMessage → GetReply → notifyBridgeOutbound', async () => {
+	const username = `bridge-chain-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_chain_',
+		minP2pNode: true,
+		/** @param {string} user replica */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
+		},
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+
+	const platformChatId = 930001
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		name: 'tg-full-chain',
+	})
+	await addchar(groupId, CHAR_PLAIN_B, username)
+	const channelId = await getDefaultChannelId(username, groupId)
+
+	/** @type {object[]} */
+	const outboundLines = []
+	registerBridgeOutbound(username, groupId, async ({ messageLine }) => {
+		outboundLines.push(messageLine)
+		return { platformMessageId: 4242 }
+	})
+
+	await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId: 701,
+		author: { platformUserId: 9001, displayName: 'Peer' },
+		text: 'trigger full chain',
+		timestamp: Date.now(),
+	})
+
+	await waitUntil(async () => {
+		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+		return messages.some(row => String(row.content?.content || '').includes('plain_reply_b reply'))
+	}, 15000)
+
+	await waitUntil(() => outboundLines.some(row =>
+		row.charId === CHAR_PLAIN_B
+		|| String(row.content?.content || '').includes('plain_reply_b reply'),
+	), 15000)
+})

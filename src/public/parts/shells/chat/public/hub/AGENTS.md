@@ -53,12 +53,12 @@ Hub-facing API shapes:
 - **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json`（per-recipient 已读水位）。增量写：`src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs`（`eventPersist` 在 `message`/`message_edit` 落盘后调用）。
 - **Syntax**: `@128hex entityHash` in message body; Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
 - **API**: `GET /inbox`（`recipientEntityHash` 缺省 operator）、`GET/PUT /inbox/seen`；群内 autocomplete 仍为 `GET …/groups/:id/mentions/suggest`。
-- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/mentionsView.mjs`）；badge 由 WS `channel_message.mentions.entityHashes` 驱动。
+- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/inboxView.mjs` + `hub/inboxClient.mjs`）；badge 由 WS `channel_message.mentions.entityHashes` 驱动。
 - **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.
 
 ## 具名层 (aliases / petname, M3)
 
 - **本地别名**（用户级，不上 DAG，canonical 只认 hash）：存 `{userDict}/shells/chat/aliases.json`（`{ entities, groups }`），路由 `GET/PUT …/aliases`（整档，无 owner 校验，同 bookmarks）。
 - **共享客户端** `shared/aliases.mjs`（social 经 `/parts/shells:chat/shared/aliases.mjs` 复用）：`loadAliases()` 预热内存缓存，`aliasForEntity/aliasForGroup/groupIdForAlias` 为同步读缓存的热路径 getter，`setEntityAlias/setGroupAlias`（空串删除）整档 PUT 后更新缓存。**缓存必须在渲染前预热**：Hub 在 `initCore`（`loadGroups` 之前）、Social 在 `bootstrapSocialApp` 起始各 `await loadAliases()`。
-- **名字解析** `shared/nameResolve.mjs`：`resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })`（alias → profile → 短码）、`disambiguateLabels`（同名后缀 `·${hash.slice(64,68)}`）。新增任何露 hash 的展示点都应经 `aliasForEntity`/`groupDisplayName`（`core/domUtils.mjs`），不要再写裸 `.slice()` fallback。
+- **名字解析** `shared/nameResolve.mjs`：`resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })`（alias → profile → 短码）、`disambiguateLabels`（同名后缀 `·${hash.slice(64,68)}`）。Hub 热路径：`authorDisplayLabel` / `hydrateAuthorLabels` / hover 卡均经 `resolveDisplayName`（禁止裸写 `profile.name`）；侧栏与设置页成员列表批量 `disambiguateLabels`。新增任何露 hash 的展示点都应经这些入口，不要再写裸 `.slice()` fallback。
 - **深链**：`#group:@{alias}:{channelId}` 由 `parseHash` 用 `groupIdForAlias` 反查；`updateHash` 仍写 canonical groupId。

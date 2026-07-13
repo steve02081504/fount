@@ -1,6 +1,5 @@
 import { Buffer } from 'node:buffer'
 
-import { getPartInfo } from '../../../../../../src/scripts/locale.mjs'
 import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
 
 const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
@@ -16,37 +15,6 @@ const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
 /**
  * Telegram 消息实体类型
  * @typedef {import('npm:telegraf/typings/core/types/typegram').MessageEntity} TelegramMessageEntity
- */
-/**
- * 角色 API 类型别名。
- * @typedef {import('../../../../../../src/decl/charAPI.ts').CharAPI_t} CharAPI_t
- */
-/**
- * fount 聊天日志条目基类类型别名。
- * @typedef {import('../../../chat/decl/chatLog.ts').chatLogEntry_t} FountChatLogEntryBase
- */
-/**
- * 聊天回复类型别名。
- * @typedef {import('../../../chat/decl/chatLog.ts').chatReply_t} ChatReply_t
- */
-
-/**
- * 简化的 fount 聊天日志条目类型，用于默认接口。
- * 扩展信息与自定义接口的 fountEntry.extension 结构尽量保持一致。
- * @typedef { (FountChatLogEntryBase & {
- * 	extension?: {
- * 		platform: 'telegram',
- * 		platform_message_ids?: (number | string)[], // 消息ID数组
- * 		platform_channel_id?: number | string,      // Telegram chat.id
- * 		platform_user_id?: number | string,         // Telegram from.id
- * 		telegram_message_thread_id?: number,   // 分区ID
- * 		is_from_owner?: boolean,
- * 		telegram_message_obj?: TelegramMessageType, // 原始TG消息对象
- * 		content_parts?: string[],
- * 		telegram_media_group_id?: string,
- * 		[key: string]: any
- * 	}
- * })} chatLogEntry_t_simple
  */
 
 /**
@@ -223,7 +191,7 @@ export function aiMarkdownToTelegramHtml(aiMarkdownText) {
  * @typedef {{ name: string, buffer: Buffer, mime_type: string, description: string }} TelegramResolvedFile_t
  */
 /**
- * 惰性附件槽：与龙胆 `processMessageFiles` 一致，仅在调用方需要时再 `fetch`（默认在即将 `GetReply` 时由 {@link resolveTelegramChatLogEntryFilesInPlace} 统一拉取）。
+ * 惰性附件槽：构造时不下载，调用 loader 时再 `fetch`（bridge DTO 路径会在组装时立即解析）。
  * @typedef {() => Promise<TelegramResolvedFile_t | undefined>} TelegramLazyFileLoader_t
  */
 
@@ -388,58 +356,6 @@ export function createLazyTelegramMessageFileLoaders(context, message) {
 }
 
 /**
- * 判断 `files` 是否为惰性槽数组（首项为函数）。
- * @param {unknown} files - 待检测的 `files` 字段。
- * @returns {boolean} 为惰性槽布局时返回 true。
- */
-export function isLazyTelegramFileSlots(files) {
-	return Array.isArray(files) && files.length > 0 && typeof files[0] === 'function'
-}
-
-/**
- * 若该条目的 `files` 为惰性槽，则并发拉取并写回为已解析文件数组（与龙胆在入队前 `fetchFiles` 类似，此处绑定在即将调用 `GetReply` 时）。
- * @param {chatLogEntry_t_simple} entry - 单条聊天日志（就地改写 `files`）。
- * @returns {Promise<void>} 无返回值；失败的分片在对应 loader 内记日志并省略。
- */
-export async function resolveTelegramChatLogEntryFilesInPlace(entry) {
-	if (!entry?.files?.length) return
-	if (!isLazyTelegramFileSlots(entry.files)) return
-	entry.files = (await Promise.all(entry.files.map(fn => fn()))).filter(Boolean)
-}
-
-/**
- * 与龙胆 `bot_core/processMessageUpdate` 逐行一致（无返回值；龙胆侧为 `async` 但体内无 `await`，此处用同步函数避免无意义 `async`）。
- * @param {chatLogEntry_t_simple[]} log - 对应龙胆 `channelChatLogs[channelId]`。
- * @param {chatLogEntry_t_simple} updatedFountEntry - 对应龙胆接入层传入条目。
- * @returns {void}
- */
-export function applyTelegramMessageUpdateToChannelLog(log, updatedFountEntry) {
-	if (!log || !updatedFountEntry.extension?.platform_message_ids?.length) return
-
-	const updatedMsgId = updatedFountEntry.extension.platform_message_ids[0]
-
-	const entryIndex = log.findIndex(entry =>
-		entry.extension?.platform_message_ids?.includes(updatedMsgId)
-	)
-
-	if (entryIndex > -1) {
-		const entryToUpdate = log[entryIndex]
-		const partIndex = entryToUpdate.extension.platform_message_ids.indexOf(updatedMsgId)
-
-		if (partIndex > -1) {
-			const newContentPart = ((updatedFountEntry.extension.content_parts?.[0] || updatedFountEntry.content)).replace(/（已编辑）$/, '') + '（已编辑）'
-			entryToUpdate.extension.content_parts[partIndex] = newContentPart
-
-			entryToUpdate.time_stamp = updatedFountEntry.time_stamp
-			if (updatedFountEntry.files?.length)
-				entryToUpdate.files = [...entryToUpdate.files || [], ...updatedFountEntry.files]
-
-			entryToUpdate.content = entryToUpdate.extension.content_parts.join('\n')
-		}
-	}
-}
-
-/**
  * 拼出单条 TG 消息对应的 AI Markdown 正文片段（含可选回复引用与贴纸标记）。
  * @param {TelegramMessageType} message - 当前分片消息。
  * @param {TelegramBotInfo} botInfo - Bot 信息，用于实体解析中的「我」等。
@@ -494,213 +410,6 @@ function extractMediaGroupContentParts(sorted, botInfo, interfaceConfig) {
 		contentParts.push(buildTelegramMessageTextContentPart(message, botInfo, replyToMessageForAiPrompt))
 	}
 	return { contentParts, content: contentParts.join('\n') }
-}
-
-/**
- * 合并相册内各 `message_id` 命中的 `aiReplyObjectCache` 并删除已消费键。
- * @param {TelegramMessageType[]} sorted - 已排序的媒体组消息。
- * @param {Record<number, ChatReply_t>} [aiReplyObjectCache] - Bot 发出消息 ID → 原始 AI 回复。
- * @returns {{ mergedAiReply: Record<string, unknown>, mergedAiReplyExtension: Record<string, unknown> }} 供展开到条目根与 `extension`。
- */
-function mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache) {
-	let mergedAiReply = {}
-	let mergedAiReplyExtension = {}
-	if (!aiReplyObjectCache) return { mergedAiReply, mergedAiReplyExtension }
-	for (const message of sorted) {
-		const telegramMessageId = message.message_id
-		const cached = aiReplyObjectCache[telegramMessageId]
-		if (!cached) continue
-		mergedAiReply = { ...mergedAiReply, ...cached }
-		if (cached.extension)
-			mergedAiReplyExtension = { ...mergedAiReplyExtension, ...cached.extension }
-		delete aiReplyObjectCache[telegramMessageId]
-	}
-	return { mergedAiReply, mergedAiReplyExtension }
-}
-
-/**
- * 将同一相册（`media_group_id` 相同）的多条 Telegram 消息合并为一条 `chatLogEntry_t_simple`。
- * @param {import('npm:telegraf').Context} context - Telegraf 上下文。
- * @param {TelegramMessageType[]} messages - 同一媒体组的消息（调用方已按接收去重）。
- * @param {TelegramBotInfo} botInfo - bot 信息。
- * @param {any} interfaceConfig - 接口配置。
- * @param {CharAPI_t} charAPI - 角色 API。
- * @param {string} botCharname - 当前 bot 绑定角色名。
- * @param {Record<number, ChatReply_t>} [aiReplyObjectCache] - AI 回复缓存。
- * @param {Record<number, string>} [userDisplayNameCache={}] - 用户显示名缓存（由上层闭包注入）。
- * @returns {Promise<chatLogEntry_t_simple | null>} 合并成功返回一条日志；无有效正文与附件且无缓存正文时返回 null。
- */
-export async function telegramMediaGroupMessagesToFountChatLogEntry(context, messages, botInfo, interfaceConfig, charAPI, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
-	if (!messages?.length) return null
-
-	const sorted = [...messages].sort((a, b) => a.message_id - b.message_id)
-	const primary = sorted[0]
-	if (!primary.from) return null
-
-	for (const m of sorted)
-		if (m.from?.id !== primary.from.id || m.chat.id !== primary.chat.id)
-			console.warn('[TelegramDefaultInterface] Media group member chat/from mismatch, still merging.', {
-				media_group_id: primary.media_group_id,
-				expected_from: primary.from.id,
-				got_from: m.from?.id,
-			})
-
-	const fromUser = primary.from
-	const { chat } = primary
-
-	let role = 'char'
-	if (fromUser.id === botInfo.id)
-		role = 'char'
-	else if (interfaceConfig.OwnerUserID && String(fromUser.id) === String(interfaceConfig.OwnerUserID))
-		role = 'user'
-
-	let name = ''
-	if (fromUser.id in userDisplayNameCache && Math.random() >= 0.1)
-		name = userDisplayNameCache[fromUser.id]
-	else {
-		name = fromUser.first_name || ''
-		if (fromUser.last_name) name += ` ${fromUser.last_name}`
-		if (!name.trim() && fromUser.username) name = fromUser.username
-		if (!name.trim()) name = `User_${fromUser.id}`
-		userDisplayNameCache[fromUser.id] = name
-	}
-
-	const botDisplayName = (await getPartInfo(charAPI))?.name || botCharname
-	const { contentParts, content } = extractMediaGroupContentParts(sorted, botInfo, interfaceConfig)
-	const files = sorted.flatMap(m => createLazyTelegramMessageFileLoaders(context, m))
-	const { mergedAiReply, mergedAiReplyExtension } = mergeAiReplyCacheForMessages(sorted, aiReplyObjectCache)
-
-	const isFromOwner = role === 'user'
-	const messageWithReply = sorted.find(m => m.reply_to_message)
-
-	const hasMergedAiBody = !!(mergedAiReply.content || mergedAiReply.content_for_show || mergedAiReply.files?.length)
-	if (!content.trim() && !files.length && !hasMergedAiBody)
-		return null
-
-	const time_stamp = Math.max(...sorted.map(m => (m.edit_date ?? m.date) * 1000))
-
-	/**
-	 * 转换后的聊天日志条目。
-	 * @type {chatLogEntry_t_simple}
-	 */
-	const entry = {
-		...mergedAiReply,
-		time_stamp,
-		role,
-		name: role === 'char' && fromUser.id === botInfo.id ? botDisplayName : name,
-		content,
-		files: mergedAiReply?.files?.length ? mergedAiReply.files : files,
-		extension: {
-			...mergedAiReplyExtension,
-			platform: 'telegram',
-			platform_message_ids: sorted.map(m => m.message_id),
-			content_parts: contentParts,
-			platform_channel_id: chat.id,
-			platform_user_id: fromUser.id,
-			is_from_owner: isFromOwner,
-			...primary.message_thread_id !== undefined && { telegram_message_thread_id: primary.message_thread_id },
-			telegram_message_obj: primary,
-			telegram_media_group_id: primary.media_group_id,
-			...messageWithReply?.reply_to_message && { telegram_reply_to_message_id: messageWithReply.reply_to_message.message_id }
-		}
-	}
-	return entry
-}
-
-/**
- * 将 Telegram 的消息上下文转换为 fount 的聊天日志条目格式。
- * @param {import('npm:telegraf').Context} context - Telegraf 的消息上下文.
- * @param {import('npm:telegraf').NarrowedContext<import('npm:telegraf').Context, import('npm:telegraf').Types.Update.MessageUpdate> | { message: TelegramMessageType }} messageHolder - 包含 message 对象的上下文或包装器.
- * @param {TelegramBotInfo} botInfo - bot自身的信息。
- * @param {any} interfaceConfig - 接口配置 (例如 OwnerUserID)。
- * @param {CharAPI_t} charAPI - 当前角色的API对象。
- * @param {string} ownerUsername - fount系统的用户名。
- * @param {string} botCharname - 当前bot绑定的角色名。
- * @param {Record<number, ChatReply_t>} [aiReplyObjectCache] 用于恢复AI回复附加数据的缓存。
- * @param {Record<number, string>} [userDisplayNameCache={}] - 用户显示名缓存（由上层闭包注入）。
- * @returns {Promise<chatLogEntry_t_simple | null>} 转换后的聊天日志条目，或 null。
- */
-export async function TelegramMessageToFountChatLogEntry(context, messageHolder, botInfo, interfaceConfig, charAPI, ownerUsername, botCharname, aiReplyObjectCache, userDisplayNameCache = {}) {
-	if (!messageHolder || !messageHolder.message) return null
-
-	const { message } = messageHolder
-	const fromUser = message.from
-	const { chat } = message
-
-	if (!fromUser) {
-		console.warn('[TelegramDefaultInterface] Message without `from` field encountered, skipping:', message)
-		return null
-	}
-
-	const cachedAIReply = aiReplyObjectCache?.[message.message_id]
-
-	let role = 'char'
-	if (fromUser.id === botInfo.id)
-		role = 'char'
-	else if (interfaceConfig.OwnerUserID && String(fromUser.id) === String(interfaceConfig.OwnerUserID))
-		role = 'user'
-
-	let name = ''
-	if (fromUser.id in userDisplayNameCache && Math.random() >= 0.1)
-		name = userDisplayNameCache[fromUser.id]
-	else {
-		name = fromUser.first_name || ''
-		if (fromUser.last_name) name += ` ${fromUser.last_name}`
-		if (!name.trim() && fromUser.username) name = fromUser.username
-		if (!name.trim()) name = `User_${fromUser.id}`
-		userDisplayNameCache[fromUser.id] = name
-	}
-
-	const botDisplayName = (await getPartInfo(charAPI))?.name || botCharname
-
-	const rawText = message.text || message.caption
-	const entities = message.entities || message.caption_entities
-
-	let replyToMessageForAiPrompt = message.reply_to_message
-	if (isReplyToOwnerTopicCreationMessage(message, interfaceConfig, chat.type))
-		replyToMessageForAiPrompt = undefined
-
-	// 实体转 AI Markdown，同时嵌入回复引用（论坛主题创建回复不加引用块，与龙胆一致）
-	let content = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, replyToMessageForAiPrompt)
-	// 贴纸追加文本描述标记，格式与龙胆一致，可被平台层解析为实物贴纸 file_id
-	if (message.sticker) {
-		const { sticker } = message
-		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`
-		content = [content, stickerDesc].filter(Boolean).join('\n\n')
-	}
-
-	const isFromOwner = role === 'user'
-
-	const files = createLazyTelegramMessageFileLoaders(context, message)
-
-	if (!content.trim() && !files.length && !cachedAIReply)
-		return null
-
-	/**
-	 * 转换后的聊天日志条目。
-	 * @type {chatLogEntry_t_simple}
-	 */
-	const entry = {
-		...cachedAIReply,
-		time_stamp: message.edit_date ? message.edit_date * 1000 : message.date * 1000,
-		role,
-		name: role === 'char' && fromUser.id === botInfo.id ? botDisplayName : name,
-		content,
-		files: cachedAIReply?.files?.length ? cachedAIReply.files : files,
-		extension: {
-			...cachedAIReply?.extension,
-			platform: 'telegram',
-			platform_message_ids: [message.message_id],
-			content_parts: [content],
-			platform_channel_id: chat.id,
-			platform_user_id: fromUser.id,
-			is_from_owner: isFromOwner,
-			...message.message_thread_id !== undefined && { telegram_message_thread_id: message.message_thread_id },
-			telegram_message_obj: message,
-			...message.reply_to_message && { telegram_reply_to_message_id: message.reply_to_message.message_id }
-		}
-	}
-	return entry
 }
 
 /**

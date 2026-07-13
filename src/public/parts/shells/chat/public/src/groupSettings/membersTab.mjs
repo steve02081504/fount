@@ -3,6 +3,7 @@ import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
+import { disambiguateLabels } from '../../shared/nameResolve.mjs'
 import { unbanMember } from '../api/groupApi.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
@@ -77,19 +78,25 @@ export async function renderMembers(context) {
 	const { signal } = context.membersController
 
 	const memberRows = Array.isArray(context.state.members) ? context.state.members : []
-	const members = memberRows.map(member => {
+	const labelItems = memberRows.map(member => {
 		const memberKey = member.memberKey || member.agentEntityHash || member.pubKeyHash || ''
-		const roles = member.roles || ['@everyone']
-		const displayName = String(member.displayName || '').trim()
+		const entityHash = String(member.entityHash || '').trim()
+		const label = String(member.displayName || '').trim()
 			|| authorDisplayLabel(member.entityHash || memberKey)
-		const isAgent = member.memberKind === 'agent'
+		return { member, memberKey, entityHash, label }
+	})
+	const labels = disambiguateLabels(labelItems)
+	const members = labelItems.map((item, index) => {
+		const displayName = labels[index]
+		const roles = item.member.roles || ['@everyone']
+		const isAgent = item.member.memberKind === 'agent'
 		const roleDefs = context.state?.roles || {}
 		return {
-			memberKey: escapeHtml(memberKey),
+			memberKey: escapeHtml(item.memberKey),
 			displayName: escapeHtml(displayName),
 			initial: escapeHtml(displayName.charAt(0).toUpperCase() || '?'),
 			rolesLabel: escapeHtml(roles.map(roleId => context.state.roles[roleId]?.name || roleId).join(' / ') || '@everyone'),
-			isAdmin: memberDisplaysAsAdmin(member, roleDefs),
+			isAdmin: memberDisplaysAsAdmin(item.member, roleDefs),
 			isAgent,
 		}
 	})

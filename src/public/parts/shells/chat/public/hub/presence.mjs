@@ -6,14 +6,22 @@
  * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup
  */
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
 	cachedProfileFromApi,
 	fetchEntityProfileApi,
 } from '../src/entityProfileApi.mjs'
 
 import { applyProfileAvatarToHost, paintHashAvatarHost } from './core/avatarCover.mjs'
-import { authorDisplayLabel, authorPresentationKeys, resolveEntityHashForAuthorKey, warmCharEntityHashCache } from './core/domUtils.mjs'
+import {
+	authorDisplayLabel,
+	authorPresentationKeys,
+	memberDisplayNameForAuthorKey,
+	resolveEntityHashForAuthorKey,
+	warmCharEntityHashCache,
+} from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { dismissProfilePopup, resolveEntityFromAnchor, showProfilePopup } from './profilePopup.mjs'
 
@@ -183,12 +191,19 @@ export function applyAvatarsTo(rootElement) {
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
-			if (profile.avatar)
+			if (profile.avatar) {
+				const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
 				void applyProfileAvatarToHost(av, {
 					seed: profileKey,
-					label: profile.name || authorDisplayLabel(authorKey),
+					label: resolveDisplayName({
+						entityHash,
+						alias: entityHash ? aliasForEntity(entityHash) : '',
+						profileName: profile.name,
+						fallbackLabel: authorDisplayLabel(authorKey),
+					}),
 					avatar: profile.avatar,
 				})
+			}
 			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})
@@ -200,7 +215,7 @@ export function applyAvatarsTo(rootElement) {
 }
 
 /**
- * 异步将消息作者名替换为资料卡 displayName（保留 data-author-key）。
+ * 异步将消息作者名补齐为 resolveDisplayName 结果（alias 优先于 profile.name；保留 data-author-key）。
  * @param {HTMLElement} rootElement 消息列表根节点
  * @returns {Promise<void>}
  */
@@ -211,8 +226,16 @@ export async function hydrateAuthorLabels(rootElement) {
 		if (!key || key === '?') return
 		tasks.push((async () => {
 			const profile = await fetchAuthorProfile(key, { groupId: hubStore.context.currentGroupId || undefined })
-			if (!profile?.name || au.dataset.authorKey !== key) return
-			au.textContent = profile.name
+			if (au.dataset.authorKey !== key) return
+			const entityHash = resolveEntityHashForAuthorKey(key)
+			au.textContent = resolveDisplayName({
+				entityHash: entityHash || undefined,
+				alias: entityHash ? aliasForEntity(entityHash) : '',
+				profileName: profile?.name,
+				fallbackLabel: au.textContent?.trim()
+					|| memberDisplayNameForAuthorKey(key)
+					|| undefined,
+			})
 		})())
 	})
 	await Promise.all(tasks)
@@ -266,11 +289,17 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 	const profile = await fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined })
 	if (hoverCardAvatar?.dataset.uname !== authorKey) return
 	if (profile) {
-		if (hoverCardName) hoverCardName.textContent = profile.name || displayName
+		const resolvedName = resolveDisplayName({
+			entityHash: profileKey,
+			alias: aliasForEntity(profileKey),
+			profileName: profile.name,
+			fallbackLabel: displayName,
+		})
+		if (hoverCardName) hoverCardName.textContent = resolvedName
 		if (hoverCardAvatar instanceof HTMLElement)
 			await applyProfileAvatarToHost(hoverCardAvatar, {
 				seed: profileKey,
-				label: profile.name || displayName,
+				label: resolvedName,
 				avatar: profile.avatar,
 				emojiFontSize: '32px',
 				letterId: 'hover-card-avatar-letter',

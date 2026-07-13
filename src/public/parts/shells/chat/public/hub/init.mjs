@@ -345,7 +345,7 @@ async function wireHubPickers() {
 /** @returns {Promise<void>} Hub 页面入口初始化（重型特性；导航由 initCore 完成） */
 export async function init() {
 	setupMisc()
-	void import('./mentionsInbox.mjs').then(({ updateMentionsBadge }) => updateMentionsBadge())
+	void import('./inboxClient.mjs').then(({ updateInboxBadge }) => updateInboxBadge())
 	wireHubBannerBindings()
 	void loadMe()
 	await wireHubHeavyFeatures()

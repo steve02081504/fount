@@ -3,7 +3,7 @@
  * 【职责】Hub 左侧主模式切换：「群组」「好友」「提及」三套布局的激活、数据加载与 composer 状态清理。
  * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / mentions。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav、mentionsView。
+ * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav、inboxView。
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 
@@ -42,16 +42,16 @@ export function setActiveModeTab(mode) {
  */
 export async function setMode(mode) {
 	if (mode !== 'mentions') {
-		const { closeMentionsInboxView } = await import('./mentionsView.mjs')
-		closeMentionsInboxView()
+		const { closeInboxView } = await import('./inboxView.mjs')
+		closeInboxView()
 	}
 
 	hubStore.context.currentMode = mode
 	setActiveModeTab(mode)
 
 	if (mode === 'mentions') {
-		const { activateMentionsView } = await import('./mentionsView.mjs')
-		await activateMentionsView()
+		const { activateInboxView } = await import('./inboxView.mjs')
+		await activateInboxView()
 		return
 	}
 

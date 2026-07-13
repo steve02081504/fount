@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，残余缺口 G2–G4）；**G1 已落地**（as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移待 M7b（G1 已齐）；M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移地基（M7a + M7b + G1–G4）已齐、可动工；M8–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -59,7 +59,7 @@
 
 ## 一—六、M1–M6 as-built 基线（已落地）
 
-> 本节是**事实记录**：真实路径、真实签名、真实语法，供后续里程碑直接引用。与原规划文本的偏差均为有意的实现选择，以此处为准。残余缺口编号 G2–G4，在「M6.5 缺口修复」中排期。
+> 本节是**事实记录**：真实路径、真实签名、真实语法，供后续里程碑直接引用。与原规划文本的偏差均为有意的实现选择，以此处为准。原残余缺口 G1–G4 已在「M6.5 缺口修复」中全部落地（as-built 见该节）。
 
 ### M1 — Chat 收件人与触发统一
 
@@ -115,8 +115,8 @@ onMessage?: (event: {
 ### M3 — 具名层
 
 - `chat/public/shared/aliases.mjs`（`loadAliases` / `aliasForEntity` / `aliasForGroup` / `setEntityAlias` / `setGroupAlias`）、`chat/public/shared/nameResolve.mjs`（`resolveDisplayName` / `disambiguateLabels`）已落地；aliases 存储与路由同原规划（`prefs.mjs` 整档读写）。
-- inbox 视图、`init.mjs`、`profilePopup.mjs` 已接 `resolveDisplayName`。
-- **G2（缺口）**：主消息流 `hub/core/domUtils.mjs::authorDisplayLabel` 只接 alias + member 缓存，未接 `resolveDisplayName`（缺 profileName 层）；成员列表未统一 `disambiguateLabels`。三层解析链在展示端未贯通。
+- inbox 视图（`hub/inboxView.mjs`）、`init.mjs`、`profilePopup.mjs` 已接 `resolveDisplayName`。
+- **G2（已落地，`2026-07-13`）**：三层解析链在展示端已贯通——主消息流 `hub/core/domUtils.mjs::authorDisplayLabel`、异步补齐 `hub/presence.mjs::hydrateAuthorLabels`、侧栏 `hub/groupNav.mjs`、设置页 `src/groupSettings/membersTab.mjs` 均经 `resolveDisplayName`（alias → profileName → 短码）；成员列表统一 `disambiguateLabels` 消歧。详见 M6.5 节。
 
 ### M4 — ChatClient 对象模型
 
@@ -143,21 +143,21 @@ onMessage?: (event: {
 - outbound：`registerBridgeOutbound(username, groupId, handler)` 键 `username:groupId`，壳层首条入站后懒注册（`ensureOutboundHandler` + `primeOutboundRegistered`）；char 消息落盘后 `notifyBridgeOutbound`。
 - 三壳统一 `src/default_interface/main.mjs`（该目录为壳内正式结构并将长期保留——`*-api` 插件从中取运行实例 `getTelegramBotForChar` / `getDiscordClientForChar` / `getWechatRuntimeForChar`；原规划「目录消失」的说法作废）。`FormatOutboundReply` 钩子已进 `charAPI.ts` 与三壳；`TweakInboundDto` 仅 TG / DC 接线，wechatbot 未调（入 G4 顺手补齐或从 wechat 契约删除）。
 - bridgeOps 注册现状：telegram / discord = `{ sendTyping, kickMember, unbanMember, createInvite, leaveChat, openDm, getNativeContext }`；wechat 仅 `{ sendTyping, getNativeContext }`（平台能力所限，且无 edit/delete ingress——接受为长期不对齐项）。
-- **G3（缺口）**：`telegrambot/src/format.mjs` 残留旧 chatLog 路径死代码（`TelegramMessageToFountChatLogEntry`、`telegramMediaGroupMessagesToFountChatLogEntry` 及其 `is_from_owner` 等依赖，全仓库无消费者），删除。
-- **G4（缺口）**：M5/M6 验收欠账——`postBridgeMessage → runTriggerPipeline → char 回复 → notifyBridgeOutbound` 端到端、`postBridgeEdit` / `postBridgeDelete` 集成、mock Telegraf→DTO 转换、出站贴纸回归、`FormatOutboundReply` 返回 true 跳过默认格式化、四端触发一致性回归，均未落测。
+- **G3（已落地，`2026-07-13`）**：`telegrambot/src/format.mjs` 旧 chatLog 路径死代码（`TelegramMessageToFountChatLogEntry` / `telegramMediaGroupMessagesToFountChatLogEntry` 及 `is_from_owner` 依赖）已整段删除，全仓库 grep 为零；入站转换唯一入口为 DTO 路径 `telegramMessageToBridgeDto` / `telegramMediaGroupToBridgeDto`。详见 M6.5 节。
+- **G4（已落地，`2026-07-13`）**：M5/M6 验收欠账已补测（端到端链 + edit/delete + mock DTO + 贴纸 + `FormatOutboundReply` 跳过 + 四端触发一致性）。详见 M6.5 节。
 
 ---
 
-## M6.5 — 缺口修复（G1–G4）
+## M6.5 — 缺口修复（G1–G4，as-built，`2026-07-13`）
 
-无相互依赖，可与 M7a / M7b 并行：
+四项无相互依赖，与 M7a / M7b 并行落地，**全部完成**：
 
-1. **G1 bridge DM 触发兜底（as-built，`2026-07-13`）**：`triggerPipeline.mjs` 的 `isDm` 已改用 `groupKindFromState(state) === 'dm'`；`conversationContext.mjs` 的 `group.kind` 同函数，`boundPeerEntityHash` 单独门控 ECDH。测试：`chat/test/integration/bridge_ingress.test.mjs`（bridge DM 兜底触发 + 普通 bridge group 反向锚点；fixture `write_path_agent` + `plain_reply_b`）。
-2. **G2 展示名解析链贯通**：`hub/core/domUtils.mjs::authorDisplayLabel` 接 `resolveDisplayName`（alias → profileName → 短码）；成员列表走 `disambiguateLabels`。验收：设 profile 名后主消息流作者名显示 profile 名；同名成员显示 `名·xxxx` 消歧。
-3. **G3 telegrambot 死代码删除**：`format.mjs` 旧 chatLog 路径整段删除，`eslint --fix --quiet` 收尾。验收：grep 无 `TelegramMessageToFountChatLogEntry`。
-4. **G4 M5/M6 补测**：按上节清单补进 chat / 三壳 `test/manifest.json`。
+1. **G1 bridge DM 触发兜底**：`triggerPipeline.mjs` 的 `isDm` 已改用 `groupKindFromState(state) === 'dm'`；`conversationContext.mjs` 的 `group.kind` 同函数，`boundPeerEntityHash` 单独门控 ECDH。测试：`chat/test/integration/bridge_ingress.test.mjs`（bridge DM 兜底触发 + 普通 bridge group 不兜底；fixture `write_path_agent` + `plain_reply_b`）。
+2. **G2 展示名解析链贯通**：主消息流 `hub/core/domUtils.mjs::authorDisplayLabel`、异步补齐 `hub/presence.mjs::hydrateAuthorLabels`、侧栏 `hub/groupNav.mjs`、设置页 `src/groupSettings/membersTab.mjs` 全部经 `shared/nameResolve.mjs::resolveDisplayName`（alias → profileName → 短码）；成员列表统一 `disambiguateLabels`（同名后缀 `·${hash.slice(64,68)}`）。测试：`chat/test/pure/name_resolve.test.mjs`（解析优先级 + 消歧路径）。
+3. **G3 telegrambot 死代码删除**：`telegrambot/src/format.mjs` 旧 chatLog 路径（`TelegramMessageToFountChatLogEntry` / `telegramMediaGroupMessagesToFountChatLogEntry` 及 `is_from_owner` 依赖）整段删除，`eslint --fix --quiet` 收尾，全仓库 grep 为零；入站转换唯一入口为 DTO 路径 `telegramMessageToBridgeDto` / `telegramMediaGroupToBridgeDto`。
+4. **G4 M5/M6 补测**：端到端链（`postBridgeMessage → runTriggerPipeline → char 回复 → notifyBridgeOutbound`）、`postBridgeEdit` / `postBridgeDelete` 集成、mock Telegraf→DTO、出站贴纸、`FormatOutboundReply` 返回 true 跳过默认格式化 → `chat/test/integration/bridge_ingress.test.mjs` + `telegrambot/test/pure/format_bridge.test.mjs`；四端（Hub / TG / DC / WX）触发意愿一致性回归 → `chat/test/integration/bridge_trigger_parity.test.mjs`（onMessage 意愿一致、plain char 群不兜底、DM 兜底一致，WX 仅入站）。
 
-顺手项（不阻塞任何里程碑）：`hub/mentionsView.mjs` / `mentionsInbox.mjs` 更名 `inboxView.mjs` / `inboxClient.mjs`，与 `/inbox` 路由对齐。
+顺手项（**已完成**）：`hub/mentionsView.mjs` / `mentionsInbox.mjs` 更名为 `hub/inboxView.mjs` / `hub/inboxClient.mjs`，导出 `activateInboxView` / `fetchInboxPage` / `updateInboxBadge` / `markInboxSeen` 等，与 `/inbox` 路由对齐；`mode.mjs` / `init.mjs` 引用同步更新，旧文件已删。
 
 ---
 
@@ -200,7 +200,7 @@ onMessage?: (event: {
 
 ## M7 — 龙胆迁移
 
-> 前置：M7a + M7b（G1 已落地）。映射表已按龙胆 `bot_core` / `interfaces/*` 真实能力清单逐项对照目标面实际 API 重写（每行落点均已核实存在或在 M7a/M7b 中新建）。
+> 前置：M7a + M7b + M6.5（G1–G4 已全部落地）。映射表已按龙胆 `bot_core` / `interfaces/*` 真实能力清单逐项对照目标面实际 API 重写（每行落点均已核实存在或在 M7a/M7b 中新建）。
 
 源码：`data/users/steve02081504/chars/GentianAphrodite/`（读该目录 `AGENTS.md` 先行）。现状：TG/DC 走 `bot_core`（队列 + 合并 + `trigger.mjs` 打分 + `PlatformAPI_t`），Hub 走 chat shell 直连 `reply_gener/GetReply`，`onMessage` 零实现——两套调度。
 
@@ -407,7 +407,7 @@ graph LR
   M9[M9 social actor 平权] --> M10[M10 social 产品补强]
 ```
 
-- M6.5 / M7a / M7b 相互独立，可并行；M7 需 M7a + M7b（G1 已落地，四端触发一致回归可信）；M7a 承接自裁，M7b 承接主人识别。
+- M6.5 / M7a / M7b 相互独立，可并行；M7 需 M7a + M7b（M6.5 G1–G4 已落地，四端触发一致回归已覆盖、可信）；M7a 承接自裁，M7b 承接主人识别。
 - M8 复用 M1 事件形状约定与 M2 care / notify 基建（均已落地）；M9 与 M8 都动 `dispatch.mjs`，先后合并即可；M10 的 `poll_closed` 通知复用 `notifyUser`。
 
 ## 测试策略

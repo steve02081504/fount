@@ -243,7 +243,7 @@ flowchart TB
 | chat mention inbox | `src/public/parts/shells/chat/src/chat/lib/mentionInbox.mjs` |
 | chat 落盘副作用 | `src/public/parts/shells/chat/src/chat/dag/eventPersist.mjs` |
 | chat autoReply / trigger | `src/public/parts/shells/chat/src/chat/session/autoReply.mjs`、`triggerReply.mjs` |
-| Hub mention / 通知 | `src/public/parts/shells/chat/public/hub/mentionsInbox.mjs`、`hubNotifications.mjs`、`groupStream.mjs` |
+| Hub mention / 通知 | `src/public/parts/shells/chat/public/hub/inboxClient.mjs`、`hubNotifications.mjs`、`groupStream.mjs` |
 | 频道未读 | `src/public/parts/shells/chat/src/chat/lib/readMarkers.mjs` |
 | 投票 | `src/public/parts/shells/chat/src/group/routes/channelVotes.mjs` |
 | @ 解析 | `src/public/pages/scripts/lib/mentions.mjs` |

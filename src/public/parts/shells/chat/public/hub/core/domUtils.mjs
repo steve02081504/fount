@@ -13,8 +13,9 @@ import {
 	hashAvatarStyle,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
-import { entityHashLabel, isEntityHash128 } from '../../shared/entityHash.mjs'
+import { isEntityHash128 } from '../../shared/entityHash.mjs'
 import { agentEntityHash } from '../../shared/entityId.mjs'
+import { resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
 
 import { hubStore } from './state.mjs'
@@ -137,6 +138,7 @@ export function memberDisplayNameForAuthorKey(key) {
 
 /**
  * 将发送者键（entityHash / pubKeyHash / 角色 part 名）转为可读展示名。
+ * 有 entityHash 时走 `resolveDisplayName`（alias → member fallback → 短码）；否则保留短码/截断兜底。
  * @param {string} [key] 原始发送者标识
  * @returns {string} 可读展示名
  */
@@ -144,13 +146,14 @@ export function authorDisplayLabel(key) {
 	const raw = String(key ?? '').trim()
 	if (!raw || raw === '?') return '?'
 	const entityHash = resolveEntityHashForAuthorKey(raw)
-	if (entityHash) {
-		const alias = aliasForEntity(entityHash)
-		if (alias) return alias
-	}
+	if (entityHash)
+		return resolveDisplayName({
+			entityHash,
+			alias: aliasForEntity(entityHash),
+			fallbackLabel: memberDisplayNameForAuthorKey(raw) || undefined,
+		})
 	const fromMember = memberDisplayNameForAuthorKey(raw)
 	if (fromMember) return fromMember
-	if (isEntityHash128(raw)) return entityHashLabel(raw)
 	if (isHex64(raw)) {
 		const hex = normalizeHex64(raw)
 		return `${hex.slice(0, 8)}…${hex.slice(-4)}`

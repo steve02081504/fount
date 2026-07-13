@@ -13,6 +13,7 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { disambiguateLabels } from '../shared/nameResolve.mjs'
 import {
 	federationCatchUp,
 	rebindFederationRoom,
@@ -394,12 +395,11 @@ export async function selectChannel(channelId) {
 export async function renderMemberList(state) {
 	const container = document.getElementById('hub-member-list')
 	await loadHubPersonalFilter()
+	const viewerHash = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 	const members = (state.members || []).filter(member => {
 		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
 		const entityHash = member.entityHash
-			|| (String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase() === memberKey.toLowerCase()
-				? hubStore.viewer.viewerEntityHash
-				: '')
+			|| (viewerHash === memberKey.toLowerCase() ? hubStore.viewer.viewerEntityHash : '')
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
 	})
 	if (!members.length) {
@@ -407,6 +407,19 @@ export async function renderMemberList(state) {
 		return
 	}
 	const roleDefs = state.roles || {}
+	const prepared = members.map((member) => {
+		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
+		const isAgent = member.memberKind === 'agent'
+		const entityHash = member.entityHash
+			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
+			|| ''
+		const label = String(member.displayName || '').trim()
+			|| (isAgent ? member.charname : '')
+			|| authorDisplayLabel(member.entityHash || memberKey)
+		return { member, memberKey, isAgent, entityHash, label }
+	})
+	const labels = disambiguateLabels(prepared)
+	const rowsByMember = new Map(prepared.map((row, index) => [row.member, { ...row, displayName: labels[index] }]))
 	const admins = members.filter(member => memberDisplaysAsAdmin(member, roleDefs))
 	const others = members.filter(member => !memberDisplaysAsAdmin(member, roleDefs))
 	/**
@@ -422,18 +435,9 @@ export async function renderMemberList(state) {
 		}))
 		const listHost = container.querySelector('.hub-member-group-list:last-of-type')
 		for (const member of list) {
-			const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
-			const isAgent = member.memberKind === 'agent'
-			const displayName = String(member.displayName || '').trim()
-				|| (isAgent ? member.charname : '')
-				|| authorDisplayLabel(member.entityHash || memberKey)
-			const viewerHash = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-			const avatarFor = member.entityHash
-				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
-				|| ''
-			const entityHash = member.entityHash
-				|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
-				|| ''
+			const row = rowsByMember.get(member)
+			const { memberKey, isAgent, entityHash, displayName } = row
+			const avatarFor = entityHash
 			const isAdmin = memberDisplaysAsAdmin(member, roleDefs)
 			const ownerAttr = isAgent && member.ownerPubKeyHash
 				? ` data-owner-pub-key-hash="${escapeHtml(member.ownerPubKeyHash)}"`

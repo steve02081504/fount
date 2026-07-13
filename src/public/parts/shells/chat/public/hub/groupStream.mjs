@@ -11,7 +11,7 @@ import { buildChatGroupWebSocketUrl } from '../src/wsUrl.mjs'
 
 import { hubStore } from './core/state.mjs'
 import { renderHubChannelSidebar } from './groupNav.mjs'
-import { maybeBumpMentionsBadgeFromWire } from './mentionsInbox.mjs'
+import { maybeBumpInboxBadgeFromWire } from './inboxClient.mjs'
 import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
 import { handleVoteClosedWire } from './wireVoteEvents.mjs'
@@ -375,7 +375,7 @@ function handleGroupHubWireMessage(wireMessage, channelId) {
 	if (wireMessage.type === 'channel_message') {
 		const incomingChannelId = wireMessage.channelId
 		const channelMessage = wireMessage.message
-		maybeBumpMentionsBadgeFromWire(wireMessage)
+		maybeBumpInboxBadgeFromWire(wireMessage)
 		const { main, thread } = hubChannelMatch(incomingChannelId, channelId)
 		if (!main && !thread) {
 			if (hubStore.context.currentGroupId)
