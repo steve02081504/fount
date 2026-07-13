@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，含残余缺口 G1–G4）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移待 M7b+G1；M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，残余缺口 G2–G4）；**G1 已落地**（as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移待 M7b（G1 已齐）；M8–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -59,7 +59,7 @@
 
 ## 一—六、M1–M6 as-built 基线（已落地）
 
-> 本节是**事实记录**：真实路径、真实签名、真实语法，供后续里程碑直接引用。与原规划文本的偏差均为有意的实现选择，以此处为准。残余缺口编号 G1–G4，在「M6.5 缺口修复」中排期。
+> 本节是**事实记录**：真实路径、真实签名、真实语法，供后续里程碑直接引用。与原规划文本的偏差均为有意的实现选择，以此处为准。残余缺口编号 G2–G4，在「M6.5 缺口修复」中排期。
 
 ### M1 — Chat 收件人与触发统一
 
@@ -92,7 +92,7 @@ onMessage?: (event: {
 }) => Promise<boolean>
 ```
 
-- **G1（缺口）**：`runTriggerPipeline` 的无 `onMessage` 兜底 DM 判定只看 `state.groupMeta?.dmKind === 'ecdh'`（`triggerPipeline.mjs` L116），未覆盖 bridge DM——而 `conversationContext.mjs` 与 `notifyPrefs.mjs::groupKindFromState` 均把 `groupSettings.bridge.chatKind === 'dm'` 算作 DM。三处判定应统一走 `groupKindFromState`。
+- **DM 种类判定（as-built）**：`notifyPrefs.mjs::groupKindFromState(state)` 为唯一权威——`groupMeta.dmKind === 'ecdh'` 或 `groupSettings.bridge.chatKind === 'dm'` → `'dm'`。`triggerPipeline.mjs` 无 `onMessage` 兜底与 `conversationContext.mjs` 的 `group.kind` 均走此函数；`boundPeerEntityHash` 仍仅 ECDH DM 填充（bridge DM 无对端 hash 语义）。
 
 ### M2 — 通知生命周期与触达
 
@@ -152,7 +152,7 @@ onMessage?: (event: {
 
 无相互依赖，可与 M7a / M7b 并行：
 
-1. **G1 bridge DM 触发兜底**：`triggerPipeline.mjs` 的 `isDm` 改用 `notifyPrefs.mjs::groupKindFromState(state) === 'dm'`（顺带 `conversationContext.mjs` L54 的重复判定也收敛到同一函数）。验收：无 `onMessage` 的 char 在 mock bridge DM（`chatKind: 'dm'`）里被兜底触发。
+1. **G1 bridge DM 触发兜底（as-built，`2026-07-13`）**：`triggerPipeline.mjs` 的 `isDm` 已改用 `groupKindFromState(state) === 'dm'`；`conversationContext.mjs` 的 `group.kind` 同函数，`boundPeerEntityHash` 单独门控 ECDH。测试：`chat/test/integration/bridge_ingress.test.mjs`（bridge DM 兜底触发 + 普通 bridge group 反向锚点；fixture `write_path_agent` + `plain_reply_b`）。
 2. **G2 展示名解析链贯通**：`hub/core/domUtils.mjs::authorDisplayLabel` 接 `resolveDisplayName`（alias → profileName → 短码）；成员列表走 `disambiguateLabels`。验收：设 profile 名后主消息流作者名显示 profile 名；同名成员显示 `名·xxxx` 消歧。
 3. **G3 telegrambot 死代码删除**：`format.mjs` 旧 chatLog 路径整段删除，`eslint --fix --quiet` 收尾。验收：grep 无 `TelegramMessageToFountChatLogEntry`。
 4. **G4 M5/M6 补测**：按上节清单补进 chat / 三壳 `test/manifest.json`。
@@ -200,7 +200,7 @@ onMessage?: (event: {
 
 ## M7 — 龙胆迁移
 
-> 前置：M7a + M7b + G1。映射表已按龙胆 `bot_core` / `interfaces/*` 真实能力清单逐项对照目标面实际 API 重写（每行落点均已核实存在或在 M7a/M7b 中新建）。
+> 前置：M7a + M7b（G1 已落地）。映射表已按龙胆 `bot_core` / `interfaces/*` 真实能力清单逐项对照目标面实际 API 重写（每行落点均已核实存在或在 M7a/M7b 中新建）。
 
 源码：`data/users/steve02081504/chars/GentianAphrodite/`（读该目录 `AGENTS.md` 先行）。现状：TG/DC 走 `bot_core`（队列 + 合并 + `trigger.mjs` 打分 + `PlatformAPI_t`），Hub 走 chat shell 直连 `reply_gener/GetReply`，`onMessage` 零实现——两套调度。
 
@@ -407,7 +407,7 @@ graph LR
   M9[M9 social actor 平权] --> M10[M10 social 产品补强]
 ```
 
-- M6.5 / M7a / M7b 相互独立，可并行；M7 需三者齐（G1 保证四端触发一致回归可信，M7a 承接自裁，M7b 承接主人识别）。
+- M6.5 / M7a / M7b 相互独立，可并行；M7 需 M7a + M7b（G1 已落地，四端触发一致回归可信）；M7a 承接自裁，M7b 承接主人识别。
 - M8 复用 M1 事件形状约定与 M2 care / notify 基建（均已落地）；M9 与 M8 都动 `dispatch.mjs`，先后合并即可；M10 的 `poll_closed` 通知复用 `notifyUser`。
 
 ## 测试策略

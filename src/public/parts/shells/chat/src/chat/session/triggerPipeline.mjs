@@ -3,6 +3,7 @@ import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { getState } from '../dag/materialize.mjs'
 import { agentEntityHash } from '../lib/entity.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
+import { groupKindFromState } from '../lib/notifyPrefs.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 
 
@@ -113,7 +114,7 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	const nodeHash = getLocalNodeHash()
 	const settings = await loadAutoReplySettings(username, groupId)
 	const { state } = await getState(username, groupId)
-	const isDm = state.groupMeta?.dmKind === 'ecdh'
+	const isDm = groupKindFromState(state) === 'dm'
 
 	/** @type {string[]} */
 	const mentionedChars = []

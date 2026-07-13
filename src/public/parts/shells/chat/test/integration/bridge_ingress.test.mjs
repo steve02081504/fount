@@ -12,18 +12,23 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_YES = 'on_message_yes'
+const CHAR_PLAIN_A = 'write_path_agent'
+const CHAR_PLAIN_B = 'plain_reply_b'
 
 /**
  * @param {string} dataDir 数据根
  * @param {string} username 用户
+ * @param {string | string[]} charNames 角色 fixture 名
  * @returns {Promise<void>}
  */
-async function seedCharFixture(dataDir, username) {
+async function seedCharFixture(dataDir, username, charNames = CHAR_YES) {
 	const userRoot = join(dataDir, 'users', username)
-	const from = join(fixturesRoot, 'chars', CHAR_YES)
-	const to = join(userRoot, 'chars', CHAR_YES)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
+	for (const name of [charNames].flat()) {
+		const from = join(fixturesRoot, 'chars', name)
+		const to = join(userRoot, 'chars', name)
+		await mkdir(dirname(to), { recursive: true })
+		await cp(from, to, { recursive: true })
+	}
 }
 
 /**
@@ -156,6 +161,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 		username,
 		tempDirPrefix: 'fount_bridge_outbound_',
 		minP2pNode: true,
+		/** @param {string} user replica */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -214,7 +220,9 @@ Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () =>
 	/** @type {string[]} */
 	const calls = []
 	registerBridgeOps(username, 'telegram', 'ops-bot', {
+		/** @returns {Promise<void>} noop */
 		sendTyping: async () => { calls.push('typing') },
+		/** @returns {Promise<string>} invite URL */
 		createInvite: async () => {
 			calls.push('invite')
 			return 'https://t.me/+invite'
@@ -346,4 +354,101 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 	const hash = bridgeEntityHash('discord', '555')
 	const out = await rewriteDiscordMentionsToFount(username, 'see <@555>')
 	assertEquals(out, `see @[entity:${hash}]`)
+})
+
+Deno.test('bridge DM fallback triggers char without onMessage when charCount > 1', async () => {
+	const username = `bridge-dm-trig-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_dm_trig_',
+		minP2pNode: true,
+		/** @param {string} user replica */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
+		},
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+
+	const platformChatId = 910001
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'dm',
+		name: 'tg-dm-trigger',
+	})
+	await addchar(groupId, CHAR_PLAIN_A, username)
+	await addchar(groupId, CHAR_PLAIN_B, username)
+	const channelId = await getDefaultChannelId(username, groupId)
+
+	await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'dm',
+		platformMessageId: 501,
+		author: { platformUserId: 4242, displayName: 'Peer' },
+		text: 'dm ping without mention',
+		timestamp: Date.now(),
+	})
+
+	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
+	await waitUntil(async () => {
+		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+		return messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker)))
+	}, 15000)
+})
+
+Deno.test('bridge group without DM does not fallback-trigger chars without onMessage', async () => {
+	const username = `bridge-grp-trig-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_grp_trig_',
+		minP2pNode: true,
+		/** @param {string} user replica */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
+		},
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+
+	const platformChatId = 910002
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		name: 'tg-group-no-trigger',
+	})
+	await addchar(groupId, CHAR_PLAIN_A, username)
+	await addchar(groupId, CHAR_PLAIN_B, username)
+	const channelId = await getDefaultChannelId(username, groupId)
+
+	await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId: 502,
+		author: { platformUserId: 4243, displayName: 'Member' },
+		text: 'group ping without mention',
+		timestamp: Date.now(),
+	})
+
+	await new Promise(resolve => setTimeout(resolve, 500))
+	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
+	const replyMarkers = ['write_path_agent reply', 'plain_reply_b reply']
+	assert(!messages.some(row => replyMarkers.some(marker => String(row.content?.content || '').includes(marker))))
 })

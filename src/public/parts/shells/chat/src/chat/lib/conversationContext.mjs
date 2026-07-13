@@ -6,6 +6,7 @@ import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { getState } from '../dag/materialize.mjs'
 
 import { memberEntityHash } from './entity.mjs'
+import { groupKindFromState } from './notifyPrefs.mjs'
 
 /**
  * ECDH DM 对端 entityHash（本机视角）。
@@ -51,14 +52,15 @@ function countActiveMembers(state) {
  */
 export async function buildConversationContext(username, groupId, channelId) {
 	const { state } = await getState(username, groupId)
-	const isDm = state.groupMeta?.dmKind === 'ecdh' || state.groupSettings?.bridge?.chatKind === 'dm'
+	const kind = groupKindFromState(state)
+	const isEcdhDm = state.groupMeta?.dmKind === 'ecdh'
 	const channel = state.channels?.[channelId]
 	return {
 		group: {
 			groupId,
 			name: state.groupMeta?.name || groupId,
-			kind: isDm ? 'dm' : 'group',
-			...isDm ? { boundPeerEntityHash: await resolveBoundPeerEntityHash(username, groupId, state) } : {},
+			kind,
+			...isEcdhDm ? { boundPeerEntityHash: await resolveBoundPeerEntityHash(username, groupId, state) } : {},
 			...state.groupSettings?.bridge ? { bridge: state.groupSettings.bridge } : {},
 			memberCount: countActiveMembers(state),
 		},
