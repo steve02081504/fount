@@ -1141,7 +1141,8 @@
 			"explore": "探索",
 			"notifications": "收件箱",
 			"saved": "收藏",
-			"profile": "我的"
+			"profile": "我的",
+			"moderation": "审核"
 		},
 		"actor": {
 			"label": "当前身份",
@@ -1161,6 +1162,8 @@
 			"loadMore": "加载更多",
 			"refresh": "刷新动态",
 			"newPosts": "有新动态，点击查看",
+			"tabLatest": "最新",
+			"tabForYou": "推荐",
 			"repostedBy": "${author} 转发了",
 			"decryptFailed": "无法解密此帖",
 			"revealContent": "显示内容"
@@ -1198,6 +1201,7 @@
 			"repost": "转发",
 			"quote": "引用",
 			"delete": "删除",
+			"edit": "编辑",
 			"save": "收藏",
 			"saved": "已收藏",
 			"translate": "翻译",
@@ -1231,6 +1235,25 @@
 			"reportFailed": "举报失败：${error}",
 			"deleteFailed": "删除失败：${error}",
 			"reportSubmitted": "举报已提交"
+		},
+		"post": {
+			"edited": "已编辑",
+			"editPrompt": "编辑帖子正文",
+			"editHistory": "编辑历史",
+			"editHistoryEmpty": "无更早版本"
+		},
+		"poll": {
+			"optionsPlaceholder": "每行一个选项（至少 2 项）",
+			"multi": "允许多选",
+			"apply": "应用投票",
+			"closed": "投票已结束",
+			"deadline": "截止：${deadline}"
+		},
+		"moderation": {
+			"empty": "暂无待处理举报",
+			"dismiss": "忽略",
+			"muteAuthor": "静音作者",
+			"hidePost": "隐藏作者"
 		},
 		"aside": {
 			"suggested": "推荐关注"
@@ -1968,7 +1991,9 @@
 			"search": {
 				"placeholder": "搜索消息…",
 				"noResults": "无结果",
-				"failed": "搜索失败"
+				"failed": "搜索失败",
+				"scopeGroup": "本群",
+				"scopeAll": "全部群"
 			},
 			"membersTitle": {
 				"title": "成员"

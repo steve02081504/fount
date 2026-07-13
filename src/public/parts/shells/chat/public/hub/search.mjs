@@ -3,7 +3,7 @@
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
+import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { hubStore } from './core/state.mjs'
@@ -35,7 +35,7 @@ function hideSearchResults() {
  * @param {object[]} items 搜索结果
  * @returns {void}
  */
-function renderSearchResults(items) {
+function renderSearchResults(items, scope = 'group') {
 	const host = searchResultsHost()
 	if (!host) return
 	if (!items.length) {
@@ -45,9 +45,11 @@ function renderSearchResults(items) {
 	}
 	const channels = hubStore.context.currentState?.channels || {}
 	host.innerHTML = items.map(item => {
-		const channelName = escapeHtml(channels[item.channelId]?.name || item.channelId || '')
+		const channelName = scope === 'all'
+			? escapeHtml(String(item.groupId || ''))
+			: escapeHtml(channels[item.channelId]?.name || item.channelId || '')
 		const text = escapeHtml(String(item.text || '').slice(0, 160))
-		return `<button type="button" class="hub-search-result" data-channel-id="${escapeHtml(item.channelId)}" data-event-id="${escapeHtml(item.eventId)}">
+		return `<button type="button" class="hub-search-result" data-group-id="${escapeHtml(item.groupId || hubStore.context.currentGroupId || '')}" data-channel-id="${escapeHtml(item.channelId)}" data-event-id="${escapeHtml(item.eventId)}">
 			<div class="hub-search-result-meta">${channelName}</div>
 			<div class="hub-search-result-text">${text}</div>
 		</button>`
@@ -55,11 +57,14 @@ function renderSearchResults(items) {
 	host.removeAttribute('hidden')
 	host.querySelectorAll('.hub-search-result').forEach(button => {
 		button.addEventListener('click', () => {
+			const groupId = button.getAttribute('data-group-id')
 			const channelId = button.getAttribute('data-channel-id')
 			const eventId = button.getAttribute('data-event-id')
 			if (!channelId || !eventId) return
 			hideSearchResults()
 			void (async () => {
+				if (groupId && groupId !== hubStore.context.currentGroupId)
+					await import('./groupNav.mjs').then(m => m.selectGroup(groupId))
 				await selectChannel(channelId)
 				await scrollToMessageEventId(eventId)
 			})()
@@ -68,21 +73,40 @@ function renderSearchResults(items) {
 }
 
 /**
+ * @returns {string} group | all
+ */
+function hubSearchScope() {
+	const select = document.getElementById('hub-search-scope')
+	if (select instanceof HTMLSelectElement && select.value === 'all') return 'all'
+	return 'group'
+}
+
+/**
  * @param {string} query 搜索词
  * @returns {Promise<void>}
  */
 export async function runHubMessageSearch(query) {
-	const groupId = hubStore.context.currentGroupId
-	if (!groupId || query.length < 2) {
+	if (query.length < 2) {
 		hideSearchResults()
 		return
 	}
+	const scope = hubSearchScope()
 	try {
+		if (scope === 'all') {
+			const { items } = await searchAllChatGroups(query, { limit: 40 })
+			renderSearchResults(items, 'all')
+			return
+		}
+		const groupId = hubStore.context.currentGroupId
+		if (!groupId) {
+			hideSearchResults()
+			return
+		}
 		const { items } = await searchGroupChannelMessages(groupId, query, {
 			channelId: hubStore.context.currentChannelId || undefined,
 			limit: 40,
 		})
-		renderSearchResults(items)
+		renderSearchResults(items, 'group')
 	}
 	catch (error) {
 		handleUIError(error, 'chat.hub.search.failed')

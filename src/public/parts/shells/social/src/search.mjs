@@ -7,26 +7,37 @@ import { querySocialPostIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
+ * @param {object} item feed 条目
+ * @returns {string} 搜索分页游标
+ */
+export function searchItemCursorKey(item) {
+	const wall = Number(item.hlc?.wall || item.post?.hlc?.wall || 0)
+	return `${wall}:${item.postId}`
+}
+
+/**
  * 在已知时间线中搜索可见帖子（索引优先，未覆盖 owner 回退扫描）。
  * @param {string} username 用户
  * @param {object} [options] 选项
  * @param {string} options.q 查询（至少 2 字符）
  * @param {number} [options.limit=30] 结果上限
- * @returns {Promise<{ query: string, items: object[] }>} 搜索结果
+ * @param {string} [options.cursor] 分页游标
+ * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>} 搜索结果
  */
 export async function searchPosts(username, options = {}) {
 	const query = (options.q || '').trim()
 	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
 	if (query.length < 2)
-		return { query, items: [] }
+		return { query, items: [], nextCursor: null }
 
 	const viewerContext = await loadViewerContext(username, options.actingEntityHash || null)
-	const itemContext = await createFeedItemBuildContext(username)
+	const itemContext = await createFeedItemBuildContext(username, null, options.actingEntityHash || null)
 	const owners = []
 	for await (const entityHash of iterateVisibleTimelineOwners(username))
 		owners.push(entityHash)
 
-	const indexedHits = await querySocialPostIndex(username, owners, query, limit)
+	const fetchLimit = options.cursor ? limit * 4 + 50 : limit * 2
+	const indexedHits = await querySocialPostIndex(username, owners, query, fetchLimit)
 	/** @type {Map<string, object>} */
 	const itemsByKey = new Map()
 
@@ -41,18 +52,29 @@ export async function searchPosts(username, options = {}) {
 		itemsByKey.set(`${hit.entityHash}:${hit.postId}`, item)
 	}
 
-	if (itemsByKey.size < limit) {
+	if (itemsByKey.size < fetchLimit) {
 		const { iterateVisiblePosts } = await import('./feed/iterate.mjs')
 		for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
 			const key = `${entityHash}:${post.id}`
 			if (itemsByKey.has(key)) continue
 			if (!postMatchesQuery(post, query)) continue
 			itemsByKey.set(key, await buildPostFeedItem(username, entityHash, post, itemContext))
-			if (itemsByKey.size >= limit) break
+			if (itemsByKey.size >= fetchLimit) break
 		}
 	}
 
-	const items = [...itemsByKey.values()]
+	let items = [...itemsByKey.values()]
 	items.sort((left, right) => compareFeedItems(left, right) * -1)
-	return { query, items: items.slice(0, limit) }
+
+	if (options.cursor) {
+		const cursor = String(options.cursor)
+		const index = items.findIndex(item => searchItemCursorKey(item) === cursor)
+		items = index >= 0 ? items.slice(index + 1) : []
+	}
+
+	const page = items.slice(0, limit)
+	const nextCursor = page.length === limit && items.length > limit
+		? searchItemCursorKey(page[page.length - 1])
+		: null
+	return { query, items: page, nextCursor }
 }

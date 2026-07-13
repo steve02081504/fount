@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { Buffer } from 'node:buffer'
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -42,6 +43,23 @@ export function governanceReportsPath(username) {
  */
 export function governanceReportsSentPath(username) {
 	return join(governanceDir(username), 'reports_sent.jsonl')
+}
+
+/**
+ * @param {string} username replica
+ * @returns {string} 举报处置记录
+ */
+export function governanceReportsResolvedPath(username) {
+	return join(governanceDir(username), 'reports_resolved.jsonl')
+}
+
+/**
+ * @param {object} report 举报
+ * @returns {string} 稳定短 id
+ */
+export function reportRowId(report) {
+	const body = reportSignBody(normalizeReportBody(report))
+	return createHash('sha256').update(JSON.stringify(body)).digest('hex').slice(0, 16)
 }
 
 /**
@@ -205,5 +223,46 @@ export async function ingestInboundReport(username, report) {
 export async function listReceivedReports(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
 	const rows = await readJsonl(governanceReportsPath(username))
-	return { reports: rows.slice(-limit).reverse() }
+	return {
+		reports: rows.slice(-limit).reverse().map(row => ({
+			...row,
+			id: reportRowId(row),
+		})),
+	}
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} actingEntityHash 处置者
+ * @param {{ reportId: string, action: 'dismiss' | 'mute_author' | 'hide_post' }} input 处置
+ * @returns {Promise<object>} 处置记录
+ */
+export async function resolveReport(username, actingEntityHash, input) {
+	const reportId = String(input.reportId || '').trim()
+	const action = String(input.action || '').trim()
+	if (!reportId || !['dismiss', 'mute_author', 'hide_post'].includes(action))
+		throw new Error('invalid resolve input')
+	const rows = await readJsonl(governanceReportsPath(username))
+	const report = rows.find(row => reportRowId(row) === reportId)
+	if (!report) throw new Error('report not found')
+	const actor = String(actingEntityHash || '').trim().toLowerCase()
+	if (action === 'mute_author') {
+		const { setPersonalMuted } = await import('npm:@steve02081504/fount-p2p/node/personal_block')
+		await setPersonalMuted(actor, report.targetEntityHash, true)
+	}
+	if (action === 'hide_post') {
+		const { setPersonalHidden } = await import('npm:@steve02081504/fount-p2p/node/personal_block')
+		await setPersonalHidden(actor, report.targetEntityHash, true)
+	}
+	const resolved = {
+		reportId,
+		action,
+		targetEntityHash: report.targetEntityHash,
+		targetPostId: report.targetPostId,
+		at: Date.now(),
+		actorEntityHash: actor,
+	}
+	await mkdir(governanceDir(username), { recursive: true })
+	await appendJsonlSynced(governanceReportsResolvedPath(username), resolved)
+	return resolved
 }

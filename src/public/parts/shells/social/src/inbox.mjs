@@ -15,7 +15,7 @@ import { canWriteTimeline } from './timeline/append.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
 /** @type {Set<string>} */
-export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post'])
+export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed'])
 
 /**
  *
@@ -340,6 +340,41 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 		url: '/parts/shells:social/',
 		tag: `social:care_post:${recipient}`,
 	})
+}
+
+/**
+ * poll 截止后写 poll_closed inbox 行。
+ * @param {string} username replica
+ * @param {string} recipientEntityHash 收件人
+ * @param {string} authorEntityHash 帖作者
+ * @param {string} postId 帖 id
+ * @param {object} poll poll 配置
+ * @param {Record<string, number>} tally 选项计数
+ * @returns {Promise<void>}
+ */
+export async function appendPollClosedInboxRow(username, recipientEntityHash, authorEntityHash, postId, poll, tally) {
+	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
+	const author = String(authorEntityHash || '').trim().toLowerCase()
+	if (!recipient || !author || !postId) return
+	if (!await canWriteTimeline(username, recipient)) return
+	const at = Date.now()
+	const preview = String(poll?.options?.[0] || 'poll closed').slice(0, SNIPPET_MAX_LEN)
+	const notification = {
+		...normalizeNotificationRow('poll_closed', author, at, postId, null),
+		snippet: preview,
+		tally,
+		aggregateKey: computeAggregateKey({
+			type: 'poll_closed',
+			actorEntityHash: author,
+			postId,
+			targetPostId: null,
+			at,
+		}, recipient),
+	}
+	const dir = inboxDir(username, recipient)
+	fs.mkdirSync(dir, { recursive: true })
+	await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
+	pushFeedUpdate(username, { type: 'notification', notification })
 }
 
 /**

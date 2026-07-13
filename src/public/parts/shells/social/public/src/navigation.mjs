@@ -6,6 +6,7 @@ import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from 
 import { loadNotifications } from './views/notifications.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
+import { loadModeration } from './views/moderation.mjs'
 
 /**
  * 刷新当前可见视图中的帖子列表。
@@ -48,6 +49,7 @@ export async function switchView(appContext, view) {
 	}
 	if (view === 'explore') await loadExplore(appContext)
 	if (view === 'saved') await loadSaved(appContext)
+	if (view === 'moderation') await loadModeration(appContext)
 	if (view === 'profile') await loadProfile(appContext)
 }
 

@@ -110,7 +110,62 @@ export async function loadTrendingHashtags(appContext) {
 }
 
 /**
- * 显示「有新帖」横幅（WS 增量，不重置 feed cursor）。
+ * 在 feed 顶部插入单条帖子卡片（WS 真增量）。
+ * @param {object} appContext 应用上下文
+ * @param {object} item feed 条目
+ * @returns {Promise<boolean>} 是否成功插入
+ */
+export async function prependFeedItem(appContext, item) {
+	if (appContext.state.activeFeedSearchQuery) return false
+	if (appContext.state.feedCursor) return false
+	const feedView = document.getElementById('feedView')
+	if (!feedView || feedView.classList.contains('hidden')) return false
+	const list = document.getElementById('feedList')
+	if (!list) return false
+	document.getElementById('feedNewPostsBanner')?.remove()
+	const card = await appContext.buildPostCard(item).catch(() => null)
+	if (!card) return false
+	const empty = list.querySelector('.feed-empty')
+	if (empty) list.replaceChildren(card)
+	else list.prepend(card)
+	return true
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @returns {string} feed ranking query 片段
+ */
+function feedRankingQuery(appContext) {
+	return appContext.state.feedRanking === 'for_you' ? '&ranking=for_you' : ''
+}
+
+/**
+ * 更新 feed 排序 tab 高亮。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+export function updateFeedRankingTabs(appContext) {
+	for (const tab of document.querySelectorAll('[data-feed-ranking]')) {
+		if (!(tab instanceof HTMLElement)) continue
+		tab.classList.toggle('active', tab.dataset.feedRanking === appContext.state.feedRanking)
+	}
+}
+
+/**
+ * 切换 feed 排序并重新加载。
+ * @param {object} appContext 应用上下文
+ * @param {string} ranking latest | for_you
+ * @returns {Promise<void>}
+ */
+export async function setFeedRanking(appContext, ranking) {
+	appContext.state.feedRanking = ranking === 'for_you' ? 'for_you' : 'latest'
+	appContext.state.feedCursor = null
+	updateFeedRankingTabs(appContext)
+	await loadFeed(appContext, false)
+}
+
+/**
+ * 显示「有新帖」横幅（深分页 / 非首屏 fallback）。
  * @param {object} appContext 应用上下文
  * @returns {void}
  */
@@ -145,7 +200,7 @@ export async function loadFeed(appContext, append = false) {
 	const cursorQuery = append && appContext.state.feedCursor
 		? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
 		: ''
-	const data = await appContext.socialApi(`/feed?limit=30${cursorQuery}`)
+	const data = await appContext.socialApi(`/feed?limit=30${feedRankingQuery(appContext)}${cursorQuery}`)
 	if (feedGeneration !== gen) return
 	const items = data.items || []
 	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
@@ -157,7 +212,10 @@ export async function loadFeed(appContext, append = false) {
 		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
 		list.replaceChildren(emptyElement)
 	}
-	else if (!append) list.replaceChildren(...cards.filter(Boolean))
+	else if (!append) {
+		list.replaceChildren(...cards.filter(Boolean))
+		updateFeedRankingTabs(appContext)
+	}
 	else for (const card of cards)
 		if (card) list.appendChild(card)
 
@@ -184,9 +242,9 @@ export async function runFeedSearch(appContext) {
 		return
 	}
 	appContext.state.activeFeedSearchQuery = q
-	appContext.state.feedCursor = null
+	appContext.state.feedSearchCursor = null
 	disconnectInfiniteScroll()
-	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=40`)
+	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=30`)
 	if (appContext.state.activeFeedSearchQuery !== q) return
 	const list = document.getElementById('feedList')
 	if (!list) return
@@ -201,10 +259,40 @@ export async function runFeedSearch(appContext) {
 		list.replaceChildren(hintElement, emptyElement)
 	} else {
 		const container = document.createElement('div')
+		container.id = 'feedSearchResults'
 		for (const card of cardEls) if (card) container.appendChild(card)
 		list.replaceChildren(hintElement, container)
+		appContext.state.feedSearchCursor = data.nextCursor || null
+		const sentinel = ensureScrollSentinel(list, 'feedSearchScrollSentinel')
+		bindInfiniteScroll({
+			sentinel,
+			hasMore: () => !!appContext.state.feedSearchCursor,
+			onLoad: () => appendFeedSearch(appContext),
+		})
 	}
 	updateFeedSearchChrome(appContext)
+}
+
+/**
+ * 搜索分页追加。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+export async function appendFeedSearch(appContext) {
+	const q = appContext.state.activeFeedSearchQuery
+	if (!q || !appContext.state.feedSearchCursor) return
+	const data = await appContext.socialApi(
+		`/search?q=${encodeURIComponent(q)}&limit=30&cursor=${encodeURIComponent(appContext.state.feedSearchCursor)}`,
+	)
+	if (appContext.state.activeFeedSearchQuery !== q) return
+	const container = document.getElementById('feedSearchResults')
+	if (!container) return
+	const items = data.items || []
+	for (const item of items) {
+		const card = await appContext.buildPostCard(item).catch(() => null)
+		if (card) container.appendChild(card)
+	}
+	appContext.state.feedSearchCursor = data.nextCursor || null
 }
 
 /**

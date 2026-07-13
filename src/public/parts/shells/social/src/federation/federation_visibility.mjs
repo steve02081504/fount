@@ -34,7 +34,13 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
 			new Set(requesterContext.followsOwner ? [ownerEntityHash] : []),
 		)
 
-	if (type === 'post_delete') return true
+	if (type === 'post_edit' || type === 'post_delete') return true
+
+	if (type === 'poll_vote') {
+		if (requesterContext.isOwner) return true
+		const target = String(event.content?.targetEntityHash || '').toLowerCase()
+		return target === String(requesterContext.requesterEntityHash || '').toLowerCase()
+	}
 
 	return false
 }

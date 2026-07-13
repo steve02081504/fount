@@ -8,7 +8,10 @@ import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
+import { assertPollVoteAllowed, normalizePollDraft } from '../lib/poll.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
+import { buildPostFeedItem } from '../feed/buildItem.mjs'
+import { createFeedItemBuildContext } from '../feed/iterate.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
 import { pushFeedUpdate } from '../ws/feedHub.mjs'
@@ -50,12 +53,22 @@ export function registerPostsRoutes(router) {
 			visibility,
 			...req.body.contentWarning ? { contentWarning: String(req.body.contentWarning).trim().slice(0, 200) } : {},
 		}
+		if (req.body.poll) {
+			try {
+				draftContent.poll = normalizePollDraft(req.body.poll)
+			}
+			catch (err) {
+				throw httpError(400, err?.message || 'invalid poll')
+			}
+		}
 		const signed = await commitTimelineEvent(username, entityHash, {
 			type: 'post',
 			charPartName,
 			content: await maybeEncryptPostContent(username, entityHash, randomUUID(), draftContent, visibility),
 		})
-		pushFeedUpdate(username, { type: 'post', entityHash, postId: signed.id })
+		const itemContext = await createFeedItemBuildContext(username, new Set([entityHash]), entityHash)
+		const item = await buildPostFeedItem(username, entityHash, { ...signed, postId: signed.id }, itemContext)
+		pushFeedUpdate(username, { type: 'post', item })
 		res.status(200).json({ event: signed })
 	})
 
@@ -104,6 +117,61 @@ export function registerPostsRoutes(router) {
 				targetPostId,
 				comment: String(req.body?.comment || ''),
 			},
+		})
+		res.status(200).json({ event })
+	})
+
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/poll-vote', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const targetEntityHash = String(req.params.entityHash).toLowerCase()
+		const targetPostId = String(req.params.postId)
+		if (!isEntityHash128(targetEntityHash) || !targetPostId)
+			throw httpError(400, 'invalid params')
+		if (!await isKnownSocialTarget(username, targetEntityHash))
+			throw httpError(400, 'unknown entity')
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
+		let choices
+		try {
+			choices = await assertPollVoteAllowed(username, targetEntityHash, targetPostId, req.body?.choices)
+		}
+		catch (err) {
+			throw httpError(400, err?.message || 'invalid poll vote')
+		}
+		const event = await commitTimelineEvent(username, actingEntity, {
+			type: 'poll_vote',
+			content: { targetEntityHash, targetPostId, choices },
+		})
+		res.status(200).json({ event })
+	})
+
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/edit', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const targetEntityHash = String(req.params.entityHash).toLowerCase()
+		const targetPostId = String(req.params.postId)
+		if (!isEntityHash128(targetEntityHash) || !targetPostId)
+			throw httpError(400, 'invalid params')
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
+		if (actingEntity !== targetEntityHash)
+			throw httpError(403, 'can only edit own posts')
+		const { getTimelineMaterialized } = await import('../timeline/materialize.mjs')
+		const { maybeDecryptPostContent } = await import('../vault_crypto/vault.mjs')
+		const view = await getTimelineMaterialized(username, actingEntity)
+		const post = view.postById[targetPostId]
+		if (!post) throw httpError(404, 'post not found')
+		const decrypted = await maybeDecryptPostContent(username, actingEntity, post.content) || post.content || {}
+		const visibility = decrypted.visibility || post.content?.visibility || 'public'
+		const draftContent = {
+			targetPostId,
+			text: String(req.body.text ?? decrypted.text ?? ''),
+			mediaRefs: req.body.mediaRefs ?? decrypted.mediaRefs,
+			lang: req.body.lang || decrypted.lang || 'zh-CN',
+			...req.body.contentWarning !== undefined
+				? { contentWarning: String(req.body.contentWarning).trim().slice(0, 200) }
+				: decrypted.contentWarning ? { contentWarning: decrypted.contentWarning } : {},
+		}
+		const event = await commitTimelineEvent(username, actingEntity, {
+			type: 'post_edit',
+			content: await maybeEncryptPostContent(username, actingEntity, targetPostId, draftContent, visibility),
 		})
 		res.status(200).json({ event })
 	})

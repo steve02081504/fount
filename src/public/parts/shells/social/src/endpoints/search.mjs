@@ -18,6 +18,7 @@ export function registerSearchRoutes(router) {
 		res.status(200).json(await searchPosts(username, {
 			q: searchQuery,
 			limit: Number(req.query.limit) || 30,
+			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
 			actingEntityHash,
 		}))
 	})

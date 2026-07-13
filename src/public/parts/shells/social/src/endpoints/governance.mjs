@@ -3,7 +3,8 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
-import { listReceivedReports, submitReport } from '../governance/report.mjs'
+import { listReceivedReports, resolveReport, submitReport } from '../governance/report.mjs'
+import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 
 /**
  * 注册治理相关路由。
@@ -34,5 +35,20 @@ export function registerGovernanceRoutes(router) {
 		res.status(200).json(await listReceivedReports(username, {
 			limit: Number(req.query.limit) || 50,
 		}))
+	})
+
+	router.post('/api/parts/shells\\:social/governance/reports/resolve', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
+		try {
+			const resolved = await resolveReport(username, actingEntity, {
+				reportId: req.body?.reportId,
+				action: req.body?.action,
+			})
+			res.status(200).json({ resolved })
+		}
+		catch (err) {
+			throw httpError(400, err?.message || 'resolve failed')
+		}
 	})
 }

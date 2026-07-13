@@ -139,6 +139,8 @@ export function buildPostBody(appContext) {
 			groupId: appContext.state.pendingGroupRef.groupId,
 			channelId: appContext.state.pendingGroupRef.channelId,
 		}
+	if (appContext.state.pendingPoll)
+		body.poll = appContext.state.pendingPoll
 	return body
 }
 
@@ -173,7 +175,7 @@ export async function addComposerMedia(appContext, files) {
  */
 export async function publishPost(appContext) {
 	const body = buildPostBody(appContext)
-	if (!body.text && !appContext.state.pendingMediaRefs.length) return
+	if (!body.text && !appContext.state.pendingMediaRefs.length && !body.poll) return
 	await appContext.socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
@@ -184,6 +186,7 @@ export async function publishPost(appContext) {
 	appContext.state.pendingMediaRefs = []
 	appContext.state.pendingQuoteRef = null
 	appContext.state.pendingGroupRef = null
+	appContext.state.pendingPoll = null
 	refreshMediaPreview(appContext)
 	await refreshQuotePreview(appContext)
 	void refreshGroupRefPreview(appContext)

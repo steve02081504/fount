@@ -49,6 +49,10 @@
 					<span class="s-ic s-ic-user" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.profile"></span>
 				</button>
+				<button type="button" data-view="moderation" class="nav-btn btn btn-ghost justify-start">
+					<span class="s-ic s-ic-report" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.moderation"></span>
+				</button>
 			</nav>
 			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
 				<span class="nav-label" data-i18n="social.composer.composeButton"></span>
@@ -63,6 +67,12 @@
 					<div class="composer-body">
 						<div id="quotePreview" class="quote-preview hidden"></div>
 						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
+						<div id="pollComposerPanel" class="poll-composer hidden">
+							<textarea id="pollComposerOptions" rows="3" data-i18n="social.poll.optionsPlaceholder" placeholder=""></textarea>
+							<label><input id="pollComposerMulti" type="checkbox" /> <span data-i18n="social.poll.multi"></span></label>
+							<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
+							<button type="button" id="pollComposerApply" class="btn btn-ghost btn-xs" data-i18n="social.poll.apply"></button>
+						</div>
 						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
 						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
 						<div id="mediaPreview" class="media-preview hidden"></div>
@@ -76,6 +86,9 @@
 									<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
 								</label>
 								<select id="linkGroupSelect" class="select select-bordered select-sm composer-select hidden"></select>
+								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" aria-label="Poll">
+									<span class="s-ic s-ic-vote" aria-hidden="true"></span>
+								</button>
 								<select id="postVisibility" class="select select-bordered select-sm composer-select composer-visibility">
 									<option value="public" data-i18n="social.composer.visibilityPublic"></option>
 									<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
@@ -91,6 +104,10 @@
 			<section id="feedView" class="view">
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.feed"></h2>
+					<div class="feed-ranking-tabs" role="tablist">
+						<button type="button" class="btn btn-ghost btn-xs active" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
+						<button type="button" class="btn btn-ghost btn-xs" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
+					</div>
 					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-tip="">
 						<span class="s-ic s-ic-refresh" aria-hidden="true"></span>
 					</button>
@@ -125,6 +142,13 @@
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.saved"></h2>
 				</header>
+			</section>
+
+			<section id="moderationView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.moderation"></h2>
+				</header>
+				<div id="moderationList" class="moderation-list"></div>
 			</section>
 
 			<section id="profileView" class="view hidden"></section>

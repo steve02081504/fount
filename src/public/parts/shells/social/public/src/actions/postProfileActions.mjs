@@ -1,6 +1,8 @@
 import { formatSocialProfileRunUri } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
+import { handlePollVoteClick } from '../lib/pollUi.mjs'
+import { refreshVisiblePosts } from '../navigation.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
@@ -11,6 +13,43 @@ import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handlePostProfileActionsClick(appContext, target) {
+	if (await handlePollVoteClick(appContext, target)) return true
+
+	const editButton = target.closest('[data-edit]')
+	if (editButton instanceof HTMLElement && editButton.dataset.edit) {
+		const parsed = parseActionKey(editButton.dataset.edit)
+		if (parsed) {
+			closePostMoreMenus()
+			const card = editButton.closest('.post-card')
+			const current = decodeURIComponent(card?.dataset.postText || '')
+			const next = window.prompt(appContext.geti18n('social.post.editPrompt'), current)
+			if (next == null || next === current) return true
+			await runSocialWrite('edit', () => appContext.socialApi(
+				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/edit`,
+				{ method: 'POST', body: JSON.stringify({ text: next }) },
+			))
+			await refreshVisiblePosts(appContext)
+		}
+		return true
+	}
+
+	const historyButton = target.closest('[data-edit-history]')
+	if (historyButton instanceof HTMLElement && historyButton.dataset.editHistory) {
+		const card = historyButton.closest('.post-card')
+		const postId = card?.dataset.postId
+		const author = card?.dataset.authorEntity
+		if (postId && author) {
+			closePostMoreMenus()
+			void appContext.socialApi(`/profile/${encodeURIComponent(author)}/posts?limit=50`).then(async data => {
+				const item = (data.items || []).find(row => row.postId === postId)
+				const revisions = item?.post?.revisions || []
+				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
+				window.alert(lines || appContext.geti18n('social.post.editHistoryEmpty'))
+			})
+		}
+		return true
+	}
+
 	const copyLinkButton = target.closest('[data-copy-link]')
 	if (copyLinkButton instanceof HTMLElement && copyLinkButton.dataset.copyLink) {
 		const parsed = parseActionKey(copyLinkButton.dataset.copyLink)

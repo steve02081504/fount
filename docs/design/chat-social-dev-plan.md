@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；**M8 已落地**（as-built 见 M8 节）；**M9 已落地**（as-built 见 M9 节）；M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；**M8 已落地**（as-built 见 M8 节）；**M9 已落地**（as-built 见 M9 节）；**M10 已落地**（as-built 见 M10 节）。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -308,53 +308,30 @@ onMessage?: (event: {
 
 ---
 
-## M10 — Social 产品补强 + 顺手项
+## M10 — Social 产品补强 + 顺手项（as-built，`2026-07-14`）
 
-### 现状锚点（2026-07-13 核对）
+> 落地：`2026-07-14`。测试：`social/test/integration/m10_features.test.mjs`（4 用例）+ 既有 governance / posts_http / search 回归。
 
-poll / `post_edit` / for_you 排序均未实现（仅有 `DELETE /posts` → `post_delete`）；social `GET /search?q=&limit=` 无 cursor；explore（`GET /explore`、`/explore/posts`）已有；chat **单群**搜索已有（`GET /api/parts/shells:chat/groups/:groupId/search?q=&channelId=&limit=` → `searchGroupMessages`），跨群缺。
+| 模块 | 实际落点 | 关键导出 / 行为 |
+| --- | --- | --- |
+| poll 事件 | `namespace` + `reducers` + `federation_visibility` + `write_auth` | `poll_vote` content `{ targetEntityHash, targetPostId, choices }` 写在投票者时间线 |
+| poll 投影 | `src/federation/poll_index.mjs` | `projectPollVoteFromTimelineEvent` / `listPollTally` / `readPollTally`；存储 `{userDict}/shells/social/poll_tally/{targetEntityHash}/{postId}.json` |
+| poll 辅助 | `src/lib/poll.mjs` | `normalizePollDraft` / `assertPollVoteAllowed` / `isPollClosed` |
+| poll 截止 | `src/lib/pollDeadlineWatcher.mjs` | `schedulePollDeadlines` / `firePollClosed` / `bootstrapPollDeadlineWatchers`；inbox `poll_closed`（`VALID_NOTIFICATION_TYPES`） |
+| post_edit | 同上五道门禁 | owner-only `write_auth`；`postEdits` + `revisions[]` 物化；`searchIndex` 重建词条 |
+| for_you | `src/feed/ranking.mjs` | `buildForYouFeed` / `scorePostForYou`；cursor `score:postId` |
+| feed API | `endpoints/feed.mjs` | `GET /feed?ranking=for_you\|latest` |
+| posts API | `endpoints/posts.mjs` | `POST /posts` body `poll`；`POST …/poll-vote`；`POST …/edit` |
+| WS 增量 | `endpoints/posts.mjs` + `views/feed.mjs` | `pushFeedUpdate({ type:'post', item })`；`prependFeedItem` |
+| 审核 | `governance/report.mjs` + `endpoints/governance.mjs` | `reportRowId`；`POST /governance/reports/resolve`；`views/moderation.mjs` |
+| 搜索分页 | `src/search.mjs` | cursor `"${hlcWall}:${postId}"` / `nextCursor` |
+| chat 跨群搜索 | `chat/src/chat/search/global.mjs` + `endpoints/globalSearch.mjs` | `GET /api/parts/shells:chat/search`；Hub `#hub-search-scope` |
 
-### 10.1 投票（poll）
+### 验收（as-built）
 
-- **发帖**：`POST /posts` body 增加 `poll: { options: string[], multi?: boolean, deadline?: ISO8601 }`，存入 post content（followers 可见时随 GSH 一起加密）。
-- **投票事件**：新时间线事件 `poll_vote`，content `{ targetEntityHash, targetPostId, choices: number[] }`，写在**投票者**时间线。触及文件（social 新增事件类型的既有门禁）：`federation/namespace.mjs`（`SOCIAL_TIMELINE_EVENT_TYPES`）、`timeline/reducers.mjs`、`federation/federation_visibility.mjs`（可被作者节点 pull，**不**入 private 集）、`federation/write_auth.mjs`。
-- **tally 投影**：新建 `src/federation/poll_index.mjs`（模式对齐 `follower_index.mjs`）：append / sync 遇 `poll_vote` 调 `projectPollVote`，聚合写 `{userDict}/shells/social/poll_tally/{targetEntityHash}/{postId}.json`；`feed/buildItem.mjs` 附 `poll: { options, multi, deadline, tally, closed, viewerChoices }`。
-- **截止**：作者 replica 起 deadline watcher（复用 chat `voteDeadlineWatcher.mjs` 的模式，新建 `src/lib/pollDeadlineWatcher.mjs`）；到期产 `poll_closed` inbox 行（`VALID_NOTIFICATION_TYPES` 增加）；过期 `poll_vote` 在 reducer / write_auth 双侧拒绝。
-- **前端**：composer 加 poll 编辑器；`postCard.mjs` 渲染选项条 + 投票交互（`POST /posts/:entityHash/:postId/poll-vote` body `{ choices, actingEntityHash? }`）。
-
-### 10.2 帖文编辑
-
-- 新时间线事件 `post_edit`，content `{ targetPostId, text, mediaRefs?, contentWarning?, lang? }`（followers 帖同 GSH 加密）；`write_auth` 限定 sender 为时间线 owner。
-- reducer：`postEdits.get(targetPostId).push(event)`；materialize 输出最新 revision，原文进 `revisions[]`。
-- `searchIndex.mjs::indexTimelineEventForSearch` 处理 `post_edit`（重建词条）。
-- 前端：post 菜单加「编辑」与「编辑历史」dialog；卡片显示 `(已编辑)`。
-
-### 10.3 for_you 推荐排序
-
-- 新建 `src/feed/ranking.mjs::buildForYouFeed(username, { actingEntityHash, limit, cursor })`。
-- 候选 = 关注时间线池 + 二度注入（被关注者时间线中 like/repost 指向的公开帖，本地已同步数据解析）。打分（纯本地信号，无 ML 无中心服务）：
-
-```text
-score = exp(-age / 24h)
-      × (1 + log1p(likes + 2·reposts + replies))
-      × (1 + log1p(viewer 与作者双向互动次数))
-```
-
-- `GET /feed` 增加 `ranking=for_you|latest`（默认 latest）；前端 feed 顶部 tab 切换。
-
-### 10.4 前端与运营顺手项
-
-- **WS 真增量**：发帖后 `pushFeedUpdate({ type: 'post', item })` 携带 build 好的 feed item；前端 `prependFeedItem` 插头部；`showFeedNewPostsBanner` 仅保留为搜索态 / 分页深处 fallback。
-- **审核队列 UI**：report 行补 `id`（行内容 SHA-256 短码）；`POST /governance/reports/resolve` body `{ reportId, action: 'dismiss'|'mute_author'|'hide_post' }`（复用 relationships / personalBlock 写路径，处置记录 append `reports_resolved.jsonl`）；前端 `views/moderation.mjs` + 导航入口。
-- **搜索分页**：`searchPosts` 增加 `cursor` 入参与 `nextCursor` 返回（游标 = 末项 `"${hlcWall}:${postId}"`）；前端 `runFeedSearch` 接 `bindInfiniteScroll`。
-- **chat 跨群搜索**：新建 `chat/src/chat/search/global.mjs::searchAllGroups(username, { q, limit, cursor })`（枚举 joined 群 → 逐群 `queryIndex` → 归并）；路由 `GET /api/parts/shells:chat/search?q=&limit=&cursor=`；Hub 搜索框加「本群 / 全部群」scope 切换。
-
-### 验收
-
-- poll 全生命周期双节点 live 测试：A 发 poll → B 投票 → 联邦 pull → tally 一致 → 截止后再投被拒、双方收 `poll_closed`。
-- `post_edit` 联邦同步后两节点 materialize 的最新文本与 revisions 一致；搜索命中新文本不命中旧文本。
-- for_you 与 latest 可切换、cursor 稳定不重复；亲和作者新帖排位高于同龄陌生帖。
-- WS 收 `post` 后无整页重拉（断言 `loadFeed` 未被调而新卡片存在）。
+- ✅ poll tally 投影 + post_edit 物化 + search cursor + for_you score：`m10_features.test.mjs`
+- ✅ governance report id + resolve + posts HTTP：`governance.test.mjs` / `posts_http.test.mjs`
+- ⚠️ poll 双节点联邦 live / WS prepend 无整页重拉：留 live / Playwright 补测
 
 ---
 

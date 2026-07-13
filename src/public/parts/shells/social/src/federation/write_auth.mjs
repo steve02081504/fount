@@ -84,6 +84,9 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 		}))
 			return true
 
+	if (opts.eventType === 'post_edit')
+		return normalizedSender === parsed.subjectHash
+
 	if (normalizedSender === parsed.subjectHash)
 		return true
 

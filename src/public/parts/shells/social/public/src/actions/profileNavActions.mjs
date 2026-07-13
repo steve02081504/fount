@@ -9,12 +9,14 @@ import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
 
+import { effectiveActingEntityHash } from '../lib/apiClient.mjs'
+
 /**
  * @param {object} appContext Social 应用上下文
  * @returns {Record<string, unknown>} 含 actingEntityHash 的请求体字段
  */
 function actingFields(appContext) {
-	const actingEntityHash = appContext.state.viewerEntityHash
+	const actingEntityHash = effectiveActingEntityHash()
 	return actingEntityHash ? { actingEntityHash } : {}
 }
 

@@ -11,6 +11,7 @@
 					<span class="author-handle">${authorHandle}</span>
 					<span class="post-meta-sep">·</span>
 					<span class="post-meta">${postTime}</span>
+					${editedBadge}
 					${visibilityIcon}
 				</div>
 			</div>
@@ -27,6 +28,8 @@
 					${hideButton}
 					${muteButton}
 					${reportButton}
+					${editButton}
+					${editHistoryButton}
 					${deleteButton}
 				</div>
 			</div>
@@ -34,6 +37,7 @@
 	</header>
 	${quoteHtml}
 	${groupRefHtml}
+	${pollHtml}
 	${mediaHtml}
 	<div class="body markdown-body">${bodyHtml}</div>
 	${embeddedWrapEnd}

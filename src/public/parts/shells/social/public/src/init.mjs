@@ -16,7 +16,7 @@ import { SOCIAL_APP_GATE } from './gate.mjs'
 import { bootstrapActingEntity } from './lib/actorSwitcher.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
-import { runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
+import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 
@@ -33,8 +33,15 @@ const FEED_WS_RECONNECT_MAX_MS = 30_000
  */
 function handleFeedWebSocketMessage(appContext, message) {
 	if (!message?.type || message.type === 'hello') return
-	if (message.type === 'post')
+	if (message.type === 'post') {
+		if (message.item) {
+			void prependFeedItem(appContext, message.item).then(inserted => {
+				if (!inserted) showFeedNewPostsBanner(appContext)
+			})
+			return
+		}
 		showFeedNewPostsBanner(appContext)
+	}
 	else if (message.type === 'notification') {
 		if (!mergeIncomingNotification(appContext, message.notification))
 			bumpNotificationBadge(appContext)

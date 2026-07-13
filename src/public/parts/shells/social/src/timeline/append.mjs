@@ -14,6 +14,7 @@ import {
 	getRecoveryPubKeyHex,
 } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
+import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 
@@ -122,6 +123,7 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 	invalidateTimelineMaterializedCache(username, entityHash)
 	invalidateTimelineOwnerIndex(username)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, row)
+	await projectPollVoteFromTimelineEvent(username, entityHash, row)
 	await maintainSocialTimeline(username, entityHash)
 	const { appendInboxFromTimelineEvent } = await import('../inbox.mjs')
 	await appendInboxFromTimelineEvent(username, entityHash, row)
@@ -219,6 +221,8 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 	if (signed.type === 'post') {
 		const { dispatchSocialMessage } = await import('../dispatch.mjs')
 		await dispatchSocialMessage(username, entityHash, signed)
+		const { schedulePollDeadlines } = await import('../lib/pollDeadlineWatcher.mjs')
+		void schedulePollDeadlines(username, entityHash)
 	}
 	return signed
 }

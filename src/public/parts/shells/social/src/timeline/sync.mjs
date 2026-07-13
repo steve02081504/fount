@@ -2,6 +2,7 @@ import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/s
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
+import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
@@ -35,11 +36,27 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	})
 	if (!validated.accepted) return false
 	if (existing.some(row => row.id === validated.row.id)) return true
+	if (validated.row.type === 'poll_vote') {
+		const { assertPollVoteAllowed } = await import('../lib/poll.mjs')
+		try {
+			await assertPollVoteAllowed(
+				username,
+				validated.row.content.targetEntityHash,
+				validated.row.content.targetPostId,
+				validated.row.content.choices,
+				validated.row.hlc?.wall || validated.row.timestamp || Date.now(),
+			)
+		}
+		catch {
+			return false
+		}
+	}
 	await appendJsonlSynced(timelineEventsPath(username, entityHash), validated.row)
 	invalidateTimelineMaterializedCache(username, entityHash)
 	invalidateTimelineOwnerIndex(username)
 	await tryImportFollowApproveVault(username, entityHash, event)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, validated.row)
+	await projectPollVoteFromTimelineEvent(username, entityHash, validated.row)
 	if (validated.row.type === 'block' || validated.row.type === 'unblock') {
 		const { following } = await loadFollowing(username)
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))

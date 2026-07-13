@@ -77,7 +77,7 @@ export async function buildHomeFeed(username, options = {}) {
 		: await loadFollowing(username)
 	const viewerContext = await loadViewerContext(username, acting)
 	const feedSources = new Set(following)
-	const itemContext = await createFeedItemBuildContext(username, feedSources)
+	const itemContext = await createFeedItemBuildContext(username, feedSources, acting)
 
 	/** @type {{ candidates: object[], index: number }[]} */
 	const streams = []

@@ -1,4 +1,6 @@
 import { socialPostKey } from '../federation/post_key.mjs'
+import { listPollTally } from '../federation/poll_index.mjs'
+import { isPollClosed, viewerPollChoicesFromView } from '../lib/poll.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'
 
 /**
@@ -46,7 +48,7 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 	const postOut = decrypt
 		? await withDecryptedPostContent(username, entityHash, post)
 		: post
-	return {
+	const item = {
 		kind: 'post',
 		entityHash,
 		postId: post.id,
@@ -55,6 +57,21 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 		authorProfile: await feedContext.authorProfile(entityHash),
 		...feedContext.engagementForPost(entityHash, post.id),
 	}
+	const poll = postOut.content?.poll
+	if (poll?.options?.length) {
+		const tally = await listPollTally(username, entityHash, post.id)
+		item.poll = {
+			options: poll.options,
+			multi: poll.multi === true,
+			deadline: poll.deadline || null,
+			tally,
+			closed: isPollClosed(poll),
+			viewerChoices: feedContext.viewerPollChoices
+				? viewerPollChoicesFromView(feedContext.viewerPollChoices, entityHash, post.id)
+				: null,
+		}
+	}
+	return item
 }
 
 /**

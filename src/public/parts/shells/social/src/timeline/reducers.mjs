@@ -13,8 +13,10 @@ export function createSocialTimelineState() {
 	return {
 		socialMeta: {},
 		posts: new Map(),
+		postEdits: new Map(),
 		deletedPostIds: new Set(),
 		likes: new Map(),
+		pollVotes: new Map(),
 		reposts: [],
 		followEvents: [],
 		following: new Set(),
@@ -53,6 +55,34 @@ function reducePost(state, event) {
  */
 function reducePostDelete(state, event) {
 	state.deletedPostIds.add(event.content.targetPostId)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reducePostEdit(state, event) {
+	const targetPostId = event.content.targetPostId
+	if (!targetPostId) return state
+	const list = state.postEdits.get(targetPostId) || []
+	list.push(event)
+	state.postEdits.set(targetPostId, list)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reducePollVote(state, event) {
+	const key = socialPostKey(event.content.targetEntityHash, event.content.targetPostId)
+	state.pollVotes.set(key, {
+		choices: [...(event.content.choices || [])],
+		at: event.hlc?.wall || event.timestamp || Date.now(),
+	})
 	return state
 }
 
@@ -139,7 +169,9 @@ function passthroughReducer(state) {
 export const SOCIAL_TIMELINE_REDUCERS = {
 	social_meta: reduceSocialMeta,
 	post: reducePost,
+	post_edit: reducePostEdit,
 	post_delete: reducePostDelete,
+	poll_vote: reducePollVote,
 	like: reduceLike,
 	unlike: reduceUnlike,
 	repost: reduceRepost,
@@ -163,6 +195,27 @@ export function finalizeSocialTimelineView(state, order) {
 	for (const deletedId of state.deletedPostIds)
 		state.posts.delete(deletedId)
 
+	for (const [postId, edits] of state.postEdits.entries()) {
+		const base = state.posts.get(postId)
+		if (!base || !edits.length) continue
+		const latest = edits[edits.length - 1]
+		const { targetPostId: _ignored, ...patch } = latest.content || {}
+		const revisions = edits.slice(0, -1).map(edit => ({
+			text: edit.content?.text,
+			mediaRefs: edit.content?.mediaRefs,
+			contentWarning: edit.content?.contentWarning,
+			lang: edit.content?.lang,
+			at: edit.hlc?.wall || edit.timestamp,
+			eventId: edit.id,
+		}))
+		state.posts.set(postId, {
+			...base,
+			content: { ...base.content, ...patch },
+			edited: true,
+			revisions,
+		})
+	}
+
 	const visiblePosts = [...state.posts.values()]
 		.sort((earlierPost, laterPost) => {
 			const earlierWall = earlierPost.hlc?.wall || 0
@@ -176,6 +229,7 @@ export function finalizeSocialTimelineView(state, order) {
 		posts: visiblePosts,
 		postById: Object.fromEntries(state.posts),
 		likes: [...state.likes.values()],
+		pollVotes: state.pollVotes,
 		reposts: state.reposts,
 		followEvents: state.followEvents,
 		following: [...state.following],

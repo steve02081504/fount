@@ -42,7 +42,9 @@ export function vaultGroupId(entityHash) {
 export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'social_meta',
 	'post',
+	'post_edit',
 	'post_delete',
+	'poll_vote',
 	'repost',
 	'like',
 	'unlike',

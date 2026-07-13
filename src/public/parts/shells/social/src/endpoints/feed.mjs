@@ -1,5 +1,6 @@
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { buildHomeFeed } from '../feed.mjs'
+import { buildForYouFeed } from '../feed/ranking.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 import { syncFollowingTimelines } from '../timeline/sync.mjs'
 import { registerFeedSocket } from '../ws/feedHub.mjs'
@@ -13,11 +14,15 @@ export function registerFeedRoutes(router) {
 	router.get('/api/parts/shells\\:social/feed', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const actingEntityHash = await resolveActingEntity(username, req.query.actingEntityHash, { requireEntity: false })
-		const feed = await buildHomeFeed(username, {
+		const ranking = String(req.query.ranking || 'latest').toLowerCase()
+		const options = {
 			actingEntityHash,
 			limit: Number(req.query.limit) || 50,
 			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
-		})
+		}
+		const feed = ranking === 'for_you'
+			? await buildForYouFeed(username, options)
+			: await buildHomeFeed(username, options)
 		res.status(200).json(feed)
 	})
 

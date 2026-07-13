@@ -5,7 +5,7 @@ import { formatActionKey } from './lib/actionKey.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from './lib/display.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
-import { renderMediaHtml } from './mediaRender.mjs'
+import { renderPollHtml } from './lib/pollUi.mjs'
 
 /**
  * 创建 feed 帖子卡片构建函数（闭包注入依赖）。
@@ -93,6 +93,12 @@ export function createPostCardBuilder({
 		const headerAvatarProfile = isRepost ? null : item.authorProfile
 		const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
 		const postTime = formatTime(geti18n, item.post?.hlc?.wall)
+		const editedBadge = item.post?.edited
+			? `<span class="post-edited-badge">${geti18n('social.post.edited')}</span>`
+			: ''
+		const pollHtml = item.poll && !decryptFailed
+			? renderPollHtml(item.poll, actionKey, geti18n)
+			: ''
 		const blockButton = isOwn
 			? ''
 			: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
@@ -108,6 +114,12 @@ export function createPostCardBuilder({
 		const deleteButton = isOwn
 			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
+		const editButton = isOwn
+			? `<button type="button" data-edit="${actionKey}"><span class="s-ic s-ic-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`
+			: ''
+		const editHistoryButton = isOwn && item.post?.revisions?.length
+			? `<button type="button" data-edit-history="${actionKey}"><span data-i18n="social.post.editHistory"></span></button>`
+			: ''
 
 		const card = await renderTemplate('post_card', {
 			postId: item.postId,
@@ -122,6 +134,7 @@ export function createPostCardBuilder({
 			headerLink,
 			authorHandle: entityHandle(headerHandleEntity),
 			postTime,
+			editedBadge,
 			visibilityIcon,
 			moreLabel: geti18n('social.actions.more'),
 			replyLabel: geti18n('social.actions.replies'),
@@ -129,6 +142,7 @@ export function createPostCardBuilder({
 			saveLabel: geti18n('social.actions.save'),
 			quoteHtml,
 			groupRefHtml,
+			pollHtml,
 			mediaHtml,
 			bodyHtml,
 			likedClass,
@@ -143,6 +157,8 @@ export function createPostCardBuilder({
 			hideButton,
 			muteButton,
 			reportButton,
+			editButton,
+			editHistoryButton,
 			deleteButton,
 		})
 		return /** @type {HTMLElement} */ card

@@ -225,6 +225,26 @@ export async function searchGroupChannelMessages(groupId, query, opts = {}) {
 }
 
 /**
+ * 跨群搜索消息。
+ * @param {string} query 查询（至少 2 字符）
+ * @param {{ limit?: number, cursor?: string }} [opts] 选项
+ * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>}
+ */
+export async function searchAllChatGroups(query, opts = {}) {
+	const params = new URLSearchParams({ q: query })
+	if (opts.limit) params.set('limit', String(opts.limit))
+	if (opts.cursor) params.set('cursor', opts.cursor)
+	const response = await fetch(`/api/parts/shells:chat/search?${params}`, { credentials: 'include' })
+	if (!response.ok) throw new Error(await response.text())
+	const data = await response.json()
+	return {
+		query: data.query || query,
+		items: data.items || [],
+		nextCursor: data.nextCursor || null,
+	}
+}
+
+/**
  * 拉取进行中流的已缓冲分片（WS 晚加入时补流式显示）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

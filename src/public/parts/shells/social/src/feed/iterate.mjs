@@ -19,12 +19,17 @@ import {
  * @param {Iterable<string>} [owners] engagement 扫描范围
  * @returns {Promise<{ authorProfile: ReturnType<typeof createAuthorProfileLoader>, engagementForPost: ReturnType<typeof createEngagementForPost>, engagement: Awaited<ReturnType<typeof buildEngagementIndex>>, viewerLiked: Awaited<ReturnType<typeof buildViewerLikedSet>> }>} feed 条目构建上下文
  */
-export async function createFeedItemBuildContext(username, owners) {
+export async function createFeedItemBuildContext(username, owners, actingEntityHash = null) {
 	const engagement = await buildEngagementIndex(username, owners)
 	const viewerLiked = await buildViewerLikedSet(username)
 	const authorProfile = createAuthorProfileLoader(username)
 	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
-	return { authorProfile, engagementForPost, engagement, viewerLiked }
+	let viewerPollChoices = null
+	if (actingEntityHash) {
+		const view = await getTimelineMaterialized(username, actingEntityHash)
+		viewerPollChoices = view
+	}
+	return { authorProfile, engagementForPost, engagement, viewerLiked, viewerPollChoices }
 }
 
 /**

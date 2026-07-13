@@ -164,6 +164,20 @@ export async function indexTimelineEventForSearch(username, entityHash, row) {
 		return
 	}
 
+	if (row.type === 'post_edit') {
+		const postId = String(row.content?.targetPostId || '').trim()
+		if (!postId) return
+		const content = await maybeDecryptPostContent(username, owner, row.content)
+		if (!content?.text) return
+		await indexDocument(indexDir, owner, {
+			id: postId,
+			text: content.text,
+			ts: Number(row.hlc?.wall || row.timestamp || Date.now()),
+			fields: { entityHash: owner, postId },
+		})
+		return
+	}
+
 	if (row.type !== 'post') return
 	const postId = String(row.id || '').trim()
 	if (!postId) return
