@@ -606,6 +606,8 @@ TweakInboundDto?: (dto) => Promise<void>   // 可选就地修饰入站 DTO（追
 
 ## M7 — 龙胆迁移
 
+> **无法实施（待地基）**：本节依赖的 M4 `ChatClient` / M5 bridge 缺两块地基——(1) 没有统一的「停止 bot 运行」方法（龙胆「自裁」无落点）；(2) 平台默认界面身份映射不认识「user 自己」（主人无法稳定识别为 operator）。详见 [../review/platform-interface-architecture-gaps.md](../review/platform-interface-architecture-gaps.md)。补齐前不推进 M7；下方映射表保留为地基补齐后的参考。
+
 源码：`data/users/steve02081504/chars/GentianAphrodite/`（读该目录 `AGENTS.md` 先行）。现状：TG/DC 走 `bot_core`（队列 + 合并 + `trigger.mjs` 打分 + `platformAPI.sendMessage`），Hub 走 chat shell 直连 `reply_gener/GetReply`，`onMessage` 未实现——两套调度。
 
 ### 迁移映射
