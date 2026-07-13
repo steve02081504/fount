@@ -2,6 +2,7 @@
  * Hub composer @ 提及 autocomplete（群内成员，插入 entityHash）。
  */
 import { formatHashShort } from '../shared/entityHash.mjs'
+import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
 
 import { hubStore } from './core/state.mjs'
 
@@ -49,7 +50,7 @@ export function attachHubMentionAutocomplete(textarea) {
 			button.dataset.index = String(index)
 			const subtitle = row.entityHash
 				? formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })
-				: (row.memberCount != null ? `${row.memberCount}` : '')
+				: row.memberCount != null ? `${row.memberCount}` : ''
 			button.innerHTML = `
 				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
 				<small>${subtitle}</small>
@@ -101,10 +102,10 @@ export function attachHubMentionAutocomplete(textarea) {
 	 * @returns {string} 插入 token
 	 */
 	function mentionTokenForRow(row) {
-		if (row.kind === 'role' && row.roleId) return `@[role:${row.roleId}]`
-		if (row.kind === 'everyone') return '@[everyone]'
-		if (row.kind === 'here') return '@[here]'
-		return `@[hash:${row.entityHash}]`
+		if (row.kind === 'role' && row.roleId) return formatRoleMentionToken(row.roleId)
+		if (row.kind === 'everyone') return formatRoleMentionToken('everyone')
+		if (row.kind === 'here') return formatRoleMentionToken('here')
+		return formatEntityMentionToken(row.entityHash)
 	}
 
 	/**
@@ -193,7 +194,7 @@ export function insertComposerMention(entityHash) {
 	if (!textarea || textarea.disabled) return
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash) return
-	const mention = `@[hash:${hash}] `
+	const mention = `${formatEntityMentionToken(hash)} `
 	const start = textarea.selectionStart ?? textarea.value.length
 	const end = textarea.selectionEnd ?? start
 	textarea.value = textarea.value.slice(0, start) + mention + textarea.value.slice(end)

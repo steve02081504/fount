@@ -66,7 +66,7 @@ Deno.test('postBridgeMessage persists message and mention inbox', async () => {
 		chatKind: 'group',
 		platformMessageId: 11,
 		author: { platformUserId, displayName: 'BridgeUser' },
-		text: `hello @[hash:${operatorHash}]`,
+		text: `hello @[entity:${operatorHash}]`,
 		timestamp: Date.now(),
 	})
 
@@ -141,10 +141,10 @@ Deno.test('rewriteTelegramMentionsToFount and outbound entity restore', async ()
 		user: { id: 42, is_bot: false, first_name: 'Alice' },
 	}]
 	const out = await rewriteTelegramMentionsToFount(username, text, entities)
-	assertEquals(out, `ping @[hash:${hash}]`)
+	assertEquals(out, `ping @[entity:${hash}]`)
 
 	const boundHash = await resolveBridgeIdentity(username, 'telegram', 77, 'Zed')
-	const restored = await buildTelegramTextAndEntities(username, `see @[hash:${boundHash}]`)
+	const restored = await buildTelegramTextAndEntities(username, `see @[entity:${boundHash}]`)
 	assertEquals(restored.text, 'see Zed')
 	assertEquals(restored.entities.length, 1)
 	assertEquals(restored.entities[0].user.id, 77)
@@ -345,5 +345,5 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 	const { rewriteDiscordMentionsToFount } = await import('../../../discordbot/src/format.mjs')
 	const hash = bridgeEntityHash('discord', '555')
 	const out = await rewriteDiscordMentionsToFount(username, 'see <@555>')
-	assertEquals(out, `see @[hash:${hash}]`)
+	assertEquals(out, `see @[entity:${hash}]`)
 })

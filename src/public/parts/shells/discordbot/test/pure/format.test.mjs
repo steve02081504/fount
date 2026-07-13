@@ -18,5 +18,5 @@ Deno.test('splitDiscordReply splits long text', () => {
 Deno.test('rewriteDiscordMentionsToFount role mention becomes everyone', async () => {
 	const username = `dc-fmt-${crypto.randomUUID().slice(0, 8)}`
 	const out = await rewriteDiscordMentionsToFount(username, 'ping <@&12345> and @here')
-	assertEquals(out, 'ping @[everyone] and @[here]')
+	assertEquals(out, 'ping @[role:everyone] and @[role:here]')
 })

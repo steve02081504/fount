@@ -1,6 +1,7 @@
 /**
  * Chat emoji 内容提供商（registries.emoji）：最近 / 群自定义 / Unicode 分组。
  */
+import { formatEmojiToken } from '../shared/inlineTokenSyntax.mjs'
 import { fetchFrequentEmojis } from '../src/emojiUsageApi.mjs'
 import { groupEmojiDataApiPath } from '../src/groupEmojiApi.mjs'
 import {
@@ -38,7 +39,7 @@ async function loadRecentItems(context) {
 	const items = []
 	for (const entry of entries) {
 		if (entry.kind === 'custom' && entry.groupId && entry.emojiId) {
-			const emojiRef = `:[${entry.groupId}/${entry.emojiId}]:`
+			const emojiRef = formatEmojiToken(entry.groupId, entry.emojiId)
 			items.push({
 				kind: 'custom',
 				groupId: entry.groupId,
@@ -66,7 +67,7 @@ async function loadGroupItems(targetGroupId) {
 	const data = await resp.json()
 	if (!resp.ok) throw new Error(data.error || 'load failed')
 	return (data.entries || []).map(entry => {
-		const emojiRef = `:[${targetGroupId}/${entry.emojiId}]:`
+		const emojiRef = formatEmojiToken(targetGroupId, entry.emojiId)
 		return {
 			kind: 'custom',
 			groupId: targetGroupId,
@@ -171,7 +172,7 @@ function tokenForSelection(item) {
 	if (item.unicode) return item.unicode
 	if (item.emojiRef) return item.emojiRef
 	if (item.groupId && item.emojiId)
-		return `:[${item.groupId}/${item.emojiId}]:`
+		return formatEmojiToken(item.groupId, item.emojiId)
 	return ''
 }
 

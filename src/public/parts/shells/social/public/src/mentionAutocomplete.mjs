@@ -2,6 +2,7 @@
  * @ 提及 autocomplete（输入 @ 后弹出候选）。
  */
 
+import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
@@ -100,7 +101,7 @@ export function attachMentionAutocomplete(textarea) {
 	 */
 	function apply(row) {
 		if (!mentionRange) return
-		const mention = `@[hash:${row.entityHash}]`
+		const mention = formatEntityMentionToken(row.entityHash)
 		textarea.value = textarea.value.slice(0, mentionRange.start)
 			+ mention
 			+ textarea.value.slice(mentionRange.end)

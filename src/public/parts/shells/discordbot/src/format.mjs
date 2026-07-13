@@ -2,7 +2,9 @@ import { Buffer } from 'node:buffer'
 
 import { ChannelType } from 'npm:discord.js'
 
-const FOUNT_ENTITY_MENTION_RE = /@\[hash:([0-9a-f]{128})\]/gi
+import { formatEntityMentionToken } from '../../chat/public/shared/inlineTokenSyntax.mjs'
+
+const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
 
 /**
  * @param {Function} func 异步函数
@@ -244,17 +246,17 @@ export async function rewriteDiscordMentionsToFount(username, text) {
 	for (const match of matches.reverse()) {
 		const userId = match[1]
 		const hash = await resolveBridgeIdentity(username, 'discord', userId, '')
-		const token = `@[hash:${hash}]`
+		const token = formatEntityMentionToken(hash)
 		result = result.slice(0, match.index) + token + result.slice(match.index + match[0].length)
 	}
-	result = result.replace(/<@&\d+>/g, '@[everyone]')
-	result = result.replace(/@everyone/gi, '@[everyone]')
-	result = result.replace(/@here/gi, '@[here]')
+	result = result.replace(/<@&\d+>/g, '@[role:everyone]')
+	result = result.replace(/@everyone/gi, '@[role:everyone]')
+	result = result.replace(/@here/gi, '@[role:here]')
 	return result
 }
 
 /**
- * 出站：fount `@[hash]` → Discord mention 语法。
+ * 出站：fount `@[entity:…]` → Discord mention 语法。
  * @param {string} username replica
  * @param {string} text 正文
  * @returns {Promise<string>} 还原后正文

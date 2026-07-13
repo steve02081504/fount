@@ -2,9 +2,11 @@
  * 【文件】public/src/customEmojis.mjs
  * 【职责】用户级自定义表情库：列表、从群消息保存、解析文本中首个 emoji ref。
  * 【原理】REST /custom-emojis；saveCustomEmojiFromRef 复制群表情到用户 shellData。
- * 【数据结构】entries[] { groupId, emojiId, ... }；:[group/emoji]: token。
+ * 【数据结构】entries[] { groupId, emojiId, ... }；:[emoji:group/emoji]: token。
  * 【关联】markdown_ext/index.mjs、groupEmojiApi.mjs。
  */
+import { EMOJI_TOKEN_RE } from '../shared/inlineTokenSyntax.mjs'
+
 import { putCachedEmojiDataUrl, resolveEmojiUrlBestEffort } from './emojiCache.mjs'
 
 /**
@@ -19,7 +21,7 @@ export async function listCustomEmojis() {
 }
 
 /**
- * 将 `:[groupId/emojiId]:` 引用的表情保存到 shellData 并写入 IndexedDB 缓存。
+ * 将 `:[emoji:groupId/emojiId]:` 引用的表情保存到 shellData 并写入 IndexedDB 缓存。
  * @param {string} groupId 来源群
  * @param {string} emojiId 表情 id
  * @returns {Promise<object>} 保存后的条目
@@ -39,8 +41,6 @@ export async function saveCustomEmojiFromRef(groupId, emojiId) {
 	return data.entry
 }
 
-const EMOJI_TOKEN = /:\[([^/]+)\/([^\]]+)\]:/g
-
 /**
  * 从消息正文中提取首个自定义表情引用。
  * @param {string} text 消息文本
@@ -48,8 +48,8 @@ const EMOJI_TOKEN = /:\[([^/]+)\/([^\]]+)\]:/g
  */
 export function firstCustomEmojiRef(text) {
 	const s = String(text || '')
-	EMOJI_TOKEN.lastIndex = 0
-	const m = EMOJI_TOKEN.exec(s)
+	EMOJI_TOKEN_RE.lastIndex = 0
+	const m = EMOJI_TOKEN_RE.exec(s)
 	if (!m) return null
 	return { groupId: m[1], emojiId: m[2] }
 }

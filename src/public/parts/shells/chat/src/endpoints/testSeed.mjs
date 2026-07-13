@@ -36,7 +36,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 		const eventId = randomBytes(32).toString('hex')
 		const senderKey = randomBytes(32).toString('hex')
 		const at = Date.now()
-		const text = `${previewText} @[hash:${viewerEntityHash}]`
+		const text = `${previewText} @[entity:${viewerEntityHash}]`
 
 		await broadcastAndPersist(username, groupId, {
 			id: eventId,

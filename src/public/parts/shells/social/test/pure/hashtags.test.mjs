@@ -8,7 +8,7 @@ import { extractHashtagsFromText } from '../../src/lib/hashtags.mjs'
 import { postMatchesQuery } from '../../src/lib/postQuery.mjs'
 
 Deno.test('extractHashtagsFromText skips group refs', () => {
-	const tags = extractHashtagsFromText('see #[mygroup/default] and #hello')
+	const tags = extractHashtagsFromText('see #[channel:mygroup/default] and #hello')
 	assertEquals(tags.includes('hello'), true)
 	assertEquals(tags.includes('mygroup'), false)
 })

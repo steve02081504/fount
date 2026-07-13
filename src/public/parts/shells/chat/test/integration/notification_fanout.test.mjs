@@ -155,7 +155,7 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 		type: 'message',
 		eventId: `${'11'.repeat(32)}`,
 		sender: senderKey,
-		content: { type: 'text', content: 'wake @[here]' },
+		content: { type: 'text', content: 'wake @[role:here]' },
 		hlc: { wall: Date.now() },
 	}
 	const liveMentions = buildMentionsFromMessageLine(username, groupId, channelId, messageLine, state, { ingress: 'live' })

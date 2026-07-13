@@ -7,6 +7,7 @@ import { Buffer } from 'node:buffer'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { scanEmojiTokens } from '../../../social/src/lib/emojiPostEmbed.mjs'
+import { formatEmojiToken } from '../../public/shared/inlineTokenSyntax.mjs'
 import { computeEmojiContentHash } from '../../src/group/groupEmojis.mjs'
 
 Deno.test('computeEmojiContentHash is stable sha256 hex', () => {
@@ -35,7 +36,7 @@ Deno.test('emoji content hash for non-member reuse path', () => {
 })
 
 Deno.test('scanEmojiTokens finds group emoji markers', () => {
-	const refs = scanEmojiTokens('hello :[g1/e1]: world :[g2/e2]:')
+	const refs = scanEmojiTokens(`hello ${formatEmojiToken('g1', 'e1')} world ${formatEmojiToken('g2', 'e2')}`)
 	assertEquals(refs.length, 2)
 	assertEquals(refs[0], { groupId: 'g1', emojiId: 'e1' })
 })

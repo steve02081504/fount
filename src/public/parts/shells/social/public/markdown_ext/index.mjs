@@ -6,7 +6,7 @@ import { visit, SKIP } from 'https://esm.sh/unist-util-visit'
 import { expandChannelLinksInText } from '/parts/shells:chat/shared/expandChannelLinks.mjs'
 import { formatSocialSearchHref } from '../shared/runUri.mjs'
 
-/** 话题标签（不含 Chat `#[group/channel]`）。 */
+/** 话题标签（不含 Chat `#[channel:…]` 等 typed hash token）。 */
 const HASHTAG_RE = /#([\p{L}\p{N}_-]{2,32})/gu
 
 /**

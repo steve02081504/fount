@@ -5,17 +5,18 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import emojiProvider from '../../public/providers/emoji.mjs'
+import { formatEmojiToken } from '../../public/shared/inlineTokenSyntax.mjs'
 import stickerProvider from '../../public/providers/sticker.mjs'
 
 Deno.test('emoji provider tokenForSelection handles unicode and group refs', () => {
 	assertEquals(emojiProvider.tokenForSelection({ unicode: '👍' }), '👍')
 	assertEquals(
-		emojiProvider.tokenForSelection({ groupId: 'g1', emojiId: 'e1', emojiRef: ':[g1/e1]:' }),
-		':[g1/e1]:',
+		emojiProvider.tokenForSelection({ groupId: 'g1', emojiId: 'e1', emojiRef: formatEmojiToken('g1', 'e1') }),
+		formatEmojiToken('g1', 'e1'),
 	)
 	assertEquals(
 		emojiProvider.tokenForSelection({ groupId: 'g2', emojiId: 'e2' }),
-		':[g2/e2]:',
+		formatEmojiToken('g2', 'e2'),
 	)
 })
 

@@ -4,13 +4,12 @@
 import { visit } from 'npm:unist-util-visit'
 
 import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
+import { EMOJI_TOKEN_RE } from '../shared/inlineTokenSyntax.mjs'
 
 const EMOJI_CONTENT_API = '/api/parts/shells:chat/emoji-content'
 
-const EMOJI_TOKEN = /:\[([\w.-]+)\/([\w.-]+)\]:/g
-
 /**
- * remark：展开 `:[group/emoji]:` 与 `#[group/channel]`。
+ * remark：展开 `:[emoji:group/emoji]:` 与 `#[channel:…]` / `#[group:…]` / `#[message:…]`。
  * @returns {(tree: import('npm:@types/mdast').Root) => void} remark 插件。
  */
 function remarkChatDialect() {
@@ -20,8 +19,8 @@ function remarkChatDialect() {
 			let value = node.value
 			if (value.includes('#['))
 				value = expandChannelLinksInText(value)
-			if (value.includes(':[',))
-				value = value.replace(EMOJI_TOKEN, (_match, groupId, emojiId) => {
+			if (value.includes(':[emoji:'))
+				value = value.replace(EMOJI_TOKEN_RE, (_match, groupId, emojiId) => {
 					const src = `${EMOJI_CONTENT_API}/${encodeURIComponent(groupId)}/${encodeURIComponent(emojiId)}`
 					return `![emoji](${src})`
 				})

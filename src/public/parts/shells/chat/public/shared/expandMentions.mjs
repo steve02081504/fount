@@ -65,7 +65,7 @@ export function expandMentionsInMarkdown(text, labelMap, options = {}) {
 	const parts = []
 	let cursor = 0
 	for (const token of parseInlineTokens(source)) {
-		if (!token.kind || token.kind === 'emoji' || token.kind === 'channel') continue
+		if (!token.kind || token.kind === 'emoji' || token.kind === 'channel' || token.kind === 'group' || token.kind === 'message') continue
 		if (token.start > cursor) parts.push(source.slice(cursor, token.start))
 		if (token.kind === 'entity') {
 			const hash = token.body.toLowerCase()

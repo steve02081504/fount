@@ -31,7 +31,7 @@ export function extractMentionRoleIds(text) {
 
 /**
  * @param {string} text 正文
- * @returns {boolean} 是否含 @[everyone]
+ * @returns {boolean} 是否含 @[role:everyone]
  */
 export function hasEveryoneToken(text) {
 	return parseInlineTokens(text).some(token => token.kind === 'everyone' && token.body === 'everyone')
@@ -39,7 +39,7 @@ export function hasEveryoneToken(text) {
 
 /**
  * @param {string} text 正文
- * @returns {boolean} 是否含 @[here]
+ * @returns {boolean} 是否含 @[role:here]
  */
 export function hasHereToken(text) {
 	return parseInlineTokens(text).some(token => token.kind === 'everyone' && token.body === 'here')

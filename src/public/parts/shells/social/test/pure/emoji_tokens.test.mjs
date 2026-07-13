@@ -4,23 +4,26 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { formatEmojiToken } from '../../../chat/public/shared/inlineTokenSyntax.mjs'
 import { buildEmojiMediaRefsForPost, scanEmojiTokens } from '../../src/lib/emojiPostEmbed.mjs'
 
 Deno.test('post with emoji token yields media ref candidates', () => {
-	const refs = scanEmojiTokens('see :[privateGroup/customEmoji]: here')
+	const refs = scanEmojiTokens(`see ${formatEmojiToken('privateGroup', 'customEmoji')} here`)
 	assertEquals(refs[0]?.groupId, 'privateGroup')
 	assertEquals(refs[0]?.emojiId, 'customEmoji')
 })
 
 Deno.test('scanEmojiTokens deduplicates repeated tokens', () => {
-	const refs = scanEmojiTokens(':[a/b]: :[a/b]:')
+	const token = formatEmojiToken('a', 'b')
+	const refs = scanEmojiTokens(`${token} ${token}`)
 	assertEquals(refs.length, 1)
 })
 
-Deno.test('scanEmojiTokens requires trailing colon', () => {
-	const refs = scanEmojiTokens('seed :[g1/e1]: tail')
+Deno.test('scanEmojiTokens requires typed emoji prefix and trailing colon', () => {
+	const refs = scanEmojiTokens(`seed ${formatEmojiToken('g1', 'e1')} tail`)
 	assertEquals(refs, [{ groupId: 'g1', emojiId: 'e1' }])
-	assertEquals(scanEmojiTokens('see :[g1/e1] without colon'), [])
+	assertEquals(scanEmojiTokens('see :[g1/e1]: without emoji prefix'), [])
+	assertEquals(scanEmojiTokens('see :[emoji:g1/e1] without trailing colon'), [])
 })
 
 Deno.test('buildEmojiMediaRefsForPost empty when no emoji tokens', async () => {
@@ -30,7 +33,7 @@ Deno.test('buildEmojiMediaRefsForPost empty when no emoji tokens', async () => {
 
 Deno.test('feed mediaRef shape for groupEmoji embed', () => {
 	const contentHash = 'a'.repeat(64)
-	const refs = scanEmojiTokens(':[g1/e1]:')
+	const refs = scanEmojiTokens(formatEmojiToken('g1', 'e1'))
 	const mediaRefs = refs.map(({ groupId, emojiId }) => ({
 		kind: 'groupEmoji',
 		groupId,

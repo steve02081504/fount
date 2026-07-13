@@ -7,7 +7,13 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	expandChannelLinksInText,
 	formatChatGroupHref,
+	formatChatMessageHref,
 } from '../../../chat/public/shared/expandChannelLinks.mjs'
+import {
+	formatChannelToken,
+	formatGroupToken,
+	formatMessageToken,
+} from '../../../chat/public/shared/inlineTokenSyntax.mjs'
 import {
 	formatGroupRefMarkdownToken,
 	groupRefLabel,
@@ -24,16 +30,24 @@ Deno.test('expandChannelLinksInText expands channel and group tokens', () => {
 	const channelHref = formatChatGroupHref('g1', 'c1')
 	const groupHref = formatChatGroupHref('g2')
 	assertEquals(
-		expandChannelLinksInText('see #[g1/c1]'),
+		expandChannelLinksInText(`see ${formatChannelToken('g1', 'c1')}`),
 		`see [#g1/c1](${channelHref})`,
 	)
 	assertEquals(
-		expandChannelLinksInText('join #[g2]'),
+		expandChannelLinksInText(`join ${formatGroupToken('g2')}`),
 		`join [#g2](${groupHref})`,
 	)
 	assertEquals(
-		expandChannelLinksInText('#[g1/c1] then #[g2]'),
+		expandChannelLinksInText(`${formatChannelToken('g1', 'c1')} then ${formatGroupToken('g2')}`),
 		`[#g1/c1](${channelHref}) then [#g2](${groupHref})`,
+	)
+})
+
+Deno.test('expandChannelLinksInText expands message tokens', () => {
+	const messageHref = formatChatMessageHref('g1', 'c1', 'evt1234567890')
+	assertEquals(
+		expandChannelLinksInText(formatMessageToken('g1', 'c1', 'evt1234567890')),
+		`[#g1/c1/evt12345…](${messageHref})`,
 	)
 })
 
@@ -43,7 +57,7 @@ Deno.test('expandChannelLinksInText leaves plain hashtags unchanged', () => {
 
 Deno.test('expandChannelLinksInText href matches formatChatGroupHref', () => {
 	assertEquals(
-		expandChannelLinksInText('#[my-group/general]'),
+		expandChannelLinksInText(formatChannelToken('my-group', 'general')),
 		`[#my-group/general](${formatChatGroupHref('my-group', 'general')})`,
 	)
 })
@@ -55,7 +69,7 @@ Deno.test('groupRefLabel prefers custom label', () => {
 
 Deno.test('formatGroupRefMarkdownToken and strip', () => {
 	const token = formatGroupRefMarkdownToken('my-group', 'general')
-	assertEquals(token, '#[my-group/general]')
+	assertEquals(token, formatChannelToken('my-group', 'general'))
 	const stripped = stripGroupRefMarkdownTokens(`hello\n\n${token}\n\ntail`)
 	assertEquals(stripped, 'hello\n\ntail')
 })

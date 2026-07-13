@@ -1,4 +1,4 @@
-/** 话题标签（不含 Chat `#[group/channel]`）。 */
+/** 话题标签（不含 Chat `#[channel:…]` 等 typed hash token）。 */
 export const HASHTAG_TOKEN_RE = /#([\p{L}\p{N}_-]{2,32})/gu
 
 /**

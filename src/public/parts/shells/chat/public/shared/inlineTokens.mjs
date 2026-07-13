@@ -1,27 +1,30 @@
 /** inline token 唯一 tokenizer（chat/social 共用；勿用 /scripts/ 绝对路径）。 */
 import { isEntityHash128 } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id_parse'
 
-/** @typedef {'entity' | 'role' | 'everyone' | 'emoji' | 'channel'} InlineTokenKind */
+import { INLINE_TOKEN_RE } from './inlineTokenSyntax.mjs'
+
+/** @typedef {'entity' | 'role' | 'everyone' | 'emoji' | 'channel' | 'group' | 'message'} InlineTokenKind */
 
 /** @typedef {{ kind: InlineTokenKind, body: string, start: number, end: number }} InlineToken */
-
-const INLINE_TOKEN_RE = /@\[([^\]]+)\]|#\[([\w.-]+)\/([\w.-]+)\]|#\[([\w.-]+)\](?!\/\w)|:\[([\w.-]+)\/([\w.-]+)\]:/giu
 
 /**
  * @param {string} mentionBody @[] 内正文
  * @param {number} start token 起始偏移
  * @param {number} end token 结束偏移
- * @returns {InlineToken | null}
+ * @returns {InlineToken | null} 解析后的 mention token；无法识别则为 null
  */
 function parseBracketMention(mentionBody, start, end) {
 	const body = String(mentionBody || '').trim()
 	if (!body) return null
-	if (body === 'everyone' || body === 'here')
-		return { kind: 'everyone', body, start, end }
-	if (body.startsWith('role:'))
-		return { kind: 'role', body: body.slice('role:'.length), start, end }
-	if (body.startsWith('hash:')) {
-		const hash = body.slice('hash:'.length).trim().toLowerCase()
+	if (body.startsWith('role:')) {
+		const roleId = body.slice('role:'.length).trim()
+		if (!roleId) return null
+		if (roleId === 'everyone' || roleId === 'here')
+			return { kind: 'everyone', body: roleId, start, end }
+		return { kind: 'role', body: roleId, start, end }
+	}
+	if (body.startsWith('entity:')) {
+		const hash = body.slice('entity:'.length).trim().toLowerCase()
 		if (isEntityHash128(hash))
 			return { kind: 'entity', body: hash, start, end }
 	}
@@ -46,16 +49,25 @@ export function parseInlineTokens(text) {
 			if (mention) tokens.push(mention)
 			continue
 		}
-		if (match[2] !== undefined && match[3] !== undefined) {
-			tokens.push({ kind: 'channel', body: `${match[2]}/${match[3]}`, start, end })
+		if (match[2] !== undefined && match[3] !== undefined && match[4] !== undefined) {
+			tokens.push({
+				kind: 'message',
+				body: `${match[2]}/${match[3]}/${match[4]}`,
+				start,
+				end,
+			})
 			continue
 		}
-		if (match[4] !== undefined) {
-			tokens.push({ kind: 'channel', body: match[4], start, end })
+		if (match[5] !== undefined && match[6] !== undefined) {
+			tokens.push({ kind: 'channel', body: `${match[5]}/${match[6]}`, start, end })
 			continue
 		}
-		if (match[5] !== undefined && match[6] !== undefined)
-			tokens.push({ kind: 'emoji', body: `${match[5]}/${match[6]}`, start, end })
+		if (match[7] !== undefined) {
+			tokens.push({ kind: 'group', body: match[7], start, end })
+			continue
+		}
+		if (match[8] !== undefined && match[9] !== undefined)
+			tokens.push({ kind: 'emoji', body: `${match[8]}/${match[9]}`, start, end })
 	}
 	return tokens
 }

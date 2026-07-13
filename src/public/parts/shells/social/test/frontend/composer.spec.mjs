@@ -88,7 +88,7 @@ test.describe('Social composer', () => {
 		await expect(page.locator('.mention-panel .mention-option').first()).toBeVisible({ timeout: 20_000 })
 		await page.locator('.mention-panel .mention-option').first().click()
 		const value = await page.locator('#postText').inputValue()
-		expect(value).toMatch(/^@\[hash:[\da-f]{128}\]$/iu)
+		expect(value).toMatch(/^@\[entity:[\da-f]{128}\]$/iu)
 	})
 
 	test('visibility selector is available', async ({ page }) => {
