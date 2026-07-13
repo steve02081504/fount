@@ -43,7 +43,7 @@ function commitOptsFromAppend(secretKey, state, opts) {
 		skipCheckpointRebuild: opts.skipCheckpointRebuild,
 		skipGenesisSideEffects: opts.skipGenesisSideEffects,
 		federationExistingSlotOnly: opts.federationExistingSlotOnly,
-		federationJoinTimeoutMs: opts.federationJoinTimeoutMs,
+		ingress: opts.ingress,
 	}
 }
 

@@ -13,9 +13,9 @@
 
 import { inspect } from 'node:util'
 
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import {
 	appendDagGeneratingPlaceholder,
@@ -27,9 +27,12 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
+import { agentEntityHash } from '../lib/entity.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
 import { finishStreamBuffer } from '../ws/groupWsStreamBuffer.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
+import { dispatchCharError } from './charError.mjs'
 import { createCharPreviewStream } from './charPreviewStream.mjs'
 import { getChatRequest } from './chatRequest.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
@@ -42,16 +45,16 @@ import { deleteMessage } from './messages.mjs'
 import { chatLogEntry_t } from './models.mjs'
 import { addchar } from './partConfig.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
-import { resolveChar, resolveWorld } from './resolvePart.mjs'
-import { invokeGroupRpc } from './rpcInvoke.mjs'
-import { getCharBind, getGroupRuntime, isLocalNode } from './runtime.mjs'
-import { buildSerializableRequest } from './serializableRequest.mjs'
 import {
 	autoReplyBucketKey,
 	buildOnMessageEvent,
 	consumeAutoReplyToken,
 	loadAutoReplySettings,
 } from './replyThrottle.mjs'
+import { resolveChar, resolveWorld } from './resolvePart.mjs'
+import { invokeGroupRpc } from './rpcInvoke.mjs'
+import { getCharBind, getGroupRuntime, isLocalNode } from './runtime.mjs'
+import { buildSerializableRequest } from './serializableRequest.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
 /** @type {Set<string>} 进行中的角色生成（groupId\\0channelId\\0charname） */
@@ -229,9 +232,30 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			supported_functions: request.supported_functions,
 		}
 
-		// world 可代角色回复（GetCharReply 返回 null 表示放行给 char 本体）
-		const charReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
-			?? await request.char.interfaces.chat.GetReply(request)
+		let typingTimer = null
+		try {
+			const { getChatClient } = await import('../../api/index.mjs')
+			const selfHash = agentEntityHash(getLocalNodeHash(), `chars/${request.char_id}`).toLowerCase()
+			const genClient = await getChatClient(chatMetadata.username, selfHash)
+			const genGroup = await genClient.group(groupId)
+			const genChannel = await genGroup.channel(channelForStream)
+			void genChannel.typing().catch(() => {})
+			typingTimer = setInterval(() => {
+				void genChannel.typing().catch(() => {})
+			}, 5000)
+			typingTimer.unref?.()
+		}
+		catch { /* agent ChatClient 不可用时跳过出站 typing 心跳 */ }
+
+		let charReply
+		try {
+			// world 可代角色回复（GetCharReply 返回 null 表示放行给 char 本体）
+			charReply = await request.world.interfaces.chat.GetCharReply?.(request, request.char_id)
+				?? await request.char.interfaces.chat.GetReply(request)
+		}
+		finally {
+			if (typingTimer) clearInterval(typingTimer)
+		}
 
 		if (charReply === null) {
 			stream.abort('Generation result was null.')
@@ -277,6 +301,19 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 			await finalizeEntry(placeholderEntry, false)
 		}
 		else {
+			const handled = await dispatchCharError(request.char, error, {
+				username: chatMetadata.username,
+				source: 'GetReply',
+				groupId,
+				channelId: channelForStream,
+				charname: request.char_id,
+			})
+			if (handled) {
+				placeholderEntry.is_generating = false
+				const logIndex = chatMetadata.chatLog.findIndex(entry => entry.id === entryId)
+				if (logIndex !== -1) await deleteMessage(groupId, logIndex)
+				return
+			}
 			stream.abort(error?.message)
 			placeholderEntry.content = `\`\`\`\nError:\n${formatGenerationError(error)}\n\`\`\``
 			await finalizeEntry(placeholderEntry, true)
@@ -311,18 +348,28 @@ export async function getCharReplyFrequency(groupId) {
 		let frequency = session.charFrequencies?.[charname] ?? 1
 		if (char.interfaces?.chat?.onMessage) {
 			const bucketKey = autoReplyBucketKey(groupId, defaultChannelId, charname)
-			if (settings.enabled) {
-				const { allowed } = consumeAutoReplyToken(bucketKey, settings)
-				if (!allowed) {
-					frequency = 0
-					continue
-				}
-			}
 			const event = await buildOnMessageEvent(chatMetadata.username, groupId, defaultChannelId, charname)
-			const spoke = await char.interfaces.chat.onMessage(event).catch(() => false)
+			let spoke = false
+			try {
+				spoke = await char.interfaces.chat.onMessage(event)
+			}
+			catch (error) {
+				await dispatchCharError(char, error, {
+					username: chatMetadata.username,
+					source: 'onMessage',
+					groupId,
+					channelId: defaultChannelId,
+					charname,
+					event,
+				})
+				frequency = 0
+				continue
+			}
 			frequency = spoke ? 1e6 : 0
-			if (settings.enabled && spoke)
-				consumeAutoReplyToken(bucketKey, settings)
+			if (settings.enabled && spoke && frequency > 0) {
+				const { allowed } = consumeAutoReplyToken(bucketKey, settings)
+				if (!allowed) frequency = 0
+			}
 		}
 		if (frequency > 0)
 			result.push({ charname, frequency })
@@ -336,7 +383,7 @@ export async function getCharReplyFrequency(groupId) {
  * @param {Array<{ charname: string | null, frequency: number }>} replyFrequency 频率表
  * @returns {string | null | undefined} 角色名；无可选时 null/undefined
  */
-function pickNextCharForReply(replyFrequency) {
+export function pickNextCharForReply(replyFrequency) {
 	const totalWeight = replyFrequency.reduce((sum, entry) => sum + entry.frequency, 0)
 	if (totalWeight <= 0) return null
 	let random = Math.random() * totalWeight

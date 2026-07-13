@@ -1,5 +1,6 @@
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parseInboundJson } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import {
 	handleClientWsControlFrame,
@@ -53,6 +54,17 @@ export function registerWsRoutes(router) {
 				const wireMessage = parseInboundJson(raw)
 				if (!wireMessage) return
 				if (handleClientWsControlFrame(wireMessage)) return
+				if (wireMessage.type === 'typing') {
+					// Hub 人类 typing 入账（volatile，不进 DAG），供 channel.typingUsers() 消费
+					void (async () => {
+						const { recordChannelTyping } = await import('../chat/bridge/typing.mjs')
+						const { resolveOperatorEntityHash } = await import('../chat/lib/replica.mjs')
+						const entityHash = await resolveOperatorEntityHash(username)
+						if (entityHash)
+							recordChannelTyping(username, groupId, String(wireMessage.payload?.channelId || 'default'), entityHash)
+					})()
+					return
+				}
 				if (handleGroupSocketIdentityMessage(ws, wireMessage)) return
 				void handleGroupSocketRpcMessage(groupId, roomKey, ws, wireMessage)
 			})

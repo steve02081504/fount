@@ -161,7 +161,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			channelId: effectiveChannelId,
 			memberId,
 			member_roles,
-			personaForOther: options.personaForOther || undefined,
+			...state.groupSettings?.bridge ? { bridge: state.groupSettings.bridge } : {},
 		},
 	}
 

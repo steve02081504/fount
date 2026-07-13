@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 
+import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { commitChannelMessageEvent } from '../chat/channel/messageCommit.mjs'
 import { appendActorEvent } from '../chat/dag/append.mjs'
 import { createChannel as dagCreateChannel } from '../chat/dag/channelOps.mjs'
@@ -52,6 +53,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<void>}
 		 */
 		async typing() {
+			recordChannelTyping(ctx.username, groupId, channelId, ctx.actor.entityHash)
 			const state = await loadGroupState(ctx, groupId)
 			if (state.groupSettings?.bridge) {
 				await dispatchBridgeTyping(ctx, groupId, state, channelId)
@@ -63,6 +65,13 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				channelId,
 				memberId: ctx.actor.entityHash,
 			})
+		},
+		/**
+		 * @returns {Promise<string[]>} 当前频道正在输入的 entityHash 列表
+		 */
+		async typingUsers() {
+			const { listTypingEntities } = await import('../chat/bridge/typing.mjs')
+			return listTypingEntities(ctx.username, groupId, channelId)
 		},
 		/**
 		 * @param {{ limit?: number, before?: string }} [opts] 分页

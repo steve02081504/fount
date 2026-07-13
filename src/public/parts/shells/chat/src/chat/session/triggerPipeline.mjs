@@ -7,6 +7,7 @@ import { groupKindFromState } from '../lib/notifyPrefs.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 
 
+import { dispatchCharError } from './charError.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
 import { getCharListOfGroup } from './partConfig.mjs'
 import {
@@ -17,24 +18,7 @@ import {
 	tickAutoReplyFrequency,
 } from './replyThrottle.mjs'
 import { resolveChar } from './resolvePart.mjs'
-import { isCharReplyInFlight, triggerCharReply } from './triggerReply.mjs'
-
-/**
- * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {Array<{ charname: string, frequency: number }>} candidates 候选
- * @returns {string | null} 加权选中的角色名
- */
-function pickNextCharForReply(candidates) {
-	const totalWeight = candidates.reduce((sum, entry) => sum + entry.frequency, 0)
-	if (totalWeight <= 0) return null
-	let random = Math.random() * totalWeight
-	for (const { charname, frequency } of candidates) {
-		if (random < frequency) return charname
-		random -= frequency
-	}
-	return null
-}
+import { isCharReplyInFlight, pickNextCharForReply, triggerCharReply } from './triggerReply.mjs'
 
 /**
  * @param {object} session 物化 session
@@ -68,15 +52,28 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, mess
 	const bucketKey = autoReplyBucketKey(groupId, channelId, charname)
 
 	if (char.interfaces?.chat?.onMessage) {
+		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
+		let spoke = false
+		try {
+			spoke = await char.interfaces.chat.onMessage(event)
+		}
+		catch (error) {
+			await dispatchCharError(char, error, {
+				username,
+				source: 'onMessage',
+				groupId,
+				channelId,
+				charname,
+				event,
+			})
+			return false
+		}
+		if (!spoke) return false
 		if (settings.enabled && !mentioned) {
 			const { allowed } = consumeAutoReplyToken(bucketKey, settings)
 			if (!allowed) return false
 		}
-		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
-		const spoke = await char.interfaces.chat.onMessage(event).catch(() => false)
-		if (settings.enabled && spoke)
-			consumeAutoReplyToken(bucketKey, settings)
-		return spoke
+		return true
 	}
 
 	if (mentioned || charCount === 1 || isDm) return true

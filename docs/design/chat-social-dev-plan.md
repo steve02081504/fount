@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移地基（M7a + M7b + G1–G4）已齐、可动工；M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；M8–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -141,7 +141,7 @@ onMessage?: (event: {
 - DTO 契约（**修正原规划**）：`postBridgeMessage(username, dto)` 消费 `platform` / `platformChatId` / `platformThreadId?` / `platformMessageId` / `chatKind` / `chatName?` / `author{platformUserId, displayName, avatarUrl?}` / `text` / `files?` / `replyToPlatformMessageId?` / `timestamp?`。**没有结构化 `mentions` 字段**——入站 @ 由壳层 `format.mjs` 直接把正文改写为 `@[hash:...]` token，改写后正文即 canonical，extraction / fanout / 渲染免费复用。`postBridgeEdit` / `postBridgeDelete` 同族。
 - identity：`bridgeEntityHash(platform, platformUserId)`（sha512 派生伪 hash）、`bindBridgeIdentity(username, { platform, platformUserId, entityHash, displayName? })`、`resolveBridgeIdentity(username, platform, platformUserId, displayName?)`（绑定优先于派生，顺手刷新 `entityReverse` 反查表）、`lookupBridgeEntityReverse`（出站 @ 还原）。存储 `bridges.json = { mappings, identityMap, entityReverse }`；绑定路由 `PUT /api/parts/shells:chat/bridge/identity-bind`（`chat/src/endpoints/bridge.mjs`）已有。
 - outbound：`registerBridgeOutbound(username, groupId, handler)` 键 `username:groupId`，壳层首条入站后懒注册（`ensureOutboundHandler` + `primeOutboundRegistered`）；char 消息落盘后 `notifyBridgeOutbound`。
-- 三壳统一 `src/default_interface/main.mjs`（该目录为壳内正式结构并将长期保留——`*-api` 插件从中取运行实例 `getTelegramBotForChar` / `getDiscordClientForChar` / `getWechatRuntimeForChar`；原规划「目录消失」的说法作废）。`FormatOutboundReply` 钩子已进 `charAPI.ts` 与三壳；`TweakInboundDto` 仅 TG / DC 接线，wechatbot 未调（入 G4 顺手补齐或从 wechat 契约删除）。
+- 三壳统一 `src/default_interface/main.mjs`（该目录为壳内正式结构并将长期保留——`*-api` 插件从中取运行实例 `getTelegramBotForChar` / `getDiscordClientForChar` / `getWechatRuntimeForChar`；原规划「目录消失」的说法作废）。`FormatOutboundReply` 钩子已进 `charAPI.ts` 与三壳；`TweakInboundDto` 三壳统一在 `bridgeIngestDto`（`interfaceKit.mjs`）内调用一次。
 - bridgeOps 注册现状：telegram / discord = `{ sendTyping, kickMember, unbanMember, createInvite, leaveChat, openDm, getNativeContext }`；wechat 仅 `{ sendTyping, getNativeContext }`（平台能力所限，且无 edit/delete ingress——接受为长期不对齐项）。
 - **G3（已落地，`2026-07-13`）**：`telegrambot/src/format.mjs` 旧 chatLog 路径死代码（`TelegramMessageToFountChatLogEntry` / `telegramMediaGroupMessagesToFountChatLogEntry` 及 `is_from_owner` 依赖）已整段删除，全仓库 grep 为零；入站转换唯一入口为 DTO 路径 `telegramMessageToBridgeDto` / `telegramMediaGroupToBridgeDto`。详见 M6.5 节。
 - **G4（已落地，`2026-07-13`）**：M5/M6 验收欠账已补测（端到端链 + edit/delete + mock DTO + 贴纸 + `FormatOutboundReply` 跳过 + 四端触发一致性）。详见 M6.5 节。
@@ -198,56 +198,62 @@ onMessage?: (event: {
 
 ---
 
-## M7 — 龙胆迁移
+## M7 — 龙胆迁移（as-built，2026-07-13 返工）
 
-> 前置：M7a + M7b + M6.5（G1–G4 已全部落地）。映射表已按龙胆 `bot_core` / `interfaces/*` 真实能力清单逐项对照目标面实际 API 重写（每行落点均已核实存在或在 M7a/M7b 中新建）。
+> 落地：`2026-07-13`（返工补齐退化项）。测试：`gentian_m7.test.mjs`（4 契约用例）+ `bridge_typing.test.mjs` + 既有 bridge 集成测试。
 
-源码：`data/users/steve02081504/chars/GentianAphrodite/`（读该目录 `AGENTS.md` 先行）。现状：TG/DC 走 `bot_core`（队列 + 合并 + `trigger.mjs` 打分 + `PlatformAPI_t`），Hub 走 chat shell 直连 `reply_gener/GetReply`，`onMessage` 零实现——两套调度。
+源码：`data/users/steve02081504/chars/GentianAphrodite/`（架构见 `AGENTS.md`）。**已退役** `bot_core/` 与旧平台 handler 目录；TG/DC/Hub 统一走 `runTriggerPipeline` → `onMessage` → `GetReply`。
 
-### 迁移总则
+### fount 侧返工补齐（as-built）
 
-- 主人 = **operator entityHash**（M7b 认领后跨平台唯一）。龙胆 `Load` 时 `setCared(username, 自身 agentEntityHash, resolveOperatorEntityHash(username), true)` 一次；打分与命令门控用 `isCaredBy`。`OwnerUserID` / `OwnerUserName` / `OwnerNameKeywords` 等平台配置中，身份类字段作废，`OwnerNameKeywords`（昵称叫名打分）留在龙胆自己的配置里。
-- **直接回话走 ChatClient，不经 memory 传话**：固定应答类（复诵 / 情感复读 / 复读跟风 / 命令确认语 / 自裁告别语）在 `onMessage` 内 `client.messageFrom(event).reply(...)` 就地发出，然后返回 false 跳过生成管线——命令识别只跑一次，`GetReply` 与 `reply_gener/noAI` 不再为这些场景短路。`chat_scoped_char_memory` 只承载**真状态**（敷衍 / 静音 / 禁止词 / 催眠、主人在场抽查冷却），不作 onMessage → GetReply 的传话管道。
-- 敷衍模式是状态不是单次应答：开关在 `onMessage` 命令识别里落 memory；命中期间的「嗯嗯！」由 `GetReply` 读 memory 走 noAI 产出（触发裁决照常跑，改变的是「说什么」，归生成侧）。
-
-### 迁移映射表
-
-| 现有（已核对） | 去向（已核对的实际 API） |
+| 能力 | 落点 |
 | --- | --- |
-| `bot_core/trigger.mjs` 打分（关键词 / 叫名 / 主人分支 / 偏好期 / 概率裁决 / 主人+bot 连续对话强制触发） | 新建 `trigger/onMessage.mjs` 实现 `interfaces.chat.onMessage(event)`：上下文取 `event.message` + `event.chatReplyRequest.chat_log`；被 @ 判定 `messageMentionsEntity(event, 自身或主人 hash)`（主人经 role 被点名同样命中）；主人判定 `isCaredBy`；DM 判定 `event.group.kind === 'dm'`；`main.mjs` 的 `interfaces.chat` 挂 `onMessage` |
-| 主人命令：敷衍 / 不敷衍、耳朵开关（voice_sentinel）、禁止词、闭嘴静音 | `onMessage` 内命令识别；状态入 `chat_scoped_char_memory`；耳朵开关照旧 `setMyData`（龙胆自身子系统，与 chat 无关）；确认语就地 `message.reply(...)` 发出后返回 false |
-| **自裁**（原 `platformAPI.destroySelf` 裸断连接） | `onMessage` 内：告别语 `message.reply(...)` 就地发出 → 当前群 `group.bridgeBot().stop()`（M7a：完整壳级停止，含 EndJob 与 registry 清理）→ 返回 false；「全平台下线」= 遍历 `client.bridgeBots()` 逐停；Hub 原生群无平台连接可停，回一句拒绝即可（龙胆策略自决） |
-| 复读检测 / 情感字符复读 / 复诵 | `onMessage` 打分项（读 `chat_log` 近 10 条）；命中即 `message.reply(...)` 就地发出复读/复诵文本，返回 false（原 `sendAndLogReply` 不走 AI 的语义原样保留，且不再需要 noAI 二次识别） |
-| 消息队列 / `mergeChatLogEntries` / `fetchFilesForMessages` | **删除**——chat 管线供序列化 log 与附件 |
-| `interfaces/{telegram,discord}/{event-handlers,message-converter,state,world}.mjs` | **删除**——bridge 负责转换收发；IM 风格 prompt（原 `getPlatformWorld`）按 `event.group.bridge?.platform` 在龙胆 prompt 逻辑内自出 |
-| `platform-api.mjs`：`sendMessage` | `channel.send(reply)` / `message.reply(reply)` |
-| 〃 `sendTyping` | `channel.typing()` |
-| 〃 `fetchChannelHistory` | `channel.messages({ limit, before })`（DAG 历史；平台侧更早历史不补——TG 原实现本就返回 `[]`，有意收缩） |
-| 〃 `getBotUserId` / `getBotUsername` / `getBotDisplayName` | 自身 = `client.entityHash` + `group.member(client.entityHash).displayName`；平台原生 id 需要时走 `telegram.*` / `discord.*` 插件命名空间 |
-| 〃 `getOwnerUserName` / `getOwnerUserId` | **作废**——主人即 operator entityHash（M7b） |
-| 〃 `getChatNameForAI` | `group.name` / `channel.name` |
-| 〃 `destroySelf` | 见上「自裁」行 |
-| 〃 `logError` | `console.error`（`fount log` 统一采集）；`error.mjs` 的 AI 自修 / `reloadPart` 链保留在龙胆侧 |
-| 〃 `getPlatformSpecificPlugins` / `getPlatformWorld` | **删除**——M4.3 `codeContextPlugin` 注入 `fount.*`，`*-api` 插件注入平台命名空间；关键词门控提示策略留龙胆 prompt 逻辑 |
-| 〃 `getGroupMembers` | `group.members()`（桥接群经 M7a `listMembers` op + identity 映射；WX 未注册 → throw，与原「TG 仅管理员」同为平台事实） |
-| 〃 `generateInviteLink` | `group.createInvite()` |
-| 〃 `leaveGroup` | `group.leave()` |
-| 〃 `getGroupDefaultChannel` | `group.defaultChannel()` |
-| 〃 `sendDirectMessageToOwner` | `client.openDm(operatorHash)` → `channel.send` |
-| 〃 `getOwnerPresenceInGroups` / `onGroupJoin` / `onOwnerLeaveGroup`（入群主人检查、无主退群、主人离群跟退） | 无生命周期 hook（有意收缩）：`onMessage` 内**惰性低频抽查**（如 per-group 冷却一天，状态在 `chat_scoped_char_memory`）——`group.members()` 查 operatorHash（M7b 绑定后主人账号即 operator hash；TG 仅管理员可枚举时退化为近期消息作者判定），不在场则走原流程：`generateInsult` → `channel.send` → `group.leave()`；邀请链接私信主人 = `group.createInvite()` + `openDm().send` |
-| 主人 typing 等待（`waitForOwnerTypingToEnd`） | **有意收缩不迁移**——bridge 无 typing ingress；将来如需在 DTO 加 typing 事件另议 |
-| `interfaces/{telegram,discord}/api.mjs`（code_execution 裸平台客户端） | **删除**——M4.3 注入 + `*-api` 插件；桥接群原生逃生舱 = `bridgeOps.getNativeContext` 水合的平台命名空间 |
-| `interfaces/telegram/utils.mjs` 贴纸 / HTML 出站定制 | `interfaces.telegram.FormatOutboundReply`（M6 钩子已在），仅保留与壳层默认实现不同的部分 |
-| `telegram.BotSetup` / `discord.OnceClientReady` | 删除或收缩为空（连接归壳层默认管理） |
-| `bot_core/{index,reply,state,utils,group_handler,error}.mjs` | **删除**（`error.mjs` 的 AI 自修建议逻辑若保留，移龙胆通用错误处理，不再挂平台） |
+| typing 入站 + `channel.typingUsers()` | `chat/src/chat/bridge/typing.mjs`；DC `TypingStart` → `postBridgeTyping` |
+| 生成期 typing 心跳 | `triggerReply.mjs` `executeGeneration` 每 5s |
+| 群生命周期 | `interfaces.chat.onGroupEvent` + `bridge/groupEvents.mjs` |
+| 引用块 + `replyToEventId`（落 `extension.bridge.replyToEventId`） | TG/DC `format.mjs`；`ingress.mjs` |
+| Discord poll / TG `@username` | 各壳 `format.mjs` |
+| `extension.bridge` 水合 | `hydration.mjs` |
+| `OnError` 路由 | `charAPI.ts` + `session/charError.mjs` |
+| onMessage 无条件送达 | 节流改到意愿 true 后才扣 bucket |
+| DC 历史回填 | 新建桥接映射 backfill ~30 条（`backfilled` 持久化标记，重启不重拉） |
+| 声明式贴纸 | `interfaces.*.stickers`；壳默认出站 |
 
-### 验收
+### 龙胆侧（as-built）
 
-- 三端一致回归：同一段对话脚本在 Hub 原生群 / mock TG bridge / mock DC bridge 下 `onMessage` 触发裁决序列一致（叫名无 @、主人关键词、闭嘴静音、复读、敷衍均覆盖）。
-- 直接回话用例：主人发「龙胆复诵 \`x\`」→ `onMessage` 内 `message.reply` 落盘该文本、返回 false、`GetReply` 未被调、无递归触发。
-- 自裁用例：mock bridge 群内主人发「龙胆自裁」→ 告别语经 `message.reply` 就地发出 → mock `stopSelf` 被调 → 返回 false。
-- 主人识别用例：M7b 绑定后，主人 TG/DC 账号消息以 operatorHash 入账且 `isCaredBy` 命中；未绑定路人不命中。
-- `GentianAphrodite/` 目录内 grep 无 `platformAPI` / `bot_core` 残留。
+| 模块 | 路径 |
+| --- | --- |
+| 完整触发打分 | `trigger/scoring.mjs` |
+| 复读 / 命令 / typing 等待 | `trigger/{repeat,commands,helpers,constants}.mjs` |
+| 群守卫 | `trigger/groupGuard.mjs`（`onGroupEvent`） |
+| AI 自修 | 顶层 `OnError` → `reply_gener/error.mjs` |
+| 平台 API 插件 | `interfaces/{telegram,discord}/api.mjs` |
+| 贴纸声明 | `stickers.manifest.mjs` |
+| 契约 fixture（非龙胆逻辑副本） | `chat/test/fixtures/chars/gentian_m7/` |
+
+**已删**：`bot_core/`、`formatOutbound.mjs`、char 内贴纸出站逻辑。
+
+### 验收（as-built）
+
+- ✅ 复诵 / 自裁 / OnError / 主人识别：`gentian_m7.test.mjs`
+- ✅ typing ingress + `typingUsers`：`bridge_typing.test.mjs`
+- ✅ 引用解析链（`replyToPlatformMessageId` → `extension.bridge.replyToEventId`）/ onGroupEvent 分发 / `codeBridgeContext` 桥接元数据：`bridge_ingress.test.mjs` + `bridge_group_events.test.mjs`
+- ✅ DC poll 文本：`discordbot/test/pure/format.test.mjs`
+- ⚠️ DC 历史回填（含重启幂等）：靠 `bridges.json` 持久化 `backfilled` 标记，无集成测试（需真实 discord.js client，留待 live 验证）
+- ✅ 龙胆完整打分 / 复读 / 群管：龙胆 `trigger/` 单份真身；fixture 不复制 scoring
+
+### 迁移映射表（返工后归档）
+
+| 旧能力 | 新落点 |
+| --- | --- |
+| `bot_core/trigger.mjs` 打分 | `trigger/scoring.mjs` + `onMessage.mjs` |
+| 主人 typing 等待 | `waitForOwnerTypingEnd` + fount `bridge/typing.mjs` |
+| 群入/离/启动检查 | `onGroupEvent` + `groupGuard.mjs` |
+| DC 历史回填 | 壳 `ensureOutboundHandler` 首次注册时回填触发频道；`bridges.json` `backfilled` 标记跨重启幂等 |
+| `interfaces/{telegram,discord}/api.mjs` | **保留在龙胆** |
+| 贴纸出站 | char 声明 `interfaces.*.stickers`；壳层默认出站 |
+| AI 自修 | 顶层 `char.OnError` |
+| `formatOutbound` | **删除** |
 
 ---
 
@@ -427,7 +433,6 @@ graph LR
 - 全局唯一用户名注册：联邦下必被抢注，petname 模型替代。
 - shell 出品的回复生成 runtime 库：生成永远是 char 的活，重复代码靠删除多余调度层消解，不靠抽公共库转移责任。
 - char 级「杀进程」：fount 单进程多 char 共存，下线粒度到 bridge bot 实例（`stopSelf`）为止。
-- bridge typing ingress（主人 typing 等待）：龙胆该行为有意收缩不迁移，将来有真实需求再议。
 
 ## 后续方向（未排期备忘）
 

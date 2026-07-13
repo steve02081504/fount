@@ -9,7 +9,7 @@ const FOUNT_ENTITY_MENTION_RE = /@\[entity:([0-9a-f]{128})\]/gi
 /**
  * @param {Function} func 异步函数
  * @param {{ times?: number, WhenFailsWaitFor?: number }} [options] 重试选项
- * @returns {Promise<unknown>}
+ * @returns {Promise<unknown>} func 的返回值
  */
 async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } = {}) {
 	let lastError
@@ -34,9 +34,7 @@ export function splitDiscordReply(reply, split_length = 2000) {
 	let new_content_slices = []
 	let last = ''
 
-	/**
-	 *
-	 */
+	/** 收尾当前切片轮次。 */
 	function mapend() {
 		if (last) new_content_slices.push(last)
 		content_slices = new_content_slices
@@ -45,8 +43,8 @@ export function splitDiscordReply(reply, split_length = 2000) {
 	}
 
 	/**
-	 *
-	 * @param code_block
+	 * @param {string} code_block 围栏代码块文本
+	 * @returns {string[]} 按长度切分并保留围栏的片段
 	 */
 	function splitCodeBlock(code_block) {
 		const slices = code_block.trim().split('\n')
@@ -142,8 +140,8 @@ export function splitDiscordReply(reply, split_length = 2000) {
 }
 
 /**
- *
- * @param embed
+ * @param {import('npm:discord.js').Embed} embed Discord embed
+ * @returns {string} 可读文本（空 embed 返回空串）
  */
 function formatEmbed(embed) {
 	let embedContent = ''
@@ -160,8 +158,8 @@ function formatEmbed(embed) {
 }
 
 /**
- *
- * @param components
+ * @param {Array<object>} components Discord message components
+ * @returns {string} 递归提取的可读文本
  */
 function extractTextFromComponents(components) {
 	if (!Array.isArray(components) || !components.length) return ''
@@ -179,8 +177,8 @@ function extractTextFromComponents(components) {
 }
 
 /**
- *
- * @param message
+ * @param {import('npm:discord.js').Message} message Discord 消息
+ * @returns {string} 含 mention/embed/附件/组件的可读文本
  */
 function formatMessageContent(message) {
 	let content = message.content || ''
@@ -212,6 +210,41 @@ function formatMessageContent(message) {
 	}
 	if (message.editedTimestamp) content += '（已编辑）'
 	return content
+}
+
+/**
+ * @param {import('npm:discord.js').Poll} poll Discord 投票
+ * @returns {string} 可读文本
+ */
+export function formatDiscordPoll(poll) {
+	if (!poll) return ''
+	const lines = [`[投票] ${poll.question?.text || ''}`]
+	for (const answer of poll.answers?.values?.() || [])
+		lines.push(`- ${answer.text}${answer.votes != null ? ` (${answer.votes})` : ''}`)
+	if (poll.expiresTimestamp)
+		lines.push(`截止: ${new Date(poll.expiresTimestamp).toISOString()}`)
+	if (poll.allowMultiselect) lines.push('(多选)')
+	return lines.filter(Boolean).join('\n')
+}
+
+/**
+ * 引用块注入（与 Telegram bridge 对齐）。
+ * @param {import('npm:discord.js').Message} message 消息
+ * @param {import('npm:discord.js').Client} client 客户端
+ * @returns {Promise<string>} 引用前缀
+ */
+async function buildDiscordReplyQuoteBlock(message, client) {
+	const refId = message.reference?.messageId
+	if (!refId || !message.channel?.messages?.fetch) return ''
+	try {
+		const refMsg = await message.channel.messages.fetch(refId)
+		const refContent = formatMessageContent(refMsg)
+		const preview = refContent.slice(0, 80) + (refContent.length > 80 ? '...' : '')
+		if (!preview) return ''
+		const authorName = refMsg.author?.username || refMsg.author?.globalName || '未知用户'
+		return `${preview.split('\n').map(line => `> ${line}`).join('\n')}\n(回复 ${authorName})\n\n`
+	}
+	catch { return '' }
 }
 
 /**
@@ -309,7 +342,12 @@ export async function discordMessageToBridgeDto(message, client, ownerUsername) 
 	}
 	catch { /* displayName fallback */ }
 
-	const rawText = await getMessageFullContent(fullMessage, client)
+	let rawText = await getMessageFullContent(fullMessage, client)
+	rawText = await buildDiscordReplyQuoteBlock(fullMessage, client) + rawText
+	if (fullMessage.poll) {
+		const pollText = formatDiscordPoll(fullMessage.poll)
+		if (pollText) rawText = [rawText, pollText].filter(Boolean).join('\n\n')
+	}
 	const text = await rewriteDiscordMentionsToFount(ownerUsername, rawText)
 	const files = []
 	const processedUrls = new Set()

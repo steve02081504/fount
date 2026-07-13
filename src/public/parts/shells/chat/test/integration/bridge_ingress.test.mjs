@@ -554,7 +554,7 @@ Deno.test('postBridgeDelete removes message from channel display', async () => {
 	assert(!after.some(row => row.eventId === event.id))
 })
 
-Deno.test('full chain: postBridgeMessage → GetReply → notifyBridgeOutbound', async () => {
+Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridgeOutbound', async () => {
 	const username = `bridge-chain-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -569,31 +569,19 @@ Deno.test('full chain: postBridgeMessage → GetReply → notifyBridgeOutbound',
 	})
 	await ensureServer()
 
-	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
 	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
-	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
-	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { loadPart } = await import('fount/server/parts_loader.mjs')
 
 	const platformChatId = 930001
-	const { groupId } = await ensureBridgeGroup(username, {
-		platform: 'telegram',
-		platformChatId,
-		chatKind: 'group',
-		name: 'tg-full-chain',
-	})
-	await addchar(groupId, CHAR_PLAIN_B, username)
-	const channelId = await getDefaultChannelId(username, groupId)
-
+	const charAPI = await loadPart(username, `chars/${CHAR_PLAIN_B}`)
+	/** @type {string | undefined} */
+	let groupId
 	/** @type {object[]} */
 	const outboundLines = []
-	registerBridgeOutbound(username, groupId, async ({ messageLine }) => {
-		outboundLines.push(messageLine)
-		return { platformMessageId: 4242 }
-	})
-
-	await postBridgeMessage(username, {
+	await bridgeIngestDto(username, charAPI, 'telegram', {
 		platform: 'telegram',
 		platformChatId,
 		chatKind: 'group',
@@ -601,8 +589,15 @@ Deno.test('full chain: postBridgeMessage → GetReply → notifyBridgeOutbound',
 		author: { platformUserId: 9001, displayName: 'Peer' },
 		text: 'trigger full chain',
 		timestamp: Date.now(),
-	})
+	}, async gid => {
+		groupId = gid
+		registerBridgeOutbound(username, gid, async ({ messageLine }) => {
+			outboundLines.push(messageLine)
+			return { platformMessageId: 4242 }
+		})
+	}, 'chain-bot', CHAR_PLAIN_B)
 
+	const channelId = await getDefaultChannelId(username, groupId)
 	await waitUntil(async () => {
 		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 20 })
 		return messages.some(row => String(row.content?.content || '').includes('plain_reply_b reply'))
@@ -612,4 +607,120 @@ Deno.test('full chain: postBridgeMessage → GetReply → notifyBridgeOutbound',
 		row.charId === CHAR_PLAIN_B
 		|| String(row.content?.content || '').includes('plain_reply_b reply'),
 	), 15000)
+})
+
+Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId; codeBridgeContext reads hydrated meta', async () => {
+	const username = `bridge-reply-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_reply_',
+		minP2pNode: true,
+		/** @param {string} user replica */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
+		},
+	})
+	await ensureServer()
+
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
+	const {
+		bridgeMetaFromChatLogEntry,
+		findTriggerChatLogEntry,
+	} = await import('../../src/chat/lib/codeBridgeContext.mjs')
+
+	const platformChatId = 960001
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		name: 'reply-chain',
+	})
+	await addchar(groupId, CHAR_PLAIN_B, username)
+	const channelId = await getDefaultChannelId(username, groupId)
+
+	const author = { platformUserId: 9101, displayName: 'Quoter' }
+	const first = await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId: 901,
+		author,
+		text: 'original message',
+		timestamp: Date.now(),
+	})
+	await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId: 902,
+		author,
+		text: 'quoting reply',
+		replyToPlatformMessageId: 901,
+		timestamp: Date.now(),
+	})
+
+	const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 10 })
+	const quoted = messages.find(row => String(row.content?.content || '').includes('quoting reply'))
+	assert(quoted)
+	assertEquals(quoted.content.extension.bridge.replyToEventId, first.id)
+	assertEquals(quoted.content.extension.bridge.replyToPlatformMessageId, '901')
+
+	// 水合后 chat_log 行上 bridge 元数据在 entry.extension.bridge，codeBridgeContext 必须能读到
+	const req = await getChatRequest(groupId, CHAR_PLAIN_B, channelId, { replicaUsername: username })
+	const trigger = findTriggerChatLogEntry(req.chat_log)
+	assert(trigger)
+	const meta = bridgeMetaFromChatLogEntry(trigger)
+	assert(meta)
+	assertEquals(meta.platformMessageId, '902')
+	assertEquals(meta.replyToEventId, first.id)
+})
+
+Deno.test('getChatRequest exposes extension.bridge on bridge groups', async () => {
+	const username = `bridge-ext-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_bridge_ext_',
+		minP2pNode: true,
+		/** @param {string} user replica */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
+		},
+	})
+	await ensureServer()
+
+	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
+	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
+	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+
+	const platformChatId = 940001
+	const { groupId } = await ensureBridgeGroup(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		botname: 'ext-bot',
+	})
+	await addchar(groupId, CHAR_PLAIN_B, username)
+	await postBridgeMessage(username, {
+		platform: 'telegram',
+		platformChatId,
+		chatKind: 'group',
+		platformMessageId: 801,
+		author: { platformUserId: 9002, displayName: 'Peer' },
+		text: 'bridge extension probe',
+		timestamp: Date.now(),
+	})
+
+	const req = await getChatRequest(groupId, CHAR_PLAIN_B, null, { replicaUsername: username })
+	assertEquals(req.extension?.bridge?.platform, 'telegram')
+	assertEquals(req.extension?.bridge?.botname, 'ext-bot')
 })

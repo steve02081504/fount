@@ -1,0 +1,7 @@
+{
+	"name": "gentian_m7",
+	"description": "M7 龙胆 onMessage 验收 fixture",
+	"author": "fount",
+	"version": "1.0.0",
+	"tags": ["test", "m7"]
+}

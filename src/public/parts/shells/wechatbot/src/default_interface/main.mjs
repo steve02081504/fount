@@ -4,7 +4,6 @@ import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
-	primeOutboundRegistered,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
@@ -233,13 +232,11 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 			outboundRegistered.add(groupId)
 		}
 
-		primeOutboundRegistered(outboundRegistered, ownerUsername)
-
 		/**
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'wechat', dto, ensureOutboundHandler, botname)
+			await bridgeIngestDto(ownerUsername, charAPI, 'wechat', dto, ensureOutboundHandler, botname, botCharname)
 		}
 
 		try {

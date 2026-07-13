@@ -199,6 +199,8 @@ async function buildChatLogEntryFromDagMessage(
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
 	const fileCount = editOverride?.fileCount != null ? editOverride.fileCount : content.fileCount
 	if (fileCount != null) entry.extension = { ...entry.extension, dagFileCount: fileCount }
+	if (content.extension?.bridge)
+		entry.extension = { ...entry.extension || {}, bridge: { ...content.extension.bridge } }
 	if (content.visibility) entry.visibility = content.visibility
 	if (content.charVisibility?.length) entry.charVisibility = content.charVisibility
 	return entry

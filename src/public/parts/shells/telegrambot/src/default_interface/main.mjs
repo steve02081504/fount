@@ -1,11 +1,11 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 import { postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
-	primeOutboundRegistered,
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
@@ -71,6 +71,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 	async function SimpleTelegramBotSetup(bot, interfaceConfig, botname) {
 		const botInfo = bot.botInfo || await tryFewTimes(() => bot.telegram.getMe())
 		const DefaultParseModeOptions = { parse_mode: 'HTML' }
+		const stickerMap = charAPI.interfaces.telegram?.stickers || {}
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
@@ -229,12 +230,20 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					}))
 					if (!firstMessageId) firstMessageId = sent.message_id
 				}
+				for (const file of messageLine.files || []) {
+					const name = String(file.name || '')
+					const base = name.replace(/\.avif$/i, '')
+					const mapping = stickerMap[name] || stickerMap[`${base}.avif`] || stickerMap[base]
+					if (!mapping?.fileId) continue
+					const sent = await tryFewTimes(() => bot.telegram.sendSticker(platformChatId, mapping.fileId, {
+						...threadKey ? { message_thread_id: Number(threadKey) } : {},
+					}))
+					if (!firstMessageId) firstMessageId = sent.message_id
+				}
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})
 			outboundRegistered.add(groupId)
 		}
-
-		primeOutboundRegistered(outboundRegistered, ownerUsername)
 
 		/** @type {Map<string, { messages: object[], context: TelegrafContext, timer: ReturnType<typeof setTimeout> | null }>} */
 		const telegramMediaGroupBuffers = new Map()
@@ -276,7 +285,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'telegram', dto, ensureOutboundHandler, botname)
+			await bridgeIngestDto(ownerUsername, charAPI, 'telegram', dto, ensureOutboundHandler, botname, botCharname)
 		}
 
 		bot.on('edited_message', async context => {
@@ -326,6 +335,45 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		bot.catch((err, ctx) => {
 			console.error(`[TelegramBridge] Telegraf error for update ${ctx.updateType || 'unknown'}:`, err)
 		})
+
+		bot.on('my_chat_member', async context => {
+			const update = context.update?.my_chat_member
+			if (!update?.chat || update.new_chat_member?.user?.id !== botInfo.id) return
+			const status = update.new_chat_member?.status
+			if (status !== 'member' && status !== 'administrator') return
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'bot_joined_group',
+					platform: 'telegram',
+					platformChatId: update.chat.id,
+					chatName: update.chat.title || String(update.chat.id),
+					botname,
+				})
+			}
+			catch (error) { console.error('[TelegramBridge] postBridgeGroupEvent my_chat_member failed:', error) }
+		})
+
+		bot.on('chat_member', async context => {
+			const update = context.update?.chat_member
+			if (!update?.chat || !update.new_chat_member) return
+			const status = update.new_chat_member.status
+			if (status !== 'left' && status !== 'kicked') return
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'member_left',
+					platform: 'telegram',
+					platformChatId: update.chat.id,
+					member: {
+						platformUserId: update.new_chat_member.user.id,
+						displayName: update.new_chat_member.user.first_name || update.new_chat_member.user.username,
+					},
+					botname,
+				})
+			}
+			catch (error) { console.error('[TelegramBridge] postBridgeGroupEvent chat_member failed:', error) }
+		})
+
+		await dispatchBridgeBotStarted(ownerUsername, 'telegram', botname)
 	}
 
 	return {

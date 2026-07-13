@@ -145,6 +145,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
  *   entry?: object | null,
  *   origin?: 'human' | 'char' | 'greeting' | 'bridge',
  *   skipWorldHook?: boolean,
+ *   ingress?: 'live' | 'backfill',
  * }} args 落盘参数
  * @returns {Promise<object>} 已签名 DAG 事件
  */
@@ -158,6 +159,7 @@ export async function commitChannelMessageEvent(args) {
 		entry = null,
 		origin = 'human',
 		skipWorldHook = false,
+		ingress,
 	} = args
 	let { content } = args
 
@@ -190,7 +192,7 @@ export async function commitChannelMessageEvent(args) {
 		timestamp,
 		...charId ? { charId } : {},
 		content: channelMessageContentObject(canonical),
-	})
+	}, { ...ingress ? { ingress } : {} })
 
 	if (event?.id && entry)
 		entry.extension = { ...entry.extension || {}, dagEventId: event.id }

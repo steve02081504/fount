@@ -2,23 +2,29 @@ import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js
 
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeDelete, postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
+import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
-	primeOutboundRegistered,
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
 import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
-import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
+import {
+	isBridgeGroupBackfilled,
+	lookupBridgePlatformChannel,
+	markBridgeGroupBackfilled,
+} from '../../chat/src/chat/bridge/registry.mjs'
+import { postBridgeTyping } from '../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
 	restoreFountMentionsForDiscord,
 	splitDiscordReply,
 } from '../format.mjs'
 import { resolveOwnerPlatformUserId } from '../ownerResolve.mjs'
+import { resolveOutboundDiscordStickers } from '../stickers.mjs'
 
 /**
  * @typedef {import('npm:discord.js').Client} DiscordClient
@@ -59,6 +65,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 	async function SimpleDiscordBotMain(client, interfaceConfig, botname) {
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
+		const stickerMap = charAPI.interfaces.discord?.stickers || {}
 
 		registerBridgeOps(ownerUsername, 'discord', botname, {
 			/**
@@ -157,8 +164,9 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		/**
 		 * @param {string} groupId 群 ID
 		 * @param {{ platformChatId: string }} bridge 桥接设置
+		 * @param {object} [sourceDto] 触发注册的入站 DTO（回填频道定位）
 		 */
-		async function ensureOutboundHandler(groupId, bridge) {
+		async function ensureOutboundHandler(groupId, bridge, sourceDto) {
 			if (outboundRegistered.has(groupId)) return
 			registerBridgeOutbound(ownerUsername, groupId, async ({ channelId, messageLine }) => {
 				const platformChannel = lookupBridgePlatformChannel(ownerUsername, groupId, channelId)
@@ -171,8 +179,21 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				const rawText = channelMessageAgentText(messageLine.content) || ''
 				const plainText = await restoreFountMentionsForDiscord(ownerUsername, rawText)
 				const replyEntry = messageLineToReplyEntry(messageLine, botCharname)
-				const files = (messageLine.files || []).map(file => ({
+				const rawFiles = (messageLine.files || []).map(file => ({
 					attachment: file.buffer,
+					name: file.name,
+					description: file.description,
+					buffer: file.buffer,
+				}))
+				const { emojiTokens, attachmentFiles: stickerResolved } = await resolveOutboundDiscordStickers(
+					client,
+					stickerMap,
+					rawFiles,
+				)
+				let plainWithEmoji = plainText
+				if (emojiTokens.length) plainWithEmoji = [plainText, ...emojiTokens].filter(Boolean).join('\n')
+				const files = stickerResolved.map(file => ({
+					attachment: file.buffer ?? file.attachment,
 					name: file.name,
 					description: file.description,
 				}))
@@ -193,7 +214,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				})) return {}
 
 				let firstMessageId = null
-				const textChunks = splitDiscordReply(plainText)
+				const textChunks = splitDiscordReply(plainWithEmoji)
 				const fileChunks = []
 				for (let i = 0; i < files.length; i += 10)
 					fileChunks.push(files.slice(i, i + 10))
@@ -213,15 +234,38 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})
 			outboundRegistered.add(groupId)
+			if (!isBridgeGroupBackfilled(ownerUsername, groupId)) {
+				markBridgeGroupBackfilled(ownerUsername, groupId)
+				void (async () => {
+					try {
+						// 回填触发本次映射的平台频道（DM 时 platformChatId 即频道）
+						const targetChannelId = sourceDto?.platformThreadId
+							?? (sourceDto?.chatKind === 'dm' ? sourceDto.platformChatId : null)
+						if (!targetChannelId) return
+						const channel = await client.channels.fetch(String(targetChannelId))
+						if (!channel?.messages?.fetch) return
+						const batch = await channel.messages.fetch({ limit: 30 })
+						const ordered = [...batch.values()].sort((a, b) => a.createdTimestamp - b.createdTimestamp)
+						for (const msg of ordered) {
+							if (!shouldAcceptMessage(msg)) continue
+							if (String(msg.id) === String(sourceDto?.platformMessageId)) continue
+							const dto = await discordMessageToBridgeDto(msg, client, ownerUsername)
+							if (!dto) continue
+							dto.ingress = 'backfill'
+							dto.botname = botname
+							await postBridgeMessage(ownerUsername, dto)
+						}
+					}
+					catch (error) { console.error('[DiscordBridge] history backfill failed:', error) }
+				})()
+			}
 		}
-
-		primeOutboundRegistered(outboundRegistered, ownerUsername)
 
 		/**
 		 * @param {object} dto 桥接 DTO
 		 */
 		async function ingestDto(dto) {
-			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler, botname)
+			await bridgeIngestDto(ownerUsername, charAPI, 'discord', dto, ensureOutboundHandler, botname, botCharname)
 		}
 
 		/**
@@ -254,6 +298,35 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			catch (error) { console.error('[DiscordBridge] postBridgeEdit failed:', error) }
 		})
 
+		client.on(Events.GuildCreate, async guild => {
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'bot_joined_group',
+					platform: 'discord',
+					platformChatId: guild.id,
+					chatName: guild.name,
+					botname,
+				})
+			}
+			catch (error) { console.error('[DiscordBridge] postBridgeGroupEvent guild create failed:', error) }
+		})
+
+		client.on(Events.GuildMemberRemove, async member => {
+			try {
+				await postBridgeGroupEvent(ownerUsername, {
+					type: 'member_left',
+					platform: 'discord',
+					platformChatId: member.guild.id,
+					member: {
+						platformUserId: member.user.id,
+						displayName: member.user.username,
+					},
+					botname,
+				})
+			}
+			catch (error) { console.error('[DiscordBridge] postBridgeGroupEvent member remove failed:', error) }
+		})
+
 		client.on(Events.MessageDelete, async message => {
 			if (!message.channelId || !message.id) return
 			const isDm = message.channel?.type === ChannelType.DM
@@ -267,6 +340,39 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 			}
 			catch (error) { console.error('[DiscordBridge] postBridgeDelete failed:', error) }
 		})
+
+		client.on(Events.TypingStart, async typing => {
+			const user = typing.user
+			if (!user || user.bot) return
+			const channel = typing.channel
+			if (!channel) return
+			if (channel.type === ChannelType.DM) {
+				if (user.username !== interfaceConfig.OwnerUserName) return
+				try {
+					await postBridgeTyping(ownerUsername, {
+						platform: 'discord',
+						platformChatId: channel.id,
+						platformUserId: user.id,
+						displayName: user.globalName || user.username,
+					})
+				}
+				catch (error) { console.error('[DiscordBridge] postBridgeTyping failed:', error) }
+				return
+			}
+			if (!channel.isTextBased?.() || !typing.guildId) return
+			try {
+				await postBridgeTyping(ownerUsername, {
+					platform: 'discord',
+					platformChatId: typing.guildId,
+					platformThreadId: channel.id,
+					platformUserId: user.id,
+					displayName: user.globalName || user.username,
+				})
+			}
+			catch (error) { console.error('[DiscordBridge] postBridgeTyping failed:', error) }
+		})
+
+		await dispatchBridgeBotStarted(ownerUsername, 'discord', botname)
 	}
 
 	return {

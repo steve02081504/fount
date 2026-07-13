@@ -15,6 +15,20 @@ import { unlockAchievement } from '../../achievements/src/api.mjs'
  */
 
 /**
+ * char 可只挂 FormatOutboundReply 等钩子；缺 BotSetup 时合并 default 壳层接口。
+ * @param {CharAPI_t} char 角色 API
+ * @param {string} username replica
+ * @param {string} charname 角色名
+ * @returns {Promise<void>}
+ */
+async function ensureTelegramBotInterface(char, username, charname) {
+	if (char.interfaces.telegram?.BotSetup) return
+	const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
+	const defaults = await createSimpleTelegramInterface(char, username, charname)
+	char.interfaces.telegram = { ...defaults, ...char.interfaces.telegram }
+}
+
+/**
  * Telegram Bot 的核心逻辑。
  */
 
@@ -74,11 +88,7 @@ export function getBotConfig(username, botname) {
  */
 export async function getBotConfigTemplate(username, charname) {
 	const char = await loadPart(username, 'chars/' + charname)
-	// 如果角色没有定义 telegram 接口，则使用默认接口
-	if (!char.interfaces.telegram) {
-		const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
-		char.interfaces.telegram = await createSimpleTelegramInterface(char, username, charname)
-	}
+	await ensureTelegramBotInterface(char, username, charname)
 	// 调用角色接口的 GetBotConfigTemplate 方法，如果不存在则返回空对象
 	return await char.interfaces.telegram?.GetBotConfigTemplate?.() || {}
 }
@@ -126,11 +136,7 @@ export async function runBot(username, botname) {
 	// 将启动过程包装在 Promise 中并存入缓存，以防止重复启动
 	botCache[botname] = (async () => {
 		const char = await loadPart(username, 'chars/' + config.char)
-		// 如果角色没有定义 telegram 接口，则使用默认接口
-		if (!char.interfaces.telegram) {
-			const { createSimpleTelegramInterface } = await import('./default_interface/main.mjs')
-			char.interfaces.telegram = await createSimpleTelegramInterface(char, username, config.char)
-		}
+		await ensureTelegramBotInterface(char, username, config.char)
 		return await startTelegrafBot(config, char, botname)
 	})()
 

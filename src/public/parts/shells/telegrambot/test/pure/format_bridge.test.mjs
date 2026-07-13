@@ -6,9 +6,9 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
+import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
 
 import {
 	aiMarkdownToTelegramHtml,
@@ -20,7 +20,7 @@ import {
 /**
  * 对齐 telegrambot default_interface 出站分支：FormatOutboundReply 返回 true 则跳过默认 HTML。
  * @param {{ FormatOutboundReply?: Function, replyEntry: object, plainText: string, send: Function }} args 参数
- * @returns {Promise<{ path: 'custom' | 'default', htmlParts: string[], stickerIds: string[], sendCalls: object[] }>}
+ * @returns {Promise<{ path: 'custom' | 'default', htmlParts: string[], stickerIds: string[], sendCalls: object[] }>} 走过的分支与出站记录
  */
 async function dispatchTelegramOutbound({ FormatOutboundReply, replyEntry, plainText, send }) {
 	const { cleanMarkdown, stickerIds } = extractStickerIdsFromMarkdown(plainText)
@@ -28,7 +28,7 @@ async function dispatchTelegramOutbound({ FormatOutboundReply, replyEntry, plain
 	const sendCalls = []
 	/**
 	 * @param {object} payload 出站载荷
-	 * @returns {Promise<object>}
+	 * @returns {Promise<object>} send 的返回值
 	 */
 	const trackedSend = async payload => {
 		sendCalls.push(payload)
@@ -43,12 +43,12 @@ async function dispatchTelegramOutbound({ FormatOutboundReply, replyEntry, plain
 
 	/** @type {string[]} */
 	const htmlParts = []
-	if (cleanMarkdown.trim()) {
+	if (cleanMarkdown.trim()) 
 		for (const part of splitTelegramReply(aiMarkdownToTelegramHtml(cleanMarkdown))) {
 			htmlParts.push(part)
 			await trackedSend({ text: part })
 		}
-	}
+	
 	if (stickerIds.length)
 		await trackedSend({ stickerIds })
 	return { path: 'default', htmlParts, stickerIds, sendCalls }
@@ -79,10 +79,20 @@ Deno.test('FormatOutboundReply true skips default HTML path and still uses send'
 	const result = await dispatchTelegramOutbound({
 		replyEntry: { content: 'ignored-by-custom' },
 		plainText: '**should not become default html** <:sticker_file:set:>',
+		/**
+		 * @param {object} _entry 回复条目（此测试不使用）
+		 * @param {{ send: Function }} root0 出站上下文
+		 * @param {Function} root0.send 出站发送函数
+		 * @returns {Promise<boolean>} true 表示接管出站
+		 */
 		FormatOutboundReply: async (_entry, { send }) => {
 			await send({ text: 'custom-body' })
 			return true
 		},
+		/**
+		 * @param {object} payload 出站载荷
+		 * @returns {Promise<object>} 模拟发送结果
+		 */
 		send: async payload => {
 			if (payload.text?.includes('<b>'))
 				defaultHtmlSeen.push(payload.text)
@@ -100,6 +110,7 @@ Deno.test('default outbound path formats HTML and forwards sticker ids', async (
 	const result = await dispatchTelegramOutbound({
 		replyEntry: { content: 'plain' },
 		plainText: '**hi** <:file_ABC:cool_set:🎉>',
+		/** @returns {Promise<object>} 模拟发送结果 */
 		send: async () => ({ platformMessageId: 2 }),
 	})
 	assertEquals(result.path, 'default')
@@ -152,7 +163,7 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 	assertEquals(dto.chatKind, 'group')
 	assertEquals(dto.chatName, 'Bridge Group')
 	assertEquals(dto.author.platformUserId, 11)
-	assertEquals(dto.author.displayName, 'Bob Builder')
+	assertEquals(dto.author.displayName, 'Bob Builder (@bob)')
 	assertEquals(dto.replyToPlatformMessageId, 66)
 	assertEquals(dto.timestamp, 1_700_000_000_000)
 	assert(dto.text.includes(`@[entity:${expectedHash}]`))

@@ -199,6 +199,9 @@ export async function postBridgeMessage(username, dto) {
 	)
 
 	let content = await buildBridgeMessageContent(username, groupId, dto.text, dto.files)
+	const replyToEventId = dto.replyToPlatformMessageId != null
+		? lookupBridgeEventId(username, groupId, dto.replyToPlatformMessageId)
+		: null
 	content = {
 		...content,
 		displayName: String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`,
@@ -215,6 +218,7 @@ export async function postBridgeMessage(username, dto) {
 				...dto.replyToPlatformMessageId != null
 					? { replyToPlatformMessageId: String(dto.replyToPlatformMessageId) }
 					: {},
+				...replyToEventId ? { replyToEventId } : {},
 			},
 		},
 	}
@@ -228,6 +232,7 @@ export async function postBridgeMessage(username, dto) {
 		timestamp: dto.timestamp ? Number(dto.timestamp) : Date.now(),
 		origin: 'bridge',
 		skipWorldHook: true,
+		...dto.ingress === 'backfill' ? { ingress: 'backfill' } : {},
 	})
 
 	if (event?.id)

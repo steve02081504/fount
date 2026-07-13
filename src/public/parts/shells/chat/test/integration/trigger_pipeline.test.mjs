@@ -6,7 +6,7 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { onMessageProbeState } from '../fixtures/on_message_probe_state.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
@@ -27,7 +27,7 @@ async function seedCharFixture(dataDir, username) {
 	await cp(from, to, { recursive: true })
 }
 
-Deno.test('token bucket suppresses onMessage when exhausted', async () => {
+Deno.test('token bucket suppresses generation not onMessage when exhausted', async () => {
 	const username = `tb-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbeState()
 	probe.reset()
@@ -35,6 +35,10 @@ Deno.test('token bucket suppresses onMessage when exhausted', async () => {
 		username,
 		tempDirPrefix: 'fount_trigger_bucket_',
 		minP2pNode: true,
+		/**
+	 * @param {string} user fount 用户名
+	 * @returns {Promise<void>}
+	 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -48,7 +52,6 @@ Deno.test('token bucket suppresses onMessage when exhausted', async () => {
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
-	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 
 	const groupId = await newGroup(username, { name: 'token-bucket' })
 	const channelId = await getDefaultChannelId(username, groupId)
@@ -65,15 +68,20 @@ Deno.test('token bucket suppresses onMessage when exhausted', async () => {
 		},
 	})
 
-	const before = probe.events.length
+	const beforeEvents = probe.events.length
+	const beforeReplies = probe.replies
 	await postChannelMessage(username, groupId, channelId, { text: 'first' })
-	await new Promise(resolve => setTimeout(resolve, 300))
-	const afterFirst = probe.events.length
-	assert(afterFirst > before)
+	await new Promise(resolve => setTimeout(resolve, 800))
+	assertEquals(probe.events.length > beforeEvents, true)
+	assertEquals(probe.replies, beforeReplies + 1)
+	const afterFirstEvents = probe.events.length
+	const afterFirstReplies = probe.replies
 
 	await postChannelMessage(username, groupId, channelId, { text: 'second' })
-	await new Promise(resolve => setTimeout(resolve, 300))
-	assertEquals(probe.events.length, afterFirst)
+	await new Promise(resolve => setTimeout(resolve, 800))
+	// A7：事件一律送达 onMessage；桶耗尽只压回生成意愿
+	assertEquals(probe.events.length > afterFirstEvents, true)
+	assertEquals(probe.replies, afterFirstReplies)
 })
 
 Deno.test('backfill ingress skips trigger pipeline', async () => {
@@ -84,6 +92,10 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 		username,
 		tempDirPrefix: 'fount_trigger_backfill_',
 		minP2pNode: true,
+		/**
+	 * @param {string} user fount 用户名
+	 * @returns {Promise<void>}
+	 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
 			await ensureOperatorPubKey(user)

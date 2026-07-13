@@ -49,6 +49,25 @@ export function sendWebsocketMessage(message) {
 		console.error('WebSocket is not connected.')
 }
 
+/** 上次 typing 上报时间戳（volatile 节流，TTL 6s / 节流 3s）。 */
+let lastTypingReportAt = 0
+
+/**
+ * 上报本人正在输入（volatile，不入 DAG；服务端入账 typingUsers）。
+ * @param {string} channelId 频道 ID
+ * @returns {void}
+ */
+export function reportTyping(channelId) {
+	const now = Date.now()
+	if (now - lastTypingReportAt < 3000) return
+	if (activeGroupWebSocket?.readyState !== WebSocket.OPEN) return
+	lastTypingReportAt = now
+	activeGroupWebSocket.send(JSON.stringify({
+		type: 'typing',
+		payload: { channelId: channelId || 'default' },
+	}))
+}
+
 /**
  * 请求服务端中止流式生成（chatLog UUID 与/或 DAG event id）。
  * @param {string | { messageId?: string, dagEventId?: string }} target 停止目标

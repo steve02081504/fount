@@ -1,4 +1,5 @@
 import { requireBridgeOp } from '../chat/bridge/ops.mjs'
+import { lookupBridgePlatformChannel } from '../chat/bridge/registry.mjs'
 
 /**
  * @param {object} state 物化群状态
@@ -20,9 +21,10 @@ function bridgeContext(state) {
 export async function dispatchBridgeTyping(ctx, groupId, state, channelId) {
 	const bridge = bridgeContext(state)
 	if (!bridge) return
+	const platformChannel = lookupBridgePlatformChannel(ctx.username, groupId, channelId)
 	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'sendTyping')({
-		platformChatId: bridge.platformChatId,
-		platformThreadId: channelId !== 'default' ? channelId : undefined,
+		platformChatId: platformChannel?.platformChatId ?? bridge.platformChatId,
+		platformThreadId: platformChannel?.platformThreadId,
 	})
 }
 

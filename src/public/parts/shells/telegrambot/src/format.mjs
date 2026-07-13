@@ -616,7 +616,8 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	if (!message?.from) return null
 	const rawText = message.text || message.caption || ''
 	const entities = message.entities || message.caption_entities
-	let text = await rewriteTelegramMentionsToFount(ownerUsername, rawText, entities)
+	let text = telegramEntitiesToAiMarkdown(rawText, entities, botInfo, message.reply_to_message)
+	text = await rewriteTelegramMentionsToFount(ownerUsername, text, entities)
 	if (message.sticker) {
 		const { sticker } = message
 		const stickerDesc = `<:${sticker.file_id}:${sticker.set_name || 'unknown_set'}:${sticker.emoji || ''}>`
@@ -637,12 +638,15 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	}
 	if (!text.trim() && !files.length) return null
 
-	const displayName = [
+	const baseName = [
 		message.from.first_name,
 		message.from.last_name,
 	].filter(Boolean).join(' ').trim()
 		|| message.from.username
 		|| `User_${message.from.id}`
+	const displayName = message.from.username && !baseName.includes(`@${message.from.username}`)
+		? `${baseName} (@${message.from.username})`
+		: baseName
 
 	return {
 		platform: 'telegram',
@@ -689,12 +693,15 @@ export async function telegramMediaGroupToBridgeDto(context, messages, ownerUser
 	}
 	if (!text.trim() && !resolvedFiles.length) return null
 	const from = primary.from
-	const displayName = [
+	const baseName = [
 		from.first_name,
 		from.last_name,
 	].filter(Boolean).join(' ').trim()
 		|| from.username
 		|| `User_${from.id}`
+	const displayName = from.username && !baseName.includes(`@${from.username}`)
+		? `${baseName} (@${from.username})`
+		: baseName
 	return {
 		platform: 'telegram',
 		platformChatId: primary.chat.id,

@@ -84,6 +84,17 @@ export class CharAPI_t {
 	 * @returns {Promise<void>}
 	 */
 	Uninstall?: (reason: string, from: string) => Promise<void>
+	/**
+	 * 角色级错误处理；返回 true 或 void 表示已处理，false 表示未处理（由 shell 落默认路径）。
+	 */
+	OnError?: (error: Error, context: {
+		username: string
+		source: 'onMessage' | 'onGroupEvent' | 'GetReply' | string
+		groupId?: string
+		channelId?: string
+		charname?: string
+		event?: object
+	}) => Promise<boolean | void>
 
 	/**
 	 * 与外壳（如聊天 WebUI、Live2D 模型等）的接口。
@@ -199,6 +210,30 @@ export class CharAPI_t {
 				}
 			}) => Promise<boolean>
 			/**
+			 * 群生命周期事件（bot 启动 / 入群 / 成员离群等）。
+			 */
+			onGroupEvent?: (event: {
+				type: 'bot_started' | 'bot_joined_group' | 'member_left'
+				group: {
+					groupId: string
+					name: string
+					kind: 'group' | 'dm'
+					boundPeerEntityHash?: string
+					bridge?: { platform: string, platformChatId: string }
+					memberCount: number
+				}
+				channel: {
+					channelId: string
+					name: string
+					kind: 'text' | 'thread'
+				}
+				member?: {
+					entityHash: string
+					platformUserId?: string
+					displayName?: string
+				}
+			}) => Promise<void>
+			/**
 			 * 编辑消息。
 			 * @param {object} arg - 参数对象。
 			 * @returns {Promise<chatReply_t>} - 编辑后的聊天回复。
@@ -253,6 +288,8 @@ export class CharAPI_t {
 			}) => Promise<boolean>
 			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
 			TweakInboundDto?: (dto: any) => Promise<void>
+			/** 出站文件名 → Telegram 原生贴纸 file_id。 */
+			stickers?: Record<string, { fileId: string }>
 		},
 		/**
 		 * Discord 机器人接口（壳层 bridge 模式：OnceClientReady 注册 ops 与 outbound）。
@@ -277,6 +314,8 @@ export class CharAPI_t {
 			}) => Promise<boolean>
 			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
 			TweakInboundDto?: (dto: any) => Promise<void>
+			/** 出站文件名 → Discord application emoji 名。 */
+			stickers?: Record<string, { emojiName: string }>
 		},
 		/**
 		 * 微信机器人（iLink Bot HTTP 长轮询，壳层 bridge 模式）。

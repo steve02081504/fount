@@ -176,6 +176,32 @@ export function lookupBridgeEventId(username, groupId, platformMessageId) {
 }
 
 /**
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @returns {boolean} 该桥接群是否已做过历史回填
+ */
+export function isBridgeGroupBackfilled(username, groupId) {
+	const key = findBridgeGroupKeyByGroupId(username, groupId)
+	if (!key) return false
+	return !!loadBridgesDoc(username).mappings[key]?.backfilled
+}
+
+/**
+ * 持久化标记桥接群已完成历史回填（跨进程重启幂等）。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ */
+export function markBridgeGroupBackfilled(username, groupId) {
+	const key = findBridgeGroupKeyByGroupId(username, groupId)
+	if (!key) return
+	const doc = loadBridgesDoc(username)
+	const mapping = doc.mappings[key]
+	if (!mapping) return
+	mapping.backfilled = true
+	saveBridgesDoc(username, doc)
+}
+
+/**
  * 枚举本 replica 已映射的桥接群。
  * @param {string} username replica
  * @returns {Array<{ groupKey: string, groupId: string }>} 已映射桥接群列表
