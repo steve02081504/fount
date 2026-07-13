@@ -13,7 +13,7 @@ import {
 	syncGroupRefInComposer,
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
-import { renderAvatarHtml } from './lib/display.mjs'
+import { bootstrapActingEntity } from './lib/actorSwitcher.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, showFeedNewPostsBanner } from './views/feed.mjs'
@@ -24,17 +24,6 @@ const socialGate = createReadyGate(SOCIAL_APP_GATE)
 
 const FEED_WS_TIMEOUT_MS = 30_000
 const FEED_WS_RECONNECT_MAX_MS = 30_000
-
-/**
- * 更新 composer 区当前用户头像。
- * @param {object} appContext 应用上下文
- * @returns {void}
- */
-function refreshComposerAvatar(appContext) {
-	const slot = document.getElementById('viewerComposerAvatar')
-	if (!slot || !appContext.state.viewerEntityHash) return
-	slot.innerHTML = renderAvatarHtml(appContext.state.viewerEntityHash, null)
-}
 
 /**
  * 处理 feed WebSocket 消息。
@@ -143,8 +132,7 @@ export async function bootstrapSocialApp(appContext) {
 		await updateNotificationBadge(appContext)
 
 		const viewer = await appContext.socialApi('/viewer')
-		appContext.state.viewerEntityHash = viewer.viewerEntityHash ?? null
-		refreshComposerAvatar(appContext)
+		bootstrapActingEntity(appContext, viewer)
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',

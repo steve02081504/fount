@@ -1,7 +1,8 @@
-import { createLruMap } from '../../../../../../scripts/memo.mjs'
-import { readJsonlTipId } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { readJsonlTipId } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { materializeFromEvents } from 'npm:@steve02081504/fount-p2p/timeline/materialize_runner'
+
+import { createLruMap } from '../../../../../../scripts/memo.mjs'
 import { timelineEventsPath, timelineSnapshotPath } from '../paths.mjs'
 
 import { readTimelineEvents } from './append.mjs'

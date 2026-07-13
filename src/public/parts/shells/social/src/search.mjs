@@ -20,7 +20,7 @@ export async function searchPosts(username, options = {}) {
 	if (query.length < 2)
 		return { query, items: [] }
 
-	const viewerContext = await loadViewerContext(username)
+	const viewerContext = await loadViewerContext(username, options.actingEntityHash || null)
 	const itemContext = await createFeedItemBuildContext(username)
 	const owners = []
 	for await (const entityHash of iterateVisibleTimelineOwners(username))

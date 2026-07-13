@@ -1,5 +1,6 @@
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import { getReplicaFromReq } from '../../../../../../server/p2p_server/http_glue.mjs'
+import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 
@@ -17,8 +18,22 @@ export function registerViewerRoutes(router) {
 		const profile = entityHash
 			? await getEntityProfile(replicaUsername, entityHash)
 			: null
+		const agents = []
+		for (const { entityHash: agentHash, charPartName } of listLocalAgentEntities(replicaUsername)) {
+			const agentProfile = await getEntityProfile(replicaUsername, agentHash)
+			agents.push({
+				entityHash: agentHash,
+				charPartName,
+				displayName: agentProfile?.name || charPartName,
+			})
+		}
 		res.status(200).json({
 			viewerEntityHash: entityHash,
+			operator: entityHash ? {
+				entityHash,
+				displayName: profile?.name || null,
+			} : null,
+			agents,
 			profile,
 		})
 	})

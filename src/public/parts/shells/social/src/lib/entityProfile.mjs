@@ -1,5 +1,5 @@
-import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 
 /**
  * @param {string} username replica 用户名

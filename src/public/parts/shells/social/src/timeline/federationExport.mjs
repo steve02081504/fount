@@ -1,6 +1,7 @@
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { getOperatorEntityHashProvider } from '../federation/follower_index_registry.mjs'
+
 import { filterTimelineEventsForFederation } from '../federation/federation_visibility.mjs'
+import { getOperatorEntityHashProvider } from '../federation/follower_index_registry.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 
 import { getTimelineMaterialized } from './materialize.mjs'

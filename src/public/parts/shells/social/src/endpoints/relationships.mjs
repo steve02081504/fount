@@ -1,10 +1,11 @@
-import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { setPersonalHidden, setPersonalMuted } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { dispatchFollowEvent } from '../dispatch.mjs'
+import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { setFollow } from '../following.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
@@ -28,7 +29,7 @@ export function registerRelationshipsRoutes(router) {
 		if (!isEntityHash128(target))
 			throw httpError(400, 'invalid entityHash')
 		const follow = req.body?.follow !== false
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		await setFollow(username, actingEntity, target, follow)
 		if (follow) {
 			await dispatchFollowEvent(username, actingEntity, target)
@@ -55,7 +56,7 @@ export function registerRelationshipsRoutes(router) {
 		if (!await isKnownSocialTarget(username, target))
 			throw httpError(400, 'unknown entity')
 		const block = req.body?.block !== false
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash, {
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash, {
 			invalidMessage: 'can only block as your operator or local agent entities',
 		})
 		await ensureEntitySocialReady(username, actingEntity)
@@ -75,7 +76,7 @@ export function registerRelationshipsRoutes(router) {
 		if (!await isKnownSocialTarget(username, target))
 			throw httpError(400, 'unknown entity')
 		const hide = req.body?.hide !== false
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash, {
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash, {
 			invalidMessage: 'can only hide as your operator or local agent entities',
 		})
 		const hidden = await setPersonalHidden(actingEntity, target, hide)
@@ -90,7 +91,7 @@ export function registerRelationshipsRoutes(router) {
 		if (!await isKnownSocialTarget(username, target))
 			throw httpError(400, 'unknown entity')
 		const mute = req.body?.mute !== false
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash, {
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash, {
 			invalidMessage: 'can only mute as your operator or local agent entities',
 		})
 		await setPersonalMuted(actingEntity, target, mute)
@@ -99,7 +100,7 @@ export function registerRelationshipsRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/relationships/follow-approve', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		const followerPubKeyHex = String(req.body?.followerPubKeyHex)
 		if (!followerPubKeyHex)
 			throw httpError(400, 'invalid request')

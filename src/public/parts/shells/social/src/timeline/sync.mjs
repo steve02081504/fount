@@ -1,9 +1,11 @@
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
+import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
-import { loadFollowing } from '../following.mjs'
+import { loadFollowing, loadFollowingForActor } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
 import { handleInboundPersonalBlockEvent } from '../personalBlock.mjs'
 import { tryImportFollowApproveVault } from '../vault_crypto/followApproveImport.mjs'
@@ -100,7 +102,27 @@ export async function syncTimelineForEntity(username, entityHash) {
 }
 
 /**
- * 加载首页前同步关注账户的远程时间线。
+ * @param {string} username replica
+ * @returns {Promise<string[]>} 本机 operator + agent 关注目标的并集
+ */
+async function unionFollowingTargetsForLocalEntities(username) {
+	/** @type {Set<string>} */
+	const targets = new Set()
+	const operator = await resolveOperatorEntityHash(username)
+	const actors = []
+	if (operator) actors.push(operator.toLowerCase())
+	for (const { entityHash } of listLocalAgentEntities(username))
+		actors.push(entityHash.toLowerCase())
+	for (const actor of actors) {
+		const { following } = await loadFollowingForActor(username, actor)
+		for (const hash of following)
+			if (hash !== actor) targets.add(hash)
+	}
+	return [...targets]
+}
+
+/**
+ * 加载首页前同步本机全部 acting entity 关注目标的远程时间线。
  * @param {string} username 用户
  * @param {object} [options] 选项
  * @param {number} [options.max=24] 最多同步多少个关注
@@ -108,8 +130,7 @@ export async function syncTimelineForEntity(username, entityHash) {
  */
 export async function syncFollowingTimelines(username, options = {}) {
 	const max = Math.min(Math.max(Number(options.max) || 24, 1), 64)
-	const { following } = await loadFollowing(username)
-	const targets = following.slice(0, max)
+	const targets = (await unionFollowingTargetsForLocalEntities(username)).slice(0, max)
 	const results = await Promise.allSettled(
 		targets.map(entityHash => syncTimelineForEntity(username, entityHash)),
 	)

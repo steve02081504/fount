@@ -1,11 +1,11 @@
-import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import {
 	isAuthorFilteredByPersonalSets,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
-import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
 import {
 	buildPostFeedItem,
 	buildRepostFeedItem,
@@ -18,7 +18,7 @@ import {
 import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
-import { loadFollowing } from './following.mjs'
+import { loadFollowing, loadFollowingForActor } from './following.mjs'
 import { queryReplyIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
@@ -71,8 +71,11 @@ async function resolveVisiblePost(username, entityHash, postId, viewerContext) {
  */
 export async function buildHomeFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
-	const { following } = await loadFollowing(username)
-	const viewerContext = await loadViewerContext(username)
+	const acting = options.actingEntityHash || null
+	const { following } = acting
+		? await loadFollowingForActor(username, acting)
+		: await loadFollowing(username)
+	const viewerContext = await loadViewerContext(username, acting)
 	const feedSources = new Set(following)
 	const itemContext = await createFeedItemBuildContext(username, feedSources)
 

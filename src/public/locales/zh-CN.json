@@ -1143,6 +1143,11 @@
 			"saved": "收藏",
 			"profile": "我的"
 		},
+		"actor": {
+			"label": "当前身份",
+			"operator": "我（操作者）",
+			"agent": "Agent：${name}"
+		},
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",

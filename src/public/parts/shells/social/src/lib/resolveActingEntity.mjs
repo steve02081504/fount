@@ -1,6 +1,6 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveSocialEntity } from '../federation/hosting.mjs'
 
 /**
  * 解析写操作 acting 实体（operator 或本地 agent）；无法解析时 throw httpError。

@@ -1,4 +1,4 @@
-import { socialApi } from './lib/apiClient.mjs'
+import { socialApi, effectiveActingEntityHash } from './lib/apiClient.mjs'
 import {
 	authorLabel,
 	formatTime as formatTimeWithI18n,
@@ -20,7 +20,7 @@ export function createSocialContext(geti18n) {
 		 * 返回当前观看者 entityHash。
 		 * @returns {string | null} 观看者 entityHash；未登录时为 null
 		 */
-		getViewerEntityHash: () => socialState.viewerEntityHash,
+		getViewerEntityHash: () => effectiveActingEntityHash(),
 		geti18n,
 		authorLabel,
 		renderAvatarHtml,

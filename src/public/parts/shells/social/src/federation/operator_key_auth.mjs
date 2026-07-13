@@ -1,6 +1,7 @@
 /**
  * Social 时间线 operator 写授权（含 social_meta 创世语义）。
  */
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	activeSenderHashFromPubKeyHex,
 	foldOperatorKeyHistoryFromEvents as foldRotateRevokeHistory,
@@ -9,7 +10,6 @@ import {
 	resolveActiveKeyAtGeneration,
 	isActiveGenerationRevoked,
 } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 /**
  * 折叠时间线事件中的 recovery 公钥与 operator 密钥链（含 social_meta）。
@@ -18,10 +18,10 @@ import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexId
  */
 export function foldOperatorKeyHistoryFromEvents(events) {
 	let recoveryPubKeyHex = null
-	for (const event of events || []) {
+	for (const event of events || []) 
 		if (event.type === 'social_meta' && isHex64(normalizeHex64(event.content?.recoveryPubKeyHex || '')))
 			recoveryPubKeyHex = normalizeHex64(event.content.recoveryPubKeyHex)
-	}
+	
 	const folded = foldRotateRevokeHistory(events)
 	return {
 		recoveryPubKeyHex: recoveryPubKeyHex ?? folded.recoveryPubKeyHex,

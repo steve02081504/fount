@@ -1,5 +1,6 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
+import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 import { searchPosts } from '../search.mjs'
 
 /**
@@ -13,9 +14,11 @@ export function registerSearchRoutes(router) {
 		const searchQuery = String(req.query.q || '').trim()
 		if (searchQuery.length < 2)
 			throw httpError(400, 'query must be at least 2 characters')
+		const actingEntityHash = await resolveActingEntity(username, req.query.actingEntityHash, { requireEntity: false })
 		res.status(200).json(await searchPosts(username, {
 			q: searchQuery,
 			limit: Number(req.query.limit) || 30,
+			actingEntityHash,
 		}))
 	})
 }

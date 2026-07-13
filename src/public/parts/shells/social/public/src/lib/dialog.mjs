@@ -7,6 +7,10 @@ import { pickFromDialog } from '/scripts/features/dialog.mjs'
  */
 export function promptText(title, value = '') {
 	return pickFromDialog('text_prompt_modal', { title, value }, {
+		/**
+		 *
+		 * @param dialog
+		 */
 		mapResult: dialog => dialog.querySelector('#promptInput')?.value.trim() || null,
 	})
 }
@@ -16,5 +20,5 @@ export function promptText(title, value = '') {
  * @returns {Promise<boolean>} 用户确认
  */
 export async function confirmAction(message) {
-	return (await pickFromDialog('confirm_modal', { message })) === 'ok'
+	return await pickFromDialog('confirm_modal', { message }) === 'ok'
 }

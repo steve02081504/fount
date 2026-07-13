@@ -1,7 +1,8 @@
-import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
+import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'

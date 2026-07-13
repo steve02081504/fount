@@ -3,9 +3,10 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from 'npm:@steve02081504/fount-p2p/files/assemble'
-import { vaultGroupId } from './federation/namespace.mjs'
+
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
+import { vaultGroupId } from './federation/namespace.mjs'
 import { loadVaultMasterKey } from './vault_crypto/vault.mjs'
 
 /**

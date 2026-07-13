@@ -18,7 +18,8 @@ export { notificationCursor }
  * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number, viewerEntityHash: string | null }>} 通知列表
  */
 export async function buildNotifications(username, options = {}) {
-	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
+	const { resolveActingEntity } = await import('./lib/resolveActingEntity.mjs')
+	const viewerEntityHash = (await resolveActingEntity(username, options.actingEntityHash, { requireEntity: false }))?.toLowerCase() || null
 	if (!viewerEntityHash)
 		return { notifications: [], nextCursor: null, unreadCount: 0, viewerEntityHash: null }
 	const page = await readInboxNotifications(username, viewerEntityHash, options)

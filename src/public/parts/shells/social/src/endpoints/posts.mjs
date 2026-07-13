@@ -23,7 +23,7 @@ export function registerPostsRoutes(router) {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
 		const requested = req.body.entityHash?.toLowerCase() ?? ''
-		let entityHash = await resolveActingEntity(username, req.body.actingEntityHash, {
+		let entityHash = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash, {
 			invalidMessage: 'can only post as your operator or local agent entities',
 			missingMessage: 'configure Chat federation identity first (same P2P entity as Social)',
 		})
@@ -61,7 +61,7 @@ export function registerPostsRoutes(router) {
 
 	router.delete('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const actingEntity = await resolveActingEntity(username, req.body.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		const targetPostId = String(req.body.postId)
 		if (!targetPostId) throw httpError(400, 'postId required')
 		const event = await commitTimelineEvent(username, actingEntity, {
@@ -79,7 +79,7 @@ export function registerPostsRoutes(router) {
 			throw httpError(400, 'invalid params')
 		if (!await isKnownSocialTarget(username, targetEntityHash))
 			throw httpError(400, 'unknown entity')
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		const like = req.body?.like !== false
 		const event = await commitTimelineEvent(username, actingEntity, {
 			type: like ? 'like' : 'unlike',
@@ -96,7 +96,7 @@ export function registerPostsRoutes(router) {
 			throw httpError(400, 'invalid params')
 		if (!await isKnownSocialTarget(username, targetEntityHash))
 			throw httpError(400, 'unknown entity')
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		const event = await commitTimelineEvent(username, actingEntity, {
 			type: 'repost',
 			content: {

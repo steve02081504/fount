@@ -3,6 +3,7 @@
  */
 import { ensureLocalEntityProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/entity/replica'
+
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { ensureSocialMeta } from '../timeline/append.mjs'
 

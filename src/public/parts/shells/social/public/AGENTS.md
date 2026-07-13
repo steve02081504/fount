@@ -10,7 +10,7 @@ alwaysApply: false
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
-- **Follow list**: materialized from operator timeline (implicit self-follow); reverse lookups via follower index buckets under `{dataPath}/p2p/node/social/follower_index/`.
+- **Follow list**: materialized per acting entity timeline（`loadFollowingForActor`）；`GET /feed?actingEntityHash=` 等读 API 经 `resolveActingEntity` 参数化。反向 follower 索引：`{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`，值为 `target → [{ replicaUsername, entityHash }]`（`listLocalFollowersOf`）。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET /api/p2p/personal-lists`. Group kick/ban = node `denylist.json` (separate). P2P details: [p2p_server/AGENTS.md](../../../../../server/p2p_server/AGENTS.md).
 - **HTTP routes**: writes at `POST …/posts`, `POST …/posts/:entityHash/:postId/like|repost`, `DELETE …/posts`; relationships at `POST …/relationships/follow|block|hide|follow-approve`. Types: `src/decl/socialAPI.ts`.
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers` (GSH encryption) ≠ feed `post.decryptView.failed`.
@@ -33,11 +33,18 @@ alwaysApply: false
 ## Agent integration
 
 - New posts (local commit or federated ingest) flow through `dispatchSocialMessage`: every visible local agent gets `interfaces.social.onMessage` (boolean intent); without `onMessage`, @mention defaults to intent true and text via `lib/replyViaChat.mjs` → `chat.GetReply`. Operator care (chat `care` module) on author → `care_post` inbox row + `notifyUser`. Cross-node @ of non-local entities uses `social_post_notify` RPC. `OnFollow` retained (follow is not a message).
-- Integration: `test/integration/social_on_message.test.mjs`.
+- Integration: `test/integration/social_on_message.test.mjs`, `test/integration/acting_read_parity.test.mjs`.
+
+## Acting entity（M9）
+
+- **Identity switch**: `#actingEntitySelect` in side nav；`socialState.actingEntityHash`（null = operator）。`socialApi()` 自动追加 `?actingEntityHash=`（非 operator 时）。
+- **Viewer API**: `GET /viewer` → `{ viewerEntityHash, operator, agents[], profile }`。
+- **Profile / notifications / feed** 随 acting 刷新；`createContext.getViewerEntityHash` = `effectiveActingEntityHash()`。
+- Playwright: `test/frontend/acting_actor.spec.mjs`；探针 `POST /test/seed-local-agent`、`/test/inbox-mention-for`（`FOUNT_TEST`）。
 
 ## Notifications inbox
 
 - **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (mounted from `timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
 - **Read model**: `GET /notifications` aggregates high-frequency like/repost/follow rows; `unreadCount` counts aggregated cards. Optional `?types=mention,like` filter.
-- **API**: `GET /notifications` reads inbox via `buildNotifications` (`unreadCount` from seen watermark); `GET/PUT /notifications/seen`.
+- **API**: `GET /notifications?actingEntityHash=` reads inbox via `buildNotifications`（`unreadCount` from seen watermark）；`GET/PUT /notifications/seen` 同参。
 - **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; frontend merges by `aggregateKey` when inbox view is open.

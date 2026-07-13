@@ -1,6 +1,6 @@
-import { applyFollowNetworkHints } from './federation/network_hints.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
+import { applyFollowNetworkHints } from './federation/network_hints.mjs'
 import { commitTimelineEvent } from './timeline/append.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 

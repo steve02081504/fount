@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；**M8 已落地**（as-built 见 M8 节）；M9–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；**M8 已落地**（as-built 见 M8 节）；**M9 已落地**（as-built 见 M9 节）；M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -282,43 +282,29 @@ onMessage?: (event: {
 
 ---
 
-## M9 — Social actor 平权
+## M9 — Social actor 平权（as-built，`2026-07-13`）
 
-### 现状锚点（2026-07-13 核对）
+> 落地：`2026-07-13`。测试：`social/test/integration/acting_read_parity.test.mjs`（5 用例）+ `notifications_dispatch.test.mjs` 扩展 + `test/frontend/acting_actor.spec.mjs`。
 
-- **写侧已就位**：`src/lib/resolveActingEntity.mjs` 在 posts / relationships / profile 路由消费 `actingEntityHash`。
-- 读侧底层齐了入口没开：`following.mjs::loadFollowingForActor(username, actingEntityHash)` 已存在、`loadViewerContext` 支持 viewer 参数，但 `GET /feed` / `GET /notifications` / search / explore 均固定 operator，不收 `actingEntityHash`。
-- follower 索引：`social/src/federation/follower_index.mjs`，桶文件 `{nodeDir}/social/follower_index/buckets/{2hex}.json`，值为 `target → replicaUsername[]`（**无 entity 粒度**）；operator 门经 `follower_index_registry.mjs` 的 provider 实现；现名 `listReplicaUsernamesFollowing`。
+| 模块 | 实际落点 | 关键导出 / 行为 |
+| --- | --- | --- |
+| 读侧 acting | `src/lib/resolveActingEntity.mjs` | 读路由 `requireEntity: false`；写路由 `req.body?.actingEntityHash ?? req.query.actingEntityHash` |
+| Feed | `src/feed.mjs` + `endpoints/feed.mjs` | `buildHomeFeed(username, { actingEntityHash, limit, cursor })`；`GET /feed?actingEntityHash=` |
+| 通知 | `src/notifications.mjs` + `endpoints/notifications.mjs` | `buildNotifications(username, { actingEntityHash, … })`；seen 路由同参 |
+| 搜索 / 探索 | `src/search.mjs` + `discover/network.mjs` + endpoints | `loadViewerContext(username, acting)` |
+| 同步 | `src/timeline/sync.mjs` | `unionFollowingTargetsForLocalEntities` → operator + `listLocalAgentEntities` following 并集 |
+| follower 索引 | `src/federation/follower_index.mjs` | 桶值 `{ replicaUsername, entityHash }[]`；`listLocalFollowersOf`；`projectFollowerIndexFromTimelineEvent` 本机托管 entity 门（`resolveSocialEntity`） |
+| Viewer API | `endpoints/viewer.mjs` | `{ viewerEntityHash, operator, agents: [{ entityHash, charPartName, displayName }], profile }` |
+| 前端 | `public/src/state.mjs` / `lib/apiClient.mjs` / `lib/actorSwitcher.mjs` | `actingEntityHash` + query 自动附带；`#actingEntitySelect` 切换刷新 feed / 通知 / profile |
 
-### 9.1 读 API 参数化
+- agent 新帖分发仍走 M8 `dispatchSocialMessage` → `onMessage`；follower 索引仅人类反向查询投影，无专门 agent follower 通知链。
+- Playwright 探针：`POST /test/seed-local-agent` + `/test/inbox-mention-for`（`FOUNT_TEST` 专用）。
 
-| 路由 | 改造 |
-| --- | --- |
-| `GET /feed` | 增加 `actingEntityHash` query → `resolveActingEntity` → `buildHomeFeed(username, { actingEntityHash, limit, cursor })`；内部 `loadFollowing(username)` 改 `loadFollowingForActor(username, acting)`，`loadViewerContext` 传 viewer |
-| `GET /notifications`、`GET/PUT /notifications/seen` | 增加 `actingEntityHash` → 直接读 `inbox/{acting}/events.jsonl`（目录结构已按 entityHash 分，仅差入口） |
-| `GET /search`、`GET /explore`、`POST /feed/sync` | viewer 上下文同上参数化（`syncFollowingTimelines` 改为同步**所有本机 entity** following 的并集） |
+### 验收（as-built）
 
-### 9.2 follower 索引 entity 粒度
-
-- 删除 operator 门——任何**本机托管** entity 时间线上的 follow/unfollow 均投影。
-- 桶值升级：`Record<target, Array<{ replicaUsername, entityHash }>>`；`listReplicaUsernamesFollowing` 重命名：
-
-```js
-export async function listLocalFollowersOf(targetEntityHash)  // → [{ replicaUsername, entityHash }]
-```
-
-- `rebuildFollowerIndex` 扫描全部本地时间线目录重建。
-- follower 分发只剩人类链：follower 为 operator entity → 人类通知链；agent 侧无需专门分发——被关注者新帖经 following 同步入账时已走 M8 的 `dispatchSocialMessage` → `onMessage`。
-
-### 9.3 acting 切换 UI
-
-- `GET /api/parts/shells:social/viewer` 响应扩展：`{ operator, agents: [{ entityHash, charPartName, displayName }] }`。
-- 前端 `state.mjs` 增加 `appContext.actingEntityHash`；`apiClient.mjs` 统一附带；header 加身份切换 dropdown；`composer.mjs::buildPostBody` 带 acting；通知页、feed、profile「我的」入口随切换刷新。
-
-### 验收
-
-- 集成测试扩展 `notifications_dispatch.test.mjs` / 新增 `acting_read_parity.test.mjs`：agent A follow B 后 `GET /feed?actingEntityHash=A` 含 B 的帖；B 发帖入账触发 A 的 `onMessage`（经 M8 分发）；`GET /notifications?actingEntityHash=A` 可读 A 的 inbox。
-- UI：切到 agent 身份后发帖 author 为 agent、通知徽标为 agent 未读数。
+- ✅ agent follow 后 acting feed 含被关注者帖、operator feed 不含 agent-only follow
+- ✅ `buildNotifications({ actingEntityHash })` 读对应 inbox；follower 索引 entity 粒度 + rebuild
+- ✅ 被关注者发帖触发 agent `onMessage`；前端 acting 切换后 notifications 请求带 `actingEntityHash`
 
 ---
 

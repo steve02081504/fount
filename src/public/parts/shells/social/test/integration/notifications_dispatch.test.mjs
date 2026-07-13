@@ -76,6 +76,39 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	assert(rows.every(row => 'actorEntityHash' in row && row.postId !== undefined && row.targetPostId !== undefined))
 })
 
+Deno.test('buildNotifications respects actingEntityHash viewer', async () => {
+	const { username, operator } = await getSession()
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: { text: 'acting notify target', visibility: 'public' },
+	}, { fanout: false })
+
+	const agentHash = await seedMentionAgentChar(username)
+	const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
+	await ensureEntitySocialReady(username, agentHash)
+	await append.commitTimelineEvent(username, operator, {
+		type: 'post',
+		content: {
+			text: `agent only @[entity:${agentHash}]`,
+			visibility: 'public',
+		},
+	}, { fanout: false })
+
+	const operatorPage = await notifications.buildNotifications(username, { limit: 50 })
+	assertEquals(operatorPage.viewerEntityHash, operator)
+
+	const agentPage = await notifications.buildNotifications(username, {
+		actingEntityHash: agentHash,
+		limit: 50,
+	})
+	assertEquals(agentPage.viewerEntityHash, agentHash)
+	assert(agentPage.notifications.some(row => row.type === 'mention'))
+	const agentMentionPostId = agentPage.notifications.find(row => row.type === 'mention')?.postId
+	assert(agentMentionPostId)
+	assert(!operatorPage.notifications.some(row => row.postId === agentMentionPostId),
+		'operator inbox should not include agent-only mention')
+})
+
 Deno.test('dispatchSocialMessage does not publish agent reply without mention when no onMessage', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	const { username, operator } = await getSession()

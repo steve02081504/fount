@@ -1,11 +1,12 @@
-import { httpError } from '../../../../../../scripts/http_error.mjs'
 import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { buildProfileFeedItems, buildLikedFeedItems, listReplies } from '../feed.mjs'
-import { loadFollowing } from '../following.mjs'
+import { loadFollowing, loadFollowingForActor } from '../following.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
@@ -41,7 +42,10 @@ export function registerProfileRoutes(router) {
 		const entityHash = routeEntityHash(req.params)
 		const profile = await getEntityProfile(username, entityHash)
 		const view = await getTimelineMaterialized(username, entityHash)
-		const { following } = await loadFollowing(username)
+		const actingEntity = await resolveActingEntity(username, req.query?.actingEntityHash, { requireEntity: false })
+		const { following } = actingEntity
+			? await loadFollowingForActor(username, actingEntity)
+			: await loadFollowing(username)
 		const isFollowing = following.includes(entityHash)
 		res.status(200).json({
 			entityHash,
@@ -81,7 +85,7 @@ export function registerProfileRoutes(router) {
 
 	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash)
+		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
 		await ensureEntitySocialReady(username, actingEntity)
 		const socialMeta = await updateSocialMeta(username, actingEntity, {
 			exploreBlurb: req.body?.exploreBlurb,

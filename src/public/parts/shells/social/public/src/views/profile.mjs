@@ -1,3 +1,4 @@
+import { effectiveActingEntityHash } from '../lib/apiClient.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
@@ -5,12 +6,13 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 
+
 /**
  * @param {object} appContext 应用上下文
  * @returns {string} personal-lists 查询串
  */
 function personalListsQuery(appContext) {
-	const actingEntityHash = appContext.state.viewerEntityHash
+	const actingEntityHash = effectiveActingEntityHash()
 	return actingEntityHash
 		? `?actingEntityHash=${encodeURIComponent(actingEntityHash)}`
 		: ''
@@ -206,7 +208,8 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
 		appContext.socialApi(`/profile/${entityHash}`),
 		appContext.socialApi(`/profile/${entityHash}/following`).catch(() => ({ following: [] })),
 	])
-	const isSelf = appContext.state.viewerEntityHash && entityHash === appContext.state.viewerEntityHash
+	const acting = effectiveActingEntityHash()
+	const isSelf = acting && entityHash === acting
 	const container = document.getElementById('profileView')
 	const name = escapeHtml(appContext.authorLabel(entityHash, data.profile))
 	const handle = escapeHtml(entityHandle(entityHash))
@@ -262,13 +265,12 @@ export async function loadProfileFor(appContext, entityHash, highlightPostId = n
  * @returns {Promise<void>}
  */
 export async function loadProfile(appContext) {
-	const viewer = await appContext.socialApi('/viewer')
-	appContext.state.viewerEntityHash = viewer.viewerEntityHash
-	if (!appContext.state.viewerEntityHash) {
+	const profileHash = effectiveActingEntityHash()
+	if (!profileHash) {
 		document.getElementById('profileView').innerHTML = `<div class="empty">${escapeHtml(appContext.geti18n('social.empty.noIdentity'))}</div>`
 		return
 	}
-	await loadProfileFor(appContext, appContext.state.viewerEntityHash)
+	await loadProfileFor(appContext, profileHash)
 }
 
 /**

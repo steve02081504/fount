@@ -1,5 +1,6 @@
-import { timelineGroupId } from './federation/namespace.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
+
+import { timelineGroupId } from './federation/namespace.mjs'
 
 /**
  * 返回指定 entity 时间线目录路径。

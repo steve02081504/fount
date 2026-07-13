@@ -7,6 +7,7 @@ import {
 	generateFileMasterKey,
 	wrapKeyEcies,
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
+
 import { vaultGroupId } from '../federation/namespace.mjs'
 import { vaultStatePath } from '../paths.mjs'
 

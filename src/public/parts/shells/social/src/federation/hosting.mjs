@@ -1,11 +1,11 @@
 /**
  * Social 实体托管解析：本机 replica 上的 user/agent entity。
  */
+import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	getAgentCharResolver,
 	getListLocalAgentsProvider,
 } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
-import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'

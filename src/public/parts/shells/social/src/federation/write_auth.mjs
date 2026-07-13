@@ -1,16 +1,17 @@
 /**
  * Social 时间线写入授权（联邦入站 untrusted 边界）。
  */
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isValidActiveSender } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
+
+import { getOperatorEntityHashProvider } from './follower_index_registry.mjs'
+import { resolveSocialEntity } from './hosting.mjs'
 import {
 	foldOperatorKeyHistoryFromEvents,
 	isOperatorTimelineWriteAuthorized,
 } from './operator_key_auth.mjs'
-import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
-import { resolveSocialEntity } from './hosting.mjs'
-import { getOperatorEntityHashProvider } from './follower_index_registry.mjs'
 
 /**
  * sender 是否为本机某 agent 实体的合法 operator 活跃钥。
