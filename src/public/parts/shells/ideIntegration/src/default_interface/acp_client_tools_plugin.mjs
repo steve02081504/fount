@@ -100,48 +100,44 @@ export function buildACPClientToolsPlugin(connection, sessionId, clientCapabilit
 	if (!canRead && !canWrite && !canTerminal) return null
 
 	// ── Prompt 描述 ──────────────────────────────────────────────────
-	const promptLines = ['# ACP 客户端工具']
-	if (canRead)
-		promptLines.push(
-			'', '## 读取文件',
-			'从 IDE 读取文本文件（包括未保存的更改）。',
-			'用法：`<acp-read-file path="/absolute/path" />`',
-			'指定行范围：`<acp-read-file path="/absolute/path" line="10" limit="50" />`',
-		)
+	const promptText = `\
+# ACP 客户端工具
+${canRead ? `\
+\
+## 读取文件
+从 IDE 读取文本文件（包括未保存的更改）。
+用法：\`<acp-read-file path="/absolute/path" />\`
+指定行范围：\`<acp-read-file path="/absolute/path" line="10" limit="50" />\`
+` : ''}${canWrite ? `\
+\
+## 写入文件
+在 IDE 中创建或覆盖文本文件。需要用户批准。
+用法：\`<acp-write-file path="/absolute/path">文件内容</acp-write-file>\`
+` : ''}${canTerminal ? `\
+\
+## 运行终端命令
+在 IDE 的终端中执行 shell 命令。需要用户批准。
+用法：\`<acp-terminal command="npm" args="test --coverage" cwd="/project" />\`
+- \`command\`（必需）：要运行的程序。
+- \`args\`（可选）：空格分隔的参数。
+- \`cwd\`（可选）：工作目录（绝对路径）。
+- \`env\`（可选）：逗号分隔的 KEY=VALUE 对。
+` : ''}\
+\
+## 计划
+向 IDE 报告执行计划。每个条目包含内容、优先级（high/medium/low）和状态（pending/in_progress/completed）。
+用法：
+\`\`\`
+<acp-plan>
+- [high] pending: 分析代码库
+- [medium] in_progress: 实现功能 X
+- [low] completed: 编写测试
+</acp-plan>
+\`\`\`
 
-	if (canWrite)
-		promptLines.push(
-			'', '## 写入文件',
-			'在 IDE 中创建或覆盖文本文件。需要用户批准。',
-			'用法：`<acp-write-file path="/absolute/path">文件内容</acp-write-file>`',
-		)
-
-	if (canTerminal)
-		promptLines.push(
-			'', '## 运行终端命令',
-			'在 IDE 的终端中执行 shell 命令。需要用户批准。',
-			'用法：`<acp-terminal command="npm" args="test --coverage" cwd="/project" />`',
-			'- `command`（必需）：要运行的程序。',
-			'- `args`（可选）：空格分隔的参数。',
-			'- `cwd`（可选）：工作目录（绝对路径）。',
-			'- `env`（可选）：逗号分隔的 KEY=VALUE 对。',
-		)
-
-	promptLines.push(
-		'', '## 计划',
-		'向 IDE 报告执行计划。每个条目包含内容、优先级（high/medium/low）和状态（pending/in_progress/completed）。',
-		'用法：',
-		'```',
-		'<acp-plan>',
-		'- [high] pending: 分析代码库',
-		'- [medium] in_progress: 实现功能 X',
-		'- [low] completed: 编写测试',
-		'</acp-plan>',
-		'```',
-		'', '## 思考',
-		'将推理/分析包装在 `<thinking>...</thinking>` 中，以在 IDE 中显示为思考气泡（不属于主要回复的一部分）。',
-	)
-	const promptText = promptLines.join('\n')
+## 思考
+将推理/分析包装在 \`<thinking>...</thinking>\` 中，以在 IDE 中显示为思考气泡（不属于主要回复的一部分）。
+`
 
 	// ── Preview Updater 块 ────────────────────────────────────────────
 	const toolBlocks = [

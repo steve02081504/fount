@@ -12,14 +12,13 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 			 * @returns {Promise<string>} 追加 prompt
 			 */
 			async GetJSCodePrompt(args) {
-				const actorLabel = args.char_id ? `agent char "${args.char_id}"` : 'operator'
-				return [
-					'JS 沙箱变量 `fount`（跨平台统一 ChatClient）：',
-					'- `fount.chat` — ChatClient（acting = 当前 ' + actorLabel + '）',
-					'- `fount.group` / `fount.channel` — 当前群与频道',
-					'- `fount.message` — 触发本次生成的 Message（可解析时）',
-					'写方法权限按 acting 成员角色裁决；agent 不能建群或独立持钥。',
-				].join('\n')
+				return `\
+你可以在 JS 代码里用 \`fount\` 对象操作当前群：
+- \`fount.chat\` — 当前聊天
+- \`fount.group\` / \`fount.channel\` — 当前群与频道
+- \`fount.message\` — 触发这次回复的那条消息
+能改什么取决于你在群里的权限。
+`
 			},
 			/**
 			 * @param {import('../../../../../../decl/chatLog.ts').chatReplyRequest_t} args 生成请求

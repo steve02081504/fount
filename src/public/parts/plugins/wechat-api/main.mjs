@@ -18,10 +18,10 @@ async function wechatCodePrompt(args) {
 	if (!runtime) return SETUP_PROMPT
 
 	return `\
-JS 沙箱变量 \`wechat\`：
+你可以在 JS 代码里用 \`wechat\` 对象操控微信 Bot：
 - \`wechat.ownerWeChatId\` — 主人微信 ID
 - \`wechat.sendText(text)\` / \`wechat.sendFiles(files)\` — 发消息与文件
-历史消息请用 \`fount.channel.messages()\`（桥接模式下 chat DAG 即历史）。
+查看历史消息用 \`fount.channel.messages()\`。
 `
 }
 

@@ -25,17 +25,17 @@ async function telegramCodePrompt(args) {
 	const inBridge = groupId && channelId && args.username
 		&& await resolveBridgePlatformIds(args.username, groupId, channelId).then(ids => ids?.platform === 'telegram')
 
-	const lines = [
-		'JS 沙箱变量 `telegram`：',
-		'- `telegram.client` — Telegraf 实例',
-		'- `telegram.api` — Bot API（`bot.telegram`）',
-	]
-	if (inBridge)
-		lines.push('- `telegram.chat` / `telegram.chatId` / `telegram.threadId` / `telegram.messageId` — 当前 Telegram 桥接上下文')
-	else
-		lines.push('- 当前不在 Telegram 桥接群，chat 相关字段不可用')
-	lines.push('示例：`await telegram.api.sendMessage(telegram.chatId, \'hello\')`')
-	return lines.join('\n')
+	return `\
+你可以在 JS 代码里用 \`telegram\` 对象操控 Bot：
+- \`telegram.client\` — Telegraf 实例
+- \`telegram.api\` — Bot API（\`bot.telegram\`）
+${inBridge
+		? `- \`telegram.chat\` — 当前 Telegram 聊天（群/私聊）
+- \`telegram.chatId\` / \`telegram.threadId\` / \`telegram.messageId\` — 定位这次回复用的 id
+可发消息、禁言/踢人、管群组等。`
+		: '当前不在 Telegram 对话里，chat 相关字段不可用。'}
+示例：\`await telegram.api.sendMessage(telegram.chatId, 'hello')\`
+`
 }
 
 /**
