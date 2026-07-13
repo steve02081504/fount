@@ -1,5 +1,6 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 import { postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
@@ -150,6 +151,17 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					delete charBotRegistry[ownerUsername]
 			},
 		})
+
+		const ownerUserId = interfaceConfig.OwnerUserID
+		if (ownerUserId != null && String(ownerUserId).trim()) {
+			let ownerDisplayName = ''
+			try {
+				const chat = await bot.telegram.getChat(ownerUserId)
+				ownerDisplayName = chat.first_name || chat.username || ''
+			}
+			catch { /* displayName 可选 */ }
+			await claimOperatorBridgeIdentity(ownerUsername, 'telegram', ownerUserId, ownerDisplayName)
+		}
 
 		/**
 		 * @param {string} groupId 群 ID

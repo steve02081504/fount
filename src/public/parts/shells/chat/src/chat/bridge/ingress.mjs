@@ -4,6 +4,7 @@ import { createHash, randomUUID } from 'node:crypto'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
 import { entityFileUrl } from 'npm:@steve02081504/fount-p2p/entity/files/url'
+import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
 
 import {
 	channelMessageAgentText,
@@ -17,7 +18,7 @@ import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
-import { resolveBridgeIdentity } from './identity.mjs'
+import { isBoundBridgeIdentity, resolveBridgeIdentity } from './identity.mjs'
 import {
 	ensureBridgeGroup,
 	lookupBridgeEventId,
@@ -138,6 +139,34 @@ async function buildBridgeMessageContent(username, groupId, text, files) {
 }
 
 /**
+ * 已绑定实体作者用 profile 覆盖展示名与头像，DTO 作兜底。
+ * @param {string} username replica
+ * @param {string} platform 平台名
+ * @param {object} dto 桥接 DTO
+ * @param {string} groupId 群 ID
+ * @param {string} authorEntityHash 作者 entityHash
+ * @param {object} content 消息 content
+ * @returns {Promise<object>} 展示字段已 enrich 的 content
+ */
+async function enrichBoundAuthorDisplay(username, platform, dto, groupId, authorEntityHash, content) {
+	if (!isBoundBridgeIdentity(username, platform, dto.author.platformUserId)) return content
+
+	const dtoDisplayName = String(dto.author.displayName || '').trim()
+	let displayName = dtoDisplayName || `User_${dto.author.platformUserId}`
+	let displayAvatar = dto.author.avatarUrl
+
+	const profile = await getProfile(authorEntityHash, username, { groupId })
+	if (profile?.name) displayName = String(profile.name).trim() || displayName
+	if (profile?.avatar) displayAvatar = profile.avatar
+
+	return {
+		...content,
+		displayName,
+		...displayAvatar ? { displayAvatar } : {},
+	}
+}
+
+/**
  * 入站桥接消息 → DAG。
  * @param {string} username replica
  * @param {object} dto 桥接 DTO
@@ -189,6 +218,7 @@ export async function postBridgeMessage(username, dto) {
 			},
 		},
 	}
+	content = await enrichBoundAuthorDisplay(username, platform, dto, groupId, authorEntityHash, content)
 
 	const event = await commitChannelMessageEvent({
 		username,
@@ -252,6 +282,7 @@ export async function postBridgeEdit(username, dto) {
 			},
 		},
 	}
+	newContent = await enrichBoundAuthorDisplay(username, platform, dto, groupId, authorEntityHash, newContent)
 
 	return appendChannelMessageEdit(username, groupId, channelId, eventId, newContent)
 }

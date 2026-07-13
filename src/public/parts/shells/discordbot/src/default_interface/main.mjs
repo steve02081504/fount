@@ -2,6 +2,7 @@ import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js
 
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 import { postBridgeDelete, postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
@@ -17,6 +18,7 @@ import {
 	restoreFountMentionsForDiscord,
 	splitDiscordReply,
 } from '../format.mjs'
+import { resolveOwnerPlatformUserId } from '../ownerResolve.mjs'
 
 /**
  * @typedef {import('npm:discord.js').Client} DiscordClient
@@ -43,15 +45,15 @@ export function getDiscordClientForChar(username, charname) {
  */
 export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCharname) {
 	/**
-	 * @returns {{ OwnerUserName: string }} 默认 bot 配置模板
+	 * @returns {{ OwnerUserName: string, OwnerUserID?: string }} 默认 bot 配置模板
 	 */
 	function GetSimpleBotConfigTemplate() {
-		return { OwnerUserName: 'your_discord_username' }
+		return { OwnerUserName: 'your_discord_username', OwnerUserID: '' }
 	}
 
 	/**
 	 * @param {DiscordClient} client Discord 客户端
-	 * @param {{ OwnerUserName: string }} interfaceConfig 配置
+	 * @param {{ OwnerUserName: string, OwnerUserID?: string }} interfaceConfig 配置
 	 * @param {string} botname bot 实例名
 	 */
 	async function SimpleDiscordBotMain(client, interfaceConfig, botname) {
@@ -147,6 +149,10 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					delete charClientRegistry[ownerUsername]
 			},
 		})
+
+		const owner = await resolveOwnerPlatformUserId(client, interfaceConfig)
+		if (owner)
+			await claimOperatorBridgeIdentity(ownerUsername, 'discord', owner.platformUserId, owner.displayName)
 
 		/**
 		 * @param {string} groupId 群 ID

@@ -1,5 +1,6 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
@@ -99,6 +100,8 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 					delete charWechatRuntimeRegistry[ownerUsername]
 			},
 		})
+
+		await claimOperatorBridgeIdentity(ownerUsername, 'wechat', interfaceConfig.OwnerWeChatId, ownerDisplayName)
 
 		/**
 		 * @param {string} toUserId 对端 ID

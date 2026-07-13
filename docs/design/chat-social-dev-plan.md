@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，含残余缺口 G1–G4）；**M7a 已落地**（as-built 见 M7a 节）；M7b 未动工；M7 龙胆迁移待 M7a+M7b+G1；M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节，含残余缺口 G1–G4）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；M7 龙胆迁移待 M7b+G1；M8–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -179,52 +179,22 @@ onMessage?: (event: {
 
 ---
 
-## M7b — 地基：operator 平台身份认领
+## M7b — 地基：operator 平台身份认领（as-built）
 
-### 现状锚点
+> 落地：`2026-07-13`。测试：`chat/test/integration/bridge_identity_claim.test.mjs`（4 用例）+ `discordbot/test/pure/owner_resolve.test.mjs`（DC 解析 2 用例）。
 
-- 壳配置 Owner 字段现状：TG `OwnerUserID`（仅私聊准入过滤）、DC `OwnerUserName`（仅 DM 准入；**代码库无 `OwnerDiscordID`**，Discord 走 username 字符串）、WX `OwnerWeChatId`（出站默认对端，不做入站过滤）+ `OwnerPromptName`。这些字段与 bridge identity / operator entityHash **零关联**。
-- operator entityHash：`chat/src/chat/lib/replica.mjs::resolveOperatorEntityHash(username)` → `src/server/p2p_server/operator_identity.mjs`（`settings/operator.json` recovery 公钥派生）。
-- 手动绑定通路已有：`PUT /bridge/identity-bind` → `bindBridgeIdentity`（`identityMap` 优先于派生伪 hash，`entityReverse` 反查表供出站还原）。
+| 模块 | 实际落点 | 关键导出 / 行为 |
+| --- | --- | --- |
+| 共享认领 | `chat/src/chat/bridge/identity.mjs` | `isPlaceholderPlatformUserId(platformUserId)` / `isBoundBridgeIdentity(username, platform, platformUserId)`（`identityMap` 键存在性）/ `claimOperatorBridgeIdentity(username, platform, platformUserId, displayName?)`（空值或 `your_` 占位符跳过；`resolveOperatorEntityHash` 为 null 跳过；否则 `bindBridgeIdentity` 幂等覆盖） |
+| TG 壳接线 | `telegrambot/src/default_interface/main.mjs` | `registerBridgeOps` 后：`bot.telegram.getChat(OwnerUserID)` 取 `first_name`/`username` → `claimOperatorBridgeIdentity(..., 'telegram', ...)` |
+| DC 壳接线 | `discordbot/src/ownerResolve.mjs` + `default_interface/main.mjs` | `resolveOwnerPlatformUserId(client, interfaceConfig)`：`OwnerUserID` snowflake 直用（`users.fetch` 取 displayName）；仅 `OwnerUserName` 时遍历 `client.guilds.cache` → `members.fetch` 按 username 匹配（龙胆 `resolvedOwnerId` 同法）；模板新增可选 `OwnerUserID: ''`；`registerBridgeOps` 后 claim |
+| WX 壳接线 | `wechatbot/src/default_interface/main.mjs` + `endpoints.mjs` | 就绪处 `claimOperatorBridgeIdentity(..., 'wechat', OwnerWeChatId, OwnerPromptName \|\| ownerUsername)`；`applyQrLoginResult` 写入 `OwnerWeChatId` 后 re-bind |
+| 展示归属 | `chat/src/chat/bridge/ingress.mjs` | `enrichBoundAuthorDisplay`：`postBridgeMessage` / `postBridgeEdit` 在 `isBoundBridgeIdentity` 命中时 `getProfile(authorEntityHash, username, { groupId })` 覆盖 `displayName`/`displayAvatar`，DTO 兜底；伪 hash 作者维持原状 |
 
-**缺的只是一根线**：壳启动时把 Owner 平台账号自动 bind 到 operator entityHash。
-
-### 7b.1 自动认领
-
-三壳 bot 启动就绪时（`OnceClientReady` / `BotSetup` 后、bridgeOps 注册同处）：
-
-```js
-await bindBridgeIdentity(username, {
-  platform, platformUserId: ownerPlatformUserId,
-  entityHash: resolveOperatorEntityHash(username),
-  displayName: ownerDisplayName,
-})
-```
-
-- **TG**：`OwnerUserID` 即 uid，直接绑。
-- **DC**：配置模板增加可选 `OwnerUserID`（snowflake，直填免解析）；只有 `OwnerUserName` 时启动后解析一次（`client.users` / guild 成员遍历，龙胆 `resolvedOwnerId` 同法），解析失败打 warn 跳过绑定。顺带消灭龙胆侧「`is_from_owner` 用 username、`getOwnerUserId` 用 resolvedOwnerId」的识别分裂。
-- **WX**：`OwnerWeChatId`（QR 登录自动写入时同步绑）。
-- 幂等：`bindBridgeIdentity` 本就是覆盖写；换 Owner 配置重启即更新。
-
-### 7b.2 效果（绑定后自动获得，无需新代码）
-
-- operator 平台消息经 `resolveBridgeIdentity` 直接以 **operator entityHash** 入账：care / inbox / alias / 通知归属、`messageMentionsEntity(event, operatorHash)`、`isCaredBy` 全部统一；跨平台同一身份，与 Hub 的 fount 身份对上。
-- 龙胆认主人不再需要预知各平台 uid：care 一个 operator entityHash 即可（见 M7）。
-
-### 7b.3 展示归属
-
-`postBridgeMessage` 拼 content 时：author 解析出的 entityHash 若为**已绑定的真实实体**（`identityMap` 命中，非派生伪 hash），走 `getProfile(entityHash, ...)` 取 name / avatar，DTO `author.displayName` 兜底——operator 在自己 bot 的会话里以自己的 profile 出现。伪 hash 作者维持 DTO displayName 现状。
-
-### 7b.4 准入过滤
-
-壳层 DM 准入语义与实现不动（仍是配置字段比对）——绑定是其副产品，不是替代。
-
-### 验收
-
-- 配置 `OwnerUserID` 的 TG bot 启动后 `bridges.json.identityMap` 含 `telegram:{uid} → operatorHash`。
-- owner 的入站 DTO 落盘后 `extension.bridge.authorEntityHash === operatorHash`，operator inbox / care 归因正确。
-- DC 仅配 `OwnerUserName` 时启动解析并绑定成功；配 `OwnerUserID` 时不做遍历。
-- fixture char 在 mock TG DM 内 `isCaredBy(username, charHash, operatorHash)` + `resolveBridgeIdentity` 认出主人消息。
+- 准入过滤（7b.4）：三壳 DM 准入仍用配置字段比对，未改。
+- 绑定后自动生效（7b.2）：`resolveBridgeIdentity` → `extension.bridge.authorEntityHash`；care / inbox / alias / 通知 / `messageMentionsEntity` / `isCaredBy` 无需新代码。
+- 手动绑定通路不变：`PUT /api/parts/shells:chat/bridge/identity-bind` → `bindBridgeIdentity`。
+- 龙胆侧 `is_from_owner` / `getOwnerUserId` 分裂消除属 **M7**，M7b 只加壳层绑定线。
 
 ---
 
