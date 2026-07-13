@@ -207,7 +207,7 @@ export interface SocialFeedPage {
 }
 
 /** 通知类型（`notifications.mjs`）。 */
-export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow'
+export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow' | 'care_post'
 
 /** 聚合展示 actor 摘要。 */
 export interface SocialNotificationActor {
@@ -328,16 +328,17 @@ export interface SocialRpcPostDiscoverResponse {
 	nextCursor?: string | null
 }
 
-/** char.interfaces.social — 可选；未实现 OnMention 时默认走 chat.GetReply。 */
-export interface SocialMentionEvent {
-	username: string
-	charPartName: string
+/** char.interfaces.social — 入站 post 事件（可序列化纯数据）。 */
+export interface SocialMessageEvent {
+	post: object
 	authorEntityHash: string
 	authorDisplayName: string
-	postId: string
 	postText: string
-	mentionedEntityHash: string
 	replyTo?: SocialPostRef
+	mentions: { entityHashes: string[] }
+	viewerEntityHash: string
+	username: string
+	charPartName: string
 	lang: string
 }
 
@@ -355,26 +356,7 @@ export interface SocialFollowEvent {
 /**
  *
  */
-export interface SocialFollowerUpdateEvent {
-	username: string
-	charPartName: string
-	authorEntityHash: string
-	postId: string
-	postText: string
-	post: SocialTimelineEvent & { type: 'post' }
-	viewerUsername: string
-}
-
-/**
- *
- */
-export type SocialHandlerResult = { text?: string, skip?: boolean } | null
-
-/**
- *
- */
 export interface SocialCharInterface {
-	OnMention?: (event: SocialMentionEvent) => Promise<SocialHandlerResult>
+	onMessage?: (event: SocialMessageEvent) => Promise<boolean>
 	OnFollow?: (event: SocialFollowEvent) => Promise<void>
-	OnFollowerUpdate?: (event: SocialFollowerUpdateEvent) => Promise<SocialHandlerResult>
 }

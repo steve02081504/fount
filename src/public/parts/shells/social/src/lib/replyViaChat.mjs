@@ -1,5 +1,5 @@
 /**
- * OnMention 无 social handler 时回退 chat.GetReply：构造最小 chatReplyRequest 并取回复正文。
+ * social onMessage 意愿 true 或无 onMessage 且被 @ 时，经 chat.GetReply 生成公开回复正文。
  */
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../../chat/src/chat/session/builtinParts.mjs'
 
@@ -7,24 +7,24 @@ import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../../chat/src/chat/session/b
  * @param {string} username replica
  * @param {string} charPartName chars 目录名
  * @param {object} char char part
- * @param {object} mentionEvent OnMention 载荷
+ * @param {object} messageEvent SocialMessageEvent 载荷
  * @returns {Promise<string | null>} 回复正文；char 无 GetReply 或回复为空时 null
  */
-export async function mentionFallbackReplyText(username, charPartName, char, mentionEvent) {
+export async function replyViaChat(username, charPartName, char, messageEvent) {
 	const getReply = char.interfaces?.chat?.GetReply
 	if (!getReply) return null
 
 	const now = new Date()
 	const entry = {
-		name: mentionEvent.authorDisplayName || 'user',
+		name: messageEvent.authorDisplayName || 'user',
 		time_stamp: now,
 		role: 'user',
-		content: mentionEvent.postText || '',
+		content: messageEvent.postText || '',
 		files: [],
 		extension: {
 			platform: 'social',
-			postId: mentionEvent.postId,
-			authorEntityHash: mentionEvent.authorEntityHash,
+			postId: messageEvent.post?.id,
+			authorEntityHash: messageEvent.authorEntityHash,
 		},
 	}
 	const charInfo = char.info?.['zh-CN'] || char.info?.['en-US'] || {}
@@ -40,13 +40,13 @@ export async function mentionFallbackReplyText(username, charPartName, char, men
 			fount_assets: false,
 			fount_themes: false,
 		},
-		chat_name: 'social:mention',
+		chat_name: 'social:post',
 		char_id: charPartName,
 		username,
 		Charname: charInfo.name || charPartName,
-		UserCharname: mentionEvent.authorDisplayName || 'user',
-		ReplyToCharname: mentionEvent.authorDisplayName,
-		locales: [{ code: mentionEvent.lang || 'zh-CN' }],
+		UserCharname: messageEvent.authorDisplayName || 'user',
+		ReplyToCharname: messageEvent.authorDisplayName,
+		locales: [{ code: messageEvent.lang || 'zh-CN' }],
 		time: now,
 		world: BUILTIN_WORLD,
 		user: BUILTIN_PERSONA,
@@ -59,12 +59,12 @@ export async function mentionFallbackReplyText(username, charPartName, char, men
 		chat_scoped_char_memory: {},
 		extension: {
 			platform: 'social',
-			mention: {
-				postId: mentionEvent.postId,
-				authorEntityHash: mentionEvent.authorEntityHash,
+			post: {
+				id: messageEvent.post?.id,
+				authorEntityHash: messageEvent.authorEntityHash,
 			},
 		},
-		/** @returns {Promise<null>} social 回退请求不支持追加消息 */
+		/** @returns {Promise<null>} social 请求不支持追加消息 */
 		AddChatLogEntry: async () => null,
 		/** @returns {Promise<object>} 原样返回请求自身（无会话可刷新） */
 		Update: async function update() { return this },

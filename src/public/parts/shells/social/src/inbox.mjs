@@ -3,10 +3,11 @@
  */
 import fs from 'node:fs'
 
-import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
-import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 
@@ -14,7 +15,7 @@ import { canWriteTimeline } from './timeline/append.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
 /** @type {Set<string>} */
-export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow'])
+export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post'])
 
 /**
  *
@@ -299,6 +300,46 @@ export function setNotificationsSeenAt(username, entityHash, at) {
 	const dir = inboxDir(username, entityHash)
 	fs.mkdirSync(dir, { recursive: true })
 	saveJsonFile(inboxReadPath(username, entityHash), { seenAt: Number(at) || Date.now() })
+}
+
+/**
+ * operator 特别关心作者的新帖：写 care_post inbox 行并触达。
+ * @param {string} username replica
+ * @param {string} recipientEntityHash 收件人（operator）
+ * @param {string} authorEntityHash 发帖作者
+ * @param {object} post 签名 post
+ * @param {string | null} [snippet] 摘要
+ * @returns {Promise<void>}
+ */
+export async function appendCarePostInboxRow(username, recipientEntityHash, authorEntityHash, post, snippet = null) {
+	const recipient = String(recipientEntityHash || '').trim().toLowerCase()
+	const author = String(authorEntityHash || '').trim().toLowerCase()
+	if (!recipient || !author || recipient === author) return
+	if (!await canWriteTimeline(username, recipient)) return
+	const at = Number(post.hlc?.wall) || Number(post.timestamp) || Date.now()
+	const textSnippet = snippet ?? notificationSnippet(post.content?.text || '')
+	const notification = {
+		...normalizeNotificationRow('care_post', author, at, post.id, null),
+		snippet: textSnippet,
+		aggregateKey: computeAggregateKey({
+			type: 'care_post',
+			actorEntityHash: author,
+			postId: post.id,
+			targetPostId: null,
+			at,
+		}, recipient),
+	}
+	const dir = inboxDir(username, recipient)
+	fs.mkdirSync(dir, { recursive: true })
+	await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
+	pushFeedUpdate(username, { type: 'notification', notification })
+	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
+	void notifyUser(username, {
+		title: 'care_post',
+		body: String(textSnippet || 'care_post'),
+		url: '/parts/shells:social/',
+		tag: `social:care_post:${recipient}`,
+	})
 }
 
 /**

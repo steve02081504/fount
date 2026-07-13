@@ -1,6 +1,7 @@
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
+
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
+import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
 import { loadFollowing } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
@@ -46,6 +47,10 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	await appendInboxFromTimelineEvent(username, entityHash, validated.row)
 	const { indexTimelineEventForSearch } = await import('../searchIndex.mjs')
 	await indexTimelineEventForSearch(username, entityHash, validated.row)
+	if (validated.row.type === 'post') {
+		const { dispatchSocialMessage } = await import('../dispatch.mjs')
+		await dispatchSocialMessage(username, entityHash, validated.row)
+	}
 	return true
 }
 

@@ -407,8 +407,8 @@ export class CharAPI_t {
 		/**
 		 * Social 动态接口（fount Social shell）。
 		 * 账号即 P2P entityHash，与 Chat 联邦身份 / agent 实体同一套，无需单独注册。
-		 * 跨节点调用走 Trystero `social_rpc`（如 `social_on_mention`），不经 `char_rpc` / remoteProxy。
-		 * 未实现 OnMention 时，shell 默认调用 chat.GetReply 生成公开回复（参考 bot 流水线）。
+		 * 跨节点调用走 Trystero `social_rpc`（如 `social_post_notify`），不经 `char_rpc` / remoteProxy。
+		 * 未实现 onMessage 时，被 @ 的 agent 默认经 chat.GetReply 生成公开回复。
 		 */
 		social?: SocialCharInterface,
 		/**

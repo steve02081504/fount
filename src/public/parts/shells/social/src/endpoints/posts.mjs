@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 
-import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
+import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
-import { dispatchPostFollowerUpdates, dispatchPostMentions } from '../dispatch.mjs'
+import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
@@ -55,8 +55,6 @@ export function registerPostsRoutes(router) {
 			charPartName,
 			content: await maybeEncryptPostContent(username, entityHash, randomUUID(), draftContent, visibility),
 		})
-		await dispatchPostMentions(username, entityHash, signed)
-		await dispatchPostFollowerUpdates(entityHash, signed)
 		pushFeedUpdate(username, { type: 'post', entityHash, postId: signed.id })
 		res.status(200).json({ event: signed })
 	})

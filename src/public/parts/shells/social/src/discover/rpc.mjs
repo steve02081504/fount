@@ -1,4 +1,5 @@
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
 import { SOCIAL_RPC_REQUEST_TYPES } from '../federation/namespace.mjs'
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
 
@@ -46,11 +47,11 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 				events,
 			}
 		}
-		case 'social_on_mention': {
-			const { processSocialOnMentionRpc } = await import('../dispatch.mjs')
+		case 'social_post_notify': {
+			const { processSocialPostNotifyRpc } = await import('../dispatch.mjs')
 			return {
-				type: 'social_on_mention_response',
-				...await processSocialOnMentionRpc(username, rpc),
+				type: 'social_post_notify_response',
+				...await processSocialPostNotifyRpc(username, rpc),
 			}
 		}
 		case 'social_report': {

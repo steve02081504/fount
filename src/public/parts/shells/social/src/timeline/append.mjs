@@ -1,18 +1,19 @@
 import { Buffer } from 'node:buffer'
 
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { recoverySubjectHashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
-import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
-import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 import { getAgentCharResolver } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
+import { recoverySubjectHashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
+import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
+
 import {
 	consumePendingRecoverySecret,
 	getOperatorSecretKey,
 	getRecoveryPubKeyHex,
 } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 
@@ -215,6 +216,10 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 	const signed = await appendTimelineEvent(username, entityHash, event)
 	if (options.fanout !== false)
 		await publishTimelineEvent(username, entityHash, signed)
+	if (signed.type === 'post') {
+		const { dispatchSocialMessage } = await import('../dispatch.mjs')
+		await dispatchSocialMessage(username, entityHash, signed)
+	}
 	return signed
 }
 

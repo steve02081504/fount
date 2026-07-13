@@ -1,24 +1,52 @@
 /**
- * Social 事件分发：@ 任意 P2P 实体；本地 agent 经 social OnMention 或 chat.GetReply 回退响应。
+ * Social 入站 post 分发：本机 agent onMessage + operator care 通知 + 跨节点 post 推送。
  */
-import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
-import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
+import { mentionsEntity, extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { listReplicaUsernamesFollowing } from './federation/follower_index.mjs'
-import { applyMentionNetworkHint } from './federation/network_hints.mjs'
+
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 
+import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
+import { applyMentionNetworkHint } from './federation/network_hints.mjs'
+import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
+import { withDecryptedPostContent } from './feed/buildItem.mjs'
+import { loadViewerContext } from './feed/helpers.mjs'
+import { canViewPost } from './feedVisibility.mjs'
 import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
-import { ensureCharSocialInterface } from './lib/charSocial.mjs'
-import { mentionFallbackReplyText } from './lib/chatMentionFallback.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
-import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { mentionSourceText, postTextForNotification } from './lib/postMentionText.mjs'
-import { commitTimelineEvent } from './timeline/append.mjs'
+import { replyViaChat } from './lib/replyViaChat.mjs'
+
+/** @type {Set<string>} (agentHash, postId) 与 care 去重 */
+const dispatchedPostKeys = new Set()
+
+/** @type {Map<string, { tokens: number }>} */
+const socialReplyBuckets = new Map()
+
+const SOCIAL_THROTTLE_SETTINGS = { enabled: true, burst: 2, refill: 0.5 }
 
 /**
- * 解析 entityHash 对应的展示名。
+ * @param {string} bucketKey agent 节流键
+ * @param {{ enabled: boolean, burst: number, refill: number }} settings 桶配置
+ * @returns {{ allowed: boolean }} 是否允许消耗
+ */
+function consumeSocialReplyToken(bucketKey, settings) {
+	if (!settings.enabled) return { allowed: true }
+	const row = socialReplyBuckets.get(bucketKey) || { tokens: settings.burst }
+	row.tokens = Math.min(settings.burst, row.tokens + settings.refill)
+	if (row.tokens < 1) {
+		socialReplyBuckets.set(bucketKey, row)
+		return { allowed: false }
+	}
+	row.tokens = Math.max(0, row.tokens - 1)
+	socialReplyBuckets.set(bucketKey, row)
+	return { allowed: true }
+}
+
+/**
  * @param {string} entityHash 128 位 entityHash
  * @param {string} [replicaUsername] 查询 profile 的 replica
  * @returns {Promise<string>} 展示名或 hash 缩写
@@ -26,33 +54,6 @@ import { commitTimelineEvent } from './timeline/append.mjs'
 async function displayNameForEntity(entityHash, replicaUsername) {
 	const profile = replicaUsername ? await getEntityProfile(replicaUsername, entityHash) : null
 	return profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
-}
-
-/**
- * 调用角色 `interfaces.social` 上的指定处理器。
- * @param {string} username replica 登录名
- * @param {string} charPartName chars/ 下目录名
- * @param {string} method interfaces.social 方法名
- * @param {object} event 事件载荷
- * @returns {Promise<{ text?: string, skip?: boolean } | null>} 处理器结果
- */
-async function invokeCharSocialInterface(username, charPartName, method, event) {
-	const char = await ensureCharSocialInterface(username, charPartName)
-	const handler = char?.interfaces?.social?.[method]
-	if (!handler) return null
-	return normalizeSocialHandlerResult(await handler({
-		username,
-		charPartName,
-		...event,
-	}))
-}
-
-/**
- * @param {unknown} result social 接口返回值
- * @returns {{ text: string } | { skip: true }} 可发布文本或跳过标记
- */
-function normalizeSocialHandlerResult(result) {
-	return result?.text ? { text: result.text } : { skip: true }
 }
 
 /**
@@ -65,6 +66,7 @@ function normalizeSocialHandlerResult(result) {
  */
 async function publishEntityReply(username, authorEntityHash, content, charPartName = null) {
 	await ensureEntitySocialReady(username, authorEntityHash)
+	const { commitTimelineEvent } = await import('./timeline/append.mjs')
 	return commitTimelineEvent(username, authorEntityHash, {
 		type: 'post',
 		charPartName,
@@ -73,109 +75,163 @@ async function publishEntityReply(username, authorEntityHash, content, charPartN
 }
 
 /**
- * 本机托管 agent 对 @ 提及的 OnMention 处理与可选自动回复。
- * @param {ReturnType<typeof resolveSocialEntity>} target 解析后的目标实体
- * @param {object} mentionEvent OnMention 载荷
- * @returns {Promise<{ handled: boolean, published: boolean }>} handled 表示目标是否为本机 agent；published 表示是否已发帖回复
+ * @param {string} username replica
+ * @param {string} authorEntityHash 作者
+ * @param {object} post 签名 post
+ * @param {string} authorLabel 作者展示名
+ * @returns {Promise<void>}
  */
-async function handleLocalAgentOnMention(target, mentionEvent) {
-	if (!target?.local || target.kind !== 'agent' || !target.replicaUsername || !target.charPartName)
-		return { handled: false, published: false }
+async function dispatchCarePostIfNeeded(username, authorEntityHash, post, authorLabel) {
+	const operator = await resolveOperatorEntityHash(username)
+	if (!operator) return
+	const author = authorEntityHash.toLowerCase()
+	if (author === operator) return
+	const careKey = `care:${operator}:${post.id}`
+	if (dispatchedPostKeys.has(careKey)) return
+	if (!await isCaredBy(username, operator, author)) return
+	dispatchedPostKeys.add(careKey)
+	const snippet = postTextForNotification(post) ?? notificationSnippetFromAuthor(authorLabel)
+	const { appendCarePostInboxRow } = await import('./inbox.mjs')
+	await appendCarePostInboxRow(username, operator, author, post, snippet)
+}
 
-	const { replicaUsername: username, charPartName, entityHash } = target
-	const char = await loadPart(username, `chars/${charPartName}`)
-	if (!char) return { handled: true, published: false }
+/**
+ * @param {string} authorLabel 展示名
+ * @returns {string | null} 通知摘要
+ */
+function notificationSnippetFromAuthor(authorLabel) {
+	return authorLabel ? `${authorLabel} 发了新帖` : null
+}
 
-	// OnMention 为正式接口；缺失时回退 chat.GetReply（最小 chatReplyRequest）
-	const onMention = char.interfaces?.social?.OnMention
-	const text = onMention
-		? normalizeSocialHandlerResult(await onMention({
+/**
+ * @param {string} username replica
+ * @param {string} authorEntityHash 作者
+ * @param {object} post 签名 post
+ * @param {{ entityHashes: string[] }} mentions mention 结构
+ * @param {string} authorLabel 作者展示名
+ * @param {string} lang 语言
+ * @returns {Promise<void>}
+ */
+async function dispatchLocalAgents(username, authorEntityHash, post, mentions, authorLabel, lang) {
+	const author = authorEntityHash.toLowerCase()
+	const replyTo = post.content?.replyTo
+
+	for (const { entityHash: agentHash, charPartName } of listLocalAgentEntities(username)) {
+		const viewerHash = agentHash.toLowerCase()
+		if (viewerHash === author) continue
+
+		const dedupeKey = `agent:${viewerHash}:${post.id}`
+		if (dispatchedPostKeys.has(dedupeKey)) continue
+
+		const viewerContext = await loadViewerContext(username, viewerHash)
+		if (!canViewPost({ entityHash: author, content: post.content }, viewerContext)) continue
+
+		const decrypted = await withDecryptedPostContent(username, author, post)
+		if (!decrypted.content && post.content?.scheme === 'gsh') continue
+
+		dispatchedPostKeys.add(dedupeKey)
+
+		const postText = postTextForNotification({ content: decrypted.content }) ?? ''
+		const mentioned = mentionsEntity(mentions, viewerHash)
+		if (!mentioned) {
+			const { allowed } = consumeSocialReplyToken(`social\0${viewerHash}`, SOCIAL_THROTTLE_SETTINGS)
+			if (!allowed) continue
+		}
+
+		const char = await loadPart(username, `chars/${charPartName}`)
+		if (!char) continue
+
+		const messageEvent = {
+			post,
+			authorEntityHash: author,
+			authorDisplayName: authorLabel,
+			postText,
+			replyTo,
+			mentions,
+			viewerEntityHash: viewerHash,
 			username,
 			charPartName,
-			...mentionEvent,
-			mentionedEntityHash: entityHash,
-		})).text
-		: await mentionFallbackReplyText(username, charPartName, char, mentionEvent)
-	if (!text) return { handled: true, published: false }
-
-	await publishEntityReply(
-		username,
-		entityHash,
-		{
-			text,
-			replyTo: mentionEvent.replyTo,
-			visibility: 'public',
-			lang: mentionEvent.lang,
-		},
-		charPartName,
-	)
-	return { handled: true, published: true }
-}
-
-/**
- * 本机 replica 上执行 OnMention（供 social_rpc 入站）。
- * @param {string} hostingUsername 托管 replica
- * @param {object} rpc RPC 体
- * @returns {Promise<{ ok: boolean, published?: boolean }>} 处理结果
- */
-export async function processSocialOnMentionRpc(hostingUsername, rpc) {
-	const target = await resolveSocialEntity(rpc.targetEntityHash, hostingUsername)
-	const result = await handleLocalAgentOnMention(target, {
-		authorEntityHash: rpc.authorEntityHash,
-		authorDisplayName: rpc.authorDisplayName,
-		postId: rpc.postId,
-		postText: rpc.postText,
-		replyTo: rpc.replyTo,
-		lang: rpc.lang,
-	})
-	if (!result.handled) return { ok: false }
-	return { ok: true, published: result.published }
-}
-
-/**
- * 帖子 @ 提及分发：目标为任意 P2P 实体；本机托管 agent 经 social 接口自动回复。
- * @param {string} posterUsername 发帖 replica
- * @param {string} authorEntityHash 作者 entityHash
- * @param {object} post 签名 post
- * @returns {Promise<void>} 无返回值
- */
-export async function dispatchPostMentions(posterUsername, authorEntityHash, post) {
-	const mentions = extractMentionEntityHashes(mentionSourceText(post))
-	if (!mentions.length) return
-
-	const notifyText = postTextForNotification(post)
-	const authorLabel = await displayNameForEntity(authorEntityHash, posterUsername)
-	const replyTo = { entityHash: authorEntityHash, postId: post.id }
-	const lang = post.content?.lang || 'zh-CN'
-	const authorRep = pickNodeScore(authorEntityHash.slice(0, 64))
-
-	for (const targetHash of mentions) {
-		if (targetHash === authorEntityHash.toLowerCase()) continue
-		if (authorRep < SOCIAL_REP_HIDE_THRESHOLD) continue
-		applyMentionNetworkHint(posterUsername, targetHash)
-		const target = await resolveSocialEntity(targetHash)
-		const local = await handleLocalAgentOnMention(target, {
-			authorEntityHash,
-			authorDisplayName: authorLabel,
-			postId: post.id,
-			postText: notifyText,
-			replyTo,
 			lang,
-		})
-		if (local.handled) continue
+		}
+
+		const onMessage = char.interfaces?.social?.onMessage
+		const wantsReply = onMessage
+			? await onMessage(messageEvent)
+			: mentioned
+		if (!wantsReply) continue
+
+		const text = await replyViaChat(username, charPartName, char, messageEvent)
+		if (!text) continue
+
+		await publishEntityReply(
+			username,
+			viewerHash,
+			{ text, replyTo: replyTo || { entityHash: author, postId: post.id }, visibility: 'public', lang },
+			charPartName,
+		)
+	}
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} authorEntityHash 作者
+ * @param {object} post 签名 post
+ * @param {string[]} mentionHashes @ 实体列表
+ * @returns {Promise<void>}
+ */
+async function dispatchRemoteMentionPush(username, authorEntityHash, post, mentionHashes) {
+	const author = authorEntityHash.toLowerCase()
+	const authorRep = pickNodeScore(author.slice(0, 64))
+	if (authorRep < SOCIAL_REP_HIDE_THRESHOLD) return
+
+	for (const targetHash of mentionHashes) {
+		if (targetHash === author) continue
+		applyMentionNetworkHint(username, targetHash)
+		const target = await resolveSocialEntity(targetHash)
+		if (target?.local && target.kind === 'agent' && target.replicaUsername === username) continue
 
 		const { collectSocialRpcResponses } = await import('./federation/part_wire_rpc.mjs')
-		void collectSocialRpcResponses(posterUsername, {
-			type: 'social_on_mention',
-			targetEntityHash: targetHash,
-			authorEntityHash,
-			authorDisplayName: authorLabel,
-			postId: post.id,
-			postText: notifyText,
-			replyTo,
-			lang,
-		}).catch(err => console.error('social_rpc social_on_mention failed', err))
+		void collectSocialRpcResponses(username, {
+			type: 'social_post_notify',
+			authorEntityHash: author,
+			posterUsername: username,
+			post,
+		}).catch(err => console.error('social_rpc social_post_notify failed', err))
 	}
+}
+
+/**
+ * 新帖入账分发：本机 agent onMessage、operator care、跨节点 @ 推送。
+ * @param {string} username 入账 replica
+ * @param {string} authorEntityHash 作者 entityHash
+ * @param {object} post 签名 post
+ * @returns {Promise<void>}
+ */
+export async function dispatchSocialMessage(username, authorEntityHash, post) {
+	if (post?.type !== 'post') return
+	const author = String(authorEntityHash || '').trim().toLowerCase()
+	const mentionHashes = extractMentionEntityHashes(mentionSourceText(post))
+	const mentions = { entityHashes: mentionHashes }
+	const authorLabel = await displayNameForEntity(author, username)
+	const lang = post.content?.lang || 'zh-CN'
+
+	await dispatchCarePostIfNeeded(username, author, post, authorLabel)
+	await dispatchLocalAgents(username, author, post, mentions, authorLabel, lang)
+	if (mentionHashes.length)
+		await dispatchRemoteMentionPush(username, author, post, mentionHashes)
+}
+
+/**
+ * 联邦 RPC 入站：目标节点收到 post 后走同一分发。
+ * @param {string} hostingUsername 托管 replica
+ * @param {object} rpc RPC 体
+ * @returns {Promise<{ ok: boolean }>} RPC 处理结果
+ */
+export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
+	const post = rpc?.post
+	if (!post || post.type !== 'post') return { ok: false }
+	await dispatchSocialMessage(rpc.posterUsername || hostingUsername, rpc.authorEntityHash, post)
+	return { ok: true }
 }
 
 /**
@@ -190,56 +246,21 @@ export async function dispatchFollowEvent(followerUsername, followerEntityHash, 
 	if (!target?.local || target.kind !== 'agent' || !target.replicaUsername || !target.charPartName)
 		return
 
-	await invokeCharSocialInterface(
-		target.replicaUsername,
-		target.charPartName,
-		'OnFollow',
-		{
-			followerEntityHash,
-			followerUsername,
-			targetEntityHash: target.entityHash,
-		},
-	)
+	const char = await loadPart(target.replicaUsername, `chars/${target.charPartName}`)
+	const handler = char?.interfaces?.social?.OnFollow
+	if (typeof handler !== 'function') return
+
+	await handler({
+		username: target.replicaUsername,
+		charPartName: target.charPartName,
+		followerEntityHash,
+		followerUsername,
+		targetEntityHash: target.entityHash,
+	})
 }
 
-/**
- * 所关注实体发新帖：通知各 replica 上显式实现 OnFollowerUpdate 的本地 agent（无默认实现）。
- * @param {string} authorEntityHash 发帖作者 entityHash
- * @param {object} post 签名 post 事件
- * @returns {Promise<void>}
- */
-export async function dispatchPostFollowerUpdates(authorEntityHash, post) {
-	const author = String(authorEntityHash || '').toLowerCase()
-	if (!author || post?.type !== 'post') return
-
-	const notifyText = postTextForNotification(post)
-	const replyTo = { entityHash: author, postId: post.id }
-	const lang = post.content?.lang || 'zh-CN'
-
-	for (const viewerUsername of await listReplicaUsernamesFollowing(author))
-		for (const { entityHash: agentHash, charPartName } of listLocalAgentEntities(viewerUsername)) {
-			const char = await loadPart(viewerUsername, `chars/${charPartName}`)
-			const handler = char?.interfaces?.social?.OnFollowerUpdate
-			if (typeof handler !== 'function') continue
-
-			const result = await handler({
-				username: viewerUsername,
-				charPartName,
-				authorEntityHash: author,
-				postId: post.id,
-				postText: notifyText,
-				post,
-				viewerUsername,
-			})
-			const custom = normalizeSocialHandlerResult(result)
-
-			if (!custom || custom.skip || !custom.text) continue
-			await publishEntityReply(
-				viewerUsername,
-				agentHash,
-				{ text: custom.text, replyTo, visibility: 'public', lang },
-				charPartName,
-			)
-		}
-
+/** @internal 测试用：清空去重集 */
+export function resetSocialDispatchDedupForTests() {
+	dispatchedPostKeys.clear()
+	socialReplyBuckets.clear()
 }

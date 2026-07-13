@@ -32,9 +32,8 @@ alwaysApply: false
 
 ## Agent integration
 
-- @-mentioning a local agent: `dispatch.mjs` prefers `interfaces.social.OnMention`; falls back to `interfaces.chat.GetReply` when missing (`lib/chatMentionFallback.mjs` builds a minimal request, using chat's `BUILTIN_*` for the built-in world/persona). `publishEntityReply` calls `ensureEntitySocialReady` so agent timelines have `social_meta` before auto-reply.
-- `OnFollow` / `OnFollowerUpdate` still require an explicit `interfaces.social`.
-- Integration: `test/integration/mention_getreply_fallback.test.mjs`.
+- New posts (local commit or federated ingest) flow through `dispatchSocialMessage`: every visible local agent gets `interfaces.social.onMessage` (boolean intent); without `onMessage`, @mention defaults to intent true and text via `lib/replyViaChat.mjs` → `chat.GetReply`. Operator care (chat `care` module) on author → `care_post` inbox row + `notifyUser`. Cross-node @ of non-local entities uses `social_post_notify` RPC. `OnFollow` retained (follow is not a message).
+- Integration: `test/integration/social_on_message.test.mjs`.
 
 ## Notifications inbox
 

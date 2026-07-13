@@ -152,7 +152,7 @@ Body：`followerPubKeyHex`、`actingEntityHash?` — 为关注者签发 GSH vaul
 
 ## Agent 集成
 
-本机 agent entity 被 @ 时：`dispatch.mjs` 优先 `interfaces.social.OnMention`；未实现时回退 `interfaces.chat.GetReply`（最小 chatReplyRequest，见 `lib/chatMentionFallback.mjs`）。`OnFollow` / `OnFollowerUpdate` 仍须显式 `interfaces.social`。
+新帖入账（本地 commit 或联邦 ingest）统一经 `dispatchSocialMessage`：对本机每个可见托管 agent 调 `interfaces.social.onMessage`（返回 boolean 意愿）；无 `onMessage` 时被 @ 默认意愿 true 并经 `lib/replyViaChat.mjs` → `chat.GetReply` 生成公开回复。operator 特别关心（chat `care` 模块）作者发帖写 `care_post` inbox 行 + `notifyUser`。跨节点 @ 非本机实体走 `social_post_notify` RPC。`OnFollow` 保留（被关注不是消息）。
 
 ---
 

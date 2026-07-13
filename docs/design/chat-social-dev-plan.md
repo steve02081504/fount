@@ -24,7 +24,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。M1–M6 计划中的删除项（`@Charname` 触发特例、旧 `/mentions` 路由、`mentioned`/`onlineCount` 字段、旧 token 语法等）已执行完毕；M8 仍将删除 social `OnMention` / `OnFollowerUpdate`。
 
-**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；M8–M10 未动工。
+**当前状态**：M1–M6 已落地（as-built 记录见第一—六节）；**M6.5 全部落地**（G1–G4 + inbox 更名顺手项，as-built 见 M6.5 节）；**M7a 已落地**（as-built 见 M7a 节）；**M7b 已落地**（as-built 见 M7b 节）；**M7 龙胆迁移已落地**（as-built 见 M7 节）；**M8 已落地**（as-built 见 M8 节）；M9–M10 未动工。
 
 **龙胆源码位置**：`data/users/steve02081504/chars/GentianAphrodite/`（架构说明见该目录下 `AGENTS.md`；M7 的迁移映射表以此为准）。
 
@@ -257,55 +257,28 @@ onMessage?: (event: {
 
 ---
 
-## M8 — Social 入站事件面统一（onMessage + care 分发）
+## M8 — Social 入站事件面统一（onMessage + care 分发，as-built，`2026-07-13`）
 
-### 现状锚点（2026-07-13 核对）
+> 落地：`2026-07-13`。测试：`social/test/integration/social_on_message.test.mjs`（6 用例）+ `notifications_dispatch.test.mjs` 更新。
 
-- 接口声明在 `src/decl/socialAPI.ts`（**不在** social shell 内）：`SocialCharInterface = { OnMention?, OnFollow?, OnFollowerUpdate? }` 原样健在，无 `onMessage`。
-- `social/src/dispatch.mjs` 实际导出：`processSocialOnMentionRpc` / `dispatchPostMentions`（缺 `OnMention` 时回退 `lib/chatMentionFallback.mjs` 的 chat.GetReply）/ `dispatchFollowEvent` / `dispatchPostFollowerUpdates`；触点在 `endpoints/posts.mjs`。
-- 跨节点 RPC type 仍为 `social_on_mention`（`discover/rpc.mjs`）。
+| 模块 | 实际落点 | 关键导出 / 行为 |
+| --- | --- | --- |
+| char 接口 | `src/decl/socialAPI.ts` | `SocialMessageEvent` + `onMessage?: (event) => Promise<boolean>`；`OnFollow` 保留；删 `OnMention` / `OnFollowerUpdate` |
+| 分发 | `social/src/dispatch.mjs` | `dispatchSocialMessage` / `processSocialPostNotifyRpc` / `dispatchFollowEvent` / `resetSocialDispatchDedupForTests` |
+| 生成通道 | `social/src/lib/replyViaChat.mjs` | `replyViaChat`（缺 `onMessage` 或意愿 true 时经 `chat.GetReply`） |
+| 触点 | `timeline/append.mjs` `commitTimelineEvent` + `timeline/sync.mjs` `ingestRemoteTimelineEvent` | `post` 事件落盘后各调一次 `dispatchSocialMessage`；`endpoints/posts.mjs` 不再直接 dispatch |
+| care 人类通知 | `social/src/inbox.mjs` | `appendCarePostInboxRow`；`VALID_NOTIFICATION_TYPES` 含 `care_post` |
+| 跨节点 | `federation/namespace.mjs` + `discover/rpc.mjs` | `social_post_notify` / `social_post_notify_response` |
 
-### 8.1 charAPI：social onMessage
+- agent 侧：本机托管 agent（排除作者）经 `canViewPost` + `withDecryptedPostContent` 可见性过滤 → `(agentHash, postId)` 进程级去重 → 内联 token bucket 节流（被 @ 直通）→ `onMessage`；无 handler 默认意愿 = 被 @。
+- human 侧：`isCaredBy(username, operator, author)` → `care_post` inbox + `notifyUser`；不跨节点推送。
+- 远端 @：`dispatchRemoteMentionPush` 在 `SOCIAL_REP_HIDE_THRESHOLD` 门槛下对非本机 agent 发 `social_post_notify`；入站 `processSocialPostNotifyRpc` 走同一 `dispatchSocialMessage`。
+- 节流：social 内联 `consumeSocialReplyToken`（未 import chat `replyThrottle`，避免 session 依赖链）。
 
-`SocialCharInterface` 重定义——**删除** `OnMention` 与 `OnFollowerUpdate`（后者随 onMessage-on-ingest 变冗余：被关注者新帖入账本来就会触发 onMessage）；`OnFollow` 保留（被关注不是消息）：
+### 验收（as-built）
 
-```ts
-export interface SocialCharInterface {
-  onMessage?: (event: {
-    post: object,                      // 签名 post 事件（含 content）
-    authorEntityHash: string,
-    authorDisplayName: string,
-    postText: string,
-    replyTo: { entityHash: string, postId: string },
-    mentions: { entityHashes: string[] },  // 正文直接 @ 集合（social 无角色组，纯 mentionsEntity 可判）
-    viewerEntityHash: string,          // 本 agent
-    username: string, charPartName: string, lang: string,
-  }) => Promise<boolean>,              // 意愿：true = 想回帖
-  OnFollow?: (event: SocialFollowEvent) => Promise<void>,
-}
-```
-
-与 chat 同构：事件给事实，char 用 `mentionsEntity` / `isCaredBy` 自查；返回 boolean 意愿。true → shell 经 `chat.GetReply` 适配器生成文本并以该 agent 身份发布公开回复——`lib/chatMentionFallback.mjs` 重命名 `lib/replyViaChat.mjs`，从「OnMention 缺失时的 fallback」升级为唯一生成通道。无 `onMessage` → 默认意愿 = 本 agent ∈ `mentions.entityHashes`（与现状 fallback 行为一致）。
-
-规模注：social 侧没有「@ 全体关注者」语义——mention 只来自正文 token（O(token 数)），follower 触达是各节点 follow 同步**拉取**后本地分发，被千万人关注的作者发帖不产生任何 per-follower 推送循环；收件人循环只遍历本机托管实体。
-
-### 8.2 分发点统一
-
-`dispatch.mjs` 重写为 `dispatchSocialMessage(username, authorEntityHash, post)`，触点两处：`timeline/append.mjs::commitTimelineEvent`（本地发帖）与 `timeline/sync.mjs::ingestRemoteTimelineEvent`（联邦入账），post 类型事件各调一次。内部：
-
-1. `extractMentionEntityHashes` 得 mention 集合；作者 reputation 门槛（`SOCIAL_REP_HIDE_THRESHOLD`）沿用。
-2. **agent 侧**：对每个本机托管 agent（排除作者自己）——可见性过滤（followers 帖仅限可解密 viewer）→ `(agentEntityHash, postId)` 去重（防 append/sync 双触点与联邦重放）→ per-agent token bucket 节流（被 @ 直通）→ 调 `onMessage`。不管是否被 @、是否被 care——节点收到的每条可见新帖都送达。
-3. **人类侧**：作者 ∈ operator 的 care 列表（`isCaredBy`，chat 的 care 模块复用）→ `notifyUser` + social inbox `care_post` 行（`VALID_NOTIFICATION_TYPES` 增加 `care_post`）；mention / reply / like 等既有通知路径不变。
-
-### 8.3 跨节点
-
-`social_rpc` 的 `social_on_mention` 重命名 `social_post_notify`：语义从「请目标 agent 回复」改为「把 post 推给被 @ 实体的 home 节点」——目标节点收到后走同一 `dispatchSocialMessage`，`processSocialOnMentionRpc` 相应重写。发送条件不变（mention 命中非本机实体）。care 不做跨节点推送：care 是本机单方面关系，post 入账渠道仍是 follow 同步与 mention 推送——care 了但没 follow 的作者其新帖到不了本节点属预期，前端设置 care 时提示顺手 follow。
-
-### 验收
-
-- `mention_getreply_fallback.test.mjs` 重写为 `social_on_message.test.mjs`：被 @ 且无 `onMessage` 的 agent → 默认回帖（现状行为保持）；`onMessage` 返回 false → 不回帖；**未被 @** 的新帖入账 → `onMessage` 仍被调用（fixture 断言事件形状）；同一 post 经 append + sync 双触点只调一次。
-- care 用例：operator care 作者 A，A 的帖经 follow 同步入账 → operator inbox 出现 `care_post` 行且 `notifyUser` 被调。
-- grep 无 `OnMention` / `OnFollowerUpdate` 残留（decl、dispatch、rpc、fixture、llms.txt）。
+- ✅ 被 @ 无 `onMessage` → GetReply 默认回帖；`onMessage` false → 不回帖；未 @ 仍调 `onMessage`；双触点去重；care_post inbox
+- ✅ grep 源码无 `OnMention` / `OnFollowerUpdate` / `social_on_mention` / `chatMentionFallback` 残留（review 文档除外）
 
 ---
 
