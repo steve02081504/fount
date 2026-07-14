@@ -1,16 +1,11 @@
 import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
 
-import {
-	registerEntityPresentationProvider,
-	registerLocalesFromRequestProvider,
-} from 'npm:@steve02081504/fount-p2p/entity/presentation_registry'
 import { initNode } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 
-import { createFountEntityStore } from './entity_store.mjs'
+import { createFountEntityStore } from '../../public/parts/shells/chat/src/entity/store.mjs'
 import { registerP2PInboundHandlers } from './inbound_handlers.mjs'
-import { getInfoDefaultsForEntity, localesFromRequest } from './presentation.mjs'
 import { pickPrimaryReplica } from './user_notify.mjs'
 
 /**
@@ -25,8 +20,6 @@ export async function initP2PServer({ dataPath, signaling }) {
 	const { createDefaultTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	const { registerTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
-	registerEntityPresentationProvider(getInfoDefaultsForEntity)
-	registerLocalesFromRequestProvider(localesFromRequest)
 	registerP2PInboundHandlers()
 	const primary = pickPrimaryReplica()
 	// 测试节点也须在启动时先 join user room 并落定，再让联邦 join 群 room（串行 + 落定窗口）。

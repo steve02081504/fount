@@ -32,7 +32,7 @@ export function normalizePersonalFilterResponse(raw = { entries: [] }) {
  * @returns {Promise<{ blockedEntityHashes: Set<string>, blockedSubjects: Set<string>, hiddenEntityHashes: Set<string>, hiddenSubjects: Set<string> }>} 过滤集
  */
 export async function fetchPersonalFilterSets() {
-	const resp = await fetch('/api/p2p/personal-lists', { credentials: 'include' })
+	const resp = await fetch('/api/parts/shells:chat/personal-lists', { credentials: 'include' })
 	if (!resp.ok) return EMPTY
 	return normalizePersonalFilterResponse(await resp.json())
 }

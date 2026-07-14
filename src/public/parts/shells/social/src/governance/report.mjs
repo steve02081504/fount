@@ -13,7 +13,7 @@ import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_p
 import { sendToNode } from 'npm:@steve02081504/fount-p2p/trust_graph/send'
 
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
-import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
+import { getEntitySecretKey } from '../../../chat/src/entity/identity.mjs'
 import { wrapSocialRpc } from '../federation/part_wire_rpc.mjs'
 
 const REPORT_CATEGORIES = new Set(['spam', 'abuse', 'illegal', 'other'])

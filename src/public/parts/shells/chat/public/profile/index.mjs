@@ -92,7 +92,7 @@ async function init() {
 	})
 
 	try {
-		const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
+		const resp = await fetch('/api/parts/shells:chat/viewer', { credentials: 'include' })
 		if (!resp.ok) throw new Error(`viewer ${resp.status}`)
 		const data = await resp.json()
 		if (!data.viewerEntityHash) {

@@ -1,6 +1,6 @@
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/entity_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'

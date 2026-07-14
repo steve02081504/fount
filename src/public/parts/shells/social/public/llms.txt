@@ -1,6 +1,6 @@
 # social shell Web API
 
-HTTP 前缀：`/api/parts/shells:social/`。账号与 Chat 联邦 P2P 实体相同（用户级 identity/profile 见 `/api/p2p/*`），无需单独注册；**不** `loadPart('shells/chat')`。
+HTTP 前缀：`/api/parts/shells:social/`。账号与 Chat 联邦 P2P 实体相同（identity/profile 见 `/api/parts/shells:chat/{viewer,entities…}`；网络级仍 `/api/p2p/{network,denylist,federation}`），无需单独注册；后端可 import chat `src/entity/`，前端**不** `loadPart('shells/chat')`。
 
 WebSocket：`/ws/parts/shells:social/feed`（推送 feed 更新，客户端收到后刷新首页）。
 

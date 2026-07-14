@@ -2,11 +2,12 @@
  * Social 实体托管解析：本机 replica 上的 user/agent entity。
  */
 import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import {
-	getAgentCharResolver,
-	getListLocalAgentsProvider,
-} from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
+import {
+	listLocalAgentEntities as scanLocalAgentEntities,
+	resolveAgentCharPartNameForUser,
+} from '../../../chat/src/entity/agentHost.mjs'
 
 import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
 
@@ -25,8 +26,7 @@ import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './fo
  * @returns {{ entityHash: string, charPartName: string }[]} 本地 agent 列表
  */
 export function listLocalAgentEntities(replicaUsername) {
-	const provider = getListLocalAgentsProvider()
-	return provider ? provider(replicaUsername) : []
+	return scanLocalAgentEntities(replicaUsername)
 }
 
 /**
@@ -40,14 +40,13 @@ export async function findHostingReplicaUsername(entityHash) {
 
 	const listReplicas = getReplicaUsernamesProvider()
 	const resolveOperator = getOperatorEntityHashProvider()
-	const resolveAgent = getAgentCharResolver()
 	if (!listReplicas || !resolveOperator) return null
 
 	for (const username of listReplicas()) {
 		if (parsed.nodeHash !== getNodeHash()) continue
 		const operator = await resolveOperator(username)
 		if (operator?.toLowerCase() === parsed.entityHash) return username
-		if (resolveAgent?.(username, parsed.entityHash)) return username
+		if (resolveAgentCharPartNameForUser(username, parsed.entityHash)) return username
 	}
 	return null
 }
@@ -75,7 +74,6 @@ export async function resolveSocialEntity(entityHash, hintReplicaUsername = null
 		}
 
 	const resolveOperator = getOperatorEntityHashProvider()
-	const resolveAgent = getAgentCharResolver()
 	const operator = resolveOperator ? await resolveOperator(replicaUsername) : null
 	if (operator?.toLowerCase() === parsed.entityHash)
 		return {
@@ -86,7 +84,7 @@ export async function resolveSocialEntity(entityHash, hintReplicaUsername = null
 			charPartName: null,
 		}
 
-	const charPartName = resolveAgent?.(replicaUsername, parsed.entityHash) ?? null
+	const charPartName = resolveAgentCharPartNameForUser(replicaUsername, parsed.entityHash) ?? null
 	if (charPartName)
 		return {
 			entityHash: parsed.entityHash,

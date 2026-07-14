@@ -36,7 +36,7 @@ async function init() {
 		await initTranslations('stickers')
 
 		try {
-			const resp = await fetch('/api/p2p/viewer', { credentials: 'include' })
+			const resp = await fetch('/api/parts/shells:chat/viewer', { credentials: 'include' })
 			if (resp.ok) {
 				const data = await resp.json()
 				currentEntityHash = data.viewerEntityHash || null

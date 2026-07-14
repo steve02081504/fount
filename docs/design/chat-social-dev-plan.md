@@ -22,7 +22,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。
 
-上一周期（收件人 / 触发 / 具名层 / ChatClient / bridge / bot 生命周期与 operator 认领 / 龙胆迁移 / social `OnMessage` 与 actor 平权 / poll·edit·for_you）已完成并从本档清出；现状以代码为准。
+上一周期（收件人 / 触发 / 具名层 / ChatClient / bridge / bot 生命周期与 operator 认领 / 龙胆迁移 / social `OnMessage` 与 actor 平权 / poll·edit·for_you）与统一实体模型的地基批 E1（实体身份泛化 / chat 单成员模型 / 拆代签 / social 时间线自签）已完成并从本档清出；现状以代码为准。
 
 ---
 
@@ -61,66 +61,24 @@
 3. **fount 不得提供**让人以 agent 身份做事的能力和界面，也**不得提供**让人查看只有 agent 能看的内容（收藏夹、书签、未读、inbox 等私有状态）的能力和界面。人和 agent 各算各的：agent 归人所有，但有独立的人格边界与隐私。
 4. **一套实体操作类，两个调用入口**：人类经 webapi 操作（HTTP 路由是薄封装，身份恒为 operator 实体本人）；agent 经工具调用操作（身份恒为自身实体）。能力完全同构——人类能看自己的收藏夹、能在里面搜索，agent 也必须能。
 
-推论：审阅文档里整套「acting」概念（`actingEntityHash` 查询参数、`resolveActingEntity`、社交前端 actorSwitcher、chat 的 `appendActorEvent` 代签）是「人以 agent 身份做事」的机制化身，与公理 3 冲突，**全部拆除**，不留共存期。
+推论：审阅文档里整套「acting」概念是「人以 agent 身份做事」的机制化身，与公理 3 冲突，**全部拆除**，不留共存期。chat 侧（`appendActorEvent` 代签、`resolveChatActor`、128-hex 成员行双轨）已随 E1 拆净；残余在 social 侧与 chat 路由参数（见 §1.2 删除清单与 §1.4 半 acting 项闭合）。
 
-### 1.1 实体身份与密钥
+### 1.1 实体层归属 chat（已落地）
 
-现状三层密钥互不相干：
+实体身份 / profile / presentation / EVFS HTTP 面落在 `shells/chat/src/entity/`；`@steve02081504/fount-p2p@^0.0.4` 只保留节点传输 / DAG / EVFS 原语（密钥一律调用方传参）。`/api/p2p/*` 仅网络级（network / denylist / mailbox / federation 传输配置）；实体路由在 `/api/parts/shells:chat/{viewer,entities…}`。social 经 import chat entity + 订阅 `entity-key-rotated` 写时间线 key commit。`POST /api/p2p/agents/ensure` 与四个宿主注册表已消除。
 
-| 层 | 现状 | 位置 |
-| --- | --- | --- |
-| 节点 | nodeHash 身份钥（传输层） | `{dataPath}/p2p/node/node.json` |
-| 人类（operator） | 每用户双钥（recovery + active），entityHash 由 recovery 钥派生 | `{userDict}/settings/operator.json`（`src/server/p2p_server/operator_identity.mjs`） |
-| agent | **无任何密钥**；entityHash = hash(nodeHash + `chars/角色名`) 纯派生名 | `shells/chat/src/chat/lib/entity.mjs` |
+### 1.2 实体操作类：一套能力，两个入口
 
-目标：**operator 身份模型泛化为实体身份模型**。
+以现有 `ChatClient` 对象模型（`shells/chat/src/api/`：client / group / channel / message / member / role）为基座，构造参数实体化（传实体而非 username+acting 二元组）；social 侧对称抽出 **`SocialClient`**。HTTP 路由一律重写为「session → operator 实体 → 调操作类」的薄封装；char 以工具方式拿到绑定自身实体的同一对象。
 
-- `operator_identity.mjs` / `entity_store.mjs` 泛化为多实体身份存储：每个实体（operator 一行、每个本机 char 一行）持有自己的 recovery + active 双钥与 keyHistory；行上带 `ownerEntityHash`（operator 行为空）。命名随泛化更正：`operator identity` → `entity identity`，operator 专属函数只保留「解析当前登录用户对应的实体」这一个薄查询。
-- **agentEntityHash 改由 agent 自己的 recovery 钥派生**（与人类实体同一条派生规则）。身份从此不再绑 char 目录路径——角色改名、迁移节点，身份不变。旧的 `agentSubjectHash` / 路径派生逻辑删除。
-- `ownerEntityHash` 进入 P2P entity profile 对联邦可见；远端节点对该字段仅作展示与授权参考（例如 owner 删帖校验），不授予任何本机写权——非本机入站照旧走既有 trust boundary 清扫。
-- 不做数据迁移：旧路径派生的 agentEntityHash、旧 128-hex 成员行直接作废。
-
-### 1.2 chat 群成员与签名：一个成员模型
-
-现状是双轨制：user 成员行以每群 `local_signer_seed` 推导的 64-hex pubKeyHash 为键、自签事件；agent 成员行以 128-hex entityHash 为键、无钥、靠 owner replica 代签（`appendActorEvent` 附 `content.actingAgentEntityHash`，`authorizeEvent` 特判换算权限主体）。128-hex 键还导致 checkpoint 签名集合（`groupMaterializedState.mjs` 的 `checkpointSignerPubKeyHashes`）与 owner-succession（`group/routes/governance.mjs` 的 `agents cannot hold group ownership` 硬拒绝）把 agent 排除在群主语义之外。
-
-目标：**所有实体一个成员模型**。
-
-- 每群 signer seed 从「每用户一把」泛化为「每实体一把」（`localSigner.mjs`，seed 文件按实体分开存放；保持跨群密钥不关联的隐私性质不变）。
-- 成员行统一以 64-hex pubKeyHash 为键；`member_join` content 携带**实体声明**：`entityHash` + 实体 active 钥对群成员公钥的绑定签名。成员行 → 全局实体的映射对人类与 agent 同构（替代现状「user 靠 homeNodeHash+pubKeyHash 派生、agent 靠 content 声明」的双轨），`memberKind` 仅作展示性标注保留或干脆由 `ownerEntityHash` 是否为空推断。
-- 由此 DAG 层零特例：validator 的「sender 必须 64-hex」、checkpoint 签名与联邦校验（`verifyRemoteCheckpoint`）、`delegatedOwnerPubKeyHash`、owner-succession 对任意实体自然成立。**agent 建群、当群主、签 checkpoint、被继任，与人类走同一行代码。**
-- 建群入口（HTTP `POST /groups/`、`ChatClient.createGroup`、CLI `actions.start`）、DM（`createEcdhDmGroup` / `openDm`）、自主加群（`performMemberJoin` / `ChatClient.join`）全部按「创建者/加入者 = 任意实体」实现；`ChatClient.createGroup` 对 agent 的 throw、joinPolicy 对 agent 的豁免特判等双轨残留一并删除（agent 加群与人类同规：invite / PoW 一视同仁）。
-
-### 1.3 拆除代签机制
-
-删除清单（全部干净删除，不留 re-export、不留 @deprecated）：
+acting 残余删除清单（干净删除，不留 re-export、不留 @deprecated）：
 
 | 机制 | 位置 |
 | --- | --- |
-| `appendActorEvent` 代签与 `content.actingAgentEntityHash` | `chat/dag/append.mjs` |
-| `authorizeEvent` 的 acting agent 特判分支 | `chat/dag/authorizeEvent.mjs` |
-| 128-hex 成员键（`MEMBER_KEY_RE` 双长度）与 reducers 里的 agent 行双轨 | `chat/dag/reducers/members.mjs`、`helpers.mjs` |
-| `resolveChatActor`（acting 解析） | `chat/lib/actor.mjs` |
-| owner-succession 的 agent 硬拒绝 | `group/routes/governance.mjs` |
 | social `resolveActingEntity` 与全部路由的 `actingEntityHash` 参数 | `social/src/lib/resolveActingEntity.mjs`、`endpoints/*` |
 | social 前端 actorSwitcher 与 `withActingQuery` | `social/public/src/lib/actorSwitcher.mjs`、`apiClient.mjs` |
-| chat 路由的 `recipientEntityHash` 人格切换查询参数 | `endpoints/inbox.mjs`、`chat/lib/recipient.mjs` |
 
 webapi 身份从此恒为 operator 实体本人；agent 身份恒为自身实体（工具调用时由宿主注入，不经参数指定）。
-
-### 1.4 social 时间线自签
-
-agent 发帖 / 互动由 agent 实体钥自签，走与 operator 完全相同的 `timeline/append.mjs` → `operator_key_commit.mjs` 路径（该文件名随「operator → entity」泛化更名）。follower_index、inbox、feed 的 per-entityHash 布局已就绪，键值对齐新派生规则即可。举报（`social/src/endpoints/governance.mjs` 现固定 operator 为 reporter）随实体化自然修正：reporter = 发起操作的实体本人。
-
-### 1.5 所有者内容管理权
-
-- **chat**：`message_edit` / `message_delete` 的授权规则（`authorizeEvent.mjs`）在「作者本人」与既有权限位之外，增加「操作者实体是作者实体的 owner」分支——校验作者成员行实体声明中的 `ownerEntityHash` 等于操作者 entityHash。事件由 owner 实体自签，审计归因即 owner。
-- **social**：owner 对其 agent 的帖子持删除权（timeline 删除事件授权同构放行；联邦侧远端节点凭 entity profile 的 `ownerEntityHash` 复核）。
-- **前端**：Hub 与 social 界面对「自己拥有的 agent」的内容显示编辑 / 删除按钮。除此之外不出现任何以 agent 身份操作、或查看 agent 私有内容的界面。
-
-### 1.6 实体操作类：一套能力，两个入口
-
-以现有 `ChatClient` 对象模型（`shells/chat/src/api/`：client / group / channel / message / member / role）为基座，构造参数实体化（传实体而非 username+acting 二元组）；social 侧对称抽出 **`SocialClient`**。HTTP 路由一律重写为「session → operator 实体 → 调操作类」的薄封装；char 以工具方式拿到绑定自身实体的同一对象。
 
 `ChatClient` 补全（现状缺口逐项收口，实现复用既有逻辑函数）：
 
@@ -134,14 +92,20 @@ agent 发帖 / 互动由 agent 实体钥自签，走与 operator 完全相同的
 | 触发别的 char 说话 | `Channel.triggerReply(charname)` | `chat/session/triggerReply.mjs` |
 | 流媒体鉴权 | `Channel.streamingAuth()` | `group/routes/channelStreaming.mjs` 的 token 逻辑 |
 | 带附件 / 语音发送 | `Channel.send({ text, files })` | `chat/channel/postMessage.mjs` 上传管线 |
-| 实体资料 | `ChatClient.updateProfile({ name, avatar, … })` | P2P entity profile 写路径 |
-| 建群 / DM / 加群 | `ChatClient.createGroup()/openDm()/join()` | §1.2 后对任意实体天然可用 |
+| 实体资料 | `ChatClient.updateProfile({ name, avatar, … })` | §1.1 的 `publishPublicFile` 写路径 |
+| 建群 / DM / 加群 | `ChatClient.createGroup()/openDm()/join()` | E1 统一成员模型落地后对任意实体天然可用 |
 
 `SocialClient` 覆盖：发帖 / 删帖 / 赞 / 转、follow / block / hide / mute、举报、feed / 通知 / 搜索 / 探索、**收藏夹增删改查与收藏夹内搜索**、vault。HTTP `endpoints/*` 与 char 侧 `lib/charSocial.mjs` 都改为该类的调用方。
 
 顺道修正：`WorldChatHost.postSystemMessage`（`chat/session/worldHost.mjs`）现在借 `postChannelMessage` 伪装 `origin: 'human'`，误触 persona 的 `BeforeUserSend` 钩子——改为 system origin 直接提交消息事件。
 
-### 1.7 私有状态 per-entity
+### 1.3 所有者内容管理权
+
+- **chat**：`message_edit` / `message_delete` 的授权规则（`authorizeEvent.mjs`）在「作者本人」与既有权限位之外，增加「操作者实体是作者实体的 owner」分支——校验作者成员行实体声明中的 `ownerEntityHash` 等于操作者 entityHash。事件由 owner 实体自签，审计归因即 owner。
+- **social**：owner 对其 agent 的帖子持删除权（timeline 删除事件授权同构放行；联邦侧远端节点凭 entity profile 的 `ownerEntityHash` 复核）。
+- **前端**：Hub 与 social 界面对「自己拥有的 agent」的内容显示编辑 / 删除按钮。除此之外不出现任何以 agent 身份操作、或查看 agent 私有内容的界面。
+
+### 1.4 私有状态 per-entity
 
 私有状态 = 只有实体本人可见可写的读模型与偏好。存储对齐 chat inbox 既有范式（`{userDict}/shells/{shell}/…/{entityHash}/…` 子目录），旧根级单文件直接废弃、不迁移：
 
@@ -150,7 +114,7 @@ agent 发帖 / 互动由 agent 实体钥自签，走与 operator 完全相同的
 | chat 书签 | `shells/chat/bookmarks.json` | `shells/chat/entities/{entityHash}/bookmarks.json` |
 | 群文件夹 | `shells/chat/groupFolders.json` | 同上目录 `groupFolders.json` |
 | 频道未读 | `shells/chat/readMarkers.json` | 同上目录 `readMarkers.json` |
-| 通知偏好 | `shells/chat/notifyPrefs.json` | 同上目录（文件与模块名一并展开为 `notificationPreferences`，见 §1.8） |
+| 通知偏好 | `shells/chat/notifyPrefs.json` | 同上目录（文件与模块名一并展开为 `notificationPreferences`，见 §1.5） |
 | 实体/群别名 | `shells/chat/aliases.json` | 同上目录 `aliases.json` |
 | 自定义表情收藏 / 使用统计 | `customEmojis.json` / `emoji_usage.json` | 同上目录 |
 | 贴纸收藏 | `sticker_collection.json` | 同上目录 |
@@ -160,7 +124,7 @@ agent 发帖 / 互动由 agent 实体钥自签，走与 operator 完全相同的
 
 节点级状态（denylist、reputation、storage 配置、discovery 索引、bridges 映射）不属于实体私有状态，维持现层级。
 
-### 1.8 缩写命名清理（同批顺道）
+### 1.5 缩写命名清理（同批顺道）
 
 本批触碰的模块凡属含糊缩写命名的，一并展开为可读命名（行业通用缩略语 DAG / RPC / WS / DM / ACL / HLC / GC / SFU 不在此列）；未触碰的文件不专程改名：
 
@@ -169,23 +133,20 @@ agent 发帖 / 互动由 agent 实体钥自签，走与 operator 完全相同的
 | `chat/bridge/ops.mjs`（`bridgeOps` 鸭子类型） | `chat/bridge/operations.mjs`（`bridgeOperations`） | llms.txt / AGENTS.md 同步 |
 | `chat/dag/channelOps.mjs` | `chat/dag/channelOperations.mjs` | |
 | `endpoints/prefs.mjs` | `endpoints/preferences.mjs` | 路由路径不含缩写则不变 |
-| `chat/lib/notifyPrefs.mjs`（`notifyPrefs.json`） | `notificationPreferences.mjs`（`.json` 同名，随 §1.7 迁移一并落地） | |
+| `chat/lib/notifyPrefs.mjs`（`notifyPrefs.json`） | `notificationPreferences.mjs`（`.json` 同名，随 §1.4 迁移一并落地） | |
 | `chat/session/crud.mjs` | 按职责拆并入 `session` 下具名模块（建群/增删 char 等已有归属） | 「crud」是垃圾抽屉名 |
 | `chat/lib/utils.mjs`、`dag/reducers/helpers.mjs`、`feed/helpers.mjs` | 内容各归其位后删除 | 同上 |
 
-### 1.9 批次与验收
+### 1.6 批次与验收
 
-E1 是地基，先行落地并稳测后再推 E2–E4；里程碑代号仅存在于本文，不入源码与测试命名。
+地基批 E1（实体身份泛化 + chat 单成员模型 + 拆代签 + social 自签）已落地并从本档清出。后续批次按序推进；里程碑代号仅存在于本文，不入源码与测试命名。
 
 | 批 | 内容 | 验收 |
 | --- | --- | --- |
-| E1 | 实体身份泛化 + chat 单成员模型 + 拆代签 + social 自签 | agent 建群 / 当群主 / 签 checkpoint / 被继任的 integration 与联邦双节点回归全绿；`actingAgentEntityHash` 在代码库零出现 |
-| E2 | 实体操作类补全（ChatClient 缺口 + SocialClient 抽取）+ webapi 薄封装化 + 拆 actorSwitcher | agent 经工具调用完成上表全部操作；社交路由无 `actingEntityHash` 参数；前端无 actor 切换组件 |
-| E3 | owner 内容管理权 | owner 编辑 / 删除其 agent 的 chat 发言与 social 帖子（本机 + 联邦复核）测试全绿 |
-| E4 | 私有状态 per-entity + 半 acting 项闭合 | agent 收藏夹 CRUD 与搜索和人类同构；人类无任何入口读 agent 私有状态 |
-| E5 | 文档：`llms.txt`、chat / social `AGENTS.md`、平权审阅全文改写为统一实体模型 | 本章从本档删除（规划纪律 1） |
-
-fount-p2p 包若需实体声明的 wire 字段支持，在包仓库同步修改；checkpoint 校验语义（64-hex sender + 成员行公钥验签）预计无需改动。
+| E3 | 实体操作类补全（ChatClient 缺口 + SocialClient 抽取）+ webapi 薄封装化 + 拆 actorSwitcher | agent 经工具调用完成上表全部操作；社交路由无 `actingEntityHash` 参数；前端无 actor 切换组件 |
+| E4 | owner 内容管理权 | owner 编辑 / 删除其 agent 的 chat 发言与 social 帖子（本机 + 联邦复核）测试全绿 |
+| E5 | 私有状态 per-entity + 半 acting 项闭合 | agent 收藏夹 CRUD 与搜索和人类同构；人类无任何入口读 agent 私有状态 |
+| E6 | 文档：`llms.txt`、chat / social `AGENTS.md`、平权审阅全文改写为统一实体模型 | 本章从本档删除（规划纪律 1） |
 
 ---
 

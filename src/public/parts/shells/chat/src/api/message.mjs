@@ -1,5 +1,5 @@
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
-import { memberEntityHash } from '../chat/lib/entity.mjs'
+import { memberEntityHash } from '../entity/member.mjs'
 import { messageMentionsEntity } from '../chat/lib/mentionFacts.mjs'
 
 import { normalizeReplyContent } from './internal.mjs'

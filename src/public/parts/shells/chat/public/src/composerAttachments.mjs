@@ -7,7 +7,7 @@
  */
 import { svgInliner } from '/scripts/lib/svgInliner.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
-import { entityFileUrl, fetchEvfsFile } from '/scripts/api/p2p/evfsMedia.mjs'
+import { entityFileUrl, fetchEvfsFile } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'

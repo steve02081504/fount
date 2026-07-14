@@ -269,7 +269,7 @@ export interface SocialNotificationsPage {
 /** @deprecated 使用 {@link PersonalListEntry}（`p2pAPI.ts`） */
 export type SocialPersonalListEntry = PersonalListEntry
 
-/** `GET …/profile/personal-lists` 与 P2P `/api/p2p/personal-lists` 共用。 */
+/** `GET …/profile/personal-lists` 与 chat `/api/parts/shells:chat/personal-lists` 共用。 */
 export type SocialPersonalListsResponse = PersonalListsResponse
 
 /** 关系写操作响应。 */

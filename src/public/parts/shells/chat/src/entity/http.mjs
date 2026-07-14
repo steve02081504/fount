@@ -1,9 +1,9 @@
-import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { resolveGroupMemberEntityHash } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
-import { getUserByReq } from '../auth/index.mjs'
+import { getUserByReq } from '../../../../../../server/auth/index.mjs'
 
-import { resolveCharPartNameForEntity, resolveOperatorEntityHashForUser } from './entity_identity.mjs'
+import { resolveCharPartNameForEntity, resolveOperatorEntityHashForUser } from './identity.mjs'
+import { resolveLogicalEntityId } from './logicalId.mjs'
+import { resolveGroupMemberEntityHash } from './viewerResolve.mjs'
 
 /**
  * @returns {string} 本节点 nodeHash
@@ -37,7 +37,7 @@ export async function getReplicaFromReq(req) {
  * @returns {Promise<boolean>} 当前用户是否可写该实体
  */
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
-	const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/entity/replica')
+	const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/node/identity')
 	if (!isWritableLocalEntity(entityHash)) return false
 	const target = String(entityHash || '').toLowerCase()
 	const operatorHash = await resolveOperatorEntityHashForUser(replicaUsername)

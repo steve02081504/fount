@@ -110,7 +110,7 @@ const SCENARIOS = {
  * @returns {Promise<void>}
  */
 export default async function bootstrap(username) {
-	const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	await ensureOperatorPubKey(username)
 
 	const dataPath = process.env.FOUNT_TEST_DATA_PATH

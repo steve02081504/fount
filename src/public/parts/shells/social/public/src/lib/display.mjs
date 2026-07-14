@@ -11,7 +11,7 @@ import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMes
 
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
-const ENTITY_AVATAR_API = '/api/p2p/entities'
+const ENTITY_AVATAR_API = '/api/parts/shells:chat/entities'
 
 /**
  * 格式化为 @handle 展示（hash 缩写）。

@@ -25,7 +25,7 @@ import { getState } from '../dag/materialize.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { injectFountChatCodeContextPlugin } from '../lib/codeContextPlugin.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { ensureLocalAgentEntityHash } from '../lib/entity.mjs'
+import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import {

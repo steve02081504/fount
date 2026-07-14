@@ -50,7 +50,7 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
@@ -186,7 +186,7 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
@@ -196,7 +196,7 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 	})
 	await boot.ensureServer()
 
-	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { isCaredBy } = await import('../../src/chat/lib/care.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')

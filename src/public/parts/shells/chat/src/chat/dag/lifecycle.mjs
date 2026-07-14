@@ -101,7 +101,7 @@ export async function createGroup(username, body) {
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const owner = String(body.ownerPubKeyHash || '').trim().toLowerCase()
 	if (!owner) throw new Error('ownerPubKeyHash required')
-	const { getOperatorEntityHash } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const { getOperatorEntityHash } = await import('../../entity/identity.mjs')
 	const entityHash = body.entityHash || await getOperatorEntityHash(username)
 	const memberJoinSecretKey = body.secretKey
 	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey

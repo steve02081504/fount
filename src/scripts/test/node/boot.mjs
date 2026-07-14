@@ -326,7 +326,7 @@ export async function bootHeadlessDataRoot(dataPath) {
  */
 async function ensureMinP2pNode(dataPath) {
 	const { isNodeInitialized } = await import('npm:@steve02081504/fount-p2p/node/instance')
-	const { createFountEntityStore } = await import('fount/server/p2p_server/entity_store.mjs')
+	const { createFountEntityStore } = await import('fount/public/parts/shells/chat/src/entity/store.mjs')
 	const { initTestP2pNode } = await import('./p2p_node.mjs')
 	if (!isNodeInitialized()) {
 		const nodeDir = join(dataPath, 'p2p', 'node')

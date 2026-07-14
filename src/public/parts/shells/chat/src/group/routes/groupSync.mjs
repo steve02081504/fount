@@ -6,13 +6,13 @@
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
-import { memberEntityHash } from '../../chat/lib/entity.mjs'
+import { getProfile } from '../../entity/profile.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
-import { localesFromRequest } from '../../../../../../../server/p2p_server/presentation.mjs'
+import { localesFromRequest } from '../../entity/presentation.mjs'
 import {
 	deleteArchivesBeforeMonth,
 	isArchiveCoverageComplete,

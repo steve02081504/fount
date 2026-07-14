@@ -9,12 +9,7 @@
 import './src/chat/dag/index.mjs'
 import './src/chat/federation/config.mjs'
 
-import {
-	registerDefaultAgentHosting,
-	unregisterDefaultAgentHosting,
-} from './src/chat/lib/agentHosting.mjs'
-import { registerMaterializedSessionProvider, unregisterMaterializedSessionProvider } from 'npm:@steve02081504/fount-p2p/entity/session_snapshot_registry'
-import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
+import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
@@ -34,7 +29,6 @@ import {
 } from './src/chat/mailbox/ingest.mjs'
 import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
 import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
-import { getMaterializedSession } from './src/chat/session/dagSession.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
 import { setGroupEndpoints } from './src/group/endpoints.mjs'
 
@@ -98,10 +92,8 @@ export default {
 		registerChatChunkProviders()
 		registerChatGroupEntityIndex()
 		registerGroupMemberEntityResolver('chat', getGroupMemberEntityHash)
-		registerMaterializedSessionProvider('chat', getMaterializedSession)
 		registerChatFederationRoomProvider()
 		registerChatMailboxConsumer()
-		await registerDefaultAgentHosting()
 		if (loadCount === 1) {
 			setGroupEndpoints(router)
 			setEndpoints(router)
@@ -122,10 +114,8 @@ export default {
 			unregisterChatManifestTransfer()
 			unregisterChatChunkProviders()
 			unregisterChatGroupEntityIndex()
-			unregisterMaterializedSessionProvider('chat')
 			unregisterChatFederationRoomProvider()
 			unregisterChatMailboxConsumer()
-			unregisterDefaultAgentHosting()
 		}
 	},
 	interfaces: {

@@ -47,7 +47,7 @@ export async function applyMyStatusUI(status, customStatus = '') {
  */
 export async function sendHeartbeat(entityHash) {
 	if (!entityHash) return
-	await fetch(`/api/p2p/entities/${encodeURIComponent(entityHash)}/heartbeat`, {
+	await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/heartbeat`, {
 		method: 'POST',
 		credentials: 'include',
 	})
@@ -61,7 +61,7 @@ export async function sendHeartbeat(entityHash) {
 export async function setMyStatus(status, options = {}) {
 	const entityHash = hubStore.viewer.viewerEntityHash
 	if (!entityHash) return
-	const resp = await fetch(`/api/p2p/entities/${encodeURIComponent(entityHash)}/status`, {
+	const resp = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/status`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		credentials: 'include',

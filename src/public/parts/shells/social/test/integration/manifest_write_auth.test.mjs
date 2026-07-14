@@ -21,7 +21,7 @@ const {
 	getEntitySecretKey,
 	getOperatorSecretKey,
 	resolveOperatorEntityHashForUser,
-} = await import('fount/server/p2p_server/entity_identity.mjs')
+} = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 

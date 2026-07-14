@@ -1,15 +1,13 @@
-import { Readable } from 'node:stream'
-
-import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/entity/files/acl'
-import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
-import { entityFileUrl, profileAvatarFileUrl } from 'npm:@steve02081504/fount-p2p/entity/files/url'
-import { getProfile, updateProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/files/acl'
+import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evfs_logical_path'
-import { applyAvatarToAllLocales } from '../../server/p2p_server/presentation.mjs'
+import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
-import { isAllowedImageUpload, pickUploadedFile } from './multipart_upload.mjs'
+import { entityFileUrl } from './filesUrl.mjs'
+import { uploadAvatar } from './profile.mjs'
 
+const CHAT_PREFIX = '/api/parts/shells:chat'
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024
 
 /**
@@ -41,8 +39,10 @@ function readWildcardPath(wildcardParam) {
  * @param {(req: import('npm:express').Request) => { username: string }} getUserByReq 用户解析
  * @returns {void}
  */
-export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
-	router.get('/api/p2p/entities/:entityHash/files/*logicalPath', authenticate, async (req, res) => {
+export function registerEntityFileEndpoints(router, authenticate, getUserByReq) {
+	const filesPath = `${CHAT_PREFIX}/entities/:entityHash/files/*logicalPath`
+
+	router.get(filesPath, authenticate, async (req, res) => {
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
@@ -65,7 +65,7 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 		plain.pipe(res.status(200))
 	})
 
-	router.head('/api/p2p/entities/:entityHash/files/*logicalPath', authenticate, async (req, res) => {
+	router.head(filesPath, authenticate, async (req, res) => {
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
@@ -78,7 +78,7 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 		return res.status(200).end()
 	})
 
-	router.put('/api/p2p/entities/:entityHash/files/*logicalPath', authenticate, async (req, res) => {
+	router.put(filesPath, authenticate, async (req, res) => {
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const logicalPath = parseEvfsLogicalPath(readWildcardPath(req.params.logicalPath))
 		if (!isEntityHash128(entityHash) || !logicalPath)
@@ -112,7 +112,7 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 		})
 	})
 
-	router.post('/api/p2p/entities/:entityHash/files/profile/avatar', authenticate, async (req, res) => {
+	router.post(`${CHAT_PREFIX}/entities/:entityHash/files/profile/avatar`, authenticate, async (req, res) => {
 		const entityHash = String(req.params.entityHash || '').toLowerCase()
 		const { username } = getUserByReq(req)
 		if (!isEntityHash128(entityHash))
@@ -127,22 +127,13 @@ export function registerP2pFileEndpoints(router, authenticate, getUserByReq) {
 		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
 			return res.status(413).json({ error: 'file too large' })
 
-		await putFileManifestFromStream({
-			ownerEntityHash: entityHash,
-			logicalPath: 'profile/avatar',
-			readable: Readable.from(file.buffer),
-			plainSize: file.buffer.length,
-			name: file.originalname || 'avatar',
-			mimeType: file.mimetype || 'image/png',
-			ceMode: 'convergent',
-		})
-
-		const avatarUrl = profileAvatarFileUrl(entityHash)
-		const profile = await getProfile(entityHash, username, { skipPresentation: true })
-		await updateProfile(username, entityHash, {
-			localized: applyAvatarToAllLocales(profile.localized, avatarUrl),
-		}, { skipPresentation: true })
-
+		const avatarUrl = await uploadAvatar(
+			username,
+			entityHash,
+			file.buffer,
+			file.originalname || 'avatar',
+			file.mimetype || 'image/png',
+		)
 		res.status(200).json({ avatarUrl })
 	})
 }

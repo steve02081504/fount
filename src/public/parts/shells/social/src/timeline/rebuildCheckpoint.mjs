@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer'
 import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
-import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
+import { getEntitySecretKey } from '../../../chat/src/entity/identity.mjs'
 import { timelineSnapshotPath } from '../paths.mjs'
 
 /**

@@ -401,7 +401,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
 	const req = await playwrightRequest.newContext()
 	try {
 		const res = await req.get(
-			`${baseUrl}/api/p2p/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
+			`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
 		)
 		if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
 		const data = await res.json()

@@ -9,7 +9,7 @@ import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/entity_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
 import { canWriteTimeline } from './timeline/append.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'

@@ -25,7 +25,7 @@ const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity
 const {
 	ensureAgentEntityIdentity,
 	getEntitySecretKey,
-} = await import('fount/server/p2p_server/entity_identity.mjs')
+} = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 

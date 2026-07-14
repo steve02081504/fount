@@ -65,7 +65,7 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 		tempDirPrefix: 'fount_inbox_recip_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixtures(dataDir, user, [CHAR_YES])
 		},
@@ -76,7 +76,7 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
-	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { dispatchMessageFanout } = await import('../../src/chat/dag/messageFanout.mjs')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
 
@@ -117,7 +117,7 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 		tempDirPrefix: 'fount_inbox_charname_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixtures(dataDir, user, [CHAR_YES])
 		},
@@ -150,7 +150,7 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 		tempDirPrefix: 'fount_trigger_pipe_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixtures(dataDir, user, [CHAR_YES, CHAR_NO])
 		},
@@ -200,14 +200,14 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 		tempDirPrefix: 'fount_trigger_dm_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixtures(dataDir, user, [CHAR_YES])
 		},
 	})
 	await ensureServer()
 
-	const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
 	const { createEcdhDmGroup } = await import('../../src/chat/dm/index.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')

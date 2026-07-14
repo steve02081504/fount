@@ -1,5 +1,5 @@
 import { findTriggerChatLogEntry } from './codeBridgeContext.mjs'
-import { ensureLocalAgentEntityHash } from './entity.mjs'
+import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 
 /** @type {import('../../../../../../decl/pluginAPI.ts').PluginAPI_t} */
 export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {

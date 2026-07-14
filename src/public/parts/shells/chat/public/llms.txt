@@ -128,7 +128,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET | `/discovery` | 本地群发现索引（`?limit=`）；条目含 `sources[]` 来源 node |
 | POST | `/discovery/refresh` | 向已加入群联邦邻居广播 `discovery_announce` |
 
-**用户级 P2P（服务器路由，非 chat shell 前缀）**：`GET/PUT /api/p2p/federation`（identity、relayUrls、batterySaver）；`GET /api/p2p/viewer`（operator entity + profile + `agents: [{ entityHash, charPartName }]`）；`POST /api/p2p/agents/ensure` body `{ charPartName }` → `{ entityHash, charPartName }`；`GET/PUT /api/p2p/entities/:entityHash` 及 avatar/status/heartbeat。群传输密钥仍在 DAG `groupSettings.roomSecret`。
+**用户级 P2P**：网络传输 `GET/PUT /api/p2p/federation`（identity、relayUrls、batterySaver）；实体面 `GET /api/parts/shells:chat/viewer`（operator entity + profile + `agents[]`）；`GET/PUT /api/parts/shells:chat/entities/:entityHash` 及 avatar/status/heartbeat/rotate/revoke。群传输密钥仍在 DAG `groupSettings.roomSecret`。
 
 **群设置（发现）**：`group_settings_update` 可写 `discoveryPublic`、`discoveryTitle`、`discoveryBlurb`（不含 `roomSecret`）。另含 `eventRetentionDepth`、`eventRetentionMs`、`compactTriggerEventDepth`、`messageRateLimitPerMin`、`iceServers`（WebRTC/Trystero；TURN 凭据仅本机物化）、`autoChannelGc`（默认 true：物化时自动删除沉寂孤岛频道，每次最多 2 个）。联邦调优三字段经 `POST …/federation/tuning` 写入：`federationPartitionCount`、`rtcConnectionBudgetMax`、`rtcJoinRatePerMin`。本地 `messages/{channelId}.jsonl` 为明文展示侧车；DAG `events.jsonl` 仍为 GSH 密文。
 
@@ -245,7 +245,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET | `…/groups/:groupId/files/:fileId/download-status` | 分片下载任务摘要（`done/total/percent/status/seededAt`） |
 | POST | `…/groups/:groupId/files/:fileId/download-resume` | 触发断点续传并返回当前下载任务状态 |
 
-群文件字节下载：`GET /api/p2p/entities/{groupEntityHash}/files/chat/{fileId}`（服务端读 manifest + chunk 解密）。
+群文件字节下载：`GET /api/parts/shells:chat/entities/{groupEntityHash}/files/chat/{fileId}`（服务端读 manifest + chunk 解密）。
 
 `GET …/state` 响应含 `fileFolders`、`files[]`（物化 fileIndex 摘要）。
 

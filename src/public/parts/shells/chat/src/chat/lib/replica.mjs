@@ -3,14 +3,14 @@
  * 【职责】replica 上下文与群成员 entityHash；用户 operator 见 server/p2p_server。
  */
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
-import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/entity/replica'
+import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../../../../../../server/p2p_server/http_glue.mjs'
+import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../entity/http.mjs'
 import {
 	getOperatorEntityHash,
 	resolveOperatorEntityHashForUser,
-} from '../../../../../../../server/p2p_server/entity_identity.mjs'
+} from '../../entity/identity.mjs'
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
 
 /**

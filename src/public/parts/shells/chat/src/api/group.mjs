@@ -6,7 +6,7 @@ import { activateGroupFederation, isGroupFederationActive } from '../chat/federa
 import { roomCredentialsFromGroupSettings } from '../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../chat/governance/joinPowAnchors.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
-import { memberEntityHash } from '../chat/lib/entity.mjs'
+import { memberEntityHash } from '../entity/member.mjs'
 import { mintGroupInviteTicket } from '../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../chat/lib/replica.mjs'
 

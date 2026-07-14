@@ -33,7 +33,7 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -90,7 +90,7 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},

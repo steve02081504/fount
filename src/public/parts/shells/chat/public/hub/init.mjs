@@ -87,7 +87,7 @@ async function loadMe() {
 	let data
 	try {
 		const qs = localeQueryString(hubStore.context.currentGroupId || undefined)
-		const resp = await fetch(`/api/p2p/viewer${qs ? `?${qs}` : ''}`, { credentials: 'include' })
+		const resp = await fetch(`/api/parts/shells:chat/viewer${qs ? `?${qs}` : ''}`, { credentials: 'include' })
 		if (!resp.ok) return
 		data = await resp.json()
 	} catch {

@@ -4,7 +4,7 @@
  */
 export async function ensureSocialTestReady(username) {
 	const { ensureOperatorPubKey, resolveOperatorEntityHashForUser } =
-		await import('fount/server/p2p_server/entity_identity.mjs')
+		await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	const { ensureOperatorSocialReady } = await import('../src/lib/bootstrap.mjs')
 	await ensureOperatorPubKey(username)
 	if (!await resolveOperatorEntityHashForUser(username))

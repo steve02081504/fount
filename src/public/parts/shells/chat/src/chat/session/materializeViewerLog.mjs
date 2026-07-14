@@ -8,7 +8,7 @@
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatViewer_t} chatViewer_t */
 
-import { ensureLocalAgentEntityHash } from '../lib/entity.mjs'
+import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,

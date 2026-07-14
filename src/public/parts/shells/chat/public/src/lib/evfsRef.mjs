@@ -1,4 +1,4 @@
-/** 浏览器端 evfs: 引用解析（与 `npm:@steve02081504/fount-p2p/entity/files/evfs_ref` 一致）。 */
+/** 浏览器端 evfs: 引用解析（与 `npm:@steve02081504/fount-p2p/files/evfs_ref` 一致）。 */
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
 
 /** @type {string} */

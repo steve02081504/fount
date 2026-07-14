@@ -11,7 +11,7 @@ import { readJsonl, appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/s
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../../../scripts/json_loader.mjs'
 import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
 
-import { memberEntityHash } from './entity.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 import { shellChatRoot } from './paths.mjs'
 import { getLocalNodeHash, resolveOperatorEntityHash } from './replica.mjs'
 

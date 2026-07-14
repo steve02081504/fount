@@ -56,8 +56,8 @@ async function readWorldDistribution(replicaUsername, worldname) {
  * @returns {Promise<void>}
  */
 export async function appendAgentMemberJoin(replicaUsername, groupId, charname, appendOpts = {}) {
-	const { ensureLocalAgentEntityHash } = await import('../lib/entity.mjs')
-	const { getOperatorEntityHash } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+	const { getOperatorEntityHash } = await import('../../entity/identity.mjs')
 	const { mintGroupInviteTicket } = await import('../lib/inviteTickets.mjs')
 	const bind = sessionOwnerBinding(replicaUsername)
 	const entityHash = await ensureLocalAgentEntityHash(replicaUsername, charname)

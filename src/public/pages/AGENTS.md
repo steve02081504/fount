@@ -46,4 +46,4 @@ alwaysApply: false
 
 ## P2P (Browser)
 
-Import via `esm.sh`; shared Chat/Social primitives (`entityHash`, `digest`, `mentions`, `inlineTokens`, `hashAvatar`, etc.) live in `shells/chat/public/shared/`.
+Import via `esm.sh`；共享 primitives（`entityHash`、`digest`、`mentions`、`inlineTokens`、`hashAvatar`、`evfsMedia` 等）在 `shells/chat/public/shared/`（`/parts/shells:chat/shared/…`）。实体 HTTP 面走 `/api/parts/shells:chat/{viewer,entities…}`；节点网络面仍 `/api/p2p/{network,denylist,mailbox,federation}`。

@@ -3,7 +3,7 @@ import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/men
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
 
 import { isCaredBy } from './care.mjs'
-import { memberEntityHash } from './entity.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 
 /**
  * @param {string} username 用户

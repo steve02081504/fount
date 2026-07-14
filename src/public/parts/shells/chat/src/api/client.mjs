@@ -1,4 +1,4 @@
-import { ensureOperatorPubKey } from 'fount/server/p2p_server/entity_identity.mjs'
+import { ensureOperatorPubKey } from '../entity/identity.mjs'
 
 import { createEcdhDmGroup } from '../chat/dm/index.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'

@@ -13,8 +13,8 @@
 import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 
-import { putFileManifest } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
-import { formatEvfsRef, parseEvfsRef } from 'npm:@steve02081504/fount-p2p/entity/files/evfs_ref'
+import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { formatEvfsRef, parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**

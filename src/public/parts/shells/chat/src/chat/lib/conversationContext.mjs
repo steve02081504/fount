@@ -5,7 +5,7 @@ import { sha256TextHex } from 'npm:@steve02081504/fount-p2p/crypto'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { getState } from '../dag/materialize.mjs'
 
-import { memberEntityHash } from './entity.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 import { groupKindFromState } from './notifyPrefs.mjs'
 
 /**

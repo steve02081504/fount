@@ -1,8 +1,8 @@
 import {
 	isLogicalEntityHash,
 	logicalEntityHash,
-} from 'npm:@steve02081504/fount-p2p/entity/logical_entity'
-import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
+} from 'npm:@steve02081504/fount-p2p/core/logical_entity'
+import { resolveLogicalEntityId } from '../../entity/logicalId.mjs'
 
 /**
  *

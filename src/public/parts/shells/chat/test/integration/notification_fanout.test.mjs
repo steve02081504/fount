@@ -87,7 +87,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 		username,
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			const from = join(fixturesRoot, 'chars', CHAR_YES)
 			const to = join(dataDir, 'users', user, 'chars', CHAR_YES)
@@ -101,7 +101,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
-	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
 	const { saveNotifyPrefs } = await import('../../src/chat/lib/notifyPrefs.mjs')
@@ -140,7 +140,7 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { buildMentionsFromMessageLine } = await import('../../src/chat/dag/messageFanout.mjs')
 	const { messageMentionsEntity } = await import('../../src/chat/lib/mentionFacts.mjs')
-	const { memberEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { memberEntityHash } = await import('../../src/entity/member.mjs')
 
 	const groupId = await newGroup(username, { name: 'nf-here' })
 	const channelId = await getDefaultChannelId(username, groupId)

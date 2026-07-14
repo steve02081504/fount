@@ -2,9 +2,9 @@ import { Buffer } from 'node:buffer'
 import { createHash, randomUUID } from 'node:crypto'
 
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
-import { putFileManifest } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
-import { entityFileUrl } from 'npm:@steve02081504/fount-p2p/entity/files/url'
-import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { entityFileUrl } from '../../entity/filesUrl.mjs'
+import { getProfile } from '../../entity/profile.mjs'
 
 import {
 	channelMessageAgentText,

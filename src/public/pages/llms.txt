@@ -197,16 +197,13 @@ fount 是一个 AI Agent 框架，本文档描述 Web 服务器提供的基础 A
 
 ### GET/PUT /api/p2p/federation
 - 认证：需要
-- 用途：节点联邦 identity（`identityPubKeyHex`）、`relayUrls`、`batterySaver`。
+- 用途：节点联邦 identity、`relayUrls`、`batterySaver`、mailbox（网络级传输配置）。
 
-### GET /api/p2p/viewer
+### GET /api/p2p/network · denylist · mailbox/summary
 - 认证：需要
-- 查询：`groupId?`（可选，按群成员 entity 解析观看者）
-- 用途：返回 `viewerEntityHash`、profile 摘要；未配置 identity 时 `identityRequired: true`。
+- 用途：节点网络图、节点 denylist、mailbox 积压摘要。
 
-### GET/PUT /api/p2p/entities/:entityHash
-- 认证：需要
-- 用途：读写 entity profile；头像经 EVFS `GET|PUT /files/profile/avatar`；另有 `/status`、`/heartbeat`。
+实体面（viewer / profile / EVFS / personal-lists / 密钥 rotate·revoke）在 chat shell：`/api/parts/shells:chat/{viewer,entities…}`。见 `shells/chat/public/llms.txt`。
 
 Social/Mailbox 联邦 fanout 经 Chat shell 注册的 `TrustGraphProvider`；Chat 未 Load 时 explore 仅本地结果。
 

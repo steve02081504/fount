@@ -1,5 +1,5 @@
 import { authenticate } from '../../../../../../server/auth/index.mjs'
-import { getReplicaFromReq } from '../../../../../../server/p2p_server/http_glue.mjs'
+import { getReplicaFromReq } from '../../../chat/src/entity/http.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'

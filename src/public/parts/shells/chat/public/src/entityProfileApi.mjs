@@ -45,7 +45,7 @@ export function cachedProfileFromApi(profile, entityHash) {
 export async function fetchEntityProfileApi(entityHash, groupId) {
 	const qs = localeQueryString(groupId)
 	const response = await fetch(
-		`/api/p2p/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
 		{ credentials: 'include' },
 	)
 	if (!response.ok) {
@@ -64,7 +64,7 @@ export async function fetchEntityProfileApi(entityHash, groupId) {
 export async function updateEntityProfileApi(entityHash, updates, groupId) {
 	const qs = localeQueryString(groupId)
 	const response = await fetch(
-		`/api/p2p/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
 		{
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },

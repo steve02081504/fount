@@ -63,7 +63,7 @@ export async function buildMemberJoinBindingFields(username, entityHash, memberP
 	const {
 		getEntityActivePubKey,
 		getEntitySecretKey,
-	} = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	} = await import('../../entity/identity.mjs')
 	const eh = String(entityHash || '').trim().toLowerCase()
 	const entityActivePubKeyHex = normalizeHex64(await getEntityActivePubKey(username, eh))
 	const secretHex = await getEntitySecretKey(username, eh)

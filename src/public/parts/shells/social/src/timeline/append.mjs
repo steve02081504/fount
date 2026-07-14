@@ -13,7 +13,7 @@ import {
 	getRecoveryPubKeyHex,
 	loadEntityIdentity,
 	resolveCharPartNameForEntity,
-} from '../../../../../../server/p2p_server/entity_identity.mjs'
+} from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'

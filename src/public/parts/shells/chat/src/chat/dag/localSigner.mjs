@@ -25,7 +25,7 @@ import { PUB_KEY_HASH_HEX } from './validator.mjs'
 async function resolveSignerEntityHash(username, entityHash) {
 	const declared = String(entityHash || '').trim().toLowerCase()
 	if (declared) return declared
-	const { resolveOperatorEntityHashForUser } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 	const hash = await resolveOperatorEntityHashForUser(username)
 	if (!hash) throw new Error('operator entityHash required for local signer')
 	return hash
@@ -71,7 +71,7 @@ async function loadOrCreateLocalSignerSeed(username, groupId, entityHash) {
 	}
 	catch { /* migrate or create below */ }
 
-	const { resolveOperatorEntityHashForUser } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
 	const operatorHash = await resolveOperatorEntityHashForUser(username)
 	if (operatorHash && entityHash === operatorHash) {
 		const legacy = legacyLocalSignerSeedPath(username, groupId)

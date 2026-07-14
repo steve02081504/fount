@@ -16,6 +16,7 @@ import { registerPrefsRoutes } from './endpoints/prefs.mjs'
 import { registerSessionRoutes } from './endpoints/sessions.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
+import { registerEntityEndpoints } from './entity/endpoints.mjs'
 import { registerWsRoutes } from './endpoints/ws.mjs'
 import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpoints.mjs'
 
@@ -25,6 +26,7 @@ import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpo
  * @param {import('npm:websocket-express').Router} router - Express路由实例，用于附加端点。
  */
 export function setEndpoints(router) {
+	registerEntityEndpoints(router)
 	registerStickerRoutesUnderChat(router, '/api/parts/shells:chat/stickers')
 
 	registerPrefsRoutes(router)

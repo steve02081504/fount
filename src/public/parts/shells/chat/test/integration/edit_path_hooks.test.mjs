@@ -49,7 +49,7 @@ async function setupEditPathSession() {
 		 * @param {string} user 新建的测试用户名
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedEditPathFixtures(dataDir, user)
 		},

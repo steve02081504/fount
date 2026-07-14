@@ -23,7 +23,7 @@ export function createRole(ctx, groupId, roleId, roleRow) {
 			for (const [, member] of Object.entries(state.members || {})) {
 				if (member?.status !== 'active') continue
 				if (!(member.roles || []).includes(roleId)) continue
-				const entityHash = (await import('../chat/lib/entity.mjs')).memberEntityHash(member)
+				const entityHash = (await import('../entity/member.mjs')).memberEntityHash(member)
 				if (!entityHash) continue
 				out.push(createMember(ctx, groupId, entityHash, member))
 			}

@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
-import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
+import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { buildFileManifestFromEnc, encryptPlaintextToParts, vaultWrapDescriptor } from 'npm:@steve02081504/fount-p2p/files/assemble'
 
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'

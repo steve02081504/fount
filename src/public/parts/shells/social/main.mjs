@@ -1,4 +1,3 @@
-import { getAgentCharResolver } from 'npm:@steve02081504/fount-p2p/entity/hosting_registry'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	registerShellPartpath,
@@ -10,6 +9,7 @@ import {
 	mutateReputation,
 } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getAllUserNames } from '../../../../server/auth/index.mjs'
+import { events } from '../../../../server/events.mjs'
 
 import { handleSocialRpc } from './src/discover/rpc.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
@@ -25,10 +25,23 @@ import { applyFollowedBlockSignal } from './src/federation/reputation_social.mjs
 import { registerEntityKeyChainProvider } from './src/federation/write_auth.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'
+import { commitEntityKeyRevoke, commitEntityKeyRotate } from './src/timeline/entity_key_commit.mjs'
 import { getTimelineMaterialized } from './src/timeline/materialize.mjs'
 import { ingestRemoteTimelineEvent } from './src/timeline/sync.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
+
+/**
+ * @param {{ username: string, entityHash: string, kind: string, rotation: object, revokePayload?: object, recoverySecret?: Uint8Array }} payload 密钥轮换事件
+ * @returns {Promise<void>}
+ */
+async function handleEntityKeyRotated(payload) {
+	const { username, entityHash, kind, rotation, revokePayload, recoverySecret } = payload
+	if (kind === 'rotate')
+		await commitEntityKeyRotate(username, entityHash, rotation)
+	else if (kind === 'revoke')
+		await commitEntityKeyRevoke(username, entityHash, revokePayload, recoverySecret)
+}
 
 /**
  * @param {string} username replica 登录名
@@ -77,10 +90,10 @@ export default {
 		registerShellPartpath('social', 'shells/social')
 		registerReplicaUsernamesProvider(getAllUserNames)
 		registerOperatorEntityHashProvider(
-			(await import('../../../../server/p2p_server/entity_identity.mjs')).resolveOperatorEntityHashForUser,
+			(await import('../chat/src/entity/identity.mjs')).resolveOperatorEntityHashForUser,
 		)
 		registerEntityKeyChainProvider(async username => {
-			const { ensureOperatorIdentity } = await import('../../../../server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorIdentity } = await import('../chat/src/entity/identity.mjs')
 			const row = await ensureOperatorIdentity(username)
 			if (!row?.recoveryPubKeyHex) return null
 			return {
@@ -90,17 +103,14 @@ export default {
 			}
 		})
 		registerFollowingScanProvider(async username => {
-			const { resolveOperatorEntityHashForUser } = await import('../../../../server/p2p_server/entity_identity.mjs')
+			const { resolveOperatorEntityHashForUser } = await import('../chat/src/entity/identity.mjs')
 			const operator = await resolveOperatorEntityHashForUser(username)
 			if (!operator) return []
 			const view = await getTimelineMaterialized(username, operator)
 			return view.following
 		})
 		registerBlockReputationHandler(opts => applyFollowedBlockSignal(opts, mutateReputation))
-		if (!getAgentCharResolver()) {
-			const { registerDefaultAgentHosting } = await import('../chat/src/chat/lib/agentHosting.mjs')
-			await registerDefaultAgentHosting()
-		}
+		events.on('entity-key-rotated', handleEntityKeyRotated)
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
 		setEndpoints(router)
@@ -114,6 +124,7 @@ export default {
 		unregisterReplicaUsernamesProvider()
 		unregisterFollowingScanProvider()
 		unregisterBlockReputationHandler()
+		events.off('entity-key-rotated', handleEntityKeyRotated)
 		unregisterSocialManifestAcl()
 		unregisterSocialManifestTransfer()
 	},

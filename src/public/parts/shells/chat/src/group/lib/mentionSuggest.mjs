@@ -1,4 +1,4 @@
-import { memberEntityHash } from '../../chat/lib/entity.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 

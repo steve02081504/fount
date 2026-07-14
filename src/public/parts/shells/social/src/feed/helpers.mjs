@@ -1,6 +1,6 @@
 import { loadPersonalFilterSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/entity_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { loadFollowing, loadFollowingForActor } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'

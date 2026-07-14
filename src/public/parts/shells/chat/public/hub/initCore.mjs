@@ -14,7 +14,7 @@ import { parseHash } from './core/urlHash.mjs'
 /** @returns {Promise<void>} 拉取 viewer 到 hubStore（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
 	const [viewerResp, whoamiResp] = await Promise.all([
-		fetch('/api/p2p/viewer', { credentials: 'include' }),
+		fetch('/api/parts/shells:chat/viewer', { credentials: 'include' }),
 		fetch('/api/whoami', { credentials: 'include' }),
 	])
 	if (whoamiResp.ok) {

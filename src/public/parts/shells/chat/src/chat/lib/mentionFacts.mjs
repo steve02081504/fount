@@ -3,7 +3,7 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 import { getState } from '../dag/materialize.mjs'
 
-import { memberEntityHash } from './entity.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 
 /**
  * @param {object} state 物化群状态

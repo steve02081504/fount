@@ -7,7 +7,7 @@ import { randomBytes } from 'node:crypto'
 import { unlink } from 'node:fs/promises'
 
 import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
-import { resolveLocalEntityHashFromRecoveryPubKeyHex } from 'npm:@steve02081504/fount-p2p/entity/replica'
+import { resolveLocalEntityHashFromRecoveryPubKeyHex } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
@@ -18,20 +18,20 @@ import {
 } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { createGenesisKeyHistory } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 import { readJsonFile } from 'npm:@steve02081504/fount-p2p/utils/json_io'
-import { events } from '../events.mjs'
-import { assignShellData } from '../setting_loader.mjs'
+import { events } from '../../../../../../server/events.mjs'
+import { assignShellData } from '../../../../../../server/setting_loader.mjs'
 
 import {
 	legacyOperatorJsonPath,
 	listEntityIdentities,
 	readEntityIdentity,
 	writeEntityIdentity,
-} from './entity_store.mjs'
+} from './store.mjs'
 
 /** @type {Map<string, string>} key = `${username}\0${entityHash}` */
 const pendingRecoverySecrets = new Map()
 
-/** @type {Map<string, { recoveryPub: string, activePub: string, activeSecret: string, entityHash: string, keyGeneration: number, ownerEntityHash: string | null, charPartName: string | null }>} */
+/** @type {Map<string, { recoveryPub: string, activePub: string, activeSecret: string, recoverySecret: string, entityHash: string, keyGeneration: number, ownerEntityHash: string | null, charPartName: string | null }>} */
 const identityCache = new Map()
 
 /** @type {Map<string, string>} username → operator entityHash */
@@ -93,6 +93,9 @@ function cacheFromRow(username, row) {
 		recoveryPub: normalizeHex64(row.recoveryPubKeyHex),
 		activePub: normalizeHex64(row.activePubKeyHex),
 		activeSecret: normalizeHex64(row.activeSecretKeyHex),
+		recoverySecret: isHex64(normalizeHex64(row.recoverySecretKeyHex || ''))
+			? normalizeHex64(row.recoverySecretKeyHex)
+			: '',
 		entityHash,
 		keyGeneration: Number(row.keyGeneration ?? 0),
 		ownerEntityHash,
@@ -213,6 +216,7 @@ export async function ensureEntityIdentity(username, opts = {}) {
 	const keyHistory = createGenesisKeyHistory(recoveryPubKeyHex, activePubKeyHex)
 	const row = {
 		recoveryPubKeyHex,
+		recoverySecretKeyHex,
 		activePubKeyHex,
 		activeSecretKeyHex,
 		keyGeneration: 0,
@@ -238,7 +242,7 @@ export async function ensureEntityIdentity(username, opts = {}) {
  */
 async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
 	try {
-		const { ensureLocalEntityProfile, updateProfile } = await import('npm:@steve02081504/fount-p2p/entity/profile')
+		const { ensureLocalEntityProfile, updateProfile } = await import('./profile.mjs')
 		await ensureLocalEntityProfile(username, entityHash)
 		await updateProfile(username, entityHash, { ownerEntityHash }, { skipPresentation: true })
 	}
@@ -299,6 +303,16 @@ export async function ensureOperatorPubKey(username) {
 export async function getEntitySecretKey(username, entityHash) {
 	await loadEntityIdentity(username, entityHash)
 	return identityCache.get(cacheKey(username, entityHash))?.activeSecret || ''
+}
+
+/**
+ * @param {string} username fount 登录名
+ * @param {string} entityHash 128 hex
+ * @returns {Promise<string>} 64 hex recovery 私钥；缺失时为空串（旧 identity）
+ */
+export async function getEntityRecoverySecretKey(username, entityHash) {
+	await loadEntityIdentity(username, entityHash)
+	return identityCache.get(cacheKey(username, entityHash))?.recoverySecret || ''
 }
 
 /**
@@ -437,6 +451,7 @@ export async function commitEntityKeyRotation(username, entityHash, patch) {
 	})
 	const row = {
 		recoveryPubKeyHex: prev.recoveryPubKeyHex,
+		recoverySecretKeyHex: prev.recoverySecretKeyHex,
 		activePubKeyHex,
 		activeSecretKeyHex,
 		keyGeneration,

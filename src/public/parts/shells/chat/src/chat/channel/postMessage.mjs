@@ -10,9 +10,9 @@ import { createHash, randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
-import { putFileManifest } from 'npm:@steve02081504/fount-p2p/entity/files/evfs'
-import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/entity/files/evfs_ref'
-import { entityFileUrl } from 'npm:@steve02081504/fount-p2p/entity/files/url'
+import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
+import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	channelMessageAgentText,

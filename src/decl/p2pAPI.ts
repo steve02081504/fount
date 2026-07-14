@@ -134,7 +134,7 @@ export type PersonalListScope = 'entity' | 'subject'
  */
 export type PersonalListKind = 'block' | 'hide'
 
-/** `GET /api/p2p/personal-lists` 与 Social profile 共用条目形状。 */
+/** `GET /api/parts/shells:chat/personal-lists` 与 Social profile 共用条目形状。 */
 export interface PersonalListEntry {
 	scope: PersonalListScope
 	kind: PersonalListKind

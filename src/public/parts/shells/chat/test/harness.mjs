@@ -24,7 +24,7 @@ export function createIntegrationBoot(options = {}) {
 	const loadParts = options.loadParts ?? ['shells/chat']
 	const afterInit = options.afterInit ?? (options.minP2pNode
 		? async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 		}
 		: undefined)

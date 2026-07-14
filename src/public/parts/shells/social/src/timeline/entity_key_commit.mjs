@@ -6,7 +6,7 @@ import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/s
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 
-import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
+import { getEntitySecretKey } from '../../../chat/src/entity/identity.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'

@@ -4,13 +4,13 @@
 import {
 	getProfile,
 	updateProfile,
-} from 'npm:@steve02081504/fount-p2p/entity/profile'
+} from '../entity/profile.mjs'
 import {
 	getInfoDefaultsForEntity,
 	isPlaceholderDisplayName,
 	normalizeLocalizedMap,
 	resolvePersonaPresentation,
-} from '../../../../../../server/p2p_server/presentation.mjs'
+} from '../entity/presentation.mjs'
 import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/replica.mjs'
 
 /**

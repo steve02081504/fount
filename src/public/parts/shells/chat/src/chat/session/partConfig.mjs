@@ -231,6 +231,8 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
  */
 export async function addchar(groupId, charname, replicaUsername, opts = {}) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
+	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+	await ensureLocalAgentEntityHash(username, charname)
 	const session = await getMaterializedSession(username, groupId)
 	if (sessionHasChar(session, charname)) {
 		const chatMetadata = await getGroupRuntime(groupId, username)

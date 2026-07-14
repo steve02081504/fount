@@ -1,5 +1,5 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
-import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
+import { getProfile } from '../../../chat/src/entity/profile.mjs'
 
 import { listLocalTimelineDirs } from '../feed/helpers.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
@@ -100,7 +100,7 @@ export async function discoverFollowGraph(username, entityHash, ingress = {}) {
 	const view = await getTimelineMaterialized(username, id)
 	if (view.socialMeta?.hideFromDiscovery) {
 		const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
-		const { resolveOperatorEntityHashForUser } = await import('../../../../../../server/p2p_server/entity_identity.mjs')
+		const { resolveOperatorEntityHashForUser } = await import('../../../chat/src/entity/identity.mjs')
 		const requesterNode = (ingress.requesterNodeHash || '').trim().toLowerCase()
 		const operator = await resolveOperatorEntityHashForUser(username)
 		const isOwnerRequest = requesterNode === getNodeHash() || operator?.toLowerCase() === id

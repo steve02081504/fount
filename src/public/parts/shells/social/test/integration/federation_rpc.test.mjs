@@ -217,7 +217,7 @@ Deno.test('remote entity profile uses subjectHash placeholder not local persona'
 		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
 	])
 
-	const { resolvePersonaPresentation } = await import('fount/server/p2p_server/presentation.mjs')
+	const { resolvePersonaPresentation } = await import('fount/public/parts/shells/chat/src/entity/presentation.mjs')
 	const personaName = (await resolvePersonaPresentation(username)).displayName
 	const entityProfile = await import('../../src/lib/entityProfile.mjs')
 	const profile = await entityProfile.getEntityProfile(username, remoteOwner)

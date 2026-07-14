@@ -7,7 +7,7 @@
  */
 import { sha256HexFromBlob } from '../../shared/digest.mjs'
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
-import { entityFileUrl } from '/scripts/api/p2p/evfsMedia.mjs'
+import { entityFileUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { groupEntityHash } from '../../shared/groupEntityHash.mjs'
 import { fetchGroupFileAsBlobUrl } from '../groupFileBlob.mjs'
 import { convergentChunkHashes } from '../lib/convergentChunk.mjs'

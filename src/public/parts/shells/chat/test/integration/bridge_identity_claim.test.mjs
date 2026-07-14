@@ -33,8 +33,8 @@ async function seedCharFixture(dataDir, username) {
  * @returns {Promise<void>}
  */
 async function seedOperatorProfileName(username, operatorHash, name) {
-	const { getProfile, updateProfile } = await import('npm:@steve02081504/fount-p2p/entity/profile')
-	const { normalizeLocalizedMap } = await import('fount/server/p2p_server/presentation.mjs')
+	const { getProfile, updateProfile } = await import('../../src/entity/profile.mjs')
+	const { normalizeLocalizedMap } = await import('fount/public/parts/shells/chat/src/entity/presentation.mjs')
 	const profile = await getProfile(operatorHash, username, { skipPresentation: true })
 	const localized = normalizeLocalizedMap(profile.localized)
 	localized['zh-CN'] = { ...localized['zh-CN'], name }
@@ -158,7 +158,7 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 		tempDirPrefix: 'fount_bridge_care_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -167,7 +167,7 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 
 	const { claimOperatorBridgeIdentity, bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { setCared, isCaredBy } = await import('../../src/chat/lib/care.mjs')
-	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()

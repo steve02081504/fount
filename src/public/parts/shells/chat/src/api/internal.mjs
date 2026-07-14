@@ -2,7 +2,7 @@ import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { getState } from '../chat/dag/materialize.mjs'
-import { memberEntityHash } from '../chat/lib/entity.mjs'
+import { memberEntityHash } from '../entity/member.mjs'
 import { resolveMemberKey } from '../group/access.mjs'
 
 /**

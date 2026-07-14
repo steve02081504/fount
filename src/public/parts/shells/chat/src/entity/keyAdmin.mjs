@@ -1,12 +1,9 @@
 import { Buffer } from 'node:buffer'
 
-import {
-	commitEntityKeyRevoke,
-	commitEntityKeyRotate,
-} from '../../public/parts/shells/social/src/timeline/entity_key_commit.mjs'
 import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { entityKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
+import { events } from '../../../../../../server/events.mjs'
 
 import {
 	commitEntityKeyRotation as persistActiveRotation,
@@ -14,10 +11,10 @@ import {
 	getFederationViewForUser,
 	getEntityKeyGeneration,
 	getOperatorEntityHash,
-} from './entity_identity.mjs'
+} from './identity.mjs'
 
 /**
- * 主动轮换活跃实体钥并广播时间线事件（默认 operator）。
+ * 主动轮换活跃实体钥；social 经 entity-key-rotated 订阅后写时间线。
  * @param {string} username replica
  * @param {string} [entityHash] 实体；缺省 operator
  * @returns {Promise<object>} federation 视图
@@ -25,7 +22,13 @@ import {
 export async function rotateEntityActiveKey(username, entityHash) {
 	const hash = entityHash || await getOperatorEntityHash(username)
 	const rotation = await generateNextActiveKeyPair(username, hash)
-	await commitEntityKeyRotate(username, hash, rotation)
+	// 时间线须用旧活跃钥签名，故先 emit（social 订阅写 timeline）再落盘新钥
+	await events.emit('entity-key-rotated', {
+		username,
+		entityHash: hash,
+		kind: 'rotate',
+		rotation,
+	})
 	await persistActiveRotation(username, hash, rotation)
 	return getFederationViewForUser(username)
 }
@@ -57,10 +60,18 @@ export async function revokeEntityActiveKey(username, body) {
 	const recoverySecret = new Uint8Array(Buffer.from(recoverySecretKeyHex, 'hex'))
 	const signBytes = entityKeyRevokeSignBytes(revokeBody)
 	const signature = await sign(signBytes, recoverySecret)
-	await commitEntityKeyRevoke(username, entityHash, {
+	const revokePayload = {
 		...revokeBody,
 		recoverySignature: Buffer.from(signature).toString('hex'),
-	}, recoverySecret)
+	}
+	await events.emit('entity-key-rotated', {
+		username,
+		entityHash,
+		kind: 'revoke',
+		rotation,
+		revokePayload,
+		recoverySecret,
+	})
 	await persistActiveRotation(username, entityHash, rotation)
 	return getFederationViewForUser(username)
 }

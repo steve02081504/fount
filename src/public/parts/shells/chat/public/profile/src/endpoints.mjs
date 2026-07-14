@@ -19,7 +19,7 @@ import { localeQueryString } from '../../src/entityProfileApi.mjs'
 export async function getProfile(entityHash, groupId) {
 	const qs = localeQueryString(groupId)
 	const response = await fetch(
-		`/api/p2p/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`,
 		{ credentials: 'include' },
 	)
 	if (!response.ok) {
@@ -37,7 +37,7 @@ export async function getProfile(entityHash, groupId) {
  */
 export async function updateProfile(entityHash, updates, groupId) {
 	const qs = localeQueryString(groupId)
-	const response = await fetch(`/api/p2p/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`, {
+	const response = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}${qs ? `?${qs}` : ''}`, {
 		method: 'PUT',
 		headers: {
 			'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export async function updateProfile(entityHash, updates, groupId) {
 export async function uploadAvatar(entityHash, file) {
 	const formData = new FormData()
 	formData.append('avatar', file)
-	const response = await fetch(`/api/p2p/entities/${encodeURIComponent(entityHash)}/files/profile/avatar`, {
+	const response = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/profile/avatar`, {
 		method: 'POST',
 		body: formData,
 	})

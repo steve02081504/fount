@@ -42,36 +42,6 @@ export function ingestAgentEntityHashList(agents) {
 }
 
 /**
- * 经 `/api/p2p/agents/ensure` 解析本地角色 entityHash。
- * @param {string} charname 角色 part 名
- * @returns {Promise<string | null>} entityHash
- */
-async function ensureCharEntityHashViaApi(charname) {
-	const name = String(charname || '').trim()
-	if (!name) return null
-	try {
-		const resp = await fetch('/api/p2p/agents/ensure', {
-			method: 'POST',
-			credentials: 'include',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ charPartName: name }),
-		})
-		if (!resp.ok) return null
-		const data = await resp.json()
-		const hash = String(data?.entityHash || '').trim().toLowerCase()
-		if (!isEntityHash128(hash)) return null
-		charEntityHashCache.set(name, hash)
-		const agents = hubStore.viewer.agents || []
-		if (!agents.some(a => String(a.charPartName || '') === name))
-			hubStore.viewer.agents = [...agents, { entityHash: hash, charPartName: name }]
-		return hash
-	}
-	catch {
-		return null
-	}
-}
-
-/**
  * 当前群/私聊涉及的角色 part 名。
  * @returns {string[]} 角色 part 名列表
  */
@@ -83,7 +53,7 @@ export function activeCharPartNames() {
 }
 
 /**
- * 预热角色 agent entityHash（成员表 → viewer.agents → ensure API；禁止路径派生）。
+ * 预热角色 agent entityHash（成员表 → viewer.agents 缓存；禁止路径派生或 ensure API）。
  * @param {string[]} [charNames] 角色 part 名；省略则用当前群 charlist
  * @returns {Promise<void>}
  */
@@ -97,19 +67,14 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 		if (charname) agentByChar.set(charname, member)
 	}
 	ingestAgentEntityHashList(hubStore.viewer.agents || [])
-	const missing = []
 	for (const raw of charNames) {
 		const name = String(raw || '').trim()
 		if (!name || charEntityHashCache.has(name)) continue
 		const member = agentByChar.get(name.toLowerCase())
 		const cachedHash = member?.entityHash || member?.agentEntityHash
-		if (cachedHash && isEntityHash128(String(cachedHash))) {
+		if (cachedHash && isEntityHash128(String(cachedHash)))
 			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
-			continue
-		}
-		missing.push(name)
 	}
-	await Promise.all(missing.map(name => ensureCharEntityHashViaApi(name)))
 }
 
 /**

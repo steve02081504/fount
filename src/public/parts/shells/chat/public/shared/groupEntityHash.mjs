@@ -1,4 +1,4 @@
-import { logicalEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/entity/logical_entity'
+import { logicalEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/logical_entity'
 
 /**
  *

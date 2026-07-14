@@ -1,7 +1,7 @@
 /**
  * 聊天附件经 EVFS 上传与下载。
  */
-import { fetchEvfsFile, uploadEvfsAttachment } from '/scripts/api/p2p/evfsMedia.mjs'
+import { fetchEvfsFile, uploadEvfsAttachment } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
 const CHAT_ATTACHMENT_PREFIX = 'shells/chat/attachments'
 

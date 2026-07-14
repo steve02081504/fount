@@ -1,7 +1,7 @@
 /**
  * Social 媒体渲染（与上传解耦）。
  */
-import { mediaRefUrl } from '/scripts/api/p2p/evfsMedia.mjs'
+import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
 /**
  * 将 mediaRefs 渲染为帖子内嵌媒体 HTML。

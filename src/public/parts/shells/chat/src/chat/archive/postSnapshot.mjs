@@ -1,8 +1,8 @@
 /**
  * 帖子终态快照（冷归档 / Hub 深历史）。
  */
-import { getProfile } from 'npm:@steve02081504/fount-p2p/entity/profile'
-import { memberEntityHash } from '../lib/entity.mjs'
+import { getProfile } from '../../entity/profile.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'

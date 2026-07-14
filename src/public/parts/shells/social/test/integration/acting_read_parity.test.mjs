@@ -21,7 +21,7 @@ const notifications = await import('../../src/notifications.mjs')
 const following = await import('../../src/following.mjs')
 const followerIndex = await import('../../src/federation/follower_index.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
-const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
+const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/entity/member.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 

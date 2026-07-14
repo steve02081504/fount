@@ -3,6 +3,6 @@
  * @param {string} username 测试用户名
  */
 export default async function bootstrap(username) {
-	const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
+	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 	await ensureOperatorPubKey(username)
 }
