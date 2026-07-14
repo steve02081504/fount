@@ -68,6 +68,28 @@ export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupI
 }
 
 /**
+ * 本机 replica 上任一活跃成员键：先 operator，再遍历本机已落盘 signer 的 entity。
+ * 供水合 / AI runtime 等「有本机副本即可」路径；HTTP 身份路由仍用 `resolveActiveMemberKeyForLocalUser`。
+ * @param {string} replicaUsername fount 登录名
+ * @param {string} groupId 群 ID
+ * @param {object} state 物化群状态
+ * @returns {Promise<string | null>} 成员键
+ */
+export async function resolveActiveMemberKeyForLocalReplica(replicaUsername, groupId, state) {
+	const operatorKey = await resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state)
+	if (operatorKey) return operatorKey
+	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
+	for (const [key, member] of Object.entries(state.members || {})) {
+		if (member?.status !== 'active') continue
+		const entityHash = String(member.entityHash || '').trim().toLowerCase()
+		if (!entityHash) continue
+		const sender = await peekLocalSignerPubKeyHash(replicaUsername, groupId, entityHash)
+		if (sender && resolveActiveMemberKey(state, sender) === key) return key
+	}
+	return null
+}
+
+/**
  * @param {object} state 物化群状态
  * @param {object} member 成员记录
  * @param {string} permission 权限键

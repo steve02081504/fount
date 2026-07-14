@@ -20,7 +20,7 @@ import { listUserGroups } from '../chat/lib/userGroups.mjs'
 import { safeReadJson } from '../chat/lib/fsSafe.mjs'
 import { tallyVoteChoices } from '../chat/lib/voteTally.mjs'
 
-import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
+import { resolveActiveMemberKeyForLocalReplica, resolveActiveMemberKeyForLocalUser } from './access.mjs'
 
 /**
  * 群列表用轻量物化：有 snapshot 时避免全量重放 events.jsonl。
@@ -197,7 +197,7 @@ async function attachVoteSummaries(lines, voteCastEvents) {
  * @returns {Promise<object[]>} enriched 消息行
  */
 async function finalizeChannelMessagesForViewer(username, groupId, state, lines, channelId = 'default') {
-	const viewerPubKeyHash = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
+	const viewerPubKeyHash = await resolveActiveMemberKeyForLocalReplica(username, groupId, state)
 	if (!viewerPubKeyHash) throw new Error('Not a member')
 	const streamGeneratingIdleMs = Number(state.groupSettings?.streamGeneratingIdleMs)
 	let work = markStaleGeneratingMessages(
