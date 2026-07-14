@@ -11,10 +11,10 @@ import { isTimelineWriteAuthorized } from './write_auth.mjs'
 /**
  * @param {object} event 签名事件
  * @param {string} entityHash 时间线 owner
- * @param {{ canonicalize: (event: object) => object, priorEvents?: object[] }} deps 规范化依赖
+ * @param {{ canonicalize: (event: object) => object, priorEvents?: object[], username?: string }} deps 规范化依赖
  * @returns {Promise<{ accepted: true, row: object } | { accepted: false }>} 验证结果
  */
-export async function validateRemoteTimelineEvent(event, entityHash, { canonicalize, priorEvents = [] }) {
+export async function validateRemoteTimelineEvent(event, entityHash, { canonicalize, priorEvents = [], username } = {}) {
 	if (!SOCIAL_TIMELINE_EVENT_TYPES.has(event.type)) return { accepted: false }
 	if (event.groupId !== timelineGroupId(entityHash)) return { accepted: false }
 	const sender = event.sender.trim().toLowerCase()
@@ -26,6 +26,7 @@ export async function validateRemoteTimelineEvent(event, entityHash, { canonical
 		eventType: event.type,
 		eventContent: event.content,
 		priorEvents,
+		username,
 	})) return { accepted: false }
 	try {
 		return { accepted: true, row: canonicalize(event) }

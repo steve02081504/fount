@@ -70,3 +70,36 @@ Deno.test('user-style owner accepts subjectHash sender only', async () => {
 	assertEquals(await isTimelineWriteAuthorized(owner, sender), true)
 	assertEquals(await isTimelineWriteAuthorized(owner, pubKeyHash(publicKeyFromSeed(randomSeed()))), false)
 })
+
+Deno.test('owner active key may post_delete on owned agent timeline', async () => {
+	const { username } = await getSession()
+	const charPartName = 'manifest-owner-delete-agent'
+	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	assert(operator)
+	await ensureEntitySocialReady(username, operator)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const ownerSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
+	const ownerSender = pubKeyHash(publicKeyFromSeed(ownerSecret))
+	assertEquals(await isTimelineWriteAuthorized(row.entityHash, ownerSender, {
+		eventType: 'post_delete',
+		eventContent: { targetPostId: 'a'.repeat(64) },
+		username,
+	}), true)
+})
+
+Deno.test('stranger key cannot post_delete on agent timeline via owner branch', async () => {
+	const { username } = await getSession()
+	const charPartName = 'manifest-owner-delete-deny'
+	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	await ensureEntitySocialReady(username, operator)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const stranger = pubKeyHash(publicKeyFromSeed(randomSeed()))
+	assertEquals(await isTimelineWriteAuthorized(row.entityHash, stranger, {
+		eventType: 'post_delete',
+		username,
+	}), false)
+})

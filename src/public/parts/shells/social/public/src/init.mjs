@@ -143,6 +143,7 @@ export async function bootstrapSocialApp(appContext) {
 		appContext.state.viewerDisplayName = viewer.operator?.displayName
 			|| viewer.profile?.name
 			|| null
+		appContext.state.agents = Array.isArray(viewer.agents) ? viewer.agents : []
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && appContext.state.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(appContext.state.viewerEntityHash, {

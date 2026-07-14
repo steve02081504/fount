@@ -19,7 +19,8 @@ export function registerPostsRoutes(router) {
 		const { client } = await socialClientFromReq(req)
 		const postId = String(req.body?.postId || '')
 		if (!postId) throw httpError(400, 'postId required')
-		const post = await client.post(client.entityHash, postId)
+		const entityHash = String(req.body?.entityHash || client.entityHash).trim().toLowerCase()
+		const post = await client.post(entityHash, postId)
 		res.status(200).json({ event: await post.delete() })
 	})
 

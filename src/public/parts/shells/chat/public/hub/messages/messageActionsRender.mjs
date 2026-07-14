@@ -27,18 +27,35 @@ import {
 	hubActionUnpinIcon,
 } from '../../src/lib/emojiSvg.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'
 
 import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
 import { isChannelMessageGenerating } from './messageRender.mjs'
 
 /**
- * 是否为本节点发出的角色消息。
+ * 消息作者是否为本机 operator 拥有的 agent。
+ * @param {object} message 消息行
+ * @param {object} opts 查看者上下文（含 ownedAgentEntityHashes）
+ * @returns {boolean} 是否自有 agent 内容
+ */
+function isOwnedAgentMessage(message, opts) {
+	const owned = opts.ownedAgentEntityHashes
+	if (!owned?.size || !message?.charId) return false
+	const authorKey = message.charId || message.authorPubKeyHash
+	const authorEntity = resolveEntityHashForAuthorKey(authorKey)
+		|| resolveEntityHashForAuthorKey(message.authorPubKeyHash)
+	return !!(authorEntity && owned.has(authorEntity))
+}
+
+/**
+ * 是否为本节点发出的角色消息（含自有 agent，哪怕 isRemote）。
  * @param {object} message 消息行
  * @param {object} opts 查看者上下文
  * @returns {boolean} 是否己方角色
  */
 function isOwnCharMessage(message, opts) {
 	if (!message?.charId) return false
+	if (isOwnedAgentMessage(message, opts)) return true
 	if (message.isRemote) return false
 	const localCharIds = opts.localCharIds?.length
 		? opts.localCharIds
@@ -162,7 +179,7 @@ export async function renderMessageActionsHtml(message, opts) {
 	const eventId = String(message.eventId)
 	if (!eventId || message.type !== 'message') return { hoverHtml: '', inlineHtml: '' }
 
-	const ownChar = !message.isRemote && isOwnCharMessage(message, opts)
+	const ownChar = isOwnCharMessage(message, opts)
 	const generating = isChannelMessageGenerating(message)
 	if (generating) return { hoverHtml: '', inlineHtml: '' }
 

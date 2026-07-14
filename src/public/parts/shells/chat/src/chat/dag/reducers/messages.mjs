@@ -1,5 +1,6 @@
-import { isHex64, withGroupId } from './helpers.mjs'
 import { isVoteBallotClosed } from '../../lib/voteBallots.mjs'
+
+import { isHex64, withGroupId } from './helpers.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const messageReducers = {
@@ -17,15 +18,13 @@ export const messageReducers = {
 			state.channels[channelId].messageSeq = (Number(state.channels[channelId].messageSeq) || 0) + 1
 			state.channels[channelId].lastEventId = eventId
 		}
-		if (isHex64(eventId)) {
-			const charOwner = event.content?.charOwner
+		if (isHex64(eventId)) 
 			state.messageSenderIndex[eventId] = {
 				sender: event.sender,
-				charOwner: isHex64(charOwner) ? charOwner : null,
 				charId: event.charId || null,
 				channelId,
 			}
-		}
+		
 		if (event.content?.type === 'vote') {
 			state.voteBallots ??= {}
 			state.voteBallots[eventId] = {

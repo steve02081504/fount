@@ -25,6 +25,8 @@ const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity
 const {
 	ensureAgentEntityIdentity,
 	getEntitySecretKey,
+	getOperatorSecretKey,
+	resolveOperatorEntityHashForUser,
 } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
@@ -237,4 +239,42 @@ Deno.test('remote (non-local) agent timeline event cannot be authorized → reje
 		type: 'post', content: { text: 'remote agent post', visibility: 'public' },
 	})
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, event), false)
+})
+
+// owner 活跃钥签 post_delete 写入本机 agent 时间线 → 接受（联邦复核路径）。
+Deno.test('owner-signed post_delete on local agent timeline is accepted', async () => {
+	const { username } = await getSession()
+	const charPartName = 'social-owner-delete-agent'
+	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	await ensureEntitySocialReady(username, operator)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const post = await append.appendTimelineEvent(username, row.entityHash, {
+		type: 'post',
+		charPartName,
+		content: { text: 'agent post to delete', visibility: 'public' },
+	})
+	const ownerSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
+	const event = await makeRemoteSignedEvent(ownerSecret, row.entityHash, {
+		type: 'post_delete',
+		content: { targetPostId: post.id },
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, row.entityHash, event), true)
+})
+
+// 陌生钥签 post_delete → 拒绝。
+Deno.test('stranger-signed post_delete on local agent timeline is rejected', async () => {
+	const { username } = await getSession()
+	const charPartName = 'social-owner-delete-deny'
+	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	await ensureEntitySocialReady(username, operator)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const event = await makeRemoteSignedEvent(randomSeed(), row.entityHash, {
+		type: 'post_delete',
+		content: { targetPostId: 'a'.repeat(64) },
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, row.entityHash, event), false)
 })

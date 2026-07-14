@@ -231,6 +231,7 @@ export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
 	const validated = await validateRemoteTimelineEvent(post, authorEntityHash, {
 		canonicalize: canonicalizeSignedTimelineEvent,
 		priorEvents,
+		username: hostingUsername,
 	})
 	if (!validated.accepted) return { ok: false }
 

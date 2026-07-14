@@ -56,7 +56,7 @@ Deno.test('message_delete with absent target is deferrable', async () => {
 
 Deno.test('message_edit denial for non-owner present target is NOT deferrable', async () => {
 	const state = baseState({
-		messageSenderIndex: { [TARGET]: { sender: OTHER, charOwner: null, charId: null, channelId: 'default' } },
+		messageSenderIndex: { [TARGET]: { sender: OTHER, charId: null, channelId: 'default' } },
 	})
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
 	const result = await checkEventPermission(state, event, SENDER)
@@ -72,7 +72,7 @@ Deno.test('message_edit denial for non-owner present target is NOT deferrable', 
 
 Deno.test('message_edit by author with present target is allowed', async () => {
 	const state = baseState({
-		messageSenderIndex: { [TARGET]: { sender: SENDER, charOwner: null, charId: null, channelId: 'default' } },
+		messageSenderIndex: { [TARGET]: { sender: SENDER, charId: null, channelId: 'default' } },
 	})
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
 	assertEquals((await checkEventPermission(state, event, SENDER)).ok, true)

@@ -1,5 +1,6 @@
 /**
- * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；agent 仅 owner 或 ADMIN 可踢。
+ * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；agent 仅 owner 或 ADMIN 可踢；
+ * message_edit/delete 允许 agent owner 管理其发言。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -43,9 +44,67 @@ function baseState(overrides = {}) {
 		channels: { default: { type: 'text' } },
 		channelPermissions: {},
 		groupSettings: { defaultChannelId: 'default' },
+		messageSenderIndex: {},
+		messageOverlay: { deletedIds: new Set() },
 		...overrides,
 	}
 }
+
+const AGENT_MSG = 'e'.repeat(64)
+
+Deno.test('message_edit allowed when owner edits own agent message', async () => {
+	const state = baseState({
+		messageSenderIndex: {
+			[AGENT_MSG]: { sender: AGENT_KEY, charId: 'test_agent', channelId: 'default' },
+		},
+	})
+	const event = { type: 'message_edit', channelId: 'default', content: { targetId: AGENT_MSG } }
+	assertEquals((await checkEventPermission(state, event, OWNER)).ok, true)
+})
+
+Deno.test('message_delete allowed when owner deletes own agent message', async () => {
+	const state = baseState({
+		messageSenderIndex: {
+			[AGENT_MSG]: { sender: AGENT_KEY, charId: 'test_agent', channelId: 'default' },
+		},
+	})
+	const event = { type: 'message_delete', channelId: 'default', content: { targetId: AGENT_MSG } }
+	assertEquals((await checkEventPermission(state, event, OWNER)).ok, true)
+})
+
+Deno.test('message_edit denied when non-owner edits another agent message', async () => {
+	const state = baseState({
+		messageSenderIndex: {
+			[AGENT_MSG]: { sender: AGENT_KEY, charId: 'test_agent', channelId: 'default' },
+		},
+	})
+	const event = { type: 'message_edit', channelId: 'default', content: { targetId: AGENT_MSG } }
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'message_edit denied')
+})
+
+Deno.test('message_delete allowed with MANAGE_MESSAGES on agent message', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: {
+				permissions: {
+					KICK_MEMBERS: true,
+					BAN_MEMBERS: true,
+					MANAGE_MESSAGES: true,
+					SEND_MESSAGES: true,
+					VIEW_CHANNEL: true,
+				},
+			},
+		},
+		messageSenderIndex: {
+			[AGENT_MSG]: { sender: AGENT_KEY, charId: 'test_agent', channelId: 'default' },
+		},
+	})
+	const event = { type: 'message_delete', channelId: 'default', content: { targetId: AGENT_MSG } }
+	assertEquals((await checkEventPermission(state, event, MODERATOR)).ok, true)
+})
 
 Deno.test('member_kick denied without KICK_MEMBERS', async () => {
 	const state = baseState()

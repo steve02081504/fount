@@ -16,6 +16,7 @@ import {
 } from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
+import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
@@ -131,14 +132,37 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 }
 
 /**
- * 向时间线追加一条签名事件（实体自身活跃钥签名）。
+ * 解析写事件签名者：缺省为时间线 owner；owner 删 agent 帖时可指定 signerEntityHash。
+ * @param {string} username replica 登录名
+ * @param {string} entityHash 时间线 owner
+ * @param {object} event 未签名事件
+ * @param {string} [signerEntityHash] 签名实体（缺省 = 时间线 owner）
+ * @returns {Promise<string>} 规范化 signer entityHash
+ */
+async function resolveTimelineEventSigner(username, entityHash, event, signerEntityHash) {
+	const timelineOwner = String(entityHash || '').trim().toLowerCase()
+	const signer = String(signerEntityHash || timelineOwner).trim().toLowerCase()
+	if (signer === timelineOwner) return signer
+	if (event?.type !== 'post_delete')
+		throw new Error('foreign signer only allowed for post_delete')
+	const profile = await getEntityProfile(username, timelineOwner)
+	const owner = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+	if (!owner || owner !== signer)
+		throw new Error('signer is not owner of timeline entity')
+	return signer
+}
+
+/**
+ * 向时间线追加一条签名事件（缺省实体自身活跃钥；owner 删帖可改 signer）。
  * @param {string} username 用户
  * @param {string} entityHash 时间线 owner
  * @param {object} event 未签名事件（type/content/timestamp）
+ * @param {{ signerEntityHash?: string }} [options] 签名选项
  * @returns {Promise<object>} 签名事件
  */
-export async function appendTimelineEvent(username, entityHash, event) {
-	const { secretKey } = await resolveActiveTimelineSigner(username, entityHash)
+export async function appendTimelineEvent(username, entityHash, event, options = {}) {
+	const signer = await resolveTimelineEventSigner(username, entityHash, event, options.signerEntityHash)
+	const { secretKey } = await resolveActiveTimelineSigner(username, signer)
 	return appendSignedTimelineEvent(username, entityHash, event, secretKey)
 }
 
@@ -209,11 +233,13 @@ export async function readTimelineEvents(username, entityHash) {
  * @param {string} username 用户
  * @param {string} entityHash 时间线 owner
  * @param {object} event 未签名事件
- * @param {{ fanout?: boolean }} [options] 默认 fanout=true
+ * @param {{ fanout?: boolean, signerEntityHash?: string }} [options] 默认 fanout=true
  * @returns {Promise<object>} 签名事件
  */
 export async function commitTimelineEvent(username, entityHash, event, options = {}) {
-	const signed = await appendTimelineEvent(username, entityHash, event)
+	const signed = await appendTimelineEvent(username, entityHash, event, {
+		signerEntityHash: options.signerEntityHash,
+	})
 	if (options.fanout !== false)
 		await publishTimelineEvent(username, entityHash, signed)
 	if (signed.type === 'post') {

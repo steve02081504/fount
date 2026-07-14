@@ -2,6 +2,7 @@
  * 实体平权：agent 经 SocialClient 的 feed / notifications 与 operator HTTP 读模型隔离；follower 索引 / OnMessage。
  */
 /* global Deno */
+import { Buffer } from 'node:buffer'
 import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -92,6 +93,27 @@ Deno.test('agent follow projects entity-granular follower index', async () => {
 	assert(followers.some(row =>
 		row.replicaUsername === username && row.entityHash === agentHash),
 	'follower index records agent entity not just replica username')
+})
+
+Deno.test('operator SocialClient may delete owned agent post', async () => {
+	const { username } = await getSession()
+	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const agentClient = await getSocialClient(username, agentHash)
+	const post = await agentClient.post({ text: 'agent post owner may delete', visibility: 'public' })
+	const operatorClient = await getSocialClient(username)
+	const deleted = await (await operatorClient.post(agentHash, post.postId)).delete()
+	assertEquals(deleted.type, 'post_delete')
+	assertEquals(deleted.content.targetPostId, post.postId)
+	const view = await append.readTimelineEvents(username, agentHash)
+	assert(view.some(row => row.type === 'post_delete' && row.content?.targetPostId === post.postId))
+	const { getOperatorSecretKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+	const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+	const ownerSender = pubKeyHash(publicKeyFromSeed(
+		new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex')),
+	))
+	const deleteRow = view.find(row => row.type === 'post_delete' && row.content?.targetPostId === post.postId)
+	assertEquals(deleteRow.sender, ownerSender)
 })
 
 Deno.test('followed author post triggers agent OnMessage via timeline dispatch', async () => {

@@ -119,10 +119,9 @@ export async function appendDagGeneratingPlaceholder(groupId, entry, username) {
  * @param {string} groupId 群 ID
  * @param {object} entry 聊天条目
  * @param {string} text 终稿正文
- * @param {string} sender 事件发件人 pubKeyHash
  * @returns {Promise<object>} newContent 载荷
  */
-async function buildFinalMessageContent(username, groupId, entry, text, sender) {
+async function buildFinalMessageContent(username, groupId, entry, text) {
 	const { state } = await getState(username, groupId)
 	const maxBytes = Number(state.groupSettings?.maxDagPayloadBytes) || 262_144
 	const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
@@ -131,8 +130,6 @@ async function buildFinalMessageContent(username, groupId, entry, text, sender) 
 		role: entry.role,
 		is_generating: false,
 	}
-	if (entry.role === 'char')
-		content.charOwner = sender
 	const agent = String(text ?? entryContentToMirrorText(entry))
 	const show = entry.content_for_show ?? agent
 	const edit = entry.content_for_edit ?? agent
@@ -212,7 +209,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 			return
 		}
 		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
-		let newContent = await buildFinalMessageContent(username, groupId, entry, text, sender)
+		let newContent = await buildFinalMessageContent(username, groupId, entry, text)
 		const { runWorldAddChatLogEntryHook } = await import('../channel/messageCommit.mjs')
 		const hooked = await runWorldAddChatLogEntryHook(
 			username,
@@ -269,7 +266,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
-		const content = await buildFinalMessageContent(username, groupId, entry, text, sender)
+		const content = await buildFinalMessageContent(username, groupId, entry, text)
 		const isGreeting = !!entry.extension?.isGreeting
 			|| !!entry.extension?.greetingType
 			|| !!entry.extension.timeSlice?.greeting_type
@@ -332,7 +329,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 		const targetId = entry.extension?.dagEventId
 		if (!targetId) return
 		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
-		let newContent = await buildFinalMessageContent(username, groupId, entry, entryContentToMirrorText(entry), sender)
+		let newContent = await buildFinalMessageContent(username, groupId, entry, entryContentToMirrorText(entry))
 		const { buildCanonicalMessageContent } = await import('../channel/messageCommit.mjs')
 		newContent = await buildCanonicalMessageContent(
 			username,

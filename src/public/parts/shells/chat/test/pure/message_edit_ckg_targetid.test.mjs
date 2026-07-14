@@ -59,7 +59,7 @@ function baseState(overrides = {}) {
 		channels: {},
 		channelPermissions: {},
 		groupSettings: {},
-		messageSenderIndex: { [TARGET]: { sender: AUTHOR, charOwner: null, charId: null, channelId: CHANNEL } },
+		messageSenderIndex: { [TARGET]: { sender: AUTHOR, charId: null, channelId: CHANNEL } },
 		messageOverlay: { deletedIds: new Set() },
 		...overrides,
 	}

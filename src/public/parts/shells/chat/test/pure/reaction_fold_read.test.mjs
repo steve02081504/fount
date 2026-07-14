@@ -22,7 +22,7 @@ const CHANNEL = 'channel_x'
 function freshState() {
 	return {
 		groupId: 'g',
-		messageSenderIndex: { [messageEventId]: { sender: VOTER_A, charOwner: null, charId: null, channelId: CHANNEL } },
+		messageSenderIndex: { [messageEventId]: { sender: VOTER_A, charId: null, channelId: CHANNEL } },
 		messageOverlay: { reactions: new Map() },
 	}
 }

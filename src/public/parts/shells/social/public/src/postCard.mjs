@@ -6,11 +6,13 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from './lib/display.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
+import { renderMediaHtml } from './mediaRender.mjs'
 
 /**
  * 创建 feed 帖子卡片构建函数（闭包注入依赖）。
  * @param {object} options 依赖
  * @param {() => string | null} options.getViewerEntityHash 当前观看者
+ * @param {() => Set<string>} [options.getOwnedAgentEntityHashes] 本机拥有的 agent entityHash 集合
  * @param {(key: string, params?: object) => string} options.geti18n i18n 函数
  * @param {Function} options.authorLabel 作者展示名
  * @param {Function} options.renderAvatarHtml 头像 HTML
@@ -21,6 +23,7 @@ import { renderPollHtml } from './lib/pollUi.mjs'
  */
 export function createPostCardBuilder({
 	getViewerEntityHash,
+	getOwnedAgentEntityHashes = () => new Set(),
 	geti18n,
 	authorLabel,
 	renderAvatarHtml,
@@ -57,6 +60,11 @@ export function createPostCardBuilder({
 		
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
+		const ownedAgents = getOwnedAgentEntityHashes()
+		const isOwnedAgentPost = !isRepost && !isOwn
+			&& !!item.entityHash
+			&& ownedAgents.has(String(item.entityHash).toLowerCase())
+		const canDelete = isOwn || isOwnedAgentPost
 		const label = authorLabel(item.entityHash, item.authorProfile)
 		const visibilityCode = item.post?.content?.visibility === 'followers' ? 'followers' : 'public'
 		const visibilityIcon = visibilityCode === 'followers'
@@ -99,20 +107,21 @@ export function createPostCardBuilder({
 		const pollHtml = item.poll && !decryptFailed
 			? renderPollHtml(item.poll, actionKey, geti18n)
 			: ''
-		const blockButton = isOwn
+		const treatAsOwn = isOwn || isOwnedAgentPost
+		const blockButton = treatAsOwn
 			? ''
 			: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
-		const hideButton = isOwn
+		const hideButton = treatAsOwn
 			? ''
 			: `<button type="button" data-hide="${item.entityHash}"><span class="s-ic s-ic-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
-		const muteButton = isOwn
+		const muteButton = treatAsOwn
 			? ''
 			: `<button type="button" data-mute="${item.entityHash}"><span class="s-ic s-ic-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
-		const reportButton = isOwn
+		const reportButton = treatAsOwn
 			? ''
 			: `<button type="button" data-report="${actionKey}"><span class="s-ic s-ic-report" aria-hidden="true"></span><span data-i18n="social.actions.report"></span></button>`
-		const deleteButton = isOwn
-			? `<button type="button" class="danger-item" data-delete="${item.postId}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
+		const deleteButton = canDelete
+			? `<button type="button" class="danger-item" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
 		const editButton = isOwn
 			? `<button type="button" data-edit="${actionKey}"><span class="s-ic s-ic-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`

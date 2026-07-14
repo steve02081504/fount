@@ -1,4 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
+import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { assertPollVoteAllowed } from '../lib/poll.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
@@ -84,13 +85,26 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 			})
 		},
 		/**
+		 * 删除帖子：作者自签，或作者 agent 的 owner 以自身钥签到作者时间线。
 		 * @returns {Promise<object>} post_delete 事件
 		 */
 		async delete() {
-			return commitTimelineEvent(ctx.username, ctx.entityHash, {
+			const view = await getTimelineMaterialized(ctx.username, owner)
+			if (!view.postById[id]) throw httpError(404, 'post not found')
+			if (ctx.entityHash === owner) 
+				return commitTimelineEvent(ctx.username, owner, {
+					type: 'post_delete',
+					content: { targetPostId: id },
+				})
+			
+			const profile = await getEntityProfile(ctx.username, owner)
+			const ownerEntity = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+			if (!ownerEntity || ownerEntity !== ctx.entityHash)
+				throw httpError(403, 'can only delete own posts or owned agent posts')
+			return commitTimelineEvent(ctx.username, owner, {
 				type: 'post_delete',
 				content: { targetPostId: id },
-			})
+			}, { signerEntityHash: ctx.entityHash })
 		},
 		/**
 		 * @param {number[]} optionIds 投票选项下标

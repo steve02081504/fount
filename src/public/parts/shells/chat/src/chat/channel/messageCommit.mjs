@@ -126,7 +126,6 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
 		if (entry?.id) canonical.chatLogEntryId = entry.id
 		canonical.sessionSnapshot = await exportSessionSnapshot(username, groupId, channelId)
 		if (entry?.role) canonical.role = entry.role
-		if (entry?.role === 'char') canonical.charOwner = sender
 		if (canonical.is_generating == null && entry?.is_generating)
 			canonical.is_generating = true
 	}

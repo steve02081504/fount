@@ -1,7 +1,7 @@
 import { formatSocialProfileRunUri } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
-import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
+import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
@@ -87,10 +87,13 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const next = card?.nextSibling
 		card?.remove()
 		closePostMoreMenus()
+		const postId = deleteButton.dataset.delete
+		const entityHash = deleteButton.dataset.deleteEntity
+			|| appContext.state.viewerEntityHash
 		try {
 			await runSocialWrite('delete', () => appContext.socialApi('/posts', {
 				method: 'DELETE',
-				body: JSON.stringify({ postId: deleteButton.dataset.delete }),
+				body: JSON.stringify({ postId, entityHash }),
 			}))
 		}
 		catch {

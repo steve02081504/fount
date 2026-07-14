@@ -1,6 +1,6 @@
 # Chat / Social 开发规划
 
-更新：`2026-07-14`（清档：已落地里程碑从本档删除，以代码与壳测试为准）
+更新：`2026-07-15`（清档：已落地里程碑从本档删除，以代码与壳测试为准）
 
 > 本文档是**实施级规划**：只写尚未排期或正在推进的工作。做没做、做到哪，以仓库代码与各 shell 测试为准。
 >
@@ -99,12 +99,6 @@ webapi 身份从此恒为 operator 实体本人；agent 身份恒为自身实体
 
 顺道修正：`WorldChatHost.postSystemMessage`（`chat/session/worldHost.mjs`）现在借 `postChannelMessage` 伪装 `origin: 'human'`，误触 persona 的 `BeforeUserSend` 钩子——改为 system origin 直接提交消息事件。
 
-### 1.3 所有者内容管理权
-
-- **chat**：`message_edit` / `message_delete` 的授权规则（`authorizeEvent.mjs`）在「作者本人」与既有权限位之外，增加「操作者实体是作者实体的 owner」分支——校验作者成员行实体声明中的 `ownerEntityHash` 等于操作者 entityHash。事件由 owner 实体自签，审计归因即 owner。
-- **social**：owner 对其 agent 的帖子持删除权（timeline 删除事件授权同构放行；联邦侧远端节点凭 entity profile 的 `ownerEntityHash` 复核）。
-- **前端**：Hub 与 social 界面对「自己拥有的 agent」的内容显示编辑 / 删除按钮。除此之外不出现任何以 agent 身份操作、或查看 agent 私有内容的界面。
-
 ### 1.4 私有状态 per-entity
 
 私有状态 = 只有实体本人可见可写的读模型与偏好。存储对齐 chat inbox 既有范式（`{userDict}/shells/{shell}/…/{entityHash}/…` 子目录），旧根级单文件直接废弃、不迁移：
@@ -139,12 +133,11 @@ webapi 身份从此恒为 operator 实体本人；agent 身份恒为自身实体
 
 ### 1.6 批次与验收
 
-地基批 E1（实体身份泛化 + chat 单成员模型 + 拆代签 + social 自签）已落地并从本档清出。后续批次按序推进；里程碑代号仅存在于本文，不入源码与测试命名。
+地基批 E1（实体身份泛化 + chat 单成员模型 + 拆代签 + social 自签）与 E4（owner 内容管理权）已落地并从本档清出。后续批次按序推进；里程碑代号仅存在于本文，不入源码与测试命名。
 
 | 批 | 内容 | 验收 |
 | --- | --- | --- |
 | E3 | 实体操作类补全（ChatClient 缺口 + SocialClient 抽取）+ webapi 薄封装化 + 拆 actorSwitcher | agent 经工具调用完成上表全部操作；社交路由无 `actingEntityHash` 参数；前端无 actor 切换组件 |
-| E4 | owner 内容管理权 | owner 编辑 / 删除其 agent 的 chat 发言与 social 帖子（本机 + 联邦复核）测试全绿 |
 | E5 | 私有状态 per-entity + 半 acting 项闭合 | agent 收藏夹 CRUD 与搜索和人类同构；人类无任何入口读 agent 私有状态 |
 | E6 | 文档：`llms.txt`、chat / social `AGENTS.md`、平权审阅全文改写为统一实体模型 | 本章从本档删除（规划纪律 1） |
 

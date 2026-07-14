@@ -92,7 +92,7 @@ Query：返回 `{ entries: [{ scope, value, kind: 'block'|'hide'|'mute' }] }`（
 Body：`text`、`visibility`（`public`|`followers`）、`lang`、`mediaRefs[]`、`replyTo`、`quoteRef`、`groupRef`、`contentWarning?`、`poll?`（`{ options[], multi?, deadline? }`）、`entityHash?`、`charPartName?`。
 
 ### `DELETE /api/parts/shells:social/posts`
-Body：`postId`。
+Body：`postId`、`entityHash?`（缺省 = operator；可删自有帖或 `ownerEntityHash` 为自己的 agent 帖）。
 
 ### `POST /api/parts/shells:social/posts/:entityHash/:postId/edit`
 Body：`text?`、`mediaRefs?`、`lang?`、`contentWarning?` — 追加 `post_edit`；物化 `revisions[]`。

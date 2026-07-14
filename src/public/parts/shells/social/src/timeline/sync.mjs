@@ -33,6 +33,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	const validated = await validateRemoteTimelineEvent(event, entityHash, {
 		canonicalize: canonicalizeSignedTimelineEvent,
 		priorEvents: existing,
+		username,
 	})
 	if (!validated.accepted) return false
 	if (existing.some(row => row.id === validated.row.id)) return true

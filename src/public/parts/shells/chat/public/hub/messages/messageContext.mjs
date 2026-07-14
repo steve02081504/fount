@@ -26,12 +26,18 @@ export function messageRenderOpts() {
 	const pinnedEventIds = hubStore.context.currentChannelId && hubStore.context.currentState?.pinsByChannel?.[hubStore.context.currentChannelId]
 		? [...hubStore.context.currentState.pinsByChannel[hubStore.context.currentChannelId]]
 		: []
+	const ownedAgentEntityHashes = new Set(
+		(hubStore.viewer.agents || [])
+			.map(row => String(row?.entityHash || '').trim().toLowerCase())
+			.filter(Boolean),
+	)
 	return {
 		reactions: hubStore.messages.channelReactions,
 		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
 		canAddReactions: hubStore.messages.reactionRenderOpts.canAddReactions,
 		viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
 		localCharIds: activeCharPartNames(),
+		ownedAgentEntityHashes,
 		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
 		canPinMessages: hubStore.messages.reactionRenderOpts.canPinMessages,
 		pinnedEventIds,
