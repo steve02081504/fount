@@ -39,6 +39,9 @@ Query：`q`（至少 2 字符）、`limit`（默认 30，最大 100）、`cursor
 
 在观看者已知时间线（关注 + 自身）中搜索可见帖子：`#tag` 仅匹配正文中的话题标签；否则按正文子串或作者 `entityHash` 前缀。响应：`{ query, items[], nextCursor? }`（条目与 feed 同构，仅 `kind: post`）。
 
+### `GET /api/parts/shells:social/entities/search`
+Query：`q`（≥2）、`limit`（默认 20）。经 chat `part_query`（`kind=entity_search`）多跳搜实体；响应同 chat `GET …/entities/search`。前端搜索页同时展示用户与帖子两段。
+
 ### `GET /api/parts/shells:social/explore`
 Query：`limit`。账户发现（本地 + 邻居 RPC 合并）。
 

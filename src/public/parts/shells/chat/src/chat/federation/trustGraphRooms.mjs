@@ -1,9 +1,9 @@
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { registerScopeAuthorizer } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
-import { resolveFederationPoolLimits, selectPeerIdsFromPool } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { registerFederationRoomProvider, unregisterFederationRoomProvider } from 'npm:@steve02081504/fount-p2p/registries/room_provider'
+import { registerScopeAuthorizer } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
+import { resolveFederationPoolLimits, selectPeerIdsFromPool } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 
 import { loadFederationGroupSettings, loadFederationMaterializedState } from './dagDependencies.mjs'
 import { LOGIC_SYNC_PARTITION } from './partitions.mjs'

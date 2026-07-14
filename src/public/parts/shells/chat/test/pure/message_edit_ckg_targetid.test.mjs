@@ -4,8 +4,8 @@
  * 而用户正文（newContent）保持加密。整个事件由作者 Ed25519 签名保护，明文 targetId 不削弱机密性。
  */
 /* global Deno */
-import { decryptWithChannelKey, encryptWithChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { assertEquals, assert } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { decryptWithChannelKey, encryptWithChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 
 import {
 	assertFederatedCkgContent,

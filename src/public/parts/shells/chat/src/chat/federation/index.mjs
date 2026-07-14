@@ -5,14 +5,15 @@
  * 【数据结构】signPayload 为已验签 DAG 行；catchUp 返回 tipsCollected、wantIds、eventsFilled 等统计；listFederationPeers 返回 selfNodeHash、peers 名册。
  * 【关联】room.mjs、acl.mjs、pendingRelay.mjs、gossip.mjs、archiveHandshake.mjs、peerPool.mjs、dagDependencies.mjs、registry.mjs；DAG 读写在 scripts/p2p 与 dag/ 层。
  */
-import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonlStream } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { pickFederationTargetPeerIds, reconcilePeerPoolFromRoster } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { getStalePeerPruneCount } from 'npm:@steve02081504/fount-p2p/transport/stale_peer_log'
-import { isWantIdsInBackoff, wantIdsGroupKey } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
+
+import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { syncMissingArchiveMonths } from '../archive/syncMonths.mjs'
 import { eventChannelId } from '../dag/authorizeEvent.mjs'

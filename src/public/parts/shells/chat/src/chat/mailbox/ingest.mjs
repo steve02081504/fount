@@ -5,6 +5,7 @@ import {
 	takeMailboxForRecipient,
 } from 'npm:@steve02081504/fount-p2p/mailbox/store'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { appendValidatedRemoteEvent, isRemoteIngestAccepted } from '../dag/remoteIngest.mjs'
 

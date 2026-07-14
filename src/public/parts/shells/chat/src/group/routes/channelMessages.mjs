@@ -6,9 +6,10 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import {
 	applyChannelMessageDeleteHooks,
@@ -24,12 +25,12 @@ import {
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
 import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
-import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { searchGroupMessages } from '../../chat/search/index.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
 import {

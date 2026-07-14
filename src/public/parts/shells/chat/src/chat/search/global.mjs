@@ -1,9 +1,9 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
-import { queryIndex } from '../../../../../../../scripts/search/invertedIndex.mjs'
 
+import { queryIndex } from '../../../../../../../scripts/search/invertedIndex.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { groupSearchIndexPath } from '../lib/paths.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
-import { getState } from '../dag/materialize.mjs'
 
 import { ensureArchiveIndexed } from './index.mjs'
 
@@ -18,7 +18,7 @@ export function globalSearchCursorKey(hit) {
 /**
  * @param {string} username replica
  * @param {object} [options] 搜索选项
- * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>}
+ * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>} 跨群搜索结果
  */
 export async function searchAllGroups(username, options = {}) {
 	const query = String(options.q || '').trim()
@@ -43,6 +43,10 @@ export async function searchAllGroups(username, options = {}) {
 			shardKeys: channelIds,
 			query,
 			limit: limit * 2,
+			/**
+			 * @param {object} doc 索引文档
+			 * @returns {boolean} 是否通过个人过滤
+			 */
 			verify: doc => {
 				if (!String(doc.text || '').toLowerCase().includes(query.toLowerCase())) return false
 				if (!personalFilter) return true

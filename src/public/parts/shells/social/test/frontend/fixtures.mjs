@@ -8,7 +8,6 @@ import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	FOREIGN_FE_AUTHOR_HASH,
-	FOREIGN_FE_POST_MARKER,
 	SEEDED_TEST_TARGET_HASH,
 } from './seedConstants.mjs'
 

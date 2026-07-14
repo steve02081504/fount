@@ -19,14 +19,29 @@ const createdGroups = []
 const pngBytes = TEST_PNG_BYTES
 const pngDataUrl = testPngDataUrl()
 
+/**
+ * @param {string} method HTTP 方法
+ * @param {string} path 路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('fount/scripts/test/live/http.mjs').LiveHttpResponse>} Chat API 响应
+ */
 async function api(method, path, body) {
 	return chatApi(method, path, body, 120)
 }
 
+/**
+ * @param {number} status HTTP 状态码
+ * @param {number[]} [allowed] 允许的状态码
+ * @returns {boolean} 是否在允许范围内
+ */
 function okStatus(status, allowed = [200, 201]) {
 	return allowed.includes(status)
 }
 
+/**
+ * @param {string} groupId 群 ID
+ * @returns {Promise<string | null>} 可用测试角色名
+ */
 async function ensureTestChar(groupId) {
 	for (const cc of ['test_streamer', 'test_char', 'TestChar']) {
 		const r = await api('POST', `/groups/${groupId}/char`, { charname: cc, deferGreeting: true })
@@ -35,18 +50,35 @@ async function ensureTestChar(groupId) {
 	return null
 }
 
+/**
+ * @param {string} groupId 群 ID
+ * @returns {Promise<string>} 测试角色名
+ */
 async function requireTestChar(groupId) {
 	const char = await ensureTestChar(groupId)
 	if (!char) throw new Error('test_streamer char must be available (live fixture copy failed)')
 	return char
 }
 
+/**
+ *
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @returns {Promise<boolean>} 触发是否成功
+ */
 async function triggerCharReply(groupId, channelId, charname) {
 	if (!charname) return false
 	const r = await api('POST', `/groups/${groupId}/channels/${channelId}/trigger-reply`, { charname })
 	return okStatus(r.status)
 }
 
+/**
+ *
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {Promise<string | null>} 最新角色消息 eventId
+ */
 async function getLatestCharMessageId(groupId, channelId) {
 	const r = await api('GET', `/groups/${groupId}/channels/${channelId}/messages`)
 	if (r.status !== 200) return null
@@ -55,6 +87,14 @@ async function getLatestCharMessageId(groupId, channelId) {
 	return rows[rows.length - 1].eventId
 }
 
+/**
+ *
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} charname 角色名
+ * @param {number} [timeoutSec] 超时秒数
+ * @returns {Promise<string | null>} 角色回复 eventId；超时为 null
+ */
 async function waitForCharMessageId(groupId, channelId, charname, timeoutSec = 90) {
 	await triggerCharReply(groupId, channelId, charname)
 	let found = null

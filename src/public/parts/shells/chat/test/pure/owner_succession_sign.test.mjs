@@ -6,9 +6,9 @@
 import { Buffer } from 'node:buffer'
 
 
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { ownerSuccessionBallotSignBytes } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 Deno.test('owner succession ballot sign bytes verify roundtrip', async () => {
 	const seed = new Uint8Array(32).fill(9)

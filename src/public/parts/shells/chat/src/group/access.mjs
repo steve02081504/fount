@@ -59,6 +59,7 @@ export function resolveActiveAgentMemberKeyByCharname(state, charname) {
  * @param {string} replicaUsername fount 登录名（仅用于 replica 磁盘路径）
  * @param {string} groupId 群 ID
  * @param {object} state 物化群状态
+ * @param {string} entityHash 实体 hash
  * @returns {Promise<string | null>} 成员键
  */
 export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state, entityHash) {

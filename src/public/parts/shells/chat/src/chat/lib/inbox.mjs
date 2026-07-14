@@ -9,8 +9,8 @@ import { readJsonl, appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/s
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../../../scripts/json_loader.mjs'
 import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
-
 import { memberEntityHash } from '../../entity/member.mjs'
+
 import { shellChatRoot } from './paths.mjs'
 import { getLocalNodeHash, resolveOperatorEntityHash } from './replica.mjs'
 
@@ -63,7 +63,7 @@ export function getChatInboxSeenAt(username, recipientEntityHash) {
  * @param {string} username 用户
  * @param {string} recipientEntityHash 收件人 entityHash
  * @param {number} at 已读水位
- * @returns {void}
+ * @returns {void} 无
  */
 export function setChatInboxSeenAt(username, recipientEntityHash, at) {
 	const dir = chatInboxDir(username, recipientEntityHash)
@@ -114,19 +114,19 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
  * 从消息行解析作者（桥接消息优先 extension.bridge 归因）。
  * @param {object} state 物化群状态
  * @param {object} messageLine 频道消息行
- * @returns {{ authorEntityHash: string | null, authorDisplayName: string }}
+ * @returns {{ authorEntityHash: string | null, authorDisplayName: string }} 作者展示信息
  */
 export function resolveAuthorFromMessageLine(state, messageLine) {
 	// message_edit 的桥接归因藏在 newContent 里（content 顶层只有 targetId/newContent）。
 	const content = messageLine?.content
 	const bridge = (messageLine?.type === 'message_edit' ? content?.newContent : content)?.extension?.bridge
 		|| content?.extension?.bridge
-	if (bridge?.authorEntityHash) {
+	if (bridge?.authorEntityHash) 
 		return {
 			authorEntityHash: String(bridge.authorEntityHash).trim().toLowerCase(),
 			authorDisplayName: String(bridge.authorDisplayName || '').trim() || 'unknown',
 		}
-	}
+	
 	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
 	return resolveAuthorFromSender(state, senderKey)
 }
@@ -202,7 +202,7 @@ export function deriveChatInboxMentionRow(recipientEntityHash, groupId, channelI
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {object} state 物化群状态
- * @returns {object | null}
+ * @returns {object | null} inbox 行；无正文时为 null
  */
 export function deriveChatInboxMessageRow(recipientEntityHash, groupId, channelId, messageLine, state) {
 	return deriveChatInboxRowFromMessage(recipientEntityHash, 'message', groupId, channelId, messageLine, state)
@@ -214,7 +214,7 @@ export function deriveChatInboxMessageRow(recipientEntityHash, groupId, channelI
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {object} state 物化群状态
- * @returns {object | null}
+ * @returns {object | null} inbox 行；无正文时为 null
  */
 export function deriveChatInboxCareRow(recipientEntityHash, groupId, channelId, messageLine, state) {
 	return deriveChatInboxRowFromMessage(recipientEntityHash, 'care', groupId, channelId, messageLine, state)
@@ -245,7 +245,7 @@ export function deriveChatInboxVoteClosedRow(recipientEntityHash, groupId, chann
  * @param {string} username 用户
  * @param {string} recipientEntityHash 收件人 entityHash
  * @param {object} row inbox 行
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function appendChatInbox(username, recipientEntityHash, row) {
 	const dir = chatInboxDir(username, recipientEntityHash)

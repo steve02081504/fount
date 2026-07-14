@@ -319,8 +319,9 @@ function toString(value) {
 
 /**
  *
- * @param key
- * @param params
+ * @param {string} key 键
+ * @param {Record<string, unknown>} [params] 插值参数
+ * @returns {void} 无
  */
 console.infoI18n = (key, params = {}) => {
 	try {
@@ -333,8 +334,9 @@ console.infoI18n = (key, params = {}) => {
 
 /**
  *
- * @param key
- * @param params
+ * @param {string} key 键
+ * @param {Record<string, unknown>} [params] 插值参数
+ * @returns {void} 无
  */
 console.logI18n = (key, params = {}) => {
 	try {
@@ -347,8 +349,9 @@ console.logI18n = (key, params = {}) => {
 
 /**
  *
- * @param key
- * @param params
+ * @param {string} key 键
+ * @param {Record<string, unknown>} [params] 插值参数
+ * @returns {void} 无
  */
 console.warnI18n = (key, params = {}) => {
 	try {
@@ -361,8 +364,9 @@ console.warnI18n = (key, params = {}) => {
 
 /**
  *
- * @param key
- * @param params
+ * @param {string} key 键
+ * @param {Record<string, unknown>} [params] 插值参数
+ * @returns {void} 无
  */
 console.errorI18n = (key, params = {}) => {
 	try {
@@ -375,9 +379,10 @@ console.errorI18n = (key, params = {}) => {
 
 /**
  *
- * @param id
- * @param key
- * @param params
+ * @param {string} id 标识
+ * @param {string} key 键
+ * @param {Record<string, unknown>} [params] 插值参数
+ * @returns {void} 无
  */
 console.freshLineI18n = (id, key, params = {}) => {
 	try {
@@ -392,7 +397,7 @@ console.freshLineI18n = (id, key, params = {}) => {
  * 使用 i18n 显示警报。
  * @param {LocaleKey} key - 翻译键。
  * @param {object} [params] - 可选的参数，用于插值。
- * @returns {void}
+ * @returns {void} 无
  */
 export function alertI18n(key, params = {}) {
 	return alert(toString(geti18n(key, params)))

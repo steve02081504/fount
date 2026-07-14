@@ -21,6 +21,10 @@ export function formatHashShort(hash, opts = {}) {
 		ellipsis = true,
 	} = opts
 
+	/**
+	 * @param {string} label 标签
+	 * @returns {string} 带可选 @ 前缀的标签
+	 */
 	const prefix = label => withAt ? `@${label}` : label
 
 	if (useSubject) {

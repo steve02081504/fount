@@ -2,9 +2,9 @@ import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/s
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
-import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
+import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
 import { loadFollowing, loadFollowingForActor } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'

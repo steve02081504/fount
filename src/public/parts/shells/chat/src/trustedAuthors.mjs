@@ -2,6 +2,7 @@
  * 用户级 trustedAuthors（settings/trustedAuthors.json），chat / social 共用。
  */
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 
 const DATANAME = 'trustedAuthors'

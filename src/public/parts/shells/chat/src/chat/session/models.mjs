@@ -15,6 +15,7 @@ import crypto from 'node:crypto'
 
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { formatEvfsRef, parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
+
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 
 /**

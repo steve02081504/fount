@@ -244,33 +244,98 @@ export async function runFeedSearch(appContext) {
 	appContext.state.activeFeedSearchQuery = q
 	appContext.state.feedSearchCursor = null
 	disconnectInfiniteScroll()
-	const data = await appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=30`)
+	const [data, entityData] = await Promise.all([
+		appContext.socialApi(`/search?q=${encodeURIComponent(q)}&limit=30`),
+		appContext.socialApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
+	])
 	if (appContext.state.activeFeedSearchQuery !== q) return
 	const list = document.getElementById('feedList')
 	if (!list) return
 	const items = data.items || []
-	const [hintElement, ...cardEls] = await Promise.all([
-		renderTemplate('feed_search_hint', {}),
-		...items.map(item => appContext.buildPostCard(item).catch(() => null)),
-	])
-	if (appContext.state.activeFeedSearchQuery !== q) return
+	const entities = entityData.entities || []
+	const hintElement = await renderTemplate('feed_search_hint', {})
+	const frag = document.createDocumentFragment()
+	frag.appendChild(hintElement)
+
+	const usersSection = document.createElement('section')
+	usersSection.className = 'feed-search-users mb-4'
+	const usersTitle = document.createElement('h3')
+	usersTitle.className = 'text-sm font-semibold opacity-70 mb-2'
+	usersTitle.dataset.i18n = 'social.search.usersTitle'
+	usersTitle.textContent = appContext.geti18n('social.search.usersTitle')
+	usersSection.appendChild(usersTitle)
+	if (!entities.length) {
+		const empty = document.createElement('p')
+		empty.className = 'text-sm opacity-50'
+		empty.textContent = appContext.geti18n('social.search.usersEmpty')
+		usersSection.appendChild(empty)
+	}
+	else 
+		for (const entity of entities)
+			usersSection.appendChild(buildEntitySearchCard(appContext, entity))
+	
+	frag.appendChild(usersSection)
+
+	const postsTitle = document.createElement('h3')
+	postsTitle.className = 'text-sm font-semibold opacity-70 mb-2'
+	postsTitle.dataset.i18n = 'social.search.postsTitle'
+	postsTitle.textContent = appContext.geti18n('social.search.postsTitle')
+	frag.appendChild(postsTitle)
+
 	if (!items.length) {
 		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' })
-		list.replaceChildren(hintElement, emptyElement)
-	} else {
+		frag.appendChild(emptyElement)
+		list.replaceChildren(frag)
+	}
+	else {
 		const container = document.createElement('div')
 		container.id = 'feedSearchResults'
+		const cardEls = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
 		for (const card of cardEls) if (card) container.appendChild(card)
-		list.replaceChildren(hintElement, container)
+		frag.appendChild(container)
+		list.replaceChildren(frag)
 		appContext.state.feedSearchCursor = data.nextCursor || null
 		const sentinel = ensureScrollSentinel(list, 'feedSearchScrollSentinel')
 		bindInfiniteScroll({
 			sentinel,
+			/**
+			 * @returns {boolean} 是否还有下一页
+			 */
 			hasMore: () => !!appContext.state.feedSearchCursor,
+			/**
+			 * @returns {Promise<void>} 追加下一页
+			 */
 			onLoad: () => appendFeedSearch(appContext),
 		})
 	}
 	updateFeedSearchChrome(appContext)
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {object} entity 搜索命中实体
+ * @returns {HTMLElement} 卡片
+ */
+function buildEntitySearchCard(appContext, entity) {
+	const row = document.createElement('div')
+	row.className = 'suggested-account feed-search-entity'
+	const handle = entity.handle ? `@${entity.handle}` : entityHandle(entity.entityHash)
+	const label = entity.alias || entity.name || handle
+	const followLabel = entity.following
+		? appContext.geti18n('social.actions.following')
+		: appContext.geti18n('social.actions.follow')
+	row.innerHTML = `
+		<div class="suggested-account-info">
+			<a href="${escapeHtml(formatSocialProfileHref(entity.entityHash))}" class="suggested-account-name">${escapeHtml(label)}</a>
+			<span class="suggested-account-handle">${escapeHtml(handle)}</span>
+			<span class="text-xs opacity-50">${escapeHtml(appContext.geti18n('social.search.trustScore', { score: Number(entity.nodeScore || 0).toFixed(2) }))}</span>
+		</div>
+		<div class="flex gap-1 flex-wrap justify-end">
+			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(entity.entityHash)}" data-is-following="${entity.following ? 'true' : 'false'}">${escapeHtml(followLabel)}</button>
+			<button type="button" class="btn btn-ghost btn-xs" data-set-alias="${escapeHtml(entity.entityHash)}">${escapeHtml(appContext.geti18n('social.search.pinAlias'))}</button>
+		</div>
+	`
+	return row
 }
 
 /**

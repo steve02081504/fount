@@ -3,10 +3,11 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { clampNumber } from '../../../../../../../scripts/clamp.mjs'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
 import { resolveTargetMemberKey } from '../dag/reducers/members.mjs'

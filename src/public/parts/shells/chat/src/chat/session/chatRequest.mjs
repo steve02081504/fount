@@ -16,6 +16,7 @@ import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
+import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,
@@ -25,7 +26,6 @@ import { getState } from '../dag/materialize.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { injectFountChatCodeContextPlugin } from '../lib/codeContextPlugin.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import {

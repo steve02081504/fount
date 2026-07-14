@@ -3,9 +3,10 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { fetchChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_fetch'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { fetchChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_fetch'
 import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
+
 import { getState } from '../chat/dag/materialize.mjs'
 import { requestGroupEmojiFromUserRoom } from '../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../chat/federation/room.mjs'

@@ -4,14 +4,15 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
+
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadArchiveManifest, wireArchiveManifestForFederation } from '../archive/index.mjs'
 import { isSignedBaseCheckpoint } from '../dag/checkpointPayload.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { listChannelMessages } from '../dag/queries.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 
 
 import { hasMaterializedAclSnapshot } from './acl.mjs'

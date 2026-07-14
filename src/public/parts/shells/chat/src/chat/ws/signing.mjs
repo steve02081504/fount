@@ -7,8 +7,8 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import {
 	boundStreamSlices,
 	signStreamSignatureHex,
@@ -16,6 +16,7 @@ import {
 	streamKeyPairFromUserSeed,
 	verifyStreamSignatureHex,
 } from 'npm:@steve02081504/fount-p2p/wire/volatile_signature'
+
 import { getFederationIdentitySecret } from '../federation/config.mjs'
 
 /** @type {Map<string, { pubKeyHex: string, pubKeyHash: string, secretKey: Uint8Array }>} */

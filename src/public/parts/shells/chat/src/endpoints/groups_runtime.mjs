@@ -1,13 +1,13 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getWorldName } from '../chat/session/channelWorld.mjs'
-import { getInitialData } from '../chat/session/sessionQueries.mjs'
 import {
 	getCharListOfGroup,
 	getPluginListOfGroup,
 	getUserPersonaName,
 } from '../chat/session/partConfig.mjs'
 import { registerGroupRuntime } from '../chat/session/runtime.mjs'
+import { getInitialData } from '../chat/session/sessionQueries.mjs'
 import { groupMetadatas } from '../chat/session/wsLifecycle.mjs'
 import { GROUPS_PREFIX } from '../group/routes/path.mjs'
 

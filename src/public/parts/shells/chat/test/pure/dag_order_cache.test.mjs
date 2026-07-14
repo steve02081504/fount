@@ -2,12 +2,12 @@
  * DAG 拓扑序缓存单元测试（Deno）。
  */
 /* global Deno */
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	buildOrderCachePayload,
 	mergeTopologicalOrder,
 	resolveEventTopologicalOrder,
 } from 'npm:@steve02081504/fount-p2p/federation/dag_order_cache'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 
 /**

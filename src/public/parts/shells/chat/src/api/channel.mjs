@@ -1,6 +1,6 @@
+import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
-import { Buffer } from 'node:buffer'
 
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { postChannelMessage } from '../chat/channel/postMessage.mjs'
@@ -44,6 +44,11 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		async send(reply) {
 			const charId = ctx.charname || null
 			const origin = charId ? 'char' : 'human'
+			/**
+			 *
+			 * @param {File[] | unknown[]} files 上传文件
+ * @returns {void} 无
+			 */
 			const mapFiles = files => files?.map(file => ({
 				...file,
 				buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
@@ -107,7 +112,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		},
 		/**
 		 * @param {string} charname 角色名
-		 * @returns {Promise<void>}
+		 * @returns {Promise<void>} 无
 		 */
 		async triggerReply(charname) {
 			const { triggerCharReply } = await import('../chat/session/triggerReply.mjs')
@@ -160,7 +165,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 			}
 		},
 		/**
-		 * @returns {Promise<void>}
+		 * @returns {Promise<void>} 无
 		 */
 		async typing() {
 			recordChannelTyping(ctx.username, groupId, channelId, ctx.entityHash)

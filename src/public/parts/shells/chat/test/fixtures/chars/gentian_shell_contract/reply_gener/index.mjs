@@ -1,6 +1,6 @@
 /**
  * @param {object} args GetReply 参数
- * @returns {Promise<object>}
+ * @returns {Promise<object>} 角色回复内容
  */
 export async function GetReply(args) {
 	const memory = args.chat_scoped_char_memory

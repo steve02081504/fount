@@ -80,7 +80,7 @@ function reducePostEdit(state, event) {
 function reducePollVote(state, event) {
 	const key = socialPostKey(event.content.targetEntityHash, event.content.targetPostId)
 	state.pollVotes.set(key, {
-		choices: [...(event.content.choices || [])],
+		choices: [...event.content.choices || []],
 		at: event.hlc?.wall || event.timestamp || Date.now(),
 	})
 	return state

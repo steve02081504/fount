@@ -35,8 +35,8 @@ const targetPubKeyHash = resolvedTarget
 const ownerSuccessionTarget = targetPubKeyHash
 
 /**
- *
- * @param state
+ * @param {object} state 物化群状态
+ * @returns {boolean} 创始人是否已转让给目标成员
  */
 function hasTransferredFounder(state) {
 	if (state.groupMeta?.ownerPubKeyHash === ownerSuccessionTarget) return true

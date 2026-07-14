@@ -3,7 +3,9 @@
  */
 /* global Deno */
 
+import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	pubKeyHash,
 	publicKeyFromSeed,
@@ -11,25 +13,23 @@ import {
 	sign,
 } from 'npm:@steve02081504/fount-p2p/crypto'
 import {
-	computeTipConsensusScores,
-	selectConsensusBranchTip,
-} from 'npm:@steve02081504/fount-p2p/governance/branch'
-import {
-	DEFAULT_ICE_SERVERS,
-	resolveIceServers,
-	sanitizeIceServersForSettings,
-} from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
-import {
 	messageRateEntityKey,
 	resolveMessageRateLimits,
 } from 'npm:@steve02081504/fount-p2p/federation/message_rate_limit'
-import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import {
+	computeTipConsensusScores,
+	selectConsensusBranchTip,
+} from 'npm:@steve02081504/fount-p2p/governance/branch'
 import {
 	parseJoinSnapshotRequest,
 	parseJoinSnapshotResponse,
 	parsePullResponseEnvelope,
 } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import {
+	DEFAULT_ICE_SERVERS,
+	resolveIceServers,
+	sanitizeIceServersForSettings,
+} from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 
 import { findStaleUnreachableChannels } from '../../src/chat/channel/gc.mjs'
 import { registerChatEventTypeDefs } from '../../src/chat/dag/eventTypes.mjs'

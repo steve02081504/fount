@@ -2,11 +2,11 @@
  * 联邦 gossip 纯函数单测。
  */
 /* global Deno */
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	batchWantIds,
 	wantIdsPeerKey,
 } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
 	buildGossipForwardPlan,

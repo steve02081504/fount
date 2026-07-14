@@ -22,9 +22,15 @@ Deno.test('per-bot bridgeOperations: two bots on same platform route independent
 	const callsA = []
 	const callsB = []
 	registerBridgeOperations(username, 'telegram', 'bot-a', {
+		/**
+		 *
+		 */
 		sendTyping: async () => { callsA.push('typing') },
 	})
 	registerBridgeOperations(username, 'telegram', 'bot-b', {
+		/**
+		 *
+		 */
 		sendTyping: async () => { callsB.push('typing') },
 	})
 
@@ -67,8 +73,14 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	/** @type {object[]} */
 	const outboundLines = []
 	registerBridgeOperations(username, 'mock', 'clear-bot', {
+		/**
+		 *
+		 */
 		sendTyping: async () => {},
 	}, {
+		/**
+		 *
+		 */
 		teardown: async () => {
 			const { unregisterBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
 			unregisterBridgeOutbound(username, groupId)
@@ -108,6 +120,9 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 
 	let stopSelfCalled = false
 	registerBridgeOperations(username, 'mock', 'self-stop-bot', {
+		/**
+		 *
+		 */
 		stopSelf: async () => { stopSelfCalled = true },
 	})
 
@@ -147,8 +162,14 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
-	registerBridgeOperations(username, 'telegram', 'list-a', { sendTyping: async () => {} })
-	registerBridgeOperations(username, 'discord', 'list-b', { sendTyping: async () => {} })
+	registerBridgeOperations(username, 'telegram', 'list-a', { /**
+	 *
+	 */
+		sendTyping: async () => {} })
+	registerBridgeOperations(username, 'discord', 'list-b', { /**
+	 *
+	 */
+		sendTyping: async () => {} })
 
 	const client = await getChatClient(username)
 	const bots = await client.bridgeBots()
@@ -204,6 +225,9 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 	const platformUserId = 4242
 	const expectedHash = bridgeEntityHash('mock', platformUserId)
 	registerBridgeOperations(username, 'mock', 'members-bot', {
+		/**
+		 * @returns {Promise<object[]>} 成员列表
+		 */
 		listMembers: async () => [{ platformUserId, displayName: 'Alice' }],
 	})
 

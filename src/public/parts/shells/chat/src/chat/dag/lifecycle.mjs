@@ -8,14 +8,15 @@
 import { randomUUID } from 'node:crypto'
 import { access, mkdir } from 'node:fs/promises'
 
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
+import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { syncEntityProfileFromPersona } from '../../profile/syncFromPersona.mjs'
 import { DEFAULT_HLC_MAX_SKEW_MS } from '../events/hlcPolicy.mjs'
@@ -24,9 +25,9 @@ import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federat
 import { DEFAULT_SIGNALING_APP_ID, mintRoomSecret } from '../federation/roomCredentials.mjs'
 import { initGroupFileMasterKey } from '../file_keys/store.mjs'
 import { releaseFileStorageRefs } from '../files/groupFiles.mjs'
+import { safeRm } from '../lib/fsSafe.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
-import { safeRm } from '../lib/fsSafe.mjs'
 import { invalidateKnownMemberIndex } from '../mailbox/memberIndex.mjs'
 import { purgeGroupSession } from '../session/wsLifecycle.mjs'
 import { dropGroupReplicaRegistration } from '../ws/groupWsRooms.mjs'
@@ -107,14 +108,14 @@ export async function createGroup(username, body) {
 	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
 	const genesisSender = owner
 	let declaredOwner = body.ownerEntityHash
-	if (declaredOwner === undefined) {
+	if (declaredOwner === undefined) 
 		try {
 			declaredOwner = (await loadEntityIdentity(username, entityHash)).ownerEntityHash
 		}
 		catch {
 			declaredOwner = null
 		}
-	}
+	
 
 	/** @param {object} event 创世事件体（含 sender） */
 	const genesisAppend = async event => {

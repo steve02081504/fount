@@ -28,10 +28,11 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 
 ## Trust boundaries
 
-- **Untrusted inbound**: discovery, link envelopes, WS federation frames, `remoteIngest`, `part_timeline_put`/`part_invoke` — validate only at gates: `wire/ingress`, `schemas/*`, shell inbound gates.
+- **Untrusted inbound**: discovery, link envelopes, WS federation frames, `remoteIngest`, `part_timeline_put`/`part_invoke`, `part_query_req`/`part_query_res` — validate only at gates: `wire/ingress`, `schemas/*`, shell inbound gates.
 - **Trusted after disk read**: `events.jsonl` only runs `stripDagEventLocalExtensions`; reducers/UI do not re-canonicalize hex.
-- **Node data**: `{dataPath}/p2p/node/` (`node.json`, `denylist.json`, `reputation.json`, etc.); entity identities at `{userDict}/entities/{entityHash}/identity.json` (operator = `ownerEntityHash === null`).
+- **Node data**: `{dataPath}/p2p/node/` (`node.json`, `denylist.json`, `reputation.json`, etc.); entity identities at `{userDict}/entities/{entityHash}/identity.json` (operator = `charPartName === null`).
 - **Mailbox**: `{dataPath}/p2p/node/mailbox/store.jsonl`; directed packets via `sendToNode`, discovery fanout via TrustGraph.
+- **part_query**: multi-hop opaque query (`npm:…/wire/part_query`); fount registers `entity_search` on chat partpath at `initP2PServer` (`registerQueryInboundHandler` + `localEntitySearchHandler`). Initiator `queryNetwork` / shell `searchEntitiesNetwork`; replies reverse-path; relay cache is unverified clue only.
 - **Denylist vs personal lists**: node-level `denylist.json` vs per-entity `personal_block.json` / `personal_hide.json`.
 - **Agent identity**: `ensureAgentEntityIdentity(username, charPartName)` / chat `ensureLocalAgentEntityHash` — key-derived entityHash in `entities/{hash}/identity.json`; never path-derive from `chars/`. Frontend char→hash via `GET /api/parts/shells:chat/viewer` `agents[]`；加入群时 `addchar` 服务端 `ensureLocalAgentEntityHash`。
 

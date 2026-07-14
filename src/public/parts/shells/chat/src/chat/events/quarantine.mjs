@@ -7,6 +7,7 @@
  */
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+
 import { quarantinePath } from '../lib/paths.mjs'
 
 /**

@@ -4,12 +4,13 @@
  * 【关联】groupLifecycle.newGroup、partConfig、chatLogAppend。
  */
 import { getDefaultChannelId } from '../dag/queries.mjs'
+
 import { addChatLogEntryImport } from './chatLogAppend.mjs'
+import { newGroup } from './groupLifecycle.mjs'
 import { buildChatLogEntryFromCharReply, buildChatLogEntryFromUserMessage } from './logEntries.mjs'
 import { addchar, addplugin, setCharReplyFrequency, setPersona, bindWorld } from './partConfig.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
-import { newGroup } from './groupLifecycle.mjs'
 
 /**
  * 批量导入消息（不触发角色回复）。

@@ -17,8 +17,8 @@ import { completeLiveScript, skipCase, testCase, writeLiveSummary } from '../sin
 /** @typedef {import('../http.mjs').LiveNodeHandle} LiveNodeHandle */
 
 /**
- * @param {number} index
- * @returns {LiveNodeHandle}
+ * @param {number} index 下标
+ * @returns {LiveNodeHandle} 联邦 live 节点句柄
  */
 function newFedNodeHandle(index) {
 	const idx = index + 1
@@ -40,7 +40,10 @@ function newFedNodeHandle(index) {
 	}
 }
 
-/** @param {LiveNodeHandle} node */
+/**
+ * @param {LiveNodeHandle} node 联邦节点
+ * @returns {void} 无
+ */
 function resetFedNodeBlocklist(node) {
 	try {
 		const dataPath = String(node.dataPath || '').trim()
@@ -54,7 +57,9 @@ function resetFedNodeBlocklist(node) {
 	}
 }
 
-/** @returns {LiveNodeHandle[]} */
+/**
+ * @returns {LiveNodeHandle[]} 已加载节点列表
+ */
 function loadFedNodes() {
 	const count = parseInt(process.env.FOUNT_TEST_NODE_COUNT || '2', 10)
 	if (count < 1) throw new Error('FOUNT_TEST_NODE_COUNT must be >= 1')
@@ -78,9 +83,10 @@ export const FedPngBytes = TEST_PNG_BYTES
 
 /**
  * @param {LiveNodeHandle} node @param {string} method @param {string} p2pPath @param {unknown} [body]
- * @param method
- * @param p2pPath
- * @param body
+ * @param {string} method HTTP 方法
+ * @param {string} p2pPath P2P API 路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} P2P API 响应
  */
 export async function P2pApi(node, method, p2pPath, body) {
 	return invokeRequest(node, method, `/api/p2p${p2pPath}`, body)
@@ -88,9 +94,10 @@ export async function P2pApi(node, method, p2pPath, body) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {unknown} [body]
- * @param method
- * @param chatPath
- * @param body
+ * @param {string} method HTTP 方法
+ * @param {string} chatPath chat API 路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} Chat API 响应
  */
 export async function Api(node, method, chatPath, body) {
 	return invokeRequest(node, method, chatPath, body, { shell: 'chat' })
@@ -98,10 +105,11 @@ export async function Api(node, method, chatPath, body) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {unknown} [body]
- * @param shell
- * @param method
- * @param shellPath
- * @param body
+ * @param {string} shell shell 名
+ * @param {string} method HTTP 方法
+ * @param {string} shellPath shell API 路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} shell API 响应
  */
 export async function ShellApi(node, shell, method, shellPath, body) {
 	return invokeRequest(node, method, shellPath, body, { shell })
@@ -109,9 +117,10 @@ export async function ShellApi(node, shell, method, shellPath, body) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} method @param {string} rootPath @param {unknown} [body]
- * @param method
- * @param rootPath
- * @param body
+ * @param {string} method HTTP 方法
+ * @param {string} rootPath 根路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} 根路径 API 响应
  */
 export async function RootApi(node, method, rootPath, body) {
 	return invokeRequest(node, method, rootPath, body, { timeoutSec: 60 })
@@ -119,13 +128,14 @@ export async function RootApi(node, method, rootPath, body) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} method @param {string} chatPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType]
- * @param method
- * @param chatPath
- * @param fields
- * @param fileField
- * @param fileName
- * @param fileBytes
- * @param contentType
+ * @param {string} method HTTP 方法
+ * @param {string} chatPath chat API 路径
+ * @param {Record<string, string>} fields 表单字段
+ * @param {string} fileField 表单文件字段名
+ * @param {string} fileName 文件名
+ * @param {Uint8Array | Buffer} fileBytes 文件字节
+ * @param {string} [contentType] MIME 类型
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} multipart 响应
  */
 export async function ApiMultipart(node, method, chatPath, fields, fileField, fileName, fileBytes, contentType = 'image/png') {
 	return invokeMultipart(node, 'chat', method, chatPath, fields, fileField, fileName, fileBytes, contentType)
@@ -133,22 +143,24 @@ export async function ApiMultipart(node, method, chatPath, fields, fileField, fi
 
 /**
  * @param {LiveNodeHandle} node @param {string} shell @param {string} method @param {string} shellPath @param {Record<string,string|number|boolean>} fields @param {string} fileField @param {string} fileName @param {Uint8Array} fileBytes @param {string} [contentType]
- * @param shell
- * @param method
- * @param shellPath
- * @param fields
- * @param fileField
- * @param fileName
- * @param fileBytes
- * @param contentType
+ * @param {string} shell shell 名
+ * @param {string} method HTTP 方法
+ * @param {string} shellPath shell API 路径
+ * @param {Record<string, string>} fields 表单字段
+ * @param {string} fileField 表单文件字段名
+ * @param {string} fileName 文件名
+ * @param {Uint8Array | Buffer} fileBytes 文件字节
+ * @param {string} [contentType] MIME 类型
+ * @returns {Promise<import('../http.mjs').LiveHttpResponse>} multipart 响应
  */
 export const ShellApiMultipart = (node, shell, method, shellPath, fields, fileField, fileName, fileBytes, contentType = 'image/png') =>
 	invokeMultipart(node, shell, method, shellPath, fields, fileField, fileName, fileBytes, contentType)
 
 /**
  * @param {number} timeoutSec @param {number} intervalSec @param {() => Promise<boolean>} probe
- * @param intervalSec
- * @param probe
+ * @param {number} intervalSec 轮询间隔秒
+ * @param {Function} probe 探测回调
+ * @returns {Promise<boolean>} 超时前最后一次探测结果
  */
 export async function PollUntil(timeoutSec, intervalSec, probe) {
 	const deadline = Date.now() + timeoutSec * 1000
@@ -163,8 +175,9 @@ export async function PollUntil(timeoutSec, intervalSec, probe) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {number} [waitMs]
- * @param groupId
- * @param waitMs
+ * @param {string} groupId 群 ID
+ * @param {number} [waitMs] 等待毫秒
+ * @returns {Promise<void>} 无
  */
 export async function InvokeFedCatchupSync(node, groupId, waitMs = ms('6s')) {
 	await Api(node, 'POST', `/groups/${groupId}/federation/catchup`, { waitMs })
@@ -173,9 +186,10 @@ export async function InvokeFedCatchupSync(node, groupId, waitMs = ms('6s')) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {number} [minMembers] @param {number} [timeoutSec]
- * @param groupId
- * @param minMembers
- * @param timeoutSec
+ * @param {string} groupId 群 ID
+ * @param {number} [minMembers] 最少成员数
+ * @param {number} [timeoutSec] 超时秒数
+ * @returns {Promise<boolean>} 成员数是否达到门槛
  */
 export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec = 120) {
 	return PollUntil(timeoutSec, 3, async () => {
@@ -189,11 +203,12 @@ export async function WaitFedMembers(node, groupId, minMembers = 2, timeoutSec =
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec] @param {number} [catchupWaitMs]
- * @param groupId
- * @param probe
- * @param timeoutSec
- * @param intervalSec
- * @param catchupWaitMs
+ * @param {string} groupId 群 ID
+ * @param {Function} probe 探测回调
+ * @param {number} [timeoutSec] 超时秒数
+ * @param {number} [intervalSec] 轮询间隔秒
+ * @param {number} [catchupWaitMs] 追赶等待毫秒
+ * @returns {Promise<boolean>} probe 是否在超时前成功
  */
 export async function WaitFedConverged(node, groupId, probe, timeoutSec = 120, intervalSec = 3, catchupWaitMs = 6000) {
 	const deadline = Date.now() + timeoutSec * 1000
@@ -207,8 +222,9 @@ export async function WaitFedConverged(node, groupId, probe, timeoutSec = 120, i
 
 /**
  * @param {() => Promise<boolean>} probe @param {number} [timeoutSec] @param {number} [intervalSec]
- * @param timeoutSec
- * @param intervalSec
+ * @param {number} [timeoutSec] 超时秒数
+ * @param {number} [intervalSec] 轮询间隔秒
+ * @returns {Promise<boolean>} probe 是否在超时前成功
  */
 export async function WaitFedLive(probe, timeoutSec = 90, intervalSec = 3) {
 	return PollUntil(timeoutSec, intervalSec, probe)
@@ -216,9 +232,10 @@ export async function WaitFedLive(probe, timeoutSec = 90, intervalSec = 3) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId
- * @param groupId
- * @param channelId
- * @param eventId
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} eventId 事件 ID
+ * @returns {Promise<boolean>} 频道是否含目标消息
  */
 export async function TestFedHasMessage(node, groupId, channelId, eventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
@@ -228,10 +245,11 @@ export async function TestFedHasMessage(node, groupId, channelId, eventId) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId @param {string | RegExp} pattern
- * @param groupId
- * @param channelId
- * @param eventId
- * @param pattern
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} eventId 事件 ID
+ * @param {unknown} pattern pattern
+ * @returns {Promise<boolean>} 消息正文是否匹配 pattern
  */
 export async function TestFedMessageContent(node, groupId, channelId, eventId, pattern) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
@@ -244,9 +262,10 @@ export async function TestFedMessageContent(node, groupId, channelId, eventId, p
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} eventId
- * @param groupId
- * @param channelId
- * @param eventId
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} eventId 事件 ID
+ * @returns {Promise<boolean>} 目标消息是否已删除
  */
 export async function TestFedMessageDeleted(node, groupId, channelId, eventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
@@ -256,9 +275,10 @@ export async function TestFedMessageDeleted(node, groupId, channelId, eventId) {
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId @param {string} targetEventId
- * @param groupId
- * @param channelId
- * @param targetEventId
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} targetEventId 目标事件 ID
+ * @returns {Promise<boolean>} 目标消息是否有反应
  */
 export async function TestFedHasReaction(node, groupId, channelId, targetEventId) {
 	const response = await Api(node, 'GET', `/groups/${groupId}/channels/${channelId}/messages`)
@@ -270,8 +290,9 @@ export async function TestFedHasReaction(node, groupId, channelId, targetEventId
 
 /**
  * @param {LiveNodeHandle} node @param {string} groupId @param {string} channelId
- * @param groupId
- * @param channelId
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {Promise<boolean>} 频道是否存在于群状态
  */
 export async function TestFedHasChannel(node, groupId, channelId) {
 	const state = await Api(node, 'GET', `/groups/${groupId}/state`)
@@ -280,8 +301,9 @@ export async function TestFedHasChannel(node, groupId, channelId) {
 
 /**
  * @param {string} name @param {string | null} seedText @param {LiveNodeHandle[]} joinNodes
- * @param seedText
- * @param joinNodes
+ * @param {string} seedText 种子文本
+ * @param {object[]} joinNodes 加入节点
+ * @returns {Promise<{ groupId: string, channelId: string, seedEventId: string | null, invite: object }>} 开放群加入上下文
  */
 export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 	const group = (await Api(FedA, 'POST', '/groups/', { name, description: 'L4 fed probe' })).json
@@ -330,8 +352,8 @@ export async function InitializeOpenGroupJoinMulti(name, seedText, joinNodes) {
 
 /**
  * 双端互拨 user-room，减少 join / CAS 路径冷启动失败。
- * @param {LiveNodeHandle[]} nodes
- * @returns {Promise<void>}
+ * @param {LiveNodeHandle[]} nodes 节点列表
+ * @returns {Promise<void>} 无
  */
 export async function WarmupFedNodeLinks(nodes) {
 	/** @type {Array<{ node: LiveNodeHandle, nodeHash: string }>} */
@@ -349,7 +371,8 @@ export async function WarmupFedNodeLinks(nodes) {
 
 /**
  * @param {string} name @param {string | null} seedText
- * @param seedText
+ * @param {string} seedText 种子文本
+ * @returns {Promise<{ groupId: string, channelId: string, seedEventId: string | null, invite: object }>} 双节点开放群加入上下文
  */
 export async function InitializeOpenGroupJoin(name, seedText) {
 	const group = (await Api(FedA, 'POST', '/groups/', { name, description: 'L4 fed probe' })).json
@@ -398,7 +421,10 @@ export async function InitializeOpenGroupJoin(name, seedText) {
 	return { groupId, channelId, seedEventId, invite }
 }
 
-/** @param {unknown} row */
+/**
+ * @param {unknown} row 群列表行
+ * @returns {boolean} 是否为联邦测试群
+ */
 function testFedTestGroup(row) {
 	if (row == null) return false
 	const name = String(row.name || '')
@@ -410,7 +436,10 @@ function testFedTestGroup(row) {
 	return false
 }
 
-/** @param {LiveNodeHandle} node */
+/**
+ * @param {LiveNodeHandle} node 联邦节点
+ * @returns {Promise<string[]>} 测试群 ID 列表
+ */
 async function getFedTestGroupIds(node) {
 	const list = await Api(node, 'GET', '/groups/')
 	if (list.status !== 200) return []
@@ -419,7 +448,8 @@ async function getFedTestGroupIds(node) {
 
 /**
  * @param {LiveNodeHandle} node @param {string[]} groupIds
- * @param groupIds
+ * @param {string[]} groupIds 群 ID 列表
+ * @returns {Promise<void>} 无
  */
 async function invokeGroupLeaveBestEffort(node, groupIds) {
 	const ids = [...new Set(groupIds.filter(Boolean))]
@@ -438,7 +468,8 @@ async function invokeGroupLeaveBestEffort(node, groupIds) {
 
 /**
  * @param {string} tag @param {string} [groupId]
- * @param groupId
+ * @param {string} groupId 群 ID
+ * @returns {void} 无
  */
 export function WriteFedSummary(tag, groupId) {
 	writeLiveSummary(tag)
@@ -451,7 +482,7 @@ export function WriteFedSummary(tag, groupId) {
 export { completeLiveScript, skipCase, testCase }
 
 /**
- *
+ * @returns {Promise<void>} 无
  */
 export async function ClearFedTestGroups() {
 	console.log('\n=== Cleanup all test groups ===')
@@ -466,7 +497,10 @@ export async function ClearFedTestGroups() {
 		}
 }
 
-/** @param {string} groupId */
+/**
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>} 无
+ */
 export async function ClearFedGroup(groupId) {
 	if (!groupId) return
 	console.log('\n=== Cleanup ===')

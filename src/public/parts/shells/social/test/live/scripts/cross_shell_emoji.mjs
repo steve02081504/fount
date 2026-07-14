@@ -1,5 +1,5 @@
-import { ms } from 'fount/scripts/ms.mjs'
 import { formatEmojiToken } from 'fount/public/parts/shells/chat/public/shared/inlineTokenSyntax.mjs'
+import { ms } from 'fount/scripts/ms.mjs'
 import {
 	Api,
 	ApiMultipart,

@@ -7,9 +7,10 @@
 import { mkdir, readFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
+import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
 import { readJsonl, writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
-import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
+
 import { getUserDictionary } from '../../../../../../../server/auth/index.mjs'
 import { postChannelMessage } from '../channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'

@@ -6,18 +6,19 @@ import fs from 'node:fs'
 import { mkdir, readdir, stat } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
-import { loadJsonFile, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
+import { loadJsonFile, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
+
 import { isChannelIdValid, resolveChannelId } from './channelId.mjs'
-import { groupDir, eventsPath, sidecarPath } from './paths.mjs'
 import {
 	isEnoent,
 	rethrowUnlessEnoentOrEnotdir,
 	safeUnlink,
 	safeUnlinkSync,
 } from './fsSafe.mjs'
+import { groupDir, eventsPath, sidecarPath } from './paths.mjs'
 
 /**
  * @param {{ extension?: { groupChannelId?: string } }} entry 聊天条目（含 extension 频道）

@@ -1,4 +1,5 @@
 import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
+
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getFederationSettings } from '../chat/federation/config.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'

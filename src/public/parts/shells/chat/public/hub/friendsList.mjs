@@ -7,14 +7,17 @@
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { setEntityAlias } from '../shared/aliases.mjs'
+import { formatHashShort } from '../shared/entityHash.mjs'
+import { isHex64 } from '../shared/pubKeyHex.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
-import { enterFriendChat } from './friendChat.mjs'
+import { dispatchFriendChat, enterFriendChat } from './friendChat.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
 
@@ -210,8 +213,35 @@ export async function renderFriendsColumn(friends) {
 	const header = document.getElementById('hub-group-name-display')
 	const container = document.getElementById('hub-channel-list')
 	header.dataset.i18n = 'chat.hub.friendsTag'
+
+	const wrap = document.createElement('div')
+	wrap.className = 'hub-friends-wrap flex flex-col gap-2 h-full min-h-0'
+	wrap.innerHTML = `
+		<div class="hub-friends-search px-2 pt-1">
+			<input type="search" id="hub-friends-search-input" class="input input-bordered input-sm w-full" autocomplete="off" data-i18n="chat.hub.friendsSearchPlaceholder" placeholder="${escapeHtml(geti18n('chat.hub.friendsSearchPlaceholder'))}" />
+			<div id="hub-friends-search-results" class="hub-friends-search-results mt-2 space-y-1 max-h-48 overflow-y-auto hidden"></div>
+		</div>
+		<div id="hub-friends-list-body" class="hub-friends-list-body min-h-0 flex-1 overflow-y-auto"></div>
+	`
+	container.replaceChildren(wrap)
+	const body = wrap.querySelector('#hub-friends-list-body')
+	const searchInput = wrap.querySelector('#hub-friends-search-input')
+	const searchResults = wrap.querySelector('#hub-friends-search-results')
+
+	let searchTimer = 0
+	searchInput?.addEventListener('input', () => {
+		clearTimeout(searchTimer)
+		searchTimer = setTimeout(() => { void runFriendsEntitySearch(searchInput, searchResults) }, 280)
+	})
+	searchInput?.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			clearTimeout(searchTimer)
+			void runFriendsEntitySearch(searchInput, searchResults)
+		}
+	})
+
 	if (!friends.length) {
-		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noFriends' })
+		await mountTemplate(body, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noFriends' })
 		return
 	}
 	const charFriends = friends.filter(f => f.charname)
@@ -220,12 +250,12 @@ export async function renderFriendsColumn(friends) {
 	const rows = await Promise.all(friends.map(f =>
 		friendRowTemplateData(f, f.charname ? detailsByChar.get(f.charname) : null),
 	))
-	await mountTemplate(container, 'hub/mode/chars_column', {
+	await mountTemplate(body, 'hub/mode/chars_column', {
 		count: String(friends.length),
 		countI18nKey: 'chat.hub.friendsCount',
 		items: rows,
 	})
-	container.querySelectorAll('.hub-char-list-item').forEach((el) => {
+	body.querySelectorAll('.hub-char-list-item').forEach((el) => {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
@@ -238,4 +268,84 @@ export async function renderFriendsColumn(friends) {
 				await renderCharInfoCard(row.charname, details)
 			})
 	})
+}
+
+/**
+ * @param {HTMLInputElement} input 搜索框
+ * @param {HTMLElement} resultsHost 结果容器
+ * @returns {Promise<void>}
+ */
+async function runFriendsEntitySearch(input, resultsHost) {
+	if (!(input instanceof HTMLInputElement) || !(resultsHost instanceof HTMLElement)) return
+	const q = input.value.trim()
+	if (q.length < 2) {
+		resultsHost.classList.add('hidden')
+		resultsHost.replaceChildren()
+		if (q.length === 1) {
+			const hint = document.createElement('p')
+			hint.className = 'text-xs opacity-60 px-1'
+			hint.textContent = geti18n('chat.hub.friendsSearchTooShort')
+			resultsHost.appendChild(hint)
+			resultsHost.classList.remove('hidden')
+		}
+		return
+	}
+	const response = await fetch(`/api/parts/shells:chat/entities/search?q=${encodeURIComponent(q)}`, {
+		credentials: 'include',
+	})
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok) {
+		showToastI18n('error', 'chat.hub.createChatFailed', { error: data.error || `HTTP ${response.status}` })
+		return
+	}
+	const entities = data.entities || []
+	resultsHost.replaceChildren()
+	resultsHost.classList.remove('hidden')
+	if (!entities.length) {
+		const empty = document.createElement('p')
+		empty.className = 'text-xs opacity-60 px-1'
+		empty.textContent = geti18n('chat.hub.friendsSearchEmpty')
+		resultsHost.appendChild(empty)
+		return
+	}
+	for (const entity of entities) {
+		const row = document.createElement('div')
+		row.className = 'flex items-center gap-2 rounded-box bg-base-200 px-2 py-1'
+		const handle = entity.handle ? `@${entity.handle}` : formatHashShort(entity.entityHash, { headLen: 8, tailLen: 4 })
+		const label = entity.alias || entity.name || handle
+		row.innerHTML = `
+			<div class="min-w-0 flex-1">
+				<div class="text-sm truncate">${escapeHtml(label)}</div>
+				<div class="text-xs opacity-60 truncate">${escapeHtml(handle)}</div>
+			</div>
+			<button type="button" class="btn btn-ghost btn-xs" data-pin>${escapeHtml(geti18n('chat.hub.friendsSearchPin'))}</button>
+			<button type="button" class="btn btn-primary btn-xs" data-dm>${escapeHtml(geti18n('chat.hub.friendsSearchDm'))}</button>
+		`
+		row.querySelector('[data-pin]')?.addEventListener('click', () => {
+			void (async () => {
+				const next = prompt(geti18n('chat.hub.profilePopup.setAliasPrompt', { name: label }), entity.alias || entity.handle || entity.name || '')
+				if (next == null) return
+				await setEntityAlias(entity.entityHash, next)
+				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+			})()
+		})
+		row.querySelector('[data-dm]')?.addEventListener('click', () => {
+			void (async () => {
+				const pubKeyHex = String(entity.activePubKeyHex || '').trim().toLowerCase()
+				if (!isHex64(pubKeyHex)) {
+					showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
+					return
+				}
+				if (entity.handle || entity.name)
+					await setEntityAlias(entity.entityHash, entity.alias || entity.handle || entity.name).catch(() => {})
+				await dispatchFriendChat({
+					type: 'user',
+					displayName: label,
+					pubKeyHex,
+					entityHash: entity.entityHash,
+				})
+			})()
+		})
+		resultsHost.appendChild(row)
+	}
 }

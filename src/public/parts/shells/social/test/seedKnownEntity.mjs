@@ -1,7 +1,7 @@
-import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { applyNetworkHint } from 'npm:@steve02081504/fount-p2p/node/network'
-import { getEntityStore, isNodeInitialized } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { getEntityStore, isNodeInitialized } from 'npm:@steve02081504/fount-p2p/node/instance'
+import { applyNetworkHint } from 'npm:@steve02081504/fount-p2p/node/network'
 
 /** 前端 / live 烟测共用的「可发现」占位 entityHash（nodeHash 经 network hint 注册）。 */
 export const SEEDED_TEST_TARGET_HASH = placeholderEntityHash('a')

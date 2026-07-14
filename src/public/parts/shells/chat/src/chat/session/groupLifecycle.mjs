@@ -8,13 +8,13 @@ import { events } from '../../../../../../../server/events.mjs'
 import { createGroup, removeLocalGroupReplica } from '../dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
 import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
+
 import {
 	appendSessionPersonaSet,
 	appendSessionPluginAdd,
 	appendSessionWorldBind,
 } from './dagSession.mjs'
 import { chatMetadata_t } from './models.mjs'
-import { getActiveGroupRuntime } from './persistence.mjs'
 import { registerGroupRuntime, rebuildGroupRuntime } from './runtime.mjs'
 import { groupMetadatas, purgeGroupSession } from './wsLifecycle.mjs'
 

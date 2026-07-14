@@ -21,18 +21,30 @@ import {
 
 /** @typedef {import('fount/scripts/test/live/http.mjs').LiveNodeHandle} LiveNodeHandle */
 
+/**
+ * @param {LiveNodeHandle} node 联邦 live 节点
+ * @returns {Promise<string>} 节点 activePubKeyHex（小写）
+ */
 async function getIdentity(node) {
 	const r = await P2pApi(node, 'GET', '/federation')
 	if (r.status !== 200) throw new Error(`federation GET ${r.status}`)
 	return String(r.json.activePubKeyHex).toLowerCase()
 }
 
+/**
+ * @param {LiveNodeHandle} node 联邦 live 节点
+ * @returns {Promise<string>} 登录用户名
+ */
 async function getWhoamiUser(node) {
 	const r = await RootApi(node, 'GET', '/api/whoami')
 	if (r.status !== 200) throw new Error(`whoami ${r.status}`)
 	return r.json.username
 }
 
+/**
+ * @param {LiveNodeHandle} node 联邦 live 节点
+ * @returns {Promise<{ pubKeyHex: string, dmIntroNonce: string, dmIntroSignatureHex: string }>} DM intro 证明
+ */
 async function buildDmIntro(node) {
 	const user = await getWhoamiUser(node)
 	const dataPath = node.dataPath
@@ -52,6 +64,12 @@ async function buildDmIntro(node) {
 	return JSON.parse(out.trim())
 }
 
+/**
+ * @param {LiveNodeHandle} node 联邦 live 节点
+ * @param {string} gid 群 ID
+ * @param {string} currentCid 当前频道 ID
+ * @returns {Promise<string | null>} 可用频道 ID
+ */
 async function resolveUsableChannelId(node, gid, currentCid) {
 	if (currentCid) return currentCid
 	return PollUntil(120, 3, async () => {

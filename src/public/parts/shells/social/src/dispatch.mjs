@@ -6,8 +6,8 @@ import { mentionsEntity, extractMentionEntityHashes } from 'fount/public/parts/s
 import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
 import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
 import { applyMentionNetworkHint } from './federation/network_hints.mjs'

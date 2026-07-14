@@ -3,6 +3,7 @@
  */
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+
 import { messagesPath } from '../lib/paths.mjs'
 
 /**

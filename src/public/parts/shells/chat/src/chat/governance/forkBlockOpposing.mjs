@@ -4,14 +4,15 @@
  * 【原理】computeDagTipIdsFromEvents 枚举 tips；ancestorClosureFromTip 收集 GOVERNANCE_AUTHZ_TYPES 发送者 pubKeyHash。
  * 【关联】blocklist addDenylistEntry、governance_branch；fork 后用户确认选支。
  */
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
-import { addDenylistEntry } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import {
 	ancestorClosureFromTip,
 	computeDagTipIdsFromEvents,
 } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { addDenylistEntry } from 'npm:@steve02081504/fount-p2p/node/denylist'
+
 import { GOVERNANCE_AUTHZ_TYPES } from '../dag/eventTypes.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 

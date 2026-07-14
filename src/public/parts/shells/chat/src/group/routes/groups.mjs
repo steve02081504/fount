@@ -7,8 +7,9 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.mjs'
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
@@ -18,10 +19,10 @@ import { newMetadata } from '../../chat/session/groupLifecycle.mjs'
 import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
 import { modifyTimeLine } from '../../chat/session/timeLine.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
-import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'

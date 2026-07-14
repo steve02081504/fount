@@ -5,11 +5,11 @@ import { randomUUID } from 'node:crypto'
 import { mkdir, unlink } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
-import { finalizeAtomicRename } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+import { finalizeAtomicRename } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { penalizeArchiveServeMismatch } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+
 import { isArchiveCoverageComplete, loadArchiveManifest, mutateArchiveManifest } from '../archive/index.mjs'
 import {
 	prepareArchiveMonthChunkMetaForServe,
@@ -20,6 +20,7 @@ import {
 	resolveArchiveQuorumPeerMin,
 	syncArchivedEventIdsFromMonthBody,
 } from '../archive/monthDigest.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import {

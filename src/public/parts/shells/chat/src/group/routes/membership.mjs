@@ -5,11 +5,11 @@
  * 【数据结构】成员页 {members,membersPagesCount}、invite ticket、powSolution、join content（introducerPubKeyHash/reputationEdge）。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/dag、chat/lib/inviteTickets、access.mjs、groupSync 无关。
  */
+import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
-import { memberEntityHash } from '../../entity/member.mjs'
-import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/runUri.mjs'
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
@@ -23,9 +23,9 @@ import { roomCredentialsFromGroupSettings } from '../../chat/federation/roomCred
 import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
-import { governanceChannelId } from '../access.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
-
+import { memberEntityHash } from '../../entity/member.mjs'
+import { governanceChannelId } from '../access.mjs'
 import { suggestGroupMentions } from '../lib/mentionSuggest.mjs'
 
 import { requireGroupMember, resolveGroupMember } from './middleware.mjs'

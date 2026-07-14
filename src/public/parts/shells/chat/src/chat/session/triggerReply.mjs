@@ -17,6 +17,7 @@ import { isEntityHash128, parseEntityHash } from 'npm:@steve02081504/fount-p2p/c
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
+import { ensureLocalAgentEntityHash, memberEntityHash } from '../../entity/member.mjs'
 import {
 	appendDagGeneratingPlaceholder,
 	cancelGeneratingPlaceholder,
@@ -27,7 +28,6 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { ensureLocalAgentEntityHash, memberEntityHash } from '../../entity/member.mjs'
 import { finishStreamBuffer } from '../ws/groupWsStreamBuffer.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'

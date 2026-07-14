@@ -1,13 +1,14 @@
 /**
  * 【文件】`dag/remoteIngest.mjs` — 联邦/远程 DAG 事件入库。
  */
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { computeEventId } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { isSubjectBannedByState, isSubjectBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPeerPoolKeyBlocked, loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { recordMessageRateViolation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
+import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { assertFederatedCkgContent } from '../channel_keys/content.mjs'
 import {
 	classifyHlcSkewAction,

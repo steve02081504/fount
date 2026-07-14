@@ -9,11 +9,11 @@
 import './src/chat/dag/index.mjs'
 import './src/chat/federation/config.mjs'
 
-import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import {
 	registerShellPartpath,
 	unregisterShellPartpath,
 } from 'npm:@steve02081504/fount-p2p/registries/part_path'
+
 import { sendEventToUser } from '../../../../server/web_server/event_dispatcher.mjs'
 
 import { registerChatChunkProviders, unregisterChatChunkProviders } from './src/chat/chunkProviders.mjs'
@@ -30,6 +30,7 @@ import {
 import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
 import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
+import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import { setGroupEndpoints } from './src/group/endpoints.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default

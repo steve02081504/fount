@@ -34,9 +34,9 @@ const VIDEO_NAME_REGEXP = /\.(mp4|mov|avi|mkv|webm)$/i
 const AUDIO_NAME_REGEXP = /\.(mp3|ogg|wav|m4a|aac|flac)$/i
 
 /**
- *
- * @param text
- * @param maxBytes
+ * @param {string} text 文本
+ * @param {number} maxBytes 最大字节数
+ * @returns {string[]} UTF-8 硬切分后的文本段
  */
 function hardSplitByBytes(text, maxBytes) {
 	const textEncoder = new TextEncoder()
@@ -62,7 +62,7 @@ function hardSplitByBytes(text, maxBytes) {
  * 按微信 UTF-8 字节限制分割文本。
  * @param {string} text 原文
  * @param {number} [maxBytes] 每段最大字节
- * @returns {string[]}
+ * @returns {string[]} 符合微信字节限制的文本段
  */
 export function splitWechatText(text, maxBytes = WECHAT_TEXT_MAX_BYTES) {
 	const textEncoder = new TextEncoder()
@@ -87,8 +87,8 @@ export function splitWechatText(text, maxBytes = WECHAT_TEXT_MAX_BYTES) {
 }
 
 /**
- *
- * @param name
+ * @param {string} name 文件名
+ * @returns {string} 推断的 MIME 类型
  */
 function guessMimeFromFileName(name) {
 	const lowerFileName = String(name).toLowerCase()
@@ -104,9 +104,9 @@ function guessMimeFromFileName(name) {
 }
 
 /**
- *
- * @param mimeType
- * @param fileName
+ * @param {string} mimeType MIME 类型
+ * @param {string} fileName 文件名
+ * @returns {string} 输入文件扩展名（含点）
  */
 function getInputExt(mimeType, fileName) {
 	const ext = mimetype.extension(mimeType)
@@ -116,9 +116,9 @@ function getInputExt(mimeType, fileName) {
 }
 
 /**
- *
- * @param buffer
- * @param inputExt
+ * @param {Buffer | Uint8Array} buffer 二进制缓冲
+ * @param {string} inputExt 输入扩展名
+ * @returns {Promise<boolean>} 是否为动图/多帧媒体
  */
 async function isAnimatedMedia(buffer, inputExt) {
 	const tempDir = mkdtempSync(join(tmpdir(), 'fount-wechat-probe-'))
@@ -140,11 +140,11 @@ async function isAnimatedMedia(buffer, inputExt) {
 }
 
 /**
- *
- * @param buffer
- * @param inputExt
- * @param outputExt
- * @param extraArgs
+ * @param {Buffer | Uint8Array} buffer 二进制缓冲
+ * @param {string} inputExt 输入扩展名
+ * @param {string} outputExt 输出扩展名
+ * @param {string[]} [extraArgs] 额外参数
+ * @returns {Promise<Buffer>} 转换后的文件缓冲
  */
 async function convertBufferWithFfmpeg(buffer, inputExt, outputExt, extraArgs = []) {
 	const tempDir = mkdtempSync(join(tmpdir(), 'fount-wechat-'))
@@ -170,7 +170,7 @@ async function convertBufferWithFfmpeg(buffer, inputExt, outputExt, extraArgs = 
 /**
  * 若文件格式微信不支持，自动转换为兼容格式。
  * @param {{ name?: string, buffer?: Buffer, mime_type?: string }} file 文件对象
- * @returns {Promise<typeof file>}
+ * @returns {Promise<typeof file>} 微信兼容的文件对象
  */
 export async function convertFileToWechatCompatible(file) {
 	if (!file?.buffer) return file
@@ -213,8 +213,8 @@ export async function convertFileToWechatCompatible(file) {
 }
 
 /**
- *
- * @param wechatMessage
+ * @param {object} wechatMessage 微信消息
+ * @returns {string} 合并后的入站文本
  */
 function extractInboundText(wechatMessage) {
 	return (wechatMessage.item_list || [])
@@ -224,8 +224,8 @@ function extractInboundText(wechatMessage) {
 }
 
 /**
- *
- * @param wechatMessage
+ * @param {object} wechatMessage 微信消息
+ * @returns {boolean} 是否含可下载媒体项
  */
 function hasDownloadableMediaItem(wechatMessage) {
 	return (wechatMessage.item_list || []).some(item =>
@@ -237,10 +237,10 @@ function hasDownloadableMediaItem(wechatMessage) {
 }
 
 /**
- *
- * @param media
- * @param cdnBaseUrl
- * @param signal
+ * @param {object} media 媒体
+ * @param {string} cdnBaseUrl CDN 基址
+ * @param {AbortSignal} signal AbortSignal
+ * @returns {Promise<Buffer>} 解密后的媒体缓冲
  */
 async function downloadAndDecrypt(media, cdnBaseUrl, signal) {
 	const encrypted = await downloadCdnBuffer(media.encrypt_query_param || '', cdnBaseUrl, media.full_url, signal)
@@ -248,10 +248,10 @@ async function downloadAndDecrypt(media, cdnBaseUrl, signal) {
 }
 
 /**
- *
- * @param item
- * @param cdnBaseUrl
- * @param signal
+ * @param {object} item 消息项
+ * @param {string} cdnBaseUrl CDN 基址
+ * @param {AbortSignal} signal AbortSignal
+ * @returns {Promise<{ name: string, buffer: Buffer, mime_type: string } | null>} 解密后的文件；失败为 null
  */
 async function downloadAndDecryptMediaItem(item, cdnBaseUrl, signal) {
 	try {
@@ -341,7 +341,7 @@ export async function wechatMessageToBridgeDto(wechatMessage, ownerUsername, cdn
 /**
  * 检测上传媒体类型。
  * @param {{ name?: string, mime_type?: string }} fileLike 文件
- * @returns {number}
+ * @returns {number} UploadMediaType 枚举值
  */
 export function detectWechatUploadMediaType(fileLike) {
 	const mimeType = String(fileLike?.mime_type || '').toLowerCase()
@@ -358,12 +358,12 @@ export function detectWechatUploadMediaType(fileLike) {
 /**
  * 构建微信出站媒体 item。
  * @param {object} args 参数
- * @returns {object}
+ * @returns {object} 微信出站 item_list 条目
  */
 export function buildWechatMediaMessageItem(args) {
 	/**
-	 *
-	 * @param cdnMedia
+	 * @param {object} cdnMedia CDN 媒体项
+	 * @returns {object} 出站加密媒体字段
 	 */
 	const outboundMedia = cdnMedia => ({ ...cdnMedia, encrypt_type: 1 })
 	if (args.uploadMediaType === UploadMediaType.IMAGE)
@@ -405,8 +405,8 @@ export const WechatMessageType = { USER: 1, BOT: 2 }
 export const WechatMessageState = { NEW: 0, GENERATING: 1, FINISH: 2 }
 
 /**
- *
- * @param wechatMessage
+ * @param {object} wechatMessage 微信消息
+ * @returns {boolean} 是否含文本或可下载媒体
  */
 export function wechatMessageHasContent(wechatMessage) {
 	return Boolean(extractInboundText(wechatMessage)) || hasDownloadableMediaItem(wechatMessage)

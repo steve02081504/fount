@@ -12,6 +12,7 @@ import { DEFAULT_MAX_CATCHUP_EVENTS } from 'npm:@steve02081504/fount-p2p/core/co
 import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
+
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'

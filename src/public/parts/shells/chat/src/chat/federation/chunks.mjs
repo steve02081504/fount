@@ -5,8 +5,10 @@
  * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
  * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；npm:@steve02081504/fount-p2p/node/reputation_store.mjs；npm:@steve02081504/fount-p2p/node/storage_plugins。
  */
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { b64ToU8, u8ToB64 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
+import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
+import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
+import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { registerChunkFetchWait, resolveChunkFetchWait } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_pending'
 import {
 	assignChunksToPeers,
@@ -15,17 +17,16 @@ import {
 	markChunkInflight,
 	planChunkFetches,
 } from 'npm:@steve02081504/fount-p2p/federation/chunk_fetch_scheduler'
-import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
-import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { verifiedChunkBytes } from 'npm:@steve02081504/fount-p2p/files/chunk_fetch_verify'
 import { handleFedChunkGetIngress, handleFedChunkDataIngress } from 'npm:@steve02081504/fount-p2p/files/chunk_responder'
 import { getChunk, hasChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
-import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { bumpChunkStorageReputation, penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
+import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
+
+import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { bumpChunkLocalRef } from '../files/chunkRefcount.mjs'
 import { beginChunkReplicationWait, recordChunkReplicationAck, registerChunkReplicationTargets } from '../files/chunkReplicationAck.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'

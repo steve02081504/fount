@@ -1,5 +1,5 @@
-import { getState } from '../dag/materialize.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import { groupKindFromState } from '../lib/notificationPreferences.mjs'
 

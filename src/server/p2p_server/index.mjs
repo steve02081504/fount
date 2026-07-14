@@ -5,6 +5,7 @@ import { initNode } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 
 import { createFountEntityStore } from '../../public/parts/shells/chat/src/entity/store.mjs'
+
 import { registerP2PInboundHandlers } from './inbound_handlers.mjs'
 import { pickPrimaryReplica } from './user_notify.mjs'
 
@@ -21,9 +22,23 @@ export async function initP2PServer({ dataPath, signaling }) {
 	const { registerTrustGraphProvider } = await import('npm:@steve02081504/fount-p2p/trust_graph/registry')
 	registerTrustGraphProvider('default', createDefaultTrustGraphProvider())
 	registerP2PInboundHandlers()
+	await registerEntitySearchQueryHandler()
 	const primary = pickPrimaryReplica()
 	// 测试节点也须在启动时先 join user room 并落定，再让联邦 join 群 room（串行 + 落定窗口）。
 	// 若跳过启动 join、改在联邦 mid-flight lazy ensureUserRoom，会与已连 peer 的群 room 争抢 offerPool 并断链。
 	if (primary)
 		await ensureUserRoom({ replicaUsername: primary })
+}
+
+/**
+ * 注册 chat `entity_search` 多跳查询 handler。
+ * @returns {Promise<void>}
+ */
+async function registerEntitySearchQueryHandler() {
+	const { getShellPartpath } = await import('npm:@steve02081504/fount-p2p/registries/part_path')
+	const { registerQueryInboundHandler } = await import('npm:@steve02081504/fount-p2p/wire/part_query')
+	const { ENTITY_SEARCH_KIND, localEntitySearchHandler } = await import(
+		'../../public/parts/shells/chat/src/entity/entitySearch.mjs'
+	)
+	registerQueryInboundHandler(getShellPartpath('chat'), ENTITY_SEARCH_KIND, localEntitySearchHandler)
 }

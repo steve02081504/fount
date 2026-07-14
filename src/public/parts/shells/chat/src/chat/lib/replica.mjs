@@ -2,10 +2,10 @@
  * 【文件】src/chat/lib/replica.mjs
  * 【职责】replica 上下文与群成员 entityHash；用户 operator 见 server/p2p_server。
  */
-import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
-import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { getNodeHash, isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
+
 import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../entity/http.mjs'
 import {
 	getOperatorEntityHash,

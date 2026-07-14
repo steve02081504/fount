@@ -6,8 +6,8 @@
 import { readdir } from 'node:fs/promises'
 import { join } from 'node:path'
 
-import { shellChatRoot } from './paths.mjs'
 import { rethrowUnlessEnoentOrEnotdir } from './fsSafe.mjs'
+import { shellChatRoot } from './paths.mjs'
 
 /**
  * 枚举当前用户聊天 shell 数据下出现过的所有会话/群 ID。

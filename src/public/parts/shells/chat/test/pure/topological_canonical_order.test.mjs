@@ -2,8 +2,8 @@
  * topologicalCanonicalOrder 单元测试（Deno）。
  */
 /* global Deno */
-import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
 
 
 /**

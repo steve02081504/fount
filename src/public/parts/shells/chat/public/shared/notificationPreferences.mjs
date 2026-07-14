@@ -14,7 +14,7 @@ export async function loadNotificationPreferences() {
 
 /**
  * @param {Record<string, object>} prefs 整档通知偏好
- * @returns {Promise<Record<string, object>>}
+ * @returns {Promise<Record<string, object>>} 写入后的整档偏好
  */
 export async function saveNotificationPreferences(prefs) {
 	const response = await fetch(NOTIFY_PREFS_API, {
@@ -30,7 +30,7 @@ export async function saveNotificationPreferences(prefs) {
 
 /**
  * @param {object} prefs 群级偏好
- * @returns {boolean}
+ * @returns {boolean} 当前是否处于静音窗口
  */
 export function isNotifyMuted(prefs = {}) {
 	if (prefs.mutedUntil === true) return true

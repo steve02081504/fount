@@ -3,14 +3,17 @@ import path from 'node:path'
 
 import webpush from 'npm:web-push'
 
+import { loadJsonFileIfExists, saveJsonFile } from '../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../auth/index.mjs'
 import { data_path } from '../../server.mjs'
-import { loadJsonFileIfExists, saveJsonFile } from '../../../scripts/json_loader.mjs'
 
+/**
+ * @returns {string} vapid 文件路径
+ */
 const VAPID_PATH = () => path.join(data_path, 'notify', 'vapid.json')
 
 /**
- * @returns {Promise<{ publicKey: string, privateKey: string }>}
+ * @returns {Promise<{ publicKey: string, privateKey: string }>} VAPID 密钥对
  */
 export async function ensureVapidKeys() {
 	const filePath = VAPID_PATH()
@@ -47,7 +50,7 @@ function loadPushSubscriptions(username) {
 /**
  * @param {string} username 用户
  * @param {object[]} subscriptions 订阅列表
- * @returns {void}
+ * @returns {void} 无
  */
 function savePushSubscriptions(username, subscriptions) {
 	const filePath = pushSubscriptionsPath(username)
@@ -58,7 +61,7 @@ function savePushSubscriptions(username, subscriptions) {
 /**
  * @param {string} username 用户
  * @param {PushSubscriptionJSON} subscription Push 订阅
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function addPushSubscription(username, subscription) {
 	const endpoint = String(subscription?.endpoint || '').trim()
@@ -71,7 +74,7 @@ export async function addPushSubscription(username, subscription) {
 /**
  * @param {string} username 用户
  * @param {string} endpoint 订阅 endpoint
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function removePushSubscription(username, endpoint) {
 	const normalized = String(endpoint || '').trim()
@@ -83,7 +86,7 @@ export async function removePushSubscription(username, endpoint) {
 /**
  * @param {string} username 用户
  * @param {{ title?: string, body?: string, url?: string, tag?: string }} payload 通知载荷
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function sendWebPush(username, payload) {
 	await ensureVapidKeys()
@@ -95,7 +98,7 @@ export async function sendWebPush(username, payload) {
 		url: payload.url || '/',
 		tag: payload.tag,
 	})
-	for (const subscription of [...subscriptions]) {
+	for (const subscription of [...subscriptions]) 
 		try {
 			await webpush.sendNotification(subscription, body)
 		}
@@ -104,7 +107,7 @@ export async function sendWebPush(username, payload) {
 			if (status === 404 || status === 410)
 				await removePushSubscription(username, subscription.endpoint)
 		}
-	}
+	
 }
 
 /**

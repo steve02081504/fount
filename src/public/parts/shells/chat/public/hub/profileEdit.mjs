@@ -171,6 +171,9 @@ function initEditState(entityHash, profile) {
 	const custom = editDialog?.querySelector('#hub-profile-edit-custom-status')
 	if (custom instanceof HTMLInputElement)
 		custom.value = profile.customStatus || ''
+	const handle = editDialog?.querySelector('#hub-profile-edit-handle')
+	if (handle instanceof HTMLInputElement)
+		handle.value = profile.handle || ''
 	loadActiveLocaleForm()
 	refreshLocaleTabs()
 }
@@ -183,6 +186,7 @@ async function handleSaveProfile() {
 	try {
 		const updates = {
 			localized: editingLocalized,
+			handle: editDialog.querySelector('#hub-profile-edit-handle')?.value?.trim() || '',
 			status: editDialog.querySelector('#hub-profile-edit-status')?.value || editingBaseProfile.status,
 			customStatus: editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim() || '',
 		}

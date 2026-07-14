@@ -7,8 +7,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { verify } from 'npm:@steve02081504/fount-p2p/crypto'
+
 import { dmLinkSignableBytes } from '../../../public/shared/dmLinkSignature.mjs'
 
 /**

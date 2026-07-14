@@ -1,6 +1,4 @@
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
-
 import {
 	avatarColor,
 	avatarInitial,
@@ -10,6 +8,8 @@ import {
 	isFirstMessageInAuthorGroup,
 	MESSAGE_AVATAR_GROUP_GAP_MS,
 } from 'fount/public/parts/shells/chat/public/shared/hashAvatar.mjs'
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
 
 const SEED = 'a'.repeat(128)
 

@@ -5,9 +5,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 
 const BIND_DOMAIN = 'fount-chat-member-bind'
 const SIG_HEX_RE = /^[\da-f]{128}$/u
@@ -57,7 +57,7 @@ export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bi
  * @param {string} username replica 所有者
  * @param {string} entityHash 128-hex
  * @param {string} memberPubKeyHash 群成员 pubKeyHash
- * @returns {Promise<{ entityHash: string, entityActivePubKeyHex: string, bindingSig: string }>}
+ * @returns {Promise<{ entityHash: string, entityActivePubKeyHex: string, bindingSig: string }>} member_join 绑定字段
  */
 export async function buildMemberJoinBindingFields(username, entityHash, memberPubKeyHash) {
 	const {

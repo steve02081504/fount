@@ -8,9 +8,9 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { mkdir, stat } from 'node:fs/promises'
 
-import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { EPOCH_CHAIN_MAX } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl, writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
@@ -22,6 +22,10 @@ import {
 	writeOrderCache,
 } from 'npm:@steve02081504/fount-p2p/federation/dag_order_cache'
 import {
+	invalidateTopologicalOrderMemo,
+	resolveTopologicalOrderMemoCached,
+} from 'npm:@steve02081504/fount-p2p/federation/topo_order_memo'
+import {
 	authzFoldOrderIds,
 	computeDagTipIdsFromEvents,
 	hasDanglingParents,
@@ -30,10 +34,7 @@ import {
 	selectConsensusBranchTip,
 } from 'npm:@steve02081504/fount-p2p/governance/branch'
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
-import {
-	invalidateTopologicalOrderMemo,
-	resolveTopologicalOrderMemoCached,
-} from 'npm:@steve02081504/fount-p2p/federation/topo_order_memo'
+
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
 import { archivePostsBeforeDagFold, trimMessagesJsonlToHotWindow } from '../archive/archiveBeforeFold.mjs'
 import { computeHotPostsForCheckpoint } from '../archive/hotPosts.mjs'
@@ -42,8 +43,8 @@ import { findStaleUnreachableChannels } from '../channel/gc.mjs'
 import { enforceEventRetention } from '../events/retention.mjs'
 import { flushPendingRelay } from '../federation/pendingRelay.mjs'
 import { loadGovernanceBranchTip } from '../governance/branchStore.mjs'
-import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/fsSafe.mjs'
+import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 
 import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'

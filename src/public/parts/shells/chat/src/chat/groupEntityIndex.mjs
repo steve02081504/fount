@@ -2,11 +2,11 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 import {
 	registerLogicalEntityIdResolver,
 	unregisterLogicalEntityIdResolver,
 } from '../entity/logicalId.mjs'
-import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 import { groupEntityHash } from './lib/groupEntity.mjs'
 

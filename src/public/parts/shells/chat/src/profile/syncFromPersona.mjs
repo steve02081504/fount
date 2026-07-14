@@ -1,17 +1,17 @@
 /**
  * 群 persona 变更后同步 entity profile（Chat 专用）。
  */
-import {
-	getProfile,
-	updateProfile,
-} from '../entity/profile.mjs'
+import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/replica.mjs'
 import {
 	getInfoDefaultsForEntity,
 	isPlaceholderDisplayName,
 	normalizeLocalizedMap,
 	resolvePersonaPresentation,
 } from '../entity/presentation.mjs'
-import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/replica.mjs'
+import {
+	getProfile,
+	updateProfile,
+} from '../entity/profile.mjs'
 
 /**
  * @param {string} replicaUsername replica 登录名

@@ -1,4 +1,5 @@
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
 import { getUserByReq } from '../../../../../../server/auth/index.mjs'
 
 import { resolveCharPartNameForEntity, resolveOperatorEntityHashForUser } from './identity.mjs'
@@ -42,7 +43,7 @@ export async function isWritableLocalEntityForUser(replicaUsername, entityHash) 
 	const target = String(entityHash || '').toLowerCase()
 	const operatorHash = await resolveOperatorEntityHashForUser(replicaUsername)
 	if (target === operatorHash) return true
-	return (await resolveCharPartNameForEntity(replicaUsername, target)) != null
+	return await resolveCharPartNameForEntity(replicaUsername, target) != null
 }
 
 /**

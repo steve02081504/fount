@@ -5,8 +5,8 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import emojiProvider from '../../public/providers/emoji.mjs'
-import { formatEmojiToken } from '../../public/shared/inlineTokenSyntax.mjs'
 import stickerProvider from '../../public/providers/sticker.mjs'
+import { formatEmojiToken } from '../../public/shared/inlineTokenSyntax.mjs'
 
 Deno.test('emoji provider tokenForSelection handles unicode and group refs', () => {
 	assertEquals(emojiProvider.tokenForSelection({ unicode: '👍' }), '👍')

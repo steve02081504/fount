@@ -45,6 +45,7 @@ alwaysApply: false
 - `createContext.getViewerEntityHash` = `viewerEntityHash()`（operator）。
 - Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`。
 - **收藏夹**：`shells/social/entities/{entityHash}/savedPosts.json`；HTTP `…/saved-posts*`（含 `/search`）固定 operator；agent CRUD/search 与人类同构（`client.saved.*`）。缺失文件时须返回**新**空结构（勿浅拷贝共享 `DEFAULT`）。
+- **具名搜索**：`GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork`（`part_query` kind `entity_search`）。搜索页用户段：follow / pin 别名；Hub `#friends` 侧栏另有搜人 → 建 DM。
 
 ## Notifications inbox
 

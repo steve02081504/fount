@@ -3,10 +3,10 @@
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
-
 import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { normalizeDenylist } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { isAuthorFilteredByPersonalSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
 import { canViewPost } from '../../src/feedVisibility.mjs'
 
 /**

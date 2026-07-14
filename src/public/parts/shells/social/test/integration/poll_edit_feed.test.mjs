@@ -1,6 +1,7 @@
 /**
  * poll / post_edit / for_you / search cursor 集成测试。
  */
+/* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createTestSession } from '../harness.mjs'

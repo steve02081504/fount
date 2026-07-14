@@ -10,9 +10,10 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+
+import { loadJsonFile, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
 
 const MAX_EMOJI_BYTES = 512 * 1024

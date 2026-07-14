@@ -17,7 +17,7 @@ import { ms } from '../../ms.mjs'
  * @param {string} base 节点根 URL
  * @param {string} key API key
  * @param {string} path 路径（可含 query）
- * @returns {string}
+ * @returns {string} 带 API key 的完整 URL
  */
 export function buildApiUri(base, key, path) {
 	const root = base.trim().replace(/\/+$/, '')
@@ -26,8 +26,8 @@ export function buildApiUri(base, key, path) {
 }
 
 /**
- * @param {unknown} raw 响应体
- * @returns {unknown}
+ * @param {unknown} raw 响应体文本
+ * @returns {unknown} 解析后的 JSON 或原文
  */
 function parseJsonBody(raw) {
 	if (!raw) return null
@@ -48,7 +48,7 @@ function parseJsonBody(raw) {
  * @param {object} [options] 选项
  * @param {number} [options.timeoutSec=180] 超时秒
  * @param {string} [options.shell] shell 名；设置则 path 为 shell 相对路径
- * @returns {Promise<LiveHttpResponse>}
+ * @returns {Promise<LiveHttpResponse>} HTTP 响应（不抛状态错误）
  */
 export async function invokeRequest(node, method, path, body, options = {}) {
 	const { timeoutSec = 180, shell } = options
@@ -84,7 +84,7 @@ export async function invokeRequest(node, method, path, body, options = {}) {
  * @param {string} fileName 文件名
  * @param {Uint8Array} fileBytes 文件内容
  * @param {string} [contentType='image/png'] MIME
- * @returns {Promise<LiveHttpResponse>}
+ * @returns {Promise<LiveHttpResponse>} multipart HTTP 响应
  */
 export async function invokeMultipart(node, shell, method, path, fields, fileField, fileName, fileBytes, contentType = 'image/png') {
 	const uri = buildApiUri(node.base, node.key, `/api/parts/shells:${shell}${path}`)
@@ -106,7 +106,7 @@ export async function invokeMultipart(node, shell, method, path, fields, fileFie
 
 /**
  * @param {number} ms 毫秒
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export function sleep(ms) {
 	return new Promise(resolve => { setTimeout(resolve, ms) })
@@ -117,7 +117,10 @@ export const TEST_PNG_BYTES = Uint8Array.from(atob(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
 ), c => c.charCodeAt(0))
 
-/** @param {string} [dataUrlPrefix='data:image/png;base64,'] */
+/**
+ * @param {string} [dataUrlPrefix='data:image/png;base64,'] data URL 前缀
+ * @returns {string} 测试 PNG 的 data URL
+ */
 export function testPngDataUrl(dataUrlPrefix = 'data:image/png;base64,') {
 	return `${dataUrlPrefix}${btoa(String.fromCharCode(...TEST_PNG_BYTES))}`
 }

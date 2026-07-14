@@ -1,8 +1,9 @@
 /**
  * group/routes/groupEmojis.mjs — 群自定义表情 REST + 非成员内容端点。
  */
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { betterSendFile } from '../../../../../../../server/web_server/resources.mjs'
 import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'

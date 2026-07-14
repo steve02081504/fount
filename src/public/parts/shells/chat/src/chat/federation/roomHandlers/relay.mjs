@@ -1,10 +1,11 @@
-import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
 import {
 	parseDiscoveryAnnounce,
 	parseDiscoveryQuery,
 	parseDiscoveryQueryResponse,
 } from 'npm:@steve02081504/fount-p2p/schemas/discovery'
 import { parseJoinSnapshotRequest, parseJoinSnapshotResponse } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
+
 import { applyRemoteDigestClaim } from '../archiveDigestClaims.mjs'
 import {
 	handleFedArchiveMonthWant,

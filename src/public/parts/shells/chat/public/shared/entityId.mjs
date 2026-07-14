@@ -15,6 +15,9 @@ export async function hashFromPubKeyHex(pubKeyHex) {
 	return sha256Hex(bytes.buffer)
 }
 
+/**
+ *
+ */
 export { encodeEntityHash }
 
 /**

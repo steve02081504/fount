@@ -6,7 +6,7 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createIntegrationBoot } from '../harness.mjs'
 
@@ -18,6 +18,11 @@ Deno.test('agent bookmarks isolated from operator ChatClient', async () => {
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const from = join(fixturesRoot, 'chars', CHAR)
 			const to = join(dataDir, 'users', user, 'chars', CHAR)
@@ -47,6 +52,11 @@ Deno.test('agent notification preferences and read markers isolated from operato
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const from = join(fixturesRoot, 'chars', CHAR)
 			const to = join(dataDir, 'users', user, 'chars', CHAR)
@@ -85,6 +95,11 @@ Deno.test('care and inbox namespaces stay bound to client entityHash', async () 
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const from = join(fixturesRoot, 'chars', CHAR)
 			const to = join(dataDir, 'users', user, 'chars', CHAR)

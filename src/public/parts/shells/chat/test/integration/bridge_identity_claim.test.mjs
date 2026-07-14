@@ -16,7 +16,7 @@ const CHAR_YES = 'on_message_yes'
 /**
  * @param {string} dataDir 数据根
  * @param {string} username 用户
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function seedCharFixture(dataDir, username) {
 	const userRoot = join(dataDir, 'users', username)
@@ -30,7 +30,7 @@ async function seedCharFixture(dataDir, username) {
  * @param {string} username replica
  * @param {string} operatorHash operator entityHash
  * @param {string} name profile 展示名
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function seedOperatorProfileName(username, operatorHash, name) {
 	const { getProfile, updateProfile } = await import('../../src/entity/profile.mjs')
@@ -157,6 +157,10 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 		username,
 		tempDirPrefix: 'fount_bridge_care_',
 		minP2pNode: true,
+		/**
+		 * @param {string} user 用户名
+		 * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)

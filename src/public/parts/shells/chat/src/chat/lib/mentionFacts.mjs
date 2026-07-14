@@ -1,9 +1,9 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
+import { memberEntityHash } from '../../entity/member.mjs'
 import { getState } from '../dag/materialize.mjs'
 
-import { memberEntityHash } from '../../entity/member.mjs'
 
 /**
  * @param {object} state 物化群状态

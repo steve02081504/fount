@@ -12,13 +12,13 @@ export default {
 	},
 	interfaces: {
 		chat: {
-			/** @returns {Promise<{ content: string }>} */
+			/** @returns {Promise<{ content: string }>} 回复对象 */
 			GetReply: async () => ({ content: 'social-on-message-reply' }),
 		},
 		social: {
 			/**
-			 * @param {import('../../../../../../../../../decl/socialAPI.ts').SocialMessageEvent} event
-			 * @returns {Promise<boolean>}
+			 * @param {import('../../../../../../../../../decl/socialAPI.ts').SocialMessageEvent} event 事件
+			 * @returns {Promise<boolean>} 是否应处理该消息
 			 */
 			OnMessage: async event => {
 				const state = globalThis.__fountSocialOnMessageProbe ??= { events: [], returnValue: true }

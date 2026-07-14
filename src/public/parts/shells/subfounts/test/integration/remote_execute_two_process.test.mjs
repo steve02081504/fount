@@ -4,7 +4,6 @@
 /* global Deno */
 import { spawn } from 'node:child_process'
 import { mkdir } from 'node:fs/promises'
-import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -22,7 +21,7 @@ const clientWorkerPath = join(integrationDir, 'helpers/subfount_client_worker.mj
  * @param {string} method HTTP 方法
  * @param {string} path P2P API 路径
  * @param {object} [body] JSON body
- * @returns {Promise<Response>}
+ * @returns {Promise<Response>} fetch Response
  */
 function p2pFetch(node, method, path, body) {
 	const sep = path.includes('?') ? '&' : '?'
@@ -37,7 +36,7 @@ function p2pFetch(node, method, path, body) {
 /**
  * @param {number} timeoutMs 超时毫秒
  * @param {() => Promise<boolean>} predicate 条件
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 条件成立返回；超时抛错
  */
 async function waitFor(timeoutMs, predicate) {
 	const deadline = Date.now() + timeoutMs
@@ -76,7 +75,7 @@ function spawnSubfountClient(options) {
 
 /**
  * @param {import('node:child_process').ChildProcess} child 子进程
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function stopClient(child) {
 	if (!child?.pid) return
@@ -107,7 +106,7 @@ async function waitForRemoteSubfount(node) {
 
 /**
  * @param {string} path 文件路径
- * @returns {Promise<object | null>}
+ * @returns {Promise<object | null>} 解析后的 JSON；失败为 null
  */
 async function readJsonFile(path) {
 	try {

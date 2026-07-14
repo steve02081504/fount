@@ -1182,12 +1182,18 @@
 			"postCount": "${n} 条帖子"
 		},
 		"search": {
-			"placeholder": "搜索动态或 #话题（至少 2 字）",
+			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
 			"submit": "搜索",
 			"clear": "清除",
-			"hint": "在已关注与本人的时间线中搜索；以 # 开头仅匹配话题标签",
+			"hint": "用户与动态均经信任网络搜索；以 # 开头仅匹配话题标签",
 			"empty": "没有匹配的帖子",
-			"tooShort": "请输入至少 2 个字符"
+			"tooShort": "请输入至少 2 个字符",
+			"usersTitle": "用户",
+			"postsTitle": "动态",
+			"usersEmpty": "没有匹配的用户",
+			"pinAlias": "设为别名",
+			"dm": "发私信",
+			"trustScore": "信任 ${score}"
 		},
 		"profile": {
 			"viewPosts": "查看动态",
@@ -2307,6 +2313,11 @@
 			"stickersLoadFailed": "加载失败：${error}",
 			"noChars": "暂无角色，先去安装一些吧",
 			"noFriends": "暂无私聊。可从主页点角色、在群聊中打开资料卡发私信，或从消息里点头像发起对话。",
+			"friendsSearchPlaceholder": "按自定义 ID / 名称搜人…",
+			"friendsSearchEmpty": "没有匹配的用户",
+			"friendsSearchTooShort": "请输入至少 2 个字符",
+			"friendsSearchDm": "发私信",
+			"friendsSearchPin": "设为别名",
 			"charCount": "${count} 个角色",
 			"friendsCount": "${count} 个好友",
 			"charTag": "角色",
@@ -2479,7 +2490,10 @@
 				"tagsLabel": "标签",
 				"tagsPlaceholder": "用逗号分隔，例如：助手, 原创",
 				"linksLabel": "链接",
-				"linksPlaceholder": "每行一条：名称|URL|图标URL（后两项可省略）"
+				"linksPlaceholder": "每行一条：名称|URL|图标URL（后两项可省略）",
+				"handleLabel": "自定义 ID",
+				"handlePlaceholder": "例如 steve（2–32 位小写字母数字._-）",
+				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。"
 			},
 			"profilePopup": {
 				"close": {

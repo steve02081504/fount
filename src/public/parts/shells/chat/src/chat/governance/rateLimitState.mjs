@@ -1,11 +1,12 @@
 /**
  * 群级消息限速内存桶（按 entityKey 滑动窗口）。
  */
-import { createLruMap } from '../../../../../../../scripts/memo.mjs'
 import {
 	messageRateEntityKey,
 	resolveMessageRateLimits,
 } from 'npm:@steve02081504/fount-p2p/federation/message_rate_limit'
+
+import { createLruMap } from '../../../../../../../scripts/memo.mjs'
 
 const BUCKETS_BY_GROUP_MAX = 1024
 

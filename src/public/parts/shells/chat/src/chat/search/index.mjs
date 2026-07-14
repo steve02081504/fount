@@ -1,4 +1,5 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
 import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
 import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
 import { loadArchiveManifest } from '../archive/index.mjs'

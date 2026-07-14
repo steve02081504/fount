@@ -1,6 +1,6 @@
-import { generateChannelKey, wrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
-import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { generateChannelKey, wrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 
 /**
  * @param {object} state 物化群状态

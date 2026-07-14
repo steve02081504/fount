@@ -2,11 +2,13 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import {
 	isAuthorFilteredByPersonalSets,
+	loadPersonalFilterSets,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
-import { loadPersonalFilterSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
+
+import { socialPostKey } from './federation/post_key.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
 import {
 	buildPostFeedItem,
@@ -17,7 +19,6 @@ import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing, loadFollowingForActor, listFollowedTimelineOwners } from './following.mjs'
-import { socialPostKey } from './federation/post_key.mjs'
 import { queryReplyIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 

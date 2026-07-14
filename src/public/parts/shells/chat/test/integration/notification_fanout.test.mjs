@@ -2,10 +2,11 @@
  * 通知偏好矩阵、@here 时序、care 穿透、vote_closed inbox。
  */
 /* global Deno */
-import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createIntegrationBoot } from '../harness.mjs'
 
@@ -16,8 +17,8 @@ const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures'
  * @param {string} groupId 群
  * @param {string} channelId 频道
  * @param {object} messageLine 消息行
- * @param {{ ingress?: string }} [options]
- * @returns {Promise<void>}
+ * @param {{ ingress?: string }} [options] 扇出选项
+ * @returns {Promise<void>} 无
  */
 async function fanout(username, groupId, channelId, messageLine, options = {}) {
 	const { dispatchMessageFanout } = await import('../../src/chat/dag/messageFanout.mjs')
@@ -86,6 +87,11 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -162,6 +168,11 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 	assertEquals(liveMentions.everyone, true)
 	assertEquals(backMentions.everyone, false)
 
+	/**
+	 *
+	 * @param {object} extra 附加字段
+ * @returns {void} 无
+	 */
 	const probe = extra => ({
 		mentions: extra,
 		group: { groupId },

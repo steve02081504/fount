@@ -8,11 +8,11 @@
 import { Buffer } from 'node:buffer'
 import { createHash, randomUUID } from 'node:crypto'
 
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
-import { entityFileUrl } from '../../entity/filesUrl.mjs'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
 	channelMessageAgentText,
@@ -20,6 +20,7 @@ import {
 	channelMessageShowText,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
+import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
@@ -269,7 +270,7 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 
 	let files = Array.isArray(payload.files) ? payload.files : undefined
 	if (origin === 'human')
-		;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
+	;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
 
 	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
 	content = finalized

@@ -27,7 +27,7 @@ function isAbsentStorageError(error) {
 
 /**
  * @param {S3StorageConfig} config 桶与凭证
- * @returns {Promise<import('@aws-sdk/client-s3').S3Client>}
+ * @returns {Promise<import('@aws-sdk/client-s3').S3Client>} S3 客户端
  */
 async function createS3Client(config) {
 	if (!config.bucket || !config.accessKeyId || !config.secretAccessKey)
@@ -45,10 +45,10 @@ async function createS3Client(config) {
 }
 
 /**
- * @param {S3StorageConfig} config
- * @param {string} groupId
- * @param {string} chunkHash
- * @returns {string}
+ * @param {S3StorageConfig} config 配置
+ * @param {string} groupId 群 ID
+ * @param {string} chunkHash 分片 hash
+ * @returns {string} S3 对象键
  */
 function s3ObjectKey(config, groupId, chunkHash) {
 	const normalizedPrefix = (config.prefix || '').replace(/\/+$/u, '')
@@ -57,9 +57,9 @@ function s3ObjectKey(config, groupId, chunkHash) {
 }
 
 /**
- * @param {string} groupId
- * @param {string} chunkHash
- * @returns {string}
+ * @param {string} groupId 群 ID
+ * @param {string} chunkHash 分片 hash
+ * @returns {string} 联邦规范对象键
  */
 function federatedCanonicalKey(groupId, chunkHash) {
 	return `groups/${groupId}/chunks/${chunkHash}.bin`
@@ -68,17 +68,26 @@ function federatedCanonicalKey(groupId, chunkHash) {
 /**
  * AWS S3 或兼容端（MinIO 等）。locator：`s3://${bucket}/${key}`
  *
- * @param {S3StorageConfig} config
- * @returns {import('npm:@steve02081504/fount-p2p/node/storage_plugins').GroupStoragePlugin}
+ * @param {S3StorageConfig} config 配置
+ * @returns {import('npm:@steve02081504/fount-p2p/node/storage_plugins').GroupStoragePlugin} S3 存储插件
  */
 export function createS3StoragePlugin(config) {
 	/** @type {import('@aws-sdk/client-s3').S3Client | null} */
 	let cached = null
+	/**
+	 * @returns {Promise<import('@aws-sdk/client-s3').S3Client>} S3 客户端
+	 */
 	async function client() {
 		if (!cached) cached = await createS3Client(config)
 		return cached
 	}
 	return {
+		/**
+		 * @param {string} groupId 群 ID
+		 * @param {string} chunkHash 分片 hash
+		 * @param {Uint8Array | Buffer} data 数据
+		 * @returns {Promise<{ storageLocator: string }>} 存储定位器
+		 */
 		async putChunk(groupId, chunkHash, data) {
 			const { PutObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const s3Client = await client()
@@ -90,6 +99,10 @@ export function createS3StoragePlugin(config) {
 			}))
 			return { storageLocator: `s3://${config.bucket}/${objectKey}` }
 		},
+		/**
+		 * @param {object} locator 定位器
+		 * @returns {Promise<Uint8Array>} 分片数据
+		 */
 		async getChunk(locator) {
 			const { GetObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const s3LocatorMatch = String(locator).match(/^s3:\/\/([^/]+)\/(.+)$/u)
@@ -105,6 +118,10 @@ export function createS3StoragePlugin(config) {
 				chunks.push(part)
 			return new Uint8Array(Buffer.concat(chunks))
 		},
+		/**
+		 * @param {object} locator 定位器
+		 * @returns {Promise<void>} 无
+		 */
 		async deleteChunk(locator) {
 			const { DeleteObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const s3LocatorMatch = String(locator).match(/^s3:\/\/([^/]+)\/(.+)$/u)
@@ -126,8 +143,8 @@ export function createS3StoragePlugin(config) {
 /**
  * 联邦分块：同一 object key 写入多个 S3 副本。locator：`fed:${key}`
  *
- * @param {{ replicas: S3StorageConfig[] }} config
- * @returns {import('npm:@steve02081504/fount-p2p/node/storage_plugins').GroupStoragePlugin}
+ * @param {{ replicas: S3StorageConfig[] }} config 联邦副本配置
+ * @returns {import('npm:@steve02081504/fount-p2p/node/storage_plugins').GroupStoragePlugin} 联邦多副本存储插件
  */
 export function createFederatedChunksPlugin(config) {
 	const replicas = config?.replicas
@@ -137,12 +154,22 @@ export function createFederatedChunksPlugin(config) {
 	/** @type {import('@aws-sdk/client-s3').S3Client[]} */
 	const clients = []
 
+	/**
+	 * @param {number} replicaIndex 副本下标
+	 * @returns {Promise<import('@aws-sdk/client-s3').S3Client>} S3 客户端
+	 */
 	async function clientAt(replicaIndex) {
 		if (!clients[replicaIndex]) clients[replicaIndex] = await createS3Client(replicas[replicaIndex])
 		return clients[replicaIndex]
 	}
 
 	return {
+		/**
+		 * @param {string} groupId 群 ID
+		 * @param {string} chunkHash 分片 hash
+		 * @param {Uint8Array | Buffer} data 数据
+		 * @returns {Promise<{ storageLocator: string }>} 存储定位器
+		 */
 		async putChunk(groupId, chunkHash, data) {
 			const { PutObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const buf = Buffer.from(data)
@@ -159,6 +186,10 @@ export function createFederatedChunksPlugin(config) {
 			}
 			return { storageLocator: `fed:${canonical}` }
 		},
+		/**
+		 * @param {object} locator 定位器
+		 * @returns {Promise<Uint8Array>} 分片数据
+		 */
 		async getChunk(locator) {
 			const { GetObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const federatedLocatorMatch = String(locator).match(/^fed:(.+)$/u)
@@ -188,6 +219,10 @@ export function createFederatedChunksPlugin(config) {
 			}
 			throw lastError || new Error('federated getChunk: all replicas failed')
 		},
+		/**
+		 * @param {object} locator 定位器
+		 * @returns {Promise<void>} 无
+		 */
 		async deleteChunk(locator) {
 			const { DeleteObjectCommand } = await import('npm:@aws-sdk/client-s3')
 			const federatedLocatorMatch = String(locator).match(/^fed:(.+)$/u)

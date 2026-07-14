@@ -16,7 +16,7 @@ const CHAR_FIXTURE = 'on_message_yes'
 /**
  * @param {string} dataDir 数据根
  * @param {string} username 用户
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function seedCharFixture(dataDir, username) {
 	const userRoot = join(dataDir, 'users', username)
@@ -32,6 +32,11 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 		username,
 		tempDirPrefix: 'fount_chat_client_send_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -74,6 +79,11 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 		username,
 		tempDirPrefix: 'fount_chat_client_pin_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -126,6 +136,11 @@ Deno.test('agent createGroup is allowed', async () => {
 		username,
 		tempDirPrefix: 'fount_chat_client_agroup_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -168,7 +183,17 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 
 	const calls = []
 	registerBridgeOperations(username, 'mock', 'bridge-bot', {
+		/**
+		 *
+		 * @param {object} payload 载荷
+ * @returns {Promise<void>} 无
+		 */
 		sendTyping: async payload => { calls.push(['typing', payload]) },
+		/**
+		 *
+		 * @param {object} payload 载荷
+ * @returns {Promise<void>} 无
+		 */
 		leaveChat: async payload => { calls.push(['leave', payload]) },
 	})
 
@@ -206,6 +231,11 @@ Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', as
 		username,
 		tempDirPrefix: 'fount_chat_client_e3_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -251,6 +281,11 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 		username,
 		tempDirPrefix: 'fount_chat_client_code_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -287,6 +322,11 @@ Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () 
 		username,
 		tempDirPrefix: 'fount_chat_client_agent_life_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)

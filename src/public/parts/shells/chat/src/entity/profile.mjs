@@ -1,9 +1,9 @@
 import { Buffer } from 'node:buffer'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
-import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_manifest'
+import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
 import { profileAvatarFileUrl } from './filesUrl.mjs'
 import {
@@ -19,6 +19,24 @@ const HEARTBEAT_STALE_MS = 120_000
 const MANUAL_STATUSES = new Set(['online', 'idle', 'dnd', 'invisible', 'away', 'busy', 'offline'])
 const PROFILE_JSON = 'profile.json'
 const PUBLIC_PROFILE_PATH = 'profile.json'
+/** handle：2–32 位小写 `[a-z0-9_.-]`；空串表示清除。不要求全局唯一。 */
+const HANDLE_RE = /^[a-z0-9_.-]{2,32}$/
+
+/** entityHash → 负缓存截止时间（仅远端拉取失败） */
+const remoteProfileNegativeCache = new Map()
+const REMOTE_PROFILE_NEGATIVE_TTL_MS = 60_000
+
+/**
+ * 规范化实体 handle；空串表示未设置。非法输入抛错（调用方应校验）。
+ * @param {unknown} value 原始值
+ * @returns {string} 小写 handle 或 ''
+ */
+export function normalizeEntityHandle(value) {
+	const handle = String(value ?? '').trim().toLowerCase()
+	if (!handle) return ''
+	if (!HANDLE_RE.test(handle)) throw new Error('invalid handle')
+	return handle
+}
 
 /**
  * @param {string} entityHash 128 位 entityHash
@@ -31,6 +49,9 @@ function getDefaultProfile(entityHash, parsed) {
 		nodeHash: parsed.nodeHash,
 		subjectHash: parsed.subjectHash,
 		ownerEntityHash: null,
+		handle: '',
+		activePubKeyHex: '',
+		keyGeneration: 0,
 		localized: {},
 		status: 'online',
 		customStatus: '',
@@ -50,6 +71,12 @@ function getDefaultProfile(entityHash, parsed) {
  */
 function toStoredProfile(profileData) {
 	const ownerRaw = profileData.ownerEntityHash
+	let handle = ''
+	try {
+		handle = normalizeEntityHandle(profileData.handle)
+	}
+	catch { handle = '' }
+	const activePub = String(profileData.activePubKeyHex || '').trim().toLowerCase()
 	return {
 		entityHash: profileData.entityHash,
 		nodeHash: profileData.nodeHash,
@@ -57,6 +84,9 @@ function toStoredProfile(profileData) {
 		ownerEntityHash: ownerRaw == null || ownerRaw === ''
 			? null
 			: String(ownerRaw).trim().toLowerCase(),
+		handle,
+		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
+		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
 		status: profileData.status || 'online',
 		customStatus: String(profileData.customStatus || '').trim(),
@@ -71,7 +101,7 @@ function toStoredProfile(profileData) {
 }
 
 /**
- * 签名公开发布物：仅静态展示字段（含 ownerEntityHash / localized）。
+ * 签名公开发布物：静态展示字段 + handle + 活跃公钥（建 DM 用）。
  * @param {object} stored 本地 profile
  * @returns {object} 可 JSON 序列化的公开体
  */
@@ -81,6 +111,9 @@ function toPublicProfilePayload(stored) {
 		nodeHash: stored.nodeHash,
 		subjectHash: stored.subjectHash,
 		ownerEntityHash: stored.ownerEntityHash,
+		handle: stored.handle || '',
+		activePubKeyHex: stored.activePubKeyHex || '',
+		keyGeneration: Number(stored.keyGeneration ?? 0) || 0,
 		localized: stored.localized,
 	}
 }
@@ -92,11 +125,26 @@ function toPublicProfilePayload(stored) {
  * @returns {Promise<void>}
  */
 async function publishStaticProfile(replicaUsername, entityHash, stored) {
-	const { getEntityRecoverySecretKey, getRecoveryPubKeyHex } = await import('./identity.mjs')
+	const { getEntityRecoverySecretKey, getRecoveryPubKeyHex, getEntityActivePubKey } = await import('./identity.mjs')
 	const recoverySecretKeyHex = await getEntityRecoverySecretKey(replicaUsername, entityHash)
 	const recoveryPubKeyHex = await getRecoveryPubKeyHex(replicaUsername, entityHash)
 	if (!recoverySecretKeyHex || !recoveryPubKeyHex) return
-	const plaintext = Buffer.from(JSON.stringify(toPublicProfilePayload(stored)), 'utf8')
+	let activePubKeyHex = stored.activePubKeyHex || ''
+	let keyGeneration = Number(stored.keyGeneration ?? 0) || 0
+	if (!activePubKeyHex) 
+		try {
+			activePubKeyHex = await getEntityActivePubKey(replicaUsername, entityHash)
+			const { readEntityIdentity } = await import('./store.mjs')
+			const row = await readEntityIdentity(replicaUsername, entityHash)
+			if (row) keyGeneration = Number(row.keyGeneration ?? 0) || 0
+		}
+		catch { /* 无本地身份则保持空 */ }
+	
+	const plaintext = Buffer.from(JSON.stringify(toPublicProfilePayload({
+		...stored,
+		activePubKeyHex,
+		keyGeneration,
+	})), 'utf8')
 	await publishPublicFile({
 		ownerEntityHash: entityHash,
 		logicalPath: PUBLIC_PROFILE_PATH,
@@ -136,6 +184,50 @@ export function computeEffectiveStatus(profile, viewerEntityHash, options = {}) 
  * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object }} [options] 选项
  * @returns {Promise<object>} 资料对象
  */
+/**
+ * 远端实体：经 EVFS 拉签名 profile 落盘（显式路径用；带负缓存）。
+ * @param {string} replicaUsername replica
+ * @param {string} entityHash 128 hex
+ * @returns {Promise<object | null>} 落盘后的 stored profile，或 null
+ */
+export async function fetchAndCacheRemoteProfile(replicaUsername, entityHash) {
+	const parsed = parseEntityHash(entityHash)
+	if (!parsed || isWritableLocalEntity(parsed.entityHash)) return null
+	const now = Date.now()
+	const negUntil = remoteProfileNegativeCache.get(parsed.entityHash) || 0
+	if (negUntil > now) return null
+
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	const plain = await readPublicFile(replicaUsername, parsed.entityHash, PUBLIC_PROFILE_PATH)
+	if (!plain) {
+		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		return null
+	}
+	let payload
+	try {
+		payload = JSON.parse(plain.toString('utf8'))
+	}
+	catch {
+		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		return null
+	}
+	if (String(payload?.entityHash || '').toLowerCase() !== parsed.entityHash) {
+		remoteProfileNegativeCache.set(parsed.entityHash, now + REMOTE_PROFILE_NEGATIVE_TTL_MS)
+		return null
+	}
+	const defaultProfile = getDefaultProfile(parsed.entityHash, parsed)
+	const stored = toStoredProfile({ ...defaultProfile, ...payload, entityHash: parsed.entityHash })
+	await getEntityStore().writeEntityJson(parsed.entityHash, PROFILE_JSON, stored)
+	remoteProfileNegativeCache.delete(parsed.entityHash)
+	return stored
+}
+
+/**
+ * @param {string} entityHash 128 位 entityHash
+ * @param {string | null} [replicaUsername] 展示默认字段用
+ * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], infoDefaults?: object, fetchRemote?: boolean }} [options] 选项；`fetchRemote` 仅显式查看/搜索路径
+ * @returns {Promise<object>} 资料对象
+ */
 export async function getProfile(entityHash, replicaUsername = null, options = {}) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) throw new Error('invalid entityHash')
@@ -151,6 +243,10 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 		await store.writeEntityJson(parsed.entityHash, PROFILE_JSON, stored)
 		if (replicaUsername)
 			await publishStaticProfile(replicaUsername, parsed.entityHash, stored).catch(() => {})
+	}
+	else if (options.fetchRemote && replicaUsername) {
+		const remote = await fetchAndCacheRemoteProfile(replicaUsername, parsed.entityHash)
+		if (remote) stored = remote
 	}
 
 	const locales = options.locales || ['zh-CN', 'en-UK']
@@ -181,7 +277,7 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 /**
  * @param {string} replicaUsername 副本用户名 所有者
  * @param {string} entityHash 128 位 entityHash
- * @returns {Promise<object>}
+ * @returns {Promise<object>} 心跳时间戳
  */
 export async function recordHeartbeat(replicaUsername, entityHash) {
 	void replicaUsername
@@ -212,6 +308,21 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		? normalizeLocalizedMap(updates.localized)
 		: profile.localized
 
+	let handle = profile.handle || ''
+	if (updates.handle !== undefined)
+		handle = normalizeEntityHandle(updates.handle)
+
+	let activePubKeyHex = profile.activePubKeyHex || ''
+	let keyGeneration = Number(profile.keyGeneration ?? 0) || 0
+	try {
+		const { getEntityActivePubKey } = await import('./identity.mjs')
+		const { readEntityIdentity } = await import('./store.mjs')
+		activePubKeyHex = await getEntityActivePubKey(replicaUsername, entityHash)
+		const row = await readEntityIdentity(replicaUsername, entityHash)
+		if (row) keyGeneration = Number(row.keyGeneration ?? 0) || 0
+	}
+	catch { /* keep prior */ }
+
 	const updatedProfile = toStoredProfile({
 		...profile,
 		entityHash: parsed.entityHash,
@@ -220,6 +331,9 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		ownerEntityHash: updates.ownerEntityHash !== undefined
 			? updates.ownerEntityHash
 			: profile.ownerEntityHash,
+		handle,
+		activePubKeyHex,
+		keyGeneration,
 		localized,
 		status: updates.status != null ? updates.status : profile.status,
 		customStatus: updates.customStatus != null ? updates.customStatus : profile.customStatus,
@@ -231,6 +345,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 
 	const staticTouched = updates.localized !== undefined
 		|| updates.ownerEntityHash !== undefined
+		|| updates.handle !== undefined
 	if (staticTouched)
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => {})
 

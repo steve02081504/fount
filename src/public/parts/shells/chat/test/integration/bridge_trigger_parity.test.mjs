@@ -21,7 +21,7 @@ const CHAR_PLAIN_B = 'plain_reply_b'
  * @param {string} dataDir 数据根
  * @param {string} username 用户
  * @param {string | string[]} charNames 角色 fixture 名
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function seedCharFixture(dataDir, username, charNames) {
 	const userRoot = join(dataDir, 'users', username)
@@ -36,7 +36,7 @@ async function seedCharFixture(dataDir, username, charNames) {
 /**
  * @param {() => Promise<boolean>} predicate 条件
  * @param {number} [timeoutMs] 超时
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 等待 predicate 成立或超时抛错
  */
 async function waitUntil(predicate, timeoutMs = 15000) {
 	const deadline = Date.now() + timeoutMs
@@ -51,7 +51,7 @@ async function waitUntil(predicate, timeoutMs = 15000) {
  * @param {string} username replica
  * @param {string} groupId 群
  * @param {string} channelId 频道
- * @returns {Promise<object[]>}
+ * @returns {Promise<object[]>} 频道消息行
  */
 async function listMessages(username, groupId, channelId) {
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
@@ -62,7 +62,7 @@ async function listMessages(username, groupId, channelId) {
  * @param {'hub' | 'telegram' | 'discord' | 'wechat'} end 端点
  * @param {string} username replica
  * @param {{ chatKind: 'group' | 'dm', label: string, platformChatId: string | number }} opts 会话选项
- * @returns {Promise<{ groupId: string, channelId: string, post: (text: string, platformMessageId: string | number) => Promise<void> }>}
+ * @returns {Promise<{ groupId: string, channelId: string, post: (text: string, platformMessageId: string | number) => Promise<void> }>} 端会话句柄
  */
 async function openEnd(end, username, opts) {
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
@@ -82,7 +82,7 @@ async function openEnd(end, username, opts) {
 				channelId: dm.defaultChannelId,
 				/**
 				 * @param {string} text 正文
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				post: async text => {
 					await postChannelMessage(username, dm.groupId, dm.defaultChannelId, { text })
@@ -98,7 +98,7 @@ async function openEnd(end, username, opts) {
 			channelId,
 			/**
 			 * @param {string} text 正文
-			 * @returns {Promise<void>}
+			 * @returns {Promise<void>} 无
 			 */
 			post: async text => {
 				await postChannelMessage(username, groupId, channelId, { text })
@@ -121,7 +121,7 @@ async function openEnd(end, username, opts) {
 		/**
 		 * @param {string} text 正文
 		 * @param {string | number} platformMessageId 平台消息 id
-		 * @returns {Promise<void>}
+		 * @returns {Promise<void>} 无
 		 */
 		post: async (text, platformMessageId) => {
 			await postBridgeMessage(username, {
@@ -137,7 +137,7 @@ async function openEnd(end, username, opts) {
 	}
 }
 
-const ENDS = /** @type {const} */ (['hub', 'telegram', 'discord', 'wechat'])
+const ENDS = /** @type {const} */ ['hub', 'telegram', 'discord', 'wechat']
 
 Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	const username = `parity-onmsg-${crypto.randomUUID().slice(0, 8)}`

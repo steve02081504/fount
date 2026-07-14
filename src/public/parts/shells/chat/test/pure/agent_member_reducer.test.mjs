@@ -1,9 +1,9 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createEmptySessionState } from '../../src/chat/dag/reducers/state.mjs'
 import { memberReducers } from '../../src/chat/dag/reducers/members.mjs'
 import { roleReducers } from '../../src/chat/dag/reducers/roles.mjs'
+import { createEmptySessionState } from '../../src/chat/dag/reducers/state.mjs'
 
 Deno.test('agent member_join syncs session.chars; kick removes derived char', () => {
 	const node = 'a'.repeat(64)

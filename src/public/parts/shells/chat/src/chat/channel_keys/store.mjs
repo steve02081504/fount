@@ -1,10 +1,11 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import { unwrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { unwrapChannelKey } from 'npm:@steve02081504/fount-p2p/crypto/channel'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
 import { channelKeysPath } from '../lib/paths.mjs'
 

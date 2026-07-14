@@ -279,6 +279,18 @@ export function createSocialClient(ctx) {
 			})
 		},
 		/**
+		 * @param {string} query 搜索词
+		 * @param {{ maxHits?: number }} [opts] 选项
+		 * @returns {Promise<{ query: string, entities: object[] }>} 实体网络搜索
+		 */
+		async searchEntities(query, opts = {}) {
+			const { searchEntitiesNetwork } = await import('../../../chat/src/entity/entitySearch.mjs')
+			return searchEntitiesNetwork(ctx.username, query, {
+				viewerEntityHash: ctx.entityHash,
+				maxHits: opts.maxHits,
+			})
+		},
+		/**
 		 * @param {{ limit?: number }} [opts] 选项
 		 * @returns {Promise<object>} 探索账户
 		 */

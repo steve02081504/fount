@@ -6,9 +6,9 @@ import { activateGroupFederation, isGroupFederationActive } from '../chat/federa
 import { roomCredentialsFromGroupSettings } from '../chat/federation/roomCredentials.mjs'
 import { collectJoinPowAnchors } from '../chat/governance/joinPowAnchors.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
-import { memberEntityHash } from '../entity/member.mjs'
 import { mintGroupInviteTicket } from '../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../chat/lib/replica.mjs'
+import { memberEntityHash } from '../entity/member.mjs'
 
 import { dispatchBridgeLeave } from './bridgeDispatch.mjs'
 import { createChannel } from './channel.mjs'
@@ -97,7 +97,7 @@ export function createGroup(ctx, groupId, projection) {
 						memberKind: 'user',
 						displayName: row.displayName || entityHash.slice(64, 72),
 						platformUserId: String(row.platformUserId),
-						extension: { bridge: { platformUserId: String(row.platformUserId) } },
+						extension: { bridge: { platformUserId: String(row.platformUserId) }},
 					})
 				}))
 				return { page: 1, pageCount: 1, members }
@@ -224,8 +224,8 @@ export function createGroup(ctx, groupId, projection) {
 			const signOpts = { entityHash: ctx.entityHash }
 			return {
 				/**
-				 * @param {{ targetPubKeyHash: string, claim?: number, verified?: boolean, proof?: { eventId: string } }} args slash 参数
-				 * @returns {Promise<{ applied: number }>}
+				 * @param {{ targetPubKeyHash: string, claim?: number, verified?: boolean, proof?: { eventId: string }}} args slash 参数
+				 * @returns {Promise<{ applied: number }>} 应用条数
 				 */
 				async slash(args) {
 					const { appendSignedLocalEvent: append } = await import('../chat/dag/append.mjs')
@@ -266,7 +266,7 @@ export function createGroup(ctx, groupId, projection) {
 				},
 				/**
 				 * @param {string} targetPubKeyHash 目标 pubKeyHash
-				 * @returns {Promise<{ applied: number }>}
+				 * @returns {Promise<{ applied: number }>} 应用条数
 				 */
 				async reset(targetPubKeyHash) {
 					const hash = String(targetPubKeyHash || '').trim().toLowerCase()
@@ -286,7 +286,7 @@ export function createGroup(ctx, groupId, projection) {
 		get federation() {
 			return {
 				/**
-				 * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts]
+				 * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] catchup 选项
 				 * @returns {Promise<object>} catchup 统计
 				 */
 				async catchup(opts = {}) {
@@ -310,7 +310,7 @@ export function createGroup(ctx, groupId, projection) {
 			return {
 				/**
 				 * @param {string} [personaname] 人格名
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				async setPersona(personaname) {
 					const { setPersona } = await import('../chat/session/partConfig.mjs')
@@ -319,7 +319,7 @@ export function createGroup(ctx, groupId, projection) {
 				/**
 				 * @param {string} channelId 频道
 				 * @param {string | null} worldname 世界
-				 * @returns {Promise<object | null>}
+				 * @returns {Promise<object | null>} 绑定后的世界配置
 				 */
 				async bindWorld(channelId, worldname) {
 					const { bindWorld } = await import('../chat/session/partConfig.mjs')
@@ -327,7 +327,7 @@ export function createGroup(ctx, groupId, projection) {
 				},
 				/**
 				 * @param {string} pluginname 插件名
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				async addPlugin(pluginname) {
 					const { addplugin } = await import('../chat/session/partConfig.mjs')
@@ -335,7 +335,7 @@ export function createGroup(ctx, groupId, projection) {
 				},
 				/**
 				 * @param {string} pluginname 插件名
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				async removePlugin(pluginname) {
 					const { removeplugin } = await import('../chat/session/partConfig.mjs')
@@ -343,8 +343,8 @@ export function createGroup(ctx, groupId, projection) {
 				},
 				/**
 				 * @param {string} charname 角色名
-				 * @param {object} [opts]
-				 * @returns {Promise<object | null>}
+				 * @param {object} [opts] 选项
+				 * @returns {Promise<object | null>} 加入后的角色配置
 				 */
 				async addChar(charname, opts) {
 					const { addchar } = await import('../chat/session/partConfig.mjs')
@@ -352,7 +352,7 @@ export function createGroup(ctx, groupId, projection) {
 				},
 				/**
 				 * @param {string} charname 角色名
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				async removeChar(charname) {
 					const { removechar } = await import('../chat/session/partConfig.mjs')
@@ -361,7 +361,7 @@ export function createGroup(ctx, groupId, projection) {
 				/**
 				 * @param {string} charname 角色名
 				 * @param {number} frequency 频率
-				 * @returns {Promise<void>}
+				 * @returns {Promise<void>} 无
 				 */
 				async setCharReplyFrequency(charname, frequency) {
 					const { setCharReplyFrequency } = await import('../chat/session/partConfig.mjs')

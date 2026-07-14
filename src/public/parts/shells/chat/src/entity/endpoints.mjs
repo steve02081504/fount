@@ -3,6 +3,7 @@ import {
 	loadPersonalBlockEntries,
 	loadPersonalHideEntries,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 
 import { registerEntityFileEndpoints } from './filesEndpoints.mjs'
@@ -98,6 +99,16 @@ export function registerEntityEndpoints(router) {
 
 	registerEntityFileEndpoints(router, authenticate, getUserByReq)
 
+	router.get(`${CHAT_PREFIX}/entities/search`, authenticate, async (req, res) => {
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		const { searchEntitiesNetwork } = await import('./entitySearch.mjs')
+		const result = await searchEntitiesNetwork(replicaUsername, String(req.query?.q || ''), {
+			viewerEntityHash: operatorEntityHash || undefined,
+			maxHits: Number(req.query?.limit) || 20,
+		})
+		res.status(200).json(result)
+	})
+
 	router.get(entityPathRegex('/stats$'), authenticate, async (req, res) => {
 		const entityHash = req.params[0].toLowerCase()
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
@@ -141,7 +152,7 @@ export function registerEntityEndpoints(router) {
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		const groupId = String(req.query?.groupId || '').trim() || undefined
 		const locales = localesFromRequest(req, replicaUsername)
-		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales })
+		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales, fetchRemote: true })
 		let groupMemberEntityHash = null
 		if (groupId)
 			try {

@@ -3,8 +3,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { publicKeyFromSeed, sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
+
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
 /** @typedef {import('npm:@steve02081504/fount-p2p/schemas/federation_pull').PullAttestation} PullAttestation */

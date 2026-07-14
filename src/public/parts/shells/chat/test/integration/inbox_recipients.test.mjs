@@ -2,6 +2,7 @@
  * per-recipient inbox + 触发管线集成测试。
  */
 /* global Deno */
+import { Buffer } from 'node:buffer'
 import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -19,7 +20,7 @@ const CHAR_NO = 'on_message_no'
  * @param {string} dataDir 数据根
  * @param {string} username 用户
  * @param {string[]} chars 角色 fixture 名
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function seedCharFixtures(dataDir, username, chars) {
 	const userRoot = join(dataDir, 'users', username)
@@ -35,7 +36,7 @@ async function seedCharFixtures(dataDir, username, chars) {
  * @param {string} username 用户
  * @param {string} groupId 群
  * @param {string} channelId 频道
- * @returns {Promise<object[]>}
+ * @returns {Promise<object[]>} 频道消息行
  */
 async function listMessages(username, groupId, channelId) {
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
@@ -45,7 +46,7 @@ async function listMessages(username, groupId, channelId) {
 /**
  * @param {() => Promise<boolean>} predicate 条件
  * @param {number} [timeoutMs] 超时
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 等待 predicate 成立或超时抛错
  */
 async function waitUntil(predicate, timeoutMs = 8000) {
 	const deadline = Date.now() + timeoutMs
@@ -64,6 +65,11 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 		username,
 		tempDirPrefix: 'fount_inbox_recip_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -116,6 +122,11 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 		username,
 		tempDirPrefix: 'fount_inbox_charname_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -149,6 +160,11 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 		username,
 		tempDirPrefix: 'fount_trigger_pipe_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)
@@ -199,6 +215,11 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 		username,
 		tempDirPrefix: 'fount_trigger_dm_',
 		minP2pNode: true,
+		/**
+		 *
+		 * @param {string} user 用户名
+ * @returns {Promise<void>} 无
+		 */
 		afterInit: async user => {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			await ensureOperatorPubKey(user)

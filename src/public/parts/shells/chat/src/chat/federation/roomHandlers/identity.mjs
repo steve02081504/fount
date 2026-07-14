@@ -1,8 +1,7 @@
-import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
-import { mergePexNodeHints } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { bumpReputationOnRelay } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { mergePexNodeHints } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
 import {
 	annotateRtcPeerNodeHash,
@@ -12,6 +11,8 @@ import {
 	takeRtcJoinSlot,
 } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
+import { debugLog } from '../../../../../../../../scripts/debug_log.mjs'
 import { loadFederationGroupSettings } from '../dagDependencies.mjs'
 import {
 	shouldDropPartitionBridgeUnderLoad,

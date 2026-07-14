@@ -3,8 +3,9 @@
  * 【职责】频道 HTTP 路由（频道与群元数据 CRUD）。
  * 【关联】被 channels.mjs 聚合注册。
  */
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { normalizeFriendBinding } from '../../../public/shared/friendBinding.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'

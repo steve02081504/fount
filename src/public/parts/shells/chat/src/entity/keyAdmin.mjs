@@ -1,8 +1,9 @@
 import { Buffer } from 'node:buffer'
 
-import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import { entityKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
+
 import { events } from '../../../../../../server/events.mjs'
 
 import {

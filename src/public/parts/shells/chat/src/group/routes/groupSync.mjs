@@ -5,14 +5,12 @@
  * 【数据结构】物化 state 子集、reputation 表、peers roster、snapshot/checkpoint、GSH buffer stats。
  * 【关联】被 group/endpoints.mjs 注册；依赖 chat/federation、chat/governance、profile/*、access.mjs。
  */
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { getProfile } from '../../entity/profile.mjs'
-import { memberEntityHash } from '../../entity/member.mjs'
-import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { loadPeerPoolView } from 'npm:@steve02081504/fount-p2p/node/network'
 import { buildAndApplyUnverifiedSlashAlert } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
-import { localesFromRequest } from '../../entity/presentation.mjs'
 import {
 	deleteArchivesBeforeMonth,
 	isArchiveCoverageComplete,
@@ -43,6 +41,9 @@ import { getGroupMemberEntityHash } from '../../chat/lib/replica.mjs'
 import { getMaterializedSession } from '../../chat/session/dagSession.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
+import { localesFromRequest } from '../../entity/presentation.mjs'
+import { getProfile } from '../../entity/profile.mjs'
 import { canGovSlash, canInChannel, governanceChannelId, resolveActiveMemberKeyForLocalUser } from '../access.mjs'
 import { loadGroupShunState, saveGroupShunState } from '../groupShunState.mjs'
 

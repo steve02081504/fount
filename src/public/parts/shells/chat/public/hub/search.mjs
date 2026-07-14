@@ -21,7 +21,7 @@ function searchResultsHost() {
 }
 
 /**
- * @returns {void}
+ * @returns {void} 无
  */
 function hideSearchResults() {
 	const host = searchResultsHost()
@@ -33,8 +33,8 @@ function hideSearchResults() {
 
 /**
  * @param {object[]} items 搜索结果
- * @param scope
- * @returns {void}
+ * @param {string} [scope] 作用域
+ * @returns {void} 无
  */
 function renderSearchResults(items, scope = 'group') {
 	const host = searchResultsHost()
@@ -84,7 +84,7 @@ function hubSearchScope() {
 
 /**
  * @param {string} query 搜索词
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function runHubMessageSearch(query) {
 	if (query.length < 2) {
@@ -117,7 +117,7 @@ export async function runHubMessageSearch(query) {
 
 /**
  * @param {string} query 原始输入
- * @returns {void}
+ * @returns {void} 无
  */
 export function scheduleHubMessageSearch(query) {
 	if (searchDebounce) clearTimeout(searchDebounce)
@@ -132,7 +132,7 @@ export function scheduleHubMessageSearch(query) {
 }
 
 /**
- * @returns {void}
+ * @returns {void} 无
  */
 export function wireHubSearchPanel() {
 	document.addEventListener('click', event => {

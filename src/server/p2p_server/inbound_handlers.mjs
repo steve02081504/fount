@@ -2,8 +2,9 @@ import {
 	registerDeliveryInboundHandler,
 	registerRpcInboundHandler,
 } from 'npm:@steve02081504/fount-p2p/registries/inbound'
-import { isPartInvokeResponse, normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+import { isPartInvokeResponse, normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+
 import { getAllUserNames } from '../auth/index.mjs'
 import { loadPart, hasPartMain } from '../parts_loader.mjs'
 

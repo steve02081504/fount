@@ -8,6 +8,7 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
+
 import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
 
 import { collectJoinPowAnchors, joinPowExemptAsHistoricalReplay } from './joinPowAnchors.mjs'

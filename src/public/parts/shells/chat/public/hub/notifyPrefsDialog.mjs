@@ -5,7 +5,7 @@ import { loadNotificationPreferences, saveNotificationPreferences } from '../sha
 /**
  * @param {Record<string, object>} prefs 整档偏好
  * @param {string} groupId 群 ID
- * @returns {object}
+ * @returns {object} 该群通知偏好
  */
 function groupPrefs(prefs, groupId) {
 	return prefs[groupId] || {}
@@ -14,7 +14,7 @@ function groupPrefs(prefs, groupId) {
 /**
  * 打开群通知设置对话框。
  * @param {string} groupId 群 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function openGroupNotifyPrefsDialog(groupId) {
 	const prefs = await loadNotificationPreferences()
@@ -23,8 +23,8 @@ export async function openGroupNotifyPrefsDialog(groupId) {
 		titleKey: 'chat.hub.notifyPrefs.title',
 		current,
 		/**
-		 *
-		 * @param dialog
+		 * @param {HTMLDialogElement} dialog 对话框元素
+		 * @returns {Promise<void>} 无
 		 */
 		onSave: async dialog => {
 			const next = { ...prefs, [groupId]: readNotifyPrefsFromDialog(dialog, current) }
@@ -41,7 +41,7 @@ export async function openGroupNotifyPrefsDialog(groupId) {
  * 打开频道通知设置对话框（覆盖群级偏好）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 	const prefs = await loadNotificationPreferences()
@@ -51,8 +51,8 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 		titleKey: 'chat.hub.channelContext.notifyPrefs',
 		current,
 		/**
-		 *
-		 * @param dialog
+		 * @param {HTMLDialogElement} dialog 对话框元素
+		 * @returns {Promise<void>} 无
 		 */
 		onSave: async dialog => {
 			const channelPrefs = readNotifyPrefsFromDialog(dialog, current)
@@ -65,8 +65,8 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 }
 
 /**
- * @param {{ titleKey: string, current: object, onSave: (dialog: HTMLDialogElement) => Promise<void> }} options
- * @returns {Promise<void>}
+ * @param {{ titleKey: string, current: object, onSave: (dialog: HTMLDialogElement) => Promise<void> }} options 对话框选项
+ * @returns {Promise<void>} 无
  */
 async function openNotifyPrefsDialog({ titleKey, current, onSave }) {
 	await openDialogFromTemplate('hub/modals/notify_prefs', {
@@ -76,8 +76,8 @@ async function openNotifyPrefsDialog({ titleKey, current, onSave }) {
 		mutedUntil: current.mutedUntil ?? '',
 	}, {
 		/**
-		 *
-		 * @param dialog
+		 * @param {HTMLDialogElement} dialog 对话框元素
+		 * @returns {void} 无
 		 */
 		onReady: dialog => {
 			const title = dialog.querySelector('h3')
@@ -94,7 +94,7 @@ async function openNotifyPrefsDialog({ titleKey, current, onSave }) {
 /**
  * @param {HTMLDialogElement} dialog 对话框
  * @param {object} current 当前偏好
- * @returns {object}
+ * @returns {object} 对话框读取的偏好
  */
 function readNotifyPrefsFromDialog(dialog, current) {
 	const mode = dialog.querySelector('[name="notifyMode"]:checked')?.value || 'mentions'

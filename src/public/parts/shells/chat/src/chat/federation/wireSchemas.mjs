@@ -2,6 +2,7 @@
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parsePullAttestation } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import { extractInboundSignedEvent, isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
 import { PARTITION_BRIDGE_ACTIONS } from './partitionBridge.mjs'

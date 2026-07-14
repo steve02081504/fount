@@ -1,5 +1,8 @@
 import { withGroupId, createEmptySessionState } from './state.mjs'
 
+/**
+ *
+ */
 export { createEmptySessionState } from './state.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */

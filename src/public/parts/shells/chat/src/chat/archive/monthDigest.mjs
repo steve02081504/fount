@@ -5,16 +5,17 @@ import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
 import { createInterface } from 'node:readline'
 
-import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { pickNodeScoreFromReputation } from 'npm:@steve02081504/fount-p2p/reputation/pick_score'
 import { loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { pickNodeScoreFromReputation } from 'npm:@steve02081504/fount-p2p/reputation/pick_score'
 import {
 	resolveArchiveQuorumPeerMin,
 	resolveArchiveQuorumPeerStrictMin,
 	resolveArchiveQuorumThresholds,
 } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
+
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { channelArchivePath } from '../lib/paths.mjs'
 
 import { archiveMonthKey } from './settings.mjs'

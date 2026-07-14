@@ -20,7 +20,7 @@ import { groupFetch, groupPath } from './groupClient.mjs'
 export async function castChannelVote(groupId, channelId, ballotId, choice) {
 	const data = await groupFetch(
 		groupPath(groupId, 'channels', channelId, 'votes', ballotId, 'cast'),
-		{ method: 'POST', json: { choice } },
+		{ method: 'POST', json: { choice }},
 	)
 	return data.event
 }
@@ -30,7 +30,7 @@ export async function castChannelVote(groupId, channelId, ballotId, choice) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} targetEventId 目标消息事件 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function pinMessage(groupId, channelId, targetEventId) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'pins'), {
@@ -44,7 +44,7 @@ export async function pinMessage(groupId, channelId, targetEventId) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} targetEventId 目标消息事件 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function unpinMessage(groupId, channelId, targetEventId) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'pins', targetEventId), {
@@ -57,7 +57,7 @@ export async function unpinMessage(groupId, channelId, targetEventId) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object[]} items 列表项
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function updateChannelListItems(groupId, channelId, items) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'list-items'), {
@@ -126,13 +126,13 @@ export async function requestChannelHistoryFromPeers(groupId, channelId, options
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: number, eventIds?: string[] }} [options] 游标与条数限制
- * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>> }>} 消息与反应
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] } >> }>} 消息与反应
  */
 export async function getChannelMessages(groupId, channelId, options = {}) {
 	if (Array.isArray(options.eventIds) && options.eventIds.length) {
 		const data = await groupFetch(
 			groupPath(groupId, 'channels', channelId, 'messages', 'batch-get'),
-			{ method: 'POST', json: { eventIds: options.eventIds } },
+			{ method: 'POST', json: { eventIds: options.eventIds }},
 		)
 		return {
 			messages: data.messages || [],
@@ -159,7 +159,7 @@ export async function getChannelMessages(groupId, channelId, options = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: number }} [options] 游标与条数限制
- * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] }>>, readMarker: object | null, hasMore: boolean, oldestRawEventId: string | null }>} 消息与反应
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] } >>, readMarker: object | null, hasMore: boolean, oldestRawEventId: string | null }>} 消息与反应
  */
 export async function getChannelViewLog(groupId, channelId, options = {}) {
 	const params = new URLSearchParams()
@@ -185,7 +185,7 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ eventId: string, seq: number }} marker 已读水位
- * @returns {Promise<{ readMarker: { eventId: string, seq: number } }>} 服务端确认后的已读水位
+ * @returns {Promise<{ readMarker: { eventId: string, seq: number }}>} 服务端确认后的已读水位
  */
 export async function putChannelReadMarker(groupId, channelId, marker) {
 	return groupFetch(groupPath(groupId, 'channels', channelId, 'read-marker'), {
@@ -228,7 +228,7 @@ export async function searchGroupChannelMessages(groupId, query, opts = {}) {
  * 跨群搜索消息。
  * @param {string} query 查询（至少 2 字符）
  * @param {{ limit?: number, cursor?: string }} [opts] 选项
- * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>}
+ * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>} 跨群搜索结果
  */
 export async function searchAllChatGroups(query, opts = {}) {
 	const params = new URLSearchParams({ q: query })
@@ -249,7 +249,7 @@ export async function searchAllChatGroups(query, opts = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} pendingStreamId DAG 占位 message eventId
- * @returns {Promise<{ chunkSeq: number, slices: object[] }[]>} 流式 diff 块列表
+ * @returns {Promise<{ chunkSeq: number, slices: object[] }[]}> 流式 diff 块列表
  */
 export async function getStreamBufferChunks(groupId, channelId, pendingStreamId) {
 	const data = await groupFetch(
@@ -280,7 +280,7 @@ export async function getChatBranch(groupId) {
  * @param {string} channelId 频道 ID（生成上下文）
  * @param {number} [delta] 分支偏移步数
  * @param {{ latest?: boolean }} [opts] `latest: true` 跳到最新分支
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function modifyBranch(groupId, channelId, delta, opts = {}) {
 	const body = { channelId }
@@ -297,7 +297,7 @@ export async function modifyBranch(groupId, channelId, delta, opts = {}) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} [charname] 指定角色名；省略则由服务端选择
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function triggerChannelReply(groupId, channelId, charname) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'trigger-reply'), {
@@ -312,7 +312,7 @@ export async function triggerChannelReply(groupId, channelId, charname) {
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息事件 ID
  * @param {string|object} content 富内容对象（与 POST 对称）
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function editChannelMessage(groupId, channelId, eventId, content) {
 	const bodyContent = channelMessageContentObject(
@@ -329,7 +329,7 @@ export async function editChannelMessage(groupId, channelId, eventId, content) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息事件 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function deleteChannelMessage(groupId, channelId, eventId) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId), {
@@ -344,7 +344,7 @@ export async function deleteChannelMessage(groupId, channelId, eventId) {
  * @param {string} eventId 消息事件 ID
  * @param {string} type 反馈类型
  * @param {string} [reason] 可选说明
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function setChannelMessageFeedback(groupId, channelId, eventId, type, reason) {
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId, 'feedback'), {
@@ -388,7 +388,7 @@ export async function createChannel(groupId, name, type = 'text') {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} updates name / description / type 等
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function updateChannel(groupId, channelId, updates) {
 	await groupFetch(groupPath(groupId, 'channels', channelId), {
@@ -401,7 +401,7 @@ export async function updateChannel(groupId, channelId, updates) {
  * 删除群频道。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function deleteChannel(groupId, channelId) {
 	await groupFetch(groupPath(groupId, 'channels', channelId), {
@@ -413,7 +413,7 @@ export async function deleteChannel(groupId, channelId) {
  * 将频道设为群默认频道。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function setDefaultChannel(groupId, channelId) {
 	await groupFetch(groupPath(groupId, 'default-channel'), {

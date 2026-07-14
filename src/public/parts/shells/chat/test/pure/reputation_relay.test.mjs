@@ -2,8 +2,8 @@
  * 信誉中继去重单元测试（Deno）。
  */
 /* global Deno */
-import { relayBumpIsDuplicate } from 'npm:@steve02081504/fount-p2p/reputation/relay_dedupe'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { relayBumpIsDuplicate } from 'npm:@steve02081504/fount-p2p/reputation/relay_dedupe'
 
 
 Deno.test('relayBumpIsDuplicate blocks same peer and key within window', () => {

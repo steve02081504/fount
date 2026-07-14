@@ -29,7 +29,7 @@ import { formatUnreadBadgeHtml } from './unread.mjs'
 
 /**
  * 持久化当前文件夹布局到后端。
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function persistGroupFolders() {
 	await fetch('/api/parts/shells:chat/group-folders', {
@@ -98,8 +98,8 @@ function folderMiniIconsHtml(folder, byId) {
  * 渲染并挂载单个群组服务器图标。
  * @param {HTMLElement} parent 服务器列表或文件夹容器
  * @param {{ groupId: string, name: string, isLeaving?: boolean }} group 群组摘要
- * @param notifyPrefs
- * @returns {Promise<void>}
+ * @param {object} [notifyPrefs] 通知偏好
+ * @returns {Promise<void>} 无
  */
 async function appendHubServerItem(parent, group, notifyPrefs = {}) {
 	const active = group.groupId === hubStore.context.currentGroupId

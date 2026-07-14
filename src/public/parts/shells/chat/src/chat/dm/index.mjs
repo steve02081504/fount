@@ -8,6 +8,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'

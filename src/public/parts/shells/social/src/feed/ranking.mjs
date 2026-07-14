@@ -3,13 +3,14 @@ import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { socialPostKey } from '../federation/post_key.mjs'
-import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
-import { buildPostFeedItem } from './buildItem.mjs'
-import { buildEngagementIndex, loadViewerContext } from '../feed.mjs'
-import { createFeedItemBuildContext } from './iterate.mjs'
+import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
+import { loadViewerContext } from '../feed.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
+
+import { buildPostFeedItem } from './buildItem.mjs'
+import { createFeedItemBuildContext } from './iterate.mjs'
 
 const SCORE_HALF_LIFE_MS = 86_400_000
 
@@ -143,7 +144,7 @@ export function forYouCursorKey(item) {
 /**
  * @param {string} username 用户
  * @param {object} [options] 分页选项
- * @returns {Promise<{ items: object[], nextCursor: string | null }>}
+ * @returns {Promise<{ items: object[], nextCursor: string | null }>} For You feed 分页
  */
 export async function buildForYouFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)

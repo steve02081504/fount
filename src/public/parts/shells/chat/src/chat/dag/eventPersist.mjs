@@ -29,9 +29,9 @@ import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImpo
 import { applyFileMasterKeyRotationFromEvent } from '../file_keys/store.mjs'
 import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
-import { safeReadJson } from '../lib/fsSafe.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
 

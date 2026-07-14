@@ -4,8 +4,9 @@
  * 【原理】resolveGroupMember 统一 getUser → getState → memberKey；ensure* 系列供路由早退。
  * 【关联】channels.mjs、governance.mjs、groupSync.mjs、dag.mjs、membership.mjs。
  */
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { canInChannel, resolveActiveMemberKeyForLocalUser } from '../access.mjs'

@@ -1,9 +1,9 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
 import { assignEntityShellData, loadEntityShellData } from '../../../../../../../server/setting_loader.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
 
 import { isCaredBy } from './care.mjs'
-import { memberEntityHash } from '../../entity/member.mjs'
 
 const DATANAME = 'notificationPreferences'
 

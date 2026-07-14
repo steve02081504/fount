@@ -3,16 +3,16 @@ import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
-import { canViewPost } from '../feedVisibility.mjs'
-import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
-import { getTimelineMaterialized } from '../timeline/materialize.mjs'
-
-import { createEngagementForPost } from './buildItem.mjs'
 import {
 	buildEngagementIndex,
 	buildViewerLikedSet,
 } from '../feed.mjs'
+import { canViewPost } from '../feedVisibility.mjs'
 import { listFollowedTimelineOwners } from '../following.mjs'
+import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
+import { getTimelineMaterialized } from '../timeline/materialize.mjs'
+
+import { createEngagementForPost } from './buildItem.mjs'
 
 /**
  * @param {string} username 用户

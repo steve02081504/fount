@@ -1,6 +1,9 @@
 /** Social shell HTTP 客户端。 */
 import { socialState } from '../state.mjs'
 
+/**
+ *
+ */
 export const SOCIAL_API = '/api/parts/shells:social'
 
 /**

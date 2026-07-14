@@ -1,12 +1,13 @@
 /**
  * 帖子终态快照（冷归档 / Hub 深历史）。
  */
-import { getProfile } from '../../entity/profile.mjs'
-import { memberEntityHash } from '../../entity/member.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
 import { channelMessageContentObject } from '../../../public/shared/channelContent.mjs'
 import { mergeChannelMessagesForDisplay } from '../../../public/shared/messageMerge.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
+import { getProfile } from '../../entity/profile.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { decryptEventContent } from '../channel_keys/content.mjs'
 

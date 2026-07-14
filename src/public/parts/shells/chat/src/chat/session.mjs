@@ -33,6 +33,9 @@ export const tryInvokeLocalWorldRpc = createWorldRpcDispatcher(getChatRequest)
  *
  */
 export { deleteGroup, newGroup } from './session/groupLifecycle.mjs'
+/**
+ *
+ */
 export { getInitialData } from './session/sessionQueries.mjs'
 /**
  *

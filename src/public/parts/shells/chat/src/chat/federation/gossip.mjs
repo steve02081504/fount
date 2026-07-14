@@ -7,20 +7,21 @@
  */
 import { randomUUID } from 'node:crypto'
 
-import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
-import { parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+import { createDedupeSlot } from 'npm:@steve02081504/fount-p2p/federation/dedupe_slot'
 import {
 	batchWantIds,
 	takeOutgoingWantIdsSlot,
 } from 'npm:@steve02081504/fount-p2p/federation/want_ids'
+import { parsePullResponseEnvelope } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
+import { pickFederationTargetPeerIds, resolveFederationPoolLimits } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
 import { extractInboundSignedEvent } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import {
 	finishMultiWireWaiters,
 	notifyMultiWireWaitersByPrefix,
 	registerMultiWireWait,
 } from 'npm:@steve02081504/fount-p2p/wire/wait'
+
 import { eventsPath } from '../lib/paths.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'

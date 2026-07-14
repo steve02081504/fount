@@ -7,13 +7,14 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
-import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
+import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { pubKeyHash } from 'npm:@steve02081504/fount-p2p/crypto'
 import { generateKeyRotationNonce, deriveNextFileMasterKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/governance/owner_succession_ballot'
-import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { addDenylistFromBanContent, addGroupBlockedPeers, removeGroupBlockedPeer } from 'npm:@steve02081504/fount-p2p/node/denylist'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'

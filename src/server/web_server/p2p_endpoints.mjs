@@ -1,9 +1,10 @@
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	addDenylistEntry,
 	loadDenylist,
 } from 'npm:@steve02081504/fount-p2p/node/denylist'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { loadNetwork } from 'npm:@steve02081504/fount-p2p/node/network'
+
 import {
 	getFederationViewForUser,
 	saveFederationViewForUser,

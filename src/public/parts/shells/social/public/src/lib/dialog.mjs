@@ -8,8 +8,8 @@ import { pickFromDialog } from '/scripts/features/dialog.mjs'
 export function promptText(title, value = '') {
 	return pickFromDialog('text_prompt_modal', { title, value }, {
 		/**
-		 *
-		 * @param dialog
+		 * @param {HTMLDialogElement} dialog 对话框元素
+		 * @returns {string | null} 用户输入；取消为 null
 		 */
 		mapResult: dialog => dialog.querySelector('#promptInput')?.value.trim() || null,
 	})

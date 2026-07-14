@@ -9,6 +9,7 @@ import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_act
 import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bucket'
+
 import {
 	bufferToDataUrl,
 	loadGroupEmojiManifest,

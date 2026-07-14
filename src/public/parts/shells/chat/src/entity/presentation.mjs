@@ -1,11 +1,15 @@
-import { getLocalizedInfo } from '../../../../../../scripts/locale.mjs'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+
+import { getLocalizedInfo } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../../../../../../server/parts_loader.mjs'
 
 import { resolveAgentCharPartNameForUser } from './agentHost.mjs'
 
+/**
+ *
+ */
 export {
 	isPlaceholderDisplayName,
 	normalizeLocalizedMap,

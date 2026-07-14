@@ -2,8 +2,8 @@
  * 无状态 PoW 入群策略校验。
  */
 /* global Deno */
-import { JOIN_POW_DEFAULT_EPOCH_MS, solveJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 import { assertRejects } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { JOIN_POW_DEFAULT_EPOCH_MS, solveJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 
 import { validateJoinPolicy } from '../../src/chat/governance/joinPolicy.mjs'
 

@@ -1,13 +1,14 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
-	registerShellPartpath,
-	unregisterShellPartpath,
-} from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import {
 	registerBlockReputationHandler,
 	unregisterBlockReputationHandler,
 	mutateReputation,
 } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import {
+	registerShellPartpath,
+	unregisterShellPartpath,
+} from 'npm:@steve02081504/fount-p2p/registries/part_path'
+
 import { getAllUserNames } from '../../../../server/auth/index.mjs'
 import { events } from '../../../../server/events.mjs'
 

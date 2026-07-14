@@ -409,6 +409,25 @@ export function createChatClient(ctx) {
 			return updateProfile(ctx.username, ctx.entityHash, fields)
 		},
 		/**
+		 * @returns {{ search: Function }} 实体命名空间
+		 */
+		get entities() {
+			return {
+				/**
+				 * @param {string} q 搜索词
+				 * @param {{ maxHits?: number }} [opts] 选项
+				 * @returns {Promise<{ query: string, entities: object[] }>} 网络搜索结果
+				 */
+				async search(q, opts = {}) {
+					const { searchEntitiesNetwork } = await import('../entity/entitySearch.mjs')
+					return searchEntitiesNetwork(ctx.username, q, {
+						viewerEntityHash: ctx.entityHash,
+						maxHits: opts.maxHits,
+					})
+				},
+			}
+		},
+		/**
 		 * @returns {Promise<object[]>} 本 user 运行中的 BridgeBot 列表
 		 */
 		async bridgeBots() {

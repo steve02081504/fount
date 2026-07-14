@@ -2,9 +2,10 @@
  * 群联邦同步水位：离线起始 UTC 月、末帧 tipsHash。
  */
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
+
 import { archiveMonthKey } from '../archive/settings.mjs'
-import { groupSyncStatePath } from '../lib/paths.mjs'
 import { safeReadJson } from '../lib/fsSafe.mjs'
+import { groupSyncStatePath } from '../lib/paths.mjs'
 
 const EMPTY_SYNC_STATE = {
 	offlineStartUtcMonth: '',

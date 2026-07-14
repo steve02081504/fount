@@ -120,7 +120,7 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 		}
 		else if (!content.entityHash)
 			content.entityHash = entityHash
-		if (content.ownerEntityHash === undefined) {
+		if (content.ownerEntityHash === undefined) 
 			try {
 				const { loadEntityIdentity } = await import('../../entity/identity.mjs')
 				const idRow = await loadEntityIdentity(username, entityHash)
@@ -128,7 +128,7 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 					content.ownerEntityHash = idRow.ownerEntityHash
 			}
 			catch { /* 无本地身份时跳过 */ }
-		}
+		
 		eventBody = { ...eventBody, content }
 	}
 

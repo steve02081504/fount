@@ -6,18 +6,19 @@ import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 import { unlink } from 'node:fs/promises'
 
-import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
-import { resolveLocalEntityHashFromRecoveryPubKeyHex } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { createGenesisKeyHistory } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 import {
 	ensureNodeDefaults,
 	getNodeHash,
 	getNodeTransportSettings,
+	resolveLocalEntityHashFromRecoveryPubKeyHex,
 	saveNodeTransportSettings,
 } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { createGenesisKeyHistory } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 import { readJsonFile } from 'npm:@steve02081504/fount-p2p/utils/json_io'
+
 import { events } from '../../../../../../server/events.mjs'
 import { assignShellData } from '../../../../../../server/setting_loader.mjs'
 
@@ -152,12 +153,12 @@ async function findOperatorEntityHash(username) {
 		cacheFromRow(username, migrated)
 		return migrated.entityHash
 	}
-	for (const row of await listEntityIdentities(username)) {
+	for (const row of await listEntityIdentities(username)) 
 		if (row.charPartName == null || row.charPartName === '') {
 			cacheFromRow(username, row)
 			return row.entityHash
 		}
-	}
+	
 	return null
 }
 
@@ -187,14 +188,14 @@ export async function ensureEntityIdentity(username, opts = {}) {
 			operatorHashCache.delete(username)
 		}
 	}
-	else if (charPartName) {
-		for (const row of await listEntityIdentities(username)) {
+	else if (charPartName) 
+		for (const row of await listEntityIdentities(username)) 
 			if (row.charPartName === charPartName) {
 				cacheFromRow(username, row)
 				return row
 			}
-		}
-	}
+		
+	
 
 	const recovery = keyPairFromSeed(randomBytes(32))
 	const active = keyPairFromSeed(randomBytes(32))
@@ -288,7 +289,7 @@ export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 	const { getState } = await import('../chat/dag/materialize.mjs')
 	const { appendSignedLocalEvent } = await import('../chat/dag/append.mjs')
 	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
-	for (const groupId of await listUserGroups(username)) {
+	for (const groupId of await listUserGroups(username)) 
 		try {
 			const { state } = await getState(username, groupId, { skipLeftPurge: true })
 			const sender = await peekLocalSignerPubKeyHash(username, groupId, hash)
@@ -301,7 +302,7 @@ export async function setEntityOwner(username, entityHash, ownerEntityHash) {
 			}, { entityHash: hash })
 		}
 		catch { /* 非成员 / 无权写则跳过 */ }
-	}
+	
 	return row
 }
 

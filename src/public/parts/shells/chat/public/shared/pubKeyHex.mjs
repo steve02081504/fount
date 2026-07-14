@@ -1,3 +1,6 @@
+/**
+ *
+ */
 export {
 	compareHex64Asc,
 	HEX_ID_64,

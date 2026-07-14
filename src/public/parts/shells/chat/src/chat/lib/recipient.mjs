@@ -1,5 +1,6 @@
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { resolveAgentCharPartName } from '../../entity/member.mjs'
+
 import { resolveOperatorEntityHash } from './replica.mjs'
 
 /**

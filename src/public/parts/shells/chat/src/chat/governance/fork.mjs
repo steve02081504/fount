@@ -10,10 +10,11 @@ import { randomUUID } from 'node:crypto'
 import { cp, mkdir, readdir, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { computeLocalTipsHash } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { buildCheckpointPayload } from '../dag/checkpointPayload.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'

@@ -1,6 +1,6 @@
 import { setCared } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
-import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/entity/member.mjs'
 import { resolveOperatorEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/replica.mjs'
+import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/entity/member.mjs'
 
 import { handleOwnerCommands } from './commands.mjs'
 import { extractMessageText, resolveMessageContext } from './helpers.mjs'

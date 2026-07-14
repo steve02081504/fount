@@ -1,10 +1,10 @@
 /**
  * 将正文中的 `@[...]` 展开为 Markdown 链接（展示 displayName / 角色名）。
  */
-import { parseInlineTokens } from './inlineTokens.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { formatHashShort } from './entityHash.mjs'
+import { parseInlineTokens } from './inlineTokens.mjs'
 import { disambiguateLabels } from './nameResolve.mjs'
 import { formatSocialProfileHref } from './socialRunUri.mjs'
 
@@ -18,6 +18,11 @@ export function buildMentionLabelMap(members = [], viewer = {}) {
 	/** @type {Array<{ entityHash: string, label: string }>} */
 	const items = []
 	const seen = new Set()
+	/**
+	 * @param {string} hash entityHash
+	 * @param {string} name 展示名
+	 * @returns {void} 无
+	 */
 	const push = (hash, name) => {
 		const key = String(hash || '').trim().toLowerCase()
 		if (!key || seen.has(key)) return

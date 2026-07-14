@@ -2,8 +2,8 @@ import { entityHashLabel } from './entityHash.mjs'
 
 /**
  * 统一名字解析：本地别名 → 自声明名 → 短码兜底。
- * @param {{ entityHash?: string, alias?: string, profileName?: string, fallbackLabel?: string }} input
- * @returns {string}
+ * @param {{ entityHash?: string, alias?: string, profileName?: string, fallbackLabel?: string }} input 解析输入
+ * @returns {string} 展示名（别名 → 自声明名 → 兜底）
  */
 export function resolveDisplayName({ entityHash, alias, profileName, fallbackLabel } = {}) {
 	const aliasName = String(alias || '').trim()
@@ -17,7 +17,7 @@ export function resolveDisplayName({ entityHash, alias, profileName, fallbackLab
 
 /**
  * 同名消歧：label 冲突者追加 `·${entityHash.slice(64, 68)}` 后缀。
- * @param {Array<{ label: string, entityHash?: string }>} items
+ * @param {Array<{ label: string, entityHash?: string }>} items 待消歧条目
  * @returns {string[]} 与 items 同序的消歧后 label
  */
 export function disambiguateLabels(items) {

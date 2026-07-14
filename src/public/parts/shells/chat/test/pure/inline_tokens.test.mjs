@@ -1,6 +1,11 @@
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
-
+import { parseInlineTokens } from 'fount/public/parts/shells/chat/public/shared/inlineTokens.mjs'
+import {
+	formatChannelToken,
+	formatEmojiToken,
+	formatEntityMentionToken,
+	formatRoleMentionToken,
+} from 'fount/public/parts/shells/chat/public/shared/inlineTokenSyntax.mjs'
 import {
 	buildMentionsStructure,
 	extractMentionEntityHashes,
@@ -8,13 +13,8 @@ import {
 	hasEveryoneToken,
 	hasHereToken,
 } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
-import {
-	formatChannelToken,
-	formatEmojiToken,
-	formatEntityMentionToken,
-	formatRoleMentionToken,
-} from 'fount/public/parts/shells/chat/public/shared/inlineTokenSyntax.mjs'
-import { parseInlineTokens } from 'fount/public/parts/shells/chat/public/shared/inlineTokens.mjs'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
 
 const HASH = 'a'.repeat(128)
 

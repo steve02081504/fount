@@ -7,13 +7,14 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
-import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
-import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { sign, verify } from 'npm:@steve02081504/fount-p2p/crypto'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
+
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
+import archiveTunables from '../lib/archive.tunables.json' with { type: 'json' }
 import { discoveryIndexPath } from '../lib/paths.mjs'
 import { listUserGroups } from '../lib/userGroups.mjs'
 

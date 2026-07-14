@@ -14,12 +14,12 @@ import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { setTimeout as sleep } from 'node:timers/promises'
 
-import { ensureNodeDefaults, getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { ensureLinkToNode, getLink, getLinkRegistry } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
-import { createScopedLinkRoom } from 'npm:@steve02081504/fount-p2p/rooms/scoped_link'
-
 import { initTestP2pNode } from 'fount/scripts/test/node/p2p_node.mjs'
 import { testSignalingFromRelayUrls } from 'fount/scripts/test/node/p2p_signaling.mjs'
+import { ensureNodeDefaults, getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
+import { createScopedLinkRoom } from 'npm:@steve02081504/fount-p2p/rooms/scoped_link'
+import { ensureLinkToNode, getLink, getLinkRegistry } from 'npm:@steve02081504/fount-p2p/transport/link_registry'
+
 
 const relayUrl = process.env.FOUNT_TEST_P2P_RELAY_URL?.trim()
 const hostPeerId = process.env.FOUNT_TEST_SUBFOUNT_HOST_PEER_ID?.trim()
@@ -41,13 +41,13 @@ const localNodeHash = getNodeHash()
 if (infoFile)
 	await writeFile(infoFile, JSON.stringify({ nodeHash: localNodeHash }), 'utf8')
 
-if (hostNodeHash) {
+if (hostNodeHash) 
 	for (let attempt = 0; attempt < 90; attempt++) {
 		await ensureLinkToNode(hostNodeHash).catch(() => null)
 		if (getLink(hostNodeHash)) break
 		await sleep(1000)
 	}
-}
+
 
 /** @type {any} */
 let room = null

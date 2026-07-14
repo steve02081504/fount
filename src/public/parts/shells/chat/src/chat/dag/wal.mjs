@@ -5,10 +5,11 @@
  * 【数据结构】返回 `{ ok, reason?, forceFullReplay? }`；`checkpoint` 含 `checkpoint_event_id`、`dag_tip_ids`。
  * 【关联】`materialize.mjs`、`storage.mjs`、`../lib/paths.mjs`。
  */
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 import { computeDagTipIdsFromEvents, hasDanglingParents } from 'npm:@steve02081504/fount-p2p/governance/branch'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { eventsPath, snapshotPath } from '../lib/paths.mjs'
 
 import { isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'

@@ -4,6 +4,7 @@ import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_
 import { findLastEventOfType } from 'npm:@steve02081504/fount-p2p/dag/event_query'
 import { computeLocalTipsHash, computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+
 import { eventsPath } from '../lib/paths.mjs'
 
 import { appendSignedLocalEvent } from './append.mjs'

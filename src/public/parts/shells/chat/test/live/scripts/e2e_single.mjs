@@ -17,6 +17,12 @@ const {
 /** @type {string[]} */
 const createdGroups = []
 
+/**
+ * @param {string} method HTTP 方法
+ * @param {string} path 路径
+ * @param {object | undefined} body 请求体
+ * @returns {Promise<import('fount/scripts/test/live/http.mjs').LiveHttpResponse>} Chat API 响应
+ */
 async function api(method, path, body) {
 	return chatApi(method, path, body)
 }

@@ -3,14 +3,14 @@ import { createHash, randomUUID } from 'node:crypto'
 
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { entityFileUrl } from '../../entity/filesUrl.mjs'
-import { getProfile } from '../../entity/profile.mjs'
 
 import {
 	channelMessageAgentText,
 	channelMessageContentObject,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
+import { entityFileUrl } from '../../entity/filesUrl.mjs'
+import { getProfile } from '../../entity/profile.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { appendChannelMessageDelete, appendChannelMessageEdit } from '../channel/messageMutations.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'

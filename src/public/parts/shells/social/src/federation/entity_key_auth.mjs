@@ -14,7 +14,7 @@ import {
 /**
  * 折叠时间线事件中的 recovery 公钥与实体密钥链（含 social_meta）。
  * @param {object[]} events 时间线事件（拓扑序）
- * @returns {{ recoveryPubKeyHex: string | null, entityKeyHistory: import('npm:@steve02081504/fount-p2p/federation/entity_key_chain').EntityKeyHistoryEntry[] }}
+ * @returns {{ recoveryPubKeyHex: string | null, entityKeyHistory: import('npm:@steve02081504/fount-p2p/federation/entity_key_chain').EntityKeyHistoryEntry[] }} 实体密钥链折叠结果
  */
 export function foldEntityKeyHistoryFromEvents(events) {
 	let recoveryPubKeyHex = null

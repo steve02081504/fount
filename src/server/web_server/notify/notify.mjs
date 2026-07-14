@@ -1,4 +1,5 @@
 import { sendEventToUser } from '../event_dispatcher.mjs'
+
 import { sendWebPush } from './webPush.mjs'
 
 /**

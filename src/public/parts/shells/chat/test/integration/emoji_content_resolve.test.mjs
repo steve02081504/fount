@@ -4,8 +4,8 @@
 /* global Deno */
 import { Buffer } from 'node:buffer'
 
-import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 import { assertEquals, assertExists } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 
 import { computeEmojiContentHash } from '../../src/group/groupEmojis.mjs'
 import { createIntegrationBoot } from '../harness.mjs'

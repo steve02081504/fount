@@ -7,11 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { b64ToU8 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
-import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
-import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest'
 import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	decryptConvergentCiphertext,
@@ -22,8 +18,13 @@ import {
 	unwrapContentKey,
 	wrapContentKey,
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
+import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
+import { saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
+import { normalizeFileManifest } from 'npm:@steve02081504/fount-p2p/files/manifest'
 import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
+
+import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 import { getState } from '../dag/materialize.mjs'
 import {
 	fetchChunksFromRoster,

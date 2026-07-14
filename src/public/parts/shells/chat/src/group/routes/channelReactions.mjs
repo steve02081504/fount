@@ -4,13 +4,13 @@
  * 【关联】被 channels.mjs 聚合注册。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import {
 	appendListItemUpdate,
 	appendPinEvent,
 	appendReactionEvent,
 	appendUnpinEvent,
 } from '../../chat/dag/channelOperations.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import {
 	ensurePinPermission,

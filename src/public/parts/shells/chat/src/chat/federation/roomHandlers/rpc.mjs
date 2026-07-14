@@ -1,7 +1,8 @@
-import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/group_part'
 import { wireAction } from 'npm:@steve02081504/fount-p2p/transport/room_wire_action'
 import { isFederationActionAllowedUnderLoad } from 'npm:@steve02081504/fount-p2p/transport/rtc_connection_budget'
+import { attachGroupPartWire } from 'npm:@steve02081504/fount-p2p/wire/group_part'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
+
 import { encodeWireJson } from '../../lib/wireJson.mjs'
 import {
 	buildRpcErrorResponse,

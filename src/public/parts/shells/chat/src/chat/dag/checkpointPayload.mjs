@@ -2,9 +2,9 @@ import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
 import { canonicalStringify } from 'npm:@steve02081504/fount-p2p/core/canonical_json'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { verifyCheckpointSignature } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { computeLocalTipsHash, merkleRoot } from 'npm:@steve02081504/fount-p2p/dag/index'
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { checkpointSignerPubKeyHashes, serializeReactionsOverlay, serializeVotesOverlay } from './groupMaterializedState.mjs'

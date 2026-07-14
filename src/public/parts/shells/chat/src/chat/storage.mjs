@@ -7,14 +7,15 @@
  */
 
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
-import {
-	createFederatedChunksPlugin,
-	createS3StoragePlugin,
-} from './lib/remoteStoragePlugins.mjs'
+
 import { loadShellData } from '../../../../../../server/setting_loader.mjs'
 
 import { createFederationSwarmStoragePlugin } from './federation/chunks.mjs'
 import { shellChatRoot } from './lib/paths.mjs'
+import {
+	createFederatedChunksPlugin,
+	createS3StoragePlugin,
+} from './lib/remoteStoragePlugins.mjs'
 
 /**
  * @param {unknown} cfg 单条 S3 副本配置

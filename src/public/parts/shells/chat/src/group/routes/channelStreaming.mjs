@@ -3,9 +3,10 @@
  * 【职责】频道 HTTP 路由（流媒体鉴权与嵌入）。
  * 【关联】被 channels.mjs 聚合注册。
  */
-import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { resolveIceServers } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { resolveIceServers } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
+
+import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendStreamingSession } from '../../chat/dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/ws/auth.mjs'

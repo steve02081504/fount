@@ -1,13 +1,13 @@
 /**
  * Chat profile CLI actions（委托 scripts/p2p/entity）。
  */
+import { getOperatorEntityHash } from '../entity/identity.mjs'
+import { normalizeLocalizedMap } from '../entity/presentation.mjs'
 import {
 	getProfile,
 	updateProfile,
 	updateStatus as setEntityStatus,
 } from '../entity/profile.mjs'
-import { normalizeLocalizedMap } from '../entity/presentation.mjs'
-import { getOperatorEntityHash } from '../entity/identity.mjs'
 
 /**
  *

@@ -1,6 +1,7 @@
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { isVoteBallotClosed } from '../../lib/voteBallots.mjs'
 
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { withGroupId } from './state.mjs'
 

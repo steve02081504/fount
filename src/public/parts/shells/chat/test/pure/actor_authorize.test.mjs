@@ -2,11 +2,11 @@
  * 权限主体恒为 sender（无 acting overlay）纯测试。
  */
 /* global Deno */
+import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'
-import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 /**
  * @returns {{ state: object, sender: string, peer: string }} 双成员物化 state

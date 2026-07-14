@@ -1,5 +1,5 @@
-import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
 import { createEmptySessionState } from './reducers/state.mjs'

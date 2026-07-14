@@ -5,10 +5,9 @@ import { MEMBERS_PAGE_SIZE } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { withGroupId } from './state.mjs'
-import { clampRepEdge } from './governance.mjs'
 import { recordFileMasterKeyRotation } from './files.mjs'
-import { createEmptySessionState } from './state.mjs'
+import { clampRepEdge } from './governance.mjs'
+import { createEmptySessionState, withGroupId } from './state.mjs'
 
 const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 

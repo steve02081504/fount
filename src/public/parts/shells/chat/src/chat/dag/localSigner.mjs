@@ -5,9 +5,9 @@
  * 【数据结构】返回 `{ sender: string, secretKey: Uint8Array }`；`sender` 恒为 64 hex pubKeyHash。
  * 【关联】`append.mjs`、`channelOperations.mjs`、`chatLogMirror.mjs`、`validator.mjs`。
  */
+import { Buffer } from 'node:buffer'
 import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
-import { Buffer } from 'node:buffer'
 
 import { pubKeyHash, publicKeyFromSeed, randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 

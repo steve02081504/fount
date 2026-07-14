@@ -1,6 +1,6 @@
 import { buildPostFeedItem } from './feed/buildItem.mjs'
-import { loadViewerContext } from './feed.mjs'
 import { createFeedItemBuildContext, iterateVisiblePosts, iterateVisibleTimelineOwners } from './feed/iterate.mjs'
+import { loadViewerContext } from './feed.mjs'
 import { compareFeedItems } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { postMatchesQuery } from './lib/postQuery.mjs'

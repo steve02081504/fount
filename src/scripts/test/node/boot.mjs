@@ -1,6 +1,7 @@
 /**
  * fount 测试节点统一启动（同进程集成测试 + node worker 子进程共用）。
  */
+/* global Deno */
 import 'fount/scripts/test/env.mjs'
 
 import crypto from 'node:crypto'
@@ -39,7 +40,7 @@ const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
  * 写入或更新节点 config.json。
  * @param {string} dataPath data 根目录
  * @param {WriteNodeConfigOpts} options 配置选项
- * @returns {void}
+ * @returns {void} 无
  */
 export function writeNodeConfig(dataPath, options) {
 	const port = options.port ?? HEADLESS_CONFIG_PORT
@@ -267,7 +268,7 @@ export async function startTestServer(options) {
  * in-process server 测试默认关闭 Deno ops/resource sanitize。
  * 进程退出时 server 定时器/句柄仍在，sanitize 会把「全绿」判成 exit 1。
  * harness 在模块顶层 import boot 时即打补丁，早于后续 `Deno.test(...)` 注册。
- * @returns {void}
+ * @returns {void} 无
  */
 function patchDenoTestSanitizeOff() {
 	const original = Deno.test
@@ -307,7 +308,7 @@ export function createTestServerBoot(options) {
 /**
  * 无 Web 的 headless fount 数据根（联邦仿真等）。
  * @param {string} dataPath 数据根目录
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 export async function bootHeadlessDataRoot(dataPath) {
 	fs.mkdirSync(dataPath, { recursive: true })
@@ -322,7 +323,7 @@ export async function bootHeadlessDataRoot(dataPath) {
 /**
  * 在无 Web 场景下初始化最小 P2P node 身份。
  * @param {string} dataPath data 根目录
- * @returns {Promise<void>}
+ * @returns {Promise<void>} 无
  */
 async function ensureMinP2pNode(dataPath) {
 	const { isNodeInitialized } = await import('npm:@steve02081504/fount-p2p/node/instance')

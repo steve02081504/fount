@@ -1,4 +1,5 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
 import { getProfile } from '../../../chat/src/entity/profile.mjs'
 
 /**

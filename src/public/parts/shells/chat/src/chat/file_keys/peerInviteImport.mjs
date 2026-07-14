@@ -3,8 +3,9 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 
 import { applyFileKeyGrant } from './historicalGrant.mjs'

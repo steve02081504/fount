@@ -2,6 +2,7 @@
  * 联邦群发现 gossip：discovery_announce / discovery_query。
  */
 import { pickFederationTargetPeerIds } from 'npm:@steve02081504/fount-p2p/transport/peer_pool'
+
 import {
 	buildDiscoveryQueryResponse,
 	buildSignedDiscoveryAdvertisement,

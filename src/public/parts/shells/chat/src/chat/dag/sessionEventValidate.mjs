@@ -2,6 +2,7 @@
  * 【文件】`dag/sessionEventValidate.mjs` — `session_*` / 本地元数据 DAG 事件内容校验。
  */
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
 const WORLD_DISTRIBUTIONS = new Set(['local', 'replicated', 'hosted'])

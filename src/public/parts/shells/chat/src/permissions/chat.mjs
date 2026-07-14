@@ -32,7 +32,13 @@ const chatEvaluator = createLayeredEvaluator({
 	everyoneRoleId: '@everyone',
 })
 
+/**
+ *
+ */
 export const encodePermissions = chatEvaluator.encode
+/**
+ *
+ */
 export const decodePermissions = chatEvaluator.decode
 
 /**

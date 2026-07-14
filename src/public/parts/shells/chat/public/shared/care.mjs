@@ -31,7 +31,7 @@ export async function setCared(targetEntityHash, cared) {
 
 /**
  * @param {string} targetEntityHash 目标
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} 是否已关心该实体
  */
 export async function isCared(targetEntityHash) {
 	const cared = await listCared()
