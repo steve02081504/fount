@@ -45,14 +45,3 @@ export async function loadModeration(appContext) {
 		})
 	})
 }
-
-/**
- * 处理审核视图点击。
- * @param {object} appContext 应用上下文
- * @param {HTMLElement} target 点击目标
- * @returns {Promise<boolean>} 是否已处理
- */
-export async function handleModerationClick(appContext, target) {
-	if (!target.closest('#moderationView')) return false
-	return true
-}

@@ -9,10 +9,12 @@ export const EMOJI_TOKEN_RE = /:\[emoji:([\w.-]+)\/([\w.-]+)\]:/g
  *
  */
 export const MESSAGE_TOKEN_RE = /#\[message:([\w.-]+)\/([\w.-]+)\/([\w.-]+)\]/g
+
 /**
  *
  */
 export const CHANNEL_TOKEN_RE = /#\[channel:([\w.-]+)\/([\w.-]+)\]/g
+
 /**
  *
  */

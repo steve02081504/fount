@@ -1,6 +1,8 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+
 import { getState } from '../dag/materialize.mjs'
+
 import { memberEntityHash } from './entity.mjs'
 
 /**
@@ -38,7 +40,7 @@ function memberHasAnyRole(state, entityHash, roleIds) {
  * 判定实体是否被消息 mentions 结构命中（直接 @；叠加 role / everyone）。
  * @param {object} event onMessage 事件或含 mentions 的上下文
  * @param {string} entityHash 待查实体
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} 是否命中
  */
 export async function messageMentionsEntity(event, entityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()
@@ -47,7 +49,7 @@ export async function messageMentionsEntity(event, entityHash) {
 	if (!mentions) return false
 	if (mentionsEntity(mentions, hash)) return true
 	const groupId = event?.group?.groupId
-	const username = event?.chatReplyRequest?.username || event?._username
+	const username = event?.chatReplyRequest?.username
 	if (!groupId || !username) return false
 	const { state } = await getState(username, groupId)
 	if (mentions.everyone && isActiveGroupMember(state, hash)) return true

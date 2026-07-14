@@ -122,7 +122,7 @@ Deno.test('dispatchSocialMessage does not publish agent reply without mention wh
 	assertEquals(after.length, beforeCount, 'agent without onMessage must not reply when unmentioned')
 })
 
-Deno.test('processSocialPostNotifyRpc accepts valid post payload', async () => {
+Deno.test('processSocialPostNotifyRpc accepts signed post payload', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	const { username, operator } = await getSession()
 	const post = await append.commitTimelineEvent(username, operator, {
@@ -135,4 +135,11 @@ Deno.test('processSocialPostNotifyRpc accepts valid post payload', async () => {
 		post,
 	})
 	assertEquals(result.ok, true)
+
+	const forged = await dispatch.processSocialPostNotifyRpc(username, {
+		authorEntityHash: operator,
+		posterUsername: username,
+		post: { ...post, signature: '00'.repeat(64), id: 'f'.repeat(64) },
+	})
+	assertEquals(forged.ok, false)
 })

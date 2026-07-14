@@ -38,21 +38,19 @@ function charAgentEntityHash(session, charname, nodeHash) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
- * @param {object} messageLine 触发消息行
- * @param {object} mentions mentions 结构
+ * @param {object} event onMessage 事件（已构建）
  * @param {boolean} mentioned 是否被 @
  * @param {{ enabled: boolean, burst: number, refill: number, frequency: number }} settings 节流配置
  * @param {boolean} isDm 是否 DM 群
  * @param {number} charCount 群内 char 数
  * @returns {Promise<boolean>} 发言意愿
  */
-async function resolveCharReplyWill(username, groupId, channelId, charname, messageLine, mentions, mentioned, settings, isDm, charCount) {
+async function resolveCharReplyWill(username, groupId, channelId, charname, event, mentioned, settings, isDm, charCount) {
 	const char = await resolveChar(groupId, charname, username)
 	if (!char) return false
 	const bucketKey = autoReplyBucketKey(groupId, channelId, charname)
 
 	if (char.interfaces?.chat?.onMessage) {
-		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
 		let spoke = false
 		try {
 			spoke = await char.interfaces.chat.onMessage(event)
@@ -123,7 +121,7 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
 		const mentioned = agentHash ? await messageMentionsEntity(event, agentHash) : false
 		const wantsReply = await resolveCharReplyWill(
-			username, groupId, channelId, charname, messageLine, mentions,
+			username, groupId, channelId, charname, event,
 			mentioned, settings, isDm, chars.length,
 		)
 		if (!wantsReply) continue

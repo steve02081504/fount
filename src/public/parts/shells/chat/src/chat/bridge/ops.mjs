@@ -64,8 +64,7 @@ export function requireBridgeOp(username, bridge, op) {
 	if (!platform || !botname)
 		throw new Error(`bridge op requires platform and botname: ${op}`)
 	const fn = resolveBridgeOps(username, { platform, botname })?.[op]
-	if (typeof fn !== 'function')
-		throw new Error(`bridge op not registered: ${platform}:${botname}.${op}`)
+	if (!fn) throw new Error(`bridge op not registered: ${platform}:${botname}.${op}`)
 	return fn
 }
 

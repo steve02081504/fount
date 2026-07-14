@@ -14,6 +14,7 @@ import { set_sentry_enabled } from 'fount/scripts/sentry_state.mjs'
 import { set_start } from 'fount/server/base.mjs'
 import { init } from 'fount/server/server.mjs'
 
+import { assertDisposableDataPath } from '../core/disposable_path.mjs'
 import { HEADLESS_CONFIG_PORT, pickAvailableIpcPort } from '../core/ports.mjs'
 
 import { assignIpcPort, defaultTestStarts, ipcPortFromStarts, ipcStartsEnabled } from './starts.mjs'
@@ -174,8 +175,10 @@ export async function initFountNode({ dataPath, restarter, starts, needsOutput, 
  * @returns {Promise<{ dataPath: string, username: string }>} 数据目录与用户名
  */
 export async function bootInProcess(options) {
-	if (options.resetData)
+	if (options.resetData) {
+		assertDisposableDataPath(options.dataPath)
 		fs.rmSync(options.dataPath, { recursive: true, force: true })
+	}
 
 	const starts = options.starts ?? defaultTestStarts(options)
 	let ipcPort = ipcPortFromStarts(starts)
@@ -245,6 +248,7 @@ export async function bootInProcess(options) {
  */
 export async function startTestServer(options) {
 	const dataDir = options.dataDir ?? join(tmpdir(), `fount_test_${Date.now().toString(36)}`)
+	assertDisposableDataPath(dataDir)
 	const row = await bootInProcess({
 		dataPath: dataDir,
 		port: options.port ?? HEADLESS_CONFIG_PORT,

@@ -213,7 +213,6 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 					threadId: platformThreadId,
 				})) return {}
 
-				let firstMessageId = null
 				const textChunks = splitDiscordReply(plainWithEmoji)
 				const fileChunks = []
 				for (let i = 0; i < files.length; i += 10)
@@ -221,15 +220,16 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 
 				if (!textChunks.length && !fileChunks.length) return {}
 
+				let firstMessageId = null
 				for (let i = 0; i < textChunks.length; i++) {
 					const payload = { content: textChunks[i] }
 					if (i === textChunks.length - 1 && fileChunks.length) payload.files = fileChunks.shift()
-					const sent = await tryFewTimes(() => channel.send(payload))
-					if (!firstMessageId) firstMessageId = sent.id
+					const { platformMessageId } = await sendPayload(payload)
+					if (!firstMessageId) firstMessageId = platformMessageId
 				}
 				for (const chunk of fileChunks) {
-					const sent = await tryFewTimes(() => channel.send({ files: chunk }))
-					if (!firstMessageId) firstMessageId = sent.id
+					const { platformMessageId } = await sendPayload({ files: chunk })
+					if (!firstMessageId) firstMessageId = platformMessageId
 				}
 				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
 			})

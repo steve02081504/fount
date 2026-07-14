@@ -74,7 +74,7 @@ export async function indexChannelMessageLine(username, groupId, channelId, mess
  * @param {string} channelId 频道 ID
  * @returns {Promise<void>}
  */
-async function ensureArchiveIndexed(username, groupId, channelId) {
+export async function ensureArchiveIndexed(username, groupId, channelId) {
 	const manifest = await loadArchiveManifest(username, groupId)
 	const months = manifest?.channels?.[channelId]?.months || []
 	if (!months.length) return

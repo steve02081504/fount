@@ -90,17 +90,9 @@ async function dispatchCarePostIfNeeded(username, authorEntityHash, post, author
 	if (dispatchedPostKeys.has(careKey)) return
 	if (!await isCaredBy(username, operator, author)) return
 	dispatchedPostKeys.add(careKey)
-	const snippet = postTextForNotification(post) ?? notificationSnippetFromAuthor(authorLabel)
+	const snippet = postTextForNotification(post) ?? (authorLabel ? `${authorLabel} 发了新帖` : null)
 	const { appendCarePostInboxRow } = await import('./inbox.mjs')
 	await appendCarePostInboxRow(username, operator, author, post, snippet)
-}
-
-/**
- * @param {string} authorLabel 展示名
- * @returns {string | null} 通知摘要
- */
-function notificationSnippetFromAuthor(authorLabel) {
-	return authorLabel ? `${authorLabel} 发了新帖` : null
 }
 
 /**
@@ -208,29 +200,41 @@ async function dispatchRemoteMentionPush(username, authorEntityHash, post, menti
  * @returns {Promise<void>}
  */
 export async function dispatchSocialMessage(username, authorEntityHash, post) {
-	if (post?.type !== 'post') return
-	const author = String(authorEntityHash || '').trim().toLowerCase()
+	if (post.type !== 'post') return
+	const author = String(authorEntityHash).trim().toLowerCase()
 	const mentionHashes = extractMentionEntityHashes(mentionSourceText(post))
 	const mentions = { entityHashes: mentionHashes }
 	const authorLabel = await displayNameForEntity(author, username)
-	const lang = post.content?.lang || 'zh-CN'
 
 	await dispatchCarePostIfNeeded(username, author, post, authorLabel)
-	await dispatchLocalAgents(username, author, post, mentions, authorLabel, lang)
+	await dispatchLocalAgents(username, author, post, mentions, authorLabel, post.content?.lang || 'zh-CN')
 	if (mentionHashes.length)
 		await dispatchRemoteMentionPush(username, author, post, mentionHashes)
 }
 
 /**
- * 联邦 RPC 入站：目标节点收到 post 后走同一分发。
+ * 联邦 RPC 入站：验签后走同一分发（不落盘；落盘由 timeline pull/ingest）。
  * @param {string} hostingUsername 托管 replica
  * @param {object} rpc RPC 体
  * @returns {Promise<{ ok: boolean }>} RPC 处理结果
  */
 export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
-	const post = rpc?.post
-	if (!post || post.type !== 'post') return { ok: false }
-	await dispatchSocialMessage(rpc.posterUsername || hostingUsername, rpc.authorEntityHash, post)
+	const post = rpc.post
+	const authorEntityHash = String(rpc.authorEntityHash || '').trim().toLowerCase()
+	if (post?.type !== 'post' || !authorEntityHash) return { ok: false }
+
+	const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
+	const { validateRemoteTimelineEvent } = await import('./federation/remote_ingest.mjs')
+	const { timelineEventsPath } = await import('./paths.mjs')
+	const { canonicalizeSignedTimelineEvent } = await import('./timeline/canonicalizeEvent.mjs')
+	const priorEvents = await readJsonl(timelineEventsPath(hostingUsername, authorEntityHash))
+	const validated = await validateRemoteTimelineEvent(post, authorEntityHash, {
+		canonicalize: canonicalizeSignedTimelineEvent,
+		priorEvents,
+	})
+	if (!validated.accepted) return { ok: false }
+
+	await dispatchSocialMessage(rpc.posterUsername || hostingUsername, authorEntityHash, validated.row)
 	return { ok: true }
 }
 
@@ -248,7 +252,7 @@ export async function dispatchFollowEvent(followerUsername, followerEntityHash, 
 
 	const char = await loadPart(target.replicaUsername, `chars/${target.charPartName}`)
 	const handler = char?.interfaces?.social?.OnFollow
-	if (typeof handler !== 'function') return
+	if (!handler) return
 
 	await handler({
 		username: target.replicaUsername,

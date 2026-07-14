@@ -10,13 +10,13 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
-import { isHex64 } from '../shared/pubKeyHex.mjs'
-
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
+import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { isHex64 } from '../shared/pubKeyHex.mjs'
 import { formatSocialProfileHref } from '../shared/socialRunUri.mjs'
+
 import { hubStore } from './core/state.mjs'
 import {
 	loadEntityProfile,
@@ -211,6 +211,9 @@ async function paintProfilePopup(popup, entity) {
 	if (aliasButton instanceof HTMLButtonElement) {
 		aliasButton.hidden = !isEntityHash128(entityHash)
 		if (!aliasButton.hidden)
+			/**
+			 *
+			 */
 			aliasButton.onclick = () => {
 				void (async () => {
 					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
@@ -237,6 +240,9 @@ async function paintProfilePopup(popup, entity) {
 			careButton.dataset.i18n = cared
 				? 'chat.hub.profilePopup.careRemove'
 				: 'chat.hub.profilePopup.care'
+			/**
+			 *
+			 */
 			careButton.onclick = () => {
 				void (async () => {
 					const next = !await isCared(owner, entityHash)

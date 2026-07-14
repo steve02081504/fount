@@ -3,7 +3,8 @@ import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
-import { disambiguateLabels } from '../../shared/nameResolve.mjs'
+import { aliasForEntity } from '../../shared/aliases.mjs'
+import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { unbanMember } from '../api/groupApi.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
@@ -81,8 +82,14 @@ export async function renderMembers(context) {
 	const labelItems = memberRows.map(member => {
 		const memberKey = member.memberKey || member.agentEntityHash || member.pubKeyHash || ''
 		const entityHash = String(member.entityHash || '').trim()
-		const label = String(member.displayName || '').trim()
-			|| authorDisplayLabel(member.entityHash || memberKey)
+		const label = entityHash
+			? resolveDisplayName({
+				entityHash,
+				alias: aliasForEntity(entityHash),
+				profileName: member.displayName,
+			})
+			: String(member.displayName || '').trim()
+				|| authorDisplayLabel(memberKey)
 		return { member, memberKey, entityHash, label }
 	})
 	const labels = disambiguateLabels(labelItems)

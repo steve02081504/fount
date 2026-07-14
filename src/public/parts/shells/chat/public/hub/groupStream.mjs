@@ -14,11 +14,11 @@ import { renderHubChannelSidebar } from './groupNav.mjs'
 import { maybeBumpInboxBadgeFromWire } from './inboxClient.mjs'
 import { messageIdSelector } from './messages/messageShared.mjs'
 import { getActiveThreadChannelId } from './threadDrawer.mjs'
-import { handleVoteClosedWire } from './wireVoteEvents.mjs'
 import {
 	bumpChannelUnread,
 	handleReadMarkerWire,
 } from './unread.mjs'
+import { handleVoteClosedWire } from './wireVoteEvents.mjs'
 
 /** @type {WebSocket | null} */
 let groupWebSocket = null

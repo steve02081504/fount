@@ -1,7 +1,8 @@
 import { buildPostFeedItem } from './feed/buildItem.mjs'
 import { loadViewerContext } from './feed/helpers.mjs'
-import { createFeedItemBuildContext, iterateVisibleTimelineOwners } from './feed/iterate.mjs'
+import { createFeedItemBuildContext, iterateVisiblePosts, iterateVisibleTimelineOwners } from './feed/iterate.mjs'
 import { compareFeedItems } from './feedMerge.mjs'
+import { canViewPost } from './feedVisibility.mjs'
 import { postMatchesQuery } from './lib/postQuery.mjs'
 import { querySocialPostIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
@@ -46,14 +47,12 @@ export async function searchPosts(username, options = {}) {
 		const post = view.postById?.[hit.postId] || view.posts?.find(row => row.id === hit.postId)
 		if (!post) continue
 		const enriched = { ...post, entityHash: hit.entityHash }
-		const { canViewPost } = await import('./feedVisibility.mjs')
 		if (!canViewPost(enriched, viewerContext)) continue
 		const item = await buildPostFeedItem(username, hit.entityHash, post, itemContext)
 		itemsByKey.set(`${hit.entityHash}:${hit.postId}`, item)
 	}
 
-	if (itemsByKey.size < fetchLimit) {
-		const { iterateVisiblePosts } = await import('./feed/iterate.mjs')
+	if (itemsByKey.size < fetchLimit) 
 		for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
 			const key = `${entityHash}:${post.id}`
 			if (itemsByKey.has(key)) continue
@@ -61,7 +60,7 @@ export async function searchPosts(username, options = {}) {
 			itemsByKey.set(key, await buildPostFeedItem(username, entityHash, post, itemContext))
 			if (itemsByKey.size >= fetchLimit) break
 		}
-	}
+	
 
 	let items = [...itemsByKey.values()]
 	items.sort((left, right) => compareFeedItems(left, right) * -1)

@@ -1,5 +1,6 @@
 import { console } from '../../../../../scripts/i18n/bare.mjs'
 import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted } from '../../chat/src/chat/bridge/groupEvents.mjs'
 import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
 import {
 	bridgeIngestDto,
@@ -63,6 +64,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		let lastToUserId = String(interfaceConfig.OwnerWeChatId || '').trim()
 		let lastContextToken = ''
 		const processedIds = new Set()
+		const PROCESSED_IDS_MAX = 5000
 		let loggedReady = false
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
@@ -101,6 +103,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		})
 
 		await claimOperatorBridgeIdentity(ownerUsername, 'wechat', interfaceConfig.OwnerWeChatId, ownerDisplayName)
+		await dispatchBridgeBotStarted(ownerUsername, 'wechat', botname)
 
 		/**
 		 * @param {string} toUserId 对端 ID
@@ -282,6 +285,10 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 						: `s${wechatMessage.seq}:${wechatMessage.client_id || ''}`
 					if (processedIds.has(dedupKey)) continue
 					processedIds.add(dedupKey)
+					if (processedIds.size > PROCESSED_IDS_MAX) {
+						const oldest = processedIds.values().next().value
+						processedIds.delete(oldest)
+					}
 
 					if (wechatMessage.message_type !== WechatMessageType.USER) continue
 					if (wechatMessage.message_state === WechatMessageState.GENERATING) continue

@@ -45,8 +45,8 @@ export function getTelegramBotForChar(username, charname) {
  * @returns {string} 逻辑频道键
  */
 function constructLogicalChannelId(chatId, threadId) {
-	if (Object(threadId) instanceof Number) return `${chatId}_${threadId}`
-	return String(chatId)
+	if (threadId == null) return String(chatId)
+	return `${chatId}_${threadId}`
 }
 
 /**
@@ -212,35 +212,14 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 					threadId: threadKey,
 				})) return {}
 
-				let firstMessageId = null
-				if (cleanMarkdown.trim()) {
-					const { text, entities } = await buildTelegramTextAndEntities(ownerUsername, cleanMarkdown)
-					for (const part of splitTelegramReply(aiMarkdownToTelegramHtml(text))) {
-						const sent = await tryFewTimes(() => bot.telegram.sendMessage(platformChatId, part, {
-							...DefaultParseModeOptions,
-							...threadKey ? { message_thread_id: Number(threadKey) } : {},
-							...entities.length ? { entities } : {},
-						}))
-						if (!firstMessageId) firstMessageId = sent.message_id
-					}
-				}
-				for (const stickerId of stickerIds) {
-					const sent = await tryFewTimes(() => bot.telegram.sendSticker(platformChatId, stickerId, {
-						...threadKey ? { message_thread_id: Number(threadKey) } : {},
-					}))
-					if (!firstMessageId) firstMessageId = sent.message_id
-				}
+				const fileStickerIds = []
 				for (const file of messageLine.files || []) {
 					const name = String(file.name || '')
 					const base = name.replace(/\.avif$/i, '')
 					const mapping = stickerMap[name] || stickerMap[`${base}.avif`] || stickerMap[base]
-					if (!mapping?.fileId) continue
-					const sent = await tryFewTimes(() => bot.telegram.sendSticker(platformChatId, mapping.fileId, {
-						...threadKey ? { message_thread_id: Number(threadKey) } : {},
-					}))
-					if (!firstMessageId) firstMessageId = sent.message_id
+					if (mapping?.fileId) fileStickerIds.push(mapping.fileId)
 				}
-				return firstMessageId != null ? { platformMessageId: firstMessageId } : {}
+				return sendPayload({ text: cleanMarkdown, stickerIds: [...stickerIds, ...fileStickerIds] })
 			})
 			outboundRegistered.add(groupId)
 		}

@@ -7,12 +7,12 @@ import {
 	seedMentionInbox,
 } from './fixtures.mjs'
 
-test.describe('Mention inbox', () => {
+test.describe('Inbox', () => {
 	test.setTimeout(600_000)
 
 	test('seeded @mention shows badge, inbox list, and jump to message', async ({ page, baseUrl, apiKey, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
-		const marker = `mentions-e2e ${Date.now()}`
+		const marker = `inbox-e2e ${Date.now()}`
 		const { eventId } = await seedMentionInbox(baseUrl, apiKey, {
 			groupId,
 			channelId,
@@ -22,16 +22,16 @@ test.describe('Mention inbox', () => {
 		await page.reload({ waitUntil: 'domcontentloaded' })
 		await waitForHubShellReady(page)
 
-		const badge = page.locator('#hub-mentions-badge')
+		const badge = page.locator('#hub-inbox-badge')
 		await expect(badge).toBeVisible({ timeout: ms('1m') })
 		await expect(badge).toHaveText('1')
 
-		await page.locator('.hub-server-mentions').click()
-		await expect(page).toHaveURL(/#mentions/)
-		await expect(page.locator('#hub-mentions-list .hub-mention-row').first())
+		await page.locator('.hub-server-inbox').click()
+		await expect(page).toHaveURL(/#inbox/)
+		await expect(page.locator('#hub-inbox-list .hub-inbox-row').first())
 			.toBeVisible({ timeout: ms('1m') })
 
-		await page.locator('#hub-mentions-list .hub-mention-row').first().click()
+		await page.locator('#hub-inbox-list .hub-inbox-row').first().click()
 		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`), { timeout: ms('2m') })
 		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: ms('2m') })
 		const messageRow = page.locator(`#hub-messages .hub-message[data-message-id="${eventId}"]`)

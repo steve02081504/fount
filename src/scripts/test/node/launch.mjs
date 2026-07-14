@@ -16,6 +16,7 @@ import { fileURLToPath } from 'node:url'
 import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
 import { resolveListenBind } from '../../net_listen.mjs'
+import { assertDisposableDataPath } from '../core/disposable_path.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
@@ -547,8 +548,10 @@ export async function stopNode(node) {
 		new Promise(resolve => setTimeout(resolve, ms('5s'))),
 	])
 	await collectNodeHeapSnapshots(pid)
-	if (!node.keepData && node.dataPath)
+	if (!node.keepData && node.dataPath) {
+		assertDisposableDataPath(node.dataPath)
 		await rm(node.dataPath, { recursive: true, force: true })
+	}
 	if (node.usedTestRelay)
 		await stopTestNostrRelay()
 }

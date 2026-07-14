@@ -1900,19 +1900,20 @@
 				"title": "好友",
 				"tip": "好友"
 			},
-			"mentionsTooltip": {
-				"title": "@提及",
-				"tip": "跨群 @我"
+			"inboxTooltip": {
+				"title": "收件箱",
+				"tip": "跨群收件箱"
 			},
-			"mentions": {
-				"title": "提及",
+			"inbox": {
+				"title": "收件箱",
 				"tabMention": "@提及",
 				"tabMessage": "全部消息",
 				"tabCare": "特别关心",
 				"tabVoteClosed": "投票结束",
 				"empty": "暂无消息",
 				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
-				"composerDisabled": "在提及收件箱中无法发送消息"
+				"composerDisabled": "在收件箱中无法发送消息",
+				"badgeFetchFailed": "未读徽章刷新失败：${error}"
 			},
 			"notifyPrefs": {
 				"title": "通知设置",

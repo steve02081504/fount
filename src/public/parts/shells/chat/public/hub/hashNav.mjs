@@ -8,7 +8,7 @@
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { FRIENDS_HASH, isFriendsHash, MENTIONS_HASH, parseHash } from './core/urlHash.mjs'
+import { FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
 import { selectChannel, selectGroup } from './groupNav.mjs'
@@ -24,8 +24,8 @@ let navigationQueue = Promise.resolve()
 async function navigateFromHashInner() {
 	try {
 		const hash = window.location.hash.slice(1)
-		if (hash === MENTIONS_HASH) {
-			await setMode('mentions')
+		if (hash === INBOX_HASH) {
+			await setMode('inbox')
 			return
 		}
 		if (!hash || hash === FRIENDS_HASH) {

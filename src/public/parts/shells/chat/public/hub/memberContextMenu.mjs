@@ -5,16 +5,16 @@
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
+import { isCared, setCared } from '../shared/care.mjs'
 import { getGroupState } from '../src/api/groupApi.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
-import { insertComposerMention } from './mentionAutocomplete.mjs'
-import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
-import { isCared, setCared } from '../shared/care.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { hubStore } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
 import { renderMemberList } from './groupNav.mjs'
+import { insertComposerMention } from './mentionAutocomplete.mjs'
 import { resolveEntityFromAnchor } from './profilePopup.mjs'
 
 /** @type {HTMLElement | null} */

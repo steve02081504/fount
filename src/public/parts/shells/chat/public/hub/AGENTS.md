@@ -48,12 +48,12 @@ Hub-facing API shapes:
 - **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
 - **Frontend E2E**: `test/frontend/unread.spec.mjs` (badge + divider + clear-on-read).
 
-## @mention inbox
+## Inbox（跨群收件箱）
 
 - **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json`（per-recipient 已读水位）。增量写：`src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs`（`eventPersist` 在 `message`/`message_edit` 落盘后调用）。
-- **Syntax**: `@128hex entityHash` in message body; Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
+- **Syntax**: `@[entity:<128hex>]` in message body（见 `shared/inlineTokenSyntax.mjs`）；Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
 - **API**: `GET /inbox`（`recipientEntityHash` 缺省 operator）、`GET/PUT /inbox/seen`；群内 autocomplete 仍为 `GET …/groups/:id/mentions/suggest`。
-- **Hub**: server bar `@` 按钮 + `#mentions` 列表（`hub/inboxView.mjs` + `hub/inboxClient.mjs`）；badge 由 WS `channel_message.mentions.entityHashes` 驱动。
+- **Hub**: server bar `@` 按钮 + `#inbox` 列表（`hub/inboxView.mjs` + `hub/inboxClient.mjs`）；badge 由 WS `channel_message.mentions.entityHashes` 驱动。
 - **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.
 
 ## 具名层 (aliases / petname, M3)

@@ -2,9 +2,9 @@
  * Social 治理最小集：mute / report / contentWarning。
  */
 /* global Deno */
-import { setPersonalMuted, isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { placeholderEntityHash } from 'fount/scripts/test/fixtures.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { setPersonalMuted, isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { createTestSession } from '../harness.mjs'
 
@@ -93,4 +93,33 @@ Deno.test('social_report RPC handler ingests signed report', async () => {
 
 	const { reports } = await listReceivedReports(username, { limit: 10 })
 	assert(reports.some(row => row.reason === 'federated spam marker'))
+})
+
+Deno.test('resolveReport dismisses by reportRowId', async () => {
+	const { username, operator } = await getSession()
+	const {
+		submitReport,
+		listReceivedReports,
+		resolveReport,
+		reportRowId,
+	} = await import('../../src/governance/report.mjs')
+
+	const signed = await submitReport(username, {
+		targetEntityHash: operator,
+		targetPostId: null,
+		reason: 'noise to dismiss',
+		category: 'spam',
+		reporterEntityHash: operator,
+	})
+	const reportId = reportRowId(signed)
+	const { reports } = await listReceivedReports(username, { limit: 20 })
+	assert(reports.some(row => row.id === reportId))
+
+	const resolved = await resolveReport(username, operator, {
+		reportId,
+		action: 'dismiss',
+	})
+	assertEquals(resolved.reportId, reportId)
+	assertEquals(resolved.action, 'dismiss')
+	assertEquals(resolved.actorEntityHash, operator)
 })

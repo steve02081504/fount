@@ -16,8 +16,8 @@ import {
 } from '../src/api/groupChannel.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { renderHubChannelSidebar, selectChannel } from './groupNav.mjs'
+import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null

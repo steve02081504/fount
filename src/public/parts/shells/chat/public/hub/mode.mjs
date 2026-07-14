@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/mode.mjs
- * 【职责】Hub 左侧主模式切换：「群组」「好友」「提及」三套布局的激活、数据加载与 composer 状态清理。
- * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / mentions。
+ * 【职责】Hub 左侧主模式切换：「群组」「好友」「收件箱」三套布局的激活、数据加载与 composer 状态清理。
+ * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / inbox。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav、inboxView。
  */
@@ -25,8 +25,8 @@ import {
 } from './privateGroup.mjs'
 
 /**
- * 高亮左侧「群组 / 好友 / 提及」模式切换按钮。
- * @param {'groups' | 'friends' | 'mentions'} mode 主栏模式
+ * 高亮左侧「群组 / 好友 / 收件箱」模式切换按钮。
+ * @param {'groups' | 'friends' | 'inbox'} mode 主栏模式
  * @returns {void}
  */
 export function setActiveModeTab(mode) {
@@ -36,12 +36,12 @@ export function setActiveModeTab(mode) {
 }
 
 /**
- * 切换 Hub 主模式（群组 / 好友 / 提及）。
- * @param {'groups' | 'friends' | 'mentions'} mode 目标模式
+ * 切换 Hub 主模式（群组 / 好友 / 收件箱）。
+ * @param {'groups' | 'friends' | 'inbox'} mode 目标模式
  * @returns {Promise<void>}
  */
 export async function setMode(mode) {
-	if (mode !== 'mentions') {
+	if (mode !== 'inbox') {
 		const { closeInboxView } = await import('./inboxView.mjs')
 		closeInboxView()
 	}
@@ -49,7 +49,7 @@ export async function setMode(mode) {
 	hubStore.context.currentMode = mode
 	setActiveModeTab(mode)
 
-	if (mode === 'mentions') {
+	if (mode === 'inbox') {
 		const { activateInboxView } = await import('./inboxView.mjs')
 		await activateInboxView()
 		return
@@ -92,7 +92,7 @@ export async function setMode(mode) {
 		else
 			await renderFriendsColumn(await loadFriendsList())
 
-	else if (mode === 'groups') 
+	else if (mode === 'groups')
 		if (!hubStore.context.currentGroupId || !hubStore.context.currentState) {
 			setPinsBookmarksWrapVisible(false)
 			updateStatusBanners()
@@ -103,5 +103,5 @@ export async function setMode(mode) {
 			await renderMemberList(hubStore.context.currentState)
 			await renderGroupInfoCard(hubStore.context.currentState)
 		}
-	
+
 }

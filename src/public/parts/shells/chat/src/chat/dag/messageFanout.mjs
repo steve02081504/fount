@@ -34,15 +34,13 @@ function hubMessageUrl(groupId, channelId, eventId) {
 
 /**
  * 从消息正文构建 mentions 结构（含 entity / role / everyone，受 sender 权限门控）。
- * @param {string} _username replica
- * @param {string} _groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} messageLine 频道消息行
  * @param {object} state 物化群状态
  * @param {{ ingress?: 'live' | 'backfill' }} [options] 入账语义
- * @returns {{ entityHashes: string[], roleIds: string[], everyone: boolean }}
+ * @returns {{ entityHashes: string[], roleIds: string[], everyone: boolean }} mentions 结构
  */
-export function buildMentionsFromMessageLine(_username, _groupId, channelId, messageLine, state, options = {}) {
+export function buildMentionsFromMessageLine(channelId, messageLine, state, options = {}) {
 	const text = mentionTextFromMessageLine(messageLine)
 	if (!text) return { entityHashes: [], roleIds: [], everyone: false }
 	const senderKey = String(messageLine?.sender || '').trim().toLowerCase()
@@ -72,10 +70,9 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 	}
 
 	const { state } = await getState(username, groupId)
-	const mentions = buildMentionsFromMessageLine(username, groupId, channelId, messageLine, state, options)
+	const mentions = buildMentionsFromMessageLine(channelId, messageLine, state, options)
 	const recipients = await listLocalRecipientsInGroup(username, state)
 	const operator = (await resolveOperatorEntityHash(username))?.toLowerCase() || null
-	const senderKey = String(messageLine.sender || '').trim().toLowerCase()
 	const { authorEntityHash, authorDisplayName } = resolveAuthorFromMessageLine(state, messageLine)
 	const groupName = state.groupMeta?.name || groupId
 	const channelName = state.channels?.[channelId]?.name || channelId
@@ -84,7 +81,6 @@ export async function dispatchMessageFanout(username, groupId, channelId, messag
 		mentions,
 		group: { groupId },
 		chatReplyRequest: { username },
-		_username: username,
 	}
 
 	for (const recipientHash of recipients) {

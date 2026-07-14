@@ -221,8 +221,10 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 	if (signed.type === 'post') {
 		const { dispatchSocialMessage } = await import('../dispatch.mjs')
 		await dispatchSocialMessage(username, entityHash, signed)
-		const { schedulePollDeadlines } = await import('../lib/pollDeadlineWatcher.mjs')
-		void schedulePollDeadlines(username, entityHash)
+		if (signed.content?.poll) {
+			const { schedulePollDeadlineForPost } = await import('../lib/pollDeadlineWatcher.mjs')
+			void schedulePollDeadlineForPost(username, entityHash, signed)
+		}
 	}
 	return signed
 }

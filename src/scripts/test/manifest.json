@@ -156,6 +156,21 @@
 				"src/scripts/test/core/baseline.mjs",
 				"src/scripts/test/core/run_timing.mjs"
 			]
+		},
+		{
+			"name": "disposable_path",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/disposable_path.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/disposable_path.test.mjs",
+				"src/scripts/test/core/disposable_path.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/test/core/repo_root.mjs",
+				"src/scripts/test/node/boot.mjs",
+				"src/scripts/test/node/launch.mjs"
+			]
 		}
 	]
 }

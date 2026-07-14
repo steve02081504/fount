@@ -89,9 +89,9 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 
 	setPendingHighlightEventId(norm)
 
-	if (findMessageViewIndex(norm) >= 0 && hubStore.messages.channelMessagePipeline) {
+	if (findMessageViewIndex(norm) >= 0 && hubStore.messages.channelMessagePipeline) 
 		await hubStore.messages.channelMessagePipeline.refresh()
-	}
+	
 	else {
 		rebuildVirtualListAtEvent(container, norm, reload)
 		if (hubStore.messages.channelMessagePipeline)

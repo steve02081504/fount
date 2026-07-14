@@ -13,7 +13,8 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { disambiguateLabels } from '../shared/nameResolve.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
+import { disambiguateLabels, resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
 	federationCatchUp,
 	rebindFederationRoom,
@@ -413,9 +414,16 @@ export async function renderMemberList(state) {
 		const entityHash = member.entityHash
 			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
 			|| ''
-		const label = String(member.displayName || '').trim()
-			|| (isAgent ? member.charname : '')
-			|| authorDisplayLabel(member.entityHash || memberKey)
+		const label = entityHash
+			? resolveDisplayName({
+				entityHash,
+				alias: aliasForEntity(entityHash),
+				profileName: member.displayName,
+				fallbackLabel: isAgent ? member.charname : undefined,
+			})
+			: String(member.displayName || '').trim()
+				|| (isAgent ? member.charname : '')
+				|| authorDisplayLabel(memberKey)
 		return { member, memberKey, isAgent, entityHash, label }
 	})
 	const labels = disambiguateLabels(prepared)

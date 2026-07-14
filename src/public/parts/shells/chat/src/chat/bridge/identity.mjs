@@ -97,12 +97,20 @@ export async function resolveBridgeIdentity(username, platform, platformUserId, 
 	const key = bridgeIdentityKey(platform, platformUserId)
 	const bound = doc.identityMap[key]
 	const hash = (bound || bridgeEntityHash(platform, platformUserId)).toLowerCase()
-	doc.entityReverse[hash] = {
+	const next = {
 		platform: String(platform),
 		platformUserId: String(platformUserId),
 		displayName: String(displayName || doc.entityReverse[hash]?.displayName || '').trim(),
 	}
-	saveBridgesDoc(username, doc)
+	const prev = doc.entityReverse[hash]
+	if (
+		prev?.platform !== next.platform
+		|| prev?.platformUserId !== next.platformUserId
+		|| (prev?.displayName || '') !== next.displayName
+	) {
+		doc.entityReverse[hash] = next
+		saveBridgesDoc(username, doc)
+	}
 	return hash
 }
 
@@ -110,7 +118,7 @@ export async function resolveBridgeIdentity(username, platform, platformUserId, 
  * 按 entityHash 查平台用户反查信息。
  * @param {string} username replica
  * @param {string} entityHash entityHash
- * @returns {string | null} 平台用户反查信息或 null
+ * @returns {{ platform: string, platformUserId: string, displayName?: string } | null} 平台用户反查信息或 null
  */
 export function lookupBridgeEntityReverse(username, entityHash) {
 	const hash = String(entityHash || '').trim().toLowerCase()

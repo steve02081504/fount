@@ -67,18 +67,15 @@ function followerBucketPath(bucketId) {
 }
 
 /**
- * @param {unknown} row 桶内条目（兼容旧 string[] 格式）
+ * @param {unknown} row 桶内条目
  * @returns {FollowerIndexEntry | null} 规范化 follower 行
  */
 function normalizeFollowerEntry(row) {
-	if (typeof row === 'string')
-		return { replicaUsername: row, entityHash: '' }
-	if (row && typeof row === 'object' && row.replicaUsername)
-		return {
-			replicaUsername: String(row.replicaUsername),
-			entityHash: String(row.entityHash || '').trim().toLowerCase(),
-		}
-	return null
+	if (!row?.replicaUsername) return null
+	return {
+		replicaUsername: String(row.replicaUsername),
+		entityHash: String(row.entityHash || '').trim().toLowerCase(),
+	}
 }
 
 /**

@@ -33,6 +33,7 @@ function hideSearchResults() {
 
 /**
  * @param {object[]} items 搜索结果
+ * @param scope
  * @returns {void}
  */
 function renderSearchResults(items, scope = 'group') {

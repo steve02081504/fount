@@ -8,6 +8,7 @@ from deep_translator import GoogleTranslator
 import time
 from collections import OrderedDict, Counter
 import sys
+import subprocess
 import concurrent.futures
 import pathspec
 
@@ -65,16 +66,37 @@ def load_gitignore_spec(fount_root_dir):
 	return spec
 
 
-# 获取Google支持的语言代码字典和代码集合
-try:
-	supp_lang_translator = GoogleTranslator(source="auto", target="en")  # 临时实例
-	SUPPORTED_GOOGLE_LANGS_DICT = supp_lang_translator.get_supported_languages(as_dict=True)
-	SUPPORTED_GOOGLE_CODES = set(SUPPORTED_GOOGLE_LANGS_DICT.values())
-	print(f"成功加载 Google Translator 支持的语言 ({len(SUPPORTED_GOOGLE_CODES)} 种)。")
-except Exception as e:
-	print(f"错误: 初始化 Google Translator 失败，无法获取支持语言列表: {e}")
-	print("翻译功能将无法正常工作。请检查网络连接或 deep_translator 库。")
-	SUPPORTED_GOOGLE_CODES = set()
+SUPPORTED_GOOGLE_CODES = set()
+
+
+def ensure_allowed_to_run():
+	"""仅 master / GitHub Actions 可跑；功能分支改完 zh-CN 即可，PR 时 CI 会同步其他语言。"""
+	if os.environ.get("GITHUB_ACTIONS") == "true":
+		return
+	branch = subprocess.check_output(
+		["git", "-C", FOUNT_DIR, "branch", "--show-current"],
+		text=True,
+	).strip()
+	if branch == "master":
+		return
+	print(
+		"此脚本只在主分支（master）和 CI（GitHub Actions）中运行。\n"
+		"非主分支会在 PR 时自动运行；开发期间本地化调整众多，没必要时刻同步到其他语言。"
+	)
+	sys.exit(0)
+
+
+def load_supported_google_codes():
+	"""加载 Google Translator 支持的语言代码集合。"""
+	global SUPPORTED_GOOGLE_CODES
+	try:
+		supp_lang_translator = GoogleTranslator(source="auto", target="en")
+		SUPPORTED_GOOGLE_CODES = set(supp_lang_translator.get_supported_languages(as_dict=True).values())
+		print(f"成功加载 Google Translator 支持的语言 ({len(SUPPORTED_GOOGLE_CODES)} 种)。")
+	except Exception as e:
+		print(f"错误: 初始化 Google Translator 失败，无法获取支持语言列表: {e}")
+		print("翻译功能将无法正常工作。请检查网络连接或 deep_translator 库。")
+		SUPPORTED_GOOGLE_CODES = set()
 
 
 def get_lang_from_filename(filename):
@@ -1398,6 +1420,8 @@ export type LocaleKeyWithoutParams = Exclude<LocaleKey, LocaleKeyWithParams>
 # --- 主逻辑 (重构后) ---
 def main():
 	"""主执行函数"""
+	ensure_allowed_to_run()
+	load_supported_google_codes()
 	gitignore_spec = load_gitignore_spec(FOUNT_DIR)
 
 	all_data, languages, lang_to_path = load_locale_files()

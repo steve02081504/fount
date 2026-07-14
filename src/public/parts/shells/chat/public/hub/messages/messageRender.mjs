@@ -741,12 +741,12 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 		bubble.dataset.mdPreview = canExpand ? '1' : '0'
 		bubble.dataset.mdUntrusted = '1'
 
-		if (canExpand) {
+		if (canExpand) 
 			await mountMdRevealButton(bubble, () => {
 				bubble.dataset.mdRevealed = '1'
 				void hydrateMessageMarkdown(container, messageId)
 			})
-		}
+		
 
 		wireBubbleOffscreenGuards(bubble, false, messageId, container)
 	}

@@ -82,16 +82,11 @@ export function createGroup(ctx, groupId, projection) {
 			const state = await loadGroupState(ctx, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.botname) {
-				const { resolveBridgeOps } = await import('../chat/bridge/ops.mjs')
+				const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
 				const { resolveBridgeIdentity } = await import('../chat/bridge/identity.mjs')
-				const listMembers = resolveBridgeOps(ctx.username, {
-					platform: bridge.platform,
-					botname: bridge.botname,
-				})?.listMembers
-				if (typeof listMembers !== 'function')
-					throw new Error(`bridge op not registered: ${bridge.platform}:${bridge.botname}.listMembers`)
+				const listMembers = requireBridgeOp(ctx.username, bridge, 'listMembers')
 				const rows = await listMembers({ platformChatId: bridge.platformChatId })
-				const members = await Promise.all((rows || []).map(async row => {
+				const members = await Promise.all(rows.map(async row => {
 					const entityHash = await resolveBridgeIdentity(
 						ctx.username,
 						bridge.platform,
@@ -184,7 +179,7 @@ export function createGroup(ctx, groupId, projection) {
 			return url
 		},
 		/**
-		 * @returns {Promise<void>} 退群完成 退群完成
+		 * @returns {Promise<void>} 退群完成
 		 */
 		async leave() {
 			const state = await loadGroupState(ctx, groupId)

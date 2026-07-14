@@ -5,13 +5,13 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
+import { buildPostFeedItem } from '../feed/buildItem.mjs'
+import { createFeedItemBuildContext } from '../feed/iterate.mjs'
 import { ensureEntitySocialReady, ensureOperatorSocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { assertPollVoteAllowed, normalizePollDraft } from '../lib/poll.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
-import { buildPostFeedItem } from '../feed/buildItem.mjs'
-import { createFeedItemBuildContext } from '../feed/iterate.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
 import { pushFeedUpdate } from '../ws/feedHub.mjs'
@@ -25,19 +25,17 @@ export function registerPostsRoutes(router) {
 	router.post('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		await ensureOperatorSocialReady(username)
-		const requested = req.body.entityHash?.toLowerCase() ?? ''
-		let entityHash = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash, {
-			invalidMessage: 'can only post as your operator or local agent entities',
-			missingMessage: 'configure Chat federation identity first (same P2P entity as Social)',
-		})
-		let charPartName = req.body.charPartName || null
-		if (requested) {
-			const resolved = await resolveSocialEntity(requested, username)
-			if (!resolved?.local || resolved.replicaUsername !== username)
-				throw httpError(403, 'can only post as your operator or local agent entities')
-			entityHash = resolved.entityHash
-			if (resolved.kind === 'agent') charPartName = resolved.charPartName
-		}
+		const entityHash = await resolveActingEntity(
+			username,
+			req.body?.actingEntityHash ?? req.body?.entityHash ?? req.query.actingEntityHash,
+			{
+				invalidMessage: 'can only post as your operator or local agent entities',
+				missingMessage: 'configure Chat federation identity first (same P2P entity as Social)',
+			},
+		)
+		const resolved = await resolveSocialEntity(entityHash, username)
+		const charPartName = req.body.charPartName
+			|| (resolved?.kind === 'agent' ? resolved.charPartName : null)
 		await ensureEntitySocialReady(username, entityHash)
 		const visibility = req.body.visibility === 'followers' ? 'followers' : 'public'
 		const draftContent = {
@@ -53,14 +51,14 @@ export function registerPostsRoutes(router) {
 			visibility,
 			...req.body.contentWarning ? { contentWarning: String(req.body.contentWarning).trim().slice(0, 200) } : {},
 		}
-		if (req.body.poll) {
+		if (req.body.poll) 
 			try {
 				draftContent.poll = normalizePollDraft(req.body.poll)
 			}
 			catch (err) {
 				throw httpError(400, err?.message || 'invalid poll')
 			}
-		}
+		
 		const signed = await commitTimelineEvent(username, entityHash, {
 			type: 'post',
 			charPartName,

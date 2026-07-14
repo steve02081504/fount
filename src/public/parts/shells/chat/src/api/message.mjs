@@ -28,7 +28,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 		mentions: messageMentions,
 		time: line.timestamp || line.time_stamp || Date.now(),
 		/**
-		 * @returns {Promise<object>} 作者 Member
+		 * @returns {Promise<object | null>} 作者 Member；找不到成员时为 null
 		 */
 		async author() {
 			const { loadGroupState } = await import('./internal.mjs')
@@ -49,28 +49,22 @@ export function createMessage(ctx, groupId, line, mentions) {
 				const hash = memberEntityHash(member)
 				if (hash) return createMember(ctx, groupId, hash, member)
 			}
-			return createMember(ctx, groupId, ctx.actor.entityHash, {
-				memberKind: 'user',
-				displayName: content.displayName || senderKey.slice(0, 8),
-				roles: [],
-			})
+			return null
 		},
 		/**
 		 * @param {string | object} reply 回复正文
 		 * @returns {Promise<object>} 新 Message
 		 */
 		async reply(reply) {
-			const { createGroup } = await import('./group.mjs')
-			const group = createGroup(ctx, groupId, {})
-			const channel = await group.channel(channelId)
-			return channel.send(reply)
+			const { createChannel } = await import('./channel.mjs')
+			return createChannel(ctx, groupId, channelId).send(reply)
 		},
 		/**
 		 * @param {object} patch 编辑补丁
 		 * @returns {Promise<object>} message_edit 事件
 		 */
 		async edit(patch) {
-			const newContent = normalizeReplyContent(patch.text != null ? patch : patch.content ?? patch)
+			const newContent = normalizeReplyContent(patch.content ?? patch)
 			if (ctx.actor.kind === 'agent')
 				return appendActorEvent(ctx.username, groupId, ctx.actor, {
 					type: 'message_edit',

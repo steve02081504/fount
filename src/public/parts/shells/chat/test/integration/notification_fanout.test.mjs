@@ -158,8 +158,8 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 		content: { type: 'text', content: 'wake @[role:here]' },
 		hlc: { wall: Date.now() },
 	}
-	const liveMentions = buildMentionsFromMessageLine(username, groupId, channelId, messageLine, state, { ingress: 'live' })
-	const backMentions = buildMentionsFromMessageLine(username, groupId, channelId, messageLine, state, { ingress: 'backfill' })
+	const liveMentions = buildMentionsFromMessageLine(channelId, messageLine, state, { ingress: 'live' })
+	const backMentions = buildMentionsFromMessageLine(channelId, messageLine, state, { ingress: 'backfill' })
 	assertEquals(liveMentions.everyone, true)
 	assertEquals(backMentions.everyone, false)
 
@@ -167,7 +167,6 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 		mentions: extra,
 		group: { groupId },
 		chatReplyRequest: { username },
-		_username: username,
 	})
 	assertEquals(await messageMentionsEntity(probe(liveMentions), memberHash), true)
 	assertEquals(await messageMentionsEntity(probe(backMentions), memberHash), false)

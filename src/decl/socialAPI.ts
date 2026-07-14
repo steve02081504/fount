@@ -41,6 +41,13 @@ export interface SocialGroupRef {
 	channelId?: string
 }
 
+/** 帖内投票草稿（`lib/poll.mjs::normalizePollDraft`）。 */
+export interface SocialPollDraft {
+	options: string[]
+	multi: boolean
+	deadline: string | null
+}
+
 /** 时间线 `post` 事件的 content 载荷。 */
 export interface SocialPostContent {
 	text?: string
@@ -50,6 +57,16 @@ export interface SocialPostContent {
 	groupRef?: SocialGroupRef
 	lang?: string
 	visibility?: SocialVisibility
+	contentWarning?: string
+	poll?: SocialPollDraft
+}
+
+/** `post_edit` 事件 content。 */
+export interface SocialPostEditContent {
+	targetPostId: string
+	text?: string
+	mediaRefs?: SocialMediaRef[]
+	lang?: string
 	contentWarning?: string
 }
 
@@ -69,6 +86,11 @@ export interface SocialMeta {
 export interface SocialEngagementTarget {
 	targetEntityHash: string
 	targetPostId: string
+}
+
+/** `poll_vote` 事件 content。 */
+export interface SocialPollVoteContent extends SocialEngagementTarget {
+	choices: number[]
 }
 
 /**
@@ -109,7 +131,9 @@ export type SocialTimelineEventType =
 	| 'social_meta'
 	| 'state_summary'
 	| 'post'
+	| 'post_edit'
 	| 'post_delete'
+	| 'poll_vote'
 	| 'like'
 	| 'unlike'
 	| 'repost'
@@ -127,7 +151,9 @@ export interface SocialTimelineEventContentMap {
 	social_meta: Partial<SocialMeta>
 	state_summary: Record<string, unknown>
 	post: SocialPostContent | Record<string, unknown>
+	post_edit: SocialPostEditContent
 	post_delete: SocialPostDeleteContent
+	poll_vote: SocialPollVoteContent
 	like: SocialLikeContent
 	unlike: SocialLikeContent
 	repost: SocialRepostContent
@@ -207,7 +233,7 @@ export interface SocialFeedPage {
 }
 
 /** 通知类型（`notifications.mjs`）。 */
-export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow' | 'care_post'
+export type SocialNotificationType = 'reply' | 'mention' | 'like' | 'repost' | 'follow' | 'care_post' | 'poll_closed'
 
 /** 聚合展示 actor 摘要。 */
 export interface SocialNotificationActor {

@@ -1,6 +1,8 @@
 /**
  * Hub 跨群 inbox：API、badge 与 WS 增量。
  */
+import { handleUIError } from '../src/ui/errors.mjs'
+
 import { hubStore } from './core/state.mjs'
 
 const INBOX_API = '/api/parts/shells:chat/inbox'
@@ -28,6 +30,7 @@ export async function fetchInboxPage(options = {}) {
 
 /**
  * @param {number} [at] 已读水位毫秒
+ * @param {{ recipientEntityHash?: string }} [options] 可选收件人
  * @returns {Promise<number>} 写入的 seenAt
  */
 export async function markInboxSeen(at = Date.now(), options = {}) {
@@ -46,13 +49,18 @@ export async function markInboxSeen(at = Date.now(), options = {}) {
  * @returns {Promise<void>}
  */
 export async function updateInboxBadge() {
-	const unread = Number.isFinite(badgeUnreadCount)
-		? badgeUnreadCount
-		: Number((await fetchInboxPage({ limit: 1 }).catch(() => ({ unreadCount: 0 }))).unreadCount) || 0
+	let unread = badgeUnreadCount
+	if (!Number.isFinite(unread)) try {
+		unread = Number((await fetchInboxPage({ limit: 1 })).unreadCount) || 0
+	}
+	catch (error) {
+		handleUIError(error, 'chat.hub.inbox.badgeFetchFailed')
+		return
+	}
 	badgeUnreadCount = null
-	hubStore.mentions.unreadCount = unread
+	hubStore.inbox.unreadCount = unread
 	const label = unread > 99 ? '99+' : String(unread)
-	const badge = document.getElementById('hub-mentions-badge')
+	const badge = document.getElementById('hub-inbox-badge')
 	if (!badge) return
 	if (unread > 0) {
 		badge.textContent = label
@@ -65,7 +73,7 @@ export async function updateInboxBadge() {
  * @returns {void}
  */
 export function bumpInboxBadge() {
-	const current = badgeUnreadCount ?? hubStore.mentions.unreadCount ?? 0
+	const current = badgeUnreadCount ?? hubStore.inbox.unreadCount ?? 0
 	badgeUnreadCount = current + 1
 	void updateInboxBadge()
 }

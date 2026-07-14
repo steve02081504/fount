@@ -49,6 +49,48 @@ Deno.test({
 		const body = JSON.parse(postRaw)
 		assert(body.event?.id)
 		assertEquals(body.event.content?.text, 'integration posts http')
+
+		const pollRes = await fetch(`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${encodeURIComponent(apiKey)}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				entityHash: viewerEntityHash,
+				text: 'poll via http',
+				visibility: 'public',
+				lang: 'zh-CN',
+				poll: { options: ['yes', 'no'], multi: false },
+			}),
+		})
+		const pollRaw = await pollRes.text()
+		assertEquals(pollRes.status, 200, pollRaw)
+		const pollBody = JSON.parse(pollRaw)
+		const pollPostId = pollBody.event?.id
+		assert(pollPostId)
+		assertEquals(pollBody.event.content?.poll?.options?.length, 2)
+
+		const voteRes = await fetch(
+			`${baseUrl}/api/parts/shells:social/posts/${viewerEntityHash}/${pollPostId}/poll-vote?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ choices: [1] }),
+			},
+		)
+		const voteRaw = await voteRes.text()
+		assertEquals(voteRes.status, 200, voteRaw)
+		assertEquals(JSON.parse(voteRaw).event?.type, 'poll_vote')
+
+		const editRes = await fetch(
+			`${baseUrl}/api/parts/shells:social/posts/${viewerEntityHash}/${body.event.id}/edit?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ text: 'edited via http' }),
+			},
+		)
+		const editRaw = await editRes.text()
+		assertEquals(editRes.status, 200, editRaw)
+		assertEquals(JSON.parse(editRaw).event?.type, 'post_edit')
 	}
 	finally {
 		await stopNode(node)

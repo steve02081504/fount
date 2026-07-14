@@ -1,6 +1,5 @@
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-
 import { loadNotifyPrefs, saveNotifyPrefs } from '../shared/notifyPrefs.mjs'
 
 /**
@@ -23,6 +22,10 @@ export async function openGroupNotifyPrefsDialog(groupId) {
 	await openNotifyPrefsDialog({
 		titleKey: 'chat.hub.notifyPrefs.title',
 		current,
+		/**
+		 *
+		 * @param dialog
+		 */
 		onSave: async dialog => {
 			const next = { ...prefs, [groupId]: readNotifyPrefsFromDialog(dialog, current) }
 			await saveNotifyPrefs(next)
@@ -47,9 +50,13 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 	await openNotifyPrefsDialog({
 		titleKey: 'chat.hub.channelContext.notifyPrefs',
 		current,
+		/**
+		 *
+		 * @param dialog
+		 */
 		onSave: async dialog => {
 			const channelPrefs = readNotifyPrefsFromDialog(dialog, current)
-			const nextGroup = { ...group, channels: { ...(group.channels || {}), [channelId]: channelPrefs } }
+			const nextGroup = { ...group, channels: { ...group.channels || {}, [channelId]: channelPrefs } }
 			await saveNotifyPrefs({ ...prefs, [groupId]: nextGroup })
 			showToastI18n('success', 'chat.hub.notifyPrefs.saved')
 			dialog.close()
@@ -68,6 +75,10 @@ async function openNotifyPrefsDialog({ titleKey, current, onSave }) {
 		suppressRoles: !!current.suppressRoles,
 		mutedUntil: current.mutedUntil ?? '',
 	}, {
+		/**
+		 *
+		 * @param dialog
+		 */
 		onReady: dialog => {
 			const title = dialog.querySelector('h3')
 			if (title) title.dataset.i18n = titleKey
@@ -89,7 +100,7 @@ function readNotifyPrefsFromDialog(dialog, current) {
 	const mode = dialog.querySelector('[name="notifyMode"]:checked')?.value || 'mentions'
 	const suppressEveryone = !!dialog.querySelector('[name="suppressEveryone"]')?.checked
 	const suppressRoles = !!dialog.querySelector('[name="suppressRoles"]')?.checked
-	const muteSelect = /** @type {HTMLSelectElement | null} */ (dialog.querySelector('[name="muteDuration"]'))
+	const muteSelect = /** @type {HTMLSelectElement | null} */ dialog.querySelector('[name="muteDuration"]')
 	/** @type {object} */
 	const next = { ...current, mode, suppressEveryone, suppressRoles }
 	if (muteSelect?.value === 'forever') next.mutedUntil = true

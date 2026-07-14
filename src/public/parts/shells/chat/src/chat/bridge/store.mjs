@@ -15,11 +15,11 @@ function emptyBridgesDoc() {
  */
 export function loadBridgesDoc(username) {
 	const doc = loadShellData(username, 'chat', BRIDGES_KEY)
-	if (!doc || typeof doc !== 'object') return emptyBridgesDoc()
+	if (!doc) return emptyBridgesDoc()
 	return {
-		mappings: doc.mappings && typeof doc.mappings === 'object' ? doc.mappings : {},
-		identityMap: doc.identityMap && typeof doc.identityMap === 'object' ? doc.identityMap : {},
-		entityReverse: doc.entityReverse && typeof doc.entityReverse === 'object' ? doc.entityReverse : {},
+		mappings: doc.mappings || {},
+		identityMap: doc.identityMap || {},
+		entityReverse: doc.entityReverse || {},
 	}
 }
 

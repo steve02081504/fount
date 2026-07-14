@@ -62,7 +62,7 @@ export const hubStore = {
 		operatorEntityHash: null,
 		viewerEntityHash: null,
 	},
-	mentions: {
+	inbox: {
 		unreadCount: 0,
 	},
 	/** `enterFriendChat` 进行中；`setMode('friends')` 时保留私聊会话 */

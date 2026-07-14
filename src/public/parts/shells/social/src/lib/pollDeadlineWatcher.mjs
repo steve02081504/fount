@@ -2,7 +2,6 @@
  * Social poll 截止 watcher（镜像 chat voteDeadlineWatcher 模式）。
  */
 import { notifyUser } from '../../../../../../server/web_server/notify/notify.mjs'
-
 import { getReplicaUsernamesProvider } from '../federation/follower_index_registry.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { listPollTally, readPollTally } from '../federation/poll_index.mjs'
@@ -19,7 +18,7 @@ const scheduledDeadlines = new Map()
 /**
  * @param {string} entityHash 作者
  * @param {string} postId 帖 id
- * @returns {string}
+ * @returns {string} 调度键
  */
 function scheduleKey(entityHash, postId) {
 	return `${entityHash.toLowerCase()}:${postId}`
@@ -58,6 +57,33 @@ export async function firePollClosed(username, entityHash, postId) {
 }
 
 /**
+ * 为单帖注册 poll deadline（热路径：commit 后只扫本帖）。
+ * @param {string} username replica
+ * @param {string} entityHash 作者
+ * @param {object} post 已落盘 post
+ * @returns {Promise<void>}
+ */
+export async function schedulePollDeadlineForPost(username, entityHash, post) {
+	const owner = entityHash.toLowerCase()
+	const content = await maybeDecryptPostContent(username, owner, post.content)
+	const poll = content?.poll
+	if (!poll?.deadline) return
+	const parsed = Date.parse(String(poll.deadline))
+	if (!Number.isFinite(parsed)) return
+	const key = scheduleKey(owner, post.id)
+	if (scheduledDeadlines.has(key)) return
+	if (parsed <= Date.now()) {
+		await firePollClosed(username, owner, post.id)
+		return
+	}
+	const timeout = setTimeout(() => {
+		scheduledDeadlines.delete(key)
+		void firePollClosed(username, owner, post.id)
+	}, parsed - Date.now())
+	scheduledDeadlines.set(key, timeout)
+}
+
+/**
  * @param {string} username replica
  * @param {string} entityHash 作者
  * @returns {Promise<void>}
@@ -65,24 +91,8 @@ export async function firePollClosed(username, entityHash, postId) {
 export async function schedulePollDeadlines(username, entityHash) {
 	const owner = entityHash.toLowerCase()
 	const view = await getTimelineMaterialized(username, owner)
-	for (const post of view.posts || []) {
-		const content = await maybeDecryptPostContent(username, owner, post.content)
-		const poll = content?.poll
-		if (!poll?.deadline) continue
-		const parsed = Date.parse(String(poll.deadline))
-		if (!Number.isFinite(parsed)) continue
-		const key = scheduleKey(owner, post.id)
-		if (scheduledDeadlines.has(key)) continue
-		if (parsed <= Date.now()) {
-			await firePollClosed(username, owner, post.id)
-			continue
-		}
-		const timeout = setTimeout(() => {
-			scheduledDeadlines.delete(key)
-			void firePollClosed(username, owner, post.id)
-		}, parsed - Date.now())
-		scheduledDeadlines.set(key, timeout)
-	}
+	for (const post of view.posts || [])
+		await schedulePollDeadlineForPost(username, owner, post)
 }
 
 /**

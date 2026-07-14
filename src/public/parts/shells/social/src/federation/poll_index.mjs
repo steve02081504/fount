@@ -6,6 +6,7 @@ import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
 
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
+
 import { socialPostKey } from './post_key.mjs'
 
 const POLL_TALLY_CACHE_MAX = 512
@@ -42,9 +43,7 @@ function pollTallyCacheKey(targetEntityHash, postId) {
  * @returns {{ votes: Record<string, { choices: number[] }>, tally: Record<string, number> }} 规范化 tally
  */
 function normalizePollTally(raw) {
-	const votes = raw?.votes && typeof raw.votes === 'object' ? raw.votes : {}
-	const tally = raw?.tally && typeof raw.tally === 'object' ? raw.tally : {}
-	return { votes, tally }
+	return { votes: raw?.votes || {}, tally: raw?.tally || {} }
 }
 
 /**
@@ -54,10 +53,10 @@ function normalizePollTally(raw) {
 export function computePollTallyFromVotes(votes) {
 	/** @type {Record<string, number>} */
 	const tally = {}
-	for (const row of Object.values(votes)) {
+	for (const row of Object.values(votes)) 
 		for (const idx of row?.choices || [])
 			tally[String(idx)] = (tally[String(idx)] || 0) + 1
-	}
+	
 	return tally
 }
 

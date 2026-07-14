@@ -6,15 +6,13 @@
  * @returns {Promise<boolean>} char 是否已处理
  */
 export async function dispatchCharError(char, error, context) {
-	if (typeof char.OnError === 'function') 
-		try {
-			const handled = await char.OnError(error, context)
-			if (handled !== false) return true
-		}
-		catch (handlerError) {
-			console.error('char OnError failed:', handlerError)
-		}
-	
+	if (char.OnError) try {
+		const handled = await char.OnError(error, context)
+		if (handled !== false) return true
+	}
+	catch (handlerError) {
+		console.error('char OnError failed:', handlerError)
+	}
 	console.error(`char error [${context.source}]:`, error)
 	return false
 }

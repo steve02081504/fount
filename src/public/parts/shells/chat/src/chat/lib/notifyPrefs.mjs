@@ -10,7 +10,7 @@ import { memberEntityHash } from './entity.mjs'
  * @returns {Record<string, object>} groupId → 偏好
  */
 export function loadNotifyPrefs(username) {
-	return loadShellData(username, 'chat', 'notifyPrefs') || {}
+	return loadShellData(username, 'chat', 'notifyPrefs') ?? {}
 }
 
 /**
@@ -19,7 +19,7 @@ export function loadNotifyPrefs(username) {
  * @returns {void}
  */
 export function saveNotifyPrefs(username, prefs) {
-	assignShellData(username, 'chat', 'notifyPrefs', prefs || {})
+	assignShellData(username, 'chat', 'notifyPrefs', prefs)
 }
 
 /**
@@ -40,11 +40,9 @@ export function groupKindFromState(state) {
  * @returns {object} 生效偏好（频道覆盖群级）
  */
 export function resolveEffectiveNotifyPrefs(username, groupId, channelId, state) {
-	const all = loadNotifyPrefs(username)
-	const groupPrefs = all[groupId] || {}
+	const groupPrefs = loadNotifyPrefs(username)[groupId] || {}
 	const channelPrefs = groupPrefs.channels?.[channelId] || {}
-	const kind = groupKindFromState(state)
-	const defaults = kind === 'dm'
+	const defaults = groupKindFromState(state) === 'dm'
 		? { mode: 'all', suppressEveryone: false, suppressRoles: false }
 		: { mode: 'mentions', suppressEveryone: false, suppressRoles: false }
 	return {
@@ -61,8 +59,7 @@ export function resolveEffectiveNotifyPrefs(username, groupId, channelId, state)
  */
 export function isNotifyMuted(prefs) {
 	if (prefs.mutedUntil === true) return true
-	if (typeof prefs.mutedUntil === 'number' && prefs.mutedUntil > Date.now()) return true
-	return false
+	return prefs.mutedUntil > Date.now()
 }
 
 /**

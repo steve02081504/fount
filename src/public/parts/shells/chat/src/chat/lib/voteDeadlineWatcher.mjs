@@ -4,8 +4,9 @@
 import { notifyUser } from 'fount/server/web_server/notify/notify.mjs'
 
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
-import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
 import { getState } from '../dag/materialize.mjs'
+import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
+
 import {
 	appendChatInbox,
 	deriveChatInboxVoteClosedRow,
@@ -21,13 +22,11 @@ const scheduledDeadlines = new Map()
 /**
  * @param {string} ballotId ballot eventId
  * @param {string} groupId 群 ID
- * @returns {string}
+ * @returns {string} 调度键
  */
 function scheduleKey(ballotId, groupId) {
 	return `${groupId}:${ballotId}`
 }
-
-import { isVoteBallotClosed } from './voteBallots.mjs'
 
 /**
  * @param {string} username replica

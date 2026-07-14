@@ -1,11 +1,11 @@
 import { addDragAndDropSupport } from '../src/ui/dragAndDrop.mjs'
 
-import { attachHubMentionAutocomplete } from './mentionAutocomplete.mjs'
 import {
 	pickPhoto,
 	selectedFiles,
 	toggleVoiceRecording,
 } from './composerFiles.mjs'
+import { attachHubMentionAutocomplete } from './mentionAutocomplete.mjs'
 
 /** @returns {void} */
 export function wireComposerEvents() {

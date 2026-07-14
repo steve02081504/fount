@@ -6,14 +6,13 @@
  * 【关联】../../../../scripts/template、../src/api/groupApi、core/domUtils、core/state、friendBindings、groupContextMenu、groupNav
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
+import { aliasForGroup } from '../shared/aliases.mjs'
+import { isGroupMutedInSidebar, loadNotifyPrefs } from '../shared/notifyPrefs.mjs'
 import { getChatBookmarks, getGroupList, saveChatBookmarks } from '../src/api/groupApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
-import { aliasForGroup } from '../shared/aliases.mjs'
-import { isGroupMutedInSidebar, loadNotifyPrefs } from '../shared/notifyPrefs.mjs'
-
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
@@ -99,6 +98,7 @@ function folderMiniIconsHtml(folder, byId) {
  * 渲染并挂载单个群组服务器图标。
  * @param {HTMLElement} parent 服务器列表或文件夹容器
  * @param {{ groupId: string, name: string, isLeaving?: boolean }} group 群组摘要
+ * @param notifyPrefs
  * @returns {Promise<void>}
  */
 async function appendHubServerItem(parent, group, notifyPrefs = {}) {

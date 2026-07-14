@@ -200,7 +200,14 @@ export class CharAPI_t {
 					name: string
 					kind: 'group' | 'dm'
 					boundPeerEntityHash?: string
-					bridge?: { platform: string, platformChatId: string }
+					/** settings.bridge 整对象投影（含 chatKind / botname 等） */
+					bridge?: {
+						platform: string
+						platformChatId: string
+						chatKind?: 'group' | 'dm'
+						botname?: string
+						[key: string]: unknown
+					}
 					memberCount: number
 				}
 				channel: {
@@ -219,7 +226,13 @@ export class CharAPI_t {
 					name: string
 					kind: 'group' | 'dm'
 					boundPeerEntityHash?: string
-					bridge?: { platform: string, platformChatId: string }
+					bridge?: {
+						platform: string
+						platformChatId: string
+						chatKind?: 'group' | 'dm'
+						botname?: string
+						[key: string]: unknown
+					}
 					memberCount: number
 				}
 				channel: {

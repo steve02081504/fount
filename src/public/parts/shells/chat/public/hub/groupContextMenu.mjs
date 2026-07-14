@@ -14,19 +14,19 @@ import {
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
 import { createGroupInvite, groupRequest, leaveGroups } from '../src/api/groupApi.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { navigateToGroupSettings, selectGroup } from './groupNav.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
 import { closeGroupWebSocket } from './groupStream.mjs'
+import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { renderServerBar } from './serverBar.mjs'
-import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null

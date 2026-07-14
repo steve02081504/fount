@@ -5,7 +5,7 @@ import { assignShellData, loadShellData } from '../../../../../../../server/sett
  * @returns {Record<string, string[]>} owner → cared entityHashes
  */
 function loadCareMap(username) {
-	return loadShellData(username, 'chat', 'care') || {}
+	return loadShellData(username, 'chat', 'care') ?? {}
 }
 
 /**
@@ -51,7 +51,7 @@ export async function setCared(username, ownerEntityHash, targetEntityHash, care
  * @param {string} username 用户
  * @param {string} ownerEntityHash 关心列表所有者
  * @param {string} targetEntityHash 目标实体
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} 是否关心
  */
 export async function isCaredBy(username, ownerEntityHash, targetEntityHash) {
 	const owner = String(ownerEntityHash || '').trim().toLowerCase()

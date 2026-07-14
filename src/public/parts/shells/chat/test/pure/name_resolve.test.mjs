@@ -52,6 +52,27 @@ Deno.test('hydrateAuthorLabels 路径：alias 压过 profile.name，禁止裸写
 	)
 })
 
+Deno.test('成员列表路径：alias 压过 member.displayName（groupNav / membersTab）', () => {
+	assertEquals(
+		resolveDisplayName({
+			entityHash: HASH,
+			alias: '宠物名',
+			profileName: 'member.displayName',
+			fallbackLabel: 'charname',
+		}),
+		'宠物名',
+	)
+	assertEquals(
+		resolveDisplayName({
+			entityHash: HASH,
+			alias: '',
+			profileName: 'member.displayName',
+			fallbackLabel: 'charname',
+		}),
+		'member.displayName',
+	)
+})
+
 Deno.test('authorDisplayLabel 路径：有 entityHash 时 alias → member fallback → 短码', () => {
 	assertEquals(
 		resolveDisplayName({

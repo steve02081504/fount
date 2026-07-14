@@ -1,15 +1,8 @@
-import { effectiveActingEntityHash } from './lib/apiClient.mjs'
-import { renderAvatarHtml } from './lib/display.mjs'
-import { switchView } from './navigation.mjs'
-import { updateNotificationBadge } from './views/notifications.mjs'
+import { switchView } from '../navigation.mjs'
+import { updateNotificationBadge } from '../views/notifications.mjs'
 
-/**
- * @param {object} appContext 应用上下文
- * @returns {string | null} 当前 effective acting entityHash
- */
-export function getEffectiveActingHash(appContext) {
-	return effectiveActingEntityHash()
-}
+import { effectiveActingEntityHash } from './apiClient.mjs'
+import { renderAvatarHtml } from './display.mjs'
 
 /**
  * 填充身份切换下拉并绑定 change。
@@ -66,7 +59,7 @@ export function mountActingEntitySwitcher(appContext, viewer) {
  */
 export function refreshComposerAvatar(appContext) {
 	const slot = document.getElementById('viewerComposerAvatar')
-	const hash = getEffectiveActingHash(appContext)
+	const hash = effectiveActingEntityHash()
 	if (!slot || !hash) return
 	slot.innerHTML = renderAvatarHtml(hash, { name: appContext.state.actingDisplayName })
 }
@@ -79,11 +72,10 @@ export function refreshComposerAvatar(appContext) {
 async function onActingEntityChanged(appContext, entityHash) {
 	const normalized = entityHash?.trim().toLowerCase() || null
 	appContext.state.actingEntityHash = normalized
-	if (!normalized) 
+	if (!normalized)
 		appContext.state.actingDisplayName = appContext.state.viewerEntityHash
 			? appContext.geti18n('social.actor.operator')
 			: null
-	
 	else {
 		const agent = appContext.state.availableAgents.find(row => row.entityHash === normalized)
 		appContext.state.actingDisplayName = agent?.displayName || agent?.charPartName || normalized

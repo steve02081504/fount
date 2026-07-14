@@ -91,7 +91,7 @@ export async function buildOnMessageEvent(username, groupId, channelId, charname
 	let message = chatReplyRequest.chat_log?.at(-1)
 	if (options.messageLine) {
 		const chatMetadata = await getGroupRuntime(groupId, username)
-		const i18n = await loadDagHydrationI18n()
+		const i18n = await loadDagHydrationI18n(username)
 		const entries = await buildChatLogEntriesFromChannelLines(
 			[options.messageLine],
 			chatMetadata.LastTimeSlice,

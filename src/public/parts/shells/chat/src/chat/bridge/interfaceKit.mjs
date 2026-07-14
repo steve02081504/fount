@@ -1,3 +1,4 @@
+import { channelMessageAgentText } from '../../../public/shared/channelContent.mjs'
 import { getState } from '../dag/materialize.mjs'
 
 import { postBridgeMessage } from './ingress.mjs'
@@ -26,12 +27,12 @@ export async function tryFewTimes(func, { times = 3, WhenFailsWaitFor = 2000 } =
  * @returns {object} chatLogEntry 形状
  */
 export function messageLineToReplyEntry(messageLine, charname) {
-	const content = messageLine?.content || {}
+	const text = channelMessageAgentText(messageLine?.content) || ''
 	return {
 		name: charname,
 		role: 'char',
-		content: typeof content === 'string' ? content : content.text || '',
-		content_for_show: typeof content === 'string' ? content : content.text || '',
+		content: text,
+		content_for_show: text,
 		time_stamp: messageLine?.hlc?.wall || Date.now(),
 		files: (messageLine?.files || []).map(file => ({
 			name: file.name,

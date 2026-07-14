@@ -1,6 +1,6 @@
 # Chat / Social 开发规划
 
-更新：`2026-07-13`
+更新：`2026-07-14`（查缺补漏收尾：wechat bot_started、成员 alias 优先、inbox 前端更名、identity 写盘脏检查、坏味道清理）
 
 > 本文档是**实施级规划**：每个批次写明改哪些文件、新 API 的名字与参数、删除什么。做没做、做到哪，以仓库代码与各 shell 测试为准。
 >
@@ -76,7 +76,7 @@
 
 - 存储：`{userDict}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json`；路由 `GET/PUT /api/parts/shells:chat/inbox*`（旧 `/mentions` 路由已删）。
 - 数据流：`eventPersist.mjs` 在 `message` / `message_edit` 落盘后调 `dispatchMessageFanout`（`ingress: 'live' | 'backfill'`）→ per-recipient 命中判定落 inbox 行、对 operator 走通知裁决 → 非 backfill 的 message 进 `runTriggerPipeline`。
-- 管线裁决：跳过 `isAutoTrigger || signPayload.charId || role === 'char'`；per-char 构建事件、`messageMentionsEntity` 判 @；有 `onMessage` 调之取意愿，无则默认意愿 = `被 @ || 群内仅一 char || isDm`；被 @ 直通，其余加权抽签；token bucket 节流。`signPayload.charId` 跳过项同时保证：char 在 `onMessage` 内经 ChatClient 自发的消息不会再次进管线（直接发送 + 返回 false 的模式无递归）。
+- 管线裁决：跳过 `content.isAutoTrigger || messageLine.charId || content.role === 'char'`（`eventPersist` 落盘时把 `signPayload.charId` 写到 `messageLine.charId`）；per-char 构建事件一次、`messageMentionsEntity` 判 @；有 `onMessage` 调之取意愿，无则默认意愿 = `被 @ || 群内仅一 char || isDm`；被 @ 直通，其余加权抽签；token bucket 节流。`messageLine.charId` 跳过项同时保证：char 在 `onMessage` 内经 ChatClient 自发的消息不会再次进管线（直接发送 + 返回 false 的模式无递归）。
 - `interfaces.chat.onMessage` 事件形状（`src/decl/charAPI.ts`，实际）：
 
 ```ts
@@ -86,7 +86,7 @@ onMessage?: (event: {
   mentions: { entityHashes: string[], roleIds: string[], everyone: boolean },
   group: { groupId: string, name: string, kind: 'group' | 'dm',
            boundPeerEntityHash?: string,
-           bridge?: { platform: string, platformChatId: string /* 实际含 chatKind 等 settings.bridge 整对象 */ },
+           bridge?: { platform: string, platformChatId: string, chatKind?: 'group'|'dm', botname?: string, ... },
            memberCount: number },
   channel: { channelId: string, name: string, kind: 'text' | 'thread' },
 }) => Promise<boolean>
@@ -96,18 +96,20 @@ onMessage?: (event: {
 
 ### M2 — 通知生命周期与触达
 
-**inline token 语法（as-built，与原规划表不同，一切以此为准）**——唯一 tokenizer 在 `chat/public/shared/inlineTokens.mjs`，mention 薄封装在 `chat/public/shared/mentions.mjs`（`extractMentionEntityHashes` / `extractMentionRoleIds` / `hasEveryoneToken` / `hasHereToken` / `buildMentionsStructure` / `mentionsEntity`）：
+**inline token 语法（as-built，一切以此为准）**——格式常量在 `chat/public/shared/inlineTokenSyntax.mjs`，唯一 tokenizer 在 `chat/public/shared/inlineTokens.mjs`，mention 薄封装在 `chat/public/shared/mentions.mjs`（`extractMentionEntityHashes` / `extractMentionRoleIds` / `hasEveryoneToken` / `hasHereToken` / `buildMentionsStructure` / `mentionsEntity`）：
 
 | token | 实际语法 | 说明 |
 | --- | --- | --- |
-| entity @ | `@[hash:<128hex>]` | **必须带 `hash:` 前缀**；裸 `@[<128hex>]` 不解析 |
+| entity @ | `@[entity:<128hex>]` | **必须带 `entity:` 前缀**；裸 `@[<128hex>]` / `@[hash:…]` 均不解析 |
 | 角色组 @ | `@[role:<roleId>]` | sender 有 `MENTION_EVERYONE` 权限才进 `roleIds` |
-| 全员 @ | `@[everyone]`、`@[here]` | 两者 kind 同为 `everyone`，靠 body 区分；`@[here]` 仅 `ingress === 'live'` 记入 everyone 位 |
-| 自定义 emoji | `:[<packId>/<emojiId>]` | 无尾冒号 |
-| 频道链接 | `#[<groupId>/<channelId>]`、`#[<channelId>]` | 短形态省略 groupId |
+| 全员 @ | `@[role:everyone]`、`@[role:here]` | 解析 kind 同为 `everyone`，靠 body 区分；`here` 仅 `ingress === 'live'` 记入 everyone 位 |
+| 自定义 emoji | `:[emoji:<groupId>/<emojiId>]:` | 有尾冒号；`groupId` 为 emoji pack 归属群 |
+| 频道链接 | `#[channel:<groupId>/<channelId>]` | 完整形态 |
+| 群组链接 | `#[group:<groupId>]` | 群深链 |
+| 消息深链 | `#[message:<groupId>/<channelId>/<eventId>]` | 消息定位 |
 
 - care：`chat/src/chat/lib/care.mjs`（`listCared` / `setCared` / `isCaredBy`），存储 `{userDict}/shells/chat/care.json`；前端共享客户端 `chat/public/shared/care.mjs`。语义不变：人类命中 care 无条件通知穿透一切偏好；agent 侧 care 只是 `isCaredBy` 可查的事实，不改变触发。
-- 通知偏好：`chat/src/chat/lib/notifyPrefs.mjs`（`resolveEffectiveNotifyPrefs` / `isNotifyMuted` / `describeMentionHit` / `shouldNotifyHumanForMessage` / `shouldAppendMessageInboxRow` / `groupKindFromState`）；DM 缺省 `all`、普通群缺省 `mentions`，suppress 只压人类触达。
+- 通知偏好：`chat/src/chat/lib/notifyPrefs.mjs`（`loadNotifyPrefs` / `saveNotifyPrefs` / `resolveEffectiveNotifyPrefs` / `isNotifyMuted` / `describeMentionHit` / `shouldNotifyHumanForMessage` / `shouldAppendMessageInboxRow` / `groupKindFromState`）；DM 缺省 `all`、普通群缺省 `mentions`，suppress 只压人类触达。
 - 投票生命周期：`chat/src/chat/lib/voteDeadlineWatcher.mjs`（`scheduleVoteDeadlines` / `fireVoteClosed`）；deadline 禁投在 authorize 与 reducer 双侧。
 - Web Push（**路径与原规划不同**）：`src/server/web_server/notify/notify.mjs`（`notifyUser`）与 `webPush.mjs`（`getVapidPublicKey` / `addPushSubscription` / `removePushSubscription` / `sendWebPush`）；订阅存 `{userDict}/notify/push_subscriptions.json`；SW `push` / `notificationclick` 与 `base.mjs` 的订阅上报已接。
 - **触达与落行解耦**：`appendChatInbox` 只写 JSONL 不触达；`notifyUser` 由 `messageFanout.mjs`（消息裁决后）与 `voteDeadlineWatcher.mjs`（关票）显式调用。
@@ -120,7 +122,7 @@ onMessage?: (event: {
 
 ### M4 — ChatClient 对象模型
 
-- 目录（**与原规划不同**）：`chat/src/api/`（`index` / `client` / `group` / `channel` / `message` / `member` / `role`.mjs）；入口 `getChatClient(username, actingEntityHash?)`。
+- 目录（**与原规划不同**）：`chat/src/api/`（`index` / `client` / `group` / `channel` / `message` / `member` / `role` / `bridgeDispatch` / `internal`.mjs）；入口 `getChatClient(username, actingEntityHash?)`。
 - actor 委托：`chat/src/chat/lib/actor.mjs::resolveChatActor`；`chat/src/chat/dag/append.mjs::appendActorEvent(username, groupId, actor, event, opts?)`——agent actor 以成员行 `ownerPubKeyHash` 代签 + `content.actingAgentEntityHash` 归因，authorize 联邦侧同规则复核；`client.createGroup` 对 agent actor throw（有意不对等）。
 - 对象面（as-built）：
 
@@ -142,7 +144,7 @@ onMessage?: (event: {
 - identity：`bridgeEntityHash(platform, platformUserId)`（sha512 派生伪 hash）、`bindBridgeIdentity(username, { platform, platformUserId, entityHash, displayName? })`、`resolveBridgeIdentity(username, platform, platformUserId, displayName?)`（绑定优先于派生，顺手刷新 `entityReverse` 反查表）、`lookupBridgeEntityReverse`（出站 @ 还原）。存储 `bridges.json = { mappings, identityMap, entityReverse }`；绑定路由 `PUT /api/parts/shells:chat/bridge/identity-bind`（`chat/src/endpoints/bridge.mjs`）已有。
 - outbound：`registerBridgeOutbound(username, groupId, handler)` 键 `username:groupId`，壳层首条入站后懒注册（`ensureOutboundHandler` + `primeOutboundRegistered`）；char 消息落盘后 `notifyBridgeOutbound`。
 - 三壳统一 `src/default_interface/main.mjs`（该目录为壳内正式结构并将长期保留——`*-api` 插件从中取运行实例 `getTelegramBotForChar` / `getDiscordClientForChar` / `getWechatRuntimeForChar`；原规划「目录消失」的说法作废）。`FormatOutboundReply` 钩子已进 `charAPI.ts` 与三壳；`TweakInboundDto` 三壳统一在 `bridgeIngestDto`（`interfaceKit.mjs`）内调用一次。
-- bridgeOps 注册现状：telegram / discord = `{ sendTyping, kickMember, unbanMember, createInvite, leaveChat, openDm, getNativeContext }`；wechat 仅 `{ sendTyping, getNativeContext }`（平台能力所限，且无 edit/delete ingress——接受为长期不对齐项）。
+- bridgeOps 注册现状：telegram / discord = `{ sendTyping, kickMember, unbanMember, createInvite, leaveChat, openDm, getNativeContext, stopSelf, listMembers }`；wechat = `{ sendTyping, getNativeContext, stopSelf }`（无 `listMembers` / edit/delete ingress——接受为长期不对齐项）。三壳就绪后均 `dispatchBridgeBotStarted`。
 - **G3（已落地，`2026-07-13`）**：`telegrambot/src/format.mjs` 旧 chatLog 路径死代码（`TelegramMessageToFountChatLogEntry` / `telegramMediaGroupMessagesToFountChatLogEntry` 及 `is_from_owner` 依赖）已整段删除，全仓库 grep 为零；入站转换唯一入口为 DTO 路径 `telegramMessageToBridgeDto` / `telegramMediaGroupToBridgeDto`。详见 M6.5 节。
 - **G4（已落地，`2026-07-13`）**：M5/M6 验收欠账已补测（端到端链 + edit/delete + mock DTO + 贴纸 + `FormatOutboundReply` 跳过 + 四端触发一致性）。详见 M6.5 节。
 
@@ -157,7 +159,7 @@ onMessage?: (event: {
 3. **G3 telegrambot 死代码删除**：`telegrambot/src/format.mjs` 旧 chatLog 路径（`TelegramMessageToFountChatLogEntry` / `telegramMediaGroupMessagesToFountChatLogEntry` 及 `is_from_owner` 依赖）整段删除，`eslint --fix --quiet` 收尾，全仓库 grep 为零；入站转换唯一入口为 DTO 路径 `telegramMessageToBridgeDto` / `telegramMediaGroupToBridgeDto`。
 4. **G4 M5/M6 补测**：端到端链（`postBridgeMessage → runTriggerPipeline → char 回复 → notifyBridgeOutbound`）、`postBridgeEdit` / `postBridgeDelete` 集成、mock Telegraf→DTO、出站贴纸、`FormatOutboundReply` 返回 true 跳过默认格式化 → `chat/test/integration/bridge_ingress.test.mjs` + `telegrambot/test/pure/format_bridge.test.mjs`；四端（Hub / TG / DC / WX）触发意愿一致性回归 → `chat/test/integration/bridge_trigger_parity.test.mjs`（onMessage 意愿一致、plain char 群不兜底、DM 兜底一致，WX 仅入站）。
 
-顺手项（**已完成**）：`hub/mentionsView.mjs` / `mentionsInbox.mjs` 更名为 `hub/inboxView.mjs` / `hub/inboxClient.mjs`，导出 `activateInboxView` / `fetchInboxPage` / `updateInboxBadge` / `markInboxSeen` 等，与 `/inbox` 路由对齐；`mode.mjs` / `init.mjs` 引用同步更新，旧文件已删。
+顺手项（**已完成**）：`hub/mentionsView.mjs` / `mentionsInbox.mjs` 更名为 `hub/inboxView.mjs` / `hub/inboxClient.mjs`，导出 `activateInboxView` / `fetchInboxPage` / `updateInboxBadge` / `markInboxSeen` 等，与 `/inbox` 路由对齐；`mode.mjs` / `init.mjs` 引用同步更新，旧文件已删。前端收件箱模式统一为 `inbox`（`hubStore.inbox`、`#inbox`、`hub-inbox-*` DOM/CSS、`chat.hub.inbox.*` i18n）；成员列表（`groupNav` / `membersTab`）经 `resolveDisplayName` alias 优先。
 
 ---
 
@@ -200,7 +202,7 @@ onMessage?: (event: {
 
 ## M7 — 龙胆迁移（as-built，2026-07-13 返工）
 
-> 落地：`2026-07-13`（返工补齐退化项）。测试：`gentian_m7.test.mjs`（4 契约用例）+ `bridge_typing.test.mjs` + 既有 bridge 集成测试。
+> 落地：`2026-07-13`（返工补齐退化项）。测试：`gentian_shell_contract.test.mjs`（4 契约用例）+ `bridge_typing.test.mjs` + 既有 bridge 集成测试。
 
 源码：`data/users/steve02081504/chars/GentianAphrodite/`（架构见 `AGENTS.md`）。**已退役** `bot_core/` 与旧平台 handler 目录；TG/DC/Hub 统一走 `runTriggerPipeline` → `onMessage` → `GetReply`。
 
@@ -213,7 +215,8 @@ onMessage?: (event: {
 | 群生命周期 | `interfaces.chat.onGroupEvent` + `bridge/groupEvents.mjs` |
 | 引用块 + `replyToEventId`（落 `extension.bridge.replyToEventId`） | TG/DC `format.mjs`；`ingress.mjs` |
 | Discord poll / TG `@username` | 各壳 `format.mjs` |
-| `extension.bridge` 水合 | `hydration.mjs` |
+| `extension.bridge` 水合 | `chat/src/chat/dag/hydration.mjs` |
+| 桥接原生上下文水合 | `chat/src/chat/lib/codeBridgeContext.mjs`（`hydrateBridgeNativeContext`） |
 | `OnError` 路由 | `charAPI.ts` + `session/charError.mjs` |
 | onMessage 无条件送达 | 节流改到意愿 true 后才扣 bucket |
 | DC 历史回填 | 新建桥接映射 backfill ~30 条（`backfilled` 持久化标记，重启不重拉） |
@@ -229,13 +232,13 @@ onMessage?: (event: {
 | AI 自修 | 顶层 `OnError` → `reply_gener/error.mjs` |
 | 平台 API 插件 | `interfaces/{telegram,discord}/api.mjs` |
 | 贴纸声明 | `stickers.manifest.mjs` |
-| 契约 fixture（非龙胆逻辑副本） | `chat/test/fixtures/chars/gentian_m7/` |
+| 契约 fixture（非龙胆逻辑副本） | `chat/test/fixtures/chars/gentian_shell_contract/` |
 
 **已删**：`bot_core/`、`formatOutbound.mjs`、char 内贴纸出站逻辑。
 
 ### 验收（as-built）
 
-- ✅ 复诵 / 自裁 / OnError / 主人识别：`gentian_m7.test.mjs`
+- ✅ 复诵 / 自裁 / OnError / 主人识别：`gentian_shell_contract.test.mjs`
 - ✅ typing ingress + `typingUsers`：`bridge_typing.test.mjs`
 - ✅ 引用解析链（`replyToPlatformMessageId` → `extension.bridge.replyToEventId`）/ onGroupEvent 分发 / `codeBridgeContext` 桥接元数据：`bridge_ingress.test.mjs` + `bridge_group_events.test.mjs`
 - ✅ DC poll 文本：`discordbot/test/pure/format.test.mjs`
@@ -293,7 +296,7 @@ onMessage?: (event: {
 | 通知 | `src/notifications.mjs` + `endpoints/notifications.mjs` | `buildNotifications(username, { actingEntityHash, … })`；seen 路由同参 |
 | 搜索 / 探索 | `src/search.mjs` + `discover/network.mjs` + endpoints | `loadViewerContext(username, acting)` |
 | 同步 | `src/timeline/sync.mjs` | `unionFollowingTargetsForLocalEntities` → operator + `listLocalAgentEntities` following 并集 |
-| follower 索引 | `src/federation/follower_index.mjs` | 桶值 `{ replicaUsername, entityHash }[]`；`listLocalFollowersOf`；`projectFollowerIndexFromTimelineEvent` 本机托管 entity 门（`resolveSocialEntity`） |
+| follower 索引 | `src/federation/follower_index.mjs` | 存储 `{nodeDir}/social/follower_index/`；桶值 `{ replicaUsername, entityHash }[]`；`listLocalFollowersOf`；`projectFollowerIndexFromTimelineEvent` 本机托管 entity 门（`resolveSocialEntity`） |
 | Viewer API | `endpoints/viewer.mjs` | `{ viewerEntityHash, operator, agents: [{ entityHash, charPartName, displayName }], profile }` |
 | 前端 | `public/src/state.mjs` / `lib/apiClient.mjs` / `lib/actorSwitcher.mjs` | `actingEntityHash` + query 自动附带；`#actingEntitySelect` 切换刷新 feed / 通知 / profile |
 
@@ -310,14 +313,14 @@ onMessage?: (event: {
 
 ## M10 — Social 产品补强 + 顺手项（as-built，`2026-07-14`）
 
-> 落地：`2026-07-14`。测试：`social/test/integration/m10_features.test.mjs`（4 用例）+ 既有 governance / posts_http / search 回归。
+> 落地：`2026-07-14`。测试：`social/test/integration/poll_edit_feed.test.mjs`（4 用例）+ 既有 governance / posts_http / search 回归。
 
 | 模块 | 实际落点 | 关键导出 / 行为 |
 | --- | --- | --- |
 | poll 事件 | `namespace` + `reducers` + `federation_visibility` + `write_auth` | `poll_vote` content `{ targetEntityHash, targetPostId, choices }` 写在投票者时间线 |
 | poll 投影 | `src/federation/poll_index.mjs` | `projectPollVoteFromTimelineEvent` / `listPollTally` / `readPollTally`；存储 `{userDict}/shells/social/poll_tally/{targetEntityHash}/{postId}.json` |
 | poll 辅助 | `src/lib/poll.mjs` | `normalizePollDraft` / `assertPollVoteAllowed` / `isPollClosed` |
-| poll 截止 | `src/lib/pollDeadlineWatcher.mjs` | `schedulePollDeadlines` / `firePollClosed` / `bootstrapPollDeadlineWatchers`；inbox `poll_closed`（`VALID_NOTIFICATION_TYPES`） |
+| poll 截止 | `src/lib/pollDeadlineWatcher.mjs` | `schedulePollDeadlineForPost`（commit 热路径）/ `schedulePollDeadlines`（bootstrap 全扫）/ `firePollClosed`；inbox `poll_closed`（`VALID_NOTIFICATION_TYPES`） |
 | post_edit | 同上五道门禁 | owner-only `write_auth`；`postEdits` + `revisions[]` 物化；`searchIndex` 重建词条 |
 | for_you | `src/feed/ranking.mjs` | `buildForYouFeed` / `scorePostForYou`；cursor `score:postId` |
 | feed API | `endpoints/feed.mjs` | `GET /feed?ranking=for_you\|latest` |
@@ -329,7 +332,7 @@ onMessage?: (event: {
 
 ### 验收（as-built）
 
-- ✅ poll tally 投影 + post_edit 物化 + search cursor + for_you score：`m10_features.test.mjs`
+- ✅ poll tally 投影 + post_edit 物化 + search cursor + for_you score：`poll_edit_feed.test.mjs`
 - ✅ governance report id + resolve + posts HTTP：`governance.test.mjs` / `posts_http.test.mjs`
 - ⚠️ poll 双节点联邦 live / WS prepend 无整页重拉：留 live / Playwright 补测
 

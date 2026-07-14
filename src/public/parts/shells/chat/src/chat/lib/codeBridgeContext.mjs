@@ -18,9 +18,8 @@ export function findTriggerChatLogEntry(chatLog) {
 export function bridgeMetaFromChatLogEntry(entry) {
 	// 水合后 content 是字符串，bridge 元数据在 entry.extension.bridge（hydration.mjs）；
 	// 未水合的原始行仍可能带 content.extension.bridge。
-	const content = entry?.content
 	return entry?.extension?.bridge
-		?? (content && typeof content === 'object' ? content.extension?.bridge : null)
+		?? entry?.content?.extension?.bridge
 		?? null
 }
 
