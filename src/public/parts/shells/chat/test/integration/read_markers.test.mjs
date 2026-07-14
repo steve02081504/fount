@@ -1,5 +1,5 @@
 /**
- * M5：read-marker + message seq + 群列表未读摘要。
+ * read-marker + message seq + 群列表未读摘要。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

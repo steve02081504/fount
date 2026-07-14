@@ -1,7 +1,7 @@
 /**
  * 【文件】viewerLog.mjs — world/persona chat_log 视图统一分发与 viewer 角色解析
  * 【职责】applyWorldChatLogView / applyPersonaChatLogView；resolveViewerRoles 从物化 members 取 roles。
- * 【原理】正式接口以 viewer 为键；老 world 仅实现 GetChatLogForCharname 时 char viewer 回退；顺序固定为 world（客观）→ persona（主观）。D6 后 world/user 恒存在。
+ * 【原理】正式接口以 viewer 为键；老 world 仅实现 GetChatLogForCharname 时 char viewer 回退；顺序固定为 world（客观）→ persona（主观）。world/user 恒存在。
  * 【数据结构】chatViewer_t；state.members[memberKey].roles。
  * 【关联】chatRequest、materializeViewerLog、worldAPI、userAPI、group/access、prompt_struct visibility。
  */

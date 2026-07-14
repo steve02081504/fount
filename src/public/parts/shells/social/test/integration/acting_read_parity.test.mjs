@@ -1,5 +1,5 @@
 /**
- * M9 acting 读侧平权：feed / notifications / follower 索引 / onMessage 经 agent following。
+ * acting 读侧平权：feed / notifications / follower 索引 / onMessage 经 agent following。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -96,7 +96,7 @@ Deno.test('agent follow projects entity-granular follower index', async () => {
 	'follower index records agent entity not just replica username')
 })
 
-Deno.test('followed author post triggers agent onMessage via M8 dispatch', async () => {
+Deno.test('followed author post triggers agent onMessage via timeline dispatch', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
 	const { username } = await getSession()

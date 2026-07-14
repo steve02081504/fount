@@ -1,5 +1,5 @@
 /**
- * M2：最小无 AI 角色，供 greeting / char 写路径测试。
+ * 最小无 AI 角色，供 greeting / char 写路径测试。
  * @type {import('../../../../../../../../../decl/charAPI.ts').CharAPI_t}
  */
 export default {

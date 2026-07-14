@@ -1,5 +1,5 @@
 /**
- * M8：replicated distribution 测试 world；演示 ChatHostConnected + 折叠层权限过滤。
+ * replicated distribution 测试 world；演示 ChatHostConnected + 折叠层权限过滤。
  * @type {import('../../../../../../../../../decl/worldAPI.ts').WorldAPI_t}
  */
 const HOOK_KEY = '__fount_replicated_world_hook_state__'

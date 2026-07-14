@@ -1,5 +1,5 @@
 /**
- * M7：world distribution 声明与 resolveWorld 三分支分发。
+ * world distribution 声明与 resolveWorld 三分支分发。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -39,7 +39,7 @@ async function promptHasLocalMarker(world) {
 	return String(text || '').includes('local-world-prompt-marker')
 }
 
-Deno.test('M7 world distribution: local 本机执行 + 未装回退 BUILTIN + hosted 回归', async t => {
+Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hosted 回归', async t => {
 	const sim = await createChatFederationSim()
 	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
 	const NODE_A = nodeName('A')
@@ -118,7 +118,7 @@ Deno.test('M7 world distribution: local 本机执行 + 未装回退 BUILTIN + ho
 const REPLICATED_WORLD = 'replicated_world'
 const REPLICATED_HOOK_KEY = '__fount_replicated_world_hook_state__'
 
-Deno.test('M7 replicated: 本机执行 + 未装节点走 remoteWorldProxy', async t => {
+Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteWorldProxy', async t => {
 	const sim = await createChatFederationSim()
 	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
 	const NODE_A = nodeName('A')
@@ -201,7 +201,7 @@ Deno.test('M7 replicated: 本机执行 + 未装节点走 remoteWorldProxy', asyn
 	})
 })
 
-Deno.test('M7 hosted: 未装 world 的 replica 不加载 hosted part（sim 同 nodeHash）', async () => {
+Deno.test('world distribution hosted: 未装 world 的 replica 不加载 hosted part（sim 同 nodeHash）', async () => {
 	const sim = await createChatFederationSim()
 	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
 	const NODE_A = nodeName('A')

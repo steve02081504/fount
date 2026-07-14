@@ -1,5 +1,5 @@
 /**
- * M3：view-log 与 persona 主观滤镜；world 先于 persona；D6 内置兜底。
+ * view-log 与 persona 主观滤镜；world 先于 persona；内置 world/persona 兜底。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -130,7 +130,7 @@ Deno.test('view-log: hide/rewrite + world-before-persona + agent parity', async 
 	assert(charViewTexts.some(text => text.includes('persona-hide-me')), 'persona hide is user-only')
 })
 
-Deno.test('D6 builtin world/persona: unbound group view-log works', async () => {
+Deno.test('builtin world/persona: unbound group view-log works', async () => {
 	const username = `vb-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,

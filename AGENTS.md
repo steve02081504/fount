@@ -28,6 +28,7 @@
 - **Debug dumps**: `debugLog(name, data)` → `debug_logs/`.
 - **API test**: `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PS: `$env:FOUNT_API_KEY`, bash: `$FOUNT_API_KEY`).
 - **Subagent context handoff**: subagents do not inherit the parent chat's full reasoning or implicit context. Before delegating, provide task definition, target paths, constraints, verified findings, and expected output.
+- **No planning IDs in code**: roadmap milestones (`M1`/`M7a`/`G4`/`D6` 等，见 [chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md)) 只留在设计 md；勿写入源码、测试名、fixture 路径、注释、`llms.txt`。文件/角色名用领域语义（如 `gentian_shell_contract`、`poll_edit_feed`），不要用里程碑代号。
 
 ## Specialized Guides
 

@@ -1,5 +1,5 @@
 /**
- * M1：触发管线专项（token bucket + backfill 不触发）。
+ * 触发管线专项（token bucket + backfill 不触发）。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

@@ -1,5 +1,5 @@
 /**
- * M2 write-path 钩子计数（fixtures 与测试共用 globalThis）。
+ * write-path 钩子计数（fixtures 与测试共用 globalThis）。
  * @returns {{
  *   addCalls: object[],
  *   afterCalls: object[],

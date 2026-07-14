@@ -1,5 +1,5 @@
 /**
- * M4：ChatClient 对象模型集成测试。
+ * ChatClient 对象模型集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

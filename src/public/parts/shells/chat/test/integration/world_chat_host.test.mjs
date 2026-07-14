@@ -1,5 +1,5 @@
 /**
- * M8：WorldChatHost postSystemMessage / localData / triggerCharReply 写路径。
+ * WorldChatHost postSystemMessage / localData / triggerCharReply 写路径。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

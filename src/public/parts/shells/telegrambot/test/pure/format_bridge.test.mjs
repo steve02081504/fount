@@ -1,5 +1,5 @@
 /**
- * M5/M6.5：telegrambot format 纯测试（DTO / 贴纸 / FormatOutboundReply 契约）。
+ * telegrambot format 纯测试（DTO / 贴纸 / FormatOutboundReply 契约）。
  */
 /* global Deno */
 import { mkdtempSync } from 'node:fs'

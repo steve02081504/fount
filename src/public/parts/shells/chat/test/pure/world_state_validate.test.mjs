@@ -1,5 +1,5 @@
 /**
- * M8：world_state content 形状校验。
+ * world_state content 形状校验。
  */
 /* global Deno */
 import { assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'

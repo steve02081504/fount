@@ -1,5 +1,5 @@
 /**
- * M7：local distribution 测试 world；钩子留 globalThis 可观测痕迹。
+ * local distribution 测试 world；钩子留 globalThis 可观测痕迹。
  * @type {import('../../../../../../../../../decl/worldAPI.ts').WorldAPI_t}
  */
 const HOOK_KEY = '__fount_local_world_hook_state__'

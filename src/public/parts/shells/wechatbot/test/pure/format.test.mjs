@@ -1,5 +1,5 @@
 /**
- * M6：wechatbot format 纯测试。
+ * wechatbot format 纯测试。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

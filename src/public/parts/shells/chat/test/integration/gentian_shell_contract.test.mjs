@@ -1,5 +1,5 @@
 /**
- * M7 壳层契约验收（复诵 / 自裁 / OnError / 主人识别）。
+ * 壳层契约验收（复诵 / 自裁 / OnError / 主人识别）。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -11,7 +11,7 @@ import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.t
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
-const CHAR = 'gentian_m7'
+const CHAR = 'gentian_shell_contract'
 
 /**
  * @param {string} dataDir 数据根
@@ -108,7 +108,7 @@ Deno.test('Gentian onMessage: self-destruct calls bridge stopSelf', async () => 
 
 	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
 	const { handleOwnerCommands } = await import(
-		`file://${join(fixturesRoot, 'chars/gentian_m7/trigger/commands.mjs').replace(/\\/g, '/')}`
+		`file://${join(fixturesRoot, 'chars/gentian_shell_contract/trigger/commands.mjs').replace(/\\/g, '/')}`
 	)
 
 	const botname = 'gentian-stop-bot'

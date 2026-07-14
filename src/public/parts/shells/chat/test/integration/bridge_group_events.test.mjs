@@ -1,5 +1,5 @@
 /**
- * M7：桥接群生命周期事件 → char onGroupEvent 分发。
+ * 桥接群生命周期事件 → char onGroupEvent 分发。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

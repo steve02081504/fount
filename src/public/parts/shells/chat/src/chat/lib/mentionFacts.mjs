@@ -35,7 +35,7 @@ function memberHasAnyRole(state, entityHash, roleIds) {
 }
 
 /**
- * 判定实体是否被消息 mentions 结构命中（M1：直接 @；M2 叠加 role/everyone）。
+ * 判定实体是否被消息 mentions 结构命中（直接 @；叠加 role / everyone）。
  * @param {object} event onMessage 事件或含 mentions 的上下文
  * @param {string} entityHash 待查实体
  * @returns {Promise<boolean>}

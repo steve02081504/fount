@@ -1,5 +1,5 @@
 /**
- * M1：per-recipient inbox + 触发管线集成测试。
+ * per-recipient inbox + 触发管线集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

@@ -1,5 +1,5 @@
 /**
- * M7b：operator 平台身份认领集成测试。
+ * operator 平台身份认领集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

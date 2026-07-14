@@ -1,5 +1,5 @@
 /**
- * M7a：per-bot bridgeOps 生命周期集成测试。
+ * per-bot bridgeOps 生命周期集成测试。
  */
 /* global Deno */
 import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -7,10 +7,10 @@ import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.224.
 import { createIntegrationBoot } from '../harness.mjs'
 
 Deno.test('per-bot bridgeOps: two bots on same platform route independently', async () => {
-	const username = `m7a-parallel-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-parallel-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_parallel_',
+		tempDirPrefix: 'fount_bridge_lifecycle_parallel_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -50,10 +50,10 @@ Deno.test('per-bot bridgeOps: two bots on same platform route independently', as
 })
 
 Deno.test('unregisterBridgeOps clears registry and outbound handlers', async () => {
-	const username = `m7a-unreg-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-unreg-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_unreg_',
+		tempDirPrefix: 'fount_bridge_lifecycle_unreg_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -93,10 +93,10 @@ Deno.test('unregisterBridgeOps clears registry and outbound handlers', async () 
 })
 
 Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
-	const username = `m7a-stop-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-stop-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_stop_',
+		tempDirPrefix: 'fount_bridge_lifecycle_stop_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -136,10 +136,10 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 })
 
 Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
-	const username = `m7a-list-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-list-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_list_',
+		tempDirPrefix: 'fount_bridge_lifecycle_list_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -158,10 +158,10 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 })
 
 Deno.test('ensureBridgeGroup records botname in group settings', async () => {
-	const username = `m7a-botname-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-botname-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_botname_',
+		tempDirPrefix: 'fount_bridge_lifecycle_botname_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -187,10 +187,10 @@ Deno.test('ensureBridgeGroup records botname in group settings', async () => {
 })
 
 Deno.test('bridge group members() uses listMembers op', async () => {
-	const username = `m7a-members-${crypto.randomUUID().slice(0, 8)}`
+	const username = `bridge-lifecycle-members-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_m7a_members_',
+		tempDirPrefix: 'fount_bridge_lifecycle_members_',
 		minP2pNode: true,
 	})
 	await ensureServer()

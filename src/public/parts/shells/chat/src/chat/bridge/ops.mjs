@@ -12,7 +12,7 @@ function registryKey(username, platform, botname) {
 }
 
 /**
- * bot 壳启动时注册 per-bot bridgeOps（M7a 消费）。
+ * bot 壳启动时注册 per-bot bridgeOps（操作面 / ChatClient 消费）。
  * @param {string} username replica
  * @param {string} platform 平台标识
  * @param {string} botname bot 实例名

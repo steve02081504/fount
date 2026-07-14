@@ -1,5 +1,5 @@
 /**
- * M2：记录 AddChatLogEntry / AfterAddChatLogEntry 次数；可选改写 entry.content。
+ * 记录 AddChatLogEntry / AfterAddChatLogEntry 次数；可选改写 entry.content。
  * @type {import('../../../../../../../../../decl/worldAPI.ts').WorldAPI_t}
  */
 const HOOK_KEY = '__fount_write_path_hook_state__'

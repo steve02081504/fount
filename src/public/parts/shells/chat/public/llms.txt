@@ -261,7 +261,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ---
 
-## ChatClient 对象模型（进程内 API，M4）
+## ChatClient 对象模型（进程内 API）
 
 import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, actingEntityHash?)`。
 

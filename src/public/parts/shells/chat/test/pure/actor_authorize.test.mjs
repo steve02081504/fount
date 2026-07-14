@@ -1,5 +1,5 @@
 /**
- * M4：actingAgentEntityHash 委托鉴权纯测试。
+ * actingAgentEntityHash 委托鉴权纯测试。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

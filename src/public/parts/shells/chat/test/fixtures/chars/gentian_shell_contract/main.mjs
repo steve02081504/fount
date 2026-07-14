@@ -8,12 +8,12 @@ export let lastOnError = null
 export default {
 	info: {
 		'zh-CN': {
-			name: '龙胆 M7',
+			name: '龙胆壳层契约',
 			avatar: '🌸',
-			description: 'M7 壳层契约验收 fixture（非龙胆逻辑副本）',
+			description: '壳层契约验收 fixture（非龙胆逻辑副本）',
 			version: '1.0.0',
 			author: 'fount',
-			tags: ['test', 'm7'],
+			tags: ['test', 'shell-contract'],
 		},
 	},
 	/**

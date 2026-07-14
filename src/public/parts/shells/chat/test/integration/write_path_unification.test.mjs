@@ -1,5 +1,5 @@
 /**
- * M2：写路径统一 — BeforeUserSend + world Add/After 单点触发 + Hub/CLI 同源。
+ * 写路径统一 — BeforeUserSend + world Add/After 单点触发 + Hub/CLI 同源。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

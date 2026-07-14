@@ -1,5 +1,5 @@
 /**
- * M5：inbox 持久化 + 已读水位 + buildNotifications unreadCount + 聚合读模型。
+ * inbox 持久化 + 已读水位 + buildNotifications unreadCount + 聚合读模型。
  */
 /* global Deno */
 import fs from 'node:fs'

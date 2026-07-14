@@ -1,11 +1,11 @@
 /**
- * M10：poll / post_edit / for_you / search cursor 集成测试。
+ * poll / post_edit / for_you / search cursor 集成测试。
  */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createTestSession } from '../harness.mjs'
 
-const session = createTestSession({ tempDirPrefix: 'fount_social_m10_' })
+const session = createTestSession({ tempDirPrefix: 'fount_social_poll_edit_' })
 
 Deno.test('poll vote updates tally projection', async () => {
 	const { username, operator } = await session()
@@ -58,16 +58,16 @@ Deno.test('searchPosts returns nextCursor', async () => {
 
 	await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'alpha unique m10 token', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'alpha unique poll-edit token', visibility: 'public', lang: 'zh-CN' },
 	})
 	await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'beta unique m10 token', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'beta unique poll-edit token', visibility: 'public', lang: 'zh-CN' },
 	})
-	const page1 = await searchPosts(username, { q: 'unique m10', limit: 1 })
+	const page1 = await searchPosts(username, { q: 'unique poll-edit', limit: 1 })
 	assertEquals(page1.items.length, 1)
 	assert(page1.nextCursor)
-	const page2 = await searchPosts(username, { q: 'unique m10', limit: 1, cursor: page1.nextCursor })
+	const page2 = await searchPosts(username, { q: 'unique poll-edit', limit: 1, cursor: page1.nextCursor })
 	assertEquals(page2.items.length, 1)
 	assert(page1.items[0].postId !== page2.items[0].postId)
 })

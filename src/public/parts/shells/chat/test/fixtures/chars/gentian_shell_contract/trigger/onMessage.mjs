@@ -5,7 +5,7 @@ import { getLocalNodeHash, resolveOperatorEntityHash } from 'fount/public/parts/
 import { handleOwnerCommands } from './commands.mjs'
 import { extractMessageText, resolveMessageContext } from './helpers.mjs'
 
-const CHARNAME = 'gentian_m7'
+const CHARNAME = 'gentian_shell_contract'
 
 /** @type {string} */
 let selfEntityHash = ''

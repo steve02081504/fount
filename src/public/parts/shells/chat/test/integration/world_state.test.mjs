@@ -1,5 +1,5 @@
 /**
- * M8：world_state 状态通道 + WorldChatHost 集成测试。
+ * world_state 状态通道 + WorldChatHost 集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -28,7 +28,7 @@ async function seedWorldFixture(dataRoot, username, worldname) {
 	await cp(from, to, { recursive: true })
 }
 
-Deno.test('M8 world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 64KB 拒收', async t => {
+Deno.test('world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 64KB 拒收', async t => {
 	const sim = await createChatFederationSim()
 	const { modules, groupId, nodeName, dataRoot, federate, gossipAll, joinGroup, stateOf } = sim
 	const NODE_A = nodeName('A')

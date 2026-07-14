@@ -1,5 +1,5 @@
 /**
- * M8：world_state LWW reducer 纯测试。
+ * world_state LWW reducer 纯测试。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'

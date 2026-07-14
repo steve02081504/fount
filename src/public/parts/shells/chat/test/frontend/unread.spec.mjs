@@ -49,7 +49,7 @@ async function withReadMarkerSettled(page, channelId, trigger) {
 	await putPromise
 }
 
-test.describe('Unread badge & divider (M5)', () => {
+test.describe('Unread badge & divider', () => {
 	test.setTimeout(600_000)
 
 	test('other-channel message shows group badge; divider on revisit; badge clears after read', async ({ page, baseUrl, apiKey, groupChannel }) => {

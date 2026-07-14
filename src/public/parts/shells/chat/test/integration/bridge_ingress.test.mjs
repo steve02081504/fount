@@ -1,5 +1,5 @@
 /**
- * M5：bridge ingress 集成测试。
+ * bridge ingress 集成测试。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'

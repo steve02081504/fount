@@ -1,5 +1,5 @@
 /**
- * M6.5 G4 / C5：Hub + mock TG/DC/WX 四端触发意愿一致性。
+ * Hub + mock TG/DC/WX 四端触发意愿一致性。
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'

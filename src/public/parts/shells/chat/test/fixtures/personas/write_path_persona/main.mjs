@@ -1,5 +1,5 @@
 /**
- * M2：BeforeUserSend 改写 / 拒绝。
+ * BeforeUserSend 改写 / 拒绝。
  * @type {import('../../../../../../../../../decl/userAPI.ts').UserAPI_t}
  */
 const HOOK_KEY = '__fount_write_path_hook_state__'

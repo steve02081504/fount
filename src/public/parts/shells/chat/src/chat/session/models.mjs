@@ -39,7 +39,7 @@ export class timeSlice_t {
 	chars = {}
 	/** @type {Record<string, PluginAPI_t>} */
 	plugins = {}
-	/** @type {WorldAPI_t} 缺省内置极小世界（D6：拓扑无例外） */
+	/** @type {WorldAPI_t} 缺省内置极小世界（拓扑无例外） */
 	world = BUILTIN_WORLD
 	/** @type {string} */
 	world_id

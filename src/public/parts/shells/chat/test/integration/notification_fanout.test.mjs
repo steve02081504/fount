@@ -1,5 +1,5 @@
 /**
- * M2：通知偏好矩阵、@here 时序、care 穿透、vote_closed inbox。
+ * 通知偏好矩阵、@here 时序、care 穿透、vote_closed inbox。
  */
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
