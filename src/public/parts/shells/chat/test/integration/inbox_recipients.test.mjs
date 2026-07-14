@@ -72,7 +72,7 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
@@ -124,7 +124,7 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
@@ -157,7 +157,7 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')

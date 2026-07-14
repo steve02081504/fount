@@ -1,13 +1,13 @@
 /**
  * 【文件】src/emojiUsage.mjs
- * 【职责】按用户统计 Unicode 与群自定义表情（:[groupId/emojiId]）的使用频次，供选择器「常用」排序。
- * 【原理】数据存于 shell data（dataname emoji_usage），键 u:{unicode} 或 g:{groupId}/{emojiId}；
+ * 【职责】按实体统计 Unicode 与群自定义表情（:[groupId/emojiId]）的使用频次，供选择器「常用」排序。
+ * 【原理】数据存于实体私有 shell data（dataname emoji_usage），键 u:{unicode} 或 g:{groupId}/{emojiId}；
  *   每次 recordEmojiUsage 递增 count 并更新 lastUsedAt；超过 MAX_STORED(512) 时按 count、lastUsedAt 淘汰最少使用的条目。
  *   recordEmojiUsageFromMessageContent 从发送的 channel content 正则提取（sticker 类型走 emojiRef）。
  * 【数据结构】entries: Record<id, { id, kind, count, lastUsedAt, unicode? | groupId?, emojiId? }>。
  * 【关联】endpoints 暴露 list API；发送消息路径调用 record；依赖 channelContent 取文本。
  */
-import { assignShellData, loadShellData } from '../../../../../server/setting_loader.mjs'
+import { assignEntityShellData, loadEntityShellData } from '../../../../../server/setting_loader.mjs'
 import { channelMessageText } from '../public/shared/channelContent.mjs'
 
 const SHELL_DATANAME = 'emoji_usage'
@@ -28,10 +28,11 @@ function usageEntryId(kind, fields) {
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @returns {Record<string, object>} id → 统计条目
  */
-function loadUsageEntries(username) {
-	return loadShellData(username, 'chat', SHELL_DATANAME)?.entries || {}
+function loadUsageEntries(username, entityHash) {
+	return loadEntityShellData(username, 'chat', entityHash, SHELL_DATANAME)?.entries || {}
 }
 
 /**
@@ -56,15 +57,16 @@ function pruneUsageEntries(entries) {
 /**
  * 记录一次表情使用（发送消息或选择器使用时调用）。
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {{ kind: 'unicode', unicode: string } | { kind: 'custom', groupId: string, emojiId: string }} item 表情
  * @returns {void}
  */
-export function recordEmojiUsage(username, item) {
+export function recordEmojiUsage(username, entityHash, item) {
 	if (item.kind === 'unicode') {
 		const unicode = String(item.unicode || '').trim()
 		if (!unicode) return
 		const id = usageEntryId('unicode', { unicode })
-		const entries = loadUsageEntries(username)
+		const entries = loadUsageEntries(username, entityHash)
 		const prev = entries[id]
 		entries[id] = {
 			id,
@@ -73,14 +75,14 @@ export function recordEmojiUsage(username, item) {
 			count: (prev?.count || 0) + 1,
 			lastUsedAt: Date.now(),
 		}
-		assignShellData(username, 'chat', SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
+		assignEntityShellData(username, 'chat', entityHash, SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
 		return
 	}
 	const groupId = String(item.groupId || '').trim()
 	const emojiId = String(item.emojiId || '').trim()
 	if (!groupId || !emojiId) return
 	const id = usageEntryId('custom', { groupId, emojiId })
-	const entries = loadUsageEntries(username)
+	const entries = loadUsageEntries(username, entityHash)
 	const prev = entries[id]
 	entries[id] = {
 		id,
@@ -90,22 +92,23 @@ export function recordEmojiUsage(username, item) {
 		count: (prev?.count || 0) + 1,
 		lastUsedAt: Date.now(),
 	}
-	assignShellData(username, 'chat', SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
+	assignEntityShellData(username, 'chat', entityHash, SHELL_DATANAME, { entries: pruneUsageEntries(entries) })
 }
 
 /**
  * 从频道消息 content 提取并累计表情使用次数。
  * @param {string} username 发送者
+ * @param {string} entityHash 实体
  * @param {Record<string, unknown>} content 消息 content
  * @returns {void}
  */
-export function recordEmojiUsageFromMessageContent(username, content) {
+export function recordEmojiUsageFromMessageContent(username, entityHash, content) {
 	if (!content) return
 	if (content.type === 'sticker') {
 		const emojiRef = String(content.emojiRef || '').trim()
 		const match = /:\[([\w.-]+)\/([\w.-]+)]:/.exec(emojiRef)
 		if (match)
-			recordEmojiUsage(username, { kind: 'custom', groupId: match[1], emojiId: match[2] })
+			recordEmojiUsage(username, entityHash, { kind: 'custom', groupId: match[1], emojiId: match[2] })
 		return
 	}
 	const text = channelMessageText(content)
@@ -117,7 +120,7 @@ export function recordEmojiUsageFromMessageContent(username, content) {
 		const key = `${match[1]}/${match[2]}`
 		if (customSeen.has(key)) continue
 		customSeen.add(key)
-		recordEmojiUsage(username, { kind: 'custom', groupId: match[1], emojiId: match[2] })
+		recordEmojiUsage(username, entityHash, { kind: 'custom', groupId: match[1], emojiId: match[2] })
 	}
 
 	UNICODE_EMOJI.lastIndex = 0
@@ -126,19 +129,20 @@ export function recordEmojiUsageFromMessageContent(username, content) {
 		const glyph = match[0]
 		if (!glyph || unicodeSeen.has(glyph)) continue
 		unicodeSeen.add(glyph)
-		recordEmojiUsage(username, { kind: 'unicode', unicode: glyph })
+		recordEmojiUsage(username, entityHash, { kind: 'unicode', unicode: glyph })
 	}
 }
 
 /**
  * 按发送次数列出常用表情。
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {number} [limit=32] 返回条数上限
  * @returns {object[]} 统计条目，按 count、lastUsedAt 降序
  */
-export function listFrequentEmojis(username, limit = 32) {
+export function listFrequentEmojis(username, entityHash, limit = 32) {
 	const cap = Math.min(64, Math.max(1, limit))
-	return Object.values(loadUsageEntries(username))
+	return Object.values(loadUsageEntries(username, entityHash))
 		.sort((a, b) => b.count - a.count || b.lastUsedAt - a.lastUsedAt)
 		.slice(0, cap)
 }

@@ -1,7 +1,7 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 import { getProfile } from '../../../chat/src/entity/profile.mjs'
 
-import { listLocalTimelineDirs } from '../feed/helpers.mjs'
+import { listLocalTimelineDirs } from '../timeline/ownerIndex.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 /** 每个 owner 最多纳入探索候选的帖子数（物化视图已按新→旧）。 */

@@ -144,3 +144,27 @@ Deno.test('rebuildFollowerIndex restores agent follows', async () => {
 	assert(followers.some(row =>
 		row.replicaUsername === username && row.entityHash === agentHash))
 })
+
+Deno.test('agent saved posts CRUD+search isolated from operator', async () => {
+	const { username, operator } = await getSession()
+	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const agentClient = await getSocialClient(username, agentHash)
+	const operatorClient = await getSocialClient(username)
+
+	const post = await agentClient.post({ text: 'agent-saved-only-post', visibility: 'public' })
+	await agentClient.saved.add({ entityHash: post.entityHash, postId: post.postId })
+	const agentHit = await agentClient.saved.search('agent-saved-only')
+	assert(agentHit.posts.some(row => row.postId === post.postId), 'agent can search own saved posts')
+
+	const operatorList = await operatorClient.saved.list()
+	assert(!operatorList.unfiled.some(row => row.postId === post.postId), 'operator unfiled excludes agent saves')
+	for (const folder of Object.values(operatorList.folders))
+		assert(!folder.posts.some(row => row.postId === post.postId), 'operator folders exclude agent saves')
+	const operatorHit = await operatorClient.saved.search('agent-saved-only')
+	assertEquals(operatorHit.posts.length, 0)
+
+	await operatorClient.saved.add({ entityHash: operator, postId: post.postId })
+	assert((await operatorClient.saved.list()).unfiled.some(row => row.postId === post.postId))
+	assertEquals((await agentClient.saved.search('agent-saved-only')).posts.length, 1)
+})

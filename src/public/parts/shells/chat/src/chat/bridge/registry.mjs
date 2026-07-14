@@ -2,7 +2,7 @@ import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { getState } from '../dag/materialize.mjs'
-import { newGroup } from '../session/crud.mjs'
+import { newGroup } from '../session/groupLifecycle.mjs'
 
 import {
 	bridgeGroupKey,

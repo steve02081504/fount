@@ -3,24 +3,100 @@ import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import {
 	isAuthorFilteredByPersonalSets,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
+import { loadPersonalFilterSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from './federation/reputation_social.mjs'
 import {
 	buildPostFeedItem,
 	buildRepostFeedItem,
 	withDecryptedPostContent,
 } from './feed/buildItem.mjs'
-import {
-	listFollowedTimelineOwners,
-	loadViewerContext,
-} from './feed/helpers.mjs'
 import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
-import { loadFollowing, loadFollowingForActor } from './following.mjs'
+import { loadFollowing, loadFollowingForActor, listFollowedTimelineOwners } from './following.mjs'
+import { socialPostKey } from './federation/post_key.mjs'
 import { queryReplyIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
+
+/**
+ * @param {Map<string, number>} counts 计数表
+ * @param {string} entityHash 目标实体
+ * @param {string | number} postId 帖子 id
+ */
+function bumpEngagementCount(counts, entityHash, postId) {
+	if (!entityHash || postId == null) return
+	const key = socialPostKey(entityHash.toLowerCase(), postId)
+	counts.set(key, (counts.get(key) || 0) + 1)
+}
+
+/**
+ * 扫描时间线构建点赞/转发/回复计数索引。
+ * @param {string} username 用户
+ * @param {Iterable<string>} [owners] 仅扫描这些时间线 owner；缺省为全部已知 owner
+ * @returns {Promise<{ likes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }>} 互动计数索引
+ */
+export async function buildEngagementIndex(username, owners = null) {
+	/** @type {Map<string, number>} */
+	const likes = new Map()
+	/** @type {Map<string, number>} */
+	const reposts = new Map()
+	/** @type {Map<string, number>} */
+	const replies = new Map()
+
+	const ownerList = owners ? [...owners] : await listFollowedTimelineOwners(username)
+	for (const owner of ownerList) {
+		const view = await getTimelineMaterialized(username, owner)
+		for (const like of view.likes)
+			bumpEngagementCount(likes, like.content?.targetEntityHash, like.content?.targetPostId)
+		for (const repost of view.reposts)
+			bumpEngagementCount(reposts, repost.content?.targetEntityHash, repost.content?.targetPostId)
+		for (const post of view.posts) {
+			const replyTo = post.content?.replyTo
+			bumpEngagementCount(replies, replyTo?.entityHash, replyTo?.postId)
+		}
+	}
+	return { likes, reposts, replies }
+}
+
+/**
+ * 收集观看者已点赞的帖子键集合。
+ * @param {string} username 用户
+ * @returns {Promise<Set<string>>} 已点赞帖子键集合
+ */
+export async function buildViewerLikedSet(username) {
+	const self = await resolveOperatorEntityHash(username)
+	if (!self) return new Set()
+	const view = await getTimelineMaterialized(username, self)
+	return new Set(view.likes.map(like =>
+		socialPostKey(like.content.targetEntityHash, like.content.targetPostId),
+	))
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} [viewerEntityHash] 可选指定观看实体，默认 operator
+ * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>> }>} 观看者上下文
+ */
+export async function loadViewerContext(username, viewerEntityHash = null) {
+	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
+	const following = new Set(
+		viewer
+			? (await loadFollowingForActor(username, viewer)).following.map(id => id.toLowerCase())
+			: [],
+	)
+	const personalFilter = viewer
+		? await loadPersonalFilterSets(viewer)
+		: {
+			blockedEntityHashes: new Set(),
+			blockedSubjects: new Set(),
+			hiddenEntityHashes: new Set(),
+			hiddenSubjects: new Set(),
+		}
+	return { viewerEntityHash: viewer, following, personalFilter }
+}
 
 /**
  * @param {object} item feed 条目

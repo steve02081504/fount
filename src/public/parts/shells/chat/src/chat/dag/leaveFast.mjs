@@ -8,7 +8,7 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'
 import { resolveActiveMemberKey } from '../../group/access.mjs'
 import { groupDir, snapshotPath } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 import { appendEvent } from './append.mjs'
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'

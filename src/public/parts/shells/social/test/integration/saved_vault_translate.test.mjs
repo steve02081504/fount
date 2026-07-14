@@ -21,28 +21,28 @@ Deno.test('saved posts folder CRUD', async () => {
 	}, { fanout: false })
 	const postId = signed.id
 
-	const created = await saved.createSavedFolder(username, 'Favorites')
+	const created = await saved.createSavedFolder(username, operator, 'Favorites')
 	const folderId = Object.keys(created.folders).find(id => created.folders[id].name === 'Favorites')
 	assert(folderId)
 
-	let data = await saved.addSavedPost(username, { entityHash: operator, postId }, folderId)
+	let data = await saved.addSavedPost(username, operator, { entityHash: operator, postId }, folderId)
 	assert(data.folders[folderId].posts.some(r => r.postId === postId))
 
-	await saved.renameSavedFolder(username, folderId, 'Starred')
-	data = await saved.loadSavedPosts(username)
+	await saved.renameSavedFolder(username, operator, folderId, 'Starred')
+	data = await saved.loadSavedPosts(username, operator)
 	assertEquals(data.folders[folderId].name, 'Starred')
 
-	data = await saved.removeSavedPost(username, { entityHash: operator, postId }, folderId)
+	data = await saved.removeSavedPost(username, operator, { entityHash: operator, postId }, folderId)
 	assertEquals(data.folders[folderId].posts.length, 0)
 
-	data = await saved.addSavedPost(username, { entityHash: operator, postId }, null)
+	data = await saved.addSavedPost(username, operator, { entityHash: operator, postId }, null)
 	assert(data.unfiled.some(r => r.postId === postId))
 
-	data = await saved.deleteSavedFolder(username, folderId)
+	data = await saved.deleteSavedFolder(username, operator, folderId)
 	assert(!data.folders[folderId])
 	assert(data.unfiled.some(r => r.postId === postId))
 
-	await saved.removeSavedPost(username, { entityHash: operator, postId })
+	await saved.removeSavedPost(username, operator, { entityHash: operator, postId })
 })
 
 Deno.test('registerVaultFile and getVaultFileByShareId', async () => {

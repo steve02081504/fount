@@ -87,3 +87,15 @@ export async function listLocalEntitiesForNode(username, nodeHash) {
 	if (!key) return []
 	return [...(await getTimelineOwnerIndex(username)).byNode.get(key) || []]
 }
+
+/**
+ * 列出磁盘上全部时间线 owner（探索/热搜用）。
+ * @param {string} username 用户
+ * @param {{ nodeHashPrefix?: string | null }} [options] 仅返回该 nodeHash 托管的 entity
+ * @returns {Promise<string[]>} 本地 timelines 目录下的 entityHash
+ */
+export async function listLocalTimelineDirs(username, options = {}) {
+	const prefix = (options.nodeHashPrefix || '').trim().toLowerCase() || null
+	if (prefix) return listLocalEntitiesForNode(username, prefix)
+	return [...(await getTimelineOwnerIndex(username)).all]
+}

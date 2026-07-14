@@ -10,7 +10,7 @@ import { getState } from './chat/dag/materialize.mjs'
 import { getDefaultChannelId } from './chat/dag/queries.mjs'
 import { orchestrateDmFirstContact, performMemberJoin } from './chat/dm/index.mjs'
 import { getWorldName } from './chat/session/channelWorld.mjs'
-import { newGroup } from './chat/session/crud.mjs'
+import { newGroup } from './chat/session/groupLifecycle.mjs'
 import {
 	addchar,
 	getCharListOfGroup,
@@ -94,7 +94,11 @@ export const actions = {
 	 * @param {string} root0.user - 用户的名称。
 	 * @returns {Promise<Array<string>>} - 聊天ID的数组。
 	 */
-	list: ({ user }) => enumerateJoinedFederatedGroups(user),
+	list: async ({ user }) => {
+		const { resolveOperatorEntityHashForUser } = await import('./entity/identity.mjs')
+		const operatorEntityHash = await resolveOperatorEntityHashForUser(user)
+		return enumerateJoinedFederatedGroups(user, operatorEntityHash)
+	},
 	/**
 	 * 向指定的聊天会话发送消息（DAG-first，与 Hub 同一入口）。
 	 * @param {object} root0 - 参数对象。

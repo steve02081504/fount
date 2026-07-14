@@ -5,10 +5,10 @@ import { setCared } from '../../src/chat/lib/care.mjs'
 import {
 	describeMentionHit,
 	isNotifyMuted,
-	resolveEffectiveNotifyPrefs,
+	resolveEffectiveNotificationPreferences,
 	shouldNotifyHumanForMessage,
-	saveNotifyPrefs,
-} from '../../src/chat/lib/notifyPrefs.mjs'
+	saveNotificationPreferences,
+} from '../../src/chat/lib/notificationPreferences.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const GROUP = 'g1'
@@ -16,19 +16,19 @@ const CHANNEL = 'default'
 const OPERATOR = 'b'.repeat(128)
 const AUTHOR = 'c'.repeat(128)
 
-Deno.test('resolveEffectiveNotifyPrefs defaults dm to all', async () => {
+Deno.test('resolveEffectiveNotificationPreferences defaults dm to all', async () => {
 	const username = `np-dm-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
-	const prefs = resolveEffectiveNotifyPrefs(username, GROUP, CHANNEL, { groupMeta: { dmKind: 'ecdh' } })
+	const prefs = resolveEffectiveNotificationPreferences(username, OPERATOR, GROUP, CHANNEL, { groupMeta: { dmKind: 'ecdh' } })
 	assertEquals(prefs.mode, 'all')
 })
 
-Deno.test('resolveEffectiveNotifyPrefs defaults group to mentions', async () => {
+Deno.test('resolveEffectiveNotificationPreferences defaults group to mentions', async () => {
 	const username = `np-grp-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
-	const prefs = resolveEffectiveNotifyPrefs(username, GROUP, CHANNEL, { groupMeta: {} })
+	const prefs = resolveEffectiveNotificationPreferences(username, OPERATOR, GROUP, CHANNEL, { groupMeta: {} })
 	assertEquals(prefs.mode, 'mentions')
 })
 
@@ -42,7 +42,7 @@ Deno.test('shouldNotifyHumanForMessage care pierces mute', async () => {
 	const username = `np-care-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
-	saveNotifyPrefs(username, { [GROUP]: { mutedUntil: true } })
+	saveNotificationPreferences(username, OPERATOR, { [GROUP]: { mutedUntil: true } })
 	await setCared(username, OPERATOR, AUTHOR, true)
 	const state = { groupMeta: {}, members: {} }
 	const probeEvent = {

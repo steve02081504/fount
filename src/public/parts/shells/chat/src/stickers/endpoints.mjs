@@ -73,7 +73,7 @@ export function setEndpoints(router, apiBase = DEFAULT_STICKER_API) {
 		const pack = await getStickerPack(packId)
 		const { operatorEntityHash, replicaUsername } = await getReplicaFromReq(req)
 		if (!pack.isPublic && pack.authorEntityHash !== operatorEntityHash) {
-			const collection = await getUserCollection(replicaUsername)
+			const collection = await getUserCollection(replicaUsername, operatorEntityHash)
 			if (!collection.installedPacks.includes(packId))
 				return res.status(403).end()
 		}
@@ -139,31 +139,31 @@ export function setEndpoints(router, apiBase = DEFAULT_STICKER_API) {
 	})
 
 	router.post(stickerPathRegex(apiBase, '/install/([^/]+)$'), authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		await installPack(replicaUsername, req.params[0])
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		await installPack(replicaUsername, operatorEntityHash, req.params[0])
 		res.status(200).json({})
 	})
 
 	router.post(stickerPathRegex(apiBase, '/uninstall/([^/]+)$'), authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		await uninstallPack(replicaUsername, req.params[0])
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		await uninstallPack(replicaUsername, operatorEntityHash, req.params[0])
 		res.status(200).json({})
 	})
 
 	router.get(`${apiBase}/collection`, authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		res.status(200).json({ collection: await getUserCollection(replicaUsername) })
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		res.status(200).json({ collection: await getUserCollection(replicaUsername, operatorEntityHash) })
 	})
 
 	router.post(stickerPathRegex(apiBase, '/favorites/([^/]+)$'), authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		await addToFavorites(replicaUsername, req.params[0])
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		await addToFavorites(replicaUsername, operatorEntityHash, req.params[0])
 		res.status(200).json({})
 	})
 
 	router.delete(stickerPathRegex(apiBase, '/favorites/([^/]+)$'), authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		await removeFromFavorites(replicaUsername, req.params[0])
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		await removeFromFavorites(replicaUsername, operatorEntityHash, req.params[0])
 		res.status(200).json({})
 	})
 
@@ -180,8 +180,8 @@ export function setEndpoints(router, apiBase = DEFAULT_STICKER_API) {
 	})
 
 	router.post(stickerPathRegex(apiBase, '/recent/([^/]+)$'), authenticate, async (req, res) => {
-		const { replicaUsername } = await getReplicaFromReq(req)
-		await recordRecentUse(replicaUsername, req.params[0])
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		await recordRecentUse(replicaUsername, operatorEntityHash, req.params[0])
 		res.status(200).json({})
 	})
 }

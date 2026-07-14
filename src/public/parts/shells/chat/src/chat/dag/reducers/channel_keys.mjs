@@ -1,4 +1,4 @@
-import { withGroupId } from './helpers.mjs'
+import { withGroupId } from './state.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const channelKeyReducers = {

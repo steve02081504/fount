@@ -4,13 +4,13 @@
  * 【关联】被 channels.mjs 聚合注册。
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import {
 	appendListItemUpdate,
 	appendPinEvent,
 	appendReactionEvent,
 	appendUnpinEvent,
 } from '../../chat/dag/channelOperations.mjs'
-import { triggerCharReply } from '../../chat/session/triggerReply.mjs'
 
 import {
 	ensurePinPermission,
@@ -28,11 +28,11 @@ import { GROUPS_PREFIX, EVENT_ID_PARAM } from './path.mjs'
 export function registerChannelReactionRoutes(router, authenticate) {
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/trigger-reply`, authenticate, requireGroupChannel(), async (req, res) => {
 		const { groupId, channelId } = req.groupContext
-
 		const { charname } = req.body || {}
 		const resolvedCharname = String(charname || '').trim() || null
 
-		await triggerCharReply(groupId, channelId, resolvedCharname)
+		const { client } = await chatClientFromReq(req)
+		await (await (await client.group(groupId)).channel(channelId)).triggerReply(resolvedCharname)
 		res.status(200).json({})
 	})
 

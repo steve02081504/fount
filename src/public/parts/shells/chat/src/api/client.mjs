@@ -17,11 +17,215 @@ export function createChatClient(ctx) {
 		 * @returns {Promise<object[]>} 已加入群列表
 		 */
 		async groups() {
-			const rows = await enumerateJoinedFederatedGroups(ctx.username)
+			const rows = await enumerateJoinedFederatedGroups(ctx.username, ctx.entityHash)
 			return Promise.all(rows.map(async row => {
 				const { group } = await buildConversationContext(ctx.username, row.groupId, row.defaultChannelId || 'default')
 				return hydrateGroup(ctx, row.groupId, group)
 			}))
+		},
+		/**
+		 * @returns {{ list: Function, set: Function }} 书签
+		 */
+		get bookmarks() {
+			return {
+				async list() {
+					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					return { entries: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'bookmarks').entries || [] }
+				},
+				async set(entries) {
+					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const next = Array.isArray(entries) ? entries : []
+					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'bookmarks', { entries: next })
+					return { entries: next }
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, set: Function }} 群文件夹
+		 */
+		get groupFolders() {
+			return {
+				async list() {
+					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					return { folders: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'groupFolders').folders || [] }
+				},
+				async set(folders) {
+					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const next = Array.isArray(folders) ? folders : []
+					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'groupFolders', { folders: next })
+					return { folders: next }
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, set: Function }} 实体/群别名
+		 */
+		get aliases() {
+			return {
+				async list() {
+					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const data = loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'aliases')
+					return { entities: data.entities || {}, groups: data.groups || {} }
+				},
+				async set(doc) {
+					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const next = { entities: doc?.entities || {}, groups: doc?.groups || {} }
+					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'aliases', next)
+					return next
+				},
+			}
+		},
+		/**
+		 * @returns {Promise<Record<string, Record<string, { eventId: string, seq: number }>>>} 全量已读水位
+		 */
+		async readMarkers() {
+			const { loadReadMarkers } = await import('../chat/lib/readMarkers.mjs')
+			return loadReadMarkers(ctx.username, ctx.entityHash)
+		},
+		/**
+		 * @returns {{ get: Function, set: Function }} 通知偏好
+		 */
+		get notifications() {
+			return {
+				async get() {
+					const { loadNotificationPreferences } = await import('../chat/lib/notificationPreferences.mjs')
+					return loadNotificationPreferences(ctx.username, ctx.entityHash)
+				},
+				async set(prefs) {
+					const { saveNotificationPreferences, loadNotificationPreferences } = await import('../chat/lib/notificationPreferences.mjs')
+					saveNotificationPreferences(ctx.username, ctx.entityHash, prefs || {})
+					return loadNotificationPreferences(ctx.username, ctx.entityHash)
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, seenAt: Function, setSeenAt: Function }} inbox
+		 */
+		get inbox() {
+			return {
+				/**
+				 * @param {{ limit?: number, cursor?: string, kinds?: string[] }} [opts] 分页
+				 * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>}
+				 */
+				async list(opts = {}) {
+					const { listChatInbox } = await import('../chat/lib/inbox.mjs')
+					const { getState } = await import('../chat/dag/materialize.mjs')
+					const page = await listChatInbox(ctx.username, ctx.entityHash, opts)
+					/** @type {Map<string, object>} */
+					const stateCache = new Map()
+					const items = await Promise.all(page.items.map(async row => {
+						let state = stateCache.get(row.groupId)
+						if (!state) {
+							state = (await getState(ctx.username, row.groupId)).state
+							stateCache.set(row.groupId, state)
+						}
+						return {
+							...row,
+							groupName: state.groupMeta?.name || row.groupId,
+							channelName: state.channels?.[row.channelId]?.name || row.channelId,
+						}
+					}))
+					return { items, nextCursor: page.nextCursor, unreadCount: page.unreadCount }
+				},
+				async seenAt() {
+					const { getChatInboxSeenAt } = await import('../chat/lib/inbox.mjs')
+					return getChatInboxSeenAt(ctx.username, ctx.entityHash)
+				},
+				async setSeenAt(at = Date.now()) {
+					const { setChatInboxSeenAt } = await import('../chat/lib/inbox.mjs')
+					const seenAt = Number(at) || Date.now()
+					setChatInboxSeenAt(ctx.username, ctx.entityHash, seenAt)
+					return seenAt
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, set: Function, save: Function, frequent: Function, record: Function }} 自定义表情与用量
+		 */
+		get emojis() {
+			return {
+				async list() {
+					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					return { entries: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis').entries || [] }
+				},
+				async set(entries) {
+					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const next = Array.isArray(entries) ? entries : []
+					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis', { entries: next })
+					return { entries: next }
+				},
+				async save({ groupId, emojiId, dataUrl }) {
+					const { loadEntityShellData, assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+					const gid = String(groupId || '').trim()
+					const eid = String(emojiId || '').trim()
+					const url = String(dataUrl || '').trim()
+					if (!gid || !eid) throw new Error('groupId and emojiId required')
+					if (!url.startsWith('data:')) throw new Error('dataUrl required (data:…)')
+					const entries = [...loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis').entries || []]
+					const id = `${gid}/${eid}`
+					const next = { id, groupId: gid, emojiId: eid, dataUrl: url, savedAt: Date.now() }
+					const existingIndex = entries.findIndex(entry => entry?.id === id)
+					if (existingIndex >= 0) entries[existingIndex] = next
+					else entries.push(next)
+					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis', { entries })
+					return { entry: next }
+				},
+				async frequent(limit = 32) {
+					const { listFrequentEmojis } = await import('../emojiUsage.mjs')
+					return listFrequentEmojis(ctx.username, ctx.entityHash, limit)
+				},
+				async record(item) {
+					const { recordEmojiUsage } = await import('../emojiUsage.mjs')
+					recordEmojiUsage(ctx.username, ctx.entityHash, item)
+				},
+			}
+		},
+		/**
+		 * @returns {{ get: Function, install: Function, uninstall: Function, addFavorite: Function, removeFavorite: Function, recordRecent: Function }} 贴纸收藏
+		 */
+		get stickers() {
+			return {
+				async get() {
+					const { getUserCollection } = await import('../stickers/stickers.mjs')
+					return getUserCollection(ctx.username, ctx.entityHash)
+				},
+				async install(packId) {
+					const { installPack } = await import('../stickers/stickers.mjs')
+					await installPack(ctx.username, ctx.entityHash, packId)
+				},
+				async uninstall(packId) {
+					const { uninstallPack } = await import('../stickers/stickers.mjs')
+					await uninstallPack(ctx.username, ctx.entityHash, packId)
+				},
+				async addFavorite(stickerId) {
+					const { addToFavorites } = await import('../stickers/stickers.mjs')
+					await addToFavorites(ctx.username, ctx.entityHash, stickerId)
+				},
+				async removeFavorite(stickerId) {
+					const { removeFromFavorites } = await import('../stickers/stickers.mjs')
+					await removeFromFavorites(ctx.username, ctx.entityHash, stickerId)
+				},
+				async recordRecent(stickerId) {
+					const { recordRecentUse } = await import('../stickers/stickers.mjs')
+					await recordRecentUse(ctx.username, ctx.entityHash, stickerId)
+				},
+			}
+		},
+		/**
+		 * @returns {{ list: Function, set: Function }} 关心列表（共享 care.json，键=entityHash）
+		 */
+		get care() {
+			return {
+				async list() {
+					const { listCared } = await import('../chat/lib/care.mjs')
+					return listCared(ctx.username, ctx.entityHash)
+				},
+				async set(targetEntityHash, cared = true) {
+					const { setCared, listCared } = await import('../chat/lib/care.mjs')
+					await setCared(ctx.username, ctx.entityHash, targetEntityHash, cared !== false)
+					return listCared(ctx.username, ctx.entityHash)
+				},
+			}
 		},
 		/**
 		 * @param {string} groupId 群 ID
@@ -51,7 +255,7 @@ export function createChatClient(ctx) {
 		 * @returns {Promise<object>} 新建 Group
 		 */
 		async createGroup(opts = {}) {
-			const { newGroup } = await import('../chat/session/crud.mjs')
+			const { newGroup } = await import('../chat/session/groupLifecycle.mjs')
 			const groupId = await newGroup(ctx.username, opts)
 			return this.group(groupId)
 		},

@@ -300,74 +300,79 @@ export async function deleteSticker(packId, stickerId) {
 }
 
 /**
- * 获取用户贴纸收藏
+ * 获取实体贴纸收藏
  * @param {string} username - 用户名
+ * @param {string} entityHash - 实体
  * @returns {Promise<UserStickerCollection>} 用户贴纸收藏数据
  */
-export async function getUserCollection(username) {
-	return loadUserStickerCollection(username)
+export async function getUserCollection(username, entityHash) {
+	return loadUserStickerCollection(username, entityHash)
 }
 
 /**
  * 安装贴纸包
  * @param {string} username - 用户名
+ * @param {string} entityHash - 实体
  * @param {string} packId - 贴纸包ID
  * @returns {Promise<void>} 无返回值
  */
-export async function installPack(username, packId) {
-	const collection = await getUserCollection(username)
+export async function installPack(username, entityHash, packId) {
+	const collection = await getUserCollection(username, entityHash)
 
 	if (collection.installedPacks.includes(packId))
 		throw new Error('Pack already installed')
 
 
 	collection.installedPacks.push(packId)
-	saveUserStickerCollection(username, collection)
+	saveUserStickerCollection(username, entityHash, collection)
 }
 
 /**
  * 卸载贴纸包
  * @param {string} username - 用户名
+ * @param {string} entityHash - 实体
  * @param {string} packId - 贴纸包ID
  * @returns {Promise<void>} 无返回值
  */
-export async function uninstallPack(username, packId) {
-	const collection = await getUserCollection(username)
+export async function uninstallPack(username, entityHash, packId) {
+	const collection = await getUserCollection(username, entityHash)
 
 	if (!collection.installedPacks.includes(packId))
 		throw new Error('Pack not installed')
 
 
 	collection.installedPacks = collection.installedPacks.filter(id => id !== packId)
-	saveUserStickerCollection(username, collection)
+	saveUserStickerCollection(username, entityHash, collection)
 }
 
 /**
  * 添加到收藏
  * @param {string} username - 用户名
+ * @param {string} entityHash - 实体
  * @param {string} stickerId - 贴纸ID
  * @returns {Promise<void>} 无返回值
  */
-export async function addToFavorites(username, stickerId) {
-	const collection = await getUserCollection(username)
+export async function addToFavorites(username, entityHash, stickerId) {
+	const collection = await getUserCollection(username, entityHash)
 
 	if (!collection.favoriteStickers.includes(stickerId)) {
 		collection.favoriteStickers.push(stickerId)
-		saveUserStickerCollection(username, collection)
+		saveUserStickerCollection(username, entityHash, collection)
 	}
 }
 
 /**
  * 从收藏移除
  * @param {string} username - 用户名
+ * @param {string} entityHash - 实体
  * @param {string} stickerId - 贴纸ID
  * @returns {Promise<void>} 无返回值
  */
-export async function removeFromFavorites(username, stickerId) {
-	const collection = await getUserCollection(username)
+export async function removeFromFavorites(username, entityHash, stickerId) {
+	const collection = await getUserCollection(username, entityHash)
 
 	collection.favoriteStickers = collection.favoriteStickers.filter(id => id !== stickerId)
-	saveUserStickerCollection(username, collection)
+	saveUserStickerCollection(username, entityHash, collection)
 }
 
 /**
@@ -399,9 +404,9 @@ export async function ensureUserImportPack(replicaUsername, authorEntityHash) {
 		description: await geti18nForUser(replicaUsername, 'stickers.importPackDescription'),
 		isPublic: false,
 	})
-	const collection = await getUserCollection(replicaUsername)
+	const collection = await getUserCollection(replicaUsername, authorEntityHash)
 	if (!collection.installedPacks.includes(pack.packId))
-		await installPack(replicaUsername, pack.packId)
+		await installPack(replicaUsername, authorEntityHash, pack.packId)
 	return pack.packId
 }
 
@@ -421,19 +426,20 @@ export async function importStickerFromDataUrl(replicaUsername, authorEntityHash
 				: '.jpg'
 	const packId = await ensureUserImportPack(replicaUsername, authorEntityHash)
 	const sticker = await uploadSticker(packId, buffer, `saved${ext}`, { name: name || 'saved' })
-	await addToFavorites(replicaUsername, sticker.id)
-	await recordRecentUse(replicaUsername, sticker.id)
+	await addToFavorites(replicaUsername, authorEntityHash, sticker.id)
+	await recordRecentUse(replicaUsername, authorEntityHash, sticker.id)
 	return sticker
 }
 
 /**
  * 记录最近使用
  * @param {string} username 用户名
+ * @param {string} entityHash 实体
  * @param {string} stickerId 贴纸 ID
  * @returns {Promise<void>}
  */
-export async function recordRecentUse(username, stickerId) {
-	const collection = await getUserCollection(username)
+export async function recordRecentUse(username, entityHash, stickerId) {
+	const collection = await getUserCollection(username, entityHash)
 
 	// 移除旧的记录
 	collection.recentStickers = collection.recentStickers.filter(id => id !== stickerId)
@@ -446,5 +452,5 @@ export async function recordRecentUse(username, stickerId) {
 		collection.recentStickers = collection.recentStickers.slice(0, 50)
 
 
-	saveUserStickerCollection(username, collection)
+	saveUserStickerCollection(username, entityHash, collection)
 }

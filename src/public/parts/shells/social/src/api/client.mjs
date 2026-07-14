@@ -323,7 +323,7 @@ export function createSocialClient(ctx) {
 				 * @returns {Promise<object>} 收藏结构（含预览）
 				 */
 				async list() {
-					return enrichSavedPosts(ctx.username, await loadSavedPosts(ctx.username))
+					return enrichSavedPosts(ctx.username, await loadSavedPosts(ctx.username, ctx.entityHash))
 				},
 				/**
 				 * @param {{ entityHash: string, postId: string }} ref 帖引用
@@ -331,7 +331,7 @@ export function createSocialClient(ctx) {
 				 * @returns {Promise<object>} 写入后结构
 				 */
 				async add(ref, folderId = null) {
-					return addSavedPost(ctx.username, ref, folderId)
+					return addSavedPost(ctx.username, ctx.entityHash, ref, folderId)
 				},
 				/**
 				 * @param {{ entityHash: string, postId: string }} ref 帖引用
@@ -339,14 +339,14 @@ export function createSocialClient(ctx) {
 				 * @returns {Promise<object>} 写入后结构
 				 */
 				async remove(ref, folderId) {
-					return removeSavedPost(ctx.username, ref, folderId)
+					return removeSavedPost(ctx.username, ctx.entityHash, ref, folderId)
 				},
 				/**
 				 * @param {string} name 文件夹名
 				 * @returns {Promise<object>} 写入后结构
 				 */
 				async createFolder(name) {
-					return createSavedFolder(ctx.username, name)
+					return createSavedFolder(ctx.username, ctx.entityHash, name)
 				},
 				/**
 				 * @param {string} folderId 文件夹 id
@@ -354,14 +354,14 @@ export function createSocialClient(ctx) {
 				 * @returns {Promise<object>} 写入后结构
 				 */
 				async renameFolder(folderId, name) {
-					return renameSavedFolder(ctx.username, folderId, name)
+					return renameSavedFolder(ctx.username, ctx.entityHash, folderId, name)
 				},
 				/**
 				 * @param {string} folderId 文件夹 id
 				 * @returns {Promise<object>} 写入后结构
 				 */
 				async deleteFolder(folderId) {
-					return deleteSavedFolder(ctx.username, folderId)
+					return deleteSavedFolder(ctx.username, ctx.entityHash, folderId)
 				},
 				/**
 				 * @param {string} query 搜索串
@@ -369,7 +369,7 @@ export function createSocialClient(ctx) {
 				 * @returns {Promise<object>} 匹配收藏
 				 */
 				async search(query, opts = {}) {
-					return searchSavedPosts(ctx.username, query, opts)
+					return searchSavedPosts(ctx.username, ctx.entityHash, query, opts)
 				},
 			}
 		},

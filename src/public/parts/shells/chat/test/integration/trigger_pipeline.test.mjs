@@ -47,7 +47,7 @@ Deno.test('token bucket suppresses generation not OnMessage when exhausted', asy
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
@@ -104,7 +104,7 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { dispatchMessageFanout } = await import('../../src/chat/dag/messageFanout.mjs')

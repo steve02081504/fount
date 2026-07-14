@@ -13,7 +13,7 @@ import { listLocalAgentEntities, resolveSocialEntity } from './federation/hostin
 import { applyMentionNetworkHint } from './federation/network_hints.mjs'
 import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
 import { withDecryptedPostContent } from './feed/buildItem.mjs'
-import { loadViewerContext } from './feed/helpers.mjs'
+import { loadViewerContext } from './feed.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'

@@ -11,7 +11,7 @@ const getSession = createTestSession()
 
 const append = await import('../../src/timeline/append.mjs')
 const feedMerge = await import('../../src/feedMerge.mjs')
-const feedHelpers = await import('../../src/feed/helpers.mjs')
+const feedHelpers = await import('../../src/feed.mjs')
 const buildItem = await import('../../src/feed/buildItem.mjs')
 const feedHub = await import('../../src/ws/feedHub.mjs')
 

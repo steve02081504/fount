@@ -11,8 +11,8 @@ import { createEngagementForPost } from './buildItem.mjs'
 import {
 	buildEngagementIndex,
 	buildViewerLikedSet,
-	listFollowedTimelineOwners,
-} from './helpers.mjs'
+} from '../feed.mjs'
+import { listFollowedTimelineOwners } from '../following.mjs'
 
 /**
  * @param {string} username 用户
@@ -48,7 +48,7 @@ export async function* iterateVisibleTimelineOwners(username) {
 
 /**
  * @param {string} username 用户
- * @param {Awaited<ReturnType<import('./helpers.mjs').loadViewerContext>>} viewerContext 观看者上下文
+ * @param {Awaited<ReturnType<import('../feed.mjs').loadViewerContext>>} viewerContext 观看者上下文
  * @returns {AsyncGenerator<{ entityHash: string, post: object, enriched: object }>} 可见帖子
  */
 export async function* iterateVisiblePosts(username, viewerContext) {

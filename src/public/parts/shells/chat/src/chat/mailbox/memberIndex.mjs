@@ -6,7 +6,7 @@ import { join } from 'node:path'
 
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { shellChatRoot } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 /** @type {Map<string, { pubKeys: Set<string>, nodeHashes: Set<string>, builtAt: number }>} */
 const indexCache = new Map()

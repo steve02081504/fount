@@ -31,7 +31,7 @@ import { releaseFileChunksAfterDelete } from '../files/deleteGc.mjs'
 import { joinPowBonusFromMemberJoin } from '../governance/joinPolicy.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 import { nextChannelMessageSeq } from '../lib/readMarkers.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../ws/groupWsRooms.mjs'
 
@@ -39,7 +39,7 @@ import { isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from './materialize.mjs'
 import { dispatchMessageFanout } from './messageFanout.mjs'
-import { resolveTargetMemberKey } from './reducers/helpers.mjs'
+import { resolveTargetMemberKey } from './reducers/members.mjs'
 
 /** 写入频道消息流 JSONL 的事件类型。 */
 const PERSIST_MESSAGE_TYPES = new Set([

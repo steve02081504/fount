@@ -1,25 +1,29 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 
-import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
+import { assignEntityShellData, loadEntityShellData } from '../../../../../../../server/setting_loader.mjs'
 
 import { isCaredBy } from './care.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
+const DATANAME = 'notificationPreferences'
+
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @returns {Record<string, object>} groupId → 偏好
  */
-export function loadNotifyPrefs(username) {
-	return loadShellData(username, 'chat', 'notifyPrefs') ?? {}
+export function loadNotificationPreferences(username, entityHash) {
+	return loadEntityShellData(username, 'chat', entityHash, DATANAME) ?? {}
 }
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {Record<string, object>} prefs 整档偏好
  * @returns {void}
  */
-export function saveNotifyPrefs(username, prefs) {
-	assignShellData(username, 'chat', 'notifyPrefs', prefs)
+export function saveNotificationPreferences(username, entityHash, prefs) {
+	assignEntityShellData(username, 'chat', entityHash, DATANAME, prefs)
 }
 
 /**
@@ -34,13 +38,14 @@ export function groupKindFromState(state) {
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} state 物化群状态
  * @returns {object} 生效偏好（频道覆盖群级）
  */
-export function resolveEffectiveNotifyPrefs(username, groupId, channelId, state) {
-	const groupPrefs = loadNotifyPrefs(username)[groupId] || {}
+export function resolveEffectiveNotificationPreferences(username, entityHash, groupId, channelId, state) {
+	const groupPrefs = loadNotificationPreferences(username, entityHash)[groupId] || {}
 	const channelPrefs = groupPrefs.channels?.[channelId] || {}
 	const defaults = groupKindFromState(state) === 'dm'
 		? { mode: 'all', suppressEveryone: false, suppressRoles: false }
@@ -100,7 +105,9 @@ export async function shouldNotifyHumanForMessage(username, recipientEntityHash,
 	const authorEntityHash = String(options.authorEntityHash || '').trim().toLowerCase()
 	if (authorEntityHash && await isCaredBy(username, recipientEntityHash, authorEntityHash))
 		return true
-	const prefs = resolveEffectiveNotifyPrefs(username, options.groupId, options.channelId, options.state)
+	const prefs = resolveEffectiveNotificationPreferences(
+		username, recipientEntityHash, options.groupId, options.channelId, options.state,
+	)
 	if (isNotifyMuted(prefs)) return false
 	if (prefs.mode === 'nothing') return false
 	if (prefs.mode === 'all') return true
@@ -119,6 +126,8 @@ export async function shouldNotifyHumanForMessage(username, recipientEntityHash,
  * @returns {Promise<boolean>} 是否应落 message inbox 行
  */
 export async function shouldAppendMessageInboxRow(username, recipientEntityHash, options = {}) {
-	const prefs = resolveEffectiveNotifyPrefs(username, options.groupId, options.channelId, options.state)
+	const prefs = resolveEffectiveNotificationPreferences(
+		username, recipientEntityHash, options.groupId, options.channelId, options.state,
+	)
 	return prefs.mode === 'all'
 }

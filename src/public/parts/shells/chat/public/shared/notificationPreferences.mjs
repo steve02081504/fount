@@ -5,10 +5,10 @@ const NOTIFY_PREFS_API = `${CHAT_API_CLIENT_PREFIX}/notify-prefs`
 /**
  * @returns {Promise<Record<string, object>>} 整档通知偏好
  */
-export async function loadNotifyPrefs() {
+export async function loadNotificationPreferences() {
 	const response = await fetch(NOTIFY_PREFS_API, { credentials: 'include' })
 	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'load notify prefs failed')
+	if (!response.ok) throw new Error(data.error || 'load notification preferences failed')
 	return data.prefs || {}
 }
 
@@ -16,7 +16,7 @@ export async function loadNotifyPrefs() {
  * @param {Record<string, object>} prefs 整档通知偏好
  * @returns {Promise<Record<string, object>>}
  */
-export async function saveNotifyPrefs(prefs) {
+export async function saveNotificationPreferences(prefs) {
 	const response = await fetch(NOTIFY_PREFS_API, {
 		method: 'PUT',
 		credentials: 'include',
@@ -24,7 +24,7 @@ export async function saveNotifyPrefs(prefs) {
 		body: JSON.stringify({ prefs }),
 	})
 	const data = await response.json()
-	if (!response.ok) throw new Error(data.error || 'save notify prefs failed')
+	if (!response.ok) throw new Error(data.error || 'save notification preferences failed')
 	return data.prefs || {}
 }
 

@@ -1,8 +1,8 @@
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { calculateMemberPermissions, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
-import { createEmptySessionState } from './reducers/helpers.mjs'
 import { CHAT_EVENT_REDUCERS } from './reducers/index.mjs'
+import { createEmptySessionState } from './reducers/state.mjs'
 
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').RuntimeGroupState} RuntimeGroupState */
 /** @typedef {import('../../../../../../../decl/p2pAPI.ts').Checkpoint} Checkpoint */

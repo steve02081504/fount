@@ -232,11 +232,10 @@ async function paintProfilePopup(popup, entity) {
 	const careButton = popup.querySelector('[data-profile-popup-care]')
 	if (careButton instanceof HTMLButtonElement) {
 		const isSelf = isViewerEntityHash(entityHash)
-		const owner = hubStore.viewer?.operatorEntityHash
-		const canCare = !isSelf && isEntityHash128(entityHash) && !!owner
+		const canCare = !isSelf && isEntityHash128(entityHash) && !!hubStore.viewer?.operatorEntityHash
 		careButton.hidden = !canCare
 		if (canCare) {
-			const cared = await isCared(owner, entityHash)
+			const cared = await isCared(entityHash)
 			careButton.dataset.i18n = cared
 				? 'chat.hub.profilePopup.careRemove'
 				: 'chat.hub.profilePopup.care'
@@ -245,8 +244,8 @@ async function paintProfilePopup(popup, entity) {
 			 */
 			careButton.onclick = () => {
 				void (async () => {
-					const next = !await isCared(owner, entityHash)
-					await setCared(owner, entityHash, next)
+					const next = !await isCared(entityHash)
+					await setCared(entityHash, next)
 					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
 					careButton.dataset.i18n = next
 						? 'chat.hub.profilePopup.careRemove'

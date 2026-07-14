@@ -1,24 +1,17 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { getWorldName } from '../chat/session/channelWorld.mjs'
-import { getInitialData } from '../chat/session/crud.mjs'
+import { getInitialData } from '../chat/session/sessionQueries.mjs'
 import {
-	addchar,
-	addplugin,
 	getCharListOfGroup,
 	getPluginListOfGroup,
 	getUserPersonaName,
-	removechar,
-	removeplugin,
-	setCharReplyFrequency,
-	setPersona,
-	bindWorld,
 } from '../chat/session/partConfig.mjs'
 import { registerGroupRuntime } from '../chat/session/runtime.mjs'
 import { groupMetadatas } from '../chat/session/wsLifecycle.mjs'
 import { GROUPS_PREFIX } from '../group/routes/path.mjs'
 
-import { optionalChannelId, resolveGroupChannel } from './shared.mjs'
+import { chatClientFromReq, optionalChannelId, resolveGroupChannel } from './shared.mjs'
 
 /**
  * @param {import('npm:express').Router} router Express 路由
@@ -62,8 +55,8 @@ export function registerGroupsRuntimeRoutes(router) {
 
 	router.put(`${GROUPS_PREFIX}/:groupId/char/:charname/frequency`, authenticate, async (req, res) => {
 		const { params: { groupId, charname }, body: { frequency } } = req
-		const { username } = getUserByReq(req)
-		await setCharReplyFrequency(groupId, charname, frequency, username)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.setCharReplyFrequency(charname, frequency)
 		res.status(200).json({})
 	})
 
@@ -71,39 +64,43 @@ export function registerGroupsRuntimeRoutes(router) {
 		const { params: { groupId }, body: { worldname, channelId: requestedChannelId } } = req
 		const { username } = getUserByReq(req)
 		const channelId = await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
-		await bindWorld(groupId, channelId, worldname, username)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.bindWorld(channelId, worldname)
 		res.status(200).json({})
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/persona`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { personaname } } = req
-		const { username } = getUserByReq(req)
-		await setPersona(groupId, personaname, username)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.setPersona(personaname)
 		res.status(200).json({})
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/char`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { charname, deferGreeting } } = req
-		const { username } = getUserByReq(req)
-		await addchar(groupId, charname, username, { deferGreeting: !!deferGreeting })
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.addChar(charname, { deferGreeting: !!deferGreeting })
 		res.status(200).json({})
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/char/:charname`, authenticate, async (req, res) => {
 		const { groupId, charname } = req.params
-		await removechar(groupId, charname)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.removeChar(charname)
 		res.status(200).json({})
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/plugin`, authenticate, async (req, res) => {
 		const { params: { groupId }, body: { pluginname } } = req
-		await addplugin(groupId, pluginname)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.addPlugin(pluginname)
 		res.status(200).json({})
 	})
 
 	router.delete(`${GROUPS_PREFIX}/:groupId/plugin/:pluginname`, authenticate, async (req, res) => {
 		const { groupId, pluginname } = req.params
-		await removeplugin(groupId, pluginname)
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).session.removePlugin(pluginname)
 		res.status(200).json({})
 	})
 }

@@ -17,7 +17,7 @@ import {
 	rethrowUnlessEnoentOrEnotdir,
 	safeUnlink,
 	safeUnlinkSync,
-} from './utils.mjs'
+} from './fsSafe.mjs'
 
 /**
  * @param {{ extension?: { groupChannelId?: string } }} entry 聊天条目（含 extension 频道）

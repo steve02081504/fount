@@ -17,7 +17,7 @@ Deno.test('per-bot bridgeOperations: two bots on same platform route independent
 
 	const { registerBridgeOperations, requireBridgeOperation } = await import('../../src/chat/bridge/operations.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 
 	const callsA = []
 	const callsB = []
@@ -61,7 +61,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	const { registerBridgeOperations, unregisterBridgeOperations, requireBridgeOperation, resolveBridgeOperations } =
 		await import('../../src/chat/bridge/operations.mjs')
 	const { registerBridgeOutbound, notifyBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 
 	const groupId = await newGroup(username, { name: 'outbound-clear' })
 	/** @type {object[]} */
@@ -103,7 +103,7 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	let stopSelfCalled = false
@@ -198,7 +198,7 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const platformUserId = 4242

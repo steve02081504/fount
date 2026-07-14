@@ -1,6 +1,6 @@
 import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
 
-import { withGroupId } from './helpers.mjs'
+import { withGroupId } from './state.mjs'
 
 /**
  * @param {{ wall: number, logical: number } | null | undefined} a 候选 HLC

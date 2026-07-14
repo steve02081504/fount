@@ -16,7 +16,7 @@ import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import {
 	shouldAppendMessageInboxRow,
 	shouldNotifyHumanForMessage,
-} from '../lib/notifyPrefs.mjs'
+} from '../lib/notificationPreferences.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
 import { runTriggerPipeline } from '../session/triggerPipeline.mjs'
 

@@ -29,7 +29,7 @@ Deno.test('notify prefs: group mentions mode skips message row without @', async
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
@@ -55,16 +55,16 @@ Deno.test('notify prefs: mode all appends message row', async () => {
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
-	const { saveNotifyPrefs } = await import('../../src/chat/lib/notifyPrefs.mjs')
+	const { saveNotificationPreferences } = await import('../../src/chat/lib/notificationPreferences.mjs')
 
 	const groupId = await newGroup(username, { name: 'nf-all' })
 	const channelId = await getDefaultChannelId(username, groupId)
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
-	saveNotifyPrefs(username, { [groupId]: { mode: 'all' } })
+	saveNotificationPreferences(username, operatorHash, { [groupId]: { mode: 'all' } })
 
 	await fanout(username, groupId, channelId, {
 		type: 'message',
@@ -97,14 +97,14 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
-	const { saveNotifyPrefs } = await import('../../src/chat/lib/notifyPrefs.mjs')
+	const { saveNotificationPreferences } = await import('../../src/chat/lib/notificationPreferences.mjs')
 	const { setCared } = await import('../../src/chat/lib/care.mjs')
 
 	const groupId = await newGroup(username, { name: 'nf-care' })
@@ -114,7 +114,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	const agentHash = (await ensureLocalAgentEntityHash(username, CHAR_YES)).toLowerCase()
 	const { state } = await getState(username, groupId)
 	const charMemberKey = Object.keys(state.members).find(key => state.members[key]?.charname === CHAR_YES)
-	saveNotifyPrefs(username, { [groupId]: { mutedUntil: true } })
+	saveNotificationPreferences(username, operatorHash, { [groupId]: { mutedUntil: true } })
 	await setCared(username, operatorHash, agentHash, true)
 
 	await fanout(username, groupId, channelId, {
@@ -135,7 +135,7 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { buildMentionsFromMessageLine } = await import('../../src/chat/dag/messageFanout.mjs')
@@ -176,7 +176,7 @@ Deno.test('fireVoteClosed appends vote_closed inbox row for operator', async () 
 	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')

@@ -40,7 +40,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
@@ -82,7 +82,7 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
@@ -134,7 +134,7 @@ Deno.test('agent createGroup is allowed', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
@@ -156,7 +156,7 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
@@ -255,7 +255,7 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')

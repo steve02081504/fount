@@ -20,7 +20,6 @@ export async function fetchInboxPage(options = {}) {
 	const params = new URLSearchParams()
 	if (options.limit) params.set('limit', String(options.limit))
 	if (options.cursor) params.set('cursor', String(options.cursor))
-	if (options.recipientEntityHash) params.set('recipientEntityHash', String(options.recipientEntityHash))
 	if (options.kinds?.length) params.set('kinds', options.kinds.join(','))
 	const query = params.toString()
 	const response = await fetch(`${INBOX_API}${query ? `?${query}` : ''}`, { credentials: 'include' })
@@ -30,15 +29,14 @@ export async function fetchInboxPage(options = {}) {
 
 /**
  * @param {number} [at] 已读水位毫秒
- * @param {{ recipientEntityHash?: string }} [options] 可选收件人
  * @returns {Promise<number>} 写入的 seenAt
  */
-export async function markInboxSeen(at = Date.now(), options = {}) {
+export async function markInboxSeen(at = Date.now()) {
 	await fetch(`${INBOX_API}/seen`, {
 		method: 'PUT',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ at, recipientEntityHash: options?.recipientEntityHash }),
+		body: JSON.stringify({ at }),
 	})
 	badgeUnreadCount = 0
 	await updateInboxBadge()

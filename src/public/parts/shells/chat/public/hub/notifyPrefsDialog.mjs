@@ -1,6 +1,6 @@
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { loadNotifyPrefs, saveNotifyPrefs } from '../shared/notifyPrefs.mjs'
+import { loadNotificationPreferences, saveNotificationPreferences } from '../shared/notificationPreferences.mjs'
 
 /**
  * @param {Record<string, object>} prefs 整档偏好
@@ -17,7 +17,7 @@ function groupPrefs(prefs, groupId) {
  * @returns {Promise<void>}
  */
 export async function openGroupNotifyPrefsDialog(groupId) {
-	const prefs = await loadNotifyPrefs()
+	const prefs = await loadNotificationPreferences()
 	const current = groupPrefs(prefs, groupId)
 	await openNotifyPrefsDialog({
 		titleKey: 'chat.hub.notifyPrefs.title',
@@ -28,7 +28,7 @@ export async function openGroupNotifyPrefsDialog(groupId) {
 		 */
 		onSave: async dialog => {
 			const next = { ...prefs, [groupId]: readNotifyPrefsFromDialog(dialog, current) }
-			await saveNotifyPrefs(next)
+			await saveNotificationPreferences(next)
 			showToastI18n('success', 'chat.hub.notifyPrefs.saved')
 			dialog.close()
 			const { renderServerBar } = await import('./serverBar.mjs')
@@ -44,7 +44,7 @@ export async function openGroupNotifyPrefsDialog(groupId) {
  * @returns {Promise<void>}
  */
 export async function openChannelNotifyPrefsDialog(groupId, channelId) {
-	const prefs = await loadNotifyPrefs()
+	const prefs = await loadNotificationPreferences()
 	const group = groupPrefs(prefs, groupId)
 	const current = group.channels?.[channelId] || {}
 	await openNotifyPrefsDialog({
@@ -57,7 +57,7 @@ export async function openChannelNotifyPrefsDialog(groupId, channelId) {
 		onSave: async dialog => {
 			const channelPrefs = readNotifyPrefsFromDialog(dialog, current)
 			const nextGroup = { ...group, channels: { ...group.channels || {}, [channelId]: channelPrefs } }
-			await saveNotifyPrefs({ ...prefs, [groupId]: nextGroup })
+			await saveNotificationPreferences({ ...prefs, [groupId]: nextGroup })
 			showToastI18n('success', 'chat.hub.notifyPrefs.saved')
 			dialog.close()
 		},

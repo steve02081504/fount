@@ -21,18 +21,15 @@ import {
 	CHANNEL_MESSAGE_EVENT_ID_RE,
 	findChannelMessageRow,
 } from '../../chat/channel/messageMutations.mjs'
-import { postChannelMessage } from '../../chat/channel/postMessage.mjs'
-import { decryptEventContent } from '../../chat/channel_keys/content.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
-import { getChannelReadMarker, setChannelReadMarker } from '../../chat/lib/readMarkers.mjs'
 import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 import { searchGroupMessages } from '../../chat/search/index.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
 import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
-import { recordEmojiUsageFromMessageContent } from '../../emojiUsage.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
 import {
@@ -197,7 +194,9 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			limit,
 		}, { kind: 'user' })
 		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, visibleEventIds)
-		const readMarker = getChannelReadMarker(username, groupId, channelId)
+		const { client } = await chatClientFromReq(req)
+		const channel = await (await client.group(groupId)).channel(channelId)
+		const readMarker = await channel.readMarker()
 		res.status(200).json({ messages, reactions, readMarker, hasMore, oldestRawEventId })
 	})
 
@@ -216,8 +215,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		ensureChannel(state, channelId)
 		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
 
-		setChannelReadMarker(username, groupId, channelId, { eventId, seq })
-		const readMarker = getChannelReadMarker(username, groupId, channelId)
+		const { client } = await chatClientFromReq(req)
+		const readMarker = await (await (await client.group(groupId)).channel(channelId)).markRead({ eventId, seq })
 		broadcastEvent(groupWsRoomKeyForReplica(groupId), {
 			type: 'read_marker',
 			username,
@@ -282,19 +281,21 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			...file,
 			buffer: Buffer.from(file.buffer, 'base64'),
 		}))
-		const { event } = await postChannelMessage(username, groupId, channelId, {
+		const { client } = await chatClientFromReq(req)
+		const channel = await (await client.group(groupId)).channel(channelId)
+		const sent = await channel.send({
 			...reply
 				? { reply: { content: reply.content, isAutoTrigger: reply.isAutoTrigger } }
 				: { rawContent },
 			files: processedFiles.length ? processedFiles : undefined,
 			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,
 		})
-		const result = await decryptEventContent(username, groupId, channelId, event.content)
+		const event = sent.sourceEvent
+		const result = sent.decryptResult
 		/** @type {object} */
 		const responseEvent = { ...event }
-		if (result.ok) 
+		if (result.ok)
 			responseEvent.content = result.content
-		
 		else {
 			responseEvent.content = null
 			responseEvent.decryptView = {
@@ -303,7 +304,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			}
 		}
 		const content = responseEvent.content || {}
-		recordEmojiUsageFromMessageContent(username, content)
+		const { recordEmojiUsageFromMessageContent } = await import('../../emojiUsage.mjs')
+		recordEmojiUsageFromMessageContent(username, client.entityHash, content)
 		res.status(201).json({ event: responseEvent })
 	})
 

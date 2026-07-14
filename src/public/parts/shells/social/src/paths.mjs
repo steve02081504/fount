@@ -43,12 +43,14 @@ export function vaultStatePath(username, entityHash) {
 }
 
 /**
- * 返回 savedPosts.json 文件路径。
+ * 返回实体私有 savedPosts.json 文件路径。
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @returns {string} savedPosts.json
  */
-export function savedPostsPath(username) {
-	return `${getUserDictionary(username)}/shells/social/savedPosts.json`
+export function savedPostsPath(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	return `${getUserDictionary(username)}/shells/social/entities/${hash}/savedPosts.json`
 }
 
 /**

@@ -15,7 +15,7 @@ Deno.test('mute filters feed via personal lists', async () => {
 	const { username, operator } = await getSession()
 	const { isAuthorFilteredByPersonalSets, loadPersonalFilterSets } = await import('npm:@steve02081504/fount-p2p/node/personal_block')
 	const { canViewPost } = await import('../../src/feedVisibility.mjs')
-	const { loadViewerContext } = await import('../../src/feed/helpers.mjs')
+	const { loadViewerContext } = await import('../../src/feed.mjs')
 
 	await setPersonalMuted(operator, TARGET, true)
 	const filterSets = await loadPersonalFilterSets(operator)

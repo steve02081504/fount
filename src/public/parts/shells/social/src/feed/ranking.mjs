@@ -5,7 +5,7 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 import { socialPostKey } from '../federation/post_key.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
 import { buildPostFeedItem } from './buildItem.mjs'
-import { loadViewerContext } from './helpers.mjs'
+import { buildEngagementIndex, loadViewerContext } from '../feed.mjs'
 import { createFeedItemBuildContext } from './iterate.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { loadFollowingForActor } from '../following.mjs'
@@ -65,7 +65,7 @@ async function buildAffinityIndex(username, following) {
  * @returns {AsyncGenerator<{ entityHash: string, post: object, score: number }>} 候选帖
  */
 async function* iterateForYouCandidates(username, following, viewerContext) {
-	const { buildEngagementIndex } = await import('./helpers.mjs')
+	const { buildEngagementIndex } = await import('../feed.mjs')
 	const engagement = await buildEngagementIndex(username, following)
 	const affinity = await buildAffinityIndex(username, following)
 	const seen = new Set()

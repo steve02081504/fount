@@ -56,3 +56,13 @@ export async function setFollow(username, entityHash, targetEntityHash, follow) 
 	if (follow) return [...following, id]
 	return following.filter(hash => hash !== id)
 }
+
+/**
+ * 列出观看者已知的时间线 owner（关注 + 自身；自身由隐式自关注保证）。
+ * @param {string} username 用户
+ * @returns {Promise<string[]>} 已知时间线 owner
+ */
+export async function listFollowedTimelineOwners(username) {
+	const { following } = await loadFollowing(username)
+	return following
+}

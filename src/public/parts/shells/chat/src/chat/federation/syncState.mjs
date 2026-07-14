@@ -4,7 +4,7 @@
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { archiveMonthKey } from '../archive/settings.mjs'
 import { groupSyncStatePath } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 const EMPTY_SYNC_STATE = {
 	offlineStartUtcMonth: '',

@@ -5,6 +5,7 @@
  */
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import {
 	ensureChannel,
@@ -59,15 +60,13 @@ export function registerChannelVoteRoutes(router, authenticate) {
 		else if (Number.isFinite(Number(deadlineMs)) && Number(deadlineMs) > 0)
 			voteDeadline = new Date(Date.now() + Number(deadlineMs)).toISOString()
 
-		const event = await appendSignedLocalEvent(username, groupId, {
-			type: 'message',
-			channelId,
-			timestamp: Date.now(),
-			content: { type: 'vote', question, options, deadline: voteDeadline },
+		const { client } = await chatClientFromReq(req)
+		const message = await (await (await client.group(groupId)).channel(channelId)).startVote({
+			question,
+			options,
+			deadline: voteDeadline,
 		})
-		const { scheduleVoteDeadlines } = await import('../../chat/lib/voteDeadlineWatcher.mjs')
-		void scheduleVoteDeadlines(username, groupId)
-		res.status(201).json({ event, ballotId: event.id })
+		res.status(201).json({ event: message.sourceEvent, ballotId: message.eventId })
 	})
 
 }

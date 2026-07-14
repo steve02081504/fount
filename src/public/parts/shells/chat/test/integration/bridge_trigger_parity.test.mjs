@@ -89,7 +89,7 @@ async function openEnd(end, username, opts) {
 				},
 			}
 		}
-		const { newGroup } = await import('../../src/chat/session/crud.mjs')
+		const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 		const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 		const groupId = await newGroup(username, { name: opts.label })
 		const channelId = await getDefaultChannelId(username, groupId)

@@ -97,10 +97,9 @@ export async function showMemberContextMenu(event, memberElement) {
 	})
 	menu.querySelector('.hub-member-menu-care')?.addEventListener('click', () => {
 		void (async () => {
-			const owner = hubStore.viewer?.operatorEntityHash
-			if (!owner || !entityHash) return
-			const cared = await isCared(owner, entityHash)
-			await setCared(owner, entityHash, !cared)
+			if (!entityHash) return
+			const cared = await isCared(entityHash)
+			await setCared(entityHash, !cared)
 			showToastI18n('success', cared ? 'chat.hub.memberContext.careRemoved' : 'chat.hub.memberContext.careAdded')
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })

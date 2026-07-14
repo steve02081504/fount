@@ -17,7 +17,7 @@ import { resolveContentRefsInMessageLines } from '../chat/files/contentRefResolv
 import { eventsPath, snapshotPath } from '../chat/lib/paths.mjs'
 import { loadReadMarkers, summarizeGroupUnread } from '../chat/lib/readMarkers.mjs'
 import { listUserGroups } from '../chat/lib/userGroups.mjs'
-import { safeReadJson } from '../chat/lib/utils.mjs'
+import { safeReadJson } from '../chat/lib/fsSafe.mjs'
 import { tallyVoteChoices } from '../chat/lib/voteTally.mjs'
 
 import { resolveActiveMemberKeyForLocalUser } from './access.mjs'
@@ -98,10 +98,11 @@ function markStaleGeneratingMessages(lines, idleMs = DEFAULT_STREAM_GENERATING_I
 
 /**
  * @param {string} username 用户名
+ * @param {string} entityHash 实体（私有未读水位归属）
  * @returns {Promise<object[]>} 群列表行
  */
-export async function enumerateJoinedFederatedGroups(username) {
-	const readMarkers = loadReadMarkers(username)
+export async function enumerateJoinedFederatedGroups(username, entityHash) {
+	const readMarkers = loadReadMarkers(username, entityHash)
 	const rows = []
 	for (const groupId of await listUserGroups(username)) {
 		const state = await loadGroupListState(username, groupId)

@@ -1,40 +1,43 @@
 /**
- * 【文件】readMarkers.mjs — 每用户每频道已读水位（seq + eventId）。
- * 【职责】读写 `shells/chat/readMarkers.json`；计算频道/群未读数。
+ * 【文件】readMarkers.mjs — 每实体每频道已读水位（seq + eventId）。
+ * 【职责】读写 `shells/chat/entities/{entityHash}/readMarkers.json`；计算频道/群未读数。
  * 【原理】未读 = channel.messageSeq - marker.seq；O(1) 依赖物化 state 上的 messageSeq。
  */
-import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
+import { assignEntityShellData, loadEntityShellData } from '../../../../../../../server/setting_loader.mjs'
 
 const DATANAME = 'readMarkers'
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @returns {Record<string, Record<string, { eventId: string, seq: number }>>} groupId → channelId → marker
  */
-export function loadReadMarkers(username) {
-	return loadShellData(username, 'chat', DATANAME)
+export function loadReadMarkers(username, entityHash) {
+	return loadEntityShellData(username, 'chat', entityHash, DATANAME)
 }
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {{ eventId: string, seq: number } | null} 已读水位
  */
-export function getChannelReadMarker(username, groupId, channelId) {
-	const markers = loadReadMarkers(username)
+export function getChannelReadMarker(username, entityHash, groupId, channelId) {
+	const markers = loadReadMarkers(username, entityHash)
 	return markers[groupId]?.[channelId] ?? null
 }
 
 /**
  * @param {string} username 用户
+ * @param {string} entityHash 实体
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ eventId: string, seq: number }} marker 已读水位
  * @returns {void}
  */
-export function setChannelReadMarker(username, groupId, channelId, marker) {
-	const markers = loadReadMarkers(username)
+export function setChannelReadMarker(username, entityHash, groupId, channelId, marker) {
+	const markers = loadReadMarkers(username, entityHash)
 	markers[groupId] ??= {}
 	const prev = markers[groupId][channelId]
 	const nextSeq = Number(marker.seq)
@@ -43,7 +46,7 @@ export function setChannelReadMarker(username, groupId, channelId, marker) {
 		eventId: String(marker.eventId).trim().toLowerCase(),
 		seq: nextSeq,
 	}
-	assignShellData(username, 'chat', DATANAME, markers)
+	assignEntityShellData(username, 'chat', entityHash, DATANAME, markers)
 }
 
 /**

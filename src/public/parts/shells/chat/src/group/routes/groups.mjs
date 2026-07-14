@@ -14,13 +14,14 @@ import { createGroup, removeLocalGroupReplica } from '../../chat/dag/lifecycle.m
 import { getLocalSignerForNewGroup } from '../../chat/dag/localSigner.mjs'
 import { createEcdhDmGroup } from '../../chat/dm/index.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
-import { newMetadata } from '../../chat/session/crud.mjs'
+import { newMetadata } from '../../chat/session/groupLifecycle.mjs'
 import { getActiveGroupRuntime } from '../../chat/session/persistence.mjs'
 import { registerGroupRuntime } from '../../chat/session/runtime.mjs'
 import { modifyTimeLine } from '../../chat/session/timeLine.mjs'
 import { governanceChannelId } from '../access.mjs'
 import { buildGroupPreview } from '../groupPreview.mjs'
 import { enumerateJoinedFederatedGroups } from '../queries.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import { requireGroupMember } from './middleware.mjs'
 import { GROUPS_PREFIX } from './path.mjs'
@@ -33,8 +34,8 @@ import { GROUPS_PREFIX } from './path.mjs'
  */
 export function registerGroupLifecycleRoutes(router, authenticate) {
 	router.get(`${GROUPS_PREFIX}/`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const rows = await enumerateJoinedFederatedGroups(username)
+		const { client } = await chatClientFromReq(req)
+		const rows = await enumerateJoinedFederatedGroups((await getUserByReq(req)).username, client.entityHash)
 		rows.sort((left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0))
 		res.status(200).json(rows)
 	})
@@ -76,7 +77,9 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		const { normalizeFriendBinding } = await import('../../../public/shared/friendBinding.mjs')
 		const friendBinding = normalizeFriendBinding(body.friendBinding)
 		if (friendBinding && !body.forceNew) {
-			const rows = await enumerateJoinedFederatedGroups(username)
+			const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
+			const operatorEntityHash = await resolveOperatorEntityHashForUser(username)
+			const rows = await enumerateJoinedFederatedGroups(username, operatorEntityHash)
 			const existing = rows.find(row =>
 				row.friendBinding?.entityHash?.toLowerCase() === friendBinding.entityHash.toLowerCase(),
 			)
@@ -91,6 +94,21 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		}
 
 		const groupId = body.groupId || randomUUID()
+		const useClientCreate = !body.groupId && !body.description && !friendBinding
+		if (useClientCreate) {
+			const { client } = await chatClientFromReq(req)
+			const group = await client.createGroup({
+				name: body.name || 'New Group',
+				defaultChannelName: body.defaultChannelName,
+			})
+			const { loadGroupState } = await import('../../api/internal.mjs')
+			const state = await loadGroupState({ username, entityHash: client.entityHash }, group.id)
+			return res.status(201).json({
+				groupId: group.id,
+				defaultChannelId: state.groupSettings?.defaultChannelId || 'default',
+			})
+		}
+
 		const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, groupId)
 		const result = await createGroup(username, {
 			groupId,

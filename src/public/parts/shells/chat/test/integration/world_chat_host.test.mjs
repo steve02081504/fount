@@ -53,7 +53,7 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { bindWorld, addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { resolveWorld } = await import('../../src/chat/session/resolvePart.mjs')

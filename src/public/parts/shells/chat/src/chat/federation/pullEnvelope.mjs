@@ -11,7 +11,7 @@ import { getState } from '../dag/materialize.mjs'
 import { mergeChannelHistories } from '../dag/queries.mjs'
 import { applyFileKeyGrant, buildFileKeyGrant } from '../file_keys/historicalGrant.mjs'
 import { snapshotPath } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 import { requireDagDeps } from './dagDependencies.mjs'
 import { wrapPullResponseInner, unwrapPullResponseEnvelope } from './pullResponse.mjs'

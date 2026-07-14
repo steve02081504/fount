@@ -28,7 +28,9 @@ Deno.test('enumerateJoinedFederatedGroups after snapshot bootstrap + local membe
 	assertEquals(state.members[joinerKey]?.status, 'active', 'getState sees joiner')
 
 	const { enumerateJoinedFederatedGroups } = await import('../../src/group/queries.mjs')
-	const rows = await enumerateJoinedFederatedGroups(NODE_B)
+	const { resolveOperatorEntityHashForUser } = await import('../../src/entity/identity.mjs')
+	const operatorB = await resolveOperatorEntityHashForUser(NODE_B)
+	const rows = await enumerateJoinedFederatedGroups(NODE_B, operatorB)
 	const row = rows.find(entry => entry.groupId === groupId)
 	assert(row, 'joined group appears in sidebar list API')
 	assertEquals(row.name, 'List Bootstrap')

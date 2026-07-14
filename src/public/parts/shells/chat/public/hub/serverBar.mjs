@@ -7,7 +7,7 @@
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { aliasForGroup } from '../shared/aliases.mjs'
-import { isGroupMutedInSidebar, loadNotifyPrefs } from '../shared/notifyPrefs.mjs'
+import { isGroupMutedInSidebar, loadNotificationPreferences } from '../shared/notificationPreferences.mjs'
 import { getChatBookmarks, getGroupList, saveChatBookmarks } from '../src/api/groupApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
@@ -136,7 +136,7 @@ export async function renderServerBar() {
 	const byId = new Map(sidebarGroups.map(g => [g.groupId, g]))
 	const used = new Set()
 	const folders = hubStore.sidebar.groupFoldersState.folders || []
-	const notifyPrefs = await loadNotifyPrefs().catch(() => ({}))
+	const notifyPrefs = await loadNotificationPreferences().catch(() => ({}))
 
 	if (folders.length) {
 		for (const [folderIndex, folder] of folders.entries()) {

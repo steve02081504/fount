@@ -9,7 +9,7 @@ import { computeDagTipIdsFromEvents } from 'npm:@steve02081504/fount-p2p/governa
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sleep } from '../../../../../../../scripts/sleep.mjs'
 import { loadGroupShunState, saveGroupShunState, SHUN_CONSENSUS_WINDOW_MS, updateGroupShunState } from '../../group/groupShunState.mjs'
-import { resolveTargetMemberKey } from '../dag/reducers/helpers.mjs'
+import { resolveTargetMemberKey } from '../dag/reducers/members.mjs'
 
 import { loadLocalFederationArchive, wireArchiveSummary } from './archiveHandshake.mjs'
 import { localNodeHash, loadFederationMaterializedState, requireDagDeps } from './dagDependencies.mjs'

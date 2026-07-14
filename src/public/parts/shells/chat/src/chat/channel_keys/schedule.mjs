@@ -4,7 +4,7 @@ import { materializeFromCheckpoint } from '../dag/groupMaterializedState.mjs'
 import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { snapshotPath } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 import { buildChannelKeyRotateContent } from './rotate.mjs'
 import { applyChannelKeyRotateEvent, loadChannelKeysFile } from './store.mjs'

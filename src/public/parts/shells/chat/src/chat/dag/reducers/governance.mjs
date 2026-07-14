@@ -1,10 +1,18 @@
-import {
-	clampRepEdge,
-	isHex64,
-	recordFileMasterKeyRotation,
-	sanitizeIceServersForSettings,
-	withGroupId,
-} from './helpers.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { sanitizeIceServersForSettings } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
+
+import { withGroupId } from './state.mjs'
+import { recordFileMasterKeyRotation } from './files.mjs'
+
+/**
+ * @param {unknown} value 事件中的原始数值
+ * @returns {number} 限制在 [-1, 1] 的声誉边权
+ */
+export function clampRepEdge(value) {
+	const number = Number(value)
+	if (!Number.isFinite(number)) return 1
+	return Math.max(-1, Math.min(1, number))
+}
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const governanceReducers = {

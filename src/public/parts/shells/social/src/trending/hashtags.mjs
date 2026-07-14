@@ -1,4 +1,4 @@
-import { loadViewerContext } from '../feed/helpers.mjs'
+import { loadViewerContext } from '../feed.mjs'
 import { iterateVisiblePosts } from '../feed/iterate.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
 import { readTrendingHashtagCounts } from '../searchIndex.mjs'

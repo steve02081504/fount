@@ -1,6 +1,8 @@
 import { isVoteBallotClosed } from '../../lib/voteBallots.mjs'
 
-import { isHex64, withGroupId } from './helpers.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { withGroupId } from './state.mjs'
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const messageReducers = {

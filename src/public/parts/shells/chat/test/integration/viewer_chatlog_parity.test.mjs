@@ -52,7 +52,7 @@ async function buildAgentRequestWithWorld(worldname) {
 	})
 	await ensureServer()
 
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar, bindWorld } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')

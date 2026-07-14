@@ -43,7 +43,7 @@ export async function buildNotificationsLegacy(username, options = {}) {
 	if (!viewerEntityHash)
 		return { notifications: [], nextCursor: null, viewerEntityHash: null }
 
-	const { listFollowedTimelineOwners } = await import('./feed/helpers.mjs')
+	const { listFollowedTimelineOwners } = await import('./following.mjs')
 	const { extractMentionEntityHashes } = await import('fount/public/parts/shells/chat/public/shared/mentions.mjs')
 	const { getTimelineMaterialized } = await import('./timeline/materialize.mjs')
 

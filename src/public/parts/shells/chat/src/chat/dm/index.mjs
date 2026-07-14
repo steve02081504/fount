@@ -79,7 +79,7 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 	const {groupId} = result
 	registerGroupRuntime(groupId, username)
 	await initGroupFileMasterKey(username, groupId)
-	// 仿 session/crud.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，
+	// 仿 session/groupLifecycle.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，
 	// 末尾统一做一次 rebuildAndSaveCheckpoint，避免 DM 建群放大成多次 checkpoint 阻塞写路径。
 	const batchOpts = { skipCheckpointRebuild: true, skipReleaseQuarantined: true, publishFederation: false }
 	await appendSignedLocalEvent(username, groupId, {

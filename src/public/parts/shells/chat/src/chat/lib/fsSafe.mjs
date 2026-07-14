@@ -1,9 +1,9 @@
 /**
- * 【文件】src/chat/lib/utils.mjs
- * 【职责】chat 后端通用小工具：延迟、重试、数组去重等无领域语义的 helper。
+ * 【文件】src/chat/lib/fsSafe.mjs
+ * 【职责】chat 后端文件系统安全读写：ENOENT 容忍、JSON 安全解析、rm 退避重试。
  * 【原理】纯函数集合，避免各子模块复制粘贴相同逻辑。
- * 【数据结构】无持久状态；导出 sleep、uniqBy、clamp 等。
- * 【关联】dag、session、stream 各模块按需引用。
+ * 【数据结构】无持久状态。
+ * 【关联】dag、session、federation 各模块按需引用。
  */
 import fs from 'node:fs'
 import { readFile, rm, unlink } from 'node:fs/promises'

@@ -15,7 +15,7 @@ import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 import { verifyMemberJoinBinding } from './entityBinding.mjs'
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
 import { manageAdminsPubKeyHashes, memberChannelPermissions } from './groupMaterializedState.mjs'
-import { resolveTargetMemberKey } from './reducers/helpers.mjs'
+import { resolveTargetMemberKey } from './reducers/members.mjs'
 
 
 /**

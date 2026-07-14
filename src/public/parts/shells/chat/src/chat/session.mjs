@@ -12,7 +12,7 @@
 
 import { createCharRpcDispatcher, createWorldRpcDispatcher } from './federation/rpcDispatcher.mjs'
 import { getChatRequest } from './session/chatRequest.mjs'
-import { deleteGroup } from './session/crud.mjs'
+import { deleteGroup } from './session/groupLifecycle.mjs'
 import { getActiveGroupRuntime, isLocallyOwnedGroup, isVividGroup } from './session/persistence.mjs'
 import { bindSessionUnloadHooks, initializeGroupMetadatas } from './session/wsLifecycle.mjs'
 
@@ -32,7 +32,8 @@ export const tryInvokeLocalWorldRpc = createWorldRpcDispatcher(getChatRequest)
 /**
  *
  */
-export { deleteGroup, newGroup, getInitialData } from './session/crud.mjs'
+export { deleteGroup, newGroup } from './session/groupLifecycle.mjs'
+export { getInitialData } from './session/sessionQueries.mjs'
 /**
  *
  */

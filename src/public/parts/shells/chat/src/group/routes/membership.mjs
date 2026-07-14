@@ -15,7 +15,6 @@ import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../../public/shared/r
 import { leaveManyGroupsForUser } from '../../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../../chat/dag/localSigner.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
-import { performMemberJoin } from '../../chat/dm/index.mjs'
 import { computeDmRoomLabelFromPubKeys } from '../../chat/dm/labels.mjs'
 import { validateDmIntroLinkProof } from '../../chat/dm/linkValidate.mjs'
 import { getFederationSettings } from '../../chat/federation/config.mjs'
@@ -25,6 +24,7 @@ import { collectJoinPowAnchors } from '../../chat/governance/joinPowAnchors.mjs'
 import { mintGroupInviteTicket } from '../../chat/lib/inviteTickets.mjs'
 import { getLocalNodeHash } from '../../chat/lib/replica.mjs'
 import { governanceChannelId } from '../access.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import { suggestGroupMentions } from '../lib/mentionSuggest.mjs'
 
@@ -185,7 +185,8 @@ export function registerMembershipRoutes(router, authenticate) {
 			}
 		}
 
-		const result = await performMemberJoin(username, groupId, {
+		const { client } = await chatClientFromReq(req)
+		const group = await client.join(groupId, {
 			inviteCode,
 			powSolution: pow,
 			introducerPubKeyHash,
@@ -194,7 +195,12 @@ export function registerMembershipRoutes(router, authenticate) {
 			reputationEdge,
 			bootstrap,
 		})
-		res.status(200).json({ groupId, defaultChannelId: result.defaultChannelId })
+		const { loadGroupState } = await import('../../api/internal.mjs')
+		const joinedState = await loadGroupState({ username, entityHash: client.entityHash }, group.id)
+		res.status(200).json({
+			groupId,
+			defaultChannelId: joinedState.groupSettings?.defaultChannelId || 'default',
+		})
 	})
 
 	router.post(`${GROUPS_PREFIX}/leave`, authenticate, async (req, res) => {

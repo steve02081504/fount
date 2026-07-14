@@ -43,7 +43,7 @@ import { enforceEventRetention } from '../events/retention.mjs'
 import { flushPendingRelay } from '../federation/pendingRelay.mjs'
 import { loadGovernanceBranchTip } from '../governance/branchStore.mjs'
 import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
-import { safeReadJson } from '../lib/utils.mjs'
+import { safeReadJson } from '../lib/fsSafe.mjs'
 
 import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'

@@ -38,7 +38,7 @@ function findEventId(rows, needle) {
  * @returns {Promise<{ groupId: string, channelId: string }>} 新群
  */
 async function createBaseGroup(username) {
-	const { newGroup } = await import('../../src/chat/session/crud.mjs')
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const groupId = await newGroup(username, { name: 'routes-http' })
 	const channelId = await getDefaultChannelId(username, groupId)

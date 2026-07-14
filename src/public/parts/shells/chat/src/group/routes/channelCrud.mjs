@@ -7,6 +7,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { prefixedRandomId } from 'npm:@steve02081504/fount-p2p/core/random_id'
 import { normalizeFriendBinding } from '../../../public/shared/friendBinding.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
+import { chatClientFromReq } from '../../endpoints/shared.mjs'
 
 import {
 	ensureChannel,
@@ -63,11 +64,8 @@ export function registerChannelCrudRoutes(router, authenticate) {
 
 		if (!Object.keys(content).length)
 			throw httpError(400, 'no meta fields to update')
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'group_meta_update',
-			timestamp: Date.now(),
-			content,
-		})
+		const { client } = await chatClientFromReq(req)
+		await (await client.group(groupId)).setMeta(content)
 		res.status(200).json({})
 	})
 
@@ -93,19 +91,15 @@ export function registerChannelCrudRoutes(router, authenticate) {
 		if (!channelName)
 			throw httpError(400, 'Channel name is required')
 
-		const channelId = prefixedRandomId('channel_')
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'channel_create',
-			timestamp: Date.now(),
-			content: {
-				channelId,
-				type: type || 'text',
-				name: channelName,
-				description: description ?? '',
-				isPrivate: isPrivate || false,
-			},
+		const { client } = await chatClientFromReq(req)
+		const channel = await (await client.group(groupId)).createChannel({
+			type: type || 'text',
+			name: channelName,
+			description: description ?? '',
+			channelId: prefixedRandomId('channel_'),
+			isPrivate: isPrivate || false,
 		})
-		res.status(201).json({ channelId })
+		res.status(201).json({ channelId: channel.id })
 	})
 
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId`, authenticate, async (req, res) => {

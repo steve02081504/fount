@@ -1,4 +1,27 @@
-import { isHex64, withGroupId } from './helpers.mjs'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+
+import { withGroupId } from './state.mjs'
+
+/**
+ * @param {object} state 物化状态
+ * @param {object} event DAG 事件
+ * @param {'kick' | 'rotate'} rotationType 文件主密钥轮换原因
+ * @param {Record<string, unknown>} [extra] 附加字段
+ * @returns {void}
+ */
+export function recordFileMasterKeyRotation(state, event, rotationType, extra = {}) {
+	const generation = event.content.key_generation
+	const nonce = event.content.new_key_nonce
+	if (!Number.isFinite(generation) || !nonce) return
+	if (!state.fileMasterKeyRotations) state.fileMasterKeyRotations = []
+	state.fileMasterKeyRotations.push({
+		eventId: event.id,
+		generation,
+		nonce,
+		type: rotationType,
+		...extra,
+	})
+}
 
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const fileReducers = {

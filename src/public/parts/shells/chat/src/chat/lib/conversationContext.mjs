@@ -6,7 +6,7 @@ import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { getState } from '../dag/materialize.mjs'
 
 import { memberEntityHash } from '../../entity/member.mjs'
-import { groupKindFromState } from './notifyPrefs.mjs'
+import { groupKindFromState } from './notificationPreferences.mjs'
 
 /**
  * ECDH DM 对端 entityHash（本机视角）。

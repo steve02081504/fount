@@ -3,13 +3,13 @@ import { access } from 'node:fs/promises'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
 import { groupDir } from '../chat/lib/paths.mjs'
+import { deleteGroup } from '../chat/session/groupLifecycle.mjs'
 import {
 	copyGroupChat,
-	deleteGroup,
 	exportGroupChat,
 	importGroupChat,
-	listGroupSessions,
-} from '../chat/session/crud.mjs'
+} from '../chat/session/importExport.mjs'
+import { listGroupSessions } from '../chat/session/sessionQueries.mjs'
 import { groupMetadatas } from '../chat/session/wsLifecycle.mjs'
 import { GROUPS_PREFIX } from '../group/routes/path.mjs'
 

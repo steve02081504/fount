@@ -44,11 +44,34 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		async send(reply) {
 			const charId = ctx.charname || null
 			const origin = charId ? 'char' : 'human'
+			const mapFiles = files => files?.map(file => ({
+				...file,
+				buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
+			}))
+			if (reply && typeof reply === 'object' && (reply.reply || reply.rawContent)) {
+				const { event } = await postChannelMessage(ctx.username, groupId, channelId, {
+					...reply,
+					files: mapFiles(reply.files),
+					origin: reply.origin || origin,
+					charId: reply.charId || charId,
+					entityHash: reply.entityHash || ctx.entityHash,
+				})
+				const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
+				const decrypted = await decryptEventContent(ctx.username, groupId, channelId, event.content)
+				const message = createMessage(ctx, groupId, {
+					eventId: event.id,
+					channelId,
+					sender: event.sender,
+					charId: event.charId || charId,
+					content: decrypted.ok ? decrypted.content : event.content,
+					timestamp: event.timestamp,
+				})
+				message.sourceEvent = event
+				message.decryptResult = decrypted
+				return message
+			}
 			const files = reply && typeof reply === 'object' && Array.isArray(reply.files)
-				? reply.files.map(file => ({
-					...file,
-					buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
-				}))
+				? mapFiles(reply.files)
 				: undefined
 			const hasFiles = !!files?.length
 			const payload = hasFiles || (reply && typeof reply === 'object' && (reply.text != null || reply.content != null) && !reply.type)
@@ -70,7 +93,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 			// 落盘后 content 是 CKG 密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
 			const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
 			const decrypted = await decryptEventContent(ctx.username, groupId, channelId, event.content)
-			return createMessage(ctx, groupId, {
+			const message = createMessage(ctx, groupId, {
 				eventId: event.id,
 				channelId,
 				sender: event.sender,
@@ -78,6 +101,9 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				content: decrypted.ok ? decrypted.content : event.content,
 				timestamp: event.timestamp,
 			})
+			message.sourceEvent = event
+			message.decryptResult = decrypted
+			return message
 		},
 		/**
 		 * @param {string} charname 角色名
@@ -86,6 +112,22 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		async triggerReply(charname) {
 			const { triggerCharReply } = await import('../chat/session/triggerReply.mjs')
 			await triggerCharReply(groupId, channelId, charname, null, { replicaUsername: ctx.username })
+		},
+		/**
+		 * @returns {Promise<{ eventId: string, seq: number } | null>} 当前频道已读水位
+		 */
+		async readMarker() {
+			const { getChannelReadMarker } = await import('../chat/lib/readMarkers.mjs')
+			return getChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId)
+		},
+		/**
+		 * @param {{ eventId: string, seq: number }} marker 已读水位
+		 * @returns {Promise<{ eventId: string, seq: number } | null>} 写入后的水位
+		 */
+		async markRead(marker) {
+			const { setChannelReadMarker, getChannelReadMarker } = await import('../chat/lib/readMarkers.mjs')
+			setChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId, marker)
+			return getChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId)
 		},
 		/**
 		 * @returns {Promise<object>} 流媒体鉴权结果（webrtc 或 sfu）
@@ -202,13 +244,15 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 			}
 			const event = await appendSignedLocalEvent(ctx.username, groupId, body, signOpts)
 			void scheduleVoteDeadlines(ctx.username, groupId)
-			return createMessage(ctx, groupId, {
+			const message = createMessage(ctx, groupId, {
 				eventId: event.id,
 				channelId,
 				sender: event.sender,
 				content: event.content,
 				timestamp: event.timestamp,
 			})
+			message.sourceEvent = event
+			return message
 		},
 		/**
 		 * @param {object} opts 频道参数
@@ -224,6 +268,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 					type: opts.type || 'text',
 					name: opts.name || newChannelId,
 					description: opts.description,
+					...opts.isPrivate != null ? { isPrivate: Boolean(opts.isPrivate) } : {},
 				},
 			}, signOpts)
 			const resolvedId = created.content?.channelId || newChannelId
