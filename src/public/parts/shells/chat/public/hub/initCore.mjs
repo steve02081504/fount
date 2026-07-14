@@ -26,6 +26,9 @@ async function loadViewerIdentity() {
 	hubStore.viewer.nodeHash = data.nodeHash || null
 	hubStore.viewer.operatorEntityHash = data.viewerEntityHash || null
 	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
+	hubStore.viewer.agents = Array.isArray(data.agents) ? data.agents : []
+	const { ingestAgentEntityHashList } = await import('./core/domUtils.mjs')
+	ingestAgentEntityHashList(hubStore.viewer.agents)
 }
 
 /** @returns {Promise<void>} 按 URL 进入好友/群频道视图 */
@@ -74,8 +77,10 @@ async function navigateHubFromLocation() {
 		await setMode('friends')
 		const { enterFriendChat } = await import('./friendChat.mjs')
 		const { buildCharFriendBinding } = await import('../shared/friendBinding.mjs')
-		if (hubStore.viewer.nodeHash)
-			await enterFriendChat({ binding: await buildCharFriendBinding(hubStore.viewer.nodeHash, charParam) })
+		const { charAgentEntityHash } = await import('./entityResolve.mjs')
+		const entityHash = await charAgentEntityHash(charParam)
+		if (entityHash)
+			await enterFriendChat({ binding: buildCharFriendBinding(entityHash, charParam) })
 		return
 	}
 

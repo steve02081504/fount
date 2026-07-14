@@ -33,7 +33,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 		tempDirPrefix: 'fount_chat_client_send_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -43,8 +43,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 	const { readViewerChannelMessages } = await import('../../src/chat/session/materializeViewerLog.mjs')
 
@@ -52,7 +51,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_FIXTURE, username)
 
-	const agentHash = agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`)
+	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
 	const client = await getChatClient(username, agentHash)
 	const group = await client.group(groupId)
 	const channel = await group.channel(channelId)
@@ -76,7 +75,7 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 		tempDirPrefix: 'fount_chat_client_pin_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -88,15 +87,14 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const groupId = await newGroup(username, { name: 'client-pin' })
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_FIXTURE, username)
-	const agentHash = agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`)
+	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
 
 	const posted = await postChannelMessage(username, groupId, channelId, { text: 'pin me' })
 	const eventId = posted.event.id
@@ -122,14 +120,14 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 	await target.react(':test_emoji:')
 })
 
-Deno.test('agent createGroup throws by design', async () => {
-	const username = `cc-nogroup-${crypto.randomUUID().slice(0, 8)}`
+Deno.test('agent createGroup is allowed', async () => {
+	const username = `cc-agroup-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_nogroup_',
+		tempDirPrefix: 'fount_chat_client_agroup_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -138,14 +136,15 @@ Deno.test('agent createGroup throws by design', async () => {
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const groupId = await newGroup(username, { name: 'noop' })
 	await addchar(groupId, CHAR_FIXTURE, username)
-	const client = await getChatClient(username, agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`))
-	await assertRejects(() => client.createGroup({ name: 'nope' }), Error, 'agent actors cannot create groups')
+	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
+	const client = await getChatClient(username, agentHash)
+	const created = await client.createGroup({ name: 'agent-owned' })
+	assert(created.id)
 })
 
 Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
@@ -204,7 +203,7 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 		tempDirPrefix: 'fount_chat_client_code_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -217,18 +216,18 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
 	const { FOUNT_CHAT_CODE_CONTEXT_PLUGIN } = await import('../../src/chat/lib/codeContextPlugin.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 
 	const groupId = await newGroup(username, { name: 'code-ctx' })
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_FIXTURE, username)
 	await postChannelMessage(username, groupId, channelId, { text: 'trigger ctx' })
 
+	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
 	const request = await getChatRequest(groupId, CHAR_FIXTURE, channelId, { replicaUsername: username })
 	const ctx = await FOUNT_CHAT_CODE_CONTEXT_PLUGIN.interfaces.code_execution.GetJSCodeContext(request)
 	assert(ctx.fount?.chat)
 	assert(ctx.fount?.group)
 	assert(ctx.fount?.channel)
-	assertEquals(ctx.fount.chat.entityHash, agentEntityHash(getNodeHash(), `chars/${CHAR_FIXTURE}`).toLowerCase())
+	assertEquals(ctx.fount.chat.entityHash, agentHash.toLowerCase())
 })

@@ -1,36 +1,33 @@
 /**
  * 【文件】group/access.mjs
  * 【职责】群成员身份解析与 RBAC 权限判定，供路由层与查询层复用。
- * 【原理】pubKeyHash/agentEntityHash/charname 双向匹配活跃成员；本机用户从 local_signer_seed 推导 pubKeyHash；频道权限委托 p2p hasPermission。
+ * 【原理】pubKeyHash / entityHash / charname 匹配活跃成员；本机用户从 per-entity local signer 推导 pubKeyHash。
  * 【数据结构】物化 state（members、roles、channels、channelPermissions）、PERMISSIONS 常量。
  * 【关联】被 group/routes/*、queries.mjs、localAuthz.mjs 引用；依赖 chat/dag/materialize、chat/lib/paths。
  */
-import { readFile } from 'node:fs/promises'
-
-import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
-import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { localSignerSeedPath } from '../chat/lib/paths.mjs'
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 /**
  * @param {object} state 物化群状态
- * @param {string} identifier 成员键、pubKeyHash（64 hex）、agentEntityHash（128 hex）或 agent charname
+ * @param {string} identifier 成员键、pubKeyHash（64 hex）、entityHash（128 hex）或 agent charname
  * @returns {string | null} 成员在 state.members 中的键，无则 null
  */
 export function resolveMemberKey(state, identifier) {
 	const raw = String(identifier || '').trim().toLowerCase()
 	if (!raw) return null
 	if (state.members[raw]) return raw
-	for (const [key, member] of Object.entries(state.members)) 
+	for (const [key, member] of Object.entries(state.members)) {
+		if (member?.entityHash === raw) return key
 		if (member?.memberKind === 'agent' && member.charname?.toLowerCase() === raw)
 			return key
-	
+	}
 	return null
 }
 
 /**
  * @param {object} state 物化群状态
- * @param {string} memberKey 成员 pubKeyHash 或 agentEntityHash
+ * @param {string} memberKey 成员 pubKeyHash
  * @returns {string | null} 活跃成员在 state.members 中的键，无则 null
  */
 export function resolveActiveMemberKey(state, memberKey) {
@@ -46,17 +43,17 @@ export function resolveActiveMemberKey(state, memberKey) {
 export function resolveActiveAgentMemberKeyByCharname(state, charname) {
 	const name = String(charname || '').trim().toLowerCase()
 	if (!name) return null
-	for (const [key, member] of Object.entries(state.members)) 
+	for (const [key, member] of Object.entries(state.members))
 		if (member?.memberKind === 'agent'
 			&& member.status === 'active'
 			&& member.charname?.toLowerCase() === name)
 			return key
-	
+
 	return null
 }
 
 /**
- * 本机 replica：`getUserByReq` 登录名 + 该群 `local_signer_seed` 推导的 pubKeyHash。
+ * 本机 replica：登录名对应 operator 实体的群成员键。
  * @param {string} replicaUsername fount 登录名（仅用于 replica 磁盘路径）
  * @param {string} groupId 群 ID
  * @param {object} state 物化群状态
@@ -64,10 +61,9 @@ export function resolveActiveAgentMemberKeyByCharname(state, charname) {
  */
 export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state) {
 	try {
-		const raw = await readFile(localSignerSeedPath(replicaUsername, groupId))
-		if (raw.length < 32) return null
-		const secretKey = new Uint8Array(raw.buffer, raw.byteOffset, 32)
-		return resolveActiveMemberKey(state, pubKeyHash(publicKeyFromSeed(secretKey)))
+		const { resolveLocalEventSigner } = await import('../chat/dag/localSigner.mjs')
+		const { sender } = await resolveLocalEventSigner(replicaUsername, groupId)
+		return resolveActiveMemberKey(state, sender)
 	}
 	catch {
 		return null

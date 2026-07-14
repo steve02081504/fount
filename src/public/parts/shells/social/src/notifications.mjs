@@ -1,5 +1,5 @@
 
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/entity_identity.mjs'
 
 import { readInboxNotifications, notificationCursor, normalizeNotificationRow } from './inbox.mjs'
 

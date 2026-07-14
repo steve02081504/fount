@@ -10,9 +10,9 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { governanceChannelId } from '../../group/access.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
 import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
+import { verifyMemberJoinBinding } from './entityBinding.mjs'
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
 import { manageAdminsPubKeyHashes, memberChannelPermissions } from './groupMaterializedState.mjs'
 import { resolveTargetMemberKey } from './reducers/helpers.mjs'
@@ -42,26 +42,6 @@ function isMessageDeleted(state, targetId) {
 }
 
 /**
- * 委托写路径：带 actingAgentEntityHash 时权限按 agent 成员行求值。
- * @param {object} state 物化群状态
- * @param {{ content?: object }} event DAG 事件
- * @param {string} senderHash 签名者 pubKeyHash
- * @returns {{ ok: boolean, reason?: string, permissionMemberKey: string }} 权限成员键
- */
-function resolvePermissionMemberKey(state, event, senderHash) {
-	const sender = String(senderHash || '').trim().toLowerCase()
-	const actingAgent = String(event.content?.actingAgentEntityHash || '').trim().toLowerCase()
-	if (!actingAgent) return { ok: true, permissionMemberKey: sender }
-
-	const member = state.members[actingAgent]
-	if (!member || member.memberKind !== 'agent' || member.status !== 'active')
-		return { ok: false, reason: 'invalid actingAgentEntityHash' }
-	if (String(member.ownerPubKeyHash || '').trim().toLowerCase() !== sender)
-		return { ok: false, reason: 'actingAgentEntityHash sender mismatch' }
-	return { ok: true, permissionMemberKey: actingAgent }
-}
-
-/**
  * @param {{ channelId?: string }} event DAG 事件
  * @returns {string} 权限求值用的频道 ID
  */
@@ -70,13 +50,13 @@ export function eventChannelId(event) {
 }
 
 /**
- * 按物化状态校验事件类型权限（append 与联邦 ACL 共用）。
+ * 按物化状态校验事件类型权限（append 与联邦 ACL 共用）。权限主体恒为 sender。
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} senderHash 发送方 pubKeyHash（小写）
- * @returns {{ ok: boolean, reason?: string, deferrable?: boolean }} 是否允许；`deferrable` 表示因目标/父事件尚未到达的暂时性失败
+ * @returns {Promise<{ ok: boolean, reason?: string, deferrable?: boolean }>} 是否允许
  */
-export function checkEventPermission(state, event, senderHash) {
+export async function checkEventPermission(state, event, senderHash) {
 	const { type } = event
 	if (!type) return { ok: false, reason: 'missing event type' }
 	if (!FEDERATION_ACL_GATED_EVENT_TYPES.has(type)) return { ok: true }
@@ -85,33 +65,26 @@ export function checkEventPermission(state, event, senderHash) {
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
 		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
-	const delegation = resolvePermissionMemberKey(state, event, sender)
-	if (!delegation.ok) return { ok: false, reason: delegation.reason }
-	const permissionMemberKey = delegation.permissionMemberKey
-
 	const channelId = eventChannelId(event)
-	const channelPerms = memberChannelPermissions(state, permissionMemberKey, channelId)
-	const govPerms = memberChannelPermissions(state, permissionMemberKey, governanceChannelId(state))
+	const channelPerms = memberChannelPermissions(state, sender, channelId)
+	const govPerms = memberChannelPermissions(state, sender, governanceChannelId(state))
 
 	switch (type) {
 		case 'member_join': {
 			const content = event.content || {}
-			if (content.memberKind === 'agent') {
-				if (state.members[sender]?.status !== 'active')
-					return { ok: false, reason: 'requires active member sender', deferrable: true }
-				const agentKey = String(content.agentEntityHash || '').trim().toLowerCase()
-				const charname = String(content.charname || '').trim()
-				const homeNodeHash = content.homeNodeHash
-				if (!isEntityHash128(agentKey) || !charname || !isHex64(homeNodeHash))
-					return { ok: false, reason: 'invalid agent member_join content' }
-				if (agentEntityHash(homeNodeHash, `chars/${charname}`) !== agentKey)
-					return { ok: false, reason: 'agentEntityHash mismatch' }
-				if (sender === content.ownerPubKeyHash || !content.ownerPubKeyHash)
-					return { ok: true }
-				if (govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.ADMIN])
-					return { ok: true }
-				return { ok: false, reason: 'agent member_join denied' }
-			}
+			const entityHash = String(content.entityHash || '').trim().toLowerCase()
+			const entityActivePubKeyHex = String(content.entityActivePubKeyHex || '').trim().toLowerCase()
+			const bindingSig = String(content.bindingSig || '').trim().toLowerCase()
+			if (!isEntityHash128(entityHash) || !isHex64(entityActivePubKeyHex) || !/^[\da-f]{128}$/u.test(bindingSig))
+				return { ok: false, reason: 'invalid member_join binding' }
+			const bindOk = await verifyMemberJoinBinding({
+				entityHash,
+				memberPubKeyHash: sender,
+				bindingSig,
+				entityActivePubKeyHex,
+			})
+			if (!bindOk)
+				return { ok: false, reason: 'member_join bindingSig invalid' }
 			return { ok: true }
 		}
 		case 'member_leave':
@@ -120,7 +93,9 @@ export function checkEventPermission(state, event, senderHash) {
 			const targetKey = resolveTargetMemberKey(event.content)
 			const target = targetKey ? state.members[targetKey] : null
 			if (target?.memberKind === 'agent') {
-				if (target.ownerPubKeyHash === sender)
+				const senderEntity = String(state.members[sender]?.entityHash || '').trim().toLowerCase()
+				const ownerEntity = String(target.ownerEntityHash || '').trim().toLowerCase()
+				if (ownerEntity && senderEntity === ownerEntity)
 					return { ok: true }
 				if (govPerms[PERMISSIONS.ADMIN])
 					return { ok: true }
@@ -183,9 +158,6 @@ export function checkEventPermission(state, event, senderHash) {
 				const target = String(content.delegatedOwnerPubKeyHash || '').trim().toLowerCase()
 				if (isHex64(target) && manageAdminsPubKeyHashes(state).has(target))
 					return { ok: true }
-				// owner-succession 经联邦/gossip 乱序抵达时，授予新主 MANAGE_ADMINS 的 role_assign 可能尚未
-				// 折叠到本地共识分支（断链 / 少数支）。此时目标若仍是活跃成员，视为"依赖未到达"的暂时性失败，
-				// 走 quarantine 待 role_assign 折叠后重放，而非永久丢弃（对齐 message_edit/message_delete 语义）。
 				const deferrable = isHex64(target) && state.members[target]?.status === 'active'
 				return { ok: false, reason: 'delegatedOwnerPubKeyHash must name an active MANAGE_ADMINS holder', deferrable }
 			}
@@ -253,11 +225,6 @@ export function checkEventPermission(state, event, senderHash) {
 		case 'world_state':
 			return { ok: true }
 		case 'dag_tip_merge':
-			// 纯拓扑合并：reducer 对物化状态无副作用，且 ingest 强制 prev_event_ids 覆盖全部当前 tips
-			// （只能"并入所有分支"，无法选择性偏袒某支来操纵共识选支）。若要求 MANAGE_CHANNELS，会与
-			// owner-succession 形成死锁——新主在 owner-succession 事件折入共识前拿不到管理权限，而这些事件
-			// 折入共识恰恰依赖本条合并。故放开为任意活跃成员可发起，保证分叉确定性收敛。sender 活跃成员
-			// 身份已在上方（第 60 行）校验。
 			return { ok: true }
 		case 'message_delete': {
 			const targetId = String(event.content?.targetId || '').trim().toLowerCase()
@@ -298,13 +265,12 @@ export function checkEventPermission(state, event, senderHash) {
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} senderHash 发送方 pubKeyHash
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function assertEventPermission(state, event, senderHash) {
-	const { ok, reason, deferrable } = checkEventPermission(state, event, senderHash)
+export async function assertEventPermission(state, event, senderHash) {
+	const { ok, reason, deferrable } = await checkEventPermission(state, event, senderHash)
 	if (ok) return
 	const error = new Error(reason || 'permission denied')
-	// 区分"确定性拒绝"与"目标/父事件尚未到达的暂时性失败"：后者供联邦入站走 quarantine/defer 重试。
 	if (deferrable) error.deferrable = true
 	throw error
 }

@@ -1,4 +1,4 @@
-import { reduceOperatorKeyRevoke, reduceOperatorKeyRotate } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
+import { reduceEntityKeyRevoke, reduceEntityKeyRotate } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 
 import { socialPostKey } from '../federation/post_key.mjs'
 
@@ -21,7 +21,7 @@ export function createSocialTimelineState() {
 		followEvents: [],
 		following: new Set(),
 		blocked: new Set(),
-		operatorKeyHistory: [],
+		entityKeyHistory: [],
 		recoveryPubKeyHex: null,
 	}
 }
@@ -179,8 +179,8 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	unfollow: reduceUnfollow,
 	block: reduceBlock,
 	unblock: reduceUnblock,
-	operator_key_rotate: reduceOperatorKeyRotate,
-	operator_key_revoke: reduceOperatorKeyRevoke,
+	entity_key_rotate: reduceEntityKeyRotate,
+	entity_key_revoke: reduceEntityKeyRevoke,
 	state_summary: reduceSocialMeta,
 	file_share: passthroughReducer,
 	follow_approve: passthroughReducer,
@@ -234,7 +234,7 @@ export function finalizeSocialTimelineView(state, order) {
 		followEvents: state.followEvents,
 		following: [...state.following],
 		blocked: [...state.blocked],
-		operatorKeyHistory: state.operatorKeyHistory,
+		entityKeyHistory: state.entityKeyHistory,
 		recoveryPubKeyHex: state.recoveryPubKeyHex,
 		tipIds: order.length ? [order[order.length - 1]] : [],
 	}

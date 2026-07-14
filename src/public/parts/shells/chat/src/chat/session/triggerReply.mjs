@@ -27,8 +27,7 @@ import { getState } from '../dag/materialize.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { persistLogContextSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
-import { getLocalNodeHash } from '../lib/replica.mjs'
+import { ensureLocalAgentEntityHash, memberEntityHash } from '../lib/entity.mjs'
 import { finishStreamBuffer } from '../ws/groupWsStreamBuffer.mjs'
 
 import { broadcastGroupEvent } from './broadcast.mjs'
@@ -115,12 +114,14 @@ export async function handleAutoReply(groupId, channelId, replyFrequency, lastSp
 					if (isEntityHash128(turn.memberId)) {
 						const parsed = parseEntityHash(turn.memberId)
 						if (!parsed) continue
-						for (const name of Object.keys(session.chars || {})) {
-							const bind = session.chars[name]
-							if (agentEntityHash(bind.homeNodeHash, `chars/${name}`) === turn.memberId) {
-								charname = name
+						const { state: speakState } = await getState(username, groupId)
+						for (const [key, member] of Object.entries(speakState.members || {})) {
+							if (member?.memberKind !== 'agent' || member.status !== 'active') continue
+							if (memberEntityHash(member) === turn.memberId) {
+								charname = member.charname || null
 								break
 							}
+							void key
 						}
 						if (!charname) continue
 					}
@@ -235,7 +236,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 		let typingTimer = null
 		try {
 			const { getChatClient } = await import('../../api/index.mjs')
-			const selfHash = agentEntityHash(getLocalNodeHash(), `chars/${request.char_id}`).toLowerCase()
+			const selfHash = (await ensureLocalAgentEntityHash(chatMetadata.username, request.char_id)).toLowerCase()
 			const genClient = await getChatClient(chatMetadata.username, selfHash)
 			const genGroup = await genClient.group(groupId)
 			const genChannel = await genGroup.channel(channelForStream)

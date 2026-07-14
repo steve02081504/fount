@@ -22,7 +22,7 @@ import {
 	unregisterReplicaUsernamesProvider,
 } from './src/federation/follower_index_registry.mjs'
 import { applyFollowedBlockSignal } from './src/federation/reputation_social.mjs'
-import { registerOperatorKeyChainProvider } from './src/federation/write_auth.mjs'
+import { registerEntityKeyChainProvider } from './src/federation/write_auth.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'
 import { getTimelineMaterialized } from './src/timeline/materialize.mjs'
@@ -77,20 +77,20 @@ export default {
 		registerShellPartpath('social', 'shells/social')
 		registerReplicaUsernamesProvider(getAllUserNames)
 		registerOperatorEntityHashProvider(
-			(await import('../../../../server/p2p_server/operator_identity.mjs')).resolveOperatorEntityHashForUser,
+			(await import('../../../../server/p2p_server/entity_identity.mjs')).resolveOperatorEntityHashForUser,
 		)
-		registerOperatorKeyChainProvider(async username => {
-			const { readOperatorIdentity } = await import('../../../../server/p2p_server/entity_store.mjs')
-			const row = await readOperatorIdentity(username)
+		registerEntityKeyChainProvider(async username => {
+			const { ensureOperatorIdentity } = await import('../../../../server/p2p_server/entity_identity.mjs')
+			const row = await ensureOperatorIdentity(username)
 			if (!row?.recoveryPubKeyHex) return null
 			return {
 				recoveryPubKeyHex: String(row.recoveryPubKeyHex).trim().toLowerCase(),
 				activePubKeyHex: String(row.activePubKeyHex || '').trim().toLowerCase(),
-				operatorKeyHistory: Array.isArray(row.keyHistory) ? row.keyHistory : [],
+				entityKeyHistory: Array.isArray(row.keyHistory) ? row.keyHistory : [],
 			}
 		})
 		registerFollowingScanProvider(async username => {
-			const { resolveOperatorEntityHashForUser } = await import('../../../../server/p2p_server/operator_identity.mjs')
+			const { resolveOperatorEntityHashForUser } = await import('../../../../server/p2p_server/entity_identity.mjs')
 			const operator = await resolveOperatorEntityHashForUser(username)
 			if (!operator) return []
 			const view = await getTimelineMaterialized(username, operator)

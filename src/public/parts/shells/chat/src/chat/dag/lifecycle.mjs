@@ -6,12 +6,11 @@
  * 【关联】`append.mjs`、`materialize.mjs`、`events/hlcPolicy.mjs`、`../federation/room.mjs`。
  */
 import { randomUUID } from 'node:crypto'
-import { access, mkdir, readFile } from 'node:fs/promises'
+import { access, mkdir } from 'node:fs/promises'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { geti18nForUser } from '../../../../../../../scripts/i18n/index.mjs'
 import { DEFAULT_STREAM_GENERATING_IDLE_MS } from 'npm:@steve02081504/fount-p2p/core/constants'
-import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { sortedPrevEventIds } from 'npm:@steve02081504/fount-p2p/dag/index'
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
@@ -25,7 +24,7 @@ import { ensureFederationRoom, teardownFederationRoomForGroup } from '../federat
 import { DEFAULT_SIGNALING_APP_ID, mintRoomSecret } from '../federation/roomCredentials.mjs'
 import { initGroupFileMasterKey } from '../file_keys/store.mjs'
 import { releaseFileStorageRefs } from '../files/groupFiles.mjs'
-import { groupDir, eventsPath, localSignerSeedPath } from '../lib/paths.mjs'
+import { groupDir, eventsPath } from '../lib/paths.mjs'
 import { getLocalNodeHash } from '../lib/replica.mjs'
 import { safeRm } from '../lib/utils.mjs'
 import { invalidateKnownMemberIndex } from '../mailbox/memberIndex.mjs'
@@ -34,6 +33,7 @@ import { dropGroupReplicaRegistration } from '../ws/groupWsRooms.mjs'
 
 import { appendEvent } from './append.mjs'
 import { checkEventPermission } from './authorizeEvent.mjs'
+import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { applyEvent, emptyMaterializedState } from './groupMaterializedState.mjs'
 import { getLocalSignerForNewGroup, resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -80,7 +80,7 @@ export async function convergeDagTipsIfAuthorized(username, groupId) {
 
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
 	const { state } = await getState(username, groupId)
-	if (!checkEventPermission(state, { type: 'dag_tip_merge' }, sender).ok) return
+	if (!(await checkEventPermission(state, { type: 'dag_tip_merge' }, sender)).ok) return
 
 	try {
 		await mergeDagTips(username, groupId, sender, secretKey)
@@ -101,8 +101,10 @@ export async function createGroup(username, body) {
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const owner = String(body.ownerPubKeyHash || '').trim().toLowerCase()
 	if (!owner) throw new Error('ownerPubKeyHash required')
+	const { getOperatorEntityHash } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const entityHash = body.entityHash || await getOperatorEntityHash(username)
 	const memberJoinSecretKey = body.secretKey
-	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId)).secretKey
+	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
 	const genesisSender = owner
 
 	/** @param {object} event 创世事件体（含 sender） */
@@ -187,6 +189,7 @@ export async function createGroup(username, body) {
 			},
 		})
 
+	const binding = await buildMemberJoinBindingFields(username, entityHash, owner)
 	await genesisAppend({
 		type: 'member_join',
 		sender: owner,
@@ -194,6 +197,9 @@ export async function createGroup(username, body) {
 		content: {
 			roles: ['founder'],
 			homeNodeHash: getLocalNodeHash(),
+			...binding,
+			...body.ownerEntityHash ? { ownerEntityHash: body.ownerEntityHash } : {},
+			...body.charname ? { charname: body.charname } : {},
 		},
 	})
 
@@ -264,16 +270,13 @@ export async function deleteGroupData(username, groupId) {
  */
 export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
 	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return false
-	let raw
+	let memberKey
 	try {
-		raw = await readFile(localSignerSeedPath(username, groupId))
+		;({ sender: memberKey } = await resolveLocalEventSigner(username, groupId))
 	}
 	catch {
 		return false
 	}
-	if (raw.length < 32) return false
-	const secretKey = new Uint8Array(raw.buffer, raw.byteOffset, 32)
-	const memberKey = pubKeyHash(publicKeyFromSeed(secretKey))
 	const record = state.members?.[memberKey]
 	if (!record || record.status === 'active') return false
 

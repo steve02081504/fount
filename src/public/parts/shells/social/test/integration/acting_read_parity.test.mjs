@@ -21,8 +21,7 @@ const notifications = await import('../../src/notifications.mjs')
 const following = await import('../../src/following.mjs')
 const followerIndex = await import('../../src/federation/follower_index.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
-const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
@@ -35,7 +34,7 @@ async function seedAgentChar(username, charName) {
 	const to = join(getUserDictionary(username), 'chars', charName)
 	await mkdir(to, { recursive: true })
 	await cp(join(fixturesRoot, 'chars', charName), to, { recursive: true })
-	const hash = agentEntityHash(getNodeHash(), `chars/${charName}`)
+	const hash = await ensureLocalAgentEntityHash(username, charName)
 	await ensureEntitySocialReady(username, hash)
 	return hash
 }

@@ -14,6 +14,7 @@ import { checkMessageRateLimit } from '../governance/messageRateLimit.mjs'
 import { groupDir, eventsPath } from '../lib/paths.mjs'
 
 import { commitSignedChatEvent } from './commitSignedEvent.mjs'
+import { buildMemberJoinBindingFields } from './entityBinding.mjs'
 import { validateIngestAuthz } from './ingest.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
@@ -98,18 +99,31 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 }
 
 /**
- * 本机 HTTP 写路径：强制 `sender` 为 pubKeyHash 并签名后落盘。
+ * 本机写路径：按实体解析群成员 signer；`member_join` 无 binding 时自动附加实体声明。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {object} event 事件体（勿设 sender）
- * @param {object} [appendOpts] 传给 `appendEvent` 的选项
+ * @param {{ entityHash?: string } & object} [appendOpts] 传给 `appendEvent`；`entityHash` 缺省为 operator
  * @returns {Promise<object>} 签名后事件
  */
 export async function appendSignedLocalEvent(username, groupId, event, appendOpts = {}) {
-	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
+	const { entityHash: entityHashOpt, ...restOpts } = appendOpts
+	const { sender, secretKey, entityHash } = await resolveLocalEventSigner(username, groupId, entityHashOpt)
 	let eventBody = { ...event }
 	delete eventBody.sender
-	const state = appendOpts.state ?? (await getState(username, groupId)).state
+
+	if (eventBody.type === 'member_join') {
+		const content = { ...eventBody.content || {} }
+		if (!content.bindingSig) {
+			Object.assign(content, await buildMemberJoinBindingFields(username, entityHash, sender))
+			eventBody = { ...eventBody, content }
+		}
+		else if (!content.entityHash)
+			content.entityHash = entityHash
+		eventBody = { ...eventBody, content }
+	}
+
+	const state = restOpts.state ?? (await getState(username, groupId)).state
 	await validateIngestAuthz(username, groupId, { ...eventBody, sender }, { source: 'local', state })
 	if (CKG_ENCRYPT_EVENT_TYPES.has(eventBody.type) && eventBody.content && !isCkgEncryptedContent(eventBody.content)) {
 		const channelId = eventBody.channelId || 'default'
@@ -121,25 +135,8 @@ export async function appendSignedLocalEvent(username, groupId, event, appendOpt
 		}
 	}
 	return appendEvent(username, groupId, { ...eventBody, sender }, secretKey, {
-		...appendOpts,
+		...restOpts,
 		state,
 		skipValidateIngestAuthz: true,
 	})
-}
-
-/**
- * 按 acting entity 归因的 DAG 写路径：user actor 即 appendSignedLocalEvent；agent actor 在 content 写入 actingAgentEntityHash。
- * @param {string} username replica 所有者
- * @param {string} groupId 群 ID
- * @param {{ kind: 'user'|'agent', entityHash: string, charname?: string }} actor 操作主体
- * @param {object} event 事件体（勿设 sender）
- * @param {object} [appendOpts] 传给 appendSignedLocalEvent 的选项
- * @returns {Promise<object>} 签名后事件
- */
-export async function appendActorEvent(username, groupId, actor, event, appendOpts = {}) {
-	if (actor.kind === 'user')
-		return appendSignedLocalEvent(username, groupId, event, appendOpts)
-
-	const content = { ...event.content || {}, actingAgentEntityHash: actor.entityHash }
-	return appendSignedLocalEvent(username, groupId, { ...event, content }, appendOpts)
 }

@@ -87,7 +87,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 		username,
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			const from = join(fixturesRoot, 'chars', CHAR_YES)
 			const to = join(dataDir, 'users', user, 'chars', CHAR_YES)
@@ -101,9 +101,8 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
 	const { saveNotifyPrefs } = await import('../../src/chat/lib/notifyPrefs.mjs')
 	const { setCared } = await import('../../src/chat/lib/care.mjs')
@@ -112,7 +111,7 @@ Deno.test('care pierces mute for care inbox row', async () => {
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_YES, username)
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
-	const agentHash = agentEntityHash(getNodeHash(), `chars/${CHAR_YES}`).toLowerCase()
+	const agentHash = (await ensureLocalAgentEntityHash(username, CHAR_YES)).toLowerCase()
 	const { state } = await getState(username, groupId)
 	const charMemberKey = Object.keys(state.members).find(key => state.members[key]?.charname === CHAR_YES)
 	saveNotifyPrefs(username, { [groupId]: { mutedUntil: true } })

@@ -1,31 +1,32 @@
 import { Buffer } from 'node:buffer'
 
 import {
-	commitOperatorKeyRevoke,
-	commitOperatorKeyRotate,
-} from '../../public/parts/shells/social/src/timeline/operator_key_commit.mjs'
+	commitEntityKeyRevoke,
+	commitEntityKeyRotate,
+} from '../../public/parts/shells/social/src/timeline/entity_key_commit.mjs'
 import { sign } from 'npm:@steve02081504/fount-p2p/crypto'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { operatorKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
+import { entityKeyRevokeSignBytes } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 
 import {
-	commitActiveKeyRotation as persistActiveRotation,
+	commitEntityKeyRotation as persistActiveRotation,
 	generateNextActiveKeyPair,
 	getFederationViewForUser,
+	getEntityKeyGeneration,
 	getOperatorEntityHash,
-	getOperatorKeyGeneration,
-} from './operator_identity.mjs'
+} from './entity_identity.mjs'
 
 /**
- * 主动轮换活跃 operator 钥并广播时间线事件。
+ * 主动轮换活跃实体钥并广播时间线事件（默认 operator）。
  * @param {string} username replica
+ * @param {string} [entityHash] 实体；缺省 operator
  * @returns {Promise<object>} federation 视图
  */
-export async function rotateOperatorActiveKey(username) {
-	const entityHash = await getOperatorEntityHash(username)
-	const rotation = await generateNextActiveKeyPair(username)
-	await commitOperatorKeyRotate(username, entityHash, rotation)
-	await persistActiveRotation(username, rotation)
+export async function rotateEntityActiveKey(username, entityHash) {
+	const hash = entityHash || await getOperatorEntityHash(username)
+	const rotation = await generateNextActiveKeyPair(username, hash)
+	await commitEntityKeyRotate(username, hash, rotation)
+	await persistActiveRotation(username, hash, rotation)
 	return getFederationViewForUser(username)
 }
 
@@ -35,13 +36,15 @@ export async function rotateOperatorActiveKey(username) {
  * @param {object} body 请求体
  * @returns {Promise<object>} federation 视图
  */
-export async function revokeOperatorActiveKey(username, body) {
+export async function revokeEntityActiveKey(username, body) {
 	const recoverySecretKeyHex = normalizeHex64(body.recoverySecretKeyHex || '')
 	if (!isHex64(recoverySecretKeyHex)) throw new Error('recoverySecretKeyHex required')
 
-	const entityHash = await getOperatorEntityHash(username)
-	const currentGen = await getOperatorKeyGeneration(username)
-	const rotation = await generateNextActiveKeyPair(username)
+	const entityHash = body.entityHash
+		? String(body.entityHash).toLowerCase()
+		: await getOperatorEntityHash(username)
+	const currentGen = await getEntityKeyGeneration(username, entityHash)
+	const rotation = await generateNextActiveKeyPair(username, entityHash)
 	const revokeBody = {
 		entityHash,
 		revokeGenerations: Array.isArray(body.revokeGenerations)
@@ -52,12 +55,12 @@ export async function revokeOperatorActiveKey(username, body) {
 	}
 
 	const recoverySecret = new Uint8Array(Buffer.from(recoverySecretKeyHex, 'hex'))
-	const signBytes = operatorKeyRevokeSignBytes(revokeBody)
+	const signBytes = entityKeyRevokeSignBytes(revokeBody)
 	const signature = await sign(signBytes, recoverySecret)
-	await commitOperatorKeyRevoke(username, entityHash, {
+	await commitEntityKeyRevoke(username, entityHash, {
 		...revokeBody,
 		recoverySignature: Buffer.from(signature).toString('hex'),
 	}, recoverySecret)
-	await persistActiveRotation(username, rotation)
+	await persistActiveRotation(username, entityHash, rotation)
 	return getFederationViewForUser(username)
 }

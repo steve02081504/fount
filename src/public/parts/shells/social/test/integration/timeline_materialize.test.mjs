@@ -15,7 +15,7 @@ const materialize = await import('../../src/timeline/materialize.mjs')
 const following = await import('../../src/following.mjs')
 const socialMeta = await import('../../src/socialMeta.mjs')
 const entityProfile = await import('../../src/lib/entityProfile.mjs')
-const { resolveOperatorEntityHashForUser } = await import('fount/server/p2p_server/operator_identity.mjs')
+const { resolveOperatorEntityHashForUser } = await import('fount/server/p2p_server/entity_identity.mjs')
 
 const TARGET_A = placeholderEntityHash('a')
 const TARGET_B = placeholderEntityHash('b')

@@ -158,7 +158,7 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 		tempDirPrefix: 'fount_bridge_care_',
 		minP2pNode: true,
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -167,13 +167,12 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 
 	const { claimOperatorBridgeIdentity, bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { setCared, isCaredBy } = await import('../../src/chat/lib/care.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
 	assert(operatorHash)
-	const charHash = agentEntityHash(getNodeHash(), `chars/${CHAR_YES}`).toLowerCase()
+	const charHash = (await ensureLocalAgentEntityHash(username, CHAR_YES)).toLowerCase()
 
 	const ownerUid = 71717171
 	const strangerUid = 81818181

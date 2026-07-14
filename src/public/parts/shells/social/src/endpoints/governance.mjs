@@ -2,7 +2,6 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
-import { resolveOperatorEntityHashForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
 import { listReceivedReports, resolveReport, submitReport } from '../governance/report.mjs'
 import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
 
@@ -17,9 +16,10 @@ export function registerGovernanceRoutes(router) {
 		const targetEntityHash = String(req.body?.targetEntityHash || '').toLowerCase()
 		if (!isEntityHash128(targetEntityHash))
 			throw httpError(400, 'invalid targetEntityHash')
-		const reporterEntityHash = (await resolveOperatorEntityHashForUser(username))?.toLowerCase()
-		if (!reporterEntityHash)
-			throw httpError(400, 'configure federation identity first')
+		const reporterEntityHash = await resolveActingEntity(
+			username,
+			req.body?.actingEntityHash ?? req.query.actingEntityHash,
+		)
 		const report = await submitReport(username, {
 			targetEntityHash,
 			targetPostId: req.body?.targetPostId,

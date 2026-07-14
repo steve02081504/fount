@@ -14,13 +14,16 @@ const getSession = createTestSession()
 
 const { isTimelineWriteAuthorized } = await import('../../src/federation/write_auth.mjs')
 const append = await import('../../src/timeline/append.mjs')
-const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
-const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
-const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
-const { getOperatorSecretKey, resolveOperatorEntityHashForUser } =
-	await import('fount/server/p2p_server/operator_identity.mjs')
+const { pubKeyHash, publicKeyFromSeed, keyPairFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash, entityHashFromRecoveryPubKeyHex } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+const {
+	ensureAgentEntityIdentity,
+	getEntitySecretKey,
+	getOperatorSecretKey,
+	resolveOperatorEntityHashForUser,
+} = await import('fount/server/p2p_server/entity_identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
+const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
 Deno.test('operator may write own user timeline', async () => {
 	const { username } = await getSession()
@@ -39,20 +42,22 @@ Deno.test('foreign sender cannot write operator timeline', async () => {
 	assertEquals(await isTimelineWriteAuthorized(operator, attacker), false)
 })
 
-Deno.test('operator may write locally-hosted agent timeline', async () => {
+Deno.test('local agent active key may write own timeline with key history', async () => {
 	const { username } = await getSession()
-	const nodeHash = getNodeHash()
 	const charPartName = 'manifest-write-agent'
 	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const agentOwner = agentEntityHash(nodeHash, `chars/${charPartName}`)
-	const operatorSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
-	const operatorSender = pubKeyHash(publicKeyFromSeed(operatorSecret))
-	assertEquals(await isTimelineWriteAuthorized(agentOwner, operatorSender), true)
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const priorEvents = await append.readTimelineEvents(username, row.entityHash)
+	const secret = new Uint8Array(Buffer.from(await getEntitySecretKey(username, row.entityHash), 'hex'))
+	const sender = pubKeyHash(publicKeyFromSeed(secret))
+	assertEquals(await isTimelineWriteAuthorized(row.entityHash, sender, { priorEvents }), true)
 })
 
 Deno.test('remote agent timeline rejects unknown sender', async () => {
 	await getSession()
-	const remoteOwner = agentEntityHash('9'.repeat(64), 'chars/remote-only')
+	const { publicKey } = keyPairFromSeed(randomSeed())
+	const remoteOwner = entityHashFromRecoveryPubKeyHex('9'.repeat(64), Buffer.from(publicKey).toString('hex'))
 	const stranger = pubKeyHash(publicKeyFromSeed(randomSeed()))
 	assertEquals(await isTimelineWriteAuthorized(remoteOwner, stranger), false)
 })

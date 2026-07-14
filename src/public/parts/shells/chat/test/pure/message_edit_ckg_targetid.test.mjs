@@ -109,34 +109,32 @@ Deno.test('vote message ckg envelope keeps ballot metadata plaintext', () => {
 	assert(isCkgEncryptedContent(envelope))
 })
 
-Deno.test('authorizeEvent reads targetId from encrypted message_edit and authorizes author', () => {
+Deno.test('authorizeEvent reads targetId from encrypted message_edit and authorizes author', async () => {
 	const content = encryptLikeAppend(
 		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }
-	// 关键：content 已是密文，但 targetId 明文 → 鉴权可读到并通过。
-	assertEquals(checkEventPermission(baseState(), event, AUTHOR).ok, true)
+	assertEquals((await checkEventPermission(baseState(), event, AUTHOR)).ok, true)
 })
 
-Deno.test('encrypted message_edit passes outbound federation relay ACL', () => {
+Deno.test('encrypted message_edit passes outbound federation relay ACL', async () => {
 	const content = encryptLikeAppend(
 		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }
-	// 修复前此处因密文读不到 targetId 而失败 → 静默不中继；现应可中继。
-	assertEquals(canRelayFederatedEvent(baseState(), event), true)
+	assertEquals(await canRelayFederatedEvent(baseState(), event), true)
 })
 
-Deno.test('encrypted message_edit with absent target stays deferrable (quarantine, not drop)', () => {
+Deno.test('encrypted message_edit with absent target stays deferrable (quarantine, not drop)', async () => {
 	const content = encryptLikeAppend(
 		{ targetId: TARGET, newContent: { type: 'text', content: 'x' } },
 		plaintextCkgContentFields('message_edit'),
 	)
 	const event = { type: 'message_edit', channelId: CHANNEL, sender: AUTHOR, content }
 	const state = baseState({ messageSenderIndex: {} })
-	const result = checkEventPermission(state, event, AUTHOR)
+	const result = await checkEventPermission(state, event, AUTHOR)
 	assertEquals(result.ok, false)
 	assertEquals(result.deferrable, true)
 })

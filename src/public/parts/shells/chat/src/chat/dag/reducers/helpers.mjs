@@ -6,10 +6,10 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { sanitizeIceServersForSettings } from 'npm:@steve02081504/fount-p2p/transport/ice_servers'
 
-const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
+const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 
 /**
- * 活跃成员 map 键 Merkle 根（64 hex pubKeyHash 或 128 hex agentEntityHash）。
+ * 活跃成员 map 键 Merkle 根（64 hex pubKeyHash）。
  * @param {string[]} ids 成员键
  * @returns {string} 64 hex 根
  */
@@ -86,12 +86,9 @@ export function recordFileMasterKeyRotation(state, event, rotationType, extra = 
  * @returns {boolean} 是否应拒绝该成员加入
  */
 export function isJoinBanned(state, sender, joinContent = {}) {
-	if (joinContent.memberKind === 'agent') {
-		const agentEntityHash = String(joinContent.agentEntityHash || '').trim().toLowerCase()
-		if (isEntityHash128(agentEntityHash) && state.bannedEntities.has(agentEntityHash))
-			return true
-		return state.bannedMembers.has(sender)
-	}
+	const entityHash = String(joinContent.entityHash || '').trim().toLowerCase()
+	if (isEntityHash128(entityHash) && state.bannedEntities.has(entityHash))
+		return true
 	if (state.bannedMembers.has(sender)) return true
 	const home = joinContent.homeNodeHash
 	if (!isHex64(home)) return false
@@ -100,7 +97,7 @@ export function isJoinBanned(state, sender, joinContent = {}) {
 
 /**
  * @param {object} [content] 事件 content
- * @returns {string | null} 目标成员键（64 或 128 hex）
+ * @returns {string | null} 目标成员键（64 hex）
  */
 export function resolveTargetMemberKey(content = {}) {
 	const key = String(content.targetMemberKey || content.targetPubKeyHash || '').trim().toLowerCase()
@@ -117,7 +114,8 @@ export function syncSessionCharsFromMembers(state) {
 	state.session.chars = {}
 	state.session.charFrequencies = {}
 	for (const member of Object.values(state.members)) {
-		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
+		const isAgent = member?.memberKind === 'agent' || Boolean(member?.ownerEntityHash)
+		if (!isAgent || member.status !== 'active') continue
 		const charname = String(member.charname || '').trim()
 		if (!charname) continue
 		state.session.chars[charname] = {
@@ -137,13 +135,9 @@ export function syncSessionCharsFromMembers(state) {
 export function applyBanContent(state, content) {
 	const targetMemberKey = resolveTargetMemberKey(content)
 	const member = targetMemberKey ? state.members[targetMemberKey] : null
-	if (member?.memberKind === 'agent') {
-		const agentEntityHash = String(member.agentEntityHash || targetMemberKey).toLowerCase()
-		if (isEntityHash128(agentEntityHash)) state.bannedEntities.add(agentEntityHash)
-	}
-	else if (targetMemberKey)
+	if (targetMemberKey)
 		state.bannedMembers.add(targetMemberKey)
-	const entityHash = String(content.targetEntityHash || '').trim().toLowerCase()
+	const entityHash = String(content.targetEntityHash || member?.entityHash || '').trim().toLowerCase()
 	if (isEntityHash128(entityHash)) state.bannedEntities.add(entityHash)
 	if (isHex64(content.targetNodeHash)) state.bannedNodes.add(content.targetNodeHash)
 	const homeNode = normalizeHex64(member?.homeNodeHash)
@@ -152,20 +146,15 @@ export function applyBanContent(state, content) {
 
 /**
  * @param {object} state 物化群状态
- * @param {string} targetMemberKey 成员键（64 或 128 hex）
+ * @param {string} targetMemberKey 成员键（64 hex）
  * @returns {void}
  */
 export function clearBanForMember(state, targetMemberKey) {
 	const key = String(targetMemberKey || '').trim().toLowerCase()
 	const member = state.members[key]
-	if (member?.memberKind === 'agent') {
-		const agentEntityHash = String(member.agentEntityHash || key).toLowerCase()
-		if (isEntityHash128(agentEntityHash)) state.bannedEntities.delete(agentEntityHash)
-		const home = member.homeNodeHash
-		if (isHex64(home)) state.bannedNodes.delete(home)
-		return
-	}
 	state.bannedMembers.delete(key)
+	const entityHash = String(member?.entityHash || '').trim().toLowerCase()
+	if (isEntityHash128(entityHash)) state.bannedEntities.delete(entityHash)
 	const home = member?.homeNodeHash
 	if (isHex64(home)) {
 		state.bannedNodes.delete(home)

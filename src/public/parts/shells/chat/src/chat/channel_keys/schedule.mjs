@@ -11,15 +11,13 @@ import { applyChannelKeyRotateEvent, loadChannelKeysFile } from './store.mjs'
 
 /**
  * 本机签名身份是否有权对频道发起 `channel_key_rotate`。
- * 联邦入站副作用（role_assign / channel_permissions_update 后的自动轮换）会在每个收件节点触发，
- * 未授权节点必须静默跳过而非抛错，否则整条入站事件落盘被中断。
  * @param {object} state 物化群状态
  * @param {string} sender 本机签名 pubKeyHash
  * @param {string} channelId 频道 ID
- * @returns {boolean} 有权轮换则为 true
+ * @returns {Promise<boolean>} 有权轮换则为 true
  */
-function localCanRotateChannelKey(state, sender, channelId) {
-	return checkEventPermission(state, { type: 'channel_key_rotate', channelId }, sender).ok
+async function localCanRotateChannelKey(state, sender, channelId) {
+	return (await checkEventPermission(state, { type: 'channel_key_rotate', channelId }, sender)).ok
 }
 
 /**
@@ -83,7 +81,7 @@ export async function appendChannelKeyRotate(username, groupId, channelId) {
 	const state = await loadStateForChannelKeys(username, groupId)
 	if (!state.channels[id]) return null
 	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
-	if (!localCanRotateChannelKey(state, sender, id)) return null
+	if (!await localCanRotateChannelKey(state, sender, id)) return null
 	const content = buildChannelKeyRotateContent(state, id)
 	await applyChannelKeyRotateEvent(username, groupId, { content }, sender)
 	return appendEvent(username, groupId, {
@@ -106,7 +104,7 @@ export async function rotateAllChannelKeys(username, groupId) {
 	/** @type {object[]} */
 	const rotations = []
 	for (const channelId of Object.keys(state.channels || {})) {
-		if (!localCanRotateChannelKey(state, sender, channelId)) continue
+		if (!await localCanRotateChannelKey(state, sender, channelId)) continue
 		const content = buildChannelKeyRotateContent(state, channelId)
 		rotations.push(content)
 		if (!state.channelKeyGeneration) state.channelKeyGeneration = {}

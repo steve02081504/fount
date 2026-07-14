@@ -142,8 +142,8 @@ export type SocialTimelineEventType =
 	| 'follow_approve'
 	| 'block'
 	| 'unblock'
-	| 'operator_key_rotate'
-	| 'operator_key_revoke'
+	| 'entity_key_rotate'
+	| 'entity_key_revoke'
 	| 'file_share'
 
 /** 各事件 content 形状映射。 */
@@ -162,8 +162,8 @@ export interface SocialTimelineEventContentMap {
 	follow_approve: Record<string, unknown>
 	block: SocialBlockContent
 	unblock: SocialBlockContent
-	operator_key_rotate: Record<string, unknown>
-	operator_key_revoke: Record<string, unknown>
+	entity_key_rotate: Record<string, unknown>
+	entity_key_revoke: Record<string, unknown>
 	file_share: Record<string, unknown>
 }
 

@@ -5,6 +5,7 @@
  * 【数据结构】join 事件 content 含 inviteCode、powSolution { anchorRef, epoch, nonce, joinerNodeHash? }；state.groupSettings.joinPolicy 字符串枚举。
  * 【关联】npm:@steve02081504/fount-p2p/governance/join_pow.mjs、joinPowAnchors.mjs、inviteTickets、dag/append、room ingest。
  */
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { JOIN_POW_DEFAULT_EPOCH_MS, powVoluntaryBonus, verifyJoinPow } from 'npm:@steve02081504/fount-p2p/governance/join_pow'
 import { verifyGroupInviteTicket } from '../lib/inviteTickets.mjs'
@@ -78,14 +79,16 @@ function joinPolicyError(message, { pendable = false } = {}) {
 export async function validateJoinPolicy(state, event, replicaUsername, opts = {}) {
 	if (event?.type !== 'member_join') return
 	const content = event.content || {}
-	if (content.memberKind === 'agent') return
 	const fromFederation = opts.source === 'federation'
 	const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 	const activeBefore = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const senderKey = String(event.sender || '').trim().toLowerCase()
 	const senderAlreadyActive = state.members?.[senderKey]?.status === 'active'
 	if (Array.isArray(content.roles)) {
-		const allowExtraRoles = activeBefore === 0 || senderAlreadyActive
+		const ownerEh = String(content.ownerEntityHash || '').trim().toLowerCase()
+		const ownerActive = isEntityHash128(ownerEh)
+			&& Object.values(state.members).some(member => member?.status === 'active' && member.entityHash === ownerEh)
+		const allowExtraRoles = activeBefore === 0 || senderAlreadyActive || ownerActive
 		if (!allowExtraRoles)
 			throw joinPolicyError('member_join roles only allowed for genesis join', { pendable: fromFederation })
 		for (const roleId of content.roles) {

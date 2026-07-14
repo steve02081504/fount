@@ -29,9 +29,10 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 
 - **Untrusted inbound**: discovery, link envelopes, WS federation frames, `remoteIngest`, `part_timeline_put`/`part_invoke` — validate only at gates: `wire/ingress`, `schemas/*`, shell inbound gates.
 - **Trusted after disk read**: `events.jsonl` only runs `stripDagEventLocalExtensions`; reducers/UI do not re-canonicalize hex.
-- **Node data**: `{dataPath}/p2p/node/` (`node.json`, `denylist.json`, `reputation.json`, etc.); operator key at `{userDict}/settings/operator.json`.
+- **Node data**: `{dataPath}/p2p/node/` (`node.json`, `denylist.json`, `reputation.json`, etc.); entity identities at `{userDict}/entities/{entityHash}/identity.json` (operator = `ownerEntityHash === null`).
 - **Mailbox**: `{dataPath}/p2p/node/mailbox/store.jsonl`; directed packets via `sendToNode`, discovery fanout via TrustGraph.
 - **Denylist vs personal lists**: node-level `denylist.json` vs per-entity `personal_block.json` / `personal_hide.json`.
+- **Agent identity**: `ensureAgentEntityIdentity(username, charPartName)` / chat `ensureLocalAgentEntityHash` — key-derived entityHash in `entities/{hash}/identity.json`; never path-derive from `chars/`. Frontend char→hash via `GET /api/p2p/viewer` `agents[]` or `POST /api/p2p/agents/ensure`.
 
 ## Chat shell supplements
 

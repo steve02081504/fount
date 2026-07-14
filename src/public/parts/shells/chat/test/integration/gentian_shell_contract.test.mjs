@@ -50,7 +50,7 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
@@ -186,7 +186,7 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
@@ -196,12 +196,12 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 	})
 	await boot.ensureServer()
 
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getLocalNodeHash, resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
 	const { isCaredBy } = await import('../../src/chat/lib/care.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 
-	const selfHash = agentEntityHash(getLocalNodeHash(), `chars/${CHAR}`).toLowerCase()
+	const selfHash = (await ensureLocalAgentEntityHash(username, CHAR)).toLowerCase()
 	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
 	assert(operatorHash)
 	assertEquals(await isCaredBy(username, selfHash, operatorHash), true)

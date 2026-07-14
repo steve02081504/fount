@@ -1,6 +1,9 @@
 /* global Deno */
-import { agentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
+import { Buffer } from 'node:buffer'
+
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+import { entityHashFromRecoveryPubKeyHex } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import {
 	applyPersonaChatLogView,
@@ -180,7 +183,8 @@ Deno.test('projectViewerEntriesToRows drops hidden and rewrites text', async () 
 Deno.test('resolveViewerRoles: char and user paths from members', async () => {
 	const node = 'a'.repeat(64)
 	const char = 'viewer_char'
-	const agentKey = agentEntityHash(node, `chars/${char}`)
+	const { publicKey } = keyPairFromSeed(new Uint8Array(32).fill(7))
+	const agentKey = entityHashFromRecoveryPubKeyHex(node, Buffer.from(publicKey).toString('hex'))
 	const userKey = 'b'.repeat(64)
 	const state = {
 		members: {

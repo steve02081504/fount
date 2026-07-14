@@ -31,22 +31,6 @@ export function isBanScope(scope) {
  * @returns {object} DAG content
  */
 export function buildMemberBanContent(banScope, memberRow) {
-	if (memberRow?.memberKind === 'agent') {
-		const targetMemberKey = String(memberRow.agentEntityHash || '').trim().toLowerCase()
-		if (!isEntityHash128(targetMemberKey))
-			throw new Error('invalid agent member entityHash')
-		/** @type {Record<string, string>} */
-		const content = { banScope, targetMemberKey }
-		if (banScope === 'entity')
-			content.targetEntityHash = targetMemberKey
-		const homeNodeHash = normalizeHex64(memberRow?.homeNodeHash || '')
-		if (banScope === 'node') {
-			if (!isHex64(homeNodeHash))
-				throw new Error('member missing homeNodeHash for node ban')
-			content.targetNodeHash = homeNodeHash
-		}
-		return content
-	}
 	const targetMemberKey = normalizeHex64(memberRow?.pubKeyHash || '')
 	if (!isHex64(targetMemberKey))
 		throw new Error('invalid member pubKeyHash')
@@ -102,21 +86,12 @@ export function blockEntriesFromBanContent(content) {
 export function unbanTargetsFromMember(state, targetMemberKey) {
 	const key = String(targetMemberKey || '').trim().toLowerCase()
 	const member = state.members?.[key]
-	if (member?.memberKind === 'agent') {
-		const agentEntityHash = String(member.agentEntityHash || key).toLowerCase()
-		const homeNodeHash = normalizeHex64(member?.homeNodeHash)
-		return {
-			pubKeyHash: null,
-			entityHash: isEntityHash128(agentEntityHash) ? agentEntityHash : null,
-			nodeHash: isHex64(homeNodeHash) ? homeNodeHash : null,
-		}
-	}
-	const pubKeyHash = normalizeHex64(key)
+	const pubKeyHash = normalizeHex64(member?.pubKeyHash || key)
 	const homeNodeHash = normalizeHex64(member?.homeNodeHash)
-	const entityHash = isHex64(pubKeyHash) && isHex64(homeNodeHash) ? `${homeNodeHash}${pubKeyHash}` : null
+	const declaredEntity = memberEntityHash(member)
 	return {
 		pubKeyHash: isHex64(pubKeyHash) ? pubKeyHash : null,
-		entityHash: entityHash && isEntityHash128(entityHash) ? entityHash : null,
+		entityHash: declaredEntity,
 		nodeHash: isHex64(homeNodeHash) ? homeNodeHash : null,
 	}
 }

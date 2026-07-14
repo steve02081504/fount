@@ -293,13 +293,15 @@ export async function enterFriendChat(opts = {}) {
  */
 export async function dispatchFriendChat(entity) {
 	if (entity.type === 'char' && entity.id) {
-		const { nodeHash } = hubStore
-		if (!nodeHash) {
+		const entityHash = entity.entityHash && isEntityHash128(entity.entityHash)
+			? String(entity.entityHash).toLowerCase()
+			: await (await import('./entityResolve.mjs')).charAgentEntityHash(entity.id)
+		if (!entityHash) {
 			showToastI18n('error', 'chat.hub.noUsername')
 			return
 		}
 		await enterFriendChat({
-			binding: await buildCharFriendBinding(nodeHash, entity.id, entity.displayName),
+			binding: buildCharFriendBinding(entityHash, entity.id, entity.displayName),
 		})
 		return
 	}

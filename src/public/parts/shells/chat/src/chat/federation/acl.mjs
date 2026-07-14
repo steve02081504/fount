@@ -61,7 +61,7 @@ export function shouldDeferInboundIngest(state, event) {
  * @param {{ type?: string, sender?: string }} event DAG 事件
  * @returns {boolean} 通过权限检查则为 true
  */
-export function canRelayFederatedEvent(state, event) {
+export async function canRelayFederatedEvent(state, event) {
 	const type = event?.type
 	if (!type || !isAuthzGatedEventType(type)) return true
 	if (state?.groupSettings?.batterySaver && !hasMaterializedAclSnapshot(state))
@@ -71,5 +71,5 @@ export function canRelayFederatedEvent(state, event) {
 	const sender = String(event.sender || '').trim().toLowerCase()
 	if (!PUB_KEY_HASH_HEX.test(sender)) return false
 
-	return checkEventPermission(state, event, sender).ok
+	return (await checkEventPermission(state, event, sender)).ok
 }

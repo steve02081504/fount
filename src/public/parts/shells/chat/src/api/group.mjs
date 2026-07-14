@@ -1,5 +1,5 @@
 import { formatJoinRunUri, wrapProtocolHttpsUrl } from '../../public/shared/runUri.mjs'
-import { appendActorEvent } from '../chat/dag/append.mjs'
+import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { performLocalGroupLeave } from '../chat/dag/leaveMany.mjs'
 import { resolveLocalEventSigner } from '../chat/dag/localSigner.mjs'
 import { activateGroupFederation, isGroupFederationActive } from '../chat/federation/groupFederation.mjs'
@@ -192,11 +192,11 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<object>} group_meta_update 事件
 		 */
 		async setMeta(patch) {
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'group_meta_update',
 				timestamp: Date.now(),
 				content: patch,
-			})
+			}, { entityHash: ctx.entityHash })
 		},
 	}
 }

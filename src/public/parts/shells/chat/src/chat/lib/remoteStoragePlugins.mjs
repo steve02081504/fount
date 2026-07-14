@@ -1,6 +1,6 @@
 import { Buffer } from 'node:buffer'
 
-import { debugLog } from 'npm:@steve02081504/fount-p2p/utils/debug_log'
+import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
 
 /**
  * @param {unknown} error 存储删除错误

@@ -13,7 +13,7 @@ import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_p
 import { sendToNode } from 'npm:@steve02081504/fount-p2p/trust_graph/send'
 
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
-import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { wrapSocialRpc } from '../federation/part_wire_rpc.mjs'
 
 const REPORT_CATEGORIES = new Set(['spam', 'abuse', 'illegal', 'other'])
@@ -119,12 +119,14 @@ function reportSignBody(report) {
  * @returns {Promise<object>} 已签名举报
  */
 export async function signLocalReport(username, input) {
-	const secretHex = await getOperatorSecretKey(username)
-	if (!secretHex || secretHex.length !== 64) throw new Error('configure federation identity before reporting')
+	const reporterEntityHash = String(input.reporterEntityHash || '').toLowerCase()
+	if (!reporterEntityHash) throw new Error('reporterEntityHash required')
+	const secretHex = await getEntitySecretKey(username, reporterEntityHash)
+	if (!secretHex || secretHex.length !== 64) throw new Error('configure entity identity before reporting')
 	const secretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))
 	const reporterPubKeyHex = Buffer.from(publicKeyFromSeed(secretKey)).toString('hex')
 	const reporterPubKeyHash = pubKeyHash(publicKeyFromSeed(secretKey))
-	const report = normalizeReportBody({ ...input, reporterPubKeyHash, reporterPubKeyHex })
+	const report = normalizeReportBody({ ...input, reporterEntityHash, reporterPubKeyHash, reporterPubKeyHex })
 	const body = reportSignBody(report)
 	const signatureBytes = await sign(signPayloadBytes(body), secretKey)
 	const signature = Buffer.from(signatureBytes).toString('hex')

@@ -4,7 +4,7 @@
  */
 import { sha256Hex } from '../shared/digest.mjs'
 
-const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
+const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 
 /**
  * @param {unknown} value 成员键
@@ -39,7 +39,7 @@ function digestHex(digest) {
 }
 
 /**
- * @param {string[]} ids 成员键（64 或 128 hex）
+ * @param {string[]} ids 成员键（64 hex）
  * @returns {Promise<string>} Merkle 根 hex
  */
 export async function computeMembersMerkleRoot(ids) {
@@ -77,7 +77,7 @@ export async function computeMembersMerkleRoot(ids) {
  */
 export function collectActiveMemberHashes(state) {
 	return [...new Set((state.members || [])
-		.map(member => String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim().toLowerCase())
+		.map(member => String(member.memberKey || member.pubKeyHash || '').trim().toLowerCase())
 		.filter(isMemberKey))]
 		.sort()
 }

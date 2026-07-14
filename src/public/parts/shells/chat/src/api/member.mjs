@@ -1,4 +1,4 @@
-import { appendActorEvent } from '../chat/dag/append.mjs'
+import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 
 import { resolveActiveMemberKeyByEntityHash, resolveMemberKeyByEntityHash } from './internal.mjs'
 
@@ -10,6 +10,7 @@ import { resolveActiveMemberKeyByEntityHash, resolveMemberKeyByEntityHash } from
  * @returns {object} Member 鸭子类型
  */
 export function createMember(ctx, groupId, entityHash, memberRow) {
+	const signOpts = { entityHash: ctx.entityHash }
 	return {
 		entityHash: String(entityHash).toLowerCase(),
 		memberKind: memberRow?.memberKind || 'user',
@@ -26,11 +27,11 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
 			await dispatchBridgeMemberKick(ctx, groupId, state, targetKey, memberRow)
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'member_kick',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			})
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} 封禁成员
@@ -40,11 +41,11 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 			const state = await loadGroupState(ctx, groupId)
 			const targetKey = resolveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'member_ban',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			})
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} 解封成员
@@ -54,11 +55,11 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 			const state = await loadGroupState(ctx, groupId)
 			const targetKey = resolveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'member_unban',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			})
+			}, signOpts)
 		},
 		/**
 		 * @param {string} roleId 角色 ID
@@ -69,11 +70,11 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 			const state = await loadGroupState(ctx, groupId)
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'role_assign',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey, roleId },
-			})
+			}, signOpts)
 		},
 		/**
 		 * @param {string} roleId 角色 ID
@@ -84,18 +85,18 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 			const state = await loadGroupState(ctx, groupId)
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendActorEvent(ctx.username, groupId, ctx.actor, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'role_revoke',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey, roleId },
-			})
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} DM 群
 		 */
 		async dm() {
 			const { getChatClient } = await import('./index.mjs')
-			const client = await getChatClient(ctx.username, ctx.actor.entityHash)
+			const client = await getChatClient(ctx.username, ctx.entityHash)
 			return client.openDm(entityHash)
 		},
 	}

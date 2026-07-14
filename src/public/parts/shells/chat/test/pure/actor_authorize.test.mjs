@@ -1,70 +1,81 @@
 /**
- * actingAgentEntityHash 委托鉴权纯测试。
+ * 权限主体恒为 sender（无 acting overlay）纯测试。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-
-import { agentSubjectHash } from '../../src/chat/lib/entity.mjs'
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 import { emptyMaterializedState } from '../../src/chat/dag/groupMaterializedState.mjs'
 import { createDefaultRoles } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
 /**
- * @returns {object} 带 agent 成员的物化 state
+ * @returns {{ state: object, sender: string, peer: string }} 双成员物化 state
  */
-function stateWithAgent() {
+function stateWithTwoMembers() {
 	const state = emptyMaterializedState()
 	const roles = createDefaultRoles()
 	state.roles = roles
 	state.channels = { default: { channelId: 'default', name: 'general', type: 'text' } }
 	state.groupSettings = { defaultChannelId: 'default' }
 	const sender = 'a'.repeat(64)
-	const agentHash = encodeEntityHash('c'.repeat(64), agentSubjectHash('chars/agent_char')).toLowerCase()
+	const peer = 'b'.repeat(64)
 	state.members[sender] = {
 		status: 'active',
 		memberKind: 'user',
 		pubKeyHash: sender,
-		roles: ['founder'],
+		roles: ['@everyone'],
 	}
-	state.members[agentHash] = {
+	state.members[peer] = {
 		status: 'active',
-		memberKind: 'agent',
-		agentEntityHash: agentHash,
-		charname: 'agent_char',
-		ownerPubKeyHash: sender,
-		roles: ['admin'],
+		memberKind: 'user',
+		pubKeyHash: peer,
+		roles: ['@everyone'],
 	}
-	return { state, sender, agentHash }
+	return { state, sender, peer }
 }
 
-Deno.test('actingAgentEntityHash: permissions use agent member row', () => {
-	const { state, sender, agentHash } = stateWithAgent()
+Deno.test('permissions use sender member row', async () => {
+	const { state, sender } = stateWithTwoMembers()
 	const event = {
 		type: 'reaction_add',
 		channelId: 'default',
 		content: {
-			actingAgentEntityHash: agentHash,
 			targetEventId: 'f'.repeat(64),
 			emoji: ':smile:',
 		},
 	}
-	const allowed = checkEventPermission(state, event, sender)
+	const allowed = await checkEventPermission(state, event, sender)
 	assertEquals(allowed.ok, true)
 })
 
-Deno.test('actingAgentEntityHash: forged sender rejected', () => {
-	const { state, agentHash } = stateWithAgent()
+Deno.test('non-member sender rejected', async () => {
+	const { state } = stateWithTwoMembers()
 	const event = {
 		type: 'reaction_add',
 		channelId: 'default',
 		content: {
-			actingAgentEntityHash: agentHash,
 			targetEventId: 'f'.repeat(64),
 			emoji: ':smile:',
 		},
 	}
-	const denied = checkEventPermission(state, event, 'b'.repeat(64))
+	const denied = await checkEventPermission(state, event, 'c'.repeat(64))
+	assertEquals(denied.ok, false)
+	assertEquals(denied.reason, 'requires active member sender')
+})
+
+Deno.test('stale actingAgentEntityHash field is ignored', async () => {
+	const { state, sender, peer } = stateWithTwoMembers()
+	state.members[peer].roles = ['admin']
+	const event = {
+		type: 'channel_create',
+		content: {
+			actingAgentEntityHash: peer,
+			channelId: 'x',
+			name: 'x',
+			type: 'text',
+		},
+	}
+	// sender 无 MANAGE_CHANNELS；旧 acting overlay 不得借 peer 权限放行
+	const denied = await checkEventPermission(state, event, sender)
 	assertEquals(denied.ok, false)
 })

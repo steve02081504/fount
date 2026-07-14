@@ -53,7 +53,7 @@ async function setupHumanViewerGroup() {
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedHumanViewerFixtures(dataDir, user)
 		},

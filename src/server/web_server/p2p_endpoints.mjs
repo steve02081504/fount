@@ -24,11 +24,13 @@ import {
 import { authenticate, getUserByReq } from '../auth/index.mjs'
 import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } from '../p2p_server/http_glue.mjs'
 import {
+	ensureAgentEntityIdentity,
 	getFederationViewForUser,
+	listLocalAgentIdentities,
 	resolveOperatorEntityHashForUser,
 	saveFederationViewForUser,
-} from '../p2p_server/operator_identity.mjs'
-import { revokeOperatorActiveKey, rotateOperatorActiveKey } from '../p2p_server/operator_key_admin.mjs'
+} from '../p2p_server/entity_identity.mjs'
+import { revokeEntityActiveKey, rotateEntityActiveKey } from '../p2p_server/entity_key_admin.mjs'
 
 import { registerP2pFileEndpoints } from './p2p_file_endpoints.mjs'
 
@@ -76,12 +78,12 @@ export function registerP2pEndpoints(router) {
 
 	router.post('/api/p2p/federation/rotate', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(await rotateOperatorActiveKey(username))
+		res.status(200).json(await rotateEntityActiveKey(username))
 	})
 
 	router.post('/api/p2p/federation/revoke', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		res.status(200).json(await revokeOperatorActiveKey(username, req.body || {}))
+		res.status(200).json(await revokeEntityActiveKey(username, req.body || {}))
 	})
 
 	router.get('/api/p2p/network', authenticate, async (req, res) => {
@@ -135,6 +137,7 @@ export function registerP2pEndpoints(router) {
 				nodeHash,
 				viewerEntityHash: null,
 				profile: null,
+				agents: [],
 				identityRequired: true,
 			})
 
@@ -151,7 +154,20 @@ export function registerP2pEndpoints(router) {
 
 		await ensureLocalEntityProfile(replicaUsername, viewerEntityHash)
 		const profile = await getProfile(viewerEntityHash, replicaUsername, { groupId, locales })
-		res.status(200).json({ nodeHash, viewerEntityHash, profile })
+		const agents = await listLocalAgentIdentities(replicaUsername)
+		res.status(200).json({ nodeHash, viewerEntityHash, profile, agents })
+	})
+
+	router.post('/api/p2p/agents/ensure', authenticate, async (req, res) => {
+		const { replicaUsername } = await getReplicaFromReq(req)
+		const charPartName = String(req.body?.charPartName || '').trim()
+		if (!charPartName)
+			return res.status(400).json({ error: 'charPartName required' })
+		const row = await ensureAgentEntityIdentity(replicaUsername, charPartName)
+		res.status(200).json({
+			entityHash: String(row.entityHash).toLowerCase(),
+			charPartName: String(row.charPartName || charPartName),
+		})
 	})
 
 	router.get('/api/p2p/mailbox/summary', authenticate, async (req, res) => {

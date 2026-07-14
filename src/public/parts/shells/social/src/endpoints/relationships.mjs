@@ -3,7 +3,7 @@ import { setPersonalHidden, setPersonalMuted } from 'npm:@steve02081504/fount-p2
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
-import { getFederationViewForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getFederationViewForUser } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { dispatchFollowEvent } from '../dispatch.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
 import { setFollow } from '../following.mjs'

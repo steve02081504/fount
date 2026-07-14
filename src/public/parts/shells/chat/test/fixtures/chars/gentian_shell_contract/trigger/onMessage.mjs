@@ -1,6 +1,6 @@
 import { setCared } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
-import { agentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
-import { getLocalNodeHash, resolveOperatorEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/replica.mjs'
+import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
+import { resolveOperatorEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/replica.mjs'
 
 import { handleOwnerCommands } from './commands.mjs'
 import { extractMessageText, resolveMessageContext } from './helpers.mjs'
@@ -45,8 +45,7 @@ export async function OnMessage(event) {
  * @param {string} replicaUsername replica
  */
 export async function initTriggerIdentity(replicaUsername) {
-	const nodeHash = getLocalNodeHash()
-	const selfHash = agentEntityHash(nodeHash, `chars/${CHARNAME}`)
+	const selfHash = await ensureLocalAgentEntityHash(replicaUsername, CHARNAME)
 	const operatorHash = (await resolveOperatorEntityHash(replicaUsername))?.toLowerCase()
 	selfEntityHash = String(selfHash || '').toLowerCase()
 	operatorEntityHash = String(operatorHash || '').toLowerCase()

@@ -8,7 +8,7 @@ import {
 	getFederationViewForUser,
 	getOperatorSecretKey,
 	saveFederationViewForUser,
-} from '../../../../../../../server/p2p_server/operator_identity.mjs'
+} from '../../../../../../../server/p2p_server/entity_identity.mjs'
 
 import { invalidateAllFederationPartitionsForUser } from './registry.mjs'
 

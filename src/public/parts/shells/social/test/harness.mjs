@@ -41,7 +41,7 @@ export function createIntegrationBoot(options = {}) {
  */
 export async function resolveTestOperator(boot) {
 	await boot.ensureServer()
-	const { resolveOperatorEntityHashForUser } = await import('fount/server/p2p_server/operator_identity.mjs')
+	const { resolveOperatorEntityHashForUser } = await import('fount/server/p2p_server/entity_identity.mjs')
 	const operator = await resolveOperatorEntityHashForUser(boot.username)
 	if (!operator) throw new Error('operator entityHash missing')
 	return { username: boot.username, operator }

@@ -14,7 +14,7 @@ Deno.test('isVoteBallotClosed after deadline', () => {
 	assertEquals(isVoteBallotClosed({ deadline: new Date(Date.now() + 60_000).toISOString() }), false)
 })
 
-Deno.test('authorizeEvent rejects vote_cast after deadline', () => {
+Deno.test('authorizeEvent rejects vote_cast after deadline', async () => {
 	const state = emptyMaterializedState()
 	state.roles = createDefaultRoles()
 	state.members = {
@@ -38,6 +38,6 @@ Deno.test('authorizeEvent rejects vote_cast after deadline', () => {
 		hlc: { wall: Date.now() },
 		content: { ballotId: 'ballot1', choice: 'yes' },
 	}
-	const verdict = checkEventPermission(state, event, SENDER)
+	const verdict = await checkEventPermission(state, event, SENDER)
 	assertEquals(verdict.ok, false)
 })

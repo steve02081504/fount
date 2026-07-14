@@ -69,7 +69,7 @@ async function openEnd(end, username, opts) {
 
 	if (end === 'hub') {
 		if (opts.chatKind === 'dm') {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
 			const { createEcdhDmGroup } = await import('../../src/chat/dm/index.mjs')
 			const myPub = await ensureOperatorPubKey(username)
@@ -150,7 +150,7 @@ Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, CHAR_YES)
 		},
@@ -188,7 +188,7 @@ Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
 		},
@@ -224,7 +224,7 @@ Deno.test('four-end DM: plain chars fallback-trigger consistently (WX ingress-on
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
 		},

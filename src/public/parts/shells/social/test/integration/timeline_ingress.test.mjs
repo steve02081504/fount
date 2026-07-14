@@ -19,12 +19,15 @@ const sync = await import('../../src/timeline/sync.mjs')
 const append = await import('../../src/timeline/append.mjs')
 const canon = await import('../../src/timeline/canonicalizeEvent.mjs')
 const { addDenylistEntry, loadDenylist, saveDenylist } = await import('npm:@steve02081504/fount-p2p/node/denylist')
-const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
-const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
+const { pubKeyHash, publicKeyFromSeed, keyPairFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { encodeEntityHash, entityHashFromRecoveryPubKeyHex } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
-const { getOperatorSecretKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+const {
+	ensureAgentEntityIdentity,
+	getEntitySecretKey,
+} = await import('fount/server/p2p_server/entity_identity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
+const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
 /**
  * 为给定种子构造一个 user 风格的 owner entityHash（nodeHash 任意 + sender subjectHash）。
@@ -192,44 +195,43 @@ Deno.test('legit user-owned write (sender === subjectHash) is accepted', async (
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, owner, event), true)
 })
 
-// agent 型正例：本机托管 agent 实体 + 由本节点 operator（federation identity）代签 → 接受。
-// agent 无独立私钥，靠托管节点 operator 身份绑定证明写入权（本机可解析该绑定）。
-Deno.test('operator-signed write to a locally-hosted agent timeline is accepted', async () => {
+// agent 型正例：本机 agent 身份 + social_meta 创世后，用 agent 活跃钥签名写入。
+Deno.test('agent-key-signed write to a local agent timeline is accepted', async () => {
 	const { username } = await getSession()
-	const nodeHash = getNodeHash()
-	// 在测试用户目录下放一个 chars/ 目录，使其成为本机托管 agent 实体
 	const charPartName = 'social-test-agent'
 	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const agentOwner = agentEntityHash(nodeHash, `chars/${charPartName}`)
-	// 用 operator 的 federation identity 私钥代签（sender === operator subjectHash，而非 agent subjectHash）
-	const operatorSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
-	const event = await makeRemoteSignedEvent(operatorSecret, agentOwner, {
-		type: 'post', charPartName, content: { text: 'agent post by operator', visibility: 'public' },
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const agentSecret = new Uint8Array(Buffer.from(await getEntitySecretKey(username, row.entityHash), 'hex'))
+	const event = await makeRemoteSignedEvent(agentSecret, row.entityHash, {
+		type: 'post', charPartName, content: { text: 'agent post by agent key', visibility: 'public' },
 	})
-	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), true)
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, row.entityHash, event), true)
 })
 
-// agent 型攻击例：陌生 key 代签本机 agent 实体 → 拒绝（sender 非该节点 operator）。
+// agent 型攻击例：陌生 key 代签本机 agent 实体 → 拒绝。
 Deno.test('foreign-key injection into a locally-hosted agent timeline is rejected', async () => {
 	const { username } = await getSession()
-	const nodeHash = getNodeHash()
-	const charPartName = 'social-test-agent' // 复用上一用例创建的本机 agent
+	const charPartName = 'social-test-agent'
 	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
-	const agentOwner = agentEntityHash(nodeHash, `chars/${charPartName}`)
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	await ensureEntitySocialReady(username, row.entityHash)
 	const attackerSeed = randomSeed()
-	const event = await makeRemoteSignedEvent(attackerSeed, agentOwner, {
+	const event = await makeRemoteSignedEvent(attackerSeed, row.entityHash, {
 		type: 'post', charPartName, content: { text: 'INJECTED agent post', visibility: 'public' },
 	})
-	assertEquals(await sync.ingestRemoteTimelineEvent(username, agentOwner, event), false)
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, row.entityHash, event), false)
 })
 
-// agent 型架构边界：远端节点托管的 agent 时间线事件，本机无法解析 operator 绑定 → 拒绝。
-// （当前架构缺少跨节点 nodeHash → operator 身份公告链，详见 README 架构问题。）
+// 远端节点 agent：无先验密钥链且 sender≠subjectHash → 拒绝。
 Deno.test('remote (non-local) agent timeline event cannot be authorized → rejected', async () => {
 	const { username } = await getSession()
-	// 用 agentSubjectHash 风格的 subject + 非本机 nodeHash 构造一个“远端 agent 实体”
 	const remoteNodeHash = '7'.repeat(64)
-	const remoteAgentOwner = agentEntityHash(remoteNodeHash, 'chars/remote-agent')
+	const { publicKey } = keyPairFromSeed(randomSeed())
+	const remoteAgentOwner = entityHashFromRecoveryPubKeyHex(
+		remoteNodeHash,
+		Buffer.from(publicKey).toString('hex'),
+	)
 	const someSeed = randomSeed()
 	const event = await makeRemoteSignedEvent(someSeed, remoteAgentOwner, {
 		type: 'post', content: { text: 'remote agent post', visibility: 'public' },

@@ -85,15 +85,16 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 	}
 	if (hubStore.privateGroup.groupId === previousGroupId)
 		clearPrivateGroupState()
-	const { nodeHash } = hubStore
-	if (!nodeHash) {
+	const { charAgentEntityHash } = await import('./entityResolve.mjs')
+	const entityHash = await charAgentEntityHash(charname)
+	if (!entityHash) {
 		showToastI18n('error', 'chat.hub.noUsername')
 		return
 	}
 	const { enterFriendChat } = await import('./friendChat.mjs')
 	await enterFriendChat({
 		forceNew: true,
-		binding: await buildCharFriendBinding(nodeHash, charname),
+		binding: buildCharFriendBinding(entityHash, charname),
 	})
 }
 
@@ -105,16 +106,21 @@ export async function restartPrivateGroup(charname, previousGroupId) {
  */
 export async function enterPrivateGroup(charname, opts = {}) {
 	if (!charname) return
-	const { nodeHash } = hubStore
-	if (!nodeHash) {
-		showToastI18n('error', 'chat.hub.noUsername')
-		return
-	}
 	const { enterFriendChat } = await import('./friendChat.mjs')
+	let binding = opts.binding
+	if (!binding) {
+		const { charAgentEntityHash } = await import('./entityResolve.mjs')
+		const entityHash = await charAgentEntityHash(charname)
+		if (!entityHash) {
+			showToastI18n('error', 'chat.hub.noUsername')
+			return
+		}
+		binding = buildCharFriendBinding(entityHash, charname)
+	}
 	await enterFriendChat({
 		groupId: opts.groupId,
 		forceNew: opts.forceNew,
-		binding: opts.binding || await buildCharFriendBinding(nodeHash, charname),
+		binding,
 	})
 }
 

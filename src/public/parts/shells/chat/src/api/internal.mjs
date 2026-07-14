@@ -8,7 +8,8 @@ import { resolveMemberKey } from '../group/access.mjs'
 /**
  * @typedef {{
  *   username: string,
- *   actor: { kind: 'user'|'agent', entityHash: string, charname?: string },
+ *   entityHash: string,
+ *   charname?: string,
  * }} ChatApiContext
  */
 

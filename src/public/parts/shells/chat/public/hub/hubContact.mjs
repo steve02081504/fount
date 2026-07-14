@@ -37,7 +37,7 @@ export async function applyHubContactQuery(contactRaw) {
 			if (hash !== entityHash) continue
 			await setMode('friends')
 			await enterFriendChat({
-				binding: await buildCharFriendBinding(nodeHash, friend.charname, friend.displayName),
+				binding: buildCharFriendBinding(hash, friend.charname, friend.displayName),
 			})
 			return true
 		}

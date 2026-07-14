@@ -163,7 +163,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -174,8 +174,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
-	const { agentEntityHash } = await import('../../src/chat/lib/entity.mjs')
-	const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+	const { ensureLocalAgentEntityHash } = await import('../../src/chat/lib/entity.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const platformChatId = 800002
@@ -188,7 +187,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	await addchar(groupId, CHAR_YES, username)
 	const channelId = await getDefaultChannelId(username, groupId)
 
-	const agentHash = agentEntityHash(getNodeHash(), `chars/${CHAR_YES}`).toLowerCase()
+	const agentHash = (await ensureLocalAgentEntityHash(username, CHAR_YES)).toLowerCase()
 	/** @type {object[]} */
 	const outboundLines = []
 	registerBridgeOutbound(username, groupId, async ({ messageLine }) => {
@@ -364,7 +363,7 @@ Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
 		},
@@ -413,7 +412,7 @@ Deno.test('bridge group without DM does not fallback-trigger chars without OnMes
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
 		},
@@ -562,7 +561,7 @@ Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridg
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
 		},
@@ -617,7 +616,7 @@ Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId;
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
 		},
@@ -690,7 +689,7 @@ Deno.test('getChatRequest exposes extension.bridge on bridge groups', async () =
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
 		},

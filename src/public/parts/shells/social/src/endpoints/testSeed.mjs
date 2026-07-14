@@ -5,15 +5,14 @@ import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { agentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
+import { ensureLocalAgentEntityHash } from 'fount/public/parts/shells/chat/src/chat/lib/entity.mjs'
 import { encodeEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { getUserByReq, getUserDictionary } from '../../../../../../server/auth/index.mjs'
-import { resolveOperatorEntityHashForUser } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveOperatorEntityHashForUser } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { seedRemoteTimeline, randomSeed } from '../../test/federation/remote_timeline.mjs'
 import { FOREIGN_FE_AUTHOR_HASH, FOREIGN_FE_SEED } from '../../test/seedForeignFeedAuthor.mjs'
 import { inboxEventsPath } from '../inbox.mjs'
@@ -103,7 +102,7 @@ export function registerTestSeedRoutes(router, authenticate) {
 		const to = join(getUserDictionary(username), 'chars', charPartName)
 		await mkdir(to, { recursive: true })
 		await cp(from, to, { recursive: true })
-		const entityHash = agentEntityHash(getNodeHash(), `chars/${charPartName}`)
+		const entityHash = await ensureLocalAgentEntityHash(username, charPartName)
 		await ensureEntitySocialReady(username, entityHash)
 		res.status(200).json({ entityHash, charPartName })
 	})

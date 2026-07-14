@@ -6,11 +6,11 @@ import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/s
 import { validateRemoteEventShape } from 'npm:@steve02081504/fount-p2p/schemas/remote_event'
 
 /**
- *
+ * 群成员键：仅 64-hex pubKeyHash。
  */
-export const MEMBER_KEY_RE = /^[\da-f]{64}$|^[\da-f]{128}$/u
+export const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 
-/** Chat content 内 hex64 字段名 */
+/** Chat content 内 hex64 字段名（bindingSig 为 128-hex 签名，勿列入） */
 export const CHAT_CONTENT_HEX_KEYS = new Set([
 	'ballotId',
 	'targetId',
@@ -19,6 +19,7 @@ export const CHAT_CONTENT_HEX_KEYS = new Set([
 	'homeNodeHash',
 	'introducerPubKeyHash',
 	'delegatedOwnerPubKeyHash',
+	'entityActivePubKeyHex',
 	'contentHash',
 	'ciphertextHash',
 	'from',
@@ -28,7 +29,8 @@ export const CHAT_CONTENT_HEX_KEYS = new Set([
 
 /** Chat content 内 128 位 entityHash 字段名 */
 export const CHAT_CONTENT_ENTITY_HASH_KEYS = new Set([
-	'agentEntityHash',
+	'entityHash',
+	'ownerEntityHash',
 	'targetEntityHash',
 ])
 
@@ -39,10 +41,12 @@ export const CHAT_CONTENT_ENTITY_HASH_KEYS = new Set([
 export function canonicalizeChatContent(content) {
 	if (!content) return content
 	const out = canonicalizeRowContent(content, CHAT_CONTENT_HEX_KEYS, CHAT_CONTENT_ENTITY_HASH_KEYS)
+	if (out?.bindingSig != null && out.bindingSig !== '')
+		out.bindingSig = String(out.bindingSig).trim().toLowerCase().replace(/^0x/iu, '')
 	if (out?.targetMemberKey != null && out.targetMemberKey !== '') {
 		const key = String(out.targetMemberKey).trim().toLowerCase()
 		if (!MEMBER_KEY_RE.test(key))
-			throw new Error('targetMemberKey must be 64 or 128 hex characters')
+			throw new Error('targetMemberKey must be 64 hex characters')
 		out.targetMemberKey = key
 	}
 	return out

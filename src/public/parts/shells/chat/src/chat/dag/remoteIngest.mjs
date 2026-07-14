@@ -312,7 +312,7 @@ export async function ingestRemoteEvent(username, groupId, payload, opts = {}) {
  */
 export async function relayPendingFederatedEvent(username, groupId, signPayload) {
 	const { state } = await getState(username, groupId)
-	if (!canRelayFederatedEvent(state, signPayload)) return false
+	if (!await canRelayFederatedEvent(state, signPayload)) return false
 	await publishSignedEventToFederation(username, groupId, signPayload)
 	return true
 }

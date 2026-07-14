@@ -10,7 +10,7 @@ import { getReplicaFromReq, isWritableLocalEntityForUser } from '../../../../../
 import {
 	getOperatorEntityHash,
 	resolveOperatorEntityHashForUser,
-} from '../../../../../../../server/p2p_server/operator_identity.mjs'
+} from '../../../../../../../server/p2p_server/entity_identity.mjs'
 import { readLocalSignerSeed } from '../dag/localSigner.mjs'
 
 /**

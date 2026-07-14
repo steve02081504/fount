@@ -2,7 +2,7 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 

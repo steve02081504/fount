@@ -40,7 +40,7 @@ Deno.test('token bucket suppresses generation not OnMessage when exhausted', asy
 	 * @returns {Promise<void>}
 	 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},
@@ -97,7 +97,7 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 	 * @returns {Promise<void>}
 	 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/operator_identity.mjs')
+			const { ensureOperatorPubKey } = await import('fount/server/p2p_server/entity_identity.mjs')
 			await ensureOperatorPubKey(user)
 			await seedCharFixture(dataDir, user)
 		},

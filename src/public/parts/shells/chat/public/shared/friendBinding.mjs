@@ -1,9 +1,8 @@
 import { isEntityHash128 } from './entityHash.mjs'
 import {
-	agentEntityHash,
+	entityHashFromRecoveryPubKeyHex,
+	entityHashFromSubjectHash,
 	hashFromPubKeyHex,
-	userEntityHashFromRecoveryPubKeyHex,
-	userEntityHashFromSubjectHash,
 } from './entityId.mjs'
 import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
 
@@ -28,16 +27,18 @@ export function normalizeFriendBinding(raw) {
 }
 
 /**
- * @param {string} nodeHash 本机 nodeHash（64 hex）
+ * @param {string} entityHash 后端已解析的 agent entityHash（禁止路径派生）
  * @param {string} charname 角色 part 名
  * @param {string} [displayName] 展示名
- * @returns {Promise<FriendBinding>} 角色 agent 绑定
+ * @returns {FriendBinding} 角色 agent 绑定
  */
-export async function buildCharFriendBinding(nodeHash, charname, displayName) {
+export function buildCharFriendBinding(entityHash, charname, displayName) {
+	const eh = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(eh)) throw new Error('entityHash required')
 	const name = String(charname || '').trim()
 	if (!name) throw new Error('charname required')
 	return {
-		entityHash: await agentEntityHash(nodeHash, `chars/${name}`),
+		entityHash: eh,
 		charname: name,
 		...displayName ? { displayName } : {},
 	}
@@ -59,7 +60,7 @@ export async function buildUserFriendBinding(peer) {
 	const recoveryPubKeyHex = normalizeHex64(peer?.recoveryPubKeyHex || '')
 	if (isHex64(nodeHash) && isHex64(recoveryPubKeyHex))
 		return {
-			entityHash: await userEntityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex),
+			entityHash: await entityHashFromRecoveryPubKeyHex(nodeHash, recoveryPubKeyHex),
 			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
 		}
 
@@ -70,7 +71,7 @@ export async function buildUserFriendBinding(peer) {
 	}
 	if (isHex64(nodeHash) && isHex64(subjectHash))
 		return {
-			entityHash: userEntityHashFromSubjectHash(nodeHash, subjectHash),
+			entityHash: entityHashFromSubjectHash(nodeHash, subjectHash),
 			...peer.displayName ? { displayName: String(peer.displayName).trim() } : {},
 		}
 

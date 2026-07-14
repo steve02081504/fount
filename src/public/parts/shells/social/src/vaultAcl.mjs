@@ -1,4 +1,4 @@
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../server/p2p_server/entity_identity.mjs'
 
 import { loadFollowing } from './following.mjs'
 

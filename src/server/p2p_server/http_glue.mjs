@@ -1,12 +1,9 @@
 import { resolveLogicalEntityId } from 'npm:@steve02081504/fount-p2p/entity/logical_entity_id_registry'
-import {
-	resolveLocalOperatorEntityHash,
-} from 'npm:@steve02081504/fount-p2p/entity/replica'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { resolveGroupMemberEntityHash } from 'npm:@steve02081504/fount-p2p/registries/p2p_viewer'
 import { getUserByReq } from '../auth/index.mjs'
 
-import { getRecoveryPubKeyHex, resolveOperatorEntityHashForUser } from './operator_identity.mjs'
+import { resolveCharPartNameForEntity, resolveOperatorEntityHashForUser } from './entity_identity.mjs'
 
 /**
  * @returns {string} 本节点 nodeHash
@@ -42,9 +39,10 @@ export async function getReplicaFromReq(req) {
 export async function isWritableLocalEntityForUser(replicaUsername, entityHash) {
 	const { isWritableLocalEntity } = await import('npm:@steve02081504/fount-p2p/entity/replica')
 	if (!isWritableLocalEntity(entityHash)) return false
-	const recoveryPub = await getRecoveryPubKeyHex(replicaUsername)
-	const operatorHash = resolveLocalOperatorEntityHash(recoveryPub)
-	return entityHash === operatorHash
+	const target = String(entityHash || '').toLowerCase()
+	const operatorHash = await resolveOperatorEntityHashForUser(replicaUsername)
+	if (target === operatorHash) return true
+	return (await resolveCharPartNameForEntity(replicaUsername, target)) != null
 }
 
 /**

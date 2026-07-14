@@ -3,7 +3,7 @@ import { Buffer } from 'node:buffer'
 import { signCheckpoint } from 'npm:@steve02081504/fount-p2p/crypto/checkpoint_sign'
 import { writeJsonAtomicSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
-import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { timelineSnapshotPath } from '../paths.mjs'
 
 /**
@@ -14,7 +14,13 @@ import { timelineSnapshotPath } from '../paths.mjs'
  * @returns {Promise<object>} 落盘快照
  */
 export async function rebuildSignedTimelineSnapshot(username, entityHash, view) {
-	const secretHex = await getOperatorSecretKey(username)
+	let secretHex = ''
+	try {
+		secretHex = await getEntitySecretKey(username, entityHash)
+	}
+	catch {
+		/* 远端/未托管实体无本地密钥，落未签名快照 */
+	}
 	if (!secretHex || secretHex.length !== 64) {
 		await writeJsonAtomicSynced(timelineSnapshotPath(username, entityHash), view)
 		return view

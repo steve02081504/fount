@@ -144,8 +144,8 @@ export async function listLocalRecipientsInGroup(username, state) {
 	for (const member of Object.values(state.members || {})) {
 		if (member?.status !== 'active' || member?.memberKind !== 'agent') continue
 		if (normalizeHex64(member.homeNodeHash) !== nodeHash) continue
-		const hash = String(member.agentEntityHash || '').trim().toLowerCase()
-		if (isEntityHash128(hash)) recipients.push(hash)
+		const hash = memberEntityHash(member)
+		if (hash) recipients.push(hash)
 	}
 	return [...new Set(recipients)]
 }

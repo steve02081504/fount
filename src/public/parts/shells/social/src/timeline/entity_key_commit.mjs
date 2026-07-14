@@ -6,7 +6,7 @@ import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/s
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 
-import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getEntitySecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
 import { canonicalizeLocalTimelineEvent } from './canonicalizeEvent.mjs'
@@ -24,11 +24,12 @@ function timelineSignerFromSecret(secretKey) {
 
 /**
  * @param {string} username replica
- * @returns {Promise<{ sender: string, secretKey: Uint8Array }>} 活跃钥签名者
+ * @param {string} entityHash 128 hex
+ * @returns {Promise<{ sender: string, secretKey: Uint8Array }>} 实体活跃钥签名者
  */
-async function resolveActiveTimelineSigner(username) {
-	const secretHex = await getOperatorSecretKey(username)
-	if (!secretHex || secretHex.length !== 64) throw new Error('configure federation identity before posting')
+async function resolveEntityTimelineSigner(username, entityHash) {
+	const secretHex = await getEntitySecretKey(username, entityHash)
+	if (!secretHex || secretHex.length !== 64) throw new Error('configure entity identity before key commit')
 	const secretKey = new Uint8Array(Buffer.from(secretHex, 'hex'))
 	return timelineSignerFromSecret(secretKey)
 }
@@ -38,21 +39,21 @@ async function resolveActiveTimelineSigner(username) {
  * @param {string} entityHash 128 hex
  * @returns {Promise<void>}
  */
-async function assertWritableOperatorTimeline(username, entityHash) {
+async function assertWritableEntityTimeline(username, entityHash) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || parsed.nodeHash !== getNodeHash()) throw new Error('cannot write timeline for this entity on this replica')
-	await resolveActiveTimelineSigner(username)
+	await resolveEntityTimelineSigner(username, entityHash)
 }
 
 /**
  * @param {string} username replica
- * @param {string} entityHash operator entityHash
+ * @param {string} entityHash 128 hex
  * @param {object} event 未签名事件
  * @param {Uint8Array} secretKey 签名私钥
  * @returns {Promise<object>} 签名事件
  */
-async function appendSignedOperatorTimelineEvent(username, entityHash, event, secretKey) {
-	await assertWritableOperatorTimeline(username, entityHash)
+async function appendSignedEntityTimelineEvent(username, entityHash, event, secretKey) {
+	await assertWritableEntityTimeline(username, entityHash)
 	const groupId = groupIdForTimeline(entityHash)
 	const previous = await readJsonl(timelineEventsPath(username, entityHash))
 	const { hlc, prev_event_ids } = computeAppendHlcAndPrev(previous, event)
@@ -75,16 +76,16 @@ async function appendSignedOperatorTimelineEvent(username, entityHash, event, se
 }
 
 /**
- * 主动轮换 operator 活跃钥并广播时间线事件。
+ * 主动轮换实体活跃钥并广播时间线事件。
  * @param {string} username replica
- * @param {string} entityHash operator entityHash
+ * @param {string} entityHash 实体 entityHash
  * @param {object} rotation 轮换结果
  * @returns {Promise<object>} 签名事件
  */
-export async function commitOperatorKeyRotate(username, entityHash, rotation) {
-	const { secretKey } = await resolveActiveTimelineSigner(username)
-	const signed = await appendSignedOperatorTimelineEvent(username, entityHash, {
-		type: 'operator_key_rotate',
+export async function commitEntityKeyRotate(username, entityHash, rotation) {
+	const { secretKey } = await resolveEntityTimelineSigner(username, entityHash)
+	const signed = await appendSignedEntityTimelineEvent(username, entityHash, {
+		type: 'entity_key_rotate',
 		content: {
 			generation: rotation.keyGeneration,
 			activePubKeyHex: rotation.activePubKeyHex,
@@ -98,14 +99,14 @@ export async function commitOperatorKeyRotate(username, entityHash, rotation) {
 /**
  * recovery 钥签发 revoke + 新活跃钥。
  * @param {string} username replica
- * @param {string} entityHash operator entityHash
+ * @param {string} entityHash 实体 entityHash
  * @param {object} revokeBody 吊销正文
  * @param {Uint8Array} recoverySecretKey recovery 私钥
  * @returns {Promise<object>} revoke 事件
  */
-export async function commitOperatorKeyRevoke(username, entityHash, revokeBody, recoverySecretKey) {
-	const signed = await appendSignedOperatorTimelineEvent(username, entityHash, {
-		type: 'operator_key_revoke',
+export async function commitEntityKeyRevoke(username, entityHash, revokeBody, recoverySecretKey) {
+	const signed = await appendSignedEntityTimelineEvent(username, entityHash, {
+		type: 'entity_key_revoke',
 		content: revokeBody,
 	}, recoverySecretKey)
 	await publishTimelineEvent(username, entityHash, signed)

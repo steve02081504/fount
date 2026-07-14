@@ -25,8 +25,8 @@ import { getState } from '../dag/materialize.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { injectFountChatCodeContextPlugin } from '../lib/codeContextPlugin.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
-import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
+import { ensureLocalAgentEntityHash } from '../lib/entity.mjs'
+import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import {
 	buildChatLogEntryFromCharReply,
@@ -104,7 +104,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
 	const memberId = charname
-		? agentEntityHash(getLocalNodeHash(), `chars/${charname}`)
+		? await ensureLocalAgentEntityHash(replicaUsername, charname)
 		: await getOperatorEntityHash(replicaUsername)
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */

@@ -100,7 +100,7 @@ export async function discoverFollowGraph(username, entityHash, ingress = {}) {
 	const view = await getTimelineMaterialized(username, id)
 	if (view.socialMeta?.hideFromDiscovery) {
 		const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
-		const { resolveOperatorEntityHashForUser } = await import('../../../../../../server/p2p_server/operator_identity.mjs')
+		const { resolveOperatorEntityHashForUser } = await import('../../../../../../server/p2p_server/entity_identity.mjs')
 		const requesterNode = (ingress.requesterNodeHash || '').trim().toLowerCase()
 		const operator = await resolveOperatorEntityHashForUser(username)
 		const isOwnerRequest = requesterNode === getNodeHash() || operator?.toLowerCase() === id

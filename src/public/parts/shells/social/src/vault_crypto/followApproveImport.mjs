@@ -5,7 +5,7 @@ import { publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
-import { getOperatorSecretKey } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { getOperatorSecretKey } from '../../../../../../server/p2p_server/entity_identity.mjs'
 
 import { saveVaultMasterKey } from './vault.mjs'
 

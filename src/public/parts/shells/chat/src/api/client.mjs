@@ -1,4 +1,4 @@
-import { ensureOperatorPubKey } from 'fount/server/p2p_server/operator_identity.mjs'
+import { ensureOperatorPubKey } from 'fount/server/p2p_server/entity_identity.mjs'
 
 import { createEcdhDmGroup } from '../chat/dm/index.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
@@ -15,7 +15,7 @@ import { createMessage } from './message.mjs'
  */
 export function createChatClient(ctx) {
 	return {
-		entityHash: ctx.actor.entityHash,
+		entityHash: ctx.entityHash,
 		/**
 		 * @returns {Promise<object[]>} 已加入群列表
 		 */
@@ -53,8 +53,6 @@ export function createChatClient(ctx) {
 		 * @returns {Promise<object>} 新建 Group
 		 */
 		async createGroup(opts = {}) {
-			if (ctx.actor.kind === 'agent')
-				throw new Error('agent actors cannot create groups')
 			const groupId = await newGroup(ctx.username, opts)
 			return this.group(groupId)
 		},
@@ -96,13 +94,13 @@ export function createChatClient(ctx) {
 }
 
 /**
- * 获取以 acting entity 归因的 ChatClient。
+ * 获取以指定实体自签的 ChatClient。
  * @param {string} username replica 登录名
- * @param {string | undefined | null} [actingEntityHash] 缺省 = operator
+ * @param {string | undefined | null} [entityHash] 缺省 = operator
  * @returns {Promise<object>} ChatClient
  */
-export async function getChatClient(username, actingEntityHash) {
-	const { resolveChatActor } = await import('../chat/lib/actor.mjs')
-	const actor = await resolveChatActor(username, actingEntityHash)
-	return createChatClient({ username, actor })
+export async function getChatClient(username, entityHash) {
+	const { resolveChatEntity } = await import('../chat/lib/actor.mjs')
+	const entity = await resolveChatEntity(username, entityHash)
+	return createChatClient({ username, ...entity })
 }

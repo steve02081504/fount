@@ -1,6 +1,5 @@
 import { findTriggerChatLogEntry } from './codeBridgeContext.mjs'
-import { agentEntityHash } from './entity.mjs'
-import { getLocalNodeHash } from './replica.mjs'
+import { ensureLocalAgentEntityHash } from './entity.mjs'
 
 /** @type {import('../../../../../../decl/pluginAPI.ts').PluginAPI_t} */
 export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
@@ -29,13 +28,13 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 				const channelId = args.extension?.channelId
 				if (!groupId || !channelId || !args.username) return {}
 
-				const actingEntityHash = args.char_id
-					? agentEntityHash(getLocalNodeHash(), `chars/${args.char_id}`)
+				const entityHash = args.char_id
+					? await ensureLocalAgentEntityHash(args.username, args.char_id)
 					: args.extension?.memberId
 
 				const { getChatClient } = await import('../../api/index.mjs')
 				const { buildConversationContext } = await import('./conversationContext.mjs')
-				const chat = await getChatClient(args.username, actingEntityHash)
+				const chat = await getChatClient(args.username, entityHash)
 				const group = await chat.group(groupId)
 				const channel = await group.channel(channelId)
 

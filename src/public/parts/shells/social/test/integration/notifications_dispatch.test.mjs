@@ -20,8 +20,7 @@ const append = await import('../../src/timeline/append.mjs')
 const notifications = await import('../../src/notifications.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const following = await import('../../src/following.mjs')
-const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
@@ -34,7 +33,7 @@ async function seedMentionAgentChar(username) {
 	const to = join(getUserDictionary(username), 'chars', GETREPLY_CHAR)
 	await mkdir(to, { recursive: true })
 	await cp(join(fixturesRoot, 'chars', GETREPLY_CHAR), to, { recursive: true })
-	return agentEntityHash(getNodeHash(), `chars/${GETREPLY_CHAR}`)
+	return ensureLocalAgentEntityHash(username, GETREPLY_CHAR)
 }
 
 Deno.test('buildNotifications includes like repost follow reply mention', async () => {

@@ -2,8 +2,7 @@ import { randomUUID } from 'node:crypto'
 
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
 import { commitChannelMessageEvent } from '../chat/channel/messageCommit.mjs'
-import { appendActorEvent } from '../chat/dag/append.mjs'
-import { createChannel as dagCreateChannel } from '../chat/dag/channelOps.mjs'
+import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
 import { broadcastSignedGroupVolatile } from '../chat/session/broadcast.mjs'
@@ -15,12 +14,23 @@ import { createMessage } from './message.mjs'
 
 /**
  * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @returns {{ kind: 'char', charname: string, entityHash: string } | { kind: 'user', memberId: string }} 观察者字段
+ */
+function viewerFieldsFromCtx(ctx) {
+	return ctx.charname
+		? { kind: 'char', charname: ctx.charname, entityHash: ctx.entityHash }
+		: { kind: 'user', memberId: ctx.entityHash }
+}
+
+/**
+ * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} [projection] 1.4 频道投影
  * @returns {object} Channel 鸭子类型
  */
 export function createChannel(ctx, groupId, channelId, projection = {}) {
+	const signOpts = { entityHash: ctx.entityHash }
 	return {
 		id: channelId,
 		name: projection.name || channelId,
@@ -31,7 +41,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async send(reply) {
 			const content = normalizeReplyContent(reply)
-			const charId = ctx.actor.kind === 'agent' ? ctx.actor.charname : null
+			const charId = ctx.charname || null
 			const event = await commitChannelMessageEvent({
 				username: ctx.username,
 				groupId,
@@ -39,6 +49,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				content,
 				charId,
 				origin: charId ? 'char' : 'human',
+				entityHash: ctx.entityHash,
 			})
 			return createMessage(ctx, groupId, {
 				eventId: event.id,
@@ -53,7 +64,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<void>}
 		 */
 		async typing() {
-			recordChannelTyping(ctx.username, groupId, channelId, ctx.actor.entityHash)
+			recordChannelTyping(ctx.username, groupId, channelId, ctx.entityHash)
 			const state = await loadGroupState(ctx, groupId)
 			if (state.groupSettings?.bridge) {
 				await dispatchBridgeTyping(ctx, groupId, state, channelId)
@@ -63,7 +74,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				type: 'typing',
 				groupId,
 				channelId,
-				memberId: ctx.actor.entityHash,
+				memberId: ctx.entityHash,
 			})
 		},
 		/**
@@ -78,9 +89,6 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object[]>} Message 列表
 		 */
 		async messages(opts = {}) {
-			const viewerFields = ctx.actor.kind === 'agent'
-				? { kind: 'char', charname: ctx.actor.charname, entityHash: ctx.actor.entityHash }
-				: { kind: 'user', memberId: ctx.actor.entityHash }
 			const { messages: rows } = await readViewerChannelMessages(
 				ctx.username,
 				groupId,
@@ -89,7 +97,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 					limit: opts.limit,
 					before: opts.before,
 				},
-				viewerFields,
+				viewerFieldsFromCtx(ctx),
 			)
 			return rows.map(row => createMessage(ctx, groupId, {
 				eventId: row.eventId,
@@ -112,9 +120,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				groupId,
 				channelId,
 				{ eventIds: pinIds },
-				ctx.actor.kind === 'agent'
-					? { kind: 'char', charname: ctx.actor.charname, entityHash: ctx.actor.entityHash }
-					: { kind: 'user', memberId: ctx.actor.entityHash },
+				viewerFieldsFromCtx(ctx),
 			)
 			return rows.map(row => createMessage(ctx, groupId, row))
 		},
@@ -137,7 +143,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				timestamp: Date.now(),
 				content: { type: 'vote', question, options, deadline: voteDeadline },
 			}
-			const event = await appendActorEvent(ctx.username, groupId, ctx.actor, body)
+			const event = await appendSignedLocalEvent(ctx.username, groupId, body, signOpts)
 			void scheduleVoteDeadlines(ctx.username, groupId)
 			return createMessage(ctx, groupId, {
 				eventId: event.id,
@@ -152,22 +158,20 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} 新建 Channel（由 Group.createChannel 使用）
 		 */
 		async _createSibling(opts) {
-			const channelId = opts.channelId || randomUUID()
-			const created = ctx.actor.kind === 'agent'
-				? await appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'channel_create',
-					timestamp: Date.now(),
-					content: {
-						channelId,
-						type: opts.type || 'text',
-						name: opts.name || channelId,
-						description: opts.description,
-					},
-				})
-				: await dagCreateChannel(ctx.username, groupId, { ...opts, channelId })
-			const newChannelId = created.content?.channelId || channelId
-			const { channel } = await buildConversationContext(ctx.username, groupId, newChannelId)
-			return createChannel(ctx, groupId, newChannelId, channel)
+			const newChannelId = opts.channelId || randomUUID()
+			const created = await appendSignedLocalEvent(ctx.username, groupId, {
+				type: 'channel_create',
+				timestamp: Date.now(),
+				content: {
+					channelId: newChannelId,
+					type: opts.type || 'text',
+					name: opts.name || newChannelId,
+					description: opts.description,
+				},
+			}, signOpts)
+			const resolvedId = created.content?.channelId || newChannelId
+			const { channel } = await buildConversationContext(ctx.username, groupId, resolvedId)
+			return createChannel(ctx, groupId, resolvedId, channel)
 		},
 	}
 }

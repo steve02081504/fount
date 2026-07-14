@@ -181,27 +181,71 @@ export function createFountEntityStore() {
 
 /**
  * @param {string} username fount 登录名
- * @returns {string} operator.json 绝对路径
+ * @returns {string} 用户 entities 根目录
  */
-export function operatorJsonPath(username) {
+export function entitiesRoot(username) {
+	return path.join(getUserDictionary(username), 'entities')
+}
+
+/**
+ * @param {string} username fount 登录名
+ * @param {string} entityHash 128 hex
+ * @returns {string} identity.json 绝对路径
+ */
+export function entityIdentityPath(username, entityHash) {
+	return path.join(entitiesRoot(username), String(entityHash).toLowerCase(), 'identity.json')
+}
+
+/**
+ * 旧路径：settings/operator.json（一次性搬迁源）。
+ * @param {string} username fount 登录名
+ * @returns {string} 旧 operator.json 路径
+ */
+export function legacyOperatorJsonPath(username) {
 	return path.join(getUserDictionary(username), 'settings', 'operator.json')
 }
 
 /**
  * @param {string} username fount 登录名
- * @returns {Promise<{ recoveryPubKeyHex: string, activePubKeyHex: string, activeSecretKeyHex?: string } | null>} operator 身份
+ * @param {string} entityHash 128 hex
+ * @returns {Promise<object | null>} 实体身份行
  */
-export async function readOperatorIdentity(username) {
-	return readJsonFile(operatorJsonPath(username))
+export async function readEntityIdentity(username, entityHash) {
+	return readJsonFile(entityIdentityPath(username, entityHash))
 }
 
 /**
  * @param {string} username fount 登录名
- * @param {object} data operator 身份对象
+ * @param {string} entityHash 128 hex
+ * @param {object} data 身份对象
  * @returns {Promise<void>}
  */
-export async function writeOperatorIdentity(username, data) {
-	const filePath = operatorJsonPath(username)
+export async function writeEntityIdentity(username, entityHash, data) {
+	const filePath = entityIdentityPath(username, entityHash)
 	await mkdir(path.dirname(filePath), { recursive: true })
 	await writeJsonFile(filePath, data)
+}
+
+/**
+ * @param {string} username fount 登录名
+ * @returns {Promise<object[]>} 该用户全部实体身份行（含 entityHash）
+ */
+export async function listEntityIdentities(username) {
+	const root = entitiesRoot(username)
+	const { readdir } = await import('node:fs/promises')
+	let dirs
+	try {
+		dirs = await readdir(root, { withFileTypes: true })
+	}
+	catch {
+		return []
+	}
+	/** @type {object[]} */
+	const rows = []
+	for (const ent of dirs) {
+		if (!ent.isDirectory()) continue
+		const row = await readEntityIdentity(username, ent.name)
+		if (row) rows.push({ ...row, entityHash: String(ent.name).toLowerCase() })
+	}
+	return rows
 }

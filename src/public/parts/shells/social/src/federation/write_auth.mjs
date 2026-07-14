@@ -3,56 +3,31 @@
  */
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { isValidActiveSender } from 'npm:@steve02081504/fount-p2p/federation/operator_key_chain'
 
-import { getOperatorEntityHashProvider } from './follower_index_registry.mjs'
-import { resolveSocialEntity } from './hosting.mjs'
 import {
-	foldOperatorKeyHistoryFromEvents,
-	isOperatorTimelineWriteAuthorized,
-} from './operator_key_auth.mjs'
+	foldEntityKeyHistoryFromEvents,
+	isEntityTimelineWriteAuthorized,
+} from './entity_key_auth.mjs'
 
-
-/**
- * sender 是否为本机某 agent 实体的合法 operator 活跃钥。
- * @param {string} entityHash 128 位 agent entityHash
- * @param {string} sender 已验签的 sender pubKeyHash（64 hex）
- * @returns {Promise<boolean>} 是否为该 agent 托管节点的 operator 活跃钥
- */
-async function isLocalAgentOperator(entityHash, sender) {
-	const resolved = await resolveSocialEntity(entityHash)
-	if (resolved?.kind !== 'agent' || !resolved.replicaUsername) return false
-	const resolveOperator = getOperatorEntityHashProvider()
-	if (!resolveOperator) return false
-	const operator = await resolveOperator(resolved.replicaUsername)
-	if (!operator) return false
-	const provider = getOperatorKeyChainProvider()
-	if (!provider) return false
-	const chain = await provider(resolved.replicaUsername)
-	if (!chain?.recoveryPubKeyHex) return false
-	return isValidActiveSender(chain.operatorKeyHistory || [], chain.recoveryPubKeyHex, sender)
-}
-
-/** @type {((username: string) => Promise<{ recoveryPubKeyHex: string, operatorKeyHistory: object[], activePubKeyHex?: string } | null>) | null} */
-let operatorKeyChainProvider = null
+/** @type {((username: string) => Promise<{ recoveryPubKeyHex: string, entityKeyHistory: object[], activePubKeyHex?: string } | null>) | null} */
+let entityKeyChainProvider = null
 
 /**
- * @param {(username: string) => Promise<object | null>} fn 按 replica 返回密钥链
+ * @param {(username: string) => Promise<object | null>} fn 按 replica 返回密钥链（默认 operator）
  * @returns {void}
  */
-export function registerOperatorKeyChainProvider(fn) {
-	operatorKeyChainProvider = fn
+export function registerEntityKeyChainProvider(fn) {
+	entityKeyChainProvider = fn
 }
 
 /**
  * @returns {((username: string) => Promise<object | null>) | null} 已注册 provider
  */
-export function getOperatorKeyChainProvider() {
-	return operatorKeyChainProvider
+export function getEntityKeyChainProvider() {
+	return entityKeyChainProvider
 }
-
 /**
- * 判定已验签的 sender 是否有权写入目标时间线（user / agent 统一入口）。
+ * 判定已验签的 sender 是否有权写入目标时间线。
  * @param {string} entityHash 时间线 owner（128 hex）
  * @param {string} sender 事件 sender（已验签的 pubKeyHash，64 hex）
  * @param {object} [opts] 可选上下文
@@ -67,20 +42,20 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 	const normalizedSender = normalizeHex64(sender)
 	if (!isHex64(normalizedSender)) return false
 
-	const folded = foldOperatorKeyHistoryFromEvents(opts.priorEvents || [])
+	const folded = foldEntityKeyHistoryFromEvents(opts.priorEvents || [])
 	const recoveryPubKeyHex = folded.recoveryPubKeyHex || opts.recoveryPubKeyHex || null
-	const operatorKeyHistory = folded.operatorKeyHistory?.length
-		? folded.operatorKeyHistory
-		: opts.operatorKeyHistory || []
+	const entityKeyHistory = folded.entityKeyHistory?.length
+		? folded.entityKeyHistory
+		: opts.entityKeyHistory || []
 
-	if (recoveryPubKeyHex && operatorKeyHistory.length)
-		if (isOperatorTimelineWriteAuthorized({
+	if (recoveryPubKeyHex && entityKeyHistory.length)
+		if (isEntityTimelineWriteAuthorized({
 			entityHash: parsed.entityHash,
 			sender: normalizedSender,
 			eventType: opts.eventType || '',
 			eventContent: opts.eventContent || {},
 			recoveryPubKeyHex,
-			operatorKeyHistory,
+			entityKeyHistory,
 		}))
 			return true
 
@@ -90,5 +65,5 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 	if (normalizedSender === parsed.subjectHash)
 		return true
 
-	return isLocalAgentOperator(parsed.entityHash, normalizedSender)
+	return false
 }

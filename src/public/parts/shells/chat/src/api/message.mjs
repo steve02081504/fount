@@ -1,6 +1,4 @@
-import { appendChannelMessageDelete, appendChannelMessageEdit } from '../chat/channel/messageMutations.mjs'
-import { appendActorEvent } from '../chat/dag/append.mjs'
-import { appendPinEvent, appendReactionEvent, appendUnpinEvent } from '../chat/dag/channelOps.mjs'
+import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { memberEntityHash } from '../chat/lib/entity.mjs'
 import { messageMentionsEntity } from '../chat/lib/mentionFacts.mjs'
 
@@ -19,6 +17,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 	const channelId = line.channelId || line.extension?.groupChannelId || 'default'
 	const content = line.content || line
 	const messageMentions = mentions || line.mentions
+	const signOpts = { entityHash: ctx.entityHash }
 
 	return {
 		eventId,
@@ -65,98 +64,76 @@ export function createMessage(ctx, groupId, line, mentions) {
 		 */
 		async edit(patch) {
 			const newContent = normalizeReplyContent(patch.content ?? patch)
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'message_edit',
-					channelId,
-					timestamp: Date.now(),
-					content: {
-						targetId: eventId,
-						newContent,
-						chatLogEntryId: content.chatLogEntryId,
-					},
-				})
-			return appendChannelMessageEdit(ctx.username, groupId, channelId, eventId, newContent)
+			return appendSignedLocalEvent(ctx.username, groupId, {
+				type: 'message_edit',
+				channelId,
+				timestamp: Date.now(),
+				content: {
+					targetId: eventId,
+					newContent,
+					chatLogEntryId: content.chatLogEntryId,
+				},
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} message_delete 事件
 		 */
 		async delete() {
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'message_delete',
-					channelId,
-					timestamp: Date.now(),
-					content: {
-						targetId: eventId,
-						chatLogEntryId: content.chatLogEntryId,
-					},
-				})
-			return appendChannelMessageDelete(ctx.username, groupId, channelId, eventId)
+			return appendSignedLocalEvent(ctx.username, groupId, {
+				type: 'message_delete',
+				channelId,
+				timestamp: Date.now(),
+				content: {
+					targetId: eventId,
+					chatLogEntryId: content.chatLogEntryId,
+				},
+			}, signOpts)
 		},
 		/**
 		 * @param {string} emoji emoji token
 		 * @returns {Promise<object>} reaction_add 事件
 		 */
 		async react(emoji) {
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'reaction_add',
-					channelId,
-					timestamp: Date.now(),
-					content: { targetEventId: eventId, emoji },
-				})
-			return appendReactionEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'reaction_add',
 				channelId,
-				targetEventId: eventId,
-				emoji,
-			})
+				timestamp: Date.now(),
+				content: { targetEventId: eventId, emoji },
+			}, signOpts)
 		},
 		/**
 		 * @param {string} emoji emoji token
 		 * @returns {Promise<object>} reaction_remove 事件
 		 */
 		async unreact(emoji) {
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'reaction_remove',
-					channelId,
-					timestamp: Date.now(),
-					content: { targetEventId: eventId, emoji },
-				})
-			return appendReactionEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(ctx.username, groupId, {
 				type: 'reaction_remove',
 				channelId,
-				targetEventId: eventId,
-				emoji,
-			})
+				timestamp: Date.now(),
+				content: { targetEventId: eventId, emoji },
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} pin_message 事件
 		 */
 		async pin() {
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'pin_message',
-					channelId,
-					timestamp: Date.now(),
-					content: { targetEventId: eventId },
-				})
-			return appendPinEvent(ctx.username, groupId, channelId, eventId)
+			return appendSignedLocalEvent(ctx.username, groupId, {
+				type: 'pin_message',
+				channelId,
+				timestamp: Date.now(),
+				content: { targetEventId: eventId },
+			}, signOpts)
 		},
 		/**
 		 * @returns {Promise<object>} unpin_message 事件
 		 */
 		async unpin() {
-			if (ctx.actor.kind === 'agent')
-				return appendActorEvent(ctx.username, groupId, ctx.actor, {
-					type: 'unpin_message',
-					channelId,
-					timestamp: Date.now(),
-					content: { targetEventId: eventId },
-				})
-			return appendUnpinEvent(ctx.username, groupId, channelId, eventId)
+			return appendSignedLocalEvent(ctx.username, groupId, {
+				type: 'unpin_message',
+				channelId,
+				timestamp: Date.now(),
+				content: { targetEventId: eventId },
+			}, signOpts)
 		},
 		/**
 		 * @param {string} hash entityHash

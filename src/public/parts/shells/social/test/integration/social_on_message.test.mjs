@@ -20,8 +20,7 @@ const append = await import('../../src/timeline/append.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const inbox = await import('../../src/inbox.mjs')
 const following = await import('../../src/following.mjs')
-const { agentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
-const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
+const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/chat/lib/entity.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
@@ -37,7 +36,7 @@ async function seedAgentChar(username, charName) {
 	const to = join(getUserDictionary(username), 'chars', charName)
 	await mkdir(to, { recursive: true })
 	await cp(join(fixturesRoot, 'chars', charName), to, { recursive: true })
-	return agentEntityHash(getNodeHash(), `chars/${charName}`)
+	return ensureLocalAgentEntityHash(username, charName)
 }
 
 Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage missing and mentioned', async () => {

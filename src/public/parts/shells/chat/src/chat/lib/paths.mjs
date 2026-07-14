@@ -190,12 +190,23 @@ export function channelKeysPath(username, groupId) {
 }
 
 /**
- * 本机签名种子文件路径（32 字节二进制，不入 DAG）。
+ * 本机 per-entity 签名种子路径（32 字节二进制，不入 DAG）。
  * @param {string} username 本地账户名
  * @param {string} groupId 会话 / 群 ID
+ * @param {string} entityHash 128-hex 实体
  * @returns {string} 种子文件绝对路径
  */
-export function localSignerSeedPath(username, groupId) {
+export function localSignerSeedPath(username, groupId, entityHash) {
+	return join(groupDir(username, groupId), 'signers', entityHash, 'local_signer_seed')
+}
+
+/**
+ * 旧版群级单种子路径（仅 operator 迁移读）。
+ * @param {string} username 本地账户名
+ * @param {string} groupId 会话 / 群 ID
+ * @returns {string} 旧种子绝对路径
+ */
+export function legacyLocalSignerSeedPath(username, groupId) {
 	return join(groupDir(username, groupId), 'local_signer_seed')
 }
 

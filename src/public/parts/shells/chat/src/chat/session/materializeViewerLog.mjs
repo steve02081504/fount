@@ -8,7 +8,7 @@
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatLogEntry_t} chatLogEntry_t */
 /** @typedef {import('../../../../../../../decl/chatLog.ts').chatViewer_t} chatViewer_t */
 
-import { agentEntityHash } from '../lib/entity.mjs'
+import { ensureLocalAgentEntityHash } from '../lib/entity.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,
@@ -16,7 +16,7 @@ import {
 } from '../dag/hydration.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/contextSidecar.mjs'
-import { getLocalNodeHash, getOperatorEntityHash } from '../lib/replica.mjs'
+import { getOperatorEntityHash } from '../lib/replica.mjs'
 import { entryVisibleToViewer } from '../lib/visibility.mjs'
 
 
@@ -52,7 +52,7 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 
 	const memberId = viewerFields.memberId
 		?? (viewerFields.kind === 'char' && viewerFields.charname
-			? viewerFields.entityHash || agentEntityHash(getLocalNodeHash(), `chars/${viewerFields.charname}`)
+			? viewerFields.entityHash || await ensureLocalAgentEntityHash(username, viewerFields.charname)
 			: await getOperatorEntityHash(username))
 
 	/** @type {chatViewer_t} */

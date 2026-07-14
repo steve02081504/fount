@@ -128,7 +128,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET | `/discovery` | 本地群发现索引（`?limit=`）；条目含 `sources[]` 来源 node |
 | POST | `/discovery/refresh` | 向已加入群联邦邻居广播 `discovery_announce` |
 
-**用户级 P2P（服务器路由，非 chat shell 前缀）**：`GET/PUT /api/p2p/federation`（identity、relayUrls、batterySaver）；`GET /api/p2p/viewer`（operator entity + profile）；`GET/PUT /api/p2p/entities/:entityHash` 及 avatar/status/heartbeat。群传输密钥仍在 DAG `groupSettings.roomSecret`。
+**用户级 P2P（服务器路由，非 chat shell 前缀）**：`GET/PUT /api/p2p/federation`（identity、relayUrls、batterySaver）；`GET /api/p2p/viewer`（operator entity + profile + `agents: [{ entityHash, charPartName }]`）；`POST /api/p2p/agents/ensure` body `{ charPartName }` → `{ entityHash, charPartName }`；`GET/PUT /api/p2p/entities/:entityHash` 及 avatar/status/heartbeat。群传输密钥仍在 DAG `groupSettings.roomSecret`。
 
 **群设置（发现）**：`group_settings_update` 可写 `discoveryPublic`、`discoveryTitle`、`discoveryBlurb`（不含 `roomSecret`）。另含 `eventRetentionDepth`、`eventRetentionMs`、`compactTriggerEventDepth`、`messageRateLimitPerMin`、`iceServers`（WebRTC/Trystero；TURN 凭据仅本机物化）、`autoChannelGc`（默认 true：物化时自动删除沉寂孤岛频道，每次最多 2 个）。联邦调优三字段经 `POST …/federation/tuning` 写入：`federationPartitionCount`、`rtcConnectionBudgetMax`、`rtcJoinRatePerMin`。本地 `messages/{channelId}.jsonl` 为明文展示侧车；DAG `events.jsonl` 仍为 GSH 密文。
 
@@ -263,12 +263,11 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ## ChatClient 对象模型（进程内 API）
 
-import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, actingEntityHash?)`。
+import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, entityHash?)`。
 
-- **acting entity**：缺省 = operator；可指定本机托管 agent 的 entityHash。写事件由 operator 群签名钥代签；agent 归因写 `content.actingAgentEntityHash`，权限按 agent 成员行裁决。
-- **有意不对等**：agent 不能 `createGroup`、不能持群 ownership、不能独立持钥。
+- **操作实体**：缺省 = operator；可指定本机托管 agent 的 entityHash。写事件由该实体的 per-entity 群签名钥自签；权限主体恒为 `sender`。
 - **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
-- **写路径**：消息发送走 `commitChannelMessageEvent(origin:'char')`；其余写操作走 `appendActorEvent` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
+- **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
 - **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；typing/leave/kick/createInvite 等平台操作经 `requireBridgeOp(username, group.bridge, op)` 分派到 per-bot 注册表（键 `${username}:${platform}:${botname}`）；未注册 op 直接 throw。壳层 `registerBridgeOps(username, platform, botname, ops, { teardown, charname })`；`stopBot`/`pauseBot` 调 `unregisterBridgeOps` 触发 teardown（清 outbound + char 注册表）。
 - **bot 生命周期操作面**：`group.bridgeBot()` → `{ platform, botname, stop() }`（`stop()` = `stopSelf` op = 壳级 `stopBot`）；`client.bridgeBots()` 枚举运行中实例。粒度：退群 = `group.leave()`；停单 bot = `group.bridgeBot().stop()`；全平台下线 = 遍历 `client.bridgeBots()` 逐停。无 char 级杀进程。
 - **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ fount: { chat, group, channel, message? } }`；平台插件另注入 `{ discord }` / `{ telegram }` / `{ wechat }` 命名空间（桥接群经 `getNativeContext` 水合原生对象）。沙箱不暴露 `bridgeOps`。

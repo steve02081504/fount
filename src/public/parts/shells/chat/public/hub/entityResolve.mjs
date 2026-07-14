@@ -3,22 +3,24 @@
  * 【职责】Hub 内实体身份解析：角色 agent entityHash、本地可写与当前 viewer 的 hash 判定。
  * 【原理】为资料卡、成员菜单与消息作者展示提供 `charAgentEntityHash` 等查询辅助。间接影响作者标签与 trusted 判定输入，不渲染消息 HTML。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../src/friendBinding、../src/lib/entityHash、core/state
+ * 【关联】../src/friendBinding、../src/lib/entityHash、core/state、core/domUtils
  */
 import { isEntityHash128 } from '../shared/entityHash.mjs'
-import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
 
+import { charEntityHashFromCache, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 
 /**
  * @param {string} charname 角色 part 名
- * @returns {string | null} 本地 agent entityHash
+ * @returns {Promise<string | null>} 本地 agent entityHash（后端 identity，禁止路径派生）
  */
 export async function charAgentEntityHash(charname) {
-	const { nodeHash } = hubStore
 	const name = String(charname || '').trim()
-	if (!nodeHash || !name) return null
-	return (await buildCharFriendBinding(nodeHash, name)).entityHash
+	if (!name) return null
+	const cached = charEntityHashFromCache(name)
+	if (cached) return cached
+	await warmCharEntityHashCache([name])
+	return charEntityHashFromCache(name)
 }
 
 /**

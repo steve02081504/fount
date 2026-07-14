@@ -61,6 +61,8 @@ export const hubStore = {
 		/** 登录用户 operator 实体（个人拉黑/隐藏列表归属；入群后不随 viewer 切换） */
 		operatorEntityHash: null,
 		viewerEntityHash: null,
+		/** @type {{ entityHash: string, charPartName: string }[]} 本机 agent 映射（来自 /api/p2p/viewer） */
+		agents: [],
 	},
 	inbox: {
 		unreadCount: 0,

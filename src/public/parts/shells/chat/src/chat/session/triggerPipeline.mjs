@@ -1,14 +1,9 @@
-import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-
 import { getState } from '../dag/materialize.mjs'
-import { agentEntityHash } from '../lib/entity.mjs'
+import { memberEntityHash } from '../lib/entity.mjs'
 import { messageMentionsEntity } from '../lib/mentionFacts.mjs'
 import { groupKindFromState } from '../lib/notifyPrefs.mjs'
-import { getLocalNodeHash } from '../lib/replica.mjs'
-
 
 import { dispatchCharError } from './charError.mjs'
-import { getMaterializedSession } from './dagSession.mjs'
 import { getCharListOfGroup } from './partConfig.mjs'
 import {
 	autoReplyBucketKey,
@@ -21,16 +16,18 @@ import { resolveChar } from './resolvePart.mjs'
 import { isCharReplyInFlight, pickNextCharForReply, triggerCharReply } from './triggerReply.mjs'
 
 /**
- * @param {object} session 物化 session
+ * @param {object} members 物化成员表
  * @param {string} charname 角色名
- * @param {string} nodeHash 本节点 hash
  * @returns {string | null} agent entityHash
  */
-function charAgentEntityHash(session, charname, nodeHash) {
-	const bind = session.chars?.[charname]
-	if (!bind) return null
-	const home = normalizeHex64(bind.homeNodeHash) || nodeHash
-	return agentEntityHash(home, `chars/${charname}`).toLowerCase()
+function charAgentEntityHash(members, charname) {
+	const name = String(charname || '').trim().toLowerCase()
+	for (const member of Object.values(members || {})) {
+		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
+		if (String(member.charname || '').trim().toLowerCase() !== name) continue
+		return memberEntityHash(member)
+	}
+	return null
 }
 
 /**
@@ -105,8 +102,6 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	if (!chars.length) return
 
 	const mentions = options.mentions || { entityHashes: [], roleIds: [], everyone: false }
-	const session = await getMaterializedSession(username, groupId)
-	const nodeHash = getLocalNodeHash()
 	const settings = await loadAutoReplySettings(username, groupId)
 	const { state } = await getState(username, groupId)
 	const isDm = groupKindFromState(state) === 'dm'
@@ -117,7 +112,7 @@ export async function runTriggerPipeline(username, groupId, channelId, messageLi
 	const willing = []
 
 	for (const charname of chars) {
-		const agentHash = charAgentEntityHash(session, charname, nodeHash)
+		const agentHash = charAgentEntityHash(state.members, charname)
 		const event = await buildOnMessageEvent(username, groupId, channelId, charname, { messageLine, mentions })
 		const mentioned = agentHash ? await messageMentionsEntity(event, agentHash) : false
 		const wantsReply = await resolveCharReplyWill(

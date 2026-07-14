@@ -32,68 +32,68 @@ function baseState(overrides = {}) {
 	}
 }
 
-Deno.test('message_edit with absent target is deferrable (not a hard denial)', () => {
+Deno.test('message_edit with absent target is deferrable (not a hard denial)', async () => {
 	const state = baseState()
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
-	const result = checkEventPermission(state, event, SENDER)
+	const result = await checkEventPermission(state, event, SENDER)
 	assertEquals(result.ok, false)
 	assertEquals(result.reason, 'message not found')
 	assertEquals(result.deferrable, true)
 
 	let thrown
-	try { assertEventPermission(state, event, SENDER) }
+	try { await assertEventPermission(state, event, SENDER) }
 	catch (error) { thrown = error }
 	assertEquals(thrown?.deferrable, true)
 })
 
-Deno.test('message_delete with absent target is deferrable', () => {
+Deno.test('message_delete with absent target is deferrable', async () => {
 	const state = baseState()
 	const event = { type: 'message_delete', channelId: 'default', content: { targetId: TARGET } }
-	const result = checkEventPermission(state, event, SENDER)
+	const result = await checkEventPermission(state, event, SENDER)
 	assertEquals(result.ok, false)
 	assertEquals(result.deferrable, true)
 })
 
-Deno.test('message_edit denial for non-owner present target is NOT deferrable', () => {
+Deno.test('message_edit denial for non-owner present target is NOT deferrable', async () => {
 	const state = baseState({
 		messageSenderIndex: { [TARGET]: { sender: OTHER, charOwner: null, charId: null, channelId: 'default' } },
 	})
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
-	const result = checkEventPermission(state, event, SENDER)
+	const result = await checkEventPermission(state, event, SENDER)
 	assertEquals(result.ok, false)
 	assertEquals(result.reason, 'message_edit denied')
 	assertEquals(result.deferrable, undefined)
 
 	let thrown
-	try { assertEventPermission(state, event, SENDER) }
+	try { await assertEventPermission(state, event, SENDER) }
 	catch (error) { thrown = error }
 	assertEquals(thrown?.deferrable, undefined)
 })
 
-Deno.test('message_edit by author with present target is allowed', () => {
+Deno.test('message_edit by author with present target is allowed', async () => {
 	const state = baseState({
 		messageSenderIndex: { [TARGET]: { sender: SENDER, charOwner: null, charId: null, channelId: 'default' } },
 	})
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
-	assertEquals(checkEventPermission(state, event, SENDER).ok, true)
+	assertEquals((await checkEventPermission(state, event, SENDER)).ok, true)
 })
 
-Deno.test('message_edit referencing an already-deleted target is NOT deferrable', () => {
+Deno.test('message_edit referencing an already-deleted target is NOT deferrable', async () => {
 	const state = baseState({ messageOverlay: { deletedIds: new Set([TARGET]) } })
 	const event = { type: 'message_edit', channelId: 'default', content: { targetId: TARGET } }
-	const result = checkEventPermission(state, event, SENDER)
+	const result = await checkEventPermission(state, event, SENDER)
 	assertEquals(result.ok, false)
 	assertEquals(result.reason, 'message not found')
 	assertEquals(result.deferrable, false)
 })
 
-Deno.test('member_ban from sender not yet active locally is deferrable', () => {
+Deno.test('member_ban from sender not yet active locally is deferrable', async () => {
 	const state = baseState({ members: { [OTHER]: { status: 'active', roles: ['@everyone'] } } })
 	const event = {
 		type: 'member_ban',
 		content: { targetMemberKey: OTHER, banScope: 'entity' },
 	}
-	const result = checkEventPermission(state, event, SENDER)
+	const result = await checkEventPermission(state, event, SENDER)
 	assertEquals(result.ok, false)
 	assertEquals(result.reason, 'requires active member sender')
 	assertEquals(result.deferrable, true)

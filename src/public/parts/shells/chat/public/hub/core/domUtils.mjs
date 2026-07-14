@@ -14,7 +14,6 @@ import {
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
-import { agentEntityHash } from '../../shared/entityId.mjs'
 import { resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
 
@@ -29,6 +28,50 @@ export { avatarColor, avatarInitial, avatarTextColor, hashAvatarStyle }
 const charEntityHashCache = new Map()
 
 /**
+ * 把 agents 列表灌入 char→entityHash 缓存。
+ * @param {{ entityHash?: string, charPartName?: string }[]} agents viewer/agents
+ * @returns {void}
+ */
+export function ingestAgentEntityHashList(agents) {
+	for (const row of agents || []) {
+		const name = String(row?.charPartName || '').trim()
+		const hash = String(row?.entityHash || '').trim().toLowerCase()
+		if (name && isEntityHash128(hash))
+			charEntityHashCache.set(name, hash)
+	}
+}
+
+/**
+ * 经 `/api/p2p/agents/ensure` 解析本地角色 entityHash。
+ * @param {string} charname 角色 part 名
+ * @returns {Promise<string | null>} entityHash
+ */
+async function ensureCharEntityHashViaApi(charname) {
+	const name = String(charname || '').trim()
+	if (!name) return null
+	try {
+		const resp = await fetch('/api/p2p/agents/ensure', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ charPartName: name }),
+		})
+		if (!resp.ok) return null
+		const data = await resp.json()
+		const hash = String(data?.entityHash || '').trim().toLowerCase()
+		if (!isEntityHash128(hash)) return null
+		charEntityHashCache.set(name, hash)
+		const agents = hubStore.viewer.agents || []
+		if (!agents.some(a => String(a.charPartName || '') === name))
+			hubStore.viewer.agents = [...agents, { entityHash: hash, charPartName: name }]
+		return hash
+	}
+	catch {
+		return null
+	}
+}
+
+/**
  * 当前群/私聊涉及的角色 part 名。
  * @returns {string[]} 角色 part 名列表
  */
@@ -40,37 +83,33 @@ export function activeCharPartNames() {
 }
 
 /**
- * 预计算角色 agent entityHash（供消息头像/资料 API 使用）。
+ * 预热角色 agent entityHash（成员表 → viewer.agents → ensure API；禁止路径派生）。
  * @param {string[]} [charNames] 角色 part 名；省略则用当前群 charlist
  * @returns {Promise<void>}
  */
 export async function warmCharEntityHashCache(charNames = activeCharPartNames()) {
 	const members = hubStore.context.currentState?.members || []
-	/** @type {Map<string, { nodeHash?: string, agentEntityHash?: string, entityHash?: string }>} */
+	/** @type {Map<string, { agentEntityHash?: string, entityHash?: string }>} */
 	const agentByChar = new Map()
 	for (const member of members) {
-		if (member?.kind !== 'agent') continue
+		if (member?.kind !== 'agent' && member?.memberKind !== 'agent') continue
 		const charname = String(member.charname || '').trim().toLowerCase()
 		if (charname) agentByChar.set(charname, member)
 	}
+	ingestAgentEntityHashList(hubStore.viewer.agents || [])
+	const missing = []
 	for (const raw of charNames) {
 		const name = String(raw || '').trim()
 		if (!name || charEntityHashCache.has(name)) continue
 		const member = agentByChar.get(name.toLowerCase())
-		const cachedHash = member?.agentEntityHash || member?.entityHash
+		const cachedHash = member?.entityHash || member?.agentEntityHash
 		if (cachedHash && isEntityHash128(String(cachedHash))) {
 			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
 			continue
 		}
-		const node = member?.nodeHash || hubStore.nodeHash
-		if (!node) continue
-		try {
-			charEntityHashCache.set(name, await agentEntityHash(node, `chars/${name}`))
-		}
-		catch {
-			/* 忽略无效角色名 */
-		}
+		missing.push(name)
 	}
+	await Promise.all(missing.map(name => ensureCharEntityHashViaApi(name)))
 }
 
 /**

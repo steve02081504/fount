@@ -1,6 +1,6 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/operator_identity.mjs'
+import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../../../../server/p2p_server/entity_identity.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { loadFollowing } from '../following.mjs'
 

@@ -181,9 +181,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			return {
 				memberKey,
 				kind: isAgent ? 'agent' : 'user',
-				ownerPubKeyHash: isAgent ? memberRow.ownerPubKeyHash : undefined,
+				ownerEntityHash: isAgent ? memberRow.ownerEntityHash : undefined,
 				charname: isAgent ? memberRow.charname : null,
-				agentEntityHash: isAgent ? memberRow.agentEntityHash : null,
 				nodeHash: memberRow.homeNodeHash,
 				entityHash,
 				pubKeyHex: memberRow.pubKeyHex || null,

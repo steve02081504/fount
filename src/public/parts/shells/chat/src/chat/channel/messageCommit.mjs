@@ -97,17 +97,17 @@ export async function runWorldAddChatLogEntryHook(username, groupId, channelId, 
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} content 已规范化 content
- * @param {{ charId?: string | null, entry?: object | null, origin?: string }} [opts] 生成类选项
+ * @param {{ charId?: string | null, entry?: object | null, origin?: string, entityHash?: string }} [opts] 生成类选项
  * @returns {Promise<object>} canonical content
  */
 export async function buildCanonicalMessageContent(username, groupId, channelId, content, opts = {}) {
-	const { charId = null, entry = null, origin = 'human' } = opts
+	const { charId = null, entry = null, origin = 'human', entityHash } = opts
 	const base = channelMessageContentObject(content)
 	if (origin === 'bridge')
 		return base
 
 	const [{ sender }, { state }] = await Promise.all([
-		resolveLocalEventSigner(username, groupId),
+		resolveLocalEventSigner(username, groupId, entityHash),
 		getState(username, groupId),
 	])
 	const display = await resolveDisplaySnapshot(
@@ -146,6 +146,7 @@ export async function buildCanonicalMessageContent(username, groupId, channelId,
  *   origin?: 'human' | 'char' | 'greeting' | 'bridge',
  *   skipWorldHook?: boolean,
  *   ingress?: 'live' | 'backfill',
+ *   entityHash?: string,
  * }} args 落盘参数
  * @returns {Promise<object>} 已签名 DAG 事件
  */
@@ -160,6 +161,7 @@ export async function commitChannelMessageEvent(args) {
 		origin = 'human',
 		skipWorldHook = false,
 		ingress,
+		entityHash,
 	} = args
 	let { content } = args
 
@@ -184,6 +186,7 @@ export async function commitChannelMessageEvent(args) {
 		charId,
 		entry,
 		origin,
+		entityHash,
 	})
 
 	const event = await appendSignedLocalEvent(username, groupId, {
@@ -192,7 +195,7 @@ export async function commitChannelMessageEvent(args) {
 		timestamp,
 		...charId ? { charId } : {},
 		content: channelMessageContentObject(canonical),
-	}, { ...ingress ? { ingress } : {} })
+	}, { entityHash, ...ingress ? { ingress } : {} })
 
 	if (event?.id && entry)
 		entry.extension = { ...entry.extension || {}, dagEventId: event.id }

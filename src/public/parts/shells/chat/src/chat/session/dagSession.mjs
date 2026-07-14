@@ -1,7 +1,6 @@
 /**
  * 【文件】dagSession.mjs — DAG 物化 session 读取与 session_* / 成员 agent 事件追加
  */
-import { agentEntityHash } from '../lib/entity.mjs'
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
@@ -57,14 +56,19 @@ async function readWorldDistribution(replicaUsername, worldname) {
  * @returns {Promise<void>}
  */
 export async function appendAgentMemberJoin(replicaUsername, groupId, charname, appendOpts = {}) {
+	const { ensureLocalAgentEntityHash } = await import('../lib/entity.mjs')
+	const { getOperatorEntityHash } = await import('../../../../../../../server/p2p_server/entity_identity.mjs')
+	const { mintGroupInviteTicket } = await import('../lib/inviteTickets.mjs')
 	const bind = sessionOwnerBinding(replicaUsername)
-	const entityHash = agentEntityHash(bind.homeNodeHash, `chars/${charname}`)
+	const entityHash = await ensureLocalAgentEntityHash(replicaUsername, charname)
+	const ownerEntityHash = await getOperatorEntityHash(replicaUsername)
+	const { code: inviteCode } = await mintGroupInviteTicket(replicaUsername, groupId)
 	const content = {
-		memberKind: 'agent',
 		charname,
-		agentEntityHash: entityHash,
 		homeNodeHash: bind.homeNodeHash,
+		ownerEntityHash,
 		ownerUsername: bind.ownerUsername,
+		inviteCode,
 	}
 	if (Array.isArray(appendOpts.roles) && appendOpts.roles.length)
 		content.roles = appendOpts.roles
@@ -72,7 +76,7 @@ export async function appendAgentMemberJoin(replicaUsername, groupId, charname, 
 		type: 'member_join',
 		timestamp: Date.now(),
 		content,
-	}, appendOpts)
+	}, { ...appendOpts, entityHash })
 }
 
 /**
