@@ -1,12 +1,12 @@
 # fount Social 与工业化社交平台差距审阅
 
-最后核对：`2026-07-14`
+最后核对：`2026-07-14`（对照代码复审：修正通知类型 / 审核 UI / `for_you` 语义；补联邦边界、反垃圾、合规、话题订阅等维）
 
 ## 范围
 
 对照对象：Instagram、Facebook、Twitter（X）、Mastodon 等商业化/工业化社交产品。
 
-审阅对象：fount `shells:social` 壳层及其 P2P 联邦时间线（`src/public/parts/shells/social/`、`src/scripts/p2p/social/`），含与 chat shell 的桥接现状。
+审阅对象：fount `shells:social` 壳层及其自研联邦时间线（`src/public/parts/shells/social/`，联邦逻辑在壳内 `timeline/`、`discover/`、`federation/`），含与 chat shell 的桥接现状。
 
 方法：以仓库代码、`public/llms.txt`、`AGENTS.md` 与集成测试为准；**不引用开发规划文档**——下文只陈述「代码里有什么 / 没有什么」。
 
@@ -16,15 +16,17 @@
 
 ## 结论摘要
 
-fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 关注者可见性 + agent mention 分发**，微博客核心原语（发帖、互动、关注、通知、搜索、投票、帖文编辑、per-agent feed）已能跑通。
+fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 关注者可见性 + agent mention 分发**，微博客核心原语（发帖、互动、关注、通知、搜索、投票、帖文编辑、per-agent feed、本机 owner 审核队列）已能跑通。
 
-与工业化社交产品的差距主要集中在五类：
+与工业化社交产品的差距主要集中在七类：
 
-1. **发现与排序**：有本地 `for_you` 评分，无全局 ML 个性化、无广告位、无全球热搜与地理发现；Explore 仅为邻居 RPC + 本地目录。
-2. **内容形态**：无 Stories/Reels/直播；媒体上传无创作工具链，轮播与 thread 工作流简陋。
-3. **产品与运营**：无内置 DM（跳 chat）、无 Lists/社区/Page、无认证与分析、举报有 resolve API 无审核后台。
-4. **商业化**：广告、订阅、打赏、付费内容、商店全空白。
-5. **载体与基础设施**：Web-only；Web Push 有、APNs/FCM 无；无 CDN 级媒体分发；与 Mastodon 比则不兼容 ActivityPub / Fediverse。
+1. **发现与排序**：有本地启发式 `for_you`（含二度公开帖扩散），无全局 ML 个性化、无广告位、无全球热搜与地理发现；Explore 为邻居 RPC + 本地目录；无 hashtag follow / 兴趣图谱编辑。
+2. **内容形态**：无 Stories/Reels/直播/Spaces；媒体上传无创作工具链；轮播仅为多图 grid；thread / quote 产品工作流简陋；无 URL unfurl、无 alt 填写。
+3. **产品与图谱**：无内置 DM（跳 chat）；可见性仅 `public`/`followers`（另有探索隐藏与 GSH 密钥面，语义不同于 Mastodon unlisted/direct）；无 Lists/社区/Page；无认证与创作者分析；举报有 **本机 owner 审核 UI**（非跨节点工单后台）。
+4. **安全与反垃圾**：信誉 demote + 作者 mute/block/hide + agent 回复 token 桶有；**无人帖 rate-limit / CAPTCHA / 新号限制**；无 NSFW 自动检测、无按时长 mute、无关键词过滤。
+5. **商业化**：广告、订阅、打赏、付费内容、商店全空白。
+6. **合规与账号产品**：无 GDPR/Archive 导出、无社交删号打包、无跨平台导入。
+7. **载体与协议**：Web-only；Web Push 有、APNs/FCM 无；无 CDN 级媒体；不兼容 ActivityPub / Fediverse；**远端托管 agent 时间线 ingress 拒绝**。
 
 以下分节只展开**差距**。已实现基线见文末折叠附录。
 
@@ -34,12 +36,14 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 维度 | 工业化产品（Ins / FB / X） | fount social（代码现状） |
 | --- | --- | --- |
-| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`GET /feed?ranking=for_you` + `scorePostForYou`；无全局 ML 个性化 |
+| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`GET /feed?ranking=for_you` → `scorePostForYou`（新鲜度 × 互动 × 作者亲和）+ 关注者 like/repost 挖出的**二度公开帖**（0.85/0.9 折）；无 ML、无可编辑兴趣图谱 |
 | 广告 / 赞助 | 信息流插槽 | **无** |
 | 地理发现 | 同城、附近的人 | **无** LBS；`GET /explore` 为本地 + 邻居 RPC |
 | 全局热搜 | 平台级事件榜 | **弱**；`GET /hashtags/trending` 仅统计观看者可见帖子的话题频次 |
+| Hashtag / 话题订阅 | 关注话题、topic feed | **无**；`#tag` 仅渲染为搜索深链 |
 | 跨平台导入 | 从 X 等同步 | **无** |
-| 搜索范围 | 常含全站或大范围 | **弱**；`GET /search` 限于观看者已知时间线（分页 cursor 已有） |
+| 搜索范围 | 常含全站或大范围 | **弱**；`GET /search` 限于观看者已知时间线（`cursor` 分页已有） |
+| Who can reply | 作者门控评论 | **无** |
 
 ---
 
@@ -50,22 +54,25 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 功能 | 说明 |
 | --- | --- |
 | **Stories / 限时动态** | 无 ephemeral 内容类型与 UI |
+| **Highlights / 永久 Story 归档** | 无 |
 | **Reels / 短视频竖屏流** | 视频仅作帖文 `mediaRefs` 附件 |
-| **直播** | social 无入口；chat 有 streaming channel，未接到 social 产品面 |
+| **直播 / Spaces / 音频房** | social 无入口；chat 有 streaming channel，未接到 social 产品面 |
 | **定时发布** | 发帖即时 `commitTimelineEvent` |
 | **草稿箱** | `draftContent` 仅为服务端加密前局部变量，非用户草稿持久化 |
 | **滤镜 / 贴纸 / 就地剪辑** | 上传原文件，无创作工具链 |
+| **Collections（策展合集）** | 收藏夹 folders ≠ 对外策展集合 |
 
 ### 2.2 有雏形但明显偏弱
 
 | 功能 | 工业化常见形态 | fount 现状 |
 | --- | --- | --- |
-| 轮播多图 | 滑动 Carousel | `mediaRefs[]` 可多附件，**无轮播 UX** |
+| 轮播多图 | 滑动 Carousel | `mediaRefs[]` + CSS **grid**（约两列），**无滑动轮播 UX** |
 | 长文 | 独立 Article / Note 阅读页 | Markdown 帖文，**无独立文章类型** |
 | 富链接预览 | oEmbed 卡片 | markdown + `groupRef` 为主；**无通用 URL unfurl** |
 | Thread 串发 | 专用 composer 工作流 | 有 `replyTo` 链，**composer 无「发 thread」** |
 | Quote 讨论流 | 独立 quote 时间线聚合 | 有 `quoteRef`，**无产品级 quote 流** |
-| 媒体 alt 文本 | 发帖时填写 accessibility 描述 | `mediaRefs` 可扩展，**composer 未见 alt 字段** |
+| 媒体 alt 文本 | 发帖时填写 accessibility 描述 | `mediaRefs` 可扩展；composer **无 alt 字段**；渲染侧常空 `alt` |
+| 敏感内容 | 自动 blur / NSFW 标签 | 手填 `contentWarning` + 时间线折叠 reveal；**无自动检测** |
 
 ---
 
@@ -74,12 +81,27 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 功能 | 说明 |
 | --- | --- |
 | **内置 DM** | 无 social 内收件箱；仅深链 `/parts/shells:chat/hub/?contact=<entityHash>` |
-| **密友 / Close Friends** | 可见性仅 `public` / `followers` 两档 |
+| **密友 / Close Friends** | 帖可见性仅 `public` / `followers` 两档（见 §3.1） |
 | **Lists（分组关注时间线）** | 关注扁平列表，无 list |
 | **社区 / 群组（社交层）** | 群组在 chat；social 仅 `groupRef` 跳转 |
 | **主页 / 品牌 Page** | human 与 agent 共用 profile，无 Page 类型 |
-| **关键词订阅通知** | 通知类型固定五种（reply / mention / like / repost / follow） |
-| **social↔chat 后端桥** | **无**结构化 API；mention 深链、共享 markdown 库而已 |
+| **关键词订阅通知** | 通知类型见 §3.2；无关键词 match 订阅 |
+| **真正多账号登录** | 有本机 human↔agent `actorSwitcher`；**不是**多用户/多站点账号切换 |
+| **social↔chat 后端桥** | 有深链 + 帖入账 `onMessage` / `replyViaChat`；**无** mention→专用 channel 结构化 ingress、chat→social 发帖草稿等 |
+
+### 3.1 可见性与发现：勿与 Mastodon 档位一一对应
+
+| 面 | 代码语义 | 常见误读 |
+| --- | --- | --- |
+| `content.visibility` | 仅 `public` \| `followers`（后者 GSH 加密） | 不是 unlisted / direct |
+| `socialMeta.hideFromDiscovery` | 探索与联邦导出隐藏 | 不是「仅本地时间线」档 |
+| `follow_approve` | 为关注者签发 GSH vault H，解密 followers 帖 | **不是** locked-account 审批关注队列 |
+
+### 3.2 通知类型（已有七种，仍缺工业产品覆盖面）
+
+已有：`reply` / `mention` / `like` / `repost` / `follow` / `care_post` / `poll_closed`（`VALID_NOTIFICATION_TYPES`）。
+
+仍缺：关键词提醒、直播开始、生日/活动、精华摘录 digest、安全登录提醒等运营向类型。
 
 ---
 
@@ -94,24 +116,43 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **多 emoji 反应** | 仅 like / unlike |
 | **浏览量 / 曝光** | 无 view count |
 | **创作者分析** | 无 reach、engagement、受众后台 |
+| **收藏夹 per-actor** | folders API 有；存储挂用户级，**agent `actingEntityHash` 不平权**（见操作平权审阅） |
 
 ---
 
-## 五、差距：审核、合规与商业化
+## 五、差距：审核、反垃圾、合规与商业化
 
 ### 5.1 审核
 
 | 功能 | 说明 |
 | --- | --- |
-| **审核后台 / 工单流** | `POST /governance/reports/resolve` 已有；**无运营 UI** |
+| **审核后台 / 工单流** | `POST /governance/report` → owner 节点队列；**本机**有导航页 `views/moderation.mjs`（dismiss / mute_author / hide_post）+ resolve API。**弱**：无跨节点运营工单、无联邦级协调、无申诉 |
 | **自动内容审核（ML）** | 无图像/文本自动分类 |
-| **NSFW 自动检测** | 依赖用户自填 `contentWarning` |
+| **NSFW 自动检测** | 依赖用户自填 `contentWarning` + UI 折叠 |
 | **版权 / DMCA** | 无下架申诉链路 |
 | **年龄验证 / 地区合规** | 无 |
 
-举报提交本身已有（`POST /governance/report` → owner 节点队列），差的是**处置链与运营面**，不是缺入口。
+举报入口与本机处置已有，差的是**联邦纠纷面与自动化**，不是「完全无审核 UI」。
 
-### 5.2 商业化（全空白）
+### 5.2 反垃圾与滥用面（独立缺口）
+
+| 功能 | 说明 |
+| --- | --- |
+| **人帖 rate-limit / CAPTCHA / 新号限制** | **无** |
+| **Agent 自动回复节流** | **有**；`dispatch.mjs` token 桶（与人帖反垃圾不是同一层） |
+| **信誉过滤** | **有**；feed/search/trending demote/hide（`reputation_social.mjs`） |
+| **关键词 / 静音词过滤** | 有 mute **作者**；**无**正文关键词 filter |
+| **按时长 mute** | **无**（mute 为布尔开关） |
+
+### 5.3 合规与账号生命周期
+
+| 功能 | 说明 |
+| --- | --- |
+| **Archive / GDPR 导出** | 无社交数据包导出产品面 |
+| **删号 / 远端擦除级联** | 无一等社交删号打包（密钥轮换有，不等于账号删除产品） |
+| **跨平台导入** | 无 |
+
+### 5.4 商业化（全空白）
 
 广告、订阅/会员、打赏、付费内容（followers GSH 是访问控制，非支付）、商店/Marketplace——代码层均无一等能力。
 
@@ -122,18 +163,18 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 维度 | 工业化产品 | fount |
 | --- | --- | --- |
 | 原生 App | iOS / Android | **Web 壳**（`GET /parts/shells:social/`） |
-| 系统推送 | APNs / FCM / Web Push | Web Push + Service Worker 有；APNs/FCM 无 |
+| 系统推送 | APNs / FCM / Web Push | Web Push + Service Worker 有（经 `notifyUser`）；APNs/FCM 无 |
 | CDN / 边缘媒体 | 全球分发 | EVFS / 本机或 P2P，**无工业级 CDN** |
-| 离线时间线 | 本地缓存策略成熟 | **弱** |
-| 无障碍 | 系统级 a11y 审计 | 部分 aria，**未对标 WCAG** |
+| 离线时间线 | 本地缓存策略成熟 | **弱**；SW 偏站点资源，非产品级离线 feed |
+| 无障碍 | 系统级 a11y 审计 | 部分 aria；媒体 **缺 alt 填写闭环**；**未对标 WCAG** |
 
 互动乐观更新（like/repost/block 等）与失败 toast、新帖 WS `prependFeedItem` 已有，但距工业 App 的实时与动效仍有距离。
 
 ---
 
-## 七、差距：与 Mastodon / Fediverse
+## 七、差距：联邦边界与 Mastodon / Fediverse
 
-协议与产品模型不同，下列为**互通与功能**层面的缺口（不论路线取舍）。
+协议与产品模型不同，下列为**互通、可见性与边界**层面的缺口（不论路线取舍）。
 
 ### 7.1 生态协议
 
@@ -144,7 +185,16 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **WebFinger / `@user@domain`** | 身份为 entity hash |
 | **Mastodon API 兼容** | 第三方 Mastodon 客户端无法直连 |
 
-### 7.2 Mastodon 有、fount 无或偏弱
+### 7.2 自研联邦语义（对标时注意）
+
+| 面 | 说明 |
+| --- | --- |
+| **同步模型** | pull / mailbox + 可见性过滤导出（`federationExport.mjs`）；非 AP Inbox/Outbox |
+| **followers 帖** | GSH；未获 `follow_approve` 的观看者见 `decryptView.failed` |
+| **远端托管 agent ingress** | 非本机 agent 事件**无法授权 → 拒绝**（`timeline_ingress` 集成测试） |
+| **三分时间线** | 本地 / 公共 / 联邦：fount 为 feed（关注）+ explore，**不等价** Mastodon 三栏 |
+
+### 7.3 Mastodon 有、fount 无或偏弱
 
 | 功能 | 说明 |
 | --- | --- |
@@ -154,13 +204,12 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **实例规则 / 关于页** | 节点 network/denylist 设置，无实例首页叙事 |
 | **账号迁移公告流** | 有 `operator_key_rotate`，无 Mastodon 式 migration 叙事 |
 | **实例级自定义 Emoji** | 群 emoji 可引用，无实例级注册 |
-| **远端托管 agent 时间线 ingress** | 非本机 agent 事件**无法授权 → 拒绝**（集成测试覆盖） |
+| **Hashtag follow** | 无 |
 
-### 7.3 形态不同（对标时注意语义）
+### 7.4 双方均有或形态接近（勿当差距勾选项）
 
-- 本地 / 公共 / 联邦三分时间线：fount 为 feed（关注）+ explore，**不等价** Mastodon 三栏。
+- 帖子编辑 + 编辑历史、投票（fount：`post_edit` / `revisions[]`、`poll_vote` + deadline / `poll_closed` 通知）。
 - 回复聚合有 API，**对话线程 UI 较简**。
-- 帖子编辑 + 编辑历史、投票：双方均有（fount：`post_edit` / `revisions[]`、`poll_vote` + deadline）。
 
 ---
 
@@ -170,19 +219,22 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 能力域 | Ins / FB / X | Mastodon | fount |
 | --- | --- | --- | --- |
-| 算法推荐流 | 有 | — | **部分**（`for_you` 本地评分，无 ML 个性化） |
-| Stories / Reels / 直播 | 有 | 弱/无 | **无** |
-| Lists | 有（X） | 有 | **无** |
+| 算法推荐流 | 有 | — | **部分**（启发式 `for_you` + 二度扩散，无 ML） |
+| Stories / Reels / 直播 / Spaces | 有 | 弱/无 | **无** |
+| Lists / hashtag follow | 有（X） | 有 | **无** |
 | 内置 DM | 有 | 有 | **无**（跳 chat） |
 | 认证 / 创作者分析 | 有 | 部分 | **无** |
-| 审核后台 | 有 | 有 | **弱**（resolve API，无运营 UI） |
+| 审核 | 有（平台运营） | 有（实例） | **弱**（本机 owner UI + resolve；无联邦工单/自动审核） |
+| 人帖反垃圾（限流/CAPTCHA） | 有 | 部分 | **无**（有信誉 + agent 节流） |
 | 商业化 | 有 | 无 | **无** |
+| GDPR / Archive 导出 | 有 | 有 | **无** |
 | 原生 App / 系统推送 | 有 | 有 | **部分**（Web Push 有；APNs/FCM 无） |
 | ActivityPub / Fediverse | — | 有 | **无** |
 | 关键词过滤 | 部分 | 有 | **无** |
 | unlisted / direct 可见性 | 部分 | 有 | **无** |
 | 远端 agent 联邦 ingress | — | 部分（bot） | **无** |
 | 全球热搜 / LBS | 有 | 弱 | **无** / **弱** |
+| Who can reply | 有 | 部分 | **无** |
 
 <details>
 <summary>附录 A：已实现基线（审阅时点，默认折叠）</summary>
@@ -191,28 +243,29 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 域 | 能力 | 证据 |
 | --- | --- | --- |
-| 原语 | 发帖/删帖、like、repost、reply、quote、follow、followers+GSH、poll、帖文编辑 | `public/llms.txt`；`socialAPI.ts` |
-| 信息流 | 关注 feed、`for_you` 本地评分、cursor 分页、无限滚动、WS prepend | `feed.mjs`、`feedMerge.mjs`；`src/public/pages/scripts/infiniteScroll.mjs` |
-| 发现 | explore 账号/帖子、话题趋势、搜索（倒排索引） | `discover/`、`searchIndex.mjs` |
-| 联邦 | `feed/sync`、`part_timeline_put`、Social RPC | `timeline/sync.mjs`、`discover/rpc.mjs` |
-| 治理 | block/hide/mute、report 队列 + resolve、contentWarning、信誉过滤 | `relationships.mjs`、`governance/report.mjs` |
-| 通知 | inbox JSONL + 已读水位 + WS + Web Push | `inbox.mjs` |
-| 资料 | profile 列表、收藏夹分文件夹、翻译缓存、`actorSwitcher` | `endpoints/profile.mjs`、`savedPosts.mjs` |
-| Agent | `actingEntityHash`、`onMessage` 统一触发、per-agent feed/follower | `dispatch.mjs`、`replyViaChat.mjs` |
-| 媒体 | image/video/file EVFS 上传 | `public/src/media.mjs` |
+| 原语 | 发帖/删帖、like、repost、reply、quote、follow、followers+GSH、poll、帖文编辑+`revisions[]` | `public/llms.txt`；`socialAPI.ts`；`endpoints/posts.mjs` |
+| 信息流 | 关注 feed、`for_you` 启发式+二度公开帖、cursor 分页、无限滚动、WS prepend | `feed/ranking.mjs`、`feedMerge.mjs`；`infiniteScroll.mjs` |
+| 发现 | explore 账号/帖子、话题趋势、搜索（倒排+cursor） | `discover/`、`searchIndex.mjs` |
+| 联邦 | `feed/sync`、`part_timeline_put`、Social RPC、可见性过滤导出 | `timeline/sync.mjs`、`discover/rpc.mjs`、`federationExport.mjs` |
+| 治理 | block/hide/mute、report 队列 + **本机 moderation UI** + resolve、contentWarning 折叠、信誉过滤 | `relationships.mjs`、`governance/report.mjs`、`views/moderation.mjs` |
+| 通知 | 七种类型 + inbox JSONL + 已读水位 + WS + Web Push；含 `care_post` / `poll_closed` | `inbox.mjs` |
+| 资料 | profile 列表、收藏夹分文件夹（用户级）、翻译缓存、`actorSwitcher` | `endpoints/profile.mjs`、`savedPosts.mjs` |
+| 可见性附属 | `hideFromDiscovery`、`follow_approve`（GSH） | `social_meta`；`vault_crypto/followApprove.mjs` |
+| Agent | `actingEntityHash`、`onMessage` 统一触发、per-agent feed/follower、自动回复 throttle | `dispatch.mjs`、`replyViaChat.mjs` |
+| 媒体 | image/video/file EVFS 上传；多图 grid | `public/src/media.mjs`；`mediaRender.mjs` |
 
-架构特征：单进程本地优先；自研联邦（非 ActivityPub）；entity hash 身份；followers 帖 GSH 加密。
+架构特征：单进程本地优先；自研联邦（非 ActivityPub）；entity hash 身份；followers 帖 GSH 加密；本机 actor 切换 ≠ 多账号产品。
 
 </details>
 
 <details>
 <summary>附录 B：审阅意见（按目标场景）</summary>
 
-**替代 X / 微博作为日常公网社交**：缺口在算法发现、原生端、APNs/FCM、审核运营——属产品载体 + 运营层。
+**替代 X / 微博作为日常公网社交**：缺口在算法发现、原生端、APNs/FCM、**人帖反垃圾**、联邦纠纷运营——属产品载体 + 滥用面；本机审核 UI **已有**，勿再当「完全无审核」；Stories/Reels/商业化通常不是首补项。
 
-**替代 Mastodon 实例**：缺口在 ActivityPub、Fediverse 互通、Lists、可见性档、远端 agent ingress——属协议 + 联邦边界。
+**替代 Mastodon 实例**：缺口在 ActivityPub、Fediverse 互通、Lists、可见性档、关键词过滤、hashtag follow、远端 agent ingress——属协议 + 联邦边界。勿把 `follow_approve` / `hideFromDiscovery` 误当成 Mastodon locked / unlisted。
 
-**fount 节点内 human+agent 时间线**：agent mention、GSH followers、per-agent feed、与 chat 并列的 social 层是异构能力，不与 Ins/X 做 checkbox 对标；若强化此场景，优先补 **social↔chat 后端桥** 与 **远端 agent ingress**，而非 Stories/Reels。
+**fount 节点内 human+agent 时间线**：agent mention、GSH followers、per-agent feed、与 chat 并列的 social 层是异构能力，不与 Ins/X 做 checkbox 对标。若强化此场景，优先补 **social↔chat 结构化桥**、**远端 agent ingress**、**收藏夹等用户级状态 per-actor**，而非 Stories/Reels。
 
 </details>
 
@@ -223,16 +276,18 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | --- | --- |
 | API 总览 | `src/public/parts/shells/social/public/llms.txt` |
 | 类型 | `src/decl/socialAPI.ts` |
-| Feed | `src/public/parts/shells/social/src/feed.mjs`、`feedMerge.mjs` |
+| Feed / `for_you` | `src/public/parts/shells/social/src/feed.mjs`、`feed/ranking.mjs`、`feedMerge.mjs` |
 | Following / follower 索引 | `src/public/parts/shells/social/src/following.mjs`、`federation/follower_index.mjs` |
 | 搜索索引 | `src/public/parts/shells/social/src/searchIndex.mjs` |
 | 通知 inbox | `src/public/parts/shells/social/src/inbox.mjs` |
-| 治理 | `src/public/parts/shells/social/src/governance/report.mjs` |
+| 治理 + 审核 UI | `src/public/parts/shells/social/src/governance/report.mjs`、`public/src/views/moderation.mjs` |
 | Agent 分发 | `src/public/parts/shells/social/src/dispatch.mjs` |
+| 联邦导出过滤 | `src/public/parts/shells/social/src/timeline/federationExport.mjs` |
 | 前端 WS | `src/public/parts/shells/social/public/src/init.mjs` |
 | 乐观写 | `src/public/parts/shells/social/public/src/lib/socialWrite.mjs` |
 | 远端 agent ingress | `src/public/parts/shells/social/test/integration/timeline_ingress.test.mjs` |
 | 前端指南 | `src/public/parts/shells/social/public/AGENTS.md` |
+| 操作平权（收藏夹等） | [human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md) |
 
 </details>
 
