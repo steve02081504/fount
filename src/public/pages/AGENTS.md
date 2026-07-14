@@ -44,6 +44,6 @@ alwaysApply: false
 - **`regex.mjs`**: Regex parsing and escaping.
 - **`credentialManager.mjs`**: Secure credential encryption and transfer.
 
-## P2P（浏览器）
+## P2P (Browser)
 
-`@steve02081504/fount-p2p` 经 `esm.sh` 导入；Chat/Social 共用原语见 `shells/chat/public/shared/`（`entityHash`、`digest`、`mentions`、`inlineTokens`、`hashAvatar` 等）。
+Import via `esm.sh`; shared Chat/Social primitives (`entityHash`, `digest`, `mentions`, `inlineTokens`, `hashAvatar`, etc.) live in `shells/chat/public/shared/`.
