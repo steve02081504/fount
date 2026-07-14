@@ -99,6 +99,7 @@ Deno.test('resolveReport dismisses by reportRowId', async () => {
 	const { username, operator } = await getSession()
 	const {
 		submitReport,
+		ingestInboundReport,
 		listReceivedReports,
 		resolveReport,
 		reportRowId,
@@ -111,6 +112,7 @@ Deno.test('resolveReport dismisses by reportRowId', async () => {
 		category: 'spam',
 		reporterEntityHash: operator,
 	})
+	assertEquals(await ingestInboundReport(username, signed), true)
 	const reportId = reportRowId(signed)
 	const { reports } = await listReceivedReports(username, { limit: 20 })
 	assert(reports.some(row => row.id === reportId))

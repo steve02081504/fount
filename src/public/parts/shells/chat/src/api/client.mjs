@@ -1,8 +1,5 @@
 import { ensureOperatorPubKey } from '../entity/identity.mjs'
-
-import { createEcdhDmGroup } from '../chat/dm/index.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
-import { newGroup } from '../chat/session/crud.mjs'
 import { enumerateJoinedFederatedGroups } from '../group/queries.mjs'
 
 import { createGroup as hydrateGroup } from './group.mjs'
@@ -42,6 +39,7 @@ export function createChatClient(ctx) {
 		 * @returns {Promise<object>} DM Group
 		 */
 		async openDm(peerEntityHash) {
+			const { createEcdhDmGroup } = await import('../chat/dm/index.mjs')
 			const peerPubKey = peerPubKeyFromEntityHash(peerEntityHash)
 			const myPubKey = await ensureOperatorPubKey(ctx.username)
 			const dm = await createEcdhDmGroup(ctx.username, myPubKey, peerPubKey)
@@ -53,8 +51,19 @@ export function createChatClient(ctx) {
 		 * @returns {Promise<object>} 新建 Group
 		 */
 		async createGroup(opts = {}) {
+			const { newGroup } = await import('../chat/session/crud.mjs')
 			const groupId = await newGroup(ctx.username, opts)
 			return this.group(groupId)
+		},
+		/**
+		 * @param {string} groupId 群 ID
+		 * @param {object} [opts] 加群参数（inviteCode / bootstrap 等）
+		 * @returns {Promise<object>} Group
+		 */
+		async join(groupId, opts = {}) {
+			const { performMemberJoin } = await import('../chat/dm/index.mjs')
+			const result = await performMemberJoin(ctx.username, groupId, opts)
+			return this.group(result.groupId)
 		},
 		/**
 		 * @param {object} event OnMessage 纯数据事件
@@ -62,19 +71,59 @@ export function createChatClient(ctx) {
 		 */
 		async messageFrom(event) {
 			const groupId = event.group?.groupId
-			const channelId = event.channel?.channelId || 'default'
 			const message = event.message || event
 			return createMessage(ctx, groupId, {
 				...message,
-				channelId,
+				channelId: event.channel?.channelId || message.channelId || 'default',
 				eventId: message.eventId || message.id || message.extension?.dagEventId,
 			}, event.mentions)
+		},
+		/**
+		 * @returns {Promise<object>} 节点级信誉账本
+		 */
+		async reputation() {
+			const { loadReputation } = await import('npm:@steve02081504/fount-p2p/node/reputation_store')
+			return loadReputation()
+		},
+		/**
+		 * @returns {{ add: Function, list: Function }} 节点 denylist
+		 */
+		get nodeDenylist() {
+			return {
+				/**
+				 * @param {{ scope: string, value: string, groupId?: string }} entry denylist 条目
+				 * @returns {Promise<object>} 更新后的 denylist
+				 */
+				async add(entry) {
+					const { addDenylistEntry, loadDenylist } = await import('npm:@steve02081504/fount-p2p/node/denylist')
+					addDenylistEntry(entry)
+					return loadDenylist()
+				},
+				/**
+				 * @returns {Promise<object>} denylist
+				 */
+				async list() {
+					const { loadDenylist } = await import('npm:@steve02081504/fount-p2p/node/denylist')
+					return loadDenylist()
+				},
+			}
+		},
+		/**
+		 * @param {{ name?: string, avatar?: { buffer: Buffer, filename: string, mimeType?: string }, [key: string]: unknown }} updates 资料补丁
+		 * @returns {Promise<object>} 更新后的 profile
+		 */
+		async updateProfile(updates = {}) {
+			const { updateProfile, uploadAvatar } = await import('../entity/profile.mjs')
+			const { avatar, ...fields } = updates
+			if (avatar?.buffer)
+				await uploadAvatar(ctx.username, ctx.entityHash, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
+			return updateProfile(ctx.username, ctx.entityHash, fields)
 		},
 		/**
 		 * @returns {Promise<object[]>} 本 user 运行中的 BridgeBot 列表
 		 */
 		async bridgeBots() {
-			const { listBridgeBots } = await import('../chat/bridge/ops.mjs')
+			const { listBridgeBots } = await import('../chat/bridge/operations.mjs')
 			return listBridgeBots(ctx.username).map(row => ({
 				platform: row.platform,
 				botname: row.botname,
@@ -82,8 +131,8 @@ export function createChatClient(ctx) {
 				 * @returns {Promise<void>} 停止该 bot 实例
 				 */
 				async stop() {
-					const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
-					await requireBridgeOp(ctx.username, {
+					const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
+					await requireBridgeOperation(ctx.username, {
 						platform: row.platform,
 						botname: row.botname,
 					}, 'stopSelf')()

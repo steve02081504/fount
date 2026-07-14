@@ -65,19 +65,20 @@ async function resolveVisiblePost(username, entityHash, postId, viewerContext) {
  * 构建关注流首页 feed（含原帖与转发，多路归并排序）。
  * @param {string} username 用户
  * @param {object} [options] 分页选项
+ * @param {string} [options.viewerEntityHash] 观看实体；缺省 = operator
  * @param {number} [options.limit=50] 条数上限
  * @param {string} [options.cursor] 分页游标
  * @returns {Promise<{ items: object[], nextCursor: string | null }>} 首页 feed
  */
 export async function buildHomeFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
-	const acting = options.actingEntityHash || null
-	const { following } = acting
-		? await loadFollowingForActor(username, acting)
+	const viewer = options.viewerEntityHash || null
+	const { following } = viewer
+		? await loadFollowingForActor(username, viewer)
 		: await loadFollowing(username)
-	const viewerContext = await loadViewerContext(username, acting)
+	const viewerContext = await loadViewerContext(username, viewer)
 	const feedSources = new Set(following)
-	const itemContext = await createFeedItemBuildContext(username, feedSources, acting)
+	const itemContext = await createFeedItemBuildContext(username, feedSources, viewer)
 
 	/** @type {{ candidates: object[], index: number }[]} */
 	const streams = []

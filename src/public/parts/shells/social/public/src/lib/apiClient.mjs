@@ -1,21 +1,7 @@
 /** Social shell HTTP 客户端。 */
 import { socialState } from '../state.mjs'
 
-/**
- *
- */
 export const SOCIAL_API = '/api/parts/shells:social'
-
-/**
- * @param {string} path API 路径（含前导 `/`）
- * @returns {string} 附带 actingEntityHash 的路径
- */
-function withActingQuery(path) {
-	const acting = socialState.actingEntityHash
-	if (!acting || acting === socialState.viewerEntityHash) return path
-	const sep = path.includes('?') ? '&' : '?'
-	return `${path}${sep}actingEntityHash=${encodeURIComponent(acting)}`
-}
 
 /**
  * 调用 Social shell 受保护 HTTP API 并返回 JSON。
@@ -24,7 +10,7 @@ function withActingQuery(path) {
  * @returns {Promise<any>} 解析后的 JSON
  */
 export async function socialApi(path, options = {}) {
-	const response = await fetch(`${SOCIAL_API}${withActingQuery(path)}`, {
+	const response = await fetch(`${SOCIAL_API}${path}`, {
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json', ...options.headers || {} },
 		...options,
@@ -34,8 +20,8 @@ export async function socialApi(path, options = {}) {
 }
 
 /**
- * @returns {string | null} 当前 effective acting entityHash（operator 或 agent）
+ * @returns {string | null} 当前观看者（operator）entityHash
  */
-export function effectiveActingEntityHash() {
-	return socialState.actingEntityHash || socialState.viewerEntityHash
+export function viewerEntityHash() {
+	return socialState.viewerEntityHash
 }

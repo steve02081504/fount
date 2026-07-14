@@ -52,7 +52,7 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
-	const { setWorld, addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { bindWorld, addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
@@ -61,7 +61,7 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 
 	const groupId = await newGroup(username, { name: 'roles-filter' })
 	const channelId = await getDefaultChannelId(username, groupId)
-	await setWorld(groupId, channelId, WORLD, username)
+	await bindWorld(groupId, channelId, WORLD, username)
 	await addchar(groupId, CHAR, username)
 
 	await postChannelMessage(username, groupId, channelId, { text: 'public hello' })

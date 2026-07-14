@@ -189,8 +189,8 @@ export async function runBot(username, botname) {
  */
 export async function stopBot(username, botname) {
 	await destroyBotSession(username, botname)
-	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-	await unregisterBridgeOps(username, 'wechat', botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'wechat', botname)
 	EndJob(username, 'shells/wechatbot', botname)
 }
 
@@ -202,8 +202,8 @@ export async function stopBot(username, botname) {
  */
 export async function pauseBot(username, botname) {
 	await destroyBotSession(username, botname)
-	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-	await unregisterBridgeOps(username, 'wechat', botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'wechat', botname)
 }
 
 on_shutdown(() => Promise.all(

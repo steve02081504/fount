@@ -29,7 +29,7 @@ import {
 } from './dagSession.mjs'
 import { buildChatLogEntryFromCharReply, buildChatLogEntryFromUserMessage } from './logEntries.mjs'
 import { chatMetadata_t } from './models.mjs'
-import { addchar, addplugin, setCharSpeakingFrequency, setPersona, setWorld } from './partConfig.mjs'
+import { addchar, addplugin, setCharReplyFrequency, setPersona, bindWorld } from './partConfig.mjs'
 import { getActiveGroupRuntime, getSummaryFromMetadata } from './persistence.mjs'
 import { registerGroupRuntime, rebuildGroupRuntime } from './runtime.mjs'
 import { groupMetadatas, purgeGroupSession } from './wsLifecycle.mjs'
@@ -242,11 +242,11 @@ export async function importGroupChat(data, username) {
 	const channelId = await getDefaultChannelId(username, groupId)
 
 	if (data.persona) await setPersona(groupId, data.persona)
-	if (data.world) await setWorld(groupId, channelId, data.world)
+	if (data.world) await bindWorld(groupId, channelId, data.world)
 	for (const pluginname of data.plugins || []) await addplugin(groupId, pluginname)
 	for (const charname of data.chars || []) await addchar(groupId, charname, username)
 	for (const [charname, frequency] of Object.entries(data.frequency || {}))
-		await setCharSpeakingFrequency(groupId, charname, Number(frequency))
+		await setCharReplyFrequency(groupId, charname, Number(frequency))
 
 	await importMessages(groupId, channelId, data.messages || [], username)
 	return { groupId }

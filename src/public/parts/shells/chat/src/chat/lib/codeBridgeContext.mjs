@@ -1,4 +1,4 @@
-import { resolveBridgeOps } from '../bridge/ops.mjs'
+import { resolveBridgeOperations } from '../bridge/operations.mjs'
 import { lookupBridgePlatformChannel } from '../bridge/registry.mjs'
 import { getState } from '../dag/materialize.mjs'
 
@@ -58,7 +58,7 @@ export async function hydrateBridgeNativeContext(username, groupId, channelId, t
 
 	const platformMessageId = bridgeMetaFromChatLogEntry(triggerEntry)?.platformMessageId
 	const getNativeContext = ids.botname
-		? resolveBridgeOps(username, { platform: ids.platform, botname: ids.botname })?.getNativeContext
+		? resolveBridgeOperations(username, { platform: ids.platform, botname: ids.botname })?.getNativeContext
 		: undefined
 	if (!getNativeContext)
 		return { ...ids, platformMessageId }

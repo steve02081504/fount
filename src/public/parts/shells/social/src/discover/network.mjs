@@ -7,7 +7,7 @@ import { handleSocialRpc } from './rpc.mjs'
  * 探索页：合并本地 + 邻居 RPC 结果。
  * @param {string} username 用户
  * @param {object} rpc RPC 请求体
- * @param {{ actingEntityHash?: string | null }} [options] acting 观看者
+ * @param {{ viewerEntityHash?: string | null }} [options] 观看者实体
  * @returns {Promise<object>} 合并结果
  */
 export async function discoverWithNetwork(username, rpc, options = {}) {
@@ -21,7 +21,7 @@ export async function discoverWithNetwork(username, rpc, options = {}) {
 		for (const row of remote)
 			for (const account of row.accounts || [])
 				accountMap.set(account.entityHash, account)
-		const { following } = await loadViewerContext(username, options.actingEntityHash || null)
+		const { following } = await loadViewerContext(username, options.viewerEntityHash || null)
 		merged.accounts = [...accountMap.values()]
 			.filter(account => !following.has(String(account.entityHash).toLowerCase()))
 			.slice(0, rpc.n || 20)

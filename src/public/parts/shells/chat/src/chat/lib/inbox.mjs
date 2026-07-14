@@ -4,7 +4,6 @@
 import fs from 'node:fs'
 import { join } from 'node:path'
 
-import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { readJsonl, appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
@@ -118,7 +117,10 @@ export function resolveAuthorFromSender(state, senderMemberKey) {
  * @returns {{ authorEntityHash: string | null, authorDisplayName: string }}
  */
 export function resolveAuthorFromMessageLine(state, messageLine) {
-	const bridge = messageLine?.content?.extension?.bridge
+	// message_edit 的桥接归因藏在 newContent 里（content 顶层只有 targetId/newContent）。
+	const content = messageLine?.content
+	const bridge = (messageLine?.type === 'message_edit' ? content?.newContent : content)?.extension?.bridge
+		|| content?.extension?.bridge
 	if (bridge?.authorEntityHash) {
 		return {
 			authorEntityHash: String(bridge.authorEntityHash).trim().toLowerCase(),

@@ -1,93 +1,52 @@
-import {
-	loadPersonalBlockEntries,
-	loadPersonalHideEntries,
-} from 'npm:@steve02081504/fount-p2p/node/personal_block'
-
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
-import { buildProfileFeedItems, buildLikedFeedItems, listReplies } from '../feed.mjs'
-import { loadFollowing, loadFollowingForActor } from '../following.mjs'
-import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
-import { getEntityProfile } from '../lib/entityProfile.mjs'
-import { resolveActingEntity } from '../lib/resolveActingEntity.mjs'
-import { updateSocialMeta } from '../socialMeta.mjs'
-import { getTimelineMaterialized, maintainSocialTimeline } from '../timeline/materialize.mjs'
+import { authenticate } from '../../../../../../server/auth/index.mjs'
 
-import { routeEntityHash } from './shared.mjs'
+import { routeEntityHash, socialClientFromReq } from './shared.mjs'
 
 /**
- * 注册资料读路由与 meta 更新。
+ * 注册资料读路由与 meta 更新（SocialClient 薄封装；仅 operator）。
  * @param {import('npm:express').Router} router Express 路由
  * @returns {void}
  */
 export function registerProfileRoutes(router) {
 	router.get('/api/parts/shells\\:social/profile/personal-lists', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const actingEntity = await resolveActingEntity(username, req.query?.actingEntityHash, { requireEntity: false })
-		if (!actingEntity)
-			return res.status(200).json({ entries: [] })
-		const [blockedEntries, hiddenEntries] = await Promise.all([
-			loadPersonalBlockEntries(actingEntity),
-			loadPersonalHideEntries(actingEntity),
-		])
-		const entries = [
-			...blockedEntries.map(entry => ({ ...entry, kind: 'block' })),
-			...hiddenEntries.map(entry => ({ ...entry, kind: 'hide' })),
-		]
-		res.status(200).json({ entries })
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.personalLists())
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const entityHash = routeEntityHash(req.params)
-		const profile = await getEntityProfile(username, entityHash)
-		const view = await getTimelineMaterialized(username, entityHash)
-		const actingEntity = await resolveActingEntity(username, req.query?.actingEntityHash, { requireEntity: false })
-		const { following } = actingEntity
-			? await loadFollowingForActor(username, actingEntity)
-			: await loadFollowing(username)
-		const isFollowing = following.includes(entityHash)
-		res.status(200).json({
-			entityHash,
-			profile,
-			postCount: view.posts.length,
-			isFollowing,
-			socialMeta: view.socialMeta,
-		})
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.profile(routeEntityHash(req.params)))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/posts', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json(await buildProfileFeedItems(username, routeEntityHash(req.params), {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.profilePosts(routeEntityHash(req.params), {
 			limit: Number(req.query.limit) || 30,
 			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
 		}))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/likes', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		res.status(200).json(await buildLikedFeedItems(username, routeEntityHash(req.params)))
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.profileLikes(routeEntityHash(req.params)))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/following', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const view = await getTimelineMaterialized(username, routeEntityHash(req.params))
-		res.status(200).json({ following: view.following })
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.profileFollowing(routeEntityHash(req.params)))
 	})
 
 	router.get('/api/parts/shells\\:social/profile/:entityHash/replies/:postId', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const entityHash = routeEntityHash(req.params)
+		const { client } = await socialClientFromReq(req)
 		const postId = String(req.params.postId)
 		if (!postId) throw httpError(400, 'invalid params')
-		res.status(200).json({ replies: await listReplies(username, entityHash, postId) })
+		res.status(200).json(await client.profileReplies(routeEntityHash(req.params), postId))
 	})
 
 	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const actingEntity = await resolveActingEntity(username, req.body?.actingEntityHash ?? req.query.actingEntityHash)
-		await ensureEntitySocialReady(username, actingEntity)
-		const socialMeta = await updateSocialMeta(username, actingEntity, {
+		const { client } = await socialClientFromReq(req)
+		const socialMeta = await client.updateMeta({
 			exploreBlurb: req.body?.exploreBlurb,
 			hideFromDiscovery: req.body?.hideFromDiscovery,
 		})
@@ -95,8 +54,7 @@ export function registerProfileRoutes(router) {
 	})
 
 	router.post('/api/parts/shells\\:social/timeline/:entityHash/maintain', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const snapshot = await maintainSocialTimeline(username, routeEntityHash(req.params))
-		res.status(200).json({ checkpointEventId: snapshot.checkpoint_event_id })
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.maintainTimeline(routeEntityHash(req.params)))
 	})
 }

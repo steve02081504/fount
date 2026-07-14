@@ -50,10 +50,10 @@ async function createBaseGroup(username) {
  * @returns {Promise<object>} setup
  */
 async function setupViewlog(username) {
-	const { setWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
+	const { bindWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
 	const { groupId, channelId } = await createBaseGroup(username)
-	await setWorld(groupId, channelId, WORLD_VIEWLOG, username)
+	await bindWorld(groupId, channelId, WORLD_VIEWLOG, username)
 	await setPersona(groupId, PERSONA_VIEWLOG, username)
 	await postText(username, groupId, channelId, 'hello visible')
 	await postText(username, groupId, channelId, 'secret hidden-marker payload')
@@ -82,11 +82,11 @@ async function setupBeforeSendReject(username) {
  * @returns {Promise<object>} setup
  */
 async function setupEditHooks(username) {
-	const { setWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
+	const { bindWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
 	const { groupId, channelId } = await createBaseGroup(username)
 	await setPersona(groupId, PERSONA_EDIT, username)
-	await setWorld(groupId, channelId, WORLD_EDIT, username)
+	await bindWorld(groupId, channelId, WORLD_EDIT, username)
 	await postText(username, groupId, channelId, 'seed persona-edit-me world-edit-me')
 	await postText(username, groupId, channelId, 'keep persona-delete-reject')
 	const rows = await readChannelMessagesForUser(username, groupId, channelId, { limit: 50 })

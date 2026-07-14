@@ -130,8 +130,8 @@ webapi 身份从此恒为 operator 实体本人；agent 身份恒为自身实体
 
 | 现名 | 更名 | 备注 |
 | --- | --- | --- |
-| `chat/bridge/ops.mjs`（`bridgeOps` 鸭子类型） | `chat/bridge/operations.mjs`（`bridgeOperations`） | llms.txt / AGENTS.md 同步 |
-| `chat/dag/channelOps.mjs` | `chat/dag/channelOperations.mjs` | |
+| `chat/bridge/operations.mjs`（`bridgeOperations` 鸭子类型） | `chat/bridge/operations.mjs`（`bridgeOperations`） | llms.txt / AGENTS.md 同步 |
+| `chat/dag/channelOperations.mjs` | `chat/dag/channelOperations.mjs` | |
 | `endpoints/prefs.mjs` | `endpoints/preferences.mjs` | 路由路径不含缩写则不变 |
 | `chat/lib/notifyPrefs.mjs`（`notifyPrefs.json`） | `notificationPreferences.mjs`（`.json` 同名，随 §1.4 迁移一并落地） | |
 | `chat/session/crud.mjs` | 按职责拆并入 `session` 下具名模块（建群/增删 char 等已有归属） | 「crud」是垃圾抽屉名 |

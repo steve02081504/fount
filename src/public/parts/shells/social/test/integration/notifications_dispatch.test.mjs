@@ -75,11 +75,11 @@ Deno.test('buildNotifications includes like repost follow reply mention', async 
 	assert(rows.every(row => 'actorEntityHash' in row && row.postId !== undefined && row.targetPostId !== undefined))
 })
 
-Deno.test('buildNotifications respects actingEntityHash viewer', async () => {
+Deno.test('buildNotifications respects viewerEntityHash / SocialClient agent', async () => {
 	const { username, operator } = await getSession()
 	await append.commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'acting notify target', visibility: 'public' },
+		content: { text: 'viewer notify target', visibility: 'public' },
 	}, { fanout: false })
 
 	const agentHash = await seedMentionAgentChar(username)
@@ -93,13 +93,11 @@ Deno.test('buildNotifications respects actingEntityHash viewer', async () => {
 		},
 	}, { fanout: false })
 
-	const operatorPage = await notifications.buildNotifications(username, { limit: 50 })
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const operatorPage = await (await getSocialClient(username)).notifications({ limit: 50 })
 	assertEquals(operatorPage.viewerEntityHash, operator)
 
-	const agentPage = await notifications.buildNotifications(username, {
-		actingEntityHash: agentHash,
-		limit: 50,
-	})
+	const agentPage = await (await getSocialClient(username, agentHash)).notifications({ limit: 50 })
 	assertEquals(agentPage.viewerEntityHash, agentHash)
 	assert(agentPage.notifications.some(row => row.type === 'mention'))
 	const agentMentionPostId = agentPage.notifications.find(row => row.type === 'mention')?.postId

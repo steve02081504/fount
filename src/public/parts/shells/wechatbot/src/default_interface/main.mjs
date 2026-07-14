@@ -6,7 +6,7 @@ import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
+import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import {
 	buildWechatMediaMessageItem,
@@ -69,7 +69,7 @@ export function createSimpleWechatInterface(charAPI, ownerUsername, botCharname)
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
-		registerBridgeOps(ownerUsername, 'wechat', botname, {
+		registerBridgeOperations(ownerUsername, 'wechat', botname, {
 			/**
 			 * @param {{ platformChatId: string | number }} params 平台会话
 			 */

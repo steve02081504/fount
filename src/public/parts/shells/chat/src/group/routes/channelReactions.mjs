@@ -9,7 +9,7 @@ import {
 	appendPinEvent,
 	appendReactionEvent,
 	appendUnpinEvent,
-} from '../../chat/dag/channelOps.mjs'
+} from '../../chat/dag/channelOperations.mjs'
 import { triggerCharReply } from '../../chat/session/triggerReply.mjs'
 
 import {

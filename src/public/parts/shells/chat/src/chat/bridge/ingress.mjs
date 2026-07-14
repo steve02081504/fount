@@ -13,7 +13,7 @@ import {
 } from '../../../public/shared/channelContent.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { appendChannelMessageDelete, appendChannelMessageEdit } from '../channel/messageMutations.mjs'
-import { appendFileUploadEvent } from '../dag/channelOps.mjs'
+import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'

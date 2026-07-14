@@ -8,7 +8,7 @@ import {
 	messageLineToReplyEntry,
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
+import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
 import {
@@ -75,7 +75,7 @@ export async function createSimpleTelegramInterface(charAPI, ownerUsername, botC
 		/** @type {Set<string>} */
 		const outboundRegistered = new Set()
 
-		registerBridgeOps(ownerUsername, 'telegram', botname, {
+		registerBridgeOperations(ownerUsername, 'telegram', botname, {
 			/**
 			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */

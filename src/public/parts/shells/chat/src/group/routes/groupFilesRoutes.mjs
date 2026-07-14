@@ -5,7 +5,7 @@
  */
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
-import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../../chat/dag/channelOps.mjs'
+import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
 import { loadDownloadTask, summarizeDownloadTask } from '../../chat/files/downloadTasks.mjs'

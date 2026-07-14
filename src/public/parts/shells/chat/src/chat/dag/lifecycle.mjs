@@ -270,13 +270,10 @@ export async function deleteGroupData(username, groupId) {
  */
 export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
 	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return false
-	let memberKey
-	try {
-		;({ sender: memberKey } = await resolveLocalEventSigner(username, groupId))
-	}
-	catch {
-		return false
-	}
+	// 只读 peek：本函数在 getState 内被调用，resolveLocalEventSigner 会回调 getState 造成无限递归。
+	const { peekLocalSignerPubKeyHash } = await import('./localSigner.mjs')
+	const memberKey = await peekLocalSignerPubKeyHash(username, groupId)
+	if (!memberKey) return false
 	const record = state.members?.[memberKey]
 	if (!record || record.status === 'active') return false
 

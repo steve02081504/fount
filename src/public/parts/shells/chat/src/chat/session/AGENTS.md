@@ -59,7 +59,7 @@ alwaysApply: false
 
 - `insertCharGreeting` / world greeting: skip outright when `GetGreeting` / `GetGroupGreeting` is missing — don't assume the hook always exists.
 - When the group already has other entries, `greeting_type=group` prefers `GetGroupGreeting`, falling back to `GetGreeting`.
-- `setWorld` greeting resolves the world per `channelId` via `resolveWorld`; don't just read `LastTimeSlice.world` (that only reflects the default channel).
+- `bindWorld` greeting resolves the world per `channelId` via `resolveWorld`; don't just read `LastTimeSlice.world` (that only reflects the default channel).
 - Integration test fixtures may skip implementing greeting; reuse `test/fixtures/chars|worlds/*` when one is needed.
 
 ## Write path (DAG-first)

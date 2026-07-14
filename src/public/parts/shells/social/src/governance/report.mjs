@@ -235,11 +235,11 @@ export async function listReceivedReports(username, options = {}) {
 
 /**
  * @param {string} username replica
- * @param {string} actingEntityHash 处置者
+ * @param {string} entityHash 处置者
  * @param {{ reportId: string, action: 'dismiss' | 'mute_author' | 'hide_post' }} input 处置
  * @returns {Promise<object>} 处置记录
  */
-export async function resolveReport(username, actingEntityHash, input) {
+export async function resolveReport(username, entityHash, input) {
 	const reportId = String(input.reportId || '').trim()
 	const action = String(input.action || '').trim()
 	if (!reportId || !['dismiss', 'mute_author', 'hide_post'].includes(action))
@@ -247,7 +247,7 @@ export async function resolveReport(username, actingEntityHash, input) {
 	const rows = await readJsonl(governanceReportsPath(username))
 	const report = rows.find(row => reportRowId(row) === reportId)
 	if (!report) throw new Error('report not found')
-	const actor = String(actingEntityHash || '').trim().toLowerCase()
+	const actor = String(entityHash || '').trim().toLowerCase()
 	if (action === 'mute_author') {
 		const { setPersonalMuted } = await import('npm:@steve02081504/fount-p2p/node/personal_block')
 		await setPersonalMuted(actor, report.targetEntityHash, true)

@@ -9,17 +9,6 @@ import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
 
-import { effectiveActingEntityHash } from '../lib/apiClient.mjs'
-
-/**
- * @param {object} appContext Social 应用上下文
- * @returns {Record<string, unknown>} 含 actingEntityHash 的请求体字段
- */
-function actingFields(appContext) {
-	const actingEntityHash = effectiveActingEntityHash()
-	return actingEntityHash ? { actingEntityHash } : {}
-}
-
 /**
  * 乐观隐藏作者帖子，失败回滚。
  * @param {string} entityHash 作者
@@ -51,7 +40,6 @@ export async function handleProfileNavClick(appContext, target) {
 			body: JSON.stringify({
 				exploreBlurb: document.getElementById('exploreBlurbInput')?.value ?? '',
 				hideFromDiscovery: document.getElementById('exploreProtectedInput')?.checked ?? false,
-				...actingFields(appContext),
 			}),
 		})
 		if (appContext.state.profileEntityHash)
@@ -68,7 +56,7 @@ export async function handleProfileNavClick(appContext, target) {
 		try {
 			await runSocialWrite('follow', () => appContext.socialApi('/relationships/follow', {
 				method: 'POST',
-				body: JSON.stringify({ entityHash, follow: !wasFollowing, ...actingFields(appContext) }),
+				body: JSON.stringify({ entityHash, follow: !wasFollowing }),
 			}))
 			if (appContext.state.profileEntityHash === entityHash)
 				await loadProfileFor(appContext, entityHash)
@@ -117,7 +105,7 @@ export async function handleProfileNavClick(appContext, target) {
 		const entityHash = blockButton.dataset.block
 		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash, block: true, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash, block: true }),
 		}), 'block')
 	}
 
@@ -126,7 +114,7 @@ export async function handleProfileNavClick(appContext, target) {
 		const entityHash = hideButton.dataset.hide
 		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/hide', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash, hide: true, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash, hide: true }),
 		}), 'hide')
 	}
 
@@ -135,7 +123,7 @@ export async function handleProfileNavClick(appContext, target) {
 		const entityHash = muteButton.dataset.mute
 		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/mute', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash, mute: true, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash, mute: true }),
 		}), 'mute')
 	}
 
@@ -152,7 +140,6 @@ export async function handleProfileNavClick(appContext, target) {
 						targetPostId: parsed.postId,
 						reason: 'user report',
 						category: 'other',
-						...actingFields(appContext),
 					}),
 				}))
 				showToastI18n('success', 'social.actions.reportSubmitted')
@@ -165,7 +152,7 @@ export async function handleProfileNavClick(appContext, target) {
 	if (unblockButton instanceof HTMLElement && unblockButton.dataset.unblock) {
 		await appContext.socialApi('/relationships/block', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: unblockButton.dataset.unblock, block: false, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: unblockButton.dataset.unblock, block: false }),
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}
@@ -174,7 +161,7 @@ export async function handleProfileNavClick(appContext, target) {
 	if (unhideButton instanceof HTMLElement && unhideButton.dataset.unhide) {
 		await appContext.socialApi('/relationships/hide', {
 			method: 'POST',
-			body: JSON.stringify({ entityHash: unhideButton.dataset.unhide, hide: false, ...actingFields(appContext) }),
+			body: JSON.stringify({ entityHash: unhideButton.dataset.unhide, hide: false }),
 		})
 		await renderBlocklist(appContext, document.getElementById('blocklistSection'))
 	}

@@ -17,16 +17,17 @@ import {
 /**
  * @param {string} username 用户
  * @param {Iterable<string>} [owners] engagement 扫描范围
+ * @param {string | null} [viewerEntityHash] 观看者实体（用于 poll 自选投影）
  * @returns {Promise<{ authorProfile: ReturnType<typeof createAuthorProfileLoader>, engagementForPost: ReturnType<typeof createEngagementForPost>, engagement: Awaited<ReturnType<typeof buildEngagementIndex>>, viewerLiked: Awaited<ReturnType<typeof buildViewerLikedSet>> }>} feed 条目构建上下文
  */
-export async function createFeedItemBuildContext(username, owners, actingEntityHash = null) {
+export async function createFeedItemBuildContext(username, owners, viewerEntityHash = null) {
 	const engagement = await buildEngagementIndex(username, owners)
 	const viewerLiked = await buildViewerLikedSet(username)
 	const authorProfile = createAuthorProfileLoader(username)
 	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
 	let viewerPollChoices = null
-	if (actingEntityHash) {
-		const view = await getTimelineMaterialized(username, actingEntityHash)
+	if (viewerEntityHash) {
+		const view = await getTimelineMaterialized(username, viewerEntityHash)
 		viewerPollChoices = view
 	}
 	return { authorProfile, engagementForPost, engagement, viewerLiked, viewerPollChoices }

@@ -394,7 +394,7 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
 	if (!opts.skipChannelGc && state.groupSettings?.autoChannelGc !== false)
 		try {
 			const staleChannelIds = findStaleUnreachableChannels(state, events)
-			const { deleteChannel } = await import('./channelOps.mjs')
+			const { deleteChannel } = await import('./channelOperations.mjs')
 			for (const channelId of staleChannelIds.slice(0, 2))
 				await deleteChannel(username, groupId, channelId)
 		}

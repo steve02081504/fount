@@ -225,7 +225,7 @@ Deno.test('chat 3-node E2E', async t => {
 		const mutedPerms = modules.state.memberChannelPermissions(mutedState, memberPubKeyByNode.B, 'general')
 		assertEquals(mutedPerms[P.SEND_MESSAGES], false, 'hard-muted member cannot send despite SEND-granting role + channel allow')
 		assertEquals(mutedPerms[P.VIEW_CHANNEL], false, 'hard-muted member retains no channel permission')
-		const mutedAuthz = modules.authorize.checkEventPermission(mutedState, { type: 'message', channelId: 'general' }, memberPubKeyByNode.B)
+		const mutedAuthz = await modules.authorize.checkEventPermission(mutedState, { type: 'message', channelId: 'general' }, memberPubKeyByNode.B)
 		assertEquals(mutedAuthz.ok, false, 'DAG authz rejects message from hard-muted member')
 	})
 

@@ -10,7 +10,7 @@ import {
 	messageLineToReplyEntry,
 	tryFewTimes,
 } from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOps } from '../../chat/src/chat/bridge/ops.mjs'
+import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
 import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
 import {
 	isBridgeGroupBackfilled,
@@ -67,7 +67,7 @@ export async function createSimpleDiscordInterface(charAPI, ownerUsername, botCh
 		const outboundRegistered = new Set()
 		const stickerMap = charAPI.interfaces.discord?.stickers || {}
 
-		registerBridgeOps(ownerUsername, 'discord', botname, {
+		registerBridgeOperations(ownerUsername, 'discord', botname, {
 			/**
 			 * @param {{ platformChatId: string | number, platformThreadId?: string | number }} params 平台会话
 			 */

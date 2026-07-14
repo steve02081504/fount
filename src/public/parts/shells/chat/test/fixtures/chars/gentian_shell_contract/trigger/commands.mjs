@@ -19,8 +19,8 @@ export async function handleOwnerCommands({
 		const group = await client.group(groupId)
 		const bridge = group.bridge
 		if (bridge?.platform && bridge?.botname) {
-			const { requireBridgeOp } = await import('fount/public/parts/shells/chat/src/chat/bridge/ops.mjs')
-			await requireBridgeOp(username, bridge, 'stopSelf')()
+			const { requireBridgeOperation } = await import('fount/public/parts/shells/chat/src/chat/bridge/operations.mjs')
+			await requireBridgeOperation(username, bridge, 'stopSelf')()
 		}
 		return 'exit'
 	}

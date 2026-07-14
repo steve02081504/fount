@@ -1,5 +1,5 @@
 /**
- * acting 读侧平权：feed / notifications / follower 索引 / OnMessage 经 agent following。
+ * 实体平权：agent 经 SocialClient 的 feed / notifications 与 operator HTTP 读模型隔离；follower 索引 / OnMessage。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -16,8 +16,6 @@ const AUTHOR_CHAR = 'mention_getreply_agent'
 
 const getSession = createTestSession()
 const append = await import('../../src/timeline/append.mjs')
-const feed = await import('../../src/feed.mjs')
-const notifications = await import('../../src/notifications.mjs')
 const following = await import('../../src/following.mjs')
 const followerIndex = await import('../../src/federation/follower_index.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
@@ -40,7 +38,7 @@ async function seedAgentChar(username, charName) {
 }
 
 Deno.test('agent following feeds home feed; operator feed excludes agent-only follow', async () => {
-	const { username, operator } = await getSession()
+	const { username } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
 	const authorHash = await seedAgentChar(username, AUTHOR_CHAR)
 	await following.setFollow(username, agentHash, authorHash, true)
@@ -50,18 +48,21 @@ Deno.test('agent following feeds home feed; operator feed excludes agent-only fo
 		content: { text: 'agent feed parity post', visibility: 'public' },
 	}, { fanout: false })
 
-	const agentFeed = await feed.buildHomeFeed(username, { actingEntityHash: agentHash, limit: 50 })
-	const operatorFeed = await feed.buildHomeFeed(username, { limit: 50 })
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const agentClient = await getSocialClient(username, agentHash)
+	const operatorClient = await getSocialClient(username)
+	const agentFeed = await agentClient.feed({ limit: 50 })
+	const operatorFeed = await operatorClient.feed({ limit: 50 })
 
 	assert(agentFeed.items.some(item =>
 		item.entityHash === authorHash && item.postId === authorPost.id),
-	'agent acting feed should include followed author post')
+	'agent feed should include followed author post')
 	assert(!operatorFeed.items.some(item =>
 		item.entityHash === authorHash && item.postId === authorPost.id),
 	'operator feed should not include post only followed by agent')
 })
 
-Deno.test('buildNotifications reads acting entity inbox', async () => {
+Deno.test('buildNotifications reads agent entity inbox via SocialClient', async () => {
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
 
@@ -70,11 +71,9 @@ Deno.test('buildNotifications reads acting entity inbox', async () => {
 		content: { text: `mention agent @[entity:${agentHash}]`, visibility: 'public' },
 	}, { fanout: false })
 
-	const agentPage = await notifications.buildNotifications(username, {
-		actingEntityHash: agentHash,
-		limit: 50,
-	})
-	const operatorPage = await notifications.buildNotifications(username, { limit: 50 })
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const agentPage = await (await getSocialClient(username, agentHash)).notifications({ limit: 50 })
+	const operatorPage = await (await getSocialClient(username)).notifications({ limit: 50 })
 
 	assertEquals(agentPage.viewerEntityHash, agentHash)
 	assert(agentPage.notifications.some(row => row.type === 'mention'), 'agent inbox has mention')

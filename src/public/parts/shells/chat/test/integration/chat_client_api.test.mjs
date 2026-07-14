@@ -147,7 +147,7 @@ Deno.test('agent createGroup is allowed', async () => {
 	assert(created.id)
 })
 
-Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
+Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	const username = `cc-bridge-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
@@ -159,11 +159,11 @@ Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	const calls = []
-	registerBridgeOps(username, 'mock', 'bridge-bot', {
+	registerBridgeOperations(username, 'mock', 'bridge-bot', {
 		sendTyping: async payload => { calls.push(['typing', payload]) },
 		leaveChat: async payload => { calls.push(['leave', payload]) },
 	})
@@ -188,12 +188,57 @@ Deno.test('bridgeOps mock: typing and leave dispatch', async () => {
 
 Deno.test('unregistered bridge op throws', async () => {
 	const username = `cc-unreg-${crypto.randomUUID().slice(0, 8)}`
-	const { requireBridgeOp } = await import('../../src/chat/bridge/ops.mjs')
+	const { requireBridgeOperation } = await import('../../src/chat/bridge/operations.mjs')
 	assertThrows(
-		() => requireBridgeOp(username, { platform: 'missing', botname: 'nope' }, 'sendTyping'),
+		() => requireBridgeOperation(username, { platform: 'missing', botname: 'nope' }, 'sendTyping'),
 		Error,
 		'bridge op not registered',
 	)
+})
+
+Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', async () => {
+	const username = `cc-e3-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_chat_client_e3_',
+		minP2pNode: true,
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user)
+		},
+	})
+	await ensureServer()
+
+	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { Buffer } = await import('node:buffer')
+
+	const client = await getChatClient(username)
+	assert(await client.reputation())
+	assert(await client.nodeDenylist.list())
+
+	await client.updateProfile({ localized: { 'zh-CN': { name: 'e3-profile' } } })
+
+	const group = await client.createGroup({ name: 'e3-session' })
+	const channelId = await getDefaultChannelId(username, group.id)
+	await group.session.addChar(CHAR_FIXTURE, { deferGreeting: true })
+	await group.session.setCharReplyFrequency(CHAR_FIXTURE, 0)
+	await group.session.setPersona(null)
+
+	const channel = await group.channel(channelId)
+	const withFile = await channel.send({
+		text: 'with attachment',
+		files: [{ name: 'note.txt', mime_type: 'text/plain', buffer: Buffer.from('hello-e3') }],
+	})
+	assert(withFile.eventId)
+	assert((withFile.content?.fileIds || []).length >= 1, 'send with files should attach fileIds')
+
+	const forked = await group.fork({ name: 'e3-fork' })
+	assert(forked.id)
+	assert(forked.id !== group.id)
+
+	await group.federation.catchup({ waitMs: 50 })
 })
 
 Deno.test('fount_chat code_execution context exposes chat objects', async () => {

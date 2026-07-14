@@ -147,10 +147,10 @@ export function forYouCursorKey(item) {
  */
 export async function buildForYouFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
-	const acting = options.actingEntityHash || null
-	const { following } = await loadFollowingForActor(username, acting)
-	const viewerContext = await loadViewerContext(username, acting)
-	const itemContext = await createFeedItemBuildContext(username, following, acting)
+	const viewer = options.viewerEntityHash || null
+	const { following } = await loadFollowingForActor(username, viewer)
+	const viewerContext = await loadViewerContext(username, viewer)
+	const itemContext = await createFeedItemBuildContext(username, following, viewer)
 
 	/** @type {{ entityHash: string, post: object, score: number }[]} */
 	const candidates = []

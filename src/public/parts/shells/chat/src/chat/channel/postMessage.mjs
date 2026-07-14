@@ -1,7 +1,7 @@
 /**
  * 【文件】channel/postMessage.mjs
- * 【职责】频道 human 发帖：persona BeforeUserSend、附件上传、规范化 content、经 messageCommit 落 DAG。
- * 【原理】postChannelMessage 为 human（Hub/CLI）唯一入口；BeforeUserSend 在落盘前改写/拒绝；world AddChatLogEntry 由 commitChannelMessageEvent 触发。
+ * 【职责】频道发帖：可选 persona BeforeUserSend、附件上传、规范化 content、经 messageCommit 落 DAG。
+ * 【原理】postChannelMessage 支持 origin 分流；human 走 BeforeUserSend；char/system 跳过；附件管线与钩子解耦。
  * 【数据结构】uploadMeta { fileId, parts[], contentHash, wrappedKey }；message content 经 channelContent 规范化。
  * 【关联】messageCommit、files/groupFiles、file_keys/store、dag/append、lib/channelContent、achievements。
  */
@@ -20,7 +20,7 @@ import {
 	channelMessageShowText,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
-import { appendFileUploadEvent } from '../dag/channelOps.mjs'
+import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
@@ -172,7 +172,6 @@ function normalizeChannelMessageContent(content, maxBytes) {
  * @returns {Promise<{ content: object, files: Array<{ name?: string, mime_type?: string, buffer: Buffer }> | undefined }>} 改写结果
  */
 async function applyBeforeUserSend(username, groupId, channelId, content, files) {
-	// 按发送者 replica 解析 persona（勿用 getActiveGroupRuntime：联邦仿真里槽位可能属于别的 replica）
 	const session = await getMaterializedSession(username, groupId)
 	const { player, player_id: personaname } = await loadPlayerForReplica(username, session.personas)
 	const beforeSend = player.interfaces.chat.BeforeUserSend
@@ -198,34 +197,15 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 }
 
 /**
- * 向频道发送 human 消息：BeforeUserSend → 附件 → messageCommit。
+ * 附件上传 + content 规范化（与 human 钩子解耦）。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {{
- *   text?: string,
- *   rawContent?: object,
- *   files?: Array<{ name?: string, mime_type?: string, buffer: Buffer }>,
- *   reply?: { content: unknown, isAutoTrigger?: boolean },
- *   maxDagPayloadBytes?: number,
- * }} payload 消息载荷
- * @returns {Promise<{ event: object, fileIds: string[] }>} DAG 消息事件
+ * @param {object} content 消息内容
+ * @param {Array<{ name?: string, mime_type?: string, buffer: Buffer }> | undefined} files 附件
+ * @param {number} maxBytes payload 上限
+ * @returns {Promise<{ content: object, fileIds: string[] }>} 合并后 content 与 fileIds
  */
-export async function postChannelMessage(username, groupId, channelId, payload = {}) {
-	const maxBytes = Number(payload.maxDagPayloadBytes) || 262_144
-
-	let content = payload.rawContent
-		? channelMessageContentObject(payload.rawContent)
-		: textChannelContent(payload.text ?? '')
-
-	if (payload.reply) {
-		content = channelMessageContentObject(payload.reply.content)
-		if (payload.reply.isAutoTrigger) content = { ...content, isAutoTrigger: true }
-	}
-
-	let files = Array.isArray(payload.files) ? payload.files : undefined
-	;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
-
+async function attachFilesToContent(username, groupId, content, files, maxBytes) {
 	const fileIds = []
 	const inlineMarkers = []
 	for (const file of files || []) {
@@ -254,18 +234,60 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 	if (fileIds.length)
 		content = { ...content, fileIds, fileCount: fileIds.length }
 
-	content = normalizeChannelMessageContent(content, maxBytes)
+	return { content: normalizeChannelMessageContent(content, maxBytes), fileIds }
+}
 
-	void unlockAchievement(username, 'shells/chat', 'first_chat')
-	if ((files || []).some(file => String(file.mime_type || '').startsWith('image/')))
-		void unlockAchievement(username, 'shells/chat', 'photo_chat')
+/**
+ * 向频道发送消息：可选 BeforeUserSend → 附件 → messageCommit。
+ * @param {string} username 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {{
+ *   text?: string,
+ *   rawContent?: object,
+ *   files?: Array<{ name?: string, mime_type?: string, buffer: Buffer }>,
+ *   reply?: { content: unknown, isAutoTrigger?: boolean },
+ *   maxDagPayloadBytes?: number,
+ *   origin?: 'human' | 'char' | 'system',
+ *   charId?: string | null,
+ *   entityHash?: string,
+ * }} payload 消息载荷
+ * @returns {Promise<{ event: object, fileIds: string[] }>} DAG 消息事件
+ */
+export async function postChannelMessage(username, groupId, channelId, payload = {}) {
+	const maxBytes = Number(payload.maxDagPayloadBytes) || 262_144
+	const origin = payload.origin || 'human'
+
+	let content = payload.rawContent
+		? channelMessageContentObject(payload.rawContent)
+		: textChannelContent(payload.text ?? '')
+
+	if (payload.reply) {
+		content = channelMessageContentObject(payload.reply.content)
+		if (payload.reply.isAutoTrigger) content = { ...content, isAutoTrigger: true }
+	}
+
+	let files = Array.isArray(payload.files) ? payload.files : undefined
+	if (origin === 'human')
+		;({ content, files } = await applyBeforeUserSend(username, groupId, channelId, content, files))
+
+	const { content: finalized, fileIds } = await attachFilesToContent(username, groupId, content, files, maxBytes)
+	content = finalized
+
+	if (origin === 'human') {
+		void unlockAchievement(username, 'shells/chat', 'first_chat')
+		if ((files || []).some(file => String(file.mime_type || '').startsWith('image/')))
+			void unlockAchievement(username, 'shells/chat', 'photo_chat')
+	}
 
 	const event = await commitChannelMessageEvent({
 		username,
 		groupId,
 		channelId,
 		content: channelMessageContentObject(content),
-		origin: 'human',
+		origin,
+		charId: payload.charId ?? null,
+		...payload.entityHash && { entityHash: payload.entityHash },
 	})
 
 	void maybeDispatchMailboxForOfflinePeer(username, groupId, event)

@@ -1,4 +1,4 @@
-import { requireBridgeOp } from '../chat/bridge/ops.mjs'
+import { requireBridgeOperation } from '../chat/bridge/operations.mjs'
 import { lookupBridgePlatformChannel } from '../chat/bridge/registry.mjs'
 
 /**
@@ -22,7 +22,7 @@ export async function dispatchBridgeTyping(ctx, groupId, state, channelId) {
 	const bridge = bridgeContext(state)
 	if (!bridge) return
 	const platformChannel = lookupBridgePlatformChannel(ctx.username, groupId, channelId)
-	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'sendTyping')({
+	await requireBridgeOperation(ctx.username, state.groupSettings.bridge, 'sendTyping')({
 		platformChatId: platformChannel?.platformChatId ?? bridge.platformChatId,
 		platformThreadId: platformChannel?.platformThreadId,
 	})
@@ -37,7 +37,7 @@ export async function dispatchBridgeTyping(ctx, groupId, state, channelId) {
 export async function dispatchBridgeLeave(ctx, groupId, state) {
 	const bridge = bridgeContext(state)
 	if (!bridge) return
-	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'leaveChat')({
+	await requireBridgeOperation(ctx.username, state.groupSettings.bridge, 'leaveChat')({
 		platformChatId: bridge.platformChatId,
 	})
 }
@@ -55,7 +55,7 @@ export async function dispatchBridgeMemberKick(ctx, groupId, state, targetMember
 	if (!bridge) return
 	const platformUserId = memberRow?.platformUserId || memberRow?.extension?.bridge?.platformUserId
 	if (!platformUserId) throw new Error('bridge member kick requires platformUserId')
-	await requireBridgeOp(ctx.username, state.groupSettings.bridge, 'kickMember')({
+	await requireBridgeOperation(ctx.username, state.groupSettings.bridge, 'kickMember')({
 		platformChatId: bridge.platformChatId,
 		platformUserId,
 	})

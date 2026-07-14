@@ -26,7 +26,7 @@ export async function createChatFederationSim(options = {}) {
 		materialize: await import('../../src/chat/dag/materialize.mjs'),
 		remoteIngest: await import('../../src/chat/dag/remoteIngest.mjs'),
 		append: await import('../../src/chat/dag/append.mjs'),
-		channelOps: await import('../../src/chat/dag/channelOps.mjs'),
+		channelOps: await import('../../src/chat/dag/channelOperations.mjs'),
 		channelMessaging: await import('../../src/chat/channel/postMessage.mjs'),
 		schedule: await import('../../src/chat/channel_keys/schedule.mjs'),
 		queries: await import('../../src/chat/dag/queries.mjs'),
@@ -159,14 +159,13 @@ export async function createChatFederationSim(options = {}) {
 	 */
 	async function joinGroup(joinerNode, ownerNode, groupId, inviteCode) {
 		await adoptSnapshot(ownerNode, joinerNode, groupId)
-		const { sender, secretKey } = await modules.localSigner.getLocalSignerForNewGroup(joinerNode, groupId)
-		await modules.append.appendEvent(joinerNode, groupId, {
+		// 与生产 join 路径同轨：appendSignedLocalEvent 解析 per-entity signer 并自动附加 member_join 实体绑定。
+		const signed = await modules.append.appendSignedLocalEvent(joinerNode, groupId, {
 			type: 'member_join',
-			sender,
 			timestamp: Date.now(),
 			content: { inviteCode, homeNodeHash: modules.replica.getLocalNodeHash(joinerNode) },
-		}, secretKey, { publishFederation: false, skipReleaseQuarantined: true })
-		return sender
+		}, { publishFederation: false, skipReleaseQuarantined: true })
+		return signed.sender
 	}
 
 	/**

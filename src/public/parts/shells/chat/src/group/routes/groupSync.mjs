@@ -320,24 +320,8 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		if (!canInChannel(state, member, PERMISSIONS.ADMIN, channelId)
 			&& !canInChannel(state, member, PERMISSIONS.MANAGE_ADMINS, channelId))
 			throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
-		const patch = {}
-		const partitionCount = Number(req.body?.federationPartitionCount)
-		if (Number.isFinite(partitionCount))
-			patch.federationPartitionCount = Math.max(2, Math.min(64, Math.floor(partitionCount)))
-		const rtcBudget = Number(req.body?.rtcConnectionBudgetMax)
-		if (Number.isFinite(rtcBudget))
-			patch.rtcConnectionBudgetMax = Math.max(8, Math.min(128, Math.floor(rtcBudget)))
-		const rtcJoinRate = Number(req.body?.rtcJoinRatePerMin)
-		if (Number.isFinite(rtcJoinRate))
-			patch.rtcJoinRatePerMin = Math.max(4, Math.min(60, Math.floor(rtcJoinRate)))
-		if (!Object.keys(patch).length)
-			throw httpError(400, 'no valid tuning fields')
-		await appendSignedLocalEvent(username, groupId, {
-			type: 'group_settings_update',
-			timestamp: Date.now(),
-			content: patch,
-		})
-		invalidateFederationRoomCache(username, groupId)
+		const { setFederationTuning } = await import('../../chat/federation/tuning.mjs')
+		const patch = await setFederationTuning(username, groupId, req.body || {})
 		res.status(200).json({ ok: true, patch })
 	})
 

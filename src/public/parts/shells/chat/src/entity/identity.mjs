@@ -176,16 +176,14 @@ export async function ensureEntityIdentity(username, opts = {}) {
 	if (charPartName === null && ownerEntityHash === null) {
 		const opHash = await findOperatorEntityHash(username)
 		if (opHash) {
-			const cached = identityCache.get(cacheKey(username, opHash))
-			if (cached) {
-				const disk = await readEntityIdentity(username, opHash)
-				return { ...disk, entityHash: opHash }
-			}
 			const disk = await readEntityIdentity(username, opHash)
 			if (isDualKeyIdentity(disk)) {
 				cacheFromRow(username, { ...disk, entityHash: opHash })
 				return { ...disk, entityHash: opHash }
 			}
+			// 磁盘身份已不存在（数据根切换/被删）：作废缓存，走重建。
+			identityCache.delete(cacheKey(username, opHash))
+			operatorHashCache.delete(username)
 		}
 	}
 	else if (charPartName) {
@@ -264,13 +262,12 @@ export async function ensureOperatorIdentity(username) {
  */
 export async function loadEntityIdentity(username, entityHash) {
 	const hash = String(entityHash).toLowerCase()
-	const cached = identityCache.get(cacheKey(username, hash))
-	if (cached) {
-		const disk = await readEntityIdentity(username, hash)
-		return { ...disk, entityHash: hash }
-	}
 	const disk = await readEntityIdentity(username, hash)
-	if (!isDualKeyIdentity(disk)) throw new Error(`entity identity not found: ${hash}`)
+	if (!isDualKeyIdentity(disk)) {
+		// 缓存可能残留已删除数据根的身份：以磁盘为准作废。
+		identityCache.delete(cacheKey(username, hash))
+		throw new Error(`entity identity not found: ${hash}`)
+	}
 	const row = { ...disk, entityHash: hash }
 	cacheFromRow(username, row)
 	return row

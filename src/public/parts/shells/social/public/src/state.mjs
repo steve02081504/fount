@@ -1,10 +1,7 @@
 /** Social 前端共享可变状态。 */
 export const socialState = {
 	viewerEntityHash: null,
-	/** 当前 acting 身份；null = operator */
-	actingEntityHash: null,
-	actingDisplayName: null,
-	availableAgents: [],
+	viewerDisplayName: null,
 	feedCursor: null,
 	profileEntityHash: null,
 	pendingMediaRefs: [],

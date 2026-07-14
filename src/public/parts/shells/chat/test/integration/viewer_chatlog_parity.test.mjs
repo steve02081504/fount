@@ -53,7 +53,7 @@ async function buildAgentRequestWithWorld(worldname) {
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
-	const { addchar, setWorld } = await import('../../src/chat/session/partConfig.mjs')
+	const { addchar, bindWorld } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 	const { getChatRequest } = await import('../../src/chat/session/chatRequest.mjs')
@@ -61,7 +61,7 @@ async function buildAgentRequestWithWorld(worldname) {
 
 	const groupId = await newGroup(username, { name: `viewer-${worldname}` })
 	const channelId = await getDefaultChannelId(username, groupId)
-	await setWorld(groupId, channelId, worldname, username)
+	await bindWorld(groupId, channelId, worldname, username)
 	await addchar(groupId, CHAR, username)
 	await postChannelMessage(username, groupId, channelId, {
 		text: 'hello visible',

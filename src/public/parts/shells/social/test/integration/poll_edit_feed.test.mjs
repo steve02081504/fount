@@ -81,7 +81,7 @@ Deno.test('buildForYouFeed returns scored items', async () => {
 		type: 'post',
 		content: { text: 'for you feed item', visibility: 'public', lang: 'zh-CN' },
 	})
-	const feed = await buildForYouFeed(username, { actingEntityHash: operator, limit: 10 })
+	const feed = await buildForYouFeed(username, { viewerEntityHash: operator, limit: 10 })
 	assert(feed.items.length >= 1)
 	assert(typeof feed.items[0].score === 'number')
 })

@@ -63,7 +63,7 @@ async function setupWritePathSession() {
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
-	const { setPersona, setWorld } = await import('../../src/chat/session/partConfig.mjs')
+	const { setPersona, bindWorld } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 
 	const groupId = await newGroup(username, { name: 'write-path' })
@@ -71,7 +71,7 @@ async function setupWritePathSession() {
 	await setPersona(groupId, PERSONA, username)
 
 	hooks.reset()
-	const greeting = await setWorld(groupId, channelId, WORLD, username)
+	const greeting = await bindWorld(groupId, channelId, WORLD, username)
 	assert(greeting, 'world greeting inserted')
 	assertEquals(hooks.addCalls.length, 1, 'greeting Add once at setup')
 	assertEquals(hooks.afterCalls.length, 1, 'greeting After once at setup')

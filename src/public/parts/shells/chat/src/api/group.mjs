@@ -42,8 +42,8 @@ export function createGroup(ctx, groupId, projection) {
 				 * @returns {Promise<void>} 停止本 bot 实例
 				 */
 				async stop() {
-					const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
-					await requireBridgeOp(ctx.username, bridge, 'stopSelf')()
+					const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
+					await requireBridgeOperation(ctx.username, bridge, 'stopSelf')()
 				},
 			}
 		},
@@ -82,9 +82,9 @@ export function createGroup(ctx, groupId, projection) {
 			const state = await loadGroupState(ctx, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.botname) {
-				const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
+				const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
 				const { resolveBridgeIdentity } = await import('../chat/bridge/identity.mjs')
-				const listMembers = requireBridgeOp(ctx.username, bridge, 'listMembers')
+				const listMembers = requireBridgeOperation(ctx.username, bridge, 'listMembers')
 				const rows = await listMembers({ platformChatId: bridge.platformChatId })
 				const members = await Promise.all(rows.map(async row => {
 					const entityHash = await resolveBridgeIdentity(
@@ -157,8 +157,8 @@ export function createGroup(ctx, groupId, projection) {
 			const state = await loadGroupState(ctx, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.platformChatId) {
-				const { requireBridgeOp } = await import('../chat/bridge/ops.mjs')
-				return requireBridgeOp(ctx.username, bridge, 'createInvite')({
+				const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
+				return requireBridgeOperation(ctx.username, bridge, 'createInvite')({
 					platformChatId: bridge.platformChatId,
 				})
 			}
@@ -197,6 +197,177 @@ export function createGroup(ctx, groupId, projection) {
 				timestamp: Date.now(),
 				content: patch,
 			}, { entityHash: ctx.entityHash })
+		},
+		/**
+		 * @param {{ tipId?: string, name?: string }} [opts] fork 参数
+		 * @returns {Promise<object>} 新 Group
+		 */
+		async fork(opts = {}) {
+			const { forkGroupFromBranch } = await import('../chat/governance/fork.mjs')
+			const result = await forkGroupFromBranch(ctx.username, groupId, opts)
+			const { group } = await buildConversationContext(ctx.username, result.groupId, result.defaultChannelId)
+			return createGroup(ctx, result.groupId, group)
+		},
+		/**
+		 * @param {string} acceptedTipId 接受的 tip
+		 * @returns {Promise<{ blocked: string[] }>} 阻断结果
+		 */
+		async blockOpposingFork(acceptedTipId) {
+			const { blockOpposingForkBranch } = await import('../chat/governance/forkBlockOpposing.mjs')
+			const { sender } = await resolveLocalEventSigner(ctx.username, groupId)
+			return blockOpposingForkBranch(ctx.username, groupId, acceptedTipId, sender)
+		},
+		/**
+		 * @returns {{ slash: Function, reset: Function }} 群信誉操作
+		 */
+		get reputation() {
+			const signOpts = { entityHash: ctx.entityHash }
+			return {
+				/**
+				 * @param {{ targetPubKeyHash: string, claim?: number, verified?: boolean, proof?: { eventId: string } }} args slash 参数
+				 * @returns {Promise<{ applied: number }>}
+				 */
+				async slash(args) {
+					const { appendSignedLocalEvent: append } = await import('../chat/dag/append.mjs')
+					const { getState } = await import('../chat/dag/materialize.mjs')
+					const { buildAndApplyUnverifiedSlashAlert } = await import('npm:@steve02081504/fount-p2p/node/reputation_store')
+					const { publishVolatileToFederation } = await import('../chat/federation/index.mjs')
+					const { broadcastEvent } = await import('../chat/ws/groupWsBroadcast.mjs')
+					const { groupWsRoomKeyForReplica } = await import('../chat/ws/groupWsRooms.mjs')
+					const { canGovSlash, resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
+					const content = {
+						targetPubKeyHash: String(args.targetPubKeyHash || '').trim().toLowerCase(),
+						claim: Number(args.claim ?? 0.25),
+					}
+					if (args.verified) {
+						content.verified = true
+						if (args.proof?.eventId) content.proof = { eventId: String(args.proof.eventId).trim().toLowerCase() }
+					}
+					if (!content.targetPubKeyHash)
+						throw new Error('targetPubKeyHash required')
+					const { state } = await getState(ctx.username, groupId)
+					const memberKey = await resolveActiveMemberKeyForLocalUser(ctx.username, groupId, state)
+					const member = memberKey ? state.members[memberKey] : undefined
+					if (!content.verified && !content.proof) {
+						if (!canGovSlash(state, member))
+							throw new Error('ADMIN or MANAGE_ROLES required')
+						const { sender } = await resolveLocalEventSigner(ctx.username, groupId)
+						const alert = buildAndApplyUnverifiedSlashAlert(sender, content, state.groupSettings || {})
+						broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
+						await publishVolatileToFederation(groupId, alert)
+						return { applied: 1 }
+					}
+					await append(ctx.username, groupId, {
+						type: 'reputation_slash',
+						timestamp: Date.now(),
+						content,
+					}, signOpts)
+					return { applied: 1 }
+				},
+				/**
+				 * @param {string} targetPubKeyHash 目标 pubKeyHash
+				 * @returns {Promise<{ applied: number }>}
+				 */
+				async reset(targetPubKeyHash) {
+					const hash = String(targetPubKeyHash || '').trim().toLowerCase()
+					if (!hash) throw new Error('targetPubKeyHash required')
+					await appendSignedLocalEvent(ctx.username, groupId, {
+						type: 'reputation_reset',
+						timestamp: Date.now(),
+						content: { targetPubKeyHash: hash },
+					}, signOpts)
+					return { applied: 1 }
+				},
+			}
+		},
+		/**
+		 * @returns {{ catchup: Function, setTuning: Function }} 联邦操作
+		 */
+		get federation() {
+			return {
+				/**
+				 * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts]
+				 * @returns {Promise<object>} catchup 统计
+				 */
+				async catchup(opts = {}) {
+					const { catchUpGroupFromPeers } = await import('../chat/federation/index.mjs')
+					return catchUpGroupFromPeers(ctx.username, groupId, opts)
+				},
+				/**
+				 * @param {object} fields 调参字段
+				 * @returns {Promise<object>} 写入的 patch
+				 */
+				async setTuning(fields) {
+					const { setFederationTuning } = await import('../chat/federation/tuning.mjs')
+					return setFederationTuning(ctx.username, groupId, fields, { entityHash: ctx.entityHash })
+				},
+			}
+		},
+		/**
+		 * @returns {object} 会话部件配置
+		 */
+		get session() {
+			return {
+				/**
+				 * @param {string} [personaname] 人格名
+				 * @returns {Promise<void>}
+				 */
+				async setPersona(personaname) {
+					const { setPersona } = await import('../chat/session/partConfig.mjs')
+					await setPersona(groupId, personaname, ctx.username)
+				},
+				/**
+				 * @param {string} channelId 频道
+				 * @param {string | null} worldname 世界
+				 * @returns {Promise<object | null>}
+				 */
+				async bindWorld(channelId, worldname) {
+					const { bindWorld } = await import('../chat/session/partConfig.mjs')
+					return bindWorld(groupId, channelId, worldname, ctx.username)
+				},
+				/**
+				 * @param {string} pluginname 插件名
+				 * @returns {Promise<void>}
+				 */
+				async addPlugin(pluginname) {
+					const { addplugin } = await import('../chat/session/partConfig.mjs')
+					await addplugin(groupId, pluginname, ctx.username)
+				},
+				/**
+				 * @param {string} pluginname 插件名
+				 * @returns {Promise<void>}
+				 */
+				async removePlugin(pluginname) {
+					const { removeplugin } = await import('../chat/session/partConfig.mjs')
+					await removeplugin(groupId, pluginname, ctx.username)
+				},
+				/**
+				 * @param {string} charname 角色名
+				 * @param {object} [opts]
+				 * @returns {Promise<object | null>}
+				 */
+				async addChar(charname, opts) {
+					const { addchar } = await import('../chat/session/partConfig.mjs')
+					return addchar(groupId, charname, ctx.username, opts)
+				},
+				/**
+				 * @param {string} charname 角色名
+				 * @returns {Promise<void>}
+				 */
+				async removeChar(charname) {
+					const { removechar } = await import('../chat/session/partConfig.mjs')
+					await removechar(groupId, charname, ctx.username)
+				},
+				/**
+				 * @param {string} charname 角色名
+				 * @param {number} frequency 频率
+				 * @returns {Promise<void>}
+				 */
+				async setCharReplyFrequency(charname, frequency) {
+					const { setCharReplyFrequency } = await import('../chat/session/partConfig.mjs')
+					await setCharReplyFrequency(groupId, charname, frequency, ctx.username)
+				},
+			}
 		},
 	}
 }

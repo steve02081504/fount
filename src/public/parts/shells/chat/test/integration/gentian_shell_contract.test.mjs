@@ -106,14 +106,14 @@ Deno.test('Gentian OnMessage: self-destruct calls bridge stopSelf', async () => 
 	})
 	await ensureServer()
 
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { handleOwnerCommands } = await import(
 		`file://${join(fixturesRoot, 'chars/gentian_shell_contract/trigger/commands.mjs').replace(/\\/g, '/')}`
 	)
 
 	const botname = 'gentian-stop-bot'
 	let stopCalled = false
-	registerBridgeOps(username, 'telegram', botname, {
+	registerBridgeOperations(username, 'telegram', botname, {
 		/**
 		 *
 		 */

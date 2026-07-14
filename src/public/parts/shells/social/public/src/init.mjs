@@ -13,7 +13,7 @@ import {
 	syncGroupRefInComposer,
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
-import { bootstrapActingEntity } from './lib/actorSwitcher.mjs'
+import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
@@ -139,7 +139,15 @@ export async function bootstrapSocialApp(appContext) {
 		await updateNotificationBadge(appContext)
 
 		const viewer = await appContext.socialApi('/viewer')
-		bootstrapActingEntity(appContext, viewer)
+		appContext.state.viewerEntityHash = viewer.viewerEntityHash ?? null
+		appContext.state.viewerDisplayName = viewer.operator?.displayName
+			|| viewer.profile?.name
+			|| null
+		const avatarSlot = document.getElementById('viewerComposerAvatar')
+		if (avatarSlot && appContext.state.viewerEntityHash)
+			avatarSlot.innerHTML = renderAvatarHtml(appContext.state.viewerEntityHash, {
+				name: appContext.state.viewerDisplayName,
+			})
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',

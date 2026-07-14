@@ -283,7 +283,6 @@ export interface SocialFollowResponse {
  */
 export interface SocialBlockResponse {
 	entityHash: string
-	actingEntityHash: string
 	blocked: boolean
 }
 
@@ -292,7 +291,6 @@ export interface SocialBlockResponse {
  */
 export interface SocialHideResponse {
 	entityHash: string
-	actingEntityHash: string
 	hidden: boolean
 }
 

@@ -186,3 +186,37 @@ export async function deleteSavedFolder(username, folderId) {
 	delete data.folders[folderId]
 	return saveSavedPosts(username, data)
 }
+
+/**
+ * 在已加载的收藏帖中按正文/作者文本匹配搜索。
+ * @param {string} username 用户
+ * @param {string} query 搜索串
+ * @param {{ limit?: number }} [opts] 选项
+ * @returns {Promise<{ posts: object[], query: string }>} 匹配的收藏（含 folderId）
+ */
+export async function searchSavedPosts(username, query, opts = {}) {
+	const q = String(query || '').trim().toLowerCase()
+	const limit = Math.min(Math.max(Number(opts.limit) || 50, 1), 200)
+	const enriched = await enrichSavedPosts(username, await loadSavedPosts(username))
+	/** @type {object[]} */
+	const posts = []
+	/**
+	 * @param {object} ref 收藏引用
+	 * @param {string | null} folderId 所在文件夹
+	 */
+	const consider = (ref, folderId) => {
+		const haystack = [
+			ref.preview,
+			ref.authorName,
+			ref.entityHash,
+		].filter(Boolean).join('\n').toLowerCase()
+		if (q && !haystack.includes(q)) return
+		posts.push({ ...ref, folderId })
+	}
+	for (const [folderId, folder] of Object.entries(enriched.folders))
+		for (const ref of folder.posts)
+			consider(ref, folderId)
+	for (const ref of enriched.unfiled)
+		consider(ref, null)
+	return { query: String(query || '').trim(), posts: posts.slice(0, limit) }
+}

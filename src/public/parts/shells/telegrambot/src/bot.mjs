@@ -169,8 +169,8 @@ export async function stopBot(username, botname) {
 	}
 	finally {
 		delete botCache[botname]
-		const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-		await unregisterBridgeOps(username, 'telegram', botname)
+		const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+		await unregisterBridgeOperations(username, 'telegram', botname)
 		EndJob(username, 'shells/telegrambot', botname)
 	}
 }
@@ -190,8 +190,8 @@ export async function pauseBot(username, botname) {
 	}
 	finally {
 		delete botCache[botname]
-		const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-		await unregisterBridgeOps(username, 'telegram', botname)
+		const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+		await unregisterBridgeOperations(username, 'telegram', botname)
 	}
 }
 on_shutdown(async () => {

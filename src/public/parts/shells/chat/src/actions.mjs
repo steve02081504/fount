@@ -16,9 +16,9 @@ import {
 	getCharListOfGroup,
 	getUserPersonaName,
 	removechar,
-	setCharSpeakingFrequency,
+	setCharReplyFrequency,
 	setPersona,
-	setWorld,
+	bindWorld,
 } from './chat/session/partConfig.mjs'
 import { getActiveGroupRuntime } from './chat/session/persistence.mjs'
 import { triggerCharReply } from './chat/session/triggerReply.mjs'
@@ -68,7 +68,7 @@ export const actions = {
 
 		if (chatInfo.world) {
 			const channelId = await defaultChannelForGroup(groupId)
-			await setWorld(groupId, channelId, chatInfo.world)
+			await bindWorld(groupId, channelId, chatInfo.world)
 		}
 		if (chatInfo.persona) await setPersona(groupId, chatInfo.persona)
 		if (chatInfo.chars)
@@ -164,7 +164,7 @@ export const actions = {
 	'set-world': async ({ groupId, worldName }) => {
 		if (!groupId) throw new Error('Group ID is required.')
 		const channelId = await defaultChannelForGroup(groupId)
-		return setWorld(groupId, channelId, worldName || null)
+		return bindWorld(groupId, channelId, worldName || null)
 	},
 	/**
 	 * 获取当前用户角色。
@@ -207,7 +207,7 @@ export const actions = {
 	 */
 	'set-char-frequency': ({ groupId, charname, frequency }) => {
 		if (!groupId || !charname || frequency == null) throw new Error('Group ID, character name, and frequency are required.')
-		return setCharSpeakingFrequency(groupId, charname, frequency)
+		return setCharReplyFrequency(groupId, charname, frequency)
 	},
 	/**
 	 * 触发角色回复。

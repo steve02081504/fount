@@ -1,7 +1,7 @@
 /**
  * 【文件】`dag/sessionEventValidate.mjs` — `session_*` / 本地元数据 DAG 事件内容校验。
  */
-import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { isChannelIdValid } from '../lib/channelId.mjs'
 
 const WORLD_DISTRIBUTIONS = new Set(['local', 'replicated', 'hosted'])
@@ -31,8 +31,9 @@ export function validateSessionEventContent(event) {
 	const content = event?.content || {}
 	switch (event.type) {
 		case 'agent_reply_frequency_set': {
+			// state.members 以 64-hex pubKeyHash 为键（见 reducers/members.mjs、canonicalizeEvent）。
 			const targetMemberKey = String(content.targetMemberKey || '').trim().toLowerCase()
-			if (!isEntityHash128(targetMemberKey))
+			if (!isHex64(targetMemberKey))
 				throw new Error('agent_reply_frequency_set: targetMemberKey required')
 			if (!Number.isFinite(Number(content.frequency)))
 				throw new Error('agent_reply_frequency_set: frequency required')

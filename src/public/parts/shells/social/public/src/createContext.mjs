@@ -1,4 +1,4 @@
-import { socialApi, effectiveActingEntityHash } from './lib/apiClient.mjs'
+import { socialApi, viewerEntityHash } from './lib/apiClient.mjs'
 import {
 	authorLabel,
 	formatTime as formatTimeWithI18n,
@@ -17,10 +17,10 @@ import { socialState } from './state.mjs'
 export function createSocialContext(geti18n) {
 	const buildPostCard = createPostCardBuilder({
 		/**
-		 * 返回当前观看者 entityHash。
+		 * 返回当前观看者 entityHash（恒为 operator）。
 		 * @returns {string | null} 观看者 entityHash；未登录时为 null
 		 */
-		getViewerEntityHash: () => effectiveActingEntityHash(),
+		getViewerEntityHash: () => viewerEntityHash(),
 		geti18n,
 		authorLabel,
 		renderAvatarHtml,

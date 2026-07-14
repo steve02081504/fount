@@ -10,9 +10,9 @@ import {
 	getUserPersonaName,
 	removechar,
 	removeplugin,
-	setCharSpeakingFrequency,
+	setCharReplyFrequency,
 	setPersona,
-	setWorld,
+	bindWorld,
 } from '../chat/session/partConfig.mjs'
 import { registerGroupRuntime } from '../chat/session/runtime.mjs'
 import { groupMetadatas } from '../chat/session/wsLifecycle.mjs'
@@ -63,7 +63,7 @@ export function registerGroupsRuntimeRoutes(router) {
 	router.put(`${GROUPS_PREFIX}/:groupId/char/:charname/frequency`, authenticate, async (req, res) => {
 		const { params: { groupId, charname }, body: { frequency } } = req
 		const { username } = getUserByReq(req)
-		await setCharSpeakingFrequency(groupId, charname, frequency, username)
+		await setCharReplyFrequency(groupId, charname, frequency, username)
 		res.status(200).json({})
 	})
 
@@ -71,7 +71,7 @@ export function registerGroupsRuntimeRoutes(router) {
 		const { params: { groupId }, body: { worldname, channelId: requestedChannelId } } = req
 		const { username } = getUserByReq(req)
 		const channelId = await resolveGroupChannel(groupId, optionalChannelId(requestedChannelId), username)
-		await setWorld(groupId, channelId, worldname, username)
+		await bindWorld(groupId, channelId, worldname, username)
 		res.status(200).json({})
 	})
 

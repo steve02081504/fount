@@ -175,8 +175,8 @@ export async function stopBot(username, botname) {
 		delete botCache[botname]
 	}
 
-	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-	await unregisterBridgeOps(username, 'discord', botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'discord', botname)
 	EndJob(username, 'shells/discordbot', botname)
 }
 
@@ -196,8 +196,8 @@ export async function pauseBot(username, botname) {
 	} finally {
 		delete botCache[botname]
 	}
-	const { unregisterBridgeOps } = await import('../../chat/src/chat/bridge/ops.mjs')
-	await unregisterBridgeOps(username, 'discord', botname)
+	const { unregisterBridgeOperations } = await import('../../chat/src/chat/bridge/operations.mjs')
+	await unregisterBridgeOperations(username, 'discord', botname)
 }
 on_shutdown(async () => {
 	for (const username of getAllUserNames())

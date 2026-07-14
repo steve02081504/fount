@@ -1,12 +1,12 @@
 /**
- * per-bot bridgeOps 生命周期集成测试。
+ * per-bot bridgeOperations 生命周期集成测试。
  */
 /* global Deno */
 import { assert, assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { createIntegrationBoot } from '../harness.mjs'
 
-Deno.test('per-bot bridgeOps: two bots on same platform route independently', async () => {
+Deno.test('per-bot bridgeOperations: two bots on same platform route independently', async () => {
 	const username = `bridge-lifecycle-parallel-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
@@ -15,16 +15,16 @@ Deno.test('per-bot bridgeOps: two bots on same platform route independently', as
 	})
 	await ensureServer()
 
-	const { registerBridgeOps, requireBridgeOp } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations, requireBridgeOperation } = await import('../../src/chat/bridge/operations.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 
 	const callsA = []
 	const callsB = []
-	registerBridgeOps(username, 'telegram', 'bot-a', {
+	registerBridgeOperations(username, 'telegram', 'bot-a', {
 		sendTyping: async () => { callsA.push('typing') },
 	})
-	registerBridgeOps(username, 'telegram', 'bot-b', {
+	registerBridgeOperations(username, 'telegram', 'bot-b', {
 		sendTyping: async () => { callsB.push('typing') },
 	})
 
@@ -42,14 +42,14 @@ Deno.test('per-bot bridgeOps: two bots on same platform route independently', as
 		content: { bridge: { platform: 'telegram', platformChatId: '1002', chatKind: 'group', botname: 'bot-b' } },
 	})
 
-	await requireBridgeOp(username, { platform: 'telegram', botname: 'bot-a' }, 'sendTyping')({ platformChatId: '1001' })
-	await requireBridgeOp(username, { platform: 'telegram', botname: 'bot-b' }, 'sendTyping')({ platformChatId: '1002' })
+	await requireBridgeOperation(username, { platform: 'telegram', botname: 'bot-a' }, 'sendTyping')({ platformChatId: '1001' })
+	await requireBridgeOperation(username, { platform: 'telegram', botname: 'bot-b' }, 'sendTyping')({ platformChatId: '1002' })
 
 	assertEquals(callsA, ['typing'])
 	assertEquals(callsB, ['typing'])
 })
 
-Deno.test('unregisterBridgeOps clears registry and outbound handlers', async () => {
+Deno.test('unregisterBridgeOperations clears registry and outbound handlers', async () => {
 	const username = `bridge-lifecycle-unreg-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
@@ -58,15 +58,15 @@ Deno.test('unregisterBridgeOps clears registry and outbound handlers', async () 
 	})
 	await ensureServer()
 
-	const { registerBridgeOps, unregisterBridgeOps, requireBridgeOp, resolveBridgeOps } =
-		await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations, unregisterBridgeOperations, requireBridgeOperation, resolveBridgeOperations } =
+		await import('../../src/chat/bridge/operations.mjs')
 	const { registerBridgeOutbound, notifyBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 
 	const groupId = await newGroup(username, { name: 'outbound-clear' })
 	/** @type {object[]} */
 	const outboundLines = []
-	registerBridgeOps(username, 'mock', 'clear-bot', {
+	registerBridgeOperations(username, 'mock', 'clear-bot', {
 		sendTyping: async () => {},
 	}, {
 		teardown: async () => {
@@ -78,15 +78,15 @@ Deno.test('unregisterBridgeOps clears registry and outbound handlers', async () 
 		outboundLines.push(messageLine)
 	})
 
-	assert(resolveBridgeOps(username, { platform: 'mock', botname: 'clear-bot' }))
-	await unregisterBridgeOps(username, 'mock', 'clear-bot')
-	assertEquals(resolveBridgeOps(username, { platform: 'mock', botname: 'clear-bot' }), undefined)
+	assert(resolveBridgeOperations(username, { platform: 'mock', botname: 'clear-bot' }))
+	await unregisterBridgeOperations(username, 'mock', 'clear-bot')
+	assertEquals(resolveBridgeOperations(username, { platform: 'mock', botname: 'clear-bot' }), undefined)
 
 	await notifyBridgeOutbound(username, groupId, 'default', { eventId: 'e1', content: { text: 'x' } })
 	assertEquals(outboundLines.length, 0)
 
 	assertThrows(
-		() => requireBridgeOp(username, { platform: 'mock', botname: 'clear-bot' }, 'sendTyping'),
+		() => requireBridgeOperation(username, { platform: 'mock', botname: 'clear-bot' }, 'sendTyping'),
 		Error,
 		'bridge op not registered',
 	)
@@ -101,13 +101,13 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 	})
 	await ensureServer()
 
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	let stopSelfCalled = false
-	registerBridgeOps(username, 'mock', 'self-stop-bot', {
+	registerBridgeOperations(username, 'mock', 'self-stop-bot', {
 		stopSelf: async () => { stopSelfCalled = true },
 	})
 
@@ -144,11 +144,11 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 	})
 	await ensureServer()
 
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
-	registerBridgeOps(username, 'telegram', 'list-a', { sendTyping: async () => {} })
-	registerBridgeOps(username, 'discord', 'list-b', { sendTyping: async () => {} })
+	registerBridgeOperations(username, 'telegram', 'list-a', { sendTyping: async () => {} })
+	registerBridgeOperations(username, 'discord', 'list-b', { sendTyping: async () => {} })
 
 	const client = await getChatClient(username)
 	const bots = await client.bridgeBots()
@@ -195,7 +195,7 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 	})
 	await ensureServer()
 
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
@@ -203,7 +203,7 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 
 	const platformUserId = 4242
 	const expectedHash = bridgeEntityHash('mock', platformUserId)
-	registerBridgeOps(username, 'mock', 'members-bot', {
+	registerBridgeOperations(username, 'mock', 'members-bot', {
 		listMembers: async () => [{ platformUserId, displayName: 'Alice' }],
 	})
 

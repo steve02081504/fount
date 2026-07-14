@@ -1,4 +1,3 @@
-import { resolveActingEntity } from '../../../social/src/lib/resolveActingEntity.mjs'
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import {
 	loadPersonalBlockEntries,
@@ -72,14 +71,12 @@ export function registerEntityEndpoints(router) {
 
 	router.get(`${CHAT_PREFIX}/personal-lists`, authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
-		const acting = await resolveActingEntity(username, req.query?.actingEntityHash, { requireEntity: false })
-		if (acting.error)
-			return res.status(acting.status).json({ error: acting.error })
-		if (!acting.actingEntity)
+		const operator = await resolveOperatorEntityHashForUser(username)
+		if (!operator)
 			return res.status(200).json({ entries: [] })
 		const [blockedEntries, hiddenEntries] = await Promise.all([
-			loadPersonalBlockEntries(acting.actingEntity),
-			loadPersonalHideEntries(acting.actingEntity),
+			loadPersonalBlockEntries(operator),
+			loadPersonalHideEntries(operator),
 		])
 		const entries = [
 			...blockedEntries.map(entry => ({ ...entry, kind: 'block' })),

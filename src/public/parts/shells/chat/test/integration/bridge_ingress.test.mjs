@@ -203,7 +203,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	await waitUntil(async () => outboundLines.some(row => row.charId === CHAR_YES))
 })
 
-Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () => {
+Deno.test('mock bridgeOperations: typing and createInvite on bridge group', async () => {
 	const username = `bridge-ops-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
@@ -212,13 +212,13 @@ Deno.test('mock bridgeOps: typing and createInvite on bridge group', async () =>
 	})
 	await ensureServer()
 
-	const { registerBridgeOps } = await import('../../src/chat/bridge/ops.mjs')
+	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
 	const { getChatClient } = await import('../../src/api/index.mjs')
 
 	/** @type {string[]} */
 	const calls = []
-	registerBridgeOps(username, 'telegram', 'ops-bot', {
+	registerBridgeOperations(username, 'telegram', 'ops-bot', {
 		/** @returns {Promise<void>} noop */
 		sendTyping: async () => { calls.push('typing') },
 		/** @returns {Promise<string>} invite URL */

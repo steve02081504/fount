@@ -61,13 +61,13 @@ async function setupHumanViewerGroup() {
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
-	const { addchar, setWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
+	const { addchar, bindWorld, setPersona } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 
 	const groupId = await newGroup(username, { name: 'viewer-human' })
 	const channelId = await getDefaultChannelId(username, groupId)
-	await setWorld(groupId, channelId, WORLD, username)
+	await bindWorld(groupId, channelId, WORLD, username)
 	await setPersona(groupId, PERSONA, username)
 
 	await postChannelMessage(username, groupId, channelId, { text: 'hello visible' })

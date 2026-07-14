@@ -119,7 +119,7 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 | **举报闭环** | chat shell **无** report 路由 / 审核工单。角色权限、ban/kick、审计日志、fork、信誉、personal block/hide、denylist、owner-succession **已有** |
 | **自动审核** | **无** |
 | **企业** | **无** SSO、eDiscovery、合规导出、管理控制台（list 本机 JSON 导出 ≠ eDiscovery） |
-| **Bot 生态** | parts / ChatClient / bridgeOps 可编程；**无** OAuth 托管与商店 |
+| **Bot 生态** | parts / ChatClient / bridgeOperations 可编程；**无** OAuth 托管与商店 |
 | **商业运营层** | **无**官方表情/主题商店、付费增值 |
 | **公告频道语义** | pins 有；**无** announcement channel 专用类型 |
 
@@ -134,7 +134,7 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 
 ### 5.3 桥接 bot（异构入口，非原生客户端）
 
-Telegram / Discord / WeChat bot 壳经 `registerBridgeOps` 接入同一 `ChatClient` 鸭子类型；入站可带 `replyToEventId`、typing 等。这是**平台翻译层**，不能抵消「无原生 IM App」与「Hub 无 Bot 商店 UX」。
+Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `ChatClient` 鸭子类型；入站可带 `replyToEventId`、typing 等。这是**平台翻译层**，不能抵消「无原生 IM App」与「Hub 无 Bot 商店 UX」。
 
 ---
 
@@ -225,7 +225,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOps` 接入同一 `ChatCli
 | AV | streaming channel + av-relay / 外嵌 SFU | `codecsAv.mjs`；`ws/avRelay.mjs` |
 | 审计 | audit-log API + 设置面板 | `auditLog.mjs` |
 | 会话备份 | list import/export JSON | `public/list/` |
-| Bridge | TG/DC/WeChat → `bridgeOps` | `chat/src/chat/bridge/`；`shells/*bot/` |
+| Bridge | TG/DC/WeChat → `bridgeOperations` | `chat/src/chat/bridge/`；`shells/*bot/` |
 | 读写钩子 | view-log、persona/world、`WorldChatHost`、ChatClient acting | `session/AGENTS.md`；`api/index.mjs` |
 | 限流 | `messageRateLimitPerMin` | `messageRateLimit.mjs` |
 

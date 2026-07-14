@@ -225,7 +225,10 @@ export function createWorldChatHost(replicaUsername, groupId, worldname) {
 		 * @returns {Promise<void>}
 		 */
 		async postSystemMessage(channelId, content) {
-			await postChannelMessage(replicaUsername, groupId, channelId, { rawContent: content })
+			await postChannelMessage(replicaUsername, groupId, channelId, {
+				rawContent: content,
+				origin: 'system',
+			})
 		},
 		listMembers,
 		listChannels,

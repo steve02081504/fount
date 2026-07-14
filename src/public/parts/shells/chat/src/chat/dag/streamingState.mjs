@@ -3,7 +3,7 @@
  * 【职责】记录各群频道当前 SFU/流式会话 id、过期时间与发起者 pubKeyHash；供鉴权与 UI 查询。
  * 【原理】不落 DAG，仅用 `groupId:channelId` 键的 Map；过期条目在读取时惰性删除。
  * 【数据结构】`{ sessionId, expiresAt, by }` 存于模块级 `sessions` Map。
- * 【关联】`channelOps.mjs`（`appendStreamingSession` / `setStreamingSession`）。
+ * 【关联】`channelOperations.mjs`（`appendStreamingSession` / `setStreamingSession`）。
  */
 /** @type {Map<string, { sessionId: string, expiresAt: number, by: string }>} */
 const sessions = new Map()

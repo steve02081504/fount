@@ -1,5 +1,5 @@
 /**
- * 【文件】`dag/channelOps.mjs` — 频道与附属 DAG 写操作封装。
+ * 【文件】`dag/channelOperations.mjs` — 频道与附属 DAG 写操作封装。
  * 【职责】通过 `appendSignedLocalEvent` 发出频道 CRUD、列表项、置顶、文件、反应、`file_master_key_rotate` 等治理/内容事件。
  * 【原理】高层 API 构造事件体与时间戳，签名与鉴权委托 `append.mjs`；流媒体会话仅更新进程内 `streamingState` 不落 DAG。
  * 【数据结构】各函数返回签名后的完整 DAG 事件对象；`file_master_key_rotate` 在 DM 或 ADMIN/MANAGE_ROLES 下允许。

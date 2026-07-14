@@ -5,13 +5,13 @@ import { commitTimelineEvent } from './timeline/append.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
 /**
- * 从 acting 实体时间线物化视图读取关注列表。
+ * 从实体时间线物化视图读取关注列表。
  * @param {string} username 用户
- * @param {string} actingEntityHash 写操作 acting 实体
+ * @param {string} entityHash 观看/写操作实体
  * @returns {Promise<{ following: string[] }>} 关注列表
  */
-export async function loadFollowingForActor(username, actingEntityHash) {
-	const actor = String(actingEntityHash || '').trim().toLowerCase()
+export async function loadFollowingForActor(username, entityHash) {
+	const actor = String(entityHash || '').trim().toLowerCase()
 	if (!actor) return { following: [] }
 	const view = await getTimelineMaterialized(username, actor)
 	const following = new Set(view.following.map(id => id.toLowerCase()))
@@ -33,15 +33,15 @@ export async function loadFollowing(username) {
 /**
  * 关注或取关：追加 follow/unfollow 事件、联邦 fanout、网络 hint。
  * @param {string} username 用户
- * @param {string} actingEntityHash acting 实体（operator 或本地 agent）
- * @param {string} entityHash 目标
+ * @param {string} entityHash 发起方实体（operator 或本地 agent）
+ * @param {string} targetEntityHash 目标
  * @param {boolean} follow true=关注 false=取关
  * @returns {Promise<string[]>} 规范化后的关注列表
  */
-export async function setFollow(username, actingEntityHash, entityHash, follow) {
-	const self = String(actingEntityHash || '').trim().toLowerCase()
+export async function setFollow(username, entityHash, targetEntityHash, follow) {
+	const self = String(entityHash || '').trim().toLowerCase()
 	if (!self) throw new Error('configure federation identity before following')
-	const id = entityHash.toLowerCase()
+	const id = String(targetEntityHash).toLowerCase()
 	const { following } = await loadFollowingForActor(username, self)
 	const already = following.includes(id)
 	if (follow === already) return following

@@ -1,7 +1,9 @@
 import { randomUUID } from 'node:crypto'
 
+import { Buffer } from 'node:buffer'
+
 import { recordChannelTyping } from '../chat/bridge/typing.mjs'
-import { commitChannelMessageEvent } from '../chat/channel/messageCommit.mjs'
+import { postChannelMessage } from '../chat/channel/postMessage.mjs'
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { buildConversationContext } from '../chat/lib/conversationContext.mjs'
 import { scheduleVoteDeadlines } from '../chat/lib/voteDeadlineWatcher.mjs'
@@ -36,29 +38,84 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		name: projection.name || channelId,
 		kind: projection.kind || 'text',
 		/**
-		 * @param {string | object} reply 消息正文
+		 * @param {string | { text?: string, content?: string, type?: string, files?: Array<{ name?: string, mime_type?: string, buffer: Buffer | string }> }} reply 消息正文或带附件载荷
 		 * @returns {Promise<object>} Message
 		 */
 		async send(reply) {
-			const content = normalizeReplyContent(reply)
 			const charId = ctx.charname || null
-			const event = await commitChannelMessageEvent({
-				username: ctx.username,
-				groupId,
-				channelId,
-				content,
-				charId,
-				origin: charId ? 'char' : 'human',
-				entityHash: ctx.entityHash,
-			})
+			const origin = charId ? 'char' : 'human'
+			const files = reply && typeof reply === 'object' && Array.isArray(reply.files)
+				? reply.files.map(file => ({
+					...file,
+					buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
+				}))
+				: undefined
+			const hasFiles = !!files?.length
+			const payload = hasFiles || (reply && typeof reply === 'object' && (reply.text != null || reply.content != null) && !reply.type)
+				? {
+					text: typeof reply === 'string' ? reply : String(reply.text ?? reply.content ?? ''),
+					files,
+					origin,
+					charId,
+					entityHash: ctx.entityHash,
+				}
+				: {
+					rawContent: normalizeReplyContent(reply),
+					files,
+					origin,
+					charId,
+					entityHash: ctx.entityHash,
+				}
+			const { event } = await postChannelMessage(ctx.username, groupId, channelId, payload)
+			// 落盘后 content 是 CKG 密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
+			const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
+			const decrypted = await decryptEventContent(ctx.username, groupId, channelId, event.content)
 			return createMessage(ctx, groupId, {
 				eventId: event.id,
 				channelId,
 				sender: event.sender,
 				charId: event.charId || charId,
-				content: event.content,
+				content: decrypted.ok ? decrypted.content : event.content,
 				timestamp: event.timestamp,
 			})
+		},
+		/**
+		 * @param {string} charname 角色名
+		 * @returns {Promise<void>}
+		 */
+		async triggerReply(charname) {
+			const { triggerCharReply } = await import('../chat/session/triggerReply.mjs')
+			await triggerCharReply(groupId, channelId, charname, null, { replicaUsername: ctx.username })
+		},
+		/**
+		 * @returns {Promise<object>} 流媒体鉴权结果（webrtc 或 sfu）
+		 */
+		async streamingAuth() {
+			const { resolveIceServers } = await import('npm:@steve02081504/fount-p2p/transport/ice_servers')
+			const { appendStreamingSession } = await import('../chat/dag/channelOperations.mjs')
+			const { getCurrentFileMasterKey } = await import('../chat/file_keys/store.mjs')
+			const { buildStreamingEmbedUrl, mintStreamingViewToken } = await import('../chat/ws/auth.mjs')
+			const state = await loadGroupState(ctx, groupId)
+			const channel = state.channels?.[channelId]
+			if (!channel) throw new Error('Channel not found')
+			if (channel.type !== 'streaming') throw new Error('Channel is not a streaming channel')
+			const baseUrl = state.groupSettings?.streamingSfuWss?.trim() || ''
+			if (!baseUrl)
+				return { mode: 'webrtc', iceServers: resolveIceServers(state.groupSettings) }
+			const keyEntry = await getCurrentFileMasterKey(ctx.username, groupId)
+			if (!keyEntry?.fileMasterKey)
+				throw new Error('Group encryption (GSH) not initialized')
+			const { sessionId, token, expiresAt } = mintStreamingViewToken(
+				ctx.username, groupId, channelId, undefined, keyEntry.fileMasterKey,
+			)
+			await appendStreamingSession(ctx.username, groupId, channelId, { sessionId, expiresAt })
+			return {
+				mode: 'sfu',
+				sessionId,
+				token,
+				expiresAt,
+				embedUrl: buildStreamingEmbedUrl(baseUrl, token),
+			}
 		},
 		/**
 		 * @returns {Promise<void>}

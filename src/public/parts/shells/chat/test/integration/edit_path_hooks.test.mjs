@@ -57,13 +57,13 @@ async function setupEditPathSession() {
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/crud.mjs')
-	const { setPersona, setWorld } = await import('../../src/chat/session/partConfig.mjs')
+	const { setPersona, bindWorld } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 
 	const groupId = await newGroup(username, { name: 'edit-path-hooks' })
 	const channelId = await getDefaultChannelId(username, groupId)
 	await setPersona(groupId, PERSONA, username)
-	await setWorld(groupId, channelId, WORLD, username)
+	await bindWorld(groupId, channelId, WORLD, username)
 	editPathHookState().reset()
 	return { username, groupId, channelId }
 }

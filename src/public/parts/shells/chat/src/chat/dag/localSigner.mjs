@@ -3,7 +3,7 @@
  * 【职责】读写 `signers/{entityHash}/local_signer_seed`；解析写入用的 `sender`（pubKeyHash）与 `secretKey`。
  * 【原理】种子 32 字节不入 DAG；跨群不关联。旧群级 `local_signer_seed` 仅对 operator 实体迁移读并搬迁。
  * 【数据结构】返回 `{ sender: string, secretKey: Uint8Array }`；`sender` 恒为 64 hex pubKeyHash。
- * 【关联】`append.mjs`、`channelOps.mjs`、`chatLogMirror.mjs`、`validator.mjs`。
+ * 【关联】`append.mjs`、`channelOperations.mjs`、`chatLogMirror.mjs`、`validator.mjs`。
  */
 import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
@@ -38,7 +38,7 @@ async function resolveSignerEntityHash(username, entityHash) {
  * @param {string} [entityHash] 实体；缺省 operator
  * @returns {Promise<Uint8Array>} 私钥种子
  */
-export async function readLocalSignerSeed(username, groupId, entityHash) {
+export function readLocalSignerSeed(username, groupId, entityHash) {
 	return ensureLocalSignerSeed(username, groupId, entityHash)
 }
 
@@ -124,6 +124,28 @@ async function ensureLocalSignerSeed(username, groupId, entityHash) {
 		seedCreationLocks.set(key, pending)
 	}
 	return pending
+}
+
+/**
+ * 只读推导本群本地签名 pubKeyHash：种子缺失返回 null，不创建种子、不物化群状态。
+ * 供 `getState` 的 leftPurge 检查等物化内部路径使用——这些路径禁止回调 `getState`（会无限递归）。
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} [entityHash] 实体；缺省 operator
+ * @returns {Promise<string | null>} pubKeyHash；无种子或无 operator 身份时 null
+ */
+export async function peekLocalSignerPubKeyHash(username, groupId, entityHash) {
+	let resolved
+	try {
+		resolved = await resolveSignerEntityHash(username, entityHash)
+	}
+	catch {
+		return null
+	}
+	const raw = await readFile(localSignerSeedPath(username, groupId, resolved)).catch(() => Buffer.alloc(0))
+	const seed = seedFromRaw(raw)
+	if (!seed) return null
+	return pubKeyHash(publicKeyFromSeed(seed))
 }
 
 /**

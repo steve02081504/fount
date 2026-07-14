@@ -1,7 +1,7 @@
 /**
  * 【文件】partConfig.mjs — 会话部件配置（人格/世界/角色/插件）与 DAG 事件写入
- * 【职责】setPersona/setWorld/addchar/removechar/addplugin/removeplugin/setCharSpeakingFrequency；读写物化 session 并 rebuildGroupRuntime；问候语插入；getCharList/getChatLog 等查询。
- * 【原理】每次变更 appendSession* 签名事件到 DAG 后 rebuildGroupRuntime 刷新内存；setWorld/addchar 在合适 greeting_type 下调用 GetGreeting/GetGroupGreeting 并经 addChatLogEntry 落盘；广播对应 persona_set/world_set/char_added 等事件。
+ * 【职责】setPersona/bindWorld/addchar/removechar/addplugin/removeplugin/setCharReplyFrequency；读写物化 session 并 rebuildGroupRuntime；问候语插入；getCharList/getChatLog 等查询。
+ * 【原理】每次变更 appendSession* 签名事件到 DAG 后 rebuildGroupRuntime 刷新内存；bindWorld/addchar 在合适 greeting_type 下调用 GetGreeting/GetGroupGreeting 并经 addChatLogEntry 落盘；广播对应 persona_set/world_set/char_added 等事件。
  * 【数据结构】物化 session 绑定（ownerUsername + homeNodeHash）；chatMetadata.LastTimeSlice、channelWorlds Map。
  * 【关联】dagSession、runtime、broadcast、generation、profile sync、endpoints。
  */
@@ -130,7 +130,7 @@ export async function setPersona(groupId, personaname, replicaUsername) {
  * @param {string} [replicaUsername] replica 所有者
  * @returns {Promise<chatLogEntry_t | null>} 问候条目或 null
  */
-export async function setWorld(groupId, channelId, worldname, replicaUsername) {
+export async function bindWorld(groupId, channelId, worldname, replicaUsername) {
 	channelId = channelId ?? 'default'
 	const { username } = await resolveReplica(groupId, replicaUsername)
 	if (!worldname)
@@ -173,7 +173,7 @@ export async function setWorld(groupId, channelId, worldname, replicaUsername) {
 	}
 	catch (error) {
 		if (!isExpectedTeardownRace(error))
-			console.error('setWorld greeting failed:', error)
+			console.error('bindWorld greeting failed:', error)
 		return null
 	}
 }
@@ -314,7 +314,7 @@ export async function removeplugin(groupId, pluginname, replicaUsername) {
  * @param {string} [replicaUsername] replica 所有者
  * @returns {Promise<void>}
  */
-export async function setCharSpeakingFrequency(groupId, charname, frequency, replicaUsername) {
+export async function setCharReplyFrequency(groupId, charname, frequency, replicaUsername) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
 	await appendAgentReplyFrequencySet(username, groupId, charname, frequency)
 	await rebuildGroupRuntime(groupId, username)

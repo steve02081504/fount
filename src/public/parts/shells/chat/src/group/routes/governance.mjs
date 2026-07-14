@@ -16,7 +16,7 @@ import { verifyOwnerSuccessionThreshold } from 'npm:@steve02081504/fount-p2p/gov
 import { calculateMemberPermissions, hasPermission, PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
-import { appendKeyRotateEvent } from '../../chat/dag/channelOps.mjs'
+import { appendKeyRotateEvent } from '../../chat/dag/channelOperations.mjs'
 import { adminPubKeyHashes } from '../../chat/dag/groupMaterializedState.mjs'
 import { getState } from '../../chat/dag/materialize.mjs'
 import { invalidateFederationRoomCache } from '../../chat/federation/room.mjs'

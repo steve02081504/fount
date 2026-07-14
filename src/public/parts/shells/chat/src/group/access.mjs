@@ -54,20 +54,17 @@ export function resolveActiveAgentMemberKeyByCharname(state, charname) {
 
 /**
  * 本机 replica：登录名对应 operator 实体的群成员键。
+ * 只读推导（不物化、不创建种子）：本函数被 `getState` 的 leftPurge 检查调用，
+ * 走 `resolveLocalEventSigner` 会回调 `getState` 形成无限递归。
  * @param {string} replicaUsername fount 登录名（仅用于 replica 磁盘路径）
  * @param {string} groupId 群 ID
  * @param {object} state 物化群状态
  * @returns {Promise<string | null>} 成员键
  */
 export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state) {
-	try {
-		const { resolveLocalEventSigner } = await import('../chat/dag/localSigner.mjs')
-		const { sender } = await resolveLocalEventSigner(replicaUsername, groupId)
-		return resolveActiveMemberKey(state, sender)
-	}
-	catch {
-		return null
-	}
+	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
+	const sender = await peekLocalSignerPubKeyHash(replicaUsername, groupId)
+	return sender ? resolveActiveMemberKey(state, sender) : null
 }
 
 /**
