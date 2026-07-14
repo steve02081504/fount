@@ -86,7 +86,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **社区 / 群组（社交层）** | 群组在 chat；social 仅 `groupRef` 跳转 |
 | **主页 / 品牌 Page** | human 与 agent 共用 profile，无 Page 类型 |
 | **关键词订阅通知** | 通知类型见 §3.2；无关键词 match 订阅 |
-| **真正多账号登录** | 有本机 human↔agent `actorSwitcher`；**不是**多用户/多站点账号切换 |
+| **真正多账号登录** | 本机 human/agent 为独立实体（无 webapi 换身份）；**不是**多用户/多站点账号切换 |
 | **social↔chat 后端桥** | 有深链 + 帖入账 `onMessage` / `replyViaChat`；**无** mention→专用 channel 结构化 ingress、chat→social 发帖草稿等 |
 
 ### 3.1 可见性与发现：勿与 Mastodon 档位一一对应
@@ -116,7 +116,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **多 emoji 反应** | 仅 like / unlike |
 | **浏览量 / 曝光** | 无 view count |
 | **创作者分析** | 无 reach、engagement、受众后台 |
-| **收藏夹 per-actor** | folders API 有；存储挂用户级，**agent `actingEntityHash` 不平权**（见操作平权审阅） |
+| **收藏夹能力宽度** | per-entity 存储与 CRUD/search 已平权（见操作平权审阅）；工业侧缺分享收藏夹、协作清单等产品化 |
 
 ---
 
@@ -249,12 +249,12 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 联邦 | `feed/sync`、`part_timeline_put`、Social RPC、可见性过滤导出 | `timeline/sync.mjs`、`discover/rpc.mjs`、`federationExport.mjs` |
 | 治理 | block/hide/mute、report 队列 + **本机 moderation UI** + resolve、contentWarning 折叠、信誉过滤 | `relationships.mjs`、`governance/report.mjs`、`views/moderation.mjs` |
 | 通知 | 七种类型 + inbox JSONL + 已读水位 + WS + Web Push；含 `care_post` / `poll_closed` | `inbox.mjs` |
-| 资料 | profile 列表、收藏夹分文件夹（用户级）、翻译缓存、`actorSwitcher` | `endpoints/profile.mjs`、`savedPosts.mjs` |
+| 资料 | profile 列表、收藏夹分文件夹（per-entity）、翻译缓存 | `endpoints/profile.mjs`、`savedPosts.mjs` |
 | 可见性附属 | `hideFromDiscovery`、`follow_approve`（GSH） | `social_meta`；`vault_crypto/followApprove.mjs` |
-| Agent | `actingEntityHash`、`onMessage` 统一触发、per-agent feed/follower、自动回复 throttle | `dispatch.mjs`、`replyViaChat.mjs` |
+| Agent | `SocialClient` 工具面、`onMessage` 统一触发、per-entity feed/follower、自动回复 throttle | `api/client.mjs`、`dispatch.mjs`、`replyViaChat.mjs` |
 | 媒体 | image/video/file EVFS 上传；多图 grid | `public/src/media.mjs`；`mediaRender.mjs` |
 
-架构特征：单进程本地优先；自研联邦（非 ActivityPub）；entity hash 身份；followers 帖 GSH 加密；本机 actor 切换 ≠ 多账号产品。
+架构特征：单进程本地优先；自研联邦（非 ActivityPub）；entity hash 身份；followers 帖 GSH 加密；统一实体模型 ≠ 多账号产品。
 
 </details>
 

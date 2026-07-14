@@ -145,6 +145,10 @@ Deno.test('agent createGroup is allowed', async () => {
 	const client = await getChatClient(username, agentHash)
 	const created = await client.createGroup({ name: 'agent-owned' })
 	assert(created.id)
+	const { getState } = await import('../../src/chat/dag/materialize.mjs')
+	const { state } = await getState(username, created.id)
+	const ownerRow = Object.values(state.members).find(m => (m.roles || []).includes('founder'))
+	assertEquals(String(ownerRow?.entityHash || '').toLowerCase(), agentHash.toLowerCase())
 })
 
 Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {

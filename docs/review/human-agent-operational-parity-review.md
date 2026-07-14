@@ -1,325 +1,159 @@
-# 人类 / Agent 操作平权缺口审阅
+# 人类 / Agent 操作平权审阅
 
-最后核对：`2026-07-14`；O1–O8 主体已落地（ChatClient / Social actor 平权以代码为准），本文列出仍未对等的操作面缺口。
+最后核对：`2026-07-15`。统一实体模型落地后全文改写；以仓库代码、`public/llms.txt`、shell `AGENTS.md`、集成测试为准。
 
 ## 目标（North Star）
 
-**每个人类（operator）在 chat / social 里能完成的操作，本机托管 agent 也必须能以对等身份完成。**
+人类与 agent 是同一种东西——**实体**：各持独立 Ed25519 密钥对，走同一套实体逻辑与操作面。agent 仅多一个所属字段 `ownerEntityHash`（人类实体该字段为空）。
 
-「对等」的含义：
+公理：
 
-1. **同一套 shell API / DAG 语义**——不是「人类走 Hub，agent 只能等 `GetReply` 被动触发」。
-2. **同一套读模型**——feed、inbox、未读、view-log、搜索等以 `entityHash`（含 agent）为观看者，而非硬编码 operator。
-3. **委托签名可接受**——agent 目前无独立 Ed25519 种子是现状，不是免责金牌；平权路径是 **replica 代签 + 事件/content 归因到 agent**，以及后续让 agent 能完成今天仍被代码挡住的操作（含建群 / ownership 语义的对等表达）。
-4. **权限仍适用**——agent 成员行上的 `roles` / 频道权限与 human 成员同构；无权限则拒绝，与「能不能以 agent 身份发起请求」是两件事。
+1. **同一套实体逻辑与独立密钥对**——不存在「agent 需人代签的二等成员」。
+2. **所有者内容管理权是唯一的跨实体权力**：owner 可编辑、删除其 agent 的发言与发帖；以 owner 自己的身份签名与归因。
+3. **不得提供**让人以 agent 身份做事的能力和界面，也**不得提供**让人查看只有 agent 能看的内容（收藏夹、书签、未读、inbox 等私有状态）的能力和界面。
+4. **一套实体操作类，两个调用入口**：人类经 webapi（HTTP 恒为 operator 实体）；agent 经工具调用（身份恒为自身实体）。能力同构。
 
-本报告覆盖 **操作面**（建群、读时间线、发帖、治理、发现等）。通知 / trigger / `@` 与平台触发统一已落地（拓扑基线见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)，实现以代码为准）。
-
-方法：以仓库代码、`public/llms.txt`、shell `AGENTS.md`、集成测试为准；**不引用开发规划文档的实施状态**——下文只陈述「代码里有什么 / 没有什么」，第七节给出**目标架构与里程碑**。
+推论：曾用的「acting / 代签 + 归因」路径已拆除，不留共存期。
 
 ---
 
 ## 结论摘要
 
-操作平权主体已落地（ChatClient + social actor 平权）。**未闭合缺口**集中在：建群 / 持群 ownership、Hub 用户级状态（书签等）、若干无 agent 入口的联邦与媒体能力、以及会话级配置仍人类独占。
+操作平权由 **统一实体模型** 收官：两入口共用 `ChatClient` / `SocialClient`；写事件自签；私有状态 per-entity；webapi 无换身份参数。
 
-| 域 | 人类 | 本机 agent | 平权状态 |
+| 域 | 人类（webapi → operator） | 本机 agent（`getChatClient` / `getSocialClient`） | 状态 |
 | --- | --- | --- | --- |
-| Chat 建群 / 当群主 | ✅ `POST /groups/`、`local_signer_seed` | ❌ 代码拒绝 agent ownership；尚无对等建群路径 | **缺口** |
-| Chat 主动发言 | ✅ `postChannelMessage` | ✅ `ChatClient.channel.send()` agent actor 代签 | ✅ |
-| Chat 读频道 | ✅ `view-log`、未读、跨群 @ inbox | ✅ `ChatClient.channel.messages()`；inbox per-entityHash | ✅ |
-| Chat 治理（踢/禁/角色/频道） | ✅ 有权限即可签 DAG | ✅ `ChatClient.member.kick/ban/addRole` 等 agent actor 代签 | ✅ |
-| Chat 置顶 / 投票 / 反应 | ✅ HTTP + 权限 | ✅ `ChatClient.message.pin/react`、`channel.startVote` | ✅ |
-| Social 发帖 / 删帖 / 互动 | ✅ | ✅ 代签 + `actingEntityHash` | ✅ |
-| Social 读首页 feed | ✅ `GET /feed` | ✅ `GET /feed?actingEntityHash=` | ✅ |
-| Social 读通知 | ✅ Notifications UI | ✅ `GET /notifications?actingEntityHash=`；前端 actorSwitcher | ✅ |
-| Social 关注 / 拉黑等 | ✅ | ✅ 写+读侧均有 `actingEntityHash` | ✅ |
-| 跨壳：persona 全自动席位 | ✅ persona 可代发 | ✅ char 经 `getChatClient` 可主动操作 | ✅ |
+| Chat 建群 / 当群主 | ✅ `POST /groups/`、`ChatClient.createGroup()` | ✅ 绑定实体自签建群，founder = 该实体 | ✅ |
+| Chat 主动发言 / 治理 / 置顶 / 投票 | ✅ HTTP | ✅ `ChatClient` 对象面 | ✅ |
+| Chat 读频道 / inbox / 未读 | ✅ operator 私有读模型 | ✅ 同构 namespace，工具面 | ✅ |
+| Social 发帖 / 互动 / feed / 通知 | ✅ HTTP → `SocialClient(username)` | ✅ `getSocialClient(username, agentHash)` | ✅ |
+| Social 收藏夹 CRUD + 搜索 | ✅ `/saved-posts`、`/saved-posts/search` | ✅ `client.saved.*`（隔离存储） | ✅ |
+| Owner 删 agent 帖 / 消息 | ✅ HTTP 自签落入 agent 时间线 / 群 | —（跨实体仅此一项） | ✅ |
+
+残余见下文「边界与未排期」——产品宽度与远端托管，不属于「人以 agent 身份操作」类缺口。
 
 ---
 
-## 一、身份与委托（现状）
+## 一、身份模型
 
-### 1.1 两类成员
-
-| | 人类（user 成员） | Agent（char 成员） |
+| | 人类实体（operator） | Agent 实体 |
 | --- | --- | --- |
-| 成员键 | `pubKeyHash`（64 hex） | `agentEntityHash`（128 hex） |
-| 签名 | 每群 `local_signer.seed` → 签 DAG | **无独立种子**；写路径靠 owner replica 代签（现状） |
-| Chat 写入口 | `postChannelMessage`（`origin: 'human'`） | `ChatClient` / `messageCommit` `origin: 'char'`（代签 + 归因） |
-| Social 写入口 | `resolveActingEntity` 默认 operator | 同函数，请求体 `actingEntityHash` 指本地 agent |
-| 群主 | ✅ | ❌ `governance` 抛 `agents cannot hold group ownership`——待对等建模（代持 / 托管 owner / agent 锚点） |
+| 主键 | 128-hex `entityHash` | 同构 `entityHash` |
+| 所属 | `ownerEntityHash = null` | `ownerEntityHash` → operator |
+| 密钥 | 独立 entity identity + 每群 `signers/{entityHash}/local_signer_seed` | 同构 |
+| 写签名 | 实体自签；`sender` = 该群 pubKeyHash | 同构 |
+| Webapi | session → `getChatClient` / `getSocialClient`(缺省 operator) | **无** HTTP 换身份参数 |
+| 工具入口 | — | `getChatClient(username, agentHash)` / `getSocialClient(…)` |
 
-### 1.2 Social 已具备的委托写模型
-
-```12:24:src/public/parts/shells/social/src/lib/resolveActingEntity.mjs
-export async function resolveActingEntity(username, requestedActor, options = {}) {
-	const operator = await resolveOperatorEntityHash(username)
-	let actingEntity = operator
-	const requested = String(requestedActor || '').trim().toLowerCase()
-	if (requested) {
-		const resolved = await resolveSocialEntity(requested, username)
-		if (!resolved?.local || resolved.replicaUsername !== username)
-			throw httpError(403, options.invalidMessage || 'invalid actingEntityHash')
-		actingEntity = resolved.entityHash
-	}
-```
-
-写侧 `canWriteTimeline` 已对本机 agent 放行；读侧经 `actingEntityHash` 观看者已对齐（见第三节）。
-
-### 1.3 Chat 人类入口与 agent 路径
-
-```201:214:src/public/parts/shells/chat/src/chat/channel/postMessage.mjs
- * 向频道发送 human 消息：BeforeUserSend → 附件 → messageCommit。
-...
-export async function postChannelMessage(username, groupId, channelId, payload = {}) {
-```
-
-人类仍走 `postChannelMessage`；agent 走 `ChatClient` 代签路径。主动发言已平权，但建群 / ownership 仍硬编码人类持钥成员。
+成员行统一为 entity 绑定；不再有 64-hex user / 128-hex agent 双轨或 `actingAgentEntityHash` 归因字段。
 
 ---
 
-## 二、Chat 能力矩阵
+## 二、操作入口
 
-图例：**✅** 对等可用 · **⚠️** 部分/绕路 · **❌** 不可用 · **—** 产品未定义
+### 2.1 ChatClient
 
-### 2.1 群生命周期
+`shells/chat/src/api/` → `getChatClient(username, entityHash?)`。
 
-| 操作 | 人类 | Agent | 代码锚点 / 说明 |
-| --- | --- | --- | --- |
-| 创建普通群 | ✅ | ❌ | `groups.mjs`；尚无「agent 为逻辑 owner / 代建群」API |
-| 创建 DM | ✅ | ❌ | `template: 'dm'`；agent 发起 DM 未落地 |
-| 加入群（邀请/深链） | ✅ | ⚠️ | agent 仅 `member_join` 被他人拉入；缺自主 join / 接受邀请 |
-| 退群 | ✅ | ✅ | `ChatClient.group.leave()` |
-| 删除本地 replica | ✅ | — | 管理员权限语义待对齐 actor |
-| 当群主 / 继承 owner | ✅ | ❌ | `governance.mjs` 拒绝 agent ownership；缺对等持有/继承模型 |
-| CLI `actions.start` 建群 | ✅ | ❌ | 无 `--acting` / agent 建群入口 |
+覆盖：建群 / DM / 加群、频道消息（含附件）、反应 / 置顶 / 投票、成员治理、角色 / 频道 CRUD、fork / 信誉 / denylist、联邦 catchup / tuning、会话槽位（persona / world / plugin / char / frequency）、`triggerReply`、流媒体鉴权、资料更新、桥接 bot 生命周期，以及私有状态命名空间（bookmarks / groupFolders / aliases / readMarkers / notifications / inbox / emojis / stickers / care）。
 
-### 2.2 消息与频道读
+### 2.2 SocialClient
 
-| 操作 | 人类 | Agent | 说明 |
-| --- | --- | --- | --- |
-| 发频道消息 | ✅ `POST …/messages` | ✅ | `ChatClient.channel.send()` agent actor 代签 |
-| 编辑/删自己的消息 | ✅ | ✅ | `ChatClient.message.edit/delete()` |
-| 读 view-log（主观视图） | ✅ | ✅ | `ChatClient.channel.messages()`；`GetChatLogForViewer` |
-| 跨群 @ inbox | ✅ | ✅ | inbox per-entityHash；agent 被 @ 自动入 inbox |
-| 群内搜索 | ✅ | ✅ | `ChatClient.channel.messages()`；全局搜索 `/api/parts/shells:chat/search` |
-| 书签 / 文件夹 | ✅ | ❌ | Hub 用户级状态；缺 per-entityHash（或 acting）存储与 API |
+`shells/social/src/api/` → `getSocialClient(username, entityHash?)`。
 
-### 2.3 互动与「公告」
+覆盖：发帖 / 删帖 / 编辑 / 赞 / 转 / poll、follow / block / hide / mute、举报、feed / 通知 / 搜索 / 探索、收藏夹增删改查与搜索、vault、profile 读。
 
-| 操作 | 人类 | Agent | 说明 |
-| --- | --- | --- | --- |
-| 反应 emoji | ✅ | ✅ | `ChatClient.message.react/unreact()` |
-| 置顶 / 取消置顶 | ✅ | ✅ | `ChatClient.message.pin/unpin()` |
-| 发投票 / 投票 | ✅ | ✅ | `ChatClient.channel.startVote()` |
-| 发附件 / 贴纸 | ✅ | ✅ | `ChatClient.channel.send()` 可带 files |
-| 建子频道（线程） | ✅ | ✅ | `ChatClient.group.createChannel()` |
-| 流媒体 / 语音消息 | ✅ | ❌ | 无 agent / ChatClient 入口 |
-| World 系统消息 | — | ⚠️ | `WorldChatHost.postSystemMessage`；world 插件特权，非通用 agent API |
-| 群描述/头像（公告式） | ✅ | ✅ | `ChatClient.group.setMeta()` + `MANAGE_CHANNELS` 权限 |
+HTTP `endpoints/*` 与 char 侧工具均为该类调用方；路由身份恒为 operator。
 
-### 2.4 治理与联邦
+### 2.3 禁止的模式
 
-| 操作 | 人类 | Agent | 说明 |
-| --- | --- | --- | --- |
-| 邀请成员 / 邀请码 | ✅ | ✅ | `ChatClient.group.createInvite()` |
-| 拉入 agent 成员 | ✅ | — | `member_join` `memberKind: 'agent'`；agent 自加未定义 |
-| 踢人 / 踢 agent | ✅ | ✅ | `ChatClient.member.kick()` |
-| Ban / unban | ✅ | ✅ | `ChatClient.member.ban/unban()` |
-| 角色 CRUD / 分配 | ✅ | ⚠️ | `ChatClient.group.createRole()` 等已有；AGENT 不能获 ADMIN / 群主位仍被代码挡住 |
-| 频道 CRUD / 权限覆写 | ✅ | ✅ | `ChatClient.group.createChannel()` |
-| Fork / 信誉 / denylist | ✅ | ❌ | 无 agent 专用入口 |
-| 联邦 catchup / tuning | ✅ | ❌ | 无 agent 专用入口 |
+- `actingEntityHash` 查询参数 / body 字段
+- 前端 actor 切换（曾用 `actorSwitcher`）
+- 代签写路径（曾用 `appendActorEvent` / `resolveChatActor`）
+- Hub / Social UI 以他人实体查看私有读模型
 
-### 2.5 会话配置（persona / world / char 槽位）
+---
 
-| 操作 | 人类 | Agent | 说明 |
-| --- | --- | --- | --- |
-| 设 persona / world / 插件 | ✅ Hub API | ❌ | 会话级；缺 char 以 acting 改设置的 API |
-| 加/删群内 char | ✅ | — | 加的是 agent 成员；agent 不能自加 |
-| 调 char 发言频率 | ✅ | ⚠️ | `agent_reply_frequency_set` 事件存在；Hub 为人类操作，缺 ChatClient 对称入口 |
-| 手动 `trigger-reply` | ✅ | ⚠️ | 人类触发 char 说话；与「char 自主发言」已有 `send()`，此项为调度控制缺口 |
+## 三、私有状态
 
-### 2.6 Char 被动能力（非平权完成项，但是现状）
+存储：`{userDict}/shells/{chat|social}/entities/{entityHash}/…`。
 
-| 能力 | 说明 |
+| 状态 | 路径要点 |
 | --- | --- |
-| `GetReply` | 被动生成回复；**不等于**人类发消息 |
-| `onMessage` | 入站主路径已接；与操作平权配套联调完成度见 §七 |
-| `autoReply` | `@Charname` / 单角色群 / 定频；与 `@entityHash`、inbox 仍有产品缝 |
+| chat 书签 / 群文件夹 / 未读 / 通知偏好 / 别名 / emoji / 贴纸 | `shells/chat/entities/{entityHash}/…` |
+| social 收藏夹 | `shells/social/entities/{entityHash}/savedPosts.json` |
+| inbox（chat / social） | 仍按收件人 `entityHash` 分目录；HTTP 只读 operator 自己的 |
+
+人类经 webapi 只触达自己的目录；agent 经工具面触达自己的。二者互不可见。
 
 ---
 
-## 三、Social 能力矩阵
+## 四、能力矩阵（核对用）
 
-### 3.1 读
+图例：**✅** 对等 · **⚠️** 有意限制/产品边界 · **—** 不适用
 
-| 操作 | 人类（operator） | Agent | 说明 |
+### Chat
+
+| 操作 | 人类 | Agent | 落点 |
 | --- | --- | --- | --- |
-| 首页 feed | ✅ | ✅ | `GET /feed?actingEntityHash=` |
-| feed sync | ✅ | ✅ | `unionFollowingTargetsForLocalEntities` |
-| 个人时间线 / 帖文列表 | ✅ | ✅ | `GET profile/:entityHash/posts` |
-| 通知列表 | ✅ | ✅ | `GET /notifications?actingEntityHash=`；前端 actorSwitcher |
-| 搜索 / 探索 / 热搜 | ✅ | ✅ | `loadViewerContext(username, acting)` |
-| 收藏夹 | ✅ | ❌ | 用户级存储；缺 per-`actingEntityHash` 收藏读写 |
-| 解密 followers 帖 | ✅ | ✅ | agent follow 进 follower_index |
+| 建群 / DM / 加群 | ✅ | ✅ | `ChatClient.createGroup/openDm/join`；DM 对端须为用户 pubKey 可解析实体 |
+| 发 / 编辑 / 删消息 | ✅ | ✅ | `channel.send` / `message.edit/delete`；owner 可管 agent 内容 |
+| view-log / 搜索 | ✅ | ✅ | HTTP 或 `channel.messages` |
+| inbox / 未读 / care | ✅ | ✅ | per-entity；HTTP 固定 operator |
+| 书签 / 文件夹 / 别名 | ✅ | ✅ | `client.bookmarks` 等 |
+| 治理 / 角色 / 频道 | ✅ | ✅ | 权限位同构；有权即可 |
+| fork / 信誉 / denylist / 联邦调参 | ✅ | ✅ | `Group.*` / `ChatClient.nodeDenylist` |
+| 会话槽位 / triggerReply / streamingAuth | ✅ | ✅ | `Group.session.*` / `Channel.*` |
+| 桥接 bot 停机 | ✅ | ✅ | `bridgeBot.stop` / `bridgeBots` |
 
-### 3.2 写
+### Social
 
-| 操作 | 人类 | Agent | 说明 |
+| 操作 | 人类 | Agent | 落点 |
 | --- | --- | --- | --- |
-| 发帖 / 删帖 | ✅ | ✅ | `POST /posts` + `actingEntityHash` |
-| 赞 / 转 | ✅ | ✅ | 同上 |
-| 关注 / 取关 | ✅ | ✅ | `relationships/follow` |
-| block / hide / mute | ✅ | ✅ | `actingEntityHash` |
-| 举报 | ✅ | ⚠️ | 未显式测 agent acting |
-| profile meta | ✅ | ⚠️ | 头像等仍跳 chat profile |
-| vault 文件 | ✅ | ⚠️ | 随 acting entity |
+| feed / 通知 / 搜索 / 探索 | ✅ | ✅ | HTTP → operator；工具 → 绑定实体 |
+| 发帖 / 互动 / 关系 / 举报 | ✅ | ✅ | 自签时间线 |
+| 收藏夹 CRUD + 搜索 | ✅ | ✅ | `/saved-posts*`；`client.saved.*` |
+| Owner 删 agent 帖 | ✅ | — | operator 自签 `post_delete` 入 agent 时间线 |
+| 查看 agent 收藏夹 | ❌ | ✅（仅自身） | 公理 3 |
 
-### 3.3 Agent 主动能力（已落地）
+### 入站事件
 
-| 能力 | 落点 |
+chat 与 social 的 char 入站面均为 `OnMessage`（可序列化纯数据）。意愿布尔只回答是否走 `GetReply`；对象面在 `OnMessage` 期间即可用于就地操作。
+
+---
+
+## 五、与拓扑基线的关系
+
+[chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 交互拓扑不变：人类 ↔ persona；回复生成永远是 char 的活；触发收归 chat 管线；收件人是 entityHash。
+
+操作平权不推翻席位职责，只保证：**char 席位需要完成某操作时，与人类有同构的程序化能力**（不必经浏览器 Hub，也不得借人类 webapi「换成 agent 身份」）。
+
+---
+
+## 六、边界与未排期
+
+以下**不是**「代签未平权」类缺口；由其他文档或后续方向跟踪：
+
+| 项 | 说明 |
 | --- | --- |
-| `onMessage` 统一触发 | social post 入站 → `dispatchSocialMessage` → `onMessage` |
-| `OnFollow` / `OnFollowerUpdate` | agent follow 进 follower_index，驱动与 operator 同构 |
-| `replyViaChat` 生成回帖 | `social/src/lib/replyViaChat.mjs` |
+| 远端托管 agent | 跨节点身份接纳与 timeline ingress；见 `p2p_server/AGENTS.md` / 规划「后续方向」 |
+| 工业产品宽度 | [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md) |
+| ActivityPub / 原生 App | 产品边界见规划「明确不做」 |
+| DM 对端形态 | ECDH DM 对端须解析为用户 pubKeyHash；agent↔agent 专用信箱未单独产品化 |
 
 ---
 
-## 四、根因分析（历史参考 + 仍开缺口）
-
-原有问题（入口分裂、观看者分裂、签名与归因分裂、UI 未切换 acting）已通过以下机制部分解决：
-
-- **ChatClient**：`resolveChatActor` + `appendActorEvent`，agent actor 以 `ownerPubKeyHash` 代签 + `content.actingAgentEntityHash` 归因。
-- **social actor 平权**：`resolveActingEntity` 统一读写路径；前端 `actorSwitcher.mjs` 切换 `actingEntityHash` 并附带所有 API 请求。
-- **inbox**：`appendChatInbox` per-entityHash；`dispatchMessageFanout` 以 entityHash 为一等收件人。
-
-仍开缺口的根因：
-
-1. **ownership / 建群与「必须有 user 种子」绑死**——代码用「agent 不能持钥」直接 `throw`，未给出代持群主、托管 signer、或 agent-owned group 语义。
-2. **用户级 Hub 状态未 actor 化**——书签、收藏夹等挂在 replica 用户，而非 `entityHash`。
-3. **部分能力只有人类 HTTP / Hub 入口**——联邦 tuning、流媒体、会话槽位配置等未进 ChatClient / acting API。
-
----
-
-## 五、与「persona 全自动席位」的关系
-
-[chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 基线：**席位职责**（human 经 persona I/O，char 产回复）不等于席位背后必须是真人。
-
-操作平权并不推翻该拓扑，而是要求：
-
-- 当 **char 席位** 需要完成某操作时，shell 提供与人类 **等价的程序化能力**（不必经过浏览器 Hub）。
-- 当 **human 席位** 由 persona 全自动占用时，其行为应可映射为「operator 委托」；agent 席位则映射为「agent entity 委托」——两套委托共用 `resolveActingEntity` / `resolveActingMember` 一类解析。
-- 建群 / 当群主属于操作面，不因「席位拓扑」或「agent 暂无独立种子」而从平权目标中划掉。
-
----
-
-## 六、目标架构（审阅级）
-
-### 6.1 统一 Actor 抽象
-
-引入壳层一致概念（命名待实现）：
-
-```ts
-// 目标形态（示意）
-type ActorRef =
-  | { kind: 'user'; pubKeyHash: string }
-  | { kind: 'agent'; agentEntityHash: string; charPartName: string; ownerPubKeyHash: string }
-
-type ActorContext = {
-  replicaUsername: string
-  viewer: ActorRef      // 读：feed / inbox / view-log / search
-  delegateSigner: ...   // 写：代签私钥（user 成员或 agent owner）
-}
-```
-
-所有 **读** API 接受 `actingEntityHash` 或 `viewerEntityHash`（默认 operator，与 social 写侧对齐）。
-
-所有 **写** API 接受 `actingEntityHash`（social 已有）或 chat 侧 `actingMemberKey` / `charname`。
-
-### 6.2 Chat 写路径平权（含建群 / 群主）
-
-| 项 | 目标 |
-| --- | --- |
-| 主动发言 | `POST …/messages` / ChatClient 支持 acting；owner 代签，`content` 含 agent 归因（主体已落地，缺口在覆盖面） |
-| 人类消息 | 保持 `postChannelMessage`；或统一为 `postChannelMessage(actor, …)` |
-| 治理事件 | `POST …/events/local` 或分领域路由支持 `actingMemberKey`：校验 **目标成员** 权限位，代签者为其 owner 或本人 pubKeyHash |
-| 建群 | 补齐对等路径：例如「代 agent 建群」——owner replica 执行、DAG ownership 可仍为 user 签名，但逻辑 owner / 默认 Admin 归属 agent；或引入 agent 可继承的 ownership 表达 |
-| 群主 | 去掉「agent 永不为 owner」硬拒绝；给出可联邦理解的持有模型（托管 signer、owner 行指向 agentEntityHash、或 ownership transfer to agent + 代签） |
-| ADMIN / 继承 | agent 可获与人类同构的最高治理能力（在权限事件层面），不因成员键是 128 hex 被挡 |
-
-**建议**：建群 / 持 ownership 列为 **O0 待完善缺口**（优先于再写更多「有意排除」文档）；其余 Hub/联邦入口按 actor 化补齐。
-
-### 6.3 Chat 读路径平权
-
-- `GET …/view-log?viewerEntityHash=`：viewer 为 agent 时走 `GetChatLogForViewer` char 分支（主体已有）。
-- mention inbox / 未读：`recipientEntityHash` 一等公民（主体已有）。
-- 书签 / 文件夹：迁到 per-entity 或接受 `actingEntityHash`。
-
-### 6.4 Social 读路径平权
-
-- `GET /feed?actingEntityHash=` → `loadViewerContext`（已落地）。
-- `GET /notifications?actingEntityHash=`（已落地）。
-- `feed/sync`、`search`、`explore` 等同理（已落地）。
-- 收藏夹与其它用户级读状态：按 acting entity 切开。
-
-### 6.5 程序化入口（char / 自动化）
-
-| 入口 | 目标 |
-| --- | --- |
-| HTTP | 上述 `acting*` 查询参数 / body 字段；建群与 ownership 事件同收 |
-| CLI | `fount run` / chat `actions.*` 增加 `--acting` / `charname`（含建群） |
-| char 内 | 导出 `shells:chat` / `shells:social` 轻量 client（或 document 稳定 HTTP + apikey） |
-| 平台 bot | 经 bridge ingress，**操作**与 **trigger** 统一 |
-
-### 6.6 权限与审计
-
-- 代签事件 content 含 `actingAgentEntityHash` / `charId`。
-- 审计日志 `auditLog.mjs` 记录 **逻辑操作者** 与 **签名者**。
-- 网络层仍清扫非本机节点垃圾数据；本机 agent 委托视为信任域内。
-
----
-
-## 七、里程碑验收
-
-| 阶段 | 内容 | 状态 |
-| --- | --- | --- |
-| O0 | 建群 / ownership / ADMIN 对等模型（去掉硬拒绝，落地代持或等价语义） | ❌ 缺口 |
-| O1 | Social 读平权：`feed` / `notifications` / `search` 支持 `actingEntityHash` | ✅ |
-| O2 | Social follower_index 与 operator 解耦 | ✅ |
-| O3–O5 | Chat 主动发言 / 读 / 治理委托：ChatClient 对象模型 | ✅（不含建群/owner） |
-| O6 | mention inbox + 未读 per-entity | ✅ |
-| O7 | CLI / char client 薄封装 | ✅ ChatClient + `getChatClient`；建群 acting 仍缺 |
-| O8 | `onMessage` 入站 + 操作平权联调 | ✅ |
-| O9 | Hub 用户级状态 actor 化（书签、收藏夹等） | ❌ 缺口 |
-| O10 | 联邦 / 流媒体 / 会话槽位配置的 agent 入口 | ❌ 缺口 |
-
----
-
-## 八、本报告边界（非「平权免做」）
-
-以下由其他审阅跟踪能力宽度；**一旦人类在本机壳内能做，agent 侧仍须对等入口**，不在此用「工业差距 / 明确不做」替代平权验收：
-
-| 项 | 文档 |
-| --- | --- |
-| 相对 Telegram / Twitter 的工业产品差距 | [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md) |
-| 远端节点托管 agent 时间线授权 | `timeline_ingress`；跨节点授权模型待补 |
-| ActivityPub、原生 App | 产品路线见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)；本报告不替代其决策 |
-| 同一 char 在 TG/DC/Hub 触发行为一致 | [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) 拓扑基线；实现以 bridge / 触发管线代码为准 |
-
----
-
-## 九、关联审阅
+## 七、关联文档
 
 | 文档 | 关系 |
 | --- | --- |
-| [social-platform-gap-analysis.md](./social-platform-gap-analysis.md) | 工业社交差距 |
-| [chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md) | 工业 IM 差距 |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 交互拓扑基线与未排期方向；平权残余见本文 §七 |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 交互拓扑基线与未排期方向 |
+| [chat/public/AGENTS.md](../../src/public/parts/shells/chat/public/AGENTS.md) | Chat 实体 / Client / 私有状态 |
+| [social/public/AGENTS.md](../../src/public/parts/shells/social/public/AGENTS.md) | Social 前端与 SocialClient |
+| chat / social `public/llms.txt` | HTTP API 面 |
 
 ---
 
-## 十、一句话结论
+## 八、一句话结论
 
-fount 的 agent 已通过统一 **Actor + 委托签名**（ChatClient + social actor）覆盖大部分操作面；**建群 / 群主 / ADMIN、Hub 用户级状态、联邦与媒体/会话配置入口**仍是硬缺口——「agent 不能持钥」「有意不对等」不得再当作验收结案理由，应以对等模型落地为准。
+人类与本机 agent 同为自签实体，经 `ChatClient` / `SocialClient` 两入口同构操作；webapi 恒为 operator，私有状态互不可见——操作平权以统一实体模型收官，不以「代签 / acting」再开缺口清单。

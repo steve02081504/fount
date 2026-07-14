@@ -42,7 +42,7 @@ Hub-facing API shapes:
 
 ## Unread
 
-- **Model**: `channel.messageSeq` (materialized on group state) minus per-user `readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
+- **Model**: `channel.messageSeq` (materialized on group state) minus per-entity `shells/chat/entities/{entityHash}/readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`；HTTP 固定 operator；`PUT …/channels/:id/read-marker`；WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
 - **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`; sidebar group list sorts by `lastMessageTime`, unread as badge only; earliest-unread divider in `messages/messageShared.mjs` (renders only when at least one read message precedes it). Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.
 - **Open = read**: `loadMessages` calls `markCurrentChannelRead` immediately on opening a text channel (no wait for scroll bottom); `firstUnreadEventId` is retained this session as the divider anchor and recalculated from the new marker on next load.
 - **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
@@ -52,13 +52,13 @@ Hub-facing API shapes:
 
 - **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json` (per-recipient read watermark). Incremental write: `src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs` (`eventPersist` called after `message`/`message_edit` persisted).
 - **Syntax**: `@[entity:<128hex>]` in message body (see `shared/inlineTokenSyntax.mjs`); Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
-- **API**: `GET /inbox` (`recipientEntityHash` defaults to operator), `GET/PUT /inbox/seen`; group autocomplete: `GET …/groups/:id/mentions/suggest`.
+- **API**: `GET /inbox`、`GET/PUT /inbox/seen` 固定 operator 实体（无换收件人参数）；agent inbox 仅经 `getChatClient(username, agentHash).inbox`。群 autocomplete: `GET …/groups/:id/mentions/suggest`.
 - **Hub**: server bar `@` button + `#inbox` list (`hub/inboxView.mjs` + `hub/inboxClient.mjs`); badge driven by WS `channel_message.mentions.entityHashes`.
 - **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.
 
 ## Aliases / petnames
 
-- **Local aliases** (user-level, not on DAG — canonical uses hash only): stored in `{userDict}/shells/chat/aliases.json` (`{ entities, groups }`); routes `GET/PUT …/aliases` (whole-file, no owner check, same as bookmarks).
+- **Local aliases**（实体私有，不上 DAG — canonical 只用 hash）：`{userDict}/shells/chat/entities/{entityHash}/aliases.json` (`{ entities, groups }`); routes `GET/PUT …/aliases`（HTTP 固定 operator，同 bookmarks）。
 - **Shared client** `shared/aliases.mjs` (Social reuses via `/parts/shells:chat/shared/aliases.mjs`): `loadAliases()` warms in-memory cache; `aliasForEntity`/`aliasForGroup`/`groupIdForAlias` are synchronous hot-path getters; `setEntityAlias`/`setGroupAlias` (empty string = delete) do a whole-file PUT then update cache. **Cache must be warm before rendering**: Hub calls `await loadAliases()` in `initCore` (before `loadGroups`); Social calls it at `bootstrapSocialApp` start.
 - **Name resolution** `shared/nameResolve.mjs`: `resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })` (alias → profile → short hash); `disambiguateLabels` appends `·${hash.slice(64,68)}` for collisions. Hub hot paths — `authorDisplayLabel`, `hydrateAuthorLabels`, hover cards — all go through `resolveDisplayName` (do not access `profile.name` directly); sidebar and settings member lists use `disambiguateLabels` in batch. Every new hash-display point must use these helpers, not bare `.slice()`.
 - **Deep links**: `#group:@{alias}:{channelId}` resolved by `parseHash` via `groupIdForAlias`; `updateHash` still writes canonical groupId.

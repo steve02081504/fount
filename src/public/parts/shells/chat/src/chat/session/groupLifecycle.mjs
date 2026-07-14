@@ -52,16 +52,18 @@ export function findEmptyGroupId() {
 /**
  * 创建一个全新的聊天（每个聊天天然对应一个群，groupId 即 groupId）。
  * @param {string} username - 新聊天的所有者用户名。
- * @param {{ name?: string, defaultChannelName?: string }} [options] 可选：群显示名与默认频道名
+ * @param {{ name?: string, defaultChannelName?: string, entityHash?: string }} [options] 群显示名 / 默认频道 / 建群实体（缺省 operator）
  * @returns {Promise<string>} 新创建的聊天的ID。
  */
 export async function newGroup(username, options = {}) {
 	const groupId = findEmptyGroupId()
-	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, groupId)
+	const entityHash = options.entityHash || undefined
+	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, groupId, entityHash)
 	const result = await createGroup(username, {
 		groupId,
 		ownerPubKeyHash,
 		secretKey,
+		entityHash,
 		name: options.name || await geti18nForUser(username, 'chat.group.defaults.dmChatName'),
 		defaultChannelName: options.defaultChannelName,
 	})

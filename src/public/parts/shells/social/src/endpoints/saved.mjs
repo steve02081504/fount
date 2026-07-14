@@ -14,6 +14,13 @@ export function registerSavedRoutes(router) {
 		res.status(200).json(await client.saved.list())
 	})
 
+	router.get('/api/parts/shells\\:social/saved-posts/search', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const q = String(req.query?.q || '')
+		const limit = req.query?.limit != null ? Number(req.query.limit) : undefined
+		res.status(200).json(await client.saved.search(q, { limit }))
+	})
+
 	router.post('/api/parts/shells\\:social/saved-posts/add', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const body = req.body || {}

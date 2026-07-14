@@ -1,5 +1,5 @@
-import { authenticate } from '../../../../../../server/auth/index.mjs'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
+import { authenticate } from '../../../../../../server/auth/index.mjs'
 import { CHAT_API_PREFIX } from '../group/routes/path.mjs'
 
 import { chatClientFromReq } from './shared.mjs'

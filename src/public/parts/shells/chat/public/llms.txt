@@ -107,17 +107,20 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ---
 
-## 用户级（与 `groups/` 并列）
+## 实体私有偏好与发现（HTTP 恒 operator；与 `groups/` 并列）
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
 | GET/PUT | `/trusted-authors` | 不安全渲染可信作者 `pubKeyHash[]` |
-| GET/PUT | `/bookmarks` | `{ entries: [{ groupId, channelId, eventId, title?, href? }] }` |
-| GET | `/inbox?recipientEntityHash=&kinds=&limit=&cursor=` | per-recipient inbox `{ items[], nextCursor, unreadCount }`（newest-first） |
-| GET/PUT | `/inbox/seen?recipientEntityHash=` | 收件人已读水位 `{ seenAt }` |
+| GET/PUT | `/bookmarks` | operator 实体私有 `{ entries: [{ groupId, channelId, eventId, title?, href? }] }`（存 `entities/{entityHash}/bookmarks.json`） |
+| GET | `/inbox?kinds=&limit=&cursor=` | operator inbox `{ items[], nextCursor, unreadCount }`（newest-first；无换收件人参数） |
+| GET/PUT | `/inbox/seen` | operator 已读水位 `{ seenAt }` |
 | GET | `/groups/:groupId/mentions/suggest?q=&limit=` | 群内 @ autocomplete `{ suggestions: [{ entityHash, displayName, memberKey, kind }] }` |
-| GET/PUT | `/group-folders` | Hub 侧栏文件夹 `{ folders: [...] }` |
-| GET/PUT | `/custom-emojis` | 用户自定义表情 |
+| GET/PUT | `/group-folders` | Hub 侧栏文件夹 `{ folders: [...] }`（operator 实体私有） |
+| GET/PUT | `/aliases` | `{ entities, groups }` petnames（operator 实体私有） |
+| GET/PUT | `/notify-prefs` | 通知偏好（存储名 `notificationPreferences`；operator 实体私有） |
+| GET/PUT | `/care` | 特别关心列表；PUT body `{ targetEntityHash, cared? }` |
+| GET/PUT | `/custom-emojis` | 自定义表情（operator 实体私有） |
 | POST | `/custom-emojis/save` | 保存他人表情到库 |
 | GET | `/groups/:groupId/emojis` | 群自定义表情 manifest |
 | POST | `/groups/:groupId/emojis` | 上传群表情（multipart `emoji`） |
@@ -265,9 +268,14 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, entityHash?)`。
 
-- **操作实体**：缺省 = operator；可指定本机托管 agent 的 entityHash。写事件由该实体的 per-entity 群签名钥自签；权限主体恒为 `sender`。
+- **统一实体模型**：人类与本机 agent 同为实体；缺省 entityHash = operator。HTTP 路由薄封装恒为 operator；agent 只经本入口绑定自身实体。无私有状态换身份参数。
+- **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。
 - **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
-- **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })` → 既有 DAG 原语（反应/置顶/治理/频道/投票等）。
-- **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；typing/leave/kick/createInvite 等平台操作经 `requireBridgeOperation(username, group.bridge, op)` 分派到 per-bot 注册表（键 `${username}:${platform}:${botname}`）；未注册 op 直接 throw。壳层 `registerBridgeOperations(username, platform, botname, ops, { teardown, charname })`；`stopBot`/`pauseBot` 调 `unregisterBridgeOperations` 触发 teardown（清 outbound + char 注册表）。
-- **bot 生命周期操作面**：`group.bridgeBot()` → `{ platform, botname, stop() }`（`stop()` = `stopSelf` op = 壳级 `stopBot`）；`client.bridgeBots()` 枚举运行中实例。粒度：退群 = `group.leave()`；停单 bot = `group.bridgeBot().stop()`；全平台下线 = 遍历 `client.bridgeBots()` 逐停。无 char 级杀进程。
-- **code_execution**：`getChatRequest` 自动注入 `fount_chat` 插件，上下文变量 `{ fount: { chat, group, channel, message? } }`；平台插件另注入 `{ discord }` / `{ telegram }` / `{ wechat }` 命名空间（桥接群经 `getNativeContext` 水合原生对象）。沙箱不暴露 `bridgeOperations`。
+- **生命周期**：`createGroup` / `openDm` / `join` 均以绑定实体签名（DM 对端须为可解析用户 pubKeyHash）。
+- **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis` / `stickers` / `care` 均挂在绑定实体目录下。
+- **会话 / 联邦 / 节点**：`Group.session.*`、`Group.federation.catchup/setTuning`、`Group.fork/blockOpposingFork`、`Group.reputation`、`ChatClient.reputation`、`ChatClient.nodeDenylist`、`Channel.triggerReply` / `streamingAuth`、`updateProfile`。
+- **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })`。
+- **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；平台操作经 `requireBridgeOperation`；`group.bridgeBot().stop()` / `client.bridgeBots()`。无 char 级杀进程。
+- **code_execution**：`getChatRequest` 注入 `fount_chat` → `{ fount: { chat, group, channel, message? } }`；平台插件另注入原生命名空间。沙箱不暴露 `bridgeOperations`。
+
+壳级说明见 `public/AGENTS.md`；操作平权见 `docs/review/human-agent-operational-parity-review.md`。

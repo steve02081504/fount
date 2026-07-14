@@ -1,5 +1,5 @@
 ---
-description: Chat session viewer model (GetChatLogForViewer, member_roles, greeting hooks, D6 builtins)
+description: Chat session viewer model (GetChatLogForViewer, member_roles, greeting hooks, builtin world/persona)
 globs: src/public/parts/shells/chat/src/chat/session/**, src/decl/chatLog.ts, src/decl/worldAPI.ts, src/decl/userAPI.ts
 alwaysApply: false
 ---
@@ -23,7 +23,7 @@ alwaysApply: false
 - Federation: `federation/remoteWorldProxy.mjs` + `federation/rpcDispatcher.mjs`; the world side exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`.
 - **Optional-hook degradation across RPC**: the proxy defines every method, so "remote didn't implement it" surfaces as a `METHOD_NOT_FOUND` RPC error — `invokeRemote` catches it and returns `undefined`, making a missing remote hook indistinguishable from a locally-undefined one. Callers therefore uniformly use `hook?.(…) ?? fallback`. The dispatcher throws `METHOD_NOT_FOUND` for local parts lacking the method instead of falling through to network RPC.
 
-## D6 built-in minimal world / persona
+## Built-in minimal world / persona
 
 - `session/builtinParts.mjs`: `BUILTIN_WORLD` (`distribution: 'local'`), `BUILTIN_PERSONA`.
 - `resolveWorld` / `loadPlayerFields` / `buildTimeSliceFromSession` return these singletons when nothing is bound or nothing is installed locally — **never `null`**.
@@ -78,7 +78,7 @@ alwaysApply: false
 
 - Pure: `test/pure/viewer_log_dispatch.test.mjs`
 - Integration: `test/integration/viewer_chatlog_parity.test.mjs` (agent-path world filtering)
-- Integration: `test/integration/viewer_human_viewlog.test.mjs` (view-log, persona, ordering, D6)
+- Integration: `test/integration/viewer_human_viewlog.test.mjs` (view-log, persona, ordering, builtins)
 - Integration: `test/integration/write_path_unification.test.mjs` (single point for `BeforeUserSend` + Add/After; `triggerCharReply` is fire-and-forget, so wait for `After` before asserting)
 
 ## Edit/delete hooks (channel-native)

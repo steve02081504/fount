@@ -28,4 +28,5 @@ alwaysApply: false
 4. Add `public/llms.txt` for AI discovery.
 
 **Example**: `src/public/parts/shells/shellassist/`.
-**Chat Hub**: [chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md).
+**Chat**: [chat/public/AGENTS.md](chat/public/AGENTS.md)（实体 / ChatClient）；Hub UI：[chat/public/hub/AGENTS.md](chat/public/hub/AGENTS.md)。
+**Social**: [social/public/AGENTS.md](social/public/AGENTS.md)。

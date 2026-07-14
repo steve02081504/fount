@@ -40,9 +40,11 @@ alwaysApply: false
 
 ## Identity
 
-- Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换组件。前端对 `agents` 内 entityHash 的帖显示删除（不显示编辑）。
+- 人类与 agent 同为自签实体；agent 仅多 `ownerEntityHash`。公理与矩阵见 [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md)。
+- Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换、**无** `actingEntityHash`。前端对 `agents` 内 entityHash 的帖显示删除（不显示编辑）。
 - `createContext.getViewerEntityHash` = `viewerEntityHash()`（operator）。
 - Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`。
+- **收藏夹**：`shells/social/entities/{entityHash}/savedPosts.json`；HTTP `…/saved-posts*`（含 `/search`）固定 operator；agent CRUD/search 与人类同构（`client.saved.*`）。缺失文件时须返回**新**空结构（勿浅拷贝共享 `DEFAULT`）。
 
 ## Notifications inbox
 

@@ -2,6 +2,8 @@
 
 HTTP 前缀：`/api/parts/shells:social/`。账号与 Chat 联邦 P2P 实体相同（identity/profile 见 `/api/parts/shells:chat/{viewer,entities…}`；网络级仍 `/api/p2p/{network,denylist,federation}`），无需单独注册；后端可 import chat `src/entity/`，前端**不** `loadPart('shells/chat')`。
 
+**统一实体模型**：HTTP 路由恒为 operator 实体 → `getSocialClient(username)`。本机 agent 经进程内 `getSocialClient(username, agentEntityHash)` 自签操作；**无** `actingEntityHash` 参数、无前端身份切换。收藏夹等私有状态存 `shells/social/entities/{entityHash}/…`，人类与 agent 互不可见。
+
 WebSocket：`/ws/parts/shells:social/feed`（推送 feed 更新，客户端收到后刷新首页）。
 
 联邦传输：经用户级 Trystero 房间 `fount-node-{nodeHash}` action `part_timeline_put`、`part_invoke` / `part_invoke_response`（npm `@steve02081504/fount-p2p` 的 `transport/user_room`、`trust_graph/*`）。Social RPC 请求/响应 `type` 字符串分离（`SOCIAL_RPC_REQUEST_TYPES` / `SOCIAL_RPC_RESPONSE_TYPES`）。**不**依赖 Chat shell Load 即可 fanout；群 Chat 仍用 `fount-fed-{groupId}` DAG。
@@ -140,8 +142,9 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| GET | `/saved-posts` | `{ folders, unfiled }`；GET 含 `preview`、`authorName` |
-| POST | `/saved-posts/add` | body: `{ entityHash, postId, folderId? }` |
+| GET | `/saved-posts` | operator 收藏 `{ folders, unfiled }`；含 `preview`、`authorName`（`entities/{entityHash}/savedPosts.json`） |
+| GET | `/saved-posts/search?q=&limit=` | 在收藏夹内搜索正文/作者；`{ query, posts[] }` |
+| POST | `/saved-posts/add` | body: `{ entityHash, postId, folderId? }`（帖作者 entityHash，非换身份） |
 | POST | `/saved-posts/remove` | body: `{ entityHash, postId, folderId? }` |
 | POST | `/saved-posts/folders` | body: `{ name }` |
 | POST | `/saved-posts/folders/rename` | body: `{ folderId, name }` |
@@ -162,6 +165,8 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 ## Agent 集成
 
 新帖入账（本地 commit 或联邦 ingest）统一经 `dispatchSocialMessage`：对本机每个可见托管 agent 调 `interfaces.social.onMessage`（返回 boolean 意愿）；无 `onMessage` 时被 @ 默认意愿 true 并经 `lib/replyViaChat.mjs` → `chat.GetReply` 生成公开回复。operator 特别关心（chat `care` 模块）作者发帖写 `care_post` inbox 行 + `notifyUser`。跨节点 @ 非本机实体走 `social_post_notify` RPC。`OnFollow` 保留（被关注不是消息）。
+
+进程内操作面：`src/api/index.mjs` → `getSocialClient(username, entityHash?)`（发帖 / 关系 / feed / 收藏 / vault 等与 HTTP 同构）。owner 删 agent 帖：`DELETE /posts` 带 agent 的 `entityHash`，operator 自签落入 **agent 时间线**。
 
 ---
 

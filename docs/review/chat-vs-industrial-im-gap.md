@@ -218,7 +218,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 搜索 | 群内 + 跨群 | `search/`；`endpoints/globalSearch.mjs` |
 | Mentions / inbox | entity + `@[role:…]` / everyone/here；per-entityHash inbox；care | `inlineTokenSyntax.mjs`；`inbox.mjs`；`care.mjs` |
 | 未读 | channel seq + read-marker；多端 WS | `readMarkers.mjs`；`hub/unread.mjs` |
-| 通知 | Web Push + SW；mute / mode prefs | `server/web_server/notify/`；`endpoints/prefs.mjs`；`messageFanout.mjs` |
+| 通知 | Web Push + SW；mute / mode prefs | `server/web_server/notify/`；`endpoints/preferences.mjs`；`messageFanout.mjs` |
 | Presence / typing | status + heartbeat；WS volatile typing | `hubStatus.mjs`；`presence.mjs`；`bridge/typing.mjs` |
 | 组织 | bookmarks、group-folders、aliases、`channel.category` | `pinsBookmarks.mjs`；`serverBar.mjs`；`shared/aliases.mjs` |
 | 文件 | 群分片、folder ops、断点续传、EVFS | `llms.txt` §群文件 |
@@ -226,7 +226,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 审计 | audit-log API + 设置面板 | `auditLog.mjs` |
 | 会话备份 | list import/export JSON | `public/list/` |
 | Bridge | TG/DC/WeChat → `bridgeOperations` | `chat/src/chat/bridge/`；`shells/*bot/` |
-| 读写钩子 | view-log、persona/world、`WorldChatHost`、ChatClient acting | `session/AGENTS.md`；`api/index.mjs` |
+| 读写钩子 | view-log、persona/world、`WorldChatHost`、`ChatClient`（实体自签） | `session/AGENTS.md`；`api/index.mjs` |
 | 限流 | `messageRateLimitPerMin` | `messageRateLimit.mjs` |
 
 </details>

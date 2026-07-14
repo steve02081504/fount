@@ -8,10 +8,10 @@
 import { randomUUID } from 'node:crypto'
 
 import { HEX_ID_64 as PUB_KEY_HEX_64, normalizeHex64 as normalizePubKeyHex } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
+import { resolveActiveMemberKey, resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { appendSignedLocalEvent } from '../dag/append.mjs'
 import { createGroup } from '../dag/lifecycle.mjs'
-import { getLocalSignerForNewGroup } from '../dag/localSigner.mjs'
+import { getLocalSignerForNewGroup, peekLocalSignerPubKeyHash } from '../dag/localSigner.mjs'
 import { getState, rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 import { setFederationBootstrap } from '../federation/bootstrapStore.mjs'
 import { getFederationSettings } from '../federation/config.mjs'
@@ -51,11 +51,13 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
 /**
  * 创建 ECDH 双人 DM 群并写入元数据（§14）。
  * @param {string} username 当前用户
- * @param {string} myPubKeyHex 本端公钥
+ * @param {string} myPubKeyHex 本端 ECDH 公钥（实体稳定公钥；与本群 local signer 可不同）
  * @param {string} peerPubKeyHex 对端公钥
+ * @param {{ entityHash?: string }} [opts] 建群实体（缺省 operator）
  * @returns {Promise<{ groupId: string, defaultChannelId: string, dmSessionTag: string }>} 新建或已存在的 DM 群
  */
-export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
+export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, opts = {}) {
+	const entityHash = opts.entityHash || undefined
 	const myPubKey = normalizePubKeyHex(myPubKeyHex)
 	const peerPubKey = normalizePubKeyHex(peerPubKeyHex)
 	if (!PUB_KEY_HEX_64.test(myPubKey) || !PUB_KEY_HEX_64.test(peerPubKey))
@@ -67,13 +69,14 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 	if (existing) return { ...existing, dmSessionTag }
 
 	const plannedGroupId = randomUUID()
-	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId)
+	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId, entityHash)
 	const result = await createGroup(username, {
 		groupId: plannedGroupId,
 		name: `DM · ${dmRoomLabelPrefix}`,
 		description: 'Direct message',
 		ownerPubKeyHash,
 		secretKey,
+		entityHash,
 		enableGroupFederation: true,
 	})
 	const {groupId} = result
@@ -81,7 +84,12 @@ export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex) {
 	await initGroupFileMasterKey(username, groupId)
 	// 仿 session/groupLifecycle.mjs newMetadata：建群后这两条 DAG 事件跳过逐条重型 checkpoint 与联邦发布，
 	// 末尾统一做一次 rebuildAndSaveCheckpoint，避免 DM 建群放大成多次 checkpoint 阻塞写路径。
-	const batchOpts = { skipCheckpointRebuild: true, skipReleaseQuarantined: true, publishFederation: false }
+	const batchOpts = {
+		skipCheckpointRebuild: true,
+		skipReleaseQuarantined: true,
+		publishFederation: false,
+		entityHash,
+	}
 	await appendSignedLocalEvent(username, groupId, {
 		type: 'group_meta_update',
 		timestamp: Date.now(),
@@ -222,13 +230,18 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
  */
 export async function performMemberJoin(username, groupId, opts = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
+	const entityHash = opts.entityHash || undefined
 
 	// 首次入群时本地尚无群 state，必须靠 roomSecret 引导联邦房间凭据才能与对端汇合。
 	if (opts.bootstrap?.roomSecret)
 		setFederationBootstrap(username, groupId, opts.bootstrap)
 
 	const { state } = await getState(username, groupId)
-	if (await resolveActiveMemberKeyForLocalUser(username, groupId, state))
+	const existingSender = await peekLocalSignerPubKeyHash(username, groupId, entityHash)
+	const alreadyMember = existingSender
+		? resolveActiveMemberKey(state, existingSender)
+		: !entityHash && await resolveActiveMemberKeyForLocalUser(username, groupId, state)
+	if (alreadyMember)
 		return { groupId, defaultChannelId: state.groupSettings?.defaultChannelId || 'default' }
 
 	const content = { homeNodeHash: getLocalNodeHash() }
@@ -248,7 +261,7 @@ export async function performMemberJoin(username, groupId, opts = {}) {
 		console.error('performMemberJoin ensureFederationRoom:', error)
 	})
 
-	await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content })
+	await appendSignedLocalEvent(username, groupId, { type: 'member_join', timestamp: Date.now(), content }, { entityHash })
 	const { state: afterJoin } = await getState(username, groupId)
 	await maybeAssignEcdhDmAdmin(username, groupId, afterJoin)
 	invalidateFederationRoomCache(username, groupId)
