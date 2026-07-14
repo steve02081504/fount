@@ -13,10 +13,10 @@ let selfEntityHash = ''
 let operatorEntityHash = ''
 
 /**
- * @param {Parameters<NonNullable<import('fount/decl/charAPI.ts').CharAPI_t['interfaces']['chat']['onMessage']>>[0]} event onMessage 事件
+ * @param {Parameters<NonNullable<import('fount/decl/charAPI.ts').CharAPI_t['interfaces']['chat']['OnMessage']>>[0]} event OnMessage 事件
  * @returns {Promise<boolean>} 是否愿意回复
  */
-export async function onMessage(event) {
+export async function OnMessage(event) {
 	if (!selfEntityHash) return false
 
 	const memory = event.chatReplyRequest.chat_scoped_char_memory ??= {}

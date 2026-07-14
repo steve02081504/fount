@@ -8,7 +8,7 @@ import { ensureBridgeGroup, resolveBridgeChannel } from './registry.mjs'
 
 
 /**
- * 构建 onGroupEvent 事件体。
+ * 构建 OnGroupEvent 事件体。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -31,21 +31,21 @@ async function buildGroupEvent(username, groupId, channelId, type, member) {
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @param {object} event onGroupEvent 事件
+ * @param {object} event OnGroupEvent 事件
  * @returns {Promise<void>}
  */
 async function dispatchGroupEventToChars(username, groupId, channelId, event) {
 	const chars = await getCharListOfGroup(groupId, username)
 	for (const charname of chars) {
 		const char = await resolveChar(groupId, charname, username)
-		if (!char?.interfaces?.chat?.onGroupEvent) continue
+		if (!char?.interfaces?.chat?.OnGroupEvent) continue
 		try {
-			await char.interfaces.chat.onGroupEvent(event)
+			await char.interfaces.chat.OnGroupEvent(event)
 		}
 		catch (error) {
 			await dispatchCharError(char, error, {
 				username,
-				source: 'onGroupEvent',
+				source: 'OnGroupEvent',
 				groupId,
 				channelId,
 				charname,
@@ -56,7 +56,7 @@ async function dispatchGroupEventToChars(username, groupId, channelId, event) {
 }
 
 /**
- * 桥接平台群生命周期事件 → char onGroupEvent。
+ * 桥接平台群生命周期事件 → char OnGroupEvent。
  * @param {string} username replica
  * @param {{ type: string, platform: string, platformChatId: string | number, platformThreadId?: string | number, chatKind?: string, chatName?: string, botname?: string, member?: { platformUserId: string | number, displayName?: string } }} dto DTO
  * @returns {Promise<void>}

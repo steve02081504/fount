@@ -1,5 +1,5 @@
 import { GetReply } from './reply_gener/index.mjs'
-import { initTriggerIdentity, onMessage } from './trigger/onMessage.mjs'
+import { initTriggerIdentity, OnMessage } from './trigger/OnMessage.mjs'
 
 /** @type {{ error?: Error, context?: object } | null} */
 export let lastOnError = null
@@ -35,7 +35,7 @@ export default {
 	interfaces: {
 		chat: {
 			GetReply,
-			onMessage,
+			OnMessage,
 		},
 	},
 }

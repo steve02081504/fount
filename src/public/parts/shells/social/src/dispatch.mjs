@@ -1,5 +1,5 @@
 /**
- * Social 入站 post 分发：本机 agent onMessage + operator care 通知 + 跨节点 post 推送。
+ * Social 入站 post 分发：本机 agent OnMessage + operator care 通知 + 跨节点 post 推送。
  */
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 import { mentionsEntity, extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
@@ -146,9 +146,9 @@ async function dispatchLocalAgents(username, authorEntityHash, post, mentions, a
 			lang,
 		}
 
-		const onMessage = char.interfaces?.social?.onMessage
-		const wantsReply = onMessage
-			? await onMessage(messageEvent)
+		const OnMessage = char.interfaces?.social?.OnMessage
+		const wantsReply = OnMessage
+			? await OnMessage(messageEvent)
 			: mentioned
 		if (!wantsReply) continue
 
@@ -193,7 +193,7 @@ async function dispatchRemoteMentionPush(username, authorEntityHash, post, menti
 }
 
 /**
- * 新帖入账分发：本机 agent onMessage、operator care、跨节点 @ 推送。
+ * 新帖入账分发：本机 agent OnMessage、operator care、跨节点 @ 推送。
  * @param {string} username 入账 replica
  * @param {string} authorEntityHash 作者 entityHash
  * @param {object} post 签名 post

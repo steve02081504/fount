@@ -4,7 +4,7 @@ export default {
 		'zh-CN': {
 			name: 'Plain Reply B',
 			avatar: '🔵',
-			description: 'no onMessage; GetReply only',
+			description: 'no OnMessage; GetReply only',
 			version: '1.0.0',
 			author: 'fount',
 			tags: ['test'],

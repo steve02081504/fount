@@ -1,5 +1,5 @@
 /**
- * 桥接群生命周期事件 → char onGroupEvent 分发。
+ * 桥接群生命周期事件 → char OnGroupEvent 分发。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -25,7 +25,7 @@ async function seedCharFixture(dataDir, username) {
 	await cp(from, to, { recursive: true })
 }
 
-Deno.test('postBridgeGroupEvent dispatches to char onGroupEvent with member identity', async () => {
+Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member identity', async () => {
 	const username = `bridge-gev-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,

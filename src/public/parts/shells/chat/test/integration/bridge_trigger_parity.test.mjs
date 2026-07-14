@@ -139,7 +139,7 @@ async function openEnd(end, username, opts) {
 
 const ENDS = /** @type {const} */ (['hub', 'telegram', 'discord', 'wechat'])
 
-Deno.test('four-end group: onMessage willingness is consistent', async () => {
+Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	const username = `parity-onmsg-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbeState()
 	probe.reset()
@@ -171,16 +171,16 @@ Deno.test('four-end group: onMessage willingness is consistent', async () => {
 			platformChatId: 940000 + index,
 		})
 		await addchar(session.groupId, CHAR_YES, username)
-		await session.post(`parity onMessage ping ${end}`, 1000 + index)
+		await session.post(`parity OnMessage ping ${end}`, 1000 + index)
 		await waitUntil(async () => probe.events.length > before, 15000)
 		triggeredByEnd[end] = probe.events.length - before
 	}
 
 	for (const end of ENDS)
-		assert(triggeredByEnd[end] >= 1, `${end} should trigger onMessage`)
+		assert(triggeredByEnd[end] >= 1, `${end} should trigger OnMessage`)
 })
 
-Deno.test('four-end group: plain chars without onMessage do not fallback-trigger', async () => {
+Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger', async () => {
 	const username = `parity-plain-g-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,

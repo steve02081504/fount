@@ -2,9 +2,9 @@
 export default {
 	info: {
 		'zh-CN': {
-			name: 'onMessage No',
+			name: 'OnMessage No',
 			avatar: '🔴',
-			description: 'onMessage always false',
+			description: 'OnMessage always false',
 			version: '1.0.0',
 			author: 'fount',
 			tags: ['test'],
@@ -13,7 +13,7 @@ export default {
 	interfaces: {
 		chat: {
 			GetReply: async () => ({ content: 'on_message_no reply' }),
-			onMessage: async event => {
+			OnMessage: async event => {
 				const state = globalThis.__fountOnMessageProbe || { events: [], returnValue: false }
 				state.events.push({
 					message: event.message,

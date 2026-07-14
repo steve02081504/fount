@@ -59,7 +59,7 @@ export function createChatClient(ctx) {
 			return this.group(groupId)
 		},
 		/**
-		 * @param {object} event onMessage 纯数据事件
+		 * @param {object} event OnMessage 纯数据事件
 		 * @returns {Promise<object>} Message
 		 */
 		async messageFrom(event) {

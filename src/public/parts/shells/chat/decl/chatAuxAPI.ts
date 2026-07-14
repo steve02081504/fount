@@ -1,8 +1,4 @@
-import { Buffer } from 'node:buffer'
-
-import { info_t } from '../../../../../decl/basedefs.ts'
-
-/** ---- Channels（原 channelAPI.ts）---- */
+/** ---- Channels（数据形状；运行时见 `groupChannel.mjs` / `channels.mjs`）---- */
 
 /** 频道内单项操作权限标识（与 DAG 角色/订阅者列表对照）。 */
 export type ChannelPermission =
@@ -65,26 +61,7 @@ export interface ChannelMember {
 	joinedAt: number
 }
 
-/** 频道管理（DAG 事件驱动；见 `groupChannel.mjs` / `channels.mjs`）。 */
-export class ChannelAPI_t {
-	info: info_t
-
-	Init?: () => Promise<void>
-	Load?: () => Promise<void>
-	Unload?: (reason: string) => Promise<void>
-
-	interfaces?: {
-		createChannel?: (username: string, config: Partial<ChannelConfig>) => Promise<ChannelConfig>
-		getChannelList?: (username: string) => Promise<ChannelConfig[]>
-		getChannel?: (channelId: string) => Promise<ChannelConfig>
-		updateChannel?: (channelId: string, updates: Partial<ChannelConfig>) => Promise<ChannelConfig>
-		deleteChannel?: (channelId: string) => Promise<void>
-		checkPermission?: (username: string, channelId: string, permission: ChannelPermission) => Promise<boolean>
-		getUserRole?: (username: string, channelId: string) => Promise<ChannelRole | null>
-	}
-}
-
-/** ---- Profile（原 profileAPI.ts）---- */
+/** ---- Profile（数据形状）---- */
 
 /** 实体在线/勿扰等展示状态。 */
 export type UserStatus = 'online' | 'idle' | 'dnd' | 'invisible' | 'offline' | 'away' | 'busy'
@@ -144,24 +121,7 @@ export interface UserProfilePresentation extends UserProfile {
 	localeKeys?: string[]
 }
 
-/** 实体资料读写 API（多 locale 切片 + 头像上传）。 */
-export class ProfileAPI_t {
-	info: info_t
-
-	Init?: () => Promise<void>
-	Load?: () => Promise<void>
-	Unload?: (reason: string) => Promise<void>
-
-	interfaces?: {
-		getProfile?: (entityHash: string) => Promise<UserProfilePresentation>
-		updateProfile?: (entityHash: string, updates: Partial<UserProfile>) => Promise<UserProfilePresentation>
-		uploadAvatar?: (entityHash: string, file: Buffer, filename: string) => Promise<string>
-		getStats?: (entityHash: string) => Promise<UserProfile['stats']>
-		updateStatus?: (entityHash: string, status: UserStatus, customStatus?: string) => Promise<void>
-	}
-}
-
-/** ---- Stickers（原 stickerAPI.ts）---- */
+/** ---- Stickers（数据形状；运行时见 `stickers/`）---- */
 
 /** 贴纸包内单个贴纸资源。 */
 export interface Sticker {
@@ -199,29 +159,4 @@ export interface StickerMessage {
 	packId: string
 	stickerId: string
 	url: string
-}
-
-/** 贴纸包 CRUD 与用户收藏 API。 */
-export class StickerAPI_t {
-	info: info_t
-
-	Init?: () => Promise<void>
-	Load?: () => Promise<void>
-	Unload?: (reason: string) => Promise<void>
-
-	interfaces?: {
-		getStickerPacks?: (username?: string) => Promise<StickerPack[]>
-		createStickerPack?: (username: string, pack: Partial<StickerPack>) => Promise<StickerPack>
-		getStickerPack?: (packId: string) => Promise<StickerPack>
-		updateStickerPack?: (packId: string, updates: Partial<StickerPack>) => Promise<StickerPack>
-		deleteStickerPack?: (packId: string) => Promise<void>
-		uploadSticker?: (packId: string, file: Buffer, filename: string, metadata: Partial<Sticker>) => Promise<Sticker>
-		deleteSticker?: (packId: string, stickerId: string) => Promise<void>
-		installPack?: (username: string, packId: string) => Promise<void>
-		uninstallPack?: (username: string, packId: string) => Promise<void>
-		getUserCollection?: (username: string) => Promise<UserStickerCollection>
-		addToFavorites?: (username: string, stickerId: string) => Promise<void>
-		removeFromFavorites?: (username: string, stickerId: string) => Promise<void>
-		recordRecentUse?: (username: string, stickerId: string) => Promise<void>
-	}
 }

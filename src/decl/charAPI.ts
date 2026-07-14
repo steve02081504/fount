@@ -89,7 +89,7 @@ export class CharAPI_t {
 	 */
 	OnError?: (error: Error, context: {
 		username: string
-		source: 'onMessage' | 'onGroupEvent' | 'GetReply' | string
+		source: 'OnMessage' | 'OnGroupEvent' | 'GetReply' | string
 		groupId?: string
 		channelId?: string
 		charname?: string
@@ -182,12 +182,12 @@ export class CharAPI_t {
 			 */
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
 			/**
-			 * 新消息到达时触发（event hook，非 PascalCase RPC 方法），角色决定是否主动发言。
+			 * 新消息到达时触发，角色决定是否主动发言。
 			 * 返回 true 表示发言，false 表示不发言。
 			 * @param {object} event - 事件上下文（可序列化事实：message / mentions / group / channel）
 			 * @returns {Promise<boolean>}
 			 */
-			onMessage?: (event: {
+			OnMessage?: (event: {
 				chatReplyRequest: chatReplyRequest_t
 				message: chatLogEntry_t
 				mentions: {
@@ -219,7 +219,7 @@ export class CharAPI_t {
 			/**
 			 * 群生命周期事件（bot 启动 / 入群 / 成员离群等）。
 			 */
-			onGroupEvent?: (event: {
+			OnGroupEvent?: (event: {
 				type: 'bot_started' | 'bot_joined_group' | 'member_left'
 				group: {
 					groupId: string
@@ -421,7 +421,7 @@ export class CharAPI_t {
 		 * Social 动态接口（fount Social shell）。
 		 * 账号即 P2P entityHash，与 Chat 联邦身份 / agent 实体同一套，无需单独注册。
 		 * 跨节点调用走 Trystero `social_rpc`（如 `social_post_notify`），不经 `char_rpc` / remoteProxy。
-		 * 未实现 onMessage 时，被 @ 的 agent 默认经 chat.GetReply 生成公开回复。
+		 * 未实现 OnMessage 时，被 @ 的 agent 默认经 chat.GetReply 生成公开回复。
 		 */
 		social?: SocialCharInterface,
 		/**

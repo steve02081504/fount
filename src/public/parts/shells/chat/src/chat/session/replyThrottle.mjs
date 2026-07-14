@@ -77,13 +77,13 @@ export function tickAutoReplyFrequency(groupId, channelId, frequency) {
 }
 
 /**
- * 构建 onMessage 事件体（可序列化；供入站管线与链式轮询共用）。
+ * 构建 OnMessage 事件体（可序列化；供入站管线与链式轮询共用）。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
  * @param {{ messageLine?: object, mentions?: object }} [options] 触发消息与 mentions
- * @returns {Promise<object>} onMessage 事件
+ * @returns {Promise<object>} OnMessage 事件
  */
 export async function buildOnMessageEvent(username, groupId, channelId, charname, options = {}) {
 	const { group, channel } = await buildConversationContext(username, groupId, channelId)

@@ -1,5 +1,5 @@
 /**
- * 仅 chat.GetReply、无 social.onMessage。
+ * 仅 chat.GetReply、无 social.OnMessage。
  */
 export default {
 	info: {

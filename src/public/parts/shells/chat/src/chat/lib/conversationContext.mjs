@@ -44,7 +44,7 @@ function countActiveMembers(state) {
 }
 
 /**
- * 构建可序列化会话上下文（onMessage / ChatClient 投影基座）。
+ * 构建可序列化会话上下文（OnMessage / ChatClient 投影基座）。
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID

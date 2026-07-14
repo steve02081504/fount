@@ -2,9 +2,9 @@
 export default {
 	info: {
 		'zh-CN': {
-			name: 'onMessage Yes',
+			name: 'OnMessage Yes',
 			avatar: '🟢',
-			description: 'onMessage probe',
+			description: 'OnMessage probe',
 			version: '1.0.0',
 			author: 'fount',
 			tags: ['test'],
@@ -19,10 +19,10 @@ export default {
 				return { content: 'on_message_yes reply' }
 			},
 			/**
-			 * @param {object} event onMessage 事件
+			 * @param {object} event OnMessage 事件
 			 * @returns {Promise<boolean>} probe 配置的回复意愿
 			 */
-			onMessage: async event => {
+			OnMessage: async event => {
 				const state = globalThis.__fountOnMessageProbe || { events: [], replies: 0, returnValue: true }
 				state.events.push({
 					message: event.message,
@@ -36,7 +36,7 @@ export default {
 			 * @param {object} event 群事件
 			 * @returns {Promise<void>}
 			 */
-			onGroupEvent: async event => {
+			OnGroupEvent: async event => {
 				(globalThis.__fountGroupEventProbe ??= []).push(event)
 			},
 		},

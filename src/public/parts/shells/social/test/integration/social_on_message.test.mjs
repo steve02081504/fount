@@ -1,5 +1,5 @@
 /**
- * social onMessage 分发：GetReply 回退、意愿裁决、去重、care 通知。
+ * social OnMessage 分发：GetReply 回退、意愿裁决、去重、care 通知。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -40,7 +40,7 @@ async function seedAgentChar(username, charName) {
 	return agentEntityHash(getNodeHash(), `chars/${charName}`)
 }
 
-Deno.test('dispatchSocialMessage falls back to chat.GetReply when onMessage missing and mentioned', async () => {
+Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage missing and mentioned', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, GETREPLY_CHAR)
@@ -52,11 +52,11 @@ Deno.test('dispatchSocialMessage falls back to chat.GetReply when onMessage miss
 	const agentTimeline = await append.readTimelineEvents(username, agentHash)
 	const reply = agentTimeline.find(ev =>
 		ev.type === 'post' && String(ev.content?.text || '').includes('mention-getreply-fallback'))
-	assert(reply, 'agent should publish GetReply reply when mentioned without onMessage')
+	assert(reply, 'agent should publish GetReply reply when mentioned without OnMessage')
 	assertEquals(reply.content.replyTo?.entityHash, operator)
 })
 
-Deno.test('onMessage returns false → no reply published', async () => {
+Deno.test('OnMessage returns false → no reply published', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
 	const { username, operator } = await getSession()
@@ -67,11 +67,11 @@ Deno.test('onMessage returns false → no reply published', async () => {
 		content: { text: `hey @[entity:${agentHash}]`, visibility: 'public' },
 	}, { fanout: false })
 	const after = await append.readTimelineEvents(username, agentHash)
-	assertEquals(after.length, before, 'onMessage false must not publish reply')
-	assert(globalThis.__fountSocialOnMessageProbe.events.length >= 1, 'onMessage still invoked')
+	assertEquals(after.length, before, 'OnMessage false must not publish reply')
+	assert(globalThis.__fountSocialOnMessageProbe.events.length >= 1, 'OnMessage still invoked')
 })
 
-Deno.test('unmentioned post still invokes onMessage with event shape', async () => {
+Deno.test('unmentioned post still invokes OnMessage with event shape', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
 	const { username, operator } = await getSession()
@@ -81,7 +81,7 @@ Deno.test('unmentioned post still invokes onMessage with event shape', async () 
 		content: { text: 'plain post without mentions', visibility: 'public' },
 	}, { fanout: false })
 	const events = globalThis.__fountSocialOnMessageProbe.events
-	assert(events.length >= 1, 'onMessage invoked for unmentioned visible post')
+	assert(events.length >= 1, 'OnMessage invoked for unmentioned visible post')
 	const hit = events.find(row => row.viewerEntityHash === agentHash)
 	assert(hit, 'probe agent received event')
 	assertEquals(hit.authorEntityHash, operator)
@@ -89,7 +89,7 @@ Deno.test('unmentioned post still invokes onMessage with event shape', async () 
 	assert('postText' in hit && 'postId' in hit)
 })
 
-Deno.test('duplicate dispatchSocialMessage only invokes onMessage once per agent', async () => {
+Deno.test('duplicate dispatchSocialMessage only invokes OnMessage once per agent', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
 	const { username, operator } = await getSession()

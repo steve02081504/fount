@@ -356,7 +356,7 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 	assertEquals(out, `see @[entity:${hash}]`)
 })
 
-Deno.test('bridge DM fallback triggers char without onMessage when charCount > 1', async () => {
+Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1', async () => {
 	const username = `bridge-dm-trig-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -405,7 +405,7 @@ Deno.test('bridge DM fallback triggers char without onMessage when charCount > 1
 	}, 15000)
 })
 
-Deno.test('bridge group without DM does not fallback-trigger chars without onMessage', async () => {
+Deno.test('bridge group without DM does not fallback-trigger chars without OnMessage', async () => {
 	const username = `bridge-grp-trig-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,

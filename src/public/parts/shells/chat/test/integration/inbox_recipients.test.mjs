@@ -142,7 +142,7 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 	assert(!messages.some(row => String(row.content?.content || '').includes('on_message_yes reply')))
 })
 
-Deno.test('trigger pipeline: onMessage true speaks without mention; false stays silent', async () => {
+Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays silent', async () => {
 	const username = `trig-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbeState()
 	probe.reset()
@@ -192,7 +192,7 @@ Deno.test('trigger pipeline: onMessage true speaks without mention; false stays 
 	assertEquals(noReplies.length, 0)
 })
 
-Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in onMessage', async () => {
+Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage', async () => {
 	const username = `trig-dm-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbeState()
 	probe.reset()

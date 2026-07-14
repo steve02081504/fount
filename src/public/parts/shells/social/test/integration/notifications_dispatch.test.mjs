@@ -109,7 +109,7 @@ Deno.test('buildNotifications respects actingEntityHash viewer', async () => {
 		'operator inbox should not include agent-only mention')
 })
 
-Deno.test('dispatchSocialMessage does not publish agent reply without mention when no onMessage', async () => {
+Deno.test('dispatchSocialMessage does not publish agent reply without mention when no OnMessage', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	const { username, operator } = await getSession()
 	const agentHash = await seedMentionAgentChar(username)
@@ -119,7 +119,7 @@ Deno.test('dispatchSocialMessage does not publish agent reply without mention wh
 		content: { text: 'no mentions here', visibility: 'public' },
 	}, { fanout: false })
 	const after = await append.readTimelineEvents(username, agentHash)
-	assertEquals(after.length, beforeCount, 'agent without onMessage must not reply when unmentioned')
+	assertEquals(after.length, beforeCount, 'agent without OnMessage must not reply when unmentioned')
 })
 
 Deno.test('processSocialPostNotifyRpc accepts signed post payload', async () => {

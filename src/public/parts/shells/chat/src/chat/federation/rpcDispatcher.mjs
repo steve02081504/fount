@@ -168,16 +168,16 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 					const request = await getChatRequest(groupId, charname, inferChannelId(), { replicaUsername: owner })
 					return resultOk(method, await getReply(request))
 				}
-				case 'onMessage': {
-					const onMessage = char.interfaces?.chat?.onMessage
-					if (!onMessage) return resultOk(method, false)
+				case 'OnMessage': {
+					const OnMessage = char.interfaces?.chat?.OnMessage
+					if (!OnMessage) return resultOk(method, false)
 					const envelope = list[0] || {}
 					if (envelope.mentions && envelope.group && envelope.channel && envelope.message)
-						return resultOk(method, await onMessage(envelope))
+						return resultOk(method, await OnMessage(envelope))
 					const replyCharname = envelope.chatReplyRequest?.char_id || charname
 					const { buildOnMessageEvent } = await import('../session/replyThrottle.mjs')
 					const event = await buildOnMessageEvent(owner, groupId, inferChannelId(), replyCharname)
-					return resultOk(method, await onMessage(event))
+					return resultOk(method, await OnMessage(event))
 				}
 				case 'MessageEdit':
 				case 'MessageEditing':

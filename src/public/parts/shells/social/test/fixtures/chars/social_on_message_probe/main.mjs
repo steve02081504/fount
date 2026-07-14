@@ -2,9 +2,9 @@
 export default {
 	info: {
 		'zh-CN': {
-			name: 'Social onMessage probe',
+			name: 'Social OnMessage probe',
 			avatar: '🔬',
-			description: 'social onMessage probe',
+			description: 'social OnMessage probe',
 			version: '1.0.0',
 			author: 'fount',
 			tags: ['test'],
@@ -20,7 +20,7 @@ export default {
 			 * @param {import('../../../../../../../../../decl/socialAPI.ts').SocialMessageEvent} event
 			 * @returns {Promise<boolean>}
 			 */
-			onMessage: async event => {
+			OnMessage: async event => {
 				const state = globalThis.__fountSocialOnMessageProbe ??= { events: [], returnValue: true }
 				state.events.push({
 					authorEntityHash: event.authorEntityHash,

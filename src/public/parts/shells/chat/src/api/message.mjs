@@ -10,7 +10,7 @@ import { createMember } from './member.mjs'
 /**
  * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
  * @param {string} groupId 群 ID
- * @param {object} line 消息行或 onMessage 事件 message
+ * @param {object} line 消息行或 OnMessage 事件 message
  * @param {object} [mentions] mentions 结构
  * @returns {object} Message 鸭子类型
  */

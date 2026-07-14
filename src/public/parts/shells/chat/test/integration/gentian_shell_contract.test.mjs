@@ -39,7 +39,7 @@ async function waitUntil(predicate, timeoutMs = 15000) {
 	throw new Error('waitUntil timeout')
 }
 
-Deno.test('Gentian onMessage: owner repeat command replies inline', async () => {
+Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => {
 	const username = `gentian-repeat-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,
@@ -97,7 +97,7 @@ Deno.test('Gentian onMessage: owner repeat command replies inline', async () => 
 	})
 })
 
-Deno.test('Gentian onMessage: self-destruct calls bridge stopSelf', async () => {
+Deno.test('Gentian OnMessage: self-destruct calls bridge stopSelf', async () => {
 	const username = `gentian-stop-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
@@ -168,14 +168,14 @@ Deno.test('Gentian fixture: OnError routed via dispatchCharError', async () => {
 
 	const char = await loadPart(username, `chars/${CHAR}`)
 	const err = new Error('fixture boom')
-	const context = { username, source: 'onMessage', groupId: 'g1', channelId: 'c1' }
+	const context = { username, source: 'OnMessage', groupId: 'g1', channelId: 'c1' }
 	const handled = await dispatchCharError(char, err, context)
 
 	assertEquals(handled, true)
 	assert(typeof char.OnError === 'function')
 })
 
-Deno.test('Gentian onMessage: isCaredBy recognizes bound owner not stranger', async () => {
+Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', async () => {
 	const username = `gentian-care-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,

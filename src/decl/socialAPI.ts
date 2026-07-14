@@ -383,6 +383,6 @@ export interface SocialFollowEvent {
  *
  */
 export interface SocialCharInterface {
-	onMessage?: (event: SocialMessageEvent) => Promise<boolean>
+	OnMessage?: (event: SocialMessageEvent) => Promise<boolean>
 	OnFollow?: (event: SocialFollowEvent) => Promise<void>
 }

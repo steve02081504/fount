@@ -38,7 +38,7 @@ function charAgentEntityHash(session, charname, nodeHash) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
- * @param {object} event onMessage 事件（已构建）
+ * @param {object} event OnMessage 事件（已构建）
  * @param {boolean} mentioned 是否被 @
  * @param {{ enabled: boolean, burst: number, refill: number, frequency: number }} settings 节流配置
  * @param {boolean} isDm 是否 DM 群
@@ -50,15 +50,15 @@ async function resolveCharReplyWill(username, groupId, channelId, charname, even
 	if (!char) return false
 	const bucketKey = autoReplyBucketKey(groupId, channelId, charname)
 
-	if (char.interfaces?.chat?.onMessage) {
+	if (char.interfaces?.chat?.OnMessage) {
 		let spoke = false
 		try {
-			spoke = await char.interfaces.chat.onMessage(event)
+			spoke = await char.interfaces.chat.OnMessage(event)
 		}
 		catch (error) {
 			await dispatchCharError(char, error, {
 				username,
-				source: 'onMessage',
+				source: 'OnMessage',
 				groupId,
 				channelId,
 				charname,

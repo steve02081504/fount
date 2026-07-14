@@ -7,7 +7,7 @@
  */
 import { assignShellData, loadShellData } from '../../../../../../../server/setting_loader.mjs'
 
-/** @typedef {import('../../../../../../../decl/chatAuxAPI.ts').UserStickerCollection} UserStickerCollection */
+/** @typedef {import('../../../decl/chatAuxAPI.ts').UserStickerCollection} UserStickerCollection */
 
 const SHELL_DATANAME = 'sticker_collection'
 

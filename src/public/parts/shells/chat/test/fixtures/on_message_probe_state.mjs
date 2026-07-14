@@ -1,5 +1,5 @@
 /**
- * onMessage 探针 fixture 共享状态（globalThis，跨 user 目录复制后仍可用）。
+ * OnMessage 探针 fixture 共享状态（globalThis，跨 user 目录复制后仍可用）。
  * @returns {{ events: object[], replies: number, returnValue: boolean, reset: () => void }} probe 状态视图
  */
 export function onMessageProbeState() {
@@ -7,11 +7,11 @@ export function onMessageProbeState() {
 	if (!globalThis[key])
 		globalThis[key] = { events: [], replies: 0, returnValue: true }
 	return {
-		/** @returns {object[]} 已记录的 onMessage 事件 */
+		/** @returns {object[]} 已记录的 OnMessage 事件 */
 		get events() { return globalThis[key].events },
 		/** @returns {number} GetReply 调用次数 */
 		get replies() { return globalThis[key].replies },
-		/** @returns {boolean} onMessage 返回值 */
+		/** @returns {boolean} OnMessage 返回值 */
 		get returnValue() { return globalThis[key].returnValue },
 		/**
 		 *

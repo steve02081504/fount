@@ -329,7 +329,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 }
 
 /**
- * 构建各角色回复权重（含 `onMessage` 发言意愿）。
+ * 构建各角色回复权重（含 `OnMessage` 发言意愿）。
  * @param {string} groupId 群 ID
  * @returns {Promise<Array<{ charname: string | null, frequency: number }>>} 各角色权重列表
  */
@@ -346,17 +346,17 @@ export async function getCharReplyFrequency(groupId) {
 			|| await resolveChar(groupId, charname, chatMetadata.username)
 		if (!char) continue
 		let frequency = session.charFrequencies?.[charname] ?? 1
-		if (char.interfaces?.chat?.onMessage) {
+		if (char.interfaces?.chat?.OnMessage) {
 			const bucketKey = autoReplyBucketKey(groupId, defaultChannelId, charname)
 			const event = await buildOnMessageEvent(chatMetadata.username, groupId, defaultChannelId, charname)
 			let spoke = false
 			try {
-				spoke = await char.interfaces.chat.onMessage(event)
+				spoke = await char.interfaces.chat.OnMessage(event)
 			}
 			catch (error) {
 				await dispatchCharError(char, error, {
 					username: chatMetadata.username,
-					source: 'onMessage',
+					source: 'OnMessage',
 					groupId,
 					channelId: defaultChannelId,
 					charname,

@@ -220,7 +220,7 @@ export function createRemoteCharProxy(memberId, sourceHost, interfaces = {}, rpc
 			 * @param {object} event 新消息事件上下文（可序列化：message / mentions / group / channel）
 			 * @returns {Promise<boolean>} true 表示该 char 想要发言
 			 */
-			onMessage: event => invokeRemote('onMessage', [event]).then(Boolean),
+			OnMessage: event => invokeRemote('OnMessage', [event]).then(Boolean),
 			/**
 			 * @param {{ index: number, original: chatLogEntry_t, edited: chatReply_t, chat_log: chatLogEntry_t[], extension?: object }} editPayload 编辑参数
 			 * @returns {Promise<chatReply_t>} 编辑后的回复

@@ -27,7 +27,7 @@ async function seedCharFixture(dataDir, username) {
 	await cp(from, to, { recursive: true })
 }
 
-Deno.test('token bucket suppresses generation not onMessage when exhausted', async () => {
+Deno.test('token bucket suppresses generation not OnMessage when exhausted', async () => {
 	const username = `tb-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbeState()
 	probe.reset()
@@ -79,7 +79,7 @@ Deno.test('token bucket suppresses generation not onMessage when exhausted', asy
 
 	await postChannelMessage(username, groupId, channelId, { text: 'second' })
 	await new Promise(resolve => setTimeout(resolve, 800))
-	// A7：事件一律送达 onMessage；桶耗尽只压回生成意愿
+	// 事件一律送达 OnMessage；桶耗尽只压回生成意愿
 	assertEquals(probe.events.length > afterFirstEvents, true)
 	assertEquals(probe.replies, afterFirstReplies)
 })

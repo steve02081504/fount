@@ -14,7 +14,7 @@ export function extractMessageText(message) {
 }
 
 /**
- * @param {object} event onMessage 事件
+ * @param {object} event OnMessage 事件
  * @returns {string | undefined} 桥接作者 entityHash
  */
 function bridgeAuthorHash(event) {
@@ -25,7 +25,7 @@ function bridgeAuthorHash(event) {
 }
 
 /**
- * @param {object} event onMessage 事件
+ * @param {object} event OnMessage 事件
  * @param {string} selfHash 自身 hash
  * @param {string} operatorHash operator hash
  * @returns {Promise<{ authorHash: string, isFromOwner: boolean, client: object, message: object }>} 消息上下文

@@ -1,5 +1,5 @@
 /**
- * social onMessage 意愿 true 或无 onMessage 且被 @ 时，经 chat.GetReply 生成公开回复正文。
+ * social OnMessage 意愿 true 或无 OnMessage 且被 @ 时，经 chat.GetReply 生成公开回复正文。
  */
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../../chat/src/chat/session/builtinParts.mjs'
 

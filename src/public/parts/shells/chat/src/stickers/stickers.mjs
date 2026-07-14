@@ -27,9 +27,9 @@ import {
 	saveUserStickerCollection,
 } from './collection/store.mjs'
 
-/** @typedef {import('../../../../../../decl/chatAuxAPI.ts').StickerPack} StickerPack */
-/** @typedef {import('../../../../../../decl/chatAuxAPI.ts').Sticker} Sticker */
-/** @typedef {import('../../../../../../decl/chatAuxAPI.ts').UserStickerCollection} UserStickerCollection */
+/** @typedef {import('../../decl/chatAuxAPI.ts').StickerPack} StickerPack */
+/** @typedef {import('../../decl/chatAuxAPI.ts').Sticker} Sticker */
+/** @typedef {import('../../decl/chatAuxAPI.ts').UserStickerCollection} UserStickerCollection */
 
 const STICKER_API = '/api/parts/shells:chat/stickers'
 
