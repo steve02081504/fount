@@ -1,6 +1,6 @@
 /**
  * 治理类 DAG 事件权限：kick/ban/role 等须持有对应能力；agent 仅 owner 或 ADMIN 可踢；
- * message_edit/delete 允许 agent owner 管理其发言。
+ * message_edit/delete 允许所属主人管理其发言（人类与 agent 同构）。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -190,4 +190,48 @@ Deno.test('role_assign ADMIN requires MANAGE_ADMINS', async () => {
 	const result = await checkEventPermission(state, event, MODERATOR)
 	assertEquals(result.ok, false)
 	assertEquals(result.reason, 'role_assign ADMIN requires MANAGE_ADMINS')
+})
+
+const HUMAN_MSG = '9'.repeat(64)
+
+Deno.test('message_edit allowed when owner edits owned human message', async () => {
+	const state = baseState({
+		members: {
+			...baseState().members,
+			[VICTIM]: {
+				status: 'active',
+				roles: ['@everyone'],
+				memberKind: 'user',
+				entityHash: '4'.repeat(128),
+				ownerEntityHash: OWNER_ENTITY,
+			},
+		},
+		messageSenderIndex: { [HUMAN_MSG]: { sender: VICTIM, channelId: 'default' } },
+	})
+	const event = { type: 'message_edit', channelId: 'default', content: { targetId: HUMAN_MSG } }
+	assertEquals((await checkEventPermission(state, event, OWNER)).ok, true)
+})
+
+Deno.test('message_delete allowed when owner deletes owned human message', async () => {
+	const state = baseState({
+		members: {
+			...baseState().members,
+			[VICTIM]: {
+				status: 'active',
+				roles: ['@everyone'],
+				memberKind: 'user',
+				entityHash: '4'.repeat(128),
+				ownerEntityHash: OWNER_ENTITY,
+			},
+		},
+		messageSenderIndex: { [HUMAN_MSG]: { sender: VICTIM, channelId: 'default' } },
+	})
+	const event = { type: 'message_delete', channelId: 'default', content: { targetId: HUMAN_MSG } }
+	assertEquals((await checkEventPermission(state, event, OWNER)).ok, true)
+})
+
+Deno.test('member_owner_update allowed for active member self', async () => {
+	const state = baseState()
+	const event = { type: 'member_owner_update', content: { ownerEntityHash: MOD_ENTITY } }
+	assertEquals((await checkEventPermission(state, event, VICTIM)).ok, true)
 })

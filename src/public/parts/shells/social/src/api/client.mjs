@@ -9,7 +9,7 @@ import {
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-import { getFederationViewForUser, resolveOperatorEntityHashForUser } from '../../../chat/src/entity/identity.mjs'
+import { getEntityActivePubKey, resolveOperatorEntityHashForUser } from '../../../chat/src/entity/identity.mjs'
 import { discoverWithNetwork } from '../discover/network.mjs'
 import { dispatchFollowEvent } from '../dispatch.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
@@ -304,7 +304,7 @@ export function createSocialClient(ctx) {
 		 * @returns {Promise<object>} 热门话题
 		 */
 		async trendingHashtags(opts = {}) {
-			return buildTrendingHashtags(ctx.username, opts)
+			return buildTrendingHashtags(ctx.username, { ...opts, ...viewerOpts() })
 		},
 		/**
 		 * @param {string} q 前缀
@@ -312,7 +312,7 @@ export function createSocialClient(ctx) {
 		 * @returns {Promise<object>} @ 建议
 		 */
 		async suggestMentions(q, opts = {}) {
-			return suggestMentions(ctx.username, String(q || ''), Number(opts.limit) || 20)
+			return suggestMentions(ctx.username, String(q || ''), Number(opts.limit) || 20, ctx.entityHash)
 		},
 		/**
 		 * @returns {{ list: Function, add: Function, remove: Function, createFolder: Function, renameFolder: Function, deleteFolder: Function, search: Function }} 收藏命名空间
@@ -439,14 +439,14 @@ export function createSocialClient(ctx) {
 		 * @returns {Promise<object>} 时间线帖
 		 */
 		async profilePosts(entityHash, opts = {}) {
-			return buildProfileFeedItems(ctx.username, String(entityHash).toLowerCase(), opts)
+			return buildProfileFeedItems(ctx.username, String(entityHash).toLowerCase(), { ...opts, ...viewerOpts() })
 		},
 		/**
 		 * @param {string} entityHash 目标实体
 		 * @returns {Promise<object>} 点赞流
 		 */
 		async profileLikes(entityHash) {
-			return buildLikedFeedItems(ctx.username, String(entityHash).toLowerCase())
+			return buildLikedFeedItems(ctx.username, String(entityHash).toLowerCase(), viewerOpts())
 		},
 		/**
 		 * @param {string} entityHash 目标实体
@@ -463,7 +463,7 @@ export function createSocialClient(ctx) {
 		 */
 		async profileReplies(entityHash, postId) {
 			return {
-				replies: await listReplies(ctx.username, String(entityHash).toLowerCase(), String(postId)),
+				replies: await listReplies(ctx.username, String(entityHash).toLowerCase(), String(postId), viewerOpts()),
 			}
 		},
 		/**
@@ -538,7 +538,7 @@ async function setFollowRelation(ctx, target, follow) {
 		await dispatchFollowEvent(ctx.username, ctx.entityHash, hash)
 		const targetEntity = await resolveSocialEntity(hash)
 		if (targetEntity?.local && targetEntity.replicaUsername) {
-			const followerPubKeyHex = (await getFederationViewForUser(ctx.username)).activePubKeyHex
+			const followerPubKeyHex = await getEntityActivePubKey(ctx.username, ctx.entityHash)
 			if (followerPubKeyHex)
 				await autoApproveFollower(targetEntity.replicaUsername, hash, followerPubKeyHex)
 		}

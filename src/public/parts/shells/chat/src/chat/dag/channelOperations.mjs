@@ -95,10 +95,11 @@ export async function appendListItemUpdate(username, groupId, channelId, items) 
  * @param {string} groupId 群组 ID
  * @param {string} channelId 流媒体频道 ID
  * @param {{ sessionId: string, expiresAt: number }} session 会话元数据
+ * @param {string} [entityHash] 归因实体；缺省为 operator
  * @returns {Promise<{ ok: boolean }>} 写入成功标记
  */
-export async function appendStreamingSession(username, groupId, channelId, session) {
-	const { sender } = await resolveLocalEventSigner(username, groupId)
+export async function appendStreamingSession(username, groupId, channelId, session, entityHash) {
+	const { sender } = await resolveLocalEventSigner(username, groupId, entityHash)
 	setStreamingSession(groupId, channelId, {
 		sessionId: session.sessionId,
 		expiresAt: session.expiresAt,

@@ -48,13 +48,15 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 	const postOut = decrypt
 		? await withDecryptedPostContent(username, entityHash, post)
 		: post
+	const authorProfile = await feedContext.authorProfile(entityHash)
 	const item = {
 		kind: 'post',
 		entityHash,
 		postId: post.id,
 		post: postOut,
 		hlc: post.hlc,
-		authorProfile: await feedContext.authorProfile(entityHash),
+		authorProfile,
+		ownerEntityHash: authorProfile?.ownerEntityHash || null,
 		...feedContext.engagementForPost(entityHash, post.id),
 	}
 	const poll = postOut.content?.poll

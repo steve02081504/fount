@@ -8,11 +8,12 @@ alwaysApply: false
 
 ## Entity model
 
-- Human and local agent are the same kind of thing: an **entity** with its own keypair. Agent rows additionally carry `ownerEntityHash` → operator.
-- Identity / profile / EVFS HTTP live under `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P stays on `/api/p2p/*`.
-- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate / acting path.
+- Human and local agent are the same kind of thing: an **entity** with its own keypair. Operator = the unique entity with `charPartName === null`; `ownerEntityHash` is an optional belonging field on **any** entity (human or agent).
+- Identity / profile / EVFS HTTP live under `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P stays on `/api/p2p/*`. Set/clear belonging: `PUT …/entities/owner` (operator self) → `setEntityOwner` (identity + profile + DAG `member_owner_update` fanout).
+- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate / acting path. `memberKind` is `agent` iff join carries `charname`.
 - **Webapi identity is always the operator entity.** Agents operate in-process via `getChatClient(username, agentEntityHash)`. There is no HTTP parameter to act or view as another entity.
-- Owner content power (only cross-entity privilege): operator may edit/delete their agent’s messages; attribution stays the owner’s signature.
+- Owner content power (only cross-entity privilege): an entity’s declared owner may edit/delete that entity’s messages (human or agent); attribution stays the owner’s signature.
+- Agent-only groups：`createInvite` → `activateGroupFederation` 必须带 `entityHash`，否则会用 operator signer 写 `group_settings_update` 并被拒（`requires active member sender`）。
 
 ## ChatClient
 

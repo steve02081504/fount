@@ -165,8 +165,8 @@ export function createGroup(ctx, groupId, projection) {
 			const ticket = await mintGroupInviteTicket(ctx.username, groupId)
 			const roomCreds = isGroupFederationActive(state.groupSettings)
 				? roomCredentialsFromGroupSettings(state.groupSettings)
-				: await activateGroupFederation(ctx.username, groupId)
-			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(ctx.username, groupId)
+				: await activateGroupFederation(ctx.username, groupId, ctx.entityHash)
+			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
 			const powAnchorRef = collectJoinPowAnchors(state)[0] ?? null
 			const url = wrapProtocolHttpsUrl(formatJoinRunUri(
 				groupId,
@@ -185,7 +185,7 @@ export function createGroup(ctx, groupId, projection) {
 			const state = await loadGroupState(ctx, groupId)
 			if (state.groupSettings?.bridge)
 				await dispatchBridgeLeave(ctx, groupId, state)
-			await performLocalGroupLeave(ctx.username, groupId)
+			await performLocalGroupLeave(ctx.username, groupId, ctx.entityHash)
 		},
 		/**
 		 * @param {object} patch 元数据补丁
@@ -204,7 +204,7 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async fork(opts = {}) {
 			const { forkGroupFromBranch } = await import('../chat/governance/fork.mjs')
-			const result = await forkGroupFromBranch(ctx.username, groupId, opts)
+			const result = await forkGroupFromBranch(ctx.username, groupId, { ...opts, entityHash: ctx.entityHash })
 			const { group } = await buildConversationContext(ctx.username, result.groupId, result.defaultChannelId)
 			return createGroup(ctx, result.groupId, group)
 		},
@@ -214,7 +214,7 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async blockOpposingFork(acceptedTipId) {
 			const { blockOpposingForkBranch } = await import('../chat/governance/forkBlockOpposing.mjs')
-			const { sender } = await resolveLocalEventSigner(ctx.username, groupId)
+			const { sender } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
 			return blockOpposingForkBranch(ctx.username, groupId, acceptedTipId, sender)
 		},
 		/**
@@ -246,12 +246,12 @@ export function createGroup(ctx, groupId, projection) {
 					if (!content.targetPubKeyHash)
 						throw new Error('targetPubKeyHash required')
 					const { state } = await getState(ctx.username, groupId)
-					const memberKey = await resolveActiveMemberKeyForLocalUser(ctx.username, groupId, state)
+					const memberKey = await resolveActiveMemberKeyForLocalUser(ctx.username, groupId, state, ctx.entityHash)
 					const member = memberKey ? state.members[memberKey] : undefined
 					if (!content.verified && !content.proof) {
 						if (!canGovSlash(state, member))
 							throw new Error('ADMIN or MANAGE_ROLES required')
-						const { sender } = await resolveLocalEventSigner(ctx.username, groupId)
+						const { sender } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
 						const alert = buildAndApplyUnverifiedSlashAlert(sender, content, state.groupSettings || {})
 						broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 						await publishVolatileToFederation(groupId, alert)

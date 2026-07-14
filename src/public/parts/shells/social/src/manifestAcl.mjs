@@ -18,7 +18,12 @@ export function registerSocialManifestAcl() {
 		manifest?.transferKeyDescriptor?.type === 'vault-wrap' ? 'vault-wrap' : null,
 	)
 	registerManifestAcl('vault-wrap', OWNER_ID, async context =>
-		canViewVaultFile(context.replicaUsername, context.ownerEntityHash, context.manifest),
+		canViewVaultFile(
+			context.replicaUsername,
+			context.ownerEntityHash,
+			context.manifest,
+			context.viewerEntityHash,
+		),
 	)
 }
 

@@ -2,7 +2,7 @@ import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/en
 
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
-import { loadFollowing } from '../following.mjs'
+import { loadFollowingForActor } from '../following.mjs'
 
 import { getEntityProfile } from './entityProfile.mjs'
 
@@ -12,9 +12,10 @@ import { getEntityProfile } from './entityProfile.mjs'
  * @param {string} username 用户
  * @param {string} [query] 过滤关键词
  * @param {number} [limit=20] 条数上限
+ * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
  * @returns {Promise<{ suggestions: object[] }>} @ 提及候选
  */
-export async function suggestMentions(username, query = '', limit = 20) {
+export async function suggestMentions(username, query = '', limit = 20, viewerEntityHash) {
 	const normalizedQuery = query.trim().toLowerCase()
 	/** @type {object[]} */
 	const suggestions = []
@@ -36,7 +37,9 @@ export async function suggestMentions(username, query = '', limit = 20) {
 		suggestions.push(suggestion)
 	}
 
-	const selfEntityHash = await resolveOperatorEntityHash(username)
+	const selfEntityHash = viewerEntityHash
+		? String(viewerEntityHash).trim().toLowerCase()
+		: await resolveOperatorEntityHash(username)
 	if (selfEntityHash) {
 		const profile = await getEntityProfile(username, selfEntityHash)
 		pushSuggestion({
@@ -46,7 +49,9 @@ export async function suggestMentions(username, query = '', limit = 20) {
 		})
 	}
 
-	const { following } = await loadFollowing(username)
+	const { following } = selfEntityHash
+		? await loadFollowingForActor(username, selfEntityHash)
+		: { following: [] }
 	for (const entityHash of following) {
 		const profile = await getEntityProfile(username, entityHash)
 		pushSuggestion({

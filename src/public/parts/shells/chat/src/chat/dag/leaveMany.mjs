@@ -13,10 +13,11 @@ const DEFAULT_CONCURRENCY = 4
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
+ * @param {string} [entityHash] 签名实体；缺省为 operator
  * @returns {Promise<{ ok: true } | { ok: false, error: string }>} 成功或失败原因
  */
-export async function performLocalGroupLeave(username, groupId) {
-	const leaveCtx = await resolveLeaveMembership(username, groupId)
+export async function performLocalGroupLeave(username, groupId, entityHash) {
+	const leaveCtx = await resolveLeaveMembership(username, groupId, entityHash)
 	if (!leaveCtx)
 		return { ok: false, error: 'Not a member' }
 	await appendMemberLeaveFast(username, groupId, leaveCtx)

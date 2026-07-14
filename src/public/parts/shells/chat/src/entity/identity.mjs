@@ -1,6 +1,6 @@
 /**
  * 统一实体身份：人类（operator）与 agent 同 schema，落 entities/{entityHash}/identity.json。
- * operator = ownerEntityHash === null 的实体。
+ * operator = charPartName === null 的实体（每登录用户唯一）；ownerEntityHash 为所属关系字段，两类实体均可设。
  */
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
@@ -89,6 +89,9 @@ function cacheFromRow(username, row) {
 	const ownerEntityHash = ownerRaw == null || ownerRaw === ''
 		? null
 		: String(ownerRaw).toLowerCase()
+	const charPartName = row.charPartName == null || row.charPartName === ''
+		? null
+		: String(row.charPartName)
 	identityCache.set(cacheKey(username, entityHash), {
 		recoveryPub: normalizeHex64(row.recoveryPubKeyHex),
 		activePub: normalizeHex64(row.activePubKeyHex),
@@ -99,11 +102,9 @@ function cacheFromRow(username, row) {
 		entityHash,
 		keyGeneration: Number(row.keyGeneration ?? 0),
 		ownerEntityHash,
-		charPartName: row.charPartName == null || row.charPartName === ''
-			? null
-			: String(row.charPartName),
+		charPartName,
 	})
-	if (ownerEntityHash === null) operatorHashCache.set(username, entityHash)
+	if (charPartName === null) operatorHashCache.set(username, entityHash)
 }
 
 /**
@@ -141,7 +142,7 @@ async function migrateLegacyOperatorIdentity(username) {
 
 /**
  * @param {string} username fount 登录名
- * @returns {Promise<string | null>} null-owner 实体的 entityHash
+ * @returns {Promise<string | null>} 无 charPartName 的实体（operator）entityHash
  */
 async function findOperatorEntityHash(username) {
 	const cached = operatorHashCache.get(username)
@@ -152,7 +153,7 @@ async function findOperatorEntityHash(username) {
 		return migrated.entityHash
 	}
 	for (const row of await listEntityIdentities(username)) {
-		if (row.ownerEntityHash == null || row.ownerEntityHash === '') {
+		if (row.charPartName == null || row.charPartName === '') {
 			cacheFromRow(username, row)
 			return row.entityHash
 		}
@@ -245,6 +246,63 @@ async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
 		await updateProfile(username, entityHash, { ownerEntityHash }, { skipPresentation: true })
 	}
 	catch { /* profile 运行时未就绪时跳过 */ }
+}
+
+/**
+ * 设置实体所属主人（identity + profile 双写，并向本机已加入群 fanout `member_owner_update`）。
+ * @param {string} username fount 登录名
+ * @param {string} entityHash 被设主人的实体
+ * @param {string | null} ownerEntityHash 主人 entityHash；null/空 清除
+ * @returns {Promise<object>} 更新后的身份行（含 entityHash）
+ */
+export async function setEntityOwner(username, entityHash, ownerEntityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(hash)) throw new Error('invalid entityHash')
+	const nextOwner = ownerEntityHash == null || ownerEntityHash === ''
+		? null
+		: String(ownerEntityHash).trim().toLowerCase()
+	if (nextOwner && !isEntityHash128(nextOwner)) throw new Error('invalid ownerEntityHash')
+	if (nextOwner === hash) throw new Error('cannot set self as owner')
+
+	const prev = await loadEntityIdentity(username, hash)
+	const row = {
+		...prev,
+		ownerEntityHash: nextOwner,
+		entityHash: hash,
+	}
+	await writeEntityIdentity(username, hash, {
+		recoveryPubKeyHex: row.recoveryPubKeyHex,
+		recoverySecretKeyHex: row.recoverySecretKeyHex,
+		activePubKeyHex: row.activePubKeyHex,
+		activeSecretKeyHex: row.activeSecretKeyHex,
+		keyGeneration: row.keyGeneration,
+		keyHistory: row.keyHistory,
+		ownerEntityHash: nextOwner,
+		charPartName: row.charPartName ?? null,
+		createdAt: row.createdAt,
+	})
+	cacheFromRow(username, row)
+	await syncProfileOwnerField(username, hash, nextOwner)
+
+	const { listUserGroups } = await import('../chat/lib/userGroups.mjs')
+	const { getState } = await import('../chat/dag/materialize.mjs')
+	const { appendSignedLocalEvent } = await import('../chat/dag/append.mjs')
+	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
+	for (const groupId of await listUserGroups(username)) {
+		try {
+			const { state } = await getState(username, groupId, { skipLeftPurge: true })
+			const sender = await peekLocalSignerPubKeyHash(username, groupId, hash)
+			if (!sender || state.members?.[sender]?.status !== 'active') continue
+			if (String(state.members[sender]?.entityHash || '').toLowerCase() !== hash) continue
+			await appendSignedLocalEvent(username, groupId, {
+				type: 'member_owner_update',
+				timestamp: Date.now(),
+				content: { ownerEntityHash: nextOwner },
+			}, { entityHash: hash })
+		}
+		catch { /* 非成员 / 无权写则跳过 */ }
+	}
+	return row
 }
 
 /**
@@ -534,7 +592,7 @@ export function setDmIntroNonce(username, nonce) {
 export async function listLocalAgentIdentities(username) {
 	const rows = await listEntityIdentities(username)
 	return rows
-		.filter(row => row.charPartName && row.ownerEntityHash)
+		.filter(row => row.charPartName)
 		.map(row => ({
 			entityHash: String(row.entityHash).toLowerCase(),
 			charPartName: String(row.charPartName),

@@ -8,6 +8,7 @@ import { readTrendingHashtagCounts } from '../searchIndex.mjs'
  * @param {string} username 用户
  * @param {object} [options] 选项
  * @param {number} [options.limit=12] 返回条数
+ * @param {string} [options.viewerEntityHash] 观看实体；缺省为 operator
  * @returns {Promise<{ tags: { tag: string, count: number }[] }>} 热门话题
  */
 export async function buildTrendingHashtags(username, options = {}) {
@@ -15,7 +16,7 @@ export async function buildTrendingHashtags(username, options = {}) {
 	const indexed = await readTrendingHashtagCounts(username, limit)
 	if (indexed.tags.length) return indexed
 
-	const viewerContext = await loadViewerContext(username)
+	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
 	/** @type {Map<string, number>} */
 	const counts = new Map()
 

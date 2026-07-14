@@ -22,7 +22,7 @@ import { listFollowedTimelineOwners } from '../following.mjs'
  */
 export async function createFeedItemBuildContext(username, owners, viewerEntityHash = null) {
 	const engagement = await buildEngagementIndex(username, owners)
-	const viewerLiked = await buildViewerLikedSet(username)
+	const viewerLiked = await buildViewerLikedSet(username, viewerEntityHash)
 	const authorProfile = createAuthorProfileLoader(username)
 	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
 	let viewerPollChoices = null
@@ -35,10 +35,11 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 
 /**
  * @param {string} username 用户
+ * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
  * @returns {AsyncGenerator<string>} 可见时间线 owner
  */
-export async function* iterateVisibleTimelineOwners(username) {
-	for (const entityHash of await listFollowedTimelineOwners(username)) {
+export async function* iterateVisibleTimelineOwners(username, viewerEntityHash) {
+	for (const entityHash of await listFollowedTimelineOwners(username, viewerEntityHash)) {
 		if (!isEntityHash128(entityHash)) continue
 		if (isEntityHashBlocked(entityHash)) continue
 		if (shouldHideAuthorByReputation(entityHash, pickNodeScore)) continue
@@ -52,7 +53,7 @@ export async function* iterateVisibleTimelineOwners(username) {
  * @returns {AsyncGenerator<{ entityHash: string, post: object, enriched: object }>} 可见帖子
  */
 export async function* iterateVisiblePosts(username, viewerContext) {
-	for await (const entityHash of iterateVisibleTimelineOwners(username)) {
+	for await (const entityHash of iterateVisibleTimelineOwners(username, viewerContext?.viewerEntityHash)) {
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (!view.posts?.length) continue
 		for (const post of view.posts) {

@@ -51,3 +51,49 @@ Deno.test('agent member_join syncs session.chars; kick removes derived char', ()
 	})
 	assertEquals(state.members[owner].roles.includes('admin'), true)
 })
+
+Deno.test('human member_join keeps ownerEntityHash without becoming agent', () => {
+	const node = 'a'.repeat(64)
+	const humanKey = 'b'.repeat(64)
+	const masterKey = 'c'.repeat(64)
+	const humanEntity = '1'.repeat(128)
+	const masterEntity = '2'.repeat(128)
+	let state = {
+		members: {},
+		roles: { '@everyone': {} },
+		bannedMembers: new Set(),
+		bannedEntities: new Set(),
+		bannedNodes: new Set(),
+		inviteEdges: [],
+		session: createEmptySessionState(),
+	}
+	state = memberReducers.member_join(state, {
+		type: 'member_join', sender: humanKey, timestamp: 1,
+		content: {
+			homeNodeHash: node,
+			entityHash: humanEntity,
+			ownerEntityHash: masterEntity,
+		},
+	})
+	assertEquals(state.members[humanKey]?.memberKind, 'user')
+	assertEquals(state.members[humanKey]?.ownerEntityHash, masterEntity)
+	assertEquals(Object.keys(state.session.chars), [])
+
+	state = memberReducers.member_owner_update(state, {
+		type: 'member_owner_update', sender: humanKey, timestamp: 2,
+		content: { ownerEntityHash: null },
+	})
+	assertEquals(state.members[humanKey]?.ownerEntityHash, null)
+
+	state = memberReducers.member_owner_update(state, {
+		type: 'member_owner_update', sender: humanKey, timestamp: 3,
+		content: { ownerEntityHash: masterEntity },
+	})
+	assertEquals(state.members[humanKey]?.ownerEntityHash, masterEntity)
+
+	state = memberReducers.member_join(state, {
+		type: 'member_join', sender: masterKey, timestamp: 4,
+		content: { homeNodeHash: node, entityHash: masterEntity },
+	})
+	assertEquals(state.members[masterKey]?.memberKind, 'user')
+})

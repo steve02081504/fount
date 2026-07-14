@@ -33,29 +33,47 @@ import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './m
 import { isChannelMessageGenerating } from './messageRender.mjs'
 
 /**
- * 消息作者是否为本机 operator 拥有的 agent。
+ * 解析消息作者成员行声明的 ownerEntityHash。
  * @param {object} message 消息行
- * @param {object} opts 查看者上下文（含 ownedAgentEntityHashes）
- * @returns {boolean} 是否自有 agent 内容
+ * @param {object} opts 查看者上下文（含 groupMembers / viewerEntityHash）
+ * @returns {string | null} owner entityHash
  */
-function isOwnedAgentMessage(message, opts) {
-	const owned = opts.ownedAgentEntityHashes
-	if (!owned?.size || !message?.charId) return false
-	const authorKey = message.charId || message.authorPubKeyHash
-	const authorEntity = resolveEntityHashForAuthorKey(authorKey)
+function authorOwnerEntityHash(message, opts) {
+	const authorEntity = resolveEntityHashForAuthorKey(message.charId || message.authorPubKeyHash)
 		|| resolveEntityHashForAuthorKey(message.authorPubKeyHash)
-	return !!(authorEntity && owned.has(authorEntity))
+	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
+	for (const member of opts.groupMembers || []) {
+		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
+		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
+		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
+			const owner = String(member?.ownerEntityHash || '').trim().toLowerCase()
+			return owner || null
+		}
+	}
+	return null
 }
 
 /**
- * 是否为本节点发出的角色消息（含自有 agent，哪怕 isRemote）。
+ * 当前观看者是否为消息作者所属主人（人类与 agent 同构）。
+ * @param {object} message 消息行
+ * @param {object} opts 查看者上下文
+ * @returns {boolean} 是否可管理
+ */
+function isManagedByViewer(message, opts) {
+	const owner = authorOwnerEntityHash(message, opts)
+	const viewerEntity = String(opts.viewerEntityHash || '').trim().toLowerCase()
+	return !!(owner && viewerEntity && owner === viewerEntity)
+}
+
+/**
+ * 是否为本节点发出的角色消息（含所属 agent，哪怕 isRemote）。
  * @param {object} message 消息行
  * @param {object} opts 查看者上下文
  * @returns {boolean} 是否己方角色
  */
 function isOwnCharMessage(message, opts) {
 	if (!message?.charId) return false
-	if (isOwnedAgentMessage(message, opts)) return true
+	if (isManagedByViewer(message, opts)) return true
 	if (message.isRemote) return false
 	const localCharIds = opts.localCharIds?.length
 		? opts.localCharIds
@@ -77,6 +95,7 @@ function isOwnCharMessage(message, opts) {
 function canDeleteMessage(message, opts) {
 	if (!message?.eventId) return false
 	if (isOwnCharMessage(message, opts)) return true
+	if (isManagedByViewer(message, opts)) return true
 	if (message.charId && opts.canManageMessages) return true
 	if (!message.charId) {
 		const viewer = String(opts.viewerPubKeyHash || '').toLowerCase()
@@ -231,7 +250,9 @@ export async function renderMessageActionsHtml(message, opts) {
 			}))
 	}
 
-	const canEdit = ownChar || (!message.isRemote && canDelete && !message.charId && !!channelMessageText(message.content))
+	const canEdit = (ownChar || isManagedByViewer(message, opts)
+		|| (!message.isRemote && canDelete && !message.charId))
+		&& !!channelMessageText(message.content)
 	if (canEdit)
 		hoverInlineParts.push(actionButton({
 			action: 'edit',

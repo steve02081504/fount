@@ -22,6 +22,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	member_kick: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	member_ban: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	member_unban: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
+	member_owner_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	role_create: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	role_update: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },
 	role_delete: { aclGated: true, gcExclude: true, governance: true, permissionAnchor: true },

@@ -85,7 +85,7 @@ export function registerMembershipRoutes(router, authenticate) {
 			return {
 				memberKey,
 				kind: isAgent ? 'agent' : 'user',
-				ownerEntityHash: isAgent ? member.ownerEntityHash : undefined,
+				ownerEntityHash: member.ownerEntityHash || undefined,
 				nodeHash: member.homeNodeHash,
 				entityHash,
 				roles: member.roles || [],

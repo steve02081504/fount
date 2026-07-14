@@ -10,6 +10,7 @@ import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } f
 import {
 	listLocalAgentIdentities,
 	resolveOperatorEntityHashForUser,
+	setEntityOwner,
 } from './identity.mjs'
 import { revokeEntityActiveKey, rotateEntityActiveKey } from './keyAdmin.mjs'
 import { localesFromRequest } from './presentation.mjs'
@@ -163,6 +164,21 @@ export function registerEntityEndpoints(router) {
 		const locales = localesFromRequest(req, replicaUsername)
 		res.status(200).json({
 			profile: await updateProfile(replicaUsername, entityHash, req.body, { groupId, locales }),
+		})
+	})
+
+	router.put(`${CHAT_PREFIX}/entities/owner`, authenticate, async (req, res) => {
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
+		const raw = req.body?.ownerEntityHash
+		const ownerEntityHash = raw == null || raw === '' ? null : String(raw).trim().toLowerCase()
+		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
+			return res.status(400).json({ error: 'invalid ownerEntityHash' })
+		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)
+		res.status(200).json({
+			entityHash: operatorEntityHash,
+			ownerEntityHash: row.ownerEntityHash ?? null,
 		})
 	})
 }

@@ -132,7 +132,7 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 }
 
 /**
- * 解析写事件签名者：缺省为时间线 owner；owner 删 agent 帖时可指定 signerEntityHash。
+ * 解析写事件签名者：缺省为时间线 owner；owner 改/删所属实体帖时可指定 signerEntityHash。
  * @param {string} username replica 登录名
  * @param {string} entityHash 时间线 owner
  * @param {object} event 未签名事件
@@ -143,8 +143,8 @@ async function resolveTimelineEventSigner(username, entityHash, event, signerEnt
 	const timelineOwner = String(entityHash || '').trim().toLowerCase()
 	const signer = String(signerEntityHash || timelineOwner).trim().toLowerCase()
 	if (signer === timelineOwner) return signer
-	if (event?.type !== 'post_delete')
-		throw new Error('foreign signer only allowed for post_delete')
+	if (event?.type !== 'post_delete' && event?.type !== 'post_edit')
+		throw new Error('foreign signer only allowed for post_delete or post_edit')
 	const profile = await getEntityProfile(username, timelineOwner)
 	const owner = String(profile?.ownerEntityHash || '').trim().toLowerCase()
 	if (!owner || owner !== signer)

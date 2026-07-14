@@ -38,10 +38,11 @@ function prevTipIdsFromCheckpoint(checkpoint) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
+ * @param {string} [entityHash] 签名实体；缺省为 operator
  * @returns {Promise<{ username: string, state: object, memberKey: string, sender: string, secretKey: Uint8Array } | null>} 成员上下文；非成员为 null
  */
-export async function resolveLeaveMembership(username, groupId) {
-	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId)
+export async function resolveLeaveMembership(username, groupId, entityHash) {
+	const { sender, secretKey } = await resolveLocalEventSigner(username, groupId, entityHash)
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 	if (checkpoint?.members_record) {
 		const state = materializeFromCheckpoint(checkpoint)

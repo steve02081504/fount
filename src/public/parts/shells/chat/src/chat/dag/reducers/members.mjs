@@ -87,8 +87,7 @@ function syncSessionCharsFromMembers(state) {
 	state.session.chars = {}
 	state.session.charFrequencies = {}
 	for (const member of Object.values(state.members)) {
-		const isAgent = member?.memberKind === 'agent' || Boolean(member?.ownerEntityHash)
-		if (!isAgent || member.status !== 'active') continue
+		if (member?.memberKind !== 'agent' || member.status !== 'active') continue
 		const charname = String(member.charname || '').trim()
 		if (!charname) continue
 		state.session.chars[charname] = {
@@ -153,12 +152,17 @@ export const memberReducers = {
 		if (!isEntityHash128(entityHash))
 			return state
 
-		const ownerEntityHash = String(content.ownerEntityHash || '').trim().toLowerCase() || null
-		const memberKind = ownerEntityHash && isEntityHash128(ownerEntityHash) ? 'agent' : 'user'
 		const existing = state.members[event.sender]
 		// 已是活跃成员的重复 member_join（DAG 重放 / 检查点重建时对已折叠基态的再应用）必须幂等：
 		// 不得重算 extraRoles（此时 activeBefore 含成员自身，会算成 0 个 extraRole）从而回退 founder 等既有角色。
 		const isActiveReapply = existing?.status === 'active'
+		const charnameRaw = String(content.charname || existing?.charname || '').trim()
+		const charname = charnameRaw || undefined
+		const ownerFromContent = String(content.ownerEntityHash || '').trim().toLowerCase()
+		const ownerFallback = isActiveReapply ? String(existing?.ownerEntityHash || '').trim().toLowerCase() : ''
+		const ownerRaw = ownerFromContent || ownerFallback
+		const ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null
+		const memberKind = charname ? 'agent' : 'user'
 		const activeBefore = Object.values(state.members).filter(member => member?.status === 'active').length
 		const allowDeclaredRoles = !isActiveReapply && (memberKind === 'agent' || activeBefore === 0)
 		const extraRoles = allowDeclaredRoles && Array.isArray(content.roles)
@@ -169,16 +173,14 @@ export const memberReducers = {
 		state.members[event.sender] = {
 			memberKind,
 			entityHash,
-			ownerEntityHash: memberKind === 'agent' ? ownerEntityHash : null,
+			ownerEntityHash,
 			pubKeyHash: event.sender,
 			pubKeyHex: event.senderPubKey || existing?.pubKeyHex || null,
 			homeNodeHash: homeNodeHash && isHex64(homeNodeHash) ? homeNodeHash : existing?.homeNodeHash ?? null,
 			roles: isActiveReapply && existing.roles?.length ? existing.roles : ['@everyone', ...extraRoles],
 			joinedAt: isActiveReapply ? existing.joinedAt ?? event.timestamp : event.timestamp,
 			status: 'active',
-			charname: memberKind === 'agent'
-				? String(content.charname || existing?.charname || '').trim() || undefined
-				: undefined,
+			charname: memberKind === 'agent' ? charname : undefined,
 			ownerUsername: memberKind === 'agent'
 				? String(content.ownerUsername || existing?.ownerUsername || '').trim() || undefined
 				: undefined,
@@ -199,6 +201,24 @@ export const memberReducers = {
 		}
 
 		syncSessionCharsFromMembers(state)
+		refreshMembersDigest(state)
+		return state
+	},
+
+	/**
+	 * 处理 `member_owner_update`：成员自签更新所属主人（人类与 agent 同构）。
+	 * @param {object} state 物化群状态
+	 * @param {object} event DAG 事件
+	 * @returns {object} 更新后的 state
+	 */
+	member_owner_update(state, event) {
+		withGroupId(state, event)
+		const member = state.members[event.sender]
+		if (!member || member.status !== 'active') return state
+		const ownerRaw = event.content?.ownerEntityHash == null || event.content?.ownerEntityHash === ''
+			? ''
+			: String(event.content.ownerEntityHash).trim().toLowerCase()
+		member.ownerEntityHash = ownerRaw && isEntityHash128(ownerRaw) ? ownerRaw : null
 		refreshMembersDigest(state)
 		return state
 	},

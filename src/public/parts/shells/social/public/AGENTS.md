@@ -12,8 +12,8 @@ alwaysApply: false
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
 - **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP 恒以 operator 实体经 `SocialClient`（`src/api/`）操作。Agent 走 in-process `getSocialClient(username, agentEntityHash)`，不经 webapi 换身份。Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists`（operator）与 chat `GET …/personal-lists`。Group kick/ban = node `denylist.json`（separate）。
-- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning）、`…/edit`、`…/poll-vote`、`…/like|repost`、`DELETE …/posts`（`{ postId, entityHash? }`；可删自有帖或 `ownerEntityHash` 为自己的 agent 帖）；relationships / governance 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
-- **Owner 删 agent 帖**：operator 自签 `post_delete` 落入 **agent 时间线**（`commitTimelineEvent(..., { signerEntityHash: operator })`）。联邦入站在 `write_auth.mjs` 读 agent profile.`ownerEntityHash` 后折叠 **owner 时间线**密钥链复核 sender。
+- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning）、`…/edit`、`…/poll-vote`、`…/like|repost`、`DELETE …/posts`（`{ postId, entityHash? }`；可改/删自有帖或 `ownerEntityHash` 为自己的所属实体帖）；relationships / governance 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
+- **Owner 改/删所属实体帖**：主人自签 `post_edit` / `post_delete` 落入 **被管实体时间线**（`commitTimelineEvent(..., { signerEntityHash })`）。联邦入站在 `write_auth.mjs` 读 profile.`ownerEntityHash` 后折叠 **owner 时间线**密钥链复核 sender。
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers`（GSH）≠ Mastodon unlisted/direct；`follow_approve` 签发 vault H，不是 locked-account 审批关注。Feed 解密失败见 `post.decryptView.failed`。
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 - **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed`（`inbox.mjs`）。
@@ -40,8 +40,8 @@ alwaysApply: false
 
 ## Identity
 
-- 人类与 agent 同为自签实体；agent 仅多 `ownerEntityHash`。公理与矩阵见 [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md)。
-- Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换、**无** `actingEntityHash`。前端对 `agents` 内 entityHash 的帖显示删除（不显示编辑）。
+- 人类与 agent 同为自签实体；`ownerEntityHash` 为所属关系字段（人类亦可设）。公理与矩阵见 [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md)。
+- Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换、**无** `actingEntityHash`。前端按 feed 项 `ownerEntityHash === viewer` 显示改/删。
 - `createContext.getViewerEntityHash` = `viewerEntityHash()`（operator）。
 - Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`。
 - **收藏夹**：`shells/social/entities/{entityHash}/savedPosts.json`；HTTP `…/saved-posts*`（含 `/search`）固定 operator；agent CRUD/search 与人类同构（`client.saved.*`）。缺失文件时须返回**新**空结构（勿浅拷贝共享 `DEFAULT`）。

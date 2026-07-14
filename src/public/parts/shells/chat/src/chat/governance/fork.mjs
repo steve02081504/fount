@@ -41,7 +41,7 @@ async function cpIfExists(src, dst) {
 /**
  * @param {string} username 用户名
  * @param {string} sourceGroupId 源群 ID
- * @param {{ tipId?: string, name?: string }} [opts] 可选分支尖与新群名称
+ * @param {{ tipId?: string, name?: string, entityHash?: string }} [opts] 可选分支尖、新群名称与签名实体
  * @returns {Promise<{ groupId: string, forkedFrom: string, branchTip: string, defaultChannelId: string }>} 新群元数据
  */
 export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
@@ -59,15 +59,17 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 		throw new Error('branch tip not found in source DAG')
 
 	const forkName = opts.name?.trim() || `${state.groupMeta?.name || sourceGroupId} (fork)`
+	const entityHash = opts.entityHash
 
 	const plannedGroupId = randomUUID()
-	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId)
+	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId, entityHash)
 	const { groupId: forkGroupId, defaultChannelId } = await createGroup(username, {
 		groupId: plannedGroupId,
 		name: forkName,
 		description: state.groupMeta?.description ?? '',
 		ownerPubKeyHash,
 		secretKey,
+		entityHash,
 	})
 
 	await cpIfExists(fileMasterKeysPath(username, sourceGroupId), fileMasterKeysPath(username, forkGroupId))
@@ -96,7 +98,7 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 			forkBranchTip: branchTip,
 			forkedAt: Date.now(),
 		},
-	})
+	}, { entityHash })
 
 	// 基于 fork 自身 DAG 物化出的权威状态（forker 即 founder/owner）重建 checkpoint，
 	// 仅携带源群消息 overlay 与文件夹，使复制过来的频道消息保留置顶/表态/编辑/删除视图。

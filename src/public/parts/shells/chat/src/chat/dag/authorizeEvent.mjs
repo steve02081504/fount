@@ -31,17 +31,16 @@ function resolveIndexedMessage(state, targetId) {
 }
 
 /**
- * 操作者是否为消息作者 agent 的 owner（成员行 ownerEntityHash）。
+ * 操作者是否为消息作者的所属主人（成员行 ownerEntityHash；人类与 agent 同构）。
  * @param {object} state 物化群状态
  * @param {string} senderHash 操作者 pubKeyHash
  * @param {string} authorPubKeyHash 消息作者 pubKeyHash
- * @returns {boolean} 是否为 agent owner
+ * @returns {boolean} 是否为所属主人
  */
-function isAgentOwnerOfAuthor(state, senderHash, authorPubKeyHash) {
+function isOwnerOfAuthor(state, senderHash, authorPubKeyHash) {
 	const author = state.members?.[authorPubKeyHash]
-	if (author?.memberKind !== 'agent') return false
 	const senderEntity = String(state.members?.[senderHash]?.entityHash || '').trim().toLowerCase()
-	const ownerEntity = String(author.ownerEntityHash || '').trim().toLowerCase()
+	const ownerEntity = String(author?.ownerEntityHash || '').trim().toLowerCase()
 	return !!(ownerEntity && senderEntity && senderEntity === ownerEntity)
 }
 
@@ -104,14 +103,17 @@ export async function checkEventPermission(state, event, senderHash) {
 		}
 		case 'member_leave':
 			return { ok: true }
+		case 'member_owner_update':
+			// 仅成员本人可改自己的所属声明；活跃成员门控已在上方完成
+			return { ok: true }
 		case 'member_kick': {
 			const targetKey = resolveTargetMemberKey(event.content)
 			const target = targetKey ? state.members[targetKey] : null
+			const senderEntity = String(state.members[sender]?.entityHash || '').trim().toLowerCase()
+			const ownerEntity = String(target?.ownerEntityHash || '').trim().toLowerCase()
+			if (ownerEntity && senderEntity === ownerEntity)
+				return { ok: true }
 			if (target?.memberKind === 'agent') {
-				const senderEntity = String(state.members[sender]?.entityHash || '').trim().toLowerCase()
-				const ownerEntity = String(target.ownerEntityHash || '').trim().toLowerCase()
-				if (ownerEntity && senderEntity === ownerEntity)
-					return { ok: true }
 				if (govPerms[PERMISSIONS.ADMIN])
 					return { ok: true }
 				return { ok: false, reason: 'agent kick denied' }
@@ -234,7 +236,7 @@ export async function checkEventPermission(state, event, senderHash) {
 			const entry = resolveIndexedMessage(state, targetId)
 			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
-			if (isAgentOwnerOfAuthor(state, sender, entry.sender)) return { ok: true }
+			if (isOwnerOfAuthor(state, sender, entry.sender)) return { ok: true }
 			return { ok: false, reason: 'message_edit denied' }
 		}
 		case 'world_state':
@@ -246,7 +248,7 @@ export async function checkEventPermission(state, event, senderHash) {
 			const entry = resolveIndexedMessage(state, targetId)
 			if (!entry) return { ok: false, reason: 'message not found', deferrable: !isMessageDeleted(state, targetId) }
 			if (entry.sender === sender) return { ok: true }
-			if (isAgentOwnerOfAuthor(state, sender, entry.sender)) return { ok: true }
+			if (isOwnerOfAuthor(state, sender, entry.sender)) return { ok: true }
 			return channelPerms[PERMISSIONS.MANAGE_MESSAGES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_MESSAGES required' }

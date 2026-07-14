@@ -116,6 +116,47 @@ Deno.test('operator SocialClient may delete owned agent post', async () => {
 	assertEquals(deleteRow.sender, ownerSender)
 })
 
+Deno.test('operator SocialClient may edit owned agent post', async () => {
+	const { username } = await getSession()
+	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const agentClient = await getSocialClient(username, agentHash)
+	const post = await agentClient.post({ text: 'agent post owner may edit', visibility: 'public' })
+	const operatorClient = await getSocialClient(username)
+	const edited = await (await operatorClient.post(agentHash, post.postId)).edit({ text: 'edited by owner' })
+	assertEquals(edited.type, 'post_edit')
+	assertEquals(edited.content.targetPostId, post.postId)
+	assertEquals(edited.content.text, 'edited by owner')
+	const view = await append.readTimelineEvents(username, agentHash)
+	assert(view.some(row => row.type === 'post_edit' && row.content?.targetPostId === post.postId))
+})
+
+Deno.test('setEntityOwner lets declared master manage human posts; operator lookup survives', async () => {
+	const { username, operator } = await getSession()
+	const masterHash = await seedAgentChar(username, AUTHOR_CHAR)
+	const {
+		setEntityOwner,
+		resolveOperatorEntityHashForUser,
+		loadEntityIdentity,
+	} = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+	await setEntityOwner(username, operator, masterHash)
+	assertEquals(await resolveOperatorEntityHashForUser(username), operator)
+	assertEquals((await loadEntityIdentity(username, operator)).ownerEntityHash, masterHash)
+
+	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const humanClient = await getSocialClient(username)
+	const post = await humanClient.post({ text: 'human post owned by agent', visibility: 'public' })
+	const masterClient = await getSocialClient(username, masterHash)
+	const edited = await (await masterClient.post(operator, post.postId)).edit({ text: 'master edit' })
+	assertEquals(edited.type, 'post_edit')
+	const deleted = await (await masterClient.post(operator, post.postId)).delete()
+	assertEquals(deleted.type, 'post_delete')
+
+	await setEntityOwner(username, operator, null)
+	assertEquals(await resolveOperatorEntityHashForUser(username), operator)
+	assertEquals((await loadEntityIdentity(username, operator)).ownerEntityHash, null)
+})
+
 Deno.test('followed author post triggers agent OnMessage via timeline dispatch', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }

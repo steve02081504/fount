@@ -60,9 +60,14 @@ export async function setFollow(username, entityHash, targetEntityHash, follow) 
 /**
  * 列出观看者已知的时间线 owner（关注 + 自身；自身由隐式自关注保证）。
  * @param {string} username 用户
+ * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
  * @returns {Promise<string[]>} 已知时间线 owner
  */
-export async function listFollowedTimelineOwners(username) {
-	const { following } = await loadFollowing(username)
+export async function listFollowedTimelineOwners(username, viewerEntityHash) {
+	const viewer = viewerEntityHash
+		? String(viewerEntityHash).trim().toLowerCase()
+		: await resolveOperatorEntityHash(username)
+	if (!viewer) return []
+	const { following } = await loadFollowingForActor(username, viewer)
 	return following
 }

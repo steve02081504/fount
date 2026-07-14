@@ -150,7 +150,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 			const { sessionId, token, expiresAt } = mintStreamingViewToken(
 				ctx.username, groupId, channelId, undefined, keyEntry.fileMasterKey,
 			)
-			await appendStreamingSession(ctx.username, groupId, channelId, { sessionId, expiresAt })
+			await appendStreamingSession(ctx.username, groupId, channelId, { sessionId, expiresAt }, ctx.entityHash)
 			return {
 				mode: 'sfu',
 				sessionId,

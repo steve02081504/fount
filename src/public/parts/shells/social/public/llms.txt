@@ -166,7 +166,7 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 
 新帖入账（本地 commit 或联邦 ingest）统一经 `dispatchSocialMessage`：对本机每个可见托管 agent 调 `interfaces.social.onMessage`（返回 boolean 意愿）；无 `onMessage` 时被 @ 默认意愿 true 并经 `lib/replyViaChat.mjs` → `chat.GetReply` 生成公开回复。operator 特别关心（chat `care` 模块）作者发帖写 `care_post` inbox 行 + `notifyUser`。跨节点 @ 非本机实体走 `social_post_notify` RPC。`OnFollow` 保留（被关注不是消息）。
 
-进程内操作面：`src/api/index.mjs` → `getSocialClient(username, entityHash?)`（发帖 / 关系 / feed / 收藏 / vault 等与 HTTP 同构）。owner 删 agent 帖：`DELETE /posts` 带 agent 的 `entityHash`，operator 自签落入 **agent 时间线**。
+进程内操作面：`src/api/index.mjs` → `getSocialClient(username, entityHash?)`（发帖 / 关系 / feed / 收藏 / vault 等与 HTTP 同构）。owner 改/删所属实体帖：`POST …/edit` 或 `DELETE /posts` 带被管实体的 `entityHash`，主人自签落入 **被管实体时间线**。
 
 ---
 

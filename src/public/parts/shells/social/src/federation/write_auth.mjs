@@ -32,13 +32,13 @@ export function getEntityKeyChainProvider() {
 }
 
 /**
- * owner 以自身活跃钥删除 agent 帖：凭 agent profile.ownerEntityHash 与 owner 时间线密钥链复核。
- * @param {string} entityHash 时间线 owner（agent）
+ * owner 以自身活跃钥改/删所属实体帖：凭 profile.ownerEntityHash 与 owner 时间线密钥链复核。
+ * @param {string} entityHash 时间线 owner
  * @param {string} sender 事件 sender pubKeyHash
- * @param {{ username?: string }} opts 需 username 以读 owner 时间线
+ * @param {{ username?: string, eventType?: string, eventContent?: object }} opts 需 username 以读 owner 时间线
  * @returns {Promise<boolean>} 是否授权
  */
-async function isOwnerPostDeleteAuthorized(entityHash, sender, opts) {
+async function isOwnerContentEventAuthorized(entityHash, sender, opts) {
 	const username = String(opts.username || '').trim()
 	if (!username) return false
 	const profile = await getEntityProfile(username, entityHash)
@@ -57,7 +57,7 @@ async function isOwnerPostDeleteAuthorized(entityHash, sender, opts) {
 	return isEntityTimelineWriteAuthorized({
 		entityHash: ownerEntityHash,
 		sender,
-		eventType: 'post_delete',
+		eventType: opts.eventType || 'post_delete',
 		eventContent: opts.eventContent || {},
 		recoveryPubKeyHex: folded.recoveryPubKeyHex,
 		entityKeyHistory: folded.entityKeyHistory,
@@ -98,14 +98,11 @@ export async function isTimelineWriteAuthorized(entityHash, sender, opts = {}) {
 		}))
 			return true
 
-	if (opts.eventType === 'post_edit')
-		return normalizedSender === parsed.subjectHash
-
 	if (normalizedSender === parsed.subjectHash)
 		return true
 
-	if (opts.eventType === 'post_delete'
-		&& await isOwnerPostDeleteAuthorized(parsed.entityHash, normalizedSender, opts))
+	if ((opts.eventType === 'post_delete' || opts.eventType === 'post_edit')
+		&& await isOwnerContentEventAuthorized(parsed.entityHash, normalizedSender, opts))
 		return true
 
 	return false

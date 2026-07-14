@@ -21,15 +21,6 @@ export function createSocialContext(geti18n) {
 		 * @returns {string | null} 观看者 entityHash；未登录时为 null
 		 */
 		getViewerEntityHash: () => viewerEntityHash(),
-		/**
-		 * 本机 operator 拥有的 agent entityHash 集合。
-		 * @returns {Set<string>} owned agent hashes
-		 */
-		getOwnedAgentEntityHashes: () => new Set(
-			(socialState.agents || [])
-				.map(row => String(row?.entityHash || '').trim().toLowerCase())
-				.filter(Boolean),
-		),
 		geti18n,
 		authorLabel,
 		renderAvatarHtml,

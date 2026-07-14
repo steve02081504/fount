@@ -34,7 +34,7 @@ export async function searchPosts(username, options = {}) {
 	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
 	const itemContext = await createFeedItemBuildContext(username, null, options.viewerEntityHash || null)
 	const owners = []
-	for await (const entityHash of iterateVisibleTimelineOwners(username))
+	for await (const entityHash of iterateVisibleTimelineOwners(username, options.viewerEntityHash || null))
 		owners.push(entityHash)
 
 	const fetchLimit = options.cursor ? limit * 4 + 50 : limit * 2

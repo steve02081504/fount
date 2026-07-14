@@ -64,10 +64,13 @@ export async function buildEngagementIndex(username, owners = null) {
 /**
  * 收集观看者已点赞的帖子键集合。
  * @param {string} username 用户
+ * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
  * @returns {Promise<Set<string>>} 已点赞帖子键集合
  */
-export async function buildViewerLikedSet(username) {
-	const self = await resolveOperatorEntityHash(username)
+export async function buildViewerLikedSet(username, viewerEntityHash) {
+	const self = viewerEntityHash
+		? String(viewerEntityHash).trim().toLowerCase()
+		: await resolveOperatorEntityHash(username)
 	if (!self) return new Set()
 	const view = await getTimelineMaterialized(username, self)
 	return new Set(view.likes.map(like =>
@@ -245,7 +248,7 @@ export async function buildHomeFeed(username, options = {}) {
  * 构建资料页帖子列表（与首页 feed 同构，支持 cursor 分页）。
  * @param {string} username 用户
  * @param {string} entityHash 资料页 owner
- * @param {{ limit?: number, cursor?: string }} [options] 分页
+ * @param {{ limit?: number, cursor?: string, viewerEntityHash?: string }} [options] 分页与观看者
  * @returns {Promise<{ entityHash: string, items: object[], nextCursor: string | null }>} 与首页 feed 同构的帖子列表
  */
 export async function buildProfileFeedItems(username, entityHash, options = {}) {
@@ -254,8 +257,8 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [], nextCursor: null }
 
-	const viewerContext = await loadViewerContext(username)
-	const itemContext = await createFeedItemBuildContext(username)
+	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
+	const itemContext = await createFeedItemBuildContext(username, null, options.viewerEntityHash || null)
 	const view = await getTimelineMaterialized(username, entityHash)
 
 	/** @type {object[]} */
@@ -287,15 +290,16 @@ export async function buildProfileFeedItems(username, entityHash, options = {}) 
  * 构建资料页点赞列表（与首页 feed 同构）。
  * @param {string} username 用户
  * @param {string} entityHash 资料页 owner
+ * @param {{ viewerEntityHash?: string }} [options] 观看者
  * @returns {Promise<{ entityHash: string, items: object[] }>} 点赞过的帖子列表
  */
-export async function buildLikedFeedItems(username, entityHash) {
+export async function buildLikedFeedItems(username, entityHash, options = {}) {
 	entityHash = entityHash.trim().toLowerCase()
 	if (!isEntityHash128(entityHash))
 		return { entityHash, items: [] }
 
-	const viewerContext = await loadViewerContext(username)
-	const itemContext = await createFeedItemBuildContext(username)
+	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
+	const itemContext = await createFeedItemBuildContext(username, null, options.viewerEntityHash || null)
 	const view = await getTimelineMaterialized(username, entityHash)
 	if (!view.likes?.length)
 		return { entityHash, items: [] }
@@ -321,10 +325,11 @@ export async function buildLikedFeedItems(username, entityHash) {
  * @param {string} username 用户
  * @param {string} entityHash 作者
  * @param {string} postId 帖子
+ * @param {{ viewerEntityHash?: string }} [options] 观看者
  * @returns {Promise<object[]>} 可见回复
  */
-export async function listReplies(username, entityHash, postId) {
-	const viewerContext = await loadViewerContext(username)
+export async function listReplies(username, entityHash, postId, options = {}) {
+	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
 	/** @type {object[]} */
 	const replies = []
 	const refs = await queryReplyIndex(username, entityHash, postId)
@@ -340,8 +345,8 @@ export async function listReplies(username, entityHash, postId) {
 		replies.push({ entityHash: author, post })
 	}
 
-	if (!replies.length) 
-		for (const author of await listFollowedTimelineOwners(username)) {
+	if (!replies.length)
+		for (const author of await listFollowedTimelineOwners(username, options.viewerEntityHash || null)) {
 			if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
 			if (isHiddenByAuthorReputation(author)) continue
 			const view = await getTimelineMaterialized(username, author)

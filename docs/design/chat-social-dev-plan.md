@@ -14,7 +14,7 @@
 
 输入为缺口审阅（审阅只陈述现状；设计决策与未排期方向以本文为准）：
 
-- [human-agent-operational-parity-review.md](../review/human-agent-operational-parity-review.md)：操作平权（统一实体模型已落地；对象面残余实现债见该档 §六）
+- [human-agent-operational-parity-review.md](../review/human-agent-operational-parity-review.md)：操作平权（统一实体模型、对象面穿线、owner 改删与人类可设主人已收口）
 - [social-platform-gap-analysis.md](../review/social-platform-gap-analysis.md)：social 产品差距
 - [chat-vs-industrial-im-gap.md](../review/chat-vs-industrial-im-gap.md)：chat 工业 IM 差距
 
@@ -22,7 +22,7 @@
 
 不向后兼容原则不变：直接删除替换、不留共存期、不写迁移代码。
 
-上一周期（收件人 / 触发 / 具名层 / ChatClient / bridge / bot 生命周期与 operator 认领 / 龙胆迁移 / social `OnMessage` 与 actor 平权 / poll·edit·for_you）与统一实体模型整批（实体身份泛化 / 单成员模型 / 拆代签与 acting / SocialClient / 私有状态 per-entity / owner 内容管理权 / 文档收口）已完成并从本档清出。代签类缺口已关；Client 旁路仍默认 operator 的实现债与公理修订以 [平权审阅](../review/human-agent-operational-parity-review.md) 为准，不在本档重复开里程碑。
+上一周期（收件人 / 触发 / 具名层 / ChatClient / bridge / bot 生命周期与 operator 认领 / 龙胆迁移 / social `OnMessage` 与 actor 平权 / poll·edit·for_you）与统一实体模型整批（实体身份泛化 / 单成员模型 / 拆代签与 acting / SocialClient / 私有状态 per-entity / owner 内容管理权 / 文档收口）以及对象面穿线收口（Chat leave·fork·invite·slash·streaming、Social viewer·vault 实体钥、owner 改删帖、人类可设主人）已完成并从本档清出。以 [平权审阅](../review/human-agent-operational-parity-review.md) 为准，不在本档重复开里程碑。
 
 ---
 

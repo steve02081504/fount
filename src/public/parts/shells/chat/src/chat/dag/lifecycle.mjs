@@ -101,11 +101,20 @@ export async function createGroup(username, body) {
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const owner = String(body.ownerPubKeyHash || '').trim().toLowerCase()
 	if (!owner) throw new Error('ownerPubKeyHash required')
-	const { getOperatorEntityHash } = await import('../../entity/identity.mjs')
+	const { getOperatorEntityHash, loadEntityIdentity } = await import('../../entity/identity.mjs')
 	const entityHash = body.entityHash || await getOperatorEntityHash(username)
 	const memberJoinSecretKey = body.secretKey
 	const genesisSecretKey = memberJoinSecretKey || (await getLocalSignerForNewGroup(username, groupId, entityHash)).secretKey
 	const genesisSender = owner
+	let declaredOwner = body.ownerEntityHash
+	if (declaredOwner === undefined) {
+		try {
+			declaredOwner = (await loadEntityIdentity(username, entityHash)).ownerEntityHash
+		}
+		catch {
+			declaredOwner = null
+		}
+	}
 
 	/** @param {object} event 创世事件体（含 sender） */
 	const genesisAppend = async event => {
@@ -198,7 +207,7 @@ export async function createGroup(username, body) {
 			roles: ['founder'],
 			homeNodeHash: getLocalNodeHash(),
 			...binding,
-			...body.ownerEntityHash ? { ownerEntityHash: body.ownerEntityHash } : {},
+			...declaredOwner ? { ownerEntityHash: declaredOwner } : {},
 			...body.charname ? { charname: body.charname } : {},
 		},
 	})

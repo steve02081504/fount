@@ -28,9 +28,10 @@ export function isGroupFederationActive(groupSettings = {}) {
  * 首次邀请时写入 roomSecret 并加入联邦房间；已激活则直接返回凭证。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
+ * @param {string} [entityHash] 签名实体；缺省为 operator
  * @returns {Promise<{ signalingAppId: string, roomSecret: string }>} 房间凭证
  */
-export async function activateGroupFederation(username, groupId) {
+export async function activateGroupFederation(username, groupId, entityHash) {
 	const { state } = await getState(username, groupId)
 	const existing = roomCredentialsFromGroupSettings(state.groupSettings)
 	if (existing) return existing
@@ -46,7 +47,7 @@ export async function activateGroupFederation(username, groupId) {
 			...gs.rtcConnectionBudgetMax == null ? { rtcConnectionBudgetMax: 32 } : {},
 			...gs.rtcJoinRatePerMin == null ? { rtcJoinRatePerMin: 12 } : {},
 		},
-	}, { federationJoinTimeoutMs: ACTIVATE_FEDERATION_JOIN_TIMEOUT_MS })
+	}, { federationJoinTimeoutMs: ACTIVATE_FEDERATION_JOIN_TIMEOUT_MS, entityHash })
 	const { state: after } = await getState(username, groupId)
 	const creds = roomCredentialsFromGroupSettings(after.groupSettings)
 	if (!creds) throw new Error('failed to activate group federation')

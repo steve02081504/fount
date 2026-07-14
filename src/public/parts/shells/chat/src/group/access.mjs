@@ -61,9 +61,9 @@ export function resolveActiveAgentMemberKeyByCharname(state, charname) {
  * @param {object} state 物化群状态
  * @returns {Promise<string | null>} 成员键
  */
-export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state) {
+export async function resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state, entityHash) {
 	const { peekLocalSignerPubKeyHash } = await import('../chat/dag/localSigner.mjs')
-	const sender = await peekLocalSignerPubKeyHash(replicaUsername, groupId)
+	const sender = await peekLocalSignerPubKeyHash(replicaUsername, groupId, entityHash)
 	return sender ? resolveActiveMemberKey(state, sender) : null
 }
 

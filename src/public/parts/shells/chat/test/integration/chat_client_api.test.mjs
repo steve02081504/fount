@@ -280,3 +280,50 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 	assert(ctx.fount?.channel)
 	assertEquals(ctx.fount.chat.entityHash, agentHash.toLowerCase())
 })
+
+Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () => {
+	const username = `cc-agent-life-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_chat_client_agent_life_',
+		minP2pNode: true,
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user)
+		},
+	})
+	await ensureServer()
+
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
+	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getState } = await import('../../src/chat/dag/materialize.mjs')
+	const { resolveOperatorEntityHashForUser } = await import('../../src/entity/identity.mjs')
+	const { peekLocalSignerPubKeyHash } = await import('../../src/chat/dag/localSigner.mjs')
+
+	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
+	const client = await getChatClient(username, agentHash)
+	const created = await client.createGroup({ name: 'agent-life' })
+	await addchar(created.id, CHAR_FIXTURE, username)
+	const agentGroup = await client.group(created.id)
+
+	const invite = await agentGroup.createInvite()
+	assert(typeof invite === 'string' && invite.length > 0)
+	const agentPub = await peekLocalSignerPubKeyHash(username, created.id, agentHash)
+	assert(invite.toLowerCase().includes(agentPub))
+
+	const forked = await agentGroup.fork({ name: 'agent-life-fork' })
+	assert(forked.id)
+	assert(forked.id !== created.id)
+	const { state: forkState } = await getState(username, forked.id)
+	const forkFounder = Object.values(forkState.members).find(m => (m.roles || []).includes('founder'))
+	assertEquals(String(forkFounder?.entityHash || '').toLowerCase(), agentHash.toLowerCase())
+
+	await agentGroup.leave()
+	const { listUserGroups } = await import('../../src/chat/lib/userGroups.mjs')
+	assertEquals((await listUserGroups(username)).includes(created.id), false)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	assert(operator)
+	assert(operator !== agentHash)
+})

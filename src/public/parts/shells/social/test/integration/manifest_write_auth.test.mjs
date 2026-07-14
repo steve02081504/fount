@@ -103,3 +103,21 @@ Deno.test('stranger key cannot post_delete on agent timeline via owner branch', 
 		username,
 	}), false)
 })
+
+Deno.test('owner active key may post_edit on owned agent timeline', async () => {
+	const { username } = await getSession()
+	const charPartName = 'manifest-owner-edit-agent'
+	fs.mkdirSync(`${getUserDictionary(username)}/chars/${charPartName}`, { recursive: true })
+	const row = await ensureAgentEntityIdentity(username, charPartName)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	assert(operator)
+	await ensureEntitySocialReady(username, operator)
+	await ensureEntitySocialReady(username, row.entityHash)
+	const ownerSecret = new Uint8Array(Buffer.from(await getOperatorSecretKey(username), 'hex'))
+	const ownerSender = pubKeyHash(publicKeyFromSeed(ownerSecret))
+	assertEquals(await isTimelineWriteAuthorized(row.entityHash, ownerSender, {
+		eventType: 'post_edit',
+		eventContent: { targetPostId: 'a'.repeat(64), text: 'by owner' },
+		username,
+	}), true)
+})

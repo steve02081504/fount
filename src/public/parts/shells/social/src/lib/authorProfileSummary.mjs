@@ -16,7 +16,11 @@ export function createAuthorProfileLoader(username) {
 			// getProfile 对远端作者返回派生默认资料；不可用 ensureLocalEntityProfile（远端会抛错使整个 feed 失败）。
 			const profile = await getProfile(entityHash, username)
 			if (!profile) return null
-			return { name: profile.name, avatar: profile.avatar || null }
+			return {
+				name: profile.name,
+				avatar: profile.avatar || null,
+				ownerEntityHash: profile.ownerEntityHash || null,
+			}
 		},
 		{ max: 256 },
 	)

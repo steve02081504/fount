@@ -18,6 +18,7 @@ import { openHubProfileEdit } from '../hub/profileEdit.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { initProfileFederationSettings } from './federationSettingsPanel.mjs'
+import { initProfileOwnerSettings } from './ownerSettingsPanel.mjs'
 import { getProfile } from './src/endpoints.mjs'
 
 let currentEntityHash = null
@@ -123,6 +124,7 @@ async function init() {
 		})
 	})
 
+	await initProfileOwnerSettings()
 	await initProfileFederationSettings()
 	await loadUserGroups()
 	await loadUserChannels()
