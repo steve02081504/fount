@@ -32,7 +32,7 @@ function canViewPostForFederationExport(post, requesterEntityHash, blocked, foll
  * @param {string} username replica
  * @param {string | null | undefined} requesterNodeHash 64 hex
  * @param {string} ownerEntityHash 时间线 owner
- * @returns {Promise<{ requesterEntityHash: string | null, followsOwner: boolean, isOwner: boolean, hideFromDiscovery: boolean }>} 请求者上下文
+ * @returns {Promise<{ requesterEntityHash: string | null, followsOwner: boolean, isOwner: boolean, hideFromDiscovery: boolean, publishReactions: boolean, publishPreferences: boolean }>} 请求者上下文
  */
 async function resolveFederationRequesterContext(username, requesterNodeHash, ownerEntityHash) {
 	const owner = String(ownerEntityHash).toLowerCase()
@@ -40,9 +40,20 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 	const requesterNode = requesterNodeHash?.trim().toLowerCase() || null
 	const ownerView = await getTimelineMaterialized(username, owner)
 	const hideFromDiscovery = Boolean(ownerView.socialMeta?.hideFromDiscovery)
+	const { loadTaste } = await import('../taste/store.mjs')
+	const taste = await loadTaste(username, owner)
+	const publishReactions = taste.privacy.publishReactions !== false
+	const publishPreferences = taste.privacy.publishPreferences !== false
 
 	if (!requesterNode)
-		return { requesterEntityHash: null, followsOwner: false, isOwner: false, hideFromDiscovery }
+		return {
+			requesterEntityHash: null,
+			followsOwner: false,
+			isOwner: false,
+			hideFromDiscovery,
+			publishReactions,
+			publishPreferences,
+		}
 
 	if (requesterNode === localNode) {
 		const resolveOperator = getOperatorEntityHashProvider()
@@ -53,6 +64,8 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 			followsOwner: operatorView?.following?.includes(owner) ?? false,
 			isOwner: operator?.toLowerCase() === owner,
 			hideFromDiscovery,
+			publishReactions,
+			publishPreferences,
 		}
 	}
 
@@ -63,10 +76,19 @@ async function resolveFederationRequesterContext(username, requesterNodeHash, ow
 			followsOwner: view.following.includes(owner),
 			isOwner: entityHash === owner,
 			hideFromDiscovery,
+			publishReactions,
+			publishPreferences,
 		}
 	}
 
-	return { requesterEntityHash: null, followsOwner: false, isOwner: false, hideFromDiscovery }
+	return {
+		requesterEntityHash: null,
+		followsOwner: false,
+		isOwner: false,
+		hideFromDiscovery,
+		publishReactions,
+		publishPreferences,
+	}
 }
 
 /**

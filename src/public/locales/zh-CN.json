@@ -1181,7 +1181,10 @@
 		"taste": {
 			"title": "口味偏好",
 			"rebuild": "重建偏好",
-			"privacyPublish": "向关注者发布命名标注",
+			"privacyPublishPreferences": "公开标签命名与合并发现",
+			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
+			"privacyPublishReactions": "公开点赞与点踩",
+			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
 			"namePlaceholder": "本地显示名",
 			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
 			"weight": "权重 ${weight}"

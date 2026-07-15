@@ -22,6 +22,8 @@ export function createSocialTimelineState() {
 		followEvents: [],
 		following: new Set(),
 		blocked: new Set(),
+		/** @type {Map<string, Record<string, string>>} tagHash → locale → label */
+		tagNames: new Map(),
 		entityKeyHistory: [],
 		recoveryPubKeyHex: null,
 	}
@@ -136,6 +138,21 @@ function reduceUndislike(state, event) {
  * @param {object} event DAG 事件
  * @returns {object} 更新后状态
  */
+function reduceTagName(state, event) {
+	const tagHash = String(event.content?.tagHash || '').trim().toLowerCase()
+	const locale = String(event.content?.locale || '').trim()
+	const label = String(event.content?.label || '').trim().slice(0, 64)
+	if (!tagHash || !locale || !label) return state
+	const existing = state.tagNames.get(tagHash) || {}
+	state.tagNames.set(tagHash, { ...existing, [locale]: label })
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
 function reduceRepost(state, event) {
 	state.reposts.push(event)
 	return state
@@ -201,6 +218,7 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	unlike: reduceUnlike,
 	dislike: reduceDislike,
 	undislike: reduceUndislike,
+	tag_name: reduceTagName,
 	repost: reduceRepost,
 	follow: reduceFollow,
 	unfollow: reduceUnfollow,
@@ -257,6 +275,7 @@ export function finalizeSocialTimelineView(state, order) {
 		postById: Object.fromEntries(state.posts),
 		likes: [...state.likes.values()],
 		dislikes: [...state.dislikes.values()],
+		tagNames: Object.fromEntries(state.tagNames),
 		pollVotes: state.pollVotes,
 		reposts: state.reposts,
 		followEvents: state.followEvents,

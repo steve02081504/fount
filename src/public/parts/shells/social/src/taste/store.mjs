@@ -1,6 +1,7 @@
 /**
- * 实体口味偏好表存储（标签权重 / 软别名 / 命名 / 隐私）。
+ * 实体口味偏好表存储（计算权重 / 手动覆盖 / 软别名 / 隐私）。
  * 别名表持久不过期；声明收件箱另行有界。
+ * 标签显示名由时间线 tag_name 事件承载，不写入本文件。
  */
 import path from 'node:path'
 
@@ -12,10 +13,10 @@ import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 /**
  * @typedef {{
- *   tags: Record<string, number>,
+ *   computed: Record<string, number>,
+ *   manual: Record<string, number>,
  *   aliases: Record<string, { to: string, confidence: number, evidence?: object }>,
- *   names: Record<string, Record<string, string>>,
- *   privacy: { publishPreferences: boolean },
+ *   privacy: { publishPreferences: boolean, publishReactions: boolean },
  *   clusteredAt: number,
  *   postTags: Record<string, { tags: string[], selfWeight: number }>,
  * }} TasteStore
@@ -24,10 +25,10 @@ import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 /** @returns {TasteStore} 空偏好表 */
 export function emptyTasteStore() {
 	return {
-		tags: {},
+		computed: {},
+		manual: {},
 		aliases: {},
-		names: {},
-		privacy: { publishPreferences: true },
+		privacy: { publishPreferences: true, publishReactions: true },
 		clusteredAt: 0,
 		postTags: {},
 	}
@@ -53,12 +54,17 @@ export function tasteStorePath(username, entityHash) {
 export function normalizeTasteStore(raw) {
 	const base = emptyTasteStore()
 	if (!raw || typeof raw !== 'object') return base
+	// 旧版 tags 字段迁入 computed（一次性兼容）
+	const computed = raw.computed && typeof raw.computed === 'object'
+		? { ...raw.computed }
+		: raw.tags && typeof raw.tags === 'object' ? { ...raw.tags } : {}
 	return {
-		tags: raw.tags && typeof raw.tags === 'object' ? { ...raw.tags } : {},
+		computed,
+		manual: raw.manual && typeof raw.manual === 'object' ? { ...raw.manual } : {},
 		aliases: raw.aliases && typeof raw.aliases === 'object' ? { ...raw.aliases } : {},
-		names: raw.names && typeof raw.names === 'object' ? { ...raw.names } : {},
 		privacy: {
 			publishPreferences: raw.privacy?.publishPreferences !== false,
+			publishReactions: raw.privacy?.publishReactions !== false,
 		},
 		clusteredAt: Number(raw.clusteredAt) || 0,
 		postTags: raw.postTags && typeof raw.postTags === 'object' ? { ...raw.postTags } : {},
@@ -139,11 +145,31 @@ export function resolveTasteAlias(tagHash, aliases) {
 }
 
 /**
+ * computed + manual 合计权重（经别名）。
  * @param {TasteStore} store 偏好
  * @param {string} tagHash tag
- * @returns {number} 权重（经别名）
+ * @returns {number} 权重
  */
 export function tasteWeightOf(store, tagHash) {
 	const canon = resolveTasteAlias(tagHash, store.aliases)
-	return Number(store.tags[canon]) || 0
+	return (Number(store.computed[canon]) || 0) + (Number(store.manual[canon]) || 0)
+}
+
+/**
+ * 折叠全部 tag 权重（computed + manual）。
+ * @param {TasteStore} store 偏好
+ * @returns {Map<string, number>} canonical → 合计权重
+ */
+export function collapseTasteWeights(store) {
+	/** @type {Map<string, number>} */
+	const collapsed = new Map()
+	for (const [raw, weight] of Object.entries(store.computed || {})) {
+		const canon = resolveTasteAlias(raw, store.aliases)
+		collapsed.set(canon, (collapsed.get(canon) || 0) + (Number(weight) || 0))
+	}
+	for (const [raw, weight] of Object.entries(store.manual || {})) {
+		const canon = resolveTasteAlias(raw, store.aliases)
+		collapsed.set(canon, (collapsed.get(canon) || 0) + (Number(weight) || 0))
+	}
+	return collapsed
 }

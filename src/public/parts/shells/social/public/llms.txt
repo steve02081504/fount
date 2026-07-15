@@ -122,20 +122,21 @@ Body：`comment?`。
 Query：`locale?`（默认 `zh-CN`）。响应：`{ privacy, clusteredAt, aliases, tags: [{ tagHash, weight, label }] }`。
 
 ### `PUT /api/parts/shells:social/taste`
-Body：`privacy?`（`{ publishPreferences }`）、`tags?`（`Record<tagHash, weight>`，0 删除）。响应：`{ privacy, tags, aliases }`。
+Body：`privacy?`（`{ publishPreferences, publishReactions }`，默认皆 true）、`tags?`（`Record<tagHash, weight>` 写入 **manual** 覆盖，0 删除）。响应：`{ privacy, computed, manual, aliases, tagCount? }`。
+关闭 `publishPreferences`：不共享标签命名与合并声明。关闭 `publishReactions`：like/dislike 不 fanout、不进 `reaction_index`、联邦 pull 不导出。
 
 ### `POST /api/parts/shells:social/taste/rebuild`
-从 like/dislike 反应图重建本地聚类权重。响应：`{ clusteredAt, tagCount }`。
+从 like/dislike 反应图重建本地 `computed` 权重（manual 不动），顺带懒验证合并收件箱与本地发现 gossip。响应：`{ clusteredAt, tagCount }`。
 
 ### `POST /api/parts/shells:social/taste/names`
-Body：`{ tagHash, label, locale? }` — 本地命名并可选 gossip。响应：`{ names }`。
+Body：`{ tagHash, label, locale? }` — 写入签名时间线事件 `tag_name`（受 `publishPreferences` 控制 fanout）。响应：`{ event }`。
 
 ### `DELETE /api/parts/shells:social/taste/aliases/:fromTag`
 撤销软别名。响应：`{ aliases }`。
 
 SocialClient：`client.taste.get|update|rebuild|setName|revokeAlias`（与上同构）。
 
-联邦 RPC：`social_reaction_pull_request` → `{ type: 'social_reaction_pull_response', targetEntityHash, postId, events[] }`（签名 like/dislike 事件分页，`afterReactor` 游标）；`social_tag_merge_claim` / `social_tag_name_claim` 见 taste 模块。
+联邦 RPC：`social_reaction_pull_request` → `{ type: 'social_reaction_pull_response', targetEntityHash, postId, events[] }`（签名 like/dislike 事件分页，`afterReactor` 游标；`postId`/`targetEntityHash` 须合法 hex）；`social_tag_merge_claim`（声明入有界收件箱，本地验证后软别名）。标签命名走时间线 `tag_name`，无独立命名 RPC。
 
 ---
 

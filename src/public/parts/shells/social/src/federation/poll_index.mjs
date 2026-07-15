@@ -1,6 +1,7 @@
 import path from 'node:path'
 
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
@@ -8,6 +9,18 @@ import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 import { socialPostKey } from './post_key.mjs'
+
+/**
+ * @param {string} targetEntityHash 帖作者
+ * @param {string} postId 帖 id
+ * @returns {{ target: string, postId: string } | null} 规范化键
+ */
+function normalizePollTarget(targetEntityHash, postId) {
+	const target = String(targetEntityHash || '').trim().toLowerCase()
+	const id = normalizeHex64(String(postId || '').trim())
+	if (!parseEntityHash(target) || !isHex64(id)) return null
+	return { target, postId: id }
+}
 
 const POLL_TALLY_CACHE_MAX = 512
 
@@ -21,11 +34,13 @@ const pollTallyCache = createLruMap(POLL_TALLY_CACHE_MAX)
  * @returns {string} tally 文件路径
  */
 export function pollTallyPath(username, targetEntityHash, postId) {
+	const normalized = normalizePollTarget(targetEntityHash, postId)
+	if (!normalized) throw new Error('invalid poll target')
 	return path.join(
 		getUserDictionary(username),
 		'shells/social/poll_tally',
-		targetEntityHash.toLowerCase(),
-		`${postId}.json`,
+		normalized.target,
+		`${normalized.postId}.json`,
 	)
 }
 
@@ -67,7 +82,9 @@ export function computePollTallyFromVotes(votes) {
  * @returns {Promise<{ votes: Record<string, { choices: number[] }>, tally: Record<string, number> }>} tally 投影
  */
 export async function readPollTally(username, targetEntityHash, postId) {
-	const key = pollTallyCacheKey(targetEntityHash, postId)
+	const ids = normalizePollTarget(targetEntityHash, postId)
+	if (!ids) return { votes: {}, tally: {} }
+	const key = pollTallyCacheKey(ids.target, ids.postId)
 	const cached = pollTallyCache.get(key)
 	if (cached) {
 		pollTallyCache.touch(key, cached)
@@ -75,7 +92,7 @@ export async function readPollTally(username, targetEntityHash, postId) {
 	}
 	const { readFile } = await import('node:fs/promises')
 	try {
-		const raw = JSON.parse(await readFile(pollTallyPath(username, targetEntityHash, postId), 'utf8'))
+		const raw = JSON.parse(await readFile(pollTallyPath(username, ids.target, ids.postId), 'utf8'))
 		const normalized = normalizePollTally(raw)
 		pollTallyCache.touch(key, normalized)
 		return normalized
@@ -114,13 +131,15 @@ async function writePollTally(username, targetEntityHash, postId, votes) {
  * @returns {Promise<void>}
  */
 export async function upsertPollVote(username, targetEntityHash, postId, voterEntityHash, choices) {
-	const target = targetEntityHash.toLowerCase()
-	const voter = voterEntityHash.toLowerCase()
-	const mutexKey = socialPostKey(target, postId)
+	const ids = normalizePollTarget(targetEntityHash, postId)
+	if (!ids) return
+	const voter = String(voterEntityHash || '').trim().toLowerCase()
+	if (!parseEntityHash(voter)) return
+	const mutexKey = socialPostKey(ids.target, ids.postId)
 	await withAsyncMutex(`poll-tally:${mutexKey}`, async () => {
-		const current = await readPollTally(username, target, postId)
+		const current = await readPollTally(username, ids.target, ids.postId)
 		const votes = { ...current.votes, [voter]: { choices: [...choices] } }
-		await writePollTally(username, target, postId, votes)
+		await writePollTally(username, ids.target, ids.postId, votes)
 	})
 }
 
@@ -133,11 +152,10 @@ export async function upsertPollVote(username, targetEntityHash, postId, voterEn
  */
 export async function projectPollVoteFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	if (event.type !== 'poll_vote') return
-	const targetEntityHash = String(event.content?.targetEntityHash || '').trim().toLowerCase()
-	const targetPostId = String(event.content?.targetPostId || '').trim()
+	const ids = normalizePollTarget(event.content?.targetEntityHash, event.content?.targetPostId)
 	const choices = event.content?.choices
-	if (!parseEntityHash(targetEntityHash) || !targetPostId || !Array.isArray(choices)) return
-	await upsertPollVote(replicaUsername, targetEntityHash, targetPostId, timelineOwnerEntityHash.toLowerCase(), choices)
+	if (!ids || !Array.isArray(choices)) return
+	await upsertPollVote(replicaUsername, ids.target, ids.postId, timelineOwnerEntityHash, choices)
 }
 
 /**

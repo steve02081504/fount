@@ -2,16 +2,20 @@
  * Social 时间线联邦 pull 出站可见性纯逻辑。
  */
 
-/** 联邦 pull 永不外泄的类型 */
+/** 联邦 pull 永不外泄的类型（反应按 owner.publishReactions 另过滤） */
 export const FEDERATION_PRIVATE_EVENT_TYPES = new Set([
 	'follow',
 	'unfollow',
 	'follow_approve',
+	'file_share',
+])
+
+/** 受 publishReactions 控制的反应事件 */
+export const FEDERATION_REACTION_EVENT_TYPES = new Set([
 	'like',
 	'unlike',
 	'dislike',
 	'undislike',
-	'file_share',
 ])
 
 /**
@@ -24,6 +28,8 @@ export const FEDERATION_PRIVATE_EVENT_TYPES = new Set([
 export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requesterContext, canViewPost) {
 	const type = event.type
 	if (FEDERATION_PRIVATE_EVENT_TYPES.has(type)) return false
+	if (FEDERATION_REACTION_EVENT_TYPES.has(type))
+		return requesterContext.publishReactions !== false
 	if (requesterContext.isOwner) return true
 
 	if (type === 'social_meta') return !requesterContext.hideFromDiscovery
@@ -43,6 +49,9 @@ export function isTimelineEventVisibleForFederation(event, ownerEntityHash, requ
 		const target = String(event.content?.targetEntityHash || '').toLowerCase()
 		return target === String(requesterContext.requesterEntityHash || '').toLowerCase()
 	}
+
+	if (type === 'tag_name')
+		return requesterContext.publishPreferences !== false
 
 	return false
 }

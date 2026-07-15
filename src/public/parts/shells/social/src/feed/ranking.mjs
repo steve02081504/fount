@@ -28,11 +28,14 @@ export function scorePostForYou(post, engagement, affinity, tasteMatch = 0, now 
 	const freshness = Math.exp(-ageMs / SCORE_HALF_LIFE_MS)
 	const key = socialPostKey(post.entityHash || '', post.id)
 	const likes = engagement.likes.get(key) || 0
+	const dislikes = engagement.dislikes?.get(key) || 0
 	const reposts = engagement.reposts.get(key) || 0
 	const replies = engagement.replies.get(key) || 0
-	const engagementBoost = 1 + Math.log1p(likes + 2 * reposts + replies)
+	const engagementBoost = 1 + Math.log1p(Math.max(0, likes + 2 * reposts + replies - dislikes))
 	const affinityBoost = 1 + Math.log1p(affinity)
-	const interestBoost = 1 + Math.log1p(Math.max(0, tasteMatch))
+	const interestBoost = tasteMatch >= 0
+		? 1 + Math.log1p(tasteMatch)
+		: 1 / (1 + Math.log1p(-tasteMatch))
 	return freshness * engagementBoost * affinityBoost * interestBoost
 }
 
@@ -159,10 +162,6 @@ export async function buildForYouFeed(username, options = {}) {
 	const viewerContext = await loadViewerContext(username, viewer)
 	const itemContext = await createFeedItemBuildContext(username, following, viewer)
 	const taste = viewer ? await ensureTasteFresh(username, viewer) : null
-	if (viewer) {
-		const { lazyVerifyPendingMergeClaims } = await import('../taste/mergeClaims.mjs')
-		await lazyVerifyPendingMergeClaims(username, viewer).catch(() => null)
-	}
 
 	/** @type {{ entityHash: string, post: object, score: number }[]} */
 	const candidates = []

@@ -40,11 +40,11 @@ import {
 } from '../savedPosts.mjs'
 import { searchPosts } from '../search.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
+import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
 import { rebuildTaste } from '../taste/cluster.mjs'
 import { revokeTasteAlias } from '../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../taste/nameClaims.mjs'
 import { loadTaste, mutateTaste } from '../taste/store.mjs'
-import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized, maintainSocialTimeline } from '../timeline/materialize.mjs'
 import { syncFollowingTimelines, syncTimelineForEntity } from '../timeline/sync.mjs'
@@ -117,6 +117,10 @@ export function createSocialClient(ctx) {
 			const content = row
 				? await maybeDecryptPostContent(ctx.username, owner, row.content) || row.content
 				: null
+			if (row) {
+				const { pullPostReactions } = await import('../federation/reaction_pull.mjs')
+				void pullPostReactions(ctx.username, owner, String(id)).catch(() => null)
+			}
 			return createPost(ctx, owner, id, { content, event: row || null })
 		},
 		/**
@@ -453,6 +457,7 @@ export function createSocialClient(ctx) {
 						if (patch.privacy && typeof patch.privacy === 'object')
 							draft.privacy = {
 								publishPreferences: patch.privacy.publishPreferences !== false,
+								publishReactions: patch.privacy.publishReactions !== false,
 							}
 						if (patch.tags && typeof patch.tags === 'object')
 							for (const [tag, weight] of Object.entries(patch.tags)) {
@@ -460,27 +465,35 @@ export function createSocialClient(ctx) {
 								if (!key) continue
 								const value = Number(weight)
 								if (!Number.isFinite(value)) continue
-								if (value === 0) delete draft.tags[key]
-								else draft.tags[key] = value
+								if (value === 0) delete draft.manual[key]
+								else draft.manual[key] = value
 							}
 						return draft
 					})
-					return { privacy: store.privacy, tags: store.tags, aliases: store.aliases }
+					return {
+						privacy: store.privacy,
+						computed: store.computed,
+						manual: store.manual,
+						aliases: store.aliases,
+					}
 				},
 				/**
 				 * @returns {Promise<object>} 重建结果
 				 */
 				async rebuild() {
 					const store = await rebuildTaste(ctx.username, ctx.entityHash)
-					return { clusteredAt: store.clusteredAt, tagCount: Object.keys(store.tags).length }
+					return {
+						clusteredAt: store.clusteredAt,
+						tagCount: Object.keys(store.computed).length + Object.keys(store.manual).length,
+					}
 				},
 				/**
 				 * @param {{ tagHash: string, label: string, locale?: string }} input 命名
-				 * @returns {Promise<object>} 命名表
+				 * @returns {Promise<object>} 命名事件
 				 */
 				async setName(input) {
-					const store = await publishTagName(ctx.username, ctx.entityHash, input)
-					return { names: store.names }
+					const event = await publishTagName(ctx.username, ctx.entityHash, input)
+					return { event }
 				},
 				/**
 				 * @param {string} fromTag 源 tag

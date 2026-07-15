@@ -2,9 +2,35 @@ import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { assertPollVoteAllowed } from '../lib/poll.mjs'
+import { loadTaste } from '../taste/store.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent, maybeEncryptPostContent } from '../vault_crypto/vault.mjs'
+
+/**
+ * @param {import('./client.mjs').SocialApiContext} ctx API 上下文
+ * @returns {Promise<boolean>} 是否公开反应
+ */
+async function shouldPublishReactions(ctx) {
+	const taste = await loadTaste(ctx.username, ctx.entityHash)
+	return taste.privacy.publishReactions !== false
+}
+
+/**
+ * @param {import('./client.mjs').SocialApiContext} ctx API 上下文
+ * @param {string} type 事件类型
+ * @param {string} owner 帖作者
+ * @param {string} id 帖 id
+ * @returns {Promise<object>} 签名事件
+ */
+async function commitReaction(ctx, type, owner, id) {
+	await assertKnownPostTarget(ctx, owner)
+	const fanout = await shouldPublishReactions(ctx)
+	return commitTimelineEvent(ctx.username, ctx.entityHash, {
+		type,
+		content: { targetEntityHash: owner, targetPostId: id },
+	}, { fanout })
+}
 
 /**
  * 构造绑定到某帖的 Post 鸭子类型。
@@ -27,41 +53,25 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 		 * @returns {Promise<object>} like 事件
 		 */
 		async like() {
-			await assertKnownPostTarget(ctx, owner)
-			return commitTimelineEvent(ctx.username, ctx.entityHash, {
-				type: 'like',
-				content: { targetEntityHash: owner, targetPostId: id },
-			})
+			return commitReaction(ctx, 'like', owner, id)
 		},
 		/**
 		 * @returns {Promise<object>} unlike 事件
 		 */
 		async unlike() {
-			await assertKnownPostTarget(ctx, owner)
-			return commitTimelineEvent(ctx.username, ctx.entityHash, {
-				type: 'unlike',
-				content: { targetEntityHash: owner, targetPostId: id },
-			})
+			return commitReaction(ctx, 'unlike', owner, id)
 		},
 		/**
 		 * @returns {Promise<object>} dislike 事件（与 like 互斥，reducer 侧清 like）
 		 */
 		async dislike() {
-			await assertKnownPostTarget(ctx, owner)
-			return commitTimelineEvent(ctx.username, ctx.entityHash, {
-				type: 'dislike',
-				content: { targetEntityHash: owner, targetPostId: id },
-			})
+			return commitReaction(ctx, 'dislike', owner, id)
 		},
 		/**
 		 * @returns {Promise<object>} undislike 事件
 		 */
 		async undislike() {
-			await assertKnownPostTarget(ctx, owner)
-			return commitTimelineEvent(ctx.username, ctx.entityHash, {
-				type: 'undislike',
-				content: { targetEntityHash: owner, targetPostId: id },
-			})
+			return commitReaction(ctx, 'undislike', owner, id)
 		},
 		/**
 		 * @param {string} [comment] 转发附言

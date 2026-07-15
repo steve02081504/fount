@@ -1,10 +1,9 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
-
 import { rebuildTaste } from '../taste/cluster.mjs'
-import { lazyVerifyPendingMergeClaims, revokeTasteAlias } from '../taste/mergeClaims.mjs'
+import { revokeTasteAlias } from '../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../taste/nameClaims.mjs'
-import { loadTaste, mutateTaste } from '../taste/store.mjs'
+import { collapseTasteWeights, loadTaste, mutateTaste } from '../taste/store.mjs'
 
 import { socialClientFromReq } from './shared.mjs'
 
@@ -34,6 +33,7 @@ export function registerTasteRoutes(router) {
 			if (body.privacy && typeof body.privacy === 'object')
 				draft.privacy = {
 					publishPreferences: body.privacy.publishPreferences !== false,
+					publishReactions: body.privacy.publishReactions !== false,
 				}
 			if (body.tags && typeof body.tags === 'object')
 				for (const [tag, weight] of Object.entries(body.tags)) {
@@ -41,19 +41,27 @@ export function registerTasteRoutes(router) {
 					if (!key) continue
 					const value = Number(weight)
 					if (!Number.isFinite(value)) continue
-					if (value === 0) delete draft.tags[key]
-					else draft.tags[key] = value
+					if (value === 0) delete draft.manual[key]
+					else draft.manual[key] = value
 				}
 			return draft
 		})
-		res.status(200).json({ privacy: store.privacy, tags: store.tags, aliases: store.aliases })
+		res.status(200).json({
+			privacy: store.privacy,
+			computed: store.computed,
+			manual: store.manual,
+			aliases: store.aliases,
+			tagCount: collapseTasteWeights(store).size,
+		})
 	})
 
 	router.post('/api/parts/shells\\:social/taste/rebuild', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const store = await rebuildTaste(client.username, client.entityHash)
-		await lazyVerifyPendingMergeClaims(client.username, client.entityHash)
-		res.status(200).json({ clusteredAt: store.clusteredAt, tagCount: Object.keys(store.tags).length })
+		res.status(200).json({
+			clusteredAt: store.clusteredAt,
+			tagCount: collapseTasteWeights(store).size,
+		})
 	})
 
 	router.post('/api/parts/shells\\:social/taste/names', authenticate, async (req, res) => {
@@ -62,8 +70,8 @@ export function registerTasteRoutes(router) {
 		const label = String(req.body?.label || '').trim()
 		const locale = String(req.body?.locale || 'zh-CN').trim()
 		if (!tagHash || !label) throw httpError(400, 'tagHash and label required')
-		const store = await publishTagName(client.username, client.entityHash, { tagHash, label, locale })
-		res.status(200).json({ names: store.names })
+		const event = await publishTagName(client.username, client.entityHash, { tagHash, label, locale })
+		res.status(200).json({ event })
 	})
 
 	router.delete('/api/parts/shells\\:social/taste/aliases/:fromTag', authenticate, async (req, res) => {

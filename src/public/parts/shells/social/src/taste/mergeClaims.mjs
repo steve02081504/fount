@@ -2,17 +2,17 @@
  * Tag 合并声明收件箱（有界、过期、来源限速）。
  * 已接受别名写入 taste store，持久不过期。
  */
+import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
-import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { getNodeDir } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 
-import { verifyTagMergeClaim } from './mergeVerify.mjs'
-import { mutateTaste, resolveTasteAlias } from './store.mjs'
+import { localTagStats, verifyTagMergeClaimWithStats } from './mergeVerify.mjs'
+import { loadTaste, mutateTaste, resolveTasteAlias } from './store.mjs'
 
 const CLAIM_INBOX_MAX = 500
 const CLAIM_TTL_MS = 7 * 24 * 60 * 60 * 1000
@@ -87,7 +87,7 @@ export function pruneClaimInbox(rows) {
  * @param {string} _username replica
  * @param {object} claim 声明体
  * @param {{ requesterNodeHash?: string | null }} [ingress] 入站
- * @returns {Promise<{ ok: boolean }>}
+ * @returns {Promise<{ ok: boolean }>} 是否入箱
  */
 export async function ingestTagMergeClaim(_username, claim, ingress = {}) {
 	if (!isWellFormedClaim(claim)) return { ok: false }
@@ -110,31 +110,35 @@ export async function ingestTagMergeClaim(_username, claim, ingress = {}) {
 }
 
 /**
- * 对偏好表中出现的 tag 懒验证收件箱声明。
+ * 对偏好表中出现的 tag 懒验证收件箱声明（供 rebuild 调用；复用预计算 stats）。
  * @param {string} username replica
  * @param {string} entityHash acting
- * @returns {Promise<{ accepted: number, rejected: number }>}
+ * @param {{ usage: Map<string, number>, audiences: Map<string, Map<string, number>> }} [statsHint] 预计算
+ * @returns {Promise<{ accepted: number, rejected: number }>} 计数
  */
-export async function lazyVerifyPendingMergeClaims(username, entityHash) {
+export async function lazyVerifyPendingMergeClaims(username, entityHash, statsHint = null) {
 	const rows = pruneClaimInbox(await readClaimInbox())
 	await rewriteClaimInbox(rows)
 	let accepted = 0
 	let rejected = 0
-	const actorTags = new Set()
-	const { loadTaste } = await import('./store.mjs')
 	const taste = await loadTaste(username, entityHash)
-	for (const t of Object.keys(taste.tags)) actorTags.add(resolveTasteAlias(t, taste.aliases))
-	for (const t of Object.keys(taste.postTags || {}))
-		for (const tag of taste.postTags[t]?.tags || [])
+	const stats = statsHint || await localTagStats(username, entityHash, taste)
+	const actorTags = new Set([
+		...Object.keys(taste.computed || {}),
+		...Object.keys(taste.manual || {}),
+	].map(t => resolveTasteAlias(t, taste.aliases)))
+	for (const row of Object.values(taste.postTags || {}))
+		for (const tag of row?.tags || [])
 			actorTags.add(resolveTasteAlias(tag, taste.aliases))
 
 	for (const row of rows) {
 		const from = row.claim?.from
 		const to = row.claim?.to
 		if (!from || !to) continue
-		if (!actorTags.has(from) && !actorTags.has(to) && !actorTags.has(resolveTasteAlias(from, taste.aliases)))
+		if (!actorTags.has(from) && !actorTags.has(to)
+			&& !actorTags.has(resolveTasteAlias(from, taste.aliases)))
 			continue
-		const result = await verifyTagMergeClaim(username, entityHash, row.claim)
+		const result = verifyTagMergeClaimWithStats(stats, row.claim)
 		if (!result.ok) {
 			rejected++
 			continue
@@ -176,7 +180,7 @@ export async function gossipTagMergeClaim(username, claim) {
  * @param {string} username replica
  * @param {string} entityHash acting
  * @param {string} fromTag 别名源
- * @returns {Promise<import('./store.mjs').TasteStore>}
+ * @returns {Promise<import('./store.mjs').TasteStore>} 更新后偏好
  */
 export async function revokeTasteAlias(username, entityHash, fromTag) {
 	const from = String(fromTag).trim().toLowerCase()

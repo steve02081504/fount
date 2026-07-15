@@ -8,12 +8,21 @@ import { socialPostKey } from '../federation/post_key.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
+import { weightedJaccard } from './jaccard.mjs'
 import { loadTaste, resolveTasteAlias } from './store.mjs'
-import { weightedJaccard } from './cluster.mjs'
 
-const MIN_USAGE = 2
-const MIN_FIT = 0.35
-const MAX_EXCLUSIVE_OVERLAP = 0.15
+/**
+ *
+ */
+export const MIN_USAGE = 2
+/**
+ *
+ */
+export const MIN_FIT = 0.35
+/**
+ *
+ */
+export const MAX_EXCLUSIVE_OVERLAP = 0.15
 
 /**
  * @param {string} entityHash 实体
@@ -30,10 +39,11 @@ function trustWeight(entityHash) {
  * 从本地关注圈积累 tag → 受众向量 / 用量。
  * @param {string} username replica
  * @param {string} entityHash acting
- * @returns {Promise<{ usage: Map<string, number>, audiences: Map<string, Map<string, number>> }>}
+ * @param {import('./store.mjs').TasteStore} [tasteHint] 可选预载偏好
+ * @returns {Promise<{ usage: Map<string, number>, audiences: Map<string, Map<string, number>> }>} 用量与受众
  */
-async function localTagStats(username, entityHash) {
-	const taste = await loadTaste(username, entityHash)
+export async function localTagStats(username, entityHash, tasteHint = null) {
+	const taste = tasteHint || await loadTaste(username, entityHash)
 	const { following } = await loadFollowingForActor(username, entityHash)
 	/** @type {Map<string, number>} */
 	const usage = new Map()
@@ -41,9 +51,10 @@ async function localTagStats(username, entityHash) {
 	const audiences = new Map()
 
 	/**
-	 * @param {string} tag
-	 * @param {string} reactor
-	 * @param {number} w
+	 * @param {string} tag 标签
+	 * @param {string} reactor 反应者
+	 * @param {number} w 权重
+	 * @returns {void}
 	 */
 	function bump(tag, reactor, w) {
 		const canon = resolveTasteAlias(tag, taste.aliases)
@@ -72,17 +83,16 @@ async function localTagStats(username, entityHash) {
 }
 
 /**
- * @param {string} username replica
- * @param {string} entityHash acting
+ * @param {{ usage: Map<string, number>, audiences: Map<string, Map<string, number>> }} stats 预计算统计
  * @param {{ from: string, to: string, evidence?: object }} claim 声明
- * @returns {Promise<{ ok: boolean, confidence: number, reason?: string }>}
+ * @returns {{ ok: boolean, confidence: number, reason?: string }} 验证结果
  */
-export async function verifyTagMergeClaim(username, entityHash, claim) {
+export function verifyTagMergeClaimWithStats(stats, claim) {
 	const from = String(claim.from || '').trim().toLowerCase()
 	const to = String(claim.to || '').trim().toLowerCase()
 	if (!from || !to || from === to) return { ok: false, confidence: 0, reason: 'malformed' }
 
-	const { usage, audiences } = await localTagStats(username, entityHash)
+	const { usage, audiences } = stats
 	const usageFrom = usage.get(from) || 0
 	const usageTo = usage.get(to) || 0
 	if (usageFrom < MIN_USAGE || usageTo < MIN_USAGE)
@@ -93,7 +103,6 @@ export async function verifyTagMergeClaim(username, entityHash, claim) {
 	const fit = weightedJaccard(audFrom, audTo)
 	if (fit < MIN_FIT) return { ok: false, confidence: 0, reason: 'fit' }
 
-	// 互斥：若存在其他高频 tag 与 from 高重叠、与 to 低重叠，则拒绝「错并把 from→to」
 	let worstExclusive = 0
 	for (const [other, aud] of audiences) {
 		if (other === from || other === to) continue
@@ -107,4 +116,15 @@ export async function verifyTagMergeClaim(username, entityHash, claim) {
 
 	const confidence = Math.min(1, fit * Math.log1p(Math.min(usageFrom, usageTo)) / 3)
 	return { ok: true, confidence }
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} entityHash acting
+ * @param {{ from: string, to: string, evidence?: object }} claim 声明
+ * @returns {Promise<{ ok: boolean, confidence: number, reason?: string }>} 验证结果
+ */
+export async function verifyTagMergeClaim(username, entityHash, claim) {
+	const stats = await localTagStats(username, entityHash)
+	return verifyTagMergeClaimWithStats(stats, claim)
 }

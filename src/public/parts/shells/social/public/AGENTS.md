@@ -24,7 +24,7 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike**（互斥，reducer 侧清对立反应）；`reaction_index` 投影联邦 like/dislike 签名事件；`for_you` 用本地 `taste/*` 聚类权重（`interestBoost`）。偏好 UI：`#tasteView` → `views/taste.mjs`。
+- Post card engagement: like / **dislike**（互斥，reducer 侧清对立反应）；`reaction_index` 投影联邦 like/dislike 签名事件（受实体 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*` 聚类权重（`interestBoost`，可负压分）。偏好 UI：`#tasteView` → `views/taste.mjs`（双开关：`publishPreferences` / `publishReactions`）。标签命名走时间线 `tag_name` 事件。
 
 ## Feed / profile pagination
 

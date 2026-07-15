@@ -23,7 +23,8 @@ export async function loadTaste(appContext) {
 	if (!panel) return
 	const data = await appContext.socialApi('/taste')
 	const tags = data.tags || []
-	const publish = data.privacy?.publishPreferences !== false
+	const publishPreferences = data.privacy?.publishPreferences !== false
+	const publishReactions = data.privacy?.publishReactions !== false
 
 	panel.replaceChildren()
 
@@ -31,19 +32,25 @@ export async function loadTaste(appContext) {
 	toolbar.className = 'taste-toolbar card'
 	toolbar.innerHTML = `
 		<label class="taste-privacy">
-			<input type="checkbox" id="tastePrivacyToggle" ${publish ? 'checked' : ''} />
-			<span data-i18n="social.taste.privacyPublish">${escapeHtml(appContext.geti18n('social.taste.privacyPublish'))}</span>
+			<input type="checkbox" id="tastePublishPreferences" ${publishPreferences ? 'checked' : ''} />
+			<span data-i18n="social.taste.privacyPublishPreferences">${escapeHtml(appContext.geti18n('social.taste.privacyPublishPreferences'))}</span>
 		</label>
+		<p class="taste-privacy-hint" data-i18n="social.taste.privacyPublishPreferencesHint">${escapeHtml(appContext.geti18n('social.taste.privacyPublishPreferencesHint'))}</p>
+		<label class="taste-privacy">
+			<input type="checkbox" id="tastePublishReactions" ${publishReactions ? 'checked' : ''} />
+			<span data-i18n="social.taste.privacyPublishReactions">${escapeHtml(appContext.geti18n('social.taste.privacyPublishReactions'))}</span>
+		</label>
+		<p class="taste-privacy-hint" data-i18n="social.taste.privacyPublishReactionsHint">${escapeHtml(appContext.geti18n('social.taste.privacyPublishReactionsHint'))}</p>
 		<button type="button" id="tasteRebuildButton" class="btn btn-primary btn-sm" data-i18n="social.taste.rebuild">${escapeHtml(appContext.geti18n('social.taste.rebuild'))}</button>
 	`
 	panel.appendChild(toolbar)
 
 	const list = document.createElement('div')
 	list.className = 'taste-list'
-	if (!tags.length) {
+	if (!tags.length) 
 		list.innerHTML = `<p class="empty-hint">${escapeHtml(appContext.geti18n('social.taste.empty'))}</p>`
-	}
-	else {
+	
+	else 
 		for (const tag of tags) {
 			const row = document.createElement('article')
 			row.className = 'taste-row card'
@@ -61,16 +68,31 @@ export async function loadTaste(appContext) {
 			`
 			list.appendChild(row)
 		}
-	}
+	
 	panel.appendChild(list)
 
-	document.getElementById('tastePrivacyToggle')?.addEventListener('change', event => {
-		const input = event.target
-		if (!(input instanceof HTMLInputElement)) return
-		void runSocialWrite('tastePrivacy', () => appContext.socialApi('/taste', {
+	/**
+	 * @returns {Promise<void>}
+	 */
+	function persistPrivacy() {
+		const prefs = document.getElementById('tastePublishPreferences')
+		const reactions = document.getElementById('tastePublishReactions')
+		return runSocialWrite('tastePrivacy', () => appContext.socialApi('/taste', {
 			method: 'PUT',
-			body: JSON.stringify({ privacy: { publishPreferences: input.checked } }),
+			body: JSON.stringify({
+				privacy: {
+					publishPreferences: prefs instanceof HTMLInputElement ? prefs.checked : true,
+					publishReactions: reactions instanceof HTMLInputElement ? reactions.checked : true,
+				},
+			}),
 		}))
+	}
+
+	document.getElementById('tastePublishPreferences')?.addEventListener('change', () => {
+		void persistPrivacy()
+	})
+	document.getElementById('tastePublishReactions')?.addEventListener('change', () => {
+		void persistPrivacy()
 	})
 
 	document.getElementById('tasteRebuildButton')?.addEventListener('click', () => {
@@ -78,7 +100,7 @@ export async function loadTaste(appContext) {
 			.then(() => loadTaste(appContext))
 	})
 
-	for (const form of list.querySelectorAll('.taste-rename-form')) {
+	for (const form of list.querySelectorAll('.taste-rename-form')) 
 		form.addEventListener('submit', event => {
 			event.preventDefault()
 			const tagHash = form.getAttribute('data-tag-hash')
@@ -90,5 +112,5 @@ export async function loadTaste(appContext) {
 				body: JSON.stringify({ tagHash, label, locale: navigator.language || 'zh-CN' }),
 			})).then(() => loadTaste(appContext))
 		})
-	}
+	
 }

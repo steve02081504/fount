@@ -73,12 +73,12 @@ Deno.test('reaction_index projection after like', async () => {
 Deno.test('listReactionEvents paginates by afterReactor', async () => {
 	const { username, operator } = await getSession()
 	const reactors = [operator, REACTOR_B, REACTOR_C].map(h => h.toLowerCase()).sort()
-	for (const reactor of reactors) {
+	for (const reactor of reactors) 
 		await reactionIndex.upsertReaction(username, TARGET, POST_ID, reactor, {
 			kind: 'like',
 			event: { id: `evt-${reactor}`, type: 'like', content: { targetEntityHash: TARGET, targetPostId: POST_ID } },
 		})
-	}
+	
 
 	const first = await reactionIndex.listReactionEvents(username, TARGET, POST_ID, null, 2)
 	assertEquals(first.length, 2)
@@ -87,4 +87,35 @@ Deno.test('listReactionEvents paginates by afterReactor', async () => {
 	const second = await reactionIndex.listReactionEvents(username, TARGET, POST_ID, reactors[1], 2)
 	assertEquals(second.length, 1)
 	assertEquals(second[0].id, `evt-${reactors[2]}`)
+})
+
+Deno.test('private publishReactions skips reaction_index projection', async () => {
+	const { username, operator } = await getSession()
+	const tasteStore = await import('../../src/taste/store.mjs')
+	await tasteStore.saveTaste(username, operator, {
+		...tasteStore.emptyTasteStore(),
+		privacy: { publishPreferences: true, publishReactions: false },
+	})
+	await append.commitTimelineEvent(username, operator, {
+		type: 'like',
+		content: { targetEntityHash: TARGET, targetPostId: POST_ID },
+	}, { fanout: false })
+	const summary = await reactionIndex.summarizeReactions(username, TARGET, POST_ID)
+	assert(!summary.likes.includes(operator.toLowerCase()))
+})
+
+Deno.test('tag_name event materializes into view.tagNames', async () => {
+	const { username, operator } = await getSession()
+	const tagHash = placeholderEntityHash('t')
+	await append.commitTimelineEvent(username, operator, {
+		type: 'tag_name',
+		content: { tagHash, locale: 'zh-CN', label: '测试标签' },
+	}, { fanout: false })
+	const view = await materialize.getTimelineMaterialized(username, operator)
+	assertEquals(view.tagNames?.[tagHash.toLowerCase()]?.['zh-CN'], '测试标签')
+})
+
+Deno.test('normalizeReactionTarget rejects path traversal postId', () => {
+	assertEquals(reactionIndex.normalizeReactionTarget(TARGET, '../etc/passwd'), null)
+	assertEquals(reactionIndex.normalizeReactionTarget(TARGET, POST_ID)?.postId, POST_ID)
 })

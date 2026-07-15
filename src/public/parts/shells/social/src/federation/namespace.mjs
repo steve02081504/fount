@@ -50,6 +50,7 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'unlike',
 	'dislike',
 	'undislike',
+	'tag_name',
 	'follow',
 	'unfollow',
 	'block',
@@ -70,7 +71,6 @@ export const SOCIAL_RPC_REQUEST_TYPES = new Set([
 	'social_timeline_pull_request',
 	'social_reaction_pull_request',
 	'social_tag_merge_claim',
-	'social_tag_name_claim',
 	'social_report',
 ])
 
@@ -83,7 +83,6 @@ export const SOCIAL_RPC_RESPONSE_TYPES = new Set([
 	'social_timeline_pull_response',
 	'social_reaction_pull_response',
 	'social_tag_merge_claim_response',
-	'social_tag_name_claim_response',
 	'social_report_response',
 ])
 

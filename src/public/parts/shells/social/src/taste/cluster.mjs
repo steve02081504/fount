@@ -7,15 +7,26 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 
 import { socialPostKey } from '../federation/post_key.mjs'
 import { summarizeReactions } from '../federation/reaction_index.mjs'
+import { pullPostReactions } from '../federation/reaction_pull.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
-import { loadTaste, mutateTaste, resolveTasteAlias } from './store.mjs'
+import { weightedJaccard } from './jaccard.mjs'
+import { gossipTagMergeClaim, lazyVerifyPendingMergeClaims } from './mergeClaims.mjs'
+import { localTagStats, verifyTagMergeClaimWithStats } from './mergeVerify.mjs'
+import { loadTaste, mutateTaste, resolveTasteAlias, tasteWeightOf } from './store.mjs'
+
+/**
+ *
+ */
+export { weightedJaccard } from './jaccard.mjs'
 
 const JACCARD_MERGE = 0.45
 const SENIORITY_MIN_POSTS = 2
 const CLUSTER_STALE_MS = 6 * 60 * 60 * 1000
 const MAX_POSTS_SCAN = 400
+const REACTION_PULL_ON_REBUILD = 30
+const LOCAL_MERGE_MIN_FIT = 0.55
 
 /**
  * @param {string} entityHash 实体
@@ -25,27 +36,7 @@ function trustWeightOfEntity(entityHash) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed) return 0
 	const score = pickNodeScore(parsed.nodeHash)
-	// score 常见约 [-1,1]；映射到 (0.05, 1]
 	return Math.max(0.05, Math.min(1, 0.5 + score / 2))
-}
-
-/**
- * @param {Map<string, number>} left 加权集合
- * @param {Map<string, number>} right 加权集合
- * @returns {number} 加权 Jaccard
- */
-export function weightedJaccard(left, right) {
-	if (!left.size || !right.size) return 0
-	let inter = 0
-	let union = 0
-	const keys = new Set([...left.keys(), ...right.keys()])
-	for (const key of keys) {
-		const a = left.get(key) || 0
-		const b = right.get(key) || 0
-		inter += Math.min(a, b)
-		union += Math.max(a, b)
-	}
-	return union > 0 ? inter / union : 0
 }
 
 /**
@@ -70,16 +61,16 @@ function audienceVector(likes, dislikes) {
  * @param {string} username replica
  * @param {string} entityHash acting
  * @param {Set<string>} following 关注
- * @returns {Promise<Map<string, { likes: Map<string, number>, dislikes: Map<string, number>, selfTags: string[] }>>}
+ * @returns {Promise<Map<string, { likes: Map<string, number>, dislikes: Map<string, number>, selfTags: string[] }>>} 帖 → 受众
  */
 async function collectPostAudiences(username, entityHash, following) {
 	/** @type {Map<string, { likes: Map<string, number>, dislikes: Map<string, number>, selfTags: string[] }>} */
 	const posts = new Map()
 
 	/**
-	 * @param {string} author
-	 * @param {string} postId
-	 * @returns {{ likes: Map<string, number>, dislikes: Map<string, number>, selfTags: string[] }}
+	 * @param {string} author 作者
+	 * @param {string} postId 帖 id
+	 * @returns {{ likes: Map<string, number>, dislikes: Map<string, number>, selfTags: string[] }} 受众行
 	 */
 	function ensure(author, postId) {
 		const key = socialPostKey(author, postId)
@@ -118,10 +109,12 @@ async function collectPostAudiences(username, entityHash, following) {
 		}
 	}
 
-	// 合并 reaction_index（可能含推送到达的远距反应）
-	for (const [key, row] of [...posts.entries()].slice(0, MAX_POSTS_SCAN)) {
+	const scanKeys = [...posts.keys()].slice(0, MAX_POSTS_SCAN)
+	for (const key of scanKeys) {
 		const [author, postId] = key.split(':')
 		if (!author || !postId) continue
+		const row = posts.get(key)
+		if (!row) continue
 		const summary = await summarizeReactions(username, author, postId)
 		for (const reactor of summary.likes) {
 			if (row.likes.has(reactor)) continue
@@ -154,7 +147,6 @@ export function pickClusterRepresentative(audiences) {
 		.map(([hash]) => hash)
 		.sort()
 	if (eligible.length) return eligible[0]
-	// 退化：取全局最小 reactor，避免空簇
 	const all = [...appear.keys()].sort()
 	return all[0] || null
 }
@@ -164,12 +156,12 @@ export function pickClusterRepresentative(audiences) {
  * @returns {Map<string, string>} postKey → tagHash
  */
 export function clusterPostsByAudience(postAudiences) {
-	const keys = [...postAudiences.keys()]
+	const keys = [...postAudiences.keys()].slice(0, MAX_POSTS_SCAN)
 	/** @type {number[]} */
 	const parent = keys.map((_, i) => i)
 	/**
-	 * @param {number} i
-	 * @returns {number}
+	 * @param {number} i 下标
+	 * @returns {number} 根
 	 */
 	function find(i) {
 		while (parent[i] !== i) {
@@ -179,8 +171,9 @@ export function clusterPostsByAudience(postAudiences) {
 		return i
 	}
 	/**
-	 * @param {number} a
-	 * @param {number} b
+	 * @param {number} a 下标 a
+	 * @param {number} b 下标 b
+	 * @returns {void}
 	 */
 	function union(a, b) {
 		const ra = find(a)
@@ -214,6 +207,83 @@ export function clusterPostsByAudience(postAudiences) {
 }
 
 /**
+ * @param {string} username replica
+ * @param {string} actor acting
+ * @returns {Promise<void>}
+ */
+async function pullRecentReactionPosts(username, actor) {
+	const view = await getTimelineMaterialized(username, actor)
+	/** @type {{ key: string, at: number, author: string, postId: string }[]} */
+	const targets = []
+	for (const like of view.likes || []) {
+		const author = String(like.content?.targetEntityHash || '').toLowerCase()
+		const postId = String(like.content?.targetPostId || '')
+		if (!parseEntityHash(author) || !postId) continue
+		targets.push({
+			key: socialPostKey(author, postId),
+			at: Number(like.hlc?.wall || like.timestamp) || 0,
+			author,
+			postId,
+		})
+	}
+	for (const dislike of view.dislikes || []) {
+		const author = String(dislike.content?.targetEntityHash || '').toLowerCase()
+		const postId = String(dislike.content?.targetPostId || '')
+		if (!parseEntityHash(author) || !postId) continue
+		targets.push({
+			key: socialPostKey(author, postId),
+			at: Number(dislike.hlc?.wall || dislike.timestamp) || 0,
+			author,
+			postId,
+		})
+	}
+	targets.sort((a, b) => b.at - a.at)
+	const seen = new Set()
+	let pulled = 0
+	for (const row of targets) {
+		if (seen.has(row.key)) continue
+		seen.add(row.key)
+		await pullPostReactions(username, row.author, row.postId).catch(() => null)
+		pulled++
+		if (pulled >= REACTION_PULL_ON_REBUILD) break
+	}
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} actor acting
+ * @param {import('./store.mjs').TasteStore} store 偏好
+ * @param {{ usage: Map<string, number>, audiences: Map<string, Map<string, number>> }} stats 统计
+ * @returns {Promise<void>}
+ */
+async function discoverAndGossipMerges(username, actor, store, stats) {
+	const tags = [...stats.audiences.keys()].sort()
+	for (let i = 0; i < tags.length; i++) 
+		for (let j = i + 1; j < tags.length; j++) {
+			const a = tags[i]
+			const b = tags[j]
+			const fit = weightedJaccard(stats.audiences.get(a), stats.audiences.get(b))
+			if (fit < LOCAL_MERGE_MIN_FIT) continue
+			const from = a < b ? a : b
+			const to = a < b ? b : a
+			const claim = { from, to, evidence: { fit, local: true } }
+			const result = verifyTagMergeClaimWithStats(stats, claim)
+			if (!result.ok) continue
+			await mutateTaste(username, actor, draft => {
+				draft.aliases[from] = {
+					to,
+					confidence: result.confidence,
+					evidence: { fit, verifiedAt: Date.now() },
+				}
+				return draft
+			})
+			if (store.privacy.publishPreferences !== false)
+				await gossipTagMergeClaim(username, claim).catch(() => null)
+		}
+	
+}
+
+/**
  * 重建实体口味表。
  * @param {string} username replica
  * @param {string} entityHash acting
@@ -221,6 +291,8 @@ export function clusterPostsByAudience(postAudiences) {
  */
 export async function rebuildTaste(username, entityHash) {
 	const actor = String(entityHash).toLowerCase()
+	await pullRecentReactionPosts(username, actor)
+
 	const { following } = await loadFollowingForActor(username, actor)
 	const followingSet = new Set([...following].map(h => h.toLowerCase()))
 	const raw = await collectPostAudiences(username, actor, followingSet)
@@ -248,17 +320,16 @@ export async function rebuildTaste(username, entityHash) {
 		ownSignal.set(key, (ownSignal.get(key) || 0) - 1)
 	}
 
-	return mutateTaste(username, actor, store => {
+	const store = await mutateTaste(username, actor, draft => {
 		/** @type {Record<string, number>} */
-		const tags = { ...store.tags }
+		const computed = {}
 		/** @type {Record<string, { tags: string[], selfWeight: number }>} */
-		const postTags = { ...store.postTags }
+		const postTags = {}
 
 		for (const [key, signal] of ownSignal) {
 			const clusterTag = assignment.get(key)
 			const declared = selfTags.get(key) || []
 			const reactionCount = Math.abs(signal)
-			// 自标先验随反应数衰减
 			const selfWeight = 1 / (1 + reactionCount)
 			/** @type {string[]} */
 			const tagList = []
@@ -269,18 +340,23 @@ export async function rebuildTaste(username, entityHash) {
 			postTags[key] = { tags: tagList, selfWeight }
 
 			for (const rawTag of tagList) {
-				const canon = resolveTasteAlias(rawTag, store.aliases)
+				const canon = resolveTasteAlias(rawTag, draft.aliases)
 				const isSelf = declared.includes(rawTag) && rawTag !== clusterTag
 				const delta = signal * (isSelf ? selfWeight : 1)
-				tags[canon] = (tags[canon] || 0) + delta
+				computed[canon] = (computed[canon] || 0) + delta
 			}
 		}
 
-		store.tags = tags
-		store.postTags = postTags
-		store.clusteredAt = Date.now()
-		return store
+		draft.computed = computed
+		draft.postTags = postTags
+		draft.clusteredAt = Date.now()
+		return draft
 	})
+
+	const stats = await localTagStats(username, actor, store)
+	await lazyVerifyPendingMergeClaims(username, actor, stats)
+	await discoverAndGossipMerges(username, actor, store, stats)
+	return loadTaste(username, actor)
 }
 
 /**
@@ -296,11 +372,11 @@ export async function ensureTasteFresh(username, entityHash) {
 }
 
 /**
- * 帖与观看者偏好的匹配分（仅正贡献；名字不参与）。
+ * 帖与观看者偏好的匹配分（可负；名字不参与）。
  * @param {object} post 物化帖（可含 content.tags）
  * @param {string} authorEntityHash 作者
  * @param {import('./store.mjs').TasteStore} taste 观看者偏好
- * @returns {number} 匹配分 ≥ 0
+ * @returns {number} 匹配分（可负）
  */
 export function computeTasteMatch(post, authorEntityHash, taste) {
 	const key = socialPostKey(authorEntityHash, post.id || post.postId)
@@ -318,10 +394,9 @@ export function computeTasteMatch(post, authorEntityHash, taste) {
 
 	let match = 0
 	for (const t of tags) {
-		const canon = resolveTasteAlias(t, taste.aliases)
-		const w = Number(taste.tags[canon]) || 0
+		const w = tasteWeightOf(taste, t)
 		const isSelfOnly = self.map(x => String(x).toLowerCase()).includes(t) && !inferred?.tags?.includes(t)
 		match += w * (isSelfOnly ? selfWeight : 1)
 	}
-	return Math.max(0, match)
+	return match
 }

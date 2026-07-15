@@ -66,8 +66,18 @@ Deno.test('federation export: private event types never leak', async () => {
 	const all = await append.readTimelineEvents(username, operator)
 	const exported = await fedExport.filterEventsForFederatedPull(username, operator, all, null)
 	const exportedTypes = new Set(exported.map(e => e.type))
-	for (const priv of ['follow', 'unfollow', 'like', 'unlike', 'follow_approve', 'file_share'])
+	for (const priv of ['follow', 'unfollow', 'follow_approve', 'file_share'])
 		assert(!exportedTypes.has(priv), `private type ${priv} must not be exported`)
+	// like 默认 publishReactions=true 时可导出；隐私关闭时不导出
+	assert(exportedTypes.has('like'), 'public reactions export when publishReactions defaults true')
+
+	const tasteStore = await import('../../src/taste/store.mjs')
+	await tasteStore.saveTaste(username, operator, {
+		...tasteStore.emptyTasteStore(),
+		privacy: { publishPreferences: true, publishReactions: false },
+	})
+	const exportedPrivate = await fedExport.filterEventsForFederatedPull(username, operator, all, null)
+	assert(!exportedPrivate.some(e => e.type === 'like'), 'like hidden when publishReactions=false')
 })
 
 Deno.test('federation export: followers-only post hidden from anonymous requester', async () => {

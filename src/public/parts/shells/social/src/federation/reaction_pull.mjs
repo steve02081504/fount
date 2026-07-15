@@ -1,10 +1,10 @@
 /**
  * 经 TrustGraph 拉取某帖的签名反应事件，验签并入本地投影。
  */
+import { timelineGroupId } from '../federation/namespace.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { REACTION_PULL_BATCH } from '../federation/reaction_index.mjs'
 import { ingestRemoteTimelineEvent } from '../timeline/sync.mjs'
-import { timelineGroupId } from '../federation/namespace.mjs'
 
 const REACTION_PULL_MAX_ROUNDS = 8
 
@@ -54,16 +54,21 @@ export async function pullPostReactions(username, targetEntityHash, postId) {
 		if (!batch.length) break
 		attempted += batch.length
 
-		let lastReactor = afterReactor
+		/** @type {string[]} */
+		const reactorsThisRound = []
 		for (const event of batch) {
 			const reactor = reactorFromReactionEvent(event)
 			if (!reactor) continue
 			if (event.groupId !== timelineGroupId(reactor)) continue
 			if (!await ingestRemoteTimelineEvent(username, reactor, event)) continue
 			imported++
-			lastReactor = reactor
+			reactorsThisRound.push(reactor)
 		}
-		afterReactor = lastReactor
+		if (!reactorsThisRound.length) break
+		reactorsThisRound.sort()
+		const nextCursor = reactorsThisRound[reactorsThisRound.length - 1]
+		if (afterReactor && nextCursor <= afterReactor) break
+		afterReactor = nextCursor
 		if (batch.length < REACTION_PULL_BATCH) break
 	}
 

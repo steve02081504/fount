@@ -1,7 +1,8 @@
+import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { SOCIAL_RPC_REQUEST_TYPES } from '../federation/namespace.mjs'
-import { listReactionEvents, REACTION_PULL_BATCH } from '../federation/reaction_index.mjs'
+import { listReactionEvents, normalizeReactionTarget, REACTION_PULL_BATCH } from '../federation/reaction_index.mjs'
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
 
 import { discoverAccounts, discoverFollowGraph, discoverPosts } from './local.mjs'
@@ -49,19 +50,37 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 			}
 		}
 		case 'social_reaction_pull_request': {
-			const targetEntityHash = String(rpc.targetEntityHash || '').toLowerCase()
-			const postId = String(rpc.postId || '').trim()
+			const ids = normalizeReactionTarget(rpc.targetEntityHash, rpc.postId)
+			if (!ids) 
+				return {
+					type: 'social_reaction_pull_response',
+					targetEntityHash: String(rpc.targetEntityHash || '').toLowerCase(),
+					postId: String(rpc.postId || '').trim(),
+					events: [],
+				}
+			
+			const afterReactor = rpc.afterReactor
+				? String(rpc.afterReactor).trim().toLowerCase()
+				: null
+			if (afterReactor && !parseEntityHash(afterReactor)) 
+				return {
+					type: 'social_reaction_pull_response',
+					targetEntityHash: ids.target,
+					postId: ids.postId,
+					events: [],
+				}
+			
 			const events = await listReactionEvents(
 				username,
-				targetEntityHash,
-				postId,
-				rpc.afterReactor,
+				ids.target,
+				ids.postId,
+				afterReactor,
 				rpc.limit ?? REACTION_PULL_BATCH,
 			)
 			return {
 				type: 'social_reaction_pull_response',
-				targetEntityHash,
-				postId,
+				targetEntityHash: ids.target,
+				postId: ids.postId,
 				events,
 			}
 		}
@@ -70,13 +89,6 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 			return {
 				type: 'social_tag_merge_claim_response',
 				...await ingestTagMergeClaim(username, rpc.claim, ingress),
-			}
-		}
-		case 'social_tag_name_claim': {
-			const { ingestTagNameClaim } = await import('../taste/nameClaims.mjs')
-			return {
-				type: 'social_tag_name_claim_response',
-				...await ingestTagNameClaim(username, rpc.claim, ingress),
 			}
 		}
 		case 'social_post_notify': {
