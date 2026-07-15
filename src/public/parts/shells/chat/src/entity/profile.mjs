@@ -291,12 +291,29 @@ export async function recordHeartbeat(replicaUsername, entityHash) {
  * @param {string} replicaUsername 副本用户名 所有者
  * @param {string} entityHash 128 位 entityHash
  * @param {object} updates 更新内容
- * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[] }} [options] 选项
+ * @param {{ groupId?: string, skipPresentation?: boolean, locales?: string[], identityOwnerSync?: boolean }} [options] 选项；`identityOwnerSync` 仅供 setEntityOwner 回写 profile
  * @returns {Promise<object>} 更新后的资料
  */
 export async function updateProfile(replicaUsername, entityHash, updates, options = {}) {
 	if (!isWritableLocalEntity(entityHash))
 		throw new Error('entity not writable on this replica')
+
+	// 所属关系必须经 setEntityOwner（identity + 群 fanout）；禁止只写 profile 造成 Chat 内容权失灵。
+	if (updates.ownerEntityHash !== undefined && !options.identityOwnerSync) {
+		const { setEntityOwner } = await import('./identity.mjs')
+		await setEntityOwner(replicaUsername, entityHash, updates.ownerEntityHash)
+		const { ownerEntityHash: _owner, ...rest } = updates
+		updates = rest
+		if (!Object.keys(updates).length) {
+			if (options.skipPresentation)
+				return getProfile(entityHash, replicaUsername, { groupId: options.groupId, skipPresentation: true })
+			const locales = options.locales || ['zh-CN', 'en-UK']
+			const profile = await getProfile(entityHash, replicaUsername, { groupId: options.groupId, skipPresentation: true })
+			const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
+			const resolved = resolveProfilePresentation(profile, locales, infoDefaults)
+			return { ...profile, ...resolved, infoDefaults, localeKeys: Object.keys(profile.localized) }
+		}
+	}
 
 	const profile = await getProfile(entityHash, replicaUsername, {
 		groupId: options.groupId,

@@ -367,3 +367,67 @@ Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () 
 	assert(operator)
 	assert(operator !== agentHash)
 })
+
+Deno.test('agent ChatClient may edit/delete owned human messages after setEntityOwner', async () => {
+	const username = `cc-master-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer, dataDir } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_chat_client_master_',
+		minP2pNode: true,
+		/**
+		 * @param {string} user 用户名
+		 * @returns {Promise<void>} 无
+		 */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+			await ensureOperatorPubKey(user)
+			await seedCharFixture(dataDir, user)
+		},
+	})
+	await ensureServer()
+
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
+	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
+	const { getChatClient } = await import('../../src/api/index.mjs')
+	const {
+		setEntityOwner,
+		resolveOperatorEntityHashForUser,
+		loadEntityIdentity,
+	} = await import('../../src/entity/identity.mjs')
+	const { getState } = await import('../../src/chat/dag/materialize.mjs')
+	const { peekLocalSignerPubKeyHash } = await import('../../src/chat/dag/localSigner.mjs')
+
+	const groupId = await newGroup(username, { name: 'human-owned-by-agent' })
+	const channelId = await getDefaultChannelId(username, groupId)
+	await addchar(groupId, CHAR_FIXTURE, username)
+
+	const agentHash = (await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)).toLowerCase()
+	const operator = (await resolveOperatorEntityHashForUser(username)).toLowerCase()
+	await setEntityOwner(username, operator, agentHash)
+	assertEquals((await loadEntityIdentity(username, operator)).ownerEntityHash, agentHash)
+
+	const operatorPub = await peekLocalSignerPubKeyHash(username, groupId, operator)
+	const { state: afterOwner } = await getState(username, groupId)
+	assertEquals(String(afterOwner.members[operatorPub]?.ownerEntityHash || '').toLowerCase(), agentHash)
+
+	const humanClient = await getChatClient(username)
+	const humanMsg = await (await (await humanClient.group(groupId)).channel(channelId)).send('owned by master')
+	assert(humanMsg.eventId)
+
+	const masterClient = await getChatClient(username, agentHash)
+	const channel = await (await masterClient.group(groupId)).channel(channelId)
+	const rows = await channel.messages({ limit: 20 })
+	const owned = rows.find(row => row.eventId === humanMsg.eventId)
+	assert(owned, 'master must see owned human message in channel history')
+	const edited = await owned.edit({ text: 'master edited human' })
+	assertEquals(edited.type, 'message_edit')
+	assertEquals(edited.content.targetId, humanMsg.eventId)
+
+	const deleted = await owned.delete()
+	assertEquals(deleted.type, 'message_delete')
+	assertEquals(deleted.content.targetId, humanMsg.eventId)
+
+	await setEntityOwner(username, operator, null)
+})

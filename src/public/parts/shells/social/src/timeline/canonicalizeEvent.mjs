@@ -9,6 +9,7 @@ export const SOCIAL_TIMELINE_ROW_OPTS = {
 	contentHexKeys: new Set([
 		'targetPostId',
 		'targetId',
+		'noteEventId',
 	]),
 	entityHashKeys: new Set([
 		'targetEntityHash',

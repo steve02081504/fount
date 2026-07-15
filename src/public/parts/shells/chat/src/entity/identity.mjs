@@ -244,7 +244,10 @@ async function syncProfileOwnerField(username, entityHash, ownerEntityHash) {
 	try {
 		const { ensureLocalEntityProfile, updateProfile } = await import('./profile.mjs')
 		await ensureLocalEntityProfile(username, entityHash)
-		await updateProfile(username, entityHash, { ownerEntityHash }, { skipPresentation: true })
+		await updateProfile(username, entityHash, { ownerEntityHash }, {
+			skipPresentation: true,
+			identityOwnerSync: true,
+		})
 	}
 	catch { /* profile 运行时未就绪时跳过 */ }
 }

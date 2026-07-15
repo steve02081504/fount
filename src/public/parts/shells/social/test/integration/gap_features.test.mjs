@@ -9,15 +9,14 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession()
 
-const append = await import('../../src/timeline/append.mjs')
 const noteIndex = await import('../../src/federation/note_index.mjs')
 const mutedKeywords = await import('../../src/mutedKeywords.mjs')
 const contentFilter = await import('../../src/lib/contentFilter.mjs')
 const feedVisibility = await import('../../src/feedVisibility.mjs')
 const dwell = await import('../../src/engagement/dwell.mjs')
 
-const TARGET = placeholderEntityHash('n')
-const POST_ID = 'e'.repeat(64)
+const TARGET = placeholderEntityHash('a')
+const POST_ID = 'd'.repeat(64)
 
 Deno.test('muted keywords filter canViewPost', async () => {
 	const { username, operator } = await getSession()
@@ -50,28 +49,32 @@ Deno.test('muted keywords filter canViewPost', async () => {
 
 Deno.test('post_note projects into note_index and tops with helpful votes', async () => {
 	const { username, operator } = await getSession()
-	const note = await append.commitTimelineEvent(username, operator, {
+	const noteId = 'a'.repeat(64)
+	await noteIndex.projectNoteFromTimelineEvent(username, operator, {
+		id: noteId,
 		type: 'post_note',
 		content: { targetEntityHash: TARGET, targetPostId: POST_ID, text: 'context for readers' },
-	}, { fanout: false })
+		hlc: { wall: Date.now() },
+	})
 
 	let summary = await noteIndex.summarizeNotes(username, TARGET, POST_ID)
 	assertEquals(summary.notes.length, 1)
 	assertEquals(summary.topNote, null)
 
-	await append.commitTimelineEvent(username, operator, {
+	await noteIndex.projectNoteFromTimelineEvent(username, operator, {
+		id: 'b'.repeat(64),
 		type: 'note_vote',
 		content: {
 			targetEntityHash: TARGET,
 			targetPostId: POST_ID,
-			noteEventId: note.id,
+			noteEventId: noteId,
 			helpful: true,
 		},
-	}, { fanout: false })
+	})
 
 	summary = await noteIndex.summarizeNotes(username, TARGET, POST_ID)
 	assert(summary.topNote)
-	assertEquals(summary.topNote.noteEventId, note.id)
+	assertEquals(summary.topNote.noteEventId, noteId)
 	assertEquals(summary.topNote.score, 1)
 })
 

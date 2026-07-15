@@ -36,11 +36,11 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 维度 | 工业化产品（Ins / FB / X） | fount social（代码现状） |
 | --- | --- | --- |
-| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`GET /feed?ranking=for_you` → `scorePostForYou`（新鲜度 × 互动 × 作者亲和 × **`interestBoost` 本地 taste tag 匹配，可负**）+ 关注者 like/repost 挖出的**二度公开帖**（0.85/0.9 折）；like/dislike 驱动 `taste/*` 聚类；**有**偏好编辑 UI（重建 / `tag_name` 命名 / `publishPreferences`+`publishReactions`）；无 ML |
+| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`for_you` + taste + **本地 dwell 停留弱信号**（不联邦）；无 ML |
 | 广告 / 赞助 | 信息流插槽 | **无** |
-| 地理发现 | 同城、附近的人 | **无** LBS；`GET /explore` 为本地 + 邻居 RPC |
-| 全局热搜 | 平台级事件榜 | **弱**；`GET /hashtags/trending` 仅统计观看者可见帖子的话题频次 |
-| Hashtag / 话题订阅 | 关注话题、topic feed | **无**；`#tag` 仅渲染为搜索深链 |
+| 地理发现 | 同城、附近的人 | **无** LBS；探索为本地 + 邻居 RPC；热搜有 `nearby` 邻居话题聚合 |
+| 全局热搜 | 平台级事件榜 | **部分**；`GET /hashtags/trending` 本地可见帖话题频次；`scope=nearby` 经 `part_query` 聚合邻居公开计数（非全球） |
+| Hashtag / 话题订阅 | 关注话题、topic feed | **无**；`#tag` 仅渲染为搜索深链；有本地关键词/标签屏蔽 |
 | 跨平台导入 | 从 X 等同步 | **无** |
 | 搜索范围 | 常含全站或大范围 | **弱**；`GET /search` 限于观看者已知时间线（`cursor` 分页已有） |
 | Who can reply | 作者门控评论 | **无** |
@@ -59,20 +59,21 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **直播 / Spaces / 音频房** | social 无入口；chat 有 streaming channel，未接到 social 产品面 |
 | **定时发布** | 发帖即时 `commitTimelineEvent` |
 | **草稿箱** | `draftContent` 仅为服务端加密前局部变量，非用户草稿持久化 |
-| **滤镜 / 贴纸 / 就地剪辑** | 上传原文件，无创作工具链 |
+| **滤镜 / 贴纸 / 就地剪辑** | 发图前有基础 canvas 裁剪/打码/画笔；无滤镜贴纸库 |
 | **Collections（策展合集）** | 收藏夹 folders ≠ 对外策展集合 |
 
 ### 2.2 有雏形但明显偏弱
 
 | 功能 | 工业化常见形态 | fount 现状 |
 | --- | --- | --- |
-| 轮播多图 | 滑动 Carousel | `mediaRefs[]` + CSS **grid**（约两列），**无滑动轮播 UX** |
+| 轮播多图 | 滑动 Carousel | `mediaRefs[]` + **scroll-snap 轮播** + lightbox；composer 可填 **alt**；发图前 canvas 裁剪/打码/画笔 |
 | 长文 | 独立 Article / Note 阅读页 | Markdown 帖文，**无独立文章类型** |
 | 富链接预览 | oEmbed 卡片 | markdown + `groupRef` 为主；**无通用 URL unfurl** |
 | Thread 串发 | 专用 composer 工作流 | 有 `replyTo` 链，**composer 无「发 thread」** |
 | Quote 讨论流 | 独立 quote 时间线聚合 | 有 `quoteRef`，**无产品级 quote 流** |
-| 媒体 alt 文本 | 发帖时填写 accessibility 描述 | `mediaRefs` 可扩展；composer **无 alt 字段**；渲染侧常空 `alt` |
-| 敏感内容 | 自动 blur / NSFW 标签 | 手填 `contentWarning` + 时间线折叠 reveal；**无自动检测** |
+| 媒体 alt 文本 | 发帖时填写 accessibility 描述 | **有**；composer alt 输入；渲染与 lightbox 使用；入站截断 |
+| 敏感内容 | 自动 blur / NSFW 标签 | `contentWarning` 折叠正文+media/poll；`sensitiveMedia` 媒体 blur；**无自动检测** |
+| 社区补充 | Community Notes | **有**；`post_note` / `note_vote` + 有用性净分 |
 
 ---
 
@@ -141,8 +142,8 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | **人帖 rate-limit / CAPTCHA / 新号限制** | **无** |
 | **Agent 自动回复节流** | **有**；`dispatch.mjs` token 桶（与人帖反垃圾不是同一层） |
 | **信誉过滤** | **有**；feed/search/trending demote/hide（`reputation_social.mjs`） |
-| **关键词 / 静音词过滤** | 有 mute **作者**；**无**正文关键词 filter |
-| **按时长 mute** | **无**（mute 为布尔开关） |
+| **关键词 / 静音词过滤** | **有**；`muted_keywords.json` 匹配正文 / CW / tags；mute **作者**仍保留 |
+| **按时长 mute** | **无**（mute 为布尔开关；屏蔽词可设 `expiresAt`） |
 
 ### 5.3 合规与账号生命周期
 
@@ -199,7 +200,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 功能 | 说明 |
 | --- | --- |
 | **Lists** | 无 |
-| **静音词 / 关键词过滤** | 有 mute **作者**，无关键词 filter |
+| **静音词 / 关键词过滤** | 有 mute **作者** + 本地关键词/tag 屏蔽 |
 | **可见性档** | 仅 public / followers；无 unlisted / direct |
 | **实例规则 / 关于页** | 节点 network/denylist 设置，无实例首页叙事 |
 | **账号迁移公告流** | 有 `operator_key_rotate`，无 Mastodon 式 migration 叙事 |
@@ -230,10 +231,10 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | GDPR / Archive 导出 | 有 | 有 | **无** |
 | 原生 App / 系统推送 | 有 | 有 | **部分**（Web Push 有；APNs/FCM 无） |
 | ActivityPub / Fediverse | — | 有 | **无** |
-| 关键词过滤 | 部分 | 有 | **无** |
+| 关键词过滤 | 部分 | 有 | **有**（本地屏蔽词；非 Mastodon 静音词同款产品面） |
 | unlisted / direct 可见性 | 部分 | 有 | **无** |
 | 远端 agent 联邦 ingress | — | 部分（bot） | **无** |
-| 全球热搜 / LBS | 有 | 弱 | **无** / **弱** |
+| 全球热搜 / LBS | 有 | 弱 | **部分** / **无**（附近热搜=邻居节点；无 LBS） |
 | Who can reply | 有 | 部分 | **无** |
 
 <details>

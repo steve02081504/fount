@@ -1020,12 +1020,6 @@ body {
 	right: 0.5rem;
 }
 
-.media-chip-editable {
-	flex-direction: column;
-	align-items: stretch;
-	max-width: 10rem;
-}
-
 .media-chip-alt {
 	width: 100%;
 	margin-top: 0.25rem;
@@ -1126,6 +1120,24 @@ body {
 	border-radius: 12px;
 	overflow: hidden;
 	background: var(--social-bg-soft);
+}
+
+.media-chip.media-chip-editable {
+	width: 10rem;
+	height: auto;
+	overflow: visible;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding-bottom: 0.25rem;
+}
+
+.media-chip.media-chip-editable img,
+.media-chip.media-chip-editable video {
+	width: 100%;
+	height: 80px;
+	object-fit: cover;
+	border-radius: 12px;
 }
 
 .media-chip img {

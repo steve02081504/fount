@@ -409,6 +409,15 @@ export function createChatClient(ctx) {
 			return updateProfile(ctx.username, ctx.entityHash, fields)
 		},
 		/**
+		 * 声明 / 清除本实体的所属主人（identity + profile + 群 `member_owner_update`）。
+		 * @param {string | null} ownerEntityHash 主人 entityHash；null/空 清除
+		 * @returns {Promise<object>} 更新后的身份行
+		 */
+		async setOwner(ownerEntityHash) {
+			const { setEntityOwner } = await import('../entity/identity.mjs')
+			return setEntityOwner(ctx.username, ctx.entityHash, ownerEntityHash)
+		},
+		/**
 		 * @returns {{ search: Function }} 实体命名空间
 		 */
 		get entities() {
