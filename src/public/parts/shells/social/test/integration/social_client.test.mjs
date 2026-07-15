@@ -10,7 +10,7 @@ const getSession = createTestSession()
 
 Deno.test('getSocialClient defaults to operator and posts return Post', async () => {
 	const { username, operator } = await getSession()
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const client = await getSocialClient(username)
 	assertEquals(client.entityHash, operator)
 
@@ -29,7 +29,7 @@ Deno.test('getSocialClient defaults to operator and posts return Post', async ()
 
 Deno.test('getSocialClient rejects foreign entityHash', async () => {
 	const { username } = await getSession()
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	await assertRejects(
 		() => getSocialClient(username, 'a'.repeat(128)),
 		Error,

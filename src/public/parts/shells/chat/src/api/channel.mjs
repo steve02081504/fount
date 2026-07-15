@@ -15,24 +15,24 @@ import { loadGroupState, normalizeReplyContent } from './internal.mjs'
 import { createMessage } from './message.mjs'
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @returns {{ kind: 'char', charname: string, entityHash: string } | { kind: 'user', memberId: string }} 观察者字段
  */
-function viewerFieldsFromCtx(ctx) {
-	return ctx.charname
-		? { kind: 'char', charname: ctx.charname, entityHash: ctx.entityHash }
-		: { kind: 'user', memberId: ctx.entityHash }
+function viewerFieldsFrom(apiContext) {
+	return apiContext.charname
+		? { kind: 'char', charname: apiContext.charname, entityHash: apiContext.entityHash }
+		: { kind: 'user', memberId: apiContext.entityHash }
 }
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} [projection] 1.4 频道投影
  * @returns {object} Channel 鸭子类型
  */
-export function createChannel(ctx, groupId, channelId, projection = {}) {
-	const signOpts = { entityHash: ctx.entityHash }
+export function createChannel(apiContext, groupId, channelId, projection = {}) {
+	const signOpts = { entityHash: apiContext.entityHash }
 	return {
 		id: channelId,
 		name: projection.name || channelId,
@@ -42,63 +42,52 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object>} Message
 		 */
 		async send(reply) {
-			const charId = ctx.charname || null
+			const charId = apiContext.charname || null
 			const origin = charId ? 'char' : 'human'
 			/**
-			 *
-			 * @param {File[] | unknown[]} files 上传文件
- * @returns {void} 无
+			 * @param {Array<{ buffer: Buffer | string }> | undefined} files 附件
+			 * @returns {Array<{ buffer: Buffer }> | undefined} 规范化缓冲
 			 */
 			const mapFiles = files => files?.map(file => ({
 				...file,
 				buffer: Buffer.isBuffer(file.buffer) ? file.buffer : Buffer.from(file.buffer),
 			}))
-			if (reply && typeof reply === 'object' && (reply.reply || reply.rawContent)) {
-				const { event } = await postChannelMessage(ctx.username, groupId, channelId, {
-					...reply,
-					files: mapFiles(reply.files),
-					origin: reply.origin || origin,
-					charId: reply.charId || charId,
-					entityHash: reply.entityHash || ctx.entityHash,
-				})
-				const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
-				const decrypted = await decryptEventContent(ctx.username, groupId, channelId, event.content)
-				const message = createMessage(ctx, groupId, {
-					eventId: event.id,
-					channelId,
-					sender: event.sender,
-					charId: event.charId || charId,
-					content: decrypted.ok ? decrypted.content : event.content,
-					timestamp: event.timestamp,
-				})
-				message.sourceEvent = event
-				message.decryptResult = decrypted
-				return message
+			const objectReply = typeof reply === 'object' && reply ? reply : null
+			/** @type {object} */
+			let postPayload
+			if (objectReply?.reply || objectReply?.rawContent)
+				postPayload = {
+					...objectReply,
+					files: mapFiles(objectReply.files),
+					origin: objectReply.origin || origin,
+					charId: objectReply.charId || charId,
+					entityHash: objectReply.entityHash || apiContext.entityHash,
+				}
+			else {
+				const files = Array.isArray(objectReply?.files) ? mapFiles(objectReply.files) : undefined
+				const useText = !!files?.length
+					|| (objectReply && (objectReply.text != null || objectReply.content != null) && !objectReply.type)
+				postPayload = useText
+					? {
+						text: typeof reply === 'string' ? reply : String(objectReply.text ?? objectReply.content ?? ''),
+						files,
+						origin,
+						charId,
+						entityHash: apiContext.entityHash,
+					}
+					: {
+						rawContent: normalizeReplyContent(reply),
+						files,
+						origin,
+						charId,
+						entityHash: apiContext.entityHash,
+					}
 			}
-			const files = reply && typeof reply === 'object' && Array.isArray(reply.files)
-				? mapFiles(reply.files)
-				: undefined
-			const hasFiles = !!files?.length
-			const payload = hasFiles || (reply && typeof reply === 'object' && (reply.text != null || reply.content != null) && !reply.type)
-				? {
-					text: typeof reply === 'string' ? reply : String(reply.text ?? reply.content ?? ''),
-					files,
-					origin,
-					charId,
-					entityHash: ctx.entityHash,
-				}
-				: {
-					rawContent: normalizeReplyContent(reply),
-					files,
-					origin,
-					charId,
-					entityHash: ctx.entityHash,
-				}
-			const { event } = await postChannelMessage(ctx.username, groupId, channelId, payload)
+			const { event } = await postChannelMessage(apiContext.username, groupId, channelId, postPayload)
 			// 落盘后 content 是 CKG 密文；发送方持钥，还原明文供调用方直接读取（fileIds 等）。
 			const { decryptEventContent } = await import('../chat/channel_keys/content.mjs')
-			const decrypted = await decryptEventContent(ctx.username, groupId, channelId, event.content)
-			const message = createMessage(ctx, groupId, {
+			const decrypted = await decryptEventContent(apiContext.username, groupId, channelId, event.content)
+			const message = createMessage(apiContext, groupId, {
 				eventId: event.id,
 				channelId,
 				sender: event.sender,
@@ -116,14 +105,14 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async triggerReply(charname) {
 			const { triggerCharReply } = await import('../chat/session/triggerReply.mjs')
-			await triggerCharReply(groupId, channelId, charname, null, { replicaUsername: ctx.username })
+			await triggerCharReply(groupId, channelId, charname, null, { replicaUsername: apiContext.username })
 		},
 		/**
 		 * @returns {Promise<{ eventId: string, seq: number } | null>} 当前频道已读水位
 		 */
 		async readMarker() {
 			const { getChannelReadMarker } = await import('../chat/lib/readMarkers.mjs')
-			return getChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId)
+			return getChannelReadMarker(apiContext.username, apiContext.entityHash, groupId, channelId)
 		},
 		/**
 		 * @param {{ eventId: string, seq: number }} marker 已读水位
@@ -131,8 +120,8 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async markRead(marker) {
 			const { setChannelReadMarker, getChannelReadMarker } = await import('../chat/lib/readMarkers.mjs')
-			setChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId, marker)
-			return getChannelReadMarker(ctx.username, ctx.entityHash, groupId, channelId)
+			setChannelReadMarker(apiContext.username, apiContext.entityHash, groupId, channelId, marker)
+			return getChannelReadMarker(apiContext.username, apiContext.entityHash, groupId, channelId)
 		},
 		/**
 		 * @returns {Promise<object>} 流媒体鉴权结果（webrtc 或 sfu）
@@ -142,20 +131,20 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 			const { appendStreamingSession } = await import('../chat/dag/channelOperations.mjs')
 			const { getCurrentFileMasterKey } = await import('../chat/file_keys/store.mjs')
 			const { buildStreamingEmbedUrl, mintStreamingViewToken } = await import('../chat/ws/auth.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const channel = state.channels?.[channelId]
 			if (!channel) throw new Error('Channel not found')
 			if (channel.type !== 'streaming') throw new Error('Channel is not a streaming channel')
 			const baseUrl = state.groupSettings?.streamingSfuWss?.trim() || ''
 			if (!baseUrl)
 				return { mode: 'webrtc', iceServers: resolveIceServers(state.groupSettings) }
-			const keyEntry = await getCurrentFileMasterKey(ctx.username, groupId)
+			const keyEntry = await getCurrentFileMasterKey(apiContext.username, groupId)
 			if (!keyEntry?.fileMasterKey)
 				throw new Error('Group encryption (GSH) not initialized')
 			const { sessionId, token, expiresAt } = mintStreamingViewToken(
-				ctx.username, groupId, channelId, undefined, keyEntry.fileMasterKey,
+				apiContext.username, groupId, channelId, undefined, keyEntry.fileMasterKey,
 			)
-			await appendStreamingSession(ctx.username, groupId, channelId, { sessionId, expiresAt }, ctx.entityHash)
+			await appendStreamingSession(apiContext.username, groupId, channelId, { sessionId, expiresAt }, apiContext.entityHash)
 			return {
 				mode: 'sfu',
 				sessionId,
@@ -168,17 +157,17 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<void>} 无
 		 */
 		async typing() {
-			recordChannelTyping(ctx.username, groupId, channelId, ctx.entityHash)
-			const state = await loadGroupState(ctx, groupId)
+			recordChannelTyping(apiContext.username, groupId, channelId, apiContext.entityHash)
+			const state = await loadGroupState(apiContext, groupId)
 			if (state.groupSettings?.bridge) {
-				await dispatchBridgeTyping(ctx, groupId, state, channelId)
+				await dispatchBridgeTyping(apiContext, groupId, state, channelId)
 				return
 			}
-			await broadcastSignedGroupVolatile(ctx.username, groupId, {
+			await broadcastSignedGroupVolatile(apiContext.username, groupId, {
 				type: 'typing',
 				groupId,
 				channelId,
-				memberId: ctx.entityHash,
+				memberId: apiContext.entityHash,
 			})
 		},
 		/**
@@ -186,7 +175,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async typingUsers() {
 			const { listTypingEntities } = await import('../chat/bridge/typing.mjs')
-			return listTypingEntities(ctx.username, groupId, channelId)
+			return listTypingEntities(apiContext.username, groupId, channelId)
 		},
 		/**
 		 * @param {{ limit?: number, before?: string }} [opts] 分页
@@ -194,16 +183,16 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async messages(opts = {}) {
 			const { messages: rows } = await readViewerChannelMessages(
-				ctx.username,
+				apiContext.username,
 				groupId,
 				channelId,
 				{
 					limit: opts.limit,
 					before: opts.before,
 				},
-				viewerFieldsFromCtx(ctx),
+				viewerFieldsFrom(apiContext),
 			)
-			return rows.map(row => createMessage(ctx, groupId, {
+			return rows.map(row => createMessage(apiContext, groupId, {
 				eventId: row.eventId,
 				channelId,
 				sender: row.sender || row.authorPubKeyHash,
@@ -216,17 +205,17 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 * @returns {Promise<object[]>} 置顶 Message 列表
 		 */
 		async pins() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const pinIds = state.messageOverlay?.pins?.get(channelId) || []
 			if (!pinIds.length) return []
 			const { messages: rows } = await readViewerChannelMessages(
-				ctx.username,
+				apiContext.username,
 				groupId,
 				channelId,
 				{ eventIds: pinIds },
-				viewerFieldsFromCtx(ctx),
+				viewerFieldsFrom(apiContext),
 			)
-			return rows.map(row => createMessage(ctx, groupId, row))
+			return rows.map(row => createMessage(apiContext, groupId, row))
 		},
 		/**
 		 * @param {{ question: string, options: string[], deadline?: string, deadlineMs?: number }} ballot 投票定义
@@ -247,9 +236,9 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				timestamp: Date.now(),
 				content: { type: 'vote', question, options, deadline: voteDeadline },
 			}
-			const event = await appendSignedLocalEvent(ctx.username, groupId, body, signOpts)
-			void scheduleVoteDeadlines(ctx.username, groupId)
-			const message = createMessage(ctx, groupId, {
+			const event = await appendSignedLocalEvent(apiContext.username, groupId, body, signOpts)
+			void scheduleVoteDeadlines(apiContext.username, groupId)
+			const message = createMessage(apiContext, groupId, {
 				eventId: event.id,
 				channelId,
 				sender: event.sender,
@@ -265,7 +254,7 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 		 */
 		async _createSibling(opts) {
 			const newChannelId = opts.channelId || randomUUID()
-			const created = await appendSignedLocalEvent(ctx.username, groupId, {
+			const created = await appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'channel_create',
 				timestamp: Date.now(),
 				content: {
@@ -277,8 +266,8 @@ export function createChannel(ctx, groupId, channelId, projection = {}) {
 				},
 			}, signOpts)
 			const resolvedId = created.content?.channelId || newChannelId
-			const { channel } = await buildConversationContext(ctx.username, groupId, resolvedId)
-			return createChannel(ctx, groupId, resolvedId, channel)
+			const { channel } = await buildConversationContext(apiContext.username, groupId, resolvedId)
+			return createChannel(apiContext, groupId, resolvedId, channel)
 		},
 	}
 }

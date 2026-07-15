@@ -3,10 +3,9 @@
  * 【职责】频道消息展示链：DAG 边排序、分支折叠、反应计票与投票人列表。
  * 【原理】applyChannelDisplayChain 合并 activeBranches；tallyReactions/tallyReactionVoters 扫描 reaction 事件。
  * 【数据结构】mergedMessages[]、activeBranches、viewerMemberPubKeyHash。
- * 【关联】reactionHandlers；Hub messageRender。
+ * 【关联】reactionHandlers；Hub messages/render。
  */
-import { isHex64 } from '../../shared/pubKeyHex.mjs'
-
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /**
  * 稳定比较两条 DAG 边（时间戳升序，其次 eventId 字典序）。
  * @param {object} left 消息行

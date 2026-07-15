@@ -4,9 +4,10 @@
 /* global Deno */
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { isTimelineEventVisibleForFederation } from '../../src/federation/federation_visibility.mjs'
+import { isTimelineEventVisibleForFederation } from '../../src/federation/visibility.mjs'
 import { scorePostForYou } from '../../src/feed/ranking.mjs'
-import { weightedJaccard, pickClusterRepresentative } from '../../src/taste/cluster.mjs'
+import { pickClusterRepresentative } from '../../src/taste/cluster.mjs'
+import { weightedJaccard } from '../../src/taste/jaccard.mjs'
 import { pruneClaimInbox } from '../../src/taste/mergeClaims.mjs'
 import { verifyTagMergeClaimWithStats } from '../../src/taste/mergeVerify.mjs'
 import { normalizeTasteStore, resolveTasteAlias, tasteWeightOf } from '../../src/taste/store.mjs'

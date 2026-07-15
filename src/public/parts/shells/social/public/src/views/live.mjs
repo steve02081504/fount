@@ -1,10 +1,8 @@
+import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import {
-	buildSocialLiveAvWsUrl,
-	joinAvRelayRoom,
-} from '/parts/shells:chat/shared/avRelayClient.mjs'
+import { joinAvRelayRoom } from '/parts/shells:chat/shared/avRelayClient.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null

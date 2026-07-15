@@ -93,7 +93,7 @@ Deno.test('buildNotifications respects viewerEntityHash / SocialClient agent', a
 		},
 	}, { fanout: false })
 
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const operatorPage = await (await getSocialClient(username)).notifications({ limit: 50 })
 	assertEquals(operatorPage.viewerEntityHash, operator)
 

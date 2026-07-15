@@ -7,6 +7,9 @@ import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fo
 
 import { buildLiveFeed } from './feed.mjs'
 
+/**
+ *
+ */
 export const LIVE_FEED_KIND = 'live_feed'
 
 /**
@@ -18,7 +21,7 @@ export async function localLiveFeedHandler(ctx, query) {
 	const username = String(ctx.replicaUsername || '').trim()
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
-		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */(query).limit : 20,
+		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 20,
 	) || 20, 1), 32)
 	const { items } = await buildLiveFeed(username, { limit, scope: 'local' })
 	const nodeHash = String(getNodeHash() || '').toLowerCase()
@@ -61,33 +64,37 @@ export async function buildNearbyLiveFeed(username, options = {}) {
 	const limit = Math.min(Math.max(Number(options.limit) || 20, 1), 50)
 	const rows = await queryNetwork(username, getShellPartpath('social'), LIVE_FEED_KIND, { limit }, {
 		maxHits: 64,
+		/**
+		 * @param {object} row 网络行
+		 * @returns {string} 去重键
+		 */
 		rowKey: row => {
 			if (!row || typeof row !== 'object') return ''
-			const entityHash = String(/** @type {{ entityHash?: unknown }} */(row).entityHash || '').toLowerCase()
-			const liveId = String(/** @type {{ liveId?: unknown }} */(row).liveId || '').toLowerCase()
+			const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '').toLowerCase()
+			const liveId = String(/** @type {{ liveId?: unknown }} */row.liveId || '').toLowerCase()
 			return entityHash && liveId ? `${entityHash}:${liveId}` : ''
 		},
 	})
 	const items = []
 	for (const raw of rows) {
 		if (!raw || typeof raw !== 'object') continue
-		const entityHash = String(/** @type {{ entityHash?: unknown }} */(raw).entityHash || '').trim().toLowerCase()
-		const liveId = String(/** @type {{ liveId?: unknown }} */(raw).liveId || '').trim().toLowerCase()
+		const entityHash = String(/** @type {{ entityHash?: unknown }} */raw.entityHash || '').trim().toLowerCase()
+		const liveId = String(/** @type {{ liveId?: unknown }} */raw.liveId || '').trim().toLowerCase()
 		if (!entityHash || !liveId) continue
 		items.push({
 			liveId,
 			entityHash,
-			title: String(/** @type {{ title?: unknown }} */(raw).title || 'Live').slice(0, 120),
-			viewerCount: Math.max(0, Number(/** @type {{ viewerCount?: unknown }} */(raw).viewerCount) || 0),
-			likeCount: Math.max(0, Number(/** @type {{ likeCount?: unknown }} */(raw).likeCount) || 0),
-			startedAt: Number(/** @type {{ startedAt?: unknown }} */(raw).startedAt) || 0,
-			avRoomId: String(/** @type {{ avRoomId?: unknown }} */(raw).avRoomId || `social:${entityHash}:${liveId}`),
-			bridgeOrigin: String(/** @type {{ bridgeOrigin?: unknown }} */(raw).bridgeOrigin || '') || null,
-			watchSecret: String(/** @type {{ watchSecret?: unknown }} */(raw).watchSecret || '') || null,
+			title: String(/** @type {{ title?: unknown }} */raw.title || 'Live').slice(0, 120),
+			viewerCount: Math.max(0, Number(/** @type {{ viewerCount?: unknown }} */raw.viewerCount) || 0),
+			likeCount: Math.max(0, Number(/** @type {{ likeCount?: unknown }} */raw.likeCount) || 0),
+			startedAt: Number(/** @type {{ startedAt?: unknown }} */raw.startedAt) || 0,
+			avRoomId: String(/** @type {{ avRoomId?: unknown }} */raw.avRoomId || `social:${entityHash}:${liveId}`),
+			bridgeOrigin: String(/** @type {{ bridgeOrigin?: unknown }} */raw.bridgeOrigin || '') || null,
+			watchSecret: String(/** @type {{ watchSecret?: unknown }} */raw.watchSecret || '') || null,
 			visibility: 'public',
 			status: 'live',
 			federated: true,
-			nodeHash: String(/** @type {{ nodeHash?: unknown }} */(raw).nodeHash || '').toLowerCase(),
+			nodeHash: String(/** @type {{ nodeHash?: unknown }} */raw.nodeHash || '').toLowerCase(),
 		})
 		if (items.length >= limit) break
 	}

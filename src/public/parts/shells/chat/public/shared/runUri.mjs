@@ -1,5 +1,4 @@
-import { normalizeHex64 } from './pubKeyHex.mjs'
-
+import { normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /** @type {string} */
 export const CHAT_RUN_PART = 'shells:chat'
 const RUN_PREFIX = `fount://run/${CHAT_RUN_PART}/`

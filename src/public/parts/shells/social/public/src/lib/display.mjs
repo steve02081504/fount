@@ -9,7 +9,7 @@ import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 
 const ENTITY_AVATAR_API = '/api/parts/shells:chat/entities'
 

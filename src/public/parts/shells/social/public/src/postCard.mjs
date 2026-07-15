@@ -1,11 +1,11 @@
 import { wrapContentWarningHtml } from '/scripts/features/contentReveal/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
+import { formatSocialProfileHref } from '../shared/runUri.mjs'
 
 import { formatActionKey } from './lib/actionKey.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { entityHandle } from './lib/display.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 

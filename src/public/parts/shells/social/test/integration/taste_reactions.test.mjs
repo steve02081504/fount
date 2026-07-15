@@ -11,7 +11,7 @@ const getSession = createTestSession()
 
 const append = await import('../../src/timeline/append.mjs')
 const materialize = await import('../../src/timeline/materialize.mjs')
-const reactionIndex = await import('../../src/federation/reaction_index.mjs')
+const reactionIndex = await import('../../src/federation/reaction/index.mjs')
 
 const TARGET = placeholderEntityHash('a')
 const POST_ID = 'd'.repeat(64)

@@ -2,8 +2,8 @@ import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { SOCIAL_RPC_REQUEST_TYPES } from '../federation/namespace.mjs'
-import { listNoteEvents, NOTE_PULL_BATCH } from '../federation/note_index.mjs'
-import { listReactionEvents, normalizeReactionTarget, REACTION_PULL_BATCH } from '../federation/reaction_index.mjs'
+import { listNoteEvents, NOTE_PULL_BATCH } from '../federation/note/index.mjs'
+import { listReactionEvents, normalizeReactionTarget, REACTION_PULL_BATCH } from '../federation/reaction/index.mjs'
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
 
 import { discoverAccounts, discoverFollowGraph, discoverPosts } from './local.mjs'

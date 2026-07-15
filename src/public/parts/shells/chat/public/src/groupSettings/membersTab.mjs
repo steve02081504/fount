@@ -5,7 +5,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
-import { unbanMember } from '../api/groupApi.mjs'
+import { unbanMember } from '../api/groupGovernance.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
 
 /**

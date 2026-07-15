@@ -8,12 +8,12 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { replicatedWorldHookState } from '../fixtures/probes/replicatedWorldHookState.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const REPLICATED_WORLD = 'replicated_world'
 const CHAR = 'write_path_agent'
-const HOOK_KEY = '__fount_replicated_world_hook_state__'
 
 /**
  * @param {string} dataDir 数据根
@@ -34,7 +34,7 @@ async function seedHostFixtures(dataDir, username) {
 }
 
 Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async () => {
-	globalThis[HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
+	replicatedWorldHookState.reset()
 	const username = `wch-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -67,7 +67,7 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 	await addchar(groupId, CHAR, username)
 	await resolveWorld(groupId, channelId, username)
 
-	const host = globalThis[HOOK_KEY].host
+	const host = replicatedWorldHookState.host
 	assert(host, 'ChatHostConnected wired host')
 
 	await host.localData.set('inventory', { gold: 42 })

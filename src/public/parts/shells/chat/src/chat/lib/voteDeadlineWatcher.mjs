@@ -7,6 +7,7 @@ import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { getState } from '../dag/materialize.mjs'
 import { broadcastEvent } from '../ws/groupWsBroadcast.mjs'
 
+import { createDeadlineScheduler } from './deadlineScheduler.mjs'
 import {
 	appendChatInbox,
 	deriveChatInboxVoteClosedRow,
@@ -16,8 +17,7 @@ import {
 import { resolveOperatorEntityHash } from './replica.mjs'
 import { tallyVoteChoices } from './voteTally.mjs'
 
-/** @type {Map<string, ReturnType<typeof setTimeout>>} */
-const scheduledDeadlines = new Map()
+const deadlines = createDeadlineScheduler()
 
 /**
  * @param {string} ballotId ballot eventId
@@ -86,16 +86,7 @@ export async function scheduleVoteDeadlines(username, groupId) {
 		if (!ballot?.deadline) continue
 		const parsed = Date.parse(ballot.deadline)
 		if (!Number.isFinite(parsed)) continue
-		const key = scheduleKey(ballotId, groupId)
-		if (scheduledDeadlines.has(key)) continue
-		if (parsed <= Date.now()) {
-			await fireVoteClosed(username, groupId, ballot.channelId || 'default', ballotId)
-			continue
-		}
-		const timeout = setTimeout(() => {
-			scheduledDeadlines.delete(key)
-			void fireVoteClosed(username, groupId, ballot.channelId || 'default', ballotId)
-		}, parsed - Date.now())
-		scheduledDeadlines.set(key, timeout)
+		await deadlines.schedule(scheduleKey(ballotId, groupId), parsed, () =>
+			fireVoteClosed(username, groupId, ballot.channelId || 'default', ballotId))
 	}
 }

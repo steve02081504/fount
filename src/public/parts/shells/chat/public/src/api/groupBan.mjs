@@ -3,9 +3,9 @@
  * 【职责】按范围封禁成员：DAG 声誉 + 服务端 blocklist/peers 同步。
  * 【原理】校验 targetPubKeyHash 为 hex64 后调用 ban 端点，可选 postReputationSlash。
  * 【数据结构】groupId、targetPubKeyHash、scope 选项。
- * 【关联】groupClient.mjs、groupGovernance.mjs、pubKeyHex.mjs。
+ * 【关联】groupClient.mjs、groupGovernance.mjs、fount-p2p/core/hexIds。
  */
-import { isHex64 } from '../../shared/pubKeyHex.mjs'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { groupFetch, groupPath } from './groupClient.mjs'
 import { postReputationSlash } from './groupGovernance.mjs'

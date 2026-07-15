@@ -2,8 +2,8 @@
  * 在已知时间线中搜索可见帖子（索引优先；支持结构化过滤与联邦 nearby）。
  */
 import { buildPostFeedItem } from './feed/buildItem.mjs'
+import { loadViewerContext } from './feed/home.mjs'
 import { createFeedItemBuildContext, iterateVisiblePosts, iterateVisibleTimelineOwners } from './feed/iterate.mjs'
-import { loadViewerContext } from './feed.mjs'
 import { compareFeedItems } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { postMatchesQuery } from './lib/postQuery.mjs'

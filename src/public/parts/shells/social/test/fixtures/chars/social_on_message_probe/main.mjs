@@ -1,3 +1,5 @@
+import { socialOnMessageProbe } from 'fount/public/parts/shells/social/test/fixtures/probes/socialOnMessageProbe.mjs'
+
 /** @type {import('../../../../../../../../../decl/charAPI.ts').CharAPI_t} */
 export default {
 	info: {
@@ -21,15 +23,14 @@ export default {
 			 * @returns {Promise<boolean>} 是否应处理该消息
 			 */
 			OnMessage: async event => {
-				const state = globalThis.__fountSocialOnMessageProbe ??= { events: [], returnValue: true }
-				state.events.push({
+				socialOnMessageProbe.events.push({
 					authorEntityHash: event.authorEntityHash,
 					postText: event.postText,
 					mentions: event.mentions,
 					viewerEntityHash: event.viewerEntityHash,
 					postId: event.post?.id,
 				})
-				return !!state.returnValue
+				return !!socialOnMessageProbe.returnValue
 			},
 		},
 	},

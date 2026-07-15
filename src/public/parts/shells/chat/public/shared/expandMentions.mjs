@@ -6,7 +6,7 @@ import { aliasForEntity } from './aliases.mjs'
 import { formatHashShort } from './entityHash.mjs'
 import { parseInlineTokens } from './inlineTokens.mjs'
 import { disambiguateLabels } from './nameResolve.mjs'
-import { formatSocialProfileHref } from './socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
 
 /**

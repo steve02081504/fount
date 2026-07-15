@@ -1,4 +1,4 @@
-import { getChatClient } from 'fount/public/parts/shells/chat/src/api/index.mjs'
+import { getChatClient } from 'fount/public/parts/shells/chat/src/api/client.mjs'
 import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
 
 /**

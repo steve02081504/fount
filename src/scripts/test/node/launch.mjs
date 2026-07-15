@@ -364,7 +364,7 @@ async function injectFixtures(dataPath, username, copies) {
 /**
  * 启动一个 headless fount 测试节点子进程。
  * @param {object} [options={}] 启动选项
- * @param {number} [options.port] 监听端口；省略则从 8931 起扫描空闲口
+ * @param {number} [options.port] 监听端口；省略则从 28931 (TEST_PORT_BASE) 起扫描空闲口
  * @param {string} [options.dataPath] 数据目录；省略则 mkdtemp
  * @param {string} [options.username='CI-user'] 用户名
  * @param {string} [options.apiKey] API key；省略则按 port 生成

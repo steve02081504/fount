@@ -18,7 +18,7 @@ const sync = await import('../../src/timeline/sync.mjs')
 const fedExport = await import('../../src/timeline/federationExport.mjs')
 const discoverRpc = await import('../../src/discover/rpc.mjs')
 const discoverLocal = await import('../../src/discover/local.mjs')
-const feed = await import('../../src/feed.mjs')
+const feed = await import('../../src/feed/home.mjs')
 const following = await import('../../src/following.mjs')
 const socialMeta = await import('../../src/socialMeta.mjs')
 

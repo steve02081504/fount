@@ -1,11 +1,11 @@
+import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { isEntityHash128 } from './entityHash.mjs'
 import {
 	entityHashFromRecoveryPubKeyHex,
 	entityHashFromSubjectHash,
 	hashFromPubKeyHex,
 } from './entityId.mjs'
-import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
-
 /**
  * @typedef {object} FriendBinding
  * @property {string} entityHash 128 位对端 entityHash

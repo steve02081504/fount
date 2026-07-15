@@ -4,7 +4,7 @@ import {
 	mergeIncrementalSourceBatch,
 	refreshChannelMessagesView,
 } from './channelMessageStore.mjs'
-import { getMessageText } from './messageRender.mjs'
+import { getMessageText } from './render/text.mjs'
 
 /**
  * @param {Record<string, Record<string, { voters?: string[] }>> | undefined} reactions 反应映射

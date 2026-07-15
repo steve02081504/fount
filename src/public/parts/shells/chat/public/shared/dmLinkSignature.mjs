@@ -1,5 +1,4 @@
-import { normalizeHex64 } from './pubKeyHex.mjs'
-
+import { normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 /** §16 DM Link 验签域前缀。 */
 export const DM_LINK_SIGNATURE_PREFIX = 'fount-dm-link'
 

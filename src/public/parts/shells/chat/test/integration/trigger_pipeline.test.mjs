@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { onMessageProbeState } from '../fixtures/on_message_probe_state.mjs'
+import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -29,7 +29,7 @@ async function seedCharFixture(dataDir, username) {
 
 Deno.test('token bucket suppresses generation not OnMessage when exhausted', async () => {
 	const username = `tb-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -86,7 +86,7 @@ Deno.test('token bucket suppresses generation not OnMessage when exhausted', asy
 
 Deno.test('backfill ingress skips trigger pipeline', async () => {
 	const username = `bf-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,

@@ -3,13 +3,13 @@
  * 【职责】置顶/引用消息的预览摘要：拉取目标事件、缓存描述字段并生成模板插值。
  * 【原理】为置顶条与消息内 pin 卡片提供 `pinPreviewTemplateFields` 展示字段。`resolvePinMessagePreview` 解析被引用消息文本/Markdown 摘要；`clearPinPreviewCache` 在换频道时失效。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../src/api/groupApi、../core/domUtils、../core/state、messageRender
+ * 【关联】channelMessageStore、../core/domUtils、../core/state、render/text
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { hubStore } from '../core/state.mjs'
 
 import { fetchRowsForMessageEvent } from './channelMessageStore.mjs'
-import { getMessageText } from './messageRender.mjs'
+import { getMessageText } from './render/text.mjs'
 
 /** @type {Map<string, { i18n?: string, params?: Record<string, string>, text?: string }>} */
 const previewCache = new Map()

@@ -3,12 +3,26 @@
  * 【职责】Codecs 音视频中继：构建 relay 房间 ID/WebSocket URL，加入/离开 AV 房间与编解码预设。
  * 【原理】与 `streamingAv` 配合更新通话工具栏；本文件侧重 MediaStream/Encoder 与 relay 信令 UI 片段。使用独立 AV relay WebSocket（`buildAvRelayWebSocketUrl`），与群组消息 WS 分离。
  * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../shared/avRelayClient（URL）、../../../../scripts/template、core/domUtils
+ * 【关联】../shared/avRelayClient（帧协议 / URL）、../shared/avRelayPresets、../../../../scripts/template、core/domUtils
  */
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
-import { buildChatAvRelayWsUrl } from '../shared/avRelayClient.mjs'
+import {
+	AUDIO_BPS,
+	AUDIO_CHANNELS,
+	AUDIO_CODEC,
+	AUDIO_SAMPLE_RATE,
+	FRAME_AUDIO,
+	FRAME_SCREEN,
+	FRAME_VIDEO,
+	bytesToHex,
+	buildChatAvRelayWsUrl,
+	packAvFrame,
+	safeClose,
+	unpackAvFrame,
+} from '../shared/avRelayClient.mjs'
+import { CODECS_PRESETS } from '../shared/avRelayPresets.mjs'
 
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
@@ -17,26 +31,7 @@ import { buildChatAvRelayWsUrl } from '../shared/avRelayClient.mjs'
  *   [0] frame_type 0=video 1=audio 2=screen
  */
 
-/**
- * WebCodecs AV 采集/编码预设（分辨率、码率、帧率）。
- * @type {Record<string, { codec: string, w: number, h: number, bps: number, fps: number }>}
- */
-export const CODECS_PRESETS = {
-	thumb: { codec: 'vp8', w: 160, h: 120, bps: 64_000, fps: 5 },
-	low: { codec: 'vp8', w: 320, h: 240, bps: 200_000, fps: 10 },
-	med: { codec: 'vp8', w: 640, h: 480, bps: 600_000, fps: 15 },
-	high: { codec: 'vp8', w: 1280, h: 720, bps: 1_500_000, fps: 30 },
-}
-
-const FRAME_VIDEO = 0
-const FRAME_AUDIO = 1
-const FRAME_SCREEN = 2
-const FRAME_HEADER_BYTES = 26
 const KEY_MS = 2000
-const AUDIO_CODEC = 'opus'
-const AUDIO_SAMPLE_RATE = 48_000
-const AUDIO_CHANNELS = 1
-const AUDIO_BPS = 32_000
 
 /** @type {CodecsAvSession | null} */
 let activeSession = null
@@ -65,50 +60,6 @@ export function buildAvRelayRoomId(groupId, channelId) {
  */
 export function buildAvRelayWsUrl(groupId, channelId) {
 	return buildChatAvRelayWsUrl(buildAvRelayRoomId(groupId, channelId))
-}
-
-/**
- * @param {Uint8Array} bytes 16 字节 sender id
- * @returns {string} 32 位 hex
- */
-function bytesToHex(bytes) {
-	return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
-}
-
-/**
- * @param {number} frameType 0=video 1=audio
- * @param {boolean} isKey 是否关键帧
- * @param {Uint8Array} data 编码数据
- * @param {Uint8Array} selfId 本端 senderId
- * @param {number} t0 session 起点
- * @param {{ seq: number }} seqRef 序列号
- * @returns {ArrayBuffer} 打包帧
- */
-function packFrame(frameType, isKey, data, selfId, t0, seqRef) {
-	const out = new Uint8Array(FRAME_HEADER_BYTES + data.byteLength)
-	const dv = new DataView(out.buffer)
-	dv.setUint8(0, frameType)
-	dv.setUint8(1, isKey ? 1 : 0)
-	dv.setUint32(2, seqRef.seq++, false)
-	dv.setUint32(6, (performance.now() - t0) | 0, false)
-	out.set(selfId, 10)
-	out.set(data, FRAME_HEADER_BYTES)
-	return out.buffer
-}
-
-/**
- * @param {ArrayBuffer} arrayBuffer 入站帧
- * @returns {{ frameType: number, isKey: boolean, sender: string, data: ArrayBuffer } | null} 解析结果
- */
-function unpackFrame(arrayBuffer) {
-	if (arrayBuffer.byteLength < FRAME_HEADER_BYTES) return null
-	const view = new DataView(arrayBuffer)
-	return {
-		frameType: view.getUint8(0),
-		isKey: !!(view.getUint8(1) & 1),
-		sender: bytesToHex(new Uint8Array(arrayBuffer, 10, 16)),
-		data: arrayBuffer.slice(FRAME_HEADER_BYTES),
-	}
 }
 
 /**
@@ -286,7 +237,7 @@ export async function joinCodecsAvRoom(opts) {
 	 * @returns {Promise<void>}
 	 */
 	const handleInboundFrame = async arrayBuffer => {
-		const frame = unpackFrame(arrayBuffer)
+		const frame = unpackAvFrame(arrayBuffer)
 		if (!frame || frame.sender === selfHex) return
 		const isScreen = frame.frameType === FRAME_SCREEN
 		const peer = await getOrCreatePeer(frame.sender, isScreen)
@@ -405,9 +356,9 @@ export async function joinCodecsAvRoom(opts) {
 			if (videoLocal) videoLocal.srcObject = null
 			ws.close()
 			for (const peer of peers.values()) {
-				try { peer.videoDecoder.close() } catch { /* ignore */ }
-				try { peer.audioDecoder?.close() } catch { /* ignore */ }
-				try { await peer.audioCtx?.close() } catch { /* ignore */ }
+				safeClose(peer.videoDecoder)
+				safeClose(peer.audioDecoder)
+				safeClose(peer.audioCtx)
 				peer.tile.remove()
 			}
 			peers.clear()
@@ -543,7 +494,7 @@ async function startVideoEncoder(opts) {
 			if (!isVideoSending()) return
 			const raw = new Uint8Array(chunk.byteLength)
 			chunk.copyTo(raw)
-			ws.send(packFrame(frameType, chunk.type === 'key', raw, selfId, t0, videoSeqRef))
+			ws.send(packAvFrame(frameType, chunk.type === 'key', raw, selfId, t0, videoSeqRef))
 		},
 		/**
 		 * @param {Error} error 编码错误
@@ -606,7 +557,7 @@ async function startVideoEncoder(opts) {
 
 	return () => {
 		stopReader()
-		try { encoder.close() } catch { /* ignore */ }
+		safeClose(encoder)
 	}
 }
 
@@ -628,7 +579,7 @@ async function startAudioEncoder(opts) {
 			if (!isAudioSending()) return
 			const raw = new Uint8Array(chunk.byteLength)
 			chunk.copyTo(raw)
-			ws.send(packFrame(FRAME_AUDIO, chunk.type === 'key', raw, selfId, t0, audioSeqRef))
+			ws.send(packAvFrame(FRAME_AUDIO, chunk.type === 'key', raw, selfId, t0, audioSeqRef))
 		},
 		/**
 		 * @param {Error} error 编码错误
@@ -667,6 +618,6 @@ async function startAudioEncoder(opts) {
 
 	return () => {
 		stopReader()
-		try { encoder.close() } catch { /* ignore */ }
+		safeClose(encoder)
 	}
 }

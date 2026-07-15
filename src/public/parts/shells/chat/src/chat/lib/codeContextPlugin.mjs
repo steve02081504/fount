@@ -33,7 +33,7 @@ export const FOUNT_CHAT_CODE_CONTEXT_PLUGIN = {
 					? await ensureLocalAgentEntityHash(args.username, args.char_id)
 					: args.extension?.memberId
 
-				const { getChatClient } = await import('../../api/index.mjs')
+				const { getChatClient } = await import('../../api/client.mjs')
 				const { buildConversationContext } = await import('./conversationContext.mjs')
 				const chat = await getChatClient(args.username, entityHash)
 				const group = await chat.group(groupId)

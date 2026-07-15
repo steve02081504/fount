@@ -35,12 +35,12 @@ function remarkSocialDialect() {
 				hasHashtags = true
 				if (start > lastIndex)
 					parts.push({ type: 'text', value: value.slice(lastIndex, start) })
-			parts.push({
-				type: 'link',
-				url: formatSocialTopicHref(match[1]),
-				title: null,
-				children: [{ type: 'text', value: `#${match[1]}` }],
-			})
+				parts.push({
+					type: 'link',
+					url: formatSocialTopicHref(match[1]),
+					title: null,
+					children: [{ type: 'text', value: `#${match[1]}` }],
+				})
 				lastIndex = start + match[0].length
 			}
 

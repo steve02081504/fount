@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { groupEventProbe } from '../fixtures/probes/groupEventProbe.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -45,7 +46,7 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 
-	globalThis.__fountGroupEventProbe = []
+	groupEventProbe.reset()
 	const platformChatId = 950001
 	const { groupId } = await ensureBridgeGroup(username, {
 		platform: 'telegram',
@@ -71,7 +72,7 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 		botname: 'gev-bot',
 	})
 
-	const probe = globalThis.__fountGroupEventProbe
+	const probe = groupEventProbe.events
 	assertEquals(probe.length, 2)
 	assertEquals(probe[0].type, 'bot_joined_group')
 	assertEquals(probe[0].group.groupId, groupId)
@@ -101,7 +102,7 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 
-	globalThis.__fountGroupEventProbe = []
+	groupEventProbe.reset()
 	const { groupId: mineGroupId } = await ensureBridgeGroup(username, {
 		platform: 'telegram',
 		platformChatId: 950002,
@@ -121,7 +122,7 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 
 	await dispatchBridgeBotStarted(username, 'telegram', 'bot-a')
 
-	const probe = globalThis.__fountGroupEventProbe
+	const probe = groupEventProbe.events
 	assertEquals(probe.length, 1)
 	assertEquals(probe[0].type, 'bot_started')
 	assertEquals(probe[0].group.groupId, mineGroupId)

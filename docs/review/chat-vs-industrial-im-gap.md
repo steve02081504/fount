@@ -223,7 +223,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 审计 | audit-log API + 设置面板 | `auditLog.mjs` |
 | 会话备份 | list import/export JSON | `public/list/` |
 | Bridge | TG/DC/WeChat → `bridgeOperations` | `chat/src/chat/bridge/`；`shells/*bot/` |
-| 读写钩子 | view-log、persona/world、`WorldChatHost`、`ChatClient`（实体自签） | `session/AGENTS.md`；`api/index.mjs` |
+| 读写钩子 | view-log、persona/world、`WorldChatHost`、`ChatClient`（实体自签） | `session/AGENTS.md`；`api/client.mjs` |
 | 限流 | `messageRateLimitPerMin` | `messageRateLimit.mjs` |
 
 </details>

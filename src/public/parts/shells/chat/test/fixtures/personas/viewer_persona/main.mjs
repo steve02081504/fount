@@ -1,11 +1,8 @@
+import { viewerPersonaOrder } from 'fount/public/parts/shells/chat/test/fixtures/probes/viewerPersonaOrder.mjs'
+
 /**
  * persona GetChatLogForViewer — 隐藏 persona-hide-me，改写 persona-rewrite-me；顺带断言 world 已先滤。
  * @type {import('../../../../../../../../../decl/userAPI.ts').UserAPI_t}
- */
-const ORDER_KEY = '__fount_viewer_persona_order__'
-
-/**
- *
  */
 export default {
 	info: {
@@ -43,13 +40,9 @@ export default {
 			 */
 			GetChatLogForViewer: async (arg, viewer) => {
 				if (viewer?.kind !== 'user') return arg.chat_log || []
-				const sawWorldHidden = (arg.chat_log || []).some(entry =>
+				viewerPersonaOrder.worldHiddenStillPresent = (arg.chat_log || []).some(entry =>
 					String(entry.content || '').includes('hidden-marker'))
-				globalThis[ORDER_KEY] = {
-					...globalThis[ORDER_KEY] || {},
-					worldHiddenStillPresent: sawWorldHidden,
-					called: true,
-				}
+				viewerPersonaOrder.called = true
 				return (arg.chat_log || [])
 					.filter(entry => !String(entry.content || '').includes('persona-hide-me'))
 					.map(entry => {

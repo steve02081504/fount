@@ -3,7 +3,7 @@
  * 【职责】群设置内审计日志面板：虚拟列表展示 fetchGroupAuditLog 结果。
  * 【原理】initAuditLogPanel 挂载模板与 virtualList；dispose 清理监听。
  * 【数据结构】groupId、审计行 { action, actor, timestamp, ... }。
- * 【关联】groupSettings.mjs、groupApi(groupCore)、virtualList.mjs。
+ * 【关联】groupSettings.mjs、groupCore.mjs、virtualList.mjs。
  */
 import {
 	renderTemplate,
@@ -13,7 +13,7 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { createVirtualList } from '../../../../scripts/lib/virtualList.mjs'
 
-import { fetchGroupAuditLog } from './api/groupApi.mjs'
+import { fetchGroupAuditLog } from './api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 

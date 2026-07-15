@@ -3,7 +3,7 @@
  * 【职责】根据 location.hash 驱动 Hub 导航：好友列表、好友绑定私聊、或普通群+频道选择。
  * 【原理】`navigateFromHash` 解析 `parseHash()`；空 hash 或 `#friends` 切好友模式；有 groupId 时先 `loadGroups`，绑定群走 `enterFriendChat`，否则 `selectGroup`。
  * 【数据结构】hash 片段约定见 core/urlHash（`#group:groupId:channelId`、`#friends`）。
- * 【关联】init、core/urlHash、groupNav、friendBindings、friendChat、mode、serverBar。
+ * 【关联】init、core/urlHash、sidebar、friendBindings、friendChat、mode、serverBar。
  */
 import { handleUIError } from '../src/ui/errors.mjs'
 
@@ -11,9 +11,9 @@ import { hubStore } from './core/state.mjs'
 import { FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
-import { selectChannel, selectGroup } from './groupNav.mjs'
 import { setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
+import { selectChannel, selectGroup } from './sidebar/index.mjs'
 
 /** @type {Promise<void>} */
 let navigationQueue = Promise.resolve()

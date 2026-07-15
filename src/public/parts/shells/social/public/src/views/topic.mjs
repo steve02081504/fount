@@ -12,20 +12,20 @@ let currentTopicTag = null
  */
 export function initTopicView(appContext) {
 	document.getElementById('topicView')?.addEventListener('click', async event => {
-		const btn = event.target.closest('#topicFollowButton')
-		if (!btn) return
-		const tag = btn.dataset.tag
+		const followButton = event.target.closest('#topicFollowButton')
+		if (!followButton) return
+		const tag = followButton.dataset.tag
 		if (!tag) return
-		const isFollowed = btn.dataset.followed === 'true'
+		const isFollowed = followButton.dataset.followed === 'true'
 		try {
 			await appContext.socialApi('/topics/follow', {
 				method: 'POST',
 				body: JSON.stringify({ tag, follow: !isFollowed }),
 			})
-			btn.dataset.followed = String(!isFollowed)
-			btn.textContent = appContext.geti18n(!isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
-			btn.classList.toggle('btn-primary', isFollowed)
-			btn.classList.toggle('btn-outline', !isFollowed)
+			followButton.dataset.followed = String(!isFollowed)
+			followButton.textContent = appContext.geti18n(!isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
+			followButton.classList.toggle('btn-primary', isFollowed)
+			followButton.classList.toggle('btn-outline', !isFollowed)
 		}
 		catch { /* ignore */ }
 	})
@@ -53,20 +53,19 @@ export async function loadTopicView(appContext, tag) {
 	if (list) list.replaceChildren()
 	delete view.dataset.topicCursor
 
-	// 检查订阅状态
-	const followBtn = document.getElementById('topicFollowButton')
-	if (followBtn) {
-		followBtn.dataset.tag = normalizedTag
-		followBtn.dataset.followed = 'false'
-		followBtn.textContent = appContext.geti18n('social.topic.follow')
-		followBtn.className = 'btn btn-primary btn-sm'
+	const followButton = document.getElementById('topicFollowButton')
+	if (followButton) {
+		followButton.dataset.tag = normalizedTag
+		followButton.dataset.followed = 'false'
+		followButton.textContent = appContext.geti18n('social.topic.follow')
+		followButton.className = 'btn btn-primary btn-sm'
 		appContext.socialApi('/topics/followed').then(data => {
 			const tags = (data.tags || []).map(t => t.toLowerCase())
 			const isFollowed = tags.includes(normalizedTag.toLowerCase())
-			followBtn.dataset.followed = String(isFollowed)
-			followBtn.textContent = appContext.geti18n(isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
-			followBtn.classList.toggle('btn-primary', !isFollowed)
-			followBtn.classList.toggle('btn-outline', isFollowed)
+			followButton.dataset.followed = String(isFollowed)
+			followButton.textContent = appContext.geti18n(isFollowed ? 'social.topic.unfollow' : 'social.topic.follow')
+			followButton.classList.toggle('btn-primary', !isFollowed)
+			followButton.classList.toggle('btn-outline', isFollowed)
 		}).catch(() => {})
 	}
 
@@ -86,7 +85,7 @@ async function loadTopicPosts(appContext, tag, append = false) {
 	const list = document.getElementById('topicPostList')
 	if (!list) return
 
-	const cursor = append ? (view.dataset.topicCursor || '') : ''
+	const cursor = append ? view.dataset.topicCursor || '' : ''
 	const params = new URLSearchParams({ limit: '30' })
 	if (cursor) params.set('cursor', cursor)
 
@@ -110,7 +109,13 @@ async function loadTopicPosts(appContext, tag, append = false) {
 		const sentinel = ensureScrollSentinel(list, 'topicScrollSentinel')
 		bindInfiniteScroll({
 			sentinel,
+			/**
+			 * @returns {boolean} 是否还有下一页
+			 */
 			hasMore: () => !!view.dataset.topicCursor,
+			/**
+			 * @returns {Promise<void>} 加载下一页
+			 */
 			onLoad: () => loadTopicPosts(appContext, currentTopicTag ?? tag, true),
 		})
 	}

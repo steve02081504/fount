@@ -3,17 +3,12 @@
  * 【职责】DAG 分叉治理 UI：绑定顶栏分叉按钮，执行分支、合并、封锁对立叉与刷新分叉横幅。
  * 【原理】监听 `#hub-fork-branch-button` 等控件，配合 `banners.refreshDagForkBanner` 提示当前治理状态；分叉/合并成功后调用 `loadMessages` 重建频道视图以反映新 DAG 尖。
  * 【数据结构】hubStore 当前群/频道上下文与 WS 连接状态；见模块内变量 JSDoc。
- * 【关联】../../../../../scripts/i18n、../../../../../scripts/toast、../../src/api/groupApi、../banners、../core/state、../messages/messages。
+ * 【关联】../../../../../scripts/i18n、../../../../../scripts/toast、../../src/api/groupGovernance、../banners、../core/state、../messages/messages。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
-import {
-	blockOpposingForkBranch,
-	forkGroupAsNew,
-	getGroupState,
-	mergeDagTips,
-	setGovernanceBranch,
-} from '../../src/api/groupApi.mjs'
+import { getGroupState } from '../../src/api/groupCore.mjs'
+import { blockOpposingForkBranch, forkGroupAsNew, mergeDagTips, setGovernanceBranch } from '../../src/api/groupGovernance.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
 import { refreshDagForkBanner, selectedForkTipId } from '../banners.mjs'
 import { hubStore, setHubState } from '../core/state.mjs'

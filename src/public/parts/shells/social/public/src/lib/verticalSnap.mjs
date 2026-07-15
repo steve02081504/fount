@@ -4,10 +4,10 @@
 
 /**
  * @param {HTMLElement} container snap 容器
- * @param {object} [options]
+ * @param {object} [options] 回调选项
  * @param {(index: number, el: HTMLElement) => void} [options.onEnter] 进入回调（可见度 ≥ 60%）
  * @param {(index: number, el: HTMLElement) => void} [options.onLeave] 离开回调
- * @returns {{ disconnect: () => void, observe: (el: HTMLElement) => void }}
+ * @returns {{ disconnect: () => void, observe: (el: HTMLElement) => void }} 观察控制
  */
 export function bindVerticalSnap(container, { onEnter, onLeave } = {}) {
 	const observer = new IntersectionObserver(entries => {
@@ -25,7 +25,12 @@ export function bindVerticalSnap(container, { onEnter, onLeave } = {}) {
 		observer.observe(child)
 
 	return {
+		/** @returns {void} */
 		disconnect: () => observer.disconnect(),
+		/**
+		 * @param {HTMLElement} el 新 slide
+		 * @returns {void}
+		 */
 		observe: el => observer.observe(el),
 	}
 }

@@ -13,7 +13,7 @@ const getSession = createTestSession()
 
 const personalBlock = await import('../../src/personalBlock.mjs')
 const materialize = await import('../../src/timeline/materialize.mjs')
-const { loadViewerContext } = await import('../../src/feed.mjs')
+const { loadViewerContext } = await import('../../src/feed/home.mjs')
 const { canViewPost } = await import('../../src/feedVisibility.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')

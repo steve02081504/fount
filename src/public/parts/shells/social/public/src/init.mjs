@@ -14,17 +14,17 @@ import {
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
+import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
-import { bindMediaCarousel } from './mediaRender.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
+import { initLiveBroadcastView } from './views/live.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 import { initSearchView } from './views/search.mjs'
 import { initTopicView } from './views/topic.mjs'
 import { handleVideoKeydown } from './views/video.mjs'
-import { initLiveBroadcastView } from './views/live.mjs'
 
 const socialGate = createReadyGate(SOCIAL_APP_GATE)
 

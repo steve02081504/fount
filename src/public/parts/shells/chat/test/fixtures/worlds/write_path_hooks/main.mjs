@@ -1,20 +1,8 @@
+import { writePathHookState } from 'fount/public/parts/shells/chat/test/fixtures/probes/writePathHookState.mjs'
+
 /**
  * 记录 AddChatLogEntry / AfterAddChatLogEntry 次数；可选改写 entry.content。
  * @type {import('../../../../../../../../../decl/worldAPI.ts').WorldAPI_t}
- */
-const HOOK_KEY = '__fount_write_path_hook_state__'
-
-/**
- * @returns {{ addCalls: object[], afterCalls: object[], beforeSendCalls: object[] }} 计数器
- */
-function hookState() {
-	if (!globalThis[HOOK_KEY])
-		globalThis[HOOK_KEY] = { addCalls: [], afterCalls: [], beforeSendCalls: [] }
-	return globalThis[HOOK_KEY]
-}
-
-/**
- *
  */
 export default {
 	info: {
@@ -43,8 +31,7 @@ export default {
 			 * @returns {Promise<object>} 条目（可改写）
 			 */
 			AddChatLogEntry: async (arg, entry) => {
-				const state = hookState()
-				state.addCalls.push({
+				writePathHookState.addCalls.push({
 					channelId: arg?.extension?.channelId,
 					content: entry?.content,
 					role: entry?.role,
@@ -59,7 +46,7 @@ export default {
 			 * @returns {Promise<void>}
 			 */
 			AfterAddChatLogEntry: async (arg, freq) => {
-				hookState().afterCalls.push({
+				writePathHookState.afterCalls.push({
 					channelId: arg?.extension?.channelId,
 					freqLen: Array.isArray(freq) ? freq.length : 0,
 				})

@@ -5,7 +5,7 @@
  *   - hoverHtml：悬停时显示的浮动操作栏（绝对定位）；
  *   - inlineHtml：常驻显示的紧凑反馈栏（重新生成 + 点赞/点踩，仅角色消息）。
  * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../../src/lib/channelContent、../../src/lib/emojiSvg、../core/domUtils、messageActionsUi、messageRender
+ * 【关联】../../src/lib/channelContent、../../src/lib/emojiSvg、../core/domUtils、messageActionsUi、render/text
  */
 import { channelMessageText } from '../../shared/channelContent.mjs'
 import {
@@ -33,7 +33,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'
 
 import { actionButton, menuActionItem, menuSubmenu, renderActionsBar } from './messageActionsUi.mjs'
-import { isChannelMessageGenerating } from './messageRender.mjs'
+import { isChannelMessageGenerating } from './render/text.mjs'
 
 /**
  * 解析消息作者成员行声明的 ownerEntityHash。

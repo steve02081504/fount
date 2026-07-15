@@ -31,8 +31,7 @@ export async function fetchMemberReadMarkers(groupId, channelId) {
 			{ credentials: 'include' },
 		)
 		if (!response.ok) return {}
-		const data = await response.json()
-		const markers = data?.markers && typeof data.markers === 'object' ? data.markers : {}
+		const { markers = {} } = await response.json()
 		markersCache.set(cacheKey(groupId, channelId), markers)
 		return markers
 	}
@@ -84,7 +83,7 @@ export function getReadCountForMessage(groupId, channelId, msgSeq) {
 	let count = 0
 	for (const [entityHash, marker] of Object.entries(markers)) {
 		if (entityHash.toLowerCase() === viewerKey) continue
-		if (typeof marker.seq === 'number' && marker.seq >= msgSeq) count++
+		if (marker.seq >= msgSeq) count++
 	}
 	return count
 }

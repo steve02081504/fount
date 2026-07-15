@@ -1,14 +1,15 @@
 /**
  * 【文件】public/hub/serverBar.mjs
  * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `hubStore.sidebar.groups`。
- * 【原理】`renderServerBar` 填充 `#hub-server-list`；支持拖拽排序与群组入口点击（委托给 `groupNav`）。
+ * 【原理】`renderServerBar` 填充 `#hub-server-list`；支持拖拽排序与群组入口点击（委托给 `sidebar.selectGroup`）。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../../../scripts/template、../src/api/groupApi、core/domUtils、core/state、friendBindings、groupContextMenu、groupNav
+ * 【关联】../../../../scripts/template、../src/api/groupBookmarks、groupCore、core/domUtils、core/state、friendBindings、groupContextMenu、sidebar
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { aliasForGroup } from '../shared/aliases.mjs'
 import { isGroupMutedInSidebar, loadNotificationPreferences } from '../shared/notificationPreferences.mjs'
-import { getChatBookmarks, getGroupList, saveChatBookmarks } from '../src/api/groupApi.mjs'
+import { getChatBookmarks, saveChatBookmarks } from '../src/api/groupBookmarks.mjs'
+import { getGroupList } from '../src/api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
@@ -16,7 +17,6 @@ import { hubStore } from './core/state.mjs'
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
-import { selectGroup } from './groupNav.mjs'
 import {
 	clearGroupSelection,
 	handleGroupItemModifierClick,
@@ -25,6 +25,7 @@ import {
 	syncGroupSelectionStyles,
 } from './groupSelection.mjs'
 import { attachServerBarDnd } from './serverBarDnd.mjs'
+import { selectGroup } from './sidebar/index.mjs'
 import { formatUnreadBadgeHtml } from './unread.mjs'
 
 /**

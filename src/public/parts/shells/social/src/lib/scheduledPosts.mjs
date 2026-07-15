@@ -1,11 +1,10 @@
 /**
  * 定时发帖草稿队列（本地 JSONL，到点由 scheduledPostWatcher 正式 commit）。
  */
-import fs from 'node:fs'
 import { randomUUID } from 'node:crypto'
+import fs from 'node:fs'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-
 import { scheduledPostsPath } from '../paths.mjs'
 
 /**

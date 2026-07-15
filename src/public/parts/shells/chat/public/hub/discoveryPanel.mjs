@@ -7,7 +7,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/api/discoveryApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { selectGroup } from './groupNav.mjs'
+import { selectGroup } from './sidebar/index.mjs'
 
 /**
  * @param {Array<{ groupId: string, title?: string, blurb?: string, sources?: Array<{ fromNodeHash?: string }> }>} entries 发现条目

@@ -3,7 +3,7 @@
  * 【职责】群列表模态、建群对话框与 openGroup 导航到 Hub hash。
  * 【原理】renderGroupList 调 getGroupList；showCreateGroupModal → createGroup；openGroup 设 location。
  * 【数据结构】群摘要 { id, name }、模板 DOM。
- * 【关联】api/groupApi.mjs；Hub 入口与侧栏。
+ * 【关联】api/groupCore.mjs；Hub 入口与侧栏。
  */
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import {

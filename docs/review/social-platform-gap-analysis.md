@@ -244,7 +244,7 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 
 | 域 | 能力 | 证据 |
 | --- | --- | --- |
-| 原语 | 发帖/删帖、like/dislike、repost、reply、quote、follow、followers+GSH、poll、帖文编辑+`revisions[]`、Community Notes | `public/llms.txt`；`socialAPI.ts`；`endpoints/posts.mjs`；`federation/note_index.mjs` |
+| 原语 | 发帖/删帖、like/dislike、repost、reply、quote、follow、followers+GSH、poll、帖文编辑+`revisions[]`、Community Notes | `public/llms.txt`；`socialAPI.ts`；`endpoints/posts.mjs`；`federation/note/index.mjs` |
 | 信息流 | 关注 feed、`for_you`+二度公开帖+dwell、cursor 分页、无限滚动、WS prepend | `feed/ranking.mjs`、`engagement/dwell.mjs`；`infiniteScroll.mjs` |
 | 发现 | explore 账号/帖子、话题趋势（local/nearby）、搜索（倒排+cursor） | `discover/`、`trending/`、`searchIndex.mjs` |
 | 联邦 | `feed/sync`、`part_timeline_put`、Social RPC、可见性过滤导出 | `timeline/sync.mjs`、`discover/rpc.mjs`、`federationExport.mjs` |
@@ -252,7 +252,7 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 | 通知 | 八种类型 + inbox JSONL + 已读水位 + WS + Web Push | `inbox.mjs` |
 | 资料 | profile 列表、收藏夹分文件夹（per-entity）、翻译缓存、口味偏好 | `endpoints/profile.mjs`、`savedPosts.mjs`、`endpoints/taste.mjs` |
 | 可见性附属 | `hideFromDiscovery`、`follow_approve`（GSH） | `social_meta`；`vault_crypto/followApprove.mjs` |
-| Agent | `SocialClient` 工具面、`onMessage` 统一触发、per-entity feed/follower、自动回复 throttle | `api/client.mjs`、`dispatch.mjs`、`replyViaChat.mjs` |
+| Agent | `SocialClient` 工具面、`onMessage` 统一触发、per-entity feed/follower、自动回复 throttle | `api/client/index.mjs`、`dispatch.mjs`、`replyViaChat.mjs` |
 | 媒体 | EVFS 上传；scroll-snap 轮播；alt；发图前 canvas 剪辑；CW / sensitiveMedia | `mediaRender.mjs`；`composer.mjs`；`mediaRefs.mjs` |
 | 分享 | Share Pages 协议 HTTPS 中转 | `public/shared/runUri.mjs` |
 
@@ -278,13 +278,13 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 | --- | --- |
 | API 总览 | `src/public/parts/shells/social/public/llms.txt` |
 | 类型 | `src/decl/socialAPI.ts` |
-| Feed / `for_you` | `src/public/parts/shells/social/src/feed.mjs`、`feed/ranking.mjs`、`feedMerge.mjs` |
+| Feed / `for_you` | `src/public/parts/shells/social/src/feed/home.mjs`、`feed/ranking.mjs`、`feedMerge.mjs` |
 | Dwell / taste | `src/public/parts/shells/social/src/engagement/dwell.mjs`；`endpoints/taste.mjs`；`endpoints/signals.mjs` |
-| Following / follower 索引 | `src/public/parts/shells/social/src/following.mjs`、`federation/follower_index.mjs` |
+| Following / follower 索引 | `src/public/parts/shells/social/src/following.mjs`、`federation/follower/index.mjs` |
 | 搜索索引 | `src/public/parts/shells/social/src/searchIndex.mjs` |
 | 通知 inbox | `src/public/parts/shells/social/src/inbox.mjs` |
 | 关键词屏蔽 | `src/public/parts/shells/social/src/lib/contentFilter.mjs`、`mutedKeywords.mjs` |
-| Community Notes | `src/public/parts/shells/social/src/federation/note_index.mjs` |
+| Community Notes | `src/public/parts/shells/social/src/federation/note/index.mjs` |
 | Agent 分发 | `src/public/parts/shells/social/src/dispatch.mjs` |
 | 联邦导出过滤 | `src/public/parts/shells/social/src/timeline/federationExport.mjs` |
 | 前端 WS | `src/public/parts/shells/social/public/src/init.mjs` |

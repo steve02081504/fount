@@ -1,8 +1,8 @@
-import { sendGroupMessage } from '../../src/api/groupApi.mjs'
+import { sendGroupMessage } from '../../src/api/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
 import { hubStore } from '../core/state.mjs'
-import { waitForGroupWebSocketOpen } from '../groupStream.mjs'
+import { waitForGroupWebSocketOpen } from '../stream/index.mjs'
 
 import { syncChannelActionsContext } from './messageContext.mjs'
 import { getMessagesContainer } from './messageScroll.mjs'

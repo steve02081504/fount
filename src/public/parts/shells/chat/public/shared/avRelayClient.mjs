@@ -1,22 +1,41 @@
 /**
  * 【文件】public/shared/avRelayClient.mjs
- * 【职责】Chat / Social 共用的 WebCodecs + AV relay 精简客户端（推流 / 解码播画）。
+ * 【职责】WebCodecs + AV relay 精简客户端（推流 / 解码播画）；导出帧协议工具。Social live 复用 joinAvRelayRoom。
  * 【原理】26 字节帧头与 chat `avRelay.mjs` 一致；URL 基于当前页协议；preset 固定 med。
- * 【关联】chat hub codecsAv；social live-av WS
+ * 【关联】avRelayPresets；chat hub codecsAv / call；social live WS URL 在 social/shared/liveAvWsUrl
  */
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
 import { buildWebSocketUrl } from '../src/wsUrl.mjs'
 
-const PRESET = { codec: 'vp8', w: 640, h: 480, bps: 600_000, fps: 15 }
-const FRAME_VIDEO = 0
-const FRAME_AUDIO = 1
-const FRAME_HEADER = 26
+import { CODECS_PRESETS } from './avRelayPresets.mjs'
+
+const PRESET = CODECS_PRESETS.med
+/** 帧类型：摄像头视频 */
+export const FRAME_VIDEO = 0
+/** 帧类型：音频 */
+export const FRAME_AUDIO = 1
+/** 帧类型：屏幕共享 */
+export const FRAME_SCREEN = 2
+/** relay 帧头字节数（与服务端 avRelay 一致） */
+export const FRAME_HEADER_BYTES = 26
 const KEY_MS = 2000
-const AUDIO_CODEC = 'opus'
-const AUDIO_RATE = 48_000
-const AUDIO_CH = 1
-const AUDIO_BPS = 32_000
+/**
+ *
+ */
+export const AUDIO_CODEC = 'opus'
+/**
+ *
+ */
+export const AUDIO_SAMPLE_RATE = 48_000
+/**
+ *
+ */
+export const AUDIO_CHANNELS = 1
+/**
+ *
+ */
+export const AUDIO_BPS = 32_000
 
 /**
  * @typedef {object} AvRelaySession
@@ -28,14 +47,16 @@ const AUDIO_BPS = 32_000
  */
 
 /**
- * @param {string} entityHash 主播 entity hash
- * @param {string} liveId 直播场次 ID
- * @returns {string} Social live-av WebSocket URL
+ * 关闭 WebCodecs / AudioContext 等资源；已关闭时吞掉异常。
+ * @param {{ close?: () => unknown } | null | undefined} resource 可关闭资源
+ * @returns {void}
  */
-export function buildSocialLiveAvWsUrl(entityHash, liveId) {
-	return buildWebSocketUrl(
-		`/ws/parts/shells:social/live-av/${encodeURIComponent(entityHash)}/${encodeURIComponent(liveId)}`,
-	)
+export function safeClose(resource) {
+	try {
+		const closing = resource?.close?.()
+		void closing?.catch?.(() => {})
+	}
+	catch { /* ignore */ }
 }
 
 /**
@@ -61,12 +82,12 @@ export function buildChatCallWsUrl(groupId, channelId) {
  * @param {Uint8Array} bytes 原始字节
  * @returns {string} 小写 hex
  */
-function bytesToHex(bytes) {
+export function bytesToHex(bytes) {
 	return [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')
 }
 
 /**
- * @param {number} frameType 0=video 1=audio
+ * @param {number} frameType 0=video 1=audio 2=screen
  * @param {boolean} isKey 是否关键帧
  * @param {Uint8Array} data 编码载荷
  * @param {Uint8Array} selfId 本端 senderId（16 字节）
@@ -74,15 +95,15 @@ function bytesToHex(bytes) {
  * @param {{ seq: number }} seqRef 序列号引用
  * @returns {ArrayBuffer} 打包后的 relay 帧
  */
-function packFrame(frameType, isKey, data, selfId, t0, seqRef) {
-	const out = new Uint8Array(FRAME_HEADER + data.byteLength)
+export function packAvFrame(frameType, isKey, data, selfId, t0, seqRef) {
+	const out = new Uint8Array(FRAME_HEADER_BYTES + data.byteLength)
 	const dv = new DataView(out.buffer)
 	dv.setUint8(0, frameType)
 	dv.setUint8(1, isKey ? 1 : 0)
 	dv.setUint32(2, seqRef.seq++, false)
 	dv.setUint32(6, (performance.now() - t0) | 0, false)
 	out.set(selfId, 10)
-	out.set(data, FRAME_HEADER)
+	out.set(data, FRAME_HEADER_BYTES)
 	return out.buffer
 }
 
@@ -90,14 +111,14 @@ function packFrame(frameType, isKey, data, selfId, t0, seqRef) {
  * @param {ArrayBuffer} buf 入站帧
  * @returns {{ frameType: number, isKey: boolean, sender: string, data: ArrayBuffer } | null} 解析结果
  */
-function unpackFrame(buf) {
-	if (buf.byteLength < FRAME_HEADER) return null
+export function unpackAvFrame(buf) {
+	if (buf.byteLength < FRAME_HEADER_BYTES) return null
 	const view = new DataView(buf)
 	return {
 		frameType: view.getUint8(0),
 		isKey: !!(view.getUint8(1) & 1),
 		sender: bytesToHex(new Uint8Array(buf, 10, 16)),
-		data: buf.slice(FRAME_HEADER),
+		data: buf.slice(FRAME_HEADER_BYTES),
 	}
 }
 
@@ -185,7 +206,7 @@ export async function joinAvRelayRoom(opts) {
 	 */
 	const ensureAudioDecoder = () => {
 		if (audioDecoder || mode === 'preview') return
-		audioCtx = new AudioContext({ sampleRate: AUDIO_RATE })
+		audioCtx = new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE })
 		audioDecoder = new AudioDecoder({
 			/**
 			 * @param {AudioData} audioData 解码音频
@@ -219,8 +240,8 @@ export async function joinAvRelayRoom(opts) {
 		})
 		audioDecoder.configure({
 			codec: AUDIO_CODEC,
-			sampleRate: AUDIO_RATE,
-			numberOfChannels: AUDIO_CH,
+			sampleRate: AUDIO_SAMPLE_RATE,
+			numberOfChannels: AUDIO_CHANNELS,
 		})
 	}
 
@@ -236,7 +257,7 @@ export async function joinAvRelayRoom(opts) {
 	const handleInbound = arrayBuffer => {
 		onBinaryFrame?.(arrayBuffer)
 		if (asPublisher || !videoDecoder) return
-		const frame = unpackFrame(arrayBuffer)
+		const frame = unpackAvFrame(arrayBuffer)
 		if (!frame || frame.sender === selfHex) return
 
 		if (frame.frameType === FRAME_AUDIO) {
@@ -277,8 +298,8 @@ export async function joinAvRelayRoom(opts) {
 			handleInbound(event.data)
 			return
 		}
-		const msg = JSON.parse(event.data)
-		if (msg.type === 'peer_count') onPeerCount?.(msg.count)
+		const controlFrame = JSON.parse(event.data)
+		if (controlFrame.type === 'peer_count') onPeerCount?.(controlFrame.count)
 	}
 
 	await new Promise((res, rej) => {
@@ -296,15 +317,15 @@ export async function joinAvRelayRoom(opts) {
 	let videoEnabled = true
 	let audioMuted = false
 
-	if (asPublisher) 
+	if (asPublisher)
 		try {
 			mediaStream = await navigator.mediaDevices.getUserMedia({
 				video: { width: PRESET.w, height: PRESET.h, frameRate: PRESET.fps },
 				audio: {
 					echoCancellation: true,
 					noiseSuppression: true,
-					sampleRate: AUDIO_RATE,
-					channelCount: AUDIO_CH,
+					sampleRate: AUDIO_SAMPLE_RATE,
+					channelCount: AUDIO_CHANNELS,
 				},
 			})
 			if (videoLocal) {
@@ -312,22 +333,16 @@ export async function joinAvRelayRoom(opts) {
 				videoLocal.muted = true
 			}
 
-			/**
-			 * @returns {boolean} WS 是否可发
-			 */
-			const open = () => ws.readyState === WebSocket.OPEN
 			stopCapture = await startPublish(
 				mediaStream, ws, selfId, t0, videoSeq, audioSeq,
-				() => videoEnabled && open(),
-				() => !audioMuted && open(),
+				() => videoEnabled && ws.readyState === WebSocket.OPEN,
+				() => !audioMuted && ws.readyState === WebSocket.OPEN,
 			)
 		}
 		catch (err) {
 			ws.close()
 			throw err
 		}
-	
-
 	return {
 		/**
 		 * @returns {void}
@@ -336,9 +351,9 @@ export async function joinAvRelayRoom(opts) {
 			stopCapture()
 			mediaStream?.getTracks().forEach(t => t.stop())
 			if (videoLocal) videoLocal.srcObject = null
-			try { videoDecoder?.close() } catch { /* ignore */ }
-			try { audioDecoder?.close() } catch { /* ignore */ }
-			void audioCtx?.close()
+			safeClose(videoDecoder)
+			safeClose(audioDecoder)
+			safeClose(audioCtx)
 			ws.close()
 		},
 		/**
@@ -373,9 +388,9 @@ export async function joinAvRelayRoom(opts) {
 				audioHasKey = false
 			}
 			else {
-				try { audioDecoder?.close() } catch { /* ignore */ }
+				safeClose(audioDecoder)
 				audioDecoder = null
-				void audioCtx?.close()
+				safeClose(audioCtx)
 				audioCtx = null
 				audioHasKey = false
 			}
@@ -413,7 +428,7 @@ async function startPublish(stream, ws, selfId, t0, videoSeq, audioSeq, isVideoS
 			if (!isVideoSending()) return
 			const raw = new Uint8Array(chunk.byteLength)
 			chunk.copyTo(raw)
-			ws.send(packFrame(FRAME_VIDEO, chunk.type === 'key', raw, selfId, t0, videoSeq))
+			ws.send(packAvFrame(FRAME_VIDEO, chunk.type === 'key', raw, selfId, t0, videoSeq))
 		},
 		/**
 		 * @param {Error} err 编码错误
@@ -463,7 +478,7 @@ async function startPublish(stream, ws, selfId, t0, videoSeq, audioSeq, isVideoS
 			if (!isAudioSending()) return
 			const raw = new Uint8Array(chunk.byteLength)
 			chunk.copyTo(raw)
-			ws.send(packFrame(FRAME_AUDIO, chunk.type === 'key', raw, selfId, t0, audioSeq))
+			ws.send(packAvFrame(FRAME_AUDIO, chunk.type === 'key', raw, selfId, t0, audioSeq))
 		},
 		/**
 		 * @param {Error} err 编码错误
@@ -473,8 +488,8 @@ async function startPublish(stream, ws, selfId, t0, videoSeq, audioSeq, isVideoS
 	})
 	aEnc.configure({
 		codec: AUDIO_CODEC,
-		sampleRate: AUDIO_RATE,
-		numberOfChannels: AUDIO_CH,
+		sampleRate: AUDIO_SAMPLE_RATE,
+		numberOfChannels: AUDIO_CHANNELS,
 		bitrate: AUDIO_BPS,
 	})
 
@@ -502,7 +517,7 @@ async function startPublish(stream, ws, selfId, t0, videoSeq, audioSeq, isVideoS
 	return () => {
 		stopVideo()
 		stopAudio()
-		try { vEnc.close() } catch { /* ignore */ }
-		try { aEnc.close() } catch { /* ignore */ }
+		safeClose(vEnc)
+		safeClose(aEnc)
 	}
 }

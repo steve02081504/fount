@@ -9,12 +9,13 @@ import { fileURLToPath } from 'node:url'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { BUILTIN_WORLD } from '../../src/chat/session/builtinParts.mjs'
+import { localWorldHookState } from '../fixtures/probes/localWorldHookState.mjs'
+import { replicatedWorldHookState } from '../fixtures/probes/replicatedWorldHookState.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const LOCAL_WORLD = 'local_world'
 const HOSTED_WORLD = 'viewer_filter'
-const HOOK_KEY = '__fount_local_world_hook_state__'
 
 /**
  * @param {string} dataRoot 数据根
@@ -69,7 +70,7 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 	const { resolveWorld } = await import('../../src/chat/session/resolvePart.mjs')
 
 	await t.step('local world bind 写入 distribution: local', async () => {
-		globalThis[HOOK_KEY] = { promptCalls: 0, viewerCalls: 0 }
+		localWorldHookState.reset()
 		await appendSessionWorldBind(NODE_A, groupId, LOCAL_WORLD)
 		await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
 
@@ -81,17 +82,17 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 	})
 
 	await t.step('local：安装节点本机执行，未安装节点回退 BUILTIN_WORLD', async () => {
-		globalThis[HOOK_KEY] = { promptCalls: 0, viewerCalls: 0 }
+		localWorldHookState.reset()
 
 		const worldA = await resolveWorld(groupId, channelId, NODE_A)
 		assert(await promptHasLocalMarker(worldA), 'NODE_A 应加载 local_world fixture')
-		assertEquals(globalThis[HOOK_KEY].promptCalls, 1)
+		assertEquals(localWorldHookState.promptCalls, 1)
 
-		globalThis[HOOK_KEY] = { promptCalls: 0, viewerCalls: 0 }
+		localWorldHookState.reset()
 		const worldB = await resolveWorld(groupId, channelId, NODE_B)
 		assertEquals(worldB, BUILTIN_WORLD)
 		assertEquals(await promptHasLocalMarker(worldB), false)
-		assertEquals(globalThis[HOOK_KEY].promptCalls, 0)
+		assertEquals(localWorldHookState.promptCalls, 0)
 	})
 
 	await t.step('hosted 回归：未声明 distribution 的 world 折叠为 hosted', async () => {
@@ -116,7 +117,6 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 })
 
 const REPLICATED_WORLD = 'replicated_world'
-const REPLICATED_HOOK_KEY = '__fount_replicated_world_hook_state__'
 
 Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteWorldProxy', async t => {
 	const sim = await createChatFederationSim()
@@ -156,12 +156,12 @@ Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteW
 	})
 
 	await t.step('本机已装 replicated world 本机执行', async () => {
-		globalThis[REPLICATED_HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
+		replicatedWorldHookState.reset()
 		const worldA = await resolveWorld(groupId, channelId, NODE_A)
 		const prompt = await worldA.interfaces.chat.GetPrompt({})
 		assert(String(prompt?.text?.[0]?.content || '').includes('replicated-world-prompt-marker'))
-		assertEquals(globalThis[REPLICATED_HOOK_KEY].promptCalls, 1)
-		assertEquals(globalThis[REPLICATED_HOOK_KEY].hostConnected, 1)
+		assertEquals(replicatedWorldHookState.promptCalls, 1)
+		assertEquals(replicatedWorldHookState.hostConnected, 1)
 		assert(!worldA[REMOTE_WORLD_PROXY_SYMBOL])
 	})
 
@@ -178,13 +178,13 @@ Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteW
 		const { groupMetadatas } = await import('../../src/chat/session/wsLifecycle.mjs')
 		groupMetadatas.set(groupId, { username: NODE_A, chatMetadata: null })
 
-		globalThis[REPLICATED_HOOK_KEY] = { hostConnected: 0, promptCalls: 0, host: null, lastFoldIgnored: 0 }
+		replicatedWorldHookState.reset()
 		const worldB = await resolveWorld(groupId, channelId, NODE_B)
 		assert(worldB[REMOTE_WORLD_PROXY_SYMBOL])
 
 		const prompt = await worldB.interfaces.chat.GetPrompt({})
 		assert(String(prompt?.text?.[0]?.content || '').includes('replicated-world-prompt-marker'))
-		assertEquals(globalThis[REPLICATED_HOOK_KEY].promptCalls, 1, '应执行 NODE_A 侧的 world part')
+		assertEquals(replicatedWorldHookState.promptCalls, 1, '应执行 NODE_A 侧的 world part')
 
 		const chatLog = [{ content: 'rpc-roundtrip-entry', role: 'user' }]
 		const viewed = await worldB.interfaces.chat.GetChatLogForViewer(

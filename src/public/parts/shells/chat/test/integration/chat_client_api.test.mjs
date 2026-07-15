@@ -49,7 +49,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 	const { readViewerChannelMessages } = await import('../../src/chat/session/materializeViewerLog.mjs')
 
 	const groupId = await newGroup(username, { name: 'client-send' })
@@ -99,7 +99,7 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 
 	const groupId = await newGroup(username, { name: 'client-pin' })
 	const channelId = await getDefaultChannelId(username, groupId)
@@ -152,7 +152,7 @@ Deno.test('agent createGroup is allowed', async () => {
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 
 	const groupId = await newGroup(username, { name: 'noop' })
 	await addchar(groupId, CHAR_FIXTURE, username)
@@ -179,7 +179,7 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 
 	const calls = []
 	registerBridgeOperations(username, 'mock', 'bridge-bot', {
@@ -244,7 +244,7 @@ Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', as
 	})
 	await ensureServer()
 
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { Buffer } = await import('node:buffer')
 
@@ -337,7 +337,7 @@ Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () 
 
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 	const { getState } = await import('../../src/chat/dag/materialize.mjs')
 	const { resolveOperatorEntityHashForUser } = await import('../../src/entity/identity.mjs')
 	const { peekLocalSignerPubKeyHash } = await import('../../src/chat/dag/localSigner.mjs')
@@ -390,7 +390,7 @@ Deno.test('agent ChatClient may edit/delete owned human messages after setEntity
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/index.mjs')
+	const { getChatClient } = await import('../../src/api/client.mjs')
 	const {
 		setEntityOwner,
 		resolveOperatorEntityHashForUser,

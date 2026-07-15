@@ -1,5 +1,5 @@
-import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
-import { loadViewerContext } from '../feed.mjs'
+import { collectSocialRpcMerged } from '../federation/rpc/wire.mjs'
+import { loadViewerContext } from '../feed/home.mjs'
 
 import { handleSocialRpc } from './rpc.mjs'
 

@@ -1,12 +1,10 @@
 /**
  * Hub 频道消息 Store：source 合并、展示链折叠、导航补拉（无 DOM）。
  */
+import { compareHex64Asc } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
-import { compareHex64Asc } from '../../shared/pubKeyHex.mjs'
-import {
-	getChannelMessages,
-	getPinContextMessages,
-} from '../../src/api/groupApi.mjs'
+import { getChannelMessages, getPinContextMessages } from '../../src/api/groupChannel.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
 import { hubStore } from '../core/state.mjs'

@@ -119,6 +119,9 @@ export function bindDwellTracker(root, onFlush) {
 		void flushBuffer()
 	}, FLUSH_INTERVAL_MS)
 
+	/**
+	 *
+	 */
 	const onVisibility = () => {
 		if (document.visibilityState === 'hidden')
 			void flushBuffer()

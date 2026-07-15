@@ -11,7 +11,7 @@ const session = createTestSession({ tempDirPrefix: 'fount_social_poll_edit_' })
 Deno.test('poll vote updates tally projection', async () => {
 	const { username, operator } = await session()
 	const { commitTimelineEvent } = await import('../../src/timeline/append.mjs')
-	const { listPollTally } = await import('../../src/federation/poll_index.mjs')
+	const { listPollTally } = await import('../../src/federation/poll/index.mjs')
 
 	const post = await commitTimelineEvent(username, operator, {
 		type: 'post',

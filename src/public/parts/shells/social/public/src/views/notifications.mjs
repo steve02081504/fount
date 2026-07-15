@@ -1,5 +1,5 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 

@@ -10,11 +10,11 @@ import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { INBOX_HASH, updateInboxHash } from './core/urlHash.mjs'
-import { closeGroupWebSocket } from './groupStream.mjs'
 import { fetchInboxPage, markInboxSeen } from './inboxClient.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
+import { closeGroupWebSocket } from './stream/index.mjs'
 
 /** @type {string | null} */
 let nextCursor = null
@@ -127,7 +127,7 @@ function wireInboxRowClicks(host) {
 		const { groupId, channelId, eventId } = row.dataset
 		if (!groupId || !channelId || !eventId) return
 		void (async () => {
-			const { selectGroup } = await import('./groupNav.mjs')
+			const { selectGroup } = await import('./sidebar/index.mjs')
 			const { setPendingScrollTarget } = await import('./messages/channelMessageStore.mjs')
 			setPendingScrollTarget(eventId, groupId, channelId)
 			await selectGroup(groupId, channelId)

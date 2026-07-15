@@ -1,5 +1,7 @@
 /**
- * Hub 侧加载当前 viewer 实体的个人拉黑/隐藏列表（与 Social 共享）。
+ * Hub 专属：缓存 viewer 个人拉黑/隐藏列表并用于成员/消息过滤。
+ * 列表本体由 Social relationships API 写入；纯转换在 `shared/personalFilter.mjs`。
+ * Social 前端不引用本模块（走自有 feed/profile 后端过滤）。
  */
 import {
 	fetchPersonalFilterSets,

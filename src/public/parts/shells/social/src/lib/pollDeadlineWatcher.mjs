@@ -1,10 +1,11 @@
 /**
- * Social poll 截止 watcher（镜像 chat voteDeadlineWatcher 模式）。
+ * Social poll 截止 watcher。
  */
 import { notifyUser } from '../../../../../../server/web_server/notify/notify.mjs'
-import { getReplicaUsernamesProvider } from '../federation/follower_index_registry.mjs'
+import { createDeadlineScheduler } from '../../../chat/src/chat/lib/deadlineScheduler.mjs'
+import { getReplicaUsernamesProvider } from '../federation/follower/registry.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
-import { listPollTally, readPollTally } from '../federation/poll_index.mjs'
+import { listPollTally, readPollTally } from '../federation/poll/index.mjs'
 import { appendPollClosedInboxRow } from '../inbox.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'
@@ -12,8 +13,7 @@ import { pushFeedUpdate } from '../ws/feedHub.mjs'
 
 import { isPollClosed } from './poll.mjs'
 
-/** @type {Map<string, ReturnType<typeof setTimeout>>} */
-const scheduledDeadlines = new Map()
+const deadlines = createDeadlineScheduler()
 
 /**
  * @param {string} entityHash 作者
@@ -70,17 +70,8 @@ export async function schedulePollDeadlineForPost(username, entityHash, post) {
 	if (!poll?.deadline) return
 	const parsed = Date.parse(String(poll.deadline))
 	if (!Number.isFinite(parsed)) return
-	const key = scheduleKey(owner, post.id)
-	if (scheduledDeadlines.has(key)) return
-	if (parsed <= Date.now()) {
-		await firePollClosed(username, owner, post.id)
-		return
-	}
-	const timeout = setTimeout(() => {
-		scheduledDeadlines.delete(key)
-		void firePollClosed(username, owner, post.id)
-	}, parsed - Date.now())
-	scheduledDeadlines.set(key, timeout)
+	await deadlines.schedule(scheduleKey(owner, post.id), parsed, () =>
+		firePollClosed(username, owner, post.id))
 }
 
 /**

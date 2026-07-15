@@ -8,7 +8,8 @@ import {
 	subscribeAvRelayFrames,
 } from '../../../chat/src/chat/ws/avRelay.mjs'
 
-import { ingestBridgedLiveSignal, liveBridgeTokenFor } from './link.mjs'
+import { ingestBridgedLiveSignal } from './hub.mjs'
+import { liveBridgeTokenFor } from './link.mjs'
 import { loadLiveSession } from './session.mjs'
 
 /**

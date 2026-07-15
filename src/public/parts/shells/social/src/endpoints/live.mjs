@@ -95,7 +95,7 @@ export function registerLiveRoutes(router) {
 				return
 			}
 		}
-		if (!canJoinLiveRoom(username, entityHash, liveId, client.entityHash) && !session.federatedProxy) {
+		if (!canJoinLiveRoom(username, entityHash, liveId) && !session.federatedProxy) {
 			ws.close(4004, 'not_live')
 			return
 		}

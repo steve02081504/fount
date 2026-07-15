@@ -1,20 +1,8 @@
+import { writePathHookState } from 'fount/public/parts/shells/chat/test/fixtures/probes/writePathHookState.mjs'
+
 /**
  * BeforeUserSend 改写 / 拒绝。
  * @type {import('../../../../../../../../../decl/userAPI.ts').UserAPI_t}
- */
-const HOOK_KEY = '__fount_write_path_hook_state__'
-
-/**
- * @returns {{ addCalls: object[], afterCalls: object[], beforeSendCalls: object[] }} 计数器
- */
-function hookState() {
-	if (!globalThis[HOOK_KEY])
-		globalThis[HOOK_KEY] = { addCalls: [], afterCalls: [], beforeSendCalls: [] }
-	return globalThis[HOOK_KEY]
-}
-
-/**
- *
  */
 export default {
 	info: {
@@ -46,21 +34,21 @@ export default {
 				extension: {},
 			}),
 			/**
-			 * @param {object} ctx BeforeUserSend 上下文
+			 * @param {object} context BeforeUserSend 上下文
 			 * @returns {Promise<object | undefined>} 改写/拒绝
 			 */
-			BeforeUserSend: async ctx => {
-				hookState().beforeSendCalls.push({
-					channelId: ctx.channelId,
-					text: ctx.input?.content,
+			BeforeUserSend: async context => {
+				writePathHookState.beforeSendCalls.push({
+					channelId: context.channelId,
+					text: context.input?.content,
 				})
-				const text = String(ctx.input?.content || '')
+				const text = String(context.input?.content || '')
 				if (text.includes('persona-reject-me'))
 					return { reject: 'persona rejected send' }
 				if (text.includes('persona-rewrite-me'))
 					return {
 						input: {
-							...ctx.input,
+							...context.input,
 							type: 'text',
 							content: text.replace('persona-rewrite-me', 'persona-rewritten'),
 						},

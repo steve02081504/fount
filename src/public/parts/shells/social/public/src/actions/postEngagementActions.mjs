@@ -1,7 +1,7 @@
 import { mountTranslationBlock, requestTranslation, resolveTargetLang } from '/scripts/features/translate.mjs'
-import { SOCIAL_API } from '../lib/apiClient.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
+import { SOCIAL_API } from '../lib/apiClient.mjs'
 import {
 	applyDislikeButtonOptimistic,
 	applyLikeButtonOptimistic,

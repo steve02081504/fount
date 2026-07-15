@@ -86,7 +86,9 @@ export async function runSearchView(appContext) {
 		const sentinel = ensureScrollSentinel(list, 'searchViewScrollSentinel')
 		bindInfiniteScroll({
 			sentinel,
+			/** @returns {boolean} 是否还有下一页 */
 			hasMore: () => !!cursor,
+			/** @returns {Promise<void>} */
 			onLoad: async () => {
 				const p2 = new URLSearchParams(baseParams)
 				p2.set('cursor', cursor)

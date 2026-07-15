@@ -245,7 +245,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 
 	let hideThreshold = -0.5
 	try {
-		const rep = await import('../../social/src/federation/reputation_social.mjs')
+		const rep = await import('../../social/src/federation/reputation/index.mjs')
 		hideThreshold = Number(rep.SOCIAL_REP_HIDE_THRESHOLD)
 	}
 	catch { /* social 未装 */ }

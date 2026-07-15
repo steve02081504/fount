@@ -7,26 +7,28 @@ import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fo
 
 import { searchPosts } from '../search.mjs'
 
+/** part_query kind：联邦帖文搜索 */
 export const POST_SEARCH_KIND = 'post_search'
 
 /**
- * @param {{ replicaUsername?: string }} ctx 入站上下文
+ * @param {{ replicaUsername?: string }} apiContext 入站上下文
  * @param {unknown} query 查询
  * @returns {Promise<object[]>} 行
  */
-export async function localPostSearchHandler(ctx, query) {
-	const username = String(ctx.replicaUsername || '').trim()
+export async function localPostSearchHandler(apiContext, query) {
+	const username = String(apiContext.replicaUsername || '').trim()
 	if (!username) return []
-	const q = String(query && typeof query === 'object' ? /** @type {{ q?: unknown }} */(query).q : '' || '').trim()
-	const limit = Math.min(Math.max(Number(
-		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */(query).limit : 20,
-	) || 20, 1), 32)
+	const { q: rawQ, limit: rawLimit, author, media, tag } = query && typeof query === 'object'
+		? /** @type {{ q?: unknown, limit?: unknown, author?: unknown, media?: unknown, tag?: unknown }} */ query
+		: {}
+	const q = String(rawQ || '').trim()
+	const limit = Math.min(Math.max(Number(rawLimit) || 20, 1), 32)
 	const result = await searchPosts(username, {
 		q,
 		limit,
-		author: query && typeof query === 'object' ? /** @type {{ author?: unknown }} */(query).author : undefined,
-		media: query && typeof query === 'object' ? /** @type {{ media?: unknown }} */(query).media : undefined,
-		tag: query && typeof query === 'object' ? /** @type {{ tag?: unknown }} */(query).tag : undefined,
+		author,
+		media,
+		tag,
 		scope: 'local',
 	})
 	const nodeHash = String(getNodeHash() || '').toLowerCase()
@@ -85,10 +87,14 @@ export async function buildNearbyPostSearch(username, options = {}) {
 		tag: options.tag,
 	}, {
 		maxHits: 64,
+		/**
+		 * @param {object} row 搜索行
+		 * @returns {string} 去重键
+		 */
 		rowKey: row => {
 			if (!row || typeof row !== 'object') return ''
-			const entityHash = String(/** @type {{ entityHash?: unknown }} */(row).entityHash || '').toLowerCase()
-			const postId = String(/** @type {{ postId?: unknown }} */(row).postId || '')
+			const entityHash = String(row.entityHash || '').toLowerCase()
+			const postId = String(row.postId || '')
 			return entityHash && postId ? `${entityHash}:${postId}` : ''
 		},
 	})
@@ -97,16 +103,16 @@ export async function buildNearbyPostSearch(username, options = {}) {
 	const items = []
 	for (const raw of rows) {
 		if (!raw || typeof raw !== 'object') continue
-		const entityHash = String(/** @type {{ entityHash?: unknown }} */(raw).entityHash || '').trim().toLowerCase()
-		const postId = String(/** @type {{ postId?: unknown }} */(raw).postId || '').trim()
-		const event = /** @type {{ event?: object }} */(raw).event
+		const entityHash = String(raw.entityHash || '').trim().toLowerCase()
+		const postId = String(raw.postId || '').trim()
+		const event = raw.event
 		if (!entityHash || !postId || !event) continue
 		// 入站清洗：仅公开可见摘录，不信任密文字段
 		if (event.content?.visibility === 'followers') continue
 		items.push({
 			entityHash,
 			postId,
-			hlc: event.hlc || /** @type {{ hlc?: unknown }} */(raw).hlc || null,
+			hlc: event.hlc || raw.hlc || null,
 			post: {
 				...event,
 				id: postId,
@@ -118,7 +124,7 @@ export async function buildNearbyPostSearch(username, options = {}) {
 				},
 			},
 			federated: true,
-			nodeHash: String(/** @type {{ nodeHash?: unknown }} */(raw).nodeHash || '').toLowerCase(),
+			nodeHash: String(raw.nodeHash || '').toLowerCase(),
 		})
 		if (items.length >= limit) break
 	}

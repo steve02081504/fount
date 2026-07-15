@@ -11,21 +11,17 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import {
-	createChannelThread,
-	getChannelViewLog,
-	getGroupState,
-	sendGroupMessage,
-} from '../src/api/groupApi.mjs'
+import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src/api/groupChannel.mjs'
+import { getGroupState } from '../src/api/groupCore.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 
 import { activeCharPartNames } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
-import { bindChannelMessageActions } from './messages/messageActionsHandlers.mjs'
+import { bindChannelMessageActions } from './messages/actions/handlers.mjs'
 import { setChannelMessageActionsContext } from './messages/messageActionsState.mjs'
-import { localizeRenderedMessages, renderChannelMessageBlock } from './messages/messageRender.mjs'
 import { syncChannelActionsContext } from './messages/messages.mjs'
 import { wireMessageReactions } from './messages/reactions.mjs'
+import { localizeRenderedMessages, renderChannelMessageBlock } from './messages/render/index.mjs'
 import { applyAvatarsTo } from './presence.mjs'
 
 /** @type {{ groupId: string, parentChannelId: string, threadChannelId: string, parentEventId: string, messages: object[], reactions: Record<string, Record<string, { voters?: string[] }>> } | null} */

@@ -18,7 +18,7 @@ import { openThread } from '../threadDrawer.mjs'
 
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
-import { getMessageText } from './messageRender.mjs'
+import { getMessageText } from './render/text.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null

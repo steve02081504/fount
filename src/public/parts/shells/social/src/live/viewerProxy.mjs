@@ -94,6 +94,9 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 		ingestBridgedLiveSignal(username, entityHash, liveId, msg)
 	})
 
+	/**
+	 *
+	 */
 	const closer = () => {
 		try { remote.close() } catch { /* ignore */ }
 		proxies.delete(key)

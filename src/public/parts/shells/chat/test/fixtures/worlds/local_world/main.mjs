@@ -1,20 +1,8 @@
+import { localWorldHookState } from 'fount/public/parts/shells/chat/test/fixtures/probes/localWorldHookState.mjs'
+
 /**
- * local distribution 测试 world；钩子留 globalThis 可观测痕迹。
+ * local distribution 测试 world。
  * @type {import('../../../../../../../../../decl/worldAPI.ts').WorldAPI_t}
- */
-const HOOK_KEY = '__fount_local_world_hook_state__'
-
-/**
- * @returns {{ promptCalls: number, viewerCalls: number }} 调用计数
- */
-function hookState() {
-	if (!globalThis[HOOK_KEY])
-		globalThis[HOOK_KEY] = { promptCalls: 0, viewerCalls: 0 }
-	return globalThis[HOOK_KEY]
-}
-
-/**
- *
  */
 export default {
 	distribution: 'local',
@@ -42,7 +30,7 @@ export default {
 			 * @returns {Promise<object>} 带标记的 prompt
 			 */
 			GetPrompt: async () => {
-				hookState().promptCalls++
+				localWorldHookState.promptCalls++
 				return {
 					text: [{ content: 'local-world-prompt-marker', important: 0 }],
 					additional_chat_log: [],
@@ -54,7 +42,7 @@ export default {
 			 * @returns {Promise<object[]>} 原 chat_log
 			 */
 			GetChatLogForViewer: async arg => {
-				hookState().viewerCalls++
+				localWorldHookState.viewerCalls++
 				return arg.chat_log || []
 			},
 		},

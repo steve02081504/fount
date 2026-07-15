@@ -3,11 +3,11 @@
  * 【职责】Hub 杂项初始化：浏览器通知权限、成就钩子，以及将 char/world part 拖入群组的导入逻辑。
  * 【原理】`setupMisc` 在 `init` 末尾注册拖放区与通知按钮；`setupPartDragDrop` 高亮可放置区域；拖入 part 可能触发群状态变更后刷新消息。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/toast、../src/achievements、../src/api/groupApi、core/state。
+ * 【关联】../../../../scripts/toast、../src/achievements、../src/api/groupClient、core/state。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { initializeAchievements } from '../src/achievements.mjs'
-import { groupRequest } from '../src/api/groupApi.mjs'
+import { groupRequest } from '../src/api/groupClient.mjs'
 
 import { hubStore } from './core/state.mjs'
 

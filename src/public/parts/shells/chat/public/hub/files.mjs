@@ -3,11 +3,11 @@
  * 【职责】群组文件抽屉：列出频道附件、预览/下载，并与 Hub 主布局的开关状态联动。
  * 【原理】`wireFilesDrawer` / `openFilesDrawer` 控制侧滑抽屉显隐与 `#hub-files-drawer` 内容刷新。
  * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、core/domUtils
+ * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、core/domUtils
  */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { confirmI18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
-import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupApi.mjs'
+import { deleteGroupFile, getGroupState, updateFileSystemFolder } from '../src/api/groupCore.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 /** @type {string | null} */

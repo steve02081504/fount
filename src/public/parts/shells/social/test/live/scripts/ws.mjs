@@ -42,9 +42,9 @@ const postRun = await waitForWsFrame({
 	trigger: async () => {
 		const post = await socialApi('POST', '/posts', {
 			entityHash,
-		text: `ws-push ${Date.now()}`,
-		visibility: 'public',
-		locale: 'zh-CN',
+			text: `ws-push ${Date.now()}`,
+			visibility: 'public',
+			locale: 'zh-CN',
 		})
 		if (post.status !== 200) throw new Error(`post failed ${post.status}`)
 	},

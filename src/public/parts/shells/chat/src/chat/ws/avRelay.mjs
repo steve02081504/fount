@@ -265,15 +265,15 @@ function fanoutBinary(roomId, room, buf, fromWs, opts = {}) {
  * @returns {void}
  */
 function handleTextControl(roomId, room, ws, data, meta) {
-	let msg
-	try { msg = JSON.parse(String(data)) }
+	let controlFrame
+	try { controlFrame = JSON.parse(String(data)) }
 	catch { return }
-	if (!msg || typeof msg !== 'object') return
+	if (!controlFrame || typeof controlFrame !== 'object') return
 	const state = room.get(ws)
 	if (!state) return
 
-	if (msg.type === 'subscribe') {
-		const mode = String(msg.mode || '').trim().toLowerCase()
+	if (controlFrame.type === 'subscribe') {
+		const mode = String(controlFrame.mode || '').trim().toLowerCase()
 		if (mode === 'preview' || mode === 'full') {
 			state.mode = mode
 			if (mode === 'full') state.lastPreviewAt = 0
@@ -281,8 +281,8 @@ function handleTextControl(roomId, room, ws, data, meta) {
 		return
 	}
 
-	if (msg.type !== 'hello') return
-	const senderId = String(msg.senderId || '').trim().toLowerCase()
+	if (controlFrame.type !== 'hello') return
+	const senderId = String(controlFrame.senderId || '').trim().toLowerCase()
 	if (!/^[0-9a-f]{32}$/.test(senderId)) return
 	state.senderId = senderId
 	if (state.entityHash) {

@@ -9,11 +9,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { allowNoise } from 'fount/scripts/test/core/allowNoise.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { replicatedWorldHookState } from '../fixtures/probes/replicatedWorldHookState.mjs'
 import { createChatFederationSim } from '../simulation/federation.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const REPLICATED_WORLD = 'replicated_world'
-const HOOK_KEY = '__fount_replicated_world_hook_state__'
 
 /**
  * @param {string} dataRoot 数据根
@@ -65,11 +65,11 @@ Deno.test('world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 
 	await t.step('ChatHostConnected 接线且 A set → B get 收敛', async () => {
 		resetWorldHostConnectedCacheForTests()
-		globalThis[HOOK_KEY] = { hostConnected: 0, host: null, lastFoldIgnored: 0 }
+		replicatedWorldHookState.reset()
 
 		await resolveWorld(groupId, channelId, NODE_A)
-		assertEquals(globalThis[HOOK_KEY].hostConnected, 1)
-		assert(globalThis[HOOK_KEY].host)
+		assertEquals(replicatedWorldHookState.hostConnected, 1)
+		assert(replicatedWorldHookState.host)
 
 		const hostA = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
 		await hostA.state.set('weather', 'rain')
@@ -83,7 +83,7 @@ Deno.test('world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 	})
 
 	await t.step('越权写入落 DAG 但折叠层忽略', async () => {
-		globalThis[HOOK_KEY] = { hostConnected: 0, host: null, lastFoldIgnored: 0 }
+		replicatedWorldHookState.reset()
 		const protectedKey = `protected/${ownerSigner.sender}/gold`
 		const hostA = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
 		await hostA.state.set(protectedKey, 100)
@@ -105,7 +105,7 @@ Deno.test('world_state: 双 replica 状态收敛 + 越权折叠忽略 + 联邦 6
 
 		const hostA2 = createWorldChatHost(NODE_A, groupId, REPLICATED_WORLD)
 		assertEquals(await foldAuthorizedValue(hostA2, protectedKey), 100)
-		assert(globalThis[HOOK_KEY].lastFoldIgnored >= 1)
+		assert(replicatedWorldHookState.lastFoldIgnored >= 1)
 		// 分层语义锁定：shell LWW reducer 世界无关、不裁权限——state.get 返回越权后值；
 		// "忽略越权写入" 是 world 折叠层（state.log 自定义 fold）的职责，见上一断言。
 		assertEquals(await hostA2.state.get(protectedKey), 9999)

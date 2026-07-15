@@ -4,12 +4,14 @@ import path from 'node:path'
 import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 import {
 	AUTHOR_BOOST_PER_DWELL,
-	DWELL_MIN_MS,
 	normalizeDwellEntry,
 	TAG_WEIGHT_PER_DWELL,
 } from '../lib/dwellSignal.mjs'
 import { extractHashtagsFromText } from '../lib/hashtags.mjs'
 
+/**
+ *
+ */
 export {
 	AUTHOR_BOOST_PER_DWELL,
 	DWELL_MIN_MS,

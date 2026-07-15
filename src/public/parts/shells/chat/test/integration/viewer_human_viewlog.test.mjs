@@ -8,13 +8,13 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { viewerPersonaOrder } from '../fixtures/probes/viewerPersonaOrder.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR = 'viewer_agent'
 const WORLD = 'human_viewer'
 const PERSONA = 'viewer_persona'
-const ORDER_KEY = '__fount_viewer_persona_order__'
 
 /**
  * @param {string} dataDir 数据根
@@ -90,7 +90,7 @@ async function setupHumanViewerGroup() {
 }
 
 Deno.test('view-log: hide/rewrite + world-before-persona + agent parity', async () => {
-	globalThis[ORDER_KEY] = undefined
+	viewerPersonaOrder.reset()
 	const { username, groupId, channelId, messageTexts } = await setupHumanViewerGroup()
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
 	const { readViewerChannelMessages } = await import('../../src/chat/session/materializeViewerLog.mjs')
@@ -112,8 +112,8 @@ Deno.test('view-log: hide/rewrite + world-before-persona + agent parity', async 
 	assert(viewTexts.some(text => text.includes('persona-rewritten')), `persona rewrite on view-log; got=${JSON.stringify(viewTexts)}`)
 	assert(messages.some(row => row.extension?.viewerRewritten), 'viewerRewritten flag')
 
-	assertEquals(globalThis[ORDER_KEY]?.called, true)
-	assertEquals(globalThis[ORDER_KEY]?.worldHiddenStillPresent, false)
+	assertEquals(viewerPersonaOrder.called, true)
+	assertEquals(viewerPersonaOrder.worldHiddenStillPresent, false)
 
 	const request = await getChatRequest(groupId, CHAR, channelId, { replicaUsername: username })
 	const agentTexts = (request.chat_log || []).map(entry => String(entry.content || ''))

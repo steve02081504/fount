@@ -1,8 +1,8 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /**
  * 关闭收藏帖模态框。

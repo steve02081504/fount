@@ -14,7 +14,7 @@ import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
  */
 async function shareOrCopyPostLink(entityHash, postId, title) {
 	const url = formatSocialShareHttpsUrl(entityHash, postId)
-	if (typeof navigator.share === 'function') {
+	if (typeof navigator.share === 'function') 
 		try {
 			await navigator.share({ title: title || 'fount', url })
 			return 'shared'
@@ -22,7 +22,7 @@ async function shareOrCopyPostLink(entityHash, postId, title) {
 		catch (err) {
 			if (err?.name === 'AbortError') return 'shared'
 		}
-	}
+	
 	await copyTextToClipboard(url)
 	return 'copied'
 }

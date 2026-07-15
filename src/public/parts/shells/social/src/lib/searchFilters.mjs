@@ -64,7 +64,7 @@ export function postMatchesFilters(post, filters) {
 		const text = String(post.content?.text || '')
 		const tags = [
 			...extractHashtagsFromText(text),
-			...(Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : []),
+			...Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : [],
 		]
 		if (!tags.includes(filters.tag)) return false
 	}

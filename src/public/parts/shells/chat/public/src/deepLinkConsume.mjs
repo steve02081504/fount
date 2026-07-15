@@ -3,13 +3,16 @@
  * 【职责】消费 fount://run 与 ?invite= 深链：入群、建 DM、跳转 Social 资料、暂存待处理邀请。
  */
 
-import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
+import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social/shared/runUri.mjs'
 
 
-import { isHex64 } from '../shared/pubKeyHex.mjs'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { parseDmRunUri, parseJoinRunUri, parseMessageRunUri } from '../shared/runUri.mjs'
 
-import { createDirectMessageByPubKeys, getFederationSettings, getGroupState, joinGroup } from './api/groupApi.mjs'
+import { getFederationSettings } from './api/federationSettings.mjs'
+import { getGroupState, joinGroup } from './api/groupCore.mjs'
+import { createDirectMessageByPubKeys } from './api/groupDm.mjs'
 import { notifyHubGroupJoined } from './hubBroadcast.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
 import { resolvePowForJoin } from './powJoin.mjs'

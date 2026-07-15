@@ -21,12 +21,12 @@ import {
 	unregisterFollowingScanProvider,
 	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
-} from './src/federation/follower_index_registry.mjs'
-import { applyFollowedBlockSignal } from './src/federation/reputation_social.mjs'
+} from './src/federation/follower/registry.mjs'
+import { applyFollowedBlockSignal } from './src/federation/reputation/index.mjs'
 import { registerEntityKeyChainProvider } from './src/federation/write_auth.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'
-import { commitEntityKeyRevoke, commitEntityKeyRotate } from './src/timeline/entity_key_commit.mjs'
+import { commitEntityKeyRevoke, commitEntityKeyRotate } from './src/timeline/entityKey/commit.mjs'
 import { getTimelineMaterialized } from './src/timeline/materialize.mjs'
 import { ingestRemoteTimelineEvent } from './src/timeline/sync.mjs'
 

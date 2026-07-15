@@ -1,16 +1,17 @@
+import { parseSocialRunUri } from '../../shared/runUri.mjs'
+
 import { publishPost } from './composer.mjs'
 import { activateView } from './viewChrome.mjs'
-import { parseSocialRunUri } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
+import { loadLiveView } from './views/live.mjs'
 import { loadNotifications } from './views/notifications.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
-import { loadTaste } from './views/taste.mjs'
 import { loadSearchView } from './views/search.mjs'
+import { loadTaste } from './views/taste.mjs'
 import { loadTopicView } from './views/topic.mjs'
 import { loadVideoView } from './views/video.mjs'
-import { loadLiveView } from './views/live.mjs'
 
 /**
  * 刷新当前可见视图中的帖子列表。

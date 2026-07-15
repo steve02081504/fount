@@ -17,7 +17,8 @@ import {
 	handleGroupSocketIdentityMessage,
 	handleGroupSocketRpcMessage,
 } from '../chat/ws/groupWsRpc.mjs'
-import { runAuthenticatedWs } from '../ws_auth.mjs'
+
+import { runAuthenticatedWs } from './wsAuth.mjs'
 
 /**
  * @param {import('npm:websocket-express').Router} router Express 路由

@@ -1,7 +1,7 @@
 /**
  * Hub 横幅与固定 DOM 节点的声明式绑定（订阅 hubStore / watchHubState）。
  */
-import { getGroupState } from '../../src/api/groupApi.mjs'
+import { getGroupState } from '../../src/api/groupCore.mjs'
 
 import { hubStore, setHubState, watchHubState } from './state.mjs'
 

@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals, assertNotEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { onMessageProbeState } from '../fixtures/on_message_probe_state.mjs'
+import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -59,7 +59,7 @@ async function waitUntil(predicate, timeoutMs = 8000) {
 
 Deno.test('per-recipient inbox: @operator and @agent', async () => {
 	const username = `inbox-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -116,7 +116,7 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 
 Deno.test('@Charname plain text does not trigger char reply', async () => {
 	const username = `inbox-char-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -154,7 +154,7 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 
 Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays silent', async () => {
 	const username = `trig-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -209,7 +209,7 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 
 Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage', async () => {
 	const username = `trig-dm-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
+	const probe = onMessageProbe
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,

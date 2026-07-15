@@ -17,12 +17,12 @@ import { createMember } from './member.mjs'
 import { createRole } from './role.mjs'
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @param {string} groupId 群 ID
  * @param {object} projection 1.4 群投影
  * @returns {object} Group 鸭子类型
  */
-export function createGroup(ctx, groupId, projection) {
+export function createGroup(apiContext, groupId, projection) {
 	return {
 		id: groupId,
 		name: projection.name || groupId,
@@ -43,7 +43,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async stop() {
 					const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
-					await requireBridgeOperation(ctx.username, bridge, 'stopSelf')()
+					await requireBridgeOperation(apiContext.username, bridge, 'stopSelf')()
 				},
 			}
 		},
@@ -51,9 +51,9 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<object[]>} 频道列表
 		 */
 		async channels() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			return Object.entries(state.channels || {}).map(([channelId, channel]) =>
-				createChannel(ctx, groupId, channelId, {
+				createChannel(apiContext, groupId, channelId, {
 					name: channel.name || channelId,
 					kind: channel.parentChannelId && channel.parentEventId ? 'thread' : 'text',
 				}))
@@ -63,14 +63,14 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<object>} group_meta_update 事件 Channel
 		 */
 		async channel(channelId) {
-			const { channel } = await buildConversationContext(ctx.username, groupId, channelId)
-			return createChannel(ctx, groupId, channelId, channel)
+			const { channel } = await buildConversationContext(apiContext.username, groupId, channelId)
+			return createChannel(apiContext, groupId, channelId, channel)
 		},
 		/**
 		 * @returns {Promise<object>} group_meta_update 事件 默认频道
 		 */
 		async defaultChannel() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const channelId = state.groupSettings?.defaultChannelId || 'default'
 			return this.channel(channelId)
 		},
@@ -79,21 +79,21 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<{ members: object[], page: number, pageCount: number }>} 分页成员
 		 */
 		async members(opts = {}) {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.botname) {
 				const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
 				const { resolveBridgeIdentity } = await import('../chat/bridge/identity.mjs')
-				const listMembers = requireBridgeOperation(ctx.username, bridge, 'listMembers')
+				const listMembers = requireBridgeOperation(apiContext.username, bridge, 'listMembers')
 				const rows = await listMembers({ platformChatId: bridge.platformChatId })
 				const members = await Promise.all(rows.map(async row => {
 					const entityHash = await resolveBridgeIdentity(
-						ctx.username,
+						apiContext.username,
 						bridge.platform,
 						row.platformUserId,
 						row.displayName,
 					)
-					return createMember(ctx, groupId, entityHash, {
+					return createMember(apiContext, groupId, entityHash, {
 						memberKind: 'user',
 						displayName: row.displayName || entityHash.slice(64, 72),
 						platformUserId: String(row.platformUserId),
@@ -108,7 +108,7 @@ export function createGroup(ctx, groupId, projection) {
 				pageCount,
 				members: slice.map(([key, member]) => {
 					const hash = memberEntityHash(member)
-					return createMember(ctx, groupId, hash || key, member)
+					return createMember(apiContext, groupId, hash || key, member)
 				}),
 			}
 		},
@@ -117,30 +117,30 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<object | null>} Member
 		 */
 		async member(entityHash) {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const key = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!key) return null
 			const member = state.members[key]
 			const hash = memberEntityHash(member) || entityHash
-			return createMember(ctx, groupId, hash, member)
+			return createMember(apiContext, groupId, hash, member)
 		},
 		/**
 		 * @returns {Promise<object[]>} 角色列表
 		 */
 		async roles() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			return Object.entries(state.roles || {}).map(([roleId, role]) =>
-				createRole(ctx, groupId, roleId, role))
+				createRole(apiContext, groupId, roleId, role))
 		},
 		/**
 		 * @param {string} roleId 角色 ID
 		 * @returns {Promise<object | null>} Role
 		 */
 		async role(roleId) {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const roleRow = state.roles?.[roleId]
 			if (!roleRow) return null
-			return createRole(ctx, groupId, roleId, roleRow)
+			return createRole(apiContext, groupId, roleId, roleRow)
 		},
 		/**
 		 * @param {object} opts 频道参数
@@ -154,19 +154,19 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<string>} 邀请深链文本
 		 */
 		async createInvite() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.platformChatId) {
 				const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
-				return requireBridgeOperation(ctx.username, bridge, 'createInvite')({
+				return requireBridgeOperation(apiContext.username, bridge, 'createInvite')({
 					platformChatId: bridge.platformChatId,
 				})
 			}
-			const ticket = await mintGroupInviteTicket(ctx.username, groupId)
+			const ticket = await mintGroupInviteTicket(apiContext.username, groupId)
 			const roomCreds = isGroupFederationActive(state.groupSettings)
 				? roomCredentialsFromGroupSettings(state.groupSettings)
-				: await activateGroupFederation(ctx.username, groupId, ctx.entityHash)
-			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
+				: await activateGroupFederation(apiContext.username, groupId, apiContext.entityHash)
+			const { sender: introducerPubKeyHash } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
 			const powAnchorRef = collectJoinPowAnchors(state)[0] ?? null
 			const url = wrapProtocolHttpsUrl(formatJoinRunUri(
 				groupId,
@@ -182,21 +182,21 @@ export function createGroup(ctx, groupId, projection) {
 		 * @returns {Promise<void>} 退群完成
 		 */
 		async leave() {
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			if (state.groupSettings?.bridge)
-				await dispatchBridgeLeave(ctx, groupId, state)
-			await performLocalGroupLeave(ctx.username, groupId, ctx.entityHash)
+				await dispatchBridgeLeave(apiContext, groupId, state)
+			await performLocalGroupLeave(apiContext.username, groupId, apiContext.entityHash)
 		},
 		/**
 		 * @param {object} patch 元数据补丁
 		 * @returns {Promise<object>} group_meta_update 事件
 		 */
 		async setMeta(patch) {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'group_meta_update',
 				timestamp: Date.now(),
 				content: patch,
-			}, { entityHash: ctx.entityHash })
+			}, { entityHash: apiContext.entityHash })
 		},
 		/**
 		 * @param {{ tipId?: string, name?: string }} [opts] fork 参数
@@ -204,9 +204,9 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async fork(opts = {}) {
 			const { forkGroupFromBranch } = await import('../chat/governance/fork.mjs')
-			const result = await forkGroupFromBranch(ctx.username, groupId, { ...opts, entityHash: ctx.entityHash })
-			const { group } = await buildConversationContext(ctx.username, result.groupId, result.defaultChannelId)
-			return createGroup(ctx, result.groupId, group)
+			const result = await forkGroupFromBranch(apiContext.username, groupId, { ...opts, entityHash: apiContext.entityHash })
+			const { group } = await buildConversationContext(apiContext.username, result.groupId, result.defaultChannelId)
+			return createGroup(apiContext, result.groupId, group)
 		},
 		/**
 		 * @param {string} acceptedTipId 接受的 tip
@@ -214,14 +214,14 @@ export function createGroup(ctx, groupId, projection) {
 		 */
 		async blockOpposingFork(acceptedTipId) {
 			const { blockOpposingForkBranch } = await import('../chat/governance/forkBlockOpposing.mjs')
-			const { sender } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
-			return blockOpposingForkBranch(ctx.username, groupId, acceptedTipId, sender)
+			const { sender } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
+			return blockOpposingForkBranch(apiContext.username, groupId, acceptedTipId, sender)
 		},
 		/**
 		 * @returns {{ slash: Function, reset: Function }} 群信誉操作
 		 */
 		get reputation() {
-			const signOpts = { entityHash: ctx.entityHash }
+			const signOpts = { entityHash: apiContext.entityHash }
 			return {
 				/**
 				 * @param {{ targetPubKeyHash: string, claim?: number, verified?: boolean, proof?: { eventId: string }}} args slash 参数
@@ -245,19 +245,19 @@ export function createGroup(ctx, groupId, projection) {
 					}
 					if (!content.targetPubKeyHash)
 						throw new Error('targetPubKeyHash required')
-					const { state } = await getState(ctx.username, groupId)
-					const memberKey = await resolveActiveMemberKeyForLocalUser(ctx.username, groupId, state, ctx.entityHash)
+					const { state } = await getState(apiContext.username, groupId)
+					const memberKey = await resolveActiveMemberKeyForLocalUser(apiContext.username, groupId, state, apiContext.entityHash)
 					const member = memberKey ? state.members[memberKey] : undefined
 					if (!content.verified && !content.proof) {
 						if (!canGovSlash(state, member))
 							throw new Error('ADMIN or MANAGE_ROLES required')
-						const { sender } = await resolveLocalEventSigner(ctx.username, groupId, ctx.entityHash)
+						const { sender } = await resolveLocalEventSigner(apiContext.username, groupId, apiContext.entityHash)
 						const alert = buildAndApplyUnverifiedSlashAlert(sender, content, state.groupSettings || {})
 						broadcastEvent(groupWsRoomKeyForReplica(groupId), alert)
 						await publishVolatileToFederation(groupId, alert)
 						return { applied: 1 }
 					}
-					await append(ctx.username, groupId, {
+					await append(apiContext.username, groupId, {
 						type: 'reputation_slash',
 						timestamp: Date.now(),
 						content,
@@ -271,7 +271,7 @@ export function createGroup(ctx, groupId, projection) {
 				async reset(targetPubKeyHash) {
 					const hash = String(targetPubKeyHash || '').trim().toLowerCase()
 					if (!hash) throw new Error('targetPubKeyHash required')
-					await appendSignedLocalEvent(ctx.username, groupId, {
+					await appendSignedLocalEvent(apiContext.username, groupId, {
 						type: 'reputation_reset',
 						timestamp: Date.now(),
 						content: { targetPubKeyHash: hash },
@@ -291,7 +291,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async catchup(opts = {}) {
 					const { catchUpGroupFromPeers } = await import('../chat/federation/index.mjs')
-					return catchUpGroupFromPeers(ctx.username, groupId, opts)
+					return catchUpGroupFromPeers(apiContext.username, groupId, opts)
 				},
 				/**
 				 * @param {object} fields 调参字段
@@ -299,7 +299,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async setTuning(fields) {
 					const { setFederationTuning } = await import('../chat/federation/tuning.mjs')
-					return setFederationTuning(ctx.username, groupId, fields, { entityHash: ctx.entityHash })
+					return setFederationTuning(apiContext.username, groupId, fields, { entityHash: apiContext.entityHash })
 				},
 			}
 		},
@@ -314,7 +314,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async setPersona(personaname) {
 					const { setPersona } = await import('../chat/session/partConfig.mjs')
-					await setPersona(groupId, personaname, ctx.username)
+					await setPersona(groupId, personaname, apiContext.username)
 				},
 				/**
 				 * @param {string} channelId 频道
@@ -323,7 +323,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async bindWorld(channelId, worldname) {
 					const { bindWorld } = await import('../chat/session/partConfig.mjs')
-					return bindWorld(groupId, channelId, worldname, ctx.username)
+					return bindWorld(groupId, channelId, worldname, apiContext.username)
 				},
 				/**
 				 * @param {string} pluginname 插件名
@@ -331,7 +331,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async addPlugin(pluginname) {
 					const { addplugin } = await import('../chat/session/partConfig.mjs')
-					await addplugin(groupId, pluginname, ctx.username)
+					await addplugin(groupId, pluginname, apiContext.username)
 				},
 				/**
 				 * @param {string} pluginname 插件名
@@ -339,7 +339,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async removePlugin(pluginname) {
 					const { removeplugin } = await import('../chat/session/partConfig.mjs')
-					await removeplugin(groupId, pluginname, ctx.username)
+					await removeplugin(groupId, pluginname, apiContext.username)
 				},
 				/**
 				 * @param {string} charname 角色名
@@ -348,7 +348,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async addChar(charname, opts) {
 					const { addchar } = await import('../chat/session/partConfig.mjs')
-					return addchar(groupId, charname, ctx.username, opts)
+					return addchar(groupId, charname, apiContext.username, opts)
 				},
 				/**
 				 * @param {string} charname 角色名
@@ -356,7 +356,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async removeChar(charname) {
 					const { removechar } = await import('../chat/session/partConfig.mjs')
-					await removechar(groupId, charname, ctx.username)
+					await removechar(groupId, charname, apiContext.username)
 				},
 				/**
 				 * @param {string} charname 角色名
@@ -365,7 +365,7 @@ export function createGroup(ctx, groupId, projection) {
 				 */
 				async setCharReplyFrequency(charname, frequency) {
 					const { setCharReplyFrequency } = await import('../chat/session/partConfig.mjs')
-					await setCharReplyFrequency(groupId, charname, frequency, ctx.username)
+					await setCharReplyFrequency(groupId, charname, frequency, apiContext.username)
 				},
 			}
 		},

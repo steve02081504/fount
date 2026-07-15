@@ -11,9 +11,9 @@ import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '.
 
 import { listLocalAgentEntities, resolveSocialEntity } from './federation/hosting.mjs'
 import { applyMentionNetworkHint } from './federation/network_hints.mjs'
-import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation_social.mjs'
+import { SOCIAL_REP_HIDE_THRESHOLD } from './federation/reputation/index.mjs'
 import { withDecryptedPostContent } from './feed/buildItem.mjs'
-import { loadViewerContext } from './feed.mjs'
+import { loadViewerContext } from './feed/home.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { ensureEntitySocialReady } from './lib/bootstrap.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
@@ -182,7 +182,7 @@ async function dispatchRemoteMentionPush(username, authorEntityHash, post, menti
 		const target = await resolveSocialEntity(targetHash)
 		if (target?.local && target.kind === 'agent' && target.replicaUsername === username) continue
 
-		const { collectSocialRpcResponses } = await import('./federation/part_wire_rpc.mjs')
+		const { collectSocialRpcResponses } = await import('./federation/rpc/wire.mjs')
 		void collectSocialRpcResponses(username, {
 			type: 'social_post_notify',
 			authorEntityHash: author,
@@ -224,7 +224,7 @@ export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
 	if (post?.type !== 'post' || !authorEntityHash) return { ok: false }
 
 	const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
-	const { validateRemoteTimelineEvent } = await import('./federation/remote_ingest.mjs')
+	const { validateRemoteTimelineEvent } = await import('./federation/ingest/remote.mjs')
 	const { timelineEventsPath } = await import('./paths.mjs')
 	const { canonicalizeSignedTimelineEvent } = await import('./timeline/canonicalizeEvent.mjs')
 	const priorEvents = await readJsonl(timelineEventsPath(hostingUsername, authorEntityHash))

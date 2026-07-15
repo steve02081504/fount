@@ -16,7 +16,7 @@ export function registerDiscoverRoutes(router) {
 		if (scope === 'nearby')
 			res.status(200).json(await buildNearbyTrendingHashtags(username, opts))
 		else
-			res.status(200).json({ ...(await buildTrendingHashtags(username, opts)), scope: 'local' })
+			res.status(200).json({ ...await buildTrendingHashtags(username, opts), scope: 'local' })
 	})
 
 	router.get('/api/parts/shells\\:social/mentions/suggest', authenticate, async (req, res) => {

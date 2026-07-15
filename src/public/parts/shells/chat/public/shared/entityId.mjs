@@ -1,8 +1,7 @@
 import { encodeEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id_parse'
+import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { sha256Hex } from './digest.mjs'
-import { isHex64, normalizeHex64 } from './pubKeyHex.mjs'
-
 /**
  * @param {unknown} pubKeyHex 32 字节公钥 hex
  * @returns {Promise<string>} 64 位 subjectHash（pubKeyHash）

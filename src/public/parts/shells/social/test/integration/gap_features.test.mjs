@@ -9,7 +9,7 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession()
 
-const noteIndex = await import('../../src/federation/note_index.mjs')
+const noteIndex = await import('../../src/federation/note/index.mjs')
 const mutedKeywords = await import('../../src/mutedKeywords.mjs')
 const contentFilter = await import('../../src/lib/contentFilter.mjs')
 const feedVisibility = await import('../../src/feedVisibility.mjs')

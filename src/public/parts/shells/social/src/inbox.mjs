@@ -11,9 +11,9 @@ import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
-import { canWriteTimeline } from './timeline/append.mjs'
 import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
 import { loadMutedKeywords } from './mutedKeywords.mjs'
+import { canWriteTimeline } from './timeline/append.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
 /** @type {Set<string>} */

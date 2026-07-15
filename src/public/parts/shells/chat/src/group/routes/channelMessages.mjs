@@ -24,6 +24,10 @@ import {
 } from '../../chat/channel/messageMutations.mjs'
 import { appendSignedLocalEvent } from '../../chat/dag/append.mjs'
 import { requestChannelHistoryFromPeers } from '../../chat/federation/channelHistory.mjs'
+import {
+	loadGroupMemberReadMarkers,
+	setGroupMemberReadMarker,
+} from '../../chat/lib/groupMemberReadMarkers.mjs'
 import { resolveOperatorEntityHash } from '../../chat/lib/replica.mjs'
 import { searchGroupMessages } from '../../chat/search/index.mjs'
 import { readViewerChannelMessages } from '../../chat/session/materializeViewerLog.mjs'
@@ -31,10 +35,6 @@ import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
-import {
-	loadGroupMemberReadMarkers,
-	setGroupMemberReadMarker,
-} from '../../chat/lib/groupMemberReadMarkers.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
 import {

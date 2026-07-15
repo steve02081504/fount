@@ -4,14 +4,14 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 
 import { loadDwellAuthorBoosts } from '../engagement/dwell.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
-import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
-import { buildEngagementIndex, loadViewerContext } from '../feed.mjs'
+import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation/index.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { computeTasteMatch, ensureTasteFresh } from '../taste/cluster.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { buildPostFeedItem } from './buildItem.mjs'
+import { buildEngagementIndex, loadViewerContext } from './home.mjs'
 import { createFeedItemBuildContext } from './iterate.mjs'
 
 const SCORE_HALF_LIFE_MS = 86_400_000

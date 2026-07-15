@@ -1,3 +1,6 @@
+import { groupEventProbe } from 'fount/public/parts/shells/chat/test/fixtures/probes/groupEventProbe.mjs'
+import { onMessageProbe } from 'fount/public/parts/shells/chat/test/fixtures/probes/onMessageProbe.mjs'
+
 /** @type {import('../../../../../../../../../decl/charAPI.ts').CharAPI_t} */
 export default {
 	info: {
@@ -14,8 +17,7 @@ export default {
 		chat: {
 			/** @returns {Promise<{ content: string }>} 固定回复并累加 probe 计数 */
 			GetReply: async () => {
-				const state = globalThis.__fountOnMessageProbe || { events: [], replies: 0, returnValue: true }
-				state.replies = (state.replies || 0) + 1
+				onMessageProbe.replies++
 				return { content: 'on_message_yes reply' }
 			},
 			/**
@@ -23,21 +25,20 @@ export default {
 			 * @returns {Promise<boolean>} probe 配置的回复意愿
 			 */
 			OnMessage: async event => {
-				const state = globalThis.__fountOnMessageProbe || { events: [], replies: 0, returnValue: true }
-				state.events.push({
+				onMessageProbe.events.push({
 					message: event.message,
 					mentions: event.mentions,
 					group: event.group,
 					channel: event.channel,
 				})
-				return !!state.returnValue
+				return !!onMessageProbe.returnValue
 			},
 			/**
 			 * @param {object} event 群事件
 			 * @returns {Promise<void>}
 			 */
 			OnGroupEvent: async event => {
-				(globalThis.__fountGroupEventProbe ??= []).push(event)
+				groupEventProbe.events.push(event)
 			},
 		},
 	},

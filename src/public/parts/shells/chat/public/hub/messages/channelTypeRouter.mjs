@@ -1,11 +1,11 @@
 /**
  * 非 text 频道（list / streaming）加载路由。
  */
-import { getStreamingChannelAuth } from '../../src/api/groupApi.mjs'
+import { getStreamingChannelAuth } from '../../src/api/groupCore.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { renderListChannel, renderStreamingChannel, renderCodecsAvStreamingChannel } from '../channels.mjs'
 import { hubStore } from '../core/state.mjs'
-import { selectChannel, saveListChannelItems } from '../groupNav.mjs'
+import { selectChannel, saveListChannelItems } from '../sidebar/index.mjs'
 import { leaveHubAvSession } from '../streamingAv.mjs'
 
 /**

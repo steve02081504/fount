@@ -2,21 +2,16 @@
  * 【文件】public/hub/federation/federationModal.mjs
  * 【职责】Hub 联邦设置浮层：节点 relay/省电、群 房间口令轮换、入群快照修复、信誉与 DM 链接。
  * 【原理】`openFederationSettingsModal` 渲染 `hub/federation/modal` 模板并绑定 `#hub-settings-modal` 控件。
- * 【关联】wireEvents.mjs、discoveryPanel.mjs、core/overlayModal.mjs、src/api/groupApi.mjs、src/dmLink.mjs。
+ * 【关联】wiring/index.mjs、discoveryPanel.mjs、core/overlayModal.mjs、src/api/group*.mjs、src/dmLink.mjs。
  */
+import { isHex64, normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { isHex64, normalizeHex64, PUB_KEY_HEX_64 } from '../../shared/pubKeyHex.mjs'
-import {
-	getFederationSettings,
-	getGroupReputation,
-	getGroupState,
-	postReputationReset,
-	postReputationSlash,
-	putFederationSettings,
-	repairJoinSnapshot,
-	rotateFederationRoomSecret,
-} from '../../src/api/groupApi.mjs'
+import { getFederationSettings, putFederationSettings } from '../../src/api/federationSettings.mjs'
+import { getGroupState } from '../../src/api/groupCore.mjs'
+import { repairJoinSnapshot, rotateFederationRoomSecret } from '../../src/api/groupFederation.mjs'
+import { getGroupReputation, postReputationReset, postReputationSlash } from '../../src/api/groupGovernance.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { closeOverlayModal, openOverlayModal } from '../core/overlayModal.mjs'
@@ -28,7 +23,7 @@ import { openDiscoveryPanel } from '../discoveryPanel.mjs'
  */
 function hexSeedToBytes(hex) {
 	const normalized = normalizeHex64(hex)
-	if (!PUB_KEY_HEX_64.test(normalized))
+	if (!HEX_ID_64.test(normalized))
 		throw new Error('invalid hex seed')
 	return new Uint8Array(normalized.match(/.{2}/g).map(byte => Number.parseInt(byte, 16)))
 }
@@ -199,11 +194,11 @@ function wireFederationModalEvents(groupId) {
 		const pubKeyHex = normalizeHex64(document.getElementById('federation-dm-pubkey')?.value || '')
 		const secretHex = normalizeHex64(document.getElementById('federation-dm-secret')?.value || '')
 		const nodeUrl = String(document.getElementById('federation-dm-node')?.value || '').trim()
-		if (!PUB_KEY_HEX_64.test(pubKeyHex)) {
+		if (!HEX_ID_64.test(pubKeyHex)) {
 			showToastI18n('error', 'chat.hub.fedDmNeedPubKey')
 			return
 		}
-		if (!PUB_KEY_HEX_64.test(secretHex)) {
+		if (!HEX_ID_64.test(secretHex)) {
 			showToastI18n('error', 'chat.hub.fedDmNeedSecretKey')
 			return
 		}

@@ -3,12 +3,13 @@
  * 【职责】Hub 顶栏与主区横幅：置顶/书签侧栏显隐、明文模式提示、DAG 分叉横幅与频道置顶条刷新。
  * 【原理】操作 `#hub-pins-bookmarks-wrap`、`#hub-plaintext-main-banner`、`#hub-dag-fork-banner` 等固定占位元素。`refreshChannelPinsBar` 根据置顶事件更新顶栏摘要，与 `pinPreview` 协作展示引用预览。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../../../scripts/template、../src/lib/pubKeyHex、core/domUtils、core/state
+ * 【关联】../../../../scripts/template、fount-p2p/core/hexIds、core/domUtils、core/state
  */
-import { renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { isHex64 } from '../shared/pubKeyHex.mjs'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
+import { renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
+
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshBoundBanners } from './core/bindings.mjs'
 import { hubStore } from './core/state.mjs'
 

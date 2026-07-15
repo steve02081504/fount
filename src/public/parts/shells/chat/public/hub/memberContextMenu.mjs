@@ -7,15 +7,15 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
-import { getGroupState } from '../src/api/groupApi.mjs'
+import { getGroupState } from '../src/api/groupCore.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { pickBanScope } from './banScopePicker.mjs'
 import { hubStore } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
-import { renderMemberList } from './groupNav.mjs'
 import { insertComposerMention } from './mentionAutocomplete.mjs'
 import { resolveEntityFromAnchor } from './profilePopup.mjs'
+import { renderMemberList } from './sidebar/index.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -157,7 +157,7 @@ export async function showMemberContextMenu(event, memberElement) {
 		if (!confirmI18n('chat.group.settingsPage.banConfirm', { name: displayName })) return
 		const picked = await pickBanScope({ displayName })
 		if (!picked) return
-		const { banMemberWithScope } = await import('../src/api/groupApi.mjs')
+		const { banMemberWithScope } = await import('../src/api/groupBan.mjs')
 		try {
 			await banMemberWithScope(hubStore.context.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settingsPage.banSuccess')

@@ -5,7 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { bridgeAvRooms } from '../../../chat/src/chat/ws/avRelay.mjs'
-import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
+import { collectSocialRpcMerged } from '../federation/rpc/wire.mjs'
 import { pushFeedUpdate } from '../ws/feedHub.mjs'
 
 import {
@@ -263,8 +263,3 @@ export async function tearDownLiveLink(username, entityHash, liveId) {
 export function liveBridgeTokenFor(linkSecret, entityHash, liveId) {
 	return mintLiveBridgeToken(linkSecret, entityHash, liveId)
 }
-
-/**
- * 供 bridge 入站转发信令。
- */
-export { ingestBridgedLiveSignal } from './hub.mjs'

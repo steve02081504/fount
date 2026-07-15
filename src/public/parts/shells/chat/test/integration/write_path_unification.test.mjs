@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals, assertNotEquals, assertRejects, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { writePathHookState } from '../fixtures/write_path_hook_state.mjs'
+import { writePathHookState } from '../fixtures/probes/writePathHookState.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -39,12 +39,11 @@ async function seedWritePathFixtures(dataDir, username) {
  *   username: string,
  *   groupId: string,
  *   channelId: string,
- *   hooks: ReturnType<typeof writePathHookState>,
+ *   hooks: typeof writePathHookState,
  * }>} 会话上下文
  */
 async function setupWritePathSession() {
-	const hooks = writePathHookState()
-	hooks.reset()
+	writePathHookState.reset()
 	const username = `wp-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -70,13 +69,13 @@ async function setupWritePathSession() {
 	const channelId = await getDefaultChannelId(username, groupId)
 	await setPersona(groupId, PERSONA, username)
 
-	hooks.reset()
+	writePathHookState.reset()
 	const greeting = await bindWorld(groupId, channelId, WORLD, username)
 	assert(greeting, 'world greeting inserted')
-	assertEquals(hooks.addCalls.length, 1, 'greeting Add once at setup')
-	assertEquals(hooks.afterCalls.length, 1, 'greeting After once at setup')
+	assertEquals(writePathHookState.addCalls.length, 1, 'greeting Add once at setup')
+	assertEquals(writePathHookState.afterCalls.length, 1, 'greeting After once at setup')
 
-	return { username, groupId, channelId, hooks }
+	return { username, groupId, channelId, hooks: writePathHookState }
 }
 
 /**

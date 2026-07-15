@@ -7,8 +7,8 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 
 import { loadDwellTagBoosts } from '../engagement/dwell.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
-import { summarizeReactions } from '../federation/reaction_index.mjs'
-import { pullPostReactions } from '../federation/reaction_pull.mjs'
+import { summarizeReactions } from '../federation/reaction/index.mjs'
+import { pullPostReactions } from '../federation/reaction/pull.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
@@ -16,11 +16,6 @@ import { weightedJaccard } from './jaccard.mjs'
 import { gossipTagMergeClaim, lazyVerifyPendingMergeClaims } from './mergeClaims.mjs'
 import { localTagStats, verifyTagMergeClaimWithStats } from './mergeVerify.mjs'
 import { loadTaste, mutateTaste, resolveTasteAlias, tasteWeightOf } from './store.mjs'
-
-/**
- *
- */
-export { weightedJaccard } from './jaccard.mjs'
 
 const JACCARD_MERGE = 0.45
 const SENIORITY_MIN_POSTS = 2

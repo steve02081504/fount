@@ -3,15 +3,18 @@
  * 【职责】好友私聊入口：查找或创建 DM 群、绑定角色/用户、切换 Hub 到私聊布局并连接群组 WS。
  * 【原理】`enterFriendChat` 渲染活跃角色卡、调整侧栏高亮与 composer；`dispatchFriendChat` 处理列表点击；设置 `hubStore.privateGroup` 后加载默认频道消息，与群聊共用 `messages` 管道。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】由 `hashNav.navigateFromHash` 在解析到好友绑定 groupId 时调用本模块；../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、../src/api/groupFriendBinding、../src/friendBinding、../src/lib/entityHash、../src/lib/pubKeyHex、charCard。
+ * 【关联】由 `hashNav.navigateFromHash` 在解析到好友绑定 groupId 时调用本模块；../../../../scripts/template、../../../../scripts/toast、groupCore/Dm/federationSettings、groupFriendBinding、fount-p2p/core/hexIds、charCard。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildCharFriendBinding, buildUserFriendBinding, normalizeFriendBinding } from '../shared/friendBinding.mjs'
-import { isHex64 } from '../shared/pubKeyHex.mjs'
-import { createDirectMessageByPubKeys, getFederationSettings, getGroupState } from '../src/api/groupApi.mjs'
+import { getFederationSettings } from '../src/api/federationSettings.mjs'
+import { getGroupState } from '../src/api/groupCore.mjs'
+import { createDirectMessageByPubKeys } from '../src/api/groupDm.mjs'
 import { setGroupFriendBinding } from '../src/api/groupFriendBinding.mjs'
 import { handleUIError, toError } from '../src/ui/errors.mjs'
 
@@ -19,9 +22,9 @@ import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
 import { hubStore } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
-import { selectChannel } from './groupNav.mjs'
-import { closeGroupWebSocket } from './groupStream.mjs'
 import { loadGroups } from './serverBar.mjs'
+import { selectChannel } from './sidebar/index.mjs'
+import { closeGroupWebSocket } from './stream/index.mjs'
 
 /** @type {AbortController | null} 当前进行中的私聊进入操作 */
 let enterFriendChatAbort = null

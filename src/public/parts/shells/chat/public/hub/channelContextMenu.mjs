@@ -3,21 +3,21 @@
  * 【职责】侧栏频道项右键菜单：重命名、删除、类型切换与打开线程等频道级操作入口。
  * 【原理】`showChannelContextMenu` 在频道行旁弹出定位菜单并绑定一次性点击处理；删除/切换频道后由 `selectChannel`/`loadMessages` 重建主栏消息视图。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】打开频道时可能触发 `updateHash`（由 `groupNav.selectChannel` 完成）；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、../src/api/groupChannel、core/state、groupNav。
+ * 【关联】打开频道时可能触发 `updateHash`（由 `sidebar.selectChannel` 完成）；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupChannel、core/state、sidebar。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
-import { getGroupState } from '../src/api/groupApi.mjs'
 import {
 	deleteChannel,
 	setDefaultChannel,
 	updateChannel,
 } from '../src/api/groupChannel.mjs'
+import { getGroupState } from '../src/api/groupCore.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { renderHubChannelSidebar, selectChannel } from './groupNav.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
+import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null

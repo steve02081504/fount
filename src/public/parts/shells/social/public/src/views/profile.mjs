@@ -1,9 +1,9 @@
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { viewerEntityHash } from '../lib/apiClient.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 
 /**

@@ -3,8 +3,10 @@
  * 【职责】点击头像/作者链接触发的轻量资料弹层：解析锚点实体并展示只读资料摘要。
  * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；从消息行 `data-author` 等属性解析实体；不修改频道列表 HTML 结构。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/template、../../../../scripts/toast、../src/lib/entityHash、../src/lib/pubKeyHex、core/state、entityProfile、entityResolve、friendChat。
+ * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import {
 	renderTemplate,
 	usingTemplates,
@@ -14,8 +16,7 @@ import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
-import { isHex64 } from '../shared/pubKeyHex.mjs'
-import { formatSocialProfileHref } from '../shared/socialRunUri.mjs'
+import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
 import { hubStore } from './core/state.mjs'
 import {

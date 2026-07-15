@@ -2,24 +2,20 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplate,
 } from '../../../../../scripts/features/template.mjs'
-import { getChannelViewLog } from '../../src/api/groupApi.mjs'
+import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
 import { getChatGestures } from '../chatGestures.mjs'
 import { hubStore } from '../core/state.mjs'
-import { syncStreamingSlotsFromDom } from '../groupStream.mjs'
 import { applyAvatarsTo } from '../presence.mjs'
+import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 
+import { bindChannelMessageActions } from './actions/handlers.mjs'
 import {
 	consumePendingScrollTarget,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
-import { bindChannelMessageActions } from './messageActionsHandlers.mjs'
 import { bindReactions, messageRenderOpts } from './messageContext.mjs'
-import {
-	localizeRenderedMessages,
-	renderChannelMessageBlock,
-} from './messageRender.mjs'
 import {
 	consumePendingHighlightEventId,
 	getMessagesContainer,
@@ -29,6 +25,10 @@ import {
 	setPendingHighlightEventId,
 } from './messageScroll.mjs'
 import { isTwoPartyCharDialogue, refreshChannelView } from './messageShared.mjs'
+import {
+	localizeRenderedMessages,
+	renderChannelMessageBlock,
+} from './render/index.mjs'
 
 /** @returns {void} */
 export function destroyChannelVirtualList() {

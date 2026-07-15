@@ -9,7 +9,7 @@ import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { applyTheme } from '../../../../scripts/theme/index.mjs'
 
 import { HUB_SHELL_GATE } from './gate.mjs'
-import { wireBootstrap } from './wireBootstrap.mjs'
+import { wireBootstrap } from './wiring/bootstrap.mjs'
 
 const hubShellGate = createReadyGate(HUB_SHELL_GATE)
 
@@ -25,7 +25,7 @@ export async function bootHub() {
 	try {
 		const { initCore } = await import('./initCore.mjs')
 		await initCore()
-		const { wireEvents } = await import('./wireEvents.mjs')
+		const { wireEvents } = await import('./wiring/index.mjs')
 		wireEvents()
 		const { init } = await import('./init.mjs')
 		await init()

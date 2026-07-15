@@ -4,10 +4,10 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { resolveSensitiveMedia, sanitizeMediaRefs } from '../../src/lib/mediaRefs.mjs'
 import { formatSocialShareHttpsUrl } from '../../public/shared/runUri.mjs'
-import { noteHelpfulScore } from '../../src/lib/noteScore.mjs'
 import { normalizeDwellEntry, AUTHOR_BOOST_PER_DWELL } from '../../src/lib/dwellSignal.mjs'
+import { resolveSensitiveMedia, sanitizeMediaRefs } from '../../src/lib/mediaRefs.mjs'
+import { noteHelpfulScore } from '../../src/lib/noteScore.mjs'
 
 Deno.test('sanitizeMediaRefs truncates alt and drops junk', () => {
 	const refs = sanitizeMediaRefs([

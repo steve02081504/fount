@@ -3,7 +3,7 @@
  * 【职责】角色好友私聊 Hub 流程：进入/重启私聊、清空状态与聊天设置浮层入口。
  * 【原理】`initPrivateGroup` 注入 composer 启停/滚底回调；`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
  * 【数据结构】hubStore.privateGroup 回调引用与当前私聊 charname。
- * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、groupApi。
+ * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'

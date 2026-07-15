@@ -1,3 +1,5 @@
+import { onMessageProbe } from 'fount/public/parts/shells/chat/test/fixtures/probes/onMessageProbe.mjs'
+
 /** @type {import('../../../../../../../../../decl/charAPI.ts').CharAPI_t} */
 export default {
 	info: {
@@ -21,8 +23,7 @@ export default {
 			 * @returns {Promise<boolean>} 恒为 false
 			 */
 			OnMessage: async event => {
-				const state = globalThis.__fountOnMessageProbe || { events: [], returnValue: false }
-				state.events.push({
+				onMessageProbe.events.push({
 					message: event.message,
 					mentions: event.mentions,
 					group: event.group,

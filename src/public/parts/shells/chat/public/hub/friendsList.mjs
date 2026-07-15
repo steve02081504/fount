@@ -5,13 +5,14 @@
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
  */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { setEntityAlias } from '../shared/aliases.mjs'
 import { formatHashShort } from '../shared/entityHash.mjs'
-import { isHex64 } from '../shared/pubKeyHex.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'

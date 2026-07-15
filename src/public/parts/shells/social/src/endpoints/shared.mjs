@@ -21,6 +21,6 @@ export function routeEntityHash(params) {
  */
 export async function socialClientFromReq(req) {
 	const { username } = getUserByReq(req)
-	const { getSocialClient } = await import('../api/index.mjs')
+	const { getSocialClient } = await import('../api/client/index.mjs')
 	return { username, client: await getSocialClient(username) }
 }

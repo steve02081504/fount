@@ -2,9 +2,7 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	mountTemplate,
 } from '../../../../../scripts/features/template.mjs'
-import {
-	getChannelViewLog,
-} from '../../src/api/groupApi.mjs'
+import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
@@ -13,7 +11,7 @@ import { hubStore } from '../core/state.mjs'
 import {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
-} from '../groupStream.mjs'
+} from '../stream/index.mjs'
 import { isThreadDrawerOpen } from '../threadDrawer.mjs'
 import {
 	firstUnreadEventId,
@@ -31,10 +29,6 @@ import {
 import { loadNonTextChannel } from './channelTypeRouter.mjs'
 import { bindReactions, messageRenderOpts, refreshReactionPerms } from './messageContext.mjs'
 import {
-	isChannelMessageGenerating,
-	renderMessageReactionsHtml,
-} from './messageRender.mjs'
-import {
 	getMessagesContainer,
 	scrollToBottom,
 } from './messageScroll.mjs'
@@ -50,6 +44,8 @@ import {
 	destroyChannelVirtualList,
 	initChannelVirtualList,
 } from './messageVirtualList.mjs'
+import { renderMessageReactionsHtml } from './render/reactions.mjs'
+import { isChannelMessageGenerating } from './render/text.mjs'
 
 /** @type {Map<string, { messages: object[], reactions: object, reactionsEtag: string, readMarker: object | null, firstUnreadEventId: string | null }>} */
 const channelViewCache = new Map()

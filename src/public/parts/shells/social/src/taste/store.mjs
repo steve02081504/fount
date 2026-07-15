@@ -48,6 +48,14 @@ export function tasteStorePath(username, entityHash) {
 }
 
 /**
+ * @param {unknown} value 候选记录
+ * @returns {Record<string, *>} 浅拷贝或空对象
+ */
+function asRecord(value) {
+	return value && typeof value === 'object' ? { .../** @type {object} */ value } : {}
+}
+
+/**
  * @param {object | null | undefined} raw 磁盘数据
  * @returns {TasteStore} 规范化
  */
@@ -55,19 +63,17 @@ export function normalizeTasteStore(raw) {
 	const base = emptyTasteStore()
 	if (!raw || typeof raw !== 'object') return base
 	// 旧版 tags 字段迁入 computed（一次性兼容）
-	const computed = raw.computed && typeof raw.computed === 'object'
-		? { ...raw.computed }
-		: raw.tags && typeof raw.tags === 'object' ? { ...raw.tags } : {}
+	const computed = raw.computed != null ? asRecord(raw.computed) : asRecord(raw.tags)
 	return {
 		computed,
-		manual: raw.manual && typeof raw.manual === 'object' ? { ...raw.manual } : {},
-		aliases: raw.aliases && typeof raw.aliases === 'object' ? { ...raw.aliases } : {},
+		manual: asRecord(raw.manual),
+		aliases: asRecord(raw.aliases),
 		privacy: {
 			publishPreferences: raw.privacy?.publishPreferences !== false,
 			publishReactions: raw.privacy?.publishReactions !== false,
 		},
 		clusteredAt: Number(raw.clusteredAt) || 0,
-		postTags: raw.postTags && typeof raw.postTags === 'object' ? { ...raw.postTags } : {},
+		postTags: asRecord(raw.postTags),
 	}
 }
 

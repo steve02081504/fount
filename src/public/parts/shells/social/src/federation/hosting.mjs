@@ -9,7 +9,7 @@ import {
 	resolveAgentCharPartNameForUser,
 } from '../../../chat/src/entity/agentHost.mjs'
 
-import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower_index_registry.mjs'
+import { getOperatorEntityHashProvider, getReplicaUsernamesProvider } from './follower/registry.mjs'
 
 /**
  * @typedef {'user' | 'agent' | 'unknown'} SocialEntityKind

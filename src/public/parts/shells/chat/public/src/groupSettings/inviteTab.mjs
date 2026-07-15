@@ -1,6 +1,5 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
-import { createGroupInvite } from '../api/groupApi.mjs'
-
+import { createGroupInvite } from '../api/groupCore.mjs'
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {void} */
 export function wireInvitePanel(context) {
 	document.getElementById('group-settings-mint-invite-button')?.addEventListener('click', async () => {

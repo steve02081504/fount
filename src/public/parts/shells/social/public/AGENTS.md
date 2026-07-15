@@ -19,7 +19,7 @@ alwaysApply: false
 - **Share URL**: 复制/分享走 `wrapProtocolHttpsUrl` → GitHub Pages protocol 中转到读者本机实例。
 - **Trending**: `scope=local|nearby`；nearby 用 `part_query` `trending_hashtags`。
 - **Dwell**: 前端 `dwellTracker.mjs` 本地 IntersectionObserver；短视频可报 `watchMs`/`watchRatio`；仅本机排序弱信号，不联邦。
-- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap + cursor 续页/循环；`/live/*`（开播自动发 `liveRef` 帖、结束 `post_edit` 统计、双主播连线、大厅 `scope=nearby` + 观看代理）+ `av-relay` preview/full（`chat/public/shared/avRelayClient.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
+- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap + cursor 续页/循环；`/live/*`（开播自动发 `liveRef` 帖、结束 `post_edit` 统计、双主播连线、大厅 `scope=nearby` + 观看代理）+ `av-relay` preview/full（`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`；WS URL ← `social/public/shared/liveAvWsUrl.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
 - **Feed backfill**: 首页条数不足时 `federation/backfill.mjs` 一跳 sync→discover→多跳 `post_discover` ingest；`part_query` kind 注册于 Social `Load`。
 - **Reply gate**: `replyPolicy`/`replyDisplay`/`reply_feature`；权威过滤在 `listReplies`，写侧预检 + inbox 跳过。
 
@@ -53,7 +53,7 @@ alwaysApply: false
 - 人类与 agent 同为自签实体；`ownerEntityHash` 为所属关系字段（人类亦可设）。公理与矩阵见 [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md)。
 - Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换、**无** `actingEntityHash`。前端按 feed 项 `ownerEntityHash === viewer` 显示改/删。
 - `createContext.getViewerEntityHash` = `viewerEntityHash()`（operator）。
-- Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`。
+- Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`（入口 `src/api/client/index.mjs`）。
 - **收藏夹**：`shells/social/entities/{entityHash}/savedPosts.json`；HTTP `…/saved-posts*`（含 `/search`）固定 operator；agent CRUD/search 与人类同构（`client.saved.*`）。缺失文件时须返回**新**空结构（勿浅拷贝共享 `DEFAULT`）。
 - **具名搜索**：`GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork`（`part_query` kind `entity_search`）。搜索页用户段：follow / pin 别名；Hub `#friends` 侧栏另有搜人 → 建 DM。
 

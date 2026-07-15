@@ -3,13 +3,14 @@
  * 【职责】§16 DM Link：nonce 轮换、Ed25519 签名与 formatDmRunUri 分享链接。
  * 【原理】dmLinkSignableBytes 构造验签域；rotateDmLink 更新联邦设置中的 nonce；sign(signer.mjs) 产出 intro 签名。
  * 【数据结构】pubKeyHex64、nonceBase64Url、introSignatureHex；persist 选项。
- * 【关联】lib/dmLinkSignature.mjs、groupApi、runUri.mjs、signer.mjs。
+ * 【关联】dmLinkSignature.mjs、federationSettings.mjs、runUri.mjs、signer.mjs。
  */
 
-import { normalizeHex64, PUB_KEY_HEX_64 } from '../shared/pubKeyHex.mjs'
+import { normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
-import { putFederationSettings } from './api/groupApi.mjs'
+import { putFederationSettings } from './api/federationSettings.mjs'
 import { dmLinkSignableBytes } from '/parts/shells:chat/shared/dmLinkSignature.mjs'
 import { sign } from './lib/signer.mjs'
 
@@ -127,7 +128,7 @@ export async function createDmLinkAndSync(options) {
  */
 export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, nonce }) {
 	const pubKey = normalizeHex64(pubKeyHex)
-	if (!PUB_KEY_HEX_64.test(pubKey)) throw new Error('invalid pubKeyHex')
+	if (!HEX_ID_64.test(pubKey)) throw new Error('invalid pubKeyHex')
 
 	const nonceBase64Url = nonce || getDmLinkNonce()
 	const secretKey = secretKey32 instanceof Uint8Array

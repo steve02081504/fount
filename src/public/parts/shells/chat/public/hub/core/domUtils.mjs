@@ -1,9 +1,9 @@
 /**
  * 【文件】public/hub/core/domUtils.mjs
  * 【职责】Hub 消息与成员展示用的 DOM/文本工具：作者键解析、头像色、HTML 转义与时间 i18n 属性片段。
- * 【原理】为气泡头像、昵称与时间戳提供一致的视觉辅助函数；预热角色 entityHash 缓存。`authorPresentationKeys`、`escapeHtml`、`formatTimeAttrs` 等被 `messageRender` 与频道列表复用。
+ * 【原理】为气泡头像、昵称与时间戳提供一致的视觉辅助函数；预热角色 entityHash 缓存。`authorPresentationKeys`、`escapeHtml`、`formatTimeAttrs` 等被 `messages/render` 与频道列表复用。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../src/lib/entityHash、../../src/lib/entityId、../../src/lib/pubKeyHex、state
+ * 【关联】shared/entityHash、shared/nameResolve、fount-p2p/core/hexIds、state
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import {
@@ -12,10 +12,11 @@ import {
 	avatarTextColor,
 	hashAvatarStyle,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
+import { isHex64, normalizeHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
 import { resolveDisplayName } from '../../shared/nameResolve.mjs'
-import { isHex64, normalizeHex64 } from '../../shared/pubKeyHex.mjs'
 
 import { hubStore } from './state.mjs'
 

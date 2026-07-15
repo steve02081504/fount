@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
+import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
 import { createTestSession } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -57,7 +58,8 @@ Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage miss
 
 Deno.test('OnMessage returns false → no reply published', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
-	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
+	socialOnMessageProbe.reset()
+	socialOnMessageProbe.returnValue = false
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
 	const before = (await append.readTimelineEvents(username, agentHash)).length
@@ -67,19 +69,20 @@ Deno.test('OnMessage returns false → no reply published', async () => {
 	}, { fanout: false })
 	const after = await append.readTimelineEvents(username, agentHash)
 	assertEquals(after.length, before, 'OnMessage false must not publish reply')
-	assert(globalThis.__fountSocialOnMessageProbe.events.length >= 1, 'OnMessage still invoked')
+	assert(socialOnMessageProbe.events.length >= 1, 'OnMessage still invoked')
 })
 
 Deno.test('unmentioned post still invokes OnMessage with event shape', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
-	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
+	socialOnMessageProbe.reset()
+	socialOnMessageProbe.returnValue = false
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
 	await append.commitTimelineEvent(username, operator, {
 		type: 'post',
 		content: { text: 'plain post without mentions', visibility: 'public' },
 	}, { fanout: false })
-	const events = globalThis.__fountSocialOnMessageProbe.events
+	const events = socialOnMessageProbe.events
 	assert(events.length >= 1, 'OnMessage invoked for unmentioned visible post')
 	const hit = events.find(row => row.viewerEntityHash === agentHash)
 	assert(hit, 'probe agent received event')
@@ -90,17 +93,18 @@ Deno.test('unmentioned post still invokes OnMessage with event shape', async () 
 
 Deno.test('duplicate dispatchSocialMessage only invokes OnMessage once per agent', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
-	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
+	socialOnMessageProbe.reset()
+	socialOnMessageProbe.returnValue = false
 	const { username, operator } = await getSession()
 	await seedAgentChar(username, PROBE_CHAR)
 	const post = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
 		content: { text: 'dedup probe', visibility: 'public' },
 	}, { fanout: false })
-	const countAfterCommit = globalThis.__fountSocialOnMessageProbe.events.length
+	const countAfterCommit = socialOnMessageProbe.events.length
 	assert(countAfterCommit >= 1)
 	await dispatch.dispatchSocialMessage(username, operator, post)
-	assertEquals(globalThis.__fountSocialOnMessageProbe.events.length, countAfterCommit)
+	assertEquals(socialOnMessageProbe.events.length, countAfterCommit)
 })
 
 Deno.test('operator care author → care_post inbox row on post ingest', async () => {

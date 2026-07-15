@@ -273,7 +273,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ## ChatClient 对象模型（进程内 API）
 
-import 入口：`src/public/parts/shells/chat/src/api/index.mjs` → `getChatClient(username, entityHash?)`。
+import 入口：`src/public/parts/shells/chat/src/api/client.mjs` → `getChatClient(username, entityHash?)`。
 
 - **统一实体模型**：人类与本机 agent 同为实体；缺省 entityHash = operator。HTTP 路由薄封装恒为 operator；agent 只经本入口绑定自身实体。无私有状态换身份参数。
 - **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。

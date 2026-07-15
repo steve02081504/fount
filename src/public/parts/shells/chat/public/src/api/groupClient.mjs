@@ -3,7 +3,7 @@
  * 【职责】联邦群 HTTP 客户端底座：统一 BASE、路径编码与 JSON fetch，供各 api/*.mjs 复用。
  * 【原理】groupPath 对各段 encodeURIComponent；groupFetch 拼接 /api/parts/shells:chat/groups/ 并 credentials:include，json 选项自动设 Content-Type；非 2xx 抛 Error(data.error)。groupRequest 为 Hub 常用的 groupId+endpoint 快捷封装。
  * 【数据结构】GROUPS_BASE 常量；groupFetch(path, RequestInit&{json?})、groupPath(groupId,...segments)、groupRequest(groupId, endpoint, method, body)。
- * 【关联】groupApi 及各子模块 re-export 的底层；后端 src/group/routes。
+ * 【关联】各 api/*.mjs（groupCore/Channel/…）与后端 src/group/routes。
  */
 import { GROUPS_CLIENT_PREFIX } from '../../shared/apiPaths.mjs'
 

@@ -4,7 +4,7 @@
  * 【原理】注册 setGroupChannelRefreshHandler 等联邦流回调 → bindChannelMessageActions；导航由 initCore 完成。
  *   refreshViewerHubPresentation 按 viewerEntityHash 拉 profile 更新顶栏头像；stopGeneration 绑定生成中止按钮。
  * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道与管道上下文。
- * 【关联】hub 页面加载时调用；串联 messages、groupStream、hashNav、chat、presence、wireEvents。
+ * 【关联】hub 页面加载时调用；串联 messages、stream、hashNav、chat、presence、wireEvents。
  */
 import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPicker.mjs'
 import { mountDockedStickerPicker } from '../../../../scripts/components/stickerPicker.mjs'
@@ -24,6 +24,14 @@ import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs
 import { hubStore } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { wireHubGroupEmojiStickerGestures } from './emojiPickerGestures.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { setupMisc } from './misc.mjs'
+import { setActiveModeTab, setMode } from './mode.mjs'
+import { applyAvatarsTo, fetchUserProfile } from './presence.mjs'
+import {
+	initPrivateGroup,
+	setRefreshStopGenerationButton,
+} from './privateGroup.mjs'
 import {
 	closeGroupWebSocket,
 	getActiveVolatileStreamIds,
@@ -34,15 +42,7 @@ import {
 	setGroupMessageEditHandler,
 	setGroupStreamEndHandler,
 	setGroupThreadChannelRefreshHandler,
-} from './groupStream.mjs'
-import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
-import { setupMisc } from './misc.mjs'
-import { setActiveModeTab, setMode } from './mode.mjs'
-import { applyAvatarsTo, fetchUserProfile } from './presence.mjs'
-import {
-	initPrivateGroup,
-	setRefreshStopGenerationButton,
-} from './privateGroup.mjs'
+} from './stream/index.mjs'
 import { refreshActiveThreadIfOpen } from './threadDrawer.mjs'
 
 /** @returns {Promise<typeof import('./messages/messages.mjs')>} 按需加载的重型 messages 模块图 */
@@ -243,7 +243,7 @@ async function wireHubHeavyFeatures() {
 		scrollToBottom,
 	} = await messagesApi()
 	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
-	const { bindChannelMessageActions } = await import('./messages/messageActionsHandlers.mjs')
+	const { bindChannelMessageActions } = await import('./messages/actions/handlers.mjs')
 
 	/**
 	 * 刷新停止生成按钮的可见状态。

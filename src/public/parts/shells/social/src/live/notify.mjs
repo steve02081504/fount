@@ -6,8 +6,7 @@ import fs from 'node:fs'
 import { appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
 import { notifyUser } from '../../../../../../server/web_server/notify/notify.mjs'
-
-import { listLocalFollowersOf } from '../federation/follower_index.mjs'
+import { listLocalFollowersOf } from '../federation/follower/index.mjs'
 import {
 	computeAggregateKey,
 	inboxDir,

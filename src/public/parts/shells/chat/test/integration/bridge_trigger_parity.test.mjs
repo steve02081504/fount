@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { onMessageProbeState } from '../fixtures/on_message_probe_state.mjs'
+import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -141,9 +141,8 @@ const ENDS = /** @type {const} */ ['hub', 'telegram', 'discord', 'wechat']
 
 Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	const username = `parity-onmsg-${crypto.randomUUID().slice(0, 8)}`
-	const probe = onMessageProbeState()
-	probe.reset()
-	probe.returnValue = true
+	onMessageProbe.reset()
+	onMessageProbe.returnValue = true
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
 		tempDirPrefix: 'fount_bridge_parity_onmsg_',
@@ -162,9 +161,9 @@ Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	const triggeredByEnd = {}
 
 	for (const [index, end] of ENDS.entries()) {
-		probe.reset()
-		probe.returnValue = true
-		const before = probe.events.length
+		onMessageProbe.reset()
+		onMessageProbe.returnValue = true
+		const before = onMessageProbe.events.length
 		const session = await openEnd(end, username, {
 			chatKind: 'group',
 			label: `parity-onmsg-${end}`,
@@ -172,8 +171,8 @@ Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 		})
 		await addchar(session.groupId, CHAR_YES, username)
 		await session.post(`parity OnMessage ping ${end}`, 1000 + index)
-		await waitUntil(async () => probe.events.length > before, 15000)
-		triggeredByEnd[end] = probe.events.length - before
+		await waitUntil(async () => onMessageProbe.events.length > before, 15000)
+		triggeredByEnd[end] = onMessageProbe.events.length - before
 	}
 
 	for (const end of ENDS)

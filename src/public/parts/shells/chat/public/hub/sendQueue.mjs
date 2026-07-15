@@ -5,7 +5,7 @@
  *   online / WS open 时遍历队列依次调用 sendGroupMessage。
  *   气泡复用 pending 样式显示「排队中」状态。
  */
-import { sendGroupMessage } from '../src/api/groupApi.mjs'
+import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 
 import { hubStore } from './core/state.mjs'
 

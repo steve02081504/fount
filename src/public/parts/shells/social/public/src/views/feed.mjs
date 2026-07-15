@@ -1,11 +1,10 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialTopicHref } from '../../shared/runUri.mjs'
+import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { bindDwellTracker, sendDwellBeacon } from '../dwellTracker.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { activateView } from '../viewChrome.mjs'
-import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null

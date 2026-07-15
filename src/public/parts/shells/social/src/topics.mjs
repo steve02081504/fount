@@ -89,7 +89,7 @@ export async function buildTopicFeed(username, tag, options = {}) {
 	}
 
 	if (candidates.length < limit) {
-		const { loadViewerContext } = await import('./feed.mjs')
+		const { loadViewerContext } = await import('./feed/home.mjs')
 		const viewerContext = await loadViewerContext(username, viewer)
 		for await (const { entityHash, post } of iterateVisiblePosts(username, viewerContext)) {
 			const key = `${entityHash}:${post.id}`

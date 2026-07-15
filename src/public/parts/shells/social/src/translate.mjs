@@ -27,6 +27,12 @@ export function getCachedTranslation(username, cacheKey) {
 	return getCachedTranslationBase(username, CACHE_DATANAME, cacheKey)
 }
 
+/**
+ *
+ */
 export const translatePostText = translateText
 
+/**
+ *
+ */
 export { translateText }

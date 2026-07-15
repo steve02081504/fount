@@ -7,8 +7,8 @@ import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/grou
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { selectChannel } from './groupNav.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
+import { selectChannel } from './sidebar/index.mjs'
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let searchDebounce = null
@@ -65,7 +65,7 @@ function renderSearchResults(items, scope = 'group') {
 			hideSearchResults()
 			void (async () => {
 				if (groupId && groupId !== hubStore.context.currentGroupId)
-					await import('./groupNav.mjs').then(m => m.selectGroup(groupId))
+					await import('./sidebar/index.mjs').then(m => m.selectGroup(groupId))
 				await selectChannel(channelId)
 				await scrollToMessageEventId(eventId)
 			})()

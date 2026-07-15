@@ -18,7 +18,7 @@ alwaysApply: false
 
 ## ChatClient
 
-- Entry: `src/api/index.mjs` → `getChatClient(username, entityHash?)`（缺省 = operator）.
+- Entry: `src/api/client.mjs` → `getChatClient(username, entityHash?)`（缺省 = operator）.
 - Surface: groups / DM / join, channel send (+ files), reactions / pins / votes, member+role+channel governance, fork / reputation / denylist, federation catchup+tuning, session slots (persona / world / plugin / char / frequency), `triggerReply`, `streamingAuth`, `updateProfile` / `setOwner`, `entities.search`, bridge bot lifecycle, private-state namespaces.
 - `OnMessage` may hydrate via `client.messageFrom(event)` and operate immediately; returning false skips `GetReply` without blocking those ops.
 - Bridge groups: duck-typed `bridgeOperations` registered per bot; `group.bridgeBot().stop()` / `client.bridgeBots()`.

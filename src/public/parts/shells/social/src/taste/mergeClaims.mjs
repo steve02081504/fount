@@ -9,7 +9,7 @@ import path from 'node:path'
 import { getNodeDir } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
 
-import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
+import { collectSocialRpcMerged } from '../federation/rpc/wire.mjs'
 
 import { localTagStats, verifyTagMergeClaimWithStats } from './mergeVerify.mjs'
 import { loadTaste, mutateTaste, resolveTasteAlias } from './store.mjs'

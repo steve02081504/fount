@@ -22,7 +22,7 @@ Deno.test('scheduled post enqueue and cancel', async () => {
 
 Deno.test('tag_follow materializes followedTags', async () => {
 	const { username, operator } = await getSession()
-	const { getSocialClient } = await import('../../src/api/index.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const client = await getSocialClient(username)
 	assertEquals(client.entityHash, operator)
 	const result = await client.followTopic('gaptest', true)
@@ -61,9 +61,9 @@ Deno.test('replyPolicy followers_7d rejects non-follower', async () => {
 
 Deno.test('live session start stop', async () => {
 	const { username } = await getSession()
-	const { getSocialClient } = await import('../../src/api/index.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const client = await getSocialClient(username)
-	const session = await client.startLive({ title: 'test live', bridgeOrigin: 'http://127.0.0.1:8931' })
+	const session = await client.startLive({ title: 'test live', bridgeOrigin: 'http://live-bridge.test' })
 	assertEquals(session.status, 'live')
 	assert(session.liveId)
 	assert(session.avRoomId)
@@ -99,14 +99,14 @@ Deno.test('live session start stop', async () => {
 
 Deno.test('same-node live link bridges sessions', async () => {
 	const { username } = await getSession()
-	const { getSocialClient } = await import('../../src/api/index.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const client = await getSocialClient(username)
-	const a = await client.startLive({ title: 'host-a', bridgeOrigin: 'http://127.0.0.1:8931' })
+	const a = await client.startLive({ title: 'host-a', bridgeOrigin: 'http://live-bridge.test' })
 	// second live same entity blocked — use invite against fictional peer that auto-rejects
 	const invite = await client.inviteLiveLink(a.liveId, {
 		peerEntityHash: 'a'.repeat(128),
 		peerLiveId: crypto.randomUUID(),
-		bridgeOrigin: 'http://127.0.0.1:8931',
+		bridgeOrigin: 'http://live-bridge.test',
 	})
 	assertEquals(invite.status, 'invited')
 	await client.stopLive(a.liveId)

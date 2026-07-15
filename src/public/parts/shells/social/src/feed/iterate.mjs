@@ -2,18 +2,18 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
-import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
-import {
-	buildEngagementIndex,
-	buildViewerDislikedSet,
-	buildViewerLikedSet,
-} from '../feed.mjs'
+import { shouldHideAuthorByReputation } from '../federation/reputation/index.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { listFollowedTimelineOwners } from '../following.mjs'
 import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { createEngagementForPost } from './buildItem.mjs'
+import {
+	buildEngagementIndex,
+	buildViewerDislikedSet,
+	buildViewerLikedSet,
+} from './home.mjs'
 
 /**
  * @param {string} username 用户
@@ -51,7 +51,7 @@ export async function* iterateVisibleTimelineOwners(username, viewerEntityHash) 
 
 /**
  * @param {string} username 用户
- * @param {Awaited<ReturnType<import('../feed.mjs').loadViewerContext>>} viewerContext 观看者上下文
+ * @param {Awaited<ReturnType<import('./home.mjs').loadViewerContext>>} viewerContext 观看者上下文
  * @returns {AsyncGenerator<{ entityHash: string, post: object, enriched: object }>} 可见帖子
  */
 export async function* iterateVisiblePosts(username, viewerContext) {

@@ -14,10 +14,10 @@ import {
 	loadEntityIdentity,
 	resolveCharPartNameForEntity,
 } from '../../../chat/src/entity/identity.mjs'
-import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
-import { projectNoteFromTimelineEvent } from '../federation/note_index.mjs'
-import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
-import { projectReactionFromTimelineEvent } from '../federation/reaction_index.mjs'
+import { projectFollowerIndexFromTimelineEvent } from '../federation/follower/index.mjs'
+import { projectNoteFromTimelineEvent } from '../federation/note/index.mjs'
+import { projectPollVoteFromTimelineEvent } from '../federation/poll/index.mjs'
+import { projectReactionFromTimelineEvent } from '../federation/reaction/index.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
@@ -256,8 +256,3 @@ export async function commitTimelineEvent(username, entityHash, event, options =
 	}
 	return signed
 }
-
-/**
- *
- */
-export { commitEntityKeyRotate, commitEntityKeyRevoke } from './entity_key_commit.mjs'

@@ -92,11 +92,11 @@ export async function joinChannelCall(groupId, channelId) {
 	catch (error) {
 		console.error('call join failed:', error)
 		setCallDockVisible(false)
-		const msg = error?.message || String(error)
-		if (String(msg).includes('WebCodecs'))
+		const errorText = error?.message || String(error)
+		if (errorText.includes('WebCodecs'))
 			showToastI18n('error', 'chat.hub.streamAvNoCodecs')
 		else
-			showToastI18n('error', 'chat.hub.callJoinFailed', { error: msg })
+			showToastI18n('error', 'chat.hub.callJoinFailed', { error: errorText })
 	}
 }
 
@@ -162,7 +162,10 @@ function wireCallDockControls(dock) {
 	if (dock.dataset.wired) return
 	dock.dataset.wired = '1'
 	const byRole = Object.fromEntries(
-		[...dock.querySelectorAll('[data-call-role]')].map(btn => [btn.getAttribute('data-call-role'), btn]),
+		[...dock.querySelectorAll('[data-call-role]')].map(callButton => [
+			callButton.getAttribute('data-call-role'),
+			callButton,
+		]),
 	)
 	byRole.mute?.addEventListener('click', () => {
 		const muted = callSession?.toggleMute()
@@ -246,10 +249,10 @@ export async function refreshCallStatusBadge() {
  * @returns {void}
  */
 export function wireCallHeaderButton() {
-	const btn = document.getElementById('hub-header-call-button')
-	if (!btn || btn.dataset.wired) return
-	btn.dataset.wired = '1'
-	btn.addEventListener('click', () => {
+	const callButton = document.getElementById('hub-header-call-button')
+	if (!callButton || callButton.dataset.wired) return
+	callButton.dataset.wired = '1'
+	callButton.addEventListener('click', () => {
 		const groupId = hubStore.context.currentGroupId
 		const channelId = hubStore.context.currentChannelId
 		if (!groupId || !channelId) return

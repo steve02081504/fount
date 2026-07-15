@@ -239,14 +239,14 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 		})
 	}
 
-	if (fileIds.length) {
+	if (fileIds.length) 
 		content = {
 			...content,
 			fileIds,
 			fileCount: fileIds.length,
 			...Object.keys(fileAlts).length ? { fileAlts: { ...content.fileAlts, ...fileAlts } } : {},
 		}
-	}
+	
 
 	return { content: normalizeChannelMessageContent(content, maxBytes), fileIds }
 }

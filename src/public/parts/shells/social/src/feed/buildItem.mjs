@@ -1,5 +1,5 @@
-import { summarizeNotes } from '../federation/note_index.mjs'
-import { listPollTally } from '../federation/poll_index.mjs'
+import { summarizeNotes } from '../federation/note/index.mjs'
+import { listPollTally } from '../federation/poll/index.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { isPollClosed, viewerPollChoicesFromView } from '../lib/poll.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'

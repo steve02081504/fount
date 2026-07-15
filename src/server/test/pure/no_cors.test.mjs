@@ -24,7 +24,7 @@ Deno.test('buildUpstreamHeaders forwards Range and No-Cors-* injects Cookie/Auth
 			'no-cors-authorization': 'Bearer upstream',
 			'no-cors-x-custom': 'yes',
 			'x-random': 'nope',
-			host: 'localhost:8931',
+			host: 'localhost:9999',
 			connection: 'keep-alive',
 		},
 	})

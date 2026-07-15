@@ -235,7 +235,7 @@ export async function executeGeneration(groupId, request, stream, placeholderEnt
 
 		let typingTimer = null
 		try {
-			const { getChatClient } = await import('../../api/index.mjs')
+			const { getChatClient } = await import('../../api/client.mjs')
 			const selfHash = (await ensureLocalAgentEntityHash(chatMetadata.username, request.char_id)).toLowerCase()
 			const genClient = await getChatClient(chatMetadata.username, selfHash)
 			const genGroup = await genClient.group(groupId)

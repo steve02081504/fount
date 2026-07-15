@@ -3,7 +3,7 @@
  * 【职责】群组侧栏项与顶栏群组菜单：离开群、邀请、联邦入口、文件夹操作等上下文动作。
  * 【原理】`showGroupContextMenu` / `showGroupHeaderMenu` 弹出单例菜单层并处理 dismiss；离开或删除群后清空消息区；本模块不渲染气泡。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupApi、../src/inviteQr、chat、core/domUtils。
+ * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、../src/inviteQr、chat、core/domUtils。
  */
 import { getPartList } from '../../../../scripts/api/parts.mjs'
 import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
@@ -15,18 +15,19 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
-import { createGroupInvite, groupRequest, leaveGroups } from '../src/api/groupApi.mjs'
+import { groupRequest } from '../src/api/groupClient.mjs'
+import { createGroupInvite, leaveGroups } from '../src/api/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
-import { navigateToGroupSettings, selectGroup } from './groupNav.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
-import { closeGroupWebSocket } from './groupStream.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
 import { renderServerBar } from './serverBar.mjs'
+import { navigateToGroupSettings, selectGroup } from './sidebar/index.mjs'
+import { closeGroupWebSocket } from './stream/index.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null

@@ -9,10 +9,10 @@ const MAX_PATTERN_LEN = 64
  */
 export function normalizeMutedKeywordEntry(raw) {
 	if (!raw || typeof raw !== 'object') return null
-	const pattern = String(/** @type {{ pattern?: unknown }} */(raw).pattern || '').trim().toLowerCase()
+	const pattern = String(/** @type {{ pattern?: unknown }} */raw.pattern || '').trim().toLowerCase()
 	if (!pattern || pattern.length > MAX_PATTERN_LEN) return null
-	const matchTags = /** @type {{ matchTags?: unknown }} */(raw).matchTags !== false
-	const expiresRaw = /** @type {{ expiresAt?: unknown }} */(raw).expiresAt
+	const matchTags = /** @type {{ matchTags?: unknown }} */raw.matchTags !== false
+	const expiresRaw = /** @type {{ expiresAt?: unknown }} */raw.expiresAt
 	const expiresAt = expiresRaw == null || expiresRaw === ''
 		? undefined
 		: Number(expiresRaw)

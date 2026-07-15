@@ -10,13 +10,13 @@ alwaysApply: false
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
 - **External untrusted**: Trystero wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `npm:@steve02081504/fount-p2p/wire/ingress`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `npm:@steve02081504/fount-p2p/schemas/*`.
-- **Untrusted remote Markdown**: `messageRender.hydrateOneMarkdown` renders the first 120 chars as preview via the untrusted pipeline (aligned with mention `textPreview`); overflow shows an expand button; trusted authors still use the trusted pipeline (`allowDangerousHtml`).
+- **Untrusted remote Markdown**: `messages/render/markdown.mjs` (`hydrateMessageMarkdown`) renders the first 120 chars as preview via the untrusted pipeline (aligned with mention `textPreview`); overflow shows an expand button; trusted authors still use the trusted pipeline (`allowDangerousHtml`).
 
 ## Streaming AV
 
 - **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`)。roster / `hello` / `frame_type=2` 屏幕共享；`subscribe mode=preview|full`（preview 只转 keyframe+节流、无音频）。
 - **群组通话**：文本频道顶栏 → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`；卡片 `content.type:'call'` + `message_edit` 更新参与者/结束。
-- **Shared lean client**（Social live 等复用）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildSocialLiveAvWsUrl` / `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`（`mode` / `setMode`）。
+- **Shared lean client**（Social live 复用编解码会话）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`（`mode` / `setMode`）；帧协议常量与 `packAvFrame` / `unpackAvFrame` / `bytesToHex` 从此导出。画质预设：`shared/avRelayPresets.mjs` 的 `CODECS_PRESETS`（勿经 codecsAv barrel）。Social live-av URL 在 `/parts/shells:social/shared/liveAvWsUrl.mjs`。
 - **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
 - Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.
 - **消息方向预载**：`MessagePipeline` 向上滑且距顶 <2 屏时提前 `loadMoreTop`；`loadOlderMessages` in-flight 去重。
@@ -24,7 +24,8 @@ alwaysApply: false
 ## UI conventions
 
 - **Errors**: use `handleUIError` from `public/src/ui/errors.mjs` — toast + `console.error` + Sentry (all three). Do not catch with only `showToastI18n` alone. Background paths: `toError` + `console.error` + Sentry without toast.
-- **Relative imports**: files directly under `public/hub/` must reach shared frontend helpers with `../src/...`; using `../../src/...` resolves to `/parts/src/...` in the browser and hard-fails module loading.
+- **Relative imports**: from `public/hub/*.mjs` use `../src/...` for `public/src` helpers (`../../src` resolves to `/parts/src` in the browser and hard-fails). One nesting deeper (`hub/wiring/`, `hub/messages/`, `hub/federation/`, `hub/sidebar/`, `hub/stream/`) needs `../../src/...` and `../../../../../scripts/...`. Two levels (`hub/messages/render/`, `hub/messages/actions/`, `hub/stream/handlers/`) need `../../../src/...` and `../../../../../../scripts/...`. DOM event wiring lives in `hub/wiring/` (`index.mjs` = `wireEvents`, `bootstrap.mjs` = `wireBootstrap`; filenames drop the `wire` prefix, export names keep it). Sidebar nav: `hub/sidebar/`（`index.mjs` 协调 `selectGroup` / `renderHubChannelSidebar`）。群 WS: `hub/stream/`（`connection.mjs` 生命周期；`handlers/` 按 wire type；`index.mjs` 对外 façade）。
+- **Message modules**: render coordination in `messages/render/`（`index.mjs` 聚合；正文/MD/附件等按职责分文件，直引不 barrel）；action 委托在 `messages/actions/handlers.mjs`，各 `data-action` 进同目录独立文件。
 - No hardcoded user-visible strings; use `data-i18n` and `zh-CN.json`.
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
@@ -57,7 +58,7 @@ Hub-facing API shapes:
 - **Syntax**: `@[entity:<128hex>]` in message body (see `shared/inlineTokenSyntax.mjs`); Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
 - **API**: `GET /inbox`、`GET/PUT /inbox/seen` 固定 operator 实体（无换收件人参数）；agent inbox 仅经 `getChatClient(username, agentHash).inbox`。群 autocomplete: `GET …/groups/:id/mentions/suggest`.
 - **Hub**: server bar `@` button + `#inbox` list (`hub/inboxView.mjs` + `hub/inboxClient.mjs`); badge driven by WS `channel_message.mentions.entityHashes`.
-- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `shared/socialRunUri.mjs`.
+- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `/parts/shells:social/shared/runUri.mjs`。
 
 ## Aliases / petnames
 

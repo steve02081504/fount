@@ -40,12 +40,12 @@ export function registerLiveSignalSocket(entityHash, liveId, socket, meta) {
 		broadcast(key, { type: 'like_count', count: session.likeCount || 0 })
 
 	socket.on('message', raw => {
-		let msg
-		try { msg = JSON.parse(String(raw)) }
+		let wireMessage
+		try { wireMessage = JSON.parse(String(raw)) }
 		catch { return }
-		if (!msg || typeof msg !== 'object') return
-		if (msg.type === 'danmaku') {
-			const text = String(msg.text || '').trim().slice(0, 120)
+		if (!wireMessage || typeof wireMessage !== 'object') return
+		if (wireMessage.type === 'danmaku') {
+			const text = String(wireMessage.text || '').trim().slice(0, 120)
 			if (!text) return
 			const row = {
 				type: 'danmaku',
@@ -59,7 +59,7 @@ export function registerLiveSignalSocket(entityHash, liveId, socket, meta) {
 			forwardBridged(key, row)
 			return
 		}
-		if (msg.type === 'like') {
+		if (wireMessage.type === 'like') {
 			const updated = patchLiveStats(meta.username, entityHash, liveId, { likeDelta: 1 })
 			const row = {
 				type: 'like',
@@ -170,16 +170,10 @@ function broadcast(key, payload) {
  * @param {string} username replica
  * @param {string} entityHash 主播
  * @param {string} liveId 直播
- * @param {string} viewerEntityHash 观看者
  * @returns {boolean} 是否允许进入
  */
-export function canJoinLiveRoom(username, entityHash, liveId, viewerEntityHash) {
-	const session = loadLiveSession(username, entityHash, liveId)
-	if (!session || session.status !== 'live') return false
-	if (session.federatedProxy) return true
-	if (session.visibility !== 'followers') return true
-	void viewerEntityHash
-	return true
+export function canJoinLiveRoom(username, entityHash, liveId) {
+	return loadLiveSession(username, entityHash, liveId)?.status === 'live'
 }
 
 /**

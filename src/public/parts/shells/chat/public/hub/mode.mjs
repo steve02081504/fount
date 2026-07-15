@@ -3,7 +3,7 @@
  * 【职责】Hub 左侧主模式切换：「群组」「好友」「收件箱」三套布局的激活、数据加载与 composer 状态清理。
  * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / inbox。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；groupStream、friendsList、groupNav、inboxView。
+ * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；stream、friendsList、sidebar、inboxView。
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 
@@ -11,18 +11,18 @@ import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
 import { hubStore, setHubState } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import {
+	clearPrivateGroupState,
+} from './privateGroup.mjs'
 import {
 	isPrivateChatActive,
 	renderChannelList,
 	renderGroupInfoCard,
 	renderHubChannelSidebar,
 	renderMemberList,
-} from './groupNav.mjs'
-import { closeGroupWebSocket } from './groupStream.mjs'
-import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
-import {
-	clearPrivateGroupState,
-} from './privateGroup.mjs'
+} from './sidebar/index.mjs'
+import { closeGroupWebSocket } from './stream/index.mjs'
 
 /**
  * 高亮左侧「群组 / 好友 / 收件箱」模式切换按钮。

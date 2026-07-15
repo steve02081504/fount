@@ -3,22 +3,19 @@
  * 【职责】置顶消息与聊天书签：拉取列表、取消置顶/删除书签，渲染到顶栏搜索框左侧的两个弹出面板。
  * 【原理】`refreshPinsBookmarks` 更新 `#hub-pins-wrap`/`#hub-bookmarks-wrap` 面板内条目与按钮计数徽标，配合 `banners.setPinsBookmarksWrapVisible` 控制按钮可见性；`wirePinsBookmarksPanels` 负责按钮的展开/收起交互。条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/template、../src/api/groupApi、banners、core/domUtils、core/state、groupNav、messages/messages、messages/pinPreview。
+ * 【关联】../../../../scripts/template、../src/api/groupBookmarks、banners、core/domUtils、core/state、sidebar、messages/messages、messages/pinPreview。
  */
 import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
-import {
-	getChatBookmarks,
-	getGroupState,
-	removeChatBookmark,
-	unpinMessage,
-} from '../src/api/groupApi.mjs'
+import { getChatBookmarks, removeChatBookmark } from '../src/api/groupBookmarks.mjs'
+import { unpinMessage } from '../src/api/groupChannel.mjs'
+import { getGroupState } from '../src/api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'
 import { hubStore } from './core/state.mjs'
-import { selectChannel, selectGroup } from './groupNav.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
+import { selectChannel, selectGroup } from './sidebar/index.mjs'
 
 const SIDEBAR_LABEL_MAX = 56
 

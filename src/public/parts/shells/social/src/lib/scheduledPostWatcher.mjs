@@ -1,13 +1,13 @@
 /**
- * 定时发帖 watcher（镜像 pollDeadlineWatcher）。
+ * 定时发帖 watcher。
  */
-import { getReplicaUsernamesProvider } from '../federation/follower_index_registry.mjs'
+import { createDeadlineScheduler } from '../../../chat/src/chat/lib/deadlineScheduler.mjs'
+import { getReplicaUsernamesProvider } from '../federation/follower/registry.mjs'
 import { resolveSocialEntity } from '../federation/hosting.mjs'
 
 import { listScheduledPosts, takeScheduledPost } from './scheduledPosts.mjs'
 
-/** @type {Map<string, ReturnType<typeof setTimeout>>} */
-const scheduledTimers = new Map()
+const deadlines = createDeadlineScheduler()
 
 /**
  * @param {string} entityHash 作者
@@ -30,7 +30,7 @@ export async function fireScheduledPost(username, entityHash, scheduledId) {
 	if (!row) return
 	const resolved = await resolveSocialEntity(owner, username)
 	if (!resolved?.local || resolved.replicaUsername !== username) return
-	const { getSocialClient } = await import('../api/index.mjs')
+	const { getSocialClient } = await import('../api/client/index.mjs')
 	const client = await getSocialClient(username, owner)
 	const draft = { ...row.draft }
 	delete draft.publishAt
@@ -45,19 +45,10 @@ export async function fireScheduledPost(username, entityHash, scheduledId) {
  */
 export function scheduleOneScheduledPost(username, entityHash, row) {
 	const owner = entityHash.toLowerCase()
-	const key = scheduleKey(owner, row.scheduledId)
-	if (scheduledTimers.has(key)) return
 	const publishAt = Number(row.publishAt)
 	if (!Number.isFinite(publishAt)) return
-	if (publishAt <= Date.now()) {
-		void fireScheduledPost(username, owner, row.scheduledId)
-		return
-	}
-	const timeout = setTimeout(() => {
-		scheduledTimers.delete(key)
-		void fireScheduledPost(username, owner, row.scheduledId)
-	}, publishAt - Date.now())
-	scheduledTimers.set(key, timeout)
+	void deadlines.schedule(scheduleKey(owner, row.scheduledId), publishAt, () =>
+		fireScheduledPost(username, owner, row.scheduledId))
 }
 
 /**
@@ -67,11 +58,7 @@ export function scheduleOneScheduledPost(username, entityHash, row) {
  * @returns {void}
  */
 export function cancelScheduledPostTimer(username, entityHash, scheduledId) {
-	const key = scheduleKey(entityHash, scheduledId)
-	const timer = scheduledTimers.get(key)
-	if (!timer) return
-	clearTimeout(timer)
-	scheduledTimers.delete(key)
+	deadlines.clear(scheduleKey(entityHash, scheduledId))
 }
 
 /**

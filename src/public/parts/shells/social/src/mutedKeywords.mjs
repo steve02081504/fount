@@ -1,9 +1,7 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
-import { normalizeMutedKeywordEntry, pruneMutedKeywordEntries } from './lib/contentFilter.mjs'
+import { pruneMutedKeywordEntries } from './lib/contentFilter.mjs'
 import { mutedKeywordsPath } from './paths.mjs'
-
-export { normalizeMutedKeywordEntry, pruneMutedKeywordEntries } from './lib/contentFilter.mjs'
 
 /**
  * @returns {{ entries: object[] }} 空屏蔽词表

@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
+import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
 import { createTestSession } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -18,7 +19,7 @@ const AUTHOR_CHAR = 'mention_getreply_agent'
 const getSession = createTestSession()
 const append = await import('../../src/timeline/append.mjs')
 const following = await import('../../src/following.mjs')
-const followerIndex = await import('../../src/federation/follower_index.mjs')
+const followerIndex = await import('../../src/federation/follower/index.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/entity/member.mjs')
 const { getUserDictionary } = await import('fount/server/auth/index.mjs')
@@ -49,7 +50,7 @@ Deno.test('agent following feeds home feed; operator feed excludes agent-only fo
 		content: { text: 'agent feed parity post', visibility: 'public' },
 	}, { fanout: false })
 
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const operatorClient = await getSocialClient(username)
 	const agentFeed = await agentClient.feed({ limit: 50 })
@@ -72,7 +73,7 @@ Deno.test('buildNotifications reads agent entity inbox via SocialClient', async 
 		content: { text: `mention agent @[entity:${agentHash}]`, visibility: 'public' },
 	}, { fanout: false })
 
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentPage = await (await getSocialClient(username, agentHash)).notifications({ limit: 50 })
 	const operatorPage = await (await getSocialClient(username)).notifications({ limit: 50 })
 
@@ -98,7 +99,7 @@ Deno.test('agent follow projects entity-granular follower index', async () => {
 Deno.test('operator SocialClient may delete owned agent post', async () => {
 	const { username } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const post = await agentClient.post({ text: 'agent post owner may delete', visibility: 'public' })
 	const operatorClient = await getSocialClient(username)
@@ -119,7 +120,7 @@ Deno.test('operator SocialClient may delete owned agent post', async () => {
 Deno.test('operator SocialClient may edit owned agent post', async () => {
 	const { username } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const post = await agentClient.post({ text: 'agent post owner may edit', visibility: 'public' })
 	const operatorClient = await getSocialClient(username)
@@ -143,7 +144,7 @@ Deno.test('setEntityOwner lets declared master manage human posts; operator look
 	assertEquals(await resolveOperatorEntityHashForUser(username), operator)
 	assertEquals((await loadEntityIdentity(username, operator)).ownerEntityHash, masterHash)
 
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const humanClient = await getSocialClient(username)
 	const post = await humanClient.post({ text: 'human post owned by agent', visibility: 'public' })
 	const masterClient = await getSocialClient(username, masterHash)
@@ -159,7 +160,8 @@ Deno.test('setEntityOwner lets declared master manage human posts; operator look
 
 Deno.test('followed author post triggers agent OnMessage via timeline dispatch', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
-	globalThis.__fountSocialOnMessageProbe = { events: [], returnValue: false }
+	socialOnMessageProbe.reset()
+	socialOnMessageProbe.returnValue = false
 	const { username } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
 	const authorHash = await seedAgentChar(username, AUTHOR_CHAR)
@@ -170,7 +172,7 @@ Deno.test('followed author post triggers agent OnMessage via timeline dispatch',
 		content: { text: 'followed author new post', visibility: 'public' },
 	}, { fanout: false })
 
-	const hit = globalThis.__fountSocialOnMessageProbe.events.find(row => row.viewerEntityHash === agentHash)
+	const hit = socialOnMessageProbe.events.find(row => row.viewerEntityHash === agentHash)
 	assert(hit, 'agent OnMessage invoked for followed author post')
 	assertEquals(hit.authorEntityHash, authorHash)
 })
@@ -189,7 +191,7 @@ Deno.test('rebuildFollowerIndex restores agent follows', async () => {
 Deno.test('agent saved posts CRUD+search isolated from operator', async () => {
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, PROBE_CHAR)
-	const { getSocialClient } = await import('../../src/api/client.mjs')
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const operatorClient = await getSocialClient(username)
 

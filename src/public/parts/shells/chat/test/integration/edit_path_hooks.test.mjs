@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals, assertRejects, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { editPathHookState } from '../fixtures/edit_path_hook_state.mjs'
+import { editPathHookState } from '../fixtures/probes/editPathHookState.mjs'
 import { createIntegrationBoot } from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
@@ -39,7 +39,7 @@ async function seedEditPathFixtures(dataDir, username) {
  * @returns {Promise<{ username: string, groupId: string, channelId: string }>} 就绪的测试会话标识
  */
 async function setupEditPathSession() {
-	editPathHookState().reset()
+	editPathHookState.reset()
 	const username = `edit-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
@@ -64,7 +64,7 @@ async function setupEditPathSession() {
 	const channelId = await getDefaultChannelId(username, groupId)
 	await setPersona(groupId, PERSONA, username)
 	await bindWorld(groupId, channelId, WORLD, username)
-	editPathHookState().reset()
+	editPathHookState.reset()
 	return { username, groupId, channelId }
 }
 
@@ -81,7 +81,6 @@ async function listMessages(username, groupId, channelId) {
 
 Deno.test('persona BeforeUserEdit then world MessageEdit rewrite before DAG edit', async () => {
 	const { username, groupId, channelId } = await setupEditPathSession()
-	const hooks = editPathHookState()
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
 	await postChannelMessage(username, groupId, channelId, { text: 'seed persona-edit-me world-edit-me' })
 	const row = (await listMessages(username, groupId, channelId)).find(m =>
@@ -97,8 +96,8 @@ Deno.test('persona BeforeUserEdit then world MessageEdit rewrite before DAG edit
 	)
 	await appendChannelMessageEdit(username, groupId, channelId, row.eventId, edited)
 
-	assertEquals(hooks.beforeEditCalls.length, 1)
-	assertEquals(hooks.worldEditCalls.length, 1)
+	assertEquals(editPathHookState.beforeEditCalls.length, 1)
+	assertEquals(editPathHookState.worldEditCalls.length, 1)
 	const messages = await listMessages(username, groupId, channelId)
 	const hit = messages.find(m => String(m.content?.content || '').includes('world-edited'))
 	assert(hit)

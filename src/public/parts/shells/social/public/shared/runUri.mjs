@@ -1,7 +1,42 @@
 /** social runUri 与 chat 互跳；外部分享经 Pages protocol 中转。 */
 
+const SOCIAL_SHELL_PATH = '/parts/shells:social/'
 const SOCIAL_RUN_PART = 'shells:social'
 const RUN_PREFIX = `fount://run/${SOCIAL_RUN_PART}/`
+
+/**
+ * Social shell 实体资料页 hash 链接。
+ * @param {string} entityHash 128 位 entityHash
+ * @param {string} [postId] 帖子 id
+ * @returns {string} 浏览器路径（含 hash）
+ */
+export function formatSocialProfileHref(entityHash, postId) {
+	const hash = postId ? `profile;${entityHash};${postId}` : `profile;${entityHash}`
+	return `${SOCIAL_SHELL_PATH}#${hash}`
+}
+
+/**
+ * @param {string} raw hash 或 runUri
+ * @returns {{ subcommand: string, entityHash?: string, postId?: string, searchQuery?: string } | null} 解析结果
+ */
+export function parseSocialRunUri(raw) {
+	let input = raw.trim()
+	if (!input) return null
+	if (input.startsWith('fount://run/')) input = input.slice('fount://run/'.length)
+	if (input.startsWith(`${SOCIAL_RUN_PART}/`) || input.startsWith(`${SOCIAL_RUN_PART};`))
+		input = input.slice(SOCIAL_RUN_PART.length + 1)
+
+	const parts = input.split(';').map(segment => {
+		try { return decodeURIComponent(segment) }
+		catch { return segment }
+	})
+	const subcommand = parts[0]?.trim()
+	if (subcommand === 'profile')
+		return { subcommand, entityHash: parts[1], postId: parts[2] }
+	if (subcommand === 'search')
+		return { subcommand, searchQuery: parts.slice(1).join(';') }
+	return subcommand ? { subcommand, entityHash: parts[1] } : null
+}
 
 /**
  * @param {string} subcommand 子命令
@@ -47,8 +82,8 @@ export function formatSocialShareHttpsUrl(entityHash, postId) {
 export function formatSocialSearchHref(query) {
 	const q = String(query || '').trim()
 	if (q.startsWith('#'))
-		return `/parts/shells:social/#search;${encodeURIComponent(q.slice(1))}`
-	return `/parts/shells:social/#search;${encodeURIComponent(q)}`
+		return `${SOCIAL_SHELL_PATH}#search;${encodeURIComponent(q.slice(1))}`
+	return `${SOCIAL_SHELL_PATH}#search;${encodeURIComponent(q)}`
 }
 
 /**
@@ -57,7 +92,7 @@ export function formatSocialSearchHref(query) {
  */
 export function formatSocialTopicHref(tag) {
 	const t = String(tag || '').trim().replace(/^#/, '')
-	return `/parts/shells:social/#topic:${encodeURIComponent(t)}`
+	return `${SOCIAL_SHELL_PATH}#topic:${encodeURIComponent(t)}`
 }
 
 /**

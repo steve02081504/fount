@@ -95,7 +95,7 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 		 * @returns {Promise<object>} DM 群
 		 */
 		async dm() {
-			const { getChatClient } = await import('./index.mjs')
+			const { getChatClient } = await import('./client.mjs')
 			const client = await getChatClient(ctx.username, ctx.entityHash)
 			return client.openDm(entityHash)
 		},

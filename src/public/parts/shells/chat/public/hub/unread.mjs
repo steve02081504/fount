@@ -101,7 +101,7 @@ export async function markCurrentChannelRead() {
 		group.unreadCount = sumChannelUnread(group.channelUnread)
 	}
 	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
-	void import('./groupNav.mjs').then(({ renderHubChannelSidebar }) => {
+	void import('./sidebar/index.mjs').then(({ renderHubChannelSidebar }) => {
 		if (hubStore.context.currentState) void renderHubChannelSidebar(hubStore.context.currentState)
 	})
 }
