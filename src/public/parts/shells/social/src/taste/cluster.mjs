@@ -5,6 +5,7 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { loadDwellTagBoosts } from '../engagement/dwell.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { summarizeReactions } from '../federation/reaction_index.mjs'
 import { pullPostReactions } from '../federation/reaction_pull.mjs'
@@ -320,6 +321,7 @@ export async function rebuildTaste(username, entityHash) {
 		ownSignal.set(key, (ownSignal.get(key) || 0) - 1)
 	}
 
+	const dwellTags = await loadDwellTagBoosts(username, actor)
 	const store = await mutateTaste(username, actor, draft => {
 		/** @type {Record<string, number>} */
 		const computed = {}
@@ -345,6 +347,11 @@ export async function rebuildTaste(username, entityHash) {
 				const delta = signal * (isSelf ? selfWeight : 1)
 				computed[canon] = (computed[canon] || 0) + delta
 			}
+		}
+
+		for (const [rawTag, weight] of dwellTags) {
+			const canon = resolveTasteAlias(rawTag, draft.aliases)
+			computed[canon] = (computed[canon] || 0) + weight
 		}
 
 		draft.computed = computed

@@ -12,10 +12,12 @@ import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
 import { canWriteTimeline } from './timeline/append.mjs'
+import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
+import { loadMutedKeywords } from './mutedKeywords.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
 /** @type {Set<string>} */
-export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed'])
+export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed', 'post_note'])
 
 /**
  *
@@ -277,6 +279,15 @@ export function deriveInboxNotifications(timelineOwner, event) {
 		if (target && target !== owner)
 			rows.push({ recipient: target, ...normalizeNotificationRow('follow', owner, at, null, null) })
 	}
+	if (event.type === 'post_note') {
+		const target = (event.content?.targetEntityHash || '').toLowerCase()
+		if (target && target !== owner)
+			rows.push({
+				recipient: target,
+				...normalizeNotificationRow('post_note', owner, at, null, event.content?.targetPostId ?? null, target),
+				snippet: notificationSnippet(event.content?.text || ''),
+			})
+	}
 	return rows
 }
 
@@ -390,6 +401,15 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		if (!await canWriteTimeline(username, row.recipient)) continue
 		if (await isMutedBy(row.recipient, { entityHash: row.actorEntityHash })) continue
 		const snippet = await resolveNotificationSnippet(username, timelineOwner, event, row)
+		const mutedKeywords = await loadMutedKeywords(username, row.recipient)
+		const filterPost = {
+			content: {
+				text: `${event?.content?.text || ''}\n${snippet || ''}`,
+				contentWarning: event?.content?.contentWarning,
+				tags: event?.content?.tags,
+			},
+		}
+		if (postMatchesMutedKeywords(filterPost, mutedKeywords)) continue
 		const { recipient, ...baseRow } = row
 		const dir = inboxDir(username, recipient)
 		fs.mkdirSync(dir, { recursive: true })

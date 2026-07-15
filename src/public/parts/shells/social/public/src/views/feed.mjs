@@ -4,7 +4,11 @@ import { formatSocialSearchHref } from '../../shared/runUri.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { activateView } from '../viewChrome.mjs'
+import { bindDwellTracker, sendDwellBeacon } from '../dwellTracker.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
+
+/** @type {(() => void) | null} */
+let unbindDwell = null
 
 /**
  * 加载并渲染 Feed 页。
@@ -77,36 +81,49 @@ export async function loadSuggestedAccounts(appContext) {
 /**
  * 加载并渲染侧边栏热门话题标签。
  * @param {object} appContext 应用上下文
+ * @param {'local' | 'nearby'} [scope='local'] 范围
  * @returns {Promise<void>}
  */
-export async function loadTrendingHashtags(appContext) {
+export async function loadTrendingHashtags(appContext, scope = 'local') {
 	const aside = document.getElementById('feedTrending')
 	if (!aside) return
-	const data = await appContext.socialApi('/hashtags/trending?limit=12').catch(() => ({ tags: [] }))
+	const currentScope = scope === 'nearby' ? 'nearby' : 'local'
+	aside.dataset.trendingScope = currentScope
+	const data = await appContext.socialApi(`/hashtags/trending?limit=12&scope=${currentScope}`).catch(() => ({ tags: [] }))
 	const tags = data.tags || []
-	if (!tags.length) {
-		aside.classList.add('hidden')
-		aside.innerHTML = ''
-		return
-	}
 	aside.classList.remove('hidden')
 	aside.replaceChildren()
-	aside.appendChild(await renderTemplate('trending_header', {}))
+	aside.appendChild(await renderTemplate('trending_header', {
+		localActive: currentScope === 'local' ? 'active' : '',
+		nearbyActive: currentScope === 'nearby' ? 'active' : '',
+		localLabel: appContext.geti18n('social.trending.scopeLocal'),
+		nearbyLabel: appContext.geti18n('social.trending.scopeNearby'),
+	}))
 	const list = document.createElement('div')
 	list.className = 'trending-tags'
-	for (const row of tags) {
-		const link = document.createElement('a')
-		link.className = 'trending-tag link-btn'
-		link.href = formatSocialSearchHref(row.tag)
-		link.textContent = `#${row.tag}`
-		link.title = appContext.geti18n('social.trending.postCount', { n: row.count })
-		const count = document.createElement('span')
-		count.className = 'trending-count'
-		count.textContent = String(row.count)
-		link.appendChild(count)
-		list.appendChild(link)
-	}
+	if (!tags.length)
+		list.innerHTML = `<p class="empty-hint">${appContext.geti18n('social.trending.empty')}</p>`
+	else
+		for (const row of tags) {
+			const link = document.createElement('a')
+			link.className = 'trending-tag link-btn'
+			link.href = formatSocialSearchHref(row.tag)
+			link.textContent = `#${row.tag}`
+			link.title = appContext.geti18n('social.trending.postCount', { n: row.count })
+			const count = document.createElement('span')
+			count.className = 'trending-count'
+			count.textContent = String(row.count)
+			link.appendChild(count)
+			list.appendChild(link)
+		}
+
 	aside.appendChild(list)
+	aside.querySelectorAll('[data-trending-scope]').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const next = btn.getAttribute('data-trending-scope') === 'nearby' ? 'nearby' : 'local'
+			void loadTrendingHashtags(appContext, next)
+		})
+	})
 }
 
 /**
@@ -220,6 +237,8 @@ export async function loadFeed(appContext, append = false) {
 		if (card) list.appendChild(card)
 
 	bindFeedInfiniteScroll(appContext)
+	if (unbindDwell) unbindDwell()
+	unbindDwell = bindDwellTracker(list, entries => sendDwellBeacon(appContext, entries))
 	void loadTrendingHashtags(appContext)
 	void loadSuggestedAccounts(appContext)
 }

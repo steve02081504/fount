@@ -44,18 +44,39 @@ export function createPostCardBuilder({
 		const decryptFailed = item.post?.decryptView?.failed
 		const decryptFailedLabel = geti18n('social.feed.decryptFailed')
 		const contentWarning = item.post?.content?.contentWarning?.trim()
+		const sensitiveMedia = item.post?.content?.sensitiveMedia === true
+			|| Boolean(contentWarning)
 		const text = item.post?.content?.text || (decryptFailed ? decryptFailedLabel : '')
 		const contentAuthor = isRepost ? originalAuthor : item.entityHash
-		let bodyHtml = decryptFailed
+		const markdownBody = decryptFailed
 			? `<em>${decryptFailedLabel}</em>`
 			: await renderMarkdown(text, contentAuthor)
-		if (contentWarning && !decryptFailed) 
-			bodyHtml = `<div class="content-warning-wrap" data-cw-collapsed="1">
+		const mediaHtmlRaw = decryptFailed
+			? ''
+			: renderMediaHtml(item.post?.content?.mediaRefs, {
+				sensitive: sensitiveMedia && !contentWarning,
+				warningLabel: geti18n('social.feed.sensitiveMedia'),
+				revealLabel: geti18n('social.feed.revealContent'),
+			})
+		const quoteRef = item.post?.content?.quoteRef
+		const quoteHtml = quoteRef && !decryptFailed
+			? renderQuoteBlockHtml(geti18n, { ...quoteRef, text: quoteRef.text || '' })
+			: ''
+		const groupRef = item.post?.content?.groupRef
+		const groupRefHtml = groupRef && !decryptFailed
+			? renderGroupRefBlockHtml(groupRef)
+			: ''
+		const pollHtml = item.poll && !decryptFailed
+			? renderPollHtml(item.poll, actionKey, geti18n)
+			: ''
+		let contentBlock = `${pollHtml}${mediaHtmlRaw}<div class="body markdown-body">${markdownBody}</div>`
+		if (contentWarning && !decryptFailed)
+			contentBlock = `<div class="content-warning-wrap" data-cw-collapsed="1">
 				<div class="content-warning-label">${escapeHtml(contentWarning)}</div>
 				<button type="button" class="content-warning-reveal" data-i18n="social.feed.revealContent">${geti18n('social.feed.revealContent')}</button>
-				<div class="content-warning-body hidden">${bodyHtml}</div>
+				<div class="content-warning-body hidden">${contentBlock}</div>
 			</div>`
-		
+
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost
 		const itemOwner = String(item.ownerEntityHash || item.authorProfile?.ownerEntityHash || '').trim().toLowerCase()
@@ -70,15 +91,6 @@ export function createPostCardBuilder({
 		const visibilityIcon = visibilityCode === 'followers'
 			? `<span class="s-ic s-ic-lock post-visibility-icon" title="${geti18n('social.composer.visibilityFollowers')}" aria-label="${geti18n('social.composer.visibilityFollowers')}"></span>`
 			: `<span class="s-ic s-ic-globe post-visibility-icon" title="${geti18n('social.composer.visibilityPublic')}" aria-label="${geti18n('social.composer.visibilityPublic')}"></span>`
-		const mediaHtml = decryptFailed ? '' : renderMediaHtml(item.post?.content?.mediaRefs)
-		const quoteRef = item.post?.content?.quoteRef
-		const quoteHtml = quoteRef && !decryptFailed
-			? renderQuoteBlockHtml(geti18n, { ...quoteRef, text: quoteRef.text || '' })
-			: ''
-		const groupRef = item.post?.content?.groupRef
-		const groupRefHtml = groupRef && !decryptFailed
-			? renderGroupRefBlockHtml(groupRef)
-			: ''
 		const likedClass = item.viewerLiked ? ' liked' : ''
 		const dislikedClass = item.viewerDisliked ? ' disliked' : ''
 		const likeLabel = item.viewerLiked
@@ -108,9 +120,6 @@ export function createPostCardBuilder({
 		const editedBadge = item.post?.edited
 			? `<span class="post-edited-badge">${geti18n('social.post.edited')}</span>`
 			: ''
-		const pollHtml = item.poll && !decryptFailed
-			? renderPollHtml(item.poll, actionKey, geti18n)
-			: ''
 		const treatAsOwn = canManage
 		const blockButton = treatAsOwn
 			? ''
@@ -134,6 +143,23 @@ export function createPostCardBuilder({
 			? `<button type="button" data-edit-history="${actionKey}"><span data-i18n="social.post.editHistory"></span></button>`
 			: ''
 
+		const topNote = item.communityNote?.topNote
+		const communityNoteHtml = topNote
+			? `<div class="community-note" data-note-for="${actionKey}">
+				<div class="community-note-label">${escapeHtml(geti18n('social.notes.label'))}</div>
+				<p class="community-note-text">${escapeHtml(topNote.text || '')}</p>
+				<div class="community-note-actions">
+					<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${escapeHtml(topNote.noteEventId)}" data-helpful="1">${escapeHtml(geti18n('social.notes.helpful'))} (${topNote.helpfulCount || 0})</button>
+					<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${escapeHtml(topNote.noteEventId)}" data-helpful="0">${escapeHtml(geti18n('social.notes.unhelpful'))} (${topNote.unhelpfulCount || 0})</button>
+					<button type="button" class="btn btn-ghost btn-xs" data-note-more="${actionKey}">${escapeHtml(geti18n('social.notes.more', { n: item.communityNote.noteCount || 1 }))}</button>
+				</div>
+			</div>`
+			: item.communityNote?.noteCount
+				? `<div class="community-note community-note-collapsed">
+					<button type="button" class="btn btn-ghost btn-xs" data-note-more="${actionKey}">${escapeHtml(geti18n('social.notes.more', { n: item.communityNote.noteCount }))}</button>
+				</div>`
+				: ''
+
 		const card = await renderTemplate('post_card', {
 			postId: item.postId,
 			postTextEncoded: encodeURIComponent(text),
@@ -153,11 +179,11 @@ export function createPostCardBuilder({
 			replyLabel: geti18n('social.actions.replies'),
 			repostLabel: geti18n('social.actions.repost'),
 			saveLabel: geti18n('social.actions.save'),
+			shareLabel: geti18n('social.actions.share'),
 			quoteHtml,
 			groupRefHtml,
-			pollHtml,
-			mediaHtml,
-			bodyHtml,
+			contentBlock,
+			communityNoteHtml,
 			likedClass,
 			dislikedClass,
 			actionKey,

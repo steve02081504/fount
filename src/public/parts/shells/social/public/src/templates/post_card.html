@@ -22,6 +22,8 @@
 				<div class="post-more-menu hidden" data-more-menu="${actionKey}">
 					<button type="button" data-quote="${actionKey}"><span class="s-ic s-ic-quote" aria-hidden="true"></span><span data-i18n="social.actions.quote"></span></button>
 					<button type="button" data-copy-link="${actionKey}"><span class="s-ic s-ic-link" aria-hidden="true"></span><span data-i18n="social.actions.copyLink"></span></button>
+					<button type="button" data-share="${actionKey}"><span class="s-ic s-ic-share" aria-hidden="true"></span><span data-i18n="social.actions.share"></span></button>
+					<button type="button" data-add-note="${actionKey}"><span data-i18n="social.notes.add"></span></button>
 					<button type="button" data-translate="${actionKey}"><span class="s-ic s-ic-translate" aria-hidden="true"></span><span data-i18n="social.actions.translate"></span></button>
 					<button type="button" class="dm-btn" data-dm="${entityHash}"><span class="s-ic s-ic-dm" aria-hidden="true"></span><span data-i18n="social.actions.dm"></span></button>
 					${blockButton}
@@ -37,9 +39,8 @@
 	</header>
 	${quoteHtml}
 	${groupRefHtml}
-	${pollHtml}
-	${mediaHtml}
-	<div class="body markdown-body">${bodyHtml}</div>
+	${contentBlock}
+	${communityNoteHtml}
 	${embeddedWrapEnd}
 	<div class="post-actions">
 		<button type="button" class="action-btn action-btn-reply replies-btn" data-replies="${actionKey}" aria-label="${replyLabel}">
@@ -60,6 +61,9 @@
 		</button>
 		<button type="button" class="action-btn action-btn-save" data-save="${actionKey}" aria-label="${saveLabel}">
 			<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+		</button>
+		<button type="button" class="action-btn action-btn-share" data-share="${actionKey}" aria-label="${shareLabel}">
+			<span class="s-ic s-ic-share" aria-hidden="true"></span>
 		</button>
 	</div>
 	<div class="repost-panel hidden" data-repost-for="${actionKey}">

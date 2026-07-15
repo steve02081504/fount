@@ -24,6 +24,17 @@ export async function handleMainClick(appContext, event) {
 		return
 	}
 
+	const sensitiveReveal = target.closest('.sensitive-media-reveal')
+	if (sensitiveReveal instanceof HTMLElement) {
+		const wrap = sensitiveReveal.closest('.sensitive-media-wrap')
+		if (wrap instanceof HTMLElement) {
+			wrap.dataset.sensitiveCollapsed = '0'
+			wrap.classList.add('revealed')
+			sensitiveReveal.closest('.sensitive-media-overlay')?.remove()
+		}
+		return
+	}
+
 	if (!target.closest('.post-more-dropdown'))
 		closePostMoreMenus()
 

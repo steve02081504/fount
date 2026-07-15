@@ -54,6 +54,17 @@ export function savedPostsPath(username, entityHash) {
 }
 
 /**
+ * 实体本地关键词/标签屏蔽表路径。
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @returns {string} muted_keywords.json
+ */
+export function mutedKeywordsPath(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	return `${getUserDictionary(username)}/shells/social/entities/${hash}/muted_keywords.json`
+}
+
+/**
  * Social 全文搜索与辅助索引根目录。
  * @param {string} username replica
  * @returns {string} search 目录

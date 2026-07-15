@@ -45,6 +45,8 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'post_edit',
 	'post_delete',
 	'poll_vote',
+	'post_note',
+	'note_vote',
 	'repost',
 	'like',
 	'unlike',
@@ -70,6 +72,7 @@ export const SOCIAL_RPC_REQUEST_TYPES = new Set([
 	'social_post_notify',
 	'social_timeline_pull_request',
 	'social_reaction_pull_request',
+	'social_note_pull_request',
 	'social_tag_merge_claim',
 	'social_report',
 ])
@@ -82,6 +85,7 @@ export const SOCIAL_RPC_RESPONSE_TYPES = new Set([
 	'social_post_notify_response',
 	'social_timeline_pull_response',
 	'social_reaction_pull_response',
+	'social_note_pull_response',
 	'social_tag_merge_claim_response',
 	'social_report_response',
 ])

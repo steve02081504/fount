@@ -114,12 +114,16 @@ export default {
 		events.on('entity-key-rotated', handleEntityKeyRotated)
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
+		const { registerSocialTrendingQueryHandler } = await import('./src/trending/network.mjs')
+		registerSocialTrendingQueryHandler()
 		setEndpoints(router)
 		const { bootstrapPollDeadlineWatchers } = await import('./src/lib/pollDeadlineWatcher.mjs')
 		void bootstrapPollDeadlineWatchers()
 	},
 	/** 卸载 Social shell。 */
-	Unload: () => {
+	Unload: async () => {
+		const { unregisterSocialTrendingQueryHandler } = await import('./src/trending/network.mjs')
+		unregisterSocialTrendingQueryHandler()
 		unregisterShellPartpath('social')
 		unregisterOperatorEntityHashProvider()
 		unregisterReplicaUsernamesProvider()

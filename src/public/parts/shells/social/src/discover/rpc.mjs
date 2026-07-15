@@ -2,6 +2,7 @@ import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { SOCIAL_RPC_REQUEST_TYPES } from '../federation/namespace.mjs'
+import { listNoteEvents, NOTE_PULL_BATCH } from '../federation/note_index.mjs'
 import { listReactionEvents, normalizeReactionTarget, REACTION_PULL_BATCH } from '../federation/reaction_index.mjs'
 import { buildFederatedTimelinePullResponse } from '../timeline/sync.mjs'
 
@@ -81,6 +82,33 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 				type: 'social_reaction_pull_response',
 				targetEntityHash: ids.target,
 				postId: ids.postId,
+				events,
+			}
+		}
+		case 'social_note_pull_request': {
+			const target = String(rpc.targetEntityHash || '').toLowerCase()
+			const postId = String(rpc.postId || '').trim()
+			const afterAuthor = rpc.afterAuthor
+				? String(rpc.afterAuthor).trim().toLowerCase()
+				: null
+			if (!parseEntityHash(target) || (afterAuthor && !parseEntityHash(afterAuthor)))
+				return {
+					type: 'social_note_pull_response',
+					targetEntityHash: target,
+					postId,
+					events: [],
+				}
+			const events = await listNoteEvents(
+				username,
+				target,
+				postId,
+				afterAuthor,
+				rpc.limit ?? NOTE_PULL_BATCH,
+			)
+			return {
+				type: 'social_note_pull_response',
+				targetEntityHash: target,
+				postId,
 				events,
 			}
 		}

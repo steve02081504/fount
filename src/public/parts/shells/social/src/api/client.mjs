@@ -24,6 +24,7 @@ import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
+import { sanitizeMediaRefs, resolveSensitiveMedia } from '../lib/mediaRefs.mjs'
 import { suggestMentions } from '../lib/mentionSuggest.mjs'
 import { normalizePollDraft } from '../lib/poll.mjs'
 import { buildNotifications } from '../notifications.mjs'
@@ -41,6 +42,7 @@ import {
 import { searchPosts } from '../search.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
+import { loadMutedKeywords, replaceMutedKeywords } from '../mutedKeywords.mjs'
 import { rebuildTaste } from '../taste/cluster.mjs'
 import { revokeTasteAlias } from '../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../taste/nameClaims.mjs'
@@ -324,6 +326,10 @@ export function createSocialClient(ctx) {
 		 * @returns {Promise<object>} 热门话题
 		 */
 		async trendingHashtags(opts = {}) {
+			if (opts.scope === 'nearby') {
+				const { buildNearbyTrendingHashtags } = await import('../trending/network.mjs')
+				return buildNearbyTrendingHashtags(ctx.username, { ...opts, ...viewerOpts() })
+			}
 			return buildTrendingHashtags(ctx.username, { ...opts, ...viewerOpts() })
 		},
 		/**
@@ -579,6 +585,26 @@ export function createSocialClient(ctx) {
 			}
 		},
 		/**
+		 * 本地关键词/标签屏蔽（不联邦）。
+		 */
+		get mutedKeywords() {
+			return {
+				/**
+				 * @returns {Promise<{ entries: object[] }>} 屏蔽词表
+				 */
+				async list() {
+					return loadMutedKeywords(ctx.username, ctx.entityHash)
+				},
+				/**
+				 * @param {object[]} entries 条目
+				 * @returns {Promise<{ entries: object[] }>} 写入结果
+				 */
+				async replace(entries) {
+					return replaceMutedKeywords(ctx.username, ctx.entityHash, entries)
+				},
+			}
+		},
+		/**
 		 * @param {string} entityHash 时间线 owner
 		 * @returns {Promise<{ checkpointEventId: string | null }>} 维护结果
 		 */
@@ -673,16 +699,17 @@ async function createTimelinePost(ctx, draft) {
 	const visibility = draft.visibility === 'followers' ? 'followers' : 'public'
 	const draftContent = {
 		text: String(draft.text),
-		mediaRefs: [
+		mediaRefs: sanitizeMediaRefs([
 			...draft.mediaRefs ?? [],
 			...await buildEmojiMediaRefsForPost(ctx.username, String(draft.text)),
-		],
+		]),
 		replyTo: draft.replyTo,
 		quoteRef: draft.quoteRef,
 		groupRef: draft.groupRef,
 		lang: draft.lang || 'zh-CN',
 		visibility,
 		...draft.contentWarning ? { contentWarning: String(draft.contentWarning).trim().slice(0, 200) } : {},
+		...resolveSensitiveMedia(draft.sensitiveMedia, draft.contentWarning) ? { sensitiveMedia: true } : {},
 	}
 	if (Array.isArray(draft.tags)) {
 		const tags = [...new Set(draft.tags.map(t => String(t).trim().toLowerCase()).filter(Boolean))].slice(0, 16)

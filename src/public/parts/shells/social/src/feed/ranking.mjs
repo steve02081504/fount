@@ -2,6 +2,7 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { loadDwellAuthorBoosts } from '../engagement/dwell.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
 import { buildEngagementIndex, loadViewerContext } from '../feed.mjs'
@@ -42,9 +43,10 @@ export function scorePostForYou(post, engagement, affinity, tasteMatch = 0, now 
 /**
  * @param {string} username replica
  * @param {Set<string>} following 关注列表
+ * @param {string | null} [viewerEntityHash] 观看者（用于 dwell 亲和）
  * @returns {Promise<Map<string, number>>} 作者 → 双向互动次数
  */
-async function buildAffinityIndex(username, following) {
+async function buildAffinityIndex(username, following, viewerEntityHash = null) {
 	/** @type {Map<string, number>} */
 	const affinity = new Map()
 	for (const entityHash of following) {
@@ -62,6 +64,11 @@ async function buildAffinityIndex(username, following) {
 				affinity.set(String(replyTo.entityHash).toLowerCase(), (affinity.get(String(replyTo.entityHash).toLowerCase()) || 0) + 1)
 		}
 	}
+	if (viewerEntityHash) {
+		const dwellBoosts = await loadDwellAuthorBoosts(username, viewerEntityHash)
+		for (const [author, boost] of dwellBoosts)
+			affinity.set(author, (affinity.get(author) || 0) + boost)
+	}
 	return affinity
 }
 
@@ -74,7 +81,7 @@ async function buildAffinityIndex(username, following) {
  */
 async function* iterateForYouCandidates(username, following, viewerContext, taste) {
 	const engagement = await buildEngagementIndex(username, following)
-	const affinity = await buildAffinityIndex(username, following)
+	const affinity = await buildAffinityIndex(username, following, viewerContext.viewerEntityHash || null)
 	const seen = new Set()
 
 	/**

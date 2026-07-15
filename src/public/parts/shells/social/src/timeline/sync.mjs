@@ -3,6 +3,7 @@ import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/s
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
+import { projectNoteFromTimelineEvent } from '../federation/note_index.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { projectReactionFromTimelineEvent } from '../federation/reaction_index.mjs'
@@ -16,6 +17,7 @@ import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
 import { filterEventsForFederatedPull } from './federationExport.mjs'
 import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
+import { sanitizeMediaRefs } from '../lib/mediaRefs.mjs'
 
 /** 联邦 RPC 单次 pull 响应上限（客户端循环 afterEventId 直至空批）。 */
 export const FEDERATED_TIMELINE_PULL_BATCH = 200
@@ -37,6 +39,12 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		username,
 	})
 	if (!validated.accepted) return false
+	if (validated.row.content?.mediaRefs)
+		validated.row.content.mediaRefs = sanitizeMediaRefs(validated.row.content.mediaRefs)
+	if (validated.row.content && 'sensitiveMedia' in validated.row.content)
+		validated.row.content.sensitiveMedia = validated.row.content.sensitiveMedia === true
+	if (validated.row.type === 'post_note' && validated.row.content)
+		validated.row.content.text = String(validated.row.content.text || '').trim().slice(0, 2000)
 	if (existing.some(row => row.id === validated.row.id)) return true
 	if (validated.row.type === 'poll_vote') {
 		const { assertPollVoteAllowed } = await import('../lib/poll.mjs')
@@ -60,6 +68,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, validated.row)
 	await projectPollVoteFromTimelineEvent(username, entityHash, validated.row)
 	await projectReactionFromTimelineEvent(username, entityHash, validated.row)
+	await projectNoteFromTimelineEvent(username, entityHash, validated.row)
 	if (validated.row.type === 'block' || validated.row.type === 'unblock') {
 		const { following } = await loadFollowing(username)
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))

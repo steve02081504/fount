@@ -8,6 +8,7 @@ import {
 
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
+import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 
 /** @type {number} */
 let quotePreviewGeneration = 0
@@ -116,18 +117,27 @@ export async function loadGroupPickerOptions(appContext) {
 }
 
 /**
- * 从 composer 表单构建发帖 API 请求体。
+ * 从 composer 表单构建发帖 API 请求体（媒体须已上传）。
  * @param {object} appContext 应用上下文
+ * @param {object[]} mediaRefs 已上传 refs
  * @returns {object} 发帖 body
  */
-export function buildPostBody(appContext) {
+export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMediaRefs) {
 	const contentWarning = document.getElementById('postContentWarning')?.value?.trim() || ''
+	const sensitiveEl = document.getElementById('postSensitiveMedia')
+	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
+		? sensitiveEl.checked
+		: Boolean(contentWarning)
 	const body = {
 		text: document.getElementById('postText').value.trim(),
-		mediaRefs: appContext.state.pendingMediaRefs,
+		mediaRefs: mediaRefs.map(ref => {
+			const { file: _file, objectUrl: _url, pending: _pending, ...rest } = ref
+			return rest
+		}),
 		visibility: document.getElementById('postVisibility').value,
 		lang: document.getElementById('postLang').value.trim() || 'zh-CN',
 		...contentWarning ? { contentWarning } : {},
+		...sensitiveMedia || contentWarning ? { sensitiveMedia: true } : {},
 	}
 	if (appContext.state.pendingQuoteRef)
 		body.quoteRef = {
@@ -154,18 +164,93 @@ export function refreshMediaPreview(appContext) {
 		document.getElementById('mediaPreview'),
 		appContext.state.pendingMediaRefs,
 		() => refreshMediaPreview(appContext),
+		{
+			altPlaceholder: appContext.geti18n('social.composer.mediaAlt'),
+			editLabel: appContext.geti18n('social.composer.editImage'),
+			onEditImage: async (index, ref) => {
+				const source = ref.file
+				if (!(source instanceof Blob)) return
+				const edited = await openImageEditor(source, {
+					title: appContext.geti18n('social.composer.editImage'),
+					cropLabel: appContext.geti18n('social.composer.editCrop'),
+					mosaicLabel: appContext.geti18n('social.composer.editMosaic'),
+					brushLabel: appContext.geti18n('social.composer.editBrush'),
+					applyLabel: appContext.geti18n('social.composer.editApply'),
+					cancelLabel: appContext.geti18n('social.composer.editCancel'),
+				})
+				if (!edited) return
+				if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
+				appContext.state.pendingMediaRefs[index] = {
+					...ref,
+					file: edited,
+					objectUrl: URL.createObjectURL(edited),
+					name: edited.name,
+					mimeType: edited.type || ref.mimeType,
+					pending: true,
+					kind: 'image',
+				}
+				refreshMediaPreview(appContext)
+			},
+		},
 	)
 }
 
 /**
- * 上传并追加 composer 媒体附件。
+ * 暂存 composer 媒体（延迟到发帖时再上传，便于编辑）。
  * @param {object} appContext 应用上下文
- * @param {FileList} files 媒体文件
+ * @param {FileList | File[]} files 媒体文件
  * @returns {Promise<void>}
  */
 export async function addComposerMedia(appContext, files) {
-	appContext.state.pendingMediaRefs.push(...await uploadSocialMedia(files))
+	for (const file of files) {
+		const kind = file.type.startsWith('image/')
+			? 'image'
+			: file.type.startsWith('video/')
+				? 'video'
+				: 'file'
+		appContext.state.pendingMediaRefs.push({
+			kind,
+			name: file.name,
+			mimeType: file.type || 'application/octet-stream',
+			file,
+			objectUrl: URL.createObjectURL(file),
+			pending: true,
+			alt: '',
+		})
+	}
 	refreshMediaPreview(appContext)
+}
+
+/**
+ * @param {object[]} refs 待发布 refs
+ * @returns {Promise<object[]>} 已上传 refs
+ */
+async function ensureUploadedMediaRefs(refs) {
+	const out = []
+	const pendingFiles = []
+	const pendingIndexes = []
+	for (const [index, ref] of refs.entries()) {
+		if (ref.pending && ref.file instanceof Blob) {
+			pendingFiles.push(ref.file)
+			pendingIndexes.push(index)
+			out.push(null)
+		}
+		else {
+			const { file: _f, objectUrl: _o, pending: _p, ...rest } = ref
+			out.push(rest)
+		}
+	}
+	if (pendingFiles.length) {
+		const uploaded = await uploadSocialMedia(pendingFiles)
+		for (const [i, uploadedRef] of uploaded.entries()) {
+			const original = refs[pendingIndexes[i]]
+			out[pendingIndexes[i]] = {
+				...uploadedRef,
+				...original.alt ? { alt: original.alt } : {},
+			}
+		}
+	}
+	return out
 }
 
 /**
@@ -174,8 +259,11 @@ export async function addComposerMedia(appContext, files) {
  * @returns {Promise<void>}
  */
 export async function publishPost(appContext) {
-	const body = buildPostBody(appContext)
-	if (!body.text && !appContext.state.pendingMediaRefs.length && !body.poll) return
+	if (!document.getElementById('postText').value.trim()
+		&& !appContext.state.pendingMediaRefs.length
+		&& !appContext.state.pendingPoll) return
+	const uploadedRefs = await ensureUploadedMediaRefs(appContext.state.pendingMediaRefs)
+	const body = buildPostBody(appContext, uploadedRefs)
 	await appContext.socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
@@ -183,6 +271,11 @@ export async function publishPost(appContext) {
 	const cwInput = document.getElementById('postContentWarning')
 	if (cwInput instanceof HTMLInputElement)
 		cwInput.value = ''
+	const sensitiveEl = document.getElementById('postSensitiveMedia')
+	if (sensitiveEl instanceof HTMLInputElement)
+		sensitiveEl.checked = false
+	for (const ref of appContext.state.pendingMediaRefs)
+		if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
 	appContext.state.pendingMediaRefs = []
 	appContext.state.pendingQuoteRef = null
 	appContext.state.pendingGroupRef = null

@@ -24,6 +24,7 @@ export interface SocialMediaRef {
 	shareId?: string
 	owner?: string
 	url?: string
+	alt?: string
 	[key: string]: unknown
 }
 
@@ -58,6 +59,7 @@ export interface SocialPostContent {
 	lang?: string
 	visibility?: SocialVisibility
 	contentWarning?: string
+	sensitiveMedia?: boolean
 	poll?: SocialPollDraft
 }
 

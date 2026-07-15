@@ -32,7 +32,19 @@ Query：`limit`（默认 50，最大 200）、`cursor`（分页游标）、`rank
 显式同步关注时间线（联邦 mailbox / pull）。响应：`{ synced: true }`。
 
 ### `GET /api/parts/shells:social/hashtags/trending`
-Query：`limit`（默认 12，最大 32）。从观看者可见帖子统计话题标签频次。响应：`{ tags: [{ tag, count }] }`。
+Query：`limit`（默认 12，最大 32）、`scope`（`local` 默认｜`nearby` 经 `part_query` kind `trending_hashtags` 聚合邻居公开话题计数）。响应：`{ tags: [{ tag, count }], scope }`。
+
+### `GET|PUT /api/parts/shells:social/profile/muted-keywords`
+本地关键词/标签屏蔽表（不联邦）。`PUT` body：`{ entries: [{ pattern, matchTags?, expiresAt? }] }`。命中正文、contentWarning 或 tags 的帖从 feed/explore/search/通知中隐藏。
+
+### `POST /api/parts/shells:social/signals/dwell`
+本地隐私停留信号（不联邦）。Body：`{ entries: [{ author, postId, tags?, dwellMs, at? }] }`（`dwellMs ≥ 3s`）。用于 `for_you` 作者亲和弱加权（每条 +0.25）与 taste 标签弱证据（每条 tag +0.15）。
+
+### `GET|POST /api/parts/shells:social/posts/:entityHash/:postId/notes`
+社区补充（Community Notes）：`POST` body `{ text }` → 调用者时间线 `post_note` 事件；`GET` 返回 `{ notes[], topNote }`（净 helpful 分 > 0 的最高分附在 feed `communityNote.topNote`）。
+
+### `POST /api/parts/shells:social/posts/:entityHash/:postId/notes/:noteEventId/vote`
+Body：`{ helpful: boolean }` → `note_vote`。通知类型含 `post_note`。
 
 ### `GET /api/parts/shells:social/search`
 Query：`q`（至少 2 字符）、`limit`（默认 30，最大 100）、`cursor?`。
@@ -53,7 +65,7 @@ Query：`limit`（默认 30，最大 100）、`cursor`（分页游标）、`type
 
 响应：`{ notifications[], nextCursor, unreadCount, viewerEntityHash }`。读取层按目标聚合高频互动（like/repost 按目标帖、follow 按 24h 窗口）；`unreadCount` 为聚合卡片未读数。
 
-每条字段：`{ type, actorEntityHash, postId, targetPostId, at }` 必填；可选 `targetEntityHash`, `snippet`, `actors[]`, `actorCount`, `latestActorEntityHash`, `aggregateKey`。类型：`reply` | `mention` | `like` | `repost` | `follow` | `care_post` | `poll_closed`。
+每条字段：`{ type, actorEntityHash, postId, targetPostId, at }` 必填；可选 `targetEntityHash`, `snippet`, `actors[]`, `actorCount`, `latestActorEntityHash`, `aggregateKey`。类型：`reply` | `mention` | `like` | `repost` | `follow` | `care_post` | `poll_closed` | `post_note`。
 
 ### `POST /api/parts/shells:social/translate`
 Body：`{ text, targetLang }` — 帖子翻译（缓存于用户侧）。

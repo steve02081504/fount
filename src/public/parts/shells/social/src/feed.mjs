@@ -19,6 +19,7 @@ import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from './feedMerge.mjs'
 import { canViewPost } from './feedVisibility.mjs'
 import { loadFollowing, loadFollowingForActor, listFollowedTimelineOwners } from './following.mjs'
+import { loadMutedKeywords } from './mutedKeywords.mjs'
 import { queryReplyIndex } from './searchIndex.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
 
@@ -103,7 +104,7 @@ export async function buildViewerDislikedSet(username, viewerEntityHash) {
 /**
  * @param {string} username 用户
  * @param {string} [viewerEntityHash] 可选指定观看实体，默认 operator
- * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>> }>} 观看者上下文
+ * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>>, mutedKeywords: Awaited<ReturnType<typeof loadMutedKeywords>> }>} 观看者上下文
  */
 export async function loadViewerContext(username, viewerEntityHash = null) {
 	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
@@ -120,7 +121,10 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 			hiddenEntityHashes: new Set(),
 			hiddenSubjects: new Set(),
 		}
-	return { viewerEntityHash: viewer, following, personalFilter }
+	const mutedKeywords = viewer
+		? await loadMutedKeywords(username, viewer)
+		: { entries: [] }
+	return { viewerEntityHash: viewer, following, personalFilter, mutedKeywords }
 }
 
 /**

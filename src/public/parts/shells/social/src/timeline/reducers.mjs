@@ -214,6 +214,8 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	post_edit: reducePostEdit,
 	post_delete: reducePostDelete,
 	poll_vote: reducePollVote,
+	post_note: passthroughReducer,
+	note_vote: passthroughReducer,
 	like: reduceLike,
 	unlike: reduceUnlike,
 	dislike: reduceDislike,

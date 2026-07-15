@@ -57,4 +57,14 @@ export function registerProfileRoutes(router) {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.maintainTimeline(routeEntityHash(req.params)))
 	})
+
+	router.get('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.mutedKeywords.list())
+	})
+
+	router.put('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.mutedKeywords.replace(req.body?.entries || []))
+	})
 }

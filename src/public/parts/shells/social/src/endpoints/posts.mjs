@@ -67,4 +67,24 @@ export function registerPostsRoutes(router) {
 			}),
 		})
 	})
+
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/notes', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))
+		res.status(200).json({ event: await post.addNote(req.body?.text) })
+	})
+
+	router.get('/api/parts/shells\\:social/posts/:entityHash/:postId/notes', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))
+		res.status(200).json(await post.notes())
+	})
+
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/notes/:noteEventId/vote', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))
+		res.status(200).json({
+			event: await post.voteNote(String(req.params.noteEventId), req.body?.helpful !== false),
+		})
+	})
 }

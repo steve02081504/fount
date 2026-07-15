@@ -1,6 +1,7 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
+import { sanitizeMediaRefs, resolveSensitiveMedia } from '../lib/mediaRefs.mjs'
 import { assertPollVoteAllowed } from '../lib/poll.mjs'
 import { loadTaste } from '../taste/store.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
@@ -103,11 +104,15 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 			const draftContent = {
 				targetPostId: id,
 				text: String(patch.text ?? decrypted.text ?? ''),
-				mediaRefs: patch.mediaRefs ?? decrypted.mediaRefs,
+				mediaRefs: sanitizeMediaRefs(patch.mediaRefs ?? decrypted.mediaRefs),
 				lang: patch.lang || decrypted.lang || 'zh-CN',
 				...patch.contentWarning !== undefined
 					? { contentWarning: String(patch.contentWarning).trim().slice(0, 200) }
 					: decrypted.contentWarning ? { contentWarning: decrypted.contentWarning } : {},
+				...resolveSensitiveMedia(
+					patch.sensitiveMedia !== undefined ? patch.sensitiveMedia : decrypted.sensitiveMedia,
+					patch.contentWarning !== undefined ? patch.contentWarning : decrypted.contentWarning,
+				) ? { sensitiveMedia: true } : {},
 			}
 			return commitTimelineEvent(ctx.username, owner, {
 				type: 'post_edit',
@@ -138,6 +143,47 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 				type: 'poll_vote',
 				content: { targetEntityHash: owner, targetPostId: id, choices },
 			})
+		},
+		/**
+		 * @param {string} text 补充正文
+		 * @returns {Promise<object>} post_note 事件
+		 */
+		async addNote(text) {
+			await assertKnownPostTarget(ctx, owner)
+			const cleaned = String(text || '').trim().slice(0, 2000)
+			if (!cleaned) throw httpError(400, 'note text required')
+			return commitTimelineEvent(ctx.username, ctx.entityHash, {
+				type: 'post_note',
+				content: { targetEntityHash: owner, targetPostId: id, text: cleaned },
+			})
+		},
+		/**
+		 * @param {string} noteEventId 补充事件 id
+		 * @param {boolean} helpful 是否有用
+		 * @returns {Promise<object>} note_vote 事件
+		 */
+		async voteNote(noteEventId, helpful) {
+			await assertKnownPostTarget(ctx, owner)
+			const noteId = String(noteEventId || '').trim().toLowerCase()
+			if (!noteId) throw httpError(400, 'noteEventId required')
+			return commitTimelineEvent(ctx.username, ctx.entityHash, {
+				type: 'note_vote',
+				content: {
+					targetEntityHash: owner,
+					targetPostId: id,
+					noteEventId: noteId,
+					helpful: helpful === true,
+				},
+			})
+		},
+		/**
+		 * @returns {Promise<{ notes: object[], topNote: object | null }>} 补充信息汇总
+		 */
+		async notes() {
+			const { summarizeNotes } = await import('../federation/note_index.mjs')
+			const { pullPostNotes } = await import('../federation/note_pull.mjs')
+			await pullPostNotes(ctx.username, owner, id).catch(() => null)
+			return summarizeNotes(ctx.username, owner, id)
 		},
 	}
 }

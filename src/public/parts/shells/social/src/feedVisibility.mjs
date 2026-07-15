@@ -1,5 +1,7 @@
 import { isAuthorFilteredByPersonalSets } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
+import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
+
 /**
  * 根据可见性与个人拉黑/隐藏/关注关系判断帖子是否对观看者可见。
  * @param {object} post 帖子
@@ -9,6 +11,8 @@ import { isAuthorFilteredByPersonalSets } from 'npm:@steve02081504/fount-p2p/nod
 export function canViewPost(post, viewerContext) {
 	const authorEntity = post.entityHash.toLowerCase()
 	if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, authorEntity))
+		return false
+	if (postMatchesMutedKeywords(post, viewerContext.mutedKeywords))
 		return false
 	const visibility = post.content?.visibility || 'public'
 	if (visibility === 'public') return true

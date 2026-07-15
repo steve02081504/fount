@@ -17,6 +17,7 @@ import { registerSearchRoutes } from './endpoints/search.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
 import { registerTasteRoutes } from './endpoints/taste.mjs'
+import { registerSignalsRoutes } from './endpoints/signals.mjs'
 import { registerVaultRoutes } from './endpoints/vault.mjs'
 import { registerViewerRoutes } from './endpoints/viewer.mjs'
 
@@ -39,6 +40,7 @@ export function setEndpoints(router) {
 	registerGovernanceRoutes(router)
 	registerSavedRoutes(router)
 	registerTasteRoutes(router)
+	registerSignalsRoutes(router)
 	registerVaultRoutes(router)
 	if (process.env.FOUNT_TEST === '1' || process.env.FOUNT_TEST_ISOLATED === '1')
 		registerTestSeedRoutes(router, authenticate)

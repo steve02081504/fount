@@ -14,6 +14,96 @@ function formatWeight(weight) {
 }
 
 /**
+ * @param {object} appContext 应用上下文
+ * @param {HTMLElement} panel 面板
+ * @param {object[]} entries 屏蔽词条目
+ * @returns {void}
+ */
+function renderMutedKeywordsSection(appContext, panel, entries) {
+	const section = document.createElement('div')
+	section.className = 'muted-keywords card'
+	section.innerHTML = `
+		<h3 class="muted-keywords-title" data-i18n="social.taste.mutedKeywordsTitle">${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsTitle'))}</h3>
+		<p class="taste-privacy-hint" data-i18n="social.taste.mutedKeywordsHint">${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsHint'))}</p>
+		<form id="mutedKeywordForm" class="muted-keyword-form">
+			<input type="text" id="mutedKeywordInput" maxlength="64" placeholder="${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsPlaceholder'))}" />
+			<label class="muted-keyword-match-tags">
+				<input type="checkbox" id="mutedKeywordMatchTags" checked />
+				<span data-i18n="social.taste.mutedKeywordsMatchTags">${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsMatchTags'))}</span>
+			</label>
+			<button type="submit" class="btn btn-primary btn-sm" data-i18n="social.taste.mutedKeywordsAdd">${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsAdd'))}</button>
+		</form>
+		<div class="muted-keyword-chips" id="mutedKeywordChips"></div>
+	`
+	panel.appendChild(section)
+
+	const chips = section.querySelector('#mutedKeywordChips')
+	/**
+	 * @param {object[]} list 条目
+	 */
+	function paintChips(list) {
+		chips.replaceChildren()
+		if (!list.length) {
+			chips.innerHTML = `<p class="empty-hint">${escapeHtml(appContext.geti18n('social.taste.mutedKeywordsEmpty'))}</p>`
+			return
+		}
+		for (const entry of list) {
+			const chip = document.createElement('button')
+			chip.type = 'button'
+			chip.className = 'muted-keyword-chip'
+			chip.dataset.pattern = entry.pattern
+			const tagHint = entry.matchTags === false ? '' : ' #Tag'
+			chip.innerHTML = `<span>${escapeHtml(entry.pattern)}${escapeHtml(tagHint)}</span><span aria-hidden="true">×</span>`
+			chip.title = appContext.geti18n('social.taste.mutedKeywordsRemove')
+			chips.appendChild(chip)
+		}
+	}
+	paintChips(entries)
+
+	/**
+	 * @param {object[]} next 下一份条目
+	 * @returns {Promise<object[]>} 服务端条目
+	 */
+	async function persist(next) {
+		const data = await runSocialWrite('mutedKeywords', () => appContext.socialApi('/profile/muted-keywords', {
+			method: 'PUT',
+			body: JSON.stringify({ entries: next }),
+		}))
+		const saved = data?.entries || next
+		paintChips(saved)
+		return saved
+	}
+
+	section.querySelector('#mutedKeywordForm')?.addEventListener('submit', event => {
+		event.preventDefault()
+		const input = section.querySelector('#mutedKeywordInput')
+		const matchTags = section.querySelector('#mutedKeywordMatchTags')
+		const pattern = input instanceof HTMLInputElement ? input.value.trim().toLowerCase() : ''
+		if (!pattern) return
+		const next = [
+			...entries.filter(entry => entry.pattern !== pattern),
+			{
+				pattern,
+				matchTags: matchTags instanceof HTMLInputElement ? matchTags.checked : true,
+			},
+		]
+		void persist(next).then(saved => {
+			entries.splice(0, entries.length, ...saved)
+			if (input instanceof HTMLInputElement) input.value = ''
+		})
+	})
+
+	chips.addEventListener('click', event => {
+		const chip = event.target instanceof Element ? event.target.closest('.muted-keyword-chip') : null
+		if (!(chip instanceof HTMLElement) || !chip.dataset.pattern) return
+		const next = entries.filter(entry => entry.pattern !== chip.dataset.pattern)
+		void persist(next).then(saved => {
+			entries.splice(0, entries.length, ...saved)
+		})
+	})
+}
+
+/**
  * 加载并渲染口味偏好视图。
  * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
@@ -21,10 +111,14 @@ function formatWeight(weight) {
 export async function loadTaste(appContext) {
 	const panel = document.getElementById('tastePanel')
 	if (!panel) return
-	const data = await appContext.socialApi('/taste')
+	const [data, muted] = await Promise.all([
+		appContext.socialApi('/taste'),
+		appContext.socialApi('/profile/muted-keywords'),
+	])
 	const tags = data.tags || []
 	const publishPreferences = data.privacy?.publishPreferences !== false
 	const publishReactions = data.privacy?.publishReactions !== false
+	const mutedEntries = [...(muted.entries || [])]
 
 	panel.replaceChildren()
 
@@ -45,12 +139,13 @@ export async function loadTaste(appContext) {
 	`
 	panel.appendChild(toolbar)
 
+	renderMutedKeywordsSection(appContext, panel, mutedEntries)
+
 	const list = document.createElement('div')
 	list.className = 'taste-list'
-	if (!tags.length) 
+	if (!tags.length)
 		list.innerHTML = `<p class="empty-hint">${escapeHtml(appContext.geti18n('social.taste.empty'))}</p>`
-	
-	else 
+	else
 		for (const tag of tags) {
 			const row = document.createElement('article')
 			row.className = 'taste-row card'
@@ -68,7 +163,7 @@ export async function loadTaste(appContext) {
 			`
 			list.appendChild(row)
 		}
-	
+
 	panel.appendChild(list)
 
 	/**
@@ -100,7 +195,7 @@ export async function loadTaste(appContext) {
 			.then(() => loadTaste(appContext))
 	})
 
-	for (const form of list.querySelectorAll('.taste-rename-form')) 
+	for (const form of list.querySelectorAll('.taste-rename-form'))
 		form.addEventListener('submit', event => {
 			event.preventDefault()
 			const tagHash = form.getAttribute('data-tag-hash')
@@ -112,5 +207,4 @@ export async function loadTaste(appContext) {
 				body: JSON.stringify({ tagHash, label, locale: navigator.language || 'zh-CN' }),
 			})).then(() => loadTaste(appContext))
 		})
-	
 }

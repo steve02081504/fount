@@ -15,6 +15,7 @@ import {
 import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
+import { bindMediaCarousel } from './mediaRender.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
@@ -120,6 +121,7 @@ export async function bootstrapSocialApp(appContext) {
 			input.value = ''
 		})
 		document.getElementById('app')?.addEventListener('click', event => { void handleMainClick(appContext, event) })
+		bindMediaCarousel(document.getElementById('app'))
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return

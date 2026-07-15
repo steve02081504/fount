@@ -1,3 +1,4 @@
+import { summarizeNotes } from '../federation/note_index.mjs'
 import { listPollTally } from '../federation/poll_index.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { isPollClosed, viewerPollChoicesFromView } from '../lib/poll.mjs'
@@ -76,6 +77,9 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 				: null,
 		}
 	}
+	const { topNote, notes } = await summarizeNotes(username, entityHash, post.id)
+	if (topNote || notes.length)
+		item.communityNote = { topNote, noteCount: notes.length }
 	return item
 }
 

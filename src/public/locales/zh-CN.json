@@ -1166,7 +1166,15 @@
 			"addMedia": "添加媒体",
 			"visibilityPublic": "公开",
 			"visibilityFollowers": "仅关注者",
-			"contentWarning": "内容警告（可选）"
+			"contentWarning": "内容警告（可选）",
+			"sensitiveMedia": "媒体敏感遮罩",
+			"mediaAlt": "图片描述（alt）",
+			"editImage": "编辑",
+			"editCrop": "裁剪",
+			"editMosaic": "打码",
+			"editBrush": "画笔",
+			"editApply": "应用",
+			"editCancel": "取消"
 		},
 		"feed": {
 			"loadMore": "加载更多",
@@ -1176,7 +1184,8 @@
 			"tabForYou": "推荐",
 			"repostedBy": "${author} 转发了",
 			"decryptFailed": "无法解密此帖",
-			"revealContent": "显示内容"
+			"revealContent": "显示内容",
+			"sensitiveMedia": "敏感媒体"
 		},
 		"taste": {
 			"title": "口味偏好",
@@ -1187,11 +1196,21 @@
 			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
 			"namePlaceholder": "本地显示名",
 			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
-			"weight": "权重 ${weight}"
+			"weight": "权重 ${weight}",
+			"mutedKeywordsTitle": "屏蔽词与标签",
+			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
+			"mutedKeywordsPlaceholder": "输入关键词或 #标签",
+			"mutedKeywordsMatchTags": "同时匹配标签",
+			"mutedKeywordsAdd": "添加",
+			"mutedKeywordsRemove": "移除屏蔽词",
+			"mutedKeywordsEmpty": "尚未添加屏蔽词"
 		},
 		"trending": {
 			"title": "热门话题",
-			"postCount": "${n} 条帖子"
+			"postCount": "${n} 条帖子",
+			"scopeLocal": "本机",
+			"scopeNearby": "附近",
+			"empty": "暂无热门话题"
 		},
 		"search": {
 			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
@@ -1271,6 +1290,15 @@
 			"editPrompt": "编辑帖子正文",
 			"editHistory": "编辑历史",
 			"editHistoryEmpty": "无更早版本"
+		},
+		"notes": {
+			"label": "读者补充",
+			"add": "补充信息",
+			"prompt": "写一条读者补充（社区笔记）",
+			"helpful": "有用",
+			"unhelpful": "无用",
+			"more": "全部 ${n} 条",
+			"empty": "暂无补充信息"
 		},
 		"poll": {
 			"optionsPlaceholder": "每行一个选项（至少 2 项）",
