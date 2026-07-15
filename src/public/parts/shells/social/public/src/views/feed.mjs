@@ -1,10 +1,10 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialTopicHref } from '../../shared/runUri.mjs'
+import { bindDwellTracker, sendDwellBeacon } from '../dwellTracker.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { activateView } from '../viewChrome.mjs'
-import { bindDwellTracker, sendDwellBeacon } from '../dwellTracker.mjs'
 import { formatSocialProfileHref } from '/parts/shells:chat/shared/socialRunUri.mjs'
 
 /** @type {(() => void) | null} */
@@ -36,11 +36,60 @@ export function bindFeedInfiniteScroll(appContext) {
 	const sentinel = ensureScrollSentinel(list, 'feedScrollSentinel')
 	bindInfiniteScroll({
 		sentinel,
-		/** @returns {boolean} feed 是否仍有下一页 */
-		hasMore: () => !!appContext.state.feedCursor,
-		/** @returns {Promise<void>} 追加加载下一页 feed */
+		rootMargin: '480px 0px',
+		/** @returns {boolean} 有下一页或可循环重放 */
+		hasMore: () => !!appContext.state.feedCursor
+			|| !!appContext.state.feedShownItems?.length,
+		/** @returns {Promise<void>} 追加下一页或循环重放 */
 		onLoad: () => loadFeed(appContext, true),
 	})
+}
+
+/**
+ * 后台预取下一页（结果缓存在 state.feedPrefetch）。
+ * @param {object} appContext 应用上下文
+ * @returns {void}
+ */
+function scheduleFeedPrefetch(appContext) {
+	const cursor = appContext.state.feedCursor
+	if (!cursor || appContext.state.activeFeedSearchQuery) return
+	if (appContext.state.feedPrefetch?.cursor === cursor) return
+	if (appContext.state.feedPrefetchInFlight) return
+	const gen = feedGeneration
+	appContext.state.feedPrefetchInFlight = (async () => {
+		const data = await appContext.socialApi(
+			`/feed?limit=30${feedRankingQuery(appContext)}&cursor=${encodeURIComponent(cursor)}`,
+		).catch(() => null)
+		if (feedGeneration !== gen) return
+		if (!data || appContext.state.feedCursor !== cursor) return
+		appContext.state.feedPrefetch = {
+			cursor,
+			items: data.items || [],
+			nextCursor: data.nextCursor || null,
+		}
+	})().finally(() => {
+		appContext.state.feedPrefetchInFlight = null
+	})
+}
+
+/**
+ * 循环重放已展示条目。
+ * @param {object} appContext 应用上下文
+ * @returns {Promise<void>}
+ */
+async function replayFeedItems(appContext) {
+	const items = appContext.state.feedShownItems
+	if (!items?.length) return
+	const list = document.getElementById('feedList')
+	if (!list) return
+	const divider = document.createElement('div')
+	divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
+	divider.dataset.i18n = 'social.feed.replayDivider'
+	divider.textContent = appContext.geti18n('social.feed.replayDivider')
+	list.appendChild(divider)
+	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
+	for (const card of cards) if (card) list.appendChild(card)
+	bindFeedInfiniteScroll(appContext)
 }
 
 /**
@@ -177,6 +226,8 @@ export function updateFeedRankingTabs(appContext) {
 export async function setFeedRanking(appContext, ranking) {
 	appContext.state.feedRanking = ranking === 'for_you' ? 'for_you' : 'latest'
 	appContext.state.feedCursor = null
+	appContext.state.feedPrefetch = null
+	appContext.state.feedShownItems = null
 	updateFeedRankingTabs(appContext)
 	await loadFeed(appContext, false)
 }
@@ -213,21 +264,53 @@ let feedGeneration = 0
  */
 export async function loadFeed(appContext, append = false) {
 	if (appContext.state.activeFeedSearchQuery) return
-	const gen = ++feedGeneration
-	const cursorQuery = append && appContext.state.feedCursor
-		? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
-		: ''
-	const data = await appContext.socialApi(`/feed?limit=30${feedRankingQuery(appContext)}${cursorQuery}`)
-	if (feedGeneration !== gen) return
-	const items = data.items || []
-	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
-	if (feedGeneration !== gen) return
-	appContext.state.feedCursor = data.nextCursor || null
 	const list = document.getElementById('feedList')
 	if (!list) return
+
+	if (append && !appContext.state.feedCursor) {
+		await replayFeedItems(appContext)
+		return
+	}
+
+	const gen = ++feedGeneration
+	let items
+	let nextCursor
+
+	const cached = append && appContext.state.feedPrefetch
+		&& appContext.state.feedPrefetch.cursor === appContext.state.feedCursor
+		? appContext.state.feedPrefetch
+		: null
+	if (cached) {
+		items = cached.items
+		nextCursor = cached.nextCursor
+		appContext.state.feedPrefetch = null
+	}
+	else {
+		const cursorQuery = append && appContext.state.feedCursor
+			? `&cursor=${encodeURIComponent(appContext.state.feedCursor)}`
+			: ''
+		const data = await appContext.socialApi(`/feed?limit=30${feedRankingQuery(appContext)}${cursorQuery}`)
+		if (feedGeneration !== gen) return
+		items = data.items || []
+		nextCursor = data.nextCursor || null
+	}
+	if (feedGeneration !== gen) return
+
+	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
+	if (feedGeneration !== gen) return
+
+	appContext.state.feedCursor = nextCursor || null
+	if (!append) {
+		appContext.state.feedShownItems = [...items]
+		appContext.state.feedPrefetch = null
+	}
+	else if (items.length)
+		appContext.state.feedShownItems = [...appContext.state.feedShownItems || [], ...items]
+
 	if (!append && !items.length) {
 		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
 		list.replaceChildren(emptyElement)
+		appContext.state.feedShownItems = null
 	}
 	else if (!append) {
 		list.replaceChildren(...cards.filter(Boolean))
@@ -237,6 +320,7 @@ export async function loadFeed(appContext, append = false) {
 		if (card) list.appendChild(card)
 
 	bindFeedInfiniteScroll(appContext)
+	scheduleFeedPrefetch(appContext)
 	if (unbindDwell) unbindDwell()
 	unbindDwell = bindDwellTracker(list, entries => sendDwellBeacon(appContext, entries))
 	void loadTrendingHashtags(appContext)
@@ -390,6 +474,8 @@ export async function clearFeedSearch(appContext) {
 	const input = document.getElementById('feedSearchInput')
 	if (input instanceof HTMLInputElement) input.value = ''
 	appContext.state.feedCursor = null
+	appContext.state.feedShownItems = null
+	appContext.state.feedPrefetch = null
 	await loadFeed(appContext, false)
 	updateFeedSearchChrome(appContext)
 }

@@ -1199,7 +1199,8 @@
 			"repostedBy": "${author} 转发了",
 			"decryptFailed": "无法解密此帖",
 			"revealContent": "显示内容",
-			"sensitiveMedia": "敏感媒体"
+			"sensitiveMedia": "敏感媒体",
+			"replayDivider": "已看完，重新浏览"
 		},
 		"taste": {
 			"title": "口味偏好",

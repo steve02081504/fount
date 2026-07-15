@@ -40,11 +40,27 @@ export function createMessagePipeline({
 	let virtualList = null
 	let shouldAutoScroll = true
 	let programmaticScrollUntil = 0
+	let lastScrollTop = container.scrollTop
+	let prefetchInFlight = false
 
 	container.addEventListener('scroll', () => {
 		if (Date.now() < programmaticScrollUntil) return
-		shouldAutoScroll = container.scrollTop >=
+		const scrollTop = container.scrollTop
+		const scrollingUp = scrollTop < lastScrollTop
+		lastScrollTop = scrollTop
+		shouldAutoScroll = scrollTop >=
 			container.scrollHeight - container.clientHeight - 100
+		if (
+			scrollingUp
+			&& loadMoreTop
+			&& !prefetchInFlight
+			&& scrollTop < container.clientHeight * 2
+		) {
+			prefetchInFlight = true
+			void Promise.resolve(loadMoreTop()).finally(() => {
+				prefetchInFlight = false
+			})
+		}
 	}, { passive: true })
 
 	/** @param {boolean} [force] 是否强制滚到底 */

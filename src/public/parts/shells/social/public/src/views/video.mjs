@@ -1,6 +1,7 @@
-import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
+import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
+
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { renderRepliesPanel } from './replies.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
@@ -9,6 +10,11 @@ let snapBind = null
 let currentVideoIndex = -1
 /** @type {object} */
 let appCtx = null
+/** @type {string | null} */
+let videoCursor = null
+/** @type {object[]} */
+let videoShownItems = []
+let videoPageLoading = false
 
 /**
  * 加载并渲染短视频流。
@@ -24,21 +30,28 @@ export async function loadVideoView(appContext) {
 	snapBind = null
 	container.replaceChildren()
 	currentVideoIndex = -1
+	videoCursor = null
+	videoShownItems = []
+	videoPageLoading = false
 
-	const data = await appContext.socialApi('/videos/feed').catch(() => ({ items: [] }))
+	const data = await appContext.socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
+	videoCursor = data.nextCursor || null
 
 	if (!items.length) {
 		container.innerHTML = `<div class="video-slide"><p class="video-empty">${escapeHtml(appContext.geti18n('social.video.empty'))}</p></div>`
 		return
 	}
 
-	for (const item of items) {
-		const slide = buildVideoSlide(appContext, item)
-		container.appendChild(slide)
-	}
+	appendVideoSlides(appContext, container, items)
+	videoShownItems = [...items]
 
 	snapBind = bindVerticalSnap(container, {
+		/**
+		 * @param {number} index 当前索引
+		 * @param {HTMLElement} el slide
+		 * @returns {void}
+		 */
 		onEnter: (index, el) => {
 			currentVideoIndex = index
 			const video = el.querySelector('video')
@@ -46,14 +59,19 @@ export async function loadVideoView(appContext) {
 				video.preload = 'auto'
 				video.play().catch(() => {})
 			}
-			// 预加载后两条
 			for (let i = 1; i <= 2; i++) {
 				const next = container.children[index + i]
 				const nv = next?.querySelector('video')
 				if (nv) nv.preload = 'auto'
 			}
+			void maybeLoadMoreVideos(appContext, container, index)
 		},
-		onLeave: (_, el) => {
+		/**
+		 * @param {number} _index 离开索引
+		 * @param {HTMLElement} el slide
+		 * @returns {void}
+		 */
+		onLeave: (_index, el) => {
 			const video = el.querySelector('video')
 			if (video) {
 				video.pause()
@@ -61,6 +79,61 @@ export async function loadVideoView(appContext) {
 			}
 		},
 	})
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {HTMLElement} container snap 容器
+ * @param {object[]} items 条目
+ * @returns {void}
+ */
+function appendVideoSlides(appContext, container, items) {
+	for (const item of items) {
+		const slide = buildVideoSlide(appContext, item)
+		container.appendChild(slide)
+		snapBind?.observe(slide)
+	}
+}
+
+/**
+ * @param {object} appContext 应用上下文
+ * @param {HTMLElement} container 容器
+ * @param {number} index 当前索引
+ * @returns {Promise<void>}
+ */
+async function maybeLoadMoreVideos(appContext, container, index) {
+	if (videoPageLoading) return
+	const remaining = container.children.length - index - 1
+	if (remaining > 2) return
+
+	if (videoCursor) {
+		videoPageLoading = true
+		try {
+			const data = await appContext.socialApi(
+				`/videos/feed?limit=20&cursor=${encodeURIComponent(videoCursor)}`,
+			).catch(() => null)
+			if (!data) return
+			const items = data.items || []
+			videoCursor = data.nextCursor || null
+			if (items.length) {
+				videoShownItems.push(...items)
+				appendVideoSlides(appContext, container, items)
+			}
+		}
+		finally {
+			videoPageLoading = false
+		}
+		return
+	}
+
+	if (!videoShownItems.length) return
+	videoPageLoading = true
+	try {
+		appendVideoSlides(appContext, container, videoShownItems)
+	}
+	finally {
+		videoPageLoading = false
+	}
 }
 
 /**
@@ -109,7 +182,6 @@ function buildVideoSlide(appContext, item) {
 			fill.style.width = `${(video.currentTime / video.duration) * 100}%`
 	})
 
-	// 双击点赞，单击播放/暂停
 	let lastTap = 0
 	slide.addEventListener('pointerup', async event => {
 		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel')) return
@@ -129,7 +201,6 @@ function buildVideoSlide(appContext, item) {
 		}
 	})
 
-	// 长按 2× 速度，同时横向拖动 seek
 	let pressTimer = null
 	let pressStartX = 0
 	let seekBaseTime = 0
@@ -153,6 +224,9 @@ function buildVideoSlide(appContext, item) {
 		video.currentTime = Math.max(0, Math.min(video.duration || 0, seekBaseTime + dx / 8))
 	})
 
+	/**
+	 *
+	 */
 	const endPress = () => {
 		if (pressTimer) { clearTimeout(pressTimer); pressTimer = null }
 		if (speedMode) {
@@ -163,7 +237,6 @@ function buildVideoSlide(appContext, item) {
 	slide.addEventListener('pointerup', endPress)
 	slide.addEventListener('pointercancel', endPress)
 
-	// 停留上报
 	let dwellStart = null
 	video?.addEventListener('play', () => { dwellStart = Date.now() })
 	video?.addEventListener('pause', () => {
@@ -181,13 +254,11 @@ function buildVideoSlide(appContext, item) {
 		dwellStart = null
 	})
 
-	// 点赞按钮
 	slide.querySelector('.video-like-btn')?.addEventListener('click', async event => {
 		event.stopPropagation()
 		await doVideoLike(appContext, slide)
 	})
 
-	// 评论面板
 	slide.querySelector('.video-comment-btn')?.addEventListener('click', async event => {
 		event.stopPropagation()
 		const panel = slide.querySelector('[data-replies-panel]')
@@ -237,7 +308,7 @@ function showHeartAnim(slide) {
 
 /**
  * 视频视图键盘导航处理器（绑定到 #videoView）。
- * @param {KeyboardEvent} event
+ * @param {KeyboardEvent} event 键盘事件
  * @returns {void}
  */
 export function handleVideoKeydown(event) {
@@ -254,6 +325,7 @@ export function handleVideoKeydown(event) {
 		case 'ArrowDown':
 			event.preventDefault()
 			container.children[currentVideoIndex + 1]?.scrollIntoView({ behavior: 'smooth' })
+			void maybeLoadMoreVideos(appCtx, container, currentVideoIndex + 1)
 			break
 		case ' ':
 			event.preventDefault()

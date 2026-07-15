@@ -116,4 +116,16 @@ test.describe('Social feed', () => {
 		const newCount = await page.locator('#feedList [data-post-id]').count()
 		expect(newCount).toBeGreaterThan(initialCount)
 	})
+
+	test('feed loops replay when cursor exhausted', async ({ page, baseUrl, apiKey }) => {
+		await seedPostsViaApi(baseUrl, apiKey, 3, 'replay')
+		await openSocialHome(page, baseUrl)
+		await expect(page.locator('#feedList [data-post-id]').first()).toBeVisible({ timeout: 60_000 })
+		const before = await page.locator('#feedList [data-post-id]').count()
+		expect(before).toBeGreaterThan(0)
+		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 30_000 })
+		await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
+		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 15_000 })
+		await expect(page.locator('#feedList [data-post-id]')).toHaveCount(before * 2, { timeout: 15_000 })
+	})
 })

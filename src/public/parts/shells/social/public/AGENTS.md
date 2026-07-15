@@ -19,7 +19,8 @@ alwaysApply: false
 - **Share URL**: 复制/分享走 `wrapProtocolHttpsUrl` → GitHub Pages protocol 中转到读者本机实例。
 - **Trending**: `scope=local|nearby`；nearby 用 `part_query` `trending_hashtags`。
 - **Dwell**: 前端 `dwellTracker.mjs` 本地 IntersectionObserver；短视频可报 `watchMs`/`watchRatio`；仅本机排序弱信号，不联邦。
-- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap；`/live/*`（开播自动发 `liveRef` 帖、结束 `post_edit` 统计、双主播连线、大厅 `scope=nearby` + 观看代理）+ `av-relay`（`chat/public/shared/avRelayClient.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
+- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap + cursor 续页/循环；`/live/*`（开播自动发 `liveRef` 帖、结束 `post_edit` 统计、双主播连线、大厅 `scope=nearby` + 观看代理）+ `av-relay` preview/full（`chat/public/shared/avRelayClient.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
+- **Feed backfill**: 首页条数不足时 `federation/backfill.mjs` 一跳 sync→discover→多跳 `post_discover` ingest；`part_query` kind 注册于 Social `Load`。
 - **Reply gate**: `replyPolicy`/`replyDisplay`/`reply_feature`；权威过滤在 `listReplies`，写侧预检 + inbox 跳过。
 
 ## UI conventions
@@ -32,10 +33,14 @@ alwaysApply: false
 
 ## Feed / profile pagination
 
-- Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`).
-- Feed / notifications / profile posts paginate via backend `nextCursor`; search mode calls `disconnectInfiniteScroll()` (no cursor append).
+- Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`); default `rootMargin` ≈ two viewports (`480px`).
+- Feed / notifications / profile posts paginate via backend `nextCursor`; search mode has its own sentinel.
+- Feed prefetch: after each page, frontend background-fetches the next cursor into `state.feedPrefetch`; sentinel consumes cache then schedules the next prefetch.
+- Feed / videos / live **replay**: when `nextCursor` is exhausted, further scroll re-appends already-shown items (feed inserts `.feed-replay-divider` with `social.feed.replayDivider`).
+- Empty / thin first page triggers server `federation/backfill.mjs`：`syncFollowingTimelines` → discover+`syncTimelineForEntity` → multi-hop `post_discover` ingest. Live empty falls back to `buildNearbyLiveFeed`.
+- Videos / live use vertical snap + cursor append near end (3rd from last); live preconnects next slide with AV `subscribe mode=preview` (keyframes only) + signal WS.
 - Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts。
-- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=`), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete)。Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`。
+- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=` + replay divider), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete)。Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`。
 
 ## Agent integration
 

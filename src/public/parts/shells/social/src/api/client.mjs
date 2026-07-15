@@ -207,9 +207,29 @@ export function createSocialClient(ctx) {
 		async feed(opts = {}) {
 			const mode = opts.mode || (opts.ranking === 'for_you' ? 'forYou' : 'home')
 			const options = { ...opts, ...viewerOpts() }
-			return mode === 'forYou'
+			/**
+			 * @returns {Promise<object>} 本页 feed
+			 */
+			const build = () => mode === 'forYou'
 				? buildForYouFeed(ctx.username, options)
 				: buildHomeFeed(ctx.username, options)
+			let result = await build()
+			const limit = Math.min(Math.max(Number(opts.limit) || 50, 1), 200)
+			if (!opts.cursor && result.items.length < limit) {
+				const { backfillPosts } = await import('../federation/backfill.mjs')
+				await backfillPosts(ctx.username, {
+					viewerEntityHash: options.viewerEntityHash,
+					/**
+					 * @returns {Promise<boolean>} 本地是否已足够
+					 */
+					enough: async () => {
+						result = await build()
+						return result.items.length >= limit
+					},
+				})
+				result = await build()
+			}
+			return result
 		},
 		/**
 		 * @returns {Promise<{ synced: true }>} 同步结果
@@ -309,7 +329,25 @@ export function createSocialClient(ctx) {
 		 */
 		async videosFeed(opts = {}) {
 			const { buildVideosFeed } = await import('../videosFeed.mjs')
-			return buildVideosFeed(ctx.username, { ...opts, ...viewerOpts() })
+			const options = { ...opts, ...viewerOpts() }
+			let result = await buildVideosFeed(ctx.username, options)
+			const limit = Math.min(Math.max(Number(opts.limit) || 20, 1), 50)
+			if (!opts.cursor && result.items.length < limit) {
+				const { backfillPosts } = await import('../federation/backfill.mjs')
+				await backfillPosts(ctx.username, {
+					viewerEntityHash: options.viewerEntityHash,
+					mediaOnly: true,
+					/**
+					 * @returns {Promise<boolean>} 本地是否已足够
+					 */
+					enough: async () => {
+						result = await buildVideosFeed(ctx.username, options)
+						return result.items.length >= limit
+					},
+				})
+				result = await buildVideosFeed(ctx.username, options)
+			}
+			return result
 		},
 		/**
 		 * @param {object} draft 开播草稿
@@ -333,7 +371,13 @@ export function createSocialClient(ctx) {
 		 */
 		async liveFeed(opts = {}) {
 			const { buildLiveFeed } = await import('../live/feed.mjs')
-			return buildLiveFeed(ctx.username, { ...opts, ...viewerOpts() })
+			const options = { ...opts, ...viewerOpts() }
+			let result = await buildLiveFeed(ctx.username, options)
+			if (!opts.cursor && !result.items.length && String(opts.scope || 'local') !== 'nearby') {
+				const { buildNearbyLiveFeed } = await import('../live/network.mjs')
+				result = await buildNearbyLiveFeed(ctx.username, options)
+			}
+			return result
 		},
 		/**
 		 * @param {string} liveId 本端直播

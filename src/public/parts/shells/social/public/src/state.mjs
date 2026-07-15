@@ -5,6 +5,12 @@ export const socialState = {
 	/** @type {{ entityHash: string, charPartName?: string }[]} 本机 operator 拥有的 agent */
 	agents: [],
 	feedCursor: null,
+	/** @type {object[] | null} 已展示的 feed 原始条目（循环重放源） */
+	feedShownItems: null,
+	/** @type {{ cursor: string, items: object[], nextCursor: string | null } | null} */
+	feedPrefetch: null,
+	/** @type {Promise<void> | null} */
+	feedPrefetchInFlight: null,
 	profileEntityHash: null,
 	pendingMediaRefs: [],
 	pendingQuoteRef: null,

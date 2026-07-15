@@ -123,6 +123,8 @@ export default {
 		void bootstrapScheduledPostWatchers()
 		const { registerSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
 		registerSocialPostSearchQueryHandler()
+		const { registerSocialPostDiscoverQueryHandler } = await import('./src/discover/postDiscover.mjs')
+		registerSocialPostDiscoverQueryHandler()
 		const { registerSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
 		registerSocialLiveFeedQueryHandler()
 	},
@@ -132,6 +134,8 @@ export default {
 		unregisterSocialTrendingQueryHandler()
 		const { unregisterSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
 		unregisterSocialPostSearchQueryHandler()
+		const { unregisterSocialPostDiscoverQueryHandler } = await import('./src/discover/postDiscover.mjs')
+		unregisterSocialPostDiscoverQueryHandler()
 		const { unregisterSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
 		unregisterSocialLiveFeedQueryHandler()
 		unregisterShellPartpath('social')

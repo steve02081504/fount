@@ -22,7 +22,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 - **Ordering & dispatch**: manifest list order, `report.md` slot order, and serial-vs-parallel dispatch share the same topo + tie-break rules. Details: [resource-scheduling.md](docs/resource-scheduling.md).
 - **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after.
 
-### Framework libs
+## Framework libs
 
 | Module | Role |
 | --- | --- |
@@ -37,6 +37,12 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | `core/deno_panic.mjs` | detect `Deno has panicked` in suite output → gh auto-issue |
 | `runner/suite_run.mjs` | `buildSuiteInvocation` / `runSuite` |
 | `runner/continue_reason.mjs` | `--continue` slot reasons → report |
+
+### Frontend scroll / media patterns（跨 shell 可复用）
+
+- Feed 类无限列表：`/scripts/infiniteScroll.mjs` + `nextCursor`；预取下一页缓存、耗尽后循环重放已展示条目（Social feed / videos / live）。
+- 竖滑 snap 续页：倒数第 N 条触发 cursor append + `observe` 新 slide；直播相邻条用低带宽 `preview` 预连。
+- Chat 虚拟列表：按滚动方向提前 `loadMoreTop`，API 去重，避免窗口顶到头才同步等网络。
 
 ## Taxonomy
 

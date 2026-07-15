@@ -20,6 +20,7 @@ import { Buffer } from 'node:buffer'
  *
  * 文本消息：
  *   客户端 → 服务端：{ type: 'hello', senderId: hex32 }
+ *   客户端 → 服务端：{ type: 'subscribe', mode: 'full' | 'preview' }
  *   服务端 → 客户端：{ type: 'peer_count', count } / { type: 'roster', peers: [{ entityHash, senderId }] }
  *
  * roomId 惯例：`groupId:channelId`（streaming）/ `groupId:channelId:call`（通话）/ `social:…`
@@ -37,8 +38,11 @@ export const AV_FRAME_SCREEN = 2
 const HARD_MAX_BPS = 32_000_000
 const HARD_MAX_BYTES_PER_SEC = HARD_MAX_BPS / 8
 
+/** preview 模式关键帧转发最短间隔（ms） */
+const PREVIEW_KEYFRAME_INTERVAL_MS = 4000
+
 /**
- * @typedef {{ bytesSec: number, resetAt: number, entityHash: string, senderId: string }} AvPeerState
+ * @typedef {{ bytesSec: number, resetAt: number, entityHash: string, senderId: string, mode: 'full' | 'preview', lastPreviewAt: number }} AvPeerState
  */
 
 /** @type {Map<string, Map<import('npm:ws').WebSocket, AvPeerState>>} */
@@ -158,6 +162,8 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
 		resetAt: Date.now() + 1000,
 		entityHash,
 		senderId: '',
+		mode: 'full',
+		lastPreviewAt: 0,
 	})
 	broadcastPeerCount(room)
 	if (entityHash) broadcastRoster(room)
@@ -213,8 +219,16 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
  * @returns {void}
  */
 function fanoutBinary(roomId, room, buf, fromWs, opts = {}) {
-	for (const [peer] of room) {
+	const frameType = buf.length >= AV_RELAY_HEADER_SIZE ? buf[0] : -1
+	const isKey = buf.length >= AV_RELAY_HEADER_SIZE ? !!(buf[1] & 1) : false
+	const now = Date.now()
+	for (const [peer, peerState] of room) {
 		if (peer === fromWs || peer.readyState !== 1) continue
+		if (peerState.mode === 'preview') {
+			if (frameType !== 0 || !isKey) continue
+			if (now - (peerState.lastPreviewAt || 0) < PREVIEW_KEYFRAME_INTERVAL_MS) continue
+			peerState.lastPreviewAt = now
+		}
 		try { peer.send(buf, { binary: true }) }
 		catch { /* skip failed send */ }
 	}
@@ -223,8 +237,13 @@ function fanoutBinary(roomId, room, buf, fromWs, opts = {}) {
 		for (const otherId of bridged) {
 			const other = rooms.get(otherId)
 			if (!other) continue
-			for (const [peer] of other) {
+			for (const [peer, peerState] of other) {
 				if (peer.readyState !== 1) continue
+				if (peerState.mode === 'preview') {
+					if (frameType !== 0 || !isKey) continue
+					if (now - (peerState.lastPreviewAt || 0) < PREVIEW_KEYFRAME_INTERVAL_MS) continue
+					peerState.lastPreviewAt = now
+				}
 				try { peer.send(buf, { binary: true }) }
 				catch { /* skip */ }
 			}
@@ -250,11 +269,21 @@ function handleTextControl(roomId, room, ws, data, meta) {
 	try { msg = JSON.parse(String(data)) }
 	catch { return }
 	if (!msg || typeof msg !== 'object') return
+	const state = room.get(ws)
+	if (!state) return
+
+	if (msg.type === 'subscribe') {
+		const mode = String(msg.mode || '').trim().toLowerCase()
+		if (mode === 'preview' || mode === 'full') {
+			state.mode = mode
+			if (mode === 'full') state.lastPreviewAt = 0
+		}
+		return
+	}
+
 	if (msg.type !== 'hello') return
 	const senderId = String(msg.senderId || '').trim().toLowerCase()
 	if (!/^[0-9a-f]{32}$/.test(senderId)) return
-	const state = room.get(ws)
-	if (!state) return
 	state.senderId = senderId
 	if (state.entityHash) {
 		broadcastRoster(room)

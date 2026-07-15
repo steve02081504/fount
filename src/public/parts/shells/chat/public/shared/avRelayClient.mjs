@@ -23,6 +23,8 @@ const AUDIO_BPS = 32_000
  * @property {() => void} close 断开 WS 并释放编解码 / 采集
  * @property {() => boolean} toggleMute 切换静音，返回静音后为 true
  * @property {() => boolean} toggleVideo 开关摄像头，返回关闭后为 true
+ * @property {(mode: 'full' | 'preview') => void} [setMode] 切换订阅档位（观众侧）
+ * @property {() => 'full' | 'preview'} [getMode] 当前订阅档位
  */
 
 /**
@@ -108,6 +110,7 @@ function unpackFrame(buf) {
  * @param {boolean} [opts.asPublisher=false] true=采集编码推流；false=解码播画
  * @param {HTMLCanvasElement} [opts.canvas] 远端视频绘制目标（观众侧）
  * @param {HTMLVideoElement} [opts.videoLocal] 本地预览（推流侧）
+ * @param {'full' | 'preview'} [opts.mode='full'] 观众订阅档位
  * @returns {Promise<AvRelaySession>} 会话句柄
  */
 export async function joinAvRelayRoom(opts) {
@@ -118,11 +121,14 @@ export async function joinAvRelayRoom(opts) {
 		asPublisher = false,
 		canvas = null,
 		videoLocal = null,
+		mode: initialMode = 'full',
 	} = opts
 
 	if (asPublisher && (!('VideoEncoder' in globalThis) || !('AudioEncoder' in globalThis)))
 		throw new Error('WebCodecs not supported')
-	if (!asPublisher && (!('VideoDecoder' in globalThis) || !('AudioDecoder' in globalThis)))
+	if (!asPublisher && !('VideoDecoder' in globalThis))
+		throw new Error('WebCodecs not supported')
+	if (!asPublisher && initialMode !== 'preview' && !('AudioDecoder' in globalThis))
 		throw new Error('WebCodecs not supported')
 
 	const selfId = crypto.getRandomValues(new Uint8Array(16))
@@ -130,6 +136,8 @@ export async function joinAvRelayRoom(opts) {
 	const t0 = performance.now()
 	const videoSeq = { seq: 0 }
 	const audioSeq = { seq: 0 }
+	/** @type {'full' | 'preview'} */
+	let mode = initialMode === 'preview' ? 'preview' : 'full'
 
 	const ws = new WebSocket(wsUrl)
 	ws.binaryType = 'arraybuffer'
@@ -146,12 +154,14 @@ export async function joinAvRelayRoom(opts) {
 	let audioRx = 0
 	let audioNextTime = 0
 
-	if (!asPublisher && canvas) {
+	/**
+	 * @returns {void}
+	 */
+	const ensureVideoDecoder = () => {
+		if (videoDecoder || !canvas) return
 		const ctx2d = canvas.getContext('2d')
 		canvas.width = PRESET.w
 		canvas.height = PRESET.h
-		audioCtx = new AudioContext({ sampleRate: AUDIO_RATE })
-
 		videoDecoder = new VideoDecoder({
 			/**
 			 * @param {VideoFrame} frame 解码帧
@@ -168,7 +178,14 @@ export async function joinAvRelayRoom(opts) {
 			error: err => console.error('VideoDecoder:', err),
 		})
 		videoDecoder.configure({ codec: PRESET.codec, codedWidth: PRESET.w, codedHeight: PRESET.h })
+	}
 
+	/**
+	 * @returns {void}
+	 */
+	const ensureAudioDecoder = () => {
+		if (audioDecoder || mode === 'preview') return
+		audioCtx = new AudioContext({ sampleRate: AUDIO_RATE })
 		audioDecoder = new AudioDecoder({
 			/**
 			 * @param {AudioData} audioData 解码音频
@@ -207,6 +224,11 @@ export async function joinAvRelayRoom(opts) {
 		})
 	}
 
+	if (!asPublisher && canvas) {
+		ensureVideoDecoder()
+		if (mode === 'full') ensureAudioDecoder()
+	}
+
 	/**
 	 * @param {ArrayBuffer} arrayBuffer 入站帧
 	 * @returns {void}
@@ -218,6 +240,7 @@ export async function joinAvRelayRoom(opts) {
 		if (!frame || frame.sender === selfHex) return
 
 		if (frame.frameType === FRAME_AUDIO) {
+			if (mode === 'preview' || !audioDecoder) return
 			if (!frame.isKey && !audioHasKey) return
 			if (frame.isKey) audioHasKey = true
 			if (audioDecoder.decodeQueueSize > 8) return
@@ -230,8 +253,12 @@ export async function joinAvRelayRoom(opts) {
 			return
 		}
 
+		if (mode === 'preview' && !frame.isKey) return
 		if (!frame.isKey && !videoHasKey) return
-		if (frame.isKey) videoHasKey = true
+		if (frame.isKey) {
+			videoHasKey = true
+			if (mode === 'full') videoRx = 0
+		}
 		if (videoDecoder.decodeQueueSize > 10) return
 		videoRx++
 		videoDecoder.decode(new EncodedVideoChunk({
@@ -258,6 +285,9 @@ export async function joinAvRelayRoom(opts) {
 		ws.onopen = res
 		ws.onerror = rej
 	})
+
+	if (!asPublisher && ws.readyState === WebSocket.OPEN)
+		ws.send(JSON.stringify({ type: 'subscribe', mode }))
 
 	/** @type {MediaStream | null} */
 	let mediaStream = null
@@ -329,6 +359,33 @@ export async function joinAvRelayRoom(opts) {
 			if (track) track.enabled = videoEnabled
 			return !videoEnabled
 		},
+		/**
+		 * @param {'full' | 'preview'} next 目标档位
+		 * @returns {void}
+		 */
+		setMode: next => {
+			const target = next === 'preview' ? 'preview' : 'full'
+			if (target === mode) return
+			mode = target
+			if (target === 'full') {
+				ensureAudioDecoder()
+				videoHasKey = false
+				audioHasKey = false
+			}
+			else {
+				try { audioDecoder?.close() } catch { /* ignore */ }
+				audioDecoder = null
+				void audioCtx?.close()
+				audioCtx = null
+				audioHasKey = false
+			}
+			if (ws.readyState === WebSocket.OPEN)
+				ws.send(JSON.stringify({ type: 'subscribe', mode }))
+		},
+		/**
+		 * @returns {'full' | 'preview'} 当前档位
+		 */
+		getMode: () => mode,
 	}
 }
 

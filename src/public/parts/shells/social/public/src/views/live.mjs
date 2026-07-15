@@ -8,12 +8,47 @@ import {
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
-/** @type {WebSocket | null} */
-let activeRoomWs = null
-/** @type {{ close: () => void } | null} */
-let activeAvSession = null
 /** @type {string} */
 let liveScope = 'local'
+/** @type {string | null} */
+let liveCursor = null
+/** @type {object[]} */
+let liveShownItems = []
+let livePageLoading = false
+/** @type {number} */
+let currentLiveIndex = -1
+
+/**
+ * 每个 slide 的连接态：信令 WS + AV session。
+ * @typedef {{ signalWs: WebSocket | null, avSession: { close: () => void, setMode?: (m: string) => void, getMode?: () => string } | null }} LiveSlideConn
+ */
+/** @type {WeakMap<HTMLElement, LiveSlideConn>} */
+const slideConnections = new WeakMap()
+
+/**
+ * @param {HTMLElement} slide slide
+ * @returns {void}
+ */
+function closeSlideConn(slide) {
+	const conn = slideConnections.get(slide)
+	if (!conn) return
+	conn.signalWs?.close()
+	conn.avSession?.close()
+	slideConnections.delete(slide)
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @returns {LiveSlideConn} 连接态
+ */
+function getOrCreateConn(slide) {
+	let conn = slideConnections.get(slide)
+	if (!conn) {
+		conn = { signalWs: null, avSession: null }
+		slideConnections.set(slide, conn)
+	}
+	return conn
+}
 
 /**
  * @param {object} appContext 应用上下文
@@ -25,18 +60,23 @@ export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
 	const container = document.getElementById('liveSnapContainer')
 	if (!container) return
 
-	activeRoomWs?.close()
-	activeRoomWs = null
-	activeAvSession?.close()
-	activeAvSession = null
+	for (const child of [...container.children])
+		if (child instanceof HTMLElement) closeSlideConn(child)
 	snapBind?.disconnect()
 	snapBind = null
 	container.replaceChildren()
+	liveCursor = null
+	liveShownItems = []
+	livePageLoading = false
+	currentLiveIndex = -1
 
 	ensureLiveScopeTabs(appContext)
 
-	const data = await appContext.socialApi(`/live/feed?scope=${encodeURIComponent(liveScope)}`).catch(() => ({ items: [] }))
+	const data = await appContext.socialApi(
+		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}`,
+	).catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
+	liveCursor = data.nextCursor || null
 
 	if (!items.length) {
 		container.innerHTML = `<div class="live-slide"><p class="live-empty">${escapeHtml(appContext.geti18n('social.live.empty'))}</p></div>`
@@ -48,45 +88,167 @@ export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
 		return
 	}
 
-	for (const item of items) {
-		const slide = buildLiveSlide(appContext, item)
-		container.appendChild(slide)
-	}
+	liveShownItems = [...items]
+	appendLiveSlides(appContext, container, items)
 
 	snapBind = bindVerticalSnap(container, {
 		/**
-		 * @param {unknown} _ unused
+		 * @param {number} index 索引
 		 * @param {HTMLElement} el slide
 		 * @returns {void}
 		 */
-		onEnter: (_, el) => {
-			activeRoomWs?.close()
-			activeRoomWs = null
-			activeAvSession?.close()
-			activeAvSession = null
-			const { entityHash, liveId } = el.dataset
-			if (entityHash && liveId)
-				connectLiveRoom(appContext, el, entityHash, liveId, el.dataset)
+		onEnter: (index, el) => {
+			currentLiveIndex = index
+			activateLiveSlide(appContext, container, index)
+			void maybeLoadMoreLives(appContext, container, index)
 		},
 		/**
+		 * @param {number} _index 离开索引
+		 * @param {HTMLElement} el slide
 		 * @returns {void}
 		 */
-		onLeave: () => {
-			activeRoomWs?.close()
-			activeRoomWs = null
-			activeAvSession?.close()
-			activeAvSession = null
+		onLeave: (_index, el) => {
+			demoteLiveSlide(el)
 		},
 	})
 
-	if (targetEntityHash && targetLiveId) 
-		for (const slide of container.children) 
+	if (targetEntityHash && targetLiveId)
+		for (const slide of container.children)
 			if (slide.dataset.entityHash === targetEntityHash && slide.dataset.liveId === targetLiveId) {
 				slide.scrollIntoView()
 				break
 			}
-		
-	
+}
+
+/**
+ * @param {object} appContext ctx
+ * @param {HTMLElement} container 容器
+ * @param {object[]} items 条目
+ * @returns {void}
+ */
+function appendLiveSlides(appContext, container, items) {
+	for (const item of items) {
+		const slide = buildLiveSlide(appContext, item)
+		container.appendChild(slide)
+		snapBind?.observe(slide)
+	}
+}
+
+/**
+ * @param {object} appContext ctx
+ * @param {HTMLElement} container 容器
+ * @param {number} index 当前索引
+ * @returns {Promise<void>}
+ */
+async function maybeLoadMoreLives(appContext, container, index) {
+	if (livePageLoading || liveScope === 'nearby') return
+	const remaining = container.children.length - index - 1
+	if (remaining > 2) return
+
+	if (liveCursor) {
+		livePageLoading = true
+		try {
+			const data = await appContext.socialApi(
+				`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}&cursor=${encodeURIComponent(liveCursor)}`,
+			).catch(() => null)
+			if (!data) return
+			const items = data.items || []
+			liveCursor = data.nextCursor || null
+			if (items.length) {
+				liveShownItems.push(...items)
+				appendLiveSlides(appContext, container, items)
+			}
+		}
+		finally {
+			livePageLoading = false
+		}
+		return
+	}
+
+	if (!liveShownItems.length) return
+	livePageLoading = true
+	try {
+		appendLiveSlides(appContext, container, liveShownItems)
+	}
+	finally {
+		livePageLoading = false
+	}
+}
+
+/**
+ * 当前条 full；下一条预连 preview。
+ * @param {object} appContext ctx
+ * @param {HTMLElement} container 容器
+ * @param {number} index 当前索引
+ * @returns {void}
+ */
+function activateLiveSlide(appContext, container, index) {
+	const current = container.children[index]
+	const next = container.children[index + 1]
+	if (current instanceof HTMLElement)
+		ensureLiveConnected(appContext, current, 'full')
+	if (next instanceof HTMLElement)
+		ensureLiveConnected(appContext, next, 'preview')
+
+	for (let i = 0; i < container.children.length; i++) {
+		if (i === index || i === index + 1) continue
+		const el = container.children[i]
+		if (el instanceof HTMLElement) closeSlideConn(el)
+	}
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @returns {void}
+ */
+function demoteLiveSlide(slide) {
+	const conn = slideConnections.get(slide)
+	if (!conn?.avSession) return
+	if (typeof conn.avSession.setMode === 'function')
+		conn.avSession.setMode('preview')
+}
+
+/**
+ * @param {object} appContext ctx
+ * @param {HTMLElement} slide slide
+ * @param {'full' | 'preview'} mode 档位
+ * @returns {void}
+ */
+function ensureLiveConnected(appContext, slide, mode) {
+	const { entityHash, liveId } = slide.dataset
+	if (!entityHash || !liveId) return
+	const conn = getOrCreateConn(slide)
+	if (!conn.signalWs || conn.signalWs.readyState > 1)
+		conn.signalWs = openLiveSignalWs(appContext, slide, entityHash, liveId, slide.dataset)
+
+	if (conn.avSession && typeof conn.avSession.setMode === 'function') {
+		conn.avSession.setMode(mode)
+		if (mode === 'full')
+			slide.querySelector('.live-placeholder')?.classList.add('hidden')
+		return
+	}
+
+	const canvas = slide.querySelector('.live-av-canvas')
+	if (!(canvas instanceof HTMLCanvasElement)) return
+	const federated = slide.dataset.federated === '1'
+	const finalAvUrl = federated
+		? `${buildSocialLiveAvWsUrl(entityHash, liveId)}?proxy=1&bridgeOrigin=${encodeURIComponent(slide.dataset.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(slide.dataset.watchSecret || '')}`
+		: buildSocialLiveAvWsUrl(entityHash, liveId)
+	void joinAvRelayRoom({
+		wsUrl: finalAvUrl,
+		asPublisher: false,
+		canvas,
+		mode,
+	}).then(session => {
+		const current = slideConnections.get(slide)
+		if (!current || current !== conn) {
+			session.close()
+			return
+		}
+		conn.avSession = session
+		if (mode === 'full' || session.getMode?.() === 'full')
+			slide.querySelector('.live-placeholder')?.classList.add('hidden')
+	}).catch(() => { /* keep placeholder */ })
 }
 
 /**
@@ -154,14 +316,12 @@ function renderLiveHallGrid(appContext, container, items) {
 		`
 		card.addEventListener('click', () => {
 			liveScope = 'local'
+			for (const child of [...container.children])
+				if (child instanceof HTMLElement) closeSlideConn(child)
 			container.replaceChildren()
 			const slide = buildLiveSlide(appContext, item)
 			container.appendChild(slide)
-			connectLiveRoom(appContext, slide, item.entityHash, item.liveId, {
-				bridgeOrigin: item.bridgeOrigin || '',
-				watchSecret: item.watchSecret || '',
-				federated: item.federated ? '1' : '',
-			})
+			ensureLiveConnected(appContext, slide, 'full')
 		})
 		grid.appendChild(card)
 	}
@@ -250,8 +410,9 @@ function sendDanmaku(slide) {
 	if (!(input instanceof HTMLInputElement) || !input.value.trim()) return
 	const text = input.value.trim()
 	input.value = ''
-	if (activeRoomWs?.readyState === WebSocket.OPEN)
-		activeRoomWs.send(JSON.stringify({ type: 'danmaku', text }))
+	const ws = slideConnections.get(slide)?.signalWs
+	if (ws?.readyState === WebSocket.OPEN)
+		ws.send(JSON.stringify({ type: 'danmaku', text }))
 }
 
 /**
@@ -259,8 +420,9 @@ function sendDanmaku(slide) {
  * @returns {Promise<void>}
  */
 async function sendLiveLike(slide) {
-	if (activeRoomWs?.readyState === WebSocket.OPEN)
-		activeRoomWs.send(JSON.stringify({ type: 'like' }))
+	const ws = slideConnections.get(slide)?.signalWs
+	if (ws?.readyState === WebSocket.OPEN)
+		ws.send(JSON.stringify({ type: 'like' }))
 	showHeartFloat(slide)
 }
 
@@ -283,16 +445,15 @@ function showHeartFloat(slide) {
  * @param {string} entityHash 主播
  * @param {string} liveId 直播
  * @param {DOMStringMap | object} [meta] 联邦线索
- * @returns {void}
+ * @returns {WebSocket} 信令 WS
  */
-function connectLiveRoom(appContext, slide, entityHash, liveId, meta = {}) {
+function openLiveSignalWs(appContext, slide, entityHash, liveId, meta = {}) {
 	const federated = meta.federated === '1' || meta.federated === true
 	const qs = federated
 		? `?proxy=1&bridgeOrigin=${encodeURIComponent(meta.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(meta.watchSecret || '')}`
 		: ''
 	const wsUrl = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/parts/shells:social/live/${entityHash}/${liveId}${qs}`
 	const ws = new WebSocket(wsUrl)
-	activeRoomWs = ws
 
 	ws.addEventListener('message', event => {
 		let msg = null
@@ -311,10 +472,9 @@ function connectLiveRoom(appContext, slide, entityHash, liveId, meta = {}) {
 				for (const el of slide.querySelectorAll('[data-like-count]'))
 					el.textContent = appContext.geti18n('social.live.likes', { n: msg.likeCount })
 		}
-		else if (msg.type === 'like_count') 
+		else if (msg.type === 'like_count')
 			for (const el of slide.querySelectorAll('[data-like-count]'))
 				el.textContent = appContext.geti18n('social.live.likes', { n: msg.count ?? 0 })
-		
 		else if (msg.type === 'hello' && msg.likeCount != null) {
 			for (const el of slide.querySelectorAll('[data-like-count]'))
 				el.textContent = appContext.geti18n('social.live.likes', { n: msg.likeCount })
@@ -327,24 +487,7 @@ function connectLiveRoom(appContext, slide, entityHash, liveId, meta = {}) {
 			slide.classList.remove('live-linked')
 	})
 
-	ws.addEventListener('close', () => {
-		if (activeRoomWs === ws) activeRoomWs = null
-	})
-
-	const canvas = slide.querySelector('.live-av-canvas')
-	if (canvas instanceof HTMLCanvasElement) {
-		const finalAvUrl = federated
-			? `${buildSocialLiveAvWsUrl(entityHash, liveId)}?proxy=1&bridgeOrigin=${encodeURIComponent(meta.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(meta.watchSecret || '')}`
-			: buildSocialLiveAvWsUrl(entityHash, liveId)
-		void joinAvRelayRoom({
-			wsUrl: finalAvUrl,
-			asPublisher: false,
-			canvas,
-		}).then(session => {
-			activeAvSession = session
-			slide.querySelector('.live-placeholder')?.classList.add('hidden')
-		}).catch(() => { /* keep placeholder */ })
-	}
+	return ws
 }
 
 /**

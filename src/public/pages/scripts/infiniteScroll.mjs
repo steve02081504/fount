@@ -8,16 +8,17 @@ let activeObserver = null
  * @param {Element} options.sentinel 哨兵元素
  * @param {() => boolean} options.hasMore 是否还有更多
  * @param {() => void | Promise<void>} options.onLoad 触发加载
+ * @param {string} [options.rootMargin='480px 0px'] 提前量（约两屏）
  * @returns {void}
  */
-export function bindInfiniteScroll({ root = null, sentinel, hasMore, onLoad }) {
+export function bindInfiniteScroll({ root = null, sentinel, hasMore, onLoad, rootMargin = '480px 0px' }) {
 	disconnectInfiniteScroll()
 	if (!sentinel || !hasMore()) return
 	activeObserver = new IntersectionObserver(entries => {
 		if (!entries.some(entry => entry.isIntersecting)) return
 		if (!hasMore()) return
 		void onLoad()
-	}, { root, rootMargin: '240px 0px' })
+	}, { root, rootMargin })
 	activeObserver.observe(sentinel)
 }
 

@@ -14,11 +14,12 @@ alwaysApply: false
 
 ## Streaming AV
 
-- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`)。roster / `hello` / `frame_type=2` 屏幕共享。
+- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`)。roster / `hello` / `frame_type=2` 屏幕共享；`subscribe mode=preview|full`（preview 只转 keyframe+节流、无音频）。
 - **群组通话**：文本频道顶栏 → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`；卡片 `content.type:'call'` + `message_edit` 更新参与者/结束。
-- **Shared lean client**（Social live 等复用）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildSocialLiveAvWsUrl` / `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`。
+- **Shared lean client**（Social live 等复用）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildSocialLiveAvWsUrl` / `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`（`mode` / `setMode`）。
 - **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
 - Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.
+- **消息方向预载**：`MessagePipeline` 向上滑且距顶 <2 屏时提前 `loadMoreTop`；`loadOlderMessages` in-flight 去重。
 
 ## UI conventions
 

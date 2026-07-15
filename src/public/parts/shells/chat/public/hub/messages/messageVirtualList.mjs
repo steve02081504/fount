@@ -57,8 +57,20 @@ async function renderChannelMessageElement(message, index) {
 	return frag.firstElementChild
 }
 
+/** @type {Promise<number> | null} */
+let olderMessagesInFlight = null
+
 /** @returns {Promise<number>} 新载入的更早消息条数 */
 export async function loadOlderMessages() {
+	if (olderMessagesInFlight) return olderMessagesInFlight
+	olderMessagesInFlight = doLoadOlderMessages().finally(() => {
+		olderMessagesInFlight = null
+	})
+	return olderMessagesInFlight
+}
+
+/** @returns {Promise<number>} 新载入的更早消息条数 */
+async function doLoadOlderMessages() {
 	if (hubStore.messages.channelOlderExhausted || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return 0
 	const oldest = hubStore.messages.channelMessages[0]
 	const oldestId = oldest?.eventId
