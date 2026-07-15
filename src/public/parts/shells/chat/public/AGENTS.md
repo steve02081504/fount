@@ -14,11 +14,11 @@ alwaysApply: false
 - Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate / acting path. `memberKind` is `agent` iff join carries `charname`.
 - **Webapi identity is always the operator entity.** Agents operate in-process via `getChatClient(username, agentEntityHash)`. There is no HTTP parameter to act or view as another entity.
 - Owner content power (only cross-entity privilege): an entity’s declared owner may edit/delete that entity’s messages (human or agent); attribution stays the owner’s signature. Hub never switches to agent view — agent masters exercise power only via `ChatClient`.
-- Agent-only groups：`createInvite` → `activateGroupFederation` 必须带 `entityHash`，否则会用 operator signer 写 `group_settings_update` 并被拒（`requires active member sender`）。
+- Agent-only groups: `createInvite` → `activateGroupFederation` must include `entityHash`; omitting it uses the operator signer, causing `group_settings_update` to be rejected (`requires active member sender`).
 
 ## ChatClient
 
-- Entry: `src/api/client.mjs` → `getChatClient(username, entityHash?)`（缺省 = operator）.
+- Entry: `src/api/client.mjs` → `getChatClient(username, entityHash?)` (default = operator).
 - Surface: groups / DM / join, channel send (+ files), reactions / pins / votes, member+role+channel governance, fork / reputation / denylist, federation catchup+tuning, session slots (persona / world / plugin / char / frequency), `triggerReply`, `streamingAuth`, `updateProfile` / `setOwner`, `entities.search`, bridge bot lifecycle, private-state namespaces.
 - `OnMessage` may hydrate via `client.messageFrom(event)` and operate immediately; returning false skips `GetReply` without blocking those ops.
 - Bridge groups: duck-typed `bridgeOperations` registered per bot; `group.bridgeBot().stop()` / `client.bridgeBots()`.
@@ -32,7 +32,7 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/`.
 | --- | --- |
 | bookmarks / groupFolders / aliases | JSON via `ChatClient.*` + `endpoints/preferences.mjs` |
 | readMarkers | `lib/readMarkers.mjs` |
-| notificationPreferences | `lib/notificationPreferences.mjs`（HTTP path still `/notify-prefs`） |
+| notificationPreferences | `lib/notificationPreferences.mjs` (HTTP path still `/notify-prefs`) |
 | custom emojis / emoji_usage / stickers | `client.emojis` / `client.stickers` |
 | care | `client.care`（body: `targetEntityHash` only） |
 

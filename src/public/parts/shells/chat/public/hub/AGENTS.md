@@ -14,18 +14,18 @@ alwaysApply: false
 
 ## Streaming AV
 
-- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`)。roster / `hello` / `frame_type=2` 屏幕共享；`subscribe mode=preview|full`（preview 只转 keyframe+节流、无音频）。
-- **群组通话**：文本频道顶栏 → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`；卡片 `content.type:'call'` + `message_edit` 更新参与者/结束。
-- **Shared lean client**（Social live 复用编解码会话）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`（`mode` / `setMode`）；帧协议常量与 `packAvFrame` / `unpackAvFrame` / `bytesToHex` 从此导出。画质预设：`shared/avRelayPresets.mjs` 的 `CODECS_PRESETS`（勿经 codecsAv barrel）。Social live-av URL 在 `/parts/shells:social/shared/liveAvWsUrl.mjs`。
+- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). Roster / `hello` / `frame_type=2` screen share; `subscribe mode=preview|full` (preview = keyframes only, throttled, no audio).
+- **Group call**: text channel header → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `content.type:'call'` + `message_edit` updates participants/end.
+- **Shared lean client** (reused by Social live): `/parts/shells:chat/shared/avRelayClient.mjs` — `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom` (`mode` / `setMode`); frame protocol constants and `packAvFrame` / `unpackAvFrame` / `bytesToHex` exported from here. Quality presets: `shared/avRelayPresets.mjs` `CODECS_PRESETS` (do not import via `codecsAv` barrel). Social live AV WS URL: `/parts/shells:social/shared/liveAvWsUrl.mjs`.
 - **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
 - Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.
-- **消息方向预载**：`MessagePipeline` 向上滑且距顶 <2 屏时提前 `loadMoreTop`；`loadOlderMessages` in-flight 去重。
+- **Message direction prefetch**: `MessagePipeline` prefetches `loadMoreTop` when scrolling up and within 2 screens of the top; `loadOlderMessages` deduplicates in-flight requests.
 
 ## UI conventions
 
 - **Errors**: use `handleUIError` from `public/src/ui/errors.mjs` — toast + `console.error` + Sentry (all three). Do not catch with only `showToastI18n` alone. Background paths: `toError` + `console.error` + Sentry without toast.
-- **Relative imports**: from `public/hub/*.mjs` use `../src/...` for `public/src` helpers (`../../src` resolves to `/parts/src` in the browser and hard-fails). One nesting deeper (`hub/wiring/`, `hub/messages/`, `hub/federation/`, `hub/sidebar/`, `hub/stream/`) needs `../../src/...` and `../../../../../scripts/...`. Two levels (`hub/messages/render/`, `hub/messages/actions/`, `hub/stream/handlers/`) need `../../../src/...` and `../../../../../../scripts/...`. DOM event wiring lives in `hub/wiring/` (`index.mjs` = `wireEvents`, `bootstrap.mjs` = `wireBootstrap`; filenames drop the `wire` prefix, export names keep it). Sidebar nav: `hub/sidebar/`（`index.mjs` 协调 `selectGroup` / `renderHubChannelSidebar`）。群 WS: `hub/stream/`（`connection.mjs` 生命周期；`handlers/` 按 wire type；`index.mjs` 对外 façade）。
-- **Message modules**: render coordination in `messages/render/`（`index.mjs` 聚合；正文/MD/附件等按职责分文件，直引不 barrel）；action 委托在 `messages/actions/handlers.mjs`，各 `data-action` 进同目录独立文件。
+- **Relative imports**: from `public/hub/*.mjs` use `../src/...` for `public/src` helpers (`../../src` resolves to `/parts/src` in the browser and hard-fails). One nesting deeper (`hub/wiring/`, `hub/messages/`, `hub/federation/`, `hub/sidebar/`, `hub/stream/`) needs `../../src/...` and `../../../../../scripts/...`. Two levels (`hub/messages/render/`, `hub/messages/actions/`, `hub/stream/handlers/`) need `../../../src/...` and `../../../../../../scripts/...`. DOM event wiring lives in `hub/wiring/` (`index.mjs` = `wireEvents`, `bootstrap.mjs` = `wireBootstrap`; filenames drop the `wire` prefix, export names keep it). Sidebar nav: `hub/sidebar/` (`index.mjs` coordinates `selectGroup` / `renderHubChannelSidebar`). Group WS: `hub/stream/` (`connection.mjs` lifecycle; `handlers/` by wire type; `index.mjs` external facade).
+- **Message modules**: render coordination in `messages/render/` (`index.mjs` aggregates; body/MD/attachments etc. split by responsibility, direct imports not barrel); action delegation in `messages/actions/handlers.mjs`, each `data-action` in a separate file in the same dir.
 - No hardcoded user-visible strings; use `data-i18n` and `zh-CN.json`.
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
@@ -46,7 +46,7 @@ Hub-facing API shapes:
 
 ## Unread
 
-- **Model**: `channel.messageSeq` (materialized on group state) minus per-entity `shells/chat/entities/{entityHash}/readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`；HTTP 固定 operator；`PUT …/channels/:id/read-marker`；WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
+- **Model**: `channel.messageSeq` (materialized on group state) minus per-entity `shells/chat/entities/{entityHash}/readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; HTTP fixed to operator; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
 - **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`; sidebar group list sorts by `lastMessageTime`, unread as badge only; earliest-unread divider in `messages/messageShared.mjs` (renders only when at least one read message precedes it). Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.
 - **Open = read**: `loadMessages` calls `markCurrentChannelRead` immediately on opening a text channel (no wait for scroll bottom); `firstUnreadEventId` is retained this session as the divider anchor and recalculated from the new marker on next load.
 - **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
@@ -56,15 +56,15 @@ Hub-facing API shapes:
 
 - **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json` (per-recipient read watermark). Incremental write: `src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs` (`eventPersist` called after `message`/`message_edit` persisted).
 - **Syntax**: `@[entity:<128hex>]` in message body (see `shared/inlineTokenSyntax.mjs`); Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
-- **API**: `GET /inbox`、`GET/PUT /inbox/seen` 固定 operator 实体（无换收件人参数）；agent inbox 仅经 `getChatClient(username, agentHash).inbox`。群 autocomplete: `GET …/groups/:id/mentions/suggest`.
+- **API**: `GET /inbox`, `GET|PUT /inbox/seen` fixed to operator entity (no recipient parameter); agent inbox only via `getChatClient(username, agentHash).inbox`. Group autocomplete: `GET …/groups/:id/mentions/suggest`.
 - **Hub**: server bar `@` button + `#inbox` list (`hub/inboxView.mjs` + `hub/inboxClient.mjs`); badge driven by WS `channel_message.mentions.entityHashes`.
-- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `/parts/shells:social/shared/runUri.mjs`。
+- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `/parts/shells:social/shared/runUri.mjs`.
 
 ## Aliases / petnames
 
-- **Local aliases**（实体私有，不上 DAG — canonical 只用 hash）：经 `ChatClient.aliases` / `GET/PUT …/aliases`（HTTP 固定 operator）。
+- **Local aliases** (entity-private, not in DAG — canonical key is hash only): via `ChatClient.aliases` / `GET|PUT …/aliases` (HTTP fixed to operator).
 - **Shared client** `shared/aliases.mjs` (Social reuses via `/parts/shells:chat/shared/aliases.mjs`): `loadAliases()` warms in-memory cache; `aliasForEntity`/`aliasForGroup`/`groupIdForAlias` are synchronous hot-path getters; `setEntityAlias`/`setGroupAlias` (empty string = delete) do a whole-file PUT then update cache. **Cache must be warm before rendering**: Hub calls `await loadAliases()` in `initCore` (before `loadGroups`); Social calls it at `bootstrapSocialApp` start.
 - **Name resolution** `shared/nameResolve.mjs`: `resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })` (alias → profile → short hash); `disambiguateLabels` appends `·${hash.slice(64,68)}` for collisions. Hub hot paths — `authorDisplayLabel`, `hydrateAuthorLabels`, hover cards — all go through `resolveDisplayName` (do not access `profile.name` directly); sidebar and settings member lists use `disambiguateLabels` in batch. Every new hash-display point must use these helpers, not bare `.slice()`.
 - **Deep links**: `#group:@{alias}:{channelId}` resolved by `parseHash` via `groupIdForAlias`; optional `;{eventId}` message anchor; `updateHash` still writes canonical groupId. Standalone share: `fount://run/shells:chat/message;…` wrapped via `wrapProtocolHttpsUrl` → GitHub Pages protocol hop.
-- **Message extras**: content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `fileAlts`（见 `shared/messageFields.mjs`）。裸链接 embed 由前端 markdown 渲染器（`data-fount-embed`）经 `/api/no-cors` 水合，不入库。
+- **Message extras**: content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `fileAlts` (see `shared/messageFields.mjs`). Bare link embeds are hydrated by the frontend markdown renderer (`data-fount-embed`) via `/api/no-cors`, not stored.
 - **Network handle search**: profile top-level `handle` (signed public); Hub `#friends` search box + Social feed search call `GET …/entities/search` (multi-hop `part_query` kind `entity_search`).

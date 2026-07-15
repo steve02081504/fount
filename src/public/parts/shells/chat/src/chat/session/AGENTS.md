@@ -70,7 +70,7 @@ alwaysApply: false
 - **Sole `After` trigger point**: `broadcastAndPersist` awaits `AfterAddChatLogEntry` for `message` and finalized `message_edit`; char/greeting flow through the same pipeline via `syncChatLogEntryToDag` / `finalizeDagGeneratingMessage`.
 - Canonical content: everyone gets `displayName`/`displayAvatar`; generated entries also attach `sessionSnapshot`/`chatLogEntryId`.
 - **Char display snapshot**: `resolveDisplaySnapshot` with `charId` resolves agent part info (not `sender` persona). Streaming finalize (`finalizeDagGeneratingMessage`) and `mergeChannelMessagesForDisplay` must preserve `displayName`/`displayAvatar` through `message_edit` — placeholder-only snapshots are wrong for final bubbles.
-- Fixture hook counters: module-level singletons under `test/fixtures/probes/` imported via `fount/public/parts/shells/chat/test/fixtures/probes/*.mjs`（fixture 复制到 user 目录后仍解析回仓库源）。**禁止** `globalThis.__fount*`。
+- Fixture hook counters: module-level singletons under `test/fixtures/probes/` imported via `fount/public/parts/shells/chat/test/fixtures/probes/*.mjs` (fixtures copied to a user directory still resolve back to the repo source). **Do not use** `globalThis.__fount*`.
 - Fixtures use `fount/.../probes/...` absolute imports — do not `import '../writePathHookState.mjs'` relatively from a fixture `main.mjs`.
 - Pure-test projection: only import `viewerLogProject.mjs` (don't pull in the session I/O graph via `materializeViewerLog`).
 
@@ -87,7 +87,7 @@ alwaysApply: false
 - Persona resolution is the same as `BeforeUserSend` (the sender's replica via `loadPlayerForReplica`).
 - `session/messages.mjs`'s `editMessage` has been removed; `deleteMessage` only does abort-placeholder cleanup.
 - `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)` — nullish result (missing hook, remote METHOD_NOT_FOUND, or explicit null) falls through to the char itself.
-- Fixture counters: `test/fixtures/probes/editPathHookState.mjs`（同 write-path，`fount/` 导入模块级单例）。
+- Fixture counters: `test/fixtures/probes/editPathHookState.mjs` (same absolute-import pattern as write-path).
 - Integration: `test/integration/edit_path_hooks.test.mjs`.
 - Pure: `test/pure/world_state_reducer.test.mjs`, `test/pure/world_state_validate.test.mjs`
 - Integration: `test/integration/world_state.test.mjs`, `test/integration/world_distribution.test.mjs`

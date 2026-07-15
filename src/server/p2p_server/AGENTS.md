@@ -19,8 +19,8 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 | Area | Path |
 | --- | --- |
 | Node startup / entity store glue | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` |
-| HTTP `/api/p2p/*`（网络级） | `src/server/web_server/p2p_endpoints.mjs` |
-| HTTP `/api/parts/shells:chat/*`（实体/profile/EVFS） | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
+| HTTP `/api/p2p/*` (network level) | `src/server/web_server/p2p_endpoints.mjs` |
+| HTTP `/api/parts/shells:chat/*` (entity/profile/EVFS) | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
 | Chat federation / DAG / encryption | `shells/chat/src/chat/` |
 | Social timeline federation | `shells/social/src/federation/`, `timeline/` |
 | S3 / multi-replica group file backend | `shells/chat/src/chat/lib/remoteStoragePlugins.mjs` |
@@ -34,7 +34,7 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 - **Mailbox**: `{dataPath}/p2p/node/mailbox/store.jsonl`; directed packets via `sendToNode`, discovery fanout via TrustGraph.
 - **part_query**: multi-hop opaque query (`npm:…/wire/part_query`); chat shell Load registers `entity_search` via `registerChatEntitySearchHandler` (after `registerShellPartpath`). Initiator `queryNetwork` / shell `searchEntitiesNetwork`; replies reverse-path; relay cache is unverified clue only.
 - **Denylist vs personal lists**: node-level `denylist.json` vs per-entity `personal_block.json` / `personal_hide.json`.
-- **Agent identity**: `ensureAgentEntityIdentity(username, charPartName)` / chat `ensureLocalAgentEntityHash` — key-derived entityHash in `entities/{hash}/identity.json`; never path-derive from `chars/`. Frontend char→hash via `GET /api/parts/shells:chat/viewer` `agents[]`；加入群时 `addchar` 服务端 `ensureLocalAgentEntityHash`。
+- **Agent identity**: `ensureAgentEntityIdentity(username, charPartName)` / chat `ensureLocalAgentEntityHash` — key-derived entityHash in `entities/{hash}/identity.json`; never path-derive from `chars/`. Frontend char→hash via `GET /api/parts/shells:chat/viewer` `agents[]`; on group join (`addchar`), server calls `ensureLocalAgentEntityHash`.
 
 ## Chat shell supplements
 

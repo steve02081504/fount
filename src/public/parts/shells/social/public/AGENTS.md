@@ -10,18 +10,18 @@ alwaysApply: false
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
-- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP 恒以 operator 实体经 `SocialClient`（`src/api/`）操作。Agent 走 in-process `getSocialClient(username, agentEntityHash)`，不经 webapi 换身份。Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`。
-- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists`（operator）与 chat `GET …/personal-lists`。Group kick/ban = node `denylist.json`（separate）。
-- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning / sensitiveMedia / mediaRefs.alt）、`…/edit`、`…/poll-vote`、`…/notes`、`…/notes/:id/vote`、`…/like|dislike|repost`、`DELETE …/posts`；`GET|PUT /taste`、`GET|PUT /profile/muted-keywords`、`POST /signals/dwell`；relationships 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
-- **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers`（GSH）≠ Mastodon unlisted/direct；`follow_approve` 签发 vault H，不是 locked-account 审批关注。Feed 解密失败见 `post.decryptView.failed`。`contentWarning` 折叠 media/poll/正文；`sensitiveMedia` 单独 blur 媒体遮罩。
+- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`.
+- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists` (operator) and chat `GET …/personal-lists`. Group kick/ban = node `denylist.json` (separate).
+- **HTTP routes**: thin wrappers → `getSocialClient(username)`; writes at `POST …/posts` (incl. poll / contentWarning / sensitiveMedia / mediaRefs.alt), `…/edit`, `…/poll-vote`, `…/notes`, `…/notes/:id/vote`, `…/like|dislike|repost`, `DELETE …/posts`; `GET|PUT /taste`, `GET|PUT /profile/muted-keywords`, `POST /signals/dwell`; relationships likewise. Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
+- **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers` (GSH) ≠ Mastodon unlisted/direct; `follow_approve` issues vault H, not locked-account approval. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses media/poll/body; `sensitiveMedia` blurs media only.
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
-- **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started`（`inbox.mjs`）。
-- **Share URL**: 复制/分享走 `wrapProtocolHttpsUrl` → GitHub Pages protocol 中转到读者本机实例。
-- **Trending**: `scope=local|nearby`；nearby 用 `part_query` `trending_hashtags`。
-- **Dwell**: 前端 `dwellTracker.mjs` 本地 IntersectionObserver；短视频可报 `watchMs`/`watchRatio`；仅本机排序弱信号，不联邦。
-- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap + cursor 续页/循环；`/live/*`（开播自动发 `liveRef` 帖、结束 `post_edit` 统计、双主播连线、大厅 `scope=nearby` + 观看代理）+ `av-relay` preview/full（`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`；WS URL ← `social/public/shared/liveAvWsUrl.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
-- **Feed backfill**: 首页条数不足时 `federation/backfill.mjs` 一跳 sync→discover→多跳 `post_discover` ingest；`part_query` kind 注册于 Social `Load`。
-- **Reply gate**: `replyPolicy`/`replyDisplay`/`reply_feature`；权威过滤在 `listReplies`，写侧预检 + inbox 跳过。
+- **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started` (`inbox.mjs`).
+- **Share URL**: `wrapProtocolHttpsUrl` → GitHub Pages protocol relay to the reader's local instance.
+- **Trending**: `scope=local|nearby`; nearby uses `part_query` `trending_hashtags`.
+- **Dwell**: frontend `dwellTracker.mjs` uses local IntersectionObserver; short videos may report `watchMs`/`watchRatio`; local-only ranking signal, not federated.
+- **Topics / search / videos / live**: `tag_follow` topic pages; `GET /search` with filters and `scope=nearby` (`post_search`); `GET /videos/feed` + vertical snap + cursor pagination/replay; `/live/*` (broadcast auto-posts `liveRef`, end `post_edit` stats, dual-host co-stream, lobby `scope=nearby` + viewer proxy) + `av-relay` preview/full (`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`; WS URL ← `social/public/shared/liveAvWsUrl.mjs`); scheduled posts `publishAt` + `scheduledPostWatcher` (modeled on poll deadline).
+- **Feed backfill**: when the home feed is thin, `federation/backfill.mjs` one-hop sync → discover → multi-hop `post_discover` ingest; `part_query` kinds registered in Social `Load`.
+- **Reply gate**: `replyPolicy`/`replyDisplay`/`reply_feature`; authoritative filtering in `listReplies`, write-side pre-check + inbox skip.
 
 ## UI conventions
 
@@ -29,37 +29,37 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike**（互斥，reducer 侧清对立反应）；`reaction_index` 投影联邦 like/dislike 签名事件（受实体 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*` 聚类权重（`interestBoost`，可负压分）。偏好 UI：`#tasteView` → `views/taste.mjs`（双开关：`publishPreferences` / `publishReactions`）。标签命名走时间线 `tag_name` 事件。
+- Post card engagement: like / **dislike** (mutually exclusive; reducer clears the opposing reaction); `reaction_index` projects federated like/dislike signed events (controlled by entity `privacy.publishReactions`); `for_you` uses local `taste/*` cluster weights (`interestBoost`, can be negative). Preference UI: `#tasteView` → `views/taste.mjs` (two toggles: `publishPreferences` / `publishReactions`). Tag naming uses timeline `tag_name` events.
 
 ## Feed / profile pagination
 
 - Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`); default `rootMargin` ≈ two viewports (`480px`).
 - Feed / notifications / profile posts paginate via backend `nextCursor`; search mode has its own sentinel.
 - Feed prefetch: after each page, frontend background-fetches the next cursor into `state.feedPrefetch`; sentinel consumes cache then schedules the next prefetch.
-- Feed / videos / live **replay**: when `nextCursor` is exhausted, further scroll re-appends already-shown items (feed inserts `.feed-replay-divider` with `social.feed.replayDivider`).
-- Empty / thin first page triggers server `federation/backfill.mjs`：`syncFollowingTimelines` → discover+`syncTimelineForEntity` → multi-hop `post_discover` ingest. Live empty falls back to `buildNearbyLiveFeed`.
+- Feed / videos / live **replay**: when `nextCursor` is exhausted, further scrolls re-append already-shown items (feed inserts `.feed-replay-divider` with `social.feed.replayDivider`).
+- Empty / thin first page triggers server `federation/backfill.mjs`: `syncFollowingTimelines` → discover + `syncTimelineForEntity` → multi-hop `post_discover` ingest. Live empty falls back to `buildNearbyLiveFeed`.
 - Videos / live use vertical snap + cursor append near end (3rd from last); live preconnects next slide with AV `subscribe mode=preview` (keyframes only) + signal WS.
-- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts。
-- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=` + replay divider), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete)。Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`。
+- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts.
+- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=` + replay divider), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
 
 ## Agent integration
 
 - New posts (local commit or federated ingest) flow through `dispatchSocialMessage`: every visible local agent gets `interfaces.social.OnMessage` (boolean intent); without `OnMessage`, @mention defaults to intent true and text via `lib/replyViaChat.mjs` → `chat.GetReply`. Operator care (chat `care` module) on author → `care_post` inbox row + `notifyUser`. Cross-node @ of non-local entities uses `social_post_notify` RPC. `OnFollow` retained (follow is not a message).
-- Integration: `test/integration/social_on_message.test.mjs`, `test/integration/entity_parity.test.mjs`（原 acting 平权，现为 operator HTTP vs agent SocialClient）。
-- **测试陷阱**：`commitTimelineEvent` 对 `post` 恒触发 `dispatchSocialMessage` → `loadPart` 本机全部 agent。若仅 `mkdir` 占位 char 目录而无 `main.mjs`，集成测请改用 `appendTimelineEvent`（跳过 dispatch），或安装真实 fixture char。
+- Integration: `test/integration/social_on_message.test.mjs`, `test/integration/entity_parity.test.mjs` (operator HTTP vs agent SocialClient).
+- **Testing trap**: `commitTimelineEvent` on `post` always triggers `dispatchSocialMessage` → `loadPart` for all local agents. If a char directory exists without `main.mjs`, use `appendTimelineEvent` instead (skips dispatch), or install a real fixture char.
 
 ## Identity
 
-- 人类与 agent 同为自签实体；`ownerEntityHash` 为所属关系字段（人类亦可设）。公理与矩阵见 [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md)。
-- Webapi 身份恒为 operator（`GET /viewer` → `viewerEntityHash` + `agents[]`）；**无**前端身份切换、**无** `actingEntityHash`。前端按 feed 项 `ownerEntityHash === viewer` 显示改/删。
-- `createContext.getViewerEntityHash` = `viewerEntityHash()`（operator）。
-- Agent 私有读/写仅经工具面 `getSocialClient(username, agentEntityHash)`（入口 `src/api/client/index.mjs`）。
-- **收藏夹**：`shells/social/entities/{entityHash}/savedPosts.json`；HTTP `…/saved-posts*`（含 `/search`）固定 operator；agent CRUD/search 与人类同构（`client.saved.*`）。缺失文件时须返回**新**空结构（勿浅拷贝共享 `DEFAULT`）。
-- **具名搜索**：`GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork`（`part_query` kind `entity_search`）。搜索页用户段：follow / pin 别名；Hub `#friends` 侧栏另有搜人 → 建 DM。
+- Human and agent are both self-signed entities; `ownerEntityHash` is a belonging field (humans may also set it). Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
+- Webapi identity is always the operator (`GET /viewer` → `viewerEntityHash` + `agents[]`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
+- `createContext.getViewerEntityHash` = `viewerEntityHash()` (operator).
+- Agent private read/write only via `getSocialClient(username, agentEntityHash)` (entry: `src/api/client/index.mjs`).
+- **Saved posts**: `shells/social/entities/{entityHash}/savedPosts.json`; HTTP `…/saved-posts*` (incl. `/search`) fixed to operator; agent CRUD/search is structurally identical (`client.saved.*`). Missing file must return a **new** empty structure (do not shallow-copy a shared `DEFAULT`).
+- **Entity search**: `GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork` (`part_query` kind `entity_search`). Search page user section: follow / pin alias; Hub `#friends` sidebar has separate search → create DM.
 
 ## Notifications inbox
 
-- **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent`（`timeline/append.mjs` commit + `timeline/sync.mjs` ingest）。
-- **Read model**: `GET /notifications` aggregates high-frequency like/repost/follow rows; `unreadCount` counts aggregated cards. Optional `?types=` filter（含 `care_post` / `poll_closed`）。
-- **API**: `GET /notifications` / `GET|PUT /notifications/seen` 固定 operator。
+- **Storage**: per-recipient `{userDictionary}/shells/social/inbox/{entityHash}/events.jsonl` + `read.json` seen watermark. Incremental write in `src/inbox.mjs` → `appendInboxFromTimelineEvent` (`timeline/append.mjs` commit + `timeline/sync.mjs` ingest).
+- **Read model**: `GET /notifications` aggregates high-frequency like/repost/follow rows; `unreadCount` counts aggregated cards. Optional `?types=` filter (incl. `care_post` / `poll_closed`).
+- **API**: `GET /notifications` / `GET|PUT /notifications/seen` fixed to operator.
 - **WS**: `pushFeedUpdate(username, { type: 'notification', notification })` on inbox append; frontend merges by `aggregateKey` when inbox view is open.
