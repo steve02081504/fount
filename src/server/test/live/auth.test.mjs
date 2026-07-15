@@ -13,6 +13,21 @@ import { wsBaseUrl } from '../../../scripts/test/core/url.mjs'
 import { bootInProcess } from '../../../scripts/test/node/boot.mjs'
 import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/node/launch.mjs'
 
+/**
+ * 从 Set-Cookie 响应头取出指定 cookie 的 name=value。
+ * @param {Headers} headers 响应头
+ * @param {string} name cookie 名
+ * @returns {string|undefined} `name=value` 或缺失时 undefined
+ */
+function cookiePairFromSetCookie(headers, name) {
+	const cookies = headers.getSetCookie?.() ?? [headers.get('set-cookie')].filter(Boolean)
+	const prefix = `${name}=`
+	for (const raw of cookies) {
+		const first = String(raw).split(';')[0]
+		if (first.startsWith(prefix)) return first
+	}
+}
+
 Deno.test('verifyApiKey accepts valid key and rejects invalid or revoked', async () => {
 	const dataPath = mkdtempSync(join(tmpdir(), 'fount_auth_unit_'))
 	const username = 'auth-unit-user'
@@ -110,6 +125,48 @@ Deno.test({
 				? res.headers.getSetCookie()
 				: [res.headers.get('set-cookie')].filter(Boolean)
 			assert(cookies.some(c => String(c).startsWith('accessToken=')), 'missing accessToken cookie')
+		})
+
+		await t.step('concurrent whoami with same refreshToken shares rotated session', async () => {
+			const loginRes = await fetch(`${baseUrl}/api/login`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify({ apiKey, deviceid: 'refresh-concurrency-device' }),
+			})
+			assertEquals(loginRes.status, 200)
+			const refreshPair = cookiePairFromSetCookie(loginRes.headers, 'refreshToken')
+			assert(refreshPair, 'missing refreshToken cookie')
+
+			/**
+			 * 仅带 refreshToken cookie 调用 whoami，触发静默刷新。
+			 * @returns {Promise<Response>} whoami 响应
+			 */
+			const whoami = () => fetch(`${baseUrl}/api/whoami`, {
+				headers: {
+					Accept: 'application/json',
+					Cookie: refreshPair,
+				},
+			})
+			const [a, b] = await Promise.all([whoami(), whoami()])
+			assertEquals(a.status, 200)
+			assertEquals(b.status, 200)
+			assertEquals((await a.json()).username, username)
+			assertEquals((await b.json()).username, username)
+
+			const aAccess = cookiePairFromSetCookie(a.headers, 'accessToken')
+			const bAccess = cookiePairFromSetCookie(b.headers, 'accessToken')
+			const aRefresh = cookiePairFromSetCookie(a.headers, 'refreshToken')
+			const bRefresh = cookiePairFromSetCookie(b.headers, 'refreshToken')
+			assert(aAccess && aRefresh, 'missing rotated cookies on first concurrent response')
+			assertEquals(aAccess, bAccess)
+			assertEquals(aRefresh, bRefresh)
+
+			// 宽限期内迟到请求：仍持有旧 refreshToken，也应成功
+			const late = await whoami()
+			assertEquals(late.status, 200)
+			assertEquals((await late.json()).username, username)
+			assertEquals(cookiePairFromSetCookie(late.headers, 'accessToken'), aAccess)
+			assertEquals(cookiePairFromSetCookie(late.headers, 'refreshToken'), aRefresh)
 		})
 
 		await t.step('invalid fount-apikey rejected on /ws/test/auth_echo', async () => {

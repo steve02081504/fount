@@ -80,6 +80,13 @@ const loginFailures = {}
  * @type {Map<string, object>}
  */
 const jwtCache = new Map()
+/**
+ * 刷新令牌 single-flight：同一旧 refreshToken 的并发/迟到请求复用同一结果。
+ * 成功后保留约 1 分钟宽限，避免 Set-Cookie 生效前的迟到请求踩到已轮换的 jti。
+ * @type {Map<string, Promise<object>>}
+ */
+const refreshInFlight = new Map()
+const REFRESH_GRACE_MS = ms('1m')
 
 // --- 辅助函数 ---
 
@@ -321,6 +328,7 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 			userAgent: req?.headers?.['user-agent'],
 			lastSeen: Date.now(),
 		})
+		save_config()
 
 		return {
 			status: 200,
@@ -334,13 +342,16 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 }
 
 /**
- * 刷新访问令牌。
+ * 刷新访问令牌（同一旧 refreshToken 并发/迟到请求 single-flight + 宽限复用）。
  * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
  * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refresh(refreshTokenValue, req) {
-	return handleTokenRefresh(refreshTokenValue, req, {
+	const existing = refreshInFlight.get(refreshTokenValue)
+	if (existing) return existing
+
+	const promise = handleTokenRefresh(refreshTokenValue, req, {
 		tokenName: 'standard',
 		expectedType: undefined,
 		userTokenArrayKey: 'refreshTokens',
@@ -379,7 +390,22 @@ async function refresh(refreshTokenValue, req) {
 		accessTokenKey: 'accessToken',
 		refreshTokenKey: 'refreshToken',
 		errorI18nKey: 'fountConsole.auth.refreshTokenError',
+	}).then(result => {
+		if (result.status === 200)
+			setTimeout(() => {
+				if (refreshInFlight.get(refreshTokenValue) === promise)
+					refreshInFlight.delete(refreshTokenValue)
+			}, REFRESH_GRACE_MS).unref()
+		else
+			refreshInFlight.delete(refreshTokenValue)
+		return result
+	}, error => {
+		refreshInFlight.delete(refreshTokenValue)
+		throw error
 	})
+
+	refreshInFlight.set(refreshTokenValue, promise)
+	return promise
 }
 
 /**

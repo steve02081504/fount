@@ -161,7 +161,8 @@ export async function init(start_config) {
 	}
 
 	config = get_config()
-	if (starts.Base) initAuth()
+	let authPromise
+	if (starts.Base) authPromise = initAuth()
 	SetTaskbarProgress(65)
 
 	const ipcModulePromise = starts.IPC ? import('./ipc_server/index.mjs') : null
@@ -192,8 +193,9 @@ export async function init(start_config) {
 		 * 懒加载地获取 Express 应用程序实例。
 		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
 		 */
-		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(({ app }) => {
+		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(async ({ app }) => {
 			app.set('trust proxy', trust_proxy ?? 'loopback')
+			await authPromise
 			server.removeListener('request', requestListener)
 			server.on('request', app)
 			server.removeListener('upgrade', upgradeListener)
