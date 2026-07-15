@@ -30,12 +30,11 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 	const { ensureOperatorPubKey, resolveOperatorEntityHashForUser } = await import('../../src/entity/identity.mjs')
 	const { updateProfile, getProfile } = await import('../../src/entity/profile.mjs')
 	const {
-		ENTITY_SEARCH_KIND,
 		localEntitySearchHandler,
+		registerChatEntitySearchHandler,
 		searchEntitiesNetwork,
 	} = await import('../../src/entity/entitySearch.mjs')
-	const { getShellPartpath } = await import('npm:@steve02081504/fount-p2p/registries/part_path')
-	const { registerQueryInboundHandler, resetPartQueryStateForTests } = await import(
+	const { resetPartQueryStateForTests } = await import(
 		'npm:@steve02081504/fount-p2p/wire/part_query'
 	)
 
@@ -52,7 +51,7 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 	assertEquals(profile.handle, 'steve_test')
 
 	resetPartQueryStateForTests()
-	registerQueryInboundHandler(getShellPartpath('chat'), ENTITY_SEARCH_KIND, localEntitySearchHandler)
+	registerChatEntitySearchHandler()
 
 	const localRows = await localEntitySearchHandler({ replicaUsername: username }, { q: 'steve' })
 	assert(localRows.some(row => row.entityHash === operator && row.handle === 'steve_test'))

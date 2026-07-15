@@ -6,7 +6,7 @@ import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identit
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 
@@ -21,6 +21,22 @@ import { listEntityIdentities } from './store.mjs'
  *
  */
 export const ENTITY_SEARCH_KIND = 'entity_search'
+
+/**
+ * Chat Load：注册 `entity_search` part_query handler（须在 registerShellPartpath 之后）。
+ * @returns {void}
+ */
+export function registerChatEntitySearchHandler() {
+	registerQueryInboundHandler(getShellPartpath('chat'), ENTITY_SEARCH_KIND, localEntitySearchHandler)
+}
+
+/**
+ * Chat Unload：清空 handler（须在 unregisterShellPartpath 之前）。
+ * @returns {void}
+ */
+export function unregisterChatEntitySearchHandler() {
+	registerQueryInboundHandler(getShellPartpath('chat'), ENTITY_SEARCH_KIND, () => [])
+}
 
 /**
  * @param {unknown} queryHandlerQuery part_query 入站 query
@@ -246,7 +262,6 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 			Object.assign(aliases, doc?.entities || {})
 		}
 		catch { /* */ }
-	
 
 	const verified = await mapPool([...unique.keys()].map(entityHash => async () => {
 		const parsed = parseEntityHash(entityHash)

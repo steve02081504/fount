@@ -58,7 +58,8 @@ Hub-facing API shapes:
 
 ## Aliases / petnames
 
-- **Local aliases**（实体私有，不上 DAG — canonical 只用 hash）：`{userDict}/shells/chat/entities/{entityHash}/aliases.json` (`{ entities, groups }`); routes `GET/PUT …/aliases`（HTTP 固定 operator，同 bookmarks）。
+- **Local aliases**（实体私有，不上 DAG — canonical 只用 hash）：经 `ChatClient.aliases` / `GET/PUT …/aliases`（HTTP 固定 operator）。
 - **Shared client** `shared/aliases.mjs` (Social reuses via `/parts/shells:chat/shared/aliases.mjs`): `loadAliases()` warms in-memory cache; `aliasForEntity`/`aliasForGroup`/`groupIdForAlias` are synchronous hot-path getters; `setEntityAlias`/`setGroupAlias` (empty string = delete) do a whole-file PUT then update cache. **Cache must be warm before rendering**: Hub calls `await loadAliases()` in `initCore` (before `loadGroups`); Social calls it at `bootstrapSocialApp` start.
 - **Name resolution** `shared/nameResolve.mjs`: `resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })` (alias → profile → short hash); `disambiguateLabels` appends `·${hash.slice(64,68)}` for collisions. Hub hot paths — `authorDisplayLabel`, `hydrateAuthorLabels`, hover cards — all go through `resolveDisplayName` (do not access `profile.name` directly); sidebar and settings member lists use `disambiguateLabels` in batch. Every new hash-display point must use these helpers, not bare `.slice()`.
 - **Deep links**: `#group:@{alias}:{channelId}` resolved by `parseHash` via `groupIdForAlias`; `updateHash` still writes canonical groupId.
+- **Network handle search**: profile top-level `handle` (signed public); Hub `#friends` search box + Social feed search call `GET …/entities/search` (multi-hop `part_query` kind `entity_search`).

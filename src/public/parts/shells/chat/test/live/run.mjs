@@ -96,6 +96,7 @@ const suites = {
 	fed_file_transfer: { fed: true, run: denoLiveRun(join(fedScripts, 'file_transfer.mjs')) },
 	fed_control_plane: { fed: true, run: denoLiveRun(join(fedScripts, 'control_plane.mjs')) },
 	fed_reputation_owner: { fed: true, run: denoLiveRun(join(fedScripts, 'reputation_owner.mjs')) },
+	fed_entity_search: { fed: true, run: denoLiveRun(join(fedScripts, 'entity_search.mjs')) },
 }
 
 await runLiveSuiteCli({

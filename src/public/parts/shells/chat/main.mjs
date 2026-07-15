@@ -30,6 +30,10 @@ import {
 import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
 import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
 import { setEndpoints } from './src/endpoints.mjs'
+import {
+	registerChatEntitySearchHandler,
+	unregisterChatEntitySearchHandler,
+} from './src/entity/entitySearch.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import { setGroupEndpoints } from './src/group/endpoints.mjs'
 
@@ -85,6 +89,7 @@ export default {
 	Load: async ({ router }) => {
 		loadCount++
 		registerShellPartpath('chat', 'shells/chat')
+		registerChatEntitySearchHandler()
 		registerChatEventTypeDefs()
 		registerChatGroupEmojiPostEmbed()
 		registerChatUserRoomEmojiHandlers()
@@ -106,6 +111,7 @@ export default {
 	Unload: () => {
 		loadCount--
 		if (!loadCount) {
+			unregisterChatEntitySearchHandler()
 			unregisterShellPartpath('chat')
 			unregisterChatEventTypeDefs()
 			unregisterChatGroupEmojiPostEmbed()

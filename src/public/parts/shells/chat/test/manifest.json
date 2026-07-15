@@ -132,6 +132,11 @@
 		"fedReputationOwner": [
 			"src/public/parts/shells/chat/test/live/scripts/federation/reputation_owner.mjs"
 		],
+		"fedEntitySearch": [
+			"src/public/parts/shells/chat/src/entity/**",
+			"src/server/p2p_server/**",
+			"src/public/parts/shells/chat/test/live/scripts/federation/entity_search.mjs"
+		],
 		"frontend": [
 			"src/public/parts/shells/chat/public/**",
 			"src/public/parts/shells/chat/test/frontend/**",
@@ -182,6 +187,7 @@
 		{ "name": "fed_file_transfer", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedFileTransfer"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_file_transfer"] },
 		{ "name": "fed_control_plane", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedControlPlane"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_control_plane"] },
 		{ "name": "fed_reputation_owner", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedReputationOwner"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_reputation_owner"] },
+		{ "name": "fed_entity_search", "dependsOn": ["fed_core"], "trigger": ["fedLiveInfra", "fedEntitySearch"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/live/run.mjs", "--suite", "fed_entity_search"] },
 		{ "name": "frontend", "dependsOn": ["server:live", "e2e_single"], "trigger": "frontend", "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/frontend/run.mjs"] }
 	]
 }
