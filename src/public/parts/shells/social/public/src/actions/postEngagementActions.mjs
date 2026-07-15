@@ -3,8 +3,12 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
 import {
+	applyDislikeButtonOptimistic,
 	applyLikeButtonOptimistic,
 	bumpRepostCount,
+	clearDislikeOnCard,
+	clearLikeOnCard,
+	rollbackDislikeButton,
 	rollbackLikeButton,
 	runSocialWrite,
 } from '../lib/socialWrite.mjs'
@@ -21,6 +25,27 @@ import { closePostMoreMenus } from './shared.mjs'
  */
 export async function handlePostEngagementClick(appContext, target) {
 	const cardRoot = target.closest('.post-card') || document
+	const dislikeButton = target.closest('[data-dislike]')
+	if (dislikeButton instanceof HTMLElement && dislikeButton.dataset.dislike) {
+		const parsed = parseActionKey(dislikeButton.dataset.dislike)
+		if (parsed) {
+			const { entityHash, postId } = parsed
+			const disliked = dislikeButton.dataset.disliked === '1'
+			const snapshot = applyDislikeButtonOptimistic(dislikeButton, !disliked)
+			const card = dislikeButton.closest('.post-card')
+			if (!disliked && card instanceof HTMLElement) clearLikeOnCard(card)
+			try {
+				await runSocialWrite('dislike', () => appContext.socialApi(`/posts/${entityHash}/${postId}/dislike`, {
+					method: 'POST',
+					body: JSON.stringify({ dislike: !disliked }),
+				}))
+			}
+			catch {
+				rollbackDislikeButton(dislikeButton, snapshot)
+			}
+		}
+	}
+
 	const likeButton = target.closest('[data-like]')
 	if (likeButton instanceof HTMLElement && likeButton.dataset.like) {
 		const parsed = parseActionKey(likeButton.dataset.like)
@@ -28,6 +53,8 @@ export async function handlePostEngagementClick(appContext, target) {
 			const { entityHash, postId } = parsed
 			const liked = likeButton.dataset.liked === '1'
 			const snapshot = applyLikeButtonOptimistic(likeButton, !liked)
+			const card = likeButton.closest('.post-card')
+			if (!liked && card instanceof HTMLElement) clearDislikeOnCard(card)
 			try {
 				await runSocialWrite('like', () => appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
 					method: 'POST',

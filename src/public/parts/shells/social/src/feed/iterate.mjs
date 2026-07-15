@@ -5,6 +5,7 @@ import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_stor
 import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
 import {
 	buildEngagementIndex,
+	buildViewerDislikedSet,
 	buildViewerLikedSet,
 } from '../feed.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
@@ -18,19 +19,20 @@ import { createEngagementForPost } from './buildItem.mjs'
  * @param {string} username 用户
  * @param {Iterable<string>} [owners] engagement 扫描范围
  * @param {string | null} [viewerEntityHash] 观看者实体（用于 poll 自选投影）
- * @returns {Promise<{ authorProfile: ReturnType<typeof createAuthorProfileLoader>, engagementForPost: ReturnType<typeof createEngagementForPost>, engagement: Awaited<ReturnType<typeof buildEngagementIndex>>, viewerLiked: Awaited<ReturnType<typeof buildViewerLikedSet>> }>} feed 条目构建上下文
+ * @returns {Promise<object>} feed 条目构建上下文
  */
 export async function createFeedItemBuildContext(username, owners, viewerEntityHash = null) {
 	const engagement = await buildEngagementIndex(username, owners)
 	const viewerLiked = await buildViewerLikedSet(username, viewerEntityHash)
+	const viewerDisliked = await buildViewerDislikedSet(username, viewerEntityHash)
 	const authorProfile = createAuthorProfileLoader(username)
-	const engagementForPost = createEngagementForPost(engagement, viewerLiked)
+	const engagementForPost = createEngagementForPost(engagement, viewerLiked, viewerDisliked)
 	let viewerPollChoices = null
 	if (viewerEntityHash) {
 		const view = await getTimelineMaterialized(username, viewerEntityHash)
 		viewerPollChoices = view
 	}
-	return { authorProfile, engagementForPost, engagement, viewerLiked, viewerPollChoices }
+	return { authorProfile, engagementForPost, engagement, viewerLiked, viewerDisliked, viewerPollChoices }
 }
 
 /**

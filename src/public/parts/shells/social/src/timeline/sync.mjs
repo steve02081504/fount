@@ -5,6 +5,7 @@ import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_in
 import { listLocalAgentEntities } from '../federation/hosting.mjs'
 import { collectSocialRpcMerged } from '../federation/part_wire_rpc.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
+import { projectReactionFromTimelineEvent } from '../federation/reaction_index.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
 import { loadFollowing, loadFollowingForActor } from '../following.mjs'
 import { timelineEventsPath } from '../paths.mjs'
@@ -58,6 +59,7 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 	await tryImportFollowApproveVault(username, entityHash, event)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, validated.row)
 	await projectPollVoteFromTimelineEvent(username, entityHash, validated.row)
+	await projectReactionFromTimelineEvent(username, entityHash, validated.row)
 	if (validated.row.type === 'block' || validated.row.type === 'unblock') {
 		const { following } = await loadFollowing(username)
 		await handleInboundPersonalBlockEvent(username, entityHash, validated.row, new Set(following))

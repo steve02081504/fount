@@ -80,9 +80,13 @@ export function createPostCardBuilder({
 			? renderGroupRefBlockHtml(groupRef)
 			: ''
 		const likedClass = item.viewerLiked ? ' liked' : ''
+		const dislikedClass = item.viewerDisliked ? ' disliked' : ''
 		const likeLabel = item.viewerLiked
 			? geti18n('social.actions.unlike')
 			: geti18n('social.actions.like')
+		const dislikeLabel = item.viewerDisliked
+			? geti18n('social.actions.undislike')
+			: geti18n('social.actions.dislike')
 		const repostBanner = isRepost
 			? `<div class="repost-banner"><span class="s-ic s-ic-repost" aria-hidden="true"></span>${geti18n('social.feed.repostedBy', { author: label })}</div>`
 			: ''
@@ -155,10 +159,14 @@ export function createPostCardBuilder({
 			mediaHtml,
 			bodyHtml,
 			likedClass,
+			dislikedClass,
 			actionKey,
 			likedFlag: item.viewerLiked ? '1' : '0',
+			dislikedFlag: item.viewerDisliked ? '1' : '0',
 			likeLabel,
+			dislikeLabel,
 			likeCount: item.likeCount || 0,
+			dislikeCount: item.dislikeCount || 0,
 			repostCount: item.repostCount || 0,
 			replyCount: item.replyCount || 0,
 			entityHash: item.entityHash,

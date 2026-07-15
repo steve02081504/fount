@@ -16,6 +16,7 @@ import {
 } from '../../../chat/src/entity/identity.mjs'
 import { projectFollowerIndexFromTimelineEvent } from '../federation/follower_index.mjs'
 import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
+import { projectReactionFromTimelineEvent } from '../federation/reaction_index.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { groupIdForTimeline, timelineEventsPath } from '../paths.mjs'
 
@@ -123,6 +124,7 @@ async function appendSignedTimelineEvent(username, entityHash, event, secretKey)
 	invalidateTimelineOwnerIndex(username)
 	await projectFollowerIndexFromTimelineEvent(username, entityHash, row)
 	await projectPollVoteFromTimelineEvent(username, entityHash, row)
+	await projectReactionFromTimelineEvent(username, entityHash, row)
 	await maintainSocialTimeline(username, entityHash)
 	const { appendInboxFromTimelineEvent } = await import('../inbox.mjs')
 	await appendInboxFromTimelineEvent(username, entityHash, row)

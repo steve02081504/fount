@@ -71,6 +71,8 @@ body {
 .s-ic-repost { mask-image: url("https://api.iconify.design/mdi/repeat.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/repeat.svg"); }
 .s-ic-like { mask-image: url("https://api.iconify.design/mdi/heart-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/heart-outline.svg"); }
 .s-ic-like-filled { mask-image: url("https://api.iconify.design/mdi/heart.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg"); }
+.s-ic-dislike { mask-image: url("https://api.iconify.design/mdi/thumb-down-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/thumb-down-outline.svg"); }
+.s-ic-taste { mask-image: url("https://api.iconify.design/mdi/tune.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/tune.svg"); }
 .s-ic-share { mask-image: url("https://api.iconify.design/mdi/share-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/share-outline.svg"); }
 .s-ic-more { mask-image: url("https://api.iconify.design/mdi/dots-horizontal.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/dots-horizontal.svg"); }
 .s-ic-quote { mask-image: url("https://api.iconify.design/mdi/format-quote-close.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/format-quote-close.svg"); }
@@ -775,6 +777,16 @@ body {
 .action-btn-like.liked .s-ic-like {
 	mask-image: url("https://api.iconify.design/mdi/heart.svg");
 	-webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg");
+}
+
+.action-btn-dislike:hover,
+.action-btn-dislike.disliked {
+	color: var(--social-muted);
+}
+
+.action-btn-dislike.disliked .s-ic-dislike {
+	mask-image: url("https://api.iconify.design/mdi/thumb-down.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/thumb-down.svg");
 }
 
 .action-btn-save:hover {
@@ -1565,4 +1577,68 @@ body {
 
 .content-warning-body.hidden {
 	display: none;
+}
+
+.taste-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	padding: 0 1rem 1rem;
+}
+
+.taste-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.75rem 1rem;
+}
+
+.taste-privacy {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.9rem;
+}
+
+.taste-list {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.taste-row {
+	padding: 0.75rem 1rem;
+}
+
+.taste-row-main {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.5rem 0.75rem;
+	margin-bottom: 0.5rem;
+}
+
+.taste-hash,
+.taste-weight {
+	font-size: 0.82rem;
+	color: var(--social-muted);
+}
+
+.taste-rename-form {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.taste-rename-form input {
+	flex: 1 1 12rem;
+	min-width: 0;
+	border: 1px solid var(--social-border);
+	border-radius: 999px;
+	padding: 0.35rem 0.75rem;
+	font: inherit;
+	background: transparent;
+	color: inherit;
 }

@@ -20,7 +20,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 与工业化社交产品的差距主要集中在七类：
 
-1. **发现与排序**：有本地启发式 `for_you`（含二度公开帖扩散），无全局 ML 个性化、无广告位、无全球热搜与地理发现；Explore 为邻居 RPC + 本地目录；无 hashtag follow / 兴趣图谱编辑。
+1. **发现与排序**：有本地启发式 `for_you`（含二度公开帖扩散、`interestBoost` 本地口味 tag 匹配、dislike 负向证据），无全局 ML 个性化、无广告位、无全球热搜与地理发现；Explore 为邻居 RPC + 本地目录；无 hashtag follow；**有**可编辑口味偏好视图（`GET /taste`、重建、命名）。
 2. **内容形态**：无 Stories/Reels/直播/Spaces；媒体上传无创作工具链；轮播仅为多图 grid；thread / quote 产品工作流简陋；无 URL unfurl、无 alt 填写。
 3. **产品与图谱**：无内置 DM（跳 chat）；可见性仅 `public`/`followers`（另有探索隐藏与 GSH 密钥面，语义不同于 Mastodon unlisted/direct）；无 Lists/社区/Page；无认证与创作者分析；举报有 **本机 owner 审核 UI**（非跨节点工单后台）。
 4. **安全与反垃圾**：信誉 demote + 作者 mute/block/hide + agent 回复 token 桶有；**无人帖 rate-limit / CAPTCHA / 新号限制**；无 NSFW 自动检测、无按时长 mute、无关键词过滤。
@@ -36,7 +36,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 维度 | 工业化产品（Ins / FB / X） | fount social（代码现状） |
 | --- | --- | --- |
-| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`GET /feed?ranking=for_you` → `scorePostForYou`（新鲜度 × 互动 × 作者亲和）+ 关注者 like/repost 挖出的**二度公开帖**（0.85/0.9 折）；无 ML、无可编辑兴趣图谱 |
+| 推荐 Feed | For You / 个性化排序、兴趣模型 | **部分**；`GET /feed?ranking=for_you` → `scorePostForYou`（新鲜度 × 互动 × 作者亲和 × **`interestBoost` 本地 taste tag 匹配**）+ 关注者 like/repost 挖出的**二度公开帖**（0.85/0.9 折）；like/dislike 驱动 `taste/*` 聚类；**有**偏好编辑 UI（重建 / 命名 / 隐私）；无 ML |
 | 广告 / 赞助 | 信息流插槽 | **无** |
 | 地理发现 | 同城、附近的人 | **无** LBS；`GET /explore` 为本地 + 邻居 RPC |
 | 全局热搜 | 平台级事件榜 | **弱**；`GET /hashtags/trending` 仅统计观看者可见帖子的话题频次 |

@@ -12,7 +12,7 @@ alwaysApply: false
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
 - **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP 恒以 operator 实体经 `SocialClient`（`src/api/`）操作。Agent 走 in-process `getSocialClient(username, agentEntityHash)`，不经 webapi 换身份。Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists`（operator）与 chat `GET …/personal-lists`。Group kick/ban = node `denylist.json`（separate）。
-- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning）、`…/edit`、`…/poll-vote`、`…/like|repost`、`DELETE …/posts`（`{ postId, entityHash? }`；可改/删自有帖或 `ownerEntityHash` 为自己的所属实体帖）；relationships / governance 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
+- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning）、`…/edit`、`…/poll-vote`、`…/like|dislike|repost`、`DELETE …/posts`（`{ postId, entityHash? }`；可改/删自有帖或 `ownerEntityHash` 为自己的所属实体帖）；`GET|PUT /taste`、`POST /taste/rebuild|names`；relationships / governance 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
 - **Owner 改/删所属实体帖**：主人自签 `post_edit` / `post_delete` 落入 **被管实体时间线**（`commitTimelineEvent(..., { signerEntityHash })`）。联邦入站在 `write_auth.mjs` 读 profile.`ownerEntityHash` 后折叠 **owner 时间线**密钥链复核 sender。
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers`（GSH）≠ Mastodon unlisted/direct；`follow_approve` 签发 vault H，不是 locked-account 审批关注。Feed 解密失败见 `post.decryptView.failed`。
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
@@ -24,6 +24,7 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
+- Post card engagement: like / **dislike**（互斥，reducer 侧清对立反应）；`reaction_index` 投影联邦 like/dislike 签名事件；`for_you` 用本地 `taste/*` 聚类权重（`interestBoost`）。偏好 UI：`#tasteView` → `views/taste.mjs`。
 
 ## Feed / profile pagination
 

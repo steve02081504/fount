@@ -44,6 +44,26 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 			})
 		},
 		/**
+		 * @returns {Promise<object>} dislike 事件（与 like 互斥，reducer 侧清 like）
+		 */
+		async dislike() {
+			await assertKnownPostTarget(ctx, owner)
+			return commitTimelineEvent(ctx.username, ctx.entityHash, {
+				type: 'dislike',
+				content: { targetEntityHash: owner, targetPostId: id },
+			})
+		},
+		/**
+		 * @returns {Promise<object>} undislike 事件
+		 */
+		async undislike() {
+			await assertKnownPostTarget(ctx, owner)
+			return commitTimelineEvent(ctx.username, ctx.entityHash, {
+				type: 'undislike',
+				content: { targetEntityHash: owner, targetPostId: id },
+			})
+		},
+		/**
 		 * @param {string} [comment] 转发附言
 		 * @returns {Promise<object>} repost 事件
 		 */

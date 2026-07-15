@@ -7,6 +7,7 @@ import { loadModeration } from './views/moderation.mjs'
 import { loadNotifications } from './views/notifications.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
+import { loadTaste } from './views/taste.mjs'
 
 /**
  * 刷新当前可见视图中的帖子列表。
@@ -49,6 +50,7 @@ export async function switchView(appContext, view) {
 	}
 	if (view === 'explore') await loadExplore(appContext)
 	if (view === 'saved') await loadSaved(appContext)
+	if (view === 'taste') await loadTaste(appContext)
 	if (view === 'moderation') await loadModeration(appContext)
 	if (view === 'profile') await loadProfile(appContext)
 }

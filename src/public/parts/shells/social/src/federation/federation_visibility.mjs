@@ -9,6 +9,8 @@ export const FEDERATION_PRIVATE_EVENT_TYPES = new Set([
 	'follow_approve',
 	'like',
 	'unlike',
+	'dislike',
+	'undislike',
 	'file_share',
 ])
 

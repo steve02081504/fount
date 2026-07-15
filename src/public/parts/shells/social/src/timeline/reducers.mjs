@@ -16,6 +16,7 @@ export function createSocialTimelineState() {
 		postEdits: new Map(),
 		deletedPostIds: new Set(),
 		likes: new Map(),
+		dislikes: new Map(),
 		pollVotes: new Map(),
 		reposts: [],
 		followEvents: [],
@@ -92,7 +93,9 @@ function reducePollVote(state, event) {
  * @returns {object} 更新后状态
  */
 function reduceLike(state, event) {
-	state.likes.set(socialPostKey(event.content.targetEntityHash, event.content.targetPostId), event)
+	const key = socialPostKey(event.content.targetEntityHash, event.content.targetPostId)
+	state.likes.set(key, event)
+	state.dislikes.delete(key)
 	return state
 }
 
@@ -103,6 +106,28 @@ function reduceLike(state, event) {
  */
 function reduceUnlike(state, event) {
 	state.likes.delete(socialPostKey(event.content.targetEntityHash, event.content.targetPostId))
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceDislike(state, event) {
+	const key = socialPostKey(event.content.targetEntityHash, event.content.targetPostId)
+	state.dislikes.set(key, event)
+	state.likes.delete(key)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceUndislike(state, event) {
+	state.dislikes.delete(socialPostKey(event.content.targetEntityHash, event.content.targetPostId))
 	return state
 }
 
@@ -174,6 +199,8 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	poll_vote: reducePollVote,
 	like: reduceLike,
 	unlike: reduceUnlike,
+	dislike: reduceDislike,
+	undislike: reduceUndislike,
 	repost: reduceRepost,
 	follow: reduceFollow,
 	unfollow: reduceUnfollow,
@@ -229,6 +256,7 @@ export function finalizeSocialTimelineView(state, order) {
 		posts: visiblePosts,
 		postById: Object.fromEntries(state.posts),
 		likes: [...state.likes.values()],
+		dislikes: [...state.dislikes.values()],
 		pollVotes: state.pollVotes,
 		reposts: state.reposts,
 		followEvents: state.followEvents,

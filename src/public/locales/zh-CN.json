@@ -1150,6 +1150,7 @@
 			"explore": "探索",
 			"notifications": "收件箱",
 			"saved": "收藏",
+			"taste": "偏好",
 			"profile": "我的",
 			"moderation": "审核"
 		},
@@ -1176,6 +1177,14 @@
 			"repostedBy": "${author} 转发了",
 			"decryptFailed": "无法解密此帖",
 			"revealContent": "显示内容"
+		},
+		"taste": {
+			"title": "口味偏好",
+			"rebuild": "重建偏好",
+			"privacyPublish": "向关注者发布命名标注",
+			"namePlaceholder": "本地显示名",
+			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
+			"weight": "权重 ${weight}"
 		},
 		"trending": {
 			"title": "热门话题",
@@ -1213,6 +1222,8 @@
 		"actions": {
 			"like": "点赞",
 			"unlike": "取消赞",
+			"dislike": "踩",
+			"undislike": "取消踩",
 			"repost": "转发",
 			"quote": "引用",
 			"delete": "删除",
@@ -1240,6 +1251,7 @@
 			"more": "更多",
 			"share": "分享",
 			"likeFailed": "点赞失败：${error}",
+			"dislikeFailed": "踩失败：${error}",
 			"repostFailed": "转发失败：${error}",
 			"replyFailed": "回复失败：${error}",
 			"followFailed": "关注失败：${error}",

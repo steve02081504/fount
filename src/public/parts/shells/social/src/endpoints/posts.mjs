@@ -31,6 +31,13 @@ export function registerPostsRoutes(router) {
 		res.status(200).json({ event })
 	})
 
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/dislike', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))
+		const event = req.body?.dislike === false ? await post.undislike() : await post.dislike()
+		res.status(200).json({ event })
+	})
+
 	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/repost', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))

@@ -34,14 +34,16 @@ function bumpEngagementCount(counts, entityHash, postId) {
 }
 
 /**
- * 扫描时间线构建点赞/转发/回复计数索引。
+ * 扫描时间线构建点赞/点踩/转发/回复计数索引。
  * @param {string} username 用户
  * @param {Iterable<string>} [owners] 仅扫描这些时间线 owner；缺省为全部已知 owner
- * @returns {Promise<{ likes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }>} 互动计数索引
+ * @returns {Promise<{ likes: Map<string, number>, dislikes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }>} 互动计数索引
  */
 export async function buildEngagementIndex(username, owners = null) {
 	/** @type {Map<string, number>} */
 	const likes = new Map()
+	/** @type {Map<string, number>} */
+	const dislikes = new Map()
 	/** @type {Map<string, number>} */
 	const reposts = new Map()
 	/** @type {Map<string, number>} */
@@ -50,16 +52,18 @@ export async function buildEngagementIndex(username, owners = null) {
 	const ownerList = owners ? [...owners] : await listFollowedTimelineOwners(username)
 	for (const owner of ownerList) {
 		const view = await getTimelineMaterialized(username, owner)
-		for (const like of view.likes)
+		for (const like of view.likes || [])
 			bumpEngagementCount(likes, like.content?.targetEntityHash, like.content?.targetPostId)
-		for (const repost of view.reposts)
+		for (const dislike of view.dislikes || [])
+			bumpEngagementCount(dislikes, dislike.content?.targetEntityHash, dislike.content?.targetPostId)
+		for (const repost of view.reposts || [])
 			bumpEngagementCount(reposts, repost.content?.targetEntityHash, repost.content?.targetPostId)
-		for (const post of view.posts) {
+		for (const post of view.posts || []) {
 			const replyTo = post.content?.replyTo
 			bumpEngagementCount(replies, replyTo?.entityHash, replyTo?.postId)
 		}
 	}
-	return { likes, reposts, replies }
+	return { likes, dislikes, reposts, replies }
 }
 
 /**
@@ -74,8 +78,25 @@ export async function buildViewerLikedSet(username, viewerEntityHash) {
 		: await resolveOperatorEntityHash(username)
 	if (!self) return new Set()
 	const view = await getTimelineMaterialized(username, self)
-	return new Set(view.likes.map(like =>
+	return new Set((view.likes || []).map(like =>
 		socialPostKey(like.content.targetEntityHash, like.content.targetPostId),
+	))
+}
+
+/**
+ * 收集观看者已点踩的帖子键集合。
+ * @param {string} username 用户
+ * @param {string} [viewerEntityHash] 观看实体；缺省为 operator
+ * @returns {Promise<Set<string>>} 已点踩帖子键集合
+ */
+export async function buildViewerDislikedSet(username, viewerEntityHash) {
+	const self = viewerEntityHash
+		? String(viewerEntityHash).trim().toLowerCase()
+		: await resolveOperatorEntityHash(username)
+	if (!self) return new Set()
+	const view = await getTimelineMaterialized(username, self)
+	return new Set((view.dislikes || []).map(dislike =>
+		socialPostKey(dislike.content.targetEntityHash, dislike.content.targetPostId),
 	))
 }
 

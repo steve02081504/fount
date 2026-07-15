@@ -40,6 +40,10 @@ import {
 } from '../savedPosts.mjs'
 import { searchPosts } from '../search.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
+import { rebuildTaste } from '../taste/cluster.mjs'
+import { revokeTasteAlias } from '../taste/mergeClaims.mjs'
+import { listTasteTags, publishTagName } from '../taste/nameClaims.mjs'
+import { loadTaste, mutateTaste } from '../taste/store.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized, maintainSocialTimeline } from '../timeline/materialize.mjs'
@@ -421,6 +425,74 @@ export function createSocialClient(ctx) {
 			}
 		},
 		/**
+		 * @returns {{ get: Function, update: Function, rebuild: Function, setName: Function, revokeAlias: Function }} taste 命名空间
+		 */
+		get taste() {
+			return {
+				/**
+				 * @param {{ locale?: string }} [opts] 选项
+				 * @returns {Promise<object>} 偏好与标签列表
+				 */
+				async get(opts = {}) {
+					const locale = String(opts.locale || 'zh-CN')
+					const store = await loadTaste(ctx.username, ctx.entityHash)
+					const tags = await listTasteTags(ctx.username, ctx.entityHash, locale)
+					return {
+						privacy: store.privacy,
+						clusteredAt: store.clusteredAt,
+						aliases: store.aliases,
+						tags,
+					}
+				},
+				/**
+				 * @param {{ privacy?: { publishPreferences?: boolean }, tags?: Record<string, number> }} patch 补丁
+				 * @returns {Promise<object>} 更新后偏好摘要
+				 */
+				async update(patch = {}) {
+					const store = await mutateTaste(ctx.username, ctx.entityHash, draft => {
+						if (patch.privacy && typeof patch.privacy === 'object')
+							draft.privacy = {
+								publishPreferences: patch.privacy.publishPreferences !== false,
+							}
+						if (patch.tags && typeof patch.tags === 'object')
+							for (const [tag, weight] of Object.entries(patch.tags)) {
+								const key = String(tag).trim().toLowerCase()
+								if (!key) continue
+								const value = Number(weight)
+								if (!Number.isFinite(value)) continue
+								if (value === 0) delete draft.tags[key]
+								else draft.tags[key] = value
+							}
+						return draft
+					})
+					return { privacy: store.privacy, tags: store.tags, aliases: store.aliases }
+				},
+				/**
+				 * @returns {Promise<object>} 重建结果
+				 */
+				async rebuild() {
+					const store = await rebuildTaste(ctx.username, ctx.entityHash)
+					return { clusteredAt: store.clusteredAt, tagCount: Object.keys(store.tags).length }
+				},
+				/**
+				 * @param {{ tagHash: string, label: string, locale?: string }} input 命名
+				 * @returns {Promise<object>} 命名表
+				 */
+				async setName(input) {
+					const store = await publishTagName(ctx.username, ctx.entityHash, input)
+					return { names: store.names }
+				},
+				/**
+				 * @param {string} fromTag 源 tag
+				 * @returns {Promise<object>} 别名表
+				 */
+				async revokeAlias(fromTag) {
+					const store = await revokeTasteAlias(ctx.username, ctx.entityHash, fromTag)
+					return { aliases: store.aliases }
+				},
+			}
+		},
+		/**
 		 * @param {{ exploreBlurb?: string, hideFromDiscovery?: boolean }} patch meta 补丁
 		 * @returns {Promise<object>} 更新后的 socialMeta
 		 */
@@ -598,6 +670,10 @@ async function createTimelinePost(ctx, draft) {
 		lang: draft.lang || 'zh-CN',
 		visibility,
 		...draft.contentWarning ? { contentWarning: String(draft.contentWarning).trim().slice(0, 200) } : {},
+	}
+	if (Array.isArray(draft.tags)) {
+		const tags = [...new Set(draft.tags.map(t => String(t).trim().toLowerCase()).filter(Boolean))].slice(0, 16)
+		if (tags.length) draftContent.tags = tags
 	}
 	if (draft.poll)
 		draftContent.poll = normalizePollDraft(draft.poll)

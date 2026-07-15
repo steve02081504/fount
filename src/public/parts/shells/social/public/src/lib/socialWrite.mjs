@@ -48,6 +48,66 @@ export function rollbackLikeButton(button, snapshot) {
 }
 
 /**
+ * @param {HTMLElement} button dislike 按钮
+ * @param {boolean} disliked 目标 disliked 状态
+ * @returns {{ disliked: string, count: number }} 回滚快照
+ */
+export function applyDislikeButtonOptimistic(button, disliked) {
+	const countEl = button.querySelector('.action-count')
+	const snapshot = {
+		disliked: button.dataset.disliked || '0',
+		count: Number(countEl?.textContent) || 0,
+	}
+	button.dataset.disliked = disliked ? '1' : '0'
+	button.classList.toggle('disliked', disliked)
+	if (countEl)
+		countEl.textContent = String(Math.max(0, snapshot.count + (disliked ? 1 : -1)))
+	return snapshot
+}
+
+/**
+ * @param {HTMLElement} button dislike 按钮
+ * @param {{ disliked: string, count: number }} snapshot 回滚快照
+ * @returns {void}
+ */
+export function rollbackDislikeButton(button, snapshot) {
+	const countEl = button.querySelector('.action-count')
+	button.dataset.disliked = snapshot.disliked
+	button.classList.toggle('disliked', snapshot.disliked === '1')
+	if (countEl) countEl.textContent = String(snapshot.count)
+}
+
+/**
+ * 踩/取消踩时清除同卡 like 状态（与 reducer 互斥一致）。
+ * @param {HTMLElement} cardRoot 帖子卡
+ * @returns {void}
+ */
+export function clearLikeOnCard(cardRoot) {
+	const likeButton = cardRoot.querySelector('[data-like]')
+	if (!(likeButton instanceof HTMLElement)) return
+	if (likeButton.dataset.liked !== '1') return
+	const countEl = likeButton.querySelector('.action-count')
+	likeButton.dataset.liked = '0'
+	likeButton.classList.remove('liked')
+	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
+}
+
+/**
+ * 赞/取消赞时清除同卡 dislike 状态（与 reducer 互斥一致）。
+ * @param {HTMLElement} cardRoot 帖子卡
+ * @returns {void}
+ */
+export function clearDislikeOnCard(cardRoot) {
+	const dislikeButton = cardRoot.querySelector('[data-dislike]')
+	if (!(dislikeButton instanceof HTMLElement)) return
+	if (dislikeButton.dataset.disliked !== '1') return
+	const countEl = dislikeButton.querySelector('.action-count')
+	dislikeButton.dataset.disliked = '0'
+	dislikeButton.classList.remove('disliked')
+	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
+}
+
+/**
  * @param {HTMLElement} cardRoot 帖子卡根节点
  * @param {number} delta repost 计数增量
  * @returns {number} 原计数

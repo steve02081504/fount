@@ -3,10 +3,11 @@ import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
 import { socialPostKey } from '../federation/post_key.mjs'
-import { shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
-import { loadViewerContext } from '../feed.mjs'
+import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation_social.mjs'
+import { buildEngagementIndex, loadViewerContext } from '../feed.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { loadFollowingForActor } from '../following.mjs'
+import { computeTasteMatch, ensureTasteFresh } from '../taste/cluster.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { buildPostFeedItem } from './buildItem.mjs'
@@ -18,10 +19,11 @@ const SCORE_HALF_LIFE_MS = 86_400_000
  * @param {object} post 物化帖
  * @param {object} engagement 互动索引
  * @param {number} affinity 与作者互动次数
+ * @param {number} [tasteMatch=0] 口味匹配分
  * @param {number} [now=Date.now()] 当前时刻
  * @returns {number} 推荐分
  */
-export function scorePostForYou(post, engagement, affinity, now = Date.now()) {
+export function scorePostForYou(post, engagement, affinity, tasteMatch = 0, now = Date.now()) {
 	const ageMs = Math.max(0, now - Number(post.hlc?.wall || post.timestamp || now))
 	const freshness = Math.exp(-ageMs / SCORE_HALF_LIFE_MS)
 	const key = socialPostKey(post.entityHash || '', post.id)
@@ -30,7 +32,8 @@ export function scorePostForYou(post, engagement, affinity, now = Date.now()) {
 	const replies = engagement.replies.get(key) || 0
 	const engagementBoost = 1 + Math.log1p(likes + 2 * reposts + replies)
 	const affinityBoost = 1 + Math.log1p(affinity)
-	return freshness * engagementBoost * affinityBoost
+	const interestBoost = 1 + Math.log1p(Math.max(0, tasteMatch))
+	return freshness * engagementBoost * affinityBoost * interestBoost
 }
 
 /**
@@ -63,13 +66,28 @@ async function buildAffinityIndex(username, following) {
  * @param {string} username replica
  * @param {Set<string>} following 关注列表
  * @param {object} viewerContext 观看者上下文
+ * @param {import('../taste/store.mjs').TasteStore | null} taste 观看者偏好
  * @returns {AsyncGenerator<{ entityHash: string, post: object, score: number }>} 候选帖
  */
-async function* iterateForYouCandidates(username, following, viewerContext) {
-	const { buildEngagementIndex } = await import('../feed.mjs')
+async function* iterateForYouCandidates(username, following, viewerContext, taste) {
 	const engagement = await buildEngagementIndex(username, following)
 	const affinity = await buildAffinityIndex(username, following)
 	const seen = new Set()
+
+	/**
+	 * @param {string} entityHash 作者
+	 * @param {object} post 帖
+	 * @param {number} [discount=1] 二度折扣
+	 * @returns {number} 分
+	 */
+	function scoreOf(entityHash, post, discount = 1) {
+		const enriched = { ...post, entityHash }
+		const match = taste ? computeTasteMatch(enriched, entityHash, taste) : 0
+		const base = scorePostForYou(enriched, engagement, affinity.get(entityHash.toLowerCase()) || 0, match)
+		const repPenalty = reputationSortPenalty(entityHash, pickNodeScore)
+		const demoted = base / (1 + repPenalty)
+		return demoted * discount
+	}
 
 	for (const entityHash of following) {
 		if (!isEntityHash128(entityHash) || isEntityHashBlocked(entityHash)) continue
@@ -81,11 +99,7 @@ async function* iterateForYouCandidates(username, following, viewerContext) {
 			const key = `${entityHash}:${post.id}`
 			if (seen.has(key)) continue
 			seen.add(key)
-			yield {
-				entityHash,
-				post,
-				score: scorePostForYou({ ...post, entityHash }, engagement, affinity.get(entityHash.toLowerCase()) || 0),
-			}
+			yield { entityHash, post, score: scoreOf(entityHash, post) }
 		}
 	}
 
@@ -105,11 +119,7 @@ async function* iterateForYouCandidates(username, following, viewerContext) {
 			if (!canViewPost(enriched, viewerContext)) continue
 			if ((post.content?.visibility || 'public') !== 'public') continue
 			seen.add(key)
-			yield {
-				entityHash: targetEntity,
-				post,
-				score: scorePostForYou(enriched, engagement, affinity.get(targetEntity) || 0) * 0.85,
-			}
+			yield { entityHash: targetEntity, post, score: scoreOf(targetEntity, post, 0.85) }
 		}
 		for (const repost of view.reposts || []) {
 			const targetEntity = String(repost.content?.targetEntityHash || '').toLowerCase()
@@ -124,11 +134,7 @@ async function* iterateForYouCandidates(username, following, viewerContext) {
 			if (!canViewPost(enriched, viewerContext)) continue
 			if ((post.content?.visibility || 'public') !== 'public') continue
 			seen.add(key)
-			yield {
-				entityHash: targetEntity,
-				post,
-				score: scorePostForYou(enriched, engagement, affinity.get(targetEntity) || 0) * 0.9,
-			}
+			yield { entityHash: targetEntity, post, score: scoreOf(targetEntity, post, 0.9) }
 		}
 	}
 }
@@ -152,10 +158,15 @@ export async function buildForYouFeed(username, options = {}) {
 	const { following } = await loadFollowingForActor(username, viewer)
 	const viewerContext = await loadViewerContext(username, viewer)
 	const itemContext = await createFeedItemBuildContext(username, following, viewer)
+	const taste = viewer ? await ensureTasteFresh(username, viewer) : null
+	if (viewer) {
+		const { lazyVerifyPendingMergeClaims } = await import('../taste/mergeClaims.mjs')
+		await lazyVerifyPendingMergeClaims(username, viewer).catch(() => null)
+	}
 
 	/** @type {{ entityHash: string, post: object, score: number }[]} */
 	const candidates = []
-	for await (const row of iterateForYouCandidates(username, following, viewerContext))
+	for await (const row of iterateForYouCandidates(username, following, viewerContext, taste))
 		candidates.push(row)
 
 	candidates.sort((left, right) => right.score - left.score || right.post.id.localeCompare(left.post.id))

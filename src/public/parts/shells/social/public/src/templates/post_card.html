@@ -54,6 +54,10 @@
 			<span class="s-ic s-ic-like" aria-hidden="true"></span>
 			<span class="action-count">${likeCount}</span>
 		</button>
+		<button type="button" class="action-btn action-btn-dislike dislike-btn${dislikedClass}" data-dislike="${actionKey}" data-disliked="${dislikedFlag}" aria-label="${dislikeLabel}">
+			<span class="s-ic s-ic-dislike" aria-hidden="true"></span>
+			<span class="action-count">${dislikeCount}</span>
+		</button>
 		<button type="button" class="action-btn action-btn-save" data-save="${actionKey}" aria-label="${saveLabel}">
 			<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
 		</button>

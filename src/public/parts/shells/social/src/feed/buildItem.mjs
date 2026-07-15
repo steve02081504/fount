@@ -4,18 +4,21 @@ import { isPollClosed, viewerPollChoicesFromView } from '../lib/poll.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'
 
 /**
- * @param {{ likes: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }} engagement 互动计数索引
+ * @param {{ likes: Map<string, number>, dislikes?: Map<string, number>, reposts: Map<string, number>, replies: Map<string, number> }} engagement 互动计数索引
  * @param {Set<string>} viewerLiked 观看者已赞键集合
+ * @param {Set<string>} [viewerDisliked] 观看者已踩键集合
  * @returns {(targetEntityHash: string, targetPostId: string) => object} 互动计数查询
  */
-export function createEngagementForPost(engagement, viewerLiked) {
+export function createEngagementForPost(engagement, viewerLiked, viewerDisliked = new Set()) {
 	return function engagementForPost(targetEntityHash, targetPostId) {
 		const key = socialPostKey(targetEntityHash, targetPostId)
 		return {
 			likeCount: engagement.likes.get(key) || 0,
+			dislikeCount: engagement.dislikes?.get(key) || 0,
 			repostCount: engagement.reposts.get(key) || 0,
 			replyCount: engagement.replies.get(key) || 0,
 			viewerLiked: viewerLiked.has(key),
+			viewerDisliked: viewerDisliked.has(key),
 		}
 	}
 }
