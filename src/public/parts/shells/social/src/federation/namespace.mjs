@@ -74,7 +74,6 @@ export const SOCIAL_RPC_REQUEST_TYPES = new Set([
 	'social_reaction_pull_request',
 	'social_note_pull_request',
 	'social_tag_merge_claim',
-	'social_report',
 ])
 
 /** @type {Set<string>} */
@@ -87,7 +86,6 @@ export const SOCIAL_RPC_RESPONSE_TYPES = new Set([
 	'social_reaction_pull_response',
 	'social_note_pull_response',
 	'social_tag_merge_claim_response',
-	'social_report_response',
 ])
 
 /** @type {Set<string>} */

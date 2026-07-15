@@ -77,20 +77,6 @@ test.describe('Social post actions', () => {
 		await expect(page.locator(`#savedView a[href*="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('report shows success toast', async ({ page, baseUrl, apiKey }) => {
-		const card = await findForeignAuthorPostCard(page, baseUrl, apiKey)
-		await openPostMoreMenu(card)
-		await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/governance/report')
-				&& res.request().method() === 'POST'
-				&& res.status() === 200,
-			),
-			card.locator('[data-report]').click(),
-		])
-		await expect(page.locator('#toast-container .alert-success')).toBeVisible({ timeout: 10_000 })
-	})
-
 	test('hide removes foreign author posts optimistically', async ({ page, baseUrl, apiKey }) => {
 		const card = await findForeignAuthorPostCard(page, baseUrl, apiKey)
 		await openPostMoreMenu(card)

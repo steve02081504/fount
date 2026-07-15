@@ -109,14 +109,14 @@ mute / notify-prefs、care、书签、侧栏群文件夹、petname aliases、`ch
 
 | 缺口 | 说明 |
 | --- | --- |
-| **举报闭环** | chat shell **无** report 路由 / 审核工单。角色权限、ban/kick、审计日志、fork、信誉、personal block/hide、denylist、owner-succession **已有** |
+| **举报闭环** | chat / social **均无** report 工单。角色权限、ban/kick、审计日志、fork、信誉、personal block/hide、denylist、owner-succession **已有**；social 另有 mute / 关键词屏蔽 |
 | **自动审核** | **无** |
 | **企业** | **无** SSO、eDiscovery、合规导出、管理控制台（list 本机 JSON 导出 ≠ eDiscovery） |
 | **Bot 生态** | parts / ChatClient / bridgeOperations 可编程；**无** OAuth 托管与商店 |
 | **商业运营层** | **无**官方表情/主题商店、付费增值 |
 | **公告频道语义** | pins 有；**无** announcement channel 专用类型 |
 
-交叉引用：社交侧举报 + resolve API + 审核 UI（`social/.../governance`、`moderation.mjs`）见 [social-platform-gap-analysis.md](./social-platform-gap-analysis.md)——**不要**把 social 的 resolve API 写成 chat 能力。
+交叉引用：social 侧同样不做举报投递（本机即管理员），见 [social-platform-gap-analysis.md](./social-platform-gap-analysis.md) §5.1。
 
 ### 5.2 超级 App 生态（QQ/微信/Line）
 

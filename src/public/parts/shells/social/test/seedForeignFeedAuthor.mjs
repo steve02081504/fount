@@ -19,7 +19,7 @@ export const FOREIGN_FE_AUTHOR_HASH = encodeEntityHash('f'.repeat(64), subject)
 export const FOREIGN_FE_POST_MARKER = 'fe-foreign-governance-post'
 
 /**
- * 为前端测试 ingest 一条远程作者公开帖（供 mute/hide/report 菜单烟测）。
+ * 为前端测试 ingest 一条远程作者公开帖（供 mute/hide 菜单烟测）。
  * @param {string} username 测试 replica 登录名
  * @returns {Promise<{ entityHash: string, postId: string }>} 远程作者实体与帖子 ID
  */

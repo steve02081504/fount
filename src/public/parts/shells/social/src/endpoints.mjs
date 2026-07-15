@@ -7,7 +7,6 @@ import { authenticate } from '../../../../../server/auth/index.mjs'
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
 import { registerExploreRoutes } from './endpoints/explore.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
-import { registerGovernanceRoutes } from './endpoints/governance.mjs'
 import { registerNotificationRoutes } from './endpoints/notifications.mjs'
 import { registerPostsRoutes } from './endpoints/posts.mjs'
 import { registerProfileRoutes } from './endpoints/profile.mjs'
@@ -39,7 +38,6 @@ export function setEndpoints(router) {
 	registerProfileRoutes(router)
 	registerPostsRoutes(router)
 	registerRelationshipsRoutes(router)
-	registerGovernanceRoutes(router)
 	registerSavedRoutes(router)
 	registerTasteRoutes(router)
 	registerSignalsRoutes(router)

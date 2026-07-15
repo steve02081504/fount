@@ -1151,8 +1151,7 @@
 			"notifications": "收件箱",
 			"saved": "收藏",
 			"taste": "偏好",
-			"profile": "我的",
-			"moderation": "审核"
+			"profile": "我的"
 		},
 		"actor": {
 			"label": "当前身份",
@@ -1260,7 +1259,6 @@
 			"block": "拉黑",
 			"hide": "隐藏",
 			"mute": "静音",
-			"report": "举报",
 			"follow": "关注",
 			"following": "已关注",
 			"care": "特别关心",
@@ -1284,9 +1282,7 @@
 			"blockFailed": "拉黑失败：${error}",
 			"hideFailed": "隐藏失败：${error}",
 			"muteFailed": "静音失败：${error}",
-			"reportFailed": "举报失败：${error}",
-			"deleteFailed": "删除失败：${error}",
-			"reportSubmitted": "举报已提交"
+			"deleteFailed": "删除失败：${error}"
 		},
 		"post": {
 			"edited": "已编辑",
@@ -1309,12 +1305,6 @@
 			"apply": "应用投票",
 			"closed": "投票已结束",
 			"deadline": "截止：${deadline}"
-		},
-		"moderation": {
-			"empty": "暂无待处理举报",
-			"dismiss": "忽略",
-			"muteAuthor": "静音作者",
-			"hidePost": "隐藏作者"
 		},
 		"aside": {
 			"suggested": "推荐关注"

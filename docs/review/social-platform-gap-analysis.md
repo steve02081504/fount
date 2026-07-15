@@ -18,13 +18,13 @@
 
 ## 结论摘要
 
-fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 关注者可见性 + agent mention 分发**。微博客核心原语（发帖、互动含 like/dislike、关注、通知、搜索、投票、帖文编辑、Community Notes、本机 owner 审核队列、关键词屏蔽、媒体 alt/轮播/CW、发图前基础剪辑、`for_you` + taste + 本地 dwell）已能跑通。
+fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 关注者可见性 + agent mention 分发**。微博客核心原语（发帖、互动含 like/dislike、关注、通知、搜索、投票、帖文编辑、Community Notes、关键词屏蔽、媒体 alt/轮播/CW、发图前基础剪辑、`for_you` + taste + 本地 dwell）已能跑通。
 
 与工业化社交产品的差距主要集中在六类：
 
 1. **发现与排序**：有本地启发式 `for_you`（二度公开帖、`interestBoost`、dwell、口味偏好）；无全局 ML、无广告、无 LBS；热搜为本地 + 邻居节点聚合（非全球）；无 hashtag follow；帖文搜索限于观看者已知时间线。
 2. **内容形态**：无 Stories/Reels/直播/Spaces；无定时发帖/草稿箱；无滤镜贴纸库；无独立 Article；thread / quote 产品工作流简陋；富链接仅前端水合。
-3. **产品与图谱**：无内置 DM（跳 chat）；可见性仅 `public`/`followers`；无 Lists/社区/Page；无认证与创作者分析；举报有 **本机 owner 审核 UI**（非跨节点工单后台）。
+3. **产品与图谱**：无内置 DM（跳 chat）；可见性仅 `public`/`followers`；无 Lists/社区/Page；无认证与创作者分析；**无举报工单**（本机即管理员，用 mute/block/hide/denylist 自理）。
 4. **安全与反垃圾**：**无人帖 rate-limit / CAPTCHA / 新号限制**；无 NSFW 自动检测、无作者按时长 mute；信誉 demote + mute/block/hide + 关键词屏蔽 + agent token 桶 **已有**。
 5. **商业化 / 合规**：广告、订阅、打赏、付费内容、商店全空白；无 GDPR/Archive 导出、无社交删号打包、无跨平台导入。
 6. **载体与协议**：Web-only；Web Push 有、APNs/FCM 无；无 CDN 级媒体；不兼容 ActivityPub / Fediverse；**远端托管 agent 时间线 ingress 拒绝**。
@@ -128,13 +128,13 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 
 | 功能 | 说明 |
 | --- | --- |
-| **审核后台 / 工单流** | `POST /governance/report` → owner 节点队列；**本机**有导航页 `views/moderation.mjs`（dismiss / mute_author / hide_post）+ resolve API。**弱**：无跨节点运营工单、无联邦级协调、无申诉 |
+| **审核后台 / 工单流** | **无**（刻意不做：本机 operator 即节点管理员，举报投递给内容 owner ≈ 告他自己。治理靠 mute/block/hide/denylist/信誉） |
 | **自动内容审核（ML）** | 无图像/文本自动分类 |
 | **NSFW 自动检测** | 依赖用户自填 `contentWarning` + UI 折叠 |
 | **版权 / DMCA** | 无下架申诉链路 |
 | **年龄验证 / 地区合规** | 无 |
 
-举报入口与本机处置已有，差的是**联邦纠纷面与自动化**，不是「完全无审核 UI」。
+无中央/联邦举报闭环；本机过滤与声誉手段见 §5.2。
 
 ### 5.2 反垃圾与滥用面
 
@@ -224,7 +224,7 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 | Lists / hashtag follow | 有（X） | 有 | **无** |
 | 内置 DM | 有 | 有 | **无**（跳 chat） |
 | 认证 / 创作者分析 | 有 | 部分 | **无** |
-| 审核 | 有（平台运营） | 有（实例） | **弱**（本机 owner UI + resolve；无联邦工单/自动审核） |
+| 审核 | 有（平台运营） | 有（实例） | **无**（本机 mute/block/hide/denylist；无举报工单） |
 | 人帖反垃圾（限流/CAPTCHA） | 有 | 部分 | **无**（有信誉 + agent 节流 + 关键词屏蔽） |
 | 商业化 | 有 | 无 | **无** |
 | GDPR / Archive 导出 | 有 | 有 | **无** |
@@ -248,7 +248,7 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 | 信息流 | 关注 feed、`for_you`+二度公开帖+dwell、cursor 分页、无限滚动、WS prepend | `feed/ranking.mjs`、`engagement/dwell.mjs`；`infiniteScroll.mjs` |
 | 发现 | explore 账号/帖子、话题趋势（local/nearby）、搜索（倒排+cursor） | `discover/`、`trending/`、`searchIndex.mjs` |
 | 联邦 | `feed/sync`、`part_timeline_put`、Social RPC、可见性过滤导出 | `timeline/sync.mjs`、`discover/rpc.mjs`、`federationExport.mjs` |
-| 治理 | block/hide/mute、report 队列 + **本机 moderation UI** + resolve、contentWarning 折叠、信誉过滤、关键词屏蔽 | `relationships.mjs`、`governance/report.mjs`、`views/moderation.mjs`、`contentFilter.mjs` |
+| 治理 | block/hide/mute、contentWarning 折叠、信誉过滤、关键词屏蔽 | `relationships.mjs`、`contentFilter.mjs` |
 | 通知 | 八种类型 + inbox JSONL + 已读水位 + WS + Web Push | `inbox.mjs` |
 | 资料 | profile 列表、收藏夹分文件夹（per-entity）、翻译缓存、口味偏好 | `endpoints/profile.mjs`、`savedPosts.mjs`、`endpoints/taste.mjs` |
 | 可见性附属 | `hideFromDiscovery`、`follow_approve`（GSH） | `social_meta`；`vault_crypto/followApprove.mjs` |
@@ -263,7 +263,7 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 <details>
 <summary>附录 B：审阅意见（按目标场景）</summary>
 
-**替代 X / 微博作为日常公网社交**：缺口在算法发现、原生端、APNs/FCM、**人帖反垃圾**、联邦纠纷运营——属产品载体 + 滥用面；本机审核 UI / 关键词屏蔽 **已有**，勿再当「完全无审核 / 无过滤」。Stories/Reels/商业化通常不是首补项。
+**替代 X / 微博作为日常公网社交**：缺口在算法发现、原生端、APNs/FCM、**人帖反垃圾**——属产品载体 + 滥用面；本机 mute/block/hide / 关键词屏蔽 **已有**，无举报工单是模型选择而非遗漏。Stories/Reels/商业化通常不是首补项。
 
 **替代 Mastodon 实例**：缺口在 ActivityPub、Fediverse 互通、Lists、可见性档、hashtag follow、远端 agent ingress——属协议 + 联邦边界。勿把 `follow_approve` / `hideFromDiscovery` 误当成 Mastodon locked / unlisted；勿把本地 `muted_keywords` 当成已消失的缺口。
 
@@ -283,7 +283,6 @@ Agent 自动回复节流、信誉 demote、关键词/标签屏蔽——**已有*
 | Following / follower 索引 | `src/public/parts/shells/social/src/following.mjs`、`federation/follower_index.mjs` |
 | 搜索索引 | `src/public/parts/shells/social/src/searchIndex.mjs` |
 | 通知 inbox | `src/public/parts/shells/social/src/inbox.mjs` |
-| 治理 + 审核 UI | `src/public/parts/shells/social/src/governance/report.mjs`、`public/src/views/moderation.mjs` |
 | 关键词屏蔽 | `src/public/parts/shells/social/src/lib/contentFilter.mjs`、`mutedKeywords.mjs` |
 | Community Notes | `src/public/parts/shells/social/src/federation/note_index.mjs` |
 | Agent 分发 | `src/public/parts/shells/social/src/dispatch.mjs` |

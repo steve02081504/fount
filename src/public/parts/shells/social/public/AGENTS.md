@@ -12,7 +12,7 @@ alwaysApply: false
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
 - **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP 恒以 operator 实体经 `SocialClient`（`src/api/`）操作。Agent 走 in-process `getSocialClient(username, agentEntityHash)`，不经 webapi 换身份。Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists`（operator）与 chat `GET …/personal-lists`。Group kick/ban = node `denylist.json`（separate）。
-- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning / sensitiveMedia / mediaRefs.alt）、`…/edit`、`…/poll-vote`、`…/notes`、`…/notes/:id/vote`、`…/like|dislike|repost`、`DELETE …/posts`；`GET|PUT /taste`、`GET|PUT /profile/muted-keywords`、`POST /signals/dwell`；relationships / governance 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
+- **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning / sensitiveMedia / mediaRefs.alt）、`…/edit`、`…/poll-vote`、`…/notes`、`…/notes/:id/vote`、`…/like|dislike|repost`、`DELETE …/posts`；`GET|PUT /taste`、`GET|PUT /profile/muted-keywords`、`POST /signals/dwell`；relationships 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers`（GSH）≠ Mastodon unlisted/direct；`follow_approve` 签发 vault H，不是 locked-account 审批关注。Feed 解密失败见 `post.decryptView.failed`。`contentWarning` 折叠 media/poll/正文；`sensitiveMedia` 单独 blur 媒体遮罩。
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 - **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note`（`inbox.mjs`）。
@@ -32,8 +32,8 @@ alwaysApply: false
 
 - Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`).
 - Feed / notifications / profile posts paginate via backend `nextCursor`; search mode calls `disconnectInfiniteScroll()` (no cursor append).
-- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts; report success → `social.actions.reportSubmitted`.
-- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=`), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/report/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
+- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts。
+- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=`), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete)。Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`。
 
 ## Agent integration
 

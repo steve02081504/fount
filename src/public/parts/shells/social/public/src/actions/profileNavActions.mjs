@@ -2,7 +2,6 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { aliasForEntity, setEntityAlias } from '/parts/shells:chat/shared/aliases.mjs'
 import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
-import { parseActionKey } from '../lib/actionKey.mjs'
 import { removePostsByAuthor, restoreRemovedPosts, runSocialWrite } from '../lib/socialWrite.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
@@ -125,27 +124,6 @@ export async function handleProfileNavClick(appContext, target) {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, mute: true }),
 		}), 'mute')
-	}
-
-	const reportButton = target.closest('[data-report]')
-	if (reportButton instanceof HTMLElement && reportButton.dataset.report) {
-		const parsed = parseActionKey(reportButton.dataset.report)
-		if (parsed) {
-			closePostMoreMenus()
-			try {
-				await runSocialWrite('report', () => appContext.socialApi('/governance/report', {
-					method: 'POST',
-					body: JSON.stringify({
-						targetEntityHash: parsed.entityHash,
-						targetPostId: parsed.postId,
-						reason: 'user report',
-						category: 'other',
-					}),
-				}))
-				showToastI18n('success', 'social.actions.reportSubmitted')
-			}
-			catch { /* toast in runSocialWrite */ }
-		}
 	}
 
 	const unblockButton = target.closest('[data-unblock]')

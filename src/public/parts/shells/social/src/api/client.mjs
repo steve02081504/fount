@@ -18,7 +18,6 @@ import { createFeedItemBuildContext } from '../feed/iterate.mjs'
 import { buildForYouFeed } from '../feed/ranking.mjs'
 import { buildHomeFeed, buildLikedFeedItems, buildProfileFeedItems, listReplies } from '../feed.mjs'
 import { loadFollowingForActor, setFollow } from '../following.mjs'
-import { listReceivedReports, resolveReport, submitReport } from '../governance/report.mjs'
 import { getNotificationsSeenAt, parseNotificationTypesFilter, setNotificationsSeenAt } from '../inbox.mjs'
 import { ensureEntitySocialReady } from '../lib/bootstrap.mjs'
 import { buildEmojiMediaRefsForPost } from '../lib/emojiPostEmbed.mjs'
@@ -200,33 +199,6 @@ export function createSocialClient(ctx) {
 				type: 'follow_approve',
 				content: payload,
 			})
-		},
-		/**
-		 * @param {string | { targetEntityHash: string, targetPostId?: string, reason?: string, category?: string }} target 举报目标或载荷
-		 * @returns {Promise<object>} 已签名举报
-		 */
-		async report(target) {
-			const body = typeof target === 'string'
-				? { targetEntityHash: target }
-				: { ...target }
-			return submitReport(ctx.username, {
-				...body,
-				reporterEntityHash: ctx.entityHash,
-			})
-		},
-		/**
-		 * @param {{ limit?: number }} [opts] 分页
-		 * @returns {Promise<object>} 收到的举报列表
-		 */
-		async listReports(opts = {}) {
-			return listReceivedReports(ctx.username, opts)
-		},
-		/**
-		 * @param {{ reportId: string, action: 'dismiss' | 'mute_author' | 'hide_post' }} input 处置
-		 * @returns {Promise<object>} 处置记录
-		 */
-		async resolveReport(input) {
-			return resolveReport(ctx.username, ctx.entityHash, input)
 		},
 		/**
 		 * @param {{ mode?: 'home' | 'forYou', limit?: number, cursor?: string, ranking?: string }} [opts] feed 选项

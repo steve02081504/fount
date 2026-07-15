@@ -126,11 +126,6 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 				...await processSocialPostNotifyRpc(username, rpc),
 			}
 		}
-		case 'social_report': {
-			const { ingestInboundReport } = await import('../governance/report.mjs')
-			const ok = await ingestInboundReport(username, rpc.report)
-			return { type: 'social_report_response', ok }
-		}
 		default:
 			return null
 	}

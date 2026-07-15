@@ -130,9 +130,6 @@ export function createPostCardBuilder({
 		const muteButton = treatAsOwn
 			? ''
 			: `<button type="button" data-mute="${item.entityHash}"><span class="s-ic s-ic-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
-		const reportButton = treatAsOwn
-			? ''
-			: `<button type="button" data-report="${actionKey}"><span class="s-ic s-ic-report" aria-hidden="true"></span><span data-i18n="social.actions.report"></span></button>`
 		const deleteButton = canDelete
 			? `<button type="button" class="danger-item" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 			: ''
@@ -199,7 +196,6 @@ export function createPostCardBuilder({
 			blockButton,
 			hideButton,
 			muteButton,
-			reportButton,
 			editButton,
 			editHistoryButton,
 			deleteButton,

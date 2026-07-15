@@ -169,15 +169,6 @@ Body：`entityHash`、`hide?`。纯本地 `personal_hide.json`，不联邦。
 ### `POST /api/parts/shells:social/relationships/mute`
 Body：`entityHash`、`mute?`。纯本地 `personal_mute.json`，不联邦；过滤 feed 并压制来自该作者的通知。
 
-### `POST /api/parts/shells:social/governance/report`
-Body：`targetEntityHash`、`targetPostId?`、`reason`（≥2 字符）、`category`（`spam`|`abuse`|`illegal`|`other`）。签名后本地审计 `reports_sent.jsonl`，并 RPC 投递至内容 owner 节点 `governance/reports.jsonl`。
-
-### `GET /api/parts/shells:social/governance/reports`
-Query：`limit`。读本机收到的举报队列；Social 壳有本机 moderation 视图（dismiss / mute_author / hide_post）。
-
-### `POST /api/parts/shells:social/governance/reports/resolve`
-Body：`reportId`、`action`（`dismiss`｜`mute_author`｜`hide_post`）等 — owner 节点本地处置。
-
 ### `POST /api/parts/shells:social/relationships/follow-approve`
 Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers 帖；**不是** locked-account 审批关注队列）。
 
