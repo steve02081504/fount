@@ -1,0 +1,87 @@
+/**
+ * 群组通话卡片生命周期集成测试。
+ */
+/* global Deno */
+import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
+import { createIntegrationBoot } from '../harness.mjs'
+
+Deno.test('call session posts and edits call card then ends', async () => {
+	const username = `call-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		tempDirPrefix: 'fount_chat_call_',
+		minP2pNode: true,
+		/**
+		 *
+		 * @param user
+		 */
+		/**
+		 * @param {string} user replica
+		 * @returns {Promise<void>}
+		 */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+			await ensureOperatorPubKey(user)
+		},
+	})
+	await ensureServer()
+
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const {
+		beginCallSession,
+		updateCallRoster,
+		endCallSession,
+		getLiveCallSession,
+	} = await import('../../src/chat/call/session.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { mergeChannelMessagesForDisplay } = await import('../../public/shared/messageMerge.mjs')
+
+	const groupId = await newGroup(username, { name: 'call-group' })
+	const channelId = await getDefaultChannelId(username, groupId)
+	const initiator = await resolveOperatorEntityHash(username)
+	assert(initiator)
+
+	const session = await beginCallSession(username, groupId, channelId, initiator)
+	assertEquals(session.status, 'ongoing')
+	assert(session.messageEventId)
+
+	await updateCallRoster(groupId, channelId, [
+		{ entityHash: initiator, senderId: 'a'.repeat(32) },
+		{ entityHash: 'b'.repeat(128), senderId: 'c'.repeat(32) },
+	])
+	const live = getLiveCallSession(groupId, channelId)
+	assertEquals(live.everJoined.length, 2)
+
+	await endCallSession(groupId, channelId)
+	assertEquals(getLiveCallSession(groupId, channelId), null)
+
+	// message_edit 会在 checkpoint rebuild 时从 events.jsonl 折叠掉；断言看频道侧车折叠后的展示行
+	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 100 })
+	const card = mergeChannelMessagesForDisplay(lines).find(row =>
+		row.eventId === session.messageEventId || row.content?.type === 'call',
+	)
+	assert(card)
+	assertEquals(card.content?.type, 'call')
+	assertEquals(card.content?.status, 'ended')
+	assert(Array.isArray(card.content?.participants))
+	assert(card.content.participants.includes(initiator.toLowerCase()))
+	assertEquals(card.content?.current?.length ?? 0, 0)
+	assert(card.content?.duration >= 0)
+})
+
+Deno.test('channelContent accepts call type', async () => {
+	const { channelMessageContentObject } = await import('../../public/shared/channelContent.mjs')
+	const content = channelMessageContentObject({
+		type: 'call',
+		callId: 'x',
+		status: 'ongoing',
+		startedAt: Date.now(),
+		initiator: 'a'.repeat(128),
+		participants: ['a'.repeat(128)],
+		current: ['a'.repeat(128)],
+	})
+	assertEquals(content.type, 'call')
+})

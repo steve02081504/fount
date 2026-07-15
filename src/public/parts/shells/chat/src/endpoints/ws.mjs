@@ -3,6 +3,12 @@ import { parseInboundJson } from 'npm:@steve02081504/fount-p2p/wire/ingress'
 
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import {
+	beginCallSession,
+	callRoomId,
+	endCallSession,
+	updateCallRoster,
+} from '../chat/call/session.mjs'
+import {
 	handleClientWsControlFrame,
 	registerGroupUiSocket,
 } from '../chat/session/wsLifecycle.mjs'
@@ -36,6 +42,49 @@ export function registerWsRoutes(router) {
 		})
 	})
 
+	router.ws('/ws/parts/shells\\:chat/call/:groupId/:channelId', authenticate, (ws, req) => {
+		const groupId = String(req.params.groupId || '')
+		const channelId = String(req.params.channelId || '')
+		if (!groupId || !channelId) return void ws.close()
+		runAuthenticatedWs(ws, req, async ({ username }) => {
+			const { getState } = await import('../chat/dag/materialize.mjs')
+			const { resolveActiveMemberKeyForLocalUser } = await import('../group/access.mjs')
+			const { resolveOperatorEntityHash } = await import('../chat/lib/replica.mjs')
+			const { state } = await getState(username, groupId)
+			if (!await resolveActiveMemberKeyForLocalUser(username, groupId, state)) return void ws.close()
+			if (!state.channels[channelId]) return void ws.close()
+			const entityHash = await resolveOperatorEntityHash(username)
+			if (!entityHash) return void ws.close()
+			const roomId = callRoomId(groupId, channelId)
+			registerAvRelaySocket(roomId, ws, {
+				entityHash,
+				/**
+				 * @param {string} hash 首个入房 entityHash
+				 * @returns {void}
+				 */
+				onFirstPeer: hash => {
+					void beginCallSession(username, groupId, channelId, hash)
+						.catch(error => console.error('call: begin failed', error))
+				},
+				/**
+				 * @param {{ entityHash: string, senderId: string }[]} roster roster
+				 * @returns {void}
+				 */
+				onRosterChange: roster => {
+					void updateCallRoster(groupId, channelId, roster)
+						.catch(error => console.error('call: roster update failed', error))
+				},
+				/**
+				 * @returns {void}
+				 */
+				onRoomEmpty: () => {
+					void endCallSession(groupId, channelId)
+						.catch(error => console.error('call: end failed', error))
+				},
+			})
+		})
+	})
+
 	router.ws('/ws/parts/shells\\:chat/groups/:ownerNodeHash/:groupId', authenticate, (ws, req) => {
 		const { ownerNodeHash, groupId } = req.params
 		if (!ownerNodeHash || !groupId) return void ws.close()
@@ -55,7 +104,6 @@ export function registerWsRoutes(router) {
 				if (!wireMessage) return
 				if (handleClientWsControlFrame(wireMessage)) return
 				if (wireMessage.type === 'typing') {
-					// Hub 人类 typing 入账（volatile，不进 DAG），供 channel.typingUsers() 消费
 					void (async () => {
 						const { recordChannelTyping } = await import('../chat/bridge/typing.mjs')
 						const { resolveOperatorEntityHash } = await import('../chat/lib/replica.mjs')

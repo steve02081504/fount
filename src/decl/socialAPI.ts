@@ -62,6 +62,17 @@ export interface SocialPostContent {
 	replyTo?: SocialPostRef
 	quoteRef?: SocialPostRef
 	groupRef?: SocialGroupRef
+	liveRef?: {
+		entityHash: string
+		liveId: string
+		status?: 'live' | 'ended'
+		startedAt?: number
+		endedAt?: number
+		duration?: number
+		totalViewers?: number
+		totalLikes?: number
+		peakViewers?: number
+	}
 	lang?: string
 	visibility?: SocialVisibility
 	contentWarning?: string

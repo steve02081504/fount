@@ -1,6 +1,6 @@
 import { sanitizeMessageExtras } from './messageFields.mjs'
 
-/** @typedef {'text' | 'sticker' | 'vote' | 'group_invite'} ChannelContentType */
+/** @typedef {'text' | 'sticker' | 'vote' | 'group_invite' | 'call'} ChannelContentType */
 
 /**
  * @param {object} content 消息 content
@@ -8,7 +8,7 @@ import { sanitizeMessageExtras } from './messageFields.mjs'
  */
 export function channelContentType(content) {
 	const { type } = content
-	if (type === 'text' || type === 'sticker' || type === 'vote' || type === 'group_invite') return type
+	if (type === 'text' || type === 'sticker' || type === 'vote' || type === 'group_invite' || type === 'call') return type
 	throw new Error(`unknown content.type: ${type}`)
 }
 
@@ -67,6 +67,7 @@ export function channelMessageContentObject(input) {
  */
 export function channelMessageAgentText(content) {
 	if (content?.type === 'vote') return String(content.question || '').trim()
+	if (content?.type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
 	if (content?.type !== 'text') return ''
 	return String(content.content)
 }
@@ -77,6 +78,7 @@ export function channelMessageAgentText(content) {
  */
 export function channelMessageShowText(content) {
 	if (content?.type === 'vote') return String(content.question || '').trim()
+	if (content?.type === 'call') return content.status === 'ended' ? 'Call ended' : 'Call in progress'
 	if (content?.type !== 'text') return ''
 	return String(content.content_for_show ?? content.content)
 }

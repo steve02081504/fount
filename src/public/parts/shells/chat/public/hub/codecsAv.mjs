@@ -14,7 +14,7 @@ import { buildChatAvRelayWsUrl } from '../shared/avRelayClient.mjs'
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
  *
  * 帧头 26 字节，与 {@link ../../../src/chat/ws/avRelay.mjs} 一致：
- *   [0] frame_type 0=video 1=audio
+ *   [0] frame_type 0=video 1=audio 2=screen
  */
 
 /**
@@ -30,6 +30,7 @@ export const CODECS_PRESETS = {
 
 const FRAME_VIDEO = 0
 const FRAME_AUDIO = 1
+const FRAME_SCREEN = 2
 const FRAME_HEADER_BYTES = 26
 const KEY_MS = 2000
 const AUDIO_CODEC = 'opus'
@@ -45,6 +46,7 @@ let activeSession = null
  * @property {() => Promise<void>} close 离开房间并释放资源
  * @property {() => boolean} toggleMute 切换静音，返回静音后为 true
  * @property {() => boolean} toggleVideo 开关摄像头，返回关闭后为 true
+ * @property {() => Promise<boolean>} [toggleScreen] 开关屏幕共享，返回共享中为 true
  */
 
 /**
@@ -143,6 +145,9 @@ function scheduleAudioPlayback(audioContext, audioData, peer) {
  * @param {HTMLElement} opts.avGrid 远端 tile 容器
  * @param {HTMLVideoElement | null} [opts.videoLocal] 本地预览
  * @param {(count: number) => void} [opts.onPeerCount] 在线人数
+ * @param {string} [opts.wsUrl] 自定义 WS（通话走 `/call/…`）
+ * @param {(peers: { entityHash: string, senderId: string }[]) => void} [opts.onRoster] roster 回调
+ * @param {(senderId: string, entityHash: string | null) => string} [opts.labelForPeer] tile 标签
  * @returns {Promise<CodecsAvSession>} 会话句柄
  */
 export async function joinCodecsAvRoom(opts) {
@@ -156,6 +161,9 @@ export async function joinCodecsAvRoom(opts) {
 		avGrid,
 		videoLocal = null,
 		onPeerCount,
+		wsUrl = null,
+		onRoster = null,
+		labelForPeer = null,
 	} = opts
 
 	await leaveCodecsAvRoom()
@@ -166,22 +174,27 @@ export async function joinCodecsAvRoom(opts) {
 	const t0 = performance.now()
 	const videoSeqRef = { seq: 0 }
 	const audioSeqRef = { seq: 0 }
+	const screenSeqRef = { seq: 0 }
+	/** @type {Map<string, string>} senderId → entityHash */
+	const senderToEntity = new Map()
 
 	/** @type {Map<string, object>} */
 	const peers = new Map()
 	/** @type {Map<string, Promise<object>>} */
 	const peersCreating = new Map()
 
-	const ws = new WebSocket(buildAvRelayWsUrl(groupId, channelId))
+	const ws = new WebSocket(wsUrl || buildAvRelayWsUrl(groupId, channelId))
 	ws.binaryType = 'arraybuffer'
 
 	/**
 	 * @param {string} senderIdHex 远端 senderId（32 位 hex）
+	 * @param {boolean} [isScreen=false] 是否屏幕共享轨
 	 * @returns {Promise<object>} peer 状态
 	 */
-	const getOrCreatePeer = async senderIdHex => {
-		if (peers.has(senderIdHex)) return peers.get(senderIdHex)
-		if (peersCreating.has(senderIdHex)) return peersCreating.get(senderIdHex)
+	const getOrCreatePeer = async (senderIdHex, isScreen = false) => {
+		const peerKey = isScreen ? `${senderIdHex}:screen` : senderIdHex
+		if (peers.has(peerKey)) return peers.get(peerKey)
+		if (peersCreating.has(peerKey)) return peersCreating.get(peerKey)
 
 		const promise = (async () => {
 			const canvas = document.createElement('canvas')
@@ -189,17 +202,26 @@ export async function joinCodecsAvRoom(opts) {
 			canvas.height = preset.h
 			const canvas2d = canvas.getContext('2d')
 
+			const entityHash = senderToEntity.get(senderIdHex) || null
+			const defaultLabel = isScreen
+				? `🖥 …${senderIdHex.slice(-8)}`
+				: `…${senderIdHex.slice(-8)}`
+			const label = labelForPeer
+				? labelForPeer(senderIdHex, entityHash) + (isScreen ? ' 🖥' : '')
+				: defaultLabel
 			const tile = await renderTemplate('hub/streaming/av_tile', {
-				peerId: senderIdHex,
-				label: `…${senderIdHex.slice(-8)}`,
+				peerId: peerKey,
+				label,
 			})
+			if (entityHash) tile.dataset.entityHash = entityHash
 			tile.querySelector('.hub-streaming-av-canvas-host')?.appendChild(canvas)
 			avGrid.appendChild(tile)
 
-			const audioCtx = new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE })
-			/** @type {{ tile: HTMLElement, videoDecoder: VideoDecoder, videoHasKey: boolean, videoRxSeq: number, audioDecoder: AudioDecoder, audioCtx: AudioContext, audioHasKey: boolean, audioRxSeq: number, audioNextTime: number }} */
+			const audioCtx = isScreen ? null : new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE })
+			/** @type {object} */
 			const peer = {
 				tile,
+				isScreen,
 				videoDecoder: null,
 				videoHasKey: false,
 				videoRxSeq: 0,
@@ -227,33 +249,35 @@ export async function joinCodecsAvRoom(opts) {
 			})
 			peer.videoDecoder.configure({ codec: preset.codec, codedWidth: preset.w, codedHeight: preset.h })
 
-			peer.audioDecoder = new AudioDecoder({
-				/**
-				 * @param {AudioData} audioData 解码音频
-				 * @returns {void}
-				 */
-				output: audioData => {
-					scheduleAudioPlayback(audioCtx, audioData, peer)
-					audioData.close()
-				},
-				/**
-				 * @param {Error} error 解码错误
-				 * @returns {void}
-				 */
-				error: error => console.error('AudioDecoder:', error),
-			})
-			peer.audioDecoder.configure({
-				codec: AUDIO_CODEC,
-				sampleRate: AUDIO_SAMPLE_RATE,
-				numberOfChannels: AUDIO_CHANNELS,
-			})
+			if (!isScreen) {
+				peer.audioDecoder = new AudioDecoder({
+					/**
+					 * @param {AudioData} audioData 解码音频
+					 * @returns {void}
+					 */
+					output: audioData => {
+						scheduleAudioPlayback(audioCtx, audioData, peer)
+						audioData.close()
+					},
+					/**
+					 * @param {Error} error 解码错误
+					 * @returns {void}
+					 */
+					error: error => console.error('AudioDecoder:', error),
+				})
+				peer.audioDecoder.configure({
+					codec: AUDIO_CODEC,
+					sampleRate: AUDIO_SAMPLE_RATE,
+					numberOfChannels: AUDIO_CHANNELS,
+				})
+			}
 
-			peers.set(senderIdHex, peer)
-			peersCreating.delete(senderIdHex)
+			peers.set(peerKey, peer)
+			peersCreating.delete(peerKey)
 			return peer
 		})()
 
-		peersCreating.set(senderIdHex, promise)
+		peersCreating.set(peerKey, promise)
 		return promise
 	}
 
@@ -264,9 +288,11 @@ export async function joinCodecsAvRoom(opts) {
 	const handleInboundFrame = async arrayBuffer => {
 		const frame = unpackFrame(arrayBuffer)
 		if (!frame || frame.sender === selfHex) return
-		const peer = await getOrCreatePeer(frame.sender)
+		const isScreen = frame.frameType === FRAME_SCREEN
+		const peer = await getOrCreatePeer(frame.sender, isScreen)
 
 		if (frame.frameType === FRAME_AUDIO) {
+			if (!peer.audioDecoder) return
 			if (!frame.isKey && !peer.audioHasKey) return
 			if (frame.isKey) peer.audioHasKey = true
 			if (peer.audioDecoder.decodeQueueSize > 8) return
@@ -279,6 +305,7 @@ export async function joinCodecsAvRoom(opts) {
 			return
 		}
 
+		if (frame.frameType !== FRAME_VIDEO && frame.frameType !== FRAME_SCREEN) return
 		if (!frame.isKey && !peer.videoHasKey) return
 		if (frame.isKey) peer.videoHasKey = true
 		if (peer.videoDecoder.decodeQueueSize > 10) return
@@ -302,21 +329,37 @@ export async function joinCodecsAvRoom(opts) {
 		const wireMessage = JSON.parse(event.data)
 		if (wireMessage.type === 'peer_count')
 			onPeerCount?.(wireMessage.count)
+		if (wireMessage.type === 'roster' && Array.isArray(wireMessage.peers)) {
+			for (const peer of wireMessage.peers) {
+				const sid = String(peer.senderId || '').toLowerCase()
+				const eh = String(peer.entityHash || '').toLowerCase()
+				if (sid && eh) senderToEntity.set(sid, eh)
+			}
+			onRoster?.(wireMessage.peers)
+		}
 	}
 
 	await new Promise((res, rej) => {
-		ws.onopen = res
+		/**
+		 *
+		 */
+		ws.onopen = () => {
+			try { ws.send(JSON.stringify({ type: 'hello', senderId: selfHex })) }
+			catch { /* ignore */ }
+			res()
+		}
 		ws.onerror = rej
 	})
 
-	/**
-	 * 停止本地采集与编码循环（由 startCodecsCapture 赋值）。
-	 * @type {() => void}
-	 */
+	/** @type {() => void} */
 	let stopCapture = () => { }
+	/** @type {() => void} */
+	let stopScreen = () => { }
 	let mediaStream = null
+	let screenStream = null
 	let videoEnabled = true
 	let audioMuted = false
+	let screenSharing = false
 
 	try {
 		stopCapture = await startCodecsCapture({
@@ -328,15 +371,15 @@ export async function joinCodecsAvRoom(opts) {
 			audioSeqRef,
 			videoLocal,
 			/**
-			 * @returns {boolean} 是否发送视频
+			 * @returns {boolean} 是否应发送摄像头轨
 			 */
 			isVideoSending: () => videoEnabled && ws.readyState === WebSocket.OPEN,
 			/**
-			 * @returns {boolean} 是否发送音频
+			 * @returns {boolean} 是否应发送麦克风轨
 			 */
 			isAudioSending: () => !audioMuted && ws.readyState === WebSocket.OPEN,
 			/**
-			 * @param {MediaStream} stream 采集流
+			 * @param {MediaStream} stream 本地采集流
 			 * @returns {void}
 			 */
 			onStream: stream => { mediaStream = stream },
@@ -356,19 +399,21 @@ export async function joinCodecsAvRoom(opts) {
 			if (activeSession !== session) return
 			activeSession = null
 			stopCapture()
+			stopScreen()
 			mediaStream?.getTracks().forEach(t => t.stop())
+			screenStream?.getTracks().forEach(t => t.stop())
 			if (videoLocal) videoLocal.srcObject = null
 			ws.close()
 			for (const peer of peers.values()) {
 				try { peer.videoDecoder.close() } catch { /* ignore */ }
-				try { peer.audioDecoder.close() } catch { /* ignore */ }
-				try { await peer.audioCtx.close() } catch { /* ignore */ }
+				try { peer.audioDecoder?.close() } catch { /* ignore */ }
+				try { await peer.audioCtx?.close() } catch { /* ignore */ }
 				peer.tile.remove()
 			}
 			peers.clear()
 		},
 		/**
-		 * @returns {boolean} 静音后为 true
+		 * @returns {boolean} 是否静音
 		 */
 		toggleMute: () => {
 			audioMuted = !audioMuted
@@ -377,13 +422,52 @@ export async function joinCodecsAvRoom(opts) {
 			return audioMuted
 		},
 		/**
-		 * @returns {boolean} 关闭视频后为 true
+		 * @returns {boolean} 是否已关摄像头
 		 */
 		toggleVideo: () => {
 			videoEnabled = !videoEnabled
 			const track = mediaStream?.getVideoTracks()[0]
 			if (track) track.enabled = videoEnabled
 			return !videoEnabled
+		},
+		/**
+		 * @returns {Promise<boolean>} 是否正在共享屏幕
+		 */
+		toggleScreen: async () => {
+			if (screenSharing) {
+				stopScreen()
+				screenStream?.getTracks().forEach(t => t.stop())
+				screenStream = null
+				screenSharing = false
+				return false
+			}
+			if (!navigator.mediaDevices?.getDisplayMedia)
+				throw new Error('getDisplayMedia not supported')
+			screenStream = await navigator.mediaDevices.getDisplayMedia({
+				video: { frameRate: preset.fps },
+				audio: false,
+			})
+			screenSharing = true
+			stopScreen = await startVideoEncoder({
+				preset,
+				stream: screenStream,
+				ws,
+				selfId,
+				t0,
+				videoSeqRef: screenSeqRef,
+				/**
+				 * @returns {boolean} 是否应发送屏幕轨
+				 */
+				isVideoSending: () => screenSharing && ws.readyState === WebSocket.OPEN,
+				frameType: FRAME_SCREEN,
+			})
+			screenStream.getVideoTracks()[0]?.addEventListener('ended', () => {
+				if (!screenSharing) return
+				stopScreen()
+				screenStream = null
+				screenSharing = false
+			})
+			return true
 		},
 	}
 
@@ -446,7 +530,7 @@ async function startCodecsCapture(opts) {
  * @returns {Promise<() => void>} 停止视频编码函数
  */
 async function startVideoEncoder(opts) {
-	const { preset, stream, ws, selfId, t0, videoSeqRef, isVideoSending } = opts
+	const { preset, stream, ws, selfId, t0, videoSeqRef, isVideoSending, frameType = FRAME_VIDEO } = opts
 	const [track] = stream.getVideoTracks()
 	if (!track) return () => { }
 
@@ -459,7 +543,7 @@ async function startVideoEncoder(opts) {
 			if (!isVideoSending()) return
 			const raw = new Uint8Array(chunk.byteLength)
 			chunk.copyTo(raw)
-			ws.send(packFrame(FRAME_VIDEO, chunk.type === 'key', raw, selfId, t0, videoSeqRef))
+			ws.send(packFrame(frameType, chunk.type === 'key', raw, selfId, t0, videoSeqRef))
 		},
 		/**
 		 * @param {Error} error 编码错误

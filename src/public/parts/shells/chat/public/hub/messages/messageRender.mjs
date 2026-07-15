@@ -384,6 +384,48 @@ async function renderVoteBlock(message, allMessages) {
 
 /**
  * @param {object} message 消息行
+ * @returns {Promise<string>} HTML
+ */
+async function renderCallBlock(message) {
+	const content = message?.content || {}
+	const status = content.status === 'ended' ? 'ended' : 'ongoing'
+	const source = status === 'ongoing' && Array.isArray(content.current) && content.current.length
+		? content.current
+		: (Array.isArray(content.participants) ? content.participants : [])
+	const hashes = source.map(h => String(h || '').toLowerCase()).filter(Boolean)
+	const avatarsHtml = hashes.slice(0, 12).map(hash =>
+		`<span class="hub-call-avatar hub-avatar-wrap" data-avatar-for="${escapeHtml(hash)}" title="${escapeHtml(hash.slice(0, 8))}">${escapeHtml(hash.slice(0, 2))}</span>`,
+	).join('')
+	let metaHtml = ''
+	if (status === 'ongoing') {
+		const started = Number(content.startedAt) || 0
+		const timeText = started ? new Date(started).toLocaleTimeString() : ''
+		metaHtml = `<span data-i18n="chat.hub.callStartedAt" data-time="${escapeHtml(timeText)}"></span>`
+			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
+	}
+	else {
+		const durationMs = Number(content.duration) || 0
+		const secs = Math.max(0, Math.round(durationMs / 1000))
+		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
+		const ss = String(secs % 60).padStart(2, '0')
+		metaHtml = `<span data-i18n="chat.hub.callDuration" data-duration="${mm}:${ss}"></span>`
+			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
+	}
+	const joinButtonHtml = status === 'ongoing'
+		? `<button type="button" class="btn btn-sm btn-primary hub-call-join-btn" data-i18n="chat.hub.callJoin"></button>`
+		: ''
+	return renderTemplateAsHtmlString('hub/messages/call_block', {
+		callId: escapeHtml(String(content.callId || message.eventId || '')),
+		status,
+		titleI18n: status === 'ended' ? 'chat.hub.callEnded' : 'chat.hub.callInProgress',
+		metaHtml,
+		avatarsHtml: avatarsHtml || '<span class="hub-call-avatars-empty" data-i18n="chat.hub.callNoParticipants"></span>',
+		joinButtonHtml,
+	})
+}
+
+/**
+ * @param {object} message 消息行
  * @param {object[]} allMessages 频道消息
  * @param {Record<string, Record<string, { voters?: string[] }>>} reactionsMap 当前页聚合反应
  * @param {string} viewerMemberId 本机成员 pubKeyHash 或 `local`
@@ -584,20 +626,24 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			: ''
 		const stickerHtml = !decryptHtml ? await renderStickerBlock(message) : null
 		const groupInviteHtml = !decryptHtml && !stickerHtml ? await renderGroupInviteBlock(message) : null
-		const useVote = !decryptHtml && !stickerHtml && !groupInviteHtml
+		const useCall = !decryptHtml && !stickerHtml && !groupInviteHtml
+			&& message.content?.type === 'call'
+		const useVote = !decryptHtml && !stickerHtml && !groupInviteHtml && !useCall
 			&& message.content?.type === 'vote' && allMessages.length
-		const usePlainMd = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote
+		const usePlainMd = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote && !useCall
 			&& plainText.length > 0 && message.eventId
 
-		const filesHtml = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote
+		const filesHtml = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote && !useCall
 			? await renderMessageFileIdsHtml(message)
 			: ''
 		const bodyCore = decryptHtml
 			|| stickerHtml
 			|| groupInviteHtml
-			|| (useVote
-				? await renderVoteBlock(message, allMessages)
-				: await renderMessageContent(plainText))
+			|| (useCall
+				? await renderCallBlock(message)
+				: useVote
+					? await renderVoteBlock(message, allMessages)
+					: await renderMessageContent(plainText))
 
 		// 转发头
 		const forwardedFrom = message.content?.forwardedFrom

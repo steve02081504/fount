@@ -2127,7 +2127,96 @@ body {
 }
 
 .live-author { font-weight: bold; font-size: 0.9rem; }
-.live-viewer-count { font-size: 0.78rem; opacity: 0.8; }
+.live-viewer-count,
+.live-like-count { font-size: 0.78rem; opacity: 0.8; }
+
+.live-scope-tabs {
+	display: flex;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	position: absolute;
+	top: 0.5rem;
+	left: 0.5rem;
+	z-index: 5;
+}
+.live-scope-btn {
+	border: 1px solid rgba(255,255,255,0.3);
+	background: rgba(0,0,0,0.45);
+	color: #fff;
+	border-radius: 999px;
+	padding: 0.25rem 0.75rem;
+	font-size: 0.75rem;
+	cursor: pointer;
+}
+.live-scope-btn.is-active { background: var(--color-primary, #5865f2); border-color: transparent; }
+
+.live-hall-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	gap: 0.75rem;
+	padding: 3rem 0.75rem 1rem;
+}
+.live-hall-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	border-radius: 12px;
+	border: 1px solid var(--fallback-bc, #333);
+	background: var(--fallback-b1, #1a1a1a);
+	text-align: left;
+	cursor: pointer;
+	color: inherit;
+}
+.live-hall-avatar {
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: #444;
+}
+.live-hall-title { font-weight: 600; font-size: 0.9rem; }
+.live-hall-stats { font-size: 0.75rem; opacity: 0.7; }
+
+.live-av-wrap { position: absolute; inset: 0; display: flex; }
+.live-linked .live-av-wrap { gap: 2px; }
+.live-linked .live-av-canvas { width: 50%; }
+.live-linked .live-av-canvas-peer { display: block !important; width: 50%; }
+
+.live-link-row {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 0.5rem;
+	align-items: center;
+}
+
+.live-ref-card {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.6rem 0.75rem;
+	border-radius: 10px;
+	background: rgba(88, 101, 242, 0.15);
+	border: 1px solid rgba(88, 101, 242, 0.4);
+	margin-bottom: 0.5rem;
+	text-decoration: none;
+	color: inherit;
+}
+.live-ref-card--ended { background: rgba(128,128,128,0.12); border-color: rgba(128,128,128,0.35); }
+.live-ref-badge {
+	font-size: 0.7rem;
+	font-weight: 700;
+	background: #e11;
+	color: #fff;
+	padding: 0.1rem 0.4rem;
+	border-radius: 4px;
+}
+.live-ref-card--ended .live-ref-badge { background: #666; }
+.live-ref-avatar {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	background: #555;
+}
 
 .live-actions {
 	position: absolute;

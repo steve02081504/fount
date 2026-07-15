@@ -29,8 +29,11 @@ export async function localLiveFeedHandler(ctx, query) {
 			entityHash: row.entityHash,
 			title: String(row.title || '').slice(0, 120),
 			viewerCount: Number(row.viewerCount) || 0,
+			likeCount: Number(row.likeCount) || 0,
 			startedAt: Number(row.startedAt) || 0,
 			avRoomId: row.avRoomId,
+			bridgeOrigin: row.bridgeOrigin || null,
+			watchSecret: row.publicWatchSecret || null,
 			nodeHash,
 		}))
 }
@@ -76,8 +79,11 @@ export async function buildNearbyLiveFeed(username, options = {}) {
 			entityHash,
 			title: String(/** @type {{ title?: unknown }} */(raw).title || 'Live').slice(0, 120),
 			viewerCount: Math.max(0, Number(/** @type {{ viewerCount?: unknown }} */(raw).viewerCount) || 0),
+			likeCount: Math.max(0, Number(/** @type {{ likeCount?: unknown }} */(raw).likeCount) || 0),
 			startedAt: Number(/** @type {{ startedAt?: unknown }} */(raw).startedAt) || 0,
 			avRoomId: String(/** @type {{ avRoomId?: unknown }} */(raw).avRoomId || `social:${entityHash}:${liveId}`),
+			bridgeOrigin: String(/** @type {{ bridgeOrigin?: unknown }} */(raw).bridgeOrigin || '') || null,
+			watchSecret: String(/** @type {{ watchSecret?: unknown }} */(raw).watchSecret || '') || null,
 			visibility: 'public',
 			status: 'live',
 			federated: true,

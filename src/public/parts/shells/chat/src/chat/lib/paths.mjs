@@ -28,6 +28,15 @@ export function discoveryIndexPath(username) {
 }
 
 /**
+ * 本机活跃通话会话快照（崩溃收尾用）。
+ * @param {string} username 本地账户名
+ * @returns {string} `calls/active.json` 绝对路径
+ */
+export function activeCallsPath(username) {
+	return join(shellChatRoot(username), 'calls', 'active.json')
+}
+
+/**
  * 单个群 / 会话在磁盘上的 DAG 数据目录。
  * @param {string} username 本地账户名
  * @param {string} groupId 群组或会话 ID

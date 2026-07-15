@@ -103,6 +103,8 @@ export default {
 		if (loadCount === 1) {
 			setGroupEndpoints(router)
 			setEndpoints(router)
+			void import('./src/chat/call/session.mjs').then(m => m.reconcileAllOrphanedCalls())
+				.catch(error => console.error('call: reconcile on Load failed', error))
 		}
 	},
 	/**

@@ -63,12 +63,51 @@ Deno.test('live session start stop', async () => {
 	const { username } = await getSession()
 	const { getSocialClient } = await import('../../src/api/index.mjs')
 	const client = await getSocialClient(username)
-	const session = await client.startLive({ title: 'test live' })
+	const session = await client.startLive({ title: 'test live', bridgeOrigin: 'http://127.0.0.1:8931' })
 	assertEquals(session.status, 'live')
 	assert(session.liveId)
 	assert(session.avRoomId)
+	assert(session.livePostId)
+	assert(session.publicWatchSecret)
 	const feed = await client.liveFeed({ limit: 10 })
 	assert(feed.items.some(row => row.liveId === session.liveId))
+
+	const { getTimelineMaterialized } = await import('../../src/timeline/materialize.mjs')
+	const view = await getTimelineMaterialized(username, client.entityHash)
+	const livePost = view.postById[session.livePostId]
+	assert(livePost)
+	assertEquals(livePost.content?.liveRef?.liveId, session.liveId)
+	assertEquals(livePost.content?.liveRef?.status, 'live')
+
+	const { patchLiveStats } = await import('../../src/live/session.mjs')
+	patchLiveStats(username, client.entityHash, session.liveId, {
+		viewerCount: 3,
+		viewerEntityHash: client.entityHash,
+		likeDelta: 2,
+	})
+
 	const ended = await client.stopLive(session.liveId)
 	assertEquals(ended.status, 'ended')
+	assertEquals(ended.liveStats?.totalLikes, 2)
+	assert(ended.liveStats?.totalViewers >= 1)
+
+	const after = await getTimelineMaterialized(username, client.entityHash)
+	const endedPost = after.postById[session.livePostId]
+	assertEquals(endedPost.content?.liveRef?.status, 'ended')
+	assertEquals(endedPost.content?.liveRef?.totalLikes, 2)
+})
+
+Deno.test('same-node live link bridges sessions', async () => {
+	const { username } = await getSession()
+	const { getSocialClient } = await import('../../src/api/index.mjs')
+	const client = await getSocialClient(username)
+	const a = await client.startLive({ title: 'host-a', bridgeOrigin: 'http://127.0.0.1:8931' })
+	// second live same entity blocked — use invite against fictional peer that auto-rejects
+	const invite = await client.inviteLiveLink(a.liveId, {
+		peerEntityHash: 'a'.repeat(128),
+		peerLiveId: crypto.randomUUID(),
+		bridgeOrigin: 'http://127.0.0.1:8931',
+	})
+	assertEquals(invite.status, 'invited')
+	await client.stopLive(a.liveId)
 })

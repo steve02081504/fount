@@ -45,6 +45,17 @@ export function buildChatAvRelayWsUrl(roomId) {
 }
 
 /**
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @returns {string} 群组通话 WebSocket URL
+ */
+export function buildChatCallWsUrl(groupId, channelId) {
+	return buildWebSocketUrl(
+		`/ws/parts/shells:chat/call/${encodeURIComponent(groupId)}/${encodeURIComponent(channelId)}`,
+	)
+}
+
+/**
  * @param {Uint8Array} bytes 原始字节
  * @returns {string} 小写 hex
  */

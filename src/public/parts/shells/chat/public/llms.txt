@@ -2,7 +2,7 @@
 
 HTTP 前缀：`/api/parts/shells:chat/`。群集合：`GET`/`POST` `/api/parts/shells:chat/groups/`（须在 `:groupId` 动态段之前注册）。本地会话：`/api/parts/shells:chat/sessions/`。
 
-WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群壳、RPC 共用；须为 replica 活跃成员）。
+WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群壳、RPC 共用；须为 replica 活跃成员）；通话 `/ws/parts/shells:chat/call/:groupId/:channelId`；流媒体 `/ws/parts/shells:chat/av-relay/:roomId`。
 
 ---
 
@@ -209,7 +209,10 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | POST | `/trigger-reply` | 频道内触发角色回复 |
 | POST | `/threads` | 建子频道；需 `CREATE_THREADS` |
 | POST | `/streaming-auth` | 流媒体观看 token；频道 `type: streaming` 且配置 `streamingSfuWss` |
+| GET | `/call-status` | 群组通话状态 `{ active, peerCount, callId?, participants? }` |
 | POST | `/list-items` | 列表频道条目更新 |
+
+**群组通话**：文本频道顶栏「通话」→ WS `/ws/parts/shells:chat/call/:groupId/:channelId`（room=`groupId:channelId:call`，av-relay + roster）。首人入房发 `content.type:'call'` 卡片，参与者变化 `message_edit`，空房定稿 `status:'ended'`。屏幕共享用 `frame_type=2`。
 
 **流式（§6.4）**：DAG `message`（`is_generating: true`）→ VOLATILE `stream_chunk`（`pendingStreamId` = 占位 event id，`channelId` 必填，`chunkSeq` + `slices` diff 数组，Ed25519 签名）→ DAG `message_edit` 终稿。超时未终稿由 `streamGeneratingIdleMs`（默认 150000ms）标记失败。
 

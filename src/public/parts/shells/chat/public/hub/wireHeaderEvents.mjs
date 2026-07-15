@@ -1,3 +1,4 @@
+import { wireCallHeaderButton } from './call.mjs'
 import { hubStore } from './core/state.mjs'
 import { openFederationSettingsModal } from './federation/federationModal.mjs'
 import { wireForkActions } from './federation/forkActions.mjs'
@@ -13,6 +14,7 @@ export function wireHeaderEvents() {
 	wirePresenceInteractions()
 	wireProfilePopupDismiss()
 	wirePinsBookmarksPanels()
+	wireCallHeaderButton()
 
 	document.getElementById('hub-federation-settings-button').addEventListener('click', () => {
 		void openFederationSettingsModal(() => hubStore.context.currentGroupId)

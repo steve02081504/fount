@@ -1222,6 +1222,84 @@
 	font-size: 11px;
 	color: #fff;
 	background: rgba(0, 0, 0, 0.5);
+}
+
+.hub-call-dock {
+	border-bottom: 1px solid var(--hub-border);
+	background: var(--hub-bg-sidebar, var(--hub-bg-main));
+	padding: 8px 12px;
+}
+
+.hub-call-dock-bar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.hub-call-dock-title {
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.hub-call-peer-label {
+	font-size: 12px;
+	color: var(--hub-text-muted);
+}
+
+.hub-call-dock-actions {
+	display: flex;
+	gap: 4px;
+	margin-left: auto;
+}
+
+.hub-call-av-grid {
+	max-height: min(36vh, 280px);
+	margin-top: 8px;
+}
+
+.hub-call-block {
+	border: 1px solid var(--hub-border);
+	border-radius: 10px;
+	padding: 10px 12px;
+	background: var(--hub-media-bg, rgba(0, 0, 0, 0.08));
+	max-width: 360px;
+}
+
+.hub-call-block-head {
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.hub-call-block-meta {
+	font-size: 12px;
+	color: var(--hub-text-muted);
+	margin-bottom: 8px;
+}
+
+.hub-call-avatars {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+	margin-bottom: 8px;
+}
+
+.hub-call-avatar {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 10px;
+	background: var(--hub-accent, #5865f2);
+	color: #fff;
+	overflow: hidden;
+}
+
+#hub-header-call-button.is-active {
+	color: var(--hub-accent, #5865f2);
+}
 	border-radius: 4px;
 	padding: 2px 6px;
 	pointer-events: none;

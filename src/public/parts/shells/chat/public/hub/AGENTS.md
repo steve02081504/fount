@@ -14,8 +14,9 @@ alwaysApply: false
 
 ## Streaming AV
 
-- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`).
-- **Shared lean client**（Social live 等复用）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildSocialLiveAvWsUrl` / `buildChatAvRelayWsUrl` / `joinAvRelayRoom`（单远端、med preset；Hub 多 peer tile UI 仍用 `codecsAv`）。
+- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`)。roster / `hello` / `frame_type=2` 屏幕共享。
+- **群组通话**：文本频道顶栏 → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`；卡片 `content.type:'call'` + `message_edit` 更新参与者/结束。
+- **Shared lean client**（Social live 等复用）: `/parts/shells:chat/shared/avRelayClient.mjs` — `buildSocialLiveAvWsUrl` / `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom`。
 - **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
 - Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.
 

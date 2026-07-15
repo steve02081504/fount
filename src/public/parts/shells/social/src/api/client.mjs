@@ -336,6 +336,23 @@ export function createSocialClient(ctx) {
 			return buildLiveFeed(ctx.username, { ...opts, ...viewerOpts() })
 		},
 		/**
+		 * @param {string} liveId 本端直播
+		 * @param {{ peerEntityHash: string, peerLiveId: string, bridgeOrigin?: string }} target 对端
+		 * @returns {Promise<object>} 连线结果
+		 */
+		async inviteLiveLink(liveId, target = {}) {
+			const { inviteLiveLink } = await import('../live/link.mjs')
+			return inviteLiveLink(ctx.username, ctx.entityHash, liveId, target)
+		},
+		/**
+		 * @param {string} liveId 本端直播
+		 * @returns {Promise<object>} 结果
+		 */
+		async stopLiveLink(liveId) {
+			const { tearDownLiveLink } = await import('../live/link.mjs')
+			return tearDownLiveLink(ctx.username, ctx.entityHash, liveId)
+		},
+		/**
 		 * @param {string} query 搜索词
 		 * @param {{ maxHits?: number }} [opts] 选项
 		 * @returns {Promise<{ query: string, entities: object[] }>} 实体网络搜索

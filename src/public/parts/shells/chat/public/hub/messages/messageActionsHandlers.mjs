@@ -270,6 +270,18 @@ export function bindChannelMessageActions(container) {
 	if (container.dataset.hubChannelActionsBound === '1') return
 	container.dataset.hubChannelActionsBound = '1'
 	container.addEventListener('click', async (clickEvent) => {
+		const joinBtn = /** @type {HTMLElement} */ clickEvent.target.closest('.hub-call-join-btn')
+		if (joinBtn) {
+			clickEvent.stopPropagation()
+			const { hubStore } = await import('../core/state.mjs')
+			const groupId = hubStore.context.currentGroupId
+			const channelId = hubStore.context.currentChannelId
+			if (groupId && channelId) {
+				const { joinChannelCall } = await import('../call.mjs')
+				await joinChannelCall(groupId, channelId)
+			}
+			return
+		}
 		const actions = getChannelMessageActionsContext()
 		if (!actions) return
 		const retryButton = /** @type {HTMLElement} */ clickEvent.target.closest('[data-retry-send]')

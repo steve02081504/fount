@@ -126,6 +126,10 @@ export async function handleSocialRpc(username, rpc, ingress = {}) {
 				...await processSocialPostNotifyRpc(username, rpc),
 			}
 		}
+		case 'live_link_invite': {
+			const { handleLiveLinkInviteRpc } = await import('../live/link.mjs')
+			return handleLiveLinkInviteRpc(username, rpc)
+		}
 		default:
 			return null
 	}

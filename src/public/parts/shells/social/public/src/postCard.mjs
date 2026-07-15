@@ -10,6 +10,36 @@ import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 
 /**
+ * @param {object} liveRef 直播引用
+ * @param {(key: string, params?: object) => string} geti18n i18n
+ * @returns {string} HTML
+ */
+function renderLiveRefHtml(liveRef, geti18n) {
+	const entityHash = String(liveRef.entityHash || '').toLowerCase()
+	const liveId = String(liveRef.liveId || '').toLowerCase()
+	const ended = liveRef.status === 'ended'
+	const href = `#live:${entityHash}:${liveId}`
+	if (ended) {
+		const viewers = Number(liveRef.totalViewers) || 0
+		const likes = Number(liveRef.totalLikes) || 0
+		const durationMs = Number(liveRef.duration) || 0
+		const secs = Math.max(0, Math.round(durationMs / 1000))
+		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
+		const ss = String(secs % 60).padStart(2, '0')
+		return `<a class="live-ref-card live-ref-card--ended" href="${escapeHtml(href)}">
+			<span class="live-ref-badge">${escapeHtml(geti18n('social.live.postEnded'))}</span>
+			<span class="live-ref-avatar" data-avatar-for="${escapeHtml(entityHash)}"></span>
+			<span class="live-ref-stats">${escapeHtml(geti18n('social.live.postEndedStats', { viewers, likes, duration: `${mm}:${ss}` }))}</span>
+		</a>`
+	}
+	return `<a class="live-ref-card" href="${escapeHtml(href)}">
+		<span class="live-ref-badge">LIVE</span>
+		<span class="live-ref-avatar" data-avatar-for="${escapeHtml(entityHash)}"></span>
+		<span class="live-ref-cta">${escapeHtml(geti18n('social.live.postWatch'))}</span>
+	</a>`
+}
+
+/**
  * 创建 feed 帖子卡片构建函数（闭包注入依赖）。
  * @param {object} options 依赖
  * @param {() => string | null} options.getViewerEntityHash 当前观看者
@@ -70,7 +100,11 @@ export function createPostCardBuilder({
 		const pollHtml = item.poll && !decryptFailed
 			? renderPollHtml(item.poll, actionKey, geti18n)
 			: ''
-		let contentBlock = `${pollHtml}${mediaHtmlRaw}<div class="body markdown-body">${markdownBody}</div>`
+		const liveRef = item.post?.content?.liveRef
+		const liveRefHtml = liveRef && !decryptFailed
+			? renderLiveRefHtml(liveRef, geti18n)
+			: ''
+		let contentBlock = `${pollHtml}${mediaHtmlRaw}${liveRefHtml}<div class="body markdown-body">${markdownBody}</div>`
 		if (contentWarning && !decryptFailed)
 			contentBlock = wrapContentWarningHtml(contentBlock, {
 				warningLabel: contentWarning,

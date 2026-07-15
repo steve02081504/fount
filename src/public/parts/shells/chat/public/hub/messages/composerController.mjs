@@ -16,6 +16,21 @@ export function refreshHubHeaderButtons() {
 		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId)
 			settingsButton.removeAttribute('hidden')
 		else settingsButton.setAttribute('hidden', '')
+
+	const callButton = document.getElementById('hub-header-call-button')
+	if (callButton) {
+		const channelType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
+		const show = hubStore.context.currentMode === 'groups'
+			&& hubStore.context.currentGroupId
+			&& hubStore.context.currentChannelId
+			&& hubStore.context.currentState?.isMember
+			&& (channelType === 'text' || channelType === 'streaming')
+		if (show) {
+			callButton.removeAttribute('hidden')
+			void import('../call.mjs').then(m => m.refreshCallStatusBadge())
+		}
+		else callButton.setAttribute('hidden', '')
+	}
 }
 
 /** @returns {void} */
