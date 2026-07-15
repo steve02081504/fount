@@ -1,6 +1,6 @@
 # fount Chat 与工业化 IM 差距审阅
 
-最后核对：`2026-07-14`
+最后核对：`2026-07-15`
 
 ## 范围
 
@@ -14,15 +14,14 @@
 
 ## 结论摘要
 
-fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读模型（view-log / inbox / 未读）**，Discord 级社群原语（频道分类、角色权限、反应/置顶/投票/贴纸、子线程、跨群搜索、mute/care、Web Push）与去中心化联邦（Mailbox、EVFS、gossip）已能跑通；桥接 bot（TG/DC/WeChat）可把异网消息接进同一对象模型。
+fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读模型（view-log / inbox / 未读）**。社群原语（频道分类、角色权限、反应/置顶/投票/贴纸、子线程、跨群搜索、mute/care、Web Push）、消息手感补齐项（转发、气泡投递态、离线队列、草稿、正文翻译、消息级 CW/敏感媒体）与去中心化联邦（Mailbox、EVFS、gossip）已能跑通；桥接 bot（TG/DC/WeChat）可把异网消息接进同一对象模型。
 
-与工业化 IM 的差距主要集中在五类：
+与工业化 IM 的差距主要集中在四类：
 
 1. **载体与触达**：Web Hub / PWA；Web Push 有、APNs/FCM 无；密码学身份无中心化恢复；联系人靠 P2P 发现/邀请码；节点离线收信弱于商业 IM 常驻代理。
-2. **消息手感**：语音为录音附件；无定时/阅后即焚；无线程外 quote-reply。
+2. **消息手感残差**：语音为录音附件；无定时/阅后即焚；无线程外工业式 quote-reply；无 GIF 商店 / Slash·Bot 交互 UI；频道级 NSFW 门控无。
 3. **规模与 AV**：单进程 av-relay + 稀疏 WebRTC；无 1:1 通话 / 屏幕共享 / Stage / 通话历史；无消息投递 SLA。
-4. **治理与运营**：chat 有 ban/kick/角色/审计/fork；**无举报闭环**（举报工单在 social，勿混栽）；无企业 SSO/合规导出/Bot 商店。
-5. **生态与联邦对称**：无支付/小程序；social↔chat 仅深链；persona/plugin 无正式跨节点代理；无 ActivityPub 等异构互通。
+4. **治理、生态与联邦对称**：chat **无举报闭环**（举报工单在 social）；无企业 SSO/合规导出/Bot 商店；无支付/小程序；social↔chat 仅深链 + agent `replyViaChat`；persona/plugin 无正式跨节点代理；无 ActivityPub 等异构互通。
 
 以下分节只展开**差距**。已实现基线见附录 A。
 
@@ -35,7 +34,7 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 | 客户端 | iOS / Android / 桌面原生 | **Web Hub** + PWA `manifest`（`protocol_handlers`）；需自跑 fount |
 | 账号恢复 | 手机/邮箱/OAuth、云端换机 | operator 密钥；**无**「忘密码」中心化恢复 |
 | 联系人发现 | 通讯录、扫码、推荐 | mDNS/Nostr、邀请码/深链、本地 discovery 索引 |
-| 后台通知 | APNs / FCM / 系统推送 | **部分**：Web Push + Service Worker；APNs/FCM **无**；浏览器 `Notification` 条件极窄 |
+| 后台通知 | APNs / FCM / 系统推送 | **部分**：Web Push + Service Worker；APNs/FCM **无** |
 | 多设备 | QR 关联设备、会话同步 | 多端 `read_marker` WS 同步有；**无** QR link-device / 设备管理产品面 |
 | 常驻收信 | 云端/手机代理 | 本机节点在线；离线靠 Mailbox |
 | 云备份 | 聊天记录上云 | 本地 DAG；list UI 可本机 import/export JSON（非托管备份） |
@@ -48,19 +47,15 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 
 | 功能 | 说明 |
 | --- | --- |
-| **语音消息（工业 UX）** | Hub `#hub-voice-button` 录音 → `.wav` 附件（`composerFiles.mjs`）；无按住说话 / 波形 / 转写 |
-| **转发** | **无**用户级「转到另一会话」。有站外 **share 深链**（`share.mjs`），≠ 转发 |
+| **语音消息（工业 UX）** | Hub 录音 → `.wav` 附件（`composerFiles.mjs`）；无按住说话 / 波形 / 转写 |
 | **定时发送** | **无** |
 | **阅后即焚** | **无** ephemeral TTL 消息类型 |
-| **单条已读回执** | 仅频道 `read-marker` seq；**无** per-message receipts |
-| **投递状态** | **无**气泡级 sent / delivered / failed ACK（文件层有 `chunkReplicationAck`，不进消息 UX） |
-| **离线发送队列** | **无** pending/retry UI；联邦靠 Mailbox / gossip |
-| **Composer 草稿** | **无**草稿持久化 API/UI |
-| **富链接预览** | 前端 markdown 裸链接水合（`/api/no-cors` + OG）；非结构化入库 |
-| **正文翻译** | **无**（social 侧有翻译缓存，chat 消息面无） |
-| **内联 quote-reply** | **无**主频道内引用气泡；`parentEventId` 在 Hub 多用于 DAG 分支父边，≠ 工业回复引用 |
+| **单条已读回执** | 频道 `read-marker` seq + 成员水位；己方气泡有已读**人数**（seq 推导）；**无** Signal 式 per-message receipt 事件 |
+| **内联 quote-reply** | 无主频道内用户主动引用气泡；回复入口为子线程（`threadDrawer.mjs`）；DAG 父边引用条 ≠ 工业回复引用 |
 | **GIF / 贴纸商店** | 有本地 sticker pack + import；**无** Tenor/Giphy 级 picker |
-| **Slash / Bot 交互 UI** | Hub **无** slash commands / reply keyboard / 交互按钮编曲；桥接 bot 是平台翻译层，不是 Discord/TG Bot UX |
+| **Slash / Bot 交互 UI** | Hub **无** slash commands / reply keyboard / 交互按钮；桥接 bot 是平台翻译层，不是 Discord/TG Bot UX |
+| **富链接预览** | 前端 markdown 裸链接水合（`/api/no-cors` + OG）；非结构化入库 |
+| **NSFW / age gate** | 消息级 `content_warning` / `sensitive_media` 有；**无**频道旗标 + 确认门 |
 
 ### 2.2 有实现但未对齐工业 UX
 
@@ -68,14 +63,12 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 | --- | --- | --- |
 | 线程 | 主频道内 quote-reply 线程 | 独立子频道（`POST …/threads`、`threadDrawer.mjs`） |
 | presence | 集群级实时状态 | profile status + heartbeat（online/idle/dnd/invisible）；轻量 |
-| typing | 对方正在输入 | WS VOLATILE `typing` + bridge `sendTyping`；有 |
-| Spoiler / CW | 独立内容警告字段 | Markdown `\|\|text\|\|` spoiler 渲染；**无**独立 CW 字段 |
+| Spoiler | 独立内容警告字段 | 消息级 CW 字段 + Markdown `\|\|text\|\|` spoiler；无 Discord 式频道 CW 门控 |
 | 慢速模式 | 频道慢速倒计时 UX | `messageRateLimitPerMin` + `BYPASS_RATE_LIMIT`；设置数字，非 Discord 式倒计时条 |
-| NSFW / age gate | 频道旗标 + 确认门 | **无** |
 
-### 2.3 通知与会话组织（社群壳已齐，对标时勿当缺口）
+### 2.3 已齐（对标时勿当缺口）
 
-下列相对 Discord/微信通知与侧栏组织**已具备**，只列以免误判为缺失：mute / notify-prefs、care（穿透 mute）、书签、侧栏群文件夹、petname aliases、`channel.category` 折叠分类。证据见附录 A。
+mute / notify-prefs、care、书签、侧栏群文件夹、petname aliases、`channel.category`、转发（`forwardedFrom`）、气泡投递态（pending→sent→delivered + 失败 retry）、离线发送队列（`sendQueue.mjs`）、Composer 草稿（`composerDraft.mjs`）、正文翻译（`translate` + prefs）、typing。证据见附录 A。
 
 ---
 
@@ -164,12 +157,12 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 系统后台推送 | **部分**（Web Push；无 APNs/FCM） |
 | QR 多设备 / 手机号发现 | **无** |
 | 语音消息（工业 UX） | **部分**（录音附件） |
-| 消息转发 / 定时 / 阅后即焚 | **无** |
-| 单条已读 / 气泡投递态 / 离线发送队列 | **无** |
-| Composer 草稿 | **无** |
-| 富链接 unfurl / 正文翻译 | 前端 embed 水合 + `/translate` |
+| 定时 / 阅后即焚 | **无** |
+| 单条已读回执（Signal 式） | **部分**（频道水位 + 已读人数；无 per-message receipt） |
+| 富链接 unfurl 入库 | **部分**（前端 OG 水合） |
 | 内嵌 quote-reply 线程 | **部分**（子频道） |
 | Slash / Bot 交互 UI / GIF 商店 | **无** |
+| 频道 NSFW / age gate | **无** |
 | 1:1 通话 / 屏幕共享 / Stage / 通话历史 | **无** |
 | 大规模 AV / SFU | **部分** |
 | 消息投递 SLA | **无** |
@@ -192,7 +185,9 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 群内+跨群全文搜索 | 有 |
 | @mention inbox / 角色组 @ / care / mute prefs | 有 |
 | 投票生命周期通知 | 有 |
-| 频道级未读水位 + 多端 read_marker | **部分**（无单条回执） |
+| 转发 / 草稿 / 离线队列 / 气泡投递态 / 正文翻译 | 有 |
+| 消息级 CW / sensitive_media | 有 |
+| 频道级未读水位 + 多端 read_marker | 有（无 Signal 式单条回执） |
 | 去中心化联邦 / Mailbox / EVFS | 有 |
 | Bridge bots（TG/DC/WeChat） | 异构入口 |
 | AI char/world/persona / ChatClient | 异构，工业 IM 无对标 |
@@ -212,13 +207,15 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | --- | --- | --- |
 | 协议 | 联邦群/DM、DAG、CKG、热/冷归档、Mailbox | `public/llms.txt`；`src/server/p2p_server/AGENTS.md` |
 | 频道 | 文本/列表/流媒体、分类、树形 parent、角色 ACL、ban/kick、反应/置顶/投票、子线程、fork/信誉/denylist | `llms.txt`；`groupNav.mjs`；`threadDrawer.mjs` |
-| 消息 CRUD | edit/delete、attachments、反馈 | `channelMessages.mjs`；`composerFiles.mjs` |
+| 消息 CRUD | edit/delete、attachments、反馈、转发、CW/敏感媒体 | `channelMessages.mjs`；`messageFields.mjs`；`composerFiles.mjs` |
+| 发送手感 | 草稿、离线队列、pending→sent→delivered、失败 retry | `composerDraft.mjs`；`sendQueue.mjs`；`messageSend.mjs`；`groupStream.mjs` |
 | 表情/贴纸 | 群 emoji CAS、用户贴纸包 import、picker | `stickers/`；`pages/.../stickerPicker.mjs` |
-| Spoiler | Markdown spoiler 渲染 | `pages/scripts/features/markdown/convertor.mjs` |
+| Spoiler / CW | Markdown spoiler + 消息级 `content_warning` | `convertor.mjs`；`composerDraft.mjs`；`message_fields` 测试 |
 | 搜索 | 群内 + 跨群 | `search/`；`endpoints/globalSearch.mjs` |
 | Mentions / inbox | entity + `@[role:…]` / everyone/here；per-entityHash inbox；care | `inlineTokenSyntax.mjs`；`inbox.mjs`；`care.mjs` |
-| 未读 | channel seq + read-marker；多端 WS | `readMarkers.mjs`；`hub/unread.mjs` |
-| 通知 | Web Push + SW；mute / mode prefs | `server/web_server/notify/`；`endpoints/preferences.mjs`；`messageFanout.mjs` |
+| 未读 | channel seq + read-marker；多端 WS；成员水位 / 已读人数 | `readMarkers.mjs`；`memberReadMarkers.mjs`；`hub/unread.mjs` |
+| 通知 | Web Push + SW；mute / mode prefs | `server/web_server/notify/`；`prefs.mjs`；`messageFanout.mjs` |
+| 翻译 | 手动 + 自动翻译 prefs | `endpoints/translate.mjs`；`translationPrefs.mjs` |
 | Presence / typing | status + heartbeat；WS volatile typing | `hubStatus.mjs`；`presence.mjs`；`bridge/typing.mjs` |
 | 组织 | bookmarks、group-folders、aliases、`channel.category` | `pinsBookmarks.mjs`；`serverBar.mjs`；`shared/aliases.mjs` |
 | 文件 | 群分片、folder ops、断点续传、EVFS | `llms.txt` §群文件 |
@@ -236,7 +233,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 
 **替代微信/Line 作为日常 IM**：缺口在原生客户端、APNs/FCM、云账号恢复、通讯录发现、常驻离线收信——属产品载体 + 触达。
 
-**Discord 级社区**：社群原语已近；优先缺口在大规模 AV、内嵌 reply UX、unfurl、Bot OAuth/商店、慢速/NSFW 产品叙事——属媒体规模 + 手感/生态。
+**Discord 级社区**：社群原语与消息手感主路径已近；优先缺口在大规模 AV、内嵌 reply UX、Bot OAuth/商店、频道 NSFW——属媒体规模 + 手感/生态。
 
 **Signal 级隐私**：CKG/GSH 与本地优先已在路上；缺口在元数据面（sealed sender 类）、明文侧车策略、联邦参与者可见性——属隐私路线取舍，不是缺功能清单。
 
@@ -254,12 +251,14 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | Session | `src/public/parts/shells/chat/src/chat/session/AGENTS.md` |
 | P2P | `src/server/p2p_server/AGENTS.md` |
 | 搜索 | `src/public/parts/shells/chat/src/chat/search/`；`endpoints/globalSearch.mjs` |
-| 未读 | `src/public/parts/shells/chat/src/chat/lib/readMarkers.mjs`；`hub/unread.mjs` |
+| 未读 | `src/public/parts/shells/chat/src/chat/lib/readMarkers.mjs`；`hub/unread.mjs`；`hub/memberReadMarkers.mjs` |
 | Inbox / care | `src/public/parts/shells/chat/src/chat/lib/inbox.mjs`；`care.mjs` |
 | 通知分发 | `src/public/parts/shells/chat/src/chat/dag/messageFanout.mjs` |
 | Web Push | `src/server/web_server/notify/webPush.mjs`；`src/public/pages/service_worker.mjs` |
 | 通知偏好 | `src/public/parts/shells/chat/src/endpoints/prefs.mjs`；`public/shared/notifyPrefs.mjs` |
 | 语音附件 | `src/public/parts/shells/chat/public/hub/composerFiles.mjs` |
+| 转发 / 投递态 / 草稿 / 离线队列 | `messageActionsHandlers.mjs`；`messageSend.mjs`；`composerDraft.mjs`；`sendQueue.mjs` |
+| 翻译 | `src/public/parts/shells/chat/src/endpoints/translate.mjs` |
 | 站外分享 | `src/public/parts/shells/chat/public/src/share.mjs` |
 | social 深链 | `src/public/parts/shells/chat/public/shared/socialRunUri.mjs` |
 | Bridge | `src/public/parts/shells/chat/src/chat/bridge/` |
