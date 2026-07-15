@@ -22,6 +22,12 @@ export function createSocialTimelineState() {
 		followEvents: [],
 		following: new Set(),
 		blocked: new Set(),
+		/** @type {Set<string>} */
+		followedTags: new Set(),
+		/** @type {Map<string, Set<string>>} targetPostId → featured reply keys */
+		featuredReplies: new Map(),
+		/** @type {Map<string, object>} liveId → live_start event */
+		activeLives: new Map(),
 		/** @type {Map<string, Record<string, string>>} tagHash → locale → label */
 		tagNames: new Map(),
 		entityKeyHistory: [],
@@ -184,6 +190,84 @@ function reduceUnfollow(state, event) {
  * @param {object} event DAG 事件
  * @returns {object} 更新后状态
  */
+function reduceTagFollow(state, event) {
+	const tag = String(event.content?.tag || '').trim().toLowerCase()
+	if (tag) state.followedTags.add(tag)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceTagUnfollow(state, event) {
+	const tag = String(event.content?.tag || '').trim().toLowerCase()
+	if (tag) state.followedTags.delete(tag)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceReplyFeature(state, event) {
+	const targetPostId = String(event.content?.targetPostId || '').trim()
+	const replier = String(event.content?.replierEntityHash || '').trim().toLowerCase()
+	const replyPostId = String(event.content?.replyPostId || '').trim()
+	if (!targetPostId || !replier || !replyPostId) return state
+	const key = `${replier}:${replyPostId}`
+	const set = state.featuredReplies.get(targetPostId) || new Set()
+	set.add(key)
+	state.featuredReplies.set(targetPostId, set)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceReplyUnfeature(state, event) {
+	const targetPostId = String(event.content?.targetPostId || '').trim()
+	const replier = String(event.content?.replierEntityHash || '').trim().toLowerCase()
+	const replyPostId = String(event.content?.replyPostId || '').trim()
+	if (!targetPostId || !replier || !replyPostId) return state
+	const set = state.featuredReplies.get(targetPostId)
+	if (!set) return state
+	set.delete(`${replier}:${replyPostId}`)
+	if (!set.size) state.featuredReplies.delete(targetPostId)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceLiveStart(state, event) {
+	const liveId = String(event.content?.liveId || event.id || '').trim().toLowerCase()
+	if (liveId) state.activeLives.set(liveId, event)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceLiveEnd(state, event) {
+	const liveId = String(event.content?.liveId || '').trim().toLowerCase()
+	if (liveId) state.activeLives.delete(liveId)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
 function reduceBlock(state, event) {
 	state.blocked.add(event.content.targetEntityHash.toLowerCase())
 	return state
@@ -224,6 +308,12 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	repost: reduceRepost,
 	follow: reduceFollow,
 	unfollow: reduceUnfollow,
+	tag_follow: reduceTagFollow,
+	tag_unfollow: reduceTagUnfollow,
+	reply_feature: reduceReplyFeature,
+	reply_unfeature: reduceReplyUnfeature,
+	live_start: reduceLiveStart,
+	live_end: reduceLiveEnd,
 	block: reduceBlock,
 	unblock: reduceUnblock,
 	entity_key_rotate: reduceEntityKeyRotate,
@@ -282,6 +372,11 @@ export function finalizeSocialTimelineView(state, order) {
 		reposts: state.reposts,
 		followEvents: state.followEvents,
 		following: [...state.following],
+		followedTags: [...state.followedTags],
+		featuredReplies: Object.fromEntries(
+			[...state.featuredReplies.entries()].map(([postId, set]) => [postId, [...set]]),
+		),
+		activeLives: Object.fromEntries(state.activeLives),
 		blocked: [...state.blocked],
 		entityKeyHistory: state.entityKeyHistory,
 		recoveryPubKeyHex: state.recoveryPubKeyHex,

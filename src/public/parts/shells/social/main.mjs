@@ -119,11 +119,21 @@ export default {
 		setEndpoints(router)
 		const { bootstrapPollDeadlineWatchers } = await import('./src/lib/pollDeadlineWatcher.mjs')
 		void bootstrapPollDeadlineWatchers()
+		const { bootstrapScheduledPostWatchers } = await import('./src/lib/scheduledPostWatcher.mjs')
+		void bootstrapScheduledPostWatchers()
+		const { registerSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
+		registerSocialPostSearchQueryHandler()
+		const { registerSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
+		registerSocialLiveFeedQueryHandler()
 	},
 	/** 卸载 Social shell。 */
 	Unload: async () => {
 		const { unregisterSocialTrendingQueryHandler } = await import('./src/trending/network.mjs')
 		unregisterSocialTrendingQueryHandler()
+		const { unregisterSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
+		unregisterSocialPostSearchQueryHandler()
+		const { unregisterSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
+		unregisterSocialLiveFeedQueryHandler()
 		unregisterShellPartpath('social')
 		unregisterOperatorEntityHashProvider()
 		unregisterReplicaUsernamesProvider()

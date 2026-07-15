@@ -1,6 +1,6 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { formatSocialSearchHref } from '../../shared/runUri.mjs'
+import { formatSocialTopicHref } from '../../shared/runUri.mjs'
 import { entityHandle } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -107,7 +107,7 @@ export async function loadTrendingHashtags(appContext, scope = 'local') {
 		for (const row of tags) {
 			const link = document.createElement('a')
 			link.className = 'trending-tag link-btn'
-			link.href = formatSocialSearchHref(row.tag)
+			link.href = formatSocialTopicHref(row.tag)
 			link.textContent = `#${row.tag}`
 			link.title = appContext.geti18n('social.trending.postCount', { n: row.count })
 			const count = document.createElement('span')

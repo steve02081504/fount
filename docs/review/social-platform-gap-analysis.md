@@ -1,6 +1,6 @@
 # fount Social 与工业化社交平台差距审阅
 
-最后核对：`2026-07-15`
+最后核对：`2026-07-15`（同日已补：话题订阅、帖文搜索视图/联邦、短视频、直播、作者门控、定时发布——以代码与 `public/llms.txt` 为准）
 
 ## 范围
 
@@ -41,10 +41,10 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | 广告 / 赞助 | 信息流插槽 | **无** |
 | 地理发现 | 同城、附近的人 | **无** LBS；探索为本地 + 邻居 RPC；热搜 `nearby` = 邻居话题聚合，非坐标 |
 | 全局热搜 | 平台级事件榜 | **部分**；本地可见帖频次 + `scope=nearby` 邻居公开计数（非全球） |
-| Hashtag / 话题订阅 | 关注话题、topic feed | **无**；`#tag` 仅渲染为搜索深链 |
+| Hashtag / 话题订阅 | 关注话题、topic feed | **有**；`tag_follow` + 话题页 + feed 注入 |
 | 跨平台导入 | 从 X 等同步 | **无** |
-| 搜索范围 | 常含全站或大范围 | **弱**；帖文 `GET /search` 限于观看者已知时间线；实体搜索经 `part_query` 多跳更广 |
-| Who can reply | 作者门控评论 | **无** |
+| 搜索范围 | 常含全站或大范围 | **部分**；本地已知时间线 + `scope=nearby` 邻居 `post_search`；独立搜索视图与过滤器 |
+| Who can reply | 作者门控评论 | **有**；`replyPolicy` + 精选评论 |
 
 ---
 
@@ -56,9 +56,9 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | --- | --- |
 | **Stories / 限时动态** | 无 ephemeral 内容类型与 UI |
 | **Highlights / 永久 Story 归档** | 无 |
-| **Reels / 短视频竖屏流** | 视频仅作帖文 `mediaRefs` 附件 |
-| **直播 / Spaces / 音频房** | social 无入口；chat 有 streaming channel，未接到 social 产品面 |
-| **定时发布** | 发帖即时 `commitTimelineEvent` |
+| **Reels / 短视频竖屏流** | `GET /videos/feed` + 竖屏 snap UI（预加载/双击赞/长按快进/快捷键） |
+| **直播 / Spaces / 音频房** | social 原生 live + 可挂 chat streaming；竖屏直播间（弹幕/点赞特效/av-relay） |
+| **定时发布** | `publishAt` 队列 + scheduledPostWatcher |
 | **草稿箱** | `draftContent` 仅为服务端加密前局部变量，非用户草稿持久化 |
 | **滤镜 / 贴纸创作库** | 发图前有 canvas 裁剪/打码/画笔；无滤镜贴纸库 |
 | **Collections（策展合集）** | 收藏夹 folders ≠ 对外策展集合 |

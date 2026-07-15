@@ -7,6 +7,10 @@ import { loadNotifications } from './views/notifications.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
 import { loadTaste } from './views/taste.mjs'
+import { loadSearchView } from './views/search.mjs'
+import { loadTopicView } from './views/topic.mjs'
+import { loadVideoView } from './views/video.mjs'
+import { loadLiveView } from './views/live.mjs'
 
 /**
  * 刷新当前可见视图中的帖子列表。
@@ -51,6 +55,8 @@ export async function switchView(appContext, view) {
 	if (view === 'saved') await loadSaved(appContext)
 	if (view === 'taste') await loadTaste(appContext)
 	if (view === 'profile') await loadProfile(appContext)
+	if (view === 'videos') await loadVideoView(appContext)
+	if (view === 'live') await loadLiveView(appContext)
 }
 
 /**
@@ -59,8 +65,36 @@ export async function switchView(appContext, view) {
  * @returns {Promise<boolean>} 是否已处理导航
  */
 export async function applyIncomingNavigation(appContext) {
+	const rawHash = window.location.hash.replace(/^#/, '')
+
+	// 冒号分隔的自定义深链格式
+	if (rawHash === 'videos') {
+		await switchView(appContext, 'videos')
+		return true
+	}
+	if (rawHash.startsWith('topic:')) {
+		const tag = decodeURIComponent(rawHash.slice('topic:'.length))
+		await loadTopicView(appContext, tag)
+		return true
+	}
+	if (rawHash.startsWith('search:')) {
+		const q = decodeURIComponent(rawHash.slice('search:'.length))
+		await loadSearchView(appContext, q)
+		return true
+	}
+	if (rawHash.startsWith('live:')) {
+		const rest = rawHash.slice('live:'.length)
+		const colonIdx = rest.indexOf(':')
+		const entityHash = colonIdx >= 0 ? rest.slice(0, colonIdx) : rest
+		const liveId = colonIdx >= 0 ? rest.slice(colonIdx + 1) : ''
+		activateView('live')
+		await loadLiveView(appContext, entityHash, liveId)
+		return true
+	}
+
+	// 分号分隔的原有深链格式
 	const urlQ = new URLSearchParams(location.search).get('q')?.trim()
-	const hashParsed = parseSocialRunUri(window.location.hash.replace(/^#/, ''))
+	const hashParsed = parseSocialRunUri(rawHash)
 	if (hashParsed?.subcommand === 'search' && hashParsed.searchQuery) {
 		const tag = hashParsed.searchQuery.trim()
 		await openSearchView(appContext, tag.startsWith('#') ? tag : `#${tag}`)

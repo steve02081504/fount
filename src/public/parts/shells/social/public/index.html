@@ -47,6 +47,14 @@
 					<span class="s-ic s-ic-user" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.profile"></span>
 				</button>
+				<button type="button" data-view="videos" class="nav-btn btn btn-ghost justify-start">
+					<span class="s-ic s-ic-video" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.videos"></span>
+				</button>
+				<button type="button" data-view="live" class="nav-btn btn btn-ghost justify-start">
+					<span class="s-ic s-ic-live" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.live"></span>
+				</button>
 			</nav>
 			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
 				<span class="nav-label" data-i18n="social.composer.composeButton"></span>
@@ -87,11 +95,21 @@
 								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" aria-label="Poll">
 									<span class="s-ic s-ic-vote" aria-hidden="true"></span>
 								</button>
-								<select id="postVisibility" class="select select-bordered select-sm composer-select composer-visibility">
-									<option value="public" data-i18n="social.composer.visibilityPublic"></option>
-									<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
-								</select>
-								<input id="postLocale" type="hidden" value="zh-CN" />
+					<select id="postVisibility" class="select select-bordered select-sm composer-select composer-visibility">
+								<option value="public" data-i18n="social.composer.visibilityPublic"></option>
+								<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
+							</select>
+							<select id="postReplyPolicy" class="select select-bordered select-sm composer-select">
+								<option value="everyone" data-i18n="social.composer.replyPolicyEveryone"></option>
+								<option value="followers_7d" data-i18n="social.composer.replyPolicyFollowers7d"></option>
+								<option value="author_follows" data-i18n="social.composer.replyPolicyAuthorFollows"></option>
+							</select>
+							<select id="postReplyDisplay" class="select select-bordered select-sm composer-select">
+								<option value="all" data-i18n="social.composer.replyDisplayAll"></option>
+								<option value="featured_only" data-i18n="social.composer.replyDisplayFeaturedOnly"></option>
+							</select>
+							<input id="postPublishAt" type="datetime-local" class="composer-schedule-input" title="" data-i18n-title="social.composer.scheduleLabel" />
+							<input id="postLocale" type="hidden" value="zh-CN" />
 							</div>
 							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
 						</div>
@@ -150,7 +168,73 @@
 			</section>
 
 			<section id="profileView" class="view hidden"></section>
+
+			<section id="searchView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.search.viewTitle"></h2>
+				</header>
+				<div class="search-view-filters">
+					<div class="feed-search-wrap">
+						<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
+						<input type="search" id="searchViewInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" placeholder="" />
+					</div>
+					<div class="search-filters">
+						<input type="text" id="searchViewAuthor" class="input input-bordered input-sm" data-i18n="social.search.filterAuthor" placeholder="" />
+						<select id="searchViewMedia" class="select select-bordered select-sm">
+							<option value="" data-i18n="social.search.filterMediaAll"></option>
+							<option value="image" data-i18n="social.search.filterMediaImage"></option>
+							<option value="video" data-i18n="social.search.filterMediaVideo"></option>
+						</select>
+						<input type="text" id="searchViewTag" class="input input-bordered input-sm" data-i18n="social.search.filterTag" placeholder="#tag" />
+						<select id="searchViewSort" class="select select-bordered select-sm">
+							<option value="recent" data-i18n="social.search.sortRecent"></option>
+							<option value="popular" data-i18n="social.search.sortPopular"></option>
+						</select>
+						<select id="searchViewScope" class="select select-bordered select-sm">
+							<option value="local" data-i18n="social.search.scopeLocal"></option>
+							<option value="nearby" data-i18n="social.search.scopeNearby"></option>
+						</select>
+						<button type="button" id="searchViewButton" class="btn btn-primary btn-sm" data-i18n="social.search.submit"></button>
+					</div>
+				</div>
+				<div id="searchViewResults" class="feed-list"></div>
+			</section>
+
+			<section id="topicView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title topic-view-title">#</h2>
+					<button type="button" id="topicFollowButton" class="btn btn-primary btn-sm" data-i18n="social.topic.follow"></button>
+				</header>
+				<div id="topicPostList" class="feed-list"></div>
+			</section>
+
+			<section id="liveBroadcastView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.live.broadcast.title"></h2>
+				</header>
+				<div class="live-broadcast-panel" id="liveBroadcastPanel">
+					<input id="liveTitleInput" type="text" class="input input-bordered w-full" maxlength="120" data-i18n="social.live.broadcast.titlePlaceholder" placeholder="" />
+					<canvas id="liveBroadcastCanvas" class="live-broadcast-canvas" width="640" height="480"></canvas>
+					<button type="button" id="liveStartButton" class="btn btn-error" data-i18n="social.live.broadcast.start"></button>
+					<button type="button" id="liveStopButton" class="btn btn-ghost hidden" data-i18n="social.live.broadcast.stop"></button>
+					<p id="liveBroadcastStatus" class="live-broadcast-status"></p>
+				</div>
+			</section>
 		</main>
+
+		<section id="videoView" class="view hidden" aria-label="Short videos">
+			<button type="button" class="view-back-btn" id="videoViewBackButton" aria-label="Back">
+				<span class="s-ic s-ic-home" aria-hidden="true"></span>
+			</button>
+			<div class="vertical-snap-view" id="videoSnapContainer"></div>
+		</section>
+
+		<section id="liveView" class="view hidden" aria-label="Live streams">
+			<button type="button" class="view-back-btn" id="liveViewBackButton" aria-label="Back">
+				<span class="s-ic s-ic-home" aria-hidden="true"></span>
+			</button>
+			<div class="vertical-snap-view" id="liveSnapContainer"></div>
+		</section>
 
 		<aside class="aside-col" aria-label="Social sidebar">
 			<div class="aside-search card bg-base-200 shadow-sm">
@@ -184,6 +268,12 @@
 			</button>
 			<button type="button" data-view="profile" class="nav-btn btn btn-ghost btn-sm">
 				<span class="s-ic s-ic-user" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="videos" class="nav-btn btn btn-ghost btn-sm">
+				<span class="s-ic s-ic-video" aria-hidden="true"></span>
+			</button>
+			<button type="button" data-view="live" class="nav-btn btn btn-ghost btn-sm">
+				<span class="s-ic s-ic-live" aria-hidden="true"></span>
 			</button>
 		</nav>
 

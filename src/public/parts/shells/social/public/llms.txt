@@ -47,9 +47,44 @@ Query：`limit`（默认 12，最大 32）、`scope`（`local` 默认｜`nearby`
 Body：`{ helpful: boolean }` → `note_vote`。通知类型含 `post_note`。
 
 ### `GET /api/parts/shells:social/search`
-Query：`q`（至少 2 字符）、`limit`（默认 30，最大 100）、`cursor?`。
+Query：`q`（≥2 或配合过滤器）、`limit`、`cursor?`、`author?`、`media=image|video`、`tag?`、`sort=latest|top`、`scope=local|nearby`、`before?`/`after?`（毫秒）。
 
-在观看者已知时间线（关注 + 自身）中搜索可见帖子：`#tag` 仅匹配正文中的话题标签；否则按正文子串或作者 `entityHash` 前缀。响应：`{ query, items[], nextCursor? }`（条目与 feed 同构，仅 `kind: post`）。
+本地：观看者已知时间线倒排 + 扫描回退。`scope=nearby`：`part_query` kind `post_search` 聚合邻居公开帖摘录（入站清洗）。响应：`{ query, items[], nextCursor?, filters?, scope }`。
+
+### `POST /api/parts/shells:social/topics/follow`
+Body：`{ tag, follow?: boolean }` → 时间线 `tag_follow`/`tag_unfollow`。响应：`{ tag, isFollowing, tags[] }`。
+
+### `GET /api/parts/shells:social/topics/followed`
+响应：`{ tags[] }`。
+
+### `GET /api/parts/shells:social/topics/:tag/posts`
+话题帖流（cursor 分页）。响应：`{ tag, items[], nextCursor }`。首页 feed 也会把订阅话题公开帖并入 merge（`via: topic`）。
+
+### `GET /api/parts/shells:social/videos/feed`
+短视频竖屏流（含 video mediaRef 的公开帖，for_you 启发式）。响应：`{ items[], nextCursor }`。
+
+### `POST /api/parts/shells:social/live/start`
+Body：`{ title?, visibility?, groupId?, channelId? }`。无 group 时 social 原生 `avRoomId=social:{entityHash}:{liveId}`；有则挂载 chat streaming。写 `live_start`，通知关注者 `live_started`。
+
+### `POST /api/parts/shells:social/live/stop`
+Body：`{ liveId }` → `live_end`。
+
+### `GET /api/parts/shells:social/live/feed`
+Query：`limit`、`cursor?`、`scope=local|nearby`。在播列表。
+
+### WS `/ws/parts/shells:social/live/:entityHash/:liveId`
+弹幕/点赞信令：客户端发 `{ type:'danmaku', text }` / `{ type:'like' }`；服务端广播 `danmaku` / `like` / `viewer_count`。
+
+### WS `/ws/parts/shells:social/live-av/:entityHash/:liveId`
+复用 chat `avRelay`（WebCodecs 二进制帧）。跨节点 AV 观看需直连主播节点。
+
+### `GET /api/parts/shells:social/posts/scheduled` / `DELETE …/posts/scheduled/:scheduledId`
+定时发帖队列。`POST /posts` 带未来 `publishAt`（毫秒）则入队而非即时 commit。
+
+### `POST /api/parts/shells:social/posts/:entityHash/:postId/feature-reply`
+Body：`{ replierEntityHash, replyPostId, feature?: boolean }` → `reply_feature`/`reply_unfeature`。
+
+发帖 body 扩展：`replyPolicy`（`everyone`|`followers_7d`|`author_follows`）、`replyDisplay`（`all`|`featured_only`）、`publishAt`。
 
 ### `GET /api/parts/shells:social/entities/search`
 Query：`q`（≥2）、`limit`（默认 20）。经 chat `part_query`（`kind=entity_search`）多跳搜实体；响应同 chat `GET …/entities/search`。前端搜索页同时展示用户与帖子两段。
@@ -65,7 +100,7 @@ Query：`limit`（默认 30，最大 100）、`cursor`（分页游标）、`type
 
 响应：`{ notifications[], nextCursor, unreadCount, viewerEntityHash }`。读取层按目标聚合高频互动（like/repost 按目标帖、follow 按 24h 窗口）；`unreadCount` 为聚合卡片未读数。
 
-每条字段：`{ type, actorEntityHash, postId, targetPostId, at }` 必填；可选 `targetEntityHash`, `snippet`, `actors[]`, `actorCount`, `latestActorEntityHash`, `aggregateKey`。类型：`reply` | `mention` | `like` | `repost` | `follow` | `care_post` | `poll_closed` | `post_note`。
+每条字段：`{ type, actorEntityHash, postId, targetPostId, at }` 必填；可选 `targetEntityHash`, `snippet`, `actors[]`, `actorCount`, `latestActorEntityHash`, `aggregateKey`。类型：`reply` | `mention` | `like` | `repost` | `follow` | `care_post` | `poll_closed` | `post_note` | `live_started`。
 
 ### `POST /api/parts/shells:social/translate`
 Body：`{ text, targetLang }` — 帖子翻译（缓存于用户侧）。
@@ -109,7 +144,8 @@ Query：返回 `{ entries: [{ scope, value, kind: 'block'|'hide'|'mute' }] }`（
 ## 帖文写操作
 
 ### `POST /api/parts/shells:social/posts`
-Body：`text`、`visibility`（`public`|`followers`）、`locale`、`mediaRefs[]`、`replyTo`、`quoteRef`、`groupRef`、`contentWarning?`、`sensitiveMedia?`、`poll?`（`{ options[], multi?, deadline? }`）、`entityHash?`、`charPartName?`。
+Body：`text`、`visibility`（`public`|`followers`）、`locale`、`mediaRefs[]`、`replyTo`、`quoteRef`、`groupRef`、`contentWarning?`、`sensitiveMedia?`、`poll?`、`tags?`、`replyPolicy?`、`replyDisplay?`、`publishAt?`（未来毫秒 → 定时队列）、`entityHash?`、`charPartName?`。
+定时成功响应：`{ scheduled: true, scheduledId, publishAt }`；即时发布：`{ event }`。
 
 ### `DELETE /api/parts/shells:social/posts`
 Body：`postId`、`entityHash?`（缺省 = operator；可删自有帖或 `ownerEntityHash` 为自己的 agent 帖）。

@@ -7,6 +7,7 @@ import { authenticate } from '../../../../../server/auth/index.mjs'
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
 import { registerExploreRoutes } from './endpoints/explore.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
+import { registerLiveRoutes } from './endpoints/live.mjs'
 import { registerNotificationRoutes } from './endpoints/notifications.mjs'
 import { registerPostsRoutes } from './endpoints/posts.mjs'
 import { registerProfileRoutes } from './endpoints/profile.mjs'
@@ -16,9 +17,11 @@ import { registerSearchRoutes } from './endpoints/search.mjs'
 import { registerSignalsRoutes } from './endpoints/signals.mjs'
 import { registerTasteRoutes } from './endpoints/taste.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
+import { registerTopicsRoutes } from './endpoints/topics.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
 import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs'
 import { registerVaultRoutes } from './endpoints/vault.mjs'
+import { registerVideosRoutes } from './endpoints/videos.mjs'
 import { registerViewerRoutes } from './endpoints/viewer.mjs'
 
 /**
@@ -31,6 +34,9 @@ export function setEndpoints(router) {
 	registerExploreRoutes(router)
 	registerDiscoverRoutes(router)
 	registerSearchRoutes(router)
+	registerTopicsRoutes(router)
+	registerVideosRoutes(router)
+	registerLiveRoutes(router)
 	registerNotificationRoutes(router)
 	registerTranslateRoutes(router)
 	registerTranslationPrefsRoutes(router)

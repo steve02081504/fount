@@ -49,6 +49,12 @@ export interface SocialPollDraft {
 	deadline: string | null
 }
 
+/** 谁可回复本帖。 */
+export type SocialReplyPolicy = 'everyone' | 'followers_7d' | 'author_follows'
+
+/** 回复展示策略。 */
+export type SocialReplyDisplay = 'all' | 'featured_only'
+
 /** 时间线 `post` 事件的 content 载荷。 */
 export interface SocialPostContent {
 	text?: string
@@ -61,6 +67,9 @@ export interface SocialPostContent {
 	contentWarning?: string
 	sensitiveMedia?: boolean
 	poll?: SocialPollDraft
+	tags?: string[]
+	replyPolicy?: SocialReplyPolicy
+	replyDisplay?: SocialReplyDisplay
 }
 
 /** `post_edit` 事件 content。 */
@@ -136,11 +145,22 @@ export type SocialTimelineEventType =
 	| 'post_edit'
 	| 'post_delete'
 	| 'poll_vote'
+	| 'post_note'
+	| 'note_vote'
 	| 'like'
 	| 'unlike'
+	| 'dislike'
+	| 'undislike'
+	| 'tag_name'
 	| 'repost'
 	| 'follow'
 	| 'unfollow'
+	| 'tag_follow'
+	| 'tag_unfollow'
+	| 'reply_feature'
+	| 'reply_unfeature'
+	| 'live_start'
+	| 'live_end'
 	| 'follow_approve'
 	| 'block'
 	| 'unblock'
@@ -156,11 +176,22 @@ export interface SocialTimelineEventContentMap {
 	post_edit: SocialPostEditContent
 	post_delete: SocialPostDeleteContent
 	poll_vote: SocialPollVoteContent
+	post_note: Record<string, unknown>
+	note_vote: Record<string, unknown>
 	like: SocialLikeContent
 	unlike: SocialLikeContent
+	dislike: SocialLikeContent
+	undislike: SocialLikeContent
+	tag_name: Record<string, unknown>
 	repost: SocialRepostContent
 	follow: SocialFollowContent
 	unfollow: SocialFollowContent
+	tag_follow: { tag: string }
+	tag_unfollow: { tag: string }
+	reply_feature: { targetPostId: string, replierEntityHash: string, replyPostId: string }
+	reply_unfeature: { targetPostId: string, replierEntityHash: string, replyPostId: string }
+	live_start: Record<string, unknown>
+	live_end: { liveId: string }
 	follow_approve: Record<string, unknown>
 	block: SocialBlockContent
 	unblock: SocialBlockContent

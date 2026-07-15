@@ -1,4 +1,5 @@
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
+import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import {
 	formatGroupRefMarkdownToken,
 	groupRefLabel,
@@ -151,6 +152,19 @@ export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMe
 		}
 	if (appContext.state.pendingPoll)
 		body.poll = appContext.state.pendingPoll
+
+	const replyPolicy = document.getElementById('postReplyPolicy')?.value
+	if (replyPolicy && replyPolicy !== 'everyone') body.replyPolicy = replyPolicy
+
+	const replyDisplay = document.getElementById('postReplyDisplay')?.value
+	if (replyDisplay && replyDisplay !== 'all') body.replyDisplay = replyDisplay
+
+	const publishAtEl = document.getElementById('postPublishAt')
+	if (publishAtEl instanceof HTMLInputElement && publishAtEl.value) {
+		const ms = new Date(publishAtEl.value).getTime()
+		if (!Number.isNaN(ms) && ms > Date.now()) body.publishAt = ms
+	}
+
 	return body
 }
 
@@ -268,6 +282,7 @@ export async function publishPost(appContext) {
 		&& !appContext.state.pendingPoll) return
 	const uploadedRefs = await ensureUploadedMediaRefs(appContext.state.pendingMediaRefs)
 	const body = buildPostBody(appContext, uploadedRefs)
+	const isScheduled = !!body.publishAt
 	await appContext.socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
@@ -278,6 +293,9 @@ export async function publishPost(appContext) {
 	const sensitiveEl = document.getElementById('postSensitiveMedia')
 	if (sensitiveEl instanceof HTMLInputElement)
 		sensitiveEl.checked = false
+	const publishAtEl = document.getElementById('postPublishAt')
+	if (publishAtEl instanceof HTMLInputElement)
+		publishAtEl.value = ''
 	for (const ref of appContext.state.pendingMediaRefs)
 		if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
 	appContext.state.pendingMediaRefs = []
@@ -291,6 +309,8 @@ export async function publishPost(appContext) {
 	const groupSelect = document.getElementById('linkGroupSelect')
 	if (groupSelect instanceof HTMLSelectElement)
 		groupSelect.value = ''
+	if (isScheduled)
+		showToastI18n('success', 'social.composer.scheduleSuccess')
 }
 
 /**

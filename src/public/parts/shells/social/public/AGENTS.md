@@ -15,10 +15,12 @@ alwaysApply: false
 - **HTTP routes**: 薄封装 → `getSocialClient(username)`；writes at `POST …/posts`（含 poll / contentWarning / sensitiveMedia / mediaRefs.alt）、`…/edit`、`…/poll-vote`、`…/notes`、`…/notes/:id/vote`、`…/like|dislike|repost`、`DELETE …/posts`；`GET|PUT /taste`、`GET|PUT /profile/muted-keywords`、`POST /signals/dwell`；relationships 同理。Types: `src/decl/socialAPI.ts`；总览 `public/llms.txt`。
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ `content.visibility: followers`（GSH）≠ Mastodon unlisted/direct；`follow_approve` 签发 vault H，不是 locked-account 审批关注。Feed 解密失败见 `post.decryptView.failed`。`contentWarning` 折叠 media/poll/正文；`sensitiveMedia` 单独 blur 媒体遮罩。
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
-- **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note`（`inbox.mjs`）。
+- **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started`（`inbox.mjs`）。
 - **Share URL**: 复制/分享走 `wrapProtocolHttpsUrl` → GitHub Pages protocol 中转到读者本机实例。
 - **Trending**: `scope=local|nearby`；nearby 用 `part_query` `trending_hashtags`。
-- **Dwell**: 前端 `dwellTracker.mjs` 本地 IntersectionObserver；仅本机排序弱信号，不联邦。
+- **Dwell**: 前端 `dwellTracker.mjs` 本地 IntersectionObserver；短视频可报 `watchMs`/`watchRatio`；仅本机排序弱信号，不联邦。
+- **Topics / search / videos / live**: `tag_follow` 话题页；`GET /search` 支持过滤器与 `scope=nearby`（`post_search`）；`GET /videos/feed` + 竖屏 snap；`/live/*` + `av-relay`（`chat/public/shared/avRelayClient.mjs`）；定时发帖 `publishAt` + `scheduledPostWatcher`（仿 poll deadline）。
+- **Reply gate**: `replyPolicy`/`replyDisplay`/`reply_feature`；权威过滤在 `listReplies`，写侧预检 + inbox 跳过。
 
 ## UI conventions
 

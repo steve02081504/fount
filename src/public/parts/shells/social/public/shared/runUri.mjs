@@ -52,6 +52,15 @@ export function formatSocialSearchHref(query) {
 }
 
 /**
+ * @param {string} tag 话题标签（不含 #）
+ * @returns {string} 话题页浏览器 hash 链接
+ */
+export function formatSocialTopicHref(tag) {
+	const t = String(tag || '').trim().replace(/^#/, '')
+	return `/parts/shells:social/#topic:${encodeURIComponent(t)}`
+}
+
+/**
  * @param {string} entityHash 目标 entityHash
  * @returns {string} Chat hub 联系链接
  */

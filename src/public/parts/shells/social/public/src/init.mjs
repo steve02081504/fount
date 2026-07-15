@@ -21,6 +21,10 @@ import { applyIncomingNavigation, afterPublishPost, switchView } from './navigat
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
+import { initSearchView } from './views/search.mjs'
+import { initTopicView } from './views/topic.mjs'
+import { handleVideoKeydown } from './views/video.mjs'
+import { initLiveBroadcastView } from './views/live.mjs'
 
 const socialGate = createReadyGate(SOCIAL_APP_GATE)
 
@@ -187,6 +191,20 @@ export async function bootstrapSocialApp(appContext) {
 			const label = select.selectedOptions[0]?.textContent
 			|| groupRefLabel({ groupId, channelId })
 			setPendingGroupRef(appContext, groupId, channelId, label)
+		})
+
+		// 初始化新视图
+		initSearchView(appContext)
+		initTopicView(appContext)
+		initLiveBroadcastView(appContext)
+
+		// 视频视图键盘导航
+		document.getElementById('videoView')?.addEventListener('keydown', handleVideoKeydown)
+		document.getElementById('videoViewBackButton')?.addEventListener('click', () => {
+			void switchView(appContext, 'feed')
+		})
+		document.getElementById('liveViewBackButton')?.addEventListener('click', () => {
+			void switchView(appContext, 'feed')
 		})
 
 		if (!await applyIncomingNavigation(appContext))

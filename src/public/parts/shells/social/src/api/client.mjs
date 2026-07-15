@@ -261,6 +261,81 @@ export function createSocialClient(ctx) {
 			})
 		},
 		/**
+		 * @returns {Promise<object[]>} 定时发帖列表
+		 */
+		async listScheduledPosts() {
+			const { listScheduledPosts } = await import('../lib/scheduledPosts.mjs')
+			return listScheduledPosts(ctx.username, ctx.entityHash)
+		},
+		/**
+		 * @param {string} scheduledId id
+		 * @returns {Promise<object | null>} 取消项
+		 */
+		async cancelScheduledPost(scheduledId) {
+			const { cancelScheduledPost } = await import('../lib/scheduledPosts.mjs')
+			const { cancelScheduledPostTimer } = await import('../lib/scheduledPostWatcher.mjs')
+			const removed = cancelScheduledPost(ctx.username, ctx.entityHash, scheduledId)
+			if (removed) cancelScheduledPostTimer(ctx.username, ctx.entityHash, scheduledId)
+			return removed
+		},
+		/**
+		 * @param {string} tag 话题
+		 * @param {boolean} [follow] 是否订阅
+		 * @returns {Promise<object>} 结果
+		 */
+		async followTopic(tag, follow = true) {
+			const { setTagFollow } = await import('../topics.mjs')
+			return setTagFollow(ctx.username, ctx.entityHash, tag, follow !== false)
+		},
+		/**
+		 * @returns {Promise<{ tags: string[] }>} 已订阅话题
+		 */
+		async followedTopics() {
+			const { listFollowedTags } = await import('../topics.mjs')
+			return listFollowedTags(ctx.username, ctx.entityHash)
+		},
+		/**
+		 * @param {string} tag 话题
+		 * @param {{ limit?: number, cursor?: string }} [opts] 分页
+		 * @returns {Promise<object>} 话题帖流
+		 */
+		async topicPosts(tag, opts = {}) {
+			const { buildTopicFeed } = await import('../topics.mjs')
+			return buildTopicFeed(ctx.username, tag, { ...opts, ...viewerOpts() })
+		},
+		/**
+		 * @param {{ limit?: number, cursor?: string }} [opts] 分页
+		 * @returns {Promise<object>} 短视频流
+		 */
+		async videosFeed(opts = {}) {
+			const { buildVideosFeed } = await import('../videosFeed.mjs')
+			return buildVideosFeed(ctx.username, { ...opts, ...viewerOpts() })
+		},
+		/**
+		 * @param {object} draft 开播草稿
+		 * @returns {Promise<object>} live 会话
+		 */
+		async startLive(draft = {}) {
+			const { startLiveSession } = await import('../live/session.mjs')
+			return startLiveSession(ctx.username, ctx.entityHash, draft)
+		},
+		/**
+		 * @param {string} liveId 直播 id
+		 * @returns {Promise<object>} 结束结果
+		 */
+		async stopLive(liveId) {
+			const { stopLiveSession } = await import('../live/session.mjs')
+			return stopLiveSession(ctx.username, ctx.entityHash, liveId)
+		},
+		/**
+		 * @param {{ limit?: number, cursor?: string, scope?: string }} [opts] 选项
+		 * @returns {Promise<object>} 在播列表
+		 */
+		async liveFeed(opts = {}) {
+			const { buildLiveFeed } = await import('../live/feed.mjs')
+			return buildLiveFeed(ctx.username, { ...opts, ...viewerOpts() })
+		},
+		/**
 		 * @param {string} query 搜索词
 		 * @param {{ maxHits?: number }} [opts] 选项
 		 * @returns {Promise<{ query: string, entities: object[] }>} 实体网络搜索
@@ -669,7 +744,38 @@ async function createTimelinePost(ctx, draft) {
 	const charPartName = draft.charPartName
 		|| ctx.charPartName
 		|| (resolved?.kind === 'agent' ? resolved.charPartName : null)
+
+	const publishAt = draft.publishAt != null ? Number(draft.publishAt) : NaN
+	if (Number.isFinite(publishAt) && publishAt > Date.now()) {
+		const { enqueueScheduledPost } = await import('../lib/scheduledPosts.mjs')
+		const { scheduleOneScheduledPost } = await import('../lib/scheduledPostWatcher.mjs')
+		const storedDraft = { ...draft }
+		delete storedDraft.publishAt
+		const row = enqueueScheduledPost(ctx.username, ctx.entityHash, storedDraft, publishAt)
+		scheduleOneScheduledPost(ctx.username, ctx.entityHash, row)
+		return { scheduled: true, scheduledId: row.scheduledId, publishAt: row.publishAt }
+	}
+
 	const visibility = draft.visibility === 'followers' ? 'followers' : 'public'
+	const { normalizeReplyPolicy, normalizeReplyDisplay, canReplyUnderPolicy, loadPostReplyGate } = await import('../lib/replyPolicy.mjs')
+	const replyPolicy = normalizeReplyPolicy(draft.replyPolicy)
+	const replyDisplay = normalizeReplyDisplay(draft.replyDisplay)
+
+	if (draft.replyTo?.entityHash && draft.replyTo?.postId) {
+		const targetOwner = String(draft.replyTo.entityHash).toLowerCase()
+		if (!await isKnownSocialTarget(ctx.username, targetOwner))
+			throw httpError(400, 'unknown entity')
+		const gate = await loadPostReplyGate(ctx.username, targetOwner, String(draft.replyTo.postId))
+		if (!gate) throw httpError(404, 'reply target not found')
+		const allowed = await canReplyUnderPolicy({
+			username: ctx.username,
+			authorEntityHash: targetOwner,
+			replierEntityHash: ctx.entityHash,
+			replyPolicy: gate.replyPolicy,
+		})
+		if (!allowed) throw httpError(403, 'reply not allowed by author policy')
+	}
+
 	const draftContent = {
 		text: String(draft.text),
 		mediaRefs: sanitizeMediaRefs([
@@ -681,6 +787,8 @@ async function createTimelinePost(ctx, draft) {
 		groupRef: draft.groupRef,
 		locale: draft.locale || 'zh-CN',
 		visibility,
+		...replyPolicy !== 'everyone' ? { replyPolicy } : {},
+		...replyDisplay !== 'all' ? { replyDisplay } : {},
 		...draft.contentWarning ? { contentWarning: String(draft.contentWarning).trim().slice(0, 200) } : {},
 		...resolveSensitiveMedia(draft.sensitiveMedia, draft.contentWarning) ? { sensitiveMedia: true } : {},
 	}

@@ -12,7 +12,34 @@ export function registerPostsRoutes(router) {
 	router.post('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const post = await client.post(req.body || {})
+		if (post?.scheduled)
+			return res.status(200).json({ scheduled: true, scheduledId: post.scheduledId, publishAt: post.publishAt })
 		res.status(200).json({ event: post.event })
+	})
+
+	router.get('/api/parts/shells\\:social/posts/scheduled', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json({ items: await client.listScheduledPosts() })
+	})
+
+	router.delete('/api/parts/shells\\:social/posts/scheduled/:scheduledId', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const removed = await client.cancelScheduledPost(String(req.params.scheduledId || ''))
+		if (!removed) throw httpError(404, 'scheduled post not found')
+		res.status(200).json({ cancelled: true, scheduledId: removed.scheduledId })
+	})
+
+	router.post('/api/parts/shells\\:social/posts/:entityHash/:postId/feature-reply', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const post = await client.post(routeEntityHash(req.params), String(req.params.postId))
+		const feature = req.body?.feature !== false
+		res.status(200).json({
+			event: await post.featureReply({
+				replierEntityHash: req.body?.replierEntityHash,
+				replyPostId: req.body?.replyPostId,
+				feature,
+			}),
+		})
 	})
 
 	router.delete('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {

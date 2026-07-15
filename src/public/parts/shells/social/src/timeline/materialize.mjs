@@ -95,20 +95,33 @@ export async function getTimelineMaterialized(username, entityHash) {
 	const bucket = timelineCacheBucket(username)
 	const memoryHit = bucket.get(entityKey)
 	if (memoryHit && memoryHit.tipId === tipId)
-		return memoryHit.view
+		return ensureTimelineViewDefaults(memoryHit.view)
 
 	const cached = await loadTimelineSnapshot(username, entityHash)
 	if (snapshotMatchesTip(cached, tipId)) {
-		const entry = { tipId, view: cached }
+		const view = ensureTimelineViewDefaults(cached)
+		const entry = { tipId, view }
 		bucket.set(entityKey, entry)
 		timelineViewCache.touch(username, bucket)
 		return entry.view
 	}
 
 	const events = await readTimelineEvents(username, entityHash)
-	const view = materializeTimeline(events)
+	const view = ensureTimelineViewDefaults(materializeTimeline(events))
 	bucket.set(entityKey, { tipId, view })
 	timelineViewCache.touch(username, bucket)
+	return view
+}
+
+/**
+ * @param {object} view 物化视图
+ * @returns {object} 补齐新字段默认值
+ */
+function ensureTimelineViewDefaults(view) {
+	if (!view) return view
+	if (!view.followedTags) view.followedTags = []
+	if (!view.featuredReplies) view.featuredReplies = {}
+	if (!view.activeLives) view.activeLives = {}
 	return view
 }
 

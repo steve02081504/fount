@@ -17,7 +17,7 @@ import { loadMutedKeywords } from './mutedKeywords.mjs'
 import { pushFeedUpdate } from './ws/feedHub.mjs'
 
 /** @type {Set<string>} */
-export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed', 'post_note'])
+export const VALID_NOTIFICATION_TYPES = new Set(['reply', 'mention', 'like', 'repost', 'follow', 'care_post', 'poll_closed', 'post_note', 'live_started'])
 
 /**
  *
@@ -400,6 +400,22 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		if (row.actorEntityHash === row.recipient) continue
 		if (!await canWriteTimeline(username, row.recipient)) continue
 		if (await isMutedBy(row.recipient, { entityHash: row.actorEntityHash })) continue
+		if (row.type === 'reply' && event.content?.replyTo?.entityHash) {
+			const { canReplyUnderPolicy, loadPostReplyGate } = await import('./lib/replyPolicy.mjs')
+			const gate = await loadPostReplyGate(
+				username,
+				String(event.content.replyTo.entityHash),
+				String(event.content.replyTo.postId || ''),
+			)
+			const allowed = await canReplyUnderPolicy({
+				username,
+				authorEntityHash: String(event.content.replyTo.entityHash),
+				replierEntityHash: timelineOwner,
+				replyPolicy: gate?.replyPolicy || 'everyone',
+				at: Number(event.hlc?.wall) || Number(event.timestamp) || Date.now(),
+			})
+			if (!allowed) continue
+		}
 		const snippet = await resolveNotificationSnippet(username, timelineOwner, event, row)
 		const mutedKeywords = await loadMutedKeywords(username, row.recipient)
 		const filterPost = {

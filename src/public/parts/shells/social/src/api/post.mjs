@@ -185,6 +185,21 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 			await pullPostNotes(ctx.username, owner, id).catch(() => null)
 			return summarizeNotes(ctx.username, owner, id)
 		},
+		/**
+		 * 作者精选 / 取消精选回复。
+		 * @param {{ replierEntityHash: string, replyPostId: string, feature?: boolean }} opts 选项
+		 * @returns {Promise<object>} 事件
+		 */
+		async featureReply(opts = {}) {
+			const signerOpts = await resolveOwnerContentSigner(ctx, owner)
+			const replierEntityHash = String(opts.replierEntityHash || '').trim().toLowerCase()
+			const replyPostId = String(opts.replyPostId || '').trim()
+			if (!replierEntityHash || !replyPostId) throw httpError(400, 'replierEntityHash and replyPostId required')
+			return commitTimelineEvent(ctx.username, owner, {
+				type: opts.feature === false ? 'reply_unfeature' : 'reply_feature',
+				content: { targetPostId: id, replierEntityHash, replyPostId },
+			}, signerOpts)
+		},
 	}
 }
 

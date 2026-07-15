@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "页面未找到",
+		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页"
+	},
 	"lang": "zh-CN",
 	"name": "简体中文",
 	"channels": {
@@ -1151,7 +1157,9 @@
 			"notifications": "收件箱",
 			"saved": "收藏",
 			"taste": "偏好",
-			"profile": "我的"
+			"profile": "我的",
+			"videos": "短视频",
+			"live": "直播"
 		},
 		"actor": {
 			"label": "当前身份",
@@ -1173,7 +1181,14 @@
 			"editMosaic": "打码",
 			"editBrush": "画笔",
 			"editApply": "应用",
-			"editCancel": "取消"
+			"editCancel": "取消",
+			"replyPolicyEveryone": "所有人可回复",
+			"replyPolicyFollowers7d": "7天以上关注者",
+			"replyPolicyAuthorFollows": "我关注的人",
+			"replyDisplayAll": "显示全部回复",
+			"replyDisplayFeaturedOnly": "仅精选回复",
+			"scheduleLabel": "定时发布",
+			"scheduleSuccess": "帖子已加入定时队列"
 		},
 		"feed": {
 			"loadMore": "加载更多",
@@ -1226,7 +1241,18 @@
 			"usersEmpty": "没有匹配的用户",
 			"pinAlias": "设为别名",
 			"dm": "发私信",
-			"trustScore": "信任 ${score}"
+			"trustScore": "信任 ${score}",
+			"viewTitle": "搜索",
+			"loading": "搜索中…",
+			"filterAuthor": "作者",
+			"filterMediaAll": "所有媒体",
+			"filterMediaImage": "图片",
+			"filterMediaVideo": "视频",
+			"filterTag": "标签",
+			"sortRecent": "最新",
+			"sortPopular": "热门",
+			"scopeLocal": "本机",
+			"scopeNearby": "附近"
 		},
 		"profile": {
 			"viewPosts": "查看动态",
@@ -1347,7 +1373,7 @@
 			}
 		},
 		"replies": {
-			"placeholder": "写回复…",
+			"placeholder": "写一条回复…",
 			"submit": "回复",
 			"empty": "暂无回复"
 		},
@@ -1408,6 +1434,28 @@
 			"explorePosts": "暂无探索帖子",
 			"likedPosts": "暂无点赞",
 			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
+		},
+		"topic": {
+			"follow": "订阅",
+			"unfollow": "取消订阅",
+			"empty": "该话题暂无帖子"
+		},
+		"video": {
+			"empty": "暂无短视频"
+		},
+		"live": {
+			"empty": "暂无直播",
+			"viewers": "${n} 人观看",
+			"danmakuPlaceholder": "说点什么…",
+			"danmakuSend": "发送",
+			"broadcast": {
+				"title": "开播",
+				"titlePlaceholder": "直播标题（可选）",
+				"start": "开始直播",
+				"stop": "停止直播",
+				"started": "直播已开始",
+				"stopped": "直播已停止"
+			}
 		}
 	},
 	"chat": {
@@ -4603,12 +4651,6 @@
 		},
 		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
-	},
-	"404": {
-		"title": "页面未找到",
-		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
-		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
-		"homepageButton": "返回首页"
 	},
 	"tips": {
 		"title": "你知道吗？",

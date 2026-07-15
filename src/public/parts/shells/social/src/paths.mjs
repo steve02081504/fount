@@ -92,6 +92,50 @@ export function socialTrendingIndexPath(username) {
 }
 
 /**
+ * 定时发帖队列文件。
+ * @param {string} username replica
+ * @param {string} entityHash 实体
+ * @returns {string} scheduled.json
+ */
+export function scheduledPostsPath(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	return `${getUserDictionary(username)}/shells/social/scheduled/${hash}.json`
+}
+
+/**
+ * 直播会话目录。
+ * @param {string} username replica
+ * @param {string} entityHash 主播
+ * @returns {string} live 目录
+ */
+export function liveDir(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	return `${getUserDictionary(username)}/shells/social/live/${hash}`
+}
+
+/**
+ * 单场直播会话元数据。
+ * @param {string} username replica
+ * @param {string} entityHash 主播
+ * @param {string} liveId 直播 id
+ * @returns {string} live.json
+ */
+export function liveSessionPath(username, entityHash, liveId) {
+	return `${liveDir(username, entityHash)}/${String(liveId).trim().toLowerCase()}.json`
+}
+
+/**
+ * 直播弹幕 JSONL。
+ * @param {string} username replica
+ * @param {string} entityHash 主播
+ * @param {string} liveId 直播 id
+ * @returns {string} danmaku.jsonl
+ */
+export function liveDanmakuPath(username, entityHash, liveId) {
+	return `${liveDir(username, entityHash)}/${String(liveId).trim().toLowerCase()}.danmaku.jsonl`
+}
+
+/**
  * 返回时间线对应的 DAG groupId。
  * @param {string} entityHash 128 hex
  * @returns {string} DAG groupId

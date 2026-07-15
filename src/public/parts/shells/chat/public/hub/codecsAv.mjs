@@ -3,12 +3,12 @@
  * 【职责】Codecs 音视频中继：构建 relay 房间 ID/WebSocket URL，加入/离开 AV 房间与编解码预设。
  * 【原理】与 `streamingAv` 配合更新通话工具栏；本文件侧重 MediaStream/Encoder 与 relay 信令 UI 片段。使用独立 AV relay WebSocket（`buildAvRelayWebSocketUrl`），与群组消息 WS 分离。
  * 【数据结构】见函数入参与返回值 JSDoc。
- * 【关联】../../../../scripts/template、../src/wsUrl、core/domUtils
+ * 【关联】../shared/avRelayClient（URL）、../../../../scripts/template、core/domUtils
  */
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
-import { buildAvRelayWebSocketUrl } from '../src/wsUrl.mjs'
+import { buildChatAvRelayWsUrl } from '../shared/avRelayClient.mjs'
 
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
@@ -62,8 +62,7 @@ export function buildAvRelayRoomId(groupId, channelId) {
  * @returns {string} WebSocket URL
  */
 export function buildAvRelayWsUrl(groupId, channelId) {
-	const roomId = buildAvRelayRoomId(groupId, channelId)
-	return buildAvRelayWebSocketUrl(roomId)
+	return buildChatAvRelayWsUrl(buildAvRelayRoomId(groupId, channelId))
 }
 
 /**

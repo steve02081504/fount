@@ -4,7 +4,7 @@
 import { visit, SKIP } from 'https://esm.sh/unist-util-visit'
 
 import { expandChannelLinksInText } from '/parts/shells:chat/shared/expandChannelLinks.mjs'
-import { formatSocialSearchHref } from '../shared/runUri.mjs'
+import { formatSocialTopicHref } from '../shared/runUri.mjs'
 
 /** 话题标签（不含 Chat `#[channel:…]` 等 typed hash token）。 */
 const HASHTAG_RE = /#([\p{L}\p{N}_-]{2,32})/gu
@@ -35,12 +35,12 @@ function remarkSocialDialect() {
 				hasHashtags = true
 				if (start > lastIndex)
 					parts.push({ type: 'text', value: value.slice(lastIndex, start) })
-				parts.push({
-					type: 'link',
-					url: formatSocialSearchHref(match[1]),
-					title: null,
-					children: [{ type: 'text', value: `#${match[1]}` }],
-				})
+			parts.push({
+				type: 'link',
+				url: formatSocialTopicHref(match[1]),
+				title: null,
+				children: [{ type: 'text', value: `#${match[1]}` }],
+			})
 				lastIndex = start + match[0].length
 			}
 

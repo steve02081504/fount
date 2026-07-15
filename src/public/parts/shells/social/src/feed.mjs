@@ -227,6 +227,46 @@ export async function buildHomeFeed(username, options = {}) {
 		streams.push({ candidates, index: 0 })
 	}
 
+	// 订阅话题源：从已知时间线注入含标签的公开帖
+	if (viewer) {
+		const viewerView = await getTimelineMaterialized(username, viewer)
+		const followedTags = new Set((viewerView.followedTags || []).map(t => String(t).toLowerCase()))
+		if (followedTags.size) {
+			const { extractHashtagsFromText } = await import('./lib/hashtags.mjs')
+			/** @type {object[]} */
+			const topicCandidates = []
+			const seenKeys = new Set()
+			for (const entityHash of feedSources) {
+				if (!isEntityHash128(entityHash)) continue
+				const view = await getTimelineMaterialized(username, entityHash)
+				for (const post of view.posts || []) {
+					if (post.content?.visibility === 'followers') continue
+					const tags = [
+						...extractHashtagsFromText(post.content?.text || ''),
+						...(Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : []),
+					]
+					if (!tags.some(tag => followedTags.has(tag))) continue
+					const key = `${entityHash}:${post.id}`
+					if (seenKeys.has(key)) continue
+					seenKeys.add(key)
+					topicCandidates.push({
+						kind: 'post',
+						entityHash,
+						postId: post.id,
+						post,
+						hlc: post.hlc,
+						via: 'topic',
+						repPenalty: reputationSortPenalty(entityHash, pickNodeScore),
+					})
+				}
+			}
+			if (topicCandidates.length) {
+				topicCandidates.sort((a, b) => -compareFeedItems(a, b))
+				streams.push({ candidates: topicCandidates, index: 0 })
+			}
+		}
+	}
+
 	let collecting = !options.cursor
 	/** @type {object[]} */
 	const items = []
@@ -251,6 +291,7 @@ export async function buildHomeFeed(username, options = {}) {
 			item = await buildPostFeedItem(username, candidate.entityHash, candidate.post, itemContext)
 
 		if (!item) continue
+		if (candidate.via) item.via = candidate.via
 		const key = feedItemCursorKey(item)
 		if (!collecting) {
 			if (key === options.cursor) collecting = true
@@ -356,6 +397,12 @@ export async function buildLikedFeedItems(username, entityHash, options = {}) {
  */
 export async function listReplies(username, entityHash, postId, options = {}) {
 	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
+	const { canReplyUnderPolicy, featuredReplyKey, loadPostReplyGate, normalizeReplyDisplay } = await import('./lib/replyPolicy.mjs')
+	const gate = await loadPostReplyGate(username, entityHash, postId)
+	const replyPolicy = gate?.replyPolicy || 'everyone'
+	const replyDisplay = gate?.replyDisplay || 'all'
+	const authorView = await getTimelineMaterialized(username, entityHash)
+	const featuredSet = new Set(authorView.featuredReplies?.[postId] || [])
 	/** @type {object[]} */
 	const replies = []
 	const refs = await queryReplyIndex(username, entityHash, postId)
@@ -368,7 +415,16 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 		const post = view.postById?.[ref.postId] || view.posts?.find(row => row.id === ref.postId)
 		if (!post) continue
 		if (!canViewPost({ ...post, entityHash: author }, viewerContext)) continue
-		replies.push({ entityHash: author, post })
+		const allowed = await canReplyUnderPolicy({
+			username,
+			authorEntityHash: entityHash,
+			replierEntityHash: author,
+			replyPolicy,
+			at: Number(post.hlc?.wall) || Number(post.timestamp) || Date.now(),
+		})
+		if (!allowed) continue
+		const featured = featuredSet.has(featuredReplyKey(author, ref.postId))
+		replies.push({ entityHash: author, post, featured })
 	}
 
 	if (!replies.length)
@@ -384,15 +440,26 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 				if (replyTo.postId !== postId) continue
 				if (!canViewPost({ ...post, entityHash: author }, viewerContext))
 					continue
-				replies.push({ entityHash: author, post })
+				const allowed = await canReplyUnderPolicy({
+					username,
+					authorEntityHash: entityHash,
+					replierEntityHash: author,
+					replyPolicy,
+					at: Number(post.hlc?.wall) || Number(post.timestamp) || Date.now(),
+				})
+				if (!allowed) continue
+				const featured = featuredSet.has(featuredReplyKey(author, post.id))
+				replies.push({ entityHash: author, post, featured })
 			}
 		}
-	
 
 	replies.sort((left, right) => {
+		if (left.featured !== right.featured) return left.featured ? -1 : 1
 		const lw = Number(left.post.hlc.wall)
 		const rw = Number(right.post.hlc.wall)
 		return rw - lw
 	})
+	if (normalizeReplyDisplay(replyDisplay) === 'featured_only')
+		return replies.filter(row => row.featured)
 	return replies
 }
