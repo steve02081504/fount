@@ -16,6 +16,9 @@ export class chatReply_t {
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
+	locale?: string
+	content_warning?: string
+	sensitive_media?: boolean
 	files?: {
 		name: string
 		mime_type: string
@@ -124,6 +127,17 @@ export type channelMessageContent_t = {
 	fileIds?: string[]
 	fileCount?: number
 	isAutoTrigger?: boolean
+	locale?: string
+	content_warning?: string
+	sensitive_media?: boolean
+	forwardedFrom?: {
+		groupId: string
+		channelId: string
+		eventId: string
+		senderName?: string
+		shareUrl?: string
+	}
+	fileAlts?: Record<string, string>
 	[key: string]: unknown
 }
 
@@ -180,6 +194,9 @@ export class chatLogEntry_t {
 	content: string
 	content_for_show?: string
 	content_for_edit?: string
+	locale?: string
+	content_warning?: string
+	sensitive_media?: boolean
 	is_generating?: boolean
 	files?: {
 		name: string

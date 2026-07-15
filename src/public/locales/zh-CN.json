@@ -1203,7 +1203,10 @@
 			"mutedKeywordsMatchTags": "同时匹配标签",
 			"mutedKeywordsAdd": "添加",
 			"mutedKeywordsRemove": "移除屏蔽词",
-			"mutedKeywordsEmpty": "尚未添加屏蔽词"
+			"mutedKeywordsEmpty": "尚未添加屏蔽词",
+			"autoTranslateTitle": "自动翻译",
+			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
+			"autoTranslateEnable": "自动翻译非本语言帖子"
 		},
 		"trending": {
 			"title": "热门话题",
@@ -2666,7 +2669,44 @@
 			"createGroup": "新建群组",
 			"noDescription": "暂无描述",
 			"memberCountLabel": "${count} 成员",
-			"loadListFailed": "加载群组列表失败: ${error}"
+			"loadListFailed": "加载群组列表失败: ${error}",
+			"contentWarning": "内容警告",
+			"sensitiveMedia": "敏感媒体",
+			"revealContent": "显示内容",
+			"revealMedia": "显示媒体",
+			"copyShareLink": "复制分享链接",
+			"forward": "转发",
+			"forwardedFrom": "转发自",
+			"forwardDialog": {
+				"title": "转发消息",
+				"selectGroup": "选择目标群组",
+				"selectChannel": "选择目标频道",
+				"confirm": "转发",
+				"cancel": "取消",
+				"success": "已转发",
+				"failed": "转发失败"
+			},
+			"deliverySent": "已发送",
+			"deliveryDelivered": "已送达",
+			"translate": "翻译",
+			"translating": "翻译中…",
+			"translateShowOriginal": "显示原文",
+			"translateShowTranslation": "显示译文",
+			"translateLabel": "译文",
+			"translateFailed": "翻译失败",
+			"altImageLabel": "图片说明（alt）",
+			"altImagePlaceholder": "为图片添加描述…",
+			"editImage": "编辑图片",
+			"draftRestored": "已恢复草稿",
+			"queuedOffline": "等待发送（离线）",
+			"translationPrefs": {
+				"title": "翻译设置",
+				"autoTranslate": "自动翻译外语消息",
+				"hint": "开启后，语言与界面不同的消息会自动请求译文。",
+				"save": "保存",
+				"saved": "翻译设置已保存",
+				"saveFailed": "保存失败：${error}"
+			}
 		},
 		"sidebar": {
 			"settings": {
@@ -4726,6 +4766,10 @@
 		"save": "保存",
 		"delete": "删除",
 		"confirm": "确认",
-		"close": "关闭"
+		"close": "关闭",
+		"translate": {
+			"showOriginal": "显示原文",
+			"showTranslation": "显示译文"
+		}
 	}
 }

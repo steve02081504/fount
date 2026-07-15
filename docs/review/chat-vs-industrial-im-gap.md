@@ -19,7 +19,7 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 与工业化 IM 的差距主要集中在五类：
 
 1. **载体与触达**：Web Hub / PWA；Web Push 有、APNs/FCM 无；密码学身份无中心化恢复；联系人靠 P2P 发现/邀请码；节点离线收信弱于商业 IM 常驻代理。
-2. **消息手感**：语音为录音附件；无转发/定时/阅后即焚；无单条已读与气泡投递态；无 unfurl/正文翻译；无线程外 quote-reply；无 composer 草稿与离线发送队列 UX。
+2. **消息手感**：语音为录音附件；无定时/阅后即焚；无线程外 quote-reply。
 3. **规模与 AV**：单进程 av-relay + 稀疏 WebRTC；无 1:1 通话 / 屏幕共享 / Stage / 通话历史；无消息投递 SLA。
 4. **治理与运营**：chat 有 ban/kick/角色/审计/fork；**无举报闭环**（举报工单在 social，勿混栽）；无企业 SSO/合规导出/Bot 商店。
 5. **生态与联邦对称**：无支付/小程序；social↔chat 仅深链；persona/plugin 无正式跨节点代理；无 ActivityPub 等异构互通。
@@ -56,7 +56,7 @@ fount chat 的底盘是 **联邦群/DM + DAG 事件 + CKG 频道加密 + Hub 读
 | **投递状态** | **无**气泡级 sent / delivered / failed ACK（文件层有 `chunkReplicationAck`，不进消息 UX） |
 | **离线发送队列** | **无** pending/retry UI；联邦靠 Mailbox / gossip |
 | **Composer 草稿** | **无**草稿持久化 API/UI |
-| **富链接预览** | **无** oEmbed 级 unfurl |
+| **富链接预览** | 前端 markdown 裸链接水合（`/api/no-cors` + OG）；非结构化入库 |
 | **正文翻译** | **无**（social 侧有翻译缓存，chat 消息面无） |
 | **内联 quote-reply** | **无**主频道内引用气泡；`parentEventId` 在 Hub 多用于 DAG 分支父边，≠ 工业回复引用 |
 | **GIF / 贴纸商店** | 有本地 sticker pack + import；**无** Tenor/Giphy 级 picker |
@@ -167,7 +167,7 @@ Telegram / Discord / WeChat bot 壳经 `registerBridgeOperations` 接入同一 `
 | 消息转发 / 定时 / 阅后即焚 | **无** |
 | 单条已读 / 气泡投递态 / 离线发送队列 | **无** |
 | Composer 草稿 | **无** |
-| 富链接 unfurl / 正文翻译 | **无** |
+| 富链接 unfurl / 正文翻译 | 前端 embed 水合 + `/translate` |
 | 内嵌 quote-reply 线程 | **部分**（子频道） |
 | Slash / Bot 交互 UI / GIF 商店 | **无** |
 | 1:1 通话 / 屏幕共享 / Stage / 通话历史 | **无** |

@@ -243,6 +243,12 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 			})
 			return true
 		}
+		case 'copy-share-link':
+			return handleCopyShareLink(button, actions)
+		case 'forward':
+			return handleForward(button, channelMessage, actions)
+		case 'translate':
+			return handleTranslate(button, row, channelMessage)
 		case 'copy-md':
 		case 'copy-text':
 		case 'copy-html':
@@ -288,6 +294,200 @@ export function bindChannelMessageActions(container) {
 
 		await handleChannelMessageClick(button, row, channelMessage, actions)
 	})
+}
+
+/**
+ * 复制消息分享链接到剪贴板。
+ * @param {HTMLElement} button 被点击按钮
+ * @param {object} actions 操作上下文
+ * @returns {Promise<boolean>} 是否已处理
+ */
+async function handleCopyShareLink(button, actions) {
+	const { groupId, channelId } = actions
+	const eventId = button.dataset.eventId?.trim()
+	if (!groupId || !channelId || !eventId) return true
+	try {
+		const { formatMessageRunUri, wrapProtocolHttpsUrl } = await import('../../shared/runUri.mjs')
+		const shareUrl = wrapProtocolHttpsUrl(formatMessageRunUri(groupId, channelId, eventId))
+		await navigator.clipboard.writeText(shareUrl)
+		showToastI18n('success', 'chat.hub.copyShareLink')
+	}
+	catch (error) {
+		console.error('copy share link failed', error)
+	}
+	return true
+}
+
+/**
+ * 弹出转发对话框，选择目标群+频道后发送。
+ * @param {HTMLElement} button 被点击按钮
+ * @param {object} channelMessage 原消息
+ * @param {object} actions 操作上下文
+ * @returns {Promise<boolean>} 是否已处理
+ */
+async function handleForward(button, channelMessage, actions) {
+	const { groupId, channelId } = actions
+	const eventId = button.dataset.eventId?.trim()
+	if (!eventId) return true
+
+	const sidebarGroups = hubStore.sidebar.groups || []
+	if (!sidebarGroups.length) {
+		showToastI18n('info', 'chat.hub.forwardDialog.selectGroup')
+		return true
+	}
+
+	const { geti18n } = await import('../../../../../scripts/i18n/index.mjs')
+	/**
+	 * @param {string|{title?:string}|undefined} v i18n 值
+	 * @returns {string} 字符串表示
+	 */
+	const g = v => typeof v === 'string' ? v : v?.title || ''
+	const titleLabel = g(geti18n('chat.hub.forwardDialog.title')) || 'Forward message'
+	const selectGroupLabel = g(geti18n('chat.hub.forwardDialog.selectGroup')) || 'Select group'
+	const selectChannelLabel = g(geti18n('chat.hub.forwardDialog.selectChannel')) || 'Select channel'
+	const confirmLabel = g(geti18n('chat.hub.forwardDialog.confirm')) || 'Forward'
+	const cancelLabel = g(geti18n('chat.hub.forwardDialog.cancel')) || 'Cancel'
+
+	const dialog = document.createElement('dialog')
+	dialog.className = 'modal'
+	dialog.innerHTML = `
+		<div class="modal-box">
+			<h3 class="font-bold text-lg mb-3">${titleLabel}</h3>
+			<label class="form-control w-full mb-2">
+				<span class="label-text">${selectGroupLabel}</span>
+				<select id="fwd-group-select" class="select select-bordered w-full"></select>
+			</label>
+			<label class="form-control w-full mb-4">
+				<span class="label-text">${selectChannelLabel}</span>
+				<select id="fwd-channel-select" class="select select-bordered w-full"></select>
+			</label>
+			<div class="flex justify-end gap-2">
+				<button type="button" data-cancel class="btn btn-ghost">${cancelLabel}</button>
+				<button type="button" data-confirm class="btn btn-primary">${confirmLabel}</button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button></button></form>
+	`
+	document.body.appendChild(dialog)
+
+	const groupSelect = dialog.querySelector('#fwd-group-select')
+	const channelSelect = dialog.querySelector('#fwd-channel-select')
+
+	// 填充群组列表
+	for (const g of sidebarGroups) {
+		const opt = document.createElement('option')
+		opt.value = g.groupId || g.id || ''
+		opt.textContent = g.groupName || g.name || opt.value
+		groupSelect?.appendChild(opt)
+	}
+
+	const { getGroupState } = await import('../../src/api/groupApi.mjs')
+
+	/** @returns {Promise<void>} 刷新频道选项 */
+	const updateChannels = async () => {
+		if (!channelSelect) return
+		channelSelect.innerHTML = ''
+		const selGroupId = groupSelect?.value
+		if (!selGroupId) return
+		try {
+			const state = await getGroupState(selGroupId)
+			const chs = state?.channels || {}
+			for (const [chId, ch] of Object.entries(chs)) {
+				if (ch.type && ch.type !== 'text') continue
+				const opt = document.createElement('option')
+				opt.value = chId
+				opt.textContent = ch.name || chId
+				channelSelect.appendChild(opt)
+			}
+		}
+		catch { /* empty */ }
+	}
+
+	groupSelect?.addEventListener('change', () => { void updateChannels() })
+	await updateChannels()
+
+	dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
+	dialog.querySelector('[data-confirm]')?.addEventListener('click', async () => {
+		const targetGroupId = groupSelect?.value
+		const targetChannelId = channelSelect?.value
+		if (!targetGroupId || !targetChannelId) return
+		dialog.close()
+		try {
+			const { sendGroupMessage } = await import('../../src/api/groupApi.mjs')
+			const text = getMessageText(channelMessage)
+			const senderName = channelMessage.content?.displayName
+				|| String(channelMessage.sender || '').slice(0, 8)
+				|| '?'
+			const { formatMessageRunUri, wrapProtocolHttpsUrl } = await import('../../shared/runUri.mjs')
+			const shareUrl = groupId && channelId && eventId
+				? wrapProtocolHttpsUrl(formatMessageRunUri(groupId, channelId, eventId))
+				: ''
+			const forwardContent = {
+				type: 'text',
+				content: text,
+				locale: channelMessage.content?.locale || navigator.language,
+				forwardedFrom: {
+					groupId: groupId || '',
+					channelId: channelId || '',
+					eventId: eventId || '',
+					senderName,
+					shareUrl,
+				},
+			}
+			await sendGroupMessage(targetGroupId, targetChannelId, forwardContent)
+			showToastI18n('success', 'chat.hub.forwardDialog.success')
+		}
+		catch (error) {
+			showToastI18n('error', 'chat.hub.forwardDialog.failed', { error: error?.message || String(error) })
+		}
+	})
+
+	dialog.addEventListener('close', () => { dialog.remove() })
+	dialog.showModal()
+	return true
+}
+
+/**
+ * 翻译消息文本，在气泡下挂载译文块。
+ * @param {HTMLElement} button 被点击按钮
+ * @param {HTMLElement | null} row 消息行
+ * @param {object} channelMessage 消息
+ * @returns {Promise<boolean>} 是否已处理
+ */
+async function handleTranslate(button, row, channelMessage) {
+	const text = getMessageText(channelMessage)
+	if (!text) return true
+	button.disabled = true
+	try {
+		const { mountTranslationBlock, requestTranslation, resolveTargetLang } = await import('../../../../../scripts/features/translate.mjs')
+		const { geti18n } = await import('../../../../../scripts/i18n/index.mjs')
+		const targetLang = resolveTargetLang()
+		const translated = await requestTranslation('/api/parts/shells:chat/translate', text, targetLang)
+		const bubble = row?.querySelector('.hub-message-content')
+		if (bubble instanceof HTMLElement) {
+			const showOrigLabel = String(
+				(v => typeof v === 'string' ? v : v?.title || '')(geti18n('chat.hub.translateShowOriginal')),
+			) || 'Original'
+			const showTransLabel = String(
+				(v => typeof v === 'string' ? v : v?.title || '')(geti18n('chat.hub.translateShowTranslation')),
+			) || 'Translation'
+			const transLabel = String(
+				(v => typeof v === 'string' ? v : v?.title || '')(geti18n('chat.hub.translateLabel')),
+			) || ''
+			mountTranslationBlock(bubble, {
+				originalText: text,
+				translatedText: translated,
+				showOriginalLabel: showOrigLabel,
+				showTranslationLabel: showTransLabel,
+				translationLabel: transLabel,
+			})
+		}
+	}
+	catch (error) {
+		showToastI18n('error', 'chat.hub.translateFailed', { error: error?.message || String(error) })
+	}
+	finally { button.disabled = false }
+	return true
 }
 
 /**

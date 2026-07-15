@@ -1,6 +1,7 @@
 /**
  * Social 媒体渲染（与上传解耦）：轮播、alt、敏感遮罩、lightbox。
  */
+import { wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 
@@ -47,17 +48,11 @@ export function renderMediaHtml(mediaRefs, options = {}) {
 		${nav}
 		${dots}
 	</div>`
-	if (options.sensitive) {
-		const label = escapeHtml(options.warningLabel || '')
-		const reveal = escapeHtml(options.revealLabel || 'Reveal')
-		html = `<div class="sensitive-media-wrap" data-sensitive-collapsed="1">
-			<div class="sensitive-media-overlay">
-				<div class="sensitive-media-label">${label}</div>
-				<button type="button" class="sensitive-media-reveal">${reveal}</button>
-			</div>
-			<div class="sensitive-media-body">${html}</div>
-		</div>`
-	}
+	if (options.sensitive)
+		html = wrapSensitiveMediaHtml(html, {
+			warningLabel: options.warningLabel || '',
+			revealLabel: options.revealLabel || 'Reveal',
+		})
 	return html
 }
 

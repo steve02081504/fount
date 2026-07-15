@@ -1,0 +1,15 @@
+<dialog class="modal" data-template-type="hub/modals/translation_prefs">
+	<div class="modal-box">
+		<h3 class="font-bold text-lg mb-3" data-i18n="chat.hub.translationPrefs.title"></h3>
+		<label class="label cursor-pointer justify-start gap-3">
+			<input type="checkbox" id="hub-auto-translate" class="checkbox checkbox-sm" ${autoTranslateChecked} />
+			<span class="label-text" data-i18n="chat.hub.translationPrefs.autoTranslate"></span>
+		</label>
+		<p class="text-sm opacity-70 mt-2" data-i18n="chat.hub.translationPrefs.hint"></p>
+		<div class="modal-action">
+			<form method="dialog"><button class="btn btn-ghost" data-i18n="chat.hub.modalClose"></button></form>
+			<button type="button" class="btn btn-primary" data-action="save" data-i18n="chat.hub.translationPrefs.save"></button>
+		</div>
+	</div>
+	<form method="dialog" class="modal-backdrop"><button data-i18n="chat.hub.modalClose"></button></form>
+</dialog>

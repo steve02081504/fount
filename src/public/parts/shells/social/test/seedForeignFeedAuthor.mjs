@@ -52,7 +52,7 @@ export async function seedForeignFeedAuthorPost(username) {
 			content: {
 				text: `${FOREIGN_FE_POST_MARKER} ${Date.now()}`,
 				visibility: 'public',
-				lang: 'zh-CN',
+				locale: 'zh-CN',
 			},
 		},
 	])

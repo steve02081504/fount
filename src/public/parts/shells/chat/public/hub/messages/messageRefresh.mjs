@@ -337,6 +337,9 @@ export async function loadMessages(reload, syncCtx) {
 		await markCurrentChannelRead().catch(() => {})
 		refreshChannelPinsBar()
 		saveChannelViewCache()
+		void import('../memberReadMarkers.mjs').then(({ fetchMemberReadMarkers }) => {
+			void fetchMemberReadMarkers(groupId, channelId)
+		})
 	}
 	catch (err) {
 		const error = handleUIError(err, 'chat.hub.loadMessagesFailed')

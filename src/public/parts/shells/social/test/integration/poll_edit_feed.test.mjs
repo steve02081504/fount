@@ -18,7 +18,7 @@ Deno.test('poll vote updates tally projection', async () => {
 		content: {
 			text: 'poll post',
 			visibility: 'public',
-			lang: 'zh-CN',
+			locale: 'zh-CN',
 			poll: { options: ['A', 'B'], multi: false, deadline: null },
 		},
 	})
@@ -41,11 +41,11 @@ Deno.test('post_edit materializes latest text', async () => {
 
 	const post = await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'before edit', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'before edit', visibility: 'public', locale: 'zh-CN' },
 	})
 	await commitTimelineEvent(username, operator, {
 		type: 'post_edit',
-		content: { targetPostId: post.id, text: 'after edit', lang: 'zh-CN' },
+		content: { targetPostId: post.id, text: 'after edit', locale: 'zh-CN' },
 	})
 	const view = await getTimelineMaterialized(username, operator)
 	assertEquals(view.postById[post.id].content.text, 'after edit')
@@ -59,11 +59,11 @@ Deno.test('searchPosts returns nextCursor', async () => {
 
 	await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'alpha unique poll-edit token', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'alpha unique poll-edit token', visibility: 'public', locale: 'zh-CN' },
 	})
 	await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'beta unique poll-edit token', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'beta unique poll-edit token', visibility: 'public', locale: 'zh-CN' },
 	})
 	const page1 = await searchPosts(username, { q: 'unique poll-edit', limit: 1 })
 	assertEquals(page1.items.length, 1)
@@ -80,7 +80,7 @@ Deno.test('buildForYouFeed returns scored items', async () => {
 
 	await commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'for you feed item', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'for you feed item', visibility: 'public', locale: 'zh-CN' },
 	})
 	const feed = await buildForYouFeed(username, { viewerEntityHash: operator, limit: 10 })
 	assert(feed.items.length >= 1)

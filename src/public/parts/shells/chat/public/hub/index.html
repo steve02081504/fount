@@ -155,6 +155,16 @@
 			</div>
 
 			<div id="hub-attachment-preview" class="hub-attachment-preview"></div>
+			<div id="hub-composer-extras" class="hub-composer-extras flex flex-wrap items-center gap-2 px-4 py-1 text-sm hidden">
+				<label class="flex items-center gap-1 cursor-pointer" title data-i18n-title="chat.hub.contentWarning">
+					<span class="opacity-70 text-xs" data-i18n="chat.hub.contentWarning"></span>
+					<input type="text" id="hub-content-warning" class="input input-bordered input-xs w-40 min-w-0" data-i18n="chat.hub.contentWarning" />
+				</label>
+				<label class="flex items-center gap-1 cursor-pointer">
+					<input type="checkbox" id="hub-sensitive-media" class="checkbox checkbox-xs" />
+					<span class="opacity-70 text-xs" data-i18n="chat.hub.sensitiveMedia"></span>
+				</label>
+			</div>
 			<div class="hub-input-area">
 				<div class="hub-input-wrapper bg-[var(--hub-bg-input)] rounded-lg px-4 min-h-11 flex items-end gap-3 relative">
 					<button type="button" class="hub-icon-button" id="hub-voice-button" data-i18n="chat.chatArea.voiceButton" disabled>

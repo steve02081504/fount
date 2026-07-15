@@ -41,7 +41,7 @@ Deno.test({
 				entityHash: viewerEntityHash,
 				text: 'integration posts http',
 				visibility: 'public',
-				lang: 'zh-CN',
+				locale: 'zh-CN',
 			}),
 		})
 		const postRaw = await postRes.text()
@@ -57,7 +57,7 @@ Deno.test({
 				entityHash: viewerEntityHash,
 				text: 'poll via http',
 				visibility: 'public',
-				lang: 'zh-CN',
+				locale: 'zh-CN',
 				poll: { options: ['yes', 'no'], multi: false },
 			}),
 		})

@@ -62,7 +62,7 @@ export function registerPostsRoutes(router) {
 			event: await post.edit({
 				text: req.body?.text,
 				mediaRefs: req.body?.mediaRefs,
-				lang: req.body?.lang,
+				locale: req.body?.locale,
 				contentWarning: req.body?.contentWarning,
 			}),
 		})

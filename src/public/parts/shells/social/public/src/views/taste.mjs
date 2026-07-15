@@ -104,6 +104,35 @@ function renderMutedKeywordsSection(appContext, panel, entries) {
 }
 
 /**
+ * 自动翻译偏好区块。
+ * @param {object} appContext 应用上下文
+ * @param {HTMLElement} panel 面板
+ * @returns {Promise<void>}
+ */
+async function renderTranslationPrefsSection(appContext, panel) {
+	const data = await appContext.socialApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
+	const prefs = data?.prefs || { autoTranslate: false }
+	const section = document.createElement('div')
+	section.className = 'translation-prefs card'
+	section.innerHTML = `
+		<h3 data-i18n="social.taste.autoTranslateTitle">${escapeHtml(appContext.geti18n('social.taste.autoTranslateTitle'))}</h3>
+		<p class="taste-privacy-hint" data-i18n="social.taste.autoTranslateHint">${escapeHtml(appContext.geti18n('social.taste.autoTranslateHint'))}</p>
+		<label class="taste-privacy">
+			<input type="checkbox" id="socialAutoTranslate" ${prefs.autoTranslate ? 'checked' : ''} />
+			<span data-i18n="social.taste.autoTranslateEnable">${escapeHtml(appContext.geti18n('social.taste.autoTranslateEnable'))}</span>
+		</label>
+	`
+	panel.appendChild(section)
+	section.querySelector('#socialAutoTranslate')?.addEventListener('change', event => {
+		const checked = event.target instanceof HTMLInputElement && event.target.checked
+		void runSocialWrite('translationPrefs', () => appContext.socialApi('/translation-prefs', {
+			method: 'PUT',
+			body: JSON.stringify({ prefs: { ...prefs, autoTranslate: checked } }),
+		}))
+	})
+}
+
+/**
  * 加载并渲染口味偏好视图。
  * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
@@ -118,7 +147,7 @@ export async function loadTaste(appContext) {
 	const tags = data.tags || []
 	const publishPreferences = data.privacy?.publishPreferences !== false
 	const publishReactions = data.privacy?.publishReactions !== false
-	const mutedEntries = [...(muted.entries || [])]
+	const mutedEntries = [...muted.entries || []]
 
 	panel.replaceChildren()
 
@@ -140,6 +169,7 @@ export async function loadTaste(appContext) {
 	panel.appendChild(toolbar)
 
 	renderMutedKeywordsSection(appContext, panel, mutedEntries)
+	await renderTranslationPrefsSection(appContext, panel)
 
 	const list = document.createElement('div')
 	list.className = 'taste-list'

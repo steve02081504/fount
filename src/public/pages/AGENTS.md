@@ -20,13 +20,17 @@ alwaysApply: false
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate(name, data)` / `mountTemplate(parent, name, data)` / `renderTemplateAsHtmlString`.
 - **`dialog.mjs`**: `openDialogFromTemplate(templateName, data, { onReady })` and `pickFromDialog` for `<dialog class="modal">` lifecycle.
+- **`contentReveal/`** (`index.mjs`): `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal` — CW / 敏感媒体折叠与 reveal 委托；CSS 自动注入 `contentReveal.css`。
+- **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` — 译文块挂载与切换、翻译 API 请求。
 - **`memo.mjs`**: `memoizePromise` / `createLruMap`.
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
 - **`cssValues.mjs`**: Dynamic CSS variable manipulation.
 
 ## Rendering & Content
 
-- **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki.
+- **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki. 非 standalone 管线会对裸 http(s) 链接打 `data-fount-embed`（整段纯链接=`card`，行文中=`chip`；`[text](url)` 忽略）。
+- **`embedCard.mjs`**: 经 `ALL /api/no-cors?url=` 抓页 + `DOMParser` 解析 OG，由 MutationObserver 水合占位链接；会话级 LRU 缓存。
+- **`/api/no-cors`**（server）：已认证双向流式中转。同名转发 `Range` / 条件头 / `Content-Type` 等；上游 Cookie、Authorization、自定义头用 `No-Cors-*` 注入（如 `No-Cors-Authorization: Bearer …` → `Authorization`）。不缓冲整包 body；`X-No-Cors-Final-Url` 记录跟随重定向后的最终 URL。
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry (remark/rehype plugins, CSS, init hooks).
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()` of registry modules.
 - **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers consuming `emoji`/`sticker` registries; Hub mounts via `mountDockedEmojiPicker`/`mountDockedStickerPicker`. Docked options use full names: `pickerElement`, `gridElement`, `triggerButton`, `tabsElement`, `inputElement` — not `*El`/`*Btn`. **JS variable names, HTML `id`s, and i18n keys** use full words (`*Button`/`*Element`/`*Context`); leave external UI-library classes (e.g. DaisyUI's `class="btn …"`) untouched.

@@ -10,6 +10,7 @@
 			"triggers": [
 				"src/server/test/pure/**",
 				"src/server/registries.mjs",
+				"src/server/no_cors.mjs",
 				"src/public/pages/scripts/api/registries.mjs"
 			]
 		},

@@ -12,10 +12,12 @@ import {
 	hubActionBookmarkIcon,
 	hubActionCopyHtmlIcon,
 	hubActionCopyIcon,
+	hubActionCopyLinkIcon,
 	hubActionCopyTextIcon,
 	hubActionDeleteIcon,
 	hubActionDownloadIcon,
 	hubActionEditIcon,
+	hubActionForwardIcon,
 	hubActionPinIcon,
 	hubActionRegenIcon,
 	hubActionShareIcon,
@@ -24,6 +26,7 @@ import {
 	hubActionThumbUpIcon,
 	hubActionTimelineNextIcon,
 	hubActionTimelinePrevIcon,
+	hubActionTranslateIcon,
 	hubActionUnpinIcon,
 } from '../../src/lib/emojiSvg.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -169,7 +172,7 @@ function shareSubmenu(eventId) {
 }
 
 /**
- * 构建消息下拉菜单项：复制/分享/下载（可选删除、时间线）。
+ * 构建消息下拉菜单项：复制/分享/转发/下载（可选删除、时间线）。
  * @param {string} eventId 已转义事件 id
  * @param {{ ownChar?: boolean, canDelete?: boolean }} opts 选项
  * @returns {string} 菜单 `<li>` HTML
@@ -182,6 +185,8 @@ function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
 	}
 	parts.push(copySubmenu(eventId))
 	parts.push(shareSubmenu(eventId))
+	parts.push(menuActionItem('copy-share-link', `data-event-id="${eventId}"`, hubActionCopyLinkIcon, 'chat.hub.copyShareLink'))
+	parts.push(menuActionItem('forward', `data-event-id="${eventId}"`, hubActionForwardIcon, 'chat.hub.forward'))
 	parts.push(menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'))
 	if (canDelete)
 		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menuDelete', 'text-error'))
@@ -259,6 +264,15 @@ export async function renderMessageActionsHtml(message, opts) {
 			attrs: `data-event-id="${escapedEventId}"`,
 			icon: hubActionEditIcon,
 			i18nKey: 'chat.hub.messageActionEdit',
+		}))
+
+	// 翻译按钮（仅有文本内容时显示）
+	if (channelMessageText(message.content))
+		hoverInlineParts.push(actionButton({
+			action: 'translate',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionTranslateIcon,
+			i18nKey: 'chat.hub.translate',
 		}))
 
 	const menuItems = buildMenuItems(escapedEventId, { ownChar, canDelete })

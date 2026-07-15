@@ -1,6 +1,6 @@
 /**
  * 【文件】public/src/composerAttachments.mjs
- * 【职责】编写器附件：选文件、粘贴、预览与上传前 base64 缩略。
+ * 【职责】编写器附件：选文件、粘贴、预览与上传前 base64 缩略。图片附件支持 alt 文本输入与图片编辑器。
  * 【原理】handleFilesSelect/handlePaste 维护 selectedFiles 数组；renderAttachmentPreview 用模板；getFile 预览已上传 hash。
  * 【数据结构】selectedFiles(File[])、attachmentPreviewContainer DOM。
  * 【关联】files.mjs、ui/modal.mjs、dragAndDrop.mjs；Hub composer。
@@ -12,6 +12,19 @@ import { parseEvfsRef } from './lib/evfsRef.mjs'
 import { arrayBufferToBase64 } from './lib/federationUpload.mjs'
 import { processTimeStampForId } from './lib/timestampId.mjs'
 import { openModal } from './ui/modal.mjs'
+
+/**
+ * 将 base64 字符串转为 Blob。
+ * @param {string} base64 base64 数据（不含 data URI 前缀）
+ * @param {string} mimeType MIME 类型
+ * @returns {Blob} 对应的 Blob 对象
+ */
+function base64ToBlob(base64, mimeType) {
+	const binary = atob(base64)
+	const bytes = new Uint8Array(binary.length)
+	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+	return new Blob([bytes], { type: mimeType })
+}
 
 /**
  * 处理文件选择。
@@ -112,6 +125,45 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 			openModal(base64Data, 'image')
 		})
 		previewContainer.appendChild(previewImg)
+
+		// alt 文本输入
+		const altInput = document.createElement('input')
+		altInput.type = 'text'
+		altInput.className = 'input input-bordered input-xs w-full mt-1 hub-attachment-alt-input'
+		altInput.placeholder = String(
+			await import('/scripts/i18n/index.mjs').then(m => {
+				const v = m.geti18n('chat.hub.altImagePlaceholder')
+				return typeof v === 'string' ? v : v?.title || ''
+			}).catch(() => ''),
+		) || 'Alt text…'
+		altInput.value = file.description || ''
+		altInput.addEventListener('input', () => { file.description = altInput.value })
+		attachmentElement.appendChild(altInput)
+
+		// 编辑按钮
+		const editBtn = document.createElement('button')
+		editBtn.type = 'button'
+		editBtn.className = 'btn btn-ghost btn-xs hub-attachment-edit-button mt-1'
+		editBtn.dataset.i18n = 'chat.hub.editImage'
+		editBtn.textContent = '✎'
+		editBtn.addEventListener('click', async () => {
+			try {
+				const { openImageEditor } = await import('/scripts/imageEditor/index.mjs')
+				const blob = base64ToBlob(file.buffer, file.mime_type)
+				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }))
+				if (!edited) return
+				const buf = await edited.arrayBuffer()
+				file.buffer = arrayBufferToBase64(buf)
+				file.name = edited.name
+				file.mime_type = edited.type || file.mime_type
+				// 刷新预览图
+				const newSrc = `data:${file.mime_type};base64,${file.buffer}`
+				const img = previewContainer.querySelector('img')
+				if (img) img.src = newSrc
+			}
+			catch (err) { console.error('image edit failed:', err) }
+		})
+		attachmentElement.appendChild(editBtn)
 	}
 	else if (file.mime_type.startsWith('video/')) {
 		const videoSrc = `data:${file.mime_type};base64,${file.buffer}`

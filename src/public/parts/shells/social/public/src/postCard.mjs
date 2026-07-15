@@ -1,3 +1,4 @@
+import { wrapContentWarningHtml } from '/scripts/features/contentReveal/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 
@@ -71,11 +72,10 @@ export function createPostCardBuilder({
 			: ''
 		let contentBlock = `${pollHtml}${mediaHtmlRaw}<div class="body markdown-body">${markdownBody}</div>`
 		if (contentWarning && !decryptFailed)
-			contentBlock = `<div class="content-warning-wrap" data-cw-collapsed="1">
-				<div class="content-warning-label">${escapeHtml(contentWarning)}</div>
-				<button type="button" class="content-warning-reveal" data-i18n="social.feed.revealContent">${geti18n('social.feed.revealContent')}</button>
-				<div class="content-warning-body hidden">${contentBlock}</div>
-			</div>`
+			contentBlock = wrapContentWarningHtml(contentBlock, {
+				warningLabel: contentWarning,
+				revealLabel: geti18n('social.feed.revealContent'),
+			})
 
 		const viewerEntityHash = getViewerEntityHash()
 		const isOwn = viewerEntityHash && item.entityHash === viewerEntityHash && !isRepost

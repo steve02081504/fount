@@ -47,6 +47,7 @@ export const fileReducers = {
 			storageLocator: event.content.storageLocator ?? null,
 			parts: Array.isArray(event.content.parts) ? event.content.parts : null,
 			uploaderPubKeyHash: isHex64(sender) ? sender : null,
+			...event.content.description ? { description: String(event.content.description).slice(0, 1500) } : {},
 		})
 		return state
 	},

@@ -91,7 +91,7 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 		},
 		/**
 		 * 编辑帖子：作者自签，或作者所属主人以自身钥签到作者时间线。
-		 * @param {{ text?: string, mediaRefs?: object[], lang?: string, contentWarning?: string }} patch 编辑补丁
+		 * @param {{ text?: string, mediaRefs?: object[], locale?: string, contentWarning?: string }} patch 编辑补丁
 		 * @returns {Promise<object>} post_edit 事件
 		 */
 		async edit(patch = {}) {
@@ -105,7 +105,7 @@ export function createPost(ctx, entityHash, postId, snapshot = null) {
 				targetPostId: id,
 				text: String(patch.text ?? decrypted.text ?? ''),
 				mediaRefs: sanitizeMediaRefs(patch.mediaRefs ?? decrypted.mediaRefs),
-				lang: patch.lang || decrypted.lang || 'zh-CN',
+				locale: patch.locale || decrypted.locale || 'zh-CN',
 				...patch.contentWarning !== undefined
 					? { contentWarning: String(patch.contentWarning).trim().slice(0, 200) }
 					: decrypted.contentWarning ? { contentWarning: decrypted.contentWarning } : {},

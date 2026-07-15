@@ -119,6 +119,8 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET/PUT | `/group-folders` | Hub 侧栏文件夹 `{ folders: [...] }`（operator 实体私有） |
 | GET/PUT | `/aliases` | `{ entities, groups }` petnames（operator 实体私有） |
 | GET/PUT | `/notify-prefs` | 通知偏好（存储名 `notificationPreferences`；operator 实体私有） |
+| GET/PUT | `/translation-prefs` | `{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }`（实体私有） |
+| POST | `/translate` | body `{ text, targetLang }` → `{ translated, cached }` |
 | GET/PUT | `/care` | 特别关心列表；PUT body `{ targetEntityHash, cared? }` |
 | GET/PUT | `/custom-emojis` | 自定义表情（operator 实体私有） |
 | POST | `/custom-emojis/save` | 保存他人表情到库 |
@@ -189,7 +191,9 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES` |
+| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`fileAlts` |
+| GET | `/member-read-markers` | 本机侧车视角各成员水位 `{ markers: { [entityHash]: { eventId, seq } } }` |
+| PUT | `/read-marker` | body `{ eventId, seq }`；写入实体 readMarkers + 群成员侧车；WS `read_marker`（含 `entityHash`） |
 | GET | `/messages` | raw 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（治理/调试；不含 world/persona 视图滤镜） |
 | GET | `/view-log` | viewer 视图（本机 user）：同 query；物化后 world→persona 滤镜再投影回行 DTO；Hub 主读口；`{ messages, reactions }` |
 | POST | `/messages/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 raw 行 + reactions |

@@ -15,6 +15,7 @@ import {
 import { SOCIAL_APP_GATE } from './gate.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
+import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
@@ -120,8 +121,10 @@ export async function bootstrapSocialApp(appContext) {
 			await addComposerMedia(appContext, input.files)
 			input.value = ''
 		})
-		document.getElementById('app')?.addEventListener('click', event => { void handleMainClick(appContext, event) })
-		bindMediaCarousel(document.getElementById('app'))
+		const appRoot = document.getElementById('app')
+		appRoot?.addEventListener('click', event => { void handleMainClick(appContext, event) })
+		bindContentReveal(appRoot)
+		bindMediaCarousel(appRoot)
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return
@@ -133,9 +136,9 @@ export async function bootstrapSocialApp(appContext) {
 		for (const button of document.querySelectorAll('.nav-btn[data-view]'))
 			button.addEventListener('click', () => { void switchView(appContext, button.dataset.view) })
 
-		const postLang = document.getElementById('postLang')
-		if (postLang instanceof HTMLInputElement)
-			postLang.value = navigator.language || 'zh-CN'
+		const postLocale = document.getElementById('postLocale')
+		if (postLocale instanceof HTMLInputElement)
+			postLocale.value = navigator.language || 'zh-CN'
 
 		await loadGroupPickerOptions(appContext)
 		await updateNotificationBadge(appContext)
@@ -155,7 +158,7 @@ export async function bootstrapSocialApp(appContext) {
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',
 			postVisibility: 'social.a11y.postVisibility',
-			postLang: 'social.a11y.postLang',
+			postLocale: 'social.a11y.postLang',
 			feedTrending: 'social.a11y.trendingHashtags',
 			saveFolderSelect: 'social.a11y.saveFolderSelect',
 			feedRefreshButton: 'social.feed.refresh',

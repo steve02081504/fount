@@ -35,7 +35,7 @@ import { commitChannelMessageEvent } from './messageCommit.mjs'
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {Buffer} buffer 文件字节
- * @param {{ name?: string, mime_type?: string }} file 元数据
+ * @param {{ name?: string, mime_type?: string, description?: string }} file 元数据
  * @returns {Promise<{ fileId: string, uploadMeta: object, inlineImageUrl: string | null }>} 上传结果
  */
 async function uploadPlainFileToGroup(username, groupId, buffer, file) {
@@ -69,6 +69,8 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 		})
 	}
 
+	const description = String(file.description || '').trim().slice(0, 1500)
+
 	/** @type {object} */
 	const uploadMeta = {
 		fileId,
@@ -77,6 +79,7 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 		mimeType,
 		contentHash,
 		key_generation: keyGen,
+		...description ? { description } : {},
 	}
 	if (partCount === 1) {
 		const p = parts[0]
@@ -209,6 +212,8 @@ async function applyBeforeUserSend(username, groupId, channelId, content, files)
 async function attachFilesToContent(username, groupId, content, files, maxBytes) {
 	const fileIds = []
 	const inlineMarkers = []
+	/** @type {Record<string, string>} */
+	const fileAlts = {}
 	for (const file of files || []) {
 		if (parseEvfsRef(file.buffer))
 			continue
@@ -216,6 +221,8 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 		if (!buffer.byteLength) continue
 		const { fileId, inlineImageUrl } = await uploadPlainFileToGroup(username, groupId, buffer, file)
 		fileIds.push(fileId)
+		const alt = String(file.description || '').trim().slice(0, 1500)
+		if (alt) fileAlts[fileId] = alt
 		if (inlineImageUrl) {
 			const fileName = String(file.name || 'image').replace(/\|/g, '_')
 			inlineMarkers.push(`[image:${fileName}|${inlineImageUrl}]`)
@@ -232,8 +239,14 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 		})
 	}
 
-	if (fileIds.length)
-		content = { ...content, fileIds, fileCount: fileIds.length }
+	if (fileIds.length) {
+		content = {
+			...content,
+			fileIds,
+			fileCount: fileIds.length,
+			...Object.keys(fileAlts).length ? { fileAlts: { ...content.fileAlts, ...fileAlts } } : {},
+		}
+	}
 
 	return { content: normalizeChannelMessageContent(content, maxBytes), fileIds }
 }

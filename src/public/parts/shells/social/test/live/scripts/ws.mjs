@@ -42,9 +42,9 @@ const postRun = await waitForWsFrame({
 	trigger: async () => {
 		const post = await socialApi('POST', '/posts', {
 			entityHash,
-			text: `ws-push ${Date.now()}`,
-			visibility: 'public',
-			lang: 'zh-CN',
+		text: `ws-push ${Date.now()}`,
+		visibility: 'public',
+		locale: 'zh-CN',
 		})
 		if (post.status !== 200) throw new Error(`post failed ${post.status}`)
 	},
@@ -59,7 +59,7 @@ const seedPost = await socialApi('POST', '/posts', {
 	entityHash,
 	text: `ws-like-target ${Date.now()}`,
 	visibility: 'public',
-	lang: 'zh-CN',
+	locale: 'zh-CN',
 })
 const postId = seedPost.json?.event?.id
 if (seedPost.status !== 200 || !postId) {

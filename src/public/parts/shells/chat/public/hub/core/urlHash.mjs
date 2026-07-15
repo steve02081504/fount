@@ -12,25 +12,30 @@ export const FRIENDS_HASH = 'friends'
 export const INBOX_HASH = 'inbox'
 
 /**
- * 从 `location.hash` 解析当前群组与频道。
- * @returns {{ groupId: string | null, channelId: string | null }} 解析结果
+ * 从 `location.hash` 解析当前群组、频道与可选消息 eventId。
+ * 格式：`#group:{groupId}:{channelId}` 或 `#group:{groupId}:{channelId};{eventId}`
+ * @returns {{ groupId: string | null, channelId: string | null, eventId: string | null }} 解析结果
  */
 export function parseHash() {
 	const hash = window.location.hash.substring(1)
-	if (!hash.startsWith('group:')) return { groupId: null, channelId: null }
+	if (!hash.startsWith('group:')) return { groupId: null, channelId: null, eventId: null }
 	const rest = hash.slice('group:'.length)
 	const sep = rest.indexOf(':')
-	if (sep < 0) return { groupId: null, channelId: null }
+	if (sep < 0) return { groupId: null, channelId: null, eventId: null }
 	try {
 		const rawGroup = decodeURIComponent(rest.slice(0, sep))
-		const channelId = rest.slice(sep + 1)
+		const channelPart = rest.slice(sep + 1)
+		// `;{eventId}` 后缀
+		const semiIdx = channelPart.indexOf(';')
+		const channelId = semiIdx >= 0 ? channelPart.slice(0, semiIdx) : channelPart
+		const eventId = semiIdx >= 0 ? decodeURIComponent(channelPart.slice(semiIdx + 1)) : null
 		// `@别名` 前缀：用本地别名反查 canonical groupId（写入端仍写 groupId）
 		const groupId = rawGroup.startsWith('@') ? groupIdForAlias(rawGroup.slice(1)) : rawGroup
-		if (!groupId || !channelId) return { groupId: null, channelId: null }
-		return { groupId, channelId }
+		if (!groupId || !channelId) return { groupId: null, channelId: null, eventId: null }
+		return { groupId, channelId, eventId: eventId || null }
 	}
 	catch {
-		return { groupId: null, channelId: null }
+		return { groupId: null, channelId: null, eventId: null }
 	}
 }
 
@@ -45,14 +50,17 @@ export function isInboxHash() {
 }
 
 /**
- * 将当前群组/频道写入 hash（`#group:id:channel`）。
+ * 将当前群组/频道（可选 eventId）写入 hash。
+ * 格式：`#group:{groupId}:{channelId}` 或 `#group:{groupId}:{channelId};{eventId}`
  * @param {string} groupId 群组 ID
  * @param {string | null} channelId 频道 ID
- * @returns {void} 无
+ * @param {string | null} [eventId] 可选消息 eventId（含 `;` 分隔）
+ * @returns {void}
  */
-export function updateHash(groupId, channelId) {
+export function updateHash(groupId, channelId, eventId) {
 	if (!groupId) return
-	const newHash = `group:${encodeURIComponent(groupId)}:${channelId || 'default'}`
+	let newHash = `group:${encodeURIComponent(groupId)}:${channelId || 'default'}`
+	if (eventId) newHash += `;${encodeURIComponent(eventId)}`
 	if (window.location.hash.slice(1) === newHash) return
 	const url = `${window.location.pathname}${window.location.search}#${newHash}`
 	history.replaceState(null, '', url)

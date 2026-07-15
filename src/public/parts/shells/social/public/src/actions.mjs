@@ -13,28 +13,6 @@ export async function handleMainClick(appContext, event) {
 	const { target } = event
 	if (!(target instanceof HTMLElement)) return
 
-	const reveal = target.closest('.content-warning-reveal')
-	if (reveal instanceof HTMLElement) {
-		const wrap = reveal.closest('.content-warning-wrap')
-		const body = wrap?.querySelector('.content-warning-body')
-		if (body) {
-			body.classList.remove('hidden')
-			reveal.remove()
-		}
-		return
-	}
-
-	const sensitiveReveal = target.closest('.sensitive-media-reveal')
-	if (sensitiveReveal instanceof HTMLElement) {
-		const wrap = sensitiveReveal.closest('.sensitive-media-wrap')
-		if (wrap instanceof HTMLElement) {
-			wrap.dataset.sensitiveCollapsed = '0'
-			wrap.classList.add('revealed')
-			sensitiveReveal.closest('.sensitive-media-overlay')?.remove()
-		}
-		return
-	}
-
 	if (!target.closest('.post-more-dropdown'))
 		closePostMoreMenus()
 

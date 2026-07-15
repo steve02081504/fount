@@ -946,45 +946,6 @@ body {
 	background: var(--s-accent);
 }
 
-.sensitive-media-wrap {
-	position: relative;
-	isolation: isolate;
-}
-
-.sensitive-media-wrap[data-sensitive-collapsed="1"] .sensitive-media-body {
-	filter: blur(28px);
-	pointer-events: none;
-	user-select: none;
-}
-
-.sensitive-media-overlay {
-	position: absolute;
-	inset: 0;
-	z-index: 3;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	background: color-mix(in srgb, black 25%, transparent);
-	border-radius: 16px;
-}
-
-.sensitive-media-label {
-	font-weight: 600;
-	color: white;
-	text-shadow: 0 1px 2px black;
-}
-
-.sensitive-media-reveal {
-	border: 1px solid white;
-	background: color-mix(in srgb, black 40%, transparent);
-	color: white;
-	border-radius: 6px;
-	padding: 4px 12px;
-	cursor: pointer;
-}
-
 .media-lightbox-box {
 	max-width: min(96vw, 960px);
 	width: fit-content;
@@ -1168,6 +1129,18 @@ body {
 	border-radius: 12px;
 	border: 1px solid var(--social-border);
 	background: var(--social-bg-soft);
+}
+
+.translation-block {
+	margin-top: 0.5rem;
+	padding: 0.65rem 0.85rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+.translation-toggle {
+	align-self: flex-start;
 }
 
 .quote-block {
@@ -1815,52 +1788,6 @@ body {
 	display: flex;
 	gap: 0.35rem;
 	margin: 0.35rem 0 0.5rem;
-}
-
-.content-warning-wrap {
-	border: 1px solid color-mix(in srgb, var(--s-accent) 35%, transparent);
-	border-radius: 8px;
-	padding: 10px 12px;
-	margin-bottom: 8px;
-	background: color-mix(in srgb, var(--s-accent) 8%, transparent);
-}
-
-.content-warning-label {
-	font-size: 13px;
-	font-weight: 600;
-	margin-bottom: 8px;
-}
-
-.content-warning-reveal {
-	border: 1px solid var(--s-border);
-	background: var(--s-bg-secondary);
-	color: var(--s-text);
-	border-radius: 6px;
-	padding: 4px 10px;
-	cursor: pointer;
-}
-
-.content-warning-body.hidden {
-	display: none;
-}
-
-.content-warning-label {
-	font-size: 13px;
-	font-weight: 600;
-	margin-bottom: 8px;
-}
-
-.content-warning-reveal {
-	border: 1px solid var(--s-border);
-	background: var(--s-bg-secondary);
-	color: var(--s-text);
-	border-radius: 6px;
-	padding: 4px 10px;
-	cursor: pointer;
-}
-
-.content-warning-body.hidden {
-	display: none;
 }
 
 .taste-panel {

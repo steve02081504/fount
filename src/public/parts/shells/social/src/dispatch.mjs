@@ -101,10 +101,10 @@ async function dispatchCarePostIfNeeded(username, authorEntityHash, post, author
  * @param {object} post 签名 post
  * @param {{ entityHashes: string[] }} mentions mention 结构
  * @param {string} authorLabel 作者展示名
- * @param {string} lang 语言
+ * @param {string} locale 语言/地区
  * @returns {Promise<void>}
  */
-async function dispatchLocalAgents(username, authorEntityHash, post, mentions, authorLabel, lang) {
+async function dispatchLocalAgents(username, authorEntityHash, post, mentions, authorLabel, locale) {
 	const author = authorEntityHash.toLowerCase()
 	const replyTo = post.content?.replyTo
 
@@ -143,7 +143,7 @@ async function dispatchLocalAgents(username, authorEntityHash, post, mentions, a
 			viewerEntityHash: viewerHash,
 			username,
 			charPartName,
-			lang,
+			locale,
 		}
 
 		const OnMessage = char.interfaces?.social?.OnMessage
@@ -158,7 +158,7 @@ async function dispatchLocalAgents(username, authorEntityHash, post, mentions, a
 		await publishEntityReply(
 			username,
 			viewerHash,
-			{ text, replyTo: replyTo || { entityHash: author, postId: post.id }, visibility: 'public', lang },
+			{ text, replyTo: replyTo || { entityHash: author, postId: post.id }, visibility: 'public', locale },
 			charPartName,
 		)
 	}
@@ -207,7 +207,7 @@ export async function dispatchSocialMessage(username, authorEntityHash, post) {
 	const authorLabel = await displayNameForEntity(author, username)
 
 	await dispatchCarePostIfNeeded(username, author, post, authorLabel)
-	await dispatchLocalAgents(username, author, post, mentions, authorLabel, post.content?.lang || 'zh-CN')
+	await dispatchLocalAgents(username, author, post, mentions, authorLabel, post.content?.locale || 'zh-CN')
 	if (mentionHashes.length)
 		await dispatchRemoteMentionPush(username, author, post, mentionHashes)
 }

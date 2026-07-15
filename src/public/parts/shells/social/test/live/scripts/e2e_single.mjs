@@ -75,7 +75,7 @@ await testCase('POST /posts', async () => {
 		entityHash,
 		text: 'social e2e post',
 		visibility: 'public',
-		lang: 'zh-CN',
+		locale: 'zh-CN',
 	})
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	postId = r.json.event?.id

@@ -381,6 +381,10 @@ export async function selectChannel(channelId) {
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
 		getCurrentState: () => hubStore.context.currentState,
 	})
+	// 恢复草稿
+	void import('./composerDraft.mjs').then(({ loadDraft }) => {
+		loadDraft(hubStore.context.currentGroupId, channelId)
+	})
 	await loadMessages()
 	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
 		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)

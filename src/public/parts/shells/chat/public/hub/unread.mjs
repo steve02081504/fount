@@ -112,6 +112,9 @@ export async function markCurrentChannelRead() {
  * @returns {void}
  */
 export function handleReadMarkerWire(wireMessage) {
+	void import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
+		applyMemberReadMarkerWire(wireMessage)
+	})
 	const viewerName = hubStore.viewer.username
 	if (!wireMessage?.readMarker || wireMessage.username !== viewerName) return
 	const { groupId, channelId, readMarker } = wireMessage

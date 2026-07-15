@@ -1,4 +1,5 @@
 import { sendGroupMessage } from '../../src/api/groupApi.mjs'
+import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
 import { hubStore } from '../core/state.mjs'
 import { waitForGroupWebSocketOpen } from '../groupStream.mjs'
@@ -42,17 +43,18 @@ function channelRowFromPostedEvent(event) {
 }
 
 /**
- * @param {string} content 文本内容
+ * @param {object} contentObj 富内容对象
  * @param {string} tempId 临时 pending eventId
  * @returns {object} 乐观 pending 行
  */
-function pendingRowFromComposer(content, tempId) {
+function pendingRowFromComposer(contentObj, tempId) {
 	const viewerPubKeyHash = hubStore.context.currentState?.viewerMemberPubKeyHash || null
 	return {
 		eventId: tempId,
 		pending: true,
+		deliveryStatus: 'pending',
 		type: 'message',
-		content: { type: 'text', content },
+		content: contentObj,
 		sender: viewerPubKeyHash,
 		authorPubKeyHash: viewerPubKeyHash,
 		timestamp: Date.now(),
@@ -61,13 +63,13 @@ function pendingRowFromComposer(content, tempId) {
 }
 
 /**
- * @param {string} content 文本内容
+ * @param {object} contentObj 富内容对象
  * @param {string} tempId 临时 pending eventId
  * @returns {Promise<void>}
  */
-async function insertPendingRow(content, tempId) {
+async function insertPendingRow(contentObj, tempId) {
 	hubStore.messages.composerPendingId = tempId
-	const row = pendingRowFromComposer(content, tempId)
+	const row = pendingRowFromComposer(contentObj, tempId)
 	const container = getMessagesContainer()
 	if (!container) return
 	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, [row])
@@ -87,7 +89,7 @@ async function insertPendingRow(content, tempId) {
  */
 async function confirmPendingRow(tempId, event) {
 	hubStore.messages.composerPendingId = null
-	const realRow = channelRowFromPostedEvent(event)
+	const realRow = { ...channelRowFromPostedEvent(event), deliveryStatus: 'sent' }
 	const container = getMessagesContainer()
 	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(
 		hubStore.messages.channelMessagesSource.filter(m => String(m.eventId) !== tempId),
@@ -155,32 +157,58 @@ export async function retryFailedPendingMessage(tempId) {
 	}
 }
 
-/** @param {string} content @returns {Promise<void>} */
-export async function sendCurrentMessage(content) {
+/**
+ * 构建发送用富内容对象（含 CW/sensitive/locale）。
+ * @param {string} text 文本内容
+ * @returns {object} content object
+ */
+function buildComposerContent(text) {
+	const contentObj = { type: 'text', content: text, locale: navigator.language || 'zh-CN' }
+	const cw = getContentWarning()
+	if (cw) contentObj.content_warning = cw
+	if (getSensitiveMedia()) contentObj.sensitive_media = true
+	return contentObj
+}
+
+/** @param {string} text @returns {Promise<void>} */
+export async function sendCurrentMessage(text) {
 	const sendGroupId = hubStore.context.currentGroupId
 	const sendChannelId = hubStore.context.currentChannelId
 	if (!sendGroupId || !sendChannelId)
 		throw new Error('no channel selected')
 	await waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
 	const files = [...selectedFiles]
+	const contentObj = buildComposerContent(text)
 	const tempId = `pending:${crypto.randomUUID()}`
-	await insertPendingRow(content, tempId)
+	await insertPendingRow(contentObj, tempId)
 	try {
-		const event = await sendGroupMessage(sendGroupId, sendChannelId, content, files)
+		const event = await sendGroupMessage(sendGroupId, sendChannelId, contentObj, files)
 		if (hubStore.context.currentGroupId !== sendGroupId || hubStore.context.currentChannelId !== sendChannelId) {
 			hubStore.messages.composerPendingId = null
 			hubStore.messages.channelMessagesSource = hubStore.messages.channelMessagesSource.filter(m => String(m.eventId) !== tempId)
 			clearSelectedFiles()
+			clearComposerExtras()
 			hubStore.messages.failedPendingPayloads.delete(tempId)
 			return
 		}
 		clearSelectedFiles()
+		clearComposerExtras()
 		hubStore.messages.failedPendingPayloads.delete(tempId)
+		void import('../composerDraft.mjs').then(({ clearDraft }) => {
+			clearDraft(sendGroupId, sendChannelId)
+		})
+		void import('../sendQueue.mjs').then(({ dequeueOfflineMessage }) => {
+			dequeueOfflineMessage(tempId)
+		})
 		await confirmPendingRow(tempId, event)
 	}
 	catch (error) {
-		if (hubStore.context.currentGroupId === sendGroupId && hubStore.context.currentChannelId === sendChannelId)
-			await failPendingRow(tempId, content, files)
+		if (hubStore.context.currentGroupId === sendGroupId && hubStore.context.currentChannelId === sendChannelId) {
+			await failPendingRow(tempId, contentObj, files)
+			void import('../sendQueue.mjs').then(({ enqueueOfflineMessage }) => {
+				enqueueOfflineMessage(tempId, sendGroupId, sendChannelId, contentObj)
+			})
+		}
 		else {
 			hubStore.messages.composerPendingId = null
 			hubStore.messages.channelMessagesSource = hubStore.messages.channelMessagesSource.filter(m => String(m.eventId) !== tempId)

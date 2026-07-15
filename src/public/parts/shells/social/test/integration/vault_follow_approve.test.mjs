@@ -20,7 +20,7 @@ const { publicKeyFromSeed, pubKeyHash } = await import('npm:@steve02081504/fount
 Deno.test('maybeEncryptPostContent roundtrips via maybeDecryptPostContent', async () => {
 	const { username, operator } = await getSession()
 	const postKeyId = randomUUID()
-	const plain = { text: 'vault secret', visibility: 'followers', lang: 'zh-CN' }
+	const plain = { text: 'vault secret', visibility: 'followers', locale: 'zh-CN' }
 	const enc = await vault.maybeEncryptPostContent(username, operator, postKeyId, plain, 'followers')
 	assertEquals(enc.scheme, 'gsh')
 	const dec = await vault.maybeDecryptPostContent(username, operator, enc)
@@ -29,7 +29,7 @@ Deno.test('maybeEncryptPostContent roundtrips via maybeDecryptPostContent', asyn
 
 Deno.test('maybeDecryptPostContent passes through public plaintext content', async () => {
 	const { username, operator } = await getSession()
-	const plain = { text: 'public hello', visibility: 'public', lang: 'zh-CN' }
+	const plain = { text: 'public hello', visibility: 'public', locale: 'zh-CN' }
 	const dec = await vault.maybeDecryptPostContent(username, operator, plain)
 	assertEquals(dec, plain)
 })

@@ -128,6 +128,48 @@ function rehypeSpoiler() {
 }
 
 /**
+ * @param {object} node hast 节点
+ * @returns {string} 拼接文本
+ */
+function hastTextContent(node) {
+	if (!node) return ''
+	if (node.type === 'text') return node.value || ''
+	if (!node.children) return ''
+	return node.children.map(hastTextContent).join('')
+}
+
+/**
+ * @param {object} parent 父节点
+ * @param {object} child 关注的子节点
+ * @returns {boolean} 父节点有效内容是否仅此子节点
+ */
+function isSoleMeaningfulChild(parent, child) {
+	return (parent.children || []).every(n =>
+		n === child
+		|| (n.type === 'text' && !String(n.value || '').trim()),
+	)
+}
+
+/**
+ * 裸 http(s) 链接打标：单段纯链接 → card；行文中裸链接 → chip；带文本的 md 链接忽略。
+ * @returns {Function} Unified.js 插件
+ */
+function rehypeFountEmbedLinks() {
+	return tree => {
+		visit(tree, 'element', (node, _index, parent) => {
+			if (node.tagName !== 'a') return
+			const href = String(node.properties?.href || '')
+			if (!href.startsWith('http://') && !href.startsWith('https://')) return
+			const text = hastTextContent(node).trim()
+			if (text !== href) return
+			node.properties ??= {}
+			node.properties['data-fount-embed'] =
+				parent?.tagName === 'p' && isSoleMeaningfulChild(parent, node) ? 'card' : 'chip'
+		})
+	}
+}
+
+/**
  * 为元素添加 DaisyUI 类。
  * @returns {Function} - Unified.js 插件。
  */
@@ -1019,18 +1061,26 @@ export async function GetMarkdownConvertor({
 } = {}) {
 	const registered = await ensureMarkdownExtensionAssets()
 
+	if (!isStandalone) {
+		const { ensureEmbedHydrator } = await import('../embedCard.mjs')
+		ensureEmbedHydrator()
+	}
+
 	let processor = unified()
 		.use(remarkParse)
 		.use(remarkDisable, { disable: ['codeIndented'] })
 		.use(remarkBreaks)
 		.use(remarkMath)
+		.use(remarkGfm, { singleTilde: false })
 	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
 		processor = processor.use(plugin)
 	processor = processor
 		.use(remarkRehype, { allowDangerousHtml })
-		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeSpoiler)
+	if (!isStandalone)
+		processor = processor.use(rehypeFountEmbedLinks)
+	processor = processor
 		.use(rehypeMermaid)
 		.use(rehypePrettyCode, {
 			theme: {

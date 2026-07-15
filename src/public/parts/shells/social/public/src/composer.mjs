@@ -135,7 +135,7 @@ export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMe
 			return rest
 		}),
 		visibility: document.getElementById('postVisibility').value,
-		lang: document.getElementById('postLang').value.trim() || 'zh-CN',
+		locale: document.getElementById('postLocale').value.trim() || 'zh-CN',
 		...contentWarning ? { contentWarning } : {},
 		...sensitiveMedia || contentWarning ? { sensitiveMedia: true } : {},
 	}
@@ -167,6 +167,10 @@ export function refreshMediaPreview(appContext) {
 		{
 			altPlaceholder: appContext.geti18n('social.composer.mediaAlt'),
 			editLabel: appContext.geti18n('social.composer.editImage'),
+			/**
+			 * @param {number} index 媒体下标
+			 * @param {object} ref 媒体引用
+			 */
 			onEditImage: async (index, ref) => {
 				const source = ref.file
 				if (!(source instanceof Blob)) return
@@ -229,7 +233,7 @@ async function ensureUploadedMediaRefs(refs) {
 	const out = []
 	const pendingFiles = []
 	const pendingIndexes = []
-	for (const [index, ref] of refs.entries()) {
+	for (const [index, ref] of refs.entries()) 
 		if (ref.pending && ref.file instanceof Blob) {
 			pendingFiles.push(ref.file)
 			pendingIndexes.push(index)
@@ -239,7 +243,7 @@ async function ensureUploadedMediaRefs(refs) {
 			const { file: _f, objectUrl: _o, pending: _p, ...rest } = ref
 			out.push(rest)
 		}
-	}
+	
 	if (pendingFiles.length) {
 		const uploaded = await uploadSocialMedia(pendingFiles)
 		for (const [i, uploadedRef] of uploaded.entries()) {

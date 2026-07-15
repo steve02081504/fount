@@ -32,7 +32,7 @@ async function navigateFromHashInner() {
 			await setMode('friends')
 			return
 		}
-		const { groupId, channelId } = parseHash()
+		const { groupId, channelId, eventId } = parseHash()
 		if (!groupId) {
 			await setMode('friends')
 			return
@@ -45,6 +45,7 @@ async function navigateFromHashInner() {
 			&& hubStore.context.currentState?.channels?.[channelId]
 		) {
 			await selectChannel(channelId)
+			if (eventId) await scrollToAndHighlightEventId(eventId)
 			return
 		}
 
@@ -52,14 +53,37 @@ async function navigateFromHashInner() {
 		const binding = friendBindingForGroup(groupId)
 		if (binding) {
 			await enterFriendChat({ groupId, binding, channelId: channelId || undefined })
+			if (eventId) await scrollToAndHighlightEventId(eventId)
 			return
 		}
 
 		await selectGroup(groupId, channelId)
+		if (eventId) await scrollToAndHighlightEventId(eventId)
 	}
 	catch (error) {
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 	}
+}
+
+/**
+ * 滚动到指定消息并短暂高亮（eventId 定位）。
+ * @param {string} eventId 目标消息 eventId
+ * @returns {Promise<void>}
+ */
+async function scrollToAndHighlightEventId(eventId) {
+	if (!eventId) return
+	try {
+		const { scrollToMessageEventId } = await import('./messages/messages.mjs')
+		await scrollToMessageEventId(eventId)
+		// 短暂高亮
+		const container = document.getElementById('hub-messages')
+		const row = container?.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
+		if (row instanceof HTMLElement) {
+			row.classList.add('hub-message--highlight')
+			setTimeout(() => row.classList.remove('hub-message--highlight'), 2000)
+		}
+	}
+	catch { /* best-effort */ }
 }
 
 /**

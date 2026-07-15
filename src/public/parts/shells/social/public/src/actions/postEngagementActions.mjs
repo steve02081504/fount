@@ -1,5 +1,5 @@
-import { renderTemplate } from '/scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { mountTranslationBlock, requestTranslation, resolveTargetLang } from '/scripts/features/translate.mjs'
+import { SOCIAL_API } from '../lib/apiClient.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
 import {
@@ -159,14 +159,18 @@ export async function handlePostEngagementClick(appContext, target) {
 		const card = translateButton.closest('.post-card')
 		if (!cardBody || !card) return false
 		const text = decodeURIComponent(card.dataset.postText || '')
-		const result = await appContext.socialApi('/translate', {
-			method: 'POST',
-			body: JSON.stringify({ text, targetLang: 'zh-CN' }),
+		const translated = await requestTranslation(
+			`${SOCIAL_API}/translate`,
+			text,
+			resolveTargetLang(),
+		)
+		mountTranslationBlock(cardBody, {
+			originalText: text,
+			translatedText: translated,
+			translationLabel: appContext.geti18n('social.translate.label'),
+			showOriginalLabel: appContext.geti18n('common.translate.showOriginal'),
+			showTranslationLabel: appContext.geti18n('common.translate.showTranslation'),
 		})
-		const block = await renderTemplate('translate_block', {
-			translated: escapeHtml(result.translated),
-		})
-		cardBody.appendChild(block)
 		closePostMoreMenus()
 	}
 

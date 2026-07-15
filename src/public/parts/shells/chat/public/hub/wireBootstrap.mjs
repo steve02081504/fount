@@ -133,4 +133,13 @@ export function wireBootstrap() {
 	document.getElementById('hub-toggle-members-button')?.addEventListener('click', () => {
 		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')
 	})
+	// 草稿自动保存接线
+	void import('./composerDraft.mjs').then(({ wireDraftAutoSave }) => {
+		wireDraftAutoSave(() => ({
+			groupId: hubStore.context.currentGroupId,
+			channelId: hubStore.context.currentChannelId,
+		}))
+	})
+	// 离线队列接线
+	void import('./sendQueue.mjs').then(({ wireSendQueueDrain }) => { wireSendQueueDrain() })
 }

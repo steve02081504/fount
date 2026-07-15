@@ -56,7 +56,9 @@ async function navigateHubFromLocation() {
 			const clean = new URL(window.location.href)
 			clean.searchParams.delete('url')
 			clean.searchParams.delete('run')
-			window.history.replaceState(null, '', `${clean.pathname}${clean.search}#group:${encodeURIComponent(groupId)}:${channelId || 'default'}`)
+			let hash = `group:${encodeURIComponent(groupId)}:${channelId || 'default'}`
+			if (applied.eventId) hash += `;${encodeURIComponent(applied.eventId)}`
+			window.history.replaceState(null, '', `${clean.pathname}${clean.search}#${hash}`)
 		}
 	}
 

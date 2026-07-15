@@ -38,7 +38,7 @@ Deno.test('post → materialize roundtrip', async () => {
 	const { username, operator } = await getSession()
 	const signed = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'hello world', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'hello world', visibility: 'public', locale: 'zh-CN' },
 	}, { fanout: false })
 	assert(signed.id && signed.signature && signed.senderPubKey)
 	const view = await materialize.getTimelineMaterialized(username, operator)

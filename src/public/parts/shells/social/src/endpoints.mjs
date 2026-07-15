@@ -14,10 +14,11 @@ import { registerProfileRoutes } from './endpoints/profile.mjs'
 import { registerRelationshipsRoutes } from './endpoints/relationships.mjs'
 import { registerSavedRoutes } from './endpoints/saved.mjs'
 import { registerSearchRoutes } from './endpoints/search.mjs'
+import { registerSignalsRoutes } from './endpoints/signals.mjs'
+import { registerTasteRoutes } from './endpoints/taste.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
-import { registerTasteRoutes } from './endpoints/taste.mjs'
-import { registerSignalsRoutes } from './endpoints/signals.mjs'
+import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs'
 import { registerVaultRoutes } from './endpoints/vault.mjs'
 import { registerViewerRoutes } from './endpoints/viewer.mjs'
 
@@ -33,6 +34,7 @@ export function setEndpoints(router) {
 	registerSearchRoutes(router)
 	registerNotificationRoutes(router)
 	registerTranslateRoutes(router)
+	registerTranslationPrefsRoutes(router)
 	registerViewerRoutes(router)
 	registerProfileRoutes(router)
 	registerPostsRoutes(router)

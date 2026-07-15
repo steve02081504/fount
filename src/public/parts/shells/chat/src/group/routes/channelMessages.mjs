@@ -31,6 +31,10 @@ import { broadcastEvent } from '../../chat/ws/groupWsBroadcast.mjs'
 import { groupWsRoomKeyForReplica } from '../../chat/ws/groupWsRooms.mjs'
 import { getBufferedStreamChunks } from '../../chat/ws/groupWsStreamBuffer.mjs'
 import { chatClientFromReq } from '../../endpoints/shared.mjs'
+import {
+	loadGroupMemberReadMarkers,
+	setGroupMemberReadMarker,
+} from '../../chat/lib/groupMemberReadMarkers.mjs'
 import { readChannelReactionsForMessages, readChannelMessagesForUser, readPinNeighborhoodForUser } from '../queries.mjs'
 
 import {
@@ -218,14 +222,32 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 		const { client } = await chatClientFromReq(req)
 		const readMarker = await (await (await client.group(groupId)).channel(channelId)).markRead({ eventId, seq })
+		setGroupMemberReadMarker(username, groupId, channelId, client.entityHash, readMarker)
 		broadcastEvent(groupWsRoomKeyForReplica(groupId), {
 			type: 'read_marker',
 			username,
+			entityHash: client.entityHash,
 			groupId,
 			channelId,
 			readMarker,
 		})
 		res.status(200).json({ readMarker })
+	})
+
+	router.get(`${GROUPS_PREFIX}/:groupId/channels/:channelId/member-read-markers`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+
+		const membership = await resolveGroupMember(req, res, groupId)
+		const { username, state, member } = membership
+		ensureChannel(state, channelId)
+		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
+
+		const all = loadGroupMemberReadMarkers(username, groupId)
+		const channelMarkers = all[channelId] || {}
+		const markers = Object.fromEntries(
+			Object.entries(channelMarkers).map(([hash, m]) => [hash, { eventId: m.eventId, seq: m.seq }]),
+		)
+		res.status(200).json({ markers })
 	})
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages/batch-get`, authenticate, async (req, res) => {

@@ -91,6 +91,28 @@ export function parseDmRunUri(raw) {
 }
 
 /**
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string} eventId 消息 eventId
+ * @returns {string} canonical message run URI
+ */
+export function formatMessageRunUri(groupId, channelId, eventId) {
+	return buildRunUri('message', [groupId, channelId, eventId])
+}
+
+/**
+ * @param {string} raw URI
+ * @returns {{ groupId: string, channelId: string, eventId: string } | null} message 载荷
+ */
+export function parseMessageRunUri(raw) {
+	const parsed = parseChatRunUri(raw)
+	if (!parsed || parsed.subcommand !== 'message') return null
+	const [groupId, channelId, eventId] = parsed.args
+	if (!groupId || !channelId || !eventId) return null
+	return { groupId, channelId, eventId }
+}
+
+/**
  * @param {string} raw URI
  * @returns {{ groupId: string, inviteCode: string, roomSecret?: string, introducerPubKeyHash?: string, powAnchorRef?: string, introducerNodeHash?: string } | null} join 载荷
  */

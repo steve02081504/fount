@@ -77,3 +77,9 @@ export const hubActionMenuIcon = iconifyImg('mdi/dots-horizontal', { width: 16, 
 export const hubActionTimelinePrevIcon = iconifyImg('mdi/chevron-left', { width: 16, height: 16, class: 'hub-action-icon' })
 /** 消息操作栏：时间线下一版图标 */
 export const hubActionTimelineNextIcon = iconifyImg('mdi/chevron-right', { width: 16, height: 16, class: 'hub-action-icon' })
+/** 消息操作栏：翻译图标 */
+export const hubActionTranslateIcon = iconifyImg('mdi/translate', { width: 16, height: 16, class: 'hub-action-icon' })
+/** 消息操作栏：转发图标 */
+export const hubActionForwardIcon = iconifyImg('mdi/share', { width: 16, height: 16, class: 'hub-action-icon' })
+/** 消息操作栏：复制分享链接图标 */
+export const hubActionCopyLinkIcon = iconifyImg('mdi/link-variant', { width: 16, height: 16, class: 'hub-action-icon' })

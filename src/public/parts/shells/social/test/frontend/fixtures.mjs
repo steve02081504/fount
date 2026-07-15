@@ -317,7 +317,7 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
+				{ data: { text: `${textPrefix}-${index}-${Date.now()}`, visibility: 'public', locale: 'zh-CN' } },
 			)
 			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
 		}
@@ -461,7 +461,7 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 		for (let index = 0; index < count; index++) {
 			const parentRes = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
-				{ data: { text: `notif-seed-parent-${index}-${Date.now()}`, visibility: 'public', lang: 'zh-CN' } },
+				{ data: { text: `notif-seed-parent-${index}-${Date.now()}`, visibility: 'public', locale: 'zh-CN' } },
 			)
 			if (!parentRes.ok()) throw new Error(`parent post failed: ${parentRes.status()}`)
 			const postId = postIdFromResponse(await parentRes.json())

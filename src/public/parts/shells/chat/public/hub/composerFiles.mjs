@@ -9,6 +9,8 @@ import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { handleFilesSelect } from '../src/composerAttachments.mjs'
 
+import { setComposerExtrasVisible } from './composerExtras.mjs'
+
 /** @type {Array<object>} Hub 输入区待发送附件 */
 export const selectedFiles = []
 
@@ -47,6 +49,7 @@ export function clearSelectedFiles() {
 	selectedFiles.length = 0
 	const el = previewContainer()
 	if (el) el.innerHTML = ''
+	setComposerExtrasVisible(false)
 }
 
 /**
@@ -57,6 +60,7 @@ export async function addFilesFromEvent(event) {
 	const container = previewContainer()
 	if (!container) return
 	await handleFilesSelect(event, selectedFiles, container)
+	if (selectedFiles.length) setComposerExtrasVisible(true)
 }
 
 /**

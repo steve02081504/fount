@@ -27,6 +27,7 @@ import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { sanitizeMediaRefs, resolveSensitiveMedia } from '../lib/mediaRefs.mjs'
 import { suggestMentions } from '../lib/mentionSuggest.mjs'
 import { normalizePollDraft } from '../lib/poll.mjs'
+import { loadMutedKeywords, replaceMutedKeywords } from '../mutedKeywords.mjs'
 import { buildNotifications } from '../notifications.mjs'
 import { setPersonalBlock } from '../personalBlock.mjs'
 import {
@@ -42,7 +43,6 @@ import {
 import { searchPosts } from '../search.mjs'
 import { updateSocialMeta } from '../socialMeta.mjs'
 import { getVaultFileByShareId, registerVaultFile } from '../socialVaultIndex.mjs'
-import { loadMutedKeywords, replaceMutedKeywords } from '../mutedKeywords.mjs'
 import { rebuildTaste } from '../taste/cluster.mjs'
 import { revokeTasteAlias } from '../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../taste/nameClaims.mjs'
@@ -586,6 +586,7 @@ export function createSocialClient(ctx) {
 		},
 		/**
 		 * 本地关键词/标签屏蔽（不联邦）。
+		 * @returns {{ list: () => Promise<{ entries: object[] }>, replace: (entries: object[]) => Promise<{ entries: object[] }> }} muted keywords API
 		 */
 		get mutedKeywords() {
 			return {
@@ -706,7 +707,7 @@ async function createTimelinePost(ctx, draft) {
 		replyTo: draft.replyTo,
 		quoteRef: draft.quoteRef,
 		groupRef: draft.groupRef,
-		lang: draft.lang || 'zh-CN',
+		locale: draft.locale || 'zh-CN',
 		visibility,
 		...draft.contentWarning ? { contentWarning: String(draft.contentWarning).trim().slice(0, 200) } : {},
 		...resolveSensitiveMedia(draft.sensitiveMedia, draft.contentWarning) ? { sensitiveMedia: true } : {},

@@ -24,7 +24,7 @@ Deno.test('repost materializes and appears in home feed', async () => {
 	const { username, operator } = await getSession()
 	const signed = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
-		content: { text: 'original for repost', visibility: 'public', lang: 'zh-CN' },
+		content: { text: 'original for repost', visibility: 'public', locale: 'zh-CN' },
 	}, { fanout: false })
 	await append.commitTimelineEvent(username, operator, {
 		type: 'repost',
@@ -89,7 +89,7 @@ Deno.test('owner sees own followers-only post decrypted on profile feed', async 
 	const encrypted = await import('../../src/vault_crypto/vault.mjs')
 	const encContent = await encrypted.maybeEncryptPostContent(
 		username, operator, postKeyId,
-		{ text: 'followers encrypted', visibility: 'followers', lang: 'zh-CN' },
+		{ text: 'followers encrypted', visibility: 'followers', locale: 'zh-CN' },
 		'followers',
 	)
 	await append.commitTimelineEvent(username, operator, {

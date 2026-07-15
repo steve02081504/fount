@@ -251,7 +251,7 @@ export function finalizeSocialTimelineView(state, order) {
 			text: edit.content?.text,
 			mediaRefs: edit.content?.mediaRefs,
 			contentWarning: edit.content?.contentWarning,
-			lang: edit.content?.lang,
+			locale: edit.content?.locale,
 			at: edit.hlc?.wall || edit.timestamp,
 			eventId: edit.id,
 		}))

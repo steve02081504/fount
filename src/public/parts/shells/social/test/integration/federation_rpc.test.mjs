@@ -34,7 +34,7 @@ const TARGET = placeholderEntityHash('a')
  */
 async function postAs(username, operator, text, visibility = 'public') {
 	return append.commitTimelineEvent(username, operator, {
-		type: 'post', content: { text, visibility, lang: 'zh-CN' },
+		type: 'post', content: { text, visibility, locale: 'zh-CN' },
 	}, { fanout: false })
 }
 

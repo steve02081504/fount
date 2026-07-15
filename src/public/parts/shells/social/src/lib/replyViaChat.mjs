@@ -46,7 +46,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 		Charname: charInfo.name || charPartName,
 		UserCharname: messageEvent.authorDisplayName || 'user',
 		ReplyToCharname: messageEvent.authorDisplayName,
-		locales: [{ code: messageEvent.lang || 'zh-CN' }],
+		locales: [{ code: messageEvent.locale || 'zh-CN' }],
 		time: now,
 		world: BUILTIN_WORLD,
 		user: BUILTIN_PERSONA,

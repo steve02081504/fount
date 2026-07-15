@@ -1,3 +1,5 @@
+import { sanitizeMessageExtras } from './messageFields.mjs'
+
 /** @typedef {'text' | 'sticker' | 'vote' | 'group_invite'} ChannelContentType */
 
 /**
@@ -25,7 +27,7 @@ export function isTextChannelContent(content) {
 function finalizeTextChannelContent(raw) {
 	if (raw.type !== 'text') throw new Error('expected type text')
 	if (typeof raw.content !== 'string') throw new Error('text content requires string content field')
-	const out = { ...raw, type: 'text', content: raw.content }
+	const out = sanitizeMessageExtras({ ...raw, type: 'text', content: raw.content })
 	if (out.content_for_show === out.content) delete out.content_for_show
 	if (out.content_for_edit === out.content) delete out.content_for_edit
 	if (!out.displayName?.trim()) delete out.displayName
@@ -56,7 +58,7 @@ export function textChannelContent(agentText, extra = {}) {
 export function channelMessageContentObject(input) {
 	if (input.type === 'text') return finalizeTextChannelContent(input)
 	channelContentType(input)
-	return { ...input }
+	return sanitizeMessageExtras({ ...input })
 }
 
 /**

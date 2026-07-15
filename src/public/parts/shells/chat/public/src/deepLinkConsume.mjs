@@ -7,7 +7,7 @@ import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:chat/s
 
 
 import { isHex64 } from '../shared/pubKeyHex.mjs'
-import { parseDmRunUri, parseJoinRunUri } from '../shared/runUri.mjs'
+import { parseDmRunUri, parseJoinRunUri, parseMessageRunUri } from '../shared/runUri.mjs'
 
 import { createDirectMessageByPubKeys, getFederationSettings, getGroupState, joinGroup } from './api/groupApi.mjs'
 import { notifyHubGroupJoined } from './hubBroadcast.mjs'
@@ -16,17 +16,19 @@ import { resolvePowForJoin } from './powJoin.mjs'
 
 /**
  * 从当前页 query 解析 `fount://run/…` 深链（`run` 参数）。
+ * @param {string} [search] 可选 search 串；默认当前页
  * @returns {string | null} 规范化后的 run URI，无则 `null`
  */
-export function runUriFromPageLocation() {
-	const runUri = new URLSearchParams(window.location.search).get('run')?.trim()
+export function runUriFromPageLocation(search = window.location.search) {
+	const runUri = new URLSearchParams(search).get('run')?.trim()
+		|| new URLSearchParams(search).get('url')?.trim()
 	return runUri?.startsWith('fount://') ? runUri : null
 }
 
 /**
- * 解析并执行 run 深链：Chat DM/join 或跳转 Social 资料页。
+ * 解析并执行 run 深链：Chat DM/join/message 或跳转 Social 资料页。
  * @param {string} raw `fount://run/…` 完整 URI
- * @returns {Promise<{ kind: 'dm' | 'join' | 'social-profile', groupId?: string, channelId?: string } | null>} 成功载荷；无法识别为 `null`
+ * @returns {Promise<{ kind: 'dm' | 'join' | 'social-profile' | 'message', groupId?: string, channelId?: string, eventId?: string } | null>} 成功载荷；无法识别为 `null`
  */
 export async function applyChatRunUri(raw) {
 	const social = parseSocialRunUri(raw)
@@ -34,6 +36,16 @@ export async function applyChatRunUri(raw) {
 		window.location.href = formatSocialProfileHref(social.entityHash, social.postId)
 		return { kind: 'social-profile' }
 	}
+
+	const message = parseMessageRunUri(raw)
+	if (message) 
+		return {
+			kind: 'message',
+			groupId: message.groupId,
+			channelId: message.channelId,
+			eventId: message.eventId,
+		}
+	
 
 	const dm = parseDmRunUri(raw)
 	if (dm) {

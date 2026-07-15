@@ -93,7 +93,7 @@ await testCase('A feed post embeds groupEmoji mediaRef and retains token', async
 		entityHash: viewer,
 		text,
 		visibility: 'public',
-		lang: 'zh-CN',
+		locale: 'zh-CN',
 	})
 	if (r.status !== 200) throw new Error(`post ${r.status}: ${r.raw}`)
 	postId = r.json.event?.id

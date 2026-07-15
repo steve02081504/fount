@@ -194,6 +194,18 @@ export async function showStatusMenu(anchorElement) {
 	profileLi.append(profileButton)
 	menu.append(profileLi)
 
+	const translateLi = document.createElement('li')
+	const translateButton = document.createElement('button')
+	translateButton.type = 'button'
+	translateButton.className = 'px-3 py-2 text-sm w-full text-left'
+	translateButton.textContent = await geti18n('chat.hub.translationPrefs.title')
+	translateButton.addEventListener('click', () => {
+		dismissStatusMenu()
+		void import('./translationPrefsDialog.mjs').then(({ openTranslationPrefsDialog }) => openTranslationPrefsDialog())
+	})
+	translateLi.append(translateButton)
+	menu.append(translateLi)
+
 	document.body.append(menu)
 	openStatusMenuElement = menu
 

@@ -21,7 +21,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 与工业化社交产品的差距主要集中在七类：
 
 1. **发现与排序**：有本地启发式 `for_you`（含二度公开帖扩散、`interestBoost` 本地口味 tag 匹配——可负压分、dislike 负向证据），无全局 ML 个性化、无广告位、无全球热搜与地理发现；Explore 为邻居 RPC + 本地目录；无 hashtag follow；**有**可编辑口味偏好视图（`GET /taste`、重建、`tag_name` 命名、双隐私开关）。
-2. **内容形态**：无 Stories/Reels/直播/Spaces；媒体上传无创作工具链；轮播仅为多图 grid；thread / quote 产品工作流简陋；无 URL unfurl、无 alt 填写。
+2. **内容形态**：无 Stories/Reels/直播/Spaces；媒体上传无创作工具链；轮播仅为多图 grid；thread / quote 产品工作流简陋。
 3. **产品与图谱**：无内置 DM（跳 chat）；可见性仅 `public`/`followers`（另有探索隐藏与 GSH 密钥面，语义不同于 Mastodon unlisted/direct）；无 Lists/社区/Page；无认证与创作者分析；举报有 **本机 owner 审核 UI**（非跨节点工单后台）。
 4. **安全与反垃圾**：信誉 demote + 作者 mute/block/hide + agent 回复 token 桶有；**无人帖 rate-limit / CAPTCHA / 新号限制**；无 NSFW 自动检测、无按时长 mute、无关键词过滤。
 5. **商业化**：广告、订阅、打赏、付费内容、商店全空白。
@@ -68,7 +68,7 @@ fount social 的底盘是 **自研联邦时间线 + entity 级 DAG 事件 + GSH 
 | --- | --- | --- |
 | 轮播多图 | 滑动 Carousel | `mediaRefs[]` + **scroll-snap 轮播** + lightbox；composer 可填 **alt**；发图前 canvas 裁剪/打码/画笔 |
 | 长文 | 独立 Article / Note 阅读页 | Markdown 帖文，**无独立文章类型** |
-| 富链接预览 | oEmbed 卡片 | markdown + `groupRef` 为主；**无通用 URL unfurl** |
+| 富链接预览 | oEmbed 卡片 | 前端 markdown 裸链接水合（`/api/no-cors`）；非结构化入库 |
 | Thread 串发 | 专用 composer 工作流 | 有 `replyTo` 链，**composer 无「发 thread」** |
 | Quote 讨论流 | 独立 quote 时间线聚合 | 有 `quoteRef`，**无产品级 quote 流** |
 | 媒体 alt 文本 | 发帖时填写 accessibility 描述 | **有**；composer alt 输入；渲染与 lightbox 使用；入站截断 |

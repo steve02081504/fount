@@ -276,7 +276,7 @@ export async function submitReply(appContext, entityHash, postId, text) {
 			text,
 			replyTo: { entityHash, postId },
 			visibility: 'public',
-			lang: document.getElementById('postLang')?.value.trim() || 'zh-CN',
+			locale: document.getElementById('postLocale')?.value.trim() || 'zh-CN',
 		}),
 	})
 }

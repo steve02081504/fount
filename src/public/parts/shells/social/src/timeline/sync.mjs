@@ -9,6 +9,7 @@ import { projectPollVoteFromTimelineEvent } from '../federation/poll_index.mjs'
 import { projectReactionFromTimelineEvent } from '../federation/reaction_index.mjs'
 import { validateRemoteTimelineEvent } from '../federation/remote_ingest.mjs'
 import { loadFollowing, loadFollowingForActor } from '../following.mjs'
+import { sanitizeMediaRefs } from '../lib/mediaRefs.mjs'
 import { timelineEventsPath } from '../paths.mjs'
 import { handleInboundPersonalBlockEvent } from '../personalBlock.mjs'
 import { tryImportFollowApproveVault } from '../vault_crypto/followApproveImport.mjs'
@@ -17,7 +18,6 @@ import { canonicalizeSignedTimelineEvent } from './canonicalizeEvent.mjs'
 import { filterEventsForFederatedPull } from './federationExport.mjs'
 import { invalidateTimelineMaterializedCache, maintainSocialTimeline } from './materialize.mjs'
 import { invalidateTimelineOwnerIndex } from './ownerIndex.mjs'
-import { sanitizeMediaRefs } from '../lib/mediaRefs.mjs'
 
 /** 联邦 RPC 单次 pull 响应上限（客户端循环 afterEventId 直至空批）。 */
 export const FEDERATED_TIMELINE_PULL_BATCH = 200
@@ -43,6 +43,8 @@ export async function ingestRemoteTimelineEvent(username, entityHash, event) {
 		validated.row.content.mediaRefs = sanitizeMediaRefs(validated.row.content.mediaRefs)
 	if (validated.row.content && 'sensitiveMedia' in validated.row.content)
 		validated.row.content.sensitiveMedia = validated.row.content.sensitiveMedia === true
+	if (validated.row.content?.embeds != null)
+		delete validated.row.content.embeds
 	if (validated.row.type === 'post_note' && validated.row.content)
 		validated.row.content.text = String(validated.row.content.text || '').trim().slice(0, 2000)
 	if (existing.some(row => row.id === validated.row.id)) return true

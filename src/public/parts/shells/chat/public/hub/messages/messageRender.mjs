@@ -9,6 +9,8 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	renderTemplateAsHtmlString,
 } from '../../../../../scripts/features/template.mjs'
+import { bindContentReveal, wrapContentWarningHtml, wrapSensitiveMediaHtml } from '/scripts/features/contentReveal/index.mjs'
+import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { channelMessageEditText, channelMessageShowText } from '../../shared/channelContent.mjs'
 import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../../shared/expandMentions.mjs'
 import { firstCustomEmojiRef } from '../../src/customEmojis.mjs'
@@ -162,9 +164,10 @@ const LAZY_MEDIA_BYTES = 2 * 1024 * 1024
  * @param {string} id 文件 ID
  * @param {object} meta 文件元数据
  * @param {string} mime MIME
+ * @param {string} [alt] 图片 alt 文本
  * @returns {Promise<string>} 单附件 HTML
  */
-async function renderSingleFileAttachmentHtml(groupId, id, meta, mime) {
+async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 	const fileName = escapeHtml(meta.name || id)
 	if (mime.startsWith('image/')) {
 		const blobUrl = await fetchGroupFileAsBlobUrl(groupId, id)
@@ -173,6 +176,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime) {
 		return renderTemplateAsHtmlString('hub/messages/inline_image', {
 			fileName,
 			src: escapeHtml(blobUrl),
+			alt: escapeHtml(alt || meta.description || ''),
 		})
 	}
 	const size = Number(meta.size) || 0
@@ -208,6 +212,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime) {
  */
 async function renderMessageFileIdsHtml(message) {
 	const fileIds = message.content?.fileIds
+	const fileAlts = message.content?.fileAlts || {}
 	const groupId = hubStore.context.currentGroupId
 	if (!groupId || !Array.isArray(fileIds) || !fileIds.length) return ''
 
@@ -227,7 +232,8 @@ async function renderMessageFileIdsHtml(message) {
 		const meta = await metaR.json()
 		const mime = String(meta.mimeType || '')
 		if (mime.startsWith('image/') && text.includes('[image:')) continue
-		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime))
+		const alt = fileAlts[id] || meta.description || ''
+		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
 	}
 	if (!rows.length) return ''
 	return `<div class="hub-message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
@@ -457,6 +463,42 @@ async function renderMessageRowShell({
 }
 
 /**
+ * 渲染投递状态小标记 HTML（✓ / ✓✓）。
+ * @param {'pending'|'sent'|'delivered'} status 投递态
+ * @param {number} [readCount=0] 已读成员数（>0 升为已读双勾）
+ * @returns {string} HTML
+ */
+function renderDeliveryStatusHtml(status, readCount = 0) {
+	if (readCount > 0)
+		return `<span class="hub-delivery-status hub-delivery-status--read text-xs opacity-70" title="${readCount}" aria-hidden="true">✓✓</span>`
+	if (status === 'delivered')
+		return '<span class="hub-delivery-status hub-delivery-status--delivered text-xs opacity-60" aria-hidden="true">✓✓</span>'
+	if (status === 'sent')
+		return '<span class="hub-delivery-status hub-delivery-status--sent text-xs opacity-40" aria-hidden="true">✓</span>'
+	return ''
+}
+
+/**
+ * 渲染转发消息头 HTML（「转发自 {name}」）。
+ * @param {{ senderName?: string, shareUrl?: string, groupId?: string, channelId?: string, eventId?: string }} forwardedFrom 转发来源
+ * @returns {string} HTML 片段
+ */
+function renderForwardedFromHtml(forwardedFrom) {
+	const name = escapeHtml(String(forwardedFrom.senderName || ''))
+	const raw = geti18n('chat.hub.forwardedFrom')
+	const label = (typeof raw === 'string' ? raw : raw?.title) || 'Forwarded from'
+	let href = ''
+	if (forwardedFrom.shareUrl)
+		href = escapeHtml(String(forwardedFrom.shareUrl))
+	else if (forwardedFrom.groupId && forwardedFrom.channelId && forwardedFrom.eventId)
+		href = `#group:${encodeURIComponent(forwardedFrom.groupId)}:${encodeURIComponent(forwardedFrom.channelId)};${encodeURIComponent(forwardedFrom.eventId)}`
+	const nameHtml = href
+		? `<a class="hub-forwarded-from-link" href="${href}">${name}</a>`
+		: `<span>${name}</span>`
+	return `<div class="hub-forwarded-from text-xs opacity-60 mb-1">${escapeHtml(label)} ${nameHtml}</div>`
+}
+
+/**
  * 渲染单条频道消息块。
  * @param {object} message 消息
  * @param {string|null} prevAuthorKey 上一条作者键（charId ?? sender）
@@ -487,7 +529,9 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const streamingAttr = generating ? ' data-streaming="1"' : ''
 	const pendingAttr = message.pending ? ' data-pending="1"' : ''
 	const failedAttr = message.sendFailed ? ' data-send-failed="1"' : ''
-	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}`
+	const deliveryAttr = message.deliveryStatus ? ` data-delivery-status="${escapeHtml(message.deliveryStatus)}"` : ''
+	const msgLocale = message.content?.locale ? ` data-message-locale="${escapeHtml(message.content.locale)}"` : ''
+	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}${deliveryAttr}${msgLocale}`
 
 	const timeAttrs = formatTimeAttrs(time)
 	const typingLabelHtml = generating
@@ -554,10 +598,36 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			|| (useVote
 				? await renderVoteBlock(message, allMessages)
 				: await renderMessageContent(plainText))
+
+		// 转发头
+		const forwardedFrom = message.content?.forwardedFrom
+		const forwardedFromHtml = forwardedFrom
+			? renderForwardedFromHtml(forwardedFrom)
+			: ''
+
 		const failedBanner = message.sendFailed
 			? await renderTemplateAsHtmlString('hub/messages/send_failed_banner', { eventId: escapeHtml(String(message.eventId)) })
 			: ''
-		bodyHtml = `${refHtml}${truncBanner}${bodyCore}${filesHtml}${failedBanner}`
+
+		let mainBody = `${forwardedFromHtml}${refHtml}${truncBanner}${bodyCore}${filesHtml}${failedBanner}`
+
+		// 内容警告折叠
+		if (message.content?.content_warning) {
+			const cwLabel = String(message.content.content_warning)
+			const raw = geti18n('chat.hub.revealContent')
+			const revealLabel = (typeof raw === 'string' ? raw : raw?.title) || 'Reveal'
+			mainBody = wrapContentWarningHtml(mainBody, { warningLabel: cwLabel, revealLabel })
+		}
+		// 敏感媒体遮罩（仅对文件区包裹，正文 inline image 难以单独包裹故也一起包）
+		else if (message.content?.sensitive_media && (filesHtml || message.content?.fileIds?.length)) {
+			const raw = geti18n('chat.hub.sensitiveMedia')
+			const warnLabel = (typeof raw === 'string' ? raw : raw?.title) || ''
+			const rawReveal = geti18n('chat.hub.revealMedia')
+			const revealLabel = (typeof rawReveal === 'string' ? rawReveal : rawReveal?.title) || 'Reveal'
+			mainBody = wrapSensitiveMediaHtml(mainBody, { warningLabel: warnLabel, revealLabel })
+		}
+
+		bodyHtml = mainBody
 
 		if (usePlainMd)
 			bubbleAttrs = ` data-md-raw="${escapeHtml(plainText)}" data-md-author="${escapeHtml(String(message.authorPubKeyHash || ''))}"`
@@ -583,6 +653,20 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const hoverBarHtml = actionsResult?.hoverHtml || ''
 	const inlineFeedbackHtml = actionsResult?.inlineHtml || ''
 
+	// 投递态指示器（仅己方消息显示）；已读水位覆盖时升为双勾
+	let deliveryStatusHtml = ''
+	if (!generating && isOwn) {
+		const groupId = hubStore.context.currentGroupId
+		const channelId = hubStore.context.currentChannelId
+		const msgSeq = Number(message.seq)
+		let readCount = 0
+		if (groupId && channelId && Number.isFinite(msgSeq) && msgSeq > 0) {
+			const { getReadCountForMessage } = await import('../memberReadMarkers.mjs')
+			readCount = getReadCountForMessage(groupId, channelId, msgSeq)
+		}
+		deliveryStatusHtml = renderDeliveryStatusHtml(message.deliveryStatus || (message.pending ? 'pending' : 'sent'), readCount)
+	}
+
 	return {
 		html: await renderMessageRowShell({
 			rowClass: `hub-message ${isFirst ? 'first-in-group' : ''}${message.pending ? ' hub-message-pending' : ''}${message.sendFailed ? ' hub-message-send-failed' : ''}`.trim(),
@@ -598,7 +682,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 			headerHtml,
 			contentHtml: bodyHtml,
 			bubbleAttrs,
-			footerHtml: `${inlineFeedbackHtml}${reactionsHtml}`,
+			footerHtml: `${inlineFeedbackHtml}${reactionsHtml}${deliveryStatusHtml}`,
 			hoverBarHtml,
 		}),
 		sender: authorKey,
@@ -607,7 +691,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 }
 
 /**
- * 消息列表插入 DOM 后翻译动态 `data-i18n` 节点。
+ * 消息列表插入 DOM 后翻译动态 `data-i18n` 节点、绑定交互层。
  * @param {HTMLElement} container 消息列表根
  * @returns {void}
  */
@@ -615,7 +699,60 @@ export function localizeRenderedMessages(container) {
 	wireMessageEmbedGuards(container)
 	wireMessageRefBlocks(container)
 	wireMessageMediaPlaceholders(container)
+	bindContentReveal(container)
 	void hydrateMessageMarkdown(container)
+	void autoTranslateMessages(container)
+}
+
+/**
+ * 自动翻译：拉取偏好后，对需要翻译的消息 mount 译文块。
+ * @param {HTMLElement} container 消息列表根
+ * @returns {Promise<void>}
+ */
+async function autoTranslateMessages(container) {
+	if (!(container instanceof HTMLElement)) return
+	try {
+		const response = await fetch('/api/parts/shells:chat/translation-prefs', { credentials: 'include' })
+		if (!response.ok) return
+		const prefs = await response.json()
+		if (!prefs?.autoTranslate) return
+
+		const excludeLocales = new Set(Array.isArray(prefs.excludeLocales) ? prefs.excludeLocales : [])
+		const { requestTranslation, resolveTargetLang, mountTranslationBlock } = await import('/scripts/features/translate.mjs')
+		const { geti18n } = await import('../../../../../scripts/i18n/index.mjs')
+		const targetLang = resolveTargetLang()
+		/**
+		 * @param {string|{title?:string}|undefined} v i18n 值
+		 * @returns {string} 字符串表示
+		 */
+		const extractI18n = v => typeof v === 'string' ? v : v?.title || ''
+
+		const rows = container.querySelectorAll('.chat[data-message-id][data-message-locale]')
+		for (const row of rows) {
+			if (!(row instanceof HTMLElement)) continue
+			const locale = row.getAttribute('data-message-locale') || ''
+			if (!locale || excludeLocales.has(locale)) continue
+			if (locale.toLowerCase().startsWith(targetLang.toLowerCase().split('-')[0])) continue
+			const bubble = row.querySelector('.hub-message-content')
+			if (!(bubble instanceof HTMLElement)) continue
+			if (bubble.querySelector('.translation-block')) continue
+
+			const text = bubble.textContent?.trim() || ''
+			if (!text) continue
+			try {
+				const translated = await requestTranslation('/api/parts/shells:chat/translate', text, targetLang)
+				mountTranslationBlock(bubble, {
+					originalText: text,
+					translatedText: translated,
+					showOriginalLabel: extractI18n(geti18n('chat.hub.translateShowOriginal')) || 'Original',
+					showTranslationLabel: extractI18n(geti18n('chat.hub.translateShowTranslation')) || 'Translation',
+					translationLabel: extractI18n(geti18n('chat.hub.translateLabel')) || '',
+				})
+			}
+			catch { /* 翻译失败静默跳过 */ }
+		}
+	}
+	catch { /* 偏好拉取失败或端点未就绪 */ }
 }
 
 /**
