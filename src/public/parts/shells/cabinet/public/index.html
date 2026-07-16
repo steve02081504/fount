@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="cabinet.title"></title>
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+<body class="bg-base-200 min-h-screen">
+	<main class="flex flex-col md:flex-row min-h-screen">
+		<aside class="w-full md:w-64 bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
+			<div class="flex items-center justify-between gap-2">
+				<h1 class="text-lg font-semibold" data-i18n="cabinet.title"></h1>
+				<button id="btnNewCabinet" type="button" class="btn btn-primary btn-sm btn-circle" title="+">+</button>
+			</div>
+			<ul id="cabinetList" class="menu menu-sm flex-1 overflow-y-auto"></ul>
+		</aside>
+		<section class="flex-1 flex flex-col min-w-0">
+			<div class="bg-base-100 border-b border-base-300 p-2 flex flex-wrap gap-1 items-center">
+				<nav id="breadcrumb" class="text-sm breadcrumbs px-2 flex-1 min-w-[8rem]"></nav>
+				<label class="label cursor-pointer gap-1">
+					<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
+					<span class="label-text text-xs" data-i18n="cabinet.showHidden"></span>
+				</label>
+				<button id="btnUpload" type="button" class="btn btn-sm" data-i18n="cabinet.upload"></button>
+				<button id="btnUploadFolder" type="button" class="btn btn-sm" data-i18n="cabinet.uploadFolder"></button>
+				<button id="btnNewFolder" type="button" class="btn btn-sm" data-i18n="cabinet.newFolder"></button>
+				<button id="btnDownload" type="button" class="btn btn-sm" data-i18n="cabinet.download"></button>
+				<button id="btnDownloadZip" type="button" class="btn btn-sm" data-i18n="cabinet.downloadZip"></button>
+				<button id="btnRename" type="button" class="btn btn-sm" data-i18n="cabinet.rename"></button>
+				<button id="btnCopy" type="button" class="btn btn-sm" data-i18n="cabinet.copy"></button>
+				<button id="btnCut" type="button" class="btn btn-sm" data-i18n="cabinet.cut"></button>
+				<button id="btnPaste" type="button" class="btn btn-sm" data-i18n="cabinet.paste"></button>
+				<button id="btnPasteLink" type="button" class="btn btn-sm" data-i18n="cabinet.pasteLink"></button>
+				<button id="btnSelectAll" type="button" class="btn btn-sm" data-i18n="cabinet.selectAll"></button>
+				<button id="btnInvert" type="button" class="btn btn-sm" data-i18n="cabinet.invert"></button>
+				<button id="btnProps" type="button" class="btn btn-sm" data-i18n="cabinet.properties"></button>
+				<button id="btnDelete" type="button" class="btn btn-sm btn-error" data-i18n="cabinet.delete"></button>
+			</div>
+			<input id="fileInput" type="file" multiple class="hidden" />
+			<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
+			<div id="entryGrid" class="p-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 overflow-y-auto flex-1"></div>
+			<div id="statusBar" class="text-xs opacity-70 p-2 border-t border-base-300"></div>
+		</section>
+	</main>
+	<dialog id="propsDialog" class="modal">
+		<div class="modal-box space-y-3">
+			<h3 class="font-bold text-lg" data-i18n="cabinet.properties"></h3>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.name"></span>
+				<input id="propName" class="input input-bordered input-sm" />
+			</label>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.descriptionField"></span>
+				<textarea id="propDescription" class="textarea textarea-bordered textarea-sm" rows="3"></textarea>
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propHidden" type="checkbox" class="checkbox checkbox-sm" />
+				<span data-i18n="cabinet.attrHidden"></span>
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propSystem" type="checkbox" class="checkbox checkbox-sm" />
+				<span data-i18n="cabinet.attrSystem"></span>
+			</label>
+			<label class="form-control">
+				<span class="label-text" data-i18n="cabinet.previewUrl"></span>
+				<input id="propPreviewUrl" class="input input-bordered input-sm" />
+			</label>
+			<label class="label cursor-pointer justify-start gap-2">
+				<input id="propDeletePreview" type="checkbox" class="checkbox checkbox-sm" checked />
+				<span data-i18n="cabinet.deletePreviewWithFile"></span>
+			</label>
+			<div id="propFolderPasswordWrap" class="hidden space-y-2">
+				<label class="form-control">
+					<span class="label-text" data-i18n="cabinet.folderPassword"></span>
+					<input id="propFolderPassword" type="password" class="input input-bordered input-sm" />
+				</label>
+			</div>
+			<div class="text-xs opacity-70 space-y-1">
+				<div id="propCreated"></div>
+				<div id="propModified"></div>
+				<div id="propMime"></div>
+			</div>
+			<div class="modal-action">
+				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
+				<button id="propSave" type="button" class="btn btn-primary" data-i18n="cabinet.save"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+	<dialog id="passwordDialog" class="modal">
+		<div class="modal-box space-y-3">
+			<h3 class="font-bold text-lg" data-i18n="cabinet.unlockFolder"></h3>
+			<input id="unlockPassword" type="password" class="input input-bordered w-full" />
+			<div class="modal-action">
+				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
+				<button id="unlockSubmit" type="button" class="btn btn-primary" data-i18n="cabinet.unlock"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button>close</button></form>
+	</dialog>
+	<script type="module" src="./index.mjs"></script>
+</body>
+</html>

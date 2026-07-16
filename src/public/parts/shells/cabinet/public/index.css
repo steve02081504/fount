@@ -1,0 +1,25 @@
+#entryGrid .entry-card {
+	border: 1px solid oklch(var(--bc) / 0.15);
+	border-radius: 0.75rem;
+	padding: 0.75rem;
+	background: oklch(var(--b1));
+	cursor: pointer;
+	user-select: none;
+	min-height: 7rem;
+}
+#entryGrid .entry-card.selected {
+	outline: 2px solid oklch(var(--p));
+}
+#entryGrid .entry-card.broken {
+	opacity: 0.5;
+}
+#entryGrid .entry-thumb {
+	width: 100%;
+	height: 4rem;
+	object-fit: cover;
+	border-radius: 0.5rem;
+	background: oklch(var(--b2));
+}
+#cabinetList .active {
+	background: oklch(var(--p) / 0.15);
+}

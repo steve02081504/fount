@@ -1,0 +1,13 @@
+{
+	"type": "shells",
+	"dirname": "cabinet",
+	"registries": {
+		"home_function_buttons": [
+			{
+				"id": "function_buttons",
+				"level": 0,
+				"path": "home_registry.json"
+			}
+		]
+	}
+}

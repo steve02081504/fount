@@ -37,7 +37,7 @@ export const fileReducers = {
 		state.messageOverlay.fileIndex.set(event.content.fileId, {
 			name: event.content.name,
 			size: event.content.size,
-			mimeType: event.content.mimeType,
+			mime_type: event.content.mime_type,
 			folderId: event.content.folderId,
 			ceMode: event.content.ceMode || 'convergent',
 			contentHash: event.content.contentHash ?? null,
@@ -47,7 +47,14 @@ export const fileReducers = {
 			storageLocator: event.content.storageLocator ?? null,
 			parts: Array.isArray(event.content.parts) ? event.content.parts : null,
 			uploaderPubKeyHash: isHex64(sender) ? sender : null,
-			...event.content.description ? { description: String(event.content.description).slice(0, 1500) } : {},
+			...event.content.description ? { description: String(event.content.description).slice(0, 4000) } : {},
+			...event.content.attrs ? { attrs: event.content.attrs } : {},
+			...event.content.preview ? { preview: event.content.preview } : {},
+			...event.content.created ? { created: event.content.created } : {},
+			...event.content.modified ? { modified: event.content.modified } : {
+				created: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) ? sender : '' },
+				modified: { at: event.timestamp || Date.now(), entity_hash: isHex64(sender) ? sender : '' },
+			},
 		})
 		return state
 	},

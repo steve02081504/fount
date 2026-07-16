@@ -194,6 +194,12 @@ export async function appendFileUploadEvent(username, groupId, meta) {
 	}
 	if (Number.isFinite(meta.key_generation))
 		content.key_generation = Math.floor(meta.key_generation)
+	if (meta.description != null) content.description = String(meta.description).slice(0, 4000)
+	if (meta.attrs) content.attrs = meta.attrs
+	if (meta.preview) content.preview = meta.preview
+	if (meta.created) content.created = meta.created
+	if (meta.modified) content.modified = meta.modified
+	if (meta.mime_type && !content.mimeType) content.mimeType = meta.mime_type
 	return appendSignedLocalEvent(username, groupId, {
 		type: 'file_upload',
 		timestamp: Date.now(),

@@ -549,8 +549,13 @@ export function listActiveFilesFromState(state) {
 			fileId,
 			name: meta.name || fileId,
 			size: meta.size ?? null,
-			mimeType: meta.mimeType || null,
+			mime_type: meta.mime_type || null,
 			folderId: meta.folderId ?? null,
+			description: meta.description || '',
+			attrs: meta.attrs || { hidden: false, system: false },
+			preview: meta.preview || null,
+			created: meta.created || null,
+			modified: meta.modified || null,
 		})
 	}
 	if (fileIndex instanceof Map)
@@ -601,7 +606,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 	/** @type {import('npm:@steve02081504/fount-p2p/files/manifest').FileManifest | null} */
 	let manifest = null
 
-	if (Array.isArray(uploadMeta.parts) && uploadMeta.parts.length) 
+	if (Array.isArray(uploadMeta.parts) && uploadMeta.parts.length)
 		manifest = normalizeFileManifest({
 			ownerEntityHash,
 			logicalPath,
@@ -623,8 +628,8 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 			},
 			meta: { groupId, fileId, dagParts: uploadMeta.parts },
 		})
-	
-	else if (uploadMeta.ciphertextHash) 
+
+	else if (uploadMeta.ciphertextHash)
 		manifest = normalizeFileManifest({
 			ownerEntityHash,
 			logicalPath,
@@ -643,7 +648,7 @@ export async function syncGroupFileManifest(username, groupId, uploadMeta) {
 			},
 			meta: { groupId, fileId },
 		})
-	
+
 	if (!manifest) return null
 
 	/** @type {Buffer[]} */
