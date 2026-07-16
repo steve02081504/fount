@@ -23,6 +23,7 @@ import {
 } from '../channel_keys/content.mjs'
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
 import { applyChannelKeyRotateEvent } from '../channel_keys/store.mjs'
+import { rotateBoundCabinetKeys, tryImportCabinetKeyWraps } from '../cabinets/keys.mjs'
 import { getEventReceivedAt } from '../events/meta.mjs'
 import { onRoomCredentialsSyncedFromDag, roomCredentialsFromGroupSettings } from '../federation/roomCredentials.mjs'
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'
@@ -180,6 +181,7 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 		await applyReputationHooks(username, groupId, signPayload, materializedState)
 		await applyFileMasterKeyRotationFromEvent(username, groupId, signPayload)
 		await tryImportFileKeyGrantFromPeerInvite(username, groupId, signPayload)
+		await tryImportCabinetKeyWraps(username, groupId, signPayload)
 	}
 	if (signPayload.type === 'channel_key_rotate') {
 		const { sender } = await resolveLocalEventSigner(username, groupId)
@@ -205,8 +207,10 @@ export async function broadcastAndPersist(username, groupId, signPayload, persis
 				const { convergeDagTipsIfAuthorized } = await import('./lifecycle.mjs')
 				await convergeDagTipsIfAuthorized(username, groupId)
 			}
-			else if (['member_kick', 'role_assign', 'role_revoke'].includes(signPayload.type))
+			else if (['member_kick', 'role_assign', 'role_revoke'].includes(signPayload.type)) {
 				await rotateAllChannelKeys(username, groupId)
+				await rotateBoundCabinetKeys(username, groupId).catch(() => { })
+			}
 		
 
 		if (signPayload.type === 'group_settings_update' && signPayload.content?.roomSecret) {

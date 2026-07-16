@@ -193,7 +193,6 @@ export async function checkEventPermission(state, event, senderHash) {
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS required' }
 		case 'file_upload':
-		case 'file_system_update':
 			return channelPerms[PERMISSIONS.MANAGE_FILES] || channelPerms[PERMISSIONS.UPLOAD_FILES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_FILES or UPLOAD_FILES required' }
@@ -201,6 +200,12 @@ export async function checkEventPermission(state, event, senderHash) {
 			return channelPerms[PERMISSIONS.MANAGE_FILES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_FILES required' }
+		case 'cabinet_bind':
+		case 'cabinet_key_update':
+		case 'cabinet_unbind':
+			return govPerms[PERMISSIONS.MANAGE_ROLES]
+				? { ok: true }
+				: { ok: false, reason: 'MANAGE_ROLES required' }
 		case 'pin_message':
 		case 'unpin_message':
 			return channelPerms[PERMISSIONS.PIN_MESSAGES] || channelPerms[PERMISSIONS.MANAGE_MESSAGES]

@@ -38,6 +38,11 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/`.
 
 Inbox storage remains `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only (no `recipientEntityHash` query).
 
+## Files
+
+- **Message attachments**: chat DAG `file_upload` + `fileMasterKey` / chunk store (unchanged).
+- **Shared group cabinets**: Cabinet shell op-log; chat only distributes keys via DAG `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind` (`src/chat/cabinets/keys.mjs`). Hub lists binds; management UI is Cabinet `#shared:{id}`.
+
 ## HTTP
 
 Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator client. API shapes: `public/llms.txt`.

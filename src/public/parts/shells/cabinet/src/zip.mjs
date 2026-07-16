@@ -14,11 +14,20 @@ import { resolveUnlockToken } from './unlockTokens.mjs'
  * @returns {Promise<{ filename: string, bytes: Uint8Array }>} zip
  */
 export async function zipCabinetFolder(username, entityHash, cabinetId, options = {}) {
-	const cabinet = await getCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'group') throw new Error('group zip via group download not yet wired')
-
-	const index = await loadPersonalIndex(username, entityHash, cabinetId)
+	const personal = await getCabinet(username, entityHash, cabinetId)
+	let index
+	let cabinet
+	if (personal) {
+		cabinet = personal
+		index = await loadPersonalIndex(username, entityHash, cabinetId)
+	}
+	else {
+		const { getSharedCabinetMeta } = await import('./shared/keys.mjs')
+		const { loadSharedIndex } = await import('./shared/materialize.mjs')
+		cabinet = await getSharedCabinetMeta(username, cabinetId)
+		if (!cabinet) throw new Error('cabinet not found')
+		index = await loadSharedIndex(username, cabinetId)
+	}
 	const folderId = options.folder_id == null || options.folder_id === '' ? null : String(options.folder_id)
 	/** @type {Record<string, Uint8Array>} */
 	const files = {}
@@ -59,7 +68,7 @@ export async function zipCabinetFolder(username, entityHash, cabinetId, options 
 				continue
 			}
 			try {
-				files[name] = await options.readFile(entry.evfs_path)
+				files[name] = await options.readFile(entry.evfs_path, entry)
 			}
 			catch {
 				files[`${name}.missing`] = strToU8('')

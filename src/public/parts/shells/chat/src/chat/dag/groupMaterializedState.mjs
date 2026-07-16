@@ -152,6 +152,7 @@ export function emptyMaterializedState() {
 		channelKeyWraps: {},
 		channels: {},
 		fileFolders: {},
+		cabinets: {},
 		groupMeta: { name: '', description: '', avatar: null },
 		groupSettings: { ...DEFAULT_GROUP_SETTINGS, defaultChannelId: null },
 		reputationLedger: [],
@@ -194,6 +195,7 @@ export function materializeFromCheckpoint(checkpoint) {
 		channelKeyWraps: structuredClone(membersRecord.channelKeyWraps || {}),
 		channels: structuredClone(membersRecord.channels),
 		fileFolders: structuredClone(membersRecord.fileFolders),
+		cabinets: structuredClone(membersRecord.cabinets || {}),
 		groupMeta: structuredClone(membersRecord.groupMeta),
 		groupSettings: structuredClone(membersRecord.groupSettings),
 		messageOverlay: {

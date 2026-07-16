@@ -25,9 +25,10 @@ import {
 	uploadPreview,
 } from './entries.mjs'
 import { runCabinetSync, setSyncBinding } from './folderSync.mjs'
-import { listJoinedGroupCabinets } from './groupCabinet.mjs'
 import { resolveLink } from './links.mjs'
 import { fetchRemoteCabinetIndex, fetchRemoteCabinets } from './remote.mjs'
+import { createSharedCabinet, listLocalSharedCabinets } from './shared/keys.mjs'
+import { downloadSharedEntry } from './shared/ops.mjs'
 import { zipCabinetFolder } from './zip.mjs'
 
 const PREFIX = '/api/parts/shells\\:cabinet'
@@ -44,6 +45,21 @@ async function ctxFromReq(req) {
 }
 
 /**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @returns {Promise<object>} following 上下文
+ */
+async function viewerFollowContext(username, entityHash) {
+	try {
+		const { loadViewerContext } = await import('../../social/src/feed/home.mjs')
+		return await loadViewerContext(username, entityHash)
+	}
+	catch {
+		return { following: new Set(), followSince: new Map() }
+	}
+}
+
+/**
  * @param {import('npm:express').Router} router 路由
  * @returns {void}
  */
@@ -57,22 +73,16 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await ctxFromReq(req)
 		await ensureDefaultCabinet(username, entityHash)
 		const personal = await loadCabinets(username, entityHash)
-		const groups = await listJoinedGroupCabinets(username, entityHash).catch(() => [])
+		const shared = await listLocalSharedCabinets(username).catch(() => [])
 		const byId = new Map()
-		for (const row of [...personal, ...groups]) byId.set(row.cabinet_id, row)
+		for (const row of [...personal, ...shared]) byId.set(row.cabinet_id, row)
 		res.status(200).json({ cabinets: [...byId.values()] })
 	})
 
 	router.post(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		if (req.body?.type === 'group') {
-			if (!req.body.group_id) throw httpError(400, 'group_id required')
-			const cabinet = await createCabinet(username, entityHash, {
-				cabinet_id: `group:${req.body.group_id}`,
-				name: req.body.name || String(req.body.group_id).slice(0, 8),
-				type: 'group',
-				group_id: req.body.group_id,
-			})
+		if (req.body?.type === 'shared') {
+			const { cabinet } = await createSharedCabinet(username, { name: req.body.name })
 			return res.status(200).json({ cabinet })
 		}
 		const cabinet = await createCabinet(username, entityHash, req.body || {})
@@ -93,21 +103,32 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/index`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		const cabinetId = req.params.cabinetId
-		if (cabinetId.startsWith('group:') && !await getCabinet(username, entityHash, cabinetId)) 
-			await createCabinet(username, entityHash, {
-				cabinet_id: cabinetId,
-				name: cabinetId.slice(6, 14),
-				type: 'group',
-				group_id: cabinetId.slice(6),
-			}).catch(() => { })
-		
-		const result = await listEntries(username, entityHash, cabinetId, {
+		const result = await listEntries(username, entityHash, req.params.cabinetId, {
 			parent_id: req.query.parent_id,
 			show_hidden: req.query.show_hidden === '1' || req.query.show_hidden === 'true',
 			unlock_token: req.get('X-Cabinet-Unlock') || undefined,
 		})
 		res.status(200).json(result)
+	})
+
+	router.get(`${PREFIX}/cabinets/:cabinetId/entries/:entryId/download`, authenticate, async (req, res) => {
+		const { username, entityHash } = await ctxFromReq(req)
+		const cabinetId = req.params.cabinetId
+		const personal = await getCabinet(username, entityHash, cabinetId)
+		if (personal) {
+			const { loadPersonalIndex } = await import('./cabinets.mjs')
+			const { loadFileManifest, readManifestPlaintext } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+			const index = await loadPersonalIndex(username, entityHash, cabinetId)
+			const entry = index.entries.find(row => row.id === req.params.entryId)
+			if (!entry?.evfs_path) throw httpError(404, 'file not found')
+			const manifest = await loadFileManifest(entityHash, entry.evfs_path)
+			if (!manifest) throw httpError(404, 'blob missing')
+			const plain = await readManifestPlaintext(username, manifest)
+			if (!plain) throw httpError(500, 'decrypt failed')
+			return res.status(200).send(Buffer.from(plain))
+		}
+		const bytes = await downloadSharedEntry(username, cabinetId, req.params.entryId)
+		res.status(200).send(Buffer.from(bytes))
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/unlock`, authenticate, async (req, res) => {
@@ -168,14 +189,20 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/zip`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		const result = await zipCabinetFolder(username, entityHash, req.params.cabinetId, {
+		const cabinetId = req.params.cabinetId
+		const result = await zipCabinetFolder(username, entityHash, cabinetId, {
 			folder_id: req.query.parent_id || req.query.folder_id,
 			unlock_token: req.get('X-Cabinet-Unlock') || undefined,
 			/**
 			 * @param {string} evfsPath EVFS 路径
+			 * @param {object} [entry] 条目
 			 * @returns {Promise<Uint8Array>} 明文
 			 */
-			async readFile(evfsPath) {
+			async readFile(evfsPath, entry) {
+				if (entry?.id && !await getCabinet(username, entityHash, cabinetId)) {
+					const plain = await downloadSharedEntry(username, cabinetId, entry.id)
+					return new Uint8Array(plain)
+				}
 				const manifest = await loadFileManifest(entityHash, evfsPath)
 				if (!manifest) throw new Error('missing')
 				const plain = await readManifestPlaintext(username, manifest)
@@ -213,10 +240,11 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/remote/:entityHash/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
 		const owner = String(req.params.entityHash).toLowerCase()
+		const follow = await viewerFollowContext(username, entityHash)
 		const cabinets = await fetchRemoteCabinets(username, owner, {
 			viewerEntityHash: entityHash,
-			following: new Set(),
-			followSince: new Map(),
+			following: follow.following || new Set(),
+			followSince: follow.followSince || new Map(),
 			at: Date.now(),
 		})
 		res.status(200).json({ cabinets })
@@ -225,21 +253,18 @@ export function setEndpoints(router) {
 	router.get(`${PREFIX}/remote/:entityHash/cabinets/:cabinetId/index`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
 		const owner = String(req.params.entityHash).toLowerCase()
-		const cabinets = await fetchRemoteCabinets(username, owner, {
+		const follow = await viewerFollowContext(username, entityHash)
+		const ctx = {
 			viewerEntityHash: entityHash,
-			following: new Set(),
-			followSince: new Map(),
+			following: follow.following || new Set(),
+			followSince: follow.followSince || new Map(),
 			at: Date.now(),
-		})
+		}
+		const cabinets = await fetchRemoteCabinets(username, owner, ctx)
 		const meta = cabinets.find(row => row.cabinet_id === req.params.cabinetId) || {
 			visibility: { visibility: 'public' },
 		}
-		const index = await fetchRemoteCabinetIndex(username, owner, req.params.cabinetId, {
-			viewerEntityHash: entityHash,
-			following: new Set(),
-			followSince: new Map(),
-			at: Date.now(),
-		}, meta)
+		const index = await fetchRemoteCabinetIndex(username, owner, req.params.cabinetId, ctx, meta)
 		res.status(200).json({ cabinet: meta, ...index })
 	})
 }

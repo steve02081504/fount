@@ -25,7 +25,7 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 			created_at: row.created_at,
 		}))
 	const followersRows = cabinets
-		.filter(row => row.type === 'personal' && ['followers', 'followers_since'].includes(row.visibility?.visibility))
+		.filter(row => row.type === 'personal' && ['followers', 'followers_since', 'selected'].includes(row.visibility?.visibility))
 		.map(row => ({
 			cabinet_id: row.cabinet_id,
 			name: row.name,
@@ -35,7 +35,7 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 
 	const recoverySecretKeyHex = await getEntityRecoverySecretKey(username, entityHash)
 	const recoveryPubKeyHex = await getRecoveryPubKeyHex(username, entityHash)
-	if (recoverySecretKeyHex && recoveryPubKeyHex) 
+	if (recoverySecretKeyHex && recoveryPubKeyHex)
 		await publishPublicFile({
 			ownerEntityHash: entityHash,
 			logicalPath: 'shells/cabinet/cabinets.public.json',
@@ -45,7 +45,7 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 			name: 'cabinets.public.json',
 			mimeType: 'application/json',
 		})
-	
+
 
 	if (followersRows.length) {
 		const { masterKey } = await loadVaultMasterKey(username, entityHash)
@@ -70,6 +70,41 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 		await storeManifestParts(manifest, enc.parts.map(part => part.raw))
 		await saveFileManifest(manifest)
 	}
+}
+
+/**
+ * 按柜可见性发布索引到 EVFS。
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {object} cabinet 柜
+ * @param {{ version: number, entries: object[] }} index 索引
+ * @returns {Promise<object | null>} manifest
+ */
+export async function publishCabinetIndex(username, entityHash, cabinet, index) {
+	const { evfsCabinetIndexPath } = await import('./paths.mjs')
+	const logicalPath = evfsCabinetIndexPath(cabinet.cabinet_id)
+	const publicEntries = (index.entries || []).filter(entry => !entry.orphaned).map(entry => ({
+		id: entry.id,
+		name: entry.name,
+		kind: entry.kind,
+		parent_id: entry.parent_id,
+		size: entry.size,
+		mime_type: entry.mime_type,
+		description: entry.description,
+		created: entry.created,
+		modified: entry.modified,
+		attrs: entry.attrs,
+		preview: entry.preview?.url ? { url: entry.preview.url } : undefined,
+		encryption: entry.encryption ? { locked: true } : null,
+		link: entry.link,
+	}))
+	return putCabinetEvfsFile(username, entityHash, {
+		logical_path: logicalPath,
+		plaintext: Buffer.from(JSON.stringify({ version: index.version || 1, entries: publicEntries }), 'utf8'),
+		name: 'index.json',
+		mime_type: 'application/json',
+		visibility: cabinet.visibility,
+	})
 }
 
 /**

@@ -224,30 +224,6 @@ export async function appendFileDeleteEvent(username, groupId, fileId) {
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ operation: 'create'|'rename'|'move'|'delete', folderId: string, name?: string, parentFolderId?: string | null }} spec 操作说明
- * @returns {Promise<object>} 签名事件
- */
-export async function appendFileSystemUpdateEvent(username, groupId, spec) {
-	const folderId = String(spec.folderId || '').trim()
-	if (!folderId) throw new Error('folderId required')
-	const {operation} = spec
-	if (!['create', 'rename', 'move', 'delete'].includes(operation))
-		throw new Error('invalid file_system_update operation')
-	const content = { operation, folderId }
-	if (operation === 'create' || operation === 'rename')
-		content.name = String(spec.name || folderId).trim() || folderId
-	if (operation === 'create' || operation === 'move')
-		content.parentFolderId = spec.parentFolderId ?? null
-	return appendSignedLocalEvent(username, groupId, {
-		type: 'file_system_update',
-		timestamp: Date.now(),
-		content,
-	})
-}
-
-/**
- * @param {string} username 用户名
- * @param {string} groupId 群组 ID
  * @param {{ type: 'reaction_add'|'reaction_remove', channelId: string, targetEventId: string, emoji: string, targetPubKeyHash?: string }} options 反应参数
  * @returns {Promise<object>} 签名事件
  */

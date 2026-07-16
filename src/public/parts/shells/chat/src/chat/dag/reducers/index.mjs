@@ -1,3 +1,4 @@
+import { cabinetReducers } from './cabinets.mjs'
 import { channelKeyReducers } from './channel_keys.mjs'
 import { channelReducers } from './channels.mjs'
 import { fileReducers } from './files.mjs'
@@ -16,6 +17,7 @@ export const CHAT_EVENT_REDUCERS = {
 	...channelKeyReducers,
 	...messageReducers,
 	...fileReducers,
+	...cabinetReducers,
 	...governanceReducers,
 	...sessionReducers,
 	...worldStateReducers,

@@ -1,5 +1,12 @@
+import {
+	registerShellPartpath,
+	unregisterShellPartpath,
+} from 'npm:@steve02081504/fount-p2p/registries/part_path'
+
 import { setEndpoints } from './src/endpoints.mjs'
 import { startFolderSyncScheduler, stopFolderSyncScheduler } from './src/folderSync.mjs'
+import { handleCabinetP2PInvoke, registerCabinetOpInbound } from './src/shared/sync.mjs'
+import { registerCabinetManifestTransfer, unregisterCabinetManifestTransfer } from './src/shared/transfer.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -13,6 +20,9 @@ export default {
 	 * @returns {void}
 	 */
 	Load({ router }) {
+		registerShellPartpath('cabinet', 'shells/cabinet')
+		registerCabinetManifestTransfer()
+		registerCabinetOpInbound()
 		setEndpoints(router)
 		startFolderSyncScheduler()
 	},
@@ -20,9 +30,14 @@ export default {
 	 * @returns {void}
 	 */
 	Unload() {
+		unregisterShellPartpath('cabinet')
+		unregisterCabinetManifestTransfer()
 		stopFolderSyncScheduler()
 	},
 	interfaces: {
 		web: {},
+		invokes: {
+			P2PInvokeHandler: handleCabinetP2PInvoke,
+		},
 	},
 }

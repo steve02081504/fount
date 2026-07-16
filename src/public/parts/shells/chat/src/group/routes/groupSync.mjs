@@ -237,7 +237,7 @@ export function registerGroupSyncRoutes(router, authenticate) {
 			localViewBranchTip: state.localViewBranchTip ?? null,
 			governanceFork: !!state.governanceFork,
 			dagTips: state.dagTips,
-			fileFolders: state.fileFolders,
+			cabinets: state.cabinets || {},
 			files: listActiveFilesFromState(state),
 			channelCaps,
 		}

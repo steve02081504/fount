@@ -12,6 +12,7 @@ const {
 	writeLiveSection,
 	writeLiveSummary,
 	completeLiveScript,
+	node,
 } = await createSingleNodeProbe()
 
 /** @type {string[]} */
@@ -334,13 +335,18 @@ await testCase('GET files/:id/download-status', async () => {
 	return r.status === 200
 })
 
-await testCase('POST file-system create folder', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, {
-		operation: 'create',
-		folderId: `folder_${randomUUID().replace(/-/g, '')}`,
-		name: 'e2e-folder',
+await testCase('POST cabinets/bind shared cabinet', async () => {
+	const { invokeRequest } = await import('fount/scripts/test/live/http.mjs')
+	const createRes = await invokeRequest(node, 'POST', '/cabinets', { type: 'shared', name: 'e2e-shared' }, { shell: 'cabinet' })
+	const cabinetId = createRes.json?.cabinet?.cabinet_id
+	if (createRes.status !== 200 || !cabinetId)
+		throw new Error(`create shared cabinet failed: ${createRes.status} ${createRes.raw}`)
+	const r = await api('POST', `/groups/${gid}/cabinets/bind`, {
+		cabinet_id: cabinetId,
+		role_access: { '@everyone': 'rw' },
 	})
-	return r.status === 200 || r.status === 201
+	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
+	return Boolean(r.json.event)
 })
 
 await testCase('DELETE file', async () => {

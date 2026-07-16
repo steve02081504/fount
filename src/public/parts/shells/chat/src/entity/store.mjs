@@ -34,9 +34,13 @@ export function createFountEntityStore() {
 	async function findHostingUser(entityHash) {
 		const parsed = parseEntityHash(entityHash)
 		if (!parsed) return null
+		const want = parsed.entityHash
 		for (const username of getAllUserNames()) {
-			const profile = await storeForUser(username).readEntityJson(parsed.entityHash, 'profile.json')
-			if (profile) return username
+			const store = storeForUser(username)
+			if (await store.readEntityJson(want, 'profile.json')) return username
+			// 逻辑实体（群 / 共享柜）通常无 profile，仅有 EVFS 目录
+			const hashes = await store.listEntityHashes()
+			if (hashes.includes(want)) return username
 		}
 		return null
 	}
@@ -139,8 +143,13 @@ export function createFountEntityStore() {
 		 */
 		async readManifest(entityHash, logicalPath) {
 			const host = await findHostingUser(entityHash)
-			if (!host) return null
-			return storeForUser(host).readManifest(entityHash, logicalPath)
+			if (host) return storeForUser(host).readManifest(entityHash, logicalPath)
+			// 首次写入后目录已在某用户下，但尚无 profile：扫一遍
+			for (const username of getAllUserNames()) {
+				const data = await storeForUser(username).readManifest(entityHash, logicalPath)
+				if (data) return data
+			}
+			return null
 		},
 
 		/**

@@ -83,3 +83,65 @@ export function evfsBlobPath(cabinetId, blobId) {
 export function evfsPreviewPath(cabinetId, previewId) {
 	return `shells/cabinet/${cabinetId}/previews/${previewId}`
 }
+
+/**
+ * @param {string} username 用户
+ * @returns {string} 共享柜根目录
+ */
+export function sharedCabinetsRoot(username) {
+	return `${getUserDictionary(username)}/shells/cabinet/shared`
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 共享柜 id（写公钥 hash）
+ * @returns {string} 共享柜目录
+ */
+export function sharedCabinetDir(username, cabinetId) {
+	return `${sharedCabinetsRoot(username)}/${cabinetId}`
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜 id
+ * @returns {string} keys.json
+ */
+export function sharedCabinetKeysPath(username, cabinetId) {
+	return `${sharedCabinetDir(username, cabinetId)}/keys.json`
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜 id
+ * @returns {string} ops.jsonl
+ */
+export function sharedCabinetOpsPath(username, cabinetId) {
+	return `${sharedCabinetDir(username, cabinetId)}/ops.jsonl`
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜 id
+ * @returns {string} 物化快照
+ */
+export function sharedCabinetSnapshotPath(username, cabinetId) {
+	return `${sharedCabinetDir(username, cabinetId)}/snapshot.json`
+}
+
+/**
+ * @param {string} username 用户
+ * @returns {string} 本机已知共享柜登记表
+ */
+export function sharedCabinetsRegistryPath(username) {
+	return `${sharedCabinetsRoot(username)}/registry.json`
+}
+
+/**
+ * @param {string} cabinetId 共享柜 id（保留参数供调用方一致；路径由 owner entity 区分）
+ * @param {string} blobId blob id
+ * @returns {string} EVFS 逻辑路径
+ */
+export function evfsSharedBlobPath(cabinetId, blobId) {
+	void cabinetId
+	return `blobs/${blobId}`
+}

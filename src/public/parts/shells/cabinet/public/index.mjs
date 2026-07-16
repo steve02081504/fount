@@ -60,7 +60,7 @@ function renderCabinetList() {
 		const a = document.createElement('a')
 		a.href = `#cabinet:${cabinet.cabinet_id}`
 		a.className = cabinet.cabinet_id === currentCabinetId ? 'active' : ''
-		const badge = cabinet.type === 'group' ? '👥 ' : cabinet.cabinet_id === 'default' ? '★ ' : ''
+		const badge = cabinet.type === 'shared' ? '🔗 ' : cabinet.cabinet_id === 'default' ? '★ ' : ''
 		a.textContent = `${badge}${cabinet.name}`
 		a.addEventListener('click', event => {
 			event.preventDefault()
@@ -80,8 +80,8 @@ function renderCabinetList() {
  * @returns {Promise<void>}
  */
 async function cabinetContext(cabinet) {
-	if (cabinet.type === 'group') {
-		window.open(`/parts/shells:chat/hub/#group:${cabinet.group_id}`, '_blank')
+	if (cabinet.type === 'shared') {
+		await openCabinet(cabinet.cabinet_id)
 		return
 	}
 	const action = await promptI18n('cabinet.cabinetActionPrompt')
@@ -338,6 +338,13 @@ async function downloadEntry(entry, cabinetId = currentCabinetId, ownerEntityHas
 		showToastI18n('info', 'cabinet.groupDownloadHint')
 		return
 	}
+	if (currentCabinet?.type === 'shared') {
+		const a = document.createElement('a')
+		a.href = `/api/parts/shells:cabinet/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entry.id)}/download`
+		a.download = entry.name
+		a.click()
+		return
+	}
 	const entity = ownerEntityHash || (await api('GET', '/viewer')).viewer_entity_hash
 	const url = `/api/parts/shells:chat/entities/${encodeURIComponent(entity)}/files/${entry.evfs_path.split('/').map(encodeURIComponent).join('/')}`
 	const a = document.createElement('a')
@@ -537,7 +544,7 @@ function openProps() {
 	document.getElementById('propSystem').checked = Boolean(entry.attrs?.system)
 	document.getElementById('propPreviewUrl').value = entry.preview?.url || ''
 	document.getElementById('propDeletePreview').checked = entry.preview?.delete_with_file !== false
-	document.getElementById('propFolderPasswordWrap').classList.toggle('hidden', entry.kind !== 'folder' || currentCabinet?.type === 'group')
+	document.getElementById('propFolderPasswordWrap').classList.toggle('hidden', entry.kind !== 'folder' || currentCabinet?.type === 'shared')
 	document.getElementById('propFolderPassword').value = ''
 	document.getElementById('propCreated').textContent = `${geti18n('cabinet.created') || 'Created'}: ${formatStamp(entry.created)}`
 	document.getElementById('propModified').textContent = `${geti18n('cabinet.modified') || 'Modified'}: ${formatStamp(entry.modified)}`
@@ -579,13 +586,9 @@ function escapeAttr(text) {
  */
 async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
-	if (hash.startsWith('group:')) {
-		const groupId = hash.slice(6)
-		const cabinetId = `group:${groupId}`
-		if (!cabinets.some(row => row.cabinet_id === cabinetId)) {
-			await api('POST', '/cabinets', { type: 'group', group_id: groupId, name: groupId.slice(0, 8) }).catch(() => { })
-			await refreshCabinets()
-		}
+	if (hash.startsWith('shared:')) {
+		const cabinetId = hash.slice(7).split('/')[0]
+		await refreshCabinets()
 		await openCabinet(cabinetId)
 		return
 	}

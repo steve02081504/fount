@@ -12,6 +12,7 @@ const {
 	writeLiveSection,
 	writeLiveSummary,
 	completeLiveScript,
+	node,
 } = await createSingleNodeProbe()
 
 /** @type {string[]} */
@@ -241,35 +242,21 @@ await testCase('DELETE /channels/:id (non-default)', async () => {
 })
 
 // ---------------------------------------------------------------------------
-writeLiveSection('C. Files — file-system / download-resume / archive delete')
-const fsFolderA = `folder_${randomUUID().replace(/-/g, '')}`
-const fsFolderB = `folder_${randomUUID().replace(/-/g, '')}`
+writeLiveSection('C. Files — download-resume / archive delete / cabinet bind')
 const dlFileId = randomUUID()
 let dlChunk = null
 
-await testCase('POST file-system create folder A', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, { operation: 'create', folderId: fsFolderA, name: 'ext-fs-a' })
-	return r.status === 200 || r.status === 201
-})
-
-await testCase('POST file-system create folder B', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, { operation: 'create', folderId: fsFolderB, name: 'ext-fs-b' })
-	return r.status === 200 || r.status === 201
-})
-
-await testCase('POST file-system rename A', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, { operation: 'rename', folderId: fsFolderA, name: 'ext-fs-a-renamed' })
-	return r.status === 200 || r.status === 201
-})
-
-await testCase('POST file-system move B under A', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, { operation: 'move', folderId: fsFolderB, parentFolderId: fsFolderA })
-	return r.status === 200 || r.status === 201
-})
-
-await testCase('POST file-system delete B', async () => {
-	const r = await api('POST', `/groups/${gid}/file-system`, { operation: 'delete', folderId: fsFolderB })
-	return r.status === 200 || r.status === 201
+await testCase('POST cabinets/bind (shared)', async () => {
+	const { invokeRequest } = await import('fount/scripts/test/live/http.mjs')
+	const createRes = await invokeRequest(node, 'POST', '/cabinets', { type: 'shared', name: 'ext-shared' }, { shell: 'cabinet' })
+	const cabinetId = createRes.json?.cabinet?.cabinet_id
+	if (createRes.status !== 200 || !cabinetId)
+		throw new Error(`create shared: ${createRes.status} ${createRes.raw}`)
+	const r = await api('POST', `/groups/${gid}/cabinets/bind`, {
+		cabinet_id: cabinetId,
+		role_access: { '@everyone': 'rw' },
+	})
+	return r.status === 201 && Boolean(r.json.event)
 })
 
 await testCase('POST chunks + register file (download-resume)', async () => {

@@ -33,6 +33,11 @@ alwaysApply: false
 - Context menus: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs`（点击/右键关闭；勿再手写 closeOnce + addEventListener 六份拷贝）。
 - **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch (e.g. `channelActionsContext` main↔thread drawer), shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).
 
+## Files panel (shared cabinets)
+
+- Hub files drawer lists `state.cabinets` filtered by the viewer's role (`rw`/`ro`); click opens Cabinet shell `#shared:{cabinetId}`.
+- Managers (`MANAGE_ROLES`) bind via `POST …/groups/:id/cabinets/bind` (DAG `cabinet_bind` + ECIES key wraps). Message attachments stay on chat DAG (`file_upload` / `fileMasterKey`); there is no group folder tree in chat.
+
 ## Message storage & APIs
 
 Backend storage model (hot / cold archive / DAG, federation sync): [archive guide](../../src/chat/archive/AGENTS.md).

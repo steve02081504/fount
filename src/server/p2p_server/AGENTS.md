@@ -18,7 +18,7 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 
 | Area | Path |
 | --- | --- |
-| Node startup / entity store glue | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` |
+| Node startup / entity store glue | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs`（`findHostingUser` 认 profile **或** 已有 entity 目录——群/共享柜等逻辑实体无 profile） |
 | HTTP `/api/p2p/*` (network level) | `src/server/web_server/p2p_endpoints.mjs` |
 | HTTP `/api/parts/shells:chat/*` (entity/profile/EVFS) | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
 | Chat federation / DAG / encryption | `shells/chat/src/chat/` |

@@ -248,16 +248,17 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 |------|------|
 | POST | `…/groups/:groupId/chunks/have` | 预检 `{ data }` 或 `{ ciphertextHash, size }`；`have: true` 时客户端 `registerOnly` 跳传 |
 | POST | `…/groups/:groupId/chunks` | 上传块；body 可加 `registerOnly: true`（密文已存在时仅登记 wrappedKey） |
-| POST | `…/groups/:groupId/files` |
+| POST | `…/groups/:groupId/files` | 登记消息附件元数据 → DAG `file_upload` |
 | DELETE | `…/groups/:groupId/files/:fileId` | DAG `file_delete` |
-| POST | `…/groups/:groupId/file-system` | 文件夹 `{ op: create\|rename\|move\|delete, folderId, name?, parentFolderId? }` → DAG `file_system_update` |
 | GET | `…/groups/:groupId/files/:fileId/meta` | 含 `uploaderPubKeyHash`（物化自 `file_upload.sender`） |
 | GET | `…/groups/:groupId/files/:fileId/download-status` | 分片下载任务摘要（`done/total/percent/status/seededAt`） |
 | POST | `…/groups/:groupId/files/:fileId/download-resume` | 触发断点续传并返回当前下载任务状态 |
+| POST | `…/groups/:groupId/cabinets/bind` | 绑定共享柜 `{ cabinet_id, name?, write_pubkey?, role_access }` → DAG `cabinet_bind` |
+| POST | `…/groups/:groupId/cabinets/unbind` | 解绑 `{ cabinet_id }` → DAG `cabinet_unbind` |
 
-群文件字节下载：`GET /api/parts/shells:chat/entities/{groupEntityHash}/files/chat/{fileId}`（服务端读 manifest + chunk 解密）。
+消息附件字节：`GET /api/parts/shells:chat/entities/{groupEntityHash}/files/chat/{fileId}`。
 
-`GET …/state` 响应含 `fileFolders`、`files[]`（物化 fileIndex 摘要）。
+`GET …/state` 响应含 `cabinets`（role→rw/ro）、`files[]`（消息附件摘要）。目录管理在 Cabinet 共享柜。
 
 不可验证 `reputation_slash`（无 `verified`/`proof`）经联邦 VOLATILE `reputation_slash_alert` 传播（TTL=`slashAlertTtl`），不入 DAG；可验证类仍 `POST …/events/signed` 或本地 `POST …/events/local`。
 

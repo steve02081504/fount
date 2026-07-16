@@ -107,6 +107,39 @@ Deno.test({
 		const root = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/index?${q}`)
 		const rootBody = await root.json()
 		assert(rootBody.entries.some(row => row.kind === 'link'))
+
+		const sharedCreate = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ type: 'shared', name: 'SharedDocs' }),
+		})
+		const sharedCreateRaw = await sharedCreate.text()
+		assertEquals(sharedCreate.status, 200, sharedCreateRaw)
+		const sharedId = JSON.parse(sharedCreateRaw).cabinet?.cabinet_id
+		assert(sharedId && /^[0-9a-f]{64}$/.test(sharedId))
+
+		const sharedUpload = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/entries?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				plaintext_base64: btoa('shared hello'),
+				name: 'shared.txt',
+				mime_type: 'text/plain',
+			}),
+		})
+		const sharedUploadRaw = await sharedUpload.text()
+		assertEquals(sharedUpload.status, 200, sharedUploadRaw)
+		const sharedEntry = JSON.parse(sharedUploadRaw).entry
+		assert(sharedEntry?.id)
+
+		const sharedIndex = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/index?${q}`)
+		const sharedIndexBody = await sharedIndex.json()
+		assert(sharedIndexBody.entries.some(row => row.id === sharedEntry.id))
+
+		const sharedDl = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/entries/${sharedEntry.id}/download?${q}`)
+		const sharedDlRaw = await sharedDl.text()
+		assertEquals(sharedDl.status, 200, sharedDlRaw)
+		assertEquals(sharedDlRaw, 'shared hello')
 	}
 	finally {
 		await stopNode(node)

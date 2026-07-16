@@ -6,7 +6,7 @@
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { appendFileDeleteEvent, appendFileSystemUpdateEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
+import { appendFileDeleteEvent, appendFileUploadEvent } from '../../chat/dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { hasCiphertextBlob, getCiphertextBlob } from '../../chat/files/blobStore.mjs'
 import { loadDownloadTask, summarizeDownloadTask } from '../../chat/files/downloadTasks.mjs'
@@ -143,35 +143,6 @@ export function registerGroupFileRoutes(router, authenticate, getUserByReq, getS
 		await syncGroupFileManifest(username, groupId, uploadMeta).catch(error => {
 			console.error('[evfs] syncGroupFileManifest failed', error)
 		})
-		res.status(201).json({ event })
-	})
-
-	router.post(`${GROUPS_PREFIX}/:groupId/file-system`, authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
-		const groupId = req.params.groupId
-		const body = req.body || {}
-		const { operation } = body
-		const folderId = body.folderId?.trim()
-		if (!folderId) return res.status(400).json({ error: 'folderId required' })
-		if (!['create', 'rename', 'move', 'delete'].includes(operation))
-			return res.status(400).json({ error: 'operation must be create|rename|move|delete' })
-
-		const { state } = await getState(username, groupId)
-		const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
-		if (!memberKey)
-			return res.status(403).json({ error: 'Not a member' })
-		const member = state.members[memberKey]
-		const defaultChannelId = state.groupSettings?.defaultChannelId || 'default'
-		if (!canInChannel(state, member, PERMISSIONS.MANAGE_FILES, defaultChannelId)
-			&& !canInChannel(state, member, PERMISSIONS.UPLOAD_FILES, defaultChannelId))
-			return res.status(403).json({ error: 'No permission to manage file folders' })
-
-		const event = await appendFileSystemUpdateEvent(username, groupId, {
-			operation,
-			folderId,
-			name: body.name,
-			parentFolderId: body.parentFolderId,
-		}, username)
 		res.status(201).json({ event })
 	})
 

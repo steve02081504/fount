@@ -1291,6 +1291,8 @@
 			"tabAlbums": "相册",
 			"tabFollowing": "正在关注",
 			"tabLikes": "点赞",
+			"tabCabinets": "文件柜",
+			"cabinetsEmpty": "暂无公开文件柜",
 			"statsPosts": "动态",
 			"statsFollowing": "正在关注"
 		},
@@ -2154,6 +2156,8 @@
 			"filesLoading": "加载群文件中…",
 			"filesLoadFailed": "加载群文件失败：${error}",
 			"filesNoGroup": "请先选择群组",
+			"filesNoCabinets": "当前角色没有可访问的文件柜",
+			"filesBindCabinet": "添加文件柜",
 			"filesNoChannel": "请先进入可发消息的文本频道",
 			"filesUploadTo": "上传到",
 			"filesRootFolder": "根目录",

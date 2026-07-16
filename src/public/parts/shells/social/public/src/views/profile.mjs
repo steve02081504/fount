@@ -244,6 +244,43 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 	await renderProfileAlbums(entityHash, document.getElementById('profileAlbumsPanel'))
 	await renderProfileLikes(entityHash, document.getElementById('profileLikesPanel'))
 	await renderProfileFollowingList(entityHash, document.getElementById('profileFollowingPanel'))
+	await renderProfileCabinets(entityHash, document.getElementById('profileCabinetsPanel'))
+}
+
+/**
+ * @param {string} entityHash 实体
+ * @param {HTMLElement | null} container 容器
+ * @returns {Promise<void>}
+ */
+async function renderProfileCabinets(entityHash, container) {
+	if (!container) return
+	container.replaceChildren()
+	try {
+		const response = await fetch(`/api/parts/shells:cabinet/remote/${encodeURIComponent(entityHash)}/cabinets`, {
+			credentials: 'include',
+		})
+		if (!response.ok) throw new Error(await response.text())
+		const data = await response.json()
+		const cabinets = data.cabinets || []
+		if (!cabinets.length) {
+			container.innerHTML = `<div class="empty" data-i18n="social.profile.cabinetsEmpty">暂无公开文件柜</div>`
+			return
+		}
+		const list = document.createElement('div')
+		list.className = 'flex flex-col gap-2 p-2'
+		for (const row of cabinets) {
+			const link = document.createElement('a')
+			link.className = 'btn btn-ghost justify-start'
+			link.href = `/parts/shells:cabinet/#user:${encodeURIComponent(entityHash)}`
+			link.textContent = row.name || row.cabinet_id
+			list.appendChild(link)
+		}
+		container.appendChild(list)
+	}
+	catch (error) {
+		console.error(error)
+		container.innerHTML = `<div class="empty">${escapeHtml(error.message || 'failed')}</div>`
+	}
 }
 
 /**

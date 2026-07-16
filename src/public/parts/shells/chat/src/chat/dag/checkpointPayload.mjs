@@ -71,6 +71,7 @@ export function buildCheckpointPayload({
 		),
 		channels: JSON.parse(JSON.stringify(materializedState.channels || {})),
 		fileFolders: JSON.parse(JSON.stringify(materializedState.fileFolders || {})),
+		cabinets: JSON.parse(JSON.stringify(materializedState.cabinets || {})),
 		groupMeta: JSON.parse(JSON.stringify(materializedState.groupMeta || {})),
 		groupSettings: JSON.parse(JSON.stringify(materializedState.groupSettings || {})),
 		messageOverlay: serialOverlay,

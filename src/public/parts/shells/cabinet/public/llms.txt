@@ -1,34 +1,39 @@
 # shells:cabinet
 
-P2P 文件柜：个人 EVFS 柜 + 群文件共享柜。
+P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 
 ## HTTP（前缀 `/api/parts/shells:cabinet`，需登录）
 
 | 方法 | 路径 | 说明 |
 | --- | --- | --- |
 | GET | `/viewer` | `{ username, viewer_entity_hash }` |
-| GET | `/cabinets` | 个人柜 + 已加入群柜 |
-| POST | `/cabinets` | 新建个人柜，或 `{ type:'group', group_id }` |
+| GET | `/cabinets` | 个人柜 + 本机可读共享柜 |
+| POST | `/cabinets` | 新建个人柜，或 `{ type:'shared', name }` |
 | PATCH | `/cabinets/:cabinet_id` | 重命名 / visibility / sync_binding |
 | DELETE | `/cabinets/:cabinet_id` | 删除（不可删 default） |
 | GET | `/cabinets/:id/index?parent_id=&show_hidden=` | 列目录；加密文件夹需 `X-Cabinet-Unlock` |
 | POST | `/cabinets/:id/unlock` | body `{ folder_id, password }` → `{ unlock_token }` |
 | POST | `/cabinets/:id/entries` | 登记条目；可带 `plaintext_base64` 上传 |
 | PATCH | `/cabinets/:id/entries/:entry_id` | 重命名 / description / attrs / preview / set_password |
-| POST | `/cabinets/:id/entries/copy` | `{ entry_ids, target_parent_id, as_links? }` |
-| DELETE | `/cabinets/:id/entries` | `{ entry_ids }` |
+| POST | `/cabinets/:id/entries/copy` | `{ entry_ids, target_parent_id, as_links?, target_cabinet_id? }` |
+| DELETE | `/cabinets/:id/entries` | `{ entry_ids }`（本实体入链保活 orphan） |
 | GET | `/cabinets/:id/entries/:entry_id/resolve` | 解析链接 |
+| GET | `/cabinets/:id/entries/:entry_id/download` | 共享柜文件明文下载 |
 | GET | `/cabinets/:id/zip?folder_id=` | 文件夹 zip |
-| PUT | `/cabinets/:id/sync-binding` | `{ path, interval_ms }` 服务器目录双向同步 |
-| POST | `/cabinets/:id/sync` | 立即同步一轮（先拉后推，后写覆盖） |
-| POST | `/cabinets/:id/preview` | 上传预览图 `{ plaintext_base64, mime_type }` |
+| PUT | `/cabinets/:id/sync-binding` | `{ path, interval_ms }` |
+| POST | `/cabinets/:id/sync` | 立即同步 |
+| POST | `/cabinets/:id/preview` | 上传预览图 |
 | GET | `/remote/:entityHash/cabinets` | 远端公开/followers 柜列表 |
 | GET | `/remote/:entityHash/cabinets/:id/index` | 远端柜索引 |
 
-字段一律 snake_case（`mime_type`、`cabinet_id`、`parent_id`、`evfs_path`、`encryption_mode` 等）。
+字段一律 snake_case。
 
 ## Hash 路由
 
 - `#cabinet:{id}` / `#cabinet:{id}/{folderId}`
-- `#group:{groupId}`（自 chat Hub 跳转）
+- `#shared:{cabinetId}`（共享柜）
 - `#user:{entityHash}`（远端浏览）
+
+## Chat 绑定
+
+群 DAG：`cabinet_bind` / `cabinet_key_update` / `cabinet_unbind`（需 `MANAGE_ROLES`）。Hub 文件面板列 role 可访问柜。

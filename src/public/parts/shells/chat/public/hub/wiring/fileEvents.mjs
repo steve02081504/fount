@@ -1,6 +1,6 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { hubStore } from '../core/state.mjs'
-import { wireFilesDrawerToggle } from '../files.mjs'
+import { isFilesDrawerOpen, refreshFilesDrawer, setFilesDrawerOpen, wireFilesDrawerToggle } from '../files.mjs'
 
 /** @returns {void} */
 export function wireFileEvents() {
@@ -28,7 +28,16 @@ export function wireFileEvents() {
 			showToastI18n('warning', 'chat.hub.filesNoGroup')
 			return
 		}
-		window.location.href = `/parts/shells:cabinet/#group:${encodeURIComponent(hubStore.context.currentGroupId)}`
+		const open = !isFilesDrawerOpen()
+		setFilesDrawerOpen(open)
+		if (open)
+			void refreshFilesDrawer({
+				groupId: hubStore.context.currentGroupId,
+				state: hubStore.context.currentState,
+				viewer: hubStore.context.currentState?.viewer,
+			}).catch(err => {
+				void import('../../src/ui/errors.mjs').then(({ handleUIError }) => handleUIError(err))
+			})
 	})
 
 	wireFilesDrawerToggle()

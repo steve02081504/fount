@@ -40,14 +40,14 @@ export async function saveCabinets(username, entityHash, cabinets) {
  * @returns {object} 规范化柜
  */
 export function normalizeCabinet(draft) {
-	const type = draft?.type === 'group' ? 'group' : 'personal'
+	const type = draft?.type === 'shared' ? 'shared' : 'personal'
 	const visibility = normalizeVisibilitySpec(draft?.visibility || draft || { visibility: 'private' })
 	return {
 		cabinet_id: String(draft?.cabinet_id || randomUUID()),
 		name: String(draft?.name || 'untitled').slice(0, 256),
 		type,
 		visibility,
-		group_id: type === 'group' ? String(draft?.group_id || '') : undefined,
+		write_pubkey: type === 'shared' ? String(draft?.write_pubkey || '') : undefined,
 		created_at: Number(draft?.created_at) || Date.now(),
 		sync_binding: draft?.sync_binding || null,
 	}
@@ -146,5 +146,11 @@ export async function loadPersonalIndex(username, entityHash, cabinetId) {
 export async function savePersonalIndex(username, entityHash, cabinetId, index) {
 	const path = cabinetIndexPath(username, entityHash, cabinetId)
 	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(path, JSON.stringify(normalizeIndex(index), null, '\t'), 'utf8')
+	const normalized = normalizeIndex(index)
+	await writeFile(path, JSON.stringify(normalized, null, '\t'), 'utf8')
+	const cabinet = await getCabinet(username, entityHash, cabinetId)
+	if (cabinet?.type === 'personal') {
+		const { publishCabinetIndex } = await import('./publish.mjs')
+		await publishCabinetIndex(username, entityHash, cabinet, normalized).catch(() => { })
+	}
 }

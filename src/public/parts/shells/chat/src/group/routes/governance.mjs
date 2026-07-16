@@ -500,5 +500,32 @@ export function registerGovernanceRoutes(router, authenticate) {
 		res.status(200).json({ newOwnerPubKeyHash: targetHash, transferRoleId })
 	})
 
+	router.post(`${GROUPS_PREFIX}/:groupId/cabinets/bind`, authenticate, requireGroupMember(), async (req, res) => {
+		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
+		const canManage = hasPermission(state.members[memberKey], PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
+		if (!canManage) throw httpError(403, 'MANAGE_ROLES required')
+		const body = req.body || {}
+		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
+		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
+		const event = await appendCabinetBind(username, req.params.groupId, {
+			cabinet_id: String(body.cabinet_id).toLowerCase(),
+			name: body.name,
+			write_pubkey: body.write_pubkey,
+			role_access: body.role_access || {},
+		})
+		res.status(201).json({ event })
+	})
+
+	router.post(`${GROUPS_PREFIX}/:groupId/cabinets/unbind`, authenticate, requireGroupMember(), async (req, res) => {
+		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
+		const canManage = hasPermission(state.members[memberKey], PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
+		if (!canManage) throw httpError(403, 'MANAGE_ROLES required')
+		const cabinetId = String(req.body?.cabinet_id || '').toLowerCase()
+		if (!cabinetId) throw httpError(400, 'cabinet_id required')
+		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')
+		const event = await appendCabinetUnbind(username, req.params.groupId, cabinetId)
+		res.status(200).json({ event })
+	})
+
 	registerGroupFileRoutes(router, authenticate, getUserByReq, getState, canInChannel, PERMISSIONS)
 }

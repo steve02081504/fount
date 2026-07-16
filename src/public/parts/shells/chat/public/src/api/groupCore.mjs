@@ -167,17 +167,6 @@ export async function getMembersPage(groupId, pageIdx) {
 }
 
 /**
- * 创建或更新群文件系统文件夹。
- * @param {string} groupId 群 ID
- * @param {object} body 文件夹元数据
- * @returns {Promise<object>} 产生的链上事件
- */
-export async function updateFileSystemFolder(groupId, body) {
-	const data = await groupFetch(groupPath(groupId, 'file-system'), { method: 'POST', json: body })
-	return data.event
-}
-
-/**
  * 删除群内文件。
  * @param {string} groupId 群 ID
  * @param {string} fileId 文件 ID

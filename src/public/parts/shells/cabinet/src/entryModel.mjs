@@ -42,6 +42,7 @@ export function normalizeEntry(draft, entityHash) {
 			delete_with_file: draft?.preview?.delete_with_file !== false,
 		},
 		encryption: draft?.encryption || null,
+		orphaned: Boolean(draft?.orphaned),
 		link: kind === 'link' && draft?.link ? {
 			owner_entity_hash: String(draft.link.owner_entity_hash || '').toLowerCase(),
 			cabinet_id: String(draft.link.cabinet_id || ''),
@@ -82,6 +83,7 @@ export function patchEntry(entry, patch, entityHash) {
 		}
 	
 	if (patch.encryption !== undefined) next.encryption = patch.encryption
+	if (patch.orphaned !== undefined) next.orphaned = Boolean(patch.orphaned)
 	if (patch.link !== undefined) next.link = patch.link
 	next.modified = stampActor(entityHash)
 	return next
@@ -98,6 +100,7 @@ export function listChildren(entries, parentId, options = {}) {
 	return entries
 		.filter(entry => (entry.parent_id ?? null) === parent)
 		.filter(entry => options.show_hidden || !entry.attrs?.hidden)
+		.filter(entry => options.show_orphaned || !entry.orphaned)
 		.sort((a, b) => {
 			if (a.kind === 'folder' && b.kind !== 'folder') return -1
 			if (a.kind !== 'folder' && b.kind === 'folder') return 1

@@ -70,40 +70,4 @@ export const fileReducers = {
 		state.messageOverlay.fileIndex.delete(event.content.fileId)
 		return state
 	},
-
-	/**
-	 * 处理 `file_system_update` 事件：创建、重命名、移动或删除文件文件夹。
-	 * @param {object} state 物化群状态
-	 * @param {object} event DAG 事件
-	 * @returns {object} 更新后的 state
-	 */
-	file_system_update(state, event) {
-		withGroupId(state, event)
-		const { operation, folderId } = event.content
-		const fid = folderId ? String(folderId).trim() : ''
-		if (fid)
-			switch (operation) {
-				case 'create':
-					state.fileFolders[fid] = {
-						name: event.content.name || fid,
-						parentFolderId: event.content.parentFolderId ?? null,
-					}
-					break
-				case 'rename':
-					if (state.fileFolders[fid])
-						state.fileFolders[fid].name = event.content.name || state.fileFolders[fid].name
-					break
-				case 'move':
-					if (state.fileFolders[fid])
-						state.fileFolders[fid].parentFolderId = event.content.parentFolderId ?? null
-					break
-				case 'delete':
-					delete state.fileFolders[fid]
-					break
-				default:
-					break
-			}
-
-		return state
-	},
 }
