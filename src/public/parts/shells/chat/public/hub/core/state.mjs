@@ -76,12 +76,6 @@ export const hubStore = {
 		/** 对端 128 位 entityHash（角色 agent / 用户统一） */
 		peerEntityHash: null,
 		channelId: 'default',
-		refreshStopGenerationButton: null,
-		enableComposer: null,
-		disableComposer: null,
-		scrollToBottom: null,
-		applyAvatarsTo: null,
-		onEnterPrivateGroup: null,
 	},
 }
 

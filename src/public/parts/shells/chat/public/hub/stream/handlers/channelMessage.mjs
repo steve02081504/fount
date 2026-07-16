@@ -9,9 +9,9 @@ import {
 	handleReadMarkerWire,
 } from '../../unread.mjs'
 import { handleVoteClosedWire } from '../../wiring/voteEvents.mjs'
-import { streamCallbacks } from '../callbacks.mjs'
 import {
 	dispatchChannelIncrementalRefresh,
+	dispatchChannelMessageEdit,
 	hubChannelMatch,
 } from '../channelRefresh.mjs'
 import {
@@ -80,7 +80,7 @@ export function handleChannelMessageWire(wireMessage, channelId) {
 		if (targetId) {
 			if (hasVolatileStream(targetId))
 				finishVolatileStreamPreview(targetId)
-			void streamCallbacks.onMessageEdit(targetId)
+			void dispatchChannelMessageEdit(targetId)
 		}
 		return true
 	}

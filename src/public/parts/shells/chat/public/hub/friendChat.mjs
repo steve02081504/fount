@@ -20,8 +20,10 @@ import { handleUIError, toError } from '../src/ui/errors.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
 import { hubStore } from './core/state.mjs'
-import { parseHash } from './core/urlHash.mjs'
+import { parseHash, updateFriendsHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { setActiveModeTab, setMode } from './mode.mjs'
 import { loadGroups } from './serverBar.mjs'
 import { selectChannel } from './sidebar/index.mjs'
 import { closeGroupWebSocket } from './stream/index.mjs'
@@ -178,6 +180,26 @@ function resolvePrivateChannelId(state, preferredChannelId) {
 }
 
 /**
+ * 好友私聊进入/退出（角色或用户）。
+ * @param {object | null} peer `null` 退出；否则含 `entityHash`，角色另有 `charname`
+ * @returns {void}
+ */
+export function onEnterFriendChat(peer) {
+	cancelScheduledChannelRefresh()
+	closeGroupWebSocket()
+	if (!peer?.entityHash) {
+		hubStore.context.currentGroupId = null
+		hubStore.context.currentChannelId = null
+		hubStore.context.currentState = null
+		updateFriendsHash()
+		void setMode('friends')
+		return
+	}
+	hubStore.context.currentMode = 'friends'
+	setActiveModeTab('friends')
+}
+
+/**
  * 进入好友私聊：与用户 DM 相同，走群频道 + 群 WS；角色回复由服务端按群 char 列表触发。
  * @param {string} groupId 群 ID
  * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
@@ -201,7 +223,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	hubStore.context.currentGroupId = groupId
 	hubStore.context.currentState = state
 
-	hubStore.privateGroup.onEnterPrivateGroup({
+	onEnterFriendChat({
 		entityHash: binding.entityHash,
 		charname: binding.charname,
 		displayName,

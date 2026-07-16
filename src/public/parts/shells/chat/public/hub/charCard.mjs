@@ -3,7 +3,7 @@
  * 【职责】角色（char part）资料卡渲染：拉取角色详情、展示简介与进入私聊/编辑资料入口。
  * 【原理】`renderCharInfoCard` / `renderCharInfoCardActive` 填充主栏角色信息区模板。
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve
+ * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence、privateGroup
  */
 import {
 	mountTemplate,
@@ -22,27 +22,8 @@ import {
 	wireProfileEditButton,
 } from './entityProfile.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
-
-/** @type {() => void} */
-let applyAvatarsToRef = () => { }
-/** @type {() => string|null} */
-let getViewerDisplayNameRef = () => null
-/** @type {(name: string) => void} */
-let onEnterPrivateGroupRef = () => { }
-
-/**
- * 注入角色卡 UI 所需的 Hub 回调。
- * @param {object} callbacks - 回调集合
- * @param {() => void} callbacks.applyAvatarsTo - 将头像应用到成员列表 DOM
- * @param {() => string|null} callbacks.getViewerDisplayName - 当前 viewer 展示名
- * @param {(name: string) => void} callbacks.onEnterPrivateGroup - 用户点击开始聊天
- * @returns {void}
- */
-export function initCharCard({ applyAvatarsTo, getViewerDisplayName, onEnterPrivateGroup }) {
-	applyAvatarsToRef = applyAvatarsTo
-	getViewerDisplayNameRef = getViewerDisplayName
-	onEnterPrivateGroupRef = onEnterPrivateGroup
-}
+import { applyAvatarsTo } from './presence.mjs'
+import { enterPrivateGroup } from './privateGroup.mjs'
 
 /**
  * 从 API 拉取角色详情。
@@ -86,8 +67,8 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = profile?.avatar || info.avatar || details?.avatar || ''
-	const viewerDisplayName = getViewerDisplayNameRef()
-	const { viewerEntityHash } = hubStore
+	const viewerDisplayName = hubStore.viewer.viewerDisplayName
+	const { viewerEntityHash } = hubStore.viewer
 	const memberList = document.getElementById('hub-member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
@@ -141,9 +122,11 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	}
 
 	if (active)
-		applyAvatarsToRef(memberList)
+		applyAvatarsTo(memberList)
 	else
-		infoCardHost?.querySelector('.hub-info-cta')?.addEventListener('click', () => onEnterPrivateGroupRef(name))
+		infoCardHost?.querySelector('.hub-info-cta')?.addEventListener('click', () => {
+			void enterPrivateGroup(name)
+		})
 }
 
 /**

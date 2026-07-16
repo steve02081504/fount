@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/privateGroup.mjs
  * 【职责】角色好友私聊 Hub 流程：进入/重启私聊、清空状态与聊天设置浮层入口。
- * 【原理】`initPrivateGroup` 注入 composer 启停/滚底回调；`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
- * 【数据结构】hubStore.privateGroup 回调引用与当前私聊 charname。
+ * 【原理】`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
+ * 【数据结构】hubStore.privateGroup 当前私聊 charname / groupId。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
@@ -11,52 +11,11 @@ import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildCharFriendBinding } from '../shared/friendBinding.mjs'
 import { setGroupFriendBinding, unbindFriendGroup } from '../src/api/groupFriendBinding.mjs'
 
-import { initCharCard } from './charCard.mjs'
 import { mountChatConfigPanel } from './chatConfig.mjs'
-import { resetChatGestures } from './chatGestures.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
 import { hubStore } from './core/state.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
-
-/**
- * 注入 Hub 私聊 UI 回调。
- * @param {object} callbacks 回调集合
- * @param {() => void} callbacks.enableComposer 启用输入区
- * @param {() => void} callbacks.disableComposer 禁用输入区
- * @param {() => void} callbacks.scrollToBottom 滚到底部
- * @param {(root: HTMLElement) => void} callbacks.applyAvatarsTo 刷新头像
- * @param {(charname: string|null) => void} callbacks.onEnterPrivateGroup 进入/退出私聊
- * @returns {void}
- */
-export function initPrivateGroup({
-	enableComposer,
-	disableComposer,
-	scrollToBottom,
-	applyAvatarsTo,
-	onEnterPrivateGroup,
-}) {
-	const { privateGroup } = hubStore
-	privateGroup.enableComposer = enableComposer
-	privateGroup.disableComposer = disableComposer
-	privateGroup.scrollToBottom = scrollToBottom
-	privateGroup.applyAvatarsTo = applyAvatarsTo
-	privateGroup.onEnterPrivateGroup = onEnterPrivateGroup
-	/** @returns {string|null} 当前用户名 */
-	const getViewerDisplayName = () => hubStore.viewer.viewerDisplayName
-	/** @param {string} charName 角色名 */
-	const onCharCardEnter = charName => { void enterPrivateGroup(charName) }
-	initCharCard({ applyAvatarsTo, getViewerDisplayName, onEnterPrivateGroup: onCharCardEnter })
-	resetChatGestures()
-}
-
-/**
- * 注册刷新停止生成按钮的回调函数。
- * @param {(() => void)|null} fn 回调
- * @returns {void}
- */
-export function setRefreshStopGenerationButton(fn) {
-	hubStore.privateGroup.refreshStopGenerationButton = fn
-}
+import { refreshStopGenerationButton } from './stream/index.mjs'
 
 /**
  * 清理所有私聊状态。
@@ -68,7 +27,7 @@ export function clearPrivateGroupState() {
 	privateGroup.charname = null
 	privateGroup.peerEntityHash = null
 	privateGroup.channelId = 'default'
-	privateGroup.refreshStopGenerationButton?.()
+	refreshStopGenerationButton()
 }
 
 /**
@@ -163,7 +122,8 @@ export async function openGroupSettingsModal(groupId) {
 			showToastI18n('success', 'chat.hub.unbindFriendOk')
 			closeOverlayModal()
 			clearPrivateGroupState()
-			hubStore.privateGroup.onEnterPrivateGroup(null)
+			const { onEnterFriendChat } = await import('./friendChat.mjs')
+			onEnterFriendChat(null)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.hub.unbindFriendFailed', { error: error.message })
@@ -182,10 +142,11 @@ export async function openGroupSettingsModal(groupId) {
 			}
 			await response.json()
 			showToastI18n('success', 'chat.hub.sessionDeleted')
-			setTimeout(() => {
+			setTimeout(async () => {
 				closeOverlayModal()
 				clearPrivateGroupState()
-				hubStore.privateGroup.onEnterPrivateGroup(null)
+				const { onEnterFriendChat } = await import('./friendChat.mjs')
+				onEnterFriendChat(null)
 			}, 600)
 		}
 		catch (error) {

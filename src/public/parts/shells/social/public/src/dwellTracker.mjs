@@ -15,8 +15,6 @@ const visible = new Map()
 let observer = null
 /** @type {ReturnType<typeof setInterval> | null} */
 let flushTimer = null
-/** @type {((entries: object[]) => void | Promise<void>) | null} */
-let flushHandler = null
 
 /**
  * @param {HTMLElement} card 帖卡
@@ -64,20 +62,18 @@ function flushVisibleAges() {
  */
 async function flushBuffer() {
 	flushVisibleAges()
-	if (!buffer.length || !flushHandler) return
+	if (!buffer.length) return
 	const batch = buffer.splice(0, buffer.length)
-	await flushHandler(batch)
+	await sendDwellBeacon(batch)
 }
 
 /**
  * @param {HTMLElement} root feed 根
- * @param {(entries: object[]) => void | Promise<void>} onFlush 上报回调
  * @returns {() => void} 解绑
  */
-export function bindDwellTracker(root, onFlush) {
+export function bindDwellTracker(root) {
 	unbindDwellTracker()
 	if (!(root instanceof HTMLElement)) return () => {}
-	flushHandler = onFlush
 	observer = new IntersectionObserver(entries => {
 		const now = Date.now()
 		for (const entry of entries) {
@@ -147,7 +143,6 @@ export function unbindDwellTracker() {
 	if (flushTimer) clearInterval(flushTimer)
 	flushTimer = null
 	visible.clear()
-	flushHandler = null
 }
 
 /**

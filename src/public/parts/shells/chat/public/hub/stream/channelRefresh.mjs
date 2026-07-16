@@ -2,9 +2,8 @@
  * 【文件】public/hub/stream/channelRefresh.mjs
  * 【职责】主频道 / 子线程命中判定与增量刷新分发。
  */
-import { getActiveThreadChannelId } from '../threadDrawer.mjs'
-
-import { streamCallbacks } from './callbacks.mjs'
+import { hubStore } from '../core/state.mjs'
+import { getActiveThreadChannelId, refreshActiveThreadIfOpen } from '../threadDrawer.mjs'
 
 /**
  * @param {string | undefined} eventChannelId 事件频道
@@ -22,6 +21,16 @@ export function hubChannelMatch(eventChannelId, mainChannelId) {
 }
 
 /**
+ * @param {{ immediate?: boolean }} [options] 刷新选项
+ * @returns {Promise<void>}
+ */
+async function refreshMainChannel(options = {}) {
+	if (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
+	const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
+	scheduleChannelIncrementalRefresh(options)
+}
+
+/**
  * @param {string | undefined} eventChannelId 事件频道
  * @param {string} mainChannelId 主频道
  * @param {{ immediate?: boolean }} [options] 刷新选项
@@ -29,8 +38,8 @@ export function hubChannelMatch(eventChannelId, mainChannelId) {
  */
 export function dispatchChannelIncrementalRefresh(eventChannelId, mainChannelId, options = {}) {
 	const { main, thread } = hubChannelMatch(eventChannelId, mainChannelId)
-	if (main) void streamCallbacks.onChannelRefresh(options)
-	if (thread) void streamCallbacks.onThreadChannelRefresh()
+	if (main) void refreshMainChannel(options)
+	if (thread) void refreshActiveThreadIfOpen()
 }
 
 /**
@@ -40,6 +49,30 @@ export function dispatchChannelIncrementalRefresh(eventChannelId, mainChannelId,
  */
 export function dispatchChannelOverlayRefresh(eventChannelId, mainChannelId) {
 	const { main, thread } = hubChannelMatch(eventChannelId, mainChannelId)
-	if (main) void streamCallbacks.onChannelRefresh()
-	if (thread) void streamCallbacks.onThreadChannelRefresh()
+	if (main) void refreshMainChannel()
+	if (thread) void refreshActiveThreadIfOpen()
+}
+
+/**
+ * @param {string} targetId 目标消息 eventId
+ * @returns {Promise<void>}
+ */
+export async function dispatchChannelMessageEdit(targetId) {
+	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+		const { applyChannelMessageEdit } = await import('../messages/messages.mjs')
+		await applyChannelMessageEdit(targetId)
+	}
+	await refreshActiveThreadIfOpen()
+}
+
+/**
+ * @param {string} targetId 目标消息 eventId
+ * @returns {Promise<void>}
+ */
+export async function dispatchChannelMessageDelete(targetId) {
+	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+		const { applyChannelMessageDelete } = await import('../messages/messages.mjs')
+		await applyChannelMessageDelete(targetId)
+	}
+	await refreshActiveThreadIfOpen()
 }

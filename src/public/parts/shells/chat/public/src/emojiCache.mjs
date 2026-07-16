@@ -51,39 +51,6 @@ export async function getCachedEmojiDataUrl(groupId, emojiId) {
 	}
 }
 
-/** @type {((groupId: string, emojiId: string) => Promise<string | null>) | null} */
-let emojiUrlResolver = null
-
-/**
- * 注册外部表情 URL 解析器（Hub 注入）。
- * @param {(groupId: string, emojiId: string) => Promise<string | null>} resolveEmojiUrl - 解析回调。
- * @returns {void}
- */
-export function setEmojiUrlResolver(resolveEmojiUrl) {
-	emojiUrlResolver = resolveEmojiUrl
-}
-
-/**
- * 尽力解析表情 URL（缓存 → 注入解析器 → API）。
- * @param {string} groupId - 群 ID。
- * @param {string} emojiId - 表情 ID。
- * @returns {Promise<string | null>} data URL 或 null。
- */
-export async function resolveEmojiUrlBestEffort(groupId, emojiId) {
-	const cached = await getCachedEmojiDataUrl(groupId, emojiId)
-	if (cached) return cached
-	if (emojiUrlResolver) {
-		const fromResolver = await emojiUrlResolver(groupId, emojiId).catch(() => null)
-		if (fromResolver) {
-			await putCachedEmojiDataUrl(groupId, emojiId, fromResolver).catch(() => {})
-			return fromResolver
-		}
-	}
-	const fromApi = await fetchGroupEmojiDataUrl(groupId, emojiId).catch(() => null)
-	if (fromApi) await putCachedEmojiDataUrl(groupId, emojiId, fromApi).catch(() => {})
-	return fromApi
-}
-
 /**
  * 写入表情 data URL 缓存。
  * @param {string} groupId - 群 ID。
@@ -102,4 +69,28 @@ export async function putCachedEmojiDataUrl(groupId, emojiId, dataUrlOrUrl) {
 		/** @returns {void} */
 		transaction.onerror = () => reject(transaction.error)
 	})
+}
+
+/**
+ * 尽力解析表情 URL（IndexedDB 缓存 → 本地收藏列表 → 群 API）。
+ * @param {string} groupId - 群 ID。
+ * @param {string} emojiId - 表情 ID。
+ * @returns {Promise<string | null>} data URL 或 null。
+ */
+export async function resolveEmojiUrlBestEffort(groupId, emojiId) {
+	const cached = await getCachedEmojiDataUrl(groupId, emojiId)
+	if (cached) return cached
+	try {
+		const { listCustomEmojis } = await import('./customEmojis.mjs')
+		const entries = await listCustomEmojis()
+		const saved = entries.find(entry => entry?.groupId === groupId && entry?.emojiId === emojiId)?.dataUrl
+		if (saved) {
+			await putCachedEmojiDataUrl(groupId, emojiId, saved).catch(() => {})
+			return saved
+		}
+	}
+	catch { /* empty */ }
+	const fromApi = await fetchGroupEmojiDataUrl(groupId, emojiId).catch(() => null)
+	if (fromApi) await putCachedEmojiDataUrl(groupId, emojiId, fromApi).catch(() => {})
+	return fromApi
 }

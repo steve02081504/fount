@@ -1,15 +1,16 @@
 /**
  * 【文件】public/hub/stream/volatileSlots.mjs
- * 【职责】VOLATILE stream_chunk 预览槽：建槽、重排 flush、DOM 绑定、补拉缓冲。
+ * 【职责】VOLATILE stream_chunk 预览槽：建槽、重排 flush、DOM 绑定、补拉缓冲；停止生成按钮可见性。
  */
 import { stopGeneration } from '../../src/groupWsClient.mjs'
 import { streamDisplayText } from '../../src/streamDisplay.mjs'
 import { applySlices } from '../../src/streamSlices.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
+import { attachLastCharMessageSwipe } from '../chatGestures.mjs'
 import { hubStore } from '../core/state.mjs'
+import { scrollToBottom } from '../messages/messageScroll.mjs'
 import { messageIdSelector } from '../messages/messageShared.mjs'
 
-import { notifyGenerationActiveChange, streamCallbacks } from './callbacks.mjs'
 import { dispatchChannelIncrementalRefresh } from './channelRefresh.mjs'
 import { activeChannelId } from './connectionState.mjs'
 
@@ -31,6 +32,19 @@ const streamIdsFetchingRow = new Set()
 /** @returns {string[]} 活跃 pendingStreamId 列表 */
 export function getActiveVolatileStreamIds() {
 	return [...volatileStreams.keys()]
+}
+
+/**
+ * 刷新停止生成按钮的可见状态。
+ * @returns {void}
+ */
+export function refreshStopGenerationButton() {
+	const stopButton = document.getElementById('hub-stop-generation-button')
+	const sendButton = document.getElementById('hub-send-button')
+	if (!(stopButton instanceof HTMLElement) || !(sendButton instanceof HTMLElement)) return
+	const active = volatileStreams.size > 0
+	stopButton.toggleAttribute('hidden', !active)
+	sendButton.removeAttribute('hidden')
 }
 
 /**
@@ -66,7 +80,7 @@ function getOrCreateStreamSlot(streamId, charname = '') {
 			charname,
 		}
 		volatileStreams.set(id, slot)
-		notifyGenerationActiveChange()
+		refreshStopGenerationButton()
 	}
 	else if (charname && !slot.charname)
 		slot.charname = charname
@@ -107,7 +121,7 @@ function bindStreamRenderer(streamId) {
 export function removeVolatileStream(streamId) {
 	if (!volatileStreams.has(streamId)) return
 	volatileStreams.delete(streamId)
-	notifyGenerationActiveChange()
+	refreshStopGenerationButton()
 }
 
 /**
@@ -126,12 +140,27 @@ export function resetVolatileStreamState({ abortBackend = false } = {}) {
 	volatileStreams.clear()
 	streamIdsFetchingRow.clear()
 	hubStore.messages.composerPendingId = null
-	notifyGenerationActiveChange()
+	refreshStopGenerationButton()
+}
+
+/**
+ * 流式预览结束后：主频道增量刷新 + 末条角色消息滑动手势 + 滚底。
+ * @returns {Promise<void>}
+ */
+async function afterStreamEnd() {
+	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+		const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
+		await scheduleChannelIncrementalRefresh({ immediate: true })
+	}
+	const container = document.getElementById('hub-messages')
+	if (container instanceof HTMLElement)
+		attachLastCharMessageSwipe(container)
+	scrollToBottom()
 }
 
 /**
  * @param {string} streamId pendingStreamId
- * @param {{ notifyEnd?: boolean }} [options] 是否触发 onStreamEnd
+ * @param {{ notifyEnd?: boolean }} [options] 是否触发流结束刷新
  * @returns {void}
  */
 export function dismissVolatileStreamPreview(streamId, { notifyEnd = true } = {}) {
@@ -139,7 +168,7 @@ export function dismissVolatileStreamPreview(streamId, { notifyEnd = true } = {}
 	if (!id || !volatileStreams.has(id)) return
 	removeVolatileStream(id)
 	if (notifyEnd)
-		void streamCallbacks.onStreamEnd(id)
+		void afterStreamEnd()
 }
 
 /** @param {string} streamId pendingStreamId @returns {void} */

@@ -30,6 +30,7 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - State: `hubStore` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
+- **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch (e.g. `channelActionsContext` main↔thread drawer), shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).
 
 ## Message storage & APIs
 

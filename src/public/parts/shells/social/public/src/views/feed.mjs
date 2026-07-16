@@ -1,7 +1,7 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { bindDwellTracker, sendDwellBeacon } from '../dwellTracker.mjs'
+import { bindDwellTracker } from '../dwellTracker.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
@@ -326,7 +326,7 @@ export async function loadFeed(append = false) {
 	bindFeedInfiniteScroll()
 	scheduleFeedPrefetch()
 	if (unbindDwell) unbindDwell()
-	unbindDwell = bindDwellTracker(list, entries => sendDwellBeacon(entries))
+	unbindDwell = bindDwellTracker(list)
 	void loadTrendingHashtags()
 	void loadSuggestedAccounts()
 }

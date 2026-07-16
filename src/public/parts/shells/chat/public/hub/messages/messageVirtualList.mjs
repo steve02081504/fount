@@ -5,7 +5,7 @@ import {
 import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
-import { getChatGestures } from '../chatGestures.mjs'
+import { attachLastCharMessageSwipe, updateHideCharNames } from '../chatGestures.mjs'
 import { hubStore } from '../core/state.mjs'
 import { applyAvatarsTo } from '../presence.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
@@ -193,9 +193,8 @@ export function decorateRenderedMessages(container, shouldScroll = false, reload
 	bindReactions(container, reload)
 	bindChannelMessageActions(container)
 	if (isTwoPartyCharDialogue()) {
-		const gestures = getChatGestures()
-		gestures.updateHideCharNames(hubStore.messages.channelMessages)
-		gestures.attachLastCharMessageSwipe(container)
+		updateHideCharNames(hubStore.messages.channelMessages)
+		attachLastCharMessageSwipe(container)
 	}
 	if (shouldScroll) scrollToBottom()
 	const pendingId = consumePendingHighlightEventId()

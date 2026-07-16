@@ -1,14 +1,11 @@
 /**
  * 【文件】public/src/groupWsClient.mjs
- * 【职责】当前活跃群 WebSocket 单例：出站 send、入站 RPC 执行、错误处理与 stop_generation。
- * 【原理】setActiveWebSocket 绑定 Hub 打开的 socket；setInboundRpcExecutor 分发服务端推送；attachGroupWebSocketErrorHandlers 统一 toast。
- * 【数据结构】activeGroupWebSocket、inboundRpcExecutor 回调。
+ * 【职责】当前活跃群 WebSocket 单例：出站 send、错误处理与 stop_generation。
+ * 【原理】setActiveWebSocket 绑定 Hub 打开的 socket；attachGroupWebSocketErrorHandlers 统一日志。
+ * 【数据结构】activeGroupWebSocket。
  * 【关联】wsUrl.mjs；Hub WS 连接生命周期。
  */
 let activeGroupWebSocket = null
-
-/** @type {((wireMessage: object) => void | Promise<void>) | null} */
-let inboundRpcExecutor = null
 
 /**
  * 绑定出站群 WebSocket（私聊与联邦群共用同一发送口）。
@@ -17,14 +14,6 @@ let inboundRpcExecutor = null
  */
 export function setActiveWebSocket(socket) {
 	activeGroupWebSocket = socket
-}
-
-/**
- * @param {((wireMessage: object) => void | Promise<void>) | null} executor 入站 RPC 执行器
- * @returns {void}
- */
-export function setInboundRpcExecutor(executor) {
-	inboundRpcExecutor = executor
 }
 
 /**
@@ -84,16 +73,4 @@ export function stopGeneration(target) {
 			dagEventId: dagEventId || undefined,
 		},
 	})
-}
-
-/**
- * 消费群 WS 上的 `rpc_call`。
- * @param {object} wireMessage 已解析 JSON
- * @returns {Promise<boolean>} true 表示已消费
- */
-export async function handleGroupWebSocketRpc(wireMessage) {
-	if (wireMessage?.type !== 'rpc_call' || !inboundRpcExecutor)
-		return false
-	await inboundRpcExecutor(wireMessage)
-	return true
 }

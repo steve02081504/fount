@@ -4,8 +4,9 @@
  */
 import { getGroupState } from '../../../src/api/groupCore.mjs'
 import { hubStore } from '../../core/state.mjs'
-import { streamCallbacks } from '../callbacks.mjs'
 import {
+	dispatchChannelMessageDelete,
+	dispatchChannelMessageEdit,
 	dispatchChannelOverlayRefresh,
 	hubChannelMatch,
 } from '../channelRefresh.mjs'
@@ -53,7 +54,7 @@ export function handleDagEventWire(wireMessage, channelId) {
 		if (targetId) {
 			if (hasVolatileStream(targetId))
 				finishVolatileStreamPreview(targetId)
-			void streamCallbacks.onMessageEdit(targetId)
+			void dispatchChannelMessageEdit(targetId)
 		}
 		return true
 	}
@@ -61,7 +62,7 @@ export function handleDagEventWire(wireMessage, channelId) {
 		const targetId = String(dagEvent.content?.targetId || '')
 		if (targetId) {
 			removeVolatileStream(targetId)
-			void streamCallbacks.onMessageDelete(targetId)
+			void dispatchChannelMessageDelete(targetId)
 		}
 		return true
 	}

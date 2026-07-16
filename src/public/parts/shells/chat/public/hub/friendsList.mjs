@@ -18,7 +18,7 @@ import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
-import { dispatchFriendChat, enterFriendChat } from './friendChat.mjs'
+import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
 
@@ -135,7 +135,7 @@ async function deleteFriendSession(friend) {
 		if (hubStore.privateGroup.groupId === friend.groupId) {
 			const { clearPrivateGroupState } = await import('./privateGroup.mjs')
 			clearPrivateGroupState()
-			hubStore.privateGroup.onEnterPrivateGroup(null)
+			onEnterFriendChat(null)
 		}
 		await loadGroups()
 		const friends = await loadFriendsList()

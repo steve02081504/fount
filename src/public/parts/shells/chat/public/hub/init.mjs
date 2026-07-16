@@ -1,9 +1,8 @@
 /**
  * 【文件】public/hub/init.mjs
- * 【职责】Hub 主入口 bootstrap：i18n/模板/可信作者/deep link、挂载消息与 WS 回调、hash 导航、顶栏 persona 展示。
- * 【原理】注册 setGroupChannelRefreshHandler 等联邦流回调 → bindChannelMessageActions；导航由 initCore 完成。
- *   refreshViewerHubPresentation 按 viewerEntityHash 拉 profile 更新顶栏头像；stopGeneration 绑定生成中止按钮。
- * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道与管道上下文。
+ * 【职责】Hub 主入口 bootstrap：i18n/模板/可信作者/deep link、挂载消息与导航、顶栏 persona 展示。
+ * 【原理】bindChannelMessageActions；导航由 initCore 完成。刷新顶栏与停止生成按钮直接调用模块导出。
+ * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道上下文。
  * 【关联】hub 页面加载时调用；串联 messages、stream、hashNav、chat、presence、wireEvents。
  */
 import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPicker.mjs'
@@ -13,37 +12,21 @@ import { fetchStickerPayload } from '../providers/sticker.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
-import { setEmojiUrlResolver } from '../src/emojiCache.mjs'
 import { localeQueryString } from '../src/entityProfileApi.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
-import { getChatGestures } from './chatGestures.mjs'
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { wireHubBannerBindings } from './core/bindings.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
-import { updateFriendsHash } from './core/urlHash.mjs'
 import { wireHubGroupEmojiStickerGestures } from './emojiPickerGestures.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setupMisc } from './misc.mjs'
-import { setActiveModeTab, setMode } from './mode.mjs'
-import { applyAvatarsTo, fetchUserProfile } from './presence.mjs'
+import { fetchUserProfile } from './presence.mjs'
 import {
-	initPrivateGroup,
-	setRefreshStopGenerationButton,
-} from './privateGroup.mjs'
-import {
-	closeGroupWebSocket,
-	getActiveVolatileStreamIds,
+	refreshStopGenerationButton,
 	resetVolatileStreamState,
-	setGenerationActiveChangeHandler,
-	setGroupChannelRefreshHandler,
-	setGroupMessageDeleteHandler,
-	setGroupMessageEditHandler,
-	setGroupStreamEndHandler,
-	setGroupThreadChannelRefreshHandler,
 } from './stream/index.mjs'
-import { refreshActiveThreadIfOpen } from './threadDrawer.mjs'
 
 /** @returns {Promise<typeof import('./messages/messages.mjs')>} 按需加载的重型 messages 模块图 */
 const messagesApi = () => import('./messages/messages.mjs')
@@ -103,43 +86,6 @@ async function loadMe() {
 	const { syncViewerPresence, startIdleWatcher } = await import('./hubStatus.mjs')
 	await syncViewerPresence(hubStore.viewer.viewerEntityHash)
 	startIdleWatcher()
-}
-
-/** @returns {Promise<void>} 注册全局自定义表情 URL 解析器 */
-async function wireCustomEmojiResolver() {
-	const { listCustomEmojis } = await import('../src/customEmojis.mjs')
-	/**
-	 * @param {string} groupId 表情所属群
-	 * @param {string} emojiId 表情 ID
-	 * @returns {Promise<string|null>} data URL；未找到为 null
-	 */
-	setEmojiUrlResolver(async (groupId, emojiId) => {
-		const entries = await listCustomEmojis()
-		const saved = entries.find(entry => entry?.groupId === groupId && entry?.emojiId === emojiId)?.dataUrl
-		if (saved) return saved
-		const { fetchGroupEmojiDataUrl } = await import('../src/groupEmojiApi.mjs')
-		return fetchGroupEmojiDataUrl(groupId, emojiId)
-	})
-}
-
-/**
- * 好友私聊进入/退出（角色或用户）。
- * @param {object | null} peer `null` 退出；否则含 `entityHash`，角色另有 `charname`
- * @returns {void}
- */
-function onEnterFriendChat(peer) {
-	cancelScheduledChannelRefresh()
-	closeGroupWebSocket()
-	if (!peer?.entityHash) {
-		hubStore.context.currentGroupId = null
-		hubStore.context.currentChannelId = null
-		hubStore.context.currentState = null
-		updateFriendsHash()
-		void setMode('friends')
-		return
-	}
-	hubStore.context.currentMode = 'friends'
-	setActiveModeTab('friends')
 }
 
 /** @returns {string|null} 当前用户名 */
@@ -236,72 +182,19 @@ async function sendPickedHubSticker(sticker) {
  * @returns {Promise<void>}
  */
 async function wireHubHeavyFeatures() {
-	const {
-		applyChannelMessageDelete,
-		applyChannelMessageEdit,
-		scheduleChannelIncrementalRefresh,
-		scrollToBottom,
-	} = await messagesApi()
-	const { disableComposer, enableComposer } = await import('./messages/composerController.mjs')
 	const { bindChannelMessageActions } = await import('./messages/actions/handlers.mjs')
 
-	/**
-	 * 刷新停止生成按钮的可见状态。
-	 * @returns {void}
-	 */
-	function refreshStopButton() {
-		const stopButton = document.getElementById('hub-stop-generation-button')
-		const sendButton = document.getElementById('hub-send-button')
-		const active = getActiveVolatileStreamIds().length > 0
-		stopButton.toggleAttribute('hidden', !active)
-		sendButton.removeAttribute('hidden')
-	}
-
-	setRefreshStopGenerationButton(refreshStopButton)
-
-	initPrivateGroup({
-		enableComposer,
-		disableComposer,
-		scrollToBottom,
-		applyAvatarsTo,
-		onEnterPrivateGroup: onEnterFriendChat,
-	})
-
-	setGenerationActiveChangeHandler(refreshStopButton)
+	// 触达 messages 模块图，确保频道消息管道已就绪
+	await messagesApi()
 
 	document.getElementById('hub-stop-generation-button')?.addEventListener('click', () => {
 		resetVolatileStreamState({ abortBackend: true })
 	})
-	setGroupStreamEndHandler(async () => {
-		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
-			await scheduleChannelIncrementalRefresh({ immediate: true })
-		const container = document.getElementById('hub-messages')
-		if (container instanceof HTMLElement)
-			getChatGestures().attachLastCharMessageSwipe(container)
-		scrollToBottom()
-	})
-	setGroupChannelRefreshHandler((options = {}) => {
-		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
-			scheduleChannelIncrementalRefresh(options)
-	})
-	setGroupThreadChannelRefreshHandler(() => {
-		void refreshActiveThreadIfOpen()
-	})
-	setGroupMessageEditHandler(async targetId => {
-		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
-			await applyChannelMessageEdit(targetId)
-		await refreshActiveThreadIfOpen()
-	})
-	setGroupMessageDeleteHandler(async targetId => {
-		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId)
-			await applyChannelMessageDelete(targetId)
-		await refreshActiveThreadIfOpen()
-	})
+	refreshStopGenerationButton()
 
 	bindChannelMessageActions(document.getElementById('hub-messages'))
 	await wireHubPickers()
 	void syncTrustedAuthorsFromShell()
-	await wireCustomEmojiResolver()
 	cancelScheduledChannelRefresh()
 }
 
@@ -331,9 +224,8 @@ async function wireHubPickers() {
 		})
 		wireHubGroupEmojiStickerGestures(emojiGridElement, emojiPickerElement, sendPickedEmojiAsSticker)
 	}
-	
 
-	if (stickerPickerElement && stickerGridElement && stickerButton) 
+	if (stickerPickerElement && stickerGridElement && stickerButton)
 		await mountDockedStickerPicker({
 			pickerElement: stickerPickerElement,
 			gridElement: stickerGridElement,
@@ -342,7 +234,6 @@ async function wireHubPickers() {
 			context: {},
 			onSelect: sendPickedHubSticker,
 		})
-	
 }
 
 /** @returns {Promise<void>} Hub 页面入口初始化（重型特性；导航由 initCore 完成） */
