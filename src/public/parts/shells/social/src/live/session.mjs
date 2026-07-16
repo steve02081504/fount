@@ -68,11 +68,15 @@ export async function startLiveSession(username, entityHash, draft = {}) {
 		: null
 	const bridgeOrigin = String(draft.bridgeOrigin || '').trim().replace(/\/$/, '')
 	const publicWatchSecret = visibility === 'public' ? createLinkSecret() : null
+	const mediaKind = ['av', 'audio', 'video', 'whip'].includes(draft.mediaKind) ? draft.mediaKind : 'av'
+	const ingestSecret = mediaKind === 'whip' ? createLinkSecret() : null
 	const session = {
 		liveId,
 		entityHash: owner,
 		title: String(draft.title || '').trim().slice(0, 120) || 'Live',
 		visibility,
+		mediaKind,
+		ingestSecret,
 		status: 'live',
 		startedAt: Date.now(),
 		viewerCount: 0,
@@ -100,6 +104,7 @@ export async function startLiveSession(username, entityHash, draft = {}) {
 			liveId,
 			title: session.title,
 			visibility,
+			mediaKind,
 			avRoomId: session.avRoomId,
 			bridgeOrigin: session.bridgeOrigin,
 			...chatMount ? { chatMount } : {},

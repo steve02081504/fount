@@ -6,6 +6,7 @@ import WebSocket from 'npm:ws'
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import {
 	injectAvRelayFrame,
+	injectAvRelayControl,
 } from '../../../chat/src/chat/ws/avRelay.mjs'
 
 import { ingestBridgedLiveSignal } from './hub.mjs'
@@ -91,6 +92,10 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 		let msg
 		try { msg = JSON.parse(String(data)) }
 		catch { return }
+		if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
+			injectAvRelayControl(avRoomId, msg)
+			return
+		}
 		ingestBridgedLiveSignal(username, entityHash, liveId, msg)
 	})
 

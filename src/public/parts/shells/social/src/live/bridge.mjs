@@ -5,7 +5,9 @@ import WebSocket from 'npm:ws'
 
 import {
 	injectAvRelayFrame,
+	injectAvRelayControl,
 	subscribeAvRelayFrames,
+	subscribeAvRelayControls,
 } from '../../../chat/src/chat/ws/avRelay.mjs'
 
 import { ingestBridgedLiveSignal } from './hub.mjs'
@@ -43,6 +45,11 @@ export async function connectOutboundLiveBridge(opts) {
 		try { remote.send(buf, { binary: true }) }
 		catch { /* skip */ }
 	})
+	const unsubCtrl = subscribeAvRelayControls(avRoomId, text => {
+		if (remote.readyState !== 1) return
+		try { remote.send(text) }
+		catch { /* skip */ }
+	})
 
 	remote.on('message', (data, isBinary) => {
 		if (isBinary) {
@@ -52,6 +59,10 @@ export async function connectOutboundLiveBridge(opts) {
 		let msg
 		try { msg = JSON.parse(String(data)) }
 		catch { return }
+		if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
+			injectAvRelayControl(avRoomId, msg)
+			return
+		}
 		ingestBridgedLiveSignal(username, entityHash, liveId, msg)
 	})
 
@@ -78,6 +89,7 @@ export async function connectOutboundLiveBridge(opts) {
 		closed = true
 		clearInterval(statsTimer)
 		unsub()
+		unsubCtrl()
 		try { remote.close() } catch { /* ignore */ }
 	}
 	remote.on('close', close)

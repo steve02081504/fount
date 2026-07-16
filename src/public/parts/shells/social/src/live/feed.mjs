@@ -57,6 +57,7 @@ export async function buildLiveFeed(username, options = {}) {
 				entityHash,
 				title: event.content?.title || 'Live',
 				visibility: event.content?.visibility || 'public',
+				mediaKind: event.content?.mediaKind || 'av',
 				status: 'live',
 				startedAt: Number(event.hlc?.wall) || Date.now(),
 				viewerCount: 0,

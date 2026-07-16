@@ -10,6 +10,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { appendStreamingSession } from '../../chat/dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../../chat/file_keys/store.mjs'
 import { buildStreamingEmbedUrl, mintStreamingViewToken } from '../../chat/ws/auth.mjs'
+import { startWhipIngest, stopWhipIngest } from '../../chat/whip/ingest.mjs'
 
 import {
 	ensureCanInChannel,
@@ -87,6 +88,27 @@ export function registerChannelStreamingRoutes(router, authenticate) {
 			expiresAt,
 			embedUrl: buildStreamingEmbedUrl(baseUrl, token),
 		})
+	})
+
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/whip`, authenticate, requireGroupMember(), async (req, res) => {
+		const { state, member, groupId } = req.groupContext
+		const { channelId } = req.params
+		const channel = state.channels[channelId]
+		if (!channel) throw httpError(404, 'Channel not found')
+		if (channel.type !== 'streaming') throw httpError(400, 'Channel is not a streaming channel')
+		ensureCanInChannelSend(state, member, PERMISSIONS.SEND_MESSAGES, channelId, 'SEND denied')
+		const offerSdp = typeof req.body === 'string' ? req.body : String(req.body?.sdp || req.body || '')
+		if (!offerSdp.includes('v=0')) throw httpError(400, 'sdp required')
+		const roomId = `${groupId}:${channelId}`
+		const { answerSdp } = await startWhipIngest(roomId, offerSdp)
+		res.status(201).type('application/sdp').send(answerSdp)
+	})
+
+	router.delete(`${GROUPS_PREFIX}/:groupId/channels/:channelId/whip`, authenticate, requireGroupMember(), async (req, res) => {
+		const { groupId } = req.groupContext
+		const { channelId } = req.params
+		stopWhipIngest(`${groupId}:${channelId}`)
+		res.status(200).json({ ok: true })
 	})
 
 }

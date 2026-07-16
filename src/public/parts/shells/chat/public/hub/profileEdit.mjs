@@ -174,6 +174,9 @@ function initEditState(entityHash, profile) {
 	const handle = editDialog?.querySelector('#hub-profile-edit-handle')
 	if (handle instanceof HTMLInputElement)
 		handle.value = profile.handle || ''
+	const theme = editDialog?.querySelector('#hub-profile-edit-theme-color')
+	if (theme instanceof HTMLInputElement)
+		theme.value = profile.themeColor || '#5865f2'
 	loadActiveLocaleForm()
 	refreshLocaleTabs()
 }
@@ -187,6 +190,7 @@ async function handleSaveProfile() {
 		const updates = {
 			localized: editingLocalized,
 			handle: editDialog.querySelector('#hub-profile-edit-handle')?.value?.trim() || '',
+			themeColor: editDialog.querySelector('#hub-profile-edit-theme-color')?.value || '',
 			status: editDialog.querySelector('#hub-profile-edit-status')?.value || editingBaseProfile.status,
 			customStatus: editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim() || '',
 		}

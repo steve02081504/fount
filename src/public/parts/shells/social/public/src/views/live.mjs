@@ -1,9 +1,12 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
+import { entityAvatarUrl } from '../lib/display.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { joinAvRelayRoom } from '/parts/shells:chat/shared/avRelayClient.mjs'
+import { mountVoiceRing } from '/parts/shells:chat/shared/voiceRing.mjs'
+import { themeColorForEntity } from '/parts/shells:chat/shared/themeColor.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
@@ -22,6 +25,42 @@ let currentLiveIndex = -1
  * 每个 slide 的连接态：信令 WS + AV session。
  * @typedef {{ signalWs: WebSocket | null, avSession: { close: () => void, setMode?: (m: string) => void, getMode?: () => string } | null }} LiveSlideConn
  */
+/** @type {WeakMap<HTMLElement, { destroy?: () => void }>} */
+const voiceRingMounts = new WeakMap()
+
+/**
+ * @param {string} entityHash 实体
+ * @returns {Promise<object | null>} profile
+ */
+async function fetchEntityProfile(entityHash) {
+	try {
+		const res = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}`, { credentials: 'include' })
+		if (!res.ok) return null
+		const data = await res.json()
+		return data?.profile || data || null
+	}
+	catch { return null }
+}
+
+/**
+ * @param {HTMLElement} host 宿主
+ * @param {string} entityHash 主播
+ * @param {() => number[]} getLevels 电平
+ * @returns {Promise<void>}
+ */
+async function mountLiveVoiceRing(host, entityHash, getLevels) {
+	voiceRingMounts.get(host)?.destroy?.()
+	const profile = await fetchEntityProfile(entityHash)
+	host.classList.remove('hidden')
+	const mount = mountVoiceRing({
+		container: host,
+		avatarUrl: entityAvatarUrl(entityHash, profile),
+		themeColor: themeColorForEntity(profile, entityHash),
+		getLevels,
+	})
+	voiceRingMounts.set(host, mount)
+}
+
 /** @type {WeakMap<HTMLElement, LiveSlideConn>} */
 const slideConnections = new WeakMap()
 
@@ -224,7 +263,17 @@ function ensureLiveConnected(slide, mode) {
 	}
 
 	const canvas = slide.querySelector('.live-av-canvas')
-	if (!(canvas instanceof HTMLCanvasElement)) return
+	const voiceHost = slide.querySelector('[data-voice-ring]')
+	const mediaKind = slide.dataset.mediaKind || 'av'
+	const audioOnly = mediaKind === 'audio'
+	if (audioOnly && voiceHost instanceof HTMLElement) {
+		canvas?.classList.add('hidden')
+		void mountLiveVoiceRing(voiceHost, entityHash, () => {
+			const lv = conn.avSession?.getAudioLevels?.() || []
+			return lv.length ? lv : Array(16).fill(0.05)
+		})
+	}
+	if (!(canvas instanceof HTMLCanvasElement) && !audioOnly) return
 	const federated = slide.dataset.federated === '1'
 	const finalAvUrl = federated
 		? `${buildSocialLiveAvWsUrl(entityHash, liveId)}?proxy=1&bridgeOrigin=${encodeURIComponent(slide.dataset.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(slide.dataset.watchSecret || '')}`
@@ -232,8 +281,18 @@ function ensureLiveConnected(slide, mode) {
 	void joinAvRelayRoom({
 		wsUrl: finalAvUrl,
 		asPublisher: false,
-		canvas,
+		canvas: audioOnly ? null : canvas,
 		mode,
+		/**
+		 *
+		 * @param meta
+		 */
+		onPublishMeta: /** @param {object} meta */ meta => {
+			if (!meta?.video && meta?.audio && voiceHost instanceof HTMLElement) {
+				canvas?.classList.add('hidden')
+				void mountLiveVoiceRing(voiceHost, entityHash, () => conn.avSession?.getAudioLevels?.() || [])
+			}
+		},
 	}).then(session => {
 		const current = slideConnections.get(slide)
 		if (!current || current !== conn) {
@@ -334,9 +393,12 @@ function buildLiveSlide(item) {
 	if (item.bridgeOrigin) slide.dataset.bridgeOrigin = item.bridgeOrigin
 	if (item.watchSecret) slide.dataset.watchSecret = item.watchSecret
 
+	if (item.mediaKind) slide.dataset.mediaKind = item.mediaKind
+
 	slide.innerHTML = `
 		<div class="live-av-wrap">
 			<canvas class="live-av-canvas" width="640" height="480"></canvas>
+			<div class="live-voice-ring-host hidden" data-voice-ring></div>
 			<canvas class="live-av-canvas live-av-canvas-peer hidden" width="640" height="480"></canvas>
 		</div>
 		<div class="live-placeholder">
@@ -506,31 +568,72 @@ export function initLiveBroadcastView() {
 	const stopBtn = document.getElementById('liveStopButton')
 	const statusEl = document.getElementById('liveBroadcastStatus')
 	const previewCanvas = document.getElementById('liveBroadcastCanvas')
+	const voiceRingHost = document.getElementById('liveBroadcastVoiceRing')
+	const mediaModeSelect = document.getElementById('liveMediaMode')
+	const whipPanel = document.getElementById('liveWhipPanel')
+	const whipUrlInput = document.getElementById('liveWhipUrl')
+	const whipTokenInput = document.getElementById('liveWhipToken')
 	const linkPeerInput = document.getElementById('liveLinkPeerInput')
 	const linkInviteBtn = document.getElementById('liveLinkInviteButton')
 	let activeLiveId = null
-	/** @type {{ close: () => void, toggleMute?: () => boolean, toggleVideo?: () => boolean } | null} */
+	let viewerEntityHash = null
+	/** @type {{ close: () => void, getAudioLevels?: () => number[] } | null} */
 	let publishSession = null
+	/** @type {{ destroy?: () => void } | null} */
+	let broadcastVoiceRing = null
+
+	mediaModeSelect?.addEventListener('change', () => {
+		const mode = mediaModeSelect.value || 'av'
+		previewCanvas?.classList.toggle('hidden', mode === 'audio' || mode === 'whip')
+		voiceRingHost?.classList.toggle('hidden', mode !== 'audio')
+		whipPanel?.classList.toggle('hidden', mode !== 'whip')
+	})
 
 	startBtn?.addEventListener('click', async () => {
 		try {
 			const title = document.getElementById('liveTitleInput')?.value?.trim() || ''
+			const mediaKind = mediaModeSelect?.value || 'av'
 			const data = await socialApi('/live/start', {
 				method: 'POST',
-				body: JSON.stringify({ title, bridgeOrigin: location.origin }),
+				body: JSON.stringify({ title, bridgeOrigin: location.origin, mediaKind }),
 			})
 			activeLiveId = data.liveId
+			viewerEntityHash = data.entityHash
 			startBtn.classList.add('hidden')
 			stopBtn?.classList.remove('hidden')
 			document.getElementById('liveLinkRow')?.classList.remove('hidden')
 			if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.started')
-			if (previewCanvas instanceof HTMLCanvasElement && data.entityHash && data.liveId) 
+
+			if (mediaKind === 'whip') {
+				const whip = `${location.origin}/api/parts/shells:social/live/${data.liveId}/whip`
+				if (whipUrlInput instanceof HTMLInputElement) whipUrlInput.value = whip
+				if (whipTokenInput instanceof HTMLInputElement) whipTokenInput.value = data.ingestSecret || ''
+				whipPanel?.classList.remove('hidden')
+				if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.whipWaiting')
+				return
+			}
+
+			const relayMedia = mediaKind === 'av' ? 'av' : mediaKind
+			if (mediaKind === 'audio' && voiceRingHost instanceof HTMLElement) {
+				previewCanvas?.classList.add('hidden')
+				broadcastVoiceRing?.destroy?.()
+				publishSession = await joinAvRelayRoom({
+					wsUrl: buildSocialLiveAvWsUrl(data.entityHash, data.liveId),
+					asPublisher: true,
+					media: 'audio',
+				})
+				await mountLiveVoiceRing(voiceRingHost, data.entityHash, () => publishSession?.getAudioLevels?.() || [])
+				broadcastVoiceRing = voiceRingMounts.get(voiceRingHost) || null
+				return
+			}
+
+			if (previewCanvas instanceof HTMLCanvasElement && data.entityHash && data.liveId)
 				publishSession = await joinAvRelayRoom({
 					wsUrl: buildSocialLiveAvWsUrl(data.entityHash, data.liveId),
 					asPublisher: true,
 					canvas: previewCanvas,
+					media: relayMedia,
 				})
-			
 		}
 		catch (err) {
 			if (statusEl) statusEl.textContent = String(err?.message || err)
@@ -542,8 +645,14 @@ export function initLiveBroadcastView() {
 		try {
 			publishSession?.close()
 			publishSession = null
+			broadcastVoiceRing?.destroy?.()
+			broadcastVoiceRing = null
+			voiceRingHost?.classList.add('hidden')
+			previewCanvas?.classList.remove('hidden')
+			whipPanel?.classList.add('hidden')
 			await socialApi('/live/stop', { method: 'POST', body: JSON.stringify({ liveId: activeLiveId }) })
 			activeLiveId = null
+			viewerEntityHash = null
 			stopBtn.classList.add('hidden')
 			document.getElementById('liveLinkRow')?.classList.add('hidden')
 			startBtn?.classList.remove('hidden')

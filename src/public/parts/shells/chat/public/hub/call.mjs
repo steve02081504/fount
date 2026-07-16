@@ -37,9 +37,10 @@ export async function leaveChannelCall() {
 /**
  * @param {string} groupId 群
  * @param {string} channelId 频道
+ * @param {{ media?: 'av' | 'audio' | 'video' }} [opts] 媒体模式
  * @returns {Promise<void>}
  */
-export async function joinChannelCall(groupId, channelId) {
+export async function joinChannelCall(groupId, channelId, opts = {}) {
 	const key = `${groupId}:${channelId}`
 	if (callSession && callChannelKey === key) return
 	await leaveChannelCall()
@@ -55,6 +56,7 @@ export async function joinChannelCall(groupId, channelId) {
 			groupId,
 			channelId,
 			presetKey: 'med',
+			media: opts.media || 'av',
 			avGrid,
 			videoLocal,
 			wsUrl: buildChatCallWsUrl(groupId, channelId),
@@ -252,7 +254,7 @@ export function wireCallHeaderButton() {
 	const callButton = document.getElementById('hub-header-call-button')
 	if (!callButton || callButton.dataset.wired) return
 	callButton.dataset.wired = '1'
-	callButton.addEventListener('click', () => {
+	callButton.addEventListener('click', event => {
 		const groupId = hubStore.context.currentGroupId
 		const channelId = hubStore.context.currentChannelId
 		if (!groupId || !channelId) return
@@ -260,6 +262,7 @@ export function wireCallHeaderButton() {
 			void leaveChannelCall()
 			return
 		}
-		void joinChannelCall(groupId, channelId)
+		const media = event.shiftKey ? 'audio' : 'av'
+		void joinChannelCall(groupId, channelId, { media })
 	})
 }

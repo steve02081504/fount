@@ -224,7 +224,22 @@
 				</header>
 				<div class="live-broadcast-panel" id="liveBroadcastPanel">
 					<input id="liveTitleInput" type="text" class="input input-bordered w-full" maxlength="120" data-i18n="social.live.broadcast.titlePlaceholder" placeholder="" />
-					<canvas id="liveBroadcastCanvas" class="live-broadcast-canvas" width="640" height="480"></canvas>
+					<select id="liveMediaMode" class="select select-bordered w-full">
+						<option value="av" data-i18n="social.live.broadcast.mediaAv"></option>
+						<option value="audio" data-i18n="social.live.broadcast.mediaAudio"></option>
+						<option value="video" data-i18n="social.live.broadcast.mediaVideo"></option>
+						<option value="whip" data-i18n="social.live.broadcast.mediaWhip"></option>
+					</select>
+					<div class="live-broadcast-preview">
+						<canvas id="liveBroadcastCanvas" class="live-broadcast-canvas" width="640" height="480"></canvas>
+						<div id="liveBroadcastVoiceRing" class="live-voice-ring-host hidden"></div>
+					</div>
+					<div id="liveWhipPanel" class="live-whip-panel hidden">
+						<label class="label"><span class="label-text" data-i18n="social.live.broadcast.whipUrl"></span></label>
+						<input id="liveWhipUrl" type="text" class="input input-bordered input-sm font-mono w-full" readonly />
+						<label class="label"><span class="label-text" data-i18n="social.live.broadcast.whipToken"></span></label>
+						<input id="liveWhipToken" type="text" class="input input-bordered input-sm font-mono w-full" readonly />
+					</div>
 					<button type="button" id="liveStartButton" class="btn btn-error" data-i18n="social.live.broadcast.start"></button>
 					<button type="button" id="liveStopButton" class="btn btn-ghost hidden" data-i18n="social.live.broadcast.stop"></button>
 					<div class="live-link-row hidden" id="liveLinkRow">

@@ -30,9 +30,17 @@ import { Buffer } from 'node:buffer'
  * AV 中继二进制帧头长度（字节）。
  */
 export const AV_RELAY_HEADER_SIZE = 26
-
+/** frame_type：摄像头视频 */
+export const AV_FRAME_VIDEO = 0
+/** frame_type：音频 */
+export const AV_FRAME_AUDIO = 1
 /** frame_type：屏幕共享视频轨（客户端约定；服务端透传不区分） */
 export const AV_FRAME_SCREEN = 2
+
+/** @type {Map<string, Map<string, object>>} roomId → senderId → publish_meta */
+const roomPublishMeta = new Map()
+/** @type {Map<string, Set<(text: string) => void>>} */
+const roomControlSinks = new Map()
 
 /** 每发送端硬限速（高于此视为异常客户端） */
 const HARD_MAX_BPS = 32_000_000
@@ -67,6 +75,93 @@ export function subscribeAvRelayFrames(roomId, fn) {
 	return () => {
 		set.delete(fn)
 		if (!set.size) roomSinks.delete(roomId)
+	}
+}
+
+/**
+ * 订阅房间 JSON 控制帧（publish_meta 等），供 live-bridge 出站转发。
+ * @param {string} roomId 房间
+ * @param {(text: string) => void} fn 回调
+ * @returns {() => void}
+ */
+export function subscribeAvRelayControls(roomId, fn) {
+	const set = roomControlSinks.get(roomId) ?? new Set()
+	set.add(fn)
+	roomControlSinks.set(roomId, set)
+	return () => {
+		set.delete(fn)
+		if (!set.size) roomControlSinks.delete(roomId)
+	}
+}
+
+/**
+ * 注入并广播控制帧（跨节点 bridge 入站）。
+ * @param {string} roomId 房间
+ * @param {object} controlFrame JSON 体
+ * @returns {void}
+ */
+export function injectAvRelayControl(roomId, controlFrame) {
+	applyPublishMeta(roomId, controlFrame)
+	const text = JSON.stringify(controlFrame)
+	broadcastRoomControl(roomId, text)
+}
+
+/**
+ * @param {string} roomId 房间
+ * @returns {object[]} 已缓存 publish_meta 列表
+ */
+export function getAvRelayPublishMetaList(roomId) {
+	const map = roomPublishMeta.get(roomId)
+	if (!map) return []
+	return [...map.values()]
+}
+
+/**
+ * @param {string} roomId 房间
+ * @param {object} frame 控制帧
+ * @returns {void}
+ */
+function applyPublishMeta(roomId, frame) {
+	if (!frame || typeof frame !== 'object') return
+	if (frame.type === 'publish_meta') {
+		const senderId = String(frame.senderId || '').toLowerCase()
+		if (!/^[0-9a-f]{32}$/.test(senderId)) return
+		const map = roomPublishMeta.get(roomId) ?? new Map()
+		map.set(senderId, frame)
+		roomPublishMeta.set(roomId, map)
+		return
+	}
+	if (frame.type === 'publish_meta_revoke') {
+		const senderId = String(frame.senderId || '').toLowerCase()
+		roomPublishMeta.get(roomId)?.delete(senderId)
+	}
+}
+
+/**
+ * @param {string} roomId 房间
+ * @param {string} text JSON 文本
+ * @returns {void}
+ */
+function broadcastRoomControl(roomId, text) {
+	const room = rooms.get(roomId)
+	if (room)
+		for (const [peer] of room)
+			if (peer.readyState === 1) try { peer.send(text) } catch { /* skip */ }
+	const sinks = roomControlSinks.get(roomId)
+	if (sinks?.size)
+		for (const fn of sinks)
+			try { fn(text) } catch { /* skip */ }
+}
+
+/**
+ * @param {import('npm:ws').WebSocket} ws 新加入 peer
+ * @param {string} roomId 房间
+ * @returns {void}
+ */
+function sendCachedPublishMeta(ws, roomId) {
+	for (const meta of getAvRelayPublishMetaList(roomId)) {
+		if (ws.readyState !== 1) return
+		try { ws.send(JSON.stringify(meta)) } catch { /* skip */ }
 	}
 }
 
@@ -165,6 +260,7 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
 		mode: 'full',
 		lastPreviewAt: 0,
 	})
+	sendCachedPublishMeta(ws, roomId)
 	broadcastPeerCount(room)
 	if (entityHash) broadcastRoster(room)
 	if (wasEmpty && entityHash && typeof meta.onFirstPeer === 'function')
@@ -195,8 +291,15 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
 	})
 
 	ws.on('close', () => {
+		const state = room.get(ws)
+		if (state?.senderId) {
+			const revoke = { type: 'publish_meta_revoke', senderId: state.senderId }
+			applyPublishMeta(roomId, revoke)
+			broadcastRoomControl(roomId, JSON.stringify(revoke))
+		}
 		room.delete(ws)
 		if (!room.size) {
+			roomPublishMeta.delete(roomId)
 			rooms.delete(roomId)
 			if (typeof meta.onRoomEmpty === 'function') meta.onRoomEmpty()
 			return
@@ -278,6 +381,15 @@ function handleTextControl(roomId, room, ws, data, meta) {
 			state.mode = mode
 			if (mode === 'full') state.lastPreviewAt = 0
 		}
+		return
+	}
+
+	if (controlFrame.type === 'publish_meta' || controlFrame.type === 'publish_meta_revoke') {
+		const senderId = String(controlFrame.senderId || '').trim().toLowerCase()
+		if (!/^[0-9a-f]{32}$/.test(senderId)) return
+		if (controlFrame.type === 'publish_meta' && state.senderId && senderId !== state.senderId) return
+		applyPublishMeta(roomId, controlFrame)
+		broadcastRoomControl(roomId, JSON.stringify(controlFrame))
 		return
 	}
 

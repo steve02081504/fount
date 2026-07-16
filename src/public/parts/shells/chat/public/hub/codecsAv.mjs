@@ -22,6 +22,7 @@ import {
 	safeClose,
 	unpackAvFrame,
 } from '../shared/avRelayClient.mjs'
+import { createAudioGate } from '../shared/audioGate.mjs'
 import { CODECS_PRESETS } from '../shared/avRelayPresets.mjs'
 
 /**
@@ -42,9 +43,9 @@ let activeSession = null
  * @property {() => boolean} toggleMute 切换静音，返回静音后为 true
  * @property {() => boolean} toggleVideo 开关摄像头，返回关闭后为 true
  * @property {() => Promise<boolean>} [toggleScreen] 开关屏幕共享，返回共享中为 true
+ * @property {() => number[]} [getAudioLevels]
+ * @property {() => 'av' | 'audio' | 'video'} [getMediaMode]
  */
-
-/**
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {string} av-relay roomId
@@ -66,9 +67,11 @@ export function buildAvRelayWsUrl(groupId, channelId) {
  * @param {AudioContext} audioContext 播放上下文
  * @param {AudioData} audioData 解码音频
  * @param {{ audioNextTime: number }} peer 远端 peer（写入下一帧调度时间）
+ * @param {Map<string, { analyser: AnalyserNode | null, levels: number[] }>} [levelsMap]
+ * @param {string} [senderIdHex]
  * @returns {void}
  */
-function scheduleAudioPlayback(audioContext, audioData, peer) {
+function scheduleAudioPlayback(audioContext, audioData, peer, levelsMap = null, senderIdHex = '') {
 	const buffer = audioContext.createBuffer(
 		audioData.numberOfChannels,
 		audioData.numberOfFrames,
@@ -79,13 +82,21 @@ function scheduleAudioPlayback(audioContext, audioData, peer) {
 		audioData.copyTo(plane, { planeIndex: channelIndex })
 		buffer.copyToChannel(plane, channelIndex)
 	}
+	const analyser = audioContext.createAnalyser()
+	analyser.fftSize = 256
+	const gain = audioContext.createGain()
 	const source = audioContext.createBufferSource()
 	source.buffer = buffer
-	source.connect(audioContext.destination)
+	source.connect(gain)
+	gain.connect(analyser)
+	analyser.connect(audioContext.destination)
 	const now = audioContext.currentTime
 	const start = Math.max(now, peer.audioNextTime || now)
 	source.start(start)
 	peer.audioNextTime = start + buffer.duration
+	peer.analyser = analyser
+	if (levelsMap && senderIdHex)
+		levelsMap.set(senderIdHex, { analyser, levels: [] })
 }
 
 /**
@@ -102,7 +113,10 @@ function scheduleAudioPlayback(audioContext, audioData, peer) {
  * @returns {Promise<CodecsAvSession>} 会话句柄
  */
 export async function joinCodecsAvRoom(opts) {
-	if (!('VideoEncoder' in window) || !('AudioEncoder' in window))
+	const mediaMode = opts.media || 'av'
+	if (mediaMode !== 'video' && !('AudioEncoder' in window))
+		throw new Error('WebCodecs not supported')
+	if (mediaMode !== 'audio' && !('VideoEncoder' in window))
 		throw new Error('WebCodecs not supported')
 
 	const {
@@ -115,7 +129,11 @@ export async function joinCodecsAvRoom(opts) {
 		wsUrl = null,
 		onRoster = null,
 		labelForPeer = null,
+		media: mediaMode = 'av',
 	} = opts
+
+	const wantsVideo = mediaMode !== 'audio'
+	const wantsAudio = mediaMode !== 'video'
 
 	await leaveCodecsAvRoom()
 
@@ -129,12 +147,15 @@ export async function joinCodecsAvRoom(opts) {
 	/** @type {Map<string, string>} senderId → entityHash */
 	const senderToEntity = new Map()
 
+	/** @type {Map<string, object | null>} */
+	const remoteMeta = new Map()
+	/** @type {Map<string, { analyser: AnalyserNode | null, levels: number[] }>} */
+	const peerAudioLevels = new Map()
+	const audioGate = createAudioGate()
 	/** @type {Map<string, object>} */
 	const peers = new Map()
 	/** @type {Map<string, Promise<object>>} */
 	const peersCreating = new Map()
-
-	const ws = new WebSocket(wsUrl || buildAvRelayWsUrl(groupId, channelId))
 	ws.binaryType = 'arraybuffer'
 
 	/**
@@ -207,7 +228,7 @@ export async function joinCodecsAvRoom(opts) {
 					 * @returns {void}
 					 */
 					output: audioData => {
-						scheduleAudioPlayback(audioCtx, audioData, peer)
+						scheduleAudioPlayback(audioCtx, audioData, peer, peerAudioLevels, senderIdHex)
 						audioData.close()
 					},
 					/**
@@ -288,6 +309,10 @@ export async function joinCodecsAvRoom(opts) {
 			}
 			onRoster?.(wireMessage.peers)
 		}
+		if (wireMessage.type === 'publish_meta')
+			remoteMeta.set(String(wireMessage.senderId || '').toLowerCase(), wireMessage)
+		if (wireMessage.type === 'publish_meta_revoke')
+			remoteMeta.delete(String(wireMessage.senderId || '').toLowerCase())
 	}
 
 	await new Promise((res, rej) => {
@@ -295,7 +320,15 @@ export async function joinCodecsAvRoom(opts) {
 		 *
 		 */
 		ws.onopen = () => {
-			try { ws.send(JSON.stringify({ type: 'hello', senderId: selfHex })) }
+			try {
+				ws.send(JSON.stringify({ type: 'hello', senderId: selfHex }))
+				ws.send(JSON.stringify({
+					type: 'publish_meta',
+					senderId: selfHex,
+					video: wantsVideo ? { codec: 'vp8', w: preset.w, h: preset.h } : null,
+					audio: wantsAudio ? { codec: AUDIO_CODEC } : null,
+				}))
+			}
 			catch { /* ignore */ }
 			res()
 		}
@@ -321,6 +354,9 @@ export async function joinCodecsAvRoom(opts) {
 			videoSeqRef,
 			audioSeqRef,
 			videoLocal,
+			wantsVideo,
+			wantsAudio,
+			audioGate,
 			/**
 			 * @returns {boolean} 是否应发送摄像头轨
 			 */
@@ -420,6 +456,26 @@ export async function joinCodecsAvRoom(opts) {
 			})
 			return true
 		},
+		getAudioLevels: (senderId = '') => {
+			const sid = String(senderId || '').toLowerCase()
+			const entry = peerAudioLevels.get(sid)
+			if (entry?.analyser) {
+				const data = new Uint8Array(entry.analyser.frequencyBinCount)
+				entry.analyser.getByteFrequencyData(data)
+				const bands = 16
+				const out = []
+				const step = Math.max(1, Math.floor(data.length / bands))
+				for (let i = 0; i < bands; i++) {
+					let sum = 0
+					for (let j = i * step; j < (i + 1) * step && j < data.length; j++) sum += data[j]
+					out.push((sum / step) / 255)
+				}
+				return out
+			}
+			const lvl = audioGate.getLevel()
+			return Array.from({ length: 16 }, (_, i) => lvl * (0.6 + 0.4 * Math.sin(i)))
+		},
+		getMediaMode: () => mediaMode,
 	}
 
 	activeSession = session
@@ -445,29 +501,32 @@ async function startCodecsCapture(opts) {
 	const {
 		preset, ws, selfId, t0, videoSeqRef, audioSeqRef,
 		videoLocal, isVideoSending, isAudioSending, onStream,
+		wantsVideo = true, wantsAudio = true, audioGate,
 	} = opts
 
-	const stream = await navigator.mediaDevices.getUserMedia({
-		video: { width: preset.w, height: preset.h, frameRate: preset.fps },
-		audio: {
+	const constraints = {}
+	if (wantsVideo)
+		constraints.video = { width: preset.w, height: preset.h, frameRate: preset.fps }
+	if (wantsAudio)
+		constraints.audio = {
 			echoCancellation: true,
 			noiseSuppression: true,
 			sampleRate: AUDIO_SAMPLE_RATE,
 			channelCount: AUDIO_CHANNELS,
-		},
-	})
+		}
+	const stream = await navigator.mediaDevices.getUserMedia(constraints)
 	onStream(stream)
 	if (videoLocal) {
 		videoLocal.srcObject = stream
 		videoLocal.muted = true
 	}
 
-	const stopVideo = await startVideoEncoder({
+	const stopVideo = wantsVideo ? await startVideoEncoder({
 		preset, stream, ws, selfId, t0, videoSeqRef, isVideoSending,
-	})
-	const stopAudio = await startAudioEncoder({
-		stream, ws, selfId, t0, audioSeqRef, isAudioSending,
-	})
+	}) : () => { }
+	const stopAudio = wantsAudio ? await startAudioEncoder({
+		stream, ws, selfId, t0, audioSeqRef, isAudioSending, audioGate,
+	}) : () => { }
 
 	return () => {
 		stopVideo()
@@ -566,7 +625,7 @@ async function startVideoEncoder(opts) {
  * @returns {Promise<() => void>} 停止音频编码函数
  */
 async function startAudioEncoder(opts) {
-	const { stream, ws, selfId, t0, audioSeqRef, isAudioSending } = opts
+	const { stream, ws, selfId, t0, audioSeqRef, isAudioSending, audioGate } = opts
 	const track = stream.getAudioTracks()[0]
 	if (!track) return () => { }
 
@@ -604,7 +663,7 @@ async function startAudioEncoder(opts) {
 			while (running) {
 				const { value: audioData, done } = await reader.read()
 				if (done || !audioData) break
-				if (isAudioSending()) encoder.encode(audioData)
+				if (isAudioSending() && (!audioGate || audioGate.update(audioData))) encoder.encode(audioData)
 				audioData.close()
 			}
 			reader.releaseLock()

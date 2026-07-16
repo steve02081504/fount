@@ -21,6 +21,7 @@ const PROFILE_JSON = 'profile.json'
 const PUBLIC_PROFILE_PATH = 'profile.json'
 /** handle：2–32 位小写 `[a-z0-9_.-]`；空串表示清除。不要求全局唯一。 */
 const HANDLE_RE = /^[a-z0-9_.-]{2,32}$/
+const THEME_COLOR_RE = /^#[\da-f]{6}$/i
 
 /** entityHash → 负缓存截止时间（仅远端拉取失败） */
 const remoteProfileNegativeCache = new Map()
@@ -50,6 +51,7 @@ function getDefaultProfile(entityHash, parsed) {
 		subjectHash: parsed.subjectHash,
 		ownerEntityHash: null,
 		handle: '',
+		themeColor: '',
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
@@ -76,6 +78,8 @@ function toStoredProfile(profileData) {
 		handle = normalizeEntityHandle(profileData.handle)
 	}
 	catch { handle = '' }
+	const themeRaw = String(profileData.themeColor ?? '').trim()
+	const themeColor = THEME_COLOR_RE.test(themeRaw) ? themeRaw.toLowerCase() : ''
 	const activePub = String(profileData.activePubKeyHex || '').trim().toLowerCase()
 	return {
 		entityHash: profileData.entityHash,
@@ -85,6 +89,7 @@ function toStoredProfile(profileData) {
 			? null
 			: String(ownerRaw).trim().toLowerCase(),
 		handle,
+		themeColor,
 		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
@@ -112,6 +117,7 @@ function toPublicProfilePayload(stored) {
 		subjectHash: stored.subjectHash,
 		ownerEntityHash: stored.ownerEntityHash,
 		handle: stored.handle || '',
+		themeColor: stored.themeColor || '',
 		activePubKeyHex: stored.activePubKeyHex || '',
 		keyGeneration: Number(stored.keyGeneration ?? 0) || 0,
 		localized: stored.localized,
@@ -349,6 +355,11 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 			? updates.ownerEntityHash
 			: profile.ownerEntityHash,
 		handle,
+		themeColor: updates.themeColor !== undefined
+			? (THEME_COLOR_RE.test(String(updates.themeColor || '').trim())
+				? String(updates.themeColor).trim().toLowerCase()
+				: '')
+			: profile.themeColor || '',
 		activePubKeyHex,
 		keyGeneration,
 		localized,
@@ -363,6 +374,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 	const staticTouched = updates.localized !== undefined
 		|| updates.ownerEntityHash !== undefined
 		|| updates.handle !== undefined
+		|| updates.themeColor !== undefined
 	if (staticTouched)
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => {})
 

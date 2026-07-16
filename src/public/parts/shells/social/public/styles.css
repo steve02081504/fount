@@ -2192,6 +2192,40 @@ body {
 	align-items: center;
 }
 
+.voice-ring-host,
+.live-voice-ring-host {
+	position: relative;
+	width: min(72vw, 320px);
+	height: min(72vw, 320px);
+	margin: 0 auto;
+}
+.voice-ring-canvas {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+.voice-ring-avatar {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	width: 42%;
+	height: 42%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
+	object-fit: cover;
+	z-index: 1;
+}
+.live-broadcast-preview {
+	position: relative;
+	min-height: 240px;
+}
+.live-whip-panel {
+	margin-top: 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
 .live-ref-card {
 	display: flex;
 	align-items: center;

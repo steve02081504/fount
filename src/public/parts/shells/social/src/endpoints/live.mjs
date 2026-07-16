@@ -1,10 +1,13 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 import {
+	injectAvRelayControl,
 	injectAvRelayFrame,
 	registerAvRelaySocket,
 	subscribeAvRelayFrames,
+	subscribeAvRelayControls,
 } from '../../../chat/src/chat/ws/avRelay.mjs'
+import { startWhipIngest, stopWhipIngest } from '../../../chat/src/chat/whip/ingest.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import {
 	canJoinLiveRoom,
@@ -55,6 +58,33 @@ export function registerLiveRoutes(router) {
 		const session = loadLiveSession(username, entityHash, liveId)
 		if (!session) throw httpError(404, 'live not found')
 		res.status(200).json({ live: session })
+	})
+
+	router.post('/api/parts/shells\\:social/live/:liveId/whip', authenticate, async (req, res) => {
+		const { client, username } = await socialClientFromReq(req)
+		const liveId = String(req.params.liveId || '').toLowerCase()
+		const session = loadLiveSession(username, client.entityHash, liveId)
+		if (!session || session.status !== 'live') throw httpError(404, 'live not found')
+		const auth = String(req.headers.authorization || '')
+		const token = auth.startsWith('Bearer ') ? auth.slice(7).trim() : ''
+		if (!session.ingestSecret || token !== session.ingestSecret) throw httpError(403, 'bad ingest token')
+		const offerSdp = typeof req.body === 'string' ? req.body : String(req.body || '')
+		if (!offerSdp.includes('v=0')) throw httpError(400, 'sdp required')
+		const avRoomId = session.avRoomId || `social:${client.entityHash}:${liveId}`
+		const { answerSdp } = await startWhipIngest(avRoomId, offerSdp)
+		const location = `/api/parts/shells:social/live/${liveId}/whip`
+		res.setHeader('Location', location)
+		res.status(201).type('application/sdp').send(answerSdp)
+	})
+
+	router.delete('/api/parts/shells\\:social/live/:liveId/whip', authenticate, async (req, res) => {
+		const { client, username } = await socialClientFromReq(req)
+		const liveId = String(req.params.liveId || '').toLowerCase()
+		const session = loadLiveSession(username, client.entityHash, liveId)
+		if (!session) throw httpError(404, 'live not found')
+		const avRoomId = session.avRoomId || `social:${client.entityHash}:${liveId}`
+		stopWhipIngest(avRoomId)
+		res.status(200).json({ ok: true })
 	})
 
 	router.post('/api/parts/shells\\:social/live/:liveId/link/invite', authenticate, async (req, res) => {
@@ -166,6 +196,10 @@ export function registerLiveRoutes(router) {
 			if (ws.readyState !== 1) return
 			try { ws.send(buf, { binary: true }) } catch { /* skip */ }
 		})
+		const unsubCtrl = subscribeAvRelayControls(avRoomId, text => {
+			if (ws.readyState !== 1) return
+			try { ws.send(text) } catch { /* skip */ }
+		})
 		ws.on('message', (data, isBinary) => {
 			if (isBinary) {
 				injectAvRelayFrame(avRoomId, data)
@@ -174,9 +208,13 @@ export function registerLiveRoutes(router) {
 			let msg
 			try { msg = JSON.parse(String(data)) }
 			catch { return }
+			if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
+				injectAvRelayControl(avRoomId, msg)
+				return
+			}
 			ingestBridgedLiveSignal(matchedUser, entityHash, liveId, msg)
 		})
-		ws.on('close', () => { unsub() })
+		ws.on('close', () => { unsub(); unsubCtrl() })
 		ws.send(JSON.stringify({ type: 'hello', bridge: true, entityHash, liveId }))
 	})
 }
