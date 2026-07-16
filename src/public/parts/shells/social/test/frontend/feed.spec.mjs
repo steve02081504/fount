@@ -49,7 +49,7 @@ test.describe('Social feed', () => {
 		await expect(page.locator('#feedList .empty[data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('trending hashtag link opens search', async ({ page, publishPost }) => {
+	test('trending hashtag link opens topic view', async ({ page, publishPost }) => {
 		const tag = `trend${Date.now()}`
 		const { postId } = await publishPost(`trending-a #${tag}`)
 		await publishPost(`trending-b #${tag}`)
@@ -62,8 +62,9 @@ test.describe('Social feed', () => {
 		const tagLink = trending.locator('a.trending-tag', { hasText: `#${tag}` })
 		await expect(tagLink).toBeVisible({ timeout: 30_000 })
 		await tagLink.click()
-		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#topicView:not(.hidden)')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#topicView .topic-view-title')).toHaveText(`#${tag}`)
+		await expect(page.locator(`#topicPostList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('search clear restores default feed', async ({ page, publishPost }) => {
@@ -88,30 +89,30 @@ test.describe('Social feed', () => {
 		await expectPostInFeed(page, postId)
 	})
 
-	test('hashtag link in post body opens search', async ({ page, publishPost }) => {
+	test('hashtag link in post body opens topic view', async ({ page, publishPost }) => {
 		const tag = `bodytag${Date.now()}`
 		const { postId } = await publishPost(`see #${tag} here`)
 		const card = await findPostCard(page, postId)
-		await card.locator('a[href*="#search"]').filter({ hasText: `#${tag}` }).click()
-		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
+		await card.locator('a[href*="#topic:"]').filter({ hasText: `#${tag}` }).click()
+		await expect(page.locator('#topicView:not(.hidden)')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#topicView .topic-view-title')).toHaveText(`#${tag}`)
+		await expect(page.locator(`#topicPostList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('infinite scroll fetches next feed page', async ({ page, baseUrl, apiKey }) => {
 		await seedPostsViaApi(baseUrl, apiKey, 31, 'loadmore')
+		// 首屏后会后台预取带 cursor 的下一页；滚动时消费缓存而不再发请求
+		const cursorWait = page.waitForResponse(res => {
+			if (res.request().method() !== 'GET' || res.status() !== 200) return false
+			const url = new URL(res.url())
+			return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
+		}, { timeout: 60_000 })
 		await openSocialHome(page, baseUrl)
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 60_000 })
 		const initialCount = await page.locator('#feedList [data-post-id]').count()
-		const [feedResponse] = await Promise.all([
-			page.waitForResponse(res => {
-				if (res.request().method() !== 'GET' || res.status() !== 200) return false
-				const url = new URL(res.url())
-				return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
-			}, { timeout: 30_000 }),
-			page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded(),
-		])
-		const data = await feedResponse.json()
-		expect(data).toHaveProperty('items')
+		const feedResponse = await cursorWait
+		expect(await feedResponse.json()).toHaveProperty('items')
+		await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
 		await expect(page.locator('#feedList [data-post-id]')).not.toHaveCount(initialCount, { timeout: 15_000 })
 		const newCount = await page.locator('#feedList [data-post-id]').count()
 		expect(newCount).toBeGreaterThan(initialCount)
@@ -124,8 +125,18 @@ test.describe('Social feed', () => {
 		const before = await page.locator('#feedList [data-post-id]').count()
 		expect(before).toBeGreaterThan(0)
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 30_000 })
-		await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
+		// 残留帖子可能先分页；持续滚到哨兵直到出现重放分隔线
+		for (let i = 0; i < 20; i++) {
+			if (await page.locator('.feed-replay-divider').isVisible()) break
+			await page.locator('#feedScrollSentinel').scrollIntoViewIfNeeded()
+			await page.waitForTimeout(250)
+		}
 		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 15_000 })
-		await expect(page.locator('#feedList [data-post-id]')).toHaveCount(before * 2, { timeout: 15_000 })
+		const afterReplay = await page.locator('#feedList [data-post-id]').count()
+		expect(afterReplay).toBeGreaterThan(before)
+		// 重放完成后计数应稳定，不再因 observer 重绑而死循环膨胀
+		await expect(async () => {
+			expect(await page.locator('#feedList [data-post-id]').count()).toBe(afterReplay)
+		}).toPass({ timeout: 2000 })
 	})
 })

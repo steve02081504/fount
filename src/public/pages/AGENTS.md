@@ -41,7 +41,7 @@ alwaysApply: false
 ## Components & Utilities
 
 - **`virtualList.mjs`**: High-performance virtual scrolling.
-- **`infiniteScroll.mjs`**: `IntersectionObserver`-based pagination: `ensureScrollSentinel` places sentinel element, `bindInfiniteScroll` calls `onLoad` as the bottom approaches; use `disconnectInfiniteScroll` when switching views (single global observer).
+- **`infiniteScroll.mjs`**: `IntersectionObserver`-based pagination: `ensureScrollSentinel` places sentinel (`overflow-anchor: none`), `bindInfiniteScroll` calls `onLoad` as the bottom approaches (in-flight lock); use `disconnectInfiniteScroll` when switching views (single global observer). After append/replay that leaves the sentinel intersecting, prefer moving the sentinel over rebinding — a fresh observer re-fires immediately and can loop.
 - **`search.mjs`**: Live filtering and searchable dropdowns.
 - **`jsonEditor.mjs`**: `vanilla-jsoneditor` wrapper.
 - **`terminal.mjs`**: `xterm.js` terminal wrapper.

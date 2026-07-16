@@ -1,7 +1,7 @@
 import { formatSocialShareHttpsUrl } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
-import { runSocialWrite } from '../lib/socialWrite.mjs'
+import { purgeFeedShownPost, restoreFeedShownItems, runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
@@ -168,9 +168,10 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const card = deleteButton.closest('.post-card')
 		const parent = card?.parentElement
 		const next = card?.nextSibling
+		const postId = deleteButton.dataset.delete
+		const purged = purgeFeedShownPost(appContext.state, postId)
 		card?.remove()
 		closePostMoreMenus()
-		const postId = deleteButton.dataset.delete
 		const entityHash = deleteButton.dataset.deleteEntity
 			|| appContext.state.viewerEntityHash
 		try {
@@ -180,6 +181,7 @@ export async function handlePostProfileActionsClick(appContext, target) {
 			}))
 		}
 		catch {
+			restoreFeedShownItems(appContext.state, purged)
 			if (card && parent)
 				parent.insertBefore(card, next)
 		}

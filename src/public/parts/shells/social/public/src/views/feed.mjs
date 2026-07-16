@@ -22,6 +22,18 @@ export function updateFeedSearchChrome(appContext) {
 }
 
 /**
+ * 循环重放仅在用户已真实下滚且内容高于视口时允许，避免短 feed 首屏自动复制。
+ * @returns {boolean} 是否允许重放
+ */
+function canReplayFeed() {
+	const list = document.getElementById('feedList')
+	if (!list?.children.length) return false
+	const scrolled = (window.scrollY || document.documentElement.scrollTop) > 0
+	if (!scrolled) return false
+	return document.documentElement.scrollHeight > window.innerHeight
+}
+
+/**
  * 绑定 feed 无限滚动。
  * @param {object} appContext 应用上下文
  * @returns {void}
@@ -38,7 +50,7 @@ export function bindFeedInfiniteScroll(appContext) {
 		rootMargin: '480px 0px',
 		/** @returns {boolean} 有下一页或可循环重放 */
 		hasMore: () => !!appContext.state.feedCursor
-			|| !!appContext.state.feedShownItems?.length,
+			|| (!!appContext.state.feedShownItems?.length && canReplayFeed()),
 		/** @returns {Promise<void>} 追加下一页或循环重放 */
 		onLoad: () => loadFeed(appContext, true),
 	})
@@ -88,7 +100,8 @@ async function replayFeedItems(appContext) {
 	list.appendChild(divider)
 	const cards = await Promise.all(items.map(item => appContext.buildPostCard(item).catch(() => null)))
 	for (const card of cards) if (card) list.appendChild(card)
-	bindFeedInfiniteScroll(appContext)
+	// 只把哨兵挪到尾部，不重绑 observer——否则哨兵仍在视口内时会立刻再触发形成死循环
+	ensureScrollSentinel(list, 'feedScrollSentinel')
 }
 
 /**

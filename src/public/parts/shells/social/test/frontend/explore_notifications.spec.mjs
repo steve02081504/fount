@@ -179,21 +179,22 @@ test.describe('Social secondary views', () => {
 
 	test('notifications infinite scroll loads next page', async ({ page, baseUrl, apiKey }) => {
 		await seedInboxMentions(baseUrl, apiKey, 41)
-		await openSocialHome(page, baseUrl)
+		// rootMargin 可能在首屏 bind 后立刻拉下一页；也覆盖需滚动才触发的情况
+		const cursorWait = page.waitForResponse(res => {
+			if (res.request().method() !== 'GET' || res.status() !== 200) return false
+			const url = new URL(res.url())
+			return url.pathname === '/api/parts/shells:social/notifications' && url.searchParams.has('cursor')
+		}, { timeout: 60_000 })
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView .notification-card').first())
 			.toBeVisible({ timeout: 30_000 })
-		const initialCount = await page.locator('#notificationsView .notification-card').count()
-		const [notifResponse] = await Promise.all([
-			page.waitForResponse(res => {
-				if (res.request().method() !== 'GET' || res.status() !== 200) return false
-				const url = new URL(res.url())
-				return url.pathname === '/api/parts/shells:social/notifications' && url.searchParams.has('cursor')
-			}, { timeout: 30_000 }),
-			page.locator('#notificationsScrollSentinel').scrollIntoViewIfNeeded(),
-		])
-		expect(await notifResponse.json()).toHaveProperty('notifications')
-		await expect(page.locator('#notificationsView .notification-card')).not.toHaveCount(initialCount, { timeout: 15_000 })
+		await page.locator('#notificationsScrollSentinel').scrollIntoViewIfNeeded()
+		expect(await (await cursorWait).json()).toHaveProperty('notifications')
+		// 首页 limit=40；第二页到达后总数应超过首页
+		await expect.poll(
+			() => page.locator('#notificationsView .notification-card').count(),
+			{ timeout: 15_000 },
+		).toBeGreaterThan(40)
 	})
 
 	test('explore post link opens profile', async ({ page, publishPost }) => {

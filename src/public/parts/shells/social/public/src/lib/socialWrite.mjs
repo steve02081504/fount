@@ -121,6 +121,53 @@ export function bumpRepostCount(cardRoot, delta) {
 }
 
 /**
+ * 从 feed 循环重放源剔除指定帖子。
+ * @param {{ feedShownItems?: object[] | null }} state 应用 state
+ * @param {string} postId 帖子 id
+ * @returns {object[]} 被剔除的条目（用于回滚）
+ */
+export function purgeFeedShownPost(state, postId) {
+	const id = String(postId || '')
+	if (!state.feedShownItems?.length || !id) return []
+	const kept = []
+	const removed = []
+	for (const item of state.feedShownItems)
+		if (item.postId === id) removed.push(item)
+		else kept.push(item)
+	state.feedShownItems = kept.length ? kept : null
+	return removed
+}
+
+/**
+ * 从 feed 循环重放源剔除指定作者的帖子。
+ * @param {{ feedShownItems?: object[] | null }} state 应用 state
+ * @param {string} entityHash 作者 entityHash
+ * @returns {object[]} 被剔除的条目（用于回滚）
+ */
+export function purgeFeedShownAuthor(state, entityHash) {
+	const norm = String(entityHash || '').trim().toLowerCase()
+	if (!state.feedShownItems?.length || !norm) return []
+	const kept = []
+	const removed = []
+	for (const item of state.feedShownItems)
+		if (String(item.entityHash || '').trim().toLowerCase() === norm) removed.push(item)
+		else kept.push(item)
+	state.feedShownItems = kept.length ? kept : null
+	return removed
+}
+
+/**
+ * 把 purge 掉的条目塞回 feedShownItems。
+ * @param {{ feedShownItems?: object[] | null }} state 应用 state
+ * @param {object[]} items 先前剔除的条目
+ * @returns {void}
+ */
+export function restoreFeedShownItems(state, items) {
+	if (!items?.length) return
+	state.feedShownItems = [...state.feedShownItems || [], ...items]
+}
+
+/**
  * 乐观移除指定作者的全部帖子卡片。
  * @param {string} entityHash 作者 entityHash
  * @returns {HTMLElement[]} 被移除的节点（用于回滚）

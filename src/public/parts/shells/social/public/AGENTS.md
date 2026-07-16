@@ -34,14 +34,16 @@ alwaysApply: false
 
 ## Feed / profile pagination
 
-- Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`); default `rootMargin` ≈ two viewports (`480px`).
+- Shared infinite scroll: `/scripts/infiniteScroll.mjs` (`bindInfiniteScroll`, `ensureScrollSentinel`); default `rootMargin` ≈ two viewports (`480px`). Sentinel uses `overflow-anchor: none` + in-flight lock; **do not rebind** the observer after a replay append (only move the sentinel) — rebinding while the sentinel stays intersecting causes an infinite replay loop. If the loader has its own mutex (`notificationsLoading`), call `bindInfiniteScroll` **after** releasing it — otherwise the immediate post-`observe` callback is swallowed and pagination stalls until the sentinel leaves/re-enters.
 - Feed / notifications / profile posts paginate via backend `nextCursor`; search mode has its own sentinel.
-- Feed prefetch: after each page, frontend background-fetches the next cursor into `state.feedPrefetch`; sentinel consumes cache then schedules the next prefetch.
-- Feed / videos / live **replay**: when `nextCursor` is exhausted, further scrolls re-append already-shown items (feed inserts `.feed-replay-divider` with `social.feed.replayDivider`).
+- Feed prefetch: after each page, frontend background-fetches the next cursor into `state.feedPrefetch`; sentinel consumes cache then schedules the next prefetch. Playwright must wait for `cursor=` during/after first paint (prefetch), not assume a network request on scroll.
+- Feed / videos / live **replay**: when `nextCursor` is exhausted, further scrolls re-append already-shown items (feed inserts `.feed-replay-divider` with `social.feed.replayDivider`). Replay requires real scroll (`scrollY > 0` + content taller than viewport) so short feeds do not auto-duplicate on first paint. Delete/hide/block/mute must purge `state.feedShownItems` (`purgeFeedShownPost` / `purgeFeedShownAuthor`) or replay resurrects removed cards.
 - Empty / thin first page triggers server `federation/backfill.mjs`: `syncFollowingTimelines` → discover + `syncTimelineForEntity` → multi-hop `post_discover` ingest. Live empty falls back to `buildNearbyLiveFeed`.
 - Videos / live use vertical snap + cursor append near end (3rd from last); live preconnects next slide with AV `subscribe mode=preview` (keyframes only) + signal WS.
-- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts`) + `runSocialWrite` failure toasts.
-- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + `cursor=` + replay divider), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
+- Governance menu optimistic UX: `socialWrite.mjs` (`removePostsByAuthor` / `restoreRemovedPosts` / feedShown purge helpers) + `runSocialWrite` failure toasts.
+- Hashtag / trending links → `#topic:…` topic view (`loadTopicView`), not feed search (`#search;`). Playwright must assert `#topicView` / `#topicPostList`.
+- Playwright: `test/frontend/feed.spec.mjs` (scroll sentinel + prefetch `cursor=` + replay divider + topic deep links), `explore_notifications.spec.mjs` (notification cursor), `postActions.spec.mjs` (hide/delete). Foreign-author fixture: bootstrap `test/seedForeignFeedAuthor.mjs` → `findForeignAuthorPostCard` in `fixtures.mjs`.
+- Dwell HTTP: `POST /signals/dwell` uses `username` from `socialClientFromReq` (not `client.username` — SocialClient duck type has no `username`).
 
 ## Agent integration
 

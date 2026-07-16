@@ -328,6 +328,7 @@ export function bindNotificationsInfiniteScroll(appContext) {
 export async function loadNotifications(appContext, append = false) {
 	if (notificationsLoading) return
 	notificationsLoading = true
+	let shouldBind = false
 	try {
 		await ensureNotificationsSeenAt(appContext)
 		syncNotificationFilterTabs(appContext)
@@ -367,9 +368,11 @@ export async function loadNotifications(appContext, append = false) {
 		if (!append)
 			await markNotificationsSeen(appContext, rows.reduce((max, row) => Math.max(max, row.at || 0), 0) || Date.now())
 
-		bindNotificationsInfiniteScroll(appContext)
+		// 必须在释放 notificationsLoading 后再 bind，否则 observe 后立刻触发的 onLoad 会被锁吞掉
+		shouldBind = true
 	}
 	finally {
 		notificationsLoading = false
 	}
+	if (shouldBind) bindNotificationsInfiniteScroll(appContext)
 }

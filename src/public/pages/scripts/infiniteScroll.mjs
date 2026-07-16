@@ -14,10 +14,12 @@ let activeObserver = null
 export function bindInfiniteScroll({ root = null, sentinel, hasMore, onLoad, rootMargin = '480px 0px' }) {
 	disconnectInfiniteScroll()
 	if (!sentinel || !hasMore()) return
+	let loading = false
 	activeObserver = new IntersectionObserver(entries => {
 		if (!entries.some(entry => entry.isIntersecting)) return
-		if (!hasMore()) return
-		void onLoad()
+		if (loading || !hasMore()) return
+		loading = true
+		Promise.resolve(onLoad()).finally(() => { loading = false })
 	}, { root, rootMargin })
 	activeObserver.observe(sentinel)
 }
@@ -41,6 +43,8 @@ export function ensureScrollSentinel(container, sentinelId) {
 		sentinel.id = sentinelId
 		sentinel.className = 'scroll-sentinel'
 		sentinel.setAttribute('aria-hidden', 'true')
+		// 避免 scroll anchoring 把哨兵钉在视口内，导致重绑 observer 后立刻再触发
+		sentinel.style.overflowAnchor = 'none'
 	}
 	if (sentinel.parentElement !== container)
 		container.appendChild(sentinel)

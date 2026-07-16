@@ -258,6 +258,6 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 - `fount://run/shells:social/profile;<entityHash>[;<postId>]`
 - `fount://run/shells:social/search;<query>`（浏览器：`/parts/shells:social/#search;<query>`；`?q=` 查询参数亦可）
 
-帖子 Markdown 中 `#话题` 渲染为搜索深链（不作用于 Chat `#[group/channel]` 标记）。见 `public/src/lib/runUri.mjs`、`remarkHashtagLinks.mjs`。
+帖子 Markdown 中 `#话题` 渲染为话题页深链 `#topic:…`（不作用于 Chat `#[group/channel]` 标记）。见 `public/shared/runUri.mjs`、`markdown_ext/index.mjs`。
 
 从 Social 跳转 Chat DM：`/parts/shells:chat/hub/?contact=<entityHash>`。

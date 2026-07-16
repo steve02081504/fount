@@ -269,7 +269,7 @@ async function pollSearchForPost(page, query, postId, trigger) {
 		const searchRes = await searchWait
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {
-			await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toBeVisible({
+			await expect(page.locator(`#feedList [data-post-id="${postId}"]`).first()).toBeVisible({
 				timeout: ms('10s'),
 			})
 			return

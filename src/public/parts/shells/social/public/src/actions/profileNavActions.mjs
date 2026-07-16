@@ -2,7 +2,13 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { aliasForEntity, setEntityAlias } from '/parts/shells:chat/shared/aliases.mjs'
 import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
-import { removePostsByAuthor, restoreRemovedPosts, runSocialWrite } from '../lib/socialWrite.mjs'
+import {
+	purgeFeedShownAuthor,
+	removePostsByAuthor,
+	restoreFeedShownItems,
+	restoreRemovedPosts,
+	runSocialWrite,
+} from '../lib/socialWrite.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
 
@@ -10,18 +16,21 @@ import { closePostMoreMenus } from './shared.mjs'
 
 /**
  * 乐观隐藏作者帖子，失败回滚。
+ * @param {object} appContext Social 应用上下文
  * @param {string} entityHash 作者
  * @param {() => Promise<void>} write 写请求
  * @param {string} failKey i18n 失败键
  * @returns {Promise<void>}
  */
-async function optimisticAuthorFilter(entityHash, write, failKey) {
+async function optimisticAuthorFilter(appContext, entityHash, write, failKey) {
+	const purged = purgeFeedShownAuthor(appContext.state, entityHash)
 	const removed = removePostsByAuthor(entityHash)
 	closePostMoreMenus()
 	try {
 		await runSocialWrite(failKey, write)
 	}
 	catch {
+		restoreFeedShownItems(appContext.state, purged)
 		restoreRemovedPosts(removed)
 	}
 }
@@ -102,7 +111,7 @@ export async function handleProfileNavClick(appContext, target) {
 	const blockButton = target.closest('[data-block]')
 	if (blockButton instanceof HTMLElement && blockButton.dataset.block) {
 		const entityHash = blockButton.dataset.block
-		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/block', {
+		await optimisticAuthorFilter(appContext, entityHash, () => appContext.socialApi('/relationships/block', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, block: true }),
 		}), 'block')
@@ -111,7 +120,7 @@ export async function handleProfileNavClick(appContext, target) {
 	const hideButton = target.closest('[data-hide]')
 	if (hideButton instanceof HTMLElement && hideButton.dataset.hide) {
 		const entityHash = hideButton.dataset.hide
-		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/hide', {
+		await optimisticAuthorFilter(appContext, entityHash, () => appContext.socialApi('/relationships/hide', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, hide: true }),
 		}), 'hide')
@@ -120,7 +129,7 @@ export async function handleProfileNavClick(appContext, target) {
 	const muteButton = target.closest('[data-mute]')
 	if (muteButton instanceof HTMLElement && muteButton.dataset.mute) {
 		const entityHash = muteButton.dataset.mute
-		await optimisticAuthorFilter(entityHash, () => appContext.socialApi('/relationships/mute', {
+		await optimisticAuthorFilter(appContext, entityHash, () => appContext.socialApi('/relationships/mute', {
 			method: 'POST',
 			body: JSON.stringify({ entityHash, mute: true }),
 		}), 'mute')

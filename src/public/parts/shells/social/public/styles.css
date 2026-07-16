@@ -366,6 +366,7 @@ body {
 	height: 1px;
 	width: 100%;
 	pointer-events: none;
+	overflow-anchor: none;
 }
 
 .composer-toolbar {
@@ -852,11 +853,13 @@ body {
 }
 
 /* Markdown & media */
+.markdown-body a[href*="#topic:"],
 .markdown-body a[href*="#search;"] {
 	color: var(--social-accent);
 	text-decoration: none;
 }
 
+.markdown-body a[href*="#topic:"]:hover,
 .markdown-body a[href*="#search;"]:hover {
 	text-decoration: underline;
 }
