@@ -83,7 +83,7 @@ export function registerChatFederationRoomProvider() {
 				 */
 				getPeerIdByNodeHash: nodeHash => slot.getPeerIdByNodeHash(nodeHash),
 				/**
-				 * @param {string} peerId Trystero peer
+				 * @param {string} peerId peer
 				 * @param {string} actionName action
 				 * @param {unknown} payload 载荷
 				 * @returns {void}

@@ -6,11 +6,11 @@
 
 ## 目标
 
-- **nodeHash 中心**：去掉 Trystero room / offerPool / peerId 中心模型；一 `nodeHash` 一条逻辑链接，跨群复用物理传输。
+- **nodeHash 中心**：一 `nodeHash` 一条逻辑链接，跨群复用物理传输。
 - **分层解耦**：发现、信令、传输、overlay 路由、业务派发各自独立。
 - **Nostr 可插拔**：降为发现源之一，与 mDNS / BT 并列。
 - **Mailbox 复用**：定向投递 / 离线继续复用现有 Mailbox，键仍是收件人 `pubKeyHash`。
-- **大爆炸迁移**：不做向后兼容；Trystero npm 模块与 `identity_announce` 已退场。
+- **握手显式授权**：challenge-response + DTLS 指纹绑定，不以房间口令隐式授权。
 
 ## 非目标
 
@@ -32,17 +32,16 @@
 
 ## 落地概况
 
-**P0–P2 已完成**（link 层、link_registry、discovery、group_link_set、Chat 联邦换后端）。**P3 overlay 路由**已在 `link_registry.mjs` 接入（`createOverlayRouter`，直连失败时 relay）。**P4 外围**（mDNS/BT discovery、subfounts 全量对齐）部分完成。
+**P0–P2 已完成**（link 层、link_registry、discovery、group_link_set、Chat 联邦）。**P3 overlay 路由**已在 `link_registry.mjs` 接入（`createOverlayRouter`，直连失败时 relay）。**P4 外围**（mDNS/BT discovery、subfounts 全量对齐）部分完成。
 
 要点：
 
 - `ensureLinkToNode`：直连优先 → overlay relay → discovery → Mailbox。
-- Chat 群联邦经 `createGroupLinkSet`（`room.mjs`）；`FederationSlot` / `partitionBridge` 等为 chat 侧出站抽象，底层已是 node scope，非 Trystero room。
+- Chat 群联邦经 `createGroupLinkSet`（`room.mjs`）；`FederationSlot` / `partitionBridge` 等为 chat 侧出站抽象，底层走 node/group scope envelope。
 - 发现层默认 `mdns` + `nostr`；BT 需 `FOUNT_ENABLE_BT_DISCOVERY=1`。
 - 房主在 `group_link_set.start()` 主动拉起 discovery，避免「只有自己一个成员」的暗房。
 - `group:` scope 放行少量前成员 bootstrap 控制面 action，数据权限仍由各 handler 校验。
 - join 流携带 `introducerNodeHash`，减少纯 discovery 冷启动窗口。
-- 代码注释里仍可见「Trystero」字样——多为历史命名，实际 wire 已走 node/group scope envelope。
 
 回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`（`fed_dm` 长串后建议单独重跑）。
 

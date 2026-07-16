@@ -1,6 +1,6 @@
 /**
  * Subfounts UI 主要逻辑 - 仅限 WebSocket 更新
- * 所有 Trystero 连接都在服务器端处理
+ * 所有 P2P 连接都在服务器端处理
  */
 import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme/index.mjs'

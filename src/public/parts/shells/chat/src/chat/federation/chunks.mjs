@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/chunks.mjs
- * 【职责】§10.2 群文件密文块 P2P 复制：经 Trystero fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
+ * 【职责】§10.2 群文件密文块 P2P 复制：经 P2P fed_chunk_put/get/data/ack 在在线邻居间传播与拉取分块，并注册 swarm API 供 groupFiles 存储插件回调。
  * 【原理】attachFedChunkHandlers 在 ensureFederationRoom 时挂载；本地 put 后 replicateChunkToRoster 广播，缺失时 fetchChunkFromRoster 广播 get 并等待 fed_chunk_data。replicateChunkToFederation 可等待 M_eff 个 ACK。createFederationSwarmStoragePlugin 在本地 miss 时回退联邦 fetch。
  * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
  * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；npm:@steve02081504/fount-p2p/node/reputation_store.mjs；npm:@steve02081504/fount-p2p/node/storage_plugins。
@@ -344,7 +344,7 @@ export async function fetchChunksFromRoster(slot, username, groupId, chunkHashes
 }
 
 /**
- * 注册 Trystero `fed_chunk_*` 处理器，并向 slot 挂载复制/拉取 API。
+ * 注册 `fed_chunk_*` 处理器，并向 slot 挂载复制/拉取 API。
  * @param {{
  *   username: string,
  *   groupId: string,
@@ -501,7 +501,7 @@ export function attachFedChunkHandlers(fedRoom) {
 /**
  * TrustGraph 全局 chunk miss：sync 分区处理带 requestId 的 fed_chunk_get/data。
  * @param {string} username 用户
- * @param {object} room Trystero room
+ * @param {object} room federation room
  * @param {{ enqueue: (prio: number, fn: () => void) => void }} fedOut 出站队列
  * @param {object} [rtcLimits] RTC 限额
  * @param {string} [roomKey] 房间键

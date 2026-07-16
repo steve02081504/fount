@@ -94,7 +94,7 @@ export async function applyJoinSnapshotResponse(username, groupId, envelope) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} request 解析后的请求
- * @param {string} peerId Trystero peer
+ * @param {string} peerId peer
  * @param {(payload: unknown, peerId: string) => void} sendResponse 发送响应
  * @param {(subject: string) => boolean} isBlockedPeer 节点/pubKeyHash 拉黑检查
  * @param {{ fedOut?: object, fedShunSend?: Function, localNodeHash?: string }} [shunCtx] 闭门羹出站

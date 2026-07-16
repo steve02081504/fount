@@ -1,5 +1,5 @@
 /**
- * 群级 Trystero 房间凭证：从物化 groupSettings 读取，入群 bootstrap / peer hint 作 catch-up 覆盖。
+ * 群级联邦房间凭证：从物化 groupSettings 读取，入群 bootstrap / peer hint 作 catch-up 覆盖。
  */
 import { randomUUID } from 'node:crypto'
 
@@ -23,12 +23,12 @@ export function mintRoomSecret() {
 }
 
 /**
- * Trystero 房间名：ECDH DM 用 `dm:<tag>`，否则 `fount-fed-<groupId>`。
+ * 联邦房间名：ECDH DM 用 `dm:<tag>`，否则 `fount-fed-<groupId>`。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @returns {Promise<string>} 信令房间 id
  */
-export async function resolveTrysteroFedRoomName(username, groupId) {
+export async function resolveFedRoomName(username, groupId) {
 	const dag = requireDagDeps()
 	const loadGroupState = dag.getStateForFederation
 	if (!loadGroupState) return `fount-fed-${groupId}`
@@ -67,10 +67,10 @@ function credsEqual(a, b) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} [partitionId] 分区 id（默认 sync）
- * @returns {Promise<{ appId: string, password: string, roomId: string, source: 'dag' | 'bootstrap' | 'peer_hint' }>} Trystero 连接参数
+ * @returns {Promise<{ appId: string, password: string, roomId: string, source: 'dag' | 'bootstrap' | 'peer_hint' }>} 联邦连接参数
  */
 export async function resolveGroupRoomCredentials(username, groupId, partitionId = LOGIC_SYNC_PARTITION) {
-	const baseRoomId = await resolveTrysteroFedRoomName(username, groupId)
+	const baseRoomId = await resolveFedRoomName(username, groupId)
 	const roomId = partitionRoomName(baseRoomId, partitionId || LOGIC_SYNC_PARTITION)
 	const settings = await loadFederationGroupSettings(username, groupId)
 	const fromDag = roomCredentialsFromGroupSettings(settings)

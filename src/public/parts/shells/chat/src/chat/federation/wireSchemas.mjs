@@ -1,4 +1,4 @@
-/** Trystero 联邦线入站解析：tip ping/pong、gossip_request、channel_history、fed_shun、partition bridge。 */
+/** 联邦线入站解析：tip ping/pong、gossip_request、channel_history、fed_shun、partition bridge。 */
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { parsePullAttestation } from 'npm:@steve02081504/fount-p2p/schemas/federation_pull'
 import { extractInboundSignedEvent, isPlainObject } from 'npm:@steve02081504/fount-p2p/wire/ingress'
@@ -20,7 +20,7 @@ const CHANNEL_HISTORY_ROW_TYPES = new Set([
 const CHANNEL_HISTORY_ROW_MAX_BYTES = 256 * 1024
 
 /**
- * @param {unknown} payload Trystero 载荷
+ * @param {unknown} payload 联邦载荷
  * @returns {{ nodeHash: string, tips: unknown } | null} 解析结果
  */
 export function parseFedTipPing(payload) {
@@ -31,7 +31,7 @@ export function parseFedTipPing(payload) {
 }
 
 /**
- * @param {unknown} payload Trystero 载荷
+ * @param {unknown} payload 联邦载荷
  * @returns {{ tips: unknown } | null} 解析结果
  */
 export function parseFedTipPong(payload) {

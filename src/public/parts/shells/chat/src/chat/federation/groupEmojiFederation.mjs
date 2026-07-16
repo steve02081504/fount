@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/groupEmojiFederation.mjs
- * 【职责】群自定义表情经 Trystero fed_emoji_want/data 在 P2P 邻居间拉取与缓存，避免仅靠 HTTP 上传侧存储。
+ * 【职责】群自定义表情经 P2P fed_emoji_want/data 在 P2P 邻居间拉取与缓存，避免仅靠 HTTP 上传侧存储。
  * 【原理】attachFedEmojiHandlers 在 room join 时注册；本地有二进制则响应 dataUrl，请求方 persistGroupEmojiFromDataUrl。与 fed_chunk 类似采用 pendingFetches + 超时，拉黑 peer 不响应。
  * 【数据结构】载荷 { emojiId, dataUrl?, mimeType? }；等待键 username\0groupId\0emojiId。
  * 【关联】room.mjs、group/groupEmojis.mjs、wire_ingress.mjs、governance/peers 拉黑检查。

@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/charRpc.mjs
- * 【职责】解析与构造 Trystero char_rpc / char_rpc_response 线格式，统一 RPC 错误码并安全发送响应。
+ * 【职责】解析与构造 char_rpc / char_rpc_response 线格式，统一 RPC 错误码并安全发送响应。
  * 【原理】room 收到 char_rpc 后本地 tryInvokeLocalChar/WorldRpc，结果经 encodeWireJson 边界校验再 safeSendCharRpcResponse；远端响应由 groupWsHub.relayOrConsumeRpcResponse 接回群 WebSocket 等待方。与群 WS rpc_call 形成「浏览器 WS ↔ 本机 ↔ P2P ↔ 远端节点」链路。
  * 【数据结构】请求 { requestId, memberId, method, args[] }；响应 rpc_end | rpc_error + code。
  * 【关联】room.mjs、session.mjs、ws/groupWsRpc.mjs、lib/jsonBoundary.mjs、remoteProxy.mjs。
@@ -23,7 +23,7 @@ export function normalizeFederationRpcErrorCode(code) {
 
 /**
  * 解析 `char_rpc` 入站请求。
- * @param {unknown} data Trystero 载荷
+ * @param {unknown} data 联邦载荷
  * @returns {{ requestId: string, memberId: string, method: string, args: unknown[] } | null} 合法请求或 null
  */
 export function parseCharRpcRequest(data) {

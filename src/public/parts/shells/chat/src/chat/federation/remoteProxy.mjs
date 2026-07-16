@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/remoteProxy.mjs
- * 【职责】为不在本机运行的角色/世界构造 RPC 代理（CharAPI/WorldAPI 子集），经群 WebSocket rpc_call 或 Trystero char_rpc 调用远端节点。
+ * 【职责】为不在本机运行的角色/世界构造 RPC 代理（CharAPI/WorldAPI 子集），经群 WebSocket rpc_call 或 P2P char_rpc 调用远端节点。
  * 【原理】createRemoteCharProxy 用 Symbol 标记代理对象；rpcCall 组装 requestId/memberId/method，带 targetNodeId（从 sourceHost 解析 UUID）定向到指定联邦节点。shouldAcceptDirectedGroupRpc 防止 WS 误执行非本 clientNodeId 的请求。与 room char_rpc 及 ws/groupWsRpc 闭环。
  * 【数据结构】REMOTE_PROXY_SYMBOL；GROUP_RPC_TARGET_NODE_ID_KEY；代理内部缓存 interfaces 形状。
  * 【关联】charRpc.mjs、ws/groupWsRpc.mjs、session tryInvokeLocal*、lib/jsonBoundary.mjs、remoteWorldProxy.mjs。

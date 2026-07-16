@@ -7,7 +7,7 @@ import { consumeWireRateBucket } from 'npm:@steve02081504/fount-p2p/wire/rate_bu
 const takeBridgeDedupeSlot = createDedupeSlot({ maxSize: 5000, ttlMs: 30_000 })
 const DEFAULT_BRIDGE_TTL = 2
 
-/** 分区桥接允许转发且已在入站处验形的 Trystero action。 */
+/** 分区桥接允许转发且已在入站处验形的联邦 action。 */
 export const PARTITION_BRIDGE_ACTIONS = new Set(['dag_event'])
 
 /** 桥接优先级：数字越小越关键（过载时丢弃高数字） */
@@ -33,7 +33,7 @@ export function takePartitionBridgeSlot(key) {
 
 /**
  * @param {unknown} payload 桥接 action 载荷
- * @param {string} actionName Trystero action
+ * @param {string} actionName 联邦 action
  * @returns {string} 出站 dedupe id
  */
 function buildPartitionBridgeDedupeId(payload, actionName) {
@@ -53,7 +53,7 @@ export function partitionBridgeDedupeId(envelope) {
  * @param {object} options 参数
  * @param {string} options.sourcePartition 来源分区
  * @param {string} options.targetPartition 目标分区
- * @param {string} options.actionName Trystero action
+ * @param {string} options.actionName 联邦 action
  * @param {unknown} options.payload 载荷
  * @param {number} [options.ttl] 剩余跳数
  * @returns {object} 桥接信封
@@ -70,7 +70,7 @@ export function buildPartitionBridgeEnvelope(options) {
 }
 
 /**
- * @param {string} actionName Trystero action
+ * @param {string} actionName 联邦 action
  * @returns {number} 优先级（越大越先丢弃）
  */
 export function partitionBridgeActionPriority(actionName) {

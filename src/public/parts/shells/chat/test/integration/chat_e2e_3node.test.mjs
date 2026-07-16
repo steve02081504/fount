@@ -3,7 +3,7 @@
  *
  * 设计：在单进程内用 3 个独立 fount 用户（= 3 个 nodeHash + 3 套独立 DAG 磁盘副本）模拟
  * 节点 A/B/C。事件经各自本地签名后，以「已签名 wire 帧」通过真实联邦入站路径
- * `appendValidatedRemoteEvent` 在节点间传播（等价于 Nostr/Trystero relay 收到帧后的处理），
+ * `appendValidatedRemoteEvent` 在节点间传播（等价于联邦入站收到帧后的处理），
  * 因此走的是真实的签名校验 / ACL 快照门控 / joinPolicy / 权限矩阵 / reducer 物化管线，
  * 而非纯单进程 mock。
  *

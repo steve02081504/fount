@@ -209,7 +209,7 @@ class UserSubfountManager {
 		 */
 		this.uiSockets = new Set()
 		/**
-		 * Trystero 房间实例
+		 * P2P 房间实例
 		 * @type {any}
 		 */
 		this.room = null

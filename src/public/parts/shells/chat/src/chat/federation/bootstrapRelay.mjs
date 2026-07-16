@@ -67,7 +67,7 @@ function slotCredsAlreadyInSync(activeSlot, dagCreds, bootstrap) {
  * @param {string} groupId 群 ID
  * @param {string} nodeHash 本机 nodeHash
  * @param {object} request 解析后的 bootstrap 请求
- * @param {string} peerId 请求方 Trystero peer
+ * @param {string} peerId 请求方 peer
  * @param {(payload: unknown, peerId: string) => void} sendResponse 发送响应
  * @returns {Promise<void>}
  */

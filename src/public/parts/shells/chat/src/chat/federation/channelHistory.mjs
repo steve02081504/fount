@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/channelHistory.mjs
- * 【职责】经 Trystero channel_history_want/response 向联邦邻居拉取频道 JSONL 历史，并合并入本地频道消息存储。
+ * 【职责】经 P2P channel_history_want/response 向联邦邻居拉取频道 JSONL 历史，并合并入本地频道消息存储。
  */
 import { randomUUID } from 'node:crypto'
 

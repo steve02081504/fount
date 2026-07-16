@@ -294,7 +294,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {unknown} payload Trystero 载荷（完整签名事件）
+ * @param {unknown} payload 联邦载荷（完整签名事件）
  * @param {{ skipSeenDedup?: boolean, logFailures?: boolean }} [options] ingest 选项
  * @returns {Promise<RemoteIngestResult | undefined>} 写入结果；无法解析为 undefined
  */

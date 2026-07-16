@@ -92,7 +92,7 @@ export async function publishVolatileToFederation(groupId, payload) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {unknown} data 信封
- * @param {string} peerId Trystero peer
+ * @param {string} peerId peer
  * @param {Map<string, string>} peerToNode peer → nodeId
  * @param {(subject: string) => boolean} isBlockedPeer 节点拉黑检查
  * @returns {Promise<void>}

@@ -34,10 +34,7 @@ export function channelPartitionFor(channelId, count) {
 /**
  * 本节点应加入的分区 id 列表。
  *
- * 当前折叠为「单一 sync 分区」：@trystero-p2p 的 strategy 把 offerPool / didInit / SharedPeerManager
- * 作为**进程级单例**跨所有 room 复用，同一进程加入第 2 个 room 时其 WebRTC 协商被破坏，导致两个 room
- * 全都发现不了对端（实测单 room 正常、双 room 即失效，与 appId/STUN/动作数无关）。故每群只用一个联邦 room，
- * 频道分流改在应用层（action 名 + 消息路由）完成。待 fork 支持多 room/进程后可恢复 ch-xx 分区。
+ * 当前折叠为「单一 sync 分区」：每群只维护一个联邦 room，频道分流在应用层（action 名 + 消息路由）完成。
  * @param {object} groupSettings 群设置
  * @param {string} [channelId] 频道 ID
  * @returns {string[]} 本节点应加入的分区 id 列表
@@ -51,7 +48,7 @@ export function resolveNodePartitionIds(groupSettings = {}, channelId = null) {
 /**
  * @param {string} baseRoomId 基础房间名
  * @param {string} partitionId 分区 id
- * @returns {string} Trystero 房间名
+ * @returns {string} 联邦房间名
  */
 export function partitionRoomName(baseRoomId, partitionId) {
 	const normalizedPartitionId = String(partitionId || LOGIC_SYNC_PARTITION).trim() || LOGIC_SYNC_PARTITION

@@ -170,7 +170,7 @@ export function registerSyncHandlers(roomContext) {
 	 * @param {object | null | undefined} fedState 物化群状态
 	 * @param {string} requesterPubKeyHash 请求方 pubKeyHash
 	 * @param {string} requesterNodeHash 请求方 nodeHash
-	 * @param {string} peerId Trystero peer
+	 * @param {string} peerId peer
 	 * @returns {boolean} 已 shun 并应中止处理
 	 */
 	const maybeShunPubKeyRequester = (fedState, requesterPubKeyHash, requesterNodeHash, peerId) => {

@@ -134,11 +134,11 @@ export function resolveShunForNodeHashRequester(fedState, isBlockedPeer, request
 /**
  * 向对端发送 fed_shun（限流、无签名、最小载荷）。
  * @param {{ enqueue: (priority: number, run: () => void) => void }} fedOut 出站队列
- * @param {(payload: unknown, peerId: string) => void} fedShunSend Trystero send
+ * @param {(payload: unknown, peerId: string) => void} fedShunSend P2P send
  * @param {string} groupId 群 ID
  * @param {string} localNodeHash 本机 nodeHash
  * @param {string} requesterNodeHash 请求方 nodeHash（限流键）
- * @param {string} peerId Trystero peer
+ * @param {string} peerId peer
  * @param {'not_a_member' | 'blocked'} reason 闭门羹原因
  * @returns {void}
  */

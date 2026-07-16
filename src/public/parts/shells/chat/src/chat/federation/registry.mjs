@@ -1,6 +1,6 @@
 /**
  * 【文件】federation/registry.mjs
- * 【职责】进程内联邦运行时注册表：Trystero 房间实例缓存、join 防重入、tip/gossip/频道历史等待槽，以及群→当前 join 用户的 owner 映射。
+ * 【职责】进程内联邦运行时注册表：P2P 房间实例缓存、join 防重入、tip/gossip/频道历史等待槽，以及群→当前 join 用户的 owner 映射。
  * 【原理】分区槽按 username→groupId→partitionId 嵌套 Map 缓存；inflight 合并并发 join；rebindGeneration 使进行中的 join 作废。
  */
 import {
@@ -75,8 +75,8 @@ export function hasFederationPartitionSlot(username, groupId, partitionId) {
 }
 
 /**
- * 替换/失效前对被丢弃的 slot 做底层 teardown：leave Trystero 房间并清空 roster。
- * 没有它，旧 slot 的 Trystero 房间会成为持有 peer 连接的孤儿。
+ * 替换/失效前对被丢弃的 slot 做底层 teardown：leave 联邦房间并清空 roster。
+ * 没有它，旧 slot 的联邦房间会成为持有 peer 连接的孤儿。
  * @param {object | null | undefined} slot 联邦槽
  * @returns {void}
  */
@@ -86,7 +86,7 @@ function teardownFederationSlot(slot) {
 }
 
 /**
- * 从注册表移除分区槽但不 leave 底层 Trystero room（join-before-leave 替换时用）。
+ * 从注册表移除分区槽但不 leave 底层 federation room（join-before-leave 替换时用）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} partitionId 分区 id

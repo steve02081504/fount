@@ -1,5 +1,5 @@
 /**
- * Trystero / 群 WS JSON 边界：单次 stringify/parse，本地 RPC 不经过此模块。
+ * P2P / 群 WS JSON 边界：单次 stringify/parse，本地 RPC 不经过此模块。
  */
 
 /**

@@ -1,6 +1,6 @@
 /**
  * 【文件】files/chunkReplicationAck.mjs
- * 【职责】§10.2 上传后 P2P 密文块复制 ACK 跟踪：等待 M_eff 个不同 Trystero 邻居 fed_chunk_ack 或超时。
+ * 【职责】§10.2 上传后 P2P 密文块复制 ACK 跟踪：等待 M_eff 个不同 P2P 邻居 fed_chunk_ack 或超时。
  * 【原理】pendingWaits 内存表；beginChunkReplicationWait 注册 timer；recordChunkReplicationAck 按 peer/node 去重后 resolve。与 replicateChunkToFederation 配合满足冗余策略。
  * 【数据结构】Map 键 username\0groupId\0ciphertextHash；值含 requiredAcks、ackPeers、timer、expectedPeerKeys。
  * 【关联】federation/chunks.mjs、groupFiles putEncryptedChunk、npm:@steve02081504/fount-p2p/reputation/engine。
