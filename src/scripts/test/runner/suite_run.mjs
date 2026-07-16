@@ -1,6 +1,7 @@
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import process from 'node:process'
 
 import { applyBudgetToEnv } from '../core/concurrency.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
@@ -28,19 +29,29 @@ export function applyTestHeapCapToDenoRun(command) {
 }
 
 /**
+ * @typedef {object} SuiteInvocationOptions
+ * @property {string[]} [firstFiles] FOUNT_TEST_FIRST：失败优先路径
+ * @property {string[]} [subtests] FOUNT_TEST_SUBTESTS：子测试名
+ * @property {string[]} [onlyFiles] FOUNT_TEST_ONLY：范围过滤（少用）
+ */
+
+/**
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
- * @param {string[] | undefined} onlyFiles 仅跑这些文件
+ * @param {SuiteInvocationOptions} options 调用选项
  * @param {string} failuresOut 失败输出临时文件
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
-export function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget) {
+export function buildSuiteInvocation(suite, options, failuresOut, globalBudget) {
+	const { firstFiles, subtests, onlyFiles } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
+		FOUNT_TEST_FIRST: firstFiles?.length ? firstFiles.join('\n') : '',
+		FOUNT_TEST_SUBTESTS: subtests?.length ? subtests.join('\n') : '',
 		RUST_BACKTRACE: 'full',
 	}
 	if (suiteUsesSerialRunner(suite) && globalBudget)
@@ -49,19 +60,35 @@ export function buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget
 }
 
 /**
+ * @typedef {object} SuiteRunResult
+ * @property {boolean} passed
+ * @property {number} exitCode
+ * @property {string[]} failedFiles
+ * @property {string} output
+ * @property {number} durationMs
+ * @property {number} [peakMemMb]
+ * @property {number} [avgCpuPct]
+ * @property {boolean} [terminated]
+ * @property {string} [terminateReason]
+ */
+
+/**
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
- * @param {string[] | undefined} onlyFiles 失败重跑文件过滤
+ * @param {SuiteInvocationOptions | string[] | undefined} optionsOrFirst 调用选项或旧版 firstFiles
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
- * @returns {Promise<{ passed: boolean, exitCode: number, failedFiles: string[], output: string, durationMs: number, peakMemMb?: number, avgCpuPct?: number, terminated?: boolean, terminateReason?: string }>} 运行结果
+ * @returns {Promise<SuiteRunResult>} 运行结果
  */
-export async function runSuite(suite, onlyFiles, globalBudget, stream = false, watchdog = {}) {
+export async function runSuite(suite, optionsOrFirst, globalBudget, stream = false, watchdog = {}) {
+	const options = Array.isArray(optionsOrFirst) || optionsOrFirst == null
+		? { firstFiles: optionsOrFirst }
+		: optionsOrFirst
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
 	const started = Date.now()
 	try {
-		const { command, env } = buildSuiteInvocation(suite, onlyFiles, failuresOut, globalBudget)
+		const { command, env } = buildSuiteInvocation(suite, options, failuresOut, globalBudget)
 		const { code, output, terminated, terminateReason, peakMemMb, avgCpuPct } = await runCommand(command, env, {
 			stream,
 			cwd: REPO_ROOT,

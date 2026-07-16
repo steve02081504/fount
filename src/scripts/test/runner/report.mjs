@@ -334,7 +334,7 @@ function buildRunMarkdown(summary, completed) {
 			lines.push(`- ${slot.manifestId}/${slot.name}${mark}${expectedMark}`)
 		}
 		lines.push('')
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test --continue', '```', '')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test', '```', '')
 	}
 
 	return lines.join('\n')

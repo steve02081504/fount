@@ -52,9 +52,13 @@
 				"src/scripts/test/selftest/continue_reason.test.mjs",
 				"src/scripts/test/runner/continue_reason.mjs",
 				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/runner/selection.mjs",
 				"src/scripts/test/core/estimate.mjs",
 				"src/scripts/test/core/state.mjs",
-				"src/scripts/test/core/paths.mjs"
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/test/core/verdict.mjs"
 			]
 		},
 		{
@@ -69,7 +73,22 @@
 				"src/scripts/test/runner/continue_reason.mjs",
 				"src/scripts/test/core/dependencies.mjs",
 				"src/scripts/test/core/state.mjs",
-				"src/scripts/test/core/manifest.mjs"
+				"src/scripts/test/core/manifest.mjs",
+				"src/scripts/test/core/selector.mjs"
+			]
+		},
+		{
+			"name": "protocol_order",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/protocol_order.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/protocol_order.test.mjs",
+				"src/scripts/test/core/protocol.mjs",
+				"src/scripts/test/core/verdict.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/playwright/phases.mjs"
 			]
 		},
 		{

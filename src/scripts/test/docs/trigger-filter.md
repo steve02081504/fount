@@ -1,6 +1,6 @@
 # Trigger filter
 
-Diff selection (`selectSuitesByDiff`), `--outdated`, and continue-report trigger evidence all filter changed paths before glob matching. Implementation: `core/trigger_filter.mjs`.
+Verdict freshness, outdated-wave evidence, and continue-report trigger evidence all filter changed paths before glob matching. Implementation: `core/trigger_filter.mjs`. (`selectSuitesByDiff` remains for infra self-tests / legacy callers.)
 
 ## Default ignores
 

@@ -69,13 +69,74 @@
 			"src/server/registries.mjs",
 			"src/public/pages/scripts/api/registries.mjs"
 		],
-		"frontend": [
-			"src/public/parts/shells/social/public/**",
-			"src/public/parts/shells/social/test/frontend/**",
+		"frontendShared": [
+			"src/public/parts/shells/social/test/frontend/fixtures.mjs",
+			"src/public/parts/shells/social/test/frontend/run.mjs",
+			"src/public/parts/shells/social/test/frontend/phases.mjs",
+			"src/public/parts/shells/social/test/frontend/playwright.config.mjs",
+			"src/public/parts/shells/social/test/node_bootstrap.mjs",
+			"src/public/parts/shells/social/public/index.html",
+			"src/public/parts/shells/social/public/styles.css",
+			"src/public/parts/shells/social/public/src/init.mjs",
+			"src/public/parts/shells/social/public/src/state.mjs",
+			"src/public/parts/shells/social/public/src/createContext.mjs",
+			"src/public/parts/shells/social/public/src/gate.mjs",
+			"src/public/parts/shells/social/public/src/lib/apiClient.mjs",
+			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
 			"src/scripts/test/playwright/**",
 			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
+		],
+		"feSmoke": [
+			"src/public/parts/shells/social/test/frontend/smoke.spec.mjs"
+		],
+		"fePostActions": [
+			"src/public/parts/shells/social/test/frontend/postActions.spec.mjs",
+			"src/public/parts/shells/social/public/src/actions/**",
+			"src/public/parts/shells/social/public/src/postCard.mjs",
+			"src/public/parts/shells/social/public/src/actions.mjs"
+		],
+		"feReplies": [
+			"src/public/parts/shells/social/test/frontend/replies.spec.mjs",
+			"src/public/parts/shells/social/public/src/views/replies.mjs"
+		],
+		"feComposer": [
+			"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
+			"src/public/parts/shells/social/public/src/composer.mjs",
+			"src/public/parts/shells/social/public/src/actions/composerFeed.mjs"
+		],
+		"feDeepLink": [
+			"src/public/parts/shells/social/test/frontend/deepLink.spec.mjs",
+			"src/public/parts/shells/social/public/src/navigation.mjs"
+		],
+		"feFeed": [
+			"src/public/parts/shells/social/test/frontend/feed.spec.mjs",
+			"src/public/parts/shells/social/public/src/views/feed.mjs",
+			"src/public/parts/shells/social/public/src/postCard.mjs",
+			"src/public/pages/scripts/infiniteScroll.mjs"
+		],
+		"feNavigation": [
+			"src/public/parts/shells/social/test/frontend/navigation.spec.mjs",
+			"src/public/parts/shells/social/public/src/navigation.mjs",
+			"src/public/parts/shells/social/public/src/viewChrome.mjs"
+		],
+		"feProfile": [
+			"src/public/parts/shells/social/test/frontend/profile.spec.mjs",
+			"src/public/parts/shells/social/public/src/views/profile.mjs",
+			"src/public/parts/shells/social/public/src/actions/postProfile.mjs",
+			"src/public/parts/shells/social/public/src/actions/postProfileActions.mjs",
+			"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs"
+		],
+		"feSaved": [
+			"src/public/parts/shells/social/test/frontend/saved.spec.mjs",
+			"src/public/parts/shells/social/public/src/views/saved.mjs",
+			"src/public/parts/shells/social/public/src/actions/saved.mjs"
+		],
+		"feExploreNotifications": [
+			"src/public/parts/shells/social/test/frontend/explore_notifications.spec.mjs",
+			"src/public/parts/shells/social/public/src/views/explore.mjs",
+			"src/public/parts/shells/social/public/src/views/notifications.mjs"
 		]
 	},
 	"suites": [
@@ -102,6 +163,23 @@
 		{ "name": "e2e_single", "dependsOn": ["server:live", "smoke_social"], "trigger": ["shellBackend", "shellLiveInfra", "liveE2eSingle"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "e2e_single"] },
 		{ "name": "ws", "dependsOn": ["server:live", "smoke_social"], "trigger": ["shellBackend", "wsExtra", "shellLiveInfra", "liveWs"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "ws"] },
 		{ "name": "cross_shell_emoji", "dependsOn": ["server:live", "smoke_social", "shells/chat:fed_core", "shells/chat:fed_emoji"], "trigger": ["shellBackend", "crossShellEmojiExtra", "shellLiveInfra", "liveCrossShellEmoji"], "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/live/run.mjs", "--suite", "cross_shell_emoji"] },
-		{ "name": "frontend", "dependsOn": ["server:live", "smoke_social", "e2e_single"], "trigger": "frontend", "run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"] }
+		{
+			"name": "frontend",
+			"dependsOn": ["server:live", "smoke_social", "e2e_single"],
+			"trigger": "frontendShared",
+			"subtests": [
+				{ "name": "smoke", "trigger": "feSmoke" },
+				{ "name": "postActions", "trigger": "fePostActions" },
+				{ "name": "replies", "trigger": "feReplies" },
+				{ "name": "composer", "trigger": "feComposer" },
+				{ "name": "deepLink", "trigger": "feDeepLink" },
+				{ "name": "feed", "trigger": "feFeed" },
+				{ "name": "navigation", "trigger": "feNavigation" },
+				{ "name": "profile", "trigger": "feProfile" },
+				{ "name": "saved", "trigger": "feSaved" },
+				{ "name": "explore_notifications", "trigger": "feExploreNotifications" }
+			],
+			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/social/test/frontend/run.mjs"]
+		}
 	]
 }

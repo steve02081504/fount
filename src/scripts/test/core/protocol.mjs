@@ -3,9 +3,11 @@
  *
  * 所有 manifest `run` 目标须支持：
  *
- *   FOUNT_TEST_ONLY          — 换行分隔的仓库相对路径；省略则跑 suite 默认全集
+ *   FOUNT_TEST_ONLY          — 换行分隔的仓库相对路径；省略则跑 suite 默认全集（范围过滤）
+ *   FOUNT_TEST_FIRST         — 换行分隔的仓库相对路径；这些先跑，失败组有复现则跑完失败组即退
+ *   FOUNT_TEST_SUBTESTS      — 换行分隔的子测试名；省略则跑 suite 全部已注册子测试
  *   FOUNT_TEST_FAILURES_OUT  — 失败时写入 JSON 数组 string[]（仓库相对路径）
- *   FOUNT_TEST_KEEP_GOING    — `1` 时失败后继续并汇总
+ *   FOUNT_TEST_KEEP_GOING    — `1` 时失败后继续并汇总（失败组复现时仍中止）
  *   FOUNT_TEST_SCOPE         — Playwright 产物 scope（manifest id）
  */
 import { realpathSync } from 'node:fs'
@@ -42,11 +44,36 @@ export function toRepoRelative(repoRoot, file) {
 }
 
 /**
+ * 解析换行分隔的环境变量列表。
+ * @param {string | undefined} raw 原始环境变量
+ * @returns {string[]} 规范化路径/名称列表
+ */
+function parseNewlineList(raw) {
+	return raw?.split('\n').map(s => s.trim().replace(/\\/g, '/')).filter(Boolean) ?? []
+}
+
+/**
  * 解析 FOUNT_TEST_ONLY 为仓库相对路径列表。
  * @returns {string[]} 过滤路径列表
  */
 export function parseTestOnlyEnv() {
-	return process.env.FOUNT_TEST_ONLY?.split('\n').map(s => s.trim().replace(/\\/g, '/')).filter(Boolean) ?? []
+	return parseNewlineList(process.env.FOUNT_TEST_ONLY)
+}
+
+/**
+ * 解析 FOUNT_TEST_FIRST 为仓库相对路径列表。
+ * @returns {string[]} 优先路径列表
+ */
+export function parseTestFirstEnv() {
+	return parseNewlineList(process.env.FOUNT_TEST_FIRST)
+}
+
+/**
+ * 解析 FOUNT_TEST_SUBTESTS 为子测试名列表。
+ * @returns {string[]} 子测试名
+ */
+export function parseTestSubtestsEnv() {
+	return parseNewlineList(process.env.FOUNT_TEST_SUBTESTS)
 }
 
 /**
@@ -70,6 +97,30 @@ export function isIncludedInTestOnly(repoRoot, repoRelative, onlyList) {
 	if (!onlyList.length) return true
 	const rel = toRepoRelative(repoRoot, repoRelative)
 	return onlyList.some(item => matchesTestOnly(rel, item))
+}
+
+/**
+ * 将失败项排到列表前面，其余保持原相对顺序。
+ * @template T
+ * @param {T[]} items 完整列表
+ * @param {string[]} firstList 优先项（与 keyOf 结果比较）
+ * @param {(item: T) => string} [keyOf] 提取比较键；默认 String
+ * @returns {{ first: T[], rest: T[], ordered: T[] }} 分组与合并结果
+ */
+export function orderFailedFirst(items, firstList, keyOf = String) {
+	if (!firstList.length)
+		return { first: [], rest: [...items], ordered: [...items] }
+	const firstSet = new Set(firstList.map(s => s.replace(/\\/g, '/')))
+	/** @type {T[]} */
+	const first = []
+	/** @type {T[]} */
+	const rest = []
+	for (const item of items) {
+		const key = keyOf(item).replace(/\\/g, '/')
+		if (firstSet.has(key)) first.push(item)
+		else rest.push(item)
+	}
+	return { first, rest, ordered: [...first, ...rest] }
 }
 
 /**

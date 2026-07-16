@@ -29,6 +29,16 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  */
 
 /**
+ * @typedef {object} SubtestStateEntry
+ * @property {SuiteStatus} status
+ * @property {string | null} commitHash
+ * @property {string | null} uncommittedHash
+ * @property {string | null} ranAt
+ * @property {number | null} durationMs
+ * @property {string | null} [triggerHash]
+ */
+
+/**
  * @typedef {object} SuiteStateEntry
  * @property {SuiteStatus} status
  * @property {string | null} commitHash
@@ -45,6 +55,7 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  * @property {boolean} [terminated]
  * @property {string | null} [terminateReason]
  * @property {string[]} [blockedBy]
+ * @property {Record<string, SubtestStateEntry>} [subtests] 子测试状态
  */
 
 /**
@@ -236,6 +247,89 @@ async function deleteFailureLog(repoRoot, logPath) {
 }
 
 /**
+ * 失败文件是否属于给定子测试。
+ * @param {import('./manifest.mjs').SubtestDef} subtest 子测试
+ * @param {string[]} failedFiles 失败路径
+ * @returns {boolean} 是否命中
+ */
+export function subtestMatchesFailedFiles(subtest, failedFiles) {
+	const spec = subtest.spec.replace(/\\/g, '/')
+	return failedFiles.some(file => {
+		const rel = file.replace(/\\/g, '/')
+		return rel === spec || rel.endsWith(`/${spec}`)
+	})
+}
+
+/**
+ * 合并子测试状态：只更新本次跑过的子集。
+ * @param {SuiteDef} suite suite
+ * @param {Record<string, SubtestStateEntry> | undefined} prev 上次子测试状态
+ * @param {string[]} ranSubtests 本次跑过的子测试名
+ * @param {string[]} failedFiles 失败文件
+ * @param {boolean} noisy 本次是否含噪声
+ * @param {string} commitHash HEAD
+ * @param {string | null} uncommittedHash 未提交 digest
+ * @param {Record<string, string | null> | undefined} subtestTriggerHashes 子测试 triggerHash
+ * @returns {Record<string, SubtestStateEntry> | undefined} 合并后的子测试状态
+ */
+function mergeSubtestStates(
+	suite,
+	prev,
+	ranSubtests,
+	failedFiles,
+	noisy,
+	commitHash,
+	uncommittedHash,
+	subtestTriggerHashes,
+) {
+	if (!suite.subtests?.length) return prev
+	/** @type {Record<string, SubtestStateEntry>} */
+	const merged = { ...prev ?? {} }
+	const ranAt = new Date().toISOString()
+	const byName = new Map(suite.subtests.map(st => [st.name, st]))
+	for (const name of ranSubtests) {
+		const subtest = byName.get(name)
+		if (!subtest) continue
+		const failed = subtestMatchesFailedFiles(subtest, failedFiles)
+		/** @type {SuiteStatus} */
+		let status = 'passed'
+		if (failed) status = 'failed'
+		else if (noisy) status = 'noisy'
+		merged[name] = {
+			status,
+			commitHash,
+			uncommittedHash,
+			ranAt,
+			durationMs: null,
+			triggerHash: subtestTriggerHashes?.[name] ?? merged[name]?.triggerHash ?? null,
+		}
+	}
+	return merged
+}
+
+/**
+ * 由合并后的子测试状态推导 suite 级 status。
+ * @param {SuiteDef} suite suite
+ * @param {Record<string, SubtestStateEntry> | undefined} subtests 子测试状态
+ * @param {SuiteStatus} runStatus 本次运行原始 status
+ * @returns {SuiteStatus} suite status
+ */
+function aggregateSuiteStatus(suite, subtests, runStatus) {
+	if (!suite.subtests?.length) return runStatus
+	let anyFailed = false
+	let anyNoisy = false
+	for (const st of suite.subtests) {
+		const entry = subtests?.[st.name]
+		if (!entry) continue
+		if (entry.status === 'failed' || entry.status === 'blocked') anyFailed = true
+		else if (entry.status === 'noisy') anyNoisy = true
+	}
+	if (anyFailed || runStatus === 'failed') return 'failed'
+	if (anyNoisy || runStatus === 'noisy') return 'noisy'
+	return 'passed'
+}
+
+/**
  * @param {object} params 参数
  * @param {string} params.repoRoot 仓库根
  * @param {TestState} params.state 现状库
@@ -251,6 +345,8 @@ async function deleteFailureLog(repoRoot, logPath) {
  * @param {string} params.commitHash HEAD
  * @param {string | null} params.uncommittedHash 未提交 digest
  * @param {string | null} [params.triggerHash] 本次运行的 trigger 内容指纹；缺省沿用 prev
+ * @param {string[]} [params.ranSubtests] 本次实际跑过的子测试名
+ * @param {Record<string, string | null>} [params.subtestTriggerHashes] 子测试 triggerHash
  * @returns {Promise<SuiteStateEntry>} 新条目
  */
 export async function upsertSuiteRun({
@@ -262,6 +358,8 @@ export async function upsertSuiteRun({
 	commitHash,
 	uncommittedHash,
 	triggerHash,
+	ranSubtests,
+	subtestTriggerHashes,
 }) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const prev = state.suites[key]
@@ -283,14 +381,27 @@ export async function upsertSuiteRun({
 			noiseHits: [],
 			logPath: prev?.logPath ?? null,
 			blockedBy,
+			subtests: prev?.subtests,
 		}
 		return state.suites[key]
 	}
 
-	let status /** @type {SuiteStatus} */
-	if (!result.passed) status = 'failed'
-	else if (noisy) status = 'noisy'
-	else status = 'passed'
+	/** @type {SuiteStatus} */
+	let runStatus = 'passed'
+	if (!result.passed) runStatus = 'failed'
+	else if (noisy) runStatus = 'noisy'
+
+	const subtests = mergeSubtestStates(
+		suite,
+		prev?.subtests,
+		ranSubtests ?? suite.subtests?.map(st => st.name) ?? [],
+		result.failedFiles ?? [],
+		noisy,
+		commitHash,
+		uncommittedHash,
+		subtestTriggerHashes,
+	)
+	const status = aggregateSuiteStatus(suite, subtests, runStatus)
 
 	let logPath = prev?.logPath ?? null
 	if (status === 'passed') {
@@ -314,9 +425,17 @@ export async function upsertSuiteRun({
 		? nextBaselineCpuPct(prev?.baselineCpuPct, result.avgCpuPct)
 		: prev?.baselineCpuPct ?? null
 
+	// 有子测试时：未全部以当前 commit 跑过则不推进 suite.commitHash，避免掩盖未跑子测试的过期
+	let nextCommitHash = commitHash
+	if (suite.subtests?.length && subtests) {
+		const allAtHead = suite.subtests.every(st => subtests[st.name]?.commitHash === commitHash)
+		if (!allAtHead)
+			nextCommitHash = prev?.commitHash ?? commitHash
+	}
+
 	state.suites[key] = {
 		status,
-		commitHash,
+		commitHash: nextCommitHash,
 		uncommittedHash,
 		ranAt: new Date().toISOString(),
 		durationMs: result.durationMs,
@@ -329,6 +448,7 @@ export async function upsertSuiteRun({
 		logPath,
 		terminated: result.terminated ?? false,
 		terminateReason: result.terminateReason ?? null,
+		subtests,
 	}
 
 	return state.suites[key]

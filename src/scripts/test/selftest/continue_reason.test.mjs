@@ -6,16 +6,42 @@ import { resolveSelector } from '../core/selector.mjs'
 import { suiteKey } from '../core/state.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
 import { buildReasonsFromPlan } from '../runner/continue_reason.mjs'
-import { goalContinue, goalDiff, goalImperfectKeys } from '../runner/selection.mjs'
+import { goalContinue, goalImperfectKeys } from '../runner/selection.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
 
-Deno.test('resolveSelector accepts colon and slash forms', () => {
+Deno.test('resolveSelector accepts colon and slash forms with optional subtest', () => {
 	const known = ['server', 'shells/chat']
-	assertEquals(resolveSelector('server:live', known), { manifestId: 'server', suiteSelectors: ['live'] })
-	assertEquals(resolveSelector('server/live', known), { manifestId: 'server', suiteSelectors: ['live'] })
-	assertEquals(resolveSelector('shells/chat/fed_core', known), { manifestId: 'shells/chat', suiteSelectors: ['fed_core'] })
-	assertEquals(resolveSelector('server', known), { manifestId: 'server', suiteSelectors: [] })
+	assertEquals(resolveSelector('server:live', known), {
+		manifestId: 'server',
+		suiteSelectors: ['live'],
+		subtestSelectors: {},
+	})
+	assertEquals(resolveSelector('server/live', known), {
+		manifestId: 'server',
+		suiteSelectors: ['live'],
+		subtestSelectors: {},
+	})
+	assertEquals(resolveSelector('shells/chat/fed_core', known), {
+		manifestId: 'shells/chat',
+		suiteSelectors: ['fed_core'],
+		subtestSelectors: {},
+	})
+	assertEquals(resolveSelector('server', known), {
+		manifestId: 'server',
+		suiteSelectors: [],
+		subtestSelectors: {},
+	})
+	assertEquals(resolveSelector('shells/chat:frontend:feed', known), {
+		manifestId: 'shells/chat',
+		suiteSelectors: ['frontend'],
+		subtestSelectors: { frontend: ['feed'] },
+	})
+	assertEquals(resolveSelector('shells/chat/frontend/feed', known), {
+		manifestId: 'shells/chat',
+		suiteSelectors: ['frontend'],
+		subtestSelectors: { frontend: ['feed'] },
+	})
 })
 
 Deno.test('goalImperfectKeys skips stale passed suites', () => {
@@ -48,15 +74,6 @@ Deno.test('goalContinue expands one imperfect downstream level', () => {
 		['shells/chat/child', { kind: 'green', fresh: true, triggerHash: null }],
 	])
 	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat/child', 'shells/chat/parent'])
-})
-
-Deno.test('goalDiff selects direct trigger hits only', () => {
-	const scope = [
-		makeSuite('shells/chat', 'parent', { triggers: ['src/shells/chat/parent.mjs'] }),
-		makeSuite('shells/chat', 'child', { dependsOn: ['parent'], triggers: ['src/shells/chat/child.mjs'] }),
-	]
-	const { goalKeys } = goalDiff(['src/shells/chat/parent.mjs'], scope, 'head', null)
-	assertEquals([...goalKeys], ['shells/chat/parent'])
 })
 
 Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {

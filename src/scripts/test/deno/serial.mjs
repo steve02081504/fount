@@ -3,6 +3,8 @@
  *
  * 目录参数会展开为各 *.test.mjs，每个文件在独立子进程中运行，
  * 避免集成 harness 在同一进程内堆积多个 server 实例导致 OOM。
+ *
+ * FOUNT_TEST_FIRST：失败项优先；失败组有复现则跑完失败组即退，不跑其余。
  */
 import 'fount/scripts/test/env.mjs'
 
@@ -18,6 +20,8 @@ import { isDenoTeardownCrashAfterGreenTests } from '../core/deno_panic.mjs'
 import { outputHasNoise } from '../core/output_filter.mjs'
 import {
 	isIncludedInTestOnly,
+	orderFailedFirst,
+	parseTestFirstEnv,
 	parseTestOnlyEnv,
 	toRepoRelative,
 	writeFailuresOutFile,
@@ -97,6 +101,7 @@ for (const arg of args) {
 const ignore = args.find(arg => arg.startsWith('--ignore='))?.slice('--ignore='.length)
 const ignorePrefix = ignore ? resolve(REPO_ROOT, ignore) : null
 const filterList = parseTestOnlyEnv()
+const firstList = parseTestFirstEnv()
 const keepGoing = process.env.FOUNT_TEST_KEEP_GOING === '1'
 
 if (filterList.length)
@@ -112,6 +117,11 @@ let silentPassed = 0
 let stopped = false
 let cursor = 0
 const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith(ignorePrefix)))
+const { first: firstFiles, rest: restFiles } = orderFailedFirst(
+	filteredFiles,
+	firstList,
+	file => toRepoRelative(REPO_ROOT, file),
+)
 
 /**
  * 记录单文件 deno test 结果。
@@ -119,7 +129,7 @@ const filteredFiles = testFiles.filter(file => !(ignorePrefix && file.startsWith
  * @param {number} code 退出码
  * @param {string} output stdall
  * @param {string | null} [signal] 终止信号
- * @returns {void}
+ * @returns {boolean} 是否记为失败
  */
 function recordResult(file, code, output, signal = null) {
 	const teardownCrash = isDenoTeardownCrashAfterGreenTests(code, output)
@@ -137,35 +147,62 @@ function recordResult(file, code, output, signal = null) {
 		// 已通过但含噪声：输出已在 runCaptured 中实时转发
 	}
 	else {
-		// 静默通过也打一行，避免 --no-parallel 流式模式下 idle watchdog 误杀长套件
 		process.stdout.write(`[serial] ok ${rel}\n`)
 		silentPassed++
 	}
 	if (code !== 0 && !teardownCrash) {
 		failed.push(rel)
-		if (!keepGoing) stopped = true
+		return true
 	}
+	return false
 }
 
 /**
- * worker-pool 消费游标，并发跑单文件 deno test。
+ * worker-pool 消费游标，并发跑文件列表。
+ * @param {string[]} files 待跑文件
+ * @param {{ stopOnFailure: boolean }} options 失败是否停止调度
  * @returns {Promise<void>}
  */
-async function worker() {
-	while (!stopped) {
-		const index = cursor++
-		if (index >= filteredFiles.length) break
-		const file = filteredFiles[index]
-		const { code, output, signal } = await runCaptured(['deno', ...denoBase, file])
-		recordResult(file, code, output, signal)
-		if (stopped) return
+async function runPool(files, { stopOnFailure }) {
+	cursor = 0
+	stopped = false
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async function worker() {
+		while (!stopped) {
+			const index = cursor++
+			if (index >= files.length) break
+			const file = files[index]
+			const { code, output, signal } = await runCaptured(['deno', ...denoBase, file])
+			const isFail = recordResult(file, code, output, signal)
+			if (isFail && stopOnFailure) {
+				stopped = true
+				return
+			}
+			if (isFail && !keepGoing) {
+				stopped = true
+				return
+			}
+		}
+	}
+	await Promise.all(Array.from(
+		{ length: Math.min(concurrency, files.length || 1) },
+		() => worker(),
+	))
+}
+
+// 失败组优先：整组跑完后若有失败则直接退出，不跑 rest
+if (firstFiles.length) {
+	await runPool(firstFiles, { stopOnFailure: false })
+	if (failed.length) {
+		await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
+		process.exit(1)
 	}
 }
 
-await Promise.all(Array.from(
-	{ length: Math.min(concurrency, filteredFiles.length) },
-	() => worker(),
-))
+if (restFiles.length)
+	await runPool(restFiles, { stopOnFailure: !keepGoing })
 
 if (silentPassed > 0)
 	console.logI18n(silentPassed > 1

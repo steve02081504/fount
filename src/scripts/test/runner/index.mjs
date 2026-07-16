@@ -9,7 +9,6 @@ import {
 	getHeadCommitHash,
 	getUncommittedFiles,
 	hashUncommittedFiles,
-	resolveChangedFiles,
 } from '../core/changed.mjs'
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
@@ -43,28 +42,25 @@ import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildCommittedChangedByKey,
-	selectContinue,
-	selectOutdated,
-	selectSuites,
+	selectExplicitOrAll,
+	selectImperfectWave,
+	selectOutdatedWave,
 } from './selection.mjs'
 import { runSuite } from './suite_run.mjs'
 
 /**
- * @typedef {{ manifestSelectors: string[], suiteSelectors: string[] }} GroupInput
- * @typedef {{ manifestIds: string[], suiteSelectors: string[] }} ResolvedGroup
+ * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors?: Record<string, string[]> }} GroupInput
+ * @typedef {{ manifestIds: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} ResolvedGroup
  * @typedef {object} RunTestsOptions
  * @property {boolean} [runAll]
- * @property {string} [since]
  * @property {GroupInput[]} [groups]
- * @property {boolean} [continueRun]
- * @property {boolean} [outdated]
  * @property {boolean} [noParallel]
  * @property {boolean} [force]
  */
 
 /**
  * 将 CLI 分组输入解析为 manifest id 列表。
- * @param {import('../cli.mjs').GroupInput[]} groupInputs CLI 分组输入
+ * @param {GroupInput[]} groupInputs CLI 分组输入
  * @param {string[]} knownIds 已知 manifest id
  * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
  * @returns {{ groups: ResolvedGroup[], unmatched: string[] }} 已解析分组与未匹配 id
@@ -84,6 +80,7 @@ function resolveGroups(groupInputs, knownIds, allSuites) {
 		groups.push({
 			manifestIds: resolved.manifestIds,
 			suiteSelectors: input.suiteSelectors,
+			subtestSelectors: input.subtestSelectors ?? {},
 		})
 	}
 
@@ -109,23 +106,49 @@ function filterFromGroups(allSuites, groups) {
 }
 
 /**
+ * 从分组收集显式子测试过滤（suite 键 → 名列表）。
+ * @param {ResolvedGroup[]} groups 已解析分组
+ * @param {import('../core/manifest.mjs').SuiteDef[]} filtered 过滤后的 suite
+ * @returns {Map<string, string[]>} 子测试过滤
+ */
+function collectSubtestFilterByKey(groups, filtered) {
+	/** @type {Map<string, string[]>} */
+	const map = new Map()
+	for (const group of groups) 
+		for (const [suiteName, subtests] of Object.entries(group.subtestSelectors ?? {})) {
+			if (!subtests.length) continue
+			for (const suite of filtered) {
+				if (!group.manifestIds.includes(suite.manifestId)) continue
+				if (suite.name !== suiteName && suite.id !== suiteName) continue
+				const key = suiteKey(suite.manifestId, suite.name)
+				const prev = map.get(key) ?? []
+				map.set(key, [...new Set([...prev, ...subtests])])
+			}
+		}
+	
+	return map
+}
+
+/**
  * 根据 RunTestsOptions 拼出等效 CLI 命令串（日志/报告用）。
  * @param {RunTestsOptions} options 运行选项
- * @returns {string} 如 `fount test --continue shells/chat`
+ * @returns {string} 如 `fount test --force shells/chat`
  */
 function buildTestCommand(options) {
 	const parts = ['fount test']
 	if (options.runAll) parts.push('--all')
-	if (options.continueRun) parts.push('--continue')
-	if (options.outdated) parts.push('--outdated')
 	if (options.noParallel) parts.push('--no-parallel')
 	if (options.force) parts.push('--force')
-	if (options.since) parts.push('--since', options.since)
 	if (options.groups?.length)
 		for (const group of options.groups) {
 			const manifest = group.manifestSelectors[0]
-			if (group.suiteSelectors.length)
-				parts.push(`${manifest}:${group.suiteSelectors.join(',')}`)
+			if (group.suiteSelectors.length) {
+				const bits = group.suiteSelectors.map(suite => {
+					const subs = group.subtestSelectors?.[suite]
+					return subs?.length ? `${suite}:${subs.join(',')}` : suite
+				})
+				parts.push(`${manifest}:${bits.join(',')}`)
+			}
 			else
 				parts.push(manifest)
 		}
@@ -211,126 +234,27 @@ function buildStaleKeys(allSuites, verdicts, state) {
 }
 
 /**
- * 测试运行主入口：选择 suite、调度执行、写报告与 state。
- * @param {RunTestsOptions} [options={}] 运行选项
- * @returns {Promise<number>} 进程退出码
+ * 执行单波 plan，更新 state；有失败返回非 0。
+ * @param {object} context 运行上下文
+ * @returns {Promise<number>} 退出码
  */
-export async function runTests(options = {}) {
-	const globalBudget = computeGlobalBudget()
-	// --no-parallel：套件串行的同时把 serial.mjs 内文件并发压到 1，避免 Windows 抢 node_modules 锁
-	if (options.noParallel) globalBudget.cores = 1
-	const runId = new Date().toISOString().replace(/[.:]/g, '-')
-	const command = buildTestCommand(options)
-
-	const allSuites = await loadAllSuites(REPO_ROOT)
-	const knownIds = listManifestIds(allSuites)
-	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
-
-	const [commitHash, uncommittedFiles, state] = await Promise.all([
-		getHeadCommitHash(REPO_ROOT),
-		getUncommittedFiles(REPO_ROOT),
-		readState(REPO_ROOT),
-	])
-	const uncommittedHashes = await hashUncommittedFiles(REPO_ROOT, uncommittedFiles)
-	const uncommittedHash = digestFileHashes(uncommittedHashes, uncommittedFiles)
-	const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
-	const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
-
-	/** @type {string[] | undefined} */
-	let manifestIds
-	let filtered = allSuites
-	let explicitSuites = false
-
-	if (options.groups?.length) {
-		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds, allSuites)
-		if (unmatched.length) {
-			console.errorI18n('fountConsole.test.unknownManifestId', {
-				ids: unmatched.join(', '),
-			})
-			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
-			return 2
-		}
-		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
-		explicitSuites = resolved.some(group => group.suiteSelectors.length)
-		filtered = filterFromGroups(allSuites, resolved)
-
-		if (options.groups.some(group => {
-			const sel = group.manifestSelectors[0]
-			const match = resolveManifestSelectors(group.manifestSelectors, knownIds, allSuites)
-			return !knownIds.includes(sel) || match.manifestIds.length > 1
-		}))
-			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
-	}
-
-	/** @type {import('./selection.mjs').GoalSelection} */
-	let selection
-	if (options.continueRun) {
-		selection = selectContinue({
-			verdicts,
-			state,
-			allSuites,
-			commitHash,
-			uncommittedHash,
-		})
-		if (selection.action === 'exit') {
-			console.logI18n('fountConsole.test.nothingToContinue')
-			return selection.code ?? 0
-		}
-		console.logI18n('fountConsole.test.continueImperfect', { count: selection.goalKeys.size })
-	}
-	else if (options.outdated) {
-		selection = selectOutdated({
-			verdicts,
-			filtered,
-			allSuites,
-			committedChangedByKey,
-			commitHash,
-			uncommittedHash,
-			state,
-		})
-		console.logI18n('fountConsole.test.outdatedSelected', { count: selection.goalKeys.size })
-	}
-	else {
-		const changed = await resolveChangedFiles({
-			repoRoot: REPO_ROOT,
-			runAll: options.runAll,
-			since: options.since,
-		})
-		selection = selectSuites({
-			allSuites,
-			filtered,
-			changed,
-			runAll: options.runAll === true,
-			manifestIds,
-			explicitSuites,
-			commitHash,
-			uncommittedHash,
-			uncommittedFiles,
-			state,
-		})
-		if (selection.action === 'exit') return selection.code ?? 0
-	}
+async function executeWave(context) {
+	const {
+		selection,
+		verdicts,
+		byKey,
+		allSuites,
+		state,
+		commitHash,
+		uncommittedHash,
+		globalBudget,
+		options,
+		runId,
+		command,
+		subtestFilterByKey,
+	} = context
 
 	const goalKeys = selection.goalKeys ?? new Set()
-	console.logI18n('fountConsole.test.selectedSuites', {
-		selected: goalKeys.size,
-		total: allSuites.length,
-	})
-
-	if (!goalKeys.size) {
-		console.logI18n('fountConsole.test.noMatchingSuites')
-		if (explicitSuites) {
-			const scope = manifestIds?.length
-				? allSuites.filter(s => manifestIds.includes(s.manifestId))
-				: allSuites
-			console.errorI18n('fountConsole.test.available', {
-				ids: topoSortSuites(scope, allSuites).map(s => s.id).join(', '),
-			})
-			return 2
-		}
-		return 0
-	}
-
 	const plan = buildPlan(
 		goalKeys,
 		verdicts,
@@ -338,6 +262,7 @@ export async function runTests(options = {}) {
 		allSuites,
 		selection.goalEvidenceByKey ?? new Map(),
 		options.force,
+		subtestFilterByKey,
 	)
 	const continueReasons = buildReasonsFromPlan(plan)
 
@@ -399,11 +324,10 @@ export async function runTests(options = {}) {
 	}
 
 	/**
-	 * 记录 slot 结果并可选打印剩余 ETA。
 	 * @param {number | null} index report slot 下标
 	 * @param {object} entry 写入 state/report 的条目
 	 * @param {object} [root0] 选项
-	 * @param {boolean} [root0.reused=false] 是否为复用（非真跑）
+	 * @param {boolean} [root0.reused=false] 是否复用
 	 * @param {boolean} [root0.logEstimate=true] 是否打印 ETA
 	 * @returns {Promise<void>}
 	 */
@@ -423,7 +347,7 @@ export async function runTests(options = {}) {
 		gate,
 	})
 
-	const retryByManifest = selection.retryByManifest ?? new Map()
+	const failedFirstByManifest = selection.failedFirstByManifest ?? new Map()
 	const streamLive = options.noParallel === true
 
 	await coordinator.runAll(async slot => {
@@ -475,9 +399,10 @@ export async function runTests(options = {}) {
 		}))
 		console.log('>>', suite.run.join(' '))
 
-		const retryMap = retryByManifest.get(suite.manifestId)
-		const onlyFiles = retryMap?.has(suite.name) ? retryMap.get(suite.name) : undefined
-		const result = await runSuite(suite, onlyFiles, globalBudget, streamLive, {
+		const firstMap = failedFirstByManifest.get(suite.manifestId)
+		const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
+		const subtests = slot.subtestsToRun
+		const result = await runSuite(suite, { firstFiles, subtests }, globalBudget, streamLive, {
 			label,
 			baselineDurationMs,
 		})
@@ -487,6 +412,12 @@ export async function runTests(options = {}) {
 			await reportDenoPanic({ repoRoot: REPO_ROOT, output: result.output, label, commitHash })
 				.catch(error => console.error(error))
 
+		/** @type {Record<string, string | null>} */
+		const subtestTriggerHashes = {}
+		if (suite.subtests?.length && verdict?.subtests)
+			for (const st of suite.subtests)
+				subtestTriggerHashes[st.name] = verdict.subtests[st.name]?.triggerHash ?? null
+
 		const entry = await upsertSuiteRun({
 			repoRoot: REPO_ROOT,
 			state,
@@ -495,6 +426,8 @@ export async function runTests(options = {}) {
 			commitHash,
 			uncommittedHash,
 			triggerHash: verdict?.triggerHash ?? null,
+			ranSubtests: subtests,
+			subtestTriggerHashes,
 		})
 		await writeState(REPO_ROOT, state)
 		if (index != null) await recordSuiteResult(index, entry)
@@ -519,4 +452,177 @@ export async function runTests(options = {}) {
 	})
 
 	return exitCode
+}
+
+/**
+ * 测试运行主入口：选择 suite、调度执行、写报告与 state。
+ *
+ * 默认循环：imperfect 波次 → 有失败即退 1；全绿后 outdated 波次 → 再回到 imperfect；
+ * 两波皆空则退 0。失败不会在同一次调用内自动重试。
+ * @param {RunTestsOptions} [options={}] 运行选项
+ * @returns {Promise<number>} 进程退出码
+ */
+export async function runTests(options = {}) {
+	const globalBudget = computeGlobalBudget()
+	if (options.noParallel) globalBudget.cores = 1
+	const runId = new Date().toISOString().replace(/[.:]/g, '-')
+	const command = buildTestCommand(options)
+
+	const allSuites = await loadAllSuites(REPO_ROOT)
+	const knownIds = listManifestIds(allSuites)
+	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
+
+	const [commitHash, uncommittedFiles, state] = await Promise.all([
+		getHeadCommitHash(REPO_ROOT),
+		getUncommittedFiles(REPO_ROOT),
+		readState(REPO_ROOT),
+	])
+	const uncommittedHashes = await hashUncommittedFiles(REPO_ROOT, uncommittedFiles)
+	const uncommittedHash = digestFileHashes(uncommittedHashes, uncommittedFiles)
+
+	/** @type {string[] | undefined} */
+	let manifestIds
+	let filtered = allSuites
+	let explicitSuites = false
+	/** @type {Map<string, string[]>} */
+	let subtestFilterByKey = new Map()
+
+	if (options.groups?.length) {
+		const { groups: resolved, unmatched } = resolveGroups(options.groups, knownIds, allSuites)
+		if (unmatched.length) {
+			console.errorI18n('fountConsole.test.unknownManifestId', {
+				ids: unmatched.join(', '),
+			})
+			console.errorI18n('fountConsole.test.available', { ids: knownIds.join(', ') })
+			return 2
+		}
+		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
+		explicitSuites = resolved.some(group => group.suiteSelectors.length)
+		filtered = filterFromGroups(allSuites, resolved)
+		subtestFilterByKey = collectSubtestFilterByKey(resolved, filtered)
+
+		if (options.groups.some(group => {
+			const sel = group.manifestSelectors[0]
+			const match = resolveManifestSelectors(group.manifestSelectors, knownIds, allSuites)
+			return !knownIds.includes(sel) || match.manifestIds.length > 1
+		}))
+			console.logI18n('fountConsole.test.manifestMatched', { ids: manifestIds.join(', ') })
+	}
+
+	if (options.runAll || explicitSuites) {
+		const selection = selectExplicitOrAll({
+			filtered,
+			state,
+			manifestIds,
+			runAll: options.runAll === true,
+			subtestFilterByKey,
+		})
+		if (selection.action === 'exit') {
+			if (explicitSuites) {
+				console.logI18n('fountConsole.test.noMatchingSuites')
+				const scope = manifestIds?.length
+					? allSuites.filter(s => manifestIds.includes(s.manifestId))
+					: allSuites
+				console.errorI18n('fountConsole.test.available', {
+					ids: topoSortSuites(scope, allSuites).map(s => s.id).join(', '),
+				})
+				return 2
+			}
+			return 0
+		}
+		console.logI18n('fountConsole.test.selectedSuites', {
+			selected: selection.goalKeys.size,
+			total: allSuites.length,
+		})
+		const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
+		const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
+		return executeWave({
+			selection,
+			verdicts,
+			byKey,
+			allSuites,
+			state,
+			commitHash,
+			uncommittedHash,
+			globalBudget,
+			options,
+			runId,
+			command,
+			subtestFilterByKey,
+		})
+	}
+
+	// 默认：imperfect → outdated 循环；失败即退 1，两波皆空退 0
+	for (; ;) {
+		const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
+		const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
+
+		const imperfect = selectImperfectWave({
+			verdicts,
+			state,
+			allSuites,
+			scope: filtered,
+			commitHash,
+			uncommittedHash,
+		})
+		if (imperfect.action === 'run') {
+			console.logI18n('fountConsole.test.continueImperfect', { count: imperfect.goalKeys.size })
+			console.logI18n('fountConsole.test.selectedSuites', {
+				selected: imperfect.goalKeys.size,
+				total: allSuites.length,
+			})
+			const code = await executeWave({
+				selection: imperfect,
+				verdicts,
+				byKey,
+				allSuites,
+				state,
+				commitHash,
+				uncommittedHash,
+				globalBudget,
+				options,
+				runId,
+				command,
+				subtestFilterByKey,
+			})
+			if (code !== 0) return code
+			continue
+		}
+
+		const outdated = selectOutdatedWave({
+			verdicts,
+			scope: filtered,
+			allSuites,
+			committedChangedByKey,
+			commitHash,
+			uncommittedHash,
+			state,
+		})
+		if (outdated.action === 'run') {
+			console.logI18n('fountConsole.test.outdatedSelected', { count: outdated.goalKeys.size })
+			console.logI18n('fountConsole.test.selectedSuites', {
+				selected: outdated.goalKeys.size,
+				total: allSuites.length,
+			})
+			const code = await executeWave({
+				selection: outdated,
+				verdicts,
+				byKey,
+				allSuites,
+				state,
+				commitHash,
+				uncommittedHash,
+				globalBudget,
+				options,
+				runId,
+				command,
+				subtestFilterByKey,
+			})
+			if (code !== 0) return code
+			continue
+		}
+
+		console.logI18n('fountConsole.test.nothingToContinue')
+		return 0
+	}
 }

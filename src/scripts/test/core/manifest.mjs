@@ -9,15 +9,26 @@ import { matchGlob } from './glob.mjs'
 import { parseManifestResources } from './resources.mjs'
 import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
 /**
+ * suite 内注册的子测试。
+ * @typedef {object} SubtestDef
+ * @property {string} name 子测试名（CLI 第三级选择器）
+ * @property {string} spec spec 文件名（默认 `${name}.spec.mjs`）
+ * @property {string[]} triggers 子测试专属触发 glob（不含 suite 共享 triggers）
+ * @property {string[]} [triggerRefs] trigger set 引用名
+ * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
+ */
+
+/**
  * manifest 中单个 suite 的解析结果。
  * @typedef {object} SuiteDef
  * @property {string} manifestId manifest 顶层 id
  * @property {string} name suite 显示名
  * @property {string} id suite 指名 id（默认同 name）
  * @property {string[]} run 执行命令
- * @property {string[]} triggers 触发 glob
+ * @property {string[]} triggers 触发 glob（suite 共享；命中则全部子测试过期）
  * @property {string[]} [triggerRefs] manifest trigger set 引用名
  * @property {Record<string, string[]>} [triggerSetPatterns] triggerRefs 展开的模式表
+ * @property {SubtestDef[]} [subtests] 注册的子测试
  * @property {string} manifestPath 相对仓库根的 manifest 路径
  * @property {boolean} heavy 满核独占（仅 `p2p/sim` 等）；其余用 `resources`
  * @property {{ memMb?: number, cpuPct?: number } | undefined} resources 声明资源；缺省由 `resources.mjs` 推断
@@ -37,26 +48,84 @@ function resolveSuiteTriggerRefs(suite) {
 }
 
 /**
+ * 解析 trigger / triggers 字段为 glob 模式列表。
+ * @param {object} entry suite 或 subtest 条目
+ * @param {Record<string, string[]>} triggerSets manifest triggerSets
+ * @param {string} label 错误信息中的标签
+ * @returns {{ patterns: string[], refs: string[], setPatterns: Record<string, string[]> }} 解析结果
+ */
+function resolveTriggerFields(entry, triggerSets, label) {
+	/** @type {string[]} */
+	const patterns = []
+	const refs = entry.trigger
+		? Array.isArray(entry.trigger) ? entry.trigger : [entry.trigger]
+		: []
+	/** @type {Record<string, string[]>} */
+	const setPatterns = {}
+	for (const ref of refs) {
+		const set = triggerSets[ref]
+		if (!set?.length)
+			throw new Error(`unknown trigger "${ref}" in ${label}`)
+		patterns.push(...set)
+		setPatterns[ref] = set
+	}
+	if (entry.triggers?.length)
+		patterns.push(...entry.triggers)
+	return { patterns: [...new Set(patterns)], refs, setPatterns }
+}
+
+/**
  * 解析 suite 的 trigger 引用为 glob 模式列表。
  * @param {object} suite manifest 中的 suite 条目
  * @param {Record<string, string[]>} triggerSets manifest triggerSets
  * @returns {string[]} 解析后的 triggers
  */
 function resolveSuiteTriggers(suite, triggerSets) {
-	/** @type {string[]} */
-	const patterns = []
-	const refs = suite.trigger
-		? Array.isArray(suite.trigger) ? suite.trigger : [suite.trigger]
-		: []
-	for (const ref of refs) {
-		const set = triggerSets[ref]
-		if (!set?.length)
-			throw new Error(`unknown trigger "${ref}" in suite "${suite.name}"`)
-		patterns.push(...set)
+	return resolveTriggerFields(suite, triggerSets, `suite "${suite.name}"`).patterns
+}
+
+/**
+ * 解析 suite.subtests 数组。
+ * @param {object} suite manifest 中的 suite 条目
+ * @param {Record<string, string[]>} triggerSets manifest triggerSets
+ * @returns {SubtestDef[] | undefined} 子测试列表
+ */
+function resolveSubtests(suite, triggerSets) {
+	if (!suite.subtests?.length) return undefined
+	/** @type {SubtestDef[]} */
+	const out = []
+	/** @type {Set<string>} */
+	const seen = new Set()
+	for (const raw of suite.subtests) {
+		const name = raw.name?.trim()
+		if (!name)
+			throw new Error(`subtest missing "name" in suite "${suite.name}"`)
+		if (seen.has(name))
+			throw new Error(`duplicate subtest "${name}" in suite "${suite.name}"`)
+		seen.add(name)
+		const { patterns, refs, setPatterns } = resolveTriggerFields(
+			raw,
+			triggerSets,
+			`subtest "${suite.name}/${name}"`,
+		)
+		out.push({
+			name,
+			spec: raw.spec?.trim() || `${name}.spec.mjs`,
+			triggers: patterns,
+			triggerRefs: refs.length ? refs : undefined,
+			triggerSetPatterns: refs.length ? setPatterns : undefined,
+		})
 	}
-	if (suite.triggers?.length)
-		patterns.push(...suite.triggers)
-	return [...new Set(patterns)]
+	return out
+}
+
+/**
+ * 子测试的 spec 文件名。
+ * @param {SubtestDef} subtest 子测试
+ * @returns {string} basename
+ */
+export function subtestSpecBasename(subtest) {
+	return subtest.spec
 }
 
 const INFRA_PREFIX = 'src/scripts/test/'
@@ -139,6 +208,7 @@ export async function loadAllSuites(repoRoot) {
 				triggers: resolveSuiteTriggers(suite, triggerSets),
 				triggerRefs,
 				triggerSetPatterns: triggerRefs.length ? triggerSetPatterns : undefined,
+				subtests: resolveSubtests(suite, triggerSets),
 				manifestPath: relManifest,
 				heavy: suite.heavy === true,
 				resources: parseManifestResources(suite.resources),

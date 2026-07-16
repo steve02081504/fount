@@ -1,8 +1,6 @@
-import { console } from '../../i18n/bare.mjs'
 import { collectChangesSinceRecord } from '../core/changed.mjs'
 import { expandImperfectDependents } from '../core/dependencies.mjs'
-import { selectSuitesByDiff } from '../core/manifest.mjs'
-import { collectStaleTriggerEvidence, collectTriggerEvidence, suiteKey } from '../core/state.mjs'
+import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('../core/manifest.mjs').SuiteDef} SuiteDef
@@ -17,8 +15,9 @@ import { collectStaleTriggerEvidence, collectTriggerEvidence, suiteKey } from '.
  * @property {number} [code]
  * @property {Set<string>} [goalKeys]
  * @property {Map<string, GoalEvidence>} [goalEvidenceByKey]
- * @property {Map<string, Map<string, string[] | undefined>>} [retryByManifest]
- * @property {'normal' | 'continue' | 'outdated'} [mode]
+ * @property {Map<string, Map<string, string[] | undefined>>} [failedFirstByManifest] manifest → suite → 失败文件（FOUNT_TEST_FIRST）
+ * @property {Map<string, string[]>} [subtestFilterByKey] suite 键 → 显式子测试过滤
+ * @property {'imperfect' | 'outdated' | 'explicit' | 'all'} [mode]
  */
 
 /**
@@ -26,40 +25,30 @@ import { collectStaleTriggerEvidence, collectTriggerEvidence, suiteKey } from '.
  * @param {string[] | undefined} manifestIds manifest 范围
  * @returns {Map<string, Map<string, string[] | undefined>>} manifest -> suite -> 失败文件
  */
-export function buildRetryByManifest(state, manifestIds) {
+export function buildFailedFirstByManifest(state, manifestIds) {
 	/** @type {Map<string, Map<string, string[] | undefined>>} */
-	const retryByManifest = new Map()
+	const byManifest = new Map()
 	for (const [key, entry] of Object.entries(state.suites)) {
 		if (!['failed', 'noisy'].includes(entry.status)) continue
 		const slash = key.indexOf('/')
 		const manifestId = key.slice(0, slash)
 		if (manifestIds?.length && !manifestIds.includes(manifestId)) continue
 		const name = key.slice(slash + 1)
-		const map = retryByManifest.get(manifestId) ?? new Map()
+		const map = byManifest.get(manifestId) ?? new Map()
 		map.set(name, entry.failedFiles?.length ? entry.failedFiles : undefined)
-		retryByManifest.set(manifestId, map)
+		byManifest.set(manifestId, map)
 	}
-	return retryByManifest
+	return byManifest
 }
 
-/**
- * @param {SuiteDef[]} candidates 候选
- * @param {Map<string, Map<string, string[] | undefined>>} retryByManifest 重跑映射
- * @returns {Set<string>} 待重跑 suite 键
- */
-function goalKeysFromFailureRetry(candidates, retryByManifest) {
-	const retryManifestIds = [...retryByManifest.keys()]
-	const allowedSuites = new Set([...retryByManifest.values()].flatMap(map => [...map.keys()]))
-	return new Set(candidates
-		.filter(suite => retryManifestIds.includes(suite.manifestId) && allowedSuites.has(suite.name))
-		.map(suite => suiteKey(suite.manifestId, suite.name)))
-}
+/** @deprecated 使用 buildFailedFirstByManifest */
+export const buildRetryByManifest = buildFailedFirstByManifest
 
 /**
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @returns {Promise<Map<string, string[]>>} suite 键 -> 自记录 commit 以来变更文件
+ * @returns {Promise<Map<string, string[]>>} suite 键（及 `key#subtest`）-> 自记录 commit 以来变更文件
  */
 export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 	/** @type {Map<string, string[]>} */
@@ -68,6 +57,11 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 		const key = suiteKey(suite.manifestId, suite.name)
 		const entry = state.suites[key]
 		map.set(key, await collectChangesSinceRecord(repoRoot, entry?.commitHash ?? null, []))
+		if (!suite.subtests?.length) return
+		await Promise.all(suite.subtests.map(async subtest => {
+			const stCommit = entry?.subtests?.[subtest.name]?.commitHash ?? entry?.commitHash ?? null
+			map.set(`${key}#${subtest.name}`, await collectChangesSinceRecord(repoRoot, stCommit, []))
+		}))
 	}))
 	return map
 }
@@ -87,9 +81,13 @@ export function goalImperfectKeys(verdicts, state) {
 			keys.add(key)
 			continue
 		}
+		// 内容过期的 passed 留给 outdated 波次
 		if (verdict.kind === 'unknown' && entry.status === 'passed')
 			continue
-		keys.add(key)
+		if (verdict.kind === 'red' || verdict.kind === 'noisy')
+			keys.add(key)
+		else if (entry.status === 'failed' || entry.status === 'noisy' || entry.status === 'blocked')
+			keys.add(key)
 	}
 	return keys
 }
@@ -98,7 +96,7 @@ export function goalImperfectKeys(verdicts, state) {
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
  * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {Set<string>} --continue 目标键
+ * @returns {Set<string>} imperfect + 一层下游
  */
 export function goalContinue(verdicts, state, allSuites) {
 	return expandImperfectDependents(goalImperfectKeys(verdicts, state), allSuites)
@@ -107,39 +105,13 @@ export function goalContinue(verdicts, state, allSuites) {
 /**
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 过滤范围
- * @returns {Set<string>} --outdated 目标键
+ * @returns {Set<string>} outdated 目标键
  */
 export function goalOutdated(verdicts, scope) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
 	return new Set([...verdicts.entries()]
 		.filter(([key, verdict]) => scopeKeys.has(key) && verdict.kind === 'unknown')
 		.map(([key]) => key))
-}
-
-/**
- * @param {string[]} changedFiles 变更文件
- * @param {SuiteDef[]} scope 过滤范围
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
- * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 目标键与触发证据
- */
-export function goalDiff(changedFiles, scope, commitHash, uncommittedHash) {
-	const hit = selectSuitesByDiff('diff', changedFiles, scope)
-	const goalKeys = new Set(hit.map(s => suiteKey(s.manifestId, s.name)))
-	/** @type {Map<string, GoalEvidence>} */
-	const goalEvidenceByKey = new Map()
-	for (const suite of hit) {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const evidence = collectTriggerEvidence(suite, changedFiles)
-		if (evidence.matchedPaths.length)
-			goalEvidenceByKey.set(key, {
-				kind: 'diff_trigger_hit',
-				toCommit: commitHash,
-				toUncommittedHash: uncommittedHash,
-				...evidence,
-			})
-	}
-	return { goalKeys, goalEvidenceByKey }
 }
 
 /**
@@ -153,19 +125,30 @@ export function goalExplicit(suites) {
 }
 
 /**
+ * 构造 imperfect 波次选择。
  * @param {object} params 参数
  * @param {Map<string, Verdict>} params.verdicts 裁决表
  * @param {TestState} params.state 现状库
  * @param {SuiteDef[]} params.allSuites 全部 suite
+ * @param {SuiteDef[]} params.scope 范围
  * @param {string} params.commitHash HEAD
  * @param {string | null} params.uncommittedHash 未提交 digest
  * @returns {GoalSelection} 选择结果
  */
-export function selectContinue({ verdicts, state, allSuites, commitHash, uncommittedHash }) {
-	const imperfectKeys = goalImperfectKeys(verdicts, state)
+export function selectImperfectWave({
+	verdicts,
+	state,
+	allSuites,
+	scope,
+	commitHash,
+	uncommittedHash,
+}) {
+	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state)].filter(k => scopeKeys.has(k)))
 	const goalKeys = expandImperfectDependents(imperfectKeys, allSuites)
+	// 下游可能超出 scope；仍纳入（依赖需要）
 	if (!goalKeys.size)
-		return { action: 'exit', code: 0 }
+		return { action: 'exit', code: 0, mode: 'imperfect' }
 
 	/** @type {Map<string, GoalEvidence>} */
 	const goalEvidenceByKey = new Map()
@@ -206,17 +189,18 @@ export function selectContinue({ verdicts, state, allSuites, commitHash, uncommi
 
 	return {
 		action: 'run',
-		mode: 'continue',
+		mode: 'imperfect',
 		goalKeys,
 		goalEvidenceByKey,
-		retryByManifest: buildRetryByManifest(state),
+		failedFirstByManifest: buildFailedFirstByManifest(state),
 	}
 }
 
 /**
+ * 构造 outdated 波次选择。
  * @param {object} params 参数
  * @param {Map<string, Verdict>} params.verdicts 裁决表
- * @param {SuiteDef[]} [params.filtered] 过滤范围
+ * @param {SuiteDef[]} params.scope 范围
  * @param {SuiteDef[]} [params.allSuites] 全部 suite
  * @param {Map<string, string[]>} [params.committedChangedByKey] commit 变更
  * @param {string} [params.commitHash] HEAD
@@ -224,17 +208,19 @@ export function selectContinue({ verdicts, state, allSuites, commitHash, uncommi
  * @param {TestState} [params.state] 现状库
  * @returns {GoalSelection} 选择结果
  */
-export function selectOutdated({
+export function selectOutdatedWave({
 	verdicts,
-	filtered,
+	scope,
 	allSuites = [],
 	committedChangedByKey = new Map(),
 	commitHash,
 	uncommittedHash,
 	state,
 }) {
-	const scope = filtered ?? []
 	const goalKeys = goalOutdated(verdicts, scope)
+	if (!goalKeys.size)
+		return { action: 'exit', code: 0, mode: 'outdated' }
+
 	const byKey = new Map(allSuites.map(s => [suiteKey(s.manifestId, s.name), s]))
 	/** @type {Map<string, GoalEvidence>} */
 	const evidenceByKey = new Map()
@@ -263,103 +249,61 @@ export function selectOutdated({
 		mode: 'outdated',
 		goalKeys,
 		goalEvidenceByKey: evidenceByKey,
-		retryByManifest: new Map(),
+		failedFirstByManifest: state ? buildFailedFirstByManifest(state) : new Map(),
 	}
 }
 
 /**
- * @param {object} params 选择参数
- * @param {SuiteDef[]} params.allSuites 全部 suite
- * @param {SuiteDef[]} params.filtered manifest/suite 过滤后
- * @param {{ mode: string, files: string[] }} params.changed 变更文件解析结果
- * @param {boolean} params.runAll 是否全量
- * @param {string[]} [params.manifestIds] manifest id 列表
- * @param {boolean} [params.explicitSuites] 是否显式指名 suite
- * @param {string} params.commitHash 当前 HEAD
- * @param {string | null} params.uncommittedHash 当前未提交 digest
- * @param {string[]} params.uncommittedFiles 未提交路径列表
+ * 显式选择 / --all：范围内全部 suite 作为目标。
+ * @param {object} params 参数
+ * @param {SuiteDef[]} params.filtered 过滤后的 suite
  * @param {TestState} params.state 现状库
+ * @param {string[]} [params.manifestIds] manifest 范围
+ * @param {boolean} [params.runAll] 是否 --all
+ * @param {Map<string, string[]>} [params.subtestFilterByKey] 子测试过滤
  * @returns {GoalSelection} 选择结果
  */
-export function selectSuites({
-	allSuites,
+export function selectExplicitOrAll({
 	filtered,
-	changed,
-	runAll,
-	manifestIds,
-	explicitSuites,
-	commitHash,
-	uncommittedHash,
-	uncommittedFiles,
 	state,
+	manifestIds,
+	runAll = false,
+	subtestFilterByKey = new Map(),
 }) {
-	if (runAll || explicitSuites)
-		return {
-			action: 'run',
-			mode: 'normal',
-			...goalExplicit(filtered),
-			retryByManifest: buildRetryByManifest(state, manifestIds),
-		}
-
-	const retryByManifest = buildRetryByManifest(state, manifestIds)
-	/** @type {Set<string>} */
-	let goalKeys = new Set()
-	/** @type {Map<string, GoalEvidence>} */
-	let goalEvidenceByKey = new Map()
-
-	if (retryByManifest.size) {
-		goalKeys = goalKeysFromFailureRetry(filtered, retryByManifest)
-		for (const key of goalKeys)
-			goalEvidenceByKey.set(key, { kind: 'failure_retry' })
-		console.logI18n('fountConsole.test.failureRetry', {
-			manifests: [...retryByManifest.keys()].join(', '),
-			count: goalKeys.size,
-		})
-
-		const hashStale = uncommittedFiles.length > 0 && [...retryByManifest.keys()].some(manifestId =>
-			Object.entries(state.suites).some(([key, entry]) =>
-				key.startsWith(`${manifestId}/`) && entry.uncommittedHash !== uncommittedHash))
-		if (hashStale && changed.mode === 'diff' && changed.files.length) {
-			const diff = goalDiff(changed.files, filtered, commitHash, uncommittedHash)
-			const before = goalKeys.size
-			for (const key of diff.goalKeys) goalKeys.add(key)
-			for (const [key, evidence] of diff.goalEvidenceByKey)
-				if (!goalEvidenceByKey.has(key))
-					goalEvidenceByKey.set(key, evidence)
-			console.logI18n('fountConsole.test.hashStaleAppendDiff', {
-				count: goalKeys.size - before,
-			})
-		}
-	}
-	else if (changed.mode === 'diff' && changed.files.length) {
-		const diff = goalDiff(changed.files, filtered, commitHash, uncommittedHash)
-		goalKeys = diff.goalKeys
-		goalEvidenceByKey = diff.goalEvidenceByKey
-		console.logI18n('fountConsole.test.diffMode', {
-			fileCount: changed.files.length,
-			files: changed.files.slice(0, 12).join(', ')
-				+ (changed.files.length > 12 ? '...' : ''),
-		})
-	}
-	else if (changed.mode === 'none' && !manifestIds?.length) {
-		console.logI18n('fountConsole.test.noChangesHint')
-		console.logI18n('fountConsole.test.tip')
+	const { goalKeys, goalEvidenceByKey } = goalExplicit(filtered)
+	if (!goalKeys.size)
 		return { action: 'exit', code: 0 }
-	}
-	else if (changed.mode === 'none' && manifestIds?.length) {
-		console.logI18n('fountConsole.test.manifestNoDiffRunAll', {
-			manifestIds: manifestIds.join(','),
-		})
-		const explicit = goalExplicit(filtered)
-		goalKeys = explicit.goalKeys
-		goalEvidenceByKey = explicit.goalEvidenceByKey
-	}
-
 	return {
 		action: 'run',
-		mode: 'normal',
+		mode: runAll ? 'all' : 'explicit',
 		goalKeys,
 		goalEvidenceByKey,
-		retryByManifest,
+		failedFirstByManifest: buildFailedFirstByManifest(state, manifestIds),
+		subtestFilterByKey,
 	}
+}
+
+/** @deprecated 兼容旧自测名 */
+export const selectContinue = selectImperfectWave
+/** @deprecated 兼容旧自测名 */
+export const selectOutdated = selectOutdatedWave
+
+/**
+ * @deprecated diff 选择已移除；保留空壳避免旧 import 炸裂
+ * @param {string[]} _changedFiles 忽略
+ * @param {SuiteDef[]} _scope 忽略
+ * @param {string} _commitHash 忽略
+ * @param {string | null} _uncommittedHash 忽略
+ * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 空结果
+ */
+export function goalDiff(_changedFiles, _scope, _commitHash, _uncommittedHash) {
+	return { goalKeys: new Set(), goalEvidenceByKey: new Map() }
+}
+
+/**
+ * @deprecated 默认模式改为循环波次，不再走此函数
+ * @returns {GoalSelection} 退出
+ */
+export function selectSuites() {
+	return { action: 'exit', code: 0 }
 }

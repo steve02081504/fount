@@ -363,7 +363,7 @@
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
 		"test": {
-			"help": "用法：fount test [--all] [--continue] [--outdated] [--no-parallel] [--force] [--since <commit>] [<groups>...]\n\n分组语法（空格分隔多组，每组 manifest 或 manifest:suite1,suite2）：\n  manifest          该 manifest 全部 suite\n  manifest:suite    指定 suite（逗号分隔多个；亦可用 manifest/suite 斜杠写法）\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n有未提交修改时仅运行 diff 触发的测试；工作区干净时用 --since 对比指定 commit。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\n裸组（无冒号 suite）若 state 中存在失败/噪声项则优先重跑；显式指名 suite 则直接按指名执行。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked，底层修好后须实际重跑。\n\n--continue    重跑裁决非 green 的套件（含失败、噪声、内容已变、未跑过）；新鲜上游复用不阻塞下游。\n--outdated    重验内容已变（verdict unknown）及从未跑过的 suite。\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果（含失败），--force 强制真跑。\n\n示例：\n  fount test\n  fount test --all\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/chat:frontend\n  fount test --continue\n  fount test --outdated\n  fount test --since abc1234",
+			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（亦可用 manifest/suite/subtest）\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test --force shells/social:frontend",
 			"passed": "通过：${label}",
 			"passedWithNoise": "通过：${label}（含有噪声）",
 			"failed": "失败：${label}",
@@ -380,8 +380,8 @@
 			"reportPathFinal": "\n报告：${path}",
 			"statePathFinal": "现状：${path}",
 			"blocked": "阻塞：${label}（依赖未过：${deps}）",
-			"continueImperfect": "重跑 ${count} 个不完美套件",
-			"outdatedSelected": "已选择 ${count} 个陈旧/未跑过的套件",
+			"continueImperfect": "失败/未完成波次：${count} 个套件",
+			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
 			"runningSuite": {
 				"base": "\n>>> 正在运行 ${manifestId}/${name}",
 				"heavy": "高负载",
@@ -407,8 +407,8 @@
 			"hashStaleAppendDiff": "未提交内容已变化，追加 diff 触发：+${count} 个套件",
 			"diffMode": "diff 模式：${fileCount} 个文件 — ${files}",
 			"noChangesHint": "无未提交变更且未指定 --since：仅重跑 state 中不完美的套件。",
-			"tip": "提示：fount test --all | fount test --since <commit> | fount test shells/chat:pure",
-			"nothingToContinue": "没有可续跑的未完成测试项。",
+			"tip": "提示：fount test --all | fount test shells/chat:pure | fount test shells/social:frontend:feed",
+			"nothingToContinue": "全部绿且无过期项，无需再跑。",
 			"manifestNoDiffRunAll": "manifest ${manifestIds} 无 diff 触发项，将运行其全部套件。",
 			"unknownSuite": "未知的套件：${name}",
 			"federationCleanupPre": "联邦测试清理（运行前）失败：${output}",

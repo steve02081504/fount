@@ -24,6 +24,7 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  * @property {string | null} [requiredBy] 直接纳入方（依赖拉入）
  * @property {boolean} goal 是否为用户目标
  * @property {GoalEvidence} [goalEvidence] 目标证据
+ * @property {string[]} [subtestsToRun] 本次需跑的子测试名（省略 = 全部）
  */
 
 /**
@@ -65,15 +66,40 @@ function listBlockingDeps(key, planned, verdicts, byKey) {
 }
 
 /**
+ * 目标 suite 是否必须真跑（不复用）。
+ * @param {boolean} isGoal 是否目标
+ * @param {Verdict | undefined} verdict 裁决
+ * @param {boolean} force 强制
+ * @returns {boolean} 必须真跑
+ */
+function goalMustRun(isGoal, verdict, force) {
+	if (!isGoal) return false
+	if (force) return true
+	if (!verdict) return true
+	if (verdict.kind === 'unknown' || verdict.kind === 'red' || verdict.kind === 'noisy')
+		return true
+	return (verdict.subtestsToRun?.length ?? 0) > 0
+}
+
+/**
  * @param {Set<string>} goalKeys 用户目标键
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {Map<string, SuiteDef>} byKey 全部 suite
  * @param {SuiteDef[]} allSuites 全部 suite（拓扑 tie-break）
  * @param {Map<string, GoalEvidence>} [goalEvidenceByKey] 目标证据
  * @param {boolean} [force] 强制真跑目标
+ * @param {Map<string, string[]>} [subtestFilterByKey] 显式子测试过滤（suite 键 → 名列表）
  * @returns {RunPlan} 运行计划
  */
-export function buildPlan(goalKeys, verdicts, byKey, allSuites, goalEvidenceByKey = new Map(), force = false) {
+export function buildPlan(
+	goalKeys,
+	verdicts,
+	byKey,
+	allSuites,
+	goalEvidenceByKey = new Map(),
+	force = false,
+	subtestFilterByKey = new Map(),
+) {
 	const needed = new Set(goalKeys)
 	/** @type {Map<string, string>} */
 	const provenance = new Map()
@@ -103,12 +129,30 @@ export function buildPlan(goalKeys, verdicts, byKey, allSuites, goalEvidenceByKe
 		const key = suiteKey(suite.manifestId, suite.name)
 		const verdict = verdicts.get(key)
 		const isGoal = goalKeys.has(key)
+		/** @type {string[] | undefined} */
+		let subtestsToRun
+		if (suite.subtests?.length) {
+			const filter = subtestFilterByKey.get(key)
+			const allNames = suite.subtests.map(st => st.name)
+			const neededSubs = force && isGoal
+				? allNames
+				: verdict?.subtestsToRun?.length
+					? verdict.subtestsToRun
+					: verdict?.kind === 'unknown' || verdict?.kind === 'red' || verdict?.kind === 'noisy'
+						? allNames
+						: []
+			subtestsToRun = filter?.length
+				? neededSubs.filter(name => filter.includes(name))
+				: neededSubs
+		}
+
 		const base = {
 			key,
 			suite,
 			goal: isGoal,
 			goalEvidence: goalEvidenceByKey.get(key),
 			requiredBy: provenance.get(key) ?? null,
+			subtestsToRun,
 		}
 
 		const blockedBy = listBlockingDeps(key, planned, verdicts, byKey)
@@ -117,7 +161,13 @@ export function buildPlan(goalKeys, verdicts, byKey, allSuites, goalEvidenceByKe
 			continue
 		}
 
-		if (verdictReusable(verdict, force && isGoal)) {
+		// 显式子测试过滤后无交集 → 无事可做，复用
+		if (suite.subtests?.length && Array.isArray(subtestsToRun) && !subtestsToRun.length && !force) {
+			planned.set(key, { ...base, action: 'reuse' })
+			continue
+		}
+
+		if (!goalMustRun(isGoal, verdict, force) && verdictReusable(verdict, false)) {
 			planned.set(key, { ...base, action: 'reuse' })
 			continue
 		}

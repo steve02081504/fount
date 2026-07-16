@@ -1,9 +1,9 @@
 /**
  * fount test CLI
  *
- *   fount test [--all] [--continue] [--outdated] [--no-parallel] [--force] [--since <commit>] [<groups>...]
+ *   fount test [--all] [--no-parallel] [--force] [<groups>...]
  *
- * 分组语法：manifest、manifest:suite、manifest/suite（空格分隔多组）
+ * 分组语法：manifest、manifest:suite、manifest:suite:subtest、manifest/suite/subtest（空格分隔多组）
  */
 import 'fount/scripts/test/env.mjs'
 
@@ -26,10 +26,7 @@ const { positionals, values } = parseArgsOrExit({
 	args: process.argv.slice(2),
 	allowPositionals: true,
 	options: {
-		since: { type: 'string' },
 		all: { type: 'boolean', default: false },
-		continue: { type: 'boolean', default: false },
-		outdated: { type: 'boolean', default: false },
 		'no-parallel': { type: 'boolean', default: false },
 		force: { type: 'boolean', default: false },
 		help: { type: 'boolean', short: 'h', default: false },
@@ -51,15 +48,15 @@ function splitSelectors(raw) {
 }
 
 /**
- * @typedef {{ manifestSelectors: string[], suiteSelectors: string[] }} GroupInput
+ * @typedef {{ manifestSelectors: string[], suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} GroupInput
  */
 
 /**
- * 解析 CLI positional 为 manifest/suite 分组输入。
+ * 解析 CLI positional 为 manifest/suite/subtest 分组输入。
  * @param {string[]} args CLI positional
  * @param {string[]} knownIds 已知 manifest id
  * @param {import('./core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
- * @returns {{ groups: GroupInput[] | undefined }} 分组输入；无 positional 时为 undefined
+ * @returns {{ groups: GroupInput[] | undefined } | { error: string, token: string }} 分组输入
  */
 function parseGroupSelectors(args, knownIds, allSuites) {
 	if (!args.length)
@@ -76,6 +73,7 @@ function parseGroupSelectors(args, knownIds, allSuites) {
 			current = {
 				manifestSelectors: [resolved.manifestId],
 				suiteSelectors: resolved.suiteSelectors,
+				subtestSelectors: resolved.subtestSelectors ?? {},
 			}
 			groups.push(current)
 			continue
@@ -83,11 +81,28 @@ function parseGroupSelectors(args, knownIds, allSuites) {
 
 		const manifestResolved = resolveManifestSelectors([token], knownIds, allSuites)
 		if (manifestResolved.manifestIds.length) {
-			current = { manifestSelectors: [token], suiteSelectors: [] }
+			current = { manifestSelectors: [token], suiteSelectors: [], subtestSelectors: {} }
 			groups.push(current)
 		}
-		else if (isBareSuiteContinuation(token, knownIds) && current)
-			current.suiteSelectors.push(...splitSelectors(token))
+		else if (isBareSuiteContinuation(token, knownIds) && current) {
+			const parts = splitSelectors(token)
+			for (const part of parts) {
+				const colon = part.indexOf(':')
+				if (colon < 0) {
+					current.suiteSelectors.push(part)
+					continue
+				}
+				const suite = part.slice(0, colon)
+				const subtest = part.slice(colon + 1)
+				if (!current.suiteSelectors.includes(suite))
+					current.suiteSelectors.push(suite)
+				if (subtest) {
+					const list = current.subtestSelectors[suite] ?? []
+					if (!list.includes(subtest)) list.push(subtest)
+					current.subtestSelectors[suite] = list
+				}
+			}
+		}
 		else
 			return { error: 'unknownFirstToken', token }
 	}
@@ -109,9 +124,6 @@ process.exit(await (async () => {
 	const runStarted = Date.now()
 	const exitCode = await runTests({
 		runAll: values.all,
-		since: values.since,
-		continueRun: values.continue,
-		outdated: values.outdated,
 		noParallel: values['no-parallel'],
 		force: values.force,
 		groups: parsed.groups,
