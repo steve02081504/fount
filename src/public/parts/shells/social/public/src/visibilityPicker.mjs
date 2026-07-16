@@ -70,7 +70,7 @@ export function readVisibilityPicker(root = document) {
 export function renderVisibilityPickerHtml(options = {}) {
 	const selected = options.selected || 'public'
 	const idPrefix = options.idPrefix || ''
-	const options = VISIBILITY_OPTIONS.map(opt =>
+	const optionHtml = VISIBILITY_OPTIONS.map(opt =>
 		`<option value="${opt.value}"${opt.value === selected ? ' selected' : ''}>${escapeHtml(geti18n(opt.i18n))}</option>`,
 	).join('')
 	const showAllow = selected === 'selected' ? '' : ' hidden'
@@ -78,7 +78,7 @@ export function renderVisibilityPickerHtml(options = {}) {
 	return `
 		<div class="visibility-picker" data-visibility-picker>
 			<select data-visibility-select id="${escapeHtml(idPrefix)}Visibility" class="select select-bordered select-sm composer-select composer-visibility">
-				${options}
+				${optionHtml}
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"
 				placeholder="${escapeHtml(geti18n('social.visibility.allowPlaceholder'))}"
