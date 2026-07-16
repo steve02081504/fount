@@ -1,37 +1,38 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
+import { socialApi } from '../lib/apiClient.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+import { socialState } from '../state.mjs'
 
 /**
  * 关闭收藏帖模态框。
- * @param {object} appContext 应用上下文
  * @returns {void}
  */
-export function closeSaveModal(appContext) {
-	appContext.state.pendingSave = null
+export function closeSaveModal() {
+	socialState.pendingSave = null
 	document.getElementById('saveModal')?.classList.add('hidden')
 }
 
 /**
  * 打开收藏帖模态框并填充文件夹选项。
- * @param {object} appContext 应用上下文
  * @param {string} entityHash 作者
  * @param {string} postId 帖子
  * @param {HTMLElement} button 按钮
  * @returns {Promise<void>}
  */
-export async function openSaveModal(appContext, entityHash, postId, button) {
-	appContext.state.pendingSave = { entityHash, postId, button }
+export async function openSaveModal(entityHash, postId, button) {
+	socialState.pendingSave = { entityHash, postId, button }
 	const modal = document.getElementById('saveModal')
 	const select = document.getElementById('saveFolderSelect')
 	if (!modal || !select) return
-	select.innerHTML = `<option value="">${escapeHtml(appContext.geti18n('social.saved.unfiled'))}</option>`
+	select.innerHTML = `<option value="">${escapeHtml(geti18n('social.saved.unfiled'))}</option>`
 	modal.classList.remove('hidden')
-	const savedData = await appContext.socialApi('/saved-posts').catch(() => ({ folders: {} }))
-	appContext.state.savedFoldersCache = savedData.folders || {}
-	for (const [folderId, folder] of Object.entries(appContext.state.savedFoldersCache)) {
+	const savedData = await socialApi('/saved-posts').catch(() => ({ folders: {} }))
+	socialState.savedFoldersCache = savedData.folders || {}
+	for (const [folderId, folder] of Object.entries(socialState.savedFoldersCache)) {
 		const option = document.createElement('option')
 		option.value = folderId
 		option.textContent = folder.name || folderId
@@ -41,25 +42,24 @@ export async function openSaveModal(appContext, entityHash, postId, button) {
 
 /**
  * 确认收藏当前帖子到选定文件夹。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function confirmSaveModal(appContext) {
-	if (!appContext.state.pendingSave) return
+export async function confirmSaveModal() {
+	if (!socialState.pendingSave) return
 	const folderId = document.getElementById('saveFolderSelect')?.value || undefined
-	const { button } = appContext.state.pendingSave
+	const { button } = socialState.pendingSave
 	const prevText = button.textContent
-	button.textContent = appContext.geti18n('social.actions.saved')
+	button.textContent = geti18n('social.actions.saved')
 	try {
-		await runSocialWrite('save', () => appContext.socialApi('/saved-posts/add', {
+		await runSocialWrite('save', () => socialApi('/saved-posts/add', {
 			method: 'POST',
 			body: JSON.stringify({
-				entityHash: appContext.state.pendingSave.entityHash,
-				postId: appContext.state.pendingSave.postId,
+				entityHash: socialState.pendingSave.entityHash,
+				postId: socialState.pendingSave.postId,
 				folderId: folderId || undefined,
 			}),
 		}))
-		closeSaveModal(appContext)
+		closeSaveModal()
 	}
 	catch {
 		button.textContent = prevText
@@ -88,21 +88,20 @@ function savedPreviewLabel(preview, postId) {
 
 /**
  * 加载并渲染收藏帖与文件夹视图。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function loadSaved(appContext) {
-	const data = await appContext.socialApi('/saved-posts')
-	appContext.state.savedFoldersCache = data.folders || {}
+export async function loadSaved() {
+	const data = await socialApi('/saved-posts')
+	socialState.savedFoldersCache = data.folders || {}
 	const container = document.getElementById('savedView')
 	container.innerHTML = `
 		<div class="saved-toolbar card">
-			<input type="text" id="newFolderName" placeholder="${escapeHtml(appContext.geti18n('social.saved.newFolderPlaceholder'))}" />
-			<button type="button" id="createFolderButton">${escapeHtml(appContext.geti18n('social.saved.createFolder'))}</button>
+			<input type="text" id="newFolderName" placeholder="${escapeHtml(geti18n('social.saved.newFolderPlaceholder'))}" />
+			<button type="button" id="createFolderButton">${escapeHtml(geti18n('social.saved.createFolder'))}</button>
 		</div>
 	`
 	if (Object.keys(data.folders || {}).length) {
-		container.innerHTML += `<h2 class="section-title">${escapeHtml(appContext.geti18n('social.saved.folders'))}</h2>`
+		container.innerHTML += `<h2 class="section-title">${escapeHtml(geti18n('social.saved.folders'))}</h2>`
 		for (const [folderId, folder] of Object.entries(data.folders)) {
 			const block = document.createElement('div')
 			block.className = 'card saved-folder-card'
@@ -110,8 +109,8 @@ export async function loadSaved(appContext) {
 				<div class="saved-folder-header">
 					<h3>${escapeHtml(folder.name || folderId)}</h3>
 					<div class="saved-folder-actions">
-						<button type="button" class="link-btn" data-rename-folder="${escapeHtml(folderId)}">${escapeHtml(appContext.geti18n('social.saved.renameFolder'))}</button>
-						<button type="button" class="link-btn" data-delete-folder="${escapeHtml(folderId)}">${escapeHtml(appContext.geti18n('social.saved.deleteFolder'))}</button>
+						<button type="button" class="link-btn" data-rename-folder="${escapeHtml(folderId)}">${escapeHtml(geti18n('social.saved.renameFolder'))}</button>
+						<button type="button" class="link-btn" data-delete-folder="${escapeHtml(folderId)}">${escapeHtml(geti18n('social.saved.deleteFolder'))}</button>
 					</div>
 				</div>
 			`
@@ -124,14 +123,14 @@ export async function loadSaved(appContext) {
 						<strong>${savedAuthorLabel(ref.authorName, ref.entityHash)}</strong>
 						<span class="saved-preview">${savedPreviewLabel(ref.preview, ref.postId)}</span>
 					</a>
-					<button type="button" class="link-btn" data-remove-saved="${escapeHtml(actionKey)}" data-saved-folder="${escapeHtml(folderId)}">${escapeHtml(appContext.geti18n('social.saved.remove'))}</button>
+					<button type="button" class="link-btn" data-remove-saved="${escapeHtml(actionKey)}" data-saved-folder="${escapeHtml(folderId)}">${escapeHtml(geti18n('social.saved.remove'))}</button>
 				`
 				block.appendChild(row)
 			}
 			container.appendChild(block)
 		}
 	}
-	container.innerHTML += `<h2 class="section-title">${escapeHtml(appContext.geti18n('social.saved.unfiled'))}</h2>`
+	container.innerHTML += `<h2 class="section-title">${escapeHtml(geti18n('social.saved.unfiled'))}</h2>`
 	for (const ref of data.unfiled || []) {
 		const actionKey = formatActionKey(ref.entityHash, ref.postId)
 		const row = document.createElement('div')
@@ -141,10 +140,10 @@ export async function loadSaved(appContext) {
 				<strong>${savedAuthorLabel(ref.authorName, ref.entityHash)}</strong>
 				<span class="saved-preview">${savedPreviewLabel(ref.preview, ref.postId)}</span>
 			</a>
-			<button type="button" class="link-btn" data-remove-saved="${escapeHtml(actionKey)}">${escapeHtml(appContext.geti18n('social.saved.remove'))}</button>
+			<button type="button" class="link-btn" data-remove-saved="${escapeHtml(actionKey)}">${escapeHtml(geti18n('social.saved.remove'))}</button>
 		`
 		container.appendChild(row)
 	}
 	if (!Object.keys(data.folders || {}).length && !(data.unfiled || []).length)
-		container.innerHTML += `<div class="empty">${escapeHtml(appContext.geti18n('social.empty.saved'))}</div>`
+		container.innerHTML += `<div class="empty">${escapeHtml(geti18n('social.empty.saved'))}</div>`
 }

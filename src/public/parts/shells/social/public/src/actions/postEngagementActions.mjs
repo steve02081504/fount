@@ -1,7 +1,7 @@
 import { mountTranslationBlock, requestTranslation, resolveTargetLang } from '/scripts/features/translate.mjs'
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
-import { SOCIAL_API } from '../lib/apiClient.mjs'
+import { SOCIAL_API, socialApi } from '../lib/apiClient.mjs'
 import {
 	applyDislikeButtonOptimistic,
 	applyLikeButtonOptimistic,
@@ -13,17 +13,18 @@ import {
 	runSocialWrite,
 } from '../lib/socialWrite.mjs'
 import { switchView } from '../navigation.mjs'
+import { socialState } from '../state.mjs'
 import { submitReply } from '../views/profile.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
- * @param {object} appContext Social 应用上下文
  * @param {HTMLElement} target 点击目标元素
  * @returns {Promise<boolean>} 是否已处理
  */
-export async function handlePostEngagementClick(appContext, target) {
+export async function handlePostEngagementClick(target) {
 	const cardRoot = target.closest('.post-card') || document
 	const dislikeButton = target.closest('[data-dislike]')
 	if (dislikeButton instanceof HTMLElement && dislikeButton.dataset.dislike) {
@@ -35,7 +36,7 @@ export async function handlePostEngagementClick(appContext, target) {
 			const card = dislikeButton.closest('.post-card')
 			if (!disliked && card instanceof HTMLElement) clearLikeOnCard(card)
 			try {
-				await runSocialWrite('dislike', () => appContext.socialApi(`/posts/${entityHash}/${postId}/dislike`, {
+				await runSocialWrite('dislike', () => socialApi(`/posts/${entityHash}/${postId}/dislike`, {
 					method: 'POST',
 					body: JSON.stringify({ dislike: !disliked }),
 				}))
@@ -56,7 +57,7 @@ export async function handlePostEngagementClick(appContext, target) {
 			const card = likeButton.closest('.post-card')
 			if (!liked && card instanceof HTMLElement) clearDislikeOnCard(card)
 			try {
-				await runSocialWrite('like', () => appContext.socialApi(`/posts/${entityHash}/${postId}/like`, {
+				await runSocialWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
 					method: 'POST',
 					body: JSON.stringify({ like: !liked }),
 				}))
@@ -83,7 +84,7 @@ export async function handlePostEngagementClick(appContext, target) {
 			const card = submitRepostButton.closest('.post-card')
 			const prevRepost = card ? bumpRepostCount(card, 1) : 0
 			try {
-				await runSocialWrite('repost', () => appContext.socialApi(`/posts/${entityHash}/${postId}/repost`, {
+				await runSocialWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
 					method: 'POST',
 					body: JSON.stringify({ comment }),
 				}))
@@ -103,10 +104,10 @@ export async function handlePostEngagementClick(appContext, target) {
 			const { entityHash, postId } = parsed
 			const card = quoteButton.closest('.post-card')
 			const text = decodeURIComponent(card?.dataset.postText || '')
-			appContext.state.pendingQuoteRef = { entityHash, postId, text }
-			await refreshQuotePreview(appContext)
+			socialState.pendingQuoteRef = { entityHash, postId, text }
+			await refreshQuotePreview()
 			if (document.getElementById('composer')?.classList.contains('hidden'))
-				await switchView(appContext, 'feed')
+				await switchView('feed')
 			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
 			document.getElementById('postText')?.focus()
 			closePostMoreMenus()
@@ -123,8 +124,8 @@ export async function handlePostEngagementClick(appContext, target) {
 			if (!panel) return false
 			panel.classList.toggle('hidden')
 			if (panel.dataset.loaded) return false
-			const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
-			await renderRepliesPanel(appContext, panel, data.replies || [])
+			const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
+			await renderRepliesPanel(panel, data.replies || [])
 			panel.dataset.loaded = '1'
 		}
 	}
@@ -140,10 +141,10 @@ export async function handlePostEngagementClick(appContext, target) {
 			const text = textarea?.value.trim()
 			if (!text) return false
 			try {
-				await runSocialWrite('reply', () => submitReply(appContext, entityHash, postId, text))
+				await runSocialWrite('reply', () => submitReply(entityHash, postId, text))
 				textarea.value = ''
-				const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`)
-				await renderRepliesPanel(appContext, panel, data.replies || [])
+				const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
+				await renderRepliesPanel(panel, data.replies || [])
 				panel.dataset.loaded = '1'
 				panel.classList.remove('hidden')
 				const countElement = queryByActionKey('data-replies', actionKey, cardRoot)?.querySelector('.action-count')
@@ -167,9 +168,9 @@ export async function handlePostEngagementClick(appContext, target) {
 		mountTranslationBlock(cardBody, {
 			originalText: text,
 			translatedText: translated,
-			translationLabel: appContext.geti18n('social.translate.label'),
-			showOriginalLabel: appContext.geti18n('common.translate.showOriginal'),
-			showTranslationLabel: appContext.geti18n('common.translate.showTranslation'),
+			translationLabel: geti18n('social.translate.label'),
+			showOriginalLabel: geti18n('common.translate.showOriginal'),
+			showTranslationLabel: geti18n('common.translate.showTranslation'),
 		})
 		closePostMoreMenus()
 	}

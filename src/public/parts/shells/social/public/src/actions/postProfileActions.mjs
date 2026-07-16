@@ -1,10 +1,13 @@
 import { formatSocialShareHttpsUrl } from '../../shared/runUri.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
+import { socialApi } from '../lib/apiClient.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
 import { purgeFeedShownPost, restoreFeedShownItems, runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
+import { socialState } from '../state.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * @param {string} entityHash 作者
@@ -28,12 +31,11 @@ async function shareOrCopyPostLink(entityHash, postId, title) {
 }
 
 /**
- * @param {object} appContext Social 应用上下文
  * @param {HTMLElement} target 点击目标元素
  * @returns {Promise<boolean>} 是否已处理
  */
-export async function handlePostProfileActionsClick(appContext, target) {
-	if (await handlePollVoteClick(appContext, target)) return true
+export async function handlePostProfileActionsClick(target) {
+	if (await handlePollVoteClick(target)) return true
 
 	const editButton = target.closest('[data-edit]')
 	if (editButton instanceof HTMLElement && editButton.dataset.edit) {
@@ -42,13 +44,13 @@ export async function handlePostProfileActionsClick(appContext, target) {
 			closePostMoreMenus()
 			const card = editButton.closest('.post-card')
 			const current = decodeURIComponent(card?.dataset.postText || '')
-			const next = window.prompt(appContext.geti18n('social.post.editPrompt'), current)
+			const next = window.prompt(geti18n('social.post.editPrompt'), current)
 			if (next == null || next === current) return true
-			await runSocialWrite('edit', () => appContext.socialApi(
+			await runSocialWrite('edit', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/edit`,
 				{ method: 'POST', body: JSON.stringify({ text: next }) },
 			))
-			await refreshVisiblePosts(appContext)
+			await refreshVisiblePosts()
 		}
 		return true
 	}
@@ -60,11 +62,11 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const author = card?.dataset.authorEntity
 		if (postId && author) {
 			closePostMoreMenus()
-			void appContext.socialApi(`/profile/${encodeURIComponent(author)}/posts?limit=50`).then(async data => {
+			void socialApi(`/profile/${encodeURIComponent(author)}/posts?limit=50`).then(async data => {
 				const item = (data.items || []).find(row => row.postId === postId)
 				const revisions = item?.post?.revisions || []
 				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
-				window.alert(lines || appContext.geti18n('social.post.editHistoryEmpty'))
+				window.alert(lines || geti18n('social.post.editHistoryEmpty'))
 			})
 		}
 		return true
@@ -75,13 +77,13 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const parsed = parseActionKey(addNoteButton.dataset.addNote)
 		if (parsed) {
 			closePostMoreMenus()
-			const text = window.prompt(appContext.geti18n('social.notes.prompt'))
+			const text = window.prompt(geti18n('social.notes.prompt'))
 			if (!text?.trim()) return true
-			await runSocialWrite('addNote', () => appContext.socialApi(
+			await runSocialWrite('addNote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
 				{ method: 'POST', body: JSON.stringify({ text: text.trim() }) },
 			))
-			await refreshVisiblePosts(appContext)
+			await refreshVisiblePosts()
 		}
 		return true
 	}
@@ -92,11 +94,11 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const noteId = noteVoteButton.dataset.noteId
 		if (parsed && noteId) {
 			const helpful = noteVoteButton.dataset.helpful !== '0'
-			await runSocialWrite('noteVote', () => appContext.socialApi(
+			await runSocialWrite('noteVote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes/${encodeURIComponent(noteId)}/vote`,
 				{ method: 'POST', body: JSON.stringify({ helpful }) },
 			))
-			await refreshVisiblePosts(appContext)
+			await refreshVisiblePosts()
 		}
 		return true
 	}
@@ -105,12 +107,12 @@ export async function handlePostProfileActionsClick(appContext, target) {
 	if (noteMoreButton instanceof HTMLElement && noteMoreButton.dataset.noteMore) {
 		const parsed = parseActionKey(noteMoreButton.dataset.noteMore)
 		if (parsed) {
-			const data = await appContext.socialApi(
+			const data = await socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
 			)
 			const lines = (data.notes || []).map(note =>
 				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
-			window.alert(lines || appContext.geti18n('social.notes.empty'))
+			window.alert(lines || geti18n('social.notes.empty'))
 		}
 		return true
 	}
@@ -122,9 +124,9 @@ export async function handlePostProfileActionsClick(appContext, target) {
 			const { entityHash, postId } = parsed
 			await copyTextToClipboard(formatSocialShareHttpsUrl(entityHash, postId))
 			const label = copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]')
-			if (label) label.textContent = appContext.geti18n('social.actions.copied')
+			if (label) label.textContent = geti18n('social.actions.copied')
 			setTimeout(() => {
-				if (label) label.textContent = appContext.geti18n('social.actions.copyLink')
+				if (label) label.textContent = geti18n('social.actions.copyLink')
 			}, 1500)
 			closePostMoreMenus()
 		}
@@ -140,7 +142,7 @@ export async function handlePostProfileActionsClick(appContext, target) {
 				const label = shareButton.querySelector('[data-i18n="social.actions.share"]')
 					|| shareButton.querySelector('.action-count')
 				const prev = label?.textContent
-				if (label) label.textContent = appContext.geti18n('social.actions.copied')
+				if (label) label.textContent = geti18n('social.actions.copied')
 				setTimeout(() => {
 					if (label && prev != null) label.textContent = prev
 				}, 1500)
@@ -169,19 +171,19 @@ export async function handlePostProfileActionsClick(appContext, target) {
 		const parent = card?.parentElement
 		const next = card?.nextSibling
 		const postId = deleteButton.dataset.delete
-		const purged = purgeFeedShownPost(appContext.state, postId)
+		const purged = purgeFeedShownPost(socialState, postId)
 		card?.remove()
 		closePostMoreMenus()
 		const entityHash = deleteButton.dataset.deleteEntity
-			|| appContext.state.viewerEntityHash
+			|| socialState.viewerEntityHash
 		try {
-			await runSocialWrite('delete', () => appContext.socialApi('/posts', {
+			await runSocialWrite('delete', () => socialApi('/posts', {
 				method: 'DELETE',
 				body: JSON.stringify({ postId, entityHash }),
 			}))
 		}
 		catch {
-			restoreFeedShownItems(appContext.state, purged)
+			restoreFeedShownItems(socialState, purged)
 			if (card && parent)
 				parent.insertBefore(card, next)
 		}

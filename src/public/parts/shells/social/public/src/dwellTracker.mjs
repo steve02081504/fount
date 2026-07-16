@@ -1,3 +1,4 @@
+import { socialApi } from './lib/apiClient.mjs'
 /**
  * Feed 停留时长采集（本地隐私信号，不联邦）。
  */
@@ -150,11 +151,10 @@ export function unbindDwellTracker() {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {object[]} entries 停留条目
  * @returns {Promise<void>}
  */
-export async function sendDwellBeacon(appContext, entries) {
+export async function sendDwellBeacon(entries) {
 	if (!entries?.length) return
 	const body = JSON.stringify({ entries })
 	const url = '/api/parts/shells:social/signals/dwell'
@@ -162,5 +162,5 @@ export async function sendDwellBeacon(appContext, entries) {
 		const blob = new Blob([body], { type: 'application/json' })
 		if (navigator.sendBeacon(url, blob)) return
 	}
-	await appContext.socialApi('/signals/dwell', { method: 'POST', body }).catch(() => null)
+	await socialApi('/signals/dwell', { method: 'POST', body }).catch(() => null)
 }

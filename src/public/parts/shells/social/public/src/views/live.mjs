@@ -1,8 +1,10 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
+import { socialApi } from '../lib/apiClient.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { joinAvRelayRoom } from '/parts/shells:chat/shared/avRelayClient.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
@@ -49,12 +51,11 @@ function getOrCreateConn(slide) {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {string} [targetEntityHash] 定位主播
  * @param {string} [targetLiveId] 定位直播
  * @returns {Promise<void>}
  */
-export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
+export async function loadLiveView(targetEntityHash, targetLiveId) {
 	const container = document.getElementById('liveSnapContainer')
 	if (!container) return
 
@@ -68,26 +69,26 @@ export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
 	livePageLoading = false
 	currentLiveIndex = -1
 
-	ensureLiveScopeTabs(appContext)
+	ensureLiveScopeTabs()
 
-	const data = await appContext.socialApi(
+	const data = await socialApi(
 		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}`,
 	).catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
 	liveCursor = data.nextCursor || null
 
 	if (!items.length) {
-		container.innerHTML = `<div class="live-slide"><p class="live-empty">${escapeHtml(appContext.geti18n('social.live.empty'))}</p></div>`
+		container.innerHTML = `<div class="live-slide"><p class="live-empty">${escapeHtml(geti18n('social.live.empty'))}</p></div>`
 		return
 	}
 
 	if (liveScope === 'nearby') {
-		renderLiveHallGrid(appContext, container, items)
+		renderLiveHallGrid(container, items)
 		return
 	}
 
 	liveShownItems = [...items]
-	appendLiveSlides(appContext, container, items)
+	appendLiveSlides(container, items)
 
 	snapBind = bindVerticalSnap(container, {
 		/**
@@ -97,8 +98,8 @@ export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
 		 */
 		onEnter: (index, el) => {
 			currentLiveIndex = index
-			activateLiveSlide(appContext, container, index)
-			void maybeLoadMoreLives(appContext, container, index)
+			activateLiveSlide(container, index)
+			void maybeLoadMoreLives(container, index)
 		},
 		/**
 		 * @param {number} _index 离开索引
@@ -119,26 +120,24 @@ export async function loadLiveView(appContext, targetEntityHash, targetLiveId) {
 }
 
 /**
- * @param {object} appContext ctx
  * @param {HTMLElement} container 容器
  * @param {object[]} items 条目
  * @returns {void}
  */
-function appendLiveSlides(appContext, container, items) {
+function appendLiveSlides(container, items) {
 	for (const item of items) {
-		const slide = buildLiveSlide(appContext, item)
+		const slide = buildLiveSlide(item)
 		container.appendChild(slide)
 		snapBind?.observe(slide)
 	}
 }
 
 /**
- * @param {object} appContext ctx
  * @param {HTMLElement} container 容器
  * @param {number} index 当前索引
  * @returns {Promise<void>}
  */
-async function maybeLoadMoreLives(appContext, container, index) {
+async function maybeLoadMoreLives(container, index) {
 	if (livePageLoading || liveScope === 'nearby') return
 	const remaining = container.children.length - index - 1
 	if (remaining > 2) return
@@ -146,7 +145,7 @@ async function maybeLoadMoreLives(appContext, container, index) {
 	if (liveCursor) {
 		livePageLoading = true
 		try {
-			const data = await appContext.socialApi(
+			const data = await socialApi(
 				`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}&cursor=${encodeURIComponent(liveCursor)}`,
 			).catch(() => null)
 			if (!data) return
@@ -154,7 +153,7 @@ async function maybeLoadMoreLives(appContext, container, index) {
 			liveCursor = data.nextCursor || null
 			if (items.length) {
 				liveShownItems.push(...items)
-				appendLiveSlides(appContext, container, items)
+				appendLiveSlides(container, items)
 			}
 		}
 		finally {
@@ -166,7 +165,7 @@ async function maybeLoadMoreLives(appContext, container, index) {
 	if (!liveShownItems.length) return
 	livePageLoading = true
 	try {
-		appendLiveSlides(appContext, container, liveShownItems)
+		appendLiveSlides(container, liveShownItems)
 	}
 	finally {
 		livePageLoading = false
@@ -175,18 +174,17 @@ async function maybeLoadMoreLives(appContext, container, index) {
 
 /**
  * 当前条 full；下一条预连 preview。
- * @param {object} appContext ctx
  * @param {HTMLElement} container 容器
  * @param {number} index 当前索引
  * @returns {void}
  */
-function activateLiveSlide(appContext, container, index) {
+function activateLiveSlide(container, index) {
 	const current = container.children[index]
 	const next = container.children[index + 1]
 	if (current instanceof HTMLElement)
-		ensureLiveConnected(appContext, current, 'full')
+		ensureLiveConnected(current, 'full')
 	if (next instanceof HTMLElement)
-		ensureLiveConnected(appContext, next, 'preview')
+		ensureLiveConnected(next, 'preview')
 
 	for (let i = 0; i < container.children.length; i++) {
 		if (i === index || i === index + 1) continue
@@ -207,17 +205,16 @@ function demoteLiveSlide(slide) {
 }
 
 /**
- * @param {object} appContext ctx
  * @param {HTMLElement} slide slide
  * @param {'full' | 'preview'} mode 档位
  * @returns {void}
  */
-function ensureLiveConnected(appContext, slide, mode) {
+function ensureLiveConnected(slide, mode) {
 	const { entityHash, liveId } = slide.dataset
 	if (!entityHash || !liveId) return
 	const conn = getOrCreateConn(slide)
 	if (!conn.signalWs || conn.signalWs.readyState > 1)
-		conn.signalWs = openLiveSignalWs(appContext, slide, entityHash, liveId, slide.dataset)
+		conn.signalWs = openLiveSignalWs(slide, entityHash, liveId, slide.dataset)
 
 	if (conn.avSession && typeof conn.avSession.setMode === 'function') {
 		conn.avSession.setMode(mode)
@@ -250,10 +247,9 @@ function ensureLiveConnected(appContext, slide, mode) {
 }
 
 /**
- * @param {object} appContext ctx
  * @returns {void}
  */
-function ensureLiveScopeTabs(appContext) {
+function ensureLiveScopeTabs() {
 	let tabs = document.getElementById('liveScopeTabs')
 	if (!tabs) {
 		const liveView = document.getElementById('liveView')
@@ -275,16 +271,16 @@ function ensureLiveScopeTabs(appContext) {
 				return
 			}
 			liveScope = btn.dataset.scope || 'local'
-			void loadLiveView(appContext)
+			void loadLiveView()
 		})
 	}
 	for (const btn of tabs.querySelectorAll('[data-scope]')) {
 		if (!(btn instanceof HTMLElement)) continue
 		if (btn.dataset.viewBroadcast != null) {
-			btn.textContent = appContext.geti18n('social.live.broadcast.open')
+			btn.textContent = geti18n('social.live.broadcast.open')
 			continue
 		}
-		btn.textContent = appContext.geti18n(
+		btn.textContent = geti18n(
 			btn.dataset.scope === 'nearby' ? 'social.live.hall' : 'social.live.local',
 		)
 		btn.classList.toggle('is-active', btn.dataset.scope === liveScope)
@@ -292,12 +288,11 @@ function ensureLiveScopeTabs(appContext) {
 }
 
 /**
- * @param {object} appContext ctx
  * @param {HTMLElement} container 容器
  * @param {object[]} items 条目
  * @returns {void}
  */
-function renderLiveHallGrid(appContext, container, items) {
+function renderLiveHallGrid(container, items) {
 	const grid = document.createElement('div')
 	grid.className = 'live-hall-grid'
 	for (const item of items) {
@@ -308,8 +303,8 @@ function renderLiveHallGrid(appContext, container, items) {
 			<div class="live-hall-avatar" data-avatar-for="${escapeHtml(item.entityHash || '')}"></div>
 			<div class="live-hall-meta">
 				<div class="live-hall-title">${escapeHtml(item.title || '')}</div>
-				<div class="live-hall-stats">${appContext.geti18n('social.live.viewers', { n: item.viewerCount || 0 })}
-					· ${appContext.geti18n('social.live.likes', { n: item.likeCount || 0 })}</div>
+				<div class="live-hall-stats">${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}
+					· ${geti18n('social.live.likes', { n: item.likeCount || 0 })}</div>
 			</div>
 		`
 		card.addEventListener('click', () => {
@@ -317,9 +312,9 @@ function renderLiveHallGrid(appContext, container, items) {
 			for (const child of [...container.children])
 				if (child instanceof HTMLElement) closeSlideConn(child)
 			container.replaceChildren()
-			const slide = buildLiveSlide(appContext, item)
+			const slide = buildLiveSlide(item)
 			container.appendChild(slide)
-			ensureLiveConnected(appContext, slide, 'full')
+			ensureLiveConnected(slide, 'full')
 		})
 		grid.appendChild(card)
 	}
@@ -327,11 +322,10 @@ function renderLiveHallGrid(appContext, container, items) {
 }
 
 /**
- * @param {object} appContext ctx
  * @param {object} item 条目
  * @returns {HTMLElement} slide
  */
-function buildLiveSlide(appContext, item) {
+function buildLiveSlide(item) {
 	const slide = document.createElement('div')
 	slide.className = 'live-slide'
 	slide.dataset.entityHash = item.entityHash || ''
@@ -348,21 +342,21 @@ function buildLiveSlide(appContext, item) {
 		<div class="live-placeholder">
 			<span class="live-badge">LIVE</span>
 			<div class="live-title">${escapeHtml(item.title || item.authorName || '')}</div>
-			<p class="live-viewer-count" data-viewer-count>${appContext.geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</p>
-			<p class="live-like-count" data-like-count>${appContext.geti18n('social.live.likes', { n: item.likeCount || 0 })}</p>
+			<p class="live-viewer-count" data-viewer-count>${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</p>
+			<p class="live-like-count" data-like-count>${geti18n('social.live.likes', { n: item.likeCount || 0 })}</p>
 		</div>
 		<div class="live-overlay">
 			<div class="danmaku-area" data-danmaku></div>
 			<div class="live-bottom">
 				<div class="live-info">
 					<span class="live-author">${escapeHtml(item.authorName || '')}</span>
-					<span class="live-viewer-count" data-viewer-count>${appContext.geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</span>
-					<span class="live-like-count" data-like-count>${appContext.geti18n('social.live.likes', { n: item.likeCount || 0 })}</span>
+					<span class="live-viewer-count" data-viewer-count>${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</span>
+					<span class="live-like-count" data-like-count>${geti18n('social.live.likes', { n: item.likeCount || 0 })}</span>
 				</div>
 				<div class="live-danmaku-input">
 					<input type="text" class="live-danmaku-field" maxlength="100"
-						placeholder="${escapeHtml(appContext.geti18n('social.live.danmakuPlaceholder'))}" />
-					<button type="button" class="live-danmaku-send-btn">${escapeHtml(appContext.geti18n('social.live.danmakuSend'))}</button>
+						placeholder="${escapeHtml(geti18n('social.live.danmakuPlaceholder'))}" />
+					<button type="button" class="live-danmaku-send-btn">${escapeHtml(geti18n('social.live.danmakuSend'))}</button>
 				</div>
 			</div>
 		</div>
@@ -438,14 +432,13 @@ function showHeartFloat(slide) {
 }
 
 /**
- * @param {object} appContext ctx
  * @param {HTMLElement} slide slide
  * @param {string} entityHash 主播
  * @param {string} liveId 直播
  * @param {DOMStringMap | object} [meta] 联邦线索
  * @returns {WebSocket} 信令 WS
  */
-function openLiveSignalWs(appContext, slide, entityHash, liveId, meta = {}) {
+function openLiveSignalWs(slide, entityHash, liveId, meta = {}) {
 	const federated = meta.federated === '1' || meta.federated === true
 	const qs = federated
 		? `?proxy=1&bridgeOrigin=${encodeURIComponent(meta.bridgeOrigin || '')}&watchSecret=${encodeURIComponent(meta.watchSecret || '')}`
@@ -465,17 +458,17 @@ function openLiveSignalWs(appContext, slide, entityHash, liveId, meta = {}) {
 		else if (msg.type === 'viewer_count' || msg.type === 'link_stats') {
 			const n = msg.viewerCount ?? msg.count ?? 0
 			for (const el of slide.querySelectorAll('[data-viewer-count]'))
-				el.textContent = appContext.geti18n('social.live.viewers', { n })
+				el.textContent = geti18n('social.live.viewers', { n })
 			if (msg.likeCount != null)
 				for (const el of slide.querySelectorAll('[data-like-count]'))
-					el.textContent = appContext.geti18n('social.live.likes', { n: msg.likeCount })
+					el.textContent = geti18n('social.live.likes', { n: msg.likeCount })
 		}
 		else if (msg.type === 'like_count')
 			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = appContext.geti18n('social.live.likes', { n: msg.count ?? 0 })
+				el.textContent = geti18n('social.live.likes', { n: msg.count ?? 0 })
 		else if (msg.type === 'hello' && msg.likeCount != null) {
 			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = appContext.geti18n('social.live.likes', { n: msg.likeCount })
+				el.textContent = geti18n('social.live.likes', { n: msg.likeCount })
 			if (msg.link)
 				slide.classList.add('live-linked')
 		}
@@ -506,10 +499,9 @@ function addDanmakuItem(slide, text, author) {
 }
 
 /**
- * @param {object} appContext ctx
  * @returns {void}
  */
-export function initLiveBroadcastView(appContext) {
+export function initLiveBroadcastView() {
 	const startBtn = document.getElementById('liveStartButton')
 	const stopBtn = document.getElementById('liveStopButton')
 	const statusEl = document.getElementById('liveBroadcastStatus')
@@ -523,7 +515,7 @@ export function initLiveBroadcastView(appContext) {
 	startBtn?.addEventListener('click', async () => {
 		try {
 			const title = document.getElementById('liveTitleInput')?.value?.trim() || ''
-			const data = await appContext.socialApi('/live/start', {
+			const data = await socialApi('/live/start', {
 				method: 'POST',
 				body: JSON.stringify({ title, bridgeOrigin: location.origin }),
 			})
@@ -531,7 +523,7 @@ export function initLiveBroadcastView(appContext) {
 			startBtn.classList.add('hidden')
 			stopBtn?.classList.remove('hidden')
 			document.getElementById('liveLinkRow')?.classList.remove('hidden')
-			if (statusEl) statusEl.textContent = appContext.geti18n('social.live.broadcast.started')
+			if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.started')
 			if (previewCanvas instanceof HTMLCanvasElement && data.entityHash && data.liveId) 
 				publishSession = await joinAvRelayRoom({
 					wsUrl: buildSocialLiveAvWsUrl(data.entityHash, data.liveId),
@@ -550,12 +542,12 @@ export function initLiveBroadcastView(appContext) {
 		try {
 			publishSession?.close()
 			publishSession = null
-			await appContext.socialApi('/live/stop', { method: 'POST', body: JSON.stringify({ liveId: activeLiveId }) })
+			await socialApi('/live/stop', { method: 'POST', body: JSON.stringify({ liveId: activeLiveId }) })
 			activeLiveId = null
 			stopBtn.classList.add('hidden')
 			document.getElementById('liveLinkRow')?.classList.add('hidden')
 			startBtn?.classList.remove('hidden')
-			if (statusEl) statusEl.textContent = appContext.geti18n('social.live.broadcast.stopped')
+			if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.stopped')
 		}
 		catch (err) {
 			if (statusEl) statusEl.textContent = String(err?.message || err)
@@ -567,16 +559,16 @@ export function initLiveBroadcastView(appContext) {
 		const raw = linkPeerInput?.value?.trim() || ''
 		const [peerEntityHash, peerLiveId] = raw.split(':').map(s => s.trim())
 		if (!peerEntityHash || !peerLiveId) {
-			if (statusEl) statusEl.textContent = appContext.geti18n('social.live.link.needPeer')
+			if (statusEl) statusEl.textContent = geti18n('social.live.link.needPeer')
 			return
 		}
 		try {
-			const result = await appContext.socialApi(`/live/${activeLiveId}/link/invite`, {
+			const result = await socialApi(`/live/${activeLiveId}/link/invite`, {
 				method: 'POST',
 				body: JSON.stringify({ peerEntityHash, peerLiveId, bridgeOrigin: location.origin }),
 			})
 			if (statusEl)
-				statusEl.textContent = appContext.geti18n(
+				statusEl.textContent = geti18n(
 					result.status === 'linked' ? 'social.live.link.linked' : 'social.live.link.invited',
 				)
 		}

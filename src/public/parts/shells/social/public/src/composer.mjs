@@ -2,24 +2,27 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { groupRefLabel, renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 
+import { socialApi } from './lib/apiClient.mjs'
+import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+import { socialState } from './state.mjs'
 
 /** @type {number} */
 let quotePreviewGeneration = 0
 
 /**
  * 刷新引用预览面板。
- * @param {object} appContext 应用上下文
  * @returns {void}
  */
-export async function refreshQuotePreview(appContext) {
+export async function refreshQuotePreview() {
 	const panel = document.getElementById('quotePreview')
 	if (!panel) return
 	const generation = ++quotePreviewGeneration
-	if (!appContext.state.pendingQuoteRef) {
+	if (!socialState.pendingQuoteRef) {
 		panel.classList.add('hidden')
 		panel.replaceChildren()
 		return
@@ -28,22 +31,21 @@ export async function refreshQuotePreview(appContext) {
 	await mountTemplate(panel, 'quote_preview', {})
 	if (generation !== quotePreviewGeneration) return
 	const body = panel.querySelector('.quote-preview-body')
-	if (body) body.innerHTML = appContext.renderQuoteBlockHtml(appContext.state.pendingQuoteRef)
+	if (body) body.innerHTML = renderQuoteBlockHtml(socialState.pendingQuoteRef)
 	panel.querySelector('.clear-quote-btn')?.addEventListener('click', () => {
-		appContext.state.pendingQuoteRef = null
-		void refreshQuotePreview(appContext)
+		socialState.pendingQuoteRef = null
+		void refreshQuotePreview()
 	})
 }
 
 /**
  * 刷新群关联预览面板。
- * @param {object} appContext 应用上下文
  * @returns {void}
  */
-export async function refreshGroupRefPreview(appContext) {
+export async function refreshGroupRefPreview() {
 	const panel = document.getElementById('groupRefPreview')
 	if (!panel) return
-	if (!appContext.state.pendingGroupRef) {
+	if (!socialState.pendingGroupRef) {
 		panel.classList.add('hidden')
 		panel.replaceChildren()
 		return
@@ -51,11 +53,11 @@ export async function refreshGroupRefPreview(appContext) {
 	panel.classList.remove('hidden')
 	await mountTemplate(panel, 'group_ref_preview', {})
 	const body = panel.querySelector('.group-ref-preview-body')
-	if (body) body.innerHTML = renderGroupRefBlockHtml(appContext.state.pendingGroupRef)
+	if (body) body.innerHTML = renderGroupRefBlockHtml(socialState.pendingGroupRef)
 	panel.querySelector('.clear-group-ref-btn')?.addEventListener('click', () => {
-		appContext.state.pendingGroupRef = null
+		socialState.pendingGroupRef = null
 		syncGroupRefInComposer(null)
-		void refreshGroupRefPreview(appContext)
+		void refreshGroupRefPreview()
 	})
 }
 
@@ -78,13 +80,12 @@ export function syncGroupRefInComposer(ref) {
 
 /**
  * 加载可关联的 Chat 群到下拉选择器。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function loadGroupPickerOptions(appContext) {
+export async function loadGroupPickerOptions() {
 	const select = document.getElementById('linkGroupSelect')
 	if (!select) return
-	select.innerHTML = `<option value="">${appContext.geti18n('social.groupRef.pickPlaceholder')}</option>`
+	select.innerHTML = `<option value="">${geti18n('social.groupRef.pickPlaceholder')}</option>`
 	try {
 		const response = await fetch('/api/parts/shells:chat/groups/', { credentials: 'include' })
 		if (!response.ok) {
@@ -116,11 +117,10 @@ export async function loadGroupPickerOptions(appContext) {
 
 /**
  * 从 composer 表单构建发帖 API 请求体（媒体须已上传）。
- * @param {object} appContext 应用上下文
  * @param {object[]} mediaRefs 已上传 refs
  * @returns {object} 发帖 body
  */
-export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMediaRefs) {
+export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 	const contentWarning = document.getElementById('postContentWarning')?.value?.trim() || ''
 	const sensitiveEl = document.getElementById('postSensitiveMedia')
 	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
@@ -137,18 +137,18 @@ export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMe
 		...contentWarning ? { contentWarning } : {},
 		...sensitiveMedia || contentWarning ? { sensitiveMedia: true } : {},
 	}
-	if (appContext.state.pendingQuoteRef)
+	if (socialState.pendingQuoteRef)
 		body.quoteRef = {
-			entityHash: appContext.state.pendingQuoteRef.entityHash,
-			postId: appContext.state.pendingQuoteRef.postId,
+			entityHash: socialState.pendingQuoteRef.entityHash,
+			postId: socialState.pendingQuoteRef.postId,
 		}
-	if (appContext.state.pendingGroupRef)
+	if (socialState.pendingGroupRef)
 		body.groupRef = {
-			groupId: appContext.state.pendingGroupRef.groupId,
-			channelId: appContext.state.pendingGroupRef.channelId,
+			groupId: socialState.pendingGroupRef.groupId,
+			channelId: socialState.pendingGroupRef.channelId,
 		}
-	if (appContext.state.pendingPoll)
-		body.poll = appContext.state.pendingPoll
+	if (socialState.pendingPoll)
+		body.poll = socialState.pendingPoll
 
 	const replyPolicy = document.getElementById('postReplyPolicy')?.value
 	if (replyPolicy && replyPolicy !== 'everyone') body.replyPolicy = replyPolicy
@@ -167,17 +167,16 @@ export function buildPostBody(appContext, mediaRefs = appContext.state.pendingMe
 
 /**
  * 刷新待发布媒体预览区。
- * @param {object} appContext 应用上下文
  * @returns {void}
  */
-export function refreshMediaPreview(appContext) {
+export function refreshMediaPreview() {
 	renderMediaPreview(
 		document.getElementById('mediaPreview'),
-		appContext.state.pendingMediaRefs,
-		() => refreshMediaPreview(appContext),
+		socialState.pendingMediaRefs,
+		() => refreshMediaPreview(),
 		{
-			altPlaceholder: appContext.geti18n('social.composer.mediaAlt'),
-			editLabel: appContext.geti18n('social.composer.editImage'),
+			altPlaceholder: geti18n('social.composer.mediaAlt'),
+			editLabel: geti18n('social.composer.editImage'),
 			/**
 			 * @param {number} index 媒体下标
 			 * @param {object} ref 媒体引用
@@ -186,16 +185,16 @@ export function refreshMediaPreview(appContext) {
 				const source = ref.file
 				if (!(source instanceof Blob)) return
 				const edited = await openImageEditor(source, {
-					title: appContext.geti18n('social.composer.editImage'),
-					cropLabel: appContext.geti18n('social.composer.editCrop'),
-					mosaicLabel: appContext.geti18n('social.composer.editMosaic'),
-					brushLabel: appContext.geti18n('social.composer.editBrush'),
-					applyLabel: appContext.geti18n('social.composer.editApply'),
-					cancelLabel: appContext.geti18n('social.composer.editCancel'),
+					title: geti18n('social.composer.editImage'),
+					cropLabel: geti18n('social.composer.editCrop'),
+					mosaicLabel: geti18n('social.composer.editMosaic'),
+					brushLabel: geti18n('social.composer.editBrush'),
+					applyLabel: geti18n('social.composer.editApply'),
+					cancelLabel: geti18n('social.composer.editCancel'),
 				})
 				if (!edited) return
 				if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
-				appContext.state.pendingMediaRefs[index] = {
+				socialState.pendingMediaRefs[index] = {
 					...ref,
 					file: edited,
 					objectUrl: URL.createObjectURL(edited),
@@ -204,7 +203,7 @@ export function refreshMediaPreview(appContext) {
 					pending: true,
 					kind: 'image',
 				}
-				refreshMediaPreview(appContext)
+				refreshMediaPreview()
 			},
 		},
 	)
@@ -212,18 +211,17 @@ export function refreshMediaPreview(appContext) {
 
 /**
  * 暂存 composer 媒体（延迟到发帖时再上传，便于编辑）。
- * @param {object} appContext 应用上下文
  * @param {FileList | File[]} files 媒体文件
  * @returns {Promise<void>}
  */
-export async function addComposerMedia(appContext, files) {
+export async function addComposerMedia(files) {
 	for (const file of files) {
 		const kind = file.type.startsWith('image/')
 			? 'image'
 			: file.type.startsWith('video/')
 				? 'video'
 				: 'file'
-		appContext.state.pendingMediaRefs.push({
+		socialState.pendingMediaRefs.push({
 			kind,
 			name: file.name,
 			mimeType: file.type || 'application/octet-stream',
@@ -233,7 +231,7 @@ export async function addComposerMedia(appContext, files) {
 			alt: '',
 		})
 	}
-	refreshMediaPreview(appContext)
+	refreshMediaPreview()
 }
 
 /**
@@ -270,17 +268,16 @@ async function ensureUploadedMediaRefs(refs) {
 
 /**
  * 提交发帖请求并清空 composer 状态。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function publishPost(appContext) {
+export async function publishPost() {
 	if (!document.getElementById('postText').value.trim()
-		&& !appContext.state.pendingMediaRefs.length
-		&& !appContext.state.pendingPoll) return
-	const uploadedRefs = await ensureUploadedMediaRefs(appContext.state.pendingMediaRefs)
-	const body = buildPostBody(appContext, uploadedRefs)
+		&& !socialState.pendingMediaRefs.length
+		&& !socialState.pendingPoll) return
+	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
+	const body = buildPostBody(uploadedRefs)
 	const isScheduled = !!body.publishAt
-	await appContext.socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
+	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''
@@ -293,15 +290,15 @@ export async function publishPost(appContext) {
 	const publishAtEl = document.getElementById('postPublishAt')
 	if (publishAtEl instanceof HTMLInputElement)
 		publishAtEl.value = ''
-	for (const ref of appContext.state.pendingMediaRefs)
+	for (const ref of socialState.pendingMediaRefs)
 		if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
-	appContext.state.pendingMediaRefs = []
-	appContext.state.pendingQuoteRef = null
-	appContext.state.pendingGroupRef = null
-	appContext.state.pendingPoll = null
-	refreshMediaPreview(appContext)
-	await refreshQuotePreview(appContext)
-	void refreshGroupRefPreview(appContext)
+	socialState.pendingMediaRefs = []
+	socialState.pendingQuoteRef = null
+	socialState.pendingGroupRef = null
+	socialState.pendingPoll = null
+	refreshMediaPreview()
+	await refreshQuotePreview()
+	void refreshGroupRefPreview()
 	syncGroupRefInComposer(null)
 	const groupSelect = document.getElementById('linkGroupSelect')
 	if (groupSelect instanceof HTMLSelectElement)
@@ -312,18 +309,17 @@ export async function publishPost(appContext) {
 
 /**
  * 设置待关联的群/频道并更新预览。
- * @param {object} appContext 应用上下文
  * @param {string} groupId 群 id
  * @param {string} channelId 频道 id
  * @param {string} label 展示标签
  * @returns {void}
  */
-export function setPendingGroupRef(appContext, groupId, channelId, label) {
-	appContext.state.pendingGroupRef = {
+export function setPendingGroupRef(groupId, channelId, label) {
+	socialState.pendingGroupRef = {
 		groupId,
 		channelId: channelId || 'default',
 		label: label || groupRefLabel({ groupId, channelId }),
 	}
-	syncGroupRefInComposer(appContext.state.pendingGroupRef)
-	refreshGroupRefPreview(appContext)
+	syncGroupRefInComposer(socialState.pendingGroupRef)
+	refreshGroupRefPreview()
 }

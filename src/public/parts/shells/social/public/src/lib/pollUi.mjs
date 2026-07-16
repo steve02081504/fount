@@ -1,12 +1,14 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
+
+import { socialApi } from './apiClient.mjs'
 
 /**
  * @param {object} poll poll 态
  * @param {string} actionKey 帖子 action key
- * @param {(key: string, params?: object) => string} geti18n i18n
  * @returns {string} poll HTML
  */
-export function renderPollHtml(poll, actionKey, geti18n) {
+export function renderPollHtml(poll, actionKey) {
 	if (!poll?.options?.length) return ''
 	const [entityHash, postId] = actionKey.split(':')
 	const closed = poll.closed === true
@@ -36,11 +38,10 @@ export function renderPollHtml(poll, actionKey, geti18n) {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {HTMLElement} target 点击目标
  * @returns {Promise<boolean>} 是否已处理
  */
-export async function handlePollVoteClick(appContext, target) {
+export async function handlePollVoteClick(target) {
 	const button = target.closest('[data-poll-vote]')
 	if (!(button instanceof HTMLElement) || button.disabled) return false
 	const actionKey = button.dataset.pollVote
@@ -48,11 +49,11 @@ export async function handlePollVoteClick(appContext, target) {
 	if (!actionKey || !Number.isInteger(choice)) return false
 	const [entityHash, postId] = actionKey.split(':')
 	if (!entityHash || !postId) return false
-	await appContext.socialApi(`/posts/${encodeURIComponent(entityHash)}/${encodeURIComponent(postId)}/poll-vote`, {
+	await socialApi(`/posts/${encodeURIComponent(entityHash)}/${encodeURIComponent(postId)}/poll-vote`, {
 		method: 'POST',
 		body: JSON.stringify({ choices: [choice] }),
 	})
-	const { refreshVisiblePosts } = await import('./navigation.mjs')
-	await refreshVisiblePosts(appContext)
+	const { refreshVisiblePosts } = await import('../navigation.mjs')
+	await refreshVisiblePosts()
 	return true
 }

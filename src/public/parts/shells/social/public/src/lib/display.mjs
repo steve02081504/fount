@@ -8,6 +8,7 @@ import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 
@@ -92,11 +93,10 @@ export async function renderMarkdown(markdown, pubKeyHash) {
 
 /**
  * 格式化为相对时间或本地化日期字符串。
- * @param {(key: string, params?: object) => string} geti18n i18n
  * @param {number} [ts] 毫秒时间戳
  * @returns {string} 相对时间
  */
-export function formatTime(geti18n, ts) {
+export function formatTime(ts) {
 	const value = Number(ts) || Date.now()
 	const delta = Date.now() - value
 	if (delta < 60_000) return geti18n('social.time.justNow')
@@ -107,11 +107,10 @@ export function formatTime(geti18n, ts) {
 
 /**
  * 渲染引用原帖块 HTML。
- * @param {(key: string, params?: object) => string} geti18n i18n
  * @param {{ entityHash: string, postId: string, text?: string }} quoteRef 引用
  * @returns {string} HTML
  */
-export function renderQuoteBlockHtml(geti18n, quoteRef) {
+export function renderQuoteBlockHtml(quoteRef) {
 	if (!quoteRef?.entityHash || !quoteRef?.postId) return ''
 	const snippet = quoteRef.text
 		? `<p class="quote-snippet">${quoteRef.text.slice(0, 200)}${quoteRef.text.length > 200 ? '…' : ''}</p>`

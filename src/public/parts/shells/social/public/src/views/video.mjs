@@ -1,15 +1,15 @@
+import { socialApi } from '../lib/apiClient.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { renderRepliesPanel } from './replies.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
 let currentVideoIndex = -1
-/** @type {object} */
-let appCtx = null
 /** @type {string | null} */
 let videoCursor = null
 /** @type {object[]} */
@@ -18,11 +18,9 @@ let videoPageLoading = false
 
 /**
  * 加载并渲染短视频流。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function loadVideoView(appContext) {
-	appCtx = appContext
+export async function loadVideoView() {
 	const container = document.getElementById('videoSnapContainer')
 	if (!container) return
 
@@ -34,16 +32,16 @@ export async function loadVideoView(appContext) {
 	videoShownItems = []
 	videoPageLoading = false
 
-	const data = await appContext.socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
+	const data = await socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
 	videoCursor = data.nextCursor || null
 
 	if (!items.length) {
-		container.innerHTML = `<div class="video-slide"><p class="video-empty">${escapeHtml(appContext.geti18n('social.video.empty'))}</p></div>`
+		container.innerHTML = `<div class="video-slide"><p class="video-empty">${escapeHtml(geti18n('social.video.empty'))}</p></div>`
 		return
 	}
 
-	appendVideoSlides(appContext, container, items)
+	appendVideoSlides(container, items)
 	videoShownItems = [...items]
 
 	snapBind = bindVerticalSnap(container, {
@@ -64,7 +62,7 @@ export async function loadVideoView(appContext) {
 				const nv = next?.querySelector('video')
 				if (nv) nv.preload = 'auto'
 			}
-			void maybeLoadMoreVideos(appContext, container, index)
+			void maybeLoadMoreVideos(container, index)
 		},
 		/**
 		 * @param {number} _index 离开索引
@@ -82,26 +80,24 @@ export async function loadVideoView(appContext) {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {HTMLElement} container snap 容器
  * @param {object[]} items 条目
  * @returns {void}
  */
-function appendVideoSlides(appContext, container, items) {
+function appendVideoSlides(container, items) {
 	for (const item of items) {
-		const slide = buildVideoSlide(appContext, item)
+		const slide = buildVideoSlide(item)
 		container.appendChild(slide)
 		snapBind?.observe(slide)
 	}
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {HTMLElement} container 容器
  * @param {number} index 当前索引
  * @returns {Promise<void>}
  */
-async function maybeLoadMoreVideos(appContext, container, index) {
+async function maybeLoadMoreVideos(container, index) {
 	if (videoPageLoading) return
 	const remaining = container.children.length - index - 1
 	if (remaining > 2) return
@@ -109,7 +105,7 @@ async function maybeLoadMoreVideos(appContext, container, index) {
 	if (videoCursor) {
 		videoPageLoading = true
 		try {
-			const data = await appContext.socialApi(
+			const data = await socialApi(
 				`/videos/feed?limit=20&cursor=${encodeURIComponent(videoCursor)}`,
 			).catch(() => null)
 			if (!data) return
@@ -117,7 +113,7 @@ async function maybeLoadMoreVideos(appContext, container, index) {
 			videoCursor = data.nextCursor || null
 			if (items.length) {
 				videoShownItems.push(...items)
-				appendVideoSlides(appContext, container, items)
+				appendVideoSlides(container, items)
 			}
 		}
 		finally {
@@ -129,7 +125,7 @@ async function maybeLoadMoreVideos(appContext, container, index) {
 	if (!videoShownItems.length) return
 	videoPageLoading = true
 	try {
-		appendVideoSlides(appContext, container, videoShownItems)
+		appendVideoSlides(container, videoShownItems)
 	}
 	finally {
 		videoPageLoading = false
@@ -137,11 +133,10 @@ async function maybeLoadMoreVideos(appContext, container, index) {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {object} item feed 条目
  * @returns {HTMLElement} slide 元素
  */
-function buildVideoSlide(appContext, item) {
+function buildVideoSlide(item) {
 	const slide = document.createElement('div')
 	slide.className = 'video-slide'
 	slide.dataset.entityHash = item.entityHash || ''
@@ -188,7 +183,7 @@ function buildVideoSlide(appContext, item) {
 		const now = Date.now()
 		if (now - lastTap < 350) {
 			lastTap = 0
-			await doVideoLike(appContext, slide)
+			await doVideoLike(slide)
 			showHeartAnim(slide)
 		}
 		else {
@@ -242,7 +237,7 @@ function buildVideoSlide(appContext, item) {
 	video?.addEventListener('pause', () => {
 		if (!dwellStart || !slide.dataset.postId) return
 		const watchMs = Date.now() - dwellStart
-		void appContext.socialApi('/signals/dwell', {
+		void socialApi('/signals/dwell', {
 			method: 'POST',
 			body: JSON.stringify({
 				entityHash: slide.dataset.entityHash,
@@ -256,7 +251,7 @@ function buildVideoSlide(appContext, item) {
 
 	slide.querySelector('.video-like-btn')?.addEventListener('click', async event => {
 		event.stopPropagation()
-		await doVideoLike(appContext, slide)
+		await doVideoLike(slide)
 	})
 
 	slide.querySelector('.video-comment-btn')?.addEventListener('click', async event => {
@@ -266,9 +261,9 @@ function buildVideoSlide(appContext, item) {
 		panel.classList.toggle('hidden')
 		if (!panel.dataset.loaded && !panel.classList.contains('hidden')) {
 			const { entityHash, postId } = slide.dataset
-			const data = await appContext.socialApi(`/profile/${entityHash}/replies/${postId}`).catch(() => ({ replies: [] }))
+			const data = await socialApi(`/profile/${entityHash}/replies/${postId}`).catch(() => ({ replies: [] }))
 			panel.dataset.loaded = '1'
-			await renderRepliesPanel(appContext, panel, data.replies || [])
+			await renderRepliesPanel(panel, data.replies || [])
 		}
 	})
 
@@ -276,15 +271,14 @@ function buildVideoSlide(appContext, item) {
 }
 
 /**
- * @param {object} appContext 应用上下文
  * @param {HTMLElement} slide slide 元素
  * @returns {Promise<void>}
  */
-async function doVideoLike(appContext, slide) {
+async function doVideoLike(slide) {
 	const { entityHash, postId } = slide.dataset
 	if (!entityHash || !postId) return
 	await runSocialWrite('like', () =>
-		appContext.socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
+		socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
 	)
 	const countEl = slide.querySelector('.video-like-count')
 	if (countEl) countEl.textContent = String(Number(countEl.textContent) + 1)
@@ -325,7 +319,7 @@ export function handleVideoKeydown(event) {
 		case 'ArrowDown':
 			event.preventDefault()
 			container.children[currentVideoIndex + 1]?.scrollIntoView({ behavior: 'smooth' })
-			void maybeLoadMoreVideos(appCtx, container, currentVideoIndex + 1)
+			void maybeLoadMoreVideos(container, currentVideoIndex + 1)
 			break
 		case ' ':
 			event.preventDefault()
@@ -339,7 +333,7 @@ export function handleVideoKeydown(event) {
 			if (video) video.currentTime = Math.min(video.duration || 0, video.currentTime + 5)
 			break
 		case 'l': case 'L':
-			if (currentSlide && appCtx) void doVideoLike(appCtx, currentSlide)
+			if (currentSlide) void doVideoLike(currentSlide)
 			break
 		case 'm': case 'M':
 			if (video) video.muted = !video.muted

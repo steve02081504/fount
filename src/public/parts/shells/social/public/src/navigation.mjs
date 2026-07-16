@@ -1,6 +1,8 @@
 import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
+import { socialApi } from './lib/apiClient.mjs'
+import { socialState } from './state.mjs'
 import { activateView } from './viewChrome.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
@@ -15,72 +17,69 @@ import { loadVideoView } from './views/video.mjs'
 
 /**
  * 刷新当前可见视图中的帖子列表。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function refreshVisiblePosts(appContext) {
+export async function refreshVisiblePosts() {
 	const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
 	const profileVisible = !document.getElementById('profileView')?.classList.contains('hidden')
 	if (feedVisible)
-		if (appContext.state.activeFeedSearchQuery)
-			await runFeedSearch(appContext)
+		if (socialState.activeFeedSearchQuery)
+			await runFeedSearch()
 		else {
-			appContext.state.feedCursor = null
-			await loadFeed(appContext, false)
+			socialState.feedCursor = null
+			await loadFeed(false)
 		}
 
-	if (profileVisible && appContext.state.profileEntityHash)
-		await refreshProfilePosts(appContext)
+	if (profileVisible && socialState.profileEntityHash)
+		await refreshProfilePosts()
 }
 
 /**
  * 切换主导航视图并加载对应数据。
- * @param {object} appContext 应用上下文
  * @param {string} view 视图名
  * @returns {Promise<void>}
  */
-export async function switchView(appContext, view) {
+export async function switchView(view) {
 	activateView(view)
 	if (view === 'feed') {
-		if (!appContext.state.activeFeedSearchQuery) {
-			appContext.state.feedCursor = null
-			await loadFeed(appContext, false)
+		if (!socialState.activeFeedSearchQuery) {
+			socialState.feedCursor = null
+			await loadFeed(false)
 		}
-		updateFeedSearchChrome(appContext)
+		updateFeedSearchChrome()
 	}
 	if (view === 'notifications') {
-		appContext.state.notificationsCursor = null
-		await loadNotifications(appContext, false)
+		socialState.notificationsCursor = null
+		await loadNotifications(false)
 	}
-	if (view === 'explore') await loadExplore(appContext)
-	if (view === 'saved') await loadSaved(appContext)
-	if (view === 'taste') await loadTaste(appContext)
-	if (view === 'profile') await loadProfile(appContext)
-	if (view === 'videos') await loadVideoView(appContext)
-	if (view === 'live') await loadLiveView(appContext)
+	if (view === 'explore') await loadExplore()
+	if (view === 'saved') await loadSaved()
+	if (view === 'taste') await loadTaste()
+	if (view === 'profile') await loadProfile()
+	if (view === 'videos') await loadVideoView()
+	if (view === 'live') await loadLiveView()
 }
 
 /**
  * 解析 URL/hash 深链并导航到对应视图。
- * @param {object} appContext 应用上下文
  * @returns {Promise<boolean>} 是否已处理导航
  */
-export async function applyIncomingNavigation(appContext) {
+export async function applyIncomingNavigation() {
 	const rawHash = window.location.hash.replace(/^#/, '')
 
 	// 冒号分隔的自定义深链格式
 	if (rawHash === 'videos') {
-		await switchView(appContext, 'videos')
+		await switchView('videos')
 		return true
 	}
 	if (rawHash.startsWith('topic:')) {
 		const tag = decodeURIComponent(rawHash.slice('topic:'.length))
-		await loadTopicView(appContext, tag)
+		await loadTopicView(tag)
 		return true
 	}
 	if (rawHash.startsWith('search:')) {
 		const q = decodeURIComponent(rawHash.slice('search:'.length))
-		await loadSearchView(appContext, q)
+		await loadSearchView(q)
 		return true
 	}
 	if (rawHash.startsWith('live:')) {
@@ -89,7 +88,7 @@ export async function applyIncomingNavigation(appContext) {
 		const entityHash = colonIdx >= 0 ? rest.slice(0, colonIdx) : rest
 		const liveId = colonIdx >= 0 ? rest.slice(colonIdx + 1) : ''
 		activateView('live')
-		await loadLiveView(appContext, entityHash, liveId)
+		await loadLiveView(entityHash, liveId)
 		return true
 	}
 
@@ -98,19 +97,19 @@ export async function applyIncomingNavigation(appContext) {
 	const hashParsed = parseSocialRunUri(rawHash)
 	if (hashParsed?.subcommand === 'search' && hashParsed.searchQuery) {
 		const tag = hashParsed.searchQuery.trim()
-		await openSearchView(appContext, tag.startsWith('#') ? tag : `#${tag}`)
+		await openSearchView(tag.startsWith('#') ? tag : `#${tag}`)
 		return true
 	}
 	if (urlQ) {
-		await openSearchView(appContext, urlQ)
+		await openSearchView(urlQ)
 		return true
 	}
 	if (hashParsed?.entityHash && hashParsed.subcommand === 'profile') {
-		const viewer = await appContext.socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
-		appContext.state.viewerEntityHash = viewer.viewerEntityHash
+		const viewer = await socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
+		socialState.viewerEntityHash = viewer.viewerEntityHash
 		activateView('profile')
 		document.getElementById('composer')?.classList.add('hidden')
-		await loadProfileFor(appContext, hashParsed.entityHash.toLowerCase(), hashParsed.postId || null)
+		await loadProfileFor(hashParsed.entityHash.toLowerCase(), hashParsed.postId || null)
 		return true
 	}
 	return false
@@ -118,15 +117,14 @@ export async function applyIncomingNavigation(appContext) {
 
 /**
  * 发帖成功后刷新 feed 并清空搜索状态。
- * @param {object} appContext 应用上下文
  * @returns {Promise<void>}
  */
-export async function afterPublishPost(appContext) {
-	await publishPost(appContext)
-	appContext.state.activeFeedSearchQuery = null
+export async function afterPublishPost() {
+	await publishPost()
+	socialState.activeFeedSearchQuery = null
 	const searchInput = document.getElementById('feedSearchInput')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
-	appContext.state.feedCursor = null
-	await loadFeed(appContext, false)
-	updateFeedSearchChrome(appContext)
+	socialState.feedCursor = null
+	await loadFeed(false)
+	updateFeedSearchChrome()
 }
