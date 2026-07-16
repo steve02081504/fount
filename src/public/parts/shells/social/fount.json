@@ -6,7 +6,7 @@
 			{
 				"id": "socialMarkdown",
 				"level": 0,
-				"path": "markdown_ext/index.mjs"
+				"path": "markdown_extensions/index.mjs"
 			}
 		],
 		"home_function_buttons": [

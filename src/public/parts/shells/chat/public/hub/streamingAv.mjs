@@ -32,17 +32,17 @@ export async function leaveHubAvSession() {
 
 /**
  * 在流媒体频道内启动/加入 WebCodecs 中继通话。
- * @param {object} opts 参数
- * @param {string} opts.groupId 群 ID
- * @param {string} opts.channelId 频道 ID
- * @param {string} [opts.presetKey] 画质预设 thumb|low|med|high
- * @param {HTMLElement} opts.avGrid 视频网格
- * @param {HTMLVideoElement | null} [opts.videoLocal] 本地预览
- * @param {(count: number) => void} [opts.onPeerCount] 在线人数
+ * @param {object} options 参数
+ * @param {string} options.groupId 群 ID
+ * @param {string} options.channelId 频道 ID
+ * @param {string} [options.presetKey] 画质预设 thumb|low|med|high
+ * @param {HTMLElement} options.avGrid 视频网格
+ * @param {HTMLVideoElement | null} [options.videoLocal] 本地预览
+ * @param {(count: number) => void} [options.onPeerCount] 在线人数
  * @returns {Promise<void>}
  */
-export async function joinHubAvSession(opts) {
-	const { groupId, channelId, presetKey, avGrid, videoLocal = null, onPeerCount } = opts
+export async function joinHubAvSession(options) {
+	const { groupId, channelId, presetKey, avGrid, videoLocal = null, onPeerCount } = options
 	if (activeAvSession && activeChannelId === channelId) return
 	await leaveHubAvSession()
 	try {

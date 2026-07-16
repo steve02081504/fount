@@ -487,14 +487,14 @@ export function registerGovernanceRoutes(router, authenticate) {
 		for (const revoke of revocations) {
 			// 最后一笔通常是调用者自撤权；提交后会触发 role 侧效（含 rotateAllChannelKeys）。
 			// 若立刻按新权限执行该侧效，会在“事件已落盘后”抛 MANAGE_CHANNELS，导致误报 500。
-			const appendOpts = revoke.targetMemberKey === callerKey
+			const appendOptions = revoke.targetMemberKey === callerKey
 				? { skipReleaseQuarantined: true, skipGenesisSideEffects: true }
 				: undefined
 			await appendSignedLocalEvent(username, groupId, {
 				type: 'role_revoke',
 				timestamp: Date.now(),
 				content: revoke,
-			}, appendOpts)
+			}, appendOptions)
 		}
 
 		res.status(200).json({ newOwnerPubKeyHash: targetHash, transferRoleId })

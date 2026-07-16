@@ -213,13 +213,13 @@ export async function getPinContextMessages(groupId, channelId, pinEventId) {
  * 跨频道搜索群消息。
  * @param {string} groupId 群 ID
  * @param {string} query 查询（至少 2 字符）
- * @param {{ channelId?: string, limit?: number }} [opts] 选项
+ * @param {{ channelId?: string, limit?: number }} [options] 选项
  * @returns {Promise<{ query: string, items: object[] }>} 规范化查询串与命中列表
  */
-export async function searchGroupChannelMessages(groupId, query, opts = {}) {
+export async function searchGroupChannelMessages(groupId, query, options = {}) {
 	const params = new URLSearchParams({ q: query })
-	if (opts.channelId) params.set('channelId', opts.channelId)
-	if (opts.limit) params.set('limit', String(opts.limit))
+	if (options.channelId) params.set('channelId', options.channelId)
+	if (options.limit) params.set('limit', String(options.limit))
 	const data = await groupFetch(`${encodeURIComponent(groupId)}/search?${params}`, { method: 'GET' })
 	return { query: data.query || query, items: data.items || [] }
 }
@@ -227,13 +227,13 @@ export async function searchGroupChannelMessages(groupId, query, opts = {}) {
 /**
  * 跨群搜索消息。
  * @param {string} query 查询（至少 2 字符）
- * @param {{ limit?: number, cursor?: string }} [opts] 选项
+ * @param {{ limit?: number, cursor?: string }} [options] 选项
  * @returns {Promise<{ query: string, items: object[], nextCursor: string | null }>} 跨群搜索结果
  */
-export async function searchAllChatGroups(query, opts = {}) {
+export async function searchAllChatGroups(query, options = {}) {
 	const params = new URLSearchParams({ q: query })
-	if (opts.limit) params.set('limit', String(opts.limit))
-	if (opts.cursor) params.set('cursor', opts.cursor)
+	if (options.limit) params.set('limit', String(options.limit))
+	if (options.cursor) params.set('cursor', options.cursor)
 	const response = await fetch(`/api/parts/shells:chat/search?${params}`, { credentials: 'include' })
 	if (!response.ok) throw new Error(await response.text())
 	const data = await response.json()
@@ -279,12 +279,12 @@ export async function getChatBranch(groupId) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID（生成上下文）
  * @param {number} [delta] 分支偏移步数
- * @param {{ latest?: boolean }} [opts] `latest: true` 跳到最新分支
+ * @param {{ latest?: boolean }} [options] `latest: true` 跳到最新分支
  * @returns {Promise<void>} 无
  */
-export async function modifyBranch(groupId, channelId, delta, opts = {}) {
+export async function modifyBranch(groupId, channelId, delta, options = {}) {
 	const body = { channelId }
-	if (opts.latest) body.latest = true
+	if (options.latest) body.latest = true
 	else body.delta = delta
 	await groupFetch(groupPath(groupId, 'branch'), {
 		method: 'PUT',

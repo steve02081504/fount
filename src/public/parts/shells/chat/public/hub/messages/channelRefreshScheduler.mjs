@@ -16,7 +16,7 @@ export function cancelScheduledChannelRefresh() {
 /**
  * @param {() => void | Promise<void>} fn 到期回调
  * @param {number} delayMs 防抖毫秒
- * @param {{ immediate?: boolean }} [opts] `immediate` 为 true 时立即执行
+ * @param {{ immediate?: boolean }} [options] `immediate` 为 true 时立即执行
  * @returns {void}
  */
 export function scheduleDebouncedChannelRefresh(fn, delayMs, { immediate = false } = {}) {

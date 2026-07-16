@@ -98,7 +98,7 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	assertThrows(
 		() => requireBridgeOperation(username, { platform: 'mock', botname: 'clear-bot' }, 'sendTyping'),
 		Error,
-		'bridge op not registered',
+		'bridge operation not registered',
 	)
 })
 

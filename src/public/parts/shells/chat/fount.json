@@ -6,7 +6,7 @@
 			{
 				"id": "chatMarkdown",
 				"level": 0,
-				"path": "markdown_ext/index.mjs"
+				"path": "markdown_extensions/index.mjs"
 			}
 		],
 		"emoji": [

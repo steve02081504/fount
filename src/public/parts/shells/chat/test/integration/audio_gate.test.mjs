@@ -11,12 +11,12 @@ import { createAudioGate, pcmRms } from '../../public/shared/audioGate.mjs'
  * @property {number} numberOfChannels
  * @property {number} numberOfFrames
  * @property {number} sampleRate
- * @property {(out: Float32Array, opts: { planeIndex: number }) => void} copyTo
+ * @property {(out: Float32Array, options: { planeIndex: number }) => void} copyTo
  */
 
 /**
  * @param {Float32Array} out 目标缓冲
- * @param {{ planeIndex: number }} opts 声道索引
+ * @param {{ planeIndex: number }} options 声道索引
  * @param {Float32Array} plane 源 PCM
  * @returns {void}
  */
@@ -45,10 +45,10 @@ Deno.test('audioGate opens on loud frame and closes after hangover', () => {
 		sampleRate: 48_000,
 		/**
 		 * @param {Float32Array} out 目标缓冲
-		 * @param {{ planeIndex: number }} opts 声道索引
+		 * @param {{ planeIndex: number }} options 声道索引
 		 * @returns {void}
 		 */
-		copyTo: (out, opts) => copyFakePlane(out, opts, plane),
+		copyTo: (out, options) => copyFakePlane(out, options, plane),
 	})
 
 	assertEquals(gate.update(fakeAudioData(loud)), true)

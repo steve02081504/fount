@@ -93,11 +93,11 @@ export async function createChatFederationSim(options = {}) {
 	 * @param {string} sourceNode 源节点
 	 * @param {string[]} targetNodes 目标节点列表
 	 * @param {string} groupId 群组 ID
-	 * @param {{ logFailures?: boolean }} [opts] 选项
+	 * @param {{ logFailures?: boolean }} [options] 选项
 	 * @returns {Promise<{ applied: number, failed: number }>} 同步统计
 	 */
-	async function federate(sourceNode, targetNodes, groupId, opts = {}) {
-		const logFailures = opts.logFailures !== false
+	async function federate(sourceNode, targetNodes, groupId, options = {}) {
+		const logFailures = options.logFailures !== false
 		let applied = 0
 		let failed = 0
 		for (let round = 0; round < 6; round++) {
@@ -125,14 +125,14 @@ export async function createChatFederationSim(options = {}) {
 	 * 多轮全网 gossip 同步，可选收敛断言。
 	 * @param {string[]} nodes 节点列表
 	 * @param {string} groupId 群组 ID
-	 * @param {{ assertConverged?: boolean }} [opts] 选项
+	 * @param {{ assertConverged?: boolean }} [options] 选项
 	 * @returns {Promise<void>}
 	 */
-	async function gossipAll(nodes, groupId, opts = {}) {
+	async function gossipAll(nodes, groupId, options = {}) {
 		for (let pass = 0; pass < 3; pass++)
 			for (const sourceNode of nodes)
 				await federate(sourceNode, nodes, groupId)
-		if (opts.assertConverged)
+		if (options.assertConverged)
 			await assertPeersConverged(nodes, groupId)
 	}
 

@@ -21,11 +21,11 @@ class FakeWs extends EventEmitter {
 	sent = []
 	/**
 	 * @param {Buffer | string} data 数据
-	 * @param {{ binary?: boolean }} [opts] 选项
+	 * @param {{ binary?: boolean }} [options] 选项
 	 * @returns {void}
 	 */
-	send(data, opts) {
-		this.sent.push({ data, binary: !!opts?.binary })
+	send(data, options) {
+		this.sent.push({ data, binary: !!options?.binary })
 	}
 }
 

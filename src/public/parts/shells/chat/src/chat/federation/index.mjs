@@ -54,11 +54,11 @@ const PEER_ROSTER_POLL_MS = 400
 /**
  * 等待联邦房间 roster 出现至少一名邻居（新成员 join snapshot 前置条件）。
  * @param {object} slot FederationSlot
- * @param {{ maxWaitMs?: number }} [opts] 等待上限
+ * @param {{ maxWaitMs?: number }} [options] 等待上限
  * @returns {Promise<boolean>} roster 非空则为 true
  */
-async function waitForFederationPeers(slot, opts = {}) {
-	const maxWaitMs = clampNumber(opts.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 500, 60_000)
+async function waitForFederationPeers(slot, options = {}) {
+	const maxWaitMs = clampNumber(options.maxWaitMs ?? PEER_ROSTER_WAIT_MS, 500, 60_000)
 	const start = Date.now()
 	while (Date.now() - start < maxWaitMs) {
 		if (slot.getRoster().length > 0) return true
@@ -102,12 +102,12 @@ function deliverToFederationTargets(slot, payload, targets, sendFn) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} signPayload 签名事件
- * @param {{ state?: object, existingSlotOnly?: boolean, joinTimeoutMs?: number }} [opts] 出站选项
+ * @param {{ state?: object, existingSlotOnly?: boolean, joinTimeoutMs?: number }} [options] 出站选项
  * @returns {Promise<void>}
  */
-export async function publishSignedEventToFederation(username, groupId, signPayload, opts = {}) {
+export async function publishSignedEventToFederation(username, groupId, signPayload, options = {}) {
 	const nodeHash = localNodeHash()
-	const materializedState = opts.state ?? await loadFederationMaterializedState(username, groupId)
+	const materializedState = options.state ?? await loadFederationMaterializedState(username, groupId)
 	if (!materializedState) return
 	const { groupSettings } = materializedState
 	const eventType = String(signPayload.type).trim().toLowerCase()
@@ -125,12 +125,12 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 		? targetPartition
 		: pickLocalRelayPartition(groupSettings, channelId)
 	let slot = null
-	if (opts.existingSlotOnly)
+	if (options.existingSlotOnly)
 		// leaveFast / 删群路径：只用已存在 slot，绝不创建新房间（正在离开，不应再 join）。
 		slot = getFederationPartitionSlot(username, groupId, outboundPartition) ?? null
-	else if (opts.joinTimeoutMs > 0) {
+	else if (options.joinTimeoutMs > 0) {
 		// activate / 邀请激活：允许有界等待一次 join（relay 慢/不可达时不超过该窗口）。
-		const joinMs = clampNumber(opts.joinTimeoutMs ?? 0, 0, 30_000)
+		const joinMs = clampNumber(options.joinTimeoutMs ?? 0, 0, 30_000)
 		slot = await Promise.race([
 			ensureFederationPartitionRoom(username, groupId, outboundPartition, { channelId }),
 			new Promise(resolve => setTimeout(() => resolve(null), joinMs)),
@@ -172,14 +172,14 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
  * 与在线邻居交换 DAG 叶 id，并对缺失叶发起 wantIds 补洞（§9）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] 等待邻居 pong 毫秒数、额外索要 id
+ * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
  * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
-export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
+export async function catchUpGroupFromPeers(username, groupId, options = {}) {
 	const key = `${username}\0${groupId}`
 	const inflight = catchUpInflight.get(key)
 	if (inflight) return inflight
-	const task = catchUpGroupFromPeersImpl(username, groupId, opts).finally(() => {
+	const task = catchUpGroupFromPeersImpl(username, groupId, options).finally(() => {
 		if (catchUpInflight.get(key) === task) catchUpInflight.delete(key)
 	})
 	catchUpInflight.set(key, task)
@@ -189,17 +189,17 @@ export async function catchUpGroupFromPeers(username, groupId, opts = {}) {
 /**
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] 等待邻居 pong 毫秒数、额外索要 id
+ * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] 等待邻居 pong 毫秒数、额外索要 id
  * @returns {Promise<{ federationActive: boolean, tipsCollected: number, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, stalePeersPruned: number }>} 补洞统计
  */
-async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
+async function catchUpGroupFromPeersImpl(username, groupId, options = {}) {
 	const slot = await ensureFederationPartitionRoom(username, groupId, LOGIC_SYNC_PARTITION)
 	if (!slot) return { federationActive: false, tipsCollected: 0, wantIds: 0, eventsFilled: 0, wantIdsStillMissing: 0, wantIdsRateLimited: false, stalePeersPruned: 0 }
 
 	const { readJsonl } = requireDagDeps()
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	const nodeHash = localNodeHash()
-	const waitMs = clampNumber(opts.waitMs ?? 1600, 400, 30000)
+	const waitMs = clampNumber(options.waitMs ?? 1600, 400, 30000)
 	// 本轮 catchup 期间因身份映射滞后被自愈剔除的失效 peer 数（观测：>0 说明 onPeerLeave 漏触发/换房残留）。
 	const stalePeersAtStart = getStalePeerPruneCount(groupId)
 	/** @type {object[]} */
@@ -262,7 +262,7 @@ async function catchUpGroupFromPeersImpl(username, groupId, opts = {}) {
 			for (const parentId of sortedPrevEventIds(row?.event?.prev_event_ids))
 				if (!byId.has(parentId)) wantSet.add(parentId)
 		if (includeExtra)
-			for (const eventId of opts.extraWantIds || [])
+			for (const eventId of options.extraWantIds || [])
 				if (EVENT_ID_HEX.test(String(eventId)) && !byId.has(eventId))
 					wantSet.add(String(eventId).trim().toLowerCase())
 		return [...wantSet]

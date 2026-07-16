@@ -11,16 +11,16 @@ const EARLY_SETTLE_GRACE_MS = 150
  * 注册 tip 交换槽、向邻居发 ping，等待 pong 回填远端 DAG 叶 id。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {object} opts 选项
- * @param {number} opts.waitMs 等待毫秒
- * @param {string} opts.nodeHash 本机 nodeHash
- * @param {string[]} opts.localTips 本地 DAG tips
- * @param {object | undefined} opts.archiveSummary wire archive 摘要
- * @param {(ping: object, peerId: string | null) => void} [opts.sendTipPing] 发送 ping
- * @param {() => Promise<string[]>} opts.pickTargetPeerIds 选取目标 peer
+ * @param {object} options 选项
+ * @param {number} options.waitMs 等待毫秒
+ * @param {string} options.nodeHash 本机 nodeHash
+ * @param {string[]} options.localTips 本地 DAG tips
+ * @param {object | undefined} options.archiveSummary wire archive 摘要
+ * @param {(ping: object, peerId: string | null) => void} [options.sendTipPing] 发送 ping
+ * @param {() => Promise<string[]>} options.pickTargetPeerIds 选取目标 peer
  * @returns {Promise<{ tipIds: Set<string>, remoteSummaries: object[] }>} 收集结果
  */
-export async function collectRemoteTipsFromPeers(username, groupId, opts) {
+export async function collectRemoteTipsFromPeers(username, groupId, options) {
 	const prior = getPendingTipExchange(username, groupId)
 	if (prior?.resolve) prior.resolve()
 
@@ -51,7 +51,7 @@ export async function collectRemoteTipsFromPeers(username, groupId, opts) {
 			if (graceTimer) return
 			graceTimer = setTimeout(finish, EARLY_SETTLE_GRACE_MS)
 		}
-		const timer = setTimeout(finish, opts.waitMs)
+		const timer = setTimeout(finish, options.waitMs)
 		const pending = {
 			collected,
 			remoteSummaries,
@@ -64,19 +64,19 @@ export async function collectRemoteTipsFromPeers(username, groupId, opts) {
 		setPendingTipExchange(username, groupId, pending)
 
 		void (async () => {
-			if (!opts.sendTipPing) return
-			const targets = await opts.pickTargetPeerIds()
+			if (!options.sendTipPing) return
+			const targets = await options.pickTargetPeerIds()
 			// 仅在定向发送（已知目标数）时启用提前收窗；广播（targets 为空、对端数未知）仍走满 waitMs。
 			pending.expectedPeers = targets.length
 			const ping = {
-				nodeHash: opts.nodeHash,
-				tips: opts.localTips,
-				archiveSummary: opts.archiveSummary,
+				nodeHash: options.nodeHash,
+				tips: options.localTips,
+				archiveSummary: options.archiveSummary,
 			}
 			if (!targets.length)
-				opts.sendTipPing(ping, null)
+				options.sendTipPing(ping, null)
 			else for (const peerId of targets)
-				opts.sendTipPing(ping, peerId)
+				options.sendTipPing(ping, peerId)
 		})().catch(error => console.error('federation: tip ping failed', error))
 	})
 }

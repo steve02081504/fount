@@ -9,17 +9,17 @@ import { parseEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/en
 
 /**
  * @param {unknown} hash entityHash 或其它 hex 字符串
- * @param {{ withAt?: boolean, headLen?: number, tailLen?: number, useSubject?: boolean, ellipsis?: boolean }} [opts] 展示选项
+ * @param {{ withAt?: boolean, headLen?: number, tailLen?: number, useSubject?: boolean, ellipsis?: boolean }} [options] 展示选项
  * @returns {string} 短标签
  */
-export function formatHashShort(hash, opts = {}) {
+export function formatHashShort(hash, options = {}) {
 	const {
 		withAt = false,
 		headLen = 8,
 		tailLen = 4,
 		useSubject = false,
 		ellipsis = true,
-	} = opts
+	} = options
 
 	/**
 	 * @param {string} label 标签

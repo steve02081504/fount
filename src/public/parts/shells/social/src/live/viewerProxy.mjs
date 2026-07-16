@@ -89,14 +89,14 @@ export async function ensureFederatedLiveProxy(username, entityHash, liveId, hin
 			injectAvRelayFrame(avRoomId, data)
 			return
 		}
-		let msg
-		try { msg = JSON.parse(String(data)) }
+		let wireMessage
+		try { wireMessage = JSON.parse(String(data)) }
 		catch { return }
-		if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
-			injectAvRelayControl(avRoomId, msg)
+		if (wireMessage?.type === 'publish_meta' || wireMessage?.type === 'publish_meta_revoke') {
+			injectAvRelayControl(avRoomId, wireMessage)
 			return
 		}
-		ingestBridgedLiveSignal(username, entityHash, liveId, msg)
+		ingestBridgedLiveSignal(username, entityHash, liveId, wireMessage)
 	})
 
 	/**

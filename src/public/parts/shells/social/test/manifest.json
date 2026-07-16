@@ -12,7 +12,7 @@
 			"src/public/parts/shells/social/locales.json"
 		],
 		"shellPureExtra": [
-			"src/public/parts/shells/chat/public/markdown_ext/**",
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
 			"deno.json",
 			"src/server/p2p_server/**",
 			"src/scripts/search/**",
@@ -23,7 +23,7 @@
 			"src/public/pages/scripts/features/markdown/extensions.mjs"
 		],
 		"shellIntegrationExtra": [
-			"src/public/parts/shells/chat/public/markdown_ext/**",
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
 			"deno.json",
@@ -55,7 +55,7 @@
 			"src/public/parts/shells/social/test/live/scripts/ws.mjs"
 		],
 		"crossShellEmojiExtra": [
-			"src/public/parts/shells/chat/public/markdown_ext/**",
+			"src/public/parts/shells/chat/public/markdown_extensions/**",
 			"src/public/parts/shells/chat/src/group/groupPreview.mjs",
 			"src/public/parts/shells/chat/src/group/emojiContentResolve.mjs",
 			"src/server/registries.mjs",

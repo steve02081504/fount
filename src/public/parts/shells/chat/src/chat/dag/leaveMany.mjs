@@ -29,10 +29,10 @@ export async function performLocalGroupLeave(username, groupId, entityHash) {
 /**
  * @param {string} username 用户
  * @param {string[]} groupIds 群 ID 列表（去重）
- * @param {{ concurrency?: number }} [opts] 并发上限（默认 4，最大 8）
+ * @param {{ concurrency?: number }} [options] 并发上限（默认 4，最大 8）
  * @returns {Promise<{ ok: string[], failed: { groupId: string, error: string }[] }>} 成功与失败群 ID 列表
  */
-export async function leaveManyGroupsForUser(username, groupIds, opts = {}) {
+export async function leaveManyGroupsForUser(username, groupIds, options = {}) {
 	const ids = [...new Set(
 		(Array.isArray(groupIds) ? groupIds : [])
 			.map(id => String(id ?? '').trim())
@@ -46,7 +46,7 @@ export async function leaveManyGroupsForUser(username, groupIds, opts = {}) {
 	if (!ids.length)
 		return { ok: [], failed: [] }
 
-	const concurrency = Math.max(1, Math.min(8, Number(opts.concurrency) || DEFAULT_CONCURRENCY))
+	const concurrency = Math.max(1, Math.min(8, Number(options.concurrency) || DEFAULT_CONCURRENCY))
 	/** @type {string[]} */
 	const ok = []
 	/** @type {{ groupId: string, error: string }[]} */

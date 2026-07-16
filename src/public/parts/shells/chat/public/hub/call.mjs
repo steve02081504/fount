@@ -37,10 +37,10 @@ export async function leaveChannelCall() {
 /**
  * @param {string} groupId 群
  * @param {string} channelId 频道
- * @param {{ media?: 'av' | 'audio' | 'video' }} [opts] 媒体模式
+ * @param {{ media?: 'av' | 'audio' | 'video' }} [options] 媒体模式
  * @returns {Promise<void>}
  */
-export async function joinChannelCall(groupId, channelId, opts = {}) {
+export async function joinChannelCall(groupId, channelId, options = {}) {
 	const key = `${groupId}:${channelId}`
 	if (callSession && callChannelKey === key) return
 	await leaveChannelCall()
@@ -56,7 +56,7 @@ export async function joinChannelCall(groupId, channelId, opts = {}) {
 			groupId,
 			channelId,
 			presetKey: 'med',
-			media: opts.media || 'av',
+			media: options.media || 'av',
 			avGrid,
 			videoLocal,
 			wsUrl: buildChatCallWsUrl(groupId, channelId),

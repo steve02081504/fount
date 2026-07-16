@@ -169,11 +169,11 @@ export async function mergeDiscoveryAdvertisement(username, advertisement, sourc
 
 /**
  * @param {string} username 用户
- * @param {{ limit?: number }} [opts] 分页
+ * @param {{ limit?: number }} [options] 分页
  * @returns {Promise<DiscoveryEntry[]>} 排序后的条目
  */
-export async function queryDiscoveryIndex(username, opts = {}) {
-	const limit = Math.min(100, Math.max(1, opts.limit ?? 50))
+export async function queryDiscoveryIndex(username, options = {}) {
+	const limit = Math.min(100, Math.max(1, options.limit ?? 50))
 	return [...(await loadDiscoveryIndex(username)).entries]
 		.sort((a, b) => b.observedAt - a.observedAt)
 		.slice(0, limit)

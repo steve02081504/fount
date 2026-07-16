@@ -95,11 +95,11 @@ async function isHiddenFromDiscovery(username, entityHash) {
 
 /**
  * 本机应答：本机实体 profile + 已缓存远端 profile.json。
- * @param {{ replicaUsername?: string }} ctx 入站上下文
+ * @param {{ replicaUsername?: string }} inboundContext 入站上下文
  * @param {unknown} query 查询体
  * @returns {Promise<object[]>} rows
  */
-export async function localEntitySearchHandler(ctx, query) {
+export async function localEntitySearchHandler(inboundContext, query) {
 	const q = normalizeEntitySearchQuery(query)
 	if (q.length < 2) return []
 
@@ -107,8 +107,8 @@ export async function localEntitySearchHandler(ctx, query) {
 	/** @type {Map<string, { entityHash: string, handle: string, name: string }>} */
 	const byHash = new Map()
 
-	const usernames = ctx.replicaUsername
-		? [ctx.replicaUsername]
+	const usernames = inboundContext.replicaUsername
+		? [inboundContext.replicaUsername]
 		: getAllUserNames()
 
 	for (const username of usernames) 

@@ -14,13 +14,13 @@ import { postReputationSlash } from './groupGovernance.mjs'
  * 按范围封禁成员（群内 DAG + 声誉 + 服务端同步 blocklist/peers）。
  * @param {string} groupId 群 ID
  * @param {string} targetPubKeyHash 目标成员 pubKeyHash
- * @param {{ banScope: 'entity'|'node' }} opts 封禁范围
+ * @param {{ banScope: 'entity'|'node' }} options 封禁范围
  * @returns {Promise<void>}
  */
-export async function banMemberWithScope(groupId, targetPubKeyHash, opts) {
+export async function banMemberWithScope(groupId, targetPubKeyHash, options) {
 	const target = String(targetPubKeyHash || '').trim().toLowerCase()
 	if (!isHex64(target)) throw new Error('invalid target')
-	const banScope = String(opts?.banScope || '').trim().toLowerCase()
+	const banScope = String(options?.banScope || '').trim().toLowerCase()
 	await groupFetch(groupPath(groupId, 'members', target, 'ban'), {
 		method: 'POST',
 		json: { banScope },

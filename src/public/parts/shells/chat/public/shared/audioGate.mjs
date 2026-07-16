@@ -47,14 +47,14 @@ export function audioDataRms(audioData) {
 }
 
 /**
- * @param {object} [opts] 选项
- * @param {number} [opts.threshold] 开门阈值
- * @param {number} [opts.hangoverMs] 关门迟滞
+ * @param {object} [options] 选项
+ * @param {number} [options.threshold] 开门阈值
+ * @param {number} [options.hangoverMs] 关门迟滞
  * @returns {{ update: (audioData: AudioData) => boolean, getLevel: () => number, isOpen: () => boolean, setThreshold: (n: number) => void }}
  */
-export function createAudioGate(opts = {}) {
-	let threshold = opts.threshold ?? loadAudioGateThreshold()
-	const hangoverMs = opts.hangoverMs ?? DEFAULT_HANGOVER_MS
+export function createAudioGate(options = {}) {
+	let threshold = options.threshold ?? loadAudioGateThreshold()
+	const hangoverMs = options.hangoverMs ?? DEFAULT_HANGOVER_MS
 	let open = false
 	let lastAbove = 0
 	let level = 0

@@ -33,18 +33,18 @@ const BATTERY_SAVER_BLOCKED_LOCAL_TYPES = new Set([
 /**
  * @param {Uint8Array} secretKey 签名种子
  * @param {object} state 物化群状态
- * @param {object} opts append 选项
+ * @param {object} options append 选项
  * @returns {object} 传给 `commitSignedChatEvent` 的选项
  */
-function commitOptsFromAppend(secretKey, state, opts) {
+function commitOptsFromAppend(secretKey, state, options) {
 	return {
 		checkpointOwnerSecretKey: secretKey,
 		federationState: state,
-		publishFederation: opts.publishFederation !== false,
-		skipCheckpointRebuild: opts.skipCheckpointRebuild,
-		skipGenesisSideEffects: opts.skipGenesisSideEffects,
-		federationExistingSlotOnly: opts.federationExistingSlotOnly,
-		ingress: opts.ingress,
+		publishFederation: options.publishFederation !== false,
+		skipCheckpointRebuild: options.skipCheckpointRebuild,
+		skipGenesisSideEffects: options.skipGenesisSideEffects,
+		federationExistingSlotOnly: options.federationExistingSlotOnly,
+		ingress: options.ingress,
 	}
 }
 
@@ -54,12 +54,12 @@ function commitOptsFromAppend(secretKey, state, opts) {
  * @param {string} groupId 群组 ID
  * @param {object} event 待追加事件体
  * @param {Uint8Array} secretKey 签名种子
- * @param {{ state?: object, skipValidateIngestAuthz?: boolean, skipReleaseQuarantined?: boolean, publishFederation?: boolean, skipCheckpointRebuild?: boolean, skipGenesisSideEffects?: boolean, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number }} [opts] 追加选项
+ * @param {{ state?: object, skipValidateIngestAuthz?: boolean, skipReleaseQuarantined?: boolean, publishFederation?: boolean, skipCheckpointRebuild?: boolean, skipGenesisSideEffects?: boolean, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number }} [options] 追加选项
  * @returns {Promise<object>} 写入后的完整签名载荷对象
  */
-export async function appendEvent(username, groupId, event, secretKey, opts = {}) {
+export async function appendEvent(username, groupId, event, secretKey, options = {}) {
 	if (!secretKey) throw new Error('appendEvent requires secretKey')
-	const state = opts.state ?? (await getState(username, groupId)).state
+	const state = options.state ?? (await getState(username, groupId)).state
 
 	if (BATTERY_SAVER_BLOCKED_LOCAL_TYPES.has(event.type) && state.groupSettings?.batterySaver)
 		throw new Error(`batterySaver mode: governance event '${event.type}' is read-only`)
@@ -67,7 +67,7 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 	const rateCheck = await checkMessageRateLimit(username, groupId, state, event)
 	if (!rateCheck.ok) throw new Error(rateCheck.reason || 'message rate limit exceeded')
 
-	if (!opts.skipValidateIngestAuthz)
+	if (!options.skipValidateIngestAuthz)
 		await validateIngestAuthz(username, groupId, event, { source: 'local', state })
 	await mkdir(groupDir(username, groupId), { recursive: true })
 	const previous = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
@@ -83,8 +83,8 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
 		prev_event_ids: prevFromCaller,
 	})
 
-	await commitSignedChatEvent(username, groupId, wirePayload, commitOptsFromAppend(secretKey, state, opts))
-	if (opts.skipReleaseQuarantined !== true) {
+	await commitSignedChatEvent(username, groupId, wirePayload, commitOptsFromAppend(secretKey, state, options))
+	if (options.skipReleaseQuarantined !== true) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
 	}
@@ -103,11 +103,11 @@ export async function appendEvent(username, groupId, event, secretKey, opts = {}
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {object} event 事件体（勿设 sender）
- * @param {{ entityHash?: string } & object} [appendOpts] 传给 `appendEvent`；`entityHash` 缺省为 operator
+ * @param {{ entityHash?: string } & object} [appendOptions] 传给 `appendEvent`；`entityHash` 缺省为 operator
  * @returns {Promise<object>} 签名后事件
  */
-export async function appendSignedLocalEvent(username, groupId, event, appendOpts = {}) {
-	const { entityHash: entityHashOpt, ...restOpts } = appendOpts
+export async function appendSignedLocalEvent(username, groupId, event, appendOptions = {}) {
+	const { entityHash: entityHashOpt, ...restOpts } = appendOptions
 	const { sender, secretKey, entityHash } = await resolveLocalEventSigner(username, groupId, entityHashOpt)
 	let eventBody = { ...event }
 	delete eventBody.sender

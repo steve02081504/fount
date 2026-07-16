@@ -44,7 +44,7 @@
 - join 流携带 `introducerNodeHash`，减少纯 discovery 冷启动窗口。
 - 代码注释里仍可见「Trystero」字样——多为历史命名，实际 wire 已走 node/group scope envelope。
 
-回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_ext fed_dm`（`fed_dm` 长串后建议单独重跑）。
+回归口径：`fount test p2p` + `shells/chat:fed_core fed_e2e_extended fed_dm`（`fed_dm` 长串后建议单独重跑）。
 
 ## 分层
 

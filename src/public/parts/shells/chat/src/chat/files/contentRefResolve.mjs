@@ -17,10 +17,10 @@ const DEFAULT_REF_TEXT_MAX = 512_000
  * 自存储插件拉取 `content_ref` 指向的 blob 并校验 SHA-256；成功则解码 UTF-8 文本。
  * @param {string} username 所有者
  * @param {object} content DAG `message` 的 `content` 对象
- * @param {{ maxChars?: number }} [opts] 解码后最大字符数（防巨包）
+ * @param {{ maxChars?: number }} [options] 解码后最大字符数（防巨包）
  * @returns {Promise<{ status: 'ok', text: string } | { status: 'hash_mismatch' } | { status: 'unavailable' } | null>} 无 `content_ref` 时为 null
  */
-export async function resolveMessageContentRef(username, content, opts = {}) {
+export async function resolveMessageContentRef(username, content, options = {}) {
 	const ref = content?.content_ref
 	if (!ref) return null
 	const loc = String(ref.storageLocator || '').trim()
@@ -28,7 +28,7 @@ export async function resolveMessageContentRef(username, content, opts = {}) {
 	if (!loc || !isHex64(wantHash)) return null
 	if (String(ref.alg || 'sha256').trim().toLowerCase() !== 'sha256') return { status: 'unavailable' }
 
-	const maxChars = Number(opts.maxChars) > 0 ? Number(opts.maxChars) : DEFAULT_REF_TEXT_MAX
+	const maxChars = Number(options.maxChars) > 0 ? Number(options.maxChars) : DEFAULT_REF_TEXT_MAX
 
 	/** @type {Uint8Array} */
 	let raw

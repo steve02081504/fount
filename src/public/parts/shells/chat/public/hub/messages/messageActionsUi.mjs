@@ -37,13 +37,13 @@ function extractI18nTitle(val) {
 /**
  * 生成操作按钮 HTML。
  * 当有 icon 时使用 title 属性显示 i18n 文本（不替换图标），无图标时用 data-i18n 设置按钮文本。
- * @param {object} opts 按钮选项
- * @param {string} opts.action data-action 值
- * @param {string} [opts.attrs] 额外 HTML 属性
- * @param {string} [opts.icon] 图标 HTML
- * @param {string} [opts.i18nKey] i18n 键（有图标时作 title/tooltip，无图标时作按钮文本）
- * @param {string} [opts.classes] 额外 class
- * @param {string} [opts.label] 无图标时的备用文本
+ * @param {object} options 按钮选项
+ * @param {string} options.action data-action 值
+ * @param {string} [options.attrs] 额外 HTML 属性
+ * @param {string} [options.icon] 图标 HTML
+ * @param {string} [options.i18nKey] i18n 键（有图标时作 title/tooltip，无图标时作按钮文本）
+ * @param {string} [options.classes] 额外 class
+ * @param {string} [options.label] 无图标时的备用文本
  * @returns {string} 按钮 HTML
  */
 export function actionButton({ action, attrs = '', icon = '', i18nKey = '', classes = '', label = '' }) {
@@ -90,10 +90,10 @@ export function menuSubmenu(labelI18nKey, icon, innerItemsHtml) {
  * @param {string} inlineHtml 行内主操作按钮
  * @param {string} menuItemsHtml `<li>` 菜单项
  * @param {string} [shiftHtml] Shift 层按钮 HTML
- * @param {{ alwaysVisible?: boolean }} [opts] 显示选项
+ * @param {{ alwaysVisible?: boolean }} [options] 显示选项
  * @returns {string} 操作栏 HTML
  */
-export async function renderActionsBar(inlineHtml, menuItemsHtml, shiftHtml = '', opts = {}) {
+export async function renderActionsBar(inlineHtml, menuItemsHtml, shiftHtml = '', options = {}) {
 	if (!inlineHtml && !menuItemsHtml && !shiftHtml) return ''
 	const menuHtml = menuItemsHtml
 		? await renderTemplateAsHtmlString('hub/messages/actions_menu', {
@@ -101,7 +101,7 @@ export async function renderActionsBar(inlineHtml, menuItemsHtml, shiftHtml = ''
 			menuIconHtml: hubActionMenuIcon,
 		})
 		: ''
-	const visClass = opts.alwaysVisible
+	const visClass = options.alwaysVisible
 		? 'hub-message-actions--always'
 		: 'hub-message-actions--anim'
 	const shiftLayerHtml = shiftHtml
@@ -135,10 +135,10 @@ export async function editChannelBodyHtml(originalText, eventId) {
 /**
  * 绑定编辑区附件、快捷键与保存/取消。
  * @param {HTMLElement|null} editWrap 编辑区根
- * @param {object} opts 选项
- * @param {() => void|Promise<void>} opts.onSave 保存回调
- * @param {() => void|Promise<void>} opts.onCancel 取消回调
- * @param {Array<object>} [opts.initialFiles] 已有附件
+ * @param {object} options 选项
+ * @param {() => void|Promise<void>} options.onSave 保存回调
+ * @param {() => void|Promise<void>} options.onCancel 取消回调
+ * @param {Array<object>} [options.initialFiles] 已有附件
  * @returns {{ selectedFiles: object[], getText: () => string }} 编辑区控制器
  */
 export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles = [] }) {

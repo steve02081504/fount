@@ -16,8 +16,8 @@ Deno.test('partpathToUrlPrefix maps shells/chat', () => {
 
 Deno.test('resolveRegistryPathToUrl joins part-relative path', () => {
 	assertEquals(
-		resolveRegistryPathToUrl('shells/chat', 'markdown_ext/index.mjs'),
-		'/parts/shells:chat/markdown_ext/index.mjs',
+		resolveRegistryPathToUrl('shells/chat', 'markdown_extensions/index.mjs'),
+		'/parts/shells:chat/markdown_extensions/index.mjs',
 	)
 })
 

@@ -48,10 +48,10 @@ export function hlcFutureDriftMs(event) {
  * 未来 HLC skew 处置（单一入口）。
  * @param {{ type?: string, hlc?: { wall?: number } }} event DAG 事件
  * @param {number} maxSkewMs 允许的未来偏移上限（毫秒）
- * @param {{ source?: 'local' | 'federation' }} [opts] local 允许 session_* 超 skew
+ * @param {{ source?: 'local' | 'federation' }} [options] local 允许 session_* 超 skew
  * @returns {'allow' | 'quarantine' | 'reject'} 未来 skew 处置
  */
-export function classifyHlcSkewAction(event, maxSkewMs, opts = {}) {
+export function classifyHlcSkewAction(event, maxSkewMs, options = {}) {
 	const drift = hlcFutureDriftMs(event)
 	if (drift == null || drift <= maxSkewMs) return 'allow'
 
@@ -59,7 +59,7 @@ export function classifyHlcSkewAction(event, maxSkewMs, opts = {}) {
 	if (MESSAGE_HLC_QUARANTINE_TYPES.has(type)) return 'quarantine'
 
 	if (SESSION_EVENT_TYPES.has(type))
-		return opts.source === 'federation' ? 'reject' : 'allow'
+		return options.source === 'federation' ? 'reject' : 'allow'
 
 	if (FEDERATION_ACL_GATED_EVENT_TYPES.has(type)) return 'reject'
 

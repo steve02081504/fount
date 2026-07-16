@@ -2,7 +2,7 @@
  * 【文件】public/src/lib/emojiSvg.mjs
  * 【职责】Iconify CDN SVG 表情/图标 URL 与 img 标签辅助、Hub 空状态图标。
  * 【原理】iconifyUrl 拼 api.iconify.design；iconifyImg 生成带 class 的 <img> 字符串。
- * 【数据结构】icon id 如 line-md/chat-round；opts { class, alt }。
+ * 【数据结构】icon id 如 line-md/chat-round；options { class, alt }。
  * 【关联】Hub UI 模板；unicodeEmojiData 互补。
  */
 const ICONIFY_CDN = 'https://api.iconify.design'
@@ -20,16 +20,16 @@ export function iconifyUrl(icon) {
 /**
  * Inline `<img>` pointing at Iconify CDN (decorative UI icons, not Unicode emoji glyphs).
  * @param {string} icon Set/icon id
- * @param {{ class?: string, width?: number, height?: number, alt?: string }} [opts] img attributes
+ * @param {{ class?: string, width?: number, height?: number, alt?: string }} [options] img attributes
  * @returns {string} Inline `<img>` HTML.
  */
-export function iconifyImg(icon, opts = {}) {
+export function iconifyImg(icon, options = {}) {
 	const {
 		class: className = '',
 		width = 24,
 		height = 24,
 		alt = '',
-	} = opts
+	} = options
 	const cls = className ? ` class="${className}"` : ''
 	return `<img src="${iconifyUrl(icon)}"${cls} width="${width}" height="${height}" alt="${alt}" aria-hidden="true" />`
 }

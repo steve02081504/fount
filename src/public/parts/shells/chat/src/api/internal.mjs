@@ -39,22 +39,22 @@ export function resolveActiveMemberKeyByEntityHash(state, entityHash) {
 }
 
 /**
- * @param {ChatApiContext} ctx API 上下文
+ * @param {ChatApiContext} apiContext API 上下文
  * @param {string} groupId 群 ID
  * @returns {Promise<object>} 物化 state
  */
-export async function loadGroupState(ctx, groupId) {
-	const { state } = await getState(ctx.username, groupId)
+export async function loadGroupState(apiContext, groupId) {
+	const { state } = await getState(apiContext.username, groupId)
 	return state
 }
 
 /**
  * @param {object} state 物化群状态
- * @param {{ page?: number }} [opts] 分页
+ * @param {{ page?: number }} [options] 分页
  * @returns {{ members: [string, object][], page: number, pageCount: number }} 分页切片
  */
-export function paginateActiveMembers(state, opts = {}) {
-	const page = Math.max(0, Number(opts.page) || 0)
+export function paginateActiveMembers(state, options = {}) {
+	const page = Math.max(0, Number(options.page) || 0)
 	const activeMembers = Object.entries(state.members || {}).filter(([, member]) => member?.status === 'active')
 	const pageCount = Math.max(1, Math.ceil(activeMembers.length / MEMBERS_PAGE_SIZE))
 	const slice = activeMembers.slice(page * MEMBERS_PAGE_SIZE, (page + 1) * MEMBERS_PAGE_SIZE)

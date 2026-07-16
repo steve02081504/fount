@@ -203,12 +203,12 @@ export async function deleteSavedFolder(username, entityHash, folderId) {
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} query 搜索串
- * @param {{ limit?: number }} [opts] 选项
+ * @param {{ limit?: number }} [options] 选项
  * @returns {Promise<{ posts: object[], query: string }>} 匹配的收藏（含 folderId）
  */
-export async function searchSavedPosts(username, entityHash, query, opts = {}) {
+export async function searchSavedPosts(username, entityHash, query, options = {}) {
 	const q = String(query || '').trim().toLowerCase()
-	const limit = Math.min(Math.max(Number(opts.limit) || 50, 1), 200)
+	const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
 	const enriched = await enrichSavedPosts(username, await loadSavedPosts(username, entityHash))
 	/** @type {object[]} */
 	const posts = []

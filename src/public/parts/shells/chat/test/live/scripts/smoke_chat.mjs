@@ -24,7 +24,7 @@ const m = await chatApiJson('POST', `/groups/${groupId}/channels/${channelId}/me
 console.log(JSON.stringify(m, null, 2))
 
 console.log('\n=== 4. Read messages ===')
-const msgs = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
-console.log(JSON.stringify(msgs, null, 2))
+const messageList = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
+console.log(JSON.stringify(messageList, null, 2))
 
 console.log(`\n=== DONE === groupId=${groupId} channelId=${channelId}`)

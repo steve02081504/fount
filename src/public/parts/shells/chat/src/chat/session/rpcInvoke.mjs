@@ -2,7 +2,7 @@
  * 【文件】rpcInvoke.mjs — 跨节点群 RPC 调用编排
  * 【职责】统一 invokeGroupRpc：本机 char/world 优先走 session.mjs 本地 RPC；否则经 federation sendRpcToNode 发往归属节点并 await WS 响应。
  * 【原理】partKind 为 char/world 时先 tryInvokeLocal*，命中 result/error 即返回；否则构造 rpc_call 载荷（requestId、memberId、method、args、targetNodeId）异步等待 groupWsRpc。
- * 【数据结构】opts：{ memberId, method, args, targetNodeId, partKind }；requestId（UUID）。
+ * 【数据结构】options：{ memberId, method, args, targetNodeId, partKind }；requestId（UUID）。
  * 【关联】session.mjs、remoteProxy、groupWsRpc、resolvePart、triggerReply（跨机 GetReply）。
  */
 import { randomUUID } from 'node:crypto'
@@ -15,11 +15,11 @@ import { groupMetadatas } from './wsLifecycle.mjs'
 /**
  * @param {string} groupId 群 ID
  * @param {string} replicaUsername 发起方 replica
- * @param {object} opts RPC 选项
+ * @param {object} options RPC 选项
  * @returns {Promise<unknown>} RPC 结果或远程调用响应
  */
-export async function invokeGroupRpc(groupId, replicaUsername, opts) {
-	const { memberId, method, args, targetNodeId, partKind } = opts
+export async function invokeGroupRpc(groupId, replicaUsername, options) {
+	const { memberId, method, args, targetNodeId, partKind } = options
 	const entry = groupMetadatas.get(groupId)
 	const ownerUsername = entry?.username || replicaUsername
 

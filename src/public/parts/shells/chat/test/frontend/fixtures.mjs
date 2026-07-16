@@ -43,12 +43,12 @@ baseTest.afterEach(async () => {
  * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} baseUrl - 测试根 URL。
- * @param {{ waitUntil?: 'domcontentloaded' | 'load', friendsMode?: boolean }} [opts] - 导航选项。
+ * @param {{ waitUntil?: 'domcontentloaded' | 'load', friendsMode?: boolean }} [options] - 导航选项。
  * @returns {Promise<void>} 无返回值。
  */
-export async function waitForHubShell(page, baseUrl, opts = {}) {
-	const waitUntil = opts.waitUntil ?? 'domcontentloaded'
-	const friendsMode = opts.friendsMode !== false
+export async function waitForHubShell(page, baseUrl, options = {}) {
+	const waitUntil = options.waitUntil ?? 'domcontentloaded'
+	const friendsMode = options.friendsMode !== false
 	await page.goto(`${baseUrl}/parts/shells:chat/hub/`, {
 		waitUntil,
 		timeout: HUB_INIT_TIMEOUT,
@@ -97,14 +97,14 @@ export function parseGroupHashFromUrl(url) {
  * 通过 Hub UI 创建群组并进入默认频道。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} baseUrl - 测试根 URL。
- * @param {object} [opts] - 可选项。
- * @param {string} [opts.name] - 群名称。
- * @param {string} [opts.description] - 群描述。
- * @param {boolean} [opts.waitForComposer=true] - 是否等待 composer 可用。
+ * @param {object} [options] - 可选项。
+ * @param {string} [options.name] - 群名称。
+ * @param {string} [options.description] - 群描述。
+ * @param {boolean} [options.waitForComposer=true] - 是否等待 composer 可用。
  * @returns {Promise<{ groupId: string, channelId: string }>} 群与默认频道 ID。
  */
-export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
-	const name = opts.name ?? `pw-ui-${Date.now()}`
+export async function createGroupViaHubUi(page, baseUrl, options = {}) {
+	const name = options.name ?? `pw-ui-${Date.now()}`
 	if (!page.url().includes('/parts/shells:chat/hub/'))
 		await waitForHubShell(page, baseUrl)
 	else {
@@ -117,15 +117,15 @@ export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
 	await createCard.click()
 	await expect(page.locator('#create-group-form')).toBeVisible({ timeout: ms('30s') })
 	await page.locator('#create-group-form input[name="name"]').fill(name)
-	if (opts.description)
-		await page.locator('#create-group-form textarea[name="description"]').fill(opts.description)
+	if (options.description)
+		await page.locator('#create-group-form textarea[name="description"]').fill(options.description)
 	await Promise.all([
 		page.waitForURL(/#group:/, { timeout: HUB_INIT_TIMEOUT }),
 		page.locator('#create-group-form button[type="submit"]').click(),
 	])
 	const parsed = parseGroupHashFromUrl(page.url())
 	if (!parsed) throw new Error(`group hash missing after create: ${page.url()}`)
-	if (opts.waitForComposer !== false)
+	if (options.waitForComposer !== false)
 		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
 	return parsed
 }
@@ -134,15 +134,15 @@ export async function createGroupViaHubUi(page, baseUrl, opts = {}) {
  * 通过 API 创建测试群组。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {object} [opts] - 可选项。
+ * @param {object} [options] - 可选项。
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新建群信息。
  */
-export async function createTestGroup(baseUrl, apiKey, opts = {}) {
-	const name = opts.name ?? `pw-group-${Date.now()}`
+export async function createTestGroup(baseUrl, apiKey, options = {}) {
+	const name = options.name ?? `pw-group-${Date.now()}`
 	const body = {
 		name,
-		description: opts.description ?? 'playwright frontend test',
-		...opts.defaultChannelName ? { defaultChannelName: opts.defaultChannelName } : {},
+		description: options.description ?? 'playwright frontend test',
+		...options.defaultChannelName ? { defaultChannelName: options.defaultChannelName } : {},
 	}
 	const req = await playwrightRequest.newContext()
 	try {
@@ -331,16 +331,16 @@ export function messageTextFromPostResponse(postJson) {
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
  * @param {string} groupId - 群 ID。
- * @param {object} [opts] - 可选项。
+ * @param {object} [options] - 可选项。
  * @returns {Promise<{ channelId: string, name: string }>} 新建频道信息。
  */
-export async function createTestChannel(baseUrl, apiKey, groupId, opts = {}) {
-	const name = opts.name ?? `pw-ch-${Date.now()}`
+export async function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
+	const name = options.name ?? `pw-ch-${Date.now()}`
 	const req = await playwrightRequest.newContext()
 	try {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels?fount-apikey=${encodeURIComponent(apiKey)}`,
-			{ data: { name, type: opts.type ?? 'text' } },
+			{ data: { name, type: options.type ?? 'text' } },
 		)
 		if (!res.ok()) throw new Error(`createChannel failed: ${res.status()}`)
 		const data = await res.json()
@@ -417,10 +417,10 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
  * 注入一条 @viewer 的 mention inbox 条目及对应频道消息（FOUNT_TEST 专用）。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {{ groupId: string, channelId?: string, text?: string }} opts - 目标群/频道与预览正文。
+ * @param {{ groupId: string, channelId?: string, text?: string }} options - 目标群/频道与预览正文。
  * @returns {Promise<{ eventId: string, text: string, groupId: string, channelId: string }>} 种子数据。
  */
-export async function seedMentionInbox(baseUrl, apiKey, opts) {
+export async function seedMentionInbox(baseUrl, apiKey, options) {
 	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
 	try {
@@ -428,9 +428,9 @@ export async function seedMentionInbox(baseUrl, apiKey, opts) {
 			`${baseUrl}/api/parts/shells:chat/test/mention-inbox?fount-apikey=${key}`,
 			{
 				data: {
-					groupId: opts.groupId,
-					channelId: opts.channelId,
-					text: opts.text,
+					groupId: options.groupId,
+					channelId: options.channelId,
+					text: options.text,
 				},
 			},
 		)

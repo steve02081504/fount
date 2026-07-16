@@ -18,10 +18,10 @@ import { buildPostSnapshotsFromLines } from './postSnapshot.mjs'
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId message eventId
- * @param {{ markDeleted?: boolean }} [opts] 强制标记 deleted
+ * @param {{ markDeleted?: boolean }} [options] 强制标记 deleted
  * @returns {Promise<boolean>} 是否已更新归档行
  */
-export async function refreshArchivedSnapshotIfPresent(username, groupId, channelId, eventId, opts = {}) {
+export async function refreshArchivedSnapshotIfPresent(username, groupId, channelId, eventId, options = {}) {
 	const id = String(eventId || '').trim().toLowerCase()
 	if (!id) return false
 	const manifest = await loadArchiveManifest(username, groupId)
@@ -31,7 +31,7 @@ export async function refreshArchivedSnapshotIfPresent(username, groupId, channe
 
 	const { state } = await getState(username, groupId)
 	const row = await findChannelMessageRow(username, groupId, channelId, id)
-	if (!row && !opts.markDeleted) return false
+	if (!row && !options.markDeleted) return false
 	/** @type {object} */
 	const workRow = row || {
 		eventId: id,
@@ -46,7 +46,7 @@ export async function refreshArchivedSnapshotIfPresent(username, groupId, channe
 	const snaps = await buildPostSnapshotsFromLines(username, groupId, channelId, [workRow], state)
 	const snap = snaps[0]
 	if (!snap) return false
-	if (opts.markDeleted) snap.deleted = true
+	if (options.markDeleted) snap.deleted = true
 
 	const path = channelArchivePath(username, groupId, channelId, month)
 	/** @type {object[]} */

@@ -75,10 +75,10 @@ export function createGroup(apiContext, groupId, projection) {
 			return this.channel(channelId)
 		},
 		/**
-		 * @param {{ page?: number }} [opts] 分页
+		 * @param {{ page?: number }} [options] 分页
 		 * @returns {Promise<{ members: object[], page: number, pageCount: number }>} 分页成员
 		 */
-		async members(opts = {}) {
+		async members(options = {}) {
 			const state = await loadGroupState(apiContext, groupId)
 			const bridge = state.groupSettings?.bridge
 			if (bridge?.platform && bridge?.botname) {
@@ -102,7 +102,7 @@ export function createGroup(apiContext, groupId, projection) {
 				}))
 				return { page: 1, pageCount: 1, members }
 			}
-			const { members: slice, page, pageCount } = paginateActiveMembers(state, opts)
+			const { members: slice, page, pageCount } = paginateActiveMembers(state, options)
 			return {
 				page,
 				pageCount,
@@ -143,12 +143,12 @@ export function createGroup(apiContext, groupId, projection) {
 			return createRole(apiContext, groupId, roleId, roleRow)
 		},
 		/**
-		 * @param {object} opts 频道参数
+		 * @param {object} options 频道参数
 		 * @returns {Promise<object>} group_meta_update 事件 新建 Channel
 		 */
-		async createChannel(opts = {}) {
+		async createChannel(options = {}) {
 			const defaultChannel = await this.defaultChannel()
-			return defaultChannel._createSibling(opts)
+			return defaultChannel._createSibling(options)
 		},
 		/**
 		 * @returns {Promise<string>} 邀请深链文本
@@ -199,12 +199,12 @@ export function createGroup(apiContext, groupId, projection) {
 			}, { entityHash: apiContext.entityHash })
 		},
 		/**
-		 * @param {{ tipId?: string, name?: string }} [opts] fork 参数
+		 * @param {{ tipId?: string, name?: string }} [options] fork 参数
 		 * @returns {Promise<object>} 新 Group
 		 */
-		async fork(opts = {}) {
+		async fork(options = {}) {
 			const { forkGroupFromBranch } = await import('../chat/governance/fork.mjs')
-			const result = await forkGroupFromBranch(apiContext.username, groupId, { ...opts, entityHash: apiContext.entityHash })
+			const result = await forkGroupFromBranch(apiContext.username, groupId, { ...options, entityHash: apiContext.entityHash })
 			const { group } = await buildConversationContext(apiContext.username, result.groupId, result.defaultChannelId)
 			return createGroup(apiContext, result.groupId, group)
 		},
@@ -221,7 +221,7 @@ export function createGroup(apiContext, groupId, projection) {
 		 * @returns {{ slash: Function, reset: Function }} 群信誉操作
 		 */
 		get reputation() {
-			const signOpts = { entityHash: apiContext.entityHash }
+			const signOptions = { entityHash: apiContext.entityHash }
 			return {
 				/**
 				 * @param {{ targetPubKeyHash: string, claim?: number, verified?: boolean, proof?: { eventId: string }}} args slash 参数
@@ -261,7 +261,7 @@ export function createGroup(apiContext, groupId, projection) {
 						type: 'reputation_slash',
 						timestamp: Date.now(),
 						content,
-					}, signOpts)
+					}, signOptions)
 					return { applied: 1 }
 				},
 				/**
@@ -275,7 +275,7 @@ export function createGroup(apiContext, groupId, projection) {
 						type: 'reputation_reset',
 						timestamp: Date.now(),
 						content: { targetPubKeyHash: hash },
-					}, signOpts)
+					}, signOptions)
 					return { applied: 1 }
 				},
 			}
@@ -286,12 +286,12 @@ export function createGroup(apiContext, groupId, projection) {
 		get federation() {
 			return {
 				/**
-				 * @param {{ waitMs?: number, extraWantIds?: string[] }} [opts] catchup 选项
+				 * @param {{ waitMs?: number, extraWantIds?: string[] }} [options] catchup 选项
 				 * @returns {Promise<object>} catchup 统计
 				 */
-				async catchup(opts = {}) {
+				async catchup(options = {}) {
 					const { catchUpGroupFromPeers } = await import('../chat/federation/index.mjs')
-					return catchUpGroupFromPeers(apiContext.username, groupId, opts)
+					return catchUpGroupFromPeers(apiContext.username, groupId, options)
 				},
 				/**
 				 * @param {object} fields 调参字段
@@ -343,12 +343,12 @@ export function createGroup(apiContext, groupId, projection) {
 				},
 				/**
 				 * @param {string} charname 角色名
-				 * @param {object} [opts] 选项
+				 * @param {object} [options] 选项
 				 * @returns {Promise<object | null>} 加入后的角色配置
 				 */
-				async addChar(charname, opts) {
+				async addChar(charname, options) {
 					const { addchar } = await import('../chat/session/partConfig.mjs')
-					return addchar(groupId, charname, apiContext.username, opts)
+					return addchar(groupId, charname, apiContext.username, options)
 				},
 				/**
 				 * @param {string} charname 角色名

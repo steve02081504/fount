@@ -100,11 +100,11 @@ export async function leaveGroups(groupIds) {
 /**
  * 签发群组邀请票据。
  * @param {string} groupId 群 ID
- * @param {{ ttlMs?: number }} [opts] 票据有效期等选项
+ * @param {{ ttlMs?: number }} [options] 票据有效期等选项
  * @returns {Promise<{ code: string, expiresAt: number, clipboardText?: string }>} 邀请码、过期时间与剪贴板全文
  */
-export async function createGroupInvite(groupId, opts = {}) {
-	const data = await groupFetch(groupPath(groupId, 'invite-ticket'), { method: 'POST', json: { ttlMs: opts.ttlMs } })
+export async function createGroupInvite(groupId, options = {}) {
+	const data = await groupFetch(groupPath(groupId, 'invite-ticket'), { method: 'POST', json: { ttlMs: options.ttlMs } })
 	return { code: data.code, expiresAt: data.expiresAt, clipboardText: data.clipboardText }
 }
 
@@ -129,15 +129,15 @@ export async function getGroupState(groupId) {
 /**
  * 分页拉取群审计日志（需 ADMIN）。
  * @param {string} groupId 群 ID
- * @param {{ before?: string, offset?: number, limit?: number, types?: string[] }} [opts] 游标/偏移与类型过滤
+ * @param {{ before?: string, offset?: number, limit?: number, types?: string[] }} [options] 游标/偏移与类型过滤
  * @returns {Promise<{ entries: object[], hasMore: boolean, total: number, types: string[] }>} 审计条目、分页标记、总数与可用类型列表
  */
-export async function fetchGroupAuditLog(groupId, opts = {}) {
+export async function fetchGroupAuditLog(groupId, options = {}) {
 	const params = new URLSearchParams()
-	if (opts.before) params.set('before', opts.before)
-	if (opts.offset !== undefined) params.set('offset', String(opts.offset))
-	if (opts.limit !== undefined) params.set('limit', String(opts.limit))
-	if (opts.types?.length) params.set('types', opts.types.join(','))
+	if (options.before) params.set('before', options.before)
+	if (options.offset !== undefined) params.set('offset', String(options.offset))
+	if (options.limit !== undefined) params.set('limit', String(options.limit))
+	if (options.types?.length) params.set('types', options.types.join(','))
 	const query = params.toString()
 	const data = await groupFetch(
 		`${groupPath(groupId, 'audit-log')}${query ? `?${query}` : ''}`,

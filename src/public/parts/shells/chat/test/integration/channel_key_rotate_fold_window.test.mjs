@@ -80,9 +80,9 @@ Deno.test('channel_key_rotate fold window does not block message interaction', a
 	 * @type {string[]} */
 	const windowMsgIds = []
 	await t.step('窗口期：A/B/C 互发消息均可解密', async () => {
-		const mA = await postMessage(NODE_A, groupId, channelId, 'owner msg in window', [NODE_B, NODE_C])
-		const mB = await postMessage(NODE_B, groupId, channelId, 'member-B msg in window', [NODE_A, NODE_C])
-		const mC = await postMessage(NODE_C, groupId, channelId, 'member-C msg in window', [NODE_A, NODE_B])
+		const mA = await postMessage(NODE_A, groupId, channelId, 'owner message in window', [NODE_B, NODE_C])
+		const mB = await postMessage(NODE_B, groupId, channelId, 'member-B message in window', [NODE_A, NODE_C])
+		const mC = await postMessage(NODE_C, groupId, channelId, 'member-C message in window', [NODE_A, NODE_B])
 		windowMsgIds.push(mA.id, mB.id, mC.id)
 
 		for (const [author, m] of [['A', mA], ['B', mB], ['C', mC]])

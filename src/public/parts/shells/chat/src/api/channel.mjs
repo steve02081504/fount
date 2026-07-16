@@ -32,7 +32,7 @@ function viewerFieldsFrom(apiContext) {
  * @returns {object} Channel 鸭子类型
  */
 export function createChannel(apiContext, groupId, channelId, projection = {}) {
-	const signOpts = { entityHash: apiContext.entityHash }
+	const signOptions = { entityHash: apiContext.entityHash }
 	return {
 		id: channelId,
 		name: projection.name || channelId,
@@ -178,17 +178,17 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			return listTypingEntities(apiContext.username, groupId, channelId)
 		},
 		/**
-		 * @param {{ limit?: number, before?: string }} [opts] 分页
+		 * @param {{ limit?: number, before?: string }} [options] 分页
 		 * @returns {Promise<object[]>} Message 列表
 		 */
-		async messages(opts = {}) {
+		async messages(options = {}) {
 			const { messages: rows } = await readViewerChannelMessages(
 				apiContext.username,
 				groupId,
 				channelId,
 				{
-					limit: opts.limit,
-					before: opts.before,
+					limit: options.limit,
+					before: options.before,
 				},
 				viewerFieldsFrom(apiContext),
 			)
@@ -236,7 +236,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 				timestamp: Date.now(),
 				content: { type: 'vote', question, options, deadline: voteDeadline },
 			}
-			const event = await appendSignedLocalEvent(apiContext.username, groupId, body, signOpts)
+			const event = await appendSignedLocalEvent(apiContext.username, groupId, body, signOptions)
 			void scheduleVoteDeadlines(apiContext.username, groupId)
 			const message = createMessage(apiContext, groupId, {
 				eventId: event.id,
@@ -249,22 +249,22 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			return message
 		},
 		/**
-		 * @param {object} opts 频道参数
+		 * @param {object} options 频道参数
 		 * @returns {Promise<object>} 新建 Channel（由 Group.createChannel 使用）
 		 */
-		async _createSibling(opts) {
-			const newChannelId = opts.channelId || randomUUID()
+		async _createSibling(options) {
+			const newChannelId = options.channelId || randomUUID()
 			const created = await appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'channel_create',
 				timestamp: Date.now(),
 				content: {
 					channelId: newChannelId,
-					type: opts.type || 'text',
-					name: opts.name || newChannelId,
-					description: opts.description,
-					...opts.isPrivate != null ? { isPrivate: Boolean(opts.isPrivate) } : {},
+					type: options.type || 'text',
+					name: options.name || newChannelId,
+					description: options.description,
+					...options.isPrivate != null ? { isPrivate: Boolean(options.isPrivate) } : {},
 				},
-			}, signOpts)
+			}, signOptions)
 			const resolvedId = created.content?.channelId || newChannelId
 			const { channel } = await buildConversationContext(apiContext.username, groupId, resolvedId)
 			return createChannel(apiContext, groupId, resolvedId, channel)

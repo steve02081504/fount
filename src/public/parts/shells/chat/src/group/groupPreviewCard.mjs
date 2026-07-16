@@ -4,12 +4,12 @@
 
 /**
  * 由已解析的数据源组装群预览卡片。
- * @param {object} opts 输入
- * @param {string} opts.groupId 群 ID
- * @param {object | null} [opts.state] 物化 state
- * @param {{ title?: string, blurb?: string } | null} [opts.discoveryEntry] discovery 条目
- * @param {{ title?: string, blurb?: string } | null} [opts.remote] 联邦卡片
- * @param {string | null} [opts.memberKey] 成员密钥（有则为成员）
+ * @param {object} options 输入
+ * @param {string} options.groupId 群 ID
+ * @param {object | null} [options.state] 物化 state
+ * @param {{ title?: string, blurb?: string } | null} [options.discoveryEntry] discovery 条目
+ * @param {{ title?: string, blurb?: string } | null} [options.remote] 联邦卡片
+ * @param {string | null} [options.memberKey] 成员密钥（有则为成员）
  * @returns {object} 群预览卡片
  */
 export function assembleGroupPreviewCard({ groupId, state = null, discoveryEntry = null, remote = null, memberKey = null }) {

@@ -1,11 +1,11 @@
-import { makeViewerOpts } from './helpers.mjs'
+import { makeViewerOptions } from './helpers.mjs'
 
 /**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} 直播方法
  */
 export function createLiveMethods(apiContext) {
-	const viewerOpts = makeViewerOpts(apiContext)
+	const viewerOptions = makeViewerOptions(apiContext)
 	return {
 		/**
 		 * @param {object} draft 开播草稿
@@ -24,14 +24,14 @@ export function createLiveMethods(apiContext) {
 			return stopLiveSession(apiContext.username, apiContext.entityHash, liveId)
 		},
 		/**
-		 * @param {{ limit?: number, cursor?: string, scope?: string }} [opts] 选项
+		 * @param {{ limit?: number, cursor?: string, scope?: string }} [options] 选项
 		 * @returns {Promise<object>} 在播列表
 		 */
-		async liveFeed(opts = {}) {
+		async liveFeed(options = {}) {
 			const { buildLiveFeed } = await import('../../live/feed.mjs')
-			const options = { ...opts, ...viewerOpts() }
+			options = { ...options, ...viewerOptions() }
 			let result = await buildLiveFeed(apiContext.username, options)
-			if (!opts.cursor && !result.items.length && String(opts.scope || 'local') !== 'nearby') {
+			if (!options.cursor && !result.items.length && String(options.scope || 'local') !== 'nearby') {
 				const { buildNearbyLiveFeed } = await import('../../live/network.mjs')
 				result = await buildNearbyLiveFeed(apiContext.username, options)
 			}

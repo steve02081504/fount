@@ -20,10 +20,10 @@ console.log(`groupId=${groupId}  channelId=${channelId}`)
 
 console.log('\n=== 2. NodeB: read messages (expect A1 via catchup) ===')
 const gotA1 = await WaitFedConverged(FedB, groupId, async () => {
-	const msgs = await Api(FedB, 'GET', `/groups/${groupId}/channels/${channelId}/messages?limit=50`)
-	if (msgs.status !== 200) return false
-	const texts = msgs.json.messages?.map(row => row.content?.content) ?? []
-	console.log(`  NodeB sees ${texts.length} msgs: ${texts.join(' | ')}`)
+	const listResponse = await Api(FedB, 'GET', `/groups/${groupId}/channels/${channelId}/messages?limit=50`)
+	if (listResponse.status !== 200) return false
+	const texts = listResponse.json.messages?.map(row => row.content?.content) ?? []
+	console.log(`  NodeB sees ${texts.length} messages: ${texts.join(' | ')}`)
 	return texts.some(t => String(t).includes('A1:'))
 }, 120, 3, ms('6s'))
 console.log(`NodeB received A1: ${gotA1 ? 'YES' : 'NO'}`)
@@ -36,10 +36,10 @@ if (b1.status !== 201) throw new Error(`B1 send failed: ${b1.status} ${b1.raw}`)
 
 console.log('\n=== 4. NodeA: live push (GET-only, no catchup) ===')
 const gotB1Live = await WaitFedLive(async () => {
-	const msgs = await Api(FedA, 'GET', `/groups/${groupId}/channels/${channelId}/messages?limit=50`)
-	if (msgs.status !== 200) return false
-	const texts = msgs.json.messages?.map(row => row.content?.content) ?? []
-	console.log(`  NodeA live sees ${texts.length} msgs: ${texts.join(' | ')}`)
+	const listResponse = await Api(FedA, 'GET', `/groups/${groupId}/channels/${channelId}/messages?limit=50`)
+	if (listResponse.status !== 200) return false
+	const texts = listResponse.json.messages?.map(row => row.content?.content) ?? []
+	console.log(`  NodeA live sees ${texts.length} messages: ${texts.join(' | ')}`)
 	return texts.some(t => String(t).includes('B1:'))
 }, 90, 3)
 console.log(`NodeA received B1 via live push: ${gotB1Live ? 'YES' : 'NO'}`)

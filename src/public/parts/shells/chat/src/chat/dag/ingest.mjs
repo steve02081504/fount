@@ -2,7 +2,7 @@
  * 【文件】`dag/ingest.mjs` — 入站事件鉴权（本地与联邦共用）。
  * 【职责】在 append/远程入库前校验 join 策略、消息索引、权限矩阵、session 形状与 `dag_tip_merge` 前驱合法性。
  * 【原理】先物化当前群状态再判权；联邦路径要求 ACL 快照就绪且 sender 为 pubKeyHash；消息变更类事件走 `assertEventPermission`；`dag_tip_merge` 要求声明 >= 2 个父且所有 `prev_event_ids` 本地已存在（缺父可延迟，跨节点并发合并下不强求等于本地 frontier）。
- * 【数据结构】入参为 DAG 事件对象；`opts.source` 为 `'local' | 'federation'`。
+ * 【数据结构】入参为 DAG 事件对象；`options.source` 为 `'local' | 'federation'`。
  * 【关联】`authorizeEvent.mjs`、`materialize.mjs`、`sessionEventValidate.mjs`、`../federation/acl.mjs`。
  */
 import { assertHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
@@ -42,13 +42,13 @@ const MESSAGE_MUTATION_TYPES = new Set(['message_edit', 'message_delete', 'messa
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {object} event 待校验事件
- * @param {{ source?: 'local' | 'federation', state?: object }} [opts] 入站来源；可传入已物化 state 避免重复加载
+ * @param {{ source?: 'local' | 'federation', state?: object }} [options] 入站来源；可传入已物化 state 避免重复加载
  * @returns {Promise<void>}
  */
-export async function validateIngestAuthz(replicaUsername, groupId, event, opts = {}) {
-	const state = opts.state ?? (await getState(replicaUsername, groupId)).state
+export async function validateIngestAuthz(replicaUsername, groupId, event, options = {}) {
+	const state = options.state ?? (await getState(replicaUsername, groupId)).state
 
-	if (opts.source === 'federation' && shouldDeferInboundIngest(state, event)) {
+	if (options.source === 'federation' && shouldDeferInboundIngest(state, event)) {
 		const error = new Error('federated event pending: no ACL snapshot')
 		error.pendable = true
 		throw error
@@ -63,7 +63,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, opts 
 		validateWorldStateContent(event)
 
 	if (event.type === 'member_join')
-		await validateJoinPolicy(state, event, replicaUsername, { source: opts.source })
+		await validateJoinPolicy(state, event, replicaUsername, { source: options.source })
 
 	if (event.type === 'message' && event.content?.content_ref)
 		validateContentRefPayload(event.content.content_ref)

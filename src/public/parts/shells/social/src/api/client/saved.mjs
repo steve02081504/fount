@@ -62,11 +62,11 @@ export function createSavedMethods(apiContext) {
 			},
 			/**
 			 * @param {string} query 搜索串
-			 * @param {{ limit?: number }} [opts] 选项
+			 * @param {{ limit?: number }} [options] 选项
 			 * @returns {Promise<object>} 匹配收藏
 			 */
-			async search(query, opts = {}) {
-				return searchSavedPosts(apiContext.username, apiContext.entityHash, query, opts)
+			async search(query, options = {}) {
+				return searchSavedPosts(apiContext.username, apiContext.entityHash, query, options)
 			},
 		},
 	}

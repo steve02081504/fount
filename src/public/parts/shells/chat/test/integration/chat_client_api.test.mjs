@@ -211,13 +211,13 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	assertEquals(calls.some(call => call[0] === 'leave'), true)
 })
 
-Deno.test('unregistered bridge op throws', async () => {
+Deno.test('unregistered bridge operation throws', async () => {
 	const username = `cc-unreg-${crypto.randomUUID().slice(0, 8)}`
 	const { requireBridgeOperation } = await import('../../src/chat/bridge/operations.mjs')
 	assertThrows(
 		() => requireBridgeOperation(username, { platform: 'missing', botname: 'nope' }, 'sendTyping'),
 		Error,
-		'bridge op not registered',
+		'bridge operation not registered',
 	)
 })
 
@@ -296,18 +296,18 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 	const { FOUNT_CHAT_CODE_CONTEXT_PLUGIN } = await import('../../src/chat/lib/codeContextPlugin.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
 
-	const groupId = await newGroup(username, { name: 'code-ctx' })
+	const groupId = await newGroup(username, { name: 'code-context' })
 	const channelId = await getDefaultChannelId(username, groupId)
 	await addchar(groupId, CHAR_FIXTURE, username)
-	await postChannelMessage(username, groupId, channelId, { text: 'trigger ctx' })
+	await postChannelMessage(username, groupId, channelId, { text: 'trigger code context' })
 
 	const agentHash = await ensureLocalAgentEntityHash(username, CHAR_FIXTURE)
 	const request = await getChatRequest(groupId, CHAR_FIXTURE, channelId, { replicaUsername: username })
-	const ctx = await FOUNT_CHAT_CODE_CONTEXT_PLUGIN.interfaces.code_execution.GetJSCodeContext(request)
-	assert(ctx.fount?.chat)
-	assert(ctx.fount?.group)
-	assert(ctx.fount?.channel)
-	assertEquals(ctx.fount.chat.entityHash, agentHash.toLowerCase())
+	const codeContext = await FOUNT_CHAT_CODE_CONTEXT_PLUGIN.interfaces.code_execution.GetJSCodeContext(request)
+	assert(codeContext.fount?.chat)
+	assert(codeContext.fount?.group)
+	assert(codeContext.fount?.channel)
+	assertEquals(codeContext.fount.chat.entityHash, agentHash.toLowerCase())
 })
 
 Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () => {

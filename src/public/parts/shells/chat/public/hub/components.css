@@ -379,7 +379,7 @@
 #hub-messages>.hub-system-message,
 #hub-messages>.hub-char-entry,
 #hub-messages>.hub-chat-entry {
-	max-width: var(--hub-msg-max-width);
+	max-width: var(--hub-message-max-width);
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
@@ -529,7 +529,7 @@
 /* —— 输入区 —— */
 .hub-input-area {
 	padding: 0 16px 20px;
-	max-width: calc(var(--hub-msg-max-width) + 32px);
+	max-width: calc(var(--hub-message-max-width) + 32px);
 	margin: 0 auto;
 	width: 100%;
 	box-sizing: border-box;

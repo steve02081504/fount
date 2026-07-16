@@ -141,12 +141,12 @@ async function renderThreadMessages(messageContainer) {
 		})
 		return
 	}
-	const opts = threadMessageRenderOpts(threadChannelId, activeThread.reactions)
+	const options = threadMessageRenderOpts(threadChannelId, activeThread.reactions)
 	let prevSender = null
 	let prevTs = 0
 	for (const message of rows) {
 		if (generation !== threadRenderGeneration) return
-		const block = await renderChannelMessageBlock(message, prevSender, prevTs, rows, opts)
+		const block = await renderChannelMessageBlock(message, prevSender, prevTs, rows, options)
 		prevSender = message.charId ?? message.sender ?? null
 		prevTs = message.hlc?.wall ?? 0
 		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)

@@ -26,14 +26,14 @@ console.log('\n=== 5. Poll for char reply (<=20s) ===')
 let charReply = false
 for (let i = 0; i < 10; i++) {
 	await sleep(2000)
-	const msgs = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
-	const charMsg = msgs.messages?.filter(row => row.charId && !row.content?.is_generating) ?? []
-	if (charMsg.length >= 1) {
+	const list = await chatApiJson('GET', `/groups/${groupId}/channels/${channelId}/messages?limit=20`)
+	const charRows = list.messages?.filter(row => row.charId && !row.content?.is_generating) ?? []
+	if (charRows.length >= 1) {
 		charReply = true
 		console.log(`  ok    char reply after poll #${i}`)
 		break
 	}
-	console.log(`poll #${i} (${msgs.messages?.length ?? 0} msgs, waiting for char...)`)
+	console.log(`poll #${i} (${list.messages?.length ?? 0} messages, waiting for char...)`)
 }
 if (!charReply) {
 	console.log('  FAIL  no char reply within timeout')

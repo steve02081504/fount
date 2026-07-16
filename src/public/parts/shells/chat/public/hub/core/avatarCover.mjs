@@ -16,7 +16,7 @@ export { isAvatarImageUrl }
 /**
  * 将宿主重置为 hash 文字占位头像。
  * @param {HTMLElement} host 圆形容器
- * @param {{ seed?: string, label?: string, letterId?: string, letterClass?: string }} opts 绘制选项
+ * @param {{ seed?: string, label?: string, letterId?: string, letterClass?: string }} options 绘制选项
  * @returns {HTMLSpanElement} 字母节点
  */
 export function paintHashAvatarHost(host, { seed, label, letterId, letterClass = 'hub-avatar-letter' }) {
@@ -37,10 +37,10 @@ export function paintHashAvatarHost(host, { seed, label, letterId, letterClass =
 /**
  * 在 hash 占位基础上应用 profile.avatar（URL 图 / 表情文本；加载失败回退字母）。
  * @param {HTMLElement} host 圆形容器
- * @param {{ seed?: string, label?: string, avatar?: string | null, emojiFontSize?: string, letterId?: string, letterClass?: string }} opts 绘制选项
+ * @param {{ seed?: string, label?: string, avatar?: string | null, emojiFontSize?: string, letterId?: string, letterClass?: string }} options 绘制选项
  * @returns {Promise<void>}
  */
-export async function applyProfileAvatarToHost(host, opts) {
+export async function applyProfileAvatarToHost(host, options) {
 	const {
 		seed,
 		label,
@@ -48,7 +48,7 @@ export async function applyProfileAvatarToHost(host, opts) {
 		emojiFontSize = '20px',
 		letterId,
 		letterClass,
-	} = opts
+	} = options
 	const letter = paintHashAvatarHost(host, { seed, label, letterId, letterClass })
 	const avatarVal = String(avatar || '').trim()
 	if (!avatarVal) return
@@ -80,12 +80,12 @@ export async function applyProfileAvatarToHost(host, opts) {
  * @param {HTMLElement} host 头像宿主
  * @param {string} src 图片 URL
  * @param {string} alt 替代文本
- * @param {{ seed?: string }} [opts] 可选身份 seed（缺省读 host.dataset.avatarSeed）
+ * @param {{ seed?: string }} [options] 可选身份 seed（缺省读 host.dataset.avatarSeed）
  * @returns {Promise<void>}
  */
-export async function mountAvatarCover(host, src, alt, opts = {}) {
+export async function mountAvatarCover(host, src, alt, options = {}) {
 	await applyProfileAvatarToHost(host, {
-		seed: opts.seed || host.dataset?.avatarSeed,
+		seed: options.seed || host.dataset?.avatarSeed,
 		label: alt,
 		avatar: src,
 	})

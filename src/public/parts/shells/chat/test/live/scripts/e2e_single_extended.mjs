@@ -106,13 +106,13 @@ async function waitForCharMessageId(groupId, channelId, charname, timeoutSec = 9
 }
 
 // ---------------------------------------------------------------------------
-writeLiveSection('Setup — shared E2E-ext group')
+writeLiveSection('Setup — shared E2E-extended group')
 let gid = null
 let cid = null
 let fbMsgId = null
 
 await testCase('POST /groups create (ext)', async () => {
-	const r = await api('POST', '/groups/', { name: 'E2E-ext', description: 'ext coverage' })
+	const r = await api('POST', '/groups/', { name: 'E2E-extended', description: 'extended coverage' })
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	gid = r.json.groupId
 	cid = r.json.defaultChannelId
@@ -146,7 +146,7 @@ await testCase('PUT messages/:id/feedback down', async () => {
 
 await testCase('POST message (user)', async () => {
 	const r = await api('POST', `/groups/${gid}/channels/${cid}/messages`, {
-		content: { type: 'text', content: 'ext user msg' },
+		content: { type: 'text', content: 'ext user message' },
 	})
 	return okStatus(r.status)
 })
@@ -219,7 +219,7 @@ await testCase('GET /branch restored index', async () => {
 })
 
 await testCase('POST channel (to delete)', async () => {
-	const group = await api('POST', '/groups/', { name: 'E2E-ext-del', description: 'channel delete coverage' })
+	const group = await api('POST', '/groups/', { name: 'E2E-extended-del', description: 'channel delete coverage' })
 	if (group.status !== 201) throw new Error(`group ${group.status}: ${group.raw}`)
 	delGroupId = group.json.groupId
 	createdGroups.push(delGroupId)
@@ -335,7 +335,7 @@ let stickerFile = null
 let importStickerId = null
 
 await testCase('POST /stickers/packs create', async () => {
-	const r = await api('POST', '/stickers/packs', { name: 'E2E-ext-pack', description: 'ext', isPublic: true })
+	const r = await api('POST', '/stickers/packs', { name: 'E2E-extended-pack', description: 'extended', isPublic: true })
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	packId = r.json.pack?.packId ?? r.json.pack?.id
 	return Boolean(packId)
@@ -347,8 +347,8 @@ await testCase('GET /stickers/packs/:id', async () => {
 })
 
 await testCase('PUT /stickers/packs/:id', async () => {
-	const r = await api('PUT', `/stickers/packs/${packId}`, { name: 'E2E-ext-pack-2', description: 'updated' })
-	return r.status === 200 && r.json.pack?.name === 'E2E-ext-pack-2'
+	const r = await api('PUT', `/stickers/packs/${packId}`, { name: 'E2E-extended-pack-2', description: 'updated' })
+	return r.status === 200 && r.json.pack?.name === 'E2E-extended-pack-2'
 })
 
 await testCase('POST /stickers/packs/:id/stickers upload', async () => {
@@ -592,7 +592,7 @@ await testCase('POST members/:key/kick removes agent member (owner may kick own 
 })
 
 await testCase('POST owner-succession transfers ownership to agent member (200)', async () => {
-	const og = await api('POST', '/groups/', { name: 'E2E-ext-os', description: 'owner succession probe' })
+	const og = await api('POST', '/groups/', { name: 'E2E-extended-os', description: 'owner succession probe' })
 	if (og.status !== 201) throw new Error(`create ${og.status}: ${og.raw}`)
 	const ogid = og.json.groupId
 	createdGroups.push(ogid)
@@ -602,7 +602,7 @@ await testCase('POST owner-succession transfers ownership to agent member (200)'
 		const s0 = await api('GET', `/groups/${ogid}/state`)
 		const agentRow = s0.json.meta?.members?.find(m => m.charname === agentChar)
 		if (!agentRow?.memberKey) throw new Error('agent memberKey missing')
-		const ballotId = `e2e-ext-os-${randomUUID().replace(/-/g, '').slice(0, 12)}`
+		const ballotId = `E2E-extended-os-${randomUUID().replace(/-/g, '').slice(0, 12)}`
 		const r = await api('POST', `/groups/${ogid}/owner-succession`, {
 			proposedOwnerPubKeyHash: agentRow.memberKey,
 			ballotId,
@@ -620,7 +620,7 @@ await testCase('POST owner-succession transfers ownership to agent member (200)'
 })
 
 await testCase('POST fork/block-opposing with current tip (HTTP smoke)', async () => {
-	const fg = await api('POST', '/groups/', { name: 'E2E-ext-fork', description: 'fork smoke probe' })
+	const fg = await api('POST', '/groups/', { name: 'E2E-extended-fork', description: 'fork smoke probe' })
 	if (fg.status !== 201) throw new Error(`create ${fg.status}: ${fg.raw}`)
 	const fgid = fg.json.groupId
 	createdGroups.push(fgid)
@@ -649,5 +649,5 @@ for (const g of [...new Set(createdGroups)]) {
 	else console.log(`  cleanup WARN ${g} status ${r.status}`)
 }
 
-writeLiveSummary('chat e2e_single_ext')
+writeLiveSummary('chat e2e_single_extended')
 completeLiveScript()

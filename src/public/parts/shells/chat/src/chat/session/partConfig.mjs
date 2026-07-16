@@ -226,10 +226,10 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
  * @param {string} groupId 聊天 ID
  * @param {string} charname 角色名
  * @param {string} [replicaUsername] 本地账户名
- * @param {{ deferGreeting?: boolean }} [opts] `deferGreeting` 时先返回 HTTP，问候语后台插入
+ * @param {{ deferGreeting?: boolean }} [options] `deferGreeting` 时先返回 HTTP，问候语后台插入
  * @returns {Promise<chatLogEntry_t | null>} 问候条目或 null
  */
-export async function addchar(groupId, charname, replicaUsername, opts = {}) {
+export async function addchar(groupId, charname, replicaUsername, options = {}) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
 	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
 	await ensureLocalAgentEntityHash(username, charname)
@@ -243,7 +243,7 @@ export async function addchar(groupId, charname, replicaUsername, opts = {}) {
 	const isCharFriendChat = !!groupState.groupMeta?.friendBinding?.charname
 	await appendAgentMemberJoin(username, groupId, charname, {
 		roles: isCharFriendChat ? ['admin'] : undefined,
-		...opts.appendOpts || {},
+		...options.appendOptions || {},
 	})
 	const chatMetadata = await rebuildGroupRuntime(groupId, username)
 	const timeSlice = chatMetadata.LastTimeSlice.copy()
@@ -257,7 +257,7 @@ export async function addchar(groupId, charname, replicaUsername, opts = {}) {
 
 	broadcastGroupEvent(groupId, { type: 'char_added', payload: { charname } })
 
-	if (opts.deferGreeting) {
+	if (options.deferGreeting) {
 		void runDeferredCharGreeting(groupId, charname, username, timeSlice.greeting_type)
 		return null
 	}

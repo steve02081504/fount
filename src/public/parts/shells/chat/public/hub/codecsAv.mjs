@@ -102,20 +102,20 @@ function scheduleAudioPlayback(audioContext, audioData, peer, levelsMap = null, 
 }
 
 /**
- * @param {object} opts 入参
- * @param {string} opts.groupId 群 ID
- * @param {string} opts.channelId 频道 ID
- * @param {keyof typeof CODECS_PRESETS} [opts.presetKey] 画质预设
- * @param {HTMLElement} opts.avGrid 远端 tile 容器
- * @param {HTMLVideoElement | null} [opts.videoLocal] 本地预览
- * @param {(count: number) => void} [opts.onPeerCount] 在线人数
- * @param {string} [opts.wsUrl] 自定义 WS（通话走 `/call/…`）
- * @param {(peers: { entityHash: string, senderId: string }[]) => void} [opts.onRoster] roster 回调
- * @param {(senderId: string, entityHash: string | null) => string} [opts.labelForPeer] tile 标签
- * @param {'av' | 'audio' | 'video'} [opts.media] 仅音/仅画/音画
+ * @param {object} options 入参
+ * @param {string} options.groupId 群 ID
+ * @param {string} options.channelId 频道 ID
+ * @param {keyof typeof CODECS_PRESETS} [options.presetKey] 画质预设
+ * @param {HTMLElement} options.avGrid 远端 tile 容器
+ * @param {HTMLVideoElement | null} [options.videoLocal] 本地预览
+ * @param {(count: number) => void} [options.onPeerCount] 在线人数
+ * @param {string} [options.wsUrl] 自定义 WS（通话走 `/call/…`）
+ * @param {(peers: { entityHash: string, senderId: string }[]) => void} [options.onRoster] roster 回调
+ * @param {(senderId: string, entityHash: string | null) => string} [options.labelForPeer] tile 标签
+ * @param {'av' | 'audio' | 'video'} [options.media] 仅音/仅画/音画
  * @returns {Promise<CodecsAvSession>} 会话句柄
  */
-export async function joinCodecsAvRoom(opts) {
+export async function joinCodecsAvRoom(options) {
 	const {
 		groupId,
 		channelId,
@@ -127,7 +127,7 @@ export async function joinCodecsAvRoom(opts) {
 		onRoster = null,
 		labelForPeer = null,
 		media: mediaMode = 'av',
-	} = opts
+	} = options
 
 	if (mediaMode !== 'video' && !('AudioEncoder' in window))
 		throw new Error('WebCodecs not supported')
@@ -503,15 +503,15 @@ export async function leaveCodecsAvRoom() {
 }
 
 /**
- * @param {object} opts 采集参数
+ * @param {object} options 采集参数
  * @returns {Promise<() => void>} 停止函数
  */
-async function startCodecsCapture(opts) {
+async function startCodecsCapture(options) {
 	const {
 		preset, ws, selfId, t0, videoSeqRef, audioSeqRef,
 		videoLocal, isVideoSending, isAudioSending, onStream,
 		wantsVideo = true, wantsAudio = true, audioGate,
-	} = opts
+	} = options
 
 	const constraints = {}
 	if (wantsVideo)
@@ -545,11 +545,11 @@ async function startCodecsCapture(opts) {
 }
 
 /**
- * @param {object} opts 视频编码参数
+ * @param {object} options 视频编码参数
  * @returns {Promise<() => void>} 停止视频编码函数
  */
-async function startVideoEncoder(opts) {
-	const { preset, stream, ws, selfId, t0, videoSeqRef, isVideoSending, frameType = FRAME_VIDEO } = opts
+async function startVideoEncoder(options) {
+	const { preset, stream, ws, selfId, t0, videoSeqRef, isVideoSending, frameType = FRAME_VIDEO } = options
 	const [track] = stream.getVideoTracks()
 	if (!track) return () => { }
 
@@ -630,11 +630,11 @@ async function startVideoEncoder(opts) {
 }
 
 /**
- * @param {object} opts 音频编码参数
+ * @param {object} options 音频编码参数
  * @returns {Promise<() => void>} 停止音频编码函数
  */
-async function startAudioEncoder(opts) {
-	const { stream, ws, selfId, t0, audioSeqRef, isAudioSending, audioGate } = opts
+async function startAudioEncoder(options) {
+	const { stream, ws, selfId, t0, audioSeqRef, isAudioSending, audioGate } = options
 	const track = stream.getAudioTracks()[0]
 	if (!track) return () => { }
 

@@ -101,13 +101,13 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 /**
  * 进入与指定角色的好友私聊（统一走群频道会话）。
  * @param {string} charname 角色名
- * @param {{groupId?: string, forceNew?: boolean, binding?: import('../shared/friendBinding.mjs').FriendBinding}} [opts] 选项
+ * @param {{groupId?: string, forceNew?: boolean, binding?: import('../shared/friendBinding.mjs').FriendBinding}} [options] 选项
  * @returns {Promise<void>}
  */
-export async function enterPrivateGroup(charname, opts = {}) {
+export async function enterPrivateGroup(charname, options = {}) {
 	if (!charname) return
 	const { enterFriendChat } = await import('./friendChat.mjs')
-	let binding = opts.binding
+	let binding = options.binding
 	if (!binding) {
 		const { charAgentEntityHash } = await import('./entityResolve.mjs')
 		const entityHash = await charAgentEntityHash(charname)
@@ -118,8 +118,8 @@ export async function enterPrivateGroup(charname, opts = {}) {
 		binding = buildCharFriendBinding(entityHash, charname)
 	}
 	await enterFriendChat({
-		groupId: opts.groupId,
-		forceNew: opts.forceNew,
+		groupId: options.groupId,
+		forceNew: options.forceNew,
 		binding,
 	})
 }

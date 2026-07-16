@@ -6,15 +6,15 @@
 const BAR_COUNT = 48
 
 /**
- * @param {object} opts 选项
- * @param {HTMLElement} opts.container 宿主
- * @param {string} [opts.avatarUrl] 头像 URL
- * @param {string} [opts.themeColor] CSS 颜色
- * @param {() => number[]} opts.getLevels 频带电平 0..1
+ * @param {object} options 选项
+ * @param {HTMLElement} options.container 宿主
+ * @param {string} [options.avatarUrl] 头像 URL
+ * @param {string} [options.themeColor] CSS 颜色
+ * @param {() => number[]} options.getLevels 频带电平 0..1
  * @returns {{ destroy: () => void }}
  */
-export function mountVoiceRing(opts) {
-	const { container, avatarUrl = '', themeColor = '#888', getLevels } = opts
+export function mountVoiceRing(options) {
+	const { container, avatarUrl = '', themeColor = '#888', getLevels } = options
 	container.replaceChildren()
 	container.classList.add('voice-ring-host')
 
@@ -36,10 +36,10 @@ export function mountVoiceRing(opts) {
 		canvas.height = size * dpr
 		canvas.style.width = `${size}px`
 		canvas.style.height = `${size}px`
-		const ctx = canvas.getContext('2d')
-		if (!ctx) return
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-		ctx.clearRect(0, 0, size, size)
+		const canvasContext = canvas.getContext('2d')
+		if (!canvasContext) return
+		canvasContext.setTransform(dpr, 0, 0, dpr, 0, 0)
+		canvasContext.clearRect(0, 0, size, size)
 
 		const cx = size / 2
 		const cy = size / 2
@@ -58,16 +58,16 @@ export function mountVoiceRing(opts) {
 			const y0 = cy + Math.sin(angle) * inner
 			const x1 = cx + Math.cos(angle) * outer
 			const y1 = cy + Math.sin(angle) * outer
-			ctx.strokeStyle = themeColor
-			ctx.globalAlpha = 0.25 + amp * 0.75
-			ctx.lineWidth = 3
-			ctx.lineCap = 'round'
-			ctx.beginPath()
-			ctx.moveTo(x0, y0)
-			ctx.lineTo(x1, y1)
-			ctx.stroke()
+			canvasContext.strokeStyle = themeColor
+			canvasContext.globalAlpha = 0.25 + amp * 0.75
+			canvasContext.lineWidth = 3
+			canvasContext.lineCap = 'round'
+			canvasContext.beginPath()
+			canvasContext.moveTo(x0, y0)
+			canvasContext.lineTo(x1, y1)
+			canvasContext.stroke()
 		}
-		ctx.globalAlpha = 1
+		canvasContext.globalAlpha = 1
 		raf = requestAnimationFrame(draw)
 	}
 	raf = requestAnimationFrame(draw)

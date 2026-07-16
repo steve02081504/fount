@@ -138,10 +138,10 @@ function streamTitleData(channel) {
  * @param {string} channelId 列表频道 id
  * @param {object} channel 频道元数据（含 manualItems）
  * @param {(targetChannelId: string) => void | Promise<void>} onOpenChannel 点击子频道
- * @param {{ canEdit?: boolean, onSave?: (items: object[]) => Promise<void> }} [opts] 编辑权限与保存回调
+ * @param {{ canEdit?: boolean, onSave?: (items: object[]) => Promise<void> }} [options] 编辑权限与保存回调
  * @returns {Promise<void>}
  */
-export async function renderListChannel(container, groupId, channelId, channel, onOpenChannel, opts = {}) {
+export async function renderListChannel(container, groupId, channelId, channel, onOpenChannel, options = {}) {
 	void groupId
 	const items = Array.isArray(channel?.manualItems) ? channel.manualItems : []
 	await mountTemplate(container, 'hub/channels/list_shell', {})
@@ -149,7 +149,7 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 	if (!listHost) return
 	await renderListItems(listHost, channelId, channel, onOpenChannel, items)
 
-	if (!opts.canEdit) return
+	if (!options.canEdit) return
 
 	const editor = await renderTemplateNoScriptActivation('hub/channels/list_editor', {})
 	editor.className = 'hub-list-editor'
@@ -171,7 +171,7 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 			return
 		}
 		try {
-			await opts.onSave(parsed)
+			await options.onSave(parsed)
 			await renderListItems(listHost, channelId, channel, onOpenChannel, parsed)
 			channel.manualItems = parsed
 			setListEditorHint(hint, 'chat.hub.listSaved')
@@ -193,12 +193,12 @@ export async function renderListChannel(container, groupId, channelId, channel, 
  * 渲染 streaming 频道（嵌入 SFU URL，优先带签名的 embedUrl）。
  * @param {HTMLElement} container 消息区根
  * @param {object} channel 频道元数据
- * @param {{ streamingSfuWss?: string, embedUrl?: string, streamError?: string }} opts 群设置与签发 URL
+ * @param {{ streamingSfuWss?: string, embedUrl?: string, streamError?: string }} options 群设置与签发 URL
  * @returns {Promise<void>}
  */
-export async function renderStreamingChannel(container, channel, opts = {}) {
-	const embed = opts.embedUrl?.trim() || ''
-	const wss = opts.streamingSfuWss?.trim() || ''
+export async function renderStreamingChannel(container, channel, options = {}) {
+	const embed = options.embedUrl?.trim() || ''
+	const wss = options.streamingSfuWss?.trim() || ''
 	const src = embed || (wss.startsWith('https://') || wss.startsWith('http://') ? wss : '')
 	const title = streamTitleData(channel)
 
@@ -207,15 +207,15 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
 			...title,
 			mode: 'iframe',
 			src,
-			streamError: opts.streamError ? escapeHtml(opts.streamError) : '',
+			streamError: options.streamError ? escapeHtml(options.streamError) : '',
 		})
 		container.querySelector('.hub-stream-refresh-button')?.addEventListener('click', () => {
-			void opts.onRefreshAuth?.()
+			void options.onRefreshAuth?.()
 		})
 		return
 	}
 
-	const emptyI18nKey = opts.streamError
+	const emptyI18nKey = options.streamError
 		? ''
 		: wss
 			? 'chat.hub.streamEmbedHttpsRequired'
@@ -224,7 +224,7 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
 		...title,
 		mode: 'empty',
 		src: '',
-		streamError: opts.streamError ? escapeHtml(opts.streamError) : '',
+		streamError: options.streamError ? escapeHtml(options.streamError) : '',
 		emptyI18nKey,
 	})
 }
@@ -233,10 +233,10 @@ export async function renderStreamingChannel(container, channel, opts = {}) {
  * 渲染流媒体频道（无外部 SFU 时：WebCodecs + av-relay）。
  * @param {HTMLElement} container 消息区根
  * @param {object} channel 频道元数据
- * @param {{ groupId: string, channelId: string, clientId: string }} opts 本机身份
+ * @param {{ groupId: string, channelId: string, clientId: string }} options 本机身份
  * @returns {Promise<void>}
  */
-export async function renderCodecsAvStreamingChannel(container, channel, opts) {
+export async function renderCodecsAvStreamingChannel(container, channel, options) {
 	await mountTemplate(container, 'hub/channels/stream_webrtc', {
 		...streamTitleData(channel),
 		presets: AV_PRESETS,
@@ -254,8 +254,8 @@ export async function renderCodecsAvStreamingChannel(container, channel, opts) {
 		onJoin: async () => {
 			presetSelect.disabled = true
 			await joinHubAvSession({
-				groupId: opts.groupId,
-				channelId: opts.channelId,
+				groupId: options.groupId,
+				channelId: options.channelId,
 				presetKey: presetSelect.value,
 				avGrid,
 				videoLocal: localVideo,

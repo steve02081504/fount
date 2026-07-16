@@ -16,12 +16,12 @@ import { discoverPosts } from './local.mjs'
 export const POST_DISCOVER_KIND = 'post_discover'
 
 /**
- * @param {{ replicaUsername?: string }} ctx 入站上下文
+ * @param {{ replicaUsername?: string }} inboundContext 入站上下文
  * @param {unknown} query 查询
  * @returns {Promise<object[]>} 行
  */
-export async function localPostDiscoverHandler(ctx, query) {
-	const username = String(ctx.replicaUsername || '').trim()
+export async function localPostDiscoverHandler(inboundContext, query) {
+	const username = String(inboundContext.replicaUsername || '').trim()
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 20,

@@ -132,10 +132,10 @@ export async function paintBioMarkdown(descriptionElement, bio) {
  * 绑定「编辑资料」按钮。
  * @param {HTMLElement} root 根节点
  * @param {string} entityHash 128 位 entityHash
- * @param {{ onSaved?: () => void | Promise<void> }} [opts] 保存后
+ * @param {{ onSaved?: () => void | Promise<void> }} [options] 保存后
  * @returns {void}
  */
-export function wireProfileEditButton(root, entityHash, opts = {}) {
+export function wireProfileEditButton(root, entityHash, options = {}) {
 	const editButton = root?.querySelector('[data-entity-profile-edit], [data-profile-popup-edit]')
 	if (!(editButton instanceof HTMLButtonElement)) return
 	const canEdit = isLocalWritableEntityHash(entityHash)
@@ -152,7 +152,7 @@ export function wireProfileEditButton(root, entityHash, opts = {}) {
 			 */
 			onSaved: async () => {
 				invalidateUserProfileCache(entityHash)
-				await opts.onSaved?.()
+				await options.onSaved?.()
 			},
 		})
 	}

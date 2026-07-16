@@ -136,10 +136,10 @@ function videoCodecString(videoMeta) {
 }
 
 /**
- * @param {object} opts
+ * @param {object} options
  * @returns {Promise<AvRelaySession>}
  */
-export async function joinAvRelayRoom(opts) {
+export async function joinAvRelayRoom(options) {
 	const {
 		wsUrl,
 		onBinaryFrame,
@@ -151,7 +151,7 @@ export async function joinAvRelayRoom(opts) {
 		voiceRingHost = null,
 		mode: initialMode = 'full',
 		media: mediaMode = 'av',
-	} = opts
+	} = options
 
 	const wantsVideo = mediaMode !== 'audio'
 	const wantsAudio = mediaMode !== 'video'
@@ -532,15 +532,15 @@ export async function joinAvRelayRoom(opts) {
 }
 
 /**
- * @param {object} opts
+ * @param {object} options
  * @returns {Promise<() => void>}
  */
-async function startPublish(opts) {
+async function startPublish(options) {
 	const {
 		mediaStream: stream, ws, selfId, t0, videoSeq, audioSeq,
 		wantsVideo, wantsAudio, audioGate,
 		isVideoSending, isAudioSending,
-	} = opts
+	} = options
 
 	const vTrack = wantsVideo ? stream.getVideoTracks()[0] : null
 	const aTrack = wantsAudio ? stream.getAudioTracks()[0] : null

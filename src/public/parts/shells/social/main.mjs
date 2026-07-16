@@ -110,7 +110,7 @@ export default {
 			const view = await getTimelineMaterialized(username, operator)
 			return view.following
 		})
-		registerBlockReputationHandler(opts => applyFollowedBlockSignal(opts, mutateReputation))
+		registerBlockReputationHandler(options => applyFollowedBlockSignal(options, mutateReputation))
 		events.on('entity-key-rotated', handleEntityKeyRotated)
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()

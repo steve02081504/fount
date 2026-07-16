@@ -15,10 +15,10 @@ import { invalidateFederationRoomCache } from './room.mjs'
  *   rtcConnectionBudgetMax?: number,
  *   rtcJoinRatePerMin?: number,
  * }} fields 调参字段
- * @param {{ entityHash?: string }} [signOpts] 自签选项
+ * @param {{ entityHash?: string }} [signOptions] 自签选项
  * @returns {Promise<object>} 实际写入的 patch
  */
-export async function setFederationTuning(username, groupId, fields = {}, signOpts = {}) {
+export async function setFederationTuning(username, groupId, fields = {}, signOptions = {}) {
 	const patch = {}
 	const partitionCount = Number(fields.federationPartitionCount)
 	if (Number.isFinite(partitionCount))
@@ -35,7 +35,7 @@ export async function setFederationTuning(username, groupId, fields = {}, signOp
 		type: 'group_settings_update',
 		timestamp: Date.now(),
 		content: patch,
-	}, signOpts)
+	}, signOptions)
 	invalidateFederationRoomCache(username, groupId)
 	return patch
 }

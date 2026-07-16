@@ -63,7 +63,7 @@ function joinPolicyError(message, { pendable = false } = {}) {
 /**
  * 统一校验 member_join 入群策略（本地 append 与联邦入站共用）。
  *
- * 联邦入站（`opts.source === 'federation'`）针对**角色相关**的拒绝抛 `pendable` 错误：
+ * 联邦入站（`options.source === 'federation'`）针对**角色相关**的拒绝抛 `pendable` 错误：
  *   - "roles only allowed for genesis join"：sender 在本节点尚未 active，但其 join 经 gossip 先于祖先链抵达，
  *     待 catchup 把 sender 标 active 后重放即可；
  *   - "unknown role"：role_create 事件可能晚于 member_join 抵达，待重放即可。
@@ -74,13 +74,13 @@ function joinPolicyError(message, { pendable = false } = {}) {
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} replicaUsername replica 所有者（PoW 校验用）
- * @param {{ source?: 'local' | 'federation' }} [opts] 入站来源
+ * @param {{ source?: 'local' | 'federation' }} [options] 入站来源
  * @returns {Promise<void>}
  */
-export async function validateJoinPolicy(state, event, replicaUsername, opts = {}) {
+export async function validateJoinPolicy(state, event, replicaUsername, options = {}) {
 	if (event?.type !== 'member_join') return
 	const content = event.content || {}
-	const fromFederation = opts.source === 'federation'
+	const fromFederation = options.source === 'federation'
 	const joinPolicy = state.groupSettings?.joinPolicy || 'invite-only'
 	const activeBefore = Object.values(state.members).filter(groupMember => groupMember?.status === 'active').length
 	const senderKey = String(event.sender || '').trim().toLowerCase()

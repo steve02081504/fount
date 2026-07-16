@@ -95,18 +95,18 @@ export function unregisterChunkSwarm(username, groupId) {
  * @param {string} groupId 群 ID
  * @param {string} ciphertextHash 密文哈希
  * @param {Uint8Array} data 密文
- * @param {{ requiredAcks?: number, timeoutMs?: number }} [opts] 复制选项
+ * @param {{ requiredAcks?: number, timeoutMs?: number }} [options] 复制选项
  * @returns {Promise<{ acked: number, required: number, timedOut: boolean, unavailable?: boolean }>} ACK 统计
  */
-export async function replicateChunkToFederation(username, groupId, ciphertextHash, data, opts = {}) {
-	const requiredAcks = Math.max(0, Math.floor(Number(opts.requiredAcks) || 0))
+export async function replicateChunkToFederation(username, groupId, ciphertextHash, data, options = {}) {
+	const requiredAcks = Math.max(0, Math.floor(Number(options.requiredAcks) || 0))
 	const api = swarmApis.get(registryKey(username, groupId))
 	const waitPromise = beginChunkReplicationWait(
 		username,
 		groupId,
 		ciphertextHash,
 		requiredAcks,
-		opts.timeoutMs ?? 5000,
+		options.timeoutMs ?? 5000,
 	)
 	if (!api?.replicate) {
 		if (requiredAcks > 0)
@@ -200,10 +200,10 @@ export function createFederationSwarmStoragePlugin(baseDir, username, groupId) {
  * @param {string} chunkHash 块哈希
  * @param {Uint8Array} data 密文
  * @param {string} bucketKey 限速键
- * @param {{ fedOut?: { enqueue: (prio: number, fn: () => void) => void } }} [opts] 出站队列
+ * @param {{ fedOut?: { enqueue: (prio: number, fn: () => void) => void } }} [options] 出站队列
  * @returns {Promise<string[]>} 已发送 fed_chunk_put 的对端 nodeHash（无则 peerId）
  */
-function replicateChunkToRoster(slot, chunkHash, data, bucketKey, opts = {}) {
+function replicateChunkToRoster(slot, chunkHash, data, bucketKey, options = {}) {
 	if (data.byteLength > FEDERATION_CHUNK_MAX_BYTES) return []
 	if (!consumeChunkRate(bucketKey, data.byteLength)) return []
 	const payload = { chunkHash, dataB64: u8ToB64(data) }
@@ -228,8 +228,8 @@ function replicateChunkToRoster(slot, chunkHash, data, bucketKey, opts = {}) {
 		if (key) sentPeerKeys.push(key)
 	}
 	for (const { peerId, remoteNodeHash } of targets)
-		if (opts.fedOut)
-			opts.fedOut.enqueue(5, () => dispatch(peerId, remoteNodeHash))
+		if (options.fedOut)
+			options.fedOut.enqueue(5, () => dispatch(peerId, remoteNodeHash))
 		else
 			dispatch(peerId, remoteNodeHash)
 	return sentPeerKeys
@@ -286,14 +286,14 @@ function fetchChunkFromRoster(slot, username, groupId, chunkHash) {
  * @param {string} username 用户
  * @param {string} groupId 群
  * @param {string[]} chunkHashes 缺失块
- * @param {{ concurrency?: number, maxAttempts?: number }} [opts] 选项
+ * @param {{ concurrency?: number, maxAttempts?: number }} [options] 选项
  * @returns {Promise<{ fetched: Record<string, Uint8Array>, missing: string[] }>} 结果
  */
-export async function fetchChunksFromRoster(slot, username, groupId, chunkHashes, opts = {}) {
+export async function fetchChunksFromRoster(slot, username, groupId, chunkHashes, options = {}) {
 	const roster = slot.getRoster()
 	const peerIds = roster.map(p => p.peerId).filter(Boolean)
 	if (!peerIds.length) throw new Error('no federation peers for chunk fetch')
-	const concurrency = Math.max(1, Math.min(16, Number(opts.concurrency) || DEFAULT_FETCH_CONCURRENCY))
+	const concurrency = Math.max(1, Math.min(16, Number(options.concurrency) || DEFAULT_FETCH_CONCURRENCY))
 	/** @type {Map<string, { state: string, attempts: number }>} */
 	const table = new Map(chunkHashes.map(h => [h, { state: 'pending', attempts: 0 }]))
 	/** @type {Record<string, Uint8Array>} */
@@ -302,7 +302,7 @@ export async function fetchChunksFromRoster(slot, username, groupId, chunkHashes
 	let missing = [...chunkHashes]
 
 	while (missing.length) {
-		const plan = planChunkFetches(table, missing, peerIds, { maxAttempts: opts.maxAttempts ?? 3 })
+		const plan = planChunkFetches(table, missing, peerIds, { maxAttempts: options.maxAttempts ?? 3 })
 		const batch = [...plan.assignments.entries()].slice(0, concurrency)
 		if (!batch.length && plan.broadcast.length) 
 			await Promise.all(plan.broadcast.map(hash =>

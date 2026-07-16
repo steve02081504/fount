@@ -19,25 +19,25 @@ import { setStreamingSession } from './streamingState.mjs'
  * 通过 `channel_create` 事件创建频道。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {object} opts 频道参数
+ * @param {object} options 频道参数
  * @returns {Promise<object>} 签名事件
  */
-export async function createChannel(username, groupId, opts) {
-	const channelId = opts.channelId || randomUUID()
+export async function createChannel(username, groupId, options) {
+	const channelId = options.channelId || randomUUID()
 	const created = await appendSignedLocalEvent(username, groupId, {
 		type: 'channel_create',
 		timestamp: Date.now(),
 		content: {
 			channelId,
-			type: opts.type || 'text',
-			name: opts.name || channelId,
-			description: opts.description,
-			parentChannelId: opts.parentChannelId,
-			parentEventId: opts.parentEventId || null,
-			syncScope: opts.syncScope || 'group',
-			isPrivate: !!opts.isPrivate,
-			subRoomId: opts.subRoomId,
-			manualItems: opts.manualItems,
+			type: options.type || 'text',
+			name: options.name || channelId,
+			description: options.description,
+			parentChannelId: options.parentChannelId,
+			parentEventId: options.parentEventId || null,
+			syncScope: options.syncScope || 'group',
+			isPrivate: !!options.isPrivate,
+			subRoomId: options.subRoomId,
+			manualItems: options.manualItems,
 		},
 	})
 	const { appendChannelKeyRotate } = await import('../channel_keys/schedule.mjs')
@@ -242,11 +242,11 @@ export async function appendFileSystemUpdateEvent(username, groupId, spec) {
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ type: 'reaction_add'|'reaction_remove', channelId: string, targetEventId: string, emoji: string, targetPubKeyHash?: string }} opts 反应参数
+ * @param {{ type: 'reaction_add'|'reaction_remove', channelId: string, targetEventId: string, emoji: string, targetPubKeyHash?: string }} options 反应参数
  * @returns {Promise<object>} 签名事件
  */
-export async function appendReactionEvent(username, groupId, opts) {
-	const { type, channelId = 'default', targetEventId, emoji, targetPubKeyHash } = opts
+export async function appendReactionEvent(username, groupId, options) {
+	const { type, channelId = 'default', targetEventId, emoji, targetPubKeyHash } = options
 	if (!targetEventId || !emoji) throw new Error('targetEventId and emoji required')
 	const content = { targetId: targetEventId, emoji }
 	if (type === 'reaction_remove' && targetPubKeyHash)

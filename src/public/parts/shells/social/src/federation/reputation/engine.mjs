@@ -21,20 +21,20 @@ export function defaultSocialTunables() {
 
 /**
  * @param {ReputationFile} data 信誉表
- * @param {object} opts 参数
- * @param {string} opts.followerNodeHash 关注者节点
- * @param {string} opts.targetNodeHash 被拉黑节点
- * @param {string} opts.voterKey 投票键（entityHash）
- * @param {'block' | 'unblock'} opts.action 动作
- * @param {boolean} [opts.selfTrust] 自己拉黑时满信任权重
+ * @param {object} options 参数
+ * @param {string} options.followerNodeHash 关注者节点
+ * @param {string} options.targetNodeHash 被拉黑节点
+ * @param {string} options.voterKey 投票键（entityHash）
+ * @param {'block' | 'unblock'} options.action 动作
+ * @param {boolean} [options.selfTrust] 自己拉黑时满信任权重
  * @param {number} [now] 当前时间
  * @param {typeof socialTunables} [tunables] tunables
  * @returns {boolean} 是否已应用
  */
-export function applyFollowedBlockSignalPure(data, opts, now = Date.now(), tunables = socialTunables) {
-	const { followerNodeHash, targetNodeHash, voterKey, action } = opts
+export function applyFollowedBlockSignalPure(data, options, now = Date.now(), tunables = socialTunables) {
+	const { followerNodeHash, targetNodeHash, voterKey, action } = options
 	const isBlock = action === 'block'
-	const selfTrust = !!opts.selfTrust
+	const selfTrust = !!options.selfTrust
 
 	const row = data.byNodeHash[targetNodeHash] || { score: 0 }
 	row.blockPenalties ??= {}

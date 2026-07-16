@@ -3,14 +3,14 @@ import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
 import { resolveActiveMemberKeyByEntityHash, resolveMemberKeyByEntityHash } from './internal.mjs'
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @param {string} groupId 群 ID
  * @param {string} entityHash 成员 entityHash
  * @param {object} memberRow 物化成员行
  * @returns {object} Member 鸭子类型
  */
-export function createMember(ctx, groupId, entityHash, memberRow) {
-	const signOpts = { entityHash: ctx.entityHash }
+export function createMember(apiContext, groupId, entityHash, memberRow) {
+	const signOptions = { entityHash: apiContext.entityHash }
 	return {
 		entityHash: String(entityHash).toLowerCase(),
 		memberKind: memberRow?.memberKind || 'user',
@@ -23,43 +23,43 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 		async kick() {
 			const { loadGroupState } = await import('./internal.mjs')
 			const { dispatchBridgeMemberKick } = await import('./bridgeDispatch.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			await dispatchBridgeMemberKick(ctx, groupId, state, targetKey, memberRow)
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			await dispatchBridgeMemberKick(apiContext, groupId, state, targetKey, memberRow)
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'member_kick',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} 封禁成员
 		 */
 		async ban() {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const targetKey = resolveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'member_ban',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} 解封成员
 		 */
 		async unban() {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const targetKey = resolveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'member_unban',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @param {string} roleId 角色 ID
@@ -67,14 +67,14 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 		 */
 		async addRole(roleId) {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'role_assign',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey, roleId },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @param {string} roleId 角色 ID
@@ -82,21 +82,21 @@ export function createMember(ctx, groupId, entityHash, memberRow) {
 		 */
 		async removeRole(roleId) {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const targetKey = resolveActiveMemberKeyByEntityHash(state, entityHash)
 			if (!targetKey) throw new Error('member not found')
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'role_revoke',
 				timestamp: Date.now(),
 				content: { targetMemberKey: targetKey, roleId },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} DM 群
 		 */
 		async dm() {
 			const { getChatClient } = await import('./client.mjs')
-			const client = await getChatClient(ctx.username, ctx.entityHash)
+			const client = await getChatClient(apiContext.username, apiContext.entityHash)
 			return client.openDm(entityHash)
 		},
 	}

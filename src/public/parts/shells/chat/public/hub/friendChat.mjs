@@ -125,22 +125,22 @@ async function ensureCharOnGroup(groupId, charname, signal) {
 /**
  * 解析或新建好友群 ID（角色需 addchar；用户 DM 由调用方传入 groupId）。
  * @param {import('../shared/friendBinding.mjs').FriendBinding} binding 绑定
- * @param {{ groupId?: string, forceNew?: boolean }} opts 选项
+ * @param {{ groupId?: string, forceNew?: boolean }} options 选项
  * @param {AbortSignal} signal 取消信号
  * @returns {Promise<string|null>} 群 ID；失败为 null
  */
-async function resolveFriendGroupId(binding, opts, signal) {
-	let groupId = opts.forceNew ? undefined : opts.groupId
+async function resolveFriendGroupId(binding, options, signal) {
+	let groupId = options.forceNew ? undefined : options.groupId
 	if (groupId) {
 		if (binding.charname)
 			await ensureCharOnGroup(groupId, binding.charname, signal)
 		return groupId
 	}
-	if (!groupId && !opts.forceNew) {
+	if (!groupId && !options.forceNew) {
 		const fromHash = parseHash().groupId
 		if (fromHash) groupId = fromHash
 	}
-	if (!groupId && !opts.forceNew)
+	if (!groupId && !options.forceNew)
 		groupId = await findExistingFriendGroup(binding)
 
 	if (!groupId) {
@@ -149,7 +149,7 @@ async function resolveFriendGroupId(binding, opts, signal) {
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({
 				friendBinding: binding,
-				...opts.forceNew ? { forceNew: true } : {},
+				...options.forceNew ? { forceNew: true } : {},
 			}),
 		}, signal)
 		if (!r.ok) throw new Error(`POST groups HTTP ${r.status}`)
@@ -239,15 +239,15 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 }
 
 /**
- * @param {object} opts 选项
- * @param {string} [opts.groupId] 群 ID
- * @param {import('../shared/friendBinding.mjs').FriendBinding} [opts.binding] 绑定
- * @param {boolean} [opts.forceNew] 强制新建群（仅角色）
- * @param {string} [opts.channelId] 打开时选中的频道 ID
+ * @param {object} options 选项
+ * @param {string} [options.groupId] 群 ID
+ * @param {import('../shared/friendBinding.mjs').FriendBinding} [options.binding] 绑定
+ * @param {boolean} [options.forceNew] 强制新建群（仅角色）
+ * @param {string} [options.channelId] 打开时选中的频道 ID
  * @returns {Promise<void>}
  */
-export async function enterFriendChat(opts = {}) {
-	const binding = opts.binding || (opts.groupId ? friendBindingForGroup(opts.groupId) : null)
+export async function enterFriendChat(options = {}) {
+	const binding = options.binding || (options.groupId ? friendBindingForGroup(options.groupId) : null)
 	if (!binding?.entityHash) return
 
 	enterFriendChatAbort?.abort()
@@ -266,12 +266,12 @@ export async function enterFriendChat(opts = {}) {
 
 		throwIfAborted(signal)
 		const groupId = await enqueueResolveFriendGroup(
-			() => resolveFriendGroupId(binding, opts, signal),
+			() => resolveFriendGroupId(binding, options, signal),
 			signal,
 		)
 		if (!groupId) return
 		throwIfAborted(signal)
-		const channelId = opts.channelId || parseHash().channelId || undefined
+		const channelId = options.channelId || parseHash().channelId || undefined
 		await openFriendGroupChat(groupId, binding, signal, channelId)
 	}
 	catch (error) {

@@ -7,22 +7,22 @@ import { maintainSocialTimeline } from '../../timeline/materialize.mjs'
 import { syncFollowingTimelines } from '../../timeline/sync.mjs'
 import { buildTrendingHashtags } from '../../trending/hashtags.mjs'
 
-import { makeViewerOpts } from './helpers.mjs'
+import { makeViewerOptions } from './helpers.mjs'
 
 /**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} feed / 搜索 / 探索 / 话题方法
  */
 export function createFeedMethods(apiContext) {
-	const viewerOpts = makeViewerOpts(apiContext)
+	const viewerOptions = makeViewerOptions(apiContext)
 	return {
 		/**
-		 * @param {{ mode?: 'home' | 'forYou', limit?: number, cursor?: string, ranking?: string }} [opts] feed 选项
+		 * @param {{ mode?: 'home' | 'forYou', limit?: number, cursor?: string, ranking?: string }} [options] feed 选项
 		 * @returns {Promise<object>} feed
 		 */
-		async feed(opts = {}) {
-			const mode = opts.mode || (opts.ranking === 'for_you' ? 'forYou' : 'home')
-			const options = { ...opts, ...viewerOpts() }
+		async feed(options = {}) {
+			const mode = options.mode || (options.ranking === 'for_you' ? 'forYou' : 'home')
+			options = { ...options, ...viewerOptions() }
 			/**
 			 * @returns {Promise<object>} 本页 feed
 			 */
@@ -30,8 +30,8 @@ export function createFeedMethods(apiContext) {
 				? buildForYouFeed(apiContext.username, options)
 				: buildHomeFeed(apiContext.username, options)
 			let result = await build()
-			const limit = Math.min(Math.max(Number(opts.limit) || 50, 1), 200)
-			if (!opts.cursor && result.items.length < limit) {
+			const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
+			if (!options.cursor && result.items.length < limit) {
 				const { backfillPosts } = await import('../../federation/backfill.mjs')
 				await backfillPosts(apiContext.username, {
 					viewerEntityHash: options.viewerEntityHash,
@@ -56,14 +56,14 @@ export function createFeedMethods(apiContext) {
 		},
 		/**
 		 * @param {string} query 查询串
-		 * @param {{ limit?: number, cursor?: string }} [opts] 选项
+		 * @param {{ limit?: number, cursor?: string }} [options] 选项
 		 * @returns {Promise<object>} 搜索结果
 		 */
-		async search(query, opts = {}) {
+		async search(query, options = {}) {
 			return searchPosts(apiContext.username, {
 				q: String(query || ''),
-				...opts,
-				...viewerOpts(),
+				...options,
+				...viewerOptions(),
 			})
 		},
 		/**
@@ -84,23 +84,23 @@ export function createFeedMethods(apiContext) {
 		},
 		/**
 		 * @param {string} tag 话题
-		 * @param {{ limit?: number, cursor?: string }} [opts] 分页
+		 * @param {{ limit?: number, cursor?: string }} [options] 分页
 		 * @returns {Promise<object>} 话题帖流
 		 */
-		async topicPosts(tag, opts = {}) {
+		async topicPosts(tag, options = {}) {
 			const { buildTopicFeed } = await import('../../topics.mjs')
-			return buildTopicFeed(apiContext.username, tag, { ...opts, ...viewerOpts() })
+			return buildTopicFeed(apiContext.username, tag, { ...options, ...viewerOptions() })
 		},
 		/**
-		 * @param {{ limit?: number, cursor?: string }} [opts] 分页
+		 * @param {{ limit?: number, cursor?: string }} [options] 分页
 		 * @returns {Promise<object>} 短视频流
 		 */
-		async videosFeed(opts = {}) {
+		async videosFeed(options = {}) {
 			const { buildVideosFeed } = await import('../../videosFeed.mjs')
-			const options = { ...opts, ...viewerOpts() }
+			options = { ...options, ...viewerOptions() }
 			let result = await buildVideosFeed(apiContext.username, options)
-			const limit = Math.min(Math.max(Number(opts.limit) || 20, 1), 50)
-			if (!opts.cursor && result.items.length < limit) {
+			const limit = Math.min(Math.max(Number(options.limit) || 20, 1), 50)
+			if (!options.cursor && result.items.length < limit) {
 				const { backfillPosts } = await import('../../federation/backfill.mjs')
 				await backfillPosts(apiContext.username, {
 					viewerEntityHash: options.viewerEntityHash,
@@ -119,55 +119,55 @@ export function createFeedMethods(apiContext) {
 		},
 		/**
 		 * @param {string} query 搜索词
-		 * @param {{ maxHits?: number }} [opts] 选项
+		 * @param {{ maxHits?: number }} [options] 选项
 		 * @returns {Promise<{ query: string, entities: object[] }>} 实体网络搜索
 		 */
-		async searchEntities(query, opts = {}) {
+		async searchEntities(query, options = {}) {
 			const { searchEntitiesNetwork } = await import('../../../../chat/src/entity/entitySearch.mjs')
 			return searchEntitiesNetwork(apiContext.username, query, {
 				viewerEntityHash: apiContext.entityHash,
-				maxHits: opts.maxHits,
+				maxHits: options.maxHits,
 			})
 		},
 		/**
-		 * @param {{ limit?: number }} [opts] 选项
+		 * @param {{ limit?: number }} [options] 选项
 		 * @returns {Promise<object>} 探索账户
 		 */
-		async explore(opts = {}) {
+		async explore(options = {}) {
 			return discoverWithNetwork(apiContext.username, {
 				type: 'social_discover_request',
-				n: Number(opts.limit) || 20,
-			}, viewerOpts())
+				n: Number(options.limit) || 20,
+			}, viewerOptions())
 		},
 		/**
-		 * @param {{ limit?: number, mediaOnly?: boolean }} [opts] 选项
+		 * @param {{ limit?: number, mediaOnly?: boolean }} [options] 选项
 		 * @returns {Promise<object>} 探索帖
 		 */
-		async explorePosts(opts = {}) {
+		async explorePosts(options = {}) {
 			return discoverWithNetwork(apiContext.username, {
 				type: 'social_post_discover_request',
-				n: Number(opts.limit) || 20,
-				mediaOnly: opts.mediaOnly === true,
-			}, viewerOpts())
+				n: Number(options.limit) || 20,
+				mediaOnly: options.mediaOnly === true,
+			}, viewerOptions())
 		},
 		/**
-		 * @param {{ limit?: number }} [opts] 选项
+		 * @param {{ limit?: number }} [options] 选项
 		 * @returns {Promise<object>} 热门话题
 		 */
-		async trendingHashtags(opts = {}) {
-			if (opts.scope === 'nearby') {
+		async trendingHashtags(options = {}) {
+			if (options.scope === 'nearby') {
 				const { buildNearbyTrendingHashtags } = await import('../../trending/network.mjs')
-				return buildNearbyTrendingHashtags(apiContext.username, { ...opts, ...viewerOpts() })
+				return buildNearbyTrendingHashtags(apiContext.username, { ...options, ...viewerOptions() })
 			}
-			return buildTrendingHashtags(apiContext.username, { ...opts, ...viewerOpts() })
+			return buildTrendingHashtags(apiContext.username, { ...options, ...viewerOptions() })
 		},
 		/**
 		 * @param {string} q 前缀
-		 * @param {{ limit?: number }} [opts] 选项
+		 * @param {{ limit?: number }} [options] 选项
 		 * @returns {Promise<object>} @ 建议
 		 */
-		async suggestMentions(q, opts = {}) {
-			return suggestMentions(apiContext.username, String(q || ''), Number(opts.limit) || 20, apiContext.entityHash)
+		async suggestMentions(q, options = {}) {
+			return suggestMentions(apiContext.username, String(q || ''), Number(options.limit) || 20, apiContext.entityHash)
 		},
 		/**
 		 * @param {string} entityHash 时间线 owner

@@ -17,16 +17,16 @@ import { loadGroupShunState } from '../groupShunState.mjs'
  * @param {import('npm:express').Request} req HTTP 请求
  * @param {import('npm:express').Response} _res HTTP 响应（保留签名兼容）
  * @param {string} groupId 群 ID
- * @param {{ allowSuspectedRemoved?: boolean }} [opts] 是否放行疑似出局（catchup/探测）
+ * @param {{ allowSuspectedRemoved?: boolean }} [options] 是否放行疑似出局（catchup/探测）
  * @returns {Promise<{ username: string, state: object, memberKey: string, member: object }>} 成员上下文
  */
-export async function resolveGroupMember(req, _res, groupId, opts = {}) {
+export async function resolveGroupMember(req, _res, groupId, options = {}) {
 	const { username } = await getUserByReq(req)
 	const { state } = await getState(username, groupId)
 	const memberKey = await resolveActiveMemberKeyForLocalUser(username, groupId, state)
 	if (!memberKey)
 		throw httpError(403, 'Not a member')
-	if (!opts.allowSuspectedRemoved) {
+	if (!options.allowSuspectedRemoved) {
 		const shunState = await loadGroupShunState(username, groupId)
 		if (shunState.suspectedRemoved)
 			throw httpError(403, 'Not a member', { json: { error: 'Not a member', suspectedRemoved: true } })

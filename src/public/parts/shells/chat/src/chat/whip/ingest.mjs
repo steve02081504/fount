@@ -42,11 +42,11 @@ function packFrame(senderId, frameType, isKey, data, t0, seqRef) {
 /**
  * @param {string} roomId av-relay 房间
  * @param {string} offerSdp WHIP offer
- * @param {object} [opts]
- * @param {(meta: object) => void} [opts.onPublishMeta]
+ * @param {object} [options]
+ * @param {(meta: object) => void} [options.onPublishMeta]
  * @returns {Promise<{ answerSdp: string, sessionId: string, close: () => void }>}
  */
-export async function startWhipIngest(roomId, offerSdp, opts = {}) {
+export async function startWhipIngest(roomId, offerSdp, options = {}) {
 	const existing = sessionsByRoom.get(roomId)
 	existing?.close()
 
@@ -87,7 +87,7 @@ export async function startWhipIngest(roomId, offerSdp, opts = {}) {
 			if (kind === 'video') {
 				const au = h264.feed(rtp)
 				if (!au) return
-				if (!publishedVideoMeta && opts.onPublishMeta) {
+				if (!publishedVideoMeta && options.onPublishMeta) {
 					publishedVideoMeta = true
 					injectAvRelayControl(roomId, {
 						type: 'publish_meta',
@@ -109,7 +109,7 @@ export async function startWhipIngest(roomId, offerSdp, opts = {}) {
 	const close = () => {
 		whip.close()
 		sessionsByRoom.delete(roomId)
-		if (opts.onPublishMeta)
+		if (options.onPublishMeta)
 			injectAvRelayControl(roomId, { type: 'publish_meta_revoke', senderId: senderHex })
 	}
 	sessionsByRoom.set(roomId, { close })

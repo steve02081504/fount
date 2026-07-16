@@ -318,10 +318,10 @@ export function registerAvRelaySocket(roomId, ws, meta = {}) {
  * @param {Map<import('npm:ws').WebSocket, AvPeerState>} room 成员
  * @param {Buffer} buf 帧
  * @param {import('npm:ws').WebSocket | null} fromWs 来源
- * @param {{ skipSinks?: boolean }} [opts] 选项
+ * @param {{ skipSinks?: boolean }} [options] 选项
  * @returns {void}
  */
-function fanoutBinary(roomId, room, buf, fromWs, opts = {}) {
+function fanoutBinary(roomId, room, buf, fromWs, options = {}) {
 	const frameType = buf.length >= AV_RELAY_HEADER_SIZE ? buf[0] : -1
 	const isKey = buf.length >= AV_RELAY_HEADER_SIZE ? !!(buf[1] & 1) : false
 	const now = Date.now()
@@ -352,7 +352,7 @@ function fanoutBinary(roomId, room, buf, fromWs, opts = {}) {
 			}
 		}
 	
-	if (opts.skipSinks) return
+	if (options.skipSinks) return
 	const sinks = roomSinks.get(roomId)
 	if (sinks?.size)
 		for (const fn of sinks)

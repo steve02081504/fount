@@ -25,15 +25,15 @@ import { renderMemberList } from './members.mjs'
 /**
  * 从联邦网络拉取群组事件并刷新当前频道消息。
  * @param {string} groupId 群组 ID
- * @param {{ waitMs?: number }} [opts] catch-up 等待毫秒数
+ * @param {{ waitMs?: number }} [options] catch-up 等待毫秒数
  * @returns {Promise<void>}
  */
-export async function syncGroupFromNetwork(groupId, opts = {}) {
+export async function syncGroupFromNetwork(groupId, options = {}) {
 	setSyncBanner(true)
 	/** @type {{ federationActive?: boolean, wantIds: number, eventsFilled: number, wantIdsStillMissing: number, wantIdsRateLimited: boolean, tipsCollected?: number }} */
 	let catchup
 	try {
-		catchup = await federationCatchUp(groupId, { waitMs: opts.waitMs ?? 1400 })
+		catchup = await federationCatchUp(groupId, { waitMs: options.waitMs ?? 1400 })
 	}
 	catch (error) {
 		const catchupError = handleUIError(error, 'chat.hub.syncFailed').message

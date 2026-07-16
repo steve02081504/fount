@@ -23,18 +23,18 @@ const VICTIM = hex64('21c71')
 
 /**
  * 构造「创世 → 自身消息支 / 对立治理支」分叉事件集。
- * @param {object} [opts] 覆盖项
+ * @param {object} [options] 覆盖项
  * @returns {{ events: object[], acceptedTip: string, opposingTip: string }} 事件集与两叶 id
  */
-function buildForkEvents(opts = {}) {
+function buildForkEvents(options = {}) {
 	const genesis = { id: hex64('9e5'), prev_event_ids: [], type: 'group_meta_update', sender: SELF }
 	const accepted = { id: hex64('acce97ed'), prev_event_ids: [genesis.id], type: 'message', sender: SELF, content: {} }
 	const opposing = {
 		id: hex64('0bb05ed'),
 		prev_event_ids: [genesis.id],
-		type: opts.opposingType ?? 'role_assign',
-		sender: opts.opposingSender ?? ATTACKER,
-		content: opts.opposingContent ?? { targetPubKeyHash: VICTIM },
+		type: options.opposingType ?? 'role_assign',
+		sender: options.opposingSender ?? ATTACKER,
+		content: options.opposingContent ?? { targetPubKeyHash: VICTIM },
 	}
 	return { events: [genesis, accepted, opposing], acceptedTip: accepted.id, opposingTip: opposing.id }
 }

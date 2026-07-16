@@ -17,17 +17,17 @@ export const SOCIAL_REP_HIDE_THRESHOLD = socialTunables.socialRepHideThreshold
 export const SOCIAL_REP_DEMOTE_THRESHOLD = socialTunables.socialRepDemoteThreshold
 
 /**
- * @param {object} opts 参数
- * @param {string} opts.followerEntityHash 关注者（拉黑发起方）实体
- * @param {string} opts.targetEntityHash 被拉黑实体
- * @param {'block' | 'unblock'} opts.action 动作
- * @param {boolean} [opts.selfTrust] 自己拉黑时满信任权重
+ * @param {object} options 参数
+ * @param {string} options.followerEntityHash 关注者（拉黑发起方）实体
+ * @param {string} options.targetEntityHash 被拉黑实体
+ * @param {'block' | 'unblock'} options.action 动作
+ * @param {boolean} [options.selfTrust] 自己拉黑时满信任权重
  * @param {(mutator: (data: import('npm:@steve02081504/fount-p2p/node/reputation_store').ReputationFile) => void | Promise<void>) => Promise<void>} mutateReputation 突变器
  * @returns {Promise<boolean>} 是否已应用
  */
-export async function applyFollowedBlockSignal(opts, mutateReputation) {
-	const follower = parseEntityHash(opts.followerEntityHash)
-	const target = parseEntityHash(opts.targetEntityHash)
+export async function applyFollowedBlockSignal(options, mutateReputation) {
+	const follower = parseEntityHash(options.followerEntityHash)
+	const target = parseEntityHash(options.targetEntityHash)
 	if (!follower || !target) return false
 
 	await mutateReputation(data => {
@@ -35,8 +35,8 @@ export async function applyFollowedBlockSignal(opts, mutateReputation) {
 			followerNodeHash: follower.nodeHash,
 			targetNodeHash: target.nodeHash,
 			voterKey: follower.entityHash,
-			action: opts.action,
-			selfTrust: !!opts.selfTrust,
+			action: options.action,
+			selfTrust: !!options.selfTrust,
 		})
 	})
 	return true

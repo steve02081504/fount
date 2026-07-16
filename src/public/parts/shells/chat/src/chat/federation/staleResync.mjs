@@ -27,10 +27,10 @@ export function shouldPreferJoinSnapshot(localTipsHash, remoteSummaries) {
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object | null} slot 联邦槽
- * @param {{ remoteSummaries?: object[] }} [opts] 远端摘要
+ * @param {{ remoteSummaries?: object[] }} [options] 远端摘要
  * @returns {Promise<{ snapshotted: boolean }>} 是否已应用 joinSnapshot
  */
-export async function maybeJoinSnapshotOnStaleTips(username, groupId, slot, opts = {}) {
+export async function maybeJoinSnapshotOnStaleTips(username, groupId, slot, options = {}) {
 	if (!slot) return { snapshotted: false }
 	let checkpoint = null
 	try {
@@ -39,7 +39,7 @@ export async function maybeJoinSnapshotOnStaleTips(username, groupId, slot, opts
 	catch { /* absent */ }
 	const localTipsHash = checkpoint?.local_tips_hash || ''
 	if (!checkpoint?.checkpoint_event_id
-		|| shouldPreferJoinSnapshot(localTipsHash, opts.remoteSummaries || []))
+		|| shouldPreferJoinSnapshot(localTipsHash, options.remoteSummaries || []))
 		return { snapshotted: (await requestJoinSnapshotFromPeers(username, groupId, slot)).applied }
 	return { snapshotted: false }
 }

@@ -52,10 +52,10 @@ async function readWorldDistribution(replicaUsername, worldname) {
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} charname 角色名
- * @param {{ roles?: string[] }} [appendOpts] 追加选项
+ * @param {{ roles?: string[] }} [appendOptions] 追加选项
  * @returns {Promise<void>}
  */
-export async function appendAgentMemberJoin(replicaUsername, groupId, charname, appendOpts = {}) {
+export async function appendAgentMemberJoin(replicaUsername, groupId, charname, appendOptions = {}) {
 	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
 	const { getOperatorEntityHash } = await import('../../entity/identity.mjs')
 	const { mintGroupInviteTicket } = await import('../lib/inviteTickets.mjs')
@@ -70,13 +70,13 @@ export async function appendAgentMemberJoin(replicaUsername, groupId, charname, 
 		ownerUsername: bind.ownerUsername,
 		inviteCode,
 	}
-	if (Array.isArray(appendOpts.roles) && appendOpts.roles.length)
-		content.roles = appendOpts.roles
+	if (Array.isArray(appendOptions.roles) && appendOptions.roles.length)
+		content.roles = appendOptions.roles
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'member_join',
 		timestamp: Date.now(),
 		content,
-	}, { ...appendOpts, entityHash })
+	}, { ...appendOptions, entityHash })
 }
 
 /**
@@ -119,17 +119,17 @@ export async function appendAgentReplyFrequencySet(replicaUsername, groupId, cha
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string | null} worldname 世界名；null 清除群级世界
- * @param {object} [appendOpts] appendSignedLocalEvent 选项
+ * @param {object} [appendOptions] appendSignedLocalEvent 选项
  * @returns {Promise<void>}
  */
-export async function appendSessionWorldBind(replicaUsername, groupId, worldname, appendOpts = {}) {
+export async function appendSessionWorldBind(replicaUsername, groupId, worldname, appendOptions = {}) {
 	if (!worldname) {
 		await appendSignedLocalEvent(replicaUsername, groupId, {
 			type: 'session_world_clear',
 			sender: replicaUsername,
 			timestamp: Date.now(),
 			content: {},
-		}, appendOpts)
+		}, appendOptions)
 		return
 	}
 	const bind = sessionOwnerBinding(replicaUsername)
@@ -139,7 +139,7 @@ export async function appendSessionWorldBind(replicaUsername, groupId, worldname
 		sender: replicaUsername,
 		timestamp: Date.now(),
 		content: { worldname, scope: 'group', distribution, ...bind },
-	}, appendOpts)
+	}, appendOptions)
 }
 
 /**
@@ -173,32 +173,32 @@ export async function appendSessionChannelWorldBind(replicaUsername, groupId, ch
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string | null} personaname 人格名
- * @param {object} [appendOpts] appendSignedLocalEvent 选项
+ * @param {object} [appendOptions] appendSignedLocalEvent 选项
  * @returns {Promise<void>}
  */
-export async function appendSessionPersonaSet(replicaUsername, groupId, personaname, appendOpts = {}) {
+export async function appendSessionPersonaSet(replicaUsername, groupId, personaname, appendOptions = {}) {
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_persona_set',
 		sender: replicaUsername,
 		timestamp: Date.now(),
 		content: { ownerUsername: replicaUsername, personaname: personaname || null },
-	}, appendOpts)
+	}, appendOptions)
 }
 
 /**
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string} pluginname 插件名
- * @param {object} [appendOpts] appendSignedLocalEvent 选项
+ * @param {object} [appendOptions] appendSignedLocalEvent 选项
  * @returns {Promise<void>}
  */
-export async function appendSessionPluginAdd(replicaUsername, groupId, pluginname, appendOpts = {}) {
+export async function appendSessionPluginAdd(replicaUsername, groupId, pluginname, appendOptions = {}) {
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_plugin_add',
 		sender: replicaUsername,
 		timestamp: Date.now(),
 		content: { ownerUsername: replicaUsername, pluginname },
-	}, appendOpts)
+	}, appendOptions)
 }
 
 /**

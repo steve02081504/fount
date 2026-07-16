@@ -10,7 +10,7 @@
  * @typedef {{
  *   getNodeHash: () => string
  *   readJsonl: (path: string) => Promise<object[]>
- *   appendValidatedRemoteEvent: (username: string, groupId: string, signPayload: object, opts?: { logFailures?: boolean }) => Promise<{ status: 'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending', reason?: string }>
+ *   appendValidatedRemoteEvent: (username: string, groupId: string, signPayload: object, options?: { logFailures?: boolean }) => Promise<{ status: 'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending', reason?: string }>
  *   ingestRemoteEvent: (username: string, groupId: string, payload: unknown) => Promise<{ status: 'applied' | 'duplicate' | 'invalid' | 'quarantined' | 'pending', reason?: string } | undefined>
  *   getStateForFederation?: (username: string, groupId: string) => Promise<{ state: object }>
  * }} FederationDagDeps

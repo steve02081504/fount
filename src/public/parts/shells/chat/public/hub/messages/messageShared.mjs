@@ -20,14 +20,14 @@ export function refreshChannelView() {
 	refreshChannelMessagesView(getMessageText)
 	const dividerId = hubStore.messages.firstUnreadEventId
 	if (!dividerId) return
-	const msgs = hubStore.messages.channelMessages
-	const idx = msgs.findIndex(row => row.eventId === dividerId)
+	const channelMessages = hubStore.messages.channelMessages
+	const idx = channelMessages.findIndex(row => row.eventId === dividerId)
 	if (idx <= 0) return
-	if (msgs[idx - 1]?.type === 'unread_divider') return
+	if (channelMessages[idx - 1]?.type === 'unread_divider') return
 	hubStore.messages.channelMessages = [
-		...msgs.slice(0, idx),
+		...channelMessages.slice(0, idx),
 		{ type: 'unread_divider', eventId: `unread:${dividerId}` },
-		...msgs.slice(idx),
+		...channelMessages.slice(idx),
 	]
 }
 

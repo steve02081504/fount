@@ -61,14 +61,14 @@ async function listMessages(username, groupId, channelId) {
 /**
  * @param {'hub' | 'telegram' | 'discord' | 'wechat'} end 端点
  * @param {string} username replica
- * @param {{ chatKind: 'group' | 'dm', label: string, platformChatId: string | number }} opts 会话选项
+ * @param {{ chatKind: 'group' | 'dm', label: string, platformChatId: string | number }} options 会话选项
  * @returns {Promise<{ groupId: string, channelId: string, post: (text: string, platformMessageId: string | number) => Promise<void> }>} 端会话句柄
  */
-async function openEnd(end, username, opts) {
+async function openEnd(end, username, options) {
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 
 	if (end === 'hub') {
-		if (opts.chatKind === 'dm') {
+		if (options.chatKind === 'dm') {
 			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
 			const { randomKeyPair } = await import('npm:@steve02081504/fount-p2p/crypto')
 			const { createEcdhDmGroup } = await import('../../src/chat/dm/index.mjs')
@@ -91,7 +91,7 @@ async function openEnd(end, username, opts) {
 		}
 		const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 		const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
-		const groupId = await newGroup(username, { name: opts.label })
+		const groupId = await newGroup(username, { name: options.label })
 		const channelId = await getDefaultChannelId(username, groupId)
 		return {
 			groupId,
@@ -110,9 +110,9 @@ async function openEnd(end, username, opts) {
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
 	const { groupId } = await ensureBridgeGroup(username, {
 		platform: end,
-		platformChatId: opts.platformChatId,
-		chatKind: opts.chatKind,
-		name: opts.label,
+		platformChatId: options.platformChatId,
+		chatKind: options.chatKind,
+		name: options.label,
 	})
 	const channelId = await getDefaultChannelId(username, groupId)
 	return {
@@ -126,8 +126,8 @@ async function openEnd(end, username, opts) {
 		post: async (text, platformMessageId) => {
 			await postBridgeMessage(username, {
 				platform: end,
-				platformChatId: opts.platformChatId,
-				chatKind: opts.chatKind,
+				platformChatId: options.platformChatId,
+				chatKind: options.chatKind,
 				platformMessageId,
 				author: { platformUserId: `${end}-user`, displayName: `${end} User` },
 				text,

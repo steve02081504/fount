@@ -178,13 +178,13 @@ async function deleteUnreachableSidecars(username, groupId, reachable) {
  * 从根做 mark–sweep，删除不可达的 logContext sidecar。
  * @param {string} username 本地账户名
  * @param {string} groupId 群 / 会话 id
- * @param {{ chatLog?: Array<{ id?: string, extension?: object }> }} [opts] 与磁盘元数据并集（例如内存中已 hydrate 的 chatLog）
+ * @param {{ chatLog?: Array<{ id?: string, extension?: object }> }} [options] 与磁盘元数据并集（例如内存中已 hydrate 的 chatLog）
  * @returns {Promise<void>}
  */
-export async function gcLogContextSidecars(username, groupId, opts = {}) {
+export async function gcLogContextSidecars(username, groupId, options = {}) {
 	const reachable = await collectReachableSidecarRefsFromDisk(username, groupId)
-	if (Array.isArray(opts.chatLog))
-		for (const entry of opts.chatLog)
+	if (Array.isArray(options.chatLog))
+		for (const entry of options.chatLog)
 			addReachableFromChatEntry(entry, reachable)
 
 	await deleteUnreachableSidecars(username, groupId, reachable)

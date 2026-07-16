@@ -15,10 +15,10 @@ import { liveBridgeTokenFor } from './link.mjs'
 import { loadLiveSession } from './session.mjs'
 
 /**
- * @param {object} opts 参数
+ * @param {object} options 参数
  * @returns {Promise<() => void>} closer
  */
-export async function connectOutboundLiveBridge(opts) {
+export async function connectOutboundLiveBridge(options) {
 	const {
 		username,
 		entityHash,
@@ -28,7 +28,7 @@ export async function connectOutboundLiveBridge(opts) {
 		peerEntityHash,
 		peerLiveId,
 		linkSecret,
-	} = opts
+	} = options
 	const token = liveBridgeTokenFor(linkSecret, peerEntityHash, peerLiveId)
 	const base = String(peerBridgeOrigin || '').replace(/\/$/, '')
 	const wsUrl = `${base.replace(/^http/, 'ws')}/ws/parts/shells:social/live-bridge/${encodeURIComponent(peerEntityHash)}/${encodeURIComponent(peerLiveId)}?token=${encodeURIComponent(token)}`
@@ -56,14 +56,14 @@ export async function connectOutboundLiveBridge(opts) {
 			injectAvRelayFrame(avRoomId, data)
 			return
 		}
-		let msg
-		try { msg = JSON.parse(String(data)) }
+		let wireMessage
+		try { wireMessage = JSON.parse(String(data)) }
 		catch { return }
-		if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
-			injectAvRelayControl(avRoomId, msg)
+		if (wireMessage?.type === 'publish_meta' || wireMessage?.type === 'publish_meta_revoke') {
+			injectAvRelayControl(avRoomId, wireMessage)
 			return
 		}
-		ingestBridgedLiveSignal(username, entityHash, liveId, msg)
+		ingestBridgedLiveSignal(username, entityHash, liveId, wireMessage)
 	})
 
 	const statsTimer = setInterval(() => {

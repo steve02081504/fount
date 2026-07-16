@@ -50,24 +50,24 @@ async function saveVaultIndex(username, entityHash, index) {
  * 写入 vault EVFS manifest（random + vault-wrap）。
  * @param {string} username replica
  * @param {string} entityHash owner
- * @param {{ fileId?: string, plaintext: Buffer | Uint8Array, name?: string, mimeType?: string, visibility?: string }} opts 参数
+ * @param {{ fileId?: string, plaintext: Buffer | Uint8Array, name?: string, mimeType?: string, visibility?: string }} options 参数
  * @returns {Promise<{ fileId: string, logicalPath: string, manifest: object }>} 写入结果
  */
-export async function putVaultFileManifest(username, entityHash, opts) {
-	const fileId = opts.fileId || randomUUID()
+export async function putVaultFileManifest(username, entityHash, options) {
+	const fileId = options.fileId || randomUUID()
 	const logicalPath = `shells/social/vault/${fileId}`
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
-	const enc = encryptPlaintextToParts(opts.plaintext, 'random')
+	const enc = encryptPlaintextToParts(options.plaintext, 'random')
 	const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
 	const manifest = buildFileManifestFromEnc({
 		ownerEntityHash: entityHash,
 		logicalPath,
-		plaintext: opts.plaintext,
-		name: opts.name || fileId,
-		mimeType: opts.mimeType || 'application/octet-stream',
+		plaintext: options.plaintext,
+		name: options.name || fileId,
+		mimeType: options.mimeType || 'application/octet-stream',
 		ceMode: 'random',
 		transferKeyDescriptor: descriptor,
-		meta: { fileId, visibility: opts.visibility || 'followers', vaultGroupId: vaultGroupId(entityHash) },
+		meta: { fileId, visibility: options.visibility || 'followers', vaultGroupId: vaultGroupId(entityHash) },
 	}, enc)
 	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
 	await saveFileManifest(manifest)

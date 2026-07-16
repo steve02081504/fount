@@ -3,12 +3,12 @@
  */
 
 /**
- * @param {{ limit?: number }} [opts] 分页
+ * @param {{ limit?: number }} [options] 分页
  * @returns {Promise<{ entries: object[] }>} 发现索引条目
  */
-export async function fetchDiscoveryIndex(opts = {}) {
+export async function fetchDiscoveryIndex(options = {}) {
 	const params = new URLSearchParams()
-	if (opts.limit) params.set('limit', String(opts.limit))
+	if (options.limit) params.set('limit', String(options.limit))
 	const qs = params.toString()
 	const resp = await fetch(`/api/parts/shells:chat/discovery${qs ? `?${qs}` : ''}`, {
 		credentials: 'include',

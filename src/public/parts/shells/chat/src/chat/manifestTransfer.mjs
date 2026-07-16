@@ -3,8 +3,8 @@ import { Buffer } from 'node:buffer'
 import {
 	registerDagManifestPlaintextReader,
 	registerManifestOwnerMatcher,
-	registerTransferKeyDeps,
-	unregisterTransferKeyDeps,
+	registerTransferKeyDependencies,
+	unregisterTransferKeyDependencies,
 } from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
 
 import { getFileMasterKeyByGeneration, getCurrentFileMasterKey } from './file_keys/store.mjs'
@@ -18,7 +18,7 @@ const OWNER_ID = 'chat'
  */
 export function registerChatManifestTransfer() {
 	registerManifestOwnerMatcher(OWNER_ID, manifest => Array.isArray(manifest.meta?.dagParts) && !!manifest.meta?.groupId)
-	registerTransferKeyDeps(OWNER_ID, {
+	registerTransferKeyDependencies(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica
 		 * @param {string} groupId 群 ID
@@ -56,5 +56,5 @@ export function registerChatManifestTransfer() {
 
 /** @returns {void} */
 export function unregisterChatManifestTransfer() {
-	unregisterTransferKeyDeps(OWNER_ID)
+	unregisterTransferKeyDependencies(OWNER_ID)
 }

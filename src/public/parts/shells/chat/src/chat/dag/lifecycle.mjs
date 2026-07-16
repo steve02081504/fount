@@ -295,11 +295,11 @@ export async function maybePurgeLocalReplicaIfLeft(username, groupId, state) {
  * 拆除本机群副本：释放文件引用、断开联邦、清内存并删除磁盘目录。
  * @param {string} username 用户名
  * @param {string} groupId 群 ID
- * @param {{ state?: object }} [opts] 可选已物化状态（退群路径复用，避免二次全量物化）
+ * @param {{ state?: object }} [options] 可选已物化状态（退群路径复用，避免二次全量物化）
  * @returns {Promise<void>}
  */
-export async function removeLocalGroupReplica(username, groupId, opts = {}) {
-	const state = opts.state ?? (await getState(username, groupId, { skipLeftPurge: true })).state
+export async function removeLocalGroupReplica(username, groupId, options = {}) {
+	const state = options.state ?? (await getState(username, groupId, { skipLeftPurge: true })).state
 	const fileIndex = state.messageOverlay?.fileIndex
 	const fileMetas = fileIndex instanceof Map
 		? [...fileIndex.values()]

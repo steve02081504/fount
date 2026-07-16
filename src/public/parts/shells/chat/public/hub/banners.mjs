@@ -101,14 +101,14 @@ export async function refreshDagForkBanner() {
 /**
  * 联邦同步进度横幅。
  * @param {boolean} on 是否显示
- * @param {{ i18nKey?: string, params?: Record<string, string | number> }} [opts] `data-i18n` 键与 dataset 插值
+ * @param {{ i18nKey?: string, params?: Record<string, string | number> }} [options] `data-i18n` 键与 dataset 插值
  * @returns {void}
  */
-export function setSyncBanner(on, opts) {
+export function setSyncBanner(on, options) {
 	hubStore.federation.syncBanner = {
 		visible: on,
-		i18nKey: opts?.i18nKey || 'chat.hub.banners.syncing',
-		params: opts?.params || {},
+		i18nKey: options?.i18nKey || 'chat.hub.banners.syncing',
+		params: options?.params || {},
 	}
 	refreshBoundBanners()
 }

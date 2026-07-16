@@ -20,22 +20,22 @@ import { wrapPullResponseInner, unwrapPullResponseEnvelope } from './pullRespons
 /**
  * @param {string} username 本地用户
  * @param {string} groupId 群 ID
- * @param {object} opts 响应参数
- * @param {string} opts.requestId 请求 ID
- * @param {string} opts.requesterNodeHash 请求方 nodeId
- * @param {string} opts.requesterPubKeyHash 请求方 pubKeyHash
- * @param {string} opts.recipientEdPubKeyHex 接收方 Ed25519 公钥 hex
- * @param {object[]} [opts.events] DAG 事件
- * @param {Record<string, object[]>} [opts.channelHistories] 频道历史
- * @param {object} [opts.checkpoint] checkpoint
- * @param {object} [opts.archiveSummary] 存档摘要
- * @param {object} [opts.archiveManifest] 冷归档 manifest 月份 hint
- * @param {boolean} [opts.includeFileKeyGrant] 是否附带群文件主密钥 grant
- * @param {boolean} [opts.includeChannelKeyWraps] 是否附带频道密钥 wrap
- * @param {object} [opts.viewerState] 物化群状态，用于按接收方可见频道筛选密钥授予
+ * @param {object} options 响应参数
+ * @param {string} options.requestId 请求 ID
+ * @param {string} options.requesterNodeHash 请求方 nodeId
+ * @param {string} options.requesterPubKeyHash 请求方 pubKeyHash
+ * @param {string} options.recipientEdPubKeyHex 接收方 Ed25519 公钥 hex
+ * @param {object[]} [options.events] DAG 事件
+ * @param {Record<string, object[]>} [options.channelHistories] 频道历史
+ * @param {object} [options.checkpoint] checkpoint
+ * @param {object} [options.archiveSummary] 存档摘要
+ * @param {object} [options.archiveManifest] 冷归档 manifest 月份 hint
+ * @param {boolean} [options.includeFileKeyGrant] 是否附带群文件主密钥 grant
+ * @param {boolean} [options.includeChannelKeyWraps] 是否附带频道密钥 wrap
+ * @param {object} [options.viewerState] 物化群状态，用于按接收方可见频道筛选密钥授予
  * @returns {Promise<object>} HPKE envelope
  */
-export async function buildPullResponseEnvelope(username, groupId, opts) {
+export async function buildPullResponseEnvelope(username, groupId, options) {
 	const {
 		requestId,
 		requesterNodeHash,
@@ -49,7 +49,7 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
 		includeFileKeyGrant = false,
 		includeChannelKeyWraps = false,
 		viewerState = null,
-	} = opts
+	} = options
 	/** @type {Record<string, unknown>} */
 	const inner = {}
 	if (checkpoint) inner.checkpoint = checkpoint
@@ -91,18 +91,18 @@ export async function buildPullResponseEnvelope(username, groupId, opts) {
  * @param {string} username 本地用户
  * @param {string} groupId 群 ID
  * @param {object} inner 解密后的 inner
- * @param {{ allowCheckpoint?: boolean, pullRequestId?: string }} [opts] checkpoint 应用选项
+ * @param {{ allowCheckpoint?: boolean, pullRequestId?: string }} [options] checkpoint 应用选项
  * @returns {Promise<{ checkpointApplied: boolean }>} checkpoint 是否成功落盘
  */
-export async function applyPullInner(username, groupId, inner, opts = {}) {
+export async function applyPullInner(username, groupId, inner, options = {}) {
 	if (!isPlainObject(inner)) return { checkpointApplied: false }
 	let checkpointApplied = false
 	if (inner.fileKeyWraps)
 		await applyFileKeyGrant(username, groupId, inner.fileKeyWraps)
 	if (isPlainObject(inner.archiveManifest))
 		await mergeRemoteArchiveManifestHints(username, groupId, inner.archiveManifest)
-	if (isPlainObject(inner.checkpoint) && opts.allowCheckpoint === true) {
-		const pullRequestId = String(opts.pullRequestId || '').trim()
+	if (isPlainObject(inner.checkpoint) && options.allowCheckpoint === true) {
+		const pullRequestId = String(options.pullRequestId || '').trim()
 		if (pullRequestId) {
 			const localCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 			const remoteEpoch = Number(inner.checkpoint.epoch_id) || 0

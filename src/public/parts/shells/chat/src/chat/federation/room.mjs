@@ -89,12 +89,12 @@ export function invalidateFederationRoomCache(username, groupId) {
  * inflight join 因 gen 不匹配而放弃回填 slot（room.mjs join 完成处据此 leave 迟到房间）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ leaveTimeoutMs?: number }} [opts] leave 等待上限
+ * @param {{ leaveTimeoutMs?: number }} [options] leave 等待上限
  * @returns {Promise<void>}
  */
-export async function teardownFederationRoomForGroup(username, groupId, opts = {}) {
+export async function teardownFederationRoomForGroup(username, groupId, options = {}) {
 	unregisterChunkSwarm(username, groupId)
-	const leaveTimeoutMs = Number(opts.leaveTimeoutMs) > 0 ? Number(opts.leaveTimeoutMs) : DEFAULT_ROOM_LEAVE_TIMEOUT_MS
+	const leaveTimeoutMs = Number(options.leaveTimeoutMs) > 0 ? Number(options.leaveTimeoutMs) : DEFAULT_ROOM_LEAVE_TIMEOUT_MS
 	/** @type {Promise<void>[]} */
 	const leaves = []
 	forEachFederationRoomSlotInGroup(username, groupId, slot => {
@@ -113,15 +113,15 @@ export async function teardownFederationRoomForGroup(username, groupId, opts = {
  * 按需加入本群所需 信令分区（频道 + 逻辑慢同步）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ channelId?: string }} [opts] 当前活跃频道
+ * @param {{ channelId?: string }} [options] 当前活跃频道
  * @returns {Promise<FederationSlot | null>} 主分区槽（非 sync）或唯一槽
  */
-export async function ensureFederationRoom(username, groupId, opts = {}) {
+export async function ensureFederationRoom(username, groupId, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const partitionIds = resolveNodePartitionIds(groupSettings, opts.channelId)
+	const partitionIds = resolveNodePartitionIds(groupSettings, options.channelId)
 	let primary = null
 	for (const partitionId of partitionIds) {
-		const slot = await ensureFederationPartitionRoom(username, groupId, partitionId, opts)
+		const slot = await ensureFederationPartitionRoom(username, groupId, partitionId, options)
 		if (partitionId !== LOGIC_SYNC_PARTITION) primary = slot || primary
 		else if (!primary) primary = slot
 	}
@@ -132,12 +132,12 @@ export async function ensureFederationRoom(username, groupId, opts = {}) {
  * 本群所需分区均已绑定且 room 凭证未变（rebind 幂等跳过）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ channelId?: string }} [opts] 当前活跃频道
+ * @param {{ channelId?: string }} [options] 当前活跃频道
  * @returns {Promise<boolean>} 是否已全部绑定且凭证未变
  */
-export async function isFederationRoomAlreadyBound(username, groupId, opts = {}) {
+export async function isFederationRoomAlreadyBound(username, groupId, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const partitionIds = resolveNodePartitionIds(groupSettings, opts.channelId)
+	const partitionIds = resolveNodePartitionIds(groupSettings, options.channelId)
 	if (!partitionIds.length) return false
 	for (const partitionId of partitionIds) 
 		if (!await isFederationPartitionAlreadyBound(username, groupId, partitionId)) return false
@@ -149,14 +149,14 @@ export async function isFederationRoomAlreadyBound(username, groupId, opts = {})
  * 按 action 决定联邦出站槽（频道事件优先走 ch-XX；其他走 sync）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ actionName?: string, channelId?: string, eventType?: string }} [opts] 出站提示
+ * @param {{ actionName?: string, channelId?: string, eventType?: string }} [options] 出站提示
  * @returns {Promise<FederationSlot | null>} 对应分区槽
  */
-export async function resolveFederationSlotForAction(username, groupId, opts = {}) {
+export async function resolveFederationSlotForAction(username, groupId, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
-	const action = String(opts.actionName || '').trim().toLowerCase()
-	const eventType = String(opts.eventType || '').trim().toLowerCase()
-	const channelId = String(opts.channelId || '').trim() || undefined
+	const action = String(options.actionName || '').trim().toLowerCase()
+	const eventType = String(options.eventType || '').trim().toLowerCase()
+	const channelId = String(options.channelId || '').trim() || undefined
 	if (action === 'dag_event' || eventType)
 		return await ensureFederationPartitionRoom(
 			username,
@@ -173,10 +173,10 @@ export async function resolveFederationSlotForAction(username, groupId, opts = {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {string} partitionId 分区 id
- * @param {{ channelId?: string }} [opts] 选项
+ * @param {{ channelId?: string }} [options] 选项
  * @returns {Promise<FederationSlot | null>} 房间句柄或 null
  */
-export async function ensureFederationPartitionRoom(username, groupId, partitionId = LOGIC_SYNC_PARTITION, opts = {}) {
+export async function ensureFederationPartitionRoom(username, groupId, partitionId = LOGIC_SYNC_PARTITION, options = {}) {
 	const groupSettings = await loadFederationGroupSettings(username, groupId)
 	let roomCreds
 	try {

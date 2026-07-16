@@ -138,7 +138,7 @@ test.describe('Chat message actions', () => {
 
 	test('shows message context menu on right click', async ({ page, groupChannel }) => {
 		const { groupId, channelId } = groupChannel
-		const text = `ctx-menu ${Date.now()}`
+		const text = `context-menu ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
 		await row.click({ button: 'right' })

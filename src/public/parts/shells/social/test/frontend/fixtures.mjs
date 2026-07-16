@@ -210,11 +210,11 @@ async function refreshFeed(page) {
  * 在 feed 或资料页中按 postId 定位帖子卡片。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} postId - 帖子 id。
- * @param {{ preferFeed?: boolean }} [opts] - 查找选项。
+ * @param {{ preferFeed?: boolean }} [options] - 查找选项。
  * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
-export async function findPostCard(page, postId, opts = {}) {
-	const allowProfileFallback = opts.allowProfileFallback === true
+export async function findPostCard(page, postId, options = {}) {
+	const allowProfileFallback = options.allowProfileFallback === true
 	const sel = `[data-post-id="${postId}"]`
 	const feedCard = page.locator(`#feedView ${sel}`)
 	for (let attempt = 0; attempt < 3; attempt++) {
@@ -331,11 +331,11 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
  * 通过 Chat API 创建测试群（供 Social 群关联 composer 烟测）。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {{ name?: string }} [opts] - 可选项。
+ * @param {{ name?: string }} [options] - 可选项。
  * @returns {Promise<{ groupId: string, channelId: string }>} 群与默认频道 id。
  */
-export async function createTestGroup(baseUrl, apiKey, opts = {}) {
-	const name = opts.name ?? `social-fe-group-${Date.now()}`
+export async function createTestGroup(baseUrl, apiKey, options = {}) {
+	const name = options.name ?? `social-fe-group-${Date.now()}`
 	const req = await playwrightRequest.newContext()
 	try {
 		const res = await req.post(

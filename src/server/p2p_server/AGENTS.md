@@ -10,7 +10,7 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 
 ## Import conventions
 
-- **Deno / shell / server**: `npm:@steve02081504/fount-p2p/...` (`deno.json` maps `@^0.0.0`)
+- **Deno / shell / server**: `npm:@steve02081504/fount-p2p/...`
 - **Browser public**: `https://esm.sh/@steve02081504/fount-p2p/...`
 - **Archive tunables JSON**: `npm:@steve02081504/fount-p2p/dag/tunables.json` → mapped to `shells/chat/src/chat/lib/archive.tunables.json` (kept in sync with the package's `dag/tunables.json`)
 

@@ -80,7 +80,7 @@
 /* =========================================================
    悬停浮动操作栏
    ========================================================= */
-.hub-msg-hover-bar {
+.hub-message-hover-bar {
 	position: absolute;
 	top: 0;
 	right: 1.5rem;
@@ -99,34 +99,34 @@
 	transition: opacity 0.12s ease;
 }
 
-.chat-end .hub-msg-hover-bar {
+.chat-end .hub-message-hover-bar {
 	right: auto;
 	left: 1.5rem;
 }
 
-.hub-message-row:hover .hub-msg-hover-bar,
-.hub-message-row:focus-within .hub-msg-hover-bar {
+.hub-message-row:hover .hub-message-hover-bar,
+.hub-message-row:focus-within .hub-message-hover-bar {
 	opacity: 1;
 	pointer-events: auto;
 }
 
 /* 浮动栏内部：始终可见、不换行 */
-.hub-msg-hover-bar .hub-message-actions--anim,
-.hub-msg-hover-bar .hub-message-actions--always {
+.hub-message-hover-bar .hub-message-actions--anim,
+.hub-message-hover-bar .hub-message-actions--always {
 	opacity: 1;
 	pointer-events: auto;
 	margin-top: 0;
 }
 
-.hub-msg-hover-bar .hub-message-actions,
-.hub-msg-hover-bar .hub-message-actions-normal-buttons {
+.hub-message-hover-bar .hub-message-actions,
+.hub-message-hover-bar .hub-message-actions-normal-buttons {
 	flex-wrap: nowrap;
 	margin-top: 0;
 	gap: 0;
 }
 
 /* shift 层在浮动栏内隐藏（shift 操作改在右键菜单或下拉中访问） */
-.hub-msg-hover-bar .hub-message-actions-shift-buttons {
+.hub-message-hover-bar .hub-message-actions-shift-buttons {
 	display: none;
 }
 

@@ -27,7 +27,7 @@ export async function setGroupFriendBinding(groupId, friendBinding) {
 /**
  * 解除好友私聊绑定：群回到侧栏；有角色绑定时一并 session unbind。
  * @param {string} groupId 群 ID
- * @param {{ charname?: string | null }} [opts] 选项
+ * @param {{ charname?: string | null }} [options] 选项
  * @returns {Promise<void>}
  */
 export async function unbindFriendGroup(groupId, { charname } = {}) {

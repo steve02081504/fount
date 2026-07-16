@@ -30,14 +30,14 @@ function setOverlayHeading(el, text, i18nKey, params = {}) {
 
 /**
  * 打开通用设置浮层并写入内容。
- * @param {object} opts 模态框内容
- * @param {string} [opts.title] 主标题（纯文本）
- * @param {string} [opts.titleKey] 主标题 i18n 键
- * @param {string} [opts.subtitle] 副标题（纯文本）
- * @param {string} [opts.subtitleKey] 副标题 i18n 键
- * @param {Record<string, string>} [opts.subtitleParams] 副标题插值
- * @param {string | Element | DocumentFragment} [opts.body] 主体内容
- * @param {string | Element | DocumentFragment} [opts.footer] 底部操作区内容
+ * @param {object} options 模态框内容
+ * @param {string} [options.title] 主标题（纯文本）
+ * @param {string} [options.titleKey] 主标题 i18n 键
+ * @param {string} [options.subtitle] 副标题（纯文本）
+ * @param {string} [options.subtitleKey] 副标题 i18n 键
+ * @param {Record<string, string>} [options.subtitleParams] 副标题插值
+ * @param {string | Element | DocumentFragment} [options.body] 主体内容
+ * @param {string | Element | DocumentFragment} [options.footer] 底部操作区内容
  * @returns {void}
  */
 export function openOverlayModal({

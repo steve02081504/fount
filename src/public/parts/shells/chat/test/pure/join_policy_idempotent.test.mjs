@@ -30,12 +30,12 @@ function baseState(overrides = {}) {
  * 捕获 validateJoinPolicy 抛错，便于断言 message/pendable。
  * @param {object} state 群状态
  * @param {object} event member_join 事件
- * @param {{ source?: 'local' | 'federation' }} [opts] 入站来源
+ * @param {{ source?: 'local' | 'federation' }} [options] 入站来源
  * @returns {Promise<Error | undefined>} 捕获到的错误；无错误返回 undefined
  */
-async function captureJoinPolicyError(state, event, opts) {
+async function captureJoinPolicyError(state, event, options) {
 	try {
-		await validateJoinPolicy(state, event, 'u', opts)
+		await validateJoinPolicy(state, event, 'u', options)
 		return undefined
 	}
 	catch (error) {

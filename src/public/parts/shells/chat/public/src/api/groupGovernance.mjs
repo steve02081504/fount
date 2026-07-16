@@ -8,11 +8,11 @@ import { groupFetch, groupPath } from './groupClient.mjs'
 /**
  * 将现有群 fork 为新群。
  * @param {string} sourceGroupId 源群 ID
- * @param {object} [opts] fork 请求体
+ * @param {object} [options] fork 请求体
  * @returns {Promise<any>} fork API 响应
  */
-export async function forkGroupAsNew(sourceGroupId, opts = {}) {
-	return groupFetch(groupPath(sourceGroupId, 'fork'), { method: 'POST', json: opts })
+export async function forkGroupAsNew(sourceGroupId, options = {}) {
+	return groupFetch(groupPath(sourceGroupId, 'fork'), { method: 'POST', json: options })
 }
 
 /**

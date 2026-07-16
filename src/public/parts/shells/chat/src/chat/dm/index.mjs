@@ -54,11 +54,11 @@ export async function findDmGroupBySessionTag(username, dmSessionTag) {
  * @param {string} username 当前用户
  * @param {string} myPubKeyHex 本端 ECDH 公钥（实体稳定公钥；与本群 local signer 可不同）
  * @param {string} peerPubKeyHex 对端公钥
- * @param {{ entityHash?: string }} [opts] 建群实体（缺省 operator）
+ * @param {{ entityHash?: string }} [options] 建群实体（缺省 operator）
  * @returns {Promise<{ groupId: string, defaultChannelId: string, dmSessionTag: string }>} 新建或已存在的 DM 群
  */
-export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, opts = {}) {
-	const entityHash = opts.entityHash || undefined
+export async function createEcdhDmGroup(username, myPubKeyHex, peerPubKeyHex, options = {}) {
+	const entityHash = options.entityHash || undefined
 	const myPubKey = normalizePubKeyHex(myPubKeyHex)
 	const peerPubKey = normalizePubKeyHex(peerPubKeyHex)
 	if (!PUB_KEY_HEX_64.test(myPubKey) || !PUB_KEY_HEX_64.test(peerPubKey))
@@ -219,23 +219,23 @@ export async function orchestrateDmFirstContact(username, introPubKeyHex, dmIntr
  * 被 HTTP 入群路由与 shell `join` action 共用；邀请码不在加入者侧校验，只随 content 上链，由 owner 入站时按 joinPolicy 验签。
  * @param {string} username replica 所有者
  * @param {string} groupId 群 ID
- * @param {object} [opts] 入群参数
- * @param {string} [opts.inviteCode] 邀请码
- * @param {object} [opts.powSolution] 入群 PoW 解
- * @param {string} [opts.introducerPubKeyHash] 邀请人成员 pubKeyHash
- * @param {string} [opts.dmIntroNonce] DM intro nonce
- * @param {string} [opts.dmIntroSignatureHex] DM intro 签名 hex
- * @param {number} [opts.reputationEdge] 入群信誉边 [-1,1]
- * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [opts.bootstrap] 首次联邦 bootstrap
+ * @param {object} [options] 入群参数
+ * @param {string} [options.inviteCode] 邀请码
+ * @param {object} [options.powSolution] 入群 PoW 解
+ * @param {string} [options.introducerPubKeyHash] 邀请人成员 pubKeyHash
+ * @param {string} [options.dmIntroNonce] DM intro nonce
+ * @param {string} [options.dmIntroSignatureHex] DM intro 签名 hex
+ * @param {number} [options.reputationEdge] 入群信誉边 [-1,1]
+ * @param {{ roomSecret?: string, signalingAppId?: string, dmSessionTag?: string, powAnchorRef?: string, powAnchors?: string[] }} [options.bootstrap] 首次联邦 bootstrap
  * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 入群后的群信息
  */
-export async function performMemberJoin(username, groupId, opts = {}) {
+export async function performMemberJoin(username, groupId, options = {}) {
 	if (!groupId?.trim()) throw new Error('groupId required')
-	const entityHash = opts.entityHash || undefined
+	const entityHash = options.entityHash || undefined
 
 	// 首次入群时本地尚无群 state，必须靠 roomSecret 引导联邦房间凭据才能与对端汇合。
-	if (opts.bootstrap?.roomSecret)
-		setFederationBootstrap(username, groupId, opts.bootstrap)
+	if (options.bootstrap?.roomSecret)
+		setFederationBootstrap(username, groupId, options.bootstrap)
 
 	const { state } = await getState(username, groupId)
 	const existingSender = await peekLocalSignerPubKeyHash(username, groupId, entityHash)
@@ -246,16 +246,16 @@ export async function performMemberJoin(username, groupId, opts = {}) {
 		return { groupId, defaultChannelId: state.groupSettings?.defaultChannelId || 'default' }
 
 	const content = { homeNodeHash: getLocalNodeHash() }
-	if (opts.inviteCode?.trim()) content.inviteCode = opts.inviteCode.trim()
-	if (opts.powSolution) content.powSolution = opts.powSolution
-	const introducer = normalizePubKeyHex(opts.introducerPubKeyHash || '')
+	if (options.inviteCode?.trim()) content.inviteCode = options.inviteCode.trim()
+	if (options.powSolution) content.powSolution = options.powSolution
+	const introducer = normalizePubKeyHex(options.introducerPubKeyHash || '')
 	if (PUB_KEY_HEX_64.test(introducer)) content.introducerPubKeyHash = introducer
-	if (opts.dmIntroNonce && opts.dmIntroSignatureHex) {
-		content.dmIntroNonce = opts.dmIntroNonce
-		content.dmIntroSignatureHex = opts.dmIntroSignatureHex
+	if (options.dmIntroNonce && options.dmIntroSignatureHex) {
+		content.dmIntroNonce = options.dmIntroNonce
+		content.dmIntroSignatureHex = options.dmIntroSignatureHex
 	}
-	if (Number.isFinite(opts.reputationEdge))
-		content.reputationEdge = Math.max(-1, Math.min(1, opts.reputationEdge))
+	if (Number.isFinite(options.reputationEdge))
+		content.reputationEdge = Math.max(-1, Math.min(1, options.reputationEdge))
 
 	// 先建联邦房间再 append，确保 member_join 能发布给对端。
 	await ensureFederationRoom(username, groupId).catch(error => {

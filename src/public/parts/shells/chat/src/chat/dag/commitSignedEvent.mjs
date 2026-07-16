@@ -16,19 +16,19 @@ import { withGroupWriteLock } from './groupLock.mjs'
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object} wirePayload canonical 签名事件
- * @param {object} opts commit 选项
+ * @param {object} options commit 选项
  * @param {{ forceAwait?: boolean }} [publishOpts] 出站等待策略
  * @returns {Promise<void>}
  */
-async function publishSignedEvent(username, groupId, wirePayload, opts, publishOpts = {}) {
+async function publishSignedEvent(username, groupId, wirePayload, options, publishOpts = {}) {
 	const publish = publishSignedEventToFederation(username, groupId, wirePayload, {
-		state: opts.federationState,
-		existingSlotOnly: opts.federationExistingSlotOnly,
-		joinTimeoutMs: opts.federationJoinTimeoutMs,
+		state: options.federationState,
+		existingSlotOnly: options.federationExistingSlotOnly,
+		joinTimeoutMs: options.federationJoinTimeoutMs,
 	})
 	const awaitPublish = publishOpts.forceAwait
-		|| opts.federationExistingSlotOnly
-		|| opts.federationJoinTimeoutMs > 0
+		|| options.federationExistingSlotOnly
+		|| options.federationJoinTimeoutMs > 0
 	if (awaitPublish)
 		await publish
 	else
@@ -39,18 +39,18 @@ async function publishSignedEvent(username, groupId, wirePayload, opts, publishO
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object} wirePayload canonical 签名事件
- * @param {{ checkpointOwnerSecretKey?: Uint8Array, publishFederation?: boolean, skipCheckpointRebuild?: boolean, federationState?: object, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number, ingress?: 'live' | 'backfill' }} [opts] 落盘选项
+ * @param {{ checkpointOwnerSecretKey?: Uint8Array, publishFederation?: boolean, skipCheckpointRebuild?: boolean, federationState?: object, federationExistingSlotOnly?: boolean, federationJoinTimeoutMs?: number, ingress?: 'live' | 'backfill' }} [options] 落盘选项
  * @returns {Promise<'ok' | 'dup'>} `dup` 表示同 eventId 已落盘（锁内原子判定）
  */
-export async function commitSignedChatEvent(username, groupId, wirePayload, opts = {}) {
+export async function commitSignedChatEvent(username, groupId, wirePayload, options = {}) {
 	// 退群联邦出站须在 broadcastAndPersist 之前完成：完整 checkpoint 重建会 maybePurgeLocalReplicaIfLeft
 	// 删掉 events.jsonl 并 teardown slot，晚于 rebuild 的 publish 读不到 leave 帧。
-	const publishLeaveBeforeRebuild = opts.publishFederation && wirePayload.type === 'member_leave'
+	const publishLeaveBeforeRebuild = options.publishFederation && wirePayload.type === 'member_leave'
 	const persistOpts = {
-		checkpointOwnerSecretKey: opts.checkpointOwnerSecretKey,
-		skipCheckpointRebuild: opts.skipCheckpointRebuild,
-		skipGenesisSideEffects: opts.skipGenesisSideEffects,
-		ingress: opts.ingress,
+		checkpointOwnerSecretKey: options.checkpointOwnerSecretKey,
+		skipCheckpointRebuild: options.skipCheckpointRebuild,
+		skipGenesisSideEffects: options.skipGenesisSideEffects,
+		ingress: options.ingress,
 	}
 
 	const committed = await withGroupWriteLock(username, groupId, async () => {
@@ -67,14 +67,14 @@ export async function commitSignedChatEvent(username, groupId, wirePayload, opts
 	if (!committed) return 'dup'
 
 	if (publishLeaveBeforeRebuild) {
-		await publishSignedEvent(username, groupId, wirePayload, opts, { forceAwait: true })
+		await publishSignedEvent(username, groupId, wirePayload, options, { forceAwait: true })
 		await withGroupWriteLock(username, groupId, async () => {
 			await broadcastAndPersist(username, groupId, wirePayload, persistOpts)
 		})
 	}
-	else if (opts.publishFederation)
-		await publishSignedEvent(username, groupId, wirePayload, opts)
+	else if (options.publishFederation)
+		await publishSignedEvent(username, groupId, wirePayload, options)
 
-	recordMessageRate(username, groupId, wirePayload, opts.federationState?.groupSettings)
+	recordMessageRate(username, groupId, wirePayload, options.federationState?.groupSettings)
 	return 'ok'
 }

@@ -164,16 +164,16 @@ async function findOperatorEntityHash(username) {
 
 /**
  * @param {string} username fount 登录名
- * @param {{ charPartName?: string | null, ownerEntityHash?: string | null }} [opts] 实体标签；缺省 = operator
+ * @param {{ charPartName?: string | null, ownerEntityHash?: string | null }} [options] 实体标签；缺省 = operator
  * @returns {Promise<object>} 身份行（含 entityHash）
  */
-export async function ensureEntityIdentity(username, opts = {}) {
-	const charPartName = opts.charPartName == null || opts.charPartName === ''
+export async function ensureEntityIdentity(username, options = {}) {
+	const charPartName = options.charPartName == null || options.charPartName === ''
 		? null
-		: String(opts.charPartName)
-	const ownerEntityHash = opts.ownerEntityHash == null || opts.ownerEntityHash === ''
+		: String(options.charPartName)
+	const ownerEntityHash = options.ownerEntityHash == null || options.ownerEntityHash === ''
 		? null
-		: String(opts.ownerEntityHash).toLowerCase()
+		: String(options.ownerEntityHash).toLowerCase()
 
 	if (charPartName === null && ownerEntityHash === null) {
 		const opHash = await findOperatorEntityHash(username)

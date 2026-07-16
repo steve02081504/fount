@@ -125,42 +125,42 @@ export async function releasePendingIngestEvents(username, groupId) {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
- * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean, ingress?: 'live' | 'backfill' }} [opts] 日志、隔离/入站暂缓重放与写入选项
+ * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean, ingress?: 'live' | 'backfill' }} [options] 日志、隔离/入站暂缓重放与写入选项
  * @returns {Promise<RemoteIngestResult>} 写入结果；`applied` 为新链节落盘，`duplicate` 为已摄入
  */
-export async function appendValidatedRemoteEvent(username, groupId, signPayload, opts = {}) {
+export async function appendValidatedRemoteEvent(username, groupId, signPayload, options = {}) {
 	if (!signPayload?.id) return ingestResult('invalid', 'missing_id')
 	const eventId = signPayload.id
-	if (!opts.skipSeenDedup) {
+	if (!options.skipSeenDedup) {
 		if (hasSeenFederationEvent(username, groupId, eventId)) return ingestResult('duplicate', 'seen')
 		const inflightKey = `${username}\0${groupId}\0${eventId}`
 		const inflight = ingestInflight.get(inflightKey)
 		if (inflight) return inflight
-		const task = appendValidatedRemoteEventImpl(username, groupId, signPayload, opts).finally(() => {
+		const task = appendValidatedRemoteEventImpl(username, groupId, signPayload, options).finally(() => {
 			if (ingestInflight.get(inflightKey) === task) ingestInflight.delete(inflightKey)
 		})
 		ingestInflight.set(inflightKey, task)
 		return task
 	}
-	return appendValidatedRemoteEventImpl(username, groupId, signPayload, opts)
+	return appendValidatedRemoteEventImpl(username, groupId, signPayload, options)
 }
 
 /**
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} signPayload 完整签名事件
- * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean }} opts 选项
+ * @param {{ logFailures?: boolean, skipQuarantineRelease?: boolean, skipQuarantineAppend?: boolean, skipPendingIngestAppend?: boolean, skipSeenDedup?: boolean }} options 选项
  * @returns {Promise<RemoteIngestResult>} 写入结果
  */
-async function appendValidatedRemoteEventImpl(username, groupId, signPayload, opts) {
-	const logFailures = opts.logFailures !== false
+async function appendValidatedRemoteEventImpl(username, groupId, signPayload, options) {
+	const logFailures = options.logFailures !== false
 	const eventId = signPayload.id
 	/**
 	 * @param {RemoteIngestResult} ingestOutcome 入库结果
 	 * @returns {RemoteIngestResult} 结构化入库结果
 	 */
 	function finish(ingestOutcome) {
-		return finishIngestSeen(username, groupId, eventId, ingestOutcome, opts.skipSeenDedup)
+		return finishIngestSeen(username, groupId, eventId, ingestOutcome, options.skipSeenDedup)
 	}
 
 	let wirePayload
@@ -220,7 +220,7 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 
 	if (hlcAction === 'quarantine') {
-		if (opts.skipQuarantineAppend) return finish(ingestResult('quarantined', 'hlc_skew'))
+		if (options.skipQuarantineAppend) return finish(ingestResult('quarantined', 'hlc_skew'))
 		await withGroupWriteLock(username, groupId, async () => {
 			await appendQuarantinedEvent(username, groupId, wirePayload, 'hlc_skew')
 		})
@@ -259,14 +259,14 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 	}
 	catch (error) {
 		if (error?.deferrable) {
-			if (opts.skipQuarantineAppend) return finish(ingestResult('quarantined', 'missing_target'))
+			if (options.skipQuarantineAppend) return finish(ingestResult('quarantined', 'missing_target'))
 			await withGroupWriteLock(username, groupId, async () => {
 				await appendQuarantinedEvent(username, groupId, wirePayload, 'missing_target')
 			})
 			return finish(ingestResult('quarantined', 'missing_target'))
 		}
 		if (error?.pendable) {
-			if (opts.skipPendingIngestAppend) return finish(ingestResult('pending', error.message))
+			if (options.skipPendingIngestAppend) return finish(ingestResult('pending', error.message))
 			await withGroupWriteLock(username, groupId, async () => {
 				await enqueuePendingIngest(username, groupId, wirePayload, error.message)
 			})
@@ -276,9 +276,9 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
 		return finish(ingestResult('invalid', 'authz'))
 	}
 
-	if (await commitSignedChatEvent(username, groupId, wirePayload, { ingress: opts.ingress }) === 'dup')
+	if (await commitSignedChatEvent(username, groupId, wirePayload, { ingress: options.ingress }) === 'dup')
 		return finish(ingestResult('duplicate', 'event_id'))
-	if (!opts.skipQuarantineRelease) {
+	if (!options.skipQuarantineRelease) {
 		await releaseQuarantinedEvents(username, groupId)
 		await releasePendingIngestEvents(username, groupId)
 	}
@@ -295,13 +295,13 @@ async function appendValidatedRemoteEventImpl(username, groupId, signPayload, op
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {unknown} payload Trystero 载荷（完整签名事件）
- * @param {{ skipSeenDedup?: boolean, logFailures?: boolean }} [opts] ingest 选项
+ * @param {{ skipSeenDedup?: boolean, logFailures?: boolean }} [options] ingest 选项
  * @returns {Promise<RemoteIngestResult | undefined>} 写入结果；无法解析为 undefined
  */
-export async function ingestRemoteEvent(username, groupId, payload, opts = {}) {
+export async function ingestRemoteEvent(username, groupId, payload, options = {}) {
 	const signedEvent = extractInboundSignedEvent(payload, groupId)
 	if (!signedEvent) return undefined
-	return appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: true, ...opts })
+	return appendValidatedRemoteEvent(username, groupId, signedEvent, { logFailures: true, ...options })
 }
 
 /**

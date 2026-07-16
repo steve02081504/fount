@@ -28,12 +28,12 @@ function sanitizeTrendingRow(raw) {
 
 /**
  * 本机应答：公开可见话题计数（带本节点 hash 以免聚合时被去重吞并）。
- * @param {{ replicaUsername?: string }} ctx 入站上下文
+ * @param {{ replicaUsername?: string }} inboundContext 入站上下文
  * @param {unknown} query 查询
  * @returns {Promise<object[]>} rows
  */
-export async function localTrendingHashtagsHandler(ctx, query) {
-	const username = String(ctx.replicaUsername || '').trim()
+export async function localTrendingHashtagsHandler(inboundContext, query) {
+	const username = String(inboundContext.replicaUsername || '').trim()
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 12,

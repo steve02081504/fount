@@ -60,16 +60,16 @@ export function readVisibilityPicker(root = document) {
 
 /**
  * 渲染可见性 picker HTML。
- * @param {object} [opts] 选项
- * @param {string} [opts.selected='public'] 当前值（含 UI 预设）
- * @param {string} [opts.allow=''] allow 列表文本
- * @param {string} [opts.except=''] except 列表文本
- * @param {string} [opts.idPrefix=''] id 前缀
+ * @param {object} [options] 选项
+ * @param {string} [options.selected='public'] 当前值（含 UI 预设）
+ * @param {string} [options.allow=''] allow 列表文本
+ * @param {string} [options.except=''] except 列表文本
+ * @param {string} [options.idPrefix=''] id 前缀
  * @returns {string} HTML
  */
-export function renderVisibilityPickerHtml(opts = {}) {
-	const selected = opts.selected || 'public'
-	const idPrefix = opts.idPrefix || ''
+export function renderVisibilityPickerHtml(options = {}) {
+	const selected = options.selected || 'public'
+	const idPrefix = options.idPrefix || ''
 	const options = VISIBILITY_OPTIONS.map(opt =>
 		`<option value="${opt.value}"${opt.value === selected ? ' selected' : ''}>${escapeHtml(geti18n(opt.i18n))}</option>`,
 	).join('')
@@ -82,10 +82,10 @@ export function renderVisibilityPickerHtml(opts = {}) {
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"
 				placeholder="${escapeHtml(geti18n('social.visibility.allowPlaceholder'))}"
-				value="${escapeHtml(opts.allow || '')}" />
+				value="${escapeHtml(options.allow || '')}" />
 			<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except${showExcept}"
 				placeholder="${escapeHtml(geti18n('social.visibility.exceptPlaceholder'))}"
-				value="${escapeHtml(opts.except || '')}" />
+				value="${escapeHtml(options.except || '')}" />
 		</div>
 	`
 }

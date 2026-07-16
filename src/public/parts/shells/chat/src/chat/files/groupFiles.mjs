@@ -231,17 +231,17 @@ export function assertFileUploadBody(body) {
  * 上传收敛密文块（§10.3）：同明文跨群复用 `blobs/{ciphertextHash}`。
  * @param {string} username 用户
  * @param {string} groupId 群
- * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, channelId?: string, ceMode?: string }} opts 明文与可选代数
+ * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, channelId?: string, ceMode?: string }} options 明文与可选代数
  * @returns {Promise<object>} manifest 字段（contentHash、ciphertextHash、wrappedKey 等）
  */
-export async function putEncryptedChunk(username, groupId, opts) {
+export async function putEncryptedChunk(username, groupId, options) {
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
 	if (!keyEntry) throw new Error('group file master key not initialized')
 
-	const ceMode = normalizeCeMode(opts.ceMode)
+	const ceMode = normalizeCeMode(options.ceMode)
 	const encrypted = ceMode === 'random'
-		? encryptRandomPlaintext(opts.data)
-		: encryptConvergentPlaintext(opts.data)
+		? encryptRandomPlaintext(options.data)
+		: encryptConvergentPlaintext(options.data)
 	const { contentHash, ciphertextHash, raw } = encrypted
 	const have = await hasCiphertextBlob(username, ciphertextHash)
 	const storageLocator = have
@@ -264,7 +264,7 @@ export async function putEncryptedChunk(username, groupId, opts) {
 		const wantFed = storage.storagePeerId === 'federation_swarm' || requiredAcks > 0
 		if (wantFed) {
 			await ensureFederationRoom(username, groupId, {
-				channelId: String(opts.channelId || '').trim() || undefined,
+				channelId: String(options.channelId || '').trim() || undefined,
 			}).catch(() => { })
 			await replicateChunkToFederation(username, groupId, ciphertextHash, raw, {
 				requiredAcks: storage.storagePeerId === 'federation_swarm' ? requiredAcks : 0,
@@ -276,8 +276,8 @@ export async function putEncryptedChunk(username, groupId, opts) {
 	const contentKey = ceMode === 'random'
 		? encrypted.contentKey
 		: deriveContentKey(contentHash)
-	const wrappedKey = wrapContentKey(contentKey, keyEntry.fileMasterKey, opts.fileId)
-	await cachePlaintextFile(username, contentHash, opts.data)
+	const wrappedKey = wrapContentKey(contentKey, keyEntry.fileMasterKey, options.fileId)
+	await cachePlaintextFile(username, contentHash, options.data)
 
 	return {
 		ceMode,
@@ -285,7 +285,7 @@ export async function putEncryptedChunk(username, groupId, opts) {
 		ciphertextHash,
 		storageLocator,
 		wrappedKey,
-		key_generation: opts.keyGeneration ?? keyEntry.generation,
+		key_generation: options.keyGeneration ?? keyEntry.generation,
 		have,
 	}
 }
@@ -294,17 +294,17 @@ export async function putEncryptedChunk(username, groupId, opts) {
  * 密文块已存在时仅登记 wrappedKey 与引用（§10.3 预检 have-it，跳过重复上传）。
  * @param {string} username 用户
  * @param {string} groupId 群
- * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, ceMode?: string }} opts 明文（用于推导 content/ciphertext 哈希）
+ * @param {{ fileId: string, data: Uint8Array, keyGeneration?: number, ceMode?: string }} options 明文（用于推导 content/ciphertext 哈希）
  * @returns {Promise<object | null>} manifest；本地无密文时 `null`
  */
-export async function registerEncryptedChunkIfPresent(username, groupId, opts) {
+export async function registerEncryptedChunkIfPresent(username, groupId, options) {
 	const keyEntry = await getCurrentFileMasterKey(username, groupId)
 	if (!keyEntry) throw new Error('group file master key not initialized')
 
-	const ceMode = normalizeCeMode(opts.ceMode)
+	const ceMode = normalizeCeMode(options.ceMode)
 	const encrypted = ceMode === 'random'
-		? encryptRandomPlaintext(opts.data)
-		: encryptConvergentPlaintext(opts.data)
+		? encryptRandomPlaintext(options.data)
+		: encryptConvergentPlaintext(options.data)
 	const { contentHash, ciphertextHash } = encrypted
 	const have = await hasCiphertextBlob(username, ciphertextHash)
 	if (!have) return null
@@ -313,8 +313,8 @@ export async function registerEncryptedChunkIfPresent(username, groupId, opts) {
 	const contentKey = ceMode === 'random'
 		? encrypted.contentKey
 		: deriveContentKey(contentHash)
-	const wrappedKey = wrapContentKey(contentKey, keyEntry.fileMasterKey, opts.fileId)
-	await cachePlaintextFile(username, contentHash, opts.data)
+	const wrappedKey = wrapContentKey(contentKey, keyEntry.fileMasterKey, options.fileId)
+	await cachePlaintextFile(username, contentHash, options.data)
 
 	return {
 		ceMode,
@@ -322,7 +322,7 @@ export async function registerEncryptedChunkIfPresent(username, groupId, opts) {
 		ciphertextHash,
 		storageLocator,
 		wrappedKey,
-		key_generation: opts.keyGeneration ?? keyEntry.generation,
+		key_generation: options.keyGeneration ?? keyEntry.generation,
 		have: true,
 	}
 }

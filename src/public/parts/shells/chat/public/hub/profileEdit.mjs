@@ -211,10 +211,10 @@ async function handleSaveProfile() {
 
 /**
  * @param {string} entityHash 128 位 entityHash
- * @param {{ onSaved?: () => void | Promise<void> }} [opts] 保存后回调
+ * @param {{ onSaved?: () => void | Promise<void> }} [options] 保存后回调
  * @returns {Promise<void>}
  */
-export async function openHubProfileEdit(entityHash, opts = {}) {
+export async function openHubProfileEdit(entityHash, options = {}) {
 	const { fetchEntityProfileApi: fetchApi } = await import('../src/entityProfileApi.mjs')
 	const groupId = hubStore.context.currentGroupId || undefined
 	const dialog = await ensureEditDialog()
@@ -223,7 +223,7 @@ export async function openHubProfileEdit(entityHash, opts = {}) {
 		showToastI18n('error', 'profile.errors.loadFailed')
 		return
 	}
-	onSavedCallback = opts.onSaved || null
+	onSavedCallback = options.onSaved || null
 	initEditState(entityHash, data.profile)
 	dialog.showModal()
 }

@@ -42,15 +42,15 @@ async function cpIfExists(src, dst) {
 /**
  * @param {string} username 用户名
  * @param {string} sourceGroupId 源群 ID
- * @param {{ tipId?: string, name?: string, entityHash?: string }} [opts] 可选分支尖、新群名称与签名实体
+ * @param {{ tipId?: string, name?: string, entityHash?: string }} [options] 可选分支尖、新群名称与签名实体
  * @returns {Promise<{ groupId: string, forkedFrom: string, branchTip: string, defaultChannelId: string }>} 新群元数据
  */
-export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
+export async function forkGroupFromBranch(username, sourceGroupId, options = {}) {
 	const { state, order, events } = await getState(username, sourceGroupId)
 	if (!events.length)
 		throw new Error('source group has no events')
 
-	const branchTip = opts.tipId?.trim().toLowerCase()
+	const branchTip = options.tipId?.trim().toLowerCase()
 		|| state.consensusBranchTip
 		|| order[order.length - 1]
 	if (!isHex64(branchTip))
@@ -59,8 +59,8 @@ export async function forkGroupFromBranch(username, sourceGroupId, opts = {}) {
 	if (!order.includes(branchTip))
 		throw new Error('branch tip not found in source DAG')
 
-	const forkName = opts.name?.trim() || `${state.groupMeta?.name || sourceGroupId} (fork)`
-	const entityHash = opts.entityHash
+	const forkName = options.name?.trim() || `${state.groupMeta?.name || sourceGroupId} (fork)`
+	const entityHash = options.entityHash
 
 	const plannedGroupId = randomUUID()
 	const { sender: ownerPubKeyHash, secretKey } = await getLocalSignerForNewGroup(username, plannedGroupId, entityHash)

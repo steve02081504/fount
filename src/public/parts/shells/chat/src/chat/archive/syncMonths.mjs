@@ -49,20 +49,20 @@ export function sortMissingArchiveMonths(items, priorityMonth = '') {
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @param {object} slot 联邦槽
- * @param {{ priorityMonth?: string, concurrency?: number }} [opts] 选项
+ * @param {{ priorityMonth?: string, concurrency?: number }} [options] 选项
  * @returns {Promise<{ pulled: number, incomplete: number }>} 拉取统计
  */
-export async function syncMissingArchiveMonths(username, groupId, slot, opts = {}) {
+export async function syncMissingArchiveMonths(username, groupId, slot, options = {}) {
 	if (!slot) return { pulled: 0, incomplete: 0 }
 	const { loadGroupSyncState } = await import('../federation/syncState.mjs')
 	const sync = await loadGroupSyncState(username, groupId)
-	const priorityMonth = opts.priorityMonth || sync.offlineStartUtcMonth
+	const priorityMonth = options.priorityMonth || sync.offlineStartUtcMonth
 	let missing = await listMissingArchiveMonths(username, groupId)
 	if (!missing.length) return { pulled: 0, incomplete: 0 }
 	missing = sortMissingArchiveMonths(missing, priorityMonth)
 
 	const { pullArchiveMonthQuorum } = await import('../federation/archiveMonthPull.mjs')
-	const concurrency = Math.max(1, Math.min(8, Number(opts.concurrency) || DEFAULT_CONCURRENCY))
+	const concurrency = Math.max(1, Math.min(8, Number(options.concurrency) || DEFAULT_CONCURRENCY))
 	let pulled = 0
 	let incomplete = 0
 	let nextIndex = 0

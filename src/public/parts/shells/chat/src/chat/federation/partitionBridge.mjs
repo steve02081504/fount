@@ -50,22 +50,22 @@ export function partitionBridgeDedupeId(envelope) {
 }
 
 /**
- * @param {object} opts 参数
- * @param {string} opts.sourcePartition 来源分区
- * @param {string} opts.targetPartition 目标分区
- * @param {string} opts.actionName Trystero action
- * @param {unknown} opts.payload 载荷
- * @param {number} [opts.ttl] 剩余跳数
+ * @param {object} options 参数
+ * @param {string} options.sourcePartition 来源分区
+ * @param {string} options.targetPartition 目标分区
+ * @param {string} options.actionName Trystero action
+ * @param {unknown} options.payload 载荷
+ * @param {number} [options.ttl] 剩余跳数
  * @returns {object} 桥接信封
  */
-export function buildPartitionBridgeEnvelope(opts) {
+export function buildPartitionBridgeEnvelope(options) {
 	return {
-		sourcePartition: opts.sourcePartition,
-		targetPartition: opts.targetPartition,
-		actionName: opts.actionName,
-		payload: opts.payload,
-		ttl: Math.max(0, Number(opts.ttl ?? DEFAULT_BRIDGE_TTL)),
-		dedupeId: buildPartitionBridgeDedupeId(opts.payload, opts.actionName),
+		sourcePartition: options.sourcePartition,
+		targetPartition: options.targetPartition,
+		actionName: options.actionName,
+		payload: options.payload,
+		ttl: Math.max(0, Number(options.ttl ?? DEFAULT_BRIDGE_TTL)),
+		dedupeId: buildPartitionBridgeDedupeId(options.payload, options.actionName),
 	}
 }
 
@@ -101,23 +101,23 @@ export function takePartitionBridgeForwardSlot(roomKey) {
 /**
  * 经已连接分区向目标分区桥接 action。
  * @param {object} slot 源分区 FederationSlot（含 sendPartitionBridge）
- * @param {object} opts 参数
- * @param {string} opts.targetPartition 目标分区
- * @param {string} opts.actionName action
- * @param {unknown} opts.payload 载荷
- * @param {string | null} [opts.peerId] 目标 peer；null 为房内广播
- * @param {number} [opts.ttl] TTL
+ * @param {object} options 参数
+ * @param {string} options.targetPartition 目标分区
+ * @param {string} options.actionName action
+ * @param {unknown} options.payload 载荷
+ * @param {string | null} [options.peerId] 目标 peer；null 为房内广播
+ * @param {number} [options.ttl] TTL
  * @returns {boolean} 是否已发送
  */
-export function sendPartitionBridgeFromSlot(slot, opts) {
+export function sendPartitionBridgeFromSlot(slot, options) {
 	if (!slot?.send) return false
 	const envelope = buildPartitionBridgeEnvelope({
 		sourcePartition: slot.partitionId,
-		targetPartition: opts.targetPartition,
-		actionName: opts.actionName,
-		payload: opts.payload,
-		ttl: opts.ttl,
+		targetPartition: options.targetPartition,
+		actionName: options.actionName,
+		payload: options.payload,
+		ttl: options.ttl,
 	})
-	slot.send('fed_partition_bridge', envelope, opts.peerId ?? null)
+	slot.send('fed_partition_bridge', envelope, options.peerId ?? null)
 	return true
 }

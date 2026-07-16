@@ -11,14 +11,14 @@ import { loadMutedKeywords, replaceMutedKeywords } from '../../mutedKeywords.mjs
 import { updateSocialMeta } from '../../socialMeta.mjs'
 import { getTimelineMaterialized } from '../../timeline/materialize.mjs'
 
-import { makeViewerOpts } from './helpers.mjs'
+import { makeViewerOptions } from './helpers.mjs'
 
 /**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} 资料 / 列表 / 屏蔽词方法
  */
 export function createProfileMethods(apiContext) {
-	const viewerOpts = makeViewerOpts(apiContext)
+	const viewerOptions = makeViewerOptions(apiContext)
 	return {
 		/**
 		 * @param {{ exploreBlurb?: string, hideFromDiscovery?: boolean }} patch meta 补丁
@@ -47,18 +47,18 @@ export function createProfileMethods(apiContext) {
 		},
 		/**
 		 * @param {string} entityHash 目标实体
-		 * @param {{ limit?: number, cursor?: string }} [opts] 分页
+		 * @param {{ limit?: number, cursor?: string }} [options] 分页
 		 * @returns {Promise<object>} 时间线帖
 		 */
-		async profilePosts(entityHash, opts = {}) {
-			return buildProfileFeedItems(apiContext.username, String(entityHash).toLowerCase(), { ...opts, ...viewerOpts() })
+		async profilePosts(entityHash, options = {}) {
+			return buildProfileFeedItems(apiContext.username, String(entityHash).toLowerCase(), { ...options, ...viewerOptions() })
 		},
 		/**
 		 * @param {string} entityHash 目标实体
 		 * @returns {Promise<object>} 点赞流
 		 */
 		async profileLikes(entityHash) {
-			return buildLikedFeedItems(apiContext.username, String(entityHash).toLowerCase(), viewerOpts())
+			return buildLikedFeedItems(apiContext.username, String(entityHash).toLowerCase(), viewerOptions())
 		},
 		/**
 		 * @param {string} entityHash 目标实体
@@ -75,7 +75,7 @@ export function createProfileMethods(apiContext) {
 		 */
 		async profileReplies(entityHash, postId) {
 			return {
-				replies: await listReplies(apiContext.username, String(entityHash).toLowerCase(), String(postId), viewerOpts()),
+				replies: await listReplies(apiContext.username, String(entityHash).toLowerCase(), String(postId), viewerOptions()),
 			}
 		},
 		/**

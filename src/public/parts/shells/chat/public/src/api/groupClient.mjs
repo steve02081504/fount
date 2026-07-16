@@ -22,11 +22,11 @@ export function groupPath(groupId, ...segments) {
 /**
  * 对 `/api/parts/shells:chat/groups/` 发起请求并解析 JSON。
  * @param {string} path 相对 `groups/` 的路径（空串表示群集合根）
- * @param {RequestInit & { json?: object }} [opts] 额外 fetch 选项；`json` 会序列化为请求体
+ * @param {RequestInit & { json?: object }} [options] 额外 fetch 选项；`json` 会序列化为请求体
  * @returns {Promise<any>} 成功时的响应 JSON
  */
-export async function groupFetch(path, opts = {}) {
-	const { json, ...init } = opts
+export async function groupFetch(path, options = {}) {
+	const { json, ...init } = options
 	const suffix = path ? `/${path}` : ''
 	const response = await fetch(`${GROUPS_BASE}${suffix}`, {
 		credentials: 'include',
@@ -51,7 +51,7 @@ export async function groupFetch(path, opts = {}) {
  */
 export function groupRequest(groupId, endpoint, method = 'GET', body) {
 	const path = endpoint ? `${groupPath(groupId)}/${endpoint}` : groupPath(groupId)
-	const opts = { method }
-	if (body != null && method !== 'GET' && method !== 'HEAD') opts.json = body
-	return groupFetch(path, opts)
+	const options = { method }
+	if (body != null && method !== 'GET' && method !== 'HEAD') options.json = body
+	return groupFetch(path, options)
 }

@@ -6,20 +6,20 @@ import { peerPubKeyFromEntityHash } from './internal.mjs'
 import { createMessage } from './message.mjs'
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @returns {object} ChatClient 鸭子类型
  */
-export function createChatClient(ctx) {
+export function createChatClient(apiContext) {
 	return {
-		entityHash: ctx.entityHash,
+		entityHash: apiContext.entityHash,
 		/**
 		 * @returns {Promise<object[]>} 已加入群列表
 		 */
 		async groups() {
-			const rows = await enumerateJoinedFederatedGroups(ctx.username, ctx.entityHash)
+			const rows = await enumerateJoinedFederatedGroups(apiContext.username, apiContext.entityHash)
 			return Promise.all(rows.map(async row => {
-				const { group } = await buildConversationContext(ctx.username, row.groupId, row.defaultChannelId || 'default')
-				return hydrateGroup(ctx, row.groupId, group)
+				const { group } = await buildConversationContext(apiContext.username, row.groupId, row.defaultChannelId || 'default')
+				return hydrateGroup(apiContext, row.groupId, group)
 			}))
 		},
 		/**
@@ -32,7 +32,7 @@ export function createChatClient(ctx) {
 				 */
 				async list() {
 					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { entries: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'bookmarks').entries || [] }
+					return { entries: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'bookmarks').entries || [] }
 				},
 				/**
 				 * @param {object[]} entries 书签条目
@@ -41,7 +41,7 @@ export function createChatClient(ctx) {
 				async set(entries) {
 					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
 					const next = Array.isArray(entries) ? entries : []
-					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'bookmarks', { entries: next })
+					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'bookmarks', { entries: next })
 					return { entries: next }
 				},
 			}
@@ -56,7 +56,7 @@ export function createChatClient(ctx) {
 				 */
 				async list() {
 					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { folders: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'groupFolders').folders || [] }
+					return { folders: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'groupFolders').folders || [] }
 				},
 				/**
 				 * @param {object[]} folders 文件夹
@@ -65,7 +65,7 @@ export function createChatClient(ctx) {
 				async set(folders) {
 					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
 					const next = Array.isArray(folders) ? folders : []
-					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'groupFolders', { folders: next })
+					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'groupFolders', { folders: next })
 					return { folders: next }
 				},
 			}
@@ -80,7 +80,7 @@ export function createChatClient(ctx) {
 				 */
 				async list() {
 					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const data = loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'aliases')
+					const data = loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'aliases')
 					return { entities: data.entities || {}, groups: data.groups || {} }
 				},
 				/**
@@ -90,7 +90,7 @@ export function createChatClient(ctx) {
 				async set(doc) {
 					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
 					const next = { entities: doc?.entities || {}, groups: doc?.groups || {} }
-					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'aliases', next)
+					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'aliases', next)
 					return next
 				},
 			}
@@ -100,7 +100,7 @@ export function createChatClient(ctx) {
 		 */
 		async readMarkers() {
 			const { loadReadMarkers } = await import('../chat/lib/readMarkers.mjs')
-			return loadReadMarkers(ctx.username, ctx.entityHash)
+			return loadReadMarkers(apiContext.username, apiContext.entityHash)
 		},
 		/**
 		 * @returns {{ get: Function, set: Function }} 通知偏好
@@ -112,7 +112,7 @@ export function createChatClient(ctx) {
 				 */
 				async get() {
 					const { loadNotificationPreferences } = await import('../chat/lib/notificationPreferences.mjs')
-					return loadNotificationPreferences(ctx.username, ctx.entityHash)
+					return loadNotificationPreferences(apiContext.username, apiContext.entityHash)
 				},
 				/**
 				 * @param {Record<string, object>} prefs 整档偏好
@@ -120,8 +120,8 @@ export function createChatClient(ctx) {
 				 */
 				async set(prefs) {
 					const { saveNotificationPreferences, loadNotificationPreferences } = await import('../chat/lib/notificationPreferences.mjs')
-					saveNotificationPreferences(ctx.username, ctx.entityHash, prefs || {})
-					return loadNotificationPreferences(ctx.username, ctx.entityHash)
+					saveNotificationPreferences(apiContext.username, apiContext.entityHash, prefs || {})
+					return loadNotificationPreferences(apiContext.username, apiContext.entityHash)
 				},
 			}
 		},
@@ -131,19 +131,19 @@ export function createChatClient(ctx) {
 		get inbox() {
 			return {
 				/**
-				 * @param {{ limit?: number, cursor?: string, kinds?: string[] }} [opts] 分页
+				 * @param {{ limit?: number, cursor?: string, kinds?: string[] }} [options] 分页
 				 * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
 				 */
-				async list(opts = {}) {
+				async list(options = {}) {
 					const { listChatInbox } = await import('../chat/lib/inbox.mjs')
 					const { getState } = await import('../chat/dag/materialize.mjs')
-					const page = await listChatInbox(ctx.username, ctx.entityHash, opts)
+					const page = await listChatInbox(apiContext.username, apiContext.entityHash, options)
 					/** @type {Map<string, object>} */
 					const stateCache = new Map()
 					const items = await Promise.all(page.items.map(async row => {
 						let state = stateCache.get(row.groupId)
 						if (!state) {
-							state = (await getState(ctx.username, row.groupId)).state
+							state = (await getState(apiContext.username, row.groupId)).state
 							stateCache.set(row.groupId, state)
 						}
 						return {
@@ -159,7 +159,7 @@ export function createChatClient(ctx) {
 				 */
 				async seenAt() {
 					const { getChatInboxSeenAt } = await import('../chat/lib/inbox.mjs')
-					return getChatInboxSeenAt(ctx.username, ctx.entityHash)
+					return getChatInboxSeenAt(apiContext.username, apiContext.entityHash)
 				},
 				/**
 				 * @param {number} [at] 已读水位毫秒
@@ -168,7 +168,7 @@ export function createChatClient(ctx) {
 				async setSeenAt(at = Date.now()) {
 					const { setChatInboxSeenAt } = await import('../chat/lib/inbox.mjs')
 					const seenAt = Number(at) || Date.now()
-					setChatInboxSeenAt(ctx.username, ctx.entityHash, seenAt)
+					setChatInboxSeenAt(apiContext.username, apiContext.entityHash, seenAt)
 					return seenAt
 				},
 			}
@@ -183,7 +183,7 @@ export function createChatClient(ctx) {
 				 */
 				async list() {
 					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { entries: loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis').entries || [] }
+					return { entries: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis').entries || [] }
 				},
 				/**
 				 * @param {object[]} entries 表情条目
@@ -192,7 +192,7 @@ export function createChatClient(ctx) {
 				async set(entries) {
 					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
 					const next = Array.isArray(entries) ? entries : []
-					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis', { entries: next })
+					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis', { entries: next })
 					return { entries: next }
 				},
 				/**
@@ -206,13 +206,13 @@ export function createChatClient(ctx) {
 					const url = String(dataUrl || '').trim()
 					if (!gid || !eid) throw new Error('groupId and emojiId required')
 					if (!url.startsWith('data:')) throw new Error('dataUrl required (data:…)')
-					const entries = [...loadEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis').entries || []]
+					const entries = [...loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis').entries || []]
 					const id = `${gid}/${eid}`
 					const next = { id, groupId: gid, emojiId: eid, dataUrl: url, savedAt: Date.now() }
 					const existingIndex = entries.findIndex(entry => entry?.id === id)
 					if (existingIndex >= 0) entries[existingIndex] = next
 					else entries.push(next)
-					assignEntityShellData(ctx.username, 'chat', ctx.entityHash, 'customEmojis', { entries })
+					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis', { entries })
 					return { entry: next }
 				},
 				/**
@@ -221,7 +221,7 @@ export function createChatClient(ctx) {
 				 */
 				async frequent(limit = 32) {
 					const { listFrequentEmojis } = await import('../emojiUsage.mjs')
-					return listFrequentEmojis(ctx.username, ctx.entityHash, limit)
+					return listFrequentEmojis(apiContext.username, apiContext.entityHash, limit)
 				},
 				/**
 				 * @param {{ kind: string, unicode?: string, groupId?: string, emojiId?: string }} item 表情
@@ -229,7 +229,7 @@ export function createChatClient(ctx) {
 				 */
 				async record(item) {
 					const { recordEmojiUsage } = await import('../emojiUsage.mjs')
-					recordEmojiUsage(ctx.username, ctx.entityHash, item)
+					recordEmojiUsage(apiContext.username, apiContext.entityHash, item)
 				},
 			}
 		},
@@ -243,7 +243,7 @@ export function createChatClient(ctx) {
 				 */
 				async get() {
 					const { getUserCollection } = await import('../stickers/stickers.mjs')
-					return getUserCollection(ctx.username, ctx.entityHash)
+					return getUserCollection(apiContext.username, apiContext.entityHash)
 				},
 				/**
 				 * @param {string} packId 包 id
@@ -251,7 +251,7 @@ export function createChatClient(ctx) {
 				 */
 				async install(packId) {
 					const { installPack } = await import('../stickers/stickers.mjs')
-					await installPack(ctx.username, ctx.entityHash, packId)
+					await installPack(apiContext.username, apiContext.entityHash, packId)
 				},
 				/**
 				 * @param {string} packId 包 id
@@ -259,7 +259,7 @@ export function createChatClient(ctx) {
 				 */
 				async uninstall(packId) {
 					const { uninstallPack } = await import('../stickers/stickers.mjs')
-					await uninstallPack(ctx.username, ctx.entityHash, packId)
+					await uninstallPack(apiContext.username, apiContext.entityHash, packId)
 				},
 				/**
 				 * @param {string} stickerId 贴纸 id
@@ -267,7 +267,7 @@ export function createChatClient(ctx) {
 				 */
 				async addFavorite(stickerId) {
 					const { addToFavorites } = await import('../stickers/stickers.mjs')
-					await addToFavorites(ctx.username, ctx.entityHash, stickerId)
+					await addToFavorites(apiContext.username, apiContext.entityHash, stickerId)
 				},
 				/**
 				 * @param {string} stickerId 贴纸 id
@@ -275,7 +275,7 @@ export function createChatClient(ctx) {
 				 */
 				async removeFavorite(stickerId) {
 					const { removeFromFavorites } = await import('../stickers/stickers.mjs')
-					await removeFromFavorites(ctx.username, ctx.entityHash, stickerId)
+					await removeFromFavorites(apiContext.username, apiContext.entityHash, stickerId)
 				},
 				/**
 				 * @param {string} stickerId 贴纸 id
@@ -283,7 +283,7 @@ export function createChatClient(ctx) {
 				 */
 				async recordRecent(stickerId) {
 					const { recordRecentUse } = await import('../stickers/stickers.mjs')
-					await recordRecentUse(ctx.username, ctx.entityHash, stickerId)
+					await recordRecentUse(apiContext.username, apiContext.entityHash, stickerId)
 				},
 			}
 		},
@@ -297,7 +297,7 @@ export function createChatClient(ctx) {
 				 */
 				async list() {
 					const { listCared } = await import('../chat/lib/care.mjs')
-					return listCared(ctx.username, ctx.entityHash)
+					return listCared(apiContext.username, apiContext.entityHash)
 				},
 				/**
 				 * @param {string} targetEntityHash 目标实体
@@ -306,8 +306,8 @@ export function createChatClient(ctx) {
 				 */
 				async set(targetEntityHash, cared = true) {
 					const { setCared, listCared } = await import('../chat/lib/care.mjs')
-					await setCared(ctx.username, ctx.entityHash, targetEntityHash, cared !== false)
-					return listCared(ctx.username, ctx.entityHash)
+					await setCared(apiContext.username, apiContext.entityHash, targetEntityHash, cared !== false)
+					return listCared(apiContext.username, apiContext.entityHash)
 				},
 			}
 		},
@@ -317,10 +317,10 @@ export function createChatClient(ctx) {
 		 */
 		async group(groupId) {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const channelId = state.groupSettings?.defaultChannelId || 'default'
-			const { group } = await buildConversationContext(ctx.username, groupId, channelId)
-			return hydrateGroup(ctx, groupId, group)
+			const { group } = await buildConversationContext(apiContext.username, groupId, channelId)
+			return hydrateGroup(apiContext, groupId, group)
 		},
 		/**
 		 * @param {string} peerEntityHash 对端实体（须解析为用户 pubKeyHash）
@@ -330,28 +330,28 @@ export function createChatClient(ctx) {
 			const { createEcdhDmGroup } = await import('../chat/dm/index.mjs')
 			const { getEntityActivePubKey } = await import('../entity/identity.mjs')
 			const peerPubKey = peerPubKeyFromEntityHash(peerEntityHash)
-			const myPubKey = await getEntityActivePubKey(ctx.username, ctx.entityHash)
-			const dm = await createEcdhDmGroup(ctx.username, myPubKey, peerPubKey, { entityHash: ctx.entityHash })
-			const { group } = await buildConversationContext(ctx.username, dm.groupId, dm.defaultChannelId)
-			return hydrateGroup(ctx, dm.groupId, group)
+			const myPubKey = await getEntityActivePubKey(apiContext.username, apiContext.entityHash)
+			const dm = await createEcdhDmGroup(apiContext.username, myPubKey, peerPubKey, { entityHash: apiContext.entityHash })
+			const { group } = await buildConversationContext(apiContext.username, dm.groupId, dm.defaultChannelId)
+			return hydrateGroup(apiContext, dm.groupId, group)
 		},
 		/**
-		 * @param {{ name?: string, defaultChannelName?: string }} [opts] 建群参数
+		 * @param {{ name?: string, defaultChannelName?: string }} [options] 建群参数
 		 * @returns {Promise<object>} 新建 Group
 		 */
-		async createGroup(opts = {}) {
+		async createGroup(options = {}) {
 			const { newGroup } = await import('../chat/session/groupLifecycle.mjs')
-			const groupId = await newGroup(ctx.username, { ...opts, entityHash: ctx.entityHash })
+			const groupId = await newGroup(apiContext.username, { ...options, entityHash: apiContext.entityHash })
 			return this.group(groupId)
 		},
 		/**
 		 * @param {string} groupId 群 ID
-		 * @param {object} [opts] 加群参数（inviteCode / bootstrap 等）
+		 * @param {object} [options] 加群参数（inviteCode / bootstrap 等）
 		 * @returns {Promise<object>} Group
 		 */
-		async join(groupId, opts = {}) {
+		async join(groupId, options = {}) {
 			const { performMemberJoin } = await import('../chat/dm/index.mjs')
-			const result = await performMemberJoin(ctx.username, groupId, { ...opts, entityHash: ctx.entityHash })
+			const result = await performMemberJoin(apiContext.username, groupId, { ...options, entityHash: apiContext.entityHash })
 			return this.group(result.groupId)
 		},
 		/**
@@ -361,7 +361,7 @@ export function createChatClient(ctx) {
 		async messageFrom(event) {
 			const groupId = event.group?.groupId
 			const message = event.message || event
-			return createMessage(ctx, groupId, {
+			return createMessage(apiContext, groupId, {
 				...message,
 				channelId: event.channel?.channelId || message.channelId || 'default',
 				eventId: message.eventId || message.id || message.extension?.dagEventId,
@@ -405,8 +405,8 @@ export function createChatClient(ctx) {
 			const { updateProfile, uploadAvatar } = await import('../entity/profile.mjs')
 			const { avatar, ...fields } = updates
 			if (avatar?.buffer)
-				await uploadAvatar(ctx.username, ctx.entityHash, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
-			return updateProfile(ctx.username, ctx.entityHash, fields)
+				await uploadAvatar(apiContext.username, apiContext.entityHash, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
+			return updateProfile(apiContext.username, apiContext.entityHash, fields)
 		},
 		/**
 		 * 声明 / 清除本实体的所属主人（identity + profile + 群 `member_owner_update`）。
@@ -415,7 +415,7 @@ export function createChatClient(ctx) {
 		 */
 		async setOwner(ownerEntityHash) {
 			const { setEntityOwner } = await import('../entity/identity.mjs')
-			return setEntityOwner(ctx.username, ctx.entityHash, ownerEntityHash)
+			return setEntityOwner(apiContext.username, apiContext.entityHash, ownerEntityHash)
 		},
 		/**
 		 * @returns {{ search: Function }} 实体命名空间
@@ -424,14 +424,14 @@ export function createChatClient(ctx) {
 			return {
 				/**
 				 * @param {string} q 搜索词
-				 * @param {{ maxHits?: number }} [opts] 选项
+				 * @param {{ maxHits?: number }} [options] 选项
 				 * @returns {Promise<{ query: string, entities: object[] }>} 网络搜索结果
 				 */
-				async search(q, opts = {}) {
+				async search(q, options = {}) {
 					const { searchEntitiesNetwork } = await import('../entity/entitySearch.mjs')
-					return searchEntitiesNetwork(ctx.username, q, {
-						viewerEntityHash: ctx.entityHash,
-						maxHits: opts.maxHits,
+					return searchEntitiesNetwork(apiContext.username, q, {
+						viewerEntityHash: apiContext.entityHash,
+						maxHits: options.maxHits,
 					})
 				},
 			}
@@ -441,7 +441,7 @@ export function createChatClient(ctx) {
 		 */
 		async bridgeBots() {
 			const { listBridgeBots } = await import('../chat/bridge/operations.mjs')
-			return listBridgeBots(ctx.username).map(row => ({
+			return listBridgeBots(apiContext.username).map(row => ({
 				platform: row.platform,
 				botname: row.botname,
 				/**
@@ -449,7 +449,7 @@ export function createChatClient(ctx) {
 				 */
 				async stop() {
 					const { requireBridgeOperation } = await import('../chat/bridge/operations.mjs')
-					await requireBridgeOperation(ctx.username, {
+					await requireBridgeOperation(apiContext.username, {
 						platform: row.platform,
 						botname: row.botname,
 					}, 'stopSelf')()

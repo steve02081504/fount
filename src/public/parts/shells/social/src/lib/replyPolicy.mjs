@@ -50,12 +50,12 @@ export function latestFollowWallForAuthor(replierView, authorEntityHash) {
 }
 
 /**
- * @param {object} opts 参数
- * @param {string} opts.username replica
- * @param {string} opts.authorEntityHash 帖作者
- * @param {string} opts.replierEntityHash 回复者
- * @param {string} opts.replyPolicy 门控
- * @param {number} [opts.at] 回复时刻
+ * @param {object} options 参数
+ * @param {string} options.username replica
+ * @param {string} options.authorEntityHash 帖作者
+ * @param {string} options.replierEntityHash 回复者
+ * @param {string} options.replyPolicy 门控
+ * @param {number} [options.at] 回复时刻
  * @returns {Promise<boolean>} 是否允许
  */
 export async function canReplyUnderPolicy({ username, authorEntityHash, replierEntityHash, replyPolicy, at = Date.now() }) {

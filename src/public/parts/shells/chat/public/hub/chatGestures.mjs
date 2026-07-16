@@ -19,10 +19,10 @@ let swipeDelegationBound = false
 
 /**
  * 创建私聊手势：时间轴箭头、末条角色消息滑动切换。
- * @param {object} opts 依赖注入
- * @param {() => string|null} opts.getGroupId 当前群 ID
- * @param {() => string|null} opts.getChannelId 当前频道 ID
- * @param {() => Promise<void>} opts.reloadMessages 刷新频道消息
+ * @param {object} options 依赖注入
+ * @param {() => string|null} options.getGroupId 当前群 ID
+ * @param {() => string|null} options.getChannelId 当前频道 ID
+ * @param {() => Promise<void>} options.reloadMessages 刷新频道消息
  * @returns {{ updateHideCharNames: (entries: Array<object>) => void, attachLastCharMessageSwipe: (container: HTMLElement) => void }} 手势 API
  */
 export function createChatGestures({ getGroupId, getChannelId, reloadMessages }) {

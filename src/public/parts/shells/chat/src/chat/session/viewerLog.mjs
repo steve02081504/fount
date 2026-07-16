@@ -17,11 +17,11 @@ import {
 /**
  * 从物化群状态解析当前 viewer 的角色列表。
  * @param {object} state 物化群状态（含 members）
- * @param {{ charname?: string, replicaUsername: string, groupId: string, memberKey?: string }} opts 角色名、本机用户上下文；可直接给 memberKey 跳过解析
+ * @param {{ charname?: string, replicaUsername: string, groupId: string, memberKey?: string }} options 角色名、本机用户上下文；可直接给 memberKey 跳过解析
  * @returns {Promise<string[]>} 活跃成员 roles；无成员记录时为 []
  */
-export async function resolveViewerRoles(state, opts) {
-	const { charname, replicaUsername, groupId, memberKey: overrideKey } = opts
+export async function resolveViewerRoles(state, options) {
+	const { charname, replicaUsername, groupId, memberKey: overrideKey } = options
 	const memberKey = overrideKey
 		?? (charname
 			? resolveActiveAgentMemberKeyByCharname(state, charname)

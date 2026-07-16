@@ -29,10 +29,10 @@ function channelHistoryWaitKey(username, groupId, channelId, requestId) {
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
- * @param {{ before?: string, limit?: number }} [opts] 游标与条数
+ * @param {{ before?: string, limit?: number }} [options] 游标与条数
  * @returns {Promise<object[]>} 对端返回的消息行
  */
-export async function requestChannelHistoryFromPeers(username, groupId, channelId, opts = {}) {
+export async function requestChannelHistoryFromPeers(username, groupId, channelId, options = {}) {
 	const { ensureFederationRoom } = await import('./room.mjs')
 	const slot = await ensureFederationRoom(username, groupId)
 	if (!slot?.send) return []
@@ -42,8 +42,8 @@ export async function requestChannelHistoryFromPeers(username, groupId, channelI
 	const key = channelHistoryWaitKey(username, groupId, channelId, requestId)
 	const { promise } = registerWireWait(pendingChannelHistory, key, CHANNEL_HISTORY_WAIT_MS, () => [])
 
-	const limit = Math.min(500, Math.max(1, Number(opts.limit) || 50))
-	const before = EVENT_ID_HEX.test(String(opts.before || '')) ? opts.before : null
+	const limit = Math.min(500, Math.max(1, Number(options.limit) || 50))
+	const before = EVENT_ID_HEX.test(String(options.before || '')) ? options.before : null
 	const attestation = await signPullAttestation(username, groupId, { requestId })
 	try {
 		slot.send('channel_history_want',{

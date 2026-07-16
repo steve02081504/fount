@@ -11,7 +11,7 @@ import { isKnownSocialTarget } from '../../lib/entityTarget.mjs'
  * @param {SocialApiContext} apiContext API 上下文
  * @returns {() => { viewerEntityHash: string }} 读侧观看者选项工厂
  */
-export function makeViewerOpts(apiContext) {
+export function makeViewerOptions(apiContext) {
 	return () => ({ viewerEntityHash: apiContext.entityHash })
 }
 

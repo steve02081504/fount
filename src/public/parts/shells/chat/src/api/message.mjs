@@ -6,18 +6,18 @@ import { normalizeReplyContent } from './internal.mjs'
 import { createMember } from './member.mjs'
 
 /**
- * @param {import('./internal.mjs').ChatApiContext} ctx API 上下文
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @param {string} groupId 群 ID
  * @param {object} line 消息行或 OnMessage 事件 message
  * @param {object} [mentions] mentions 结构
  * @returns {object} Message 鸭子类型
  */
-export function createMessage(ctx, groupId, line, mentions) {
+export function createMessage(apiContext, groupId, line, mentions) {
 	const eventId = String(line.eventId || line.id || '').trim().toLowerCase()
 	const channelId = line.channelId || line.extension?.groupChannelId || 'default'
 	const content = line.content || line
 	const messageMentions = mentions || line.mentions
-	const signOpts = { entityHash: ctx.entityHash }
+	const signOptions = { entityHash: apiContext.entityHash }
 
 	return {
 		eventId,
@@ -31,7 +31,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 		 */
 		async author() {
 			const { loadGroupState } = await import('./internal.mjs')
-			const state = await loadGroupState(ctx, groupId)
+			const state = await loadGroupState(apiContext, groupId)
 			const senderKey = String(line.sender || '').trim().toLowerCase()
 			const member = state.members[senderKey]
 			if (line.charId) {
@@ -41,12 +41,12 @@ export function createMessage(ctx, groupId, line, mentions) {
 				})
 				if (agentKey) {
 					const agentRow = state.members[agentKey]
-					return createMember(ctx, groupId, memberEntityHash(agentRow), agentRow)
+					return createMember(apiContext, groupId, memberEntityHash(agentRow), agentRow)
 				}
 			}
 			if (member) {
 				const hash = memberEntityHash(member)
-				if (hash) return createMember(ctx, groupId, hash, member)
+				if (hash) return createMember(apiContext, groupId, hash, member)
 			}
 			return null
 		},
@@ -56,7 +56,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 		 */
 		async reply(reply) {
 			const { createChannel } = await import('./channel.mjs')
-			return createChannel(ctx, groupId, channelId).send(reply)
+			return createChannel(apiContext, groupId, channelId).send(reply)
 		},
 		/**
 		 * @param {object} patch 编辑补丁
@@ -64,7 +64,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 		 */
 		async edit(patch) {
 			const newContent = normalizeReplyContent(patch.content ?? patch)
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'message_edit',
 				channelId,
 				timestamp: Date.now(),
@@ -73,13 +73,13 @@ export function createMessage(ctx, groupId, line, mentions) {
 					newContent,
 					chatLogEntryId: content.chatLogEntryId,
 				},
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} message_delete 事件
 		 */
 		async delete() {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'message_delete',
 				channelId,
 				timestamp: Date.now(),
@@ -87,53 +87,53 @@ export function createMessage(ctx, groupId, line, mentions) {
 					targetId: eventId,
 					chatLogEntryId: content.chatLogEntryId,
 				},
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @param {string} emoji emoji token
 		 * @returns {Promise<object>} reaction_add 事件
 		 */
 		async react(emoji) {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'reaction_add',
 				channelId,
 				timestamp: Date.now(),
 				content: { targetEventId: eventId, emoji },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @param {string} emoji emoji token
 		 * @returns {Promise<object>} reaction_remove 事件
 		 */
 		async unreact(emoji) {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'reaction_remove',
 				channelId,
 				timestamp: Date.now(),
 				content: { targetEventId: eventId, emoji },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} pin_message 事件
 		 */
 		async pin() {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'pin_message',
 				channelId,
 				timestamp: Date.now(),
 				content: { targetEventId: eventId },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @returns {Promise<object>} unpin_message 事件
 		 */
 		async unpin() {
-			return appendSignedLocalEvent(ctx.username, groupId, {
+			return appendSignedLocalEvent(apiContext.username, groupId, {
 				type: 'unpin_message',
 				channelId,
 				timestamp: Date.now(),
 				content: { targetEventId: eventId },
-			}, signOpts)
+			}, signOptions)
 		},
 		/**
 		 * @param {string} hash entityHash
@@ -143,7 +143,7 @@ export function createMessage(ctx, groupId, line, mentions) {
 			return messageMentionsEntity({
 				mentions: messageMentions,
 				group: { groupId },
-				chatReplyRequest: { username: ctx.username },
+				chatReplyRequest: { username: apiContext.username },
 			}, hash)
 		},
 	}

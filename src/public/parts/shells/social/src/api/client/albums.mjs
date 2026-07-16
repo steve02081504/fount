@@ -114,17 +114,17 @@ export function createAlbumsMethods(apiContext) {
 
 			/**
 			 * @param {string} albumId id
-			 * @param {{ deletePosts?: boolean }} [opts] 删除选项
+			 * @param {{ deletePosts?: boolean }} [options] 删除选项
 			 * @returns {Promise<object>} 结果
 			 */
-			async delete(albumId, opts = {}) {
+			async delete(albumId, options = {}) {
 				const id = String(albumId || '').trim()
 				if (!id || id === DEFAULT_ALBUM_ID) throw httpError(400, 'cannot delete default album')
 				const view = await getTimelineMaterialized(apiContext.username, apiContext.entityHash)
 				const album = view.albums?.[id]
 				if (!album || album.virtual) throw httpError(404, 'album not found')
 				const postIds = [...album.postIds || []]
-				if (opts.deletePosts)
+				if (options.deletePosts)
 					for (const postId of postIds)
 						await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 							type: 'post_delete',
@@ -135,9 +135,9 @@ export function createAlbumsMethods(apiContext) {
 					type: 'album_delete',
 					content: { albumId: id },
 				})
-				if (!opts.deletePosts)
+				if (!options.deletePosts)
 					await reconcileAlbumPostVisibility(apiContext.username, apiContext.entityHash, postIds)
-				return { albumId: id, event, deletedPosts: Boolean(opts.deletePosts) }
+				return { albumId: id, event, deletedPosts: Boolean(options.deletePosts) }
 			},
 
 			/**

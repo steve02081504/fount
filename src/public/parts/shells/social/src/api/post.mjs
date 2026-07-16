@@ -187,16 +187,16 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 		},
 		/**
 		 * 作者精选 / 取消精选回复。
-		 * @param {{ replierEntityHash: string, replyPostId: string, feature?: boolean }} opts 选项
+		 * @param {{ replierEntityHash: string, replyPostId: string, feature?: boolean }} options 选项
 		 * @returns {Promise<object>} 事件
 		 */
-		async featureReply(opts = {}) {
+		async featureReply(options = {}) {
 			const signerOpts = await resolveOwnerContentSigner(apiContext, owner)
-			const replierEntityHash = String(opts.replierEntityHash || '').trim().toLowerCase()
-			const replyPostId = String(opts.replyPostId || '').trim()
+			const replierEntityHash = String(options.replierEntityHash || '').trim().toLowerCase()
+			const replyPostId = String(options.replyPostId || '').trim()
 			if (!replierEntityHash || !replyPostId) throw httpError(400, 'replierEntityHash and replyPostId required')
 			return commitTimelineEvent(apiContext.username, owner, {
-				type: opts.feature === false ? 'reply_unfeature' : 'reply_feature',
+				type: options.feature === false ? 'reply_unfeature' : 'reply_feature',
 				content: { targetPostId: id, replierEntityHash, replyPostId },
 			}, signerOpts)
 		},
@@ -214,7 +214,7 @@ async function assertKnownPostTarget(apiContext, owner) {
 }
 
 /**
- * 作者自签 → 空 opts；所属主人外签 → `{ signerEntityHash }`。
+ * 作者自签 → 空 options；所属主人外签 → `{ signerEntityHash }`。
  * @param {import('./client/helpers.mjs').SocialApiContext} apiContext 上下文
  * @param {string} postOwner 帖作者 entityHash
  * @returns {Promise<{ signerEntityHash?: string }>} commit 选项

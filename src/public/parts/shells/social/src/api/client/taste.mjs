@@ -11,11 +11,11 @@ export function createTasteMethods(apiContext) {
 	return {
 		taste: {
 			/**
-			 * @param {{ locale?: string }} [opts] 选项
+			 * @param {{ locale?: string }} [options] 选项
 			 * @returns {Promise<object>} 偏好与标签列表
 			 */
-			async get(opts = {}) {
-				const locale = String(opts.locale || 'zh-CN')
+			async get(options = {}) {
+				const locale = String(options.locale || 'zh-CN')
 				const store = await loadTaste(apiContext.username, apiContext.entityHash)
 				const tags = await listTasteTags(apiContext.username, apiContext.entityHash, locale)
 				return {

@@ -23,7 +23,7 @@ import {
 const THUMBS_UP = '\u{1F44D}'
 
 console.log('=== Setup: A creates group, B joins ===')
-const g = (await Api(FedA, 'POST', '/groups/', { name: 'FedExt', description: 'ext' })).json
+const g = (await Api(FedA, 'POST', '/groups/', { name: 'FedExtended', description: 'extended e2e' })).json
 const gid = g.groupId
 const cid = g.defaultChannelId
 await Api(FedA, 'PUT', `/groups/${gid}/settings`, { joinPolicy: 'open' })
@@ -67,7 +67,7 @@ const seenOnA = await WaitFedLive(() => TestFedHasMessage(FedA, gid, cid, bMsg),
 if (!seenOnA) throw new Error('A must see B message before reaction (live push prerequisite)')
 const reactResp = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: bMsg, emoji: THUMBS_UP })
 await testCase('A POST reaction succeeds', async () => reactResp.status === 200)
-await testCase('B sees reaction on B-msg', async () =>
+await testCase('B sees reaction on B-message', async () =>
 	WaitFedLive(() => TestFedHasReaction(FedB, gid, cid, bMsg), 60, 3),
 )
 
@@ -134,5 +134,5 @@ await testCase('B downloads file content via federation', async () => {
 })
 
 await ClearFedGroup(gid)
-WriteFedSummary('FED-EXT', gid)
+WriteFedSummary('FED-E2E-EXTENDED', gid)
 completeLiveScript()

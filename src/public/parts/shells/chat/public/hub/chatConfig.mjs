@@ -30,11 +30,11 @@ async function buildSelectOptions(names, selected) {
  * 在角色聊天设置浮层中渲染并绑定 world / persona / plugin / 频率配置。
  * @param {string} groupId 会话组 ID
  * @param {string} channelId 频道 ID（world 绑定）
- * @param {{ canEditWorldPlugins?: boolean }} [opts] 世界与插件是否可编辑
+ * @param {{ canEditWorldPlugins?: boolean }} [options] 世界与插件是否可编辑
  * @returns {Promise<void>}
  */
-export async function mountChatConfigPanel(groupId, channelId = 'default', opts = {}) {
-	const canEditWorldPlugins = opts.canEditWorldPlugins !== false
+export async function mountChatConfigPanel(groupId, channelId = 'default', options = {}) {
+	const canEditWorldPlugins = options.canEditWorldPlugins !== false
 	let host = document.getElementById('hub-character-chat-config-host')
 	if (!host) {
 		const body = document.getElementById('hub-overlay-body')
@@ -114,7 +114,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 				if (!pluginname) return
 				try {
 					await groupRequest(groupId, 'plugin', 'POST', { pluginname })
-					await mountChatConfigPanel(groupId, channelId, opts)
+					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.configSaved')
 				}
 				catch (err) {
@@ -128,7 +128,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 					if (!pluginname) return
 					try {
 						await groupRequest(groupId, `plugin/${encodeURIComponent(pluginname)}`, 'DELETE')
-						await mountChatConfigPanel(groupId, channelId, opts)
+						await mountChatConfigPanel(groupId, channelId, options)
 						showOverlayNotice('success', '', 'chat.hub.configSaved')
 					}
 					catch (err) {
@@ -173,7 +173,7 @@ export async function mountChatConfigPanel(groupId, channelId = 'default', opts 
 				if (!charname) return
 				try {
 					await groupRequest(groupId, `char/${encodeURIComponent(charname)}`, 'DELETE')
-					await mountChatConfigPanel(groupId, channelId, opts)
+					await mountChatConfigPanel(groupId, channelId, options)
 					showOverlayNotice('success', '', 'chat.hub.configSaved')
 				}
 				catch (err) {

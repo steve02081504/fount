@@ -101,24 +101,24 @@ function coveredIdsFromAnchor(byId, anchorId) {
  * 载入 DAG 事件并按规范拓扑序物化，汇总状态与 checkpoint。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ forceFullReplay?: boolean, skipWalRepair?: boolean, skipLeftPurge?: boolean }} [opts] 物化选项
+ * @param {{ forceFullReplay?: boolean, skipWalRepair?: boolean, skipLeftPurge?: boolean }} [options] 物化选项
  * @returns {Promise<{ events: object[], state: object, order: string[], checkpoint: object | null }>} 事件、物化状态与检查点
  */
-export async function getState(username, groupId, opts = {}) {
+export async function getState(username, groupId, options = {}) {
 	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 
 	let wal = { ok: true }
-	const repairing = opts.skipWalRepair || walRepairContext.getStore() === true
-	if (!opts.forceFullReplay && events.length > 0) {
+	const repairing = options.skipWalRepair || walRepairContext.getStore() === true
+	if (!options.forceFullReplay && events.length > 0) {
 		wal = await verifyEventsSnapshotWAL(username, groupId, checkpoint, events)
 		if (!repairing && (!wal.ok || wal.forceFullReplay === true))
 			return walRepairContext.run(true, async () => {
 				await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
-				return getState(username, groupId, { ...opts, skipWalRepair: true })
+				return getState(username, groupId, { ...options, skipWalRepair: true })
 			})
 	}
-	const forceReplay = opts.forceFullReplay || wal.forceFullReplay === true
+	const forceReplay = options.forceFullReplay || wal.forceFullReplay === true
 
 	const eventsFile = eventsPath(username, groupId)
 	let fingerprint = `0:0:${events.length}`
@@ -206,7 +206,7 @@ export async function getState(username, groupId, opts = {}) {
 	state.walOk = wal.ok
 	if (!wal.ok) state.walReason = wal.reason
 
-	if (!opts.skipLeftPurge) {
+	if (!options.skipLeftPurge) {
 		const { maybePurgeLocalReplicaIfLeft } = await import('./lifecycle.mjs')
 		if (await maybePurgeLocalReplicaIfLeft(username, groupId, state))
 			return { events: [], state: emptyMaterializedState(), order: [], checkpoint: null }
@@ -260,10 +260,10 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
  * 重放 DAG 并写入 `checkpoint.json`（不含后续维护副作用）。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ checkpointOwnerSecretKey?: Uint8Array }} [opts] checkpoint 选项
+ * @param {{ checkpointOwnerSecretKey?: Uint8Array }} [options] checkpoint 选项
  * @returns {Promise<object | null>} 新检查点；无事件时为 null
  */
-export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
+export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 	const previousCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 	const eventsForReplay = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
 	// 采纳的 owner 签名基态在本地真正追平前保持权威（与 WAL / getState 同口径 isAdoptedBaseAuthoritative）：
@@ -274,7 +274,7 @@ export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
 	const { events, state, order } = await getState(username, groupId, { forceFullReplay: !baseAuthoritative })
 	if (!events.length) return null
 
-	let signingKey = opts.checkpointOwnerSecretKey
+	let signingKey = options.checkpointOwnerSecretKey
 	if (!signingKey) {
 		const { readLocalSignerSeed } = await import('./localSigner.mjs')
 		signingKey = await readLocalSignerSeed(username, groupId).catch(() => null)
@@ -362,10 +362,10 @@ export async function buildAndSaveCheckpoint(username, groupId, opts = {}) {
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
  * @param {object} checkpointPayload 已保存的检查点
- * @param {{ skipChannelGc?: boolean }} [opts] 维护选项
+ * @param {{ skipChannelGc?: boolean }} [options] 维护选项
  * @returns {Promise<void>}
  */
-export async function runPostCheckpointMaintenance(username, groupId, checkpointPayload, opts = {}) {
+export async function runPostCheckpointMaintenance(username, groupId, checkpointPayload, options = {}) {
 	const { events, state } = await getState(username, groupId)
 
 	try {
@@ -392,7 +392,7 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
 		console.error('federation: replay pending ingest failed', error)
 	}
 
-	if (!opts.skipChannelGc && state.groupSettings?.autoChannelGc !== false)
+	if (!options.skipChannelGc && state.groupSettings?.autoChannelGc !== false)
 		try {
 			const staleChannelIds = findStaleUnreachableChannels(state, events)
 			const { deleteChannel } = await import('./channelOperations.mjs')
@@ -449,12 +449,12 @@ export async function runPostCheckpointMaintenance(username, groupId, checkpoint
  * 重放 DAG 授权类事件并写回 `checkpoint.json`。
  * @param {string} username 用户名
  * @param {string} groupId 群组 ID
- * @param {{ checkpointOwnerSecretKey?: Uint8Array, skipChannelGc?: boolean }} [opts] checkpoint 选项
+ * @param {{ checkpointOwnerSecretKey?: Uint8Array, skipChannelGc?: boolean }} [options] checkpoint 选项
  * @returns {Promise<object | null>} 新检查点；无事件时为 null
  */
-export async function rebuildAndSaveCheckpoint(username, groupId, opts = {}) {
-	const checkpointPayload = await buildAndSaveCheckpoint(username, groupId, opts)
+export async function rebuildAndSaveCheckpoint(username, groupId, options = {}) {
+	const checkpointPayload = await buildAndSaveCheckpoint(username, groupId, options)
 	if (!checkpointPayload) return null
-	await runPostCheckpointMaintenance(username, groupId, checkpointPayload, opts)
+	await runPostCheckpointMaintenance(username, groupId, checkpointPayload, options)
 	return checkpointPayload
 }

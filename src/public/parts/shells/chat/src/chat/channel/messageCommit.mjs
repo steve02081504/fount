@@ -97,11 +97,11 @@ export async function runWorldAddChatLogEntryHook(username, groupId, channelId, 
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {object} content 已规范化 content
- * @param {{ charId?: string | null, entry?: object | null, origin?: string, entityHash?: string }} [opts] 生成类选项
+ * @param {{ charId?: string | null, entry?: object | null, origin?: string, entityHash?: string }} [options] 生成类选项
  * @returns {Promise<object>} canonical content
  */
-export async function buildCanonicalMessageContent(username, groupId, channelId, content, opts = {}) {
-	const { charId = null, entry = null, origin = 'human', entityHash } = opts
+export async function buildCanonicalMessageContent(username, groupId, channelId, content, options = {}) {
+	const { charId = null, entry = null, origin = 'human', entityHash } = options
 	const base = channelMessageContentObject(content)
 	if (origin === 'bridge')
 		return base

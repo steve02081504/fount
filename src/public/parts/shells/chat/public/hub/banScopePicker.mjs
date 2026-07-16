@@ -12,7 +12,7 @@ import { usingTemplates } from '../../../../scripts/features/template.mjs'
 
 /**
  * 选择封禁范围（实体 / 节点）。
- * @param {{ displayName: string }} opts 成员展示信息
+ * @param {{ displayName: string }} options 成员展示信息
  * @returns {Promise<{ banScope: BanScope }|null>} 取消时为 null
  */
 export async function pickBanScope({ displayName }) {

@@ -38,14 +38,14 @@ import { isChannelMessageGenerating } from './render/text.mjs'
 /**
  * 解析消息作者成员行声明的 ownerEntityHash。
  * @param {object} message 消息行
- * @param {object} opts 查看者上下文（含 groupMembers / viewerEntityHash）
+ * @param {object} options 查看者上下文（含 groupMembers / viewerEntityHash）
  * @returns {string | null} owner entityHash
  */
-function authorOwnerEntityHash(message, opts) {
+function authorOwnerEntityHash(message, options) {
 	const authorEntity = resolveEntityHashForAuthorKey(message.charId || message.authorPubKeyHash)
 		|| resolveEntityHashForAuthorKey(message.authorPubKeyHash)
 	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
-	for (const member of opts.groupMembers || []) {
+	for (const member of options.groupMembers || []) {
 		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
 		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
 		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
@@ -59,32 +59,32 @@ function authorOwnerEntityHash(message, opts) {
 /**
  * 当前观看者是否为消息作者所属主人（人类与 agent 同构）。
  * @param {object} message 消息行
- * @param {object} opts 查看者上下文
+ * @param {object} options 查看者上下文
  * @returns {boolean} 是否可管理
  */
-function isManagedByViewer(message, opts) {
-	const owner = authorOwnerEntityHash(message, opts)
-	const viewerEntity = String(opts.viewerEntityHash || '').trim().toLowerCase()
+function isManagedByViewer(message, options) {
+	const owner = authorOwnerEntityHash(message, options)
+	const viewerEntity = String(options.viewerEntityHash || '').trim().toLowerCase()
 	return !!(owner && viewerEntity && owner === viewerEntity)
 }
 
 /**
  * 是否为本节点发出的角色消息（含所属 agent，哪怕 isRemote）。
  * @param {object} message 消息行
- * @param {object} opts 查看者上下文
+ * @param {object} options 查看者上下文
  * @returns {boolean} 是否己方角色
  */
-function isOwnCharMessage(message, opts) {
+function isOwnCharMessage(message, options) {
 	if (!message?.charId) return false
-	if (isManagedByViewer(message, opts)) return true
+	if (isManagedByViewer(message, options)) return true
 	if (message.isRemote) return false
-	const localCharIds = opts.localCharIds?.length
-		? opts.localCharIds
-		: opts.localCharId
-			? [opts.localCharId]
+	const localCharIds = options.localCharIds?.length
+		? options.localCharIds
+		: options.localCharId
+			? [options.localCharId]
 			: []
 	if (localCharIds.includes(message.charId)) return true
-	const viewer = String(opts.viewerPubKeyHash || '').trim().toLowerCase()
+	const viewer = String(options.viewerPubKeyHash || '').trim().toLowerCase()
 	const sender = String(message.authorPubKeyHash || '').trim().toLowerCase()
 	return !!(viewer && sender && viewer === sender)
 }
@@ -92,16 +92,16 @@ function isOwnCharMessage(message, opts) {
 /**
  * 是否允许删除该消息。
  * @param {object} message 消息行
- * @param {object} opts 权限上下文
+ * @param {object} options 权限上下文
  * @returns {boolean} 可删除
  */
-function canDeleteMessage(message, opts) {
+function canDeleteMessage(message, options) {
 	if (!message?.eventId) return false
-	if (isOwnCharMessage(message, opts)) return true
-	if (isManagedByViewer(message, opts)) return true
-	if (message.charId && opts.canManageMessages) return true
+	if (isOwnCharMessage(message, options)) return true
+	if (isManagedByViewer(message, options)) return true
+	if (message.charId && options.canManageMessages) return true
 	if (!message.charId) {
-		const viewer = String(opts.viewerPubKeyHash || '').toLowerCase()
+		const viewer = String(options.viewerPubKeyHash || '').toLowerCase()
 		const sender = String(message.authorPubKeyHash || '').toLowerCase()
 		if (viewer && sender && viewer === sender) return true
 	}
@@ -174,7 +174,7 @@ function shareSubmenu(eventId) {
 /**
  * 构建消息下拉菜单项：复制/分享/转发/下载（可选删除、时间线）。
  * @param {string} eventId 已转义事件 id
- * @param {{ ownChar?: boolean, canDelete?: boolean }} opts 选项
+ * @param {{ ownChar?: boolean, canDelete?: boolean }} options 选项
  * @returns {string} 菜单 `<li>` HTML
  */
 function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
@@ -196,21 +196,21 @@ function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
 /**
  * 渲染消息操作 HTML，返回悬停浮动栏与常驻内联反馈栏两个区域。
  * @param {object} message 消息行
- * @param {object} opts 权限上下文
+ * @param {object} options 权限上下文
  * @returns {Promise<{ hoverHtml: string, inlineHtml: string }>} 两个区域 HTML
  */
-export async function renderMessageActionsHtml(message, opts) {
+export async function renderMessageActionsHtml(message, options) {
 	const eventId = String(message.eventId)
 	if (!eventId || message.type !== 'message') return { hoverHtml: '', inlineHtml: '' }
 
-	const ownChar = isOwnCharMessage(message, opts)
+	const ownChar = isOwnCharMessage(message, options)
 	const generating = isChannelMessageGenerating(message)
 	if (generating) return { hoverHtml: '', inlineHtml: '' }
 
 	const feedbackType = message.extension?.feedback?.type
-	const pinnedIds = Array.isArray(opts.pinnedEventIds) ? opts.pinnedEventIds : []
+	const pinnedIds = Array.isArray(options.pinnedEventIds) ? options.pinnedEventIds : []
 	const isPinned = pinnedIds.includes(eventId)
-	const alwaysVisible = !!opts.alwaysVisibleActions && !!(message.charId || ownChar)
+	const alwaysVisible = !!options.alwaysVisibleActions && !!(message.charId || ownChar)
 	const escapedEventId = escapeHtml(eventId)
 
 	// ===== 常驻内联反馈栏（仅本机角色消息在双人对话中显示） =====
@@ -221,7 +221,7 @@ export async function renderMessageActionsHtml(message, opts) {
 			escapeHtml(String(message.charId || '')),
 			feedbackType === 'up' ? 'text-success' : '',
 			feedbackType === 'down' ? 'text-error' : '',
-			!!opts.isLastMessage,
+			!!options.isLastMessage,
 		)
 		inlineHtml = `<div class="hub-message-inline-feedback flex items-center gap-0.5">${feedbackHtml}</div>`
 	}
@@ -229,9 +229,9 @@ export async function renderMessageActionsHtml(message, opts) {
 	// ===== 悬停浮动栏 =====
 	// 常驻图标：子线程、书签、置顶、编辑；其余（复制/分享/下载/删除/时间线）收进二级下拉菜单
 	const hoverInlineParts = []
-	const canDelete = canDeleteMessage(message, opts)
+	const canDelete = canDeleteMessage(message, options)
 
-	if (opts.canCreateThreads)
+	if (options.canCreateThreads)
 		hoverInlineParts.push(actionButton({
 			action: 'thread',
 			attrs: `data-event-id="${escapedEventId}"`,
@@ -246,7 +246,7 @@ export async function renderMessageActionsHtml(message, opts) {
 			icon: hubActionBookmarkIcon,
 			i18nKey: 'chat.hub.messageActionBookmark',
 		}))
-		if (opts.canPinMessages)
+		if (options.canPinMessages)
 			hoverInlineParts.push(actionButton({
 				action: 'pin',
 				attrs: `data-event-id="${escapedEventId}" data-pinned="${isPinned ? '1' : '0'}"`,
@@ -255,7 +255,7 @@ export async function renderMessageActionsHtml(message, opts) {
 			}))
 	}
 
-	const canEdit = (ownChar || isManagedByViewer(message, opts)
+	const canEdit = (ownChar || isManagedByViewer(message, options)
 		|| (!message.isRemote && canDelete && !message.charId))
 		&& !!channelMessageText(message.content)
 	if (canEdit)

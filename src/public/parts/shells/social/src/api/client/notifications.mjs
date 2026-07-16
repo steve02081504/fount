@@ -1,27 +1,27 @@
 import { getNotificationsSeenAt, parseNotificationTypesFilter, setNotificationsSeenAt } from '../../inbox.mjs'
 import { buildNotifications } from '../../notifications.mjs'
 
-import { makeViewerOpts } from './helpers.mjs'
+import { makeViewerOptions } from './helpers.mjs'
 
 /**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} 通知方法
  */
 export function createNotificationsMethods(apiContext) {
-	const viewerOpts = makeViewerOpts(apiContext)
+	const viewerOptions = makeViewerOptions(apiContext)
 	return {
 		/**
-		 * @param {{ limit?: number, cursor?: string, types?: string | string[] }} [opts] 通知选项
+		 * @param {{ limit?: number, cursor?: string, types?: string | string[] }} [options] 通知选项
 		 * @returns {Promise<object>} 通知页
 		 */
-		async notifications(opts = {}) {
-			const types = Array.isArray(opts.types)
-				? opts.types
-				: parseNotificationTypesFilter(opts.types)
+		async notifications(options = {}) {
+			const types = Array.isArray(options.types)
+				? options.types
+				: parseNotificationTypesFilter(options.types)
 			return buildNotifications(apiContext.username, {
-				...viewerOpts(),
-				limit: opts.limit,
-				cursor: opts.cursor,
+				...viewerOptions(),
+				limit: options.limit,
+				cursor: options.cursor,
 				types,
 			})
 		},

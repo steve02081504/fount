@@ -260,17 +260,17 @@ function hasFreshShun(shunsByNode, nowMs) {
  * 根据本地物化成员名册与 shun 记录评估是否疑似出局。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ shunState?: Awaited<ReturnType<typeof loadGroupShunState>>, rosterNodeHashes?: string[] | null }} [opts] 复用 shun 状态 / catchup 期 roster 快照
+ * @param {{ shunState?: Awaited<ReturnType<typeof loadGroupShunState>>, rosterNodeHashes?: string[] | null }} [options] 复用 shun 状态 / catchup 期 roster 快照
  * @returns {Promise<ReturnType<typeof loadGroupShunState>>} 更新后状态
  */
-export async function evaluateShunConsensus(username, groupId, opts = {}) {
-	const prev = opts.shunState ?? await loadGroupShunState(username, groupId)
+export async function evaluateShunConsensus(username, groupId, options = {}) {
+	const prev = options.shunState ?? await loadGroupShunState(username, groupId)
 	// 从未收到任何 shun 且当前未疑似出局：无可评估，跳过物化与名册读取。
 	if (!prev.suspectedRemoved && !Object.keys(prev.shunsByNode).length) return prev
 	const selfNodeHash = localNodeHash()
 	const fedState = await loadFederationMaterializedState(username, groupId)
-	const rosterNodeHashes = opts.rosterNodeHashes !== undefined
-		? opts.rosterNodeHashes
+	const rosterNodeHashes = options.rosterNodeHashes !== undefined
+		? options.rosterNodeHashes
 		: await loadRosterNodeHashes(username, groupId)
 	const knownPeers = collectKnownPeerNodeHashes(fedState, selfNodeHash, rosterNodeHashes)
 	const { suspected, shunnedBy } = evaluateShunConsensusPure(knownPeers, prev.shunsByNode)
@@ -311,10 +311,10 @@ export async function handleInboundFedShun(username, groupId, fromNodeHash, reas
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} slot FederationSlot
- * @param {{ waitMs?: number }} [opts] 探测等待 shun 入站的时间
+ * @param {{ waitMs?: number }} [options] 探测等待 shun 入站的时间
  * @returns {Promise<ReturnType<typeof loadGroupShunState>>} 更新后状态
  */
-export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot, opts = {}) {
+export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot, options = {}) {
 	let shunState = await loadGroupShunState(username, groupId)
 	const now = Date.now()
 	const noShunsYet = !Object.keys(shunState.shunsByNode).length
@@ -323,10 +323,10 @@ export async function maybeProbeAndEvaluateShunConsensus(username, groupId, slot
 		&& (noShunsYet || hasFreshShun(shunState.shunsByNode, now) || now - shunState.lastProbeAt >= SHUN_PROBE_COOLDOWN_MS)
 	let rosterSnapshot = rosterNodeHashesFromSlot(slot)
 	if (shouldProbe) {
-		await waitForRosterPeers(slot, Math.min(SHUN_PROBE_ROSTER_WAIT_MS, clampNumber(opts.waitMs ?? 1800, 200, 15_000)))
+		await waitForRosterPeers(slot, Math.min(SHUN_PROBE_ROSTER_WAIT_MS, clampNumber(options.waitMs ?? 1800, 200, 15_000)))
 		shunState = await saveGroupShunState(username, groupId, { lastProbeAt: now })
 		await probeShunViaTipPingToRosterPeers(username, groupId, slot)
-		await probeShunFromFederationPeers(username, groupId, slot, opts)
+		await probeShunFromFederationPeers(username, groupId, slot, options)
 		await sleep(SHUN_PROBE_INBOUND_SETTLE_MS)
 		shunState = await loadGroupShunState(username, groupId)
 		rosterSnapshot = rosterNodeHashesFromSlot(slot)
@@ -364,12 +364,12 @@ export async function probeShunViaTipPingToRosterPeers(username, groupId, slot) 
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {object} slot FederationSlot
- * @param {{ waitMs?: number }} [opts] 等待 shun 入站的时间
+ * @param {{ waitMs?: number }} [options] 等待 shun 入站的时间
  * @returns {Promise<void>}
  */
-export async function probeShunFromFederationPeers(username, groupId, slot, opts = {}) {
+export async function probeShunFromFederationPeers(username, groupId, slot, options = {}) {
 	if (!slot?.send) return
-	const waitMs = clampNumber(opts.waitMs ?? 1800, 200, 15_000)
+	const waitMs = clampNumber(options.waitMs ?? 1800, 200, 15_000)
 	const { readJsonl } = requireDagDeps()
 	const nodeHash = localNodeHash()
 	const localArchive = await loadLocalFederationArchive(username, groupId, readJsonl)

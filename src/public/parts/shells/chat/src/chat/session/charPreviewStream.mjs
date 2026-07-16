@@ -20,7 +20,7 @@ export function replyPreviewSnapshot(reply) {
 }
 
 /**
- * @param {{ username: string, groupId: string, pendingStreamId: string, channelId: string, charId?: string }} opts 流上下文
+ * @param {{ username: string, groupId: string, pendingStreamId: string, channelId: string, charId?: string }} options 流上下文
  * @returns {{ update: (reply: object) => void }} 同步预览更新器
  */
 export function createCharPreviewStream({ username, groupId, pendingStreamId, channelId, charId }) {

@@ -63,15 +63,15 @@ function finish(ok, detail) {
 /**
  * 构造 AV relay 二进制帧（26 字节头 + 载荷）。
  * @param {Uint8Array|ArrayBuffer} payload 帧载荷
- * @param {object} [opts={}] frameType / seq 等
+ * @param {object} [options={}] frameType / seq 等
  * @returns {ArrayBuffer} 26 字节头 + payload
  */
-function buildAvFrame(payload, opts = {}) {
+function buildAvFrame(payload, options = {}) {
 	const buf = new Uint8Array(HEADER_SIZE + payload.length)
-	buf[0] = opts.frameType ?? 1
+	buf[0] = options.frameType ?? 1
 	buf[1] = 0
 	const view = new DataView(buf.buffer)
-	view.setUint32(2, opts.seq ?? 1, false)
+	view.setUint32(2, options.seq ?? 1, false)
 	view.setUint32(6, 0, false)
 	crypto.getRandomValues(buf.subarray(10, 26))
 	buf.set(payload, HEADER_SIZE)
@@ -119,13 +119,13 @@ function waitPeerCount(ws) {
 		 */
 		function onMessage(ev) {
 			if (typeof ev.data !== 'string') return
-			let msg
-			try { msg = JSON.parse(ev.data) } catch { return }
-			if (msg?.type !== 'peer_count') return
-			console.log(`peer_count=${msg.count}`)
-			if (msg.count >= 2) {
+			let wireMessage
+			try { wireMessage = JSON.parse(ev.data) } catch { return }
+			if (wireMessage?.type !== 'peer_count') return
+			console.log(`peer_count=${wireMessage.count}`)
+			if (wireMessage.count >= 2) {
 				clearTimeout(timer)
-				resolve(msg.count)
+				resolve(wireMessage.count)
 			}
 		}
 		ws.onmessage = onMessage

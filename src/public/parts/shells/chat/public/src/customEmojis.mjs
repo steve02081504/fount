@@ -3,7 +3,7 @@
  * 【职责】用户级自定义表情库：列表、从群消息保存、解析文本中首个 emoji ref。
  * 【原理】REST /custom-emojis；saveCustomEmojiFromRef 复制群表情到用户 shellData。
  * 【数据结构】entries[] { groupId, emojiId, ... }；:[emoji:group/emoji]: token。
- * 【关联】markdown_ext/index.mjs、groupEmojiApi.mjs。
+ * 【关联】markdown_extensions/index.mjs、groupEmojiApi.mjs。
  */
 import { EMOJI_TOKEN_RE } from '../shared/inlineTokenSyntax.mjs'
 

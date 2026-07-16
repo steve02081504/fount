@@ -27,7 +27,7 @@ const OTHER = 'c'.repeat(128)
  * @param {object} overrides 覆盖
  * @returns {object} viewerContext
  */
-function ctx(overrides = {}) {
+function viewerContext(overrides = {}) {
 	return {
 		viewerEntityHash: VIEWER,
 		following: new Set([VIEWER]),
@@ -64,7 +64,7 @@ Deno.test('compareVisibilityStrictness / minVisibilitySpec', () => {
 })
 
 Deno.test('canViewPost covers new visibility tiers', () => {
-	const following = ctx({
+	const following = viewerContext({
 		following: new Set([VIEWER, AUTHOR]),
 		followSince: new Map([[AUTHOR, Date.now() - 10 * 86400000]]),
 	})
@@ -83,7 +83,7 @@ Deno.test('canViewPost covers new visibility tiers', () => {
 		content: { visibility: 'selected', allow: [OTHER] },
 	}, following), false)
 	assertEquals(canViewPost({ entityHash: AUTHOR, content: { visibility: 'private' } }, following), false)
-	assertEquals(canViewPost({ entityHash: AUTHOR, content: { visibility: 'private' } }, ctx({
+	assertEquals(canViewPost({ entityHash: AUTHOR, content: { visibility: 'private' } }, viewerContext({
 		viewerEntityHash: AUTHOR,
 		following: new Set([AUTHOR]),
 	})), true)

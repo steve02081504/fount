@@ -43,7 +43,7 @@ export function inferDefaultResources(suite) {
 		if (name === 'integration') return { memMb: 1800, cpuPct: 25 }
 		if (name === 'frontend') return { memMb: 1200, cpuPct: 30 }
 		if (name === 'pure') return { memMb: 600, cpuPct: 12 }
-		if (['e2e_single', 'e2e_single_ext', 'ws', 'ws_rpc', 'ws_stream', 'smoke_chat', 'smoke_ai', 'av_relay'].includes(name))
+		if (['e2e_single', 'e2e_single_extended', 'ws', 'ws_rpc', 'ws_stream', 'smoke_chat', 'smoke_ai', 'av_relay'].includes(name))
 			return { memMb: 900, cpuPct: 22 }
 	}
 

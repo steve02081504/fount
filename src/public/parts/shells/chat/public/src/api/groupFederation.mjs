@@ -7,27 +7,27 @@ import { groupFetch, groupPath } from './groupClient.mjs'
 /**
  * 向联邦对等节点拉取缺失事件。
  * @param {string} groupId 群 ID
- * @param {object} [opts] catch-up 请求体
+ * @param {object} [options] catch-up 请求体
  * @returns {Promise<object>} 同步统计
  */
-export async function federationCatchUp(groupId, opts = {}) {
+export async function federationCatchUp(groupId, options = {}) {
 	return groupFetch(groupPath(groupId, 'federation', 'catchup'), {
 		method: 'POST',
-		json: opts,
+		json: options,
 	})
 }
 
 /**
  * 重绑联邦分区（按当前活跃频道确保对应 ch-XX 房间已加入）。
  * @param {string} groupId 群 ID
- * @param {{ channelId?: string }} [opts] 活跃频道
+ * @param {{ channelId?: string }} [options] 活跃频道
  * @returns {Promise<{ ok: boolean, channelId: string | null }>} 重绑结果
  */
-export async function rebindFederationRoom(groupId, opts = {}) {
+export async function rebindFederationRoom(groupId, options = {}) {
 	return groupFetch(groupPath(groupId, 'federation', 'rebind'), {
 		method: 'POST',
 		json: {
-			channelId: opts.channelId || null,
+			channelId: options.channelId || null,
 		},
 	})
 }
@@ -66,14 +66,14 @@ export async function repairJoinSnapshot(groupId) {
 /**
  * 增量拉取群事件。
  * @param {string} groupId 群 ID
- * @param {{ since?: string, channelId?: string, limit?: number }} [opts] 分页与过滤
+ * @param {{ since?: string, channelId?: string, limit?: number }} [options] 分页与过滤
  * @returns {Promise<{ events: object[], truncated: boolean }>} 事件列表及是否截断
  */
-export async function pullGroupEvents(groupId, opts = {}) {
+export async function pullGroupEvents(groupId, options = {}) {
 	const params = new URLSearchParams()
-	if (opts.since) params.set('since', opts.since)
-	if (opts.channelId) params.set('channelId', opts.channelId)
-	if (opts.limit) params.set('limit', String(opts.limit))
+	if (options.since) params.set('since', options.since)
+	if (options.channelId) params.set('channelId', options.channelId)
+	if (options.limit) params.set('limit', String(options.limit))
 	const query = params.toString()
 	const data = await groupFetch(
 		`${groupPath(groupId, 'events')}${query ? `?${query}` : ''}`,

@@ -18,10 +18,10 @@ export function extractMessageText(message) {
  * @returns {string | undefined} 桥接作者 entityHash
  */
 function bridgeAuthorHash(event) {
-	const msg = event.message
-	const ext = msg?.extension?.bridge
-		|| (msg?.content && typeof msg.content === 'object' ? msg.content.extension?.bridge : undefined)
-	return ext?.authorEntityHash ? String(ext.authorEntityHash).toLowerCase() : undefined
+	const message = event.message
+	const bridgeExtension = message?.extension?.bridge
+		|| (message?.content && typeof message.content === 'object' ? message.content.extension?.bridge : undefined)
+	return bridgeExtension?.authorEntityHash ? String(bridgeExtension.authorEntityHash).toLowerCase() : undefined
 }
 
 /**

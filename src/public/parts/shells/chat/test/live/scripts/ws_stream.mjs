@@ -67,12 +67,12 @@ if (!okStatus(add.status)) {
 	failLiveWsPrecondition(`cannot add char ${charname} (${add.status})`)
 }
 
-const msg = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
+const postResponse = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
 	content: { type: 'text', content: 'ws-stream probe', isAutoTrigger: true },
 })
-if (!okStatus(msg.status)) {
+if (!okStatus(postResponse.status)) {
 	await chatApi('DELETE', `/groups/${gid}`)
-	finishLiveWs(false, `post message failed (${msg.status})`)
+	finishLiveWs(false, `post message failed (${postResponse.status})`)
 }
 
 const peers = await chatApi('GET', `/groups/${gid}/peers`)
@@ -181,9 +181,9 @@ if (result === 'ok' && sawStreamChunk) {
 	dagFinalized = await (async () => {
 		for (let i = 0; i < 20; i++) {
 			await new Promise(r => { setTimeout(r, 500) })
-			const msgs = await chatApi('GET', `/groups/${gid}/channels/${cid}/messages`)
-			if (msgs.status !== 200) continue
-			const charRow = (msgs.json?.messages || []).find(m => m.charId && !m.content?.is_generating)
+			const listResponse = await chatApi('GET', `/groups/${gid}/channels/${cid}/messages`)
+			if (listResponse.status !== 200) continue
+			const charRow = (listResponse.json?.messages || []).find(row => row.charId && !row.content?.is_generating)
 			if (charRow) return true
 		}
 		return false

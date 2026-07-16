@@ -20,35 +20,35 @@ await Api(FedB, 'POST', `/groups/${gid}/join`, {
 console.log(`group=${gid} joined; waiting 14s for join-time catch-up to settle...`)
 await sleep(14_000)
 
-const msg = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-	content: { type: 'text', content: 'catchup-msg' },
+const eventId = (await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
+	content: { type: 'text', content: 'catchup-message' },
 })).json.event?.id
-console.log(`A created post-join msg=${msg}`)
+console.log(`A created post-join eventId=${eventId}`)
 
 let auto = false
 let i = 0
 for (i = 0; i < 9; i++) {
 	await sleep(3000)
-	const msgs = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
-	if ((msgs.json.messages?.filter(row => row.eventId === msg).length ?? 0) >= 1) {
+	const listResponse = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
+	if ((listResponse.json.messages?.filter(row => row.eventId === eventId).length ?? 0) >= 1) {
 		auto = true
 		break
 	}
 }
-console.log(`B sees msg WITHOUT explicit catchup (live/heartbeat): ${auto}  (after ~${i * 3}s)`)
+console.log(`B sees message WITHOUT explicit catchup (live/heartbeat): ${auto}  (after ~${i * 3}s)`)
 
 let expl = false
 for (let k = 0; k < 6; k++) {
 	const cu = await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, {})
 	console.log(`  explicit catchup #${k} -> status ${cu.status}`)
 	await sleep(4000)
-	const msgs = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
-	if ((msgs.json.messages?.filter(row => row.eventId === msg).length ?? 0) >= 1) {
+	const listResponse = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
+	if ((listResponse.json.messages?.filter(row => row.eventId === eventId).length ?? 0) >= 1) {
 		expl = true
 		break
 	}
 }
-console.log(`B sees msg AFTER explicit catchup: ${expl}`)
+console.log(`B sees message AFTER explicit catchup: ${expl}`)
 
 const pa = (await Api(FedA, 'GET', `/groups/${gid}/peers`)).json
 const pb = (await Api(FedB, 'GET', `/groups/${gid}/peers`)).json

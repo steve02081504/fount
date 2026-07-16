@@ -69,7 +69,7 @@ function chatFedNodeConfig(index, extra = {}) {
 /** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
 const suites = {
 	e2e_single: { run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')), node: SINGLE_NODE_LIVE },
-	e2e_single_ext: { run: denoLiveRun(join(scriptsDir, 'e2e_single_ext.mjs')), node: SINGLE_NODE_LIVE },
+	e2e_single_extended: { run: denoLiveRun(join(scriptsDir, 'e2e_single_extended.mjs')), node: SINGLE_NODE_LIVE },
 	smoke_chat: { run: denoLiveRun(join(scriptsDir, 'smoke_chat.mjs')), node: SINGLE_NODE_LIVE },
 	smoke_ai: { run: denoLiveRun(join(scriptsDir, 'smoke_ai.mjs')), node: SINGLE_NODE_LIVE },
 	ws: { run: denoLiveRun(join(scriptsDir, 'ws.mjs')), node: SINGLE_NODE_LIVE },
@@ -78,7 +78,7 @@ const suites = {
 	ws_stream: { run: denoLiveRun(join(scriptsDir, 'ws_stream.mjs')), node: SINGLE_NODE_LIVE },
 	av_relay: { run: denoLiveRun(join(scriptsDir, 'av_relay.mjs')), node: SINGLE_NODE_LIVE },
 	fed_core: { fed: true, run: denoLiveRun(join(fedScripts, 'core.mjs')) },
-	fed_e2e_ext: { fed: true, run: denoLiveRun(join(fedScripts, 'e2e_ext.mjs')) },
+	fed_e2e_extended: { fed: true, run: denoLiveRun(join(fedScripts, 'e2e_extended.mjs')) },
 	fed_dm: { fed: true, run: denoLiveRun(join(fedScripts, 'dm.mjs')) },
 	fed_archive_month: { fed: true, run: denoLiveRun(join(fedScripts, 'archive_month.mjs')) },
 	fed_mailbox: { fed: true, run: denoLiveRun(join(fedScripts, 'mailbox.mjs')) },

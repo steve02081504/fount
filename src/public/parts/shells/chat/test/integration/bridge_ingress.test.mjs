@@ -266,7 +266,7 @@ Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolv
 		platform: 'discord',
 		platformChatId: guildId,
 		platformThreadId: discordChannelId,
-		platformMessageId: 'dc-msg-1',
+		platformMessageId: 'dc-message-1',
 		chatKind: 'group',
 		chatName: 'Test Guild',
 		author: { platformUserId: '111', displayName: 'Alice' },
@@ -312,7 +312,7 @@ Deno.test('wechat synthetic DTO persists to DAG', async () => {
 	const event = await postBridgeMessage(username, {
 		platform: 'wechat',
 		platformChatId: peerId,
-		platformMessageId: 'wx-msg-1',
+		platformMessageId: 'wx-message-1',
 		chatKind: 'dm',
 		chatName: 'WeChat DM',
 		author: { platformUserId: peerId, displayName: 'Owner' },

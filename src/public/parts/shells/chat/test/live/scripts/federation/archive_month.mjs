@@ -25,10 +25,10 @@ await testCase('A set hotLatestMessageCount=1', async () => {
 
 await testCase('A posts archive candidates', async () => {
 	for (let i = 1; i <= 4; i++) {
-		const m = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
-			content: { type: 'text', content: `archive-msg-${i}` },
+		const postResponse = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
+			content: { type: 'text', content: `archive-message-${i}` },
 		})
-		if (m.status !== 201) throw new Error(`msg ${i} status ${m.status}`)
+		if (postResponse.status !== 201) throw new Error(`message ${i} status ${postResponse.status}`)
 	}
 	return true
 })
@@ -72,9 +72,9 @@ await testCase('B archive/summary has target month', async () => {
 
 await testCase('B can read archived message via GET messages', async () => {
 	const found = await PollUntil(60, 3, async () => {
-		const m = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages?limit=50`)
-		if (m.status !== 200) return false
-		return (m.json.messages?.filter(row => /archive-msg-/.test(String(row.content?.content))).length ?? 0) >= 1
+		const listResponse = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages?limit=50`)
+		if (listResponse.status !== 200) return false
+		return (listResponse.json.messages?.filter(row => /archive-message-/.test(String(row.content?.content))).length ?? 0) >= 1
 	})
 	return Boolean(found)
 })

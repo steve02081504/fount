@@ -69,12 +69,12 @@ export async function noteJoinSnapshotResponse(username, groupId, envelope, peer
 
 /**
  * @param {Array<object>} candidates 各 peer 应答
- * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean, activeMemberCount?: number }} [opts] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
+ * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean, activeMemberCount?: number }} [options] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
  * @returns {{ winner: object | null, bucketKey: string, reason: string }} 仲裁结果
  */
-export function pickJoinSnapshotByReputation(candidates, opts = {}) {
+export function pickJoinSnapshotByReputation(candidates, options = {}) {
 	/** @type {(peer: string) => number} */
-	let scorePeer = opts.pickScore
+	let scorePeer = options.pickScore
 	if (!scorePeer) {
 		const rep = loadReputation()
 		scorePeer = pickNodeScoreFromReputation.bind(null, rep)
@@ -104,10 +104,10 @@ export function pickJoinSnapshotByReputation(candidates, opts = {}) {
 	})
 
 	const best = ranked[0]
-	if (opts.allowSinglePeerBootstrap)
+	if (options.allowSinglePeerBootstrap)
 		return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'bootstrap' }
 	const quorumN = Math.max(
-		Number(opts.activeMemberCount) || 0,
+		Number(options.activeMemberCount) || 0,
 		best.bucket.peers.length,
 		candidates.length,
 	)

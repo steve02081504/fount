@@ -320,26 +320,26 @@ function ensureLiveScopeTabs() {
 		`
 		liveView.prepend(tabs)
 		tabs.addEventListener('click', event => {
-			const btn = event.target.closest('[data-scope]')
-			if (!(btn instanceof HTMLElement)) return
-			if (btn.dataset.viewBroadcast != null) {
+			const tabButton = event.target.closest('[data-scope]')
+			if (!(tabButton instanceof HTMLElement)) return
+			if (tabButton.dataset.viewBroadcast != null) {
 				activateView('liveBroadcast')
 				return
 			}
-			liveScope = btn.dataset.scope || 'local'
+			liveScope = tabButton.dataset.scope || 'local'
 			void loadLiveView()
 		})
 	}
-	for (const btn of tabs.querySelectorAll('[data-scope]')) {
-		if (!(btn instanceof HTMLElement)) continue
-		if (btn.dataset.viewBroadcast != null) {
-			btn.textContent = geti18n('social.live.broadcast.open')
+	for (const tabButton of tabs.querySelectorAll('[data-scope]')) {
+		if (!(tabButton instanceof HTMLElement)) continue
+		if (tabButton.dataset.viewBroadcast != null) {
+			tabButton.textContent = geti18n('social.live.broadcast.open')
 			continue
 		}
-		btn.textContent = geti18n(
-			btn.dataset.scope === 'nearby' ? 'social.live.hall' : 'social.live.local',
+		tabButton.textContent = geti18n(
+			tabButton.dataset.scope === 'nearby' ? 'social.live.hall' : 'social.live.local',
 		)
-		btn.classList.toggle('is-active', btn.dataset.scope === liveScope)
+		tabButton.classList.toggle('is-active', tabButton.dataset.scope === liveScope)
 	}
 }
 
@@ -506,34 +506,34 @@ function openLiveSignalWs(slide, entityHash, liveId, meta = {}) {
 	const ws = new WebSocket(wsUrl)
 
 	ws.addEventListener('message', event => {
-		let msg = null
-		try { msg = JSON.parse(event.data) } catch { return }
-		if (!msg?.type) return
+		let wireMessage = null
+		try { wireMessage = JSON.parse(event.data) } catch { return }
+		if (!wireMessage?.type) return
 
-		if (msg.type === 'danmaku' && msg.text)
-			addDanmakuItem(slide, msg.text, msg.authorName)
-		else if (msg.type === 'like')
+		if (wireMessage.type === 'danmaku' && wireMessage.text)
+			addDanmakuItem(slide, wireMessage.text, wireMessage.authorName)
+		else if (wireMessage.type === 'like')
 			showHeartFloat(slide)
-		else if (msg.type === 'viewer_count' || msg.type === 'link_stats') {
-			const n = msg.viewerCount ?? msg.count ?? 0
+		else if (wireMessage.type === 'viewer_count' || wireMessage.type === 'link_stats') {
+			const n = wireMessage.viewerCount ?? wireMessage.count ?? 0
 			for (const el of slide.querySelectorAll('[data-viewer-count]'))
 				el.textContent = geti18n('social.live.viewers', { n })
-			if (msg.likeCount != null)
+			if (wireMessage.likeCount != null)
 				for (const el of slide.querySelectorAll('[data-like-count]'))
-					el.textContent = geti18n('social.live.likes', { n: msg.likeCount })
+					el.textContent = geti18n('social.live.likes', { n: wireMessage.likeCount })
 		}
-		else if (msg.type === 'like_count')
+		else if (wireMessage.type === 'like_count')
 			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = geti18n('social.live.likes', { n: msg.count ?? 0 })
-		else if (msg.type === 'hello' && msg.likeCount != null) {
+				el.textContent = geti18n('social.live.likes', { n: wireMessage.count ?? 0 })
+		else if (wireMessage.type === 'hello' && wireMessage.likeCount != null) {
 			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = geti18n('social.live.likes', { n: msg.likeCount })
-			if (msg.link)
+				el.textContent = geti18n('social.live.likes', { n: wireMessage.likeCount })
+			if (wireMessage.link)
 				slide.classList.add('live-linked')
 		}
-		else if (msg.type === 'link_started')
+		else if (wireMessage.type === 'link_started')
 			slide.classList.add('live-linked')
-		else if (msg.type === 'link_ended')
+		else if (wireMessage.type === 'link_ended')
 			slide.classList.remove('live-linked')
 	})
 

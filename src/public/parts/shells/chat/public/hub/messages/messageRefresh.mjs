@@ -98,7 +98,7 @@ function restoreChannelViewCache(groupId, channelId) {
  */
 async function patchReactionRows(container, reactions, reload) {
 	hubStore.messages.channelReactions = reactions
-	const opts = messageRenderOpts()
+	const options = messageRenderOpts()
 	for (const message of hubStore.messages.channelMessages) {
 		if (message.type !== 'message' || !message.eventId) continue
 		const eventId = String(message.eventId)
@@ -107,8 +107,8 @@ async function patchReactionRows(container, reactions, reload) {
 		const html = await renderMessageReactionsHtml(
 			message,
 			reactions,
-			opts.viewerMemberId,
-			{ canAddReactions: opts.canAddReactions },
+			options.viewerMemberId,
+			{ canAddReactions: options.canAddReactions },
 		)
 		const existing = row.querySelector('.hub-reactions')
 		if (!html) {

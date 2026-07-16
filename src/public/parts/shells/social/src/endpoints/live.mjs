@@ -205,14 +205,14 @@ export function registerLiveRoutes(router) {
 				injectAvRelayFrame(avRoomId, data)
 				return
 			}
-			let msg
-			try { msg = JSON.parse(String(data)) }
+			let wireMessage
+			try { wireMessage = JSON.parse(String(data)) }
 			catch { return }
-			if (msg?.type === 'publish_meta' || msg?.type === 'publish_meta_revoke') {
-				injectAvRelayControl(avRoomId, msg)
+			if (wireMessage?.type === 'publish_meta' || wireMessage?.type === 'publish_meta_revoke') {
+				injectAvRelayControl(avRoomId, wireMessage)
 				return
 			}
-			ingestBridgedLiveSignal(matchedUser, entityHash, liveId, msg)
+			ingestBridgedLiveSignal(matchedUser, entityHash, liveId, wireMessage)
 		})
 		ws.on('close', () => { unsub(); unsubCtrl() })
 		ws.send(JSON.stringify({ type: 'hello', bridge: true, entityHash, liveId }))

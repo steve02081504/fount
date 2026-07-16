@@ -13,12 +13,12 @@ import { buildLiveFeed } from './feed.mjs'
 export const LIVE_FEED_KIND = 'live_feed'
 
 /**
- * @param {{ replicaUsername?: string }} ctx 上下文
+ * @param {{ replicaUsername?: string }} inboundContext 上下文
  * @param {unknown} query 查询
  * @returns {Promise<object[]>} rows
  */
-export async function localLiveFeedHandler(ctx, query) {
-	const username = String(ctx.replicaUsername || '').trim()
+export async function localLiveFeedHandler(inboundContext, query) {
+	const username = String(inboundContext.replicaUsername || '').trim()
 	if (!username) return []
 	const limit = Math.min(Math.max(Number(
 		query && typeof query === 'object' ? /** @type {{ limit?: unknown }} */query.limit : 20,

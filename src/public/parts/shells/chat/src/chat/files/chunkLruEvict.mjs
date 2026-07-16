@@ -28,11 +28,11 @@ function localChunksDir(username, groupId) {
  * 本节点 refcount 为 0 的本地分块 LRU 淘汰（§10.4；仅 `local:` 插件）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
- * @param {{ maxOrphans?: number }} [opts] 单次最多删除块数
+ * @param {{ maxOrphans?: number }} [options] 单次最多删除块数
  * @returns {Promise<{ evicted: number }>} 删除计数
  */
-export async function evictUnreferencedLocalChunks(username, groupId, opts = {}) {
-	const maxEvict = Math.max(1, Math.min(2000, Number(opts.maxOrphans) || DEFAULT_MAX_ORPHAN_CHUNKS))
+export async function evictUnreferencedLocalChunks(username, groupId, options = {}) {
+	const maxEvict = Math.max(1, Math.min(2000, Number(options.maxOrphans) || DEFAULT_MAX_ORPHAN_CHUNKS))
 	const refTable = await loadChunkRefcounts(username, groupId)
 	const activeLocs = new Set(Object.keys(refTable))
 

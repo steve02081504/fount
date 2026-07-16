@@ -1,7 +1,7 @@
 import {
 	registerManifestOwnerMatcher,
-	registerTransferKeyDeps,
-	unregisterTransferKeyDeps,
+	registerTransferKeyDependencies,
+	unregisterTransferKeyDependencies,
 } from 'npm:@steve02081504/fount-p2p/files/transfer_key_registry'
 
 import { loadVaultMasterKey } from './vault_crypto/vault.mjs'
@@ -14,7 +14,7 @@ const OWNER_ID = 'social'
  */
 export function registerSocialManifestTransfer() {
 	registerManifestOwnerMatcher(OWNER_ID, manifest => manifest.transferKeyDescriptor?.type === 'vault-wrap')
-	registerTransferKeyDeps(OWNER_ID, {
+	registerTransferKeyDependencies(OWNER_ID, {
 		/**
 		 * @param {string} replicaUsername replica
 		 * @param {string} entityHash vault entity
@@ -29,5 +29,5 @@ export function registerSocialManifestTransfer() {
 
 /** @returns {void} */
 export function unregisterSocialManifestTransfer() {
-	unregisterTransferKeyDeps(OWNER_ID)
+	unregisterTransferKeyDependencies(OWNER_ID)
 }
