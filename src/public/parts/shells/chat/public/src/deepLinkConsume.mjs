@@ -13,7 +13,7 @@ import { parseDmRunUri, parseJoinRunUri, parseMessageRunUri } from '../shared/ru
 import { getFederationSettings } from './api/federationSettings.mjs'
 import { getGroupState, joinGroup } from './api/groupCore.mjs'
 import { createDirectMessageByPubKeys } from './api/groupDm.mjs'
-import { notifyHubGroupJoined } from './hubBroadcast.mjs'
+import { broadcastHubGroupJoined } from './hubBroadcast.mjs'
 import { PENDING_INVITE_STORAGE_KEY } from './pendingInviteStorage.mjs'
 import { resolvePowForJoin } from './powJoin.mjs'
 
@@ -81,7 +81,7 @@ export async function applyChatRunUri(raw) {
 				}
 				: null)
 		sessionStorage.removeItem(PENDING_INVITE_STORAGE_KEY)
-		notifyHubGroupJoined(join.groupId)
+		broadcastHubGroupJoined(join.groupId)
 		return { kind: 'join', groupId: join.groupId, channelId: 'default' }
 	}
 

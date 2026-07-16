@@ -8,6 +8,7 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { geti18n } from '../../../../scripts/i18n/index.mjs'
 
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 import {
 	applySelfStatusToMemberList,
@@ -209,13 +210,5 @@ export async function showStatusMenu(anchorElement) {
 	document.body.append(menu)
 	openStatusMenuElement = menu
 
-	/**
-	 * 关闭在线状态菜单并移除文档级点击监听。
-	 * @returns {void}
-	 */
-	const closeOnce = () => {
-		dismissStatusMenu()
-		document.removeEventListener('click', closeOnce, true)
-	}
-	setTimeout(() => document.addEventListener('click', closeOnce, true), 0)
+	bindDismissOnDocumentInteraction(dismissStatusMenu, { contextMenu: false })
 }

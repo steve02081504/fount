@@ -33,6 +33,7 @@ import {
 	scrollToBottom,
 } from './messageScroll.mjs'
 import {
+	clearHubEmptyPlaceholder,
 	mergeIncrementalChannelBatch,
 	messageIdSelector,
 	reactionsSignature,
@@ -144,7 +145,7 @@ async function applyIncomingMessage(message, { scroll = false } = {}, reload, sy
 	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, [message])
 	refreshChannelView()
 
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
 
 	const viewIdx = hubStore.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
@@ -180,7 +181,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}, reload,
 	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, batch)
 	refreshChannelView()
 
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
 
 	const replaceRows = []
@@ -229,7 +230,7 @@ async function replaceChannelMessageRow(eventId, row, reload, syncCtx) {
 
 	const container = getMessagesContainer()
 	if (!container) return
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
 	const viewIdx = hubStore.messages.channelMessages.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
@@ -387,7 +388,7 @@ export async function refreshChannelMessagesIncremental(reload, syncCtx) {
 		return
 	}
 
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 
 	const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
 	if (reactionSig !== hubStore.messages.reactionsEtag) {

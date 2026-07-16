@@ -6,7 +6,7 @@ import { waitForGroupWebSocketOpen } from '../stream/index.mjs'
 
 import { syncChannelActionsContext } from './messageContext.mjs'
 import { getMessagesContainer } from './messageScroll.mjs'
-import { mergeIncrementalChannelBatch, refreshChannelView, updateLastMessageId } from './messageShared.mjs'
+import { clearHubEmptyPlaceholder, mergeIncrementalChannelBatch, refreshChannelView, updateLastMessageId } from './messageShared.mjs'
 import {
 	decorateRenderedMessages,
 	initChannelVirtualList,
@@ -75,7 +75,7 @@ async function insertPendingRow(contentObj, tempId) {
 	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, [row])
 	refreshChannelView()
 	syncCtx()
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reloadMessages)
 	const visible = hubStore.messages.channelMessages.find(m => String(m.eventId) === tempId)
 	if (visible) await hubStore.messages.channelMessagePipeline.appendItem(visible, true)

@@ -82,9 +82,6 @@ export const hubStore = {
 /** @type {Map<string, Set<(value: unknown) => void>>} */
 const hubWatchers = new Map()
 
-/** @type {Map<string, { parent: object, key: string, listener: (value: unknown) => void }[]>} */
-const hubPathWatchers = new Map()
-
 /**
  * @param {string} path 点分路径，如 `context.currentGroupId`
  * @returns {{ parent: object, key: string } | null} 父对象与末段键，或解析失败时 null
@@ -93,13 +90,12 @@ function resolveHubPath(path) {
 	const parts = String(path).split('.')
 	if (!parts.length) return null
 	let parent = hubStore
-	for (let i = 0; i < parts.length - 1; i++) {
-		const segment = parts[i]
-		if (parent == null || typeof parent !== 'object' || !(segment in parent)) return null
+	for (const segment of parts.slice(0, -1)) {
+		if (!(segment in parent)) return null
 		parent = parent[segment]
 	}
-	const key = parts[parts.length - 1]
-	if (parent == null || typeof parent !== 'object' || !(key in parent)) return null
+	const key = parts.at(-1)
+	if (!(key in parent)) return null
 	return { parent, key }
 }
 
@@ -126,11 +122,6 @@ function setHubPathValue(path, value) {
 	const bucket = hubWatchers.get(path)
 	if (bucket?.size)
 		for (const listener of bucket) listener(value)
-	const pathBucket = hubPathWatchers.get(path)
-	if (pathBucket?.length)
-		for (const entry of pathBucket)
-			if (entry.parent[entry.key] === value) entry.listener(value)
-
 }
 
 /** 预注册常用字段订阅桶。 */
@@ -149,11 +140,11 @@ for (const path of [
 
 /**
  * 订阅 Hub 嵌套字段（点分路径）。
- * @param {string} path 如 `context.currentGroupId`
+ * @param {string} path 点分路径
  * @param {(value: unknown) => void} listener 变更回调
  * @returns {() => void} 取消订阅函数
  */
-export function watchHubPath(path, listener) {
+export function watchHubState(path, listener) {
 	const bucket = hubWatchers.get(path) ?? (() => {
 		const created = new Set()
 		hubWatchers.set(path, created)
@@ -161,16 +152,6 @@ export function watchHubPath(path, listener) {
 	})()
 	bucket.add(listener)
 	return () => bucket.delete(listener)
-}
-
-/**
- * 订阅 Hub 嵌套字段（点分路径）。
- * @param {string} path 点分路径
- * @param {(value: unknown) => void} listener 变更回调
- * @returns {() => void} 取消订阅函数
- */
-export function watchHubState(path, listener) {
-	return watchHubPath(path, listener)
 }
 
 /**

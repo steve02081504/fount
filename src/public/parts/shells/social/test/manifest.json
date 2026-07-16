@@ -178,7 +178,8 @@
 						"src/public/parts/shells/social/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/profile.mjs",
 						"src/public/parts/shells/social/public/src/views/albums.mjs",
-						"src/public/parts/shells/social/public/src/actions/postProfile.mjs",
+						"src/public/parts/shells/social/public/src/actions.mjs",
+						"src/public/parts/shells/social/public/src/lib/replies.mjs",
 						"src/public/parts/shells/social/public/src/actions/postProfileActions.mjs",
 						"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs"
 					]

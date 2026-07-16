@@ -20,6 +20,7 @@ import { createGroupInvite, leaveGroups } from '../src/api/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
@@ -196,19 +197,7 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	document.body.appendChild(menu)
 	openMenuElement = menu
 
-	/**
-	 * 关闭群右键菜单并移除文档级监听。
-	 * @returns {void}
-	 */
-	const closeOnce = () => {
-		dismissGroupActionMenu()
-		document.removeEventListener('click', closeOnce, true)
-		document.removeEventListener('contextmenu', closeOnce, true)
-	}
-	setTimeout(() => {
-		document.addEventListener('click', closeOnce, true)
-		document.addEventListener('contextmenu', closeOnce, true)
-	}, 0)
+	bindDismissOnDocumentInteraction(dismissGroupActionMenu)
 
 	menu.querySelector('.hub-group-menu-manage')?.addEventListener('click', () => {
 		dismissGroupActionMenu()

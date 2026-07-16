@@ -16,6 +16,14 @@ export function promptText(title, value = '') {
 }
 
 /**
+ * @param {string} text 只读正文
+ * @returns {Promise<void>}
+ */
+export function showText(text) {
+	return pickFromDialog('text_view_modal', { text })
+}
+
+/**
  * @param {string} message 确认文案
  * @returns {Promise<boolean>} 用户确认
  */

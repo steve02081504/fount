@@ -2,6 +2,7 @@ import { mountTranslationBlock, requestTranslation, resolveTargetLang } from '/s
 import { refreshQuotePreview } from '../composer.mjs'
 import { parseActionKey, queryByActionKey } from '../lib/actionKey.mjs'
 import { SOCIAL_API, socialApi } from '../lib/apiClient.mjs'
+import { submitReply } from '../lib/replies.mjs'
 import {
 	applyDislikeButtonOptimistic,
 	applyLikeButtonOptimistic,
@@ -12,9 +13,8 @@ import {
 	rollbackLikeButton,
 	runSocialWrite,
 } from '../lib/socialWrite.mjs'
-import { switchView } from '../navigation.mjs'
+import { focusComposer } from '../navigation.mjs'
 import { socialState } from '../state.mjs'
-import { submitReply } from '../views/profile.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
@@ -106,10 +106,7 @@ export async function handlePostEngagementClick(target) {
 			const text = decodeURIComponent(card?.dataset.postText || '')
 			socialState.pendingQuoteRef = { entityHash, postId, text }
 			await refreshQuotePreview()
-			if (document.getElementById('composer')?.classList.contains('hidden'))
-				await switchView('feed')
-			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
-			document.getElementById('postText')?.focus()
+			await focusComposer({ switchToFeed: true })
 			closePostMoreMenus()
 		}
 	}

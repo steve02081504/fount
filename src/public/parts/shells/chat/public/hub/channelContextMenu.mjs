@@ -15,6 +15,7 @@ import {
 } from '../src/api/groupChannel.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
 
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'
@@ -78,19 +79,7 @@ export async function showChannelContextMenu(event, channelId) {
 	document.body.appendChild(menu)
 	openMenuElement = menu
 
-	/**
-	 * 关闭频道右键菜单并移除文档级监听。
-	 * @returns {void}
-	 */
-	const closeOnce = () => {
-		dismissChannelContextMenu()
-		document.removeEventListener('click', closeOnce, true)
-		document.removeEventListener('contextmenu', closeOnce, true)
-	}
-	setTimeout(() => {
-		document.addEventListener('click', closeOnce, true)
-		document.addEventListener('contextmenu', closeOnce, true)
-	}, 0)
+	const closeOnce = bindDismissOnDocumentInteraction(dismissChannelContextMenu)
 
 	menu.querySelector('.hub-channel-menu-notify')?.addEventListener('click', () => {
 		closeOnce()

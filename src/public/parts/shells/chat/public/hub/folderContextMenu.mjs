@@ -8,6 +8,7 @@
  */
 import { geti18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 
 /** @type {HTMLElement | null} */
@@ -97,14 +98,5 @@ export function showFolderContextMenu(event, folderIndex) {
 	document.body.appendChild(menu)
 	openMenuElement = menu
 
-	/** @returns {void} */
-	const closeOnce = () => {
-		dismissFolderContextMenu()
-		document.removeEventListener('click', closeOnce, true)
-		document.removeEventListener('contextmenu', closeOnce, true)
-	}
-	setTimeout(() => {
-		document.addEventListener('click', closeOnce, true)
-		document.addEventListener('contextmenu', closeOnce, true)
-	}, 0)
+	bindDismissOnDocumentInteraction(dismissFolderContextMenu)
 }

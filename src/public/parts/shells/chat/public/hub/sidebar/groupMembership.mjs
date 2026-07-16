@@ -4,7 +4,7 @@
  */
 import { getGroupState, joinGroup } from '../../src/api/groupCore.mjs'
 import { federationCatchUp } from '../../src/api/groupFederation.mjs'
-import { notifyHubGroupJoined } from '../../src/hubBroadcast.mjs'
+import { broadcastHubGroupJoined } from '../../src/hubBroadcast.mjs'
 import { resolvePowForJoin } from '../../src/powJoin.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
 import {
@@ -126,7 +126,7 @@ export async function ensureGroupMembership(groupId, state) {
 	const pow = await resolvePowForJoin(groupId, state, hubStore.viewer.nodeHash || '')
 	await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 	const joined = await getGroupState(groupId)
-	notifyHubGroupJoined(groupId)
+	broadcastHubGroupJoined(groupId)
 	await loadGroups()
 	return joined
 }

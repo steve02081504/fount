@@ -13,6 +13,7 @@ import {
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { createShareLink } from '../../src/share.mjs'
+import { bindDismissOnDocumentInteraction } from '../core/contextMenuDismiss.mjs'
 import { hubStore } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
@@ -95,19 +96,7 @@ export async function showMessageContextMenu(event, row) {
 	menu.showPopover?.()
 	openMenuElement = menu
 
-	/**
-	 * 关闭消息右键菜单并移除文档级监听。
-	 * @returns {void}
-	 */
-	const closeOnce = () => {
-		dismissMessageContextMenu()
-		document.removeEventListener('click', closeOnce, true)
-		document.removeEventListener('contextmenu', closeOnce, true)
-	}
-	setTimeout(() => {
-		document.addEventListener('click', closeOnce, true)
-		document.addEventListener('contextmenu', closeOnce, true)
-	}, 0)
+	const closeOnce = bindDismissOnDocumentInteraction(dismissMessageContextMenu)
 
 	menu.querySelector('[data-action="copy"]')?.addEventListener('click', () => {
 		void copyMessageText(message, row).then(closeOnce)

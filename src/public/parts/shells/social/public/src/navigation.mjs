@@ -1,7 +1,6 @@
 import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
-import { socialApi } from './lib/apiClient.mjs'
 import { socialState } from './state.mjs'
 import { activateView } from './viewChrome.mjs'
 import { loadExplore } from './views/explore.mjs'
@@ -105,14 +104,23 @@ export async function applyIncomingNavigation() {
 		return true
 	}
 	if (hashParsed?.entityHash && hashParsed.subcommand === 'profile') {
-		const viewer = await socialApi('/viewer').catch(() => ({ viewerEntityHash: null }))
-		socialState.viewerEntityHash = viewer.viewerEntityHash
 		activateView('profile')
 		document.getElementById('composer')?.classList.add('hidden')
 		await loadProfileFor(hashParsed.entityHash.toLowerCase(), hashParsed.postId || null)
 		return true
 	}
 	return false
+}
+
+/**
+ * 滚动到 composer 并聚焦输入框。
+ * @param {{ switchToFeed?: boolean }} [options] 为 true 时 composer 隐藏则先切到 feed
+ * @returns {Promise<void>}
+ */
+export async function focusComposer({ switchToFeed = false } = {}) {
+	if (switchToFeed) await switchView('feed')
+	document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
+	document.getElementById('postText')?.focus()
 }
 
 /**

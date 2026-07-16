@@ -1,7 +1,7 @@
 import { hubStore } from '../core/state.mjs'
 
 import { ensureMessageLoaded, findMessageViewIndex } from './channelMessageStore.mjs'
-import { hubMessageRowSelector, messageIdSelector, refreshChannelView } from './messageShared.mjs'
+import { clearHubEmptyPlaceholder, hubMessageRowSelector, messageIdSelector, refreshChannelView } from './messageShared.mjs'
 import { rebuildVirtualListAtEvent } from './messageVirtualList.mjs'
 
 /** @type {HTMLElement | null} */
@@ -85,7 +85,7 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 
 	if (!hubStore.messages.channelMessages.length) return
 
-	if (container.querySelector('.hub-empty')) container.innerHTML = ''
+	clearHubEmptyPlaceholder(container)
 
 	setPendingHighlightEventId(norm)
 

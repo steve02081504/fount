@@ -259,21 +259,4 @@ export async function loadProfile() {
 	await loadProfileFor(profileHash)
 }
 
-/**
- * 提交对指定帖子的公开回复。
- * @param {string} entityHash 目标
- * @param {string} postId 帖子
- * @param {string} text 回复
- * @returns {Promise<void>}
- */
-export async function submitReply(entityHash, postId, text) {
-	await socialApi('/posts', {
-		method: 'POST',
-		body: JSON.stringify({
-			text,
-			replyTo: { entityHash, postId },
-			visibility: 'public',
-			locale: document.getElementById('postLocale')?.value.trim() || 'zh-CN',
-		}),
-	})
-}
+

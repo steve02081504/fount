@@ -12,7 +12,6 @@ import { fetchStickerPayload } from '../providers/sticker.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
-import { localeQueryString } from '../src/entityProfileApi.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
@@ -65,31 +64,17 @@ export async function refreshViewerHubPresentation() {
 		})
 }
 
-/** @returns {Promise<void>} 加载当前 viewer（nodeHash + entityHash）到顶栏 */
+/** @returns {Promise<void>} 顶栏展示与在线状态（viewer 身份由 initCore 写入 hubStore） */
 async function loadMe() {
-	let data
-	try {
-		const qs = localeQueryString(hubStore.context.currentGroupId || undefined)
-		const resp = await fetch(`/api/parts/shells:chat/viewer${qs ? `?${qs}` : ''}`, { credentials: 'include' })
-		if (!resp.ok) return
-		data = await resp.json()
-	} catch {
-		return
-	}
-	hubStore.viewer.nodeHash = data.nodeHash || null
-	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
-	hubStore.viewer.agents = Array.isArray(data.agents) ? data.agents : []
-	const { ingestAgentEntityHashList } = await import('./core/domUtils.mjs')
-	ingestAgentEntityHashList(hubStore.viewer.agents)
-	await refreshViewerHubPresentation()
 	if (!hubStore.viewer.viewerEntityHash) return
+	await refreshViewerHubPresentation()
 	const { syncViewerPresence, startIdleWatcher } = await import('./hubStatus.mjs')
 	await syncViewerPresence(hubStore.viewer.viewerEntityHash)
 	startIdleWatcher()
 }
 
-/** @returns {string|null} 当前用户名 */
-function emojiGetUsername() {
+/** @returns {string|null} 当前 operator entityHash */
+function emojiViewerEntityHash() {
 	return hubStore.viewer.viewerEntityHash
 }
 
@@ -160,8 +145,8 @@ async function sendPickedHubSticker(sticker) {
 				mimeType,
 				stickerBase64,
 			})
-			const username = emojiGetUsername()
-			if (username)
+			const viewerEntityHash = emojiViewerEntityHash()
+			if (viewerEntityHash)
 				void fetch(`/api/parts/shells:chat/stickers/recent/${encodeURIComponent(stickerId)}`, {
 					method: 'POST',
 					credentials: 'include',

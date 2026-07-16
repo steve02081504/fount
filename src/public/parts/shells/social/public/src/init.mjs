@@ -20,7 +20,7 @@ import { renderAvatarHtml } from './lib/display.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
-import { applyIncomingNavigation, afterPublishPost, switchView } from './navigation.mjs'
+import { applyIncomingNavigation, afterPublishPost, focusComposer, switchView } from './navigation.mjs'
 import { socialState } from './state.mjs'
 import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
 import { initLiveBroadcastView } from './views/live.mjs'
@@ -107,9 +107,7 @@ export async function bootstrapSocialApp() {
 		await loadAliases().catch(() => {})
 		document.getElementById('postButton')?.addEventListener('click', () => { void afterPublishPost() })
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
-			void switchView('feed')
-			document.getElementById('composer')?.scrollIntoView({ behavior: 'smooth' })
-			document.getElementById('postText')?.focus()
+			void focusComposer({ switchToFeed: true })
 		})
 		const postText = document.getElementById('postText')
 		wireEmojiPickerButton(document.getElementById('emojiPickButton'), token => {
@@ -156,7 +154,7 @@ export async function bootstrapSocialApp() {
 		socialState.viewerDisplayName = viewer.operator?.displayName
 			|| viewer.profile?.name
 			|| null
-		socialState.agents = Array.isArray(viewer.agents) ? viewer.agents : []
+		socialState.agents = viewer.agents || []
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && socialState.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, {

@@ -127,32 +127,14 @@ async function doLoadOlderMessages() {
 /**
  * @param {number} offset 起始偏移
  * @param {number} limit 条数上限
- * @returns {Promise<{ items: object[], total: number }>} 虚拟列表分页数据
+ * @returns {{ items: object[], total: number }} 虚拟列表分页数据
  */
-async function fetchVirtualListPage(offset, limit) {
+function sliceChannelMessagesPage(offset, limit) {
 	if (limit === 0) return { items: [], total: hubStore.messages.channelMessages.length }
 	return {
 		items: hubStore.messages.channelMessages.slice(offset, offset + limit),
 		total: hubStore.messages.channelMessages.length,
 	}
-}
-
-/**
- * @param {object} item 消息行
- * @param {number} index 列表索引
- * @returns {Promise<HTMLElement>} 渲染后的消息元素
- */
-function renderVirtualListItem(item, index) {
-	return renderChannelMessageElement(item, index)
-}
-
-/**
- * @param {HTMLElement} container 消息列表容器
- * @param {() => Promise<void>} reload 重载消息回调
- * @returns {() => void} 渲染完成回调
- */
-function createVirtualListRenderComplete(container, reload) {
-	return () => decorateRenderedMessages(container, false, reload)
 }
 
 /**
@@ -162,11 +144,15 @@ function createVirtualListRenderComplete(container, reload) {
  */
 export function initChannelVirtualList(container, reload) {
 	destroyChannelVirtualList()
+	/** @returns {void} */
+	function onVirtualListRenderComplete() {
+		decorateRenderedMessages(container, false, reload)
+	}
 	hubStore.messages.channelMessagePipeline = createMessagePipeline({
 		container,
 		loadMoreTop: loadOlderMessages,
-		fetchData: fetchVirtualListPage,
-		renderItem: renderVirtualListItem,
+		fetchData: sliceChannelMessagesPage,
+		renderItem: renderChannelMessageElement,
 		initialIndex: (() => {
 			const targetId = consumePendingScrollTarget()
 			if (!targetId) return Math.max(0, hubStore.messages.channelMessages.length - 1)
@@ -176,7 +162,10 @@ export function initChannelVirtualList(container, reload) {
 			)
 			return idx >= 0 ? idx : Math.max(0, hubStore.messages.channelMessages.length - 1)
 		})(),
-		onRenderComplete: createVirtualListRenderComplete(container, reload),
+		/**
+		 *
+		 */
+		onRenderComplete: onVirtualListRenderComplete,
 	})
 }
 
@@ -227,9 +216,4 @@ export function rebuildVirtualListAtEvent(container, eventId, reload) {
 export function queueHighlightAfterRebuild(eventId, reload) {
 	setPendingHighlightEventId(eventId)
 	rebuildVirtualListAtEvent(getMessagesContainer(), eventId, reload)
-}
-
-/** @returns {void} */
-export function refreshChannelViewAfterMutation() {
-	refreshChannelView()
 }

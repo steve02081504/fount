@@ -18,9 +18,8 @@ function getChannel() {
 }
 
 /**
- * 入群成功后统一通知（BroadcastChannel + 可选 server 事件已由 wireBootstrap 监听）。
- * @param {string} groupId 群组 ID
- * @returns {void}
+ * 通知当前 Hub 标签页（及同源其他标签）用户已加入群组。
+ * @param {string} groupId 群组 id
  */
 export function broadcastHubGroupJoined(groupId) {
 	const id = String(groupId || '').trim()
@@ -28,14 +27,6 @@ export function broadcastHubGroupJoined(groupId) {
 	const ch = getChannel()
 	if (!ch) return
 	ch.postMessage({ type: 'group-joined', groupId: id })
-}
-
-/**
- * 通知当前 Hub 标签页（及同源其他标签）用户已加入群组。
- * @param {string} groupId 群组 id
- */
-export function notifyHubGroupJoined(groupId) {
-	broadcastHubGroupJoined(groupId)
 }
 
 /**

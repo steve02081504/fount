@@ -165,7 +165,7 @@ export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
 		? sensitiveEl.checked
 		: Boolean(contentWarning)
-	const visibilityDraft = readVisibilityPicker(document.getElementById('postVisibilityPicker') || document)
+	const visibilityDraft = readVisibilityPicker(document.getElementById('postVisibilityPicker'))
 	const albumSelect = document.getElementById('postAlbumSelect')
 	const albumIds = albumSelect instanceof HTMLSelectElement
 		? [...albumSelect.selectedOptions].map(opt => opt.value).filter(id => id && id !== 'default')

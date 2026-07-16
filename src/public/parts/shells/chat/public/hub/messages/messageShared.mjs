@@ -31,6 +31,14 @@ export function refreshChannelView() {
 	]
 }
 
+/**
+ * @param {HTMLElement} container 消息列表容器
+ * @returns {void}
+ */
+export function clearHubEmptyPlaceholder(container) {
+	if (container?.querySelector('.hub-empty')) container.innerHTML = ''
+}
+
 /** @returns {void} */
 export function updateLastMessageId() {
 	const last = hubStore.messages.channelMessagesSource.at(-1)

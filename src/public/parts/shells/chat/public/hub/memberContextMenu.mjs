@@ -11,6 +11,7 @@ import { getGroupState } from '../src/api/groupCore.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
 import { pickBanScope } from './banScopePicker.mjs'
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
 import { insertComposerMention } from './mentionAutocomplete.mjs'
@@ -64,19 +65,7 @@ export async function showMemberContextMenu(event, memberElement) {
 	document.body.appendChild(menu)
 	openMenuElement = menu
 
-	/**
-	 * 关闭成员右键菜单并移除文档级监听。
-	 * @returns {void}
-	 */
-	const closeOnce = () => {
-		dismissMemberContextMenu()
-		document.removeEventListener('click', closeOnce, true)
-		document.removeEventListener('contextmenu', closeOnce, true)
-	}
-	setTimeout(() => {
-		document.addEventListener('click', closeOnce, true)
-		document.addEventListener('contextmenu', closeOnce, true)
-	}, 0)
+	const closeOnce = bindDismissOnDocumentInteraction(dismissMemberContextMenu)
 
 	menu.querySelector('.hub-member-menu-copy-name')?.addEventListener('click', async () => {
 		await navigator.clipboard.writeText(displayName)
