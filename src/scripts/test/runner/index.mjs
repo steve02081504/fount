@@ -33,8 +33,8 @@ import {
 	writeState,
 	writeStateMarkdown,
 } from '../core/state.mjs'
-import { buildVerdicts } from '../core/verdict.mjs'
 import { auditTriggerCoverage } from '../core/trigger_audit.mjs'
+import { buildVerdicts } from '../core/verdict.mjs'
 
 import { buildReasonsFromPlan } from './continue_reason.mjs'
 import { PlanRunCoordinator } from './dependency_scheduler.mjs'

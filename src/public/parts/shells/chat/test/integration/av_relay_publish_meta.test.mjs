@@ -2,7 +2,6 @@
  * av-relay publish_meta 缓存 / 补发 / 撤销。
  */
 /* global Deno */
-import { Buffer } from 'node:buffer'
 import { EventEmitter } from 'node:events'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
@@ -12,12 +11,13 @@ import {
 	registerAvRelaySocket,
 } from '../../src/chat/ws/avRelay.mjs'
 
+/** 测试用 WebSocket 替身 */
 class FakeWs extends EventEmitter {
 	readyState = 1
 	/** @type {string[]} */
 	sent = []
 	/**
-	 * @param {string} data
+	 * @param {string} data 待发 WebSocket 文本帧
 	 * @returns {void}
 	 */
 	send(data) { this.sent.push(String(data)) }

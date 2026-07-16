@@ -8,6 +8,7 @@
 /* global VideoEncoder VideoDecoder EncodedVideoChunk VideoFrame MediaStreamTrackProcessor AudioEncoder AudioDecoder EncodedAudioChunk AudioData */
 
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
+import { createAudioGate } from '../shared/audioGate.mjs'
 import {
 	AUDIO_BPS,
 	AUDIO_CHANNELS,
@@ -22,7 +23,6 @@ import {
 	safeClose,
 	unpackAvFrame,
 } from '../shared/avRelayClient.mjs'
-import { createAudioGate } from '../shared/audioGate.mjs'
 import { CODECS_PRESETS } from '../shared/avRelayPresets.mjs'
 
 /**
@@ -46,6 +46,8 @@ let activeSession = null
  * @property {() => number[]} [getAudioLevels]
  * @property {() => 'av' | 'audio' | 'video'} [getMediaMode]
  */
+
+/**
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {string} av-relay roomId
@@ -67,8 +69,8 @@ export function buildAvRelayWsUrl(groupId, channelId) {
  * @param {AudioContext} audioContext 播放上下文
  * @param {AudioData} audioData 解码音频
  * @param {{ audioNextTime: number }} peer 远端 peer（写入下一帧调度时间）
- * @param {Map<string, { analyser: AnalyserNode | null, levels: number[] }>} [levelsMap]
- * @param {string} [senderIdHex]
+ * @param {Map<string, { analyser: AnalyserNode | null, levels: number[] }>} [levelsMap] 各发送方音量分析器表
+ * @param {string} [senderIdHex] 发送方 senderId
  * @returns {void}
  */
 function scheduleAudioPlayback(audioContext, audioData, peer, levelsMap = null, senderIdHex = '') {
@@ -110,15 +112,10 @@ function scheduleAudioPlayback(audioContext, audioData, peer, levelsMap = null, 
  * @param {string} [opts.wsUrl] 自定义 WS（通话走 `/call/…`）
  * @param {(peers: { entityHash: string, senderId: string }[]) => void} [opts.onRoster] roster 回调
  * @param {(senderId: string, entityHash: string | null) => string} [opts.labelForPeer] tile 标签
+ * @param {'av' | 'audio' | 'video'} [opts.media] 仅音/仅画/音画
  * @returns {Promise<CodecsAvSession>} 会话句柄
  */
 export async function joinCodecsAvRoom(opts) {
-	const mediaMode = opts.media || 'av'
-	if (mediaMode !== 'video' && !('AudioEncoder' in window))
-		throw new Error('WebCodecs not supported')
-	if (mediaMode !== 'audio' && !('VideoEncoder' in window))
-		throw new Error('WebCodecs not supported')
-
 	const {
 		groupId,
 		channelId,
@@ -132,10 +129,17 @@ export async function joinCodecsAvRoom(opts) {
 		media: mediaMode = 'av',
 	} = opts
 
+	if (mediaMode !== 'video' && !('AudioEncoder' in window))
+		throw new Error('WebCodecs not supported')
+	if (mediaMode !== 'audio' && !('VideoEncoder' in window))
+		throw new Error('WebCodecs not supported')
+
 	const wantsVideo = mediaMode !== 'audio'
 	const wantsAudio = mediaMode !== 'video'
 
 	await leaveCodecsAvRoom()
+
+	const ws = new WebSocket(wsUrl ?? buildAvRelayWsUrl(groupId, channelId))
 
 	const preset = CODECS_PRESETS[presetKey] || CODECS_PRESETS.med
 	const selfId = crypto.getRandomValues(new Uint8Array(16))
@@ -316,9 +320,7 @@ export async function joinCodecsAvRoom(opts) {
 	}
 
 	await new Promise((res, rej) => {
-		/**
-		 *
-		 */
+		/** @returns {void} */
 		ws.onopen = () => {
 			try {
 				ws.send(JSON.stringify({ type: 'hello', senderId: selfHex }))
@@ -456,6 +458,10 @@ export async function joinCodecsAvRoom(opts) {
 			})
 			return true
 		},
+		/**
+		 * @param {string} [senderId] 远端 senderId；省略时返回本地闸门外推电平
+		 * @returns {number[]} 0–1 频段电平（16 路）
+		 */
 		getAudioLevels: (senderId = '') => {
 			const sid = String(senderId || '').toLowerCase()
 			const entry = peerAudioLevels.get(sid)
@@ -475,6 +481,9 @@ export async function joinCodecsAvRoom(opts) {
 			const lvl = audioGate.getLevel()
 			return Array.from({ length: 16 }, (_, i) => lvl * (0.6 + 0.4 * Math.sin(i)))
 		},
+		/**
+		 * @returns {'av' | 'audio' | 'video'} 当前媒体模式
+		 */
 		getMediaMode: () => mediaMode,
 	}
 

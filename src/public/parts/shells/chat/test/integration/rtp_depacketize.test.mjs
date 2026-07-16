@@ -12,7 +12,7 @@ import { createH264Depacketizer, depacketizeOpus, parseRtpHeader } from '../../s
  * @param {number} pt payload type
  * @param {Buffer} payload 载荷
  * @param {boolean} [marker=false] M 位
- * @returns {Buffer}
+ * @returns {Buffer} 含 12 字节 RTP 头的完整包
  */
 function buildRtp(pt, payload, marker = false) {
 	const buf = Buffer.alloc(12 + payload.length)

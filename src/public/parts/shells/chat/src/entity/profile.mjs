@@ -356,9 +356,9 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 			: profile.ownerEntityHash,
 		handle,
 		themeColor: updates.themeColor !== undefined
-			? (THEME_COLOR_RE.test(String(updates.themeColor || '').trim())
+			? THEME_COLOR_RE.test(String(updates.themeColor || '').trim())
 				? String(updates.themeColor).trim().toLowerCase()
-				: '')
+				: ''
 			: profile.themeColor || '',
 		activePubKeyHex,
 		keyGeneration,

@@ -51,6 +51,7 @@ export function openImageEditor(file, labels = {}) {
 		let cropRect = null
 
 		/**
+		 * @param {File | null} result 编辑结果；取消或加载失败为 null
 		 * @returns {void}
 		 */
 		function finish(result) {
@@ -60,6 +61,9 @@ export function openImageEditor(file, labels = {}) {
 			resolve(result)
 		}
 
+		/**
+		 * @returns {void} 图片加载完成后缩放并展示编辑器
+		 */
 		img.onload = () => {
 			const maxW = Math.min(960, img.naturalWidth)
 			const scale = maxW / img.naturalWidth
@@ -68,6 +72,7 @@ export function openImageEditor(file, labels = {}) {
 			ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
 			dialog.showModal()
 		}
+		/** @returns {void} */
 		img.onerror = () => finish(null)
 		img.src = objectUrl
 
@@ -78,10 +83,10 @@ export function openImageEditor(file, labels = {}) {
 			})
 		})
 		dialog.querySelector('[data-brush-color]')?.addEventListener('input', event => {
-			brushColor = /** @type {HTMLInputElement} */ (event.target).value
+			brushColor = /** @type {HTMLInputElement} */ event.target.value
 		})
 		dialog.querySelector('[data-brush-size]')?.addEventListener('input', event => {
-			brushSize = Number(/** @type {HTMLInputElement} */ (event.target).value) || 12
+			brushSize = Number(/** @type {HTMLInputElement} */ event.target.value) || 12
 		})
 		dialog.querySelector('[data-cancel]')?.addEventListener('click', () => finish(null))
 		dialog.querySelector('[data-apply]')?.addEventListener('click', () => {
@@ -173,14 +178,14 @@ export function openImageEditor(file, labels = {}) {
 		canvas.addEventListener('pointermove', event => {
 			if (!drawing) return
 			const p = point(event)
-			if (tool === 'crop' && cropStart) {
+			if (tool === 'crop' && cropStart) 
 				cropRect = {
 					x: Math.min(cropStart.x, p.x),
 					y: Math.min(cropStart.y, p.y),
 					w: Math.abs(p.x - cropStart.x),
 					h: Math.abs(p.y - cropStart.y),
 				}
-			}
+			
 			else if (tool === 'mosaic') stampMosaic(p.x, p.y)
 			else if (tool === 'brush') {
 				ctx.lineTo(p.x, p.y)

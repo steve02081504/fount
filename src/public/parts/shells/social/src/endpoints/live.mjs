@@ -1,5 +1,6 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
+import { startWhipIngest, stopWhipIngest } from '../../../chat/src/chat/whip/ingest.mjs'
 import {
 	injectAvRelayControl,
 	injectAvRelayFrame,
@@ -7,7 +8,6 @@ import {
 	subscribeAvRelayFrames,
 	subscribeAvRelayControls,
 } from '../../../chat/src/chat/ws/avRelay.mjs'
-import { startWhipIngest, stopWhipIngest } from '../../../chat/src/chat/whip/ingest.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import {
 	canJoinLiveRoom,

@@ -6,9 +6,10 @@ import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/te
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 import { buildPostCard } from '../postCard.mjs'
+import { socialState } from '../state.mjs'
+
 import { renderProfileAlbums } from './albums.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { socialState } from '../state.mjs'
 
 /**
  * 渲染拉黑/隐藏列表 UI。

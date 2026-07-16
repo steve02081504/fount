@@ -82,7 +82,7 @@ export function subscribeAvRelayFrames(roomId, fn) {
  * 订阅房间 JSON 控制帧（publish_meta 等），供 live-bridge 出站转发。
  * @param {string} roomId 房间
  * @param {(text: string) => void} fn 回调
- * @returns {() => void}
+ * @returns {() => void} 取消订阅
  */
 export function subscribeAvRelayControls(roomId, fn) {
 	const set = roomControlSinks.get(roomId) ?? new Set()

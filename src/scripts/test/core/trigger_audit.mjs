@@ -55,7 +55,7 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 	const matchCache = new Map()
 	/**
 	 * @param {string} pattern glob
-	 * @returns {boolean}
+	 * @returns {boolean} pattern 是否匹配仓库中任一文件
 	 */
 	const matches = pattern => {
 		let hit = matchCache.get(pattern)
@@ -73,7 +73,7 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 			if (!pattern || matches(pattern)) continue
 			warnings.push({ manifestId: suite.manifestId, suiteName: suite.name, pattern })
 		}
-		for (const subtest of suite.subtests ?? []) {
+		for (const subtest of suite.subtests ?? []) 
 			for (const pattern of subtest.triggers) {
 				if (!pattern || matches(pattern)) continue
 				warnings.push({
@@ -83,7 +83,7 @@ export function findDeadTriggerWarnings(suites, repoFiles) {
 					pattern,
 				})
 			}
-		}
+		
 	}
 	return warnings
 }

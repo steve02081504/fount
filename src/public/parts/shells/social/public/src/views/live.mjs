@@ -283,11 +283,8 @@ function ensureLiveConnected(slide, mode) {
 		asPublisher: false,
 		canvas: audioOnly ? null : canvas,
 		mode,
-		/**
-		 *
-		 * @param meta
-		 */
-		onPublishMeta: /** @param {object} meta */ meta => {
+		/** @param {{ video?: boolean, audio?: boolean }} meta 发布者媒体能力 */
+		onPublishMeta: meta => {
 			if (!meta?.video && meta?.audio && voiceHost instanceof HTMLElement) {
 				canvas?.classList.add('hidden')
 				void mountLiveVoiceRing(voiceHost, entityHash, () => conn.avSession?.getAudioLevels?.() || [])

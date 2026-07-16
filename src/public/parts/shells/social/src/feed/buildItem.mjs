@@ -28,6 +28,7 @@ export function createEngagementForPost(engagement, viewerLiked, viewerDisliked 
  * @param {string} username 用户
  * @param {string} entityHash 作者
  * @param {object} post 物化帖子
+ * @param {string | null} [viewerEntityHash] 读者实体哈希，定向帖解密用
  * @returns {Promise<object>} 解密后的帖子副本
  */
 export async function withDecryptedPostContent(username, entityHash, post, viewerEntityHash = null) {
