@@ -43,7 +43,6 @@ async function setupEditPathSession() {
 	const username = `edit-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_edit_path_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user 新建的测试用户名

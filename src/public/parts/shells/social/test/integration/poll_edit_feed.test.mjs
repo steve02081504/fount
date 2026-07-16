@@ -6,7 +6,7 @@ import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.t
 
 import { createTestSession } from '../harness.mjs'
 
-const session = createTestSession({ tempDirPrefix: 'fount_social_poll_edit_' })
+const session = createTestSession()
 
 Deno.test('poll vote updates tally projection', async () => {
 	const { username, operator } = await session()

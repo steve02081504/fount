@@ -145,7 +145,6 @@ Deno.test('four-end group: OnMessage willingness is consistent', async () => {
 	onMessageProbe.returnValue = true
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_parity_onmsg_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -183,7 +182,6 @@ Deno.test('four-end group: plain chars without OnMessage do not fallback-trigger
 	const username = `parity-plain-g-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_parity_plain_g_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -219,7 +217,6 @@ Deno.test('four-end DM: plain chars fallback-trigger consistently (WX ingress-on
 	const username = `parity-plain-dm-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_parity_plain_dm_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {

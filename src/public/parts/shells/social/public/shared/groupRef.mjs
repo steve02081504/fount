@@ -1,6 +1,3 @@
-/** Chat Markdown 群链标记（与 chat shared expandChannelLinks 一致）。 */
-import { CHANNEL_TOKEN_RE, formatChannelToken } from '../../../chat/public/shared/inlineTokenSyntax.mjs'
-
 /**
  * @param {string} groupId 群 ID
  * @param {string} [channelId] 频道 ID
@@ -8,27 +5,6 @@ import { CHANNEL_TOKEN_RE, formatChannelToken } from '../../../chat/public/share
  */
 function formatChatGroupHref(groupId, channelId = 'default') {
 	return `/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`
-}
-
-/**
- * @param {string} groupId 群 id
- * @param {string} [channelId='default'] 频道 id
- * @returns {string} `#[channel:groupId/channelId]`
- */
-export function formatGroupRefMarkdownToken(groupId, channelId = 'default') {
-	const channel = channelId?.trim() || 'default'
-	return formatChannelToken(groupId, channel)
-}
-
-/**
- * @param {string} text 正文
- * @returns {string} 去掉群链标记后的正文
- */
-export function stripGroupRefMarkdownTokens(text) {
-	return String(text || '')
-		.replace(CHANNEL_TOKEN_RE, '')
-		.replace(/\n{3,}/g, '\n\n')
-		.trim()
 }
 
 /**

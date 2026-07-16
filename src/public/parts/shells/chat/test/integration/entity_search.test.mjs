@@ -8,7 +8,6 @@ import { createTestSession } from '../harness.mjs'
 
 const getSession = createTestSession({
 	minP2pNode: true,
-	tempDirPrefix: 'fount_entity_search_',
 })
 
 Deno.test('normalizeEntityHandle accepts empty and valid ids', async () => {

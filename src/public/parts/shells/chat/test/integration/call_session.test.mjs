@@ -10,7 +10,6 @@ Deno.test('call session posts and edits call card then ends', async () => {
 	const username = `call-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_call_',
 		minP2pNode: true,
 		/**
 		 *

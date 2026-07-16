@@ -1,14 +1,10 @@
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import {
-	formatGroupRefMarkdownToken,
-	groupRefLabel,
-	renderGroupRefBlockHtml,
-	stripGroupRefMarkdownTokens,
-} from '../shared/groupRef.mjs'
+import { groupRefLabel, renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
+import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 
 /** @type {number} */
@@ -71,9 +67,10 @@ export async function refreshGroupRefPreview(appContext) {
 export function syncGroupRefInComposer(ref) {
 	const textarea = document.getElementById('postText')
 	if (!(textarea instanceof HTMLTextAreaElement)) return
-	let text = stripGroupRefMarkdownTokens(textarea.value)
+	let text = stripChannelTokens(textarea.value)
 	if (ref?.groupId) {
-		const token = formatGroupRefMarkdownToken(ref.groupId, ref.channelId)
+		const channel = ref.channelId?.trim() || 'default'
+		const token = formatChannelToken(ref.groupId, channel)
 		text = text ? `${text}\n\n${token}` : token
 	}
 	textarea.value = text

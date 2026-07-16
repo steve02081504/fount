@@ -30,6 +30,7 @@ alwaysApply: false
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
 - Post card engagement: like / **dislike** (mutually exclusive; reducer clears the opposing reaction); `reaction_index` projects federated like/dislike signed events (controlled by entity `privacy.publishReactions`); `for_you` uses local `taste/*` cluster weights (`interestBoost`, can be negative). Preference UI: `#tasteView` → `views/taste.mjs` (two toggles: `publishPreferences` / `publishReactions`). Tag naming uses timeline `tag_name` events.
+- **Cross-shell chat imports**: browser modules must use absolute `/parts/shells:chat/...` URLs (filesystem relatives resolve under the page origin and 404, breaking the whole module graph). Modules imported by Deno pure tests must not contain `/parts/...` URL imports — keep token helpers in chat (`inlineTokenSyntax.mjs`) and leave social shared pure modules dependency-free.
 
 ## Feed / profile pagination
 

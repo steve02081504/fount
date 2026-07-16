@@ -82,10 +82,14 @@ async function walkMjsFiles(dir) {
 
 /**
  * @param {string} file 文件路径
- * @returns {Promise<string[]>} 文件中所有静态 import 说明符
+ * @returns {Promise<string[]>} 文件中所有静态/动态 import 说明符（忽略注释内）
  */
 async function extractImportSpecs(file) {
-	const text = await readFile(file, 'utf8')
+	const raw = await readFile(file, 'utf8')
+	// 去掉块注释与行注释，避免 JSDoc `import('…')` 被动态 import 正则误抓
+	const text = raw
+		.replace(/\/\*[\s\S]*?\*\//gu, '')
+		.replace(/(^|[^:\\])\/\/.*$/gmu, '$1')
 	/** @type {string[]} */
 	const specs = []
 	for (const re of [IMPORT_RE, DYNAMIC_IMPORT_RE]) {
@@ -147,12 +151,14 @@ export async function probeShellPart({ repoRoot, partPath }) {
 	for (const file of await walkMjsFiles(srcDir)) 
 		for (const spec of await extractImportSpecs(file)) {
 			if (!spec.startsWith('.')) continue
-			if (!spec.includes('public/')) continue
+			// `.ts` 是类型声明路径，不参与运行时模块图
+			if (spec.endsWith('.ts')) continue
 			const resolved = resolveBrowserImportSpec(repoRoot, file, spec)
 			if (!resolved) {
 				backendMissing.push(`${path.relative(repoRoot, file)} -> ${spec}`)
 				continue
 			}
+			if (!spec.includes('public/')) continue
 			const rel = path.relative(repoRoot, resolved).replace(/\\/g, '/')
 			if (rel.includes('/public/src/') && !rel.includes('/public/shared/'))
 				crossBoundary.push(`backend ${path.relative(repoRoot, file)} imports frontend-only ${rel}`)

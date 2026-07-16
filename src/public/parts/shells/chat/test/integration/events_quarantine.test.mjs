@@ -14,7 +14,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'quarantine-user',
-	tempDirPrefix: 'fount_q_',
 	loadParts: [],
 })
 

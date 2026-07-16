@@ -1,7 +1,7 @@
 /**
  * Chat shell 注册的 markdown 扩展：群 emoji token、频道/群链接。
  */
-import { visit } from 'npm:unist-util-visit'
+import { visit } from 'https://esm.sh/unist-util-visit'
 
 import { expandChannelLinksInText } from '../shared/expandChannelLinks.mjs'
 import { EMOJI_TOKEN_RE } from '../shared/inlineTokenSyntax.mjs'

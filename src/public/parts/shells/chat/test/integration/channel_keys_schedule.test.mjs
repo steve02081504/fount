@@ -9,7 +9,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'ck-schedule-user',
-	tempDirPrefix: 'fount_ck_schedule_',
 	minP2pNode: true,
 })
 

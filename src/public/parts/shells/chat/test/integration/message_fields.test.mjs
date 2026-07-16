@@ -10,7 +10,6 @@ Deno.test('postChannelMessage persists locale content_warning', async () => {
 	const username = `mf-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_message_fields_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -46,7 +45,6 @@ Deno.test('member-read-markers sidecar records put markRead', async () => {
 	const username = `mm-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_member_markers_',
 		minP2pNode: true,
 	})
 	await ensureServer()

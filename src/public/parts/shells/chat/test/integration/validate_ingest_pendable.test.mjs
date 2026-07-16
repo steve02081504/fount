@@ -19,7 +19,6 @@ const TIP_C = 'e'.repeat(64)
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'ingest-pendable-user',
-	tempDirPrefix: 'fount_ingest_pend_',
 	loadParts: [],
 })
 

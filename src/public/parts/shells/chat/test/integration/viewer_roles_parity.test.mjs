@@ -36,7 +36,6 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 	const username = `roles-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_viewer_roles_',
 		minP2pNode: true,
 		/**
 		 * 种子 fixture 前确保 operator 公钥就绪。
@@ -92,8 +91,21 @@ Deno.test('GetChatLogForViewer hides staff-only when viewer lacks moderator role
 		content: { targetMemberKey: memberKey, roleId: 'moderator' },
 	})
 
+	const { state: stateAfterAssign } = await getState(username, groupId)
+	assert(
+		stateAfterAssign.roles?.moderator,
+		'role_create did not materialize moderator role',
+	)
+	assert(
+		(stateAfterAssign.members?.[memberKey]?.roles || []).includes('moderator'),
+		`role_assign did not stick on ${memberKey}: ${JSON.stringify(stateAfterAssign.members?.[memberKey]?.roles)}`,
+	)
+
 	const request = await getChatRequest(groupId, CHAR, channelId, { replicaUsername: username })
-	assert(request.member_roles.includes('moderator'))
+	assert(
+		request.member_roles.includes('moderator'),
+		`member_roles missing moderator: ${JSON.stringify(request.member_roles)}`,
+	)
 	const agentTexts = (request.chat_log || []).map(entry => String(entry.content || ''))
 	assert(agentTexts.some(text => text.includes('public hello')))
 	assert(agentTexts.some(text => text.includes('staff-only secret marker')))

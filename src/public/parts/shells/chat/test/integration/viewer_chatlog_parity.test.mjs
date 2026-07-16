@@ -38,7 +38,6 @@ async function seedViewerFixtures(dataDir, username, worldname) {
 async function buildAgentRequestWithWorld(worldname) {
 	const { ensureServer, username, dataDir } = createIntegrationBoot({
 		username: `viewer-${worldname}`,
-		tempDirPrefix: `fount_viewer_${worldname}_`,
 		minP2pNode: true,
 		/**
 		 * @param {string} user 登录用户名

@@ -10,7 +10,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'profile-sync-user',
-	tempDirPrefix: 'fount_profile_sync_',
 	minP2pNode: true,
 })
 

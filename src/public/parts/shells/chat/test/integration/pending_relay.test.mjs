@@ -9,7 +9,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'pending-relay-user',
-	tempDirPrefix: 'fount_pending_relay_',
 	loadParts: [],
 })
 

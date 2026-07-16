@@ -74,3 +74,15 @@ export function formatEntityMentionToken(entityHash) {
 export function formatRoleMentionToken(roleId) {
 	return `@[role:${roleId}]`
 }
+
+/**
+ * 去掉正文中的频道链标记（发帖框同步群关联时用）。
+ * @param {string} text 正文
+ * @returns {string} 清除后的正文
+ */
+export function stripChannelTokens(text) {
+	return String(text || '')
+		.replace(CHANNEL_TOKEN_RE, '')
+		.replace(/\n{3,}/g, '\n\n')
+		.trim()
+}

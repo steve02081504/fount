@@ -232,7 +232,7 @@ export async function buildHomeFeed(username, options = {}) {
 		const viewerView = await getTimelineMaterialized(username, viewer)
 		const followedTags = new Set((viewerView.followedTags || []).map(t => String(t).toLowerCase()))
 		if (followedTags.size) {
-			const { extractHashtagsFromText } = await import('./lib/hashtags.mjs')
+			const { extractHashtagsFromText } = await import('../lib/hashtags.mjs')
 			/** @type {object[]} */
 			const topicCandidates = []
 			const seenKeys = new Set()
@@ -397,7 +397,7 @@ export async function buildLikedFeedItems(username, entityHash, options = {}) {
  */
 export async function listReplies(username, entityHash, postId, options = {}) {
 	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
-	const { canReplyUnderPolicy, featuredReplyKey, loadPostReplyGate, normalizeReplyDisplay } = await import('./lib/replyPolicy.mjs')
+	const { canReplyUnderPolicy, featuredReplyKey, loadPostReplyGate, normalizeReplyDisplay } = await import('../lib/replyPolicy.mjs')
 	const gate = await loadPostReplyGate(username, entityHash, postId)
 	const replyPolicy = gate?.replyPolicy || 'everyone'
 	const replyDisplay = gate?.replyDisplay || 'all'

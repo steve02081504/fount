@@ -591,7 +591,7 @@ await testCase('POST members/:key/kick removes agent member (owner may kick own 
 	return s.json.meta?.members?.filter(m => m.memberKey === agentKey).length === 0
 })
 
-await testCase('POST owner-succession rejects agent target (400)', async () => {
+await testCase('POST owner-succession transfers ownership to agent member (200)', async () => {
 	const og = await api('POST', '/groups/', { name: 'E2E-ext-os', description: 'owner succession probe' })
 	if (og.status !== 201) throw new Error(`create ${og.status}: ${og.raw}`)
 	const ogid = og.json.groupId
@@ -607,9 +607,12 @@ await testCase('POST owner-succession rejects agent target (400)', async () => {
 			proposedOwnerPubKeyHash: agentRow.memberKey,
 			ballotId,
 		})
-		if (r.status !== 400) throw new Error(`expected 400, got ${r.status}: ${r.raw}`)
+		if (r.status !== 200) throw new Error(`expected 200, got ${r.status}: ${r.raw}`)
+		if (r.json?.newOwnerPubKeyHash !== agentRow.memberKey)
+			throw new Error(`newOwnerPubKeyHash mismatch: ${JSON.stringify(r.json)}`)
+		if (!r.json?.transferRoleId) throw new Error(`transferRoleId missing: ${JSON.stringify(r.json)}`)
 		const s1 = await api('GET', `/groups/${ogid}/state`)
-		return !s1.json.meta?.delegatedOwnerPubKeyHash
+		return s1.json.meta?.delegatedOwnerPubKeyHash === agentRow.memberKey
 	}
 	finally {
 		await api('POST', '/groups/leave', { groupIds: [ogid] })

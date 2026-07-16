@@ -8,11 +8,11 @@ const CSS_HREF = '/scripts/features/contentReveal/contentReveal.css'
  */
 function ensureContentRevealStyles() {
 	if (document.querySelector('link[data-content-reveal-css]')) return
-	document.head.appendChild(Object.assign(document.createElement('link'), {
-		rel: 'stylesheet',
-		href: CSS_HREF,
-		dataset: { contentRevealCss: '' },
-	}))
+	const link = document.createElement('link')
+	link.rel = 'stylesheet'
+	link.href = CSS_HREF
+	link.dataset.contentRevealCss = ''
+	document.head.appendChild(link)
 }
 
 /**

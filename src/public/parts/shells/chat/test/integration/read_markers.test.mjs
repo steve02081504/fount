@@ -10,7 +10,6 @@ Deno.test('message seq monotonic and read-marker clears unread summary', async (
 	const username = `rm-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_read_marker_',
 		minP2pNode: true,
 	})
 	await ensureServer()

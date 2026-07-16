@@ -35,7 +35,6 @@ async function setupSession() {
 	const username = `ds-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_display_snapshot_',
 		minP2pNode: true,
 		/** @param {string} user 用户 */
 		afterInit: async user => {

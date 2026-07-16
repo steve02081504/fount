@@ -45,7 +45,6 @@ Deno.test('claimOperatorBridgeIdentity writes identityMap entry', async () => {
 	const username = `bridge-claim-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_claim_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -68,7 +67,6 @@ Deno.test('bound owner bridge message attributes operator entityHash', async () 
 	const username = `bridge-owner-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_owner_attr_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -111,7 +109,6 @@ Deno.test('bound owner message uses operator profile displayName', async () => {
 	const username = `bridge-profile-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_profile_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -155,7 +152,6 @@ Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () 
 	const username = `bridge-care-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_care_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user 用户名

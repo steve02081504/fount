@@ -10,7 +10,6 @@ Deno.test('postBridgeTyping and channel.typingUsers', async () => {
 	const username = `typing-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_typing_',
 		minP2pNode: true,
 	})
 	await boot.ensureServer()

@@ -16,7 +16,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'pending-ingest-user',
-	tempDirPrefix: 'fount_pending_ingest_',
 	loadParts: [],
 })
 

@@ -391,13 +391,11 @@ async function refresh(refreshTokenValue, req) {
 		refreshTokenKey: 'refreshToken',
 		errorI18nKey: 'fountConsole.auth.refreshTokenError',
 	}).then(result => {
-		if (result.status === 200)
-			setTimeout(() => {
-				if (refreshInFlight.get(refreshTokenValue) === promise)
-					refreshInFlight.delete(refreshTokenValue)
-			}, REFRESH_GRACE_MS).unref()
-		else
-			refreshInFlight.delete(refreshTokenValue)
+		if (result.status === 200) setTimeout(() => {
+			if (refreshInFlight.get(refreshTokenValue) === promise)
+				refreshInFlight.delete(refreshTokenValue)
+		}, REFRESH_GRACE_MS).unref()
+		else refreshInFlight.delete(refreshTokenValue)
 		return result
 	}, error => {
 		refreshInFlight.delete(refreshTokenValue)

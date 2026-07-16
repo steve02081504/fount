@@ -63,7 +63,6 @@ Deno.test('per-recipient inbox: @operator and @agent', async () => {
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_inbox_recip_',
 		minP2pNode: true,
 		/**
 		 *
@@ -120,7 +119,6 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_inbox_charname_',
 		minP2pNode: true,
 		/**
 		 *
@@ -158,7 +156,6 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_trigger_pipe_',
 		minP2pNode: true,
 		/**
 		 *
@@ -213,7 +210,6 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_trigger_dm_',
 		minP2pNode: true,
 		/**
 		 *

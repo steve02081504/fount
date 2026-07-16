@@ -38,7 +38,6 @@ Deno.test('WorldChatHost postSystemMessage localData triggerCharReply', async ()
 	const username = `wch-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_world_chat_host_',
 		minP2pNode: true,
 		/**
 		 * 种子 fixture 前确保 operator 公钥就绪。

@@ -235,33 +235,100 @@ export async function bootInProcess(options) {
  * startTestServer / createTestServerBoot 选项。
  * @typedef {object} StartTestServerOpts
  * @property {string} username 测试用户名
- * @property {string} [dataDir] 数据目录
+ * @property {string} [dataDir] 数据目录（进程内首次启动生效，之后忽略）
  * @property {number} [port=HEADLESS_CONFIG_PORT] config.json 端口（web: false 集成测试占位，不绑定 TCP）
  * @property {boolean} [minP2pNode=false] 初始化离线 node
  * @property {string[]} [loadParts] loadPart 列表
  * @property {(username: string) => Promise<void>} [afterInit] init 后钩子
  */
 
+/** 进程内共享 dataDir（同进程多次 startTestServer 复用，避免换盘导致残留异步链炸用户）。 */
+let sharedTestDataDir = null
+/** @type {Promise<{ dataDir: string }> | null} */
+let sharedTestBootPromise = null
+
+/**
+ * 进程级共享测试 dataDir（首次调用时创建或采纳 preferred）。
+ * @param {string} [preferred] 首次调用时的首选路径
+ * @returns {string} 共享 dataDir
+ */
+export function ensureSharedTestDataDir(preferred) {
+	if (!sharedTestDataDir) {
+		sharedTestDataDir = preferred ?? join(tmpdir(), `fount_test_${Date.now().toString(36)}`)
+		assertDisposableDataPath(sharedTestDataDir)
+	}
+	return sharedTestDataDir
+}
+
+/**
+ * 向已运行的同进程 server 增量注册测试用户。
+ * @param {string} dataDir 共享 data 根
+ * @param {StartTestServerOpts} options 启动选项
+ * @returns {Promise<void>} 无
+ */
+async function registerTestUserOnRunningServer(dataDir, options) {
+	const { config, save_config } = await import('fount/server/server.mjs')
+	const { username } = options
+	if (!config.data.users[username]) {
+		config.data.users[username] = {
+			username,
+			auth: {
+				userId: 'test',
+				password: 'test',
+				loginAttempts: 0,
+				lockedUntil: null,
+				refreshTokens: [],
+			},
+			jobs: {},
+			locales: [...DEFAULT_TEST_USER_LOCALES],
+			defaultParts: {},
+			timers: {},
+		}
+		save_config()
+	}
+	fs.mkdirSync(join(dataDir, 'users', username, 'settings'), { recursive: true })
+	fs.mkdirSync(join(dataDir, 'users', username, 'entities'), { recursive: true })
+
+	if (options.minP2pNode)
+		await ensureMinP2pNode(dataDir)
+
+	if (options.loadParts?.length) {
+		const { loadPart } = await import('fount/server/parts_loader.mjs')
+		for (const part of options.loadParts)
+			await loadPart(username, part)
+	}
+
+	if (options.afterInit)
+		await options.afterInit(username)
+}
+
 /**
  * 写入 config 并同进程启动 fount（集成测试）。
+ * 同进程只 `init()` 一次；后续调用向运行中实例增量注册用户，避免换 dataDir/config 撕裂残留异步链。
  * @param {StartTestServerOpts} options 启动选项
  * @returns {Promise<{ dataDir: string, username: string }>} 数据目录与用户名
  */
 export async function startTestServer(options) {
-	const dataDir = options.dataDir ?? join(tmpdir(), `fount_test_${Date.now().toString(36)}`)
-	assertDisposableDataPath(dataDir)
-	const row = await bootInProcess({
-		dataPath: dataDir,
-		port: options.port ?? HEADLESS_CONFIG_PORT,
-		username: options.username,
-		web: false,
-		p2p: false,
-		minP2pNode: options.minP2pNode ?? false,
-		loadParts: options.loadParts,
-		afterInit: options.afterInit,
-		resetData: true,
-	})
-	return { dataDir: row.dataPath, username: row.username }
+	const dataDir = ensureSharedTestDataDir(options.dataDir)
+	if (!sharedTestBootPromise) {
+		sharedTestBootPromise = bootInProcess({
+			dataPath: dataDir,
+			port: options.port ?? HEADLESS_CONFIG_PORT,
+			username: options.username,
+			web: false,
+			p2p: false,
+			minP2pNode: options.minP2pNode ?? false,
+			loadParts: options.loadParts,
+			afterInit: options.afterInit,
+			resetData: true,
+		}).then(row => ({ dataDir: row.dataPath }))
+		await sharedTestBootPromise
+		return { dataDir, username: options.username }
+	}
+
+	await sharedTestBootPromise
+	await registerTestUserOnRunningServer(dataDir, options)
+	return { dataDir, username: options.username }
 }
 
 /**

@@ -84,7 +84,7 @@ function rowMatchesQuery(q, row) {
  */
 async function isHiddenFromDiscovery(username, entityHash) {
 	try {
-		const { getTimelineMaterialized } = await import('../../social/src/timeline/materialize.mjs')
+		const { getTimelineMaterialized } = await import('../../../social/src/timeline/materialize.mjs')
 		const view = await getTimelineMaterialized(username, entityHash)
 		return Boolean(view?.socialMeta?.hideFromDiscovery)
 	}
@@ -188,7 +188,7 @@ async function loadInteractionFlags(username, viewerEntityHash, entityHash) {
 	let care = false
 	let hasDm = false
 	try {
-		const { loadFollowingForActor } = await import('../../social/src/following.mjs')
+		const { loadFollowingForActor } = await import('../../../social/src/following.mjs')
 		const set = await loadFollowingForActor(username, viewerEntityHash)
 		following = set.has(entityHash)
 	}
@@ -245,7 +245,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 
 	let hideThreshold = -0.5
 	try {
-		const rep = await import('../../social/src/federation/reputation/index.mjs')
+		const rep = await import('../../../social/src/federation/reputation/index.mjs')
 		hideThreshold = Number(rep.SOCIAL_REP_HIDE_THRESHOLD)
 	}
 	catch { /* social 未装 */ }

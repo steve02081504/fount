@@ -49,7 +49,6 @@ Deno.test('postBridgeMessage persists message and mention inbox', async () => {
 	const username = `bridge-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_ingress_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -93,7 +92,6 @@ Deno.test('bridge identity: stable hash and bind overrides', async () => {
 	const username = `bridge-id-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_identity_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -129,7 +127,6 @@ Deno.test('rewriteTelegramMentionsToFount and outbound entity restore', async ()
 	const username = `bridge-fmt-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_fmt_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -159,7 +156,6 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	const username = `bridge-out-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_outbound_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -207,7 +203,6 @@ Deno.test('mock bridgeOperations: typing and createInvite on bridge group', asyn
 	const username = `bridge-ops-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_ops_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -257,7 +252,6 @@ Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolv
 	const username = `bridge-dc-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_discord_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -307,7 +301,6 @@ Deno.test('wechat synthetic DTO persists to DAG', async () => {
 	const username = `bridge-wx-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_wechat_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -343,7 +336,6 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 	const username = `bridge-dcfmt-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_dcfmt_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -359,7 +351,6 @@ Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1
 	const username = `bridge-dm-trig-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_dm_trig_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -408,7 +399,6 @@ Deno.test('bridge group without DM does not fallback-trigger chars without OnMes
 	const username = `bridge-grp-trig-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_grp_trig_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -456,7 +446,6 @@ Deno.test('postBridgeEdit updates content and mention inbox', async () => {
 	const username = `bridge-edit-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_edit_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -516,7 +505,6 @@ Deno.test('postBridgeDelete removes message from channel display', async () => {
 	const username = `bridge-del-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_del_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -557,7 +545,6 @@ Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridg
 	const username = `bridge-chain-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_chain_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -612,7 +599,6 @@ Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId;
 	const username = `bridge-reply-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_reply_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -685,7 +671,6 @@ Deno.test('getChatRequest exposes extension.bridge on bridge groups', async () =
 	const username = `bridge-ext-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_ext_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {

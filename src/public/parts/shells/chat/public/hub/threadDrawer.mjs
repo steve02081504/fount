@@ -26,6 +26,8 @@ import { applyAvatarsTo } from './presence.mjs'
 
 /** @type {{ groupId: string, parentChannelId: string, threadChannelId: string, parentEventId: string, messages: object[], reactions: Record<string, Record<string, { voters?: string[] }>> } | null} */
 let activeThread = null
+/** 渲染代际：并发 renderThreadMessages 仅最新一代可写 DOM */
+let threadRenderGeneration = 0
 
 /** @returns {boolean} 子线程抽屉是否打开 */
 export function isThreadDrawerOpen() {
@@ -84,6 +86,7 @@ export function closeThreadDrawer() {
 	wrap.setAttribute('hidden', '')
 	wrap.replaceChildren()
 	activeThread = null
+	threadRenderGeneration++
 	syncChannelActionsContext(() => import('./messages/messages.mjs').then(m => m.loadMessages()))
 }
 
@@ -118,14 +121,17 @@ function threadMessageRenderOpts(threadChannelId, reactions) {
  */
 async function renderThreadMessages(messageContainer) {
 	if (!activeThread) return
-	messageContainer.replaceChildren()
+	const generation = ++threadRenderGeneration
 	const { groupId, threadChannelId } = activeThread
 	const { messages, reactions } = await getChannelViewLog(groupId, threadChannelId, { limit: 80 })
+	if (generation !== threadRenderGeneration || !activeThread) return
 	activeThread.messages = messages || []
 	activeThread.reactions = reactions || {}
 	const rows = applyChannelDisplayChain(activeThread.messages)
+	messageContainer.replaceChildren()
 	if (!rows.length) {
 		await mountTemplate(messageContainer, 'hub/empty/idle', {})
+		if (generation !== threadRenderGeneration) return
 		setChannelMessageActionsContext({
 			groupId,
 			channelId: threadChannelId,
@@ -139,13 +145,16 @@ async function renderThreadMessages(messageContainer) {
 	let prevSender = null
 	let prevTs = 0
 	for (const message of rows) {
+		if (generation !== threadRenderGeneration) return
 		const block = await renderChannelMessageBlock(message, prevSender, prevTs, rows, opts)
 		prevSender = message.charId ?? message.sender ?? null
 		prevTs = message.hlc?.wall ?? 0
 		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
+		if (generation !== threadRenderGeneration) return
 		if (frag.firstElementChild)
 			messageContainer.appendChild(frag.firstElementChild)
 	}
+	if (generation !== threadRenderGeneration) return
 	setChannelMessageActionsContext({
 		groupId,
 		channelId: threadChannelId,

@@ -33,7 +33,6 @@ Deno.test('token bucket suppresses generation not OnMessage when exhausted', asy
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_trigger_bucket_',
 		minP2pNode: true,
 		/**
 	 * @param {string} user fount 用户名
@@ -90,7 +89,6 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 	probe.reset()
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_trigger_backfill_',
 		minP2pNode: true,
 		/**
 	 * @param {string} user fount 用户名

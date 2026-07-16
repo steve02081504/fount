@@ -1,14 +1,10 @@
 /**
- * Social 后端集成测试 harness：每文件独立 dataDir。
+ * Social 后端集成测试 harness：同进程共享 dataDir，每测试独立 username。
  *
  * 用 createTestSession() 惰性启动 server，避免模块加载时即 boot 多个实例。
  */
-import { mkdtempSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-
 import { createLazySession } from 'fount/scripts/test/fixtures.mjs'
-import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
+import { createTestServerBoot, ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 
 import { ensureSocialTestReady } from './afterInit.mjs'
 
@@ -16,13 +12,12 @@ import { ensureSocialTestReady } from './afterInit.mjs'
  * 创建 Social 集成测试 boot 句柄。
  * @param {object} [options] harness 选项
  * @param {string} [options.username] 测试用户名
- * @param {string} [options.tempDirPrefix] 临时目录前缀
  * @param {(username: string) => Promise<void>} [options.afterInit] init 后钩子
  * @returns {{ ensureServer: () => Promise<{ dataDir: string, username: string }>, dataDir: string, username: string }} 集成 boot 句柄
  */
 export function createIntegrationBoot(options = {}) {
 	const username = options.username ?? 'social-test-user'
-	const dataDir = mkdtempSync(join(tmpdir(), options.tempDirPrefix ?? 'fount_social_test_'))
+	const dataDir = ensureSharedTestDataDir()
 	const afterInit = options.afterInit ?? ensureSocialTestReady
 	const ensureServer = createTestServerBoot({
 		username,

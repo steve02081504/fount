@@ -46,7 +46,6 @@ async function setupHumanViewerGroup() {
 	const username = `vh-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_viewer_human_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user 登录用户名
@@ -134,7 +133,6 @@ Deno.test('builtin world/persona: unbound group view-log works', async () => {
 	const username = `vb-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_viewer_builtin_',
 		minP2pNode: true,
 	})
 	await ensureServer()

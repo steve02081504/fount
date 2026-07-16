@@ -30,7 +30,6 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 	const username = `bridge-gev-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_group_events_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {
@@ -87,7 +86,6 @@ Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', as
 	const username = `bridge-bst-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_bot_started_',
 		minP2pNode: true,
 		/** @param {string} user replica */
 		afterInit: async user => {

@@ -30,7 +30,6 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 	const username = `cc-send-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_send_',
 		minP2pNode: true,
 		/**
 		 *
@@ -77,7 +76,6 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 	const username = `cc-pin-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_pin_',
 		minP2pNode: true,
 		/**
 		 *
@@ -134,7 +132,6 @@ Deno.test('agent createGroup is allowed', async () => {
 	const username = `cc-agroup-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_agroup_',
 		minP2pNode: true,
 		/**
 		 *
@@ -170,7 +167,6 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	const username = `cc-bridge-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_bridge_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -229,7 +225,6 @@ Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', as
 	const username = `cc-e3-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_e3_',
 		minP2pNode: true,
 		/**
 		 *
@@ -279,7 +274,6 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 	const username = `cc-code-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_code_',
 		minP2pNode: true,
 		/**
 		 *
@@ -320,7 +314,6 @@ Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () 
 	const username = `cc-agent-life-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_agent_life_',
 		minP2pNode: true,
 		/**
 		 *
@@ -372,7 +365,6 @@ Deno.test('agent ChatClient may edit/delete owned human messages after setEntity
 	const username = `cc-master-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer, dataDir } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_chat_client_master_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user 用户名

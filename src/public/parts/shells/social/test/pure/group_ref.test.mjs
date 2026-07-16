@@ -13,12 +13,9 @@ import {
 	formatChannelToken,
 	formatGroupToken,
 	formatMessageToken,
+	stripChannelTokens,
 } from '../../../chat/public/shared/inlineTokenSyntax.mjs'
-import {
-	formatGroupRefMarkdownToken,
-	groupRefLabel,
-	stripGroupRefMarkdownTokens,
-} from '../../public/shared/groupRef.mjs'
+import { groupRefLabel } from '../../public/shared/groupRef.mjs'
 
 Deno.test('formatChatGroupHref encodes group and channel', () => {
 	const href = formatChatGroupHref('my group', 'ch 1')
@@ -67,9 +64,9 @@ Deno.test('groupRefLabel prefers custom label', () => {
 	assertEquals(groupRefLabel({ groupId: 'g1', channelId: 'general' }), '#g1/general')
 })
 
-Deno.test('formatGroupRefMarkdownToken and strip', () => {
-	const token = formatGroupRefMarkdownToken('my-group', 'general')
-	assertEquals(token, formatChannelToken('my-group', 'general'))
-	const stripped = stripGroupRefMarkdownTokens(`hello\n\n${token}\n\ntail`)
+Deno.test('formatChannelToken and stripChannelTokens', () => {
+	const token = formatChannelToken('my-group', 'general')
+	assertEquals(token, '#[channel:my-group/general]')
+	const stripped = stripChannelTokens(`hello\n\n${token}\n\ntail`)
 	assertEquals(stripped, 'hello\n\ntail')
 })

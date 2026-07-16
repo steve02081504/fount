@@ -10,7 +10,6 @@ Deno.test('per-bot bridgeOperations: two bots on same platform route independent
 	const username = `bridge-lifecycle-parallel-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_parallel_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -59,7 +58,6 @@ Deno.test('unregisterBridgeOperations clears registry and outbound handlers', as
 	const username = `bridge-lifecycle-unreg-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_unreg_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -108,7 +106,6 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 	const username = `bridge-lifecycle-stop-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_stop_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -154,7 +151,6 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 	const username = `bridge-lifecycle-list-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_list_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -182,7 +178,6 @@ Deno.test('ensureBridgeGroup records botname in group settings', async () => {
 	const username = `bridge-lifecycle-botname-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_botname_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -211,7 +206,6 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 	const username = `bridge-lifecycle-members-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_bridge_lifecycle_members_',
 		minP2pNode: true,
 	})
 	await ensureServer()

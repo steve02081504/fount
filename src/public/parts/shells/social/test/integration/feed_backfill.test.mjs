@@ -13,7 +13,7 @@ Deno.test('localPostDiscoverHandler returns signed public post events', async ()
 	const append = await import('../../src/timeline/append.mjs')
 	const { localPostDiscoverHandler } = await import('../../src/discover/postDiscover.mjs')
 
-	const { event } = await append.commitTimelineEvent(username, operator, {
+	const event = await append.commitTimelineEvent(username, operator, {
 		type: 'post',
 		content: { text: 'backfill-discover-sample', visibility: 'public' },
 	}, { fanout: false })

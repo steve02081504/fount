@@ -43,7 +43,6 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 	const username = `gentian-repeat-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_gentian_repeat_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user fount 用户名
@@ -101,7 +100,6 @@ Deno.test('Gentian OnMessage: self-destruct calls bridge stopSelf', async () => 
 	const username = `gentian-stop-${crypto.randomUUID().slice(0, 8)}`
 	const { ensureServer } = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_gentian_stop_',
 		minP2pNode: true,
 	})
 	await ensureServer()
@@ -151,7 +149,6 @@ Deno.test('Gentian fixture: OnError routed via dispatchCharError', async () => {
 	const username = `gentian-error-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_gentian_error_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user fount 用户名
@@ -179,7 +176,6 @@ Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', as
 	const username = `gentian-care-${crypto.randomUUID().slice(0, 8)}`
 	const boot = createIntegrationBoot({
 		username,
-		tempDirPrefix: 'fount_gentian_care_',
 		minP2pNode: true,
 		/**
 		 * @param {string} user fount 用户名

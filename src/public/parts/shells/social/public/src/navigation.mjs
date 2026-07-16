@@ -1,4 +1,4 @@
-import { parseSocialRunUri } from '../../shared/runUri.mjs'
+import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
 import { activateView } from './viewChrome.mjs'

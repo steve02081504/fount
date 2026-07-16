@@ -12,7 +12,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'emoji-resolve-user',
-	tempDirPrefix: 'fount_emoji_resolve_',
 	minP2pNode: true,
 })
 

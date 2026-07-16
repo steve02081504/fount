@@ -1,18 +1,13 @@
 /**
- * Chat 后端集成测试 harness：每文件独立 dataDir，可并行 deno test。
+ * Chat 后端集成测试 harness：同进程共享 dataDir，每测试独立 username。
  */
-import { mkdtempSync } from 'node:fs'
-import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-
 import { createLazySession } from 'fount/scripts/test/fixtures.mjs'
-import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
+import { createTestServerBoot, ensureSharedTestDataDir } from 'fount/scripts/test/node/boot.mjs'
 
 /**
  * 创建 Chat 集成测试 boot 句柄。
  * @param {object} [options] harness 选项
  * @param {string} [options.username] 测试用户名
- * @param {string} [options.tempDirPrefix] 临时目录前缀
  * @param {boolean} [options.minP2pNode] 是否初始化离线 P2P node
  * @param {string[]} [options.loadParts] loadPart 列表
  * @param {(username: string) => Promise<void>} [options.afterInit] init 后钩子
@@ -20,7 +15,7 @@ import { createTestServerBoot } from 'fount/scripts/test/node/boot.mjs'
  */
 export function createIntegrationBoot(options = {}) {
 	const username = options.username ?? 'chat-test-user'
-	const dataDir = mkdtempSync(join(tmpdir(), options.tempDirPrefix ?? 'fount_chat_test_'))
+	const dataDir = ensureSharedTestDataDir()
 	const loadParts = options.loadParts ?? ['shells/chat']
 	const afterInit = options.afterInit ?? (options.minP2pNode
 		? async user => {

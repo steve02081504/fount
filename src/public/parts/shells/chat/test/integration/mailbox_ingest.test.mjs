@@ -9,7 +9,6 @@ import { createIntegrationBoot } from '../harness.mjs'
 
 const { ensureServer, username } = createIntegrationBoot({
 	username: 'mailbox-ingest-user',
-	tempDirPrefix: 'fount_mailbox_ingest_',
 	minP2pNode: true,
 })
 
