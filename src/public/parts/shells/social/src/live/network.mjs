@@ -26,7 +26,7 @@ export async function localLiveFeedHandler(ctx, query) {
 	const { items } = await buildLiveFeed(username, { limit, scope: 'local' })
 	const nodeHash = String(getNodeHash() || '').toLowerCase()
 	return items
-		.filter(row => row.visibility !== 'followers')
+		.filter(row => row.visibility === 'public' || !row.visibility)
 		.map(row => ({
 			liveId: row.liveId,
 			entityHash: row.entityHash,

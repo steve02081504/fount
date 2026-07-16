@@ -6,8 +6,30 @@
 
 import type { DAGEvent, PersonalListsResponse } from './p2pAPI.ts'
 
-/** 帖子可见范围：公开或仅关注者（followers 帖 GSH 加密）。 */
-export type SocialVisibility = 'public' | 'followers'
+/**
+ * 帖子/相册可见范围。
+ * - `public`：明文，进发现面
+ * - `unlisted`：明文可读，不进探索/热搜/搜索联邦
+ * - `followers`：GSH 加密，关注者可见
+ * - `followers_since`：GSH 加密，关注满 minFollowMs 可见
+ * - `selected`：pkw 按接收者包裹，allow 名单可见
+ * - `private`：pkw 仅作者可见
+ */
+export type SocialVisibility =
+	| 'public'
+	| 'unlisted'
+	| 'followers'
+	| 'followers_since'
+	| 'selected'
+	| 'private'
+
+/** 规范化后的可见性 spec。 */
+export interface SocialVisibilitySpec {
+	visibility: SocialVisibility
+	minFollowMs?: number
+	allow?: string[]
+	except?: string[]
+}
 
 /** 解密失败占位（`buildItem.withDecryptedPostContent`）。 */
 export interface SocialDecryptView {
@@ -75,6 +97,9 @@ export interface SocialPostContent {
 	}
 	lang?: string
 	visibility?: SocialVisibility
+	minFollowMs?: number
+	allow?: string[]
+	except?: string[]
 	contentWarning?: string
 	sensitiveMedia?: boolean
 	poll?: SocialPollDraft
@@ -90,6 +115,32 @@ export interface SocialPostEditContent {
 	mediaRefs?: SocialMediaRef[]
 	lang?: string
 	contentWarning?: string
+}
+
+/** `post_visibility_set` 事件 content（完整替换原帖 content，含重加密信封）。 */
+export interface SocialPostVisibilitySetContent extends SocialVisibilitySpec {
+	targetPostId: string
+	/** 重加密后的完整 content（明文或 GSH/pkw 信封） */
+	content: SocialPostContent | Record<string, unknown>
+}
+
+/** 相册元数据 content。 */
+export interface SocialAlbumContent extends SocialVisibilitySpec {
+	albumId: string
+	name?: string
+	description?: string
+}
+
+/** 相册成员链接。 */
+export interface SocialAlbumPostLinkContent {
+	albumId: string
+	postId: string
+}
+
+/** Feed 条目上的所属相册摘要（按观看者过滤）。 */
+export interface SocialAlbumRef {
+	albumId: string
+	name: string
 }
 
 /** 探索/资料 meta（`social_meta` 物化字段，camelCase）。 */
@@ -155,6 +206,7 @@ export type SocialTimelineEventType =
 	| 'post'
 	| 'post_edit'
 	| 'post_delete'
+	| 'post_visibility_set'
 	| 'poll_vote'
 	| 'post_note'
 	| 'note_vote'
@@ -178,6 +230,11 @@ export type SocialTimelineEventType =
 	| 'entity_key_rotate'
 	| 'entity_key_revoke'
 	| 'file_share'
+	| 'album_create'
+	| 'album_update'
+	| 'album_delete'
+	| 'album_post_add'
+	| 'album_post_remove'
 
 /** 各事件 content 形状映射。 */
 export interface SocialTimelineEventContentMap {
@@ -186,6 +243,7 @@ export interface SocialTimelineEventContentMap {
 	post: SocialPostContent | Record<string, unknown>
 	post_edit: SocialPostEditContent
 	post_delete: SocialPostDeleteContent
+	post_visibility_set: SocialPostVisibilitySetContent
 	poll_vote: SocialPollVoteContent
 	post_note: Record<string, unknown>
 	note_vote: Record<string, unknown>
@@ -209,6 +267,11 @@ export interface SocialTimelineEventContentMap {
 	entity_key_rotate: Record<string, unknown>
 	entity_key_revoke: Record<string, unknown>
 	file_share: Record<string, unknown>
+	album_create: SocialAlbumContent
+	album_update: SocialAlbumContent
+	album_delete: { albumId: string }
+	album_post_add: SocialAlbumPostLinkContent
+	album_post_remove: SocialAlbumPostLinkContent
 }
 
 /** 单条 Social 时间线 DAG 事件（判别联合）。 */
@@ -252,6 +315,8 @@ export interface SocialPostFeedItem extends SocialFeedItemBase {
 		content: SocialPostContent | null
 		decryptView?: SocialDecryptView
 	}
+	/** 观看者可见的所属相册链接 */
+	albums?: SocialAlbumRef[]
 }
 
 /** 转发 feed 条目（外层 postId 为 repost 事件 id）。 */

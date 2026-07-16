@@ -6,6 +6,7 @@ import { socialApi } from './lib/apiClient.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
+import { bindVisibilityPicker, readVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -79,6 +80,44 @@ export function syncGroupRefInComposer(ref) {
 }
 
 /**
+ * 加载可入册的相册到多选。
+ * @returns {Promise<void>}
+ */
+export async function loadAlbumPickerOptions() {
+	const select = document.getElementById('postAlbumSelect')
+	if (!(select instanceof HTMLSelectElement)) return
+	select.replaceChildren()
+	try {
+		const data = await socialApi('/albums')
+		const albums = (data.albums || []).filter(album => !album.virtual)
+		if (!albums.length) {
+			select.hidden = true
+			return
+		}
+		select.hidden = false
+		select.setAttribute('aria-label', geti18n('social.albums.pickerLabel'))
+		for (const album of albums) {
+			const option = document.createElement('option')
+			option.value = album.albumId
+			option.textContent = album.name
+			select.appendChild(option)
+		}
+	}
+	catch {
+		select.hidden = true
+	}
+}
+
+/**
+ * 绑定 composer 可见性 picker。
+ * @returns {void}
+ */
+export function initComposerVisibilityPicker() {
+	const root = document.getElementById('postVisibilityPicker')
+	if (root) bindVisibilityPicker(root)
+}
+
+/**
  * 加载可关联的 Chat 群到下拉选择器。
  * @returns {Promise<void>}
  */
@@ -126,13 +165,19 @@ export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
 		? sensitiveEl.checked
 		: Boolean(contentWarning)
+	const visibilityDraft = readVisibilityPicker(document.getElementById('postVisibilityPicker') || document)
+	const albumSelect = document.getElementById('postAlbumSelect')
+	const albumIds = albumSelect instanceof HTMLSelectElement
+		? [...albumSelect.selectedOptions].map(opt => opt.value).filter(id => id && id !== 'default')
+		: []
 	const body = {
 		text: document.getElementById('postText').value.trim(),
 		mediaRefs: mediaRefs.map(ref => {
 			const { file: _file, objectUrl: _url, pending: _pending, ...rest } = ref
 			return rest
 		}),
-		visibility: document.getElementById('postVisibility').value,
+		...visibilityDraft,
+		...albumIds.length ? { albumIds } : {},
 		locale: document.getElementById('postLocale').value.trim() || 'zh-CN',
 		...contentWarning ? { contentWarning } : {},
 		...sensitiveMedia || contentWarning ? { sensitiveMedia: true } : {},

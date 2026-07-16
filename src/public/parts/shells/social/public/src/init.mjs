@@ -7,6 +7,8 @@ import { groupRefLabel } from '../shared/groupRef.mjs'
 import { handleMainClick } from './actions.mjs'
 import {
 	addComposerMedia,
+	initComposerVisibilityPicker,
+	loadAlbumPickerOptions,
 	loadGroupPickerOptions,
 	refreshGroupRefPreview,
 	setPendingGroupRef,
@@ -144,7 +146,9 @@ export async function bootstrapSocialApp() {
 		if (postLocale instanceof HTMLInputElement)
 			postLocale.value = navigator.language || 'zh-CN'
 
+		initComposerVisibilityPicker()
 		await loadGroupPickerOptions()
+		await loadAlbumPickerOptions()
 		await updateNotificationBadge()
 
 		const viewer = await socialApi('/viewer')

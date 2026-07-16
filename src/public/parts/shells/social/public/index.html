@@ -95,10 +95,20 @@
 								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" aria-label="Poll">
 									<span class="s-ic s-ic-vote" aria-hidden="true"></span>
 								</button>
-					<select id="postVisibility" class="select select-bordered select-sm composer-select composer-visibility">
-								<option value="public" data-i18n="social.composer.visibilityPublic"></option>
-								<option value="followers" data-i18n="social.composer.visibilityFollowers"></option>
-							</select>
+					<div id="postVisibilityPicker" class="visibility-picker" data-visibility-picker>
+								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility">
+									<option value="public" data-i18n="social.visibility.public"></option>
+									<option value="unlisted" data-i18n="social.visibility.unlisted"></option>
+									<option value="followers" data-i18n="social.visibility.followers"></option>
+									<option value="followers_7d" data-i18n="social.visibility.followers7d"></option>
+									<option value="followers_30d" data-i18n="social.visibility.followers30d"></option>
+									<option value="selected" data-i18n="social.visibility.selected"></option>
+									<option value="private" data-i18n="social.visibility.private"></option>
+								</select>
+								<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow hidden" data-i18n="social.visibility.allowPlaceholder" placeholder="" />
+								<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except" data-i18n="social.visibility.exceptPlaceholder" placeholder="" />
+							</div>
+							<select id="postAlbumSelect" class="select select-bordered select-sm composer-select composer-albums" multiple size="1" hidden></select>
 							<select id="postReplyPolicy" class="select select-bordered select-sm composer-select">
 								<option value="everyone" data-i18n="social.composer.replyPolicyEveryone"></option>
 								<option value="followers_7d" data-i18n="social.composer.replyPolicyFollowers7d"></option>

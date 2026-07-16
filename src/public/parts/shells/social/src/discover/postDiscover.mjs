@@ -5,6 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
+import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
 import { discoverPosts } from './local.mjs'
@@ -37,7 +38,7 @@ export async function localPostDiscoverHandler(ctx, query) {
 		if (!entityHash || !postId) continue
 		const view = await getTimelineMaterialized(username, entityHash)
 		const post = view.postById?.[postId]
-		if (!post || post.content?.visibility === 'followers') continue
+		if (!post || !isPublicDiscoverable(post.content)) continue
 		rows.push({
 			entityHash,
 			postId,
@@ -109,7 +110,7 @@ export async function collectNearbyPostDiscover(username, options = {}) {
 		const postId = String(/** @type {{ postId?: unknown }} */raw.postId || '').trim()
 		const event = /** @type {{ event?: object }} */raw.event
 		if (!entityHash || !postId || !event) continue
-		if (event.content?.visibility === 'followers') continue
+		if (!isPublicDiscoverable(event.content)) continue
 		if (mediaOnly && !(Array.isArray(event.content?.mediaRefs) && event.content.mediaRefs.length)) continue
 		items.push({
 			entityHash,

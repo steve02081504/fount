@@ -30,8 +30,8 @@ export function createEngagementForPost(engagement, viewerLiked, viewerDisliked 
  * @param {object} post 物化帖子
  * @returns {Promise<object>} 解密后的帖子副本
  */
-export async function withDecryptedPostContent(username, entityHash, post) {
-	const decrypted = await maybeDecryptPostContent(username, entityHash, post.content)
+export async function withDecryptedPostContent(username, entityHash, post, viewerEntityHash = null) {
+	const decrypted = await maybeDecryptPostContent(username, entityHash, post.content, viewerEntityHash)
 	if (decrypted)
 		return { ...post, content: decrypted }
 	return { ...post, content: null, decryptView: { failed: true } }
@@ -49,8 +49,9 @@ export async function withDecryptedPostContent(username, entityHash, post) {
  */
 export async function buildPostFeedItem(username, entityHash, post, feedContext) {
 	const decrypt = feedContext.decrypt !== false
+	const viewerEntityHash = feedContext.viewerEntityHash || null
 	const postOut = decrypt
-		? await withDecryptedPostContent(username, entityHash, post)
+		? await withDecryptedPostContent(username, entityHash, post, viewerEntityHash)
 		: post
 	const authorProfile = await feedContext.authorProfile(entityHash)
 	const item = {
@@ -63,6 +64,10 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 		ownerEntityHash: authorProfile?.ownerEntityHash || null,
 		...feedContext.engagementForPost(entityHash, post.id),
 	}
+	if (feedContext.warmAlbumView)
+		await feedContext.warmAlbumView(entityHash)
+	if (feedContext.albumsForPost)
+		item.albums = feedContext.albumsForPost(entityHash, post.id) || []
 	const poll = postOut.content?.poll
 	if (poll?.options?.length) {
 		const tally = await listPollTally(username, entityHash, post.id)

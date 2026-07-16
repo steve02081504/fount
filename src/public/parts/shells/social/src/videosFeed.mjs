@@ -12,6 +12,7 @@ import { buildEngagementIndex, loadViewerContext } from './feed/home.mjs'
 import { createFeedItemBuildContext } from './feed/iterate.mjs'
 import { scorePostForYou } from './feed/ranking.mjs'
 import { canViewPost } from './feedVisibility.mjs'
+import { isPublicDiscoverable } from './lib/visibilitySpec.mjs'
 import { loadFollowingForActor } from './following.mjs'
 import { computeTasteMatch, ensureTasteFresh } from './taste/cluster.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
@@ -52,7 +53,7 @@ export async function buildVideosFeed(username, options = {}) {
 			if (!postHasVideo(post)) continue
 			const enriched = { ...post, entityHash }
 			if (!canViewPost(enriched, viewerContext)) continue
-			if (enriched.content?.visibility === 'followers') continue
+			if (!isPublicDiscoverable(enriched.content)) continue
 			const affinity = 1
 			const tasteMatch = taste ? computeTasteMatch(post, entityHash, taste) : 0
 			const score = scorePostForYou(enriched, engagement, affinity, tasteMatch)

@@ -1181,6 +1181,33 @@
 			"scheduleLabel": "定时发布",
 			"scheduleSuccess": "帖子已加入定时队列"
 		},
+		"visibility": {
+			"label": "可见范围",
+			"public": "公开",
+			"unlisted": "不公开列出",
+			"followers": "仅关注者",
+			"followers7d": "关注满 7 天可见",
+			"followers30d": "关注满 30 天可见",
+			"selected": "指定人员可见",
+			"private": "仅自己可见",
+			"allowPlaceholder": "可见人员 entityHash，空格或逗号分隔",
+			"exceptPlaceholder": "不给谁看（可选）"
+		},
+		"albums": {
+			"create": "新建相册",
+			"edit": "编辑相册",
+			"save": "保存",
+			"cancel": "取消",
+			"back": "返回相册",
+			"empty": "还没有相册",
+			"emptyPosts": "相册里还没有帖子",
+			"name": "相册名称",
+			"description": "相册描述",
+			"deleteLinks": "删除相册（保留帖子）",
+			"deleteWithPosts": "删除相册并删除帖子",
+			"pickerLabel": "加入相册",
+			"defaultName": "默认相册"
+		},
 		"feed": {
 			"loadMore": "加载更多",
 			"refresh": "刷新动态",
@@ -1256,6 +1283,7 @@
 			"hideFromExplore": "从探索页隐藏账户",
 			"saveExplore": "保存探索设置",
 			"tabPosts": "动态",
+			"tabAlbums": "相册",
 			"tabFollowing": "正在关注",
 			"tabLikes": "点赞",
 			"statsPosts": "动态",

@@ -1,6 +1,7 @@
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
-import { loadFollowingForActor } from './following.mjs'
+import { loadViewerContext } from './feed/home.mjs'
+import { canViewByVisibility } from './lib/visibilitySpec.mjs'
 
 
 /**
@@ -13,14 +14,15 @@ import { loadFollowingForActor } from './following.mjs'
  */
 export async function canViewVaultFile(replicaUsername, ownerEntityHash, manifest, viewerEntityHash) {
 	const visibility = manifest.meta?.visibility || 'followers'
-	if (visibility === 'public') return true
 	const owner = ownerEntityHash.toLowerCase()
 	const viewer = viewerEntityHash
 		? String(viewerEntityHash).trim().toLowerCase()
 		: await resolveOperatorEntityHash(replicaUsername)
 	if (viewer === owner) return true
-	if (visibility !== 'followers') return false
-	if (!viewer) return false
-	const { following } = await loadFollowingForActor(replicaUsername, viewer)
-	return following.includes(owner)
+	const viewerContext = await loadViewerContext(replicaUsername, viewer)
+	return canViewByVisibility(
+		{ visibility, minFollowMs: manifest.meta?.minFollowMs, allow: manifest.meta?.allow, except: manifest.meta?.except },
+		viewerContext,
+		owner,
+	)
 }

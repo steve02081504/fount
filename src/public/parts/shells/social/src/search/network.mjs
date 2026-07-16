@@ -5,6 +5,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
 import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
+import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
 import { searchPosts } from '../search.mjs'
 
 /** part_query kind：联邦帖文搜索 */
@@ -45,7 +46,7 @@ export async function localPostSearchHandler(apiContext, query) {
 			content: {
 				text: item.post.content?.text,
 				mediaRefs: item.post.content?.mediaRefs,
-				visibility: item.post.content?.visibility === 'followers' ? 'public' : item.post.content?.visibility,
+				visibility: isPublicDiscoverable(item.post.content) ? 'public' : item.post.content?.visibility,
 				tags: item.post.content?.tags,
 			},
 			hlc: item.post.hlc,
@@ -108,7 +109,7 @@ export async function buildNearbyPostSearch(username, options = {}) {
 		const event = raw.event
 		if (!entityHash || !postId || !event) continue
 		// 入站清洗：仅公开可见摘录，不信任密文字段
-		if (event.content?.visibility === 'followers') continue
+		if (!isPublicDiscoverable(event.content)) continue
 		items.push({
 			entityHash,
 			postId,

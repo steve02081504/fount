@@ -9,6 +9,11 @@ import { buildEmojiMediaRefsForPost } from '../../lib/emojiPostEmbed.mjs'
 import { isKnownSocialTarget } from '../../lib/entityTarget.mjs'
 import { sanitizeMediaRefs, resolveSensitiveMedia } from '../../lib/mediaRefs.mjs'
 import { normalizePollDraft } from '../../lib/poll.mjs'
+import {
+	minVisibilitySpec,
+	normalizeVisibilitySpec,
+	visibilitySpecToContentFields,
+} from '../../lib/visibilitySpec.mjs'
 import { commitTimelineEvent } from '../../timeline/append.mjs'
 import { getTimelineMaterialized } from '../../timeline/materialize.mjs'
 import { maybeDecryptPostContent, maybeEncryptPostContent } from '../../vault_crypto/vault.mjs'
@@ -42,7 +47,7 @@ export function createPostsMethods(apiContext) {
 			const view = await getTimelineMaterialized(apiContext.username, owner)
 			const row = view.postById[String(id)]
 			const content = row
-				? await maybeDecryptPostContent(apiContext.username, owner, row.content) || row.content
+				? await maybeDecryptPostContent(apiContext.username, owner, row.content, apiContext.entityHash) || row.content
 				: null
 			if (row) {
 				const { pullPostReactions } = await import('../../federation/reaction/pull.mjs')
@@ -94,7 +99,22 @@ async function createTimelinePost(apiContext, draft) {
 		return { scheduled: true, scheduledId: row.scheduledId, publishAt: row.publishAt }
 	}
 
-	const visibility = draft.visibility === 'followers' ? 'followers' : 'public'
+	const albumIds = [...new Set(
+		(Array.isArray(draft.albumIds) ? draft.albumIds : [])
+			.map(id => String(id || '').trim())
+			.filter(id => id && id !== 'default'),
+	)]
+	let visibilitySpec = normalizeVisibilitySpec(draft)
+	if (albumIds.length) {
+		const view = await getTimelineMaterialized(apiContext.username, apiContext.entityHash)
+		const albumSpecs = []
+		for (const albumId of albumIds) {
+			const album = view.albums?.[albumId]
+			if (!album) throw httpError(400, `unknown album: ${albumId}`)
+			albumSpecs.push(album)
+		}
+		visibilitySpec = minVisibilitySpec(albumSpecs) || visibilitySpec
+	}
 	const { normalizeReplyPolicy, normalizeReplyDisplay, canReplyUnderPolicy, loadPostReplyGate } = await import('../../lib/replyPolicy.mjs')
 	const replyPolicy = normalizeReplyPolicy(draft.replyPolicy)
 	const replyDisplay = normalizeReplyDisplay(draft.replyDisplay)
@@ -115,16 +135,16 @@ async function createTimelinePost(apiContext, draft) {
 	}
 
 	const draftContent = {
-		text: String(draft.text),
+		text: String(draft.text ?? ''),
 		mediaRefs: sanitizeMediaRefs([
 			...draft.mediaRefs ?? [],
-			...await buildEmojiMediaRefsForPost(apiContext.username, String(draft.text)),
+			...await buildEmojiMediaRefsForPost(apiContext.username, String(draft.text ?? '')),
 		]),
 		replyTo: draft.replyTo,
 		quoteRef: draft.quoteRef,
 		groupRef: draft.groupRef,
 		locale: draft.locale || 'zh-CN',
-		visibility,
+		...visibilitySpecToContentFields(visibilitySpec),
 		...replyPolicy !== 'everyone' ? { replyPolicy } : {},
 		...replyDisplay !== 'all' ? { replyDisplay } : {},
 		...draft.contentWarning ? { contentWarning: String(draft.contentWarning).trim().slice(0, 200) } : {},
@@ -140,8 +160,20 @@ async function createTimelinePost(apiContext, draft) {
 	const signed = await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
 		type: 'post',
 		charPartName,
-		content: await maybeEncryptPostContent(apiContext.username, apiContext.entityHash, randomUUID(), draftContent, visibility),
+		content: await maybeEncryptPostContent(
+			apiContext.username,
+			apiContext.entityHash,
+			randomUUID(),
+			draftContent,
+			visibilitySpec,
+		),
 	})
+	for (const albumId of albumIds) 
+		await commitTimelineEvent(apiContext.username, apiContext.entityHash, {
+			type: 'album_post_add',
+			content: { albumId, postId: signed.id },
+		})
+	
 	const itemContext = await createFeedItemBuildContext(apiContext.username, new Set([apiContext.entityHash]), apiContext.entityHash)
 	const item = await buildPostFeedItem(apiContext.username, apiContext.entityHash, { ...signed, postId: signed.id }, itemContext)
 	pushFeedUpdate(apiContext.username, { type: 'post', item })

@@ -2,6 +2,7 @@ import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { resolveOperatorEntityHashForUser } from '../../../../chat/src/entity/identity.mjs'
 import { resolveSocialEntity } from '../../federation/hosting.mjs'
 
+import { createAlbumsMethods } from './albums.mjs'
 import { createFeedMethods } from './feed.mjs'
 import { createFollowMethods } from './follow.mjs'
 import { createLiveMethods } from './live.mjs'
@@ -51,6 +52,7 @@ export function createSocialClient(apiContext) {
 		...createVaultMethods(apiContext),
 		...createTasteMethods(apiContext),
 		...createProfileMethods(apiContext),
+		...createAlbumsMethods(apiContext),
 	}
 }
 

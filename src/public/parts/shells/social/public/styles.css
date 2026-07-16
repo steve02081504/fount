@@ -2317,3 +2317,92 @@ body {
 	color: var(--social-muted);
 	margin: 0;
 }
+
+/* === Visibility / albums === */
+.visibility-picker {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	align-items: center;
+}
+
+.visibility-allow,
+.visibility-except {
+	min-width: 12rem;
+}
+
+.post-album-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	padding: 0.25rem 0 0.5rem;
+}
+
+.post-album-chip {
+	border: 1px solid var(--social-border, #333);
+	background: transparent;
+	border-radius: 999px;
+	padding: 0.15rem 0.65rem;
+	font-size: 0.75rem;
+	cursor: pointer;
+	color: var(--social-muted);
+}
+
+.album-toolbar {
+	margin-bottom: 0.75rem;
+}
+
+.album-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+	gap: 0.75rem;
+}
+
+.album-card {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 0;
+	border: 1px solid var(--social-border, #333);
+	border-radius: 0.75rem;
+	background: transparent;
+	cursor: pointer;
+	text-align: left;
+	overflow: hidden;
+}
+
+.album-card-cover {
+	aspect-ratio: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: color-mix(in srgb, var(--social-muted, #888) 18%, transparent);
+	font-weight: 600;
+	padding: 0.5rem;
+}
+
+.album-card-meta {
+	padding: 0.5rem 0.65rem 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+}
+
+.album-detail-header {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	margin-bottom: 1rem;
+}
+
+.album-detail-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+}
+
+.album-posts {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}

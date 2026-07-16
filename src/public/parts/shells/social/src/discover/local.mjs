@@ -1,6 +1,7 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
 import { getProfile } from '../../../chat/src/entity/profile.mjs'
+import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { listLocalTimelineDirs } from '../timeline/ownerIndex.mjs'
 
@@ -65,7 +66,7 @@ export async function discoverPosts(username, options = {}) {
 		if (view.socialMeta?.hideFromDiscovery) continue
 		let taken = 0
 		for (const post of view.posts) {
-			if (post.content?.visibility === 'followers') continue
+			if (!isPublicDiscoverable(post.content)) continue
 			if (mediaOnly && !post.content?.mediaRefs?.length) continue
 			posts.push({
 				entityHash,

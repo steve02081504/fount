@@ -168,4 +168,20 @@ export async function handleProfileNavClick(target) {
 		for (const panel of document.querySelectorAll('[data-profile-panel]'))
 			panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
 	}
+
+	const albumChip = target.closest('[data-album-open][data-album-id]')
+	if (albumChip instanceof HTMLElement && albumChip.dataset.albumOpen && albumChip.dataset.albumId) {
+		const { openAlbumDetail } = await import('../views/albums.mjs')
+		const { switchView } = await import('../navigation.mjs')
+		await switchView('profile')
+		for (const button of document.querySelectorAll('[data-profile-tab]')) {
+			button.classList.toggle('active', button.dataset.profileTab === 'albums')
+			button.classList.toggle('tab-active', button.dataset.profileTab === 'albums')
+		}
+		for (const panel of document.querySelectorAll('[data-profile-panel]'))
+			panel.classList.toggle('hidden', panel.dataset.profilePanel !== 'albums')
+		const panel = document.getElementById('profileAlbumsPanel')
+		if (panel)
+			await openAlbumDetail(albumChip.dataset.albumOpen, albumChip.dataset.albumId, panel)
+	}
 }

@@ -2,6 +2,7 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { albumsForPostFromView } from '../lib/albumRefs.mjs'
 import { shouldHideAuthorByReputation } from '../federation/reputation/index.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { listFollowedTimelineOwners } from '../following.mjs'
@@ -13,6 +14,7 @@ import {
 	buildEngagementIndex,
 	buildViewerDislikedSet,
 	buildViewerLikedSet,
+	loadViewerContext,
 } from './home.mjs'
 
 /**
@@ -32,7 +34,44 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 		const view = await getTimelineMaterialized(username, viewerEntityHash)
 		viewerPollChoices = view
 	}
-	return { authorProfile, engagementForPost, engagement, viewerLiked, viewerDisliked, viewerPollChoices }
+	const viewerContext = await loadViewerContext(username, viewerEntityHash)
+	/** @type {Map<string, object>} */
+	const albumViewCache = new Map()
+	/**
+	 * @param {string} authorEntityHash 作者
+	 * @param {string} postId 帖
+	 * @returns {{ albumId: string, name: string }[]} 可见相册
+	 */
+	function albumsForPost(authorEntityHash, postId) {
+		const owner = String(authorEntityHash).toLowerCase()
+		let view = albumViewCache.get(owner)
+		if (!view) {
+			// 同步缓存：物化视图通常已在内存；首次 miss 时用空（异步预热由调用方保证）
+			return []
+		}
+		return albumsForPostFromView(view, owner, postId, viewerContext)
+	}
+	/**
+	 * @param {string} authorEntityHash 作者
+	 * @returns {Promise<void>}
+	 */
+	async function warmAlbumView(authorEntityHash) {
+		const owner = String(authorEntityHash).toLowerCase()
+		if (albumViewCache.has(owner)) return
+		albumViewCache.set(owner, await getTimelineMaterialized(username, owner))
+	}
+	return {
+		authorProfile,
+		engagementForPost,
+		engagement,
+		viewerLiked,
+		viewerDisliked,
+		viewerPollChoices,
+		viewerEntityHash,
+		albumsForPost,
+		warmAlbumView,
+		albumViewCache,
+	}
 }
 
 /**

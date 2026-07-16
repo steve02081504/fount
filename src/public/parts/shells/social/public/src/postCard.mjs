@@ -107,10 +107,16 @@ export async function buildPostCard(item) {
 	const canManage = isOwn || isManagedPost
 	const canDelete = canManage
 	const label = authorLabel(item.entityHash, item.authorProfile)
-	const visibilityCode = item.post?.content?.visibility === 'followers' ? 'followers' : 'public'
-	const visibilityIcon = visibilityCode === 'followers'
-		? `<span class="s-ic s-ic-lock post-visibility-icon" title="${geti18n('social.composer.visibilityFollowers')}" aria-label="${geti18n('social.composer.visibilityFollowers')}"></span>`
-		: `<span class="s-ic s-ic-globe post-visibility-icon" title="${geti18n('social.composer.visibilityPublic')}" aria-label="${geti18n('social.composer.visibilityPublic')}"></span>`
+	const { visibilityDisplay } = await import('./visibilityPicker.mjs')
+	const vis = visibilityDisplay(item.post?.content?.visibility, item.post?.content?.minFollowMs)
+	const visLabel = geti18n(vis.labelKey)
+	const visibilityCode = vis.code
+	const visibilityIcon = `<span class="s-ic s-ic-${vis.icon === 'globe' ? 'globe' : 'lock'} post-visibility-icon" title="${visLabel}" aria-label="${visLabel}"></span>`
+	const albumChips = (item.albums || []).length
+		? `<div class="post-album-chips">${item.albums.map(album =>
+			`<button type="button" class="post-album-chip" data-album-open="${escapeHtml(item.entityHash)}" data-album-id="${escapeHtml(album.albumId)}">${escapeHtml(album.name)}</button>`,
+		).join('')}</div>`
+		: ''
 	const likedClass = item.viewerLiked ? ' liked' : ''
 	const dislikedClass = item.viewerDisliked ? ' disliked' : ''
 	const likeLabel = item.viewerLiked
@@ -200,6 +206,7 @@ export async function buildPostCard(item) {
 		quoteHtml,
 		groupRefHtml,
 		contentBlock,
+		albumChips,
 		communityNoteHtml,
 		likedClass,
 		dislikedClass,

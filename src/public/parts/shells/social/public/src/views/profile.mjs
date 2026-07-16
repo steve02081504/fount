@@ -6,6 +6,7 @@ import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/te
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 import { buildPostCard } from '../postCard.mjs'
+import { renderProfileAlbums } from './albums.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { socialState } from '../state.mjs'
 
@@ -239,6 +240,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 		await renderBlocklist(document.getElementById('blocklistSection'))
 
 	await renderProfilePosts(entityHash, document.getElementById('profilePostsPanel'), highlightPostId)
+	await renderProfileAlbums(entityHash, document.getElementById('profileAlbumsPanel'))
 	await renderProfileLikes(entityHash, document.getElementById('profileLikesPanel'))
 	await renderProfileFollowingList(entityHash, document.getElementById('profileFollowingPanel'))
 }

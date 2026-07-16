@@ -11,6 +11,7 @@ import { socialPostKey } from '../federation/post_key.mjs'
 import { reputationSortPenalty, shouldHideAuthorByReputation } from '../federation/reputation/index.mjs'
 import { compareFeedItems, kWayMergeFeedStreams, pickNextFeedStreamIndex } from '../feedMerge.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
+import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
 import { loadFollowing, loadFollowingForActor, listFollowedTimelineOwners } from '../following.mjs'
 import { loadMutedKeywords } from '../mutedKeywords.mjs'
 import { queryReplyIndex } from '../searchIndex.mjs'
@@ -104,7 +105,7 @@ export async function buildViewerDislikedSet(username, viewerEntityHash) {
 /**
  * @param {string} username 用户
  * @param {string} [viewerEntityHash] 可选指定观看实体，默认 operator
- * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>>, mutedKeywords: Awaited<ReturnType<typeof loadMutedKeywords>> }>} 观看者上下文
+ * @returns {Promise<{ viewerEntityHash: string | null, following: Set<string>, followSince: Map<string, number>, personalFilter: Awaited<ReturnType<typeof loadPersonalFilterSets>>, mutedKeywords: Awaited<ReturnType<typeof loadMutedKeywords>>, at: number }>} 观看者上下文
  */
 export async function loadViewerContext(username, viewerEntityHash = null) {
 	const viewer = viewerEntityHash || await resolveOperatorEntityHash(username)
@@ -113,6 +114,17 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 			? (await loadFollowingForActor(username, viewer)).following.map(id => id.toLowerCase())
 			: [],
 	)
+	/** @type {Map<string, number>} */
+	const followSince = new Map()
+	if (viewer) {
+		const { latestFollowWallForAuthor } = await import('../lib/replyPolicy.mjs')
+		const viewerView = await getTimelineMaterialized(username, viewer)
+		for (const author of following) {
+			const wall = latestFollowWallForAuthor(viewerView, author)
+			if (wall != null) followSince.set(author, wall)
+			else if (author === viewer.toLowerCase()) followSince.set(author, 0)
+		}
+	}
 	const personalFilter = viewer
 		? await loadPersonalFilterSets(viewer)
 		: {
@@ -124,7 +136,7 @@ export async function loadViewerContext(username, viewerEntityHash = null) {
 	const mutedKeywords = viewer
 		? await loadMutedKeywords(username, viewer)
 		: { entries: [] }
-	return { viewerEntityHash: viewer, following, personalFilter, mutedKeywords }
+	return { viewerEntityHash: viewer, following, followSince, personalFilter, mutedKeywords, at: Date.now() }
 }
 
 /**
@@ -240,7 +252,7 @@ export async function buildHomeFeed(username, options = {}) {
 				if (!isEntityHash128(entityHash)) continue
 				const view = await getTimelineMaterialized(username, entityHash)
 				for (const post of view.posts || []) {
-					if (post.content?.visibility === 'followers') continue
+					if (!isPublicDiscoverable(post.content)) continue
 					const tags = [
 						...extractHashtagsFromText(post.content?.text || ''),
 						...Array.isArray(post.content?.tags) ? post.content.tags.map(t => String(t).toLowerCase()) : [],

@@ -1,6 +1,10 @@
 import { reduceEntityKeyRevoke, reduceEntityKeyRotate } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 
 import { socialPostKey } from '../federation/post_key.mjs'
+import { normalizeVisibilitySpec, visibilitySpecToContentFields } from '../lib/visibilitySpec.mjs'
+
+/** 虚拟默认相册 id（无事件、不参与密级派生） */
+export const DEFAULT_ALBUM_ID = 'default'
 
 /**
  * Social 时间线物化 reducer 表。
@@ -30,6 +34,10 @@ export function createSocialTimelineState() {
 		activeLives: new Map(),
 		/** @type {Map<string, Record<string, string>>} tagHash → locale → label */
 		tagNames: new Map(),
+		/** @type {Map<string, object>} albumId → album */
+		albums: new Map(),
+		/** @type {Map<string, Set<string>>} postId → albumIds */
+		albumsByPost: new Map(),
 		entityKeyHistory: [],
 		recoveryPubKeyHex: null,
 	}
@@ -63,7 +71,141 @@ function reducePost(state, event) {
  * @returns {object} 更新后状态
  */
 function reducePostDelete(state, event) {
-	state.deletedPostIds.add(event.content.targetPostId)
+	const postId = event.content.targetPostId
+	state.deletedPostIds.add(postId)
+	const albumIds = state.albumsByPost.get(postId)
+	if (albumIds) {
+		for (const albumId of albumIds) {
+			const album = state.albums.get(albumId)
+			if (album) album.postIds = album.postIds.filter(id => id !== postId)
+		}
+		state.albumsByPost.delete(postId)
+	}
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reducePostVisibilitySet(state, event) {
+	const targetPostId = event.content?.targetPostId
+	if (!targetPostId) return state
+	const base = state.posts.get(targetPostId)
+	if (!base) return state
+	const nextContent = event.content?.content
+	if (!nextContent || typeof nextContent !== 'object') return state
+	// 完整 content 快照已含历史编辑；清空 postEdits 避免 finalize 把明文 patch 叠到密文信封上
+	state.postEdits.delete(targetPostId)
+	state.posts.set(targetPostId, {
+		...base,
+		content: nextContent,
+		edited: base.edited || Boolean(base.revisions?.length),
+	})
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceAlbumCreate(state, event) {
+	const albumId = String(event.content?.albumId || event.id || '').trim()
+	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
+	const spec = normalizeVisibilitySpec(event.content)
+	state.albums.set(albumId, {
+		albumId,
+		name: String(event.content?.name || albumId).trim().slice(0, 80) || albumId,
+		description: String(event.content?.description || '').trim().slice(0, 500),
+		...visibilitySpecToContentFields(spec),
+		postIds: [],
+		createdEventId: event.id,
+	})
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceAlbumUpdate(state, event) {
+	const albumId = String(event.content?.albumId || '').trim()
+	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
+	const existing = state.albums.get(albumId)
+	if (!existing) return reduceAlbumCreate(state, event)
+	const spec = normalizeVisibilitySpec({ ...existing, ...event.content })
+	const name = event.content?.name != null
+		? String(event.content.name).trim().slice(0, 80) || existing.name
+		: existing.name
+	const description = event.content?.description != null
+		? String(event.content.description).trim().slice(0, 500)
+		: existing.description
+	state.albums.set(albumId, {
+		...existing,
+		name,
+		description,
+		...visibilitySpecToContentFields(spec),
+	})
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceAlbumDelete(state, event) {
+	const albumId = String(event.content?.albumId || '').trim()
+	if (!albumId || albumId === DEFAULT_ALBUM_ID) return state
+	const album = state.albums.get(albumId)
+	if (!album) return state
+	for (const postId of album.postIds) {
+		const set = state.albumsByPost.get(postId)
+		if (!set) continue
+		set.delete(albumId)
+		if (!set.size) state.albumsByPost.delete(postId)
+	}
+	state.albums.delete(albumId)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceAlbumPostAdd(state, event) {
+	const albumId = String(event.content?.albumId || '').trim()
+	const postId = String(event.content?.postId || '').trim()
+	if (!albumId || !postId || albumId === DEFAULT_ALBUM_ID) return state
+	const album = state.albums.get(albumId)
+	if (!album) return state
+	if (!album.postIds.includes(postId)) album.postIds.push(postId)
+	const set = state.albumsByPost.get(postId) || new Set()
+	set.add(albumId)
+	state.albumsByPost.set(postId, set)
+	return state
+}
+
+/**
+ * @param {object} state 折叠状态
+ * @param {object} event DAG 事件
+ * @returns {object} 更新后状态
+ */
+function reduceAlbumPostRemove(state, event) {
+	const albumId = String(event.content?.albumId || '').trim()
+	const postId = String(event.content?.postId || '').trim()
+	if (!albumId || !postId) return state
+	const album = state.albums.get(albumId)
+	if (album) album.postIds = album.postIds.filter(id => id !== postId)
+	const set = state.albumsByPost.get(postId)
+	if (set) {
+		set.delete(albumId)
+		if (!set.size) state.albumsByPost.delete(postId)
+	}
 	return state
 }
 
@@ -297,6 +439,7 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	post: reducePost,
 	post_edit: reducePostEdit,
 	post_delete: reducePostDelete,
+	post_visibility_set: reducePostVisibilitySet,
 	poll_vote: reducePollVote,
 	post_note: passthroughReducer,
 	note_vote: passthroughReducer,
@@ -321,6 +464,11 @@ export const SOCIAL_TIMELINE_REDUCERS = {
 	state_summary: reduceSocialMeta,
 	file_share: passthroughReducer,
 	follow_approve: passthroughReducer,
+	album_create: reduceAlbumCreate,
+	album_update: reduceAlbumUpdate,
+	album_delete: reduceAlbumDelete,
+	album_post_add: reduceAlbumPostAdd,
+	album_post_remove: reduceAlbumPostRemove,
 }
 
 /**
@@ -361,6 +509,26 @@ export function finalizeSocialTimelineView(state, order) {
 			return laterPost.id.localeCompare(earlierPost.id)
 		})
 
+	const linkedPostIds = new Set(state.albumsByPost.keys())
+	const defaultPostIds = visiblePosts
+		.filter(post => {
+			if (linkedPostIds.has(post.id)) return false
+			if (post.content?.hasMedia) return true
+			const refs = post.content?.mediaRefs
+			return Array.isArray(refs) && refs.length > 0
+		})
+		.map(post => post.id)
+
+	const albums = Object.fromEntries(state.albums)
+	albums[DEFAULT_ALBUM_ID] = {
+		albumId: DEFAULT_ALBUM_ID,
+		name: 'default',
+		description: '',
+		visibility: 'public',
+		postIds: defaultPostIds,
+		virtual: true,
+	}
+
 	return {
 		socialMeta: state.socialMeta,
 		posts: visiblePosts,
@@ -378,6 +546,10 @@ export function finalizeSocialTimelineView(state, order) {
 		),
 		activeLives: Object.fromEntries(state.activeLives),
 		blocked: [...state.blocked],
+		albums,
+		albumsByPost: Object.fromEntries(
+			[...state.albumsByPost.entries()].map(([postId, set]) => [postId, [...set]]),
+		),
 		entityKeyHistory: state.entityKeyHistory,
 		recoveryPubKeyHex: state.recoveryPubKeyHex,
 		tipIds: order.length ? [order[order.length - 1]] : [],

@@ -96,6 +96,10 @@ test.describe('Social composer', () => {
 		await expect(select).toBeVisible()
 		await select.selectOption('followers')
 		await expect(select).toHaveValue('followers')
+		await select.selectOption('unlisted')
+		await expect(select).toHaveValue('unlisted')
+		await select.selectOption('private')
+		await expect(select).toHaveValue('private')
 		await select.selectOption('public')
 	})
 
