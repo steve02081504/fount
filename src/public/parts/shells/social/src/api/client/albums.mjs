@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
-import { canViewAlbum, canViewPost } from '../../feedVisibility.mjs'
 import { buildPostFeedItem } from '../../feed/buildItem.mjs'
 import { loadViewerContext } from '../../feed/home.mjs'
 import { createFeedItemBuildContext } from '../../feed/iterate.mjs'
+import { canViewAlbum, canViewPost } from '../../feedVisibility.mjs'
 import { albumsForPostFromView } from '../../lib/albumRefs.mjs'
 import { ensureEntitySocialReady } from '../../lib/bootstrap.mjs'
 import { setPostVisibility } from '../../lib/postVisibility.mjs'
@@ -234,7 +234,12 @@ export function createAlbumsMethods(apiContext) {
 					new Set([owner]),
 					apiContext.entityHash,
 				)
-				itemContext.albumsForPost = (author, postId) => albumsForPostFromView(view, owner, postId, viewerContext)
+				/**
+				 * @param {string} _author 作者（忽略，用外层 owner）
+				 * @param {string} postId 帖 id
+				 * @returns {{ albumId: string, name: string }[]} 可见相册
+				 */
+				itemContext.albumsForPost = (_author, postId) => albumsForPostFromView(view, owner, postId, viewerContext)
 
 				/** @type {object[]} */
 				const items = []

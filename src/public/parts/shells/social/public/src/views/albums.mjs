@@ -41,7 +41,7 @@ export async function renderProfileAlbums(entityHash, container) {
 		card.dataset.albumOpen = entityHash
 		card.dataset.albumId = album.albumId
 		const displayName = album.virtual ? geti18n('social.albums.defaultName') : album.name
-		const visKey = album.visibility === 'followers_since' ? 'followers7d' : (album.visibility || 'public')
+		const visKey = album.visibility === 'followers_since' ? 'followers7d' : album.visibility || 'public'
 		card.innerHTML = `
 			<div class="album-card-cover">${escapeHtml(displayName)}</div>
 			<div class="album-card-meta">
@@ -76,7 +76,7 @@ export async function openAlbumDetail(entityHash, albumId, backContainer = null)
 	header.className = 'album-detail-header'
 	header.innerHTML = `
 		<button type="button" class="btn btn-ghost btn-sm" data-album-back>${escapeHtml(geti18n('social.albums.back'))}</button>
-		<h3>${escapeHtml(album.name)}</h3>
+		<h3>${escapeHtml(album.virtual ? geti18n('social.albums.defaultName') : album.name)}</h3>
 		<p class="muted">${escapeHtml(album.description || '')}</p>
 		${isSelf && !album.virtual ? `
 			<div class="album-detail-actions">
@@ -129,8 +129,8 @@ async function openCreateAlbumDialog(onDone) {
 	})
 	bindVisibilityPicker(dialog)
 	dialog.querySelector('[data-album-submit]')?.addEventListener('click', async () => {
-		const name = /** @type {HTMLInputElement} */(dialog.querySelector('[data-album-name]'))?.value?.trim()
-		const description = /** @type {HTMLTextAreaElement} */(dialog.querySelector('[data-album-description]'))?.value?.trim() || ''
+		const name = /** @type {HTMLInputElement} */dialog.querySelector('[data-album-name]')?.value?.trim()
+		const description = /** @type {HTMLTextAreaElement} */dialog.querySelector('[data-album-description]')?.value?.trim() || ''
 		if (!name) return
 		await socialApi('/albums', {
 			method: 'POST',
@@ -170,8 +170,8 @@ async function openEditAlbumDialog(album, onDone) {
 	})
 	bindVisibilityPicker(dialog)
 	dialog.querySelector('[data-album-submit]')?.addEventListener('click', async () => {
-		const name = /** @type {HTMLInputElement} */(dialog.querySelector('[data-album-name]'))?.value?.trim()
-		const description = /** @type {HTMLTextAreaElement} */(dialog.querySelector('[data-album-description]'))?.value?.trim() || ''
+		const name = /** @type {HTMLInputElement} */dialog.querySelector('[data-album-name]')?.value?.trim()
+		const description = /** @type {HTMLTextAreaElement} */dialog.querySelector('[data-album-description]')?.value?.trim() || ''
 		if (!name) return
 		await socialApi(`/albums/${album.albumId}/update`, {
 			method: 'POST',

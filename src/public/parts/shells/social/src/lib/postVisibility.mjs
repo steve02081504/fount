@@ -4,7 +4,6 @@
 import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../scripts/http_error.mjs'
-
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent, maybeEncryptPostContent } from '../vault_crypto/vault.mjs'

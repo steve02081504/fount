@@ -13,7 +13,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 - **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
 - **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid.
-- **Run report**: `data/test/report.md` + `report.json` — last run only. **Suite sum** = non-reused slot durations; **wall clock** = run span; **parallel rate** = suite sum / wall clock × 100% − 100% (≈0% serial, higher = more parallelism). Trigger reasons in `data/test/triggered-reasons.md`. Wave/reason details: [continue-report.md](docs/continue-report.md).
+- **Run report**: `data/test/report.md` + `report.json` — last run only. **Suite sum** = non-reused slot durations; **wall clock** = run span; **parallel rate** = suite sum / wall clock × 100% − 100% (≈0% serial, higher = more parallelism). Trigger reasons in `data/test/triggered-reasons.md`. Dead trigger globs (no repo file match) warn on console and appear in `report.md`. Wave/reason details: [continue-report.md](docs/continue-report.md).
 - **Default loop** (bare `fount test`): imperfect wave (failed/noisy/blocked/missing + one-level dependents) → on failure exit 1; on all-green → outdated wave (verdict `unknown`) → back to imperfect check; both empty → exit 0. Never full-repo scan (use `--all`). Failure is not auto-retried within the same invocation.
 - **Failure-first inside suite**: `FOUNT_TEST_FIRST` = last `failedFiles`; run those first; if any still fail after the failure group finishes, exit without running the rest. Failure group all green → run remaining. Protocol: [core/protocol.mjs](core/protocol.mjs).
 - **Subtests**: suite may register `subtests: [{ name, triggers|trigger, spec? }]` in manifest. Suite-level `trigger` = shared infra (hit → all subtests stale); each subtest has its own triggers (prefer inline `triggers` globs when only used once — no single-use triggerSet) + state fingerprint. Selector: `manifest:suite:subtest` / `manifest/suite/subtest`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Plan slots stay suite-scoped but carry `subtestsToRun`.
@@ -34,6 +34,7 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | `live/env.mjs` | `FOUNT_TEST_BASE_URL` / `FOUNT_API_KEY` |
 | `core/state.mjs` | state DB read/write/upsert, fingerprint refresh |
 | `core/verdict.mjs` | one-pass suite verdicts (green/noisy/red/unknown) |
+| `core/trigger_audit.mjs` | dead trigger glob audit (no repo file match → warn + report) |
 | `core/plan.mjs` | goals + verdicts → reuse/run/blocked plan |
 | `core/selector.mjs` | `manifest:suite` / `manifest/suite` resolution |
 | `core/dependencies.mjs` | `dependsOn` resolve, topo sort, imperfect one-level dependents |

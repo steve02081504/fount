@@ -2,13 +2,13 @@ import { Buffer } from 'node:buffer'
 import { randomUUID, createCipheriv, createDecipheriv, randomBytes } from 'node:crypto'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
+import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	deriveSocialPostKey,
 	generateFileMasterKey,
 	wrapKeyEcies,
 	unwrapKeyEcies,
 } from 'npm:@steve02081504/fount-p2p/crypto/key'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
 import { vaultGroupId } from '../federation/namespace.mjs'
 import {

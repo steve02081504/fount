@@ -79,7 +79,6 @@
 			"src/public/parts/shells/social/public/styles.css",
 			"src/public/parts/shells/social/public/src/init.mjs",
 			"src/public/parts/shells/social/public/src/state.mjs",
-			"src/public/parts/shells/social/public/src/createContext.mjs",
 			"src/public/parts/shells/social/public/src/gate.mjs",
 			"src/public/parts/shells/social/public/src/lib/apiClient.mjs",
 			"src/public/parts/shells/social/public/src/lib/socialWrite.mjs",
@@ -145,6 +144,7 @@
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",
 						"src/public/parts/shells/social/public/src/composer.mjs",
+						"src/public/parts/shells/social/public/src/visibilityPicker.mjs",
 						"src/public/parts/shells/social/public/src/actions/composerFeed.mjs"
 					]
 				},
@@ -177,6 +177,7 @@
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/profile.mjs",
+						"src/public/parts/shells/social/public/src/views/albums.mjs",
 						"src/public/parts/shells/social/public/src/actions/postProfile.mjs",
 						"src/public/parts/shells/social/public/src/actions/postProfileActions.mjs",
 						"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs"

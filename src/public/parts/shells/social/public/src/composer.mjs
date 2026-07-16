@@ -6,11 +6,11 @@ import { socialApi } from './lib/apiClient.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
+import { socialState } from './state.mjs'
 import { bindVisibilityPicker, readVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { socialState } from './state.mjs'
 
 /** @type {number} */
 let quotePreviewGeneration = 0

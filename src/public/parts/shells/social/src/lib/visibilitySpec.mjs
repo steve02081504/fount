@@ -58,9 +58,9 @@ export function normalizeVisibilitySpec(draft = {}) {
 	const raw = typeof draft === 'string' ? { visibility: draft } : draft || {}
 	const presetKey = String(raw.visibility || raw.preset || '').trim()
 	const preset = VISIBILITY_UI_PRESETS[presetKey]
-	let visibility = /** @type {SocialVisibility} */ (
+	let visibility = /** @type {SocialVisibility} */ 
 		preset ? preset.visibility : String(raw.visibility || 'public').trim()
-	)
+	
 	if (!SOCIAL_VISIBILITIES.has(visibility)) visibility = 'public'
 
 	/** @type {{ visibility: SocialVisibility, minFollowMs?: number, allow?: string[], except?: string[] }} */
@@ -73,13 +73,13 @@ export function normalizeVisibilitySpec(draft = {}) {
 			: VISIBILITY_UI_PRESETS.followers_7d.minFollowMs
 	}
 
-	if (visibility === 'selected') {
+	if (visibility === 'selected') 
 		spec.allow = normalizeEntityHashList(raw.allow)
-	}
+	
 
-	if (visibility === 'private') {
+	if (visibility === 'private') 
 		spec.allow = []
-	}
+	
 
 	if (visibility === 'public' || visibility === 'unlisted' || visibility === 'followers' || visibility === 'followers_since') {
 		const except = normalizeEntityHashList(raw.except)

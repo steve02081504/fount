@@ -2,10 +2,10 @@ import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isEntityHashBlocked } from 'npm:@steve02081504/fount-p2p/node/denylist'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
-import { albumsForPostFromView } from '../lib/albumRefs.mjs'
 import { shouldHideAuthorByReputation } from '../federation/reputation/index.mjs'
 import { canViewPost } from '../feedVisibility.mjs'
 import { listFollowedTimelineOwners } from '../following.mjs'
+import { albumsForPostFromView } from '../lib/albumRefs.mjs'
 import { createAuthorProfileLoader } from '../lib/authorProfileSummary.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 
@@ -44,11 +44,11 @@ export async function createFeedItemBuildContext(username, owners, viewerEntityH
 	 */
 	function albumsForPost(authorEntityHash, postId) {
 		const owner = String(authorEntityHash).toLowerCase()
-		let view = albumViewCache.get(owner)
-		if (!view) {
+		const view = albumViewCache.get(owner)
+		if (!view) 
 			// 同步缓存：物化视图通常已在内存；首次 miss 时用空（异步预热由调用方保证）
 			return []
-		}
+		
 		return albumsForPostFromView(view, owner, postId, viewerContext)
 	}
 	/**

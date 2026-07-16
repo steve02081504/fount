@@ -44,6 +44,7 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'post',
 	'post_edit',
 	'post_delete',
+	'post_visibility_set',
 	'poll_vote',
 	'post_note',
 	'note_vote',
@@ -68,6 +69,11 @@ export const SOCIAL_TIMELINE_EVENT_TYPES = new Set([
 	'entity_key_rotate',
 	'entity_key_revoke',
 	'state_summary',
+	'album_create',
+	'album_update',
+	'album_delete',
+	'album_post_add',
+	'album_post_remove',
 ])
 
 /** @type {Set<string>} */
