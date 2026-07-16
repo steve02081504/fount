@@ -3,6 +3,8 @@ let activeObserver = null
 
 /**
  * 绑定 IntersectionObserver 无限滚动。
+ * 同一轮「进入相交」只触发一次；离开后再进入才允许下一次。
+ * 分页链式加载靠调用方在 onLoad 结束后 `bindInfiniteScroll` 重绑（新观察者 armed=true）。
  * @param {object} options 选项
  * @param {Element | null} [options.root] 滚动根（缺省 viewport）
  * @param {Element} options.sentinel 哨兵元素
@@ -15,9 +17,16 @@ export function bindInfiniteScroll({ root = null, sentinel, hasMore, onLoad, roo
 	disconnectInfiniteScroll()
 	if (!sentinel || !hasMore()) return
 	let loading = false
+	/** 离开相交后重新武装；防止 onLoad 内挪动哨兵导致同一次停留连触发 */
+	let armed = true
 	activeObserver = new IntersectionObserver(entries => {
-		if (!entries.some(entry => entry.isIntersecting)) return
-		if (loading || !hasMore()) return
+		const intersecting = entries.some(entry => entry.isIntersecting)
+		if (!intersecting) {
+			armed = true
+			return
+		}
+		if (!armed || loading || !hasMore()) return
+		armed = false
 		loading = true
 		Promise.resolve(onLoad()).finally(() => { loading = false })
 	}, { root, rootMargin })
@@ -46,7 +55,7 @@ export function ensureScrollSentinel(container, sentinelId) {
 		// 避免 scroll anchoring 把哨兵钉在视口内，导致重绑 observer 后立刻再触发
 		sentinel.style.overflowAnchor = 'none'
 	}
-	if (sentinel.parentElement !== container)
+	if (sentinel.parentElement !== container || container.lastElementChild !== sentinel)
 		container.appendChild(sentinel)
 	return sentinel
 }
