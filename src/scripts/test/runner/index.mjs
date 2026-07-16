@@ -13,7 +13,7 @@ import {
 import { computeGlobalBudget } from '../core/concurrency.mjs'
 import { reportDenoPanic } from '../core/deno_panic.mjs'
 import { topoSortSuites } from '../core/dependencies.mjs'
-import { buildEstimateTasksFromPlan, summarizeEstimate } from '../core/estimate.mjs'
+import { buildEstimateTasksFromPlan, expectedRunDurationMs, summarizeEstimate } from '../core/estimate.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import {
 	filterSuites,
@@ -26,13 +26,12 @@ import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
 import {
-	getSuiteBaselineDurationMs,
 	readState,
 	refreshEntryFingerprint,
-	refreshStateMarkdown,
 	suiteKey,
 	upsertSuiteRun,
 	writeState,
+	writeStateMarkdown,
 } from '../core/state.mjs'
 import { buildVerdicts } from '../core/verdict.mjs'
 
@@ -389,7 +388,8 @@ async function executeWave(context) {
 			return { passed: false }
 		}
 
-		const baselineDurationMs = getSuiteBaselineDurationMs(prev)
+		const subtests = slot.subtestsToRun
+		const baselineDurationMs = expectedRunDurationMs(suite, prev, subtests)
 		const expected = formatExpectedDuration(baselineDurationMs)
 		console.log(formatRunningSuiteMessage({
 			manifestId: suite.manifestId,
@@ -401,7 +401,6 @@ async function executeWave(context) {
 
 		const firstMap = failedFirstByManifest.get(suite.manifestId)
 		const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
-		const subtests = slot.subtestsToRun
 		const result = await runSuite(suite, { firstFiles, subtests }, globalBudget, streamLive, {
 			label,
 			baselineDurationMs,
@@ -437,7 +436,7 @@ async function executeWave(context) {
 
 	const exitCode = exitCodeFromSlots(reportWriter.slots)
 	const finalReportPath = await reportWriter.finalize(exitCode)
-	await refreshStateMarkdown(REPO_ROOT, allSuites, state, buildStaleKeys(allSuites, verdicts, state))
+	await writeStateMarkdown(REPO_ROOT, allSuites, state, buildStaleKeys(allSuites, verdicts, state))
 
 	const completedSlots = reportWriter.slots.filter(slot => slot.state === 'done')
 	if (exitCode !== 0 && completedSlots.length

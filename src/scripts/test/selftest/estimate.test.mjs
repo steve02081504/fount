@@ -6,6 +6,7 @@ import {
 	buildEstimateTask,
 	buildEstimateTasksFromPlan,
 	estimateEtaMs,
+	expectedRunDurationMs,
 	GAP_OVERHEAD_MS,
 	serialSumMs,
 	simulateParallelMakespanMs,
@@ -74,6 +75,51 @@ Deno.test('buildEstimateTask uses baseline and marks reused as zero', () => {
 	assertEquals(fresh.durationMs, 18_000)
 	const reused = buildEstimateTask(suite, stateEntry, { reused: true })
 	assertEquals(reused.durationMs, 0)
+})
+
+Deno.test('expectedRunDurationMs without subtests uses suite baseline', () => {
+	const suite = makeSuite('shells/chat', 'ws')
+	assertEquals(expectedRunDurationMs(suite, makeStateEntry({ baselineDurationMs: 12_000 })), 12_000)
+	assertEquals(expectedRunDurationMs(suite, undefined), null)
+})
+
+Deno.test('expectedRunDurationMs sums overhead and selected subtests', () => {
+	const suite = makeSuite('shells/social', 'frontend', {
+		subtests: [
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [] },
+			{ name: 'profile', spec: 'profile.spec.mjs', triggers: [] },
+			{ name: 'smoke', spec: 'smoke.spec.mjs', triggers: [] },
+		],
+	})
+	const entry = makeStateEntry({
+		baselineDurationMs: 90_000,
+		baselineOverheadMs: 10_000,
+		subtests: {
+			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 20_000, triggerHash: null },
+			profile: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 30_000, triggerHash: null },
+			smoke: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 15_000, triggerHash: null },
+		},
+	})
+	assertEquals(expectedRunDurationMs(suite, entry, ['feed']), 30_000)
+	assertEquals(expectedRunDurationMs(suite, entry, ['feed', 'profile']), 60_000)
+	assertEquals(expectedRunDurationMs(suite, entry), 75_000)
+})
+
+Deno.test('expectedRunDurationMs falls back to known mean for missing subtest', () => {
+	const suite = makeSuite('shells/social', 'frontend', {
+		subtests: [
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [] },
+			{ name: 'profile', spec: 'profile.spec.mjs', triggers: [] },
+		],
+	})
+	const entry = makeStateEntry({
+		baselineOverheadMs: 5_000,
+		subtests: {
+			feed: { status: 'passed', commitHash: 'abc', uncommittedHash: null, ranAt: '', durationMs: 20_000, triggerHash: null },
+		},
+	})
+	// profile missing → use known mean (20_000) + overhead
+	assertEquals(expectedRunDurationMs(suite, entry, ['feed', 'profile']), 45_000)
 })
 
 Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {

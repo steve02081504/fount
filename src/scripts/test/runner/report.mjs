@@ -122,36 +122,6 @@ export class RunReportWriter {
 	}
 
 	/**
-	 * @returns {{ index: number, manifestId: string, name: string }[]} pending 槽位
-	 */
-	get pendingSlots() {
-		/** @type {{ index: number, manifestId: string, name: string }[]} */
-		const pending = []
-		for (let index = 0; index < this.slots.length; index++) {
-			const slot = this.slots[index]
-			if (slot.state === 'pending')
-				pending.push({ index, manifestId: slot.manifestId, name: slot.name })
-		}
-		return pending
-	}
-
-	/**
-	 * @param {Map<string, ContinueReason>} continueReasons suite 键 -> 续跑原因
-	 * @returns {Promise<void>}
-	 */
-	stampContinueReasons(continueReasons) {
-		return this.#enqueue(async () => {
-			for (let index = 0; index < this.slots.length; index++) {
-				const slot = this.slots[index]
-				const reason = continueReasons.get(suiteKey(slot.manifestId, slot.name))
-				if (reason)
-					this.slots[index] = { ...slot, continueReason: reason }
-			}
-			await this.#writeFiles()
-		})
-	}
-
-	/**
 	 * @returns {ReturnType<typeof summarizeEstimate> | null} 待运行套件的剩余预估
 	 */
 	summarizePendingEstimate() {
@@ -378,14 +348,8 @@ function formatReasonKindLabel(kind, { strict = false } = {}) {
 			return geti18n('fountConsole.test.report.reasonMissingRecord')
 		case 'stale_content':
 			return geti18n('fountConsole.test.report.reasonStaleContent')
-		case 'diff_trigger_hit':
-			return geti18n('fountConsole.test.report.reasonDiffTrigger')
-		case 'diff_dependent':
-			return geti18n('fountConsole.test.report.reasonDiffDependent')
 		case 'explicit_selected':
 			return geti18n('fountConsole.test.report.reasonExplicitSelected')
-		case 'failure_retry':
-			return geti18n('fountConsole.test.report.reasonFailureRetry')
 		case 'dependency_required':
 			return geti18n('fountConsole.test.report.reasonDependencyRequired')
 	}

@@ -46,19 +46,68 @@ function taskDurationMs(task) {
 }
 
 /**
+ * 估算本次将跑的墙钟耗时（毫秒）。
+ * 无子测试 → baselineDurationMs；
+ * 有子测试 → overhead + Σ(子测试 baseline；缺失时用已知均值或全量均摊)。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
- * @param {{ reused?: boolean }} [options] 选项
+ * @param {string[] | undefined} subtestsToRun 本次子测试；省略 = 全部
+ * @returns {number | null} 预估毫秒；无任何基线时 null
+ */
+export function expectedRunDurationMs(suite, entry, subtestsToRun) {
+	if (!suite.subtests?.length)
+		return getSuiteBaselineDurationMs(entry) ?? null
+
+	const names = subtestsToRun?.length
+		? subtestsToRun
+		: suite.subtests.map(st => st.name)
+	if (!names.length) return 0
+
+	const known = suite.subtests
+		.map(st => entry?.subtests?.[st.name]?.durationMs)
+		.filter(ms => ms != null && Number.isFinite(ms) && ms > 0)
+	const knownMean = known.length
+		? known.reduce((a, b) => a + b, 0) / known.length
+		: null
+
+	const fullBaseline = getSuiteBaselineDurationMs(entry)
+	const overhead = entry?.baselineOverheadMs
+	const perFallback = knownMean
+		?? (fullBaseline != null
+			? Math.max(0, fullBaseline - (overhead ?? 0)) / suite.subtests.length
+			: null)
+
+	let sum = 0
+	let any = false
+	for (const name of names) {
+		const ms = entry?.subtests?.[name]?.durationMs
+		if (ms != null && Number.isFinite(ms) && ms > 0) {
+			sum += ms
+			any = true
+		}
+		else if (perFallback != null) {
+			sum += perFallback
+			any = true
+		}
+	}
+	if (!any) return fullBaseline ?? null
+	return Math.round(sum + (overhead ?? 0))
+}
+
+/**
+ * @param {SuiteDef} suite suite
+ * @param {SuiteStateEntry | undefined} entry 现状条目
+ * @param {{ reused?: boolean, subtestsToRun?: string[] }} [options] 选项
  * @returns {EstimateTask} 预估任务
  */
-export function buildEstimateTask(suite, entry, { reused = false } = {}) {
+export function buildEstimateTask(suite, entry, { reused = false, subtestsToRun } = {}) {
 	const key = suiteKey(suite.manifestId, suite.name)
 	const resources = resolveSuiteResources(suite, entry)
 	return {
 		key,
 		manifestId: suite.manifestId,
 		name: suite.name,
-		durationMs: reused ? 0 : getSuiteBaselineDurationMs(entry) ?? null,
+		durationMs: reused ? 0 : expectedRunDurationMs(suite, entry, subtestsToRun),
 		reused,
 		blocked: false,
 		memMb: resources.memMb,
@@ -81,7 +130,9 @@ export function buildEstimateTasksFromPlan(slots, state) {
 			key: slot.key,
 			manifestId: slot.suite.manifestId,
 			name: slot.suite.name,
-			durationMs: slot.action === 'reuse' ? 0 : getSuiteBaselineDurationMs(entry) ?? null,
+			durationMs: slot.action === 'reuse'
+				? 0
+				: expectedRunDurationMs(slot.suite, entry, slot.subtestsToRun),
 			reused: slot.action === 'reuse',
 			blocked: slot.action === 'blocked',
 			memMb: resources.memMb,

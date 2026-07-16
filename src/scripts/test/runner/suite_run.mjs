@@ -1,11 +1,11 @@
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import process from 'node:process'
 
 import { applyBudgetToEnv } from '../core/concurrency.mjs'
 import { filterTestOutput } from '../core/output_filter.mjs'
-import { readFailuresOutFile, toRepoRelative } from '../core/protocol.mjs'
+import { readFailuresOutFile, readTimingsOutFile, toRepoRelative } from '../core/protocol.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { suiteUsesSerialRunner } from '../core/resources.mjs'
 
@@ -39,15 +39,17 @@ export function applyTestHeapCapToDenoRun(command) {
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
  * @param {SuiteInvocationOptions} options 调用选项
  * @param {string} failuresOut 失败输出临时文件
+ * @param {string} timingsOut 耗时输出临时文件
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @returns {{ command: string[], env: Record<string, string> }} 命令与环境
  */
-export function buildSuiteInvocation(suite, options, failuresOut, globalBudget) {
+export function buildSuiteInvocation(suite, options, failuresOut, timingsOut, globalBudget) {
 	const { firstFiles, subtests, onlyFiles } = options ?? {}
 	const env = {
 		FOUNT_TEST: '1',
 		FOUNT_TEST_KEEP_GOING: '1',
 		FOUNT_TEST_FAILURES_OUT: failuresOut,
+		FOUNT_TEST_TIMINGS_OUT: timingsOut,
 		FOUNT_TEST_SCOPE: suite.manifestId,
 		FOUNT_TEST_ONLY: onlyFiles?.length ? onlyFiles.join('\n') : '',
 		FOUNT_TEST_FIRST: firstFiles?.length ? firstFiles.join('\n') : '',
@@ -60,12 +62,44 @@ export function buildSuiteInvocation(suite, options, failuresOut, globalBudget) 
 }
 
 /**
+ * 将 per-spec 耗时映射为子测试名 → 毫秒。
+ * @param {import('../core/manifest.mjs').SuiteDef} suite suite
+ * @param {Record<string, number>} timings 仓库相对路径 → 毫秒
+ * @param {string[] | undefined} ranSubtests 本次跑过的子测试名
+ * @returns {Record<string, number>} 子测试名 → 毫秒
+ */
+export function mapTimingsToSubtests(suite, timings, ranSubtests) {
+	if (!suite.subtests?.length || !timings) return {}
+	const names = ranSubtests?.length
+		? ranSubtests
+		: suite.subtests.map(st => st.name)
+	const byName = new Map(suite.subtests.map(st => [st.name, st]))
+	/** @type {Record<string, number>} */
+	const out = {}
+	for (const name of names) {
+		const subtest = byName.get(name)
+		if (!subtest) continue
+		const spec = subtest.spec.replace(/\\/g, '/')
+		const stem = basename(spec)
+		let matched = 0
+		for (const [path, ms] of Object.entries(timings)) {
+			const rel = path.replace(/\\/g, '/')
+			if (rel === spec || rel.endsWith(`/${spec}`) || basename(rel) === stem)
+				matched += ms
+		}
+		if (matched > 0) out[name] = matched
+	}
+	return out
+}
+
+/**
  * @typedef {object} SuiteRunResult
  * @property {boolean} passed
  * @property {number} exitCode
  * @property {string[]} failedFiles
  * @property {string} output
  * @property {number} durationMs
+ * @property {Record<string, number>} [subtestDurations] 子测试名 → 毫秒
  * @property {number} [peakMemMb]
  * @property {number} [avgCpuPct]
  * @property {boolean} [terminated]
@@ -74,33 +108,33 @@ export function buildSuiteInvocation(suite, options, failuresOut, globalBudget) 
 
 /**
  * @param {import('../core/manifest.mjs').SuiteDef} suite suite
- * @param {SuiteInvocationOptions | string[] | undefined} optionsOrFirst 调用选项或旧版 firstFiles
+ * @param {SuiteInvocationOptions | undefined} options 调用选项
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
  * @returns {Promise<SuiteRunResult>} 运行结果
  */
-export async function runSuite(suite, optionsOrFirst, globalBudget, stream = false, watchdog = {}) {
-	const options = Array.isArray(optionsOrFirst) || optionsOrFirst == null
-		? { firstFiles: optionsOrFirst }
-		: optionsOrFirst
+export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
 	const tempDir = await mkdtemp(join(tmpdir(), 'fount-test-'))
 	const failuresOut = join(tempDir, 'failures.json')
+	const timingsOut = join(tempDir, 'timings.json')
 	const started = Date.now()
 	try {
-		const { command, env } = buildSuiteInvocation(suite, options, failuresOut, globalBudget)
+		const { command, env } = buildSuiteInvocation(suite, options ?? {}, failuresOut, timingsOut, globalBudget)
 		const { code, output, terminated, terminateReason, peakMemMb, avgCpuPct } = await runCommand(command, env, {
 			stream,
 			cwd: REPO_ROOT,
 			label: watchdog.label,
 			baselineDurationMs: watchdog.baselineDurationMs,
 		})
+		const timings = await readTimingsOutFile(timingsOut)
 		return {
 			passed: code === 0 && !terminated,
 			exitCode: code,
 			failedFiles: (await readFailuresOutFile(failuresOut)).map(file => toRepoRelative(REPO_ROOT, file)),
 			output: filterTestOutput(output),
 			durationMs: Date.now() - started,
+			subtestDurations: mapTimingsToSubtests(suite, timings, options?.subtests),
 			peakMemMb,
 			avgCpuPct,
 			terminated,

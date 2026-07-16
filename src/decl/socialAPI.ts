@@ -4,7 +4,7 @@
  * 时间线骨架字段见 `DAGEvent`（`p2pAPI.ts`）；群物化状态不在此文件。
  */
 
-import type { DAGEvent, PersonalListEntry, PersonalListsResponse } from './p2pAPI.ts'
+import type { DAGEvent, PersonalListsResponse } from './p2pAPI.ts'
 
 /** 帖子可见范围：公开或仅关注者（followers 帖 GSH 加密）。 */
 export type SocialVisibility = 'public' | 'followers'
@@ -309,9 +309,6 @@ export interface SocialNotificationsPage {
 	unreadCount: number
 	viewerEntityHash: string | null
 }
-
-/** @deprecated 使用 {@link PersonalListEntry}（`p2pAPI.ts`） */
-export type SocialPersonalListEntry = PersonalListEntry
 
 /** `GET …/profile/personal-lists` 与 chat `/api/parts/shells:chat/personal-lists` 共用。 */
 export type SocialPersonalListsResponse = PersonalListsResponse

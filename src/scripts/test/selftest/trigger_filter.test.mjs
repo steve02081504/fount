@@ -1,7 +1,6 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { selectSuitesByDiff } from '../core/manifest.mjs'
 import { collectTriggerEvidence } from '../core/state.mjs'
 import { filterTriggerRelevantFiles, mergeTriggerFilter } from '../core/trigger_filter.mjs'
 import { isContentFresh } from '../core/verdict.mjs'
@@ -33,31 +32,25 @@ Deno.test('isContentFresh stays fresh when only docs or manifest change', () => 
 	assertEquals(isContentFresh(s, makeStateEntry(), changed, new Map()), true)
 })
 
-Deno.test('selectSuitesByDiff skips doc-only changes', () => {
-	const all = [
-		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
-		makeSuite('server', 'live', { triggers: ['src/server/**'] }),
-	]
+Deno.test('collectTriggerEvidence skips doc-only changes', () => {
+	const suite = makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] })
 	const docOnly = [
 		'src/public/parts/shells/chat/test/manifest.json',
 		'src/server/p2p_server/AGENTS.md',
 	]
-	assertEquals(selectSuitesByDiff('diff', docOnly, all), [])
+	assertEquals(collectTriggerEvidence(suite, docOnly).matchedPaths, [])
 })
 
-Deno.test('selectSuitesByDiff still matches code and test infra changes', () => {
-	const all = [
-		makeSuite('testkit', 'state', { triggers: ['src/scripts/test/core/state.mjs'] }),
-		makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] }),
-		makeSuite('server', 'live', { triggers: ['src/server/**'] }),
-	]
+Deno.test('collectTriggerEvidence matches code paths under triggers', () => {
+	const suite = makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/**'] })
 	assertEquals(
-		selectSuitesByDiff('diff', ['src/public/parts/shells/chat/src/foo.mjs'], all).map(s => s.name),
-		['pure'],
+		collectTriggerEvidence(suite, ['src/public/parts/shells/chat/src/foo.mjs']).matchedPaths,
+		['src/public/parts/shells/chat/src/foo.mjs'],
 	)
+	const infra = makeSuite('testkit', 'state', { triggers: ['src/scripts/test/core/state.mjs'] })
 	assertEquals(
-		selectSuitesByDiff('diff', ['src/scripts/test/core/state.mjs'], all).map(s => `${s.manifestId}/${s.name}`).sort(),
-		['testkit/state'],
+		collectTriggerEvidence(infra, ['src/scripts/test/core/state.mjs']).matchedPaths,
+		['src/scripts/test/core/state.mjs'],
 	)
 })
 
@@ -72,10 +65,6 @@ Deno.test('triggerFilter unignore restores md for one suite only', () => {
 	assertEquals(filterTriggerRelevantFiles([mdPath], mdSuite.triggerFilter), [mdPath])
 	assertEquals(collectTriggerEvidence(defaultSuite, [mdPath]).matchedPaths, [])
 	assertEquals(collectTriggerEvidence(mdSuite, [mdPath]).matchedPaths, [mdPath])
-	assertEquals(
-		selectSuitesByDiff('diff', [mdPath], [defaultSuite, mdSuite]).map(s => s.name),
-		['docs'],
-	)
 })
 
 Deno.test('triggerFilter ignoreDefaults false only applies custom ignore', () => {

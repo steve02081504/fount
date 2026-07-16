@@ -3,7 +3,6 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
 	detectDependencyCycle,
-	expandDiffDependents,
 	expandImperfectDependents,
 	resolveSuiteDependencies,
 	sortManifestIds,
@@ -139,17 +138,6 @@ Deno.test('expandImperfectDependents adds one downstream level', () => {
 	]
 	const imperfect = new Set(['shells/chat/parent'])
 	const expanded = expandImperfectDependents(imperfect, all)
-	assertEquals([...expanded].sort(), ['shells/chat/child', 'shells/chat/parent'])
-})
-
-Deno.test('expandDiffDependents adds one downstream level', () => {
-	const all = [
-		makeSuite('shells/chat', 'parent'),
-		makeSuite('shells/chat', 'child', { dependsOn: ['parent'] }),
-		makeSuite('shells/chat', 'grandchild', { dependsOn: ['child'] }),
-	]
-	const hit = new Set(['shells/chat/parent'])
-	const expanded = expandDiffDependents(hit, all)
 	assertEquals([...expanded].sort(), ['shells/chat/child', 'shells/chat/parent'])
 })
 

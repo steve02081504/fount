@@ -7,6 +7,7 @@
  *   FOUNT_TEST_FIRST         — 换行分隔的仓库相对路径；这些先跑，失败组有复现则跑完失败组即退
  *   FOUNT_TEST_SUBTESTS      — 换行分隔的子测试名；省略则跑 suite 全部已注册子测试
  *   FOUNT_TEST_FAILURES_OUT  — 失败时写入 JSON 数组 string[]（仓库相对路径）
+ *   FOUNT_TEST_TIMINGS_OUT   — 可选；写入 JSON 对象 Record<path, ms>（仓库相对 spec → 耗时）
  *   FOUNT_TEST_KEEP_GOING    — `1` 时失败后继续并汇总（失败组复现时仍中止）
  *   FOUNT_TEST_SCOPE         — Playwright 产物 scope（manifest id）
  */
@@ -150,6 +151,50 @@ export async function readFailuresOutFile(path) {
 	}
 	catch (error) {
 		if (error?.code === 'ENOENT') return []
+		throw error
+	}
+}
+
+/**
+ * 异步写入 per-spec 耗时表。
+ * @param {string} outPath 输出 JSON 路径
+ * @param {Record<string, number>} timings 仓库相对路径 → 毫秒
+ * @returns {Promise<void>}
+ */
+export async function writeTimingsOutFile(outPath, timings) {
+	if (!outPath || !timings || !Object.keys(timings).length) return
+	/** @type {Record<string, number>} */
+	const normalized = {}
+	for (const [path, ms] of Object.entries(timings)) {
+		if (ms == null || !Number.isFinite(ms) || ms < 0) continue
+		normalized[path.replace(/\\/g, '/')] = ms
+	}
+	if (!Object.keys(normalized).length) return
+	await writeFile(outPath, `${JSON.stringify(normalized)}\n`, 'utf8')
+}
+
+/**
+ * 读取子进程写入的 per-spec 耗时表。
+ * @param {string} path JSON 路径
+ * @returns {Promise<Record<string, number>>} 仓库相对路径 → 毫秒
+ */
+export async function readTimingsOutFile(path) {
+	try {
+		const raw = await readFile(path, 'utf8')
+		const data = JSON.parse(raw)
+		if (!data || typeof data !== 'object' || Array.isArray(data))
+			throw new Error(`timings out file must be JSON object: ${path}`)
+		/** @type {Record<string, number>} */
+		const out = {}
+		for (const [key, value] of Object.entries(data)) {
+			const ms = Number(value)
+			if (!Number.isFinite(ms) || ms < 0) continue
+			out[String(key).replace(/\\/g, '/')] = ms
+		}
+		return out
+	}
+	catch (error) {
+		if (error?.code === 'ENOENT') return {}
 		throw error
 	}
 }

@@ -19,9 +19,10 @@ import {
 	parseTestSubtestsEnv,
 	toRepoRelative,
 	writeFailuresOutFile,
+	writeTimingsOutFile,
 } from '../core/protocol.mjs'
 
-import { failedSpecPathsFromJsonReport } from './report.mjs'
+import { failedSpecPathsFromJsonReport, specTimingsFromJsonReport } from './report.mjs'
 import { runPlaywrightWithNode } from './run.mjs'
 
 /**
@@ -103,17 +104,6 @@ export function filterPhasesBySelection(phases, repoRoot, filterList, subtestLis
 }
 
 /**
- * @deprecated 使用 filterPhasesBySelection
- * @param {string[]} filterList FOUNT_TEST_ONLY 列表
- * @param {FrontendPhase[]} phases 全部阶段
- * @param {string} repoRoot 仓库根
- * @returns {FrontendPhase[]} 匹配的阶段
- */
-export function filterPhases(filterList, phases, repoRoot) {
-	return filterPhasesBySelection(phases, repoRoot, filterList, [])
-}
-
-/**
  * 收集阶段内应记入失败列表的 spec 路径。
  * @param {object} params 参数
  * @param {string} params.jsonReportPath Playwright JSON report 路径
@@ -141,7 +131,7 @@ async function collectPhaseFailures({ jsonReportPath, repoRoot, ranSpecPaths }) 
  * @param {string} params.extraArgs 额外 CLI 参数
  * @param {string} params.jsonReportDir JSON report 目录
  * @param {string} params.repoRoot 仓库根
- * @returns {Promise<{ code: number, failed: string[] }>} 结果
+ * @returns {Promise<{ code: number, failed: string[], timings: Record<string, number> }>} 结果
  */
 async function runOnePhase({
 	phase,
@@ -155,7 +145,7 @@ async function runOnePhase({
 	jsonReportDir,
 	repoRoot,
 }) {
-	if (!specBasenames.length) return { code: 0, failed: [] }
+	if (!specBasenames.length) return { code: 0, failed: [], timings: {} }
 	const port = basePort + phase.portOffset
 	const playwrightArgs = [extraArgs, `--project=${phase.project}`, ...specBasenames].filter(Boolean)
 	const jsonReportPath = join(jsonReportDir, `${phase.project}-${specBasenames.join('_')}.json`)
@@ -166,10 +156,12 @@ async function runOnePhase({
 		node: nodeOpts(port),
 		jsonReportPath,
 	})
-	if (code === 0) return { code: 0, failed: [] }
+	const timings = await specTimingsFromJsonReport(jsonReportPath, repoRoot)
+	if (code === 0) return { code: 0, failed: [], timings }
 	return {
 		code,
 		failed: await collectPhaseFailures({ jsonReportPath, repoRoot, ranSpecPaths: specPaths }),
+		timings,
 	}
 }
 
@@ -212,6 +204,8 @@ export async function runFrontendPhases({
 	const firstSet = new Set(firstPaths)
 	const restSet = new Set(restPaths)
 	const failed = []
+	/** @type {Record<string, number>} */
+	const timings = {}
 
 	/**
 	 * 按 phase 顺序跑给定 path 集合中的 spec。
@@ -227,7 +221,7 @@ export async function runFrontendPhases({
 			if (!indexes.length) continue
 			const specBasenames = indexes.map(index => phase.specBasenames[index])
 			const specPaths = indexes.map(index => phase.specPaths[index])
-			const { code, failed: phaseFailed } = await runOnePhase({
+			const { code, failed: phaseFailed, timings: phaseTimings } = await runOnePhase({
 				phase,
 				specBasenames,
 				specPaths,
@@ -239,6 +233,7 @@ export async function runFrontendPhases({
 				jsonReportDir,
 				repoRoot,
 			})
+			Object.assign(timings, phaseTimings)
 			if (code !== 0) {
 				failed.push(...phaseFailed)
 				const failFast = phase.project === 'shell' || phase.project === 'smoke'
@@ -254,6 +249,7 @@ export async function runFrontendPhases({
 			const code = await runPathSet(firstSet, { abortOnPhaseFail: false })
 			if (failed.length || code !== 0) {
 				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed.length ? failed : [...firstSet])
+				await writeTimingsOutFile(process.env.FOUNT_TEST_TIMINGS_OUT, timings)
 				return code || 1
 			}
 		}
@@ -262,10 +258,16 @@ export async function runFrontendPhases({
 			const code = await runPathSet(restSet, { abortOnPhaseFail: !keepGoing })
 			if (failed.length) {
 				await writeFailuresOutFile(process.env.FOUNT_TEST_FAILURES_OUT, failed)
+				await writeTimingsOutFile(process.env.FOUNT_TEST_TIMINGS_OUT, timings)
 				return code || 1
 			}
-			if (code !== 0) return code
+			if (code !== 0) {
+				await writeTimingsOutFile(process.env.FOUNT_TEST_TIMINGS_OUT, timings)
+				return code
+			}
 		}
+
+		await writeTimingsOutFile(process.env.FOUNT_TEST_TIMINGS_OUT, timings)
 	}
 	finally {
 		await rm(jsonReportDir, { recursive: true, force: true })

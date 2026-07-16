@@ -1,9 +1,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { selectSuitesByDiff } from '../core/manifest.mjs'
 import { resolveSelector } from '../core/selector.mjs'
-import { collectStaleTriggerEvidence, suiteKey } from '../core/state.mjs'
+import { collectStaleTriggerEvidence } from '../core/state.mjs'
 import { goalExplicit, goalOutdated, selectImperfectWave, selectOutdatedWave } from '../runner/selection.mjs'
 
 import { makeStateEntry, makeSuite } from './fixtures.mjs'
@@ -20,20 +19,6 @@ Deno.test('goalExplicit marks every selected suite', () => {
 	const { goalKeys, goalEvidenceByKey } = goalExplicit(suites)
 	assertEquals([...goalKeys], ['server/live'])
 	assertEquals(goalEvidenceByKey.get('server/live')?.kind, 'explicit_selected')
-})
-
-Deno.test('infraHit selects testkit plus explicit watchers only', () => {
-	const all = [
-		makeSuite('testkit', 'a', { triggers: ['src/scripts/test/foo.mjs'] }),
-		makeSuite('testkit', 'b', { triggers: ['src/scripts/test/bar.mjs'] }),
-		makeSuite('shells/chat', 'pure', { triggers: ['src/scripts/test/deno/serial.mjs'] }),
-		makeSuite('shells/chat', 'live', { triggers: ['src/public/live/**'] }),
-	]
-	const selected = selectSuitesByDiff('diff', ['src/scripts/test/deno/serial.mjs'], all)
-	assertEquals(
-		selected.map(s => suiteKey(s.manifestId, s.name)).sort(),
-		['shells/chat/pure', 'testkit/a', 'testkit/b'],
-	)
 })
 
 Deno.test('collectStaleTriggerEvidence maps paths to trigger sets', () => {

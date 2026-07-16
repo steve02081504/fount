@@ -7,7 +7,7 @@ import { join, relative } from 'node:path'
 import { attachDependencies, sortManifestIds } from './dependencies.mjs'
 import { matchGlob } from './glob.mjs'
 import { parseManifestResources } from './resources.mjs'
-import { filterTriggerRelevantFiles, mergeTriggerFilter } from './trigger_filter.mjs'
+import { mergeTriggerFilter } from './trigger_filter.mjs'
 /**
  * suite 内注册的子测试。
  * @typedef {object} SubtestDef
@@ -128,8 +128,6 @@ export function subtestSpecBasename(subtest) {
 	return subtest.spec
 }
 
-const INFRA_PREFIX = 'src/scripts/test/'
-
 const SKIP_DIR_NAMES = new Set([
 	'node_modules',
 	'.git',
@@ -220,49 +218,6 @@ export async function loadAllSuites(repoRoot) {
 		}
 	}
 	return attachDependencies(suites)
-}
-
-/**
- * 按变更文件与 manifest triggers 选出 suite。
- * @param {'all' | 'diff' | 'none'} mode 变更模式
- * @param {string[]} files 变更文件列表
- * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {SuiteDef[]} 待执行 suite
- */
-export function selectSuitesByDiff(mode, files, allSuites) {
-	if (mode === 'all')
-		return allSuites
-
-	if (!files.length) return []
-
-	const relevant = filterTriggerRelevantFiles(files)
-	const infraHit = relevant.some(f =>
-		f.startsWith(INFRA_PREFIX)
-		|| f.startsWith('.github/workflows/verify_shells.'),
-	)
-	if (infraHit) {
-		/** @type {Map<string, SuiteDef>} */
-		const selected = new Map()
-		for (const suite of allSuites) {
-			if (suite.manifestId === 'testkit')
-				selected.set(`${suite.manifestId}/${suite.name}`, suite)
-			const suiteRelevant = filterTriggerRelevantFiles(files, suite.triggerFilter)
-			if (!suiteRelevant.length) continue
-			if (suite.triggers.some(pat => suiteRelevant.some(f => matchGlob(pat, f))))
-				selected.set(`${suite.manifestId}/${suite.name}`, suite)
-		}
-		return [...selected.values()]
-	}
-
-	/** @type {SuiteDef[]} */
-	const selected = []
-	for (const suite of allSuites) {
-		const relevant = filterTriggerRelevantFiles(files, suite.triggerFilter)
-		if (!relevant.length) continue
-		const hit = suite.triggers.some(pat => relevant.some(f => matchGlob(pat, f)))
-		if (hit) selected.push(suite)
-	}
-	return selected
 }
 
 /**

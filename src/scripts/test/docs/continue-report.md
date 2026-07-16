@@ -48,3 +48,13 @@ Report slots, ETA estimate, dispatch, and trigger reasons all read the **same** 
 ## Suite-internal failure-first
 
 `FOUNT_TEST_FIRST` lists last `failedFiles`. Runners (`serial.mjs`, `playwright/phases.mjs`) run those first; if any still fail after the failure group, exit without the rest. On all-green failure group, continue with remaining files/specs (optionally filtered by `FOUNT_TEST_SUBTESTS`).
+
+## Subtest timing
+
+Playwright phases write per-spec durations to `FOUNT_TEST_TIMINGS_OUT` (`Record<path, ms>`). State stores:
+
+- per-subtest `durationMs` (EMA)
+- suite `baselineOverheadMs` = EMA(`wall − Σ reported subtest ms`)
+- suite `baselineDurationMs` only when **all** registered subtests ran
+
+ETA and duration watchdog use `expectedRunDurationMs` = overhead + sum of selected subtest baselines (with mean / full-baseline fallbacks when a subtest has no sample yet).

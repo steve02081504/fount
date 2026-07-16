@@ -1,9 +1,10 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { orderFailedFirst } from '../core/protocol.mjs'
+import { orderFailedFirst, readTimingsOutFile, writeTimingsOutFile } from '../core/protocol.mjs'
 import { aggregateSubtestVerdicts, judgeSubtest } from '../core/verdict.mjs'
 import { subtestMatchesSpec } from '../playwright/phases.mjs'
+import { mapTimingsToSubtests } from '../runner/suite_run.mjs'
 
 import { makeSuite } from './fixtures.mjs'
 
@@ -44,4 +45,36 @@ Deno.test('judgeSubtest marks missing entry unknown', () => {
 	})
 	const verdict = judgeSubtest(suite, suite.subtests[0], undefined, false, [], new Map())
 	assertEquals(verdict.kind, 'unknown')
+})
+
+Deno.test('writeTimingsOutFile / readTimingsOutFile round-trip', async () => {
+	const path = await Deno.makeTempFile({ prefix: 'fount-timings-', suffix: '.json' })
+	try {
+		await writeTimingsOutFile(path, {
+			'src/a/feed.spec.mjs': 1234.5,
+			'src/a\\profile.spec.mjs': 50,
+			bad: -1,
+		})
+		assertEquals(await readTimingsOutFile(path), {
+			'src/a/feed.spec.mjs': 1234.5,
+			'src/a/profile.spec.mjs': 50,
+		})
+		assertEquals(await readTimingsOutFile(`${path}.missing`), {})
+	}
+	finally {
+		await Deno.remove(path)
+	}
+})
+
+Deno.test('mapTimingsToSubtests matches by spec basename', () => {
+	const suite = makeSuite('shells/social', 'frontend', {
+		subtests: [
+			{ name: 'feed', spec: 'feed.spec.mjs', triggers: [] },
+			{ name: 'profile', spec: 'profile.spec.mjs', triggers: [] },
+		],
+	})
+	assertEquals(mapTimingsToSubtests(suite, {
+		'src/public/parts/shells/social/test/frontend/feed.spec.mjs': 2000,
+		'src/public/parts/shells/social/test/frontend/profile.spec.mjs': 3000,
+	}, ['feed']), { feed: 2000 })
 })

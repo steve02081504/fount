@@ -41,9 +41,6 @@ export function buildFailedFirstByManifest(state, manifestIds) {
 	return byManifest
 }
 
-/** @deprecated 使用 buildFailedFirstByManifest */
-export const buildRetryByManifest = buildFailedFirstByManifest
-
 /**
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
@@ -281,29 +278,4 @@ export function selectExplicitOrAll({
 		failedFirstByManifest: buildFailedFirstByManifest(state, manifestIds),
 		subtestFilterByKey,
 	}
-}
-
-/** @deprecated 兼容旧自测名 */
-export const selectContinue = selectImperfectWave
-/** @deprecated 兼容旧自测名 */
-export const selectOutdated = selectOutdatedWave
-
-/**
- * @deprecated diff 选择已移除；保留空壳避免旧 import 炸裂
- * @param {string[]} _changedFiles 忽略
- * @param {SuiteDef[]} _scope 忽略
- * @param {string} _commitHash 忽略
- * @param {string | null} _uncommittedHash 忽略
- * @returns {{ goalKeys: Set<string>, goalEvidenceByKey: Map<string, GoalEvidence> }} 空结果
- */
-export function goalDiff(_changedFiles, _scope, _commitHash, _uncommittedHash) {
-	return { goalKeys: new Set(), goalEvidenceByKey: new Map() }
-}
-
-/**
- * @deprecated 默认模式改为循环波次，不再走此函数
- * @returns {GoalSelection} 退出
- */
-export function selectSuites() {
-	return { action: 'exit', code: 0 }
 }

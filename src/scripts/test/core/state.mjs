@@ -34,7 +34,7 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  * @property {string | null} commitHash
  * @property {string | null} uncommittedHash
  * @property {string | null} ranAt
- * @property {number | null} durationMs
+ * @property {number | null} durationMs 子测试耗时基线（EMA，毫秒）
  * @property {string | null} [triggerHash]
  */
 
@@ -46,7 +46,8 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  * @property {string | null} ranAt
  * @property {number | null} durationMs
  * @property {string | null} [triggerHash] 运行时 trigger 相关未提交文件内容 digest；用于重跑复用判定
- * @property {number | null} [baselineDurationMs]
+ * @property {number | null} [baselineDurationMs] 全量运行墙钟基线（EMA）；仅全量子测试跑完时更新
+ * @property {number | null} [baselineOverheadMs] 固定开销基线（EMA）：wall − Σ 子测试耗时
  * @property {number | null} [baselineMemMb] 采样峰值内存基线（MB，EMA）
  * @property {number | null} [baselineCpuPct] 运行期间平均全机 CPU %（EMA）
  * @property {string[]} failedFiles
@@ -270,6 +271,8 @@ export function subtestMatchesFailedFiles(subtest, failedFiles) {
  * @param {string} commitHash HEAD
  * @param {string | null} uncommittedHash 未提交 digest
  * @param {Record<string, string | null> | undefined} subtestTriggerHashes 子测试 triggerHash
+ * @param {Record<string, number> | undefined} subtestDurations 本次子测试耗时
+ * @param {boolean} recordTiming 是否写入耗时基线
  * @returns {Record<string, SubtestStateEntry> | undefined} 合并后的子测试状态
  */
 function mergeSubtestStates(
@@ -281,6 +284,8 @@ function mergeSubtestStates(
 	commitHash,
 	uncommittedHash,
 	subtestTriggerHashes,
+	subtestDurations,
+	recordTiming,
 ) {
 	if (!suite.subtests?.length) return prev
 	/** @type {Record<string, SubtestStateEntry>} */
@@ -295,12 +300,16 @@ function mergeSubtestStates(
 		let status = 'passed'
 		if (failed) status = 'failed'
 		else if (noisy) status = 'noisy'
+		const prevDuration = merged[name]?.durationMs ?? null
+		const sample = subtestDurations?.[name]
 		merged[name] = {
 			status,
 			commitHash,
 			uncommittedHash,
 			ranAt,
-			durationMs: null,
+			durationMs: recordTiming && sample != null
+				? updateBaselineDurationMs(prevDuration, sample)
+				: prevDuration,
 			triggerHash: subtestTriggerHashes?.[name] ?? merged[name]?.triggerHash ?? null,
 		}
 	}
@@ -339,6 +348,7 @@ function aggregateSuiteStatus(suite, subtests, runStatus) {
  * @param {string[]} params.result.failedFiles 失败文件
  * @param {string} params.result.output 输出尾部
  * @param {number} params.result.durationMs 耗时
+ * @param {Record<string, number>} [params.result.subtestDurations] 子测试名 → 毫秒
  * @param {boolean} [params.result.terminated] 是否被终止
  * @param {string} [params.result.terminateReason] 终止原因
  * @param {string[]} [params.blockedBy] 阻塞来源
@@ -375,6 +385,7 @@ export async function upsertSuiteRun({
 			durationMs: null,
 			triggerHash: prev?.triggerHash ?? null,
 			baselineDurationMs: prev?.baselineDurationMs ?? null,
+			baselineOverheadMs: prev?.baselineOverheadMs ?? null,
 			baselineMemMb: prev?.baselineMemMb ?? null,
 			baselineCpuPct: prev?.baselineCpuPct ?? null,
 			failedFiles: [],
@@ -391,15 +402,22 @@ export async function upsertSuiteRun({
 	if (!result.passed) runStatus = 'failed'
 	else if (noisy) runStatus = 'noisy'
 
+	const effectiveRan = ranSubtests ?? suite.subtests?.map(st => st.name) ?? []
+	const recordTiming = shouldRecordTimingBaseline(result)
+	const ranAllSubtests = !suite.subtests?.length
+		|| suite.subtests.every(st => effectiveRan.includes(st.name))
+
 	const subtests = mergeSubtestStates(
 		suite,
 		prev?.subtests,
-		ranSubtests ?? suite.subtests?.map(st => st.name) ?? [],
+		effectiveRan,
 		result.failedFiles ?? [],
 		noisy,
 		commitHash,
 		uncommittedHash,
 		subtestTriggerHashes,
+		result.subtestDurations,
+		recordTiming,
 	)
 	const status = aggregateSuiteStatus(suite, subtests, runStatus)
 
@@ -413,15 +431,25 @@ export async function upsertSuiteRun({
 	else if (result.output)
 		logPath = await persistFailureLog(repoRoot, suite, result.output)
 
-	const baselineDurationMs = shouldRecordTimingBaseline(result)
+	const baselineDurationMs = recordTiming && ranAllSubtests
 		? updateBaselineDurationMs(prev?.baselineDurationMs, result.durationMs)
 		: prev?.baselineDurationMs ?? null
 
-	const baselineMemMb = shouldRecordTimingBaseline(result)
+	let baselineOverheadMs = prev?.baselineOverheadMs ?? null
+	if (recordTiming && suite.subtests?.length && result.subtestDurations) {
+		const reportedSum = Object.values(result.subtestDurations)
+			.reduce((sum, ms) => sum + (Number.isFinite(ms) ? ms : 0), 0)
+		if (reportedSum > 0) {
+			const overheadSample = Math.max(0, (result.durationMs ?? 0) - reportedSum)
+			baselineOverheadMs = updateBaselineDurationMs(prev?.baselineOverheadMs, overheadSample)
+		}
+	}
+
+	const baselineMemMb = recordTiming
 		? nextBaselineMemMb(prev?.baselineMemMb, result.peakMemMb)
 		: prev?.baselineMemMb ?? null
 
-	const baselineCpuPct = shouldRecordTimingBaseline(result)
+	const baselineCpuPct = recordTiming
 		? nextBaselineCpuPct(prev?.baselineCpuPct, result.avgCpuPct)
 		: prev?.baselineCpuPct ?? null
 
@@ -441,6 +469,7 @@ export async function upsertSuiteRun({
 		durationMs: result.durationMs,
 		triggerHash: triggerHash !== undefined ? triggerHash : prev?.triggerHash ?? null,
 		baselineDurationMs,
+		baselineOverheadMs,
 		baselineMemMb,
 		baselineCpuPct,
 		failedFiles: result.failedFiles ?? [],
@@ -452,17 +481,6 @@ export async function upsertSuiteRun({
 	}
 
 	return state.suites[key]
-}
-
-/**
- * @param {string} repoRoot 仓库根
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {Set<string>} staleKeys 内容已变的 suite 键（裁决 unknown 且曾有 passed 记录等）
- * @returns {Promise<Set<string>>} 陈旧 suite 键
- */
-export async function collectStaleSuiteKeys(repoRoot, allSuites, state, staleKeys) {
-	return staleKeys
 }
 
 /**
@@ -575,11 +593,11 @@ export function buildStateMarkdown(allSuites, state, staleKeys) {
 }
 
 /**
+ * 写入 state/main.md（依赖树 + 概览表）。
  * @param {string} repoRoot 仓库根
  * @param {SuiteDef[]} allSuites 全部 suite
  * @param {TestState} state 现状库
- * @param {Set<string>} outdatedKeys 陈旧键
- * @param {Set<string>} staleKeys 状态库中已过时但仍标 passed 的 suite 键
+ * @param {Set<string>} staleKeys 内容已变但仍标 passed 的 suite 键
  * @returns {Promise<string>} main.md 绝对路径
  */
 export async function writeStateMarkdown(repoRoot, allSuites, state, staleKeys) {
@@ -589,14 +607,3 @@ export async function writeStateMarkdown(repoRoot, allSuites, state, staleKeys) 
 	return path
 }
 
-/**
- * @param {string} repoRoot 仓库根
- * @param {SuiteDef[]} allSuites 全部 suite
- * @param {TestState} state 现状库
- * @param {Set<string>} staleKeys 内容已变 suite 键
- * @returns {Promise<Set<string>>} 陈旧 suite 键并写入 main.md
- */
-export async function refreshStateMarkdown(repoRoot, allSuites, state, staleKeys) {
-	await writeStateMarkdown(repoRoot, allSuites, state, staleKeys)
-	return staleKeys
-}

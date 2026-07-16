@@ -148,46 +148,6 @@
 			"src/public/pages/scripts/test/ready_gate.mjs",
 			"src/server/auth/index.mjs",
 			"src/server/web_server/endpoints.mjs"
-		],
-		"feSmoke": [
-			"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
-		],
-		"feDeepLink": [
-			"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
-			"src/public/parts/shells/chat/public/shared/runUri.mjs"
-		],
-		"feComposer": [
-			"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
-			"src/public/parts/shells/chat/public/src/composerAttachments.mjs"
-		],
-		"feNavigation": [
-			"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/serverBar.mjs",
-			"src/public/parts/shells/chat/public/hub/sidebar/**"
-		],
-		"feMessageActions": [
-			"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/messages/**"
-		],
-		"feUnread": [
-			"src/public/parts/shells/chat/test/frontend/unread.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/memberReadMarkers.mjs"
-		],
-		"feInbox": [
-			"src/public/parts/shells/chat/test/frontend/inbox.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/friendChat.mjs"
-		],
-		"feHubE2E": [
-			"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
-			"src/public/parts/shells/chat/public/hub/**"
-		],
-		"feSecondaryPages": [
-			"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
-		],
-		"feProfile": [
-			"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
-			"src/public/parts/shells/chat/public/src/templates/profile/**"
 		]
 	},
 	"suites": [
@@ -237,16 +197,76 @@
 			"dependsOn": ["server:live", "e2e_single"],
 			"trigger": "frontendShared",
 			"subtests": [
-				{ "name": "smoke", "trigger": "feSmoke" },
-				{ "name": "deepLink", "trigger": "feDeepLink" },
-				{ "name": "composer", "trigger": "feComposer" },
-				{ "name": "navigation", "trigger": "feNavigation" },
-				{ "name": "messageActions", "trigger": "feMessageActions" },
-				{ "name": "unread", "trigger": "feUnread" },
-				{ "name": "inbox", "trigger": "feInbox" },
-				{ "name": "hubE2E", "trigger": "feHubE2E" },
-				{ "name": "secondaryPages", "trigger": "feSecondaryPages" },
-				{ "name": "profile", "trigger": "feProfile" }
+				{
+					"name": "smoke",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/smoke.spec.mjs"
+					]
+				},
+				{
+					"name": "deepLink",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/deepLink.spec.mjs",
+						"src/public/parts/shells/chat/public/shared/runUri.mjs"
+					]
+				},
+				{
+					"name": "composer",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/composer.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/composerExtras.mjs",
+						"src/public/parts/shells/chat/public/src/composerAttachments.mjs"
+					]
+				},
+				{
+					"name": "navigation",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/navigation.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/serverBar.mjs",
+						"src/public/parts/shells/chat/public/hub/sidebar/**"
+					]
+				},
+				{
+					"name": "messageActions",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/messages/**"
+					]
+				},
+				{
+					"name": "unread",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/unread.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/memberReadMarkers.mjs"
+					]
+				},
+				{
+					"name": "inbox",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/inbox.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/friendChat.mjs"
+					]
+				},
+				{
+					"name": "hubE2E",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/hubE2E.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/**"
+					]
+				},
+				{
+					"name": "secondaryPages",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/secondaryPages.spec.mjs"
+					]
+				},
+				{
+					"name": "profile",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
+						"src/public/parts/shells/chat/public/src/templates/profile/**"
+					]
+				}
 			],
 			"run": ["deno", "run", "--allow-scripts", "--allow-all", "-c", "./deno.json", "./src/public/parts/shells/chat/test/frontend/run.mjs"]
 		}

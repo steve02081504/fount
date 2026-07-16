@@ -142,6 +142,64 @@ Deno.test('state baseline timing via upsertSuiteRun', async () => {
 	}
 })
 
+Deno.test('partial subtest run updates overhead/subtest but not full baseline', async () => {
+	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-state-subtest-'))
+	try {
+		const suiteDef = {
+			manifestId: 'shells/social',
+			name: 'frontend',
+			id: 'frontend',
+			run: [],
+			triggers: [],
+			manifestPath: '',
+			heavy: false,
+			subtests: [
+				{ name: 'feed', spec: 'feed.spec.mjs', triggers: [] },
+				{ name: 'profile', spec: 'profile.spec.mjs', triggers: [] },
+			],
+		}
+		const state = {
+			suites: {
+				[suiteKey('shells/social', 'frontend')]: {
+					status: 'passed',
+					commitHash: 'old',
+					uncommittedHash: null,
+					ranAt: '',
+					durationMs: 90_000,
+					baselineDurationMs: 90_000,
+					baselineOverheadMs: null,
+					failedFiles: [],
+					noiseHits: [],
+					logPath: null,
+					subtests: {},
+				},
+			},
+		}
+		await upsertSuiteRun({
+			repoRoot,
+			state,
+			suite: suiteDef,
+			result: {
+				passed: true,
+				failedFiles: [],
+				output: '',
+				durationMs: 25_000,
+				subtestDurations: { feed: 18_000 },
+			},
+			commitHash: 'new',
+			uncommittedHash: null,
+			ranSubtests: ['feed'],
+		})
+		const entry = state.suites[suiteKey('shells/social', 'frontend')]
+		assertEquals(entry.baselineDurationMs, 90_000)
+		assertEquals(entry.baselineOverheadMs, 7_000)
+		assertEquals(entry.subtests.feed.durationMs, 18_000)
+	}
+	finally {
+		await rm(repoRoot, { recursive: true, force: true })
+	}
+})
+
 Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-report-test-'))
 	try {
