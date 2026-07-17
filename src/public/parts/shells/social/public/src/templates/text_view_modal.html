@@ -1,5 +1,6 @@
 <div class="modal-box max-w-lg">
-	<pre class="whitespace-pre-wrap text-sm max-h-96 overflow-auto">{{text}}</pre>
+	<h3 class="font-bold text-lg mb-4">${escapeHtml(title)}</h3>
+	<pre class="whitespace-pre-wrap text-sm max-h-96 overflow-auto">${escapeHtml(text)}</pre>
 	<div class="modal-action">
 		<button type="button" class="btn btn-primary" data-dialog-resolve="ok" data-i18n="social.saved.confirm"></button>
 	</div>

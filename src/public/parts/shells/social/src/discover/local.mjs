@@ -32,11 +32,14 @@ export async function discoverAccounts(username, options = {}) {
 		if (view.socialMeta?.hideFromDiscovery) continue
 		if (!view.posts?.length && !view.socialMeta?.createdAt) continue
 		const profile = await getProfile(entityHash, username)
+		const bio = String(profile?.description_markdown || profile?.description || profile?.bio || '')
+			.trim()
+			.slice(0, 160)
 		accounts.push({
 			entityHash,
 			name: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0, ellipsis: false }),
 			handle: profile?.handle || '',
-			exploreBlurb: view.socialMeta?.exploreBlurb || '',
+			bio,
 			avatarUrl: customProfileAvatar(profile) || null,
 		})
 	}

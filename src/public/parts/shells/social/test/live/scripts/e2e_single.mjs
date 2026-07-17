@@ -132,7 +132,7 @@ await testCase('POST /relationships/follow unfollow seeded test target', async (
 })
 
 await testCase('POST /profile/meta', async () => {
-	const r = await shellApi('POST', '/profile/meta', { exploreBlurb: 'e2e blurb', hideFromDiscovery: false })
+	const r = await shellApi('POST', '/profile/meta', { hideFromDiscovery: false })
 	return r.status === 200
 })
 

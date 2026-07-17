@@ -69,6 +69,9 @@ export async function loadPostDetail(entityHash, postId) {
 	container.appendChild(card)
 	container.appendChild(repliesHost)
 
+	const { bindFeedVideoAutoplay } = await import('../lib/videoAutoplay.mjs')
+	bindFeedVideoAutoplay(card)
+
 	const repliesData = await socialApi(`/profile/${owner}/replies/${id}`).catch(() => ({ replies: [] }))
 	await renderRepliesPanel(repliesHost, repliesData.replies || [])
 	repliesHost.dataset.loaded = '1'

@@ -173,7 +173,7 @@ export async function buildPostCard(item, options = {}) {
 		? `<button type="button" data-edit="${actionKey}"><span class="s-ic s-ic-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`
 		: ''
 	const editHistoryButton = canManage && item.post?.revisions?.length
-		? `<button type="button" data-edit-history="${actionKey}"><span data-i18n="social.post.editHistory"></span></button>`
+		? `<button type="button" data-edit-history="${actionKey}"><span class="s-ic s-ic-history" aria-hidden="true"></span><span data-i18n="social.post.editHistory"></span></button>`
 		: ''
 
 	const topNote = item.communityNote?.topNote
@@ -227,15 +227,96 @@ export async function buildPostCard(item, options = {}) {
 		deleteButton,
 	})
 	const el = /** @type {HTMLElement} */ card
+	el.dataset.mediaEntity = actionEntity
+	el.dataset.mediaPostId = actionPostId
+	const mediaRoot = el.querySelector('.post-media')
+	if (mediaRoot instanceof HTMLElement) {
+		mediaRoot.dataset.mediaEntity = actionEntity
+		mediaRoot.dataset.mediaPostId = actionPostId
+	}
 	if (options.openDetail !== false)
 		bindPostCardOpen(el, `post;${actionEntity};${actionPostId}`)
-	else
+	else {
 		el.style.cursor = 'default'
+		bindPostDetailMediaLike(el, actionEntity, actionPostId)
+	}
 	return el
 }
 
-const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .content-warning-reveal, .sensitive-media-reveal'
+const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .post-media, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .content-warning-reveal, .sensitive-media-reveal'
 const LONG_PRESS_MS = 400
+const MEDIA_DBLCLICK_MS = 350
+
+/**
+ * 详情页：双击多媒体点赞；单击视频进短视频页。
+ * @param {HTMLElement} card 帖卡
+ * @param {string} entityHash 作者
+ * @param {string} postId 帖 id
+ * @returns {void}
+ */
+function bindPostDetailMediaLike(card, entityHash, postId) {
+	const media = card.querySelector('.post-media')
+	if (!(media instanceof HTMLElement) || media.dataset.dblLikeBound === '1') return
+	media.dataset.dblLikeBound = '1'
+	let lastTap = 0
+	media.addEventListener('pointerup', async event => {
+		if (!(event.target instanceof Element)) return
+		if (event.target.closest('[data-media-nav], .post-media-dot')) return
+		const now = Date.now()
+		const hitVideo = Boolean(event.target.closest('[data-media-video]'))
+		if (now - lastTap < MEDIA_DBLCLICK_MS) {
+			lastTap = 0
+			event.preventDefault()
+			event.stopPropagation()
+			const likeButton = card.querySelector('[data-like]')
+			if (!(likeButton instanceof HTMLElement)) return
+			if (likeButton.dataset.liked === '1') {
+				showPostMediaHeart(media)
+				return
+			}
+			const { applyLikeButtonOptimistic, rollbackLikeButton, runSocialWrite } = await import('./lib/socialWrite.mjs')
+			const { socialApi } = await import('./lib/apiClient.mjs')
+			const snapshot = applyLikeButtonOptimistic(likeButton, true)
+			showPostMediaHeart(media)
+			try {
+				await runSocialWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
+					method: 'POST',
+					body: JSON.stringify({ like: true }),
+				}))
+			}
+			catch {
+				rollbackLikeButton(likeButton, snapshot)
+			}
+			return
+		}
+		lastTap = now
+		if (!hitVideo) return
+		setTimeout(() => {
+			if (lastTap !== now) return
+			location.hash = `videos;${entityHash};${postId}`
+		}, MEDIA_DBLCLICK_MS + 10)
+	})
+}
+
+/**
+ * @param {HTMLElement} media 媒体根
+ * @returns {void}
+ */
+function showPostMediaHeart(media) {
+	let anim = media.querySelector('.post-media-heart')
+	if (!(anim instanceof HTMLElement)) {
+		anim = document.createElement('div')
+		anim.className = 'post-media-heart heart-anim'
+		anim.setAttribute('aria-hidden', 'true')
+		media.appendChild(anim)
+	}
+	anim.classList.remove('hidden')
+	anim.textContent = '👍'
+	anim.style.animation = 'none'
+	void anim.offsetWidth
+	anim.style.animation = 'heartFloat 0.8s ease-out forwards'
+	setTimeout(() => anim.classList.add('hidden'), 900)
+}
 
 /**
  * 无按钮/链接的空白区短按进详情；长按/滑动/划词不进页。

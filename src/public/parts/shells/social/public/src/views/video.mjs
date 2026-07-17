@@ -41,9 +41,10 @@ function writeVideoMutedPref(muted) {
 
 /**
  * 加载并渲染短视频流。
+ * @param {{ focusEntityHash?: string, focusPostId?: string }} [options] 可选焦点帖（深链）
  * @returns {Promise<void>}
  */
-export async function loadVideoView() {
+export async function loadVideoView(options = {}) {
 	const container = document.getElementById('videoSnapContainer')
 	const view = document.getElementById('videosView')
 	if (!container) return
@@ -56,9 +57,28 @@ export async function loadVideoView() {
 	videoShownItems = []
 	videoPageLoading = false
 
+	const focusEntityHash = String(options.focusEntityHash || '').toLowerCase()
+	const focusPostId = String(options.focusPostId || '')
+
 	const data = await socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
-	const items = data.items || []
+	let items = [...(data.items || [])]
 	videoCursor = data.nextCursor || null
+
+	if (focusEntityHash && focusPostId) {
+		const focusKey = `${focusEntityHash}:${focusPostId}`
+		const existingIndex = items.findIndex(item =>
+			`${String(item.entityHash || item.targetEntityHash || '').toLowerCase()}:${item.postId || item.targetPostId}` === focusKey
+			|| `${String(item.targetEntityHash || item.entityHash || '').toLowerCase()}:${item.targetPostId || item.postId}` === focusKey,
+		)
+		if (existingIndex > 0) {
+			const [focused] = items.splice(existingIndex, 1)
+			items = [focused, ...items]
+		}
+		else if (existingIndex < 0) {
+			const focused = await socialApi(`/posts/${focusEntityHash}/${focusPostId}`).catch(() => null)
+			if (focused?.item) items = [focused.item, ...items]
+		}
+	}
 
 	if (!items.length) {
 		container.appendChild(buildVideoEmptySlide())
@@ -107,6 +127,9 @@ export async function loadVideoView() {
 			closeVideoReplies(el)
 		},
 	})
+
+	if (focusEntityHash && focusPostId)
+		container.children[0]?.scrollIntoView({ behavior: 'instant', block: 'start' })
 }
 
 /**

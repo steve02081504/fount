@@ -81,7 +81,7 @@ test.describe('Social secondary views', () => {
 			.toBeVisible({ timeout: 20_000 })
 	})
 
-	test('notification view link opens profile', async ({ page, publishPost, baseUrl, apiKey }) => {
+	test('notification view link opens post detail', async ({ page, publishPost, baseUrl, apiKey }) => {
 		const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		const { postId } = await publishPost(`notif-link ${Date.now()}`)
 		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
@@ -90,8 +90,8 @@ test.describe('Social secondary views', () => {
 		const notifCard = page.locator('#notificationsView .notification-card').first()
 		await expect(notifCard).toBeVisible({ timeout: 30_000 })
 		await notifCard.locator('a.notification-view-link').click()
-		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`#profileView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#postDetailView')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#postDetailView [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('notifications mark all read clears badge', async ({ page, publishPost, baseUrl, apiKey }) => {
@@ -208,22 +208,25 @@ test.describe('Social secondary views', () => {
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('explore post author opens profile with saved blurb', async ({ page, publishPost }) => {
-		const blurb = `explore-visible ${Date.now()}`
+	test('explore post author opens profile after ensure discoverable', async ({ page, publishPost }) => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
-		await page.locator('#exploreBlurbInput').fill(blurb)
+		await expect(page.locator('[data-profile-settings]')).toBeVisible({ timeout: 20_000 })
+		await page.locator('[data-profile-settings]').click()
+		await expect(page.locator('#settingsView')).toBeVisible({ timeout: 20_000 })
+		const protectedInput = page.locator('#exploreProtectedInput')
+		await expect(protectedInput).toBeVisible({ timeout: 10_000 })
 		// 先前用例可能把 hideFromDiscovery 拨成 true；保存 meta 会原样写回，导致探索页看不到新帖
-		await page.locator('#exploreProtectedInput').setChecked(false)
-		await Promise.all([
-			page.waitForResponse(res =>
-				res.url().includes('/api/parts/shells:social/profile/meta')
-				&& res.request().method() === 'POST'
-				&& res.status() === 200,
-			),
-			page.locator('#saveMetaButton').click(),
-		])
-		const snippet = `explore-blurb-post ${Date.now()}`
+		if (await protectedInput.isChecked())
+			await Promise.all([
+				page.waitForResponse(res =>
+					res.url().includes('/api/parts/shells:social/profile/meta')
+					&& res.request().method() === 'POST'
+					&& res.status() === 200,
+				),
+				protectedInput.setChecked(false),
+			])
+		await page.locator('#settingsView [data-view="profile"]').click()
+		const snippet = `explore-visible-post ${Date.now()}`
 		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		await publishPost(snippet)
 		await Promise.all([
@@ -237,6 +240,6 @@ test.describe('Social secondary views', () => {
 		await expect(postCard).toBeVisible({ timeout: 30_000 })
 		await postCard.locator('a.author-name').click()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
+		await expect(page.locator('#profileEntityCardHost .hub-profile-popup')).toBeVisible()
 	})
 })

@@ -145,7 +145,6 @@ export interface SocialAlbumRef {
 
 /** 探索/资料 meta（`social_meta` 物化字段，camelCase）。 */
 export interface SocialMeta {
-	exploreBlurb?: string
 	hideFromDiscovery?: boolean
 	createdAt?: number
 	recoveryPubKeyHex?: string
@@ -410,7 +409,8 @@ export interface SavedPostsStore {
 export interface SocialDiscoverAccount {
 	entityHash: string
 	name?: string
-	exploreBlurb?: string
+	handle?: string
+	bio?: string
 	avatarUrl?: string | null
 }
 

@@ -20,9 +20,12 @@ test.describe('Social profile', () => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView')).toBeVisible()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileView .profile-banner-host[data-profile-pattern]')).toBeVisible()
-		await expect(page.locator('#profileView .profile-banner.entity-profile-banner')).toBeVisible()
+		await expect(page.locator('#profileView #profileEntityCardHost .hub-profile-popup')).toBeVisible()
+		await expect(page.locator('#profileView .hub-profile-popup-banner.entity-profile-banner')).toBeVisible()
 		await expect(page.locator(`#profilePostsPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('[data-profile-stat="following"]')).toBeVisible()
+		await expect(page.locator('[data-profile-stat="followers"]')).toBeVisible()
+		await expect(page.locator('[data-profile-tab="following"]')).toHaveCount(0)
 	})
 
 	test('profile likes tab shows liked posts', async ({ page, publishPost }) => {
@@ -36,26 +39,27 @@ test.describe('Social profile', () => {
 		await expect(page.locator(`#profileLikesPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 
-	test('profile explore settings save', async ({ page }) => {
+	test('profile settings view saves hideFromDiscovery', async ({ page }) => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
-		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
-		const blurb = `explore-blurb ${Date.now()}`
-		await page.locator('#exploreBlurbInput').fill(blurb)
+		await expect(page.locator('[data-profile-settings]')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('[data-profile-edit]')).toBeVisible()
+		await page.locator('[data-profile-settings]').click()
+		await expect(page.locator('#settingsView')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('.side-nav .nav-btn[data-view="taste"]')).toHaveCount(0)
 		const protectedInput = page.locator('#exploreProtectedInput')
+		await expect(protectedInput).toBeVisible({ timeout: 10_000 })
 		const wasProtected = await protectedInput.isChecked()
-		await protectedInput.setChecked(!wasProtected)
 		const [metaResponse] = await Promise.all([
 			page.waitForResponse(res =>
 				res.url().includes('/api/parts/shells:social/profile/meta')
 				&& res.request().method() === 'POST'
 				&& res.status() === 200,
 			),
-			page.locator('#saveMetaButton').click(),
+			protectedInput.setChecked(!wasProtected),
 		])
 		const metaJson = await metaResponse.json()
 		expect(metaJson).toHaveProperty('socialMeta')
 		expect(metaJson.socialMeta?.hideFromDiscovery).toBe(!wasProtected)
-		await expect(page.locator('#exploreBlurbInput')).toHaveValue(blurb)
 	})
 
 	test('deep link opens profile with highlighted post', async ({ page, baseUrl, apiKey, publishPost }) => {
@@ -94,13 +98,9 @@ test.describe('Social profile', () => {
 		])
 		await expect(followButton).toHaveAttribute('data-is-following', '1', { timeout: 20_000 })
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
-		// switchView→loadProfile 会 replaceChildren；等自资料渲染完再切 tab，否则点击会被冲掉
-		await expect(page.locator('#exploreBlurbInput')).toBeVisible({ timeout: 20_000 })
-		await page.locator('[data-profile-tab="following"]').click()
-		await expect(page.locator('#profileFollowingPanel')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileFollowingPanel .following-link')).toContainText(dummy.slice(0, 8))
-		// page.goto 到相同 URL hash 时浏览器不会重新加载，无法触发 applyIncomingNavigation
-		// 先导航到无 hash 的社交首页（触发完整重载），再设置 hash（触发 hashchange）
+		await expect(page.locator('[data-profile-settings]')).toBeVisible({ timeout: 20_000 })
+		await page.locator('[data-profile-stat="following"]').click()
+		await expect(page.locator('#profileRelationshipList .following-link')).toContainText(dummy.slice(0, 8), { timeout: 20_000 })
 		await page.goto(`${baseUrl}/parts/shells:social/`)
 		await waitForSocialAppReady(page)
 		await page.evaluate(eh => { window.location.hash = `profile;${eh}` }, dummy)
@@ -137,6 +137,9 @@ test.describe('Social profile', () => {
 		)
 		expect(blockRes.ok()).toBe(true)
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
+		await expect(page.locator('[data-profile-settings]')).toBeVisible({ timeout: 20_000 })
+		await page.locator('[data-profile-settings]').click()
+		await expect(page.locator('#settingsView')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator(`#blocklistSection [data-unblock="${dummy}"]`)).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
 			page.waitForResponse(res =>

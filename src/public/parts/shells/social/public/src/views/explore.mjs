@@ -98,7 +98,7 @@ export async function loadExplore() {
 				<div class="explore-account-body">
 					<a href="${escapeHtml(profileHref)}" class="suggested-account-name">${escapeHtml(account.name)}</a>
 					<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
-					${account.exploreBlurb ? `<p class="explore-account-blurb">${escapeHtml(account.exploreBlurb)}</p>` : ''}
+					${account.bio ? `<p class="explore-account-bio">${escapeHtml(account.bio)}</p>` : ''}
 				</div>
 				<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
 			`
@@ -140,4 +140,34 @@ export async function loadExplore() {
 		`
 		postList.appendChild(row)
 	}
+
+	const exploreSuggestedHost = document.getElementById('exploreSuggested')
+	const exploreSuggestedList = document.getElementById('exploreSuggestedList')
+	if (exploreSuggestedHost && exploreSuggestedList) {
+		const suggested = accountRows.slice(0, 5)
+		if (!suggested.length) {
+			exploreSuggestedHost.classList.add('hidden')
+			exploreSuggestedList.replaceChildren()
+		}
+		else {
+			exploreSuggestedHost.classList.remove('hidden')
+			exploreSuggestedList.replaceChildren()
+			for (const account of suggested) {
+				const row = document.createElement('div')
+				row.className = 'suggested-account'
+				row.innerHTML = `
+					${renderAvatarHtml(account.entityHash, { name: account.name })}
+					<div class="suggested-account-info">
+						<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
+						<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
+					</div>
+					<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
+				`
+				exploreSuggestedList.appendChild(row)
+			}
+		}
+	}
+
+	const { loadTrendingHashtags } = await import('./feed.mjs')
+	await loadTrendingHashtags('local', 'exploreTrending')
 }

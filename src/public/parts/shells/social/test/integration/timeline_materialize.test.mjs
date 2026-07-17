@@ -105,14 +105,12 @@ Deno.test('post_delete removes post from materialized view', async () => {
 	assert(!view.postById[signed.id], 'deleted post should be gone')
 })
 
-Deno.test('updateSocialMeta patches hideFromDiscovery/exploreBlurb', async () => {
+Deno.test('updateSocialMeta patches hideFromDiscovery', async () => {
 	const { username, operator } = await getSession()
 	const meta = await socialMeta.updateSocialMeta(username, operator, {
 		hideFromDiscovery: true,
-		exploreBlurb: 'hi there',
 	})
 	assertEquals(meta.hideFromDiscovery, true)
-	assertEquals(meta.exploreBlurb, 'hi there')
 	await socialMeta.updateSocialMeta(username, operator, { hideFromDiscovery: false })
 })
 

@@ -3,6 +3,7 @@ import {
 	loadPersonalHideEntries,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
+import { listKnownFollowersOf } from '../../federation/follower/index.mjs'
 import { buildLikedFeedItems, buildProfileFeedItems, buildSinglePostFeedItem, listReplies } from '../../feed/home.mjs'
 import { loadFollowingForActor } from '../../following.mjs'
 import { createAuthorProfileLoader } from '../../lib/authorProfileSummary.mjs'
@@ -15,6 +16,17 @@ import { getTimelineMaterialized } from '../../timeline/materialize.mjs'
 import { makeViewerOptions } from './helpers.mjs'
 
 /**
+ * 物化 following 去掉自引用后的计数。
+ * @param {string[]} following 关注列表
+ * @param {string} entityHash 主体
+ * @returns {number} 计数
+ */
+function countFollowing(following, entityHash) {
+	const self = entityHash.toLowerCase()
+	return (following || []).filter(hash => String(hash).toLowerCase() !== self).length
+}
+
+/**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} 资料 / 列表 / 屏蔽词方法
  */
@@ -22,7 +34,7 @@ export function createProfileMethods(apiContext) {
 	const viewerOptions = makeViewerOptions(apiContext)
 	return {
 		/**
-		 * @param {{ exploreBlurb?: string, hideFromDiscovery?: boolean }} patch meta 补丁
+		 * @param {{ hideFromDiscovery?: boolean }} patch meta 补丁
 		 * @returns {Promise<object>} 更新后的 socialMeta
 		 */
 		async updateMeta(patch = {}) {
@@ -38,10 +50,13 @@ export function createProfileMethods(apiContext) {
 			const profile = await getEntityProfile(apiContext.username, hash)
 			const view = await getTimelineMaterialized(apiContext.username, hash)
 			const { following } = await loadFollowingForActor(apiContext.username, apiContext.entityHash)
+			const knownFollowers = await listKnownFollowersOf(hash)
 			return {
 				entityHash: hash,
 				profile,
 				postCount: view.posts.length,
+				followingCount: countFollowing(view.following || [], hash),
+				followerCount: knownFollowers.length,
 				isFollowing: following.includes(hash),
 				socialMeta: view.socialMeta,
 			}
@@ -66,16 +81,40 @@ export function createProfileMethods(apiContext) {
 		 * @returns {Promise<{ following: object[] }>} 关注列表（含资料摘要）
 		 */
 		async profileFollowing(entityHash) {
-			const view = await getTimelineMaterialized(apiContext.username, String(entityHash).toLowerCase())
+			const owner = String(entityHash).toLowerCase()
+			const view = await getTimelineMaterialized(apiContext.username, owner)
 			const loadProfile = createAuthorProfileLoader(apiContext.username)
 			const following = []
-			for (const hash of view.following || []) 
+			for (const hash of view.following || []) {
+				const id = String(hash).toLowerCase()
+				if (id === owner) continue
 				following.push({
-					entityHash: hash,
-					profile: await loadProfile(hash),
+					entityHash: id,
+					profile: await loadProfile(id),
 				})
-			
+			}
 			return { following }
+		},
+		/**
+		 * @param {string} entityHash 目标实体
+		 * @returns {Promise<{ followers: object[] }>} 已知粉丝列表（含资料摘要）
+		 */
+		async profileFollowers(entityHash) {
+			const owner = String(entityHash).toLowerCase()
+			const known = await listKnownFollowersOf(owner)
+			const loadProfile = createAuthorProfileLoader(apiContext.username)
+			const seen = new Set()
+			const followers = []
+			for (const row of known) {
+				const id = String(row.entityHash || '').toLowerCase()
+				if (!id || id === owner || seen.has(id)) continue
+				seen.add(id)
+				followers.push({
+					entityHash: id,
+					profile: await loadProfile(id),
+				})
+			}
+			return { followers }
 		},
 		/**
 		 * @param {string} entityHash 作者

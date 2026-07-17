@@ -12,6 +12,8 @@ export const socialState = {
 	/** @type {Promise<void> | null} */
 	feedPrefetchInFlight: null,
 	profileEntityHash: null,
+	/** @type {object | null} 当前资料页 socialMeta（设置弹窗用） */
+	profileSocialMeta: null,
 	profilePostsCursor: null,
 	notificationsCursor: null,
 	postDetailEntityHash: null,

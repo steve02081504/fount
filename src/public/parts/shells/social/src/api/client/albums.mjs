@@ -7,6 +7,7 @@ import { createFeedItemBuildContext } from '../../feed/iterate.mjs'
 import { canViewAlbum, canViewPost } from '../../feedVisibility.mjs'
 import { albumsForPostFromView } from '../../lib/albumRefs.mjs'
 import { ensureEntitySocialReady } from '../../lib/bootstrap.mjs'
+import { resolveSensitiveMedia } from '../../lib/mediaRefs.mjs'
 import { setPostVisibility } from '../../lib/postVisibility.mjs'
 import {
 	minVisibilitySpec,
@@ -209,9 +210,11 @@ export function createAlbumsMethods(apiContext) {
 				const owner = String(entityHash || apiContext.entityHash).toLowerCase()
 				const viewerContext = await loadViewerContext(apiContext.username, apiContext.entityHash)
 				const view = await getTimelineMaterialized(apiContext.username, owner)
-				const albums = Object.values(view.albums || {})
-					.filter(album => canViewAlbum(album, owner, viewerContext))
-					.map(album => summarizeAlbum(album))
+				const albums = []
+				for (const album of Object.values(view.albums || {})) {
+					if (!canViewAlbum(album, owner, viewerContext)) continue
+					albums.push(await summarizeAlbum(apiContext.username, owner, album, view, viewerContext))
+				}
 				return albums
 			},
 
@@ -250,17 +253,55 @@ export function createAlbumsMethods(apiContext) {
 					if (!canViewPost(enriched, viewerContext)) continue
 					items.push(await buildPostFeedItem(apiContext.username, owner, post, itemContext))
 				}
-				return { album: summarizeAlbum(album), items }
+				return {
+					album: await summarizeAlbum(apiContext.username, owner, album, view, viewerContext),
+					items,
+				}
 			},
 		},
 	}
 }
 
 /**
+ * 选取相册封面：时间最新的首张可见、非剧透/非敏感图片。
+ * @param {string} username replica
+ * @param {string} owner 相册 owner
  * @param {object} album 相册
- * @returns {object} 摘要
+ * @param {object} view 物化视图
+ * @param {object} viewerContext 观看者
+ * @returns {Promise<object | null>} mediaRef 或 null
  */
-function summarizeAlbum(album) {
+async function pickAlbumCoverMediaRef(username, owner, album, view, viewerContext) {
+	for (const postId of album.postIds || []) {
+		const post = view.postById?.[postId]
+		if (!post) continue
+		const enriched = { ...post, entityHash: owner }
+		if (!canViewPost(enriched, viewerContext)) continue
+		const plain = await maybeDecryptPostContent(username, owner, post.content, viewerContext.viewerEntityHash)
+		if (!plain) continue
+		if (String(plain.contentWarning || '').trim()) continue
+		if (resolveSensitiveMedia(plain.sensitiveMedia, plain.contentWarning)) continue
+		const refs = Array.isArray(plain.mediaRefs) ? plain.mediaRefs : []
+		for (const ref of refs) {
+			if (!ref || typeof ref !== 'object') continue
+			const mimeType = String(ref.mimeType || '')
+			const kind = String(ref.kind || (mimeType.startsWith('video/') ? 'video' : 'image'))
+			if (kind !== 'image' && !mimeType.startsWith('image/')) continue
+			return ref
+		}
+	}
+	return null
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} owner owner
+ * @param {object} album 相册
+ * @param {object} view 物化视图
+ * @param {object} viewerContext 观看者
+ * @returns {Promise<object>} 摘要
+ */
+async function summarizeAlbum(username, owner, album, view, viewerContext) {
 	return {
 		albumId: album.albumId,
 		name: album.name,
@@ -272,5 +313,6 @@ function summarizeAlbum(album) {
 		postIds: [...album.postIds || []],
 		postCount: (album.postIds || []).length,
 		virtual: Boolean(album.virtual),
+		coverMediaRef: await pickAlbumCoverMediaRef(username, owner, album, view, viewerContext),
 	}
 }

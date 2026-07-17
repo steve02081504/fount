@@ -10,7 +10,7 @@ alwaysApply: false
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
-- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`.
+- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`（`listKnownFollowersOf` 资料粉丝；`listLocalFollowersOf` 仅本机托管，供通知投递）。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. API: chat `GET …/personal-lists`（operator）。Group kick/ban = node `denylist.json` (separate).
 - **HTTP routes**: thin wrappers → `getSocialClient(username)`; writes at `POST …/posts` (incl. poll / contentWarning / sensitiveMedia / mediaRefs.alt), `…/edit`, `…/poll-vote`, `…/notes`, `…/notes/:id/vote`, `…/like|dislike|repost`, `DELETE …/posts`; `GET|PUT /taste`, `GET|PUT /profile/muted-keywords`, `POST /signals/dwell`; relationships likewise. Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Visibility tiers: `public` / `unlisted` (readable, not discoverable) / `followers`+`followers_since` (GSH) / `selected`+`private` (pkw per-recipient wraps) / optional `except` (filter-only). `follow_approve` issues vault H, not locked-account approval. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses media/poll/body; `sensitiveMedia` blurs media only.
@@ -35,8 +35,11 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；帖卡与回复行共用 `templates/engagement_bar.html`（`lib/engagementBar.mjs`）；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI: `#tasteView`。
-- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + 既有深链。刷新可恢复当前 tab。
+- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；帖卡与回复行共用 `templates/engagement_bar.html`（`lib/engagementBar.mjs`）；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI：`#settings`（不再有一级 `#taste` 导航）。
+- **模板插值**：Social HTML 模板一律 `${...}`（`template.mjs`）；禁止 Mustache `{{...}}`。
+- **资料关系统计**：stats 行显示动态 / 关注 / 粉丝；点击关注或粉丝打开列表对话框，**不要**再做「正在关注」资料 Tab。
+- **相册封面**：`coverMediaRef` 取最新可见、无 contentWarning / sensitiveMedia 的图片；不得用剧透图当缩略图。
+- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…/`#settings`；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + `#search:query`（单一搜索面）。刷新可恢复当前 tab。
 - **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
 - **回复**：`listReplies` 返回完整 feed item；面板行与帖卡共用 `engagement_bar`（回复/转发/赞/踩/收藏/分享）；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
 - **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。

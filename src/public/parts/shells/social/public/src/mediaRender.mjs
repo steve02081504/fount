@@ -20,8 +20,8 @@ function renderMediaItem(ref, index) {
 			<img src="${escapeHtml(url)}" alt="${alt}" loading="lazy" class="post-media-item" />
 		</button>`
 	if (kind === 'video')
-		return `<div class="post-media-slide" data-media-index="${index}">
-			<video src="${escapeHtml(url)}" controls preload="metadata" class="post-media-item post-media-video"></video>
+		return `<div class="post-media-slide" data-media-index="${index}" data-media-video>
+			<video src="${escapeHtml(url)}" muted loop playsinline preload="metadata" class="post-media-item post-media-video"></video>
 		</div>`
 	return `<a href="${escapeHtml(url)}" class="post-media-slide post-media-file link-btn" download>${escapeHtml(ref.name || 'file')}</a>`
 }
@@ -73,6 +73,20 @@ export function bindMediaCarousel(root) {
 			const delta = Number(nav.dataset.mediaNav) || 0
 			const width = track.clientWidth || 1
 			track.scrollBy({ left: delta * width, behavior: 'smooth' })
+			return
+		}
+		const videoSlide = event.target instanceof Element ? event.target.closest('[data-media-video]') : null
+		if (videoSlide instanceof HTMLElement) {
+			if (videoSlide.closest('.post-detail-card')) return
+			const media = videoSlide.closest('.post-media')
+			const card = videoSlide.closest('.post-card')
+			const entityHash = media?.dataset.mediaEntity || card?.dataset.mediaEntity || card?.dataset.authorEntity
+			const postId = media?.dataset.mediaPostId || card?.dataset.mediaPostId || card?.dataset.postId
+			if (entityHash && postId) {
+				event.preventDefault()
+				event.stopPropagation()
+				location.hash = `videos;${entityHash};${postId}`
+			}
 			return
 		}
 		const lightboxBtn = event.target instanceof Element ? event.target.closest('[data-media-lightbox]') : null

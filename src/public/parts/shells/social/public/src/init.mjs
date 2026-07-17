@@ -22,11 +22,11 @@ import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
 import { applyIncomingNavigation, afterPublishPost, focusComposer, switchView } from './navigation.mjs'
 import { socialState } from './state.mjs'
-import { runFeedSearch, prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
+import { prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
 import { initLiveBroadcastView } from './views/live.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
-import { initSearchView } from './views/search.mjs'
+import { initSearchView, loadSearchView } from './views/search.mjs'
 import { initTopicView } from './views/topic.mjs'
 import { handleVideoKeydown } from './views/video.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -113,7 +113,7 @@ export async function bootstrapSocialApp() {
 			void focusComposer({ switchToFeed: true })
 		})
 		document.getElementById('feedSearchOpenButton')?.addEventListener('click', () => {
-			void switchView('search')
+			void loadSearchView()
 		})
 		const postText = document.getElementById('postText')
 		wireEmojiPickerButton(document.getElementById('emojiPickButton'), token => {
@@ -135,6 +135,27 @@ export async function bootstrapSocialApp() {
 		appRoot?.addEventListener('click', event => { void handleMainClick(event) })
 		bindContentReveal(appRoot)
 		bindMediaCarousel(appRoot)
+		appRoot?.addEventListener('click', event => {
+			const { target } = event
+			if (!(target instanceof HTMLElement)) return
+			const cwReveal = target.closest('.content-warning-reveal')
+			if (cwReveal) {
+				const wrap = cwReveal.closest('.content-warning-wrap')
+				queueMicrotask(async () => {
+					const { playRevealedPostVideos } = await import('./lib/videoAutoplay.mjs')
+					playRevealedPostVideos(wrap?.querySelector('.content-warning-body') || wrap)
+				})
+				return
+			}
+			const sensitiveReveal = target.closest('.sensitive-media-reveal')
+			if (sensitiveReveal) {
+				const wrap = sensitiveReveal.closest('.sensitive-media-wrap')
+				queueMicrotask(async () => {
+					const { playRevealedPostVideos } = await import('./lib/videoAutoplay.mjs')
+					playRevealedPostVideos(wrap)
+				})
+			}
+		})
 		document.getElementById('saveModal')?.addEventListener('click', async event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return
@@ -234,10 +255,22 @@ export async function bootstrapSocialApp() {
 				event.preventDefault()
 				const input = event.target
 				const q = input instanceof HTMLInputElement ? input.value.trim() : ''
-				if (q.length >= 2)
-					void switchView('feed')
-				void runFeedSearch()
+				void loadSearchView(q)
 			}
+		})
+
+		document.getElementById('feedSearchButton')?.addEventListener('click', () => {
+			const input = document.getElementById('feedSearchInput')
+			const q = input instanceof HTMLInputElement ? input.value.trim() : ''
+			void loadSearchView(q)
+		})
+
+		document.getElementById('feedSearchClearButton')?.addEventListener('click', () => {
+			const input = document.getElementById('feedSearchInput')
+			if (input instanceof HTMLInputElement) input.value = ''
+			document.getElementById('feedSearchClearButton')?.classList.add('hidden')
+			socialState.activeFeedSearchQuery = null
+			void switchView('feed')
 		})
 
 		document.getElementById('feedSearchInput')?.addEventListener('input', event => {

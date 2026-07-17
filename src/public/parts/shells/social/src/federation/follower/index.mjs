@@ -202,38 +202,56 @@ export async function updateFollowerIndex(username, targetEntityHash, follow, fo
 }
 
 /**
- * 本机托管 entity 时间线 follow/unfollow 事件写入后更新反向索引投影。
+ * 时间线 follow/unfollow 写入或入站后更新反向索引（本地与已同步远程时间线均可）。
  * @param {string} replicaUsername replica 登录名
- * @param {string} timelineOwnerEntityHash 时间线 owner
+ * @param {string} timelineOwnerEntityHash 时间线 owner（关注者）
  * @param {object} event 签名事件
  * @returns {Promise<void>}
  */
 export async function projectFollowerIndexFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	if (!['follow', 'unfollow'].includes(event.type)) return
 	const owner = timelineOwnerEntityHash.toLowerCase()
-	const resolved = await resolveSocialEntity(owner, replicaUsername)
-	if (!resolved?.local || resolved.replicaUsername !== replicaUsername) return
+	if (!parseEntityHash(owner)) return
+	const target = String(event.content?.targetEntityHash || '').trim().toLowerCase()
+	if (!parseEntityHash(target) || target === owner) return
 	await updateFollowerIndex(
 		replicaUsername,
-		event.content.targetEntityHash.toLowerCase(),
+		target,
 		event.type === 'follow',
 		owner,
 	)
 }
 
 /**
- * 哪些本实例本机 entity 关注了 target（分桶 JSON + LRU，不常驻全量索引）。
+ * 本 replica 已知的关注者（含已同步远程时间线投影；资料粉丝列表用）。
  * @param {string} entityHash 被关注实体
  * @returns {Promise<FollowerIndexEntry[]>} replica + follower entityHash
  */
-export async function listLocalFollowersOf(entityHash) {
+export async function listKnownFollowersOf(entityHash) {
 	const target = entityHash.toLowerCase()
 	if (!parseEntityHash(target)) return []
 	return dedupeFollowerEntries(await readFollowerEntry(target))
 }
 
 /**
- * 冷启动：扫描本实例全部 replica 本地时间线 owner，重建 follower 投影（按 hash 前缀分桶）。
+ * 本机托管 entity 中关注了 target 的条目（通知/直播投递用，勿把远程实体当收件人）。
+ * @param {string} entityHash 被关注实体
+ * @returns {Promise<FollowerIndexEntry[]>} replica + follower entityHash
+ */
+export async function listLocalFollowersOf(entityHash) {
+	const known = await listKnownFollowersOf(entityHash)
+	/** @type {FollowerIndexEntry[]} */
+	const local = []
+	for (const row of known) {
+		const resolved = await resolveSocialEntity(row.entityHash, row.replicaUsername)
+		if (!resolved?.local || resolved.replicaUsername !== row.replicaUsername) continue
+		local.push(row)
+	}
+	return local
+}
+
+/**
+ * 冷启动：扫描本实例全部 replica 已知时间线 owner（含远程副本），重建 follower 投影。
  * @returns {Promise<void>}
  */
 export async function rebuildFollowerIndex() {
@@ -243,28 +261,28 @@ export async function rebuildFollowerIndex() {
 	const { getTimelineMaterialized } = await import('../../timeline/materialize.mjs')
 	/** @type {Record<string, Record<string, Map<string, FollowerIndexEntry>>>} */
 	const scratch = {}
-	for (const username of listUsers()) 
+	for (const username of listUsers())
 		for (const owner of (await getTimelineOwnerIndex(username)).all) {
-			const resolved = await resolveSocialEntity(owner, username)
-			if (!resolved?.local || resolved.replicaUsername !== username) continue
-			const view = await getTimelineMaterialized(username, owner)
-			for (const rawTarget of view.following) {
+			const ownerKey = String(owner || '').toLowerCase()
+			if (!parseEntityHash(ownerKey)) continue
+			const view = await getTimelineMaterialized(username, ownerKey)
+			for (const rawTarget of view.following || []) {
 				const target = rawTarget.toLowerCase()
-				if (!parseEntityHash(target) || target === owner) continue
+				if (!parseEntityHash(target) || target === ownerKey) continue
 				const bucketId = followerBucketId(target)
 				scratch[bucketId] ??= {}
 				scratch[bucketId][target] ??= new Map()
-				const entry = { replicaUsername: username, entityHash: owner }
+				const entry = { replicaUsername: username, entityHash: ownerKey }
 				scratch[bucketId][target].set(followerEntryKey(entry), entry)
 			}
 		}
-	
+
 	const { mkdir, readdir, unlink } = await import('node:fs/promises')
 	const bucketsDir = followerBucketsDir()
 	await mkdir(bucketsDir, { recursive: true })
 	for (const name of await readdir(bucketsDir).catch(() => [])) {
-	 if (!name.endsWith('.json')) continue
-	 await unlink(path.join(bucketsDir, name)).catch(() => {})
+		if (!name.endsWith('.json')) continue
+		await unlink(path.join(bucketsDir, name)).catch(() => {})
 	}
 	followerEntryCache.clear()
 	for (const [bucketId, targets] of Object.entries(scratch)) {

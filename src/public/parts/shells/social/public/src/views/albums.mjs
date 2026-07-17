@@ -4,6 +4,24 @@ import { bindVisibilityPicker, readVisibilityPicker, renderVisibilityPickerHtml 
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
+
+/**
+ * @param {object | null} coverMediaRef 封面
+ * @param {string} displayName 相册名
+ * @returns {string} 封面 HTML
+ */
+function renderAlbumCoverHtml(coverMediaRef, displayName) {
+	if (coverMediaRef) 
+		try {
+			const url = mediaRefUrl(coverMediaRef)
+			const alt = escapeHtml(String(coverMediaRef.alt || displayName || ''))
+			return `<div class="album-card-cover"><img class="album-card-cover-img" src="${escapeHtml(url)}" alt="${alt}" loading="lazy" /></div>`
+		}
+		catch { /* fall through */ }
+	
+	return `<div class="album-card-cover album-card-cover-fallback">${escapeHtml(displayName)}</div>`
+}
 
 /**
  * 渲染资料页相册网格。
@@ -43,7 +61,7 @@ export async function renderProfileAlbums(entityHash, container) {
 		const displayName = album.virtual ? geti18n('social.albums.defaultName') : album.name
 		const visKey = album.visibility === 'followers_since' ? 'followers7d' : album.visibility || 'public'
 		card.innerHTML = `
-			<div class="album-card-cover">${escapeHtml(displayName)}</div>
+			${renderAlbumCoverHtml(album.coverMediaRef, displayName)}
 			<div class="album-card-meta">
 				<strong>${escapeHtml(displayName)}</strong>
 				<span class="muted">${album.postCount || 0} · ${escapeHtml(geti18n(`social.visibility.${visKey}`))}</span>

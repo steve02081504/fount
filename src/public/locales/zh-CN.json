@@ -1158,10 +1158,32 @@
 			"explore": "探索",
 			"notifications": "收件箱",
 			"saved": "收藏",
-			"taste": "偏好",
 			"profile": "我的",
 			"videos": "短视频",
-			"live": "直播"
+			"live": "直播",
+			"settings": "设置"
+		},
+		"settings": {
+			"title": "社交设置",
+			"back": {
+				"aria-label": "返回资料"
+			},
+			"privacyTitle": "隐私与发现",
+			"privacyHint": "控制账户是否出现在探索与推荐中。",
+			"tasteTitle": "推荐与偏好",
+			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
+			"mutedKeywordsTitle": "屏蔽词与标签",
+			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
+			"mutedKeywordsPlaceholder": "输入关键词或 #标签",
+			"mutedKeywordsMatchTags": "同时匹配标签",
+			"mutedKeywordsAdd": "添加",
+			"mutedKeywordsRemove": "移除屏蔽词",
+			"mutedKeywordsEmpty": "尚未添加屏蔽词",
+			"autoTranslateTitle": "自动翻译",
+			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
+			"autoTranslateEnable": "自动翻译非本语言帖子",
+			"safetyTitle": "安全与屏蔽",
+			"safetyHint": "管理拉黑与隐藏列表。"
 		},
 		"actor": {
 			"label": "当前身份",
@@ -1286,6 +1308,9 @@
 		},
 		"search": {
 			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
+			"open": {
+				"aria-label": "搜索"
+			},
 			"submit": "搜索",
 			"clear": "清除",
 			"hint": "用户与动态均经信任网络搜索；以 # 开头仅匹配话题标签",
@@ -1311,21 +1336,38 @@
 		},
 		"profile": {
 			"viewPosts": "查看动态",
+			"edit": "编辑资料",
 			"editInChat": "编辑资料",
+			"settings": "社交设置",
+			"settingsBtn": {
+				"aria-label": "社交设置"
+			},
 			"mediaOnly": "[媒体]",
 			"postCount": "${n} 条动态",
 			"following": "正在关注",
-			"exploreSettings": "探索页设置",
 			"hideFromExplore": "从探索页隐藏账户",
-			"saveExplore": "保存探索设置",
 			"tabPosts": "动态",
 			"tabAlbums": "相册",
-			"tabFollowing": "正在关注",
 			"tabLikes": "点赞",
 			"tabCabinets": "文件柜",
+			"tabsLabel": {
+				"aria-label": "资料分区"
+			},
 			"cabinetsEmpty": "暂无公开文件柜",
+			"cabinetsFailed": "文件柜加载失败：${error}",
+			"statsGroup": {
+				"aria-label": "资料统计"
+			},
 			"statsPosts": "动态",
-			"statsFollowing": "正在关注"
+			"statsFollowing": "关注",
+			"statsFollowers": "粉丝",
+			"followingTitle": "关注",
+			"followersTitle": "粉丝"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "关闭"
+			}
 		},
 		"actions": {
 			"like": "点赞",
@@ -1386,6 +1428,7 @@
 			"label": "读者补充",
 			"add": "补充信息",
 			"prompt": "写一条读者补充（社区笔记）",
+			"listTitle": "全部补充信息",
 			"helpful": "有用",
 			"unhelpful": "无用",
 			"more": "全部 ${n} 条",
@@ -1417,10 +1460,17 @@
 			"like": "${author} 赞了你的帖子",
 			"repost": "${author} 转发了你的帖子",
 			"follow": "${author} 关注了你",
+			"care_post": "${author} 发了新动态（特别关心）",
+			"poll_closed": "${author} 的投票已结束",
+			"post_note": "${author} 为你的帖子补充了信息",
+			"live_started": "${author} 开始直播了",
 			"view": "查看",
 			"markAllRead": "全部标为已读"
 		},
 		"inbox": {
+			"filtersLabel": {
+				"aria-label": "收件箱筛选"
+			},
 			"tabs": {
 				"all": "全部",
 				"mention": "提及",
@@ -1476,7 +1526,10 @@
 			"folders": "文件夹",
 			"all": "全部",
 			"unfiled": "未归档",
-			"createFolder": "新建文件夹",
+			"createFolder": {
+				"title": "新建文件夹",
+				"aria-label": "新建文件夹"
+			},
 			"createFolderPrompt": "文件夹名称",
 			"newFolderPlaceholder": "文件夹名称",
 			"pickFolder": "输入序号选择文件夹（0=未归档）",
@@ -1502,6 +1555,7 @@
 			"feed": "暂无动态，去关注一些人吧",
 			"profilePosts": "暂无动态",
 			"following": "暂未关注任何人",
+			"followers": "还没有粉丝",
 			"notifications": "暂无通知",
 			"saved": "暂无收藏",
 			"exploreAccounts": "暂无可推荐的账户",

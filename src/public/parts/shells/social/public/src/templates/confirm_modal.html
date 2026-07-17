@@ -1,5 +1,5 @@
 <div class="modal-box">
-	<p class="py-4">{{message}}</p>
+	<p class="py-4">${escapeHtml(message)}</p>
 	<div class="modal-action">
 		<button type="button" class="btn" data-dialog-cancel data-i18n="social.saved.cancel"></button>
 		<button type="button" class="btn btn-error" data-dialog-resolve="ok" data-i18n="social.saved.confirm"></button>

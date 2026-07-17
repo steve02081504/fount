@@ -16,11 +16,28 @@ export function promptText(title, value = '') {
 }
 
 /**
+ * 多行文本输入（读者补充等）。
+ * @param {string} title 标题
+ * @param {string} [value=''] 初始值
+ * @returns {Promise<string | null>} 输入或取消
+ */
+export function promptTextArea(title, value = '') {
+	return pickFromDialog('text_area_prompt_modal', { title, value }, {
+		/**
+		 * @param {HTMLDialogElement} dialog 对话框
+		 * @returns {string | null} 输入
+		 */
+		mapResult: dialog => dialog.querySelector('#promptInput')?.value.trim() || null,
+	})
+}
+
+/**
  * @param {string} text 只读正文
+ * @param {string} [title=''] 标题
  * @returns {Promise<void>}
  */
-export function showText(text) {
-	return pickFromDialog('text_view_modal', { text })
+export function showText(text, title = '') {
+	return pickFromDialog('text_view_modal', { text, title })
 }
 
 /**

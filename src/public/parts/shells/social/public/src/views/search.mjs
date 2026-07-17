@@ -1,11 +1,23 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
+import { socialState } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 let searchGeneration = 0
+
+/**
+ * 同步搜索 hash。
+ * @param {string} q 查询
+ * @returns {void}
+ */
+function syncSearchHash(q) {
+	const next = `#search:${encodeURIComponent(q)}`
+	if (location.hash === next) return
+	history.replaceState(null, '', `${location.pathname}${location.search}${next}`)
+}
 
 /**
  * 初始化搜索视图事件绑定（只调用一次）。
@@ -29,10 +41,17 @@ export async function loadSearchView(initialQuery = '') {
 	activateView('search')
 	const view = document.getElementById('searchView')
 	if (!view) return
+	const asideInput = document.getElementById('feedSearchInput')
 	const input = view.querySelector('#searchViewInput')
-	if (input instanceof HTMLInputElement && initialQuery)
-		input.value = initialQuery
-	if (initialQuery)
+	const q = String(initialQuery || '').trim()
+		|| (asideInput instanceof HTMLInputElement ? asideInput.value.trim() : '')
+		|| (input instanceof HTMLInputElement ? input.value.trim() : '')
+	if (input instanceof HTMLInputElement)
+		input.value = q
+	if (asideInput instanceof HTMLInputElement)
+		asideInput.value = q
+	socialState.activeFeedSearchQuery = q || null
+	if (q)
 		await runSearchView()
 	else
 		input?.focus()
@@ -47,7 +66,12 @@ export async function runSearchView() {
 	if (!view) return
 	const input = view.querySelector('#searchViewInput')
 	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
-	if (q.length < 2) return
+	if (q.length < 2) {
+		const list = view.querySelector('#searchViewResults')
+		if (list)
+			list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.search.tooShort'))}</p>`
+		return
+	}
 
 	const author = view.querySelector('#searchViewAuthor')?.value?.trim() || ''
 	const media = view.querySelector('#searchViewMedia')?.value || ''
@@ -59,6 +83,11 @@ export async function runSearchView() {
 	const list = view.querySelector('#searchViewResults')
 	if (!list) return
 
+	syncSearchHash(q)
+	socialState.activeFeedSearchQuery = q
+	const asideInput = document.getElementById('feedSearchInput')
+	if (asideInput instanceof HTMLInputElement) asideInput.value = q
+
 	disconnectInfiniteScroll()
 	list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.search.loading'))}</p>`
 
@@ -67,19 +96,48 @@ export async function runSearchView() {
 	if (media) baseParams.set('media', media)
 	if (tag) baseParams.set('tag', tag.replace(/^#/, ''))
 
-	const data = await socialApi(`/search?${baseParams}`).catch(() => ({ items: [] }))
+	const [data, entityData] = await Promise.all([
+		socialApi(`/search?${baseParams}`).catch(() => ({ items: [] })),
+		chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
+	])
 	if (gen !== searchGeneration) return
 
 	const items = data.items || []
+	const entities = entityData.entities || []
+	list.replaceChildren()
+
+	const usersTitle = document.createElement('h3')
+	usersTitle.className = 'section-title'
+	usersTitle.textContent = geti18n('social.search.usersTitle')
+	list.appendChild(usersTitle)
+	if (!entities.length) {
+		const empty = document.createElement('p')
+		empty.className = 'empty-hint'
+		empty.textContent = geti18n('social.search.usersEmpty')
+		list.appendChild(empty)
+	}
+	else {
+		const { buildEntitySearchCard } = await import('./feed.mjs')
+		for (const entity of entities)
+			list.appendChild(buildEntitySearchCard(entity))
+	}
+
+	const postsTitle = document.createElement('h3')
+	postsTitle.className = 'section-title'
+	postsTitle.textContent = geti18n('social.search.postsTitle')
+	list.appendChild(postsTitle)
+
 	if (!items.length) {
-		list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.search.empty'))}</p>`
+		const empty = document.createElement('p')
+		empty.className = 'empty-hint'
+		empty.textContent = geti18n('social.search.empty')
+		list.appendChild(empty)
 		return
 	}
 
 	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
 	if (gen !== searchGeneration) return
-
-	list.replaceChildren(...cards.filter(Boolean))
+	for (const card of cards) if (card) list.appendChild(card)
 
 	let cursor = data.nextCursor || null
 	if (cursor) {

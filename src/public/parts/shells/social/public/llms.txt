@@ -131,10 +131,10 @@ Query：`q`、`limit`。返回 `{ suggestions: [{ entityHash, displayName, kind 
 当前观看者 `viewerEntityHash` 与 `profile` 摘要。Social 前端 bootstrap 改调此路由。
 
 ### `POST /api/parts/shells:social/profile/meta`
-Body：`exploreBlurb?`、`hideFromDiscovery?` — 追加 `social_meta` 事件更新探索资料。
+Body：`hideFromDiscovery?` — 追加 `social_meta` 事件更新探索可见性。
 
 ### `GET /api/parts/shells:social/profile/:entityHash`
-资料、`postCount`、`isFollowing`、`socialMeta`（不含拉黑名单）。
+资料、`postCount`、`followingCount`、`followerCount`（本 replica 已知粉丝投影）、`isFollowing`、`socialMeta`（不含拉黑名单）。
 
 ### `GET /api/parts/shells:social/profile/:entityHash/posts`
 物化帖子列表（与首页 feed 同构的 `items[]`）。
@@ -143,7 +143,10 @@ Body：`exploreBlurb?`、`hideFromDiscovery?` — 追加 `social_meta` 事件更
 该 entity 点赞过的帖子列表。
 
 ### `GET /api/parts/shells:social/profile/:entityHash/following`
-关注列表。响应：`{ following: [{ entityHash, profile }] }`（`profile` 为作者摘要）。
+关注列表。响应：`{ following: [{ entityHash, profile }] }`（不含隐式自关注；`profile` 为作者摘要）。
+
+### `GET /api/parts/shells:social/profile/:entityHash/followers`
+已知粉丝列表（本地关注 + 已同步远程时间线投影）。响应：`{ followers: [{ entityHash, profile }] }`。
 
 ### `GET /api/parts/shells:social/profile/:entityHash/replies/:postId`
 帖下回复。响应：`{ replies[] }`，每条为完整 feed item（含 `authorProfile`、互动计数、`featured`）。

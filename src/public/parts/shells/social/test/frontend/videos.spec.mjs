@@ -320,5 +320,80 @@ test.describe('Social short videos', () => {
 		await expect(focused).toContainText(replyB)
 		await expect(focused.locator('.hash-avatar, .author-avatar, .reply-avatar')).toBeVisible()
 	})
+
+	test('feed video is muted loop without controls and click opens videos view', async ({ page, baseUrl, apiKey }) => {
+		const text = `feed-video-click ${Date.now()}`
+		const req = await playwrightRequest.newContext()
+		let postId
+		let entityHash
+		try {
+			postId = await publishViaApi(req, baseUrl, apiKey, {
+				text,
+				visibility: 'public',
+				locale: 'zh-CN',
+				mediaRefs: [{
+					kind: 'video',
+					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+				}],
+			})
+			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		}
+		finally {
+			await req.dispose()
+		}
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
+		const card = page.locator(`#feedList [data-post-id="${postId}"]`)
+		await expect(card).toBeVisible({ timeout: 30_000 })
+		const video = card.locator('video.post-media-video')
+		await expect(video).toBeVisible()
+		await expect(video).toHaveAttribute('muted', '')
+		await expect(video).toHaveAttribute('loop', '')
+		await expect(video).not.toHaveAttribute('controls', /.*/)
+		await video.click()
+		await expect(page).toHaveURL(new RegExp(`#videos;${entityHash};${postId}`), { timeout: 20_000 })
+		await expect(page.locator('#videosView')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator(`#videosView .video-slide[data-post-id="${postId}"]`).first()).toBeVisible({ timeout: 30_000 })
+	})
+
+	test('post detail double-tap media likes', async ({ page, baseUrl, apiKey }) => {
+		const text = `detail-dbl-like ${Date.now()}`
+		const req = await playwrightRequest.newContext()
+		let postId
+		let entityHash
+		try {
+			postId = await publishViaApi(req, baseUrl, apiKey, {
+				text,
+				visibility: 'public',
+				locale: 'zh-CN',
+				mediaRefs: [{
+					kind: 'video',
+					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+				}],
+			})
+			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		}
+		finally {
+			await req.dispose()
+		}
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
+		const card = page.locator('#postDetailView .post-detail-card')
+		await expect(card).toBeVisible({ timeout: 30_000 })
+		const likeBtn = card.locator('[data-like]')
+		await expect(likeBtn).toHaveAttribute('data-liked', '0')
+		const media = card.locator('.post-media')
+		await media.dispatchEvent('pointerup')
+		await page.waitForTimeout(50)
+		await Promise.all([
+			page.waitForResponse(res =>
+				res.url().includes(`/api/parts/shells:social/posts/${entityHash}/${postId}/like`)
+				&& res.request().method() === 'POST'
+				&& res.status() === 200,
+			),
+			media.dispatchEvent('pointerup'),
+		])
+		await expect(likeBtn).toHaveAttribute('data-liked', '1', { timeout: 10_000 })
+	})
 })
 

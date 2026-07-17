@@ -3,6 +3,7 @@ import { aliasForEntity, setEntityAlias } from '/parts/shells:chat/shared/aliase
 import { setCared } from '/parts/shells:chat/shared/care.mjs'
 import { formatChatDmFromSocial } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
+import { promptText } from '../lib/dialog.mjs'
 import {
 	purgeFeedShownAuthor,
 	removePostsByAuthor,
@@ -12,7 +13,13 @@ import {
 } from '../lib/socialWrite.mjs'
 import { socialState } from '../state.mjs'
 import { loadExplore } from '../views/explore.mjs'
-import { loadProfileFor, renderBlocklist } from '../views/profile.mjs'
+import {
+	activateProfileTab,
+	loadProfileFor,
+	openProfileRelationshipList,
+	openProfileSettingsDialog,
+	renderBlocklist,
+} from '../views/profile.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -43,16 +50,43 @@ async function optimisticAuthorFilter(entityHash, write, failKey) {
  * @returns {Promise<void>}
  */
 export async function handleProfileNavClick(target) {
-	if (target.closest('#saveMetaButton')) {
-		await socialApi('/profile/meta', {
-			method: 'POST',
-			body: JSON.stringify({
-				exploreBlurb: document.getElementById('exploreBlurbInput')?.value ?? '',
-				hideFromDiscovery: document.getElementById('exploreProtectedInput')?.checked ?? false,
-			}),
-		})
-		if (socialState.profileEntityHash)
-			await loadProfileFor(socialState.profileEntityHash)
+	if (target.closest('[data-profile-edit]')) {
+		window.location.href = '/parts/shells:chat/profile/'
+		return
+	}
+
+	if (target.closest('[data-profile-settings]')) {
+		await openProfileSettingsDialog(socialState.profileSocialMeta || {})
+		return
+	}
+
+	const settingsBack = target.closest('#settingsView [data-view="profile"]')
+	if (settingsBack) {
+		const { switchView } = await import('../navigation.mjs')
+		await switchView('profile')
+		return
+	}
+
+	const exploreShortcut = target.closest('.explore-shortcuts [data-view]')
+	if (exploreShortcut instanceof HTMLElement && exploreShortcut.dataset.view) {
+		const { switchView } = await import('../navigation.mjs')
+		await switchView(exploreShortcut.dataset.view)
+		return
+	}
+
+	const statButton = target.closest('[data-profile-stat]')
+	if (statButton instanceof HTMLElement && statButton.dataset.profileStat) {
+		const kind = statButton.dataset.profileStat
+		const entityHash = statButton.dataset.entityHash || socialState.profileEntityHash
+		if (kind === 'posts') {
+			await activateProfileTab('posts')
+			document.getElementById('profilePostsPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+			return
+		}
+		if ((kind === 'following' || kind === 'followers') && entityHash) {
+			await openProfileRelationshipList(entityHash, kind)
+			return
+		}
 	}
 
 	const followButton = target.closest('[data-follow]')
@@ -100,7 +134,7 @@ export async function handleProfileNavClick(target) {
 	const aliasButton = target.closest('[data-set-alias]')
 	if (aliasButton instanceof HTMLElement && aliasButton.dataset.setAlias) {
 		const entityHash = aliasButton.dataset.setAlias
-		const next = prompt(geti18n('social.actions.setAliasPrompt'), aliasForEntity(entityHash))
+		const next = await promptText(geti18n('social.actions.setAliasPrompt'), aliasForEntity(entityHash) || '')
 		if (next != null) {
 			await setEntityAlias(entityHash, next)
 			showToastI18n('success', 'social.actions.aliasSaved')
@@ -142,7 +176,8 @@ export async function handleProfileNavClick(target) {
 			method: 'POST',
 			body: JSON.stringify({ entityHash: unblockButton.dataset.unblock, block: false }),
 		})
-		await renderBlocklist(document.getElementById('blocklistSection'))
+		const section = document.getElementById('blocklistSection')
+		if (section) await renderBlocklist(section)
 	}
 
 	const unhideButton = target.closest('[data-unhide]')
@@ -151,7 +186,8 @@ export async function handleProfileNavClick(target) {
 			method: 'POST',
 			body: JSON.stringify({ entityHash: unhideButton.dataset.unhide, hide: false }),
 		})
-		await renderBlocklist(document.getElementById('blocklistSection'))
+		const section = document.getElementById('blocklistSection')
+		if (section) await renderBlocklist(section)
 	}
 
 	const dmButton = target.closest('[data-dm]')
@@ -159,33 +195,15 @@ export async function handleProfileNavClick(target) {
 		window.location.href = formatChatDmFromSocial(dmButton.dataset.dm)
 
 	const profileTab = target.closest('[data-profile-tab]')
-	if (profileTab instanceof HTMLElement && profileTab.dataset.profileTab) {
-		const tab = profileTab.dataset.profileTab
-		for (const button of document.querySelectorAll('[data-profile-tab]')) {
-			button.classList.toggle('active', button.dataset.profileTab === tab)
-			button.classList.toggle('tab-active', button.dataset.profileTab === tab)
-		}
-		for (const panel of document.querySelectorAll('[data-profile-panel]'))
-			panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
-	}
-
-	const tasteNav = target.closest('[data-view="taste"]')
-	if (tasteNav instanceof HTMLElement && !tasteNav.classList.contains('nav-btn')) {
-		const { switchView } = await import('../navigation.mjs')
-		await switchView('taste')
-	}
+	if (profileTab instanceof HTMLElement && profileTab.dataset.profileTab)
+		await activateProfileTab(profileTab.dataset.profileTab)
 
 	const albumChip = target.closest('[data-album-open][data-album-id]')
 	if (albumChip instanceof HTMLElement && albumChip.dataset.albumOpen && albumChip.dataset.albumId) {
 		const { openAlbumDetail } = await import('../views/albums.mjs')
 		const { switchView } = await import('../navigation.mjs')
 		await switchView('profile')
-		for (const button of document.querySelectorAll('[data-profile-tab]')) {
-			button.classList.toggle('active', button.dataset.profileTab === 'albums')
-			button.classList.toggle('tab-active', button.dataset.profileTab === 'albums')
-		}
-		for (const panel of document.querySelectorAll('[data-profile-panel]'))
-			panel.classList.toggle('hidden', panel.dataset.profilePanel !== 'albums')
+		await activateProfileTab('albums', { force: true })
 		const panel = document.getElementById('profileAlbumsPanel')
 		if (panel)
 			await openAlbumDetail(albumChip.dataset.albumOpen, albumChip.dataset.albumId, panel)

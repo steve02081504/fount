@@ -1,20 +1,41 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { createDOMFromHtmlString, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 import {
+	configureEntityProfileCard,
 	ensureEntityProfileCardStyles,
-	paintEntityProfileBanner,
+	paintEntityProfileCard,
+	paintEntityProfileExtras,
+	profileDescriptionText,
 } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
+import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { socialState } from '../state.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+
+/** @type {Map<string, Set<string>>} entity → 已加载过的 tab */
+const profileLoadedTabs = new Map()
+
+/**
+ * @param {string} entityHash 实体
+ * @returns {Set<string>} 已加载 tab
+ */
+function loadedTabsFor(entityHash) {
+	let set = profileLoadedTabs.get(entityHash)
+	if (!set) {
+		set = new Set()
+		profileLoadedTabs.set(entityHash, set)
+	}
+	return set
+}
 
 /**
  * 渲染拉黑/隐藏列表 UI。
@@ -22,6 +43,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  * @returns {Promise<void>}
  */
 export async function renderBlocklist(container) {
+	if (!(container instanceof HTMLElement)) return
 	const data = await chatApi('/personal-lists')
 	const entries = data.entries || []
 	const blocked = entries.filter(entry => entry.kind === 'block')
@@ -78,6 +100,17 @@ export async function renderBlocklist(container) {
 }
 
 /**
+ * 打开个人主页设置（迁移到 settings 视图后由 navigation 处理；保留导出供过渡）。
+ * @param {{ hideFromDiscovery?: boolean }} socialMeta 当前 meta
+ * @returns {Promise<void>}
+ */
+export async function openProfileSettingsDialog(socialMeta = {}) {
+	socialState.profileSocialMeta = socialMeta || socialState.profileSocialMeta
+	const { switchView } = await import('../navigation.mjs')
+	await switchView('settings')
+}
+
+/**
  * 绑定 profile 帖子无限滚动。
  * @param {string} entityHash owner
  * @param {HTMLElement} container 帖子容器
@@ -121,6 +154,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 			card.classList.add('highlight-post')
 		return card
 	})
+	bindFeedVideoAutoplay(container)
 	bindProfilePostsInfiniteScroll(entityHash, container)
 	if (highlightPostId)
 		container.querySelector(`[data-post-id="${highlightPostId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -142,23 +176,23 @@ export async function renderProfileLikes(entityHash, container) {
 	}
 	for (const item of items)
 		container.appendChild(await buildPostCard(item))
+	bindFeedVideoAutoplay(container)
 }
 
 /**
- * 渲染资料页 following 列表。
- * @param {string} entityHash owner
+ * 渲染关系列表行到容器。
  * @param {HTMLElement} container 容器
- * @returns {Promise<void>}
+ * @param {object[]} rows 行
+ * @param {string} emptyKey 空态 i18n
+ * @returns {void}
  */
-export async function renderProfileFollowingList(entityHash, container) {
-	const data = await socialApi(`/profile/${entityHash}/following`)
-	const following = data.following || []
+function fillRelationshipRows(container, rows, emptyKey) {
 	container.replaceChildren()
-	if (!following.length) {
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.empty.following'))}</div>`
+	if (!rows.length) {
+		container.innerHTML = `<div class="empty">${escapeHtml(geti18n(emptyKey))}</div>`
 		return
 	}
-	for (const row of following) {
+	for (const row of rows) {
 		const hash = typeof row === 'string' ? row : row.entityHash
 		const profile = typeof row === 'string' ? null : row.profile
 		rememberEntityHandle(hash, profile)
@@ -177,6 +211,32 @@ export async function renderProfileFollowingList(entityHash, container) {
 }
 
 /**
+ * 打开关注/粉丝列表对话框。
+ * @param {string} entityHash 实体
+ * @param {'following' | 'followers'} kind 列表类型
+ * @returns {Promise<void>}
+ */
+export async function openProfileRelationshipList(entityHash, kind) {
+	const title = geti18n(kind === 'followers'
+		? 'social.profile.followersTitle'
+		: 'social.profile.followingTitle')
+	const dialog = await openDialogFromTemplate('profile_relationship_list', { title: escapeHtml(title) })
+	const list = dialog.querySelector('#profileRelationshipList')
+	if (!(list instanceof HTMLElement)) return
+	list.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.post.loading'))}</div>`
+	const path = kind === 'followers'
+		? `/profile/${entityHash}/followers`
+		: `/profile/${entityHash}/following`
+	const data = await socialApi(path)
+	const rows = kind === 'followers' ? data.followers || [] : data.following || []
+	fillRelationshipRows(
+		list,
+		rows,
+		kind === 'followers' ? 'social.empty.followers' : 'social.empty.following',
+	)
+}
+
+/**
  * 刷新当前资料页帖子列表。
  * @param {string | null} [highlightPostId] 高亮帖
  * @returns {Promise<void>}
@@ -190,6 +250,94 @@ export async function refreshProfilePosts(highlightPostId = null) {
 }
 
 /**
+ * 激活资料 Tab（懒加载）。
+ * @param {string} tab tab id
+ * @param {{ force?: boolean }} [options] 强制重载
+ * @returns {Promise<void>}
+ */
+export async function activateProfileTab(tab, options = {}) {
+	const entityHash = socialState.profileEntityHash
+	if (!entityHash) return
+	for (const button of document.querySelectorAll('[data-profile-tab]')) {
+		const active = button.dataset.profileTab === tab
+		button.classList.toggle('active', active)
+		button.classList.toggle('tab-active', active)
+		button.setAttribute('aria-selected', active ? 'true' : 'false')
+	}
+	for (const panel of document.querySelectorAll('[data-profile-panel]'))
+		panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
+
+	const loaded = loadedTabsFor(entityHash)
+	if (!options.force && loaded.has(tab) && tab !== 'posts') return
+	loaded.add(tab)
+
+	if (tab === 'posts') {
+		const panel = document.getElementById('profilePostsPanel')
+		if (panel instanceof HTMLElement && (options.force || !panel.childElementCount))
+			await renderProfilePosts(entityHash, panel)
+		return
+	}
+	if (tab === 'albums') {
+		const panel = document.getElementById('profileAlbumsPanel')
+		if (panel instanceof HTMLElement) await renderProfileAlbums(entityHash, panel)
+		return
+	}
+	if (tab === 'likes') {
+		const panel = document.getElementById('profileLikesPanel')
+		if (panel instanceof HTMLElement) await renderProfileLikes(entityHash, panel)
+		return
+	}
+	if (tab === 'cabinets') {
+		const panel = document.getElementById('profileCabinetsPanel')
+		if (panel instanceof HTMLElement) await renderProfileCabinets(entityHash, panel)
+	}
+}
+
+/**
+ * 挂载完整人物卡到资料页宿主。
+ * @param {HTMLElement} host 宿主
+ * @param {string} entityHash 实体
+ * @param {object} profile 资料
+ * @returns {Promise<void>}
+ */
+async function mountProfileEntityCard(host, entityHash, profile) {
+	ensureEntityProfileCardStyles()
+	const response = await fetch('/parts/shells:chat/src/templates/hub/profile_popup.html')
+	const card = createDOMFromHtmlString(await response.text())
+	if (!(card instanceof HTMLElement)) return
+	configureEntityProfileCard(card, 'embedded')
+	card.classList.add('social-profile-entity-card')
+	if (!card.querySelector('[data-entity-owned-by-host]')) {
+		const ownedHost = document.createElement('div')
+		ownedHost.dataset.entityOwnedByHost = ''
+		card.querySelector('.hub-profile-popup-body')?.appendChild(ownedHost)
+	}
+	await paintEntityProfileCard(card, profile, { entityHash })
+	const bioEl = card.querySelector('[data-entity-profile-bio]')
+	if (bioEl instanceof HTMLElement) {
+		const bioText = profileDescriptionText(profile)
+		if (bioText) {
+			delete bioEl.dataset.i18n
+			bioEl.classList.add('markdown-body')
+			bioEl.replaceChildren(await renderMarkdown(bioText, entityHash))
+		}
+	}
+	const ownerEntityHash = profile?.ownerEntityHash
+		? String(profile.ownerEntityHash).toLowerCase()
+		: null
+	if (ownerEntityHash) {
+		let ownerName = null
+		try {
+			const ownerData = await socialApi(`/profile/${ownerEntityHash}`)
+			ownerName = authorLabel(ownerEntityHash, ownerData.profile)
+		}
+		catch { /* remote miss */ }
+		paintEntityProfileExtras(card, { ownerEntityHash, ownerName })
+	}
+	host.replaceChildren(card)
+}
+
+/**
  * 加载并渲染指定 entity 的资料页。
  * @param {string} entityHash owner
  * @param {string | null} [highlightPostId] 高亮帖
@@ -198,17 +346,13 @@ export async function refreshProfilePosts(highlightPostId = null) {
 export async function loadProfileFor(entityHash, highlightPostId = null) {
 	socialState.profileEntityHash = entityHash
 	socialState.profilePostsCursor = null
-	const [data, followingData] = await Promise.all([
-		socialApi(`/profile/${entityHash}`),
-		socialApi(`/profile/${entityHash}/following`).catch(() => ({ following: [] })),
-	])
+	profileLoadedTabs.delete(entityHash)
+	const data = await socialApi(`/profile/${entityHash}`)
 	const viewer = viewerEntityHash()
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
-	const name = escapeHtml(authorLabel(entityHash, data.profile))
 	rememberEntityHandle(entityHash, data.profile)
-	const handle = escapeHtml(entityHandle(entityHash, data.profile))
-	const followingCount = (followingData.following || []).length
+	socialState.profileSocialMeta = data.socialMeta || {}
 
 	const cared = socialState.viewerEntityHash
 		? await isCared(socialState.viewerEntityHash, entityHash)
@@ -226,60 +370,25 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 				? geti18n('social.actions.careRemove')
 				: geti18n('social.actions.care')),
 		})
-	const avatarHtml = renderAvatarHtml(entityHash, data.profile, 'profile-avatar')
-	const bioText = String(data.profile?.description_markdown || data.profile?.description || data.profile?.bio || '').trim()
-	const bioHtml = bioText ? `<p class="profile-bio">${escapeHtml(bioText)}</p>` : ''
-	const ownerEntityHash = data.profile?.ownerEntityHash
-		? String(data.profile.ownerEntityHash).toLowerCase()
-		: null
-	let ownedByHtml = ''
-	if (ownerEntityHash) {
-		const { renderOwnedByBoxHtml } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
-		let ownerName = null
-		try {
-			const ownerData = await socialApi(`/profile/${ownerEntityHash}`)
-			ownerName = authorLabel(ownerEntityHash, ownerData.profile)
-		}
-		catch { /* remote miss */ }
-		ownedByHtml = renderOwnedByBoxHtml(ownerEntityHash, { ownerName })
-	}
-	const selfSettingsHtml = isSelf
-		? await renderTemplateAsHtmlString('profile_self_settings', {
-			exploreBlurb: escapeHtml(data.socialMeta?.exploreBlurb || ''),
-			hideChecked: data.socialMeta?.hideFromDiscovery ? 'checked' : '',
-		})
-		: ''
 
-	ensureEntityProfileCardStyles()
 	container.replaceChildren(await renderTemplate('profile_view', {
 		headerActions,
-		avatarHtml,
-		name,
-		handle,
-		bioHtml,
-		ownedByHtml,
+		entityHash: escapeHtml(entityHash),
 		postCount: data.postCount || 0,
-		followingCount,
-		selfSettingsHtml,
+		followingCount: data.followingCount || 0,
+		followerCount: data.followerCount || 0,
 	}))
 
-	const bannerHost = container.querySelector('.profile-banner-host') || container
-	const bannerEl = container.querySelector('.profile-banner')
-	if (bannerEl instanceof HTMLElement)
-		paintEntityProfileBanner(bannerHost instanceof HTMLElement ? bannerHost : container, bannerEl, {
-			entityHash,
-			banner: data.profile?.banner,
-			themeColor: data.profile?.themeColor || '#5865f2',
-		})
+	const cardHost = container.querySelector('#profileEntityCardHost')
+	if (cardHost instanceof HTMLElement)
+		await mountProfileEntityCard(cardHost, entityHash, data.profile)
 
-	if (isSelf)
-		await renderBlocklist(document.getElementById('blocklistSection'))
-
-	await renderProfilePosts(entityHash, document.getElementById('profilePostsPanel'), highlightPostId)
-	await renderProfileAlbums(entityHash, document.getElementById('profileAlbumsPanel'))
-	await renderProfileLikes(entityHash, document.getElementById('profileLikesPanel'))
-	await renderProfileFollowingList(entityHash, document.getElementById('profileFollowingPanel'))
-	await renderProfileCabinets(entityHash, document.getElementById('profileCabinetsPanel'))
+	await activateProfileTab('posts', { force: true })
+	if (highlightPostId) {
+		const panel = document.getElementById('profilePostsPanel')
+		if (panel)
+			await renderProfilePosts(entityHash, panel, highlightPostId)
+	}
 }
 
 /**
@@ -298,7 +407,7 @@ async function renderProfileCabinets(entityHash, container) {
 		const data = await response.json()
 		const cabinets = data.cabinets || []
 		if (!cabinets.length) {
-			container.innerHTML = '<div class="empty" data-i18n="social.profile.cabinetsEmpty">暂无公开文件柜</div>'
+			container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.profile.cabinetsEmpty'))}</div>`
 			return
 		}
 		const list = document.createElement('div')
@@ -314,7 +423,7 @@ async function renderProfileCabinets(entityHash, container) {
 	}
 	catch (error) {
 		console.error(error)
-		container.innerHTML = `<div class="empty">${escapeHtml(error.message || 'failed')}</div>`
+		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.profile.cabinetsFailed', { error: error.message || 'failed' }))}</div>`
 	}
 }
 
@@ -330,5 +439,3 @@ export async function loadProfile() {
 	}
 	await loadProfileFor(profileHash)
 }
-
-

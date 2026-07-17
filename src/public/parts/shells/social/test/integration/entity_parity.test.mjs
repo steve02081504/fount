@@ -94,6 +94,16 @@ Deno.test('agent follow projects entity-granular follower index', async () => {
 	assert(followers.some(row =>
 		row.replicaUsername === username && row.entityHash === agentHash),
 	'follower index records agent entity not just replica username')
+
+	const known = await followerIndex.listKnownFollowersOf(operator)
+	assert(known.some(row => row.entityHash === agentHash), 'known followers include agent')
+
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
+	const client = await getSocialClient(username)
+	const profile = await client.profile(operator)
+	assert(profile.followerCount >= 1, 'profile reports followerCount')
+	const list = await client.profileFollowers(operator)
+	assert(list.followers.some(row => row.entityHash === agentHash), 'followers API lists agent')
 })
 
 Deno.test('operator SocialClient may delete owned agent post', async () => {

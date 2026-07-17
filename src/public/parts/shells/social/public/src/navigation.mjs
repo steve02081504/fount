@@ -4,14 +4,14 @@ import { publishPost } from './composer.mjs'
 import { socialState } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadExplore } from './views/explore.mjs'
-import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
+import { loadFeed, updateFeedSearchChrome } from './views/feed.mjs'
 import { loadLiveView } from './views/live.mjs'
 import { loadNotifications } from './views/notifications.mjs'
 import { loadPostDetail } from './views/postDetail.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
 import { loadSearchView } from './views/search.mjs'
-import { loadTaste } from './views/taste.mjs'
+import { loadSettings } from './views/settings.mjs'
 import { loadTopicView } from './views/topic.mjs'
 import { loadVideoView } from './views/video.mjs'
 
@@ -36,15 +36,23 @@ export async function refreshVisiblePosts() {
 	const profileVisible = !document.getElementById('profileView')?.classList.contains('hidden')
 	const postVisible = !document.getElementById('postDetailView')?.classList.contains('hidden')
 	if (feedVisible)
-		if (socialState.activeFeedSearchQuery)
-			await runFeedSearch()
+		if (socialState.activeFeedSearchQuery) {
+			const { loadSearchView } = await import('./views/search.mjs')
+			await loadSearchView(socialState.activeFeedSearchQuery)
+		}
 		else {
 			socialState.feedCursor = null
 			await loadFeed(false)
 		}
 
-	if (profileVisible && socialState.profileEntityHash)
+	if (profileVisible && socialState.profileEntityHash) {
 		await refreshProfilePosts()
+		const albumsPanel = document.getElementById('profileAlbumsPanel')
+		if (albumsPanel && !albumsPanel.classList.contains('hidden')) {
+			const { renderProfileAlbums } = await import('./views/albums.mjs')
+			await renderProfileAlbums(socialState.profileEntityHash, albumsPanel)
+		}
+	}
 	if (postVisible && socialState.postDetailEntityHash && socialState.postDetailPostId)
 		await loadPostDetail(socialState.postDetailEntityHash, socialState.postDetailPostId)
 }
@@ -52,7 +60,7 @@ export async function refreshVisiblePosts() {
 /**
  * 切换主导航视图并加载对应数据。
  * @param {string} view 视图名
- * @param {{ skipHash?: boolean }} [options] skipHash 时不写 URL（由 applyIncomingNavigation 调用）
+ * @param {{ skipHash?: boolean, focusEntityHash?: string, focusPostId?: string }} [options] skipHash 时不写 URL；videos 可带焦点帖
  * @returns {Promise<void>}
  */
 export async function switchView(view, options = {}) {
@@ -72,9 +80,13 @@ export async function switchView(view, options = {}) {
 	}
 	if (view === 'explore') await loadExplore()
 	if (view === 'saved') await loadSaved()
-	if (view === 'taste') await loadTaste()
+	if (view === 'settings') await loadSettings()
 	if (view === 'profile') await loadProfile()
-	if (view === 'videos') await loadVideoView()
+	if (view === 'videos')
+		await loadVideoView({
+			focusEntityHash: options.focusEntityHash,
+			focusPostId: options.focusPostId,
+		})
 	if (view === 'live') await loadLiveView()
 }
 
@@ -106,6 +118,16 @@ export async function applyIncomingNavigation() {
 		return true
 	}
 
+	// 短视频深链：#videos;entityHash;postId
+	if (rawHash.startsWith('videos;')) {
+		const parts = rawHash.split(';')
+		const focusEntityHash = (parts[1] || '').toLowerCase()
+		const focusPostId = parts[2] || ''
+		activateView('videos')
+		await loadVideoView({ focusEntityHash, focusPostId })
+		return true
+	}
+
 	// 主导航 tab：#feed / #videos / …
 	if (MAIN_NAV_VIEWS.includes(rawHash)) {
 		if (currentMainView() === rawHash) return true
@@ -118,11 +140,11 @@ export async function applyIncomingNavigation() {
 	const hashParsed = parseSocialRunUri(rawHash)
 	if (hashParsed?.subcommand === 'search' && hashParsed.searchQuery) {
 		const tag = hashParsed.searchQuery.trim()
-		await openSearchView(tag.startsWith('#') ? tag : `#${tag}`)
+		await loadSearchView(tag.startsWith('#') ? tag : `#${tag}`)
 		return true
 	}
 	if (urlQ) {
-		await openSearchView(urlQ)
+		await loadSearchView(urlQ)
 		return true
 	}
 	if (hashParsed?.subcommand === 'post' && hashParsed.entityHash && hashParsed.postId) {

@@ -57,6 +57,10 @@ function notificationIconClass(type) {
 	if (type === 'like') return 's-ic-notif-like'
 	if (type === 'repost') return 's-ic-notif-repost'
 	if (type === 'follow') return 's-ic-notif-follow'
+	if (type === 'care_post') return 's-ic-notif-like'
+	if (type === 'poll_closed') return 's-ic-vote'
+	if (type === 'post_note') return 's-ic-note'
+	if (type === 'live_started') return 's-ic-live'
 	return 's-ic-bell'
 }
 
@@ -153,8 +157,11 @@ export function bumpNotificationBadge() {
 function notificationHref(row) {
 	if (row.type === 'reply' || row.type === 'mention')
 		return formatSocialPostHref(row.actorEntityHash, row.postId)
-	if ((row.type === 'like' || row.type === 'repost') && row.targetPostId && socialState.viewerEntityHash)
-		return formatSocialPostHref(socialState.viewerEntityHash, row.targetPostId)
+	if ((row.type === 'like' || row.type === 'repost' || row.type === 'post_note' || row.type === 'poll_closed' || row.type === 'care_post')
+		&& row.targetPostId && (row.targetEntityHash || socialState.viewerEntityHash))
+		return formatSocialPostHref(row.targetEntityHash || socialState.viewerEntityHash, row.targetPostId)
+	if (row.type === 'live_started')
+		return formatSocialProfileHref(row.actorEntityHash)
 	return formatSocialProfileHref(row.actorEntityHash)
 }
 
@@ -270,7 +277,10 @@ export function syncNotificationFilterTabs() {
 	const filter = socialState.notificationsFilter || 'all'
 	for (const button of document.querySelectorAll('[data-notif-filter]')) {
 		if (!(button instanceof HTMLButtonElement)) continue
-		button.classList.toggle('active', button.dataset.notifFilter === filter)
+		const active = button.dataset.notifFilter === filter
+		button.classList.toggle('active', active)
+		button.setAttribute('aria-selected', active ? 'true' : 'false')
+		button.setAttribute('role', 'tab')
 	}
 }
 

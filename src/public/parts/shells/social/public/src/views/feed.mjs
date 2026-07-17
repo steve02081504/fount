@@ -139,12 +139,13 @@ export async function loadSuggestedAccounts() {
 }
 
 /**
- * 加载并渲染侧边栏热门话题标签。
+ * 加载并渲染热门话题标签。
  * @param {'local' | 'nearby'} [scope='local'] 范围
+ * @param {string} [containerId='feedTrending'] 容器 id
  * @returns {Promise<void>}
  */
-export async function loadTrendingHashtags(scope = 'local') {
-	const aside = document.getElementById('feedTrending')
+export async function loadTrendingHashtags(scope = 'local', containerId = 'feedTrending') {
+	const aside = document.getElementById(containerId)
 	if (!aside) return
 	const currentScope = scope === 'nearby' ? 'nearby' : 'local'
 	aside.dataset.trendingScope = currentScope
@@ -180,7 +181,7 @@ export async function loadTrendingHashtags(scope = 'local') {
 	aside.querySelectorAll('[data-trending-scope]').forEach(btn => {
 		btn.addEventListener('click', () => {
 			const next = btn.getAttribute('data-trending-scope') === 'nearby' ? 'nearby' : 'local'
-			void loadTrendingHashtags(next)
+			void loadTrendingHashtags(next, containerId)
 		})
 	})
 }
@@ -220,7 +221,10 @@ function feedRankingQuery() {
 export function updateFeedRankingTabs() {
 	for (const tab of document.querySelectorAll('[data-feed-ranking]')) {
 		if (!(tab instanceof HTMLElement)) continue
-		tab.classList.toggle('active', tab.dataset.feedRanking === socialState.feedRanking)
+		const active = tab.dataset.feedRanking === socialState.feedRanking
+		tab.classList.toggle('active', active)
+		tab.setAttribute('aria-selected', active ? 'true' : 'false')
+		tab.setAttribute('role', 'tab')
 	}
 }
 
@@ -328,6 +332,8 @@ export async function loadFeed(append = false) {
 	scheduleFeedPrefetch()
 	if (unbindDwell) unbindDwell()
 	unbindDwell = bindDwellTracker(list)
+	const { bindFeedVideoAutoplay } = await import('../lib/videoAutoplay.mjs')
+	bindFeedVideoAutoplay(list)
 	void loadTrendingHashtags()
 	void loadSuggestedAccounts()
 }
@@ -422,7 +428,7 @@ export async function runFeedSearch() {
  * @param {object} entity 搜索命中实体
  * @returns {HTMLElement} 卡片
  */
-function buildEntitySearchCard(entity) {
+export function buildEntitySearchCard(entity) {
 	const row = document.createElement('div')
 	row.className = 'suggested-account feed-search-entity'
 	const handle = entityHandle(entity.entityHash, entity)
@@ -482,16 +488,11 @@ export async function clearFeedSearch() {
 }
 
 /**
- * 切换到 feed 视图并执行指定搜索。
+ * 切换到搜索视图并执行指定搜索。
  * @param {string} query 搜索词
  * @returns {Promise<void>}
  */
 export async function openSearchView(query) {
-	const q = String(query || '').trim()
-	if (!q) return
-	activateView('feed')
-	const input = document.getElementById('feedSearchInput')
-	if (input instanceof HTMLInputElement)
-		input.value = q
-	await runFeedSearch()
+	const { loadSearchView } = await import('./search.mjs')
+	await loadSearchView(String(query || '').trim())
 }

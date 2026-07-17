@@ -188,7 +188,6 @@ export async function ensureSocialMeta(username, entityHash) {
 		type: 'social_meta',
 		content: {
 			hideFromDiscovery: false,
-			exploreBlurb: '',
 			createdAt: Date.now(),
 			recoveryPubKeyHex,
 		},

@@ -1,7 +1,7 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { promptText, showText } from '../lib/dialog.mjs'
+import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
 import { purgeFeedShownPost, restoreFeedShownItems, runSocialWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
@@ -46,7 +46,7 @@ export async function handlePostProfileActionsClick(target) {
 				const item = (data.items || []).find(row => row.postId === postId)
 				const revisions = item?.post?.revisions || []
 				const lines = revisions.map((rev, idx) => `#${idx + 1} ${rev.text || ''}`).join('\n---\n')
-				await showText(lines || geti18n('social.post.editHistoryEmpty'))
+				await showText(lines || geti18n('social.post.editHistoryEmpty'), geti18n('social.post.editHistory'))
 			})
 		}
 		return true
@@ -57,7 +57,7 @@ export async function handlePostProfileActionsClick(target) {
 		const parsed = parseActionKey(addNoteButton.dataset.addNote)
 		if (parsed) {
 			closePostMoreMenus()
-			const text = await promptText(geti18n('social.notes.prompt'))
+			const text = await promptTextArea(geti18n('social.notes.prompt'))
 			if (!text?.trim()) return true
 			await runSocialWrite('addNote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
@@ -92,7 +92,7 @@ export async function handlePostProfileActionsClick(target) {
 			)
 			await showText((data.notes || []).map(note =>
 				`[${note.score >= 0 ? '+' : ''}${note.score}] ${note.text || ''}`).join('\n---\n')
-				|| geti18n('social.notes.empty'))
+				|| geti18n('social.notes.empty'), geti18n('social.notes.listTitle'))
 		}
 		return true
 	}

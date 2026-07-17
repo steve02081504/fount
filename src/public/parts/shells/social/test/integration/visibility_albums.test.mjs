@@ -91,6 +91,30 @@ Deno.test('album delete links keeps posts; deletePosts removes them', async () =
 	assert(!view.postById[postB.event.id])
 })
 
+Deno.test('album list exposes coverMediaRef for non-spoiler image', async () => {
+	const { username, operator } = await getSession()
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
+	const client = await getSocialClient(username, operator)
+	const { albumId } = await client.albums.create({ name: 'CoverAlbum', visibility: 'public' })
+	await client.post({
+		text: 'spoiler first',
+		visibility: 'public',
+		contentWarning: 'spoiler',
+		mediaRefs: [{ kind: 'image', url: 'https://example.com/spoiler.jpg', mimeType: 'image/jpeg' }],
+		albumIds: [albumId],
+	})
+	await client.post({
+		text: 'clean cover',
+		visibility: 'public',
+		mediaRefs: [{ kind: 'image', url: 'https://example.com/cover.jpg', mimeType: 'image/jpeg' }],
+		albumIds: [albumId],
+	})
+	const albums = await client.albums.list(operator)
+	const album = albums.find(row => row.albumId === albumId)
+	assert(album, 'album listed')
+	assertEquals(album.coverMediaRef?.url, 'https://example.com/cover.jpg')
+})
+
 Deno.test('unlisted posts are not public-discoverable', async () => {
 	const { username, operator } = await getSession()
 	const { getSocialClient } = await import('../../src/api/client/index.mjs')

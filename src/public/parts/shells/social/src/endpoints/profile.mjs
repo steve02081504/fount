@@ -32,6 +32,11 @@ export function registerProfileRoutes(router) {
 		res.status(200).json(await client.profileFollowing(routeEntityHash(req.params)))
 	})
 
+	router.get('/api/parts/shells\\:social/profile/:entityHash/followers', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.profileFollowers(routeEntityHash(req.params)))
+	})
+
 	router.get('/api/parts/shells\\:social/profile/:entityHash/replies/:postId', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const postId = String(req.params.postId)
@@ -42,7 +47,6 @@ export function registerProfileRoutes(router) {
 	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const socialMeta = await client.updateMeta({
-			exploreBlurb: req.body?.exploreBlurb,
 			hideFromDiscovery: req.body?.hideFromDiscovery,
 		})
 		res.status(200).json({ socialMeta })
