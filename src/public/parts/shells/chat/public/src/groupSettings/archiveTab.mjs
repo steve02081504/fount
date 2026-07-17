@@ -1,7 +1,9 @@
-import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
+import { appendTemplate, mountTemplate } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { importChannelArchiveFile } from '../api/channelArchive.mjs'
+import { handleUIError } from '../ui/errors.mjs'
 
 import { formatArchiveBytes } from './shared.mjs'
 
@@ -27,11 +29,34 @@ export async function renderArchiveStoragePanel(context) {
 		}
 		catch { /* summary miss */ }
 
-	await mountTemplate(container, 'group/settings/archive_storage_panel', {
-		currentState: context.state,
-		canManageArchive,
-		archiveRowsHtml,
-	})
+	container.replaceChildren()
+	if (canManageArchive)
+		await mountTemplate(container, 'group/settings/archive_storage_panel', {
+			currentState: context.state,
+			canManageArchive,
+			archiveRowsHtml,
+		})
+	if (context.settingsCaps?.canImportChannel) {
+		await appendTemplate(container, 'group/settings/channel_archive_panel', {})
+		const importButton = document.getElementById('group-settings-import-channel-archive')
+		const fileInput = document.getElementById('group-settings-import-channel-file')
+		importButton?.addEventListener('click', () => fileInput?.click())
+		fileInput?.addEventListener('change', async () => {
+			const file = fileInput.files?.[0]
+			fileInput.value = ''
+			if (!file || !context.groupId) return
+			try {
+				const result = await importChannelArchiveFile(context.groupId, file)
+				showToastI18n('success', 'chat.group.settingsPage.channelArchiveImportOk', {
+					count: String(result.messageCount ?? 0),
+				})
+				window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(context.groupId)}:${encodeURIComponent(result.channelId)}`
+			}
+			catch (error) {
+				handleUIError(error, 'chat.group.settingsPage.channelArchiveImportFailed')
+			}
+		})
+	}
 	document.getElementById('archive-delete-button')?.addEventListener('click', async () => {
 		const raw = document.getElementById('archive-delete-before-month')?.value?.trim()
 		if (!raw || !/^\d{4}-\d{2}$/.test(raw)) {

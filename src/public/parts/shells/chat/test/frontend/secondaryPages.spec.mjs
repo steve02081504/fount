@@ -34,6 +34,8 @@ test.describe('Chat secondary pages', () => {
 		expect(archive.format).toBe('fount-channel-archive')
 
 		await openGroupSettingsPage(page, baseUrl, groupId)
+		await page.locator('.settings-tabs > .tab[data-tab="advanced"]').click()
+		await page.locator('[data-advanced-section="storage"]').click()
 		await expect(page.locator('#group-settings-import-channel-archive')).toBeVisible({ timeout: 30_000 })
 		await page.locator('#group-settings-import-channel-file').setInputFiles({
 			name: 'channel-archive.json',
@@ -65,12 +67,15 @@ test.describe('Chat secondary pages', () => {
 	test('settings permissions and emojis tabs load', async ({ page, baseUrl, apiKey }) => {
 		const { groupId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await openGroupSettingsPage(page, baseUrl, groupId)
-		await page.locator('.tabs .tab[data-tab="permissions"]').click()
+		await expect(page.locator('.settings-tabs > .tab')).toHaveCount(4)
+		await page.locator('.settings-tabs > .tab[data-tab="advanced"]').click()
+		await page.locator('[data-advanced-section="permissions"]').click()
 		await expect(page.locator('#permission-settings-container #group-settings-create-role-button')).toBeVisible({ timeout: 30_000 })
-		await page.locator('.tabs .tab[data-tab="channel-perms"]').click()
+		await expect(page.locator('#permission-settings-container')).not.toContainText('${Object.entries')
+		await page.locator('[data-advanced-section="channel-perms"]').click()
 		await expect(page.locator('#channel-perms-container [data-action="select-channel"]').first())
 			.toBeVisible({ timeout: 30_000 })
-		await page.locator('.tabs .tab[data-tab="emojis"]').click()
+		await page.locator('.settings-tabs > .tab[data-tab="emojis"]').click()
 		await expect(page.locator('#group-emojis-list')).toBeAttached({ timeout: 30_000 })
 		await expect(page.locator('#group-emojis-empty')).toBeVisible({ timeout: 30_000 })
 	})

@@ -20,20 +20,13 @@ export function refreshHubHeaderButtons() {
 	document.body.dataset.hubSurface = hasConversation ? 'conversation' : hubStore.context.currentMode
 
 	const filesVisible = hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember
-	const settingsVisible = hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId
 
 	const filesButton = document.getElementById('hub-header-files-button')
 	if (filesButton)
 		if (filesVisible) filesButton.removeAttribute('hidden')
 		else filesButton.setAttribute('hidden', '')
 
-	const settingsButton = document.getElementById('hub-header-settings-button')
-	if (settingsButton)
-		if (settingsVisible) settingsButton.removeAttribute('hidden')
-		else settingsButton.setAttribute('hidden', '')
-
 	document.getElementById('hub-overflow-files')?.toggleAttribute('hidden', !filesVisible)
-	document.getElementById('hub-overflow-settings')?.toggleAttribute('hidden', !settingsVisible)
 
 	const callButton = document.getElementById('hub-header-call-button')
 	if (callButton) {

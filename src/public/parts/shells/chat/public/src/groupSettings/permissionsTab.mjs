@@ -1,4 +1,4 @@
-import { mountTemplate } from '../../../../../../scripts/features/template.mjs'
+import { mountTemplate, renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n, promptI18n } from '../../../../../../scripts/i18n/index.mjs'
 
@@ -19,9 +19,26 @@ export async function renderPermissionSettings(context) {
 	context.permissionsController = new AbortController()
 	const { signal } = context.permissionsController
 
+	const rolesHtml = (await Promise.all(Object.entries(context.state.roles).map(async ([roleId, role]) => {
+		const permissionsHtml = (await Promise.all(ALL_PERMISSIONS.map(perm =>
+			renderTemplateAsHtmlString('group/settings/permission_row', {
+				checked: role.permissions[perm] ? 'checked' : '',
+				perm,
+				roleId,
+			})
+		))).join('')
+		const deleteRoleHtml = role.isDefault
+			? ''
+			: await renderTemplateAsHtmlString('group/settings/permission_role_action', { roleId })
+		return renderTemplateAsHtmlString('group/settings/permission_role', {
+			deleteRoleHtml,
+			permissionsHtml,
+			role,
+		})
+	}))).join('')
+
 	await mountTemplate(container, 'group/settings/permissions_panel', {
-		currentState: context.state,
-		allPermissions: ALL_PERMISSIONS,
+		rolesHtml,
 	})
 
 	document.getElementById('group-settings-create-role-button').addEventListener('click', () => {

@@ -5,7 +5,6 @@ import { wireForkActions } from '../federation/forkActions.mjs'
 import { showGroupHeaderMenu } from '../groupContextMenu.mjs'
 import { wirePinsBookmarksPanels } from '../pinsBookmarks.mjs'
 import { wirePresenceInteractions } from '../presence.mjs'
-import { openGroupSettingsModal } from '../privateGroup.mjs'
 import { wireProfilePopupDismiss } from '../profilePopup.mjs'
 import { scheduleHubMessageSearch } from '../search.mjs'
 
@@ -43,11 +42,6 @@ export function wireHeaderEvents() {
 	})
 	document.getElementById('hub-header-search').addEventListener('blur', (event) => {
 		event.target.style.borderColor = 'transparent'
-	})
-
-	document.getElementById('hub-header-settings-button').addEventListener('click', () => {
-		if (hubStore.privateGroup.groupId) openGroupSettingsModal(hubStore.privateGroup.groupId)
-		else window.open('/parts/shells:chat/profile', '_blank', 'noopener')
 	})
 
 	document.getElementById('hub-group-header').addEventListener('click', (event) => {

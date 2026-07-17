@@ -1,0 +1,14 @@
+<div class="collapse collapse-arrow bg-base-300">
+	<input type="checkbox" />
+	<div class="collapse-title font-medium flex items-center gap-2">
+		<div class="w-4 h-4 rounded-full" style="background-color: ${escapeHtml(role.color)}"></div>
+		${escapeHtml(role.name)}
+		${role.isDefault ? '<span class="badge badge-sm" data-i18n="chat.group.settingsPage.roleDefault"></span>' : ''}
+	</div>
+	<div class="collapse-content">
+		<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
+			${permissionsHtml}
+		</div>
+		${deleteRoleHtml}
+	</div>
+</div>

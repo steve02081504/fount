@@ -15,17 +15,27 @@ import {
 
 applyTheme()
 
-document.querySelectorAll('.tabs .tab').forEach(tab => {
+document.querySelectorAll('.settings-tabs > .tab').forEach(tab => {
 	tab.addEventListener('click', event => {
 		const target = event.target.closest('.tab')
 		if (!target?.dataset.tab) return
-		document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('tab-active'))
+		document.querySelectorAll('.settings-tabs > .tab').forEach(t => t.classList.remove('tab-active'))
 		target.classList.add('tab-active')
 		document.querySelectorAll('.settings-tab-panel').forEach(content => content.classList.add('hidden'))
 		document.getElementById(`tab-${target.dataset.tab}`)?.classList.remove('hidden')
-		if (target.dataset.tab === 'audit') void ensureAuditLogPanel()
-		if (target.dataset.tab === 'channel-perms') void ensureChannelPermissionsPanel()
 		if (target.dataset.tab === 'emojis') void ensureGroupEmojisPanel()
+	})
+})
+
+document.querySelectorAll('[data-advanced-section]').forEach(tab => {
+	tab.addEventListener('click', () => {
+		const section = tab.dataset.advancedSection
+		document.querySelectorAll('[data-advanced-section]').forEach(item => item.classList.remove('btn-active'))
+		tab.classList.add('btn-active')
+		document.querySelectorAll('.settings-advanced-panel').forEach(panel => panel.classList.add('hidden'))
+		document.getElementById(`advanced-${section}`)?.classList.remove('hidden')
+		if (section === 'audit') void ensureAuditLogPanel()
+		if (section === 'channel-perms') void ensureChannelPermissionsPanel()
 	})
 })
 

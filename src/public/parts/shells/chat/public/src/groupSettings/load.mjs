@@ -35,20 +35,34 @@ export async function loadGroupSettings(context, groupId) {
  */
 export async function updateSettingsTabsVisibility(context) {
 	if (!context.settingsCaps) return
-	const map = {
-		permissions: context.settingsCaps.canManageRoles,
-		'channel-perms': context.settingsCaps.canManageChannelPerms,
+	const topLevelMap = {
 		members: context.settingsCaps.isMember,
 		emojis: context.settingsCaps.isMember,
-		audit: context.settingsCaps.canViewAudit,
 	}
-	for (const [tabId, visible] of Object.entries(map)) {
-		const tab = document.querySelector(`.tabs .tab[data-tab="${tabId}"]`)
+	for (const [tabId, visible] of Object.entries(topLevelMap)) {
+		const tab = document.querySelector(`.settings-tabs > .tab[data-tab="${tabId}"]`)
 		if (tab) tab.classList.toggle('hidden', !visible)
 	}
-	const active = document.querySelector('.tabs .tab.tab-active')
+
+	const advancedSections = {
+		permissions: context.settingsCaps.canManageRoles,
+		'channel-perms': context.settingsCaps.canManageChannelPerms,
+		storage: context.settingsCaps.canManageArchive || context.settingsCaps.canImportChannel,
+		audit: context.settingsCaps.canViewAudit,
+	}
+	for (const [sectionId, visible] of Object.entries(advancedSections))
+		document.querySelector(`[data-advanced-section="${sectionId}"]`)?.classList.toggle('hidden', !visible)
+
+	const firstAdvancedSection = document.querySelector('[data-advanced-section]:not(.hidden)')
+	const advancedTab = document.querySelector('.settings-tabs > .tab[data-tab="advanced"]')
+	advancedTab?.classList.toggle('hidden', !firstAdvancedSection)
+	const currentAdvancedSection = document.querySelector('[data-advanced-section].btn-active:not(.hidden)')
+	if (!currentAdvancedSection && firstAdvancedSection instanceof HTMLElement)
+		firstAdvancedSection.click()
+
+	const active = document.querySelector('.settings-tabs > .tab.tab-active')
 	if (active?.classList.contains('hidden')) {
-		const general = document.querySelector('.tabs .tab[data-tab="general"]')
+		const general = document.querySelector('.settings-tabs > .tab[data-tab="general"]')
 		general?.click()
 	}
 }

@@ -165,7 +165,6 @@ function wireMobileHeaderOverflow() {
 	clickThrough('hub-overflow-pins', 'hub-pins-button')
 	clickThrough('hub-overflow-bookmarks', 'hub-bookmarks-button')
 	clickThrough('hub-overflow-files', 'hub-header-files-button')
-	clickThrough('hub-overflow-settings', 'hub-header-settings-button')
 
 	const mobileBar = document.getElementById('hub-mobile-search-bar')
 	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-mobile-search-input')

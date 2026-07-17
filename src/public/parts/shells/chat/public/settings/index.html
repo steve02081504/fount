@@ -16,29 +16,28 @@
 </head>
 
 <body class="bg-base-100 min-h-screen">
-	<div class="container mx-auto p-6 max-w-6xl">
-		<h1 class="text-3xl font-bold mb-6" data-i18n="chat.group.settingsPage.title"></h1>
+	<div class="settings-page container mx-auto p-4 sm:p-6 max-w-6xl">
+		<header class="settings-header">
+			<a class="btn btn-ghost btn-sm settings-back" href="/parts/shells:chat/hub/">
+				<span aria-hidden="true">←</span>
+				<span data-i18n="chat.group.settingsPage.backToChat"></span>
+			</a>
+			<div>
+				<p class="settings-kicker" data-i18n="chat.group.settingsPage.kicker"></p>
+				<h1 class="text-3xl font-bold" data-i18n="chat.group.settingsPage.title"></h1>
+				<p class="settings-subtitle" data-i18n="chat.group.settingsPage.subtitle"></p>
+			</div>
+		</header>
 
-		<div role="tablist" class="tabs tabs-boxed mb-6">
+		<div role="tablist" aria-label="" data-i18n-aria-label="chat.group.settingsPage.navigationLabel" class="tabs tabs-boxed settings-tabs">
 			<a role="tab" class="tab tab-active" data-tab="general" data-i18n="chat.group.settingsPage.tabGeneral"></a>
-			<a role="tab" class="tab" data-tab="permissions" data-i18n="chat.group.settingsPage.tabPermissions"></a>
-			<a role="tab" class="tab" data-tab="channel-perms" data-i18n="chat.group.settingsPage.tabChannelPermissions"></a>
 			<a role="tab" class="tab" data-tab="members" data-i18n="chat.group.settingsPage.tabMembers"></a>
 			<a role="tab" class="tab" data-tab="emojis" data-i18n="chat.group.settingsPage.tabEmojis"></a>
-			<a role="tab" class="tab hidden" data-tab="audit" data-i18n="chat.group.settingsPage.tabAudit"></a>
+			<a role="tab" class="tab hidden" data-tab="advanced" data-i18n="chat.group.settingsPage.tabAdvanced"></a>
 		</div>
 
 		<div id="tab-general" class="settings-tab-panel">
 			<div id="group-settings-container"></div>
-			<div id="group-archive-container"></div>
-		</div>
-
-		<div id="tab-permissions" class="settings-tab-panel hidden">
-			<div id="permission-settings-container"></div>
-		</div>
-
-		<div id="tab-channel-perms" class="settings-tab-panel hidden">
-			<div id="channel-perms-container"></div>
 		</div>
 
 		<div id="tab-emojis" class="settings-tab-panel hidden">
@@ -46,7 +45,7 @@
 		</div>
 
 		<div id="tab-members" class="settings-tab-panel hidden">
-			<div class="card bg-base-200 shadow-xl">
+			<div class="card bg-base-200 settings-card">
 				<div class="card-body">
 					<h2 class="card-title mb-4" data-i18n="chat.group.settingsPage.membersTitle"></h2>
 					<div id="members-list" class="space-y-2"></div>
@@ -54,9 +53,31 @@
 			</div>
 		</div>
 
-		<div id="tab-audit" class="settings-tab-panel hidden">
-			<div class="card bg-base-200 shadow-xl">
-				<div class="card-body">
+		<div id="tab-advanced" class="settings-tab-panel hidden">
+			<div class="settings-advanced-shell">
+				<div class="settings-advanced-heading">
+					<h2 class="text-xl font-semibold" data-i18n="chat.group.settingsPage.advancedHubTitle"></h2>
+					<p data-i18n="chat.group.settingsPage.advancedHubDescription"></p>
+				</div>
+				<div role="tablist" aria-label="" data-i18n-aria-label="chat.group.settingsPage.advancedNavigationLabel" class="settings-section-tabs">
+					<button type="button" role="tab" class="btn btn-sm btn-active hidden" data-advanced-section="permissions" data-i18n="chat.group.settingsPage.tabPermissions"></button>
+					<button type="button" role="tab" class="btn btn-sm hidden" data-advanced-section="channel-perms" data-i18n="chat.group.settingsPage.tabChannelPermissions"></button>
+					<button type="button" role="tab" class="btn btn-sm hidden" data-advanced-section="storage" data-i18n="chat.group.settingsPage.tabStorage"></button>
+					<button type="button" role="tab" class="btn btn-sm hidden" data-advanced-section="audit" data-i18n="chat.group.settingsPage.tabAudit"></button>
+				</div>
+
+				<div id="advanced-permissions" class="settings-advanced-panel">
+					<div id="permission-settings-container"></div>
+				</div>
+				<div id="advanced-channel-perms" class="settings-advanced-panel hidden">
+					<div id="channel-perms-container"></div>
+				</div>
+				<div id="advanced-storage" class="settings-advanced-panel hidden">
+					<div id="group-archive-container"></div>
+				</div>
+				<div id="advanced-audit" class="settings-advanced-panel hidden">
+					<div class="card bg-base-200 settings-card">
+						<div class="card-body">
 					<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
 						<div>
 							<h2 class="card-title" data-i18n="chat.group.auditLog.title"></h2>
@@ -77,6 +98,8 @@
 						<div id="audit-log-scroll" class="overflow-y-auto max-h-[min(60vh,32rem)]"></div>
 					</div>
 					<p id="audit-log-empty" class="hidden text-sm opacity-60 py-6 text-center" data-i18n="chat.group.auditLog.empty"></p>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>

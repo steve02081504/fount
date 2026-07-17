@@ -235,8 +235,17 @@
 		</details>
 		` : ''}
 
+		${showKeyRotate || showOwnerSuccession ? `
+		<details class="settings-advanced">
+			<summary>
+				<span class="settings-advanced-summary">
+					<strong data-i18n="chat.group.settingsPage.securityAdvancedTitle"></strong>
+					<small data-i18n="chat.group.settingsPage.securityAdvancedDescription"></small>
+				</span>
+			</summary>
+			<div class="settings-advanced-body">
 		${showKeyRotate ? `
-		<div class="settings-danger-zone">
+		<div>
 			<div class="settings-label-with-info mb-2">
 				<strong class="text-sm" data-i18n="chat.group.settingsPage.keyManagementTitle"></strong>
 				<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.keyManagementTip">i</span>
@@ -249,6 +258,9 @@
 		<div class="mt-2">
 			<button type="button" id="group-settings-owner-succession-button" class="btn btn-outline btn-sm" data-i18n="chat.group.settingsPage.ownerSuccession"></button>
 		</div>
+		` : ''}
+			</div>
+		</details>
 		` : ''}
 
 		${showFullSettings ? `
