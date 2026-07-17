@@ -8,9 +8,9 @@ import { isTimelineEventVisibleForFederation } from '../../src/federation/visibi
 import { scorePostForYou } from '../../src/feed/ranking.mjs'
 import { pickClusterRepresentative } from '../../src/taste/cluster.mjs'
 import { weightedJaccard } from '../../src/taste/jaccard.mjs'
-import { pruneClaimInbox } from '../../src/taste/mergeClaims.mjs'
+import { claimTouchesActorTags, pruneClaimInbox } from '../../src/taste/mergeClaims.mjs'
 import { verifyTagMergeClaimWithStats } from '../../src/taste/mergeVerify.mjs'
-import { normalizeTasteStore, resolveTasteAlias, tasteWeightOf } from '../../src/taste/store.mjs'
+import { collapseTasteWeights, normalizeTasteStore, resolveTasteAlias, tasteWeightOf } from '../../src/taste/store.mjs'
 
 Deno.test('weightedJaccard measures overlap', () => {
 	const left = new Map([['a', 1], ['b', 2]])
@@ -44,6 +44,24 @@ Deno.test('resolveTasteAlias stops on cycles', () => {
 		b: { to: 'a', confidence: 1 },
 	}
 	assertEquals(resolveTasteAlias('a', aliases), 'a')
+})
+
+Deno.test('claimTouchesActorTags follows canonical to alias', () => {
+	const aliases = { to_raw: { to: 'canon', confidence: 1 } }
+	const actorTags = new Set(['canon'])
+	assertEquals(claimTouchesActorTags('from_new', 'to_raw', actorTags, aliases), true)
+	assertEquals(claimTouchesActorTags('from_new', 'unrelated', actorTags, aliases), false)
+})
+
+Deno.test('collapseTasteWeights folds aliases into one tag', () => {
+	const store = normalizeTasteStore({
+		computed: { a: 1, b: 2 },
+		manual: { a: 3 },
+		aliases: { b: { to: 'a', confidence: 1 } },
+	})
+	const collapsed = collapseTasteWeights(store)
+	assertEquals(collapsed.size, 1)
+	assertEquals(collapsed.get('a'), 6)
 })
 
 Deno.test('normalizeTasteStore migrates legacy tags into computed', () => {

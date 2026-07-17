@@ -36,6 +36,21 @@ function isWellFormedClaim(claim) {
 }
 
 /**
+ * 声明两端（经别名折叠）是否触及当前实体已有标签。
+ * @param {string} from 源 tag
+ * @param {string} to 目标 tag
+ * @param {Set<string>} actorTags 实体 canonical tags
+ * @param {Record<string, { to: string, confidence: number }>} aliases 别名表
+ * @returns {boolean} 是否相关
+ */
+export function claimTouchesActorTags(from, to, actorTags, aliases) {
+	return actorTags.has(from)
+		|| actorTags.has(to)
+		|| actorTags.has(resolveTasteAlias(from, aliases))
+		|| actorTags.has(resolveTasteAlias(to, aliases))
+}
+
+/**
  * @returns {Promise<object[]>} 收件箱行
  */
 async function readClaimInbox() {
@@ -135,9 +150,7 @@ export async function lazyVerifyPendingMergeClaims(username, entityHash, statsHi
 		const from = row.claim?.from
 		const to = row.claim?.to
 		if (!from || !to) continue
-		if (!actorTags.has(from) && !actorTags.has(to)
-			&& !actorTags.has(resolveTasteAlias(from, taste.aliases)))
-			continue
+		if (!claimTouchesActorTags(from, to, actorTags, taste.aliases)) continue
 		const result = verifyTagMergeClaimWithStats(stats, row.claim)
 		if (!result.ok) {
 			rejected++

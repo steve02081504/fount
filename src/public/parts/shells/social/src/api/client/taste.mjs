@@ -1,7 +1,7 @@
 import { rebuildTaste } from '../../taste/cluster.mjs'
 import { revokeTasteAlias } from '../../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../../taste/nameClaims.mjs'
-import { loadTaste, mutateTaste } from '../../taste/store.mjs'
+import { collapseTasteWeights, loadTaste, mutateTaste } from '../../taste/store.mjs'
 
 /**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
@@ -26,7 +26,7 @@ export function createTasteMethods(apiContext) {
 				}
 			},
 			/**
-			 * @param {{ privacy?: { publishPreferences?: boolean }, tags?: Record<string, number> }} patch 补丁
+			 * @param {{ privacy?: { publishPreferences?: boolean, publishReactions?: boolean }, tags?: Record<string, number> }} patch 补丁
 			 * @returns {Promise<object>} 更新后偏好摘要
 			 */
 			async update(patch = {}) {
@@ -52,6 +52,7 @@ export function createTasteMethods(apiContext) {
 					computed: store.computed,
 					manual: store.manual,
 					aliases: store.aliases,
+					tagCount: collapseTasteWeights(store).size,
 				}
 			},
 			/**
@@ -61,7 +62,7 @@ export function createTasteMethods(apiContext) {
 				const store = await rebuildTaste(apiContext.username, apiContext.entityHash)
 				return {
 					clusteredAt: store.clusteredAt,
-					tagCount: Object.keys(store.computed).length + Object.keys(store.manual).length,
+					tagCount: collapseTasteWeights(store).size,
 				}
 			},
 			/**
