@@ -11,6 +11,7 @@ alwaysApply: false
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
 - **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `npm:@steve02081504/fount-p2p/wire/ingress`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `npm:@steve02081504/fount-p2p/schemas/*`.
 - **Untrusted remote Markdown**: `messages/render/markdown.mjs` (`hydrateMessageMarkdown`) renders the first 120 chars as preview via the untrusted pipeline (aligned with mention `textPreview`); overflow shows an expand button; trusted authors still use the trusted pipeline (`allowDangerousHtml`).
+- **Profile bio Markdown**: always render locally from markdown source (`description_markdown` / `description` / `bio`) via `paintEntityProfileBio` → `processFountMessageMarkdown` + fragment mount. Never trust remote pre-rendered HTML, never `escapeHtml`/`textContent` the markdown source (that kills formatting). Cabinet / Social reuse the same shared card path.
 
 ## Streaming AV
 

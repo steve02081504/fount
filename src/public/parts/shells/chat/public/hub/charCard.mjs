@@ -89,9 +89,13 @@ async function renderCharInfoCardInner(name, details, { active }) {
 
 	const descriptionElement = memberList.querySelector('.hub-char-description-md')
 	if (descriptionElement instanceof HTMLElement)
-		await paintBioMarkdown(descriptionElement, profile
-			? profileDescriptionText(profile)
-			: info.description_markdown || info.description || info.summary || details?.description || '')
+		await paintBioMarkdown(
+			descriptionElement,
+			profile
+				? profileDescriptionText(profile)
+				: info.description_markdown || info.description || info.summary || details?.description || '',
+			entityHash || '',
+		)
 
 	const infoCardHost = document.getElementById('hub-info-card-host')
 	const infoTpl = active ? 'hub/char/info_card_active' : 'hub/char/info_card_preview'
@@ -108,7 +112,6 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const card = infoCardHost?.querySelector('.hub-info-card')
 	if (card instanceof HTMLElement && profile) {
 		await paintEntityProfileUi(card, profile)
-		await paintBioMarkdown(card.querySelector('[data-entity-profile-bio]'), profileDescriptionText(profile))
 		if (entityHash)
 			wireProfileEditButton(card, entityHash, {
 				/**

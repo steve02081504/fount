@@ -1,6 +1,6 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { createDOMFromHtmlString, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
@@ -11,7 +11,6 @@ import {
 	ensureEntityProfileCardStyles,
 	paintEntityProfileCard,
 	paintEntityProfileExtras,
-	profileDescriptionText,
 } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
@@ -313,15 +312,6 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 		card.querySelector('.hub-profile-popup-body')?.appendChild(ownedHost)
 	}
 	await paintEntityProfileCard(card, profile, { entityHash })
-	const bioEl = card.querySelector('[data-entity-profile-bio]')
-	if (bioEl instanceof HTMLElement) {
-		const bioText = profileDescriptionText(profile)
-		if (bioText) {
-			delete bioEl.dataset.i18n
-			bioEl.classList.add('markdown-body')
-			bioEl.replaceChildren(await renderMarkdown(bioText, entityHash))
-		}
-	}
 	const ownerEntityHash = profile?.ownerEntityHash
 		? String(profile.ownerEntityHash).toLowerCase()
 		: null

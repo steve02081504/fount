@@ -2,7 +2,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, formatTime, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTime, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { socialState } from '../state.mjs'
 
@@ -98,10 +98,13 @@ export async function loadExplore() {
 				<div class="explore-account-body">
 					<a href="${escapeHtml(profileHref)}" class="suggested-account-name">${escapeHtml(account.name)}</a>
 					<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
-					${account.bio ? `<p class="explore-account-bio">${escapeHtml(account.bio)}</p>` : ''}
+					${account.bio ? '<div class="explore-account-bio" data-explore-bio></div>' : ''}
 				</div>
 				<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
 			`
+			const bioHost = row.querySelector('[data-explore-bio]')
+			if (bioHost instanceof HTMLElement && account.bio)
+				await mountMarkdown(bioHost, account.bio, account.entityHash)
 			accountList.appendChild(row)
 		}
 

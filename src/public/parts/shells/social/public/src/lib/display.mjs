@@ -10,6 +10,8 @@ import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
+import { isTrustedAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
@@ -68,14 +70,11 @@ export function authorLabel(entityHash, profile) {
  * @returns {Promise<boolean>} 是否为可信作者
  */
 export async function isTrusted(pubKeyHash) {
-	const response = await fetch('/api/parts/shells:chat/trusted-authors', { credentials: 'include' })
-	if (!response.ok) return false
-	const data = await response.json()
-	return (data.hashes || []).includes((pubKeyHash || '').toLowerCase())
+	return isTrustedAuthor(pubKeyHash)
 }
 
 /**
- * 将 Markdown 渲染为 HTML（含 Social 链接扩展）。
+ * 将 Markdown 源本机安全渲染为 HTML 字符串（不信任对端预渲染结果；可信作者才允许危险 HTML）。
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
  * @returns {Promise<string>} HTML
@@ -83,6 +82,20 @@ export async function isTrusted(pubKeyHash) {
 export async function renderMarkdown(markdown, pubKeyHash) {
 	const trusted = await isTrusted(pubKeyHash)
 	return processFountMessageMarkdown(markdown || '', trusted)
+}
+
+/**
+ * 将 Markdown 源本机安全渲染进 DOM 宿主（勿对源做 escapeHtml）。
+ * @param {HTMLElement} host 宿主
+ * @param {string} markdown 原文
+ * @param {string} pubKeyHash 作者
+ * @returns {Promise<void>}
+ */
+export async function mountMarkdown(host, markdown, pubKeyHash) {
+	if (!(host instanceof HTMLElement)) return
+	const html = await renderMarkdown(markdown, pubKeyHash)
+	host.classList.add('markdown-body')
+	host.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }
 
 /**

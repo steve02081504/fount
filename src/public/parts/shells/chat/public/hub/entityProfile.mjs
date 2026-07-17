@@ -3,12 +3,12 @@
  * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、编辑按钮绑定。
  * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireProfileEditButton` 更新资料卡 DOM。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/markdown、../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
+ * 【关联】../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
  */
-import { renderMarkdown } from '../../../../scripts/features/markdown/index.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import {
+	paintEntityProfileBio,
 	paintEntityProfileCard,
 	paintEntityProfileExtras,
 	profileDescriptionText as sharedProfileDescriptionText,
@@ -77,20 +77,16 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 
 /**
  * @param {HTMLElement} descriptionElement Markdown 容器
- * @param {string} bio 简介
+ * @param {string} bio 简介 markdown 源
+ * @param {string} [entityHash] 作者 hash（信任判定）
  * @returns {Promise<void>}
  */
-export async function paintBioMarkdown(descriptionElement, bio) {
-	if (!(descriptionElement instanceof HTMLElement)) return
-	const text = String(bio || '').trim()
-	if (!text) {
-		descriptionElement.replaceChildren()
-		descriptionElement.dataset.i18n = 'chat.hub.charDescriptionEmpty'
-		return
-	}
-	delete descriptionElement.dataset.i18n
-	descriptionElement.className = 'hub-char-description-md markdown-body'
-	descriptionElement.replaceChildren(await renderMarkdown(text))
+export async function paintBioMarkdown(descriptionElement, bio, entityHash = '') {
+	await paintEntityProfileBio(descriptionElement, bio, entityHash, {
+		emptyI18n: 'chat.hub.charDescriptionEmpty',
+	})
+	if (descriptionElement instanceof HTMLElement && String(bio || '').trim())
+		descriptionElement.classList.add('hub-char-description-md')
 }
 
 /**

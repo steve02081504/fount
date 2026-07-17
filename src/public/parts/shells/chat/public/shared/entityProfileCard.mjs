@@ -2,11 +2,15 @@
  * 【文件】public/shared/entityProfileCard.mjs
  * 【职责】跨壳实体资料归一化与人物卡附属区块（所属方 / 归因警告）绘制。
  * 【原理】API profile → 统一字段；owner / attribution 用 data-* 宿主节点填充；链接走 Social profile hash。
+ * bio 只吃 markdown 源，本机 processFountMessageMarkdown 安全渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts/features/template.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
+import { processFountMessageMarkdown } from '../src/lib/fountMessageMarkdown.mjs'
+import { isTrustedAuthor } from '../src/trustedAuthors.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
@@ -185,9 +189,8 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			|| geti18n(`profile.statusOptions.${normalized.status}`)
 
 	const bioElement = root.querySelector('[data-entity-profile-bio]')
-	if (bioElement)
-		bioElement.textContent = profileDescriptionText(normalized)
-			|| geti18n('profile.bioEmpty')
+	if (bioElement instanceof HTMLElement)
+		await paintEntityProfileBio(bioElement, profileDescriptionText(normalized), entityHash)
 
 	const tagsHost = root.querySelector('[data-entity-profile-tags]')
 	if (tagsHost instanceof HTMLElement) {
@@ -219,7 +222,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 }
 
 /**
- * 简介纯文本（优先 markdown 源）。
+ * 简介 markdown 源（优先 description_markdown；忽略任何对端预渲染 HTML 字段）。
  * @param {object | null | undefined} profile 资料
  * @returns {string} 简介
  */
@@ -227,6 +230,31 @@ export function profileDescriptionText(profile) {
 	const md = String(profile?.description_markdown || '').trim()
 	if (md) return md
 	return String(profile?.description || profile?.bio || '').trim()
+}
+
+/**
+ * 将简介 markdown 源本机安全渲染进宿主（可信作者走 allowDangerousHtml，否则 sanitize）。
+ * @param {HTMLElement} bioElement 简介容器
+ * @param {string} markdown markdown 源
+ * @param {string} [entityHash] 作者 entityHash / pubKeyHash（决定信任）
+ * @param {{ emptyI18n?: string }} [options] 空态 i18n
+ * @returns {Promise<void>}
+ */
+export async function paintEntityProfileBio(bioElement, markdown, entityHash = '', options = {}) {
+	if (!(bioElement instanceof HTMLElement)) return
+	const text = String(markdown || '').trim()
+	const emptyI18n = options.emptyI18n || 'chat.hub.bioEmpty'
+	if (!text) {
+		bioElement.replaceChildren()
+		bioElement.classList.remove('markdown-body')
+		bioElement.dataset.i18n = emptyI18n
+		return
+	}
+	delete bioElement.dataset.i18n
+	bioElement.classList.add('markdown-body')
+	const trusted = entityHash ? await isTrustedAuthor(entityHash) : false
+	const html = await processFountMessageMarkdown(text, trusted)
+	bioElement.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }
 
 /**

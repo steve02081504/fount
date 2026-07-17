@@ -58,20 +58,14 @@ export function applyStatusDot(el, status) {
 
 /**
  * @param {HTMLElement | null} bioElement 简介容器
- * @param {string} [bio] 简介正文
- * @returns {void}
+ * @param {string} [bio] 简介 markdown 源
+ * @param {string} [entityHash] 作者 hash
+ * @returns {Promise<void>}
  */
-export function applyBioElement(bioElement, bio) {
+export async function applyBioElement(bioElement, bio, entityHash = '') {
 	if (!bioElement) return
-	const text = String(bio || '').trim()
-	if (text) {
-		delete bioElement.dataset.i18n
-		bioElement.textContent = text
-	}
-	else {
-		bioElement.textContent = ''
-		bioElement.dataset.i18n = 'chat.hub.bioEmpty'
-	}
+	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
+	await paintEntityProfileBio(bioElement, bio, entityHash)
 }
 
 /**
@@ -308,10 +302,10 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 		if (hoverCardStatusText)
 			hoverCardStatusText.textContent = await formatStatusLabel(profile.status, profile.customStatus)
 		const { profileDescriptionText } = await import('./entityProfile.mjs')
-		applyBioElement(hoverCardBio, profileDescriptionText(profile))
+		await applyBioElement(hoverCardBio, profileDescriptionText(profile), profileKey)
 	}
 	else
-		applyBioElement(hoverCardBio, '')
+		await applyBioElement(hoverCardBio, '')
 }
 
 /**
