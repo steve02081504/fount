@@ -689,6 +689,173 @@
 	animation: hub-fade-in 0.18s ease;
 }
 
+/* 通用设置浮层 */
+#hub-settings-modal .hub-overlay-box {
+	display: flex;
+	flex-direction: column;
+	width: min(720px, calc(100vw - 32px));
+	max-width: none;
+	max-height: calc(100vh - 32px);
+	padding: 0;
+	overflow: hidden;
+	border: 1px solid var(--hub-border-subtle);
+	border-radius: 18px;
+	background: var(--hub-bg-channel);
+	box-shadow: 0 24px 72px color-mix(in srgb, black, transparent 45%);
+}
+
+.hub-overlay-header {
+	flex: none;
+	padding: 20px 24px 18px;
+	background:
+		linear-gradient(135deg,
+			color-mix(in srgb, var(--hub-accent), transparent 70%),
+			transparent 68%),
+		var(--hub-bg-channel);
+	border-bottom: 1px solid var(--hub-border-subtle);
+}
+
+.hub-overlay-header h3 {
+	margin: 0;
+	color: var(--hub-text-bright);
+	font-size: 20px;
+	font-weight: 750;
+	line-height: 1.3;
+}
+
+.hub-overlay-header p {
+	margin: 5px 0 0;
+	color: var(--hub-text-muted);
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.hub-overlay-body {
+	flex: 1;
+	min-height: 0;
+	max-height: none;
+	padding: 18px 20px;
+	overflow-y: auto;
+	scrollbar-gutter: stable;
+}
+
+.hub-overlay-section {
+	padding: 16px;
+	border: 1px solid var(--hub-border-subtle);
+	border-radius: 12px;
+	background: color-mix(in srgb, var(--hub-bg-main), transparent 28%);
+}
+
+.hub-overlay-section + .hub-overlay-section {
+	margin-top: 14px;
+}
+
+.hub-overlay-field > label {
+	display: block;
+	margin-bottom: 6px;
+	color: var(--hub-text-normal);
+	font-size: 12px;
+	font-weight: 650;
+}
+
+.hub-overlay-input,
+.hub-overlay-textarea {
+	width: 100%;
+	border-color: var(--hub-border);
+	background: color-mix(in srgb, var(--hub-bg-main), transparent 18%);
+}
+
+.hub-overlay-textarea {
+	resize: vertical;
+	line-height: 1.55;
+}
+
+.hub-overlay-toggle-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	min-height: 52px;
+	padding: 10px 12px;
+	cursor: pointer;
+	border-radius: 9px;
+	background: var(--hub-overlay-subtle);
+}
+
+.hub-overlay-toggle-row span {
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.hub-overlay-toggle-description {
+	margin: -2px 0 10px;
+	color: var(--hub-text-muted);
+	font-size: 12px;
+	line-height: 1.55;
+}
+
+.hub-overlay-action-row {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+	gap: 8px;
+}
+
+.hub-overlay-action-row .hub-overlay-button {
+	width: 100%;
+	min-height: 40px;
+	height: auto;
+	padding-block: 8px;
+	white-space: normal;
+}
+
+.hub-overlay-footer {
+	flex: none;
+	padding: 12px 20px;
+	border-top: 1px solid var(--hub-border-subtle);
+	background: color-mix(in srgb, var(--hub-bg-channel), var(--hub-bg-main) 24%);
+}
+
+.hub-overlay-footer > [data-federation-part="footer"] {
+	display: flex;
+	flex-direction: row-reverse;
+	align-items: center;
+	gap: 8px;
+}
+
+.hub-federation-reputation-dump {
+	margin: 0;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--hub-bg-main);
+	color: var(--hub-text-muted);
+}
+
+@media (max-width: 560px) {
+	#hub-settings-modal .hub-overlay-box {
+		width: 100vw;
+		max-height: 100vh;
+		height: 100vh;
+		border: 0;
+		border-radius: 0;
+	}
+
+	.hub-overlay-header {
+		padding: 16px 18px;
+	}
+
+	.hub-overlay-body {
+		padding: 14px;
+	}
+
+	.hub-overlay-section {
+		padding: 14px;
+	}
+
+	.hub-overlay-footer {
+		padding: 10px 14px;
+	}
+}
+
 /* 角色列表项强调色 */
 .hub-char-list-item.hub-list-item-char {
 	border-left: 2px solid transparent;
@@ -711,12 +878,11 @@
 }
 
 .hub-overlay-section h4 {
-	font-size: 12px;
+	font-size: 13px;
 	font-weight: 700;
-	letter-spacing: .04em;
-	text-transform: uppercase;
-	color: color-mix(in srgb, var(--color-base-content), transparent 30%);
-	margin: 0 0 8px;
+	letter-spacing: .02em;
+	color: var(--hub-text-bright);
+	margin: 0 0 12px;
 }
 
 .hub-overlay-info-row {

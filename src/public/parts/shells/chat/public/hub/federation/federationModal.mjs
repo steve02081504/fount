@@ -242,7 +242,8 @@ export async function openFederationSettingsModal(getGroupId) {
 			errorMessage: error.message,
 		})
 		openOverlayModal({
-			titleKey: 'chat.hub.federationTooltip',
+			titleKey: 'chat.hub.federationTitle',
+			subtitleKey: 'chat.hub.federationSubtitle',
 			body: root.querySelector('[data-federation-part="body"]'),
 			footer: root.querySelector('[data-federation-part="footer"]'),
 		})
@@ -268,7 +269,8 @@ export async function openFederationSettingsModal(getGroupId) {
 	})
 
 	openOverlayModal({
-		titleKey: 'chat.hub.federationTooltip',
+		titleKey: 'chat.hub.federationTitle',
+		subtitleKey: 'chat.hub.federationSubtitle',
 		body: root.querySelector('[data-federation-part="body"]'),
 		footer: root.querySelector('[data-federation-part="footer"]'),
 	})
