@@ -4,6 +4,7 @@ import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { authorDisplayLabel } from '../../hub/core/domUtils.mjs'
 import { aliasForEntity } from '../../shared/aliases.mjs'
+import { avatarInitial } from '../../shared/hashAvatar.mjs'
 import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve.mjs'
 import { unbanMember } from '../api/groupGovernance.mjs'
 import { memberDisplaysAsAdmin } from '../memberDisplay.mjs'
@@ -101,7 +102,7 @@ export async function renderMembers(context) {
 		return {
 			memberKey: escapeHtml(item.memberKey),
 			displayName: escapeHtml(displayName),
-			initial: escapeHtml(displayName.charAt(0).toUpperCase() || '?'),
+			initial: escapeHtml(avatarInitial(displayName)),
 			rolesLabel: escapeHtml(roles.map(roleId => context.state.roles[roleId]?.name || roleId).join(' / ') || '@everyone'),
 			isAdmin: memberDisplaysAsAdmin(item.member, roleDefs),
 			isAgent,

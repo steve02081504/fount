@@ -36,13 +36,13 @@ function renderLiveRefHtml(liveRef) {
 		const ss = String(secs % 60).padStart(2, '0')
 		return `<a class="live-ref-card live-ref-card--ended" href="${escapeHtml(href)}">
 			<span class="live-ref-badge">${escapeHtml(geti18n('social.live.postEnded'))}</span>
-			<span class="live-ref-avatar" data-avatar-for="${escapeHtml(entityHash)}"></span>
+			${renderAvatarHtml(entityHash, null, 'live-ref-avatar')}
 			<span class="live-ref-stats">${escapeHtml(geti18n('social.live.postEndedStats', { viewers, likes, duration: `${mm}:${ss}` }))}</span>
 		</a>`
 	}
 	return `<a class="live-ref-card" href="${escapeHtml(href)}">
 		<span class="live-ref-badge">LIVE</span>
-		<span class="live-ref-avatar" data-avatar-for="${escapeHtml(entityHash)}"></span>
+		${renderAvatarHtml(entityHash, null, 'live-ref-avatar')}
 		<span class="live-ref-cta">${escapeHtml(geti18n('social.live.postWatch'))}</span>
 	</a>`
 }

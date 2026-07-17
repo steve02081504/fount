@@ -1,6 +1,7 @@
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 
 import { memoizePromise } from '../../../../../../scripts/memo.mjs'
+import { customProfileAvatar } from '../../../chat/public/shared/hashAvatar.mjs'
 import { getProfile } from '../../../chat/src/entity/profile.mjs'
 
 
@@ -19,7 +20,10 @@ export function createAuthorProfileLoader(username) {
 			if (!profile) return null
 			return {
 				name: profile.name,
-				avatar: profile.avatar || null,
+				avatar: customProfileAvatar(profile) || null,
+				infoDefaults: profile.infoDefaults
+					? { avatar: profile.infoDefaults.avatar || '' }
+					: null,
 				ownerEntityHash: profile.ownerEntityHash || null,
 			}
 		},

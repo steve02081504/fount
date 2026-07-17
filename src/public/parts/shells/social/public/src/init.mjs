@@ -158,11 +158,18 @@ export async function bootstrapSocialApp() {
 		const viewer = await chatApi('/viewer')
 		socialState.viewerEntityHash = viewer.viewerEntityHash ?? null
 		socialState.viewerDisplayName = viewer.profile?.name || null
+		socialState.viewerProfile = viewer.profile
+			? {
+				name: viewer.profile.name || null,
+				avatar: viewer.profile.avatar || null,
+				infoDefaults: viewer.profile.infoDefaults
+					? { avatar: viewer.profile.infoDefaults.avatar || '' }
+					: null,
+			}
+			: { name: socialState.viewerDisplayName }
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && socialState.viewerEntityHash)
-			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, {
-				name: socialState.viewerDisplayName,
-			})
+			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile)
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',

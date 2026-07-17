@@ -17,6 +17,7 @@ import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
 } from '../shared/entityProfileCard.mjs'
+import { avatarInitial } from '../shared/hashAvatar.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { initProfileFederationSettings } from './federationSettingsPanel.mjs'
@@ -194,7 +195,7 @@ async function loadUserGroups() {
 			container.appendChild(await renderTemplate('profile/group_row', {
 				groupId: group.groupId,
 				defaultChannelId: group.defaultChannelId || 'default',
-				initial: (group.name || 'G')[0].toUpperCase(),
+				initial: avatarInitial(group.name || 'G'),
 				name: group.name || group.groupId,
 				description: escapeHtml(description),
 				descriptionI18nAttr: description ? '' : ' data-i18n="profile.groupDescriptionEmpty"',

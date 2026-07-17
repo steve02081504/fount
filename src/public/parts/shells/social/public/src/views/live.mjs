@@ -1,6 +1,6 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { entityAvatarUrl } from '../lib/display.mjs'
+import { entityAvatarUrl, renderAvatarHtml } from '../lib/display.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -55,6 +55,8 @@ async function mountLiveVoiceRing(host, entityHash, getLevels) {
 	const mount = mountVoiceRing({
 		container: host,
 		avatarUrl: entityAvatarUrl(entityHash, profile),
+		avatarSeed: entityHash,
+		avatarLabel: profile?.name || entityHash,
 		themeColor: themeColorForEntity(profile, entityHash),
 		getLevels,
 	})
@@ -346,7 +348,11 @@ function renderLiveHallGrid(container, items) {
 		card.type = 'button'
 		card.className = 'live-hall-card'
 		card.innerHTML = `
-			<div class="live-hall-avatar" data-avatar-for="${escapeHtml(item.entityHash || '')}"></div>
+			${renderAvatarHtml(item.entityHash, {
+		name: item.authorName || item.title,
+		avatar: item.avatarUrl || item.authorProfile?.avatar,
+		infoDefaults: item.authorProfile?.infoDefaults,
+	}, 'live-hall-avatar')}
 			<div class="live-hall-meta">
 				<div class="live-hall-title">${escapeHtml(item.title || '')}</div>
 				<div class="live-hall-stats">${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}

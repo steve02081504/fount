@@ -15,7 +15,8 @@ alwaysApply: false
 - **Webapi identity is always the operator entity.** Agents operate in-process via `getChatClient(username, agentEntityHash)`. There is no HTTP parameter to act or view as another entity.
 - Owner content power (only cross-entity privilege): an entity’s declared owner may edit/delete that entity’s messages (human or agent); attribution stays the owner’s signature. Hub never switches to agent view — agent masters exercise power only via `ChatClient`.
 - **Agent master recognition**: `entity/master.mjs` → `resolveDeclaredOwnerEntityHash` / `resolveTrustedOwnerContext`. Trusted owner message requires cryptographic author === declared `ownerEntityHash` **and** no attribution mismatch (`importedFrom` / import resign). Care lists are UX-only, not mastership.
-- Agent-only groups: `createInvite` → `activateGroupFederation` must include `entityHash`; omitting it uses the operator signer, causing `group_settings_update` to be rejected (`requires active member sender`).
+- **Agent-only groups**: `createInvite` → `activateGroupFederation` must include `entityHash`; omitting it uses the operator signer, causing `group_settings_update` to be rejected (`requires active member sender`).
+- **Entity avatars (cross-shell)**: `public/shared/hashAvatar.mjs`（配色 / `avatarInitial` / `customProfileAvatar`）+ `entityAvatar.mjs`（`renderAvatarHtml` / `entityAvatarUrl`）+ Hub `avatarCover.mjs`（DOM 宿主）。部件默认图标不算个人头像；无显式头像画 hash 字母。Social / Cabinet 人物卡复用同一套，勿再手写 `charAt(0)` 或盲请求 `files/profile/avatar`。
 
 ## ChatClient
 

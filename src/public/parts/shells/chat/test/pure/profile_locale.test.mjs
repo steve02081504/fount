@@ -89,16 +89,30 @@ Deno.test('resolveProfilePresentation falls back when tags unset', () => {
 	assertEquals(resolved.tags, ['助手'])
 })
 
-Deno.test('normalizeLocalizedMap keeps structured links', () => {
-	const localized = normalizeLocalizedMap({
-		'zh-CN': {
-			links: [
-				{ name: 'GitHub', url: 'https://github.com/x', icon: '' },
-				{ name: 'bad', url: '' },
-			],
+Deno.test('resolveProfilePresentation does not invent EVFS avatar when unset', () => {
+	const hash = 'a'.repeat(128)
+	const resolved = resolveProfilePresentation(
+		{
+			entityHash: hash,
+			subjectHash: 'b'.repeat(64),
+			localized: { 'zh-CN': { name: '用户' } },
 		},
-	})
-	assertEquals(localized['zh-CN'].links, [
-		{ icon: '', name: 'GitHub', url: 'https://github.com/x' },
-	])
+		['zh-CN'],
+		{ name: '默认名', tags: [], links: [], description: '', description_markdown: '', avatar: '', version: '', author: '', home_page: '', issue_page: '' },
+	)
+	assertEquals(resolved.avatar, '')
+})
+
+Deno.test('resolveProfilePresentation rewrites relative avatar to EVFS URL', () => {
+	const hash = 'a'.repeat(128)
+	const resolved = resolveProfilePresentation(
+		{
+			entityHash: hash,
+			subjectHash: 'b'.repeat(64),
+			localized: { 'zh-CN': { name: '用户', avatar: 'profile/avatar' } },
+		},
+		['zh-CN'],
+		{ name: '默认名', tags: [], links: [], description: '', description_markdown: '', avatar: '', version: '', author: '', home_page: '', issue_page: '' },
+	)
+	assertEquals(resolved.avatar, `/api/parts/shells:chat/entities/${hash}/files/profile/avatar`)
 })

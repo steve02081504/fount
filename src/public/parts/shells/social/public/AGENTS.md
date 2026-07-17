@@ -40,6 +40,7 @@ alwaysApply: false
 - **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
 - **回复**：`listReplies` 返回完整 feed item；面板行含头像/显示名/赞踩分享；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
 - **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。
+- **实体头像**：统一走 chat `shared/entityAvatar.mjs`（`renderAvatarHtml` / `entityAvatarUrl`）+ `hashAvatar.mjs`（`customProfileAvatar`）；无显式头像画 hash 字母，勿盲请求 `files/profile/avatar`，勿各处手写 `charAt(0)`。Composer / 回复框须传 `socialState.viewerProfile`（含 `avatar` + `infoDefaults`），与帖卡 `authorProfile` 同源。
 - **`activateView(name)`** → `#${name}View`（`data-view` 与 section id 必须同词干：`videos`→`#videosView`，勿写成 `#videoView`；否则主导航高亮后主栏整块空白）。
 - 短视频 slide 字段取自 `buildPostFeedItem`：`post.content.text` / `post.content.mediaRefs` / `authorProfile`（经 `authorLabel`），不是扁平的 `item.text` / `item.authorName`。
 - 短视频 UI：右侧操作栏含赞 / 评论 / 分享 / 静音；静音偏好写 `localStorage`（`fount.social.video.muted`）并同步全部 slide；评论抽屉盖住操作栏时靠关闭钮、点空白或 Esc 关掉（勿指望再点评论钮）；有回复时右下角固定高度轮播（`syncVideoCommentTicker`，含头像），点击条目打开抽屉并 `focusReplyInPanel` 滚到对应 `.reply[data-reply-id]`。分享复用 `shareOrCopyPostLink`。发评 / 查回复面板时 `cardRoot` 须为 `.post-card, .reply, .video-slide`（feed 与短视频可共享同一 actionKey，勿用裸 `document`）。

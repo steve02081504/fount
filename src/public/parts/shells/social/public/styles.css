@@ -776,7 +776,7 @@ body {
 	object-fit: cover;
 }
 
-.author-avatar.hash-avatar:has(.hash-avatar-img) .hash-avatar-letter {
+.author-avatar.hash-avatar:has(.hash-avatar-img.is-loaded) .hash-avatar-letter {
 	visibility: hidden;
 }
 
@@ -3304,7 +3304,7 @@ body {
 	width: 48px;
 	height: 48px;
 	border-radius: 50%;
-	background: #444;
+	flex-shrink: 0;
 }
 .live-hall-title { font-weight: 600; font-size: 0.9rem; }
 .live-hall-stats { font-size: 0.75rem; opacity: 0.7; }
@@ -3381,7 +3381,7 @@ body {
 	width: 28px;
 	height: 28px;
 	border-radius: 50%;
-	background: #555;
+	font-size: 0.7rem;
 }
 
 .live-actions {

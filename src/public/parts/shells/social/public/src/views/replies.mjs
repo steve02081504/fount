@@ -13,7 +13,7 @@ function buildReplyComposer(actionKey) {
 	const composer = document.createElement('div')
 	composer.className = 'reply-composer'
 	const avatarHtml = socialState.viewerEntityHash
-		? renderAvatarHtml(socialState.viewerEntityHash, {
+		? renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile || {
 			name: socialState.viewerDisplayName,
 		}, 'reply-composer-avatar')
 		: ''

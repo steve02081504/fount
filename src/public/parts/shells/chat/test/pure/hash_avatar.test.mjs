@@ -76,3 +76,26 @@ Deno.test('isAvatarImageUrl distinguishes URL from emoji avatar', async () => {
 	assertEquals(isAvatarImageUrl('/api/foo'), true)
 	assertEquals(isAvatarImageUrl('🤖'), false)
 })
+
+Deno.test('entityAvatarUrl only returns custom avatars', async () => {
+	const { entityAvatarUrl } = await import('fount/public/parts/shells/chat/public/shared/entityAvatar.mjs')
+	const hash = 'c'.repeat(128)
+	assertEquals(entityAvatarUrl(hash, { avatar: '', infoDefaults: { avatar: 'https://example.test/d.svg' } }), '')
+	assertEquals(entityAvatarUrl(hash, {
+		avatar: 'https://example.test/d.svg',
+		infoDefaults: { avatar: 'https://example.test/d.svg' },
+	}), '')
+	assertEquals(entityAvatarUrl(hash, { avatar: '/api/parts/shells:chat/entities/x/files/profile/avatar' }),
+		'/api/parts/shells:chat/entities/x/files/profile/avatar')
+})
+
+Deno.test('renderAvatarHtml uses letter when no custom avatar', async () => {
+	const { renderAvatarHtml } = await import('fount/public/parts/shells/chat/public/shared/entityAvatar.mjs')
+	const hash = 'd'.repeat(128)
+	const html = renderAvatarHtml(hash, { name: 'steve' })
+	assert(html.includes('>S<') || html.includes('>S</'))
+	assert(!html.includes('<img'))
+	const withImg = renderAvatarHtml(hash, { name: 'steve', avatar: 'https://example.test/a.png' })
+	assert(withImg.includes('hash-avatar-img'))
+	assert(withImg.includes('is-loaded'))
+})

@@ -107,9 +107,8 @@ export function resolveProfilePresentation(stored, locales, infoDefaults) {
 	const links = Array.isArray(slice.links) ? slice.links : infoDefaults.links || []
 
 	let avatar = slice.avatar?.trim() || infoDefaults.avatar
+	// 相对路径 → EVFS URL；无头像时不要虚构 files/profile/avatar（否则前端会当真实图去请求）。
 	if (avatar && !avatar.startsWith('http') && isEntityHash128(stored?.entityHash))
-		avatar = profileAvatarFileUrl(stored.entityHash)
-	else if (!avatar && isEntityHash128(stored?.entityHash) && stored?.localized)
 		avatar = profileAvatarFileUrl(stored.entityHash)
 
 	return {

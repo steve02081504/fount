@@ -1,4 +1,5 @@
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
+import { customProfileAvatar } from 'fount/public/parts/shells/chat/public/shared/hashAvatar.mjs'
 
 import { getProfile } from '../../../chat/src/entity/profile.mjs'
 import { isPublicDiscoverable } from '../lib/visibilitySpec.mjs'
@@ -35,7 +36,7 @@ export async function discoverAccounts(username, options = {}) {
 			entityHash,
 			name: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0, ellipsis: false }),
 			exploreBlurb: view.socialMeta?.exploreBlurb || '',
-			avatarUrl: profile?.avatar || null,
+			avatarUrl: customProfileAvatar(profile) || null,
 		})
 	}
 	const nextIndex = start + slice.length
@@ -67,7 +68,7 @@ export async function discoverPosts(username, options = {}) {
 		const profile = await getProfile(entityHash, username)
 		const authorProfile = {
 			name: profile?.name || null,
-			avatar: profile?.avatar || null,
+			avatar: customProfileAvatar(profile) || null,
 		}
 		let taken = 0
 		for (const post of view.posts) {

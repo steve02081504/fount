@@ -2,6 +2,8 @@
 export const socialState = {
 	viewerEntityHash: null,
 	viewerDisplayName: null,
+	/** @type {{ name?: string, avatar?: string, infoDefaults?: { avatar?: string } } | null} */
+	viewerProfile: null,
 	feedCursor: null,
 	/** @type {object[] | null} 已展示的 feed 原始条目（循环重放源） */
 	feedShownItems: null,
