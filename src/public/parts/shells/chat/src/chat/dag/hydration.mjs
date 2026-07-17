@@ -158,7 +158,7 @@ async function buildChatLogEntryFromDagMessage(
 	sourceChannelId = null,
 ) {
 	// 解密失败且无其它字段的消息，messageMerge.attachDecryptView 会把 content 置为 null 并附带 decryptView，
-	// 这是合法的展示状态，水合侧必须容忍，否则单条坏消息会让整个 sessions/list 接口 500。
+	// 这是合法的展示状态，水合侧必须容忍，否则单条坏消息会拖垮整页水合。
 	const content = line.content || {}
 	const entry = new chatLogEntry_t()
 	entry.id = content.chatLogEntryId || crypto.randomUUID()

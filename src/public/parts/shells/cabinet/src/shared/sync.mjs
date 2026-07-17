@@ -1,10 +1,11 @@
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from 'npm:@steve02081504/fount-p2p/trust_graph/registry'
-import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
 import { registerDeliveryInboundHandler } from 'npm:@steve02081504/fount-p2p/registries/inbound'
-import { normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
+import { ensureUserRoom } from 'npm:@steve02081504/fount-p2p/transport/user_room'
+import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from 'npm:@steve02081504/fount-p2p/trust_graph/registry'
 import { collectPartInvokeResponses } from 'npm:@steve02081504/fount-p2p/wire/part_fanout'
+import { normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
+
 import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
 import { hasPartMain } from '../../../../../../server/parts_loader.mjs'
 

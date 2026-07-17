@@ -457,9 +457,9 @@ else
 // ---------------------------------------------------------------------------
 writeLiveSection('J. Sessions & misc (non-group prefix)')
 
-await testCase('GET sessions/list', async () => {
+await testCase('GET sessions/list removed', async () => {
 	const r = await api('GET', '/sessions/list')
-	return r.status === 200
+	return r.status === 404
 })
 
 await testCase('GET/PUT bookmarks', async () => {
@@ -513,9 +513,18 @@ await testCase('GET stickers/packs + collection', async () => {
 	return a.status === 200 && b.status === 200
 })
 
-await testCase('GET group export', async () => {
-	const r = await api('GET', `/groups/${gid}/export`)
-	return r.status === 200
+await testCase('GET channel export', async () => {
+	const r = await api('GET', `/groups/${gid}/channels/${cid}/export`)
+	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
+	return r.json?.format === 'fount-channel-archive' && Array.isArray(r.json.messages)
+})
+
+await testCase('POST channel import', async () => {
+	const exp = await api('GET', `/groups/${gid}/channels/${cid}/export`)
+	if (exp.status !== 200) throw new Error(`export ${exp.status}`)
+	const r = await api('POST', `/groups/${gid}/channels/import`, exp.json)
+	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
+	return Boolean(r.json?.channelId)
 })
 
 // ---------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
+import { wrapContentKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { buildFileManifestFromEnc, encryptPlaintextToParts } from 'npm:@steve02081504/fount-p2p/files/assemble'
 import { getChunk, hasChunk, putChunk } from 'npm:@steve02081504/fount-p2p/files/chunk_store'
 import { loadFileManifest, readManifestPlaintext, saveFileManifest, storeManifestParts } from 'npm:@steve02081504/fount-p2p/files/evfs'
-import { wrapContentKey } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
 import { evfsSharedBlobPath } from '../paths.mjs'
 

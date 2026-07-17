@@ -51,6 +51,12 @@ Hub-facing API shapes:
 - **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
 - **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
 
+## Channel archive (JSON)
+
+- **Export**: channel context menu → `GET …/channels/:id/export` → download (`public/src/api/channelArchive.mjs`). Full cold+hot portable snapshot (`fount-channel-archive` v1).
+- **Import**: group settings General card → multipart `POST …/channels/import` → new text channel in the same group; Hub navigates to `#group:{groupId}:{newChannelId}`. Requires `MANAGE_CHANNELS` (`canImportChannel`).
+- Backend semantics: [archive AGENTS](../../src/chat/archive/AGENTS.md) § Portable channel archive.
+
 ## Unread
 
 - **Model**: `channel.messageSeq` (materialized on group state) minus per-entity `shells/chat/entities/{entityHash}/readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; HTTP fixed to operator; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).

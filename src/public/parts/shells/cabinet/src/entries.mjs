@@ -21,8 +21,9 @@ import {
 } from './passwordFolder.mjs'
 import { evfsBlobPath, evfsPreviewPath } from './paths.mjs'
 import { putCabinetEvfsFile } from './publish.mjs'
+import { clearRecovery, loadRecovery, storeRecovery } from './recovery.mjs'
 import { countLocalInboundLinks, gcOrphanAfterUnlink } from './refcount.mjs'
-import { issueUnlockToken, resolveUnlockToken } from './unlockTokens.mjs'
+import { issueUnlockToken, peekUnlockToken, resolveUnlockToken } from './unlockTokens.mjs'
 
 /**
  * @param {string} cabinetId 柜 id
@@ -158,6 +159,24 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 		return updateSharedEntry(username, entityHash, cabinetId, entryId, patch)
 	}
 
+	const unlockMeta = peekUnlockToken(patch.unlock_token)
+	if (unlockMeta?.cabinet_id === cabinetId) {
+		const folderKey = resolveUnlockToken(patch.unlock_token, {
+			cabinet_id: cabinetId,
+			folder_id: unlockMeta.folder_id,
+			entity_hash: entityHash,
+		})
+		if (!folderKey) throw new Error('folder locked')
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+		const idx = encIndex.entries.findIndex(row => row.id === entryId)
+		if (idx >= 0) {
+			const next = patchEntry(encIndex.entries[idx], patch, entityHash)
+			encIndex.entries[idx] = next
+			await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, encIndex)
+			return next
+		}
+	}
+
 	const index = await loadPersonalIndex(username, entityHash, cabinetId)
 	const idx = index.entries.findIndex(row => row.id === entryId)
 	if (idx < 0) throw new Error('entry not found')
@@ -190,39 +209,33 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
- * @param {string[]} entryIds 条目 ids
- * @returns {Promise<{ deleted: string[] }>} 结果
+ * @param {object[]} entries 条目
+ * @param {Set<string>} toDelete 待删
+ * @param {boolean} recoverable 可恢复
+ * @returns {Promise<{ removed: string[], kept: object[], deferredLinks: object[], stashed: object[] }>} 分区结果
  */
-export async function deleteEntries(username, entityHash, cabinetId, entryIds) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { deleteSharedEntries } = await import('./shared/ops.mjs')
-		return deleteSharedEntries(username, entityHash, cabinetId, entryIds)
-	}
-
-	const index = await loadPersonalIndex(username, entityHash, cabinetId)
-	const toDelete = new Set()
-	for (const id of entryIds)
-		for (const childId of collectSubtreeIds(index.entries, id))
-			toDelete.add(childId)
-
+async function partitionPersonalDeletes(username, entityHash, cabinetId, entries, toDelete, recoverable) {
 	/** @type {string[]} */
 	const removed = []
 	/** @type {object[]} */
 	const kept = []
 	/** @type {object[]} */
 	const deferredLinks = []
+	/** @type {object[]} */
+	const stashed = []
 
-	for (const entry of index.entries) {
+	for (const entry of entries) {
 		if (!toDelete.has(entry.id)) {
 			kept.push(entry)
 			continue
 		}
+		stashed.push(entry)
+		removed.push(entry.id)
+
+		if (recoverable) continue
 
 		if (entry.kind === 'link') {
 			deferredLinks.push(entry)
-			removed.push(entry.id)
 			continue
 		}
 
@@ -234,25 +247,204 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds) {
 
 		if (inbound > 0) {
 			kept.push({ ...entry, orphaned: true })
-			removed.push(entry.id)
 			continue
 		}
 
-		removed.push(entry.id)
 		await hardDeleteEntryBlobs(username, entityHash, entry)
 	}
 
-	await savePersonalIndex(username, entityHash, cabinetId, { version: index.version, entries: kept })
-	for (const link of deferredLinks)
-		await gcOrphanAfterUnlink(username, entityHash, link)
-	return { deleted: removed }
+	return { removed, kept, deferredLinks, stashed }
 }
 
 /**
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
- * @param {{ entry_ids: string[], target_parent_id?: string | null, as_links?: boolean, target_cabinet_id?: string }} body 复制请求
+ * @param {string[]} entryIds 条目 ids
+ * @param {{ recoverable?: boolean, unlock_token?: string }} [options] 选项
+ * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 结果
+ */
+export async function deleteEntries(username, entityHash, cabinetId, entryIds, options = {}) {
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
+	if (!cabinet) throw new Error('cabinet not found')
+	const recoverable = Boolean(options.recoverable)
+	if (cabinet.type === 'shared') {
+		const { deleteSharedEntries } = await import('./shared/ops.mjs')
+		return deleteSharedEntries(username, entityHash, cabinetId, entryIds, { recoverable })
+	}
+
+	const unlockMeta = peekUnlockToken(options.unlock_token)
+	if (unlockMeta?.cabinet_id === cabinetId) {
+		const folderKey = resolveUnlockToken(options.unlock_token, {
+			cabinet_id: cabinetId,
+			folder_id: unlockMeta.folder_id,
+			entity_hash: entityHash,
+		})
+		if (!folderKey) throw new Error('folder locked')
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+		const toDelete = new Set()
+		for (const id of entryIds)
+			for (const childId of collectSubtreeIds(encIndex.entries, id))
+				toDelete.add(childId)
+		const { removed, kept, deferredLinks, stashed } = await partitionPersonalDeletes(
+			username, entityHash, cabinetId, encIndex.entries, toDelete, recoverable,
+		)
+		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, {
+			version: encIndex.version || 1,
+			entries: kept,
+		})
+		for (const link of deferredLinks)
+			await gcOrphanAfterUnlink(username, entityHash, link)
+		if (!recoverable) return { deleted: removed }
+		const recovery_token = await storeRecovery(username, entityHash, cabinetId, {
+			entries: stashed.map(entry => ({ ...entry, __enc_folder_id: unlockMeta.folder_id })),
+		})
+		return { deleted: removed, recovery_token }
+	}
+
+	const index = await loadPersonalIndex(username, entityHash, cabinetId)
+	const toDelete = new Set()
+	for (const id of entryIds)
+		for (const childId of collectSubtreeIds(index.entries, id))
+			toDelete.add(childId)
+
+	/** @type {Record<string, string>} */
+	const encrypted_indexes = {}
+	if (recoverable) 
+		for (const entry of index.entries) {
+			if (!toDelete.has(entry.id) || entry.kind !== 'folder' || !entry.encryption) continue
+			try {
+				const { readFile } = await import('node:fs/promises')
+				const { encryptedFolderIndexPath } = await import('./paths.mjs')
+				encrypted_indexes[entry.id] = await readFile(
+					encryptedFolderIndexPath(username, entityHash, cabinetId, entry.id),
+					'utf8',
+				)
+			}
+			catch { /* 无密文索引则跳过 */ }
+		}
+	
+
+	const { removed, kept, deferredLinks, stashed } = await partitionPersonalDeletes(
+		username, entityHash, cabinetId, index.entries, toDelete, recoverable,
+	)
+
+	await savePersonalIndex(username, entityHash, cabinetId, { version: index.version, entries: kept })
+	for (const link of deferredLinks)
+		await gcOrphanAfterUnlink(username, entityHash, link)
+
+	if (!recoverable) return { deleted: removed }
+	const recovery_token = await storeRecovery(username, entityHash, cabinetId, {
+		entries: stashed,
+		encrypted_indexes,
+	})
+	return { deleted: removed, recovery_token }
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @param {{ unlock_token?: string }} [options] 选项
+ * @returns {Promise<{ restored: string[] }>} 结果
+ */
+export async function restoreEntries(username, entityHash, cabinetId, recoveryToken, options = {}) {
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
+	if (!cabinet) throw new Error('cabinet not found')
+	if (cabinet.type === 'shared') {
+		const { restoreSharedEntries } = await import('./shared/ops.mjs')
+		return restoreSharedEntries(username, entityHash, cabinetId, recoveryToken)
+	}
+
+	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, false)
+	if (!record) throw new Error('recovery token invalid')
+
+	const encStash = record.entries.filter(row => row.__enc_folder_id)
+	const mainEntries = record.entries.filter(row => !row.__enc_folder_id)
+
+	if (encStash.length) {
+		const unlockMeta = peekUnlockToken(options.unlock_token)
+		if (!unlockMeta || unlockMeta.cabinet_id !== cabinetId) throw new Error('folder locked')
+		const folderKey = resolveUnlockToken(options.unlock_token, {
+			cabinet_id: cabinetId,
+			folder_id: unlockMeta.folder_id,
+			entity_hash: entityHash,
+		})
+		if (!folderKey) throw new Error('folder locked')
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+		const existing = new Set(encIndex.entries.map(row => row.id))
+		for (const entry of encStash) {
+			if (entry.__enc_folder_id !== unlockMeta.folder_id) continue
+			const { __enc_folder_id, ...clean } = entry
+			void __enc_folder_id
+			if (!existing.has(clean.id)) encIndex.entries.push(clean)
+		}
+		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, encIndex)
+	}
+
+	if (mainEntries.length) {
+		const index = await loadPersonalIndex(username, entityHash, cabinetId)
+		const existing = new Set(index.entries.map(row => row.id))
+		for (const entry of mainEntries)
+			if (!existing.has(entry.id)) index.entries.push(entry)
+		await savePersonalIndex(username, entityHash, cabinetId, index)
+		for (const [folderId, raw] of Object.entries(record.encrypted_indexes || {})) {
+			const { writeFile, mkdir } = await import('node:fs/promises')
+			const { encryptedFolderIndexPath } = await import('./paths.mjs')
+			const path = encryptedFolderIndexPath(username, entityHash, cabinetId, folderId)
+			await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
+			await writeFile(path, typeof raw === 'string' ? raw : JSON.stringify(raw), 'utf8')
+		}
+	}
+
+	await clearRecovery(username, entityHash, cabinetId, recoveryToken, false)
+	return { restored: record.entries.map(row => row.id) }
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @returns {Promise<{ finalized: string[] }>} 结果
+ */
+export async function finalizeDelete(username, entityHash, cabinetId, recoveryToken) {
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
+	if (!cabinet) throw new Error('cabinet not found')
+	if (cabinet.type === 'shared') {
+		const { finalizeSharedDelete } = await import('./shared/ops.mjs')
+		return finalizeSharedDelete(username, cabinetId, recoveryToken)
+	}
+
+	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, false)
+	if (!record) return { finalized: [] }
+
+	for (const entry of record.entries) {
+		const { __enc_folder_id, ...clean } = entry
+		void __enc_folder_id
+		if (clean.kind === 'link') {
+			await gcOrphanAfterUnlink(username, entityHash, clean)
+			continue
+		}
+		const inbound = await countLocalInboundLinks(username, entityHash, {
+			owner_entity_hash: entityHash,
+			cabinet_id: cabinetId,
+			entry_id: clean.id,
+		})
+		if (inbound > 0) continue
+		await hardDeleteEntryBlobs(username, entityHash, clean)
+	}
+
+	await clearRecovery(username, entityHash, cabinetId, recoveryToken, false)
+	return { finalized: record.entries.map(row => row.id) }
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @param {{ entry_ids: string[], target_parent_id?: string | null, as_links?: boolean, target_cabinet_id?: string, unlock_token?: string, source_unlock_token?: string }} body 复制请求
  * @returns {Promise<object[]>} 新条目
  */
 export async function copyEntries(username, entityHash, cabinetId, body) {
@@ -262,17 +454,59 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 	const targetCabinet = await resolveCabinet(username, entityHash, targetCabinetId)
 	if (!targetCabinet) throw new Error('target cabinet not found')
 
-	const sourceIndex = cabinet.type === 'shared'
-		? await (await import('./shared/materialize.mjs')).loadSharedIndex(username, cabinetId)
-		: await loadPersonalIndex(username, entityHash, cabinetId)
+	let sourceEntries = cabinet.type === 'shared'
+		? (await (await import('./shared/materialize.mjs')).loadSharedIndex(username, cabinetId)).entries
+		: (await loadPersonalIndex(username, entityHash, cabinetId)).entries
+
+	const sourceUnlock = peekUnlockToken(body.source_unlock_token)
+	if (sourceUnlock?.cabinet_id === cabinetId) {
+		const folderKey = resolveUnlockToken(body.source_unlock_token, {
+			cabinet_id: cabinetId,
+			folder_id: sourceUnlock.folder_id,
+			entity_hash: entityHash,
+		})
+		if (folderKey) {
+			const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, sourceUnlock.folder_id, folderKey)
+			sourceEntries = [...sourceEntries, ...encIndex.entries]
+		}
+	}
 
 	const targetParent = body.target_parent_id == null || body.target_parent_id === ''
 		? null
 		: String(body.target_parent_id)
 	const created = []
 
+	/**
+	 * @param {object} entry 条目
+	 * @returns {Promise<object>} 已写入条目
+	 */
+	async function writeTarget(entry) {
+		if (targetCabinet.type === 'shared') {
+			const { registerSharedEntry } = await import('./shared/ops.mjs')
+			return registerSharedEntry(username, entityHash, targetCabinetId, entry)
+		}
+		const unlockMeta = peekUnlockToken(body.unlock_token)
+		if (unlockMeta?.cabinet_id === targetCabinetId && unlockMeta.folder_id === targetParent) {
+			const folderKey = resolveUnlockToken(body.unlock_token, {
+				cabinet_id: targetCabinetId,
+				folder_id: unlockMeta.folder_id,
+				entity_hash: entityHash,
+			})
+			if (!folderKey) throw new Error('folder locked')
+			const encIndex = await loadEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, folderKey)
+			const stored = normalizeEntry({ ...entry, parent_id: null }, entityHash)
+			encIndex.entries.push(stored)
+			await saveEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, folderKey, encIndex)
+			return stored
+		}
+		const targetIndex = await loadPersonalIndex(username, entityHash, targetCabinetId)
+		targetIndex.entries.push(entry)
+		await savePersonalIndex(username, entityHash, targetCabinetId, targetIndex)
+		return entry
+	}
+
 	for (const id of body.entry_ids || []) {
-		const source = sourceIndex.entries.find(row => row.id === id)
+		const source = sourceEntries.find(row => row.id === id)
 		if (!source) continue
 		if (body.as_links) {
 			const link = normalizeEntry({
@@ -288,16 +522,7 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 						: source.link?.entry_id,
 				},
 			}, entityHash)
-			if (targetCabinet.type === 'shared') {
-				const { registerSharedEntry } = await import('./shared/ops.mjs')
-				created.push(await registerSharedEntry(username, entityHash, targetCabinetId, link))
-			}
-			else {
-				const targetIndex = await loadPersonalIndex(username, entityHash, targetCabinetId)
-				targetIndex.entries.push(link)
-				await savePersonalIndex(username, entityHash, targetCabinetId, targetIndex)
-				created.push(link)
-			}
+			created.push(await writeTarget(link))
 			continue
 		}
 		const copy = normalizeEntry({
@@ -307,16 +532,7 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 			name: `${source.name} (copy)`,
 			orphaned: false,
 		}, entityHash)
-		if (targetCabinet.type === 'shared') {
-			const { registerSharedEntry } = await import('./shared/ops.mjs')
-			created.push(await registerSharedEntry(username, entityHash, targetCabinetId, copy))
-		}
-		else {
-			const targetIndex = await loadPersonalIndex(username, entityHash, targetCabinetId)
-			targetIndex.entries.push(copy)
-			await savePersonalIndex(username, entityHash, targetCabinetId, targetIndex)
-			created.push(copy)
-		}
+		created.push(await writeTarget(copy))
 	}
 	return created
 }

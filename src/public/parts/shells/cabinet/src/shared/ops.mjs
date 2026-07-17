@@ -119,21 +119,68 @@ export async function updateSharedEntry(username, entityHash, cabinetId, entryId
  * @param {string} entityHash 操作者
  * @param {string} cabinetId 柜
  * @param {string[]} entryIds 条目
- * @returns {Promise<{ deleted: string[] }>} 结果
+ * @param {{ recoverable?: boolean }} [options] 选项
+ * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 结果
  */
-export async function deleteSharedEntries(username, entityHash, cabinetId, entryIds) {
+export async function deleteSharedEntries(username, entityHash, cabinetId, entryIds, options = {}) {
 	void entityHash
 	const index = await loadSharedIndex(username, cabinetId)
 	/** @type {string[]} */
 	const deleted = []
+	/** @type {object[]} */
+	const stashed = []
 	for (const id of entryIds) {
 		const subtree = collectSubtreeIds(index.entries, id)
 		for (const entryId of subtree) {
+			const entry = index.entries.find(row => row.id === entryId)
+			if (entry) stashed.push(entry)
 			await commitSharedOp(username, cabinetId, 'delete', entryId, null)
 			deleted.push(entryId)
 		}
 	}
-	return { deleted }
+	if (!options.recoverable) return { deleted }
+	const { storeRecovery } = await import('../recovery.mjs')
+	const recovery_token = await storeRecovery(username, entityHash, cabinetId, {
+		shared: true,
+		entries: stashed,
+	})
+	return { deleted, recovery_token }
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 操作者
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @returns {Promise<{ restored: string[] }>} 结果
+ */
+export async function restoreSharedEntries(username, entityHash, cabinetId, recoveryToken) {
+	const { loadRecovery, clearRecovery } = await import('../recovery.mjs')
+	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, true)
+	if (!record) throw new Error('recovery token invalid')
+	/** @type {string[]} */
+	const restored = []
+	for (const entry of record.entries) {
+		await commitSharedOp(username, cabinetId, 'upsert', entry.id, entry)
+		restored.push(entry.id)
+	}
+	await clearRecovery(username, entityHash, cabinetId, recoveryToken, true)
+	return { restored }
+}
+
+/**
+ * 共享柜 finalize：条目已是 delete op，仅丢弃 recovery 记录（blob 由后续 GC 处理）。
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @returns {Promise<{ finalized: string[] }>} 结果
+ */
+export async function finalizeSharedDelete(username, cabinetId, recoveryToken) {
+	const { loadRecovery, clearRecovery } = await import('../recovery.mjs')
+	const record = await loadRecovery(username, '', cabinetId, recoveryToken, true)
+	if (!record) return { finalized: [] }
+	await clearRecovery(username, '', cabinetId, recoveryToken, true)
+	return { finalized: record.entries.map(row => row.id) }
 }
 
 /**

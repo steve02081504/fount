@@ -1,6 +1,6 @@
 import { loadCabinets, loadPersonalIndex, savePersonalIndex } from './cabinets.mjs'
-import { loadSharedIndex } from './shared/materialize.mjs'
 import { listLocalSharedCabinets } from './shared/keys.mjs'
+import { loadSharedIndex } from './shared/materialize.mjs'
 
 /**
  * 统计本实体范围内指向某条目的链接数（不含自身）。

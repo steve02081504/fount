@@ -16,7 +16,9 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 | POST | `/cabinets/:id/entries` | 登记条目；可带 `plaintext_base64` 上传 |
 | PATCH | `/cabinets/:id/entries/:entry_id` | 重命名 / description / attrs / preview / set_password |
 | POST | `/cabinets/:id/entries/copy` | `{ entry_ids, target_parent_id, as_links?, target_cabinet_id? }` |
-| DELETE | `/cabinets/:id/entries` | `{ entry_ids }`（本实体入链保活 orphan） |
+| DELETE | `/cabinets/:id/entries` | `{ entry_ids, recoverable? }`；`recoverable:true` 时返回 `recovery_token`，暂不硬删 blob |
+| POST | `/cabinets/:id/entries/restore` | `{ recovery_token }` 按原 id 恢复 |
+| POST | `/cabinets/:id/entries/finalize-delete` | `{ recovery_token }` 丢弃恢复令牌并硬删 blob |
 | GET | `/cabinets/:id/entries/:entry_id/resolve` | 解析链接 |
 | GET | `/cabinets/:id/entries/:entry_id/download` | 共享柜文件明文下载 |
 | GET | `/cabinets/:id/zip?folder_id=` | 文件夹 zip |
@@ -31,8 +33,22 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 ## Hash 路由
 
 - `#cabinet:{id}` / `#cabinet:{id}/{folderId}`
-- `#shared:{cabinetId}`（共享柜）
+- `#shared:{cabinetId}` / `#shared:{cabinetId}/{folderId}`（共享柜）
 - `#user:{entityHash}`（远端浏览）
+
+## 快捷键（页面会话）
+
+| 键 | 动作 |
+| --- | --- |
+| Ctrl/Cmd+C / X / V / Shift+V | 复制 / 剪切 / 粘贴 / 粘贴为链接 |
+| Ctrl/Cmd+A | 全选 |
+| Ctrl/Cmd+D | 删除（可撤销） |
+| Delete | 返回上一级 |
+| Ctrl/Cmd+Z / Y（或 Shift+Z） | 撤销 / 重做 |
+| Ctrl/Cmd+N | 新窗口打开当前位置 |
+| F2 | 重命名 |
+
+剪贴板经 `sessionStorage` + `BroadcastChannel` 同源跨窗口共享。撤销栈仅当前页面会话；删除走 `recoverable` 令牌，栈淘汰或关页时 `finalize-delete`。
 
 ## Chat 绑定
 

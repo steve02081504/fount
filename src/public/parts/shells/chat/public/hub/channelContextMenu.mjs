@@ -9,11 +9,16 @@ import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import {
+	downloadChannelArchiveJson,
+	exportChannelArchiveJson,
+} from '../src/api/channelArchive.mjs'
+import {
 	deleteChannel,
 	setDefaultChannel,
 	updateChannel,
 } from '../src/api/groupChannel.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
@@ -122,6 +127,19 @@ export async function showChannelContextMenu(event, channelId) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		}
 		closeOnce()
+	})
+
+	menu.querySelector('.hub-channel-menu-export')?.addEventListener('click', async () => {
+		closeOnce()
+		try {
+			const archive = await exportChannelArchiveJson(groupId, channelId)
+			const safeName = String(channelName || channelId).replace(/[^\w.-]+/g, '_').slice(0, 64)
+			downloadChannelArchiveJson(archive, `channel-${safeName}.json`)
+			showToastI18n('success', 'chat.hub.channelContext.exportOk')
+		}
+		catch (error) {
+			handleUIError(error, 'chat.hub.channelContext.exportFailed')
+		}
 	})
 
 	menu.querySelector('.hub-channel-menu-delete')?.addEventListener('click', async () => {

@@ -38,6 +38,7 @@ export async function fetchViewerChannelPermissions(stateJson, groupId, channelI
  * @typedef {{
  *   isMember: boolean,
  *   canManageArchive: boolean,
+ *   canImportChannel: boolean,
  *   canViewAudit: boolean,
  *   canManageRoles: boolean,
  *   canManageChannelPerms: boolean,
@@ -68,6 +69,7 @@ export async function resolveViewerSettingsCapabilities(stateJson, groupId) {
 		return {
 			isMember: false,
 			canManageArchive: hasLocalReplica,
+			canImportChannel: false,
 			canViewAudit: false,
 			canManageRoles: false,
 			canManageChannelPerms: false,
@@ -97,6 +99,7 @@ export async function resolveViewerSettingsCapabilities(stateJson, groupId) {
 	return {
 		isMember: true,
 		canManageArchive: true,
+		canImportChannel: canEditGroupMeta,
 		canViewAudit: permissions.ADMIN === true,
 		canManageRoles: permissions.MANAGE_ROLES === true,
 		canManageChannelPerms: permissions.MANAGE_CHANNELS === true,

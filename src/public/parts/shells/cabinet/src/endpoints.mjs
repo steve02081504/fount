@@ -17,8 +17,10 @@ import { ensureDefaultCabinet } from './defaultCabinet.mjs'
 import {
 	copyEntries,
 	deleteEntries,
+	finalizeDelete,
 	listEntries,
 	registerEntry,
+	restoreEntries,
 	unlockFolder,
 	updateEntry,
 	uploadAndRegister,
@@ -165,20 +167,47 @@ export function setEndpoints(router) {
 
 	router.patch(`${PREFIX}/cabinets/:cabinetId/entries/:entryId`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		const entry = await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, req.body || {})
+		const entry = await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, {
+			...req.body || {},
+			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+		})
 		res.status(200).json({ entry })
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries/copy`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		const entries = await copyEntries(username, entityHash, req.params.cabinetId, req.body || {})
+		const entries = await copyEntries(username, entityHash, req.params.cabinetId, {
+			...req.body || {},
+			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+		})
 		res.status(200).json({ entries })
 	})
 
 	router.delete(`${PREFIX}/cabinets/:cabinetId/entries`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
 		const ids = Array.isArray(req.body?.entry_ids) ? req.body.entry_ids : []
-		const result = await deleteEntries(username, entityHash, req.params.cabinetId, ids)
+		const result = await deleteEntries(username, entityHash, req.params.cabinetId, ids, {
+			recoverable: Boolean(req.body?.recoverable),
+			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+		})
+		res.status(200).json(result)
+	})
+
+	router.post(`${PREFIX}/cabinets/:cabinetId/entries/restore`, authenticate, async (req, res) => {
+		const { username, entityHash } = await ctxFromReq(req)
+		const recoveryToken = String(req.body?.recovery_token || '')
+		if (!recoveryToken) throw httpError(400, 'recovery_token required')
+		const result = await restoreEntries(username, entityHash, req.params.cabinetId, recoveryToken, {
+			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+		})
+		res.status(200).json(result)
+	})
+
+	router.post(`${PREFIX}/cabinets/:cabinetId/entries/finalize-delete`, authenticate, async (req, res) => {
+		const { username, entityHash } = await ctxFromReq(req)
+		const recoveryToken = String(req.body?.recovery_token || '')
+		if (!recoveryToken) throw httpError(400, 'recovery_token required')
+		const result = await finalizeDelete(username, entityHash, req.params.cabinetId, recoveryToken)
 		res.status(200).json(result)
 	})
 

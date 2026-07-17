@@ -2,8 +2,8 @@ import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
-import { randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'
+import { randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { sharedCabinetKeysPath, sharedCabinetsRegistryPath } from '../paths.mjs'
 

@@ -1,6 +1,6 @@
 import { getCabinet, loadPersonalIndex } from './cabinets.mjs'
-import { loadSharedIndex } from './shared/materialize.mjs'
 import { getSharedCabinetMeta } from './shared/keys.mjs'
+import { loadSharedIndex } from './shared/materialize.mjs'
 
 /**
  * 解析链接条目目标。

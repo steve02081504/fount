@@ -13,3 +13,10 @@ alwaysApply: false
 - **Federation**: `syncMissingArchiveMonths` backfills; `fed_archive_month_want` requires PullAttestation + active membership; peers arbitrate digests via `pickArchiveMonthByReputation`, then `syncArchivedEventIdsFromMonthBody`; quorum via `ARCHIVE_QUORUM_PEER_MIN` (`federationCollect.mjs`).
 - **Digest**: each disk JSONL line must be `canonicalArchiveMonthLine`; `digestCanonicalMonthLines` hashes lines in eventId order; `mutateArchiveManifest` does mutually-exclusive R-M-W; federation reassembly writes temp file then `rename`, never `Buffer.concat`.
 - **Hot zone**: `hot_posts.latestByChannel` in `snapshot.json` (`hotLatestMessageCount`).
+
+## Portable channel archive (Hub)
+
+- Format: `{ format: 'fount-channel-archive', version: 1, source, messages[] }` — see `src/chat/channelArchive.mjs`.
+- Export includes cold+hot final view, delete tombstones, reaction **counts** (not voters), attachment metadata only (no bytes).
+- Import creates a **new text channel** in the current group; history is re-signed by the importer (`origin: 'bridge'`, `ingress: 'backfill'`) with `importedFrom` provenance. Original DAG signatures / reaction voters are not forged.
+- HTTP: `GET …/channels/:channelId/export` (`VIEW_CHANNEL`); `POST …/channels/import` (`MANAGE_CHANNELS`, multipart `archive`).

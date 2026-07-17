@@ -3,8 +3,10 @@ import { usingTemplates } from '../../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { importChannelArchiveFile } from '../api/channelArchive.mjs'
 import { postFederationTuning } from '../api/groupFederation.mjs'
 import { rotateGroupKey, submitOwnerSuccession } from '../api/groupGovernance.mjs'
+import { handleUIError } from '../ui/errors.mjs'
 
 import { collectFederationTuningPatch } from './federationTab.mjs'
 import { collectIceServersFromDom, wireIceServersEditor } from './iceTab.mjs'
@@ -177,6 +179,28 @@ export async function renderGroupSettings(context) {
 	await appendTemplate(container, 'group/settings/basic_panel_overview', {
 		currentState: context.state,
 	})
+
+	if (context.settingsCaps.canImportChannel) {
+		await appendTemplate(container, 'group/settings/channel_archive_panel', {})
+		const importButton = document.getElementById('group-settings-import-channel-archive')
+		const fileInput = document.getElementById('group-settings-import-channel-file')
+		importButton?.addEventListener('click', () => fileInput?.click())
+		fileInput?.addEventListener('change', async () => {
+			const file = fileInput.files?.[0]
+			fileInput.value = ''
+			if (!file || !context.groupId) return
+			try {
+				const result = await importChannelArchiveFile(context.groupId, file)
+				showToastI18n('success', 'chat.group.settingsPage.channelArchiveImportOk', {
+					count: String(result.messageCount ?? 0),
+				})
+				window.location.href = `/parts/shells:chat/hub/#group:${encodeURIComponent(context.groupId)}:${encodeURIComponent(result.channelId)}`
+			}
+			catch (error) {
+				handleUIError(error, 'chat.group.settingsPage.channelArchiveImportFailed')
+			}
+		})
+	}
 
 	if (context.settingsCaps.showGovernancePanel) {
 		await appendTemplate(container, 'group/settings/basic_panel', {

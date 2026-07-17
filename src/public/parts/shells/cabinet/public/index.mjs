@@ -1,10 +1,18 @@
 import { initTranslations, geti18n, console, confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 
 import { api, unlockHeaders } from './src/api.mjs'
+import { readClipboard, writeClipboard, subscribeClipboard } from './src/clipboard.mjs'
+import { createCommandHistory } from './src/commandHistory.mjs'
+import { CABINET_APP_GATE } from './src/gate.mjs'
+import { matchCabinetShortcut, shortcutLabels } from './src/keyboard.mjs'
 import { blobToBase64, generateUploadPreview } from './src/uploadPreview.mjs'
 
 await initTranslations()
+
+const cabinetGate = createReadyGate(CABINET_APP_GATE)
+cabinetGate.markPending()
 
 /** @type {object[]} */
 let cabinets = []
@@ -22,18 +30,85 @@ let currentCabinet = null
 const selected = new Set()
 /** @type {string | null} */
 let rangeAnchor = null
-/** @type {{ mode: 'copy' | 'cut', cabinet_id: string, entry_ids: string[] } | null} */
-let clipboard = null
 /** @type {Map<string, string>} folderId -> unlock token */
 const unlockTokens = new Map()
 /** @type {Array<{ cabinet_id: string, parent_id: string | null }>} */
 const navStack = []
+/** @type {ReturnType<typeof createCommandHistory>} */
+const history = createCommandHistory(50)
+/** @type {{ mode: 'copy' | 'cut', cabinet_id: string, entry_ids: string[], source_parent_id: string | null, at: number } | null} */
+let clipboard = readClipboard()
+
+const isMac = /Mac|iPhone|iPad/.test(navigator.platform || '')
+const hotkeys = shortcutLabels(isMac)
+
+subscribeClipboard(value => {
+	clipboard = value
+})
 
 /**
  * @returns {string | undefined} 当前解锁 token
  */
 function currentUnlockToken() {
 	return currentParentId ? unlockTokens.get(currentParentId) : undefined
+}
+
+/**
+ * @returns {boolean} 当前柜是否可写
+ */
+function canWrite() {
+	if (!currentCabinet) return false
+	if (currentCabinet.type === 'shared') return Boolean(currentCabinet.can_write)
+	if (currentCabinet.type === 'group') return Boolean(currentCabinet.permissions?.can_write)
+	return true
+}
+
+/**
+ * @param {string} cabinetId 柜
+ * @param {string | null} [parentId] 父目录
+ * @returns {string} hash
+ */
+function locationHashFor(cabinetId, parentId = null) {
+	const cabinet = cabinets.find(row => row.cabinet_id === cabinetId) || currentCabinet
+	const shared = cabinet?.type === 'shared' || (/^[0-9a-f]{64}$/i.test(cabinetId) && !cabinetId.includes(':'))
+	const base = shared ? `shared:${cabinetId}` : `cabinet:${cabinetId}`
+	return parentId ? `${base}/${parentId}` : base
+}
+
+/**
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @returns {Promise<void>}
+ */
+async function finalizeRecovery(cabinetId, recoveryToken) {
+	if (!recoveryToken) return
+	await api('POST', `/cabinets/${encodeURIComponent(cabinetId)}/entries/finalize-delete`, {
+		recovery_token: recoveryToken,
+	}).catch(() => { })
+}
+
+/**
+ * @param {string} cabinetId 柜
+ * @param {string[]} entryIds ids
+ * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 删除结果
+ */
+async function recoverableDelete(cabinetId, entryIds) {
+	return api('DELETE', `/cabinets/${encodeURIComponent(cabinetId)}/entries`, {
+		entry_ids: entryIds,
+		recoverable: true,
+	}, unlockHeaders(currentUnlockToken()))
+}
+
+/**
+ * @param {string} cabinetId 柜
+ * @param {string} recoveryToken token
+ * @param {string} [unlockToken] unlock
+ * @returns {Promise<void>}
+ */
+async function restoreRecovery(cabinetId, recoveryToken, unlockToken = currentUnlockToken()) {
+	await api('POST', `/cabinets/${encodeURIComponent(cabinetId)}/entries/restore`, {
+		recovery_token: recoveryToken,
+	}, unlockHeaders(unlockToken))
 }
 
 /**
@@ -60,12 +135,13 @@ function renderCabinetList() {
 	for (const cabinet of cabinets) {
 		const li = document.createElement('li')
 		const a = document.createElement('a')
-		a.href = `#cabinet:${cabinet.cabinet_id}`
+		a.href = `#${locationHashFor(cabinet.cabinet_id)}`
 		a.className = cabinet.cabinet_id === currentCabinetId ? 'active' : ''
 		const badge = cabinet.type === 'shared' ? '🔗 ' : cabinet.cabinet_id === 'default' ? '★ ' : ''
 		a.textContent = `${badge}${cabinet.name}`
 		a.addEventListener('click', event => {
 			event.preventDefault()
+			navStack.length = 0
 			void openCabinet(cabinet.cabinet_id)
 		})
 		a.addEventListener('contextmenu', event => {
@@ -83,6 +159,7 @@ function renderCabinetList() {
  */
 async function cabinetContext(cabinet) {
 	if (cabinet.type === 'shared') {
+		navStack.length = 0
 		await openCabinet(cabinet.cabinet_id)
 		return
 	}
@@ -118,11 +195,7 @@ async function openCabinet(cabinetId, parentId = null) {
 	currentParentId = parentId
 	selected.clear()
 	rangeAnchor = null
-	location.hash = parentId
-		? `cabinet:${cabinetId}/${parentId}`
-		: cabinetId.startsWith('group:')
-			? `group:${cabinetId.slice(6)}`
-			: `cabinet:${cabinetId}`
+	location.hash = locationHashFor(cabinetId, parentId)
 	await refreshEntries()
 	renderCabinetList()
 }
@@ -319,9 +392,9 @@ function onEntryClick(event, entry) {
  */
 async function onEntryOpen(entry) {
 	if (entry.kind === 'folder') {
-		if (entry.encryption && !unlockTokens.has(entry.id)) 
+		if (entry.encryption && !unlockTokens.has(entry.id))
 			await promptUnlock(entry.id)
-		
+
 		await openCabinet(currentCabinetId, entry.id)
 		return
 	}
@@ -383,6 +456,9 @@ async function downloadEntry(entry, cabinetId = currentCabinetId, ownerEntityHas
  * @returns {Promise<void>}
  */
 async function uploadFiles(files) {
+	if (!canWrite()) return
+	/** @type {string[]} */
+	const createdIds = []
 	for (const file of files) {
 		const previewBlob = await generateUploadPreview(file)
 		let preview
@@ -395,15 +471,56 @@ async function uploadFiles(files) {
 			preview = { url: uploaded.url, delete_with_file: true }
 		}
 		const buffer = await file.arrayBuffer()
-		await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
+		const { entry } = await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
 			plaintext_base64: arrayBufferToBase64(buffer),
 			name: file.name,
 			mime_type: file.type || 'application/octet-stream',
 			parent_id: currentParentId,
 			preview,
 		}, unlockHeaders(currentUnlockToken()))
+		if (entry?.id) createdIds.push(entry.id)
 	}
 	await refreshEntries()
+	if (createdIds.length)
+		await history.push(makeCreateHistory(createdIds, 'upload'))
+}
+
+/**
+ * @param {string[]} createdIds 新建 id
+ * @param {string} label 标签
+ * @returns {import('./src/commandHistory.mjs').HistoryEntry} 历史条目
+ */
+function makeCreateHistory(createdIds, label) {
+	const cabinetId = currentCabinetId
+	/** @type {string | undefined} */
+	let recoveryToken
+	return {
+		label,
+		/**
+		 *
+		 */
+		async undo() {
+			const result = await recoverableDelete(cabinetId, createdIds)
+			recoveryToken = result.recovery_token
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async redo() {
+			if (!recoveryToken) return
+			await restoreRecovery(cabinetId, recoveryToken)
+			recoveryToken = undefined
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async discard() {
+			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
+			recoveryToken = undefined
+		},
+	}
 }
 
 /**
@@ -425,13 +542,6 @@ function selectedEntries() {
 }
 
 /**
- * @returns {boolean} 当前目录是否可写
- */
-function canWrite() {
-	return currentCabinet?.type !== 'group' || Boolean(currentCabinet?.permissions?.can_write)
-}
-
-/**
  * @returns {void}
  */
 function renderStatus() {
@@ -445,14 +555,17 @@ function renderStatus() {
  * @returns {Promise<void>}
  */
 async function createFolder() {
+	if (!canWrite()) return
 	const name = await promptI18n('cabinet.newFolderPrompt')
 	if (!name) return
-	await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
+	const { entry } = await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
 		kind: 'folder',
 		name,
 		parent_id: currentParentId,
 	}, unlockHeaders(currentUnlockToken()))
 	await refreshEntries()
+	if (entry?.id)
+		await history.push(makeCreateHistory([entry.id], 'newFolder'))
 }
 
 /**
@@ -461,7 +574,15 @@ async function createFolder() {
  */
 function copySelection(mode) {
 	if (!selected.size) return
-	clipboard = { mode, cabinet_id: currentCabinetId, entry_ids: [...selected] }
+	if (mode === 'cut' && !canWrite()) return
+	clipboard = {
+		mode,
+		cabinet_id: currentCabinetId,
+		entry_ids: [...selected],
+		source_parent_id: currentParentId,
+		at: Date.now(),
+	}
+	writeClipboard(clipboard)
 	showToastI18n('success', mode === 'copy' ? 'cabinet.copied' : 'cabinet.cutDone')
 }
 
@@ -470,46 +591,218 @@ function copySelection(mode) {
  * @returns {Promise<void>}
  */
 async function pasteClipboard(asLinks = false) {
-	if (!clipboard?.entry_ids?.length) return
-	await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/copy`, {
-		entry_ids: clipboard.entry_ids,
-		target_parent_id: currentParentId,
-		...asLinks ? { as_links: true } : {},
-	})
-	if (!asLinks && clipboard.mode === 'cut' && clipboard.cabinet_id === currentCabinetId) {
-		await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
-			entry_ids: clipboard.entry_ids,
+	if (!canWrite()) return
+	const clip = clipboard || readClipboard()
+	if (!clip?.entry_ids?.length) return
+	clipboard = clip
+
+	const sameCabinet = clip.cabinet_id === currentCabinetId
+	if (!asLinks && clip.mode === 'cut' && sameCabinet) {
+		const targetParent = currentParentId
+		const sourceParent = clip.source_parent_id ?? null
+		const movedIds = [...clip.entry_ids]
+		for (const id of movedIds)
+			await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(id)}`, {
+				parent_id: targetParent,
+			}, unlockHeaders(currentUnlockToken()))
+		writeClipboard(null)
+		clipboard = null
+		await refreshEntries()
+		const cabinetId = currentCabinetId
+		await history.push({
+			label: 'cut',
+			/**
+			 *
+			 */
+			async undo() {
+				for (const id of movedIds)
+					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(id)}`, {
+						parent_id: sourceParent,
+					}, unlockHeaders(currentUnlockToken()))
+				await refreshEntries()
+			},
+			/**
+			 *
+			 */
+			async redo() {
+				for (const id of movedIds)
+					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(id)}`, {
+						parent_id: targetParent,
+					}, unlockHeaders(currentUnlockToken()))
+				await refreshEntries()
+			},
 		})
+		return
+	}
+
+	const sourceUnlock = clip.source_parent_id ? unlockTokens.get(clip.source_parent_id) : undefined
+	const created = await api('POST', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries/copy`, {
+		entry_ids: clip.entry_ids,
+		target_parent_id: currentParentId,
+		target_cabinet_id: currentCabinetId,
+		...asLinks ? { as_links: true } : {},
+		...sourceUnlock ? { source_unlock_token: sourceUnlock } : {},
+	}, unlockHeaders(currentUnlockToken()))
+	const createdIds = (created.entries || []).map(row => row.id).filter(Boolean)
+	/** @type {string | undefined} */
+	let sourceRecovery
+	if (!asLinks && clip.mode === 'cut') {
+		const result = await api('DELETE', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries`, {
+			entry_ids: clip.entry_ids,
+			recoverable: true,
+		}, unlockHeaders(sourceUnlock))
+		sourceRecovery = result.recovery_token
+		writeClipboard(null)
 		clipboard = null
 	}
 	await refreshEntries()
+	/** @type {string | undefined} */
+	let createdRecovery
+	const targetCabinetId = currentCabinetId
+	await history.push({
+		label: asLinks ? 'pasteLink' : clip.mode === 'cut' ? 'cut' : 'paste',
+		/**
+		 *
+		 */
+		async undo() {
+			if (createdIds.length) {
+				const result = await recoverableDelete(targetCabinetId, createdIds)
+				createdRecovery = result.recovery_token
+			}
+			if (sourceRecovery) {
+				await restoreRecovery(clip.cabinet_id, sourceRecovery, sourceUnlock)
+				sourceRecovery = undefined
+			}
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async redo() {
+			if (createdRecovery) {
+				await restoreRecovery(targetCabinetId, createdRecovery)
+				createdRecovery = undefined
+			}
+			if (clip.mode === 'cut' && !asLinks) {
+				const result = await api('DELETE', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries`, {
+					entry_ids: clip.entry_ids,
+					recoverable: true,
+				}, unlockHeaders(sourceUnlock))
+				sourceRecovery = result.recovery_token
+			}
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async discard() {
+			if (createdRecovery) await finalizeRecovery(targetCabinetId, createdRecovery)
+			if (sourceRecovery) await finalizeRecovery(clip.cabinet_id, sourceRecovery)
+		},
+	})
 }
 
 /**
  * @returns {Promise<void>}
  */
 async function renameSelection() {
+	if (!canWrite()) return
 	const [entry] = selectedEntries()
 	if (!entry) return
 	const name = await promptI18n('cabinet.renamePrompt', entry.name)
-	if (!name) return
-	await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, { name })
+	if (!name || name === entry.name) return
+	const before = entry.name
+	await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, {
+		name,
+	}, unlockHeaders(currentUnlockToken()))
 	await refreshEntries()
+	const cabinetId = currentCabinetId
+	const entryId = entry.id
+	await history.push({
+		label: 'rename',
+		/**
+		 *
+		 */
+		async undo() {
+			await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, {
+				name: before,
+			}, unlockHeaders(currentUnlockToken()))
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async redo() {
+			await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, {
+				name,
+			}, unlockHeaders(currentUnlockToken()))
+			await refreshEntries()
+		},
+	})
 }
 
 /**
  * @returns {Promise<void>}
  */
 async function deleteSelection() {
+	if (!canWrite()) return
 	const rows = selectedEntries()
 	if (!rows.length) return
 	if (rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDeleteSystem')) return
 	if (!rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDelete')) return
-	await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
-		entry_ids: rows.map(row => row.id),
-	})
+	const ids = rows.map(row => row.id)
+	const cabinetId = currentCabinetId
+	const result = await recoverableDelete(cabinetId, ids)
 	selected.clear()
 	await refreshEntries()
+	let recoveryToken = result.recovery_token
+	await history.push({
+		label: 'delete',
+		/**
+		 *
+		 */
+		async undo() {
+			if (!recoveryToken) return
+			await restoreRecovery(cabinetId, recoveryToken)
+			recoveryToken = undefined
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async redo() {
+			const again = await recoverableDelete(cabinetId, ids)
+			recoveryToken = again.recovery_token
+			await refreshEntries()
+		},
+		/**
+		 *
+		 */
+		async discard() {
+			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
+			recoveryToken = undefined
+		},
+	})
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function goUp() {
+	if (!currentParentId) return
+	const parent = folderTrail.length >= 2
+		? folderTrail[folderTrail.length - 2].id
+		: null
+	await openCabinet(currentCabinetId, folderTrail.length >= 2 ? parent : null)
+}
+
+/**
+ * @returns {void}
+ */
+function openCurrentInNewWindow() {
+	if (!currentCabinetId) return
+	const hash = locationHashFor(currentCabinetId, currentParentId)
+	window.open(`${location.pathname}#${hash}`, '_blank', 'noopener')
 }
 
 /**
@@ -533,10 +826,19 @@ async function downloadFolder(folderId, name) {
  * @returns {Promise<void>}
  */
 async function downloadSelection() {
-	for (const entry of selectedEntries()) 
+	for (const entry of selectedEntries())
 		if (entry.kind === 'folder') await downloadFolder(entry.id, entry.name)
 		else if (entry.kind === 'file') await downloadEntry(entry)
-	
+}
+
+/**
+ * @param {string} label i18n key
+ * @param {string} [shortcut] 快捷键
+ * @returns {string} 菜单文案
+ */
+function menuLabel(label, shortcut) {
+	const text = geti18n(label) || label
+	return shortcut ? `${text} (${shortcut})` : text
 }
 
 /**
@@ -557,30 +859,39 @@ function showContextMenu(event, entry) {
 	const rows = selectedEntries()
 	const one = rows.length === 1
 	const writable = canWrite()
+	const hasClip = Boolean((clipboard || readClipboard())?.entry_ids?.length)
 	/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns -- context menu action callbacks */
 	const actions = entry
 		? [
-			one ? { label: 'cabinet.open', run: () => onEntryOpen(rows[0]) } : null,
-			{ label: 'cabinet.download', disabled: !rows.some(row => row.kind === 'file' || row.kind === 'folder'), run: downloadSelection },
+			one ? { label: menuLabel('cabinet.open'), run: () => onEntryOpen(rows[0]) } : null,
+			{ label: menuLabel('cabinet.download'), disabled: !rows.some(row => row.kind === 'file' || row.kind === 'folder'), run: downloadSelection },
 			false,
-			{ label: 'cabinet.rename', disabled: !writable || !one, run: renameSelection },
-			{ label: 'cabinet.copy', run: () => copySelection('copy') },
-			{ label: 'cabinet.cut', disabled: !writable, run: () => copySelection('cut') },
+			{ label: menuLabel('cabinet.rename', hotkeys.rename), disabled: !writable || !one, run: renameSelection },
+			{ label: menuLabel('cabinet.copy', hotkeys.copy), run: () => copySelection('copy') },
+			{ label: menuLabel('cabinet.cut', hotkeys.cut), disabled: !writable, run: () => copySelection('cut') },
 			false,
-			{ label: 'cabinet.properties', disabled: !one, run: openProps },
-			{ label: 'cabinet.delete', disabled: !writable, danger: true, run: deleteSelection },
+			{ label: menuLabel('cabinet.undo', hotkeys.undo), disabled: !history.canUndo(), run: () => history.undo().then(() => refreshEntries()) },
+			{ label: menuLabel('cabinet.redo', hotkeys.redo), disabled: !history.canRedo(), run: () => history.redo().then(() => refreshEntries()) },
+			false,
+			{ label: menuLabel('cabinet.properties'), disabled: !one, run: openProps },
+			{ label: menuLabel('cabinet.delete', hotkeys.delete), disabled: !writable, danger: true, run: deleteSelection },
 		]
 		: [
-			{ label: 'cabinet.upload', disabled: !writable, run: () => document.getElementById('fileInput').click() },
-			{ label: 'cabinet.uploadFolder', disabled: !writable, run: () => document.getElementById('folderInput').click() },
-			{ label: 'cabinet.newFolder', disabled: !writable, run: createFolder },
+			{ label: menuLabel('cabinet.upload'), disabled: !writable, run: () => document.getElementById('fileInput').click() },
+			{ label: menuLabel('cabinet.uploadFolder'), disabled: !writable, run: () => document.getElementById('folderInput').click() },
+			{ label: menuLabel('cabinet.newFolder'), disabled: !writable, run: createFolder },
+			{ label: menuLabel('cabinet.newWindow', hotkeys.newWindow), run: openCurrentInNewWindow },
 			false,
-			{ label: 'cabinet.paste', disabled: !writable || !clipboard?.entry_ids?.length, run: () => pasteClipboard() },
-			{ label: 'cabinet.pasteLink', disabled: !writable || !clipboard?.entry_ids?.length, run: () => pasteClipboard(true) },
+			{ label: menuLabel('cabinet.paste', hotkeys.paste), disabled: !writable || !hasClip, run: () => pasteClipboard() },
+			{ label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), disabled: !writable || !hasClip, run: () => pasteClipboard(true) },
 			false,
-			{ label: 'cabinet.selectAll', disabled: !entries.length, run: selectAllEntries },
-			{ label: 'cabinet.invert', disabled: !entries.length, run: invertSelection },
-			{ label: 'cabinet.downloadZip', run: () => downloadFolder(currentParentId, currentCabinet?.name) },
+			{ label: menuLabel('cabinet.undo', hotkeys.undo), disabled: !history.canUndo(), run: () => history.undo().then(() => refreshEntries()) },
+			{ label: menuLabel('cabinet.redo', hotkeys.redo), disabled: !history.canRedo(), run: () => history.redo().then(() => refreshEntries()) },
+			false,
+			{ label: menuLabel('cabinet.selectAll', hotkeys.selectAll), disabled: !entries.length, run: selectAllEntries },
+			{ label: menuLabel('cabinet.invert'), disabled: !entries.length, run: invertSelection },
+			{ label: menuLabel('cabinet.goUp', hotkeys.goUp), disabled: !currentParentId, run: goUp },
+			{ label: menuLabel('cabinet.downloadZip'), run: () => downloadFolder(currentParentId, currentCabinet?.name) },
 		]
 	/* eslint-enable jsdoc/require-jsdoc, jsdoc/require-returns */
 	const menu = document.querySelector('#contextMenu ul')
@@ -596,7 +907,7 @@ function showContextMenu(event, entry) {
 		const li = document.createElement('li')
 		const button = document.createElement('button')
 		button.type = 'button'
-		button.textContent = geti18n(action.label) || action.label
+		button.textContent = action.label
 		button.disabled = action.disabled
 		if (action.danger) button.classList.add('text-error')
 		/**
@@ -645,6 +956,68 @@ function invertSelection() {
 }
 
 /**
+ * @param {string} command 命令
+ * @returns {Promise<boolean>} 是否处理
+ */
+async function runCommand(command) {
+	switch (command) {
+		case 'copy':
+			copySelection('copy')
+			return true
+		case 'cut':
+			if (!canWrite() || !selected.size) return false
+			copySelection('cut')
+			return true
+		case 'paste':
+			if (!canWrite() || !(clipboard || readClipboard())?.entry_ids?.length) return false
+			await pasteClipboard(false)
+			return true
+		case 'pasteLink':
+			if (!canWrite() || !(clipboard || readClipboard())?.entry_ids?.length) return false
+			await pasteClipboard(true)
+			return true
+		case 'selectAll':
+			if (!entries.length) return false
+			selectAllEntries()
+			return true
+		case 'delete':
+			if (!canWrite() || !selected.size) return false
+			await deleteSelection()
+			return true
+		case 'undo':
+			if (!history.canUndo()) return false
+			await history.undo()
+			return true
+		case 'redo':
+			if (!history.canRedo()) return false
+			await history.redo()
+			return true
+		case 'newWindow':
+			openCurrentInNewWindow()
+			return true
+		case 'rename':
+			if (!canWrite() || selected.size !== 1) return false
+			await renameSelection()
+			return true
+		case 'goUp':
+			if (!currentParentId) return false
+			await goUp()
+			return true
+		case 'open': {
+			const [entry] = selectedEntries()
+			if (!entry) return false
+			await onEntryOpen(entry)
+			return true
+		}
+		case 'escape':
+			hideContextMenu()
+			return true
+		default:
+			return false
+	}
+}
+
+/**
  * @returns {void}
  */
 function wireToolbar() {
@@ -667,7 +1040,13 @@ function wireToolbar() {
 	document.getElementById('showHidden').onchange = () => void refreshEntries()
 	document.getElementById('propSave').onclick = async () => {
 		const [entry] = selectedEntries()
-		if (!entry) return
+		if (!entry || !canWrite()) return
+		const before = {
+			name: entry.name,
+			description: entry.description || '',
+			attrs: { ...entry.attrs },
+			preview: { ...entry.preview },
+		}
 		const patch = {
 			name: document.getElementById('propName').value,
 			description: document.getElementById('propDescription').value,
@@ -683,16 +1062,37 @@ function wireToolbar() {
 		const password = document.getElementById('propFolderPassword').value
 		if (entry.kind === 'folder' && password)
 			patch.set_password = password
-		await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, patch)
+		await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, patch, unlockHeaders(currentUnlockToken()))
 		document.getElementById('propsDialog').close()
 		await refreshEntries()
+		if (!password) {
+			const cabinetId = currentCabinetId
+			const entryId = entry.id
+			await history.push({
+				label: 'props',
+				async undo() {
+					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, before, unlockHeaders(currentUnlockToken()))
+					await refreshEntries()
+				},
+				async redo() {
+					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, patch, unlockHeaders(currentUnlockToken()))
+					await refreshEntries()
+				},
+			})
+		}
 	}
 	document.getElementById('entryGrid').addEventListener('contextmenu', event => showContextMenu(event))
 	document.addEventListener('click', hideContextMenu)
 	document.addEventListener('keydown', event => {
-		if (event.key === 'Escape') hideContextMenu()
+		const command = matchCabinetShortcut(event)
+		if (!command) return
+		event.preventDefault()
+		void runCommand(command)
 	})
 	window.addEventListener('blur', hideContextMenu)
+	window.addEventListener('pagehide', () => {
+		void history.dispose()
+	})
 	/* eslint-enable jsdoc/require-jsdoc */
 }
 
@@ -751,9 +1151,10 @@ function escapeAttr(text) {
 async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
 	if (hash.startsWith('shared:')) {
-		const cabinetId = hash.slice(7).split('/')[0]
+		const rest = hash.slice(7)
+		const [cabinetId, folderId] = rest.split('/')
 		await refreshCabinets()
-		await openCabinet(cabinetId)
+		await openCabinet(cabinetId, folderId || null)
 		return
 	}
 	if (hash.startsWith('cabinet:')) {
@@ -778,8 +1179,10 @@ try {
 	await refreshCabinets()
 	await bootFromHash()
 	window.addEventListener('hashchange', () => void bootFromHash())
+	cabinetGate.markReady()
 }
 catch (error) {
 	console.error(error)
+	cabinetGate.markFailed(error)
 	showToastI18n('error', 'cabinet.bootstrapFailed', { error: error.message })
 }

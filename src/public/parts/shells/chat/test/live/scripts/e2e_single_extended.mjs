@@ -431,8 +431,6 @@ await testCase('DELETE /groups/:id/emojis/:id', async () => {
 
 // ---------------------------------------------------------------------------
 writeLiveSection('F. Sessions & misc writes')
-let importedGid = null
-let copyGid = null
 let pluginName = null
 let pluginAddStatus = null
 
@@ -441,40 +439,29 @@ await testCase('GET /custom-emojis contains saved entry', async () => {
 	return r.status === 200 && (r.json.entries?.filter(row => row.groupId === gid).length ?? 0) >= 1
 })
 
-await testCase('POST /groups/import', async () => {
-	let exp = await api('GET', `/groups/${gid}/export`)
+await testCase('channel archive export/import round-trip', async () => {
+	let exp = await api('GET', `/groups/${gid}/channels/${cid}/export`)
 	if (exp.status !== 200) throw new Error(`export ${exp.status}: ${exp.raw}`)
 	if (!exp.json.messages?.length) {
 		await waitForCharMessageId(gid, cid, fbChar, 60)
-		exp = await api('GET', `/groups/${gid}/export`)
+		exp = await api('GET', `/groups/${gid}/channels/${cid}/export`)
 	}
-	if (!exp.json.messages?.length) throw new Error('export has no chatLog messages')
-	const body = {
-		chars: exp.json.chars,
-		world: exp.json.world,
-		persona: exp.json.persona,
-		plugins: exp.json.plugins,
-		frequency: exp.json.frequency,
-		messages: exp.json.messages,
-	}
-	const r = await api('POST', '/groups/import', body)
-	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	importedGid = r.json.groupId
-	if (importedGid) createdGroups.push(importedGid)
-	return Boolean(importedGid)
-})
-
-await testCase('POST /groups/:id/copy', async () => {
-	const r = await api('POST', `/groups/${gid}/copy`, {})
-	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	copyGid = r.json.newGroupId
-	if (copyGid) createdGroups.push(copyGid)
-	return Boolean(copyGid)
+	if (exp.status !== 200) throw new Error(`export retry ${exp.status}`)
+	if (exp.json.format !== 'fount-channel-archive') throw new Error('bad format')
+	const r = await api('POST', `/groups/${gid}/channels/import`, exp.json)
+	if (r.status !== 201) throw new Error(`import ${r.status}: ${r.raw}`)
+	const importedCid = r.json.channelId
+	if (!importedCid) throw new Error('no channelId')
+	const again = await api('GET', `/groups/${gid}/channels/${importedCid}/export`)
+	if (again.status !== 200) throw new Error(`re-export ${again.status}`)
+	return again.json.messages?.length >= 1
 })
 
 await testCase('DELETE /sessions/:groupId', async () => {
-	if (!importedGid) throw new Error('import group missing')
-	const r = await api('DELETE', `/sessions/${importedGid}`)
+	const create = await api('POST', '/groups/', { name: `ext-sess-del-${Date.now()}`, defaultChannelName: 'general' })
+	if (create.status !== 201) throw new Error(`create ${create.status}`)
+	const tempGid = create.json.groupId
+	const r = await api('DELETE', `/sessions/${tempGid}`)
 	return r.status === 200
 })
 
@@ -505,12 +492,14 @@ await testCase('DELETE /groups/:id/plugin/:name', async () => {
 	return r.status === 200
 })
 
-await testCase('POST /groups/leave (copy group)', async () => {
-	if (!copyGid) throw new Error('copy group missing')
-	const r = await api('POST', '/groups/leave', { groupIds: [copyGid] })
+await testCase('POST /groups/leave (temp group)', async () => {
+	const create = await api('POST', '/groups/', { name: `ext-leave-${Date.now()}`, defaultChannelName: 'general' })
+	if (create.status !== 201) throw new Error(`create ${create.status}`)
+	const leaveGid = create.json.groupId
+	const r = await api('POST', '/groups/leave', { groupIds: [leaveGid] })
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	const lists = await api('GET', '/sessions/list')
-	return lists.json?.filter(row => row.groupId === copyGid).length === 0
+	const lists = await api('GET', '/groups/')
+	return Array.isArray(lists.json) && !lists.json.some(row => row.groupId === leaveGid)
 })
 
 // ---------------------------------------------------------------------------

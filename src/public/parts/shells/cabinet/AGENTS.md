@@ -12,5 +12,7 @@ alwaysApply: false
 - **Links**: id triples `{ owner_entity_hash, cabinet_id, entry_id }`; local-entity inbound refcount keeps orphaned targets until unlink GC.
 - **API body / stored fields**: snake_case. Password folders: `POST …/unlock` → `X-Cabinet-Unlock` header.
 - **Directory listing**: `GET …/index?parent_id=` returns `folder_trail: [{ id, name }]` from cabinet root to the current folder; use it for named breadcrumbs so refreshes and deep links never display raw IDs.
+- **Recoverable delete**: `DELETE …/entries` with `recoverable:true` → `{ deleted, recovery_token }` (blobs kept). Restore via `POST …/entries/restore`; hard-delete via `POST …/entries/finalize-delete`. UI undo stack must finalize discarded tokens.
+- **Shortcuts**: Ctrl/Cmd+C/X/V/A/D/Z/Y/N, F2 rename, Delete = go up. Clipboard is app-level (`sessionStorage` + `BroadcastChannel`), not OS clipboard.
 - **Default cabinet**: `cabinet_id: default` seeded from `default/templates/cabinet/`.
 - **Tests**: `fount test shells/cabinet --no-parallel`.

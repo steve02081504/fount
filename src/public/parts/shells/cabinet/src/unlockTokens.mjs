@@ -30,6 +30,17 @@ export function issueUnlockToken(payload) {
 
 /**
  * @param {string} token token
+ * @returns {{ folder_key: Buffer, cabinet_id: string, folder_id: string, entity_hash: string, expires_at: number } | null} 载荷
+ */
+export function peekUnlockToken(token) {
+	gc()
+	const row = tokens.get(String(token || ''))
+	if (!row || row.expires_at <= Date.now()) return null
+	return row
+}
+
+/**
+ * @param {string} token token
  * @param {{ cabinet_id: string, folder_id: string, entity_hash: string }} expect 期望上下文
  * @returns {Buffer | null} folder key
  */

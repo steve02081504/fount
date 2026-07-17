@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer'
+
 import { waitForStickersPageReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
@@ -6,18 +8,41 @@ import {
 	openFreshGroupChannel,
 	sendMessageViaComposer,
 	openGroupSettingsPage,
-	createTestGroup,
 } from './fixtures.mjs'
 
 test.describe('Chat secondary pages', () => {
-	test('history list page loads sessions', async ({ page, baseUrl, apiKey }) => {
+	test('channel context menu exports JSON archive', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
-		await sendMessageViaComposer(page, groupId, channelId, `list-row ${Date.now()}`)
-		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#sort-select')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#filter-input')).toBeVisible()
-		const item = page.locator(`.chat-list-item[data-group-id="${groupId}"]`)
-		await expect(item).toBeVisible({ timeout: 60_000 })
+		await sendMessageViaComposer(page, groupId, channelId, `archive-export ${Date.now()}`)
+		const channelRow = page.locator(`.hub-channel-item[data-channel-id="${channelId}"]`)
+		await expect(channelRow).toBeVisible({ timeout: 60_000 })
+		const downloadPromise = page.waitForEvent('download', { timeout: 60_000 })
+		await channelRow.click({ button: 'right' })
+		await page.locator('.hub-channel-menu-export').click()
+		const download = await downloadPromise
+		expect(download.suggestedFilename()).toMatch(/\.json$/i)
+	})
+
+	test('settings page imports channel archive into new channel', async ({ page, baseUrl, apiKey }) => {
+		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
+		await sendMessageViaComposer(page, groupId, channelId, `archive-import ${Date.now()}`)
+		const exportRes = await page.request.get(
+			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/export?fount-apikey=${encodeURIComponent(apiKey)}`,
+		)
+		expect(exportRes.ok()).toBeTruthy()
+		const archive = await exportRes.json()
+		expect(archive.format).toBe('fount-channel-archive')
+
+		await openGroupSettingsPage(page, baseUrl, groupId)
+		await expect(page.locator('#group-settings-import-channel-archive')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#group-settings-import-channel-file').setInputFiles({
+			name: 'channel-archive.json',
+			mimeType: 'application/json',
+			buffer: Buffer.from(JSON.stringify(archive), 'utf8'),
+		})
+		await page.waitForURL(/\/parts\/shells:chat\/hub\/#group:/, { timeout: 60_000 })
+		const hash = new URL(page.url()).hash
+		expect(hash).toMatch(new RegExp(`#group:${groupId}:imported_`))
 	})
 
 	test('stickers store page loads', async ({ page, baseUrl }) => {
@@ -48,28 +73,6 @@ test.describe('Chat secondary pages', () => {
 		await page.locator('.tabs .tab[data-tab="emojis"]').click()
 		await expect(page.locator('#group-emojis-list')).toBeAttached({ timeout: 30_000 })
 		await expect(page.locator('#group-emojis-empty')).toBeVisible({ timeout: 30_000 })
-	})
-
-	test('history list filter narrows visible sessions', async ({ page, baseUrl, apiKey }) => {
-		const name = `pw-filter-${Date.now()}`
-		const { groupId } = await createTestGroup(baseUrl, apiKey, { name })
-		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
-		const item = page.locator(`.chat-list-item[data-group-id="${groupId}"]`)
-		await expect(item).toBeVisible({ timeout: 60_000 })
-		await page.locator('#filter-input').fill('__no-such-group-name__')
-		await expect(item).toBeHidden({ timeout: 30_000 })
-		await page.locator('#filter-input').fill(name.slice(0, 12))
-		await expect(item).toBeVisible({ timeout: 30_000 })
-	})
-
-	test('history list sort select toggles order mode', async ({ page, baseUrl, apiKey }) => {
-		await openFreshGroupChannel(page, baseUrl, apiKey)
-		await page.goto(`${baseUrl}/parts/shells:chat/list/`, { waitUntil: 'domcontentloaded' })
-		const sortSelect = page.locator('#sort-select')
-		await expect(sortSelect).toHaveValue('time_desc')
-		await sortSelect.selectOption('time_asc')
-		await expect(sortSelect).toHaveValue('time_asc')
-		await expect(page.locator('.chat-list-item').first()).toBeVisible({ timeout: 60_000 })
 	})
 
 	test('settings general tab shows group name field', async ({ page, baseUrl, apiKey }) => {

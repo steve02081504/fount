@@ -5,12 +5,6 @@
 			"level": 1,
 			"url": "/parts/shells:chat/hub/",
 			"button": "<img src=\"https://api.iconify.design/mdi/view-dashboard-outline.svg\" class=\"text-icon\"/>"
-		},
-		{
-			"info": "chat.home_function_buttons.viewHistory",
-			"level": 1,
-			"url": "/parts/shells:chat/list/",
-			"button": "<img src=\"https://api.iconify.design/line-md/chat-round.svg\" class=\"text-icon\"/>"
 		}
 	],
 	"home_interfaces": {

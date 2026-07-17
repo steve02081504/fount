@@ -1109,53 +1109,6 @@ export type LocaleData = {
 			chatHub: {
 				title: string
 			}
-			viewHistory: {
-				title: string
-			}
-		}
-	}
-	chat_history: {
-		title: string
-		pageTitle: string
-		description: string
-		filterInput: {
-			placeholder: string
-		}
-		sortOptions: {
-			time_desc: string
-			time_asc: string
-		}
-		sortBy: {
-			'aria-label': string
-		}
-		selectAll: string
-		buttons: {
-			reverseSelect: string
-			deleteSelected: string
-			exportSelected: string
-			import: string
-		}
-		chatItemButtons: {
-			continue: string
-			copy: string
-			export: string
-			delete: string
-		}
-		confirmDeleteChat: string
-		confirmDeleteMultiChats: string
-		alerts: {
-			noChatSelectedForDeletion: string
-			noChatSelectedForExport: string
-			copyError: string
-			deleteError: string
-			exportError: string
-			dragExportError: string
-			importSuccess: string
-			importError: string
-			invalidImportFile: string
-		}
-		select_checkbox: {
-			'aria-label': string
 		}
 	}
 	easynew: {
@@ -2867,9 +2820,9 @@ export type LocaleKeyParams = {
 	'chat.messageView.toolRunningLang': { lang: string | number }
 	'chat.messageView.toolSearchingContent': { content: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
-	'chat_history.confirmDeleteChat': { chars: string | number }
-	'chat_history.confirmDeleteMultiChats': { count: string | number }
-	'chat_history.select_checkbox.aria-label': { chars: string | number }
+	'chat.hub.channelContext.exportFailed': { error: string | number }
+	'chat.group.settingsPage.channelArchiveImportOk': { count: string | number }
+	'chat.group.settingsPage.channelArchiveImportFailed': { error: string | number }
 	'code_block.copy_failed': { error: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }

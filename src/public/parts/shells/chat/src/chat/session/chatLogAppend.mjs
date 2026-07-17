@@ -71,19 +71,3 @@ export async function addChatLogEntry(groupId, entry) {
 
 	return entry
 }
-
-/**
- * 导入路径追加日志（不广播、不自动回复）。
- * @param {string} groupId 群 ID
- * @param {object} entry 日志条目
- * @returns {Promise<object>} 写入后的条目
- */
-export async function addChatLogEntryImport(groupId, entry) {
-	const chatMetadata = await getActiveGroupRuntime(groupId)
-	await appendLogCore(groupId, chatMetadata, entry)
-
-	const owner = groupMetadatas.get(groupId)?.username
-	await syncChatLogEntryToDag(groupId, entry, owner)
-
-	return entry
-}

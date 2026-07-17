@@ -141,6 +141,93 @@ Deno.test({
 		const sharedDlRaw = await sharedDl.text()
 		assertEquals(sharedDl.status, 200, sharedDlRaw)
 		assertEquals(sharedDlRaw, 'shared hello')
+
+		// recoverable delete → restore → finalize
+		const delRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries?${q}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ entry_ids: [folder.id], recoverable: true }),
+		})
+		const delRaw = await delRes.text()
+		assertEquals(delRes.status, 200, delRaw)
+		const delBody = JSON.parse(delRaw)
+		assert(delBody.recovery_token)
+		assert(delBody.deleted.includes(folder.id))
+
+		const gone = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/index?${q}`)
+		const goneBody = await gone.json()
+		assertEquals(goneBody.entries.some(row => row.id === folder.id), false)
+
+		const restoreRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries/restore?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ recovery_token: delBody.recovery_token }),
+		})
+		assertEquals(restoreRes.status, 200, await restoreRes.text())
+		const restored = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/index?${q}`)
+		const restoredBody = await restored.json()
+		assert(restoredBody.entries.some(row => row.id === folder.id))
+
+		const del2 = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries?${q}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ entry_ids: [folder.id], recoverable: true }),
+		})
+		const del2Body = JSON.parse(await del2.text())
+		const fin = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries/finalize-delete?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ recovery_token: del2Body.recovery_token }),
+		})
+		assertEquals(fin.status, 200, await fin.text())
+
+		// cross-cabinet copy via target_cabinet_id
+		const other = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ name: 'Other', visibility: { visibility: 'private' } }),
+		})
+		const otherId = JSON.parse(await other.text()).cabinet.cabinet_id
+		const rootFile = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				plaintext_base64: btoa('cross'),
+				name: 'cross.txt',
+				mime_type: 'text/plain',
+			}),
+		})
+		const rootFileId = JSON.parse(await rootFile.text()).entry.id
+		const crossCopy = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/entries/copy?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({
+				entry_ids: [rootFileId],
+				target_parent_id: null,
+				target_cabinet_id: otherId,
+			}),
+		})
+		assertEquals(crossCopy.status, 200, await crossCopy.text())
+		const otherIndex = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${otherId}/index?${q}`)
+		const otherBody = await otherIndex.json()
+		assert(otherBody.entries.some(row => row.name === 'cross.txt (copy)'))
+
+		// shared recoverable delete + restore
+		const sharedDel = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/entries?${q}`, {
+			method: 'DELETE',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ entry_ids: [sharedEntry.id], recoverable: true }),
+		})
+		const sharedDelBody = JSON.parse(await sharedDel.text())
+		assert(sharedDelBody.recovery_token)
+		const sharedRestore = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/entries/restore?${q}`, {
+			method: 'POST',
+			headers: { 'content-type': 'application/json' },
+			body: JSON.stringify({ recovery_token: sharedDelBody.recovery_token }),
+		})
+		assertEquals(sharedRestore.status, 200, await sharedRestore.text())
+		const sharedIndex2 = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${sharedId}/index?${q}`)
+		assert((await sharedIndex2.json()).entries.some(row => row.id === sharedEntry.id))
 	}
 	finally {
 		await stopNode(node)
