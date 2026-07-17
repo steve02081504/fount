@@ -106,9 +106,9 @@ export function resolveProfilePresentation(stored, locales, infoDefaults) {
 	const tags = Array.isArray(slice.tags) ? slice.tags : infoDefaults.tags || []
 	const links = Array.isArray(slice.links) ? slice.links : infoDefaults.links || []
 
-	let avatar = slice.avatar?.trim() || infoDefaults.avatar
-	// 相对路径 → EVFS URL；无头像时不要虚构 files/profile/avatar（否则前端会当真实图去请求）。
-	if (avatar && !avatar.startsWith('http') && isEntityHash128(stored?.entityHash))
+	let avatar = slice.avatar?.trim() || infoDefaults.avatar || ''
+	// 仅归一「profile/avatar」逻辑路径；无头像时不要虚构 EVFS URL（前端会误当真实图）。
+	if (avatar === 'profile/avatar' && isEntityHash128(stored?.entityHash))
 		avatar = profileAvatarFileUrl(stored.entityHash)
 
 	return {

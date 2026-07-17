@@ -263,6 +263,9 @@ function bindPostCardOpen(card, hash) {
 	let timer = 0
 	let startX = 0
 	let startY = 0
+	/**
+	 *
+	 */
 	const clearPressTimer = () => {
 		if (timer) {
 			clearTimeout(timer)
