@@ -69,33 +69,76 @@
 					<div class="composer-body">
 						<div id="quotePreview" class="quote-preview hidden"></div>
 						<div id="groupRefPreview" class="group-ref-preview hidden"></div>
-						<div id="pollComposerPanel" class="poll-composer hidden">
-							<textarea id="pollComposerOptions" rows="3" data-i18n="social.poll.optionsPlaceholder" placeholder=""></textarea>
-							<label><input id="pollComposerMulti" type="checkbox" /> <span data-i18n="social.poll.multi"></span></label>
-							<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
-							<button type="button" id="pollComposerApply" class="btn btn-ghost btn-xs" data-i18n="social.poll.apply"></button>
-						</div>
 						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
-						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
-						<label class="composer-sensitive">
-							<input id="postSensitiveMedia" type="checkbox" />
-							<span data-i18n="social.composer.sensitiveMedia"></span>
-						</label>
+						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw hidden" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
+						<div id="pollComposerPanel" class="composer-panel poll-composer hidden">
+							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.optionsPlaceholder" placeholder=""></textarea>
+							<div class="poll-composer-row">
+								<label class="composer-check">
+									<input id="pollComposerMulti" type="checkbox" class="checkbox checkbox-sm" />
+									<span data-i18n="social.poll.multi"></span>
+								</label>
+								<input id="pollComposerDeadline" type="datetime-local" class="input input-bordered input-sm" />
+								<button type="button" id="pollComposerApply" class="btn btn-primary btn-xs" data-i18n="social.poll.apply"></button>
+							</div>
+						</div>
 						<div id="mediaPreview" class="media-preview hidden"></div>
+						<div id="composerAdvancedPanel" class="composer-panel composer-advanced hidden">
+							<label class="composer-field hidden" data-visibility-field>
+								<span class="composer-field-label" data-i18n="social.visibility.allowLabel"></span>
+								<input data-visibility-allow type="text" class="input input-bordered input-sm" data-i18n="social.visibility.allowPlaceholder" placeholder="" />
+							</label>
+							<label class="composer-field" data-visibility-field>
+								<span class="composer-field-label" data-i18n="social.visibility.exceptLabel"></span>
+								<input data-visibility-except type="text" class="input input-bordered input-sm" data-i18n="social.visibility.exceptPlaceholder" placeholder="" />
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.replyPolicyLabel"></span>
+								<select id="postReplyPolicy" class="select select-bordered select-sm">
+									<option value="everyone" data-i18n="social.composer.replyPolicyEveryone"></option>
+									<option value="followers_7d" data-i18n="social.composer.replyPolicyFollowers7d"></option>
+									<option value="author_follows" data-i18n="social.composer.replyPolicyAuthorFollows"></option>
+								</select>
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.replyDisplayLabel"></span>
+								<select id="postReplyDisplay" class="select select-bordered select-sm">
+									<option value="all" data-i18n="social.composer.replyDisplayAll"></option>
+									<option value="featured_only" data-i18n="social.composer.replyDisplayFeaturedOnly"></option>
+								</select>
+							</label>
+							<label class="composer-field">
+								<span class="composer-field-label" data-i18n="social.composer.scheduleLabel"></span>
+								<input id="postPublishAt" type="datetime-local" class="input input-bordered input-sm" />
+							</label>
+							<label id="linkGroupField" class="composer-field hidden">
+								<span class="composer-field-label" data-i18n="social.groupRef.linking"></span>
+								<select id="linkGroupSelect" class="select select-bordered select-sm"></select>
+							</label>
+							<label id="postAlbumField" class="composer-field hidden">
+								<span class="composer-field-label" data-i18n="social.albums.pickerLabel"></span>
+								<select id="postAlbumSelect" class="select select-bordered select-sm" multiple size="3"></select>
+							</label>
+							<label class="composer-check composer-advanced-full">
+								<input id="postSensitiveMedia" type="checkbox" class="checkbox checkbox-sm" />
+								<span data-i18n="social.composer.sensitiveMedia"></span>
+							</label>
+						</div>
 						<div class="composer-toolbar">
 							<div class="composer-tools">
-								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" aria-label="Emoji">
+								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.emojiButton">
 									<span class="s-ic s-ic-emoji" aria-hidden="true"></span>
 								</button>
-								<label class="composer-tool-btn btn btn-ghost btn-sm btn-circle media-upload-btn" aria-label="Media">
+								<label class="composer-tool-btn btn btn-ghost btn-sm btn-circle media-upload-btn" data-i18n="social.composer.mediaButton">
 									<span class="s-ic s-ic-media" aria-hidden="true"></span>
 									<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
 								</label>
-								<select id="linkGroupSelect" class="select select-bordered select-sm composer-select hidden"></select>
-								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" aria-label="Poll">
+								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.pollButton">
 									<span class="s-ic s-ic-vote" aria-hidden="true"></span>
 								</button>
-					<div id="postVisibilityPicker" class="visibility-picker" data-visibility-picker>
+								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
+									<span class="s-ic s-ic-cw" aria-hidden="true"></span>
+								</button>
 								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility">
 									<option value="public" data-i18n="social.visibility.public"></option>
 									<option value="unlisted" data-i18n="social.visibility.unlisted"></option>
@@ -105,21 +148,10 @@
 									<option value="selected" data-i18n="social.visibility.selected"></option>
 									<option value="private" data-i18n="social.visibility.private"></option>
 								</select>
-								<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow hidden" data-i18n="social.visibility.allowPlaceholder" placeholder="" />
-								<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except" data-i18n="social.visibility.exceptPlaceholder" placeholder="" />
-							</div>
-							<select id="postAlbumSelect" class="select select-bordered select-sm composer-select composer-albums" multiple size="1" hidden></select>
-							<select id="postReplyPolicy" class="select select-bordered select-sm composer-select">
-								<option value="everyone" data-i18n="social.composer.replyPolicyEveryone"></option>
-								<option value="followers_7d" data-i18n="social.composer.replyPolicyFollowers7d"></option>
-								<option value="author_follows" data-i18n="social.composer.replyPolicyAuthorFollows"></option>
-							</select>
-							<select id="postReplyDisplay" class="select select-bordered select-sm composer-select">
-								<option value="all" data-i18n="social.composer.replyDisplayAll"></option>
-								<option value="featured_only" data-i18n="social.composer.replyDisplayFeaturedOnly"></option>
-							</select>
-							<input id="postPublishAt" type="datetime-local" class="composer-schedule-input" title="" data-i18n-title="social.composer.scheduleLabel" />
-							<input id="postLocale" type="hidden" value="zh-CN" />
+								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.advancedToggle">
+									<span class="s-ic s-ic-options" aria-hidden="true"></span>
+								</button>
+								<input id="postLocale" type="hidden" value="zh-CN" />
 							</div>
 							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
 						</div>

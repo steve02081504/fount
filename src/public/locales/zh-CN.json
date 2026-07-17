@@ -1166,9 +1166,6 @@
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
 			"composeButton": "发布",
-			"addMedia": "添加媒体",
-			"visibilityPublic": "公开",
-			"visibilityFollowers": "仅关注者",
 			"contentWarning": "内容警告（可选）",
 			"sensitiveMedia": "媒体敏感遮罩",
 			"mediaAlt": "图片描述（alt）",
@@ -1181,10 +1178,32 @@
 			"replyPolicyEveryone": "所有人可回复",
 			"replyPolicyFollowers7d": "7天以上关注者",
 			"replyPolicyAuthorFollows": "我关注的人",
+			"replyPolicyLabel": "谁可以回复",
 			"replyDisplayAll": "显示全部回复",
 			"replyDisplayFeaturedOnly": "仅精选回复",
+			"replyDisplayLabel": "回复展示",
 			"scheduleLabel": "定时发布",
-			"scheduleSuccess": "帖子已加入定时队列"
+			"scheduleSuccess": "帖子已加入定时队列",
+			"emojiButton": {
+				"title": "表情",
+				"aria-label": "表情"
+			},
+			"mediaButton": {
+				"title": "添加媒体",
+				"aria-label": "添加媒体"
+			},
+			"pollButton": {
+				"title": "发起投票",
+				"aria-label": "发起投票"
+			},
+			"cwToggle": {
+				"title": "内容警告",
+				"aria-label": "内容警告"
+			},
+			"advancedToggle": {
+				"title": "更多选项",
+				"aria-label": "更多选项"
+			}
 		},
 		"visibility": {
 			"label": "可见范围",
@@ -1195,7 +1214,9 @@
 			"followers30d": "关注满 30 天可见",
 			"selected": "指定人员可见",
 			"private": "仅自己可见",
+			"allowLabel": "可见人员",
 			"allowPlaceholder": "可见人员 entityHash，空格或逗号分隔",
+			"exceptLabel": "排除人员",
 			"exceptPlaceholder": "不给谁看（可选）"
 		},
 		"albums": {

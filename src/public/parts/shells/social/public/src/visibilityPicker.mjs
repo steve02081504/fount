@@ -100,16 +100,23 @@ export function bindVisibilityPicker(root) {
 	const select = picker.querySelector('[data-visibility-select]')
 	if (!(select instanceof HTMLSelectElement)) return
 	/**
-	 *
+	 * 输入框可能被 [data-visibility-field] 标签包裹（composer 高级面板），此时按整行显隐。
+	 * @param {HTMLElement | null} el 输入节点
+	 * @returns {HTMLElement | null} 字段容器或原节点
+	 */
+	const fieldOf = el => el?.closest('[data-visibility-field]') || el
+	/**
+	 * 按当前可见性档位同步 allow / except 显隐。
+	 * @returns {void}
 	 */
 	const sync = () => {
 		const value = select.value
 		const allow = picker.querySelector('[data-visibility-allow]')
 		const except = picker.querySelector('[data-visibility-except]')
 		if (allow instanceof HTMLElement)
-			allow.classList.toggle('hidden', value !== 'selected')
+			fieldOf(allow).classList.toggle('hidden', value !== 'selected')
 		if (except instanceof HTMLElement)
-			except.classList.toggle('hidden', !['public', 'unlisted', 'followers', 'followers_7d', 'followers_30d'].includes(value))
+			fieldOf(except).classList.toggle('hidden', !['public', 'unlisted', 'followers', 'followers_7d', 'followers_30d'].includes(value))
 	}
 	select.addEventListener('change', sync)
 	sync()

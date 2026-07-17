@@ -1,6 +1,8 @@
 import {
 	refreshGroupRefPreview,
 	refreshQuotePreview,
+	setComposerAdvancedOpen,
+	setComposerContentWarningOpen,
 	syncGroupRefInComposer,
 } from '../composer.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
@@ -45,7 +47,12 @@ export async function handleComposerFeedClick(target) {
 	if (target.closest('#pollComposerToggle')) {
 		const panel = document.getElementById('pollComposerPanel')
 		panel?.classList.toggle('hidden')
+		document.getElementById('pollComposerToggle')?.classList.toggle('active', !panel?.classList.contains('hidden'))
 	}
+	if (target.closest('#composerCwToggle'))
+		setComposerContentWarningOpen()
+	if (target.closest('#composerAdvancedToggle'))
+		setComposerAdvancedOpen()
 	if (target.closest('#pollComposerApply')) {
 		const optionsRaw = document.getElementById('pollComposerOptions')?.value || ''
 		const options = optionsRaw.split('\n').map(line => line.trim()).filter(Boolean)
@@ -55,6 +62,7 @@ export async function handleComposerFeedClick(target) {
 			? { options, multi, deadline: deadlineRaw ? new Date(deadlineRaw).toISOString() : null }
 			: null
 		document.getElementById('pollComposerPanel')?.classList.add('hidden')
+		document.getElementById('pollComposerToggle')?.classList.toggle('active', Boolean(socialState.pendingPoll))
 	}
 	if (target.closest('#notificationsMarkAllButton'))
 		void markNotificationsSeen()

@@ -110,6 +110,33 @@ test.describe('Social composer', () => {
 		await expect(card).toHaveAttribute('data-visibility', 'followers')
 	})
 
+	test('content warning toggle reveals and clears input', async ({ page }) => {
+		const cwInput = page.locator('#postContentWarning')
+		await expect(cwInput).toBeHidden()
+		await page.locator('#composerCwToggle').click()
+		await expect(cwInput).toBeVisible()
+		await cwInput.fill('spoiler')
+		await page.locator('#composerCwToggle').click()
+		await expect(cwInput).toBeHidden()
+		await page.locator('#composerCwToggle').click()
+		await expect(cwInput).toHaveValue('')
+	})
+
+	test('advanced panel holds reply policy and opens on selected visibility', async ({ page }) => {
+		const panel = page.locator('#composerAdvancedPanel')
+		await expect(panel).toBeHidden()
+		await page.locator('#composerAdvancedToggle').click()
+		await expect(panel).toBeVisible()
+		await expect(page.locator('#postReplyPolicy')).toBeVisible()
+		await page.locator('#composerAdvancedToggle').click()
+		await expect(panel).toBeHidden()
+		// 选择「指定人员可见」时自动展开高级面板并显示 allow 输入
+		await page.locator('#postVisibility').selectOption('selected')
+		await expect(panel).toBeVisible()
+		await expect(page.locator('[data-visibility-allow]')).toBeVisible()
+		await page.locator('#postVisibility').selectOption('public')
+	})
+
 	test('emoji picker opens from composer', async ({ page }) => {
 		await page.locator('#emojiPickButton').click()
 		await expect(page.locator('#fount-shared-emoji-picker')).toBeVisible({ timeout: 20_000 })
@@ -147,6 +174,7 @@ test.describe('Social composer', () => {
 	test('group ref picker links chat group in post', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await createTestGroup(baseUrl, apiKey)
 		await openSocialHome(page, baseUrl)
+		await page.locator('#composerAdvancedToggle').click()
 		const groupSelect = page.locator('#linkGroupSelect')
 		await expect(groupSelect).toBeVisible({ timeout: 30_000 })
 		const optionValue = `${groupId}\t${channelId}`

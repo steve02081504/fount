@@ -85,17 +85,17 @@ export function syncGroupRefInComposer(ref) {
  */
 export async function loadAlbumPickerOptions() {
 	const select = document.getElementById('postAlbumSelect')
+	const field = document.getElementById('postAlbumField')
 	if (!(select instanceof HTMLSelectElement)) return
 	select.replaceChildren()
 	try {
 		const data = await socialApi('/albums')
 		const albums = (data.albums || []).filter(album => !album.virtual)
 		if (!albums.length) {
-			select.hidden = true
+			field?.classList.add('hidden')
 			return
 		}
-		select.hidden = false
-		select.setAttribute('aria-label', geti18n('social.albums.pickerLabel'))
+		field?.classList.remove('hidden')
 		for (const album of albums) {
 			const option = document.createElement('option')
 			option.value = album.albumId
@@ -104,17 +104,51 @@ export async function loadAlbumPickerOptions() {
 		}
 	}
 	catch {
-		select.hidden = true
+		field?.classList.add('hidden')
 	}
 }
 
 /**
- * 绑定 composer 可见性 picker。
+ * 绑定 composer 可见性 picker（选择器在工具栏，allow/except 输入在高级面板）。
+ * 选择「指定成员可见」时自动展开高级面板，让 allow 输入可见。
  * @returns {void}
  */
 export function initComposerVisibilityPicker() {
-	const root = document.getElementById('postVisibilityPicker')
-	if (root) bindVisibilityPicker(root)
+	const root = document.getElementById('composer')
+	if (!root) return
+	bindVisibilityPicker(root)
+	document.getElementById('postVisibility')?.addEventListener('change', event => {
+		if (event.target.value === 'selected')
+			setComposerAdvancedOpen(true)
+	})
+}
+
+/**
+ * 展开/收起 composer 高级选项面板并同步按钮状态。
+ * @param {boolean} [open] 指定目标状态；缺省为切换
+ * @returns {void}
+ */
+export function setComposerAdvancedOpen(open) {
+	const panel = document.getElementById('composerAdvancedPanel')
+	if (!panel) return
+	const next = open ?? panel.classList.contains('hidden')
+	panel.classList.toggle('hidden', !next)
+	document.getElementById('composerAdvancedToggle')?.classList.toggle('active', next)
+}
+
+/**
+ * 展开/收起内容警告输入框；收起时清空内容。
+ * @param {boolean} [open] 指定目标状态；缺省为切换
+ * @returns {void}
+ */
+export function setComposerContentWarningOpen(open) {
+	const input = document.getElementById('postContentWarning')
+	if (!(input instanceof HTMLInputElement)) return
+	const next = open ?? input.classList.contains('hidden')
+	input.classList.toggle('hidden', !next)
+	document.getElementById('composerCwToggle')?.classList.toggle('active', next)
+	if (next) input.focus()
+	else input.value = ''
 }
 
 /**
@@ -123,21 +157,22 @@ export function initComposerVisibilityPicker() {
  */
 export async function loadGroupPickerOptions() {
 	const select = document.getElementById('linkGroupSelect')
+	const field = document.getElementById('linkGroupField')
 	if (!select) return
 	select.innerHTML = `<option value="">${geti18n('social.groupRef.pickPlaceholder')}</option>`
 	try {
 		const response = await fetch('/api/parts/shells:chat/groups/', { credentials: 'include' })
 		if (!response.ok) {
-			select.classList.add('hidden')
+			field?.classList.add('hidden')
 			return
 		}
 		const rows = await response.json()
 		const groups = Array.isArray(rows) ? rows : []
 		if (!groups.length) {
-			select.classList.add('hidden')
+			field?.classList.add('hidden')
 			return
 		}
-		select.classList.remove('hidden')
+		field?.classList.remove('hidden')
 		for (const row of groups) {
 			const groupId = String(row.groupId || '').trim()
 			if (!groupId) continue
@@ -150,7 +185,7 @@ export async function loadGroupPickerOptions() {
 		}
 	}
 	catch {
-		select.classList.add('hidden')
+		field?.classList.add('hidden')
 	}
 }
 
@@ -165,7 +200,7 @@ export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
 		? sensitiveEl.checked
 		: Boolean(contentWarning)
-	const visibilityDraft = readVisibilityPicker(document.getElementById('postVisibilityPicker'))
+	const visibilityDraft = readVisibilityPicker(document.getElementById('composer'))
 	const albumSelect = document.getElementById('postAlbumSelect')
 	const albumIds = albumSelect instanceof HTMLSelectElement
 		? [...albumSelect.selectedOptions].map(opt => opt.value).filter(id => id && id !== 'default')
@@ -326,9 +361,7 @@ export async function publishPost() {
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''
-	const cwInput = document.getElementById('postContentWarning')
-	if (cwInput instanceof HTMLInputElement)
-		cwInput.value = ''
+	setComposerContentWarningOpen(false)
 	const sensitiveEl = document.getElementById('postSensitiveMedia')
 	if (sensitiveEl instanceof HTMLInputElement)
 		sensitiveEl.checked = false
@@ -341,6 +374,7 @@ export async function publishPost() {
 	socialState.pendingQuoteRef = null
 	socialState.pendingGroupRef = null
 	socialState.pendingPoll = null
+	document.getElementById('pollComposerToggle')?.classList.remove('active')
 	refreshMediaPreview()
 	await refreshQuotePreview()
 	void refreshGroupRefPreview()
