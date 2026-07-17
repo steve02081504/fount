@@ -20,6 +20,17 @@ export function getHubAvSession() {
 }
 
 /**
+ * 底层会话收尾时复位门面（勿再 leave，避免递归）。
+ * @returns {void}
+ */
+function onStreamingSessionClosed() {
+	activeAvSession = null
+	activeChannelId = null
+	const toolbar = document.getElementById('hub-streaming-av-toolbar')
+	if (toolbar) setHubAvToolbarInCall(toolbar, false)
+}
+
+/**
  * 离开当前 WebCodecs 会话并释放媒体轨道。
  * @returns {Promise<void>}
  */
@@ -28,6 +39,8 @@ export async function leaveHubAvSession() {
 	activeAvSession = null
 	activeChannelId = null
 	await leaveCodecsAvRoom()
+	const toolbar = document.getElementById('hub-streaming-av-toolbar')
+	if (toolbar) setHubAvToolbarInCall(toolbar, false)
 }
 
 /**
@@ -45,6 +58,9 @@ export async function joinHubAvSession(options) {
 	const { groupId, channelId, presetKey, avGrid, videoLocal = null, onPeerCount } = options
 	if (activeAvSession && activeChannelId === channelId) return
 	await leaveHubAvSession()
+	// 若有文本频道通话占用底层会话，先走 call 门面挂断以复位 dock
+	const { isInChannelCall, leaveChannelCall } = await import('./call.mjs')
+	if (isInChannelCall()) await leaveChannelCall()
 	try {
 		activeAvSession = await joinCodecsAvRoom({
 			groupId,
@@ -53,11 +69,14 @@ export async function joinHubAvSession(options) {
 			avGrid,
 			videoLocal,
 			onPeerCount,
+			onClosed: onStreamingSessionClosed,
 		})
 		activeChannelId = channelId
 	}
 	catch (error) {
 		console.error('hub av join failed:', error)
+		activeAvSession = null
+		activeChannelId = null
 		const errorMessage = error?.message || String(error)
 		if (errorMessage.includes('WebCodecs'))
 			showToastI18n('error', 'chat.hub.streamAvNoCodecs')

@@ -24,6 +24,8 @@ import {
 	unpackAvFrame,
 } from '../shared/avRelayClient.mjs'
 import { CODECS_PRESETS } from '../shared/avRelayPresets.mjs'
+import { avatarColor } from '../shared/hashAvatar.mjs'
+import { mountVoiceRing } from '../shared/voiceRing.mjs'
 
 /**
  * Hub 流媒体频道：WebCodecs + av-relay 二进制帧中继。
@@ -36,6 +38,8 @@ const KEY_MS = 2000
 
 /** @type {CodecsAvSession | null} */
 let activeSession = null
+/** @type {Promise<CodecsAvSession> | null} */
+let joinInFlight = null
 
 /**
  * @typedef {object} CodecsAvSession
@@ -108,24 +112,47 @@ function scheduleAudioPlayback(audioContext, audioData, peer, levelsMap = null, 
  * @param {keyof typeof CODECS_PRESETS} [options.presetKey] 画质预设
  * @param {HTMLElement} options.avGrid 远端 tile 容器
  * @param {HTMLVideoElement | null} [options.videoLocal] 本地预览
- * @param {(count: number) => void} [options.onPeerCount] 在线人数
+ * @param {HTMLElement | null} [options.voiceLocalHost] 本地纯音频声波宿主
+ * @param {(count: number) => void} [options.onPeerCount] 在线人数（连接数；优先用 onRoster）
  * @param {string} [options.wsUrl] 自定义 WS（通话走 `/call/…`）
  * @param {(peers: { entityHash: string, senderId: string }[]) => void} [options.onRoster] roster 回调
  * @param {(senderId: string, entityHash: string | null) => string} [options.labelForPeer] tile 标签
+ * @param {(tile: HTMLElement, senderId: string, entityHash: string | null) => void} [options.onPeerTile] 新 tile 创建后
+ * @param {() => void} [options.onClosed] 会话收尾（主动/断连）后回调
  * @param {'av' | 'audio' | 'video'} [options.media] 仅音/仅画/音画
  * @returns {Promise<CodecsAvSession>} 会话句柄
  */
 export async function joinCodecsAvRoom(options) {
+	if (joinInFlight) await joinInFlight.catch(() => { })
+
+	const run = doJoinCodecsAvRoom(options)
+	joinInFlight = run
+	try {
+		return await run
+	}
+	finally {
+		if (joinInFlight === run) joinInFlight = null
+	}
+}
+
+/**
+ * @param {object} options 同 {@link joinCodecsAvRoom}
+ * @returns {Promise<CodecsAvSession>} 会话句柄
+ */
+async function doJoinCodecsAvRoom(options) {
 	const {
 		groupId,
 		channelId,
 		presetKey = 'med',
 		avGrid,
 		videoLocal = null,
+		voiceLocalHost = null,
 		onPeerCount,
 		wsUrl = null,
 		onRoster = null,
 		labelForPeer = null,
+		onPeerTile = null,
+		onClosed = null,
 		media: mediaMode = 'av',
 	} = options
 
@@ -136,6 +163,7 @@ export async function joinCodecsAvRoom(options) {
 
 	const wantsVideo = mediaMode !== 'audio'
 	const wantsAudio = mediaMode !== 'video'
+	const audioOnlyUi = mediaMode === 'audio'
 
 	await leaveCodecsAvRoom()
 
@@ -160,7 +188,46 @@ export async function joinCodecsAvRoom(options) {
 	const peers = new Map()
 	/** @type {Map<string, Promise<object>>} */
 	const peersCreating = new Map()
+	/** @type {{ destroy: () => void } | null} */
+	let localVoiceRing = null
 	ws.binaryType = 'arraybuffer'
+
+	/**
+	 * @param {string} peerKey tile key
+	 * @returns {void}
+	 */
+	const destroyPeer = peerKey => {
+		const pending = peersCreating.get(peerKey)
+		if (pending) {
+			peersCreating.delete(peerKey)
+			void pending.then(peer => {
+				if (peers.get(peerKey) === peer) destroyPeer(peerKey)
+			}).catch(() => { })
+		}
+		const peer = peers.get(peerKey)
+		if (!peer) return
+		safeClose(peer.videoDecoder)
+		safeClose(peer.audioDecoder)
+		safeClose(peer.audioCtx)
+		peer.voiceRing?.destroy?.()
+		peer.tile?.remove()
+		peers.delete(peerKey)
+		const sid = peerKey.replace(/:screen$/, '')
+		peerAudioLevels.delete(sid)
+	}
+
+	/**
+	 * @param {string} senderIdHex 远端 senderId
+	 * @returns {void}
+	 */
+	const destroyPeersForSender = senderIdHex => {
+		const sid = String(senderIdHex || '').toLowerCase()
+		if (!sid) return
+		destroyPeer(sid)
+		destroyPeer(`${sid}:screen`)
+		senderToEntity.delete(sid)
+		remoteMeta.delete(sid)
+	}
 
 	/**
 	 * @param {string} senderIdHex 远端 senderId（32 位 hex）
@@ -173,11 +240,6 @@ export async function joinCodecsAvRoom(options) {
 		if (peersCreating.has(peerKey)) return peersCreating.get(peerKey)
 
 		const promise = (async () => {
-			const canvas = document.createElement('canvas')
-			canvas.width = preset.w
-			canvas.height = preset.h
-			const canvas2d = canvas.getContext('2d')
-
 			const entityHash = senderToEntity.get(senderIdHex) || null
 			const defaultLabel = isScreen
 				? `🖥 …${senderIdHex.slice(-8)}`
@@ -190,8 +252,61 @@ export async function joinCodecsAvRoom(options) {
 				label,
 			})
 			if (entityHash) tile.dataset.entityHash = entityHash
-			tile.querySelector('.hub-streaming-av-canvas-host')?.appendChild(canvas)
+			const canvasHost = tile.querySelector('.hub-streaming-av-canvas-host')
+			const voiceHost = tile.querySelector('.hub-streaming-av-voice-host')
+			const peerMeta = remoteMeta.get(senderIdHex)
+			const peerAudioOnly = !isScreen && (audioOnlyUi || (peerMeta && !peerMeta.video))
+
+			/** @type {HTMLCanvasElement | null} */
+			let canvas = null
+			/** @type {CanvasRenderingContext2D | null} */
+			let canvas2d = null
+			/** @type {{ destroy: () => void } | null} */
+			let voiceRing = null
+
+			if (peerAudioOnly && voiceHost instanceof HTMLElement) {
+				canvasHost?.setAttribute('hidden', '')
+				voiceHost.removeAttribute('hidden')
+				tile.classList.add('is-audio-only')
+				voiceRing = mountVoiceRing({
+					container: voiceHost,
+					avatarUrl: '',
+					avatarSeed: entityHash || senderIdHex,
+					avatarLabel: label,
+					themeColor: avatarColor(entityHash || senderIdHex),
+					/**
+					 * @returns {number[]} 电平
+					 */
+					getLevels: () => {
+						const entry = peerAudioLevels.get(senderIdHex)
+						if (entry?.analyser) {
+							const data = new Uint8Array(entry.analyser.frequencyBinCount)
+							entry.analyser.getByteFrequencyData(data)
+							const bands = 16
+							const out = []
+							const step = Math.max(1, Math.floor(data.length / bands))
+							for (let i = 0; i < bands; i++) {
+								let sum = 0
+								for (let j = i * step; j < (i + 1) * step && j < data.length; j++) sum += data[j]
+								out.push((sum / step) / 255)
+							}
+							return out
+						}
+						return Array.from({ length: 16 }, () => 0.06)
+					},
+				})
+			}
+			else {
+				voiceHost?.setAttribute('hidden', '')
+				canvas = document.createElement('canvas')
+				canvas.width = preset.w
+				canvas.height = preset.h
+				canvas2d = canvas.getContext('2d')
+				canvasHost?.appendChild(canvas)
+			}
+
 			avGrid.appendChild(tile)
+			onPeerTile?.(tile, senderIdHex, entityHash)
 
 			const audioCtx = isScreen ? null : new AudioContext({ sampleRate: AUDIO_SAMPLE_RATE })
 			/** @type {object} */
@@ -206,24 +321,27 @@ export async function joinCodecsAvRoom(options) {
 				audioHasKey: false,
 				audioRxSeq: 0,
 				audioNextTime: 0,
+				voiceRing,
 			}
 
-			peer.videoDecoder = new VideoDecoder({
-				/**
-				 * @param {VideoFrame} frame 解码帧
-				 * @returns {void}
-				 */
-				output: frame => {
-					canvas2d.drawImage(frame, 0, 0, preset.w, preset.h)
-					frame.close()
-				},
-				/**
-				 * @param {Error} error 解码错误
-				 * @returns {void}
-				 */
-				error: error => console.error('VideoDecoder:', error),
-			})
-			peer.videoDecoder.configure({ codec: preset.codec, codedWidth: preset.w, codedHeight: preset.h })
+			if (canvas2d) {
+				peer.videoDecoder = new VideoDecoder({
+					/**
+					 * @param {VideoFrame} frame 解码帧
+					 * @returns {void}
+					 */
+					output: frame => {
+						canvas2d.drawImage(frame, 0, 0, preset.w, preset.h)
+						frame.close()
+					},
+					/**
+					 * @param {Error} error 解码错误
+					 * @returns {void}
+					 */
+					error: error => console.error('VideoDecoder:', error),
+				})
+				peer.videoDecoder.configure({ codec: preset.codec, codedWidth: preset.w, codedHeight: preset.h })
+			}
 
 			if (!isScreen) {
 				peer.audioDecoder = new AudioDecoder({
@@ -282,6 +400,7 @@ export async function joinCodecsAvRoom(options) {
 		}
 
 		if (frame.frameType !== FRAME_VIDEO && frame.frameType !== FRAME_SCREEN) return
+		if (!peer.videoDecoder) return
 		if (!frame.isKey && !peer.videoHasKey) return
 		if (frame.isKey) peer.videoHasKey = true
 		if (peer.videoDecoder.decodeQueueSize > 10) return
@@ -291,6 +410,22 @@ export async function joinCodecsAvRoom(options) {
 			timestamp: peer.videoRxSeq * Math.round(1_000_000 / preset.fps),
 			data: frame.data,
 		}))
+	}
+
+	/**
+	 * roster 中仍存活的 senderId（已 hello 的）。
+	 * @param {{ entityHash: string, senderId: string }[]} rosterPeers roster
+	 * @returns {void}
+	 */
+	const pruneMissingPeers = rosterPeers => {
+		const live = new Set(
+			rosterPeers.map(p => String(p.senderId || '').toLowerCase()).filter(Boolean),
+		)
+		if (!live.size) return
+		for (const key of [...peers.keys()]) {
+			const sid = key.replace(/:screen$/, '')
+			if (sid && !live.has(sid)) destroyPeersForSender(sid)
+		}
 	}
 
 	/**
@@ -311,12 +446,16 @@ export async function joinCodecsAvRoom(options) {
 				const eh = String(peer.entityHash || '').toLowerCase()
 				if (sid && eh) senderToEntity.set(sid, eh)
 			}
+			pruneMissingPeers(wireMessage.peers)
 			onRoster?.(wireMessage.peers)
 		}
 		if (wireMessage.type === 'publish_meta')
 			remoteMeta.set(String(wireMessage.senderId || '').toLowerCase(), wireMessage)
-		if (wireMessage.type === 'publish_meta_revoke')
-			remoteMeta.delete(String(wireMessage.senderId || '').toLowerCase())
+		if (wireMessage.type === 'publish_meta_revoke') {
+			const sid = String(wireMessage.senderId || '').toLowerCase()
+			remoteMeta.delete(sid)
+			destroyPeersForSender(sid)
+		}
 	}
 
 	await new Promise((res, rej) => {
@@ -343,9 +482,10 @@ export async function joinCodecsAvRoom(options) {
 	let stopScreen = () => { }
 	let mediaStream = null
 	let screenStream = null
-	let videoEnabled = true
+	let videoEnabled = wantsVideo
 	let audioMuted = false
 	let screenSharing = false
+	let closed = false
 
 	try {
 		stopCapture = await startCodecsCapture({
@@ -355,7 +495,7 @@ export async function joinCodecsAvRoom(options) {
 			t0,
 			videoSeqRef,
 			audioSeqRef,
-			videoLocal,
+			videoLocal: audioOnlyUi ? null : videoLocal,
 			wantsVideo,
 			wantsAudio,
 			audioGate,
@@ -379,27 +519,57 @@ export async function joinCodecsAvRoom(options) {
 		throw error
 	}
 
+	if (audioOnlyUi && voiceLocalHost instanceof HTMLElement) {
+		if (videoLocal) {
+			videoLocal.hidden = true
+			videoLocal.srcObject = null
+		}
+		voiceLocalHost.hidden = false
+		localVoiceRing = mountVoiceRing({
+			container: voiceLocalHost,
+			avatarUrl: '',
+			avatarSeed: 'local',
+			avatarLabel: 'you',
+			themeColor: avatarColor('local'),
+			/**
+			 * @returns {number[]} 电平
+			 */
+			getLevels: () => {
+				const lvl = audioGate.getLevel()
+				return Array.from({ length: 16 }, (_, i) => lvl * (0.6 + 0.4 * Math.sin(i)))
+			},
+		})
+	}
+	else if (voiceLocalHost instanceof HTMLElement)
+		voiceLocalHost.hidden = true
+
 	/** @type {CodecsAvSession} */
 	const session = {
 		/**
 		 * @returns {Promise<void>}
 		 */
 		close: async () => {
-			if (activeSession !== session) return
-			activeSession = null
+			if (closed) return
+			closed = true
+			if (activeSession === session) activeSession = null
 			stopCapture()
 			stopScreen()
 			mediaStream?.getTracks().forEach(t => t.stop())
 			screenStream?.getTracks().forEach(t => t.stop())
-			if (videoLocal) videoLocal.srcObject = null
-			ws.close()
-			for (const peer of peers.values()) {
-				safeClose(peer.videoDecoder)
-				safeClose(peer.audioDecoder)
-				safeClose(peer.audioCtx)
-				peer.tile.remove()
+			if (videoLocal) {
+				videoLocal.srcObject = null
+				videoLocal.hidden = false
 			}
+			localVoiceRing?.destroy?.()
+			localVoiceRing = null
+			if (voiceLocalHost instanceof HTMLElement) voiceLocalHost.hidden = true
+			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)
+				ws.close()
+			for (const key of [...peers.keys()]) destroyPeer(key)
 			peers.clear()
+			peersCreating.clear()
+			try { onClosed?.() }
+			catch { /* ignore */ }
 		},
 		/**
 		 * @returns {boolean} 是否静音
@@ -414,6 +584,7 @@ export async function joinCodecsAvRoom(options) {
 		 * @returns {boolean} 是否已关摄像头
 		 */
 		toggleVideo: () => {
+			if (!wantsVideo) return true
 			videoEnabled = !videoEnabled
 			const track = mediaStream?.getVideoTracks()[0]
 			if (track) track.enabled = videoEnabled
@@ -487,6 +658,10 @@ export async function joinCodecsAvRoom(options) {
 		getMediaMode: () => mediaMode,
 	}
 
+	/**
+	 *
+	 */
+	ws.onclose = () => { void session.close() }
 	activeSession = session
 	return session
 }
@@ -496,9 +671,8 @@ export async function joinCodecsAvRoom(options) {
  * @returns {Promise<void>}
  */
 export async function leaveCodecsAvRoom() {
-	if (!activeSession) return
 	const session = activeSession
-	activeSession = null
+	if (!session) return
 	await session.close()
 }
 
@@ -528,6 +702,7 @@ async function startCodecsCapture(options) {
 	if (videoLocal) {
 		videoLocal.srcObject = stream
 		videoLocal.muted = true
+		videoLocal.hidden = false
 	}
 
 	const stopVideo = wantsVideo ? await startVideoEncoder({

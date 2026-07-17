@@ -2,9 +2,13 @@
  * 【文件】public/hub/call.mjs
  * 【职责】文本频道群组通话 dock：加入/离开、静音/视频/屏幕共享、人数徽标。
  */
+import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { buildChatCallWsUrl } from '../shared/avRelayClient.mjs'
+import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'
 import { hubStore } from './core/state.mjs'
@@ -14,6 +18,24 @@ import { fetchUserProfile } from './presence.mjs'
 let callSession = null
 /** @type {string | null} */
 let callChannelKey = null
+/** @type {string | null} */
+let callGroupId = null
+/** @type {string | null} */
+let callChannelId = null
+/** @type {Promise<void> | null} */
+let joinInFlight = null
+/** 递增以作废进行中的 join（挂断 / 重入） */
+let joinGeneration = 0
+
+const CALL_ICONS = {
+	mute: 'mdi/microphone',
+	unmute: 'mdi/microphone-off',
+	video: 'mdi/video',
+	videoOff: 'mdi/video-off',
+	screen: 'mdi/monitor-share',
+	screenOff: 'mdi/monitor-off',
+	hangup: 'mdi/phone-hangup',
+}
 
 /**
  * @returns {boolean} 是否在通话中
@@ -23,17 +45,66 @@ export function isInChannelCall() {
 }
 
 /**
+ * @returns {{ groupId: string, channelId: string } | null} 当前通话频道
+ */
+export function getActiveCallChannel() {
+	if (!callSession || !callGroupId || !callChannelId) return null
+	return { groupId: callGroupId, channelId: callChannelId }
+}
+
+/**
+ * 清掉门面引用并关闭底层媒体（不递增 generation）。
+ * @returns {Promise<void>}
+ */
+async function clearCallMedia() {
+	callSession = null
+	callChannelKey = null
+	callGroupId = null
+	callChannelId = null
+	await leaveCodecsAvRoom()
+}
+
+/**
  * @returns {Promise<void>}
  */
 export async function leaveChannelCall() {
-	if (!callSession) return
-	callSession = null
-	callChannelKey = null
-	await leaveCodecsAvRoom()
+	joinGeneration++
+	await clearCallMedia()
+	resetCallUi()
+}
+
+/**
+ * @returns {void}
+ */
+function resetCallUi() {
 	setCallDockVisible(false)
 	setCallButtonActive(false)
 	updateCallBadge(0)
+	setPeerCountLabel(document.getElementById('hub-call-peer-label'), 0)
 	void refreshCallStatusBadge()
+}
+
+/**
+ * @param {Element | null} peerLabel 人数标签
+ * @param {number} count 去重人数
+ * @returns {void}
+ */
+function setPeerCountLabel(peerLabel, count) {
+	if (!(peerLabel instanceof HTMLElement)) return
+	peerLabel.dataset.n = String(count)
+	peerLabel.dataset.i18n = 'chat.hub.callParticipants'
+}
+
+/**
+ * 底层会话被关掉时复位门面（勿再调 leaveCodecsAvRoom，避免递归）。
+ * @returns {void}
+ */
+function onCallSessionClosed() {
+	callSession = null
+	callChannelKey = null
+	callGroupId = null
+	callChannelId = null
+	resetCallUi()
 }
 
 /**
@@ -45,30 +116,50 @@ export async function leaveChannelCall() {
 export async function joinChannelCall(groupId, channelId, options = {}) {
 	const key = `${groupId}:${channelId}`
 	if (callSession && callChannelKey === key) return
-	await leaveChannelCall()
+	if (joinInFlight) await joinInFlight.catch(() => { })
+	if (callSession && callChannelKey === key) return
 
-	const dock = ensureCallDock()
+	const run = doJoinChannelCall(groupId, channelId, options)
+	joinInFlight = run
+	try {
+		await run
+	}
+	finally {
+		if (joinInFlight === run) joinInFlight = null
+	}
+}
+
+/**
+ * @param {string} groupId 群
+ * @param {string} channelId 频道
+ * @param {{ media?: 'av' | 'audio' | 'video' }} [options] 媒体模式
+ * @returns {Promise<void>}
+ */
+async function doJoinChannelCall(groupId, channelId, options = {}) {
+	const gen = ++joinGeneration
+	await clearCallMedia()
+
+	const dock = await ensureCallDock()
+	if (gen !== joinGeneration) return
 	const avGrid = dock.querySelector('#hub-call-av-grid')
 	const videoLocal = dock.querySelector('#hub-call-local-video')
+	const voiceLocal = dock.querySelector('#hub-call-local-voice')
 	const peerLabel = dock.querySelector('#hub-call-peer-label')
+	const channelName = hubStore.context.currentState?.channels?.[channelId]?.name || channelId
+	updateDockChannelLabel(dock, channelName)
 	setCallDockVisible(true)
 
 	try {
-		callSession = await joinCodecsAvRoom({
+		const session = await joinCodecsAvRoom({
 			groupId,
 			channelId,
 			presetKey: 'med',
 			media: options.media || 'av',
 			avGrid,
 			videoLocal,
+			voiceLocalHost: voiceLocal,
 			wsUrl: buildChatCallWsUrl(groupId, channelId),
-			/**
-			 * @param {number} count peer 数
-			 * @returns {void}
-			 */
-			onPeerCount: count => {
-				if (peerLabel) peerLabel.textContent = String(count)
-			},
+			onClosed: onCallSessionClosed,
 			/**
 			 * @param {{ entityHash: string, senderId: string }[]} peers roster
 			 * @returns {void}
@@ -77,7 +168,9 @@ export async function joinChannelCall(groupId, channelId, options = {}) {
 				const unique = new Set(
 					peers.map(p => String(p.entityHash || '').toLowerCase()).filter(Boolean),
 				)
-				updateCallBadge(unique.size)
+				const count = unique.size
+				setPeerCountLabel(peerLabel, count)
+				updateCallBadge(count)
 			},
 			/**
 			 * @param {string} _senderId sender hex
@@ -91,15 +184,47 @@ export async function joinChannelCall(groupId, channelId, options = {}) {
 					fallbackLabel: entityHash.slice(0, 8),
 				})
 			},
+			/**
+			 * @param {HTMLElement} tile tile
+			 * @param {string} _senderId sender
+			 * @param {string | null} entityHash 实体
+			 * @returns {void}
+			 */
+			onPeerTile: (tile, _senderId, entityHash) => {
+				void hydratePeerTile(tile, entityHash)
+			},
 		})
-		callChannelKey = key
-		setCallButtonActive(true)
+		if (gen !== joinGeneration) {
+			await session.close()
+			return
+		}
+		callSession = session
+		callChannelKey = `${groupId}:${channelId}`
+		callGroupId = groupId
+		callChannelId = channelId
+		refreshCallButtonActiveForCurrentChannel()
 		wireCallDockControls(dock)
-		void hydrateCallTiles(avGrid)
+		syncDockJumpVisibility(dock)
+		const localTile = avGrid?.querySelector('[data-peer-id="local"]')
+		if (options.media === 'audio') {
+			setCallControlHidden(dock, 'video', true)
+			localTile?.classList.add('is-audio-only')
+			void hydrateLocalVoiceAvatar(voiceLocal)
+		}
+		else {
+			setCallControlHidden(dock, 'video', false)
+			localTile?.classList.remove('is-audio-only')
+		}
 	}
 	catch (error) {
+		if (gen !== joinGeneration) return
 		console.error('call join failed:', error)
+		callSession = null
+		callChannelKey = null
+		callGroupId = null
+		callChannelId = null
 		setCallDockVisible(false)
+		setCallButtonActive(false)
 		const errorText = error?.message || String(error)
 		if (errorText.includes('WebCodecs'))
 			showToastI18n('error', 'chat.hub.streamAvNoCodecs')
@@ -109,57 +234,145 @@ export async function joinChannelCall(groupId, channelId, options = {}) {
 }
 
 /**
- * @param {HTMLElement} grid tile 容器
+ * @param {HTMLElement} tile tile
+ * @param {string | null} entityHash 实体
  * @returns {Promise<void>}
  */
-async function hydrateCallTiles(grid) {
-	for (const tile of grid.querySelectorAll('[data-entity-hash]')) {
-		const entityHash = tile.dataset.entityHash
-		if (!entityHash) continue
-		const profile = await fetchUserProfile(entityHash).catch(() => null)
-		const label = tile.querySelector('.hub-streaming-av-label, [data-av-label]')
-		if (label && profile)
-			label.textContent = resolveDisplayName({
-				entityHash,
-				profileName: profile.name,
-				fallbackLabel: entityHash.slice(0, 8),
-			})
-	}
+async function hydratePeerTile(tile, entityHash) {
+	if (!entityHash) return
+	tile.dataset.entityHash = entityHash
+	const profile = await fetchUserProfile(entityHash).catch(() => null)
+	const labelEl = tile.querySelector('[data-av-label], .hub-streaming-av-peer-label-inner')
+	const displayName = resolveDisplayName({
+		entityHash,
+		profileName: profile?.name,
+		fallbackLabel: entityHash.slice(0, 8),
+	})
+	if (labelEl) labelEl.textContent = displayName
+	await applyVoiceRingAvatar(tile.querySelector('.hub-streaming-av-voice-host'), {
+		entityHash,
+		profile,
+		label: displayName,
+	})
 }
 
 /**
- * @returns {HTMLElement} dock
+ * @param {HTMLElement | null} voiceLocal 本地声波宿主
+ * @returns {Promise<void>}
  */
-function ensureCallDock() {
+async function hydrateLocalVoiceAvatar(voiceLocal) {
+	const entityHash = hubStore.viewer.viewerEntityHash || ''
+	if (!entityHash || !(voiceLocal instanceof HTMLElement)) return
+	const profile = await fetchUserProfile(entityHash).catch(() => null)
+	await applyVoiceRingAvatar(voiceLocal, {
+		entityHash,
+		profile,
+		label: resolveDisplayName({
+			entityHash,
+			profileName: profile?.name,
+			fallbackLabel: geti18n('chat.hub.streamAvYou') || 'you',
+		}),
+	})
+}
+
+/**
+ * @param {Element | null} voiceHost 声波宿主
+ * @param {{ entityHash: string, profile?: object | null, label: string }} options 选项
+ * @returns {Promise<void>}
+ */
+async function applyVoiceRingAvatar(voiceHost, options) {
+	if (!(voiceHost instanceof HTMLElement)) return
+	const avatarEl = voiceHost.querySelector('.voice-ring-avatar')
+	if (!(avatarEl instanceof HTMLElement)) return
+	const avatar = customProfileAvatar(options.profile)
+	if (!avatar) return
+	if (avatarEl.tagName === 'IMG') {
+		avatarEl.src = avatar
+		return
+	}
+	const img = document.createElement('img')
+	img.className = 'voice-ring-avatar'
+	img.alt = options.label || ''
+	img.src = avatar
+	avatarEl.replaceWith(img)
+}
+
+/**
+ * @param {HTMLElement} dock dock
+ * @param {string} channelName 频道名
+ * @returns {void}
+ */
+function updateDockChannelLabel(dock, channelName) {
+	const el = dock.querySelector('[data-call-channel-name]')
+	if (el) el.textContent = channelName ? `#${channelName}` : ''
+}
+
+/**
+ * @param {HTMLElement} dock dock
+ * @returns {void}
+ */
+function syncDockJumpVisibility(dock) {
+	const jump = dock.querySelector('[data-call-role="jump"]')
+	const staticTitle = dock.querySelector('.hub-call-dock-title-static')
+	const away = !!(callGroupId && callChannelId && (
+		hubStore.context.currentGroupId !== callGroupId
+		|| hubStore.context.currentChannelId !== callChannelId
+	))
+	if (jump instanceof HTMLElement) jump.hidden = !away
+	if (staticTitle instanceof HTMLElement) staticTitle.hidden = away
+}
+
+/**
+ * @returns {Promise<HTMLElement>} dock
+ */
+async function ensureCallDock() {
 	let dock = document.getElementById('hub-call-dock')
 	if (dock) return dock
 	dock = document.createElement('div')
 	dock.id = 'hub-call-dock'
 	dock.className = 'hub-call-dock'
 	dock.hidden = true
-	dock.innerHTML = `
-		<div class="hub-call-dock-bar">
-			<span class="hub-call-dock-title" data-i18n="chat.hub.callInProgress"></span>
-			<span id="hub-call-peer-label" class="hub-call-peer-label">0</span>
-			<div class="hub-call-dock-actions">
-				<button type="button" class="hub-icon-button" data-call-role="mute" data-i18n="chat.hub.streamAvMute"></button>
-				<button type="button" class="hub-icon-button" data-call-role="video" data-i18n="chat.hub.streamAvVideo"></button>
-				<button type="button" class="hub-icon-button" data-call-role="screen" data-i18n="chat.hub.callScreenShare"></button>
-				<button type="button" class="hub-icon-button" data-call-role="hangup" data-i18n="chat.hub.callHangup"></button>
-			</div>
-		</div>
-		<div class="hub-streaming-av-grid hub-call-av-grid" id="hub-call-av-grid">
-			<div class="streaming-av-tile relative rounded-lg overflow-hidden bg-black min-h-0" data-peer-id="local">
-				<video id="hub-call-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
-				<div class="absolute bottom-1 left-1 text-xs text-white bg-black/50 rounded px-1" data-i18n="chat.hub.streamAvYou"></div>
-			</div>
-		</div>
-	`
+	await mountTemplate(dock, 'hub/call/dock', {
+		muteIconHtml: iconifyImg(CALL_ICONS.mute, { width: 20, height: 20 }),
+		videoIconHtml: iconifyImg(CALL_ICONS.video, { width: 20, height: 20 }),
+		screenIconHtml: iconifyImg(CALL_ICONS.screen, { width: 20, height: 20 }),
+		hangupIconHtml: iconifyImg(CALL_ICONS.hangup, { width: 20, height: 20 }),
+	})
 	const main = document.querySelector('.hub-main') || document.body
 	const header = main.querySelector('.hub-main-header')
 	if (header) header.after(dock)
 	else main.prepend(dock)
 	return dock
+}
+
+/**
+ * @param {HTMLButtonElement} button 按钮
+ * @param {string} icon iconify id
+ * @param {string} i18nKey title/i18n
+ * @param {boolean} [active] 高亮
+ * @returns {void}
+ */
+function setCallControlIcon(button, icon, i18nKey, active = false) {
+	if (!(button instanceof HTMLElement)) return
+	delete button.dataset.i18n
+	const label = geti18n(i18nKey) || ''
+	button.title = label
+	button.setAttribute('aria-label', label)
+	button.classList.toggle('is-active', active)
+	const img = button.querySelector('img')
+	if (img) img.src = iconifyUrl(icon)
+	else button.innerHTML = iconifyImg(icon, { width: 20, height: 20 })
+}
+
+/**
+ * @param {HTMLElement} dock dock
+ * @param {string} role role
+ * @param {boolean} hidden 隐藏
+ * @returns {void}
+ */
+function setCallControlHidden(dock, role, hidden) {
+	const btn = dock.querySelector(`[data-call-role="${role}"]`)
+	if (btn instanceof HTMLElement) btn.hidden = hidden
 }
 
 /**
@@ -175,20 +388,44 @@ function wireCallDockControls(dock) {
 			callButton,
 		]),
 	)
+
+	setCallControlIcon(byRole.mute, CALL_ICONS.mute, 'chat.hub.streamAvMute')
+	setCallControlIcon(byRole.video, CALL_ICONS.video, 'chat.hub.streamAvVideo')
+	setCallControlIcon(byRole.screen, CALL_ICONS.screen, 'chat.hub.callScreenShare')
+	setCallControlIcon(byRole.hangup, CALL_ICONS.hangup, 'chat.hub.callHangup')
+	if (byRole.jump instanceof HTMLElement) {
+		byRole.jump.title = geti18n('chat.hub.callJumpBack') || ''
+		byRole.jump.setAttribute('aria-label', byRole.jump.title)
+	}
+
 	byRole.mute?.addEventListener('click', () => {
 		const muted = callSession?.toggleMute()
-		if (byRole.mute) byRole.mute.dataset.i18n = muted ? 'chat.hub.streamAvUnmute' : 'chat.hub.streamAvMute'
+		setCallControlIcon(
+			byRole.mute,
+			muted ? CALL_ICONS.unmute : CALL_ICONS.mute,
+			muted ? 'chat.hub.streamAvUnmute' : 'chat.hub.streamAvMute',
+			!!muted,
+		)
 	})
 	byRole.video?.addEventListener('click', () => {
 		const off = callSession?.toggleVideo()
-		if (byRole.video) byRole.video.dataset.i18n = off ? 'chat.hub.streamAvVideoOn' : 'chat.hub.streamAvVideo'
+		setCallControlIcon(
+			byRole.video,
+			off ? CALL_ICONS.videoOff : CALL_ICONS.video,
+			off ? 'chat.hub.streamAvVideoOn' : 'chat.hub.streamAvVideo',
+			!!off,
+		)
 	})
 	byRole.screen?.addEventListener('click', () => {
 		void (async () => {
 			try {
 				const on = await callSession?.toggleScreen?.()
-				if (byRole.screen)
-					byRole.screen.dataset.i18n = on ? 'chat.hub.callScreenStop' : 'chat.hub.callScreenShare'
+				setCallControlIcon(
+					byRole.screen,
+					on ? CALL_ICONS.screenOff : CALL_ICONS.screen,
+					on ? 'chat.hub.callScreenStop' : 'chat.hub.callScreenShare',
+					!!on,
+				)
 			}
 			catch (error) {
 				showToastI18n('error', 'chat.hub.callScreenFailed', { error: error?.message || String(error) })
@@ -196,6 +433,24 @@ function wireCallDockControls(dock) {
 		})()
 	})
 	byRole.hangup?.addEventListener('click', () => { void leaveChannelCall() })
+	byRole.jump?.addEventListener('click', () => {
+		void jumpToCallChannel()
+	})
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function jumpToCallChannel() {
+	if (!callGroupId || !callChannelId) return
+	const { selectGroup, selectChannel } = await import('./sidebar/index.mjs')
+	if (hubStore.context.currentGroupId !== callGroupId)
+		await selectGroup(callGroupId)
+	if (hubStore.context.currentChannelId !== callChannelId)
+		await selectChannel(callChannelId)
+	const dock = document.getElementById('hub-call-dock')
+	if (dock) syncDockJumpVisibility(dock)
+	refreshCallButtonActiveForCurrentChannel()
 }
 
 /**
@@ -213,6 +468,23 @@ function setCallDockVisible(visible) {
  */
 function setCallButtonActive(active) {
 	document.getElementById('hub-header-call-button')?.classList.toggle('is-active', active)
+}
+
+/**
+ * 顶栏电话按钮 active：当前浏览频道是否就是通话频道。
+ * @returns {void}
+ */
+export function refreshCallButtonActiveForCurrentChannel() {
+	const onCallChannel = !!(
+		callSession
+		&& callGroupId
+		&& callChannelId
+		&& hubStore.context.currentGroupId === callGroupId
+		&& hubStore.context.currentChannelId === callChannelId
+	)
+	setCallButtonActive(onCallChannel)
+	const dock = document.getElementById('hub-call-dock')
+	if (dock && callSession) syncDockJumpVisibility(dock)
 }
 
 /**
@@ -234,10 +506,13 @@ function updateCallBadge(count) {
  * @returns {Promise<void>}
  */
 export async function refreshCallStatusBadge() {
+	refreshCallButtonActiveForCurrentChannel()
+	if (callSession && callChannelKey === `${hubStore.context.currentGroupId}:${hubStore.context.currentChannelId}`)
+		return
 	const groupId = hubStore.context.currentGroupId
 	const channelId = hubStore.context.currentChannelId
 	if (!groupId || !channelId) {
-		updateCallBadge(0)
+		if (!callSession) updateCallBadge(0)
 		return
 	}
 	try {
@@ -266,6 +541,10 @@ export function wireCallHeaderButton() {
 		if (!groupId || !channelId) return
 		if (callSession && callChannelKey === `${groupId}:${channelId}`) {
 			void leaveChannelCall()
+			return
+		}
+		if (callSession && callChannelKey && callChannelKey !== `${groupId}:${channelId}`) {
+			void jumpToCallChannel()
 			return
 		}
 		const media = event.shiftKey ? 'audio' : 'av'

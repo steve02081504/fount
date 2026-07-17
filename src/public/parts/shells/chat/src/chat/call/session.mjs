@@ -250,11 +250,12 @@ export function getCallStatus(groupId, channelId) {
 	const session = getLiveCallSession(groupId, channelId)
 	if (!session || session.status !== 'ongoing')
 		return { active: false, peerCount: 0 }
+	const participants = uniqHashes(session.current || [])
 	return {
 		active: true,
-		peerCount: (session.current || []).length,
+		peerCount: participants.length,
 		callId: session.callId,
-		participants: [...session.current || []],
+		participants,
 	}
 }
 

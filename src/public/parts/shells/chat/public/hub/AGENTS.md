@@ -15,7 +15,8 @@ alwaysApply: false
 ## Streaming AV
 
 - **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). Roster / `hello` / `frame_type=2` screen share; `subscribe mode=preview|full` (preview = keyframes only, throttled, no audio).
-- **Group call**: text channel header → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `content.type:'call'` + `message_edit` updates participants/end.
+- **Group call**: text channel header → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; dock template `hub/call/dock`; card `content.type:'call'` + `message_edit` updates participants/end. Shift+click = audio-only（`voiceRing.mjs` 声波环）。
+- **Session lifecycle traps**: `session.close()` must be idempotent on an internal `closed` flag — never gate on `activeSession === session` after `leaveCodecsAvRoom` has already nulled the global (that made hangup a no-op and stacked duplicate sender tiles). Use `onClosed` so `call.mjs` / `streamingAv.mjs` facades reset UI when the shared singleton dies. Abort in-flight joins with a generation counter; do not `await joinInFlight` from inside the join itself (deadlock). Prune remote tiles on `publish_meta_revoke` / roster sender disappearance.
 - **Shared lean client** (reused by Social live): `/parts/shells:chat/shared/avRelayClient.mjs` — `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom` (`mode` / `setMode`); frame protocol constants and `packAvFrame` / `unpackAvFrame` / `bytesToHex` exported from here. Quality presets: `shared/avRelayPresets.mjs` `CODECS_PRESETS` (do not import via `codecsAv` barrel). Social live AV WS URL: `/parts/shells:social/shared/liveAvWsUrl.mjs`.
 - **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
 - Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.

@@ -77,6 +77,10 @@ export async function selectChannel(channelId) {
 		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
 	updateStatusBanners()
 	void refreshPinsBookmarks()
+	void import('../call.mjs').then(m => {
+		m.refreshCallButtonActiveForCurrentChannel()
+		void m.refreshCallStatusBadge()
+	})
 }
 
 /**

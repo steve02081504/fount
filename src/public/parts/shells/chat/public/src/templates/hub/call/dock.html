@@ -1,0 +1,29 @@
+<div class="hub-call-dock-bar">
+	<button type="button" class="hub-call-dock-jump" data-call-role="jump" hidden>
+		<span class="hub-call-dock-title" data-i18n="chat.hub.callInProgress"></span>
+		<span class="hub-call-dock-channel" data-call-channel-name></span>
+	</button>
+	<span class="hub-call-dock-title hub-call-dock-title-static" data-i18n="chat.hub.callInProgress"></span>
+	<span id="hub-call-peer-label" class="hub-call-peer-label" data-i18n="chat.hub.callParticipants" data-n="0">0</span>
+	<div class="hub-call-dock-actions">
+		<button type="button" class="hub-icon-button" data-call-role="mute" title="">
+			${muteIconHtml}
+		</button>
+		<button type="button" class="hub-icon-button" data-call-role="video" title="">
+			${videoIconHtml}
+		</button>
+		<button type="button" class="hub-icon-button" data-call-role="screen" title="">
+			${screenIconHtml}
+		</button>
+		<button type="button" class="hub-icon-button hub-call-hangup" data-call-role="hangup" title="">
+			${hangupIconHtml}
+		</button>
+	</div>
+</div>
+<div class="hub-streaming-av-grid hub-call-av-grid" id="hub-call-av-grid">
+	<div class="streaming-av-tile hub-streaming-av-tile relative rounded-lg overflow-hidden bg-black min-h-0" data-peer-id="local">
+		<video id="hub-call-local-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+		<div id="hub-call-local-voice" class="hub-streaming-av-voice-host" hidden></div>
+		<div class="hub-streaming-av-peer-label-inner" data-i18n="chat.hub.streamAvYou"></div>
+	</div>
+</div>

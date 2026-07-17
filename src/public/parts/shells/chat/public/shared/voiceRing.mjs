@@ -3,27 +3,54 @@
  */
 /* eslint-disable jsdoc/require-returns-description */
 
+import { avatarColor, avatarInitial, avatarTextColor } from './hashAvatar.mjs'
+
 const BAR_COUNT = 48
 
 /**
  * @param {object} options 选项
  * @param {HTMLElement} options.container 宿主
  * @param {string} [options.avatarUrl] 头像 URL
+ * @param {string} [options.avatarSeed] 无 URL 时的 hash 种子
+ * @param {string} [options.avatarLabel] 字母占位文案
  * @param {string} [options.themeColor] CSS 颜色
  * @param {() => number[]} options.getLevels 频带电平 0..1
  * @returns {{ destroy: () => void }}
  */
 export function mountVoiceRing(options) {
-	const { container, avatarUrl = '', themeColor = '#888', getLevels } = options
+	const {
+		container,
+		avatarUrl = '',
+		avatarSeed = '',
+		avatarLabel = '',
+		themeColor = '#888',
+		getLevels,
+	} = options
 	container.replaceChildren()
 	container.classList.add('voice-ring-host')
 
 	const canvas = document.createElement('canvas')
 	canvas.className = 'voice-ring-canvas'
-	const avatar = document.createElement('img')
-	avatar.className = 'voice-ring-avatar'
-	avatar.alt = ''
-	if (avatarUrl) avatar.src = avatarUrl
+
+	const seed = String(avatarSeed || avatarLabel || 'peer')
+	const label = String(avatarLabel || seed)
+	const color = themeColor || avatarColor(seed)
+
+	/** @type {HTMLElement} */
+	let avatar
+	if (avatarUrl) {
+		avatar = document.createElement('img')
+		avatar.className = 'voice-ring-avatar'
+		avatar.alt = ''
+		avatar.src = avatarUrl
+	}
+	else {
+		avatar = document.createElement('div')
+		avatar.className = 'voice-ring-avatar voice-ring-avatar-letter'
+		avatar.textContent = avatarInitial(label)
+		avatar.style.background = avatarColor(seed)
+		avatar.style.color = avatarTextColor(seed)
+	}
 	container.append(canvas, avatar)
 
 	let raf = 0
@@ -58,7 +85,7 @@ export function mountVoiceRing(options) {
 			const y0 = cy + Math.sin(angle) * inner
 			const x1 = cx + Math.cos(angle) * outer
 			const y1 = cy + Math.sin(angle) * outer
-			canvasContext.strokeStyle = themeColor
+			canvasContext.strokeStyle = color
 			canvasContext.globalAlpha = 0.25 + amp * 0.75
 			canvasContext.lineWidth = 3
 			canvasContext.lineCap = 'round'
