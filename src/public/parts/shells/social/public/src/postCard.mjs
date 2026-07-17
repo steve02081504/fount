@@ -15,6 +15,7 @@ import {
 	renderMarkdown,
 	renderQuoteBlockHtml,
 } from './lib/display.mjs'
+import { renderEngagementBarHtml } from './lib/engagementBar.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 
@@ -127,14 +128,7 @@ export async function buildPostCard(item, options = {}) {
 			`<button type="button" class="post-album-chip" data-album-open="${escapeHtml(item.entityHash)}" data-album-id="${escapeHtml(album.albumId)}">${escapeHtml(album.name)}</button>`,
 		).join('')}</div>`
 		: ''
-	const likedClass = item.viewerLiked ? ' liked' : ''
-	const dislikedClass = item.viewerDisliked ? ' disliked' : ''
-	const likeLabel = item.viewerLiked
-		? geti18n('social.actions.unlike')
-		: geti18n('social.actions.like')
-	const dislikeLabel = item.viewerDisliked
-		? geti18n('social.actions.undislike')
-		: geti18n('social.actions.dislike')
+	const engagementBarHtml = await renderEngagementBarHtml(item, actionKey)
 	const repostBanner = isRepost
 		? `<div class="repost-banner"><span class="s-ic s-ic-repost" aria-hidden="true"></span>${geti18n('social.feed.repostedBy', { author: label })}</div>`
 		: ''
@@ -210,28 +204,15 @@ export async function buildPostCard(item, options = {}) {
 		editedBadge,
 		visibilityIcon,
 		moreLabel: geti18n('social.actions.more'),
-		replyLabel: geti18n('social.actions.replies'),
-		repostLabel: geti18n('social.actions.repost'),
-		saveLabel: geti18n('social.actions.save'),
-		shareLabel: geti18n('social.actions.share'),
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,
 		contentBlock,
 		albumChips,
 		communityNoteHtml,
-		likedClass,
-		dislikedClass,
+		engagementBarHtml,
 		actionKey,
 		postDetailHref,
-		likedFlag: item.viewerLiked ? '1' : '0',
-		dislikedFlag: item.viewerDisliked ? '1' : '0',
-		likeLabel,
-		dislikeLabel,
-		likeCount: item.likeCount || 0,
-		dislikeCount: item.dislikeCount || 0,
-		repostCount: item.repostCount || 0,
-		replyCount: item.replyCount || 0,
 		entityHash: item.entityHash,
 		blockButton,
 		hideButton,

@@ -89,6 +89,20 @@ Deno.test('resolveProfilePresentation falls back when tags unset', () => {
 	assertEquals(resolved.tags, ['助手'])
 })
 
+Deno.test('normalizeLocalizedMap keeps structured links', () => {
+	const localized = normalizeLocalizedMap({
+		'zh-CN': {
+			links: [
+				{ name: 'GitHub', url: 'https://github.com/x', icon: '' },
+				{ name: 'bad', url: '' },
+			],
+		},
+	})
+	assertEquals(localized['zh-CN'].links, [
+		{ icon: '', name: 'GitHub', url: 'https://github.com/x' },
+	])
+})
+
 Deno.test('resolveProfilePresentation does not invent EVFS avatar when unset', () => {
 	const hash = 'a'.repeat(128)
 	const resolved = resolveProfilePresentation(

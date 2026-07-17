@@ -83,7 +83,7 @@ export async function handlePostEngagementClick(target) {
 		const parsed = parseActionKey(actionKey)
 		if (parsed) {
 			const { entityHash, postId } = parsed
-			const card = submitRepostButton.closest('.post-card')
+			const card = submitRepostButton.closest('.post-card, .reply')
 			const prevRepost = card ? bumpRepostCount(card, 1) : 0
 			try {
 				await runSocialWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {

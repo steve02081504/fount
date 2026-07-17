@@ -883,8 +883,8 @@ body {
 }
 
 .action-btn-like.liked .s-ic-like {
-	mask-image: url("https://api.iconify.design/mdi/heart.svg");
-	-webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg");
+	mask-image: url("https://api.iconify.design/mdi/thumb-up.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/thumb-up.svg");
 }
 
 .action-btn-dislike:hover,
@@ -1441,18 +1441,8 @@ body {
 	min-width: 0;
 }
 
-.reply-actions {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+.reply .post-actions {
 	margin-top: 0.35rem;
-	padding-top: 0;
-	border-top: none;
-	gap: 0.15rem;
-}
-
-.reply-actions .action-btn {
-	padding: 0.25rem 0.4rem;
 }
 
 .nested-replies {

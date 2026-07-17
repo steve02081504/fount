@@ -43,33 +43,6 @@
 	${albumChips}
 	${communityNoteHtml}
 	${embeddedWrapEnd}
-	<div class="post-actions">
-		<button type="button" class="action-btn action-btn-reply replies-btn" data-replies="${actionKey}" aria-label="${replyLabel}">
-			<span class="s-ic s-ic-reply" aria-hidden="true"></span>
-			<span class="action-count">${replyCount}</span>
-		</button>
-		<button type="button" class="action-btn action-btn-repost repost-btn" data-repost="${actionKey}" aria-label="${repostLabel}">
-			<span class="s-ic s-ic-repost" aria-hidden="true"></span>
-			<span class="action-count">${repostCount}</span>
-		</button>
-		<button type="button" class="action-btn action-btn-like like-btn${likedClass}" data-like="${actionKey}" data-liked="${likedFlag}" aria-label="${likeLabel}">
-			<span class="s-ic s-ic-like" aria-hidden="true"></span>
-			<span class="action-count">${likeCount}</span>
-		</button>
-		<button type="button" class="action-btn action-btn-dislike dislike-btn${dislikedClass}" data-dislike="${actionKey}" data-disliked="${dislikedFlag}" aria-label="${dislikeLabel}">
-			<span class="s-ic s-ic-dislike" aria-hidden="true"></span>
-			<span class="action-count">${dislikeCount}</span>
-		</button>
-		<button type="button" class="action-btn action-btn-save" data-save="${actionKey}" aria-label="${saveLabel}">
-			<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
-		</button>
-		<button type="button" class="action-btn action-btn-share" data-share="${actionKey}" aria-label="${shareLabel}">
-			<span class="s-ic s-ic-share" aria-hidden="true"></span>
-		</button>
-	</div>
-	<div class="repost-panel hidden" data-repost-for="${actionKey}">
-		<textarea rows="2" data-i18n="social.repost"></textarea>
-		<button type="button" data-submit-repost="${actionKey}"><span data-i18n="social.repost.submit"></span></button>
-	</div>
+	${engagementBarHtml}
 	<div class="replies hidden" data-replies-for="${actionKey}"></div>
 </article>

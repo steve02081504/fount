@@ -1,6 +1,7 @@
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { authorLabel, formatTime, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -51,14 +52,7 @@ export async function buildReplyRow(reply) {
 	const bodyHtml = reply.post?.decryptView?.failed
 		? `<em>${geti18n('social.feed.decryptFailed')}</em>`
 		: await renderMarkdown(text, entityHash)
-	const likedClass = reply.viewerLiked ? ' liked' : ''
-	const dislikedClass = reply.viewerDisliked ? ' disliked' : ''
-	const likeLabel = reply.viewerLiked
-		? geti18n('social.actions.unlike')
-		: geti18n('social.actions.like')
-	const dislikeLabel = reply.viewerDisliked
-		? geti18n('social.actions.undislike')
-		: geti18n('social.actions.dislike')
+	const engagementBarHtml = await renderEngagementBarHtml(reply, actionKey)
 	row.innerHTML = `
 		<div class="reply-header">
 			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link">
@@ -70,23 +64,7 @@ export async function buildReplyRow(reply) {
 			</div>
 		</div>
 		<div class="markdown-body reply-body">${bodyHtml}</div>
-		<div class="reply-actions">
-			<button type="button" class="action-btn action-btn-reply replies-btn" data-replies="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.replies'))}">
-				<span class="s-ic s-ic-reply" aria-hidden="true"></span>
-				<span class="action-count">${reply.replyCount || 0}</span>
-			</button>
-			<button type="button" class="action-btn action-btn-like like-btn${likedClass}" data-like="${escapeHtml(actionKey)}" data-liked="${reply.viewerLiked ? '1' : '0'}" aria-label="${escapeHtml(likeLabel)}">
-				<span class="s-ic s-ic-like" aria-hidden="true"></span>
-				<span class="action-count">${reply.likeCount || 0}</span>
-			</button>
-			<button type="button" class="action-btn action-btn-dislike dislike-btn${dislikedClass}" data-dislike="${escapeHtml(actionKey)}" data-disliked="${reply.viewerDisliked ? '1' : '0'}" aria-label="${escapeHtml(dislikeLabel)}">
-				<span class="s-ic s-ic-dislike" aria-hidden="true"></span>
-				<span class="action-count">${reply.dislikeCount || 0}</span>
-			</button>
-			<button type="button" class="action-btn action-btn-share" data-share="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.share'))}">
-				<span class="s-ic s-ic-share" aria-hidden="true"></span>
-			</button>
-		</div>
+		${engagementBarHtml}
 		<div class="replies nested-replies hidden" data-replies-for="${escapeHtml(actionKey)}"></div>
 	`
 	return row

@@ -35,10 +35,10 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI: `#tasteView`。
+- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；帖卡与回复行共用 `templates/engagement_bar.html`（`lib/engagementBar.mjs`）；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI: `#tasteView`。
 - **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + 既有深链。刷新可恢复当前 tab。
 - **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
-- **回复**：`listReplies` 返回完整 feed item；面板行含头像/显示名/赞踩分享；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
+- **回复**：`listReplies` 返回完整 feed item；面板行与帖卡共用 `engagement_bar`（回复/转发/赞/踩/收藏/分享）；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
 - **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。
 - **实体头像**：统一走 chat `shared/entityAvatar.mjs`（`renderAvatarHtml` / `entityAvatarUrl`）+ `hashAvatar.mjs`（`customProfileAvatar`）；无显式头像画 hash 字母，勿盲请求 `files/profile/avatar`，勿各处手写 `charAt(0)`。Composer / 回复框须传 `socialState.viewerProfile`（含 `avatar` + `infoDefaults`），与帖卡 `authorProfile` 同源。
 - **`activateView(name)`** → `#${name}View`（`data-view` 与 section id 必须同词干：`videos`→`#videosView`，勿写成 `#videoView`；否则主导航高亮后主栏整块空白）。

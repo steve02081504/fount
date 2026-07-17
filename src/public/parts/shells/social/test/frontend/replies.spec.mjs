@@ -23,6 +23,8 @@ test.describe('Social replies', () => {
 		await expect(replyRow.locator('.author-avatar, .reply-avatar, .hash-avatar')).toBeVisible()
 		await expect(replyRow.locator('[data-like]')).toBeVisible()
 		await expect(replyRow.locator('[data-dislike]')).toBeVisible()
+		await expect(replyRow.locator('[data-repost]')).toBeVisible()
+		await expect(replyRow.locator('[data-save]')).toBeVisible()
 		await expect(replyRow.locator('[data-share]')).toBeVisible()
 	})
 
