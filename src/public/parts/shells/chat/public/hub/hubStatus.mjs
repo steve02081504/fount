@@ -5,8 +5,8 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/toast、core/state、presence
  */
+import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
@@ -163,49 +163,27 @@ function dismissStatusMenu() {
 export async function showStatusMenu(anchorElement) {
 	dismissStatusMenu()
 	const rect = anchorElement.getBoundingClientRect()
-	const menu = document.createElement('ul')
-	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	menu.style.cssText = `position:fixed;left:${rect.left}px;top:${rect.top - 4}px;transform:translateY(-100%);min-width:11rem;`
-
-	for (const status of MANUAL_STATUSES) {
-		const li = document.createElement('li')
-		const statusOptionButton = document.createElement('button')
-		statusOptionButton.type = 'button'
-		statusOptionButton.className = 'flex items-center gap-2 w-full'
-		const dot = document.createElement('span')
-		dot.className = 'hub-status-dot shrink-0'
-		applyStatusDot(dot, status)
-		const label = document.createElement('span')
-		label.textContent = await geti18n(`chat.hub.status.${status}`)
-		statusOptionButton.append(dot, label)
-		statusOptionButton.addEventListener('click', () => {
+	usingTemplates('/parts/shells:chat/src/templates')
+	const statusesHtml = (await Promise.all(MANUAL_STATUSES.map(status =>
+		renderTemplateAsHtmlString('hub/status/menu_option', { status }),
+	))).join('')
+	const menu = await renderTemplate('hub/status/menu', {
+		style: `position:fixed;left:${rect.left}px;top:${rect.top - 4}px;transform:translateY(-100%);min-width:11rem;`,
+		statusesHtml,
+	})
+	for (const button of menu.querySelectorAll('[data-status]')) {
+		if (!(button instanceof HTMLButtonElement)) continue
+		const { status } = button.dataset
+		button.addEventListener('click', () => {
 			dismissStatusMenu()
 			void setMyStatus(status)
 		})
-		li.append(statusOptionButton)
-		menu.append(li)
 	}
-
-	const profileLi = document.createElement('li')
-	const profileButton = document.createElement('a')
-	profileButton.href = '/parts/shells:chat/profile'
-	profileButton.className = 'px-3 py-2 text-sm'
-	profileButton.textContent = await geti18n('chat.hub.profileLinkTitle.title')
-	profileButton.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
-	profileLi.append(profileButton)
-	menu.append(profileLi)
-
-	const translateLi = document.createElement('li')
-	const translateButton = document.createElement('button')
-	translateButton.type = 'button'
-	translateButton.className = 'px-3 py-2 text-sm w-full text-left'
-	translateButton.textContent = await geti18n('chat.hub.translationPrefs.title')
-	translateButton.addEventListener('click', () => {
+	menu.querySelector('[data-profile-link]')?.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
+	menu.querySelector('[data-translation-prefs]')?.addEventListener('click', () => {
 		dismissStatusMenu()
 		void import('./translationPrefsDialog.mjs').then(({ openTranslationPrefsDialog }) => openTranslationPrefsDialog())
 	})
-	translateLi.append(translateButton)
-	menu.append(translateLi)
 
 	document.body.append(menu)
 	openStatusMenuElement = menu

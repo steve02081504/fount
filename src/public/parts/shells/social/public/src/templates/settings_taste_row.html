@@ -1,0 +1,11 @@
+<article class="taste-row card">
+	<div class="taste-row-main">
+		<strong class="taste-label">${label}</strong>
+		<span class="taste-hash">${tagHashShort}</span>
+		<span class="taste-weight">${weightLabel}</span>
+	</div>
+	<form class="taste-rename-form" data-tag-hash="${tagHash}">
+		<input type="text" maxlength="64" data-i18n="social.taste.namePlaceholder" value="${labelValue}" />
+		<button type="submit" class="btn btn-ghost btn-xs" data-i18n="social.actions.setAlias"></button>
+	</form>
+</article>

@@ -2,7 +2,7 @@ import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { createDOMFromHtmlString, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { createDOMFromHtmlString, appendTemplate, mountTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
@@ -18,7 +18,6 @@ import { buildPostCard } from '../postCard.mjs'
 import { socialState } from '../state.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /** @type {Map<string, Set<string>>} entity → 已加载过的 tab */
 const profileLoadedTabs = new Map()
@@ -48,52 +47,46 @@ export async function renderBlocklist(container) {
 	const blocked = entries.filter(entry => entry.kind === 'block')
 	const hidden = entries.filter(entry => entry.kind === 'hide')
 	if (!blocked.length && !hidden.length) {
-		container.innerHTML = `<p class="hint">${escapeHtml(geti18n('social.blocklist.empty'))}</p>`
+		await mountTemplate(container, 'blocklist_empty', {})
 		return
 	}
 	container.replaceChildren()
 	if (blocked.length) {
-		const heading = document.createElement('h3')
-		heading.className = 'section-title'
-		heading.textContent = geti18n('social.blocklist.title')
-		container.appendChild(heading)
+		await appendTemplate(container, 'blocklist_heading', { titleKey: 'social.blocklist.title' })
 		for (const entry of blocked) {
-			const row = document.createElement('div')
-			row.className = 'blocklist-row'
-			const scopeLabel = entry.scope === 'subject'
-				? geti18n('social.blocklist.scopeSubject')
-				: geti18n('social.blocklist.scopeEntity')
-			const actionButton = entry.scope === 'entity'
-				? `<button type="button" class="profile-action-btn" data-unblock="${escapeHtml(entry.value)}">${escapeHtml(geti18n('social.blocklist.unblock'))}</button>`
+			const actionHtml = entry.scope === 'entity'
+				? await renderTemplateAsHtmlString('blocklist_action', {
+					action: 'unblock',
+					value: escapeHtml(entry.value),
+					labelKey: 'social.blocklist.unblock',
+				})
 				: ''
-			row.innerHTML = `
-				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
-				<code class="entity-hash">${escapeHtml(entry.value)}</code>
-				${actionButton}
-			`
-			container.appendChild(row)
+			await appendTemplate(container, 'blocklist_row', {
+				scopeKey: entry.scope === 'subject'
+					? 'social.blocklist.scopeSubject'
+					: 'social.blocklist.scopeEntity',
+				value: escapeHtml(entry.value),
+				actionHtml,
+			})
 		}
 	}
 	if (hidden.length) {
-		const heading = document.createElement('h3')
-		heading.className = 'section-title'
-		heading.textContent = geti18n('social.blocklist.hiddenTitle')
-		container.appendChild(heading)
+		await appendTemplate(container, 'blocklist_heading', { titleKey: 'social.blocklist.hiddenTitle' })
 		for (const entry of hidden) {
-			const row = document.createElement('div')
-			row.className = 'blocklist-row'
-			const scopeLabel = entry.scope === 'subject'
-				? geti18n('social.blocklist.scopeSubject')
-				: geti18n('social.blocklist.scopeEntity')
-			const actionButton = entry.scope === 'entity'
-				? `<button type="button" class="profile-action-btn" data-unhide="${escapeHtml(entry.value)}">${escapeHtml(geti18n('social.blocklist.unhide'))}</button>`
+			const actionHtml = entry.scope === 'entity'
+				? await renderTemplateAsHtmlString('blocklist_action', {
+					action: 'unhide',
+					value: escapeHtml(entry.value),
+					labelKey: 'social.blocklist.unhide',
+				})
 				: ''
-			row.innerHTML = `
-				<span class="blocklist-kind">${escapeHtml(scopeLabel)}</span>
-				<code class="entity-hash">${escapeHtml(entry.value)}</code>
-				${actionButton}
-			`
-			container.appendChild(row)
+			await appendTemplate(container, 'blocklist_row', {
+				scopeKey: entry.scope === 'subject'
+					? 'social.blocklist.scopeSubject'
+					: 'social.blocklist.scopeEntity',
+				value: escapeHtml(entry.value),
+				actionHtml,
+			})
 		}
 	}
 }
@@ -143,7 +136,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 	const items = data.items || []
 	socialState.profilePostsCursor = data.nextCursor || null
 	if (!items.length && !append) {
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.empty.profilePosts'))}</div>`
+		await mountTemplate(container, 'feed_empty', { emptyKey: 'social.empty.profilePosts' })
 		disconnectInfiniteScroll()
 		return
 	}
@@ -170,7 +163,7 @@ export async function renderProfileLikes(entityHash, container) {
 	container.replaceChildren()
 	const items = data.items || []
 	if (!items.length) {
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.empty.likedPosts'))}</div>`
+		await mountTemplate(container, 'feed_empty', { emptyKey: 'social.empty.likedPosts' })
 		return
 	}
 	for (const item of items)
@@ -183,29 +176,24 @@ export async function renderProfileLikes(entityHash, container) {
  * @param {HTMLElement} container 容器
  * @param {object[]} rows 行
  * @param {string} emptyKey 空态 i18n
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function fillRelationshipRows(container, rows, emptyKey) {
+async function fillRelationshipRows(container, rows, emptyKey) {
 	container.replaceChildren()
 	if (!rows.length) {
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n(emptyKey))}</div>`
+		await mountTemplate(container, 'feed_empty', { emptyKey })
 		return
 	}
 	for (const row of rows) {
 		const hash = typeof row === 'string' ? row : row.entityHash
 		const profile = typeof row === 'string' ? null : row.profile
 		rememberEntityHandle(hash, profile)
-		const link = document.createElement('a')
-		link.className = 'following-link'
-		link.href = formatSocialProfileHref(hash)
-		link.innerHTML = `
-			${renderAvatarHtml(hash, profile)}
-			<span>
-				<strong>${escapeHtml(authorLabel(hash, profile))}</strong>
-				<span class="profile-handle">${escapeHtml(entityHandle(hash, profile))}</span>
-			</span>
-		`
-		container.appendChild(link)
+		await appendTemplate(container, 'relationship_row', {
+			href: escapeHtml(formatSocialProfileHref(hash)),
+			avatarHtml: renderAvatarHtml(hash, profile),
+			name: escapeHtml(authorLabel(hash, profile)),
+			handle: escapeHtml(entityHandle(hash, profile)),
+		})
 	}
 }
 
@@ -216,19 +204,20 @@ function fillRelationshipRows(container, rows, emptyKey) {
  * @returns {Promise<void>}
  */
 export async function openProfileRelationshipList(entityHash, kind) {
-	const title = geti18n(kind === 'followers'
-		? 'social.profile.followersTitle'
-		: 'social.profile.followingTitle')
-	const dialog = await openDialogFromTemplate('profile_relationship_list', { title: escapeHtml(title) })
+	const dialog = await openDialogFromTemplate('profile_relationship_list', {
+		titleKey: kind === 'followers'
+			? 'social.profile.followersTitle'
+			: 'social.profile.followingTitle',
+	})
 	const list = dialog.querySelector('#profileRelationshipList')
 	if (!(list instanceof HTMLElement)) return
-	list.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.post.loading'))}</div>`
+	await mountTemplate(list, 'feed_empty', { emptyKey: 'social.post.loading' })
 	const path = kind === 'followers'
 		? `/profile/${entityHash}/followers`
 		: `/profile/${entityHash}/following`
 	const data = await socialApi(path)
 	const rows = kind === 'followers' ? data.followers || [] : data.following || []
-	fillRelationshipRows(
+	await fillRelationshipRows(
 		list,
 		rows,
 		kind === 'followers' ? 'social.empty.followers' : 'social.empty.following',
@@ -352,13 +341,10 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 		: await renderTemplateAsHtmlString('profile_header_actions_other', {
 			entityHash: escapeHtml(entityHash),
 			isFollowing: data.isFollowing ? '1' : '0',
-			followLabel: escapeHtml(data.isFollowing
-				? geti18n('social.actions.following')
-				: geti18n('social.actions.follow')),
+			followKey: data.isFollowing ? 'social.actions.following' : 'social.actions.follow',
+			primaryClass: data.isFollowing ? '' : 'primary',
 			isCared: cared ? '1' : '0',
-			careLabel: escapeHtml(cared
-				? geti18n('social.actions.careRemove')
-				: geti18n('social.actions.care')),
+			careKey: cared ? 'social.actions.careRemove' : 'social.actions.care',
 		})
 
 	container.replaceChildren(await renderTemplate('profile_view', {
@@ -397,7 +383,7 @@ async function renderProfileCabinets(entityHash, container) {
 		const data = await response.json()
 		const cabinets = data.cabinets || []
 		if (!cabinets.length) {
-			container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.profile.cabinetsEmpty'))}</div>`
+			await mountTemplate(container, 'feed_empty', { emptyKey: 'social.profile.cabinetsEmpty' })
 			return
 		}
 		const list = document.createElement('div')
@@ -413,7 +399,12 @@ async function renderProfileCabinets(entityHash, container) {
 	}
 	catch (error) {
 		console.error(error)
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.profile.cabinetsFailed', { error: error.message || 'failed' }))}</div>`
+		container.replaceChildren()
+		const empty = document.createElement('div')
+		empty.className = 'empty'
+		empty.dataset.i18n = 'social.profile.cabinetsFailed'
+		empty.dataset.error = error.message || 'failed'
+		container.appendChild(empty)
 	}
 }
 
@@ -424,7 +415,7 @@ async function renderProfileCabinets(entityHash, container) {
 export async function loadProfile() {
 	const profileHash = viewerEntityHash()
 	if (!profileHash) {
-		document.getElementById('profileView').innerHTML = `<div class="empty">${escapeHtml(geti18n('social.empty.noIdentity'))}</div>`
+		await mountTemplate(document.getElementById('profileView'), 'feed_empty', { emptyKey: 'social.empty.noIdentity' })
 		return
 	}
 	await loadProfileFor(profileHash)

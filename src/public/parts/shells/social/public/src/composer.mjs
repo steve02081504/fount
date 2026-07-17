@@ -32,7 +32,7 @@ export async function refreshQuotePreview() {
 	await mountTemplate(panel, 'quote_preview', {})
 	if (generation !== quotePreviewGeneration) return
 	const body = panel.querySelector('.quote-preview-body')
-	if (body) body.innerHTML = renderQuoteBlockHtml(socialState.pendingQuoteRef)
+	if (body) body.innerHTML = await renderQuoteBlockHtml(socialState.pendingQuoteRef)
 	panel.querySelector('.clear-quote-btn')?.addEventListener('click', () => {
 		socialState.pendingQuoteRef = null
 		void refreshQuotePreview()

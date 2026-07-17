@@ -11,8 +11,9 @@ import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/ent
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 import { isTrustedAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
-import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts/features/template.mjs'
+import { createDocumentFragmentFromHtmlStringNoScriptActivation, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
 
@@ -115,20 +116,16 @@ export function formatTime(ts) {
 /**
  * 渲染引用原帖块 HTML。
  * @param {{ entityHash: string, postId: string, text?: string }} quoteRef 引用
- * @returns {string} HTML
+ * @returns {Promise<string>} HTML
  */
-export function renderQuoteBlockHtml(quoteRef) {
+export async function renderQuoteBlockHtml(quoteRef) {
 	if (!quoteRef?.entityHash || !quoteRef?.postId) return ''
-	const snippet = quoteRef.text
-		? `<p class="quote-snippet">${quoteRef.text.slice(0, 200)}${quoteRef.text.length > 200 ? '…' : ''}</p>`
+	const snippetHtml = quoteRef.text
+		? `<p class="quote-snippet">${escapeHtml(quoteRef.text.slice(0, 200))}${quoteRef.text.length > 200 ? '…' : ''}</p>`
 		: ''
-	return `
-		<blockquote class="quote-block">
-			<a href="${formatSocialPostHref(quoteRef.entityHash, quoteRef.postId)}" class="link-btn quote-link">
-				${geti18n('social.quote.viewOriginal')}
-			</a>
-			${snippet}
-		</blockquote>
-	`
+	return renderTemplateAsHtmlString('quote_block', {
+		href: escapeHtml(formatSocialPostHref(quoteRef.entityHash, quoteRef.postId)),
+		snippetHtml,
+	})
 }
 

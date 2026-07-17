@@ -32,6 +32,7 @@ alwaysApply: false
 - **Message modules**: render coordination in `messages/render/` (`index.mjs` aggregates; body/MD/attachments etc. split by responsibility, direct imports not barrel); action delegation in `messages/actions/handlers.mjs`, each `data-action` in a separate file in the same dir.
 - No hardcoded user-visible strings; use `data-i18n` and `zh-CN.json`.
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
+- 跨壳共享模块（如 `shared/entityProfileCard.mjs`）勿调用 `usingTemplates`——它是进程级单例，会把 Social/Cabinet 的模板请求指到 chat 路径；需要时用 `withTemplates`，或直接 DOM + `data-i18n`。
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - State: `hubStore` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
 - Context menus: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs`（点击/右键关闭；勿再手写 closeOnce + addEventListener 六份拷贝）。

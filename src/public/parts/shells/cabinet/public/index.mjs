@@ -1,7 +1,10 @@
 import { initTranslations, geti18n, console, confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+
+usingTemplates('/parts/shells:cabinet/src/templates')
 
 import { api, unlockHeaders } from './src/api.mjs'
 import { readClipboard, writeClipboard, subscribeClipboard } from './src/clipboard.mjs'
@@ -221,13 +224,13 @@ async function refreshEntries() {
 	)
 	currentCabinet = data.cabinet
 	folderTrail = data.folder_trail || []
-	renderBreadcrumb()
+	await renderBreadcrumb()
 	if (data.locked) {
 		await promptUnlock(currentParentId)
 		return
 	}
 	entries = data.entries || []
-	renderEntries()
+	await renderEntries()
 	renderStatus()
 }
 
@@ -262,9 +265,9 @@ async function promptUnlock(folderId) {
 }
 
 /**
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderBreadcrumb() {
+async function renderBreadcrumb() {
 	const host = document.getElementById('breadcrumb')
 	host.replaceChildren()
 	const ul = document.createElement('ul')
@@ -273,8 +276,7 @@ function renderBreadcrumb() {
 		back.className = 'breadcrumb-back'
 		const button = document.createElement('button')
 		button.type = 'button'
-		button.title = geti18n('cabinet.back') || 'Back'
-		button.setAttribute('aria-label', button.title)
+		button.dataset.i18n = 'cabinet.back'
 		button.textContent = '←'
 		button.addEventListener('click', () => {
 			const prev = navStack.pop()
@@ -313,23 +315,24 @@ function renderBreadcrumb() {
 }
 
 /**
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderEntries() {
+async function renderEntries() {
 	const host = document.getElementById('entryGrid')
 	host.replaceChildren()
 	for (const entry of entries) {
-		const card = document.createElement('div')
-		card.className = `entry-card${selected.has(entry.id) ? ' selected' : ''}${entry.kind === 'link' && entry._broken ? ' broken' : ''}`
-		card.dataset.id = entry.id
-		card.tabIndex = 0
-		card.setAttribute('role', 'button')
-		const thumb = entry.preview?.url
+		const thumbHtml = entry.preview?.url
 			? `<img class="entry-thumb" src="${escapeAttr(entry.preview.url)}" alt="" />`
 			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
-		card.innerHTML = `${thumb}<div class="font-medium text-sm truncate mt-1">${escapeHtml(entry.name)}</div>
-			<div class="text-xs opacity-60 truncate">${escapeHtml(entry.description || entry.mime_type || '')}</div>
-			<div class="text-[10px] opacity-50 truncate">${formatStamp(entry.modified)}</div>`
+		const card = await renderTemplate('entry_card', {
+			id: escapeAttr(entry.id),
+			selectedClass: selected.has(entry.id) ? ' selected' : '',
+			brokenClass: entry.kind === 'link' && entry._broken ? ' broken' : '',
+			thumbHtml,
+			name: escapeHtml(entry.name),
+			subtitle: escapeHtml(entry.description || entry.mime_type || ''),
+			modified: escapeHtml(formatStamp(entry.modified)),
+		})
 		card.addEventListener('click', event => {
 			if (entry.kind === 'folder' && !event.ctrlKey && !event.metaKey && !event.shiftKey)
 				void onEntryOpen(entry)
@@ -387,7 +390,7 @@ function onEntryClick(event, entry) {
 		selected.add(entry.id)
 		rangeAnchor = entry.id
 	}
-	renderEntries()
+	void renderEntries()
 	renderStatus()
 }
 
@@ -408,7 +411,7 @@ async function onEntryOpen(entry) {
 		if (!resolved.ok) {
 			showToastI18n('warning', 'cabinet.brokenLink', { reason: resolved.reason })
 			entry._broken = true
-			renderEntries()
+			void renderEntries()
 			return
 		}
 		navStack.push({ cabinet_id: currentCabinetId, parent_id: currentParentId })
@@ -858,7 +861,7 @@ function showContextMenu(event, entry) {
 		selected.clear()
 		selected.add(entry.id)
 		rangeAnchor = entry.id
-		renderEntries()
+		void renderEntries()
 		renderStatus()
 	}
 	const rows = selectedEntries()
@@ -945,7 +948,7 @@ function hideContextMenu() {
  */
 function selectAllEntries() {
 	for (const entry of entries) selected.add(entry.id)
-	renderEntries()
+	void renderEntries()
 	renderStatus()
 }
 
@@ -956,7 +959,7 @@ function invertSelection() {
 	for (const entry of entries)
 		if (selected.has(entry.id)) selected.delete(entry.id)
 		else selected.add(entry.id)
-	renderEntries()
+	void renderEntries()
 	renderStatus()
 }
 
@@ -1117,8 +1120,12 @@ function openProps() {
 	document.getElementById('propDeletePreview').checked = entry.preview?.delete_with_file !== false
 	document.getElementById('propFolderPasswordWrap').classList.toggle('hidden', entry.kind !== 'folder' || currentCabinet?.type === 'shared')
 	document.getElementById('propFolderPassword').value = ''
-	document.getElementById('propCreated').textContent = `${geti18n('cabinet.created') || 'Created'}: ${formatStamp(entry.created)}`
-	document.getElementById('propModified').textContent = `${geti18n('cabinet.modified') || 'Modified'}: ${formatStamp(entry.modified)}`
+	document.getElementById('propCreated').textContent = geti18n('cabinet.created', {
+		stamp: formatStamp(entry.created),
+	})
+	document.getElementById('propModified').textContent = geti18n('cabinet.modified', {
+		stamp: formatStamp(entry.modified),
+	})
 	document.getElementById('propMime').textContent = `MIME: ${entry.mime_type || ''}`
 	for (const id of ['propCreated', 'propModified']) {
 		const el = document.getElementById(id)
@@ -1162,32 +1169,22 @@ async function openEntityProfileCard(entityHash) {
 
 /**
  * 渲染远端实体浏览条。
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderRemoteEntityBar() {
-	let bar = document.getElementById('cabinetRemoteEntityBar')
+async function renderRemoteEntityBar() {
+	const bar = document.getElementById('cabinetRemoteEntityBar')
 	if (!remoteEntityHash) {
 		bar?.remove()
 		return
 	}
-	if (!bar) {
-		bar = document.createElement('div')
-		bar.id = 'cabinetRemoteEntityBar'
-		bar.className = 'cabinet-remote-entity-bar flex items-center gap-2 px-3 py-2'
-		const host = document.getElementById('breadcrumb')?.parentElement || document.body
-		host.prepend(bar)
-	}
 	const short = formatHashShort(remoteEntityHash, { headLen: 8, tailLen: 4 })
-	bar.replaceChildren()
-	const label = document.createElement('span')
-	label.className = 'text-sm opacity-70'
-	label.textContent = geti18n('cabinet.remoteEntity') || '远端实体'
-	const button = document.createElement('button')
-	button.type = 'button'
-	button.className = 'btn btn-ghost btn-xs'
-	button.textContent = short
-	button.addEventListener('click', () => void openEntityProfileCard(remoteEntityHash))
-	bar.append(label, button)
+	const host = document.getElementById('breadcrumb')?.parentElement || document.body
+	const next = await renderTemplate('remote_entity_bar', { short: escapeHtml(short) })
+	next.querySelector('[data-remote-entity-open]')?.addEventListener('click', () => {
+		void openEntityProfileCard(remoteEntityHash)
+	})
+	if (bar) bar.replaceWith(next)
+	else host.prepend(next)
 }
 
 /**
@@ -1215,7 +1212,7 @@ async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
 	if (hash.startsWith('shared:')) {
 		remoteEntityHash = null
-		renderRemoteEntityBar()
+		void renderRemoteEntityBar()
 		const rest = hash.slice(7)
 		const [cabinetId, folderId] = rest.split('/')
 		await refreshCabinets()
@@ -1224,7 +1221,7 @@ async function bootFromHash() {
 	}
 	if (hash.startsWith('cabinet:')) {
 		remoteEntityHash = null
-		renderRemoteEntityBar()
+		void renderRemoteEntityBar()
 		const rest = hash.slice(8)
 		const [cabinetId, folderId] = rest.split('/')
 		await openCabinet(cabinetId, folderId || null)
@@ -1233,7 +1230,7 @@ async function bootFromHash() {
 	if (hash.startsWith('user:')) {
 		const entityHash = hash.slice(5)
 		remoteEntityHash = entityHash.toLowerCase()
-		renderRemoteEntityBar()
+		void renderRemoteEntityBar()
 		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
 		cabinets = data.cabinets || []
 		renderCabinetList()
@@ -1241,7 +1238,7 @@ async function bootFromHash() {
 		return
 	}
 	remoteEntityHash = null
-	renderRemoteEntityBar()
+	void renderRemoteEntityBar()
 	await openCabinet('default')
 }
 

@@ -84,7 +84,7 @@ export async function buildPostCard(item, options = {}) {
 		})
 	const quoteRef = item.post?.content?.quoteRef
 	const quoteHtml = quoteRef && !decryptFailed
-		? renderQuoteBlockHtml({ ...quoteRef, text: quoteRef.text || '' })
+		? await renderQuoteBlockHtml({ ...quoteRef, text: quoteRef.text || '' })
 		: ''
 	const replyContext = item.replyContext
 	const replyContextHtml = replyContext && !decryptFailed

@@ -93,8 +93,8 @@ export async function handleProfileNavClick(target) {
 	if (followButton instanceof HTMLElement && followButton.dataset.follow) {
 		const entityHash = followButton.dataset.follow
 		const wasFollowing = followButton.dataset.isFollowing === '1'
-		const prevText = followButton.textContent
-		followButton.textContent = geti18n(wasFollowing ? 'social.actions.follow' : 'social.actions.following')
+		const prevKey = followButton.dataset.i18n
+		followButton.dataset.i18n = wasFollowing ? 'social.actions.follow' : 'social.actions.following'
 		followButton.dataset.isFollowing = wasFollowing ? '0' : '1'
 		try {
 			await runSocialWrite('follow', () => socialApi('/relationships/follow', {
@@ -107,7 +107,7 @@ export async function handleProfileNavClick(target) {
 				await loadExplore()
 		}
 		catch {
-			followButton.textContent = prevText
+			followButton.dataset.i18n = prevKey
 			followButton.dataset.isFollowing = wasFollowing ? '1' : '0'
 		}
 	}
@@ -118,15 +118,15 @@ export async function handleProfileNavClick(target) {
 		const owner = socialState.viewerEntityHash
 		if (!owner) return
 		const wasCared = careButton.dataset.isCared === '1'
-		const prevText = careButton.textContent
-		careButton.textContent = geti18n(wasCared ? 'social.actions.care' : 'social.actions.careRemove')
+		const prevKey = careButton.dataset.i18n
+		careButton.dataset.i18n = wasCared ? 'social.actions.care' : 'social.actions.careRemove'
 		careButton.dataset.isCared = wasCared ? '0' : '1'
 		try {
 			await setCared(owner, entityHash, !wasCared)
 			showToastI18n('success', wasCared ? 'social.actions.careRemoved' : 'social.actions.careAdded')
 		}
 		catch {
-			careButton.textContent = prevText
+			careButton.dataset.i18n = prevKey
 			careButton.dataset.isCared = wasCared ? '1' : '0'
 		}
 	}

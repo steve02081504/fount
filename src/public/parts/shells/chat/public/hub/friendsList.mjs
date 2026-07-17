@@ -7,7 +7,7 @@
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
+import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -217,13 +217,7 @@ export async function renderFriendsColumn(friends) {
 
 	const wrap = document.createElement('div')
 	wrap.className = 'hub-friends-wrap flex flex-col gap-2 h-full min-h-0'
-	wrap.innerHTML = `
-		<div class="hub-friends-search px-2 pt-1">
-			<input type="search" id="hub-friends-search-input" class="input input-bordered input-sm w-full" autocomplete="off" data-i18n="chat.hub.friendsSearchPlaceholder" placeholder="${escapeHtml(geti18n('chat.hub.friendsSearchPlaceholder'))}" />
-			<div id="hub-friends-search-results" class="hub-friends-search-results mt-2 space-y-1 max-h-48 overflow-y-auto hidden"></div>
-		</div>
-		<div id="hub-friends-list-body" class="hub-friends-list-body min-h-0 flex-1 overflow-y-auto"></div>
-	`
+	wrap.appendChild(await renderTemplate('hub/friends/search_wrap', {}))
 	container.replaceChildren(wrap)
 	const body = wrap.querySelector('#hub-friends-list-body')
 	const searchInput = wrap.querySelector('#hub-friends-search-input')
@@ -283,10 +277,9 @@ async function runFriendsEntitySearch(input, resultsHost) {
 		resultsHost.classList.add('hidden')
 		resultsHost.replaceChildren()
 		if (q.length === 1) {
-			const hint = document.createElement('p')
-			hint.className = 'text-xs opacity-60 px-1'
-			hint.textContent = geti18n('chat.hub.friendsSearchTooShort')
-			resultsHost.appendChild(hint)
+			resultsHost.appendChild(await renderTemplate('hub/friends/search_hint', {
+				i18nKey: 'chat.hub.friendsSearchTooShort',
+			}))
 			resultsHost.classList.remove('hidden')
 		}
 		return
@@ -303,25 +296,18 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	resultsHost.replaceChildren()
 	resultsHost.classList.remove('hidden')
 	if (!entities.length) {
-		const empty = document.createElement('p')
-		empty.className = 'text-xs opacity-60 px-1'
-		empty.textContent = geti18n('chat.hub.friendsSearchEmpty')
-		resultsHost.appendChild(empty)
+		resultsHost.appendChild(await renderTemplate('hub/friends/search_hint', {
+			i18nKey: 'chat.hub.friendsSearchEmpty',
+		}))
 		return
 	}
 	for (const entity of entities) {
-		const row = document.createElement('div')
-		row.className = 'flex items-center gap-2 rounded-box bg-base-200 px-2 py-1'
 		const handle = formatEntityAtId(entity.entityHash, { handle: entity.handle })
 		const label = entity.alias || entity.name || handle
-		row.innerHTML = `
-			<div class="min-w-0 flex-1">
-				<div class="text-sm truncate">${escapeHtml(label)}</div>
-				<div class="text-xs opacity-60 truncate">${escapeHtml(handle)}</div>
-			</div>
-			<button type="button" class="btn btn-ghost btn-xs" data-pin>${escapeHtml(geti18n('chat.hub.friendsSearchPin'))}</button>
-			<button type="button" class="btn btn-primary btn-xs" data-dm>${escapeHtml(geti18n('chat.hub.friendsSearchDm'))}</button>
-		`
+		const row = await renderTemplate('hub/friends/search_row', {
+			label: escapeHtml(label),
+			handle: escapeHtml(handle),
+		})
 		row.querySelector('[data-pin]')?.addEventListener('click', () => {
 			void (async () => {
 				const next = prompt(geti18n('chat.hub.profilePopup.setAliasPrompt', { name: label }), entity.alias || entity.handle || entity.name || '')

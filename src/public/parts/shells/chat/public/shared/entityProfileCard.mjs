@@ -184,9 +184,16 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	const statusDot = root.querySelector('[data-entity-profile-status-dot]')
 	if (statusDot instanceof HTMLElement) statusDot.dataset.status = status
 	const statusText = root.querySelector('[data-entity-profile-status-text]')
-	if (statusText)
-		statusText.textContent = normalized.customStatus
-			|| geti18n(`profile.statusOptions.${normalized.status}`)
+	if (statusText instanceof HTMLElement) 
+		if (normalized.customStatus) {
+			delete statusText.dataset.i18n
+			statusText.textContent = normalized.customStatus
+		}
+		else {
+			statusText.textContent = ''
+			statusText.dataset.i18n = `profile.statusOptions.${normalized.status}`
+		}
+	
 
 	const bioElement = root.querySelector('[data-entity-profile-bio]')
 	if (bioElement instanceof HTMLElement)
@@ -258,48 +265,59 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 }
 
 /**
- * 渲染「此实体为 xxx 所有」HTML。
+ * 渲染「此实体为 xxx 所有」节点（owner 需 HTML 插值，故用 geti18n；不改全局 templatePath）。
  * @param {string | null | undefined} ownerEntityHash 主人
  * @param {{ ownerName?: string | null, linkHref?: string | null }} [options] 选项
- * @returns {string} HTML；无主人时为空串
+ * @returns {HTMLElement | null} 节点；无主人时为 null
  */
-export function renderOwnedByBoxHtml(ownerEntityHash, options = {}) {
+export function renderOwnedByBox(ownerEntityHash, options = {}) {
 	const owner = String(ownerEntityHash || '').trim().toLowerCase()
-	if (!isEntityHash128(owner)) return ''
+	if (!isEntityHash128(owner)) return null
 	const label = options.ownerName
 		|| aliasForEntity(owner)
 		|| entityHashLabel(owner)
 	const href = options.linkHref || formatSocialProfileHref(owner)
 	const ownerLink = `<a class="entity-owned-by-link link link-hover" href="${escapeHtml(href)}" data-entity-owned-by-link="${escapeHtml(owner)}">${escapeHtml(label)}</a>`
-	const text = geti18n('entityProfile.ownedBy', { owner: ownerLink })
-	return `<div class="entity-owned-by-box" data-entity-owned-by="${escapeHtml(owner)}">${text}</div>`
+	const box = document.createElement('div')
+	box.className = 'entity-owned-by-box'
+	box.dataset.entityOwnedBy = owner
+	box.innerHTML = geti18n('entityProfile.ownedBy', { owner: ownerLink })
+	return box
 }
 
 /**
- * 渲染归因不匹配警告框 HTML。
- * @param {object | null | undefined} attribution 归因
+ * @param {string | null | undefined} ownerEntityHash 主人
+ * @param {{ ownerName?: string | null, linkHref?: string | null }} [options] 选项
  * @returns {string} HTML
  */
-export function renderAttributionWarningBoxHtml(attribution) {
-	if (!attribution?.mismatch) return ''
-	const text = geti18n('entityProfile.attributionMismatch')
-		|| '显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。'
-	return '<div class="entity-attribution-warning-box" role="alert" data-entity-attribution-warning>'
-		+ '<span class="entity-attribution-warning-icon" aria-hidden="true">⚠</span>'
-		+ `<span class="entity-attribution-warning-text">${escapeHtml(text)}</span>`
-		+ '</div>'
+export function renderOwnedByBoxHtml(ownerEntityHash, options = {}) {
+	const box = renderOwnedByBox(ownerEntityHash, options)
+	return box ? box.outerHTML : ''
 }
 
 /**
- * 人名旁归因警告图标 HTML。
+ * 人名旁归因警告图标。
+ * @param {object | null | undefined} attribution 归因
+ * @returns {HTMLElement | null} 节点
+ */
+export function renderAttributionWarningIcon(attribution) {
+	if (!attribution?.mismatch) return null
+	const span = document.createElement('span')
+	span.className = 'entity-attribution-warning-icon-inline'
+	span.role = 'img'
+	span.dataset.i18n = 'entityProfile.attributionMismatchShort'
+	span.dataset.attributionWarningIcon = ''
+	span.textContent = '⚠'
+	return span
+}
+
+/**
  * @param {object | null | undefined} attribution 归因
  * @returns {string} HTML
  */
 export function renderAttributionWarningIconHtml(attribution) {
-	if (!attribution?.mismatch) return ''
-	const title = geti18n('entityProfile.attributionMismatchShort')
-		|| '签名归因不匹配'
-	return `<span class="entity-attribution-warning-icon-inline" title="${escapeHtml(title)}" role="img" aria-label="${escapeHtml(title)}" data-attribution-warning-icon>⚠</span>`
+	const node = renderAttributionWarningIcon(attribution)
+	return node ? node.outerHTML : ''
 }
 
 /**
@@ -312,17 +330,34 @@ export function paintEntityProfileExtras(root, options = {}) {
 	if (!(root instanceof HTMLElement)) return
 	const ownerHost = root.querySelector('[data-entity-owned-by-host]')
 	if (ownerHost instanceof HTMLElement) {
-		const html = renderOwnedByBoxHtml(options.ownerEntityHash, {
+		const box = renderOwnedByBox(options.ownerEntityHash, {
 			ownerName: options.ownerName,
 			linkHref: options.ownerLinkHref,
 		})
-		ownerHost.innerHTML = html
-		ownerHost.hidden = !html
+		ownerHost.replaceChildren(...box ? [box] : [])
+		ownerHost.hidden = !box
 	}
 	const warnHost = root.querySelector('[data-entity-attribution-warning-host]')
-	if (warnHost instanceof HTMLElement) {
-		const html = renderAttributionWarningBoxHtml(options.attribution)
-		warnHost.innerHTML = html
-		warnHost.hidden = !html
-	}
+	if (warnHost instanceof HTMLElement) 
+		if (options.attribution?.mismatch) {
+			const box = document.createElement('div')
+			box.className = 'entity-attribution-warning-box'
+			box.role = 'alert'
+			box.dataset.entityAttributionWarning = ''
+			const icon = document.createElement('span')
+			icon.className = 'entity-attribution-warning-icon'
+			icon.setAttribute('aria-hidden', 'true')
+			icon.textContent = '⚠'
+			const text = document.createElement('span')
+			text.className = 'entity-attribution-warning-text'
+			text.dataset.i18n = 'entityProfile.attributionMismatch'
+			box.append(icon, text)
+			warnHost.replaceChildren(box)
+			warnHost.hidden = false
+		}
+		else {
+			warnHost.replaceChildren()
+			warnHost.hidden = true
+		}
+	
 }

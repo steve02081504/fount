@@ -4,6 +4,7 @@ import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runU
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, formatTime, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { socialState } from '../state.mjs'
 
 let exploreToolbarBound = false
@@ -21,21 +22,6 @@ function bindExploreToolbar() {
 		socialState.exploreMediaOnly = input.checked
 		void loadExplore()
 	})
-}
-
-/**
- * 探索分区空态（图标 + 文案，两区共用）。
- * @param {string} iconClass 图标 class（如 s-ic-user）
- * @param {string} i18nKey 文案 key
- * @returns {string} HTML
- */
-function renderExploreEmpty(iconClass, i18nKey) {
-	return `
-		<div class="explore-empty">
-			<span class="s-ic ${iconClass} explore-empty-icon" aria-hidden="true"></span>
-			<p>${escapeHtml(geti18n(i18nKey))}</p>
-		</div>
-	`
 }
 
 /**
@@ -85,23 +71,21 @@ export async function loadExplore() {
 	)
 	accountList.replaceChildren()
 	if (!accountRows.length)
-		accountList.innerHTML = renderExploreEmpty('s-ic-user', 'social.empty.exploreAccounts')
+		await mountTemplate(accountList, 'explore_empty', {
+			iconClass: 's-ic-user',
+			i18nKey: 'social.empty.exploreAccounts',
+		})
 	else
 		for (const account of accountRows) {
-			const row = document.createElement('article')
-			row.className = 'explore-account'
-			const profileHref = formatSocialProfileHref(account.entityHash)
-			row.innerHTML = `
-				<a href="${escapeHtml(profileHref)}" class="explore-account-avatar-link">
-					${renderAvatarHtml(account.entityHash, { name: account.name, avatar: account.avatarUrl }, 'explore-account-avatar')}
-				</a>
-				<div class="explore-account-body">
-					<a href="${escapeHtml(profileHref)}" class="suggested-account-name">${escapeHtml(account.name)}</a>
-					<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
-					${account.bio ? '<div class="explore-account-bio" data-explore-bio></div>' : ''}
-				</div>
-				<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
-			`
+			const profileHref = escapeHtml(formatSocialProfileHref(account.entityHash))
+			const row = await renderTemplate('explore_account', {
+				profileHref,
+				entityHash: escapeHtml(account.entityHash),
+				name: escapeHtml(account.name),
+				handle: escapeHtml(entityHandle(account.entityHash, account)),
+				avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name, avatar: account.avatarUrl }, 'explore-account-avatar'),
+				bioHtml: account.bio ? '<div class="explore-account-bio" data-explore-bio></div>' : '',
+			})
 			const bioHost = row.querySelector('[data-explore-bio]')
 			if (bioHost instanceof HTMLElement && account.bio)
 				await mountMarkdown(bioHost, account.bio, account.entityHash)
@@ -111,37 +95,31 @@ export async function loadExplore() {
 	const postRows = posts.posts || []
 	postList.replaceChildren()
 	if (!postRows.length) {
-		postList.innerHTML = renderExploreEmpty('s-ic-explore', 'social.empty.explorePosts')
+		await mountTemplate(postList, 'explore_empty', {
+			iconClass: 's-ic-explore',
+			i18nKey: 'social.empty.explorePosts',
+		})
 		return
 	}
 
 	for (const post of postRows) {
-		const row = document.createElement('article')
-		row.className = 'explore-post-card'
-		const href = formatSocialPostHref(post.entityHash, post.postId)
-		const authorHref = formatSocialProfileHref(post.entityHash)
+		const href = escapeHtml(formatSocialPostHref(post.entityHash, post.postId))
+		const authorHref = escapeHtml(formatSocialProfileHref(post.entityHash))
 		const snippet = post.textSnippet || (post.mediaThumbs?.length
 			? geti18n('social.profile.mediaOnly')
 			: '')
 		const name = authorLabel(post.entityHash, post.authorProfile)
 		const handle = entityHandle(post.entityHash, post.authorProfile)
-		row.innerHTML = `
-			<header class="explore-post-header">
-				<a href="${escapeHtml(authorHref)}" class="explore-post-avatar-link">
-					${renderAvatarHtml(post.entityHash, post.authorProfile || { name }, 'explore-post-avatar')}
-				</a>
-				<div class="explore-post-author">
-					<a href="${escapeHtml(authorHref)}" class="author-name">${escapeHtml(name)}</a>
-					<a href="${escapeHtml(authorHref)}" class="author-handle">${escapeHtml(handle)}</a>
-					<span class="post-meta">${escapeHtml(formatTime(post.hlc?.wall))}</span>
-				</div>
-			</header>
-			<a href="${escapeHtml(href)}" class="explore-post-body">
-				${snippet ? `<p class="explore-snippet">${escapeHtml(snippet)}</p>` : ''}
-				${renderExploreThumbs(post.mediaThumbs)}
-			</a>
-		`
-		postList.appendChild(row)
+		await appendTemplate(postList, 'explore_post', {
+			href,
+			authorHref,
+			name: escapeHtml(name),
+			handle: escapeHtml(handle),
+			time: escapeHtml(formatTime(post.hlc?.wall)),
+			avatarHtml: renderAvatarHtml(post.entityHash, post.authorProfile || { name }, 'explore-post-avatar'),
+			snippetHtml: snippet ? `<p class="explore-snippet">${escapeHtml(snippet)}</p>` : '',
+			thumbsHtml: renderExploreThumbs(post.mediaThumbs),
+		})
 	}
 
 	const exploreSuggestedHost = document.getElementById('exploreSuggested')
@@ -155,19 +133,14 @@ export async function loadExplore() {
 		else {
 			exploreSuggestedHost.classList.remove('hidden')
 			exploreSuggestedList.replaceChildren()
-			for (const account of suggested) {
-				const row = document.createElement('div')
-				row.className = 'suggested-account'
-				row.innerHTML = `
-					${renderAvatarHtml(account.entityHash, { name: account.name })}
-					<div class="suggested-account-info">
-						<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
-						<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
-					</div>
-					<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
-				`
-				exploreSuggestedList.appendChild(row)
-			}
+			for (const account of suggested)
+				await appendTemplate(exploreSuggestedList, 'explore_suggested', {
+					profileHref: escapeHtml(formatSocialProfileHref(account.entityHash)),
+					entityHash: escapeHtml(account.entityHash),
+					name: escapeHtml(account.name),
+					handle: escapeHtml(entityHandle(account.entityHash, account)),
+					avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name }),
+				})
 		}
 	}
 

@@ -1,6 +1,7 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { geti18n, initTranslations } from '/scripts/i18n/index.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
@@ -21,34 +22,21 @@ function formatWeight(weight) {
 /**
  * @param {HTMLElement} panel 面板
  * @param {object[]} entries 屏蔽词条目
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderMutedKeywordsSection(panel, entries) {
-	const section = document.createElement('section')
-	section.className = 'settings-card card'
-	section.innerHTML = `
-		<h3 class="settings-card-title">${escapeHtml(geti18n('social.settings.mutedKeywordsTitle'))}</h3>
-		<p class="settings-hint">${escapeHtml(geti18n('social.settings.mutedKeywordsHint'))}</p>
-		<form id="mutedKeywordForm" class="muted-keyword-form">
-			<input type="text" id="mutedKeywordInput" maxlength="64" placeholder="${escapeHtml(geti18n('social.settings.mutedKeywordsPlaceholder'))}" />
-			<label class="muted-keyword-match-tags">
-				<input type="checkbox" id="mutedKeywordMatchTags" checked />
-				<span>${escapeHtml(geti18n('social.settings.mutedKeywordsMatchTags'))}</span>
-			</label>
-			<button type="submit" class="btn btn-primary btn-sm">${escapeHtml(geti18n('social.settings.mutedKeywordsAdd'))}</button>
-		</form>
-		<div class="muted-keyword-chips" id="mutedKeywordChips"></div>
-	`
+async function renderMutedKeywordsSection(panel, entries) {
+	const section = await renderTemplate('settings_muted_keywords', {})
 	panel.appendChild(section)
 
 	const chips = section.querySelector('#mutedKeywordChips')
 	/**
 	 * @param {object[]} list 条目
+	 * @returns {Promise<void>}
 	 */
-	function paintChips(list) {
+	async function paintChips(list) {
 		chips.replaceChildren()
 		if (!list.length) {
-			chips.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.settings.mutedKeywordsEmpty'))}</p>`
+			await mountTemplate(chips, 'empty_hint', { i18nKey: 'social.settings.mutedKeywordsEmpty' })
 			return
 		}
 		for (const entry of list) {
@@ -56,13 +44,13 @@ function renderMutedKeywordsSection(panel, entries) {
 			chip.type = 'button'
 			chip.className = 'muted-keyword-chip'
 			chip.dataset.pattern = entry.pattern
+			chip.dataset.i18n = 'social.settings.mutedKeywordsRemove'
 			const tagHint = entry.matchTags === false ? '' : ' #Tag'
 			chip.innerHTML = `<span>${escapeHtml(entry.pattern)}${escapeHtml(tagHint)}</span><span aria-hidden="true">×</span>`
-			chip.title = geti18n('social.settings.mutedKeywordsRemove')
 			chips.appendChild(chip)
 		}
 	}
-	paintChips(entries)
+	await paintChips(entries)
 
 	/**
 	 * @param {object[]} next 下一份条目
@@ -74,7 +62,7 @@ function renderMutedKeywordsSection(panel, entries) {
 			body: JSON.stringify({ entries: next }),
 		}))
 		const saved = data?.entries || next
-		paintChips(saved)
+		await paintChips(saved)
 		return saved
 	}
 
@@ -114,16 +102,9 @@ function renderMutedKeywordsSection(panel, entries) {
 async function renderTranslationPrefsSection(panel) {
 	const data = await chatApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
 	const prefs = data?.prefs || { autoTranslate: false }
-	const section = document.createElement('section')
-	section.className = 'settings-card card'
-	section.innerHTML = `
-		<h3 class="settings-card-title">${escapeHtml(geti18n('social.settings.autoTranslateTitle'))}</h3>
-		<p class="settings-hint">${escapeHtml(geti18n('social.settings.autoTranslateHint'))}</p>
-		<label class="settings-toggle">
-			<input type="checkbox" id="socialAutoTranslate" ${prefs.autoTranslate ? 'checked' : ''} />
-			<span>${escapeHtml(geti18n('social.settings.autoTranslateEnable'))}</span>
-		</label>
-	`
+	const section = await renderTemplate('settings_auto_translate', {
+		checkedAttr: prefs.autoTranslate ? 'checked' : '',
+	})
 	panel.appendChild(section)
 	section.querySelector('#socialAutoTranslate')?.addEventListener('change', event => {
 		const checked = event.target instanceof HTMLInputElement && event.target.checked
@@ -137,19 +118,12 @@ async function renderTranslationPrefsSection(panel) {
 /**
  * @param {HTMLElement} panel 面板
  * @param {object} socialMeta meta
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderPrivacySection(panel, socialMeta) {
-	const section = document.createElement('section')
-	section.className = 'settings-card card'
-	section.innerHTML = `
-		<h3 class="settings-card-title">${escapeHtml(geti18n('social.settings.privacyTitle'))}</h3>
-		<p class="settings-hint">${escapeHtml(geti18n('social.settings.privacyHint'))}</p>
-		<label class="settings-toggle">
-			<input type="checkbox" id="exploreProtectedInput" ${socialMeta?.hideFromDiscovery ? 'checked' : ''} />
-			<span>${escapeHtml(geti18n('social.profile.hideFromExplore'))}</span>
-		</label>
-	`
+async function renderPrivacySection(panel, socialMeta) {
+	const section = await renderTemplate('settings_privacy', {
+		checkedAttr: socialMeta?.hideFromDiscovery ? 'checked' : '',
+	})
 	panel.appendChild(section)
 	section.querySelector('#exploreProtectedInput')?.addEventListener('change', async event => {
 		const checked = event.target instanceof HTMLInputElement && event.target.checked
@@ -167,30 +141,17 @@ function renderPrivacySection(panel, socialMeta) {
 /**
  * @param {HTMLElement} panel 面板
  * @param {object} data taste 响应
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function renderTasteSection(panel, data) {
+async function renderTasteSection(panel, data) {
 	const tags = data.tags || []
 	const publishPreferences = data.privacy?.publishPreferences !== false
 	const publishReactions = data.privacy?.publishReactions !== false
 
-	const section = document.createElement('section')
-	section.className = 'settings-card card'
-	section.innerHTML = `
-		<h3 class="settings-card-title">${escapeHtml(geti18n('social.settings.tasteTitle'))}</h3>
-		<p class="settings-hint">${escapeHtml(geti18n('social.settings.tasteHint'))}</p>
-		<label class="settings-toggle">
-			<input type="checkbox" id="tastePublishPreferences" ${publishPreferences ? 'checked' : ''} />
-			<span>${escapeHtml(geti18n('social.taste.privacyPublishPreferences'))}</span>
-		</label>
-		<p class="settings-hint">${escapeHtml(geti18n('social.taste.privacyPublishPreferencesHint'))}</p>
-		<label class="settings-toggle">
-			<input type="checkbox" id="tastePublishReactions" ${publishReactions ? 'checked' : ''} />
-			<span>${escapeHtml(geti18n('social.taste.privacyPublishReactions'))}</span>
-		</label>
-		<p class="settings-hint">${escapeHtml(geti18n('social.taste.privacyPublishReactionsHint'))}</p>
-		<button type="button" id="tasteRebuildButton" class="btn btn-primary btn-sm">${escapeHtml(geti18n('social.taste.rebuild'))}</button>
-	`
+	const section = await renderTemplate('settings_taste', {
+		prefsCheckedAttr: publishPreferences ? 'checked' : '',
+		reactionsCheckedAttr: publishReactions ? 'checked' : '',
+	})
 	panel.appendChild(section)
 
 	/**
@@ -217,29 +178,21 @@ function renderTasteSection(panel, data) {
 			.then(() => loadSettings())
 	})
 
-	const list = document.createElement('div')
-	list.className = 'taste-list'
+	const list = section.querySelector('[data-taste-list]')
+	if (!(list instanceof HTMLElement)) return
 	if (!tags.length)
-		list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.taste.empty'))}</p>`
+		await mountTemplate(list, 'empty_hint', { i18nKey: 'social.taste.empty' })
 	else
 		for (const tag of tags) {
-			const row = document.createElement('article')
-			row.className = 'taste-row card'
 			const label = tag.label || formatHashShort(tag.tagHash, { headLen: 8, tailLen: 4 })
-			row.innerHTML = `
-				<div class="taste-row-main">
-					<strong class="taste-label">${escapeHtml(label)}</strong>
-					<span class="taste-hash">${escapeHtml(formatHashShort(tag.tagHash, { headLen: 10, tailLen: 6 }))}</span>
-					<span class="taste-weight">${escapeHtml(geti18n('social.taste.weight', { weight: formatWeight(tag.weight) }))}</span>
-				</div>
-				<form class="taste-rename-form" data-tag-hash="${escapeHtml(tag.tagHash)}">
-					<input type="text" maxlength="64" placeholder="${escapeHtml(geti18n('social.taste.namePlaceholder'))}" value="${escapeHtml(tag.label || '')}" />
-					<button type="submit" class="btn btn-ghost btn-xs">${escapeHtml(geti18n('social.actions.setAlias'))}</button>
-				</form>
-			`
-			list.appendChild(row)
+			await appendTemplate(list, 'settings_taste_row', {
+				label: escapeHtml(label),
+				labelValue: escapeHtml(tag.label || ''),
+				tagHash: escapeHtml(tag.tagHash),
+				tagHashShort: escapeHtml(formatHashShort(tag.tagHash, { headLen: 10, tailLen: 6 })),
+				weightLabel: escapeHtml(geti18n('social.taste.weight', { weight: formatWeight(tag.weight) })),
+			})
 		}
-	section.appendChild(list)
 
 	for (const form of list.querySelectorAll('.taste-rename-form'))
 		form.addEventListener('submit', event => {
@@ -260,13 +213,7 @@ function renderTasteSection(panel, data) {
  * @returns {Promise<void>}
  */
 async function renderSafetySection(panel) {
-	const section = document.createElement('section')
-	section.className = 'settings-card card'
-	section.innerHTML = `
-		<h3 class="settings-card-title">${escapeHtml(geti18n('social.settings.safetyTitle'))}</h3>
-		<p class="settings-hint">${escapeHtml(geti18n('social.settings.safetyHint'))}</p>
-		<div id="blocklistSection" class="profile-settings-blocklist"></div>
-	`
+	const section = await renderTemplate('settings_safety', {})
 	panel.appendChild(section)
 	await renderBlocklist(section.querySelector('#blocklistSection'))
 	section.addEventListener('click', async event => {
@@ -285,8 +232,8 @@ export async function loadSettings() {
 	const panel = document.getElementById('settingsPanel')
 	if (!panel) return
 	const [taste, muted, profile] = await Promise.all([
-		socialApi('/taste'),
-		socialApi('/profile/muted-keywords'),
+		socialApi('/taste').catch(() => ({ tags: [], privacy: {} })),
+		socialApi('/profile/muted-keywords').catch(() => ({ entries: [] })),
 		socialState.viewerEntityHash
 			? socialApi(`/profile/${socialState.viewerEntityHash}`).catch(() => ({}))
 			: Promise.resolve({}),
@@ -296,9 +243,9 @@ export async function loadSettings() {
 	const mutedEntries = [...muted.entries || []]
 
 	panel.replaceChildren()
-	renderPrivacySection(panel, socialMeta)
-	renderTasteSection(panel, taste)
-	renderMutedKeywordsSection(panel, mutedEntries)
+	await renderPrivacySection(panel, socialMeta)
+	await renderTasteSection(panel, taste)
+	await renderMutedKeywordsSection(panel, mutedEntries)
 	await renderTranslationPrefsSection(panel)
 	await renderSafetySection(panel)
 	await initTranslations()

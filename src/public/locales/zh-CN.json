@@ -1174,10 +1174,14 @@
 			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
 			"mutedKeywordsTitle": "屏蔽词与标签",
 			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
-			"mutedKeywordsPlaceholder": "输入关键词或 #标签",
+			"mutedKeywordsPlaceholder": {
+				"placeholder": "输入关键词或 #标签"
+			},
 			"mutedKeywordsMatchTags": "同时匹配标签",
 			"mutedKeywordsAdd": "添加",
-			"mutedKeywordsRemove": "移除屏蔽词",
+			"mutedKeywordsRemove": {
+				"title": "移除屏蔽词"
+			},
 			"mutedKeywordsEmpty": "尚未添加屏蔽词",
 			"autoTranslateTitle": "自动翻译",
 			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
@@ -1285,12 +1289,16 @@
 			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
 			"privacyPublishReactions": "公开点赞与点踩",
 			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
-			"namePlaceholder": "本地显示名",
+			"namePlaceholder": {
+				"placeholder": "本地显示名"
+			},
 			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
 			"weight": "权重 ${weight}",
 			"mutedKeywordsTitle": "屏蔽词与标签",
 			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
-			"mutedKeywordsPlaceholder": "输入关键词或 #标签",
+			"mutedKeywordsPlaceholder": {
+				"placeholder": "输入关键词或 #标签"
+			},
 			"mutedKeywordsMatchTags": "同时匹配标签",
 			"mutedKeywordsAdd": "添加",
 			"mutedKeywordsRemove": "移除屏蔽词",
@@ -2453,7 +2461,8 @@
 			"groupEmojisEmpty": "暂无群表情，可在群设置中上传",
 			"groupEmojisLoadFailed": "加载群表情失败",
 			"profileLinkTitle": {
-				"title": "个人资料"
+				"title": "个人资料",
+				"textContent": "个人资料"
 			},
 			"userLoading": "加载中…",
 			"status": {
@@ -2625,7 +2634,9 @@
 			"friendsEmptyTitle": "开始一段新对话",
 			"friendsEmptyDescription": "搜索其他节点上的用户，或在群聊中打开成员资料卡发起私信。",
 			"friendsEmptyAction": "搜索用户",
-			"friendsSearchPlaceholder": "按自定义 ID / 名称搜人…",
+			"friendsSearchPlaceholder": {
+				"placeholder": "按自定义 ID / 名称搜人…"
+			},
 			"friendsSearchEmpty": "没有匹配的用户",
 			"friendsSearchTooShort": "请输入至少 2 个字符",
 			"friendsSearchDm": "发私信",
@@ -3013,6 +3024,7 @@
 			"queuedOffline": "等待发送（离线）",
 			"translationPrefs": {
 				"title": "翻译设置",
+				"textContent": "翻译设置",
 				"autoTranslate": "自动翻译外语消息",
 				"hint": "开启后，语言与界面不同的消息会自动请求译文。",
 				"save": "保存",
@@ -5057,7 +5069,10 @@
 		"invert": "反选",
 		"properties": "属性",
 		"delete": "删除",
-		"back": "返回之前的位置",
+		"back": {
+			"title": "返回之前的位置",
+			"aria-label": "返回之前的位置"
+		},
 		"cancel": "取消",
 		"save": "保存",
 		"showHidden": "显示隐藏",
@@ -5071,8 +5086,8 @@
 		"unlockFolder": "解锁加密文件夹",
 		"unlock": "解锁",
 		"unlockFailed": "解锁失败：${error}",
-		"created": "创建",
-		"modified": "修改",
+		"created": "创建：${stamp}",
+		"modified": "修改：${stamp}",
 		"statusCount": "${count} 项，已选 ${selected}",
 		"newCabinetPrompt": "新文件柜名称",
 		"newFolderPrompt": "新文件夹名称",
@@ -5095,7 +5110,10 @@
 	},
 	"entityProfile": {
 		"attributionMismatch": "显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。请勿将该显示名视为密码学身份。",
-		"attributionMismatchShort": "签名归因不匹配",
+		"attributionMismatchShort": {
+			"title": "签名归因不匹配",
+			"aria-label": "签名归因不匹配"
+		},
 		"ownedBy": "此实体为 ${owner} 所有"
 	}
 }

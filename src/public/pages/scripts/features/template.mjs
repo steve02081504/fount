@@ -177,6 +177,24 @@ export function usingTemplates(path) {
 }
 
 /**
+ * 在指定模板根下执行回调，结束后恢复先前路径（跨壳共享模块勿裸调 usingTemplates）。
+ * @template T
+ * @param {string} path 模板根（同 usingTemplates）
+ * @param {() => T | Promise<T>} fn 回调
+ * @returns {Promise<T>} 回调结果
+ */
+export async function withTemplates(path, fn) {
+	const previous = templatePath
+	usingTemplates(path)
+	try {
+		return await fn()
+	}
+	finally {
+		templatePath = previous
+	}
+}
+
+/**
  * 渲染模板(不激活脚本)。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
