@@ -10,20 +10,16 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import {
+	paintEntityProfileCard,
 	paintEntityProfileExtras,
 	profileDescriptionText as sharedProfileDescriptionText,
 } from '../shared/entityProfileCard.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
-import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
-import { avatarInitial } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { isLocalWritableEntityHash } from './entityResolve.mjs'
 import {
-	applyBioElement,
-	applyStatusDot,
 	fetchUserProfile,
-	formatStatusLabel,
 	invalidateUserProfileCache,
 } from './presence.mjs'
 import { openHubProfileEdit } from './profileEdit.mjs'
@@ -88,31 +84,8 @@ export async function loadEntityProfile(entityHash, options = {}) {
  */
 export async function paintEntityProfileUi(root, profile, extras = {}) {
 	if (!root || !profile) return
-	const name = profile.name || '?'
-	const nameElement = root.querySelector('[data-entity-profile-name]')
-	if (nameElement) nameElement.textContent = name
-	const avatarSeed = root.dataset?.entityHash || root.dataset?.entityProfileHash || name
-	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
-	if (avatarElement instanceof HTMLElement)
-		await applyProfileAvatarToHost(avatarElement, {
-			seed: avatarSeed,
-			label: name,
-			avatar: profile.avatar,
-			emojiFontSize: '28px',
-			letterClass: 'hub-avatar-letter',
-		})
-	const letterElement = root.querySelector('[data-entity-profile-letter]')
-	if (letterElement instanceof HTMLElement) {
-		letterElement.textContent = avatarInitial(name)
-		letterElement.hidden = !!profile.avatar
-	}
-	applyBioElement(root.querySelector('[data-entity-profile-bio]'), profileDescriptionText(profile))
-	paintProfileTags(root.querySelector('[data-entity-profile-tags]'), profile.tags)
-	const statusDot = root.querySelector('[data-entity-profile-status-dot]')
-	applyStatusDot(statusDot, profile.effectiveStatus || profile.status)
-	const statusText = root.querySelector('[data-entity-profile-status-text]')
-	if (statusText)
-		statusText.textContent = await formatStatusLabel(profile.effectiveStatus || profile.status, profile.customStatus)
+	const avatarSeed = root.dataset?.entityHash || root.dataset?.entityProfileHash || profile.entityHash || profile.name
+	await paintEntityProfileCard(root, profile, { entityHash: avatarSeed })
 
 	const ownerEntityHash = profile.ownerEntityHash || null
 	let ownerName = null

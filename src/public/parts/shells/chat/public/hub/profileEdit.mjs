@@ -8,6 +8,11 @@
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { uploadAvatar } from '../profile/src/endpoints.mjs'
+import {
+	configureEntityProfileCard,
+	paintEntityProfileCard,
+} from '../shared/entityProfileCard.mjs'
+import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { updateEntityProfileApi } from '../src/entityProfileApi.mjs'
 import {
 	ensureLocaleEntry,
@@ -18,7 +23,9 @@ import {
 	promptNewLocaleKey,
 	renderLocaleTabs,
 } from '../src/profileLocaleEditor.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { hubStore } from './core/state.mjs'
 import { invalidateUserProfileCache } from './presence.mjs'
 
@@ -34,6 +41,8 @@ let editingLocalized = {}
 let activeLocaleKey = ''
 /** @type {object | null} */
 let editingInfoDefaults = null
+/** @type {string} */
+let editingAvatarPreview = ''
 /** @type {(() => void | Promise<void>) | null} */
 let onSavedCallback = null
 
@@ -51,8 +60,15 @@ async function ensureEditDialog() {
 	if (!(editDialog instanceof HTMLDialogElement))
 		throw new Error('hub profile edit modal missing')
 	document.body.appendChild(node)
+	const previewHost = editDialog.querySelector('#hub-profile-edit-live-preview')
+	const previewCard = await renderTemplate('hub/profile_popup', {})
+	if (previewHost && previewCard instanceof HTMLElement) {
+		configureEntityProfileCard(previewCard, 'preview')
+		previewHost.appendChild(previewCard)
+	}
 
 	editDialog.querySelector('#hub-profile-edit-cancel')?.addEventListener('click', () => editDialog?.close())
+	editDialog.querySelector('#hub-profile-edit-close')?.addEventListener('click', () => editDialog?.close())
 	editDialog.querySelector('#hub-profile-edit-save')?.addEventListener('click', () => { void handleSaveProfile() })
 	editDialog.querySelector('#hub-profile-edit-avatar-upload')?.addEventListener('change', (event) => {
 		const file = event.target?.files?.[0]
@@ -60,12 +76,14 @@ async function ensureEditDialog() {
 		const reader = new FileReader()
 		/** @param {ProgressEvent<FileReader>} loadEvent 读取完成 */
 		reader.onload = (loadEvent) => {
-			const preview = editDialog?.querySelector('#hub-profile-edit-avatar-preview')
-			if (preview instanceof HTMLImageElement && loadEvent.target?.result)
-				preview.src = String(loadEvent.target.result)
+			if (!loadEvent.target?.result) return
+			editingAvatarPreview = String(loadEvent.target.result)
+			renderEditPreview()
 		}
 		reader.readAsDataURL(file)
 	})
+	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('input', renderEditPreview)
+	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('change', renderEditPreview)
 	return editDialog
 }
 
@@ -103,6 +121,55 @@ function loadActiveLocaleForm() {
 		hint.textContent = defaults.name
 			? `${defaults.name} (${defaults.tags?.join(', ') || ''})`.replace(/\s+\(\)$/, '')
 			: ''
+	renderEditPreview()
+}
+
+/**
+ * 按当前表单值实时刷新资料卡预览。
+ * @returns {void}
+ */
+function renderEditPreview() {
+	if (!editDialog || !editingEntityHash) return
+	const defaults = editingInfoDefaults || {}
+	const name = editDialog.querySelector('#hub-profile-edit-name')?.value?.trim()
+		|| defaults.name
+		|| editingBaseProfile?.name
+		|| editingEntityHash.slice(64, 72)
+	const handle = editDialog.querySelector('#hub-profile-edit-handle')?.value?.trim()
+	const status = editDialog.querySelector('#hub-profile-edit-status')?.value || 'offline'
+	const customStatus = editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim()
+	const description = editDialog.querySelector('#hub-profile-edit-description-markdown')?.value?.trim()
+	const themeColor = editDialog.querySelector('#hub-profile-edit-theme-color')?.value || '#5865f2'
+	const tags = parseTagsInput(editDialog.querySelector('#hub-profile-edit-tags')?.value)
+	const links = parseLinksInput(editDialog.querySelector('#hub-profile-edit-links')?.value)
+
+	const card = editDialog.querySelector('#hub-profile-edit-live-preview .hub-profile-popup')
+	if (card instanceof HTMLElement)
+		void paintEntityProfileCard(card, {
+			...editingBaseProfile,
+			entityHash: editingEntityHash,
+			name,
+			handle,
+			status,
+			effectiveStatus: status,
+			customStatus,
+			description,
+			description_markdown: description,
+			themeColor,
+			tags,
+			links,
+		}, {
+			entityHash: editingEntityHash,
+			avatarOverride: editingAvatarPreview,
+		})
+	const swatch = editDialog.querySelector('#hub-profile-edit-avatar-swatch')
+	if (swatch instanceof HTMLElement)
+		void applyProfileAvatarToHost(swatch, {
+			seed: editingEntityHash,
+			label: name,
+			avatar: editingAvatarPreview,
+			letterClass: 'hub-profile-preview-avatar-letter',
+		})
 }
 
 /** @returns {void} */
@@ -152,19 +219,19 @@ function initEditState(entityHash, profile) {
 	editingEntityHash = entityHash
 	editingBaseProfile = profile
 	editingInfoDefaults = profile.infoDefaults || null
+	editingAvatarPreview = customProfileAvatar(profile)
 	editingLocalized = { ...profile.localized || {} }
-	const keys = Object.keys(editingLocalized)
+	let keys = Object.keys(editingLocalized)
 	if (!keys.length)
 		editingLocalized[navigator.language || 'zh-CN'] = {}
+	keys = Object.keys(editingLocalized)
 
 	const navLang = String(navigator.language || '').trim()
 	activeLocaleKey = keys.find(k => k === navLang)
 		|| keys.find(k => navLang && k.split('-')[0] === navLang.split('-')[0])
 		|| keys[0]
-	const preview = editDialog?.querySelector('#hub-profile-edit-avatar-preview')
-	if (preview instanceof HTMLImageElement)
-		preview.src = profile.avatar
-			|| `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name || entityHash.slice(64, 72))}&size=128`
+	const upload = editDialog?.querySelector('#hub-profile-edit-avatar-upload')
+	if (upload instanceof HTMLInputElement) upload.value = ''
 	const status = editDialog?.querySelector('#hub-profile-edit-status')
 	if (status instanceof HTMLSelectElement)
 		status.value = profile.status || 'online'
@@ -179,6 +246,7 @@ function initEditState(entityHash, profile) {
 		theme.value = profile.themeColor || '#5865f2'
 	loadActiveLocaleForm()
 	refreshLocaleTabs()
+	renderEditPreview()
 }
 
 /** @returns {Promise<void>} */
@@ -205,7 +273,7 @@ async function handleSaveProfile() {
 		await onSavedCallback?.()
 	}
 	catch (error) {
-		showToastI18n('error', 'profile.errors.saveFailed', { error: error.message })
+		handleUIError(error, 'profile.errors.saveFailed')
 	}
 }
 

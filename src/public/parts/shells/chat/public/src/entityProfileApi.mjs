@@ -26,7 +26,9 @@ export function cachedProfileFromApi(profile, entityHash) {
 	if (!profile) return null
 	const key = String(entityHash || '').toLowerCase()
 	return {
+		entityHash: key,
 		avatar: profile.avatar || null,
+		infoDefaults: profile.infoDefaults || null,
 		name: profile.name || key.slice(64, 72),
 		handle: profile.handle || null,
 		themeColor: profile.themeColor || '',

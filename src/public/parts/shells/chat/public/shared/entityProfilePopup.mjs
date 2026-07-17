@@ -5,15 +5,15 @@
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
-import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
-import { avatarInitial } from '../hub/core/domUtils.mjs'
-import { paintProfileTags, profileDescriptionText } from '../hub/entityProfile.mjs'
-import { applyBioElement, applyStatusDot, formatStatusLabel } from '../hub/presence.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { isEntityHash128 } from './entityHash.mjs'
-import { paintEntityProfileExtras } from './entityProfileCard.mjs'
+import {
+	ensureEntityProfileCardStyles,
+	paintEntityProfileCard,
+	paintEntityProfileExtras,
+} from './entityProfileCard.mjs'
 
 const LAYER_ID = 'shared-entity-profile-popup-layer'
 
@@ -34,32 +34,10 @@ async function paintSharedPopup(popup, entity) {
 	const data = entityHash ? await fetchEntityProfileApi(entityHash).catch(() => null) : null
 	const profile = data?.profile ? cachedProfileFromApi(data.profile, entityHash) : null
 	const name = aliasForEntity(entityHash) || profile?.name || entity.displayName || '?'
-	const nameElement = popup.querySelector('[data-entity-profile-name]')
-	if (nameElement) nameElement.textContent = name
-
-	const avatarElement = popup.querySelector('[data-entity-profile-avatar]')
-	if (avatarElement instanceof HTMLElement)
-		await applyProfileAvatarToHost(avatarElement, {
-			seed: entityHash || name,
-			label: name,
-			avatar: profile?.avatar,
-			emojiFontSize: '28px',
-			letterClass: 'hub-avatar-letter',
-		})
-	const letterElement = popup.querySelector('[data-entity-profile-letter]')
-	if (letterElement instanceof HTMLElement) {
-		letterElement.textContent = avatarInitial(name)
-		letterElement.hidden = !!profile?.avatar
-	}
-	applyBioElement(popup.querySelector('[data-entity-profile-bio]'), profileDescriptionText(profile))
-	paintProfileTags(popup.querySelector('[data-entity-profile-tags]'), profile?.tags)
-	applyStatusDot(
-		popup.querySelector('[data-entity-profile-status-dot]'),
-		profile?.status || 'offline',
-	)
-	const statusText = popup.querySelector('[data-entity-profile-status-text]')
-	if (statusText)
-		statusText.textContent = await formatStatusLabel(profile?.status || 'offline', profile?.customStatus)
+	await paintEntityProfileCard(popup, profile || { name }, {
+		entityHash,
+		nameOverride: name,
+	})
 
 	let ownerName = null
 	const ownerEntityHash = profile?.ownerEntityHash || null
@@ -99,6 +77,7 @@ async function paintSharedPopup(popup, entity) {
 export async function showEntityProfilePopup(entity) {
 	if (!entity?.entityHash && !entity?.displayName) return
 	dismissEntityProfilePopup()
+	ensureEntityProfileCardStyles()
 	usingTemplates('/parts/shells:chat/src/templates')
 
 	const layer = document.createElement('div')

@@ -6,8 +6,40 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
+import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
+
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from './entityHash.mjs'
+import { customProfileAvatar, entityProfilePattern } from './hashAvatar.mjs'
+
+/**
+ * 清扫远端资料链接，只允许浏览器安全的网页协议。
+ * @param {string} raw 原始链接
+ * @returns {string|null} 可展示链接
+ */
+function safeProfileLink(raw) {
+	try {
+		const url = new URL(String(raw || ''), location.origin)
+		return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null
+	}
+	catch {
+		return null
+	}
+}
+
+const ENTITY_PROFILE_CARD_STYLESHEET = '/parts/shells:chat/shared/entityProfileCard.css'
+
+/**
+ * 跨壳弹出人物卡时按需挂载共享样式。
+ * @returns {void}
+ */
+export function ensureEntityProfileCardStyles() {
+	if (document.querySelector(`link[href="${ENTITY_PROFILE_CARD_STYLESHEET}"]`)) return
+	const link = document.createElement('link')
+	link.rel = 'stylesheet'
+	link.href = ENTITY_PROFILE_CARD_STYLESHEET
+	document.head.appendChild(link)
+}
 
 /**
  * 将 API profile 归一化为跨壳展示结构。
@@ -20,7 +52,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 	const key = String(entityHash || '').toLowerCase()
 	return {
 		entityHash: key,
-		avatar: profile?.avatar || null,
+		avatar: customProfileAvatar(profile) || null,
 		name: profile?.name || (key ? entityHashLabel(key) : '?'),
 		handle: profile?.handle || null,
 		themeColor: profile?.themeColor || '',
@@ -36,6 +68,109 @@ export function normalizeEntityProfile(profile, entityHash) {
 		activePubKeyHex: profile?.activePubKeyHex || null,
 		keyGeneration: profile?.keyGeneration ?? null,
 	}
+}
+
+/**
+ * 设置共享人物卡的嵌入模式；资料弹窗、资料页和编辑预览使用同一份结构。
+ * @param {HTMLElement} root 人物卡根节点
+ * @param {'popup'|'embedded'|'preview'} mode 使用场景
+ * @returns {void}
+ */
+export function configureEntityProfileCard(root, mode = 'popup') {
+	if (!(root instanceof HTMLElement)) return
+	root.classList.toggle('entity-profile-card--embedded', mode === 'embedded')
+	root.classList.toggle('entity-profile-card--preview', mode === 'preview')
+	if (mode === 'popup') return
+	root.querySelector('[data-profile-popup-close]')?.remove()
+	for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))
+		button.remove()
+}
+
+/**
+ * 使用共享人物卡结构绘制资料；可用于真实资料和编辑中的临时资料。
+ * @param {HTMLElement} root 人物卡根节点
+ * @param {object} profile API 或编辑态资料
+ * @param {{ entityHash?: string, avatarOverride?: string, nameOverride?: string }} [options] 绘制选项
+ * @returns {Promise<void>}
+ */
+export async function paintEntityProfileCard(root, profile, options = {}) {
+	if (!(root instanceof HTMLElement)) return
+	const entityHash = String(options.entityHash || profile?.entityHash || root.dataset.entityHash || '')
+	const normalized = normalizeEntityProfile(profile, entityHash)
+	if (!normalized) return
+	const name = options.nameOverride || normalized.name
+	const avatar = options.avatarOverride === undefined ? normalized.avatar : options.avatarOverride
+	root.dataset.entityHash = entityHash
+	const pattern = entityProfilePattern(entityHash || name)
+	root.dataset.profilePattern = pattern.variant
+	root.style.setProperty('--entity-card-accent', normalized.themeColor || '#5865f2')
+	root.style.setProperty('--entity-card-pattern-angle', `${pattern.angle}deg`)
+	root.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
+	root.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
+	root.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
+
+	const nameElement = root.querySelector('[data-entity-profile-name]')
+	if (nameElement) nameElement.textContent = name
+	const handleElement = root.querySelector('[data-entity-profile-handle]')
+	if (handleElement)
+		handleElement.textContent = normalized.handle
+			? `@${normalized.handle}`
+			: `@${entityHash.slice(64, 72) || '?'}`
+
+	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
+	if (avatarElement instanceof HTMLElement)
+		await applyProfileAvatarToHost(avatarElement, {
+			seed: entityHash || name,
+			label: name,
+			avatar,
+			emojiFontSize: '30px',
+			letterClass: 'hub-avatar-letter',
+		})
+
+	const status = normalized.status === 'away'
+		? 'idle'
+		: normalized.status === 'busy'
+			? 'dnd'
+			: normalized.status
+	const statusDot = root.querySelector('[data-entity-profile-status-dot]')
+	if (statusDot instanceof HTMLElement) statusDot.dataset.status = status
+	const statusText = root.querySelector('[data-entity-profile-status-text]')
+	if (statusText)
+		statusText.textContent = normalized.customStatus
+			|| geti18n(`profile.statusOptions.${normalized.status}`)
+
+	const bioElement = root.querySelector('[data-entity-profile-bio]')
+	if (bioElement)
+		bioElement.textContent = profileDescriptionText(normalized)
+			|| geti18n('profile.bioEmpty')
+
+	const tagsHost = root.querySelector('[data-entity-profile-tags]')
+	if (tagsHost instanceof HTMLElement) {
+		tagsHost.replaceChildren(...normalized.tags.filter(Boolean).map(tag => {
+			const chip = document.createElement('span')
+			chip.className = 'hub-profile-tag'
+			chip.textContent = `#${tag}`
+			return chip
+		}))
+		tagsHost.hidden = !tagsHost.childElementCount
+	}
+
+	const linksHost = root.querySelector('[data-entity-profile-links]')
+	if (linksHost instanceof HTMLElement) {
+		linksHost.replaceChildren(...normalized.links.flatMap(link => {
+			const safeUrl = safeProfileLink(link?.url)
+			if (!safeUrl) return []
+			const anchor = document.createElement('a')
+			anchor.className = 'entity-profile-card-link'
+			anchor.href = safeUrl
+			anchor.target = '_blank'
+			anchor.rel = 'noopener noreferrer'
+			anchor.textContent = link.name || link.url
+			return [anchor]
+		}))
+		linksHost.hidden = !linksHost.childElementCount
+	}
+	paintEntityProfileExtras(root, { ownerEntityHash: normalized.ownerEntityHash })
 }
 
 /**

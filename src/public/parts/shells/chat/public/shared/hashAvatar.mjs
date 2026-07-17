@@ -85,6 +85,33 @@ export function isAvatarImageUrl(value) {
 	return raw.startsWith('http') || raw.startsWith('/') || raw.startsWith('data:')
 }
 
+/**
+ * 返回用户显式设置的头像；部件元数据继承来的默认图标不算个人头像。
+ * @param {{ avatar?: string, infoDefaults?: { avatar?: string } } | null | undefined} profile 资料
+ * @returns {string} 自定义头像；没有则为空
+ */
+export function customProfileAvatar(profile) {
+	const avatar = String(profile?.avatar || '').trim()
+	const inheritedDefault = String(profile?.infoDefaults?.avatar || '').trim()
+	return avatar && avatar !== inheritedDefault ? avatar : ''
+}
+
+/**
+ * 从身份 seed 生成稳定的人物卡纹理参数。
+ * @param {string} seed 身份 seed
+ * @returns {{ variant: string, angle: number, size: number, offsetX: number, offsetY: number }} 纹理参数
+ */
+export function entityProfilePattern(seed) {
+	const value = hashAvatarSeed(seed) >>> 0
+	return {
+		variant: ['dots', 'grid', 'diagonal', 'rings', 'stars'][value % 5],
+		angle: 18 + ((value >>> 3) % 58),
+		size: 28 + ((value >>> 9) % 34),
+		offsetX: (value >>> 15) % 31,
+		offsetY: (value >>> 21) % 31,
+	}
+}
+
 /** 连续同作者消息隐藏头像的时间窗（毫秒） */
 export const MESSAGE_AVATAR_GROUP_GAP_MS = 30 * 60 * 1000
 

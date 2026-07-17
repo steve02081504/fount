@@ -15,141 +15,103 @@
 	<link rel="stylesheet" href="./index.css" type="text/css" />
 </head>
 
-<body class="bg-base-100 min-h-screen">
-	<div class="container mx-auto p-4 sm:p-6 max-w-7xl">
-		<!-- 顶部导航 -->
-		<div class="navbar bg-base-200 rounded-xl shadow-md mb-6">
-			<div class="flex-1">
-				<h1 class="text-2xl font-bold px-4" data-i18n="profile.title"></h1>
+<body class="profile-page min-h-screen">
+	<main class="profile-shell">
+		<header class="profile-topbar">
+			<div>
+				<p class="profile-eyebrow" data-i18n="profile.settingsEyebrow"></p>
+				<h1 data-i18n="profile.title"></h1>
+				<p class="profile-topbar-description" data-i18n="profile.description"></p>
 			</div>
-			<div class="flex-none gap-2">
-				<button id="profile-edit-button" class="btn btn-primary btn-sm sm:btn-md gap-2">
-					<img src="https://api.iconify.design/line-md/edit.svg" class="h-4 w-4" alt="" aria-hidden="true" />
-					<span data-i18n="profile.edit"></span>
-				</button>
-			</div>
-		</div>
+			<button id="profile-edit-button" class="btn btn-primary gap-2">
+				<img src="https://api.iconify.design/line-md/edit.svg" class="h-4 w-4" alt="" aria-hidden="true" />
+				<span data-i18n="profile.edit"></span>
+			</button>
+		</header>
 
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-			<!-- 左侧：个人信息卡片 -->
-			<div class="lg:col-span-1">
-				<div class="card bg-base-200 shadow-xl overflow-hidden sticky top-6">
-					<!-- 封面横幅 -->
-					<div class="profile-banner h-28 bg-gradient-to-br from-primary/40 via-secondary/30 to-accent/20 relative">
-						<div class="absolute inset-0 opacity-50" style="background-image:radial-gradient(color-mix(in srgb, var(--color-base-content) 8%, transparent) 1.5px, transparent 1.5px);background-size:60px 60px;"></div>
-					</div>
-					<div class="card-body pt-0 -mt-16 relative z-10">
-						<div class="flex flex-col items-center text-center">
-							<!-- 头像 -->
-							<div class="avatar mb-3">
-								<div class="w-28 h-28 rounded-full ring-4 ring-base-200 shadow-lg bg-base-100">
-									<img id="profile-avatar" src="" data-i18n="profile.avatar" />
-								</div>
-							</div>
+		<div class="profile-layout">
+			<aside id="profile-card-host" class="profile-card-host"></aside>
 
-							<!-- 基本信息 -->
-							<h2 id="profile-display-name" class="text-xl font-bold"></h2>
-							<p id="profile-username" class="text-sm opacity-60 mb-2"></p>
-
-							<div id="profile-status-badge" class="badge badge-success gap-1.5 mb-2">
-								<div class="w-2 h-2 rounded-full bg-current"></div>
-								<span id="profile-status"></span>
-							</div>
-
-							<p id="profile-custom-status" class="text-xs opacity-50 italic mb-3"></p>
-							<p id="profile-bio" class="text-sm leading-relaxed opacity-80 mb-3 px-2"></p>
-
-							<!-- 外链 -->
-							<div id="social-links" class="flex gap-2 mb-2">
-							</div>
-						</div>
-
-					</div>
-				</div>
-			</div>
-
-			<!-- 右侧：详细信息和贴纸管理 -->
-			<div class="lg:col-span-2 space-y-6">
-				<!-- 我的主人 -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title gap-2 mb-4">
-							<img src="https://api.iconify.design/mdi/account-key.svg" class="h-5 w-5 opacity-70" alt="" aria-hidden="true" />
-							<span data-i18n="profile.ownerTitle"></span>
-						</h2>
-						<div id="profile-owner-settings"></div>
-					</div>
-				</div>
-
-				<!-- 联邦 / 网络 -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title gap-2 mb-4">
-							<img src="https://api.iconify.design/line-md/link.svg" class="h-5 w-5 opacity-70" alt="" aria-hidden="true" />
-							<span data-i18n="profile.federationTitle"></span>
-						</h2>
-						<div id="profile-federation-settings"></div>
-					</div>
-				</div>
-
-				<!-- 我的群组 -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title gap-2 mb-4">
-							<img src="https://api.iconify.design/line-md/account.svg" class="h-5 w-5 opacity-70" alt="" aria-hidden="true" />
-							<span data-i18n="profile.myGroups"></span>
-						</h2>
-						<div id="profile-groups" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<div class="text-center py-6 opacity-50" id="no-groups">
-								<img src="https://api.iconify.design/line-md/account.svg" class="h-10 w-10 mx-auto mb-2 opacity-30" alt="" aria-hidden="true" />
-								<p class="text-sm" data-i18n="profile.noGroups"></p>
-							</div>
+			<div class="profile-content">
+				<section class="profile-section profile-overview">
+					<div class="profile-section-heading">
+						<div>
+							<p class="profile-section-kicker" data-i18n="profile.accountAtGlance"></p>
+							<h2 data-i18n="profile.overview"></h2>
 						</div>
 					</div>
-				</div>
-
-				<!-- 我的频道 -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title gap-2 mb-4">
-							<img src="https://api.iconify.design/mdi/pound.svg" class="h-5 w-5 opacity-70" alt="" aria-hidden="true" />
-							<span data-i18n="profile.myChannels"></span>
-						</h2>
-						<div id="profile-channels" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-							<div class="text-center py-6 opacity-50" id="no-channels">
-								<img src="https://api.iconify.design/mdi/pound.svg" class="h-10 w-10 mx-auto mb-2 opacity-30" alt="" aria-hidden="true" />
-								<p class="text-sm" data-i18n="profile.noChannels"></p>
-							</div>
+					<div class="profile-stats">
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryUserId"></span>
+							<strong id="summary-username">-</strong>
+						</div>
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryAccountStatus"></span>
+							<strong id="summary-status">-</strong>
+						</div>
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryLinksCount"></span>
+							<strong id="summary-links-count">0</strong>
 						</div>
 					</div>
-				</div>
+				</section>
 
-				<!-- 个人信息概览 -->
-				<div class="card bg-base-200 shadow-xl">
-					<div class="card-body">
-						<h2 class="card-title gap-2 mb-4">
-							<img src="https://api.iconify.design/line-md/person.svg" class="h-5 w-5 opacity-70" alt="" aria-hidden="true" />
-							<span data-i18n="profile.overview"></span>
-						</h2>
-						<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-							<div class="bg-base-300/50 rounded-xl p-4">
-								<div class="text-xs opacity-60 mb-1" data-i18n="profile.summaryUserId"></div>
-								<div id="summary-username" class="font-medium truncate">-</div>
-							</div>
-							<div class="bg-base-300/50 rounded-xl p-4">
-								<div class="text-xs opacity-60 mb-1" data-i18n="profile.summaryAccountStatus"></div>
-								<div id="summary-status" class="font-medium">-</div>
-							</div>
-							<div class="bg-base-300/50 rounded-xl p-4">
-								<div class="text-xs opacity-60 mb-1" data-i18n="profile.summaryLinksCount"></div>
-								<div id="summary-links-count" class="font-medium">0</div>
-							</div>
+				<section class="profile-section">
+					<div class="profile-section-heading">
+						<h2 data-i18n="profile.myGroups"></h2>
+					</div>
+					<div id="profile-groups" class="profile-item-grid">
+						<div class="profile-empty" id="no-groups">
+							<img src="https://api.iconify.design/line-md/account.svg" alt="" aria-hidden="true" />
+							<p data-i18n="profile.noGroups"></p>
 						</div>
 					</div>
-				</div>
+				</section>
+
+				<section class="profile-section">
+					<div class="profile-section-heading">
+						<h2 data-i18n="profile.myChannels"></h2>
+					</div>
+					<div id="profile-channels" class="profile-item-grid">
+						<div class="profile-empty" id="no-channels">
+							<img src="https://api.iconify.design/mdi/pound.svg" alt="" aria-hidden="true" />
+							<p data-i18n="profile.noChannels"></p>
+						</div>
+					</div>
+				</section>
+
+				<section class="profile-section profile-advanced">
+					<div class="profile-section-heading">
+						<div>
+							<p class="profile-section-kicker" data-i18n="profile.advancedKicker"></p>
+							<h2 data-i18n="profile.advancedSettings"></h2>
+							<p data-i18n="profile.advancedDescription"></p>
+						</div>
+					</div>
+					<details class="profile-settings-details">
+						<summary>
+							<img src="https://api.iconify.design/line-md/link.svg" alt="" aria-hidden="true" />
+							<span>
+								<strong data-i18n="profile.federationTitle"></strong>
+								<small data-i18n="profile.federationSummary"></small>
+							</span>
+						</summary>
+						<div id="profile-federation-settings" class="profile-settings-content"></div>
+					</details>
+					<details class="profile-settings-details profile-owner-details">
+						<summary>
+							<img src="https://api.iconify.design/mdi/account-key.svg" alt="" aria-hidden="true" />
+							<span>
+								<strong data-i18n="profile.ownerTitle"></strong>
+								<small data-i18n="profile.ownerSummary"></small>
+							</span>
+						</summary>
+						<div id="profile-owner-settings" class="profile-settings-content"></div>
+					</details>
+				</section>
 			</div>
 		</div>
-	</div>
+	</main>
 
 	<script type="module" src="./index.mjs"></script>
 </body>

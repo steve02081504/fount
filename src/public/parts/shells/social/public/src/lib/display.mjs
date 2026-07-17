@@ -1,6 +1,7 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import {
 	avatarInitial,
+	customProfileAvatar,
 	hashAvatarStyle,
 } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
@@ -42,7 +43,7 @@ export function authorLabel(entityHash, profile) {
  * @returns {string} 头像 URL
  */
 export function entityAvatarUrl(entityHash, profile) {
-	return profile?.avatar || `${ENTITY_AVATAR_API}/${encodeURIComponent(entityHash)}/files/profile/avatar`
+	return customProfileAvatar(profile) || `${ENTITY_AVATAR_API}/${encodeURIComponent(entityHash)}/files/profile/avatar`
 }
 
 /**
@@ -58,8 +59,9 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	const { background, color } = hashAvatarStyle(seed)
 	const initial = escapeHtml(avatarInitial(label))
 	const cls = `author-avatar hash-avatar ${sizeClass}`.trim()
+	const avatar = customProfileAvatar(profile)
 	const url = entityAvatarUrl(entityHash, profile)
-	if (!profile?.avatar) 
+	if (!avatar)
 		return `<div class="${cls}" style="background:${background};color:${color}">${initial}</div>`
 	
 	return `<div class="${cls}" style="background:${background};color:${color}">`

@@ -10,6 +10,7 @@ import { mountDockedStickerPicker } from '../../../../scripts/components/sticker
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { fetchStickerPayload } from '../providers/sticker.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
+import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
@@ -55,11 +56,12 @@ export async function refreshViewerHubPresentation() {
 	myAvatar.style.background = avatarColor(entityHash)
 	myAvatar.style.color = avatarTextColor(entityHash)
 	myName.textContent = label
-	if (profile?.avatar)
+	const avatar = customProfileAvatar(profile)
+	if (avatar)
 		await applyProfileAvatarToHost(myAvatar, {
 			seed: entityHash,
 			label,
-			avatar: profile.avatar,
+			avatar,
 			emojiFontSize: '18px',
 		})
 }

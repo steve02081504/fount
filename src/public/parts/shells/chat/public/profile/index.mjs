@@ -6,15 +6,17 @@
  * 【关联】profile/src/endpoints.mjs、federationSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
 import {
-	mountTemplate,
 	renderTemplate,
 	usingTemplates,
 } from '../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
-import { profileDescriptionText } from '../hub/entityProfile.mjs'
 import { openHubProfileEdit } from '../hub/profileEdit.mjs'
+import {
+	configureEntityProfileCard,
+	paintEntityProfileCard,
+} from '../shared/entityProfileCard.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { initProfileFederationSettings } from './federationSettingsPanel.mjs'
@@ -23,6 +25,8 @@ import { getProfile } from './src/endpoints.mjs'
 
 let currentEntityHash = null
 let currentProfile = null
+/** @type {HTMLElement | null} */
+let currentProfileCard = null
 
 /**
  * @param {HTMLElement | null} el 目标元素
@@ -38,21 +42,6 @@ function applyDatasetI18n(el, i18nKey, params = {}) {
 	for (const [k, v] of Object.entries(params))
 		el.dataset[k] = String(v)
 	el.textContent = ''
-}
-
-/**
- * @param {HTMLElement | null} el 目标元素
- * @param {string} [text] 纯文本；空时用 `emptyI18nKey`
- * @param {string} [emptyI18nKey] 无文本时的 i18n 键
- * @returns {void}
- */
-function setElTextOrI18n(el, text, emptyI18nKey) {
-	if (!el) return
-	if (text) {
-		delete el.dataset.i18n
-		el.textContent = text
-	}
-	else applyDatasetI18n(el, emptyI18nKey)
 }
 
 /**
@@ -85,6 +74,13 @@ async function init() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	applyTheme()
 	await initTranslations('profile')
+	const profileCardHost = document.getElementById('profile-card-host')
+	const profileCard = await renderTemplate('hub/profile_popup', {})
+	if (profileCard instanceof HTMLElement && profileCardHost) {
+		configureEntityProfileCard(profileCard, 'embedded')
+		profileCardHost.appendChild(profileCard)
+		currentProfileCard = profileCard
+	}
 
 	onLanguageChange(async () => {
 		if (currentProfile) await renderProfile(currentProfile)
@@ -153,46 +149,14 @@ async function loadProfile(entityHash) {
  * @param {object} profile - 用户资料
  */
 async function renderProfile(profile) {
-	const avatar = document.getElementById('profile-avatar')
-	if (profile.avatar)
-		avatar.src = profile.avatar
-	else
-		avatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.name)}&size=128`
+	const entityHash = currentEntityHash || profile.entityHash || '?'
+	if (currentProfileCard)
+		await paintEntityProfileCard(currentProfileCard, profile, { entityHash })
+	document.documentElement.style.setProperty('--profile-accent', profile.themeColor || '#5865f2')
 
-	document.getElementById('profile-display-name').textContent = profile.name
-	document.getElementById('profile-username').textContent = `@${profile.username || profile.entityHash?.slice(64, 72) || '?'}`
-	setElTextOrI18n(
-		document.getElementById('profile-bio'),
-		profileDescriptionText(profile),
-		'profile.bioEmpty',
-	)
-
-	const statusBadge = document.getElementById('profile-status-badge')
-	const statusText = document.getElementById('profile-status')
-	const customStatus = document.getElementById('profile-custom-status')
 	const displayStatus = profile.effectiveStatus || profile.status || 'offline'
 
-	statusBadge.className = 'badge gap-2'
-	switch (displayStatus) {
-		case 'online':
-			statusBadge.classList.add('badge-success')
-			break
-		case 'away':
-			statusBadge.classList.add('badge-warning')
-			break
-		case 'busy':
-			statusBadge.classList.add('badge-error')
-			break
-		default:
-			statusBadge.classList.add('badge-neutral')
-			break
-	}
-	applyDatasetI18n(statusText, `profile.statusOptions.${displayStatus}`)
-	customStatus.textContent = profile.customStatus || ''
-
-	await renderProfileLinks(profile.links)
-
-	document.getElementById('summary-username').textContent = `@${profile.username || '?'}`
+	document.getElementById('summary-username').textContent = `@${profile.handle || profile.username || entityHash.slice(64, 72)}`
 	applyDatasetI18n(
 		document.getElementById('summary-status'),
 		`profile.statusOptions.${displayStatus}`,
@@ -200,16 +164,6 @@ async function renderProfile(profile) {
 	document.getElementById('summary-links-count').textContent = String(
 		Array.isArray(profile.links) ? profile.links.length : 0,
 	)
-}
-
-/**
- * @param {Array<{ icon?: string, name?: string, url: string }>} links 链接列表
- */
-async function renderProfileLinks(links) {
-	const container = document.getElementById('social-links')
-	await mountTemplate(container, 'profile/social_links_shell', {
-		links: Array.isArray(links) ? links : [],
-	})
 }
 
 /**

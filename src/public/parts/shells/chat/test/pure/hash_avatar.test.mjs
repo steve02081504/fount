@@ -3,6 +3,8 @@ import {
 	avatarColor,
 	avatarInitial,
 	avatarTextColor,
+	customProfileAvatar,
+	entityProfilePattern,
 	hashAvatarRgb,
 	hashAvatarStyle,
 	isFirstMessageInAuthorGroup,
@@ -35,6 +37,18 @@ function assertNotSameColorAcrossSeeds() {
 Deno.test('hashAvatar: avatarInitial uses first letter', () => {
 	assertEquals(avatarInitial('test_streamer'), 'T')
 	assertEquals(avatarInitial(''), '?')
+})
+
+Deno.test('customProfileAvatar ignores inherited part avatar', () => {
+	const inherited = 'https://example.test/default.svg'
+	assertEquals(customProfileAvatar({ avatar: inherited, infoDefaults: { avatar: inherited } }), '')
+	assertEquals(customProfileAvatar({ avatar: '/profile/avatar', infoDefaults: { avatar: inherited } }), '/profile/avatar')
+})
+
+Deno.test('entityProfilePattern is stable and varies by identity', () => {
+	assertEquals(entityProfilePattern(SEED), entityProfilePattern(SEED))
+	assert(entityProfilePattern(SEED).variant !== entityProfilePattern('b'.repeat(128)).variant
+		|| entityProfilePattern(SEED).angle !== entityProfilePattern('b'.repeat(128)).angle)
 })
 
 Deno.test('isFirstMessageInAuthorGroup: char vs human same sender pubKey still breaks group', () => {

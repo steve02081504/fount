@@ -266,7 +266,13 @@
 					"name": "profile",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
-						"src/public/parts/shells/chat/public/src/templates/profile/**"
+						"src/public/parts/shells/chat/public/profile/**",
+						"src/public/parts/shells/chat/public/hub/profileEdit.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
+						"src/public/parts/shells/chat/public/shared/profileEdit.css",
+						"src/public/parts/shells/chat/public/src/entityProfileApi.mjs",
+						"src/public/parts/shells/chat/public/src/templates/profile/**",
+						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html"
 					]
 				}
 			],

@@ -9,6 +9,7 @@ import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { deriveMessageAttribution } from '../shared/attribution.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
+import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
 	cachedProfileFromApi,
@@ -192,7 +193,8 @@ export function applyAvatarsTo(rootElement) {
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
-			if (profile.avatar) {
+			const avatar = customProfileAvatar(profile)
+			if (avatar) {
 				const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
 				void applyProfileAvatarToHost(av, {
 					seed: profileKey,
@@ -202,7 +204,7 @@ export function applyAvatarsTo(rootElement) {
 						profileName: profile.name,
 						fallbackLabel: authorDisplayLabel(authorKey),
 					}),
-					avatar: profile.avatar,
+					avatar,
 				})
 			}
 			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
@@ -301,7 +303,7 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 			await applyProfileAvatarToHost(hoverCardAvatar, {
 				seed: profileKey,
 				label: resolvedName,
-				avatar: profile.avatar,
+				avatar: customProfileAvatar(profile),
 				emojiFontSize: '32px',
 				letterId: 'hover-card-avatar-letter',
 			})
