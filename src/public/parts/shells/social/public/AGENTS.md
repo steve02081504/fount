@@ -19,7 +19,10 @@ alwaysApply: false
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`); ingress rejects unlisted types.
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 - **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started` (`inbox.mjs`).
-- **Share URL**: chat `wrapProtocolHttpsUrl`（Social 经 `shared/protocolUrl.mjs` re-export）→ GitHub Pages protocol relay to the reader's local instance.
+- **Cross-shell chat HTTP**：viewer / personal-lists / entities/search / translation-prefs 一律走 `/api/parts/shells:chat/…`（前端 `chatApi`）；Social 不再注册重复路由。live/integration 节点需 `loadParts: ['shells/social', 'shells/chat']`。
+- **part_query**：`src/federation/partQuery.mjs` 的 `registerSocialQueryKinds` / `unregisterSocialQueryKinds`；Load/Unload 各一次。KIND+handler 留在 `trending|search|discover|live/network.mjs`。
+- **联邦帖行**：`src/federation/postQueryRow.mjs`（`federatedPostQueryRow` / `sanitizeFederatedPostQueryRow`）供 discover/search 共用。
+- **Share URL**：chat `wrapProtocolHttpsUrl`（Social 经 `shared/protocolUrl.mjs` re-export）→ GitHub Pages protocol relay to the reader's local instance。`public/shared/runUri.mjs` 保持 Deno 纯测可 import（无 `/parts/` URL）。
 - **Trending**: `scope=local|nearby`; nearby uses `part_query` `trending_hashtags`.
 - **Dwell**: frontend `dwellTracker.mjs` uses local IntersectionObserver; short videos may report `watchMs`/`watchRatio`; local-only ranking signal, not federated.
 - **Topics / search / videos / live**: `tag_follow` topic pages; `GET /search` with filters and `scope=nearby` (`post_search`); `GET /videos/feed` + vertical snap + cursor pagination/replay; `/live/*` (broadcast auto-posts `liveRef`, end `post_edit` stats, dual-host co-stream, lobby `scope=nearby` + viewer proxy) + `av-relay` preview/full (`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`; WS URL ← `social/public/shared/liveAvWsUrl.mjs`); scheduled posts `publishAt` + `scheduledPostWatcher` (modeled on poll deadline).
