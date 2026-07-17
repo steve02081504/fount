@@ -20,7 +20,7 @@ async function renderGroupEmojis(context) {
 	const entriesHtml = entries.map(entry => {
 		const src = groupEmojiDataApiPath(context.groupId, entry.emojiId)
 		const del = canManage
-			? `<button type="button" class="btn btn-ghost btn-xs text-error" data-delete-emoji="${escapeHtml(entry.emojiId)}">×</button>`
+			? `<button type="button" class="btn btn-ghost btn-xs text-error" data-delete-emoji="${escapeHtml(entry.emojiId)}" data-i18n-aria-label="chat.group.settingsPage.emojisDelete">×</button>`
 			: ''
 		return `<div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-base-300">
 <img src="${src}" alt="${escapeHtml(entry.name || entry.emojiId)}" class="w-12 h-12 object-contain" loading="lazy" />

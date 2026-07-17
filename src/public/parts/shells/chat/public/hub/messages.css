@@ -119,7 +119,8 @@
 }
 
 .hub-message-row:hover .hub-message-hover-bar,
-.hub-message-row:focus-within .hub-message-hover-bar {
+.hub-message-row:focus-within .hub-message-hover-bar,
+.shift-active .hub-message-row .hub-message-hover-bar {
 	opacity: 1;
 	pointer-events: auto;
 }
@@ -133,15 +134,11 @@
 }
 
 .hub-message-hover-bar .hub-message-actions,
-.hub-message-hover-bar .hub-message-actions-normal-buttons {
+.hub-message-hover-bar .hub-message-actions-normal-buttons,
+.hub-message-hover-bar .hub-message-actions-shift-buttons {
 	flex-wrap: nowrap;
 	margin-top: 0;
 	gap: 0;
-}
-
-/* shift 层在浮动栏内隐藏（shift 操作改在右键菜单或下拉中访问） */
-.hub-message-hover-bar .hub-message-actions-shift-buttons {
-	display: none;
 }
 
 /* =========================================================

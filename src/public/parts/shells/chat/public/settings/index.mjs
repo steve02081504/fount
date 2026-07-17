@@ -1,9 +1,7 @@
 /**
  * 【文件】public/settings/index.mjs
- * 【职责】群设置页前端入口：主题、多 Tab 切换与审计/频道权限/自定义表情子面板懒加载。
- * 【原理】initGroupSettings 拉群配置；tab 点击切换 `.settings-tab-panel`；按 data-tab 触发 ensureAuditLogPanel 等异步挂载。
- * 【数据结构】无模块级状态；DOM 通过 data-tab 与 `#tab-*` 面板 id 关联。
- * 【关联】groupSettings.mjs、auditLogPanel、channelPermissions、groupEmojis；Hub 设置路由。
+ * 【职责】群设置页入口：主题、侧栏分区导航与表情/频道权限/审计懒加载。
+ * 【关联】groupSettings.mjs、nav.mjs。
  */
 import { applyTheme } from '../../../../scripts/theme/index.mjs'
 import {
@@ -13,31 +11,17 @@ import {
 	initGroupSettings,
 } from '/parts/shells:chat/src/groupSettings.mjs'
 
+import { registerSettingsLazyHandlers, wireSettingsNav } from './nav.mjs'
+
 applyTheme()
 
-document.querySelectorAll('.settings-tabs > .tab').forEach(tab => {
-	tab.addEventListener('click', event => {
-		const target = event.target.closest('.tab')
-		if (!target?.dataset.tab) return
-		document.querySelectorAll('.settings-tabs > .tab').forEach(t => t.classList.remove('tab-active'))
-		target.classList.add('tab-active')
-		document.querySelectorAll('.settings-tab-panel').forEach(content => content.classList.add('hidden'))
-		document.getElementById(`tab-${target.dataset.tab}`)?.classList.remove('hidden')
-		if (target.dataset.tab === 'emojis') void ensureGroupEmojisPanel()
-	})
+registerSettingsLazyHandlers({
+	emojis: ensureGroupEmojisPanel,
+	'channel-perms': ensureChannelPermissionsPanel,
+	audit: ensureAuditLogPanel,
 })
 
-document.querySelectorAll('[data-advanced-section]').forEach(tab => {
-	tab.addEventListener('click', () => {
-		const section = tab.dataset.advancedSection
-		document.querySelectorAll('[data-advanced-section]').forEach(item => item.classList.remove('btn-active'))
-		tab.classList.add('btn-active')
-		document.querySelectorAll('.settings-advanced-panel').forEach(panel => panel.classList.add('hidden'))
-		document.getElementById(`advanced-${section}`)?.classList.remove('hidden')
-		if (section === 'audit') void ensureAuditLogPanel()
-		if (section === 'channel-perms') void ensureChannelPermissionsPanel()
-	})
-})
+wireSettingsNav(document.querySelector('.settings-nav'))
 
 await initGroupSettings()
 document.body.dataset.settingsLoaded = '1'

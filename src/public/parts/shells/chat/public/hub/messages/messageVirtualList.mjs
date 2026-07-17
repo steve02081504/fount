@@ -11,6 +11,7 @@ import { applyAvatarsTo } from '../presence.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 
 import { bindChannelMessageActions } from './actions/handlers.mjs'
+import { bindMessageDragExport } from './messageDragExport.mjs'
 import {
 	consumePendingScrollTarget,
 	setPendingScrollTarget,
@@ -181,6 +182,7 @@ export function decorateRenderedMessages(container, shouldScroll = false, reload
 	applyAvatarsTo(container)
 	bindReactions(container, reload)
 	bindChannelMessageActions(container)
+	bindMessageDragExport(container)
 	if (isTwoPartyCharDialogue()) {
 		updateHideCharNames(hubStore.messages.channelMessages)
 		attachLastCharMessageSwipe(container)

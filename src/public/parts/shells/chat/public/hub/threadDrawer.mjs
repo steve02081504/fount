@@ -18,6 +18,7 @@ import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 import { activeCharPartNames } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { bindChannelMessageActions } from './messages/actions/handlers.mjs'
+import { bindMessageDragExport } from './messages/messageDragExport.mjs'
 import { setChannelMessageActionsContext } from './messages/messageActionsState.mjs'
 import { syncChannelActionsContext } from './messages/messages.mjs'
 import { wireMessageReactions } from './messages/reactions.mjs'
@@ -163,6 +164,7 @@ async function renderThreadMessages(messageContainer) {
 		reload: () => renderThreadMessages(messageContainer),
 	})
 	bindChannelMessageActions(messageContainer)
+	bindMessageDragExport(messageContainer)
 	wireMessageReactions(messageContainer, {
 		groupId,
 		channelId: threadChannelId,

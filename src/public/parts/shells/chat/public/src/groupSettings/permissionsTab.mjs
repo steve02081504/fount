@@ -19,10 +19,11 @@ export async function renderPermissionSettings(context) {
 	context.permissionsController = new AbortController()
 	const { signal } = context.permissionsController
 
-	const rolesHtml = (await Promise.all(Object.entries(context.state.roles).map(async ([roleId, role]) => {
+	const rolesHtml = (await Promise.all(Object.entries(context.state.roles || {}).map(async ([roleId, role]) => {
+		const permissions = role.permissions || {}
 		const permissionsHtml = (await Promise.all(ALL_PERMISSIONS.map(perm =>
 			renderTemplateAsHtmlString('group/settings/permission_row', {
-				checked: role.permissions[perm] ? 'checked' : '',
+				checked: permissions[perm] ? 'checked' : '',
 				perm,
 				roleId,
 			})

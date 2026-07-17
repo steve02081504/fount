@@ -1,3 +1,4 @@
+import { activateSection } from '../../settings/nav.mjs'
 import { getGroupState } from '../api/groupCore.mjs'
 import { initAuditLogPanel } from '../auditLogPanel.mjs'
 import { resolveViewerSettingsCapabilities } from '../groupViewerPermissions.mjs'
@@ -35,36 +36,29 @@ export async function loadGroupSettings(context, groupId) {
  */
 export async function updateSettingsTabsVisibility(context) {
 	if (!context.settingsCaps) return
-	const topLevelMap = {
+
+	const sectionVisibility = {
+		general: true,
 		members: context.settingsCaps.isMember,
 		emojis: context.settingsCaps.isMember,
-	}
-	for (const [tabId, visible] of Object.entries(topLevelMap)) {
-		const tab = document.querySelector(`.settings-tabs > .tab[data-tab="${tabId}"]`)
-		if (tab) tab.classList.toggle('hidden', !visible)
-	}
-
-	const advancedSections = {
 		permissions: context.settingsCaps.canManageRoles,
 		'channel-perms': context.settingsCaps.canManageChannelPerms,
 		storage: context.settingsCaps.canManageArchive || context.settingsCaps.canImportChannel,
 		audit: context.settingsCaps.canViewAudit,
 	}
-	for (const [sectionId, visible] of Object.entries(advancedSections))
-		document.querySelector(`[data-advanced-section="${sectionId}"]`)?.classList.toggle('hidden', !visible)
 
-	const firstAdvancedSection = document.querySelector('[data-advanced-section]:not(.hidden)')
-	const advancedTab = document.querySelector('.settings-tabs > .tab[data-tab="advanced"]')
-	advancedTab?.classList.toggle('hidden', !firstAdvancedSection)
-	const currentAdvancedSection = document.querySelector('[data-advanced-section].btn-active:not(.hidden)')
-	if (!currentAdvancedSection && firstAdvancedSection instanceof HTMLElement)
-		firstAdvancedSection.click()
-
-	const active = document.querySelector('.settings-tabs > .tab.tab-active')
-	if (active?.classList.contains('hidden')) {
-		const general = document.querySelector('.settings-tabs > .tab[data-tab="general"]')
-		general?.click()
+	for (const [sectionId, visible] of Object.entries(sectionVisibility)) {
+		const item = document.querySelector(`.settings-nav-item[data-section="${sectionId}"]`)
+		item?.classList.toggle('hidden', !visible)
 	}
+
+	const advancedVisible = ['permissions', 'channel-perms', 'storage', 'audit']
+		.some(id => sectionVisibility[id])
+	document.querySelector('[data-nav-group="advanced"]')?.classList.toggle('hidden', !advancedVisible)
+
+	const active = document.querySelector('.settings-nav-item.settings-nav-item-active')
+	if (!active || active.classList.contains('hidden'))
+		activateSection('general')
 }
 
 /** @param {import('./state.mjs').GroupSettingsContext} context @returns {Promise<void>} */

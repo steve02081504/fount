@@ -116,13 +116,14 @@ export async function createGroupInvite(groupId, options = {}) {
 export async function getGroupState(groupId) {
 	const data = await groupFetch(groupPath(groupId, 'state'), { method: 'GET' })
 	const { meta = {}, viewer = {}, federation = {} } = data
+	const { roles: myRoles, ...viewerRest } = viewer
 	return {
 		...meta,
-		...viewer,
+		...viewerRest,
 		...federation,
 		viewerMemberPubKeyHash: viewer.memberKey ?? null,
 		viewerEntityHash: viewer.entityHash ?? null,
-		myRoles: viewer.roles ?? [],
+		myRoles: myRoles ?? [],
 	}
 }
 

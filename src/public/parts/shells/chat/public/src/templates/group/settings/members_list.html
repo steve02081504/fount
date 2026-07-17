@@ -1,6 +1,6 @@
 ${members.length ? members.map(member => `
-<div class="flex items-center justify-between p-3 bg-base-300 rounded-lg">
-	<div class="flex items-center gap-3 min-w-0">
+<div class="settings-member-row">
+	<div class="settings-member-main">
 		<div class="avatar placeholder">
 			<div class="bg-neutral text-neutral-content rounded-full w-10 h-10">
 				<span class="text-sm">${member.initial}</span>
@@ -15,9 +15,9 @@ ${members.length ? members.map(member => `
 		</div>
 	</div>
 	${showModerationActions ? `
-	<div class="flex gap-2">
-		<button class="btn btn-xs btn-warning" data-action="kick" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.kick" ${member.isAdmin && !member.isAgent ? 'disabled' : '' }></button>
-		<button class="btn btn-xs btn-error" data-action="ban" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.ban" ${member.isAdmin && !member.isAgent ? 'disabled' : '' }></button>
+	<div class="settings-member-actions">
+		<button type="button" class="btn btn-xs btn-warning" data-action="kick" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.kick" ${member.isAdmin && !member.isAgent ? 'disabled' : '' }></button>
+		<button type="button" class="btn btn-xs btn-error" data-action="ban" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.ban" ${member.isAdmin && !member.isAgent ? 'disabled' : '' }></button>
 	</div>
 	` : ''}
 </div>
@@ -25,9 +25,9 @@ ${members.length ? members.map(member => `
 ${bannedMembers?.length ? `
 <h3 class="font-semibold text-sm mt-6 mb-2" data-i18n="chat.group.settingsPage.bannedTitle"></h3>
 ${bannedMembers.map(member => `
-<div class="flex items-center justify-between p-3 bg-base-300 rounded-lg">
-	<div class="font-medium truncate font-mono text-sm">${member.memberKey}</div>
-	${showUnbanActions ? `<button class="btn btn-xs btn-outline" data-action="unban" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.unban"></button>` : ''}
+<div class="settings-member-row">
+	<div class="font-medium truncate font-mono text-sm min-w-0 flex-1">${member.memberKey}</div>
+	${showUnbanActions ? `<button type="button" class="btn btn-xs btn-outline" data-action="unban" data-username="${member.memberKey}" data-i18n="chat.group.settingsPage.unban"></button>` : ''}
 </div>
 `).join('')}
 ` : ''}

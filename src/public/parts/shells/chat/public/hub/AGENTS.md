@@ -30,6 +30,7 @@ alwaysApply: false
 - **Errors**: use `handleUIError` from `public/src/ui/errors.mjs` — toast + `console.error` + Sentry (all three). Do not catch with only `showToastI18n` alone. Background paths: `toError` + `console.error` + Sentry without toast.
 - **Relative imports**: from `public/hub/*.mjs` use `../src/...` for `public/src` helpers (`../../src` resolves to `/parts/src` in the browser and hard-fails). One nesting deeper (`hub/wiring/`, `hub/messages/`, `hub/federation/`, `hub/sidebar/`, `hub/stream/`) needs `../../src/...` and `../../../../../scripts/...`. Two levels (`hub/messages/render/`, `hub/messages/actions/`, `hub/stream/handlers/`) need `../../../src/...` and `../../../../../../scripts/...`. DOM event wiring lives in `hub/wiring/` (`index.mjs` = `wireEvents`, `bootstrap.mjs` = `wireBootstrap`; filenames drop the `wire` prefix, export names keep it). Sidebar nav: `hub/sidebar/` (`index.mjs` coordinates `selectGroup` / `renderHubChannelSidebar`). Group WS: `hub/stream/` (`connection.mjs` lifecycle; `handlers/` by wire type; `index.mjs` external facade).
 - **Message modules**: render coordination in `messages/render/` (`index.mjs` aggregates; body/MD/attachments etc. split by responsibility, direct imports not barrel); action delegation in `messages/actions/handlers.mjs`, each `data-action` in a separate file in the same dir.
+- **Message shortcuts**: 按住 Shift → 操作栏切到下载/删除（`wireShiftKeyHint` + `shiftHtml`）；从消息行非正文区拖出 → `messageDragExport.mjs` 落盘独立 HTML（`DownloadURL`），并附带 `text/markdown`。角色时间线切页用气泡侧滑/箭头，不进「更多」菜单。
 - No hardcoded user-visible strings; use `data-i18n` / `setElementI18n`（参数写在 `data-*`）and `zh-CN.json`. `geti18n` 仅用于无 DOM 或 HTML 插值片段。
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - 跨壳共享模块（如 `shared/entityProfileCard.mjs`）勿调用 `usingTemplates`——它是进程级单例，会把 Social/Cabinet 的模板请求指到 chat 路径；需要时用 `withTemplates`，或直接 DOM + `data-i18n`。
@@ -59,7 +60,7 @@ Hub-facing API shapes:
 ## Channel archive (JSON)
 
 - **Export**: channel context menu → `GET …/channels/:id/export` → download (`public/src/api/channelArchive.mjs`). Full cold+hot portable snapshot (`fount-channel-archive` v1).
-- **Import**: group settings General card → multipart `POST …/channels/import` → new text channel in the same group; Hub navigates to `#group:{groupId}:{newChannelId}`. Requires `MANAGE_CHANNELS` (`canImportChannel`).
+- **Import**: group settings → 存储与归档 → multipart `POST …/channels/import` → new text channel in the same group; Hub navigates to `#group:{groupId}:{newChannelId}`. Requires `MANAGE_CHANNELS` (`canImportChannel`).
 - Backend semantics: [archive AGENTS](../../src/chat/archive/AGENTS.md) § Portable channel archive.
 
 ## Unread

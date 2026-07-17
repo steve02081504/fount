@@ -49,6 +49,8 @@ Inbox storage remains `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; 
 
 Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator client. API shapes: `public/llms.txt`.
 
+`GET …/groups/:id/state` returns `{ meta, viewer, federation }`. Frontend `getGroupState` flattens them but **must not** let `viewer.roles`（成员已持有的角色 id 数组）覆盖 `meta.roles`（角色定义表）；已持有角色写入 `myRoles`。
+
 ## Specialized guides
 
 | Area | Doc |

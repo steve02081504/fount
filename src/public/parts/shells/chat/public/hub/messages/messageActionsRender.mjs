@@ -24,8 +24,6 @@ import {
 	hubActionThreadIcon,
 	hubActionThumbDownIcon,
 	hubActionThumbUpIcon,
-	hubActionTimelineNextIcon,
-	hubActionTimelinePrevIcon,
 	hubActionTranslateIcon,
 	hubActionUnpinIcon,
 } from '../../src/lib/emojiSvg.mjs'
@@ -172,24 +170,48 @@ function shareSubmenu(eventId) {
 }
 
 /**
- * 构建消息下拉菜单项：复制/分享/转发/下载（可选删除、时间线）。
+ * 构建消息下拉菜单项：复制/分享/转发/下载（可选删除）。
  * @param {string} eventId 已转义事件 id
- * @param {{ ownChar?: boolean, canDelete?: boolean }} options 选项
+ * @param {{ canDelete?: boolean }} options 选项
  * @returns {string} 菜单 `<li>` HTML
  */
-function buildMenuItems(eventId, { ownChar = false, canDelete = false } = {}) {
-	const parts = []
-	if (ownChar) {
-		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="-1"`, hubActionTimelinePrevIcon, 'chat.hub.menuPrev'))
-		parts.push(menuActionItem('timeline', `data-event-id="${eventId}" data-delta="1"`, hubActionTimelineNextIcon, 'chat.hub.menuNext'))
-	}
-	parts.push(copySubmenu(eventId))
-	parts.push(shareSubmenu(eventId))
-	parts.push(menuActionItem('copy-share-link', `data-event-id="${eventId}"`, hubActionCopyLinkIcon, 'chat.hub.copyShareLink'))
-	parts.push(menuActionItem('forward', `data-event-id="${eventId}"`, hubActionForwardIcon, 'chat.hub.forward'))
-	parts.push(menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'))
+function buildMenuItems(eventId, { canDelete = false } = {}) {
+	const parts = [
+		copySubmenu(eventId),
+		shareSubmenu(eventId),
+		menuActionItem('copy-share-link', `data-event-id="${eventId}"`, hubActionCopyLinkIcon, 'chat.hub.copyShareLink'),
+		menuActionItem('forward', `data-event-id="${eventId}"`, hubActionForwardIcon, 'chat.hub.forward'),
+		menuActionItem('download', `data-event-id="${eventId}"`, hubActionDownloadIcon, 'chat.hub.menuDownload'),
+	]
 	if (canDelete)
 		parts.push(menuActionItem('delete', `data-event-id="${eventId}"`, hubActionDeleteIcon, 'chat.hub.menuDelete', 'text-error'))
+	return parts.join('')
+}
+
+/**
+ * Shift 快捷层：下载 HTML +（可删时）删除，便于按住 Shift 连删。
+ * @param {string} eventId 已转义事件 id
+ * @param {boolean} canDelete 是否可删
+ * @returns {string} 按钮 HTML
+ */
+function buildShiftActions(eventId, canDelete) {
+	const parts = [
+		actionButton({
+			action: 'download',
+			attrs: `data-event-id="${eventId}"`,
+			icon: hubActionDownloadIcon,
+			i18nKey: 'chat.hub.menuDownload',
+			classes: 'text-success',
+		}),
+	]
+	if (canDelete)
+		parts.push(actionButton({
+			action: 'delete',
+			attrs: `data-event-id="${eventId}"`,
+			icon: hubActionDeleteIcon,
+			i18nKey: 'chat.hub.menuDelete',
+			classes: 'text-error',
+		}))
 	return parts.join('')
 }
 
@@ -227,7 +249,7 @@ export async function renderMessageActionsHtml(message, options) {
 	}
 
 	// ===== 悬停浮动栏 =====
-	// 常驻图标：子线程、书签、置顶、编辑；其余（复制/分享/下载/删除/时间线）收进二级下拉菜单
+	// 常驻图标：子线程、书签、置顶、编辑、翻译；复制/分享/下载/删除收进二级菜单；Shift 层为下载/删除
 	const hoverInlineParts = []
 	const canDelete = canDeleteMessage(message, options)
 
@@ -275,12 +297,13 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.translate',
 		}))
 
-	const menuItems = buildMenuItems(escapedEventId, { ownChar, canDelete })
+	const menuItems = buildMenuItems(escapedEventId, { canDelete })
+	const shiftHtml = buildShiftActions(escapedEventId, canDelete)
 
 	const hoverHtml = await renderActionsBar(
 		hoverInlineParts.join(''),
 		menuItems,
-		'',
+		shiftHtml,
 		{ alwaysVisible: false },
 	)
 

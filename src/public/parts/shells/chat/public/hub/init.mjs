@@ -170,6 +170,7 @@ async function sendPickedHubSticker(sticker) {
  */
 async function wireHubHeavyFeatures() {
 	const { bindChannelMessageActions } = await import('./messages/actions/handlers.mjs')
+	const { bindMessageDragExport } = await import('./messages/messageDragExport.mjs')
 
 	// 触达 messages 模块图，确保频道消息管道已就绪
 	await messagesApi()
@@ -179,7 +180,9 @@ async function wireHubHeavyFeatures() {
 	})
 	refreshStopGenerationButton()
 
-	bindChannelMessageActions(document.getElementById('hub-messages'))
+	const messagesRoot = document.getElementById('hub-messages')
+	bindChannelMessageActions(messagesRoot)
+	bindMessageDragExport(messagesRoot)
 	await wireHubPickers()
 	void syncTrustedAuthorsFromShell()
 	cancelScheduledChannelRefresh()
