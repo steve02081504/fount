@@ -169,15 +169,15 @@ function wireMobileHeaderOverflow() {
 	const mobileBar = document.getElementById('hub-mobile-search-bar')
 	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-mobile-search-input')
 	const desktopInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-header-search')
-	const mobileScope = /** @type {HTMLSelectElement | null} */ document.getElementById('hub-mobile-search-scope')
-	const desktopScope = /** @type {HTMLSelectElement | null} */ document.getElementById('hub-search-scope')
 
 	document.getElementById('hub-overflow-search')?.addEventListener('click', () => {
 		const moreBtn = document.getElementById('hub-header-more-button')
 		if (moreBtn instanceof HTMLElement) moreBtn.blur()
 		mobileBar?.classList.add('hub-mobile-search-bar--open')
 		if (mobileInput && desktopInput) mobileInput.value = desktopInput.value
-		if (mobileScope && desktopScope) mobileScope.value = desktopScope.value
+		const desktopScope = document.getElementById('hub-search-scope')?.dataset?.value
+		if (desktopScope)
+			void import('../search.mjs').then(({ setHubSearchScope }) => setHubSearchScope(desktopScope))
 		mobileInput?.focus()
 	})
 	document.getElementById('hub-mobile-search-close')?.addEventListener('click', () => {
@@ -187,9 +187,6 @@ function wireMobileHeaderOverflow() {
 		if (!desktopInput) return
 		desktopInput.value = mobileInput.value
 		desktopInput.dispatchEvent(new Event('input', { bubbles: true }))
-	})
-	mobileScope?.addEventListener('change', () => {
-		if (desktopScope) desktopScope.value = mobileScope.value
 	})
 }
 

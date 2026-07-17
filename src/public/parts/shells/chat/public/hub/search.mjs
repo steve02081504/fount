@@ -3,6 +3,7 @@
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
+import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
@@ -12,6 +13,11 @@ import { selectChannel } from './sidebar/index.mjs'
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let searchDebounce = null
+
+const SCOPE_I18N = {
+	group: 'chat.hub.search.scopeGroup',
+	all: 'chat.hub.search.scopeAll',
+}
 
 /**
  * @returns {HTMLElement | null} 搜索结果容器
@@ -74,12 +80,40 @@ function renderSearchResults(items, scope = 'group') {
 }
 
 /**
- * @returns {string} group | all
+ * @param {string | null | undefined} value 原始值
+ * @returns {'group' | 'all'} 规范化作用域
+ */
+function normalizeSearchScope(value) {
+	return value === 'all' ? 'all' : 'group'
+}
+
+/**
+ * @param {HTMLElement | null} trigger 作用域按钮
+ * @param {'group' | 'all'} value 作用域
+ * @returns {void} 无
+ */
+function paintSearchScopeTrigger(trigger, value) {
+	if (!trigger) return
+	trigger.dataset.value = value
+	const label = trigger.querySelector('.hub-search-scope-label')
+	if (label instanceof HTMLElement) setElementI18n(label, SCOPE_I18N[value])
+}
+
+/**
+ * @param {'group' | 'all'} value 作用域
+ * @returns {void} 无
+ */
+export function setHubSearchScope(value) {
+	const scope = normalizeSearchScope(value)
+	for (const id of ['hub-search-scope', 'hub-mobile-search-scope'])
+		paintSearchScopeTrigger(document.getElementById(id), scope)
+}
+
+/**
+ * @returns {'group' | 'all'} 当前作用域
  */
 function hubSearchScope() {
-	const select = document.getElementById('hub-search-scope')
-	if (select instanceof HTMLSelectElement && select.value === 'all') return 'all'
-	return 'group'
+	return normalizeSearchScope(document.getElementById('hub-search-scope')?.dataset?.value)
 }
 
 /**
@@ -141,5 +175,13 @@ export function wireHubSearchPanel() {
 		if (event.target instanceof Node && host.contains(event.target)) return
 		if (event.target instanceof Element && event.target.closest('#hub-header-search')) return
 		hideSearchResults()
+	})
+
+	document.querySelectorAll('.hub-search-scope-menu [data-value]').forEach(option => {
+		option.addEventListener('click', () => {
+			const value = normalizeSearchScope(option.getAttribute('data-value'))
+			setHubSearchScope(value)
+			if (document.activeElement instanceof HTMLElement) document.activeElement.blur()
+		})
 	})
 }

@@ -94,10 +94,16 @@
 					</div>
 				</div>
 				<div id="hub-header-search-wrap" class="hub-search-wrap hub-header-desktop-only">
-					<select id="hub-search-scope" class="hub-search-scope select select-bordered select-xs">
-						<option value="group" data-i18n="chat.hub.search.scopeGroup"></option>
-						<option value="all" data-i18n="chat.hub.search.scopeAll"></option>
-					</select>
+					<div class="dropdown hub-search-scope-dropdown">
+						<button type="button" tabindex="0" id="hub-search-scope" class="hub-search-scope" data-value="group" aria-haspopup="listbox">
+							<span class="hub-search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
+							<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+						</button>
+						<ul tabindex="0" class="dropdown-content menu hub-search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
+							<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
+							<li><button type="button" role="option" data-value="all" data-i18n="chat.hub.search.scopeAll"></button></li>
+						</ul>
+					</div>
 					<input id="hub-header-search" class="hub-search-input" type="search" data-i18n="chat.hub.search" />
 					<img src="https://api.iconify.design/line-md/search.svg" class="hub-search-icon" width="14" height="14" alt="" aria-hidden="true" />
 					<div id="hub-search-results" class="hub-search-results" hidden></div>
@@ -125,10 +131,16 @@
 				</div>
 				<div class="hub-mobile-search-bar" id="hub-mobile-search-bar">
 					<button type="button" class="hub-icon-button" id="hub-mobile-search-close" data-i18n="chat.hub.ariaClose">×</button>
-					<select id="hub-mobile-search-scope" class="hub-search-scope select select-bordered select-xs shrink-0">
-						<option value="group" data-i18n="chat.hub.search.scopeGroup"></option>
-						<option value="all" data-i18n="chat.hub.search.scopeAll"></option>
-					</select>
+					<div class="dropdown hub-search-scope-dropdown shrink-0">
+						<button type="button" tabindex="0" id="hub-mobile-search-scope" class="hub-search-scope" data-value="group" aria-haspopup="listbox">
+							<span class="hub-search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
+							<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+						</button>
+						<ul tabindex="0" class="dropdown-content menu hub-search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
+							<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
+							<li><button type="button" role="option" data-value="all" data-i18n="chat.hub.search.scopeAll"></button></li>
+						</ul>
+					</div>
 					<input id="hub-mobile-search-input" class="hub-search-input flex-1 min-w-0" type="search" data-i18n="chat.hub.search" />
 				</div>
 			</header>
