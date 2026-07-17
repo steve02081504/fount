@@ -4,11 +4,11 @@
 	${embeddedWrapStart}
 	<header class="post-header">
 		<div class="post-header-row">
-			${headerAvatarHtml}
+			<a href="${postDetailHref}" class="author-avatar-link">${headerAvatarHtml}</a>
 			<div class="post-author">
 				<div class="post-author-line">
 					<a href="${headerLink}" class="author-name">${headerAuthor}</a>
-					<span class="author-handle">${authorHandle}</span>
+					<a href="${postDetailHref}" class="author-handle">${authorHandle}</a>
 					<span class="post-meta-sep">·</span>
 					<a href="${postDetailHref}" class="post-meta post-time-link">${postTime}</a>
 					${editedBadge}

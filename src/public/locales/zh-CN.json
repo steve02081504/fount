@@ -1441,7 +1441,8 @@
 		"replies": {
 			"placeholder": "写一条回复…",
 			"submit": "回复",
-			"empty": "暂无回复"
+			"empty": "还没有回复",
+			"emptyHint": "来写第一条，开启讨论"
 		},
 		"repost": {
 			"placeholder": "添加转发评论（可选）…",

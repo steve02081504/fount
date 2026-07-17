@@ -248,25 +248,22 @@ export async function buildPostCard(item, options = {}) {
 	return el
 }
 
-const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu'
+const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .content-warning-reveal, .sensitive-media-reveal'
 const LONG_PRESS_MS = 400
 
 /**
- * 空白区短按进详情；按钮/链接/媒体除外；长按不进页（避免主页长按误触）。
+ * 无按钮/链接的空白区短按进详情；长按/滑动/划词不进页。
+ * 头像、handle、时间等已是进帖链接，由浏览器原生导航。
  * @param {HTMLElement} card 帖卡
  * @param {string} hash 目标 hash（不含 #）
  * @returns {void}
  */
 function bindPostCardOpen(card, hash) {
-	let pressAt = 0
 	let longPress = false
 	let timer = 0
 	let startX = 0
 	let startY = 0
-	/**
-	 *
-	 */
-	const clearPress = () => {
+	const clearPressTimer = () => {
 		if (timer) {
 			clearTimeout(timer)
 			timer = 0
@@ -275,27 +272,26 @@ function bindPostCardOpen(card, hash) {
 	card.addEventListener('pointerdown', event => {
 		if (event.button !== 0 || !(event.target instanceof Element)) return
 		if (event.target.closest(POST_CARD_OPEN_EXCLUDE)) return
-		pressAt = event.timeStamp
+		longPress = false
 		startX = event.clientX
 		startY = event.clientY
-		longPress = false
-		clearPress()
+		clearPressTimer()
 		timer = setTimeout(() => {
 			longPress = true
 			timer = 0
 		}, LONG_PRESS_MS)
 	})
-	card.addEventListener('pointerup', event => {
-		clearPress()
-		if (event.button !== 0 || longPress || !(event.target instanceof Element)) return
+	card.addEventListener('pointerup', clearPressTimer)
+	card.addEventListener('pointercancel', clearPressTimer)
+	card.addEventListener('click', event => {
+		if (!(event.target instanceof Element)) return
 		if (event.target.closest(POST_CARD_OPEN_EXCLUDE)) return
-		if (event.timeStamp - pressAt > LONG_PRESS_MS) return
+		if (longPress) {
+			longPress = false
+			return
+		}
 		if (Math.hypot(event.clientX - startX, event.clientY - startY) > 12) return
 		if (getSelection()?.toString()) return
 		location.hash = hash
-	})
-	card.addEventListener('pointercancel', clearPress)
-	card.addEventListener('pointerleave', event => {
-		if (event.pointerType === 'mouse') clearPress()
 	})
 }

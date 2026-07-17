@@ -1,8 +1,38 @@
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { authorLabel, formatTime, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+
+/**
+ * @param {string} actionKey 回复目标 actionKey
+ * @returns {HTMLElement} 回复 composer
+ */
+function buildReplyComposer(actionKey) {
+	const composer = document.createElement('div')
+	composer.className = 'reply-composer'
+	const avatarHtml = socialState.viewerEntityHash
+		? renderAvatarHtml(socialState.viewerEntityHash, {
+			name: socialState.viewerDisplayName,
+		}, 'reply-composer-avatar')
+		: ''
+	composer.innerHTML = `
+		${avatarHtml ? `<div class="reply-composer-avatar-slot" aria-hidden="true">${avatarHtml}</div>` : ''}
+		<div class="reply-composer-body">
+			<textarea rows="1" placeholder="${escapeHtml(geti18n('social.replies.placeholder'))}"></textarea>
+			<div class="reply-composer-actions">
+				<button type="button" class="reply-composer-submit" data-submit-reply="${escapeHtml(actionKey)}">${escapeHtml(geti18n('social.replies.submit'))}</button>
+			</div>
+		</div>
+	`
+	const textarea = composer.querySelector('textarea')
+	textarea?.addEventListener('input', () => {
+		textarea.style.height = 'auto'
+		textarea.style.height = `${Math.min(textarea.scrollHeight, 160)}px`
+	})
+	return composer
+}
 
 /**
  * 渲染单条回复行（头像、显示名、互动栏）。
@@ -71,8 +101,16 @@ export async function buildReplyRow(reply) {
 export async function renderRepliesPanel(panel, replies) {
 	const list = document.createElement('div')
 	list.className = 'replies-list'
-	if (!replies.length)
-		list.innerHTML = `<em>${geti18n('social.replies.empty')}</em>`
+	if (!replies.length) {
+		list.classList.add('is-empty')
+		list.innerHTML = `
+			<div class="replies-empty">
+				<span class="s-ic s-ic-reply replies-empty-icon" aria-hidden="true"></span>
+				<p class="replies-empty-title">${escapeHtml(geti18n('social.replies.empty'))}</p>
+				<p class="replies-empty-hint">${escapeHtml(geti18n('social.replies.emptyHint'))}</p>
+			</div>
+		`
+	}
 	else
 		for (const reply of replies)
 			list.appendChild(await buildReplyRow(reply))
@@ -82,8 +120,8 @@ export async function renderRepliesPanel(panel, replies) {
 		const header = document.createElement('div')
 		header.className = 'video-replies-header'
 		header.innerHTML = `
-			<span class="video-replies-title">${geti18n('social.actions.replies')}</span>
-			<button type="button" class="video-replies-close" data-close-replies aria-label="${geti18n('social.video.closeReplies')}">
+			<span class="video-replies-title">${escapeHtml(geti18n('social.actions.replies'))}</span>
+			<button type="button" class="video-replies-close" data-close-replies aria-label="${escapeHtml(geti18n('social.video.closeReplies'))}">
 				<span class="s-ic s-ic-close" aria-hidden="true"></span>
 			</button>
 		`
@@ -95,11 +133,5 @@ export async function renderRepliesPanel(panel, replies) {
 		panel.appendChild(header)
 	}
 	panel.appendChild(list)
-	const composer = document.createElement('div')
-	composer.className = 'reply-composer'
-	composer.innerHTML = `
-		<textarea rows="2" placeholder="${geti18n('social.replies.placeholder')}"></textarea>
-		<button type="button" data-submit-reply="${panel.dataset.repliesFor}">${geti18n('social.replies.submit')}</button>
-	`
-	panel.appendChild(composer)
+	panel.appendChild(buildReplyComposer(panel.dataset.repliesFor || ''))
 }
