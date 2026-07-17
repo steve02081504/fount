@@ -2613,6 +2613,7 @@
 			"groupJoinRequired": "无法打开该群组，请使用邀请链接或邀请码加入",
 			"sendFailed": "发送失败：${error}",
 			"sendFailedPending": "发送失败",
+			"markdownRenderFailed": "消息渲染失败",
 			"retrySend": "重试",
 			"sendImageFailed": "发送图片失败：${error}",
 			"sendStickerFailed": "发送贴纸失败：${error}",

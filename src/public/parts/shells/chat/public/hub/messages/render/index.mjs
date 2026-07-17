@@ -26,7 +26,7 @@ import {
 import { renderCallBlock } from './call.mjs'
 import { wireMessageEmbedGuards } from './embed.mjs'
 import { renderMessageFileIdsHtml, wireMessageMediaPlaceholders } from './file.mjs'
-import { hydrateMessageMarkdown } from './markdown.mjs'
+import { hydrateMessageMarkdown, registerPendingMessageMarkdown } from './markdown.mjs'
 import { renderMessageReactionsHtml } from './reactions.mjs'
 import {
 	getMessageText,
@@ -258,8 +258,10 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 		bodyHtml = mainBody
 
-		if (usePlainMd)
-			bubbleAttrs = ` data-md-raw="${escapeHtml(plainText)}" data-md-author="${escapeHtml(String(message.authorPubKeyHash || ''))}"`
+		if (usePlainMd) {
+			registerPendingMessageMarkdown(String(message.eventId), plainText, String(message.authorPubKeyHash || ''))
+			bubbleAttrs = ` data-md-pending="1" data-md-author="${escapeHtml(String(message.authorPubKeyHash || ''))}"`
+		}
 	}
 
 	const reactionsHtml = generating ? '' : await renderMessageReactionsHtml(

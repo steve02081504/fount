@@ -1,8 +1,10 @@
 /**
  * 【文件】public/hub/messages/render/markdown.mjs
  * 【职责】Hub 消息区 Markdown 水合与可信作者策略。
+ * 原文走内存 Map（勿塞进 data-md-raw 属性：正文常含 HTML 引号，属性转义一旦失手会撑破 DOM）。
  */
 import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../../scripts/features/template.mjs'
+import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../../../shared/expandMentions.mjs'
 import { getFountMessageMarkdownConvertor } from '../../../src/lib/fountMessageMarkdown.mjs'
 import { isTrustedAuthor } from '../../../src/trustedAuthors.mjs'
@@ -15,17 +17,25 @@ import { disposeEmbedGuard, wireBubbleOffscreenGuards } from './embed.mjs'
 const UNTRUSTED_REMOTE_PREVIEW_LEN = 120
 
 /**
- * @param {string} text 原始正文
- * @param {number} maxLen 上限
- * @returns {string} 截断后正文（超长加省略号）
+ * messageId → 待水合原文（未信任预览阶段保留，完整水合后删除）。
+ * @type {Map<string, { raw: string, authorPubKeyHash: string }>}
  */
-function truncateTextPreview(text, maxLen) {
-	const s = String(text || '')
-	if (s.length <= maxLen) return s
-	const cut = s.slice(0, maxLen)
-	const lastSpace = cut.lastIndexOf(' ')
-	const body = lastSpace > maxLen * 0.6 ? cut.slice(0, lastSpace) : cut
-	return `${body}…`
+const pendingMarkdownByMessageId = new Map()
+
+/**
+ * 注册待水合 Markdown（由消息行渲染时调用）。
+ * @param {string} messageId 消息 eventId
+ * @param {string} raw 原文
+ * @param {string} [authorPubKeyHash] 作者公钥哈希
+ * @returns {void}
+ */
+export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash = '') {
+	const id = String(messageId || '')
+	if (!id) return
+	pendingMarkdownByMessageId.set(id, {
+		raw: String(raw || ''),
+		authorPubKeyHash: String(authorPubKeyHash || ''),
+	})
 }
 
 /**
@@ -82,6 +92,20 @@ async function applyMarkdownToBubble(bubble, markdown, trusted) {
 }
 
 /**
+ * @param {HTMLElement} bubble 正文气泡
+ * @returns {void}
+ */
+function showMarkdownHydrateFailure(bubble) {
+	const label = geti18n('chat.hub.markdownRenderFailed') || 'Markdown render failed'
+	bubble.replaceChildren()
+	const notice = document.createElement('span')
+	notice.className = 'opacity-60 text-sm'
+	notice.dataset.i18n = 'chat.hub.markdownRenderFailed'
+	notice.textContent = label
+	bubble.appendChild(notice)
+}
+
+/**
  * @param {HTMLElement} container 消息列表根
  * @param {string} messageId 消息 id
  * @param {HTMLElement} row 消息行
@@ -89,11 +113,12 @@ async function applyMarkdownToBubble(bubble, markdown, trusted) {
  * @returns {Promise<void>}
  */
 async function hydrateOneMarkdown(container, messageId, row, bubble) {
-	const raw = bubble.dataset.mdRaw || ''
+	const pending = pendingMarkdownByMessageId.get(messageId)
+	const raw = (pending?.raw ?? bubble.dataset.mdRaw) || ''
 	if (!raw.trim()) return
 
 	const isRemote = row.hasAttribute('data-is-remote')
-	const authorPubKeyHash = bubble.dataset.mdAuthor || ''
+	const authorPubKeyHash = pending?.authorPubKeyHash || bubble.dataset.mdAuthor || ''
 	const trusted = !isRemote || await isTrustedAuthor(String(authorPubKeyHash))
 	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
 
@@ -101,7 +126,9 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 		const expanded = expandMentionsInMarkdown(raw, labelMap)
 		if (trusted || bubble.dataset.mdRevealed === '1') {
 			await applyMarkdownToBubble(bubble, expanded, trusted)
+			pendingMarkdownByMessageId.delete(messageId)
 			delete bubble.dataset.mdRaw
+			delete bubble.dataset.mdPending
 			bubble.dataset.mdHydrated = '1'
 			bubble.dataset.mdPreview = '0'
 			wireBubbleOffscreenGuards(bubble, trusted, () => {
@@ -116,6 +143,13 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 		bubble.dataset.mdHydrated = '1'
 		bubble.dataset.mdPreview = canExpand ? '1' : '0'
 		bubble.dataset.mdUntrusted = '1'
+		if (canExpand)
+			bubble.dataset.mdPending = '1'
+		else {
+			pendingMarkdownByMessageId.delete(messageId)
+			delete bubble.dataset.mdPending
+			delete bubble.dataset.mdRaw
+		}
 
 		if (canExpand)
 			await mountMdRevealButton(bubble, () => {
@@ -128,11 +162,16 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 			void hydrateMessageMarkdown(container, messageId)
 		})
 	}
-	catch { /* 保留 escape 占位 */ }
+	catch (error) {
+		console.error('[hub] markdown hydrate failed', messageId, error)
+		showMarkdownHydrateFailure(bubble)
+		bubble.dataset.mdHydrated = '1'
+		bubble.dataset.mdPreview = '0'
+	}
 }
 
 /**
- * §17：Hub 消息区 Markdown + 可信作者策略。
+ * Hub 消息区 Markdown + 可信作者策略。
  * @param {HTMLElement} container 消息列表根
  * @param {string} [onlyMessageId] 仅重渲染指定消息
  * @returns {Promise<void>}
@@ -148,7 +187,10 @@ export async function hydrateMessageMarkdown(container, onlyMessageId) {
 		if (row.hasAttribute('data-streaming')) continue
 		const bubble = row.querySelector('.hub-message-content, .chat-bubble.hub-message-content')
 		if (!(bubble instanceof HTMLElement)) continue
-		if (!bubble.dataset.mdRaw) continue
+		const hasPending = pendingMarkdownByMessageId.has(messageId)
+			|| bubble.dataset.mdPending === '1'
+			|| !!bubble.dataset.mdRaw
+		if (!hasPending) continue
 		if (onlyMessageId) {
 			delete bubble.dataset.mdHydrated
 			disposeEmbedGuard(bubble)

@@ -28,6 +28,7 @@ alwaysApply: false
 
 ## Rendering & Content
 
+- **`lib/escapeHtml.mjs`**: must escape `& < > " '` (string replace). Do **not** use `textContent`/`innerHTML` round-trip — it leaves `"` unescaped and will break attribute values (`data-*="…"`).
 - **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki. Non-standalone pipeline tags bare `http(s)` links with `data-fount-embed` (a whole-line link = `card`, inline = `chip`; `[text](url)` is ignored).
 - **`embedCard.mjs`**: Fetches pages via `ALL /api/no-cors?url=` + `DOMParser` OG parsing, hydrated by `MutationObserver` on placeholder links; session-level LRU cache.
 - **`/api/no-cors`** (server): authenticated bidirectional streaming proxy. Forwards `Range` / conditional / `Content-Type` headers by name; upstream Cookie, Authorization, and custom headers injected via `No-Cors-*` prefix (e.g. `No-Cors-Authorization: Bearer …` → `Authorization`). Does not buffer the full body; `X-No-Cors-Final-Url` records the final URL after redirects.
