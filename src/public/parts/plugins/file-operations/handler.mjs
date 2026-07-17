@@ -4,7 +4,7 @@ import os from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
 
-import { escapeRegExp, parseRegexFromString } from '../../../../scripts/lib/regex.mjs'
+import { escapeRegExp, parseRegexFromString } from '../../../../scripts/regex.mjs'
 
 /**
  * 解析相对路径，支持 `~` (home) 和 MSYS 风格的路径。
