@@ -180,6 +180,23 @@
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.explore"></h2>
 				</header>
+				<section class="explore-section" aria-labelledby="exploreAccountsTitle">
+					<div class="explore-section-header">
+						<h3 id="exploreAccountsTitle" class="section-title" data-i18n="social.explore.accounts"></h3>
+					</div>
+					<div id="exploreAccountList" class="explore-account-list"></div>
+				</section>
+				<section class="explore-section" aria-labelledby="explorePostsTitle">
+					<div class="explore-section-header">
+						<h3 id="explorePostsTitle" class="section-title" data-i18n="social.explore.posts"></h3>
+						<label class="explore-media-toggle">
+							<input type="checkbox" id="exploreMediaOnly" />
+							<span class="s-ic s-ic-media" aria-hidden="true"></span>
+							<span data-i18n="social.explore.mediaOnly"></span>
+						</label>
+					</div>
+					<div id="explorePostList" class="explore-post-list"></div>
+				</section>
 			</section>
 
 			<section id="notificationsView" class="view hidden">

@@ -1395,8 +1395,8 @@
 		},
 		"explore": {
 			"accounts": "推荐账户",
-			"posts": "随机帖子",
-			"mediaOnly": "仅含媒体的帖子"
+			"posts": "最新帖子",
+			"mediaOnly": "仅含媒体"
 		},
 		"groupRef": {
 			"linking": "关联 Chat 群",
@@ -1489,6 +1489,7 @@
 			"following": "暂未关注任何人",
 			"notifications": "暂无通知",
 			"saved": "暂无收藏",
+			"exploreAccounts": "暂无可推荐的账户",
 			"explorePosts": "暂无探索帖子",
 			"likedPosts": "暂无点赞",
 			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
