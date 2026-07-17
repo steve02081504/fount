@@ -2,6 +2,7 @@ import { summarizeNotes } from '../federation/note/index.mjs'
 import { listPollTally } from '../federation/poll/index.mjs'
 import { socialPostKey } from '../federation/post_key.mjs'
 import { isPollClosed, viewerPollChoicesFromView } from '../lib/poll.mjs'
+import { getTimelineMaterialized } from '../timeline/materialize.mjs'
 import { maybeDecryptPostContent } from '../vault_crypto/vault.mjs'
 
 /**
@@ -65,6 +66,9 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 		ownerEntityHash: authorProfile?.ownerEntityHash || null,
 		...feedContext.engagementForPost(entityHash, post.id),
 	}
+	const replyTo = postOut?.content?.replyTo || post.content?.replyTo
+	if (replyTo?.entityHash && replyTo?.postId)
+		item.replyContext = await buildReplyContext(username, replyTo, feedContext)
 	if (feedContext.warmAlbumView)
 		await feedContext.warmAlbumView(entityHash)
 	if (feedContext.albumsForPost)
@@ -90,6 +94,39 @@ export async function buildPostFeedItem(username, entityHash, post, feedContext)
 }
 
 /**
+ * @param {string} username 用户
+ * @param {{ entityHash: string, postId: string }} replyTo 被回复引用
+ * @param {object} feedContext feed 构建上下文
+ * @returns {Promise<object>} replyContext
+ */
+async function buildReplyContext(username, replyTo, feedContext) {
+	const targetEntityHash = String(replyTo.entityHash).toLowerCase()
+	const targetPostId = String(replyTo.postId)
+	const authorProfile = await feedContext.authorProfile(targetEntityHash)
+	let text = ''
+	try {
+		const view = await getTimelineMaterialized(username, targetEntityHash)
+		const parent = view.postById?.[targetPostId] || view.posts?.find(row => row.id === targetPostId)
+		if (parent?.content) {
+			const decrypted = await maybeDecryptPostContent(
+				username,
+				targetEntityHash,
+				parent.content,
+				feedContext.viewerEntityHash || null,
+			)
+			text = String((decrypted || parent.content)?.text || '').slice(0, 200)
+		}
+	}
+	catch { /* 父帖不可见时仅返回引用 */ }
+	return {
+		entityHash: targetEntityHash,
+		postId: targetPostId,
+		authorProfile,
+		text,
+	}
+}
+
+/**
  * @param {object} head repost 候选头
  * @param {object} originalPost 原帖
  * @param {object} feedContext 构建上下文
@@ -106,6 +143,7 @@ export async function buildRepostFeedItem(head, originalPost, feedContext) {
 		repostComment: String(head.repost.content?.comment || ''),
 		hlc: head.hlc,
 		authorProfile: await feedContext.authorProfile(head.entityHash),
+		targetAuthorProfile: await feedContext.authorProfile(head.originalEntityHash),
 		...feedContext.engagementForPost(head.originalEntityHash, head.originalPostId),
 	}
 }

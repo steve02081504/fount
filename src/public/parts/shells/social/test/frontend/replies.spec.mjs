@@ -18,7 +18,12 @@ test.describe('Social replies', () => {
 		const replyText = `reply-body ${Date.now()}`
 		await panel.locator('textarea').fill(replyText)
 		await submitReplyViaPanel(page, panel)
-		await expect(card.locator('[data-replies] .action-count')).toHaveText('1', { timeout: 30_000 })
+		await expect(card.locator(':scope > .post-actions > [data-replies] .action-count')).toHaveText('1', { timeout: 30_000 })
+		const replyRow = panel.locator('.reply').first()
+		await expect(replyRow.locator('.author-avatar, .reply-avatar, .hash-avatar')).toBeVisible()
+		await expect(replyRow.locator('[data-like]')).toBeVisible()
+		await expect(replyRow.locator('[data-dislike]')).toBeVisible()
+		await expect(replyRow.locator('[data-share]')).toBeVisible()
 	})
 
 	test('replies panel toggles closed', async ({ page, publishPost }) => {

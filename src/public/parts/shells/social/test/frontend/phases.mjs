@@ -10,7 +10,7 @@ export const phases = [
 	{ name: 'smoke', testMatch: ['smoke.spec.mjs'] },
 	{
 		name: 'actions',
-		testMatch: ['postActions.spec.mjs', 'replies.spec.mjs'],
+		testMatch: ['postActions.spec.mjs', 'replies.spec.mjs', 'postDetail.spec.mjs'],
 	},
 	{
 		// composer 含 Chat 群关联，单独阶段避免拖垮后续 deepLink/feed 节点

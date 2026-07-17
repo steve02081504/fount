@@ -290,7 +290,7 @@ function renderCommentTicker(slide, replies) {
 			if (!text) return null
 			const id = String(reply.post?.id || '')
 			if (!id) return null
-			return { id, author: authorLabel(reply.entityHash, reply.authorProfile), text }
+			return { id, author: authorLabel(reply.entityHash, reply.authorProfile), text, entityHash: reply.entityHash, authorProfile: reply.authorProfile }
 		})
 		.filter(Boolean)
 	if (!items.length) {
@@ -311,7 +311,7 @@ function renderCommentTicker(slide, replies) {
 		row.dataset.replyId = item.id
 		row.setAttribute('role', 'button')
 		row.tabIndex = 0
-		row.innerHTML = `<strong>${escapeHtml(item.author)}</strong><span>${escapeHtml(item.text.slice(0, 80))}</span>`
+		row.innerHTML = `${renderAvatarHtml(item.entityHash, item.authorProfile, 'video-ticker-avatar')}<strong>${escapeHtml(item.author)}</strong><span>${escapeHtml(item.text.slice(0, 80))}</span>`
 		track.appendChild(row)
 	}
 	ticker.replaceChildren(track)
@@ -623,7 +623,7 @@ function showHeartAnim(slide) {
 	const anim = slide.querySelector('.heart-anim')
 	if (!anim) return
 	anim.classList.remove('hidden')
-	anim.textContent = '❤️'
+	anim.textContent = '👍'
 	anim.style.animation = 'none'
 	void anim.offsetWidth
 	anim.style.animation = 'heartFloat 0.8s ease-out forwards'

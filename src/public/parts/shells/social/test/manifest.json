@@ -140,6 +140,14 @@
 					]
 				},
 				{
+					"name": "postDetail",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/postDetail.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/postDetail.mjs",
+						"src/public/parts/shells/social/src/endpoints/posts.mjs"
+					]
+				},
+				{
 					"name": "composer",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/composer.spec.mjs",

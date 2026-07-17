@@ -1372,7 +1372,15 @@
 			"edited": "已编辑",
 			"editPrompt": "编辑帖子正文",
 			"editHistory": "编辑历史",
-			"editHistoryEmpty": "无更早版本"
+			"editHistoryEmpty": "无更早版本",
+			"loading": "加载中…",
+			"notFound": "帖子不存在或不可见",
+			"loadFailed": "加载失败，请稍后重试",
+			"detailTitle": "帖子",
+			"back": "返回"
+		},
+		"reply": {
+			"context": "回复 ${author}"
 		},
 		"notes": {
 			"label": "读者补充",

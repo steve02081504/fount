@@ -1,7 +1,7 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, formatTime, renderAvatarHtml } from '../lib/display.mjs'
 import { socialState } from '../state.mjs'
@@ -152,9 +152,9 @@ export function bumpNotificationBadge() {
  */
 function notificationHref(row) {
 	if (row.type === 'reply' || row.type === 'mention')
-		return formatSocialProfileHref(row.actorEntityHash, row.postId)
+		return formatSocialPostHref(row.actorEntityHash, row.postId)
 	if ((row.type === 'like' || row.type === 'repost') && row.targetPostId && socialState.viewerEntityHash)
-		return formatSocialProfileHref(socialState.viewerEntityHash, row.targetPostId)
+		return formatSocialPostHref(socialState.viewerEntityHash, row.targetPostId)
 	return formatSocialProfileHref(row.actorEntityHash)
 }
 

@@ -9,6 +9,13 @@ import { routeEntityHash, socialClientFromReq } from './shared.mjs'
  * @returns {void}
  */
 export function registerPostsRoutes(router) {
+	router.get('/api/parts/shells\\:social/posts/:entityHash/:postId', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const item = await client.postFeedItem(routeEntityHash(req.params), String(req.params.postId))
+		if (!item) throw httpError(404, 'post not found')
+		res.status(200).json({ item })
+	})
+
 	router.post('/api/parts/shells\\:social/posts', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		const post = await client.post(req.body || {})

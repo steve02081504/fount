@@ -1,6 +1,6 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
-import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, formatTime, renderAvatarHtml } from '../lib/display.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -115,16 +115,16 @@ export async function loadExplore() {
 	for (const post of postRows) {
 		const row = document.createElement('article')
 		row.className = 'explore-post-card'
-		const href = formatSocialProfileHref(post.entityHash, post.postId)
+		const href = formatSocialPostHref(post.entityHash, post.postId)
 		const authorHref = formatSocialProfileHref(post.entityHash)
 		const snippet = post.textSnippet || (post.mediaThumbs?.length
 			? geti18n('social.profile.mediaOnly')
 			: '')
-		const name = authorLabel(post.entityHash)
+		const name = authorLabel(post.entityHash, post.authorProfile)
 		row.innerHTML = `
 			<header class="explore-post-header">
 				<a href="${escapeHtml(authorHref)}" class="explore-post-avatar-link">
-					${renderAvatarHtml(post.entityHash, { name }, 'explore-post-avatar')}
+					${renderAvatarHtml(post.entityHash, post.authorProfile || { name }, 'explore-post-avatar')}
 				</a>
 				<div class="explore-post-author">
 					<a href="${escapeHtml(authorHref)}" class="author-name">${escapeHtml(name)}</a>

@@ -5,6 +5,11 @@ import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } fr
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
+import {
+	ensureEntityProfileCardStyles,
+	paintEntityProfileBanner,
+} from '/parts/shells:chat/shared/entityProfileCard.mjs'
+import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { socialState } from '../state.mjs'
 
@@ -110,12 +115,12 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 		disconnectInfiniteScroll()
 		return
 	}
-	for (const item of items) {
+	await appendFeedItemsWithThreads(container, items, async item => {
 		const card = await buildPostCard(item)
 		if (highlightPostId && card.dataset.postId === highlightPostId)
 			card.classList.add('highlight-post')
-		container.appendChild(card)
-	}
+		return card
+	})
 	bindProfilePostsInfiniteScroll(entityHash, container)
 	if (highlightPostId)
 		container.querySelector(`[data-post-id="${highlightPostId}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -153,14 +158,16 @@ export async function renderProfileFollowingList(entityHash, container) {
 		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.empty.following'))}</div>`
 		return
 	}
-	for (const hash of following) {
+	for (const row of following) {
+		const hash = typeof row === 'string' ? row : row.entityHash
+		const profile = typeof row === 'string' ? null : row.profile
 		const link = document.createElement('a')
 		link.className = 'following-link'
 		link.href = formatSocialProfileHref(hash)
 		link.innerHTML = `
-			${renderAvatarHtml(hash, null)}
+			${renderAvatarHtml(hash, profile)}
 			<span>
-				<strong>${escapeHtml(authorLabel(hash))}</strong>
+				<strong>${escapeHtml(authorLabel(hash, profile))}</strong>
 				<span class="profile-handle">${escapeHtml(entityHandle(hash))}</span>
 			</span>
 		`
@@ -241,6 +248,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 		})
 		: ''
 
+	ensureEntityProfileCardStyles()
 	container.replaceChildren(await renderTemplate('profile_view', {
 		headerActions,
 		avatarHtml,
@@ -252,6 +260,15 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 		followingCount,
 		selfSettingsHtml,
 	}))
+
+	const bannerHost = container.querySelector('.profile-banner-host') || container
+	const bannerEl = container.querySelector('.profile-banner')
+	if (bannerEl instanceof HTMLElement)
+		paintEntityProfileBanner(bannerHost instanceof HTMLElement ? bannerHost : container, bannerEl, {
+			entityHash,
+			banner: data.profile?.banner,
+			themeColor: data.profile?.themeColor || '#5865f2',
+		})
 
 	if (isSelf)
 		await renderBlocklist(document.getElementById('blocklistSection'))

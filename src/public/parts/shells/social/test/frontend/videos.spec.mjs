@@ -112,8 +112,15 @@ test.describe('Social short videos', () => {
 
 		await slide.locator('.video-comment-btn').click()
 		await expect(panel).not.toHaveClass(/hidden/)
-		// 点视频空白区也应关闭（评论抽屉盖住右侧按钮时的退路）
-		await slide.locator('video.video-player').click({ position: { x: 40, y: 40 } })
+		// 点视频中部空白区关闭（避开左上角返回钮）
+		const video = slide.locator('video.video-player')
+		const box = await video.boundingBox()
+		await video.click({
+			position: {
+				x: Math.max(80, (box?.width || 200) * 0.5),
+				y: Math.max(120, (box?.height || 400) * 0.55),
+			},
+		})
 		await expect(panel).toHaveClass(/hidden/)
 	})
 
@@ -299,15 +306,19 @@ test.describe('Social short videos', () => {
 		const slide = await openVideoSlide(page, postId)
 		const ticker = slide.locator('[data-comment-ticker]')
 		await expect(ticker).not.toHaveClass(/hidden/, { timeout: 30_000 })
+		await ticker.evaluate(el => {
+			el.querySelector('.video-comment-ticker-track')?.classList.remove('is-scrolling')
+		})
 		const target = ticker.locator(`.video-comment-ticker-item[data-reply-id="${replyIdB}"]`).first()
 		await expect(target).toBeVisible()
-		await target.click()
+		await target.click({ force: true })
 
 		const panel = slide.locator('[data-replies-panel]')
 		await expect(panel).not.toHaveClass(/hidden/)
 		const focused = panel.locator(`.reply[data-reply-id="${replyIdB}"]`)
 		await expect(focused).toHaveClass(/is-focused/)
 		await expect(focused).toContainText(replyB)
+		await expect(focused.locator('.hash-avatar, .author-avatar, .reply-avatar')).toBeVisible()
 	})
 })
 

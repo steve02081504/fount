@@ -64,6 +64,11 @@ export async function discoverPosts(username, options = {}) {
 	for (const entityHash of owners) {
 		const view = await getTimelineMaterialized(username, entityHash)
 		if (view.socialMeta?.hideFromDiscovery) continue
+		const profile = await getProfile(entityHash, username)
+		const authorProfile = {
+			name: profile?.name || null,
+			avatar: profile?.avatar || null,
+		}
 		let taken = 0
 		for (const post of view.posts) {
 			if (!isPublicDiscoverable(post.content)) continue
@@ -74,6 +79,7 @@ export async function discoverPosts(username, options = {}) {
 				textSnippet: (post.content?.text || '').slice(0, 280),
 				mediaThumbs: post.content?.mediaRefs?.slice(0, 4) || [],
 				hlc: post.hlc,
+				authorProfile,
 			})
 			if (++taken >= POSTS_PER_OWNER) break
 		}

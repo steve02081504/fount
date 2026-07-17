@@ -3,7 +3,7 @@
  */
 import { wrapProtocolHttpsUrl } from '/parts/shells:chat/shared/runUri.mjs'
 
-import { formatSocialProfileRunUri } from './runUri.mjs'
+import { formatSocialPostRunUri, formatSocialProfileRunUri } from './runUri.mjs'
 
 /**
  *
@@ -16,5 +16,7 @@ export { wrapProtocolHttpsUrl }
  * @returns {string} 外部分享用 https 链接
  */
 export function formatSocialShareHttpsUrl(entityHash, postId) {
-	return wrapProtocolHttpsUrl(formatSocialProfileRunUri(entityHash, postId))
+	if (postId)
+		return wrapProtocolHttpsUrl(formatSocialPostRunUri(entityHash, postId))
+	return wrapProtocolHttpsUrl(formatSocialProfileRunUri(entityHash))
 }

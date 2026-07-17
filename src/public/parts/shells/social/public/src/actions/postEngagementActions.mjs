@@ -27,7 +27,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  */
 export async function handlePostEngagementClick(target) {
 	// 短视频 slide 与 feed 卡可能共享同一 actionKey；必须先收窄到当前容器
-	const cardRoot = target.closest('.post-card, .video-slide') || document
+	const cardRoot = target.closest('.post-card, .reply, .video-slide') || document
 	const dislikeButton = target.closest('[data-dislike]')
 	if (dislikeButton instanceof HTMLElement && dislikeButton.dataset.dislike) {
 		const parsed = parseActionKey(dislikeButton.dataset.dislike)
@@ -35,7 +35,7 @@ export async function handlePostEngagementClick(target) {
 			const { entityHash, postId } = parsed
 			const disliked = dislikeButton.dataset.disliked === '1'
 			const snapshot = applyDislikeButtonOptimistic(dislikeButton, !disliked)
-			const card = dislikeButton.closest('.post-card')
+			const card = dislikeButton.closest('.post-card, .reply')
 			if (!disliked && card instanceof HTMLElement) clearLikeOnCard(card)
 			try {
 				await runSocialWrite('dislike', () => socialApi(`/posts/${entityHash}/${postId}/dislike`, {
@@ -56,7 +56,7 @@ export async function handlePostEngagementClick(target) {
 			const { entityHash, postId } = parsed
 			const liked = likeButton.dataset.liked === '1'
 			const snapshot = applyLikeButtonOptimistic(likeButton, !liked)
-			const card = likeButton.closest('.post-card')
+			const card = likeButton.closest('.post-card, .reply')
 			if (!liked && card instanceof HTMLElement) clearDislikeOnCard(card)
 			try {
 				await runSocialWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {

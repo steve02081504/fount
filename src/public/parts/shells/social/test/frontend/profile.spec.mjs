@@ -20,6 +20,8 @@ test.describe('Social profile', () => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView')).toBeVisible()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#profileView .profile-banner-host[data-profile-pattern]')).toBeVisible()
+		await expect(page.locator('#profileView .profile-banner.entity-profile-banner')).toBeVisible()
 		await expect(page.locator(`#profilePostsPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 	})
 

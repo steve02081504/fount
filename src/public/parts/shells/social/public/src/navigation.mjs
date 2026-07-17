@@ -2,11 +2,12 @@ import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
 import { socialState } from './state.mjs'
-import { activateView } from './viewChrome.mjs'
+import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, openSearchView, runFeedSearch, updateFeedSearchChrome } from './views/feed.mjs'
 import { loadLiveView } from './views/live.mjs'
 import { loadNotifications } from './views/notifications.mjs'
+import { loadPostDetail } from './views/postDetail.mjs'
 import { loadProfile, loadProfileFor, refreshProfilePosts } from './views/profile.mjs'
 import { loadSaved } from './views/saved.mjs'
 import { loadSearchView } from './views/search.mjs'
@@ -15,12 +16,25 @@ import { loadTopicView } from './views/topic.mjs'
 import { loadVideoView } from './views/video.mjs'
 
 /**
+ * 将主导航视图同步到 location.hash（replace，避免历史堆叠）。
+ * @param {string} view 视图名
+ * @returns {void}
+ */
+function syncHashForMainView(view) {
+	if (!MAIN_NAV_VIEWS.includes(view)) return
+	const next = `#${view}`
+	if (location.hash === next) return
+	history.replaceState(null, '', `${location.pathname}${location.search}${next}`)
+}
+
+/**
  * 刷新当前可见视图中的帖子列表。
  * @returns {Promise<void>}
  */
 export async function refreshVisiblePosts() {
 	const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
 	const profileVisible = !document.getElementById('profileView')?.classList.contains('hidden')
+	const postVisible = !document.getElementById('postDetailView')?.classList.contains('hidden')
 	if (feedVisible)
 		if (socialState.activeFeedSearchQuery)
 			await runFeedSearch()
@@ -31,15 +45,20 @@ export async function refreshVisiblePosts() {
 
 	if (profileVisible && socialState.profileEntityHash)
 		await refreshProfilePosts()
+	if (postVisible && socialState.postDetailEntityHash && socialState.postDetailPostId)
+		await loadPostDetail(socialState.postDetailEntityHash, socialState.postDetailPostId)
 }
 
 /**
  * 切换主导航视图并加载对应数据。
  * @param {string} view 视图名
+ * @param {{ skipHash?: boolean }} [options] skipHash 时不写 URL（由 applyIncomingNavigation 调用）
  * @returns {Promise<void>}
  */
-export async function switchView(view) {
+export async function switchView(view, options = {}) {
 	activateView(view)
+	if (!options.skipHash)
+		syncHashForMainView(view)
 	if (view === 'feed') {
 		if (!socialState.activeFeedSearchQuery) {
 			socialState.feedCursor = null
@@ -67,10 +86,6 @@ export async function applyIncomingNavigation() {
 	const rawHash = window.location.hash.replace(/^#/, '')
 
 	// 冒号分隔的自定义深链格式
-	if (rawHash === 'videos') {
-		await switchView('videos')
-		return true
-	}
 	if (rawHash.startsWith('topic:')) {
 		const tag = decodeURIComponent(rawHash.slice('topic:'.length))
 		await loadTopicView(tag)
@@ -91,6 +106,13 @@ export async function applyIncomingNavigation() {
 		return true
 	}
 
+	// 主导航 tab：#feed / #videos / …
+	if (MAIN_NAV_VIEWS.includes(rawHash)) {
+		if (currentMainView() === rawHash) return true
+		await switchView(rawHash, { skipHash: true })
+		return true
+	}
+
 	// 分号分隔的原有深链格式
 	const urlQ = new URLSearchParams(location.search).get('q')?.trim()
 	const hashParsed = parseSocialRunUri(rawHash)
@@ -101,6 +123,10 @@ export async function applyIncomingNavigation() {
 	}
 	if (urlQ) {
 		await openSearchView(urlQ)
+		return true
+	}
+	if (hashParsed?.subcommand === 'post' && hashParsed.entityHash && hashParsed.postId) {
+		await loadPostDetail(hashParsed.entityHash.toLowerCase(), hashParsed.postId)
 		return true
 	}
 	if (hashParsed?.entityHash && hashParsed.subcommand === 'profile') {

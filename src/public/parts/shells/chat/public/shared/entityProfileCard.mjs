@@ -28,17 +28,53 @@ function safeProfileLink(raw) {
 }
 
 const ENTITY_PROFILE_CARD_STYLESHEET = '/parts/shells:chat/shared/entityProfileCard.css'
+const ENTITY_PROFILE_BANNER_STYLESHEET = '/parts/shells:chat/shared/entityProfileBanner.css'
 
 /**
  * 跨壳弹出人物卡时按需挂载共享样式。
  * @returns {void}
  */
 export function ensureEntityProfileCardStyles() {
-	if (document.querySelector(`link[href="${ENTITY_PROFILE_CARD_STYLESHEET}"]`)) return
-	const link = document.createElement('link')
-	link.rel = 'stylesheet'
-	link.href = ENTITY_PROFILE_CARD_STYLESHEET
-	document.head.appendChild(link)
+	for (const href of [ENTITY_PROFILE_BANNER_STYLESHEET, ENTITY_PROFILE_CARD_STYLESHEET]) {
+		if (document.querySelector(`link[href="${href}"]`)) continue
+		const link = document.createElement('link')
+		link.rel = 'stylesheet'
+		link.href = href
+		document.head.appendChild(link)
+	}
+}
+
+/**
+ * 将 hash 纹理 / 自定义 banner 应用到 banner 元素。
+ * @param {HTMLElement} host 设 data-profile-pattern 的宿主
+ * @param {HTMLElement} bannerEl banner 节点（应含 .entity-profile-banner）
+ * @param {{ entityHash: string, banner?: string, themeColor?: string }} options 选项
+ * @returns {void}
+ */
+export function paintEntityProfileBanner(host, bannerEl, options) {
+	if (!(host instanceof HTMLElement) || !(bannerEl instanceof HTMLElement)) return
+	const entityHash = String(options.entityHash || '')
+	const pattern = entityProfilePattern(entityHash)
+	host.dataset.profilePattern = pattern.variant
+	host.style.setProperty('--entity-card-accent', options.themeColor || '#5865f2')
+	host.style.setProperty('--entity-card-pattern-angle', `${pattern.angle}deg`)
+	host.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
+	host.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
+	host.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
+	const bannerUrl = isAvatarImageUrl(options.banner) ? String(options.banner).trim() : ''
+	bannerEl.classList.add('entity-profile-banner')
+	bannerEl.classList.toggle('entity-profile-banner--image', !!bannerUrl)
+	bannerEl.classList.toggle('hub-profile-popup-banner--image', !!bannerUrl)
+	if (bannerUrl) {
+		bannerEl.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 18%), rgb(0 0 0 / 28%)), url(${JSON.stringify(bannerUrl)})`
+		bannerEl.style.backgroundSize = 'cover, cover'
+		bannerEl.style.backgroundPosition = 'center, center'
+	}
+	else {
+		bannerEl.style.removeProperty('background-image')
+		bannerEl.style.removeProperty('background-size')
+		bannerEl.style.removeProperty('background-position')
+	}
 }
 
 /**
@@ -112,20 +148,13 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	root.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
 
 	const bannerElement = root.querySelector('.hub-profile-popup-banner')
-	if (bannerElement instanceof HTMLElement) {
-		const bannerUrl = isAvatarImageUrl(banner) ? String(banner).trim() : ''
-		bannerElement.classList.toggle('hub-profile-popup-banner--image', !!bannerUrl)
-		if (bannerUrl) {
-			bannerElement.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 18%), rgb(0 0 0 / 28%)), url(${JSON.stringify(bannerUrl)})`
-			bannerElement.style.backgroundSize = 'cover, cover'
-			bannerElement.style.backgroundPosition = 'center, center'
-		}
-		else {
-			bannerElement.style.removeProperty('background-image')
-			bannerElement.style.removeProperty('background-size')
-			bannerElement.style.removeProperty('background-position')
-		}
-	}
+	if (bannerElement instanceof HTMLElement)
+		paintEntityProfileBanner(root, bannerElement, {
+			entityHash: entityHash || name,
+			banner,
+			themeColor: normalized.themeColor || '#5865f2',
+		})
+
 
 	const nameElement = root.querySelector('[data-entity-profile-name]')
 	if (nameElement) nameElement.textContent = name

@@ -5,6 +5,7 @@ import { bindDwellTracker } from '../dwellTracker.mjs'
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { socialState } from '../state.mjs'
@@ -98,8 +99,7 @@ async function replayFeedItems() {
 	divider.dataset.i18n = 'social.feed.replayDivider'
 	divider.textContent = geti18n('social.feed.replayDivider')
 	list.appendChild(divider)
-	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
-	for (const card of cards) if (card) list.appendChild(card)
+	await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
 	// 只把哨兵挪到尾部，不重绑 observer——否则哨兵仍在视口内时会立刻再触发形成死循环
 	ensureScrollSentinel(list, 'feedScrollSentinel')
 }
@@ -300,7 +300,6 @@ export async function loadFeed(append = false) {
 	}
 	if (feedGeneration !== gen) return
 
-	const cards = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
 	if (feedGeneration !== gen) return
 
 	socialState.feedCursor = nextCursor || null
@@ -317,11 +316,13 @@ export async function loadFeed(append = false) {
 		socialState.feedShownItems = null
 	}
 	else if (!append) {
-		list.replaceChildren(...cards.filter(Boolean))
+		list.replaceChildren()
+		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
+		if (feedGeneration !== gen) return
 		updateFeedRankingTabs()
 	}
-	else for (const card of cards)
-		if (card) list.appendChild(card)
+	else
+		await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
 
 	bindFeedInfiniteScroll()
 	scheduleFeedPrefetch()

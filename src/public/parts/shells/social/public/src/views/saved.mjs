@@ -1,5 +1,5 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { formatSocialPostHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
@@ -104,7 +104,7 @@ function buildSavedRow(ref, folderId, folderName) {
 	const row = document.createElement('article')
 	row.className = 'saved-row'
 	row.innerHTML = `
-		<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link">
+		<a href="${escapeHtml(formatSocialPostHref(ref.entityHash, ref.postId))}" class="saved-link">
 			${renderAvatarHtml(ref.entityHash, { name: author }, 'saved-row-avatar')}
 			<span class="saved-link-body">
 				<strong class="saved-author">${escapeHtml(author)}</strong>

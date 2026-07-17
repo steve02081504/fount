@@ -11,7 +11,7 @@ import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
-import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { formatSocialPostHref } from '../../shared/runUri.mjs'
 
 const ENTITY_AVATAR_API = '/api/parts/shells:chat/entities'
 
@@ -119,7 +119,7 @@ export function renderQuoteBlockHtml(quoteRef) {
 		: ''
 	return `
 		<blockquote class="quote-block">
-			<a href="${formatSocialProfileHref(quoteRef.entityHash, quoteRef.postId)}" class="link-btn quote-link">
+			<a href="${formatSocialPostHref(quoteRef.entityHash, quoteRef.postId)}" class="link-btn quote-link">
 				${geti18n('social.quote.viewOriginal')}
 			</a>
 			${snippet}

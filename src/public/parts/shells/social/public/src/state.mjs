@@ -10,6 +10,10 @@ export const socialState = {
 	/** @type {Promise<void> | null} */
 	feedPrefetchInFlight: null,
 	profileEntityHash: null,
+	profilePostsCursor: null,
+	notificationsCursor: null,
+	postDetailEntityHash: null,
+	postDetailPostId: null,
 	pendingMediaRefs: [],
 	pendingQuoteRef: null,
 	pendingGroupRef: null,

@@ -405,7 +405,7 @@ export async function buildLikedFeedItems(username, entityHash, options = {}) {
  * @param {string} entityHash 作者
  * @param {string} postId 帖子
  * @param {{ viewerEntityHash?: string }} [options] 观看者
- * @returns {Promise<object[]>} 可见回复
+ * @returns {Promise<object[]>} 可见回复（完整 feed item + featured）
  */
 export async function listReplies(username, entityHash, postId, options = {}) {
 	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
@@ -415,8 +415,8 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 	const replyDisplay = gate?.replyDisplay || 'all'
 	const authorView = await getTimelineMaterialized(username, entityHash)
 	const featuredSet = new Set(authorView.featuredReplies?.[postId] || [])
-	/** @type {object[]} */
-	const replies = []
+	/** @type {{ entityHash: string, post: object, featured: boolean }[]} */
+	const rawReplies = []
 	const refs = await queryReplyIndex(username, entityHash, postId)
 
 	for (const ref of refs) {
@@ -436,10 +436,10 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 		})
 		if (!allowed) continue
 		const featured = featuredSet.has(featuredReplyKey(author, ref.postId))
-		replies.push({ entityHash: author, post, featured })
+		rawReplies.push({ entityHash: author, post, featured })
 	}
 
-	if (!replies.length)
+	if (!rawReplies.length)
 		for (const author of await listFollowedTimelineOwners(username, options.viewerEntityHash || null)) {
 			if (isAuthorFilteredByPersonalSets(viewerContext.personalFilter, author)) continue
 			if (isHiddenByAuthorReputation(author)) continue
@@ -461,17 +461,48 @@ export async function listReplies(username, entityHash, postId, options = {}) {
 				})
 				if (!allowed) continue
 				const featured = featuredSet.has(featuredReplyKey(author, post.id))
-				replies.push({ entityHash: author, post, featured })
+				rawReplies.push({ entityHash: author, post, featured })
 			}
 		}
 
-	replies.sort((left, right) => {
+	rawReplies.sort((left, right) => {
 		if (left.featured !== right.featured) return left.featured ? -1 : 1
 		const lw = Number(left.post.hlc.wall)
 		const rw = Number(right.post.hlc.wall)
 		return rw - lw
 	})
-	if (normalizeReplyDisplay(replyDisplay) === 'featured_only')
-		return replies.filter(row => row.featured)
+	const filtered = normalizeReplyDisplay(replyDisplay) === 'featured_only'
+		? rawReplies.filter(row => row.featured)
+		: rawReplies
+	const owners = new Set(filtered.map(row => row.entityHash))
+	owners.add(entityHash)
+	const itemContext = await createFeedItemBuildContext(username, owners, options.viewerEntityHash || null)
+	/** @type {object[]} */
+	const replies = []
+	for (const row of filtered) {
+		const item = await buildPostFeedItem(username, row.entityHash, row.post, itemContext)
+		item.featured = row.featured
+		replies.push(item)
+	}
 	return replies
+}
+
+/**
+ * 构建单帖 feed item（详情页 / HTTP GET）。
+ * @param {string} username 用户
+ * @param {string} entityHash 作者
+ * @param {string} postId 帖 id
+ * @param {{ viewerEntityHash?: string }} [options] 观看者
+ * @returns {Promise<object | null>} feed item；不可见或不存在时 null
+ */
+export async function buildSinglePostFeedItem(username, entityHash, postId, options = {}) {
+	const owner = String(entityHash).toLowerCase()
+	const id = String(postId)
+	const viewerContext = await loadViewerContext(username, options.viewerEntityHash || null)
+	const view = await getTimelineMaterialized(username, owner)
+	const post = view.postById?.[id] || view.posts?.find(row => row.id === id)
+	if (!post) return null
+	if (!canViewPost({ ...post, entityHash: owner }, viewerContext)) return null
+	const itemContext = await createFeedItemBuildContext(username, new Set([owner]), options.viewerEntityHash || null)
+	return buildPostFeedItem(username, owner, post, itemContext)
 }

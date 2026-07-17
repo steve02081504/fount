@@ -7,12 +7,22 @@ const RUN_PREFIX = `fount://run/${SOCIAL_RUN_PART}/`
 /**
  * Social shell 实体资料页 hash 链接。
  * @param {string} entityHash 128 位 entityHash
- * @param {string} [postId] 帖子 id
+ * @param {string} [postId] 帖子 id（兼容旧深链；新入口优先用 formatSocialPostHref）
  * @returns {string} 浏览器路径（含 hash）
  */
 export function formatSocialProfileHref(entityHash, postId) {
 	const hash = postId ? `profile;${entityHash};${postId}` : `profile;${entityHash}`
 	return `${SOCIAL_SHELL_PATH}#${hash}`
+}
+
+/**
+ * Social shell 单帖详情页 hash 链接。
+ * @param {string} entityHash 作者 entityHash
+ * @param {string} postId 帖子 id
+ * @returns {string} 浏览器路径（含 hash）
+ */
+export function formatSocialPostHref(entityHash, postId) {
+	return `${SOCIAL_SHELL_PATH}#post;${entityHash};${postId}`
 }
 
 /**
@@ -31,7 +41,7 @@ export function parseSocialRunUri(raw) {
 		catch { return segment }
 	})
 	const subcommand = parts[0]?.trim()
-	if (subcommand === 'profile')
+	if (subcommand === 'profile' || subcommand === 'post')
 		return { subcommand, entityHash: parts[1], postId: parts[2] }
 	if (subcommand === 'search')
 		return { subcommand, searchQuery: parts.slice(1).join(';') }
@@ -56,6 +66,15 @@ function buildRunUri(subcommand, segments) {
 export function formatSocialProfileRunUri(entityHash, postId) {
 	if (postId) return buildRunUri('profile', [entityHash, postId])
 	return buildRunUri('profile', [entityHash])
+}
+
+/**
+ * @param {string} entityHash 作者
+ * @param {string} postId 帖 id
+ * @returns {string} post 详情 runUri
+ */
+export function formatSocialPostRunUri(entityHash, postId) {
+	return buildRunUri('post', [entityHash, postId])
 }
 
 /**

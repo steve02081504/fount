@@ -49,45 +49,6 @@
 		center;
 }
 
-.hub-profile-popup[data-profile-pattern="dots"] .hub-profile-popup-banner {
-	background-image:
-		radial-gradient(circle, rgb(255 255 255 / 24%) 0 2px, transparent 2.5px),
-		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
-	background-size: var(--entity-card-pattern-size) var(--entity-card-pattern-size), auto;
-}
-
-.hub-profile-popup[data-profile-pattern="grid"] .hub-profile-popup-banner {
-	background-image:
-		linear-gradient(rgb(255 255 255 / 12%) 1px, transparent 1px),
-		linear-gradient(90deg, rgb(255 255 255 / 12%) 1px, transparent 1px),
-		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
-	background-size:
-		var(--entity-card-pattern-size) var(--entity-card-pattern-size),
-		var(--entity-card-pattern-size) var(--entity-card-pattern-size),
-		auto;
-}
-
-.hub-profile-popup[data-profile-pattern="diagonal"] .hub-profile-popup-banner {
-	background-image:
-		repeating-linear-gradient(var(--entity-card-pattern-angle), transparent 0 11px, rgb(255 255 255 / 13%) 12px 14px),
-		linear-gradient(120deg, var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
-}
-
-.hub-profile-popup[data-profile-pattern="rings"] .hub-profile-popup-banner {
-	background-image:
-		repeating-radial-gradient(circle at var(--entity-card-pattern-x) var(--entity-card-pattern-y), transparent 0 12px, rgb(255 255 255 / 13%) 13px 15px),
-		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
-}
-
-.hub-profile-popup[data-profile-pattern="stars"] .hub-profile-popup-banner {
-	background-image:
-		radial-gradient(circle at 20% 28%, rgb(255 255 255 / 44%) 0 1px, transparent 2px),
-		radial-gradient(circle at 73% 62%, rgb(255 255 255 / 30%) 0 1.5px, transparent 2.5px),
-		radial-gradient(circle at 48% 18%, rgb(255 255 255 / 24%) 0 1px, transparent 2px),
-		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
-	background-size: 67px 59px, 83px 71px, 47px 43px, auto;
-}
-
 .hub-profile-popup-banner.hub-profile-popup-banner--image,
 .hub-profile-popup[data-profile-pattern] .hub-profile-popup-banner.hub-profile-popup-banner--image {
 	background-image: none;

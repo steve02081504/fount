@@ -3,8 +3,9 @@ import {
 	loadPersonalHideEntries,
 } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
-import { buildLikedFeedItems, buildProfileFeedItems, listReplies } from '../../feed/home.mjs'
+import { buildLikedFeedItems, buildProfileFeedItems, buildSinglePostFeedItem, listReplies } from '../../feed/home.mjs'
 import { loadFollowingForActor } from '../../following.mjs'
+import { createAuthorProfileLoader } from '../../lib/authorProfileSummary.mjs'
 import { ensureEntitySocialReady } from '../../lib/bootstrap.mjs'
 import { getEntityProfile } from '../../lib/entityProfile.mjs'
 import { loadMutedKeywords, replaceMutedKeywords } from '../../mutedKeywords.mjs'
@@ -62,11 +63,32 @@ export function createProfileMethods(apiContext) {
 		},
 		/**
 		 * @param {string} entityHash 目标实体
-		 * @returns {Promise<{ following: string[] }>} 关注列表
+		 * @returns {Promise<{ following: object[] }>} 关注列表（含资料摘要）
 		 */
 		async profileFollowing(entityHash) {
 			const view = await getTimelineMaterialized(apiContext.username, String(entityHash).toLowerCase())
-			return { following: view.following }
+			const loadProfile = createAuthorProfileLoader(apiContext.username)
+			const following = []
+			for (const hash of view.following || []) 
+				following.push({
+					entityHash: hash,
+					profile: await loadProfile(hash),
+				})
+			
+			return { following }
+		},
+		/**
+		 * @param {string} entityHash 作者
+		 * @param {string} postId 帖 id
+		 * @returns {Promise<object | null>} 单帖 feed item
+		 */
+		async postFeedItem(entityHash, postId) {
+			return buildSinglePostFeedItem(
+				apiContext.username,
+				String(entityHash).toLowerCase(),
+				String(postId),
+				viewerOptions(),
+			)
 		},
 		/**
 		 * @param {string} entityHash 作者

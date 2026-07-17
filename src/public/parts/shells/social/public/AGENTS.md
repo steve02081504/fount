@@ -35,10 +35,14 @@ alwaysApply: false
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike** (mutually exclusive; reducer clears the opposing reaction); `reaction_index` projects federated like/dislike signed events (controlled by entity `privacy.publishReactions`); `for_you` uses local `taste/*` cluster weights (`interestBoost`, can be negative). Preference UI: `#tasteView` → `views/taste.mjs` (two toggles: `publishPreferences` / `publishReactions`). Tag naming uses timeline `tag_name` events.
+- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI: `#tasteView`。
+- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + 既有深链。刷新可恢复当前 tab。
+- **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
+- **回复**：`listReplies` 返回完整 feed item；面板行含头像/显示名/赞踩分享；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
+- **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。
 - **`activateView(name)`** → `#${name}View`（`data-view` 与 section id 必须同词干：`videos`→`#videosView`，勿写成 `#videoView`；否则主导航高亮后主栏整块空白）。
 - 短视频 slide 字段取自 `buildPostFeedItem`：`post.content.text` / `post.content.mediaRefs` / `authorProfile`（经 `authorLabel`），不是扁平的 `item.text` / `item.authorName`。
-- 短视频 UI：右侧操作栏含赞 / 评论 / 分享 / 静音；静音偏好写 `localStorage`（`fount.social.video.muted`）并同步全部 slide；评论抽屉盖住操作栏时靠关闭钮、点空白或 Esc 关掉（勿指望再点评论钮）；有回复时右下角固定高度轮播（`syncVideoCommentTicker`），点击条目打开抽屉并 `focusReplyInPanel` 滚到对应 `.reply[data-reply-id]`。分享复用 `shareOrCopyPostLink`。发评 / 查回复面板时 `cardRoot` 须为 `.post-card, .video-slide`（feed 与短视频可共享同一 actionKey，勿用裸 `document`）。
+- 短视频 UI：右侧操作栏含赞 / 评论 / 分享 / 静音；静音偏好写 `localStorage`（`fount.social.video.muted`）并同步全部 slide；评论抽屉盖住操作栏时靠关闭钮、点空白或 Esc 关掉（勿指望再点评论钮）；有回复时右下角固定高度轮播（`syncVideoCommentTicker`，含头像），点击条目打开抽屉并 `focusReplyInPanel` 滚到对应 `.reply[data-reply-id]`。分享复用 `shareOrCopyPostLink`。发评 / 查回复面板时 `cardRoot` 须为 `.post-card, .reply, .video-slide`（feed 与短视频可共享同一 actionKey，勿用裸 `document`）。
 - **Cross-shell chat imports**: browser modules must use absolute `/parts/shells:chat/...` URLs (filesystem relatives resolve under the page origin and 404, breaking the whole module graph). Modules imported by Deno pure tests must not contain `/parts/...` URL imports — keep token helpers in chat (`inlineTokenSyntax.mjs`) and leave social shared pure modules dependency-free.
 
 ## Feed / profile pagination

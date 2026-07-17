@@ -10,7 +10,7 @@
 					<a href="${headerLink}" class="author-name">${headerAuthor}</a>
 					<span class="author-handle">${authorHandle}</span>
 					<span class="post-meta-sep">·</span>
-					<span class="post-meta">${postTime}</span>
+					<a href="${postDetailHref}" class="post-meta post-time-link">${postTime}</a>
 					${editedBadge}
 					${visibilityIcon}
 				</div>
@@ -36,6 +36,7 @@
 			</div>
 		</div>
 	</header>
+	${replyContextHtml}
 	${quoteHtml}
 	${groupRefHtml}
 	${contentBlock}

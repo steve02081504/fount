@@ -2,7 +2,7 @@ import { wrapContentWarningHtml } from '/scripts/features/contentReveal/index.mj
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
-import { formatSocialProfileHref } from '../shared/runUri.mjs'
+import { formatSocialPostHref, formatSocialProfileHref } from '../shared/runUri.mjs'
 
 import { formatActionKey } from './lib/actionKey.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -50,9 +50,10 @@ function renderLiveRefHtml(liveRef) {
 /**
  * 将单条 feed 条目渲染为帖子卡片 DOM。
  * @param {object} item feed 条目
+ * @param {{ openDetail?: boolean }} [options] openDetail 默认 true；详情页自身传 false
  * @returns {Promise<HTMLElement>} 帖子卡片
  */
-export async function buildPostCard(item) {
+export async function buildPostCard(item, options = {}) {
 	const isRepost = item.kind === 'repost'
 	const actionEntity = item.targetEntityHash || item.entityHash
 	const actionPostId = item.targetPostId || item.postId
@@ -78,6 +79,15 @@ export async function buildPostCard(item) {
 	const quoteRef = item.post?.content?.quoteRef
 	const quoteHtml = quoteRef && !decryptFailed
 		? renderQuoteBlockHtml({ ...quoteRef, text: quoteRef.text || '' })
+		: ''
+	const replyContext = item.replyContext
+	const replyContextHtml = replyContext && !decryptFailed
+		? `<a class="reply-context" href="${escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId))}">
+			<span class="reply-context-label">${escapeHtml(geti18n('social.reply.context', {
+			author: authorLabel(replyContext.entityHash, replyContext.authorProfile),
+		}))}</span>
+			${replyContext.text ? `<span class="reply-context-snippet">${escapeHtml(String(replyContext.text).slice(0, 120))}</span>` : ''}
+		</a>`
 		: ''
 	const groupRef = item.post?.content?.groupRef
 	const groupRefHtml = groupRef && !decryptFailed
@@ -134,15 +144,16 @@ export async function buildPostCard(item) {
 	const embeddedWrapStart = isRepost ? '<div class="embedded-post">' : ''
 	const embeddedWrapEnd = isRepost ? '</div>' : ''
 	const headerAuthor = isRepost
-		? authorLabel(originalAuthor)
+		? authorLabel(originalAuthor, item.targetAuthorProfile)
 		: label
 	const headerLink = isRepost
 		? formatSocialProfileHref(originalAuthor)
 		: formatSocialProfileHref(item.entityHash)
 	const headerAvatarEntity = isRepost ? originalAuthor : item.entityHash
-	const headerAvatarProfile = isRepost ? null : item.authorProfile
+	const headerAvatarProfile = isRepost ? item.targetAuthorProfile : item.authorProfile
 	const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
 	const postTime = formatTime(item.post?.hlc?.wall)
+	const postDetailHref = formatSocialPostHref(actionEntity, actionPostId)
 	const editedBadge = item.post?.edited
 		? `<span class="post-edited-badge">${geti18n('social.post.edited')}</span>`
 		: ''
@@ -204,6 +215,7 @@ export async function buildPostCard(item) {
 		saveLabel: geti18n('social.actions.save'),
 		shareLabel: geti18n('social.actions.share'),
 		quoteHtml,
+		replyContextHtml,
 		groupRefHtml,
 		contentBlock,
 		albumChips,
@@ -211,6 +223,7 @@ export async function buildPostCard(item) {
 		likedClass,
 		dislikedClass,
 		actionKey,
+		postDetailHref,
 		likedFlag: item.viewerLiked ? '1' : '0',
 		dislikedFlag: item.viewerDisliked ? '1' : '0',
 		likeLabel,
@@ -227,5 +240,62 @@ export async function buildPostCard(item) {
 		editHistoryButton,
 		deleteButton,
 	})
-	return /** @type {HTMLElement} */ card
+	const el = /** @type {HTMLElement} */ card
+	if (options.openDetail !== false)
+		bindPostCardOpen(el, `post;${actionEntity};${actionPostId}`)
+	else
+		el.style.cursor = 'default'
+	return el
+}
+
+const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu'
+const LONG_PRESS_MS = 400
+
+/**
+ * 空白区短按进详情；按钮/链接/媒体除外；长按不进页（避免主页长按误触）。
+ * @param {HTMLElement} card 帖卡
+ * @param {string} hash 目标 hash（不含 #）
+ * @returns {void}
+ */
+function bindPostCardOpen(card, hash) {
+	let pressAt = 0
+	let longPress = false
+	let timer = 0
+	let startX = 0
+	let startY = 0
+	/**
+	 *
+	 */
+	const clearPress = () => {
+		if (timer) {
+			clearTimeout(timer)
+			timer = 0
+		}
+	}
+	card.addEventListener('pointerdown', event => {
+		if (event.button !== 0 || !(event.target instanceof Element)) return
+		if (event.target.closest(POST_CARD_OPEN_EXCLUDE)) return
+		pressAt = event.timeStamp
+		startX = event.clientX
+		startY = event.clientY
+		longPress = false
+		clearPress()
+		timer = setTimeout(() => {
+			longPress = true
+			timer = 0
+		}, LONG_PRESS_MS)
+	})
+	card.addEventListener('pointerup', event => {
+		clearPress()
+		if (event.button !== 0 || longPress || !(event.target instanceof Element)) return
+		if (event.target.closest(POST_CARD_OPEN_EXCLUDE)) return
+		if (event.timeStamp - pressAt > LONG_PRESS_MS) return
+		if (Math.hypot(event.clientX - startX, event.clientY - startY) > 12) return
+		if (getSelection()?.toString()) return
+		location.hash = hash
+	})
+	card.addEventListener('pointercancel', clearPress)
+	card.addEventListener('pointerleave', event => {
+		if (event.pointerType === 'mouse') clearPress()
+	})
 }
