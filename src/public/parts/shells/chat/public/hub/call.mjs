@@ -32,6 +32,8 @@ export async function leaveChannelCall() {
 	await leaveCodecsAvRoom()
 	setCallDockVisible(false)
 	setCallButtonActive(false)
+	updateCallBadge(0)
+	void refreshCallStatusBadge()
 }
 
 /**
@@ -66,13 +68,17 @@ export async function joinChannelCall(groupId, channelId, options = {}) {
 			 */
 			onPeerCount: count => {
 				if (peerLabel) peerLabel.textContent = String(count)
-				updateCallBadge(count)
 			},
 			/**
 			 * @param {{ entityHash: string, senderId: string }[]} peers roster
 			 * @returns {void}
 			 */
-			onRoster: peers => updateCallBadge(peers.length),
+			onRoster: peers => {
+				const unique = new Set(
+					peers.map(p => String(p.entityHash || '').toLowerCase()).filter(Boolean),
+				)
+				updateCallBadge(unique.size)
+			},
 			/**
 			 * @param {string} _senderId sender hex
 			 * @param {string | null} entityHash 实体

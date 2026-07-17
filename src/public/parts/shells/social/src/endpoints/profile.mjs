@@ -9,11 +9,6 @@ import { routeEntityHash, socialClientFromReq } from './shared.mjs'
  * @returns {void}
  */
 export function registerProfileRoutes(router) {
-	router.get('/api/parts/shells\\:social/profile/personal-lists', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.personalLists())
-	})
-
 	router.get('/api/parts/shells\\:social/profile/:entityHash', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.profile(routeEntityHash(req.params)))

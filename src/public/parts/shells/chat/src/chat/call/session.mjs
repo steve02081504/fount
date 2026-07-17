@@ -10,11 +10,14 @@ import { dirname } from 'node:path'
 
 import { loadJsonFileIfExists, saveJsonFile } from '../../../../../../../scripts/json_loader.mjs'
 import { postChannelMessage } from '../channel/postMessage.mjs'
-import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { appendFinalEditWithRetry } from '../dag/chatLogMirror.mjs'
 import { activeCallsPath } from '../lib/paths.mjs'
 
 /** @type {Map<string, object>} roomKey → 进程内通话态 */
 const liveCalls = new Map()
+
+/** @type {Map<string, Promise<void>>} roomKey → persist 串行链 */
+const persistChains = new Map()
 
 /**
  * @param {string} groupId 群
@@ -84,10 +87,11 @@ function buildCallContent(session) {
 }
 
 /**
+ * 按 session 最新状态写卡（队列内多次 roster 抖动合并为一次重建）。
  * @param {object} session 通话态
  * @returns {Promise<void>}
  */
-async function persistCallCard(session) {
+async function persistCallCardNow(session) {
 	const content = buildCallContent(session)
 	if (!session.messageEventId) {
 		const { event } = await postChannelMessage(session.username, session.groupId, session.channelId, {
@@ -99,7 +103,7 @@ async function persistCallCard(session) {
 		writeActiveEntry(session)
 		return
 	}
-	await appendSignedLocalEvent(session.username, session.groupId, {
+	await appendFinalEditWithRetry(session.username, session.groupId, {
 		type: 'message_edit',
 		channelId: session.channelId,
 		timestamp: Date.now(),
@@ -112,15 +116,27 @@ async function persistCallCard(session) {
 }
 
 /**
+ * 入队串行执行 persist；同 key 后续调用等前序完成后按最新态再写。
+ * @param {object} session 通话态
+ * @returns {Promise<void>}
+ */
+function enqueuePersistCallCard(session) {
+	const key = callKey(session.groupId, session.channelId)
+	const prev = persistChains.get(key) || Promise.resolve()
+	const next = prev.then(() => persistCallCardNow(session), () => persistCallCardNow(session))
+	persistChains.set(key, next.then(() => {}, () => {}))
+	return next
+}
+
+/**
  * @param {object} session 通话态
  * @returns {void}
  */
 function writeActiveEntry(session) {
 	const data = loadActiveCalls(session.username)
-	if (session.status === 'ended') 
+	if (session.status === 'ended')
 		delete data.calls[session.callId]
-	
-	else 
+	else
 		data.calls[session.callId] = {
 			callId: session.callId,
 			username: session.username,
@@ -132,7 +148,6 @@ function writeActiveEntry(session) {
 			everJoined: uniqHashes(session.everJoined || []),
 			status: 'ongoing',
 		}
-	
 	saveActiveCalls(session.username, data)
 }
 
@@ -146,11 +161,9 @@ function writeActiveEntry(session) {
  */
 export async function beginCallSession(username, groupId, channelId, initiatorEntityHash) {
 	const key = callKey(groupId, channelId)
-	if (liveCalls.has(key)) return liveCalls.get(key)
-	const { getAvRelayRoster } = await import('../ws/avRelay.mjs')
+	const existing = liveCalls.get(key)
+	if (existing?.status === 'ongoing') return existing
 	const initiator = String(initiatorEntityHash || '').toLowerCase()
-	const rosterHashes = getAvRelayRoster(callRoomId(groupId, channelId)).map(p => p.entityHash)
-	const initial = uniqHashes([initiator, ...rosterHashes])
 	const session = {
 		callId: randomUUID(),
 		username,
@@ -159,12 +172,17 @@ export async function beginCallSession(username, groupId, channelId, initiatorEn
 		initiator,
 		startedAt: Date.now(),
 		status: 'ongoing',
-		everJoined: initial,
-		current: initial,
+		everJoined: uniqHashes([initiator]),
+		current: uniqHashes([initiator]),
 		messageEventId: null,
 	}
 	liveCalls.set(key, session)
-	await persistCallCard(session)
+	const { getAvRelayRoster } = await import('../ws/avRelay.mjs')
+	const rosterHashes = getAvRelayRoster(callRoomId(groupId, channelId)).map(p => p.entityHash)
+	const initial = uniqHashes([initiator, ...rosterHashes])
+	session.everJoined = uniqHashes([...session.everJoined || [], ...initial])
+	session.current = uniqHashes([...session.current || [], ...initial])
+	await enqueuePersistCallCard(session)
 	return session
 }
 
@@ -182,7 +200,7 @@ export async function updateCallRoster(groupId, channelId, roster) {
 	const current = uniqHashes(roster.map(p => p.entityHash))
 	session.current = current
 	session.everJoined = uniqHashes([...session.everJoined || [], ...current])
-	await persistCallCard(session)
+	await enqueuePersistCallCard(session)
 	return session
 }
 
@@ -197,14 +215,20 @@ export async function endCallSession(groupId, channelId) {
 	const session = liveCalls.get(key)
 	if (!session || session.status !== 'ongoing') {
 		liveCalls.delete(key)
+		persistChains.delete(key)
 		return null
 	}
 	session.status = 'ended'
 	session.endedAt = Date.now()
 	session.current = []
-	await persistCallCard(session)
-	liveCalls.delete(key)
-	return session
+	try {
+		await enqueuePersistCallCard(session)
+		return session
+	}
+	finally {
+		liveCalls.delete(key)
+		persistChains.delete(key)
+	}
 }
 
 /**
@@ -249,7 +273,7 @@ export async function reconcileOrphanedCalls(username) {
 		if (liveCalls.has(key)) continue
 		try {
 			const endedAt = Date.now()
-			await appendSignedLocalEvent(username, row.groupId, {
+			await appendFinalEditWithRetry(username, row.groupId, {
 				type: 'message_edit',
 				channelId: row.channelId,
 				timestamp: endedAt,

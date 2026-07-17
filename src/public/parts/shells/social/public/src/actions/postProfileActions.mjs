@@ -1,4 +1,4 @@
-import { formatSocialShareHttpsUrl } from '../../shared/runUri.mjs'
+import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { promptText, showText } from '../lib/dialog.mjs'

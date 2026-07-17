@@ -22,14 +22,14 @@ Deno.test({
 		port,
 		username: 'social-posts-http-user',
 		apiKey,
-		loadParts: ['shells/social'],
+		loadParts: ['shells/social', 'shells/chat'],
 		bootstrap: bootstrapPath,
 		p2p: false,
 		minP2pNode: true,
 	})
 	const { baseUrl } = node
 	try {
-		const viewerRes = await fetch(`${baseUrl}/api/parts/shells:social/viewer?fount-apikey=${encodeURIComponent(apiKey)}`)
+		const viewerRes = await fetch(`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`)
 		assertEquals(viewerRes.status, 200)
 		const { viewerEntityHash } = await viewerRes.json()
 		assert(viewerEntityHash)

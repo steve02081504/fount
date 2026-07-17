@@ -1,13 +1,10 @@
 /**
  * 【文件】inbox.mjs — 通知持久 inbox（append-only JSONL + 服务端已读水位 + 读取层聚合）。
  */
-import fs from 'node:fs'
-
 import { extractMentionEntityHashes } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
-import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
+import { createJsonlInboxStore } from 'fount/public/parts/shells/chat/src/chat/lib/jsonlInboxStore.mjs'
 import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
-import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
@@ -182,6 +179,15 @@ export function inboxReadPath(username, entityHash) {
 }
 
 /**
+ * @param {string} username 用户
+ * @param {string} entityHash 收件人
+ * @returns {ReturnType<typeof createJsonlInboxStore>} store
+ */
+function socialInboxStore(username, entityHash) {
+	return createJsonlInboxStore(inboxDir(username, entityHash))
+}
+
+/**
  * @param {string} type 通知类型
  * @param {string} actorEntityHash 动作来源 timeline owner
  * @param {number} at 时间戳
@@ -296,8 +302,7 @@ export function deriveInboxNotifications(timelineOwner, event) {
  * @returns {number} 已读水位毫秒
  */
 export function getNotificationsSeenAt(username, entityHash) {
-	const data = loadJsonFileIfExists(inboxReadPath(username, entityHash))
-	return Number(data?.seenAt) || 0
+	return socialInboxStore(username, entityHash).getSeenAt()
 }
 
 /**
@@ -307,9 +312,7 @@ export function getNotificationsSeenAt(username, entityHash) {
  * @returns {void}
  */
 export function setNotificationsSeenAt(username, entityHash, at) {
-	const dir = inboxDir(username, entityHash)
-	fs.mkdirSync(dir, { recursive: true })
-	saveJsonFile(inboxReadPath(username, entityHash), { seenAt: Number(at) || Date.now() })
+	socialInboxStore(username, entityHash).setSeenAt(at)
 }
 
 /**
@@ -339,9 +342,7 @@ export async function appendCarePostInboxRow(username, recipientEntityHash, auth
 			at,
 		}, recipient),
 	}
-	const dir = inboxDir(username, recipient)
-	fs.mkdirSync(dir, { recursive: true })
-	await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
+	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
 	const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
 	void notifyUser(username, {
@@ -381,9 +382,7 @@ export async function appendPollClosedInboxRow(username, recipientEntityHash, au
 			at,
 		}, recipient),
 	}
-	const dir = inboxDir(username, recipient)
-	fs.mkdirSync(dir, { recursive: true })
-	await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
+	await socialInboxStore(username, recipient).append(notification)
 	pushFeedUpdate(username, { type: 'notification', notification })
 }
 
@@ -426,14 +425,12 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
 		}
 		if (postMatchesMutedKeywords(filterPost, mutedKeywords)) continue
 		const { recipient, ...baseRow } = row
-		const dir = inboxDir(username, recipient)
-		fs.mkdirSync(dir, { recursive: true })
 		const notification = {
 			...baseRow,
 			snippet,
 			aggregateKey: computeAggregateKey({ ...row, snippet }, recipient),
 		}
-		await appendJsonlSynced(inboxEventsPath(username, recipient), notification)
+		await socialInboxStore(username, recipient).append(notification)
 		pushFeedUpdate(username, { type: 'notification', notification })
 		const { notifyUser } = await import('fount/server/web_server/notify/notify.mjs')
 		void notifyUser(username, {
@@ -453,30 +450,19 @@ export async function appendInboxFromTimelineEvent(username, timelineOwner, even
  * @returns {Promise<{ notifications: object[], nextCursor: string | null, unreadCount: number }>} 通知页与未读数
  */
 export async function readInboxNotifications(username, viewerEntityHash, options = {}) {
-	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
-	const cursor = options.cursor ? String(options.cursor) : null
 	const types = options.types ?? null
-	const seenAt = getNotificationsSeenAt(username, viewerEntityHash)
-	const rows = await readJsonl(inboxEventsPath(username, viewerEntityHash)).catch(() => [])
-	const deduped = []
-	const seen = new Set()
-	for (const row of rows) {
-		const key = rawNotificationCursor(row)
-		if (seen.has(key)) continue
-		seen.add(key)
-		deduped.push(row)
-	}
-	const filtered = types?.length ? deduped.filter(row => types.includes(row.type)) : deduped
-	const aggregated = aggregateNotificationRows(filtered, viewerEntityHash)
-	let startIndex = 0
-	if (cursor) {
-		startIndex = aggregated.findIndex(row => notificationCursor(row) === cursor) + 1
-		if (startIndex <= 0) startIndex = aggregated.length
-	}
-	const page = aggregated.slice(startIndex, startIndex + limit)
-	const nextCursor = page.length === limit && startIndex + limit < aggregated.length
-		? notificationCursor(page[page.length - 1])
-		: null
-	const unreadCount = aggregated.filter(row => Number(row.at) > seenAt).length
-	return { notifications: page, nextCursor, unreadCount }
+	const page = await socialInboxStore(username, viewerEntityHash).listPage({
+		limit: options.limit,
+		cursor: options.cursor,
+		rowCursor: rawNotificationCursor,
+		pageCursor: notificationCursor,
+		sortByAtDesc: false,
+		filter: types?.length ? row => types.includes(row.type) : undefined,
+		/**
+		 * @param {object[]} rows 去重后的原始行
+		 * @returns {object[]} 聚合后的通知
+		 */
+		transform: rows => aggregateNotificationRows(rows, viewerEntityHash),
+	})
+	return { notifications: page.items, nextCursor: page.nextCursor, unreadCount: page.unreadCount }
 }

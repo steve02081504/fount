@@ -6,6 +6,35 @@ import { peerPubKeyFromEntityHash } from './internal.mjs'
 import { createMessage } from './message.mjs'
 
 /**
+ * 实体 shell JSON 私有态命名空间（load/assign 样板）。
+ * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
+ * @param {string} dataName setting 名
+ * @param {(stored: object) => object} shape 读出规范化；set 时写入该对象
+ * @returns {{ list: Function, set: Function }} list/set 命名空间
+ */
+function createEntityShellJsonNamespace(apiContext, dataName, shape) {
+	return {
+		/**
+		 * @returns {Promise<object>} 读出
+		 */
+		async list() {
+			const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+			return shape(loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, dataName) || {})
+		},
+		/**
+		 * @param {object} value 写入值（已是最终 shape）
+		 * @returns {Promise<object>} 写入后的值
+		 */
+		async set(value) {
+			const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
+			const next = shape(value || {})
+			assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, dataName, next)
+			return next
+		},
+	}
+}
+
+/**
  * @param {import('./internal.mjs').ChatApiContext} apiContext API 上下文
  * @returns {object} ChatClient 鸭子类型
  */
@@ -26,23 +55,20 @@ export function createChatClient(apiContext) {
 		 * @returns {{ list: Function, set: Function }} 书签
 		 */
 		get bookmarks() {
+			const ns = createEntityShellJsonNamespace(apiContext, 'bookmarks', stored => ({
+				entries: Array.isArray(stored.entries) ? stored.entries : [],
+			}))
 			return {
 				/**
 				 * @returns {Promise<{ entries: object[] }>} 书签列表
 				 */
-				async list() {
-					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { entries: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'bookmarks').entries || [] }
-				},
+				list: () => ns.list(),
 				/**
 				 * @param {object[]} entries 书签条目
 				 * @returns {Promise<{ entries: object[] }>} 写入后的列表
 				 */
 				async set(entries) {
-					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const next = Array.isArray(entries) ? entries : []
-					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'bookmarks', { entries: next })
-					return { entries: next }
+					return ns.set({ entries: Array.isArray(entries) ? entries : [] })
 				},
 			}
 		},
@@ -50,23 +76,20 @@ export function createChatClient(apiContext) {
 		 * @returns {{ list: Function, set: Function }} 群文件夹
 		 */
 		get groupFolders() {
+			const ns = createEntityShellJsonNamespace(apiContext, 'groupFolders', stored => ({
+				folders: Array.isArray(stored.folders) ? stored.folders : [],
+			}))
 			return {
 				/**
 				 * @returns {Promise<{ folders: object[] }>} 文件夹列表
 				 */
-				async list() {
-					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { folders: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'groupFolders').folders || [] }
-				},
+				list: () => ns.list(),
 				/**
 				 * @param {object[]} folders 文件夹
 				 * @returns {Promise<{ folders: object[] }>} 写入后的列表
 				 */
 				async set(folders) {
-					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const next = Array.isArray(folders) ? folders : []
-					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'groupFolders', { folders: next })
-					return { folders: next }
+					return ns.set({ folders: Array.isArray(folders) ? folders : [] })
 				},
 			}
 		},
@@ -74,26 +97,10 @@ export function createChatClient(apiContext) {
 		 * @returns {{ list: Function, set: Function }} 实体/群别名
 		 */
 		get aliases() {
-			return {
-				/**
-				 * @returns {Promise<{ entities: Record<string, string>, groups: Record<string, string> }>} 别名档
-				 */
-				async list() {
-					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const data = loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'aliases')
-					return { entities: data.entities || {}, groups: data.groups || {} }
-				},
-				/**
-				 * @param {{ entities?: Record<string, string>, groups?: Record<string, string> }} doc 别名档
-				 * @returns {Promise<{ entities: Record<string, string>, groups: Record<string, string> }>} 写入后的档
-				 */
-				async set(doc) {
-					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const next = { entities: doc?.entities || {}, groups: doc?.groups || {} }
-					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'aliases', next)
-					return next
-				},
-			}
+			return createEntityShellJsonNamespace(apiContext, 'aliases', stored => ({
+				entities: stored.entities || {},
+				groups: stored.groups || {},
+			}))
 		},
 		/**
 		 * @returns {Promise<Record<string, Record<string, { eventId: string, seq: number }>>>} 全量已读水位
@@ -177,23 +184,20 @@ export function createChatClient(apiContext) {
 		 * @returns {{ list: Function, set: Function, save: Function, frequent: Function, record: Function }} 自定义表情与用量
 		 */
 		get emojis() {
+			const customEmojis = createEntityShellJsonNamespace(apiContext, 'customEmojis', stored => ({
+				entries: Array.isArray(stored.entries) ? stored.entries : Array.isArray(stored) ? stored : [],
+			}))
 			return {
 				/**
 				 * @returns {Promise<{ entries: object[] }>} 自定义表情
 				 */
-				async list() {
-					const { loadEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					return { entries: loadEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis').entries || [] }
-				},
+				list: () => customEmojis.list(),
 				/**
 				 * @param {object[]} entries 表情条目
 				 * @returns {Promise<{ entries: object[] }>} 写入后的列表
 				 */
 				async set(entries) {
-					const { assignEntityShellData } = await import('../../../../../../server/setting_loader.mjs')
-					const next = Array.isArray(entries) ? entries : []
-					assignEntityShellData(apiContext.username, 'chat', apiContext.entityHash, 'customEmojis', { entries: next })
-					return { entries: next }
+					return customEmojis.set({ entries: Array.isArray(entries) ? entries : [] })
 				},
 				/**
 				 * @param {{ groupId: string, emojiId: string, dataUrl: string }} fields 保存字段

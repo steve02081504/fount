@@ -167,22 +167,23 @@ export async function cancelGeneratingPlaceholder(groupId, entry, username, dagE
 }
 
 /**
- * 写入 DAG message_edit 终稿；deferrable 权限错误时刷新物化 state 并重试。
+ * 写入 DAG message_edit；deferrable 权限错误时 forceFullReplay + 退避重试。
  * @param {string} username 所有者
  * @param {string} groupId 群 ID
  * @param {object} eventBody message_edit 事件体
+ * @param {object} [appendOptions] 透传 appendSignedLocalEvent（如 entityHash）
  * @param {number} [attempt] 重试次数
  * @returns {Promise<object>} 已签名事件
  */
-async function appendFinalEditWithRetry(username, groupId, eventBody, attempt = 0) {
+export async function appendFinalEditWithRetry(username, groupId, eventBody, appendOptions = {}, attempt = 0) {
 	try {
-		return await appendSignedLocalEvent(username, groupId, eventBody)
+		return await appendSignedLocalEvent(username, groupId, eventBody, appendOptions)
 	}
 	catch (error) {
 		if (error?.deferrable && attempt < 4) {
 			await getState(username, groupId, { forceFullReplay: attempt >= 2 })
 			await new Promise(resolve => { setTimeout(resolve, 40 * (attempt + 1)) })
-			return appendFinalEditWithRetry(username, groupId, eventBody, attempt + 1)
+			return appendFinalEditWithRetry(username, groupId, eventBody, appendOptions, attempt + 1)
 		}
 		throw error
 	}

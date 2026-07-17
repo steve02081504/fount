@@ -1,12 +1,14 @@
 import { createShellProbe } from 'fount/scripts/test/live/singleNode/helpers.mjs'
 
+const social = await createShellProbe('social')
+const chat = await createShellProbe('chat')
 const {
 	shellApi,
 	testCase,
 	writeLiveSection,
 	writeLiveSummary,
 	completeLiveScript,
-} = await createShellProbe('social')
+} = social
 
 let entityHash = null
 let postId = null
@@ -16,8 +18,8 @@ const dummyTarget = 'a'.repeat(128)
 
 writeLiveSection('A. Viewer & discover')
 
-await testCase('GET /viewer', async () => {
-	const r = await shellApi('GET', '/viewer')
+await testCase('GET chat /viewer', async () => {
+	const r = await chat.shellApi('GET', '/viewer')
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	entityHash = r.json.viewerEntityHash
 	return Boolean(entityHash)
@@ -148,8 +150,8 @@ await testCase('POST /relationships/hide + unhide seeded test target', async () 
 	return u.status === 200
 })
 
-await testCase('GET /profile/personal-lists', async () => {
-	const r = await shellApi('GET', '/profile/personal-lists')
+await testCase('GET chat /personal-lists', async () => {
+	const r = await chat.shellApi('GET', '/personal-lists')
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	return r.json.entries != null
 })

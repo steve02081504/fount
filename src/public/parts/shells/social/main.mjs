@@ -114,30 +114,27 @@ export default {
 		events.on('entity-key-rotated', handleEntityKeyRotated)
 		registerSocialManifestAcl()
 		registerSocialManifestTransfer()
-		const { registerSocialTrendingQueryHandler } = await import('./src/trending/network.mjs')
-		registerSocialTrendingQueryHandler()
+		const { registerSocialQueryKinds } = await import('./src/federation/partQuery.mjs')
+		const { TRENDING_HASHTAGS_KIND, localTrendingHashtagsHandler } = await import('./src/trending/network.mjs')
+		const { POST_SEARCH_KIND, localPostSearchHandler } = await import('./src/search/network.mjs')
+		const { POST_DISCOVER_KIND, localPostDiscoverHandler } = await import('./src/discover/postDiscover.mjs')
+		const { LIVE_FEED_KIND, localLiveFeedHandler } = await import('./src/live/network.mjs')
+		registerSocialQueryKinds({
+			[TRENDING_HASHTAGS_KIND]: localTrendingHashtagsHandler,
+			[POST_SEARCH_KIND]: localPostSearchHandler,
+			[POST_DISCOVER_KIND]: localPostDiscoverHandler,
+			[LIVE_FEED_KIND]: localLiveFeedHandler,
+		})
 		setEndpoints(router)
 		const { bootstrapPollDeadlineWatchers } = await import('./src/lib/pollDeadlineWatcher.mjs')
 		void bootstrapPollDeadlineWatchers()
 		const { bootstrapScheduledPostWatchers } = await import('./src/lib/scheduledPostWatcher.mjs')
 		void bootstrapScheduledPostWatchers()
-		const { registerSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
-		registerSocialPostSearchQueryHandler()
-		const { registerSocialPostDiscoverQueryHandler } = await import('./src/discover/postDiscover.mjs')
-		registerSocialPostDiscoverQueryHandler()
-		const { registerSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
-		registerSocialLiveFeedQueryHandler()
 	},
 	/** 卸载 Social shell。 */
 	Unload: async () => {
-		const { unregisterSocialTrendingQueryHandler } = await import('./src/trending/network.mjs')
-		unregisterSocialTrendingQueryHandler()
-		const { unregisterSocialPostSearchQueryHandler } = await import('./src/search/network.mjs')
-		unregisterSocialPostSearchQueryHandler()
-		const { unregisterSocialPostDiscoverQueryHandler } = await import('./src/discover/postDiscover.mjs')
-		unregisterSocialPostDiscoverQueryHandler()
-		const { unregisterSocialLiveFeedQueryHandler } = await import('./src/live/network.mjs')
-		unregisterSocialLiveFeedQueryHandler()
+		const { unregisterSocialQueryKinds } = await import('./src/federation/partQuery.mjs')
+		unregisterSocialQueryKinds()
 		unregisterShellPartpath('social')
 		unregisterOperatorEntityHashProvider()
 		unregisterReplicaUsernamesProvider()

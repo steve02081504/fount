@@ -52,7 +52,7 @@ async function invokePartForUser(username, partpath, data, ingress = {}) {
  * @param {string} partpath part 路径
  * @returns {Promise<string | null>} 拥有该 part 的用户名
  */
-async function resolveUsernameForPartpath(preferredUsername, partpath) {
+export async function resolveUsernameForPartpath(preferredUsername, partpath) {
 	if (preferredUsername && hasPartMain(preferredUsername, partpath)) return preferredUsername
 	for (const username of getAllUserNames())
 		if (hasPartMain(username, partpath)) return username

@@ -1,7 +1,7 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { socialApi } from '../lib/apiClient.mjs'
+import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
@@ -110,7 +110,7 @@ function renderMutedKeywordsSection(panel, entries) {
  * @returns {Promise<void>}
  */
 async function renderTranslationPrefsSection(panel) {
-	const data = await socialApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
+	const data = await chatApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
 	const prefs = data?.prefs || { autoTranslate: false }
 	const section = document.createElement('div')
 	section.className = 'translation-prefs card'
@@ -125,7 +125,7 @@ async function renderTranslationPrefsSection(panel) {
 	panel.appendChild(section)
 	section.querySelector('#socialAutoTranslate')?.addEventListener('change', event => {
 		const checked = event.target instanceof HTMLInputElement && event.target.checked
-		void runSocialWrite('translationPrefs', () => socialApi('/translation-prefs', {
+		void runSocialWrite('translationPrefs', () => chatApi('/translation-prefs', {
 			method: 'PUT',
 			body: JSON.stringify({ prefs: { ...prefs, autoTranslate: checked } }),
 		}))

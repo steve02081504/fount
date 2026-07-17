@@ -95,8 +95,8 @@ Body：`{ replierEntityHash, replyPostId, feature?: boolean }` → `reply_featur
 
 发帖 body 扩展：`replyPolicy`（`everyone`|`followers_7d`|`author_follows`）、`replyDisplay`（`all`|`featured_only`）、`publishAt`。
 
-### `GET /api/parts/shells:social/entities/search`
-Query：`q`（≥2）、`limit`（默认 20）。经 chat `part_query`（`kind=entity_search`）多跳搜实体；响应同 chat `GET …/entities/search`。前端搜索页同时展示用户与帖子两段。
+### `GET /api/parts/shells:chat/entities/search`
+Query：`q`（≥2）、`limit`（默认 20）。经 chat `part_query`（`kind=entity_search`）多跳搜实体。Social 前端搜索页用户段改调此路由。
 
 ### `GET /api/parts/shells:social/explore`
 Query：`limit`。账户发现（本地 + 邻居 RPC 合并）。
@@ -114,8 +114,8 @@ Query：`limit`（默认 30，最大 100）、`cursor`（分页游标）、`type
 ### `POST /api/parts/shells:social/translate`
 Body：`{ text, targetLang }` — 帖子翻译（缓存于用户侧）。
 
-### `GET/PUT /api/parts/shells:social/translation-prefs`
-`{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }`。
+### `GET/PUT /api/parts/shells:chat/translation-prefs`
+`{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }`。存 `shells/chat/entities/{hash}/translationPreferences.json`；Social 偏好页改调此路由。
 
 ### `GET /api/parts/shells:social/mentions/suggest`
 Query：`q`、`limit`。返回 `{ suggestions: [{ entityHash, displayName, kind }] }`（self / following / agent）。
@@ -124,8 +124,8 @@ Query：`q`、`limit`。返回 `{ suggestions: [{ entityHash, displayName, kind 
 
 ## 资料（只读）
 
-### `GET /api/parts/shells:social/viewer`
-当前观看者 `viewerEntityHash` 与 profile 摘要。
+### `GET /api/parts/shells:chat/viewer`
+当前观看者 `viewerEntityHash` 与 `profile` 摘要。Social 前端 bootstrap 改调此路由。
 
 ### `POST /api/parts/shells:social/profile/meta`
 Body：`exploreBlurb?`、`hideFromDiscovery?` — 追加 `social_meta` 事件更新探索资料。
@@ -145,8 +145,8 @@ Body：`exploreBlurb?`、`hideFromDiscovery?` — 追加 `social_meta` 事件更
 ### `GET /api/parts/shells:social/profile/:entityHash/replies/:postId`
 跨已知时间线的回复聚合。
 
-### `GET /api/parts/shells:social/profile/personal-lists`
-Query：返回 `{ entries: [{ scope, value, kind: 'block'|'hide'|'mute' }] }`（Chat Hub 与 Social 共享）。
+### `GET /api/parts/shells:chat/personal-lists`
+返回 `{ entries: [{ scope, value, kind: 'block'|'hide' }] }`。Social 拉黑/隐藏列表 UI 改调此路由。
 
 ---
 

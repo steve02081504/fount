@@ -84,3 +84,56 @@ Deno.test('channelContent accepts call type', async () => {
 	})
 	assertEquals(content.type, 'call')
 })
+
+Deno.test('concurrent begin + roster update yields one call card', async () => {
+	const username = `call-race-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({
+		username,
+		minP2pNode: true,
+		/**
+		 * @param {string} user replica
+		 * @returns {Promise<void>}
+		 */
+		afterInit: async user => {
+			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+			await ensureOperatorPubKey(user)
+		},
+	})
+	await ensureServer()
+
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const {
+		beginCallSession,
+		updateCallRoster,
+		endCallSession,
+	} = await import('../../src/chat/call/session.mjs')
+	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
+	const { mergeChannelMessagesForDisplay } = await import('../../public/shared/messageMerge.mjs')
+
+	const groupId = await newGroup(username, { name: 'call-race-group' })
+	const channelId = await getDefaultChannelId(username, groupId)
+	const initiator = await resolveOperatorEntityHash(username)
+	assert(initiator)
+	const peer = 'd'.repeat(128)
+
+	const [session] = await Promise.all([
+		beginCallSession(username, groupId, channelId, initiator),
+		updateCallRoster(groupId, channelId, [
+			{ entityHash: initiator, senderId: 'a'.repeat(32) },
+			{ entityHash: peer, senderId: 'b'.repeat(32) },
+		]),
+	])
+	assert(session?.messageEventId)
+	assertEquals(session.status, 'ongoing')
+
+	await endCallSession(groupId, channelId)
+
+	const lines = await readChannelMessagesForUser(username, groupId, channelId, { limit: 100 })
+	const callCards = mergeChannelMessagesForDisplay(lines).filter(row => row.content?.type === 'call')
+	assertEquals(callCards.length, 1)
+	assertEquals(callCards[0].content?.status, 'ended')
+	assert(callCards[0].content.participants.includes(initiator.toLowerCase()))
+	assert(callCards[0].content.participants.includes(peer))
+})

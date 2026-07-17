@@ -24,9 +24,25 @@ async function socialApi(method, path, body) {
 	return { status: response.status, json: await response.json().catch(() => null) }
 }
 
-const viewer = await socialApi('GET', '/viewer')
+/**
+ * @param {string} method HTTP 方法
+ * @param {string} path 相对路径
+ * @param {object} [body] JSON 请求体
+ * @returns {Promise<{ status: number, json: object | null }>} HTTP 状态码与解析后的 JSON
+ */
+async function chatApi(method, path, body) {
+	const separator = path.includes('?') ? '&' : '?'
+	const response = await fetch(`${baseUrl}/api/parts/shells:chat${path}${separator}fount-apikey=${encodeURIComponent(apiKey)}`, {
+		method,
+		headers: body ? { 'content-type': 'application/json' } : {},
+		body: body ? JSON.stringify(body) : undefined,
+	})
+	return { status: response.status, json: await response.json().catch(() => null) }
+}
+
+const viewer = await chatApi('GET', '/viewer')
 if (viewer.status !== 200 || !viewer.json?.viewerEntityHash) {
-	console.error('FAIL: GET /viewer', viewer.status, viewer.json)
+	console.error('FAIL: GET chat /viewer', viewer.status, viewer.json)
 	process.exit(1)
 }
 const entityHash = viewer.json.viewerEntityHash

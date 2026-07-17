@@ -2,7 +2,7 @@ import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { bindDwellTracker } from '../dwellTracker.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { buildPostCard } from '../postCard.mjs'
@@ -352,7 +352,7 @@ export async function runFeedSearch() {
 	disconnectInfiniteScroll()
 	const [data, entityData] = await Promise.all([
 		socialApi(`/search?q=${encodeURIComponent(q)}&limit=30`),
-		socialApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
+		chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
 	])
 	if (socialState.activeFeedSearchQuery !== q) return
 	const list = document.getElementById('feedList')

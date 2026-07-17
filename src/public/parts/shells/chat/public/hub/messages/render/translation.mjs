@@ -14,8 +14,9 @@ export async function autoTranslateMessages(container) {
 	try {
 		const response = await fetch('/api/parts/shells:chat/translation-prefs', { credentials: 'include' })
 		if (!response.ok) return
-		const prefs = await response.json()
-		if (!prefs?.autoTranslate) return
+		const data = await response.json()
+		const prefs = data?.prefs || data || {}
+		if (!prefs.autoTranslate) return
 
 		const excludeLocales = new Set(Array.isArray(prefs.excludeLocales) ? prefs.excludeLocales : [])
 		const { requestTranslation, resolveTargetLang, mountTranslationBlock } = await import('/scripts/features/translate.mjs')

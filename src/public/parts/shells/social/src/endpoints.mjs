@@ -20,10 +20,8 @@ import { registerTasteRoutes } from './endpoints/taste.mjs'
 import { registerTestSeedRoutes } from './endpoints/testSeed.mjs'
 import { registerTopicsRoutes } from './endpoints/topics.mjs'
 import { registerTranslateRoutes } from './endpoints/translate.mjs'
-import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs'
 import { registerVaultRoutes } from './endpoints/vault.mjs'
 import { registerVideosRoutes } from './endpoints/videos.mjs'
-import { registerViewerRoutes } from './endpoints/viewer.mjs'
 
 /**
  * 注册 Social shell 全部 HTTP/WS 路由。
@@ -40,8 +38,6 @@ export function setEndpoints(router) {
 	registerLiveRoutes(router)
 	registerNotificationRoutes(router)
 	registerTranslateRoutes(router)
-	registerTranslationPrefsRoutes(router)
-	registerViewerRoutes(router)
 	registerProfileRoutes(router)
 	registerPostsRoutes(router)
 	registerAlbumsRoutes(router)

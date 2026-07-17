@@ -1,6 +1,9 @@
+/**
+ * 联邦话题热度 part_query。
+ */
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
 import { buildTrendingHashtags } from './hashtags.mjs'
 
@@ -45,22 +48,6 @@ export async function localTrendingHashtagsHandler(inboundContext, query) {
 		count: row.count,
 		nodeHash,
 	}))
-}
-
-/**
- * Social Load：注册 trending_hashtags part_query handler。
- * @returns {void}
- */
-export function registerSocialTrendingQueryHandler() {
-	registerQueryInboundHandler(getShellPartpath('social'), TRENDING_HASHTAGS_KIND, localTrendingHashtagsHandler)
-}
-
-/**
- * Social Unload：清空 handler。
- * @returns {void}
- */
-export function unregisterSocialTrendingQueryHandler() {
-	registerQueryInboundHandler(getShellPartpath('social'), TRENDING_HASHTAGS_KIND, () => [])
 }
 
 /**

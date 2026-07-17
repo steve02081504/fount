@@ -11,7 +11,7 @@ alwaysApply: false
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
 - **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`.
-- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. APIs: `GET …/profile/personal-lists` (operator) and chat `GET …/personal-lists`. Group kick/ban = node `denylist.json` (separate).
+- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. API: chat `GET …/personal-lists`（operator）。Group kick/ban = node `denylist.json` (separate).
 - **HTTP routes**: thin wrappers → `getSocialClient(username)`; writes at `POST …/posts` (incl. poll / contentWarning / sensitiveMedia / mediaRefs.alt), `…/edit`, `…/poll-vote`, `…/notes`, `…/notes/:id/vote`, `…/like|dislike|repost`, `DELETE …/posts`; `GET|PUT /taste`, `GET|PUT /profile/muted-keywords`, `POST /signals/dwell`; relationships likewise. Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Visibility tiers: `public` / `unlisted` (readable, not discoverable) / `followers`+`followers_since` (GSH) / `selected`+`private` (pkw per-recipient wraps) / optional `except` (filter-only). `follow_approve` issues vault H, not locked-account approval. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses media/poll/body; `sensitiveMedia` blurs media only.
 - **Profile cabinets tab**: lists published personal/shared cabinet metadata via Cabinet remote APIs (`renderProfileCabinets`); full visibility tiers (`followers_since` / `selected`) go through Cabinet `publish.mjs`. Reading files still requires cabinet keys / EVFS access.
@@ -19,7 +19,7 @@ alwaysApply: false
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`); ingress rejects unlisted types.
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 - **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started` (`inbox.mjs`).
-- **Share URL**: `wrapProtocolHttpsUrl` → GitHub Pages protocol relay to the reader's local instance.
+- **Share URL**: chat `wrapProtocolHttpsUrl`（Social 经 `shared/protocolUrl.mjs` re-export）→ GitHub Pages protocol relay to the reader's local instance.
 - **Trending**: `scope=local|nearby`; nearby uses `part_query` `trending_hashtags`.
 - **Dwell**: frontend `dwellTracker.mjs` uses local IntersectionObserver; short videos may report `watchMs`/`watchRatio`; local-only ranking signal, not federated.
 - **Topics / search / videos / live**: `tag_follow` topic pages; `GET /search` with filters and `scope=nearby` (`post_search`); `GET /videos/feed` + vertical snap + cursor pagination/replay; `/live/*` (broadcast auto-posts `liveRef`, end `post_edit` stats, dual-host co-stream, lobby `scope=nearby` + viewer proxy) + `av-relay` preview/full (`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`; WS URL ← `social/public/shared/liveAvWsUrl.mjs`); scheduled posts `publishAt` + `scheduledPostWatcher` (modeled on poll deadline).
@@ -58,11 +58,11 @@ alwaysApply: false
 
 - Human and agent are both self-signed entities; `ownerEntityHash` is a belonging field (humans may also set it). Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
 - **Profile header**: bio 读 `description` / `description_markdown`；有 `ownerEntityHash` 时显示「此实体为 xxx 所有」链接（`formatSocialProfileHref`）。Social 时间线不存在导入重签归因问题，无需 attribution mismatch UI。
-- Webapi identity is always the operator (`GET /viewer` → `viewerEntityHash` + `agents[]`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
+- Webapi identity is always the operator (`GET /api/parts/shells:chat/viewer` → `viewerEntityHash` + `profile`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
 - Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash`（operator；前端模块直接 import，无 appContext）。
 - Agent private read/write only via `getSocialClient(username, agentEntityHash)` (entry: `src/api/client/index.mjs`).
 - **Saved posts**: `shells/social/entities/{entityHash}/savedPosts.json`; HTTP `…/saved-posts*` (incl. `/search`) fixed to operator; agent CRUD/search is structurally identical (`client.saved.*`). Missing file must return a **new** empty structure (do not shallow-copy a shared `DEFAULT`).
-- **Entity search**: `GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork` (`part_query` kind `entity_search`). Search page user section: follow / pin alias; Hub `#friends` sidebar has separate search → create DM.
+- **Entity search**: chat `GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork` (`part_query` kind `entity_search`). Search page user section: follow / pin alias; Hub `#friends` sidebar has separate search → create DM.
 
 ## Notifications inbox
 

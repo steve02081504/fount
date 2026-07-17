@@ -193,20 +193,17 @@ export function applyAvatarsTo(rootElement) {
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
-			const avatar = customProfileAvatar(profile)
-			if (avatar) {
-				const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
-				void applyProfileAvatarToHost(av, {
-					seed: profileKey,
-					label: resolveDisplayName({
-						entityHash,
-						alias: entityHash ? aliasForEntity(entityHash) : '',
-						profileName: profile.name,
-						fallbackLabel: authorDisplayLabel(authorKey),
-					}),
-					avatar,
-				})
-			}
+			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
+			void applyProfileAvatarToHost(av, {
+				seed: profileKey,
+				label: resolveDisplayName({
+					entityHash,
+					alias: entityHash ? aliasForEntity(entityHash) : '',
+					profileName: profile.name,
+					fallbackLabel: authorDisplayLabel(authorKey),
+				}),
+				avatar: customProfileAvatar(profile),
+			})
 			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})

@@ -1,16 +1,14 @@
 /**
  * Chat per-recipient inbox（append-only JSONL + 按收件人分目录的已读水位）。
  */
-import fs from 'node:fs'
 import { join } from 'node:path'
 
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { readJsonl, appendJsonlSynced } from 'npm:@steve02081504/fount-p2p/dag/storage'
 
-import { saveJsonFile, loadJsonFileIfExists } from '../../../../../../../scripts/json_loader.mjs'
 import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
+import { createJsonlInboxStore } from './jsonlInboxStore.mjs'
 import { shellChatRoot } from './paths.mjs'
 import { getLocalNodeHash, resolveOperatorEntityHash } from './replica.mjs'
 
@@ -53,10 +51,19 @@ export function chatInboxCursor(row) {
 /**
  * @param {string} username 用户
  * @param {string} recipientEntityHash 收件人 entityHash
+ * @returns {ReturnType<typeof createJsonlInboxStore>} store
+ */
+function chatInboxStore(username, recipientEntityHash) {
+	return createJsonlInboxStore(chatInboxDir(username, recipientEntityHash))
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} recipientEntityHash 收件人 entityHash
  * @returns {number} 已读水位毫秒
  */
 export function getChatInboxSeenAt(username, recipientEntityHash) {
-	return Number(loadJsonFileIfExists(chatInboxReadPath(username, recipientEntityHash))?.seenAt) || 0
+	return chatInboxStore(username, recipientEntityHash).getSeenAt()
 }
 
 /**
@@ -66,9 +73,7 @@ export function getChatInboxSeenAt(username, recipientEntityHash) {
  * @returns {void} 无
  */
 export function setChatInboxSeenAt(username, recipientEntityHash, at) {
-	const dir = chatInboxDir(username, recipientEntityHash)
-	fs.mkdirSync(dir, { recursive: true })
-	saveJsonFile(chatInboxReadPath(username, recipientEntityHash), { seenAt: Number(at) || Date.now() })
+	chatInboxStore(username, recipientEntityHash).setSeenAt(at)
 }
 
 /**
@@ -248,9 +253,7 @@ export function deriveChatInboxVoteClosedRow(recipientEntityHash, groupId, chann
  * @returns {Promise<void>} 无
  */
 export async function appendChatInbox(username, recipientEntityHash, row) {
-	const dir = chatInboxDir(username, recipientEntityHash)
-	fs.mkdirSync(dir, { recursive: true })
-	await appendJsonlSynced(chatInboxEventsPath(username, recipientEntityHash), row)
+	await chatInboxStore(username, recipientEntityHash).append(row)
 }
 
 /**
@@ -260,29 +263,11 @@ export async function appendChatInbox(username, recipientEntityHash, row) {
  * @returns {Promise<{ items: object[], nextCursor: string | null, unreadCount: number }>} 分页结果
  */
 export async function listChatInbox(username, recipientEntityHash, options = {}) {
-	const limit = Math.min(Math.max(Number(options.limit) || 30, 1), 100)
-	const cursor = options.cursor ? String(options.cursor) : null
 	const kindSet = options.kinds?.length ? new Set(options.kinds.map(k => String(k))) : null
-	const seenAt = getChatInboxSeenAt(username, recipientEntityHash)
-	const rows = await readJsonl(chatInboxEventsPath(username, recipientEntityHash)).catch(() => [])
-	const deduped = []
-	const seen = new Set()
-	for (const row of [...rows].sort((left, right) => Number(right.at) - Number(left.at))) {
-		if (kindSet && !kindSet.has(row.kind)) continue
-		const key = chatInboxCursor(row)
-		if (seen.has(key)) continue
-		seen.add(key)
-		deduped.push(row)
-	}
-	let startIndex = 0
-	if (cursor) {
-		startIndex = deduped.findIndex(row => chatInboxCursor(row) === cursor) + 1
-		if (startIndex <= 0) startIndex = deduped.length
-	}
-	const page = deduped.slice(startIndex, startIndex + limit)
-	const nextCursor = page.length === limit && startIndex + limit < deduped.length
-		? chatInboxCursor(page[page.length - 1])
-		: null
-	const unreadCount = deduped.filter(row => Number(row.at) > seenAt).length
-	return { items: page, nextCursor, unreadCount }
+	return chatInboxStore(username, recipientEntityHash).listPage({
+		limit: options.limit,
+		cursor: options.cursor,
+		rowCursor: chatInboxCursor,
+		filter: kindSet ? row => kindSet.has(row.kind) : undefined,
+	})
 }

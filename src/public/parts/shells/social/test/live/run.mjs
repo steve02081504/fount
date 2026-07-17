@@ -26,11 +26,11 @@ const releaseHeldNodeBPort = () => releasePort(nodeBPort)
 const suites = {
 	smoke_social: {
 		run: denoLiveRun(join(scriptsDir, 'smoke_social.mjs')),
-		node: { loadParts: ['shells/social'], p2p: false, minP2pNode: true },
+		node: { loadParts: ['shells/social', 'shells/chat'], p2p: false, minP2pNode: true },
 	},
 	e2e_single: {
 		run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')),
-		node: { loadParts: ['shells/social'] },
+		node: { loadParts: ['shells/social', 'shells/chat'] },
 	},
 	cross_shell_emoji: {
 		fed: true,
@@ -39,7 +39,7 @@ const suites = {
 	},
 	ws: {
 		run: denoLiveRun(join(scriptsDir, 'ws.mjs')),
-		node: { loadParts: ['shells/social'] },
+		node: { loadParts: ['shells/social', 'shells/chat'] },
 	},
 }
 

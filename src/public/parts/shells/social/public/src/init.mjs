@@ -15,7 +15,7 @@ import {
 	syncGroupRefInComposer,
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
-import { socialApi } from './lib/apiClient.mjs'
+import { chatApi } from './lib/apiClient.mjs'
 import { renderAvatarHtml } from './lib/display.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
@@ -149,12 +149,9 @@ export async function bootstrapSocialApp() {
 		await loadAlbumPickerOptions()
 		await updateNotificationBadge()
 
-		const viewer = await socialApi('/viewer')
+		const viewer = await chatApi('/viewer')
 		socialState.viewerEntityHash = viewer.viewerEntityHash ?? null
-		socialState.viewerDisplayName = viewer.operator?.displayName
-			|| viewer.profile?.name
-			|| null
-		socialState.agents = viewer.agents || []
+		socialState.viewerDisplayName = viewer.profile?.name || null
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && socialState.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, {

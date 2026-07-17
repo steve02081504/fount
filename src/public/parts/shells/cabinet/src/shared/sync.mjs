@@ -6,8 +6,7 @@ import { DEFAULT_TRUST_GRAPH_OWNER, requireTrustGraphProvider } from 'npm:@steve
 import { collectPartInvokeResponses } from 'npm:@steve02081504/fount-p2p/wire/part_fanout'
 import { normalizePartpath } from 'npm:@steve02081504/fount-p2p/wire/part_invoke'
 
-import { getAllUserNames } from '../../../../../../server/auth/index.mjs'
-import { hasPartMain } from '../../../../../../server/parts_loader.mjs'
+import { resolveUsernameForPartpath } from '../../../../../../server/p2p_server/inbound_handlers.mjs'
 
 import { loadSharedKeys } from './keys.mjs'
 import { persistSharedSnapshot } from './materialize.mjs'
@@ -68,25 +67,13 @@ export async function exportMissingSharedOps(username, cabinetId, haveOpIds = []
 }
 
 /**
- * @param {string} [preferredUsername] 首选
- * @param {string} partpath part
- * @returns {Promise<string | null>} 用户
- */
-async function resolveUsernameForCabinet(preferredUsername, partpath) {
-	if (preferredUsername && hasPartMain(preferredUsername, partpath)) return preferredUsername
-	for (const username of getAllUserNames())
-		if (hasPartMain(username, partpath)) return username
-	return null
-}
-
-/**
  * 注册 part_cabinet_op_put 投递入站。
  * @returns {void}
  */
 export function registerCabinetOpInbound() {
 	registerDeliveryInboundHandler('part_cabinet_op_put', async (ctx, message) => {
 		const partpath = normalizePartpath(message.partpath) || getShellPartpath('cabinet')
-		const username = await resolveUsernameForCabinet(ctx.replicaUsername, partpath)
+		const username = await resolveUsernameForPartpath(ctx.replicaUsername, partpath)
 		if (!username) return
 		await handleIncomingSharedOp(username, {
 			cabinetId: message.cabinetId,

@@ -359,7 +359,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
 	const req = await playwrightRequest.newContext()
 	try {
 		const res = await req.get(
-			`${baseUrl}/api/parts/shells:social/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
+			`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
 		)
 		if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
 		const data = await res.json()
@@ -446,7 +446,7 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
 	try {
-		const viewerRes = await req.get(`${baseUrl}/api/parts/shells:social/viewer?fount-apikey=${key}`)
+		const viewerRes = await req.get(`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${key}`)
 		if (!viewerRes.ok()) throw new Error(`viewer failed: ${viewerRes.status()}`)
 		const { viewerEntityHash } = await viewerRes.json()
 		for (let index = 0; index < count; index++) {

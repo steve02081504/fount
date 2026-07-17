@@ -42,7 +42,7 @@ await testCase('markdown_extensions registry reachable', async () => {
 
 console.log('\n=== Setup: B follows A (TrustGraph CAS fanout for non-member emoji) ===')
 await testCase('B follows A operator entity', async () => {
-	const viewerA = (await ShellApi(FedA, 'social', 'GET', '/viewer')).json.viewerEntityHash
+	const viewerA = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash
 	if (!viewerA) throw new Error('no viewerEntityHash on A')
 	const r = await ShellApi(FedB, 'social', 'POST', '/relationships/follow', { entityHash: viewerA, follow: true })
 	return r.status === 200
@@ -86,7 +86,7 @@ await testCase('A seeds channel (federation metadata)', async () => {
 
 console.log('\n=== A posts Social feed with group emoji token ===')
 await testCase('A feed post embeds groupEmoji mediaRef and retains token', async () => {
-	const viewer = (await ShellApi(FedA, 'social', 'GET', '/viewer')).json.viewerEntityHash
+	const viewer = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash
 	if (!viewer) throw new Error('no viewerEntityHash')
 	const text = `cross-shell feed ${emojiToken}`
 	const r = await ShellApi(FedA, 'social', 'POST', '/posts', {

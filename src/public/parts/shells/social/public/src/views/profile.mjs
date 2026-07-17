@@ -1,5 +1,5 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
+import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
@@ -17,7 +17,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  * @returns {Promise<void>}
  */
 export async function renderBlocklist(container) {
-	const data = await socialApi('/profile/personal-lists')
+	const data = await chatApi('/personal-lists')
 	const entries = data.entries || []
 	const blocked = entries.filter(entry => entry.kind === 'block')
 	const hidden = entries.filter(entry => entry.kind === 'hide')

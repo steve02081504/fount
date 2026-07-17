@@ -4,6 +4,7 @@
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { avatarColor, avatarInitial, avatarTextColor } from '/parts/shells:chat/shared/hashAvatar.mjs'
 
 /**
  * @param {object} message 消息行
@@ -16,9 +17,12 @@ export async function renderCallBlock(message) {
 		? content.current
 		: Array.isArray(content.participants) ? content.participants : []
 	const hashes = source.map(h => String(h || '').toLowerCase()).filter(Boolean)
-	const avatarsHtml = hashes.slice(0, 12).map(hash =>
-		`<span class="hub-call-avatar hub-avatar-wrap" data-avatar-for="${escapeHtml(hash)}" title="${escapeHtml(hash.slice(0, 8))}">${escapeHtml(hash.slice(0, 2))}</span>`,
-	).join('')
+	const avatarsHtml = hashes.slice(0, 12).map(hash => {
+		const letter = escapeHtml(avatarInitial(hash.slice(0, 8)))
+		const bg = escapeHtml(avatarColor(hash))
+		const fg = escapeHtml(avatarTextColor(hash))
+		return `<span class="hub-call-avatar hub-avatar-wrap" data-avatar-for="${escapeHtml(hash)}" title="${escapeHtml(hash.slice(0, 8))}" style="background:${bg};color:${fg}">${letter}</span>`
+	}).join('')
 	let metaHtml = ''
 	if (status === 'ongoing') {
 		const started = Number(content.startedAt) || 0

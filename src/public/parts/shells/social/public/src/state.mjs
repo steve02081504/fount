@@ -2,8 +2,6 @@
 export const socialState = {
 	viewerEntityHash: null,
 	viewerDisplayName: null,
-	/** @type {{ entityHash: string, charPartName?: string }[]} 本机 operator 拥有的 agent */
-	agents: [],
 	feedCursor: null,
 	/** @type {object[] | null} 已展示的 feed 原始条目（循环重放源） */
 	feedShownItems: null,

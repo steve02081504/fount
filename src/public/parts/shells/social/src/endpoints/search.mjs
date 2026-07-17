@@ -28,14 +28,4 @@ export function registerSearchRoutes(router) {
 			q: searchQuery,
 		}))
 	})
-
-	router.get('/api/parts/shells\\:social/entities/search', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		const searchQuery = String(req.query.q || '').trim()
-		if (searchQuery.length < 2)
-			throw httpError(400, 'query must be at least 2 characters')
-		res.status(200).json(await client.searchEntities(searchQuery, {
-			maxHits: Number(req.query.limit) || 20,
-		}))
-	})
 }

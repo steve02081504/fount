@@ -3,7 +3,7 @@
  */
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getShellPartpath } from 'npm:@steve02081504/fount-p2p/registries/part_path'
-import { queryNetwork, registerQueryInboundHandler } from 'npm:@steve02081504/fount-p2p/wire/part_query'
+import { queryNetwork } from 'npm:@steve02081504/fount-p2p/wire/part_query'
 
 import { buildLiveFeed } from './feed.mjs'
 
@@ -39,20 +39,6 @@ export async function localLiveFeedHandler(inboundContext, query) {
 			watchSecret: row.publicWatchSecret || null,
 			nodeHash,
 		}))
-}
-
-/**
- * @returns {void}
- */
-export function registerSocialLiveFeedQueryHandler() {
-	registerQueryInboundHandler(getShellPartpath('social'), LIVE_FEED_KIND, localLiveFeedHandler)
-}
-
-/**
- * @returns {void}
- */
-export function unregisterSocialLiveFeedQueryHandler() {
-	registerQueryInboundHandler(getShellPartpath('social'), LIVE_FEED_KIND, () => [])
 }
 
 /**
