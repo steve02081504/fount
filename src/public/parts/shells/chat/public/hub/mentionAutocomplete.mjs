@@ -1,7 +1,7 @@
 /**
  * Hub composer @ 提及 autocomplete（群内成员，插入 entityHash）。
  */
-import { formatHashShort } from '../shared/entityHash.mjs'
+import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
 
 import { hubStore } from './core/state.mjs'
@@ -49,7 +49,7 @@ export function attachHubMentionAutocomplete(textarea) {
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			const subtitle = row.entityHash
-				? formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })
+				? formatEntityAtId(row.entityHash, { handle: row.handle })
 				: row.memberCount != null ? `${row.memberCount}` : ''
 			button.innerHTML = `
 				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>

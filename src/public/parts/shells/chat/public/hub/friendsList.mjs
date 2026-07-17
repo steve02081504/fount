@@ -12,7 +12,7 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { setEntityAlias } from '../shared/aliases.mjs'
-import { formatHashShort } from '../shared/entityHash.mjs'
+import { formatEntityAtId } from '../shared/entityHash.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
@@ -312,7 +312,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 	for (const entity of entities) {
 		const row = document.createElement('div')
 		row.className = 'flex items-center gap-2 rounded-box bg-base-200 px-2 py-1'
-		const handle = entity.handle ? `@${entity.handle}` : formatHashShort(entity.entityHash, { headLen: 8, tailLen: 4 })
+		const handle = formatEntityAtId(entity.entityHash, { handle: entity.handle })
 		const label = entity.alias || entity.name || handle
 		row.innerHTML = `
 			<div class="min-w-0 flex-1">

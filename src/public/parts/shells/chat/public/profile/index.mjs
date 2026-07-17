@@ -13,6 +13,7 @@ import { showToastI18n } from '../../../scripts/features/toast.mjs'
 import { initTranslations, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../../scripts/theme/index.mjs'
 import { openHubProfileEdit } from '../hub/profileEdit.mjs'
+import { formatEntityAtId } from '../shared/entityHash.mjs'
 import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
@@ -157,7 +158,9 @@ async function renderProfile(profile) {
 
 	const displayStatus = profile.effectiveStatus || profile.status || 'offline'
 
-	document.getElementById('summary-username').textContent = `@${profile.handle || profile.username || entityHash.slice(64, 72)}`
+	document.getElementById('summary-username').textContent = formatEntityAtId(entityHash, {
+		handle: profile.handle || profile.username,
+	})
 	applyDatasetI18n(
 		document.getElementById('summary-status'),
 		`profile.statusOptions.${displayStatus}`,

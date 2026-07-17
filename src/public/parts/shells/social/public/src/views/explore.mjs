@@ -97,7 +97,7 @@ export async function loadExplore() {
 				</a>
 				<div class="explore-account-body">
 					<a href="${escapeHtml(profileHref)}" class="suggested-account-name">${escapeHtml(account.name)}</a>
-					<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash))}</span>
+					<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
 					${account.exploreBlurb ? `<p class="explore-account-blurb">${escapeHtml(account.exploreBlurb)}</p>` : ''}
 				</div>
 				<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>

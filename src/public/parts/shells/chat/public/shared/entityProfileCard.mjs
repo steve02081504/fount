@@ -9,7 +9,7 @@ import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
-import { entityHashLabel, isEntityHash128 } from './entityHash.mjs'
+import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
 import { customProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
 
 /**
@@ -160,9 +160,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	if (nameElement) nameElement.textContent = name
 	const handleElement = root.querySelector('[data-entity-profile-handle]')
 	if (handleElement)
-		handleElement.textContent = normalized.handle
-			? `@${normalized.handle}`
-			: `@${entityHash.slice(64, 72) || '?'}`
+		handleElement.textContent = formatEntityAtId(entityHash, { handle: normalized.handle })
 
 	const avatarElement = root.querySelector('[data-entity-profile-avatar]')
 	if (avatarElement instanceof HTMLElement)

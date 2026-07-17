@@ -130,7 +130,7 @@ export async function loadSuggestedAccounts() {
 			${renderAvatarHtml(account.entityHash, { name: account.name })}
 			<div class="suggested-account-info">
 				<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
-				<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash))}</span>
+				<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
 			</div>
 			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
 		`
@@ -425,7 +425,7 @@ export async function runFeedSearch() {
 function buildEntitySearchCard(entity) {
 	const row = document.createElement('div')
 	row.className = 'suggested-account feed-search-entity'
-	const handle = entity.handle ? `@${entity.handle}` : entityHandle(entity.entityHash)
+	const handle = entityHandle(entity.entityHash, entity)
 	const label = entity.alias || entity.name || handle
 	const followLabel = entity.following
 		? geti18n('social.actions.following')

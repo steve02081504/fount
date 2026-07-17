@@ -35,6 +35,7 @@ export async function discoverAccounts(username, options = {}) {
 		accounts.push({
 			entityHash,
 			name: profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 0, ellipsis: false }),
+			handle: profile?.handle || '',
 			exploreBlurb: view.socialMeta?.exploreBlurb || '',
 			avatarUrl: customProfileAvatar(profile) || null,
 		})
@@ -68,6 +69,7 @@ export async function discoverPosts(username, options = {}) {
 		const profile = await getProfile(entityHash, username)
 		const authorProfile = {
 			name: profile?.name || null,
+			handle: profile?.handle || '',
 			avatar: customProfileAvatar(profile) || null,
 		}
 		let taken = 0

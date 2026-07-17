@@ -7,7 +7,7 @@ export {
 } from '/parts/shells:chat/shared/entityAvatar.mjs'
 
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
-import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -15,14 +15,18 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
 
 /**
- * 格式化为 @handle 展示（hash 缩写）。
- * @param {string} entityHash entity hash
- * @returns {string} @handle
+ *
  */
-export function entityHandle(entityHash) {
-	const hash = String(entityHash || '')
-	if (hash.length <= 12) return `@${hash}`
-	return formatHashShort(entityHash, { withAt: true, headLen: 8, tailLen: 4 })
+export { formatEntityAtId }
+
+/**
+ * at-id 表述：有具名 handle 时 `@handle (@hash…)`，否则 `@hash…`。
+ * @param {string} entityHash entity hash
+ * @param {{ handle?: string | null } | null} [profile] 可选资料（取 handle）
+ * @returns {string} at-id
+ */
+export function entityHandle(entityHash, profile = null) {
+	return formatEntityAtId(entityHash, { handle: profile?.handle })
 }
 
 /**

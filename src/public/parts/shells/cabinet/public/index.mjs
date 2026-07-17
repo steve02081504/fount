@@ -1,6 +1,7 @@
 import { initTranslations, geti18n, console, confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
+import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { api, unlockHeaders } from './src/api.mjs'
 import { readClipboard, writeClipboard, subscribeClipboard } from './src/clipboard.mjs'
@@ -1140,7 +1141,7 @@ function openProps() {
 function formatStamp(stamp) {
 	if (!stamp?.at) return ''
 	const time = new Date(stamp.at).toLocaleString()
-	const who = stamp.entity_hash ? stamp.entity_hash.slice(0, 8) : ''
+	const who = stamp.entity_hash ? formatEntityAtId(stamp.entity_hash) : ''
 	return who ? `${time} · ${who}` : time
 }
 
@@ -1155,7 +1156,7 @@ async function openEntityProfileCard(entityHash) {
 	const { showEntityProfilePopup } = await import('/parts/shells:chat/shared/entityProfilePopup.mjs')
 	await showEntityProfilePopup({
 		entityHash: hash,
-		displayName: hash.slice(0, 8),
+		displayName: formatHashShort(hash, { headLen: 8, tailLen: 4 }),
 	})
 }
 
@@ -1176,7 +1177,7 @@ function renderRemoteEntityBar() {
 		const host = document.getElementById('breadcrumb')?.parentElement || document.body
 		host.prepend(bar)
 	}
-	const short = `${remoteEntityHash.slice(0, 8)}…${remoteEntityHash.slice(-4)}`
+	const short = formatHashShort(remoteEntityHash, { headLen: 8, tailLen: 4 })
 	bar.replaceChildren()
 	const label = document.createElement('span')
 	label.className = 'text-sm opacity-70'

@@ -56,3 +56,20 @@ export function formatHashShort(hash, options = {}) {
 export function entityHashLabel(entityHash) {
 	return formatHashShort(entityHash, { useSubject: true, headLen: 8, tailLen: 4 })
 }
+
+/**
+ * at-id 表述：有具名 handle 时 `@handle (@hash…)`，否则 `@hash…`。
+ * @param {unknown} entityHash entityHash
+ * @param {{ handle?: string | null, headLen?: number, tailLen?: number }} [options] 选项
+ * @returns {string} at-id 文案
+ */
+export function formatEntityAtId(entityHash, options = {}) {
+	const handle = String(options.handle || '').trim().replace(/^@+/u, '').toLowerCase()
+	const hashAt = formatHashShort(entityHash, {
+		withAt: true,
+		headLen: options.headLen ?? 8,
+		tailLen: options.tailLen ?? 4,
+	})
+	if (handle) return `@${handle} (${hashAt})`
+	return hashAt
+}

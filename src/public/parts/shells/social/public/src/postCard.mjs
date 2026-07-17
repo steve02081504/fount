@@ -199,7 +199,7 @@ export async function buildPostCard(item, options = {}) {
 		headerAvatarHtml: renderAvatarHtml(headerAvatarEntity, headerAvatarProfile),
 		headerAuthor,
 		headerLink,
-		authorHandle: entityHandle(headerHandleEntity),
+		authorHandle: entityHandle(headerHandleEntity, headerAvatarProfile),
 		postTime,
 		editedBadge,
 		visibilityIcon,

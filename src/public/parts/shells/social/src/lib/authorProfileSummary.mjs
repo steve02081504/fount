@@ -20,6 +20,7 @@ export function createAuthorProfileLoader(username) {
 			if (!profile) return null
 			return {
 				name: profile.name,
+				handle: profile.handle || '',
 				avatar: customProfileAvatar(profile) || null,
 				infoDefaults: profile.infoDefaults
 					? { avatar: profile.infoDefaults.avatar || '' }

@@ -1,6 +1,6 @@
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { authorLabel, formatTime, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTime, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -60,6 +60,8 @@ export async function buildReplyRow(reply) {
 			</a>
 			<div class="reply-header-text">
 				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="link-btn author-name">${escapeHtml(authorLabel(entityHash, reply.authorProfile))}</a>
+				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="author-handle">${escapeHtml(entityHandle(entityHash, reply.authorProfile))}</a>
+				<span class="post-meta-sep">·</span>
 				<a href="${escapeHtml(formatSocialPostHref(entityHash, replyId))}" class="post-meta reply-time">${escapeHtml(formatTime(reply.post?.hlc?.wall || reply.hlc?.wall))}</a>
 			</div>
 		</div>

@@ -4,7 +4,7 @@
 
 import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
-import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 const API = '/api/parts/shells:social/mentions/suggest'
 
@@ -56,7 +56,7 @@ export function attachMentionAutocomplete(textarea) {
 			button.dataset.index = String(index)
 			button.innerHTML = `
 				<strong>${aliasForEntity(row.entityHash) || row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
-				<small>${formatHashShort(row.entityHash, { headLen: 12, tailLen: 0 })}</small>
+				<small>${formatEntityAtId(row.entityHash, { handle: row.handle })}</small>
 			`
 			panel.appendChild(button)
 		}

@@ -168,7 +168,7 @@ export async function renderProfileFollowingList(entityHash, container) {
 			${renderAvatarHtml(hash, profile)}
 			<span>
 				<strong>${escapeHtml(authorLabel(hash, profile))}</strong>
-				<span class="profile-handle">${escapeHtml(entityHandle(hash))}</span>
+				<span class="profile-handle">${escapeHtml(entityHandle(hash, profile))}</span>
 			</span>
 		`
 		container.appendChild(link)
@@ -205,7 +205,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
 	const name = escapeHtml(authorLabel(entityHash, data.profile))
-	const handle = escapeHtml(entityHandle(entityHash))
+	const handle = escapeHtml(entityHandle(entityHash, data.profile))
 	const followingCount = (followingData.following || []).length
 
 	const cared = socialState.viewerEntityHash
