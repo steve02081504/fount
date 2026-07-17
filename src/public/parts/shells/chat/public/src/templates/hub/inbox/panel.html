@@ -1,0 +1,32 @@
+<section class="hub-inbox-panel" aria-labelledby="hub-inbox-heading">
+	<header class="hub-inbox-hero">
+		<div class="hub-inbox-hero-icon" aria-hidden="true">
+			<img src="https://api.iconify.design/mdi/inbox-outline.svg" width="26" height="26" alt="" />
+		</div>
+		<div class="hub-inbox-hero-copy">
+			<h2 id="hub-inbox-heading" class="hub-inbox-panel-title" data-i18n="chat.hub.inbox.overviewTitle"></h2>
+			<p class="hub-inbox-panel-description" data-i18n="chat.hub.inbox.overviewDescription"></p>
+		</div>
+	</header>
+	<div class="hub-inbox-tabs" role="tablist" aria-label="${geti18n('chat.hub.inbox.filtersLabel')}">
+		<button type="button" id="hub-inbox-tab-mention" class="hub-inbox-tab hub-inbox-tab-active" role="tab" aria-selected="true" aria-controls="hub-inbox-list" data-kind="mention">
+			<img src="https://api.iconify.design/line-md/at.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabMention"></span>
+		</button>
+		<button type="button" id="hub-inbox-tab-message" class="hub-inbox-tab" role="tab" aria-selected="false" aria-controls="hub-inbox-list" tabindex="-1" data-kind="message">
+			<img src="https://api.iconify.design/line-md/chat.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabMessage"></span>
+		</button>
+		<button type="button" id="hub-inbox-tab-care" class="hub-inbox-tab" role="tab" aria-selected="false" aria-controls="hub-inbox-list" tabindex="-1" data-kind="care">
+			<img src="https://api.iconify.design/line-md/heart.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabCare"></span>
+		</button>
+		<button type="button" id="hub-inbox-tab-vote-closed" class="hub-inbox-tab" role="tab" aria-selected="false" aria-controls="hub-inbox-list" tabindex="-1" data-kind="vote_closed">
+			<img src="https://api.iconify.design/line-md/confirm-circle.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabVoteClosed"></span>
+		</button>
+	</div>
+	<div class="hub-inbox-scroll">
+		<div id="hub-inbox-list" class="hub-inbox-list" role="tabpanel" aria-labelledby="hub-inbox-tab-mention" aria-live="polite"></div>
+	</div>
+</section>

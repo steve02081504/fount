@@ -32,12 +32,13 @@ export async function fetchInboxPage(options = {}) {
  * @returns {Promise<number>} 写入的 seenAt
  */
 export async function markInboxSeen(at = Date.now()) {
-	await fetch(`${INBOX_API}/seen`, {
+	const response = await fetch(`${INBOX_API}/seen`, {
 		method: 'PUT',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ at }),
 	})
+	if (!response.ok) throw new Error(`inbox seen ${response.status}`)
 	badgeUnreadCount = 0
 	await updateInboxBadge()
 	return at

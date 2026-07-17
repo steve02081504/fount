@@ -1,11 +1,13 @@
 /**
  * Hub 跨群 inbox 视图（#inbox）。
  */
-import { mountTemplate } from '../../../../scripts/features/template.mjs'
+import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
@@ -21,6 +23,9 @@ let nextCursor = null
 
 /** @type {boolean} */
 let loading = false
+
+/** @type {number} */
+let loadGeneration = 0
 
 /** @type {string} */
 let activeKind = 'mention'
@@ -45,30 +50,34 @@ function formatInboxTime(at) {
  * @returns {Promise<HTMLElement>} 可点击行按钮
  */
 async function renderInboxRow(row) {
-	const button = document.createElement('button')
-	button.type = 'button'
-	button.className = 'hub-inbox-row'
-	button.dataset.groupId = row.groupId
-	button.dataset.channelId = row.channelId
-	button.dataset.eventId = row.eventId
-	const author = escapeHtml(resolveDisplayName({
+	const authorLabel = resolveDisplayName({
 		entityHash: row.authorEntityHash,
 		alias: aliasForEntity(row.authorEntityHash),
 		profileName: row.authorDisplayName,
-	}))
-	const groupName = escapeHtml(await groupDisplayName(row.groupId, row.groupName))
-	const channelName = escapeHtml(row.channelName || row.channelId)
-	const preview = escapeHtml(String(row.textPreview || ''))
-	const time = escapeHtml(formatInboxTime(row.at))
-	button.innerHTML = `
-		<div class="hub-inbox-row-head">
-			<strong>${author}</strong>
-			<span class="hub-inbox-row-time">${time}</span>
-		</div>
-		<div class="hub-inbox-row-meta">${groupName} · #${channelName}</div>
-		<div class="hub-inbox-row-preview">${preview}</div>
-	`
-	return button
+	})
+	const groupLabel = await groupDisplayName(row.groupId, row.groupName)
+	const channelLabel = String(row.channelName || row.channelId)
+	const previewLabel = String(row.textPreview || '')
+	const date = new Date(Number(row.at) || Date.now())
+	return renderTemplate('hub/inbox/row', {
+		groupId: String(row.groupId),
+		channelId: String(row.channelId),
+		eventId: String(row.eventId),
+		author: escapeHtml(authorLabel),
+		initial: escapeHtml(Array.from(authorLabel)[0] || '?'),
+		groupName: escapeHtml(groupLabel),
+		channelName: escapeHtml(channelLabel),
+		preview: escapeHtml(previewLabel),
+		time: escapeHtml(formatInboxTime(row.at)),
+		dateTime: date.toISOString(),
+		fullTime: date.toLocaleString(),
+		ariaLabel: await geti18n('chat.hub.inbox.rowLabel', {
+			author: authorLabel,
+			group: groupLabel,
+			channel: channelLabel,
+			preview: previewLabel,
+		}),
+	})
 }
 
 /**
@@ -79,40 +88,86 @@ async function renderInboxRow(row) {
  */
 async function paintInboxRows(host, rows, replace = false) {
 	if (replace) host.replaceChildren()
-	for (const row of rows)
-		host.appendChild(await renderInboxRow(row))
+	host.append(...await Promise.all(rows.map(renderInboxRow)))
 	ensureScrollSentinel(host, 'hubInboxScrollSentinel')
 }
 
+const EMPTY_STATES = {
+	mention: {
+		icon: 'line-md/at',
+		titleKey: 'chat.hub.inbox.emptyMentionTitle',
+		descriptionKey: 'chat.hub.inbox.emptyMentionDescription',
+	},
+	message: {
+		icon: 'line-md/chat',
+		titleKey: 'chat.hub.inbox.emptyMessageTitle',
+		descriptionKey: 'chat.hub.inbox.emptyMessageDescription',
+	},
+	care: {
+		icon: 'line-md/heart',
+		titleKey: 'chat.hub.inbox.emptyCareTitle',
+		descriptionKey: 'chat.hub.inbox.emptyCareDescription',
+	},
+	vote_closed: {
+		icon: 'line-md/confirm-circle',
+		titleKey: 'chat.hub.inbox.emptyVoteTitle',
+		descriptionKey: 'chat.hub.inbox.emptyVoteDescription',
+	},
+}
+
 /**
+ * @param {HTMLElement} host 列表容器
  * @returns {Promise<void>}
  */
-async function loadInboxPage() {
+async function paintInboxEmpty(host) {
+	await mountTemplate(host, 'hub/inbox/empty', EMPTY_STATES[activeKind])
+}
+
+/**
+ * @param {number} generation 当前筛选条件的加载代次
+ * @returns {Promise<void>}
+ */
+async function loadInboxPage(generation = loadGeneration) {
 	if (loading) return
 	loading = true
+	const requestedCursor = nextCursor
+	const host = document.getElementById('hub-inbox-list')
+	if (host && !requestedCursor) host.setAttribute('aria-busy', 'true')
 	try {
 		const data = await fetchInboxPage({
 			limit: 30,
-			cursor: nextCursor || undefined,
+			cursor: requestedCursor || undefined,
 			kinds: [activeKind],
 		})
-		const host = document.getElementById('hub-inbox-list')
-		if (!host) return
-		await paintInboxRows(host, data.items || [], !nextCursor)
+		if (generation !== loadGeneration) return
+		const currentHost = document.getElementById('hub-inbox-list')
+		if (!currentHost) return
+		await paintInboxRows(currentHost, data.items || [], !requestedCursor)
 		nextCursor = data.nextCursor
 		bindInfiniteScroll({
-			root: host.closest('.hub-inbox-scroll') || null,
-			sentinel: ensureScrollSentinel(host, 'hubInboxScrollSentinel'),
+			root: currentHost.closest('.hub-inbox-scroll') || null,
+			sentinel: ensureScrollSentinel(currentHost, 'hubInboxScrollSentinel'),
 			/** @returns {boolean} 是否还有下一页 */
 			hasMore: () => !!nextCursor,
 			/** @returns {Promise<void>} 加载下一页 */
 			onLoad: () => loadInboxPage(),
 		})
-		if (!host.querySelector('.hub-inbox-row') && !nextCursor)
-			host.innerHTML = '<div class="hub-inbox-empty" data-i18n="chat.hub.inbox.empty"></div>'
+		if (!currentHost.querySelector('.hub-inbox-row') && !nextCursor)
+			await paintInboxEmpty(currentHost)
+	}
+	catch (error) {
+		if (generation !== loadGeneration) return
+		handleUIError(error, 'chat.hub.inbox.loadFailed')
+		if (host && !host.querySelector('.hub-inbox-row')) await mountTemplate(host, 'hub/empty/error', {
+			i18nKey: 'chat.hub.inbox.loadFailed',
+			errorMessage: error.message,
+		})
 	}
 	finally {
-		loading = false
+		if (generation === loadGeneration) {
+			loading = false
+			document.getElementById('hub-inbox-list')?.removeAttribute('aria-busy')
+		}
 	}
 }
 
@@ -132,7 +187,7 @@ function wireInboxRowClicks(host) {
 			setPendingScrollTarget(eventId, groupId, channelId)
 			await selectGroup(groupId, channelId)
 			await scrollToMessageEventId(eventId)
-		})()
+		})().catch(error => handleUIError(error, 'chat.hub.inbox.jumpFailed'))
 	})
 }
 
@@ -144,9 +199,41 @@ async function switchInboxKind(kind) {
 	if (!INBOX_KINDS.includes(kind) || kind === activeKind) return
 	activeKind = kind
 	nextCursor = null
-	for (const tab of document.querySelectorAll('.hub-inbox-tab'))
-		tab.classList.toggle('hub-inbox-tab-active', tab.dataset.kind === kind)
+	loadGeneration++
+	loading = false
+	disconnectInfiniteScroll()
+	for (const tab of document.querySelectorAll('.hub-inbox-tab')) {
+		const active = tab.dataset.kind === kind
+		tab.classList.toggle('hub-inbox-tab-active', active)
+		tab.setAttribute('aria-selected', String(active))
+		tab.tabIndex = active ? 0 : -1
+	}
+	const list = document.getElementById('hub-inbox-list')
+	list?.setAttribute('aria-labelledby', `hub-inbox-tab-${kind.replace('_', '-')}`)
 	await loadInboxPage()
+}
+
+/**
+ * @param {HTMLElement} tablist 收件箱筛选标签容器
+ * @returns {void}
+ */
+function wireInboxTabs(tablist) {
+	const tabs = Array.from(tablist.querySelectorAll('.hub-inbox-tab'))
+	for (const tab of tabs)
+		tab.addEventListener('click', () => void switchInboxKind(tab.dataset.kind || 'mention'))
+	tablist.addEventListener('keydown', event => {
+		const currentIndex = tabs.indexOf(document.activeElement)
+		if (currentIndex < 0) return
+		let nextIndex
+		if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabs.length
+		else if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+		else if (event.key === 'Home') nextIndex = 0
+		else if (event.key === 'End') nextIndex = tabs.length - 1
+		else return
+		event.preventDefault()
+		tabs[nextIndex].focus()
+		void switchInboxKind(tabs[nextIndex].dataset.kind || 'mention')
+	})
 }
 
 /**
@@ -163,29 +250,18 @@ export async function activateInboxView() {
 	hubStore.context.currentState = null
 	activeKind = 'mention'
 	nextCursor = null
+	loadGeneration++
+	loading = false
 
 	const channelList = document.getElementById('hub-channel-list')
 	if (channelList)
 		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.inbox.sidebarHint' })
-	document.getElementById('hub-member-list').innerHTML = ''
-	document.getElementById('hub-info-card-host').innerHTML = ''
+	document.getElementById('hub-member-list').replaceChildren()
+	document.getElementById('hub-info-card-host').replaceChildren()
 	document.getElementById('hub-group-name-display').dataset.i18n = 'chat.hub.inbox.title'
 
 	const messagesHost = document.getElementById('hub-messages')
-	messagesHost.innerHTML = `
-		<div class="hub-inbox-panel">
-			<div class="hub-inbox-panel-title" data-i18n="chat.hub.inbox.title"></div>
-			<div class="hub-inbox-tabs" role="tablist">
-				<button type="button" class="hub-inbox-tab hub-inbox-tab-active" data-kind="mention" data-i18n="chat.hub.inbox.tabMention"></button>
-				<button type="button" class="hub-inbox-tab" data-kind="message" data-i18n="chat.hub.inbox.tabMessage"></button>
-				<button type="button" class="hub-inbox-tab" data-kind="care" data-i18n="chat.hub.inbox.tabCare"></button>
-				<button type="button" class="hub-inbox-tab" data-kind="vote_closed" data-i18n="chat.hub.inbox.tabVoteClosed"></button>
-			</div>
-			<div class="hub-inbox-scroll">
-				<div id="hub-inbox-list" class="hub-inbox-list"></div>
-			</div>
-		</div>
-	`
+	await mountTemplate(messagesHost, 'hub/inbox/panel')
 	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.inbox.title'
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	disableComposer('chat.hub.inbox.composerDisabled')
@@ -196,10 +272,15 @@ export async function activateInboxView() {
 		listHost.dataset.wired = '1'
 		wireInboxRowClicks(listHost)
 	}
-	for (const tab of document.querySelectorAll('.hub-inbox-tab'))
-		tab.addEventListener('click', () => void switchInboxKind(tab.dataset.kind || 'mention'))
+	const tablist = messagesHost.querySelector('.hub-inbox-tabs')
+	if (tablist) wireInboxTabs(tablist)
 	await loadInboxPage()
-	await markInboxSeen()
+	try {
+		await markInboxSeen()
+	}
+	catch (error) {
+		handleUIError(error, 'chat.hub.inbox.markSeenFailed')
+	}
 }
 
 /** @returns {boolean} 当前是否为 inbox 模式 */
@@ -210,5 +291,7 @@ export function isInboxModeActive() {
 /** @returns {void} */
 export function closeInboxView() {
 	disconnectInfiniteScroll()
+	loadGeneration++
+	loading = false
 	nextCursor = null
 }

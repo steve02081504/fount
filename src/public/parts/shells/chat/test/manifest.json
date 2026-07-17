@@ -244,7 +244,9 @@
 					"name": "inbox",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/inbox.spec.mjs",
-						"src/public/parts/shells/chat/public/hub/friendChat.mjs"
+						"src/public/parts/shells/chat/public/hub/inbox*.mjs",
+						"src/public/parts/shells/chat/public/hub/components.css",
+						"src/public/parts/shells/chat/public/src/templates/hub/inbox/**"
 					]
 				},
 				{

@@ -28,6 +28,15 @@ test.describe('Inbox', () => {
 
 		await page.locator('.hub-server-inbox').click()
 		await expect(page).toHaveURL(/#inbox/)
+		await expect(page.getByRole('heading', { name: '跨群动态' })).toBeVisible()
+		const mentionTab = page.getByRole('tab', { name: '提及' })
+		const messageTab = page.getByRole('tab', { name: '全部消息' })
+		await expect(mentionTab).toHaveAttribute('aria-selected', 'true')
+		await mentionTab.focus()
+		await page.keyboard.press('ArrowRight')
+		await expect(messageTab).toHaveAttribute('aria-selected', 'true')
+		await page.keyboard.press('ArrowLeft')
+		await expect(mentionTab).toHaveAttribute('aria-selected', 'true')
 		await expect(page.locator('#hub-inbox-list .hub-inbox-row').first())
 			.toBeVisible({ timeout: ms('1m') })
 
