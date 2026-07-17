@@ -1172,6 +1172,10 @@
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
 			"composeButton": "发布",
+			"fab": {
+				"title": "写动态",
+				"aria-label": "写动态"
+			},
 			"contentWarning": "内容警告（可选）",
 			"sensitiveMedia": "媒体敏感遮罩",
 			"mediaAlt": "图片描述（alt）",
@@ -1503,6 +1507,10 @@
 			"likes": "${n} 赞",
 			"local": "本机",
 			"hall": "直播大厅",
+			"back": {
+				"title": "返回动态",
+				"aria-label": "返回动态"
+			},
 			"danmakuPlaceholder": "说点什么…",
 			"danmakuSend": "发送",
 			"postWatch": "进入直播",

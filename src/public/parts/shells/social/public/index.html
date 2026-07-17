@@ -294,9 +294,16 @@
 		</section>
 
 		<section id="liveView" class="view hidden" aria-label="Live streams">
-			<button type="button" class="view-back-btn" id="liveViewBackButton" aria-label="Back">
-				<span class="s-ic s-ic-home" aria-hidden="true"></span>
-			</button>
+			<div class="live-top-bar">
+				<button type="button" class="view-back-btn" id="liveViewBackButton" data-i18n="social.live.back">
+					<span class="s-ic s-ic-home" aria-hidden="true"></span>
+				</button>
+				<div id="liveScopeTabs" class="live-scope-tabs" role="tablist">
+					<button type="button" data-scope="local" class="live-scope-btn is-active" role="tab" aria-selected="true"></button>
+					<button type="button" data-scope="nearby" class="live-scope-btn" role="tab" aria-selected="false"></button>
+				</div>
+				<button type="button" id="liveGoBroadcastButton" class="live-go-broadcast-btn" data-view-broadcast></button>
+			</div>
 			<div class="vertical-snap-view" id="liveSnapContainer"></div>
 		</section>
 
@@ -341,7 +348,7 @@
 			</button>
 		</nav>
 
-		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.publish">
+		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.fab">
 			<span class="s-ic s-ic-compose" aria-hidden="true"></span>
 		</button>
 

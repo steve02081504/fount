@@ -306,40 +306,30 @@ function ensureLiveConnected(slide, mode) {
  * @returns {void}
  */
 function ensureLiveScopeTabs() {
-	let tabs = document.getElementById('liveScopeTabs')
-	if (!tabs) {
-		const liveView = document.getElementById('liveView')
-		if (!liveView) return
-		tabs = document.createElement('div')
-		tabs.id = 'liveScopeTabs'
-		tabs.className = 'live-scope-tabs'
-		tabs.innerHTML = `
-			<button type="button" data-scope="local" class="live-scope-btn"></button>
-			<button type="button" data-scope="nearby" class="live-scope-btn"></button>
-			<button type="button" data-scope="broadcast" class="live-scope-btn" data-view-broadcast></button>
-		`
-		liveView.prepend(tabs)
+	const tabs = document.getElementById('liveScopeTabs')
+	const goBroadcast = document.getElementById('liveGoBroadcastButton')
+	if (!tabs) return
+	if (!tabs.dataset.bound) {
+		tabs.dataset.bound = '1'
 		tabs.addEventListener('click', event => {
 			const tabButton = event.target.closest('[data-scope]')
 			if (!(tabButton instanceof HTMLElement)) return
-			if (tabButton.dataset.viewBroadcast != null) {
-				activateView('liveBroadcast')
-				return
-			}
 			liveScope = tabButton.dataset.scope || 'local'
 			void loadLiveView()
 		})
+		goBroadcast?.addEventListener('click', () => {
+			activateView('liveBroadcast')
+		})
 	}
+	if (goBroadcast) goBroadcast.textContent = geti18n('social.live.broadcast.open')
 	for (const tabButton of tabs.querySelectorAll('[data-scope]')) {
 		if (!(tabButton instanceof HTMLElement)) continue
-		if (tabButton.dataset.viewBroadcast != null) {
-			tabButton.textContent = geti18n('social.live.broadcast.open')
-			continue
-		}
+		const active = tabButton.dataset.scope === liveScope
 		tabButton.textContent = geti18n(
 			tabButton.dataset.scope === 'nearby' ? 'social.live.hall' : 'social.live.local',
 		)
-		tabButton.classList.toggle('is-active', tabButton.dataset.scope === liveScope)
+		tabButton.classList.toggle('is-active', active)
+		tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
 	}
 }
 
