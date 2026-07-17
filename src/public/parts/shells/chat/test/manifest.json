@@ -268,11 +268,18 @@
 						"src/public/parts/shells/chat/test/frontend/profile.spec.mjs",
 						"src/public/parts/shells/chat/public/profile/**",
 						"src/public/parts/shells/chat/public/hub/profileEdit.mjs",
+						"src/public/parts/shells/chat/public/hub/entityProfile.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
 						"src/public/parts/shells/chat/public/shared/profileEdit.css",
 						"src/public/parts/shells/chat/public/src/entityProfileApi.mjs",
+						"src/public/parts/shells/chat/public/src/profileLocaleEditor.mjs",
 						"src/public/parts/shells/chat/public/src/templates/profile/**",
-						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html"
+						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html",
+						"src/public/parts/shells/chat/public/src/templates/hub/profile_popup.html",
+						"src/public/parts/shells/chat/src/entity/profile.mjs",
+						"src/public/parts/shells/chat/src/entity/localized.mjs",
+						"src/public/parts/shells/chat/src/entity/filesUrl.mjs",
+						"src/public/parts/shells/chat/src/entity/filesEndpoints.mjs"
 					]
 				}
 			],

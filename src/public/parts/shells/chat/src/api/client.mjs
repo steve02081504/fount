@@ -397,7 +397,7 @@ export function createChatClient(apiContext) {
 				},
 			}
 		},
-/**
+		/**
 		 * @param {{ name?: string, avatar?: { buffer: Buffer, filename: string, mimeType?: string }, banner?: { buffer: Buffer, filename: string, mimeType?: string }, [key: string]: unknown }} updates 资料补丁
 		 * @returns {Promise<object>} 更新后的 profile
 		 */

@@ -1,13 +1,13 @@
 /**
  * 【文件】public/hub/profileEdit.mjs
- * 【职责】Hub 内资料编辑模态：头像上传、昵称/简介/标签表单与 `updateEntityProfileApi` 提交。
+ * 【职责】Hub 内资料编辑模态：头像/横幅上传、昵称/简介/标签/链接表单与提交。
  * 【原理】`openHubProfileEdit` 弹出编辑对话框并绑定保存/取消；成功后刷新顶栏与成员展示。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../profile/src/endpoints、../src/entityProfileApi、../src/profileLocaleEditor、core/state、presence。
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { uploadAvatar } from '../profile/src/endpoints.mjs'
+import { uploadAvatar, uploadBanner } from '../profile/src/endpoints.mjs'
 import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
@@ -16,12 +16,14 @@ import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { updateEntityProfileApi } from '../src/entityProfileApi.mjs'
 import {
 	ensureLocaleEntry,
-	formatLinksInput,
-	formatTagsInput,
-	parseLinksInput,
-	parseTagsInput,
+	normalizeProfileLinks,
+	normalizeProfileTag,
+	normalizeProfileTags,
 	promptNewLocaleKey,
+	readLinksEditor,
+	renderLinksEditor,
 	renderLocaleTabs,
+	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
@@ -43,6 +45,14 @@ let activeLocaleKey = ''
 let editingInfoDefaults = null
 /** @type {string} */
 let editingAvatarPreview = ''
+/** @type {string} */
+let editingBannerPreview = ''
+/** @type {boolean} */
+let editingBannerCleared = false
+/** @type {string[]} */
+let editingTags = []
+/** @type {{ name?: string, url: string, icon?: string }[]} */
+let editingLinks = []
 /** @type {(() => void | Promise<void>) | null} */
 let onSavedCallback = null
 
@@ -82,9 +92,83 @@ async function ensureEditDialog() {
 		}
 		reader.readAsDataURL(file)
 	})
+	editDialog.querySelector('#hub-profile-edit-banner-upload')?.addEventListener('change', (event) => {
+		const file = event.target?.files?.[0]
+		if (!file) return
+		const reader = new FileReader()
+		/** @param {ProgressEvent<FileReader>} loadEvent 读取完成 */
+		reader.onload = (loadEvent) => {
+			if (!loadEvent.target?.result) return
+			editingBannerPreview = String(loadEvent.target.result)
+			editingBannerCleared = false
+			renderEditPreview()
+		}
+		reader.readAsDataURL(file)
+	})
+	editDialog.querySelector('#hub-profile-edit-banner-clear')?.addEventListener('click', () => {
+		editingBannerPreview = ''
+		editingBannerCleared = true
+		const upload = editDialog?.querySelector('#hub-profile-edit-banner-upload')
+		if (upload instanceof HTMLInputElement) upload.value = ''
+		renderEditPreview()
+	})
+	editDialog.querySelector('#hub-profile-edit-tag-add')?.addEventListener('click', () => addTagFromInput())
+	editDialog.querySelector('#hub-profile-edit-tag-input')?.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter') return
+		event.preventDefault()
+		addTagFromInput()
+	})
+	editDialog.querySelector('#hub-profile-edit-link-add')?.addEventListener('click', () => {
+		editingLinks = [...readLinksEditor(editDialog?.querySelector('[data-profile-links-editor]'), { keepEmpty: true }), { name: '', url: '', icon: '' }]
+		paintLinksEditor()
+		renderEditPreview()
+	})
 	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('input', renderEditPreview)
 	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('change', renderEditPreview)
 	return editDialog
+}
+
+/** @returns {void} */
+function addTagFromInput() {
+	const input = editDialog?.querySelector('#hub-profile-edit-tag-input')
+	if (!(input instanceof HTMLInputElement)) return
+	const tag = normalizeProfileTag(input.value)
+	if (!tag) return
+	if (!editingTags.includes(tag))
+		editingTags = [...editingTags, tag]
+	input.value = ''
+	paintTagsEditor()
+	renderEditPreview()
+}
+
+/** @returns {void} */
+function paintTagsEditor() {
+	const host = editDialog?.querySelector('[data-profile-tags-editor]')
+	if (!(host instanceof HTMLElement)) return
+	renderTagsEditor(host, editingTags, (next) => {
+		editingTags = normalizeProfileTags(next)
+		paintTagsEditor()
+		renderEditPreview()
+	})
+}
+
+/** @returns {void} */
+function paintLinksEditor() {
+	const host = editDialog?.querySelector('[data-profile-links-editor]')
+	if (!(host instanceof HTMLElement)) return
+	renderLinksEditor(host, editingLinks, (next, meta = {}) => {
+		editingLinks = next.length ? next : [{ name: '', url: '', icon: '' }]
+		if (meta.rebuild) paintLinksEditor()
+		renderEditPreview()
+	})
+}
+
+/**
+ * @returns {{ name?: string, url: string, icon?: string }[]} 当前链接表单值
+ */
+function readLinksFromForm() {
+	const host = editDialog?.querySelector('[data-profile-links-editor]')
+	return normalizeProfileLinks(readLinksEditor(host))
 }
 
 /** @returns {void} */
@@ -95,8 +179,8 @@ function persistActiveLocaleForm() {
 		name: editDialog?.querySelector('#hub-profile-edit-name')?.value?.trim() || '',
 		description_markdown: md,
 		description: md.replace(/[#*[\]_`]/g, '').trim(),
-		tags: parseTagsInput(editDialog?.querySelector('#hub-profile-edit-tags')?.value),
-		links: parseLinksInput(editDialog?.querySelector('#hub-profile-edit-links')?.value),
+		tags: normalizeProfileTags(editingTags),
+		links: readLinksFromForm(),
 	}
 }
 
@@ -110,12 +194,15 @@ function loadActiveLocaleForm() {
 	const desc = editDialog?.querySelector('#hub-profile-edit-description-markdown')
 	if (desc instanceof HTMLTextAreaElement)
 		desc.value = slice.description_markdown ?? slice.description ?? ''
-	const tags = editDialog?.querySelector('#hub-profile-edit-tags')
-	if (tags instanceof HTMLInputElement)
-		tags.value = formatTagsInput(slice.tags ?? [])
-	const links = editDialog?.querySelector('#hub-profile-edit-links')
-	if (links instanceof HTMLTextAreaElement)
-		links.value = formatLinksInput(slice.links ?? [])
+	editingTags = normalizeProfileTags(
+		Array.isArray(slice.tags) ? slice.tags : defaults.tags ?? [],
+	)
+	editingLinks = normalizeProfileLinks(
+		Array.isArray(slice.links) ? slice.links : defaults.links ?? [],
+	)
+	if (!editingLinks.length) editingLinks = [{ name: '', url: '', icon: '' }]
+	paintTagsEditor()
+	paintLinksEditor()
 	const hint = editDialog?.querySelector('[data-profile-default-name]')
 	if (hint)
 		hint.textContent = defaults.name
@@ -140,8 +227,10 @@ function renderEditPreview() {
 	const customStatus = editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim()
 	const description = editDialog.querySelector('#hub-profile-edit-description-markdown')?.value?.trim()
 	const themeColor = editDialog.querySelector('#hub-profile-edit-theme-color')?.value || '#5865f2'
-	const tags = parseTagsInput(editDialog.querySelector('#hub-profile-edit-tags')?.value)
-	const links = parseLinksInput(editDialog.querySelector('#hub-profile-edit-links')?.value)
+	const links = readLinksFromForm()
+	const banner = editingBannerCleared
+		? ''
+		: editingBannerPreview || editingBaseProfile?.banner || ''
 
 	const card = editDialog.querySelector('#hub-profile-edit-live-preview .hub-profile-popup')
 	if (card instanceof HTMLElement)
@@ -156,11 +245,13 @@ function renderEditPreview() {
 			description,
 			description_markdown: description,
 			themeColor,
-			tags,
+			banner,
+			tags: editingTags,
 			links,
 		}, {
 			entityHash: editingEntityHash,
 			avatarOverride: editingAvatarPreview,
+			bannerOverride: banner,
 		})
 	const swatch = editDialog.querySelector('#hub-profile-edit-avatar-swatch')
 	if (swatch instanceof HTMLElement)
@@ -220,6 +311,8 @@ function initEditState(entityHash, profile) {
 	editingBaseProfile = profile
 	editingInfoDefaults = profile.infoDefaults || null
 	editingAvatarPreview = customProfileAvatar(profile)
+	editingBannerPreview = String(profile.banner || '').trim()
+	editingBannerCleared = false
 	editingLocalized = { ...profile.localized || {} }
 	let keys = Object.keys(editingLocalized)
 	if (!keys.length)
@@ -230,8 +323,10 @@ function initEditState(entityHash, profile) {
 	activeLocaleKey = keys.find(k => k === navLang)
 		|| keys.find(k => navLang && k.split('-')[0] === navLang.split('-')[0])
 		|| keys[0]
-	const upload = editDialog?.querySelector('#hub-profile-edit-avatar-upload')
-	if (upload instanceof HTMLInputElement) upload.value = ''
+	const avatarUpload = editDialog?.querySelector('#hub-profile-edit-avatar-upload')
+	if (avatarUpload instanceof HTMLInputElement) avatarUpload.value = ''
+	const bannerUpload = editDialog?.querySelector('#hub-profile-edit-banner-upload')
+	if (bannerUpload instanceof HTMLInputElement) bannerUpload.value = ''
 	const status = editDialog?.querySelector('#hub-profile-edit-status')
 	if (status instanceof HTMLSelectElement)
 		status.value = profile.status || 'online'
@@ -262,9 +357,14 @@ async function handleSaveProfile() {
 			status: editDialog.querySelector('#hub-profile-edit-status')?.value || editingBaseProfile.status,
 			customStatus: editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim() || '',
 		}
-		const file = editDialog.querySelector('#hub-profile-edit-avatar-upload')?.files?.[0]
-		if (file)
-			await uploadAvatar(editingEntityHash, file)
+		if (editingBannerCleared)
+			updates.banner = ''
+		const avatarFile = editDialog.querySelector('#hub-profile-edit-avatar-upload')?.files?.[0]
+		if (avatarFile)
+			await uploadAvatar(editingEntityHash, avatarFile)
+		const bannerFile = editDialog.querySelector('#hub-profile-edit-banner-upload')?.files?.[0]
+		if (bannerFile && !editingBannerCleared)
+			await uploadBanner(editingEntityHash, bannerFile)
 		const result = await updateEntityProfileApi(editingEntityHash, updates, groupId)
 		if (!result?.profile) throw new Error(result?.error || 'update failed')
 		invalidateUserProfileCache(editingEntityHash)

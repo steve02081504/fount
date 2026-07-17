@@ -1,12 +1,11 @@
 /**
  * 【文件】public/hub/entityProfile.mjs
- * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：标签、简介 Markdown、编辑按钮绑定。
+ * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、编辑按钮绑定。
  * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireProfileEditButton` 更新资料卡 DOM。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】../../../../scripts/markdown、../src/entityProfileApi、core/avatarCover、core/domUtils、core/state、entityResolve、presence、profileEdit。
+ * 【关联】../../../../scripts/markdown、../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
  */
 import { renderMarkdown } from '../../../../scripts/features/markdown/index.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import {
@@ -23,35 +22,6 @@ import {
 	invalidateUserProfileCache,
 } from './presence.mjs'
 import { openHubProfileEdit } from './profileEdit.mjs'
-
-/**
- * @param {string[]} tags 标签
- * @returns {string} HTML
- */
-export function renderProfileTagsHtml(tags) {
-	const list = Array.isArray(tags) ? tags.filter(Boolean) : []
-	if (!list.length) return ''
-	return list.map(t =>
-		`<span class="hub-profile-tag badge badge-outline badge-sm">${escapeHtml(t)}</span>`,
-	).join('')
-}
-
-/**
- * @param {HTMLElement|null} host 容器
- * @param {string[]} tags 标签
- * @returns {void}
- */
-export function paintProfileTags(host, tags) {
-	if (!host) return
-	const html = renderProfileTagsHtml(tags)
-	if (!html) {
-		host.replaceChildren()
-		host.hidden = true
-		return
-	}
-	host.hidden = false
-	host.innerHTML = html
-}
 
 /**
  * @param {object} profile API profile

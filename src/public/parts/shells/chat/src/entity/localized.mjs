@@ -103,8 +103,8 @@ export function resolveProfilePresentation(stored, locales, infoDefaults) {
 		? String(slice.description_markdown)
 		: slice.description != null ? String(slice.description) : infoDefaults.description_markdown
 
-	const tags = Array.isArray(slice.tags) ? slice.tags : (infoDefaults.tags || [])
-	const links = Array.isArray(slice.links) ? slice.links : (infoDefaults.links || [])
+	const tags = Array.isArray(slice.tags) ? slice.tags : infoDefaults.tags || []
+	const links = Array.isArray(slice.links) ? slice.links : infoDefaults.links || []
 
 	let avatar = slice.avatar?.trim() || infoDefaults.avatar
 	if (avatar && !avatar.startsWith('http') && isEntityHash128(stored?.entityHash))

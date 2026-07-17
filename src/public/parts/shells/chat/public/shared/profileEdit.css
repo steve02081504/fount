@@ -161,6 +161,18 @@
 	align-items: center;
 }
 
+.hub-profile-edit-banner-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+}
+
+.hub-profile-edit-banner-row .file-input {
+	flex: 1 1 180px;
+	min-width: 0;
+}
+
 .hub-profile-edit-avatar-swatch {
 	display: grid;
 	place-items: center;
@@ -176,6 +188,59 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+}
+
+.hub-profile-edit-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	min-height: 28px;
+	margin-bottom: 8px;
+}
+
+.hub-profile-edit-tag-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border: 1px solid color-mix(in srgb, var(--hub-accent, var(--color-primary)) 38%, transparent);
+	border-radius: 999px;
+	background: color-mix(in srgb, var(--hub-accent, var(--color-primary)) 10%, transparent);
+	font-size: 12px;
+}
+
+.hub-profile-edit-tag-remove {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	opacity: 0.65;
+	font-size: 14px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.hub-profile-edit-tag-remove:hover {
+	opacity: 1;
+}
+
+.hub-profile-edit-tags-add {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 8px;
+	align-items: center;
+}
+
+.hub-profile-edit-links {
+	display: grid;
+	gap: 8px;
+}
+
+.hub-profile-edit-link-row {
+	display: grid;
+	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) auto;
+	gap: 8px;
+	align-items: center;
 }
 
 .hub-profile-edit-color-row {
@@ -228,6 +293,14 @@
 
 @media (max-width: 480px) {
 	.hub-profile-edit-field-grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.hub-profile-edit-link-row {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.hub-profile-edit-tags-add {
 		grid-template-columns: minmax(0, 1fr);
 	}
 }

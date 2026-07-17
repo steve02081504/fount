@@ -176,14 +176,19 @@ export function renderTagsEditor(host, tags, onChange) {
 /**
  * 渲染链接动态行编辑器。
  * @param {HTMLElement} host 行容器
- * @param {ProfileLink[]} links 当前链接
- * @param {(next: ProfileLink[]) => void} onChange 变更回调
+ * @param {ProfileLink[]} links 当前链接（可含尚未填完的空行）
+ * @param {(next: ProfileLink[], meta?: { rebuild?: boolean }) => void} onChange 变更回调；`rebuild` 为 true 时需重建 DOM
  * @returns {void}
  */
 export function renderLinksEditor(host, links, onChange) {
 	if (!(host instanceof HTMLElement)) return
-	const list = normalizeProfileLinks(links)
-	const draft = list.length ? list : [{ name: '', url: '', icon: '' }]
+	const draft = Array.isArray(links) && links.length
+		? links.map(link => ({
+			name: String(link?.name || ''),
+			url: String(link?.url || ''),
+			icon: String(link?.icon || ''),
+		}))
+		: [{ name: '', url: '', icon: '' }]
 	host.replaceChildren()
 	draft.forEach((link, index) => {
 		const row = document.createElement('div')
@@ -206,15 +211,17 @@ export function renderLinksEditor(host, links, onChange) {
 		remove.textContent = '×'
 		remove.setAttribute('aria-label', geti18n('chat.hub.profileEdit.linkRemove') || 'remove')
 
+		/**
+		 *
+		 */
 		const commit = () => {
-			const next = readLinksEditor(host)
-			onChange(next.length ? next : [{ name: '', url: '', icon: '' }])
+			onChange(readLinksEditor(host, { keepEmpty: true }))
 		}
 		nameInput.addEventListener('input', commit)
 		urlInput.addEventListener('input', commit)
 		remove.addEventListener('click', () => {
-			const next = draft.filter((_, i) => i !== index)
-			onChange(next)
+			const next = readLinksEditor(host, { keepEmpty: true }).filter((_, i) => i !== index)
+			onChange(next, { rebuild: true })
 		})
 		row.append(nameInput, urlInput, remove)
 		host.append(row)
@@ -224,16 +231,19 @@ export function renderLinksEditor(host, links, onChange) {
 /**
  * 从链接编辑器 DOM 读取当前值。
  * @param {HTMLElement | null | undefined} host 行容器
- * @returns {ProfileLink[]} 链接列表（可含空行过滤后）
+ * @param {{ keepEmpty?: boolean }} [options] keepEmpty 时保留未填完的空行（编辑态）
+ * @returns {ProfileLink[]} 链接列表
  */
-export function readLinksEditor(host) {
+export function readLinksEditor(host, options = {}) {
 	if (!(host instanceof HTMLElement)) return []
-	return [...host.querySelectorAll('.hub-profile-edit-link-row')].map(row => {
+	const rows = [...host.querySelectorAll('.hub-profile-edit-link-row')].map(row => {
 		const inputs = row.querySelectorAll('input')
 		return {
 			name: String(inputs[0]?.value || '').trim(),
 			url: String(inputs[1]?.value || '').trim(),
 			icon: '',
 		}
-	}).filter(link => link.url || link.name)
+	})
+	if (options.keepEmpty) return rows
+	return rows.filter(link => link.url || link.name)
 }
