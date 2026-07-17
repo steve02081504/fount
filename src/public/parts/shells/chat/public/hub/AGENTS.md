@@ -68,7 +68,7 @@ Hub-facing API shapes:
 
 ## @mention Inbox
 
-- **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json` (per-recipient read watermark). Incremental write: `src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs` (`eventPersist` called after `message`/`message_edit` persisted).
+- **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json` (per-recipient read watermark). Incremental write: `src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs` (`eventPersist` called after `message`/`message_edit` persisted). **Skip**: `content.type === 'call'`（通话卡片 create/roster/end 会多次 `message_edit`，不当收件箱信号）.
 - **Syntax**: `@[entity:<128hex>]` in message body (see `shared/inlineTokenSyntax.mjs`); Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
 - **API**: `GET /inbox`, `GET|PUT /inbox/seen` fixed to operator entity (no recipient parameter); agent inbox only via `getChatClient(username, agentHash).inbox`. Group autocomplete: `GET …/groups/:id/mentions/suggest`.
 - **Hub**: server bar `@` button + `#inbox` list (`hub/inboxView.mjs` + `hub/inboxClient.mjs`); badge driven by WS `channel_message.mentions.entityHashes`.

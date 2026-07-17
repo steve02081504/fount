@@ -64,10 +64,12 @@ export function buildMentionsFromMessageLine(channelId, messageLine, state, opti
  */
 export async function dispatchMessageFanout(username, groupId, channelId, messageLine, options = {}) {
 	if (!['message', 'message_edit'].includes(messageLine?.type)) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
-	if (messageLine.type === 'message_edit') {
-		const newContent = messageLine.content?.newContent ?? messageLine.content
-		if (newContent?.is_generating) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
-	}
+	const payload = messageLine.type === 'message_edit'
+		? messageLine.content?.newContent ?? messageLine.content
+		: messageLine.content
+	if (payload?.is_generating) return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
+	// 通话卡片生命周期（create/roster/end）会多次 message_edit；不当作收件箱/推送/触发管线信号
+	if (payload?.type === 'call') return { mentions: { entityHashes: [], roleIds: [], everyone: false } }
 
 	const { state } = await getState(username, groupId)
 	const mentions = buildMentionsFromMessageLine(channelId, messageLine, state, options)

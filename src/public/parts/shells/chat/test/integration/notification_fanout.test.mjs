@@ -80,6 +80,64 @@ Deno.test('notify prefs: mode all appends message row', async () => {
 	assertEquals(page.items[0].kind, 'message')
 })
 
+Deno.test('call card message/edit skips inbox fanout even in mode all', async () => {
+	const username = `nf-call-${crypto.randomUUID().slice(0, 8)}`
+	const { ensureServer } = createIntegrationBoot({ username, minP2pNode: true })
+	await ensureServer()
+
+	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
+	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
+	const { resolveOperatorEntityHash } = await import('../../src/chat/lib/replica.mjs')
+	const { listChatInbox } = await import('../../src/chat/lib/inbox.mjs')
+	const { saveNotificationPreferences } = await import('../../src/chat/lib/notificationPreferences.mjs')
+
+	const groupId = await newGroup(username, { name: 'nf-call' })
+	const channelId = await getDefaultChannelId(username, groupId)
+	const operatorHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
+	saveNotificationPreferences(username, operatorHash, { [groupId]: { mode: 'all' } })
+
+	const callId = crypto.randomUUID()
+	const eventId = `${'ee'.repeat(32)}`
+	await fanout(username, groupId, channelId, {
+		type: 'message',
+		eventId,
+		sender: 'ff'.repeat(32),
+		content: {
+			type: 'call',
+			callId,
+			status: 'ongoing',
+			startedAt: Date.now(),
+			initiator: operatorHash,
+			participants: [operatorHash],
+			current: [operatorHash],
+		},
+		hlc: { wall: Date.now() },
+	}, { ingress: 'live' })
+	await fanout(username, groupId, channelId, {
+		type: 'message_edit',
+		eventId: `${'01'.repeat(32)}`,
+		sender: 'ff'.repeat(32),
+		content: {
+			targetId: eventId,
+			newContent: {
+				type: 'call',
+				callId,
+				status: 'ended',
+				startedAt: Date.now() - 1000,
+				endedAt: Date.now(),
+				duration: 1000,
+				initiator: operatorHash,
+				participants: [operatorHash],
+				current: [],
+			},
+		},
+		hlc: { wall: Date.now() },
+	}, { ingress: 'live' })
+
+	const page = await listChatInbox(username, operatorHash, { limit: 10 })
+	assertEquals(page.items.length, 0)
+})
+
 Deno.test('care pierces mute for care inbox row', async () => {
 	const username = `nf-care-${crypto.randomUUID().slice(0, 8)}`
 	const CHAR_YES = 'on_message_yes'
