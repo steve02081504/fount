@@ -23,6 +23,14 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('#hub-profile-edit-live-preview')).toBeVisible()
 		await page.locator('#hub-profile-edit-name').fill('实时预览名称')
 		await expect(page.locator('#hub-profile-edit-live-preview [data-entity-profile-name]')).toHaveText('实时预览名称')
+		await page.locator('#hub-profile-edit-new-locale-code').fill('x-copy-test')
+		await page.locator('#hub-profile-edit-locale-add').click()
+		await expect(page.locator('#hub-profile-edit-name')).toHaveValue('实时预览名称')
+		await expect(page.locator('.hub-profile-locale-tab[data-locale="x-copy-test"]')).toBeVisible()
+		await page.locator('#hub-profile-edit-locale-code').fill('x-renamed-test')
+		await page.locator('#hub-profile-edit-locale-rename').click()
+		await expect(page.locator('.hub-profile-locale-tab[data-locale="x-renamed-test"]')).toBeVisible()
+		await expect(page.locator('.hub-profile-locale-tab[data-locale="x-copy-test"]')).toHaveCount(0)
 		await page.locator('#hub-profile-edit-cancel').click()
 		await expect(page.locator('#hub-profile-edit-modal')).toBeHidden({ timeout: 10_000 })
 	})
@@ -35,6 +43,8 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('#hub-profile-edit-modal')).toBeVisible({ timeout: 20_000 })
 
 		await expect(page.locator('#hub-profile-edit-banner-upload')).toBeVisible()
+		await expect(page.locator('#hub-profile-edit-avatar-url')).toBeVisible()
+		await expect(page.locator('#hub-profile-edit-banner-url')).toBeVisible()
 		await expect(page.locator('#hub-profile-edit-banner-clear')).toBeVisible()
 		await expect(page.locator('#hub-profile-edit-tags')).toBeVisible()
 		await expect(page.locator('#hub-profile-edit-links')).toBeVisible()
@@ -59,6 +69,14 @@ test.describe('Chat profile page', () => {
 			'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
 			'base64',
 		)
+		const tinyPngUrl = `data:image/png;base64,${tinyPng.toString('base64')}`
+		await page.locator('#hub-profile-edit-avatar-url').fill(tinyPngUrl)
+		await expect(page.locator('#hub-profile-edit-avatar-swatch img')).toHaveAttribute('src', tinyPngUrl)
+		await page.locator('#hub-profile-edit-banner-url').fill(tinyPngUrl)
+		await expect
+			.poll(async () => page.locator('#hub-profile-edit-live-preview .hub-profile-popup-banner')
+				.evaluate(el => el.classList.contains('hub-profile-popup-banner--image')))
+			.toBe(true)
 		await page.locator('#hub-profile-edit-banner-upload').setInputFiles({
 			name: 'banner.png',
 			mimeType: 'image/png',

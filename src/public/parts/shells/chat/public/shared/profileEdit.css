@@ -114,6 +114,13 @@
 	gap: 7px;
 }
 
+.hub-profile-edit-locale-controls {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+	gap: 7px;
+	margin-top: 9px;
+}
+
 .hub-profile-locale-tab {
 	display: flex;
 	align-items: center;
@@ -138,11 +145,6 @@
 	background: color-mix(in srgb, var(--hub-accent, var(--color-primary)) 15%, transparent);
 }
 
-.hub-profile-locale-tab-add {
-	border-style: dashed;
-	color: var(--hub-text-muted, color-mix(in srgb, var(--color-base-content) 58%, transparent));
-}
-
 .hub-profile-locale-tab-close {
 	padding: 0 2px;
 	opacity: 0.55;
@@ -162,14 +164,25 @@
 }
 
 .hub-profile-edit-banner-row {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
 	gap: 8px;
 	align-items: center;
 }
 
-.hub-profile-edit-banner-row .file-input {
-	flex: 1 1 180px;
+.hub-profile-edit-banner-row .input {
+	grid-column: 1 / -1;
+}
+
+.hub-profile-edit-banner-row .file-input,
+.hub-profile-edit-media-inputs .file-input {
+	width: 100%;
+	min-width: 0;
+}
+
+.hub-profile-edit-media-inputs {
+	display: grid;
+	gap: 8px;
 	min-width: 0;
 }
 
@@ -288,6 +301,10 @@
 	.hub-profile-edit-header,
 	.hub-profile-edit-actions {
 		padding: 15px 16px;
+	}
+
+	.hub-profile-edit-locale-controls {
+		grid-template-columns: minmax(0, 1fr) auto;
 	}
 }
 

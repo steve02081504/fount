@@ -1,11 +1,16 @@
 /**
  * 【文件】public/src/profileLocaleEditor.mjs
- * 【职责】资料多语言编辑器：locale 标签页、新增语言、标签/链接规范化。
- * 【原理】ensureLocaleEntry/renderLocaleTabs 操作 localized 对象；promptNewLocaleKey 从 i18n 可用语言选择。
+ * 【职责】资料多语言编辑器：locale 标签页、语言切片复制/改名、标签/链接规范化。
+ * 【原理】ensureLocaleEntry/renameLocaleEntry/renderLocaleTabs 操作 localized 对象。
  * 【数据结构】ProfileLink { icon?, name?, url }；localized Record<locale, fields>。
  * 【关联】Hub/profileEdit、entityProfile；@pages/scripts/i18n/index.mjs。
  */
-import { getAvailableLocales, geti18n } from '../../../../scripts/i18n/index.mjs'
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
+
+/**
+ *
+ */
+export { ensureLocaleEntry, renameLocaleEntry } from './profileLocaleState.mjs'
 
 /**
  * @typedef {object} ProfileLink
@@ -25,25 +30,12 @@ import { getAvailableLocales, geti18n } from '../../../../scripts/i18n/index.mjs
  */
 
 /**
- * @param {Record<string, ProfileLocaleSlice>} localized 多语言表
- * @param {string} activeKey 当前 locale 键
- * @returns {Record<string, ProfileLocaleSlice>} 新表
- */
-export function ensureLocaleEntry(localized, activeKey) {
-	const key = String(activeKey || '').trim()
-	if (!key) return localized
-	if (localized[key]) return localized
-	return { ...localized, [key]: {} }
-}
-
-/**
  * @param {HTMLElement} tabsHost 书签容器
  * @param {Record<string, ProfileLocaleSlice>} localized 多语言表
  * @param {string} activeKey 当前选中 locale
  * @param {object} callbacks 回调
  * @param {(key: string) => void} callbacks.onSelect 切换 locale
  * @param {(key: string) => void} callbacks.onRemove 删除 locale
- * @param {() => void} callbacks.onAdd 添加 locale
  * @returns {void}
  */
 export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
@@ -74,34 +66,6 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 		tabsHost.append(tabButton)
 	}
 
-	const addButton = document.createElement('button')
-	addButton.type = 'button'
-	addButton.className = 'hub-profile-locale-tab hub-profile-locale-tab-add'
-	addButton.textContent = '+'
-	addButton.addEventListener('click', () => callbacks.onAdd())
-	tabsHost.append(addButton)
-}
-
-/**
- * 弹出输入框添加新 locale 键。
- * @param {Record<string, ProfileLocaleSlice>} localized 已有键
- * @returns {string | null} 新键或取消
- */
-export async function promptNewLocaleKey(localized) {
-	const existing = new Set(Object.keys(localized))
-	/** @type {{ id: string, name?: string }[]} */
-	let localeList = []
-	try {
-		localeList = await getAvailableLocales()
-	}
-	catch { /* 离线时仍可手动输入 */ }
-	const suggestions = localeList.map(l => l.id).filter(id => !existing.has(id))
-	const hint = suggestions.slice(0, 6).join(', ')
-	const raw = window.prompt(`Locale key (e.g. zh-CN, en-UK)\n${hint}`, suggestions[0] || 'zh-CN')
-	const key = String(raw || '').trim()
-	if (!key) return null
-	if (existing.has(key)) return null
-	return key
 }
 
 /**

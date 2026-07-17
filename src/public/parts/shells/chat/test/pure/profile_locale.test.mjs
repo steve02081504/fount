@@ -1,4 +1,8 @@
 /* global Deno */
+import {
+	ensureLocaleEntry,
+	renameLocaleEntry,
+} from 'fount/public/parts/shells/chat/public/src/profileLocaleState.mjs'
 import { profileBannerFileUrl } from 'fount/public/parts/shells/chat/src/entity/filesUrl.mjs'
 import {
 	normalizeLocalizedMap,
@@ -13,6 +17,33 @@ Deno.test('profileBannerFileUrl points at EVFS profile/banner', () => {
 		profileBannerFileUrl(hash),
 		`/api/parts/shells:chat/entities/${hash}/files/profile/banner`,
 	)
+})
+
+Deno.test('ensureLocaleEntry copies current profile locale without sharing arrays', () => {
+	const source = {
+		'zh-CN': {
+			name: '测试',
+			tags: ['原创'],
+			links: [{ name: '主页', url: 'https://example.test' }],
+		},
+	}
+	const localized = ensureLocaleEntry(source, 'en-UK', 'zh-CN')
+	assertEquals(localized['en-UK'], source['zh-CN'])
+	localized['en-UK'].tags.push('English')
+	localized['en-UK'].links[0].name = 'Home'
+	assertEquals(source['zh-CN'].tags, ['原创'])
+	assertEquals(source['zh-CN'].links[0].name, '主页')
+})
+
+Deno.test('renameLocaleEntry changes the locale code and keeps its slice', () => {
+	const localized = renameLocaleEntry({
+		'zh-CN': { name: '测试' },
+		'en-UK': { name: 'Test' },
+	}, 'en-UK', 'en-US')
+	assertEquals(localized, {
+		'zh-CN': { name: '测试' },
+		'en-US': { name: 'Test' },
+	})
 })
 
 Deno.test('normalizeLocalizedMap keeps empty tags so clear is not lost', () => {

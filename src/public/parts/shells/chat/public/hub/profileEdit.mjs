@@ -19,8 +19,8 @@ import {
 	normalizeProfileLinks,
 	normalizeProfileTag,
 	normalizeProfileTags,
-	promptNewLocaleKey,
 	readLinksEditor,
+	renameLocaleEntry,
 	renderLinksEditor,
 	renderLocaleTabs,
 	renderTagsEditor,
@@ -92,6 +92,12 @@ async function ensureEditDialog() {
 		}
 		reader.readAsDataURL(file)
 	})
+	editDialog.querySelector('#hub-profile-edit-avatar-url')?.addEventListener('input', (event) => {
+		const upload = editDialog?.querySelector('#hub-profile-edit-avatar-upload')
+		if (upload instanceof HTMLInputElement) upload.value = ''
+		editingAvatarPreview = event.target?.value?.trim() || ''
+		renderEditPreview()
+	})
 	editDialog.querySelector('#hub-profile-edit-banner-upload')?.addEventListener('change', (event) => {
 		const file = event.target?.files?.[0]
 		if (!file) return
@@ -105,12 +111,28 @@ async function ensureEditDialog() {
 		}
 		reader.readAsDataURL(file)
 	})
+	editDialog.querySelector('#hub-profile-edit-banner-url')?.addEventListener('input', (event) => {
+		const upload = editDialog?.querySelector('#hub-profile-edit-banner-upload')
+		if (upload instanceof HTMLInputElement) upload.value = ''
+		editingBannerPreview = event.target?.value?.trim() || ''
+		editingBannerCleared = !editingBannerPreview
+		renderEditPreview()
+	})
 	editDialog.querySelector('#hub-profile-edit-banner-clear')?.addEventListener('click', () => {
 		editingBannerPreview = ''
 		editingBannerCleared = true
+		const url = editDialog?.querySelector('#hub-profile-edit-banner-url')
+		if (url instanceof HTMLInputElement) url.value = ''
 		const upload = editDialog?.querySelector('#hub-profile-edit-banner-upload')
 		if (upload instanceof HTMLInputElement) upload.value = ''
 		renderEditPreview()
+	})
+	editDialog.querySelector('#hub-profile-edit-locale-rename')?.addEventListener('click', renameActiveLocale)
+	editDialog.querySelector('#hub-profile-edit-locale-add')?.addEventListener('click', addLocaleFromInput)
+	editDialog.querySelector('#hub-profile-edit-new-locale-code')?.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter') return
+		event.preventDefault()
+		addLocaleFromInput()
 	})
 	editDialog.querySelector('#hub-profile-edit-tag-add')?.addEventListener('click', () => addTagFromInput())
 	editDialog.querySelector('#hub-profile-edit-tag-input')?.addEventListener('keydown', (event) => {
@@ -126,6 +148,41 @@ async function ensureEditDialog() {
 	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('input', renderEditPreview)
 	editDialog.querySelector('.hub-profile-edit-form')?.addEventListener('change', renderEditPreview)
 	return editDialog
+}
+
+/** @returns {void} */
+function renameActiveLocale() {
+	const input = editDialog?.querySelector('#hub-profile-edit-locale-code')
+	if (!(input instanceof HTMLInputElement)) return
+	const key = input.value.trim()
+	persistActiveLocaleForm()
+	const renamed = renameLocaleEntry(editingLocalized, activeLocaleKey, key)
+	if (renamed === editingLocalized) {
+		input.value = activeLocaleKey
+		return
+	}
+	editingLocalized = renamed
+	activeLocaleKey = key
+	refreshLocaleTabs()
+}
+
+/** @returns {void} */
+function addLocaleFromInput() {
+	const input = editDialog?.querySelector('#hub-profile-edit-new-locale-code')
+	if (!(input instanceof HTMLInputElement)) return
+	const key = input.value.trim()
+	if (!key) return
+	persistActiveLocaleForm()
+	if (editingLocalized[key]) 
+		activeLocaleKey = key
+	
+	else {
+		editingLocalized = ensureLocaleEntry(editingLocalized, key, activeLocaleKey)
+		activeLocaleKey = key
+	}
+	input.value = ''
+	loadActiveLocaleForm()
+	refreshLocaleTabs()
 }
 
 /** @returns {void} */
@@ -208,6 +265,9 @@ function loadActiveLocaleForm() {
 		hint.textContent = defaults.name
 			? `${defaults.name} (${defaults.tags?.join(', ') || ''})`.replace(/\s+\(\)$/, '')
 			: ''
+	const localeCode = editDialog?.querySelector('#hub-profile-edit-locale-code')
+	if (localeCode instanceof HTMLInputElement)
+		localeCode.value = activeLocaleKey
 	renderEditPreview()
 }
 
@@ -283,21 +343,6 @@ function refreshLocaleTabs() {
 			loadActiveLocaleForm()
 			refreshLocaleTabs()
 		},
-		/**
-		 * 新增本地化语言 tab 并切换到该语言表单。
-		 * @returns {void}
-		 */
-		onAdd: () => {
-			void (async () => {
-				const key = await promptNewLocaleKey(editingLocalized)
-				if (!key) return
-				persistActiveLocaleForm()
-				editingLocalized = ensureLocaleEntry(editingLocalized, key)
-				activeLocaleKey = key
-				loadActiveLocaleForm()
-				refreshLocaleTabs()
-			})()
-		},
 	})
 }
 
@@ -325,8 +370,14 @@ function initEditState(entityHash, profile) {
 		|| keys[0]
 	const avatarUpload = editDialog?.querySelector('#hub-profile-edit-avatar-upload')
 	if (avatarUpload instanceof HTMLInputElement) avatarUpload.value = ''
+	const avatarUrl = editDialog?.querySelector('#hub-profile-edit-avatar-url')
+	if (avatarUrl instanceof HTMLInputElement) avatarUrl.value = editingAvatarPreview
 	const bannerUpload = editDialog?.querySelector('#hub-profile-edit-banner-upload')
 	if (bannerUpload instanceof HTMLInputElement) bannerUpload.value = ''
+	const bannerUrl = editDialog?.querySelector('#hub-profile-edit-banner-url')
+	if (bannerUrl instanceof HTMLInputElement) bannerUrl.value = editingBannerPreview
+	const newLocaleCode = editDialog?.querySelector('#hub-profile-edit-new-locale-code')
+	if (newLocaleCode instanceof HTMLInputElement) newLocaleCode.value = ''
 	const status = editDialog?.querySelector('#hub-profile-edit-status')
 	if (status instanceof HTMLSelectElement)
 		status.value = profile.status || 'online'
@@ -350,21 +401,28 @@ async function handleSaveProfile() {
 	persistActiveLocaleForm()
 	const groupId = hubStore.context.currentGroupId || undefined
 	try {
+		const avatarFile = editDialog.querySelector('#hub-profile-edit-avatar-upload')?.files?.[0]
+		const avatarUrl = avatarFile
+			? (await uploadAvatar(editingEntityHash, avatarFile)).avatarUrl
+			: editDialog.querySelector('#hub-profile-edit-avatar-url')?.value?.trim() || ''
+		editingLocalized = Object.fromEntries(
+			Object.entries(editingLocalized).map(([key, slice]) => [
+				key,
+				{ ...slice, avatar: avatarUrl },
+			]),
+		)
+		const bannerFile = editDialog.querySelector('#hub-profile-edit-banner-upload')?.files?.[0]
+		const banner = bannerFile && !editingBannerCleared
+			? (await uploadBanner(editingEntityHash, bannerFile)).bannerUrl
+			: editDialog.querySelector('#hub-profile-edit-banner-url')?.value?.trim() || ''
 		const updates = {
 			localized: editingLocalized,
 			handle: editDialog.querySelector('#hub-profile-edit-handle')?.value?.trim() || '',
 			themeColor: editDialog.querySelector('#hub-profile-edit-theme-color')?.value || '',
 			status: editDialog.querySelector('#hub-profile-edit-status')?.value || editingBaseProfile.status,
 			customStatus: editDialog.querySelector('#hub-profile-edit-custom-status')?.value?.trim() || '',
+			banner,
 		}
-		if (editingBannerCleared)
-			updates.banner = ''
-		const avatarFile = editDialog.querySelector('#hub-profile-edit-avatar-upload')?.files?.[0]
-		if (avatarFile)
-			await uploadAvatar(editingEntityHash, avatarFile)
-		const bannerFile = editDialog.querySelector('#hub-profile-edit-banner-upload')?.files?.[0]
-		if (bannerFile && !editingBannerCleared)
-			await uploadBanner(editingEntityHash, bannerFile)
 		const result = await updateEntityProfileApi(editingEntityHash, updates, groupId)
 		if (!result?.profile) throw new Error(result?.error || 'update failed')
 		invalidateUserProfileCache(editingEntityHash)

@@ -17,6 +17,12 @@
 					<div class="hub-profile-edit-locales">
 						<p class="hub-profile-edit-section-label" data-i18n="chat.hub.profileEdit.languageVersion"></p>
 						<div class="hub-profile-locale-tabs" data-profile-locale-tabs></div>
+						<div class="hub-profile-edit-locale-controls">
+							<input type="text" id="hub-profile-edit-locale-code" class="input input-bordered input-sm font-mono" autocomplete="off" data-i18n="chat.hub.profileEdit.localeCodePlaceholder" />
+							<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-locale-rename" data-i18n="chat.hub.profileEdit.localeRename"></button>
+							<input type="text" id="hub-profile-edit-new-locale-code" class="input input-bordered input-sm font-mono" autocomplete="off" data-i18n="chat.hub.profileEdit.newLocalePlaceholder" />
+							<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-locale-add" data-i18n="chat.hub.profileEdit.localeAdd"></button>
+						</div>
 						<p class="hub-profile-locale-hint text-xs opacity-60 mt-2" data-i18n="chat.hub.profileEdit.localeHint"></p>
 					</div>
 				<div class="hub-profile-edit-field-grid">
@@ -24,13 +30,17 @@
 					<label class="label py-1"><span class="label-text text-xs opacity-70" data-i18n="profile.avatarLabel"></span></label>
 					<div class="hub-profile-edit-avatar-row">
 						<div id="hub-profile-edit-avatar-swatch" class="hub-profile-edit-avatar-swatch"></div>
-						<input type="file" id="hub-profile-edit-avatar-upload" accept="image/*" class="file-input file-input-bordered file-input-sm flex-1" />
+						<div class="hub-profile-edit-media-inputs">
+							<input type="url" id="hub-profile-edit-avatar-url" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.avatarUrlPlaceholder" />
+							<input type="file" id="hub-profile-edit-avatar-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" />
+						</div>
 					</div>
 				</div>
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.bannerLabel"></span></label>
 					<div class="hub-profile-edit-banner-row">
-						<input type="file" id="hub-profile-edit-banner-upload" accept="image/*" class="file-input file-input-bordered file-input-sm flex-1" />
+						<input type="url" id="hub-profile-edit-banner-url" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.bannerUrlPlaceholder" />
+						<input type="file" id="hub-profile-edit-banner-upload" accept="image/*" class="file-input file-input-bordered file-input-sm" />
 						<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-banner-clear" data-i18n="chat.hub.profileEdit.bannerClear"></button>
 					</div>
 					<span class="label-text-alt opacity-50" data-i18n="chat.hub.profileEdit.bannerHint"></span>
