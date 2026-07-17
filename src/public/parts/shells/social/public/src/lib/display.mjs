@@ -19,14 +19,37 @@ import { formatSocialPostHref } from '../../shared/runUri.mjs'
  */
 export { formatEntityAtId }
 
+/** @type {Map<string, string>} entityHash → 具名 handle（会话内缓存） */
+const knownHandles = new Map()
+
+/**
+ * 记住实体具名 handle，供帖卡/回复等瘦摘要补全 at-id。
+ * @param {string} entityHash entity hash
+ * @param {{ handle?: string | null } | string | null | undefined} profileOrHandle 资料或 handle 字符串
+ * @returns {void}
+ */
+export function rememberEntityHandle(entityHash, profileOrHandle) {
+	const key = String(entityHash || '').trim().toLowerCase()
+	if (!key) return
+	const raw = typeof profileOrHandle === 'string'
+		? profileOrHandle
+		: profileOrHandle?.handle
+	const handle = String(raw || '').trim().replace(/^@+/u, '').toLowerCase()
+	if (handle) knownHandles.set(key, handle)
+}
+
 /**
  * at-id 表述：有具名 handle 时 `@handle (@hash…)`，否则 `@hash…`。
+ * 优先 profile.handle，其次会话内缓存（资料页已加载、其它卡片已见过）。
  * @param {string} entityHash entity hash
  * @param {{ handle?: string | null } | null} [profile] 可选资料（取 handle）
  * @returns {string} at-id
  */
 export function entityHandle(entityHash, profile = null) {
-	return formatEntityAtId(entityHash, { handle: profile?.handle })
+	const key = String(entityHash || '').trim().toLowerCase()
+	const handle = String(profile?.handle || '').trim() || knownHandles.get(key) || ''
+	if (handle) rememberEntityHandle(key, handle)
+	return formatEntityAtId(entityHash, { handle })
 }
 
 /**

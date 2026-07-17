@@ -121,6 +121,7 @@ export async function loadExplore() {
 			? geti18n('social.profile.mediaOnly')
 			: '')
 		const name = authorLabel(post.entityHash, post.authorProfile)
+		const handle = entityHandle(post.entityHash, post.authorProfile)
 		row.innerHTML = `
 			<header class="explore-post-header">
 				<a href="${escapeHtml(authorHref)}" class="explore-post-avatar-link">
@@ -128,6 +129,7 @@ export async function loadExplore() {
 				</a>
 				<div class="explore-post-author">
 					<a href="${escapeHtml(authorHref)}" class="author-name">${escapeHtml(name)}</a>
+					<a href="${escapeHtml(authorHref)}" class="author-handle">${escapeHtml(handle)}</a>
 					<span class="post-meta">${escapeHtml(formatTime(post.hlc?.wall))}</span>
 				</div>
 			</header>

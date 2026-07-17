@@ -1,6 +1,6 @@
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { authorLabel, entityHandle, formatTime, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTime, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -53,6 +53,7 @@ export async function buildReplyRow(reply) {
 		? `<em>${geti18n('social.feed.decryptFailed')}</em>`
 		: await renderMarkdown(text, entityHash)
 	const engagementBarHtml = await renderEngagementBarHtml(reply, actionKey)
+	rememberEntityHandle(entityHash, reply.authorProfile)
 	row.innerHTML = `
 		<div class="reply-header">
 			<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="reply-avatar-link">

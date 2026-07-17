@@ -2,7 +2,7 @@ import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { shareOrCopyPostLink } from '../actions/shared.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
@@ -383,6 +383,7 @@ function buildVideoSlide(item) {
 
 	const videoSrc = resolveVideoSrc(item)
 	const label = authorLabel(item.entityHash, item.authorProfile)
+	const handle = entityHandle(item.entityHash, item.authorProfile)
 	const caption = String(item.post?.content?.text || item.text || '').trim()
 	const profileHref = formatSocialProfileHref(item.entityHash)
 	const liked = Boolean(item.viewerLiked)
@@ -406,6 +407,7 @@ function buildVideoSlide(item) {
 				<a class="video-author-row" href="${escapeHtml(profileHref)}" data-video-author>
 					${renderAvatarHtml(item.entityHash, item.authorProfile, 'video-author-avatar')}
 					<span class="video-author">${escapeHtml(label)}</span>
+					<span class="video-author-handle">${escapeHtml(handle)}</span>
 				</a>
 				${caption ? `<div class="video-caption">${escapeHtml(caption.slice(0, 180))}</div>` : ''}
 			</div>

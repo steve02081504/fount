@@ -11,6 +11,7 @@ import {
 	authorLabel,
 	entityHandle,
 	formatTime,
+	rememberEntityHandle,
 	renderAvatarHtml,
 	renderMarkdown,
 	renderQuoteBlockHtml,
@@ -60,6 +61,10 @@ export async function buildPostCard(item, options = {}) {
 	const actionPostId = item.targetPostId || item.postId
 	const actionKey = formatActionKey(actionEntity, actionPostId)
 	const originalAuthor = isRepost ? item.targetEntityHash : item.entityHash
+	rememberEntityHandle(item.entityHash, item.authorProfile)
+	if (isRepost) rememberEntityHandle(originalAuthor, item.targetAuthorProfile)
+	if (item.replyContext)
+		rememberEntityHandle(item.replyContext.entityHash, item.replyContext.authorProfile)
 	const decryptFailed = item.post?.decryptView?.failed
 	const decryptFailedLabel = geti18n('social.feed.decryptFailed')
 	const contentWarning = item.post?.content?.contentWarning?.trim()
@@ -85,7 +90,7 @@ export async function buildPostCard(item, options = {}) {
 	const replyContextHtml = replyContext && !decryptFailed
 		? `<a class="reply-context" href="${escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId))}">
 			<span class="reply-context-label">${escapeHtml(geti18n('social.reply.context', {
-			author: authorLabel(replyContext.entityHash, replyContext.authorProfile),
+			author: entityHandle(replyContext.entityHash, replyContext.authorProfile),
 		}))}</span>
 			${replyContext.text ? `<span class="reply-context-snippet">${escapeHtml(String(replyContext.text).slice(0, 120))}</span>` : ''}
 		</a>`

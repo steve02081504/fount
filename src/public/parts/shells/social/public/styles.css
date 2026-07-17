@@ -2834,6 +2834,16 @@ body {
 	white-space: nowrap;
 }
 
+.video-author-handle {
+	font-size: 0.82rem;
+	opacity: 0.72;
+	color: #fff;
+	text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .video-caption {
 	color: rgba(255,255,255,0.92);
 	font-size: 0.88rem;

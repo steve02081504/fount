@@ -1,5 +1,6 @@
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
+import { rememberEntityHandle } from '../lib/display.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { socialState } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -43,6 +44,9 @@ export async function loadPostDetail(entityHash, postId) {
 		container.innerHTML = `<div class="empty">${escapeHtml(geti18n('social.post.notFound'))}</div>`
 		return
 	}
+
+	const profileData = await socialApi(`/profile/${owner}`).catch(() => null)
+	rememberEntityHandle(owner, profileData?.profile || data.item.authorProfile)
 
 	const card = await buildPostCard(data.item, { openDetail: false })
 	card.classList.add('post-detail-card')

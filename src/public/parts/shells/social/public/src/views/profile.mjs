@@ -1,6 +1,6 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -161,6 +161,7 @@ export async function renderProfileFollowingList(entityHash, container) {
 	for (const row of following) {
 		const hash = typeof row === 'string' ? row : row.entityHash
 		const profile = typeof row === 'string' ? null : row.profile
+		rememberEntityHandle(hash, profile)
 		const link = document.createElement('a')
 		link.className = 'following-link'
 		link.href = formatSocialProfileHref(hash)
@@ -205,6 +206,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
 	const name = escapeHtml(authorLabel(entityHash, data.profile))
+	rememberEntityHandle(entityHash, data.profile)
 	const handle = escapeHtml(entityHandle(entityHash, data.profile))
 	const followingCount = (followingData.following || []).length
 

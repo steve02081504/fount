@@ -16,7 +16,7 @@ import {
 } from './composer.mjs'
 import { SOCIAL_APP_GATE } from './gate.mjs'
 import { chatApi } from './lib/apiClient.mjs'
-import { renderAvatarHtml } from './lib/display.mjs'
+import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
@@ -161,12 +161,15 @@ export async function bootstrapSocialApp() {
 		socialState.viewerProfile = viewer.profile
 			? {
 				name: viewer.profile.name || null,
+				handle: viewer.profile.handle || null,
 				avatar: viewer.profile.avatar || null,
 				infoDefaults: viewer.profile.infoDefaults
 					? { avatar: viewer.profile.infoDefaults.avatar || '' }
 					: null,
 			}
 			: { name: socialState.viewerDisplayName }
+		if (socialState.viewerEntityHash)
+			rememberEntityHandle(socialState.viewerEntityHash, socialState.viewerProfile)
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
 		if (avatarSlot && socialState.viewerEntityHash)
 			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile)
