@@ -1465,8 +1465,10 @@
 		},
 		"saved": {
 			"folders": "文件夹",
+			"all": "全部",
 			"unfiled": "未归档",
 			"createFolder": "新建文件夹",
+			"createFolderPrompt": "文件夹名称",
 			"newFolderPlaceholder": "文件夹名称",
 			"pickFolder": "输入序号选择文件夹（0=未归档）",
 			"pickFolderTitle": "收藏到",
@@ -1476,7 +1478,11 @@
 			"renameFolder": "重命名",
 			"renameFolderPrompt": "新文件夹名称",
 			"deleteFolder": "删除文件夹",
-			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。"
+			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
+			"searchPlaceholder": "搜索收藏…",
+			"searchEmpty": "没有匹配的收藏",
+			"folderEmpty": "此文件夹为空",
+			"emptyHint": "浏览动态时点书签即可收藏到这里"
 		},
 		"time": {
 			"justNow": "刚刚",
