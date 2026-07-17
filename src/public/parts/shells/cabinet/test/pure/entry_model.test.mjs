@@ -2,6 +2,7 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import {
+	buildFolderTrail,
 	collectSubtreeIds,
 	listChildren,
 	normalizeEntry,
@@ -30,6 +31,18 @@ Deno.test('listChildren filters hidden and sorts folders first', () => {
 	const withHidden = listChildren(entries, null, { show_hidden: true })
 	assertEquals(withHidden.length, 3)
 	assertEquals(listChildren(entries, 'd1').map(row => row.id), ['c1'])
+})
+
+Deno.test('buildFolderTrail returns named root-to-folder path', () => {
+	const entries = [
+		normalizeEntry({ id: 'docs', name: '文档', kind: 'folder' }, 'e'),
+		normalizeEntry({ id: 'notes', name: '笔记', kind: 'folder', parent_id: 'docs' }, 'e'),
+	]
+	assertEquals(buildFolderTrail(entries, 'notes'), [
+		{ id: 'docs', name: '文档' },
+		{ id: 'notes', name: '笔记' },
+	])
+	assertEquals(buildFolderTrail(entries, null), [])
 })
 
 Deno.test('collectSubtreeIds includes descendants', () => {

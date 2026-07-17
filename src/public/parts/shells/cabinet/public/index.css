@@ -30,6 +30,61 @@
 #cabinetList .active {
 	background: oklch(var(--p) / 0.15);
 }
+.cabinet-breadcrumb {
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+.cabinet-breadcrumb::-webkit-scrollbar {
+	display: none;
+}
+.cabinet-breadcrumb ul {
+	display: flex;
+	align-items: center;
+	width: max-content;
+	min-width: 100%;
+	gap: 0.25rem;
+}
+.cabinet-breadcrumb li {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+}
+.cabinet-breadcrumb li:not(:last-child, .breadcrumb-back)::after {
+	content: "›";
+	margin-left: 0.25rem;
+	color: color-mix(in oklch, currentColor 35%, transparent);
+	font-size: 1.15rem;
+}
+.cabinet-breadcrumb button,
+.cabinet-breadcrumb .breadcrumb-current {
+	max-width: 14rem;
+	overflow: hidden;
+	padding: 0.35rem 0.55rem;
+	border-radius: 0.5rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.cabinet-breadcrumb button {
+	cursor: pointer;
+	color: color-mix(in oklch, currentColor 72%, transparent);
+}
+.cabinet-breadcrumb button:hover {
+	background: oklch(var(--b2));
+	color: currentColor;
+}
+.cabinet-breadcrumb button:focus-visible {
+	outline: 2px solid oklch(var(--p));
+	outline-offset: -2px;
+}
+.cabinet-breadcrumb .breadcrumb-current {
+	font-weight: 600;
+	color: currentColor;
+}
+.cabinet-breadcrumb .breadcrumb-back {
+	margin-right: 0.25rem;
+	border-right: 1px solid oklch(var(--bc) / 0.15);
+	padding-right: 0.25rem;
+}
 #contextMenu .menu-separator {
 	border-top: 1px solid oklch(var(--bc) / 0.12);
 	margin: 0.25rem 0;

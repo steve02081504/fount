@@ -109,6 +109,27 @@ export function listChildren(entries, parentId, options = {}) {
 }
 
 /**
+ * 构建从柜根目录到当前文件夹的具名路径。
+ * @param {object[]} entries 全部条目
+ * @param {string | null} folderId 当前文件夹
+ * @returns {{ id: string, name: string }[]} 路径
+ */
+export function buildFolderTrail(entries, folderId) {
+	const byId = new Map(entries.map(entry => [entry.id, entry]))
+	const seen = new Set()
+	const trail = []
+	let currentId = folderId
+	while (currentId && !seen.has(currentId)) {
+		seen.add(currentId)
+		const folder = byId.get(currentId)
+		if (!folder || folder.kind !== 'folder') break
+		trail.unshift({ id: folder.id, name: folder.name })
+		currentId = folder.parent_id
+	}
+	return trail
+}
+
+/**
  * @param {object[]} entries 条目
  * @param {string} entryId 条目 id
  * @returns {Set<string>} 自身及全部后代 id

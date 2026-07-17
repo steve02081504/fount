@@ -11,5 +11,6 @@ alwaysApply: false
 - **Chat binding**: group DAG `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind` wraps read/write keys to roles; Hub files panel lists accessible cabinets.
 - **Links**: id triples `{ owner_entity_hash, cabinet_id, entry_id }`; local-entity inbound refcount keeps orphaned targets until unlink GC.
 - **API body / stored fields**: snake_case. Password folders: `POST …/unlock` → `X-Cabinet-Unlock` header.
+- **Directory listing**: `GET …/index?parent_id=` returns `folder_trail: [{ id, name }]` from cabinet root to the current folder; use it for named breadcrumbs so refreshes and deep links never display raw IDs.
 - **Default cabinet**: `cabinet_id: default` seeded from `default/templates/cabinet/`.
 - **Tests**: `fount test shells/cabinet --no-parallel`.

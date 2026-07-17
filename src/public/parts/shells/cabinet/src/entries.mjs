@@ -1,12 +1,13 @@
 import { randomUUID } from 'node:crypto'
 
+import { hardDeleteEntryBlobs, tryDeletePreviewByUrl } from './blobGc.mjs'
 import {
 	getCabinet,
 	loadPersonalIndex,
 	savePersonalIndex,
 } from './cabinets.mjs'
-import { hardDeleteEntryBlobs, tryDeletePreviewByUrl } from './blobGc.mjs'
 import {
+	buildFolderTrail,
 	collectSubtreeIds,
 	listChildren,
 	normalizeEntry,
@@ -52,7 +53,7 @@ async function resolveCabinet(username, entityHash, cabinetId) {
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
  * @param {{ parent_id?: string | null, show_hidden?: boolean, unlock_token?: string }} [options] 选项
- * @returns {Promise<{ cabinet: object, parent_id: string | null, entries: object[], locked?: boolean }>} 列表
+ * @returns {Promise<{ cabinet: object, parent_id: string | null, folder_trail: object[], entries: object[], locked?: boolean }>} 列表
  */
 export async function listEntries(username, entityHash, cabinetId, options = {}) {
 	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
@@ -73,11 +74,18 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
 				entity_hash: entityHash,
 			})
 			if (!folderKey)
-				return { cabinet, parent_id: parentId, entries: [], locked: true }
+				return {
+					cabinet,
+					parent_id: parentId,
+					folder_trail: buildFolderTrail(index.entries, parentId),
+					entries: [],
+					locked: true,
+				}
 			const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, parentId, folderKey)
 			return {
 				cabinet,
 				parent_id: parentId,
+				folder_trail: buildFolderTrail(index.entries, parentId),
 				entries: listChildren(encIndex.entries, null, options),
 				locked: false,
 			}
@@ -86,6 +94,7 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
 	return {
 		cabinet,
 		parent_id: parentId,
+		folder_trail: buildFolderTrail(index.entries, parentId),
 		entries: listChildren(index.entries, parentId, options),
 	}
 }
@@ -396,4 +405,7 @@ export async function uploadPreview(username, entityHash, cabinetId, options) {
 	return { url, path: logicalPath }
 }
 
+/**
+ *
+ */
 export { tryDeletePreviewByUrl }

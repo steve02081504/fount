@@ -14,6 +14,8 @@ let currentCabinetId = null
 let currentParentId = null
 /** @type {object[]} */
 let entries = []
+/** @type {{ id: string, name: string }[]} */
+let folderTrail = []
 /** @type {object | null} */
 let currentCabinet = null
 /** @type {Set<string>} */
@@ -140,17 +142,15 @@ async function refreshEntries() {
 		unlockHeaders(currentUnlockToken()),
 	)
 	currentCabinet = data.cabinet
+	folderTrail = data.folder_trail || []
+	renderBreadcrumb()
 	if (data.locked) {
 		await promptUnlock(currentParentId)
 		return
 	}
 	entries = data.entries || []
 	renderEntries()
-	renderBreadcrumb()
-	document.getElementById('statusBar').textContent = geti18n('cabinet.statusCount', {
-		count: entries.length,
-		selected: selected.size,
-	}) || `${entries.length} items`
+	renderStatus()
 }
 
 /**
@@ -189,34 +189,47 @@ async function promptUnlock(folderId) {
 function renderBreadcrumb() {
 	const host = document.getElementById('breadcrumb')
 	host.replaceChildren()
-	const root = document.createElement('a')
-	root.textContent = currentCabinet?.name || currentCabinetId
-	root.href = '#'
-	root.addEventListener('click', event => {
-		event.preventDefault()
-		void openCabinet(currentCabinetId, null)
-	})
 	const ul = document.createElement('ul')
-	const li = document.createElement('li')
-	li.appendChild(root)
-	ul.appendChild(li)
 	if (navStack.length) {
 		const back = document.createElement('li')
-		const a = document.createElement('a')
-		a.href = '#'
-		a.textContent = '↩'
-		a.addEventListener('click', event => {
-			event.preventDefault()
+		back.className = 'breadcrumb-back'
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.title = geti18n('cabinet.back') || 'Back'
+		button.setAttribute('aria-label', button.title)
+		button.textContent = '←'
+		button.addEventListener('click', () => {
 			const prev = navStack.pop()
 			if (prev) void openCabinet(prev.cabinet_id, prev.parent_id)
 		})
-		back.appendChild(a)
+		back.appendChild(button)
 		ul.appendChild(back)
 	}
-	if (currentParentId) {
-		const li2 = document.createElement('li')
-		li2.textContent = currentParentId.slice(0, 8)
-		ul.appendChild(li2)
+	const segments = [
+		{ id: null, name: currentCabinet?.name || currentCabinetId, root: true },
+		...folderTrail,
+	]
+	for (const [index, segment] of segments.entries()) {
+		const li = document.createElement('li')
+		const isCurrent = index === segments.length - 1
+		const label = segment.root ? `⌂  ${segment.name}` : segment.name
+		if (isCurrent) {
+			const current = document.createElement('span')
+			current.className = 'breadcrumb-current'
+			current.textContent = label
+			current.title = segment.name
+			current.setAttribute('aria-current', 'page')
+			li.appendChild(current)
+		}
+		else {
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.textContent = label
+			button.title = segment.name
+			button.addEventListener('click', () => void openCabinet(currentCabinetId, segment.id))
+			li.appendChild(button)
+		}
+		ul.appendChild(li)
 	}
 	host.appendChild(ul)
 }
@@ -250,7 +263,7 @@ function renderEntries() {
 		card.addEventListener('contextmenu', event => showContextMenu(event, entry))
 		card.addEventListener('keydown', event => {
 			if (event.key === 'Enter') void onEntryOpen(entry)
-			else if (event.key === ' ' ) {
+			else if (event.key === ' ') {
 				event.preventDefault()
 				onEntryClick(event, entry)
 			}

@@ -2,12 +2,14 @@ import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 
 import {
+	buildFolderTrail,
 	collectSubtreeIds,
 	listChildren,
 	normalizeEntry,
 	patchEntry,
 } from '../entryModel.mjs'
 
+import { getSharedCabinetBlob, putSharedCabinetBlob } from './blobs.mjs'
 import { encryptOpPayload, signOp } from './crypto.mjs'
 import {
 	getSharedCabinetMeta,
@@ -18,7 +20,6 @@ import {
 } from './keys.mjs'
 import { loadSharedIndex, persistSharedSnapshot } from './materialize.mjs'
 import { appendSharedOp } from './oplog.mjs'
-import { getSharedCabinetBlob, putSharedCabinetBlob } from './blobs.mjs'
 
 /**
  * @param {string} username 用户
@@ -75,7 +76,12 @@ export async function listSharedEntries(username, cabinetId, options = {}) {
 		parentId,
 		options,
 	)
-	return { cabinet, parent_id: parentId, entries }
+	return {
+		cabinet,
+		parent_id: parentId,
+		folder_trail: buildFolderTrail(index.entries, parentId),
+		entries,
+	}
 }
 
 /**

@@ -62,6 +62,7 @@ Deno.test({
 		const lockedList = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/index?parent_id=${folder.id}&${q}`)
 		const lockedBody = await lockedList.json()
 		assertEquals(lockedBody.locked, true)
+		assertEquals(lockedBody.folder_trail, [{ id: folder.id, name: 'secret' }])
 
 		const unlockRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${cabinet.cabinet_id}/unlock?${q}`, {
 			method: 'POST',
