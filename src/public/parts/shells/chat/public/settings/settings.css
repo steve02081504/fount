@@ -77,3 +77,27 @@
 	padding-top: 1rem;
 	border-top: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
 }
+
+@media (max-width: 768px) {
+	.tabs.tabs-boxed {
+		display: flex;
+		flex-wrap: nowrap;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.tabs.tabs-boxed .tab {
+		flex: 0 0 auto;
+	}
+
+	#audit-log-container > .grid {
+		display: none;
+	}
+
+	#audit-log-scroll .grid {
+		grid-template-columns: 1fr !important;
+		gap: 0.25rem !important;
+		padding: 0.75rem 0.5rem;
+		border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	}
+}

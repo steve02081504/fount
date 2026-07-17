@@ -42,6 +42,8 @@ export async function selectChannel(channelId) {
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
 	updateHash(hubStore.context.currentGroupId, channelId)
+	const { showHubMainPane } = await import('../hubPane.mjs')
+	showHubMainPane()
 	void warmCharEntityHashCache()
 	const { renderHubChannelSidebar } = await import('./index.mjs')
 	await renderHubChannelSidebar(hubStore.context.currentState)

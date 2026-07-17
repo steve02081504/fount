@@ -130,6 +130,14 @@ export function wireBootstrap() {
 	document.getElementById('hub-toggle-members-button')?.addEventListener('click', () => {
 		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')
 	})
+	document.getElementById('hub-member-backdrop')?.addEventListener('click', () => {
+		document.getElementById('hub-member-bar')?.classList.remove('hub-member-bar--open')
+	})
+	document.getElementById('hub-top-back-button')?.addEventListener('click', () => {
+		void import('../hubPane.mjs').then(({ showHubNavPane }) => showHubNavPane())
+	})
+	wireMobileHeaderOverflow()
+	wireComposerMoreMenu()
 	// 草稿自动保存接线
 	void import('../composerDraft.mjs').then(({ wireDraftAutoSave }) => {
 		wireDraftAutoSave(() => ({
@@ -139,4 +147,65 @@ export function wireBootstrap() {
 	})
 	// 离线队列接线
 	void import('../sendQueue.mjs').then(({ wireSendQueueDrain }) => { wireSendQueueDrain() })
+}
+
+/** 移动端顶栏 ⋯ 菜单与全宽搜索条。 @returns {void} */
+function wireMobileHeaderOverflow() {
+	/**
+	 * @param {string} overflowId overflow 菜单按钮 id
+	 * @param {string} desktopId 对应桌面按钮 id
+	 * @returns {void}
+	 */
+	const clickThrough = (overflowId, desktopId) => {
+		document.getElementById(overflowId)?.addEventListener('click', () => {
+			document.getElementById(desktopId)?.click()
+			document.activeElement instanceof HTMLElement && document.activeElement.blur()
+		})
+	}
+	clickThrough('hub-overflow-pins', 'hub-pins-button')
+	clickThrough('hub-overflow-bookmarks', 'hub-bookmarks-button')
+	clickThrough('hub-overflow-files', 'hub-header-files-button')
+	clickThrough('hub-overflow-settings', 'hub-header-settings-button')
+
+	const mobileBar = document.getElementById('hub-mobile-search-bar')
+	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-mobile-search-input')
+	const desktopInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-header-search')
+	const mobileScope = /** @type {HTMLSelectElement | null} */ document.getElementById('hub-mobile-search-scope')
+	const desktopScope = /** @type {HTMLSelectElement | null} */ document.getElementById('hub-search-scope')
+
+	document.getElementById('hub-overflow-search')?.addEventListener('click', () => {
+		const moreBtn = document.getElementById('hub-header-more-button')
+		if (moreBtn instanceof HTMLElement) moreBtn.blur()
+		mobileBar?.classList.add('hub-mobile-search-bar--open')
+		if (mobileInput && desktopInput) mobileInput.value = desktopInput.value
+		if (mobileScope && desktopScope) mobileScope.value = desktopScope.value
+		mobileInput?.focus()
+	})
+	document.getElementById('hub-mobile-search-close')?.addEventListener('click', () => {
+		mobileBar?.classList.remove('hub-mobile-search-bar--open')
+	})
+	mobileInput?.addEventListener('input', () => {
+		if (!desktopInput) return
+		desktopInput.value = mobileInput.value
+		desktopInput.dispatchEvent(new Event('input', { bubbles: true }))
+	})
+	mobileScope?.addEventListener('change', () => {
+		if (desktopScope) desktopScope.value = mobileScope.value
+	})
+}
+
+/** 移动端 composer「+」菜单：转发到桌面工具按钮。 @returns {void} */
+function wireComposerMoreMenu() {
+	const map = [
+		['hub-composer-more-voice', 'hub-voice-button'],
+		['hub-composer-more-photo', 'hub-photo-button'],
+		['hub-composer-more-upload', 'hub-upload-button'],
+		['hub-composer-more-vote', 'hub-vote-button'],
+		['hub-composer-more-sticker', 'hub-sticker-button'],
+	]
+	for (const [moreId, desktopId] of map)
+		document.getElementById(moreId)?.addEventListener('click', () => {
+			document.getElementById(desktopId)?.click()
+			document.activeElement instanceof HTMLElement && document.activeElement.blur()
+		})
 }

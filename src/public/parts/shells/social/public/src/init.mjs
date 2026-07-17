@@ -109,6 +109,12 @@ export async function bootstrapSocialApp() {
 		document.getElementById('composeNavButton')?.addEventListener('click', () => {
 			void focusComposer({ switchToFeed: true })
 		})
+		document.getElementById('composeFab')?.addEventListener('click', () => {
+			void focusComposer({ switchToFeed: true })
+		})
+		document.getElementById('feedSearchOpenButton')?.addEventListener('click', () => {
+			void switchView('search')
+		})
 		const postText = document.getElementById('postText')
 		wireEmojiPickerButton(document.getElementById('emojiPickButton'), token => {
 			if (!(postText instanceof HTMLTextAreaElement)) return

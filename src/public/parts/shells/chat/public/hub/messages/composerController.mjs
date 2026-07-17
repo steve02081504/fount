@@ -3,22 +3,37 @@
  */
 import { hubStore } from '../core/state.mjs'
 
+const COMPOSER_TOOL_IDS = [
+	'hub-emoji-button',
+	'hub-upload-button',
+	'hub-voice-button',
+	'hub-photo-button',
+	'hub-sticker-button',
+	'hub-vote-button',
+	'hub-send-button',
+	'hub-composer-more-button',
+]
+
 /** @returns {void} */
 export function refreshHubHeaderButtons() {
 	const hasConversation = !!(hubStore.context.currentGroupId && hubStore.context.currentChannelId)
 	document.body.dataset.hubSurface = hasConversation ? 'conversation' : hubStore.context.currentMode
 
+	const filesVisible = hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember
+	const settingsVisible = hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId
+
 	const filesButton = document.getElementById('hub-header-files-button')
 	if (filesButton)
-		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember)
-			filesButton.removeAttribute('hidden')
+		if (filesVisible) filesButton.removeAttribute('hidden')
 		else filesButton.setAttribute('hidden', '')
 
 	const settingsButton = document.getElementById('hub-header-settings-button')
 	if (settingsButton)
-		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId)
-			settingsButton.removeAttribute('hidden')
+		if (settingsVisible) settingsButton.removeAttribute('hidden')
 		else settingsButton.setAttribute('hidden', '')
+
+	document.getElementById('hub-overflow-files')?.toggleAttribute('hidden', !filesVisible)
+	document.getElementById('hub-overflow-settings')?.toggleAttribute('hidden', !settingsVisible)
 
 	const callButton = document.getElementById('hub-header-call-button')
 	if (callButton) {
@@ -44,7 +59,7 @@ export function enableComposer() {
 	input.dataset.channel = channelName
 	input.removeAttribute('data-i18n')
 	input.setAttribute('data-i18n', 'chat.hub.composer')
-	for (const id of ['hub-emoji-button', 'hub-upload-button', 'hub-voice-button', 'hub-photo-button', 'hub-sticker-button', 'hub-vote-button', 'hub-send-button']) {
+	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
 		if (el) el.disabled = false
 	}
@@ -60,7 +75,7 @@ export function disableComposer(i18nKey = 'chat.hub.composerDisabled') {
 	input.disabled = true
 	input.dataset.i18n = i18nKey
 	delete input.dataset.channel
-	for (const id of ['hub-emoji-button', 'hub-upload-button', 'hub-voice-button', 'hub-photo-button', 'hub-sticker-button', 'hub-vote-button', 'hub-send-button']) {
+	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
 		if (el) el.disabled = true
 	}

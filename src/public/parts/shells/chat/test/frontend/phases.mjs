@@ -11,7 +11,14 @@ export const phases = [
 	{ name: 'deeplink', testMatch: ['deepLink.spec.mjs'] },
 	{
 		name: 'hub-ui',
-		testMatch: ['composer.spec.mjs', 'navigation.spec.mjs', 'messageActions.spec.mjs', 'unread.spec.mjs', 'inbox.spec.mjs'],
+		testMatch: [
+			'composer.spec.mjs',
+			'navigation.spec.mjs',
+			'messageActions.spec.mjs',
+			'unread.spec.mjs',
+			'inbox.spec.mjs',
+			'mobilePane.spec.mjs',
+		],
 	},
 	{ name: 'hub', testMatch: ['hubE2E.spec.mjs'] },
 	{ name: 'secondary', testMatch: ['secondaryPages.spec.mjs'] },

@@ -2219,6 +2219,18 @@
 			"membersTitle": {
 				"title": "成员"
 			},
+			"backToNav": {
+				"title": "返回列表",
+				"aria-label": "返回列表"
+			},
+			"moreActions": {
+				"title": "更多",
+				"aria-label": "更多操作"
+			},
+			"composerMore": {
+				"title": "更多附件",
+				"aria-label": "更多附件"
+			},
 			"settingsTitle": {
 				"title": "设置"
 			},
@@ -4926,6 +4938,14 @@
 	"cabinet": {
 		"title": "文件柜",
 		"description": "P2P 个人与共享文件柜",
+		"openCabinets": {
+			"title": "打开文件柜列表",
+			"aria-label": "打开文件柜列表"
+		},
+		"closeCabinets": {
+			"title": "关闭",
+			"aria-label": "关闭"
+		},
 		"bootstrapFailed": "文件柜初始化失败：${error}",
 		"home_function_buttons": {
 			"main": {

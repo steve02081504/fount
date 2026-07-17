@@ -49,6 +49,8 @@ export async function setMode(mode) {
 	hubStore.context.currentMode = mode
 	document.body.dataset.hubSurface = mode
 	setActiveModeTab(mode)
+	const { showHubNavPane } = await import('./hubPane.mjs')
+	showHubNavPane()
 
 	if (mode === 'inbox') {
 		const { activateInboxView } = await import('./inboxView.mjs')

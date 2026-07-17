@@ -93,6 +93,8 @@ async function navigateHubFromLocation() {
 export async function initCore() {
 	usingTemplates('/parts/shells:chat/src/templates')
 	await initTranslations('chat')
+	const { setHubPane } = await import('./hubPane.mjs')
+	setHubPane('nav')
 	await loadViewerIdentity()
 	await loadAliases().catch(() => {})
 	try {

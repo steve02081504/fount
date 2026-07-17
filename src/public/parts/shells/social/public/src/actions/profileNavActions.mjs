@@ -169,6 +169,12 @@ export async function handleProfileNavClick(target) {
 			panel.classList.toggle('hidden', panel.dataset.profilePanel !== tab)
 	}
 
+	const tasteNav = target.closest('[data-view="taste"]')
+	if (tasteNav instanceof HTMLElement && !tasteNav.classList.contains('nav-btn')) {
+		const { switchView } = await import('../navigation.mjs')
+		await switchView('taste')
+	}
+
 	const albumChip = target.closest('[data-album-open][data-album-id]')
 	if (albumChip instanceof HTMLElement && albumChip.dataset.albumOpen && albumChip.dataset.albumId) {
 		const { openAlbumDetail } = await import('../views/albums.mjs')

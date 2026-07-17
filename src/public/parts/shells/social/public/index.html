@@ -166,6 +166,9 @@
 						<button type="button" class="btn btn-ghost btn-xs active" data-feed-ranking="latest" data-i18n="social.feed.tabLatest"></button>
 						<button type="button" class="btn btn-ghost btn-xs" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
 					</div>
+					<button type="button" id="feedSearchOpenButton" class="view-header-btn btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search">
+						<span class="s-ic s-ic-search" aria-hidden="true"></span>
+					</button>
 					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-tip="">
 						<span class="s-ic s-ic-refresh" aria-hidden="true"></span>
 					</button>
@@ -337,6 +340,10 @@
 				<span class="s-ic s-ic-live" aria-hidden="true"></span>
 			</button>
 		</nav>
+
+		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.publish">
+			<span class="s-ic s-ic-compose" aria-hidden="true"></span>
+		</button>
 
 		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
 			<div class="save-modal-card card bg-base-200 shadow-xl">

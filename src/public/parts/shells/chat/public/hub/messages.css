@@ -39,6 +39,20 @@
 	gap: 8px;
 }
 
+@media (max-width: 768px) {
+	.hub-system-message {
+		padding-left: 16px;
+	}
+
+	.hub-char-timeline-arrow.left {
+		left: 4px;
+	}
+
+	.hub-char-timeline-arrow.right {
+		right: 4px;
+	}
+}
+
 /* 投票块 */
 .hub-vote-block {
 	margin-top: 4px;

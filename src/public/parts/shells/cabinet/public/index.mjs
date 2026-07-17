@@ -144,6 +144,8 @@ function renderCabinetList() {
 		a.addEventListener('click', event => {
 			event.preventDefault()
 			navStack.length = 0
+			const toggle = document.getElementById('cabinet-drawer-toggle')
+			if (toggle instanceof HTMLInputElement) toggle.checked = false
 			void openCabinet(cabinet.cabinet_id)
 		})
 		a.addEventListener('contextmenu', event => {
@@ -1024,13 +1026,15 @@ async function runCommand(command) {
  */
 function wireToolbar() {
 	/* eslint-disable jsdoc/require-jsdoc -- DOM onclick/onchange wiring */
-	document.getElementById('btnNewCabinet').onclick = async () => {
+	const createCabinet = async () => {
 		const name = await promptI18n('cabinet.newCabinetPrompt')
 		if (!name) return
 		const visibility = await promptI18n('cabinet.visibilityPrompt', 'private') || 'private'
 		await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 	}
+	document.getElementById('btnNewCabinet').onclick = createCabinet
+	document.getElementById('btnNewCabinetDesktop').onclick = createCabinet
 	document.getElementById('fileInput').onchange = async event => {
 		if (event.target.files?.length) await uploadFiles(event.target.files)
 		event.target.value = ''

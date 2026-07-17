@@ -6,7 +6,7 @@
 	position: absolute;
 	bottom: 56px;
 	right: 0;
-	width: 320px;
+	width: min(320px, calc(100vw - 16px));
 	max-height: 360px;
 	background: var(--hub-bg-channel);
 	border: 1px solid var(--hub-border);
@@ -98,7 +98,7 @@
 	position: absolute;
 	bottom: 56px;
 	right: 0;
-	width: 360px;
+	width: min(360px, calc(100vw - 16px));
 	max-height: 400px;
 	background: var(--hub-bg-channel);
 	border: 1px solid var(--hub-border);
@@ -147,6 +147,43 @@
 }
 
 /* === 移动端适配 === */
+.hub-member-backdrop {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 44;
+	background: rgb(0 0 0 / 45%);
+	border: 0;
+	padding: 0;
+	cursor: pointer;
+}
+
+.hub-top-back {
+	display: none;
+	width: 32px;
+	height: 32px;
+	border-radius: 4px;
+	align-items: center;
+	justify-content: center;
+	color: var(--hub-text-muted);
+	cursor: pointer;
+	flex-shrink: 0;
+	background: transparent;
+	border: 0;
+	padding: 0;
+}
+
+.hub-top-back:hover {
+	background: var(--hub-hover);
+	color: var(--hub-text-bright);
+}
+
+.hub-header-overflow,
+.hub-composer-more,
+.hub-mobile-search-bar {
+	display: none;
+}
+
 @media (max-width: 1024px) {
 	.hub-member-bar:not(.hub-member-bar--open) {
 		display: none;
@@ -163,43 +200,106 @@
 		width: min(280px, 85vw);
 		box-shadow: -4px 0 24px var(--hub-shadow-strong);
 	}
+
+	body:has(.hub-member-bar--open) .hub-member-backdrop {
+		display: block;
+	}
 }
 
 @media (max-width: 768px) {
-	.hub-channel-bar {
-		width: 210px;
+	body[data-hub-pane="nav"] .hub-main,
+	body[data-hub-pane="nav"] .hub-member-bar {
+		display: none !important;
 	}
 
-	.hub-server-bar {
-		width: 60px;
+	body[data-hub-pane="nav"] .hub-channel-bar {
+		flex: 1 1 auto;
+		width: auto !important;
+		min-width: 0;
 	}
-}
 
-@media (max-width: 600px) {
-	.hub-channel-bar {
-		width: 190px;
+	body[data-hub-pane="main"] .hub-server-bar,
+	body[data-hub-pane="main"] .hub-channel-bar {
+		display: none !important;
+	}
+
+	body[data-hub-pane="main"] .hub-main {
+		flex: 1 1 auto;
+		width: 100%;
+		min-width: 0;
+	}
+
+	/* Inbox / 发现：主区全宽，隐藏频道栏（surface 规则已有），保持可见主内容 */
+	body[data-hub-surface="inbox"] .hub-main,
+	body[data-hub-surface="discovery"] .hub-main {
+		display: flex !important;
+		flex: 1 1 auto;
+		width: 100%;
+		min-width: 0;
+	}
+
+	body[data-hub-surface="inbox"] .hub-channel-bar,
+	body[data-hub-surface="discovery"] .hub-channel-bar {
+		display: none !important;
 	}
 
 	.hub-server-bar {
 		width: 52px;
 	}
-}
 
-/* 顶部条小按钮 */
-.hub-top-back {
-	width: 32px;
-	height: 32px;
-	border-radius: 4px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	color: var(--hub-text-muted);
-	cursor: pointer;
-}
+	.hub-top-back {
+		display: inline-flex;
+	}
 
-.hub-top-back:hover {
-	background: var(--hub-hover);
-	color: var(--hub-text-bright);
+	.hub-header-overflow {
+		display: inline-flex;
+	}
+
+	.hub-header-desktop-only:is(button, .hub-search-wrap),
+	.hub-header-desktop-only > .hub-header-pop-button,
+	.hub-header-desktop-only > .hub-icon-button {
+		display: none !important;
+	}
+
+	.hub-header-pop.hub-header-desktop-only {
+		position: static;
+		width: 0;
+		height: 0;
+		margin: 0;
+		padding: 0;
+		overflow: visible;
+		border: 0;
+	}
+
+	.hub-composer-more {
+		display: inline-flex;
+	}
+
+	.hub-composer-desktop-tool {
+		display: none !important;
+	}
+
+	.hub-thread-drawer-wrap {
+		position: absolute;
+		inset: 0;
+		width: auto !important;
+		max-width: none !important;
+		z-index: 30;
+		border-left: 0;
+		box-shadow: none;
+	}
+
+	.hub-mobile-search-bar.hub-mobile-search-bar--open {
+		display: flex;
+		position: absolute;
+		inset: 0;
+		z-index: 20;
+		align-items: center;
+		gap: 8px;
+		padding: 0 12px;
+		background: var(--hub-bg-main);
+		border-bottom: 1px solid var(--hub-border);
+	}
 }
 
 /* === 服务器栏顶部模式切换 === */

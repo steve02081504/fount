@@ -89,3 +89,14 @@
 	border-top: 1px solid oklch(var(--bc) / 0.12);
 	margin: 0.25rem 0;
 }
+
+.cabinet-status-bar {
+	padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
+}
+
+@media (max-width: 480px) {
+	.cabinet-breadcrumb button,
+	.cabinet-breadcrumb .breadcrumb-current {
+		max-width: 8rem;
+	}
+}

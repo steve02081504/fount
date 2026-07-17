@@ -227,6 +227,16 @@
 					]
 				},
 				{
+					"name": "mobilePane",
+					"triggers": [
+						"src/public/parts/shells/chat/test/frontend/mobilePane.spec.mjs",
+						"src/public/parts/shells/chat/public/hub/hubPane.mjs",
+						"src/public/parts/shells/chat/public/hub/widgets.css",
+						"src/public/parts/shells/chat/public/hub/index.html",
+						"src/public/parts/shells/chat/public/hub/wiring/bootstrap.mjs"
+					]
+				},
+				{
 					"name": "messageActions",
 					"triggers": [
 						"src/public/parts/shells/chat/test/frontend/messageActions.spec.mjs",
