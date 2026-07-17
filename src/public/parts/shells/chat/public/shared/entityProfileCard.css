@@ -88,6 +88,18 @@
 	background-size: 67px 59px, 83px 71px, 47px 43px, auto;
 }
 
+.hub-profile-popup-banner.hub-profile-popup-banner--image,
+.hub-profile-popup[data-profile-pattern] .hub-profile-popup-banner.hub-profile-popup-banner--image {
+	background-image: none;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.hub-profile-popup-banner.hub-profile-popup-banner--image .entity-profile-card-orb {
+	display: none;
+}
+
 .entity-profile-card-orb {
 	position: absolute;
 	border-radius: 50%;

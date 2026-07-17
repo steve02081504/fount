@@ -10,7 +10,7 @@ import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, isEntityHash128 } from './entityHash.mjs'
-import { customProfileAvatar, entityProfilePattern } from './hashAvatar.mjs'
+import { customProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
 
 /**
  * 清扫远端资料链接，只允许浏览器安全的网页协议。
@@ -56,6 +56,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 		name: profile?.name || (key ? entityHashLabel(key) : '?'),
 		handle: profile?.handle || null,
 		themeColor: profile?.themeColor || '',
+		banner: String(profile?.banner || '').trim(),
 		description: profile?.description || '',
 		description_markdown: profile?.description_markdown || '',
 		tags: Array.isArray(profile?.tags) ? profile.tags : [],
@@ -90,7 +91,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
  * 使用共享人物卡结构绘制资料；可用于真实资料和编辑中的临时资料。
  * @param {HTMLElement} root 人物卡根节点
  * @param {object} profile API 或编辑态资料
- * @param {{ entityHash?: string, avatarOverride?: string, nameOverride?: string }} [options] 绘制选项
+ * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string }} [options] 绘制选项
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileCard(root, profile, options = {}) {
@@ -100,6 +101,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	if (!normalized) return
 	const name = options.nameOverride || normalized.name
 	const avatar = options.avatarOverride === undefined ? normalized.avatar : options.avatarOverride
+	const banner = options.bannerOverride === undefined ? normalized.banner : options.bannerOverride
 	root.dataset.entityHash = entityHash
 	const pattern = entityProfilePattern(entityHash || name)
 	root.dataset.profilePattern = pattern.variant
@@ -108,6 +110,22 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	root.style.setProperty('--entity-card-pattern-size', `${pattern.size}px`)
 	root.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
 	root.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
+
+	const bannerElement = root.querySelector('.hub-profile-popup-banner')
+	if (bannerElement instanceof HTMLElement) {
+		const bannerUrl = isAvatarImageUrl(banner) ? String(banner).trim() : ''
+		bannerElement.classList.toggle('hub-profile-popup-banner--image', !!bannerUrl)
+		if (bannerUrl) {
+			bannerElement.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 18%), rgb(0 0 0 / 28%)), url(${JSON.stringify(bannerUrl)})`
+			bannerElement.style.backgroundSize = 'cover, cover'
+			bannerElement.style.backgroundPosition = 'center, center'
+		}
+		else {
+			bannerElement.style.removeProperty('background-image')
+			bannerElement.style.removeProperty('background-size')
+			bannerElement.style.removeProperty('background-position')
+		}
+	}
 
 	const nameElement = root.querySelector('[data-entity-profile-name]')
 	if (nameElement) nameElement.textContent = name
@@ -149,7 +167,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 		tagsHost.replaceChildren(...normalized.tags.filter(Boolean).map(tag => {
 			const chip = document.createElement('span')
 			chip.className = 'hub-profile-tag'
-			chip.textContent = `#${tag}`
+			chip.textContent = `#${String(tag).replace(/^#+/, '')}`
 			return chip
 		}))
 		tagsHost.hidden = !tagsHost.childElementCount

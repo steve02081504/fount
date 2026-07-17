@@ -6,7 +6,7 @@ import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStrea
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
 import { entityFileUrl } from './filesUrl.mjs'
-import { uploadAvatar } from './profile.mjs'
+import { uploadAvatar, uploadBanner } from './profile.mjs'
 
 const CHAT_PREFIX = '/api/parts/shells:chat'
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024
@@ -136,5 +136,30 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 			file.mimetype || 'image/png',
 		)
 		res.status(200).json({ avatarUrl })
+	})
+
+	router.post(`${CHAT_PREFIX}/entities/:entityHash/files/profile/banner`, authenticate, async (req, res) => {
+		const entityHash = String(req.params.entityHash || '').toLowerCase()
+		const { username } = getUserByReq(req)
+		if (!isEntityHash128(entityHash))
+			return res.status(400).json({ error: 'invalid entityHash' })
+		if (!await canWriteManifestPath(username, entityHash, 'profile/banner'))
+			return res.status(403).json({ error: 'Permission denied' })
+
+		const file = pickUploadedFile(req, 'banner') || pickUploadedFile(req, 'file')
+		if (!file) return res.status(400).json({ error: 'No file uploaded' })
+		if (!await isAllowedImageUpload(file))
+			return res.status(400).json({ error: 'Only image files are allowed' })
+		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
+			return res.status(413).json({ error: 'file too large' })
+
+		const bannerUrl = await uploadBanner(
+			username,
+			entityHash,
+			file.buffer,
+			file.originalname || 'banner',
+			file.mimetype || 'image/png',
+		)
+		res.status(200).json({ bannerUrl })
 	})
 }

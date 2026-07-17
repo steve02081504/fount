@@ -17,3 +17,12 @@ export function entityFileUrl(entityHash, logicalPath) {
 export function profileAvatarFileUrl(entityHash) {
 	return entityFileUrl(entityHash, 'profile/avatar')
 }
+
+/**
+ * profile 横幅 EVFS 路径 URL。
+ * @param {string} entityHash 128 位十六进制
+ * @returns {string} profile 横幅 HTTP 地址
+ */
+export function profileBannerFileUrl(entityHash) {
+	return entityFileUrl(entityHash, 'profile/banner')
+}

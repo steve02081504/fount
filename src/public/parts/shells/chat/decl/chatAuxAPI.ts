@@ -89,6 +89,12 @@ export interface UserProfile {
 	entityHash: string
 	nodeHash: string
 	subjectHash: string
+	/** 可选网络搜索 handle */
+	handle?: string
+	/** 资料卡横幅主题色 `#rrggbb` */
+	themeColor?: string
+	/** 自定义横幅图 URL；空串回退主题色纹理 */
+	banner?: string
 	/** 多语言展示字段，键为 locale（如 `zh-CN`） */
 	localized: Record<string, ProfileLocaleSlice>
 	status: UserStatus

@@ -28,24 +28,32 @@
 					</div>
 				</div>
 				<div class="form-control hub-profile-edit-field">
+					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.bannerLabel"></span></label>
+					<div class="hub-profile-edit-banner-row">
+						<input type="file" id="hub-profile-edit-banner-upload" accept="image/*" class="file-input file-input-bordered file-input-sm flex-1" />
+						<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-banner-clear" data-i18n="chat.hub.profileEdit.bannerClear"></button>
+					</div>
+					<span class="label-text-alt opacity-50" data-i18n="chat.hub.profileEdit.bannerHint"></span>
+				</div>
+				</div>
+				<div class="hub-profile-edit-field-grid">
+				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="profile.themeColorLabel"></span></label>
 					<div class="hub-profile-edit-color-row">
 						<input type="color" id="hub-profile-edit-theme-color" class="hub-profile-edit-color-input" value="#5865f2" />
 						<span class="text-xs opacity-60" data-i18n="chat.hub.profileEdit.themeColorHint"></span>
 					</div>
 				</div>
-				</div>
-				<div class="hub-profile-edit-field-grid">
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.handleLabel"></span></label>
 					<input type="text" id="hub-profile-edit-handle" class="input input-bordered input-sm font-mono" maxlength="32" autocomplete="off" data-i18n="chat.hub.profileEdit.handlePlaceholder" />
 					<span class="label-text-alt opacity-50" data-i18n="chat.hub.profileEdit.handleHint"></span>
 				</div>
+				</div>
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="profile.name"></span></label>
 					<input type="text" id="hub-profile-edit-name" class="input input-bordered input-sm" />
 					<span class="label-text-alt opacity-50" data-profile-default-name></span>
-				</div>
 				</div>
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="profile.descriptionLabel"></span></label>
@@ -53,11 +61,16 @@
 				</div>
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.tagsLabel"></span></label>
-					<input type="text" id="hub-profile-edit-tags" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.tagsPlaceholder" />
+					<div id="hub-profile-edit-tags" class="hub-profile-edit-tags" data-profile-tags-editor></div>
+					<div class="hub-profile-edit-tags-add">
+						<input type="text" id="hub-profile-edit-tag-input" class="input input-bordered input-sm" data-i18n="chat.hub.profileEdit.tagPlaceholder" />
+						<button type="button" class="btn btn-ghost btn-sm" id="hub-profile-edit-tag-add" data-i18n="chat.hub.profileEdit.tagAdd"></button>
+					</div>
 				</div>
 				<div class="form-control hub-profile-edit-field">
 					<label class="label py-1"><span class="label-text" data-i18n="chat.hub.profileEdit.linksLabel"></span></label>
-					<textarea id="hub-profile-edit-links" class="textarea textarea-bordered textarea-sm font-mono text-xs" rows="3" data-i18n="chat.hub.profileEdit.linksPlaceholder"></textarea>
+					<div id="hub-profile-edit-links" class="hub-profile-edit-links" data-profile-links-editor></div>
+					<button type="button" class="btn btn-ghost btn-sm mt-2" id="hub-profile-edit-link-add" data-i18n="chat.hub.profileEdit.linkAdd"></button>
 				</div>
 				<div class="hub-profile-edit-field-grid">
 					<div class="form-control hub-profile-edit-field">

@@ -28,7 +28,7 @@ export function normalizeLocalizedMap(localizedInput) {
 		const localeKey = String(key || '').trim()
 		if (!localeKey || !value) continue
 		const tags = Array.isArray(value.tags)
-			? value.tags.map(t => String(t).trim()).filter(Boolean)
+			? value.tags.map(t => String(t).trim().replace(/^#+/, '')).filter(Boolean)
 			: undefined
 		const links = Array.isArray(value.links)
 			? value.links.map(normalizeLink).filter(Boolean)
@@ -43,8 +43,9 @@ export function normalizeLocalizedMap(localizedInput) {
 		if (value.author) slice.author = String(value.author).trim()
 		if (value.home_page) slice.home_page = String(value.home_page).trim()
 		if (value.issue_page) slice.issue_page = String(value.issue_page).trim()
-		if (tags?.length) slice.tags = tags
-		if (links?.length) slice.links = links
+		// 空数组也写入：用户显式清空后不应回退到 part 默认 tags/links
+		if (tags !== undefined) slice.tags = tags
+		if (links !== undefined) slice.links = links
 		if (Object.keys(slice).length) out[localeKey] = slice
 	}
 	return out
@@ -102,8 +103,8 @@ export function resolveProfilePresentation(stored, locales, infoDefaults) {
 		? String(slice.description_markdown)
 		: slice.description != null ? String(slice.description) : infoDefaults.description_markdown
 
-	const tags = slice.tags?.length ? slice.tags : infoDefaults.tags
-	const links = slice.links?.length ? slice.links : infoDefaults.links
+	const tags = Array.isArray(slice.tags) ? slice.tags : (infoDefaults.tags || [])
+	const links = Array.isArray(slice.links) ? slice.links : (infoDefaults.links || [])
 
 	let avatar = slice.avatar?.trim() || infoDefaults.avatar
 	if (avatar && !avatar.startsWith('http') && isEntityHash128(stored?.entityHash))

@@ -32,6 +32,7 @@ export function cachedProfileFromApi(profile, entityHash) {
 		name: profile.name || key.slice(64, 72),
 		handle: profile.handle || null,
 		themeColor: profile.themeColor || '',
+		banner: profile.banner || '',
 		description: profile.description || '',
 		description_markdown: profile.description_markdown || '',
 		tags: Array.isArray(profile.tags) ? profile.tags : [],

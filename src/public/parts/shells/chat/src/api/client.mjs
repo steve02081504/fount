@@ -397,15 +397,17 @@ export function createChatClient(apiContext) {
 				},
 			}
 		},
-		/**
-		 * @param {{ name?: string, avatar?: { buffer: Buffer, filename: string, mimeType?: string }, [key: string]: unknown }} updates 资料补丁
+/**
+		 * @param {{ name?: string, avatar?: { buffer: Buffer, filename: string, mimeType?: string }, banner?: { buffer: Buffer, filename: string, mimeType?: string }, [key: string]: unknown }} updates 资料补丁
 		 * @returns {Promise<object>} 更新后的 profile
 		 */
 		async updateProfile(updates = {}) {
-			const { updateProfile, uploadAvatar } = await import('../entity/profile.mjs')
-			const { avatar, ...fields } = updates
+			const { updateProfile, uploadAvatar, uploadBanner } = await import('../entity/profile.mjs')
+			const { avatar, banner, ...fields } = updates
 			if (avatar?.buffer)
 				await uploadAvatar(apiContext.username, apiContext.entityHash, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
+			if (banner?.buffer)
+				await uploadBanner(apiContext.username, apiContext.entityHash, banner.buffer, banner.filename || 'banner.png', banner.mimeType)
 			return updateProfile(apiContext.username, apiContext.entityHash, fields)
 		},
 		/**

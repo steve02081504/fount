@@ -5,7 +5,7 @@ import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_man
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
-import { profileAvatarFileUrl } from './filesUrl.mjs'
+import { profileAvatarFileUrl, profileBannerFileUrl } from './filesUrl.mjs'
 import {
 	applyAvatarToAllLocales,
 	normalizeLocalizedMap,
@@ -52,6 +52,7 @@ function getDefaultProfile(entityHash, parsed) {
 		ownerEntityHash: null,
 		handle: '',
 		themeColor: '',
+		banner: '',
 		activePubKeyHex: '',
 		keyGeneration: 0,
 		localized: {},
@@ -80,6 +81,7 @@ function toStoredProfile(profileData) {
 	catch { handle = '' }
 	const themeRaw = String(profileData.themeColor ?? '').trim()
 	const themeColor = THEME_COLOR_RE.test(themeRaw) ? themeRaw.toLowerCase() : ''
+	const banner = String(profileData.banner ?? '').trim()
 	const activePub = String(profileData.activePubKeyHex || '').trim().toLowerCase()
 	return {
 		entityHash: profileData.entityHash,
@@ -90,6 +92,7 @@ function toStoredProfile(profileData) {
 			: String(ownerRaw).trim().toLowerCase(),
 		handle,
 		themeColor,
+		banner,
 		activePubKeyHex: /^[\da-f]{64}$/i.test(activePub) ? activePub : '',
 		keyGeneration: Number(profileData.keyGeneration ?? 0) || 0,
 		localized: normalizeLocalizedMap(profileData.localized),
@@ -118,6 +121,7 @@ function toPublicProfilePayload(stored) {
 		ownerEntityHash: stored.ownerEntityHash,
 		handle: stored.handle || '',
 		themeColor: stored.themeColor || '',
+		banner: stored.banner || '',
 		activePubKeyHex: stored.activePubKeyHex || '',
 		keyGeneration: Number(stored.keyGeneration ?? 0) || 0,
 		localized: stored.localized,
@@ -360,6 +364,9 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 				? String(updates.themeColor).trim().toLowerCase()
 				: ''
 			: profile.themeColor || '',
+		banner: updates.banner !== undefined
+			? String(updates.banner || '').trim()
+			: profile.banner || '',
 		activePubKeyHex,
 		keyGeneration,
 		localized,
@@ -375,6 +382,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		|| updates.ownerEntityHash !== undefined
 		|| updates.handle !== undefined
 		|| updates.themeColor !== undefined
+		|| updates.banner !== undefined
 	if (staticTouched)
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => {})
 
@@ -419,6 +427,39 @@ export async function uploadAvatar(replicaUsername, entityHash, fileBuffer, file
 		localized: applyAvatarToAllLocales(profile.localized, avatarUrl),
 	}, { skipPresentation: true })
 	return avatarUrl
+}
+
+/**
+ * @param {string} replicaUsername 副本用户名 所有者
+ * @param {string} entityHash 128 位 entityHash
+ * @param {Buffer} fileBuffer 文件缓冲区
+ * @param {string} filename 文件名
+ * @param {string} [mimeType] MIME
+ * @returns {Promise<string>} 横幅 URL
+ */
+export async function uploadBanner(replicaUsername, entityHash, fileBuffer, filename, mimeType = 'image/png') {
+	if (!isWritableLocalEntity(entityHash))
+		throw new Error('entity not writable on this replica')
+
+	const { getEntityRecoverySecretKey, getRecoveryPubKeyHex } = await import('./identity.mjs')
+	const recoverySecretKeyHex = await getEntityRecoverySecretKey(replicaUsername, entityHash)
+	const recoveryPubKeyHex = await getRecoveryPubKeyHex(replicaUsername, entityHash)
+	if (!recoverySecretKeyHex || !recoveryPubKeyHex)
+		throw new Error('recovery key unavailable for public banner publish')
+
+	await publishPublicFile({
+		ownerEntityHash: entityHash,
+		logicalPath: 'profile/banner',
+		plaintext: fileBuffer,
+		name: filename || 'banner',
+		mimeType: mimeType || 'image/png',
+		entitySecretKey: Buffer.from(recoverySecretKeyHex, 'hex'),
+		entityPubKeyHex: recoveryPubKeyHex,
+	})
+
+	const bannerUrl = profileBannerFileUrl(entityHash)
+	await updateProfile(replicaUsername, entityHash, { banner: bannerUrl }, { skipPresentation: true })
+	return bannerUrl
 }
 
 /**

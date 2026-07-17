@@ -72,3 +72,22 @@ export async function uploadAvatar(entityHash, file) {
 	}
 	return response.json()
 }
+
+/**
+ * @param {string} entityHash 128 位 entityHash
+ * @param {File} file 横幅文件
+ * @returns {Promise<object>} 上传结果 JSON
+ */
+export async function uploadBanner(entityHash, file) {
+	const formData = new FormData()
+	formData.append('banner', file)
+	const response = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/profile/banner`, {
+		method: 'POST',
+		body: formData,
+	})
+	if (!response.ok) {
+		const data = await response.json().catch(() => ({}))
+		throw Object.assign(new Error(data.error || response.statusText), data, { response })
+	}
+	return response.json()
+}
