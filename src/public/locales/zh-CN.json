@@ -1,10 +1,4 @@
 {
-	"404": {
-		"title": "页面未找到",
-		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
-		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
-		"homepageButton": "返回首页"
-	},
 	"lang": "zh-CN",
 	"name": "简体中文",
 	"channels": {
@@ -3159,7 +3153,7 @@
 		},
 		"home_function_buttons": {
 			"chatHub": {
-				"title": "聊天 Hub"
+				"title": "聊天"
 			}
 		}
 	},
@@ -4841,6 +4835,12 @@
 			"showOriginal": "显示原文",
 			"showTranslation": "显示译文"
 		}
+	},
+	"404": {
+		"title": "页面未找到",
+		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页"
 	},
 	"cabinet": {
 		"title": "文件柜",
