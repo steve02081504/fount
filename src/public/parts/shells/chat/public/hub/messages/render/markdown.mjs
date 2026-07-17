@@ -232,7 +232,7 @@ export async function hydrateMessageMarkdown(container, onlyMessageId) {
 		const messageId = row.getAttribute('data-message-id')
 		if (!messageId) continue
 		if (row.hasAttribute('data-streaming')) continue
-		const bubble = row.querySelector('.hub-message-content, .chat-bubble.hub-message-content')
+		const bubble = row.querySelector('.hub-message-content')
 		if (!(bubble instanceof HTMLElement)) continue
 		const hasPending = pendingMarkdownByMessageId.has(messageId)
 			|| bubble.dataset.mdPending === '1'

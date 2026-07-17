@@ -92,30 +92,34 @@
 }
 
 /* =========================================================
-   悬停浮动操作栏
+   悬停浮动操作栏（sticky：长消息下滑时仍贴在滚动视口顶部）
    ========================================================= */
 .hub-message-hover-bar {
-	position: absolute;
-	top: 0;
-	right: 1.5rem;
-	transform: translateY(-50%);
+	position: sticky;
+	top: 0.35rem;
+	float: right;
 	z-index: 20;
+	height: 0;
+	overflow: visible;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
+	justify-content: flex-end;
 	gap: 1px;
-	background: var(--hub-bg-main);
-	border: 1px solid var(--hub-border-subtle);
-	border-radius: 8px;
-	box-shadow: 0 2px 8px var(--hub-shadow);
-	padding: 2px;
 	opacity: 0;
 	pointer-events: none;
 	transition: opacity 0.12s ease;
 }
 
+.hub-message-hover-bar > .hub-message-actions {
+	background: var(--hub-bg-main);
+	border: 1px solid var(--hub-border-subtle);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px var(--hub-shadow);
+	padding: 2px;
+}
+
 .chat-end .hub-message-hover-bar {
-	right: auto;
-	left: 1.5rem;
+	float: left;
 }
 
 .hub-message-row:hover .hub-message-hover-bar,

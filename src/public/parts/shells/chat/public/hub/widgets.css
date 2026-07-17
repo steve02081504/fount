@@ -1770,7 +1770,7 @@
 	transition: opacity 0.15s ease-in-out;
 }
 
-.hub-message:has(> .hub-message-edit-area) > .hub-message-content {
+.hub-message:has(.hub-message-edit-area) .hub-message-content {
 	display: none;
 }
 
