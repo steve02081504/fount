@@ -78,6 +78,7 @@ const NOISE_RULES = [
 	{ name: 'Error', pattern: /Error:/ },
 	{ name: 'WARN', pattern: /\bWARN\b/ },
 	{ name: 'rejection', pattern: /\brejection\b/i },
+	{ name: 'browser_network', pattern: /\[browser:network\]/ },
 ]
 
 const IMBALANCE_HIT = 'noise_allow_imbalance'
@@ -135,7 +136,7 @@ export function detectNoiseHits(text) {
 }
 
 /**
- * 输出是否含应展示的噪声（Error / WARN / rejection / 窗口不平衡）。
+ * 输出是否含应展示的噪声（Error / WARN / rejection / browser_network / 窗口不平衡）。
  * @param {string} text 子进程 stdall
  * @returns {boolean} 是否含噪声
  */

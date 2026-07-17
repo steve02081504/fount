@@ -43,15 +43,10 @@ export const test = baseTest.extend({
 	},
 })
 
-/** @type {string[]} 当前用例收集的浏览器 pageerror（afterEach 断言为空）。 */
-const collectedPageErrors = []
-
 baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
 	baseTest.setTimeout(ms('3m'))
-	collectedPageErrors.length = 0
-	page.on('pageerror', err => collectedPageErrors.push(String(err?.message || err)))
 	await page.addInitScript(() => {
 		if (!navigator.clipboard)
 			Object.defineProperty(navigator, 'clipboard', {
@@ -70,10 +65,6 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
 		expectedUsername: TEST_USERNAME,
 		shellLabel: 'Social',
 	})
-})
-
-baseTest.afterEach(async () => {
-	expect(collectedPageErrors, 'unexpected browser page errors').toEqual([])
 })
 
 /**

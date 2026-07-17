@@ -13,25 +13,16 @@ export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
  */
 export const { test, expect } = createFountFixtures({ locale: 'zh-CN' })
 
-/** @type {string[]} */
-const collectedPageErrors = []
-
-test.beforeEach(async ({ page, baseUrl, apiKey }) => {
+test.beforeEach(async ({ baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
 	test.setTimeout(ms('3m'))
-	collectedPageErrors.length = 0
-	page.on('pageerror', err => collectedPageErrors.push(String(err?.message || err)))
 	await assertIsolatedFrontendTest({
 		baseUrl,
 		apiKey,
 		expectedUsername: TEST_USERNAME,
 		shellLabel: 'Cabinet',
 	})
-})
-
-test.afterEach(async () => {
-	expect(collectedPageErrors, 'unexpected browser page errors').toEqual([])
 })
 
 /**

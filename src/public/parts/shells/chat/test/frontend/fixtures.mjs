@@ -14,26 +14,15 @@ export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
  */
 export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
 
-/** @type {string[]} 当前用例收集的浏览器 pageerror（afterEach 断言为空）。 */
-const collectedPageErrors = []
-
-baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
+baseTest.beforeEach(async ({ baseUrl, apiKey }) => {
 	if (!TEST_USERNAME)
 		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	collectedPageErrors.length = 0
-	page.on('pageerror', err => collectedPageErrors.push(String(err?.message || err)))
-	page.on('requestfailed', req => console.log('[browser:requestfailed]', req.url(), req.failure()?.errorText))
-	page.on('response', res => { if (res.status() >= 400) console.log('[browser:http]', res.status(), res.url()) })
 	await assertIsolatedFrontendTest({
 		baseUrl,
 		apiKey,
 		expectedUsername: TEST_USERNAME,
 		shellLabel: 'Chat',
 	})
-})
-
-baseTest.afterEach(async () => {
-	expect(collectedPageErrors, 'unexpected browser page errors').toEqual([])
 })
 
 /**

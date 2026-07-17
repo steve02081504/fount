@@ -207,6 +207,19 @@
 				"src/scripts/test/node/boot.mjs",
 				"src/scripts/test/node/launch.mjs"
 			]
+		},
+		{
+			"name": "browser_diagnostics",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/browser_diagnostics.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/browser_diagnostics.test.mjs",
+				"src/scripts/test/playwright/browser_diagnostics.mjs",
+				"src/scripts/test/playwright/fixtures.mjs",
+				"src/scripts/test/core/output_filter.mjs"
+			]
 		}
 	]
 }

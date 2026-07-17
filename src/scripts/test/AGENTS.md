@@ -53,6 +53,8 @@ Domain-specific traps (chat federation, P2P/WebRTC, etc.) belong in each part's 
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
 
+**Frontend browser diagnostics** (`playwright/browser_diagnostics.mjs`, wired in `createFountFixtures`): every page collects `response ≥ 400` and `requestfailed`, aggregates by `kind/method/status/url/error`, and flushes one `[browser:network] <JSON>` line per bucket after the test. Suite stays exit 0 if assertions pass, but `detectNoiseHits` treats `browser_network` as noise → state `noisy` → imperfect wave. Uncaught `pageerror` still hard-fails the Playwright case (`failed`). Do not re-attach these listeners in shell-local fixtures.
+
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (pulls in the P2P/native graph; Deno child-process exit can hang on Windows). When server access is required, use dynamic import or promote to an `integration/` suite.
 
 Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
