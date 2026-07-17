@@ -10,12 +10,13 @@ import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
-import { isTrustedAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
+import { isTrustedMarkdownAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
 import { createDocumentFragmentFromHtmlStringNoScriptActivation, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
+import { viewerEntityHash } from './apiClient.mjs'
 
 /**
  *
@@ -66,16 +67,17 @@ export function authorLabel(entityHash, profile) {
 }
 
 /**
- * 判断作者是否在用户可信作者列表中。
+ * 判断作者是否应对 Markdown 走可信 pipeline（本人或信任表）。
  * @param {string} pubKeyHash 作者 hash
- * @returns {Promise<boolean>} 是否为可信作者
+ * @returns {Promise<boolean>} 是否可信
  */
 export async function isTrusted(pubKeyHash) {
-	return isTrustedAuthor(pubKeyHash)
+	return isTrustedMarkdownAuthor(pubKeyHash, { selfEntityHash: viewerEntityHash() })
 }
 
 /**
  * 将 Markdown 源本机安全渲染为 HTML 字符串（不信任对端预渲染结果；可信作者才允许危险 HTML）。
+ * 本人帖始终可信，勿再只查信任表。
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
  * @returns {Promise<string>} HTML

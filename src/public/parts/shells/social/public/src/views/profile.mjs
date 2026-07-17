@@ -300,7 +300,10 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 		ownedHost.dataset.entityOwnedByHost = ''
 		card.querySelector('.hub-profile-popup-body')?.appendChild(ownedHost)
 	}
-	await paintEntityProfileCard(card, profile, { entityHash })
+	await paintEntityProfileCard(card, profile, {
+		entityHash,
+		selfEntityHash: viewerEntityHash(),
+	})
 	const ownerEntityHash = profile?.ownerEntityHash
 		? String(profile.ownerEntityHash).toLowerCase()
 		: null

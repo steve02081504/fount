@@ -37,6 +37,7 @@ async function paintSharedPopup(popup, entity) {
 	await paintEntityProfileCard(popup, profile || { name }, {
 		entityHash,
 		nameOverride: name,
+		selfEntityHash: entity.selfEntityHash,
 	})
 
 	let ownerName = null

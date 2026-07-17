@@ -20,6 +20,7 @@ import { geti18n } from '../../i18n/index.mjs'
 import { onThemeChange } from '../../theme/index.mjs'
 
 import { ensureMarkdownExtensionAssets } from './extensions.mjs'
+import { rehypeSanitizeUntrustedContent } from './sanitize.mjs'
 
 // --- 辅助函数 ---
 
@@ -200,17 +201,8 @@ function rehypeAddDaisyuiClass() {
 	}
 }
 
-/**
- * 渲染 Mermaid 图表为 SVG。
- * @returns {Function} - Unified.js 插件。
- */
-function rehypeMermaid() {
-	mermaid.initialize({
-		startOnLoad: false,
-		theme: 'base',
-		securityLevel: 'loose',
-		suppressErrorRendering: true,
-		themeCSS: /* css */ `
+/** Mermaid 主题 CSS（转换器自带；不可被图源 frontmatter 覆盖）。 */
+const MERMAID_THEME_CSS = /* css */ `
 .node rect, .node circle, .node polygon, .node ellipse, .node path,
 .cluster rect, .cluster polygon,
 .section0 rect, .section1 rect, .section2 rect, .section3 rect,
@@ -291,14 +283,40 @@ g.stateGroup .alt-composit, .statediagram-state rect.divider {
 .statediagram-cluster rect.outer { rx: 5px !important; ry: 5px !important; }
 g.classGroup .title { font-weight: bolder !important; }
 .classTitle { font-weight: bolder !important; }
-`,
-	})
+`
+
+/** 图源 frontmatter / init 不可覆盖的 mermaid 配置键。 */
+const MERMAID_SECURE_KEYS = [
+	'secure',
+	'securityLevel',
+	'startOnLoad',
+	'maxTextSize',
+	'theme',
+	'themeCSS',
+]
+
+/**
+ * 渲染 Mermaid 图表为 SVG。
+ * @param {object} [options] 选项
+ * @param {'strict' | 'loose' | 'antiscript' | 'sandbox'} [options.securityLevel='loose'] 信任级别
+ * @returns {Function} Unified.js 插件
+ */
+function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 	const container = document.getElementById('mermaid-render-container') || document.body.appendChild(Object.assign(document.createElement('div'), {
 		id: 'mermaid-render-container',
 		style: 'position: absolute; top: 0; left: 0;'
 	}))
 
 	return async (tree) => {
+		mermaid.initialize({
+			startOnLoad: false,
+			theme: 'base',
+			securityLevel,
+			suppressErrorRendering: true,
+			themeCSS: MERMAID_THEME_CSS,
+			secure: MERMAID_SECURE_KEYS,
+		})
+
 		/**
 		 * 待替换的 Mermaid 代码块节点列表。
 		 * @type {{ node: any, index: number, parent: any }[]}
@@ -1046,11 +1064,13 @@ function rehypeCacheWrite() {
 
 /**
  * 获取 Markdown 转换器。
+ * `allowDangerousHtml` 是唯一信任开关：false 时自动 early 净化 + Mermaid strict；
+ * true 时保留内联 HTML、Mermaid loose。调用方不必再拼 mermaid/sanitize 细节。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
- * @param {boolean} [options.allowDangerousHtml=true] - 是否保留 Markdown 内联 HTML（不可信作者应传 false）。
+ * @param {boolean} [options.allowDangerousHtml=true] - 是否信任内容（内联 HTML / 宽松 Mermaid）。
  * @param {Array<unknown>} [options.extraRemarkPlugins] - 插入 remarkRehype 之前的 remark 插件。
- * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件。
+ * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件（勿把净化挂这里）。
  * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
  */
 export async function GetMarkdownConvertor({
@@ -1060,6 +1080,8 @@ export async function GetMarkdownConvertor({
 	extraRehypePlugins = [],
 } = {}) {
 	const registered = await ensureMarkdownExtensionAssets()
+	const mermaidSecurityLevel = allowDangerousHtml ? 'loose' : 'strict'
+	const earlyRehypePlugins = allowDangerousHtml ? [] : [rehypeSanitizeUntrustedContent()]
 
 	if (!isStandalone) {
 		const { ensureEmbedHydrator } = await import('../embedCard.mjs')
@@ -1074,14 +1096,16 @@ export async function GetMarkdownConvertor({
 		.use(remarkGfm, { singleTilde: false })
 	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
 		processor = processor.use(plugin)
+	processor = processor.use(remarkRehype, { allowDangerousHtml })
+	for (const plugin of earlyRehypePlugins)
+		processor = processor.use(plugin)
 	processor = processor
-		.use(remarkRehype, { allowDangerousHtml })
 		.use(rehypeCacheRead)
 		.use(rehypeSpoiler)
 	if (!isStandalone)
 		processor = processor.use(rehypeFountEmbedLinks)
 	processor = processor
-		.use(rehypeMermaid)
+		.use(rehypeMermaid, { securityLevel: mermaidSecurityLevel })
 		.use(rehypePrettyCode, {
 			theme: {
 				dark: 'github-dark-dimmed',

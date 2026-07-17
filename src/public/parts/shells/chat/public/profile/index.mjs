@@ -153,7 +153,10 @@ async function loadProfile(entityHash) {
 async function renderProfile(profile) {
 	const entityHash = currentEntityHash || profile.entityHash || '?'
 	if (currentProfileCard)
-		await paintEntityProfileCard(currentProfileCard, profile, { entityHash })
+		await paintEntityProfileCard(currentProfileCard, profile, {
+			entityHash,
+			selfEntityHash: currentEntityHash,
+		})
 	document.documentElement.style.setProperty('--profile-accent', profile.themeColor || '#5865f2')
 
 	const displayStatus = profile.effectiveStatus || profile.status || 'offline'

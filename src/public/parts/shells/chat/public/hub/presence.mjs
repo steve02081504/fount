@@ -65,7 +65,10 @@ export function applyStatusDot(el, status) {
 export async function applyBioElement(bioElement, bio, entityHash = '') {
 	if (!bioElement) return
 	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
-	await paintEntityProfileBio(bioElement, bio, entityHash)
+	const { hubStore } = await import('./core/state.mjs')
+	await paintEntityProfileBio(bioElement, bio, entityHash, {
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+	})
 }
 
 /**

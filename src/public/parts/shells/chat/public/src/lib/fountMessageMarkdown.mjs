@@ -1,10 +1,9 @@
 /**
  * 共享 Markdown 处理器：按作者信任级别提供 unified pipeline（chat / social 共用）。
+ * 信任细节（净化 / Mermaid securityLevel）由 GetMarkdownConvertor(allowDangerousHtml) 内部决定。
  */
 import { GetMarkdownConvertor } from '/scripts/features/markdown/convertor.mjs'
 import { loadRegisteredMarkdownExtensions } from '/scripts/features/markdown/extensions.mjs'
-
-import { rehypeSanitizeUntrustedContent } from './fountMessageMarkdownPlugins.mjs'
 
 /** @type {Map<string, import('npm:unified').Processor>} */
 const processorCache = new Map()
@@ -23,7 +22,6 @@ export async function getFountMessageMarkdownConvertor(isTrustedAuthorContent, {
 	const processor = await GetMarkdownConvertor({
 		allowDangerousHtml: isTrustedAuthorContent,
 		extraRemarkPlugins,
-		extraRehypePlugins: isTrustedAuthorContent ? [] : [rehypeSanitizeUntrustedContent()],
 	})
 	processorCache.set(cacheKey, processor)
 	return processor

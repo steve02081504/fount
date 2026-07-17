@@ -29,7 +29,7 @@ alwaysApply: false
 ## Rendering & Content
 
 - **`lib/escapeHtml.mjs`**: must escape `& < > " '` (string replace). Do **not** use `textContent`/`innerHTML` round-trip — it leaves `"` unescaped and will break attribute values (`data-*="…"`).
-- **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki. Non-standalone pipeline tags bare `http(s)` links with `data-fount-embed` (a whole-line link = `card`, inline = `chip`; `[text](url)` is ignored).
+- **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki. Non-standalone pipeline tags bare `http(s)` links with `data-fount-embed` (a whole-line link = `card`, inline = `chip`; `[text](url)` is ignored). 信任开关只有 `GetMarkdownConvertor({ allowDangerousHtml })`：false → 自动 early 净化 + Mermaid `strict`；true → 保留内联 HTML + Mermaid `loose`。勿把净化挂到 `extraRehypePlugins`（会杀掉转换器自产的 `style`/`onclick`）。
 - **`embedCard.mjs`**: Fetches pages via `ALL /api/no-cors?url=` + `DOMParser` OG parsing, hydrated by `MutationObserver` on placeholder links; session-level LRU cache.
 - **`/api/no-cors`** (server): authenticated bidirectional streaming proxy. Forwards `Range` / conditional / `Content-Type` headers by name; upstream Cookie, Authorization, and custom headers injected via `No-Cors-*` prefix (e.g. `No-Cors-Authorization: Bearer …` → `Authorization`). Does not buffer the full body; `X-No-Cors-Final-Url` records the final URL after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry (remark/rehype plugins, CSS, init hooks).

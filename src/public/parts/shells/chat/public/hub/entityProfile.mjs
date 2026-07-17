@@ -55,7 +55,10 @@ export async function loadEntityProfile(entityHash, options = {}) {
 export async function paintEntityProfileUi(root, profile, extras = {}) {
 	if (!root || !profile) return
 	const avatarSeed = root.dataset?.entityHash || root.dataset?.entityProfileHash || profile.entityHash || profile.name
-	await paintEntityProfileCard(root, profile, { entityHash: avatarSeed })
+	await paintEntityProfileCard(root, profile, {
+		entityHash: avatarSeed,
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+	})
 
 	const ownerEntityHash = profile.ownerEntityHash || null
 	let ownerName = null
@@ -84,6 +87,7 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 export async function paintBioMarkdown(descriptionElement, bio, entityHash = '') {
 	await paintEntityProfileBio(descriptionElement, bio, entityHash, {
 		emptyI18n: 'chat.hub.charDescriptionEmpty',
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
 	})
 	if (descriptionElement instanceof HTMLElement && String(bio || '').trim())
 		descriptionElement.classList.add('hub-char-description-md')

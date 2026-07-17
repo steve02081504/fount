@@ -10,7 +10,7 @@ import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 import { processFountMessageMarkdown } from '../src/lib/fountMessageMarkdown.mjs'
-import { isTrustedAuthor } from '../src/trustedAuthors.mjs'
+import { isTrustedMarkdownAuthor } from '../src/trustedAuthors.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
@@ -131,7 +131,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
  * 使用共享人物卡结构绘制资料；可用于真实资料和编辑中的临时资料。
  * @param {HTMLElement} root 人物卡根节点
  * @param {object} profile API 或编辑态资料
- * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string }} [options] 绘制选项
+ * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string, selfEntityHash?: string | null }} [options] 绘制选项
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileCard(root, profile, options = {}) {
@@ -197,7 +197,9 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 
 	const bioElement = root.querySelector('[data-entity-profile-bio]')
 	if (bioElement instanceof HTMLElement)
-		await paintEntityProfileBio(bioElement, profileDescriptionText(normalized), entityHash)
+		await paintEntityProfileBio(bioElement, profileDescriptionText(normalized), entityHash, {
+			selfEntityHash: options.selfEntityHash,
+		})
 
 	const tagsHost = root.querySelector('[data-entity-profile-tags]')
 	if (tagsHost instanceof HTMLElement) {
@@ -244,7 +246,7 @@ export function profileDescriptionText(profile) {
  * @param {HTMLElement} bioElement 简介容器
  * @param {string} markdown markdown 源
  * @param {string} [entityHash] 作者 entityHash / pubKeyHash（决定信任）
- * @param {{ emptyI18n?: string }} [options] 空态 i18n
+ * @param {{ emptyI18n?: string, selfEntityHash?: string | null }} [options] 空态 i18n / 本人实体
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileBio(bioElement, markdown, entityHash = '', options = {}) {
@@ -259,7 +261,9 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 	}
 	delete bioElement.dataset.i18n
 	bioElement.classList.add('markdown-body')
-	const trusted = entityHash ? await isTrustedAuthor(entityHash) : false
+	const trusted = entityHash
+		? await isTrustedMarkdownAuthor(entityHash, { selfEntityHash: options.selfEntityHash })
+		: false
 	const html = await processFountMessageMarkdown(text, trusted)
 	bioElement.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }

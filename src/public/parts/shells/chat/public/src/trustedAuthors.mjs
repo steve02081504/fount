@@ -157,6 +157,19 @@ export async function isTrustedAuthor(pubKeyHash) {
 }
 
 /**
+ * Markdown 内容是否按可信 pipeline 渲染：本人实体始终可信，其余查信任表。
+ * @param {string} pubKeyHash 作者 entityHash / pubKeyHash
+ * @param {{ selfEntityHash?: string | null }} [options] 当前观看者（本人）
+ * @returns {Promise<boolean>} 是否走 allowDangerousHtml
+ */
+export async function isTrustedMarkdownAuthor(pubKeyHash, { selfEntityHash } = {}) {
+	const normalized = normalizePubKeyHash(pubKeyHash)
+	if (!normalized) return false
+	if (selfEntityHash && normalized === normalizePubKeyHash(selfEntityHash)) return true
+	return isTrustedAuthor(normalized)
+}
+
+/**
  * 将公钥哈希写入可信作者表。
  * @param {string} pubKeyHash 作者公钥哈希
  * @param {number} expiresAt 过期时间戳（ms）或 TRUST_EXPIRES_NEVER
