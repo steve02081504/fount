@@ -7,8 +7,15 @@
 	user-select: none;
 	min-height: 7rem;
 }
+#entryGrid .entry-card:hover {
+	background: oklch(var(--b2));
+}
 #entryGrid .entry-card.selected {
 	outline: 2px solid oklch(var(--p));
+}
+#entryGrid .entry-card:focus-visible {
+	outline: 2px solid oklch(var(--p));
+	outline-offset: 2px;
 }
 #entryGrid .entry-card.broken {
 	opacity: 0.5;
@@ -22,4 +29,8 @@
 }
 #cabinetList .active {
 	background: oklch(var(--p) / 0.15);
+}
+#contextMenu .menu-separator {
+	border-top: 1px solid oklch(var(--bc) / 0.12);
+	margin: 0.25rem 0;
 }

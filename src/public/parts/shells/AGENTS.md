@@ -19,6 +19,8 @@ alwaysApply: false
 - `src/endpoints.mjs`: Routes via `router.get/post/ws`. Path format: `/api/parts/shells\:<name>/...`.
 - **HTTP API**: Success = 2xx JSON body (no `success` wrapper); expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs`. Avoid route-level try/catch that only maps to 500.
 - **`fount.json` → `registries`**: `[{ id, level, path }]` (part-relative) for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`. Consumed via `GET /api/registries/:name`.
+- **`home_function_buttons.info`**: must point to a locale **object** with `title` (e.g. `achievements.home_function_buttons.main`), not a page-level string key like `social.title`. Home UI reads `geti18n(info).title`.
+- **Iconify `button` HTML**: verify the URL returns SVG (404 body `"Not found"` is injected as the icon span text). Prefer known names such as `mdi/file-cabinet.svg`.
 
 ## Implementation
 

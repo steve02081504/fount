@@ -1147,6 +1147,11 @@
 		"title": "广场",
 		"description": "P2P 开放社交动态、关注与文件分享",
 		"bootstrapFailed": "社交界面初始化失败：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "广场"
+			}
+		},
 		"nav": {
 			"feed": "首页",
 			"explore": "探索",
@@ -4892,9 +4897,15 @@
 		"title": "文件柜",
 		"description": "P2P 个人与共享文件柜",
 		"bootstrapFailed": "文件柜初始化失败：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "文件柜"
+			}
+		},
 		"upload": "上传",
 		"uploadFolder": "上传文件夹",
 		"newFolder": "新建文件夹",
+		"open": "打开",
 		"download": "下载",
 		"downloadZip": "下载文件夹",
 		"rename": "重命名",

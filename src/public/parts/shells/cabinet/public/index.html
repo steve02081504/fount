@@ -28,20 +28,6 @@
 					<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
 					<span class="label-text text-xs" data-i18n="cabinet.showHidden"></span>
 				</label>
-				<button id="btnUpload" type="button" class="btn btn-sm" data-i18n="cabinet.upload"></button>
-				<button id="btnUploadFolder" type="button" class="btn btn-sm" data-i18n="cabinet.uploadFolder"></button>
-				<button id="btnNewFolder" type="button" class="btn btn-sm" data-i18n="cabinet.newFolder"></button>
-				<button id="btnDownload" type="button" class="btn btn-sm" data-i18n="cabinet.download"></button>
-				<button id="btnDownloadZip" type="button" class="btn btn-sm" data-i18n="cabinet.downloadZip"></button>
-				<button id="btnRename" type="button" class="btn btn-sm" data-i18n="cabinet.rename"></button>
-				<button id="btnCopy" type="button" class="btn btn-sm" data-i18n="cabinet.copy"></button>
-				<button id="btnCut" type="button" class="btn btn-sm" data-i18n="cabinet.cut"></button>
-				<button id="btnPaste" type="button" class="btn btn-sm" data-i18n="cabinet.paste"></button>
-				<button id="btnPasteLink" type="button" class="btn btn-sm" data-i18n="cabinet.pasteLink"></button>
-				<button id="btnSelectAll" type="button" class="btn btn-sm" data-i18n="cabinet.selectAll"></button>
-				<button id="btnInvert" type="button" class="btn btn-sm" data-i18n="cabinet.invert"></button>
-				<button id="btnProps" type="button" class="btn btn-sm" data-i18n="cabinet.properties"></button>
-				<button id="btnDelete" type="button" class="btn btn-sm btn-error" data-i18n="cabinet.delete"></button>
 			</div>
 			<input id="fileInput" type="file" multiple class="hidden" />
 			<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
@@ -49,6 +35,9 @@
 			<div id="statusBar" class="text-xs opacity-70 p-2 border-t border-base-300"></div>
 		</section>
 	</main>
+	<div id="contextMenu" class="fixed hidden z-50 min-w-48 rounded-box border border-base-300 bg-base-100 p-1 shadow-xl">
+		<ul class="menu menu-sm"></ul>
+	</div>
 	<dialog id="propsDialog" class="modal">
 		<div class="modal-box space-y-3">
 			<h3 class="font-bold text-lg" data-i18n="cabinet.properties"></h3>

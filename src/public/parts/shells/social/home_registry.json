@@ -1,7 +1,7 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "social.title",
+			"info": "social.home_function_buttons.main",
 			"level": 2,
 			"url": "/parts/shells:social/",
 			"button": "<img src=\"https://api.iconify.design/mdi/forum-outline.svg\" class=\"text-icon\"/>"

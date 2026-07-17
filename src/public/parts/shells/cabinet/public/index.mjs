@@ -151,11 +151,6 @@ async function refreshEntries() {
 		count: entries.length,
 		selected: selected.size,
 	}) || `${entries.length} items`
-	const canWrite = currentCabinet?.type !== 'group' || currentCabinet?.permissions?.can_write
-	document.getElementById('btnUpload').disabled = !canWrite
-	document.getElementById('btnUploadFolder').disabled = !canWrite
-	document.getElementById('btnNewFolder').disabled = !canWrite
-	document.getElementById('btnDelete').disabled = !canWrite
 }
 
 /**
@@ -236,14 +231,30 @@ function renderEntries() {
 		const card = document.createElement('div')
 		card.className = `entry-card${selected.has(entry.id) ? ' selected' : ''}${entry.kind === 'link' && entry._broken ? ' broken' : ''}`
 		card.dataset.id = entry.id
+		card.tabIndex = 0
+		card.setAttribute('role', 'button')
 		const thumb = entry.preview?.url
 			? `<img class="entry-thumb" src="${escapeAttr(entry.preview.url)}" alt="" />`
 			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
 		card.innerHTML = `${thumb}<div class="font-medium text-sm truncate mt-1">${escapeHtml(entry.name)}</div>
 			<div class="text-xs opacity-60 truncate">${escapeHtml(entry.description || entry.mime_type || '')}</div>
 			<div class="text-[10px] opacity-50 truncate">${formatStamp(entry.modified)}</div>`
-		card.addEventListener('click', event => onEntryClick(event, entry))
-		card.addEventListener('dblclick', () => void onEntryOpen(entry))
+		card.addEventListener('click', event => {
+			if (entry.kind === 'folder' && !event.ctrlKey && !event.metaKey && !event.shiftKey)
+				void onEntryOpen(entry)
+			else onEntryClick(event, entry)
+		})
+		card.addEventListener('dblclick', () => {
+			if (entry.kind !== 'folder') void onEntryOpen(entry)
+		})
+		card.addEventListener('contextmenu', event => showContextMenu(event, entry))
+		card.addEventListener('keydown', event => {
+			if (event.key === 'Enter') void onEntryOpen(entry)
+			else if (event.key === ' ' ) {
+				event.preventDefault()
+				onEntryClick(event, entry)
+			}
+		})
 		host.appendChild(card)
 	}
 }
@@ -286,6 +297,7 @@ function onEntryClick(event, entry) {
 		rangeAnchor = entry.id
 	}
 	renderEntries()
+	renderStatus()
 }
 
 /**
@@ -400,6 +412,226 @@ function selectedEntries() {
 }
 
 /**
+ * @returns {boolean} 当前目录是否可写
+ */
+function canWrite() {
+	return currentCabinet?.type !== 'group' || Boolean(currentCabinet?.permissions?.can_write)
+}
+
+/**
+ * @returns {void}
+ */
+function renderStatus() {
+	document.getElementById('statusBar').textContent = geti18n('cabinet.statusCount', {
+		count: entries.length,
+		selected: selected.size,
+	}) || `${entries.length} items`
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function createFolder() {
+	const name = await promptI18n('cabinet.newFolderPrompt')
+	if (!name) return
+	await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
+		kind: 'folder',
+		name,
+		parent_id: currentParentId,
+	}, unlockHeaders(currentUnlockToken()))
+	await refreshEntries()
+}
+
+/**
+ * @param {'copy' | 'cut'} mode 模式
+ * @returns {void}
+ */
+function copySelection(mode) {
+	if (!selected.size) return
+	clipboard = { mode, cabinet_id: currentCabinetId, entry_ids: [...selected] }
+	showToastI18n('success', mode === 'copy' ? 'cabinet.copied' : 'cabinet.cutDone')
+}
+
+/**
+ * @param {boolean} asLinks 是否粘贴为链接
+ * @returns {Promise<void>}
+ */
+async function pasteClipboard(asLinks = false) {
+	if (!clipboard?.entry_ids?.length) return
+	await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/copy`, {
+		entry_ids: clipboard.entry_ids,
+		target_parent_id: currentParentId,
+		...asLinks ? { as_links: true } : {},
+	})
+	if (!asLinks && clipboard.mode === 'cut' && clipboard.cabinet_id === currentCabinetId) {
+		await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
+			entry_ids: clipboard.entry_ids,
+		})
+		clipboard = null
+	}
+	await refreshEntries()
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function renameSelection() {
+	const [entry] = selectedEntries()
+	if (!entry) return
+	const name = await promptI18n('cabinet.renamePrompt', entry.name)
+	if (!name) return
+	await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, { name })
+	await refreshEntries()
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function deleteSelection() {
+	const rows = selectedEntries()
+	if (!rows.length) return
+	if (rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDeleteSystem')) return
+	if (!rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDelete')) return
+	await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
+		entry_ids: rows.map(row => row.id),
+	})
+	selected.clear()
+	await refreshEntries()
+}
+
+/**
+ * @param {string | null} folderId 文件夹；null 表示当前目录
+ * @param {string} name 下载名称
+ * @returns {Promise<void>}
+ */
+async function downloadFolder(folderId, name) {
+	const query = folderId ? `folder_id=${encodeURIComponent(folderId)}` : ''
+	const token = folderId ? unlockTokens.get(folderId) : currentUnlockToken()
+	const blob = await api('GET', `/cabinets/${encodeURIComponent(currentCabinetId)}/zip?${query}`, null, unlockHeaders(token))
+	const url = URL.createObjectURL(blob)
+	const a = document.createElement('a')
+	a.href = url
+	a.download = `${name || currentCabinet?.name || 'cabinet'}.zip`
+	a.click()
+	URL.revokeObjectURL(url)
+}
+
+/**
+ * @returns {Promise<void>}
+ */
+async function downloadSelection() {
+	for (const entry of selectedEntries()) 
+		if (entry.kind === 'folder') await downloadFolder(entry.id, entry.name)
+		else if (entry.kind === 'file') await downloadEntry(entry)
+	
+}
+
+/**
+ * @param {MouseEvent} event 事件
+ * @param {object} [entry] 右击条目
+ * @returns {void}
+ */
+function showContextMenu(event, entry) {
+	event.preventDefault()
+	event.stopPropagation()
+	if (entry && !selected.has(entry.id)) {
+		selected.clear()
+		selected.add(entry.id)
+		rangeAnchor = entry.id
+		renderEntries()
+		renderStatus()
+	}
+	const rows = selectedEntries()
+	const one = rows.length === 1
+	const writable = canWrite()
+	/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns -- context menu action callbacks */
+	const actions = entry
+		? [
+			one ? { label: 'cabinet.open', run: () => onEntryOpen(rows[0]) } : null,
+			{ label: 'cabinet.download', disabled: !rows.some(row => row.kind === 'file' || row.kind === 'folder'), run: downloadSelection },
+			false,
+			{ label: 'cabinet.rename', disabled: !writable || !one, run: renameSelection },
+			{ label: 'cabinet.copy', run: () => copySelection('copy') },
+			{ label: 'cabinet.cut', disabled: !writable, run: () => copySelection('cut') },
+			false,
+			{ label: 'cabinet.properties', disabled: !one, run: openProps },
+			{ label: 'cabinet.delete', disabled: !writable, danger: true, run: deleteSelection },
+		]
+		: [
+			{ label: 'cabinet.upload', disabled: !writable, run: () => document.getElementById('fileInput').click() },
+			{ label: 'cabinet.uploadFolder', disabled: !writable, run: () => document.getElementById('folderInput').click() },
+			{ label: 'cabinet.newFolder', disabled: !writable, run: createFolder },
+			false,
+			{ label: 'cabinet.paste', disabled: !writable || !clipboard?.entry_ids?.length, run: () => pasteClipboard() },
+			{ label: 'cabinet.pasteLink', disabled: !writable || !clipboard?.entry_ids?.length, run: () => pasteClipboard(true) },
+			false,
+			{ label: 'cabinet.selectAll', disabled: !entries.length, run: selectAllEntries },
+			{ label: 'cabinet.invert', disabled: !entries.length, run: invertSelection },
+			{ label: 'cabinet.downloadZip', run: () => downloadFolder(currentParentId, currentCabinet?.name) },
+		]
+	/* eslint-enable jsdoc/require-jsdoc, jsdoc/require-returns */
+	const menu = document.querySelector('#contextMenu ul')
+	menu.replaceChildren()
+	for (const action of actions) {
+		if (action === null) continue
+		if (action === false) {
+			const separator = document.createElement('li')
+			separator.className = 'menu-separator'
+			menu.appendChild(separator)
+			continue
+		}
+		const li = document.createElement('li')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.textContent = geti18n(action.label) || action.label
+		button.disabled = action.disabled
+		if (action.danger) button.classList.add('text-error')
+		/**
+		 *
+		 */
+		button.onclick = () => {
+			hideContextMenu()
+			void action.run()
+		}
+		li.appendChild(button)
+		menu.appendChild(li)
+	}
+	const host = document.getElementById('contextMenu')
+	host.classList.remove('hidden')
+	const left = Math.min(event.clientX, window.innerWidth - host.offsetWidth - 8)
+	const top = Math.min(event.clientY, window.innerHeight - host.offsetHeight - 8)
+	host.style.left = `${Math.max(8, left)}px`
+	host.style.top = `${Math.max(8, top)}px`
+}
+
+/**
+ * @returns {void}
+ */
+function hideContextMenu() {
+	document.getElementById('contextMenu').classList.add('hidden')
+}
+
+/**
+ * @returns {void}
+ */
+function selectAllEntries() {
+	for (const entry of entries) selected.add(entry.id)
+	renderEntries()
+	renderStatus()
+}
+
+/**
+ * @returns {void}
+ */
+function invertSelection() {
+	for (const entry of entries)
+		if (selected.has(entry.id)) selected.delete(entry.id)
+		else selected.add(entry.id)
+	renderEntries()
+	renderStatus()
+}
+
+/**
  * @returns {void}
  */
 function wireToolbar() {
@@ -411,8 +643,6 @@ function wireToolbar() {
 		await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 	}
-	document.getElementById('btnUpload').onclick = () => document.getElementById('fileInput').click()
-	document.getElementById('btnUploadFolder').onclick = () => document.getElementById('folderInput').click()
 	document.getElementById('fileInput').onchange = async event => {
 		if (event.target.files?.length) await uploadFiles(event.target.files)
 		event.target.value = ''
@@ -421,92 +651,7 @@ function wireToolbar() {
 		if (event.target.files?.length) await uploadFiles(event.target.files)
 		event.target.value = ''
 	}
-	document.getElementById('btnNewFolder').onclick = async () => {
-		const name = await promptI18n('cabinet.newFolderPrompt')
-		if (!name) return
-		await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
-			kind: 'folder',
-			name,
-			parent_id: currentParentId,
-		}, unlockHeaders(currentUnlockToken()))
-		await refreshEntries()
-	}
 	document.getElementById('showHidden').onchange = () => void refreshEntries()
-	document.getElementById('btnSelectAll').onclick = () => {
-		for (const entry of entries) selected.add(entry.id)
-		renderEntries()
-	}
-	document.getElementById('btnInvert').onclick = () => {
-		for (const entry of entries) 
-			if (selected.has(entry.id)) selected.delete(entry.id)
-			else selected.add(entry.id)
-		
-		renderEntries()
-	}
-	document.getElementById('btnCopy').onclick = () => {
-		clipboard = { mode: 'copy', cabinet_id: currentCabinetId, entry_ids: [...selected] }
-		showToastI18n('success', 'cabinet.copied')
-	}
-	document.getElementById('btnCut').onclick = () => {
-		clipboard = { mode: 'cut', cabinet_id: currentCabinetId, entry_ids: [...selected] }
-		showToastI18n('success', 'cabinet.cutDone')
-	}
-	document.getElementById('btnPaste').onclick = async () => {
-		if (!clipboard?.entry_ids?.length) return
-		await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/copy`, {
-			entry_ids: clipboard.entry_ids,
-			target_parent_id: currentParentId,
-		})
-		if (clipboard.mode === 'cut' && clipboard.cabinet_id === currentCabinetId) {
-			await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
-				entry_ids: clipboard.entry_ids,
-			})
-			clipboard = null
-		}
-		await refreshEntries()
-	}
-	document.getElementById('btnPasteLink').onclick = async () => {
-		if (!clipboard?.entry_ids?.length) return
-		await api('POST', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/copy`, {
-			entry_ids: clipboard.entry_ids,
-			target_parent_id: currentParentId,
-			as_links: true,
-		})
-		await refreshEntries()
-	}
-	document.getElementById('btnRename').onclick = async () => {
-		const [entry] = selectedEntries()
-		if (!entry) return
-		const name = await promptI18n('cabinet.renamePrompt', entry.name)
-		if (!name) return
-		await api('PATCH', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, { name })
-		await refreshEntries()
-	}
-	document.getElementById('btnDelete').onclick = async () => {
-		const rows = selectedEntries()
-		if (!rows.length) return
-		if (rows.some(row => row.attrs?.system) && !await confirmI18n('cabinet.confirmDeleteSystem')) return
-		else if (!await confirmI18n('cabinet.confirmDelete')) return
-		await api('DELETE', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries`, {
-			entry_ids: rows.map(row => row.id),
-		})
-		selected.clear()
-		await refreshEntries()
-	}
-	document.getElementById('btnDownload').onclick = async () => {
-		for (const entry of selectedEntries())
-			if (entry.kind === 'file') await downloadEntry(entry)
-	}
-	document.getElementById('btnDownloadZip').onclick = async () => {
-		const blob = await api('GET', `/cabinets/${encodeURIComponent(currentCabinetId)}/zip?${currentParentId ? `folder_id=${encodeURIComponent(currentParentId)}` : ''}`, null, unlockHeaders(currentUnlockToken()))
-		const url = URL.createObjectURL(blob)
-		const a = document.createElement('a')
-		a.href = url
-		a.download = `${currentCabinet?.name || 'cabinet'}.zip`
-		a.click()
-		URL.revokeObjectURL(url)
-	}
-	document.getElementById('btnProps').onclick = () => void openProps()
 	document.getElementById('propSave').onclick = async () => {
 		const [entry] = selectedEntries()
 		if (!entry) return
@@ -529,6 +674,12 @@ function wireToolbar() {
 		document.getElementById('propsDialog').close()
 		await refreshEntries()
 	}
+	document.getElementById('entryGrid').addEventListener('contextmenu', event => showContextMenu(event))
+	document.addEventListener('click', hideContextMenu)
+	document.addEventListener('keydown', event => {
+		if (event.key === 'Escape') hideContextMenu()
+	})
+	window.addEventListener('blur', hideContextMenu)
 	/* eslint-enable jsdoc/require-jsdoc */
 }
 

@@ -1,10 +1,10 @@
 {
 	"home_function_buttons": [
 		{
-			"info": "cabinet.title",
+			"info": "cabinet.home_function_buttons.main",
 			"level": 2,
 			"url": "/parts/shells:cabinet/",
-			"button": "<img src=\"https://api.iconify.design/mdi/cabinet-filing.svg\" class=\"text-icon\"/>"
+			"button": "<img src=\"https://api.iconify.design/mdi/file-cabinet.svg\" class=\"text-icon\"/>"
 		}
 	]
 }
