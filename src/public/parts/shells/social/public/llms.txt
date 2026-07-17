@@ -274,8 +274,10 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 
 ## 深链
 
+- `fount://run/shells:social/post;<entityHash>;<postId>[;<sharerNodeHash>]`（外部分享优先 `fount://page/parts/shells:social/#post;…`）
 - `fount://run/shells:social/profile;<entityHash>[;<postId>]`
 - `fount://run/shells:social/search;<query>`（浏览器：`/parts/shells:social/#search;<query>`；`?q=` 查询参数亦可）
+- 分享链可选第 4 段 `sharerNodeHash`：接收方打开帖子时对分享者与作者节点 `POST /api/p2p/federation/connect-node`
 
 帖子 Markdown 中 `#话题` 渲染为话题页深链 `#topic:…`（不作用于 Chat `#[group/channel]` 标记）。见 `public/shared/runUri.mjs`、`markdown_ext/index.mjs`。
 

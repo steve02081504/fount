@@ -287,15 +287,21 @@ export async function loadMessages(reload, syncCtx) {
 		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
 		return
 	}
-	destroyChannelVirtualList()
-	const hadStale = restoreChannelViewCache(groupId, channelId)
-	if (hadStale) {
-		refreshChannelView()
-		await refreshReactionPerms()
-		initChannelVirtualList(container, reload)
+	const pipelineKey = `${groupId}:${channelId}`
+	const softReload = hubStore.messages.channelMessagePipeline
+		&& hubStore.messages.channelPipelineKey === pipelineKey
+	if (!softReload) {
+		destroyChannelVirtualList()
+		const hadStale = restoreChannelViewCache(groupId, channelId)
+		if (hadStale) {
+			refreshChannelView()
+			await refreshReactionPerms()
+			initChannelVirtualList(container, reload)
+			hubStore.messages.channelPipelineKey = pipelineKey
+		}
+		else
+			await mountTemplate(container, 'hub/empty/loading', {})
 	}
-	else
-		await mountTemplate(container, 'hub/empty/loading', {})
 	if (await loadNonTextChannel(container, channel)) return
 	try {
 		hubStore.messages.composerPendingId = null
@@ -315,22 +321,29 @@ export async function loadMessages(reload, syncCtx) {
 		syncCtx()
 		if (!messages.length) {
 			destroyChannelVirtualList()
+			hubStore.messages.channelPipelineKey = null
 			channelViewCache.delete(channelCacheKey(groupId, channelId) || '')
 			await mountTemplate(container, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
 			hubStore.messages.lastMessageId = null
 			return
 		}
-		if (hubStore.messages.firstUnreadEventId)
-			setPendingScrollTarget(hubStore.messages.firstUnreadEventId)
-		else
-			consumePendingScrollTarget()
+		if (!softReload) 
+			if (hubStore.messages.firstUnreadEventId)
+				setPendingScrollTarget(hubStore.messages.firstUnreadEventId)
+			else
+				consumePendingScrollTarget()
+		
 		if (hubStore.messages.channelMessagePipeline)
 			await hubStore.messages.channelMessagePipeline.refresh()
-		else
+		else {
 			initChannelVirtualList(container, reload)
+			hubStore.messages.channelPipelineKey = pipelineKey
+		}
+		if (softReload)
+			hubStore.messages.channelPipelineKey = pipelineKey
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
-		if (!hubStore.messages.firstUnreadEventId) scrollToBottom()
+		if (!softReload && !hubStore.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(() => {})
 		refreshChannelPinsBar()
 		saveChannelViewCache()

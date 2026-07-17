@@ -41,7 +41,7 @@ alwaysApply: false
 
 ## Components & Utilities
 
-- **`virtualList.mjs`**: High-performance virtual scrolling.
+- **`virtualList.mjs`**: High-performance virtual scrolling. Optional `getItemKey(item)` enables keyed reconcile on `refresh()` (reuse unchanged DOM by key + `JSON.stringify` equality; preserve scroll after first paint) — prefer this over `innerHTML = ''` for chat-style feeds.
 - **`infiniteScroll.mjs`**: `IntersectionObserver`-based pagination: `ensureScrollSentinel` places sentinel (`overflow-anchor: none`), `bindInfiniteScroll` calls `onLoad` as the bottom approaches (in-flight lock + rising-edge arm: one fire per enter-intersection, leave to re-arm); use `disconnectInfiniteScroll` when switching views (single global observer). Pagination chains by rebinding after each page; after replay prefer moving the sentinel over rebinding.
 - **`search.mjs`**: Live filtering and searchable dropdowns.
 - **`jsonEditor.mjs`**: `vanilla-jsoneditor` wrapper.

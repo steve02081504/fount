@@ -31,6 +31,7 @@ function createSentinel(id) {
  * @param {function(HTMLElement, HTMLElement, object): (void|Promise<void>)} [options.replaceItemRenderer] - 一个可选的函数，用于自定义替换 DOM 元素的方式。接收 `oldElement`、`newElement` 和 `item`。默认为直接替换。
  * @param {boolean} [options.setInitialScroll=true] - 是否在初始加载时滚动到 `initialIndex` 指定的项目。默认为 true。
  * @param {() => Promise<number>} [options.loadMoreTop] - 当 `startIndex` 为 0 时向上扩展数据源；返回新增加的条数。
+ * @param {(item: object) => string} [options.getItemKey] - 可选；提供时 refresh 用键控 DOM 复用，避免全量 innerHTML 重建。
  * @returns {{
  *   destroy: function(): void,
  *   refresh: function(): Promise<void>,
@@ -52,6 +53,7 @@ export function createVirtualList({
 	replaceItemRenderer = (oldElement, newElement) => oldElement.replaceWith(newElement),
 	setInitialScroll = true,
 	loadMoreTop = null,
+	getItemKey = null,
 }) {
 	const state = {
 		queue: [], // 当前加载的数据项队列
@@ -62,6 +64,9 @@ export function createVirtualList({
 		sentinelTop: null, // 上哨兵元素
 		sentinelBottom: null, // 下哨兵元素
 		renderedElements: new Map(), // 索引到 DOM 元素的映射
+		/** @type {Map<string, { element: HTMLElement, itemJson: string }>} */
+		keyedCache: new Map(), // getItemKey 模式下的 DOM 复用缓存
+		hasRenderedOnce: false, // 是否已完成过至少一次渲染（控制是否再做 initialIndex 滚动）
 		bufferSize: 10, // 初始缓冲大小
 		maxQueueSize: 0, // 最大队列大小，动态计算
 		avgItemHeight: 0, // 平均项高度，用于动态缓冲
@@ -95,10 +100,78 @@ export function createVirtualList({
 	}
 
 	/**
+	 * 键控 reconcile：按 getItemKey 复用未变 DOM，仅重画变更项。
+	 * @returns {Promise<void>}
+	 */
+	async function reconcileKeyedQueue() {
+		const prevCache = state.keyedCache
+		const nextCache = new Map()
+		const nextRendered = new Map()
+
+		if (!state.sentinelTop || !container.contains(state.sentinelTop)) {
+			state.sentinelTop = createSentinel('sentinel-top')
+			container.prepend(state.sentinelTop)
+		}
+		if (!state.sentinelBottom || !container.contains(state.sentinelBottom)) {
+			state.sentinelBottom = createSentinel('sentinel-bottom')
+			container.appendChild(state.sentinelBottom)
+		}
+
+		const renderJobs = state.queue.map((item, i) => {
+			const itemIndex = state.startIndex + i
+			const key = String(getItemKey(item))
+			const itemJson = JSON.stringify(item)
+			const cached = prevCache.get(key)
+			if (cached && cached.itemJson === itemJson)
+				return Promise.resolve({ itemIndex, key, itemJson, element: cached.element, reused: true })
+			return Promise.resolve(renderItem(item, itemIndex)).then(element => ({
+				itemIndex, key, itemJson, element, reused: false, oldElement: cached?.element,
+			}))
+		})
+		const results = await Promise.all(renderJobs)
+
+		let insertBefore = state.sentinelTop.nextSibling
+		for (const result of results) {
+			if (!result?.element) continue
+			const { itemIndex, key, itemJson, element, reused, oldElement } = result
+			if (!reused && oldElement && oldElement !== element && container.contains(oldElement))
+				oldElement.replaceWith(element)
+			else if (element.parentNode !== container || element.nextSibling !== insertBefore && element !== insertBefore)
+				container.insertBefore(element, insertBefore)
+			insertBefore = element.nextSibling
+			nextCache.set(key, { element, itemJson })
+			nextRendered.set(itemIndex, element)
+		}
+
+		for (const [key, { element }] of prevCache) {
+			if (nextCache.has(key)) continue
+			element.remove()
+		}
+
+		// 清理哨兵之间多余节点（非本次队列、非哨兵）
+		let node = state.sentinelTop.nextSibling
+		const keep = new Set(nextRendered.values())
+		while (node && node !== state.sentinelBottom) {
+			const next = node.nextSibling
+			if (!keep.has(node)) node.remove()
+			node = next
+		}
+
+		state.keyedCache = nextCache
+		state.renderedElements = nextRendered
+		updateDynamicBufferSize()
+		onRenderComplete()
+	}
+
+	/**
 	 * 对整个队列进行全量渲染。
 	 * 主要用于初始化或完全刷新。
 	 */
 	async function renderQueue() {
+		if (getItemKey) {
+			await reconcileKeyedQueue()
+			return
+		}
 		const fragment = document.createDocumentFragment()
 		state.renderedElements.clear()
 		state.sentinelTop = createSentinel('sentinel-top')
@@ -155,6 +228,13 @@ export function createVirtualList({
 		// 移除头部多余元素
 		for (let i = state.startIndex; i < retainStart; i++) {
 			const element = state.renderedElements.get(i)
+			if (element && getItemKey) 
+				for (const [key, cached] of state.keyedCache)
+					if (cached.element === element) {
+						state.keyedCache.delete(key)
+						break
+					}
+			
 			element?.remove()
 			state.renderedElements.delete(i)
 		}
@@ -168,6 +248,13 @@ export function createVirtualList({
 		const queueEndIndex = state.startIndex + state.queue.length - 1
 		for (let i = queueEndIndex; i > retainEnd; i--) {
 			const element = state.renderedElements.get(i)
+			if (element && getItemKey) 
+				for (const [key, cached] of state.keyedCache)
+					if (cached.element === element) {
+						state.keyedCache.delete(key)
+						break
+					}
+			
 			element?.remove()
 			state.renderedElements.delete(i)
 		}
@@ -200,6 +287,8 @@ export function createVirtualList({
 		newElements.forEach((element, i) => {
 			if (element) {
 				state.renderedElements.set(itemIndexFor(i), element)
+				if (getItemKey)
+					state.keyedCache.set(String(getItemKey(newItems[i])), { element, itemJson: JSON.stringify(newItems[i]) })
 				newElementsFragment.appendChild(element)
 			}
 		})
@@ -268,6 +357,8 @@ export function createVirtualList({
 				if (element) {
 					const itemIndex = state.startIndex + oldQueueLength + i
 					state.renderedElements.set(itemIndex, element)
+					if (getItemKey)
+						state.keyedCache.set(String(getItemKey(newItems[i])), { element, itemJson: JSON.stringify(newItems[i]) })
 					newElementsFragment.appendChild(element)
 				}
 			})
@@ -329,15 +420,32 @@ export function createVirtualList({
 				state.queue = []
 				state.startIndex = 0
 				await renderQueue()
+				state.hasRenderedOnce = true
 				return
 			}
+			const keepScroll = getItemKey && state.hasRenderedOnce
+			const savedScrollTop = keepScroll ? container.scrollTop : 0
 			const targetIndex = Math.max(0, Math.min(initialIndex, state.totalCount - 1))
-			const fetchStartIndex = Math.max(0, targetIndex - state.bufferSize)
-			const itemsToFetch = Math.min(state.bufferSize * 3, state.totalCount - fetchStartIndex) // 初始加载更多以填充视口
+			let fetchStartIndex = keepScroll && state.queue.length
+				? state.startIndex
+				: Math.max(0, targetIndex - state.bufferSize)
+			if (fetchStartIndex >= state.totalCount)
+				fetchStartIndex = Math.max(0, state.totalCount - (state.queue.length || state.bufferSize * 3))
+			const itemsToFetch = Math.min(
+				keepScroll && state.queue.length
+					? Math.max(state.queue.length, state.bufferSize * 3)
+					: state.bufferSize * 3,
+				state.totalCount - fetchStartIndex,
+			)
 			const { items } = await fetchData(fetchStartIndex, itemsToFetch)
 			state.queue = items
 			state.startIndex = fetchStartIndex
 			await renderQueue()
+			state.hasRenderedOnce = true
+			if (keepScroll) {
+				container.scrollTop = savedScrollTop
+				return
+			}
 			if (!setInitialScroll) return
 			const targetElement = state.renderedElements.get(targetIndex)
 			if (targetElement)
@@ -362,6 +470,8 @@ export function createVirtualList({
 		container.innerHTML = ''
 		state.queue = []
 		state.renderedElements.clear()
+		state.keyedCache.clear()
+		state.hasRenderedOnce = false
 	}
 
 	/**
@@ -383,6 +493,8 @@ export function createVirtualList({
 			}
 			if (newElement) {
 				state.renderedElements.set(itemIndex, newElement)
+				if (getItemKey)
+					state.keyedCache.set(String(getItemKey(item)), { element: newElement, itemJson: JSON.stringify(item) })
 				container.insertBefore(newElement, state.sentinelBottom)
 			}
 			pruneQueue()
@@ -410,9 +522,16 @@ export function createVirtualList({
 		}
 		await getMutex()
 		try {
+			const element = state.renderedElements.get(index)
+			if (element && getItemKey) 
+				for (const [key, cached] of state.keyedCache)
+					if (cached.element === element) {
+						state.keyedCache.delete(key)
+						break
+					}
+			
 			state.queue.splice(queueIndex, 1)
 			state.totalCount--
-			const element = state.renderedElements.get(index)
 			element?.remove()
 			state.renderedElements.delete(index)
 			// 调整后续元素的键
@@ -448,10 +567,17 @@ export function createVirtualList({
 		try {
 			const oldElement = state.renderedElements.get(index)
 			if (!oldElement) return
+			const oldItem = state.queue[queueIndex]
 			const newElement = await Promise.resolve(renderItem(item, index))
 			await Promise.resolve(replaceItemRenderer(oldElement, newElement, item))
 			state.queue[queueIndex] = item
 			state.renderedElements.set(index, newElement)
+			if (getItemKey) {
+				const oldKey = String(getItemKey(oldItem))
+				const newKey = String(getItemKey(item))
+				if (oldKey !== newKey) state.keyedCache.delete(oldKey)
+				state.keyedCache.set(newKey, { element: newElement, itemJson: JSON.stringify(item) })
+			}
 			updateDynamicBufferSize()
 		} finally {
 			state.isLoading = false

@@ -178,6 +178,7 @@ export async function bootstrapSocialApp() {
 
 		const viewer = await chatApi('/viewer')
 		socialState.viewerEntityHash = viewer.viewerEntityHash ?? null
+		socialState.viewerNodeHash = viewer.nodeHash ?? null
 		socialState.viewerDisplayName = viewer.profile?.name || null
 		socialState.viewerProfile = viewer.profile
 			? {

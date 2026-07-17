@@ -53,7 +53,9 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 
 	const chatMetadata = await getActiveGroupRuntime(groupId)
 
-	let newTimeLineIndex = chatMetadata.timeLineIndex + delta
+	let newTimeLineIndex = delta === Number.POSITIVE_INFINITY
+		? chatMetadata.timeLines.length - 1
+		: chatMetadata.timeLineIndex + delta
 
 	if (newTimeLineIndex < 0)
 		newTimeLineIndex = chatMetadata.timeLines.length - 1

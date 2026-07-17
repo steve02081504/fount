@@ -35,6 +35,8 @@ export const hubStore = {
 			canPinMessages: false,
 		},
 		channelMessagePipeline: null,
+		/** 当前 pipeline 对应的 `groupId:channelId`，用于同频道软重载 */
+		channelPipelineKey: null,
 		channelOlderExhausted: false,
 		/** 乐观发送中的 `pending:*` eventId；同时最多一条 */
 		composerPendingId: null,

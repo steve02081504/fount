@@ -17,7 +17,6 @@ import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { wireHubBannerBindings } from './core/bindings.mjs'
-import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { wireHubGroupEmojiStickerGestures } from './emojiPickerGestures.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
@@ -50,20 +49,13 @@ export async function refreshViewerHubPresentation() {
 	hubStore.viewer.viewerDisplayName = label
 	const myAvatar = document.getElementById('hub-my-avatar')
 	const myName = document.getElementById('hub-my-name')
-	myAvatar.replaceChildren()
-	myAvatar.dataset.avatarSeed = entityHash
-	myAvatar.textContent = avatarInitial(label)
-	myAvatar.style.background = avatarColor(entityHash)
-	myAvatar.style.color = avatarTextColor(entityHash)
 	myName.textContent = label
-	const avatar = customProfileAvatar(profile)
-	if (avatar)
-		await applyProfileAvatarToHost(myAvatar, {
-			seed: entityHash,
-			label,
-			avatar,
-			emojiFontSize: '18px',
-		})
+	await applyProfileAvatarToHost(myAvatar, {
+		seed: entityHash,
+		label,
+		avatar: customProfileAvatar(profile),
+		emojiFontSize: '18px',
+	})
 }
 
 /** @returns {Promise<void>} 顶栏展示与在线状态（viewer 身份由 initCore 写入 hubStore） */

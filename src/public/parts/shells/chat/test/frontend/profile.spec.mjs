@@ -9,7 +9,8 @@ test.describe('Chat profile page', () => {
 
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: 60_000 })
-		await page.locator('.hub-user-settings-link').click()
+		await page.locator('#hub-user-bar').click()
+		await page.locator('[data-profile-link]').click()
 		await expect(page).toHaveURL(/\/parts\/shells:chat\/profile/, { timeout: 30_000 })
 		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
 	})

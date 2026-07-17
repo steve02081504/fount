@@ -3,7 +3,7 @@
  * 【职责】消费 fount://run 与 ?invite= 深链：入群、建 DM、跳转 Social 资料、暂存待处理邀请。
  */
 
-import { formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social/shared/runUri.mjs'
+import { formatSocialPostHref, formatSocialProfileHref, parseSocialRunUri } from '/parts/shells:social/shared/runUri.mjs'
 
 
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -29,12 +29,16 @@ export function runUriFromPageLocation(search = window.location.search) {
 }
 
 /**
- * 解析并执行 run 深链：Chat DM/join/message 或跳转 Social 资料页。
+ * 解析并执行 run 深链：Chat DM/join/message 或跳转 Social 资料/帖子页。
  * @param {string} raw `fount://run/…` 完整 URI
- * @returns {Promise<{ kind: 'dm' | 'join' | 'social-profile' | 'message', groupId?: string, channelId?: string, eventId?: string } | null>} 成功载荷；无法识别为 `null`
+ * @returns {Promise<{ kind: 'dm' | 'join' | 'social-profile' | 'social-post' | 'message', groupId?: string, channelId?: string, eventId?: string } | null>} 成功载荷；无法识别为 `null`
  */
 export async function applyChatRunUri(raw) {
 	const social = parseSocialRunUri(raw)
+	if (social?.subcommand === 'post' && social.entityHash && social.postId) {
+		window.location.href = formatSocialPostHref(social.entityHash, social.postId, social.sharerNodeHash)
+		return { kind: 'social-post' }
+	}
 	if (social?.subcommand === 'profile' && social.entityHash) {
 		window.location.href = formatSocialProfileHref(social.entityHash, social.postId)
 		return { kind: 'social-profile' }

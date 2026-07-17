@@ -19,15 +19,18 @@ export function formatSocialProfileHref(entityHash, postId) {
  * Social shell 单帖详情页 hash 链接。
  * @param {string} entityHash 作者 entityHash
  * @param {string} postId 帖子 id
+ * @param {string} [sharerNodeHash] 分享者 nodeHash（可选第 4 段）
  * @returns {string} 浏览器路径（含 hash）
  */
-export function formatSocialPostHref(entityHash, postId) {
-	return `${SOCIAL_SHELL_PATH}#post;${entityHash};${postId}`
+export function formatSocialPostHref(entityHash, postId, sharerNodeHash) {
+	const segments = [`post;${entityHash};${postId}`]
+	if (sharerNodeHash) segments[0] += `;${sharerNodeHash}`
+	return `${SOCIAL_SHELL_PATH}#${segments[0]}`
 }
 
 /**
  * @param {string} raw hash 或 runUri
- * @returns {{ subcommand: string, entityHash?: string, postId?: string, searchQuery?: string } | null} 解析结果
+ * @returns {{ subcommand: string, entityHash?: string, postId?: string, sharerNodeHash?: string, searchQuery?: string } | null} 解析结果
  */
 export function parseSocialRunUri(raw) {
 	let input = raw.trim()
@@ -42,7 +45,12 @@ export function parseSocialRunUri(raw) {
 	})
 	const subcommand = parts[0]?.trim()
 	if (subcommand === 'profile' || subcommand === 'post')
-		return { subcommand, entityHash: parts[1], postId: parts[2] }
+		return {
+			subcommand,
+			entityHash: parts[1],
+			postId: parts[2],
+			...parts[3] && { sharerNodeHash: parts[3] },
+		}
 	if (subcommand === 'search')
 		return { subcommand, searchQuery: parts.slice(1).join(';') }
 	return subcommand ? { subcommand, entityHash: parts[1] } : null
@@ -71,10 +79,36 @@ export function formatSocialProfileRunUri(entityHash, postId) {
 /**
  * @param {string} entityHash 作者
  * @param {string} postId 帖 id
+ * @param {string} [sharerNodeHash] 分享者 nodeHash
  * @returns {string} post 详情 runUri
  */
-export function formatSocialPostRunUri(entityHash, postId) {
+export function formatSocialPostRunUri(entityHash, postId, sharerNodeHash) {
+	if (sharerNodeHash) return buildRunUri('post', [entityHash, postId, sharerNodeHash])
 	return buildRunUri('post', [entityHash, postId])
+}
+
+/**
+ * 外部分享用 page 深链（protocolhandler 直接跳转，不经 runPart）。
+ * @param {string} entityHash 作者
+ * @param {string} postId 帖 id
+ * @param {string} [sharerNodeHash] 分享者 nodeHash
+ * @returns {string} fount://page/… URI
+ */
+export function formatSocialPostPageUri(entityHash, postId, sharerNodeHash) {
+	return `fount://page${formatSocialPostHref(entityHash, postId, sharerNodeHash)}`
+}
+
+/**
+ * @param {string} entityHash 128 位 entityHash
+ * @param {string} [postId] 帖子 id
+ * @param {string} [sharerNodeHash] 分享者 nodeHash
+ * @returns {string} profile page URI
+ */
+export function formatSocialProfilePageUri(entityHash, postId, sharerNodeHash) {
+	const href = formatSocialProfileHref(entityHash, postId)
+	// profile 第 3 段是 postId；分享者 nodeHash 仅挂在 post 分享上
+	void sharerNodeHash
+	return `fount://page${href}`
 }
 
 /**

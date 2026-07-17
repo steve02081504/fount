@@ -1,3 +1,6 @@
+import { parseEntityHash } from 'https://esm.sh/@steve02081504/fount-p2p/core/entity_id'
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
 import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
@@ -14,6 +17,29 @@ import { loadSearchView } from './views/search.mjs'
 import { loadSettings } from './views/settings.mjs'
 import { loadTopicView } from './views/topic.mjs'
 import { loadVideoView } from './views/video.mjs'
+
+/**
+ * 打开分享帖时主动连分享者 / 作者节点（跳过本机）。
+ * @param {string} entityHash 作者 entityHash
+ * @param {string} [sharerNodeHash] 分享者 nodeHash
+ * @returns {void}
+ */
+function connectNodesFromShare(entityHash, sharerNodeHash) {
+	const targets = new Set()
+	if (isHex64(sharerNodeHash)) targets.add(String(sharerNodeHash).toLowerCase())
+	const parsed = parseEntityHash(entityHash)
+	if (parsed?.nodeHash) targets.add(String(parsed.nodeHash).toLowerCase())
+	const self = String(socialState.viewerNodeHash || '').toLowerCase()
+	for (const targetNodeHash of targets) {
+		if (!targetNodeHash || targetNodeHash === self) continue
+		void fetch('/api/p2p/federation/connect-node', {
+			method: 'POST',
+			credentials: 'include',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ targetNodeHash }),
+		}).catch(() => {})
+	}
+}
 
 /**
  * 将主导航视图同步到 location.hash（replace，避免历史堆叠）。
@@ -148,6 +174,7 @@ export async function applyIncomingNavigation() {
 		return true
 	}
 	if (hashParsed?.subcommand === 'post' && hashParsed.entityHash && hashParsed.postId) {
+		connectNodesFromShare(hashParsed.entityHash, hashParsed.sharerNodeHash)
 		await loadPostDetail(hashParsed.entityHash.toLowerCase(), hashParsed.postId)
 		return true
 	}

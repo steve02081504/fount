@@ -151,7 +151,7 @@ export function registerGroupLifecycleRoutes(router, authenticate) {
 		const body = req.body || {}
 		let delta = body.delta
 		if (body.latest === true) delta = Number.POSITIVE_INFINITY
-		if (typeof delta !== 'number' || !Number.isFinite(delta))
+		if (typeof delta !== 'number' || Number.isNaN(delta))
 			return res.status(400).json({ error: 'delta or latest required' })
 
 		const channelId = String(body.channelId || 'default').trim() || 'default'

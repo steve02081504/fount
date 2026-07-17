@@ -148,6 +148,21 @@ export default {
 		web: {},
 		invokes: {
 			/**
+			 * CLI / protocol run：打开 Social 帖子或资料页。
+			 * @param {string} _user 用户名
+			 * @param {string[]} args 如 `['post', entityHash, postId, sharerNodeHash?]`
+			 * @returns {Promise<{ redirect: string }>} 浏览器跳转目标
+			 */
+			ArgumentsHandler: async (_user, args) => {
+				const [subcommand, entityHash, postId, sharerNodeHash] = args
+				const { formatSocialPostHref, formatSocialProfileHref } = await import('./public/shared/runUri.mjs')
+				if (subcommand === 'post' && entityHash && postId)
+					return { redirect: formatSocialPostHref(entityHash, postId, sharerNodeHash) }
+				if (subcommand === 'profile' && entityHash)
+					return { redirect: formatSocialProfileHref(entityHash, postId) }
+				return { redirect: '/parts/shells:social/' }
+			},
+			/**
 			 * P2P part_invoke 入站：timeline put 与 social RPC。
 			 * @param {string} username replica 登录名
 			 * @param {object} data 入站 invoke 体

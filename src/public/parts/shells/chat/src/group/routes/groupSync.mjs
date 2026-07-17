@@ -261,8 +261,9 @@ export function registerGroupSyncRoutes(router, authenticate) {
 		const viewer = {
 			isMember: active,
 			memberKey: active ? memberKey : null,
+			// DAG 成员声明优先；回落 operator（切勿用群临时 signer 公钥拼假 entity）
 			entityHash: active
-				? await getGroupMemberEntityHash(username, groupId).catch(() => null)
+				? memberEntityHash(member) || await getGroupMemberEntityHash(username, groupId).catch(() => null)
 				: null,
 			roles: member?.roles || [],
 			suspectedRemoved: shunState.suspectedRemoved,

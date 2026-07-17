@@ -11,12 +11,12 @@ import { applyAvatarsTo } from '../presence.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 
 import { bindChannelMessageActions } from './actions/handlers.mjs'
-import { bindMessageDragExport } from './messageDragExport.mjs'
 import {
 	consumePendingScrollTarget,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
 import { bindReactions, messageRenderOpts } from './messageContext.mjs'
+import { bindMessageDragExport } from './messageDragExport.mjs'
 import {
 	consumePendingHighlightEventId,
 	getMessagesContainer,
@@ -35,6 +35,7 @@ import {
 export function destroyChannelVirtualList() {
 	hubStore.messages.channelMessagePipeline?.destroy()
 	hubStore.messages.channelMessagePipeline = null
+	hubStore.messages.channelPipelineKey = null
 }
 
 /**
@@ -154,6 +155,11 @@ export function initChannelVirtualList(container, reload) {
 		loadMoreTop: loadOlderMessages,
 		fetchData: sliceChannelMessagesPage,
 		renderItem: renderChannelMessageElement,
+		/**
+		 * @param {object} row 消息行
+		 * @returns {string} eventId
+		 */
+		getItemKey: row => String(row.eventId || ''),
 		initialIndex: (() => {
 			const targetId = consumePendingScrollTarget()
 			if (!targetId) return Math.max(0, hubStore.messages.channelMessages.length - 1)

@@ -175,7 +175,7 @@ Deno.test({
 })
 
 Deno.test({
-	name: 'POST heartbeat/status allow active group member persona; reject foreign entity',
+	name: 'POST heartbeat/status: group viewer.entityHash is operator; reject foreign entity',
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
@@ -191,7 +191,8 @@ Deno.test({
 		assertEquals(viewerRes.status, 200)
 		const operatorEntityHash = (await viewerRes.json()).viewerEntityHash
 		assert(operatorEntityHash)
-		assert(memberEntityHash !== operatorEntityHash, 'group persona differs from operator')
+		// 群临时 signer 的 pubKeyHash ≠ entity；viewer.entityHash 必须是 operator
+		assertEquals(memberEntityHash, operatorEntityHash)
 
 		const heartbeatRes = await chatFetch(node, 'POST', `/entities/${memberEntityHash}/heartbeat`)
 		assertEquals(heartbeatRes.status, 200)

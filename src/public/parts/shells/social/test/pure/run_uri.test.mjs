@@ -4,7 +4,12 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { formatSocialPostHref, formatSocialSearchHref, parseSocialRunUri } from '../../public/shared/runUri.mjs'
+import {
+	formatSocialPostHref,
+	formatSocialPostPageUri,
+	formatSocialSearchHref,
+	parseSocialRunUri,
+} from '../../public/shared/runUri.mjs'
 
 Deno.test('formatSocialSearchHref encodes hashtag query', () => {
 	assertEquals(formatSocialSearchHref('#fount'), '/parts/shells:social/#search;fount')
@@ -22,8 +27,22 @@ Deno.test('parseSocialRunUri reads post detail', () => {
 	assertEquals(parsed?.subcommand, 'post')
 	assertEquals(parsed?.entityHash, 'abc')
 	assertEquals(parsed?.postId, 'pid1')
+	assertEquals(parsed?.sharerNodeHash, undefined)
+})
+
+Deno.test('parseSocialRunUri reads post with sharerNodeHash', () => {
+	const parsed = parseSocialRunUri('post;abc;pid1;nodehash64')
+	assertEquals(parsed?.subcommand, 'post')
+	assertEquals(parsed?.entityHash, 'abc')
+	assertEquals(parsed?.postId, 'pid1')
+	assertEquals(parsed?.sharerNodeHash, 'nodehash64')
 })
 
 Deno.test('formatSocialPostHref builds detail hash', () => {
 	assertEquals(formatSocialPostHref('eh', 'pid'), '/parts/shells:social/#post;eh;pid')
+	assertEquals(formatSocialPostHref('eh', 'pid', 'nh'), '/parts/shells:social/#post;eh;pid;nh')
+})
+
+Deno.test('formatSocialPostPageUri for external share', () => {
+	assertEquals(formatSocialPostPageUri('eh', 'pid', 'nh'), 'fount://page/parts/shells:social/#post;eh;pid;nh')
 })

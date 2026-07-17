@@ -126,8 +126,12 @@ async function handleRunPart(parts) {
 	 */
 	const doRun = async () => {
 		try {
-			await runPart(partpath, args)
+			const result = await runPart(partpath, args)
 			progressElement.style.display = 'none'
+			if (result?.redirect) {
+				window.location.href = result.redirect
+				return
+			}
 			messageElement.dataset.i18n = 'protocolhandler.runPart.commandSent'
 			setTimeout(goBack, 2000)
 		}

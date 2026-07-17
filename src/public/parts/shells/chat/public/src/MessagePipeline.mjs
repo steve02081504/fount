@@ -26,6 +26,7 @@ import { createVirtualList } from '../../../scripts/lib/virtualList.mjs'
  * @param {number} [options.initialIndex] 初始滚动索引
  * @param {Function} [options.onRenderComplete] 渲染完成回调
  * @param {Function} [options.loadMoreTop] 向上加载更多
+ * @param {(item: object) => string} [options.getItemKey] 行键；提供时 refresh 键控复用 DOM
  * @returns {object} 管道 API
  */
 export function createMessagePipeline({
@@ -35,6 +36,7 @@ export function createMessagePipeline({
 	initialIndex = 0,
 	onRenderComplete,
 	loadMoreTop = null,
+	getItemKey = null,
 }) {
 	/** @type {ReturnType<typeof createVirtualList> | null} */
 	let virtualList = null
@@ -77,6 +79,7 @@ export function createMessagePipeline({
 		/** @returns {void} */
 		onRenderComplete: () => onRenderComplete?.(),
 		loadMoreTop,
+		getItemKey,
 	})
 
 	return {
@@ -86,6 +89,10 @@ export function createMessagePipeline({
 		/** @returns {Promise<void>} */
 		async refresh() {
 			await virtualList.refresh()
+			if (shouldAutoScroll) {
+				markProgrammaticScroll()
+				container.scrollTop = container.scrollHeight
+			}
 		},
 
 		/**

@@ -1,4 +1,5 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
+import { socialState } from '../state.mjs'
 
 /**
  * 关闭所有帖子溢出菜单（可选排除某一菜单）。
@@ -38,7 +39,7 @@ export async function copyTextToClipboard(link) {
  * @returns {Promise<'shared' | 'copied'>} 结果
  */
 export async function shareOrCopyPostLink(entityHash, postId, title) {
-	const url = formatSocialShareHttpsUrl(entityHash, postId)
+	const url = formatSocialShareHttpsUrl(entityHash, postId, socialState.viewerNodeHash || undefined)
 	if (typeof navigator.share === 'function')
 		try {
 			await navigator.share({ title: title || 'fount', url })

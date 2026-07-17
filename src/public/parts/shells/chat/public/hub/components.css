@@ -191,21 +191,6 @@
 	font-size: 12px;
 }
 
-.hub-user-settings-link {
-	color: var(--hub-text-muted);
-	padding: 6px;
-	border-radius: var(--hub-radius-sm);
-	text-decoration: none;
-	display: flex;
-	align-items: center;
-	transition: background 0.12s ease, color 0.12s ease;
-}
-
-.hub-user-settings-link:hover {
-	background: var(--hub-hover);
-	color: var(--hub-text-bright);
-}
-
 /* —— 头像 —— */
 .hub-avatar,
 .hub-member-avatar {
