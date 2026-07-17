@@ -169,7 +169,8 @@
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/navigation.spec.mjs",
 						"src/public/parts/shells/social/public/src/navigation.mjs",
-						"src/public/parts/shells/social/public/src/viewChrome.mjs"
+						"src/public/parts/shells/social/public/src/viewChrome.mjs",
+						"src/public/parts/shells/social/public/src/views/video.mjs"
 					]
 				},
 				{
@@ -190,6 +191,16 @@
 						"src/public/parts/shells/social/test/frontend/saved.spec.mjs",
 						"src/public/parts/shells/social/public/src/views/saved.mjs",
 						"src/public/parts/shells/social/public/src/actions/saved.mjs"
+					]
+				},
+				{
+					"name": "videos",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/videos.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/video.mjs",
+						"src/public/parts/shells/social/public/src/lib/verticalSnap.mjs",
+						"src/public/parts/shells/social/src/videosFeed.mjs",
+						"src/public/parts/shells/social/src/endpoints/videos.mjs"
 					]
 				},
 				{

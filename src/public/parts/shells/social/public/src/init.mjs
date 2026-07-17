@@ -204,8 +204,8 @@ export async function bootstrapSocialApp() {
 		initLiveBroadcastView()
 
 		// 视频视图键盘导航
-		document.getElementById('videoView')?.addEventListener('keydown', handleVideoKeydown)
-		document.getElementById('videoViewBackButton')?.addEventListener('click', () => {
+		document.getElementById('videosView')?.addEventListener('keydown', handleVideoKeydown)
+		document.getElementById('videosViewBackButton')?.addEventListener('click', () => {
 			void switchView('feed')
 		})
 		document.getElementById('liveViewBackButton')?.addEventListener('click', () => {

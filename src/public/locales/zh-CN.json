@@ -1506,7 +1506,18 @@
 			"empty": "该话题暂无帖子"
 		},
 		"video": {
-			"empty": "暂无短视频"
+			"view": {
+				"aria-label": "短视频"
+			},
+			"empty": "暂无短视频",
+			"emptyHint": "关注的人或公开广场里还没有带视频的帖子。发一条视频动态试试？",
+			"compose": "去发视频",
+			"back": {
+				"aria-label": "返回动态"
+			},
+			"mute": "静音",
+			"unmute": "取消静音",
+			"unavailable": "视频无法播放"
 		},
 		"live": {
 			"empty": "暂无直播",

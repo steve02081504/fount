@@ -19,7 +19,7 @@ export const phases = [
 	},
 	{
 		name: 'core',
-		testMatch: ['deepLink.spec.mjs', 'feed.spec.mjs', 'navigation.spec.mjs', 'profile.spec.mjs', 'saved.spec.mjs'],
+		testMatch: ['deepLink.spec.mjs', 'feed.spec.mjs', 'navigation.spec.mjs', 'profile.spec.mjs', 'saved.spec.mjs', 'videos.spec.mjs'],
 	},
 	{
 		name: 'tail',

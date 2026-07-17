@@ -1,4 +1,6 @@
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
+import { authorLabel, renderAvatarHtml } from '../lib/display.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
@@ -22,6 +24,7 @@ let videoPageLoading = false
  */
 export async function loadVideoView() {
 	const container = document.getElementById('videoSnapContainer')
+	const view = document.getElementById('videosView')
 	if (!container) return
 
 	snapBind?.disconnect()
@@ -37,12 +40,14 @@ export async function loadVideoView() {
 	videoCursor = data.nextCursor || null
 
 	if (!items.length) {
-		container.innerHTML = `<div class="video-slide"><p class="video-empty">${escapeHtml(geti18n('social.video.empty'))}</p></div>`
+		container.appendChild(buildVideoEmptySlide())
+		view?.focus({ preventScroll: true })
 		return
 	}
 
 	appendVideoSlides(container, items)
 	videoShownItems = [...items]
+	view?.focus({ preventScroll: true })
 
 	snapBind = bindVerticalSnap(container, {
 		/**
@@ -57,6 +62,7 @@ export async function loadVideoView() {
 				video.preload = 'auto'
 				video.play().catch(() => {})
 			}
+			setPauseHint(el, false)
 			for (let i = 1; i <= 2; i++) {
 				const next = container.children[index + i]
 				const nv = next?.querySelector('video')
@@ -75,8 +81,32 @@ export async function loadVideoView() {
 				video.pause()
 				video.playbackRate = 1
 			}
+			setPauseHint(el, true)
 		},
 	})
+}
+
+/**
+ * @returns {HTMLElement} 空态 slide
+ */
+function buildVideoEmptySlide() {
+	const slide = document.createElement('div')
+	slide.className = 'video-slide'
+	slide.innerHTML = `
+		<div class="video-empty-state">
+			<span class="s-ic s-ic-video video-empty-icon" aria-hidden="true"></span>
+			<p class="video-empty-title">${escapeHtml(geti18n('social.video.empty'))}</p>
+			<p class="video-empty-hint">${escapeHtml(geti18n('social.video.emptyHint'))}</p>
+			<button type="button" class="btn btn-primary video-empty-compose" data-video-compose>
+				${escapeHtml(geti18n('social.video.compose'))}
+			</button>
+		</div>
+	`
+	slide.querySelector('[data-video-compose]')?.addEventListener('click', async () => {
+		const { focusComposer } = await import('../navigation.mjs')
+		await focusComposer({ switchToFeed: true })
+	})
+	return slide
 }
 
 /**
@@ -122,7 +152,10 @@ async function maybeLoadMoreVideos(container, index) {
 		return
 	}
 
+	// 循环重放：需用户已滑到末尾附近且容器真的可滚，避免单条首屏自动复制
 	if (!videoShownItems.length) return
+	if (index < 1 && container.scrollTop <= 0) return
+	if (container.scrollHeight <= container.clientHeight) return
 	videoPageLoading = true
 	try {
 		appendVideoSlides(container, videoShownItems)
@@ -130,6 +163,40 @@ async function maybeLoadMoreVideos(container, index) {
 	finally {
 		videoPageLoading = false
 	}
+}
+
+/**
+ * @param {object} item feed 条目
+ * @returns {string} 可播放 URL；无则空串
+ */
+function resolveVideoSrc(item) {
+	const refs = item.post?.content?.mediaRefs || item.mediaRefs || []
+	const mediaRef = refs.find(m => String(m?.kind || '').toLowerCase() === 'video')
+	if (!mediaRef) return ''
+	try { return mediaRefUrl(mediaRef) }
+	catch { return '' }
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @param {boolean} paused 是否暂停
+ * @returns {void}
+ */
+function setPauseHint(slide, paused) {
+	slide.querySelector('.video-pause-hint')?.classList.toggle('is-visible', paused)
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @param {HTMLVideoElement} video 播放器
+ * @returns {void}
+ */
+function syncMuteButton(slide, video) {
+	const btn = slide.querySelector('.video-mute-btn')
+	if (!btn) return
+	btn.setAttribute('aria-label', geti18n(video.muted ? 'social.video.unmute' : 'social.video.mute'))
+	btn.querySelector('.s-ic')?.classList.toggle('s-ic-mute', video.muted)
+	btn.querySelector('.s-ic')?.classList.toggle('s-ic-volume', !video.muted)
 }
 
 /**
@@ -142,44 +209,71 @@ function buildVideoSlide(item) {
 	slide.dataset.entityHash = item.entityHash || ''
 	slide.dataset.postId = item.postId || ''
 
-	const refs = item.post?.content?.mediaRefs || item.mediaRefs || []
-	const mediaRef = refs.find(m => String(m?.kind || '').toLowerCase() === 'video')
-	const videoSrc = mediaRef ? mediaRefUrl(mediaRef) : ''
+	const videoSrc = resolveVideoSrc(item)
+	const label = authorLabel(item.entityHash, item.authorProfile)
+	const caption = String(item.post?.content?.text || item.text || '').trim()
+	const profileHref = formatSocialProfileHref(item.entityHash)
+	const liked = Boolean(item.viewerLiked)
+	const likeCount = item.likeCount || 0
+	const replyCount = item.replyCount || 0
 
-	slide.innerHTML = `
-		<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>
+	slide.innerHTML = videoSrc
+		? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
+		: `<div class="video-media-fallback">
+			<span class="s-ic s-ic-video" aria-hidden="true"></span>
+			<p>${escapeHtml(geti18n('social.video.unavailable'))}</p>
+		</div>`
+
+	slide.insertAdjacentHTML('beforeend', `
+		<div class="video-pause-hint" aria-hidden="true">
+			<span class="s-ic s-ic-play"></span>
+		</div>
 		<div class="video-overlay">
 			<div class="video-info">
-				<div class="video-author">${escapeHtml(item.authorName || item.authorHandle || '')}</div>
-				<div class="video-caption">${escapeHtml((item.text || '').slice(0, 120))}</div>
+				<a class="video-author-row" href="${escapeHtml(profileHref)}" data-video-author>
+					${renderAvatarHtml(item.entityHash, item.authorProfile, 'video-author-avatar')}
+					<span class="video-author">${escapeHtml(label)}</span>
+				</a>
+				${caption ? `<div class="video-caption">${escapeHtml(caption.slice(0, 180))}</div>` : ''}
 			</div>
 			<div class="video-actions">
-				<button type="button" class="video-action-btn video-like-btn" data-action="like">
+				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like">
 					<span class="s-ic s-ic-like" aria-hidden="true"></span>
-					<span class="video-like-count">${item.likeCount || 0}</span>
+					<span class="video-like-count">${likeCount}</span>
 				</button>
 				<button type="button" class="video-action-btn video-comment-btn" data-action="comment">
 					<span class="s-ic s-ic-reply" aria-hidden="true"></span>
-					<span>${item.replyCount || 0}</span>
+					<span>${replyCount}</span>
+				</button>
+				<button type="button" class="video-action-btn video-mute-btn" data-action="mute" aria-label="">
+					<span class="s-ic s-ic-volume" aria-hidden="true"></span>
 				</button>
 			</div>
 		</div>
 		<div class="heart-anim hidden" aria-hidden="true"></div>
 		<div class="video-progress-bar"><div class="video-progress-fill"></div></div>
 		<div class="video-replies-panel hidden" data-replies-panel></div>
-	`
+	`)
 
 	const video = slide.querySelector('video')
+	if (video) syncMuteButton(slide, video)
 
 	video?.addEventListener('timeupdate', () => {
 		const fill = slide.querySelector('.video-progress-fill')
 		if (fill && video.duration)
 			fill.style.width = `${(video.currentTime / video.duration) * 100}%`
 	})
+	video?.addEventListener('play', () => setPauseHint(slide, false))
+	video?.addEventListener('pause', () => setPauseHint(slide, true))
+
+	slide.querySelector('[data-video-author]')?.addEventListener('click', event => {
+		event.stopPropagation()
+	})
 
 	let lastTap = 0
 	slide.addEventListener('pointerup', async event => {
-		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel')) return
+		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel') || event.target.closest('[data-video-author]'))
+			return
 		const now = Date.now()
 		if (now - lastTap < 350) {
 			lastTap = 0
@@ -190,8 +284,9 @@ function buildVideoSlide(item) {
 			lastTap = now
 			setTimeout(() => {
 				if (lastTap !== now) return
-				if (video?.paused) video.play().catch(() => {})
-				else video?.pause()
+				if (!video) return
+				if (video.paused) video.play().catch(() => {})
+				else video.pause()
 			}, 360)
 		}
 	})
@@ -202,6 +297,8 @@ function buildVideoSlide(item) {
 	let speedMode = false
 
 	slide.addEventListener('pointerdown', event => {
+		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel') || event.target.closest('[data-video-author]'))
+			return
 		pressStartX = event.clientX
 		pressTimer = setTimeout(() => {
 			pressTimer = null
@@ -254,6 +351,13 @@ function buildVideoSlide(item) {
 		await doVideoLike(slide)
 	})
 
+	slide.querySelector('.video-mute-btn')?.addEventListener('click', event => {
+		event.stopPropagation()
+		if (!video) return
+		video.muted = !video.muted
+		syncMuteButton(slide, video)
+	})
+
 	slide.querySelector('.video-comment-btn')?.addEventListener('click', async event => {
 		event.stopPropagation()
 		const panel = slide.querySelector('[data-replies-panel]')
@@ -277,9 +381,12 @@ function buildVideoSlide(item) {
 async function doVideoLike(slide) {
 	const { entityHash, postId } = slide.dataset
 	if (!entityHash || !postId) return
+	const btn = slide.querySelector('.video-like-btn')
+	if (btn?.classList.contains('is-active')) return
 	await runSocialWrite('like', () =>
 		socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
 	)
+	btn?.classList.add('is-active')
 	const countEl = slide.querySelector('.video-like-count')
 	if (countEl) countEl.textContent = String(Number(countEl.textContent) + 1)
 }
@@ -301,7 +408,7 @@ function showHeartAnim(slide) {
 }
 
 /**
- * 视频视图键盘导航处理器（绑定到 #videoView）。
+ * 视频视图键盘导航处理器（绑定到 #videosView）。
  * @param {KeyboardEvent} event 键盘事件
  * @returns {void}
  */
@@ -336,7 +443,10 @@ export function handleVideoKeydown(event) {
 			if (currentSlide) void doVideoLike(currentSlide)
 			break
 		case 'm': case 'M':
-			if (video) video.muted = !video.muted
+			if (video && currentSlide) {
+				video.muted = !video.muted
+				syncMuteButton(currentSlide, video)
+			}
 			break
 		case 'c': case 'C': {
 			const btn = currentSlide?.querySelector('.video-comment-btn')

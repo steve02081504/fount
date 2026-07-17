@@ -36,6 +36,8 @@ alwaysApply: false
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
 - Post card engagement: like / **dislike** (mutually exclusive; reducer clears the opposing reaction); `reaction_index` projects federated like/dislike signed events (controlled by entity `privacy.publishReactions`); `for_you` uses local `taste/*` cluster weights (`interestBoost`, can be negative). Preference UI: `#tasteView` → `views/taste.mjs` (two toggles: `publishPreferences` / `publishReactions`). Tag naming uses timeline `tag_name` events.
+- **`activateView(name)`** → `#${name}View`（`data-view` 与 section id 必须同词干：`videos`→`#videosView`，勿写成 `#videoView`；否则主导航高亮后主栏整块空白）。
+- 短视频 slide 字段取自 `buildPostFeedItem`：`post.content.text` / `post.content.mediaRefs` / `authorProfile`（经 `authorLabel`），不是扁平的 `item.text` / `item.authorName`。
 - **Cross-shell chat imports**: browser modules must use absolute `/parts/shells:chat/...` URLs (filesystem relatives resolve under the page origin and 404, breaking the whole module graph). Modules imported by Deno pure tests must not contain `/parts/...` URL imports — keep token helpers in chat (`inlineTokenSyntax.mjs`) and leave social shared pure modules dependency-free.
 
 ## Feed / profile pagination

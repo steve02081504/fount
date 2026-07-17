@@ -95,6 +95,8 @@ body {
 .s-ic-vote { mask-image: url("https://api.iconify.design/mdi/poll.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/poll.svg"); }
 .s-ic-edit { mask-image: url("https://api.iconify.design/mdi/pencil-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/pencil-outline.svg"); }
 .s-ic-mute { mask-image: url("https://api.iconify.design/mdi/volume-off.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/volume-off.svg"); }
+.s-ic-volume { mask-image: url("https://api.iconify.design/mdi/volume-high.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/volume-high.svg"); }
+.s-ic-play { mask-image: url("https://api.iconify.design/mdi/play.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/play.svg"); }
 .s-ic-cw { mask-image: url("https://api.iconify.design/mdi/alert-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/alert-outline.svg"); }
 .s-ic-options { mask-image: url("https://api.iconify.design/mdi/tune-variant.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/tune-variant.svg"); }
 
@@ -2499,7 +2501,7 @@ body {
 }
 
 /* === Fullscreen video/live views === */
-#videoView,
+#videosView,
 #liveView {
 	position: fixed;
 	inset: 0;
@@ -2542,27 +2544,59 @@ body {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
+	background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
 	pointer-events: none;
 }
 
 .video-info {
-	padding: 0.75rem 4.5rem 2.5rem 1rem;
+	padding: 0.75rem 4.5rem 2.75rem 1rem;
 	pointer-events: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 0.45rem;
+}
+
+.video-author-row {
+	display: flex;
+	align-items: center;
+	gap: 0.55rem;
+	color: #fff;
+	text-decoration: none;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.video-author-row:hover .video-author {
+	text-decoration: underline;
+}
+
+.video-author-row .author-avatar {
+	width: 2.25rem;
+	height: 2.25rem;
+	border-radius: 999px;
+	flex-shrink: 0;
+	border: 1.5px solid rgba(255, 255, 255, 0.55);
 }
 
 .video-author {
-	font-weight: bold;
+	font-weight: 700;
 	color: #fff;
 	font-size: 0.95rem;
-	margin-bottom: 0.2rem;
 	text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .video-caption {
-	color: rgba(255,255,255,0.9);
-	font-size: 0.85rem;
+	color: rgba(255,255,255,0.92);
+	font-size: 0.88rem;
+	line-height: 1.35;
 	text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
 }
 
 .video-actions {
@@ -2571,8 +2605,9 @@ body {
 	bottom: 3.5rem;
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: 1.25rem;
 	align-items: center;
+	pointer-events: auto;
 }
 
 .video-action-btn {
@@ -2596,6 +2631,12 @@ body {
 	filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
 }
 
+.video-action-btn.is-active .s-ic-like {
+	mask-image: url("https://api.iconify.design/mdi/heart.svg");
+	-webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg");
+	background: var(--social-like);
+}
+
 .video-progress-bar {
 	position: absolute;
 	bottom: 0;
@@ -2612,12 +2653,90 @@ body {
 	will-change: width;
 }
 
+.video-pause-hint {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 160ms ease;
+	background: rgba(0, 0, 0, 0.18);
+}
+
+.video-pause-hint.is-visible {
+	opacity: 1;
+}
+
+.video-pause-hint .s-ic {
+	width: 3.5rem;
+	height: 3.5rem;
+	background: rgba(255, 255, 255, 0.92);
+	filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.45));
+}
+
+.video-media-fallback {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.75rem;
+	padding: 2rem;
+	text-align: center;
+	background: radial-gradient(circle at 30% 20%, #243044 0%, #0d1118 55%, #07090d 100%);
+	color: rgba(255, 255, 255, 0.88);
+}
+
+.video-media-fallback .s-ic {
+	width: 3rem;
+	height: 3rem;
+	background: rgba(255, 255, 255, 0.75);
+}
+
 .video-empty,
 .live-empty {
 	color: #fff;
 	font-size: 1rem;
 	padding: 2rem;
 	text-align: center;
+}
+
+.video-empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 0.85rem;
+	width: min(22rem, 86vw);
+	padding: 2rem 1.25rem;
+	text-align: center;
+	color: #fff;
+}
+
+.video-empty-icon {
+	width: 3.25rem;
+	height: 3.25rem;
+	background: rgba(255, 255, 255, 0.85);
+}
+
+.video-empty-title {
+	margin: 0;
+	font-size: 1.2rem;
+	font-weight: 700;
+}
+
+.video-empty-hint {
+	margin: 0;
+	color: rgba(255, 255, 255, 0.72);
+	font-size: 0.92rem;
+	line-height: 1.45;
+}
+
+.video-empty-compose {
+	margin-top: 0.35rem;
 }
 
 /* Heart animation */
@@ -2962,7 +3081,7 @@ body {
 	align-items: center;
 	justify-content: center;
 }
-#videoView .view-back-btn {
+#videosView .view-back-btn {
 	position: absolute;
 	top: 1rem;
 	left: 1rem;

@@ -24,6 +24,22 @@ test.describe('Social navigation', () => {
 		}
 	})
 
+	test('videos view opens fullscreen and shows empty state', async ({ page }) => {
+		const feedPromise = page.waitForResponse(res => {
+			if (res.request().method() !== 'GET' || res.status() !== 200) return false
+			return new URL(res.url()).pathname === '/api/parts/shells:social/videos/feed'
+		}, { timeout: 60_000 })
+		await page.locator('.side-nav .nav-btn[data-view="videos"]').click()
+		await feedPromise
+		await expect(page.locator('#videosView')).toBeVisible()
+		await expect(page.locator('#composer')).toBeHidden()
+		await expect(page.locator('#videosView .video-empty-state')).toBeVisible()
+		await expect(page.locator('#videosView .video-empty-title')).toHaveText('暂无短视频')
+		await page.locator('#videosView [data-video-compose]').click()
+		await expect(page.locator('#feedView')).toBeVisible()
+		await expect(page.locator('#composer')).toBeVisible()
+	})
+
 	test('feed search filters posts and clear restores feed', async ({ page, publishPost }) => {
 		const tag = `navsrch${Date.now()}`
 		const { postId } = await publishPost(`nav-filter #${tag}`)
