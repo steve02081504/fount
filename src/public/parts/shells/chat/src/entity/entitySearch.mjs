@@ -66,13 +66,15 @@ function profileDisplayName(profile) {
 
 /**
  * @param {string} q 已小写的 query
- * @param {{ entityHash: string, handle?: string, name?: string }} row 候选
+ * @param {{ entityHash: string, handle?: string, name?: string, charPartName?: string }} row 候选
  * @returns {boolean} 是否匹配
  */
 function rowMatchesQuery(q, row) {
 	if (!q) return false
 	const handle = String(row.handle || '').trim().toLowerCase()
 	if (handle && (handle === q || handle.includes(q))) return true
+	const charPartName = String(row.charPartName || '').trim().toLowerCase()
+	if (charPartName && (charPartName === q || charPartName.includes(q))) return true
 	const name = String(row.name || '').trim().toLowerCase()
 	return Boolean(name && name.includes(q))
 }
@@ -104,14 +106,14 @@ export async function localEntitySearchHandler(inboundContext, query) {
 	if (q.length < 2) return []
 
 	const maxHits = 32
-	/** @type {Map<string, { entityHash: string, handle: string, name: string }>} */
+	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string }>} */
 	const byHash = new Map()
 
 	const usernames = inboundContext.replicaUsername
 		? [inboundContext.replicaUsername]
 		: getAllUserNames()
 
-	for (const username of usernames) 
+	for (const username of usernames)
 		for (const row of await listEntityIdentities(username)) {
 			const entityHash = String(row.entityHash || '').toLowerCase()
 			if (!isEntityHash128(entityHash) || byHash.has(entityHash)) continue
@@ -119,12 +121,12 @@ export async function localEntitySearchHandler(inboundContext, query) {
 			const profile = await getProfile(entityHash, username, { skipPresentation: true })
 			const handle = String(profile.handle || '').trim().toLowerCase()
 			const name = profileDisplayName(profile)
-			const candidate = { entityHash, handle, name }
+			const charPartName = String(row.charPartName || '').trim() || undefined
+			const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
 			if (!rowMatchesQuery(q, candidate)) continue
 			byHash.set(entityHash, candidate)
 			if (byHash.size >= maxHits) return [...byHash.values()]
 		}
-	
 
 	const store = getEntityStore()
 	for (const entityHash of await store.listEntityHashes()) {
@@ -144,16 +146,18 @@ export async function localEntitySearchHandler(inboundContext, query) {
 
 /**
  * @param {unknown} row 线索行
- * @returns {{ entityHash: string, handle: string, name: string } | null} 规范化行或 null
+ * @returns {{ entityHash: string, handle: string, name: string, charPartName?: string } | null} 规范化行或 null
  */
 function normalizeClueRow(row) {
 	if (!row || typeof row !== 'object') return null
 	const entityHash = String(/** @type {{ entityHash?: unknown }} */row.entityHash || '').toLowerCase()
 	if (!isEntityHash128(entityHash)) return null
+	const charPartName = String(/** @type {{ charPartName?: unknown }} */row.charPartName || '').trim() || undefined
 	return {
 		entityHash,
 		handle: String(/** @type {{ handle?: unknown }} */row.handle || '').trim().toLowerCase(),
 		name: String(/** @type {{ name?: unknown }} */row.name || '').trim(),
+		...charPartName ? { charPartName } : {},
 	}
 }
 
@@ -236,7 +240,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		rowKey: row => String(/** @type {{ entityHash?: unknown }} */row?.entityHash || '').toLowerCase(),
 	})
 
-	/** @type {Map<string, { entityHash: string, handle: string, name: string }>} */
+	/** @type {Map<string, { entityHash: string, handle: string, name: string, charPartName?: string }>} */
 	const unique = new Map()
 	for (const raw of clues) {
 		const row = normalizeClueRow(raw)
@@ -270,16 +274,24 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		if (Number(score) < hideThreshold) return null
 
 		let profile
-		if (isWritableLocalEntity(entityHash))
+		let charPartName = unique.get(entityHash)?.charPartName || ''
+		if (isWritableLocalEntity(entityHash)) {
 			profile = await getProfile(entityHash, username, { skipPresentation: true })
+			if (!charPartName) {
+				const { resolveCharPartNameForEntity } = await import('./identity.mjs')
+				charPartName = await resolveCharPartNameForEntity(username, entityHash) || ''
+			}
+		}
 		else {
 			profile = await fetchAndCacheRemoteProfile(username, entityHash)
 			if (!profile) return null
+			charPartName = '' // 远端声称的 charPartName 不可信
 		}
 
 		const handle = String(profile.handle || '').trim().toLowerCase()
 		const name = profileDisplayName(profile) || unique.get(entityHash)?.name || ''
-		if (!rowMatchesQuery(normalized, { entityHash, handle, name })) return null
+		const candidate = { entityHash, handle, name, ...charPartName ? { charPartName } : {} }
+		if (!rowMatchesQuery(normalized, candidate)) return null
 
 		const flags = viewerEntityHash
 			? await loadInteractionFlags(username, viewerEntityHash, entityHash)
@@ -289,6 +301,7 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 			entityHash,
 			handle,
 			name,
+			...charPartName ? { charPartName } : {},
 			activePubKeyHex: profile.activePubKeyHex || '',
 			keyGeneration: Number(profile.keyGeneration ?? 0) || 0,
 			nodeHash: parsed.nodeHash,
@@ -303,15 +316,17 @@ export async function searchEntitiesNetwork(username, q, options = {}) {
 		const aAlias = a.alias ? 1 : 0
 		const bAlias = b.alias ? 1 : 0
 		if (aAlias !== bAlias) return bAlias - aAlias
-		const aExact = a.handle === normalized ? 1 : 0
-		const bExact = b.handle === normalized ? 1 : 0
+		const aExact = a.handle === normalized || String(a.charPartName || '').toLowerCase() === normalized ? 1 : 0
+		const bExact = b.handle === normalized || String(b.charPartName || '').toLowerCase() === normalized ? 1 : 0
 		if (aExact !== bExact) return bExact - aExact
 		const aIx = (a.following ? 4 : 0) + (a.care ? 2 : 0) + (a.hasDm ? 1 : 0)
 		const bIx = (b.following ? 4 : 0) + (b.care ? 2 : 0) + (b.hasDm ? 1 : 0)
 		if (aIx !== bIx) return bIx - aIx
 		if (a.nodeScore !== b.nodeScore) return b.nodeScore - a.nodeScore
-		const aFuzzy = String(a.name).toLowerCase().includes(normalized) ? 1 : 0
-		const bFuzzy = String(b.name).toLowerCase().includes(normalized) ? 1 : 0
+		const aFuzzy = String(a.name).toLowerCase().includes(normalized)
+			|| String(a.charPartName || '').toLowerCase().includes(normalized) ? 1 : 0
+		const bFuzzy = String(b.name).toLowerCase().includes(normalized)
+			|| String(b.charPartName || '').toLowerCase().includes(normalized) ? 1 : 0
 		if (aFuzzy !== bFuzzy) return bFuzzy - aFuzzy
 		return a.entityHash.localeCompare(b.entityHash)
 	})

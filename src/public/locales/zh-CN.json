@@ -2666,14 +2666,16 @@
 			"noChars": "暂无角色，先去安装一些吧",
 			"noFriends": "暂无私聊",
 			"friendsEmptyTitle": "开始一段新对话",
-			"friendsEmptyDescription": "搜索其他节点上的用户，或在群聊中打开成员资料卡发起私信。",
-			"friendsEmptyAction": "搜索用户",
+			"friendsEmptyDescription": "搜索本机角色或其他节点上的用户，也可在群聊中打开成员资料卡发起私信。",
+			"friendsEmptyAction": "搜索角色或用户",
 			"friendsSearchPlaceholder": {
-				"placeholder": "按自定义 ID / 名称搜人…"
+				"placeholder": "搜本机角色 / 自定义 ID / 名称…"
 			},
-			"friendsSearchEmpty": "没有匹配的用户",
+			"friendsSearchEmpty": "没有匹配的角色或用户",
 			"friendsSearchTooShort": "请输入至少 2 个字符",
 			"friendsSearchDm": "发私信",
+			"friendsSearchChat": "开始对话",
+			"friendsSearchLocalChar": "本地角色",
 			"friendsSearchPin": "设为别名",
 			"charCount": "${count} 个角色",
 			"friendsCount": "${count} 个好友",

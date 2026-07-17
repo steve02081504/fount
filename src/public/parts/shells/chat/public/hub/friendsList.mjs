@@ -1,12 +1,13 @@
 /**
  * 【文件】public/hub/friendsList.mjs
  * 【职责】好友模式侧栏：拉取好友列表 API、渲染好友列与角色/用户会话入口。
- * 【原理】`renderFriendsColumn` 填充 `#hub-friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。
+ * 【原理】`renderFriendsColumn` 填充 `#hub-friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
+import { getAllCachedPartDetails, getPartList } from '../../../../scripts/api/parts.mjs'
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
@@ -30,6 +31,19 @@ import { loadGroups } from './serverBar.mjs'
  * @property {string} [charname]
  * @property {import('../shared/friendBinding.mjs').FriendBinding} binding
  * @property {object} session
+ */
+
+/**
+ * @typedef {object} FriendsSearchHit
+ * @property {'char' | 'user'} kind
+ * @property {string} label
+ * @property {string} subtitle
+ * @property {string} [charname]
+ * @property {string} [entityHash]
+ * @property {string} [handle]
+ * @property {string} [alias]
+ * @property {string} [name]
+ * @property {string} [activePubKeyHex]
  */
 
 /**
@@ -266,6 +280,92 @@ export async function renderFriendsColumn(friends) {
 }
 
 /**
+ * 按 part 名 / 展示名搜本机角色。
+ * @param {string} q 搜索词
+ * @returns {Promise<FriendsSearchHit[]>} 本地角色命中
+ */
+async function searchLocalChars(q) {
+	const nq = q.trim().toLowerCase()
+	if (nq.length < 2) return []
+	const [names, cached] = await Promise.all([
+		getPartList('chars').catch(() => []),
+		getAllCachedPartDetails('chars').catch(() => ({})),
+	])
+	const detailsMap = cached?.cachedDetails || {}
+	/** @type {FriendsSearchHit[]} */
+	const hits = []
+	for (const charname of Array.isArray(names) ? names : []) {
+		const name = String(charname || '').trim()
+		if (!name) continue
+		const details = detailsMap[name] || null
+		const displayName = String(details?.info?.name || '').trim()
+		if (!name.toLowerCase().includes(nq) && !displayName.toLowerCase().includes(nq)) continue
+		hits.push({
+			kind: 'char',
+			charname: name,
+			label: displayName || name,
+			subtitle: displayName && displayName !== name ? name : geti18n('chat.hub.friendsSearchLocalChar'),
+		})
+		if (hits.length >= 20) break
+	}
+	return hits
+}
+
+/**
+ * @param {FriendsSearchHit} hit 搜索命中
+ * @param {HTMLElement} resultsHost 结果容器
+ * @returns {Promise<void>}
+ */
+async function appendFriendsSearchHit(hit, resultsHost) {
+	const isChar = hit.kind === 'char'
+	const row = await renderTemplate('hub/friends/search_row', {
+		label: escapeHtml(hit.label),
+		handle: escapeHtml(hit.subtitle),
+		showPin: isChar ? '' : '1',
+		actionI18n: isChar ? 'chat.hub.friendsSearchChat' : 'chat.hub.friendsSearchDm',
+	})
+	if (!isChar)
+		row.querySelector('[data-pin]')?.addEventListener('click', () => {
+			void (async () => {
+				const next = prompt(
+					geti18n('chat.hub.profilePopup.setAliasPrompt', { name: hit.label }),
+					hit.alias || hit.handle || hit.name || '',
+				)
+				if (next == null) return
+				await setEntityAlias(hit.entityHash, next)
+				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+			})()
+		})
+	row.querySelector('[data-dm]')?.addEventListener('click', () => {
+		void (async () => {
+			if (isChar) {
+				await dispatchFriendChat({
+					type: 'char',
+					id: hit.charname,
+					displayName: hit.label,
+					entityHash: hit.entityHash,
+				})
+				return
+			}
+			const pubKeyHex = String(hit.activePubKeyHex || '').trim().toLowerCase()
+			if (!isHex64(pubKeyHex)) {
+				showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
+				return
+			}
+			if (hit.handle || hit.name)
+				await setEntityAlias(hit.entityHash, hit.alias || hit.handle || hit.name).catch(() => {})
+			await dispatchFriendChat({
+				type: 'user',
+				displayName: hit.label,
+				pubKeyHex,
+				entityHash: hit.entityHash,
+			})
+		})()
+	})
+	resultsHost.appendChild(row)
+}
+
+/**
  * @param {HTMLInputElement} input 搜索框
  * @param {HTMLElement} resultsHost 结果容器
  * @returns {Promise<void>}
@@ -284,55 +384,58 @@ async function runFriendsEntitySearch(input, resultsHost) {
 		}
 		return
 	}
-	const response = await fetch(`/api/parts/shells:chat/entities/search?q=${encodeURIComponent(q)}`, {
-		credentials: 'include',
-	})
+
+	const [localChars, response] = await Promise.all([
+		searchLocalChars(q),
+		fetch(`/api/parts/shells:chat/entities/search?q=${encodeURIComponent(q)}`, {
+			credentials: 'include',
+		}),
+	])
 	const data = await response.json().catch(() => ({}))
 	if (!response.ok) {
 		showToastI18n('error', 'chat.hub.createChatFailed', { error: data.error || `HTTP ${response.status}` })
 		return
 	}
-	const entities = data.entities || []
+
+	const seenChars = new Set(localChars.map(h => h.charname))
+	/** @type {FriendsSearchHit[]} */
+	const hits = [...localChars]
+	for (const entity of data.entities || []) {
+		const charPartName = String(entity.charPartName || '').trim()
+		if (charPartName) {
+			if (seenChars.has(charPartName)) continue
+			seenChars.add(charPartName)
+			const handle = formatEntityAtId(entity.entityHash, { handle: entity.handle })
+			hits.push({
+				kind: 'char',
+				charname: charPartName,
+				entityHash: entity.entityHash,
+				label: entity.alias || entity.name || charPartName,
+				subtitle: handle,
+			})
+			continue
+		}
+		const handle = formatEntityAtId(entity.entityHash, { handle: entity.handle })
+		hits.push({
+			kind: 'user',
+			entityHash: entity.entityHash,
+			handle: entity.handle,
+			alias: entity.alias,
+			name: entity.name,
+			activePubKeyHex: entity.activePubKeyHex,
+			label: entity.alias || entity.name || handle,
+			subtitle: handle,
+		})
+	}
+
 	resultsHost.replaceChildren()
 	resultsHost.classList.remove('hidden')
-	if (!entities.length) {
+	if (!hits.length) {
 		resultsHost.appendChild(await renderTemplate('hub/friends/search_hint', {
 			i18nKey: 'chat.hub.friendsSearchEmpty',
 		}))
 		return
 	}
-	for (const entity of entities) {
-		const handle = formatEntityAtId(entity.entityHash, { handle: entity.handle })
-		const label = entity.alias || entity.name || handle
-		const row = await renderTemplate('hub/friends/search_row', {
-			label: escapeHtml(label),
-			handle: escapeHtml(handle),
-		})
-		row.querySelector('[data-pin]')?.addEventListener('click', () => {
-			void (async () => {
-				const next = prompt(geti18n('chat.hub.profilePopup.setAliasPrompt', { name: label }), entity.alias || entity.handle || entity.name || '')
-				if (next == null) return
-				await setEntityAlias(entity.entityHash, next)
-				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
-			})()
-		})
-		row.querySelector('[data-dm]')?.addEventListener('click', () => {
-			void (async () => {
-				const pubKeyHex = String(entity.activePubKeyHex || '').trim().toLowerCase()
-				if (!isHex64(pubKeyHex)) {
-					showToastI18n('warning', 'chat.hub.profilePopup.peerNoIdentity')
-					return
-				}
-				if (entity.handle || entity.name)
-					await setEntityAlias(entity.entityHash, entity.alias || entity.handle || entity.name).catch(() => {})
-				await dispatchFriendChat({
-					type: 'user',
-					displayName: label,
-					pubKeyHex,
-					entityHash: entity.entityHash,
-				})
-			})()
-		})
-		resultsHost.appendChild(row)
-	}
+	for (const hit of hits)
+		await appendFriendsSearchHit(hit, resultsHost)
 }

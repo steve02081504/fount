@@ -65,6 +65,43 @@ Deno.test('searchEntitiesNetwork finds local handle without network peers', asyn
 	assertEquals(hit.name, '史蒂夫')
 })
 
+Deno.test('searchEntitiesNetwork finds local agent by charPartName', async () => {
+	const { username } = await getSession()
+	const {
+		ensureAgentEntityIdentity,
+		ensureOperatorPubKey,
+		resolveOperatorEntityHashForUser,
+	} = await import('../../src/entity/identity.mjs')
+	const {
+		localEntitySearchHandler,
+		registerChatEntitySearchHandler,
+		searchEntitiesNetwork,
+	} = await import('../../src/entity/entitySearch.mjs')
+	const { resetPartQueryStateForTests } = await import(
+		'npm:@steve02081504/fount-p2p/wire/part_query'
+	)
+
+	await ensureOperatorPubKey(username)
+	const operator = await resolveOperatorEntityHashForUser(username)
+	const charPartName = `zl-search-${crypto.randomUUID().slice(0, 8)}`
+	const agent = await ensureAgentEntityIdentity(username, charPartName)
+	assert(agent?.entityHash)
+
+	resetPartQueryStateForTests()
+	registerChatEntitySearchHandler()
+
+	const localRows = await localEntitySearchHandler({ replicaUsername: username }, { q: charPartName })
+	assert(localRows.some(row => row.entityHash === agent.entityHash && row.charPartName === charPartName))
+
+	const { entities } = await searchEntitiesNetwork(username, charPartName, {
+		viewerEntityHash: operator,
+		maxHits: 10,
+	})
+	const hit = entities.find(row => row.entityHash === agent.entityHash)
+	assert(hit, 'expected agent entity in search results')
+	assertEquals(hit.charPartName, charPartName)
+})
+
 Deno.test('searchEntitiesNetwork returns empty for short query', async () => {
 	const { username } = await getSession()
 	const { searchEntitiesNetwork } = await import('../../src/entity/entitySearch.mjs')

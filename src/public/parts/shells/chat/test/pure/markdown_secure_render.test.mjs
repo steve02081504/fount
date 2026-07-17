@@ -69,6 +69,24 @@ Deno.test('secure render keeps code-block copy/download/execute onclick', async 
 	assertMatch(html, /navigator\.clipboard\.writeText/)
 	assertMatch(html, /a\.download\s*=/)
 	assertMatch(html, /execution-output|Godbolt|createCopyButton/)
+	assertStringIncludes(html, 'markdown-code-block')
+	assertStringIncludes(html, '<figure')
+	assertStringIncludes(html, '<pre')
+})
+
+Deno.test('inline {:lang} stays span>code, not block pre', async () => {
+	const html = await renderSecure('前 `内联代码{:js}` 后')
+	assertStringIncludes(html, 'data-rehype-pretty-code-figure')
+	assertStringIncludes(html, '内联代码')
+	assertMatch(html, /<span[^>]*data-rehype-pretty-code-figure[^>]*>[\s\S]*?<code[^>]*data-language="js"/)
+	assertFalse(/<span[^>]*data-rehype-pretty-code-figure[^>]*>[\s\S]*?<pre\b/i.test(html))
+	assertFalse(html.includes('markdown-code-block'))
+})
+
+Deno.test('plain inline code stays bare code without pretty-code figure', async () => {
+	const html = await renderSecure('前 `plain` 后')
+	assertStringIncludes(html, '<code>plain</code>')
+	assertFalse(html.includes('data-rehype-pretty-code-figure'))
 })
 
 Deno.test('secure render keeps spoiler onclick + style', async () => {

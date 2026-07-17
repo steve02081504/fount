@@ -30,6 +30,7 @@ alwaysApply: false
 
 - **`lib/escapeHtml.mjs`**: must escape `& < > " '` (string replace). Do **not** use `textContent`/`innerHTML` round-trip — it leaves `"` unescaped and will break attribute values (`data-*="…"`).
 - **`markdown.mjs`**: Markdown → HTML with KaTeX, Mermaid, Shiki；chat/social 扩展经 `markdown_extensions` registry 自动进 `GetMarkdownConvertor`。壳侧只用 `getConvertor` / `renderMarkdownAsString`，按 `allowDangerousHtml` 分**可信**与**安全**两档（安全 = early 净化 + Mermaid strict）。勿再包一层壳专用 convertor。
+- **代码块增强**：复制/下载/执行 UI 必须挂在 `rehype-pretty-code` **之后**的 rehype 插件（只碰 `figure[data-rehype-pretty-code-figure] > pre`）。不要用 Shiki `transformers.root` 包一层——会破坏 inline `{:lang}` 路径（期望 `root>pre`，包装后吐出块级 `<pre>`）。plain `` `code` `` 保持裸 `<code>`；`` `code{:js}` `` 为 `span>code`。
 - **`embedCard.mjs`**: Fetches pages via `ALL /api/no-cors?url=` + `DOMParser` OG parsing, hydrated by `MutationObserver` on placeholder links; session-level LRU cache.
 - **`/api/no-cors`** (server): authenticated bidirectional streaming proxy. Forwards `Range` / conditional / `Content-Type` headers by name; upstream Cookie, Authorization, and custom headers injected via `No-Cors-*` prefix (e.g. `No-Cors-Authorization: Bearer …` → `Authorization`). Does not buffer the full body; `X-No-Cors-Final-Url` records the final URL after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry (remark/rehype plugins, CSS, init hooks).

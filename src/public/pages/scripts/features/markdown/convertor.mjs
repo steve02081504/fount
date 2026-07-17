@@ -1,5 +1,6 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
 import { toHtml } from 'https://esm.sh/hast-util-to-html'
+import { toString as hastToString } from 'https://esm.sh/hast-util-to-string'
 import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
@@ -650,49 +651,57 @@ $stderr = StringIO.new
 }
 
 /**
- * 创建代码块插件。
+ * 统计 shiki/rehype-pretty-code 产出的行数。
+ * @param {object} pre - `<pre>` hast 节点。
+ * @returns {number} 行数。
+ */
+function countCodeLines(pre) {
+	const code = pre.children?.find(child => child.type === 'element' && child.tagName === 'code')
+	const lines = code?.children?.filter(child =>
+		child.type === 'element' && child.tagName === 'span' && 'data-line' in (child.properties || {})
+	) || []
+	return lines.length || 1
+}
+
+/**
+ * 为块级代码添加复制/下载/执行等增强 UI。
+ * 必须在 rehype-pretty-code 之后以 rehype 插件运行：Shiki transformer 的 root 包装会破坏
+ * rehype-pretty-code 对内联 `{:lang}` 的假设（期望 root>pre，包装后 inline 路径会吐出块级 pre）。
+ * @param {object} pre - `<pre>` hast 节点。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
- * @returns {object} - 代码块插件。
+ * @returns {object} - 包装后的 hast 节点。
  */
-function createCodeBlockPlugin({ isStandalone = false } = {}) {
-	return {
-		name: 'code-block-enhancements',
-		/**
-		 * 处理 hast 树。
-		 * @param {object} hast - hast 树。
-		 * @returns {object} - 处理后的 hast 树。
-		 */
-		root(hast) {
-			const rawCode = this.tokens.map(line => line.map(token => token.content).join('')).join('\n')
-			const lineCount = this.tokens.length
-			const collapseThreshold = 13
-			const lang = this.options.lang || 'txt'
-			const ext = getLanguageExtension(lang)
-			let uniqueId
-			do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
-			while (document.getElementById(uniqueId))
-			const executor = languageExecutors[ext] || languageExecutors[lang]
+function enhanceCodeBlockPre(pre, { isStandalone = false } = {}) {
+	const rawCode = hastToString(pre).replace(/\n$/, '')
+	const lineCount = countCodeLines(pre)
+	const collapseThreshold = 13
+	const lang = pre.properties?.['data-language'] || 'txt'
+	const ext = getLanguageExtension(lang)
+	let uniqueId
+	do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
+	while (document.getElementById(uniqueId))
+	const executor = languageExecutors[ext] || languageExecutors[lang]
 
-			/**
-			 * 创建工具提示。
-			 * @param {string} textKey - 文本键。
-			 * @param {any} children - 子元素。
-			 * @param {string} [position='left'] - 位置。
-			 * @returns {object} - 工具提示元素。
-			 */
-			const createTooltip = (textKey, children, position = 'left') => {
-				const props = isStandalone
-					? { 'data-tip': geti18n(textKey + '.dataset.tip') }
-					: { 'data-i18n': textKey }
-				return h('div', { class: `tooltip tooltip-${position}`, ...props }, children)
-			}
+	/**
+	 * 创建工具提示。
+	 * @param {string} textKey - 文本键。
+	 * @param {any} children - 子元素。
+	 * @param {string} [position='left'] - 位置。
+	 * @returns {object} - 工具提示元素。
+	 */
+	const createTooltip = (textKey, children, position = 'left') => {
+		const props = isStandalone
+			? { 'data-tip': geti18n(textKey + '.dataset.tip') }
+			: { 'data-i18n': textKey }
+		return h('div', { class: `tooltip tooltip-${position}`, ...props }, children)
+	}
 
-			// 复制按钮
-			const copyButtonCore = h('button', {
-				class: 'btn btn-ghost btn-square btn-sm text-icon',
-				...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
-				onclick: `\
+	// 复制按钮
+	const copyButtonCore = h('button', {
+		class: 'btn btn-ghost btn-square btn-sm text-icon',
+		...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
+		onclick: `\
 event.stopPropagation()
 const button = this
 ;(async () => {
@@ -700,32 +709,32 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-						? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
-						: 'tooltip.dataset.i18n = \'code_block.copied\''
+			? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
-						? 'alert(\'Failed to copy: \' + e.message)'
-						: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
+			? 'alert(\'Failed to copy: \' + e.message)'
+			: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-						? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
-						: 'tooltip.dataset.i18n = \'code_block.copy\''
+			? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
 })()
 `,
-			}, [fromHtml(copyIconSized, { fragment: true })])
+	}, fromHtml(copyIconSized, { fragment: true }).children)
 
-			// 下载按钮
-			const downloadButtonCore = h('button', {
-				class: 'btn btn-ghost btn-square btn-sm text-icon',
-				...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
-				onclick: `\
+	// 下载按钮
+	const downloadButtonCore = h('button', {
+		class: 'btn btn-ghost btn-square btn-sm text-icon',
+		...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
+		onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
 const a = document.createElement('a')
@@ -735,30 +744,30 @@ document.body.appendChild(a)
 a.click()
 document.body.removeChild(a)
 `,
-			}, [fromHtml(downloadIconSized, { fragment: true })])
+	}, fromHtml(downloadIconSized, { fragment: true }).children)
 
-			// 预览按钮
-			let previewButtonCore = null
-			if (ext === 'html')
-				previewButtonCore = h('button', {
-					class: 'btn btn-ghost btn-square btn-sm text-icon',
-					...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
-					onclick: `\
+	// 预览按钮
+	let previewButtonCore = null
+	if (ext === 'html')
+		previewButtonCore = h('button', {
+			class: 'btn btn-ghost btn-square btn-sm text-icon',
+			...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
+			onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
 const previewWindow = window.open('', '_blank')
 previewWindow.document.write(code)
 previewWindow.document.close()
 `,
-				}, [fromHtml(previewIconSized, { fragment: true })])
+		}, fromHtml(previewIconSized, { fragment: true }).children)
 
-			// 执行按钮
-			let executeButtonCore = null
-			if (executor)
-				executeButtonCore = h('button', {
-					class: 'btn btn-ghost btn-square btn-sm text-icon',
-					...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
-					onclick: `\
+	// 执行按钮
+	let executeButtonCore = null
+	if (executor)
+		executeButtonCore = h('button', {
+			class: 'btn btn-ghost btn-square btn-sm text-icon',
+			...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
+			onclick: `\
 event.stopPropagation()
 const codeBlockContainer = document.getElementById('${uniqueId}')
 const preExistingOutput = document.querySelectorAll('.${uniqueId}-execution-output')
@@ -785,13 +794,13 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	button.innerHTML = \${JSON.stringify(successSvg)}
 	setTimeout(() => button.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-							? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
-							: 'button.parentElement.dataset.i18n = \'code_block.copied\''
+				? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
+				: 'button.parentElement.dataset.i18n = \'code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone
-							? 'alert(\'Failed to copy: \' + error.message)'
-							: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+				? 'alert(\'Failed to copy: \' + error.message)'
+				: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`
@@ -901,44 +910,60 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	outputContainer.remove()
 })
 `,
-				}, [fromHtml(playIconSized, { fragment: true })])
+		}, fromHtml(playIconSized, { fragment: true }).children)
 
-			/**
-			 * 获取按钮组。
-			 * @param {string} tooltipPosition - 工具提示位置。
-			 * @returns {object} - 按钮组元素。
-			 */
-			const getButtonGroup = (tooltipPosition) => {
-				const buttons = []
-				if (previewButtonCore)
-					buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
-				if (executeButtonCore)
-					buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
+	/**
+	 * 获取按钮组。
+	 * @param {string} tooltipPosition - 工具提示位置。
+	 * @returns {object} - 按钮组元素。
+	 */
+	const getButtonGroup = (tooltipPosition) => {
+		const buttons = []
+		if (previewButtonCore)
+			buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
+		if (executeButtonCore)
+			buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
 
-				buttons.push(
-					createTooltip('code_block.download', [downloadButtonCore], tooltipPosition),
-					createTooltip('code_block.copy', [copyButtonCore], tooltipPosition)
-				)
-				return h('div', { class: 'flex items-center' }, buttons)
-			}
+		buttons.push(
+			createTooltip('code_block.download', [downloadButtonCore], tooltipPosition),
+			createTooltip('code_block.copy', [copyButtonCore], tooltipPosition)
+		)
+		return h('div', { class: 'flex items-center' }, buttons)
+	}
 
-			if (lineCount > collapseThreshold) {
-				const buttonNode = getButtonGroup()
-				const summaryNode = h('summary', { class: 'bg-base-200 collapse-title' }, [h('div', {
-					class: 'font-mono text-xs font-bold flex items-center justify-between'
-				}, [
-					h('span', `${lang.toUpperCase()} - ${lineCount} lines`),
-					buttonNode
-				])])
-				return h('details', { id: uniqueId, class: 'markdown-code-block collapse collapse-arrow join-item', open: true }, [
-					summaryNode,
-					h('div', { class: 'collapse-content' }, [hast])
-				])
-			}
+	if (lineCount > collapseThreshold) {
+		const buttonNode = getButtonGroup()
+		const summaryNode = h('summary', { class: 'bg-base-200 collapse-title' }, [h('div', {
+			class: 'font-mono text-xs font-bold flex items-center justify-between'
+		}, [
+			h('span', `${lang.toUpperCase()} - ${lineCount} lines`),
+			buttonNode
+		])])
+		return h('details', { id: uniqueId, class: 'markdown-code-block collapse collapse-arrow join-item', open: true }, [
+			summaryNode,
+			h('div', { class: 'collapse-content' }, [pre])
+		])
+	}
 
-			const buttonNode = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
-			return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [hast, buttonNode])
-		}
+	const buttonNode = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
+	return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [pre, buttonNode])
+}
+
+/**
+ * 仅增强块级高亮代码（figure>pre），不碰内联 span>code。
+ * @param {object} [options={}] - 选项。
+ * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @returns {() => (tree: object) => void} - rehype 插件（attacher → transformer）。
+ */
+function rehypeCodeBlockEnhancements({ isStandalone = false } = {}) {
+	return () => tree => {
+		visit(tree, 'element', node => {
+			if (node.tagName !== 'figure' || !('data-rehype-pretty-code-figure' in (node.properties || {})))
+				return
+			const preIndex = node.children.findIndex(child => child.type === 'element' && child.tagName === 'pre')
+			if (preIndex < 0) return
+			node.children[preIndex] = enhanceCodeBlockPre(node.children[preIndex], { isStandalone })
+		})
 	}
 }
 
@@ -1128,9 +1153,6 @@ export async function GetMarkdownConvertor({
 					})
 				]
 			}),
-			transformers: [
-				await createCodeBlockPlugin({ isStandalone })
-			],
 			/**
 			 * 访问标题。
 			 * @param {object} caption - 标题。
@@ -1148,6 +1170,7 @@ export async function GetMarkdownConvertor({
 				title.properties.className = 'alert alert-info shadow-lg join-item'
 			}
 		})
+		.use(rehypeCodeBlockEnhancements({ isStandalone }))
 		.use(() => {
 			return tree => {
 				visit(tree, 'element', node => {
@@ -1193,6 +1216,16 @@ export async function GetMarkdownConvertor({
 .markdown-body pre {
 	color: var(--color-base-content);
 	background-color: var(--color-base-100);
+}
+
+/* 内联 {:lang} 高亮：span>code，勿被块级 pre 样式带偏 */
+.markdown-body span[data-rehype-pretty-code-figure] {
+	display: inline;
+}
+.markdown-body span[data-rehype-pretty-code-figure] > code {
+	display: inline;
+	padding: 0.2em 0.4em;
+	border-radius: 6px;
 }
 
 [color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {
