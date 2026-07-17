@@ -384,6 +384,43 @@ Deno.test('mergeChannelMessagesForDisplay preserves displayName from message_edi
 	assertEquals(merged[0].content.content, 'char reply')
 })
 
+Deno.test('linesIncludingOverlaysForTargets pulls message_edit for target id', async () => {
+	const { linesIncludingOverlaysForTargets, mergeChannelMessagesForDisplay } = await import('../../public/shared/messageMerge.mjs')
+	const baseId = 'c'.repeat(64)
+	const editId = 'd'.repeat(64)
+	const otherId = 'e'.repeat(64)
+	const rows = [
+		{ type: 'message', eventId: baseId, content: { type: 'text', content: '', is_generating: true } },
+		{
+			type: 'message_edit',
+			eventId: editId,
+			content: { targetId: baseId, newContent: { type: 'text', content: 'err', is_generating: false } },
+		},
+		{ type: 'message', eventId: otherId, content: { type: 'text', content: 'other' } },
+	]
+	const filtered = linesIncludingOverlaysForTargets(rows, [baseId])
+	assertEquals(filtered.map(row => row.eventId).sort(), [baseId, editId].sort())
+	const merged = mergeChannelMessagesForDisplay(filtered)
+	assertEquals(merged.length, 1)
+	assertEquals(merged[0].content.is_generating, false)
+	assertEquals(merged[0].content.content, 'err')
+})
+
+Deno.test('applyMessageEditToRow clears is_generating from WS payload', async () => {
+	const { applyMessageEditToRow } = await import('../../public/shared/messageMerge.mjs')
+	const row = {
+		type: 'message',
+		eventId: 'f'.repeat(64),
+		content: { type: 'text', content: 'partial', is_generating: true, displayName: 'bot' },
+	}
+	const patched = applyMessageEditToRow(row, {
+		newContent: { type: 'text', content: '```\nError:\nboom\n```', is_generating: false, displayName: 'bot' },
+	})
+	assertEquals(patched.content.is_generating, false)
+	assertEquals(patched.content.content.includes('Error:'), true)
+	assertEquals(patched.wasEdited, true)
+})
+
 Deno.test('channel GC skips default channel', () => {
 	const nowMs = 1_700_000_000_000
 	const state = {

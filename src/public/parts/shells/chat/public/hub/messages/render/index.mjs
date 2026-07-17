@@ -26,7 +26,7 @@ import {
 import { renderCallBlock } from './call.mjs'
 import { wireMessageEmbedGuards } from './embed.mjs'
 import { renderMessageFileIdsHtml, wireMessageMediaPlaceholders } from './file.mjs'
-import { hydrateMessageMarkdown, registerPendingMessageMarkdown } from './markdown.mjs'
+import { hydrateMessageMarkdown, renderMessageMarkdownForPaint } from './markdown.mjs'
 import { renderMessageReactionsHtml } from './reactions.mjs'
 import {
 	getMessageText,
@@ -225,14 +225,23 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		const filesHtml = !decryptHtml && !stickerHtml && !groupInviteHtml && !useVote && !useCall
 			? await renderMessageFileIdsHtml(message)
 			: ''
-		const bodyCore = decryptHtml
-			|| stickerHtml
-			|| groupInviteHtml
-			|| (useCall
-				? await renderCallBlock(message)
-				: useVote
-					? await renderVoteBlock(message, allMessages)
-					: await renderMessageContent(plainText))
+
+		/** @type {string} */
+		let bodyCore
+		if (decryptHtml) bodyCore = decryptHtml
+		else if (stickerHtml) bodyCore = stickerHtml
+		else if (groupInviteHtml) bodyCore = groupInviteHtml
+		else if (useCall) bodyCore = await renderCallBlock(message)
+		else if (useVote) bodyCore = await renderVoteBlock(message, allMessages)
+		else if (usePlainMd) {
+			const rendered = await renderMessageMarkdownForPaint(String(message.eventId), plainText, {
+				isRemote: !!message.isRemote,
+				authorPubKeyHash: String(message.authorPubKeyHash || ''),
+			})
+			bodyCore = rendered.html
+			bubbleAttrs = rendered.bubbleAttrs
+		}
+		else bodyCore = await renderMessageContent(plainText)
 
 		const forwardedFrom = message.content?.forwardedFrom
 		const forwardedFromHtml = forwardedFrom
@@ -257,11 +266,6 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		}
 
 		bodyHtml = mainBody
-
-		if (usePlainMd) {
-			registerPendingMessageMarkdown(String(message.eventId), plainText, String(message.authorPubKeyHash || ''))
-			bubbleAttrs = ` data-md-pending="1" data-md-author="${escapeHtml(String(message.authorPubKeyHash || ''))}"`
-		}
 	}
 
 	const reactionsHtml = generating ? '' : await renderMessageReactionsHtml(

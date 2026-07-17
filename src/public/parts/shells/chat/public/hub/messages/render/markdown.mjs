@@ -4,9 +4,10 @@
  * 原文走内存 Map（勿塞进 data-md-raw 属性：正文常含 HTML 引号，属性转义一旦失手会撑破 DOM）。
  */
 import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../../scripts/features/template.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../../../shared/expandMentions.mjs'
-import { getFountMessageMarkdownConvertor } from '../../../src/lib/fountMessageMarkdown.mjs'
+import { getFountMessageMarkdownConvertor, processFountMessageMarkdown } from '../../../src/lib/fountMessageMarkdown.mjs'
 import { isTrustedAuthor } from '../../../src/trustedAuthors.mjs'
 import { mountMdRevealButton } from '../../../src/ui/mdRevealButton.mjs'
 import { hubStore } from '../../core/state.mjs'
@@ -36,6 +37,52 @@ export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash 
 		raw: String(raw || ''),
 		authorPubKeyHash: String(authorPubKeyHash || ''),
 	})
+}
+
+/**
+ * 消息行首帧即渲染 Markdown，避免「escape 原文 → 异步水合」闪屏。
+ * 未信任远端超长文仍只出预览，并登记 pending 供展开按钮挂载。
+ * @param {string} messageId 消息 eventId
+ * @param {string} markdown 原文
+ * @param {{ isRemote?: boolean, authorPubKeyHash?: string }} [options] 信任判定
+ * @returns {Promise<{ html: string, bubbleAttrs: string }>} 已渲染 HTML 与气泡属性
+ */
+export async function renderMessageMarkdownForPaint(messageId, markdown, {
+	isRemote = false,
+	authorPubKeyHash = '',
+} = {}) {
+	const raw = String(markdown || '')
+	const author = String(authorPubKeyHash || '')
+	const authorAttr = escapeHtml(author)
+	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
+	const expanded = expandMentionsInMarkdown(raw, labelMap)
+	const trusted = !isRemote || await isTrustedAuthor(author)
+
+	if (trusted) {
+		const html = await processFountMessageMarkdown(expanded, true)
+		return {
+			html,
+			bubbleAttrs: ` data-md-hydrated="1" data-md-preview="0" data-md-untrusted="0" data-md-author="${authorAttr}"`,
+		}
+	}
+
+	const canExpand = visibleMarkdownLength(expanded) > UNTRUSTED_REMOTE_PREVIEW_LEN
+	const previewMd = canExpand
+		? truncateVisibleMarkdown(expanded, UNTRUSTED_REMOTE_PREVIEW_LEN)
+		: expanded
+	const html = await processFountMessageMarkdown(previewMd, false)
+	if (canExpand) {
+		// 首帧已是预览 HTML；保留 pending 供 hydrate 挂「展开」按钮（勿标 hydrated，否则会被跳过）
+		registerPendingMessageMarkdown(messageId, raw, author)
+		return {
+			html,
+			bubbleAttrs: ` data-md-pending="1" data-md-untrusted="1" data-md-author="${authorAttr}"`,
+		}
+	}
+	return {
+		html,
+		bubbleAttrs: ` data-md-hydrated="1" data-md-preview="0" data-md-untrusted="1" data-md-author="${authorAttr}"`,
+	}
 }
 
 /**

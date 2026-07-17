@@ -13,6 +13,7 @@ import { topologicalCanonicalOrder } from 'npm:@steve02081504/fount-p2p/dag/inde
 import { readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
 import { stripDagEventLocalExtensions } from 'npm:@steve02081504/fount-p2p/dag/strip_extensions'
 
+import { linesIncludingOverlaysForTargets } from '../../../public/shared/messageMerge.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
@@ -106,8 +107,7 @@ export async function listChannelMessages(username, groupId, channelId, q = {}) 
 	const cap = Math.min(Number(q.limitCap) || 500, JOIN_CHANNEL_HISTORY_LIMIT)
 	const limit = Math.min(Number(q.limit) || 200, cap)
 	if (Array.isArray(q.eventIds) && q.eventIds.length) {
-		const want = new Set(q.eventIds.map(id => String(id).trim()).filter(Boolean))
-		const filtered = lines.filter(row => want.has(String(row.eventId).trim()))
+		const filtered = linesIncludingOverlaysForTargets(lines, q.eventIds)
 		if (q.decrypt === false) return filtered
 		const { decryptChannelMessageLines, isCkgEncryptedContent } = await import('../channel_keys/content.mjs')
 		if (filtered.some(line => isCkgEncryptedContent(line?.content)))

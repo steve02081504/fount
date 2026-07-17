@@ -1750,10 +1750,6 @@
 	min-height: 1.25rem;
 }
 
-.hub-message-edit-area {
-	transition: opacity 0.15s ease-in-out;
-}
-
 .hub-message-feedback-reason-area {
 	overflow: hidden;
 	max-height: 0;
@@ -1768,9 +1764,14 @@
 	margin-top: 8px;
 }
 
-/* 编辑区 */
+/* 编辑区：进入编辑时隐藏已渲染正文（含 mermaid/katex 等复杂 DOM） */
 .hub-message-edit-area {
 	margin-top: 8px;
+	transition: opacity 0.15s ease-in-out;
+}
+
+.hub-message:has(> .hub-message-edit-area) > .hub-message-content {
+	display: none;
 }
 
 .hub-message-edit-textarea {

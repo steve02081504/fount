@@ -31,7 +31,44 @@ function mergeMessageContent(base, patch) {
 function overlayTargetId(row) {
 	return row.type === 'message'
 		? String(row.eventId).trim()
-		: String(row.content.targetId).trim()
+		: String(row.content?.targetId ?? '').trim()
+}
+
+/**
+ * 按目标 eventId 取行时一并带上指向它们的 overlay（edit/delete/feedback）。
+ * @param {object[]} lines 频道原始行
+ * @param {Iterable<string>} eventIds 目标 eventId
+ * @returns {object[]} 过滤后的行
+ */
+export function linesIncludingOverlaysForTargets(lines, eventIds) {
+	const want = new Set(
+		[...eventIds].map(id => String(id || '').trim().toLowerCase()).filter(Boolean),
+	)
+	if (!want.size) return []
+	return lines.filter(row => {
+		const id = String(row?.eventId || '').trim().toLowerCase()
+		if (want.has(id)) return true
+		if (!OVERLAY_EVENT_TYPES.has(row?.type)) return false
+		return want.has(String(row?.content?.targetId || '').trim().toLowerCase())
+	})
+}
+
+/**
+ * 将单条 message_edit 的 content 应用到已合并的展示行。
+ * @param {object} row 展示用 message 行
+ * @param {{ newContent?: object, fileCount?: number }} editContent message_edit.content
+ * @returns {object} 更新后的行
+ */
+export function applyMessageEditToRow(row, editContent) {
+	const patchContent = editContent?.newContent
+	if (!row || !patchContent) return row
+	const content = {
+		...mergeMessageContent(row.content, patchContent),
+		...editContent.fileCount != null ? { fileCount: editContent.fileCount } : {},
+	}
+	if ('is_generating' in patchContent)
+		content.is_generating = !!patchContent.is_generating
+	return { ...row, content, wasEdited: true }
 }
 
 /**

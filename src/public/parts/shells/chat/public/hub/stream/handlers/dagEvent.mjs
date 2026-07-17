@@ -54,7 +54,7 @@ export function handleDagEventWire(wireMessage, channelId) {
 		if (targetId) {
 			if (hasVolatileStream(targetId))
 				finishVolatileStreamPreview(targetId)
-			void dispatchChannelMessageEdit(targetId)
+			void dispatchChannelMessageEdit(targetId, dagEvent.content || null)
 		}
 		return true
 	}

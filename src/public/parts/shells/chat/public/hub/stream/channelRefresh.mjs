@@ -55,12 +55,13 @@ export function dispatchChannelOverlayRefresh(eventChannelId, mainChannelId) {
 
 /**
  * @param {string} targetId 目标消息 eventId
+ * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS message_edit.content
  * @returns {Promise<void>}
  */
-export async function dispatchChannelMessageEdit(targetId) {
+export async function dispatchChannelMessageEdit(targetId, editContent = null) {
 	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
 		const { applyChannelMessageEdit } = await import('../messages/messages.mjs')
-		await applyChannelMessageEdit(targetId)
+		await applyChannelMessageEdit(targetId, editContent)
 	}
 	await refreshActiveThreadIfOpen()
 }

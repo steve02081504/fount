@@ -47,10 +47,11 @@ export function scheduleChannelIncrementalRefresh(options) {
 
 /**
  * @param {string} targetId 目标消息 eventId
+ * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS message_edit.content
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageEdit(targetId) {
-	return applyChannelMessageEditImpl(targetId, loadMessages, syncCtx)
+export async function applyChannelMessageEdit(targetId, editContent = null) {
+	return applyChannelMessageEditImpl(targetId, loadMessages, syncCtx, editContent)
 }
 
 /**

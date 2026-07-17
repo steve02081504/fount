@@ -20,6 +20,7 @@ test.describe('Chat message actions', () => {
 		await row.locator('.hub-message-action[data-action="edit"]').click()
 		const textarea = row.locator('.hub-message-edit-textarea')
 		await expect(textarea).toBeVisible({ timeout: 20_000 })
+		await expect(row.locator('.hub-message-content')).toBeHidden({ timeout: 5_000 })
 		await textarea.fill(updated)
 		await row.locator('.hub-message-edit-save').click()
 		await expectMessageInChat(page, updated)

@@ -2,6 +2,7 @@ import {
 	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	mountTemplate,
 } from '../../../../../scripts/features/template.mjs'
+import { applyMessageEditToRow } from '../../shared/messageMerge.mjs'
 import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
 import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
@@ -431,12 +432,24 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}, re
  * @param {string} targetId 目标消息 eventId
  * @param {() => Promise<void>} reload 重载消息回调
  * @param {() => void} syncCtx 同步操作上下文
+ * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageEdit(targetId, reload, syncCtx) {
+export async function applyChannelMessageEdit(targetId, reload, syncCtx, editContent = null) {
 	const id = String(targetId || '').trim()
 	if (!id || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
+
+	if (editContent?.newContent) {
+		const sourceIdx = hubStore.messages.channelMessagesSource.findIndex(
+			message => eventIdsEqual(message?.eventId, id),
+		)
+		if (sourceIdx >= 0) {
+			const patched = applyMessageEditToRow(hubStore.messages.channelMessagesSource[sourceIdx], editContent)
+			await replaceChannelMessageRow(id, patched, reload, syncCtx)
+			return
+		}
+	}
 
 	const rows = await fetchRowsForMessageEvent(hubStore.context.currentGroupId, hubStore.context.currentChannelId, id)
 	const row = rows.find(m => eventIdsEqual(m.eventId, id))

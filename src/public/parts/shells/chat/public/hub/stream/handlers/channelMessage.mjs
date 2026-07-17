@@ -80,7 +80,7 @@ export function handleChannelMessageWire(wireMessage, channelId) {
 		if (targetId) {
 			if (hasVolatileStream(targetId))
 				finishVolatileStreamPreview(targetId)
-			void dispatchChannelMessageEdit(targetId)
+			void dispatchChannelMessageEdit(targetId, channelMessage.content || null)
 		}
 		return true
 	}
