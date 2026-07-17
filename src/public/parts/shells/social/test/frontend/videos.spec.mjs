@@ -7,6 +7,7 @@ import {
 	postIdFromResponse,
 	waitForPostMaterialized,
 	fetchViewerEntityHash,
+	submitReplyViaPanel,
 } from './fixtures.mjs'
 
 /**
@@ -47,6 +48,7 @@ async function openVideoSlide(page, postId) {
 test.describe('Social short videos', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
 		await openSocialHome(page, baseUrl)
+		await page.evaluate(() => localStorage.removeItem('fount.social.video.muted'))
 	})
 
 	test('renders own video post in vertical snap feed', async ({ page, baseUrl, apiKey }) => {
@@ -178,6 +180,134 @@ test.describe('Social short videos', () => {
 		const ticker = slide.locator('[data-comment-ticker]')
 		await expect(ticker).not.toHaveClass(/hidden/, { timeout: 30_000 })
 		await expect(ticker.locator('.video-comment-ticker-item').first()).toContainText(replyText)
+	})
+
+	test('video replies panel accepts a reply while feed card exists', async ({ page, baseUrl, apiKey }) => {
+		const text = `video-reply-send ${Date.now()}`
+		const replyText = `from-video ${Date.now()}`
+		const req = await playwrightRequest.newContext()
+		let postId
+		try {
+			postId = await publishViaApi(req, baseUrl, apiKey, {
+				text,
+				visibility: 'public',
+				locale: 'zh-CN',
+				mediaRefs: [{
+					kind: 'video',
+					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+				}],
+			})
+		}
+		finally {
+			await req.dispose()
+		}
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+
+		// feed 里需有同帖卡片（含 data-replies-for）；发评必须落到当前 slide 面板而非 feed 空面板
+		await Promise.all([
+			page.waitForResponse(res => {
+				if (res.request().method() !== 'GET' || res.status() !== 200) return false
+				return new URL(res.url()).pathname === '/api/parts/shells:social/feed'
+			}, { timeout: 60_000 }),
+			page.locator('#feedRefreshButton').click(),
+		])
+		await expect(page.locator(`#feedList .post-card[data-post-id="${postId}"]`).first()).toBeVisible({ timeout: 30_000 })
+
+		const slide = await openVideoSlide(page, postId)
+		const panel = slide.locator('[data-replies-panel]')
+		await slide.locator('.video-comment-btn').click()
+		await expect(panel).not.toHaveClass(/hidden/)
+		await panel.locator('textarea').fill(replyText)
+		await submitReplyViaPanel(page, panel)
+		await expect(panel.locator('.reply')).toContainText(replyText, { timeout: 30_000 })
+		await expect(slide.locator('.video-comment-btn .action-count')).toHaveText('1')
+	})
+
+	test('mute preference persists after leaving videos view', async ({ page, baseUrl, apiKey }) => {
+		const text = `video-mute-pref ${Date.now()}`
+		const req = await playwrightRequest.newContext()
+		let postId
+		try {
+			postId = await publishViaApi(req, baseUrl, apiKey, {
+				text,
+				visibility: 'public',
+				locale: 'zh-CN',
+				mediaRefs: [{
+					kind: 'video',
+					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+				}],
+			})
+		}
+		finally {
+			await req.dispose()
+		}
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+
+		const slide = await openVideoSlide(page, postId)
+		const video = slide.locator('video.video-player')
+		await expect(video).toHaveJSProperty('muted', false)
+		await slide.locator('.video-mute-btn').click()
+		await expect(video).toHaveJSProperty('muted', true)
+		await expect.poll(() => page.evaluate(() => localStorage.getItem('fount.social.video.muted')))
+			.toBe('1')
+
+		await page.locator('#videosViewBackButton').click()
+		await expect(page.locator('#videosView')).toHaveClass(/hidden/)
+		const slideAgain = await openVideoSlide(page, postId)
+		await expect(slideAgain.locator('video.video-player')).toHaveJSProperty('muted', true)
+		await expect(slideAgain.locator('.video-mute-btn .s-ic')).toHaveClass(/s-ic-mute/)
+	})
+
+	test('comment ticker opens replies panel at that reply', async ({ page, baseUrl, apiKey }) => {
+		const text = `video-ticker-jump ${Date.now()}`
+		const replyA = `ticker-a ${Date.now()}`
+		const replyB = `ticker-b ${Date.now()}`
+		const req = await playwrightRequest.newContext()
+		let postId
+		let replyIdB
+		let entityHash
+		try {
+			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+			postId = await publishViaApi(req, baseUrl, apiKey, {
+				text,
+				visibility: 'public',
+				locale: 'zh-CN',
+				mediaRefs: [{
+					kind: 'video',
+					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+				}],
+			})
+			await waitForPostMaterialized(baseUrl, apiKey, postId)
+			await publishViaApi(req, baseUrl, apiKey, {
+				text: replyA,
+				replyTo: { entityHash, postId },
+				visibility: 'public',
+				locale: 'zh-CN',
+			})
+			replyIdB = await publishViaApi(req, baseUrl, apiKey, {
+				text: replyB,
+				replyTo: { entityHash, postId },
+				visibility: 'public',
+				locale: 'zh-CN',
+			})
+		}
+		finally {
+			await req.dispose()
+		}
+		await waitForPostMaterialized(baseUrl, apiKey, replyIdB)
+
+		const slide = await openVideoSlide(page, postId)
+		const ticker = slide.locator('[data-comment-ticker]')
+		await expect(ticker).not.toHaveClass(/hidden/, { timeout: 30_000 })
+		const target = ticker.locator(`.video-comment-ticker-item[data-reply-id="${replyIdB}"]`).first()
+		await expect(target).toBeVisible()
+		await target.click()
+
+		const panel = slide.locator('[data-replies-panel]')
+		await expect(panel).not.toHaveClass(/hidden/)
+		const focused = panel.locator(`.reply[data-reply-id="${replyIdB}"]`)
+		await expect(focused).toHaveClass(/is-focused/)
+		await expect(focused).toContainText(replyB)
 	})
 })
 

@@ -17,6 +17,8 @@ export async function renderRepliesPanel(panel, replies) {
 		for (const reply of replies) {
 			const row = document.createElement('div')
 			row.className = 'reply'
+			const replyId = String(reply.post?.id || '')
+			if (replyId) row.dataset.replyId = replyId
 			const text = reply.post?.content?.text || ''
 			const bodyHtml = reply.post?.decryptView?.failed
 				? `<em>${geti18n('social.feed.decryptFailed')}</em>`

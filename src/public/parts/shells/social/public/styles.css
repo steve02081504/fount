@@ -1276,9 +1276,16 @@ body {
 }
 
 .replies-list .reply {
-	padding: 0.5rem 0;
+	padding: 0.5rem 0.35rem;
 	font-size: 0.9rem;
 	border-bottom: 1px solid var(--social-border);
+	border-radius: 0.5rem;
+	transition: background 180ms ease;
+}
+
+.replies-list .reply.is-focused {
+	background: color-mix(in srgb, var(--social-accent) 16%, transparent);
+	outline: 1px solid color-mix(in srgb, var(--social-accent) 45%, transparent);
 }
 
 .highlight-post {
@@ -2607,7 +2614,7 @@ body {
 	width: min(14.5rem, 46vw);
 	height: 6.25rem;
 	overflow: hidden;
-	pointer-events: none;
+	pointer-events: auto;
 	mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent);
 	-webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 78%, transparent);
 	transition: opacity 160ms ease;
@@ -2616,6 +2623,7 @@ body {
 
 .video-comment-ticker.is-dimmed {
 	opacity: 0;
+	pointer-events: none;
 }
 
 .video-comment-ticker-track {
@@ -2640,6 +2648,13 @@ body {
 	line-height: 1.3;
 	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 	backdrop-filter: blur(4px);
+	cursor: pointer;
+}
+
+.video-comment-ticker-item:hover,
+.video-comment-ticker-item:focus-visible {
+	background: rgba(0, 0, 0, 0.62);
+	outline: none;
 }
 
 .video-comment-ticker-item strong {

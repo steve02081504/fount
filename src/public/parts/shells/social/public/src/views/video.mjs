@@ -22,6 +22,23 @@ let videoPageLoading = false
 /** @type {WeakMap<HTMLElement, object[]>} */
 const slideRepliesCache = new WeakMap()
 
+const VIDEO_MUTE_KEY = 'fount.social.video.muted'
+
+/**
+ * @returns {boolean} 是否偏好静音
+ */
+function readVideoMutedPref() {
+	return localStorage.getItem(VIDEO_MUTE_KEY) === '1'
+}
+
+/**
+ * @param {boolean} muted 是否静音
+ * @returns {void}
+ */
+function writeVideoMutedPref(muted) {
+	localStorage.setItem(VIDEO_MUTE_KEY, muted ? '1' : '0')
+}
+
 /**
  * 加载并渲染短视频流。
  * @returns {Promise<void>}
@@ -206,6 +223,23 @@ function syncMuteButton(slide, video) {
 }
 
 /**
+ * 将静音偏好应用到容器内全部视频 slide。
+ * @param {boolean} muted 是否静音
+ * @returns {void}
+ */
+function applyMutedToAllVideos(muted) {
+	writeVideoMutedPref(muted)
+	const container = document.getElementById('videoSnapContainer')
+	if (!container) return
+	for (const slide of container.querySelectorAll('.video-slide')) {
+		const video = slide.querySelector('video')
+		if (!video) continue
+		video.muted = muted
+		syncMuteButton(slide, video)
+	}
+}
+
+/**
  * @param {HTMLElement} slide slide
  * @returns {void}
  */
@@ -228,6 +262,21 @@ export function syncVideoCommentTicker(slide, replies) {
 }
 
 /**
+ * @param {HTMLElement} panel 回复面板
+ * @param {string} replyId 回复帖 id
+ * @returns {void}
+ */
+function focusReplyInPanel(panel, replyId) {
+	if (!replyId) return
+	for (const el of panel.querySelectorAll('.reply.is-focused'))
+		el.classList.remove('is-focused')
+	const row = panel.querySelector(`[data-reply-id="${CSS.escape(replyId)}"]`)
+	if (!(row instanceof HTMLElement)) return
+	row.classList.add('is-focused')
+	row.scrollIntoView({ block: 'center', behavior: 'smooth' })
+}
+
+/**
  * @param {HTMLElement} slide slide
  * @param {object[]} replies 回复
  * @returns {void}
@@ -239,15 +288,19 @@ function renderCommentTicker(slide, replies) {
 		.map(reply => {
 			const text = String(reply.post?.content?.text || '').trim()
 			if (!text) return null
-			return { author: authorLabel(reply.entityHash, reply.authorProfile), text }
+			const id = String(reply.post?.id || '')
+			if (!id) return null
+			return { id, author: authorLabel(reply.entityHash, reply.authorProfile), text }
 		})
 		.filter(Boolean)
 	if (!items.length) {
 		ticker.replaceChildren()
 		ticker.classList.add('hidden')
+		ticker.setAttribute('aria-hidden', 'true')
 		return
 	}
 	ticker.classList.remove('hidden')
+	ticker.setAttribute('aria-hidden', 'false')
 	const track = document.createElement('div')
 	track.className = 'video-comment-ticker-track'
 	// 多复制一份以便无缝滚动
@@ -255,6 +308,9 @@ function renderCommentTicker(slide, replies) {
 	for (const item of loop) {
 		const row = document.createElement('div')
 		row.className = 'video-comment-ticker-item'
+		row.dataset.replyId = item.id
+		row.setAttribute('role', 'button')
+		row.tabIndex = 0
 		row.innerHTML = `<strong>${escapeHtml(item.author)}</strong><span>${escapeHtml(item.text.slice(0, 80))}</span>`
 		track.appendChild(row)
 	}
@@ -293,9 +349,10 @@ async function ensureCommentTicker(slide) {
 /**
  * @param {HTMLElement} slide slide
  * @param {boolean} open 是否打开
+ * @param {{ focusReplyId?: string }} [options] 打开选项
  * @returns {Promise<void>}
  */
-async function setVideoRepliesOpen(slide, open) {
+async function setVideoRepliesOpen(slide, open, options = {}) {
 	const panel = slide.querySelector('[data-replies-panel]')
 	const ticker = slide.querySelector('[data-comment-ticker]')
 	if (!panel) return
@@ -305,11 +362,13 @@ async function setVideoRepliesOpen(slide, open) {
 	}
 	panel.classList.remove('hidden')
 	ticker?.classList.add('is-dimmed')
-	if (panel.dataset.loaded) return
-	const replies = await loadSlideReplies(slide)
-	panel.dataset.loaded = '1'
-	await renderRepliesPanel(panel, replies)
-	renderCommentTicker(slide, replies)
+	if (!panel.dataset.loaded) {
+		const replies = await loadSlideReplies(slide)
+		panel.dataset.loaded = '1'
+		await renderRepliesPanel(panel, replies)
+		renderCommentTicker(slide, replies)
+	}
+	if (options.focusReplyId) focusReplyInPanel(panel, options.focusReplyId)
 }
 
 /**
@@ -375,7 +434,10 @@ function buildVideoSlide(item) {
 	`)
 
 	const video = slide.querySelector('video')
-	if (video) syncMuteButton(slide, video)
+	if (video) {
+		video.muted = readVideoMutedPref()
+		syncMuteButton(slide, video)
+	}
 
 	video?.addEventListener('timeupdate', () => {
 		const fill = slide.querySelector('.video-progress-fill')
@@ -389,10 +451,20 @@ function buildVideoSlide(item) {
 		event.stopPropagation()
 	})
 
+	/**
+	 * @param {EventTarget | null} target 事件目标
+	 * @returns {boolean} 是否应忽略手势
+	 */
+	const isUiChrome = target => target instanceof Element && Boolean(
+		target.closest('.video-actions')
+		|| target.closest('.video-replies-panel')
+		|| target.closest('[data-comment-ticker]')
+		|| target.closest('[data-video-author]'),
+	)
+
 	let lastTap = 0
 	slide.addEventListener('pointerup', async event => {
-		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel') || event.target.closest('[data-video-author]'))
-			return
+		if (isUiChrome(event.target)) return
 		const panel = slide.querySelector('[data-replies-panel]')
 		if (panel && !panel.classList.contains('hidden')) {
 			closeVideoReplies(slide)
@@ -421,8 +493,7 @@ function buildVideoSlide(item) {
 	let speedMode = false
 
 	slide.addEventListener('pointerdown', event => {
-		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel') || event.target.closest('[data-video-author]'))
-			return
+		if (isUiChrome(event.target)) return
 		pressStartX = event.clientX
 		pressTimer = setTimeout(() => {
 			pressTimer = null
@@ -478,8 +549,7 @@ function buildVideoSlide(item) {
 	slide.querySelector('.video-mute-btn')?.addEventListener('click', event => {
 		event.stopPropagation()
 		if (!video) return
-		video.muted = !video.muted
-		syncMuteButton(slide, video)
+		applyMutedToAllVideos(!video.muted)
 	})
 
 	slide.querySelector('.video-share-btn')?.addEventListener('click', async event => {
@@ -502,6 +572,26 @@ function buildVideoSlide(item) {
 		if (!panel) return
 		const opening = panel.classList.contains('hidden')
 		await setVideoRepliesOpen(slide, opening)
+	})
+
+	/**
+	 * @param {Event} event 点击 / 键盘事件
+	 * @returns {void}
+	 */
+	const openTickerReply = event => {
+		const item = event.target instanceof Element
+			? event.target.closest('.video-comment-ticker-item')
+			: null
+		if (!item?.dataset.replyId) return
+		event.preventDefault()
+		event.stopPropagation()
+		void setVideoRepliesOpen(slide, true, { focusReplyId: item.dataset.replyId })
+	}
+	const ticker = slide.querySelector('[data-comment-ticker]')
+	ticker?.addEventListener('click', openTickerReply)
+	ticker?.addEventListener('keydown', event => {
+		if (event.key !== 'Enter' && event.key !== ' ') return
+		openTickerReply(event)
 	})
 
 	return slide
@@ -576,10 +666,7 @@ export function handleVideoKeydown(event) {
 			if (currentSlide) void doVideoLike(currentSlide)
 			break
 		case 'm': case 'M':
-			if (video && currentSlide) {
-				video.muted = !video.muted
-				syncMuteButton(currentSlide, video)
-			}
+			if (video) applyMutedToAllVideos(!video.muted)
 			break
 		case 'c': case 'C': {
 			const btn = currentSlide?.querySelector('.video-comment-btn')

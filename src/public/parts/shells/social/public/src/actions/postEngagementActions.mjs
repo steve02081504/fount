@@ -26,7 +26,8 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handlePostEngagementClick(target) {
-	const cardRoot = target.closest('.post-card') || document
+	// 短视频 slide 与 feed 卡可能共享同一 actionKey；必须先收窄到当前容器
+	const cardRoot = target.closest('.post-card, .video-slide') || document
 	const dislikeButton = target.closest('[data-dislike]')
 	if (dislikeButton instanceof HTMLElement && dislikeButton.dataset.dislike) {
 		const parsed = parseActionKey(dislikeButton.dataset.dislike)
