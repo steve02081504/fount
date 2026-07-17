@@ -173,3 +173,45 @@ Deno.test({
 		await stopNode(node)
 	}
 })
+
+Deno.test({
+	name: 'POST heartbeat/status allow active group member persona; reject foreign entity',
+	sanitizeOps: false,
+	sanitizeResources: false,
+}, async () => {
+	const { node, setup } = await launchScenario('entity_presence', [])
+	try {
+		const stateRes = await chatFetch(node, 'GET', `/groups/${setup.groupId}/state`)
+		assertEquals(stateRes.status, 200)
+		const stateBody = await stateRes.json()
+		const memberEntityHash = stateBody.viewer?.entityHash
+		assert(memberEntityHash, 'viewer.entityHash required')
+
+		const viewerRes = await chatFetch(node, 'GET', '/viewer')
+		assertEquals(viewerRes.status, 200)
+		const operatorEntityHash = (await viewerRes.json()).viewerEntityHash
+		assert(operatorEntityHash)
+		assert(memberEntityHash !== operatorEntityHash, 'group persona differs from operator')
+
+		const heartbeatRes = await chatFetch(node, 'POST', `/entities/${memberEntityHash}/heartbeat`)
+		assertEquals(heartbeatRes.status, 200)
+		const heartbeatBody = await heartbeatRes.json()
+		assert(typeof heartbeatBody.lastSeenAt === 'number')
+		assertEquals(heartbeatBody.effectiveStatus, 'online')
+
+		const statusRes = await chatFetch(node, 'POST', `/entities/${memberEntityHash}/status`, {
+			status: 'dnd',
+		})
+		assertEquals(statusRes.status, 200)
+		const statusBody = await statusRes.json()
+		assertEquals(statusBody.status, 'dnd')
+		assertEquals(statusBody.effectiveStatus, 'dnd')
+
+		const foreignHash = `${'a'.repeat(64)}${'b'.repeat(64)}`
+		const deniedRes = await chatFetch(node, 'POST', `/entities/${foreignHash}/heartbeat`)
+		assertEquals(deniedRes.status, 403)
+	}
+	finally {
+		await stopNode(node)
+	}
+})

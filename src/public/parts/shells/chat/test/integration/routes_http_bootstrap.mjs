@@ -98,11 +98,21 @@ async function setupEditHooks(username) {
 	}
 }
 
+/**
+ * @param {string} username 用户
+ * @returns {Promise<object>} setup
+ */
+async function setupEntityPresence(username) {
+	const { groupId, channelId } = await createBaseGroup(username)
+	return { groupId, channelId }
+}
+
 /** @type {Record<string, (username: string) => Promise<object>>} */
 const SCENARIOS = {
 	viewlog: setupViewlog,
 	before_send_reject: setupBeforeSendReject,
 	edit_hooks: setupEditHooks,
+	entity_presence: setupEntityPresence,
 }
 
 /**

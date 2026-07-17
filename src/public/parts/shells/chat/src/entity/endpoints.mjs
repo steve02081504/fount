@@ -129,7 +129,7 @@ export function registerEntityEndpoints(router) {
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,
-			effectiveStatus: computeEffectiveStatus(profile, operatorEntityHash, { isSelf: entityHash === operatorEntityHash }),
+			effectiveStatus: computeEffectiveStatus(profile, operatorEntityHash, { isSelf: true }),
 		})
 	})
 
@@ -143,7 +143,7 @@ export function registerEntityEndpoints(router) {
 			status: updated.status,
 			customStatus: updated.customStatus,
 			lastSeenAt: updated.lastSeenAt,
-			effectiveStatus: computeEffectiveStatus(updated, operatorEntityHash, { isSelf: entityHash === operatorEntityHash }),
+			effectiveStatus: computeEffectiveStatus(updated, operatorEntityHash, { isSelf: true }),
 		})
 	})
 
