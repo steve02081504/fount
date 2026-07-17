@@ -565,6 +565,114 @@
 	box-shadow: 0 24px 72px color-mix(in srgb, black, transparent 45%);
 }
 
+#hub-settings-modal:has(.hub-prefs-shell) .hub-overlay-box {
+	width: min(920px, calc(100vw - 24px));
+	height: min(720px, calc(100vh - 24px));
+}
+
+#hub-settings-modal:has(.hub-prefs-shell) .hub-overlay-body {
+	flex: 1;
+	min-height: 0;
+	padding: 0;
+	max-height: none;
+	overflow: hidden;
+	display: flex;
+}
+
+#hub-settings-modal:has(.hub-prefs-shell) .hub-overlay-footer:empty {
+	display: none;
+}
+
+.hub-prefs-shell {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	width: 100%;
+}
+
+.hub-prefs-nav {
+	flex: none;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 11.5rem;
+	padding: 12px 10px;
+	border-right: 1px solid var(--hub-border-subtle);
+	background: color-mix(in srgb, var(--hub-bg-server), transparent 35%);
+	overflow-y: auto;
+}
+
+.hub-prefs-nav-item {
+	display: block;
+	width: 100%;
+	padding: 10px 12px;
+	border: none;
+	border-radius: 10px;
+	background: transparent;
+	color: var(--hub-text-muted);
+	font-size: 13px;
+	font-weight: 600;
+	text-align: left;
+	cursor: pointer;
+}
+
+.hub-prefs-nav-item:hover {
+	background: var(--hub-overlay-subtle);
+	color: var(--hub-text-normal);
+}
+
+.hub-prefs-nav-item--active {
+	background: color-mix(in srgb, var(--hub-accent), transparent 84%);
+	color: var(--hub-text-bright);
+}
+
+.hub-prefs-main {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.hub-prefs-panel {
+	flex: 1;
+	min-height: 0;
+	padding: 16px 20px;
+	overflow-y: auto;
+}
+
+.hub-prefs-footer {
+	flex: none;
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	padding: 12px 20px;
+	border-top: 1px solid var(--hub-border-subtle);
+}
+
+.hub-prefs-footer:empty {
+	display: none;
+}
+
+@media (max-width: 720px) {
+	.hub-prefs-shell {
+		flex-direction: column;
+	}
+
+	.hub-prefs-nav {
+		flex-direction: row;
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid var(--hub-border-subtle);
+		overflow-x: auto;
+	}
+
+	.hub-prefs-nav-item {
+		flex: none;
+		white-space: nowrap;
+	}
+}
+
 .hub-overlay-header {
 	flex: none;
 	padding: 20px 24px 18px;

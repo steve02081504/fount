@@ -1,6 +1,5 @@
 import { wireCallHeaderButton } from '../call.mjs'
 import { hubStore } from '../core/state.mjs'
-import { openFederationSettingsModal } from '../federation/federationModal.mjs'
 import { wireForkActions } from '../federation/forkActions.mjs'
 import { showGroupHeaderMenu } from '../groupContextMenu.mjs'
 import { wirePinsBookmarksPanels } from '../pinsBookmarks.mjs'
@@ -15,8 +14,10 @@ export function wireHeaderEvents() {
 	wirePinsBookmarksPanels()
 	wireCallHeaderButton()
 
-	document.getElementById('hub-federation-settings-button').addEventListener('click', () => {
-		void openFederationSettingsModal(() => hubStore.context.currentGroupId)
+	document.getElementById('hub-prefs-button')?.addEventListener('click', () => {
+		void import('../hubPrefs.mjs').then(({ openHubPrefsModal }) => openHubPrefsModal({
+			getGroupId: () => hubStore.context.currentGroupId,
+		}))
 	})
 
 	document.getElementById('hub-header-search').addEventListener('input', (event) => {

@@ -35,7 +35,8 @@ alwaysApply: false
 - No hardcoded user-visible strings; use `data-i18n` / `setElementI18n`（参数写在 `data-*`）and `zh-CN.json`. `geti18n` 仅用于无 DOM 或 HTML 插值片段。
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - 跨壳共享模块（如 `shared/entityProfileCard.mjs`）勿调用 `usingTemplates`——它是进程级单例，会把 Social/Cabinet 的模板请求指到 chat 路径；需要时用 `withTemplates`，或直接 DOM + `data-i18n`。
-- Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
+- Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`. Template body = `modal-box` + optional `modal-backdrop` only（勿再包 `<dialog>`；自管生命周期的如 `profile_edit_modal` 除外）。
+- Hub prefs（翻译 / 联邦 P2P）: server bar 单一齿轮 `#hub-prefs-button` → `openHubPrefsModal`（`hub/hubPrefs.mjs`），左侧导航切换分区，内容挂入 `#hub-settings-modal`。
 - State: `hubStore` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
 - Context menus: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs`（点击/右键关闭；勿再手写 closeOnce + addEventListener 六份拷贝）。
 - **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch (e.g. `channelActionsContext` main↔thread drawer), shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).

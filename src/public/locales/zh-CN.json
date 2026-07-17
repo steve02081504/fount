@@ -46,7 +46,7 @@
 		"accountAtGlance": "账户概览",
 		"advancedKicker": "按需配置",
 		"advancedSettings": "高级设置",
-		"advancedDescription": "网络与实体委托选项默认收起，日常使用无需调整。",
+		"advancedDescription": "日常使用无需调整。",
 		"edit": "编辑资料",
 		"save": "保存",
 		"cancel": "取消",
@@ -2269,6 +2269,11 @@
 				"title": "群发现",
 				"tip": "群发现"
 			},
+			"prefsTooltip": {
+				"title": "设置",
+				"tip": "翻译与联邦 P2P 设置"
+			},
+			"prefsSubtitle": "翻译与联邦连接",
 			"federationTooltip": {
 				"title": "联邦 P2P 设置",
 				"tip": "联邦 P2P 设置"

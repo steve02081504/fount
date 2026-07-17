@@ -76,11 +76,20 @@ test.describe('Chat hub navigation', () => {
 		await expect(picker).toHaveCount(0)
 	})
 
-	test('opens federation settings overlay from server bar', async ({ page, baseUrl, apiKey }) => {
+	test('opens hub prefs with translation and federation sections', async ({ page, baseUrl, apiKey }) => {
 		await openFreshGroupChannel(page, baseUrl, apiKey)
-		const federationButton = page.locator('#hub-federation-settings-button')
-		await expect(federationButton.locator('svg[src*="cog.svg"]')).toBeVisible()
-		await federationButton.click()
+
+		const prefsButton = page.locator('#hub-prefs-button')
+		await expect(prefsButton.locator('svg[src*="cog.svg"], img[src*="cog.svg"]')).toBeVisible()
+		await prefsButton.click()
+
+		const prefsShell = page.locator('#hub-settings-modal .hub-prefs-shell')
+		await expect(prefsShell).toBeVisible({ timeout: 15_000 })
+		await expect(page.locator('#hub-settings-modal [data-prefs-section="translation"]')).toHaveClass(/hub-prefs-nav-item--active/)
+		await expect(page.locator('#hub-settings-modal #hub-auto-translate')).toBeVisible()
+
+		await page.locator('#hub-settings-modal [data-prefs-section="federation"]').click()
+		await expect(page.locator('#hub-settings-modal [data-prefs-section="federation"]')).toHaveClass(/hub-prefs-nav-item--active/)
 		await expect(page.locator('#hub-overlay-body #federation-relay-urls')).toBeVisible({ timeout: 30_000 })
 		const relayTip = page.locator('.hub-info-tip').first()
 		await expect(relayTip).toHaveClass(/tooltip/)
@@ -94,6 +103,7 @@ test.describe('Chat hub navigation', () => {
 		await page.locator('.hub-advanced-settings > summary').click()
 		await expect(page.locator('#federation-dm-rotate')).toBeVisible()
 		await page.locator('#federation-close').click()
+		await expect(prefsShell).toHaveCount(0)
 	})
 
 	test('conversation header actions keep accessible icons', async ({ page, groupChannel: _ }) => {

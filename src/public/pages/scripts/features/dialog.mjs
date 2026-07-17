@@ -1,10 +1,26 @@
 /**
  * 通用 `<dialog class="modal">` 生命周期：创建、模板渲染、showModal、关闭销毁。
+ *
+ * 模板应只含 `modal-box` + 可选 `modal-backdrop`，不要再包一层 `<dialog>`——
+ * 本模块会创建托管 dialog；若模板根仍是 dialog，会解包子节点，避免嵌套 modal 锁死页面。
  */
 import { renderTemplate, renderTemplateNoScriptActivation } from './template.mjs'
 
 /** @type {WeakMap<HTMLDialogElement, Array<{ content: DocumentFragment | null }>>} */
 const dialogNavigationStacks = new WeakMap()
+
+/**
+ * @param {HTMLDialogElement} dialog 托管 dialog
+ * @param {Element | DocumentFragment | Document} node 模板渲染结果
+ * @returns {void}
+ */
+function appendTemplateContent(dialog, node) {
+	if (node instanceof HTMLDialogElement) {
+		dialog.append(...node.childNodes)
+		return
+	}
+	dialog.appendChild(node)
+}
 
 /**
  * 将当前页收起并渲染新的对话框页；`[data-dialog-back]` 会恢复原 DOM 与表单状态。
@@ -26,7 +42,7 @@ export async function pushDialogFromTemplate(dialog, templateName, data = {}, op
 	content.append(...dialog.childNodes)
 	previousPage.content = content
 
-	dialog.appendChild(await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
+	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
 	stack.push({ content: null })
 	if (options.onReady) await options.onReady(dialog)
 	dialog.querySelector('[autofocus]')?.focus()
@@ -65,7 +81,7 @@ export function backDialog(dialog) {
 export async function openDialogFromTemplate(templateName, data = {}, options = {}) {
 	const dialog = document.createElement('dialog')
 	dialog.className = options.className ?? 'modal'
-	dialog.appendChild(await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
+	appendTemplateContent(dialog, await (options.activateScripts === false ? renderTemplateNoScriptActivation : renderTemplate)(templateName, data))
 	dialogNavigationStacks.set(dialog, [{ content: null }])
 	dialog.addEventListener('click', event => {
 		if (event.target.closest('[data-dialog-back]')) backDialog(dialog)

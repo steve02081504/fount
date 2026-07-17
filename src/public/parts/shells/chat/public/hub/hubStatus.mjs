@@ -180,10 +180,6 @@ export async function showStatusMenu(anchorElement) {
 		})
 	}
 	menu.querySelector('[data-profile-link]')?.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
-	menu.querySelector('[data-translation-prefs]')?.addEventListener('click', () => {
-		dismissStatusMenu()
-		void import('./translationPrefsDialog.mjs').then(({ openTranslationPrefsDialog }) => openTranslationPrefsDialog())
-	})
 
 	document.body.append(menu)
 	openStatusMenuElement = menu

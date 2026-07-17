@@ -1,40 +1,38 @@
-<dialog class="modal">
-	<div class="modal-box max-w-md">
-		<h3 class="font-bold text-lg" data-i18n="chat.hub.notifyPrefs.title"></h3>
-		<div class="form-control gap-3 py-4">
-			<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mode"></span></label>
-			<label class="label cursor-pointer justify-start gap-2">
-				<input type="radio" name="notifyMode" value="all" class="radio radio-sm" ${mode === 'all' ? 'checked' : ''} />
-				<span data-i18n="chat.hub.notifyPrefs.modeAll"></span>
-			</label>
-			<label class="label cursor-pointer justify-start gap-2">
-				<input type="radio" name="notifyMode" value="mentions" class="radio radio-sm" ${mode === 'mentions' ? 'checked' : ''} />
-				<span data-i18n="chat.hub.notifyPrefs.modeMentions"></span>
-			</label>
-			<label class="label cursor-pointer justify-start gap-2">
-				<input type="radio" name="notifyMode" value="nothing" class="radio radio-sm" ${mode === 'nothing' ? 'checked' : ''} />
-				<span data-i18n="chat.hub.notifyPrefs.modeNothing"></span>
-			</label>
-			<label class="label cursor-pointer justify-start gap-2">
-				<input type="checkbox" name="suppressEveryone" class="checkbox checkbox-sm" ${suppressEveryone ? 'checked' : ''} />
-				<span data-i18n="chat.hub.notifyPrefs.suppressEveryone"></span>
-			</label>
-			<label class="label cursor-pointer justify-start gap-2">
-				<input type="checkbox" name="suppressRoles" class="checkbox checkbox-sm" ${suppressRoles ? 'checked' : ''} />
-				<span data-i18n="chat.hub.notifyPrefs.suppressRoles"></span>
-			</label>
-			<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mute"></span></label>
-			<select name="muteDuration" class="select select-bordered select-sm">
-				<option value="" data-i18n="chat.hub.notifyPrefs.muteOff"></option>
-				<option value="1h" data-i18n="chat.hub.notifyPrefs.mute1h"></option>
-				<option value="8h" data-i18n="chat.hub.notifyPrefs.mute8h"></option>
-				<option value="forever" data-i18n="chat.hub.notifyPrefs.muteForever"></option>
-			</select>
-		</div>
-		<div class="modal-action">
-			<form method="dialog"><button class="btn btn-ghost" data-i18n="common.cancel"></button></form>
-			<button type="button" class="btn btn-primary hub-notify-prefs-save" data-i18n="common.save"></button>
-		</div>
+<div class="modal-box max-w-md">
+	<h3 class="font-bold text-lg" data-i18n="chat.hub.notifyPrefs.title"></h3>
+	<div class="form-control gap-3 py-4">
+		<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mode"></span></label>
+		<label class="label cursor-pointer justify-start gap-2">
+			<input type="radio" name="notifyMode" value="all" class="radio radio-sm" ${mode === 'all' ? 'checked' : ''} />
+			<span data-i18n="chat.hub.notifyPrefs.modeAll"></span>
+		</label>
+		<label class="label cursor-pointer justify-start gap-2">
+			<input type="radio" name="notifyMode" value="mentions" class="radio radio-sm" ${mode === 'mentions' ? 'checked' : ''} />
+			<span data-i18n="chat.hub.notifyPrefs.modeMentions"></span>
+		</label>
+		<label class="label cursor-pointer justify-start gap-2">
+			<input type="radio" name="notifyMode" value="nothing" class="radio radio-sm" ${mode === 'nothing' ? 'checked' : ''} />
+			<span data-i18n="chat.hub.notifyPrefs.modeNothing"></span>
+		</label>
+		<label class="label cursor-pointer justify-start gap-2">
+			<input type="checkbox" name="suppressEveryone" class="checkbox checkbox-sm" ${suppressEveryone ? 'checked' : ''} />
+			<span data-i18n="chat.hub.notifyPrefs.suppressEveryone"></span>
+		</label>
+		<label class="label cursor-pointer justify-start gap-2">
+			<input type="checkbox" name="suppressRoles" class="checkbox checkbox-sm" ${suppressRoles ? 'checked' : ''} />
+			<span data-i18n="chat.hub.notifyPrefs.suppressRoles"></span>
+		</label>
+		<label class="label"><span class="label-text" data-i18n="chat.hub.notifyPrefs.mute"></span></label>
+		<select name="muteDuration" class="select select-bordered select-sm">
+			<option value="" data-i18n="chat.hub.notifyPrefs.muteOff"></option>
+			<option value="1h" data-i18n="chat.hub.notifyPrefs.mute1h"></option>
+			<option value="8h" data-i18n="chat.hub.notifyPrefs.mute8h"></option>
+			<option value="forever" data-i18n="chat.hub.notifyPrefs.muteForever"></option>
+		</select>
 	</div>
-	<form method="dialog" class="modal-backdrop"><button>close</button></form>
-</dialog>
+	<div class="modal-action">
+		<form method="dialog"><button class="btn btn-ghost" data-i18n="common.cancel"></button></form>
+		<button type="button" class="btn btn-primary hub-notify-prefs-save" data-i18n="common.save"></button>
+	</div>
+</div>
+<form method="dialog" class="modal-backdrop"><button>close</button></form>

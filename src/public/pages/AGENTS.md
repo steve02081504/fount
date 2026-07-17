@@ -19,7 +19,7 @@ alwaysApply: false
 
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
 - **`template.mjs`**: `renderTemplate(name, data)` / `mountTemplate(parent, name, data)` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`（临时切换模板根并自动恢复；跨壳共享模块禁止裸调 `usingTemplates`，以免污染调用方路径）。
-- **`dialog.mjs`**: `openDialogFromTemplate(templateName, data, { onReady })` and `pickFromDialog` for `<dialog class="modal">` lifecycle.
+- **`dialog.mjs`**: `openDialogFromTemplate(templateName, data, { onReady })` and `pickFromDialog` for `<dialog class="modal">` lifecycle. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do **not** wrap another `<dialog>` (nested modal locks the page with invisible content).
 - **`contentReveal/`** (`index.mjs`): `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal` — content warning / sensitive media fold and reveal delegation; auto-injects `contentReveal.css`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang` — translation block mount/switch and translation API requests.
 - **`memo.mjs`**: `memoizePromise` / `createLruMap`.

@@ -5,6 +5,8 @@ test.describe('Chat profile page', () => {
 		await page.goto(`${baseUrl}/parts/shells:chat/profile`, { waitUntil: 'domcontentloaded' })
 		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('#profile-card-host [data-entity-profile-avatar]')).toBeVisible()
+		await expect(page.locator('#profile-federation-settings')).toHaveCount(0)
+		await expect(page.locator('.profile-owner-details')).toBeVisible()
 		await expect(page.locator('.profile-owner-details')).not.toHaveAttribute('open', '')
 
 		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })

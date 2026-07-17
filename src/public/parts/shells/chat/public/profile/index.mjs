@@ -1,9 +1,9 @@
 /**
  * 【文件】public/profile/index.mjs
  * 【职责】实体资料独立页：按 URL 中 entityHash 拉取并渲染多语言简介、链接与编辑入口。
- * 【原理】getProfile + 模板 profile/*；onLanguageChange 刷新；可跳转 Hub profileEdit；挂载联邦设置面板。
+ * 【原理】getProfile + 模板 profile/*；onLanguageChange 刷新；可跳转 Hub profileEdit；挂载主人设置面板。
  * 【数据结构】currentEntityHash、currentProfile；localized 各 locale 字段。
- * 【关联】profile/src/endpoints.mjs、federationSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
+ * 【关联】profile/src/endpoints.mjs、ownerSettingsPanel.mjs；hub/entityProfile.mjs、profileEdit.mjs。
  */
 import {
 	renderTemplate,
@@ -21,7 +21,6 @@ import {
 import { avatarInitial } from '../shared/hashAvatar.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
-import { initProfileFederationSettings } from './federationSettingsPanel.mjs'
 import { initProfileOwnerSettings } from './ownerSettingsPanel.mjs'
 import { getProfile } from './src/endpoints.mjs'
 
@@ -123,7 +122,6 @@ async function init() {
 	})
 
 	await initProfileOwnerSettings()
-	await initProfileFederationSettings()
 	await loadUserGroups()
 	await loadUserChannels()
 }

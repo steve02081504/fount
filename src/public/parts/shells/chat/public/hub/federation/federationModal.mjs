@@ -1,12 +1,12 @@
 /**
  * 【文件】public/hub/federation/federationModal.mjs
- * 【职责】Hub 联邦设置浮层：节点 relay/省电、群 房间口令轮换、入群快照修复、信誉与 DM 链接。
- * 【原理】`openFederationSettingsModal` 渲染 `hub/federation/modal` 模板并绑定 `#hub-settings-modal` 控件。
- * 【关联】wiring/index.mjs、core/overlayModal.mjs、src/api/group*.mjs、src/dmLink.mjs。
+ * 【职责】Hub 联邦设置面板：节点 relay/省电、群 房间口令轮换、入群快照修复、信誉与 DM 链接。
+ * 【原理】`mountFederationPrefsPanel` 写入偏好壳 panel/footer；`openFederationSettingsModal` 打开统一偏好壳并切到联邦分区。
+ * 【关联】hubPrefs.mjs、core/overlayModal.mjs、src/api/group*.mjs、src/dmLink.mjs。
  */
 import { isHex64, normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
+import { renderTemplate, usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { getFederationSettings, putFederationSettings } from '../../src/api/federationSettings.mjs'
@@ -15,7 +15,7 @@ import { repairJoinSnapshot, rotateFederationRoomSecret } from '../../src/api/gr
 import { getGroupReputation, postReputationReset, postReputationSlash } from '../../src/api/groupGovernance.mjs'
 import { createDmLinkAndSync, rotateDmLinkAndSync } from '../../src/dmLink.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { closeOverlayModal, openOverlayModal } from '../core/overlayModal.mjs'
+import { closeOverlayModal } from '../core/overlayModal.mjs'
 
 /**
  * @param {string} hex 64 hex 字符
@@ -30,10 +30,11 @@ function hexSeedToBytes(hex) {
 
 /**
  * 绑定关闭按钮。
+ * @param {ParentNode} [root=document] 作用域
  * @returns {void}
  */
-function wireCloseButtons() {
-	for (const button of document.querySelectorAll('#federation-close'))
+function wireCloseButtons(root = document) {
+	for (const button of root.querySelectorAll('#federation-close'))
 		button.addEventListener('click', closeOverlayModal)
 }
 
@@ -52,11 +53,12 @@ function formatReputationDump(reputation) {
 
 /**
  * 刷新模态内信誉 dump。
+ * @param {ParentNode} root 面板根
  * @param {string} groupId 群 ID
  * @returns {Promise<void>}
  */
-async function refreshReputationDump(groupId) {
-	const dump = document.getElementById('federation-rep-dump')
+async function refreshReputationDump(root, groupId) {
+	const dump = root.querySelector('#federation-rep-dump')
 	if (!dump) return
 	try {
 		const { reputation } = await getGroupReputation()
@@ -78,24 +80,26 @@ async function refreshReputationDump(groupId) {
 
 /**
  * 隐藏群级区块（无当前群时）。
+ * @param {ParentNode} root 面板根
  * @returns {void}
  */
-function hideGroupOnlySections() {
+function hideGroupOnlySections(root) {
 	for (const id of ['federation-rep-section', 'federation-slash-section'])
-		document.getElementById(id)?.classList.add('hidden')
+		root.querySelector(`#${id}`)?.classList.add('hidden')
 }
 
 /**
  * 绑定联邦模态交互。
+ * @param {ParentNode} root 面板根（含 footer 控件时传入共同祖先）
  * @param {string | null | undefined} groupId 当前群 ID
  * @returns {void}
  */
-function wireFederationModalEvents(groupId) {
-	wireCloseButtons()
+function wireFederationModalEvents(root, groupId) {
+	wireCloseButtons(root)
 
-	document.getElementById('federation-save')?.addEventListener('click', async () => {
-		const batterySaver = !!document.getElementById('federation-battery-saver')?.checked
-		const relayUrls = (document.getElementById('federation-relay-urls')?.value || '')
+	root.querySelector('#federation-save')?.addEventListener('click', async () => {
+		const batterySaver = !!root.querySelector('#federation-battery-saver')?.checked
+		const relayUrls = (root.querySelector('#federation-relay-urls')?.value || '')
 			.split(/\r?\n/u)
 			.map(line => line.trim())
 			.filter(line => line.startsWith('wss://'))
@@ -108,7 +112,7 @@ function wireFederationModalEvents(groupId) {
 		}
 	})
 
-	document.getElementById('federation-rotate-room-secret')?.addEventListener('click', async () => {
+	root.querySelector('#federation-rotate-room-secret')?.addEventListener('click', async () => {
 		if (!groupId) return
 		if (!confirmI18n('chat.hub.fedRotateRoomSecretConfirm')) return
 		try {
@@ -120,7 +124,7 @@ function wireFederationModalEvents(groupId) {
 		}
 	})
 
-	document.getElementById('federation-repair-join-snapshot')?.addEventListener('click', async () => {
+	root.querySelector('#federation-repair-join-snapshot')?.addEventListener('click', async () => {
 		if (!groupId) return
 		try {
 			const result = await repairJoinSnapshot(groupId)
@@ -134,16 +138,16 @@ function wireFederationModalEvents(groupId) {
 		}
 	})
 
-	document.getElementById('federation-slash-submit')?.addEventListener('click', async () => {
+	root.querySelector('#federation-slash-submit')?.addEventListener('click', async () => {
 		if (!groupId) return
-		const targetPubKeyHash = String(document.getElementById('federation-slash-target')?.value || '').trim().toLowerCase()
+		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
 		if (!isHex64(targetPubKeyHash)) {
 			showToastI18n('error', 'chat.hub.fedSlashNeedHash')
 			return
 		}
-		const claim = Number(document.getElementById('federation-slash-claim')?.value ?? 0.25)
-		const verified = !!document.getElementById('federation-slash-verified')?.checked
-		const proofEventId = String(document.getElementById('federation-slash-proof')?.value || '').trim().toLowerCase()
+		const claim = Number(root.querySelector('#federation-slash-claim')?.value ?? 0.25)
+		const verified = !!root.querySelector('#federation-slash-verified')?.checked
+		const proofEventId = String(root.querySelector('#federation-slash-proof')?.value || '').trim().toLowerCase()
 		try {
 			await postReputationSlash(groupId, {
 				targetPubKeyHash,
@@ -152,16 +156,16 @@ function wireFederationModalEvents(groupId) {
 				proof: verified && proofEventId ? { eventId: proofEventId } : undefined,
 			})
 			showToastI18n('success', 'chat.hub.fedSlashOk')
-			await refreshReputationDump(groupId)
+			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
 			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
-	document.getElementById('federation-reset-submit')?.addEventListener('click', async () => {
+	root.querySelector('#federation-reset-submit')?.addEventListener('click', async () => {
 		if (!groupId) return
-		const targetPubKeyHash = String(document.getElementById('federation-slash-target')?.value || '').trim().toLowerCase()
+		const targetPubKeyHash = String(root.querySelector('#federation-slash-target')?.value || '').trim().toLowerCase()
 		if (!isHex64(targetPubKeyHash)) {
 			showToastI18n('error', 'chat.hub.fedSlashNeedHash')
 			return
@@ -169,14 +173,14 @@ function wireFederationModalEvents(groupId) {
 		try {
 			await postReputationReset(groupId, targetPubKeyHash)
 			showToastI18n('success', 'chat.hub.fedResetOk')
-			await refreshReputationDump(groupId)
+			await refreshReputationDump(root, groupId)
 		}
 		catch (error) {
 			showToastI18n('error', 'profile.federationSaveFailed', { error: error.message })
 		}
 	})
 
-	document.getElementById('federation-dm-rotate')?.addEventListener('click', async () => {
+	root.querySelector('#federation-dm-rotate')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.fedDmRotateConfirm')) return
 		try {
 			const nonce = await rotateDmLinkAndSync()
@@ -187,10 +191,10 @@ function wireFederationModalEvents(groupId) {
 		}
 	})
 
-	document.getElementById('federation-dm-issue')?.addEventListener('click', async () => {
-		const pubKeyHex = normalizeHex64(document.getElementById('federation-dm-pubkey')?.value || '')
-		const secretHex = normalizeHex64(document.getElementById('federation-dm-secret')?.value || '')
-		const nodeUrl = String(document.getElementById('federation-dm-node')?.value || '').trim()
+	root.querySelector('#federation-dm-issue')?.addEventListener('click', async () => {
+		const pubKeyHex = normalizeHex64(root.querySelector('#federation-dm-pubkey')?.value || '')
+		const secretHex = normalizeHex64(root.querySelector('#federation-dm-secret')?.value || '')
+		const nodeUrl = String(root.querySelector('#federation-dm-node')?.value || '').trim()
 		if (!HEX_ID_64.test(pubKeyHex)) {
 			showToastI18n('error', 'chat.hub.fedDmNeedPubKey')
 			return
@@ -205,7 +209,7 @@ function wireFederationModalEvents(groupId) {
 				secretKey32: hexSeedToBytes(secretHex),
 				nodeUrl: nodeUrl || undefined,
 			})
-			const urlField = document.getElementById('federation-dm-url')
+			const urlField = root.querySelector('#federation-dm-url')
 			if (urlField instanceof HTMLTextAreaElement)
 				urlField.value = url
 			try {
@@ -221,12 +225,14 @@ function wireFederationModalEvents(groupId) {
 }
 
 /**
- * 打开 Hub 联邦设置浮层。
- * @param {() => string | null | undefined} getGroupId 当前群 ID 提供者
+ * 在偏好壳中挂载联邦设置面板。
+ * @param {HTMLElement} panel 内容区
+ * @param {HTMLElement} footer 底栏
+ * @param {string | null | undefined} groupId 当前群 ID
  * @returns {Promise<void>}
  */
-export async function openFederationSettingsModal(getGroupId) {
-	const groupId = typeof getGroupId === 'function' ? getGroupId() : getGroupId
+export async function mountFederationPrefsPanel(panel, footer, groupId) {
+	usingTemplates('/parts/shells:chat/src/templates')
 	const tooltipText = Object.fromEntries([
 		'fedRelayUrlsTip',
 		'fedBatterySaverTip',
@@ -246,24 +252,20 @@ export async function openFederationSettingsModal(getGroupId) {
 			mode: 'error',
 			errorMessage: error.message,
 		})
-		openOverlayModal({
-			titleKey: 'chat.hub.federationTitle',
-			subtitleKey: 'chat.hub.federationSubtitle',
-			body: root.querySelector('[data-federation-part="body"]'),
-			footer: root.querySelector('[data-federation-part="footer"]'),
-		})
-		wireCloseButtons()
+		panel.replaceChildren(root.querySelector('[data-federation-part="body"]'))
+		const foot = root.querySelector('[data-federation-part="footer"]')
+		footer.replaceChildren(...(foot ? [...foot.childNodes] : []))
+		wireCloseButtons(footer)
 		return
 	}
 
 	let showRotateRoomSecret = false
-	if (groupId) 
+	if (groupId)
 		try {
 			const state = await getGroupState(groupId)
 			showRotateRoomSecret = !!state?.groupSettings?.roomSecret?.trim()
 		}
 		catch { /* group sections stay hidden below */ }
-	
 
 	const relayText = escapeHtml((fedSettings.relayUrls || []).join('\n'))
 	const root = await renderTemplate('hub/federation/modal', {
@@ -273,18 +275,26 @@ export async function openFederationSettingsModal(getGroupId) {
 		showRotateRoomSecret,
 		...tooltipText,
 	})
+	const body = root.querySelector('[data-federation-part="body"]')
+	const foot = root.querySelector('[data-federation-part="footer"]')
+	panel.replaceChildren(body)
+	footer.replaceChildren(...(foot ? [...foot.childNodes] : []))
 
-	openOverlayModal({
-		titleKey: 'chat.hub.federationTitle',
-		subtitleKey: 'chat.hub.federationSubtitle',
-		body: root.querySelector('[data-federation-part="body"]'),
-		footer: root.querySelector('[data-federation-part="footer"]'),
-	})
-
-	wireFederationModalEvents(groupId || null)
+	const scope = panel.parentElement || panel
+	wireFederationModalEvents(scope, groupId || null)
 
 	if (groupId)
-		await refreshReputationDump(groupId)
+		await refreshReputationDump(panel, groupId)
 	else
-		hideGroupOnlySections()
+		hideGroupOnlySections(panel)
+}
+
+/**
+ * 打开 Hub 联邦设置（统一偏好壳）。
+ * @param {() => string | null | undefined} getGroupId 当前群 ID 提供者
+ * @returns {Promise<void>}
+ */
+export async function openFederationSettingsModal(getGroupId) {
+	const { openHubPrefsModal } = await import('../hubPrefs.mjs')
+	await openHubPrefsModal({ section: 'federation', getGroupId })
 }

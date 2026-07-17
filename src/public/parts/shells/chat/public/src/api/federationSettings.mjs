@@ -3,7 +3,7 @@
  * 【职责】本节点联邦设置 REST：读取与更新 relay、省电、identity 等。
  * 【原理】GET/PUT /api/p2p/federation，credentials include。
  * 【数据结构】enabled、relayUrls[]、batterySaver、activePubKeyHex 等 JSON。
- * 【关联】profile/federationSettingsPanel.mjs、dmLink.mjs。
+ * 【关联】hub/federation/federationModal.mjs、dmLink.mjs、friendChat.mjs。
  */
 const FEDERATION_SETTINGS_URL = '/api/p2p/federation'
 
