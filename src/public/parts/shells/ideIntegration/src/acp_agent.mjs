@@ -6,7 +6,7 @@ import { methods } from 'npm:@agentclientprotocol/sdk'
 /**
  * @param {import('npm:@agentclientprotocol/sdk').AgentContext} ctx AgentContext
  * @param {object} params session.update 参数
- * @returns {void | Promise<void>}
+ * @returns {void | Promise<void>} notify 结果
  */
 export function sessionUpdate(ctx, params) {
 	return ctx.notify(methods.client.session.update, params)

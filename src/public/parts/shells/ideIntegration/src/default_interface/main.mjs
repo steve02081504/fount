@@ -9,8 +9,8 @@ import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import { createBufferedLineBasedStream } from '../../../chat/src/streaming/index.mjs'
-
 import { sessionUpdate } from '../acp_agent.mjs'
+
 import { buildACPClientToolsPlugin } from './acp_client_tools_plugin.mjs'
 import { buildMCPPlugin } from './mcp_plugin.mjs'
 

@@ -9,7 +9,6 @@ import { isMutedBy } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { saveJsonFile, loadJsonFileIfExists } from '../../../../../scripts/json_loader.mjs'
 import { getUserDictionary } from '../../../../../server/auth/index.mjs'
-import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
 import { postMatchesMutedKeywords } from './lib/contentFilter.mjs'
 import { loadMutedKeywords } from './mutedKeywords.mjs'

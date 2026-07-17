@@ -338,7 +338,7 @@ export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 		local_tips_hash: computeLocalTipsHash(dagTipIds),
 		overlay: serializeMessageOverlayForCheckpoint(state.messageOverlay),
 		fileFolders: { ...state.fileFolders },
-		cabinets: { ...(state.cabinets || {}) },
+		cabinets: { ...state.cabinets || {} },
 		epoch_chain,
 		hot_posts: await computeHotPostsForCheckpoint(username, groupId, state, events),
 	})

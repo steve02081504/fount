@@ -47,7 +47,7 @@ function resolveUserDictionary(root, username) {
 }
 
 /**
- * 从磁盘读取 operator 活跃密钥对（entities/*/identity.json）。
+ * 从磁盘读取 operator 活跃密钥对（entities 下 identity.json）。
  * @param {string} userDir 用户目录
  * @returns {{ activePubKeyHex: string, secretHex: string }} 联邦活跃钥
  */

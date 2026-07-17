@@ -1,16 +1,16 @@
 import { Buffer } from 'node:buffer'
 
-import { wrapKeyEcies, unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 import { HEX_ID_64 as PUB_KEY_HEX_64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { wrapKeyEcies, unwrapKeyEcies } from 'npm:@steve02081504/fount-p2p/crypto/key'
 
-import { appendSignedLocalEvent } from '../dag/append.mjs'
-import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
-import { getState } from '../dag/materialize.mjs'
 import {
 	importSharedCabinetGrant,
 	loadSharedKeys,
 	rotateSharedReadKey,
 } from '../../../../cabinet/src/shared/keys.mjs'
+import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { resolveLocalEventSigner } from '../dag/localSigner.mjs'
+import { getState } from '../dag/materialize.mjs'
 
 /**
  * 成员对某柜的访问级别。

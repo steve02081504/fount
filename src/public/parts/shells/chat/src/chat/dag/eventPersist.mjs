@@ -17,13 +17,13 @@ import {
 	seedMemberReputationFromIntroducer,
 } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { rotateBoundCabinetKeys, tryImportCabinetKeyWraps } from '../cabinets/keys.mjs'
 import {
 	CKG_ENCRYPT_EVENT_TYPES,
 	decryptEventContent,
 } from '../channel_keys/content.mjs'
 import { appendChannelKeyRotate, rotateAllChannelKeys } from '../channel_keys/schedule.mjs'
 import { applyChannelKeyRotateEvent } from '../channel_keys/store.mjs'
-import { rotateBoundCabinetKeys, tryImportCabinetKeyWraps } from '../cabinets/keys.mjs'
 import { getEventReceivedAt } from '../events/meta.mjs'
 import { onRoomCredentialsSyncedFromDag, roomCredentialsFromGroupSettings } from '../federation/roomCredentials.mjs'
 import { tryImportFileKeyGrantFromPeerInvite } from '../file_keys/peerInviteImport.mjs'

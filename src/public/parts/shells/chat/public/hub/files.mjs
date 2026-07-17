@@ -1,9 +1,10 @@
 /**
  * Hub 群文件面板：列出当前成员 role 可访问的共享柜；管理者可绑定新柜。
  */
-import { hubStore } from './core/state.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
+
+import { hubStore } from './core/state.mjs'
 
 let filesDrawerWired = false
 

@@ -1,3 +1,4 @@
+/* global Deno */
 import { normalizeEntry, listChildren, patchEntry } from '../../src/entryModel.mjs'
 
 Deno.test('orphaned entries hidden from listChildren by default', () => {

@@ -1,3 +1,4 @@
+/* global Deno */
 import { Buffer } from 'node:buffer'
 
 import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'

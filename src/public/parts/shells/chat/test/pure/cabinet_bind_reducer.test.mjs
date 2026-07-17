@@ -1,3 +1,4 @@
+/* global Deno */
 import { cabinetReducers } from '../../src/chat/dag/reducers/cabinets.mjs'
 
 Deno.test('cabinet_bind / key_update / unbind materialize', () => {
