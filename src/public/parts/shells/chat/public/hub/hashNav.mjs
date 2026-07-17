@@ -8,7 +8,7 @@
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { hubStore } from './core/state.mjs'
-import { FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
+import { DISCOVERY_HASH, FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
 import { setMode } from './mode.mjs'
@@ -26,6 +26,10 @@ async function navigateFromHashInner() {
 		const hash = window.location.hash.slice(1)
 		if (hash === INBOX_HASH) {
 			await setMode('inbox')
+			return
+		}
+		if (hash === DISCOVERY_HASH) {
+			await setMode('discovery')
 			return
 		}
 		if (!hash || hash === FRIENDS_HASH) {

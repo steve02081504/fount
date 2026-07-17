@@ -1,0 +1,79 @@
+.settings-advanced {
+	margin-top: 1rem;
+	overflow: hidden;
+	border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+	border-radius: 0.85rem;
+	background: color-mix(in srgb, currentColor 3%, transparent);
+}
+
+.settings-advanced > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 1rem;
+	cursor: pointer;
+	list-style: none;
+}
+
+.settings-advanced > summary::-webkit-details-marker {
+	display: none;
+}
+
+.settings-advanced > summary::after {
+	content: '›';
+	font-size: 1.5rem;
+	opacity: 0.55;
+	transform: rotate(90deg);
+	transition: transform 0.16s ease;
+}
+
+.settings-advanced[open] > summary::after {
+	transform: rotate(-90deg);
+}
+
+.settings-advanced-summary {
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+}
+
+.settings-advanced-summary small {
+	font-size: 0.75rem;
+	opacity: 0.6;
+}
+
+.settings-advanced-body {
+	padding: 0 1rem 1rem;
+	border-top: 1px solid color-mix(in srgb, currentColor 10%, transparent);
+}
+
+.settings-advanced-body > :first-child {
+	margin-top: 1rem;
+}
+
+.settings-label-with-info {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.settings-info {
+	display: inline-grid;
+	place-items: center;
+	width: 1.05rem;
+	height: 1.05rem;
+	border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+	border-radius: 50%;
+	font-size: 0.65rem;
+	font-weight: 700;
+	line-height: 1;
+	opacity: 0.65;
+	cursor: help;
+}
+
+.settings-danger-zone {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid color-mix(in srgb, var(--color-error) 35%, transparent);
+}

@@ -52,6 +52,9 @@ test.describe('Chat hub navigation', () => {
 		await openGroupSettingsPage(page, baseUrl, groupId)
 		await expect(page.locator('#save-group-settings')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator('.tabs .tab[data-tab="general"]')).toHaveClass(/tab-active/)
+		await expect(page.locator('#group-name')).toBeVisible()
+		await expect(page.locator('.settings-advanced')).not.toHaveAttribute('open', '')
+		await expect(page.locator('#max-dag-payload-bytes')).toBeHidden()
 	})
 
 	test('opens join group modal from server picker', async ({ page, baseUrl }) => {
@@ -65,8 +68,15 @@ test.describe('Chat hub navigation', () => {
 
 	test('opens federation settings overlay from server bar', async ({ page, baseUrl, apiKey }) => {
 		await openFreshGroupChannel(page, baseUrl, apiKey)
-		await page.locator('#hub-federation-settings-button').click()
+		const federationButton = page.locator('#hub-federation-settings-button')
+		await expect(federationButton.locator('svg[src*="cog.svg"]')).toBeVisible()
+		await federationButton.click()
 		await expect(page.locator('#hub-overlay-body #federation-relay-urls')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#federation-open-discovery')).toHaveCount(0)
+		await expect(page.locator('.hub-advanced-settings')).not.toHaveAttribute('open', '')
+		await expect(page.locator('#federation-dm-rotate')).toBeHidden()
+		await page.locator('.hub-advanced-settings > summary').click()
+		await expect(page.locator('#federation-dm-rotate')).toBeVisible()
 		await page.locator('#federation-close').click()
 	})
 
@@ -89,13 +99,14 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('#hub-files-list')).toBeVisible()
 	})
 
-	test('discovery panel opens from federation settings', async ({ page, baseUrl, apiKey }) => {
+	test('discovery page opens from server bar compass', async ({ page, baseUrl, apiKey }) => {
 		await openFreshGroupChannel(page, baseUrl, apiKey)
-		await page.locator('#hub-federation-settings-button').click()
-		await expect(page.locator('#federation-open-discovery')).toBeVisible({ timeout: 30_000 })
-		await page.locator('#federation-open-discovery').click()
-		await expect(page.locator('dialog [data-discovery-list]')).toBeVisible({ timeout: 30_000 })
-		await page.locator('dialog [data-discovery-close]').click()
-		await expect(page.locator('dialog [data-discovery-list]')).toHaveCount(0, { timeout: 10_000 })
+		const discoveryButton = page.locator('#hub-discovery-button')
+		await expect(discoveryButton.locator('svg[src*="compass-outline.svg"]')).toBeVisible()
+		await discoveryButton.click()
+		await expect(page).toHaveURL(/#discovery/)
+		await expect(page.locator('.hub-discovery-page')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('[data-discovery-grid]')).toBeVisible()
+		await expect(page.locator('#hub-discovery-button')).toHaveClass(/mode-active/)
 	})
 })

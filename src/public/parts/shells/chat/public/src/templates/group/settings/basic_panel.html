@@ -28,9 +28,20 @@
 			</select>
 		</div>
 
+		<details class="settings-advanced">
+			<summary>
+				<span class="settings-advanced-summary">
+					<strong data-i18n="chat.group.settingsPage.advancedTitle"></strong>
+					<small data-i18n="chat.group.settingsPage.advancedDescription"></small>
+				</span>
+			</summary>
+			<div class="settings-advanced-body">
 		<div class="form-control">
 			<label class="label">
-				<span class="label-text" data-i18n="chat.group.settingsPage.powDifficultyLabel"></span>
+				<span class="label-text settings-label-with-info">
+					<span data-i18n="chat.group.settingsPage.powDifficultyLabel"></span>
+					<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.powDifficultyTip">i</span>
+				</span>
 			</label>
 			<input type="number" id="pow-difficulty" class="input input-bordered" value="${currentState.groupSettings.powDifficulty}" min="1" max="10">
 		</div>
@@ -52,7 +63,10 @@
 
 		<div class="form-control">
 			<label class="label">
-				<span class="label-text" data-i18n="chat.group.settingsMaxDagPayload"></span>
+				<span class="label-text settings-label-with-info">
+					<span data-i18n="chat.group.settingsMaxDagPayload"></span>
+					<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.maxDagPayloadTip">i</span>
+				</span>
 			</label>
 			<input type="number" id="max-dag-payload-bytes" class="input input-bordered" min="4096" max="8388608" step="1024" value="${Number(currentState.groupSettings.maxDagPayloadBytes) || 262144}">
 		</div>
@@ -78,7 +92,7 @@
 		</div>
 		<div class="grid grid-cols-2 gap-3">
 			<div class="form-control">
-				<label class="label"><span class="label-text" data-i18n="chat.group.settingsTrustedPeers"></span></label>
+				<label class="label"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsTrustedPeers"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.trustedPeersTip">i</span></span></label>
 				<input type="number" id="trusted-peer-slots" class="input input-bordered" min="1" max="32" value="${Number(currentState.groupSettings.trustedPeerSlots) || 8}">
 			</div>
 			<div class="form-control">
@@ -90,7 +104,7 @@
 				<input type="number" id="max-peers" class="input input-bordered" min="4" max="64" value="${Number(currentState.groupSettings.maxPeers) || 24}">
 			</div>
 			<div class="form-control">
-				<label class="label"><span class="label-text" data-i18n="chat.group.settingsGossipTtl"></span></label>
+				<label class="label"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsGossipTtl"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.gossipTtlTip">i</span></span></label>
 				<input type="number" id="gossip-ttl" class="input input-bordered" min="0" max="8" value="${Number(currentState.groupSettings.gossipTtl) ?? 2}">
 			</div>
 			<div class="form-control">
@@ -98,7 +112,7 @@
 				<input type="number" id="want-ids-budget" class="input input-bordered" min="4" max="128" value="${Number(currentState.groupSettings.wantIdsBudget) || 16}">
 			</div>
 			<div class="form-control">
-				<label class="label"><span class="label-text" data-i18n="chat.group.settingsHlcMaxSkew"></span></label>
+				<label class="label"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsHlcMaxSkew"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.hlcTip">i</span></span></label>
 				<input type="number" id="hlc-max-skew-ms" class="input input-bordered" min="60000" max="86400000" step="1000" value="${Number(currentState.groupSettings.hlcMaxSkewMs) || 3600000}">
 			</div>
 		</div>
@@ -189,20 +203,26 @@
 
 		<div class="form-control">
 			<label class="label">
-				<span class="label-text" data-i18n="chat.group.settingsStreamingSfu"></span>
+				<span class="label-text settings-label-with-info">
+					<span data-i18n="chat.group.settingsStreamingSfu"></span>
+					<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.sfuTip">i</span>
+				</span>
 			</label>
 			<input type="text" id="streaming-sfu-wss" class="input input-bordered" placeholder="wss://..." value="${escapeHtml(currentState.groupSettings.streamingSfuWss || '')}">
 		</div>
 
 		<div class="form-control mt-2">
-			<label class="label"><span class="label-text" data-i18n="chat.group.settingsIceServers"></span></label>
+			<label class="label"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsIceServers"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.iceTip">i</span></span></label>
 			<div id="ice-servers-host" class="space-y-2"></div>
 			<button type="button" id="ice-servers-add" class="btn btn-outline btn-sm mt-2" data-i18n="chat.group.settingsIceServersAdd"></button>
 			<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsIceServersHint"></p>
 		</div>
 		<div class="form-control mt-2">
 			<label class="label">
-				<span class="label-text" data-i18n="chat.group.settingsFileCeMode"></span>
+				<span class="label-text settings-label-with-info">
+					<span data-i18n="chat.group.settingsFileCeMode"></span>
+					<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.fileEncryptionTip">i</span>
+				</span>
 			</label>
 			<select id="file-ce-mode" class="select select-bordered">
 				<option value="convergent" ${String(currentState.groupSettings.fileCeMode || 'convergent' ) !=='random' ? 'selected' : '' } data-i18n="chat.group.settingsFileCeModeConvergent"></option>
@@ -211,11 +231,17 @@
 			<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsFileCeModeHint"></p>
 		</div>
 		<p class="text-xs opacity-70 mt-3 leading-relaxed" data-i18n="chat.group.convergentEncryptWarn"></p>
+			</div>
+		</details>
 		` : ''}
 
 		${showKeyRotate ? `
-		<div class="mt-4">
-			<button type="button" id="group-settings-key-rotate-button" class="btn btn-outline btn-sm" data-i18n="chat.group.settingsPage.keyRotate"></button>
+		<div class="settings-danger-zone">
+			<div class="settings-label-with-info mb-2">
+				<strong class="text-sm" data-i18n="chat.group.settingsPage.keyManagementTitle"></strong>
+				<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.keyManagementTip">i</span>
+			</div>
+			<button type="button" id="group-settings-key-rotate-button" class="btn btn-warning btn-outline btn-sm" data-i18n="chat.group.settingsPage.keyRotate"></button>
 			<p class="text-xs opacity-70 mt-2" data-i18n="chat.group.settingsPage.gshGenerationRetentionHint"></p>
 		</div>
 		` : ''}

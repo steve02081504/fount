@@ -825,9 +825,129 @@
 .hub-federation-reputation-dump {
 	margin: 0;
 	padding: 10px 12px;
+	max-height: 160px;
+	overflow: auto;
 	border-radius: 8px;
 	background: var(--hub-bg-main);
 	color: var(--hub-text-muted);
+	font-size: 11px;
+	white-space: pre-wrap;
+}
+
+.hub-setting-label {
+	display: inline-flex !important;
+	align-items: center;
+	gap: 7px;
+}
+
+.hub-info-tip {
+	display: inline-grid;
+	place-items: center;
+	width: 17px;
+	height: 17px;
+	flex: 0 0 auto;
+	border: 1px solid var(--hub-border);
+	border-radius: 50%;
+	color: var(--hub-text-muted);
+	font-size: 10px !important;
+	font-weight: 750;
+	font-style: normal;
+	line-height: 1;
+	cursor: help;
+}
+
+.hub-info-tip:hover,
+.hub-info-tip:focus-visible {
+	border-color: var(--hub-accent);
+	color: var(--hub-accent);
+	outline: none;
+}
+
+.hub-advanced-settings {
+	margin-top: 14px;
+	overflow: hidden;
+	border: 1px solid var(--hub-border-subtle);
+	border-radius: 12px;
+	background: color-mix(in srgb, var(--hub-bg-main), transparent 42%);
+}
+
+.hub-advanced-settings > summary {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 15px 16px;
+	color: var(--hub-text-bright);
+	cursor: pointer;
+	list-style: none;
+}
+
+.hub-advanced-settings > summary::-webkit-details-marker {
+	display: none;
+}
+
+.hub-advanced-settings > summary::after {
+	content: '›';
+	color: var(--hub-text-muted);
+	font-size: 24px;
+	transform: rotate(90deg);
+	transition: transform 0.16s ease;
+}
+
+.hub-advanced-settings[open] > summary::after {
+	transform: rotate(-90deg);
+}
+
+.hub-advanced-settings > summary span {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.hub-advanced-settings > summary strong {
+	font-size: 14px;
+}
+
+.hub-advanced-settings > summary small {
+	color: var(--hub-text-muted);
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.hub-advanced-settings-body {
+	padding: 0 12px 12px;
+	border-top: 1px solid var(--hub-border-subtle);
+}
+
+.hub-advanced-settings-body > .hub-overlay-section:first-child {
+	margin-top: 12px;
+}
+
+.hub-overlay-danger-action {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 14px;
+	padding: 12px;
+	border: 1px solid color-mix(in srgb, var(--color-warning), transparent 60%);
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--color-warning), transparent 91%);
+}
+
+.hub-overlay-danger-action strong {
+	color: var(--hub-text-bright);
+	font-size: 13px;
+}
+
+.hub-overlay-danger-action p {
+	margin: 3px 0 0;
+	color: var(--hub-text-muted);
+	font-size: 11px;
+	line-height: 1.45;
+}
+
+.hub-overlay-danger-action .btn {
+	flex: 0 0 auto;
 }
 
 @media (max-width: 560px) {

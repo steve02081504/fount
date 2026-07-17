@@ -1,4 +1,4 @@
-/* 建群/加群模态：主体已改用 DaisyUI；此处仅保留权限矩阵等少量补丁 */
+/* 建群/加群模态 */
 
 .group-create-perm-grid {
 	display: grid;
@@ -13,6 +13,111 @@
 	font-size: 13px;
 }
 
-.group-join-modal-box .modal-box {
+.group-join-modal-box {
 	max-width: 480px;
+}
+
+.group-modal-hero {
+	position: relative;
+	overflow: hidden;
+}
+
+.group-modal-hero::after {
+	content: '';
+	position: absolute;
+	right: -48px;
+	bottom: -72px;
+	width: 180px;
+	height: 180px;
+	border: 1px solid color-mix(in srgb, currentColor 22%, transparent);
+	border-radius: 50%;
+}
+
+.group-modal-icon {
+	display: grid;
+	place-items: center;
+	width: 52px;
+	height: 52px;
+	margin-bottom: 14px;
+	border: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+	border-radius: 17px;
+	background: color-mix(in srgb, currentColor 13%, transparent);
+}
+
+.group-modal-section-title {
+	margin: 0 0 10px;
+	font-size: 12px;
+	font-weight: 750;
+	letter-spacing: 0.08em;
+	opacity: 0.65;
+	text-transform: uppercase;
+}
+
+.group-modal-hint {
+	display: flex;
+	align-items: flex-start;
+	gap: 9px;
+	padding: 11px 12px;
+	border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+	border-radius: 10px;
+	background: color-mix(in srgb, currentColor 4%, transparent);
+	font-size: 12px;
+	line-height: 1.55;
+	opacity: 0.72;
+}
+
+.group-modal-hint img {
+	flex: 0 0 auto;
+	margin-top: 1px;
+}
+
+.group-policy-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 10px;
+}
+
+.group-policy-card {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	min-height: 82px;
+	padding: 13px;
+	border: 1px solid color-mix(in srgb, currentColor 14%, transparent);
+	border-radius: 12px;
+	cursor: pointer;
+	transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+
+.group-policy-card:hover,
+.group-policy-card:has(input:checked) {
+	border-color: var(--color-primary);
+	background: color-mix(in srgb, var(--color-primary) 9%, transparent);
+	transform: translateY(-1px);
+}
+
+.group-policy-card input {
+	margin-top: 2px;
+}
+
+.group-policy-card span {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.group-policy-card strong {
+	font-size: 14px;
+}
+
+.group-policy-card small {
+	font-size: 12px;
+	line-height: 1.4;
+	opacity: 0.65;
+}
+
+@media (max-width: 480px) {
+	.group-policy-grid {
+		grid-template-columns: 1fr;
+	}
 }

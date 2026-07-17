@@ -11,6 +11,9 @@ export const FRIENDS_HASH = 'friends'
 /** 收件箱模式的 hash 片段（`#inbox`）。 */
 export const INBOX_HASH = 'inbox'
 
+/** 群发现模式的 hash 片段（`#discovery`）。 */
+export const DISCOVERY_HASH = 'discovery'
+
 /**
  * 从 `location.hash` 解析当前群组、频道与可选消息 eventId。
  * 格式：`#group:{groupId}:{channelId}` 或 `#group:{groupId}:{channelId};{eventId}`
@@ -49,6 +52,11 @@ export function isInboxHash() {
 	return window.location.hash.slice(1) === INBOX_HASH
 }
 
+/** @returns {boolean} 当前 hash 是否为群发现 */
+export function isDiscoveryHash() {
+	return window.location.hash.slice(1) === DISCOVERY_HASH
+}
+
 /**
  * 将当前群组/频道（可选 eventId）写入 hash。
  * 格式：`#group:{groupId}:{channelId}` 或 `#group:{groupId}:{channelId};{eventId}`
@@ -77,6 +85,13 @@ export function updateFriendsHash() {
 export function updateInboxHash() {
 	if (window.location.hash.slice(1) === INBOX_HASH) return
 	const url = `${window.location.pathname}${window.location.search}#${INBOX_HASH}`
+	history.replaceState(null, '', url)
+}
+
+/** 将 hash 设为群发现（`#discovery`）。 @returns {void} */
+export function updateDiscoveryHash() {
+	if (window.location.hash.slice(1) === DISCOVERY_HASH) return
+	const url = `${window.location.pathname}${window.location.search}#${DISCOVERY_HASH}`
 	history.replaceState(null, '', url)
 }
 

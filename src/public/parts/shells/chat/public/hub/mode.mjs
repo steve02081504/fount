@@ -1,6 +1,6 @@
 /**
  * 【文件】public/hub/mode.mjs
- * 【职责】Hub 左侧主模式切换：「群组」「好友」「收件箱」三套布局的激活、数据加载与 composer 状态清理。
+ * 【职责】Hub 左侧主模式切换：「群组」「好友」「收件箱」「群发现」布局的激活、数据加载与 composer 状态清理。
  * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / inbox。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；stream、friendsList、sidebar、inboxView。
@@ -26,7 +26,7 @@ import { closeGroupWebSocket } from './stream/index.mjs'
 
 /**
  * 高亮左侧「群组 / 好友 / 收件箱」模式切换按钮。
- * @param {'groups' | 'friends' | 'inbox'} mode 主栏模式
+ * @param {'groups' | 'friends' | 'inbox' | 'discovery'} mode 主栏模式
  * @returns {void}
  */
 export function setActiveModeTab(mode) {
@@ -37,7 +37,7 @@ export function setActiveModeTab(mode) {
 
 /**
  * 切换 Hub 主模式（群组 / 好友 / 收件箱）。
- * @param {'groups' | 'friends' | 'inbox'} mode 目标模式
+ * @param {'groups' | 'friends' | 'inbox' | 'discovery'} mode 目标模式
  * @returns {Promise<void>}
  */
 export async function setMode(mode) {
@@ -47,11 +47,17 @@ export async function setMode(mode) {
 	}
 
 	hubStore.context.currentMode = mode
+	document.body.dataset.hubSurface = mode
 	setActiveModeTab(mode)
 
 	if (mode === 'inbox') {
 		const { activateInboxView } = await import('./inboxView.mjs')
 		await activateInboxView()
+		return
+	}
+	if (mode === 'discovery') {
+		const { activateDiscoveryView } = await import('./discoveryPanel.mjs')
+		await activateDiscoveryView()
 		return
 	}
 

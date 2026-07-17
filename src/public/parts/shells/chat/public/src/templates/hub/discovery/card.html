@@ -1,0 +1,14 @@
+<article class="hub-discovery-card">
+	<div class="hub-discovery-card-cover" aria-hidden="true">
+		<span>${initial}</span>
+	</div>
+	<div class="hub-discovery-card-body">
+		<h2>${title}</h2>
+		<p>${blurb || geti18n('chat.hub.discoveryNoDescription')}</p>
+		<div class="hub-discovery-card-meta">
+			<span>${sourceLabel}</span>
+			<code>${groupId}</code>
+		</div>
+		<button type="button" class="btn btn-primary btn-sm w-full" data-group-id="${groupId}" data-i18n="${actionKey}"></button>
+	</div>
+</article>

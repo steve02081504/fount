@@ -8,67 +8,102 @@ ${mode === 'error' ? `
 	<div class="hub-overlay-section space-y-3">
 		<h4 data-i18n="chat.hub.fedConnectionTitle"></h4>
 		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedRelayUrlsLabel"></label>
+			<label class="hub-setting-label">
+				<span data-i18n="chat.hub.fedRelayUrlsLabel"></span>
+				<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedRelayUrlsTip">i</span>
+			</label>
 			<textarea id="federation-relay-urls" class="hub-overlay-textarea textarea textarea-bordered w-full" rows="3" placeholder="wss://relay.damus.io">${relayText}</textarea>
 		</div>
-		<div class="hub-overlay-action-row">
-		${showRotateRoomSecret ? `
-			<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-warning" id="federation-rotate-room-secret" data-i18n="chat.hub.fedRotateRoomSecret"></button>
-			<button type="button" class="hub-overlay-button btn btn-outline" id="federation-repair-join-snapshot" data-i18n="chat.hub.fedRepairJoinSnapshot"></button>
-		` : ''}
-			<button type="button" class="hub-overlay-button btn btn-outline" id="federation-open-discovery" data-i18n="chat.hub.openDiscovery"></button>
-		</div>
 		<label class="hub-overlay-toggle-row">
-			<span data-i18n="chat.hub.fedBatterySaverLabel"></span>
+			<span class="hub-setting-label">
+				<span data-i18n="chat.hub.fedBatterySaverLabel"></span>
+				<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedBatterySaverTip">i</span>
+			</span>
 			<input type="checkbox" class="toggle toggle-primary" id="federation-battery-saver" ${batteryChecked} />
 		</label>
 	</div>
-	<div class="hub-overlay-section space-y-3" id="federation-rep-section">
-		<h4 data-i18n="chat.hub.fedRepTitle"></h4>
-		<pre id="federation-rep-dump" class="hub-federation-reputation-dump" style="max-height:160px;overflow:auto;font-size:11px;white-space:pre-wrap;" data-i18n="chat.hub.loading"></pre>
-	</div>
-	<div class="hub-overlay-section space-y-3" id="federation-slash-section">
-		<h4 data-i18n="chat.hub.fedSlashTitle"></h4>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedSlashTargetLabel"></label>
-			<input type="text" id="federation-slash-target" class="hub-overlay-input input input-bordered w-full" data-i18n="chat.hub.fedSlashTarget" spellcheck="false" />
+
+	<details class="hub-advanced-settings">
+		<summary>
+			<span>
+				<strong data-i18n="chat.hub.fedAdvancedTitle"></strong>
+				<small data-i18n="chat.hub.fedAdvancedDescription"></small>
+			</span>
+		</summary>
+		<div class="hub-advanced-settings-body">
+			${showRotateRoomSecret ? `
+			<div class="hub-overlay-section space-y-3">
+				<h4 class="hub-setting-label">
+					<span data-i18n="chat.hub.fedGroupRecoveryTitle"></span>
+					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedGroupRecoveryTip">i</span>
+				</h4>
+				<div class="hub-overlay-action-row">
+					<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-warning" id="federation-rotate-room-secret" data-i18n="chat.hub.fedRotateRoomSecret"></button>
+					<button type="button" class="hub-overlay-button btn btn-outline" id="federation-repair-join-snapshot" data-i18n="chat.hub.fedRepairJoinSnapshot"></button>
+				</div>
+			</div>
+			` : ''}
+			<div class="hub-overlay-section space-y-3" id="federation-rep-section">
+				<h4 class="hub-setting-label">
+					<span data-i18n="chat.hub.fedRepTitle"></span>
+					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedRepTip">i</span>
+				</h4>
+				<pre id="federation-rep-dump" class="hub-federation-reputation-dump" data-i18n="chat.hub.loading"></pre>
+			</div>
+			<div class="hub-overlay-section space-y-3" id="federation-slash-section">
+				<h4 class="hub-setting-label">
+					<span data-i18n="chat.hub.fedSlashTitle"></span>
+					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedSlashTip">i</span>
+				</h4>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedSlashTargetLabel"></label>
+					<input type="text" id="federation-slash-target" class="hub-overlay-input input input-bordered w-full" data-i18n="chat.hub.fedSlashTarget" spellcheck="false" />
+				</div>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedSlashClaimLabel"></label>
+					<input type="number" id="federation-slash-claim" class="hub-overlay-input input input-bordered w-full" min="0" max="1" step="0.05" value="0.25" />
+				</div>
+				<label class="hub-overlay-toggle-row">
+					<span data-i18n="chat.hub.fedSlashVerifiedLabel"></span>
+					<input type="checkbox" class="toggle toggle-primary" id="federation-slash-verified" />
+				</label>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedSlashProofLabel"></label>
+					<input type="text" id="federation-slash-proof" class="hub-overlay-input input input-bordered w-full" data-i18n="chat.hub.fedSlashProof" spellcheck="false" />
+				</div>
+				<button type="button" class="hub-overlay-button hub-overlay-button-primary btn btn-primary w-full mt-2" id="federation-slash-submit" data-i18n="chat.hub.fedSlashSubmitLabel"></button>
+				<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-ghost w-full mt-1.5" id="federation-reset-submit" data-i18n="chat.hub.fedResetSubmitLabel"></button>
+			</div>
+			<div class="hub-overlay-section space-y-3" id="federation-dm-link-section">
+				<h4 class="hub-setting-label">
+					<span data-i18n="chat.hub.fedDmLinkTitle"></span>
+					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedDmLinkTip">i</span>
+				</h4>
+				<p class="hub-overlay-toggle-description" data-i18n="chat.hub.fedDmLinkDescription"></p>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedDmPubKeyLabel"></label>
+					<input type="text" id="federation-dm-pubkey" class="hub-overlay-input input input-bordered w-full" spellcheck="false" autocomplete="off" />
+				</div>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedDmSecretLabel"></label>
+					<input type="password" id="federation-dm-secret" class="hub-overlay-input input input-bordered w-full" spellcheck="false" autocomplete="off" />
+				</div>
+				<div class="hub-overlay-field space-y-1">
+					<label data-i18n="chat.hub.fedDmNodeLabel"></label>
+					<input type="text" id="federation-dm-node" class="hub-overlay-input input input-bordered w-full" />
+				</div>
+				<div class="hub-overlay-danger-action">
+					<div>
+						<strong data-i18n="chat.hub.fedDmInvalidateTitle"></strong>
+						<p data-i18n="chat.hub.fedDmInvalidateDescription"></p>
+					</div>
+					<button type="button" class="hub-overlay-button btn btn-warning btn-sm" id="federation-dm-rotate" data-i18n="chat.hub.fedDmRotateLabel"></button>
+				</div>
+				<button type="button" class="hub-overlay-button hub-overlay-button-primary btn btn-primary w-full" id="federation-dm-issue" data-i18n="chat.hub.fedDmIssueLabel"></button>
+				<textarea id="federation-dm-url" class="hub-overlay-textarea textarea textarea-bordered w-full mt-2 text-xs" rows="3" readonly></textarea>
+			</div>
 		</div>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedSlashClaimLabel"></label>
-			<input type="number" id="federation-slash-claim" class="hub-overlay-input input input-bordered w-full" min="0" max="1" step="0.05" value="0.25" />
-		</div>
-		<label class="hub-overlay-toggle-row">
-			<span data-i18n="chat.hub.fedSlashVerifiedLabel"></span>
-			<input type="checkbox" class="toggle toggle-primary" id="federation-slash-verified" />
-		</label>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedSlashProofLabel"></label>
-			<input type="text" id="federation-slash-proof" class="hub-overlay-input input input-bordered w-full" data-i18n="chat.hub.fedSlashProof" spellcheck="false" />
-		</div>
-		<button type="button" class="hub-overlay-button hub-overlay-button-primary btn btn-primary w-full mt-2" id="federation-slash-submit" data-i18n="chat.hub.fedSlashSubmitLabel"></button>
-		<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-ghost w-full mt-1.5" id="federation-reset-submit" data-i18n="chat.hub.fedResetSubmitLabel"></button>
-	</div>
-	<div class="hub-overlay-section space-y-3" id="federation-dm-link-section">
-		<h4 data-i18n="chat.hub.fedDmLinkTitle"></h4>
-		<p class="hub-overlay-toggle-description" data-i18n="chat.hub.fedDmLinkDescription"></p>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedDmPubKeyLabel"></label>
-			<input type="text" id="federation-dm-pubkey" class="hub-overlay-input input input-bordered w-full" spellcheck="false" autocomplete="off" />
-		</div>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedDmSecretLabel"></label>
-			<input type="password" id="federation-dm-secret" class="hub-overlay-input input input-bordered w-full" spellcheck="false" autocomplete="off" />
-		</div>
-		<div class="hub-overlay-field space-y-1">
-			<label data-i18n="chat.hub.fedDmNodeLabel"></label>
-			<input type="text" id="federation-dm-node" class="hub-overlay-input input input-bordered w-full" />
-		</div>
-		<div class="hub-overlay-action-row">
-			<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-ghost" id="federation-dm-rotate" data-i18n="chat.hub.fedDmRotateLabel"></button>
-			<button type="button" class="hub-overlay-button hub-overlay-button-primary btn btn-primary" id="federation-dm-issue" data-i18n="chat.hub.fedDmIssueLabel"></button>
-		</div>
-		<textarea id="federation-dm-url" class="hub-overlay-textarea textarea textarea-bordered w-full mt-2 text-xs" rows="3" readonly></textarea>
-	</div>
+	</details>
 </div>
 <div data-federation-part="footer">
 	<button type="button" class="hub-overlay-button hub-overlay-button-primary btn btn-primary" id="federation-save" data-i18n="profile.save"></button>

@@ -1,83 +1,123 @@
-/**
- * Hub 群发现侧栏/模态。
- */
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
-import { renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
-import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+/** Hub 群发现主内容页。 */
+import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/api/discoveryApi.mjs'
+import { handleUIError } from '../src/ui/errors.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
+import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
+import { hubStore } from './core/state.mjs'
+import { updateDiscoveryHash } from './core/urlHash.mjs'
+import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
+import { clearPrivateGroupState } from './privateGroup.mjs'
 import { selectGroup } from './sidebar/index.mjs'
+import { closeGroupWebSocket } from './stream/index.mjs'
+
+let loadGeneration = 0
 
 /**
+ * @param {HTMLElement} grid 卡片容器
  * @param {Array<{ groupId: string, title?: string, blurb?: string, sources?: Array<{ fromNodeHash?: string }> }>} entries 发现条目
- * @returns {Promise<string>} 列表 HTML 片段
+ * @returns {Promise<void>}
  */
-async function renderDiscoveryListHtml(entries) {
-	if (!entries.length)
-		return await renderTemplateAsHtmlString('hub/modals/discovery_empty', {})
-	usingTemplates('/parts/shells:chat/src/templates')
-	const parts = await Promise.all(entries.map(async entry => {
-		const sources = (entry.sources || [])
-			.map(source => escapeHtml(source.fromNodeHash?.slice(0, 12) || '?'))
-			.join(', ')
-		return renderTemplateAsHtmlString('hub/modals/discovery_row', {
+async function paintDiscoveryEntries(grid, entries) {
+	if (!entries.length) {
+		await mountTemplate(grid, 'hub/discovery/empty')
+		return
+	}
+	const joinedIds = new Set(hubStore.sidebar.groups.map(group => String(group.id || group.groupId || '')))
+	grid.replaceChildren(...await Promise.all(entries.map(async entry => {
+		const title = String(entry.title || entry.groupId)
+		return renderTemplate('hub/discovery/card', {
 			groupId: escapeHtml(entry.groupId),
-			title: escapeHtml(entry.title || entry.groupId),
+			title: escapeHtml(title),
+			initial: escapeHtml(Array.from(title)[0] || '#'),
 			blurb: escapeHtml(entry.blurb || ''),
-			sources,
+			sourceLabel: escapeHtml(await geti18n('chat.hub.discoverySourceCount', {
+				count: String(entry.sources?.length || 0),
+			})),
+			actionKey: joinedIds.has(String(entry.groupId))
+				? 'chat.hub.discoveryOpen'
+				: 'chat.hub.discoveryJoin',
 		})
-	}))
-	return parts.join('')
+	})))
 }
 
 /**
- * 打开群发现列表模态。
+ * @param {HTMLElement} root 页面根
  * @returns {Promise<void>}
  */
-export async function openDiscoveryPanel() {
-	void refreshDiscoveryGossip().catch(() => { })
-	let entries = []
+async function loadDiscoveryEntries(root) {
+	const generation = ++loadGeneration
+	const grid = root.querySelector('[data-discovery-grid]')
+	const refreshButton = root.querySelector('[data-discovery-refresh]')
+	if (!(grid instanceof HTMLElement)) return
+	grid.setAttribute('aria-busy', 'true')
+	refreshButton?.setAttribute('disabled', '')
 	try {
+		await refreshDiscoveryGossip()
 		const data = await fetchDiscoveryIndex({ limit: 80 })
-		entries = data.entries || []
+		if (generation !== loadGeneration || !root.isConnected) return
+		await paintDiscoveryEntries(grid, data.entries || [])
 	}
 	catch (error) {
-		showToastI18n('error', 'chat.hub.discoveryLoadFailed', { message: error.message })
-		return
+		if (generation !== loadGeneration || !root.isConnected) return
+		handleUIError(error, 'chat.hub.discoveryLoadFailed')
+		await mountTemplate(grid, 'hub/empty/error', {
+			i18nKey: 'chat.hub.discoveryLoadFailed',
+			errorMessage: error.message,
+		})
 	}
+	finally {
+		if (generation === loadGeneration) {
+			grid.removeAttribute('aria-busy')
+			refreshButton?.removeAttribute('disabled')
+		}
+	}
+}
 
-	usingTemplates('/parts/shells:chat/src/templates')
-	const listHtml = await renderDiscoveryListHtml(entries)
-	await openDialogFromTemplate('hub/modals/discovery_modal', { listHtml }, {
-		/**
-		 * @param {HTMLDialogElement} dialog 对话框
-		 * @returns {void}
-		 */
-		onReady: dialog => {
-			dialog.querySelector('[data-discovery-close]')?.addEventListener('click', () => dialog.close())
-			dialog.querySelector('[data-discovery-refresh]')?.addEventListener('click', async () => {
-				dialog.close()
-				await openDiscoveryPanel()
-			})
-			dialog.querySelectorAll('.hub-discovery-row[data-group-id]').forEach(row => {
-				/**
-				 * @returns {Promise<void>}
-				 */
-				const openGroup = async () => {
-					const groupId = row.getAttribute('data-group-id')
-					if (!groupId) return
-					dialog.close()
-					await selectGroup(groupId)
-				}
-				row.addEventListener('click', () => { void openGroup() })
-				row.addEventListener('keydown', event => {
-					if (event.key === 'Enter' || event.key === ' ') {
-						event.preventDefault()
-						void openGroup()
-					}
-				})
-			})
-		},
+/** @returns {Promise<void>} 激活群发现主内容页。 */
+export async function activateDiscoveryView() {
+	updateDiscoveryHash()
+	cancelScheduledChannelRefresh()
+	closeGroupWebSocket()
+	clearPrivateGroupState()
+	hubStore.context.currentGroupId = null
+	hubStore.context.currentChannelId = null
+	hubStore.context.currentState = null
+	setPinsBookmarksWrapVisible(false)
+	updateStatusBanners()
+
+	const channelList = document.getElementById('hub-channel-list')
+	if (channelList)
+		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.discoverySidebarHint' })
+	document.getElementById('hub-member-list').replaceChildren()
+	document.getElementById('hub-info-card-host').replaceChildren()
+	document.getElementById('hub-group-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
+	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
+
+	const messagesHost = document.getElementById('hub-messages')
+	await mountTemplate(messagesHost, 'hub/discovery/panel')
+	const root = messagesHost.querySelector('.hub-discovery-page')
+	if (!(root instanceof HTMLElement)) return
+	root.querySelector('[data-discovery-refresh]')?.addEventListener('click', () => {
+		void loadDiscoveryEntries(root)
 	})
+	root.addEventListener('click', event => {
+		const target = event.target instanceof Element ? event.target.closest('[data-group-id]') : null
+		const groupId = target?.getAttribute('data-group-id')
+		if (!groupId) return
+		void selectGroup(groupId).catch(error => handleUIError(error, 'chat.hub.loadGroupFailed'))
+	})
+
+	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
+	disableComposer('chat.hub.composerDisabled')
+	refreshHubHeaderButtons()
+	await loadDiscoveryEntries(root)
+}
+
+/** 兼容旧调用：切换到群发现主内容页。 @returns {Promise<void>} */
+export async function openDiscoveryPanel() {
+	const { setMode } = await import('./mode.mjs')
+	await setMode('discovery')
 }
