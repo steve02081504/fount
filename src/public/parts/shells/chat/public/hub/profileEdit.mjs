@@ -127,13 +127,6 @@ async function ensureEditDialog() {
 		if (upload instanceof HTMLInputElement) upload.value = ''
 		renderEditPreview()
 	})
-	editDialog.querySelector('#hub-profile-edit-locale-rename')?.addEventListener('click', renameActiveLocale)
-	editDialog.querySelector('#hub-profile-edit-locale-add')?.addEventListener('click', addLocaleFromInput)
-	editDialog.querySelector('#hub-profile-edit-new-locale-code')?.addEventListener('keydown', (event) => {
-		if (event.key !== 'Enter') return
-		event.preventDefault()
-		addLocaleFromInput()
-	})
 	editDialog.querySelector('#hub-profile-edit-tag-add')?.addEventListener('click', () => addTagFromInput())
 	editDialog.querySelector('#hub-profile-edit-tag-input')?.addEventListener('keydown', (event) => {
 		if (event.key !== 'Enter') return
@@ -150,38 +143,37 @@ async function ensureEditDialog() {
 	return editDialog
 }
 
-/** @returns {void} */
-function renameActiveLocale() {
-	const input = editDialog?.querySelector('#hub-profile-edit-locale-code')
-	if (!(input instanceof HTMLInputElement)) return
-	const key = input.value.trim()
+/**
+ * @param {string} key 新 locale 代码
+ * @returns {void}
+ */
+function addLocale(key) {
+	const next = String(key || '').trim()
+	if (!next) return
 	persistActiveLocaleForm()
-	const renamed = renameLocaleEntry(editingLocalized, activeLocaleKey, key)
-	if (renamed === editingLocalized) {
-		input.value = activeLocaleKey
-		return
+	if (editingLocalized[next])
+		activeLocaleKey = next
+	else {
+		editingLocalized = ensureLocaleEntry(editingLocalized, next, activeLocaleKey)
+		activeLocaleKey = next
 	}
-	editingLocalized = renamed
-	activeLocaleKey = key
+	loadActiveLocaleForm()
 	refreshLocaleTabs()
 }
 
-/** @returns {void} */
-function addLocaleFromInput() {
-	const input = editDialog?.querySelector('#hub-profile-edit-new-locale-code')
-	if (!(input instanceof HTMLInputElement)) return
-	const key = input.value.trim()
-	if (!key) return
+/**
+ * @param {string} oldKey 原代码
+ * @param {string} newKey 新代码
+ * @returns {void}
+ */
+function renameLocale(oldKey, newKey) {
 	persistActiveLocaleForm()
-	if (editingLocalized[key]) 
-		activeLocaleKey = key
-	
-	else {
-		editingLocalized = ensureLocaleEntry(editingLocalized, key, activeLocaleKey)
-		activeLocaleKey = key
+	const renamed = renameLocaleEntry(editingLocalized, oldKey, newKey)
+	if (renamed !== editingLocalized) {
+		editingLocalized = renamed
+		if (activeLocaleKey === oldKey) activeLocaleKey = newKey
+		loadActiveLocaleForm()
 	}
-	input.value = ''
-	loadActiveLocaleForm()
 	refreshLocaleTabs()
 }
 
@@ -265,9 +257,6 @@ function loadActiveLocaleForm() {
 		hint.textContent = defaults.name
 			? `${defaults.name} (${defaults.tags?.join(', ') || ''})`.replace(/\s+\(\)$/, '')
 			: ''
-	const localeCode = editDialog?.querySelector('#hub-profile-edit-locale-code')
-	if (localeCode instanceof HTMLInputElement)
-		localeCode.value = activeLocaleKey
 	renderEditPreview()
 }
 
@@ -343,6 +332,8 @@ function refreshLocaleTabs() {
 			loadActiveLocaleForm()
 			refreshLocaleTabs()
 		},
+		onRename: renameLocale,
+		onAdd: addLocale,
 	})
 }
 
@@ -376,8 +367,6 @@ function initEditState(entityHash, profile) {
 	if (bannerUpload instanceof HTMLInputElement) bannerUpload.value = ''
 	const bannerUrl = editDialog?.querySelector('#hub-profile-edit-banner-url')
 	if (bannerUrl instanceof HTMLInputElement) bannerUrl.value = editingBannerPreview
-	const newLocaleCode = editDialog?.querySelector('#hub-profile-edit-new-locale-code')
-	if (newLocaleCode instanceof HTMLInputElement) newLocaleCode.value = ''
 	const status = editDialog?.querySelector('#hub-profile-edit-status')
 	if (status instanceof HTMLSelectElement)
 		status.value = profile.status || 'online'

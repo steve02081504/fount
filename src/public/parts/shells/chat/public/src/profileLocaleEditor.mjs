@@ -36,6 +36,8 @@ export { ensureLocaleEntry, renameLocaleEntry } from './profileLocaleState.mjs'
  * @param {object} callbacks 回调
  * @param {(key: string) => void} callbacks.onSelect 切换 locale
  * @param {(key: string) => void} callbacks.onRemove 删除 locale
+ * @param {(oldKey: string, newKey: string) => void} callbacks.onRename 改名 locale
+ * @param {(key: string) => void} callbacks.onAdd 新增 locale
  * @returns {void}
  */
 export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
@@ -61,11 +63,81 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 			event.stopPropagation()
 			callbacks.onRemove(key)
 		})
-		tabButton.addEventListener('click', () => callbacks.onSelect(key))
+		tabButton.addEventListener('click', (event) => {
+			if (event.target === close || close.contains(/** @type {Node} */ event.target)) return
+			if (key === activeKey) {
+				beginLocaleRename(tabButton, label, key, callbacks.onRename)
+				return
+			}
+			callbacks.onSelect(key)
+		})
 		tabButton.append(close)
 		tabsHost.append(tabButton)
 	}
 
+	const addInput = document.createElement('input')
+	addInput.type = 'text'
+	addInput.className = 'hub-profile-locale-add-input input input-bordered input-sm font-mono'
+	addInput.autocomplete = 'off'
+	addInput.placeholder = geti18n('chat.hub.profileEdit.newLocalePlaceholder') || ''
+	addInput.dataset.i18n = 'chat.hub.profileEdit.newLocalePlaceholder'
+	addInput.addEventListener('keydown', (event) => {
+		if (event.key !== 'Enter') return
+		event.preventDefault()
+		const next = addInput.value.trim()
+		if (!next) return
+		addInput.value = ''
+		callbacks.onAdd(next)
+	})
+	tabsHost.append(addInput)
+}
+
+/**
+ * 将 locale 标签替换为内联输入以改名（点击已选中标签）。
+ * @param {HTMLElement} tabButton 标签按钮
+ * @param {HTMLElement} label 当前文案节点
+ * @param {string} key 原 locale
+ * @param {(oldKey: string, newKey: string) => void} onRename 提交回调
+ * @returns {void}
+ */
+function beginLocaleRename(tabButton, label, key, onRename) {
+	if (tabButton.querySelector('.hub-profile-locale-tab-edit')) return
+	const input = document.createElement('input')
+	input.type = 'text'
+	input.className = 'hub-profile-locale-tab-edit input input-bordered input-sm font-mono'
+	input.value = key
+	input.size = Math.max(key.length, 4)
+	label.replaceWith(input)
+	input.focus()
+	input.select()
+
+	let done = false
+	/**
+	 * @param {boolean} commit 是否提交
+	 * @returns {void}
+	 */
+	const finish = (commit) => {
+		if (done) return
+		done = true
+		const next = input.value.trim()
+		if (commit && next && next !== key) onRename(key, next)
+		else input.replaceWith(label)
+	}
+	input.addEventListener('keydown', (event) => {
+		if (event.key === 'Enter') {
+			event.preventDefault()
+			event.stopPropagation()
+			finish(true)
+			return
+		}
+		if (event.key === 'Escape') {
+			event.preventDefault()
+			event.stopPropagation()
+			finish(false)
+		}
+	})
+	input.addEventListener('blur', () => finish(true))
+	input.addEventListener('click', (event) => event.stopPropagation())
 }
 
 /**

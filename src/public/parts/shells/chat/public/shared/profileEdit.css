@@ -111,28 +111,22 @@
 .hub-profile-locale-tabs {
 	display: flex;
 	flex-wrap: wrap;
+	align-items: center;
 	gap: 7px;
-}
-
-.hub-profile-edit-locale-controls {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
-	gap: 7px;
-	margin-top: 9px;
 }
 
 .hub-profile-locale-tab {
-	display: flex;
+	display: inline-flex;
 	align-items: center;
-	justify-content: space-between;
-	gap: 7px;
-	min-height: 32px;
-	padding: 5px 10px;
+	gap: 6px;
+	min-height: 28px;
+	padding: 4px 8px 4px 10px;
 	border: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 15%, transparent);
-	border-radius: 8px;
+	border-radius: 999px;
 	background: transparent;
 	color: var(--hub-text-normal, var(--color-base-content));
 	font-size: 12px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	cursor: pointer;
 }
 
@@ -154,6 +148,23 @@
 
 .hub-profile-locale-tab-close:hover {
 	opacity: 1;
+}
+
+.hub-profile-locale-tab-edit,
+.hub-profile-locale-add-input {
+	width: auto;
+	min-width: 7rem;
+	max-width: 12rem;
+	height: 28px;
+	min-height: 28px;
+	padding: 0 10px;
+	border-radius: 999px;
+	font-size: 12px;
+}
+
+.hub-profile-locale-tab-edit {
+	min-width: 4.5rem;
+	max-width: 10rem;
 }
 
 .hub-profile-edit-avatar-row {
@@ -303,9 +314,6 @@
 		padding: 15px 16px;
 	}
 
-	.hub-profile-edit-locale-controls {
-		grid-template-columns: minmax(0, 1fr) auto;
-	}
 }
 
 @media (max-width: 480px) {
