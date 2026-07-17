@@ -9,13 +9,15 @@ export {
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 
-import { processFountMessageMarkdown } from '/parts/shells:chat/src/lib/fountMessageMarkdown.mjs'
+import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { isTrustedMarkdownAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
 import { createDocumentFragmentFromHtmlStringNoScriptActivation, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
+import { socialState } from '../state.mjs'
+
 import { viewerEntityHash } from './apiClient.mjs'
 
 /**
@@ -67,24 +69,29 @@ export function authorLabel(entityHash, profile) {
 }
 
 /**
- * 判断作者是否应对 Markdown 走可信 pipeline（本人或信任表）。
+ * 判断作者是否应对 Markdown 走可信 pipeline（本人、本人 agent、或信任表）。
  * @param {string} pubKeyHash 作者 hash
+ * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
  * @returns {Promise<boolean>} 是否可信
  */
-export async function isTrusted(pubKeyHash) {
-	return isTrustedMarkdownAuthor(pubKeyHash, { selfEntityHash: viewerEntityHash() })
+export async function isTrusted(pubKeyHash, { ownerEntityHash } = {}) {
+	return isTrustedMarkdownAuthor(pubKeyHash, {
+		selfEntityHash: viewerEntityHash(),
+		nodeHash: socialState.viewerNodeHash,
+		authorOwnerEntityHash: ownerEntityHash,
+	})
 }
 
 /**
- * 将 Markdown 源本机安全渲染为 HTML 字符串（不信任对端预渲染结果；可信作者才允许危险 HTML）。
- * 本人帖始终可信，勿再只查信任表。
+ * 将 Markdown 源本机渲染为 HTML（默认/安全两档，扩展走 registry）。
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
+ * @param {{ ownerEntityHash?: string | null }} [options] 所属主人（本人的 agent）
  * @returns {Promise<string>} HTML
  */
-export async function renderMarkdown(markdown, pubKeyHash) {
-	const trusted = await isTrusted(pubKeyHash)
-	return processFountMessageMarkdown(markdown || '', trusted)
+export async function renderMarkdown(markdown, pubKeyHash, options = {}) {
+	const trusted = await isTrusted(pubKeyHash, options)
+	return renderMarkdownAsString(markdown || '', undefined, { allowDangerousHtml: trusted })
 }
 
 /**
@@ -92,11 +99,12 @@ export async function renderMarkdown(markdown, pubKeyHash) {
  * @param {HTMLElement} host 宿主
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
+ * @param {{ ownerEntityHash?: string | null }} [options] 所属主人
  * @returns {Promise<void>}
  */
-export async function mountMarkdown(host, markdown, pubKeyHash) {
+export async function mountMarkdown(host, markdown, pubKeyHash, options = {}) {
 	if (!(host instanceof HTMLElement)) return
-	const html = await renderMarkdown(markdown, pubKeyHash)
+	const html = await renderMarkdown(markdown, pubKeyHash, options)
 	host.classList.add('markdown-body')
 	host.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }

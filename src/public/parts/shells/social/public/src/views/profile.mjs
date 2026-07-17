@@ -303,6 +303,7 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 	await paintEntityProfileCard(card, profile, {
 		entityHash,
 		selfEntityHash: viewerEntityHash(),
+		nodeHash: socialState.viewerNodeHash,
 	})
 	const ownerEntityHash = profile?.ownerEntityHash
 		? String(profile.ownerEntityHash).toLowerCase()

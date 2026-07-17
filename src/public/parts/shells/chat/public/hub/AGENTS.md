@@ -10,9 +10,9 @@ alwaysApply: false
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
 - **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `npm:@steve02081504/fount-p2p/wire/ingress`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `npm:@steve02081504/fount-p2p/schemas/*`.
-- **Untrusted remote Markdown**: `messages/render/markdown.mjs` — 首帧即 `renderMessageMarkdownForPaint`（可信全文 / 未信任 120 字预览），避免流式结束「HTML→原文→HTML」闪屏；未信任超长文仍登记 pending，由 `hydrateMessageMarkdown` 挂展开按钮。可信判定：`!isRemote || isTrustedAuthor`；pipeline 只传 `allowDangerousHtml`（净化/Mermaid 由 convertor 内部决定）。Social：`isTrustedMarkdownAuthor(author, { selfEntityHash: viewer })`——本人帖始终可信。
+- **Untrusted remote Markdown**: Hub `messages/render/markdown.mjs` 用共享 `renderMarkdownAsString(..., { allowDangerousHtml })`；本地消息 / 本人与本机 agent（`isTrustedMarkdownAuthor` + `nodeHash` / `ownerEntityHash`）走可信档，其余安全档。首帧即渲染；未信任超长文预览 + 展开仍在 Hub。
 - **`message_edit` 增量**：WS 带 `content.newContent` 时直接 `applyMessageEditToRow` 进 source（流式报错终稿勿再丢 `is_generating`）；按 eventId 补拉时 `linesIncludingOverlaysForTargets` 必须带上指向该 id 的 edit/delete/feedback，否则 merge 不到终稿、占位卡在 generating。 Pending source is `registerPendingMessageMarkdown` (in-memory Map) + `data-md-pending` — **never** put raw markdown into `data-md-raw` attributes (HTML quotes break attribute parsing → blank bubbles).
-- **Profile bio Markdown**: always render locally from markdown source (`description_markdown` / `description` / `bio`) via `paintEntityProfileBio` → `processFountMessageMarkdown` + fragment mount. Never trust remote pre-rendered HTML, never `escapeHtml`/`textContent` the markdown source (that kills formatting). Cabinet / Social reuse the same shared card path.
+- **Profile bio Markdown**: `paintEntityProfileBio` → 同上两档；本人 / 本人 agent / 信任表。Cabinet / Social 共用。
 
 ## Streaming AV
 

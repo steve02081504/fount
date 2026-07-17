@@ -5,7 +5,7 @@
  * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../src/friendBinding、../src/lib/entityHash、core/state、core/domUtils
  */
-import { isEntityHash128 } from '../shared/entityHash.mjs'
+import { isSelfOrOwnedAgentEntity } from '../src/trustedAuthors.mjs'
 
 import { charEntityHashFromCache, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
@@ -28,10 +28,10 @@ export async function charAgentEntityHash(charname) {
  * @returns {boolean} 是否为本节点可写实体（用户本人或本地角色 agent）
  */
 export function isLocalWritableEntityHash(entityHash) {
-	const eh = String(entityHash || '').trim().toLowerCase()
-	const nodeHash = String(hubStore.viewer.nodeHash || '').trim().toLowerCase()
-	if (!isEntityHash128(eh) || !nodeHash) return false
-	return eh.slice(0, 64) === nodeHash
+	return isSelfOrOwnedAgentEntity(entityHash, {
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
+	})
 }
 
 /**

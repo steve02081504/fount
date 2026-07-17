@@ -3,13 +3,14 @@
  * 【职责】Hub 消息区 Markdown 水合与可信作者策略。
  * 原文走内存 Map（勿塞进 data-md-raw 属性：正文常含 HTML 引号，属性转义一旦失手会撑破 DOM）。
  */
+import { renderMarkdownAsString } from '../../../../../../scripts/features/markdown/index.mjs'
 import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '../../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../../../shared/expandMentions.mjs'
-import { getFountMessageMarkdownConvertor, processFountMessageMarkdown } from '../../../src/lib/fountMessageMarkdown.mjs'
-import { isTrustedAuthor } from '../../../src/trustedAuthors.mjs'
+import { isTrustedMarkdownAuthor } from '../../../src/trustedAuthors.mjs'
 import { mountMdRevealButton } from '../../../src/ui/mdRevealButton.mjs'
+import { resolveEntityHashForAuthorKey } from '../../core/domUtils.mjs'
 import { hubStore } from '../../core/state.mjs'
 
 import { disposeEmbedGuard, wireBubbleOffscreenGuards } from './embed.mjs'
@@ -40,6 +41,39 @@ export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash 
 }
 
 /**
+ * 从当前群成员表解析作者声明的 ownerEntityHash。
+ * @param {string} [authorKey] pubKeyHash / entityHash / charId
+ * @returns {string | null} 所属主人 entityHash，无则 null
+ */
+function resolveAuthorOwnerEntityHash(authorKey) {
+	const authorEntity = resolveEntityHashForAuthorKey(authorKey)
+	const sender = String(authorKey || '').trim().toLowerCase()
+	for (const member of hubStore.context.currentState?.members || []) {
+		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
+		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
+		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
+			const owner = String(member?.ownerEntityHash || '').trim().toLowerCase()
+			return owner || null
+		}
+	}
+	return null
+}
+
+/**
+ * @param {string} [authorPubKeyHash] 作者 hash
+ * @param {boolean} [isRemote] 是否远端消息
+ * @returns {Promise<boolean>} 是否走可信档
+ */
+async function isMessageMarkdownTrusted(authorPubKeyHash, isRemote) {
+	if (!isRemote) return true
+	return isTrustedMarkdownAuthor(authorPubKeyHash, {
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
+		authorOwnerEntityHash: resolveAuthorOwnerEntityHash(authorPubKeyHash),
+	})
+}
+
+/**
  * 消息行首帧即渲染 Markdown，避免「escape 原文 → 异步水合」闪屏。
  * 未信任远端超长文仍只出预览，并登记 pending 供展开按钮挂载。
  * @param {string} messageId 消息 eventId
@@ -56,10 +90,10 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
 	const authorAttr = escapeHtml(author)
 	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
 	const expanded = expandMentionsInMarkdown(raw, labelMap)
-	const trusted = !isRemote || await isTrustedAuthor(author)
+	const trusted = await isMessageMarkdownTrusted(author, isRemote)
 
 	if (trusted) {
-		const html = await processFountMessageMarkdown(expanded, true)
+		const html = await renderMarkdownAsString(expanded, undefined, { allowDangerousHtml: true })
 		return {
 			html,
 			bubbleAttrs: ` data-md-hydrated="1" data-md-preview="0" data-md-untrusted="0" data-md-author="${authorAttr}"`,
@@ -70,7 +104,7 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
 	const previewMd = canExpand
 		? truncateVisibleMarkdown(expanded, UNTRUSTED_REMOTE_PREVIEW_LEN)
 		: expanded
-	const html = await processFountMessageMarkdown(previewMd, false)
+	const html = await renderMarkdownAsString(previewMd, undefined, { allowDangerousHtml: false })
 	if (canExpand) {
 		// 首帧已是预览 HTML；保留 pending 供 hydrate 挂「展开」按钮（勿标 hydrated，否则会被跳过）
 		registerPendingMessageMarkdown(messageId, raw, author)
@@ -133,8 +167,7 @@ function truncateVisibleMarkdown(markdown, maxLen) {
  * @returns {Promise<void>}
  */
 async function applyMarkdownToBubble(bubble, markdown, trusted) {
-	const processor = await getFountMessageMarkdownConvertor(trusted)
-	const html = String(await processor.process({ value: markdown, data: { cache: {} } }))
+	const html = await renderMarkdownAsString(markdown, {}, { allowDangerousHtml: trusted })
 	bubble.replaceChildren(await createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }
 
@@ -166,7 +199,7 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 
 	const isRemote = row.hasAttribute('data-is-remote')
 	const authorPubKeyHash = pending?.authorPubKeyHash || bubble.dataset.mdAuthor || ''
-	const trusted = !isRemote || await isTrustedAuthor(String(authorPubKeyHash))
+	const trusted = await isMessageMarkdownTrusted(authorPubKeyHash, isRemote)
 	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
 
 	try {

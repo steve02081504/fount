@@ -68,7 +68,10 @@ export async function buildPostCard(item, options = {}) {
 	const contentAuthor = isRepost ? originalAuthor : item.entityHash
 	const markdownBody = decryptFailed
 		? '<em data-i18n="social.feed.decryptFailed"></em>'
-		: await renderMarkdown(text || (decryptFailed ? '' : ''), contentAuthor)
+		: await renderMarkdown(text || (decryptFailed ? '' : ''), contentAuthor, {
+			ownerEntityHash: item.ownerEntityHash || item.authorProfile?.ownerEntityHash
+				|| (isRepost ? item.targetAuthorProfile?.ownerEntityHash : null),
+		})
 	const contentWarning = item.post?.content?.contentWarning?.trim()
 	const sensitiveMedia = item.post?.content?.sensitiveMedia === true
 		|| Boolean(contentWarning)
@@ -134,7 +137,9 @@ export async function buildPostCard(item, options = {}) {
 		? await renderTemplateAsHtmlString('repost_banner', { author: escapeHtml(label) })
 		: ''
 	const repostCommentHtml = isRepost && item.repostComment
-		? `<div class="body markdown-body repost-comment">${await renderMarkdown(item.repostComment, item.entityHash)}</div>`
+		? `<div class="body markdown-body repost-comment">${await renderMarkdown(item.repostComment, item.entityHash, {
+			ownerEntityHash: item.ownerEntityHash || item.authorProfile?.ownerEntityHash,
+		})}</div>`
 		: ''
 	const embeddedWrapStart = isRepost ? '<div class="embedded-post">' : ''
 	const embeddedWrapEnd = isRepost ? '</div>' : ''

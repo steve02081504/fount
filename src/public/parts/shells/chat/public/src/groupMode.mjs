@@ -3,7 +3,7 @@
  * 【职责】群 UI 通用安全钩子：离屏 embed 守卫、不可信 Markdown 揭示按钮、本地物化视图提示键。
  * 【原理】attachOffscreenEmbedGuard 监听 visibility；attachUntrustedMarkdownOffscreenGuard 延迟渲染。
  * 【数据结构】无全局状态；回调 onReveal。
- * 【关联】ui/mdRevealButton.mjs、chatMarkdownConvertor；Hub 消息渲染。
+ * 【关联】ui/mdRevealButton.mjs；Hub 消息渲染。
  */
 import { mountMdRevealButton } from './ui/mdRevealButton.mjs'
 

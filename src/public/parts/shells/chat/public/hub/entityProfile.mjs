@@ -58,6 +58,7 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 	await paintEntityProfileCard(root, profile, {
 		entityHash: avatarSeed,
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
 	})
 
 	const ownerEntityHash = profile.ownerEntityHash || null
@@ -88,6 +89,7 @@ export async function paintBioMarkdown(descriptionElement, bio, entityHash = '')
 	await paintEntityProfileBio(descriptionElement, bio, entityHash, {
 		emptyI18n: 'chat.hub.charDescriptionEmpty',
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
 	})
 	if (descriptionElement instanceof HTMLElement && String(bio || '').trim())
 		descriptionElement.classList.add('hub-char-description-md')

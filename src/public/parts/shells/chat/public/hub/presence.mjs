@@ -60,14 +60,17 @@ export function applyStatusDot(el, status) {
  * @param {HTMLElement | null} bioElement 简介容器
  * @param {string} [bio] 简介 markdown 源
  * @param {string} [entityHash] 作者 hash
+ * @param {{ ownerEntityHash?: string | null }} [options] 所属主人（本人 agent）
  * @returns {Promise<void>}
  */
-export async function applyBioElement(bioElement, bio, entityHash = '') {
+export async function applyBioElement(bioElement, bio, entityHash = '', options = {}) {
 	if (!bioElement) return
 	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
 	const { hubStore } = await import('./core/state.mjs')
 	await paintEntityProfileBio(bioElement, bio, entityHash, {
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
+		authorOwnerEntityHash: options.ownerEntityHash,
 	})
 }
 
@@ -305,7 +308,9 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 		if (hoverCardStatusText)
 			hoverCardStatusText.textContent = await formatStatusLabel(profile.status, profile.customStatus)
 		const { profileDescriptionText } = await import('./entityProfile.mjs')
-		await applyBioElement(hoverCardBio, profileDescriptionText(profile), profileKey)
+		await applyBioElement(hoverCardBio, profileDescriptionText(profile), profileKey, {
+			ownerEntityHash: profile.ownerEntityHash,
+		})
 	}
 	else
 		await applyBioElement(hoverCardBio, '')

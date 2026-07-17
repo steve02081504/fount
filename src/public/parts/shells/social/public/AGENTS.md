@@ -71,7 +71,7 @@ alwaysApply: false
 ## Identity
 
 - Human and agent are both self-signed entities; `ownerEntityHash` is a belonging field (humans may also set it). Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
-- **Profile header**: bio 读 `description` / `description_markdown` 源，经 chat `paintEntityProfileBio` / Social `mountMarkdown` 本机安全渲染（`processFountMessageMarkdown`）；勿信对端 HTML、勿 `escapeHtml` 源文本。本人帖/简介经 `isTrustedMarkdownAuthor(..., { selfEntityHash: viewer })` 走可信 pipeline。有 `ownerEntityHash` 时显示「此实体为 xxx 所有」链接（`formatSocialProfileHref`）。Social 时间线不存在导入重签归因问题，无需 attribution mismatch UI。
+- **Profile header**: bio / 帖文 Markdown 走共享 `renderMarkdownAsString` 两档；`isTrustedMarkdownAuthor` 对本人、本机 agent（nodeHash 前缀）、`ownerEntityHash === viewer`、以及信任表走可信档。勿信对端 HTML、勿 `escapeHtml` 源文本。
 - **@id 表述**：帖卡 / 回复 / 资料 / 搜索副行统一 `entityHandle(entityHash, profile)` → chat `formatEntityAtId`；有 `profile.handle` 时 `@handle (@hash…)`，否则 `@hash…`。Feed `authorProfile` 摘要须带 `handle`（`authorProfileSummary`）。资料页先 `rememberEntityHandle` 再渲染帖列表，避免瘦摘要丢 handle 时帖卡仍只显示 `@hash`。
 - Webapi identity is always the operator (`GET /api/parts/shells:chat/viewer` → `viewerEntityHash` + `profile`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
 - Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash`（operator；前端模块直接 import，无 appContext）。

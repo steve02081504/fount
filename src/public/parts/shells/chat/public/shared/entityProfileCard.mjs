@@ -2,14 +2,14 @@
  * 【文件】public/shared/entityProfileCard.mjs
  * 【职责】跨壳实体资料归一化与人物卡附属区块（所属方 / 归因警告）绘制。
  * 【原理】API profile → 统一字段；owner / attribution 用 data-* 宿主节点填充；链接走 Social profile hash。
- * bio 只吃 markdown 源，本机 processFountMessageMarkdown 安全渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
+ * bio 只吃 markdown 源，本机安全/可信两档渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts/features/template.mjs'
+import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
-import { processFountMessageMarkdown } from '../src/lib/fountMessageMarkdown.mjs'
 import { isTrustedMarkdownAuthor } from '../src/trustedAuthors.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
@@ -131,7 +131,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
  * 使用共享人物卡结构绘制资料；可用于真实资料和编辑中的临时资料。
  * @param {HTMLElement} root 人物卡根节点
  * @param {object} profile API 或编辑态资料
- * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string, selfEntityHash?: string | null }} [options] 绘制选项
+ * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string, selfEntityHash?: string | null, nodeHash?: string | null }} [options] 绘制选项
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileCard(root, profile, options = {}) {
@@ -199,6 +199,8 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	if (bioElement instanceof HTMLElement)
 		await paintEntityProfileBio(bioElement, profileDescriptionText(normalized), entityHash, {
 			selfEntityHash: options.selfEntityHash,
+			nodeHash: options.nodeHash,
+			authorOwnerEntityHash: normalized.ownerEntityHash,
 		})
 
 	const tagsHost = root.querySelector('[data-entity-profile-tags]')
@@ -246,7 +248,7 @@ export function profileDescriptionText(profile) {
  * @param {HTMLElement} bioElement 简介容器
  * @param {string} markdown markdown 源
  * @param {string} [entityHash] 作者 entityHash / pubKeyHash（决定信任）
- * @param {{ emptyI18n?: string, selfEntityHash?: string | null }} [options] 空态 i18n / 本人实体
+ * @param {{ emptyI18n?: string, selfEntityHash?: string | null, nodeHash?: string | null, authorOwnerEntityHash?: string | null }} [options] 空态 / 信任上下文
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileBio(bioElement, markdown, entityHash = '', options = {}) {
@@ -262,9 +264,13 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 	delete bioElement.dataset.i18n
 	bioElement.classList.add('markdown-body')
 	const trusted = entityHash
-		? await isTrustedMarkdownAuthor(entityHash, { selfEntityHash: options.selfEntityHash })
+		? await isTrustedMarkdownAuthor(entityHash, {
+			selfEntityHash: options.selfEntityHash,
+			nodeHash: options.nodeHash,
+			authorOwnerEntityHash: options.authorOwnerEntityHash,
+		})
 		: false
-	const html = await processFountMessageMarkdown(text, trusted)
+	const html = await renderMarkdownAsString(text, undefined, { allowDangerousHtml: trusted })
 	bioElement.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
 }
 

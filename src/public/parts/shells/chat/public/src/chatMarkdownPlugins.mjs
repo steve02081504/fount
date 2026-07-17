@@ -3,7 +3,7 @@
  * 【职责】remark 插件：展开 `#[channel:group/channel]` 等链接。
  * 【原理】visit 文本节点替换 channel 链接。
  * 【数据结构】unist 树。
- * 【关联】chatMarkdownConvertor.mjs、expandChannelLinks.mjs。
+ * 【关联】markdown_extensions registry、expandChannelLinks.mjs。
  */
 import { visit } from 'https://esm.sh/unist-util-visit'
 
