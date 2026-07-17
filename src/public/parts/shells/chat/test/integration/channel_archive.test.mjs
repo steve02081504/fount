@@ -52,11 +52,12 @@ Deno.test('channel archive export/import round-trip preserves final view and pro
 
 	const archive = await exportChannelArchive(username, groupId, channelId)
 	assertEquals(archive.format, 'fount-channel-archive')
-	assertEquals(archive.version, 1)
+	assertEquals(archive.version, 2)
 	assert(archive.messages.some(m => m.content?.content === 'after-edit' && m.wasEdited))
 	assert(archive.messages.some(m => m.deleted))
 	const kept = archive.messages.find(m => m.sourceEventId === keep.event.id)
 	assertEquals(kept?.reactionCounts?.['👍'], 1)
+	assert(kept?.sourceSenderPubKeyHash)
 
 	const { channelId: importedId, messageCount } = await importChannelArchive(username, groupId, archive)
 	assert(importedId.startsWith('imported_'))
@@ -67,6 +68,10 @@ Deno.test('channel archive export/import round-trip preserves final view and pro
 
 	const rows = await readChannelMessagesForUser(username, groupId, importedId, { limit: 50 })
 	assert(rows.some(row => row.content?.content === 'after-edit'))
-	assert(rows.some(row => row.content?.importedFrom?.eventId === keep.event.id))
+	const importedKeep = rows.find(row => row.content?.importedFrom?.eventId === keep.event.id)
+	assert(importedKeep)
+	assertEquals(importedKeep.content.importedFrom.attributionMismatch, true)
+	assert(importedKeep.content.importedFrom.signerEntityHash)
+	assert(importedKeep.content.importedFrom.sourceSenderPubKeyHash)
 	assert(rows.every(row => !row.content?.fileIds?.length))
 })

@@ -153,10 +153,12 @@ async function paintProfilePopup(popup, entity) {
 		: null
 
 	if (profile)
-		await paintEntityProfileUi(popup, profile)
+		await paintEntityProfileUi(popup, profile, { attribution: entity.attribution || null })
 	else {
 		const nameElement = popup.querySelector('[data-entity-profile-name]')
 		if (nameElement) nameElement.textContent = entity.displayName || '?'
+		const { paintEntityProfileExtras } = await import('../shared/entityProfileCard.mjs')
+		paintEntityProfileExtras(popup, { attribution: entity.attribution || null })
 	}
 
 	const alias = aliasForEntity(entityHash)

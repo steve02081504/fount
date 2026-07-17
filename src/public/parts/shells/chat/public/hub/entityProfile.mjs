@@ -6,8 +6,14 @@
  * 【关联】../../../../scripts/markdown、../src/entityProfileApi、core/avatarCover、core/domUtils、core/state、entityResolve、presence、profileEdit。
  */
 import { renderMarkdown } from '../../../../scripts/features/markdown/index.mjs'
-import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { aliasForEntity } from '../shared/aliases.mjs'
+import { isEntityHash128 } from '../shared/entityHash.mjs'
+import {
+	paintEntityProfileExtras,
+	profileDescriptionText as sharedProfileDescriptionText,
+} from '../shared/entityProfileCard.mjs'
+import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { avatarInitial } from './core/domUtils.mjs'
@@ -56,9 +62,7 @@ export function paintProfileTags(host, tags) {
  * @returns {string} 用于展示的简介文本
  */
 export function profileDescriptionText(profile) {
-	const md = String(profile?.description_markdown || '').trim()
-	if (md) return md
-	return String(profile?.description || '').trim()
+	return sharedProfileDescriptionText(profile)
 }
 
 /**
@@ -79,9 +83,10 @@ export async function loadEntityProfile(entityHash, options = {}) {
 /**
  * @param {HTMLElement} root 根节点（含 data 属性选择器字段）
  * @param {object} profile 资料
+ * @param {{ attribution?: object | null }} [extras] 附加：归因警告等
  * @returns {Promise<void>}
  */
-export async function paintEntityProfileUi(root, profile) {
+export async function paintEntityProfileUi(root, profile, extras = {}) {
 	if (!root || !profile) return
 	const name = profile.name || '?'
 	const nameElement = root.querySelector('[data-entity-profile-name]')
@@ -108,6 +113,23 @@ export async function paintEntityProfileUi(root, profile) {
 	const statusText = root.querySelector('[data-entity-profile-status-text]')
 	if (statusText)
 		statusText.textContent = await formatStatusLabel(profile.effectiveStatus || profile.status, profile.customStatus)
+
+	const ownerEntityHash = profile.ownerEntityHash || null
+	let ownerName = null
+	if (isEntityHash128(ownerEntityHash)) {
+		ownerName = aliasForEntity(ownerEntityHash)
+		if (!ownerName)
+			try {
+				const ownerProfile = await loadEntityProfile(ownerEntityHash)
+				ownerName = ownerProfile?.name || null
+			}
+			catch { /* remote miss */ }
+	}
+	paintEntityProfileExtras(root, {
+		ownerEntityHash,
+		ownerName,
+		attribution: extras.attribution || null,
+	})
 }
 
 /**

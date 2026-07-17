@@ -4899,6 +4899,12 @@
 		"goUp": "返回上一级",
 		"brokenLink": "链接失效：${reason}",
 		"noDownload": "无可下载内容",
-		"groupDownloadHint": "群文件请通过消息附件或后续下载链获取"
+		"groupDownloadHint": "群文件请通过消息附件或后续下载链获取",
+		"remoteEntity": "远端实体"
+	},
+	"entityProfile": {
+		"attributionMismatch": "显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。请勿将该显示名视为密码学身份。",
+		"attributionMismatchShort": "签名归因不匹配",
+		"ownedBy": "此实体为 ${owner} 所有"
 	}
 }

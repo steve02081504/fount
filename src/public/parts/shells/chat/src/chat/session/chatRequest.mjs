@@ -107,6 +107,11 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		? await ensureLocalAgentEntityHash(replicaUsername, charname)
 		: await getOperatorEntityHash(replicaUsername)
 
+	const { resolveDeclaredOwnerEntityHash } = await import('../../entity/master.mjs')
+	const declaredOwnerEntityHash = charname && memberId
+		? await resolveDeclaredOwnerEntityHash(replicaUsername, memberId)
+		: null
+
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
 		supported_functions: {
@@ -161,6 +166,7 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 			channelId: effectiveChannelId,
 			memberId,
 			member_roles,
+			...declaredOwnerEntityHash ? { declaredOwnerEntityHash } : {},
 			...state.groupSettings?.bridge ? { bridge: state.groupSettings.bridge } : {},
 		},
 	}

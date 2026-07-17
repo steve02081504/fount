@@ -82,7 +82,7 @@ async function ensureRecoveryDir(username, entityHash, cabinetId, shared) {
  * @param {{
  *   shared?: boolean,
  *   entries: object[],
- *   encrypted_indexes?: Record<string, { version: number, entries: object[] }>,
+ *   encrypted_indexes?: Record<string, string | object>,
  * }} payload 载荷
  * @returns {Promise<string>} recovery_token
  */

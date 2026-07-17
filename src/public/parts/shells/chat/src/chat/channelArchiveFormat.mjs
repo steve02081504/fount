@@ -1,14 +1,16 @@
 /**
  * 【文件】channelArchiveFormat.mjs
  * 【职责】频道归档 JSON 的纯格式：常量、校验、反应计数折叠、PostSnapshot → portable。
- * 【原理】无 I/O；供 channelArchive 与 pure 测试共用。
+ * 【原理】无 I/O；供 channelArchive 与 pure 测试共用。v2 增加源签名者/实体字段；校验接受 v1/v2。
  */
 import { channelMessageContentObject } from '../../public/shared/channelContent.mjs'
 
 /** @type {string} */
 export const CHANNEL_ARCHIVE_FORMAT = 'fount-channel-archive'
 /** @type {number} */
-export const CHANNEL_ARCHIVE_VERSION = 1
+export const CHANNEL_ARCHIVE_VERSION = 2
+/** @type {Set<number>} */
+export const CHANNEL_ARCHIVE_SUPPORTED_VERSIONS = new Set([1, 2])
 
 /**
  * @param {object[]} reactions PostSnapshot 形反应列表
@@ -35,11 +37,17 @@ export function portableMessageFromSnapshot(snap) {
 		? channelMessageContentObject(snap.content)
 		: snap.content ?? null
 	const fileIds = Array.isArray(content?.fileIds) ? content.fileIds : []
+	const sender = snap.sender ? String(snap.sender).trim().toLowerCase() : null
+	const sourceEntityHash = snap.sourceEntityHash
+		? String(snap.sourceEntityHash).trim().toLowerCase()
+		: null
 	return {
 		sourceEventId: String(snap.eventId).trim(),
 		timestamp: snap.timestamp ?? null,
 		hlc: snap.hlc ?? null,
 		charId: snap.charId ?? null,
+		...sender ? { sourceSenderPubKeyHash: sender } : {},
+		...sourceEntityHash ? { sourceEntityHash } : {},
 		display: {
 			name: String(snap.display?.name || '').trim() || '?',
 			avatar: snap.display?.avatar ?? null,
@@ -65,7 +73,8 @@ export function validateChannelArchive(archive) {
 		throw new Error('Invalid channel archive')
 	if (archive.format !== CHANNEL_ARCHIVE_FORMAT)
 		throw new Error(`Unsupported archive format: ${archive.format}`)
-	if (Number(archive.version) !== CHANNEL_ARCHIVE_VERSION)
+	const version = Number(archive.version)
+	if (!CHANNEL_ARCHIVE_SUPPORTED_VERSIONS.has(version))
 		throw new Error(`Unsupported archive version: ${archive.version}`)
 	if (!Array.isArray(archive.messages))
 		throw new Error('Archive messages must be an array')

@@ -1,5 +1,5 @@
 import { getChatClient } from 'fount/public/parts/shells/chat/src/api/client.mjs'
-import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
+import { resolveTrustedOwnerContext } from 'fount/public/parts/shells/chat/src/entity/master.mjs'
 
 /**
  * @param {object} message 消息行
@@ -15,28 +15,30 @@ export function extractMessageText(message) {
 
 /**
  * @param {object} event OnMessage 事件
- * @returns {string | undefined} 桥接作者 entityHash
- */
-function bridgeAuthorHash(event) {
-	const message = event.message
-	const bridgeExtension = message?.extension?.bridge
-		|| (message?.content && typeof message.content === 'object' ? message.content.extension?.bridge : undefined)
-	return bridgeExtension?.authorEntityHash ? String(bridgeExtension.authorEntityHash).toLowerCase() : undefined
-}
-
-/**
- * @param {object} event OnMessage 事件
  * @param {string} selfHash 自身 hash
- * @param {string} operatorHash operator hash
- * @returns {Promise<{ authorHash: string, isFromOwner: boolean, client: object, message: object }>} 消息上下文
+ * @param {string} [declaredOwnerHash] 声明主人（可选；缺省走 identity）
+ * @returns {Promise<{ authorHash: string, isFromOwner: boolean, attribution: object, client: object, message: object }>} 消息上下文
  */
-export async function resolveMessageContext(event, selfHash, operatorHash) {
+export async function resolveMessageContext(event, selfHash, declaredOwnerHash = null) {
 	const username = event.chatReplyRequest.username
 	const client = await getChatClient(username, selfHash)
 	const message = await client.messageFrom(event)
 	const author = await message.author()
-	const authorHash = bridgeAuthorHash(event) || String(author.entityHash || '').toLowerCase()
-	const isFromOwner = !!(operatorHash && authorHash === operatorHash
-		|| operatorHash && await isCaredBy(username, selfHash, authorHash))
-	return { authorHash, isFromOwner, client, message }
+	const authorHash = String(author?.entityHash || '').toLowerCase()
+	const result = await resolveTrustedOwnerContext({
+		username,
+		agentEntityHash: selfHash,
+		eventOrLine: event,
+		authorEntityHash: authorHash || null,
+	})
+	const isFromOwner = declaredOwnerHash
+		? result.isFromOwner && result.declaredOwnerEntityHash === String(declaredOwnerHash).toLowerCase()
+		: result.isFromOwner
+	return {
+		authorHash: result.authorEntityHash || authorHash,
+		isFromOwner,
+		attribution: result.attribution,
+		client,
+		message,
+	}
 }

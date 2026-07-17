@@ -8,6 +8,10 @@ import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { firstCustomEmojiRef } from '../../../src/customEmojis.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isFirstMessageInAuthorGroup } from '/parts/shells:chat/shared/hashAvatar.mjs'
+import {
+	attributionFromHubMessage,
+} from '/parts/shells:chat/shared/attribution.mjs'
+import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
 import { hubStore } from '../../core/state.mjs'
 import { renderMessageActionsHtml } from '../messageActionsRender.mjs'
@@ -149,12 +153,15 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const presentation = authorPresentationKeys(authorKey)
 	const displayAuthor = snapDisplay || presentation.displayName
 	const avatarKey = presentation.profileKey
+	const attribution = attributionFromHubMessage(message)
+	const attributionWarningHtml = renderAttributionWarningIconHtml(attribution)
+	const attributionAttr = attribution.mismatch ? ' data-attribution-mismatch="1"' : ''
 	const streamingAttr = generating ? ' data-streaming="1"' : ''
 	const pendingAttr = message.pending ? ' data-pending="1"' : ''
 	const failedAttr = message.sendFailed ? ' data-send-failed="1"' : ''
 	const deliveryAttr = message.deliveryStatus ? ` data-delivery-status="${escapeHtml(message.deliveryStatus)}"` : ''
 	const msgLocale = message.content?.locale ? ` data-message-locale="${escapeHtml(message.content.locale)}"` : ''
-	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}${deliveryAttr}${msgLocale}`
+	const rowAttrs = `data-message-id="${escapeHtml(String(message.eventId))}" data-author-key="${escapeHtml(authorKey)}" data-message-type="${escapeHtml(message.type || 'message')}"${message.isRemote ? ' data-is-remote="1"' : ''}${authorAttr}${charAttr}${streamingAttr}${pendingAttr}${failedAttr}${deliveryAttr}${msgLocale}${attributionAttr}`
 
 	const timeAttrs = formatTimeAttrs(time)
 	const typingLabelHtml = generating
@@ -184,6 +191,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const headerHtml = await renderTemplateAsHtmlString('hub/messages/channel_header', {
 		authorKey: escapeHtml(authorKey),
 		author: escapeHtml(displayAuthor),
+		attributionWarningHtml,
 		editedLabelHtml,
 		timeI18nAttr: timeI18nAttrFragment(timeAttrs),
 		timeText: escapeHtml(timeAttrs.timeText),

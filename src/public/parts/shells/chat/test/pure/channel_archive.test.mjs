@@ -8,16 +8,23 @@ import {
 	reactionCountsFromList,
 	validateChannelArchive,
 } from '../../src/chat/channelArchiveFormat.mjs'
+import {
+	deriveMessageAttribution,
+	isTrustedOwnerAttribution,
+} from '../../src/chat/lib/attribution.mjs'
 
-Deno.test('validateChannelArchive accepts v1 portable shape', () => {
-	const archive = validateChannelArchive({
-		format: CHANNEL_ARCHIVE_FORMAT,
-		version: CHANNEL_ARCHIVE_VERSION,
-		exportedAt: '2026-01-01T00:00:00.000Z',
-		source: { groupId: 'g', channelId: 'c', channelName: 'general' },
-		messages: [],
-	})
-	assertEquals(archive.format, CHANNEL_ARCHIVE_FORMAT)
+Deno.test('validateChannelArchive accepts v1 and v2 portable shape', () => {
+	for (const version of [1, 2]) {
+		const archive = validateChannelArchive({
+			format: CHANNEL_ARCHIVE_FORMAT,
+			version,
+			exportedAt: '2026-01-01T00:00:00.000Z',
+			source: { groupId: 'g', channelId: 'c', channelName: 'general' },
+			messages: [],
+		})
+		assertEquals(archive.format, CHANNEL_ARCHIVE_FORMAT)
+	}
+	assertEquals(CHANNEL_ARCHIVE_VERSION, 2)
 })
 
 Deno.test('validateChannelArchive rejects wrong format/version', () => {
@@ -42,12 +49,14 @@ Deno.test('reactionCountsFromList collapses voters to counts', () => {
 	]), { '👍': 2, '🔥': 1 })
 })
 
-Deno.test('portableMessageFromSnapshot maps final view fields', () => {
+Deno.test('portableMessageFromSnapshot maps source identity fields', () => {
 	const portable = portableMessageFromSnapshot({
 		eventId: 'abc',
 		timestamp: 1,
 		hlc: { wall: 1, logical: 0 },
 		charId: null,
+		sender: 'aa'.repeat(32),
+		sourceEntityHash: 'bb'.repeat(64),
 		display: { name: 'Ada', avatar: null },
 		content: { type: 'text', content: 'hi' },
 		reactions: [{ emoji: '👍', voters: [{ pubKeyHash: 'x' }] }],
@@ -56,7 +65,46 @@ Deno.test('portableMessageFromSnapshot maps final view fields', () => {
 	})
 	assertEquals(portable.sourceEventId, 'abc')
 	assertEquals(portable.display.name, 'Ada')
+	assertEquals(portable.sourceSenderPubKeyHash, 'aa'.repeat(32))
+	assertEquals(portable.sourceEntityHash, 'bb'.repeat(64))
 	assertEquals(portable.reactionCounts, { '👍': 1 })
 	assertEquals(portable.pinned, true)
 	assertEquals(portable.content.type, 'text')
+})
+
+Deno.test('deriveMessageAttribution marks importedFrom as mismatch', () => {
+	const trusted = deriveMessageAttribution({ type: 'text', content: 'ok' }, { sender: 'aa'.repeat(32) })
+	assertEquals(trusted.trusted, true)
+	assertEquals(trusted.mismatch, false)
+
+	const mismatch = deriveMessageAttribution({
+		type: 'text',
+		content: 'old',
+		displayName: 'Ada',
+		importedFrom: {
+			groupId: 'g',
+			channelId: 'c',
+			eventId: 'e1',
+			sourceEntityHash: 'cc'.repeat(64),
+			signerEntityHash: 'dd'.repeat(64),
+		},
+	}, { sender: 'ee'.repeat(32) })
+	assertEquals(mismatch.trusted, false)
+	assertEquals(mismatch.mismatch, true)
+	assertEquals(mismatch.reason, 'imported_resign')
+	assertEquals(mismatch.claimedEntityHash, 'cc'.repeat(64))
+})
+
+Deno.test('isTrustedOwnerAttribution rejects mismatch even if hashes match', () => {
+	const owner = 'aa'.repeat(64)
+	assertEquals(isTrustedOwnerAttribution({
+		trusted: true,
+		mismatch: false,
+		reason: null,
+	}, owner, owner), true)
+	assertEquals(isTrustedOwnerAttribution({
+		trusted: false,
+		mismatch: true,
+		reason: 'imported_resign',
+	}, owner, owner), false)
 })

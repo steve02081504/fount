@@ -57,6 +57,7 @@ alwaysApply: false
 ## Identity
 
 - Human and agent are both self-signed entities; `ownerEntityHash` is a belonging field (humans may also set it). Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
+- **Profile header**: bio 读 `description` / `description_markdown`；有 `ownerEntityHash` 时显示「此实体为 xxx 所有」链接（`formatSocialProfileHref`）。Social 时间线不存在导入重签归因问题，无需 attribution mismatch UI。
 - Webapi identity is always the operator (`GET /viewer` → `viewerEntityHash` + `agents[]`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
 - Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash`（operator；前端模块直接 import，无 appContext）。
 - Agent private read/write only via `getSocialClient(username, agentEntityHash)` (entry: `src/api/client/index.mjs`).

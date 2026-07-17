@@ -119,12 +119,22 @@ export async function buildPostSnapshotFromRow(row, state, username, groupId) {
 	const prevIds = Array.isArray(row.prev_event_ids)
 		? [...row.prev_event_ids].map(id => String(id).trim().toLowerCase()).filter(isHex64)
 		: undefined
+	const sender = row.sender ? String(row.sender).trim().toLowerCase() : null
+	let sourceEntityHash = null
+	if (row.charId) {
+		const agentKey = resolveActiveAgentMemberKeyByCharname(state, String(row.charId).trim())
+		sourceEntityHash = agentKey ? memberEntityHash(state.members[agentKey]) : null
+	}
+	else if (sender && state.members?.[sender])
+		sourceEntityHash = memberEntityHash(state.members[sender])
+
 	return {
 		eventId,
 		channelId,
 		hlc: row.hlc,
 		timestamp: row.timestamp,
 		sender: row.sender,
+		...sourceEntityHash ? { sourceEntityHash } : {},
 		charId: row.charId ?? null,
 		display,
 		content,

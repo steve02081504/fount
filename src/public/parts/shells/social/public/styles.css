@@ -1323,6 +1323,23 @@ body {
 	line-height: 1.45;
 }
 
+.entity-owned-by-box {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	margin: 0.5rem 0 0;
+	padding: 0.5rem 0.75rem;
+	border-radius: 0.5rem;
+	border: 1px solid color-mix(in srgb, var(--color-base-content, currentColor) 18%, transparent);
+	font-size: 0.85rem;
+	opacity: 0.9;
+}
+
+.entity-owned-by-link {
+	font-weight: 600;
+}
+
 .profile-stats {
 	display: flex;
 	gap: 1.25rem;

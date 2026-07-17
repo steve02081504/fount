@@ -218,7 +218,22 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 				: geti18n('social.actions.care')),
 		})
 	const avatarHtml = renderAvatarHtml(entityHash, data.profile, 'profile-avatar')
-	const bioHtml = data.profile?.bio ? `<p class="profile-bio">${escapeHtml(data.profile.bio)}</p>` : ''
+	const bioText = String(data.profile?.description_markdown || data.profile?.description || data.profile?.bio || '').trim()
+	const bioHtml = bioText ? `<p class="profile-bio">${escapeHtml(bioText)}</p>` : ''
+	const ownerEntityHash = data.profile?.ownerEntityHash
+		? String(data.profile.ownerEntityHash).toLowerCase()
+		: null
+	let ownedByHtml = ''
+	if (ownerEntityHash) {
+		const { renderOwnedByBoxHtml } = await import('/parts/shells:chat/shared/entityProfileCard.mjs')
+		let ownerName = null
+		try {
+			const ownerData = await socialApi(`/profile/${ownerEntityHash}`)
+			ownerName = authorLabel(ownerEntityHash, ownerData.profile)
+		}
+		catch { /* remote miss */ }
+		ownedByHtml = renderOwnedByBoxHtml(ownerEntityHash, { ownerName })
+	}
 	const selfSettingsHtml = isSelf
 		? await renderTemplateAsHtmlString('profile_self_settings', {
 			exploreBlurb: escapeHtml(data.socialMeta?.exploreBlurb || ''),
@@ -232,6 +247,7 @@ export async function loadProfileFor(entityHash, highlightPostId = null) {
 		name,
 		handle,
 		bioHtml,
+		ownedByHtml,
 		postCount: data.postCount || 0,
 		followingCount,
 		selfSettingsHtml,
@@ -263,7 +279,7 @@ async function renderProfileCabinets(entityHash, container) {
 		const data = await response.json()
 		const cabinets = data.cabinets || []
 		if (!cabinets.length) {
-			container.innerHTML = `<div class="empty" data-i18n="social.profile.cabinetsEmpty">暂无公开文件柜</div>`
+			container.innerHTML = '<div class="empty" data-i18n="social.profile.cabinetsEmpty">暂无公开文件柜</div>'
 			return
 		}
 		const list = document.createElement('div')

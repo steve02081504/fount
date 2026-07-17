@@ -23,7 +23,7 @@ export async function OnMessage(event) {
 	const content = extractMessageText(event.message)
 	const platform = event.chatReplyRequest.extension?.bridge?.platform || 'chat'
 	const { isFromOwner, client, message } =
-		await resolveMessageContext(event, selfEntityHash, operatorEntityHash)
+		await resolveMessageContext(event, selfEntityHash)
 
 	const commandResult = await handleOwnerCommands({
 		content,

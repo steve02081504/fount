@@ -7,6 +7,7 @@
  */
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
+import { deriveMessageAttribution } from '../shared/attribution.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
@@ -375,6 +376,18 @@ export function wirePresenceInteractions() {
 		void (async () => {
 			const entity = await resolveEntityFromAnchor(target)
 			if (!entity) return
+			const messageRow = target.closest('.hub-message[data-message-id]')
+			if (messageRow?.dataset.attributionMismatch === '1') {
+				const eventId = messageRow.dataset.messageId
+				const channelMessages = hubStore.messages?.channelMessages || []
+				const msg = channelMessages.find(row => String(row.eventId) === String(eventId))
+				if (msg)
+					entity.attribution = deriveMessageAttribution(msg.content, {
+						sender: msg.sender || msg.authorPubKeyHash,
+					})
+				else
+					entity.attribution = { trusted: false, mismatch: true, reason: 'imported_resign' }
+			}
 			dismissProfilePopup()
 			await showProfilePopup(entity)
 		})()

@@ -20,6 +20,7 @@ import {
 } from '../../../public/shared/channelContent.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
+import { deriveMessageAttribution } from '../lib/attribution.mjs'
 import { resolveChannelId, resolveGroupChannelId } from '../lib/channelId.mjs'
 import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { chatLogEntry_t } from '../session/models.mjs'
@@ -201,6 +202,24 @@ async function buildChatLogEntryFromDagMessage(
 	if (fileCount != null) entry.extension = { ...entry.extension, dagFileCount: fileCount }
 	if (content.extension?.bridge)
 		entry.extension = { ...entry.extension || {}, bridge: { ...content.extension.bridge } }
+	const attribution = deriveMessageAttribution(content, {
+		sender: line.sender,
+		signerEntityHash: content.importedFrom?.signerEntityHash || null,
+	})
+	entry.extension = {
+		...entry.extension || {},
+		attribution,
+		...content.displayName || content.importedFrom
+			? {
+				display: {
+					name: content.displayName || null,
+					avatar: content.displayAvatar || null,
+				},
+			}
+			: {},
+	}
+	if (attribution.mismatch && content.displayName)
+		entry.name = String(content.displayName)
 	if (content.visibility) entry.visibility = content.visibility
 	if (content.charVisibility?.length) entry.charVisibility = content.charVisibility
 	return entry

@@ -1,4 +1,5 @@
 import { appendSignedLocalEvent } from '../chat/dag/append.mjs'
+import { deriveMessageAttribution } from '../chat/lib/attribution.mjs'
 import { messageMentionsEntity } from '../chat/lib/mentionFacts.mjs'
 import { memberEntityHash } from '../entity/member.mjs'
 
@@ -49,6 +50,34 @@ export function createMessage(apiContext, groupId, line, mentions) {
 				if (hash) return createMember(apiContext, groupId, hash, member)
 			}
 			return null
+		},
+		/**
+		 * @returns {import('../chat/lib/attribution.mjs').MessageAttribution} 归因
+		 */
+		attribution() {
+			const contentObj = content && typeof content === 'object' ? content : {}
+			return deriveMessageAttribution(contentObj, {
+				sender: line.sender,
+				signerEntityHash: contentObj.importedFrom?.signerEntityHash || null,
+			})
+		},
+		/**
+		 * 是否来自本 agent 声明且密码学可信的主人。
+		 * @returns {Promise<boolean>} 是否可信主人消息
+		 */
+		async isFromOwner() {
+			const { resolveTrustedOwnerContext } = await import('../entity/master.mjs')
+			const { loadGroupState } = await import('./internal.mjs')
+			const state = await loadGroupState(apiContext, groupId)
+			const author = await this.author()
+			const result = await resolveTrustedOwnerContext({
+				username: apiContext.username,
+				agentEntityHash: apiContext.entityHash,
+				eventOrLine: line,
+				state,
+				authorEntityHash: author?.entityHash || null,
+			})
+			return result.isFromOwner
 		},
 		/**
 		 * @param {string | object} reply 回复正文

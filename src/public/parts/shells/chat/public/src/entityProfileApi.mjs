@@ -28,6 +28,7 @@ export function cachedProfileFromApi(profile, entityHash) {
 	return {
 		avatar: profile.avatar || null,
 		name: profile.name || key.slice(64, 72),
+		handle: profile.handle || null,
 		themeColor: profile.themeColor || '',
 		description: profile.description || '',
 		description_markdown: profile.description_markdown || '',
@@ -35,6 +36,11 @@ export function cachedProfileFromApi(profile, entityHash) {
 		links: Array.isArray(profile.links) ? profile.links : [],
 		status: profile.effectiveStatus || profile.status || 'offline',
 		customStatus: profile.customStatus || '',
+		ownerEntityHash: profile.ownerEntityHash
+			? String(profile.ownerEntityHash).toLowerCase()
+			: null,
+		activePubKeyHex: profile.activePubKeyHex || null,
+		keyGeneration: profile.keyGeneration ?? null,
 	}
 }
 

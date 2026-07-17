@@ -33,8 +33,10 @@ import {
 	validateChannelArchive,
 } from './channelArchiveFormat.mjs'
 import { createChannel, appendPinEvent } from './dag/channelOperations.mjs'
+import { resolveLocalEventSigner } from './dag/localSigner.mjs'
 import { getState } from './dag/materialize.mjs'
 import { messagesPath } from './lib/paths.mjs'
+import { getOperatorEntityHash } from './lib/replica.mjs'
 
 /**
  *
@@ -225,9 +227,10 @@ export async function exportChannelArchive(username, groupId, channelId) {
 /**
  * @param {object} msg portable 消息
  * @param {object} source 归档 source
+ * @param {{ signerEntityHash?: string | null, signerPubKeyHash?: string | null }} [signer] 导入重签者
  * @returns {object} 写入 content
  */
-function buildImportContent(msg, source) {
+function buildImportContent(msg, source, signer = {}) {
 	const displayName = String(msg.display?.name || '').trim() || '?'
 	const displayAvatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
 	const base = msg.content && typeof msg.content === 'object' && msg.content.type
@@ -243,11 +246,22 @@ function buildImportContent(msg, source) {
 		...rest
 	} = base
 
+	const sourceSenderPubKeyHash = msg.sourceSenderPubKeyHash
+		? String(msg.sourceSenderPubKeyHash).trim().toLowerCase()
+		: null
+	const sourceEntityHash = msg.sourceEntityHash
+		? String(msg.sourceEntityHash).trim().toLowerCase()
+		: null
 	const importedFrom = {
 		groupId: source.groupId,
 		channelId: source.channelId,
 		eventId: msg.sourceEventId,
 		...source.channelName ? { channelName: source.channelName } : {},
+		...sourceSenderPubKeyHash ? { sourceSenderPubKeyHash } : {},
+		...sourceEntityHash ? { sourceEntityHash } : {},
+		...signer.signerEntityHash ? { signerEntityHash: String(signer.signerEntityHash).toLowerCase() } : {},
+		...signer.signerPubKeyHash ? { signerPubKeyHash: String(signer.signerPubKeyHash).toLowerCase() } : {},
+		attributionMismatch: true,
 	}
 
 	return channelMessageContentObject({
@@ -298,6 +312,14 @@ export async function importChannelArchive(username, groupId, archive, options =
 		description,
 	})
 
+	const signerEntityHash = await getOperatorEntityHash(username)
+	const signer = await resolveLocalEventSigner(username, groupId, signerEntityHash || undefined)
+	const signerPubKeyHash = signer?.sender ? String(signer.sender).toLowerCase() : null
+	const signerInfo = {
+		...signerEntityHash ? { signerEntityHash } : {},
+		...signerPubKeyHash ? { signerPubKeyHash } : {},
+	}
+
 	let messageCount = 0
 	for (const msg of data.messages) {
 		if (!msg || typeof msg !== 'object') continue
@@ -310,6 +332,14 @@ export async function importChannelArchive(username, groupId, archive, options =
 					channelId: source.channelId,
 					eventId: msg.sourceEventId,
 					decryptFailed: true,
+					attributionMismatch: true,
+					...signerInfo,
+					...msg.sourceSenderPubKeyHash
+						? { sourceSenderPubKeyHash: String(msg.sourceSenderPubKeyHash).toLowerCase() }
+						: {},
+					...msg.sourceEntityHash
+						? { sourceEntityHash: String(msg.sourceEntityHash).toLowerCase() }
+						: {},
 				},
 			})
 			const event = await commitChannelMessageEvent({
@@ -328,7 +358,7 @@ export async function importChannelArchive(username, groupId, archive, options =
 			continue
 		}
 
-		const content = buildImportContent(msg, source)
+		const content = buildImportContent(msg, source, signerInfo)
 		const event = await commitChannelMessageEvent({
 			username,
 			groupId,

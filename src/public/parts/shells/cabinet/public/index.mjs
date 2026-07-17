@@ -26,6 +26,8 @@ let entries = []
 let folderTrail = []
 /** @type {object | null} */
 let currentCabinet = null
+/** @type {string | null} 远端浏览中的实体（#user:） */
+let remoteEntityHash = null
 /** @type {Set<string>} */
 const selected = new Set()
 /** @type {string | null} */
@@ -1113,6 +1115,17 @@ function openProps() {
 	document.getElementById('propCreated').textContent = `${geti18n('cabinet.created') || 'Created'}: ${formatStamp(entry.created)}`
 	document.getElementById('propModified').textContent = `${geti18n('cabinet.modified') || 'Modified'}: ${formatStamp(entry.modified)}`
 	document.getElementById('propMime').textContent = `MIME: ${entry.mime_type || ''}`
+	for (const id of ['propCreated', 'propModified']) {
+		const el = document.getElementById(id)
+		const stamp = id === 'propCreated' ? entry.created : entry.modified
+		const fresh = el.cloneNode(true)
+		el.replaceWith(fresh)
+		if (stamp?.entity_hash && /^[0-9a-f]{128}$/i.test(stamp.entity_hash)) {
+			fresh.classList.add('link', 'link-hover', 'cursor-pointer')
+			fresh.addEventListener('click', () => void openEntityProfileCard(stamp.entity_hash))
+		}
+		else fresh.classList.remove('link', 'link-hover', 'cursor-pointer')
+	}
 	document.getElementById('propsDialog').showModal()
 }
 
@@ -1125,6 +1138,51 @@ function formatStamp(stamp) {
 	const time = new Date(stamp.at).toLocaleString()
 	const who = stamp.entity_hash ? stamp.entity_hash.slice(0, 8) : ''
 	return who ? `${time} · ${who}` : time
+}
+
+/**
+ * 打开统一人物卡（Chat Hub 同源弹层）。
+ * @param {string} entityHash 128 hex
+ * @returns {Promise<void>}
+ */
+async function openEntityProfileCard(entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	if (!/^[0-9a-f]{128}$/i.test(hash)) return
+	const { showEntityProfilePopup } = await import('/parts/shells:chat/shared/entityProfilePopup.mjs')
+	await showEntityProfilePopup({
+		entityHash: hash,
+		displayName: hash.slice(0, 8),
+	})
+}
+
+/**
+ * 渲染远端实体浏览条。
+ * @returns {void}
+ */
+function renderRemoteEntityBar() {
+	let bar = document.getElementById('cabinetRemoteEntityBar')
+	if (!remoteEntityHash) {
+		bar?.remove()
+		return
+	}
+	if (!bar) {
+		bar = document.createElement('div')
+		bar.id = 'cabinetRemoteEntityBar'
+		bar.className = 'cabinet-remote-entity-bar flex items-center gap-2 px-3 py-2'
+		const host = document.getElementById('breadcrumb')?.parentElement || document.body
+		host.prepend(bar)
+	}
+	const short = `${remoteEntityHash.slice(0, 8)}…${remoteEntityHash.slice(-4)}`
+	bar.replaceChildren()
+	const label = document.createElement('span')
+	label.className = 'text-sm opacity-70'
+	label.textContent = geti18n('cabinet.remoteEntity') || '远端实体'
+	const button = document.createElement('button')
+	button.type = 'button'
+	button.className = 'btn btn-ghost btn-xs'
+	button.textContent = short
+	button.addEventListener('click', () => void openEntityProfileCard(remoteEntityHash))
+	bar.append(label, button)
 }
 
 /**
@@ -1151,6 +1209,8 @@ function escapeAttr(text) {
 async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
 	if (hash.startsWith('shared:')) {
+		remoteEntityHash = null
+		renderRemoteEntityBar()
 		const rest = hash.slice(7)
 		const [cabinetId, folderId] = rest.split('/')
 		await refreshCabinets()
@@ -1158,6 +1218,8 @@ async function bootFromHash() {
 		return
 	}
 	if (hash.startsWith('cabinet:')) {
+		remoteEntityHash = null
+		renderRemoteEntityBar()
 		const rest = hash.slice(8)
 		const [cabinetId, folderId] = rest.split('/')
 		await openCabinet(cabinetId, folderId || null)
@@ -1165,12 +1227,16 @@ async function bootFromHash() {
 	}
 	if (hash.startsWith('user:')) {
 		const entityHash = hash.slice(5)
+		remoteEntityHash = entityHash.toLowerCase()
+		renderRemoteEntityBar()
 		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
 		cabinets = data.cabinets || []
 		renderCabinetList()
 		if (cabinets[0]) await openCabinet(cabinets[0].cabinet_id)
 		return
 	}
+	remoteEntityHash = null
+	renderRemoteEntityBar()
 	await openCabinet('default')
 }
 

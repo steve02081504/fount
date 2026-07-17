@@ -11,12 +11,12 @@ test.describe('Cabinet shortcuts', () => {
 		await openCabinet(page, baseUrl)
 		const card = page.locator(`.entry-card[data-id="${folder.id}"]`)
 		await expect(card).toBeVisible({ timeout: 30_000 })
-		await card.click()
-		await page.keyboard.press('Control+a')
+		await card.click({ modifiers: ['Control'] })
 		await expect(card).toHaveClass(/selected/)
+		await page.keyboard.press('Control+a')
 		page.once('dialog', dialog => dialog.accept())
 		await page.keyboard.press('Control+d')
-		await expect(card).toHaveCount(0, { timeout: 30_000 })
+		await expect(page.locator(`.entry-card[data-id="${folder.id}"]`)).toHaveCount(0, { timeout: 30_000 })
 		await page.keyboard.press('Control+z')
 		await expect(page.locator(`.entry-card[data-id="${folder.id}"]`)).toBeVisible({ timeout: 30_000 })
 	})
@@ -24,7 +24,6 @@ test.describe('Cabinet shortcuts', () => {
 	test('Delete key goes to parent folder', async ({ page, baseUrl, apiKey }) => {
 		const folder = await createFolderViaApi(baseUrl, apiKey, `pw-up-${Date.now()}`)
 		await openCabinet(page, baseUrl)
-		await page.locator(`.entry-card[data-id="${folder.id}"]`).click()
 		await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:default/${folder.id}`, {
 			waitUntil: 'domcontentloaded',
 		})
@@ -52,7 +51,8 @@ test.describe('Cabinet shortcuts', () => {
 		await openCabinet(page, baseUrl)
 		const card = page.locator(`.entry-card[data-id="${folder.id}"]`)
 		await expect(card).toBeVisible({ timeout: 30_000 })
-		await card.click()
+		await card.click({ modifiers: ['Control'] })
+		await expect(card).toHaveClass(/selected/)
 		await page.keyboard.press('Control+c')
 		await page.keyboard.press('Control+v')
 		await expect(page.locator('.entry-card', { hasText: `${folder.name} (copy)` })).toBeVisible({ timeout: 30_000 })
