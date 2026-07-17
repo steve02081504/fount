@@ -1,3 +1,4 @@
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { shareOrCopyPostLink } from '../actions/shared.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
@@ -61,7 +62,7 @@ export async function loadVideoView(options = {}) {
 	const focusPostId = String(options.focusPostId || '')
 
 	const data = await socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
-	let items = [...(data.items || [])]
+	let items = [...data.items || []]
 	videoCursor = data.nextCursor || null
 
 	if (focusEntityHash && focusPostId) {
@@ -81,7 +82,7 @@ export async function loadVideoView(options = {}) {
 	}
 
 	if (!items.length) {
-		container.appendChild(buildVideoEmptySlide())
+		container.appendChild(await buildVideoEmptySlide())
 		view?.focus({ preventScroll: true })
 		return
 	}
@@ -133,21 +134,13 @@ export async function loadVideoView(options = {}) {
 }
 
 /**
- * @returns {HTMLElement} 空态 slide
+ * @returns {Promise<HTMLElement>} 空态 slide
  */
-function buildVideoEmptySlide() {
+async function buildVideoEmptySlide() {
 	const slide = document.createElement('div')
 	slide.className = 'video-slide'
-	slide.innerHTML = `
-		<div class="video-empty-state">
-			<span class="s-ic s-ic-video video-empty-icon" aria-hidden="true"></span>
-			<p class="video-empty-title">${escapeHtml(geti18n('social.video.empty'))}</p>
-			<p class="video-empty-hint">${escapeHtml(geti18n('social.video.emptyHint'))}</p>
-			<button type="button" class="btn btn-primary video-empty-compose" data-video-compose>
-				${escapeHtml(geti18n('social.video.compose'))}
-			</button>
-		</div>
-	`
+	const empty = await renderTemplate('video_empty', {})
+	slide.appendChild(empty)
 	slide.querySelector('[data-video-compose]')?.addEventListener('click', async () => {
 		const { focusComposer } = await import('../navigation.mjs')
 		await focusComposer({ switchToFeed: true })
@@ -239,8 +232,8 @@ function setPauseHint(slide, paused) {
  */
 function syncMuteButton(slide, video) {
 	const btn = slide.querySelector('.video-mute-btn')
-	if (!btn) return
-	btn.setAttribute('aria-label', geti18n(video.muted ? 'social.video.unmute' : 'social.video.mute'))
+	if (!(btn instanceof HTMLElement)) return
+	btn.dataset.i18n = video.muted ? 'social.video.unmute' : 'social.video.mute'
 	btn.querySelector('.s-ic')?.classList.toggle('s-ic-mute', video.muted)
 	btn.querySelector('.s-ic')?.classList.toggle('s-ic-volume', !video.muted)
 }
@@ -418,7 +411,7 @@ function buildVideoSlide(item) {
 		? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
 		: `<div class="video-media-fallback">
 			<span class="s-ic s-ic-video" aria-hidden="true"></span>
-			<p>${escapeHtml(geti18n('social.video.unavailable'))}</p>
+			<p data-i18n="social.video.unavailable"></p>
 		</div>`
 
 	slide.insertAdjacentHTML('beforeend', `
@@ -446,9 +439,9 @@ function buildVideoSlide(item) {
 				</button>
 				<button type="button" class="video-action-btn video-share-btn" data-action="share" data-share="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.share'))}">
 					<span class="s-ic s-ic-share" aria-hidden="true"></span>
-					<span class="action-count" data-i18n="social.actions.share">${escapeHtml(geti18n('social.actions.share'))}</span>
+					<span class="action-count" data-i18n="social.actions.share"></span>
 				</button>
-				<button type="button" class="video-action-btn video-mute-btn" data-action="mute" aria-label="">
+				<button type="button" class="video-action-btn video-mute-btn" data-action="mute" data-i18n="social.video.mute">
 					<span class="s-ic s-ic-volume" aria-hidden="true"></span>
 				</button>
 			</div>
@@ -584,10 +577,11 @@ function buildVideoSlide(item) {
 		const result = await shareOrCopyPostLink(entityHash, postId, caption || label)
 		if (result !== 'copied') return
 		const labelEl = slide.querySelector('.video-share-btn .action-count')
-		const prev = labelEl?.textContent
-		if (labelEl) labelEl.textContent = geti18n('social.actions.copied')
+		if (!(labelEl instanceof HTMLElement)) return
+		const prev = labelEl.dataset.i18n
+		labelEl.dataset.i18n = 'social.actions.copied'
 		setTimeout(() => {
-			if (labelEl && prev != null) labelEl.textContent = prev
+			if (prev) labelEl.dataset.i18n = prev
 		}, 1500)
 	})
 

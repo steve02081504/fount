@@ -4,7 +4,7 @@
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
+import { geti18n, setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildChatCallWsUrl } from '../shared/avRelayClient.mjs'
 import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
@@ -91,8 +91,7 @@ function resetCallUi() {
  */
 function setPeerCountLabel(peerLabel, count) {
 	if (!(peerLabel instanceof HTMLElement)) return
-	peerLabel.dataset.n = String(count)
-	peerLabel.dataset.i18n = 'chat.hub.callParticipants'
+	setElementI18n(peerLabel, 'chat.hub.callParticipants', { n: count })
 }
 
 /**

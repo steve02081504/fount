@@ -675,6 +675,22 @@ export function i18nElement(element, {
 	return element
 }
 
+/**
+ * 写入 `data-i18n` 键与插值参数（其余 `data-*` → `dataset`），并立即翻译。
+ * MutationObserver 只监听 `data-i18n`；同键仅改参时不会触发观察器，必须走本函数或 `i18nElement`。
+ * @param {HTMLElement} element - 目标元素。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {Record<string, string | number | boolean | null | undefined>} [params] - 插值参数（写入 dataset）。
+ * @returns {HTMLElement} 原元素。
+ */
+export function setElementI18n(element, key, params = {}) {
+	for (const [name, value] of Object.entries(params))
+		element.dataset[name] = value
+	element.dataset.i18n = key
+	translateSingularElement(element)
+	return element
+}
+
 
 // Watch for changes in the DOM
 const i18nObserver = new MutationObserver((mutationsList) => {

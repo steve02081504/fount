@@ -1,4 +1,4 @@
-import { initTranslations, geti18n, console, confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
+import { initTranslations, geti18n, setElementI18n, console, confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
@@ -553,10 +553,10 @@ function selectedEntries() {
  * @returns {void}
  */
 function renderStatus() {
-	document.getElementById('statusBar').textContent = geti18n('cabinet.statusCount', {
+	setElementI18n(document.getElementById('statusBar'), 'cabinet.statusCount', {
 		count: entries.length,
 		selected: selected.size,
-	}) || `${entries.length} items`
+	})
 }
 
 /**
@@ -1120,10 +1120,10 @@ function openProps() {
 	document.getElementById('propDeletePreview').checked = entry.preview?.delete_with_file !== false
 	document.getElementById('propFolderPasswordWrap').classList.toggle('hidden', entry.kind !== 'folder' || currentCabinet?.type === 'shared')
 	document.getElementById('propFolderPassword').value = ''
-	document.getElementById('propCreated').textContent = geti18n('cabinet.created', {
+	setElementI18n(document.getElementById('propCreated'), 'cabinet.created', {
 		stamp: formatStamp(entry.created),
 	})
-	document.getElementById('propModified').textContent = geti18n('cabinet.modified', {
+	setElementI18n(document.getElementById('propModified'), 'cabinet.modified', {
 		stamp: formatStamp(entry.modified),
 	})
 	document.getElementById('propMime').textContent = `MIME: ${entry.mime_type || ''}`

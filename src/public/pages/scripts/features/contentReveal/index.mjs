@@ -18,17 +18,21 @@ function ensureContentRevealStyles() {
 /**
  * 为敏感媒体内容包裹遮罩层 HTML。
  * @param {string} innerHtml 内层媒体 HTML
- * @param {{ warningLabel?: string, revealLabel?: string }} [options] 标签文案
+ * @param {{ warningLabel?: string, revealLabel?: string, warningI18n?: string, revealI18n?: string }} [options] 标签文案（优先 *I18n → data-i18n）
  * @returns {string} 包裹后的 HTML
  */
-export function wrapSensitiveMediaHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal' } = {}) {
+export function wrapSensitiveMediaHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal', warningI18n, revealI18n } = {}) {
 	ensureContentRevealStyles()
-	const label = escapeHtml(warningLabel)
-	const reveal = escapeHtml(revealLabel)
+	const label = warningI18n
+		? `<div class="sensitive-media-label" data-i18n="${escapeHtml(warningI18n)}"></div>`
+		: `<div class="sensitive-media-label">${escapeHtml(warningLabel)}</div>`
+	const reveal = revealI18n
+		? `<button type="button" class="sensitive-media-reveal" data-i18n="${escapeHtml(revealI18n)}"></button>`
+		: `<button type="button" class="sensitive-media-reveal">${escapeHtml(revealLabel)}</button>`
 	return `<div class="sensitive-media-wrap" data-sensitive-collapsed="1">
 		<div class="sensitive-media-overlay">
-			<div class="sensitive-media-label">${label}</div>
-			<button type="button" class="sensitive-media-reveal">${reveal}</button>
+			${label}
+			${reveal}
 		</div>
 		<div class="sensitive-media-body">${innerHtml}</div>
 	</div>`
@@ -37,16 +41,18 @@ export function wrapSensitiveMediaHtml(innerHtml, { warningLabel = '', revealLab
 /**
  * 为正文包裹内容警告（CW）折叠层 HTML。
  * @param {string} innerHtml 内层正文 HTML
- * @param {{ warningLabel?: string, revealLabel?: string }} [options] 标签文案
+ * @param {{ warningLabel?: string, revealLabel?: string, revealI18n?: string }} [options] 标签文案（revealI18n → data-i18n）
  * @returns {string} 包裹后的 HTML
  */
-export function wrapContentWarningHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal' } = {}) {
+export function wrapContentWarningHtml(innerHtml, { warningLabel = '', revealLabel = 'Reveal', revealI18n } = {}) {
 	ensureContentRevealStyles()
 	const label = escapeHtml(warningLabel)
-	const reveal = escapeHtml(revealLabel)
+	const reveal = revealI18n
+		? `<button type="button" class="content-warning-reveal" data-i18n="${escapeHtml(revealI18n)}"></button>`
+		: `<button type="button" class="content-warning-reveal">${escapeHtml(revealLabel)}</button>`
 	return `<div class="content-warning-wrap" data-cw-collapsed="1">
 		<div class="content-warning-label">${label}</div>
-		<button type="button" class="content-warning-reveal">${reveal}</button>
+		${reveal}
 		<div class="content-warning-body hidden">${innerHtml}</div>
 	</div>`
 }

@@ -2,8 +2,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, formatTime, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { authorLabel, entityHandle, formatTimeAttrs, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
 import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { socialState } from '../state.mjs'
 
@@ -106,18 +105,27 @@ export async function loadExplore() {
 		const href = escapeHtml(formatSocialPostHref(post.entityHash, post.postId))
 		const authorHref = escapeHtml(formatSocialProfileHref(post.entityHash))
 		const snippet = post.textSnippet || (post.mediaThumbs?.length
-			? geti18n('social.profile.mediaOnly')
+			? '' // filled via data-i18n below when empty text
 			: '')
 		const name = authorLabel(post.entityHash, post.authorProfile)
 		const handle = entityHandle(post.entityHash, post.authorProfile)
+		const timeAttrs = formatTimeAttrs(post.hlc?.wall)
+		const timeHtml = timeAttrs.i18n
+			? `<span class="post-meta" data-i18n="${timeAttrs.i18n}"${timeAttrs.n != null ? ` data-n="${timeAttrs.n}"` : ''}></span>`
+			: `<span class="post-meta">${escapeHtml(timeAttrs.text || '')}</span>`
+		const snippetHtml = post.textSnippet
+			? `<p class="explore-snippet">${escapeHtml(post.textSnippet)}</p>`
+			: post.mediaThumbs?.length
+				? '<p class="explore-snippet" data-i18n="social.profile.mediaOnly"></p>'
+				: ''
 		await appendTemplate(postList, 'explore_post', {
 			href,
 			authorHref,
 			name: escapeHtml(name),
 			handle: escapeHtml(handle),
-			time: escapeHtml(formatTime(post.hlc?.wall)),
+			timeHtml,
 			avatarHtml: renderAvatarHtml(post.entityHash, post.authorProfile || { name }, 'explore-post-avatar'),
-			snippetHtml: snippet ? `<p class="explore-snippet">${escapeHtml(snippet)}</p>` : '',
+			snippetHtml,
 			thumbsHtml: renderExploreThumbs(post.mediaThumbs),
 		})
 	}

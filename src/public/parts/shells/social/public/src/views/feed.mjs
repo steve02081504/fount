@@ -7,9 +7,7 @@ import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { socialState } from '../state.mjs'
-import { activateView } from '../viewChrome.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null
@@ -97,7 +95,6 @@ async function replayFeedItems() {
 	const divider = document.createElement('div')
 	divider.className = 'feed-replay-divider text-center text-sm opacity-50 py-3'
 	divider.dataset.i18n = 'social.feed.replayDivider'
-	divider.textContent = geti18n('social.feed.replayDivider')
 	list.appendChild(divider)
 	await appendFeedItemsWithThreads(list, items, item => buildPostCard(item).catch(() => null))
 	// 只把哨兵挪到尾部，不重绑 observer——否则哨兵仍在视口内时会立刻再触发形成死循环
@@ -132,7 +129,7 @@ export async function loadSuggestedAccounts() {
 				<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
 				<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
 			</div>
-			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}">${escapeHtml(geti18n('social.actions.follow'))}</button>
+			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}" data-i18n="social.actions.follow"></button>
 		`
 		list.appendChild(row)
 	}
@@ -156,24 +153,23 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 	aside.appendChild(await renderTemplate('trending_header', {
 		localActive: currentScope === 'local' ? 'active' : '',
 		nearbyActive: currentScope === 'nearby' ? 'active' : '',
-		localLabel: geti18n('social.trending.scopeLocal'),
-		nearbyLabel: geti18n('social.trending.scopeNearby'),
 	}))
 	const list = document.createElement('div')
 	list.className = 'trending-tags'
 	if (!tags.length)
-		list.innerHTML = `<p class="empty-hint">${geti18n('social.trending.empty')}</p>`
+		list.innerHTML = '<p class="empty-hint" data-i18n="social.trending.empty"></p>'
 	else
 		for (const row of tags) {
 			const link = document.createElement('a')
 			link.className = 'trending-tag link-btn'
 			link.href = formatSocialTopicHref(row.tag)
 			link.textContent = `#${row.tag}`
-			link.title = geti18n('social.trending.postCount', { n: row.count })
 			const count = document.createElement('span')
 			count.className = 'trending-count'
 			count.textContent = String(row.count)
 			link.appendChild(count)
+			link.dataset.n = String(row.count)
+			link.dataset.i18n = 'social.trending.postCount'
 			list.appendChild(link)
 		}
 
@@ -255,7 +251,7 @@ export function showFeedNewPostsBanner() {
 	banner.type = 'button'
 	banner.id = 'feedNewPostsBanner'
 	banner.className = 'feed-new-posts-banner btn btn-primary btn-sm'
-	banner.textContent = geti18n('social.feed.newPosts')
+	banner.dataset.i18n = 'social.feed.newPosts'
 	banner.addEventListener('click', () => {
 		banner.remove()
 		void loadFeed(false)
@@ -375,24 +371,22 @@ export async function runFeedSearch() {
 	const usersTitle = document.createElement('h3')
 	usersTitle.className = 'text-sm font-semibold opacity-70 mb-2'
 	usersTitle.dataset.i18n = 'social.search.usersTitle'
-	usersTitle.textContent = geti18n('social.search.usersTitle')
 	usersSection.appendChild(usersTitle)
 	if (!entities.length) {
 		const empty = document.createElement('p')
 		empty.className = 'text-sm opacity-50'
-		empty.textContent = geti18n('social.search.usersEmpty')
+		empty.dataset.i18n = 'social.search.usersEmpty'
 		usersSection.appendChild(empty)
 	}
 	else 
 		for (const entity of entities)
-			usersSection.appendChild(buildEntitySearchCard(entity))
+			usersSection.appendChild(await buildEntitySearchCard(entity))
 	
 	frag.appendChild(usersSection)
 
 	const postsTitle = document.createElement('h3')
 	postsTitle.className = 'text-sm font-semibold opacity-70 mb-2'
 	postsTitle.dataset.i18n = 'social.search.postsTitle'
-	postsTitle.textContent = geti18n('social.search.postsTitle')
 	frag.appendChild(postsTitle)
 
 	if (!items.length) {
@@ -426,28 +420,20 @@ export async function runFeedSearch() {
 
 /**
  * @param {object} entity 搜索命中实体
- * @returns {HTMLElement} 卡片
+ * @returns {Promise<HTMLElement>} 卡片
  */
-export function buildEntitySearchCard(entity) {
-	const row = document.createElement('div')
-	row.className = 'suggested-account feed-search-entity'
+export async function buildEntitySearchCard(entity) {
 	const handle = entityHandle(entity.entityHash, entity)
 	const label = entity.alias || entity.name || handle
-	const followLabel = entity.following
-		? geti18n('social.actions.following')
-		: geti18n('social.actions.follow')
-	row.innerHTML = `
-		<div class="suggested-account-info">
-			<a href="${escapeHtml(formatSocialProfileHref(entity.entityHash))}" class="suggested-account-name">${escapeHtml(label)}</a>
-			<span class="suggested-account-handle">${escapeHtml(handle)}</span>
-			<span class="text-xs opacity-50">${escapeHtml(geti18n('social.search.trustScore', { score: Number(entity.nodeScore || 0).toFixed(2) }))}</span>
-		</div>
-		<div class="flex gap-1 flex-wrap justify-end">
-			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(entity.entityHash)}" data-is-following="${entity.following ? 'true' : 'false'}">${escapeHtml(followLabel)}</button>
-			<button type="button" class="btn btn-ghost btn-xs" data-set-alias="${escapeHtml(entity.entityHash)}">${escapeHtml(geti18n('social.search.pinAlias'))}</button>
-		</div>
-	`
-	return row
+	return renderTemplate('feed_entity_search', {
+		profileHref: escapeHtml(formatSocialProfileHref(entity.entityHash)),
+		label: escapeHtml(label),
+		handle: escapeHtml(handle),
+		score: Number(entity.nodeScore || 0).toFixed(2),
+		entityHash: escapeHtml(entity.entityHash),
+		isFollowing: entity.following ? 'true' : 'false',
+		followI18n: entity.following ? 'social.actions.following' : 'social.actions.follow',
+	})
 }
 
 /**

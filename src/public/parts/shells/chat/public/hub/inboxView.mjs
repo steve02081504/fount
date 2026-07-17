@@ -2,7 +2,6 @@
  * Hub 跨群 inbox 视图（#inbox）。
  */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
@@ -71,12 +70,6 @@ async function renderInboxRow(row) {
 		time: escapeHtml(formatInboxTime(row.at)),
 		dateTime: date.toISOString(),
 		fullTime: date.toLocaleString(),
-		ariaLabel: await geti18n('chat.hub.inbox.rowLabel', {
-			author: authorLabel,
-			group: groupLabel,
-			channel: channelLabel,
-			preview: previewLabel,
-		}),
 	})
 }
 

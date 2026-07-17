@@ -7,7 +7,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { joinAvRelayRoom } from '/parts/shells:chat/shared/avRelayClient.mjs'
 import { mountVoiceRing } from '/parts/shells:chat/shared/voiceRing.mjs'
 import { themeColorForEntity } from '/parts/shells:chat/shared/themeColor.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
+import { setElementI18n } from '/scripts/i18n/index.mjs'
 
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
@@ -119,7 +119,7 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 	liveCursor = data.nextCursor || null
 
 	if (!items.length) {
-		container.innerHTML = `<div class="live-slide"><p class="live-empty">${escapeHtml(geti18n('social.live.empty'))}</p></div>`
+		container.innerHTML = '<div class="live-slide"><p class="live-empty" data-i18n="social.live.empty"></p></div>'
 		return
 	}
 
@@ -323,13 +323,13 @@ function ensureLiveScopeTabs() {
 			activateView('liveBroadcast')
 		})
 	}
-	if (goBroadcast) goBroadcast.textContent = geti18n('social.live.broadcast.open')
+	if (goBroadcast) goBroadcast.dataset.i18n = 'social.live.broadcast.open'
 	for (const tabButton of tabs.querySelectorAll('[data-scope]')) {
 		if (!(tabButton instanceof HTMLElement)) continue
 		const active = tabButton.dataset.scope === liveScope
-		tabButton.textContent = geti18n(
-			tabButton.dataset.scope === 'nearby' ? 'social.live.hall' : 'social.live.local',
-		)
+		tabButton.dataset.i18n = tabButton.dataset.scope === 'nearby'
+			? 'social.live.hall'
+			: 'social.live.local'
 		tabButton.classList.toggle('is-active', active)
 		tabButton.setAttribute('aria-selected', active ? 'true' : 'false')
 	}
@@ -355,8 +355,10 @@ function renderLiveHallGrid(container, items) {
 	}, 'live-hall-avatar')}
 			<div class="live-hall-meta">
 				<div class="live-hall-title">${escapeHtml(item.title || '')}</div>
-				<div class="live-hall-stats">${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}
-					· ${geti18n('social.live.likes', { n: item.likeCount || 0 })}</div>
+				<div class="live-hall-stats">
+					<span data-i18n="social.live.viewers" data-n="${item.viewerCount || 0}"></span>
+					· <span data-i18n="social.live.likes" data-n="${item.likeCount || 0}"></span>
+				</div>
 			</div>
 		`
 		card.addEventListener('click', () => {
@@ -397,21 +399,20 @@ function buildLiveSlide(item) {
 		<div class="live-placeholder">
 			<span class="live-badge">LIVE</span>
 			<div class="live-title">${escapeHtml(item.title || item.authorName || '')}</div>
-			<p class="live-viewer-count" data-viewer-count>${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</p>
-			<p class="live-like-count" data-like-count>${geti18n('social.live.likes', { n: item.likeCount || 0 })}</p>
+			<p class="live-viewer-count" data-viewer-count data-i18n="social.live.viewers" data-n="${item.viewerCount || 0}"></p>
+			<p class="live-like-count" data-like-count data-i18n="social.live.likes" data-n="${item.likeCount || 0}"></p>
 		</div>
 		<div class="live-overlay">
 			<div class="danmaku-area" data-danmaku></div>
 			<div class="live-bottom">
 				<div class="live-info">
 					<span class="live-author">${escapeHtml(item.authorName || '')}</span>
-					<span class="live-viewer-count" data-viewer-count>${geti18n('social.live.viewers', { n: item.viewerCount || 0 })}</span>
-					<span class="live-like-count" data-like-count>${geti18n('social.live.likes', { n: item.likeCount || 0 })}</span>
+					<span class="live-viewer-count" data-viewer-count data-i18n="social.live.viewers" data-n="${item.viewerCount || 0}"></span>
+					<span class="live-like-count" data-like-count data-i18n="social.live.likes" data-n="${item.likeCount || 0}"></span>
 				</div>
 				<div class="live-danmaku-input">
-					<input type="text" class="live-danmaku-field" maxlength="100"
-						placeholder="${escapeHtml(geti18n('social.live.danmakuPlaceholder'))}" />
-					<button type="button" class="live-danmaku-send-btn">${escapeHtml(geti18n('social.live.danmakuSend'))}</button>
+					<input type="text" class="live-danmaku-field" maxlength="100" data-i18n="social.live.danmakuPlaceholder" />
+					<button type="button" class="live-danmaku-send-btn" data-i18n="social.live.danmakuSend"></button>
 				</div>
 			</div>
 		</div>
@@ -513,24 +514,24 @@ function openLiveSignalWs(slide, entityHash, liveId, meta = {}) {
 		else if (wireMessage.type === 'viewer_count' || wireMessage.type === 'link_stats') {
 			const n = wireMessage.viewerCount ?? wireMessage.count ?? 0
 			for (const el of slide.querySelectorAll('[data-viewer-count]'))
-				el.textContent = geti18n('social.live.viewers', { n })
+				if (el instanceof HTMLElement) setElementI18n(el, 'social.live.viewers', { n })
 			if (wireMessage.likeCount != null)
 				for (const el of slide.querySelectorAll('[data-like-count]'))
-					el.textContent = geti18n('social.live.likes', { n: wireMessage.likeCount })
+					if (el instanceof HTMLElement) setElementI18n(el, 'social.live.likes', { n: wireMessage.likeCount })
 		}
 		else if (wireMessage.type === 'like_count')
 			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = geti18n('social.live.likes', { n: wireMessage.count ?? 0 })
-		else if (wireMessage.type === 'hello' && wireMessage.likeCount != null) {
-			for (const el of slide.querySelectorAll('[data-like-count]'))
-				el.textContent = geti18n('social.live.likes', { n: wireMessage.likeCount })
-			if (wireMessage.link)
-				slide.classList.add('live-linked')
-		}
-		else if (wireMessage.type === 'link_started')
-			slide.classList.add('live-linked')
-		else if (wireMessage.type === 'link_ended')
-			slide.classList.remove('live-linked')
+				if (el instanceof HTMLElement) setElementI18n(el, 'social.live.likes', { n: wireMessage.count ?? 0 })
+				else if (wireMessage.type === 'hello' && wireMessage.likeCount != null) {
+					for (const el of slide.querySelectorAll('[data-like-count]'))
+						if (el instanceof HTMLElement) setElementI18n(el, 'social.live.likes', { n: wireMessage.likeCount })
+					if (wireMessage.link)
+						slide.classList.add('live-linked')
+				}
+				else if (wireMessage.type === 'link_started')
+					slide.classList.add('live-linked')
+				else if (wireMessage.type === 'link_ended')
+					slide.classList.remove('live-linked')
 	})
 
 	return ws
@@ -595,14 +596,14 @@ export function initLiveBroadcastView() {
 			startBtn.classList.add('hidden')
 			stopBtn?.classList.remove('hidden')
 			document.getElementById('liveLinkRow')?.classList.remove('hidden')
-			if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.started')
+			if (statusEl) statusEl.dataset.i18n = 'social.live.broadcast.started'
 
 			if (mediaKind === 'whip') {
 				const whip = `${location.origin}/api/parts/shells:social/live/${data.liveId}/whip`
 				if (whipUrlInput instanceof HTMLInputElement) whipUrlInput.value = whip
 				if (whipTokenInput instanceof HTMLInputElement) whipTokenInput.value = data.ingestSecret || ''
 				whipPanel?.classList.remove('hidden')
-				if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.whipWaiting')
+				if (statusEl) statusEl.dataset.i18n = 'social.live.broadcast.whipWaiting'
 				return
 			}
 
@@ -649,7 +650,7 @@ export function initLiveBroadcastView() {
 			stopBtn.classList.add('hidden')
 			document.getElementById('liveLinkRow')?.classList.add('hidden')
 			startBtn?.classList.remove('hidden')
-			if (statusEl) statusEl.textContent = geti18n('social.live.broadcast.stopped')
+			if (statusEl) statusEl.dataset.i18n = 'social.live.broadcast.stopped'
 		}
 		catch (err) {
 			if (statusEl) statusEl.textContent = String(err?.message || err)
@@ -661,7 +662,7 @@ export function initLiveBroadcastView() {
 		const raw = linkPeerInput?.value?.trim() || ''
 		const [peerEntityHash, peerLiveId] = raw.split(':').map(s => s.trim())
 		if (!peerEntityHash || !peerLiveId) {
-			if (statusEl) statusEl.textContent = geti18n('social.live.link.needPeer')
+			if (statusEl) statusEl.dataset.i18n = 'social.live.link.needPeer'
 			return
 		}
 		try {
@@ -670,9 +671,9 @@ export function initLiveBroadcastView() {
 				body: JSON.stringify({ peerEntityHash, peerLiveId, bridgeOrigin: location.origin }),
 			})
 			if (statusEl)
-				statusEl.textContent = geti18n(
-					result.status === 'linked' ? 'social.live.link.linked' : 'social.live.link.invited',
-				)
+				statusEl.dataset.i18n = result.status === 'linked'
+					? 'social.live.link.linked'
+					: 'social.live.link.invited'
 		}
 		catch (err) {
 			if (statusEl) statusEl.textContent = String(err?.message || err)

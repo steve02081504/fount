@@ -1,6 +1,5 @@
 import { wrapContentWarningHtml } from '/scripts/features/contentReveal/index.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
+import { renderTemplate, renderTemplateAsHtmlString } from '../../../../scripts/features/template.mjs'
 import { renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../shared/runUri.mjs'
 
@@ -10,7 +9,7 @@ import { viewerEntityHash } from './lib/apiClient.mjs'
 import {
 	authorLabel,
 	entityHandle,
-	formatTime,
+	formatTimeAttrs,
 	rememberEntityHandle,
 	renderAvatarHtml,
 	renderMarkdown,
@@ -22,13 +21,14 @@ import { renderMediaHtml } from './mediaRender.mjs'
 
 /**
  * @param {object} liveRef 直播引用
- * @returns {string} HTML
+ * @returns {Promise<string>} HTML
  */
-function renderLiveRefHtml(liveRef) {
+async function renderLiveRefHtml(liveRef) {
 	const entityHash = String(liveRef.entityHash || '').toLowerCase()
 	const liveId = String(liveRef.liveId || '').toLowerCase()
 	const ended = liveRef.status === 'ended'
-	const href = `#live:${entityHash}:${liveId}`
+	const href = escapeHtml(`#live:${entityHash}:${liveId}`)
+	const avatarHtml = renderAvatarHtml(entityHash, null, 'live-ref-avatar')
 	if (ended) {
 		const viewers = Number(liveRef.totalViewers) || 0
 		const likes = Number(liveRef.totalLikes) || 0
@@ -36,17 +36,15 @@ function renderLiveRefHtml(liveRef) {
 		const secs = Math.max(0, Math.round(durationMs / 1000))
 		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
 		const ss = String(secs % 60).padStart(2, '0')
-		return `<a class="live-ref-card live-ref-card--ended" href="${escapeHtml(href)}">
-			<span class="live-ref-badge">${escapeHtml(geti18n('social.live.postEnded'))}</span>
-			${renderAvatarHtml(entityHash, null, 'live-ref-avatar')}
-			<span class="live-ref-stats">${escapeHtml(geti18n('social.live.postEndedStats', { viewers, likes, duration: `${mm}:${ss}` }))}</span>
-		</a>`
+		return renderTemplateAsHtmlString('live_ref_ended', {
+			href,
+			avatarHtml,
+			viewers,
+			likes,
+			duration: `${mm}:${ss}`,
+		})
 	}
-	return `<a class="live-ref-card" href="${escapeHtml(href)}">
-		<span class="live-ref-badge">LIVE</span>
-		${renderAvatarHtml(entityHash, null, 'live-ref-avatar')}
-		<span class="live-ref-cta">${escapeHtml(geti18n('social.live.postWatch'))}</span>
-	</a>`
+	return renderTemplateAsHtmlString('live_ref_live', { href, avatarHtml })
 }
 
 /**
@@ -66,21 +64,20 @@ export async function buildPostCard(item, options = {}) {
 	if (item.replyContext)
 		rememberEntityHandle(item.replyContext.entityHash, item.replyContext.authorProfile)
 	const decryptFailed = item.post?.decryptView?.failed
-	const decryptFailedLabel = geti18n('social.feed.decryptFailed')
+	const text = item.post?.content?.text || ''
+	const contentAuthor = isRepost ? originalAuthor : item.entityHash
+	const markdownBody = decryptFailed
+		? '<em data-i18n="social.feed.decryptFailed"></em>'
+		: await renderMarkdown(text || (decryptFailed ? '' : ''), contentAuthor)
 	const contentWarning = item.post?.content?.contentWarning?.trim()
 	const sensitiveMedia = item.post?.content?.sensitiveMedia === true
 		|| Boolean(contentWarning)
-	const text = item.post?.content?.text || (decryptFailed ? decryptFailedLabel : '')
-	const contentAuthor = isRepost ? originalAuthor : item.entityHash
-	const markdownBody = decryptFailed
-		? `<em>${decryptFailedLabel}</em>`
-		: await renderMarkdown(text, contentAuthor)
 	const mediaHtmlRaw = decryptFailed
 		? ''
 		: renderMediaHtml(item.post?.content?.mediaRefs, {
 			sensitive: sensitiveMedia && !contentWarning,
-			warningLabel: geti18n('social.feed.sensitiveMedia'),
-			revealLabel: geti18n('social.feed.revealContent'),
+			warningI18n: 'social.feed.sensitiveMedia',
+			revealI18n: 'social.feed.revealContent',
 		})
 	const quoteRef = item.post?.content?.quoteRef
 	const quoteHtml = quoteRef && !decryptFailed
@@ -88,12 +85,13 @@ export async function buildPostCard(item, options = {}) {
 		: ''
 	const replyContext = item.replyContext
 	const replyContextHtml = replyContext && !decryptFailed
-		? `<a class="reply-context" href="${escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId))}">
-			<span class="reply-context-label">${escapeHtml(geti18n('social.reply.context', {
-			author: entityHandle(replyContext.entityHash, replyContext.authorProfile),
-		}))}</span>
-			${replyContext.text ? `<span class="reply-context-snippet">${escapeHtml(String(replyContext.text).slice(0, 120))}</span>` : ''}
-		</a>`
+		? await renderTemplateAsHtmlString('reply_context', {
+			href: escapeHtml(formatSocialPostHref(replyContext.entityHash, replyContext.postId)),
+			author: escapeHtml(entityHandle(replyContext.entityHash, replyContext.authorProfile)),
+			snippetHtml: replyContext.text
+				? `<span class="reply-context-snippet">${escapeHtml(String(replyContext.text).slice(0, 120))}</span>`
+				: '',
+		})
 		: ''
 	const groupRef = item.post?.content?.groupRef
 	const groupRefHtml = groupRef && !decryptFailed
@@ -104,13 +102,13 @@ export async function buildPostCard(item, options = {}) {
 		: ''
 	const liveRef = item.post?.content?.liveRef
 	const liveRefHtml = liveRef && !decryptFailed
-		? renderLiveRefHtml(liveRef)
+		? await renderLiveRefHtml(liveRef)
 		: ''
 	let contentBlock = `${pollHtml}${mediaHtmlRaw}${liveRefHtml}<div class="body markdown-body">${markdownBody}</div>`
 	if (contentWarning && !decryptFailed)
 		contentBlock = wrapContentWarningHtml(contentBlock, {
 			warningLabel: contentWarning,
-			revealLabel: geti18n('social.feed.revealContent'),
+			revealI18n: 'social.feed.revealContent',
 		})
 
 	const viewer = viewerEntityHash()
@@ -125,9 +123,7 @@ export async function buildPostCard(item, options = {}) {
 	const label = authorLabel(item.entityHash, item.authorProfile)
 	const { visibilityDisplay } = await import('./visibilityPicker.mjs')
 	const vis = visibilityDisplay(item.post?.content?.visibility, item.post?.content?.minFollowMs)
-	const visLabel = geti18n(vis.labelKey)
 	const visibilityCode = vis.code
-	const visibilityIcon = `<span class="s-ic s-ic-${vis.icon === 'globe' ? 'globe' : 'lock'} post-visibility-icon" title="${visLabel}" aria-label="${visLabel}"></span>`
 	const albumChips = (item.albums || []).length
 		? `<div class="post-album-chips">${item.albums.map(album =>
 			`<button type="button" class="post-album-chip" data-album-open="${escapeHtml(item.entityHash)}" data-album-id="${escapeHtml(album.albumId)}">${escapeHtml(album.name)}</button>`,
@@ -135,7 +131,7 @@ export async function buildPostCard(item, options = {}) {
 		: ''
 	const engagementBarHtml = await renderEngagementBarHtml(item, actionKey)
 	const repostBanner = isRepost
-		? `<div class="repost-banner"><span class="s-ic s-ic-repost" aria-hidden="true"></span>${geti18n('social.feed.repostedBy', { author: label })}</div>`
+		? await renderTemplateAsHtmlString('repost_banner', { author: escapeHtml(label) })
 		: ''
 	const repostCommentHtml = isRepost && item.repostComment
 		? `<div class="body markdown-body repost-comment">${await renderMarkdown(item.repostComment, item.entityHash)}</div>`
@@ -151,10 +147,14 @@ export async function buildPostCard(item, options = {}) {
 	const headerAvatarEntity = isRepost ? originalAuthor : item.entityHash
 	const headerAvatarProfile = isRepost ? item.targetAuthorProfile : item.authorProfile
 	const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
-	const postTime = formatTime(item.post?.hlc?.wall)
+	const timeAttrs = formatTimeAttrs(item.post?.hlc?.wall)
+	const postTimeAttrs = timeAttrs.i18n
+		? ` data-i18n="${timeAttrs.i18n}"${timeAttrs.n != null ? ` data-n="${timeAttrs.n}"` : ''}`
+		: ''
+	const postTimeText = timeAttrs.text ? escapeHtml(timeAttrs.text) : ''
 	const postDetailHref = formatSocialPostHref(actionEntity, actionPostId)
 	const editedBadge = item.post?.edited
-		? `<span class="post-edited-badge">${geti18n('social.post.edited')}</span>`
+		? '<span class="post-edited-badge" data-i18n="social.post.edited"></span>'
 		: ''
 	const treatAsOwn = canManage
 	const blockButton = treatAsOwn
@@ -178,24 +178,26 @@ export async function buildPostCard(item, options = {}) {
 
 	const topNote = item.communityNote?.topNote
 	const communityNoteHtml = topNote
-		? `<div class="community-note" data-note-for="${actionKey}">
-			<div class="community-note-label">${escapeHtml(geti18n('social.notes.label'))}</div>
-			<p class="community-note-text">${escapeHtml(topNote.text || '')}</p>
-			<div class="community-note-actions">
-				<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${escapeHtml(topNote.noteEventId)}" data-helpful="1">${escapeHtml(geti18n('social.notes.helpful'))} (${topNote.helpfulCount || 0})</button>
-				<button type="button" class="btn btn-ghost btn-xs" data-note-vote="${actionKey}" data-note-id="${escapeHtml(topNote.noteEventId)}" data-helpful="0">${escapeHtml(geti18n('social.notes.unhelpful'))} (${topNote.unhelpfulCount || 0})</button>
-				<button type="button" class="btn btn-ghost btn-xs" data-note-more="${actionKey}">${escapeHtml(geti18n('social.notes.more', { n: item.communityNote.noteCount || 1 }))}</button>
-			</div>
-		</div>`
+		? await renderTemplateAsHtmlString('community_note', {
+			actionKey,
+			noteId: escapeHtml(topNote.noteEventId),
+			text: escapeHtml(topNote.text || ''),
+			helpfulCount: topNote.helpfulCount || 0,
+			unhelpfulCount: topNote.unhelpfulCount || 0,
+			noteCount: item.communityNote.noteCount || 1,
+		})
 		: item.communityNote?.noteCount
-			? `<div class="community-note community-note-collapsed">
-				<button type="button" class="btn btn-ghost btn-xs" data-note-more="${actionKey}">${escapeHtml(geti18n('social.notes.more', { n: item.communityNote.noteCount }))}</button>
-			</div>`
+			? await renderTemplateAsHtmlString('community_note_collapsed', {
+				actionKey,
+				noteCount: item.communityNote.noteCount,
+			})
 			: ''
 
+	const { geti18n } = await import('/scripts/i18n/index.mjs')
+	const visLabel = geti18n(vis.labelKey)
 	const card = await renderTemplate('post_card', {
 		postId: item.postId,
-		postTextEncoded: encodeURIComponent(text),
+		postTextEncoded: encodeURIComponent(decryptFailed ? '' : text),
 		visibilityCode,
 		repostBanner,
 		repostCommentHtml,
@@ -205,10 +207,10 @@ export async function buildPostCard(item, options = {}) {
 		headerAuthor,
 		headerLink,
 		authorHandle: entityHandle(headerHandleEntity, headerAvatarProfile),
-		postTime,
+		postTimeAttrs,
+		postTimeText,
 		editedBadge,
-		visibilityIcon,
-		moreLabel: geti18n('social.actions.more'),
+		visibilityIcon: `<span class="s-ic s-ic-${vis.icon === 'globe' ? 'globe' : 'lock'} post-visibility-icon" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,

@@ -1,6 +1,5 @@
 /** Hub 群发现主内容页。 */
 import { mountTemplate, renderTemplate } from '../../../../scripts/features/template.mjs'
-import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { fetchDiscoveryIndex, refreshDiscoveryGossip } from '../src/api/discoveryApi.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -33,9 +32,7 @@ async function paintDiscoveryEntries(grid, entries) {
 			title: escapeHtml(title),
 			initial: escapeHtml(Array.from(title)[0] || '#'),
 			blurb: escapeHtml(entry.blurb || ''),
-			sourceLabel: escapeHtml(await geti18n('chat.hub.discoverySourceCount', {
-				count: String(entry.sources?.length || 0),
-			})),
+			sourceCount: String(entry.sources?.length || 0),
 			actionKey: joinedIds.has(String(entry.groupId))
 				? 'chat.hub.discoveryOpen'
 				: 'chat.hub.discoveryJoin',

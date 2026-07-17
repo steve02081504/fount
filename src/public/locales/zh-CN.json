@@ -1309,7 +1309,9 @@
 		},
 		"trending": {
 			"title": "热门话题",
-			"postCount": "${n} 条帖子",
+			"postCount": {
+				"title": "${n} 条帖子"
+			},
 			"scopeLocal": "本机",
 			"scopeNearby": "附近",
 			"empty": "暂无热门话题"
@@ -1405,7 +1407,9 @@
 			"replies": "评论",
 			"copyLink": "复制链接",
 			"copied": "已复制",
-			"more": "更多",
+			"more": {
+				"aria-label": "更多"
+			},
 			"share": "分享",
 			"likeFailed": "点赞失败：${error}",
 			"dislikeFailed": "踩失败：${error}",
@@ -1586,10 +1590,16 @@
 			"back": {
 				"aria-label": "返回动态"
 			},
-			"mute": "静音",
-			"unmute": "取消静音",
+			"mute": {
+				"aria-label": "静音"
+			},
+			"unmute": {
+				"aria-label": "取消静音"
+			},
 			"unavailable": "视频无法播放",
-			"closeReplies": "关闭评论"
+			"closeReplies": {
+				"aria-label": "关闭评论"
+			}
 		},
 		"live": {
 			"empty": "暂无直播",
@@ -1601,7 +1611,9 @@
 				"title": "返回动态",
 				"aria-label": "返回动态"
 			},
-			"danmakuPlaceholder": "说点什么…",
+			"danmakuPlaceholder": {
+				"placeholder": "说点什么…"
+			},
 			"danmakuSend": "发送",
 			"postWatch": "进入直播",
 			"postEnded": "直播已结束",
@@ -2208,7 +2220,9 @@
 				"emptyCareDescription": "你特别关心的成员发来新消息时，可以第一时间在这里看到。",
 				"emptyVoteTitle": "没有已结束的投票",
 				"emptyVoteDescription": "参与的投票结束后，结果会汇总到这里。",
-				"rowLabel": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}",
+				"rowLabel": {
+					"aria-label": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}"
+				},
 				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
 				"composerDisabled": "在收件箱中无法发送消息",
 				"badgeFetchFailed": "未读徽章刷新失败：${error}",
@@ -2759,7 +2773,9 @@
 			"ariaClose": {
 				"aria-label": "关闭"
 			},
-			"membersDigestPagesTitle": "${expected}\n${pages} 页",
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} 页"
+			},
 			"discoveryTitle": "群发现",
 			"discoveryEyebrow": "探索社区",
 			"discoveryDescription": "浏览来自联邦网络的公开群组，挑选感兴趣的社区并加入。",

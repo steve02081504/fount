@@ -1,10 +1,8 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { socialState } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 let searchGeneration = 0
 
@@ -69,7 +67,7 @@ export async function runSearchView() {
 	if (q.length < 2) {
 		const list = view.querySelector('#searchViewResults')
 		if (list)
-			list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.search.tooShort'))}</p>`
+			list.innerHTML = '<p class="empty-hint" data-i18n="social.search.tooShort"></p>'
 		return
 	}
 
@@ -89,7 +87,7 @@ export async function runSearchView() {
 	if (asideInput instanceof HTMLInputElement) asideInput.value = q
 
 	disconnectInfiniteScroll()
-	list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.search.loading'))}</p>`
+	list.innerHTML = '<p class="empty-hint" data-i18n="social.search.loading"></p>'
 
 	const baseParams = new URLSearchParams({ q, sort, scope, limit: '30' })
 	if (author) baseParams.set('author', author)
@@ -108,29 +106,29 @@ export async function runSearchView() {
 
 	const usersTitle = document.createElement('h3')
 	usersTitle.className = 'section-title'
-	usersTitle.textContent = geti18n('social.search.usersTitle')
+	usersTitle.dataset.i18n = 'social.search.usersTitle'
 	list.appendChild(usersTitle)
 	if (!entities.length) {
 		const empty = document.createElement('p')
 		empty.className = 'empty-hint'
-		empty.textContent = geti18n('social.search.usersEmpty')
+		empty.dataset.i18n = 'social.search.usersEmpty'
 		list.appendChild(empty)
 	}
 	else {
 		const { buildEntitySearchCard } = await import('./feed.mjs')
 		for (const entity of entities)
-			list.appendChild(buildEntitySearchCard(entity))
+			list.appendChild(await buildEntitySearchCard(entity))
 	}
 
 	const postsTitle = document.createElement('h3')
 	postsTitle.className = 'section-title'
-	postsTitle.textContent = geti18n('social.search.postsTitle')
+	postsTitle.dataset.i18n = 'social.search.postsTitle'
 	list.appendChild(postsTitle)
 
 	if (!items.length) {
 		const empty = document.createElement('p')
 		empty.className = 'empty-hint'
-		empty.textContent = geti18n('social.search.empty')
+		empty.dataset.i18n = 'social.search.empty'
 		list.appendChild(empty)
 		return
 	}

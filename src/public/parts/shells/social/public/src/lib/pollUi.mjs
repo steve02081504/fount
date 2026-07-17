@@ -1,5 +1,4 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 import { socialApi } from './apiClient.mjs'
 
@@ -27,12 +26,12 @@ export function renderPollHtml(poll, actionKey) {
 		</button>`
 	}).join('')
 	const status = closed
-		? geti18n('social.poll.closed')
+		? '<span data-i18n="social.poll.closed"></span>'
 		: poll.deadline
-			? geti18n('social.poll.deadline', { deadline: poll.deadline })
+			? `<span data-i18n="social.poll.deadline" data-deadline="${escapeHtml(poll.deadline)}"></span>`
 			: ''
 	return `<div class="post-poll" data-poll-for="${escapeHtml(actionKey)}">
-		<div class="post-poll-status">${escapeHtml(status)}</div>
+		<div class="post-poll-status">${status}</div>
 		<div class="poll-options">${optionsHtml}</div>
 	</div>`
 }

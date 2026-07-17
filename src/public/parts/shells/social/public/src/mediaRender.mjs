@@ -29,7 +29,7 @@ function renderMediaItem(ref, index) {
 /**
  * 将 mediaRefs 渲染为帖子内嵌媒体 HTML（多图横向轮播）。
  * @param {object[] | string[]} mediaRefs 媒体引用
- * @param {{ sensitive?: boolean, warningLabel?: string, revealLabel?: string }} [options] 敏感遮罩选项
+ * @param {{ sensitive?: boolean, warningLabel?: string, revealLabel?: string, warningI18n?: string, revealI18n?: string }} [options] 敏感遮罩选项
  * @returns {string} HTML
  */
 export function renderMediaHtml(mediaRefs, options = {}) {
@@ -52,6 +52,8 @@ export function renderMediaHtml(mediaRefs, options = {}) {
 		html = wrapSensitiveMediaHtml(html, {
 			warningLabel: options.warningLabel || '',
 			revealLabel: options.revealLabel || 'Reveal',
+			warningI18n: options.warningI18n,
+			revealI18n: options.revealI18n,
 		})
 	return html
 }

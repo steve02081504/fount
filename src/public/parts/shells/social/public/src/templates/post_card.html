@@ -10,13 +10,13 @@
 					<a href="${headerLink}" class="author-name">${headerAuthor}</a>
 					<a href="${postDetailHref}" class="author-handle">${authorHandle}</a>
 					<span class="post-meta-sep">·</span>
-					<a href="${postDetailHref}" class="post-meta post-time-link">${postTime}</a>
+					<a href="${postDetailHref}" class="post-meta post-time-link"${postTimeAttrs}>${postTimeText}</a>
 					${editedBadge}
 					${visibilityIcon}
 				</div>
 			</div>
 			<div class="post-more-dropdown">
-				<button type="button" class="action-btn action-btn-more" data-more-toggle="${actionKey}" aria-label="${moreLabel}">
+				<button type="button" class="action-btn action-btn-more" data-more-toggle="${actionKey}" data-i18n="social.actions.more">
 					<span class="s-ic s-ic-more" aria-hidden="true"></span>
 				</button>
 				<div class="post-more-menu hidden" data-more-menu="${actionKey}">

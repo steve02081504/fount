@@ -1,6 +1,6 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
-import { geti18n, initTranslations } from '/scripts/i18n/index.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
@@ -190,7 +190,7 @@ async function renderTasteSection(panel, data) {
 				labelValue: escapeHtml(tag.label || ''),
 				tagHash: escapeHtml(tag.tagHash),
 				tagHashShort: escapeHtml(formatHashShort(tag.tagHash, { headLen: 10, tailLen: 6 })),
-				weightLabel: escapeHtml(geti18n('social.taste.weight', { weight: formatWeight(tag.weight) })),
+				weight: formatWeight(tag.weight),
 			})
 		}
 

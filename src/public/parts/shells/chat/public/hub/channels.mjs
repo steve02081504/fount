@@ -10,6 +10,7 @@ import {
 	renderTemplateAsHtmlString,
 	renderTemplateNoScriptActivation,
 } from '../../../../scripts/features/template.mjs'
+import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import {
@@ -264,8 +265,7 @@ export async function renderCodecsAvStreamingChannel(container, channel, options
 				 * @returns {void}
 				 */
 				onPeerCount: count => {
-					peerLabel.dataset.i18n = 'chat.hub.streamAvPeers'
-					peerLabel.dataset.count = String(count)
+					setElementI18n(peerLabel, 'chat.hub.streamAvPeers', { count })
 				},
 			})
 			setHubAvToolbarInCall(toolbar, !!getHubAvSession())

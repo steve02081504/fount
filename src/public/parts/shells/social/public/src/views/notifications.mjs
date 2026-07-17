@@ -1,9 +1,8 @@
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, formatTime, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
 import { socialState } from '../state.mjs'
 
 /** @type {number | null} */
@@ -77,7 +76,12 @@ function notificationsTypesQuery() {
  * @param {object} row 通知条目
  * @returns {string} 动作文案
  */
-function notificationMessage(row) {
+/**
+ * 通知文案的 data-i18n 描述。
+ * @param {object} row 通知条目
+ * @returns {{ i18n: string, author?: string, author1?: string, author2?: string, count?: string }} 属性
+ */
+function notificationMessageAttrs(row) {
 	const actorCount = Number(row.actorCount) || 1
 	const primaryLabel = authorLabel(row.actorEntityHash)
 	const actors = Array.isArray(row.actors) && row.actors.length
@@ -87,19 +91,20 @@ function notificationMessage(row) {
 		? authorLabel(actors[1].entityHash)
 		: primaryLabel
 	const type = row.type
-	const singleKey = `social.notifications.${type}`
 	if (actorCount <= 1)
-		return geti18n(singleKey, { author: primaryLabel })
-	if (actorCount === 2 && type !== 'follow') {
-		const twoKey = `social.inbox.aggregated.${type}Two`
-		return geti18n(twoKey, { author1: primaryLabel, author2: secondaryLabel })
-	}
-	const aggregateKey = `social.inbox.aggregated.${type}`
-	return geti18n(aggregateKey, {
+		return { i18n: `social.notifications.${type}`, author: primaryLabel }
+	if (actorCount === 2 && type !== 'follow')
+		return {
+			i18n: `social.inbox.aggregated.${type}Two`,
+			author1: primaryLabel,
+			author2: secondaryLabel,
+		}
+	return {
+		i18n: `social.inbox.aggregated.${type}`,
 		author1: primaryLabel,
 		author2: secondaryLabel,
 		count: String(actorCount),
-	})
+	}
 }
 
 /**
@@ -177,7 +182,11 @@ function renderNotificationCard(row, seenAt) {
 	if (row.aggregateKey) card.dataset.aggregateKey = row.aggregateKey
 	card.dataset.actorCount = String(Number(row.actorCount) || 1)
 	card.dataset.at = String(Number(row.at) || 0)
-	const message = notificationMessage(row)
+	const msg = notificationMessageAttrs(row)
+	const msgParams = Object.entries(msg)
+		.filter(([key]) => key !== 'i18n')
+		.map(([key, value]) => ` data-${key}="${escapeHtml(value)}"`)
+		.join('')
 	const href = notificationHref(row)
 	const snippet = row.snippet
 		? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>`
@@ -188,12 +197,12 @@ function renderNotificationCard(row, seenAt) {
 			<div class="post-header-row">
 				${notificationAvatarsHtml(row)}
 				<div>
-					<div class="notification-type">${escapeHtml(message)}</div>
-					<span class="post-meta">${escapeHtml(formatTime(row.at))}</span>
+					<div class="notification-type" data-i18n="${msg.i18n}"${msgParams}></div>
+					${formatTimeHtml(row.at)}
 				</div>
 			</div>
 			${snippet}
-			<a href="${escapeHtml(href)}" class="notification-view-link">${escapeHtml(geti18n('social.notifications.view'))}</a>
+			<a href="${escapeHtml(href)}" class="notification-view-link" data-i18n="social.notifications.view"></a>
 		</div>
 	`
 	return card
@@ -345,7 +354,7 @@ export async function loadNotifications(append = false) {
 				if (toolbar) toolbar.classList.add('hidden')
 				const empty = document.createElement('div')
 				empty.className = 'empty'
-				empty.textContent = geti18n('social.empty.notifications')
+				empty.dataset.i18n = 'social.empty.notifications'
 				container.appendChild(empty)
 				await markNotificationsSeen()
 				disconnectInfiniteScroll()

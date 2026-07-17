@@ -184,12 +184,12 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 	const clampedTop = Math.min(top, window.innerHeight - 8)
 	menu.style.cssText = `position:fixed;left:${Math.max(8, clampedLeft)}px;top:${Math.max(8, clampedTop)}px;min-width:10rem;max-width:${menuWidth}px;`
 	if (batch) {
-		const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+		const { setElementI18n } = await import('../../../../scripts/i18n/index.mjs')
 		const li = document.createElement('li')
 		const button = document.createElement('button')
 		button.type = 'button'
 		button.className = 'hub-group-menu-leave-batch text-error'
-		button.textContent = await geti18n('chat.hub.groupContext.leaveBatch', { count: targets.length })
+		setElementI18n(button, 'chat.hub.groupContext.leaveBatch', { count: targets.length })
 		li.appendChild(button)
 		menu.appendChild(li)
 	}

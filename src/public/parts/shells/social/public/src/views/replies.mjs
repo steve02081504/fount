@@ -1,32 +1,27 @@
+import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/features/template.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { authorLabel, entityHandle, formatTime, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * @param {string} actionKey 回复目标 actionKey
- * @returns {HTMLElement} 回复 composer
+ * @returns {Promise<HTMLElement>} 回复 composer
  */
-function buildReplyComposer(actionKey) {
-	const composer = document.createElement('div')
-	composer.className = 'reply-composer'
+async function buildReplyComposer(actionKey) {
 	const avatarHtml = socialState.viewerEntityHash
 		? renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile || {
 			name: socialState.viewerDisplayName,
 		}, 'reply-composer-avatar')
 		: ''
-	composer.innerHTML = `
-		${avatarHtml ? `<div class="reply-composer-avatar-slot" aria-hidden="true">${avatarHtml}</div>` : ''}
-		<div class="reply-composer-body">
-			<textarea rows="1" placeholder="${escapeHtml(geti18n('social.replies.placeholder'))}"></textarea>
-			<div class="reply-composer-actions">
-				<button type="button" class="reply-composer-submit" data-submit-reply="${escapeHtml(actionKey)}">${escapeHtml(geti18n('social.replies.submit'))}</button>
-			</div>
-		</div>
-	`
+	const composer = await renderTemplate('reply_composer', {
+		actionKey: escapeHtml(actionKey),
+		avatarSlot: avatarHtml
+			? `<div class="reply-composer-avatar-slot" aria-hidden="true">${avatarHtml}</div>`
+			: '',
+	})
 	const textarea = composer.querySelector('textarea')
 	textarea?.addEventListener('input', () => {
 		textarea.style.height = 'auto'
@@ -50,7 +45,7 @@ export async function buildReplyRow(reply) {
 	const actionKey = formatActionKey(entityHash, replyId)
 	const text = reply.post?.content?.text || ''
 	const bodyHtml = reply.post?.decryptView?.failed
-		? `<em>${geti18n('social.feed.decryptFailed')}</em>`
+		? '<em data-i18n="social.feed.decryptFailed"></em>'
 		: await renderMarkdown(text, entityHash)
 	const engagementBarHtml = await renderEngagementBarHtml(reply, actionKey)
 	rememberEntityHandle(entityHash, reply.authorProfile)
@@ -63,7 +58,9 @@ export async function buildReplyRow(reply) {
 				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="link-btn author-name">${escapeHtml(authorLabel(entityHash, reply.authorProfile))}</a>
 				<a href="${escapeHtml(formatSocialProfileHref(entityHash))}" class="author-handle">${escapeHtml(entityHandle(entityHash, reply.authorProfile))}</a>
 				<span class="post-meta-sep">·</span>
-				<a href="${escapeHtml(formatSocialPostHref(entityHash, replyId))}" class="post-meta reply-time">${escapeHtml(formatTime(reply.post?.hlc?.wall || reply.hlc?.wall))}</a>
+				${formatTimeHtml(reply.post?.hlc?.wall || reply.hlc?.wall, 'post-meta reply-time', 'a', {
+		href: formatSocialPostHref(entityHash, replyId),
+	})}
 			</div>
 		</div>
 		<div class="markdown-body reply-body">${bodyHtml}</div>
@@ -84,13 +81,7 @@ export async function renderRepliesPanel(panel, replies) {
 	list.className = 'replies-list'
 	if (!replies.length) {
 		list.classList.add('is-empty')
-		list.innerHTML = `
-			<div class="replies-empty">
-				<span class="s-ic s-ic-reply replies-empty-icon" aria-hidden="true"></span>
-				<p class="replies-empty-title">${escapeHtml(geti18n('social.replies.empty'))}</p>
-				<p class="replies-empty-hint">${escapeHtml(geti18n('social.replies.emptyHint'))}</p>
-			</div>
-		`
+		list.innerHTML = await renderTemplateAsHtmlString('replies_empty', {})
 	}
 	else
 		for (const reply of replies)
@@ -98,14 +89,7 @@ export async function renderRepliesPanel(panel, replies) {
 
 	panel.replaceChildren()
 	if (panel.classList.contains('video-replies-panel')) {
-		const header = document.createElement('div')
-		header.className = 'video-replies-header'
-		header.innerHTML = `
-			<span class="video-replies-title">${escapeHtml(geti18n('social.actions.replies'))}</span>
-			<button type="button" class="video-replies-close" data-close-replies aria-label="${escapeHtml(geti18n('social.video.closeReplies'))}">
-				<span class="s-ic s-ic-close" aria-hidden="true"></span>
-			</button>
-		`
+		const header = await renderTemplate('video_replies_header', {})
 		header.querySelector('[data-close-replies]')?.addEventListener('click', event => {
 			event.stopPropagation()
 			panel.classList.add('hidden')
@@ -114,5 +98,5 @@ export async function renderRepliesPanel(panel, replies) {
 		panel.appendChild(header)
 	}
 	panel.appendChild(list)
-	panel.appendChild(buildReplyComposer(panel.dataset.repliesFor || ''))
+	panel.appendChild(await buildReplyComposer(panel.dataset.repliesFor || ''))
 }

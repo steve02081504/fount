@@ -35,7 +35,8 @@ alwaysApply: false
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()` of registry modules.
 - **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers consuming `emoji`/`sticker` registries; Hub mounts via `mountDockedEmojiPicker`/`mountDockedStickerPicker`. Docked options use full names: `pickerElement`, `gridElement`, `triggerButton`, `tabsElement`, `inputElement` — not `*El`/`*Btn`. **JS variable names, HTML `id`s, and i18n keys** use full words (`*Button`/`*Element`/`*Context`); leave external UI-library classes (e.g. DaisyUI's `class="btn …"`) untouched.
 - **`svgInliner.mjs`**: Inlines SVGs for CSS `currentColor` styling.
-- **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n` attributes, `geti18n`, `loadPreferredLangs`, `savePreferredLangs`.
+- **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n` attributes, `geti18n`, `setElementI18n`, `loadPreferredLangs`, `savePreferredLangs`.
+- **`data-i18n` / `dataset.i18n` 传参**：`translateSingularElement` 把整份 `element.dataset` 当作 `geti18n(key, params)` 的插值表。模板里写 `data-i18n="foo.bar" data-n="3"`（locale 用 `${n}`）；JS 动态更新用 `setElementI18n(el, 'foo.bar', { n: 3 })`——MutationObserver **只**监听 `data-i18n`，同键改参不会自动重译。嵌套对象键可写 `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`。`geti18n` 仍用于无 DOM 场景（`prompt`/`confirm`/`Error` 文案）或文案中间嵌入已构造的 DOM/HTML 片段。
 - **`i18n_base.mjs`**: Internal (imported only by `i18n.mjs`): `userPreferredLanguages` (host app) vs `fountUserPreferredLanguages` (static GitHub Pages).
 
 ## Components & Utilities

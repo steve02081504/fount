@@ -100,17 +100,49 @@ export async function mountMarkdown(host, markdown, pubKeyHash) {
 }
 
 /**
- * 格式化为相对时间或本地化日期字符串。
+ * 相对时间的 data-i18n 描述（或绝对时间纯文本）。
+ * @param {number} [ts] 毫秒时间戳
+ * @returns {{ i18n?: string, n?: number, text?: string }} 属性描述
+ */
+export function formatTimeAttrs(ts) {
+	const value = Number(ts) || Date.now()
+	const delta = Date.now() - value
+	if (delta < 60_000) return { i18n: 'social.time.justNow' }
+	if (delta < 3_600_000) return { i18n: 'social.time.minutesAgo', n: Math.floor(delta / 60_000) }
+	if (delta < 86_400_000) return { i18n: 'social.time.hoursAgo', n: Math.floor(delta / 3_600_000) }
+	return { text: new Date(value).toLocaleString() }
+}
+
+/**
+ * 相对时间 HTML（`data-i18n` + 参数，或绝对时间文本）。
+ * @param {number} [ts] 毫秒时间戳
+ * @param {string} [className] class
+ * @param {string} [tag='span'] 标签名
+ * @param {Record<string, string>} [extraAttrs] 额外属性（如 href）
+ * @returns {string} HTML
+ */
+export function formatTimeHtml(ts, className = 'post-meta', tag = 'span', extraAttrs = {}) {
+	const attrs = formatTimeAttrs(ts)
+	const extra = Object.entries(extraAttrs)
+		.map(([name, value]) => ` ${name}="${escapeHtml(value)}"`)
+		.join('')
+	const classAttr = className ? ` class="${escapeHtml(className)}"` : ''
+	if (attrs.text)
+		return `<${tag}${classAttr}${extra}>${escapeHtml(attrs.text)}</${tag}>`
+	const nAttr = attrs.n != null ? ` data-n="${attrs.n}"` : ''
+	return `<${tag}${classAttr}${extra} data-i18n="${attrs.i18n}"${nAttr}></${tag}>`
+}
+
+/**
+ * 无 DOM 场景的相对时间字符串（优先用 formatTimeHtml）。
  * @param {number} [ts] 毫秒时间戳
  * @returns {string} 相对时间
  */
 export function formatTime(ts) {
-	const value = Number(ts) || Date.now()
-	const delta = Date.now() - value
-	if (delta < 60_000) return geti18n('social.time.justNow')
-	if (delta < 3_600_000) return geti18n('social.time.minutesAgo', { n: Math.floor(delta / 60_000) })
-	if (delta < 86_400_000) return geti18n('social.time.hoursAgo', { n: Math.floor(delta / 3_600_000) })
-	return new Date(value).toLocaleString()
+	const attrs = formatTimeAttrs(ts)
+	if (attrs.text) return attrs.text
+	if (attrs.n != null) return geti18n(attrs.i18n, { n: attrs.n })
+	return geti18n(attrs.i18n)
 }
 
 /**

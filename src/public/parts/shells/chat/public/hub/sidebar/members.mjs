@@ -45,8 +45,8 @@ async function refreshMemberDigestBar(state) {
 	const pages = Math.max(1, Number(state.membersPagesCount) || 1)
 	el.className = ok ? 'hub-member-digest is-ok' : 'hub-member-digest is-warn'
 	if (pages > 1) {
-		const { geti18n } = await import('../../../../../scripts/i18n/index.mjs')
-		el.title = await geti18n('chat.hub.membersDigestPagesTitle', { expected, pages: String(pages) })
+		const { setElementI18n } = await import('../../../../../scripts/i18n/index.mjs')
+		setElementI18n(el, 'chat.hub.membersDigestPagesTitle', { expected, pages: String(pages) })
 	}
 	else el.title = expected
 	el.replaceChildren()
