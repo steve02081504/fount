@@ -111,6 +111,7 @@ export async function ensureGroupMembership(groupId, state) {
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
 		setHubState('context.currentState', state)
 		hubStore.context.currentMode = 'groups'
+		document.body.dataset.hubSurface = 'groups'
 		document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})

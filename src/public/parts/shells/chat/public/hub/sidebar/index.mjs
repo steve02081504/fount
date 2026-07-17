@@ -76,6 +76,7 @@ async function paintGroupHubChrome(state) {
 	await renderChannelList(state)
 	await renderMemberList(state)
 	hubStore.context.currentMode = 'groups'
+	document.body.dataset.hubSurface = 'groups'
 	document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})

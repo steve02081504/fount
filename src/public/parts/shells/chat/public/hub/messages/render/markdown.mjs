@@ -57,8 +57,9 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
 
 	try {
+		const expanded = expandMentionsInMarkdown(raw, labelMap)
 		if (trusted || bubble.dataset.mdRevealed === '1') {
-			await applyMarkdownToBubble(bubble, expandMentionsInMarkdown(raw, labelMap), trusted)
+			await applyMarkdownToBubble(bubble, expanded, trusted)
 			delete bubble.dataset.mdRaw
 			bubble.dataset.mdHydrated = '1'
 			bubble.dataset.mdPreview = '0'
@@ -69,9 +70,8 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 			return
 		}
 
-		const previewRaw = truncateTextPreview(raw, UNTRUSTED_REMOTE_PREVIEW_LEN)
-		const canExpand = raw.length > UNTRUSTED_REMOTE_PREVIEW_LEN
-		await applyMarkdownToBubble(bubble, expandMentionsInMarkdown(previewRaw, labelMap), false)
+		const canExpand = expanded.length > UNTRUSTED_REMOTE_PREVIEW_LEN
+		await applyMarkdownToBubble(bubble, truncateTextPreview(expanded, UNTRUSTED_REMOTE_PREVIEW_LEN), false)
 		bubble.dataset.mdHydrated = '1'
 		bubble.dataset.mdPreview = canExpand ? '1' : '0'
 		bubble.dataset.mdUntrusted = '1'
