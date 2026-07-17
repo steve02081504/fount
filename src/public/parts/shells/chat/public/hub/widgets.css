@@ -43,7 +43,8 @@
 .hub-emoji-tab-glyph {
 	font-size: 20px;
 	line-height: 1;
-	font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+	font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+		sans-serif;
 }
 
 .hub-emoji-tab:hover {
@@ -163,11 +164,21 @@
 
 @media (max-width: 768px) {
 	.hub-channel-bar {
-		display: none;
+		width: 210px;
 	}
 
 	.hub-server-bar {
 		width: 60px;
+	}
+}
+
+@media (max-width: 600px) {
+	.hub-channel-bar {
+		width: 190px;
+	}
+
+	.hub-server-bar {
+		width: 52px;
 	}
 }
 
@@ -515,8 +526,10 @@
 	gap: 8px;
 	padding: 8px 10px;
 	border-radius: 8px;
-	border: 1px solid var(--hub-warning-border, color-mix(in srgb, var(--color-warning), transparent 65%));
-	background: var(--hub-warning-soft, color-mix(in srgb, var(--color-warning), transparent 88%));
+	border: 1px solid var(--hub-warning-border, color-mix(in srgb,
+		var(--color-warning), transparent 65%));
+	background: var(--hub-warning-soft, color-mix(in srgb, var(--color-warning),
+		transparent 88%));
 	color: var(--color-warning);
 	font-size: 12px;
 	line-height: 1.4;
@@ -545,7 +558,8 @@
 	padding: 8px 10px;
 	border-radius: 8px;
 	border: 1px solid var(--hub-border-subtle, var(--hub-border));
-	background: color-mix(in srgb, var(--hub-bg-channel, transparent), transparent 40%);
+	background: color-mix(in srgb, var(--hub-bg-channel, transparent),
+		transparent 40%);
 	font-size: 12px;
 	line-height: 1.4;
 	color: var(--hub-text-muted);
@@ -934,7 +948,8 @@
 	box-sizing: border-box;
 	text-align: left;
 	font-size: 12px;
-	color: color-mix(in srgb, var(--hub-text-normal), var(--hub-text-muted) 14%);
+	color: color-mix(in srgb, var(--hub-text-normal), var(--hub-text-muted)
+		14%);
 	padding: 6px 8px;
 	border-radius: 6px;
 	cursor: pointer;
@@ -1359,10 +1374,6 @@
 #hub-header-call-button.is-active {
 	color: var(--hub-accent, #5865f2);
 }
-	border-radius: 4px;
-	padding: 2px 6px;
-	pointer-events: none;
-}
 
 .hub-stream-empty {
 	font-size: 13px;
@@ -1681,4 +1692,3 @@
 	width: 100%;
 	overflow-y: auto;
 }
-

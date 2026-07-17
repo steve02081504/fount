@@ -78,8 +78,9 @@ export async function setMode(mode) {
 		setHubState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer('chat.hub.composerDisabled')
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
-			iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
+		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/friends')
+		document.getElementById('hub-friends-empty-search-button')?.addEventListener('click', () => {
+			document.getElementById('hub-friends-search-input')?.focus()
 		})
 		document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
 	}

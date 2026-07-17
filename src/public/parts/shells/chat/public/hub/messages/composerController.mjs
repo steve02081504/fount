@@ -5,6 +5,9 @@ import { hubStore } from '../core/state.mjs'
 
 /** @returns {void} */
 export function refreshHubHeaderButtons() {
+	const hasConversation = !!(hubStore.context.currentGroupId && hubStore.context.currentChannelId)
+	document.body.dataset.hubSurface = hasConversation ? 'conversation' : hubStore.context.currentMode
+
 	const filesButton = document.getElementById('hub-header-files-button')
 	if (filesButton)
 		if (hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember)
