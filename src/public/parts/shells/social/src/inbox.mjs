@@ -481,24 +481,3 @@ export async function readInboxNotifications(username, viewerEntityHash, options
 	const unreadCount = aggregated.filter(row => Number(row.at) > seenAt).length
 	return { notifications: page, nextCursor, unreadCount }
 }
-
-/**
- * 全量扫描 timeline 重建 inbox（运维/修复工具）。
- * @param {string} username 用户
- * @returns {Promise<number>} 写入条数
- */
-export async function rebuildInbox(username) {
-	const viewerEntityHash = (await resolveOperatorEntityHash(username))?.toLowerCase()
-	if (!viewerEntityHash) return 0
-	const dir = inboxDir(username, viewerEntityHash)
-	fs.rmSync(dir, { recursive: true, force: true })
-	const { buildNotificationsLegacy } = await import('./notifications.mjs')
-	const legacy = await buildNotificationsLegacy(username, { limit: 10_000 })
-	let written = 0
-	fs.mkdirSync(dir, { recursive: true })
-	for (const row of legacy.notifications.sort((left, right) => left.at - right.at)) {
-		await appendJsonlSynced(inboxEventsPath(username, viewerEntityHash), row)
-		written++
-	}
-	return written
-}

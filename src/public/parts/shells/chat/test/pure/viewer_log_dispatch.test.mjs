@@ -16,53 +16,18 @@ const baseLog = [
 	{ id: 'b', content: 'hidden-marker' },
 ]
 
-Deno.test('applyWorldChatLogView prefers GetChatLogForViewer', async () => {
+Deno.test('applyWorldChatLogView uses GetChatLogForViewer', async () => {
 	const filtered = [baseLog[0]]
-	let legacyCalled = false
 	/** @type {(req: object, viewer: object) => Promise<object[]>} */
 	const getForViewer = async (_req, viewer) => {
 		assertEquals(viewer.kind, 'char')
 		return filtered
 	}
-	/** @type {() => Promise<object[]>} */
-	const getForCharname = async () => {
-		legacyCalled = true
-		return baseLog
-	}
 	const arg = {
 		chat_log: baseLog,
 		world: {
 			interfaces: {
-				chat: {
-					GetChatLogForViewer: getForViewer,
-					GetChatLogForCharname: getForCharname,
-				},
-			},
-		},
-	}
-	const result = await applyWorldChatLogView(arg, {
-		kind: 'char',
-		memberId: 'm1',
-		ownerUsername: 'u',
-		channelId: 'c',
-		charname: 'alice',
-	})
-	assertEquals(result, filtered)
-	assertEquals(legacyCalled, false)
-})
-
-Deno.test('applyWorldChatLogView falls back to GetChatLogForCharname for char viewer', async () => {
-	const filtered = [baseLog[0]]
-	/** @type {(req: object, charname: string) => Promise<object[]>} */
-	const getForCharname = async (_req, charname) => {
-		assertEquals(charname, 'alice')
-		return filtered
-	}
-	const arg = {
-		chat_log: baseLog,
-		world: {
-			interfaces: {
-				chat: { GetChatLogForCharname: getForCharname },
+				chat: { GetChatLogForViewer: getForViewer },
 			},
 		},
 	}
@@ -84,30 +49,6 @@ Deno.test('applyWorldChatLogView passes through when world has no chatlog hooks'
 		ownerUsername: 'u',
 		channelId: 'c',
 	}), baseLog)
-})
-
-Deno.test('applyWorldChatLogView does not call GetChatLogForCharname for user viewer', async () => {
-	let legacyCalled = false
-	/** @type {() => Promise<object[]>} */
-	const getForCharname = async () => {
-		legacyCalled = true
-		return []
-	}
-	const arg = {
-		chat_log: baseLog,
-		world: {
-			interfaces: {
-				chat: { GetChatLogForCharname: getForCharname },
-			},
-		},
-	}
-	assertEquals(await applyWorldChatLogView(arg, {
-		kind: 'user',
-		memberId: 'm1',
-		ownerUsername: 'u',
-		channelId: 'c',
-	}), baseLog)
-	assertEquals(legacyCalled, false)
 })
 
 Deno.test('applyPersonaChatLogView filters via GetChatLogForViewer', async () => {

@@ -1,5 +1,5 @@
 /**
- * follower 索引层：薄封装在 p2p social，无 legacy following.json 旁路。
+ * follower 索引层：薄封装在 p2p social。
  * following 读写集成见 integration/timeline.test.mjs。
  * 离线 harness 下 fanout 自然为 0（P2P 关闭）；setFollow 仍走 commitTimelineEvent。
  */

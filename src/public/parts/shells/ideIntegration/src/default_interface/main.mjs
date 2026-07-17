@@ -10,6 +10,7 @@ import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import { createBufferedLineBasedStream } from '../../../chat/src/streaming/index.mjs'
 
+import { sessionUpdate } from '../acp_agent.mjs'
 import { buildACPClientToolsPlugin } from './acp_client_tools_plugin.mjs'
 import { buildMCPPlugin } from './mcp_plugin.mjs'
 
@@ -52,7 +53,7 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 
 	/**
 	 * 新会话创建时调用：初始化 MCP 客户端并构建插件。
-	 * @param {{ cwd?: string, mcpServers?: Array, connection?: object }} opts - 设置选项。
+	 * @param {{ cwd?: string, mcpServers?: Array }} opts - 设置选项。
 	 * @returns {Promise<{ mcpPlugins: Record<string, object>, mcpClients: Array }>} MCP 插件和客户端。
 	 */
 	async function SetupSession({ cwd, mcpServers } = {}) {
@@ -78,21 +79,21 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 	 * 处理用户消息并返回回复。支持流式预览与中止。
 	 * @param {Array<{ role: string, content: string, name?: string, files?: Array }>} messages - 消息列表。
 	 * @param {{ mcpPlugins?: Record<string, object>, mcpClients?: Array }} [sessionData] - 会话数据。
-	 * @param {{ sessionId?: string, connection?: object, signal?: AbortSignal, clientCapabilities?: object }} [options] - 用于流式、中止与客户端工具插件。
+	 * @param {{ sessionId?: string, agentContext?: object, signal?: AbortSignal, clientCapabilities?: object }} [options] - 用于流式、中止与客户端工具插件。
 	 * @returns {Promise<{ content: string, content_for_show?: string, name?: string, files?: Array } | null>} 回复结果。
 	 */
 	async function Reply(messages, sessionData = {}, options = {}) {
 		const chat_log = buildChatLogFromMessages(messages)
 		const plugins = { ...sessionData.mcpPlugins }
+		const { agentContext, sessionId } = options
 
-		if (options.connection && options.sessionId && options.clientCapabilities) {
-			const acpTools = buildACPClientToolsPlugin(options.connection, options.sessionId, options.clientCapabilities)
+		if (agentContext && sessionId && options.clientCapabilities) {
+			const acpTools = buildACPClientToolsPlugin(agentContext, sessionId, options.clientCapabilities)
 			if (acpTools) plugins[acpTools.info[''].name] = acpTools
 		}
 
-		// 将 ACP 上下文注入 extension.acp，所有插件可用于 tool_call 报告、plan 等
-		const acpContext = options.connection && options.sessionId
-			? { connection: options.connection, sessionId: options.sessionId }
+		const acpContext = agentContext && sessionId
+			? { agentContext, sessionId }
 			: null
 
 		const locales = [...getUserByUsername(username)?.locales ?? [], ...localhostLocales]
@@ -125,15 +126,15 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 		}
 
 		let bufferedStream = null
-		if (options.connection && options.sessionId)
+		if (agentContext && sessionId)
 			bufferedStream = createBufferedLineBasedStream({
 				/**
 				 * 文本片段。
 				 * @param {string} piece - 文本片段。
 				 */
 				onChunk: (piece) => {
-					options.connection.sessionUpdate({
-						sessionId: options.sessionId,
+					sessionUpdate(agentContext, {
+						sessionId,
 						update: { sessionUpdate: 'agent_message_chunk', content: { type: 'text', text: piece } },
 					})
 				},
@@ -146,13 +147,13 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 					const mime = file.mime_type || 'application/octet-stream'
 					const base64 = Buffer.from(file.buffer).toString('base64')
 					if (mime.startsWith('image/'))
-						options.connection.sessionUpdate({
-							sessionId: options.sessionId,
+						sessionUpdate(agentContext, {
+							sessionId,
 							update: { sessionUpdate: 'agent_message_chunk', content: { type: 'image', data: base64, mimeType: mime } },
 						})
 					else if (mime.startsWith('audio/'))
-						options.connection.sessionUpdate({
-							sessionId: options.sessionId,
+						sessionUpdate(agentContext, {
+							sessionId,
 							update: { sessionUpdate: 'agent_message_chunk', content: { type: 'audio', data: base64, mimeType: mime } },
 						})
 				},
@@ -160,7 +161,7 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 			})
 
 
-		if (options.signal || options.connection) {
+		if (options.signal || agentContext) {
 			request.generation_options = {}
 			if (options.signal)
 				request.generation_options.signal = options.signal

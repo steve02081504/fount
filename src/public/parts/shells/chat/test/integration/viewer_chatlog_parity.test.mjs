@@ -1,5 +1,5 @@
 /**
- * viewer 对称：GetChatLogForViewer / legacy GetChatLogForCharname 在 agent getChatRequest 路径生效。
+ * viewer 对称：GetChatLogForViewer 在 agent getChatRequest 路径生效。
  */
 /* global Deno */
 import { cp, mkdir } from 'node:fs/promises'
@@ -84,11 +84,4 @@ Deno.test('GetChatLogForViewer hides marked message on agent getChatRequest', as
 	const contents = (request.chat_log || []).map(entry => String(entry.content || ''))
 	assert(contents.some(text => text.includes('hello visible')), 'visible message kept')
 	assert(!contents.some(text => text.includes('hidden-marker')), 'viewer filter hid marked message')
-})
-
-Deno.test('legacy GetChatLogForCharname still filters on agent getChatRequest', async () => {
-	const { request } = await buildAgentRequestWithWorld('legacy_charname')
-	const contents = (request.chat_log || []).map(entry => String(entry.content || ''))
-	assert(contents.some(text => text.includes('hello visible')), 'visible message kept')
-	assert(!contents.some(text => text.includes('hidden-marker')), 'legacy charname filter hid marked message')
 })

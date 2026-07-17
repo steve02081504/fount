@@ -76,11 +76,11 @@ export default {
 		},
 		chat: {
 			/**
-			 * 获取指定角色的聊天记录。
+			 * 按观察者返回世界视图下的聊天记录（含对话摘要裁剪）。
 			 * @param {object} args - 参数对象，包含 chat_log。
 			 * @returns {Promise<Array<object>>} - 处理后的聊天记录数组。
 			 */
-			GetChatLogForCharname: async args => {
+			GetChatLogForViewer: async args => {
 				let chatLog = args.chat_log.map(x => x)
 				if (!chatLog.length) return chatLog
 				// 找到最后一个有extension.summary的消息

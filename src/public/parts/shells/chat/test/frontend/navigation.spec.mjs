@@ -57,13 +57,22 @@ test.describe('Chat hub navigation', () => {
 		await expect(page.locator('#max-dag-payload-bytes')).toBeHidden()
 	})
 
-	test('opens join group modal from server picker', async ({ page, baseUrl }) => {
+	test('group creation and join dialogs return to the server picker', async ({ page, baseUrl }) => {
 		await waitForHubShell(page, baseUrl)
 		await page.locator('#hub-add-server-button').click()
-		await page.locator('.server-action-picker-card[data-action="join"]').click()
+		const picker = page.locator('.server-action-picker-box')
+		await picker.locator('[data-action="join"]').click()
 		await expect(page.locator('#join-group-form')).toBeVisible({ timeout: 30_000 })
-		await page.locator('#join-group-form [data-action="cancel"]').click()
-		await expect(page.locator('#join-group-form')).toBeHidden({ timeout: 10_000 })
+		await page.locator('#join-group-form [data-dialog-back]').click()
+		await expect(picker).toBeVisible()
+		await expect(page.locator('#join-group-form')).toHaveCount(0)
+
+		await picker.locator('[data-action="create"]').click()
+		await expect(page.locator('#create-group-form')).toBeVisible()
+		await page.locator('#create-group-form [data-dialog-back]').click()
+		await expect(picker).toBeVisible()
+		await picker.locator('[data-cancel]').click()
+		await expect(picker).toHaveCount(0)
 	})
 
 	test('opens federation settings overlay from server bar', async ({ page, baseUrl, apiKey }) => {
@@ -72,12 +81,26 @@ test.describe('Chat hub navigation', () => {
 		await expect(federationButton.locator('svg[src*="cog.svg"]')).toBeVisible()
 		await federationButton.click()
 		await expect(page.locator('#hub-overlay-body #federation-relay-urls')).toBeVisible({ timeout: 30_000 })
+		const relayTip = page.locator('.hub-info-tip').first()
+		await expect(relayTip).toHaveClass(/tooltip/)
+		await expect(relayTip).not.toHaveAttribute('data-tip', '')
+		await relayTip.hover()
+		await expect.poll(() => relayTip.evaluate(element => getComputedStyle(element, '::before').content))
+			.not.toBe('none')
 		await expect(page.locator('#federation-open-discovery')).toHaveCount(0)
 		await expect(page.locator('.hub-advanced-settings')).not.toHaveAttribute('open', '')
 		await expect(page.locator('#federation-dm-rotate')).toBeHidden()
 		await page.locator('.hub-advanced-settings > summary').click()
 		await expect(page.locator('#federation-dm-rotate')).toBeVisible()
 		await page.locator('#federation-close').click()
+	})
+
+	test('conversation header actions keep accessible icons', async ({ page, groupChannel: _ }) => {
+		const callButton = page.locator('#hub-header-call-button')
+		await expect(callButton).toBeVisible({ timeout: 30_000 })
+		await expect(callButton.locator('img, svg')).toBeVisible()
+		await expect(callButton).not.toHaveAttribute('title', '')
+		await expect(callButton).toHaveAttribute('aria-label', /.+/)
 	})
 
 	test('group header menu opens and manage navigates to settings', async ({ page, baseUrl, apiKey }) => {

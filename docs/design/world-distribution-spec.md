@@ -10,7 +10,7 @@ world 在 chat 里原先隐含 **单一主机托管**：`homeNodeHash` 不在本
 
 但很多 world 根本不需要单一主机。以默认 fount world 为例，它本质上只做两件事：
 
-1. 总结上文（`GetChatLogForCharname` 里裁剪 + AI 摘要）
+1. 总结上文（`GetChatLogForViewer` 里裁剪 + AI 摘要）
 2. 给 fount 角色提供有关 chat 前端渲染能力的知识（`GetPrompt`）
 
 这两件事都是**本机视角的**：每台机器给自己托管的角色做总结、注入渲染知识即可，完全允许不同机子运行不同内容、产出不同摘要。
@@ -123,7 +123,7 @@ DAG 事件 `world_state`，content：`{ worldname, action: 'set'|'delete', key, 
 | 钩子 | local / replicated | hosted |
 | --- | --- | --- |
 | `GetPrompt` / `GetGroupPrompt` / `TweakPrompt` | 本机实例执行 | RPC 到主机 |
-| `GetChatLogForViewer`（含 legacy `GetChatLogForCharname`） | 本机执行；每台机器给自己托管的 viewer 出视图 | RPC 到主机（主机知道全部真相） |
+| `GetChatLogForViewer` | 本机执行；每台机器给自己托管的 viewer 出视图 | RPC 到主机（主机知道全部真相） |
 | `AddChatLogEntry` / `AfterAddChatLogEntry` | 每 replica 本机各触发一次，副作用需本机幂等 | 各 replica 转发主机 |
 | `GetSpeakingOrder` | 仅在**回复触发发起机**上生效；需要全群强一致轮转应选 hosted | 主机权威裁决 |
 | `GetGreeting` / `GetGroupGreeting` | 本机执行 | RPC 到主机 |

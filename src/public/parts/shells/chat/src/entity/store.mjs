@@ -207,15 +207,6 @@ export function entityIdentityPath(username, entityHash) {
 }
 
 /**
- * 旧路径：settings/operator.json（一次性搬迁源）。
- * @param {string} username fount 登录名
- * @returns {string} 旧 operator.json 路径
- */
-export function legacyOperatorJsonPath(username) {
-	return path.join(getUserDictionary(username), 'settings', 'operator.json')
-}
-
-/**
  * @param {string} username fount 登录名
  * @param {string} entityHash 128 hex
  * @returns {Promise<object | null>} 实体身份行

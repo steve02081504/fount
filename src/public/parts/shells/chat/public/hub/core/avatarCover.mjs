@@ -74,19 +74,3 @@ export async function applyProfileAvatarToHost(host, options) {
 	host.style.background = avatarColor(String(seed || label || '?'))
 	host.style.color = avatarTextColor(String(seed || label || '?'))
 }
-
-/**
- * 在圆角头像容器内挂载铺满的封面图（兼容旧调用；失败时保留 hash 字母）。
- * @param {HTMLElement} host 头像宿主
- * @param {string} src 图片 URL
- * @param {string} alt 替代文本
- * @param {{ seed?: string }} [options] 可选身份 seed（缺省读 host.dataset.avatarSeed）
- * @returns {Promise<void>}
- */
-export async function mountAvatarCover(host, src, alt, options = {}) {
-	await applyProfileAvatarToHost(host, {
-		seed: options.seed || host.dataset?.avatarSeed,
-		label: alt,
-		avatar: src,
-	})
-}

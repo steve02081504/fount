@@ -247,6 +247,10 @@
 	font-size: 15px;
 	font-weight: 700;
 	letter-spacing: -0.01em;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .hub-search-wrap {
@@ -366,6 +370,11 @@
 	color: var(--hub-text-bright);
 }
 
+.hub-icon-button:focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--hub-accent), transparent 35%);
+	outline-offset: 2px;
+}
+
 .hub-icon-button.is-active {
 	background: var(--hub-active);
 	color: var(--hub-accent);
@@ -376,7 +385,7 @@
 	cursor: not-allowed;
 }
 
-.hub-icon-button img {
+.hub-icon-button :is(img, svg) {
 	width: 20px;
 	height: 20px;
 	opacity: 0.85;

@@ -10,14 +10,14 @@ ${mode === 'error' ? `
 		<div class="hub-overlay-field space-y-1">
 			<label class="hub-setting-label">
 				<span data-i18n="chat.hub.fedRelayUrlsLabel"></span>
-				<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedRelayUrlsTip">i</span>
+				<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedRelayUrlsTip}">i</span>
 			</label>
 			<textarea id="federation-relay-urls" class="hub-overlay-textarea textarea textarea-bordered w-full" rows="3" placeholder="wss://relay.damus.io">${relayText}</textarea>
 		</div>
 		<label class="hub-overlay-toggle-row">
 			<span class="hub-setting-label">
 				<span data-i18n="chat.hub.fedBatterySaverLabel"></span>
-				<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedBatterySaverTip">i</span>
+				<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedBatterySaverTip}">i</span>
 			</span>
 			<input type="checkbox" class="toggle toggle-primary" id="federation-battery-saver" ${batteryChecked} />
 		</label>
@@ -35,7 +35,7 @@ ${mode === 'error' ? `
 			<div class="hub-overlay-section space-y-3">
 				<h4 class="hub-setting-label">
 					<span data-i18n="chat.hub.fedGroupRecoveryTitle"></span>
-					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedGroupRecoveryTip">i</span>
+					<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedGroupRecoveryTip}">i</span>
 				</h4>
 				<div class="hub-overlay-action-row">
 					<button type="button" class="hub-overlay-button hub-overlay-button-cancel btn btn-warning" id="federation-rotate-room-secret" data-i18n="chat.hub.fedRotateRoomSecret"></button>
@@ -46,14 +46,14 @@ ${mode === 'error' ? `
 			<div class="hub-overlay-section space-y-3" id="federation-rep-section">
 				<h4 class="hub-setting-label">
 					<span data-i18n="chat.hub.fedRepTitle"></span>
-					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedRepTip">i</span>
+					<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedRepTip}">i</span>
 				</h4>
 				<pre id="federation-rep-dump" class="hub-federation-reputation-dump" data-i18n="chat.hub.loading"></pre>
 			</div>
 			<div class="hub-overlay-section space-y-3" id="federation-slash-section">
 				<h4 class="hub-setting-label">
 					<span data-i18n="chat.hub.fedSlashTitle"></span>
-					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedSlashTip">i</span>
+					<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedSlashTip}">i</span>
 				</h4>
 				<div class="hub-overlay-field space-y-1">
 					<label data-i18n="chat.hub.fedSlashTargetLabel"></label>
@@ -77,7 +77,7 @@ ${mode === 'error' ? `
 			<div class="hub-overlay-section space-y-3" id="federation-dm-link-section">
 				<h4 class="hub-setting-label">
 					<span data-i18n="chat.hub.fedDmLinkTitle"></span>
-					<span class="hub-info-tip" tabindex="0" data-i18n-title="chat.hub.fedDmLinkTip">i</span>
+					<span class="hub-info-tip tooltip tooltip-right" tabindex="0" data-tip="${fedDmLinkTip}">i</span>
 				</h4>
 				<p class="hub-overlay-toggle-description" data-i18n="chat.hub.fedDmLinkDescription"></p>
 				<div class="hub-overlay-field space-y-1">

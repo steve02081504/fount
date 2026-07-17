@@ -210,16 +210,6 @@ export function localSignerSeedPath(username, groupId, entityHash) {
 }
 
 /**
- * 旧版群级单种子路径（仅 operator 迁移读）。
- * @param {string} username 本地账户名
- * @param {string} groupId 会话 / 群 ID
- * @returns {string} 旧种子绝对路径
- */
-export function legacyLocalSignerSeedPath(username, groupId) {
-	return join(groupDir(username, groupId), 'local_signer_seed')
-}
-
-/**
  * 本地验收时间侧车（`receivedAt` 不进 DAG / Gossip，§6）。
  * @param {string} username 用户
  * @param {string} groupId 群 ID

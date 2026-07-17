@@ -110,12 +110,10 @@ async function showServerActionPicker() {
 		 */
 		onReady: dialog => {
 			dialog.querySelector('[data-action="create"]')?.addEventListener('click', () => {
-				dialog.close()
-				showCreateGroupModal()
+				void showCreateGroupModal(dialog)
 			})
 			dialog.querySelector('[data-action="join"]')?.addEventListener('click', () => {
-				dialog.close()
-				joinGroupById()
+				void joinGroupById(dialog)
 			})
 			dialog.querySelector('[data-cancel]')?.addEventListener('click', () => dialog.close())
 		},

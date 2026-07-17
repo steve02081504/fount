@@ -1,18 +1,18 @@
 /**
  * 【文件】`dag/localSigner.mjs` — 本群 per-entity Ed25519 签名种子管理。
  * 【职责】读写 `signers/{entityHash}/local_signer_seed`；解析写入用的 `sender`（pubKeyHash）与 `secretKey`。
- * 【原理】种子 32 字节不入 DAG；跨群不关联。旧群级 `local_signer_seed` 仅对 operator 实体迁移读并搬迁。
+ * 【原理】种子 32 字节不入 DAG；跨群不关联。
  * 【数据结构】返回 `{ sender: string, secretKey: Uint8Array }`；`sender` 恒为 64 hex pubKeyHash。
  * 【关联】`append.mjs`、`channelOperations.mjs`、`chatLogMirror.mjs`、`validator.mjs`。
  */
 import { Buffer } from 'node:buffer'
-import { access, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { access, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 
 import { pubKeyHash, publicKeyFromSeed, randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { resolveActiveMemberKey } from '../../group/access.mjs'
-import { legacyLocalSignerSeedPath, localSignerSeedPath } from '../lib/paths.mjs'
+import { localSignerSeedPath } from '../lib/paths.mjs'
 
 import { getState } from './materialize.mjs'
 import { PUB_KEY_HASH_HEX } from './validator.mjs'
@@ -55,7 +55,7 @@ function seedFromRaw(raw) {
 }
 
 /**
- * 实际的读取/创建逻辑：新路径优先；operator 可从旧群级种子迁移。
+ * 读取或创建本群实体签名种子。
  * @param {string} username 用户
  * @param {string} groupId 群 ID
  * @param {string} entityHash 128-hex
@@ -69,31 +69,7 @@ async function loadOrCreateLocalSignerSeed(username, groupId, entityHash) {
 		const seed = seedFromRaw(await readFile(path))
 		if (seed) return seed
 	}
-	catch { /* migrate or create below */ }
-
-	const { resolveOperatorEntityHashForUser } = await import('../../entity/identity.mjs')
-	const operatorHash = await resolveOperatorEntityHashForUser(username)
-	if (operatorHash && entityHash === operatorHash) {
-		const legacy = legacyLocalSignerSeedPath(username, groupId)
-		try {
-			const seed = seedFromRaw(await readFile(legacy))
-			if (seed) {
-				try {
-					await writeFile(path, seed, { flag: 'wx' })
-					await rename(legacy, `${legacy}.migrated`).catch(async () => {
-						const { unlink } = await import('node:fs/promises')
-						await unlink(legacy).catch(() => { /* best-effort */ })
-					})
-				}
-				catch {
-					const existing = seedFromRaw(await readFile(path).catch(() => Buffer.alloc(0)))
-					if (existing) return existing
-				}
-				return seed
-			}
-		}
-		catch { /* no legacy */ }
-	}
+	catch { /* create below */ }
 
 	const { secretKey } = await randomKeyPair()
 	try {

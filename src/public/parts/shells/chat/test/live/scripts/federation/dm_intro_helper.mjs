@@ -47,16 +47,21 @@ function resolveUserDictionary(root, username) {
 }
 
 /**
- * 从磁盘读取联邦活跃 operator 密钥对（operator.json）。
+ * 从磁盘读取 operator 活跃密钥对（entities/*/identity.json）。
  * @param {string} userDir 用户目录
  * @returns {{ activePubKeyHex: string, secretHex: string }} 联邦活跃钥
  */
 function loadFederationIdentity(userDir) {
-	const operator = loadJsonFileIfExists(path.join(userDir, 'settings', 'operator.json'), {})
-	const activePub = normalizeHex64(operator.activePubKeyHex)
-	const activeSecret = normalizeHex64(operator.activeSecretKeyHex)
-	if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)
-		return { activePubKeyHex: activePub, secretHex: activeSecret }
+	const entitiesDir = path.join(userDir, 'entities')
+	if (!fs.existsSync(entitiesDir)) throw new Error('operator identity missing')
+	for (const name of fs.readdirSync(entitiesDir)) {
+		const row = loadJsonFileIfExists(path.join(entitiesDir, name, 'identity.json'), null)
+		if (!row || (row.charPartName != null && row.charPartName !== '')) continue
+		const activePub = normalizeHex64(row.activePubKeyHex)
+		const activeSecret = normalizeHex64(row.activeSecretKeyHex)
+		if (HEX_ID_64.test(activePub) && activeSecret.length >= 64)
+			return { activePubKeyHex: activePub, secretHex: activeSecret }
+	}
 	throw new Error('operator active key missing')
 }
 

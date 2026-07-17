@@ -62,10 +62,8 @@ function asRecord(value) {
 export function normalizeTasteStore(raw) {
 	const base = emptyTasteStore()
 	if (!raw || typeof raw !== 'object') return base
-	// 旧版 tags 字段迁入 computed（一次性兼容）
-	const computed = raw.computed != null ? asRecord(raw.computed) : asRecord(raw.tags)
 	return {
-		computed,
+		computed: asRecord(raw.computed),
 		manual: asRecord(raw.manual),
 		aliases: asRecord(raw.aliases),
 		privacy: {

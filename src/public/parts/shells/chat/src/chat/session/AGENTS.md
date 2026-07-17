@@ -10,10 +10,9 @@ alwaysApply: false
 
 - Formal interfaces:
   - `WorldAPI.chat.GetChatLogForViewer(arg, viewer)` (`chatViewer_t` in `src/decl/chatLog.ts`)
-  - `UserAPI.chat.GetChatLogForViewer(arg, viewer)` (persona's subjective filter; the dangling legacy `GetChatLog` has been removed)
+  - `UserAPI.chat.GetChatLogForViewer(arg, viewer)` (persona's subjective filter)
 - Shell dispatch: `session/viewerLog.mjs`
-  - `applyWorldChatLogView` (prefers Viewer; falls back to legacy `GetChatLogForCharname` for char)
-  - `applyPersonaChatLogView`
+  - `applyWorldChatLogView` / `applyPersonaChatLogView`
 - **Fixed order**: base → world (objective) → persona (subjective).
 - Agent: `getChatRequest` builds the viewer, then runs the two steps above.
 - Human: `materializeViewerLog.mjs` → `GET …/view-log`; projects back to row DTOs (hides discarded entries, applies rewrite overrides, `viewerRewritten`); raw `GET …/messages` is preserved separately.

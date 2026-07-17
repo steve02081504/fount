@@ -492,18 +492,6 @@ async function initializeApp() {
 			loginPasswordHint = { password, username }
 			passwordCharFeedback?.refresh()
 		}
-		else {
-			// Legacy plaintext params
-			const usernameParam = urlParams.get('username')
-			const passwordParam = urlParams.get('password')
-			if (usernameParam) usernameInput.value = usernameParam
-			if (passwordParam) {
-				passwordInput.value = passwordParam
-				if (usernameParam)
-					loginPasswordHint = { password: passwordParam, username: usernameParam }
-				passwordCharFeedback?.refresh()
-			}
-		}
 	}
 	catch (e) {
 		console.error('Failed to obtain credentials for autologin.', e)

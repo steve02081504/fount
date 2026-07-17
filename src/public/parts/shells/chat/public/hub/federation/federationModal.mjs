@@ -8,7 +8,7 @@ import { isHex64, normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve0208150
 
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
+import { confirmI18n, geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { getFederationSettings, putFederationSettings } from '../../src/api/federationSettings.mjs'
 import { getGroupState } from '../../src/api/groupCore.mjs'
 import { repairJoinSnapshot, rotateFederationRoomSecret } from '../../src/api/groupFederation.mjs'
@@ -227,6 +227,14 @@ function wireFederationModalEvents(groupId) {
  */
 export async function openFederationSettingsModal(getGroupId) {
 	const groupId = typeof getGroupId === 'function' ? getGroupId() : getGroupId
+	const tooltipText = Object.fromEntries([
+		'fedRelayUrlsTip',
+		'fedBatterySaverTip',
+		'fedGroupRecoveryTip',
+		'fedRepTip',
+		'fedSlashTip',
+		'fedDmLinkTip',
+	].map(key => [key, escapeHtml(geti18n(`chat.hub.${key}`))]))
 
 	/** @type {object} */
 	let fedSettings = {}
@@ -263,6 +271,7 @@ export async function openFederationSettingsModal(getGroupId) {
 		relayText,
 		batteryChecked: fedSettings.batterySaver ? 'checked' : '',
 		showRotateRoomSecret,
+		...tooltipText,
 	})
 
 	openOverlayModal({

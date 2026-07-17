@@ -4,7 +4,6 @@
  */
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
-import { unlink } from 'node:fs/promises'
 
 import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
@@ -17,13 +16,11 @@ import {
 	resolveLocalEntityHashFromRecoveryPubKeyHex,
 	saveNodeTransportSettings,
 } from 'npm:@steve02081504/fount-p2p/node/identity'
-import { readJsonFile } from 'npm:@steve02081504/fount-p2p/utils/json_io'
 
 import { events } from '../../../../../../server/events.mjs'
 import { assignShellData } from '../../../../../../server/setting_loader.mjs'
 
 import {
-	legacyOperatorJsonPath,
 	listEntityIdentities,
 	readEntityIdentity,
 	writeEntityIdentity,
@@ -109,56 +106,17 @@ function cacheFromRow(username, row) {
 }
 
 /**
- * 旧 settings/operator.json → entities/{hash}/identity.json 一次性搬迁。
- * @param {string} username fount 登录名
- * @returns {Promise<object | null>} 搬迁后的身份行，或 null
- */
-async function migrateLegacyOperatorIdentity(username) {
-	const legacy = await readJsonFile(legacyOperatorJsonPath(username))
-	if (!isDualKeyIdentity(legacy)) return null
-	const entityHash = resolveLocalEntityHashFromRecoveryPubKeyHex(legacy.recoveryPubKeyHex)
-	if (!entityHash || !isEntityHash128(entityHash)) return null
-	const existing = await readEntityIdentity(username, entityHash)
-	if (isDualKeyIdentity(existing)) {
-		await unlink(legacyOperatorJsonPath(username)).catch(() => { })
-		return { ...existing, entityHash, ownerEntityHash: null, charPartName: null }
-	}
-	const row = {
-		recoveryPubKeyHex: normalizeHex64(legacy.recoveryPubKeyHex),
-		activePubKeyHex: normalizeHex64(legacy.activePubKeyHex),
-		activeSecretKeyHex: normalizeHex64(legacy.activeSecretKeyHex),
-		keyGeneration: Number(legacy.keyGeneration ?? 0),
-		keyHistory: Array.isArray(legacy.keyHistory) ? legacy.keyHistory : createGenesisKeyHistory(
-			normalizeHex64(legacy.recoveryPubKeyHex),
-			normalizeHex64(legacy.activePubKeyHex),
-		),
-		ownerEntityHash: null,
-		charPartName: null,
-		createdAt: legacy.createdAt ?? Date.now(),
-	}
-	await writeEntityIdentity(username, entityHash, row)
-	await unlink(legacyOperatorJsonPath(username)).catch(() => { })
-	return { ...row, entityHash }
-}
-
-/**
  * @param {string} username fount 登录名
  * @returns {Promise<string | null>} 无 charPartName 的实体（operator）entityHash
  */
 async function findOperatorEntityHash(username) {
 	const cached = operatorHashCache.get(username)
 	if (cached) return cached
-	const migrated = await migrateLegacyOperatorIdentity(username)
-	if (migrated) {
-		cacheFromRow(username, migrated)
-		return migrated.entityHash
-	}
-	for (const row of await listEntityIdentities(username)) 
+	for (const row of await listEntityIdentities(username))
 		if (row.charPartName == null || row.charPartName === '') {
 			cacheFromRow(username, row)
 			return row.entityHash
 		}
-	
 	return null
 }
 
@@ -367,7 +325,7 @@ export async function getEntitySecretKey(username, entityHash) {
 /**
  * @param {string} username fount 登录名
  * @param {string} entityHash 128 hex
- * @returns {Promise<string>} 64 hex recovery 私钥；缺失时为空串（旧 identity）
+ * @returns {Promise<string>} 64 hex recovery 私钥；缺失时为空串
  */
 export async function getEntityRecoverySecretKey(username, entityHash) {
 	await loadEntityIdentity(username, entityHash)

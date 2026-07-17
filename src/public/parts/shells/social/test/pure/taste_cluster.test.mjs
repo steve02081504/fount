@@ -64,9 +64,9 @@ Deno.test('collapseTasteWeights folds aliases into one tag', () => {
 	assertEquals(collapsed.get('a'), 6)
 })
 
-Deno.test('normalizeTasteStore migrates legacy tags into computed', () => {
+Deno.test('normalizeTasteStore reads computed and privacy', () => {
 	const store = normalizeTasteStore({
-		tags: { t1: 3 },
+		computed: { t1: 3 },
 		privacy: { publishPreferences: false },
 	})
 	assertEquals(store.computed.t1, 3)

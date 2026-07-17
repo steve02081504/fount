@@ -15,7 +15,7 @@ Deno.test('extractMentionEntityHashes finds bracketed 128-hex mentions', () => {
 	assertEquals(found[0], SAMPLE_HASH)
 })
 
-Deno.test('extractMentionEntityHashes ignores bare @128hex legacy syntax', () => {
+Deno.test('extractMentionEntityHashes ignores bare @128hex', () => {
 	assertEquals(extractMentionEntityHashes(`@${SAMPLE_HASH}`), [])
 	assertEquals(extractMentionEntityHashes('@abcdef'), [])
 	assertEquals(extractMentionEntityHashes(''), [])

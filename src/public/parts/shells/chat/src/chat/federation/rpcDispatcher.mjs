@@ -309,12 +309,6 @@ export function createWorldRpcDispatcher(getChatRequest) {
 					)
 					return resultOk(method, await fn(request, viewer))
 				}
-				case 'GetChatLogForCharname': {
-					const fn = world.interfaces?.chat?.GetChatLogForCharname
-					if (!fn) return { kind: 'method_not_found' }
-					const request = list[0] || await getChatRequest(groupId, list[1], inferChannelId(), { replicaUsername: owner })
-					return resultOk(method, await fn(request, list[1]))
-				}
 				case 'GetCharReply': {
 					const fn = world.interfaces?.chat?.GetCharReply
 					if (!fn) return { kind: 'method_not_found' }

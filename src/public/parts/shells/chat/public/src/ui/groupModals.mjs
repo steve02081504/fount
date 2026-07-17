@@ -5,7 +5,7 @@
  * 【数据结构】群摘要 { id, name }、模板 DOM。
  * 【关联】api/groupCore.mjs；Hub 入口与侧栏。
  */
-import { openDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
+import { openDialogFromTemplate, pushDialogFromTemplate } from '../../../../scripts/features/dialog.mjs'
 import {
 	mountTemplate,
 	usingTemplates,
@@ -62,19 +62,20 @@ export async function renderGroupList(container) {
 
 /**
  * 弹出建群对话框，成功后跳转 Hub 默认频道。
+ * @param {HTMLDialogElement} [parentDialog] 复用已有对话框并保留上一页
  * @returns {Promise<void>}
  */
-export async function showCreateGroupModal() {
+export async function showCreateGroupModal(parentDialog) {
 	ensureGroupUiCssLink()
 	usingTemplates('/parts/shells:chat/src/templates')
-	await openDialogFromTemplate('hub/modals/group_create', {}, {
+	const open = parentDialog ? pushDialogFromTemplate.bind(null, parentDialog) : openDialogFromTemplate
+	await open('hub/modals/group_create', {}, {
 		activateScripts: false,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {Promise<void>}
 		 */
 		onReady: async dialog => {
-			dialog.querySelector('[data-action="cancel"]')?.addEventListener('click', () => dialog.close())
 			dialog.querySelector('#create-group-form')?.addEventListener('submit', async event => {
 				event.preventDefault()
 				const formData = new FormData(event.target)
@@ -113,19 +114,20 @@ export function openGroup(groupId) {
 
 /**
  * 弹出入群对话框（群 ID + 邀请码），成功后写入 session 并跳转 Hub。
+ * @param {HTMLDialogElement} [parentDialog] 复用已有对话框并保留上一页
  * @returns {Promise<void>}
  */
-export async function joinGroupById() {
+export async function joinGroupById(parentDialog) {
 	ensureGroupUiCssLink()
 	usingTemplates('/parts/shells:chat/src/templates')
-	await openDialogFromTemplate('hub/modals/group_join', {}, {
+	const open = parentDialog ? pushDialogFromTemplate.bind(null, parentDialog) : openDialogFromTemplate
+	await open('hub/modals/group_join', {}, {
 		activateScripts: false,
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框
 		 * @returns {void}
 		 */
 		onReady: dialog => {
-			dialog.querySelector('[data-action="cancel"]')?.addEventListener('click', () => dialog.close())
 			dialog.querySelector('#join-group-form')?.addEventListener('submit', event => {
 				event.preventDefault()
 				const groupId = dialog.querySelector('#group-join-id-input')?.value.trim()

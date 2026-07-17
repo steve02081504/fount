@@ -2600,7 +2600,10 @@
 			"streamAvPresetLow": "低质 200kbps",
 			"streamAvPresetMed": "中质 600kbps",
 			"streamAvPresetHigh": "高质 1.5Mbps",
-			"callButton": "通话",
+			"callButton": {
+				"title": "发起或加入通话",
+				"aria-label": "发起或加入通话"
+			},
 			"callInProgress": "通话进行中",
 			"callEnded": "通话已结束",
 			"callJoin": "加入通话",
@@ -2810,7 +2813,7 @@
 				"joinInviteOnlyDescription": "需要邀请码才能加入",
 				"joinPow": "工作量证明",
 				"joinPowDescription": "加入前需完成 PoW 挑战",
-				"cancel": "取消",
+				"cancel": "返回",
 				"submit": "创建群组",
 				"failed": "创建群组失败：${error}"
 			},
@@ -2826,7 +2829,7 @@
 					"placeholder": "由群主生成的短时邀请码"
 				},
 				"hint": "群组 ID 由群主分享。邀请制群需填写有效邀请码（设置页可生成）。",
-				"cancel": "取消",
+				"cancel": "返回",
 				"submit": "加入群组"
 			},
 			"menuCopy": "复制",

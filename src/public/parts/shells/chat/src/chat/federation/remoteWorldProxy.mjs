@@ -107,12 +107,6 @@ export function createRemoteWorldProxy(memberId, sourceHost, interfaces = {}, rp
 			GetChatLogForViewer: (replyRequest, viewer) => invokeRemote('GetChatLogForViewer', [replyRequest, viewer]),
 			/**
 			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
-			 * @param {string} charname 角色名称
-			 * @returns {Promise<chatLogEntry_t[]>} 指定角色的聊天记录
-			 */
-			GetChatLogForCharname: (replyRequest, charname) => invokeRemote('GetChatLogForCharname', [replyRequest, charname]),
-			/**
-			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
 			 * @param {string} charname 被代言的角色
 			 * @returns {Promise<chatReply_t | null | undefined>} 世界代角色的回复；nullish 表示放行
 			 */

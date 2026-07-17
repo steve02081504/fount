@@ -29,6 +29,47 @@ function truncateTextPreview(text, maxLen) {
 }
 
 /**
+ * 可见预览长度：Markdown 链接只计 label，避免 mention URL 虚增字数。
+ * @param {string} markdown 已展开 @ 的 Markdown
+ * @returns {number} 近似可见字数
+ */
+function visibleMarkdownLength(markdown) {
+	return String(markdown || '').replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').length
+}
+
+/**
+ * 按可见字数截断 Markdown（优先在空格处切开）。
+ * @param {string} markdown 已展开 @ 的 Markdown
+ * @param {number} maxLen 可见字数上限
+ * @returns {string} 截断后的 Markdown
+ */
+function truncateVisibleMarkdown(markdown, maxLen) {
+	const source = String(markdown || '')
+	if (visibleMarkdownLength(source) <= maxLen) return source
+	let visible = 0
+	let index = 0
+	while (index < source.length && visible < maxLen) {
+		if (source[index] === '[') {
+			const labelEnd = source.indexOf('](', index)
+			const urlEnd = labelEnd >= 0 ? source.indexOf(')', labelEnd + 2) : -1
+			if (labelEnd >= 0 && urlEnd >= 0) {
+				const label = source.slice(index + 1, labelEnd)
+				if (visible + label.length > maxLen) break
+				visible += label.length
+				index = urlEnd + 1
+				continue
+			}
+		}
+		visible += 1
+		index += 1
+	}
+	const cut = source.slice(0, index)
+	const lastSpace = cut.lastIndexOf(' ')
+	const body = lastSpace > index * 0.6 ? cut.slice(0, lastSpace) : cut
+	return `${body}…`
+}
+
+/**
  * @param {HTMLElement} bubble 正文气泡
  * @param {string} markdown 已展开 @ 的 Markdown
  * @param {boolean} trusted 是否可信作者（决定 pipeline）
@@ -70,8 +111,8 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 			return
 		}
 
-		const canExpand = expanded.length > UNTRUSTED_REMOTE_PREVIEW_LEN
-		await applyMarkdownToBubble(bubble, truncateTextPreview(expanded, UNTRUSTED_REMOTE_PREVIEW_LEN), false)
+		const canExpand = visibleMarkdownLength(expanded) > UNTRUSTED_REMOTE_PREVIEW_LEN
+		await applyMarkdownToBubble(bubble, truncateVisibleMarkdown(expanded, UNTRUSTED_REMOTE_PREVIEW_LEN), false)
 		bubble.dataset.mdHydrated = '1'
 		bubble.dataset.mdPreview = canExpand ? '1' : '0'
 		bubble.dataset.mdUntrusted = '1'

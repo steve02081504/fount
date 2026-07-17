@@ -1,7 +1,7 @@
 /**
  * 【文件】viewerLog.mjs — world/persona chat_log 视图统一分发与 viewer 角色解析
  * 【职责】applyWorldChatLogView / applyPersonaChatLogView；resolveViewerRoles 从物化 members 取 roles。
- * 【原理】正式接口以 viewer 为键；老 world 仅实现 GetChatLogForCharname 时 char viewer 回退；顺序固定为 world（客观）→ persona（主观）。world/user 恒存在。
+ * 【原理】以 viewer 为键；顺序固定为 world（客观）→ persona（主观）。world/user 恒存在。
  * 【数据结构】chatViewer_t；state.members[memberKey].roles。
  * 【关联】chatRequest、materializeViewerLog、worldAPI、userAPI、group/access、prompt_struct visibility。
  */
@@ -32,22 +32,14 @@ export async function resolveViewerRoles(state, options) {
 }
 
 /**
- * 对 chat_log 应用 world 视图变换（正式 GetChatLogForViewer，legacy charname 回退）。
+ * 对 chat_log 应用 world 视图变换（GetChatLogForViewer）。
  * @param {chatReplyRequest_t} arg 已组装的回复请求（含 world / chat_log）
  * @param {chatViewer_t} viewer 观察者
  * @returns {Promise<chatLogEntry_t[]>} 视图化后的日志
  */
 export async function applyWorldChatLogView(arg, viewer) {
-	const worldChat = arg.world.interfaces.chat
-
-	// undefined 表示未实现（本地缺钩子或远端 METHOD_NOT_FOUND），依次回退 legacy charname → 透传
-	const viewed = await worldChat.GetChatLogForViewer?.(arg, viewer)
-	if (viewed) return viewed
-
-	if (viewer.kind === 'char' && viewer.charname && worldChat.GetChatLogForCharname)
-		return await worldChat.GetChatLogForCharname(arg, viewer.charname) ?? arg.chat_log
-
-	return arg.chat_log
+	// undefined = 未实现（本地缺钩子或远端 METHOD_NOT_FOUND）→ 透传
+	return await arg.world.interfaces.chat.GetChatLogForViewer?.(arg, viewer) ?? arg.chat_log
 }
 
 /**

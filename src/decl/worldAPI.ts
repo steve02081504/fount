@@ -71,7 +71,7 @@ export class WorldAPI_t {
 	 */
 	info: info_t
 	/**
-	 * 分布形态；缺省 'hosted'（兼容现状）。由 world part 自行声明。
+	 * 分布形态；缺省 'hosted'。由 world part 自行声明。
 	 */
 	distribution?: 'local' | 'replicated' | 'hosted'
 	/**
@@ -193,13 +193,6 @@ export class WorldAPI_t {
 			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
 			 */
 			GetChatLogForViewer?: (arg: chatReplyRequest_t, viewer: chatViewer_t) => Promise<chatLogEntry_t[]>
-			/**
-			 * Legacy sugar：仅按本地 charname 改写 chat_log。新 world 应实现 GetChatLogForViewer。
-			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {string} charname - 角色名称。
-			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
-			 */
-			GetChatLogForCharname?: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
 			/**
 			 * 消息落 DAG 前：可改写 entry 内容，或抛错/返回含 reject 语义拒绝（与 BeforeUserSend 对称的 world 侧）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

@@ -115,9 +115,3 @@ export async function activateDiscoveryView() {
 	refreshHubHeaderButtons()
 	await loadDiscoveryEntries(root)
 }
-
-/** 兼容旧调用：切换到群发现主内容页。 @returns {Promise<void>} */
-export async function openDiscoveryPanel() {
-	const { setMode } = await import('./mode.mjs')
-	await setMode('discovery')
-}
