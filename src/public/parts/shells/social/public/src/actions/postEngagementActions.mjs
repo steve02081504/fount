@@ -16,6 +16,7 @@ import {
 import { focusComposer } from '../navigation.mjs'
 import { socialState } from '../state.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
+import { syncVideoCommentTicker } from '../views/video.mjs'
 
 import { closePostMoreMenus } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -141,11 +142,14 @@ export async function handlePostEngagementClick(target) {
 				await runSocialWrite('reply', () => submitReply(entityHash, postId, text))
 				textarea.value = ''
 				const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
-				await renderRepliesPanel(panel, data.replies || [])
+				const replies = data.replies || []
+				await renderRepliesPanel(panel, replies)
 				panel.dataset.loaded = '1'
 				panel.classList.remove('hidden')
 				const countElement = queryByActionKey('data-replies', actionKey, cardRoot)?.querySelector('.action-count')
-				if (countElement) countElement.textContent = String((data.replies || []).length)
+				if (countElement) countElement.textContent = String(replies.length)
+				const slide = panel.closest('.video-slide')
+				if (slide instanceof HTMLElement) syncVideoCommentTicker(slide, replies)
 			}
 			catch { /* toast 已展示 */ }
 		}

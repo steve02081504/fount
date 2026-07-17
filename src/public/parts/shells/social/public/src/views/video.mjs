@@ -1,4 +1,6 @@
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
+import { shareOrCopyPostLink } from '../actions/shared.mjs'
+import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, renderAvatarHtml } from '../lib/display.mjs'
 import { runSocialWrite } from '../lib/socialWrite.mjs'
@@ -17,6 +19,8 @@ let videoCursor = null
 /** @type {object[]} */
 let videoShownItems = []
 let videoPageLoading = false
+/** @type {WeakMap<HTMLElement, object[]>} */
+const slideRepliesCache = new WeakMap()
 
 /**
  * 加载并渲染短视频流。
@@ -68,6 +72,7 @@ export async function loadVideoView() {
 				const nv = next?.querySelector('video')
 				if (nv) nv.preload = 'auto'
 			}
+			void ensureCommentTicker(el)
 			void maybeLoadMoreVideos(container, index)
 		},
 		/**
@@ -82,6 +87,7 @@ export async function loadVideoView() {
 				video.playbackRate = 1
 			}
 			setPauseHint(el, true)
+			closeVideoReplies(el)
 		},
 	})
 }
@@ -200,6 +206,113 @@ function syncMuteButton(slide, video) {
 }
 
 /**
+ * @param {HTMLElement} slide slide
+ * @returns {void}
+ */
+function closeVideoReplies(slide) {
+	const panel = slide.querySelector('[data-replies-panel]')
+	if (!panel || panel.classList.contains('hidden')) return
+	panel.classList.add('hidden')
+	slide.querySelector('[data-comment-ticker]')?.classList.remove('is-dimmed')
+}
+
+/**
+ * 用回复列表刷新右下角轮播（回复提交后也可调用）。
+ * @param {HTMLElement} slide slide
+ * @param {object[]} replies 回复
+ * @returns {void}
+ */
+export function syncVideoCommentTicker(slide, replies) {
+	slideRepliesCache.set(slide, replies)
+	renderCommentTicker(slide, replies)
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @param {object[]} replies 回复
+ * @returns {void}
+ */
+function renderCommentTicker(slide, replies) {
+	const ticker = slide.querySelector('[data-comment-ticker]')
+	if (!ticker) return
+	const items = replies
+		.map(reply => {
+			const text = String(reply.post?.content?.text || '').trim()
+			if (!text) return null
+			return { author: authorLabel(reply.entityHash, reply.authorProfile), text }
+		})
+		.filter(Boolean)
+	if (!items.length) {
+		ticker.replaceChildren()
+		ticker.classList.add('hidden')
+		return
+	}
+	ticker.classList.remove('hidden')
+	const track = document.createElement('div')
+	track.className = 'video-comment-ticker-track'
+	// 多复制一份以便无缝滚动
+	const loop = items.length > 1 ? [...items, ...items] : items
+	for (const item of loop) {
+		const row = document.createElement('div')
+		row.className = 'video-comment-ticker-item'
+		row.innerHTML = `<strong>${escapeHtml(item.author)}</strong><span>${escapeHtml(item.text.slice(0, 80))}</span>`
+		track.appendChild(row)
+	}
+	ticker.replaceChildren(track)
+	track.classList.toggle('is-scrolling', items.length > 1)
+	if (items.length > 1)
+		track.style.setProperty('--ticker-duration', `${Math.max(8, items.length * 3.2)}s`)
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @returns {Promise<object[]>} 回复列表
+ */
+async function loadSlideReplies(slide) {
+	const cached = slideRepliesCache.get(slide)
+	if (cached) return cached
+	const { entityHash, postId } = slide.dataset
+	if (!entityHash || !postId) return []
+	const data = await socialApi(`/profile/${entityHash}/replies/${postId}`).catch(() => ({ replies: [] }))
+	const replies = data.replies || []
+	slideRepliesCache.set(slide, replies)
+	return replies
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @returns {Promise<void>}
+ */
+async function ensureCommentTicker(slide) {
+	if (slide.dataset.tickerLoaded) return
+	slide.dataset.tickerLoaded = '1'
+	const replies = await loadSlideReplies(slide)
+	renderCommentTicker(slide, replies)
+}
+
+/**
+ * @param {HTMLElement} slide slide
+ * @param {boolean} open 是否打开
+ * @returns {Promise<void>}
+ */
+async function setVideoRepliesOpen(slide, open) {
+	const panel = slide.querySelector('[data-replies-panel]')
+	const ticker = slide.querySelector('[data-comment-ticker]')
+	if (!panel) return
+	if (!open) {
+		closeVideoReplies(slide)
+		return
+	}
+	panel.classList.remove('hidden')
+	ticker?.classList.add('is-dimmed')
+	if (panel.dataset.loaded) return
+	const replies = await loadSlideReplies(slide)
+	panel.dataset.loaded = '1'
+	await renderRepliesPanel(panel, replies)
+	renderCommentTicker(slide, replies)
+}
+
+/**
  * @param {object} item feed 条目
  * @returns {HTMLElement} slide 元素
  */
@@ -216,6 +329,7 @@ function buildVideoSlide(item) {
 	const liked = Boolean(item.viewerLiked)
 	const likeCount = item.likeCount || 0
 	const replyCount = item.replyCount || 0
+	const actionKey = formatActionKey(item.entityHash || '', item.postId || '')
 
 	slide.innerHTML = videoSrc
 		? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
@@ -236,14 +350,19 @@ function buildVideoSlide(item) {
 				</a>
 				${caption ? `<div class="video-caption">${escapeHtml(caption.slice(0, 180))}</div>` : ''}
 			</div>
+			<div class="video-comment-ticker hidden" data-comment-ticker aria-hidden="true"></div>
 			<div class="video-actions">
-				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like">
+				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" aria-label="${escapeHtml(geti18n('social.actions.like'))}">
 					<span class="s-ic s-ic-like" aria-hidden="true"></span>
 					<span class="video-like-count">${likeCount}</span>
 				</button>
-				<button type="button" class="video-action-btn video-comment-btn" data-action="comment">
+				<button type="button" class="video-action-btn video-comment-btn" data-action="comment" data-replies="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.replies'))}">
 					<span class="s-ic s-ic-reply" aria-hidden="true"></span>
-					<span>${replyCount}</span>
+					<span class="action-count">${replyCount}</span>
+				</button>
+				<button type="button" class="video-action-btn video-share-btn" data-action="share" data-share="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.share'))}">
+					<span class="s-ic s-ic-share" aria-hidden="true"></span>
+					<span class="action-count" data-i18n="social.actions.share">${escapeHtml(geti18n('social.actions.share'))}</span>
 				</button>
 				<button type="button" class="video-action-btn video-mute-btn" data-action="mute" aria-label="">
 					<span class="s-ic s-ic-volume" aria-hidden="true"></span>
@@ -252,7 +371,7 @@ function buildVideoSlide(item) {
 		</div>
 		<div class="heart-anim hidden" aria-hidden="true"></div>
 		<div class="video-progress-bar"><div class="video-progress-fill"></div></div>
-		<div class="video-replies-panel hidden" data-replies-panel></div>
+		<div class="video-replies-panel hidden" data-replies-panel data-replies-for="${escapeHtml(actionKey)}"></div>
 	`)
 
 	const video = slide.querySelector('video')
@@ -274,6 +393,11 @@ function buildVideoSlide(item) {
 	slide.addEventListener('pointerup', async event => {
 		if (event.target.closest('.video-actions') || event.target.closest('.video-replies-panel') || event.target.closest('[data-video-author]'))
 			return
+		const panel = slide.querySelector('[data-replies-panel]')
+		if (panel && !panel.classList.contains('hidden')) {
+			closeVideoReplies(slide)
+			return
+		}
 		const now = Date.now()
 		if (now - lastTap < 350) {
 			lastTap = 0
@@ -358,17 +482,26 @@ function buildVideoSlide(item) {
 		syncMuteButton(slide, video)
 	})
 
+	slide.querySelector('.video-share-btn')?.addEventListener('click', async event => {
+		event.stopPropagation()
+		const { entityHash, postId } = slide.dataset
+		if (!entityHash || !postId) return
+		const result = await shareOrCopyPostLink(entityHash, postId, caption || label)
+		if (result !== 'copied') return
+		const labelEl = slide.querySelector('.video-share-btn .action-count')
+		const prev = labelEl?.textContent
+		if (labelEl) labelEl.textContent = geti18n('social.actions.copied')
+		setTimeout(() => {
+			if (labelEl && prev != null) labelEl.textContent = prev
+		}, 1500)
+	})
+
 	slide.querySelector('.video-comment-btn')?.addEventListener('click', async event => {
 		event.stopPropagation()
 		const panel = slide.querySelector('[data-replies-panel]')
 		if (!panel) return
-		panel.classList.toggle('hidden')
-		if (!panel.dataset.loaded && !panel.classList.contains('hidden')) {
-			const { entityHash, postId } = slide.dataset
-			const data = await socialApi(`/profile/${entityHash}/replies/${postId}`).catch(() => ({ replies: [] }))
-			panel.dataset.loaded = '1'
-			await renderRepliesPanel(panel, data.replies || [])
-		}
+		const opening = panel.classList.contains('hidden')
+		await setVideoRepliesOpen(slide, opening)
 	})
 
 	return slide
@@ -453,5 +586,8 @@ export function handleVideoKeydown(event) {
 			btn?.click()
 			break
 		}
+		case 'Escape':
+			if (currentSlide) closeVideoReplies(currentSlide)
+			break
 	}
 }

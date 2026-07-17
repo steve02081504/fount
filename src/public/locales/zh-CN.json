@@ -1517,7 +1517,8 @@
 			},
 			"mute": "静音",
 			"unmute": "取消静音",
-			"unavailable": "视频无法播放"
+			"unavailable": "视频无法播放",
+			"closeReplies": "关闭评论"
 		},
 		"live": {
 			"empty": "暂无直播",

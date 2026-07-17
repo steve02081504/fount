@@ -7,29 +7,8 @@ import { purgeFeedShownPost, restoreFeedShownItems, runSocialWrite } from '../li
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { socialState } from '../state.mjs'
 
-import { closePostMoreMenus, copyTextToClipboard } from './shared.mjs'
+import { closePostMoreMenus, copyTextToClipboard, shareOrCopyPostLink } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-
-/**
- * @param {string} entityHash 作者
- * @param {string} postId 帖子
- * @param {string} [title] 分享标题
- * @returns {Promise<'shared' | 'copied'>} 结果
- */
-async function shareOrCopyPostLink(entityHash, postId, title) {
-	const url = formatSocialShareHttpsUrl(entityHash, postId)
-	if (typeof navigator.share === 'function') 
-		try {
-			await navigator.share({ title: title || 'fount', url })
-			return 'shared'
-		}
-		catch (err) {
-			if (err?.name === 'AbortError') return 'shared'
-		}
-	
-	await copyTextToClipboard(url)
-	return 'copied'
-}
 
 /**
  * @param {HTMLElement} target 点击目标元素

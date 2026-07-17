@@ -1,3 +1,5 @@
+import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
+
 /**
  * 关闭所有帖子溢出菜单（可选排除某一菜单）。
  * @param {HTMLElement | null} [exceptMenu] 保留打开的菜单
@@ -26,4 +28,26 @@ export async function copyTextToClipboard(link) {
 		document.execCommand('copy')
 		input.remove()
 	}
+}
+
+/**
+ * 系统分享帖子链接；不支持则复制到剪贴板。
+ * @param {string} entityHash 作者
+ * @param {string} postId 帖子
+ * @param {string} [title] 分享标题
+ * @returns {Promise<'shared' | 'copied'>} 结果
+ */
+export async function shareOrCopyPostLink(entityHash, postId, title) {
+	const url = formatSocialShareHttpsUrl(entityHash, postId)
+	if (typeof navigator.share === 'function')
+		try {
+			await navigator.share({ title: title || 'fount', url })
+			return 'shared'
+		}
+		catch (err) {
+			if (err?.name === 'AbortError') return 'shared'
+		}
+
+	await copyTextToClipboard(url)
+	return 'copied'
 }

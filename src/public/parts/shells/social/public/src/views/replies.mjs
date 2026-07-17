@@ -31,7 +31,23 @@ export async function renderRepliesPanel(panel, replies) {
 			list.appendChild(row)
 		}
 
-	panel.innerHTML = ''
+	panel.replaceChildren()
+	if (panel.classList.contains('video-replies-panel')) {
+		const header = document.createElement('div')
+		header.className = 'video-replies-header'
+		header.innerHTML = `
+			<span class="video-replies-title">${geti18n('social.actions.replies')}</span>
+			<button type="button" class="video-replies-close" data-close-replies aria-label="${geti18n('social.video.closeReplies')}">
+				<span class="s-ic s-ic-close" aria-hidden="true"></span>
+			</button>
+		`
+		header.querySelector('[data-close-replies]')?.addEventListener('click', event => {
+			event.stopPropagation()
+			panel.classList.add('hidden')
+			panel.closest('.video-slide')?.querySelector('[data-comment-ticker]')?.classList.remove('is-dimmed')
+		})
+		panel.appendChild(header)
+	}
 	panel.appendChild(list)
 	const composer = document.createElement('div')
 	composer.className = 'reply-composer'
