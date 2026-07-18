@@ -88,13 +88,10 @@ Deno.test('trusted render keeps unsafe js execute button', async () => {
 	assertMatch(html, /execution-output|createCopyButton/)
 })
 
-Deno.test('getCodeExecutorSafety: js unsafe, sql/brainfuck safe', async () => {
-	const { getCodeExecutorSafety } = await import('../../../../../pages/scripts/features/markdown/convertor.mjs')
-	assertEquals(getCodeExecutorSafety('js'), 'unsafe')
-	assertEquals(getCodeExecutorSafety('python'), 'unsafe')
-	assertEquals(getCodeExecutorSafety('sql'), 'safe')
-	assertEquals(getCodeExecutorSafety('b'), 'safe')
-	assertEquals(getCodeExecutorSafety('unknown-lang'), 'unsafe')
+Deno.test('secure render keeps safe brainfuck execute button', async () => {
+	const html = await renderSecure('```b\n+++\n```')
+	assertMatch(html, /execution-output|createCopyButton/)
+	assertMatch(html, /code_block\.execute|Execution/)
 })
 
 Deno.test('secure render hides html preview button', async () => {

@@ -430,56 +430,72 @@ return result
 }
 
 /**
- * @param {string} langOrExt 语言名或扩展名
- * @returns {CodeExecutorSafety} 安全系数；未知默认可疑 → unsafe
+ * @typedef {(code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>} LanguageExecutor
  */
-export function getCodeExecutorSafety(langOrExt) {
-	const key = String(langOrExt || '').toLowerCase()
-	return CODE_EXECUTOR_SAFETY[key] || 'unsafe'
+
+/**
+ * 不可信环境可用的执行器（内存解释器 / 远端沙箱等，不进页面同源任意脚本能力）。
+ * @type {Object.<string, LanguageExecutor>}
+ */
+const safeLanguageExecutors = {
+	/**
+	 * 执行 SQL 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
+	sql: async (code) => {
+		try {
+			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
+			const SQL = await initSqlJs({
+				/**
+				 * 定位 SQL.js 文件。
+				 * @param {string} file - 文件名。
+				 * @returns {string} - 文件路径。
+				 */
+				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}`
+			})
+			const db = new SQL.Database()
+			const results = db.exec(code)
+
+			let output = ''
+			if (results.length)
+				output = results.map(res => {
+					const header = `| ${res.columns.join(' | ')} |`
+					const separator = `|${'-'.repeat(header.length - 2)}|`
+					const rows = res.values.map(row => `| ${row.join(' | ')} |`).join('\n')
+					return `${header}\n${separator}\n${rows}`
+				}).join('\n\n')
+
+			return {
+				result: JSON.stringify(results),
+				output: output.trim(),
+			}
+		} catch (error) { return { error } }
+	},
+	cpp: createGodboltExecutor('gsnapshot', 'c++'),
+	c: createGodboltExecutor('cgsnapshot', 'c'),
+	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
+	go: createGodboltExecutor('gltip', 'go'),
+	rs: createGodboltExecutor('nightly', 'rust'),
+	/**
+	 * 执行 brainfuck 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
+	b: async (code) => {
+		try {
+			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
+			const brainfuck = new Brainfuck()
+			const result = brainfuck.execute(code)
+			return { output: result.output }
+		} catch (error) { return { error } }
+	},
 }
 
 /**
- * 未信任档是否可为该语言提供执行按钮。
- * @param {string} langOrExt 语言名或扩展名
- * @returns {boolean} 是否安全
- */
-export function isCodeExecutorSafeForUntrusted(langOrExt) {
-	return getCodeExecutorSafety(langOrExt) === 'safe'
-}
-
-/**
- * 执行器安全系数：`safe` = 未信任 Markdown 也可提供执行按钮；`unsafe` = 仅可信档。
- * 判定以「会不会在页面同源上下文拿到任意脚本能力」为准（含 HTML preview / 可互操作到 JS 的 VM）。
- * @typedef {'safe' | 'unsafe'} CodeExecutorSafety
- */
-
-/** @type {Readonly<Record<string, CodeExecutorSafety>>} */
-const CODE_EXECUTOR_SAFETY = {
-	js: 'unsafe',
-	javascript: 'unsafe',
-	py: 'unsafe',
-	python: 'unsafe',
-	rb: 'unsafe',
-	ruby: 'unsafe',
-	lisp: 'unsafe',
-	php: 'unsafe',
-	lua: 'unsafe',
-	// 内存解释器 / 远端沙箱：不进页面执行面
-	sql: 'safe',
-	cpp: 'safe',
-	c: 'safe',
-	csharp: 'safe',
-	go: 'safe',
-	rs: 'safe',
-	rust: 'safe',
-	b: 'safe',
-	bf: 'safe',
-	brainfuck: 'safe',
-}
-
-/**
- * 代码执行器集合
- * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>>}
+ * 可信环境执行器；与 `safeLanguageExecutors` 同 key 时覆盖后者。
+ * 可为同一语言在可信档提供更强能力，而不必为安全档牺牲功能。
+ * @type {Object.<string, LanguageExecutor>}
  */
 const languageExecutors = {
 	/**
@@ -644,58 +660,18 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
-	/**
-	 * 执行 SQL 代码。
-	 * @param {string} code - 要执行的代码。
-	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
-	 */
-	sql: async (code) => {
-		try {
-			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
-			const SQL = await initSqlJs({
-				/**
-				 * 定位 SQL.js 文件。
-				 * @param {string} file - 文件名。
-				 * @returns {string} - 文件路径。
-				 */
-				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}`
-			})
-			const db = new SQL.Database()
-			const results = db.exec(code)
+}
 
-			let output = ''
-			if (results.length)
-				output = results.map(res => {
-					const header = `| ${res.columns.join(' | ')} |`
-					const separator = `|${'-'.repeat(header.length - 2)}|`
-					const rows = res.values.map(row => `| ${row.join(' | ')} |`).join('\n')
-					return `${header}\n${separator}\n${rows}`
-				}).join('\n\n')
-
-			return {
-				result: JSON.stringify(results),
-				output: output.trim(),
-			}
-		} catch (error) { return { error } }
-	},
-	cpp: createGodboltExecutor('gsnapshot', 'c++'),
-	c: createGodboltExecutor('cgsnapshot', 'c'),
-	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
-	go: createGodboltExecutor('gltip', 'go'),
-	rs: createGodboltExecutor('nightly', 'rust'),
-	/**
-	 * 执行 brainfuck 代码。
-	 * @param {string} code - 要执行的代码。
-	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
-	 */
-	b: async (code) => {
-		try {
-			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
-			const brainfuck = new Brainfuck()
-			const result = brainfuck.execute(code)
-			return { output: result.output }
-		} catch (error) { return { error } }
-	},
+/**
+ * 按可信档解析执行器：可信 = `languageExecutors` 覆盖 `safeLanguageExecutors`；不可信只用后者。
+ * @param {string} langOrExt 语言名或扩展名
+ * @param {boolean} allowUnsafeExecutors 是否允许可信执行器
+ * @returns {LanguageExecutor | undefined}
+ */
+function resolveLanguageExecutor(langOrExt, allowUnsafeExecutors) {
+	const key = String(langOrExt || '').toLowerCase()
+	if (allowUnsafeExecutors && languageExecutors[key]) return languageExecutors[key]
+	return safeLanguageExecutors[key]
 }
 
 /**
@@ -730,9 +706,8 @@ function enhanceCodeBlockPre(pre, { isStandalone = false, allowUnsafeExecutors =
 	let uniqueId
 	do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
 	while (document.getElementById(uniqueId))
-	const executor = languageExecutors[ext] || languageExecutors[lang]
-	const executorAllowed = !!executor && (allowUnsafeExecutors || isCodeExecutorSafeForUntrusted(ext)
-		|| isCodeExecutorSafeForUntrusted(lang))
+	const executor = resolveLanguageExecutor(ext, allowUnsafeExecutors)
+		|| resolveLanguageExecutor(lang, allowUnsafeExecutors)
 
 	/**
 	 * 创建工具提示。
@@ -814,7 +789,7 @@ previewWindow.document.close()
 
 	// 执行按钮
 	let executeButtonCore = null
-	if (executorAllowed)
+	if (executor)
 		executeButtonCore = h('button', {
 			class: 'btn btn-ghost btn-square btn-sm text-icon',
 			...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
