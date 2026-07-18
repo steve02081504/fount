@@ -4,7 +4,7 @@
 
 写法：[docs/AGENTS.md](../AGENTS.md)。
 
-近期已落地、不再占篇幅：死符号清理（`fountMessageMarkdown*` / `mailboxApi` / `groupWsClient`）、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`；**本波**：Hub 导航补拉改 `POST …/view-log/batch-get`、Social `composerState`/`composerPublish` + `chatApi`、`friendsList` dismiss、`hub/gestures/`。
+近期已落地、不再占篇幅：死符号清理、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`；view-log 导航补拉；Social `composerState`/`composerPublish` + `chatApi`、`friendsList` dismiss、`hub/gestures/`；**本波**：ChatClient 按域拆工厂、`registerChatRoutes`、search/pins dismiss 对齐、`channelActions` 主区/线程分槽。
 
 ---
 
@@ -13,23 +13,19 @@
 | 优先级 | 动作 | 状态 |
 | --- | --- | --- |
 | P3 | 拆 Cabinet `public/index.mjs`（**1359** 行）；Social composer 已拆 | Cabinet 待做 |
-| P4 | ChatClient 按域拆方法工厂（对齐 SocialClient；现 `client.mjs` **494** 行单 duck） | 待做 |
+| P4 | ChatClient 按域拆方法工厂（对齐 SocialClient） | **已落地**（`src/api/client/*.mjs`） |
 | P5 | 收敛 view-log / raw 双读；导航补拉勿绕过 viewer 滤镜 | **已落地** |
-| P6 | 拆 `channelActionsContext` 可变单例；`threadDrawer` 与主区渲染路径合并 | 待做 |
-| 小 | `friendsList` dismiss、composer `chatApi`、gesture → `hub/gestures/` 已落地；`search` / `pinsBookmarks` 常驻 click-outside 仍手写 | 部分待做 |
+| P6 | 收敛 `channelActionsContext`；`threadDrawer` 与主区渲染路径合并 | **阶段 1 已落地**（主区/线程分槽）；渲染管道合并待做 |
+| 小 | Hub dismiss 统一（context menu + search/pins toggle） | **已落地** |
 | 慎做 | Chat DAG ↔ Social Timeline 事件内核合并 | 大工程；联邦规则要统一改时再动 |
 
 ---
 
 ## 一、设计别扭（为何丑 · 如何改）
 
-### 1. Chat HTTP 路由多处注册
+### 1. Chat HTTP 路由多处注册 — 最小已落地
 
-**位置**：`main.mjs` 调 `setGroupEndpoints` + `setEndpoints`；后者再挂 `entity/endpoints.mjs`；另有 `stickers/endpoints.mjs`。
-
-**为何丑**：查「这个 URL 谁挂的」要翻四处；与 `group/routes/*.mjs` 不对称。
-
-**改进**：`main.mjs` 只调一个 `registerChatRoutes(router)` 内部分发；或从 `llms.txt` 生成机器可读路由表。
+`main.mjs` 只调 `registerChatRoutes(router)`（内部分发 `setGroupEndpoints` + `setEndpoints`）；stickers 导出已改为 `registerStickerRoutes`。深度扁平化 / 机器可读路由表仍可选。
 
 ---
 
@@ -55,13 +51,9 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 ---
 
-### 5. `channelActionsContext` 可变单例 + threadDrawer 平行渲染
+### 5. `channelActionsContext` + threadDrawer 平行渲染 — 阶段 1 已落地
 
-**位置**：`hub/messages/messageActionsState.mjs`；`hub/threadDrawer.mjs`（**272** 行）也调 `setChannelMessageActionsContext` 并自管 `renderChannelMessageBlock`。
-
-**为何丑**：与 Hub AGENTS「禁止 appContext 注入」原则相悖（主区/线程抽屉多态的例外），无类型、静默 `null` 时 `appendMessageToContext` 直接 return。抽屉与主区各走一套消息装配，改一处易漏另一处。
-
-**改进**：显式 `mainChannelActions` / `threadDrawerActions` 两个导出，或按容器 `WeakMap` 绑定；抽屉复用主区 `messageRefresh` / virtual list 管道，只换 channelId。
+主区 / 线程抽屉分槽（`mainChannelActions` / `threadChannelActions`），`getChannelMessageActionsContext(fromEl)` 按 DOM 解析；主区可在抽屉打开时继续 sync。**待做**：抽屉复用主区 `messageRefresh` / virtual list 管道（阶段 2）。
 
 ---
 
@@ -91,7 +83,6 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 | 项 | 说明 |
 | --- | --- |
-| Hub `search` / `pinsBookmarks` 常驻 dismiss | 仍手写 bubble `click`；与 `bindDismissOnDocumentInteraction`（打开时绑定）模型不完全同构 |
 | DAG `session_plugin_*` | legacy 事件 replay 为 no-op；`local_plugins.json` 已取代 |
 | `stream/volatileSlots.mjs` ↔ gesture | 出站已进 `outbound.mjs`，volatile 仍耦合 `gestures/chatGestures.mjs`（目录已归并，耦合仍在） |
 
@@ -117,10 +108,11 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 | inline token | `shared/inlineTokenSyntax.mjs` | Chat、Social composer |
 | inbox JSONL | `chat/src/chat/lib/jsonlInboxStore.mjs` | Chat + Social inbox |
 | 敏感媒体 | chat `messageFields.mjs`；Social `mediaRefs.mjs` 再导出 | 两壳 |
+| shell JSON 命名空间 | `chat/src/api/client/helpers.mjs` → `createShellJsonNamespace` | Chat（Social 可对齐） |
 
 ### 建议合并（按收益）
 
-**F. Client 工厂共性（中）** — Social 的 `createPostsMethods` 组合式更清晰；Chat `src/api/client.mjs`（**494** 行）巨型 duck 可按域拆 `createGroupMethods` 等对齐。共享 `createShellJsonNamespace(username, shell, entityHash, dataName, shape)` 给私有状态命名空间。
+**F. Client 工厂共性** — ChatClient 已按域拆；共享 `createShellJsonNamespace` 已抽出。Social 私有态若扩 shell JSON 可直接复用。
 
 **G. Composer 附加字段 UI（中）** — `contentWarning` / `sensitiveMedia` / `replyTo` 的 DOM 读写可共享薄层（Chat 已有拆分模板可作蓝本）。
 
@@ -137,7 +129,7 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 | 壳 | 强 | 弱 |
 | --- | --- | --- |
-| **Chat** | 实体模型统一；Hub 已拆 `stream/` + `gestures/` + `reloadChannel`；view-log 主读+补拉一致；`shared/*` 跨壳复用；测试面大 | ChatClient 单文件膨胀；路由多处注册；threadDrawer 平行渲染 |
+| **Chat** | 实体模型统一；Hub 已拆 `stream/` + `gestures/` + `reloadChannel`；view-log 主读+补拉一致；ChatClient 按域工厂；`registerChatRoutes` 单入口；channelActions 分槽；`shared/*` 跨壳复用；测试面大 | threadDrawer 仍平行渲染（非 virtual list）；Cabinet 未对标 |
 | **Social** | SocialClient 组合式 API；`chatApi` 统一跨壳；composer 已拆 state/publish；展示名/Markdown/敏感媒体已对齐 chat shared | （本波无新增大债） |
 | **Cabinet** | 后端 `shared/oplog.mjs` 清晰；与 Chat `cabinet_bind` 边界清楚；测试精简 | 前端 `index.mjs` 单文件承载几乎全部 UI |
 

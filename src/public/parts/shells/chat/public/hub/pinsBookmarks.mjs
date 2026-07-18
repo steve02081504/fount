@@ -12,12 +12,16 @@ import { getGroupState } from '../src/api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
 import { selectChannel, selectGroup } from './sidebar/index.mjs'
 
 const SIDEBAR_LABEL_MAX = 56
+
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let pinsDismissClose = null
 
 /**
  * 更新顶栏弹出按钮的计数徽标。
@@ -210,12 +214,30 @@ const POP_DEFS = [
 
 /** 关闭所有顶栏置顶/书签弹出面板。 @returns {void} */
 function closeAllPinsBookmarksPanels() {
+	pinsDismissClose?.unbind()
+	pinsDismissClose = null
 	for (const { button, panel } of POP_DEFS) {
 		document.getElementById(panel)?.setAttribute('hidden', '')
 		const buttonElement = document.getElementById(button)
 		buttonElement?.classList.remove('is-open')
 		buttonElement?.setAttribute('aria-expanded', 'false')
 	}
+}
+
+/**
+ * @returns {void}
+ */
+function armPinsBookmarksDismiss() {
+	pinsDismissClose?.unbind()
+	pinsDismissClose = bindDismissOnDocumentInteraction(() => {
+		pinsDismissClose = null
+		for (const { button, panel } of POP_DEFS) {
+			document.getElementById(panel)?.setAttribute('hidden', '')
+			const buttonElement = document.getElementById(button)
+			buttonElement?.classList.remove('is-open')
+			buttonElement?.setAttribute('aria-expanded', 'false')
+		}
+	}, { contextMenu: false, ignoreSelectors: ['.hub-header-pop'] })
 }
 
 /**
@@ -234,6 +256,7 @@ function togglePinsBookmarksPanel(buttonId, panelId) {
 		panel.removeAttribute('hidden')
 		button.classList.add('is-open')
 		button.setAttribute('aria-expanded', 'true')
+		armPinsBookmarksDismiss()
 	}
 }
 
@@ -248,10 +271,6 @@ export function wirePinsBookmarksPanels() {
 			event.stopPropagation()
 			togglePinsBookmarksPanel(button, panel)
 		})
-	document.addEventListener('click', event => {
-		if (event.target instanceof Element && event.target.closest('.hub-header-pop')) return
-		closeAllPinsBookmarksPanels()
-	})
 	document.addEventListener('keydown', event => {
 		if (event.key === 'Escape') closeAllPinsBookmarksPanels()
 	})

@@ -13,7 +13,6 @@ import {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
 } from '../stream/index.mjs'
-import { isThreadDrawerOpen } from '../threadDrawer.mjs'
 import {
 	firstUnreadEventId,
 	markCurrentChannelRead,
@@ -156,7 +155,7 @@ async function applyIncomingMessage(message, { scroll = false } = {}) {
 	else
 		await hubStore.messages.channelMessagePipeline.refresh()
 
-	if (!isThreadDrawerOpen()) syncChannelActionsContext()
+	syncChannelActionsContext()
 	updateLastMessageId()
 	decorateRenderedMessages(container, scroll)
 }
@@ -201,7 +200,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	if (!replaceRows.length && !appendRows.length)
 		await hubStore.messages.channelMessagePipeline.refresh()
 
-	if (!isThreadDrawerOpen()) syncChannelActionsContext()
+	syncChannelActionsContext()
 	updateLastMessageId()
 	decorateRenderedMessages(container, scroll)
 }

@@ -1,7 +1,7 @@
 /**
  * 【文件】stickers/endpoints.mjs
  * 【职责】贴纸包与用户收藏的 REST：CRUD 包、上传贴纸、安装/收藏/最近使用及媒体文件下发。
- * 【原理】setEndpoints 按 apiBase 正则挂路由；鉴权后 getReplicaFromReq；写操作校验作者 entity；二进制经 betterSendFile 从 resolveStickerFilePath 读取。
+ * 【原理】registerStickerRoutes 按 apiBase 正则挂路由；鉴权后 getReplicaFromReq；写操作校验作者 entity；二进制经 betterSendFile 从 resolveStickerFilePath 读取。
  * 【数据结构】packId、stickerId、multipart 上传、collection 安装列表、favorite/recent 条目。
  * 【关联】被 chat/src/endpoints.mjs 调用；依赖 stickers.mjs、upload/fromRequest、replica.mjs。
  */
@@ -48,7 +48,7 @@ function stickerPathRegex(apiBase, tail) {
  * @param {string} [apiBase=/api/parts/shells:chat/stickers] API 前缀
  * @returns {void}
  */
-export function setEndpoints(router, apiBase = DEFAULT_STICKER_API) {
+export function registerStickerRoutes(router, apiBase = DEFAULT_STICKER_API) {
 	router.get(`${apiBase}/packs`, authenticate, async (req, res) => {
 		const { operatorEntityHash } = await getReplicaFromReq(req)
 		res.status(200).json({ packs: await getStickerPacks(operatorEntityHash) })

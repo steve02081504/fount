@@ -1,14 +1,19 @@
 /**
  * 【文件】public/hub/messages/messageActionsState.mjs
- * 【职责】消息操作模块的共享上下文：当前频道消息快照、反馈编辑队列与删除任务串行化。
- * 【原理】`showFeedbackReasonInput` 在消息行下插入原因输入；`restoreActiveFeedbackEdits` 在重绘后恢复；`appendChannelActionMessage` 向上下文追加乐观行。
+ * 【职责】消息操作模块的共享上下文：主区 / 线程抽屉各自槽位、反馈编辑队列与删除任务串行化。
+ * 【原理】`showFeedbackReasonInput` 在消息行下插入原因输入；`restoreActiveFeedbackEdits` 在重绘后恢复；
+ *   主区与线程抽屉按容器分槽，点击时按 event target 解析，互不覆盖。
  * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../core/domUtils。
  */
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+
 /** @type {object | null} */
-let channelActionsContext = null
+let mainChannelActions = null
+
+/** @type {object | null} */
+let threadChannelActions = null
 
 /** @type {Promise<void>} */
 let deletionQueue = Promise.resolve()
@@ -17,30 +22,36 @@ let deletionQueue = Promise.resolve()
 export const activeFeedbackEdits = new Map()
 
 /**
- * 更新频道消息操作委托上下文。
- * @param {object} actions 含 groupId、channelId、messages、reload
- * @returns {void}
+ * @param {Element | null | undefined} el DOM 节点
+ * @returns {boolean} 是否在线程消息容器内
  */
-export function setChannelMessageActionsContext(actions) {
-	channelActionsContext = actions
+function isThreadMessageSurface(el) {
+	return !!(el instanceof Element && el.closest('[data-thread-msgbox]'))
 }
 
 /**
+ * 更新频道消息操作委托上下文。
+ * @param {object | null} actions 含 groupId、channelId、messages、reload；null 清空该槽
+ * @param {'main' | 'thread' | HTMLElement} [surface='main'] 主区 / 线程，或传入容器元素推断
+ * @returns {void}
+ */
+export function setChannelMessageActionsContext(actions, surface = 'main') {
+	const isThread = surface === 'thread'
+		|| (surface instanceof HTMLElement && isThreadMessageSurface(surface))
+	if (isThread) threadChannelActions = actions
+	else mainChannelActions = actions
+}
+
+/**
+ * @param {Element | EventTarget | null | undefined} [fromEl] 点击/拖拽起点；缺省回主区
  * @returns {object | null} 当前操作上下文
  */
-export function getChannelMessageActionsContext() {
-	return channelActionsContext
-}
-
-/**
- * 向当前操作上下文追加一条消息行（流式追加时保持编辑/反馈可解析）。
- * @param {object} message 消息行
- * @returns {void}
- */
-export function appendChannelActionMessage(message) {
-	if (!channelActionsContext) return
-	const list = channelActionsContext.messages
-	channelActionsContext.messages = Array.isArray(list) ? [...list, message] : [message]
+export function getChannelMessageActionsContext(fromEl) {
+	if (fromEl instanceof Element) {
+		if (isThreadMessageSurface(fromEl)) return threadChannelActions
+		if (fromEl.closest('#hub-messages')) return mainChannelActions
+	}
+	return mainChannelActions
 }
 
 /**

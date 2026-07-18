@@ -13,12 +13,12 @@ import {
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
 import { createShareLink } from '../../src/share.mjs'
+import { setReplyTarget } from '../composerReply.mjs'
 import { bindDismissOnDocumentInteraction } from '../core/contextMenuDismiss.mjs'
+import { authorPresentationKeys } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
-import { setReplyTarget } from '../composerReply.mjs'
-import { authorPresentationKeys } from '../core/domUtils.mjs'
 
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
@@ -72,7 +72,7 @@ export async function showMessageContextMenu(event, row) {
 	event.stopPropagation()
 	dismissMessageContextMenu()
 
-	const actions = getChannelMessageActionsContext()
+	const actions = getChannelMessageActionsContext(row)
 	if (!actions) return
 	const message = findContextMessage(row, actions)
 	if (!message) return

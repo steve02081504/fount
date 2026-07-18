@@ -107,7 +107,7 @@ export function bindChannelMessageActions(container) {
 			}
 			return
 		}
-		const actions = getChannelMessageActionsContext()
+		const actions = getChannelMessageActionsContext(clickEvent.target)
 		if (!actions) return
 		const retryButton = /** @type {HTMLElement} */ clickEvent.target.closest('[data-retry-send]')
 		if (retryButton?.dataset.retrySend) {

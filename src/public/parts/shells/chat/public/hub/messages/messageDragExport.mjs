@@ -49,7 +49,7 @@ function clearDragPayload(row) {
  * @returns {Promise<void>}
  */
 async function prepareDragPayload(row) {
-	const actions = getChannelMessageActionsContext()
+	const actions = getChannelMessageActionsContext(row)
 	const message = actions ? findContextMessage(row, actions) : null
 	const contentEl = row.querySelector('.hub-message-content')
 	const markdown = getMessageText(message) || contentEl?.textContent?.trim() || ''
@@ -71,18 +71,30 @@ async function prepareDragPayload(row) {
  * @returns {void}
  */
 function armRowDragCleanup(row) {
+	/**
+	 *
+	 */
 	const cleanupDraggable = () => { row.draggable = false }
+	/**
+	 *
+	 */
 	const onDragEnd = () => {
 		cleanupDraggable()
 		dragInFlightRows.delete(row)
 		clearDragPayload(row)
 		teardown()
 	}
+	/**
+	 *
+	 */
 	const onMouseUp = () => {
 		cleanupDraggable()
 		if (!dragInFlightRows.has(row)) clearDragPayload(row)
 		teardown()
 	}
+	/**
+	 *
+	 */
 	const teardown = () => {
 		row.removeEventListener('mouseup', onMouseUp)
 		row.removeEventListener('mouseleave', cleanupDraggable)
@@ -105,9 +117,9 @@ export function bindMessageDragExport(container) {
 
 	container.addEventListener('mousedown', event => {
 		if (event.button !== 0) return
-		const row = /** @type {HTMLElement | null} */ (event.target.closest(ROW_SELECTOR))
+		const row = /** @type {HTMLElement | null} */ event.target.closest(ROW_SELECTOR)
 		if (!row || !container.contains(row)) return
-		if (/** @type {HTMLElement} */ (event.target).closest(NO_DRAG_SELECTOR)) {
+		if (/** @type {HTMLElement} */ event.target.closest(NO_DRAG_SELECTOR)) {
 			row.draggable = false
 			return
 		}
@@ -117,11 +129,11 @@ export function bindMessageDragExport(container) {
 	})
 
 	container.addEventListener('dragstart', event => {
-		const row = /** @type {HTMLElement | null} */ (event.target.closest(ROW_SELECTOR))
+		const row = /** @type {HTMLElement | null} */ event.target.closest(ROW_SELECTOR)
 		if (!row?.draggable || !event.dataTransfer) return
 
 		const payload = dragPayloads.get(row)
-		const actions = getChannelMessageActionsContext()
+		const actions = getChannelMessageActionsContext(row)
 		const message = actions ? findContextMessage(row, actions) : null
 		const eventId = String(message?.eventId || row.getAttribute('data-message-id') || 'export')
 		const contentEl = row.querySelector('.hub-message-content')

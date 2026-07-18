@@ -7,12 +7,18 @@ import { setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/groupChannel.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { selectChannel } from './sidebar/index.mjs'
 
 /** @type {ReturnType<typeof setTimeout> | null} */
 let searchDebounce = null
+
+/** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
+let searchDismissClose = null
+
+const SEARCH_DISMISS_IGNORE = ['#hub-header-search', '#hub-search-results', '#hub-mobile-search']
 
 const SCOPE_I18N = {
 	group: 'chat.hub.search.scopeGroup',
@@ -29,7 +35,7 @@ function searchResultsHost() {
 /**
  * @returns {void} 无
  */
-function hideSearchResults() {
+function clearSearchResultsDom() {
 	const host = searchResultsHost()
 	if (host) {
 		host.innerHTML = ''
@@ -37,6 +43,26 @@ function hideSearchResults() {
 	}
 }
 
+/**
+ * @returns {void} 无
+ */
+function hideSearchResults() {
+	searchDismissClose?.unbind()
+	searchDismissClose = null
+	clearSearchResultsDom()
+}
+
+/**
+ * 结果面板可见时绑定文档 dismiss（打开时绑定，关闭时解绑）。
+ * @returns {void} 无
+ */
+function armSearchDismiss() {
+	searchDismissClose?.unbind()
+	searchDismissClose = bindDismissOnDocumentInteraction(() => {
+		searchDismissClose = null
+		clearSearchResultsDom()
+	}, { contextMenu: false, ignoreSelectors: SEARCH_DISMISS_IGNORE })
+}
 /**
  * @param {object[]} items 搜索结果
  * @param {string} [scope] 作用域
@@ -48,6 +74,7 @@ function renderSearchResults(items, scope = 'group') {
 	if (!items.length) {
 		host.innerHTML = '<div class="hub-search-empty" data-i18n="chat.hub.search.noResults">无结果</div>'
 		host.removeAttribute('hidden')
+		armSearchDismiss()
 		return
 	}
 	const channels = hubStore.context.currentState?.channels || {}
@@ -62,6 +89,7 @@ function renderSearchResults(items, scope = 'group') {
 		</button>`
 	}).join('')
 	host.removeAttribute('hidden')
+	armSearchDismiss()
 	host.querySelectorAll('.hub-search-result').forEach(button => {
 		button.addEventListener('click', () => {
 			const groupId = button.getAttribute('data-group-id')
@@ -169,14 +197,6 @@ export function scheduleHubMessageSearch(query) {
  * @returns {void} 无
  */
 export function wireHubSearchPanel() {
-	document.addEventListener('click', event => {
-		const host = searchResultsHost()
-		if (!host || host.hasAttribute('hidden')) return
-		if (event.target instanceof Node && host.contains(event.target)) return
-		if (event.target instanceof Element && event.target.closest('#hub-header-search')) return
-		hideSearchResults()
-	})
-
 	document.querySelectorAll('.hub-search-scope-menu [data-value]').forEach(option => {
 		option.addEventListener('click', () => {
 			const value = normalizeSearchScope(option.getAttribute('data-value'))

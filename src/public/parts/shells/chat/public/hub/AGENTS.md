@@ -39,8 +39,8 @@ alwaysApply: false
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`. Template body = `modal-box` + optional `modal-backdrop` only (do not wrap another `<dialog>`; self-managed lifecycle modals like `profile_edit_modal` are exempt).
 - Hub prefs (translation / P2P federation): single gear `#hub-prefs-button` in server bar → `openHubPrefsModal` (`hub/hubPrefs.mjs`), left nav switches sections, content mounts into `#hub-settings-modal`.
 - State: `hubStore` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
-- Context menus: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs` (click/right-click to close; do not hand-write closeOnce + addEventListener for each menu).
-- **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch (e.g. `channelActionsContext` main↔thread drawer), shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).
+- Context menus / 顶栏 toggle 面板: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs`（打开时绑定；支持 `ignoreSelectors`；勿再手写常驻 document click）。
+- **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch（`channelActionsContext` 主区/`thread` 分槽，按 DOM 容器解析；非全局互斥覆盖）, shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).
 
 ## Files panel (shared cabinets)
 

@@ -20,7 +20,7 @@ import { registerTranslationPrefsRoutes } from './endpoints/translationPrefs.mjs
 import { registerTrustedAuthorsRoutes } from './endpoints/trustedAuthors.mjs'
 import { registerWsRoutes } from './endpoints/ws.mjs'
 import { registerEntityEndpoints } from './entity/endpoints.mjs'
-import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpoints.mjs'
+import { registerStickerRoutes } from './stickers/endpoints.mjs'
 
 /**
  * 为聊天功能设置API端点。
@@ -29,7 +29,7 @@ import { setEndpoints as registerStickerRoutesUnderChat } from './stickers/endpo
  */
 export function setEndpoints(router) {
 	registerEntityEndpoints(router)
-	registerStickerRoutesUnderChat(router, '/api/parts/shells:chat/stickers')
+	registerStickerRoutes(router, '/api/parts/shells:chat/stickers')
 
 	registerPrefsRoutes(router)
 	registerTranslateRoutes(router)

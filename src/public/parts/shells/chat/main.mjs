@@ -1,10 +1,10 @@
 /**
  * 【文件】main.mjs
  * 【职责】chat shell 的 Part 入口：向 parts_loader 导出 shellAPI_t，注册 HTTP/群路由与文件 GC，并分发 CLI/IPC 动作。
- * 【原理】side-effect 预加载 dag/index；Load 调用 setGroupEndpoints + setEndpoints。
+ * 【原理】side-effect 预加载 dag/index；Load 调用 registerChatRoutes。
  *   handleAction 动态 import actions 表；ArgumentsHandler 解析 dm/join/start/send 等；IPCInvokeHandler 透传 command。
  * 【数据结构】loadCount、shellAPI_t（info/Load/Unload/interfaces）、actions 命令键。
- * 【关联】parts_loader 加载；import endpoints、group/endpoints、files、locales。
+ * 【关联】parts_loader 加载；import registerRoutes、files、locales。
  */
 import './src/chat/dag/index.mjs'
 import './src/chat/federation/config.mjs'
@@ -29,7 +29,6 @@ import {
 } from './src/chat/mailbox/ingest.mjs'
 import { registerChatManifestAcl, unregisterChatManifestAcl } from './src/chat/manifestAcl.mjs'
 import { registerChatManifestTransfer, unregisterChatManifestTransfer } from './src/chat/manifestTransfer.mjs'
-import { setEndpoints } from './src/endpoints.mjs'
 import {
 	registerChatEntitySearchHandler,
 	unregisterChatEntitySearchHandler,
@@ -39,7 +38,7 @@ import {
 	unregisterOwnerProfileUpdateMailbox,
 } from './src/entity/ownerProfileUpdate.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
-import { setGroupEndpoints } from './src/group/endpoints.mjs'
+import { registerChatRoutes } from './src/registerRoutes.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default
 
@@ -106,8 +105,7 @@ export default {
 		registerChatMailboxConsumer()
 		registerOwnerProfileUpdateMailbox()
 		if (loadCount === 1) {
-			setGroupEndpoints(router)
-			setEndpoints(router)
+			registerChatRoutes(router)
 			void import('./src/chat/call/session.mjs').then(m => m.reconcileAllOrphanedCalls())
 				.catch(error => console.error('call: reconcile on Load failed', error))
 		}

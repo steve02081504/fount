@@ -6,7 +6,9 @@ import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { isTwoPartyCharDialogue } from './messageShared.mjs'
 import { wireMessageReactions } from './reactions.mjs'
 
-/** 模块级频道重载（避免 messageRefresh ↔ callers 层层传 loadMessages）。 */
+/** 模块级频道重载（避免 messageRefresh ↔ callers 层层传 loadMessages）。
+ * @returns {Promise<void>}
+ */
 export async function reloadChannel() {
 	const { loadMessages } = await import('./messageRefresh.mjs')
 	return loadMessages()
@@ -55,7 +57,7 @@ export function syncChannelActionsContext() {
 		channelId: hubStore.context.currentChannelId,
 		messages: hubStore.messages.channelMessages,
 		reload: reloadChannel,
-	})
+	}, 'main')
 }
 
 /**
