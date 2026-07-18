@@ -15,6 +15,7 @@ import {
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForGroup, setGroupAlias } from '../shared/aliases.mjs'
+import { promptText } from '../shared/promptText.mjs'
 import { groupRequest } from '../src/api/groupClient.mjs'
 import { createGroupInvite, leaveGroups } from '../src/api/groupCore.mjs'
 import { buildInviteJoinShareUrl } from '../src/inviteQr.mjs'
@@ -237,7 +238,10 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 		dismissGroupActionMenu()
 		void (async () => {
 			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-			const next = prompt(geti18n('chat.hub.groupContext.setAliasPrompt', { name: groupName }), aliasForGroup(groupId))
+			const next = await promptText(
+				geti18n('chat.hub.groupContext.setAliasPrompt', { name: groupName }),
+				aliasForGroup(groupId),
+			)
 			if (next == null) return
 			await setGroupAlias(groupId, next)
 			showToastI18n('success', 'chat.hub.groupContext.aliasSaved')

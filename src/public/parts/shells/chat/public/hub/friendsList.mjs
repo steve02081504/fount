@@ -12,8 +12,10 @@ import { mountTemplate, renderTemplate } from '../../../../scripts/features/temp
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { setEntityAlias } from '../shared/aliases.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId } from '../shared/entityHash.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { promptText } from '../shared/promptText.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
@@ -97,22 +99,29 @@ async function friendRowTemplateData(friend, details) {
 	const rawDesc = String(friend.session.lastMessageContent || '').trim()
 	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
 	const active = hubStore.privateGroup.groupId === friend.groupId
+	const displayName = resolveDisplayName({
+		entityHash: friend.key,
+		alias: aliasForEntity(friend.key),
+		profileName: friend.charname
+			? details?.info?.name || friend.displayName
+			: friend.displayName,
+		fallbackLabel: friend.charname || friend.groupId,
+	})
 	if (!friend.charname)
 		return {
 			kind: 'dm',
 			name: friend.groupId,
 			groupId: friend.groupId,
-			displayName: friend.displayName,
+			displayName,
 			subtitle,
 			activeClass: active ? ' active' : '',
 			avatarBg: avatarColor(friend.key),
 			avatarTextColor: avatarTextColor(friend.key),
-			avatarInner: escapeHtml(avatarInitial(friend.displayName)),
+			avatarInner: escapeHtml(avatarInitial(displayName)),
 		}
 
 	const info = details?.info || {}
 	const avatarUrl = info.avatar || details?.avatar || ''
-	const displayName = info.name || friend.displayName
 	return {
 		kind: 'char',
 		name: friend.charname,
@@ -124,7 +133,7 @@ async function friendRowTemplateData(friend, details) {
 		avatarTextColor: avatarTextColor(friend.key),
 		avatarInner: avatarUrl
 			? `<img src="${escapeHtml(avatarUrl)}" alt="" class="hub-char-list-avatar-img" />`
-			: escapeHtml(avatarInitial(friend.charname)),
+			: escapeHtml(avatarInitial(displayName)),
 	}
 }
 
@@ -327,14 +336,25 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 	if (!isChar)
 		row.querySelector('[data-pin]')?.addEventListener('click', () => {
 			void (async () => {
-				const next = prompt(
+				const next = await promptText(
 					geti18n('chat.hub.profilePopup.setAliasPrompt', { name: hit.label }),
-					hit.alias || hit.handle || hit.name || '',
+					hit.alias || '',
 				)
 				if (next == null) return
 				await setEntityAlias(hit.entityHash, next)
 				showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
-			})()
+				hit.alias = next
+				hit.label = resolveDisplayName({
+					entityHash: hit.entityHash,
+					alias: next,
+					profileName: hit.name,
+					fallbackLabel: hit.handle || hit.entityHash,
+				})
+				const labelEl = row.querySelector('[data-label]')
+				if (labelEl) labelEl.textContent = hit.label
+			})().catch(error => {
+				showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+			})
 		})
 	row.querySelector('[data-dm]')?.addEventListener('click', () => {
 		void (async () => {

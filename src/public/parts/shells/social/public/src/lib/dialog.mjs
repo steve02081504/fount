@@ -9,9 +9,12 @@ export function promptText(title, value = '') {
 	return pickFromDialog('text_prompt_modal', { title, value }, {
 		/**
 		 * @param {HTMLDialogElement} dialog 对话框元素
-		 * @returns {string | null} 用户输入；取消为 null
+		 * @returns {string | null} 用户输入（可为空表示清除）；取消为 null
 		 */
-		mapResult: dialog => dialog.querySelector('#promptInput')?.value.trim() || null,
+		mapResult: dialog => {
+			const input = dialog.querySelector('#promptInput')
+			return input instanceof HTMLInputElement ? input.value.trim() : null
+		},
 	})
 }
 

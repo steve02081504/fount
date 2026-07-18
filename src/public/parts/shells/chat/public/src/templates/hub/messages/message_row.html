@@ -1,9 +1,13 @@
 <div class="chat ${align} hub-message-row ${rowClass} relative group" ${rowAttrs}>
 	${avatarBlock}
-	<div class="chat-header text-sm">${headerHtml}</div>
-	<div class="chat-bubble ${bubbleClass}">
-		${hoverBarHtml ? `<div class="hub-message-hover-bar">${hoverBarHtml}</div>` : ''}
-		<div class="hub-message-content markdown-body"${bubbleAttrs}>${contentHtml}</div>
+	<div class="hub-message-stack">
+		<div class="hub-message-stack-inner">
+			${hoverBarHtml ? `<div class="hub-message-hover-bar">${hoverBarHtml}</div>` : ''}
+			<div class="chat-header text-sm">${headerHtml}</div>
+			<div class="chat-bubble ${bubbleClass}">
+				<div class="hub-message-content markdown-body"${bubbleAttrs}>${contentHtml}</div>
+			</div>
+			${footerHtml ? `<div class="chat-footer">${footerHtml}</div>` : ''}
+		</div>
 	</div>
-	${footerHtml ? `<div class="chat-footer">${footerHtml}</div>` : ''}
 </div>

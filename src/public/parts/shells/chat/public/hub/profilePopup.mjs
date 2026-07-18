@@ -16,8 +16,10 @@ import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { promptText } from '../shared/promptText.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
+import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { hubStore } from './core/state.mjs'
 import {
 	loadEntityProfile,
@@ -222,11 +224,15 @@ async function paintProfilePopup(popup, entity) {
 				void (async () => {
 					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
 					const current = popup.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
-					const next = prompt(geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }), aliasForEntity(entityHash))
+					const next = await promptText(
+						geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }),
+						aliasForEntity(entityHash),
+					)
 					if (next == null) return
 					await setEntityAlias(entityHash, next)
 					showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
 					await paintProfilePopup(popup, entity)
+					await refreshAliasDependentUi()
 				})().catch(error => {
 					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 				})

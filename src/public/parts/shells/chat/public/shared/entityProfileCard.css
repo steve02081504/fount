@@ -88,16 +88,33 @@
 	padding: 0 20px 22px;
 }
 
+.hub-profile-popup-avatar-wrap {
+	position: relative;
+	display: inline-block;
+}
+
+.hub-profile-popup-avatar {
+	display: grid;
+	place-items: center;
+	width: 88px;
+	height: 88px;
+	overflow: hidden;
+	border: 6px solid var(--hub-popover-bg, var(--color-base-200));
+	border-radius: 50%;
+	font-size: 30px;
+	font-weight: 820;
+	box-shadow: 0 6px 18px rgb(0 0 0 / 28%);
+}
+
+.hub-profile-popup-identity {
+	margin-top: 12px;
+}
+
 .hub-profile-popup-actions {
-	position: absolute;
-	top: 54px;
-	right: 18px;
-	z-index: 2;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: flex-end;
 	gap: 6px;
-	max-width: 210px;
+	margin-top: 14px;
 }
 
 .hub-profile-popup-actions:not(:has(button:not([hidden]))) {
@@ -112,23 +129,9 @@
 	font-size: 11px;
 }
 
-.hub-profile-popup-avatar-wrap {
-	position: relative;
-	display: inline-block;
-}
-
-.hub-profile-popup-avatar {
-	display: grid;
-	place-items: center;
-	width: 88px;
-	height: 88px;
-	margin-bottom: 12px;
-	overflow: hidden;
-	border: 6px solid var(--hub-popover-bg, var(--color-base-200));
-	border-radius: 50%;
-	font-size: 30px;
-	font-weight: 820;
-	box-shadow: 0 6px 18px rgb(0 0 0 / 28%);
+.hub-profile-popup-dm-button:not([hidden]) {
+	flex: 1 1 100%;
+	justify-content: center;
 }
 
 .hub-profile-popup-avatar img {
@@ -140,7 +143,7 @@
 .hub-profile-popup-status-dot {
 	position: absolute;
 	right: 1px;
-	bottom: 13px;
+	bottom: 1px;
 	width: 16px;
 	height: 16px;
 	border: 4px solid var(--hub-popover-bg, var(--color-base-200));
@@ -278,7 +281,7 @@
 
 .entity-attribution-warning-host,
 .entity-owned-by-host {
-	margin-top: 9px;
+	margin-top: 12px;
 }
 
 .entity-attribution-warning-box,
@@ -349,7 +352,7 @@
 }
 
 .entity-profile-card--embedded .hub-profile-popup-status-dot {
-	bottom: 13px;
+	bottom: 1px;
 }
 
 .entity-profile-card--embedded .hub-profile-popup-name {
@@ -363,10 +366,5 @@
 @media (max-width: 420px) {
 	.hub-profile-popup {
 		border-radius: 16px;
-	}
-
-	.hub-profile-popup-actions {
-		position: static;
-		margin: 0 0 10px 100px;
 	}
 }

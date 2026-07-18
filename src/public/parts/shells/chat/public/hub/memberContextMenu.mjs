@@ -7,9 +7,11 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { isCared, setCared } from '../shared/care.mjs'
+import { promptText } from '../shared/promptText.mjs'
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs'
 
+import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { hubStore } from './core/state.mjs'
@@ -99,12 +101,15 @@ export async function showMemberContextMenu(event, memberElement) {
 		void (async () => {
 			if (!entityHash) return
 			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
-			const next = prompt(geti18n('chat.hub.memberContext.setAliasPrompt', { name: displayName }), aliasForEntity(entityHash))
+			const next = await promptText(
+				geti18n('chat.hub.memberContext.setAliasPrompt', { name: displayName }),
+				aliasForEntity(entityHash),
+			)
 			if (next == null) return
 			await setEntityAlias(entityHash, next)
 			showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
 			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
-			void renderMemberList(hubStore.context.currentState)
+			await refreshAliasDependentUi()
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		})

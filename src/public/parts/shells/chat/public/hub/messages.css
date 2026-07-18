@@ -91,8 +91,42 @@
 	transition: background 0.12s ease;
 }
 
+/* 内容列：承接 header/bubble/footer，让悬浮栏相对定位 */
+.hub-message-stack {
+	min-width: 0;
+	width: 100%;
+	justify-self: stretch;
+}
+
+.chat-start .hub-message-stack {
+	grid-column-start: 2;
+}
+
+.chat-end .hub-message-stack {
+	grid-column-start: 1;
+}
+
+/*
+ * start：inner 拉满整列 → float:right 落在列右侧留白（短气泡不挡字）
+ * end：inner 随内容收缩并靠右 → 同样 float:right，贴在气泡外侧
+ */
+.hub-message-stack-inner {
+	display: flow-root;
+	max-width: 100%;
+}
+
+.chat-start .hub-message-stack-inner {
+	width: 100%;
+}
+
+.chat-end .hub-message-stack-inner {
+	width: fit-content;
+	margin-left: auto;
+}
+
 /* =========================================================
    悬停浮动操作栏（sticky：长消息下滑时仍贴在滚动视口顶部）
+   放在 stack 顶层而非 bubble 内：顶边与昵称行平齐
    ========================================================= */
 .hub-message-hover-bar {
 	position: sticky;
@@ -116,10 +150,6 @@
 	border-radius: 8px;
 	box-shadow: 0 2px 8px var(--hub-shadow);
 	padding: 2px;
-}
-
-.chat-end .hub-message-hover-bar {
-	float: left;
 }
 
 .hub-message-row:hover .hub-message-hover-bar,
