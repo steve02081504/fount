@@ -8,67 +8,15 @@ import { hubStore, setHubState, watchHubState } from '../core/state.mjs'
 
 import { bindReactions, messageRenderOpts, refreshReactionPerms, syncChannelActionsContext } from './messageContext.mjs'
 import {
-	applyChannelMessageDelete as applyChannelMessageDeleteImpl,
-	applyChannelMessageEdit as applyChannelMessageEditImpl,
-	loadMessages as loadMessagesImpl,
+	applyChannelMessageDelete,
+	applyChannelMessageEdit,
+	loadMessages,
 	refreshChannelMessagesIncremental,
-	refreshChannelViewDom as refreshChannelViewDomImpl,
-	scheduleChannelIncrementalRefresh as scheduleChannelIncrementalRefreshImpl,
+	refreshChannelViewDom,
+	scheduleChannelIncrementalRefresh,
 } from './messageRefresh.mjs'
-import { getMessagesContainer, scrollToBottom, scrollToMessageEventId as scrollToMessageEventIdImpl } from './messageScroll.mjs'
+import { getMessagesContainer, scrollToBottom, scrollToMessageEventId } from './messageScroll.mjs'
 import { retryFailedPendingMessage, sendCurrentMessage } from './messageSend.mjs'
-
-/** @returns {void} */
-function syncCtx() {
-	syncChannelActionsContext(loadMessages)
-}
-
-/** @returns {Promise<void>} */
-export async function loadMessages() {
-	return loadMessagesImpl(loadMessages, syncCtx)
-}
-
-/**
- * @param {HTMLElement} container 消息列表容器
- * @param {boolean} [scrollBottom=false] 是否滚动到底部
- * @returns {Promise<void>}
- */
-export async function refreshChannelViewDom(container, scrollBottom = false) {
-	return refreshChannelViewDomImpl(container, scrollBottom, loadMessages, syncCtx)
-}
-
-/**
- * @param {{ immediate?: boolean }} [options] 刷新选项
- * @returns {void}
- */
-export function scheduleChannelIncrementalRefresh(options) {
-	return scheduleChannelIncrementalRefreshImpl(options, loadMessages, syncCtx)
-}
-
-/**
- * @param {string} targetId 目标消息 eventId
- * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS message_edit.content
- * @returns {Promise<void>}
- */
-export async function applyChannelMessageEdit(targetId, editContent = null) {
-	return applyChannelMessageEditImpl(targetId, loadMessages, syncCtx, editContent)
-}
-
-/**
- * @param {string} targetId 目标消息 eventId
- * @returns {Promise<void>}
- */
-export async function applyChannelMessageDelete(targetId) {
-	return applyChannelMessageDeleteImpl(targetId, loadMessages, syncCtx)
-}
-
-/**
- * @param {string} eventId 目标消息 eventId
- * @returns {Promise<void>}
- */
-export async function scrollToMessageEventId(eventId) {
-	return scrollToMessageEventIdImpl(eventId, loadMessages, syncCtx)
-}
 
 /** @returns {Promise<void>} */
 export async function submitComposer() {
@@ -107,13 +55,19 @@ export function focusMessageEventId(eventId) {
  *
  */
 export {
+	applyChannelMessageDelete,
+	applyChannelMessageEdit,
 	bindReactions,
 	getMessagesContainer,
+	loadMessages,
 	messageRenderOpts,
 	refreshChannelMessagesIncremental,
+	refreshChannelViewDom,
 	refreshReactionPerms,
 	retryFailedPendingMessage,
+	scheduleChannelIncrementalRefresh,
 	scrollToBottom,
+	scrollToMessageEventId,
 	sendCurrentMessage,
 	syncChannelActionsContext,
 }

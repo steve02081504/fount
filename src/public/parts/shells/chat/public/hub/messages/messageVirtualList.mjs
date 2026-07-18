@@ -120,9 +120,8 @@ async function doLoadOlderMessages() {
 		return 0
 	hubStore.messages.channelMessagesSource = [...fresh, ...hubStore.messages.channelMessagesSource]
 	refreshChannelView()
-	const { loadMessages } = await import('./messages.mjs')
 	const { syncChannelActionsContext } = await import('./messageContext.mjs')
-	syncChannelActionsContext(loadMessages)
+	syncChannelActionsContext()
 	return fresh.length
 }
 
@@ -141,14 +140,13 @@ function sliceChannelMessagesPage(offset, limit) {
 
 /**
  * @param {HTMLElement} container 消息列表容器
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {void}
  */
-export function initChannelVirtualList(container, reload) {
+export function initChannelVirtualList(container) {
 	destroyChannelVirtualList()
 	/** @returns {void} */
 	function onVirtualListRenderComplete() {
-		decorateRenderedMessages(container, false, reload)
+		decorateRenderedMessages(container, false)
 	}
 	hubStore.messages.channelMessagePipeline = createMessagePipeline({
 		container,
@@ -179,14 +177,13 @@ export function initChannelVirtualList(container, reload) {
 /**
  * @param {HTMLElement} container 消息列表容器
  * @param {boolean} [shouldScroll=false] 是否滚动到底部
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {void}
  */
-export function decorateRenderedMessages(container, shouldScroll = false, reload) {
+export function decorateRenderedMessages(container, shouldScroll = false) {
 	localizeRenderedMessages(container)
 	syncStreamingSlotsFromDom(container)
 	applyAvatarsTo(container)
-	bindReactions(container, reload)
+	bindReactions(container)
 	bindChannelMessageActions(container)
 	bindMessageDragExport(container)
 	if (isTwoPartyCharDialogue()) {
@@ -206,22 +203,20 @@ export function decorateRenderedMessages(container, shouldScroll = false, reload
 /**
  * @param {HTMLElement} container 消息列表容器
  * @param {string} eventId 目标 eventId
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {void}
  */
-export function rebuildVirtualListAtEvent(container, eventId, reload) {
+export function rebuildVirtualListAtEvent(container, eventId) {
 	setPendingScrollTarget(eventId)
 	destroyChannelVirtualList()
-	initChannelVirtualList(container, reload)
-	decorateRenderedMessages(container, false, reload)
+	initChannelVirtualList(container)
+	decorateRenderedMessages(container, false)
 }
 
 /**
  * @param {string} eventId 目标 eventId
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {void}
  */
-export function queueHighlightAfterRebuild(eventId, reload) {
+export function queueHighlightAfterRebuild(eventId) {
 	setPendingHighlightEventId(eventId)
-	rebuildVirtualListAtEvent(getMessagesContainer(), eventId, reload)
+	rebuildVirtualListAtEvent(getMessagesContainer(), eventId)
 }

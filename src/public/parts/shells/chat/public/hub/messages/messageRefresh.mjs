@@ -28,7 +28,7 @@ import {
 	scheduleDebouncedChannelRefresh,
 } from './channelRefreshScheduler.mjs'
 import { loadNonTextChannel } from './channelTypeRouter.mjs'
-import { bindReactions, messageRenderOpts, refreshReactionPerms } from './messageContext.mjs'
+import { bindReactions, messageRenderOpts, refreshReactionPerms, syncChannelActionsContext } from './messageContext.mjs'
 import {
 	getMessagesContainer,
 	scrollToBottom,
@@ -95,10 +95,9 @@ function restoreChannelViewCache(groupId, channelId) {
 /**
  * @param {HTMLElement} container 消息列表容器
  * @param {Record<string, Record<string, { voters?: string[] }>>} reactions 反应映射
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {Promise<void>}
  */
-async function patchReactionRows(container, reactions, reload) {
+async function patchReactionRows(container, reactions) {
 	hubStore.messages.channelReactions = reactions
 	const options = messageRenderOpts()
 	for (const message of hubStore.messages.channelMessages) {
@@ -122,17 +121,15 @@ async function patchReactionRows(container, reactions, reload) {
 		if (existing) existing.replaceWith(next)
 		else row.appendChild(next)
 	}
-	bindReactions(container, reload)
+	bindReactions(container)
 }
 
 /**
  * @param {object} message 入站消息行
  * @param {{ scroll?: boolean }} [options] 滚动选项
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-async function applyIncomingMessage(message, { scroll = false } = {}, reload, syncCtx) {
+async function applyIncomingMessage(message, { scroll = false } = {}) {
 	const container = getMessagesContainer()
 	if (!container) return
 
@@ -147,7 +144,7 @@ async function applyIncomingMessage(message, { scroll = false } = {}, reload, sy
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
+	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
 
 	const viewIdx = hubStore.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
 	const row = viewIdx >= 0 ? hubStore.messages.channelMessages[viewIdx] : null
@@ -159,19 +156,17 @@ async function applyIncomingMessage(message, { scroll = false } = {}, reload, sy
 	else
 		await hubStore.messages.channelMessagePipeline.refresh()
 
-	if (!isThreadDrawerOpen()) syncCtx()
+	if (!isThreadDrawerOpen()) syncChannelActionsContext()
 	updateLastMessageId()
-	decorateRenderedMessages(container, scroll, reload)
+	decorateRenderedMessages(container, scroll)
 }
 
 /**
  * @param {object[]} batch 入站消息批次
  * @param {{ scroll?: boolean }} [options] 滚动选项
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-async function applyIncomingMessageBatch(batch, { scroll = false } = {}, reload, syncCtx) {
+async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	const container = getMessagesContainer()
 	if (!container || !Array.isArray(batch) || !batch.length) {
 		if (container && scroll) scrollToBottom()
@@ -183,7 +178,7 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}, reload,
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
+	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
 
 	const replaceRows = []
 	const appendRows = []
@@ -206,19 +201,17 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}, reload,
 	if (!replaceRows.length && !appendRows.length)
 		await hubStore.messages.channelMessagePipeline.refresh()
 
-	if (!isThreadDrawerOpen()) syncCtx()
+	if (!isThreadDrawerOpen()) syncChannelActionsContext()
 	updateLastMessageId()
-	decorateRenderedMessages(container, scroll, reload)
+	decorateRenderedMessages(container, scroll)
 }
 
 /**
  * @param {string} eventId 目标 eventId
  * @param {object} row 替换行
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-async function replaceChannelMessageRow(eventId, row, reload, syncCtx) {
+async function replaceChannelMessageRow(eventId, row) {
 	const id = String(eventId).trim()
 	const sourceIdx = hubStore.messages.channelMessagesSource.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
@@ -232,7 +225,7 @@ async function replaceChannelMessageRow(eventId, row, reload, syncCtx) {
 	const container = getMessagesContainer()
 	if (!container) return
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container, reload)
+	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
 	const viewIdx = hubStore.messages.channelMessages.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
@@ -241,21 +234,19 @@ async function replaceChannelMessageRow(eventId, row, reload, syncCtx) {
 		await hubStore.messages.channelMessagePipeline.replaceItem(viewIdx, viewRow)
 	else if (hubStore.messages.channelMessagePipeline)
 		await hubStore.messages.channelMessagePipeline.refresh()
-	syncCtx()
+	syncChannelActionsContext()
 	updateLastMessageId()
-	decorateRenderedMessages(container, false, reload)
+	decorateRenderedMessages(container, false)
 }
 
 /**
  * @param {HTMLElement} container 消息列表容器
  * @param {boolean} [scrollBottom=false] 是否滚动到底部
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-export async function refreshChannelViewDom(container, scrollBottom = false, reload, syncCtx) {
+export async function refreshChannelViewDom(container, scrollBottom = false) {
 	refreshChannelView()
-	syncCtx()
+	syncChannelActionsContext()
 	if (!hubStore.messages.channelMessages.length) {
 		destroyChannelVirtualList()
 		await mountTemplate(container, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
@@ -263,7 +254,7 @@ export async function refreshChannelViewDom(container, scrollBottom = false, rel
 		return
 	}
 	if (!hubStore.messages.channelMessagePipeline)
-		initChannelVirtualList(container, reload)
+		initChannelVirtualList(container)
 	else
 		await hubStore.messages.channelMessagePipeline.refresh()
 	updateLastMessageId()
@@ -271,11 +262,9 @@ export async function refreshChannelViewDom(container, scrollBottom = false, rel
 }
 
 /**
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-export async function loadMessages(reload, syncCtx) {
+export async function loadMessages() {
 	hubStore.messages.channelSearchQuery = null
 	const searchInput = document.getElementById('hub-header-search')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
@@ -297,7 +286,7 @@ export async function loadMessages(reload, syncCtx) {
 		if (hadStale) {
 			refreshChannelView()
 			await refreshReactionPerms()
-			initChannelVirtualList(container, reload)
+			initChannelVirtualList(container)
 			hubStore.messages.channelPipelineKey = pipelineKey
 		}
 		else
@@ -319,7 +308,7 @@ export async function loadMessages(reload, syncCtx) {
 		hubStore.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
 		refreshChannelView()
 		await refreshReactionPerms()
-		syncCtx()
+		syncChannelActionsContext()
 		if (!messages.length) {
 			destroyChannelVirtualList()
 			hubStore.messages.channelPipelineKey = null
@@ -337,7 +326,7 @@ export async function loadMessages(reload, syncCtx) {
 		if (hubStore.messages.channelMessagePipeline)
 			await hubStore.messages.channelMessagePipeline.refresh()
 		else {
-			initChannelVirtualList(container, reload)
+			initChannelVirtualList(container)
 			hubStore.messages.channelPipelineKey = pipelineKey
 		}
 		if (softReload)
@@ -362,11 +351,9 @@ export async function loadMessages(reload, syncCtx) {
 }
 
 /**
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-export async function refreshChannelMessagesIncremental(reload, syncCtx) {
+export async function refreshChannelMessagesIncremental() {
 	const searchActive = !!hubStore.messages.channelSearchQuery
 	if (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
 	const chType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
@@ -407,22 +394,20 @@ export async function refreshChannelMessagesIncremental(reload, syncCtx) {
 	const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
 	if (reactionSig !== hubStore.messages.reactionsEtag) {
 		hubStore.messages.reactionsEtag = reactionSig
-		await patchReactionRows(container, reactions || {}, reload)
+		await patchReactionRows(container, reactions || {})
 		if (!messages.length) return
 	}
 	hubStore.messages.channelReactions = reactions || {}
-	await applyIncomingMessageBatch(messages, { scroll: nearBottom }, reload, syncCtx)
+	await applyIncomingMessageBatch(messages, { scroll: nearBottom })
 }
 
 /**
  * @param {{ immediate?: boolean }} [options] 调度选项
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {void}
  */
-export function scheduleChannelIncrementalRefresh({ immediate = false } = {}, reload, syncCtx) {
+export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
 	scheduleDebouncedChannelRefresh(
-		() => refreshChannelMessagesIncremental(reload, syncCtx),
+		() => refreshChannelMessagesIncremental(),
 		200,
 		{ immediate },
 	)
@@ -430,12 +415,10 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}, re
 
 /**
  * @param {string} targetId 目标消息 eventId
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @param {{ newContent?: object, fileCount?: number } | null} [editContent] WS 带来的 message_edit.content
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageEdit(targetId, reload, syncCtx, editContent = null) {
+export async function applyChannelMessageEdit(targetId, editContent = null) {
 	const id = String(targetId || '').trim()
 	if (!id || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
@@ -446,7 +429,7 @@ export async function applyChannelMessageEdit(targetId, reload, syncCtx, editCon
 		)
 		if (sourceIdx >= 0) {
 			const patched = applyMessageEditToRow(hubStore.messages.channelMessagesSource[sourceIdx], editContent)
-			await replaceChannelMessageRow(id, patched, reload, syncCtx)
+			await replaceChannelMessageRow(id, patched)
 			return
 		}
 	}
@@ -454,19 +437,17 @@ export async function applyChannelMessageEdit(targetId, reload, syncCtx, editCon
 	const rows = await fetchRowsForMessageEvent(hubStore.context.currentGroupId, hubStore.context.currentChannelId, id)
 	const row = rows.find(m => eventIdsEqual(m.eventId, id))
 	if (!row) {
-		scheduleChannelIncrementalRefresh({ immediate: true }, reload, syncCtx)
+		scheduleChannelIncrementalRefresh({ immediate: true })
 		return
 	}
-	await replaceChannelMessageRow(id, row, reload, syncCtx)
+	await replaceChannelMessageRow(id, row)
 }
 
 /**
  * @param {string} targetId 目标消息 eventId
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {() => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-export async function applyChannelMessageDelete(targetId, reload, syncCtx) {
+export async function applyChannelMessageDelete(targetId) {
 	const id = String(targetId || '').trim()
 	if (!id) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
@@ -477,7 +458,7 @@ export async function applyChannelMessageDelete(targetId, reload, syncCtx) {
 	refreshChannelView()
 	if (hubStore.messages.channelMessagePipeline)
 		await hubStore.messages.channelMessagePipeline.deleteItem(idx)
-	syncCtx()
+	syncChannelActionsContext()
 	updateLastMessageId()
-	if (container) decorateRenderedMessages(container, false, reload)
+	if (container) decorateRenderedMessages(container, false)
 }

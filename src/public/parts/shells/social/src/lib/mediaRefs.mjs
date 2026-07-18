@@ -1,5 +1,12 @@
+import { resolveSensitiveMedia as resolveSensitiveMediaShared } from 'fount/public/parts/shells/chat/public/shared/messageFields.mjs'
+
 const ALT_MAX = 1500
 const MEDIA_MAX = 16
+
+/**
+ * 与 chat `messageFields.resolveSensitiveMedia` 同实现；Social 入口再导出以免调用方改路径。
+ */
+export const resolveSensitiveMedia = resolveSensitiveMediaShared
 
 /**
  * 清理入站 / 本机写入的 mediaRefs（截断 alt、限制数量）。
@@ -20,15 +27,4 @@ export function sanitizeMediaRefs(raw) {
 		out.push(cleaned)
 	}
 	return out
-}
-
-/**
- * @param {unknown} value 原始开关
- * @param {string} [contentWarning] 内容警告
- * @returns {boolean} 是否视为敏感媒体
- */
-export function resolveSensitiveMedia(value, contentWarning) {
-	if (value === true) return true
-	if (value === false) return false
-	return Boolean(String(contentWarning || '').trim())
 }

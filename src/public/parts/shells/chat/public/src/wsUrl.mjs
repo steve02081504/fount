@@ -3,7 +3,7 @@
  * 【职责】根据当前页面协议生成 ws/wss URL 与群 WebSocket 完整路径。
  * 【原理】wsProtocol 映射 https→wss；buildChatGroupWebSocketUrl 拼 ownerNodeHash 与 groupId。
  * 【数据结构】path 字符串、ownerNodeHash、groupId。
- * 【关联】groupWsClient.mjs；Hub 建连时调用。
+ * 【关联】Hub `stream/connection.mjs` 建连时调用。
  */
 /**
  * @returns {'ws:' | 'wss:'} 与当前页面协议匹配的 WebSocket 协议

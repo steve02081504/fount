@@ -6,15 +6,13 @@
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { createDocumentFragmentFromHtmlStringNoScriptActivation } from '/scripts/features/template.mjs'
-import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
-import { isTrustedMarkdownAuthor } from '../src/trustedAuthors.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
 import { customProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
+import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
 
 /**
  * 清扫远端资料链接，只允许浏览器安全的网页协议。
@@ -269,17 +267,12 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 		return
 	}
 	delete bioElement.dataset.i18n
-	bioElement.classList.add('markdown-body')
-	const trusted = entityHash
-		? await isTrustedMarkdownAuthor(entityHash, {
-			selfEntityHash: options.selfEntityHash,
-			nodeHash: options.nodeHash,
-			authorOwnerEntityHash: options.authorOwnerEntityHash,
-			viewerOwnerEntityHash: options.viewerOwnerEntityHash,
-		})
-		: false
-	const html = await renderMarkdownAsString(text, undefined, { allowDangerousHtml: trusted })
-	bioElement.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
+	await mountTrustedMarkdown(bioElement, text, entityHash, {
+		selfEntityHash: options.selfEntityHash,
+		nodeHash: options.nodeHash,
+		authorOwnerEntityHash: options.authorOwnerEntityHash,
+		viewerOwnerEntityHash: options.viewerOwnerEntityHash,
+	})
 }
 
 /**

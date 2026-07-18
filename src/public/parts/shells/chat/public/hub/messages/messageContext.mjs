@@ -6,6 +6,12 @@ import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { isTwoPartyCharDialogue } from './messageShared.mjs'
 import { wireMessageReactions } from './reactions.mjs'
 
+/** 模块级频道重载（避免 messageRefresh ↔ callers 层层传 loadMessages）。 */
+export async function reloadChannel() {
+	const { loadMessages } = await import('./messageRefresh.mjs')
+	return loadMessages()
+}
+
 /** @returns {Promise<void>} 刷新当前频道反应权限 */
 export async function refreshReactionPerms() {
 	if (!hubStore.context.currentState || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) {
@@ -42,22 +48,21 @@ export function messageRenderOpts() {
 	}
 }
 
-/** @param {() => Promise<void>} reload @returns {void} */
-export function syncChannelActionsContext(reload) {
+/** @returns {void} */
+export function syncChannelActionsContext() {
 	setChannelMessageActionsContext({
 		groupId: hubStore.context.currentGroupId,
 		channelId: hubStore.context.currentChannelId,
 		messages: hubStore.messages.channelMessages,
-		reload,
+		reload: reloadChannel,
 	})
 }
 
 /**
  * @param {HTMLElement} container 消息列表容器
- * @param {() => Promise<void>} reload 重载消息回调
  * @returns {void}
  */
-export function bindReactions(container, reload) {
+export function bindReactions(container) {
 	wireMessageReactions(container, {
 		groupId: hubStore.context.currentGroupId,
 		channelId: hubStore.context.currentChannelId,
@@ -65,6 +70,6 @@ export function bindReactions(container, reload) {
 		reactions: hubStore.messages.channelReactions,
 		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
 		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
-		reload,
+		reload: reloadChannel,
 	})
 }

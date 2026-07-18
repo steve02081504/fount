@@ -7,11 +7,14 @@ export {
 } from '/parts/shells:chat/shared/entityAvatar.mjs'
 
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
-import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-
-import { renderMarkdownAsString } from '/scripts/features/markdown/index.mjs'
+import { formatEntityAtId } from '/parts/shells:chat/shared/entityHash.mjs'
+import { resolveDisplayName } from '/parts/shells:chat/shared/nameResolve.mjs'
+import {
+	mountTrustedMarkdown,
+	renderTrustedMarkdownHtml,
+} from '/parts/shells:chat/shared/trustedMarkdown.mjs'
 import { isTrustedMarkdownAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
-import { createDocumentFragmentFromHtmlStringNoScriptActivation, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
@@ -59,40 +62,52 @@ export function entityHandle(entityHash, profile = null) {
 }
 
 /**
- * 返回作者展示名（优先 profile，否则 hash 缩写）。
+ * 返回作者展示名（别名 → profile.name → entityHash 短码）。
  * @param {string} entityHash 作者 hash
  * @param {object} [profile] 可选资料
  * @returns {string} 展示名
  */
 export function authorLabel(entityHash, profile) {
-	return aliasForEntity(entityHash) || profile?.name || formatHashShort(entityHash, { headLen: 8, tailLen: 4 })
-}
-
-/**
- * 判断作者是否应对 Markdown 走可信 pipeline（本人、本人 agent、自己的主人、或信任表）。
- * @param {string} pubKeyHash 作者 hash
- * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
- * @returns {Promise<boolean>} 是否可信
- */
-export async function isTrusted(pubKeyHash, { ownerEntityHash } = {}) {
-	return isTrustedMarkdownAuthor(pubKeyHash, {
-		selfEntityHash: viewerEntityHash(),
-		nodeHash: socialState.viewerNodeHash,
-		authorOwnerEntityHash: ownerEntityHash,
-		viewerOwnerEntityHash: socialState.viewerProfile?.ownerEntityHash,
+	return resolveDisplayName({
+		entityHash,
+		alias: aliasForEntity(entityHash),
+		profileName: profile?.name,
 	})
 }
 
 /**
- * 将 Markdown 源本机渲染为 HTML（默认/安全两档，扩展走 registry）。
+ * Social 信任上下文（本人 / 本地 agent / 所属主人 / 信任表）。
+ * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
+ * @returns {{ selfEntityHash: string | null, nodeHash: string | null, authorOwnerEntityHash?: string | null, viewerOwnerEntityHash?: string | null }}
+ */
+function socialTrustCtx({ ownerEntityHash } = {}) {
+	return {
+		selfEntityHash: viewerEntityHash(),
+		nodeHash: socialState.viewerNodeHash,
+		authorOwnerEntityHash: ownerEntityHash,
+		viewerOwnerEntityHash: socialState.viewerProfile?.ownerEntityHash,
+	}
+}
+
+/**
+ * 判断作者是否应对 Markdown 走可信 pipeline。
+ * @param {string} pubKeyHash 作者 hash
+ * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
+ * @returns {Promise<boolean>} 是否可信
+ */
+export async function isTrusted(pubKeyHash, options = {}) {
+	return isTrustedMarkdownAuthor(pubKeyHash, socialTrustCtx(options))
+}
+
+/**
+ * 将 Markdown 源本机渲染为 HTML（默认/安全两档）。
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
- * @param {{ ownerEntityHash?: string | null }} [options] 所属主人（本人的 agent）
+ * @param {{ ownerEntityHash?: string | null }} [options] 所属主人
  * @returns {Promise<string>} HTML
  */
 export async function renderMarkdown(markdown, pubKeyHash, options = {}) {
-	const trusted = await isTrusted(pubKeyHash, options)
-	return renderMarkdownAsString(markdown || '', undefined, { allowDangerousHtml: trusted })
+	return renderTrustedMarkdownHtml(markdown || '', pubKeyHash, socialTrustCtx(options))
 }
 
 /**
@@ -104,10 +119,7 @@ export async function renderMarkdown(markdown, pubKeyHash, options = {}) {
  * @returns {Promise<void>}
  */
 export async function mountMarkdown(host, markdown, pubKeyHash, options = {}) {
-	if (!(host instanceof HTMLElement)) return
-	const html = await renderMarkdown(markdown, pubKeyHash, options)
-	host.classList.add('markdown-body')
-	host.replaceChildren(createDocumentFragmentFromHtmlStringNoScriptActivation(html))
+	await mountTrustedMarkdown(host, markdown || '', pubKeyHash, socialTrustCtx(options))
 }
 
 /**

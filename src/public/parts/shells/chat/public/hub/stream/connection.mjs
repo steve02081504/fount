@@ -3,7 +3,6 @@
  * 【职责】群 Hub WebSocket 连接生命周期：connect / close / wait / isOpen。
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { setActiveWebSocket } from '../../src/groupWsClient.mjs'
 import { buildChatGroupWebSocketUrl } from '../../src/wsUrl.mjs'
 import { hubStore } from '../core/state.mjs'
 
@@ -11,6 +10,7 @@ import * as conn from './connectionState.mjs'
 import { handleChannelMessageWire } from './handlers/channelMessage.mjs'
 import { handleDagEventWire } from './handlers/dagEvent.mjs'
 import { handleVolatileStreamWire } from './handlers/streamChunk.mjs'
+import { attachGroupWebSocketErrorHandlers } from './outbound.mjs'
 import { resetVolatileStreamState } from './volatileSlots.mjs'
 
 /** @returns {boolean} 群 WS 已 OPEN */
@@ -26,7 +26,6 @@ export function closeGroupWebSocket() {
 	}
 	catch { /* empty */ }
 	conn.setConnectionHandles(null, null, null)
-	setActiveWebSocket(null)
 }
 
 /**
@@ -95,7 +94,7 @@ export function connectGroupWebSocket(groupId, channelId) {
 	}
 	const socket = new WebSocket(buildChatGroupWebSocketUrl(ownerNodeHash, groupId))
 	conn.setConnectionHandles(socket, groupId, channelId)
-	setActiveWebSocket(socket)
+	attachGroupWebSocketErrorHandlers(socket)
 	socket.addEventListener('open', () => {
 		if (hubStore.viewer.nodeHash && socket.readyState === WebSocket.OPEN)
 			socket.send(JSON.stringify({
@@ -119,7 +118,6 @@ export function connectGroupWebSocket(groupId, channelId) {
 	socket.addEventListener('close', () => {
 		if (conn.groupWebSocket === socket) {
 			conn.setConnectionHandles(null, null, null)
-			setActiveWebSocket(null)
 			resetVolatileStreamState()
 		}
 	})

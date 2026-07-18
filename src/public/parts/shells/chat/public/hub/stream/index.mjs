@@ -14,6 +14,15 @@ export {
  *
  */
 export {
+	attachGroupWebSocketErrorHandlers,
+	reportTyping,
+	sendWebsocketMessage,
+	stopGeneration,
+} from './outbound.mjs'
+/**
+ *
+ */
+export {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
 	refreshStopGenerationButton,

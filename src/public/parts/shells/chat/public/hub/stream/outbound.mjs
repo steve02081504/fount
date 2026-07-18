@@ -1,39 +1,17 @@
 /**
- * 【文件】public/src/groupWsClient.mjs
- * 【职责】当前活跃群 WebSocket 单例：出站 send、错误处理与 stop_generation。
- * 【原理】setActiveWebSocket 绑定 Hub 打开的 socket；attachGroupWebSocketErrorHandlers 统一日志。
- * 【数据结构】activeGroupWebSocket。
- * 【关联】wsUrl.mjs；Hub WS 连接生命周期。
+ * 【文件】public/hub/stream/outbound.mjs
+ * 【职责】当前群 WebSocket 出站：typing / stop_generation / 通用 JSON send。
+ * 【原理】读写 connectionState.groupWebSocket；与 connection.mjs 生命周期共用同一句柄。
  */
-let activeGroupWebSocket = null
+import * as conn from './connectionState.mjs'
 
 /**
- * 绑定出站群 WebSocket（私聊与联邦群共用同一发送口）。
- * @param {WebSocket | null} socket 群组 WS；卸载时为 null
- * @returns {void}
- */
-export function setActiveWebSocket(socket) {
-	activeGroupWebSocket = socket
-}
-
-/**
- * @param {WebSocket} socket 群组 WS
- * @returns {void}
- */
-export function attachGroupWebSocketErrorHandlers(socket) {
-	socket.addEventListener('error', event => {
-		console.error('group WebSocket error:', event)
-	})
-}
-
-/**
- * 经当前已绑定的群 WebSocket 发送 JSON（无连接则仅打日志）。
  * @param {object} message 消息体
  * @returns {void}
  */
 export function sendWebsocketMessage(message) {
-	if (activeGroupWebSocket?.readyState === WebSocket.OPEN)
-		activeGroupWebSocket.send(JSON.stringify(message))
+	if (conn.groupWebSocket?.readyState === WebSocket.OPEN)
+		conn.groupWebSocket.send(JSON.stringify(message))
 	else
 		console.error('WebSocket is not connected.')
 }
@@ -49,9 +27,9 @@ let lastTypingReportAt = 0
 export function reportTyping(channelId) {
 	const now = Date.now()
 	if (now - lastTypingReportAt < 3000) return
-	if (activeGroupWebSocket?.readyState !== WebSocket.OPEN) return
+	if (conn.groupWebSocket?.readyState !== WebSocket.OPEN) return
 	lastTypingReportAt = now
-	activeGroupWebSocket.send(JSON.stringify({
+	conn.groupWebSocket.send(JSON.stringify({
 		type: 'typing',
 		payload: { channelId: channelId || 'default' },
 	}))
@@ -72,5 +50,15 @@ export function stopGeneration(target) {
 			messageId: messageId || undefined,
 			dagEventId: dagEventId || undefined,
 		},
+	})
+}
+
+/**
+ * @param {WebSocket} socket 群组 WS
+ * @returns {void}
+ */
+export function attachGroupWebSocketErrorHandlers(socket) {
+	socket.addEventListener('error', event => {
+		console.error('group WebSocket error:', event)
 	})
 }

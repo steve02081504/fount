@@ -26,8 +26,8 @@ function currentChannelId() {
 
 /** @returns {Promise<void>} 刷新频道消息 */
 async function reloadMessages() {
-	const { loadMessages } = await import('./messages/messages.mjs')
-	await loadMessages()
+	const { reloadChannel } = await import('./messages/messageContext.mjs')
+	await reloadChannel()
 }
 
 /**

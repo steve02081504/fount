@@ -6,7 +6,7 @@
 import { onServerEvent } from '../../../../../scripts/api/server_events.mjs'
 import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
 import { usingTemplates } from '../../../../../scripts/features/template.mjs'
-import { reportTyping } from '../../src/groupWsClient.mjs'
+import { reportTyping } from '../stream/outbound.mjs'
 import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'

@@ -88,7 +88,7 @@ export function closeThreadDrawer() {
 	wrap.replaceChildren()
 	activeThread = null
 	threadRenderGeneration++
-	syncChannelActionsContext(() => import('./messages/messages.mjs').then(m => m.loadMessages()))
+	syncChannelActionsContext()
 }
 
 /**

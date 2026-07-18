@@ -1,6 +1,7 @@
 import { hubStore } from '../core/state.mjs'
 
 import { ensureMessageLoaded, findMessageViewIndex } from './channelMessageStore.mjs'
+import { syncChannelActionsContext } from './messageContext.mjs'
 import { clearHubEmptyPlaceholder, hubMessageRowSelector, messageIdSelector, refreshChannelView } from './messageShared.mjs'
 import { rebuildVirtualListAtEvent } from './messageVirtualList.mjs'
 
@@ -54,11 +55,9 @@ export { messageIdSelector }
 
 /**
  * @param {string} eventId 目标消息 eventId
- * @param {() => Promise<void>} reload 重载消息回调
- * @param {(container: HTMLElement) => void} syncCtx 同步操作上下文
  * @returns {Promise<void>}
  */
-export async function scrollToMessageEventId(eventId, reload, syncCtx) {
+export async function scrollToMessageEventId(eventId) {
 	const norm = String(eventId || '').trim()
 	if (!norm) return
 	const container = getMessagesContainer()
@@ -75,7 +74,7 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 	if (!result.ok) return
 
 	refreshChannelView()
-	syncCtx()
+	syncChannelActionsContext()
 
 	row = sel ? container.querySelector(sel) : null
 	if (row instanceof HTMLElement) {
@@ -93,7 +92,7 @@ export async function scrollToMessageEventId(eventId, reload, syncCtx) {
 		await hubStore.messages.channelMessagePipeline.refresh()
 	
 	else {
-		rebuildVirtualListAtEvent(container, norm, reload)
+		rebuildVirtualListAtEvent(container, norm)
 		if (hubStore.messages.channelMessagePipeline)
 			await hubStore.messages.channelMessagePipeline.refresh()
 	}
