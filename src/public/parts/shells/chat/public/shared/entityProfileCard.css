@@ -113,7 +113,8 @@
 .hub-profile-popup-actions {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 6px;
+	align-items: center;
+	gap: 2px 4px;
 	margin-top: 14px;
 }
 
@@ -127,6 +128,13 @@
 	border-radius: 9px;
 	padding-inline: 10px;
 	font-size: 11px;
+}
+
+.hub-profile-popup-actions .btn-ghost {
+	min-height: 28px;
+	height: 28px;
+	padding-inline: 8px;
+	font-weight: 550;
 }
 
 .hub-profile-popup-dm-button:not([hidden]) {
@@ -204,15 +212,31 @@
 }
 
 .hub-profile-popup-status-text {
-	margin-top: 12px;
+	margin-top: 5px;
 	color: var(--hub-text-muted, color-mix(in srgb, var(--color-base-content) 62%, transparent));
 	font-size: 12px;
 	line-height: 1.35;
 }
 
+.hub-profile-popup-status-text:empty {
+	display: none;
+}
+
+.entity-profile-card-meta {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.entity-profile-card-meta:not(:has(> :not([hidden]))) {
+	display: none;
+	margin-top: 0;
+}
+
 .hub-profile-popup-divider {
 	height: 1px;
-	margin: 16px 0 13px;
+	margin: 14px 0 12px;
 	background: color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 9%, transparent);
 }
 
@@ -239,7 +263,6 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 6px;
-	margin-top: 11px;
 }
 
 .hub-profile-tag {
@@ -277,11 +300,6 @@
 .entity-profile-card-link:hover {
 	background: color-mix(in srgb, var(--entity-card-accent) 14%, transparent);
 	color: color-mix(in srgb, var(--entity-card-accent) 62%, var(--hub-text-bright, var(--color-base-content)));
-}
-
-.entity-attribution-warning-host,
-.entity-owned-by-host {
-	margin-top: 12px;
 }
 
 .entity-attribution-warning-box,
