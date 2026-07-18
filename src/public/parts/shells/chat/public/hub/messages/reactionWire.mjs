@@ -1,5 +1,5 @@
 /**
- * 【文件】public/hub/messages/reactions.mjs
+ * 【文件】public/hub/messages/reactionWire.mjs
  * 【职责】消息反应（emoji）点击委托：在频道视图容器上切换添加/移除反应并刷新反应条。
  * 【原理】`wireMessageReactions` 监听 `.hub-message-reaction` 点击，更新行内反应计数与选中态。依赖 `render/reactions.renderMessageReactionsHtml` 已渲染的按钮；本地乐观更新后可触发频道刷新。
  * 【数据结构】见函数入参与返回值 JSDoc。

@@ -1,7 +1,7 @@
 import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/features/template.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
-import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderMarkdown } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderTrustedPostMarkdown } from '../lib/display.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { socialState } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -46,7 +46,7 @@ export async function buildReplyRow(reply) {
 	const text = reply.post?.content?.text || ''
 	const bodyHtml = reply.post?.decryptView?.failed
 		? '<em data-i18n="social.feed.decryptFailed"></em>'
-		: await renderMarkdown(text, entityHash)
+		: await renderTrustedPostMarkdown(text, entityHash)
 	const engagementBarHtml = await renderEngagementBarHtml(reply, actionKey)
 	rememberEntityHandle(entityHash, reply.authorProfile)
 	row.innerHTML = `

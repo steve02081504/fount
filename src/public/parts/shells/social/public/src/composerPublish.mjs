@@ -1,4 +1,5 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { readCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFields.mjs'
 
 import {
 	clearComposer,
@@ -10,17 +11,15 @@ import { socialState } from './state.mjs'
 import { readVisibilityPicker } from './visibilityPicker.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
+const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveMedia' }
+
 /**
  * 从 composer 表单构建发帖 API 请求体（媒体须已上传）。
  * @param {object[]} mediaRefs 已上传 refs
  * @returns {object} 发帖 body
  */
 export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
-	const contentWarning = document.getElementById('postContentWarning')?.value?.trim() || ''
-	const sensitiveEl = document.getElementById('postSensitiveMedia')
-	const sensitiveMedia = sensitiveEl instanceof HTMLInputElement
-		? sensitiveEl.checked
-		: Boolean(contentWarning)
+	const { contentWarning, sensitiveMedia } = readCwSensitive(SOCIAL_CW_IDS)
 	const visibilityDraft = readVisibilityPicker(document.getElementById('composer'))
 	const albumSelect = document.getElementById('postAlbumSelect')
 	const albumIds = albumSelect instanceof HTMLSelectElement
@@ -36,7 +35,7 @@ export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 		...albumIds.length ? { albumIds } : {},
 		locale: document.getElementById('postLocale').value.trim() || 'zh-CN',
 		...contentWarning ? { contentWarning } : {},
-		...sensitiveMedia || contentWarning ? { sensitiveMedia: true } : {},
+		...sensitiveMedia ? { sensitiveMedia: true } : {},
 	}
 	if (socialState.pendingQuoteRef)
 		body.quoteRef = {

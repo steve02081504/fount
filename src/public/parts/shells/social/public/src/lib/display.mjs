@@ -78,7 +78,7 @@ export function authorLabel(entityHash, profile) {
 /**
  * Social 信任上下文（本人 / 本地 agent / 所属主人 / 信任表）。
  * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
- * @returns {{ selfEntityHash: string | null, nodeHash: string | null, authorOwnerEntityHash?: string | null, viewerOwnerEntityHash?: string | null }}
+ * @returns {{ selfEntityHash: string | null, nodeHash: string | null, authorOwnerEntityHash?: string | null, viewerOwnerEntityHash?: string | null }} 信任上下文
  */
 function socialTrustCtx({ ownerEntityHash } = {}) {
 	return {
@@ -106,9 +106,12 @@ export async function isTrusted(pubKeyHash, options = {}) {
  * @param {{ ownerEntityHash?: string | null }} [options] 所属主人
  * @returns {Promise<string>} HTML
  */
-export async function renderMarkdown(markdown, pubKeyHash, options = {}) {
+export async function renderTrustedPostMarkdown(markdown, pubKeyHash, options = {}) {
 	return renderTrustedMarkdownHtml(markdown || '', pubKeyHash, socialTrustCtx(options))
 }
+
+/** 别名：与 pages `renderMarkdown` 签名不同，优先用 `renderTrustedPostMarkdown` */
+export const renderMarkdown = renderTrustedPostMarkdown
 
 /**
  * 将 Markdown 源本机安全渲染进 DOM 宿主（勿对源做 escapeHtml）。

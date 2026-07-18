@@ -1,16 +1,21 @@
 /**
  * 【文件】public/hub/composerExtras.mjs
  * 【职责】Hub composer 额外控件（内容警告、敏感媒体）的读写与清空。
- * 【原理】直接操作 #hub-content-warning / #hub-sensitive-media DOM，发送后清空。
+ * 【原理】委托 shared/composerAttachmentFields；发送后清空并清引用目标。
  */
+import {
+	clearCwSensitive,
+	readCwSensitive,
+} from '../shared/composerAttachmentFields.mjs'
+
+const HUB_CW_IDS = { cwId: 'hub-content-warning', sensitiveId: 'hub-sensitive-media' }
 
 /**
  * 读取当前内容警告文本（空字符串 = 无）。
  * @returns {string} 内容警告文本
  */
 export function getContentWarning() {
-	const el = document.getElementById('hub-content-warning')
-	return el instanceof HTMLInputElement ? el.value.trim() : ''
+	return readCwSensitive(HUB_CW_IDS).contentWarning
 }
 
 /**
@@ -18,8 +23,7 @@ export function getContentWarning() {
  * @returns {boolean} 是否已勾选
  */
 export function getSensitiveMedia() {
-	const el = document.getElementById('hub-sensitive-media')
-	return el instanceof HTMLInputElement ? el.checked : false
+	return readCwSensitive(HUB_CW_IDS).sensitiveChecked
 }
 
 /**
@@ -27,10 +31,7 @@ export function getSensitiveMedia() {
  * @returns {void}
  */
 export function clearComposerExtras() {
-	const cw = document.getElementById('hub-content-warning')
-	if (cw instanceof HTMLInputElement) cw.value = ''
-	const sm = document.getElementById('hub-sensitive-media')
-	if (sm instanceof HTMLInputElement) sm.checked = false
+	clearCwSensitive(HUB_CW_IDS)
 	void import('./composerReply.mjs').then(({ clearReplyTarget }) => clearReplyTarget())
 }
 

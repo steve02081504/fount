@@ -1,10 +1,14 @@
+/**
+ * 【文件】public/hub/messages/messageContext.mjs
+ * 【职责】主区消息操作上下文：重载、反应权限、渲染选项、反应绑定。
+ */
 import { viewerCanAddReactions, viewerCanManageMessages, viewerCanPinMessages } from '../../src/groupViewerPermissions.mjs'
-import { activeCharPartNames } from '../core/domUtils.mjs'
 import { hubStore } from '../core/state.mjs'
 
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { isTwoPartyCharDialogue } from './messageShared.mjs'
-import { wireMessageReactions } from './reactions.mjs'
+import { buildChannelRenderOpts } from './messageSurface.mjs'
+import { wireMessageReactions } from './reactionWire.mjs'
 
 /** 模块级频道重载（避免 messageRefresh ↔ callers 层层传 loadMessages）。
  * @returns {Promise<void>}
@@ -31,23 +35,14 @@ export async function refreshReactionPerms() {
 
 /** @returns {object} 消息渲染选项 */
 export function messageRenderOpts() {
-	const pinnedEventIds = hubStore.context.currentChannelId && hubStore.context.currentState?.pinsByChannel?.[hubStore.context.currentChannelId]
-		? [...hubStore.context.currentState.pinsByChannel[hubStore.context.currentChannelId]]
-		: []
-	return {
+	return buildChannelRenderOpts({
+		channelId: hubStore.context.currentChannelId,
 		reactions: hubStore.messages.channelReactions,
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canAddReactions: hubStore.messages.reactionRenderOpts.canAddReactions,
-		viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
-		viewerEntityHash: hubStore.viewer.viewerEntityHash || hubStore.viewer.operatorEntityHash || null,
-		groupMembers: hubStore.context.currentState?.members || [],
-		localCharIds: activeCharPartNames(),
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
-		canPinMessages: hubStore.messages.reactionRenderOpts.canPinMessages,
-		pinnedEventIds,
-		alwaysVisibleActions: isTwoPartyCharDialogue(),
-		canCreateThreads: !!hubStore.context.currentState?.channelCaps?.[hubStore.context.currentChannelId]?.canCreateThreads,
-	}
+		overrides: {
+			alwaysVisibleActions: isTwoPartyCharDialogue(),
+			canCreateThreads: !!hubStore.context.currentState?.channelCaps?.[hubStore.context.currentChannelId]?.canCreateThreads,
+		},
+	})
 }
 
 /** @returns {void} */

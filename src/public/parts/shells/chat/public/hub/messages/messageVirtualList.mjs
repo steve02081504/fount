@@ -1,22 +1,16 @@
 import {
-	createDocumentFragmentFromHtmlStringNoScriptActivation,
-	renderTemplate,
-} from '../../../../../scripts/features/template.mjs'
-import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
+	getChannelViewLog,
+} from '../../src/api/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
-import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
 import { hubStore } from '../core/state.mjs'
 import { attachLastCharMessageSwipe, updateHideCharNames } from '../gestures/chatGestures.mjs'
-import { applyAvatarsTo } from '../presence.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 
-import { bindChannelMessageActions } from './actions/handlers.mjs'
 import {
 	consumePendingScrollTarget,
 	setPendingScrollTarget,
 } from './channelMessageStore.mjs'
-import { bindReactions, messageRenderOpts } from './messageContext.mjs'
-import { bindMessageDragExport } from './messageDragExport.mjs'
+import { messageRenderOpts, reloadChannel } from './messageContext.mjs'
 import {
 	consumePendingHighlightEventId,
 	getMessagesContainer,
@@ -27,36 +21,15 @@ import {
 } from './messageScroll.mjs'
 import { isTwoPartyCharDialogue, refreshChannelView } from './messageShared.mjs'
 import {
-	localizeRenderedMessages,
-	renderChannelMessageBlock,
-} from './render/index.mjs'
+	bindMessageSurface,
+	createMessageSurfacePipeline,
+} from './messageSurface.mjs'
 
 /** @returns {void} */
 export function destroyChannelVirtualList() {
 	hubStore.messages.channelMessagePipeline?.destroy()
 	hubStore.messages.channelMessagePipeline = null
 	hubStore.messages.channelPipelineKey = null
-}
-
-/**
- * @param {object} message 消息行
- * @param {number} index 在列表中的索引
- * @returns {Promise<HTMLElement>} 渲染后的消息元素
- */
-async function renderChannelMessageElement(message, index) {
-	if (message.type === 'unread_divider')
-		return renderTemplate('hub/messages/unread_divider', {})
-	const prev = index > 0 ? hubStore.messages.channelMessages[index - 1] : null
-	const lastId = hubStore.messages.channelMessages.at(-1)?.eventId
-	const block = await renderChannelMessageBlock(
-		message,
-		prev?.type === 'unread_divider' ? null : prev?.charId ?? prev?.sender ?? null,
-		prev?.type === 'unread_divider' ? 0 : prev?.timestamp || 0,
-		hubStore.messages.channelMessages,
-		{ ...messageRenderOpts(), lastMessageEventId: lastId },
-	)
-	const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
-	return frag.firstElementChild
 }
 
 /** @type {Promise<number> | null} */
@@ -126,38 +99,21 @@ async function doLoadOlderMessages() {
 }
 
 /**
- * @param {number} offset 起始偏移
- * @param {number} limit 条数上限
- * @returns {{ items: object[], total: number }} 虚拟列表分页数据
- */
-function sliceChannelMessagesPage(offset, limit) {
-	if (limit === 0) return { items: [], total: hubStore.messages.channelMessages.length }
-	return {
-		items: hubStore.messages.channelMessages.slice(offset, offset + limit),
-		total: hubStore.messages.channelMessages.length,
-	}
-}
-
-/**
  * @param {HTMLElement} container 消息列表容器
  * @returns {void}
  */
 export function initChannelVirtualList(container) {
 	destroyChannelVirtualList()
-	/** @returns {void} */
-	function onVirtualListRenderComplete() {
-		decorateRenderedMessages(container, false)
-	}
-	hubStore.messages.channelMessagePipeline = createMessagePipeline({
+	hubStore.messages.channelMessagePipeline = createMessageSurfacePipeline({
 		container,
 		loadMoreTop: loadOlderMessages,
-		fetchData: sliceChannelMessagesPage,
-		renderItem: renderChannelMessageElement,
-		/**
-		 * @param {object} row 消息行
-		 * @returns {string} eventId
-		 */
-		getItemKey: row => String(row.eventId || ''),
+		/** @returns {object[]} 当前频道消息 */
+		getMessages: () => hubStore.messages.channelMessages,
+		getRenderOpts: messageRenderOpts,
+		/** @returns {void} */
+		onDecorate: () => {
+			decorateRenderedMessages(container, false)
+		},
 		initialIndex: (() => {
 			const targetId = consumePendingScrollTarget()
 			if (!targetId) return Math.max(0, hubStore.messages.channelMessages.length - 1)
@@ -167,10 +123,6 @@ export function initChannelVirtualList(container) {
 			)
 			return idx >= 0 ? idx : Math.max(0, hubStore.messages.channelMessages.length - 1)
 		})(),
-		/**
-		 *
-		 */
-		onRenderComplete: onVirtualListRenderComplete,
 	})
 }
 
@@ -180,12 +132,14 @@ export function initChannelVirtualList(container) {
  * @returns {void}
  */
 export function decorateRenderedMessages(container, shouldScroll = false) {
-	localizeRenderedMessages(container)
+	bindMessageSurface(container, {
+		groupId: hubStore.context.currentGroupId,
+		channelId: hubStore.context.currentChannelId,
+		messages: hubStore.messages.channelMessages,
+		reactions: hubStore.messages.channelReactions,
+		reload: reloadChannel,
+	})
 	syncStreamingSlotsFromDom(container)
-	applyAvatarsTo(container)
-	bindReactions(container)
-	bindChannelMessageActions(container)
-	bindMessageDragExport(container)
 	if (isTwoPartyCharDialogue()) {
 		updateHideCharNames(hubStore.messages.channelMessages)
 		attachLastCharMessageSwipe(container)

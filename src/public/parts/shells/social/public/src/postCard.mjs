@@ -12,7 +12,7 @@ import {
 	formatTimeAttrs,
 	rememberEntityHandle,
 	renderAvatarHtml,
-	renderMarkdown,
+	renderTrustedPostMarkdown,
 	renderQuoteBlockHtml,
 } from './lib/display.mjs'
 import { renderEngagementBarHtml } from './lib/engagementBar.mjs'
@@ -68,7 +68,7 @@ export async function buildPostCard(item, options = {}) {
 	const contentAuthor = isRepost ? originalAuthor : item.entityHash
 	const markdownBody = decryptFailed
 		? '<em data-i18n="social.feed.decryptFailed"></em>'
-		: await renderMarkdown(text || (decryptFailed ? '' : ''), contentAuthor, {
+		: await renderTrustedPostMarkdown(text || (decryptFailed ? '' : ''), contentAuthor, {
 			ownerEntityHash: item.ownerEntityHash || item.authorProfile?.ownerEntityHash
 				|| (isRepost ? item.targetAuthorProfile?.ownerEntityHash : null),
 		})
@@ -137,7 +137,7 @@ export async function buildPostCard(item, options = {}) {
 		? await renderTemplateAsHtmlString('repost_banner', { author: escapeHtml(label) })
 		: ''
 	const repostCommentHtml = isRepost && item.repostComment
-		? `<div class="body markdown-body repost-comment">${await renderMarkdown(item.repostComment, item.entityHash, {
+		? `<div class="body markdown-body repost-comment">${await renderTrustedPostMarkdown(item.repostComment, item.entityHash, {
 			ownerEntityHash: item.ownerEntityHash || item.authorProfile?.ownerEntityHash,
 		})}</div>`
 		: ''

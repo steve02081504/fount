@@ -1,5 +1,6 @@
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { groupRefLabel, renderGroupRefBlockHtml } from '../shared/groupRef.mjs'
+import { clearCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFields.mjs'
 
 import { chatApi, socialApi } from './lib/apiClient.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
@@ -9,6 +10,8 @@ import { bindVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+
+const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveMedia' }
 
 /**
  * @param {number} n 数值
@@ -269,9 +272,7 @@ export async function clearComposer(options = {}) {
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''
 	setComposerContentWarningOpen(false)
-	const sensitiveEl = document.getElementById('postSensitiveMedia')
-	if (sensitiveEl instanceof HTMLInputElement)
-		sensitiveEl.checked = false
+	clearCwSensitive(SOCIAL_CW_IDS)
 	const publishAtEl = document.getElementById('postPublishAt')
 	if (publishAtEl instanceof HTMLInputElement)
 		publishAtEl.value = ''

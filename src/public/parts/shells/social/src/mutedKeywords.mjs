@@ -1,13 +1,22 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { createShellJsonNamespace } from '../../chat/src/api/client/helpers.mjs'
 
 import { pruneMutedKeywordEntries } from './lib/contentFilter.mjs'
-import { mutedKeywordsPath } from './paths.mjs'
 
 /**
- * @returns {{ entries: object[] }} 空屏蔽词表
+ * @param {object} stored 原始存储
+ * @returns {{ entries: object[] }} 规范化屏蔽词表
  */
-function emptyMutedKeywords() {
-	return { entries: [] }
+function shapeMutedKeywords(stored) {
+	return { entries: pruneMutedKeywordEntries(stored?.entries || []) }
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @returns {{ list: Function, set: Function }} shell JSON 命名空间
+ */
+function mutedKeywordsNamespace(username, entityHash) {
+	return createShellJsonNamespace(username, 'social', entityHash, 'muted_keywords', shapeMutedKeywords)
 }
 
 /**
@@ -17,14 +26,7 @@ function emptyMutedKeywords() {
  * @returns {Promise<{ entries: object[] }>} 屏蔽词表
  */
 export async function loadMutedKeywords(username, entityHash) {
-	try {
-		const raw = JSON.parse(await readFile(mutedKeywordsPath(username, entityHash), 'utf8'))
-		const entries = pruneMutedKeywordEntries(raw?.entries || [])
-		return { entries }
-	}
-	catch {
-		return emptyMutedKeywords()
-	}
+	return mutedKeywordsNamespace(username, entityHash).list()
 }
 
 /**
@@ -35,12 +37,7 @@ export async function loadMutedKeywords(username, entityHash) {
  * @returns {Promise<{ entries: object[] }>} 写入后的表
  */
 export async function saveMutedKeywords(username, entityHash, data) {
-	const entries = pruneMutedKeywordEntries(data?.entries || [])
-	const path = mutedKeywordsPath(username, entityHash)
-	await mkdir(`${path.replace(/[/\\][^/\\]+$/, '')}`, { recursive: true })
-	const payload = { entries }
-	await writeFile(path, JSON.stringify(payload, null, '\t'), 'utf8')
-	return payload
+	return mutedKeywordsNamespace(username, entityHash).set(shapeMutedKeywords(data || {}))
 }
 
 /**

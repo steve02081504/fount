@@ -1,12 +1,9 @@
 /**
  * 【文件】public/hub/threadDrawer.mjs
  * 【职责】消息线程侧抽屉：打开/关闭子频道线程视图，并在主频道 WS 事件时刷新活跃线程。
- * 【原理】`openThread` / `closeThreadDrawer` 控制 `#hub-thread-drawer` 与线程内消息列表容器；线程频道复用 `messages` 加载与渲染路径；`refreshActiveThreadIfOpen` 在父频道更新后同步。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
- * 【关联】线程子频道 ID 写入 `hubStore`；主 hash 仍描述父群/父频道。
+ * 【原理】线程消息面复用 `messageSurface` 的 MessagePipeline + bind；主 hash 仍描述父群/父频道。
  */
 import {
-	createDocumentFragmentFromHtmlStringNoScriptActivation,
 	mountTemplate,
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
@@ -15,19 +12,20 @@ import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 
-import { activeCharPartNames } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
-import { bindChannelMessageActions } from './messages/actions/handlers.mjs'
 import { setChannelMessageActionsContext } from './messages/messageActionsState.mjs'
-import { bindMessageDragExport } from './messages/messageDragExport.mjs'
-import { wireMessageReactions } from './messages/reactions.mjs'
-import { localizeRenderedMessages, renderChannelMessageBlock } from './messages/render/index.mjs'
-import { applyAvatarsTo } from './presence.mjs'
+import {
+	bindMessageSurface,
+	buildChannelRenderOpts,
+	createMessageSurfacePipeline,
+} from './messages/messageSurface.mjs'
 
 /** @type {{ groupId: string, parentChannelId: string, threadChannelId: string, parentEventId: string, messages: object[], reactions: Record<string, Record<string, { voters?: string[] }>> } | null} */
 let activeThread = null
 /** 渲染代际：并发 renderThreadMessages 仅最新一代可写 DOM */
 let threadRenderGeneration = 0
+/** @type {ReturnType<typeof createMessageSurfacePipeline> | null} */
+let threadPipeline = null
 
 /** @returns {boolean} 子线程抽屉是否打开 */
 export function isThreadDrawerOpen() {
@@ -66,6 +64,14 @@ export function getActiveThreadChannelId() {
 }
 
 /**
+ * @returns {void}
+ */
+function destroyThreadPipeline() {
+	threadPipeline?.destroy()
+	threadPipeline = null
+}
+
+/**
  * 群 WS 通知子线程频道有变更时刷新抽屉。
  * @returns {Promise<void>}
  */
@@ -85,37 +91,38 @@ export function closeThreadDrawer() {
 	if (!wrap) return
 	wrap.setAttribute('hidden', '')
 	wrap.replaceChildren()
+	destroyThreadPipeline()
 	activeThread = null
 	threadRenderGeneration++
 	setChannelMessageActionsContext(null, 'thread')
 }
 
 /**
- * 组装子线程消息渲染选项。
  * @param {string} threadChannelId 子线程频道 ID
  * @param {Record<string, Record<string, { voters?: string[] }>>} reactions 聚合反应
  * @returns {object} 渲染选项
  */
 function threadMessageRenderOpts(threadChannelId, reactions) {
-	const pinnedEventIds = hubStore.context.currentState?.pinsByChannel?.[threadChannelId]
-		? [...hubStore.context.currentState.pinsByChannel[threadChannelId]]
-		: []
-	return {
-		reactions: reactions || {},
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canAddReactions: hubStore.messages.reactionRenderOpts.canAddReactions,
-		viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
-		localCharIds: activeCharPartNames(),
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
-		canPinMessages: hubStore.messages.reactionRenderOpts.canPinMessages,
-		pinnedEventIds,
-		alwaysVisibleActions: false,
-		canCreateThreads: false,
-	}
+	return buildChannelRenderOpts({
+		channelId: threadChannelId,
+		reactions,
+		overrides: {
+			alwaysVisibleActions: false,
+			canCreateThreads: false,
+		},
+	})
 }
 
 /**
- * 渲染子线程消息列表并绑定交互。
+ * @param {HTMLElement} messageContainer 消息容器
+ * @returns {Promise<void>}
+ */
+async function reloadThreadSurface(messageContainer) {
+	await renderThreadMessages(messageContainer)
+}
+
+/**
+ * 渲染子线程消息列表并绑定交互（复用主区 MessagePipeline 面）。
  * @param {HTMLElement} messageContainer 消息容器
  * @returns {Promise<void>}
  */
@@ -128,55 +135,61 @@ async function renderThreadMessages(messageContainer) {
 	activeThread.messages = messages || []
 	activeThread.reactions = reactions || {}
 	const rows = applyChannelDisplayChain(activeThread.messages)
-	messageContainer.replaceChildren()
+	activeThread.messages = rows
+
+	/**
+	 * @returns {Promise<void>}
+	 */
+	const reload = () => reloadThreadSurface(messageContainer)
+
 	if (!rows.length) {
+		destroyThreadPipeline()
+		messageContainer.replaceChildren()
 		await mountTemplate(messageContainer, 'hub/empty/idle', {})
 		if (generation !== threadRenderGeneration) return
-		setChannelMessageActionsContext({
+		bindMessageSurface(messageContainer, {
 			groupId,
 			channelId: threadChannelId,
 			messages: [],
-			/** @returns {Promise<void>} */
-			reload: () => renderThreadMessages(messageContainer),
-		}, messageContainer)
+			reactions: {},
+			reload,
+		})
 		return
 	}
-	const options = threadMessageRenderOpts(threadChannelId, activeThread.reactions)
-	let prevSender = null
-	let prevTs = 0
-	for (const message of rows) {
-		if (generation !== threadRenderGeneration) return
-		const block = await renderChannelMessageBlock(message, prevSender, prevTs, rows, options)
-		prevSender = message.charId ?? message.sender ?? null
-		prevTs = message.hlc?.wall ?? 0
-		const frag = await createDocumentFragmentFromHtmlStringNoScriptActivation(block.html)
-		if (generation !== threadRenderGeneration) return
-		if (frag.firstElementChild)
-			messageContainer.appendChild(frag.firstElementChild)
+
+	/**
+	 * @returns {void}
+	 */
+	const decorate = () => {
+		if (generation !== threadRenderGeneration || !activeThread) return
+		bindMessageSurface(messageContainer, {
+			groupId,
+			channelId: threadChannelId,
+			messages: activeThread.messages,
+			reactions: activeThread.reactions,
+			reload,
+		})
 	}
-	if (generation !== threadRenderGeneration) return
-	setChannelMessageActionsContext({
-		groupId,
-		channelId: threadChannelId,
-		messages: rows,
-		/** @returns {Promise<void>} */
-		reload: () => renderThreadMessages(messageContainer),
-	}, messageContainer)
-	bindChannelMessageActions(messageContainer)
-	bindMessageDragExport(messageContainer)
-	wireMessageReactions(messageContainer, {
-		groupId,
-		channelId: threadChannelId,
-		messages: rows,
-		reactions: activeThread.reactions,
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
-		/** @returns {Promise<void>} */
-		reload: () => renderThreadMessages(messageContainer),
+
+	if (threadPipeline) {
+		await threadPipeline.refresh()
+		if (generation !== threadRenderGeneration) return
+		decorate()
+		return
+	}
+
+	threadPipeline = createMessageSurfacePipeline({
+		container: messageContainer,
+		/** @returns {object[]} 线程消息 */
+		getMessages: () => activeThread?.messages || [],
+		/** @returns {object} 渲染选项 */
+		getRenderOpts: () => threadMessageRenderOpts(
+			activeThread?.threadChannelId || threadChannelId,
+			activeThread?.reactions || {},
+		),
+		onDecorate: decorate,
+		initialIndex: Math.max(0, rows.length - 1),
 	})
-	localizeRenderedMessages(messageContainer)
-	applyAvatarsTo(messageContainer)
-	messageContainer.scrollTop = messageContainer.scrollHeight
 }
 
 /**
@@ -240,6 +253,7 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 		if (!threadChannelId)
 			threadChannelId = await createChannelThread(groupId, parentChannelId, parentEventId)
 
+		destroyThreadPipeline()
 		activeThread = {
 			groupId,
 			parentChannelId,
