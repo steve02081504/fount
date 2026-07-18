@@ -4,7 +4,7 @@
 
 写法：[docs/AGENTS.md](../AGENTS.md)。
 
-近期已落地、不再占篇幅：死符号清理、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`；view-log 导航补拉；Social `composerState`/`composerPublish` + `chatApi`、`friendsList` dismiss、`hub/gestures/`；**本波**：ChatClient 按域拆工厂、`registerChatRoutes`、search/pins dismiss 对齐、`channelActions` 主区/线程分槽。
+近期已落地、不再占篇幅：死符号清理、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`；view-log 导航补拉；Social `composerState`/`composerPublish` + `chatApi`、`friendsList` dismiss、`hub/gestures/`；ChatClient 按域拆工厂、`registerChatRoutes`、search/pins dismiss 对齐、`channelActions` 主区/线程分槽；**本波**：Cabinet 前端按 Hub 模式拆分（`cabinetStore` + 域模块）、`volatileSlots` 去掉对 gestures 的直接依赖。
 
 ---
 
@@ -12,7 +12,7 @@
 
 | 优先级 | 动作 | 状态 |
 | --- | --- | --- |
-| P3 | 拆 Cabinet `public/index.mjs`（**1359** 行）；Social composer 已拆 | Cabinet 待做 |
+| P3 | 拆 Cabinet `public/index.mjs`；Social composer 已拆 | **已落地**（`cabinet/public/src/{state,navigation,…}`） |
 | P4 | ChatClient 按域拆方法工厂（对齐 SocialClient） | **已落地**（`src/api/client/*.mjs`） |
 | P5 | 收敛 view-log / raw 双读；导航补拉勿绕过 viewer 滤镜 | **已落地** |
 | P6 | 收敛 `channelActionsContext`；`threadDrawer` 与主区渲染路径合并 | **阶段 1 已落地**（主区/线程分槽）；渲染管道合并待做 |
@@ -35,13 +35,9 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 ---
 
-### 3. Cabinet 前端上帝文件
+### 3. Cabinet 前端 — 已拆
 
-**位置**：`cabinet/public/index.mjs`（**1359** 行）
-
-**为何丑**：单文件持有导航栈、选中态、解锁 token、历史、剪贴板、快捷键、远端浏览、属性面板、撤销删除等；与 Chat Hub 已拆成 `wiring/` / `sidebar/` / `messages/` 的风格反差极大。
-
-**改进**：按 Hub 模式拆 `state.mjs` / `navigation.mjs` / `keyboard.mjs` / `entryGrid.mjs` / `remoteBrowse.mjs`；`index.mjs` 只 bootstrap。
+`index.mjs` 仅 bootstrap；`cabinetStore`（`state.mjs`）+ `navigation` / `remoteBrowse` / `entryGrid` / `entryActions` / `contextMenu` / `commands` / `properties` / `wiring`；`keyboard.mjs` 仍为纯快捷键匹配。
 
 ---
 
@@ -83,8 +79,8 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 | 项 | 说明 |
 | --- | --- |
-| DAG `session_plugin_*` | legacy 事件 replay 为 no-op；`local_plugins.json` 已取代 |
-| `stream/volatileSlots.mjs` ↔ gesture | 出站已进 `outbound.mjs`，volatile 仍耦合 `gestures/chatGestures.mjs`（目录已归并，耦合仍在） |
+| DAG `session_plugin_*` | legacy 事件 replay 为 no-op；`local_plugins.json` 已取代（不可删 reducer，历史 DAG 需 replay） |
+| `stream/volatileSlots` ↔ gesture | **已解**：`afterStreamEnd` 只走 incremental refresh；手势由 `decorateRenderedMessages` 挂上 |
 
 ### 命名误导（非死代码）
 
@@ -129,9 +125,9 @@ Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get
 
 | 壳 | 强 | 弱 |
 | --- | --- | --- |
-| **Chat** | 实体模型统一；Hub 已拆 `stream/` + `gestures/` + `reloadChannel`；view-log 主读+补拉一致；ChatClient 按域工厂；`registerChatRoutes` 单入口；channelActions 分槽；`shared/*` 跨壳复用；测试面大 | threadDrawer 仍平行渲染（非 virtual list）；Cabinet 未对标 |
+| **Chat** | 实体模型统一；Hub 已拆 `stream/` + `gestures/` + `reloadChannel`；view-log 主读+补拉一致；ChatClient 按域工厂；`registerChatRoutes` 单入口；channelActions 分槽；volatile 不再直调 gesture；`shared/*` 跨壳复用；测试面大 | threadDrawer 仍平行渲染（非 virtual list） |
 | **Social** | SocialClient 组合式 API；`chatApi` 统一跨壳；composer 已拆 state/publish；展示名/Markdown/敏感媒体已对齐 chat shared | （本波无新增大债） |
-| **Cabinet** | 后端 `shared/oplog.mjs` 清晰；与 Chat `cabinet_bind` 边界清楚；测试精简 | 前端 `index.mjs` 单文件承载几乎全部 UI |
+| **Cabinet** | 后端 `shared/oplog.mjs` 清晰；与 Chat `cabinet_bind` 边界清楚；前端已拆 `cabinetStore` + 域模块；测试精简 | — |
 
 ---
 

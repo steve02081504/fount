@@ -6,7 +6,6 @@ import { streamDisplayText } from '../../src/streamDisplay.mjs'
 import { applySlices } from '../../src/streamSlices.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
 import { hubStore } from '../core/state.mjs'
-import { attachLastCharMessageSwipe } from '../gestures/chatGestures.mjs'
 import { scrollToBottom } from '../messages/messageScroll.mjs'
 import { messageIdSelector } from '../messages/messageShared.mjs'
 
@@ -152,9 +151,6 @@ async function afterStreamEnd() {
 		const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
 		await scheduleChannelIncrementalRefresh({ immediate: true })
 	}
-	const container = document.getElementById('hub-messages')
-	if (container instanceof HTMLElement)
-		attachLastCharMessageSwipe(container)
 	scrollToBottom()
 }
 

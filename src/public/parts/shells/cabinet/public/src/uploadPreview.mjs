@@ -75,13 +75,20 @@ export async function generateUploadPreview(file) {
 }
 
 /**
+ * @param {ArrayBuffer} buffer 缓冲
+ * @returns {string} base64
+ */
+export function arrayBufferToBase64(buffer) {
+	const bytes = new Uint8Array(buffer)
+	let binary = ''
+	for (const byte of bytes) binary += String.fromCharCode(byte)
+	return btoa(binary)
+}
+
+/**
  * @param {Blob} blob 预览
  * @returns {Promise<string>} base64
  */
 export async function blobToBase64(blob) {
-	const buffer = await blob.arrayBuffer()
-	let binary = ''
-	const bytes = new Uint8Array(buffer)
-	for (const byte of bytes) binary += String.fromCharCode(byte)
-	return btoa(binary)
+	return arrayBufferToBase64(await blob.arrayBuffer())
 }
