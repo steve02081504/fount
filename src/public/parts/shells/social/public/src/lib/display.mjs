@@ -69,7 +69,7 @@ export function authorLabel(entityHash, profile) {
 }
 
 /**
- * 判断作者是否应对 Markdown 走可信 pipeline（本人、本人 agent、或信任表）。
+ * 判断作者是否应对 Markdown 走可信 pipeline（本人、本人 agent、自己的主人、或信任表）。
  * @param {string} pubKeyHash 作者 hash
  * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
  * @returns {Promise<boolean>} 是否可信
@@ -79,6 +79,7 @@ export async function isTrusted(pubKeyHash, { ownerEntityHash } = {}) {
 		selfEntityHash: viewerEntityHash(),
 		nodeHash: socialState.viewerNodeHash,
 		authorOwnerEntityHash: ownerEntityHash,
+		viewerOwnerEntityHash: socialState.viewerProfile?.ownerEntityHash,
 	})
 }
 

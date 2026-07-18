@@ -131,7 +131,7 @@ export function configureEntityProfileCard(root, mode = 'popup') {
  * 使用共享人物卡结构绘制资料；可用于真实资料和编辑中的临时资料。
  * @param {HTMLElement} root 人物卡根节点
  * @param {object} profile API 或编辑态资料
- * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string, selfEntityHash?: string | null, nodeHash?: string | null }} [options] 绘制选项
+ * @param {{ entityHash?: string, avatarOverride?: string, bannerOverride?: string, nameOverride?: string, selfEntityHash?: string | null, nodeHash?: string | null, viewerOwnerEntityHash?: string | null }} [options] 绘制选项
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileCard(root, profile, options = {}) {
@@ -201,6 +201,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			selfEntityHash: options.selfEntityHash,
 			nodeHash: options.nodeHash,
 			authorOwnerEntityHash: normalized.ownerEntityHash,
+			viewerOwnerEntityHash: options.viewerOwnerEntityHash,
 		})
 
 	const tagsHost = root.querySelector('[data-entity-profile-tags]')
@@ -248,7 +249,13 @@ export function profileDescriptionText(profile) {
  * @param {HTMLElement} bioElement 简介容器
  * @param {string} markdown markdown 源
  * @param {string} [entityHash] 作者 entityHash / pubKeyHash（决定信任）
- * @param {{ emptyI18n?: string, selfEntityHash?: string | null, nodeHash?: string | null, authorOwnerEntityHash?: string | null }} [options] 空态 / 信任上下文
+ * @param {{
+ *   emptyI18n?: string,
+ *   selfEntityHash?: string | null,
+ *   nodeHash?: string | null,
+ *   authorOwnerEntityHash?: string | null,
+ *   viewerOwnerEntityHash?: string | null,
+ * }} [options] 空态 / 信任上下文
  * @returns {Promise<void>}
  */
 export async function paintEntityProfileBio(bioElement, markdown, entityHash = '', options = {}) {
@@ -268,6 +275,7 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 			selfEntityHash: options.selfEntityHash,
 			nodeHash: options.nodeHash,
 			authorOwnerEntityHash: options.authorOwnerEntityHash,
+			viewerOwnerEntityHash: options.viewerOwnerEntityHash,
 		})
 		: false
 	const html = await renderMarkdownAsString(text, undefined, { allowDangerousHtml: trusted })

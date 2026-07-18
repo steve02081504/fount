@@ -63,6 +63,8 @@ export const hubStore = {
 		/** 登录用户 operator 实体（个人拉黑/隐藏列表归属；入群后不随 viewer 切换） */
 		operatorEntityHash: null,
 		viewerEntityHash: null,
+		/** 观看者声明的主人 entityHash（其内容走不安全 Markdown） */
+		ownerEntityHash: null,
 		/** @type {{ entityHash: string, charPartName: string }[]} 本机 agent 映射（来自 chat viewer API） */
 		agents: [],
 	},

@@ -71,6 +71,7 @@ export async function applyBioElement(bioElement, bio, entityHash = '', options 
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
 		nodeHash: hubStore.viewer?.nodeHash,
 		authorOwnerEntityHash: options.ownerEntityHash,
+		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
 	})
 }
 

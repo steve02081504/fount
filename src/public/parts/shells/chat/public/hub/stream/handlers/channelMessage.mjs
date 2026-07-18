@@ -20,35 +20,6 @@ import {
 } from '../volatileSlots.mjs'
 
 /**
- * WS 回显己方消息时标记 DOM 行为 delivered（双勾）。
- * @param {object | null | undefined} channelMessage WS channel_message 载荷
- * @returns {void}
- */
-function markOwnMessageDelivered(channelMessage) {
-	const eventId = String(channelMessage?.eventId || '').trim()
-	if (!eventId) return
-	const viewerKey = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').trim().toLowerCase()
-	const senderKey = String(channelMessage?.sender || channelMessage?.authorPubKeyHash || '').trim().toLowerCase()
-	if (!viewerKey || !senderKey || viewerKey !== senderKey) return
-	const msgList = hubStore.messages.channelMessagesSource
-	const row = msgList.find(m => String(m.eventId) === eventId)
-	if (row && row.deliveryStatus !== 'delivered') {
-		row.deliveryStatus = 'delivered'
-		const container = document.getElementById('hub-messages')
-		const domRow = container?.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
-		if (domRow instanceof HTMLElement) {
-			domRow.dataset.deliveryStatus = 'delivered'
-			const existing = domRow.querySelector('.hub-delivery-status')
-			if (existing) {
-				existing.textContent = '✓✓'
-				existing.classList.add('hub-delivery-status--delivered')
-				existing.classList.remove('hub-delivery-status--sent')
-			}
-		}
-	}
-}
-
-/**
  * @param {object} wireMessage WS 载荷
  * @param {string} channelId 当前频道
  * @returns {boolean} 是否已处理
@@ -90,7 +61,6 @@ export function handleChannelMessageWire(wireMessage, channelId) {
 		return true
 	}
 
-	markOwnMessageDelivered(channelMessage)
 	dispatchChannelIncrementalRefresh(incomingChannelId, channelId, { immediate: true })
 	return true
 }

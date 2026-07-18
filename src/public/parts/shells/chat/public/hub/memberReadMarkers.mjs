@@ -1,8 +1,11 @@
 /**
  * 【文件】public/hub/memberReadMarkers.mjs
- * 【职责】拉取并缓存频道成员已读水位，对己方消息渲染已读数角标；WS read_marker 增量更新缓存。
+ * 【职责】拉取并缓存频道成员已读水位；己方消息角标用「是否有人已读」判定双勾；WS read_marker 增量更新后刷 DOM。
  * 【API】GET …/groups/:id/channels/:cid/member-read-markers → `{ markers: { [entityHash]: { seq, eventId } } }`
  */
+import { geti18n } from '../../../../scripts/i18n/index.mjs'
+import { hubDeliveryReadIcon } from '../src/lib/emojiSvg.mjs'
+
 import { hubStore } from './core/state.mjs'
 
 /** @type {Map<string, Record<string, { seq: number, eventId: string }>>} channelKey → markers */
@@ -19,7 +22,7 @@ function cacheKey(groupId, channelId) {
 }
 
 /**
- * 拉取指定频道的成员已读水位并写入缓存。
+ * 拉取指定频道的成员已读水位并写入缓存，随后刷新可见己方消息角标。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<Record<string, { seq: number, eventId: string }>>} 成员已读水位映射
@@ -33,6 +36,7 @@ export async function fetchMemberReadMarkers(groupId, channelId) {
 		if (!response.ok) return {}
 		const { markers = {} } = await response.json()
 		markersCache.set(cacheKey(groupId, channelId), markers)
+		paintOwnDeliveryStatuses()
 		return markers
 	}
 	catch { return {} }
@@ -66,35 +70,54 @@ export function applyMemberReadMarkerWire(wireMessage) {
 	if (prev && Number(prev.seq) >= seq) return
 	markers[entityHash] = { seq, eventId }
 	markersCache.set(key, markers)
+	if (groupId === hubStore.context.currentGroupId && channelId === hubStore.context.currentChannelId)
+		paintOwnDeliveryStatuses()
 }
 
 /**
- * 返回某条己方消息的已读成员数（排除自己）。
- * @param {string} groupId 群组 ID
- * @param {string} channelId 频道 ID
- * @param {number} msgSeq 消息 seq（view-log 行里的 seq 字段）
- * @returns {number} 已读成员数
- */
-export function getReadCountForMessage(groupId, channelId, msgSeq) {
-	const markers = getCachedReadMarkers(groupId, channelId)
-	const viewerKey = String(hubStore.context.currentState?.viewerMemberPubKeyHash
-		|| hubStore.context.currentState?.viewerEntityHash
-		|| '').trim().toLowerCase()
-	let count = 0
-	for (const [entityHash, marker] of Object.entries(markers)) {
-		if (entityHash.toLowerCase() === viewerKey) continue
-		if (marker.seq >= msgSeq) count++
-	}
-	return count
-}
-
-/**
- * 对方是否已读（DM / 单人水位比较）。
+ * 对方是否已读（任一其他成员水位覆盖该消息）。
  * @param {string} groupId 群组 ID
  * @param {string} channelId 频道 ID
  * @param {number} msgSeq 消息 seq
  * @returns {boolean} 是否有任一其他成员水位覆盖该消息
  */
 export function isMessageReadByPeer(groupId, channelId, msgSeq) {
-	return getReadCountForMessage(groupId, channelId, msgSeq) > 0
+	const markers = getCachedReadMarkers(groupId, channelId)
+	const viewerKey = String(hubStore.context.currentState?.viewerMemberPubKeyHash
+		|| hubStore.context.currentState?.viewerEntityHash
+		|| '').trim().toLowerCase()
+	for (const [entityHash, marker] of Object.entries(markers)) {
+		if (entityHash.toLowerCase() === viewerKey) continue
+		if (marker.seq >= msgSeq) return true
+	}
+	return false
+}
+
+/**
+ * 将可见己方消息角标升为「别人已读」双勾（仅 sent → read，不回退）。
+ * @returns {void}
+ */
+export function paintOwnDeliveryStatuses() {
+	const groupId = hubStore.context.currentGroupId
+	const channelId = hubStore.context.currentChannelId
+	if (!groupId || !channelId) return
+	const container = document.getElementById('hub-messages')
+	if (!(container instanceof HTMLElement)) return
+	const readTitle = geti18n('chat.hub.deliveryRead') || ''
+	for (const msg of hubStore.messages.channelMessagesSource) {
+		if (msg.isRemote || msg.pending || msg.sendFailed) continue
+		const seq = Number(msg.seq)
+		if (!Number.isFinite(seq) || seq <= 0) continue
+		if (!isMessageReadByPeer(groupId, channelId, seq)) continue
+		const eventId = String(msg.eventId || '')
+		if (!eventId) continue
+		const domRow = container.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
+		const existing = domRow?.querySelector('.hub-delivery-status')
+		if (!(existing instanceof HTMLElement)) continue
+		if (existing.classList.contains('hub-delivery-status--read')) continue
+		existing.className = 'hub-delivery-status hub-delivery-status--read text-xs opacity-70'
+		existing.title = readTitle
+		existing.innerHTML = hubDeliveryReadIcon
+		if (domRow instanceof HTMLElement) domRow.dataset.deliveryStatus = 'read'
+	}
 }

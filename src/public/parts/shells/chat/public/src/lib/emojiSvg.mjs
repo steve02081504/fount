@@ -85,3 +85,7 @@ export const hubActionTranslateIcon = iconifyImg('mdi/translate', { width: 16, h
 export const hubActionForwardIcon = iconifyImg('mdi/share', { width: 16, height: 16, class: 'hub-action-icon' })
 /** 消息操作栏：复制分享链接图标 */
 export const hubActionCopyLinkIcon = iconifyImg('mdi/link-variant', { width: 16, height: 16, class: 'hub-action-icon' })
+/** 己方消息投递：已发送单勾 */
+export const hubDeliverySentIcon = iconifyImg('mdi/check', { width: 14, height: 14, class: 'hub-delivery-icon' })
+/** 己方消息投递：别人已读重叠双勾 */
+export const hubDeliveryReadIcon = iconifyImg('mdi/check-all', { width: 14, height: 14, class: 'hub-delivery-icon' })

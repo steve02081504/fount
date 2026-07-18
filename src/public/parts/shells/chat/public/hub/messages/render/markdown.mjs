@@ -70,6 +70,8 @@ async function isMessageMarkdownTrusted(authorPubKeyHash, isRemote) {
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
 		nodeHash: hubStore.viewer?.nodeHash,
 		authorOwnerEntityHash: resolveAuthorOwnerEntityHash(authorPubKeyHash),
+		authorEntityHash: resolveEntityHashForAuthorKey(authorPubKeyHash),
+		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
 	})
 }
 

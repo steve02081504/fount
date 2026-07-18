@@ -246,6 +246,25 @@
 	opacity: 0.55;
 }
 
+.hub-delivery-status {
+	display: inline-flex;
+	align-items: center;
+	margin-inline-start: 0.25rem;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.hub-delivery-status .hub-delivery-icon {
+	width: 0.85rem;
+	height: 0.85rem;
+	display: block;
+}
+
+.hub-delivery-status--pending .loading {
+	width: 0.7rem;
+	height: 0.7rem;
+}
+
 .hub-streaming-body:not(:empty)~.hub-streaming-skeleton {
 	display: none;
 }

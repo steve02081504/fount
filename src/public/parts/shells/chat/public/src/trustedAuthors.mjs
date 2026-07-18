@@ -3,7 +3,7 @@
  * 【职责】IndexedDB 持久化「信任作者」公钥集合，决定 Markdown 是否走可信 pipeline。
  * 【原理】fount_chat_security/trustedAuthors store；syncTrustedAuthorsFromShell 与 shellData 同步；isTrustedAuthor 内存 Set 缓存。
  * 【数据结构】TRUST_EXPIRES_NEVER、{ pubKeyHash, expiresAt } 记录。
- * 【关联】trustAuthorDialog.mjs、hub/social Markdown 两档渲染。
+ * 【关联】trustAuthorDialog.mjs、hub/social Markdown 两档渲染；观看者声明的主人亦走可信档。
  */
 const TRUSTED_AUTHORS_DB_NAME = 'fount_chat_security'
 const TRUSTED_AUTHORS_STORE = 'trustedAuthors'
@@ -178,13 +178,36 @@ export function isSelfOrOwnedAgentEntity(entityHash, {
 }
 
 /**
- * Markdown 是否走可信 pipeline：本人 / 本人 agent / 信任表。
+ * 作者是否为观看者声明的主人（其帖/消息走不安全渲染）。
+ * @param {string} pubKeyHash 作者 pubKeyHash / entityHash
+ * @param {{ viewerOwnerEntityHash?: string | null, authorEntityHash?: string | null }} [options] 观看者主人与作者实体
+ * @returns {boolean} 是否主人
+ */
+export function isViewerDeclaredOwner(pubKeyHash, {
+	viewerOwnerEntityHash,
+	authorEntityHash,
+} = {}) {
+	const owner = normalizePubKeyHash(viewerOwnerEntityHash)
+	if (!owner) return false
+	const author = normalizePubKeyHash(authorEntityHash || pubKeyHash)
+	return !!author && owner === author
+}
+
+/**
+ * Markdown 是否走可信 pipeline：本人 / 本人 agent / 自己的主人 / 信任表。
  * @param {string} pubKeyHash 作者 entityHash / pubKeyHash
- * @param {{ selfEntityHash?: string | null, nodeHash?: string | null, authorOwnerEntityHash?: string | null }} [options] 信任上下文
+ * @param {{
+ *   selfEntityHash?: string | null,
+ *   nodeHash?: string | null,
+ *   authorOwnerEntityHash?: string | null,
+ *   viewerOwnerEntityHash?: string | null,
+ *   authorEntityHash?: string | null,
+ * }} [options] 信任上下文
  * @returns {Promise<boolean>} 是否可信
  */
 export async function isTrustedMarkdownAuthor(pubKeyHash, options = {}) {
 	if (isSelfOrOwnedAgentEntity(pubKeyHash, options)) return true
+	if (isViewerDeclaredOwner(pubKeyHash, options)) return true
 	return isTrustedAuthor(pubKeyHash)
 }
 

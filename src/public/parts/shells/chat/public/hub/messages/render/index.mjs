@@ -12,11 +12,12 @@ import {
 	attributionFromHubMessage,
 } from '/parts/shells:chat/shared/attribution.mjs'
 import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/entityProfileCard.mjs'
+import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
+import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
 import { hubStore } from '../../core/state.mjs'
 import { renderMessageActionsHtml } from '../messageActionsRender.mjs'
 
-import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 
 import {
 	renderDecryptBodyHtml,
@@ -93,18 +94,24 @@ async function renderMessageRowShell({
 }
 
 /**
- * 渲染投递状态小标记 HTML（✓ / ✓✓）。
- * @param {'pending'|'sent'|'delivered'} status 投递态
- * @param {number} [readCount=0] 已读成员数（>0 升为已读双勾）
+ * 渲染投递状态小标记：发送中转圈 / 已发送单勾 / 别人已读双勾。
+ * @param {'pending'|'sent'} status 投递态
+ * @param {boolean} [peerRead=false] 是否有任一其他成员已读
  * @returns {string} HTML
  */
-function renderDeliveryStatusHtml(status, readCount = 0) {
-	if (readCount > 0)
-		return `<span class="hub-delivery-status hub-delivery-status--read text-xs opacity-70" title="${readCount}" aria-hidden="true">✓✓</span>`
-	if (status === 'delivered')
-		return '<span class="hub-delivery-status hub-delivery-status--delivered text-xs opacity-60" aria-hidden="true">✓✓</span>'
-	if (status === 'sent')
-		return '<span class="hub-delivery-status hub-delivery-status--sent text-xs opacity-40" aria-hidden="true">✓</span>'
+export function renderDeliveryStatusHtml(status, peerRead = false) {
+	if (status === 'pending') {
+		const title = escapeHtml(geti18n('chat.hub.deliverySending') || '')
+		return `<span class="hub-delivery-status hub-delivery-status--pending text-xs opacity-40" title="${title}" aria-hidden="true"><span class="loading loading-spinner loading-xs"></span></span>`
+	}
+	if (peerRead) {
+		const title = escapeHtml(geti18n('chat.hub.deliveryRead') || '')
+		return `<span class="hub-delivery-status hub-delivery-status--read text-xs opacity-70" title="${title}" aria-hidden="true">${hubDeliveryReadIcon}</span>`
+	}
+	if (status === 'sent') {
+		const title = escapeHtml(geti18n('chat.hub.deliverySent') || '')
+		return `<span class="hub-delivery-status hub-delivery-status--sent text-xs opacity-40" title="${title}" aria-hidden="true">${hubDeliverySentIcon}</span>`
+	}
 	return ''
 }
 
@@ -292,16 +299,17 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 	const inlineFeedbackHtml = actionsResult?.inlineHtml || ''
 
 	let deliveryStatusHtml = ''
-	if (!generating && isOwn) {
+	if (!generating && isOwn && !message.sendFailed) {
 		const groupId = hubStore.context.currentGroupId
 		const channelId = hubStore.context.currentChannelId
 		const msgSeq = Number(message.seq)
-		let readCount = 0
+		let peerRead = false
 		if (groupId && channelId && Number.isFinite(msgSeq) && msgSeq > 0) {
-			const { getReadCountForMessage } = await import('../../memberReadMarkers.mjs')
-			readCount = getReadCountForMessage(groupId, channelId, msgSeq)
+			const { isMessageReadByPeer } = await import('../../memberReadMarkers.mjs')
+			peerRead = isMessageReadByPeer(groupId, channelId, msgSeq)
 		}
-		deliveryStatusHtml = renderDeliveryStatusHtml(message.deliveryStatus || (message.pending ? 'pending' : 'sent'), readCount)
+		const status = message.deliveryStatus === 'pending' || message.pending ? 'pending' : 'sent'
+		deliveryStatusHtml = renderDeliveryStatusHtml(status, peerRead)
 	}
 
 	return {
