@@ -1,4 +1,16 @@
 /**
+ * @param {string} text 原文
+ * @returns {string} HTML 转义
+ */
+function escapeHtml(text) {
+	return String(text ?? '')
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace(/"/g, '&quot;')
+}
+
+/**
  * @param {string} groupId 群 ID
  * @param {string} [channelId] 频道 ID
  * @returns {string} Hub hash 链接
@@ -28,8 +40,8 @@ export function renderGroupRefBlockHtml(groupRef) {
 	const label = groupRefLabel(groupRef)
 	return `\
 <div class="group-ref-block">
-	<span class="group-ref-label">${label}</span>
-	<a href="${href}" class="link-btn">${href}</a>
+	<span class="group-ref-label">${escapeHtml(label)}</span>
+	<a href="${escapeHtml(href)}" class="link-btn">${escapeHtml(href)}</a>
 </div>
 `
 }

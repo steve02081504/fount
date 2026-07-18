@@ -143,21 +143,22 @@ export async function buildPostCard(item, options = {}) {
 		: ''
 	const embeddedWrapStart = isRepost ? '<div class="embedded-post">' : ''
 	const embeddedWrapEnd = isRepost ? '</div>' : ''
-	const headerAuthor = isRepost
-		? authorLabel(originalAuthor, item.targetAuthorProfile)
-		: label
-	const headerLink = isRepost
-		? formatSocialProfileHref(originalAuthor)
-		: formatSocialProfileHref(item.entityHash)
 	const headerAvatarEntity = isRepost ? originalAuthor : item.entityHash
 	const headerAvatarProfile = isRepost ? item.targetAuthorProfile : item.authorProfile
 	const headerHandleEntity = isRepost ? originalAuthor : item.entityHash
+	const headerAuthor = escapeHtml(isRepost
+		? authorLabel(originalAuthor, item.targetAuthorProfile)
+		: label)
+	const headerLink = escapeHtml(isRepost
+		? formatSocialProfileHref(originalAuthor)
+		: formatSocialProfileHref(item.entityHash))
+	const authorHandle = escapeHtml(entityHandle(headerHandleEntity, headerAvatarProfile))
 	const timeAttrs = formatTimeAttrs(item.post?.hlc?.wall)
 	const postTimeAttrs = timeAttrs.i18n
 		? ` data-i18n="${timeAttrs.i18n}"${timeAttrs.n != null ? ` data-n="${timeAttrs.n}"` : ''}`
 		: ''
 	const postTimeText = timeAttrs.text ? escapeHtml(timeAttrs.text) : ''
-	const postDetailHref = formatSocialPostHref(actionEntity, actionPostId)
+	const postDetailHref = escapeHtml(formatSocialPostHref(actionEntity, actionPostId))
 	const editedBadge = item.post?.edited
 		? '<span class="post-edited-badge" data-i18n="social.post.edited"></span>'
 		: ''
@@ -211,7 +212,7 @@ export async function buildPostCard(item, options = {}) {
 		headerAvatarHtml: renderAvatarHtml(headerAvatarEntity, headerAvatarProfile),
 		headerAuthor,
 		headerLink,
-		authorHandle: entityHandle(headerHandleEntity, headerAvatarProfile),
+		authorHandle,
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,

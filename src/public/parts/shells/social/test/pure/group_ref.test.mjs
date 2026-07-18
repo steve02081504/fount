@@ -15,7 +15,7 @@ import {
 	formatMessageToken,
 	stripChannelTokens,
 } from '../../../chat/public/shared/inlineTokenSyntax.mjs'
-import { groupRefLabel } from '../../public/shared/groupRef.mjs'
+import { groupRefLabel, renderGroupRefBlockHtml } from '../../public/shared/groupRef.mjs'
 
 Deno.test('formatChatGroupHref encodes group and channel', () => {
 	const href = formatChatGroupHref('my group', 'ch 1')
@@ -62,6 +62,15 @@ Deno.test('expandChannelLinksInText href matches formatChatGroupHref', () => {
 Deno.test('groupRefLabel prefers custom label', () => {
 	assertEquals(groupRefLabel({ groupId: 'g1', label: 'My server' }), 'My server')
 	assertEquals(groupRefLabel({ groupId: 'g1', channelId: 'general' }), '#g1/general')
+})
+
+Deno.test('renderGroupRefBlockHtml escapes hostile label', () => {
+	const html = renderGroupRefBlockHtml({
+		groupId: 'g1',
+		label: '<img src=x onerror=alert(1)>',
+	})
+	assertEquals(html.includes('<img'), false)
+	assertEquals(html.includes('&lt;img src=x onerror=alert(1)&gt;'), true)
 })
 
 Deno.test('formatChannelToken and stripChannelTokens', () => {
