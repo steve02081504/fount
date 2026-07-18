@@ -19,6 +19,7 @@ import {
 	deleteEntries,
 	finalizeDelete,
 	listEntries,
+	readPersonalEntryBytes,
 	registerEntry,
 	restoreEntries,
 	unlockFolder,
@@ -26,6 +27,7 @@ import {
 	uploadAndRegister,
 	uploadPreview,
 } from './entries.mjs'
+import { buildFolderTrail, listChildren } from './entryModel.mjs'
 import { runCabinetSync, setSyncBinding } from './folderSync.mjs'
 import { resolveLink } from './links.mjs'
 import { fetchRemoteCabinetIndex, fetchRemoteCabinets } from './remote.mjs'
@@ -34,6 +36,15 @@ import { downloadSharedEntry } from './shared/ops.mjs'
 import { zipCabinetFolder } from './zip.mjs'
 
 const PREFIX = '/api/parts/shells\\:cabinet'
+
+/**
+ * @param {import('npm:express').Request} req 请求
+ * @param {object} [body] 请求体
+ * @returns {string | undefined} unlock token
+ */
+function unlockToken(req, body) {
+	return req.get('X-Cabinet-Unlock') || body?.unlock_token
+}
 
 /**
  * @param {import('npm:express').Request} req 请求
@@ -108,7 +119,7 @@ export function setEndpoints(router) {
 		const result = await listEntries(username, entityHash, req.params.cabinetId, {
 			parent_id: req.query.parent_id,
 			show_hidden: req.query.show_hidden === '1' || req.query.show_hidden === 'true',
-			unlock_token: req.get('X-Cabinet-Unlock') || undefined,
+			unlock_token: unlockToken(req),
 		})
 		res.status(200).json(result)
 	})
@@ -117,18 +128,18 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await ctxFromReq(req)
 		const cabinetId = req.params.cabinetId
 		const personal = await getCabinet(username, entityHash, cabinetId)
-		if (personal) {
-			const { loadPersonalIndex } = await import('./cabinets.mjs')
-			const { loadFileManifest, readManifestPlaintext } = await import('npm:@steve02081504/fount-p2p/files/evfs')
-			const index = await loadPersonalIndex(username, entityHash, cabinetId)
-			const entry = index.entries.find(row => row.id === req.params.entryId)
-			if (!entry?.evfs_path) throw httpError(404, 'file not found')
-			const manifest = await loadFileManifest(entityHash, entry.evfs_path)
-			if (!manifest) throw httpError(404, 'blob missing')
-			const plain = await readManifestPlaintext(username, manifest)
-			if (!plain) throw httpError(500, 'decrypt failed')
-			return res.status(200).send(Buffer.from(plain))
-		}
+		if (personal) 
+			try {
+				const plain = await readPersonalEntryBytes(username, entityHash, cabinetId, req.params.entryId)
+				return res.status(200).send(Buffer.from(plain))
+			}
+			catch (error) {
+				const msg = String(error?.message || '')
+				if (msg === 'file not found' || msg === 'blob missing') throw httpError(404, msg)
+				if (msg === 'decrypt failed') throw httpError(500, msg)
+				throw error
+			}
+		
 		const bytes = await downloadSharedEntry(username, cabinetId, req.params.entryId)
 		res.status(200).send(Buffer.from(bytes))
 	})
@@ -154,13 +165,13 @@ export function setEndpoints(router) {
 				attrs: body.attrs,
 				preview: body.preview,
 				description: body.description,
-				unlock_token: req.get('X-Cabinet-Unlock') || body.unlock_token,
+				unlock_token: unlockToken(req, body),
 			})
 			return res.status(200).json({ entry })
 		}
 		const entry = await registerEntry(username, entityHash, req.params.cabinetId, {
 			...body,
-			unlock_token: req.get('X-Cabinet-Unlock') || body.unlock_token,
+			unlock_token: unlockToken(req, body),
 		})
 		res.status(200).json({ entry })
 	})
@@ -169,7 +180,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await ctxFromReq(req)
 		const entry = await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, {
 			...req.body || {},
-			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+			unlock_token: unlockToken(req, req.body),
 		})
 		res.status(200).json({ entry })
 	})
@@ -178,7 +189,7 @@ export function setEndpoints(router) {
 		const { username, entityHash } = await ctxFromReq(req)
 		const entries = await copyEntries(username, entityHash, req.params.cabinetId, {
 			...req.body || {},
-			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+			unlock_token: unlockToken(req, req.body),
 		})
 		res.status(200).json({ entries })
 	})
@@ -188,7 +199,7 @@ export function setEndpoints(router) {
 		const ids = Array.isArray(req.body?.entry_ids) ? req.body.entry_ids : []
 		const result = await deleteEntries(username, entityHash, req.params.cabinetId, ids, {
 			recoverable: Boolean(req.body?.recoverable),
-			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+			unlock_token: unlockToken(req, req.body),
 		})
 		res.status(200).json(result)
 	})
@@ -198,7 +209,7 @@ export function setEndpoints(router) {
 		const recoveryToken = String(req.body?.recovery_token || '')
 		if (!recoveryToken) throw httpError(400, 'recovery_token required')
 		const result = await restoreEntries(username, entityHash, req.params.cabinetId, recoveryToken, {
-			unlock_token: req.get('X-Cabinet-Unlock') || req.body?.unlock_token,
+			unlock_token: unlockToken(req, req.body),
 		})
 		res.status(200).json(result)
 	})
@@ -221,7 +232,7 @@ export function setEndpoints(router) {
 		const cabinetId = req.params.cabinetId
 		const result = await zipCabinetFolder(username, entityHash, cabinetId, {
 			folder_id: req.query.parent_id || req.query.folder_id,
-			unlock_token: req.get('X-Cabinet-Unlock') || undefined,
+			unlock_token: unlockToken(req),
 			/**
 			 * @param {string} evfsPath EVFS 路径
 			 * @param {object} [entry] 条目
@@ -294,6 +305,13 @@ export function setEndpoints(router) {
 			visibility: { visibility: 'public' },
 		}
 		const index = await fetchRemoteCabinetIndex(username, owner, req.params.cabinetId, ctx, meta)
-		res.status(200).json({ cabinet: meta, ...index })
+		const parentId = req.query.parent_id || null
+		const options = { show_hidden: req.query.show_hidden === '1' }
+		res.status(200).json({
+			cabinet: meta,
+			version: index.version,
+			folder_trail: buildFolderTrail(index.entries, parentId),
+			entries: listChildren(index.entries, parentId, options),
+		})
 	})
 }

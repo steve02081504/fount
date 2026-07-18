@@ -3,49 +3,23 @@
  */
 import { confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/features/toast.mjs'
+import { arrayBufferToBase64, blobToBase64 } from '/scripts/lib/base64.mjs'
 
-import { api, unlockHeaders } from './api.mjs'
-import { readClipboard, writeClipboard } from './clipboard.mjs'
+import { api, cabinetApi, triggerDownload, unlockHeaders } from './api.mjs'
+import { writeClipboard } from './clipboard.mjs'
 import { renderEntries, selectedEntries } from './entryGrid.mjs'
 import { openCabinet, refreshEntries } from './navigation.mjs'
-import { canWrite, cabinetStore, currentUnlockToken } from './state.mjs'
-import { arrayBufferToBase64, blobToBase64, generateUploadPreview } from './uploadPreview.mjs'
-
-/**
- * @param {string} cabinetId 柜
- * @param {string} recoveryToken token
- * @returns {Promise<void>}
- */
-async function finalizeRecovery(cabinetId, recoveryToken) {
-	if (!recoveryToken) return
-	await api('POST', `/cabinets/${encodeURIComponent(cabinetId)}/entries/finalize-delete`, {
-		recovery_token: recoveryToken,
-	}).catch(() => { })
-}
-
-/**
- * @param {string} cabinetId 柜
- * @param {string[]} entryIds ids
- * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 删除结果
- */
-async function recoverableDelete(cabinetId, entryIds) {
-	return api('DELETE', `/cabinets/${encodeURIComponent(cabinetId)}/entries`, {
-		entry_ids: entryIds,
-		recoverable: true,
-	}, unlockHeaders(currentUnlockToken()))
-}
-
-/**
- * @param {string} cabinetId 柜
- * @param {string} recoveryToken token
- * @param {string} [unlockToken] unlock
- * @returns {Promise<void>}
- */
-async function restoreRecovery(cabinetId, recoveryToken, unlockToken = currentUnlockToken()) {
-	await api('POST', `/cabinets/${encodeURIComponent(cabinetId)}/entries/restore`, {
-		recovery_token: recoveryToken,
-	}, unlockHeaders(unlockToken))
-}
+import {
+	finalizeRecovery,
+	makeCreateHistory,
+	makeDeleteHistory,
+	makeMoveHistory,
+	makePatchHistory,
+	recoverableDelete,
+	restoreRecovery,
+} from './recoveryHistory.mjs'
+import { canWrite, cabinetStore, currentClipboard, currentUnlockToken } from './state.mjs'
+import { generateUploadPreview } from './uploadPreview.mjs'
 
 /**
  * @param {string} folderId 文件夹
@@ -61,10 +35,7 @@ export async function promptUnlock(folderId) {
 		document.getElementById('unlockSubmit').onclick = async () => {
 			try {
 				const password = document.getElementById('unlockPassword').value
-				const result = await api('POST', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/unlock`, {
-					folder_id: folderId,
-					password,
-				})
+				const result = await cabinetApi('POST', '/unlock', { folder_id: folderId, password }, { unlock: undefined })
 				cabinetStore.unlockTokens.set(folderId, result.unlock_token)
 				dialog.close()
 				resolve()
@@ -93,7 +64,7 @@ export async function onEntryOpen(entry) {
 	}
 	if (entry.kind === 'link') {
 		if (remoteEntityHash) return
-		const resolved = await api('GET', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}/resolve`)
+		const resolved = await cabinetApi('GET', `/entries/${encodeURIComponent(entry.id)}/resolve`)
 		if (!resolved.ok) {
 			showToastI18n('warning', 'cabinet.brokenLink', { reason: resolved.reason })
 			entry._broken = true
@@ -131,18 +102,17 @@ export async function downloadEntry(entry, cabinetId = cabinetStore.currentCabin
 		return
 	}
 	if (cabinetStore.currentCabinet?.type === 'shared') {
-		const a = document.createElement('a')
-		a.href = `/api/parts/shells:cabinet/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entry.id)}/download`
-		a.download = entry.name
-		a.click()
+		triggerDownload(
+			`/api/parts/shells:cabinet/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entry.id)}/download`,
+			entry.name,
+		)
 		return
 	}
 	const entity = ownerEntityHash || (await api('GET', '/viewer')).viewer_entity_hash
-	const url = `/api/parts/shells:chat/entities/${encodeURIComponent(entity)}/files/${entry.evfs_path.split('/').map(encodeURIComponent).join('/')}`
-	const a = document.createElement('a')
-	a.href = url
-	a.download = entry.name
-	a.click()
+	triggerDownload(
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entity)}/files/${entry.evfs_path.split('/').map(encodeURIComponent).join('/')}`,
+		entry.name,
+	)
 }
 
 /**
@@ -157,64 +127,25 @@ export async function uploadFiles(files) {
 		const previewBlob = await generateUploadPreview(file)
 		let preview
 		if (previewBlob) {
-			const uploaded = await api('POST', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/preview`, {
+			const uploaded = await cabinetApi('POST', '/preview', {
 				plaintext_base64: await blobToBase64(previewBlob),
 				name: `preview.${previewBlob.type.includes('avif') ? 'avif' : 'webp'}`,
 				mime_type: previewBlob.type,
 			})
 			preview = { url: uploaded.url, delete_with_file: true }
 		}
-		const buffer = await file.arrayBuffer()
-		const { entry } = await api('POST', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/entries`, {
-			plaintext_base64: arrayBufferToBase64(buffer),
+		const { entry } = await cabinetApi('POST', '/entries', {
+			plaintext_base64: arrayBufferToBase64(await file.arrayBuffer()),
 			name: file.name,
 			mime_type: file.type || 'application/octet-stream',
 			parent_id: cabinetStore.currentParentId,
 			preview,
-		}, unlockHeaders(currentUnlockToken()))
+		})
 		if (entry?.id) createdIds.push(entry.id)
 	}
 	await refreshEntries()
 	if (createdIds.length)
-		await cabinetStore.history.push(makeCreateHistory(createdIds, 'upload'))
-}
-
-/**
- * @param {string[]} createdIds 新建 id
- * @param {string} label 标签
- * @returns {import('./commandHistory.mjs').HistoryEntry} 历史条目
- */
-function makeCreateHistory(createdIds, label) {
-	const cabinetId = cabinetStore.currentCabinetId
-	/** @type {string | undefined} */
-	let recoveryToken
-	return {
-		label,
-		/**
-		 *
-		 */
-		async undo() {
-			const result = await recoverableDelete(cabinetId, createdIds)
-			recoveryToken = result.recovery_token
-			await refreshEntries()
-		},
-		/**
-		 *
-		 */
-		async redo() {
-			if (!recoveryToken) return
-			await restoreRecovery(cabinetId, recoveryToken)
-			recoveryToken = undefined
-			await refreshEntries()
-		},
-		/**
-		 *
-		 */
-		async discard() {
-			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
-			recoveryToken = undefined
-		},
-	}
+		await cabinetStore.history.push(makeCreateHistory(createdIds, 'upload', cabinetStore.currentCabinetId))
 }
 
 /**
@@ -224,14 +155,14 @@ export async function createFolder() {
 	if (!canWrite()) return
 	const name = await promptI18n('cabinet.newFolderPrompt')
 	if (!name) return
-	const { entry } = await api('POST', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/entries`, {
+	const { entry } = await cabinetApi('POST', '/entries', {
 		kind: 'folder',
 		name,
 		parent_id: cabinetStore.currentParentId,
-	}, unlockHeaders(currentUnlockToken()))
+	})
 	await refreshEntries()
 	if (entry?.id)
-		await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder'))
+		await cabinetStore.history.push(makeCreateHistory([entry.id], 'newFolder', cabinetStore.currentCabinetId))
 }
 
 /**
@@ -258,7 +189,7 @@ export function copySelection(mode) {
  */
 export async function pasteClipboard(asLinks = false) {
 	if (!canWrite()) return
-	const clip = cabinetStore.clipboard || readClipboard()
+	const clip = currentClipboard()
 	if (!clip?.entry_ids?.length) return
 	cabinetStore.clipboard = clip
 
@@ -268,36 +199,16 @@ export async function pasteClipboard(asLinks = false) {
 		const sourceParent = clip.source_parent_id ?? null
 		const movedIds = [...clip.entry_ids]
 		for (const id of movedIds)
-			await api('PATCH', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/entries/${encodeURIComponent(id)}`, {
-				parent_id: targetParent,
-			}, unlockHeaders(currentUnlockToken()))
+			await cabinetApi('PATCH', `/entries/${encodeURIComponent(id)}`, { parent_id: targetParent })
 		writeClipboard(null)
 		cabinetStore.clipboard = null
 		await refreshEntries()
-		const cabinetId = cabinetStore.currentCabinetId
-		await cabinetStore.history.push({
-			label: 'cut',
-			/**
-			 *
-			 */
-			async undo() {
-				for (const id of movedIds)
-					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(id)}`, {
-						parent_id: sourceParent,
-					}, unlockHeaders(currentUnlockToken()))
-				await refreshEntries()
-			},
-			/**
-			 *
-			 */
-			async redo() {
-				for (const id of movedIds)
-					await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(id)}`, {
-						parent_id: targetParent,
-					}, unlockHeaders(currentUnlockToken()))
-				await refreshEntries()
-			},
-		})
+		await cabinetStore.history.push(makeMoveHistory({
+			entryIds: movedIds,
+			fromParent: sourceParent,
+			toParent: targetParent,
+			cabinetId: cabinetStore.currentCabinetId,
+		}))
 		return
 	}
 
@@ -313,10 +224,7 @@ export async function pasteClipboard(asLinks = false) {
 	/** @type {string | undefined} */
 	let sourceRecovery
 	if (!asLinks && clip.mode === 'cut') {
-		const result = await api('DELETE', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries`, {
-			entry_ids: clip.entry_ids,
-			recoverable: true,
-		}, unlockHeaders(sourceUnlock))
+		const result = await recoverableDelete(clip.cabinet_id, clip.entry_ids, sourceUnlock)
 		sourceRecovery = result.recovery_token
 		writeClipboard(null)
 		cabinetStore.clipboard = null
@@ -350,10 +258,7 @@ export async function pasteClipboard(asLinks = false) {
 				createdRecovery = undefined
 			}
 			if (clip.mode === 'cut' && !asLinks) {
-				const result = await api('DELETE', `/cabinets/${encodeURIComponent(clip.cabinet_id)}/entries`, {
-					entry_ids: clip.entry_ids,
-					recoverable: true,
-				}, unlockHeaders(sourceUnlock))
+				const result = await recoverableDelete(clip.cabinet_id, clip.entry_ids, sourceUnlock)
 				sourceRecovery = result.recovery_token
 			}
 			await refreshEntries()
@@ -377,34 +282,15 @@ export async function renameSelection() {
 	if (!entry) return
 	const name = await promptI18n('cabinet.renamePrompt', entry.name)
 	if (!name || name === entry.name) return
-	const before = entry.name
-	await api('PATCH', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`, {
-		name,
-	}, unlockHeaders(currentUnlockToken()))
+	await cabinetApi('PATCH', `/entries/${encodeURIComponent(entry.id)}`, { name })
 	await refreshEntries()
-	const cabinetId = cabinetStore.currentCabinetId
-	const entryId = entry.id
-	await cabinetStore.history.push({
+	await cabinetStore.history.push(makePatchHistory({
+		entryId: entry.id,
+		before: { name: entry.name },
+		after: { name },
 		label: 'rename',
-		/**
-		 *
-		 */
-		async undo() {
-			await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, {
-				name: before,
-			}, unlockHeaders(currentUnlockToken()))
-			await refreshEntries()
-		},
-		/**
-		 *
-		 */
-		async redo() {
-			await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, {
-				name,
-			}, unlockHeaders(currentUnlockToken()))
-			await refreshEntries()
-		},
-	})
+		cabinetId: cabinetStore.currentCabinetId,
+	}))
 }
 
 /**
@@ -421,34 +307,7 @@ export async function deleteSelection() {
 	const result = await recoverableDelete(cabinetId, ids)
 	cabinetStore.selected.clear()
 	await refreshEntries()
-	let recoveryToken = result.recovery_token
-	await cabinetStore.history.push({
-		label: 'delete',
-		/**
-		 *
-		 */
-		async undo() {
-			if (!recoveryToken) return
-			await restoreRecovery(cabinetId, recoveryToken)
-			recoveryToken = undefined
-			await refreshEntries()
-		},
-		/**
-		 *
-		 */
-		async redo() {
-			const again = await recoverableDelete(cabinetId, ids)
-			recoveryToken = again.recovery_token
-			await refreshEntries()
-		},
-		/**
-		 *
-		 */
-		async discard() {
-			if (recoveryToken) await finalizeRecovery(cabinetId, recoveryToken)
-			recoveryToken = undefined
-		},
-	})
+	await cabinetStore.history.push(makeDeleteHistory(ids, result.recovery_token, cabinetId))
 }
 
 /**
@@ -458,13 +317,11 @@ export async function deleteSelection() {
  */
 export async function downloadFolder(folderId, name) {
 	const query = folderId ? `folder_id=${encodeURIComponent(folderId)}` : ''
-	const token = folderId ? cabinetStore.unlockTokens.get(folderId) : currentUnlockToken()
-	const blob = await api('GET', `/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/zip?${query}`, null, unlockHeaders(token))
+	const blob = await cabinetApi('GET', `/zip?${query}`, null, folderId
+		? { unlock: cabinetStore.unlockTokens.get(folderId) }
+		: {})
 	const url = URL.createObjectURL(blob)
-	const a = document.createElement('a')
-	a.href = url
-	a.download = `${name || cabinetStore.currentCabinet?.name || 'cabinet'}.zip`
-	a.click()
+	triggerDownload(url, `${name || cabinetStore.currentCabinet?.name || 'cabinet'}.zip`)
 	URL.revokeObjectURL(url)
 }
 

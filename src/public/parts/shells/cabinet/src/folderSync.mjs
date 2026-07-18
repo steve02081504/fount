@@ -4,6 +4,7 @@ import path from 'node:path'
 
 import { getCabinet, loadPersonalIndex, savePersonalIndex, updateCabinet } from './cabinets.mjs'
 import { normalizeEntry, patchEntry } from './entryModel.mjs'
+import { readJsonFile, writeJsonFile } from './io.mjs'
 import { evfsBlobPath, syncStatePath } from './paths.mjs'
 import { putCabinetEvfsFile } from './publish.mjs'
 
@@ -64,12 +65,7 @@ export async function runCabinetSync(username, entityHash, cabinetId) {
  * @returns {Promise<{ files: Record<string, object> }>} 快照
  */
 async function loadSnapshot(username, cabinetId) {
-	try {
-		return JSON.parse(await readFile(syncStatePath(username, cabinetId), 'utf8'))
-	}
-	catch {
-		return { files: {} }
-	}
+	return readJsonFile(syncStatePath(username, cabinetId), { files: {} })
 }
 
 /**
@@ -79,9 +75,7 @@ async function loadSnapshot(username, cabinetId) {
  * @returns {Promise<void>}
  */
 async function saveSnapshot(username, cabinetId, snapshot) {
-	const p = syncStatePath(username, cabinetId)
-	await mkdir(p.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(p, JSON.stringify(snapshot, null, '\t'), 'utf8')
+	await writeJsonFile(syncStatePath(username, cabinetId), snapshot)
 }
 
 /**

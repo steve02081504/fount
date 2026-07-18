@@ -3,11 +3,12 @@
  */
 import { setElementI18n } from '/scripts/i18n/index.mjs'
 
-import { api, unlockHeaders } from './api.mjs'
+import { cabinetApi } from './api.mjs'
 import { formatStamp, selectedEntries } from './entryGrid.mjs'
 import { refreshEntries } from './navigation.mjs'
+import { makePatchHistory } from './recoveryHistory.mjs'
 import { openEntityProfileCard } from './remoteBrowse.mjs'
-import { canWrite, cabinetStore, currentUnlockToken } from './state.mjs'
+import { canWrite, cabinetStore } from './state.mjs'
 
 /**
  * @returns {void}
@@ -78,33 +79,15 @@ export async function saveProps() {
 	const password = document.getElementById('propFolderPassword').value
 	if (entry.kind === 'folder' && password)
 		patch.set_password = password
-	await api(
-		'PATCH',
-		`/cabinets/${encodeURIComponent(cabinetStore.currentCabinetId)}/entries/${encodeURIComponent(entry.id)}`,
-		patch,
-		unlockHeaders(currentUnlockToken()),
-	)
+	await cabinetApi('PATCH', `/entries/${encodeURIComponent(entry.id)}`, patch)
 	document.getElementById('propsDialog').close()
 	await refreshEntries()
-	if (!password) {
-		const cabinetId = cabinetStore.currentCabinetId
-		const entryId = entry.id
-		await cabinetStore.history.push({
+	if (!password)
+		await cabinetStore.history.push(makePatchHistory({
+			entryId: entry.id,
+			before,
+			after: patch,
 			label: 'props',
-			/**
-			 *
-			 */
-			async undo() {
-				await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, before, unlockHeaders(currentUnlockToken()))
-				await refreshEntries()
-			},
-			/**
-			 *
-			 */
-			async redo() {
-				await api('PATCH', `/cabinets/${encodeURIComponent(cabinetId)}/entries/${encodeURIComponent(entryId)}`, patch, unlockHeaders(currentUnlockToken()))
-				await refreshEntries()
-			},
-		})
-	}
+			cabinetId: cabinetStore.currentCabinetId,
+		}))
 }

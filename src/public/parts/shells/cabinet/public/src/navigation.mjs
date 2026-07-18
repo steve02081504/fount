@@ -6,8 +6,18 @@ import { confirmI18n, promptI18n } from '/scripts/i18n/index.mjs'
 import { api, unlockHeaders } from './api.mjs'
 import { promptUnlock } from './entryActions.mjs'
 import { renderEntries, renderStatus } from './entryGrid.mjs'
-import { buildRemoteTrail, filterRemoteChildren, renderRemoteEntityBar } from './remoteBrowse.mjs'
+import { renderRemoteEntityBar } from './remoteBrowse.mjs'
 import { cabinetStore, currentUnlockToken, syncRemoteChrome } from './state.mjs'
+
+/**
+ * @param {string | null} remoteEntityHash 远端实体；null=本地
+ * @returns {void}
+ */
+function setBrowseMode(remoteEntityHash) {
+	cabinetStore.remoteEntityHash = remoteEntityHash
+	syncRemoteChrome()
+	void renderRemoteEntityBar()
+}
 
 /**
  * @param {string} cabinetId 柜
@@ -124,29 +134,20 @@ export async function refreshEntries() {
 	const { currentCabinetId, currentParentId, remoteEntityHash } = cabinetStore
 	if (!currentCabinetId) return
 	const showHidden = document.getElementById('showHidden').checked
-	if (remoteEntityHash) {
-		const data = await api(
-			'GET',
-			`/remote/${encodeURIComponent(remoteEntityHash)}/cabinets/${encodeURIComponent(currentCabinetId)}/index`,
-		)
-		cabinetStore.currentCabinet = data.cabinet
-		const all = data.entries || []
-		cabinetStore.folderTrail = buildRemoteTrail(all, currentParentId)
-		await renderBreadcrumb()
-		cabinetStore.entries = filterRemoteChildren(all, currentParentId, showHidden)
-		await renderEntries()
-		renderStatus()
-		return
-	}
 	const query = new URLSearchParams()
 	if (currentParentId) query.set('parent_id', currentParentId)
 	if (showHidden) query.set('show_hidden', '1')
-	const data = await api(
-		'GET',
-		`/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
-		null,
-		unlockHeaders(currentUnlockToken()),
-	)
+	const data = remoteEntityHash
+		? await api(
+			'GET',
+			`/remote/${encodeURIComponent(remoteEntityHash)}/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
+		)
+		: await api(
+			'GET',
+			`/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
+			null,
+			unlockHeaders(currentUnlockToken()),
+		)
 	cabinetStore.currentCabinet = data.cabinet
 	cabinetStore.folderTrail = data.folder_trail || []
 	await renderBreadcrumb()
@@ -216,10 +217,7 @@ async function renderBreadcrumb() {
 export async function goUp() {
 	const { currentParentId, folderTrail, currentCabinetId } = cabinetStore
 	if (!currentParentId) return
-	const parent = folderTrail.length >= 2
-		? folderTrail[folderTrail.length - 2].id
-		: null
-	await openCabinet(currentCabinetId, folderTrail.length >= 2 ? parent : null)
+	await openCabinet(currentCabinetId, folderTrail.length >= 2 ? folderTrail[folderTrail.length - 2].id : null)
 }
 
 /**
@@ -228,8 +226,7 @@ export async function goUp() {
 export function openCurrentInNewWindow() {
 	const { currentCabinetId, currentParentId } = cabinetStore
 	if (!currentCabinetId) return
-	const hash = locationHashFor(currentCabinetId, currentParentId)
-	window.open(`${location.pathname}#${hash}`, '_blank', 'noopener')
+	window.open(`${location.pathname}#${locationHashFor(currentCabinetId, currentParentId)}`, '_blank', 'noopener')
 }
 
 /**
@@ -238,40 +235,28 @@ export function openCurrentInNewWindow() {
 export async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
 	if (hash.startsWith('shared:')) {
-		cabinetStore.remoteEntityHash = null
-		syncRemoteChrome()
-		void renderRemoteEntityBar()
-		const rest = hash.slice(7)
-		const [cabinetId, folderId] = rest.split('/')
+		setBrowseMode(null)
+		const [cabinetId, folderId] = hash.slice(7).split('/')
 		await refreshCabinets()
 		await openCabinet(cabinetId, folderId || null)
 		return
 	}
 	if (hash.startsWith('cabinet:')) {
-		cabinetStore.remoteEntityHash = null
-		syncRemoteChrome()
-		void renderRemoteEntityBar()
-		const rest = hash.slice(8)
-		const [cabinetId, folderId] = rest.split('/')
+		setBrowseMode(null)
+		const [cabinetId, folderId] = hash.slice(8).split('/')
 		await openCabinet(cabinetId, folderId || null)
 		return
 	}
 	if (hash.startsWith('user:')) {
 		const parts = hash.slice(5).split('/')
-		const entityHash = parts[0]
-		cabinetStore.remoteEntityHash = entityHash.toLowerCase()
-		syncRemoteChrome()
-		void renderRemoteEntityBar()
-		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
+		setBrowseMode(parts[0].toLowerCase())
+		const data = await api('GET', `/remote/${encodeURIComponent(parts[0])}/cabinets`)
 		cabinetStore.cabinets = data.cabinets || []
 		renderCabinetList()
 		const cabinetId = parts[1] || cabinetStore.cabinets[0]?.cabinet_id
-		const folderId = parts[2] || null
-		if (cabinetId) await openCabinet(cabinetId, folderId)
+		if (cabinetId) await openCabinet(cabinetId, parts[2] || null)
 		return
 	}
-	cabinetStore.remoteEntityHash = null
-	syncRemoteChrome()
-	void renderRemoteEntityBar()
+	setBrowseMode(null)
 	await openCabinet('default')
 }

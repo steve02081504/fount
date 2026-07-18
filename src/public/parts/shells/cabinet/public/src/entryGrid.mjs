@@ -3,11 +3,11 @@
  */
 import { setElementI18n } from '/scripts/i18n/index.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatEntityAtId } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { showContextMenu } from './contextMenu.mjs'
 import { onEntryOpen } from './entryActions.mjs'
-import { escapeAttr, escapeHtml } from './escape.mjs'
 import { cabinetStore } from './state.mjs'
 
 /**
@@ -28,9 +28,10 @@ export function formatStamp(stamp) {
 function iconFor(entry) {
 	if (entry.kind === 'folder') return entry.encryption ? '🔒' : '📁'
 	if (entry.kind === 'link') return '🔗'
-	if (String(entry.mime_type || '').startsWith('image/')) return '🖼️'
-	if (String(entry.mime_type || '').startsWith('video/')) return '🎬'
-	if (String(entry.mime_type || '').startsWith('audio/')) return '🎵'
+	const mime = String(entry.mime_type || '')
+	if (mime.startsWith('image/')) return '🖼️'
+	if (mime.startsWith('video/')) return '🎬'
+	if (mime.startsWith('audio/')) return '🎵'
 	return '📄'
 }
 
@@ -52,6 +53,17 @@ export function renderStatus() {
 }
 
 /**
+ * 仅同步选中态 class，避免全量重绘。
+ * @returns {void}
+ */
+export function syncSelectionClasses() {
+	const { selected } = cabinetStore
+	for (const card of document.getElementById('entryGrid').querySelectorAll('.entry-card'))
+		card.classList.toggle('selected', selected.has(card.dataset.id))
+	renderStatus()
+}
+
+/**
  * @returns {Promise<void>}
  */
 export async function renderEntries() {
@@ -60,10 +72,10 @@ export async function renderEntries() {
 	host.replaceChildren()
 	for (const entry of entries) {
 		const thumbHtml = entry.preview?.url
-			? `<img class="entry-thumb" src="${escapeAttr(entry.preview.url)}" alt="" />`
+			? `<img class="entry-thumb" src="${escapeHtml(entry.preview.url)}" alt="" />`
 			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
 		const card = await renderTemplate('entry_card', {
-			id: escapeAttr(entry.id),
+			id: escapeHtml(entry.id),
 			selectedClass: selected.has(entry.id) ? ' selected' : '',
 			brokenClass: entry.kind === 'link' && entry._broken ? ' broken' : '',
 			thumbHtml,
@@ -116,8 +128,7 @@ export function onEntryClick(event, entry) {
 		selected.add(entry.id)
 		cabinetStore.rangeAnchor = entry.id
 	}
-	void renderEntries()
-	renderStatus()
+	syncSelectionClasses()
 }
 
 /**
@@ -125,8 +136,7 @@ export function onEntryClick(event, entry) {
  */
 export function selectAllEntries() {
 	for (const entry of cabinetStore.entries) cabinetStore.selected.add(entry.id)
-	void renderEntries()
-	renderStatus()
+	syncSelectionClasses()
 }
 
 /**
@@ -137,6 +147,5 @@ export function invertSelection() {
 	for (const entry of entries)
 		if (selected.has(entry.id)) selected.delete(entry.id)
 		else selected.add(entry.id)
-	void renderEntries()
-	renderStatus()
+	syncSelectionClasses()
 }

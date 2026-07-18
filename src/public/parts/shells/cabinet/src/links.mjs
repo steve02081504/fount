@@ -1,6 +1,4 @@
-import { getCabinet, loadPersonalIndex } from './cabinets.mjs'
-import { getSharedCabinetMeta } from './shared/keys.mjs'
-import { loadSharedIndex } from './shared/materialize.mjs'
+import { loadCabinetIndex, resolveCabinet } from './cabinets.mjs'
 
 /**
  * 解析链接条目目标。
@@ -28,7 +26,7 @@ export async function resolveLink(username, entityHash, cabinetId, entryId) {
 					kind: 'cabinet',
 					owner_entity_hash: targetOwner,
 					cabinet_id: targetCabinetId,
-					cabinet: await resolveCabinetMeta(username, targetOwner, targetCabinetId),
+					cabinet: await resolveCabinet(username, targetOwner, targetCabinetId),
 				},
 			}
 
@@ -53,28 +51,12 @@ export async function resolveLink(username, entityHash, cabinetId, entryId) {
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
- * @returns {Promise<object | null>} 柜
- */
-async function resolveCabinetMeta(username, entityHash, cabinetId) {
-	const personal = await getCabinet(username, entityHash, cabinetId)
-	if (personal) return personal
-	return getSharedCabinetMeta(username, cabinetId)
-}
-
-/**
- * @param {string} username 用户
- * @param {string} entityHash 实体
- * @param {string} cabinetId 柜
  * @param {string} entryId 条目
  * @returns {Promise<object | null>} 条目
  */
 async function findEntry(username, entityHash, cabinetId, entryId) {
-	const cabinet = await resolveCabinetMeta(username, entityHash, cabinetId)
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
 	if (!cabinet) return null
-	if (cabinet.type === 'shared') {
-		const index = await loadSharedIndex(username, cabinetId)
-		return index.entries.find(row => row.id === entryId) || null
-	}
-	const index = await loadPersonalIndex(username, entityHash, cabinetId)
+	const index = await loadCabinetIndex(username, entityHash, cabinetId, cabinet)
 	return index.entries.find(row => row.id === entryId) || null
 }

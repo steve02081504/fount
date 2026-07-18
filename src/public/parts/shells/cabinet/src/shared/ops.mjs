@@ -6,6 +6,7 @@ import {
 	collectSubtreeIds,
 	listChildren,
 	normalizeEntry,
+	normalizeParentId,
 	patchEntry,
 } from '../entryModel.mjs'
 
@@ -70,7 +71,7 @@ export async function listSharedEntries(username, cabinetId, options = {}) {
 	const cabinet = await getSharedCabinetMeta(username, cabinetId)
 	if (!cabinet) throw new Error('cabinet not found')
 	const index = await loadSharedIndex(username, cabinetId)
-	const parentId = options.parent_id == null || options.parent_id === '' ? null : String(options.parent_id)
+	const parentId = normalizeParentId(options.parent_id)
 	const entries = listChildren(
 		index.entries.filter(entry => !entry.orphaned || options.show_orphaned),
 		parentId,

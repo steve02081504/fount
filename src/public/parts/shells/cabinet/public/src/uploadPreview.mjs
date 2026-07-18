@@ -17,8 +17,7 @@ async function canvasToPreviewBlob(source, width, height) {
 	const canvas = document.createElement('canvas')
 	canvas.width = w
 	canvas.height = h
-	const ctx = canvas.getContext('2d')
-	ctx.drawImage(source, 0, 0, w, h)
+	canvas.getContext('2d').drawImage(source, 0, 0, w, h)
 	const avif = await new Promise(resolve => canvas.toBlob(resolve, 'image/avif', 0.6))
 	if (avif) return avif
 	return new Promise(resolve => canvas.toBlob(resolve, 'image/webp', 0.75))
@@ -53,8 +52,7 @@ async function previewFromVideo(file) {
 			video.onloadeddata = resolve
 			video.onerror = reject
 		})
-		const seekTo = Math.min(1, (video.duration || 1) * 0.1)
-		video.currentTime = seekTo
+		video.currentTime = Math.min(1, (video.duration || 1) * 0.1)
 		await new Promise(resolve => { video.onseeked = resolve })
 		return await canvasToPreviewBlob(video, video.videoWidth || 320, video.videoHeight || 180)
 	}
@@ -72,23 +70,4 @@ export async function generateUploadPreview(file) {
 	if (type.startsWith('image/')) return previewFromImage(file)
 	if (type.startsWith('video/')) return previewFromVideo(file)
 	return null
-}
-
-/**
- * @param {ArrayBuffer} buffer 缓冲
- * @returns {string} base64
- */
-export function arrayBufferToBase64(buffer) {
-	const bytes = new Uint8Array(buffer)
-	let binary = ''
-	for (const byte of bytes) binary += String.fromCharCode(byte)
-	return btoa(binary)
-}
-
-/**
- * @param {Blob} blob 预览
- * @returns {Promise<string>} base64
- */
-export async function blobToBase64(blob) {
-	return arrayBufferToBase64(await blob.arrayBuffer())
 }

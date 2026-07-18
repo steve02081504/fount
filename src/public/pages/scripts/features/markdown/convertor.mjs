@@ -931,22 +931,17 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 		return h('div', { class: 'flex items-center' }, buttons)
 	}
 
-	if (lineCount > collapseThreshold) {
-		const buttonNode = getButtonGroup()
-		const summaryNode = h('summary', { class: 'bg-base-200 collapse-title' }, [h('div', {
-			class: 'font-mono text-xs font-bold flex items-center justify-between'
-		}, [
-			h('span', `${lang.toUpperCase()} - ${lineCount} lines`),
-			buttonNode
-		])])
-		return h('details', { id: uniqueId, class: 'markdown-code-block collapse collapse-arrow join-item', open: true }, [
-			summaryNode,
-			h('div', { class: 'collapse-content' }, [pre])
-		])
-	}
+	const hoverButtons = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
 
-	const buttonNode = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
-	return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [pre, buttonNode])
+	if (lineCount > collapseThreshold)
+		return h('details', { id: uniqueId, class: 'markdown-code-block join-item group', open: true }, [
+			h('summary', { class: 'bg-base-200 px-3 py-2 font-mono text-xs font-bold cursor-pointer' },
+				`${lang.toUpperCase()} - ${lineCount} lines`
+			),
+			h('div', { class: 'relative' }, [pre, hoverButtons])
+		])
+
+	return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [pre, hoverButtons])
 }
 
 /**

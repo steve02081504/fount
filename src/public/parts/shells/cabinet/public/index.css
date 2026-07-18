@@ -10,11 +10,10 @@
 #entryGrid .entry-card:hover {
 	background: oklch(var(--b2));
 }
-#entryGrid .entry-card.selected {
+#entryGrid .entry-card:is(.selected, :focus-visible) {
 	outline: 2px solid oklch(var(--p));
 }
 #entryGrid .entry-card:focus-visible {
-	outline: 2px solid oklch(var(--p));
 	outline-offset: 2px;
 }
 #entryGrid .entry-card.broken {
@@ -78,7 +77,6 @@
 }
 .cabinet-breadcrumb .breadcrumb-current {
 	font-weight: 600;
-	color: currentColor;
 }
 .cabinet-breadcrumb .breadcrumb-back {
 	margin-right: 0.25rem;
@@ -89,16 +87,12 @@
 	border-top: 1px solid oklch(var(--bc) / 0.12);
 	margin: 0.25rem 0;
 }
-
 .cabinet-status-bar {
 	padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
 }
-
-/* 远端浏览：隐藏新建柜（会冲掉远端列表） */
 body.cabinet-remote .cabinet-local-only {
 	display: none !important;
 }
-
 @media (max-width: 480px) {
 	.cabinet-breadcrumb button,
 	.cabinet-breadcrumb .breadcrumb-current {

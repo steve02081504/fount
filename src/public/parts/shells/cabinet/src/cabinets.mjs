@@ -1,9 +1,9 @@
 import { randomUUID } from 'node:crypto'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { normalizeVisibilitySpec } from '../../social/src/lib/visibilitySpec.mjs'
 
 import { normalizeIndex } from './entryModel.mjs'
+import { readJsonFile, writeJsonFile } from './io.mjs'
 import { cabinetIndexPath, cabinetsListPath } from './paths.mjs'
 import { publishCabinetLists } from './publish.mjs'
 
@@ -13,13 +13,8 @@ import { publishCabinetLists } from './publish.mjs'
  * @returns {Promise<object[]>} 柜列表
  */
 export async function loadCabinets(username, entityHash) {
-	try {
-		const raw = JSON.parse(await readFile(cabinetsListPath(username, entityHash), 'utf8'))
-		return Array.isArray(raw?.cabinets) ? raw.cabinets : []
-	}
-	catch {
-		return []
-	}
+	const raw = await readJsonFile(cabinetsListPath(username, entityHash), { cabinets: [] })
+	return Array.isArray(raw?.cabinets) ? raw.cabinets : []
 }
 
 /**
@@ -29,9 +24,7 @@ export async function loadCabinets(username, entityHash) {
  * @returns {Promise<void>}
  */
 export async function saveCabinets(username, entityHash, cabinets) {
-	const path = cabinetsListPath(username, entityHash)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(path, JSON.stringify({ cabinets }, null, '\t'), 'utf8')
+	await writeJsonFile(cabinetsListPath(username, entityHash), { cabinets })
 	await publishCabinetLists(username, entityHash, cabinets).catch(() => { })
 }
 
@@ -68,8 +61,7 @@ export async function createCabinet(username, entityHash, draft) {
 	await saveCabinets(username, entityHash, cabinets)
 	if (cabinet.type === 'personal') {
 		const indexPath = cabinetIndexPath(username, entityHash, cabinet.cabinet_id)
-		await mkdir(indexPath.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-		await writeFile(indexPath, JSON.stringify(normalizeIndex({ version: 1, entries: [] }), null, '\t'), 'utf8')
+		await writeJsonFile(indexPath, normalizeIndex({ version: 1, entries: [] }))
 	}
 	return cabinet
 }
@@ -83,6 +75,34 @@ export async function createCabinet(username, entityHash, draft) {
 export async function getCabinet(username, entityHash, cabinetId) {
 	const cabinets = await loadCabinets(username, entityHash)
 	return cabinets.find(row => row.cabinet_id === cabinetId) || null
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @returns {Promise<object | null>} 个人或共享柜
+ */
+export async function resolveCabinet(username, entityHash, cabinetId) {
+	const personal = await getCabinet(username, entityHash, cabinetId)
+	if (personal) return personal
+	const { getSharedCabinetMeta } = await import('./shared/keys.mjs')
+	return getSharedCabinetMeta(username, cabinetId)
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @param {object} cabinet 柜元数据
+ * @returns {Promise<{ version: number, entries: object[] }>} 索引
+ */
+export async function loadCabinetIndex(username, entityHash, cabinetId, cabinet) {
+	if (cabinet.type === 'shared') {
+		const { loadSharedIndex } = await import('./shared/materialize.mjs')
+		return loadSharedIndex(username, cabinetId)
+	}
+	return loadPersonalIndex(username, entityHash, cabinetId)
 }
 
 /**
@@ -127,13 +147,8 @@ export async function deleteCabinet(username, entityHash, cabinetId) {
  * @returns {Promise<{ version: number, entries: object[] }>} 索引
  */
 export async function loadPersonalIndex(username, entityHash, cabinetId) {
-	try {
-		const raw = JSON.parse(await readFile(cabinetIndexPath(username, entityHash, cabinetId), 'utf8'))
-		return normalizeIndex(raw)
-	}
-	catch {
-		return normalizeIndex({ version: 1, entries: [] })
-	}
+	const raw = await readJsonFile(cabinetIndexPath(username, entityHash, cabinetId), null)
+	return normalizeIndex(raw || { version: 1, entries: [] })
 }
 
 /**
@@ -144,10 +159,8 @@ export async function loadPersonalIndex(username, entityHash, cabinetId) {
  * @returns {Promise<void>}
  */
 export async function savePersonalIndex(username, entityHash, cabinetId, index) {
-	const path = cabinetIndexPath(username, entityHash, cabinetId)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
 	const normalized = normalizeIndex(index)
-	await writeFile(path, JSON.stringify(normalized, null, '\t'), 'utf8')
+	await writeJsonFile(cabinetIndexPath(username, entityHash, cabinetId), normalized)
 	const cabinet = await getCabinet(username, entityHash, cabinetId)
 	if (cabinet?.type === 'personal') {
 		const { publishCabinetIndex } = await import('./publish.mjs')

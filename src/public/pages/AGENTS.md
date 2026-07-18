@@ -49,6 +49,7 @@ alwaysApply: false
 - **`jsonEditor.mjs`**: `vanilla-jsoneditor` wrapper.
 - **`terminal.mjs`**: `xterm.js` terminal wrapper.
 - **`regex.mjs`**: Regex parsing and escaping.
+- **`lib/base64.mjs`**: `arrayBufferToBase64` / `blobToBase64`（上传 body 等；勿在各壳再抄一份）。
 - **`credentialManager.mjs`**: Secure credential encryption and transfer.
 
 ## P2P (Browser)

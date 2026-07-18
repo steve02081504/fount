@@ -1,7 +1,6 @@
 /**
  * 快捷键命令分发（对接 keyboard.mjs 纯匹配）。
  */
-import { readClipboard } from './clipboard.mjs'
 import { hideContextMenu } from './contextMenu.mjs'
 import {
 	copySelection,
@@ -12,14 +11,14 @@ import {
 } from './entryActions.mjs'
 import { selectAllEntries, selectedEntries } from './entryGrid.mjs'
 import { goUp, openCurrentInNewWindow } from './navigation.mjs'
-import { canWrite, cabinetStore } from './state.mjs'
+import { canWrite, cabinetStore, hasClipboard } from './state.mjs'
 
 /**
  * @param {string} command 命令
  * @returns {Promise<boolean>} 是否处理
  */
 export async function runCommand(command) {
-	const { selected, clipboard, history, entries, currentParentId } = cabinetStore
+	const { selected, history, entries, currentParentId } = cabinetStore
 	switch (command) {
 		case 'copy':
 			copySelection('copy')
@@ -29,11 +28,11 @@ export async function runCommand(command) {
 			copySelection('cut')
 			return true
 		case 'paste':
-			if (!canWrite() || !(clipboard || readClipboard())?.entry_ids?.length) return false
+			if (!canWrite() || !hasClipboard()) return false
 			await pasteClipboard(false)
 			return true
 		case 'pasteLink':
-			if (!canWrite() || !(clipboard || readClipboard())?.entry_ids?.length) return false
+			if (!canWrite() || !hasClipboard()) return false
 			await pasteClipboard(true)
 			return true
 		case 'selectAll':

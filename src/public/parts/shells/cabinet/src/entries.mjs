@@ -1,9 +1,12 @@
 import { randomUUID } from 'node:crypto'
 
+import { loadFileManifest, readManifestPlaintext } from 'npm:@steve02081504/fount-p2p/files/evfs'
+
 import { hardDeleteEntryBlobs, tryDeletePreviewByUrl } from './blobGc.mjs'
 import {
-	getCabinet,
+	loadCabinetIndex,
 	loadPersonalIndex,
+	resolveCabinet,
 	savePersonalIndex,
 } from './cabinets.mjs'
 import {
@@ -11,42 +14,38 @@ import {
 	collectSubtreeIds,
 	listChildren,
 	normalizeEntry,
+	normalizeParentId,
 	patchEntry,
 } from './entryModel.mjs'
+import { ensureParentDir } from './io.mjs'
 import {
 	createFolderEncryption,
 	loadEncryptedFolderIndex,
 	saveEncryptedFolderIndex,
 	unlockFolderKey,
 } from './passwordFolder.mjs'
-import { evfsBlobPath, evfsPreviewPath } from './paths.mjs'
+import { evfsBlobPath, evfsPreviewPath, encryptedFolderIndexPath } from './paths.mjs'
 import { putCabinetEvfsFile } from './publish.mjs'
 import { clearRecovery, loadRecovery, storeRecovery } from './recovery.mjs'
 import { countLocalInboundLinks, gcOrphanAfterUnlink } from './refcount.mjs'
-import { issueUnlockToken, peekUnlockToken, resolveUnlockToken } from './unlockTokens.mjs'
-
-/**
- * @param {string} cabinetId 柜 id
- * @returns {boolean} 是否共享柜
- */
-function isSharedCabinetId(cabinetId) {
-	return Boolean(cabinetId) && !cabinetId.includes(':') && cabinetId.length === 64
-}
+import { issueUnlockToken, resolveFolderUnlock, resolveUnlockToken } from './unlockTokens.mjs'
 
 /**
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
- * @returns {Promise<object | null>} 柜；共享柜走 meta
+ * @param {string} entryId 条目
+ * @returns {Promise<Buffer | Uint8Array>} 明文
  */
-async function resolveCabinet(username, entityHash, cabinetId) {
-	const personal = await getCabinet(username, entityHash, cabinetId)
-	if (personal) return personal
-	if (isSharedCabinetId(cabinetId) || String(cabinetId).length >= 32) {
-		const { getSharedCabinetMeta } = await import('./shared/keys.mjs')
-		return getSharedCabinetMeta(username, cabinetId)
-	}
-	return null
+export async function readPersonalEntryBytes(username, entityHash, cabinetId, entryId) {
+	const index = await loadPersonalIndex(username, entityHash, cabinetId)
+	const entry = index.entries.find(row => row.id === entryId)
+	if (!entry?.evfs_path) throw new Error('file not found')
+	const manifest = await loadFileManifest(entityHash, entry.evfs_path)
+	if (!manifest) throw new Error('blob missing')
+	const plain = await readManifestPlaintext(username, manifest)
+	if (!plain) throw new Error('decrypt failed')
+	return plain
 }
 
 /**
@@ -65,7 +64,7 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
 	}
 
 	const index = await loadPersonalIndex(username, entityHash, cabinetId)
-	const parentId = options.parent_id == null || options.parent_id === '' ? null : String(options.parent_id)
+	const parentId = normalizeParentId(options.parent_id)
 	if (parentId) {
 		const folder = index.entries.find(entry => entry.id === parentId && entry.kind === 'folder')
 		if (folder?.encryption) {
@@ -159,20 +158,14 @@ export async function updateEntry(username, entityHash, cabinetId, entryId, patc
 		return updateSharedEntry(username, entityHash, cabinetId, entryId, patch)
 	}
 
-	const unlockMeta = peekUnlockToken(patch.unlock_token)
-	if (unlockMeta?.cabinet_id === cabinetId) {
-		const folderKey = resolveUnlockToken(patch.unlock_token, {
-			cabinet_id: cabinetId,
-			folder_id: unlockMeta.folder_id,
-			entity_hash: entityHash,
-		})
-		if (!folderKey) throw new Error('folder locked')
-		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+	const unlockMeta = resolveFolderUnlock(patch.unlock_token, cabinetId, entityHash)
+	if (unlockMeta) {
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
 		const idx = encIndex.entries.findIndex(row => row.id === entryId)
 		if (idx >= 0) {
 			const next = patchEntry(encIndex.entries[idx], patch, entityHash)
 			encIndex.entries[idx] = next
-			await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, encIndex)
+			await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key, encIndex)
 			return next
 		}
 	}
@@ -273,15 +266,9 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds, o
 		return deleteSharedEntries(username, entityHash, cabinetId, entryIds, { recoverable })
 	}
 
-	const unlockMeta = peekUnlockToken(options.unlock_token)
-	if (unlockMeta?.cabinet_id === cabinetId) {
-		const folderKey = resolveUnlockToken(options.unlock_token, {
-			cabinet_id: cabinetId,
-			folder_id: unlockMeta.folder_id,
-			entity_hash: entityHash,
-		})
-		if (!folderKey) throw new Error('folder locked')
-		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+	const unlockMeta = resolveFolderUnlock(options.unlock_token, cabinetId, entityHash)
+	if (unlockMeta) {
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
 		const toDelete = new Set()
 		for (const id of entryIds)
 			for (const childId of collectSubtreeIds(encIndex.entries, id))
@@ -289,7 +276,7 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds, o
 		const { removed, kept, deferredLinks, stashed } = await partitionPersonalDeletes(
 			username, entityHash, cabinetId, encIndex.entries, toDelete, recoverable,
 		)
-		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, {
+		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key, {
 			version: encIndex.version || 1,
 			entries: kept,
 		})
@@ -364,15 +351,9 @@ export async function restoreEntries(username, entityHash, cabinetId, recoveryTo
 	const mainEntries = record.entries.filter(row => !row.__enc_folder_id)
 
 	if (encStash.length) {
-		const unlockMeta = peekUnlockToken(options.unlock_token)
-		if (!unlockMeta || unlockMeta.cabinet_id !== cabinetId) throw new Error('folder locked')
-		const folderKey = resolveUnlockToken(options.unlock_token, {
-			cabinet_id: cabinetId,
-			folder_id: unlockMeta.folder_id,
-			entity_hash: entityHash,
-		})
-		if (!folderKey) throw new Error('folder locked')
-		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey)
+		const unlockMeta = resolveFolderUnlock(options.unlock_token, cabinetId, entityHash)
+		if (!unlockMeta) throw new Error('folder locked')
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
 		const existing = new Set(encIndex.entries.map(row => row.id))
 		for (const entry of encStash) {
 			if (entry.__enc_folder_id !== unlockMeta.folder_id) continue
@@ -380,7 +361,7 @@ export async function restoreEntries(username, entityHash, cabinetId, recoveryTo
 			void __enc_folder_id
 			if (!existing.has(clean.id)) encIndex.entries.push(clean)
 		}
-		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, folderKey, encIndex)
+		await saveEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key, encIndex)
 	}
 
 	if (mainEntries.length) {
@@ -389,11 +370,10 @@ export async function restoreEntries(username, entityHash, cabinetId, recoveryTo
 		for (const entry of mainEntries)
 			if (!existing.has(entry.id)) index.entries.push(entry)
 		await savePersonalIndex(username, entityHash, cabinetId, index)
+		const { writeFile } = await import('node:fs/promises')
 		for (const [folderId, raw] of Object.entries(record.encrypted_indexes || {})) {
-			const { writeFile, mkdir } = await import('node:fs/promises')
-			const { encryptedFolderIndexPath } = await import('./paths.mjs')
 			const path = encryptedFolderIndexPath(username, entityHash, cabinetId, folderId)
-			await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
+			await ensureParentDir(path)
 			await writeFile(path, typeof raw === 'string' ? raw : JSON.stringify(raw), 'utf8')
 		}
 	}
@@ -454,26 +434,15 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 	const targetCabinet = await resolveCabinet(username, entityHash, targetCabinetId)
 	if (!targetCabinet) throw new Error('target cabinet not found')
 
-	let sourceEntries = cabinet.type === 'shared'
-		? (await (await import('./shared/materialize.mjs')).loadSharedIndex(username, cabinetId)).entries
-		: (await loadPersonalIndex(username, entityHash, cabinetId)).entries
+	let sourceEntries = (await loadCabinetIndex(username, entityHash, cabinetId, cabinet)).entries
 
-	const sourceUnlock = peekUnlockToken(body.source_unlock_token)
-	if (sourceUnlock?.cabinet_id === cabinetId) {
-		const folderKey = resolveUnlockToken(body.source_unlock_token, {
-			cabinet_id: cabinetId,
-			folder_id: sourceUnlock.folder_id,
-			entity_hash: entityHash,
-		})
-		if (folderKey) {
-			const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, sourceUnlock.folder_id, folderKey)
-			sourceEntries = [...sourceEntries, ...encIndex.entries]
-		}
+	const sourceUnlock = resolveFolderUnlock(body.source_unlock_token, cabinetId, entityHash)
+	if (sourceUnlock) {
+		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, sourceUnlock.folder_id, sourceUnlock.folder_key)
+		sourceEntries = [...sourceEntries, ...encIndex.entries]
 	}
 
-	const targetParent = body.target_parent_id == null || body.target_parent_id === ''
-		? null
-		: String(body.target_parent_id)
+	const targetParent = normalizeParentId(body.target_parent_id)
 	const created = []
 
 	/**
@@ -485,18 +454,12 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 			const { registerSharedEntry } = await import('./shared/ops.mjs')
 			return registerSharedEntry(username, entityHash, targetCabinetId, entry)
 		}
-		const unlockMeta = peekUnlockToken(body.unlock_token)
-		if (unlockMeta?.cabinet_id === targetCabinetId && unlockMeta.folder_id === targetParent) {
-			const folderKey = resolveUnlockToken(body.unlock_token, {
-				cabinet_id: targetCabinetId,
-				folder_id: unlockMeta.folder_id,
-				entity_hash: entityHash,
-			})
-			if (!folderKey) throw new Error('folder locked')
-			const encIndex = await loadEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, folderKey)
+		const unlockMeta = resolveFolderUnlock(body.unlock_token, targetCabinetId, entityHash)
+		if (unlockMeta?.folder_id === targetParent) {
+			const encIndex = await loadEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
 			const stored = normalizeEntry({ ...entry, parent_id: null }, entityHash)
 			encIndex.entries.push(stored)
-			await saveEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, folderKey, encIndex)
+			await saveEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, unlockMeta.folder_key, encIndex)
 			return stored
 		}
 		const targetIndex = await loadPersonalIndex(username, entityHash, targetCabinetId)

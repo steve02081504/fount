@@ -26,7 +26,7 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 | POST | `/cabinets/:id/sync` | 立即同步 |
 | POST | `/cabinets/:id/preview` | 上传预览图 |
 | GET | `/remote/:entityHash/cabinets` | 远端公开/followers 柜列表 |
-| GET | `/remote/:entityHash/cabinets/:id/index` | 远端柜索引 |
+| GET | `/remote/:entityHash/cabinets/:id/index?parent_id=&show_hidden=` | 远端柜目录（同本地 index 形状：`entries` + `folder_trail`） |
 
 字段一律 snake_case。
 

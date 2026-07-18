@@ -69,6 +69,20 @@ export function canWrite() {
 }
 
 /**
+ * @returns {{ mode: 'copy' | 'cut', cabinet_id: string, entry_ids: string[], source_parent_id: string | null, at: number } | null} 剪贴板
+ */
+export function currentClipboard() {
+	return cabinetStore.clipboard || readClipboard()
+}
+
+/**
+ * @returns {boolean} 是否有可粘贴条目
+ */
+export function hasClipboard() {
+	return Boolean(currentClipboard()?.entry_ids?.length)
+}
+
+/**
  * @returns {void}
  */
 export function syncRemoteChrome() {

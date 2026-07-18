@@ -6,8 +6,9 @@ import {
 	scryptSync,
 	timingSafeEqual,
 } from 'node:crypto'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 
+import { ensureParentDir } from './io.mjs'
 import { encryptedFolderIndexPath } from './paths.mjs'
 
 const SCRYPT_N = 16384
@@ -100,7 +101,7 @@ export function unlockFolderKey(password, encryption) {
  */
 export async function saveEncryptedFolderIndex(username, entityHash, cabinetId, folderId, folderKey, index) {
 	const path = encryptedFolderIndexPath(username, entityHash, cabinetId, folderId)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
+	await ensureParentDir(path)
 	const envelope = encryptJson(folderKey, index)
 	await writeFile(path, JSON.stringify(envelope, null, '\t'), 'utf8')
 }

@@ -1,8 +1,7 @@
-import { mkdir, writeFile } from 'node:fs/promises'
-
 import { HLC } from 'npm:@steve02081504/fount-p2p/core/hlc'
 
 import { normalizeEntry } from '../entryModel.mjs'
+import { writeJsonFile } from '../io.mjs'
 import { sharedCabinetSnapshotPath } from '../paths.mjs'
 
 import { decryptOpPayload } from './crypto.mjs'
@@ -83,7 +82,5 @@ export async function loadSharedIndex(username, cabinetId) {
  */
 export async function persistSharedSnapshot(username, cabinetId) {
 	const index = await loadSharedIndex(username, cabinetId)
-	const path = sharedCabinetSnapshotPath(username, cabinetId)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(path, JSON.stringify(index, null, '\t'), 'utf8')
+	await writeJsonFile(sharedCabinetSnapshotPath(username, cabinetId), index)
 }

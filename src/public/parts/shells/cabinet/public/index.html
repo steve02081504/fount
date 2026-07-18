@@ -26,7 +26,7 @@
 						<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
 						<span class="label-text text-xs" data-i18n="cabinet.showHidden"></span>
 					</label>
-					<button id="btnNewCabinet" type="button" class="btn btn-primary btn-sm btn-circle cabinet-local-only md:hidden" title="+">+</button>
+					<button id="btnNewCabinet" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only md:hidden" title="+">+</button>
 				</div>
 				<input id="fileInput" type="file" multiple class="hidden" />
 				<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
@@ -39,7 +39,7 @@
 			<aside class="w-64 min-h-full bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
 				<div class="flex items-center justify-between gap-2">
 					<h1 class="text-lg font-semibold" data-i18n="cabinet.title"></h1>
-					<button id="btnNewCabinetDesktop" type="button" class="btn btn-primary btn-sm btn-circle cabinet-local-only hidden md:inline-flex" title="+">+</button>
+					<button id="btnNewCabinetDesktop" type="button" data-action="new-cabinet" class="btn btn-primary btn-sm btn-circle cabinet-local-only hidden md:inline-flex" title="+">+</button>
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-circle md:hidden" data-i18n="cabinet.closeCabinets">×</label>
 				</div>
 				<ul id="cabinetList" class="menu menu-sm flex-1 overflow-y-auto"></ul>

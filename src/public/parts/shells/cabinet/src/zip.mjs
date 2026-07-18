@@ -2,7 +2,8 @@ import { Buffer } from 'node:buffer'
 
 import { zipSync, strToU8 } from 'npm:fflate'
 
-import { getCabinet, loadPersonalIndex } from './cabinets.mjs'
+import { loadCabinetIndex, resolveCabinet } from './cabinets.mjs'
+import { normalizeParentId } from './entryModel.mjs'
 import { loadEncryptedFolderIndex } from './passwordFolder.mjs'
 import { resolveUnlockToken } from './unlockTokens.mjs'
 
@@ -14,21 +15,10 @@ import { resolveUnlockToken } from './unlockTokens.mjs'
  * @returns {Promise<{ filename: string, bytes: Uint8Array }>} zip
  */
 export async function zipCabinetFolder(username, entityHash, cabinetId, options = {}) {
-	const personal = await getCabinet(username, entityHash, cabinetId)
-	let index
-	let cabinet
-	if (personal) {
-		cabinet = personal
-		index = await loadPersonalIndex(username, entityHash, cabinetId)
-	}
-	else {
-		const { getSharedCabinetMeta } = await import('./shared/keys.mjs')
-		const { loadSharedIndex } = await import('./shared/materialize.mjs')
-		cabinet = await getSharedCabinetMeta(username, cabinetId)
-		if (!cabinet) throw new Error('cabinet not found')
-		index = await loadSharedIndex(username, cabinetId)
-	}
-	const folderId = options.folder_id == null || options.folder_id === '' ? null : String(options.folder_id)
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
+	if (!cabinet) throw new Error('cabinet not found')
+	const index = await loadCabinetIndex(username, entityHash, cabinetId, cabinet)
+	const folderId = normalizeParentId(options.folder_id)
 	/** @type {Record<string, Uint8Array>} */
 	const files = {}
 

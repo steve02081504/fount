@@ -1,6 +1,14 @@
 import { randomUUID } from 'node:crypto'
 
 /**
+ * @param {string | null | undefined} value 父目录 id
+ * @returns {string | null} 规范化父目录 id
+ */
+export function normalizeParentId(value) {
+	return value == null || value === '' ? null : String(value)
+}
+
+/**
  * @param {string} entityHash 操作者
  * @returns {{ at: number, entity_hash: string }} 时间戳元数据
  */
@@ -20,7 +28,7 @@ export function normalizeEntry(draft, entityHash) {
 		id: String(draft?.id || randomUUID()),
 		name: String(draft?.name || 'untitled').slice(0, 512),
 		kind,
-		parent_id: draft?.parent_id == null || draft?.parent_id === '' ? null : String(draft.parent_id),
+		parent_id: normalizeParentId(draft?.parent_id),
 		size: Number(draft?.size) || 0,
 		mime_type: String(draft?.mime_type || (kind === 'folder' ? 'inode/directory' : 'application/octet-stream')),
 		description: String(draft?.description || '').slice(0, 4000),
@@ -64,7 +72,7 @@ export function patchEntry(entry, patch, entityHash) {
 	if (patch.name != null) next.name = String(patch.name).slice(0, 512)
 	if (patch.description != null) next.description = String(patch.description).slice(0, 4000)
 	if (patch.parent_id !== undefined)
-		next.parent_id = patch.parent_id == null || patch.parent_id === '' ? null : String(patch.parent_id)
+		next.parent_id = normalizeParentId(patch.parent_id)
 	if (patch.mime_type != null) next.mime_type = String(patch.mime_type)
 	if (patch.size != null) next.size = Number(patch.size) || 0
 	if (patch.evfs_path !== undefined) next.evfs_path = patch.evfs_path ? String(patch.evfs_path) : null
@@ -96,7 +104,7 @@ export function patchEntry(entry, patch, entityHash) {
  * @returns {object[]} 子条目
  */
 export function listChildren(entries, parentId, options = {}) {
-	const parent = parentId == null || parentId === '' ? null : String(parentId)
+	const parent = normalizeParentId(parentId)
 	return entries
 		.filter(entry => (entry.parent_id ?? null) === parent)
 		.filter(entry => options.show_hidden || !entry.attrs?.hidden)

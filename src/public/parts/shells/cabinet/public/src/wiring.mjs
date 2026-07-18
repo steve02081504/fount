@@ -24,16 +24,19 @@ export function wireBootstrap() {
 		await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
 	}
-	document.getElementById('btnNewCabinet').onclick = createCabinet
-	document.getElementById('btnNewCabinetDesktop').onclick = createCabinet
-	document.getElementById('fileInput').onchange = async event => {
-		if (event.target.files?.length) await uploadFiles(event.target.files)
-		event.target.value = ''
+	for (const el of document.querySelectorAll('[data-action="new-cabinet"]'))
+		el.onclick = createCabinet
+	/**
+	 * @param {Event} event change
+	 * @returns {Promise<void>}
+	 */
+	const onUploadChange = async event => {
+		const input = /** @type {HTMLInputElement} */ event.target
+		if (input.files?.length) await uploadFiles(input.files)
+		input.value = ''
 	}
-	document.getElementById('folderInput').onchange = async event => {
-		if (event.target.files?.length) await uploadFiles(event.target.files)
-		event.target.value = ''
-	}
+	document.getElementById('fileInput').onchange = onUploadChange
+	document.getElementById('folderInput').onchange = onUploadChange
 	document.getElementById('showHidden').onchange = () => void refreshEntries()
 	document.getElementById('propSave').onclick = () => void saveProps()
 	document.getElementById('entryGrid').addEventListener('contextmenu', event => showContextMenu(event))

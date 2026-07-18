@@ -56,6 +56,24 @@ export function resolveUnlockToken(token, expect) {
 }
 
 /**
+ * @param {string | undefined} token unlock token
+ * @param {string} cabinetId 柜
+ * @param {string} entityHash 实体
+ * @returns {{ folder_id: string, folder_key: Buffer } | null} 解密上下文
+ */
+export function resolveFolderUnlock(token, cabinetId, entityHash) {
+	const meta = peekUnlockToken(token)
+	if (!meta || meta.cabinet_id !== cabinetId) return null
+	const folderKey = resolveUnlockToken(token, {
+		cabinet_id: cabinetId,
+		folder_id: meta.folder_id,
+		entity_hash: entityHash,
+	})
+	if (!folderKey) return null
+	return { folder_id: meta.folder_id, folder_key: folderKey }
+}
+
+/**
  * 测试用：清空全部 token。
  * @returns {void}
  */

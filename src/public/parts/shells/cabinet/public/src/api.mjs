@@ -1,3 +1,5 @@
+import { cabinetStore, currentUnlockToken } from './state.mjs'
+
 const API = '/api/parts/shells:cabinet'
 
 /**
@@ -27,9 +29,39 @@ export async function api(method, path, body, headers = {}) {
 }
 
 /**
- * @param {string} unlockToken token
+ * @param {string} [unlockToken] token
  * @returns {Record<string, string>} headers
  */
 export function unlockHeaders(unlockToken) {
 	return unlockToken ? { 'X-Cabinet-Unlock': unlockToken } : {}
+}
+
+/**
+ * 当前柜路径请求（自动带 unlock）。
+ * @param {string} method HTTP
+ * @param {string} subpath 相对 `/cabinets/:id` 的路径
+ * @param {object} [body] body
+ * @param {{ cabinetId?: string, unlock?: string }} [opts] 覆盖
+ * @returns {Promise<any>} JSON / blob
+ */
+export function cabinetApi(method, subpath, body, opts = {}) {
+	const id = opts.cabinetId ?? cabinetStore.currentCabinetId
+	return api(
+		method,
+		`/cabinets/${encodeURIComponent(id)}${subpath}`,
+		body,
+		unlockHeaders(opts.unlock !== undefined ? opts.unlock : currentUnlockToken()),
+	)
+}
+
+/**
+ * @param {string} href 链接
+ * @param {string} [filename] 下载名
+ * @returns {void}
+ */
+export function triggerDownload(href, filename) {
+	const a = document.createElement('a')
+	a.href = href
+	if (filename) a.download = filename
+	a.click()
 }

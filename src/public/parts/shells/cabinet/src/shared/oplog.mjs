@@ -1,7 +1,8 @@
-import { appendFile, mkdir, readFile } from 'node:fs/promises'
+import { appendFile, readFile } from 'node:fs/promises'
 
 import { mutateReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { ensureParentDir } from '../io.mjs'
 import { sharedCabinetOpsPath } from '../paths.mjs'
 
 import { verifyOp } from './crypto.mjs'
@@ -29,7 +30,7 @@ export async function loadSharedOps(username, cabinetId) {
  */
 export async function appendSharedOp(username, cabinetId, op) {
 	const path = sharedCabinetOpsPath(username, cabinetId)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
+	await ensureParentDir(path)
 	await appendFile(path, `${JSON.stringify(op)}\n`, 'utf8')
 }
 

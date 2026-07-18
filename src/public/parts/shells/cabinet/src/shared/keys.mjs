@@ -1,10 +1,10 @@
 import { Buffer } from 'node:buffer'
 import { randomBytes } from 'node:crypto'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
 
 import { nextHlc } from 'npm:@steve02081504/fount-p2p/core/hlc'
 import { randomKeyPair } from 'npm:@steve02081504/fount-p2p/crypto'
 
+import { readJsonFile, writeJsonFile } from '../io.mjs'
 import { sharedCabinetKeysPath, sharedCabinetsRegistryPath } from '../paths.mjs'
 
 import { writeIdentityFromSecret } from './crypto.mjs'
@@ -25,18 +25,14 @@ import { writeIdentityFromSecret } from './crypto.mjs'
  * @returns {Promise<SharedCabinetKeys | null>} 密钥
  */
 export async function loadSharedKeys(username, cabinetId) {
-	try {
-		const raw = JSON.parse(await readFile(sharedCabinetKeysPath(username, cabinetId), 'utf8'))
-		return {
-			write_privkey: raw.write_privkey || undefined,
-			write_pubkey: String(raw.write_pubkey || ''),
-			read_keys: Array.isArray(raw.read_keys) ? raw.read_keys : [],
-			current_gen: Number(raw.current_gen) || 0,
-			last_hlc: raw.last_hlc || null,
-		}
-	}
-	catch {
-		return null
+	const raw = await readJsonFile(sharedCabinetKeysPath(username, cabinetId), null)
+	if (!raw) return null
+	return {
+		write_privkey: raw.write_privkey || undefined,
+		write_pubkey: String(raw.write_pubkey || ''),
+		read_keys: Array.isArray(raw.read_keys) ? raw.read_keys : [],
+		current_gen: Number(raw.current_gen) || 0,
+		last_hlc: raw.last_hlc || null,
 	}
 }
 
@@ -47,9 +43,7 @@ export async function loadSharedKeys(username, cabinetId) {
  * @returns {Promise<void>}
  */
 export async function saveSharedKeys(username, cabinetId, keys) {
-	const path = sharedCabinetKeysPath(username, cabinetId)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(path, JSON.stringify(keys, null, '\t'), 'utf8')
+	await writeJsonFile(sharedCabinetKeysPath(username, cabinetId), keys)
 }
 
 /**
@@ -57,13 +51,8 @@ export async function saveSharedKeys(username, cabinetId, keys) {
  * @returns {Promise<object[]>} 登记的共享柜元数据
  */
 export async function loadSharedRegistry(username) {
-	try {
-		const raw = JSON.parse(await readFile(sharedCabinetsRegistryPath(username), 'utf8'))
-		return Array.isArray(raw?.cabinets) ? raw.cabinets : []
-	}
-	catch {
-		return []
-	}
+	const raw = await readJsonFile(sharedCabinetsRegistryPath(username), { cabinets: [] })
+	return Array.isArray(raw?.cabinets) ? raw.cabinets : []
 }
 
 /**
@@ -72,9 +61,7 @@ export async function loadSharedRegistry(username) {
  * @returns {Promise<void>}
  */
 export async function saveSharedRegistry(username, cabinets) {
-	const path = sharedCabinetsRegistryPath(username)
-	await mkdir(path.replace(/[/\\][^/\\]+$/, ''), { recursive: true })
-	await writeFile(path, JSON.stringify({ cabinets }, null, '\t'), 'utf8')
+	await writeJsonFile(sharedCabinetsRegistryPath(username), { cabinets })
 }
 
 /**

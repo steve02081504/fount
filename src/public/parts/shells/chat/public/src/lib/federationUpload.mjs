@@ -5,16 +5,9 @@
  * 【数据结构】Uint8Array/ArrayBuffer、base64 字符串。
  * 【关联】ui/groupFileUpload.mjs、groupFileBlob.mjs。
  */
-export const FEDERATION_CHUNK_MAX_BYTES = 512 * 1024
+export { arrayBufferToBase64 } from '/scripts/lib/base64.mjs'
 
 /**
- * @param {ArrayBuffer} buffer 原始二进制缓冲
- * @returns {string} 标准 Base64 文本
+ *
  */
-export function arrayBufferToBase64(buffer) {
-	let binary = ''
-	const bytes = new Uint8Array(buffer)
-	for (let index = 0; index < bytes.byteLength; index++)
-		binary += String.fromCharCode(bytes[index])
-	return btoa(binary)
-}
+export const FEDERATION_CHUNK_MAX_BYTES = 512 * 1024

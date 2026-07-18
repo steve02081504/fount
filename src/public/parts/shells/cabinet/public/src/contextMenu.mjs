@@ -3,7 +3,6 @@
  */
 import { geti18n } from '/scripts/i18n/index.mjs'
 
-import { readClipboard } from './clipboard.mjs'
 import {
 	copySelection,
 	createFolder,
@@ -14,10 +13,10 @@ import {
 	pasteClipboard,
 	renameSelection,
 } from './entryActions.mjs'
-import { invertSelection, renderEntries, renderStatus, selectAllEntries, selectedEntries } from './entryGrid.mjs'
-import { goUp, openCurrentInNewWindow, refreshEntries } from './navigation.mjs'
+import { invertSelection, selectAllEntries, selectedEntries, syncSelectionClasses } from './entryGrid.mjs'
+import { goUp, openCurrentInNewWindow } from './navigation.mjs'
 import { openProps } from './properties.mjs'
-import { canWrite, cabinetStore, hotkeys } from './state.mjs'
+import { canWrite, cabinetStore, hasClipboard, hotkeys } from './state.mjs'
 
 /**
  * @param {string} label i18n key
@@ -27,6 +26,53 @@ import { canWrite, cabinetStore, hotkeys } from './state.mjs'
 function menuLabel(label, shortcut) {
 	const text = geti18n(label) || label
 	return shortcut ? `${text} (${shortcut})` : text
+}
+
+/**
+ * @returns {{ label: string, run: () => unknown, danger?: boolean }[]} undo/redo 项
+ */
+function historyMenuItems() {
+	const { history, remoteEntityHash } = cabinetStore
+	if (remoteEntityHash) return []
+	/** @type {{ label: string, run: () => unknown }[]} */
+	const items = []
+	if (history.canUndo())
+		items.push({
+			label: menuLabel('cabinet.undo', hotkeys.undo),
+			/**
+			 * @returns {Promise<boolean>} 是否执行
+			 */
+			run: () => history.undo(),
+		})
+	if (history.canRedo())
+		items.push({
+			label: menuLabel('cabinet.redo', hotkeys.redo),
+			/**
+			 * @returns {Promise<boolean>} 是否执行
+			 */
+			run: () => history.redo(),
+		})
+	return items
+}
+
+/**
+ * @param {Array<object | false | null>} actions 原始动作（false=分隔，null=跳过）
+ * @returns {Array<object | false>} 压平后的菜单项
+ */
+function compactMenuActions(actions) {
+	/** @type {Array<object | false>} */
+	const items = []
+	for (const action of actions) {
+		if (action == null) continue
+		if (action === false) {
+			if (items.length && items.at(-1) !== false) items.push(false)
+			continue
+		}
+		items.push(action)
+	}
+	while (items[0] === false) items.shift()
+	while (items.at(-1) === false) items.pop()
+	return items
 }
 
 /**
@@ -44,18 +90,17 @@ export function hideContextMenu() {
 export function showContextMenu(event, entry) {
 	event.preventDefault()
 	event.stopPropagation()
-	const { selected, history, remoteEntityHash, entries, currentParentId, currentCabinet } = cabinetStore
+	const { selected, remoteEntityHash, entries, currentParentId, currentCabinet } = cabinetStore
 	if (entry && !selected.has(entry.id)) {
 		selected.clear()
 		selected.add(entry.id)
 		cabinetStore.rangeAnchor = entry.id
-		void renderEntries()
-		renderStatus()
+		syncSelectionClasses()
 	}
 	const rows = selectedEntries()
 	const one = rows.length === 1
 	const writable = canWrite()
-	const hasClip = Boolean((cabinetStore.clipboard || readClipboard())?.entry_ids?.length)
+	const hist = historyMenuItems()
 	/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns -- context menu action callbacks */
 	/** 不可用项直接省略，不用 disabled + 文案解释 */
 	const actions = entry
@@ -69,13 +114,8 @@ export function showContextMenu(event, entry) {
 			{ label: menuLabel('cabinet.copy', hotkeys.copy), run: () => copySelection('copy') },
 			writable ? { label: menuLabel('cabinet.cut', hotkeys.cut), run: () => copySelection('cut') } : null,
 			false,
-			!remoteEntityHash && history.canUndo()
-				? { label: menuLabel('cabinet.undo', hotkeys.undo), run: () => history.undo().then(() => refreshEntries()) }
-				: null,
-			!remoteEntityHash && history.canRedo()
-				? { label: menuLabel('cabinet.redo', hotkeys.redo), run: () => history.redo().then(() => refreshEntries()) }
-				: null,
-			false,
+			...hist,
+			hist.length ? false : null,
 			one ? { label: menuLabel('cabinet.properties'), run: openProps } : null,
 			writable ? { label: menuLabel('cabinet.delete', hotkeys.delete), danger: true, run: deleteSelection } : null,
 		]
@@ -85,16 +125,11 @@ export function showContextMenu(event, entry) {
 			writable ? { label: menuLabel('cabinet.newFolder'), run: createFolder } : null,
 			{ label: menuLabel('cabinet.newWindow', hotkeys.newWindow), run: openCurrentInNewWindow },
 			false,
-			writable && hasClip ? { label: menuLabel('cabinet.paste', hotkeys.paste), run: () => pasteClipboard() } : null,
-			writable && hasClip ? { label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), run: () => pasteClipboard(true) } : null,
+			writable && hasClipboard() ? { label: menuLabel('cabinet.paste', hotkeys.paste), run: () => pasteClipboard() } : null,
+			writable && hasClipboard() ? { label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), run: () => pasteClipboard(true) } : null,
 			false,
-			!remoteEntityHash && history.canUndo()
-				? { label: menuLabel('cabinet.undo', hotkeys.undo), run: () => history.undo().then(() => refreshEntries()) }
-				: null,
-			!remoteEntityHash && history.canRedo()
-				? { label: menuLabel('cabinet.redo', hotkeys.redo), run: () => history.redo().then(() => refreshEntries()) }
-				: null,
-			false,
+			...hist,
+			hist.length ? false : null,
 			entries.length ? { label: menuLabel('cabinet.selectAll', hotkeys.selectAll), run: selectAllEntries } : null,
 			entries.length ? { label: menuLabel('cabinet.invert'), run: invertSelection } : null,
 			currentParentId ? { label: menuLabel('cabinet.goUp', hotkeys.goUp), run: goUp } : null,
@@ -105,18 +140,7 @@ export function showContextMenu(event, entry) {
 	/* eslint-enable jsdoc/require-jsdoc, jsdoc/require-returns */
 	const menu = document.querySelector('#contextMenu ul')
 	menu.replaceChildren()
-	const items = []
-	for (const action of actions) {
-		if (action === null) continue
-		if (action === false) {
-			if (items.length && items[items.length - 1] !== false) items.push(false)
-			continue
-		}
-		items.push(action)
-	}
-	while (items[0] === false) items.shift()
-	while (items.at(-1) === false) items.pop()
-	for (const action of items) {
+	for (const action of compactMenuActions(actions)) {
 		if (action === false) {
 			const separator = document.createElement('li')
 			separator.className = 'menu-separator'
