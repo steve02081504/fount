@@ -1,5 +1,7 @@
 /**
  * Hub 单条流式消息：对展示文本做 rAF 平滑逼近并渲染 Markdown。
+ * 预览一律走未信任档——联邦 `stream_chunk` 在终稿水合前即可到达，且验签不绑定消息作者；
+ * 可信 HTML 仅在 `hydrateMessageMarkdown`（非 `data-streaming`）按作者信任判定后启用。
  */
 import { renderMarkdownAsString } from '../../../../scripts/features/markdown/index.mjs'
 
@@ -83,7 +85,9 @@ export class StreamRenderer {
 		if (this.#displayedText === this.#lastRendered) return
 		const text = this.#displayedText
 		this.#lastRendered = text
-		this.#bodyElement.innerHTML = await renderMarkdownAsString(text, this.#markdownCache)
+		this.#bodyElement.innerHTML = await renderMarkdownAsString(text, this.#markdownCache, {
+			allowDangerousHtml: false,
+		})
 		if (text.trim())
 			this.#bodyElement.parentElement
 				?.querySelector('.streaming-skeleton')

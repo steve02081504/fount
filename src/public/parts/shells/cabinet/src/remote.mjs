@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { loadFileManifest, readManifestPlaintext, readPublicFile } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
+import { isSafeHtmlUrl } from '../../../../pages/scripts/lib/sanitizeHtml.mjs'
 import { canViewByVisibility } from '../../social/src/lib/visibilitySpec.mjs'
 
 /**
@@ -29,28 +30,31 @@ export function sanitizeRemoteIndex(raw) {
 	const entries = Array.isArray(raw?.entries) ? raw.entries : []
 	return {
 		version: Number(raw?.version) || 1,
-		entries: entries.slice(0, 5000).map(entry => ({
-			id: String(entry?.id || '').slice(0, 128),
-			name: String(entry?.name || '').slice(0, 512),
-			kind: ['file', 'folder', 'link'].includes(entry?.kind) ? entry.kind : 'file',
-			parent_id: entry?.parent_id == null ? null : String(entry.parent_id).slice(0, 128),
-			size: Number(entry?.size) || 0,
-			mime_type: String(entry?.mime_type || 'application/octet-stream').slice(0, 256),
-			description: String(entry?.description || '').slice(0, 4000),
-			created: entry?.created || null,
-			modified: entry?.modified || null,
-			evfs_path: entry?.evfs_path ? String(entry.evfs_path).slice(0, 512) : null,
-			attrs: {
-				hidden: Boolean(entry?.attrs?.hidden),
-				system: Boolean(entry?.attrs?.system),
-			},
-			preview: {
-				url: String(entry?.preview?.url || '').slice(0, 1024),
-				delete_with_file: entry?.preview?.delete_with_file !== false,
-			},
-			encryption: entry?.encryption ? { locked: true } : null,
-			link: entry?.link || null,
-		})).filter(entry => entry.id),
+		entries: entries.slice(0, 5000).map(entry => {
+			const previewUrl = String(entry?.preview?.url || '').trim().slice(0, 1024)
+			return {
+				id: String(entry?.id || '').slice(0, 128),
+				name: String(entry?.name || '').slice(0, 512),
+				kind: ['file', 'folder', 'link'].includes(entry?.kind) ? entry.kind : 'file',
+				parent_id: entry?.parent_id == null ? null : String(entry.parent_id).slice(0, 128),
+				size: Number(entry?.size) || 0,
+				mime_type: String(entry?.mime_type || 'application/octet-stream').slice(0, 256),
+				description: String(entry?.description || '').slice(0, 4000),
+				created: entry?.created || null,
+				modified: entry?.modified || null,
+				evfs_path: entry?.evfs_path ? String(entry.evfs_path).slice(0, 512) : null,
+				attrs: {
+					hidden: Boolean(entry?.attrs?.hidden),
+					system: Boolean(entry?.attrs?.system),
+				},
+				preview: {
+					url: isSafeHtmlUrl(previewUrl) ? previewUrl : '',
+					delete_with_file: entry?.preview?.delete_with_file !== false,
+				},
+				encryption: entry?.encryption ? { locked: true } : null,
+				link: entry?.link || null,
+			}
+		}).filter(entry => entry.id),
 	}
 }
 

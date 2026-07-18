@@ -26,12 +26,36 @@ test.beforeEach(async ({ baseUrl, apiKey }) => {
 })
 
 /**
+ * @param {string} baseUrl 根
+ * @param {string} apiKey key
+ * @returns {Promise<string>} 个人柜 id
+ */
+export async function ensurePersonalCabinet(baseUrl, apiKey) {
+	const q = `fount-apikey=${encodeURIComponent(apiKey)}`
+	const listRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`)
+	if (!listRes.ok) throw new Error(await listRes.text())
+	const personal = (await listRes.json()).cabinets?.find(row => row.type === 'personal')
+	if (personal?.cabinet_id) return personal.cabinet_id
+	const createRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`, {
+		method: 'POST',
+		headers: { 'content-type': 'application/json' },
+		body: JSON.stringify({ name: 'Test', visibility: { visibility: 'private' } }),
+	})
+	const createRaw = await createRes.text()
+	if (!createRes.ok) throw new Error(createRaw)
+	const cabinetId = JSON.parse(createRaw).cabinet?.cabinet_id
+	if (!cabinetId) throw new Error('create personal cabinet failed')
+	return cabinetId
+}
+
+/**
  * @param {import('npm:@playwright/test').Page} page 页面
  * @param {string} baseUrl 根 URL
+ * @param {string} cabinetId 柜
  * @returns {Promise<void>}
  */
-export async function openCabinet(page, baseUrl) {
-	await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:default`, { waitUntil: 'domcontentloaded' })
+export async function openCabinet(page, baseUrl, cabinetId) {
+	await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:${cabinetId}`, { waitUntil: 'domcontentloaded' })
 	await waitForReadyGate(page, { ...CABINET_APP_GATE, label: 'Cabinet', timeout: ms('90s') })
 	await expect(page.locator('#entryGrid')).toBeVisible({ timeout: ms('30s') })
 }
@@ -40,13 +64,12 @@ export async function openCabinet(page, baseUrl) {
  * @param {string} baseUrl 根
  * @param {string} apiKey key
  * @param {string} name 文件夹名
- * @returns {Promise<{ id: string, name: string }>} 新建文件夹
+ * @returns {Promise<{ id: string, name: string, cabinet_id: string }>} 新建文件夹
  */
 export async function createFolderViaApi(baseUrl, apiKey, name) {
+	const cabinetId = await ensurePersonalCabinet(baseUrl, apiKey)
 	const q = `fount-apikey=${encodeURIComponent(apiKey)}`
-	const list = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`)
-	if (!list.ok) throw new Error(await list.text())
-	const res = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/default/entries?${q}`, {
+	const res = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets/${encodeURIComponent(cabinetId)}/entries?${q}`, {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
 		body: JSON.stringify({ kind: 'folder', name }),
@@ -54,5 +77,5 @@ export async function createFolderViaApi(baseUrl, apiKey, name) {
 	const raw = await res.text()
 	if (!res.ok) throw new Error(raw)
 	const entry = JSON.parse(raw).entry
-	return { id: entry.id, name: entry.name }
+	return { id: entry.id, name: entry.name, cabinet_id: cabinetId }
 }

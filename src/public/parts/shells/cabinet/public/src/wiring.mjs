@@ -8,7 +8,7 @@ import { runCommand } from './commands.mjs'
 import { hideContextMenu, showContextMenu } from './contextMenu.mjs'
 import { uploadFiles } from './entryActions.mjs'
 import { matchCabinetShortcut } from './keyboard.mjs'
-import { refreshCabinets, refreshEntries } from './navigation.mjs'
+import { refreshCabinets, openCabinet, refreshEntries } from './navigation.mjs'
 import { saveProps } from './properties.mjs'
 import { cabinetStore } from './state.mjs'
 
@@ -21,8 +21,9 @@ export function wireBootstrap() {
 		const name = await promptI18n('cabinet.newCabinetPrompt')
 		if (!name) return
 		const visibility = await promptI18n('cabinet.visibilityPrompt', 'private') || 'private'
-		await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
+		const { cabinet } = await api('POST', '/cabinets', { name, visibility: { visibility }, type: 'personal' })
 		await refreshCabinets()
+		if (cabinet?.cabinet_id) await openCabinet(cabinet.cabinet_id)
 	}
 	for (const el of document.querySelectorAll('[data-action="new-cabinet"]'))
 		el.onclick = createCabinet

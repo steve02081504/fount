@@ -28,7 +28,7 @@ Deno.test({
 		const listRaw = await listRes.text()
 		assertEquals(listRes.status, 200, listRaw)
 		const list = JSON.parse(listRaw)
-		assert(list.cabinets.some(row => row.cabinet_id === 'default'))
+		assertEquals(list.cabinets, [])
 
 		const createRes = await fetch(`${baseUrl}/api/parts/shells:cabinet/cabinets?${q}`, {
 			method: 'POST',

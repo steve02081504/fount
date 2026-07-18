@@ -25,12 +25,14 @@ export const SAFE_HTML_URL_SCHEMES = /^(https?:|mailto:|tel:|#|\/|about:blank#|f
 
 /**
  * href/src 是否允许写入 DOM（与 Markdown 未信任档、mediaRefs 共用）。
+ * 拒绝协议相对 `//…`（否则会被 `\/` 分支误放行）。
  * @param {string | null | undefined} url 原始 URL
  * @returns {boolean} 是否安全
  */
 export function isSafeHtmlUrl(url) {
 	const raw = String(url ?? '').trim()
-	return !!raw && SAFE_HTML_URL_SCHEMES.test(raw)
+	if (!raw || raw.startsWith('//')) return false
+	return SAFE_HTML_URL_SCHEMES.test(raw)
 }
 
 /**

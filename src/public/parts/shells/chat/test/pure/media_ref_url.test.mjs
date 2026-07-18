@@ -20,3 +20,12 @@ Deno.test('mediaRefUrl rejects javascript: and falls back to EVFS', () => {
 	assertThrows(() => mediaRefUrl({ url: 'javascript:alert(1)' }), Error, 'invalid media ref')
 	assertThrows(() => mediaRefUrl({ url: 'data:text/html,x' }), Error, 'invalid media ref')
 })
+
+Deno.test('mediaRefUrl rejects protocol-relative // urls', () => {
+	const entityHash = 'ab'.repeat(64)
+	assertEquals(
+		mediaRefUrl({ url: '//evil.example/t.gif', entityHash, path: 'a/b' }),
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/files/a/b`,
+	)
+	assertThrows(() => mediaRefUrl({ url: '//evil.example/t.gif' }), Error, 'invalid media ref')
+})

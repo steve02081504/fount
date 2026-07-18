@@ -34,7 +34,7 @@ alwaysApply: false
   - **safe**: early sanitize + Mermaid strict + `safeLanguageExecutors` only
   Both executor maps live in `convertor.mjs` (same language may have both implementations). Do not wrap another shell-specific convertor on top.
 - **Code block UI**: copy/download/execute as a rehype plugin **after** `rehype-pretty-code` (only `figure[data-rehype-pretty-code-figure] > pre`). Do not use Shiki `transformers.root` wrapping — breaks inline `{:lang}` (`root>pre` expected). Plain `` `code` `` stays bare `<code>`; `` `code{:js}` `` → `span>code`. HTML `document.write` preview is trusted-only.
-- **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `on*` / dangerous URLs.
+- **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `on*` / dangerous URLs. `isSafeHtmlUrl` (Markdown sanitize + mediaRefs) rejects `javascript:` / `data:` and protocol-relative `//…`.
 - **`embedCard.mjs`**: `ALL /api/no-cors?url=` + OG parse; `MutationObserver` hydration; session LRU.
 - **`/api/no-cors`**: authenticated streaming proxy. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry.

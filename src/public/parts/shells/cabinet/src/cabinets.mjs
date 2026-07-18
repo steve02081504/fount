@@ -133,7 +133,6 @@ export async function updateCabinet(username, entityHash, cabinetId, patch) {
  * @returns {Promise<void>}
  */
 export async function deleteCabinet(username, entityHash, cabinetId) {
-	if (cabinetId === 'default') throw new Error('cannot delete default cabinet')
 	const cabinets = await loadCabinets(username, entityHash)
 	const next = cabinets.filter(row => row.cabinet_id !== cabinetId)
 	if (next.length === cabinets.length) throw new Error('cabinet not found')

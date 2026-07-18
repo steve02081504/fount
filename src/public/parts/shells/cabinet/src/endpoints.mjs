@@ -13,7 +13,6 @@ import {
 	loadCabinets,
 	updateCabinet,
 } from './cabinets.mjs'
-import { ensureDefaultCabinet } from './defaultCabinet.mjs'
 import {
 	copyEntries,
 	deleteEntries,
@@ -84,7 +83,6 @@ export function setEndpoints(router) {
 
 	router.get(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
 		const { username, entityHash } = await ctxFromReq(req)
-		await ensureDefaultCabinet(username, entityHash)
 		const personal = await loadCabinets(username, entityHash)
 		const shared = await listLocalSharedCabinets(username).catch(() => [])
 		const byId = new Map()

@@ -43,8 +43,6 @@ export async function refreshCabinets() {
 	const data = await api('GET', '/cabinets')
 	cabinetStore.cabinets = data.cabinets || []
 	cabinetStore.cabinets.sort((a, b) => {
-		if (a.cabinet_id === 'default') return -1
-		if (b.cabinet_id === 'default') return 1
 		if (a.type !== b.type) return a.type === 'personal' ? -1 : 1
 		return String(a.name).localeCompare(String(b.name))
 	})
@@ -62,7 +60,7 @@ export function renderCabinetList() {
 		const a = document.createElement('a')
 		a.href = `#${locationHashFor(cabinet.cabinet_id)}`
 		a.className = cabinet.cabinet_id === cabinetStore.currentCabinetId ? 'active' : ''
-		const badge = cabinet.type === 'shared' ? '🔗 ' : cabinet.cabinet_id === 'default' ? '★ ' : ''
+		const badge = cabinet.type === 'shared' ? '🔗 ' : ''
 		a.textContent = `${badge}${cabinet.name}`
 		a.addEventListener('click', event => {
 			event.preventDefault()
@@ -97,12 +95,16 @@ async function cabinetContext(cabinet) {
 		await api('PATCH', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`, { name })
 		await refreshCabinets()
 	}
-	else if (action === 'delete' && cabinet.cabinet_id !== 'default') {
+	else if (action === 'delete') {
 		if (!await confirmI18n('cabinet.confirmDeleteCabinet')) return
+		const wasCurrent = cabinetStore.currentCabinetId === cabinet.cabinet_id
 		await api('DELETE', `/cabinets/${encodeURIComponent(cabinet.cabinet_id)}`)
-		if (cabinetStore.currentCabinetId === cabinet.cabinet_id) cabinetStore.currentCabinetId = 'default'
 		await refreshCabinets()
-		await openCabinet(cabinetStore.currentCabinetId || 'default')
+		if (wasCurrent) {
+			const next = cabinetStore.cabinets[0]?.cabinet_id
+			if (next) await openCabinet(next)
+			else await clearCabinetView()
+		}
 	}
 	else if (action === 'visibility') {
 		const visibility = await promptI18n('cabinet.visibilityPrompt', cabinet.visibility?.visibility || 'private')
@@ -230,6 +232,25 @@ export function openCurrentInNewWindow() {
 }
 
 /**
+ * @param {{ clearHash?: boolean }} [options] 选项
+ * @returns {Promise<void>}
+ */
+async function clearCabinetView({ clearHash = true } = {}) {
+	cabinetStore.currentCabinetId = null
+	cabinetStore.currentCabinet = null
+	cabinetStore.currentParentId = null
+	cabinetStore.folderTrail = []
+	cabinetStore.entries = []
+	cabinetStore.selected.clear()
+	cabinetStore.rangeAnchor = null
+	if (clearHash) location.hash = ''
+	await renderBreadcrumb()
+	await renderEntries()
+	renderStatus()
+	renderCabinetList()
+}
+
+/**
  * @returns {Promise<void>}
  */
 export async function bootFromHash() {
@@ -255,8 +276,11 @@ export async function bootFromHash() {
 		renderCabinetList()
 		const cabinetId = parts[1] || cabinetStore.cabinets[0]?.cabinet_id
 		if (cabinetId) await openCabinet(cabinetId, parts[2] || null)
+		else await clearCabinetView({ clearHash: false })
 		return
 	}
 	setBrowseMode(null)
-	await openCabinet('default')
+	const first = cabinetStore.cabinets[0]?.cabinet_id
+	if (first) await openCabinet(first)
+	else await clearCabinetView()
 }

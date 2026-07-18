@@ -8,7 +8,7 @@ import {
 test.describe('Cabinet shortcuts', () => {
 	test('Ctrl+A selects, Ctrl+D deletes, Ctrl+Z restores', async ({ page, baseUrl, apiKey }) => {
 		const folder = await createFolderViaApi(baseUrl, apiKey, `pw-del-${Date.now()}`)
-		await openCabinet(page, baseUrl)
+		await openCabinet(page, baseUrl, folder.cabinet_id)
 		const card = page.locator(`.entry-card[data-id="${folder.id}"]`)
 		await expect(card).toBeVisible({ timeout: 30_000 })
 		await card.click({ modifiers: ['Control'] })
@@ -23,32 +23,32 @@ test.describe('Cabinet shortcuts', () => {
 
 	test('Delete key goes to parent folder', async ({ page, baseUrl, apiKey }) => {
 		const folder = await createFolderViaApi(baseUrl, apiKey, `pw-up-${Date.now()}`)
-		await openCabinet(page, baseUrl)
-		await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:default/${folder.id}`, {
+		await openCabinet(page, baseUrl, folder.cabinet_id)
+		await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:${folder.cabinet_id}/${folder.id}`, {
 			waitUntil: 'domcontentloaded',
 		})
 		await expect(page.locator('#breadcrumb .breadcrumb-current')).toContainText(folder.name, { timeout: 30_000 })
 		await page.keyboard.press('Delete')
-		await expect(page).toHaveURL(/#cabinet:default$/, { timeout: 30_000 })
+		await expect(page).toHaveURL(new RegExp(`#cabinet:${folder.cabinet_id}$`), { timeout: 30_000 })
 	})
 
 	test('Ctrl+N opens current location in new window', async ({ page, baseUrl, apiKey, context }) => {
 		const folder = await createFolderViaApi(baseUrl, apiKey, `pw-win-${Date.now()}`)
-		await openCabinet(page, baseUrl)
-		await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:default/${folder.id}`, {
+		await openCabinet(page, baseUrl, folder.cabinet_id)
+		await page.goto(`${baseUrl}/parts/shells:cabinet/#cabinet:${folder.cabinet_id}/${folder.id}`, {
 			waitUntil: 'domcontentloaded',
 		})
 		await expect(page.locator('#breadcrumb .breadcrumb-current')).toContainText(folder.name, { timeout: 30_000 })
 		const popupPromise = context.waitForEvent('page')
 		await page.keyboard.press('Control+n')
 		const popup = await popupPromise
-		await expect(popup).toHaveURL(new RegExp(`#cabinet:default/${folder.id}`), { timeout: 30_000 })
+		await expect(popup).toHaveURL(new RegExp(`#cabinet:${folder.cabinet_id}/${folder.id}`), { timeout: 30_000 })
 		await popup.close()
 	})
 
 	test('copy paste via Ctrl+C/V creates a copy', async ({ page, baseUrl, apiKey }) => {
 		const folder = await createFolderViaApi(baseUrl, apiKey, `pw-copy-${Date.now()}`)
-		await openCabinet(page, baseUrl)
+		await openCabinet(page, baseUrl, folder.cabinet_id)
 		const card = page.locator(`.entry-card[data-id="${folder.id}"]`)
 		await expect(card).toBeVisible({ timeout: 30_000 })
 		await card.click({ modifiers: ['Control'] })

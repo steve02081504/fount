@@ -10,7 +10,7 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 | GET | `/cabinets` | 个人柜 + 本机可读共享柜 |
 | POST | `/cabinets` | 新建个人柜，或 `{ type:'shared', name }` |
 | PATCH | `/cabinets/:cabinet_id` | 重命名 / visibility / sync_binding |
-| DELETE | `/cabinets/:cabinet_id` | 删除（不可删 default） |
+| DELETE | `/cabinets/:cabinet_id` | 删除柜 |
 | GET | `/cabinets/:id/index?parent_id=&show_hidden=` | 列目录；加密文件夹需 `X-Cabinet-Unlock` |
 | POST | `/cabinets/:id/unlock` | body `{ folder_id, password }` → `{ unlock_token }` |
 | POST | `/cabinets/:id/entries` | 登记条目；可带 `plaintext_base64` 上传 |

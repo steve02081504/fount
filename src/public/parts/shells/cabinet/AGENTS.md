@@ -13,7 +13,6 @@ alwaysApply: false
 - **API**: snake_case. Password folders: `POST …/unlock` → `X-Cabinet-Unlock`. Listing: `GET …/index?parent_id=` returns `folder_trail` for breadcrumbs (same shape on remote).
 - **Recoverable delete**: `DELETE …/entries` + `recoverable:true` → `recovery_token`; restore / finalize-delete endpoints. UI undo must finalize discarded tokens.
 - **Shortcuts**: Ctrl/Cmd+C/X/V/A/D/Z/Y/N, F2, Delete=up. Clipboard is app-level (`sessionStorage` + `BroadcastChannel`), not OS.
-- **Default cabinet**: `cabinet_id: default` from `default/templates/cabinet/`.
 - **Entity profile**: `#user:{entityHash}` — shared popup via `/parts/shells:chat/shared/entityProfilePopup.mjs`; stamps use `formatEntityAtId` / `formatHashShort`.
 - **UI**: no explanatory `data-i18n` on invisible controls; omit unavailable context-menu items. Layout: `public/index.mjs` bootstrap; state `cabinetStore`; domain modules under `public/src/`.
 - **Tests**: `fount test shells/cabinet --no-parallel`.
