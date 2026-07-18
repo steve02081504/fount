@@ -92,6 +92,40 @@ test.describe('Social feed', () => {
 		await expect(page.locator(`#topicPostList [data-post-id="${postId}"]`)).toBeVisible({ timeout: 30_000 })
 	})
 
+	test('long code block stays collapsed and summary does not open detail', async ({ page, publishPost }) => {
+		const lines = Array.from({ length: 40 }, (_, i) => `const line${i} = ${i}`).join('\n')
+		const { postId } = await publishPost(`\`\`\`js\n${lines}\n\`\`\``)
+		const card = await findPostCard(page, postId)
+		const details = card.locator('details.markdown-code-block')
+		await expect(details).toBeVisible({ timeout: 20_000 })
+		await expect(details).not.toHaveAttribute('open')
+		const beforeHash = await page.evaluate(() => location.hash)
+		await details.locator('summary').click()
+		await expect(details).toHaveAttribute('open', '')
+		expect(await page.evaluate(() => location.hash)).toBe(beforeHash)
+		await expect(page.locator('#postDetailView:not(.hidden)')).toHaveCount(0)
+	})
+
+	test('long prose folds in feed and expands in place', async ({ page, publishPost }) => {
+		const text = Array.from({ length: 36 }, (_, i) => `fold-line-${i} ${'word '.repeat(12)}`).join('\n\n')
+		const { postId } = await publishPost(text)
+		const card = await findPostCard(page, postId)
+		const body = card.locator('.body.markdown-body').first()
+		await expect(body).toHaveClass(/body-foldable/, { timeout: 10_000 })
+		await expect(body).not.toHaveClass(/body-expanded/)
+		const expand = card.locator('.body-expand')
+		await expect(expand).toBeVisible()
+		const beforeHash = await page.evaluate(() => location.hash)
+		const collapsedHeight = await body.evaluate(el => el.getBoundingClientRect().height)
+		await expand.click()
+		await expect(body).toHaveClass(/body-expanded/)
+		expect(await page.evaluate(() => location.hash)).toBe(beforeHash)
+		const expandedHeight = await body.evaluate(el => el.getBoundingClientRect().height)
+		expect(expandedHeight).toBeGreaterThan(collapsedHeight)
+		await expand.click()
+		await expect(body).not.toHaveClass(/body-expanded/)
+	})
+
 	test('infinite scroll fetches next feed page', async ({ page, baseUrl, apiKey }) => {
 		await seedPostsViaApi(baseUrl, apiKey, 31, 'loadmore')
 		// 首屏后会后台预取带 cursor 的下一页；滚动时消费缓存而不再发请求

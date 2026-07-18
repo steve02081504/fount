@@ -708,11 +708,11 @@ body {
 	cursor: pointer;
 }
 
-.post-card :is(a, button, input, textarea, select, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu) {
+.post-card :is(a, button, input, textarea, select, summary, .poll, .media-gallery, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .body-expand) {
 	cursor: auto;
 }
 
-.post-card :is(a, button) {
+.post-card :is(a, button, summary, .body-expand) {
 	cursor: pointer;
 }
 
@@ -835,6 +835,30 @@ body {
 	line-height: 1.5;
 	font-size: 0.98rem;
 	word-wrap: break-word;
+}
+
+.post-card .body.body-foldable:not(.body-expanded) {
+	max-height: 17.5rem;
+	overflow: hidden;
+	mask-image: linear-gradient(to bottom, #000 calc(100% - 2.75rem), transparent);
+	-webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 2.75rem), transparent);
+}
+
+.body-expand {
+	display: block;
+	margin: 0.15rem 0 0;
+	padding: 0.2rem 0;
+	border: none;
+	background: transparent;
+	color: var(--accent);
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.body-expand:hover {
+	text-decoration: underline;
 }
 
 .post-actions {

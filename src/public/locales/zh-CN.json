@@ -1292,6 +1292,8 @@
 			"decryptFailed": "无法解密此帖",
 			"revealContent": "显示内容",
 			"sensitiveMedia": "敏感媒体",
+			"showMore": "展开",
+			"showLess": "收起",
 			"replayDivider": "已看完，重新浏览"
 		},
 		"taste": {

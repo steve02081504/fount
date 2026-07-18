@@ -241,8 +241,12 @@ export async function buildPostCard(item, options = {}) {
 		mediaRoot.dataset.mediaEntity = actionEntity
 		mediaRoot.dataset.mediaPostId = actionPostId
 	}
-	if (options.openDetail !== false)
+	if (options.openDetail !== false) {
 		bindPostCardOpen(el, `post;${actionEntity};${actionPostId}`)
+		// 时间线：长代码块默认收起；过长正文折叠，避免点 summary 进详情
+		collapseFeedCodeBlocks(el)
+		bindBodyFold(el)
+	}
 	else {
 		el.style.cursor = 'default'
 		bindPostDetailMediaLike(el, actionEntity, actionPostId)
@@ -250,9 +254,71 @@ export async function buildPostCard(item, options = {}) {
 	return el
 }
 
-const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, .poll, .post-media, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .content-warning-reveal, .sensitive-media-reveal'
+const POST_CARD_OPEN_EXCLUDE = 'a, button, input, textarea, select, label, summary, .poll, .post-media, .live-ref-card, .post-actions, .repost-panel, .replies, .post-more-menu, .content-warning-reveal, .sensitive-media-reveal, .body-expand'
 const LONG_PRESS_MS = 400
 const MEDIA_DBLCLICK_MS = 350
+/** 时间线正文折叠阈值（约 12～14 行） */
+const BODY_FOLD_MAX_PX = 280
+
+/**
+ * 时间线内将 markdown 长代码 `<details>` 默认收起（详情页保持原文展开）。
+ * @param {HTMLElement} card 帖卡
+ * @returns {void}
+ */
+function collapseFeedCodeBlocks(card) {
+	for (const details of card.querySelectorAll('details.markdown-code-block'))
+		if (details instanceof HTMLDetailsElement) details.open = false
+}
+
+/**
+ * 过长正文折叠：测量高度，超出则加「展开/收起」；CW 未揭示时延后测量。
+ * @param {HTMLElement} card 帖卡
+ * @returns {void}
+ */
+function bindBodyFold(card) {
+	for (const body of card.querySelectorAll('.body.markdown-body')) {
+		if (!(body instanceof HTMLElement) || body.dataset.bodyFoldBound === '1') continue
+		body.dataset.bodyFoldBound = '1'
+		scheduleBodyFold(body)
+	}
+}
+
+/**
+ * @param {HTMLElement} body 正文节点
+ * @returns {void}
+ */
+function scheduleBodyFold(body) {
+	/**
+	 *
+	 */
+	const apply = () => {
+		if (body.classList.contains('body-foldable')) return
+		const cwBody = body.closest('.content-warning-body')
+		if (cwBody instanceof HTMLElement && cwBody.classList.contains('hidden')) {
+			const observer = new MutationObserver(() => {
+				if (cwBody.classList.contains('hidden')) return
+				observer.disconnect()
+				requestAnimationFrame(apply)
+			})
+			observer.observe(cwBody, { attributes: true, attributeFilter: ['class'] })
+			return
+		}
+		if (body.scrollHeight <= BODY_FOLD_MAX_PX + 24) return
+		body.classList.add('body-foldable')
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'body-expand'
+		button.dataset.i18n = 'social.feed.showMore'
+		button.addEventListener('click', event => {
+			event.preventDefault()
+			event.stopPropagation()
+			const expanded = body.classList.toggle('body-expanded')
+			button.dataset.i18n = expanded ? 'social.feed.showLess' : 'social.feed.showMore'
+		})
+		body.insertAdjacentElement('afterend', button)
+	}
+	requestAnimationFrame(() => requestAnimationFrame(apply))
+}
 
 /**
  * 详情页：双击多媒体点赞；单击视频进短视频页。
