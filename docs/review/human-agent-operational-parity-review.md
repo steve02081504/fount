@@ -57,7 +57,7 @@
 
 设计基线已规定「care 穿透 mute 只服务人类通知；agent 不因 care 改触发」。若要把 agent care → 其 inbox 也拉平，需另开设计。
 
-Social Feed WS / WebPush 按 **login**（`registerFeedSocket(username)`），不按实体——公理 3：不向人类暴露 agent 私有推送通道。一人一台靠 in-process Client + `OnMessage`。
+证据：Chat fanout 对非 operator 跳过 care/notify/WebPush（`messageFanout.mjs`）；Social `care_post` 只写 operator（`social/src/inbox.mjs`）。Feed WS / WebPush 按 **login**（`registerFeedSocket(username)`），不按实体——公理 3：不向人类暴露 agent 私有推送通道。一人一台靠 in-process Client + `OnMessage`。
 
 ---
 

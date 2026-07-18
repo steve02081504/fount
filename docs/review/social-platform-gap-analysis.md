@@ -15,7 +15,7 @@
 1. **推荐仍是启发式**：`for_you` + taste + 本地 dwell；无全局 ML（有意不做广告）。
 2. **创作 UX 缝**：定时帖有 API/watcher，**无**队列管理界面；引用能发，**无**「被谁引用」聚合页；composer 不能一次发多帖 thread；富链接仅前端 OG 水合。
 3. **互动宽度**：仅 like/dislike；无按时长 mute 作者；关键词只屏蔽、无 match→提醒。
-4. **离线手感弱**：feed 内存预取 + replay，非成熟本地时间线缓存。
+4. **离线手感弱**：有内存 `feedPrefetch` 下一页预取 + 游标耗尽 replay；非 IndexedDB 级本地时间线缓存。
 
 ---
 
@@ -28,6 +28,8 @@
 | 帖文搜索 | 已知时间线 + 邻居 `post_search` | 搜不到从未接触过的全网帖 |
 
 话题订阅、`replyPolicy` / 精选评论——已齐。
+
+Feed replay：删除/屏蔽/mute 须 `purgeFeedShownPost` / `purgeFeedShownAuthor`，否则再滚到 replay 会「复活」已消失卡片（实现约束，见 `social/public/AGENTS.md`）。
 
 ---
 
@@ -87,12 +89,13 @@
 | 主题 | 路径 |
 | --- | --- |
 | API | `src/public/parts/shells/social/public/llms.txt` |
-| Feed / dwell | `feed/ranking.mjs`；`engagement/dwell.mjs`；`federation/backfill.mjs` |
+| Feed / dwell / prefetch | `feed/ranking.mjs`；`engagement/dwell.mjs`；`views/feed.mjs`（`feedPrefetch` / replay） |
 | 定时 | `lib/scheduledPosts.mjs`；`GET\|DELETE /posts/scheduled` |
 | 可见性 / 相册 | `lib/visibilitySpec.mjs`；`endpoints/albums.mjs` |
 | 草稿 | `src/drafts.mjs`；UI `#drafts` |
 | 短视频 / 直播 | `endpoints/videos.mjs`；`live/` |
 | 通知 | `inbox.mjs` |
 | 关键词屏蔽 | `lib/contentFilter.mjs` |
+| purge | `lib/socialWrite.mjs` `purgeFeedShown*` |
 
 </details>
