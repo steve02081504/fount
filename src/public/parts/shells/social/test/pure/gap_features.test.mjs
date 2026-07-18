@@ -12,14 +12,28 @@ import { noteHelpfulScore } from '../../src/lib/noteScore.mjs'
 
 Deno.test('sanitizeMediaRefs truncates alt and drops junk', () => {
 	const refs = sanitizeMediaRefs([
-		{ kind: 'image', alt: 'x'.repeat(2000) },
+		{ kind: 'image', url: 'https://example.com/a.jpg', alt: 'x'.repeat(2000) },
 		null,
 		'bad',
-		{ kind: 'video', alt: '  hello  ' },
+		{ kind: 'video', url: '/api/parts/shells:chat/entities/aa/files/b', alt: '  hello  ' },
 	])
 	assertEquals(refs.length, 2)
 	assertEquals(refs[0].alt.length, 1500)
 	assertEquals(refs[1].alt, 'hello')
+})
+
+Deno.test('sanitizeMediaRefs strips javascript: and other unsafe urls', () => {
+	const refs = sanitizeMediaRefs([
+		{ kind: 'file', url: 'javascript:alert(1)', name: 'x' },
+		{ kind: 'image', url: 'data:text/html,<script>1</script>' },
+		{ kind: 'image', url: 'https://example.com/ok.jpg' },
+		{ kind: 'image', url: 'javascript:void(0)', entityHash: 'ab'.repeat(64), path: 'profile/avatar' },
+	])
+	assertEquals(refs.length, 2)
+	assertEquals(refs[0].url, 'https://example.com/ok.jpg')
+	assertEquals(refs[1].url, undefined)
+	assertEquals(refs[1].entityHash, 'ab'.repeat(64))
+	assertEquals(refs[1].path, 'profile/avatar')
 })
 
 Deno.test('resolveSensitiveMedia defaults from contentWarning', () => {

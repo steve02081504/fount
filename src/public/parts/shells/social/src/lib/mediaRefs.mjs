@@ -1,4 +1,5 @@
 import { resolveSensitiveMedia as resolveSensitiveMediaShared } from 'fount/public/parts/shells/chat/public/shared/messageFields.mjs'
+import { isSafeHtmlUrl } from 'fount/public/pages/scripts/lib/sanitizeHtml.mjs'
 
 const ALT_MAX = 1500
 const MEDIA_MAX = 16
@@ -9,7 +10,7 @@ const MEDIA_MAX = 16
 export const resolveSensitiveMedia = resolveSensitiveMediaShared
 
 /**
- * 清理入站 / 本机写入的 mediaRefs（截断 alt、限制数量）。
+ * 清理入站 / 本机写入的 mediaRefs（截断 alt、限制数量、剥危险 url scheme）。
  * @param {unknown} raw 原始 refs
  * @returns {object[]} 清洗后的 refs
  */
@@ -24,6 +25,11 @@ export function sanitizeMediaRefs(raw) {
 			if (alt) cleaned.alt = alt
 			else delete cleaned.alt
 		}
+		if (cleaned.url != null) {
+			if (isSafeHtmlUrl(cleaned.url)) cleaned.url = String(cleaned.url).trim()
+			else delete cleaned.url
+		}
+		if (!cleaned.url && !(cleaned.entityHash && cleaned.path)) continue
 		out.push(cleaned)
 	}
 	return out

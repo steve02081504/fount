@@ -24,6 +24,16 @@ export const BLOCKED_HTML_TAGS = new Set([
 export const SAFE_HTML_URL_SCHEMES = /^(https?:|mailto:|tel:|#|\/|about:blank#|fount:)/i
 
 /**
+ * href/src 是否允许写入 DOM（与 Markdown 未信任档、mediaRefs 共用）。
+ * @param {string | null | undefined} url 原始 URL
+ * @returns {boolean} 是否安全
+ */
+export function isSafeHtmlUrl(url) {
+	const raw = String(url ?? '').trim()
+	return !!raw && SAFE_HTML_URL_SCHEMES.test(raw)
+}
+
+/**
  * @param {Element | DocumentFragment | ChildNode} root 待消毒子树
  * @returns {void}
  */
@@ -55,8 +65,7 @@ export function sanitizeHtmlTree(root) {
 				continue
 			}
 			if (lowerName === 'src' || lowerName === 'href' || lowerName === 'xlink:href') {
-				const url = String(attr.value || '')
-				if (url && !SAFE_HTML_URL_SCHEMES.test(url.trim()))
+				if (!isSafeHtmlUrl(attr.value))
 					el.removeAttribute(attr.name)
 			}
 		}

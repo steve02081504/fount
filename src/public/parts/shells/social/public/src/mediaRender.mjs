@@ -8,10 +8,16 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 /**
  * @param {object} ref 媒体引用
  * @param {number} index 序号
- * @returns {string} 单项 HTML
+ * @returns {string} 单项 HTML；非法 url 返回空串
  */
 function renderMediaItem(ref, index) {
-	const url = mediaRefUrl(ref)
+	let url
+	try {
+		url = mediaRefUrl(ref)
+	}
+	catch {
+		return ''
+	}
 	const mimeType = ref.mimeType || ''
 	const kind = ref.kind || (mimeType.startsWith('video/') ? 'video' : 'image')
 	const alt = escapeHtml(String(ref.alt || ref.name || ''))
@@ -34,16 +40,18 @@ function renderMediaItem(ref, index) {
  */
 export function renderMediaHtml(mediaRefs, options = {}) {
 	if (!mediaRefs?.length) return ''
-	const items = mediaRefs.map((ref, index) => renderMediaItem(ref, index)).join('')
-	const dots = mediaRefs.length > 1
-		? `<div class="post-media-dots" aria-hidden="true">${mediaRefs.map((_, index) =>
+	const rendered = mediaRefs.map((ref, index) => renderMediaItem(ref, index)).filter(Boolean)
+	if (!rendered.length) return ''
+	const items = rendered.join('')
+	const dots = rendered.length > 1
+		? `<div class="post-media-dots" aria-hidden="true">${rendered.map((_, index) =>
 			`<span class="post-media-dot${index === 0 ? ' active' : ''}" data-media-dot="${index}"></span>`).join('')}</div>`
 		: ''
-	const nav = mediaRefs.length > 1
+	const nav = rendered.length > 1
 		? `<button type="button" class="post-media-nav post-media-prev" data-media-nav="-1" aria-label="prev">‹</button>
 			<button type="button" class="post-media-nav post-media-next" data-media-nav="1" aria-label="next">›</button>`
 		: ''
-	let html = `<div class="post-media ${mediaRefs.length > 1 ? 'post-media-carousel' : ''}" data-media-count="${mediaRefs.length}">
+	let html = `<div class="post-media ${rendered.length > 1 ? 'post-media-carousel' : ''}" data-media-count="${rendered.length}">
 		<div class="post-media-track">${items}</div>
 		${nav}
 		${dots}

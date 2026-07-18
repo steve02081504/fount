@@ -65,12 +65,16 @@ export async function uploadEvfsAttachment(file, logicalPathPrefix) {
 	return uploadEvfsFile(entityHash, `${logicalPathPrefix}/${crypto.randomUUID()}`, file)
 }
 
+/** 与 `sanitizeHtml.SAFE_HTML_URL_SCHEMES` 对齐（本模块保持 Deno-pure，不 import `/scripts`）。 */
+const SAFE_MEDIA_URL = /^(https?:|mailto:|tel:|#|\/|about:blank#|fount:)/i
+
 /**
  * @param {{ entityHash?: string, path?: string, url?: string }} ref 媒体引用
  * @returns {string} 下载 URL
  */
 export function mediaRefUrl(ref) {
-	if (ref.url) return ref.url
-	if (ref.entityHash && ref.path) return entityFileUrl(ref.entityHash, ref.path)
+	const raw = String(ref?.url || '').trim()
+	if (raw && SAFE_MEDIA_URL.test(raw)) return raw
+	if (ref?.entityHash && ref?.path) return entityFileUrl(ref.entityHash, ref.path)
 	throw new Error('invalid media ref')
 }

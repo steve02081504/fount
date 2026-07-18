@@ -14,26 +14,14 @@ import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
 import { displayProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
+import { safeProfileLink } from './safeProfileLink.mjs'
 import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
+
+export { safeProfileLink } from './safeProfileLink.mjs'
 
 const PROFILE_POPUP_TEMPLATE_URL = '/parts/shells:chat/src/templates/hub/profile_popup.html'
 /** @type {string | null} */
 let cachedProfilePopupTemplateHtml = null
-
-/**
- * 清扫远端资料链接，只允许浏览器安全的网页协议。
- * @param {string} raw 原始链接
- * @returns {string|null} 可展示链接
- */
-function safeProfileLink(raw) {
-	try {
-		const url = new URL(String(raw || ''), location.origin)
-		return url.protocol === 'https:' || url.protocol === 'http:' ? url.href : null
-	}
-	catch {
-		return null
-	}
-}
 
 const ENTITY_PROFILE_CARD_STYLESHEET = '/parts/shells:chat/shared/entityProfileCard.css'
 const ENTITY_PROFILE_BANNER_STYLESHEET = '/parts/shells:chat/shared/entityProfileBanner.css'

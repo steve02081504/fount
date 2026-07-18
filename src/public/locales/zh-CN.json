@@ -2914,7 +2914,7 @@
 				"linkAdd": "添加链接",
 				"linkRemove": "删除链接",
 				"linkNamePlaceholder": "显示文字",
-				"linkUrlPlaceholder": "https://…",
+				"linkUrlPlaceholder": "https://… 或 fount://…",
 				"handleLabel": "自定义 ID",
 				"handlePlaceholder": "例如 steve（2–32 位小写字母数字._-）",
 				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。",
