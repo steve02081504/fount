@@ -299,7 +299,8 @@ function mergeSubtestStates(
 		/** @type {SuiteStatus} */
 		let status = 'passed'
 		if (failed) status = 'failed'
-		else if (noisy) status = 'noisy'
+		// 失败断言栈自带 `Error:`，会被 detectNoiseHits 命中；勿把同轮已通过的兄弟子测试标成 noisy。
+		else if (noisy && !failedFiles.length) status = 'noisy'
 		const prevDuration = merged[name]?.durationMs ?? null
 		const sample = subtestDurations?.[name]
 		merged[name] = {

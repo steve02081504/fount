@@ -137,6 +137,16 @@
 	object-fit: contain;
 }
 
+.emoji-grid-empty,
+.sticker-empty,
+.sticker-load-failed {
+	grid-column: 1 / -1;
+	padding: 16px 8px;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 13px;
+}
+
 /* === 移动端适配 === */
 .member-backdrop {
 	display: none;
@@ -1772,6 +1782,7 @@
 	transition: opacity 0.15s ease-in-out;
 }
 
+.message-row:has(.message-edit-area) .message-content,
 .message:has(.message-edit-area) .message-content {
 	display: none;
 }

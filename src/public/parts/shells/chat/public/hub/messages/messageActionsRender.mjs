@@ -28,6 +28,7 @@ import {
 	hubActionTranslateIcon,
 	hubActionUnpinIcon,
 } from '../../src/lib/emojiSvg.mjs'
+import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { resolveEntityHashForAuthorKey } from '../core/domUtils.mjs'
 
@@ -235,10 +236,12 @@ export async function renderMessageActionsHtml(message, options) {
 	const isPinned = pinnedIds.includes(eventId)
 	const alwaysVisible = !!options.alwaysVisibleActions && !!(message.charId || ownChar)
 	const escapedEventId = escapeHtml(eventId)
+	// 乐观 pending:* 尚无 DAG id，不渲染会写链的操作（避免 targetId 校验失败）
+	const dagReady = isDagEventId(eventId)
 
 	// ===== 常驻内联反馈栏（仅本机角色消息在双人对话中显示） =====
 	let inlineHtml = ''
-	if (alwaysVisible && ownChar) {
+	if (dagReady && alwaysVisible && ownChar) {
 		const feedbackHtml = renderOwnCharFeedbackInline(
 			escapedEventId,
 			escapeHtml(String(message.charId || '')),
@@ -252,9 +255,9 @@ export async function renderMessageActionsHtml(message, options) {
 	// ===== 悬停浮动栏 =====
 	// 常驻图标：回复、子线程、书签、置顶、编辑、翻译；复制/分享/下载/删除收进二级菜单；Shift 层为下载/删除
 	const hoverInlineParts = []
-	const canDelete = canDeleteMessage(message, options)
+	const canDelete = dagReady && canDeleteMessage(message, options)
 
-	if (/^[0-9a-f]{64}$/i.test(eventId))
+	if (dagReady)
 		hoverInlineParts.push(actionButton({
 			action: 'reply',
 			attrs: `data-event-id="${escapedEventId}"`,
@@ -262,7 +265,7 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.replyInline',
 		}))
 
-	if (options.canCreateThreads)
+	if (dagReady && options.canCreateThreads)
 		hoverInlineParts.push(actionButton({
 			action: 'thread',
 			attrs: `data-event-id="${escapedEventId}"`,
@@ -270,7 +273,7 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.replyInThread',
 		}))
 
-	if (!message.isRemote) {
+	if (dagReady && !message.isRemote) {
 		hoverInlineParts.push(actionButton({
 			action: 'bookmark',
 			attrs: `data-event-id="${escapedEventId}"`,
@@ -286,7 +289,7 @@ export async function renderMessageActionsHtml(message, options) {
 			}))
 	}
 
-	const canEdit = (ownChar || isManagedByViewer(message, options)
+	const canEdit = dagReady && (ownChar || isManagedByViewer(message, options)
 		|| (!message.isRemote && canDelete && !message.charId))
 		&& !!channelMessageText(message.content)
 	if (canEdit)
@@ -297,7 +300,7 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.messageActionEdit',
 		}))
 
-	// 翻译按钮（仅有文本内容时显示）
+	// 翻译按钮（仅有文本内容时显示；不依赖 DAG id）
 	if (channelMessageText(message.content))
 		hoverInlineParts.push(actionButton({
 			action: 'translate',
@@ -306,8 +309,8 @@ export async function renderMessageActionsHtml(message, options) {
 			i18nKey: 'chat.hub.translate',
 		}))
 
-	const menuItems = buildMenuItems(escapedEventId, { canDelete })
-	const shiftHtml = buildShiftActions(escapedEventId, canDelete)
+	const menuItems = dagReady ? buildMenuItems(escapedEventId, { canDelete }) : ''
+	const shiftHtml = dagReady ? buildShiftActions(escapedEventId, canDelete) : ''
 
 	const hoverHtml = await renderActionsBar(
 		hoverInlineParts.join(''),

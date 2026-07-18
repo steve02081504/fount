@@ -2,6 +2,7 @@
  * 【文件】public/hub/wiring/index.mjs
  * 【职责】Hub 页 DOM 事件委托薄聚合。
  */
+import { showHubNavPane } from '../hubPane.mjs'
 import { wireHubSearchPanel } from '../search.mjs'
 
 import { wireComposerEvents } from './composerEvents.mjs'
@@ -19,6 +20,16 @@ export function wireEvents() {
 	wireVoteEvents()
 
 	document.getElementById('messages').addEventListener('click', async (event) => {
+		if (event.target.closest('#friends-empty-search-button')) {
+			// 移动端先露出频道栏；桌面侧栏已可见。label[for] 原生聚焦，再补一次以防 display:none→显示的时序。
+			showHubNavPane()
+			const input = document.getElementById('friends-search-input')
+			if (input instanceof HTMLInputElement) {
+				input.focus()
+				requestAnimationFrame(() => input.focus())
+			}
+			return
+		}
 		if (await handleMessageBubbleClick(event)) return
 		if (await handleMessageFileDownloadClick(event)) return
 		if (await handleVoteOptionClick(event)) return

@@ -338,6 +338,37 @@ export async function createTestGroup(baseUrl, apiKey, options = {}) {
 	}
 }
 
+/** 极短黑帧 mp4，供 videos 前端测；经 page.route 本地 fulfill，不打外网。 */
+export const VIDEO_FIXTURE_PATH = '/__fount_test__/tiny.mp4'
+
+/** @see VIDEO_FIXTURE_PATH */
+export const TINY_MP4_BUFFER = Buffer.from(
+	'AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDEAAANcbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAAHgAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAod0cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAAHgAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAABAAAAAQAAAAAAAkZWR0cwAAABxlbHN0AAAAAAAAAAEAAAB4AAAEAAABAAAAAAH/bWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAyAAAACABVxAAAAAAALWhkbHIAAAAAAAAAAHZpZGUAAAAAAAAAAAAAAABWaWRlb0hhbmRsZXIAAAABqm1pbmYAAAAUdm1oZAAAAAEAAAAAAAAAAAAAACRkaW5mAAAAHGRyZWYAAAAAAAAAAQAAAAx1cmwgAAAAAQAAAWpzdGJsAAAAvnN0c2QAAAAAAAAAAQAAAK5hdmMxAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAABAAEABIAAAASAAAAAAAAAABFUxhdmM2Mi4xNi4xMDAgbGlieDI2NAAAAAAAAAAAAAAAGP//AAAANGF2Y0MBZAAK/+EAF2dkAAqs2V7ARAAAAwAEAAADAMg8SJZYAQAGaOvjyyLA/fj4AAAAABBwYXNwAAAAAQAAAAEAAAAUYnRydAAAAAAAAL7iAAAAAAAAABhzdHRzAAAAAAAAAAEAAAADAAACAAAAABRzdHNzAAAAAAAAAAEAAAABAAAAKGN0dHMAAAAAAAAAAwAAAAEAAAQAAAAAAQAABgAAAAABAAACAAAAABxzdHNjAAAAAAAAAAEAAAABAAAAAwAAAAEAAAAgc3RzegAAAAAAAAAAAAAAAwAAAsUAAAAMAAAADAAAABRzdGNvAAAAAAAAAAEAAAOMAAAAYXVkdGEAAABZbWV0YQAAAAAAAAAhaGRscgAAAAAAAAAAbWRpcmFwcGwAAAAAAAAAAAAAAAAsaWxzdAAAACSpdG9vAAAAHGRhdGEAAAABAAAAAExhdmY2Mi42LjEwMQAAAAhmcmVlAAAC5W1kYXQAAAKuBgX//6rcRem95tlIt5Ys2CDZI+7veDI2NCAtIGNvcmUgMTY1IHIzMjIzIDA0ODBjYjAgLSBILjI2NC9NUEVHLTQgQVZDIGNvZGVjIC0gQ29weWxlZnQgMjAwMy0yMDI1IC0gaHR0cDovL3d3dy52aWRlb2xhbi5vcmcveDI2NC5odG1sIC0gb3B0aW9uczogY2FiYWM9MSByZWY9MyBkZWJsb2NrPTE6MDowIGFuYWx5c2U9MHgzOjB4MTEzIG1lPWhleCBzdWJtZT03IHBzeT0xIHBzeV9yZD0xLjAwOjAuMDAgbWl4ZWRfcmVmPTEgbWVfcmFuZ2U9MTYgY2hyb21hX21lPTEgdHJlbGxpcz0xIDh4OGRjdD0xIGNxbT0wIGRlYWR6b25lPTIxLDExIGZhc3RfcHNraXA9MSBjaHJvbWFfcXBfb2Zmc2V0PS0yIHRocmVhZHM9MSBsb29rYWhlYWRfdGhyZWFkcz0xIHNsaWNlZF90aHJlYWRzPTAgbnI9MCBkZWNpbWF0ZT0xIGludGVybGFjZWQ9MCBibHVyYXlfY29tcGF0PTAgY29uc3RyYWluZWRfaW50cmE9MCBiZnJhbWVzPTMgYl9weXJhbWlkPTIgYl9hZGFwdD0xIGJfYmlhcz0wIGRpcmVjdD0xIHdlaWdodGI9MSBvcGVuX2dvcD0wIHdlaWdodHA9MiBrZXlpbnQ9MjUwIGtleWludF9taW49MjUgc2NlbmVjdXQ9NDAgaW50cmFfcmVmcmVzaD0wIHJjX2xvb2thaGVhZD00MCByYz1jcmYgbWJ0cmVlPTEgY3JmPTIzLjAgcWNvbXA9MC42MCBxcG1pbj0wIHFwbWF4PTY5IHFwc3RlcD00IGlwX3JhdGlvPTEuNDAgYXE9MToxLjAwAIAAAAAPZYiEADP//vbsvgU2FMjBAAAACEGaImxCv/7AAAAACAGeQXkK/8SB',
+	'base64',
+)
+
+/**
+ * 拦截 VIDEO_FIXTURE_PATH，返回 TINY_MP4_BUFFER。
+ * @param {import('@playwright/test').Page} page 页面
+ * @returns {Promise<void>}
+ */
+export async function installVideoFixtureRoute(page) {
+	await page.route(`**${VIDEO_FIXTURE_PATH}`, route => route.fulfill({
+		status: 200,
+		headers: { 'Content-Type': 'video/mp4' },
+		body: TINY_MP4_BUFFER,
+	}))
+}
+
+/**
+ * 绝对 URL，写入 mediaRefs 后由浏览器加载（需先 installVideoFixtureRoute）。
+ * @param {string} baseUrl 测试根 URL
+ * @returns {string}
+ */
+export function videoFixtureUrl(baseUrl) {
+	return new URL(VIDEO_FIXTURE_PATH, baseUrl).href
+}
+
 /** 1×1 PNG，供 composer 媒体上传烟测。 */
 export const TINY_PNG_BUFFER = Buffer.from(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
@@ -353,13 +384,23 @@ export const TINY_PNG_BUFFER = Buffer.from(
 export async function fetchViewerEntityHash(baseUrl, apiKey) {
 	const req = await playwrightRequest.newContext()
 	try {
-		const res = await req.get(
-			`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
-		)
-		if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
-		const data = await res.json()
-		if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
-		return data.viewerEntityHash
+		const url = `${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`
+		let lastErr
+		for (let attempt = 0; attempt < 3; attempt++) {
+			try {
+				const res = await req.get(url)
+				if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
+				const data = await res.json()
+				if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
+				return data.viewerEntityHash
+			}
+			catch (err) {
+				lastErr = err
+				if (!/ECONNRESET|ECONNREFUSED|socket hang up/i.test(String(err))) throw err
+				await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
+			}
+		}
+		throw lastErr
 	}
 	finally {
 		await req.dispose()

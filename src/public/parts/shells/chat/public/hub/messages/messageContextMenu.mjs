@@ -12,6 +12,7 @@ import {
 } from '../../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { confirmI18n } from '../../../../../scripts/i18n/index.mjs'
+import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { createShareLink } from '../../src/share.mjs'
 import { setReplyTarget } from '../composerReply.mjs'
 import { bindDismissOnDocumentInteraction } from '../core/contextMenuDismiss.mjs'
@@ -81,7 +82,7 @@ export async function showMessageContextMenu(event, row) {
 	const plainText = getMessageText(message) || row.querySelector('.message-content')?.textContent?.trim() || ''
 	const showTextActions = !!plainText.trim() && message.type === 'message'
 	const { currentChannelId } = store
-	const showReplyRow = !!eventId && /^[0-9a-f]{64}$/i.test(eventId) && message.type === 'message'
+	const showReplyRow = !!eventId && isDagEventId(eventId) && message.type === 'message'
 	const showThreadRow = !!actions.groupId && !!actions.channelId && !!eventId
 		&& !!store.context.currentState?.channelCaps?.[currentChannelId]?.canCreateThreads
 	const showEdit = !!row.querySelector('.message-action[data-action="edit"]')

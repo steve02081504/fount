@@ -3795,3 +3795,93 @@ body {
 	flex-direction: column;
 	gap: 0.75rem;
 }
+
+/* Shared floating emoji picker (#fount-shared-emoji-picker) */
+#fount-shared-emoji-picker.emoji-picker {
+	background: var(--color-base-200);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 12px;
+	box-shadow: 0 8px 16px color-mix(in srgb, var(--color-base-content) 18%, transparent);
+	max-height: 360px;
+	display: block;
+}
+
+#fount-shared-emoji-picker .emoji-tabs {
+	display: flex;
+	gap: 4px;
+	margin-bottom: 8px;
+	flex-wrap: wrap;
+}
+
+#fount-shared-emoji-picker .emoji-tab {
+	background: transparent;
+	border: none;
+	color: var(--muted);
+	padding: 4px 8px;
+	cursor: pointer;
+	border-radius: 4px;
+	font-size: 14px;
+	min-width: 32px;
+	min-height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#fount-shared-emoji-picker .emoji-tab-glyph {
+	font-size: 20px;
+	line-height: 1;
+	font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+}
+
+#fount-shared-emoji-picker .emoji-tab:hover {
+	background: var(--surface-hover);
+}
+
+#fount-shared-emoji-picker .emoji-tab.active {
+	background: color-mix(in srgb, var(--color-base-content) 12%, transparent);
+	color: var(--text);
+}
+
+#fount-shared-emoji-picker .emoji-grid {
+	display: grid;
+	grid-template-columns: repeat(8, 1fr);
+	gap: 2px;
+	max-height: 280px;
+	overflow-y: auto;
+}
+
+#fount-shared-emoji-picker .emoji-grid-button {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 6px;
+	border-radius: 4px;
+	font-size: 22px;
+	line-height: 1;
+}
+
+#fount-shared-emoji-picker .emoji-grid-button:hover {
+	background: var(--surface-hover);
+	transform: scale(1.2);
+}
+
+#fount-shared-emoji-picker .group-emoji-grid-button {
+	padding: 4px;
+}
+
+#fount-shared-emoji-picker .group-emoji-img {
+	width: 28px;
+	height: 28px;
+	object-fit: contain;
+	display: block;
+}
+
+#fount-shared-emoji-picker .emoji-grid-empty {
+	grid-column: 1 / -1;
+	padding: 16px 8px;
+	text-align: center;
+	color: var(--muted);
+	font-size: 13px;
+}

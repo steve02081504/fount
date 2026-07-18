@@ -5,6 +5,7 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { pinMessage, unpinMessage } from '../../../src/api/groupChannel.mjs'
 import { getGroupState } from '../../../src/api/groupCore.mjs'
+import { isDagEventId } from '../../../src/lib/eventId.mjs'
 import { store } from '../../core/state.mjs'
 
 /**
@@ -15,7 +16,8 @@ import { store } from '../../core/state.mjs'
 export async function handlePin(button, actions) {
 	const { groupId, channelId, reload } = actions
 	const eventId = button.dataset.eventId
-	if (!eventId || !groupId || !channelId) return false
+		|| button.closest('.message')?.getAttribute('data-message-id')
+	if (!isDagEventId(eventId) || !groupId || !channelId) return false
 	const unpin = button.dataset.pinned === '1'
 	button.disabled = true
 	try {

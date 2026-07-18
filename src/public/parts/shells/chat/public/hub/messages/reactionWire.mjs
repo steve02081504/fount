@@ -6,6 +6,7 @@
  * 【关联】../../../../../scripts/i18n、../../src/ui/channelDisplay、../../src/ui/emojiPicker、../../src/ui/reactionHandlers
  */
 import { promptI18n } from '../../../../../scripts/i18n/index.mjs'
+import { isDagEventId } from '../../src/lib/eventId.mjs'
 import { tallyReactionVotersFromMap } from '../../src/ui/channelDisplay.mjs'
 import { showEmojiPicker } from '../../src/ui/emojiPicker.mjs'
 import { createReactionHandlers } from '../../src/ui/reactionHandlers.mjs'
@@ -45,7 +46,7 @@ export function wireMessageReactions(container, channelView) {
 		wiredButtons.add(reactionButton)
 		const eventId = reactionButton.getAttribute('data-event-id')
 		const emoji = reactionButton.getAttribute('data-emoji')
-		if (!eventId || !emoji) return
+		if (!isDagEventId(eventId) || !emoji) return
 		reactionButton.addEventListener('click', async event => {
 			event.stopPropagation()
 			if (reactionButton.disabled) return
@@ -88,7 +89,7 @@ export function wireMessageReactions(container, channelView) {
 		if (wiredButtons.has(addReactionButton)) return
 		wiredButtons.add(addReactionButton)
 		const eventId = addReactionButton.getAttribute('data-event-id')
-		if (!eventId) return
+		if (!isDagEventId(eventId)) return
 		addReactionButton.addEventListener('click', event => {
 			event.stopPropagation()
 			void showEmojiPicker(event, emoji => {

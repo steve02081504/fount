@@ -49,7 +49,12 @@ export function sortChannelRows(rows) {
 		const ta = Number(a.timestamp) || 0
 		const tb = Number(b.timestamp) || 0
 		if (ta !== tb) return ta - tb
-		return compareHex64Asc(a.eventId, b.eventId)
+		const idA = String(a.eventId || '')
+		const idB = String(b.eventId || '')
+		// pending:* 不是 hex64，不能走 compareHex64Asc
+		if (idA.startsWith('pending:') || idB.startsWith('pending:'))
+			return idA.localeCompare(idB)
+		return compareHex64Asc(idA, idB)
 	})
 }
 

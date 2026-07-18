@@ -8,6 +8,7 @@
  */
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { eventIdsEqual } from '../../src/lib/eventId.mjs'
 
 /** @type {object | null} */
 let mainChannelActions = null
@@ -49,7 +50,9 @@ export function setChannelMessageActionsContext(actions, surface = 'main') {
 export function getChannelMessageActionsContext(fromEl) {
 	if (fromEl instanceof Element) {
 		if (isThreadMessageSurface(fromEl)) return threadChannelActions
-		if (fromEl.closest('#messages')) return mainChannelActions
+		// 主区消息在 #messages；兼容虚拟列表哨兵外偶发脱离的祖先查询
+		if (fromEl.closest('#messages') || fromEl.closest('.message[data-message-id]'))
+			return mainChannelActions
 	}
 	return mainChannelActions
 }
@@ -66,7 +69,7 @@ export function findContextMessage(row, actions) {
 	const logIndex = row.getAttribute('data-log-index')
 	return actions.messages.find(message =>
 		(logIndex != null && logIndex !== '' && String(message.chatLogIndex) === logIndex)
-		|| (messageId && String(message.eventId) === messageId)
+		|| (messageId && eventIdsEqual(message.eventId, messageId))
 		|| (entryId && String(message.id) === entryId),
 	)
 }

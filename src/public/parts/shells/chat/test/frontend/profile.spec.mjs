@@ -1,4 +1,4 @@
-import { test, expect } from './fixtures.mjs'
+import { test, expect, waitForHub } from './fixtures.mjs'
 
 test.describe('Chat profile page', () => {
 	test('profile page and hub profile link', async ({ page, baseUrl }) => {
@@ -9,9 +9,9 @@ test.describe('Chat profile page', () => {
 		await expect(page.locator('.profile-owner-details')).toBeVisible()
 		await expect(page.locator('.profile-owner-details')).not.toHaveAttribute('open', '')
 
-		await page.goto(`${baseUrl}/parts/shells:chat/hub/`, { waitUntil: 'domcontentloaded' })
-		await expect(page.locator('#server-bar')).toBeVisible({ timeout: 60_000 })
+		await waitForHub(page, baseUrl)
 		await page.locator('#user-bar').click()
+		await expect(page.locator('[data-profile-link]')).toBeVisible({ timeout: 20_000 })
 		await page.locator('[data-profile-link]').click()
 		await expect(page).toHaveURL(/\/parts\/shells:chat\/profile/, { timeout: 30_000 })
 		await expect(page.locator('#profile-edit-button')).toBeVisible({ timeout: 30_000 })

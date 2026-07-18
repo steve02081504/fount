@@ -242,6 +242,7 @@
 	--search-scope-w: 5.25rem;
 	--search-h: 32px;
 	position: relative;
+	z-index: 40;
 	margin-right: 4px;
 	display: flex;
 	align-items: stretch;
@@ -376,7 +377,7 @@
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	box-shadow: var(--shadow-md);
-	z-index: 40;
+	z-index: 50;
 }
 
 .search-result {

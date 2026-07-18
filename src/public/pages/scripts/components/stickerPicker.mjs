@@ -66,7 +66,7 @@ function createStickerButton(sticker, { className, imgClass, labelFallback, onCl
  * @returns {void}
  */
 function appendStickerGridItem(grid, sticker) {
-	grid.appendChild(createStickerButton(sticker, { className: 'hub-sticker-item' }))
+	grid.appendChild(createStickerButton(sticker, { className: 'sticker-item' }))
 }
 
 /**
@@ -99,7 +99,7 @@ export async function mountDockedStickerPicker(options) {
 			const result = await loadProviderStickers(provider, pickerContext)
 			if (!result.stickers.length) {
 				const empty = document.createElement('div')
-				empty.className = 'hub-sticker-empty'
+				empty.className = 'sticker-empty'
 				empty.dataset.i18n = result.showMarketLink
 					? 'chat.hub.stickersEmptyWithMarket'
 					: 'chat.hub.stickersEmpty'
@@ -115,7 +115,7 @@ export async function mountDockedStickerPicker(options) {
 		catch (err) {
 			hasLoadedStickers = false
 			const fail = document.createElement('div')
-			fail.className = 'hub-sticker-load-failed'
+			fail.className = 'sticker-load-failed'
 			fail.textContent = err?.message || 'load failed'
 			gridElement.appendChild(fail)
 		}
@@ -130,7 +130,7 @@ export async function mountDockedStickerPicker(options) {
 	})
 
 	gridElement.addEventListener('click', event => {
-		const stickerItem = event.target.closest('.hub-sticker-item')
+		const stickerItem = event.target.closest('.sticker-item')
 		if (!stickerItem) return
 		const sticker = {
 			stickerId: stickerItem.dataset.stickerId,
@@ -185,27 +185,23 @@ export async function mountStickerPicker(anchor, onInsert, pickerContext = {}) {
 
 	if (!items.length) {
 		const empty = document.createElement('div')
-		empty.className = 'hub-sticker-empty'
+		empty.className = 'sticker-empty'
 		empty.dataset.i18n = 'chat.hub.stickersEmpty'
 		panel.appendChild(empty)
 	}
-	else 
-		for (const item of items) 
+	else {
+		for (const item of items)
 			panel.appendChild(createStickerButton(item.raw, {
 				className: 'btn btn-ghost p-1',
 				imgClass: 'w-16 h-16 object-contain',
 				labelFallback: true,
-				/**
-				 *
-				 */
 				onClick: () => {
 					const token = item.provider.tokenForSelection(item.raw, pickerContext)
 					if (token) onInsert(token)
 					panel.remove()
 				},
 			}))
-		
-	
+	}
 
 	document.body.appendChild(panel)
 	setTimeout(() => {

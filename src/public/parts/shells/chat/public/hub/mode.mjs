@@ -86,21 +86,20 @@ export async function setMode(mode) {
 		setState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer()
-		await mountTemplate(document.getElementById('messages'), 'hub/empty/friends')
-		document.getElementById('friends-empty-search-button')?.addEventListener('click', () => {
-			document.getElementById('friends-search-input')?.focus()
-		})
 		document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
 	}
 
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
-	if (mode === 'friends')
+	if (mode === 'friends') {
+		// 先挂侧栏（含 #friends-search-input），再挂空态 CTA——否则 label[for] / focus 会打到尚未存在的 input。
 		if (isPrivateChatActive() && store.context.currentState)
 			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
-
+		if (!keepPrivateGroupSession)
+			await mountTemplate(document.getElementById('messages'), 'hub/empty/friends')
+	}
 	else if (mode === 'groups')
 		if (!store.context.currentGroupId || !store.context.currentState) {
 			setPinsBookmarksWrapVisible(false)

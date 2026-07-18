@@ -298,8 +298,9 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
  * @returns {Promise<import('npm:@playwright/test').Locator>} 消息行定位器。
  */
 export async function expectMessageInChat(page, text) {
-	const row = page.locator('#messages .message').filter({ hasText: text })
+	const row = page.locator('#messages .message:not([data-pending="1"])').filter({ hasText: text })
 	await expect(row.first()).toBeVisible({ timeout: ms('1m') })
+	await expect(row.first()).toHaveAttribute('data-message-id', /^[\da-f]{64}$/i)
 	return row.first()
 }
 

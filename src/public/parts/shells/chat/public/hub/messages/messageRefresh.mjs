@@ -138,8 +138,12 @@ async function applyIncomingMessage(message, { scroll = false } = {}) {
 	if (getActiveVolatileStreamIds().some(streamId => eventIdsEqual(streamId, eventId)) && !isChannelMessageGenerating(message))
 		dismissVolatileStreamPreview(eventId, { notifyEnd: false })
 
+	const pendingId = store.messages.composerPendingId
 	const hadInSource = store.messages.channelMessagesSource.some(m => String(m.eventId) === eventId)
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, [message])
+	// merge 会删掉乐观 pending 行；虚拟列表若只 append 真实行会留下带 pending: id 的旧 DOM
+	const pendingReplaced = !!pendingId
+		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
@@ -147,13 +151,12 @@ async function applyIncomingMessage(message, { scroll = false } = {}) {
 
 	const viewIdx = store.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
 	const row = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
-	if (row)
-		if (hadInSource)
-			await store.messages.channelMessagePipeline.replaceItem(viewIdx, row)
-		else
-			await store.messages.channelMessagePipeline.appendItem(row, scroll)
-	else
+	if (pendingReplaced || !row)
 		await store.messages.channelMessagePipeline.refresh()
+	else if (hadInSource)
+		await store.messages.channelMessagePipeline.replaceItem(viewIdx, row)
+	else
+		await store.messages.channelMessagePipeline.appendItem(row, scroll)
 
 	syncChannelActionsContext()
 	updateLastMessageId()
@@ -172,12 +175,23 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 		return
 	}
 
+	const pendingId = store.messages.composerPendingId
 	const oldIds = new Set(store.messages.channelMessagesSource.map(row => String(row.eventId || '')))
 	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, batch)
+	const pendingReplaced = !!pendingId
+		&& !store.messages.channelMessagesSource.some(m => String(m.eventId) === pendingId)
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
 	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
+
+	if (pendingReplaced) {
+		await store.messages.channelMessagePipeline.refresh()
+		syncChannelActionsContext()
+		updateLastMessageId()
+		decorateRenderedMessages(container, scroll)
+		return
+	}
 
 	const replaceRows = []
 	const appendRows = []

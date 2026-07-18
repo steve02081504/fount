@@ -9,6 +9,25 @@ import { routeEntityHash, socialClientFromReq } from './shared.mjs'
  * @returns {void}
  */
 export function registerProfileRoutes(router) {
+	// 静态段必须在 :entityHash 之前，否则 muted-keywords 会被当成 entityHash → 400
+	router.get('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.mutedKeywords.list())
+	})
+
+	router.put('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		res.status(200).json(await client.mutedKeywords.replace(req.body?.entries || []))
+	})
+
+	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
+		const { client } = await socialClientFromReq(req)
+		const socialMeta = await client.updateMeta({
+			hideFromDiscovery: req.body?.hideFromDiscovery,
+		})
+		res.status(200).json({ socialMeta })
+	})
+
 	router.get('/api/parts/shells\\:social/profile/:entityHash', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.profile(routeEntityHash(req.params)))
@@ -44,26 +63,8 @@ export function registerProfileRoutes(router) {
 		res.status(200).json(await client.profileReplies(routeEntityHash(req.params), postId))
 	})
 
-	router.post('/api/parts/shells\\:social/profile/meta', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		const socialMeta = await client.updateMeta({
-			hideFromDiscovery: req.body?.hideFromDiscovery,
-		})
-		res.status(200).json({ socialMeta })
-	})
-
 	router.post('/api/parts/shells\\:social/timeline/:entityHash/maintain', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
 		res.status(200).json(await client.maintainTimeline(routeEntityHash(req.params)))
-	})
-
-	router.get('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.mutedKeywords.list())
-	})
-
-	router.put('/api/parts/shells\\:social/profile/muted-keywords', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.mutedKeywords.replace(req.body?.entries || []))
 	})
 }

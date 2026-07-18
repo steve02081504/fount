@@ -69,7 +69,7 @@ function wireOutsideClickClose(panel, onClose, alsoInside) {
 function renderTabButton(tab, provider, activeTabId) {
 	const tabButton = document.createElement('button')
 	tabButton.type = 'button'
-	tabButton.className = 'hub-emoji-tab'
+	tabButton.className = 'emoji-tab'
 	tabButton.dataset.tab = tab.id
 	if (tab.i18nKey) tabButton.dataset.i18n = tab.i18nKey
 	if (tab.title) tabButton.title = tab.title
@@ -81,7 +81,7 @@ function renderTabButton(tab, provider, activeTabId) {
 			!!tab.isCurrent,
 		)
 	else if (tab.glyph)
-		tabButton.innerHTML = `<span class="hub-emoji-tab-glyph" aria-hidden="true">${tab.glyph}</span>`
+		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${tab.glyph}</span>`
 
 	return tabButton
 }
@@ -95,7 +95,7 @@ function appendEmojiGridItem(grid, item) {
 	if (item.kind === 'custom' || (item.groupId && item.emojiId)) {
 		const gridButton = document.createElement('button')
 		gridButton.type = 'button'
-		gridButton.className = 'hub-emoji-grid-button hub-group-emoji-grid-button'
+		gridButton.className = 'emoji-grid-button group-emoji-grid-button'
 		gridButton.dataset.groupEmojiId = item.emojiId
 		gridButton.dataset.groupEmojiRef = item.emojiRef
 		gridButton.title = item.label || item.emojiId
@@ -104,6 +104,7 @@ function appendEmojiGridItem(grid, item) {
 			img.src = item.previewUrl
 			img.alt = ''
 			img.loading = 'lazy'
+			img.className = 'group-emoji-img'
 			gridButton.appendChild(img)
 		}
 		grid.appendChild(gridButton)
@@ -113,7 +114,7 @@ function appendEmojiGridItem(grid, item) {
 	if (item.unicode) {
 		const gridButton = document.createElement('button')
 		gridButton.type = 'button'
-		gridButton.className = 'hub-emoji-grid-button'
+		gridButton.className = 'emoji-grid-button'
 		gridButton.dataset.emoji = item.unicode
 		gridButton.textContent = item.unicode
 		grid.appendChild(gridButton)
@@ -128,7 +129,7 @@ function appendEmojiGridItem(grid, item) {
 function renderGridMessage(grid, i18nKey) {
 	grid.replaceChildren()
 	const emptyMessage = document.createElement('div')
-	emptyMessage.className = 'hub-emoji-grid-empty'
+	emptyMessage.className = 'emoji-grid-empty'
 	emptyMessage.dataset.i18n = i18nKey
 	grid.appendChild(emptyMessage)
 }
@@ -139,7 +140,7 @@ function renderGridMessage(grid, i18nKey) {
  * @returns {void}
  */
 function setActiveTabButton(tabsElement, tabId) {
-	for (const tabButton of tabsElement.querySelectorAll('.hub-emoji-tab'))
+	for (const tabButton of tabsElement.querySelectorAll('.emoji-tab'))
 		tabButton.classList.toggle('active', tabButton.dataset.tab === tabId)
 }
 
@@ -291,14 +292,14 @@ export async function mountEmojiPicker(anchor, onInsert, pickerContext = {}) {
 
 	const panel = document.createElement('div')
 	panel.id = 'fount-shared-emoji-picker'
-	panel.className = 'hub-emoji-picker show'
+	panel.className = 'emoji-picker show'
 	panel.style.cssText = 'position:fixed;z-index:10000;width:320px;'
 	positionFloatingPanel(panel, anchor)
 
 	const tabsElement = document.createElement('div')
-	tabsElement.className = 'hub-emoji-tabs'
+	tabsElement.className = 'emoji-tabs'
 	const gridElement = document.createElement('div')
-	gridElement.className = 'hub-emoji-grid'
+	gridElement.className = 'emoji-grid'
 	panel.append(tabsElement, gridElement)
 	document.body.appendChild(panel)
 

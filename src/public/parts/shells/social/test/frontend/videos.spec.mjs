@@ -8,6 +8,8 @@ import {
 	waitForPostMaterialized,
 	fetchViewerEntityHash,
 	submitReplyViaPanel,
+	installVideoFixtureRoute,
+	videoFixtureUrl,
 } from './fixtures.mjs'
 
 /**
@@ -47,6 +49,7 @@ async function openVideoSlide(page, postId) {
 
 test.describe('Social short videos', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
+		await installVideoFixtureRoute(page)
 		await openHome(page, baseUrl)
 		await page.evaluate(() => localStorage.removeItem('fount.social.video.muted'))
 	})
@@ -62,7 +65,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 		}
@@ -74,7 +77,7 @@ test.describe('Social short videos', () => {
 		const slide = await openVideoSlide(page, postId)
 		await expect(page.locator(`#videosView .video-slide[data-post-id="${postId}"]`)).toHaveCount(1)
 		await expect(slide.locator('.video-caption')).toContainText(text)
-		await expect(slide.locator('video.video-player')).toHaveAttribute('src', /flower\.mp4/)
+		await expect(slide.locator('video.video-player')).toHaveAttribute('src', /\/__fount_test__\/tiny\.mp4$/)
 		await expect(slide.locator('.video-author')).not.toHaveText('')
 		await expect(slide.locator('.video-actions')).toBeVisible()
 		await expect(slide.locator('.video-share-btn')).toBeVisible()
@@ -91,7 +94,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 		}
@@ -135,7 +138,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 		}
@@ -167,7 +170,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 			await waitForPostMaterialized(baseUrl, apiKey, postId)
@@ -201,7 +204,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 		}
@@ -241,7 +244,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 		}
@@ -281,7 +284,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 			await waitForPostMaterialized(baseUrl, apiKey, postId)
@@ -333,7 +336,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
@@ -368,7 +371,7 @@ test.describe('Social short videos', () => {
 				locale: 'zh-CN',
 				mediaRefs: [{
 					kind: 'video',
-					url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+					url: videoFixtureUrl(baseUrl),
 				}],
 			})
 			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
