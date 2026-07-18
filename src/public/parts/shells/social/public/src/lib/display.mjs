@@ -76,15 +76,13 @@ export function authorLabel(entityHash, profile) {
 }
 
 /**
- * Social 信任上下文（本人 / 本地 agent / 所属主人 / 信任表）。
- * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
- * @returns {{ selfEntityHash: string | null, nodeHash: string | null, authorOwnerEntityHash?: string | null, viewerOwnerEntityHash?: string | null }} 信任上下文
+ * Social 信任上下文（本人 / 本机 char / 声明的主人 / 信任表）。
+ * @returns {{ selfEntityHash: string | null, nodeHash: string | null, viewerOwnerEntityHash?: string | null }} 信任上下文
  */
-function socialTrustCtx({ ownerEntityHash } = {}) {
+function socialTrustCtx() {
 	return {
 		selfEntityHash: viewerEntityHash(),
 		nodeHash: state.viewerNodeHash,
-		authorOwnerEntityHash: ownerEntityHash,
 		viewerOwnerEntityHash: state.viewerProfile?.ownerEntityHash,
 	}
 }
@@ -92,22 +90,22 @@ function socialTrustCtx({ ownerEntityHash } = {}) {
 /**
  * 判断作者是否应对 Markdown 走可信 pipeline。
  * @param {string} pubKeyHash 作者 hash
- * @param {{ ownerEntityHash?: string | null }} [options] 作者资料中的所属主人
+ * @param {{ ownerEntityHash?: string | null }} [_options] 兼容旧调用（所属主人不再影响 Markdown 信任）
  * @returns {Promise<boolean>} 是否可信
  */
-export async function isTrusted(pubKeyHash, options = {}) {
-	return isTrustedMarkdownAuthor(pubKeyHash, socialTrustCtx(options))
+export async function isTrusted(pubKeyHash, _options = {}) {
+	return isTrustedMarkdownAuthor(pubKeyHash, socialTrustCtx())
 }
 
 /**
  * 将 Markdown 源本机渲染为 HTML（默认/安全两档）。
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
- * @param {{ ownerEntityHash?: string | null }} [options] 所属主人
+ * @param {{ ownerEntityHash?: string | null }} [_options] 兼容旧调用
  * @returns {Promise<string>} HTML
  */
-export async function renderTrustedPostMarkdown(markdown, pubKeyHash, options = {}) {
-	return renderTrustedMarkdownHtml(markdown || '', pubKeyHash, socialTrustCtx(options))
+export async function renderTrustedPostMarkdown(markdown, pubKeyHash, _options = {}) {
+	return renderTrustedMarkdownHtml(markdown || '', pubKeyHash, socialTrustCtx())
 }
 
 /**
@@ -115,11 +113,11 @@ export async function renderTrustedPostMarkdown(markdown, pubKeyHash, options = 
  * @param {HTMLElement} host 宿主
  * @param {string} markdown 原文
  * @param {string} pubKeyHash 作者
- * @param {{ ownerEntityHash?: string | null }} [options] 所属主人
+ * @param {{ ownerEntityHash?: string | null }} [_options] 兼容旧调用
  * @returns {Promise<void>}
  */
-export async function mountMarkdown(host, markdown, pubKeyHash, options = {}) {
-	await mountTrustedMarkdown(host, markdown || '', pubKeyHash, socialTrustCtx(options))
+export async function mountMarkdown(host, markdown, pubKeyHash, _options = {}) {
+	await mountTrustedMarkdown(host, markdown || '', pubKeyHash, socialTrustCtx())
 }
 
 /**

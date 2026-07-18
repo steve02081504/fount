@@ -1,6 +1,8 @@
 /**
  * Hub composer @ 提及 autocomplete（群内成员，插入 entityHash）。
  */
+import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
+
 import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
 
@@ -51,9 +53,10 @@ export function attachHubMentionAutocomplete(textarea) {
 			const subtitle = row.entityHash
 				? formatEntityAtId(row.entityHash, { handle: row.handle })
 				: row.memberCount != null ? `${row.memberCount}` : ''
+			const label = row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })
 			button.innerHTML = `
-				<strong>${row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
-				<small>${subtitle}</small>
+				<strong>${sanitizePermissiveHtml(label)}</strong>
+				<small>${sanitizePermissiveHtml(subtitle)}</small>
 			`
 			panel.appendChild(button)
 		}

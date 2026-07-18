@@ -27,6 +27,7 @@
 			"src/server/parts_loader.mjs",
 			"src/public/pages/scripts/api/registries.mjs",
 			"src/public/pages/scripts/features/markdown/**",
+			"src/public/pages/scripts/lib/sanitizeHtml.mjs",
 			"src/public/parts/shells/chat/public/src/trustedAuthors.mjs",
 			"src/public/pages/scripts/components/emojiPicker.mjs",
 			"src/public/pages/scripts/components/stickerPicker.mjs"

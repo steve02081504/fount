@@ -430,6 +430,54 @@ return result
 }
 
 /**
+ * @param {string} langOrExt 语言名或扩展名
+ * @returns {CodeExecutorSafety} 安全系数；未知默认可疑 → unsafe
+ */
+export function getCodeExecutorSafety(langOrExt) {
+	const key = String(langOrExt || '').toLowerCase()
+	return CODE_EXECUTOR_SAFETY[key] || 'unsafe'
+}
+
+/**
+ * 未信任档是否可为该语言提供执行按钮。
+ * @param {string} langOrExt 语言名或扩展名
+ * @returns {boolean} 是否安全
+ */
+export function isCodeExecutorSafeForUntrusted(langOrExt) {
+	return getCodeExecutorSafety(langOrExt) === 'safe'
+}
+
+/**
+ * 执行器安全系数：`safe` = 未信任 Markdown 也可提供执行按钮；`unsafe` = 仅可信档。
+ * 判定以「会不会在页面同源上下文拿到任意脚本能力」为准（含 HTML preview / 可互操作到 JS 的 VM）。
+ * @typedef {'safe' | 'unsafe'} CodeExecutorSafety
+ */
+
+/** @type {Readonly<Record<string, CodeExecutorSafety>>} */
+const CODE_EXECUTOR_SAFETY = {
+	js: 'unsafe',
+	javascript: 'unsafe',
+	py: 'unsafe',
+	python: 'unsafe',
+	rb: 'unsafe',
+	ruby: 'unsafe',
+	lisp: 'unsafe',
+	php: 'unsafe',
+	lua: 'unsafe',
+	// 内存解释器 / 远端沙箱：不进页面执行面
+	sql: 'safe',
+	cpp: 'safe',
+	c: 'safe',
+	csharp: 'safe',
+	go: 'safe',
+	rs: 'safe',
+	rust: 'safe',
+	b: 'safe',
+	bf: 'safe',
+	brainfuck: 'safe',
+}
+
+/**
  * 代码执行器集合
  * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>>}
  */
@@ -670,9 +718,10 @@ function countCodeLines(pre) {
  * @param {object} pre - `<pre>` hast 节点。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {boolean} [options.allowUnsafeExecutors=true] - 是否允许不安全执行器 / HTML 预览。
  * @returns {object} - 包装后的 hast 节点。
  */
-function enhanceCodeBlockPre(pre, { isStandalone = false } = {}) {
+function enhanceCodeBlockPre(pre, { isStandalone = false, allowUnsafeExecutors = true } = {}) {
 	const rawCode = hastToString(pre).replace(/\n$/, '')
 	const lineCount = countCodeLines(pre)
 	const collapseThreshold = 13
@@ -682,6 +731,8 @@ function enhanceCodeBlockPre(pre, { isStandalone = false } = {}) {
 	do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
 	while (document.getElementById(uniqueId))
 	const executor = languageExecutors[ext] || languageExecutors[lang]
+	const executorAllowed = !!executor && (allowUnsafeExecutors || isCodeExecutorSafeForUntrusted(ext)
+		|| isCodeExecutorSafeForUntrusted(lang))
 
 	/**
 	 * 创建工具提示。
@@ -746,9 +797,9 @@ document.body.removeChild(a)
 `,
 	}, fromHtml(downloadIconSized, { fragment: true }).children)
 
-	// 预览按钮
+	// 预览按钮（document.write → 等同页面执行面，仅可信档）
 	let previewButtonCore = null
-	if (ext === 'html')
+	if (ext === 'html' && allowUnsafeExecutors)
 		previewButtonCore = h('button', {
 			class: 'btn btn-ghost btn-square btn-sm text-icon',
 			...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
@@ -763,7 +814,7 @@ previewWindow.document.close()
 
 	// 执行按钮
 	let executeButtonCore = null
-	if (executor)
+	if (executorAllowed)
 		executeButtonCore = h('button', {
 			class: 'btn btn-ghost btn-square btn-sm text-icon',
 			...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
@@ -948,16 +999,17 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
  * 仅增强块级高亮代码（figure>pre），不碰内联 span>code。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {boolean} [options.allowUnsafeExecutors=true] - 是否允许不安全执行器。
  * @returns {() => (tree: object) => void} - rehype 插件（attacher → transformer）。
  */
-function rehypeCodeBlockEnhancements({ isStandalone = false } = {}) {
+function rehypeCodeBlockEnhancements({ isStandalone = false, allowUnsafeExecutors = true } = {}) {
 	return () => tree => {
 		visit(tree, 'element', node => {
 			if (node.tagName !== 'figure' || !('data-rehype-pretty-code-figure' in (node.properties || {})))
 				return
 			const preIndex = node.children.findIndex(child => child.type === 'element' && child.tagName === 'pre')
 			if (preIndex < 0) return
-			node.children[preIndex] = enhanceCodeBlockPre(node.children[preIndex], { isStandalone })
+			node.children[preIndex] = enhanceCodeBlockPre(node.children[preIndex], { isStandalone, allowUnsafeExecutors })
 		})
 	}
 }
@@ -1084,11 +1136,11 @@ function rehypeCacheWrite() {
 
 /**
  * 获取 Markdown 转换器。
- * `allowDangerousHtml` 是唯一信任开关：false 时自动 early 净化 + Mermaid strict；
- * true 时保留内联 HTML、Mermaid loose。调用方不必再拼 mermaid/sanitize 细节。
+ * `allowDangerousHtml` 是唯一信任开关：false 时自动 early 净化 + Mermaid strict + 隐藏不安全代码执行器；
+ * true 时保留内联 HTML、Mermaid loose、全部执行/预览按钮。调用方不必再拼 mermaid/sanitize 细节。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
- * @param {boolean} [options.allowDangerousHtml=true] - 是否信任内容（内联 HTML / 宽松 Mermaid）。
+ * @param {boolean} [options.allowDangerousHtml=true] - 是否信任内容（内联 HTML / 宽松 Mermaid / 不安全执行器）。
  * @param {Array<unknown>} [options.extraRemarkPlugins] - 插入 remarkRehype 之前的 remark 插件。
  * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件（勿把净化挂这里）。
  * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
@@ -1102,6 +1154,7 @@ export async function GetMarkdownConvertor({
 	const registered = await ensureMarkdownExtensionAssets()
 	const mermaidSecurityLevel = allowDangerousHtml ? 'loose' : 'strict'
 	const earlyRehypePlugins = allowDangerousHtml ? [] : [rehypeSanitizeUntrustedContent()]
+	const allowUnsafeExecutors = allowDangerousHtml
 
 	if (!isStandalone) {
 		const { ensureEmbedHydrator } = await import('../embedCard.mjs')
@@ -1165,7 +1218,7 @@ export async function GetMarkdownConvertor({
 				title.properties.className = 'alert alert-info shadow-lg join-item'
 			}
 		})
-		.use(rehypeCodeBlockEnhancements({ isStandalone }))
+		.use(rehypeCodeBlockEnhancements({ isStandalone, allowUnsafeExecutors }))
 		.use(() => {
 			return tree => {
 				visit(tree, 'element', node => {

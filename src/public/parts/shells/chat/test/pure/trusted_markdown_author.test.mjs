@@ -1,11 +1,12 @@
 /**
- * 可信 Markdown 作者判定：本人 / 所属 agent / 声明的主人 / 信任表。
+ * 可信 Markdown 作者判定：本人 / 本机 char 实体 / 声明的主人 / 信任表。
+ * 远端自声明 ownerEntityHash 不升档。
  */
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const {
-	isSelfOrOwnedAgentEntity,
+	isSelfOrLocalAgentEntity,
 	isViewerDeclaredOwner,
 	isTrustedMarkdownAuthor,
 } = await import('../../public/src/trustedAuthors.mjs')
@@ -16,19 +17,22 @@ const MASTER = 'c'.repeat(128)
 const STRANGER = 'd'.repeat(128)
 const NODE = 'e'.repeat(64)
 
-Deno.test('isSelfOrOwnedAgentEntity: self and owned agent', () => {
-	assertEquals(isSelfOrOwnedAgentEntity(SELF, { selfEntityHash: SELF }), true)
-	assertEquals(isSelfOrOwnedAgentEntity(AGENT, {
-		selfEntityHash: SELF,
-		authorOwnerEntityHash: SELF,
-	}), true)
-	assertEquals(isSelfOrOwnedAgentEntity(STRANGER, { selfEntityHash: SELF }), false)
+Deno.test('isSelfOrLocalAgentEntity: self only', () => {
+	assertEquals(isSelfOrLocalAgentEntity(SELF, { selfEntityHash: SELF }), true)
+	assertEquals(isSelfOrLocalAgentEntity(STRANGER, { selfEntityHash: SELF }), false)
 })
 
-Deno.test('isSelfOrOwnedAgentEntity: local node prefix', () => {
+Deno.test('isSelfOrLocalAgentEntity: remote owner claim does not count', () => {
+	assertEquals(isSelfOrLocalAgentEntity(AGENT, {
+		selfEntityHash: SELF,
+		authorOwnerEntityHash: SELF,
+	}), false)
+})
+
+Deno.test('isSelfOrLocalAgentEntity: local node prefix', () => {
 	const local = `${NODE}${'f'.repeat(64)}`
-	assertEquals(isSelfOrOwnedAgentEntity(local, { nodeHash: NODE }), true)
-	assertEquals(isSelfOrOwnedAgentEntity(STRANGER, { nodeHash: NODE }), false)
+	assertEquals(isSelfOrLocalAgentEntity(local, { nodeHash: NODE }), true)
+	assertEquals(isSelfOrLocalAgentEntity(STRANGER, { nodeHash: NODE }), false)
 })
 
 Deno.test('isViewerDeclaredOwner: author is viewer master', () => {
@@ -51,4 +55,14 @@ Deno.test('isTrustedMarkdownAuthor: declared master without trust list', async (
 		viewerOwnerEntityHash: MASTER,
 		authorEntityHash: MASTER,
 	}), true)
+})
+
+Deno.test('spoofed ownerEntityHash does not elevate via self/master gates', () => {
+	assertEquals(isSelfOrLocalAgentEntity(STRANGER, {
+		selfEntityHash: SELF,
+		authorOwnerEntityHash: SELF,
+	}), false)
+	assertEquals(isViewerDeclaredOwner(STRANGER, {
+		viewerOwnerEntityHash: MASTER,
+	}), false)
 })

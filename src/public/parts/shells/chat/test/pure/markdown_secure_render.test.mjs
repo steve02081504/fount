@@ -63,15 +63,44 @@ Deno.test('sanitize plugin strips on* / script / javascript: urls', () => {
 	assertEquals(kids[1].properties.href, 'https://example.com')
 })
 
-Deno.test('secure render keeps code-block copy/download/execute onclick', async () => {
+Deno.test('secure render keeps copy/download but hides unsafe js execute', async () => {
 	const html = await renderSecure('```js\nconsole.log(1)\n```')
 	assertStringIncludes(html, 'onclick')
 	assertMatch(html, /navigator\.clipboard\.writeText/)
 	assertMatch(html, /a\.download\s*=/)
-	assertMatch(html, /execution-output|Godbolt|createCopyButton/)
 	assertStringIncludes(html, 'markdown-code-block')
 	assertStringIncludes(html, '<figure')
 	assertStringIncludes(html, '<pre')
+	assertFalse(html.includes('execution-output'))
+	assertFalse(html.includes('createCopyButton'))
+	assertFalse(/code_block\.execute/.test(html))
+})
+
+Deno.test('secure render keeps safe sql execute button', async () => {
+	const html = await renderSecure('```sql\nSELECT 1\n```')
+	assertStringIncludes(html, 'markdown-code-block')
+	assertMatch(html, /execution-output|createCopyButton/)
+	assertMatch(html, /code_block\.execute|Execution/)
+})
+
+Deno.test('trusted render keeps unsafe js execute button', async () => {
+	const html = await renderSecure('```js\nconsole.log(1)\n```', { allowDangerousHtml: true })
+	assertMatch(html, /execution-output|createCopyButton/)
+})
+
+Deno.test('getCodeExecutorSafety: js unsafe, sql/brainfuck safe', async () => {
+	const { getCodeExecutorSafety } = await import('../../../../../pages/scripts/features/markdown/convertor.mjs')
+	assertEquals(getCodeExecutorSafety('js'), 'unsafe')
+	assertEquals(getCodeExecutorSafety('python'), 'unsafe')
+	assertEquals(getCodeExecutorSafety('sql'), 'safe')
+	assertEquals(getCodeExecutorSafety('b'), 'safe')
+	assertEquals(getCodeExecutorSafety('unknown-lang'), 'unsafe')
+})
+
+Deno.test('secure render hides html preview button', async () => {
+	const html = await renderSecure('```html\n<b>x</b>\n```')
+	assertFalse(/code_block\.preview/.test(html))
+	assertFalse(/document\.write/.test(html))
 })
 
 Deno.test('inline {:lang} stays span>code, not block pre', async () => {

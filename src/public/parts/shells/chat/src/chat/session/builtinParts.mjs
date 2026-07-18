@@ -21,28 +21,28 @@ function emptyPrompt() {
  * shell 内置极小 world：无规则、本机执行。
  * @type {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t}
  */
-export const BUILTIN_WORLD = Object.freeze({
+export const BUILTIN_WORLD = {
 	distribution: 'local',
-	info: Object.freeze({
-		'zh-CN': Object.freeze({
+	info: {
+		'zh-CN': {
 			name: '（无世界）',
 			description: 'chat shell 内置空世界',
 			avatar: '',
 			version: '0',
 			author: 'fount',
-			tags: Object.freeze(['builtin']),
-		}),
-		'en-US': Object.freeze({
+			tags: ['builtin'],
+		},
+		'en-US': {
 			name: '(no world)',
 			description: 'chat shell builtin empty world',
 			avatar: '',
 			version: '0',
 			author: 'fount',
-			tags: Object.freeze(['builtin']),
-		}),
-	}),
-	interfaces: Object.freeze({
-		chat: Object.freeze({
+			tags: ['builtin'],
+		},
+	},
+	interfaces: {
+		chat: {
 			/**
 			 * @param {object} arg chatReplyRequest
 			 * @returns {Promise<object[]>} 原 chat_log
@@ -60,35 +60,35 @@ export const BUILTIN_WORLD = Object.freeze({
 			 * @returns {Promise<void>}
 			 */
 			TweakPrompt: async () => { },
-		}),
-	}),
-})
+		},
+	},
+}
 
 /**
  * shell 内置极小 persona：human 席位永远经过一个 persona。
  * @type {import('../../../../../../../decl/userAPI.ts').UserAPI_t}
  */
-export const BUILTIN_PERSONA = Object.freeze({
-	info: Object.freeze({
-		'zh-CN': Object.freeze({
+export const BUILTIN_PERSONA = {
+	info: {
+		'zh-CN': {
 			name: '（无人格）',
 			description: 'chat shell 内置空人格',
 			avatar: '',
 			version: '0',
 			author: 'fount',
-			tags: Object.freeze(['builtin']),
-		}),
-		'en-US': Object.freeze({
+			tags: ['builtin'],
+		},
+		'en-US': {
 			name: '(no persona)',
 			description: 'chat shell builtin empty persona',
 			avatar: '',
 			version: '0',
 			author: 'fount',
-			tags: Object.freeze(['builtin']),
-		}),
-	}),
-	interfaces: Object.freeze({
-		chat: Object.freeze({
+			tags: ['builtin'],
+		},
+	},
+	interfaces: {
+		chat: {
 			/**
 			 * @returns {Promise<object>} 空贡献
 			 */
@@ -106,6 +106,6 @@ export const BUILTIN_PERSONA = Object.freeze({
 			 * @returns {Promise<undefined>} 透传
 			 */
 			BeforeUserSend: async () => undefined,
-		}),
-	}),
-})
+		},
+	},
+}

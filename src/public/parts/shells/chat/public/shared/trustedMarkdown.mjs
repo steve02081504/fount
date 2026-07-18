@@ -12,8 +12,8 @@ import { isTrustedMarkdownAuthor } from '../src/trustedAuthors.mjs'
  * @param {{
  *   selfEntityHash?: string | null,
  *   nodeHash?: string | null,
- *   authorOwnerEntityHash?: string | null,
  *   viewerOwnerEntityHash?: string | null,
+ *   authorEntityHash?: string | null,
  * }} [trustCtx] 信任上下文
  * @returns {Promise<string>} HTML
  */
@@ -32,8 +32,8 @@ export async function renderTrustedMarkdownHtml(markdown, authorHash = '', trust
  * @param {{
  *   selfEntityHash?: string | null,
  *   nodeHash?: string | null,
- *   authorOwnerEntityHash?: string | null,
  *   viewerOwnerEntityHash?: string | null,
+ *   authorEntityHash?: string | null,
  * }} [trustCtx] 信任上下文
  * @returns {Promise<void>}
  */

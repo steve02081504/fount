@@ -5,7 +5,7 @@
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../src/friendBinding、../src/lib/entityHash、core/state、core/domUtils
  */
-import { isSelfOrOwnedAgentEntity } from '../src/trustedAuthors.mjs'
+import { isSelfOrLocalAgentEntity } from '../src/trustedAuthors.mjs'
 
 import { charEntityHashFromCache, warmCharEntityHashCache } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
@@ -28,7 +28,7 @@ export async function charAgentEntityHash(charname) {
  * @returns {boolean} 是否为本节点可写实体（用户本人或本地角色 agent）
  */
 export function isLocalWritableEntityHash(entityHash) {
-	return isSelfOrOwnedAgentEntity(entityHash, {
+	return isSelfOrLocalAgentEntity(entityHash, {
 		selfEntityHash: store.viewer?.viewerEntityHash,
 		nodeHash: store.viewer?.nodeHash,
 	})

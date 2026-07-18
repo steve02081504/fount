@@ -223,7 +223,6 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 		await paintEntityProfileBio(bioElement, profileDescriptionText(normalized), entityHash, {
 			selfEntityHash: options.selfEntityHash,
 			nodeHash: options.nodeHash,
-			authorOwnerEntityHash: normalized.ownerEntityHash,
 			viewerOwnerEntityHash: options.viewerOwnerEntityHash,
 		})
 
@@ -276,7 +275,6 @@ export function profileDescriptionText(profile) {
  *   emptyI18n?: string,
  *   selfEntityHash?: string | null,
  *   nodeHash?: string | null,
- *   authorOwnerEntityHash?: string | null,
  *   viewerOwnerEntityHash?: string | null,
  * }} [options] 空态 / 信任上下文
  * @returns {Promise<void>}
@@ -295,7 +293,6 @@ export async function paintEntityProfileBio(bioElement, markdown, entityHash = '
 	await mountTrustedMarkdown(bioElement, text, entityHash, {
 		selfEntityHash: options.selfEntityHash,
 		nodeHash: options.nodeHash,
-		authorOwnerEntityHash: options.authorOwnerEntityHash,
 		viewerOwnerEntityHash: options.viewerOwnerEntityHash,
 	})
 }

@@ -67,17 +67,16 @@ export function applyStatusDot(el, status) {
  * @param {HTMLElement | null} bioElement 简介容器
  * @param {string} [bio] 简介 markdown 源
  * @param {string} [entityHash] 作者 hash
- * @param {{ ownerEntityHash?: string | null }} [options] 所属主人（本人 agent）
+ * @param {{ ownerEntityHash?: string | null }} [_options] 兼容旧调用（所属主人不再影响 bio 信任）
  * @returns {Promise<void>}
  */
-export async function applyBioElement(bioElement, bio, entityHash = '', options = {}) {
+export async function applyBioElement(bioElement, bio, entityHash = '', _options = {}) {
 	if (!bioElement) return
 	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
 	const { store: hubStore } = await import('./core/state.mjs')
 	await paintEntityProfileBio(bioElement, bio, entityHash, {
 		selfEntityHash: hubStore.viewer?.viewerEntityHash,
 		nodeHash: hubStore.viewer?.nodeHash,
-		authorOwnerEntityHash: options.ownerEntityHash,
 		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
 	})
 }

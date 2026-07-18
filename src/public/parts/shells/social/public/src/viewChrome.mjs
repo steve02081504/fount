@@ -1,18 +1,18 @@
 import { pauseAllVideos } from './lib/videoAutoplay.mjs'
 
 /** 可写入 location.hash 的主导航视图 */
-export const MAIN_NAV_VIEWS = Object.freeze([
+export const MAIN_NAV_VIEWS = [
 	'feed', 'explore', 'notifications', 'saved', 'drafts', 'profile', 'videos', 'live', 'settings',
-])
+]
 
 /** 二级视图 → 保留高亮的主导航 */
-const OVERLAY_PARENT = Object.freeze({
+const OVERLAY_PARENT = {
 	settings: 'profile',
 	search: 'feed',
 	topic: 'explore',
 	postDetail: 'feed',
 	liveBroadcast: 'live',
-})
+}
 
 /** @type {string | null} 当前激活的主导航视图名 */
 let activeMainView = null

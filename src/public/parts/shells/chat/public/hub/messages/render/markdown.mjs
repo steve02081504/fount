@@ -41,25 +41,6 @@ export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash 
 }
 
 /**
- * 从当前群成员表解析作者声明的 ownerEntityHash。
- * @param {string} [authorKey] pubKeyHash / entityHash / charId
- * @returns {string | null} 所属主人 entityHash，无则 null
- */
-function resolveAuthorOwnerEntityHash(authorKey) {
-	const authorEntity = resolveEntityHashForAuthorKey(authorKey)
-	const sender = String(authorKey || '').trim().toLowerCase()
-	for (const member of store.context.currentState?.members || []) {
-		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
-		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
-		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
-			const owner = String(member?.ownerEntityHash || '').trim().toLowerCase()
-			return owner || null
-		}
-	}
-	return null
-}
-
-/**
  * @param {string} [authorPubKeyHash] 作者 hash
  * @param {boolean} [isRemote] 是否远端消息
  * @returns {Promise<boolean>} 是否走可信档
@@ -69,7 +50,6 @@ async function isMessageMarkdownTrusted(authorPubKeyHash, isRemote) {
 	return isTrustedMarkdownAuthor(authorPubKeyHash, {
 		selfEntityHash: store.viewer?.viewerEntityHash,
 		nodeHash: store.viewer?.nodeHash,
-		authorOwnerEntityHash: resolveAuthorOwnerEntityHash(authorPubKeyHash),
 		authorEntityHash: resolveEntityHashForAuthorKey(authorPubKeyHash),
 		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})

@@ -3,7 +3,7 @@
  * 【职责】IndexedDB 持久化「信任作者」公钥集合，决定 Markdown 是否走可信 pipeline。
  * 【原理】fount_chat_security/trustedAuthors store；syncTrustedAuthorsFromShell 与 shellData 同步；isTrustedAuthor 内存 Set 缓存。
  * 【数据结构】TRUST_EXPIRES_NEVER、{ pubKeyHash, expiresAt } 记录。
- * 【关联】trustAuthorDialog.mjs、hub/social Markdown 两档渲染；观看者声明的主人亦走可信档。
+ * 【关联】trustAuthorDialog.mjs、hub/social Markdown 两档渲染；默认可信 = 本人 / 本机 char 实体（nodeHash 前缀）/ 观看者声明的主人。
  */
 const TRUSTED_AUTHORS_DB_NAME = 'fount_chat_security'
 const TRUSTED_AUTHORS_STORE = 'trustedAuthors'
@@ -157,21 +157,20 @@ export async function isTrustedAuthor(pubKeyHash) {
 }
 
 /**
- * 是否为本人或本人的 agent（本机节点实体 / owner 声明指向本人）。
+ * 是否为本人或本机 char 生成的实体（entityHash 以本机 nodeHash 为前缀）。
+ * 不采信远端自声明的 ownerEntityHash——那可被伪造升档。
  * @param {string} entityHash 作者 entityHash
- * @param {{ selfEntityHash?: string | null, nodeHash?: string | null, authorOwnerEntityHash?: string | null }} [options] 信任上下文
- * @returns {boolean} 是否本人或本人 agent
+ * @param {{ selfEntityHash?: string | null, nodeHash?: string | null }} [options] 信任上下文
+ * @returns {boolean} 是否本人或本机 agent
  */
-export function isSelfOrOwnedAgentEntity(entityHash, {
+export function isSelfOrLocalAgentEntity(entityHash, {
 	selfEntityHash,
 	nodeHash,
-	authorOwnerEntityHash,
 } = {}) {
 	const eh = normalizePubKeyHash(entityHash)
 	if (!eh) return false
 	const self = normalizePubKeyHash(selfEntityHash)
 	if (self && eh === self) return true
-	if (self && normalizePubKeyHash(authorOwnerEntityHash) === self) return true
 	const nh = normalizePubKeyHash(nodeHash)
 	if (nh && eh.length >= 64 && eh.slice(0, 64) === nh) return true
 	return false
@@ -194,19 +193,19 @@ export function isViewerDeclaredOwner(pubKeyHash, {
 }
 
 /**
- * Markdown 是否走可信 pipeline：本人 / 本人 agent / 自己的主人 / 信任表。
+ * Markdown 是否走可信 pipeline：本人 / 本机 char 实体 / 自己的主人 / 信任表。
+ * 远端「自称所属主人是我」不升档，须手动加入信任表（或把对方设为主人）。
  * @param {string} pubKeyHash 作者 entityHash / pubKeyHash
  * @param {{
  *   selfEntityHash?: string | null,
  *   nodeHash?: string | null,
- *   authorOwnerEntityHash?: string | null,
  *   viewerOwnerEntityHash?: string | null,
  *   authorEntityHash?: string | null,
  * }} [options] 信任上下文
  * @returns {Promise<boolean>} 是否可信
  */
 export async function isTrustedMarkdownAuthor(pubKeyHash, options = {}) {
-	if (isSelfOrOwnedAgentEntity(pubKeyHash, options)) return true
+	if (isSelfOrLocalAgentEntity(pubKeyHash, options)) return true
 	if (isViewerDeclaredOwner(pubKeyHash, options)) return true
 	return isTrustedAuthor(pubKeyHash)
 }

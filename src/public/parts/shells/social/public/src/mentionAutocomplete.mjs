@@ -5,6 +5,7 @@
 import { formatEntityMentionToken } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { aliasForEntity } from '/parts/shells:chat/shared/aliases.mjs'
 import { formatEntityAtId, formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
+import { sanitizePermissiveHtml } from '/scripts/lib/sanitizeHtml.mjs'
 
 const API = '/api/parts/shells:social/mentions/suggest'
 
@@ -55,8 +56,8 @@ export function attachMentionAutocomplete(textarea) {
 			button.className = `mention-option${index === 0 ? ' active' : ''}`
 			button.dataset.index = String(index)
 			button.innerHTML = `
-				<strong>${aliasForEntity(row.entityHash) || row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false })}</strong>
-				<small>${formatEntityAtId(row.entityHash, { handle: row.handle })}</small>
+				<strong>${sanitizePermissiveHtml(aliasForEntity(row.entityHash) || row.displayName || formatHashShort(row.entityHash, { headLen: 8, tailLen: 0, ellipsis: false }))}</strong>
+				<small>${sanitizePermissiveHtml(formatEntityAtId(row.entityHash, { handle: row.handle }))}</small>
 			`
 			panel.appendChild(button)
 		}
