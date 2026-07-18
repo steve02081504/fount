@@ -32,6 +32,11 @@ export function installMarkdownTestDom() {
 	globalThis.CSSStyleRule = window.CSSStyleRule
 	globalThis.navigator = window.navigator
 	globalThis.getComputedStyle = window.getComputedStyle.bind(window)
+	/**
+	 * happy-dom 下用 setTimeout 模拟 requestAnimationFrame。
+	 * @param {() => void} cb - 下一帧执行的回调。
+	 * @returns {number} setTimeout 返回的定时器 handle。
+	 */
 	globalThis.requestAnimationFrame = cb => setTimeout(cb, 0)
 	globalThis.localStorage = window.localStorage
 	globalThis.sessionStorage = window.sessionStorage
@@ -40,6 +45,12 @@ export function installMarkdownTestDom() {
 	globalThis.Image = window.Image
 
 	const realFetch = globalThis.fetch.bind(globalThis)
+	/**
+	 * 测试环境 fetch：对 registry API 返回空数组，其余透传真实 fetch。
+	 * @param {RequestInfo | URL} input - 请求 URL 或 Request 对象。
+	 * @param {RequestInit} [init] - 可选的 fetch 初始化参数。
+	 * @returns {Promise<Response>} registry 桩响应或真实网络响应。
+	 */
 	globalThis.fetch = async (input, init) => {
 		const href = String(input?.url ?? input)
 		if (href.includes('/api/registries/'))

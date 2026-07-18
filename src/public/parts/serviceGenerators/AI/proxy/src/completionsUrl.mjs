@@ -24,8 +24,9 @@ export function completionsUrlCandidates(url) {
 	if (path.includes('/chat/completions')) return [urlObj.href]
 
 	/**
-	 * @param {string} pathname
-	 * @returns {string}
+	 * 保留原 URL 的 origin 与查询串，仅替换 pathname。
+	 * @param {string} pathname - 目标路径（如 `/v1/chat/completions`）。
+	 * @returns {string} 替换 pathname 后的完整 URL。
 	 */
 	const withPath = (pathname) => {
 		const next = new URL(urlObj)

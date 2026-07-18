@@ -67,8 +67,8 @@ export function playRevealedPostVideos(wrap) {
  */
 export function pauseAllSocialVideos(scope = document) {
 	if (!scope) return
-	for (const video of scope.querySelectorAll('video.post-media-video, video.video-player')) {
+	for (const video of scope.querySelectorAll('video.post-media-video, video.video-player')) 
 		if (video instanceof HTMLVideoElement)
 			video.pause()
-	}
+	
 }

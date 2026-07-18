@@ -3,6 +3,7 @@
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+
 import { closeOverlayModal } from './core/overlayModal.mjs'
 
 /**
@@ -22,12 +23,12 @@ export async function mountTranslationPrefsPanel(panel, footer) {
 	const body = root.querySelector?.('[data-translation-part="body"]') || root
 	const foot = root.querySelector?.('[data-translation-part="footer"]')
 	panel.replaceChildren(body)
-	footer.replaceChildren(...(foot ? [...foot.childNodes] : []))
+	footer.replaceChildren(...foot ? [...foot.childNodes] : [])
 
 	footer.querySelector('[data-action="close"]')?.addEventListener('click', () => closeOverlayModal())
 	footer.querySelector('[data-action="save"]')?.addEventListener('click', () => {
 		const checked = panel.querySelector('#hub-auto-translate') instanceof HTMLInputElement
-			&& /** @type {HTMLInputElement} */ (panel.querySelector('#hub-auto-translate')).checked
+			&& /** @type {HTMLInputElement} */ panel.querySelector('#hub-auto-translate').checked
 		void fetch('/api/parts/shells:chat/translation-prefs', {
 			method: 'PUT',
 			credentials: 'include',

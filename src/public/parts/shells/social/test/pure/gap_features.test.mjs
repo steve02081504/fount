@@ -2,9 +2,9 @@
  * mediaRefs 清扫 / 敏感媒体判定 / 分享 URL。
  */
 /* global Deno */
+import { wrapProtocolHttpsUrl } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { wrapProtocolHttpsUrl } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
 import { formatSocialPostRunUri } from '../../public/shared/runUri.mjs'
 import { normalizeDwellEntry, AUTHOR_BOOST_PER_DWELL } from '../../src/lib/dwellSignal.mjs'
 import { resolveSensitiveMedia, sanitizeMediaRefs } from '../../src/lib/mediaRefs.mjs'

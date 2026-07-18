@@ -6,11 +6,11 @@
 import { onServerEvent } from '../../../../../scripts/api/server_events.mjs'
 import { openDialogFromTemplate } from '../../../../../scripts/features/dialog.mjs'
 import { usingTemplates } from '../../../../../scripts/features/template.mjs'
-import { reportTyping } from '../stream/outbound.mjs'
 import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { hubStore } from '../core/state.mjs'
+import { reportTyping } from '../stream/outbound.mjs'
 
 /** @returns {Promise<void>} 惰性加载 messages 图并提交 composer */
 function submitComposerLazy() {

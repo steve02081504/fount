@@ -254,7 +254,7 @@ export async function mountFederationPrefsPanel(panel, footer, groupId) {
 		})
 		panel.replaceChildren(root.querySelector('[data-federation-part="body"]'))
 		const foot = root.querySelector('[data-federation-part="footer"]')
-		footer.replaceChildren(...(foot ? [...foot.childNodes] : []))
+		footer.replaceChildren(...foot ? [...foot.childNodes] : [])
 		wireCloseButtons(footer)
 		return
 	}
@@ -278,7 +278,7 @@ export async function mountFederationPrefsPanel(panel, footer, groupId) {
 	const body = root.querySelector('[data-federation-part="body"]')
 	const foot = root.querySelector('[data-federation-part="footer"]')
 	panel.replaceChildren(body)
-	footer.replaceChildren(...(foot ? [...foot.childNodes] : []))
+	footer.replaceChildren(...foot ? [...foot.childNodes] : [])
 
 	const scope = panel.parentElement || panel
 	wireFederationModalEvents(scope, groupId || null)

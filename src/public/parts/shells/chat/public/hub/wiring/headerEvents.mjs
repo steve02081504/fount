@@ -16,6 +16,7 @@ export function wireHeaderEvents() {
 
 	document.getElementById('hub-prefs-button')?.addEventListener('click', () => {
 		void import('../hubPrefs.mjs').then(({ openHubPrefsModal }) => openHubPrefsModal({
+			/** @returns {string | null | undefined} 当前 Hub 所选群组 id。 */
 			getGroupId: () => hubStore.context.currentGroupId,
 		}))
 	})

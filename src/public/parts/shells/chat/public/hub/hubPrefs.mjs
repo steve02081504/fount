@@ -2,6 +2,7 @@
  * Hub 偏好设置壳：左侧导航切换翻译 / 联邦 P2P，共用 `#hub-settings-modal`。
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
+
 import { closeOverlayModal, openOverlayModal } from './core/overlayModal.mjs'
 
 /** @type {'translation' | 'federation' | null} */
@@ -78,7 +79,7 @@ export async function openHubPrefsModal(options = {}) {
 			: null
 		const next = button?.getAttribute('data-prefs-section')
 		if (!next || next === activeSection) return
-		activeSection = /** @type {'translation' | 'federation'} */ (next)
+		activeSection = /** @type {'translation' | 'federation'} */ next
 		markActiveNav(nav, activeSection)
 		void mountSection(panel, footer, activeSection)
 	})
