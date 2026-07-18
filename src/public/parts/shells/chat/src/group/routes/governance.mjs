@@ -502,8 +502,11 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/cabinets/bind`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
-		const canManage = hasPermission(state.members[memberKey], PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManage) throw httpError(403, 'MANAGE_ROLES required')
+		const member = state.members[memberKey]
+		const gov = governanceChannelId(state)
+		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
+			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
+		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const body = req.body || {}
 		if (!body.cabinet_id) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetBind } = await import('../../chat/cabinets/keys.mjs')
@@ -518,8 +521,11 @@ export function registerGovernanceRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/cabinets/unbind`, authenticate, requireGroupMember(), async (req, res) => {
 		const { username, state, memberKey } = await resolveGroupMember(req, res, req.params.groupId)
-		const canManage = hasPermission(state.members[memberKey], PERMISSIONS.MANAGE_ROLES, state.roles, governanceChannelId(state), state.channelPermissions)
-		if (!canManage) throw httpError(403, 'MANAGE_ROLES required')
+		const member = state.members[memberKey]
+		const gov = governanceChannelId(state)
+		const canManage = hasPermission(member, PERMISSIONS.ADMIN, state.roles, gov, state.channelPermissions)
+			|| hasPermission(member, PERMISSIONS.MANAGE_ADMINS, state.roles, gov, state.channelPermissions)
+		if (!canManage) throw httpError(403, 'ADMIN or MANAGE_ADMINS required')
 		const cabinetId = String(req.body?.cabinet_id || '').toLowerCase()
 		if (!cabinetId) throw httpError(400, 'cabinet_id required')
 		const { appendCabinetUnbind } = await import('../../chat/cabinets/keys.mjs')

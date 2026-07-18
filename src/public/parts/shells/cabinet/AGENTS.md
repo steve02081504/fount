@@ -8,7 +8,7 @@ alwaysApply: false
 
 - **Personal**: index under `{userDict}/shells/cabinet/entities/{entityHash}/`; blobs via EVFS visibility encryption (`publish.mjs`). Index published on save (`publishCabinetIndex`).
 - **Shared**: `cabinet_id` = write-pubkey hash; EVFS owner = `logicalEntityHash('fount:cabinet:shared:' + cabinetId)`. Op-log + read-key generations under `shells/cabinet/shared/{cabinetId}/`. Sync: `part_cabinet_op_put` / P2PInvoke. Transfer key uses `file-master-key-wrap` with `groupId=cabinetId`.
-- **Chat binding**: DAG `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind`. Hub files panel lists accessible cabinets.
+- **Chat binding**: DAG `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind`. Bind/unbind 与改 `role_access` 须 `ADMIN`/`MANAGE_ADMINS`；仅 wraps 轮转仍 `MANAGE_ROLES`。Hub files panel lists accessible cabinets.
 - **Links**: `{ owner_entity_hash, cabinet_id, entry_id }`. Do not conflate entry `owner_entity_hash` (file ownership) with entity `ownerEntityHash`.
 - **API**: snake_case. Password folders: `POST …/unlock` → `X-Cabinet-Unlock`. Listing: `GET …/index?parent_id=` returns `folder_trail` for breadcrumbs (same shape on remote).
 - **Recoverable delete**: `DELETE …/entries` + `recoverable:true` → `recovery_token`; restore / finalize-delete endpoints. UI undo must finalize discarded tokens.

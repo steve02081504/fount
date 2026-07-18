@@ -1,7 +1,7 @@
 /**
  * 【文件】`dag/authorizeEvent.mjs` — 基于物化状态的 DAG 事件权限矩阵。
  * 【职责】按事件类型与频道/治理权限位判断 sender 是否可执行；供 ingest 与联邦 ACL 共用。
- * 【原理】从物化 `state` 解析 `memberChannelPermissions`；消息编辑/删除结合 `messageSenderIndex` 与 overlay 删除集；`group_settings_update` 区分委托 owner 与全量设置变更。
+ * 【原理】从物化 `state` 解析 `memberChannelPermissions`；消息编辑/删除结合 `messageSenderIndex` 与 overlay 删除集；`group_settings_update` 区分委托 owner 与全量设置变更；角色/频道覆写禁止 MANAGE_ROLES 自提权到 ADMIN；柜绑与 `role_access` 变更须超管。
  * 【数据结构】`checkEventPermission` 返回 `{ ok, reason? }`；`eventChannelId` 归一化频道 id。
  * 【关联】`ingest.mjs`、`materialize.mjs`、`permissions/chat.mjs`。
  */
@@ -61,6 +61,50 @@ function isMessageDeleted(state, targetId) {
  */
 export function eventChannelId(event) {
 	return event.channelId || 'default'
+}
+
+/**
+ * 权限 map 是否含超管位（频道覆写 / 角色定义均不可被普通 MANAGE_ROLES 写入）。
+ * @param {Record<string, boolean> | null | undefined} perms 权限位
+ * @returns {boolean} 是否含 ADMIN 或 MANAGE_ADMINS
+ */
+function permissionsGrantSuperuser(perms) {
+	if (!perms || typeof perms !== 'object') return false
+	return !!(perms[PERMISSIONS.ADMIN] || perms[PERMISSIONS.MANAGE_ADMINS])
+}
+
+/**
+ * 目标权限是否超出授予者已有位（ADMIN 旁路；MANAGE_ADMINS 可授超管位）。
+ * @param {Record<string, boolean>} govPerms 授予者治理频道权限
+ * @param {Record<string, boolean> | null | undefined} targetPerms 拟写入权限
+ * @returns {boolean} 超出则为 true
+ */
+function permissionsExceedGrantor(govPerms, targetPerms) {
+	if (govPerms[PERMISSIONS.ADMIN]) return false
+	for (const [name, on] of Object.entries(targetPerms || {})) {
+		if (!on) continue
+		if ((name === PERMISSIONS.ADMIN || name === PERMISSIONS.MANAGE_ADMINS) && govPerms[PERMISSIONS.MANAGE_ADMINS])
+			continue
+		if (!govPerms[name]) return true
+	}
+	return false
+}
+
+/**
+ * 角色权限写入：超管位须 MANAGE_ADMINS；其余位不可超过授予者。
+ * @param {Record<string, boolean>} govPerms 授予者治理权限
+ * @param {Record<string, boolean> | null | undefined} existingPerms 原角色权限（update 时）
+ * @param {Record<string, boolean> | null | undefined} nextPerms 写入后的权限
+ * @returns {{ ok: true } | { ok: false, reason: string }} 校验结果
+ */
+function checkRolePermissionsMutation(govPerms, existingPerms, nextPerms) {
+	if (permissionsGrantSuperuser(existingPerms) || permissionsGrantSuperuser(nextPerms)) {
+		if (!govPerms[PERMISSIONS.MANAGE_ADMINS])
+			return { ok: false, reason: 'ADMIN/MANAGE_ADMINS role mutation requires MANAGE_ADMINS' }
+	}
+	if (permissionsExceedGrantor(govPerms, nextPerms))
+		return { ok: false, reason: 'role permissions exceed grantor' }
+	return { ok: true }
 }
 
 /**
@@ -127,8 +171,22 @@ export async function checkEventPermission(state, event, senderHash) {
 			return govPerms[PERMISSIONS.BAN_MEMBERS]
 				? { ok: true }
 				: { ok: false, reason: 'BAN_MEMBERS denied' }
-		case 'role_create':
-		case 'role_update':
+		case 'role_create': {
+			if (!govPerms[PERMISSIONS.MANAGE_ROLES])
+				return { ok: false, reason: 'MANAGE_ROLES denied' }
+			return checkRolePermissionsMutation(govPerms, null, event.content?.permissions)
+		}
+		case 'role_update': {
+			if (!govPerms[PERMISSIONS.MANAGE_ROLES])
+				return { ok: false, reason: 'MANAGE_ROLES denied' }
+			const roleId = event.content?.roleId
+			const updates = event.content?.updates
+			if (updates && Object.hasOwn(updates, 'permissions')) {
+				const existing = roleId ? state.roles?.[roleId]?.permissions : null
+				return checkRolePermissionsMutation(govPerms, existing, updates.permissions)
+			}
+			return { ok: true }
+		}
 		case 'role_delete':
 		case 'role_revoke':
 			return govPerms[PERMISSIONS.MANAGE_ROLES]
@@ -139,8 +197,8 @@ export async function checkEventPermission(state, event, senderHash) {
 				return { ok: false, reason: 'MANAGE_ROLES denied' }
 			const assignRoleId = event.content?.roleId
 			const targetRole = assignRoleId ? state.roles?.[assignRoleId] : null
-			if (targetRole?.permissions?.ADMIN && !govPerms[PERMISSIONS.MANAGE_ADMINS])
-				return { ok: false, reason: 'role_assign ADMIN requires MANAGE_ADMINS' }
+			if (permissionsGrantSuperuser(targetRole?.permissions) && !govPerms[PERMISSIONS.MANAGE_ADMINS])
+				return { ok: false, reason: 'role_assign ADMIN/MANAGE_ADMINS requires MANAGE_ADMINS' }
 			return { ok: true }
 		}
 		case 'channel_create':
@@ -149,10 +207,16 @@ export async function checkEventPermission(state, event, senderHash) {
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_CHANNELS denied' }
-		case 'channel_permissions_update':
-			return govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]
-				? { ok: true }
-				: { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
+		case 'channel_permissions_update': {
+			if (!(govPerms[PERMISSIONS.MANAGE_ROLES] || govPerms[PERMISSIONS.MANAGE_CHANNELS]))
+				return { ok: false, reason: 'MANAGE_ROLES or MANAGE_CHANNELS required' }
+			const allow = event.content?.allow
+			if (permissionsGrantSuperuser(allow))
+				return { ok: false, reason: 'channel allow cannot include ADMIN or MANAGE_ADMINS' }
+			if (permissionsExceedGrantor(govPerms, allow))
+				return { ok: false, reason: 'channel allow exceeds grantor permissions' }
+			return { ok: true }
+		}
 		case 'channel_key_rotate':
 		case 'channel_key_rotate_batch':
 			return channelPerms[PERMISSIONS.MANAGE_CHANNELS] || govPerms[PERMISSIONS.MANAGE_CHANNELS]
@@ -201,11 +265,22 @@ export async function checkEventPermission(state, event, senderHash) {
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_FILES required' }
 		case 'cabinet_bind':
-		case 'cabinet_key_update':
 		case 'cabinet_unbind':
+			return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ADMINS]
+				? { ok: true }
+				: { ok: false, reason: 'ADMIN or MANAGE_ADMINS required' }
+		case 'cabinet_key_update': {
+			const touchesAccess = event.content?.role_access
+				&& typeof event.content.role_access === 'object'
+			if (touchesAccess) {
+				return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ADMINS]
+					? { ok: true }
+					: { ok: false, reason: 'cabinet role_access change requires ADMIN or MANAGE_ADMINS' }
+			}
 			return govPerms[PERMISSIONS.MANAGE_ROLES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_ROLES required' }
+		}
 		case 'pin_message':
 		case 'unpin_message':
 			return channelPerms[PERMISSIONS.PIN_MESSAGES] || channelPerms[PERMISSIONS.MANAGE_MESSAGES]

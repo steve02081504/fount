@@ -36,7 +36,7 @@ Deeper UI (profile card modes, module layout, unread/inbox/aliases): [ui-details
 
 ## Files / messages / archive
 
-- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind: `POST …/groups/:id/cabinets/bind`. Attachments stay on chat DAG.
+- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind/unbind: `ADMIN`/`MANAGE_ADMINS`（`POST …/cabinets/bind`）；`cabinet_key_update` 仅改 wraps 仍要 `MANAGE_ROLES`，改 `role_access` 要超管。Attachments stay on chat DAG.
 - Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
 - Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
 - Portable archive export/import: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).

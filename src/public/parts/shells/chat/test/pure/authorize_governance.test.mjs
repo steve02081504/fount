@@ -189,7 +189,150 @@ Deno.test('role_assign ADMIN requires MANAGE_ADMINS', async () => {
 	const event = { type: 'role_assign', content: { targetMemberKey: VICTIM, roleId: 'new-admin' } }
 	const result = await checkEventPermission(state, event, MODERATOR)
 	assertEquals(result.ok, false)
-	assertEquals(result.reason, 'role_assign ADMIN requires MANAGE_ADMINS')
+	assertEquals(result.reason, 'role_assign ADMIN/MANAGE_ADMINS requires MANAGE_ADMINS')
+})
+
+Deno.test('role_update cannot grant ADMIN without MANAGE_ADMINS', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { KICK_MEMBERS: true, MANAGE_ROLES: true, VIEW_CHANNEL: true, SEND_MESSAGES: true } },
+		},
+	})
+	const event = {
+		type: 'role_update',
+		content: {
+			roleId: 'moderator',
+			updates: { permissions: { KICK_MEMBERS: true, MANAGE_ROLES: true, ADMIN: true } },
+		},
+	}
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'ADMIN/MANAGE_ADMINS role mutation requires MANAGE_ADMINS')
+})
+
+Deno.test('role_create cannot grant ADMIN without MANAGE_ADMINS', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { MANAGE_ROLES: true, VIEW_CHANNEL: true, SEND_MESSAGES: true } },
+		},
+	})
+	const event = {
+		type: 'role_create',
+		content: {
+			roleId: 'evil',
+			name: 'Evil',
+			permissions: { ADMIN: true },
+		},
+	}
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'ADMIN/MANAGE_ADMINS role mutation requires MANAGE_ADMINS')
+})
+
+Deno.test('role_update cannot grant permissions grantor lacks', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { MANAGE_ROLES: true, VIEW_CHANNEL: true, SEND_MESSAGES: true } },
+		},
+	})
+	const event = {
+		type: 'role_update',
+		content: {
+			roleId: '@everyone',
+			updates: { permissions: { VIEW_CHANNEL: true, SEND_MESSAGES: true, BAN_MEMBERS: true } },
+		},
+	}
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'role permissions exceed grantor')
+})
+
+Deno.test('role_update name-only on non-admin role allowed with MANAGE_ROLES', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { MANAGE_ROLES: true, VIEW_CHANNEL: true, SEND_MESSAGES: true } },
+		},
+	})
+	const event = {
+		type: 'role_update',
+		content: { roleId: 'moderator', updates: { name: 'Staff' } },
+	}
+	assertEquals((await checkEventPermission(state, event, MODERATOR)).ok, true)
+})
+
+Deno.test('channel_permissions_update cannot allow ADMIN', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: {
+				permissions: {
+					MANAGE_ROLES: true,
+					MANAGE_CHANNELS: true,
+					VIEW_CHANNEL: true,
+					SEND_MESSAGES: true,
+				},
+			},
+		},
+	})
+	const event = {
+		type: 'channel_permissions_update',
+		content: {
+			channelId: 'default',
+			roleId: '@everyone',
+			allow: { ADMIN: true },
+			deny: {},
+		},
+	}
+	const result = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(result.ok, false)
+	assertEquals(result.reason, 'channel allow cannot include ADMIN or MANAGE_ADMINS')
+})
+
+Deno.test('cabinet_bind requires ADMIN or MANAGE_ADMINS', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { MANAGE_ROLES: true, VIEW_CHANNEL: true } },
+		},
+	})
+	const event = {
+		type: 'cabinet_bind',
+		content: { cabinet_id: 'a'.repeat(64), role_access: { moderator: 'rw' } },
+	}
+	const denied = await checkEventPermission(state, event, MODERATOR)
+	assertEquals(denied.ok, false)
+	assertEquals(denied.reason, 'ADMIN or MANAGE_ADMINS required')
+	assertEquals((await checkEventPermission(state, event, OWNER)).ok, true)
+})
+
+Deno.test('cabinet_key_update role_access requires ADMIN; keyWraps alone needs MANAGE_ROLES', async () => {
+	const state = baseState({
+		roles: {
+			...baseState().roles,
+			moderator: { permissions: { MANAGE_ROLES: true, VIEW_CHANNEL: true } },
+		},
+	})
+	const steal = {
+		type: 'cabinet_key_update',
+		content: { cabinet_id: 'a'.repeat(64), role_access: { moderator: 'rw' } },
+	}
+	const stealDenied = await checkEventPermission(state, steal, MODERATOR)
+	assertEquals(stealDenied.ok, false)
+	assertEquals(stealDenied.reason, 'cabinet role_access change requires ADMIN or MANAGE_ADMINS')
+	assertEquals((await checkEventPermission(state, steal, OWNER)).ok, true)
+
+	const rotate = {
+		type: 'cabinet_key_update',
+		content: { cabinet_id: 'a'.repeat(64), keyWraps: {}, read_generation: 2 },
+	}
+	assertEquals((await checkEventPermission(state, rotate, MODERATOR)).ok, true)
+	const strangerRotate = await checkEventPermission(state, rotate, STRANGER)
+	assertEquals(strangerRotate.ok, false)
+	assertEquals(strangerRotate.reason, 'MANAGE_ROLES required')
 })
 
 const HUMAN_MSG = '9'.repeat(64)

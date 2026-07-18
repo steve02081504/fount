@@ -257,8 +257,8 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | GET | `…/groups/:groupId/files/:fileId/meta` | 含 `uploaderPubKeyHash`（物化自 `file_upload.sender`） |
 | GET | `…/groups/:groupId/files/:fileId/download-status` | 分片下载任务摘要（`done/total/percent/status/seededAt`） |
 | POST | `…/groups/:groupId/files/:fileId/download-resume` | 触发断点续传并返回当前下载任务状态 |
-| POST | `…/groups/:groupId/cabinets/bind` | 绑定共享柜 `{ cabinet_id, name?, write_pubkey?, role_access }` → DAG `cabinet_bind` |
-| POST | `…/groups/:groupId/cabinets/unbind` | 解绑 `{ cabinet_id }` → DAG `cabinet_unbind` |
+| POST | `…/groups/:groupId/cabinets/bind` | 绑定共享柜 `{ cabinet_id, name?, write_pubkey?, role_access }` → DAG `cabinet_bind`（须 `ADMIN`/`MANAGE_ADMINS`） |
+| POST | `…/groups/:groupId/cabinets/unbind` | 解绑 `{ cabinet_id }` → DAG `cabinet_unbind`（须 `ADMIN`/`MANAGE_ADMINS`） |
 
 消息附件字节：`GET /api/parts/shells:chat/entities/{groupEntityHash}/files/chat/{fileId}`。
 

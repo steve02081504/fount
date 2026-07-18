@@ -86,7 +86,8 @@ export async function refreshFilesDrawer(drawer) {
 	const state = drawer.state || await getGroupState(drawer.groupId)
 	const viewerKey = drawer.viewer?.memberKey || state.viewer?.memberKey || state.viewer?.pubKeyHash
 	const cabinets = cabinetsForViewer(state, viewerKey)
-	const canManage = Boolean(state.viewer?.permissions?.MANAGE_ROLES || state.viewer?.canManageRoles)
+	const perms = state.viewer?.permissions || {}
+	const canManage = Boolean(perms.ADMIN || perms.MANAGE_ADMINS)
 
 	host.replaceChildren()
 	const list = document.createElement('div')
