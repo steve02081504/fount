@@ -17,6 +17,9 @@ import { bindDismissOnDocumentInteraction } from '../core/contextMenuDismiss.mjs
 import { hubStore } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
+import { setReplyTarget } from '../composerReply.mjs'
+import { authorPresentationKeys } from '../core/domUtils.mjs'
+
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
 import { getMessageText } from './render/text.mjs'
@@ -77,6 +80,7 @@ export async function showMessageContextMenu(event, row) {
 	const plainText = getMessageText(message) || row.querySelector('.hub-message-content')?.textContent?.trim() || ''
 	const showTextActions = !!plainText.trim() && message.type === 'message'
 	const { currentChannelId } = hubStore
+	const showReplyRow = !!eventId && /^[0-9a-f]{64}$/i.test(eventId) && message.type === 'message'
 	const showThreadRow = !!actions.groupId && !!actions.channelId && !!eventId
 		&& !!hubStore.context.currentState?.channelCaps?.[currentChannelId]?.canCreateThreads
 	const showEdit = !!row.querySelector('.hub-message-action[data-action="edit"]')
@@ -86,6 +90,7 @@ export async function showMessageContextMenu(event, row) {
 	usingTemplates('/parts/shells:chat/src/templates')
 	const menu = await renderTemplate('hub/messages/message_context_menu', {
 		showTextActions,
+		showReplyRow,
 		showThreadRow,
 		showEdit,
 		showDelete,
@@ -118,6 +123,15 @@ export async function showMessageContextMenu(event, row) {
 			})
 			closeOnce()
 		})()
+	})
+	menu.querySelector('[data-action="replyInline"]')?.addEventListener('click', () => {
+		const { displayName } = authorPresentationKeys(message.charId ?? message.authorPubKeyHash ?? message.sender ?? '?')
+		setReplyTarget({
+			eventId,
+			senderName: message.content?.displayName || displayName,
+			preview: plainText.slice(0, 120) || '…',
+		})
+		closeOnce()
 	})
 	menu.querySelector('[data-action="openThread"]')?.addEventListener('click', () => {
 		const title = plainText.slice(0, 40)

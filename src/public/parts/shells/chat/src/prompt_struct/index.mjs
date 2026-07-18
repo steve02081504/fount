@@ -2,8 +2,8 @@
  * 【文件】src/prompt_struct/index.mjs
  * 【职责】为角色/世界/插件私聊与群聊生成统一 prompt_struct：聚合各 Part 的 GetPrompt、过滤可见消息、构建 timelines。
  * 【原理】buildPromptStruct 并行 await 各 interfaces.chat.GetPrompt；世界可附加 GetGroupPrompt.public；
- *   chat_log 经 entryVisibleToViewer（visibility ACL + charVisibility 白名单）过滤；detail_level 控制附加字段深度。与 decl/prompt_struct.ts 类型对齐供 LLM 调用链使用。
- * 【数据结构】prompt_struct_t：char_prompt、user_prompt、world_prompt、other_chars_prompts、plugin_prompts、chat_log、timelines、locales 等。
+ *   other_chars / other_personas 走 GetPromptForOther；chat_log 经 entryVisibleToViewer 过滤；detail_level 控制附加字段深度。
+ * 【数据结构】prompt_struct_t：char_prompt、user_prompt、world_prompt、other_chars_prompts、other_personas_prompts、plugin_prompts、chat_log、timelines、locales 等。
  * 【关联】session/generation、triggerReply 调用；依赖 visibility.mjs 与 char/world/user API。
  */
 /** @typedef {import('../../../../../decl/prompt_struct.ts').prompt_struct_t} prompt_struct_t */
@@ -60,6 +60,23 @@ function injectAttributionWarnings(promptStruct, args) {
 }
 
 /**
+ * 填充他者 prompt 的活跃元数据。
+ * @param {object | undefined} prompt GetPromptForOther 结果
+ * @param {string} name 显示名键
+ * @param {{ last_active?: number, count?: number } | undefined} activity 活跃统计
+ * @returns {import('../../../../../decl/prompt_struct.ts').other_chars_prompts_t} 带 name/is_active/last_active 的片段
+ */
+function withActivityMeta(prompt, name, activity) {
+	const base = prompt && typeof prompt === 'object' ? prompt : getSinglePartPrompt()
+	return {
+		...base,
+		name,
+		is_active: (activity?.count || 0) > 0,
+		last_active: activity?.last_active || 0,
+	}
+}
+
+/**
  * 构建提示结构。
  * @param {chatReplyRequest_t} args - 参数。
  * @param {number} detail_level - 细节级别。
@@ -69,7 +86,12 @@ export async function buildPromptStruct(
 	args,
 	detail_level = 3
 ) {
-	const { char_id, char, user, world, other_chars, plugins, chat_log, UserCharname, ReplyToCharname, Charname, timelines, locales } = args
+	const {
+		char_id, char, user, world, other_chars, other_personas = {}, plugins,
+		chat_log, UserCharname, ReplyToCharname, Charname, timelines, locales,
+	} = args
+	const charActivity = args.extension?.channelActivity?.chars || {}
+	const humanActivityByOwner = args.extension?.channelActivity?.personas || {}
 	/** @type {prompt_struct_t} */
 	const promptStruct = {
 		char_id,
@@ -79,6 +101,7 @@ export async function buildPromptStruct(
 		char_prompt: getSinglePartPrompt(),
 		user_prompt: getSinglePartPrompt(),
 		other_chars_prompts: {},
+		other_personas_prompts: {},
 		world_prompt: getSinglePartPrompt(),
 		plugin_prompts: {},
 		chat_log,
@@ -89,8 +112,10 @@ export async function buildPromptStruct(
 	if (world.interfaces.chat.GetPrompt) promptStruct.world_prompt = world.interfaces.chat.GetPrompt(args)
 	if (user.interfaces.chat.GetPrompt) promptStruct.user_prompt = user.interfaces.chat.GetPrompt(args)
 	if (char?.interfaces?.chat) promptStruct.char_prompt = char.interfaces.chat.GetPrompt(args)
-	for (const otherCharName of Object.keys(other_chars))
+	for (const otherCharName of Object.keys(other_chars || {}))
 		promptStruct.other_chars_prompts[otherCharName] = other_chars[otherCharName].interfaces.chat?.GetPromptForOther?.(args)
+	for (const personaKey of Object.keys(other_personas || {}))
+		promptStruct.other_personas_prompts[personaKey] = other_personas[personaKey].interfaces.chat?.GetPromptForOther?.(args)
 	for (const pluginName of Object.keys(plugins))
 		promptStruct.plugin_prompts[pluginName] = plugins[pluginName].interfaces.chat?.GetPrompt?.(args)
 
@@ -115,7 +140,17 @@ export async function buildPromptStruct(
 	promptStruct.user_prompt = await promptStruct.user_prompt
 	promptStruct.char_prompt = await promptStruct.char_prompt
 	for (const otherCharName of Object.keys(promptStruct.other_chars_prompts))
-		promptStruct.other_chars_prompts[otherCharName] = await promptStruct.other_chars_prompts[otherCharName]
+		promptStruct.other_chars_prompts[otherCharName] = withActivityMeta(
+			await promptStruct.other_chars_prompts[otherCharName],
+			otherCharName,
+			charActivity[otherCharName],
+		)
+	for (const personaKey of Object.keys(promptStruct.other_personas_prompts))
+		promptStruct.other_personas_prompts[personaKey] = withActivityMeta(
+			await promptStruct.other_personas_prompts[personaKey],
+			personaKey,
+			humanActivityByOwner[personaKey],
+		)
 	for (const pluginName of Object.keys(promptStruct.plugin_prompts))
 		promptStruct.plugin_prompts[pluginName] = await promptStruct.plugin_prompts[pluginName]
 
@@ -125,7 +160,8 @@ export async function buildPromptStruct(
 		world.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.world_prompt, detail_level),
 		user.interfaces.chat.TweakPrompt?.(args, promptStruct, promptStruct.user_prompt, detail_level),
 		char?.interfaces?.chat?.TweakPrompt?.(args, promptStruct, promptStruct.char_prompt, detail_level),
-		...Object.keys(other_chars).map(otherCharName => other_chars[otherCharName].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_chars_prompts[otherCharName], detail_level)),
+		...Object.keys(other_chars || {}).map(otherCharName => other_chars[otherCharName].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_chars_prompts[otherCharName], detail_level)),
+		...Object.keys(other_personas || {}).map(personaKey => other_personas[personaKey].interfaces.chat?.TweakPromptForOther?.(args, promptStruct, promptStruct.other_personas_prompts[personaKey], detail_level)),
 		...Object.keys(plugins).map(pluginName => plugins[pluginName].interfaces.chat?.TweakPrompt?.(args, promptStruct, promptStruct.plugin_prompts[pluginName], detail_level))
 	])
 
@@ -175,6 +211,16 @@ export function structPromptToSingleNoChatLog(/** @type {prompt_struct_t} */ pro
 	}
 
 	{
+		const sorted = Object.values(prompt.other_personas_prompts || {}).map(persona => persona.text).filter(Boolean).map(
+			persona => persona.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
+		).flat().filter(Boolean)
+		if (sorted.length) {
+			result.push('Other persona settings:')
+			result.push(...sorted)
+		}
+	}
+
+	{
 		const sorted = Object.values(prompt.plugin_prompts).map(plugin => plugin?.text).filter(Boolean).map(
 			plugin => plugin.sort((a, b) => a.important - b.important).map(text => text.content).filter(Boolean)
 		).flat().filter(Boolean)
@@ -198,6 +244,7 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		...prompt.user_prompt?.additional_chat_log || [],
 		...prompt.world_prompt?.additional_chat_log || [],
 		...Object.values(prompt.other_chars_prompts).map(char => char?.additional_chat_log || []).flat(),
+		...Object.values(prompt.other_personas_prompts || {}).map(persona => persona?.additional_chat_log || []).flat(),
 		...Object.values(prompt.plugin_prompts).map(plugin => plugin?.additional_chat_log || []).flat(),
 		...prompt.char_prompt?.additional_chat_log || [],
 	]

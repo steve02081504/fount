@@ -10,7 +10,7 @@ import {
 	isValidGroupRpcClientNodeId,
 } from '../federation/remoteProxy.mjs'
 import { normalizeJsonBoundaryValue } from '../lib/jsonBoundary.mjs'
-import { tryInvokeLocalCharRpc, tryInvokeLocalWorldRpc } from '../session.mjs'
+import { tryInvokeLocalCharRpc, tryInvokeLocalPersonaRpc, tryInvokeLocalWorldRpc } from '../session.mjs'
 
 import { groupSockets, rpcClientIdentities } from './groupWsRooms.mjs'
 
@@ -191,9 +191,12 @@ async function handleRpcCall(senderWs, groupId, roomKey, wireMessage) {
 		return void sendRpcError(senderWs, requestId, String(error?.message || error), code)
 	}
 	try {
-		const local = String(memberId || '').includes(':world:')
+		const id = String(memberId || '')
+		const local = id.includes(':world:')
 			? await tryInvokeLocalWorldRpc(groupId, memberId, method, list)
-			: await tryInvokeLocalCharRpc(groupId, memberId, method, list)
+			: id.includes(':persona:')
+				? await tryInvokeLocalPersonaRpc(groupId, memberId, method, list)
+				: await tryInvokeLocalCharRpc(groupId, memberId, method, list)
 		if (local.kind === 'result')
 			return void sendJson(senderWs, { type: 'rpc_end', requestId, result: local.value })
 		if (local.kind === 'method_not_found')

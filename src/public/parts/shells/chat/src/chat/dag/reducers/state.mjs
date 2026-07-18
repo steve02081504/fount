@@ -22,7 +22,6 @@ export function createEmptySessionState() {
 		world: null,
 		channelWorlds: {},
 		personas: {},
-		plugins: {},
 		charFrequencies: {},
 	}
 }

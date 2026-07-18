@@ -108,24 +108,24 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchStart = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement) || target.hasAttribute('data-streaming')) return
-		const lastChar = findLastCharMessage(container)
-		if (target !== lastChar) return
 		if (event.touches.length !== 1) return
+		const lastChar = findLastCharMessage(container)
 		swipeStateByElement.set(target, {
 			startX: event.touches[0].clientX,
 			startY: event.touches[0].clientY,
 			dragging: true,
 			handled: false,
+			timeline: target === lastChar,
 		})
 	}
 
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchMove = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement)) return
 		const state = swipeStateByElement.get(target)
@@ -138,7 +138,7 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchEnd = async event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement)) return
 		const state = swipeStateByElement.get(target)
@@ -151,8 +151,11 @@ function ensureSwipeDelegation(container) {
 		state.dragging = false
 		const groupId = currentGroupId()
 		const channelId = currentChannelId()
-		if (Math.abs(deltaX) > CHAT_SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) && groupId && channelId) {
-			state.handled = true
+		if (!(Math.abs(deltaX) > CHAT_SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) && groupId && channelId))
+			return
+		state.handled = true
+		// 末条角色消息：左右滑切时间线；其余消息右滑 = 内联回复
+		if (state.timeline) {
 			try {
 				await modifyBranch(groupId, channelId, deltaX > 0 ? -1 : 1)
 				await reloadMessages()
@@ -160,13 +163,26 @@ function ensureSwipeDelegation(container) {
 			catch (err) {
 				console.error('swipe timeline', err)
 			}
+			return
 		}
+		if (deltaX <= 0) return
+		const eventId = String(target.getAttribute('data-message-id') || '').trim().toLowerCase()
+		if (!/^[0-9a-f]{64}$/.test(eventId)) return
+		const { setReplyTarget } = await import('./composerReply.mjs')
+		const { authorPresentationKeys } = await import('./core/domUtils.mjs')
+		const authorKey = target.getAttribute('data-char-id')
+			|| target.getAttribute('data-author-key')
+			|| '?'
+		const { displayName } = authorPresentationKeys(authorKey)
+		const preview = (target.querySelector('.hub-message-content')?.textContent || '')
+			.replace(/\s+/g, ' ').trim().slice(0, 120) || '…'
+		setReplyTarget({ eventId, senderName: displayName, preview })
 	}
 
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchCancel = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
 			: null
 		if (target instanceof HTMLElement) {
 			const state = swipeStateByElement.get(target)

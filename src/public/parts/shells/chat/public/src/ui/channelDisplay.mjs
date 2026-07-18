@@ -48,6 +48,39 @@ function displayParentEventId(message, messagesByEventId) {
 }
 
 /**
+ * 从已建好的 eventId→行 Map 解析展示父边（页级预计算，避免 O(n²)）。
+ * @param {object} message 消息行
+ * @param {Map<string, object>} messagesByEventId eventId → 行
+ * @returns {string | null} 父 event id（小写 hex）
+ */
+export function resolveDisplayParentEventIdFromMap(message, messagesByEventId) {
+	if (!message?.eventId || !(messagesByEventId instanceof Map) || !messagesByEventId.size) return null
+	return displayParentEventId(message, messagesByEventId)
+}
+
+/** @type {WeakMap<object[], { length: number, map: Map<string, object> }>} */
+const messagesByEventIdCache = new WeakMap()
+
+/**
+ * 构建页级 eventId→行 Map（hex64 消息）；同一数组引用且 length 未变时复用。
+ * @param {object[]} allMessages 频道内全部展示行
+ * @returns {Map<string, object>} eventId → 行
+ */
+export function buildMessagesByEventId(allMessages) {
+	if (!Array.isArray(allMessages)) return new Map()
+	const cached = messagesByEventIdCache.get(allMessages)
+	if (cached && cached.length === allMessages.length) return cached.map
+	/** @type {Map<string, object>} */
+	const map = new Map()
+	for (const row of allMessages) {
+		if (!row?.eventId || !isHex64(row.eventId)) continue
+		map.set(String(row.eventId).trim().toLowerCase(), row)
+	}
+	messagesByEventIdCache.set(allMessages, { length: allMessages.length, map })
+	return map
+}
+
+/**
  * 解析消息在展示链上的父 event id（供引用条等 UI 使用）。
  * @param {object} message 消息行
  * @param {object[]} allMessages 频道内全部展示行
@@ -55,11 +88,7 @@ function displayParentEventId(message, messagesByEventId) {
  */
 export function resolveDisplayParentEventId(message, allMessages) {
 	if (!message?.eventId || !Array.isArray(allMessages) || !allMessages.length) return null
-	const chainable = allMessages.filter(row => row?.eventId && isHex64(row.eventId))
-	const messagesByEventId = new Map(
-		chainable.map(row => [String(row.eventId).trim().toLowerCase(), row]),
-	)
-	return displayParentEventId(message, messagesByEventId)
+	return resolveDisplayParentEventIdFromMap(message, buildMessagesByEventId(allMessages))
 }
 
 /**

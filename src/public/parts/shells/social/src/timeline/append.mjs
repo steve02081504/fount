@@ -3,12 +3,12 @@ import { Buffer } from 'node:buffer'
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pubKeyHash, publicKeyFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 import { appendJsonlSynced, readJsonl } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { recoverySubjectHashFromPubKeyHex } from 'npm:@steve02081504/fount-p2p/federation/entity_key_chain'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { computeAppendHlcAndPrev, signTimelineEvent } from 'npm:@steve02081504/fount-p2p/timeline/append_core'
 
 import {
 	consumePendingRecoverySecret,
+	getEntityRecoverySecretKey,
 	getEntitySecretKey,
 	getRecoveryPubKeyHex,
 	loadEntityIdentity,
@@ -49,7 +49,7 @@ async function resolveActiveTimelineSigner(username, entityHash) {
 }
 
 /**
- * 本 replica 是否可写该 entity 的时间线（实体本人密钥）。
+ * 本 replica 是否可写该 entity 的时间线（本机托管且持有活跃私钥）。
  * @param {string} username replica 登录名
  * @param {string} entityHash 128 位 entityHash
  * @returns {Promise<boolean>} 是否可写
@@ -58,26 +58,13 @@ export async function canWriteTimeline(username, entityHash) {
 	const parsed = parseEntityHash(entityHash)
 	if (!parsed || parsed.nodeHash !== getNodeHash()) return false
 	try {
-		const row = await loadEntityIdentity(username, parsed.entityHash)
+		await loadEntityIdentity(username, parsed.entityHash)
 		const secretHex = await getEntitySecretKey(username, parsed.entityHash)
-		if (!secretHex || secretHex.length !== 64) return false
-		const activeSender = pubKeyHash(publicKeyFromSeed(new Uint8Array(Buffer.from(secretHex, 'hex'))))
-		const recoveryPub = normalizeRecovery(row.recoveryPubKeyHex)
-		if (parsed.subjectHash === recoverySubjectHashFromPubKeyHex(recoveryPub)) return true
-		if (parsed.subjectHash === activeSender) return true
-		return true
+		return !!(secretHex && secretHex.length === 64)
 	}
 	catch {
 		return false
 	}
-}
-
-/**
- * @param {string} hex recovery pub
- * @returns {string} normalized
- */
-function normalizeRecovery(hex) {
-	return String(hex || '').trim().toLowerCase()
 }
 
 /**
@@ -184,6 +171,12 @@ export async function ensureSocialMeta(username, entityHash) {
 	const { secretKey: activeSecret } = await resolveActiveTimelineSigner(username, entityHash)
 	const activePubKeyHex = Buffer.from(publicKeyFromSeed(activeSecret)).toString('hex')
 
+	// 创世 social_meta 必须 recovery 签，远端 pull 才能无先验链引导
+	let recoverySecretHex = consumePendingRecoverySecret(username, entityHash)
+	if (!recoverySecretHex)
+		recoverySecretHex = await getEntityRecoverySecretKey(username, entityHash)
+	const recoverySecret = new Uint8Array(Buffer.from(recoverySecretHex, 'hex'))
+
 	await appendSignedTimelineEvent(username, entityHash, {
 		type: 'social_meta',
 		content: {
@@ -191,22 +184,17 @@ export async function ensureSocialMeta(username, entityHash) {
 			createdAt: Date.now(),
 			recoveryPubKeyHex,
 		},
-	}, activeSecret)
+	}, recoverySecret)
 
-	if (!previous.some(event => event.type === 'entity_key_rotate')) {
-		const recoverySecretHex = consumePendingRecoverySecret(username, entityHash)
-		if (recoverySecretHex) {
-			const recoverySecret = new Uint8Array(Buffer.from(recoverySecretHex, 'hex'))
-			await appendSignedTimelineEvent(username, entityHash, {
-				type: 'entity_key_rotate',
-				content: {
-					generation: 0,
-					activePubKeyHex,
-					prevGeneration: null,
-				},
-			}, recoverySecret)
-		}
-	}
+	if (!previous.some(event => event.type === 'entity_key_rotate'))
+		await appendSignedTimelineEvent(username, entityHash, {
+			type: 'entity_key_rotate',
+			content: {
+				generation: 0,
+				activePubKeyHex,
+				prevGeneration: null,
+			},
+		}, recoverySecret)
 }
 
 /**

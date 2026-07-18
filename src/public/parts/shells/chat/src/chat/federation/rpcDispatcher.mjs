@@ -1,8 +1,8 @@
 /**
  * 【文件】federation/rpcDispatcher.mjs
- * 【职责】群联邦 RPC 服务端分发：将 memberId 映射到本机 Char/World part 并执行 interfaces 方法。
- * 【原理】createCharRpcDispatcher / createWorldRpcDispatcher 经本地绑定判定；结果 `{ kind: result|not_local|method_not_found|error }`。
- * 【关联】session.mjs 导出 tryInvokeLocal*；groupWsRpc、roomHandlers/rpc、remoteWorldProxy。
+ * 【职责】群联邦 RPC 服务端分发：将 memberId 映射到本机 Char/World/Persona part 并执行 interfaces 方法。
+ * 【原理】create*RpcDispatcher 经本地绑定判定；结果 `{ kind: result|not_local|method_not_found|error }`。
+ * 【关联】session.mjs 导出 tryInvokeLocal*；groupWsRpc、roomHandlers/rpc、remoteWorldProxy、remoteProxy。
  */
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
@@ -83,7 +83,7 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 		if (!char) {
 			const session = await getMaterializedSession(owner, groupId)
 			const bind = getCharBind(session, charname)
-			if (!bind || !isLocalNode(bind.homeNodeHash, owner)) return { kind: 'not_local' }
+			if (!bind || !isLocalNode(bind.homeNodeHash)) return { kind: 'not_local' }
 			char = await loadPart(bind.ownerUsername || owner, `chars/${charname}`)
 			if (!char) return { kind: 'not_local' }
 		}
@@ -157,7 +157,6 @@ export function createCharRpcDispatcher(getActiveGroupRuntime, getChatRequest) {
 							null,
 							{
 								replicaUsername: serial.replicaUsername || owner,
-								personaForOther: serial.personaForOther,
 								fromRpc: true,
 							},
 						)
@@ -236,7 +235,7 @@ export function createWorldRpcDispatcher(getChatRequest) {
 		const bind = session.world?.worldname === worldname
 			? session.world
 			: Object.values(session.channelWorlds || {}).find(w => w?.worldname === worldname)
-		if (!bind || !isLocalNode(bind.homeNodeHash, owner)) return { kind: 'not_local' }
+		if (!bind || !isLocalNode(bind.homeNodeHash)) return { kind: 'not_local' }
 
 		const world = await loadPart(bind.ownerUsername || owner, `worlds/${worldname}`)
 		if (!world) return { kind: 'not_local' }
@@ -326,6 +325,100 @@ export function createWorldRpcDispatcher(getChatRequest) {
 				}
 				default: {
 					const nested = resolveNestedCallable(world.interfaces, method)
+					if (!nested) return { kind: 'method_not_found' }
+					return resultOk(method, await nested(...list))
+				}
+			}
+		}
+		catch (error) {
+			return {
+				kind: 'error',
+				message: String(error?.message || error),
+				code: normalizeRpcErrorCode(error),
+			}
+		}
+	}
+}
+
+/**
+ * @param {Function} getChatRequest 构造 chatReplyRequest
+ * @returns {Function} tryInvokeLocalPersonaRpc
+ */
+export function createPersonaRpcDispatcher(getChatRequest) {
+	return async function tryInvokeLocalPersonaRpc(groupId, memberId, method, args = []) {
+		let list
+		try {
+			list = normalizeJsonBoundaryValue(Array.isArray(args) ? args : [], `rpcDispatcher.args:${method}`)
+		}
+		catch (error) {
+			return {
+				kind: 'error',
+				message: String(error?.message || error),
+				code: normalizeRpcErrorCode(error),
+			}
+		}
+
+		const chatData = await import('../session/wsLifecycle.mjs').then(m => m.groupMetadatas.get(groupId))
+		const owner = chatData?.username
+		if (!owner) return { kind: 'not_local' }
+
+		const personaMarker = ':persona:'
+		const idx = memberId.indexOf(personaMarker)
+		if (idx < 0) return { kind: 'not_local' }
+		const ownerFromId = memberId.slice(0, idx)
+		if (ownerFromId && ownerFromId !== owner) return { kind: 'not_local' }
+		const personaname = memberId.slice(idx + personaMarker.length)
+		if (!personaname) return { kind: 'not_local' }
+
+		const session = await getMaterializedSession(owner, groupId)
+		if (session.personas?.[owner] !== personaname) return { kind: 'not_local' }
+
+		const persona = await loadPart(owner, `personas/${personaname}`)
+		if (!persona) return { kind: 'not_local' }
+
+		/**
+		 * @returns {string | null} 从参数中推断的频道 ID
+		 */
+		const inferChannelId = () => {
+			const first = list[0]
+			const fromExtension = resolveChannelId(first?.extension?.channelId, '')
+			if (fromExtension) return fromExtension
+			const fromReply = resolveChannelId(first?.chatReplyRequest?.extension?.channelId, '')
+			if (fromReply) return fromReply
+			const fromViewer = resolveChannelId(first?.channelId, '')
+			if (fromViewer) return fromViewer
+			return null
+		}
+
+		try {
+			switch (method) {
+				case 'GetPromptForOther': {
+					const fn = persona.interfaces?.chat?.GetPromptForOther
+					if (!fn) return { kind: 'method_not_found' }
+					const request = await getChatRequest(groupId, undefined, inferChannelId(), { replicaUsername: owner })
+					return resultOk(method, await fn(request))
+				}
+				case 'TweakPromptForOther': {
+					const fn = persona.interfaces?.chat?.TweakPromptForOther
+					if (!fn) return resultOk(method, null)
+					const request = await getChatRequest(groupId, undefined, inferChannelId(), { replicaUsername: owner })
+					await fn(request, list[1], list[2], Number(list[3]) || 0)
+					return resultOk(method, null)
+				}
+				case 'GetChatLogForViewer': {
+					const fn = persona.interfaces?.chat?.GetChatLogForViewer
+					if (!fn) return { kind: 'method_not_found' }
+					const viewer = list[1]
+					const request = list[0] || await getChatRequest(
+						groupId,
+						viewer?.charname,
+						inferChannelId() || viewer?.channelId || null,
+						{ replicaUsername: owner },
+					)
+					return resultOk(method, await fn(request, viewer))
+				}
+				default: {
+					const nested = resolveNestedCallable(persona.interfaces, method)
 					if (!nested) return { kind: 'method_not_found' }
 					return resultOk(method, await nested(...list))
 				}

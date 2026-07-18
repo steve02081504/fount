@@ -10,6 +10,7 @@ import {
 	sanitizeContentWarning,
 	sanitizeLocale,
 	sanitizeMessageExtras,
+	sanitizeReplyTo,
 	resolveSensitiveMedia,
 } from '../../public/shared/messageFields.mjs'
 import {
@@ -27,6 +28,7 @@ Deno.test('sanitizeLocale / content_warning / alt truncate', () => {
 })
 
 Deno.test('sanitizeMessageExtras drops empty extras and embeds', () => {
+	const eventId = 'abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd'
 	const out = sanitizeMessageExtras({
 		type: 'text',
 		content: 'hi https://example.com',
@@ -37,8 +39,13 @@ Deno.test('sanitizeMessageExtras drops empty extras and embeds', () => {
 		forwardedFrom: {
 			groupId: 'g1',
 			channelId: 'default',
-			eventId: 'abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+			eventId,
 			senderName: 'bob',
+		},
+		replyTo: {
+			eventId,
+			senderName: 'alice',
+			preview: 'hello world',
 		},
 	})
 	assertEquals(out.locale, 'en-US')
@@ -46,6 +53,16 @@ Deno.test('sanitizeMessageExtras drops empty extras and embeds', () => {
 	assertEquals(out.sensitive_media, true)
 	assertEquals(out.embeds, undefined)
 	assertEquals(out.forwardedFrom.groupId, 'g1')
+	assertEquals(out.replyTo.eventId, eventId)
+	assertEquals(out.replyTo.senderName, 'alice')
+	assertEquals(out.replyTo.preview, 'hello world')
+})
+
+Deno.test('sanitizeReplyTo requires hex64 eventId', () => {
+	assertEquals(sanitizeReplyTo({ eventId: 'short' }), undefined)
+	assertEquals(sanitizeReplyTo({ eventId: 'x'.repeat(64) }), undefined)
+	const eventId = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+	assertEquals(sanitizeReplyTo({ eventId, preview: '  a  b  ' })?.preview, 'a b')
 })
 
 Deno.test('channelMessageContentObject sanitizes text extras', () => {

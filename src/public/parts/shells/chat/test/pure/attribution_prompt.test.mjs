@@ -25,6 +25,7 @@ Deno.test('buildPromptStruct injects attribution mismatch warnings', async () =>
 		user: stubPart,
 		world: stubPart,
 		other_chars: {},
+		other_personas: {},
 		plugins: {},
 		chat_log: [{
 			id: '1',

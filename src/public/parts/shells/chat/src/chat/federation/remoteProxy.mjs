@@ -274,6 +274,82 @@ export function isRemoteProxy(charObj) {
 	return Boolean(charObj && REMOTE_PROXY_SYMBOL in Object(charObj))
 }
 
+/** 标记 `createRemotePersonaProxy` 生成的对象。 */
+export const REMOTE_PERSONA_PROXY_SYMBOL = Symbol.for('fount.remotePersonaProxy')
+
+/**
+ * 远端 persona 代理（UserAPI chat 他者贡献子集）。
+ * @param {string} memberId 形如 `owner:persona:name`
+ * @param {string} [sourceHost] 远端节点标识
+ * @param {{ chat?: boolean }} [interfaces] 接口开关
+ * @param {null | ((method: string, args: unknown[]) => Promise<unknown>)} [rpcCall] 宿主注入的 RPC
+ * @returns {import('../../../../../../decl/userAPI.ts').UserAPI_t} 代理对象
+ */
+export function createRemotePersonaProxy(memberId, sourceHost, interfaces = {}, rpcCall = null) {
+	const useChat = interfaces.chat !== false
+
+	/**
+	 * @param {string} method RPC 方法名
+	 * @param {unknown[]} args 参数列表
+	 * @returns {Promise<unknown>} 经 JSON 边界校验后的返回值；METHOD_NOT_FOUND → undefined
+	 */
+	async function invokeRemote(method, args) {
+		if (!rpcCall) throw remoteUnavailableError(method)
+		let rpcResult
+		try {
+			rpcResult = await rpcCall(method, encodeWireJson(args, `rpc.args:${method}`))
+		}
+		catch (error) {
+			if (error?.code === 'METHOD_NOT_FOUND') return undefined
+			throw error
+		}
+		return encodeWireJson(rpcResult ?? null, `rpc.result:${method}`)
+	}
+
+	/** @type {import('../../../../../../decl/userAPI.ts').UserAPI_t['interfaces']} */
+	const iface = {}
+	if (useChat)
+		iface.chat = {
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @returns {Promise<single_part_prompt_t | undefined>} prompt 片段
+			 */
+			GetPromptForOther: replyRequest => invokeRemote('GetPromptForOther', [replyRequest]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {prompt_struct_t} promptStruct 完整 prompt 结构
+			 * @param {single_part_prompt_t} myPrompt 本人格的 prompt 片段
+			 * @param {number} detailLevel 详细程度
+			 * @returns {Promise<void>}
+			 */
+			TweakPromptForOther: (replyRequest, promptStruct, myPrompt, detailLevel) =>
+				invokeRemote('TweakPromptForOther', [replyRequest, promptStruct, myPrompt, detailLevel]),
+			/**
+			 * @param {chatReplyRequest_t} replyRequest 聊天回复请求
+			 * @param {import('../../../../../../decl/chatLog.ts').chatViewer_t} viewer 观察者
+			 * @returns {Promise<chatLogEntry_t[] | undefined>} 主观滤镜后的日志
+			 */
+			GetChatLogForViewer: (replyRequest, viewer) =>
+				invokeRemote('GetChatLogForViewer', [replyRequest, viewer]),
+		}
+
+	const proxy = {
+		info: {},
+		interfaces: iface,
+	}
+	Object.defineProperty(proxy, REMOTE_PERSONA_PROXY_SYMBOL, {
+		value: {
+			memberId,
+			sourceHost,
+			targetNodeId: resolveTargetNodeIdFromSourceHost(sourceHost),
+		},
+		enumerable: false,
+		configurable: false,
+		writable: false,
+	})
+	return /** @type {any} */ proxy
+}
+
 /**
  * @param {string} [operation] 可选的操作名
  * @returns {Error} 带 `REMOTE_UNAVAILABLE` code 的错误

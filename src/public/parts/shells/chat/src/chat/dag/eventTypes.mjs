@@ -62,6 +62,7 @@ export const CHAT_EVENT_TYPE_DEFS = {
 	session_world_bind_channel: {},
 	session_world_clear: {},
 	session_persona_set: {},
+	// 遗留：插件名单已迁节点本地存储；保留 type 定义以便旧 DAG 重放/入站不炸
 	session_plugin_add: {},
 	session_plugin_remove: {},
 	world_state: { aclGated: true },

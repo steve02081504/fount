@@ -19,7 +19,8 @@ alwaysApply: false
 - **visibility ACL parity**: `lib/visibility.mjs` `entryVisibleToViewer` (per-entry `visibility` roles/members + `charVisibility` char whitelist) runs in **both** final views — prompt assembly (`prompt_struct` `entryVisibleForPrompt`) and view-log base layer (`materializeViewerChatLog`, before the world hook). Raw `/messages` deliberately does not filter (moderation/audit surface).
 - **view-log pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` means the raw DAG page hit `limit` (before persona/world filtering). When filtering yields an empty page but `hasMore`, Hub advances with `oldestRawEventId` — do not peer-inject raw rows from the client (`dag/queries` already backfills on before-miss).
 - Hub: `loadMessages` / incremental refresh go through `getChannelViewLog`; navigation backfill can still use raw batch-get / pin-context.
-- Federation: `federation/remoteWorldProxy.mjs` + `federation/rpcDispatcher.mjs`; the world side exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`.
+- Federation: `federation/remoteWorldProxy.mjs` + `federation/remoteProxy.mjs` (`createRemotePersonaProxy`) + `federation/rpcDispatcher.mjs`; world exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`; persona exposes `GetPromptForOther`/`TweakPromptForOther`/`GetChatLogForViewer` (memberId `owner:persona:name`).
+- **other_chars / other_personas**: `getChatRequest` reads the latest 500 channel lines first and runs `aggregateChannelActivity`; other_chars = (`charFrequencies > 0`) ∪ active Top-N (`groupSettings.otherCharsActiveLimit`, default 8); other_personas = active humans in-window mapped to `session.personas` (excluding the local `user` slot). `buildPromptStruct` fills `is_active` / `last_active`.
 - **Optional-hook degradation across RPC**: the proxy defines every method, so "remote didn't implement it" surfaces as a `METHOD_NOT_FOUND` RPC error — `invokeRemote` catches it and returns `undefined`, making a missing remote hook indistinguishable from a locally-undefined one. Callers therefore uniformly use `hook?.(…) ?? fallback`. The dispatcher throws `METHOD_NOT_FOUND` for local parts lacking the method instead of falling through to network RPC.
 
 ## Built-in minimal world / persona
@@ -38,6 +39,14 @@ alwaysApply: false
   - **`hosted`** (current default): `isLocalNode(homeNodeHash)` → `loadPart(ownerUsername, …)`; otherwise RPC.
 - Inbound validation (`sessionEventValidate.mjs`): `hosted`/`replicated` require `homeNodeHash`; `local` may omit it.
 - Default fount world is marked `distribution: 'local'`.
+- **`GetChatPlugins`**: world returns live `PluginAPI_t` objects; `getChatRequest` merges with local plugins (**local same-name wins**). local/replicated: each node with the world installed; hosted: host-side only (remote proxy does **not** expose this hook — live objects cannot RPC). Channel scope comes from `resolveWorld(channelId)`.
+- **`TweakPrompt` hosted RPC**: in-place mutation is lost across the JSON boundary; no hook-proxy workaround.
+
+## Local plugins (node-private)
+
+- Path: `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs`.
+- `addplugin` / `removeplugin` / `getPluginListOfGroup` / group defaults in `newMetadata` all write this file — **not** DAG `session_plugin_*` (legacy events are no-op on replay).
+- Does not leak plugin names over federation; does not apply to remote agents.
 
 ## World shared state + WorldChatHost
 

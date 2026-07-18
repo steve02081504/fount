@@ -59,6 +59,8 @@ export const hubActionDeleteIcon = iconifyImg('line-md/remove', { width: 16, hei
 export const hubActionEditIcon = iconifyImg('line-md/edit', { width: 16, height: 16, class: 'hub-action-icon' })
 /** 消息操作栏：重新生成图标 */
 export const hubActionRegenIcon = iconifyImg('line-md/rotate-270', { width: 16, height: 16, class: 'hub-action-icon' })
+/** 消息操作栏：内联回复图标 */
+export const hubActionReplyIcon = iconifyImg('mdi/reply', { width: 16, height: 16, class: 'hub-action-icon' })
 /** 消息操作栏：子线程图标 */
 export const hubActionThreadIcon = iconifyImg('mdi/forum-outline', { width: 16, height: 16, class: 'hub-action-icon' })
 /** 消息操作栏：复制链接/引用图标 */

@@ -1,20 +1,45 @@
 /**
- * 【文件】resolvePart.mjs — 本机/远端角色、世界、插件部件解析
- * 【职责】resolveChar/resolveWorld 根据 session 绑定 homeNodeHash 决定 loadPart 或 createRemote*Proxy；resolveLocalPlugins 仅加载本 replica 启用的插件列表。
- * 【原理】isLocalNode 为真则同步 loadPart(owner, path)；否则 RPC 代理将 method/args 转发到 invokeGroupRpc(targetNodeId)；memberId 形如 owner:charname 或 owner:world:worldname。
+ * 【文件】resolvePart.mjs — 本机/远端角色、世界、人格、插件部件解析
+ * 【职责】resolveChar/resolveWorld/resolvePersona 根据 session 绑定 homeNodeHash 决定 loadPart 或 createRemote*Proxy；resolveLocalPlugins 从节点本地 `local_plugins.json` 加载。
+ * 【原理】isLocalNode 为真则同步 loadPart(owner, path)；否则 RPC 代理将 method/args 转发到 invokeGroupRpc(targetNodeId)；memberId 形如 owner:charname、owner:world:worldname、owner:persona:name。
  * 【数据结构】bind { ownerUsername, homeNodeHash }；代理闭包封装跨节点调用。
- * 【关联】dagSession、runtime、rpcInvoke、federation/remoteProxy、chatRequest。
+ * 【关联】dagSession、runtime、rpcInvoke、federation/remoteProxy、chatRequest、localPlugins。
  */
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
-import { createRemoteCharProxy } from '../federation/remoteProxy.mjs'
+import { getState } from '../dag/materialize.mjs'
+import { createRemoteCharProxy, createRemotePersonaProxy } from '../federation/remoteProxy.mjs'
 import { createRemoteWorldProxy } from '../federation/remoteWorldProxy.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
 
 import { BUILTIN_WORLD } from './builtinParts.mjs'
 import { getMaterializedSession } from './dagSession.mjs'
+import { getLocalPluginNames } from './localPlugins.mjs'
 import { invokeGroupRpc } from './rpcInvoke.mjs'
 import { getCharBind, isLocalNode } from './runtime.mjs'
 import { ignoreMissingPartLoadError } from './timeSliceParts.mjs'
 import { ensureWorldHostConnected } from './worldHost.mjs'
+
+/**
+ * 解析 persona 归属节点：本机 replica 用本地 node；远端优先 agent.ownerUsername / session.chars 绑定。
+ * @param {object} session 物化 session
+ * @param {object} state 物化群状态
+ * @param {string} ownerUsername persona 槽位用户
+ * @param {string} replicaUsername 当前 replica
+ * @returns {string | null} homeNodeHash
+ */
+function resolvePersonaHomeNodeHash(session, state, ownerUsername, replicaUsername) {
+	if (ownerUsername === replicaUsername) return getLocalNodeHash()
+	for (const member of Object.values(state?.members || {})) {
+		if (member?.status !== 'active') continue
+		if (member.ownerUsername === ownerUsername && member.homeNodeHash)
+			return member.homeNodeHash
+	}
+	for (const bind of Object.values(session?.chars || {})) 
+		if (bind?.ownerUsername === ownerUsername && bind.homeNodeHash)
+			return bind.homeNodeHash
+	
+	return null
+}
 
 /**
  * 本机加载 world part 后惰性接线 ChatHostConnected。
@@ -43,7 +68,7 @@ export async function resolveChar(groupId, charname, replicaUsername) {
 	if (!bind) return null
 
 	const owner = bind.ownerUsername || replicaUsername
-	if (isLocalNode(bind.homeNodeHash, replicaUsername))
+	if (isLocalNode(bind.homeNodeHash))
 		return loadPart(owner, `chars/${charname}`)
 
 	const memberId = `${owner}:${charname}`
@@ -91,7 +116,7 @@ export async function resolveWorld(groupId, channelId, replicaUsername) {
 			}))
 	}
 
-	if (isLocalNode(bind.homeNodeHash, replicaUsername)) {
+	if (isLocalNode(bind.homeNodeHash)) {
 		const world = await loadPart(owner, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
 		return finalizeLocalWorld(groupId, replicaUsername, worldname, world)
 	}
@@ -108,14 +133,43 @@ export async function resolveWorld(groupId, channelId, replicaUsername) {
 }
 
 /**
- * 本机 replica 启用的插件（仅作用于本机角色）。
+ * 解析群内某用户的 persona（本机 loadPart / 跨机 remote proxy）。
+ * @param {string} groupId 群 ID
+ * @param {string} ownerUsername persona 槽位用户（session.personas 键）
+ * @param {string} replicaUsername 当前 replica
+ * @returns {Promise<import('../../../../../../../decl/userAPI.ts').UserAPI_t | null>} 本地或远端人格 API
+ */
+export async function resolvePersona(groupId, ownerUsername, replicaUsername) {
+	const session = await getMaterializedSession(replicaUsername, groupId)
+	const personaname = session.personas?.[ownerUsername]
+	if (!personaname) return null
+
+	const { state } = await getState(replicaUsername, groupId)
+	const homeNodeHash = resolvePersonaHomeNodeHash(session, state, ownerUsername, replicaUsername)
+	if (!homeNodeHash) return null
+
+	if (isLocalNode(homeNodeHash))
+		return loadPart(ownerUsername, `personas/${personaname}`).catch(ignoreMissingPartLoadError)
+
+	const memberId = `${ownerUsername}:persona:${personaname}`
+	return createRemotePersonaProxy(memberId, homeNodeHash, {}, (method, args) =>
+		invokeGroupRpc(groupId, replicaUsername, {
+			memberId,
+			method,
+			args,
+			targetNodeId: homeNodeHash,
+			partKind: 'persona',
+		}))
+}
+
+/**
+ * 本机 replica 启用的插件（节点本地名单；仅作用于本机角色，不联邦）。
  * @param {string} groupId 群 ID
  * @param {string} replicaUsername replica 所有者
  * @returns {Promise<Record<string, import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t>>} 插件名到 API 的映射
  */
 export async function resolveLocalPlugins(groupId, replicaUsername) {
-	const session = await getMaterializedSession(replicaUsername, groupId)
-	const names = session.plugins?.[replicaUsername] || []
+	const names = await getLocalPluginNames(replicaUsername, groupId)
 	const out = {}
 	for (const pluginname of names)
 		out[pluginname] = await loadPart(replicaUsername, `plugins/${pluginname}`)

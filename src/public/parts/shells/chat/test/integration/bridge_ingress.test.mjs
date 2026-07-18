@@ -656,6 +656,9 @@ Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId;
 	assert(quoted)
 	assertEquals(quoted.content.extension.bridge.replyToEventId, first.id)
 	assertEquals(quoted.content.extension.bridge.replyToPlatformMessageId, '901')
+	assertEquals(quoted.content.replyTo?.eventId, first.id)
+	assertEquals(quoted.content.replyTo?.preview, 'original message')
+	assertEquals(quoted.content.replyTo?.senderName, 'Quoter')
 
 	// 水合后 chat_log 行上 bridge 元数据在 entry.extension.bridge，codeBridgeContext 必须能读到
 	const req = await getChatRequest(groupId, CHAR_PLAIN_B, channelId, { replicaUsername: username })

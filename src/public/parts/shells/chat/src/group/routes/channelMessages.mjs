@@ -60,6 +60,18 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { username, state } = membership
 		ensureChannel(state, parentChannelId)
 
+		const normalizedParentEventId = parentEventId ? String(parentEventId).trim().toLowerCase() : null
+		if (normalizedParentEventId) 
+			for (const [channelId, channel] of Object.entries(state.channels || {})) 
+				if (
+					channel?.parentChannelId === parentChannelId
+					&& String(channel.parentEventId || '').trim().toLowerCase() === normalizedParentEventId
+				) {
+					res.status(200).json({ channelId })
+					return
+				}
+			
+		
 
 		const newChannelId = `thread_${Date.now()}_${randomUUID().slice(0, 8)}`
 		await appendSignedLocalEvent(username, groupId, {
@@ -68,10 +80,10 @@ export function registerChannelMessageRoutes(router, authenticate) {
 			content: {
 				channelId: newChannelId,
 				type: 'text',
-				name: parentEventId ? `thread:${String(parentEventId).slice(0, 12)}` : 'Thread',
+				name: normalizedParentEventId ? `thread:${normalizedParentEventId.slice(0, 12)}` : 'Thread',
 				description: '',
 				parentChannelId,
-				parentEventId: parentEventId ? String(parentEventId).trim().toLowerCase() : null,
+				parentEventId: normalizedParentEventId,
 				syncScope: 'channel',
 			},
 		})
@@ -294,7 +306,7 @@ export function registerChannelMessageRoutes(router, authenticate) {
 
 	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/messages`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
-		const { content: rawContent, reply, files: rawFiles } = req.body || {}
+		const { content: rawContent, generated, files: rawFiles } = req.body || {}
 
 		const membership = await resolveGroupMember(req, res, groupId)
 		const { username, state } = membership
@@ -307,8 +319,8 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		const { client } = await chatClientFromReq(req)
 		const channel = await (await client.group(groupId)).channel(channelId)
 		const sent = await channel.send({
-			...reply
-				? { reply: { content: reply.content, isAutoTrigger: reply.isAutoTrigger } }
+			...generated
+				? { generated: { content: generated.content, isAutoTrigger: generated.isAutoTrigger } }
 				: { rawContent },
 			files: processedFiles.length ? processedFiles : undefined,
 			maxDagPayloadBytes: Number(state.groupSettings?.maxDagPayloadBytes) || 262_144,

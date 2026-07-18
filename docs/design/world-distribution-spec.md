@@ -122,12 +122,23 @@ DAG 事件 `world_state`，content：`{ worldname, action: 'set'|'delete', key, 
 
 | 钩子 | local / replicated | hosted |
 | --- | --- | --- |
-| `GetPrompt` / `GetGroupPrompt` / `TweakPrompt` | 本机实例执行 | RPC 到主机 |
+| `GetPrompt` / `GetGroupPrompt` / `TweakPrompt` | 本机实例执行 | RPC 到主机（**TweakPrompt 就地 mutation 经 JSON 边界丢失**；不做钩子代理修补） |
+| `GetChatPlugins` | 本机返回活对象，merge 进本机 char 的 `plugins`（本机同名优先） | **仅主机侧**真 part 生效；远端代理不挂此钩子（活对象不可 RPC） |
 | `GetChatLogForViewer` | 本机执行；每台机器给自己托管的 viewer 出视图 | RPC 到主机（主机知道全部真相） |
 | `AddChatLogEntry` / `AfterAddChatLogEntry` | 每 replica 本机各触发一次，副作用需本机幂等 | 各 replica 转发主机 |
 | `GetSpeakingOrder` | 仅在**回复触发发起机**上生效；需要全群强一致轮转应选 hosted | 主机权威裁决 |
 | `GetGreeting` / `GetGroupGreeting` | 本机执行 | RPC 到主机 |
 | `MessageEdit` / `MessageDelete` | 本机执行 | RPC 到主机 |
+
+### `GetChatPlugins`
+
+world 可向**当前频道**所有本机生成的 char 注入插件活对象（形状同 `PluginAPI_t`，先例：`codeContextPlugin`）。
+
+- `resolveWorld` 按频道解析 → 「当前频道生效」天然成立。
+- shell 在 `getChatRequest` 中：`{ ...worldPlugins, ...localPlugins }`，**本机插件同名覆盖 world**。
+- **local / replicated**：各节点装了该 world 则本地生效；未安装则无 world 插件。
+- **hosted**：仅主机进程内 `resolveWorld` 拿到真 part 时生效（guest 侧 remote proxy 不暴露此钩子）。
+- 不做 `GetChatPlugins` RPC：返回值是活对象，依赖原地钩子，不可序列化。
 
 判别口诀：**世界需不需要对不同 viewer 隐藏真相？需要 → hosted；不需要但要全群共享进度 → replicated；连共享都不需要 → local。**
 
@@ -158,6 +169,8 @@ DAG 事件 `world_state`，content：`{ worldname, action: 'set'|'delete', key, 
 | 类型声明 | `src/decl/worldAPI.ts` |
 | 内置极小 world | `src/public/parts/shells/chat/src/chat/session/builtinParts.mjs` |
 | resolveWorld 三分支 | `src/public/parts/shells/chat/src/chat/session/resolvePart.mjs` |
+| GetChatPlugins merge | `src/public/parts/shells/chat/src/chat/session/chatRequest.mjs` |
+| 本机插件名单 | `src/public/parts/shells/chat/src/chat/session/localPlugins.mjs` |
 | bind 校验 | `src/public/parts/shells/chat/src/chat/dag/sessionEventValidate.mjs` |
 | WorldChatHost | `src/public/parts/shells/chat/src/chat/session/worldHost.mjs` |
 | world_state reducer | `src/public/parts/shells/chat/src/chat/dag/reducers/worldState.mjs` |

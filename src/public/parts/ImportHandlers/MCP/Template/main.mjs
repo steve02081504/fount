@@ -39,7 +39,7 @@ const handleSampling = async ({ messages, systemPrompt }) => {
 	try {
 		const res = await samplingAIsource.StructCall({
 			chat_log, user_prompt: { text: [] }, char_prompt: { text: [] },
-			world_prompt: { text: [] }, other_chars_prompts: {}, plugin_prompts: {}
+			world_prompt: { text: [] }, other_chars_prompts: {}, other_personas_prompts: {}, plugin_prompts: {}
 		})
 		return res.content
 	} catch (err) {

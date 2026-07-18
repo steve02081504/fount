@@ -1,5 +1,5 @@
 /**
- * 频道消息扩展字段清洗（locale / content_warning / sensitive_media / forwardedFrom）。
+ * 频道消息扩展字段清洗（locale / content_warning / sensitive_media / forwardedFrom / replyTo）。
  * 入站联邦与本机写入共用。
  */
 
@@ -15,6 +15,14 @@ export const LOCALE_MAX = 32
  *
  */
 export const ALT_MAX = 1500
+/**
+ *
+ */
+export const REPLY_PREVIEW_MAX = 120
+/**
+ *
+ */
+export const REPLY_SENDER_NAME_MAX = 100
 
 /**
  * @param {unknown} value 原始开关
@@ -76,6 +84,29 @@ export function sanitizeForwardedFrom(raw) {
 }
 
 /**
+ * @param {unknown} raw 内联引用元数据
+ * @returns {{ eventId: string, senderName?: string, preview?: string } | undefined} 清洗后
+ */
+export function sanitizeReplyTo(raw) {
+	if (!raw || typeof raw !== 'object') return undefined
+	const src = /** @type {Record<string, unknown>} */ raw
+	const eventId = String(src.eventId || '').trim().toLowerCase()
+	if (!/^[0-9a-f]{64}$/.test(eventId)) return undefined
+	const out = {
+		eventId,
+		...src.senderName != null
+			? { senderName: String(src.senderName).trim().slice(0, REPLY_SENDER_NAME_MAX) }
+			: {},
+		...src.preview != null
+			? { preview: String(src.preview).replace(/\s+/g, ' ').trim().slice(0, REPLY_PREVIEW_MAX) }
+			: {},
+	}
+	if (!out.senderName) delete out.senderName
+	if (!out.preview) delete out.preview
+	return out
+}
+
+/**
  * 将扩展展示字段写入 content（就地规范后返回新对象）。
  * @param {Record<string, unknown>} content 消息 content
  * @returns {Record<string, unknown>} 清洗后
@@ -100,6 +131,10 @@ export function sanitizeMessageExtras(content) {
 	const forwardedFrom = sanitizeForwardedFrom(out.forwardedFrom)
 	if (forwardedFrom) out.forwardedFrom = forwardedFrom
 	else delete out.forwardedFrom
+
+	const replyTo = sanitizeReplyTo(out.replyTo)
+	if (replyTo) out.replyTo = replyTo
+	else delete out.replyTo
 
 	delete out.embeds
 

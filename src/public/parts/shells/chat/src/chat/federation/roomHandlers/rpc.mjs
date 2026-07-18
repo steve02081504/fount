@@ -61,11 +61,12 @@ export function registerRpcHandlers(roomContext) {
 		if (!request) return
 		const { requestId, memberId, method, args } = request
 		void (async () => {
-			const isWorld = memberId.includes(':world:')
-			const { tryInvokeLocalCharRpc, tryInvokeLocalWorldRpc } = await import('../../session.mjs')
-			const result = isWorld
+			const { tryInvokeLocalCharRpc, tryInvokeLocalPersonaRpc, tryInvokeLocalWorldRpc } = await import('../../session.mjs')
+			const result = memberId.includes(':world:')
 				? await tryInvokeLocalWorldRpc(groupId, memberId, method, args)
-				: await tryInvokeLocalCharRpc(groupId, memberId, method, args)
+				: memberId.includes(':persona:')
+					? await tryInvokeLocalPersonaRpc(groupId, memberId, method, args)
+					: await tryInvokeLocalCharRpc(groupId, memberId, method, args)
 			if (result.kind === 'not_local') return
 			safeSendCharRpcResponse(
 				charRpcResponse.send,

@@ -1,7 +1,7 @@
 /**
  * 【文件】rpcInvoke.mjs — 跨节点群 RPC 调用编排
- * 【职责】统一 invokeGroupRpc：本机 char/world 优先走 session.mjs 本地 RPC；否则经 federation sendRpcToNode 发往归属节点并 await WS 响应。
- * 【原理】partKind 为 char/world 时先 tryInvokeLocal*，命中 result/error 即返回；否则构造 rpc_call 载荷（requestId、memberId、method、args、targetNodeId）异步等待 groupWsRpc。
+ * 【职责】统一 invokeGroupRpc：本机 char/world/persona 优先走 session.mjs 本地 RPC；否则经 federation sendRpcToNode 发往归属节点并 await WS 响应。
+ * 【原理】partKind 为 char/world/persona 时先 tryInvokeLocal*，命中 result/error 即返回；否则构造 rpc_call 载荷异步等待 groupWsRpc。
  * 【数据结构】options：{ memberId, method, args, targetNodeId, partKind }；requestId（UUID）。
  * 【关联】session.mjs、remoteProxy、groupWsRpc、resolvePart、triggerReply（跨机 GetReply）。
  */
@@ -23,11 +23,17 @@ export async function invokeGroupRpc(groupId, replicaUsername, options) {
 	const entry = groupMetadatas.get(groupId)
 	const ownerUsername = entry?.username || replicaUsername
 
-	if (partKind === 'char' || partKind === 'world') {
-		const { tryInvokeLocalCharRpc, tryInvokeLocalWorldRpc } = await import('../session.mjs')
+	if (partKind === 'char' || partKind === 'world' || partKind === 'persona') {
+		const {
+			tryInvokeLocalCharRpc,
+			tryInvokeLocalWorldRpc,
+			tryInvokeLocalPersonaRpc,
+		} = await import('../session.mjs')
 		const local = partKind === 'char'
 			? await tryInvokeLocalCharRpc(groupId, memberId, method, args)
-			: await tryInvokeLocalWorldRpc(groupId, memberId, method, args)
+			: partKind === 'world'
+				? await tryInvokeLocalWorldRpc(groupId, memberId, method, args)
+				: await tryInvokeLocalPersonaRpc(groupId, memberId, method, args)
 		if (local.kind === 'result') return local.value
 		if (local.kind === 'error') {
 			const err = new Error(local.message || 'RPC error')

@@ -20,6 +20,7 @@ import {
 	hubActionForwardIcon,
 	hubActionPinIcon,
 	hubActionRegenIcon,
+	hubActionReplyIcon,
 	hubActionShareIcon,
 	hubActionThreadIcon,
 	hubActionThumbDownIcon,
@@ -249,9 +250,17 @@ export async function renderMessageActionsHtml(message, options) {
 	}
 
 	// ===== 悬停浮动栏 =====
-	// 常驻图标：子线程、书签、置顶、编辑、翻译；复制/分享/下载/删除收进二级菜单；Shift 层为下载/删除
+	// 常驻图标：回复、子线程、书签、置顶、编辑、翻译；复制/分享/下载/删除收进二级菜单；Shift 层为下载/删除
 	const hoverInlineParts = []
 	const canDelete = canDeleteMessage(message, options)
+
+	if (/^[0-9a-f]{64}$/i.test(eventId))
+		hoverInlineParts.push(actionButton({
+			action: 'reply',
+			attrs: `data-event-id="${escapedEventId}"`,
+			icon: hubActionReplyIcon,
+			i18nKey: 'chat.hub.replyInline',
+		}))
 
 	if (options.canCreateThreads)
 		hoverInlineParts.push(actionButton({

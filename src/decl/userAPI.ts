@@ -88,6 +88,21 @@ export class UserAPI_t {
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
+			 * 为其他角色获取人格侧提示贡献（群聊他者槽）。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
+			 */
+			GetPromptForOther?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * 为其他角色调整人格侧提示贡献。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {prompt_struct_t} prompt_struct - 提示结构。
+			 * @param {single_part_prompt_t} my_prompt - 我的提示。
+			 * @param {number} detail_level - 详细程度。
+			 * @returns {Promise<void>} - 无返回值。
+			 */
+			TweakPromptForOther?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
+			/**
 			 * 真人发送前拦截：可改写 input/files，或通过 reject 拒绝（服务端语义）。
 			 * @param {object} ctx - 发送上下文。
 			 * @returns {Promise<{ input?: channelMessageContent_t, files?: file_t[], reject?: string } | undefined>} - 改写/拒绝；undefined 透传。

@@ -260,7 +260,7 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
  *   text?: string,
  *   rawContent?: object,
  *   files?: Array<{ name?: string, mime_type?: string, buffer: Buffer }>,
- *   reply?: { content: unknown, isAutoTrigger?: boolean },
+ *   generated?: { content: unknown, isAutoTrigger?: boolean },
  *   maxDagPayloadBytes?: number,
  *   origin?: 'human' | 'char' | 'system',
  *   charId?: string | null,
@@ -276,9 +276,9 @@ export async function postChannelMessage(username, groupId, channelId, payload =
 		? channelMessageContentObject(payload.rawContent)
 		: textChannelContent(payload.text ?? '')
 
-	if (payload.reply) {
-		content = channelMessageContentObject(payload.reply.content)
-		if (payload.reply.isAutoTrigger) content = { ...content, isAutoTrigger: true }
+	if (payload.generated) {
+		content = channelMessageContentObject(payload.generated.content)
+		if (payload.generated.isAutoTrigger) content = { ...content, isAutoTrigger: true }
 	}
 
 	let files = Array.isArray(payload.files) ? payload.files : undefined

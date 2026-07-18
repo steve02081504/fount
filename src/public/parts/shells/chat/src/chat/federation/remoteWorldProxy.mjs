@@ -2,6 +2,7 @@
  * 【文件】federation/remoteWorldProxy.mjs
  * 【职责】为远端世界（world 成员）构造 WorldAPI 聊天接口代理，方法调用转发到与 remoteProxy 相同的 RPC 通道。
  * 【原理】createRemoteWorldProxy 按 interfaces.chat 开关挂载 GetGreeting/GetSpeakingOrder/GetChatLogForViewer 等；invokeRemote 经 rpcCall 往返并做 JSON 边界 normalize。REMOTE_WORLD_PROXY_SYMBOL 供类型识别。
+ * **不挂 GetChatPlugins**：返回活对象，不可 RPC；hosted 侧仅主机本机 resolveWorld 生效。TweakPrompt 就地 mutation 经 JSON 边界亦会丢失。
  * 【数据结构】proxy { info, interfaces.chat? }；Symbol 附着 { memberId, sourceHost }。
  * 【关联】remoteProxy.mjs、charRpc/room、session world RPC、decl/worldAPI.ts、viewerLog。
  */

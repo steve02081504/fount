@@ -27,6 +27,7 @@ export async function validateRemoteTimelineEvent(event, entityHash, { canonical
 		eventContent: event.content,
 		priorEvents,
 		username,
+		senderPubKeyHex: event.senderPubKey,
 	})) return { accepted: false }
 	try {
 		return { accepted: true, row: canonicalize(event) }

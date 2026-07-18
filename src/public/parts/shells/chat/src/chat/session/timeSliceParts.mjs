@@ -1,9 +1,10 @@
 /**
  * timeSlice 部件加载（hydrateTimeSlice 与 buildTimeSliceFromSession 共用）。
  */
-import { getAllDefaultParts, getAnyDefaultPart, loadPart } from '../../../../../../../server/parts_loader.mjs'
+import { getAnyDefaultPart, loadPart } from '../../../../../../../server/parts_loader.mjs'
 
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from './builtinParts.mjs'
+import { getLocalPluginNames } from './localPlugins.mjs'
 
 /**
  * 部件路径缺失或模块未找到时忽略；其余错误继续抛出。
@@ -76,11 +77,11 @@ export async function loadWorldFields(username, worldname) {
 
 /**
  * @param {string} replicaUsername replica 所有者
- * @param {Record<string, string[]> | undefined} pluginsByUser 物化 session.plugins
- * @returns {Promise<Record<string, unknown>>} replica 默认/绑定插件映射
+ * @param {string} groupId 群 ID
+ * @returns {Promise<Record<string, unknown>>} 本机启用插件映射
  */
-export async function loadPluginsForReplica(replicaUsername, pluginsByUser) {
-	const pluginNames = pluginsByUser?.[replicaUsername] || getAllDefaultParts(replicaUsername, 'plugins')
+export async function loadPluginsForReplica(replicaUsername, groupId) {
+	const pluginNames = await getLocalPluginNames(replicaUsername, groupId)
 	return loadPluginMap(replicaUsername, pluginNames)
 }
 

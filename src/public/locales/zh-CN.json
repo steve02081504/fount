@@ -2838,6 +2838,12 @@
 				"leaveBatchOk": "已退出 ${count} 个群",
 				"leaveBatchPartial": "${failed} / ${total} 个群退出失败，列表已刷新"
 			},
+			"replyInline": {
+				"title": "回复"
+			},
+			"replyClear": {
+				"title": "取消引用"
+			},
 			"replyInThread": {
 				"title": "在子线程中回复"
 			},

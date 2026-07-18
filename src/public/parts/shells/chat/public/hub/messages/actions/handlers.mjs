@@ -16,6 +16,7 @@ import { handleEdit } from './edit.mjs'
 import { handleFeedbackPrompt, handleFeedbackSubmitCancel } from './feedback.mjs'
 import { handleForward } from './forward.mjs'
 import { handlePin } from './pin.mjs'
+import { handleReply } from './reply.mjs'
 import { handleThread } from './thread.mjs'
 import { handleTranslate } from './translate.mjs'
 
@@ -61,6 +62,8 @@ async function handleChannelMessageClick(button, row, channelMessage, actions) {
 			return handleFeedbackPrompt(button, 'up')
 		case 'feedback-down':
 			return handleFeedbackPrompt(button, 'down')
+		case 'reply':
+			return handleReply(button, channelMessage)
 		case 'thread':
 			return handleThread(button, row, channelMessage, actions)
 		case 'delete':

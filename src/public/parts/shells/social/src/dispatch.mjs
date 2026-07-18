@@ -130,7 +130,7 @@ async function dispatchLocalAgents(username, authorEntityHash, post, mentions, a
 			if (!allowed) continue
 		}
 
-		const char = await loadPart(username, `chars/${charPartName}`)
+		const char = await loadPart(username, `chars/${charPartName}`).catch(() => null)
 		if (!char) continue
 
 		const messageEvent = {

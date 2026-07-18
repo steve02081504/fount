@@ -1,8 +1,8 @@
 /**
  * 【文件】serializableRequest.mjs — 跨节点 RPC 可序列化生成请求体
- * 【职责】buildSerializableRequest 打包 groupId/channelId/charname/replicaUsername/personaForOther/logWindow；isSerializableRequest 校验 RPC 首参是否合法。
- * 【原理】远端节点收到后据此字段本地调用 getChatRequest 再执行 GetReply，避免传输完整 chatReplyRequest；personaForOther 支持跨机代发人格上下文。
- * 【数据结构】{ groupId, channelId, charname, replicaUsername, personaForOther?, logWindow? } 纯 JSON。
+ * 【职责】buildSerializableRequest 打包 groupId/channelId/charname/replicaUsername/logWindow；isSerializableRequest 校验 RPC 首参是否合法。
+ * 【原理】远端节点收到后据此字段本地调用 getChatRequest 再执行 GetReply，避免传输完整 chatReplyRequest；other_personas 由执行端从 session 解析。
+ * 【数据结构】{ groupId, channelId, charname, replicaUsername, logWindow? } 纯 JSON。
  * 【关联】rpcInvoke、triggerReply（跨机分支）、session.mjs tryInvokeLocalCharRpc。
  */
 /**
@@ -16,7 +16,6 @@ export function buildSerializableRequest(fields) {
 		channelId,
 		charname,
 		replicaUsername,
-		personaForOther,
 		logWindow,
 	} = fields
 	return {
@@ -24,7 +23,6 @@ export function buildSerializableRequest(fields) {
 		channelId: channelId || null,
 		charname,
 		replicaUsername,
-		personaForOther: personaForOther || undefined,
 		logWindow: logWindow || undefined,
 	}
 }

@@ -111,15 +111,13 @@ function parsePokeOrAckEnvelope(envelope) {
 /**
  * @param {string} username replica
  * @param {string} ownerEntityHash 主人
- * @param {string} targetEntityHash 被管
  * @param {string} logicalPath 路径
  * @param {Buffer | Uint8Array} plaintext 明文
  * @param {string} [mimeType] MIME
  * @param {string} [name] 文件名
  * @returns {Promise<void>}
  */
-async function publishAsOwner(username, ownerEntityHash, targetEntityHash, logicalPath, plaintext, mimeType, name) {
-	void targetEntityHash
+async function publishAsOwner(username, ownerEntityHash, logicalPath, plaintext, mimeType, name) {
 	const recoverySecretKeyHex = await getEntityRecoverySecretKey(username, ownerEntityHash)
 	const recoveryPubKeyHex = await getRecoveryPubKeyHex(username, ownerEntityHash)
 	if (!recoverySecretKeyHex || !recoveryPubKeyHex)
@@ -163,7 +161,6 @@ export async function purgeOwnedProfilePublish(username, ownerEntityHash, target
 			await publishAsOwner(
 				username,
 				ownerEntityHash,
-				targetEntityHash,
 				logicalPath,
 				tombstone,
 				TOMBSTONE_MIME,
@@ -269,29 +266,26 @@ export async function publishOwnerProfileUpdate(username, publisherEntityHash, t
 	await publishAsOwner(
 		username,
 		publisher,
-		target,
 		ownedProfileUpdatePath(target, 'profile.json'),
 		Buffer.from(JSON.stringify(payload), 'utf8'),
 		'application/json',
 		'profile.json',
 	)
 
-	if (files.avatar?.buffer) 
+	if (files.avatar?.buffer)
 		await publishAsOwner(
 			username,
 			publisher,
-			target,
 			ownedProfileUpdatePath(target, 'avatar'),
 			files.avatar.buffer,
 			files.avatar.mimeType || 'image/png',
 			files.avatar.filename || 'avatar',
 		)
-	
-	if (files.banner?.buffer) 
+
+	if (files.banner?.buffer)
 		await publishAsOwner(
 			username,
 			publisher,
-			target,
 			ownedProfileUpdatePath(target, 'banner'),
 			files.banner.buffer,
 			files.banner.mimeType || 'image/png',

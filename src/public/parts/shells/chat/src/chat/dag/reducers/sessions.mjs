@@ -82,44 +82,20 @@ export const sessionReducers = {
 	},
 
 	/**
-	 * 处理 `session_plugin_add` 事件：向用户插件列表追加插件。
+	 * 遗留 `session_plugin_add`：插件名单已迁节点本地存储，忽略。
 	 * @param {object} state 物化群状态
-	 * @param {object} event DAG 事件
-	 * @returns {object} 更新后的 state
+	 * @returns {object} 原 state
 	 */
-	session_plugin_add(state, event) {
-		withGroupId(state, event)
-		if (!state.session) state.session = createEmptySessionState()
-		const ownerUsername = String(event.content?.ownerUsername || '').trim()
-		const pluginname = String(event.content?.pluginname || '').trim()
-		if (ownerUsername && pluginname) {
-			if (!state.session.plugins[ownerUsername])
-				state.session.plugins[ownerUsername] = []
-			if (!state.session.plugins[ownerUsername].includes(pluginname))
-				state.session.plugins[ownerUsername].push(pluginname)
-		}
+	session_plugin_add(state) {
 		return state
 	},
 
 	/**
-	 * 处理 `session_plugin_remove` 事件：从用户插件列表移除插件。
+	 * 遗留 `session_plugin_remove`：忽略。
 	 * @param {object} state 物化群状态
-	 * @param {object} event DAG 事件
-	 * @returns {object} 更新后的 state
+	 * @returns {object} 原 state
 	 */
-	session_plugin_remove(state, event) {
-		withGroupId(state, event)
-		if (!state.session) return state
-		const ownerUsername = String(event.content?.ownerUsername || '').trim()
-		const pluginname = String(event.content?.pluginname || '').trim()
-		if (ownerUsername && pluginname) {
-			const list = state.session.plugins[ownerUsername]
-			if (Array.isArray(list)) {
-				state.session.plugins[ownerUsername] = list.filter(name => name !== pluginname)
-				if (!state.session.plugins[ownerUsername].length)
-					delete state.session.plugins[ownerUsername]
-			}
-		}
+	session_plugin_remove(state) {
 		return state
 	},
 }

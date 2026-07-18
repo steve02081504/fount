@@ -103,6 +103,16 @@ export function snapshotPath(username, groupId) {
 }
 
 /**
+ * 本机启用的插件名单（节点私有，不入 DAG）。
+ * @param {string} username 本地账户名
+ * @param {string} groupId 群组或会话 ID
+ * @returns {string} `local_plugins.json` 绝对路径
+ */
+export function localPluginsPath(username, groupId) {
+	return join(groupDir(username, groupId), 'local_plugins.json')
+}
+
+/**
  * 频道消息派生日志 JSONL 路径。
  * @param {string} username 本地账户名
  * @param {string} groupId 群组或会话 ID

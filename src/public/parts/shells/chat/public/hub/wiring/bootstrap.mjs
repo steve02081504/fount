@@ -41,6 +41,7 @@ function wireComposerControls() {
 		void submitComposerLazy()
 		messageInput.focus()
 	})
+	void import('../composerReply.mjs').then(({ wireReplyBanner }) => wireReplyBanner())
 }
 
 /** 注册左侧群组/好友/提及模式切换（统一走 setMode）。 @returns {void} */

@@ -55,7 +55,7 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 			const objectReply = typeof reply === 'object' && reply ? reply : null
 			/** @type {object} */
 			let postPayload
-			if (objectReply?.reply || objectReply?.rawContent)
+			if (objectReply?.generated || objectReply?.rawContent)
 				postPayload = {
 					...objectReply,
 					files: mapFiles(objectReply.files),

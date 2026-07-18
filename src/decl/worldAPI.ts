@@ -2,6 +2,7 @@ import { channelMessageContent_t, chatReply_t, chatReplyRequest_t, type chatView
 
 import { locale_t, info_t } from './basedefs.ts'
 import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
+import type { PluginAPI_t } from './pluginAPI.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
 
 /** world_state 事件 content 形状（DAG 权威共享状态，群级；频道作用域用键约定如 `chan/{channelId}/...`）。 */
@@ -184,8 +185,23 @@ export class WorldAPI_t {
 			 * @param {single_part_prompt_t} my_prompt - 我的提示。
 			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<void>} - 无返回值。
+			 *
+			 * **hosted 边界**：跨 RPC 时就地 mutation 会丢失（JSON 边界无法带回引用侧改写）；
+			 * 不做钩子代理修补——hosted world 的 TweakPrompt 仅在主机进程内对本地 char 生效。
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
+			/**
+			 * 返回本 world 向当前频道 char 注入的插件活对象（仿 codeContextPlugin；不可 JSON/RPC）。
+			 *
+			 * 生效范围随 distribution：
+			 * - **local / replicated**：各节点在本机加载该 world 时本地生效（未安装则无）。
+			 * - **hosted**：仅主机侧 resolveWorld 拿到真 part 时生效；远端代理不挂此钩子。
+			 *
+			 * shell 与本机插件名单 merge 时，**本机同名优先**。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求（含 groupId/channelId 等）。
+			 * @returns {Promise<Record<string, PluginAPI_t>> | Record<string, PluginAPI_t>} 插件名 → 活对象
+			 */
+			GetChatPlugins?: (arg: chatReplyRequest_t) => Promise<Record<string, PluginAPI_t>> | Record<string, PluginAPI_t>
 			/**
 			 * 按观察者返回世界视图下的聊天记录（正式主接口）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。

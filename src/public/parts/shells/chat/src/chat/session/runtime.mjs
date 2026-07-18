@@ -2,7 +2,7 @@
  * 【文件】runtime.mjs — 群 AI runtime 物化与 timeSlice 构建
  * 【职责】在 groupMetadatas 中注册/失效群槽位；从 DAG 物化 session 构建 LastTimeSlice 并 hydrate chatLog；提供角色绑定查询与本机节点判断；支持从 message 内嵌 session 快照还原 timeSlice。
  * 【原理】getGroupRuntime 缓存 chatMetadata，未命中时 getMaterializedSession + buildTimeSliceFromSession + hydrateChatLogFromDag；仅 homeNodeHash 为本机的 part 才 loadPart，跨机 part 由 resolvePart 代理；rebuildGroupRuntime 置空缓存后重建。
- * 【数据结构】groupMetadatas 条目中的 chatMetadata（chatMetadata_t）；物化 session 的 chars/world/channelWorlds/personas/plugins/charFrequencies。
+ * 【数据结构】groupMetadatas 条目中的 chatMetadata（chatMetadata_t）；物化 session 的 chars/world/channelWorlds/personas/charFrequencies。
  * 【关联】dagSession、models、wsLifecycle、hydration、resolvePart、partConfig。
  */
 import { loadPart } from '../../../../../../../server/parts_loader.mjs'
@@ -78,7 +78,7 @@ export async function buildTimeSliceFromSession(session, replicaUsername, groupI
 	}
 
 	Object.assign(slice, await loadPlayerForReplica(replicaUsername, session?.personas))
-	Object.assign(slice.plugins, await loadPluginsForReplica(replicaUsername, session?.plugins))
+	Object.assign(slice.plugins, await loadPluginsForReplica(replicaUsername, groupId))
 
 	for (const [charname, frequency] of Object.entries(session?.charFrequencies || {}))
 		slice.chars_speaking_frequency[charname] = frequency
@@ -144,10 +144,9 @@ export function getCharBind(session, charname) {
 
 /**
  * @param {string} homeNodeHash 目标节点
- * @param {string} replicaUsername 当前 replica
  * @returns {boolean} 是否为本机节点
  */
-export function isLocalNode(homeNodeHash, replicaUsername) {
+export function isLocalNode(homeNodeHash) {
 	return homeNodeHash === getLocalNodeHash()
 }
 
@@ -165,7 +164,6 @@ export async function buildTimeSliceFromSessionSnapshot(snapshot, replicaUsernam
 		world: null,
 		channelWorlds: {},
 		personas: {},
-		plugins: {},
 		charFrequencies: {},
 	}, replicaUsername, groupId, channelId)
 	return buildTimeSliceFromSession({
@@ -173,7 +171,6 @@ export async function buildTimeSliceFromSessionSnapshot(snapshot, replicaUsernam
 		world: snapshot.world || null,
 		channelWorlds: channelId && snapshot.world ? { [channelId]: snapshot.world } : {},
 		personas: snapshot.personas || {},
-		plugins: snapshot.plugins || {},
 		charFrequencies: snapshot.charFrequencies || {},
 	}, replicaUsername, groupId, channelId)
 }

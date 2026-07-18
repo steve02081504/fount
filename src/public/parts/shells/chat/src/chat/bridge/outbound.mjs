@@ -1,6 +1,6 @@
-import { recordBridgeMessagePair } from './registry.mjs'
+import { lookupBridgePlatformMessageId, recordBridgeMessagePair } from './registry.mjs'
 
-/** @type {Map<string, (args: { channelId: string, messageLine: object }) => Promise<{ platformMessageId?: string | number } | void>>} */
+/** @type {Map<string, (args: { channelId: string, messageLine: object, replyToPlatformMessageId?: string | null }) => Promise<{ platformMessageId?: string | number } | void>>} */
 const outboundHandlers = new Map()
 
 /**
@@ -16,7 +16,7 @@ function handlerKey(username, groupId) {
  * 注册桥接群出站 handler（char 回复落盘后调用）。
  * @param {string} username replica
  * @param {string} groupId 群 ID
- * @param {(args: { channelId: string, messageLine: object }) => Promise<{ platformMessageId?: string | number } | void>} handler 出站处理
+ * @param {(args: { channelId: string, messageLine: object, replyToPlatformMessageId?: string | null }) => Promise<{ platformMessageId?: string | number } | void>} handler 出站处理
  * @returns {void}
  */
 export function registerBridgeOutbound(username, groupId, handler) {
@@ -43,7 +43,12 @@ export function unregisterBridgeOutbound(username, groupId) {
 export async function notifyBridgeOutbound(username, groupId, channelId, messageLine) {
 	const handler = outboundHandlers.get(handlerKey(username, groupId))
 	if (!handler) return
-	const result = await handler({ channelId, messageLine })
+	const replyEventId = messageLine?.content?.replyTo?.eventId
+		|| messageLine?.content?.extension?.bridge?.replyToEventId
+	const replyToPlatformMessageId = replyEventId
+		? lookupBridgePlatformMessageId(username, groupId, replyEventId)
+		: null
+	const result = await handler({ channelId, messageLine, replyToPlatformMessageId })
 	const platformMessageId = result?.platformMessageId
 	if (platformMessageId != null && messageLine?.eventId)
 		await recordBridgeMessagePair(username, groupId, {

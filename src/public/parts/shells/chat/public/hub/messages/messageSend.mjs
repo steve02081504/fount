@@ -1,6 +1,7 @@
 import { sendGroupMessage } from '../../src/api/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
+import { clearReplyTarget, getReplyTarget } from '../composerReply.mjs'
 import { hubStore } from '../core/state.mjs'
 import { waitForGroupWebSocketOpen } from '../stream/index.mjs'
 
@@ -158,7 +159,7 @@ export async function retryFailedPendingMessage(tempId) {
 }
 
 /**
- * 构建发送用富内容对象（含 CW/sensitive/locale）。
+ * 构建发送用富内容对象（含 CW/sensitive/locale/replyTo）。
  * @param {string} text 文本内容
  * @returns {object} content object
  */
@@ -167,6 +168,13 @@ function buildComposerContent(text) {
 	const cw = getContentWarning()
 	if (cw) contentObj.content_warning = cw
 	if (getSensitiveMedia()) contentObj.sensitive_media = true
+	const reply = getReplyTarget()
+	if (reply)
+		contentObj.replyTo = {
+			eventId: reply.eventId,
+			senderName: reply.senderName,
+			preview: reply.preview,
+		}
 	return contentObj
 }
 
@@ -181,6 +189,7 @@ export async function sendCurrentMessage(text) {
 	const contentObj = buildComposerContent(text)
 	const tempId = `pending:${crypto.randomUUID()}`
 	await insertPendingRow(contentObj, tempId)
+	clearReplyTarget()
 	try {
 		const event = await sendGroupMessage(sendGroupId, sendChannelId, contentObj, files)
 		if (hubStore.context.currentGroupId !== sendGroupId || hubStore.context.currentChannelId !== sendChannelId) {

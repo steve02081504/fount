@@ -12,7 +12,7 @@ import {
 import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { getProfile } from '../../entity/profile.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
-import { appendChannelMessageDelete, appendChannelMessageEdit } from '../channel/messageMutations.mjs'
+import { appendChannelMessageDelete, appendChannelMessageEdit, findChannelMessageRow } from '../channel/messageMutations.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
@@ -202,10 +202,27 @@ export async function postBridgeMessage(username, dto) {
 	const replyToEventId = dto.replyToPlatformMessageId != null
 		? lookupBridgeEventId(username, groupId, dto.replyToPlatformMessageId)
 		: null
+	const authorDisplayName = String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`
+	/** @type {{ eventId: string, senderName?: string, preview?: string } | undefined} */
+	let replyTo
+	if (replyToEventId) {
+		const parent = await findChannelMessageRow(username, groupId, channelId, replyToEventId)
+		const parentText = channelMessageAgentText(parent?.content) || String(parent?.content?.content || '')
+		replyTo = {
+			eventId: replyToEventId,
+			...parent?.content?.displayName
+				? { senderName: String(parent.content.displayName).trim().slice(0, 100) }
+				: {},
+			...parentText
+				? { preview: parentText.replace(/\s+/g, ' ').trim().slice(0, 120) }
+				: {},
+		}
+	}
 	content = {
 		...content,
-		displayName: String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`,
+		displayName: authorDisplayName,
 		...dto.author.avatarUrl ? { displayAvatar: dto.author.avatarUrl } : {},
+		...replyTo ? { replyTo } : {},
 		extension: {
 			bridge: {
 				platform,

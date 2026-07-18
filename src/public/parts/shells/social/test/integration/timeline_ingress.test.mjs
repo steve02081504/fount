@@ -19,7 +19,7 @@ const sync = await import('../../src/timeline/sync.mjs')
 const append = await import('../../src/timeline/append.mjs')
 const canon = await import('../../src/timeline/canonicalizeEvent.mjs')
 const { addDenylistEntry, loadDenylist, saveDenylist } = await import('npm:@steve02081504/fount-p2p/node/denylist')
-const { pubKeyHash, publicKeyFromSeed, keyPairFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
+const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash, entityHashFromRecoveryPubKeyHex } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 const { getNodeHash } = await import('npm:@steve02081504/fount-p2p/node/identity')
 const {
@@ -225,20 +225,81 @@ Deno.test('foreign-key injection into a locally-hosted agent timeline is rejecte
 	assertEquals(await sync.ingestRemoteTimelineEvent(username, row.entityHash, event), false)
 })
 
-// 远端节点 agent：无先验密钥链且 sender≠subjectHash → 拒绝。
-Deno.test('remote (non-local) agent timeline event cannot be authorized → rejected', async () => {
+// 远端节点 agent：先 ingest recovery 签创世链，再以活跃钥发帖 → 引导成功。
+Deno.test('remote agent timeline bootstraps via recovery genesis then accepts active-key post', async () => {
 	const { username } = await getSession()
 	const remoteNodeHash = '7'.repeat(64)
-	const { publicKey } = keyPairFromSeed(randomSeed())
-	const remoteAgentOwner = entityHashFromRecoveryPubKeyHex(
-		remoteNodeHash,
-		Buffer.from(publicKey).toString('hex'),
-	)
-	const someSeed = randomSeed()
-	const event = await makeRemoteSignedEvent(someSeed, remoteAgentOwner, {
-		type: 'post', content: { text: 'remote agent post', visibility: 'public' },
+	const recoverySeed = randomSeed()
+	const activeSeed = randomSeed()
+	const recoveryPub = Buffer.from(publicKeyFromSeed(recoverySeed)).toString('hex')
+	const activePub = Buffer.from(publicKeyFromSeed(activeSeed)).toString('hex')
+	const remoteAgentOwner = entityHashFromRecoveryPubKeyHex(remoteNodeHash, recoveryPub)
+
+	const socialMeta = await makeRemoteSignedEvent(recoverySeed, remoteAgentOwner, {
+		type: 'social_meta',
+		content: {
+			hideFromDiscovery: false,
+			createdAt: Date.now(),
+			recoveryPubKeyHex: recoveryPub,
+		},
 	})
-	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, event), false)
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, socialMeta), true)
+
+	const rotate = await makeRemoteSignedEvent(recoverySeed, remoteAgentOwner, {
+		type: 'entity_key_rotate',
+		prev_event_ids: [socialMeta.id],
+		content: {
+			generation: 0,
+			activePubKeyHex: activePub,
+			prevGeneration: null,
+		},
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, rotate), true)
+
+	const post = await makeRemoteSignedEvent(activeSeed, remoteAgentOwner, {
+		type: 'post',
+		prev_event_ids: [rotate.id],
+		content: { text: 'remote agent post', visibility: 'public' },
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, post), true)
+	const events = await append.readTimelineEvents(username, remoteAgentOwner)
+	assert(events.some(e => e.id === post.id))
+})
+
+// 远端 agent 已引导后，陌生钥注入仍拒绝。
+Deno.test('foreign-key injection into a bootstrapped remote agent timeline is rejected', async () => {
+	const { username } = await getSession()
+	const remoteNodeHash = '8'.repeat(64)
+	const recoverySeed = randomSeed()
+	const activeSeed = randomSeed()
+	const recoveryPub = Buffer.from(publicKeyFromSeed(recoverySeed)).toString('hex')
+	const activePub = Buffer.from(publicKeyFromSeed(activeSeed)).toString('hex')
+	const remoteAgentOwner = entityHashFromRecoveryPubKeyHex(remoteNodeHash, recoveryPub)
+
+	const socialMeta = await makeRemoteSignedEvent(recoverySeed, remoteAgentOwner, {
+		type: 'social_meta',
+		content: {
+			hideFromDiscovery: false,
+			createdAt: Date.now(),
+			recoveryPubKeyHex: recoveryPub,
+		},
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, socialMeta), true)
+	const rotate = await makeRemoteSignedEvent(recoverySeed, remoteAgentOwner, {
+		type: 'entity_key_rotate',
+		prev_event_ids: [socialMeta.id],
+		content: { generation: 0, activePubKeyHex: activePub, prevGeneration: null },
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, rotate), true)
+
+	const forged = await makeRemoteSignedEvent(randomSeed(), remoteAgentOwner, {
+		type: 'post',
+		prev_event_ids: [rotate.id],
+		content: { text: 'INJECTED remote agent post', visibility: 'public' },
+	})
+	assertEquals(await sync.ingestRemoteTimelineEvent(username, remoteAgentOwner, forged), false)
+	const events = await append.readTimelineEvents(username, remoteAgentOwner)
+	assert(!events.some(e => e.id === forged.id), 'forged event must not be archived')
 })
 
 // owner 活跃钥签 post_delete 写入本机 agent 时间线 → 接受（联邦复核路径）。

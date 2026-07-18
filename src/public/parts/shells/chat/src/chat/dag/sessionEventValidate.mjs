@@ -58,12 +58,6 @@ export function validateSessionEventContent(event) {
 			if (!content.ownerUsername?.trim()) throw new Error('session_persona_set: ownerUsername required')
 			break
 		}
-		case 'session_plugin_add':
-		case 'session_plugin_remove': {
-			if (!content.ownerUsername?.trim()) throw new Error(`${event.type}: ownerUsername required`)
-			if (!content.pluginname?.trim()) throw new Error(`${event.type}: pluginname required`)
-			break
-		}
 		default:
 			break
 	}

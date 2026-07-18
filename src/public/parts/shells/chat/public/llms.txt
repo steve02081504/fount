@@ -154,7 +154,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ## DAG session 事件（AI 编排真源）
 
-写入 `events.jsonl` 并物化为 `state.session`：`session_char_bind` / `session_char_unbind` / `session_world_bind` / `session_world_bind_channel` / `session_world_clear` / `session_persona_set` / `session_plugin_add` / `session_plugin_remove` / `session_char_frequency_set`。频道 `message` 可含 `content.sessionSnapshot` 供历史水合。
+写入 `events.jsonl` 并物化为 `state.session`：`session_char_bind` / `session_char_unbind` / `session_world_bind` / `session_world_bind_channel` / `session_world_clear` / `session_persona_set` / `session_char_frequency_set`。插件名单为节点本地 `local_plugins.json`（不入 DAG）。频道 `message` 可含 `content.sessionSnapshot` 供历史水合。
 
 `world_state`：共享世界状态（`content`: `worldname`, `action` (`set`|`delete`), `key`, `value?`）；物化到 `state.worldStates[worldname]`（HLC LWW）。replicated/hosted world 经 `WorldChatHost.state` 读写；`localData` 为本机私有 JSON。联邦入站 content 上限 64KB。
 
@@ -164,7 +164,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 **Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`；含 `channelMessageContent_t` / `file_t` / `chatViewer_t`）；shell `decl/chatLog.ts` 仅 re-export。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。
 
-**跨节点 RPC**：群 WS `group_ws_rpc_identity`（`clientNodeId` = 本机 node UUID）+ `rpc_call`（`targetNodeId` 定向）。**RPC 线协议** `memberId`：`owner:charname`（角色）、`owner:world:worldname`（世界）。**会话/viewer 层**另用 entity hash 作主键（`chatViewer_t.memberId`、`GetSpeakingOrder` turn 等）。`GetReply` 参数为 `SerializableRequest` `{ groupId, channelId, charname, replicaUsername, personaForOther? }`；执行端本地 `getChatRequest` 后生成并 mirror DAG。插件仅本机 `session.plugins[replica]`。
+**跨节点 RPC**：群 WS `group_ws_rpc_identity`（`clientNodeId` = 本机 node UUID）+ `rpc_call`（`targetNodeId` 定向）。**RPC 线协议** `memberId`：`owner:charname`（角色）、`owner:world:worldname`（世界）、`owner:persona:name`（人格）。**会话/viewer 层**另用 entity hash 作主键（`chatViewer_t.memberId`、`GetSpeakingOrder` turn 等）。`GetReply` 参数为 `SerializableRequest` `{ groupId, channelId, charname, replicaUsername }`；执行端本地 `getChatRequest`（含 `other_personas` 远程 persona proxy）后生成并 mirror DAG。`other_chars` 为常驻频率∪频道活跃 Top-N（`groupSettings.otherCharsActiveLimit`，默认 8）。本机插件名单仅 `local_plugins.json`；world `GetChatPlugins` 在本机 merge（同名本机优先），hosted 仅主机侧生效。
 
 ---
 
@@ -194,7 +194,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
-| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`fileAlts` |
+| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（内联引用：`{ eventId, senderName?, preview? }`）、`fileAlts`。agent 自动触发替代载荷字段名为 `generated`（非 quote-reply） |
 | GET | `/member-read-markers` | 本机侧车视角各成员水位 `{ markers: { [entityHash]: { eventId, seq } } }` |
 | PUT | `/read-marker` | body `{ eventId, seq }`；写入实体 readMarkers + 群成员侧车；WS `read_marker`（含 `entityHash`） |
 | GET | `/messages` | raw 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（治理/调试；不含 world/persona 视图滤镜） |

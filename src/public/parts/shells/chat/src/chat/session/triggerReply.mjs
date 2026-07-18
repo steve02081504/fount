@@ -452,7 +452,6 @@ async function buildCharReplyPlaceholder(chatMetadata, groupId, charname, channe
  * @param {object | null} [requestOverride] 合并进 `getChatRequest` 的字段
  * @param {object} [options] 额外选项
  * @param {string} [options.replicaUsername] 编排 replica
- * @param {object} [options.personaForOther] 跨机人格
  * @param {boolean} [options.fromRpc] 已在归属节点，跳过远端 RPC
  * @returns {Promise<void>}
  */
@@ -471,10 +470,7 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 	const bind = getCharBind(session, charname)
 	if (!bind) throw httpError(404, 'char not found')
 
-	if (!options.fromRpc && !isLocalNode(bind.homeNodeHash, username)) {
-		const personaForOther = session.personas?.[username]
-			? { ownerUsername: username, personaname: session.personas[username] }
-			: undefined
+	if (!options.fromRpc && !isLocalNode(bind.homeNodeHash)) {
 		const owner = bind.ownerUsername || username
 		await invokeGroupRpc(groupId, username, {
 			memberId: `${owner}:${charname}`,
@@ -484,7 +480,6 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 				channelId,
 				charname,
 				replicaUsername: owner,
-				personaForOther,
 			})],
 			targetNodeId: bind.homeNodeHash,
 			partKind: 'char',
@@ -506,7 +501,6 @@ export async function triggerCharReply(groupId, channelId, charname, requestOver
 	try {
 		const request = await getChatRequest(groupId, charname, channelId, {
 			replicaUsername: options.replicaUsername || username,
-			personaForOther: options.personaForOther,
 		})
 		if (requestOverride)
 			Object.assign(request, requestOverride)

@@ -22,7 +22,8 @@ alwaysApply: false
 ## ChatClient
 
 - Entry: `src/api/client.mjs` → `getChatClient(username, entityHash?)` (default = operator).
-- Surface: groups / DM / join, channel send (+ files), reactions / pins / votes, member+role+channel governance, fork / reputation / denylist, federation catchup+tuning, session slots (persona / world / plugin / char / frequency), `triggerReply`, `streamingAuth`, `updateProfile` / `updateEntityProfile` / `setOwner`, `entities.search`, bridge bot lifecycle, private-state namespaces.
+- Surface: groups / DM / join, channel send (+ files), reactions / pins / votes, member+role+channel governance, fork / reputation / denylist, federation catchup+tuning, session slots (persona / world / **node-local plugin list** / char / frequency), `triggerReply`, `streamingAuth`, `updateProfile` / `updateEntityProfile` / `setOwner`, `entities.search`, bridge bot lifecycle, private-state namespaces.
+- **Plugins**: per-group `local_plugins.json` on this node only (not DAG). World may inject live plugins via `GetChatPlugins` (merged in `getChatRequest`; local name wins). hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
 - `OnMessage` may hydrate via `client.messageFrom(event)` and operate immediately; returning false skips `GetReply` without blocking those ops.
 - Bridge groups: duck-typed `bridgeOperations` registered per bot; `group.bridgeBot().stop()` / `client.bridgeBots()`.
 - Integration: `test/integration/chat_client_api.test.mjs`, `entity_private_state.test.mjs`, `entity_search.test.mjs`.

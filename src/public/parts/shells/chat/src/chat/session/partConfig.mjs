@@ -1,9 +1,9 @@
 /**
- * 【文件】partConfig.mjs — 会话部件配置（人格/世界/角色/插件）与 DAG 事件写入
- * 【职责】setPersona/bindWorld/addchar/removechar/addplugin/removeplugin/setCharReplyFrequency；读写物化 session 并 rebuildGroupRuntime；问候语插入；getCharList/getChatLog 等查询。
- * 【原理】每次变更 appendSession* 签名事件到 DAG 后 rebuildGroupRuntime 刷新内存；bindWorld/addchar 在合适 greeting_type 下调用 GetGreeting/GetGroupGreeting 并经 addChatLogEntry 落盘；广播对应 persona_set/world_set/char_added 等事件。
- * 【数据结构】物化 session 绑定（ownerUsername + homeNodeHash）；chatMetadata.LastTimeSlice、channelWorlds Map。
- * 【关联】dagSession、runtime、broadcast、generation、profile sync、endpoints。
+ * 【文件】partConfig.mjs — 会话部件配置（人格/世界/角色/插件）与 DAG / 本地写入
+ * 【职责】setPersona/bindWorld/addchar/removechar/addplugin/removeplugin/setCharReplyFrequency；读写物化 session 或本地插件名单并 rebuildGroupRuntime；问候语插入；getCharList/getChatLog 等查询。
+ * 【原理】persona/world/char/frequency 走 appendSession* 签名事件；插件走 `local_plugins.json`（不入 DAG）；变更后 rebuildGroupRuntime；广播对应事件。
+ * 【数据结构】物化 session 绑定（ownerUsername + homeNodeHash）；本机插件名单；chatMetadata.LastTimeSlice、channelWorlds Map。
+ * 【关联】dagSession、localPlugins、runtime、broadcast、generation、profile sync、endpoints。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -25,11 +25,10 @@ import {
 	appendAgentReplyFrequencySet,
 	appendSessionChannelWorldBind,
 	appendSessionPersonaSet,
-	appendSessionPluginAdd,
-	appendSessionPluginRemove,
 	getMaterializedSession,
 	sessionHasChar,
 } from './dagSession.mjs'
+import { addLocalPlugin, getLocalPluginNames, removeLocalPlugin } from './localPlugins.mjs'
 import { buildChatLogEntryFromCharReply } from './logEntries.mjs'
 import { resolveWorld } from './resolvePart.mjs'
 import {
@@ -279,7 +278,7 @@ export async function removechar(groupId, charname, replicaUsername) {
 }
 
 /**
- * 向聊天添加插件部件并广播 plugin_added。
+ * 向聊天添加本机插件并广播 plugin_added（写入节点本地名单，不入 DAG）。
  * @param {string} groupId 聊天 ID
  * @param {string} pluginname 插件名
  * @param {string} [replicaUsername] replica 所有者
@@ -287,13 +286,13 @@ export async function removechar(groupId, charname, replicaUsername) {
  */
 export async function addplugin(groupId, pluginname, replicaUsername) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
-	await appendSessionPluginAdd(username, groupId, pluginname)
+	await addLocalPlugin(username, groupId, pluginname)
 	await rebuildGroupRuntime(groupId, username)
 	broadcastGroupEvent(groupId, { type: 'plugin_added', payload: { pluginname } })
 }
 
 /**
- * 从聊天移除插件并广播 plugin_removed。
+ * 从聊天移除本机插件并广播 plugin_removed。
  * @param {string} groupId 聊天 ID
  * @param {string} pluginname 插件名
  * @param {string} [replicaUsername] replica 所有者
@@ -301,7 +300,7 @@ export async function addplugin(groupId, pluginname, replicaUsername) {
  */
 export async function removeplugin(groupId, pluginname, replicaUsername) {
 	const { username } = await resolveReplica(groupId, replicaUsername)
-	await appendSessionPluginRemove(username, groupId, pluginname)
+	await removeLocalPlugin(username, groupId, pluginname)
 	await rebuildGroupRuntime(groupId, username)
 	broadcastGroupEvent(groupId, { type: 'plugin_removed', payload: { pluginname } })
 }
@@ -337,7 +336,7 @@ export async function getCharListOfGroup(groupId, replicaUsername) {
 }
 
 /**
- * 返回当前聊天已加载的插件 ID 列表。
+ * 返回当前聊天本机已启用的插件 ID 列表。
  * @param {string} groupId 聊天 ID
  * @param {string} [replicaUsername] replica 所有者
  * @returns {Promise<string[]>} 插件名数组
@@ -345,8 +344,7 @@ export async function getCharListOfGroup(groupId, replicaUsername) {
 export async function getPluginListOfGroup(groupId, replicaUsername) {
 	const username = replicaUsername || groupMetadatas.get(groupId)?.username
 	if (!username) return []
-	const session = await getMaterializedSession(username, groupId)
-	return [...session.plugins?.[username] || []]
+	return getLocalPluginNames(username, groupId)
 }
 
 /**

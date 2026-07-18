@@ -1,9 +1,9 @@
 /**
  * 【文件】chatRequest.mjs — 角色 GetReply 用的 chatReplyRequest 构建
- * 【职责】getChatRequest 组装 decl/chatLog 定义的 prompt 结构：合并内存 prelude、DAG 频道消息水合的 chat_log、解析的世界/角色/插件、侧车 logContext 与可选跨机 persona。
- * 【原理】readChannelMessagesForUser + buildChatLogEntriesFromChannelLines 构成主日志；resolveChar/World/LocalPlugins 支持联邦；applyWorldChatLogView 按 viewer 裁剪；member_roles 从物化 members 注入；角色 contextLength 截断；extension 含 groupId/channelId/memberId entity hash。
- * 【数据结构】chatReplyRequest_t（chat_log、timelines、AddChatLogEntry、Update、supported_functions、extension、member_roles）。
- * 【关联】runtime、resolvePart、hydration、group/queries、generation、triggerReply、viewerLog。
+ * 【职责】getChatRequest 组装 decl/chatLog 定义的 prompt 结构：合并内存 prelude、DAG 频道消息水合的 chat_log、解析的世界/角色/人格/插件。
+ * 【原理】先读 500 行频道消息并聚合活跃度；other_chars 取常驻∪活跃 Top-N；other_personas 取窗口内活跃人类对应的 session.personas（不含本机 user 槽）。
+ * 【数据结构】chatReplyRequest_t（chat_log、timelines、other_chars、other_personas、extension.channelActivity 等）。
+ * 【关联】runtime、resolvePart、channelActivity、hydration、triggerReply、viewerLog。
  */
 /** @typedef {import('../../../../../../../decl/charAPI.ts').CharAPI_t} CharAPI_t */
 /** @typedef {import('../../../../../../../decl/worldAPI.ts').WorldAPI_t} WorldAPI_t */
@@ -11,12 +11,12 @@
 /** @typedef {import('../../../../../../../decl/pluginAPI.ts').PluginAPI_t} PluginAPI_t */
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
-
 import { localhostLocales } from '../../../../../../../scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../../server/auth/index.mjs'
-import { loadPart } from '../../../../../../../server/parts_loader.mjs'
+import { resolveDeclaredOwnerEntityHash } from '../../entity/master.mjs'
 import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
+import { resolveActiveMemberKeyForLocalUser } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import {
 	buildChatLogEntriesFromChannelLines,
@@ -29,13 +29,22 @@ import { hydrateLogContextFromSidecar, sidecarChannelForEntry } from '../lib/con
 import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import {
+	aggregateChannelActivity,
+	ownerUsernameForMember,
+	selectOtherCharNames,
+	topActiveKeys,
+} from './channelActivity.mjs'
+import {
 	buildChatLogEntryFromCharReply,
 } from './logEntries.mjs'
 import { chatLogEntry_t } from './models.mjs'
-import { resolveChar, resolveLocalPlugins, resolveWorld } from './resolvePart.mjs'
+import { resolveChar, resolveLocalPlugins, resolvePersona, resolveWorld } from './resolvePart.mjs'
 import { getGroupRuntime } from './runtime.mjs'
 import { applyPersonaChatLogView, applyWorldChatLogView, resolveViewerRoles } from './viewerLog.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
+
+/** 窗口内 otherChars 活跃 Top-N 缺省 */
+const DEFAULT_OTHER_CHARS_ACTIVE_LIMIT = 8
 
 /**
  * 构建角色回复用的 prompt 结构（chat_log 来自 DAG；part 经 resolvePart）。
@@ -44,7 +53,6 @@ import { groupMetadatas } from './wsLifecycle.mjs'
  * @param {string | null} [channelId] 频道 ID
  * @param {object} [options] 选项
  * @param {string} [options.replicaUsername] replica 所有者
- * @param {object} [options.personaForOther] 跨机人格 `{ ownerUsername, personaname, displayName? }`
  * @returns {Promise<object>} prompt 请求载荷
  */
 export async function getChatRequest(groupId, charname, channelId = null, options = {}) {
@@ -66,12 +74,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 
 	const { state } = await getState(replicaUsername, groupId)
 	const member_roles = await resolveViewerRoles(state, { charname, replicaUsername, groupId })
-	const other_chars = {}
-	for (const name of Object.keys(state.session?.chars || {})) {
-		if (name === charname) continue
-		const other = await resolveChar(groupId, name, replicaUsername)
-		if (other) other_chars[name] = other
-	}
 
 	let effectiveChannelId = resolveChannelId(channelId, '')
 	if (!effectiveChannelId)
@@ -86,10 +88,50 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 	if (!effectiveChannelId)
 		effectiveChannelId = await resolveGroupChannelId(replicaUsername, groupId, null)
 
-	const resolvedWorld = await resolveWorld(groupId, effectiveChannelId, replicaUsername)
-	const plugins = injectFountChatCodeContextPlugin(await resolveLocalPlugins(groupId, replicaUsername))
-
 	const lines = await readChannelMessagesForUser(replicaUsername, groupId, effectiveChannelId, { limit: 500 })
+	const activity = aggregateChannelActivity(lines)
+	const activeLimit = Number(state.groupSettings?.otherCharsActiveLimit)
+	const otherCharsLimit = Number.isFinite(activeLimit) && activeLimit > 0
+		? activeLimit
+		: DEFAULT_OTHER_CHARS_ACTIVE_LIMIT
+
+	const otherCharNames = selectOtherCharNames(
+		Object.keys(state.session?.chars || {}),
+		charname,
+		state.session?.charFrequencies,
+		activity.chars,
+		otherCharsLimit,
+	)
+	const other_chars = {}
+	for (const name of otherCharNames) {
+		const other = await resolveChar(groupId, name, replicaUsername)
+		if (other) other_chars[name] = other
+	}
+
+	const localMemberKey = await resolveActiveMemberKeyForLocalUser(replicaUsername, groupId, state)
+	/** @type {Record<string, { last_active: number, count: number }>} */
+	const personaActivityByOwner = {}
+	for (const [memberKey, stat] of Object.entries(activity.humans)) {
+		const owner = ownerUsernameForMember(state, memberKey, replicaUsername, localMemberKey)
+		if (!owner || owner === replicaUsername) continue
+		const prev = personaActivityByOwner[owner]
+		personaActivityByOwner[owner] = prev
+			? {
+				last_active: Math.max(prev.last_active, stat.last_active),
+				count: prev.count + stat.count,
+			}
+			: { ...stat }
+	}
+	const other_personas = {}
+	for (const owner of topActiveKeys(personaActivityByOwner, otherCharsLimit)) {
+		if (!state.session?.personas?.[owner]) continue
+		const persona = await resolvePersona(groupId, owner, replicaUsername)
+		if (persona) other_personas[owner] = persona
+	}
+
+	const resolvedWorld = await resolveWorld(groupId, effectiveChannelId, replicaUsername)
+	const localPlugins = await resolveLocalPlugins(groupId, replicaUsername)
+
 	const i18n = await loadDagHydrationI18n(replicaUsername)
 	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
 	const channelEntries = await buildChatLogEntriesFromChannelLines(
@@ -107,7 +149,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		? await ensureLocalAgentEntityHash(replicaUsername, charname)
 		: await getOperatorEntityHash(replicaUsername)
 
-	const { resolveDeclaredOwnerEntityHash } = await import('../../entity/master.mjs')
 	const declaredOwnerEntityHash = charname && memberId
 		? await resolveDeclaredOwnerEntityHash(replicaUsername, memberId)
 		: null
@@ -159,17 +200,27 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		char: charPart,
 		user: playerPart,
 		other_chars,
+		other_personas,
 		chat_scoped_char_memory: charname ? timeSlice.chars_memories[charname] ??= {} : {},
-		plugins,
+		plugins: localPlugins,
 		extension: {
 			groupId,
 			channelId: effectiveChannelId,
 			memberId,
 			member_roles,
+			channelActivity: {
+				chars: activity.chars,
+				humans: activity.humans,
+				personas: personaActivityByOwner,
+			},
 			...declaredOwnerEntityHash ? { declaredOwnerEntityHash } : {},
 			...state.groupSettings?.bridge ? { bridge: state.groupSettings.bridge } : {},
 		},
 	}
+
+	// world 插件活对象 + 本机名单；同名本机优先。GetChatPlugins 不可 RPC（hosted 仅主机侧生效）。
+	const worldPlugins = await resolvedWorld.interfaces?.chat?.GetChatPlugins?.(chatReplyRequest) || {}
+	chatReplyRequest.plugins = injectFountChatCodeContextPlugin({ ...worldPlugins, ...localPlugins })
 
 	for (const logEntry of chatReplyRequest.chat_log)
 		await hydrateLogContextFromSidecar(
@@ -195,19 +246,6 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		const cap = charPart.contextLength ?? charPart.extension?.contextLength
 		if (cap > 0 && chatReplyRequest.chat_log.length > cap)
 			chatReplyRequest.chat_log = chatReplyRequest.chat_log.slice(-cap)
-	}
-
-	if (options.personaForOther?.personaname) {
-		const owner = options.personaForOther.ownerUsername
-		if (owner && owner !== replicaUsername) {
-			const personaPart = await loadPart(owner, `personas/${options.personaForOther.personaname}`)
-			if (personaPart)
-				chatReplyRequest.extension = {
-					...chatReplyRequest.extension,
-					otherPersona: personaPart,
-					otherPersonaDisplayName: options.personaForOther.displayName,
-				}
-		}
 	}
 
 	return chatReplyRequest

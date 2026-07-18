@@ -23,7 +23,7 @@ export function getSensitiveMedia() {
 }
 
 /**
- * 发送成功后清空 CW / sensitive 控件并隐藏 extras 区。
+ * 发送成功后清空 CW / sensitive 控件并隐藏 extras 区（含引用目标）。
  * @returns {void}
  */
 export function clearComposerExtras() {
@@ -31,6 +31,7 @@ export function clearComposerExtras() {
 	if (cw instanceof HTMLInputElement) cw.value = ''
 	const sm = document.getElementById('hub-sensitive-media')
 	if (sm instanceof HTMLInputElement) sm.checked = false
+	void import('./composerReply.mjs').then(({ clearReplyTarget }) => clearReplyTarget())
 }
 
 /**

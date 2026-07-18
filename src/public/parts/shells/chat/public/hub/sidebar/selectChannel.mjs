@@ -42,6 +42,7 @@ export async function selectChannel(channelId) {
 	if (isPrivateChatActive())
 		hubStore.privateGroup.channelId = channelId
 	updateHash(hubStore.context.currentGroupId, channelId)
+	void import('../composerReply.mjs').then(({ clearReplyTarget }) => clearReplyTarget())
 	const { showHubMainPane } = await import('../hubPane.mjs')
 	showHubMainPane()
 	void warmCharEntityHashCache()

@@ -21,7 +21,6 @@ export async function getMaterializedSession(replicaUsername, groupId) {
 		world: null,
 		channelWorlds: {},
 		personas: {},
-		plugins: {},
 		charFrequencies: {},
 	}
 }
@@ -183,37 +182,6 @@ export async function appendSessionPersonaSet(replicaUsername, groupId, personan
 		timestamp: Date.now(),
 		content: { ownerUsername: replicaUsername, personaname: personaname || null },
 	}, appendOptions)
-}
-
-/**
- * @param {string} replicaUsername replica 所有者
- * @param {string} groupId 群 ID
- * @param {string} pluginname 插件名
- * @param {object} [appendOptions] appendSignedLocalEvent 选项
- * @returns {Promise<void>}
- */
-export async function appendSessionPluginAdd(replicaUsername, groupId, pluginname, appendOptions = {}) {
-	await appendSignedLocalEvent(replicaUsername, groupId, {
-		type: 'session_plugin_add',
-		sender: replicaUsername,
-		timestamp: Date.now(),
-		content: { ownerUsername: replicaUsername, pluginname },
-	}, appendOptions)
-}
-
-/**
- * @param {string} replicaUsername replica 所有者
- * @param {string} groupId 群 ID
- * @param {string} pluginname 插件名
- * @returns {Promise<void>}
- */
-export async function appendSessionPluginRemove(replicaUsername, groupId, pluginname) {
-	await appendSignedLocalEvent(replicaUsername, groupId, {
-		type: 'session_plugin_remove',
-		sender: replicaUsername,
-		timestamp: Date.now(),
-		content: { ownerUsername: replicaUsername, pluginname },
-	})
 }
 
 /**

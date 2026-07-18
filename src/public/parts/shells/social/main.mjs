@@ -22,8 +22,8 @@ import {
 	unregisterOperatorEntityHashProvider,
 	unregisterReplicaUsernamesProvider,
 } from './src/federation/follower/registry.mjs'
+import { isRemoteTimelinePushAdmitted } from './src/federation/push_admission.mjs'
 import { applyFollowedBlockSignal } from './src/federation/reputation/index.mjs'
-import { registerEntityKeyChainProvider } from './src/federation/write_auth.mjs'
 import { registerSocialManifestAcl, unregisterSocialManifestAcl } from './src/manifestAcl.mjs'
 import { registerSocialManifestTransfer, unregisterSocialManifestTransfer } from './src/manifestTransfer.mjs'
 import { commitEntityKeyRevoke, commitEntityKeyRotate } from './src/timeline/entityKey/commit.mjs'
@@ -52,6 +52,8 @@ async function handleEntityKeyRotated(payload) {
 async function handleTimelinePut(username, data) {
 	const entityHash = data.timelineEntityHash.toLowerCase()
 	if (!parseEntityHash(entityHash)) throw new Error('invalid_timeline_put')
+	if (!await isRemoteTimelinePushAdmitted(username, entityHash))
+		return { result: { ok: false } }
 	const ok = await ingestRemoteTimelineEvent(username, entityHash, data.event)
 	return { result: { ok } }
 }
@@ -93,16 +95,6 @@ export default {
 		registerOperatorEntityHashProvider(
 			(await import('../chat/src/entity/identity.mjs')).resolveOperatorEntityHashForUser,
 		)
-		registerEntityKeyChainProvider(async username => {
-			const { ensureOperatorIdentity } = await import('../chat/src/entity/identity.mjs')
-			const row = await ensureOperatorIdentity(username)
-			if (!row?.recoveryPubKeyHex) return null
-			return {
-				recoveryPubKeyHex: String(row.recoveryPubKeyHex).trim().toLowerCase(),
-				activePubKeyHex: String(row.activePubKeyHex || '').trim().toLowerCase(),
-				entityKeyHistory: Array.isArray(row.keyHistory) ? row.keyHistory : [],
-			}
-		})
 		registerFollowingScanProvider(async username => {
 			const { resolveOperatorEntityHashForUser } = await import('../chat/src/entity/identity.mjs')
 			const operator = await resolveOperatorEntityHashForUser(username)

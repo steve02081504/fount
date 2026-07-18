@@ -45,6 +45,18 @@ export default {
 				localWorldHookState.viewerCalls++
 				return arg.chat_log || []
 			},
+			/**
+			 * @returns {Record<string, object>} 测试用活对象插件
+			 */
+			GetChatPlugins: () => {
+				localWorldHookState.chatPluginsCalls++
+				return {
+					'world-injected': {
+						info: { name: 'world-injected' },
+						interfaces: {},
+					},
+				}
+			},
 		},
 	},
 }

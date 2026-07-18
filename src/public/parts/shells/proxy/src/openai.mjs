@@ -116,6 +116,7 @@ async function handleChatCompletionsRequest(req, res, username, model) {
 		user_prompt: { text: [] },
 		world_prompt: { text: [] },
 		other_chars_prompts: {},
+		other_personas_prompts: {},
 		plugin_prompts: {},
 	}
 

@@ -143,6 +143,10 @@ export interface prompt_struct_t {
 	 */
 	other_chars_prompts: Record<string, other_chars_prompts_t>
 	/**
+	 * 其他人格提示（群聊他者贡献；不含本机 user_prompt 槽）。
+	 */
+	other_personas_prompts: Record<string, other_chars_prompts_t>
+	/**
 	 * 世界提示。
 	 */
 	world_prompt: single_part_prompt_t

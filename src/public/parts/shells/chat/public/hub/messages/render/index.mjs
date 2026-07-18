@@ -16,6 +16,8 @@ import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, fo
 import { hubStore } from '../../core/state.mjs'
 import { renderMessageActionsHtml } from '../messageActionsRender.mjs'
 
+import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
+
 import {
 	renderDecryptBodyHtml,
 	renderGroupInviteBlock,
@@ -201,7 +203,8 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 		saveEmojiButton,
 		typingLabelHtml,
 	})
-	const refHtml = generating ? '' : await renderMessageRefBlockHtml(message, allMessages)
+	const messagesByEventId = buildMessagesByEventId(allMessages)
+	const refHtml = generating ? '' : await renderMessageRefBlockHtml(message, messagesByEventId)
 
 	let bodyHtml
 	let bubbleAttrs = ''

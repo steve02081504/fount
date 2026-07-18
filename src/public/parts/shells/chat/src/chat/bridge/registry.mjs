@@ -176,6 +176,28 @@ export function lookupBridgeEventId(username, groupId, platformMessageId) {
 }
 
 /**
+ * 按 fount eventId 反查平台 messageId（出站原生 reply 用）。
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {string} eventId fount 消息 id
+ * @returns {string | null} platformMessageId
+ */
+export function lookupBridgePlatformMessageId(username, groupId, eventId) {
+	const key = findBridgeGroupKeyByGroupId(username, groupId)
+	if (!key) return null
+	const needle = String(eventId || '').trim().toLowerCase()
+	if (!needle) return null
+	const mapping = loadBridgesDoc(username).mappings[key]
+	if (!mapping?.messageMap?.length) return null
+	for (let i = mapping.messageMap.length - 1; i >= 0; i--) {
+		const row = mapping.messageMap[i]
+		if (String(row.eventId).trim().toLowerCase() === needle)
+			return String(row.platformMessageId)
+	}
+	return null
+}
+
+/**
  * @param {string} username replica
  * @param {string} groupId 群 ID
  * @returns {boolean} 该桥接群是否已做过历史回填

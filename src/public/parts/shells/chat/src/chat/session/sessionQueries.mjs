@@ -7,6 +7,7 @@ import { skip_report } from '../../../../../../../server/server.mjs'
 import { getDefaultChannelId } from '../dag/queries.mjs'
 
 import { getMaterializedSession } from './dagSession.mjs'
+import { getLocalPluginNames } from './localPlugins.mjs'
 import { getActiveGroupRuntime } from './persistence.mjs'
 import { groupMetadatas } from './wsLifecycle.mjs'
 
@@ -28,7 +29,7 @@ export async function getInitialData(groupId) {
 		|| null
 	return {
 		charlist: Object.keys(session.chars || {}),
-		pluginlist: session.plugins?.[username] || Object.keys(chatMetadata.LastTimeSlice.plugins || {}),
+		pluginlist: await getLocalPluginNames(username, groupId),
 		worldname: channelWorld || chatMetadata.LastTimeSlice.world_id || null,
 		personaname: session.personas?.[username] ?? chatMetadata.LastTimeSlice.player_id ?? null,
 		frequency_data: { ...session.charFrequencies, ...chatMetadata.LastTimeSlice.chars_speaking_frequency },

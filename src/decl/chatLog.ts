@@ -174,6 +174,8 @@ export class chatReplyRequest_t {
 	user: UserAPI_t
 	char: CharAPI_t
 	other_chars: Record<string, CharAPI_t>
+	/** 群内其他用户的 persona（本机 user 槽之外的他者贡献） */
+	other_personas?: Record<string, UserAPI_t>
 	plugins: Record<string, PluginAPI_t>
 	chat_summary: string
 	chat_scoped_char_memory: object

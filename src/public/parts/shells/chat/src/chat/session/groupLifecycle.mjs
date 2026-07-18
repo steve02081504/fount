@@ -11,9 +11,9 @@ import { rebuildAndSaveCheckpoint } from '../dag/materialize.mjs'
 
 import {
 	appendSessionPersonaSet,
-	appendSessionPluginAdd,
 	appendSessionWorldBind,
 } from './dagSession.mjs'
+import { setLocalPluginNames } from './localPlugins.mjs'
 import { chatMetadata_t } from './models.mjs'
 import { registerGroupRuntime, rebuildGroupRuntime } from './runtime.mjs'
 import { groupMetadatas, purgeGroupSession } from './wsLifecycle.mjs'
@@ -32,8 +32,7 @@ export async function newMetadata(groupId, username) {
 		await appendSessionPersonaSet(username, groupId, defaults.LastTimeSlice.player_id, batchOpts)
 	if (defaults.LastTimeSlice.world_id)
 		await appendSessionWorldBind(username, groupId, defaults.LastTimeSlice.world_id, batchOpts)
-	for (const pluginname of Object.keys(defaults.LastTimeSlice.plugins))
-		await appendSessionPluginAdd(username, groupId, pluginname, batchOpts)
+	await setLocalPluginNames(username, groupId, Object.keys(defaults.LastTimeSlice.plugins || {}))
 	await rebuildAndSaveCheckpoint(username, groupId, { skipChannelGc: true })
 	await rebuildGroupRuntime(groupId, username)
 }

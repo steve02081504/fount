@@ -10,6 +10,8 @@ alwaysApply: false
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
+- **写授权**（`federation/write_auth.mjs`）：折叠本机先验链；无链时引导 recovery 签创世（`social_meta` / gen0 `entity_key_rotate.senderPubKey`）或 EVFS 验签 `profile.json`（`activePubKeyHex`）attestation。创世 `ensureSocialMeta` 用 recovery 钥签 `social_meta`。
+- **Push 接纳**（`federation/push_admission.mjs`）：`part_timeline_put` 仅接纳「本机实体关注并集 ∪ 共群成员」；pull（`syncFollowingTimelines`）已按关注拉取，不经此门。denylist/信誉仍在 ingest 链。
 - **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`（`listKnownFollowersOf` 资料粉丝；`listLocalFollowersOf` 仅本机托管，供通知投递）。
 - **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. API: chat `GET …/personal-lists`（operator）。Group kick/ban = node `denylist.json` (separate).
 - **HTTP routes**: thin wrappers → `getSocialClient(username)`; writes at `POST …/posts` (incl. poll / contentWarning / sensitiveMedia / mediaRefs.alt), `…/edit`, `…/poll-vote`, `…/notes`, `…/notes/:id/vote`, `…/like|dislike|repost`, `DELETE …/posts`; `GET|PUT /taste`, `GET|PUT /profile/muted-keywords`, `POST /signals/dwell`; relationships likewise. Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
@@ -66,8 +68,8 @@ alwaysApply: false
 ## Agent integration
 
 - New posts (local commit or federated ingest) flow through `dispatchSocialMessage`: every visible local agent gets `interfaces.social.OnMessage` (boolean intent); without `OnMessage`, @mention defaults to intent true and text via `lib/replyViaChat.mjs` → `chat.GetReply`. Operator care (chat `care` module) on author → `care_post` inbox row + `notifyUser`. Cross-node @ of non-local entities uses `social_post_notify` RPC. `OnFollow` retained (follow is not a message).
-- Integration: `test/integration/social_on_message.test.mjs`, `test/integration/entity_parity.test.mjs` (operator HTTP vs agent SocialClient).
-- **Testing trap**: `commitTimelineEvent` on `post` always triggers `dispatchSocialMessage` → `loadPart` for all local agents. If a char directory exists without `main.mjs`, use `appendTimelineEvent` instead (skips dispatch), or install a real fixture char.
+- Integration: `test/integration/timeline_ingress.test.mjs`（远端 agent recovery 创世引导 + 陌生钥拒绝）、`social_on_message.test.mjs`、`entity_parity.test.mjs`。
+- **Testing trap**: `commitTimelineEvent` / ingest `post` 会触发 `dispatchSocialMessage` → `loadPart`；`dispatch` 对缺 `main.mjs` 的 char 目录已 `.catch` 跳过。集成测仍优先用真实 fixture char，或 `appendTimelineEvent`（跳过 dispatch）。
 
 ## Identity
 
