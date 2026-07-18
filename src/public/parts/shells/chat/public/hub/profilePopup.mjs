@@ -169,16 +169,6 @@ async function paintProfilePopup(popup, entity) {
 		if (nameElement) nameElement.textContent = alias
 	}
 
-	const tagElement = popup.querySelector('[data-profile-popup-entity-tag]')
-	if (tagElement)
-		if (isViewerEntityHash(entityHash))
-			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagLocal'
-		else if (entity.charname)
-			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagChar'
-		else
-			tagElement.dataset.i18n = 'chat.hub.profilePopup.tagFed'
-
-
 	const editButton = popup.querySelector('[data-profile-popup-edit]')
 	const dmButton = popup.querySelector('[data-profile-popup-dm]')
 	const socialButton = popup.querySelector('[data-profile-popup-social]')

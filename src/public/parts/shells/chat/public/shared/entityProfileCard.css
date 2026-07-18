@@ -175,14 +175,6 @@
 	background: #80848e;
 }
 
-.hub-profile-popup-name-row {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 8px;
-	padding-right: 4px;
-}
-
 .hub-profile-popup-name {
 	margin: 0;
 	color: var(--hub-text-bright, var(--color-base-content));
@@ -190,19 +182,6 @@
 	font-weight: 820;
 	line-height: 1.15;
 	overflow-wrap: anywhere;
-}
-
-.hub-profile-popup-tag {
-	padding: 3px 7px;
-	border-radius: 999px;
-	background: color-mix(in srgb, var(--entity-card-accent) 15%, transparent);
-	color: color-mix(in srgb, var(--entity-card-accent) 68%, var(--hub-text-bright, var(--color-base-content)));
-	font-size: 10px;
-	font-weight: 700;
-}
-
-.hub-profile-popup-tag:empty {
-	display: none;
 }
 
 .entity-profile-card-handle {
