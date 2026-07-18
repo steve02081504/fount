@@ -391,9 +391,17 @@ async function handleSaveProfile() {
 	const groupId = hubStore.context.currentGroupId || undefined
 	try {
 		const avatarFile = editDialog.querySelector('#hub-profile-edit-avatar-upload')?.files?.[0]
-		const avatarUrl = avatarFile
-			? (await uploadAvatar(editingEntityHash, avatarFile)).avatarUrl
-			: editDialog.querySelector('#hub-profile-edit-avatar-url')?.value?.trim() || ''
+		let avatarQueued = false
+		let avatarUrl = editDialog.querySelector('#hub-profile-edit-avatar-url')?.value?.trim() || ''
+		if (avatarFile) {
+			const avatarResult = await uploadAvatar(editingEntityHash, avatarFile)
+			if (avatarResult?.queued) {
+				avatarQueued = true
+				avatarUrl = editingAvatarPreview || avatarUrl
+			}
+			else
+				avatarUrl = avatarResult?.avatarUrl || avatarUrl
+		}
 		editingLocalized = Object.fromEntries(
 			Object.entries(editingLocalized).map(([key, slice]) => [
 				key,
@@ -401,9 +409,19 @@ async function handleSaveProfile() {
 			]),
 		)
 		const bannerFile = editDialog.querySelector('#hub-profile-edit-banner-upload')?.files?.[0]
-		const banner = bannerFile && !editingBannerCleared
-			? (await uploadBanner(editingEntityHash, bannerFile)).bannerUrl
-			: editDialog.querySelector('#hub-profile-edit-banner-url')?.value?.trim() || ''
+		let bannerQueued = false
+		let banner = editDialog.querySelector('#hub-profile-edit-banner-url')?.value?.trim() || ''
+		if (bannerFile && !editingBannerCleared) {
+			const bannerResult = await uploadBanner(editingEntityHash, bannerFile)
+			if (bannerResult?.queued) {
+				bannerQueued = true
+				banner = editingBannerPreview || banner
+			}
+			else
+				banner = bannerResult?.bannerUrl || banner
+		}
+		else if (editingBannerCleared)
+			banner = ''
 		const updates = {
 			localized: editingLocalized,
 			handle: editDialog.querySelector('#hub-profile-edit-handle')?.value?.trim() || '',
@@ -413,10 +431,13 @@ async function handleSaveProfile() {
 			banner,
 		}
 		const result = await updateEntityProfileApi(editingEntityHash, updates, groupId)
-		if (!result?.profile) throw new Error(result?.error || 'update failed')
+		const queued = !!(result?.queued || avatarQueued || bannerQueued)
+		if (!queued && !result?.profile) throw new Error(result?.error || 'update failed')
 		invalidateUserProfileCache(editingEntityHash)
 		editDialog.close()
-		showToastI18n('success', 'chat.hub.profilePopup.editSaved')
+		showToastI18n('success', queued
+			? 'chat.hub.profilePopup.editQueued'
+			: 'chat.hub.profilePopup.editSaved')
 		await onSavedCallback?.()
 	}
 	catch (error) {

@@ -84,9 +84,9 @@ export async function updateEntityProfileApi(entityHash, updates, groupId) {
 			}),
 		},
 	)
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok) 
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	}
-	return response.json()
+	
+	return data
 }

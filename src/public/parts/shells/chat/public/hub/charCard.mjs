@@ -114,6 +114,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		await paintEntityProfileUi(card, profile)
 		if (entityHash)
 			wireProfileEditButton(card, entityHash, {
+				profile,
 				/**
 				 * 资料保存后重绘角色信息卡。
 				 * @returns {Promise<void>}

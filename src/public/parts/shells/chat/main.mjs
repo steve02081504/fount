@@ -34,6 +34,10 @@ import {
 	registerChatEntitySearchHandler,
 	unregisterChatEntitySearchHandler,
 } from './src/entity/entitySearch.mjs'
+import {
+	registerOwnerProfileUpdateMailbox,
+	unregisterOwnerProfileUpdateMailbox,
+} from './src/entity/ownerProfileUpdate.mjs'
 import { registerGroupMemberEntityResolver, unregisterGroupMemberEntityResolver } from './src/entity/viewerResolve.mjs'
 import { setGroupEndpoints } from './src/group/endpoints.mjs'
 
@@ -100,6 +104,7 @@ export default {
 		registerGroupMemberEntityResolver('chat', getGroupMemberEntityHash)
 		registerChatFederationRoomProvider()
 		registerChatMailboxConsumer()
+		registerOwnerProfileUpdateMailbox()
 		if (loadCount === 1) {
 			setGroupEndpoints(router)
 			setEndpoints(router)
@@ -125,6 +130,7 @@ export default {
 			unregisterChatGroupEntityIndex()
 			unregisterChatFederationRoomProvider()
 			unregisterChatMailboxConsumer()
+			unregisterOwnerProfileUpdateMailbox()
 		}
 	},
 	interfaces: {

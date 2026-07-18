@@ -289,9 +289,11 @@
 						"src/public/parts/shells/chat/public/src/templates/hub/profile_edit_modal.html",
 						"src/public/parts/shells/chat/public/src/templates/hub/profile_popup.html",
 						"src/public/parts/shells/chat/src/entity/profile.mjs",
+						"src/public/parts/shells/chat/src/entity/ownerProfileUpdate.mjs",
 						"src/public/parts/shells/chat/src/entity/localized.mjs",
 						"src/public/parts/shells/chat/src/entity/filesUrl.mjs",
-						"src/public/parts/shells/chat/src/entity/filesEndpoints.mjs"
+						"src/public/parts/shells/chat/src/entity/filesEndpoints.mjs",
+						"src/public/parts/shells/chat/test/integration/owner_profile_update.test.mjs"
 					]
 				}
 			],

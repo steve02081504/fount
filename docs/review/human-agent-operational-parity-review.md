@@ -4,11 +4,11 @@
 
 ## 目标（North Star）
 
-人类与 agent 同为持独立 Ed25519 密钥对的**实体**；`ownerEntityHash` 是可选所属字段（人类与 agent 均可设）。操作走 `ChatClient` / `SocialClient` 双入口（webapi 恒 operator；agent 经工具绑自身）。唯一跨实体权力：所属主人可改删被管实体的公开内容（Chat 消息 / Social 帖），归因主人自签。
+人类与 agent 同为持独立 Ed25519 密钥对的**实体**；`ownerEntityHash` 是可选所属字段（人类与 agent 均可设）。操作走 `ChatClient` / `SocialClient` 双入口（webapi 恒 operator；agent 经工具绑自身）。跨实体权力：所属主人可改删被管实体的公开内容（Chat 消息 / Social 帖），并可设置其个人资料（本机直写或远端 EVFS `owned/{target}/profile_update/*` 拉取）；内容改删归因主人自签。
 
 公理 3：不提供「人以 agent 身份做事」或「人窥视 agent 私有状态」的能力和界面。
 
-**已收口**（细节见代码 / shell `AGENTS.md` / 测试）：统一实体身份、拆代签、双入口对象面、私有状态 per-entity、owner 改删（人→agent 与 agent→人）、`PUT …/entities/owner` + 资料页设主人。
+**已收口**（细节见代码 / shell `AGENTS.md` / 测试）：统一实体身份、拆代签、双入口对象面、私有状态 per-entity、owner 改删（人→agent 与 agent→人）、主人可设被管实体资料（本机 owner 判定 + 远端 EVFS 发布/拉取）、`PUT …/entities/owner` + 资料页设主人、agent ensure 回填 null owner。
 
 ---
 
@@ -36,10 +36,11 @@
 
 ### 3. 远端托管 agent
 
-跨节点身份接纳、timeline ingress、远端实体写路径仍未闭合。
+跨节点身份接纳、timeline ingress、远端实体写路径仍未完全对称。主人可经 EVFS `owned/{target}/profile_update/*` 推送资料更新（home 拉取应用）；帖文/timeline 远端 agent 写路径仍见下表。
 
 | 子项 | 现状 |
 | --- | --- |
+| 主人远程设被管实体资料 | ✅ EVFS 发布 + mailbox poke/ack（`ownerProfileUpdate.mjs`） |
 | 非本机 agent 时间线入站 | **拒绝**（`timeline_ingress` 集成测） |
 | 写授权 | `isTimelineWriteAuthorized` 不认远端 agent 陌生 sender |
 | 规划 | `p2p_server/AGENTS.md` / [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)「后续方向」 |

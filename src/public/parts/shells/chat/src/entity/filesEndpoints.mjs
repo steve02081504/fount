@@ -6,7 +6,10 @@ import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStrea
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
 import { entityFileUrl } from './filesUrl.mjs'
-import { uploadAvatar, uploadBanner } from './profile.mjs'
+import { isWritableLocalEntityForUser } from './http.mjs'
+import { resolveOperatorEntityHashForUser } from './identity.mjs'
+import { publishOwnerProfileUpdate } from './ownerProfileUpdate.mjs'
+import { getProfile, uploadAvatar, uploadBanner } from './profile.mjs'
 
 const CHAT_PREFIX = '/api/parts/shells:chat'
 const MAX_EVFS_UPLOAD_BYTES = 64 * 1024 * 1024
@@ -118,8 +121,6 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const { username } = getUserByReq(req)
 		if (!isEntityHash128(entityHash))
 			return res.status(400).json({ error: 'invalid entityHash' })
-		if (!await canWriteManifestPath(username, entityHash, 'profile/avatar'))
-			return res.status(403).json({ error: 'Permission denied' })
 
 		const file = pickUploadedFile(req, 'avatar') || pickUploadedFile(req, 'file')
 		if (!file) return res.status(400).json({ error: 'No file uploaded' })
@@ -128,14 +129,32 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
 			return res.status(413).json({ error: 'file too large' })
 
-		const avatarUrl = await uploadAvatar(
-			username,
-			entityHash,
-			file.buffer,
-			file.originalname || 'avatar',
-			file.mimetype || 'image/png',
-		)
-		res.status(200).json({ avatarUrl })
+		if (await isWritableLocalEntityForUser(username, entityHash)) {
+			if (!await canWriteManifestPath(username, entityHash, 'profile/avatar'))
+				return res.status(403).json({ error: 'Permission denied' })
+			const avatarUrl = await uploadAvatar(
+				username,
+				entityHash,
+				file.buffer,
+				file.originalname || 'avatar',
+				file.mimetype || 'image/png',
+			)
+			return res.status(200).json({ avatarUrl })
+		}
+
+		const operatorHash = await resolveOperatorEntityHashForUser(username)
+		if (!operatorHash) return res.status(400).json({ error: 'operator identity not configured' })
+		const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
+		if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
+			return res.status(403).json({ error: 'Permission denied' })
+		const queued = await publishOwnerProfileUpdate(username, operatorHash, entityHash, {}, {
+			avatar: {
+				buffer: file.buffer,
+				filename: file.originalname || 'avatar',
+				mimeType: file.mimetype || 'image/png',
+			},
+		})
+		res.status(202).json({ ...queued, avatarUrl: null })
 	})
 
 	router.post(`${CHAT_PREFIX}/entities/:entityHash/files/profile/banner`, authenticate, async (req, res) => {
@@ -143,8 +162,6 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const { username } = getUserByReq(req)
 		if (!isEntityHash128(entityHash))
 			return res.status(400).json({ error: 'invalid entityHash' })
-		if (!await canWriteManifestPath(username, entityHash, 'profile/banner'))
-			return res.status(403).json({ error: 'Permission denied' })
 
 		const file = pickUploadedFile(req, 'banner') || pickUploadedFile(req, 'file')
 		if (!file) return res.status(400).json({ error: 'No file uploaded' })
@@ -153,13 +170,31 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		if (file.buffer.length > MAX_EVFS_UPLOAD_BYTES)
 			return res.status(413).json({ error: 'file too large' })
 
-		const bannerUrl = await uploadBanner(
-			username,
-			entityHash,
-			file.buffer,
-			file.originalname || 'banner',
-			file.mimetype || 'image/png',
-		)
-		res.status(200).json({ bannerUrl })
+		if (await isWritableLocalEntityForUser(username, entityHash)) {
+			if (!await canWriteManifestPath(username, entityHash, 'profile/banner'))
+				return res.status(403).json({ error: 'Permission denied' })
+			const bannerUrl = await uploadBanner(
+				username,
+				entityHash,
+				file.buffer,
+				file.originalname || 'banner',
+				file.mimetype || 'image/png',
+			)
+			return res.status(200).json({ bannerUrl })
+		}
+
+		const operatorHash = await resolveOperatorEntityHashForUser(username)
+		if (!operatorHash) return res.status(400).json({ error: 'operator identity not configured' })
+		const profile = await getProfile(entityHash, username, { skipPresentation: true, fetchRemote: true })
+		if (String(profile?.ownerEntityHash || '').toLowerCase() !== operatorHash)
+			return res.status(403).json({ error: 'Permission denied' })
+		const queued = await publishOwnerProfileUpdate(username, operatorHash, entityHash, {}, {
+			banner: {
+				buffer: file.buffer,
+				filename: file.originalname || 'banner',
+				mimeType: file.mimetype || 'image/png',
+			},
+		})
+		res.status(202).json({ ...queued, bannerUrl: null })
 	})
 }

@@ -35,6 +35,19 @@ export function isLocalWritableEntityHash(entityHash) {
 }
 
 /**
+ * 是否可编辑资料：本机可写，或声明主人是当前 viewer。
+ * @param {string | null | undefined} entityHash 目标
+ * @param {{ ownerEntityHash?: string | null } | null | undefined} [profile] 资料（含 ownerEntityHash）
+ * @returns {boolean} 是否显示编辑入口
+ */
+export function canEditEntityProfile(entityHash, profile) {
+	if (isLocalWritableEntityHash(entityHash)) return true
+	const viewer = String(hubStore.viewer?.viewerEntityHash || '').trim().toLowerCase()
+	const owner = String(profile?.ownerEntityHash || '').trim().toLowerCase()
+	return !!(viewer && owner && viewer === owner)
+}
+
+/**
  * @param {string | null | undefined} entityHash 目标 entityHash
  * @returns {boolean} 是否为当前登录 viewer
  */

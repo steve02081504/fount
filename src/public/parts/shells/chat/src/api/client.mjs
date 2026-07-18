@@ -403,16 +403,32 @@ export function createChatClient(apiContext) {
 		},
 		/**
 		 * @param {{ name?: string, avatar?: { buffer: Buffer, filename: string, mimeType?: string }, banner?: { buffer: Buffer, filename: string, mimeType?: string }, [key: string]: unknown }} updates 资料补丁
-		 * @returns {Promise<object>} 更新后的 profile
+		 * @returns {Promise<object>} 更新后的 profile 或 `{ queued, contentHash, ts }`
 		 */
 		async updateProfile(updates = {}) {
-			const { updateProfile, uploadAvatar, uploadBanner } = await import('../entity/profile.mjs')
-			const { avatar, banner, ...fields } = updates
-			if (avatar?.buffer)
-				await uploadAvatar(apiContext.username, apiContext.entityHash, avatar.buffer, avatar.filename || 'avatar.png', avatar.mimeType)
-			if (banner?.buffer)
-				await uploadBanner(apiContext.username, apiContext.entityHash, banner.buffer, banner.filename || 'banner.png', banner.mimeType)
-			return updateProfile(apiContext.username, apiContext.entityHash, fields)
+			const { updateEntityProfileAsActor } = await import('../entity/ownerProfileUpdate.mjs')
+			const result = await updateEntityProfileAsActor(
+				apiContext.username,
+				apiContext.entityHash,
+				apiContext.entityHash,
+				updates,
+			)
+			return result.profile ?? result
+		},
+		/**
+		 * 以本 client 实体身份更新任意目标实体资料（本机直写或远端主人 EVFS 队列）。
+		 * @param {string} targetEntityHash 目标
+		 * @param {object} updates 资料补丁
+		 * @returns {Promise<object>} `{ profile }` 或 `{ queued, contentHash, ts }`
+		 */
+		async updateEntityProfile(targetEntityHash, updates = {}) {
+			const { updateEntityProfileAsActor } = await import('../entity/ownerProfileUpdate.mjs')
+			return updateEntityProfileAsActor(
+				apiContext.username,
+				apiContext.entityHash,
+				targetEntityHash,
+				updates,
+			)
 		},
 		/**
 		 * 声明 / 清除本实体的所属主人（identity + profile + 群 `member_owner_update`）。

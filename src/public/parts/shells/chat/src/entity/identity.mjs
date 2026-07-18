@@ -147,12 +147,21 @@ export async function ensureEntityIdentity(username, options = {}) {
 		}
 	}
 	else if (charPartName) 
-		for (const row of await listEntityIdentities(username)) 
-			if (row.charPartName === charPartName) {
-				cacheFromRow(username, row)
-				return row
+		for (const row of await listEntityIdentities(username)) {
+			if (row.charPartName !== charPartName) continue
+			const hash = String(row.entityHash).toLowerCase()
+			const diskOwner = row.ownerEntityHash == null || row.ownerEntityHash === ''
+				? null
+				: String(row.ownerEntityHash).toLowerCase()
+			// 既有 agent 未声明主人：回填为 operator（显式指向他人则保留）。
+			if (!diskOwner) {
+				const operatorHash = await getOperatorEntityHash(username)
+				await setEntityOwner(username, hash, operatorHash)
+				return loadEntityIdentity(username, hash)
 			}
-		
+			cacheFromRow(username, row)
+			return row
+		}
 	
 
 	const recovery = keyPairFromSeed(randomBytes(32))

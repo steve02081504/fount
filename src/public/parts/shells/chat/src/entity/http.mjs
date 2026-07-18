@@ -2,7 +2,7 @@ import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
 import { getUserByReq } from '../../../../../../server/auth/index.mjs'
 
-import { resolveCharPartNameForEntity, resolveOperatorEntityHashForUser } from './identity.mjs'
+import { loadEntityIdentity, resolveOperatorEntityHashForUser } from './identity.mjs'
 import { resolveLogicalEntityId } from './logicalId.mjs'
 import { resolveGroupMemberEntityHash } from './viewerResolve.mjs'
 
@@ -33,6 +33,7 @@ export async function getReplicaFromReq(req) {
 }
 
 /**
+ * 本机可写：节点可写，且（本人 operator，或本地 identity 声明的主人是 operator）。
  * @param {string} replicaUsername fount 登录名
  * @param {string} entityHash 目标 entityHash
  * @returns {Promise<boolean>} 当前用户是否可写该实体
@@ -42,8 +43,15 @@ export async function isWritableLocalEntityForUser(replicaUsername, entityHash) 
 	if (!isWritableLocalEntity(entityHash)) return false
 	const target = String(entityHash || '').toLowerCase()
 	const operatorHash = await resolveOperatorEntityHashForUser(replicaUsername)
+	if (!operatorHash) return false
 	if (target === operatorHash) return true
-	return await resolveCharPartNameForEntity(replicaUsername, target) != null
+	try {
+		const row = await loadEntityIdentity(replicaUsername, target)
+		return String(row.ownerEntityHash || '').toLowerCase() === operatorHash
+	}
+	catch {
+		return false
+	}
 }
 
 /**

@@ -2909,6 +2909,7 @@
 					"title": "关闭资料卡"
 				},
 				"editSaved": "资料已保存",
+				"editQueued": "已发布，等待对方节点拉取",
 				"dmChar": "与角色私聊",
 				"dmUser": "发送私信",
 				"dmFed": "联邦私信",

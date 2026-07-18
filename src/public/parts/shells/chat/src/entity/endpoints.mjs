@@ -14,6 +14,7 @@ import {
 	setEntityOwner,
 } from './identity.mjs'
 import { revokeEntityActiveKey, rotateEntityActiveKey } from './keyAdmin.mjs'
+import { pollOwnedEntityProfileUpdates, updateEntityProfileAsActor } from './ownerProfileUpdate.mjs'
 import { localesFromRequest } from './presentation.mjs'
 import {
 	computeEffectiveStatus,
@@ -21,7 +22,6 @@ import {
 	getProfile,
 	getStats,
 	recordHeartbeat,
-	updateProfile,
 	updateStatus,
 } from './profile.mjs'
 import { resolveGroupMemberEntityHash } from './viewerResolve.mjs'
@@ -126,6 +126,7 @@ export function registerEntityEndpoints(router) {
 		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
 			return res.status(403).json({ error: 'Permission denied' })
 		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
+		void pollOwnedEntityProfileUpdates(replicaUsername).catch(() => {})
 		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
 		res.status(200).json({
 			lastSeenAt,
@@ -168,14 +169,28 @@ export function registerEntityEndpoints(router) {
 
 	router.put(entityPathRegex('$'), authenticate, async (req, res) => {
 		const entityHash = req.params[0].toLowerCase()
-		const { replicaUsername } = await getReplicaFromReq(req)
-		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
-			return res.status(403).json({ error: 'Permission denied' })
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
 		const groupId = String(req.body?.groupId || req.query?.groupId || '').trim() || undefined
 		const locales = localesFromRequest(req, replicaUsername)
-		res.status(200).json({
-			profile: await updateProfile(replicaUsername, entityHash, req.body, { groupId, locales }),
-		})
+		try {
+			const result = await updateEntityProfileAsActor(
+				replicaUsername,
+				operatorEntityHash,
+				entityHash,
+				req.body || {},
+				{ groupId, locales },
+			)
+			if (result.queued)
+				return res.status(202).json(result)
+			return res.status(200).json(result)
+		}
+		catch (error) {
+			if (error?.status === 403 || /Permission denied|not declared owner/i.test(String(error?.message || '')))
+				return res.status(403).json({ error: error.message || 'Permission denied' })
+			throw error
+		}
 	})
 
 	router.put(`${CHAT_PREFIX}/entities/owner`, authenticate, async (req, res) => {

@@ -47,11 +47,11 @@ export async function updateProfile(entityHash, updates, groupId) {
 			...groupId ? { groupId } : {},
 		}),
 	})
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok) 
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	}
-	return response.json()
+	
+	return data
 }
 
 /**
@@ -66,11 +66,11 @@ export async function uploadAvatar(entityHash, file) {
 		method: 'POST',
 		body: formData,
 	})
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok) 
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	}
-	return response.json()
+	
+	return data
 }
 
 /**
@@ -85,9 +85,9 @@ export async function uploadBanner(entityHash, file) {
 		method: 'POST',
 		body: formData,
 	})
-	if (!response.ok) {
-		const data = await response.json().catch(() => ({}))
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok) 
 		throw Object.assign(new Error(data.error || response.statusText), data, { response })
-	}
-	return response.json()
+	
+	return data
 }

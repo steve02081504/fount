@@ -183,6 +183,7 @@ async function paintProfilePopup(popup, entity) {
 
 	if (editButton instanceof HTMLButtonElement && entityHash)
 		wireProfileEditButton(popup, entityHash, {
+			profile,
 			/**
 			 * 资料保存后刷新弹窗与侧栏角色卡。
 			 * @returns {Promise<void>}
