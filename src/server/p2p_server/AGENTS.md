@@ -18,7 +18,7 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 
 | Area | Path |
 | --- | --- |
-| Node startup / entity store glue | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs`（`findHostingUser` 认 profile **或** 已有 entity 目录——群/共享柜等逻辑实体无 profile） |
+| Node startup / entity store glue | `src/server/p2p_server/index.mjs`, `shells/chat/src/entity/store.mjs` (`findHostingUser` matches by profile **or** existing entity directory — groups/shared cabinets are logical entities with no profile) |
 | HTTP `/api/p2p/*` (network level) | `src/server/web_server/p2p_endpoints.mjs` |
 | HTTP `/api/parts/shells:chat/*` (entity/profile/EVFS) | `shells/chat/src/entity/endpoints.mjs`, `filesEndpoints.mjs` |
 | Chat federation / DAG / encryption | `shells/chat/src/chat/` |
@@ -43,9 +43,3 @@ P2P core lives in npm package [**@steve02081504/fount-p2p**](https://www.npmjs.c
 - Hub frontend: [hub/AGENTS.md](../../public/parts/shells/chat/public/hub/AGENTS.md)
 
 Types: `src/decl/p2pAPI.ts`.
-
-## Upstream fount-p2p 待办（包仓库）
-
-- `foldEntityKeyHistoryFromEvents` 恒返回 `recoveryPubKeyHex: null`（social 侧只好扫 `social_meta` / gen0 `senderPubKey` 叠一层）
-- `isValidActiveSender` / `isEntityTimelineWriteAuthorized` 等若干 `void` 弃用参数可清
-- 创世引导现已在 social `write_auth` 闭合；包侧若补 recovery 折叠可删掉 social 重复扫描

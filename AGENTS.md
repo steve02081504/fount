@@ -40,12 +40,14 @@
 | Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
 | Chat session viewer / member_roles | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |
 | Chat/Social roadmap / interaction topology baseline (reply generation belongs to char; persona = human I/O middleware; `ChatClient` / `SocialClient` = entity operation surface, bridges implement `bridgeOperations`) | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
+| docs writing guide (design / review style, user-visible impact, edge-debt demotion) | [docs/AGENTS.md](docs/AGENTS.md) |
 | Human / agent operational parity (unified entity model) | [docs/review/human-agent-operational-parity-review.md](docs/review/human-agent-operational-parity-review.md) |
+| Chat / Social / Cabinet implementation debt (ugly / dead / merge) | [docs/review/chat-social-cabinet-tech-stack.md](docs/review/chat-social-cabinet-tech-stack.md) |
 | World distribution model (local/replicated/hosted, WorldChatHost, world_state) | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
 | Plugin (`GetPrompt` / `TweakPrompt` / `ReplyHandler`) | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |
 | Chat shell (entity model / ChatClient / private state) | [src/public/parts/shells/chat/public/AGENTS.md](src/public/parts/shells/chat/public/AGENTS.md) |
 | Chat Hub frontend | [src/public/parts/shells/chat/public/hub/AGENTS.md](src/public/parts/shells/chat/public/hub/AGENTS.md) |
-| Cabinet (P2P 文件柜) | [src/public/parts/shells/cabinet/AGENTS.md](src/public/parts/shells/cabinet/AGENTS.md) |
+| Cabinet (P2P file cabinet) | [src/public/parts/shells/cabinet/AGENTS.md](src/public/parts/shells/cabinet/AGENTS.md) |
 | Chat cold archive | [src/public/parts/shells/chat/src/chat/archive/AGENTS.md](src/public/parts/shells/chat/src/chat/archive/AGENTS.md) |
 | Social Shell frontend | [src/public/parts/shells/social/public/AGENTS.md](src/public/parts/shells/social/public/AGENTS.md) |
 | Test framework | [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md) |

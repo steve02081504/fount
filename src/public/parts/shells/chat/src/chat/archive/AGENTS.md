@@ -16,8 +16,8 @@ alwaysApply: false
 
 ## Portable channel archive (Hub)
 
-- Format: `{ format: 'fount-channel-archive', version: 2, source, messages[] }` — see `src/chat/channelArchive.mjs`（校验仍接受 v1）。
+- Format: `{ format: 'fount-channel-archive', version: 2, source, messages[] }` — see `src/chat/channelArchive.mjs` (v1 still accepted by validation).
 - Export includes cold+hot final view, delete tombstones, reaction **counts** (not voters), attachment metadata only (no bytes), plus optional `sourceSenderPubKeyHash` / `sourceEntityHash`.
-- Import creates a **new text channel** in the current group; history is re-signed by the importer (`origin: 'bridge'`, `ingress: 'backfill'`) with `importedFrom` provenance（含 claimed/signer + `attributionMismatch: true`）。Original DAG signatures / reaction voters are not forged.
-- Hub UI：人名旁 `--color-warning` 图标；人物卡姓名下警告框。Agent / Prompt：`extension.attribution.mismatch` → 不可视为主人指令。
+- Import creates a **new text channel** in the current group; history is re-signed by the importer (`origin: 'bridge'`, `ingress: 'backfill'`) with `importedFrom` provenance (including claimed/signer + `attributionMismatch: true`). Original DAG signatures / reaction voters are not forged.
+- Hub UI: `--color-warning` icon next to sender name; warning box below name in profile card. Agent / Prompt: `extension.attribution.mismatch` → must not be treated as a trusted owner instruction.
 - HTTP: `GET …/channels/:channelId/export` (`VIEW_CHANNEL`); `POST …/channels/import` (`MANAGE_CHANNELS`, multipart `archive`).

@@ -10,10 +10,10 @@ alwaysApply: false
 
 - **Local trust domain**: Social UI, `/api/parts/shells:social/...`, local timeline append, and P2P deps are mutually trusted.
 - **External untrusted**: `part_timeline_put`, `part_invoke` (Social RPC / timeline pull). Ingress: `src/timeline/sync.mjs`, `src/discover/rpc.mjs`; outbound filtering in `src/timeline/federationExport.mjs`.
-- **写授权**（`federation/write_auth.mjs`）：折叠本机先验链；无链时引导 recovery 签创世（`social_meta` / gen0 `entity_key_rotate.senderPubKey`）或 EVFS 验签 `profile.json`（`activePubKeyHex`）attestation。创世 `ensureSocialMeta` 用 recovery 钥签 `social_meta`。
-- **Push 接纳**（`federation/push_admission.mjs`）：`part_timeline_put` 仅接纳「本机实体关注并集 ∪ 共群成员」；pull（`syncFollowingTimelines`）已按关注拉取，不经此门。denylist/信誉仍在 ingest 链。
-- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json`（`listKnownFollowersOf` 资料粉丝；`listLocalFollowersOf` 仅本机托管，供通知投递）。
-- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. API: chat `GET …/personal-lists`（operator）。Group kick/ban = node `denylist.json` (separate).
+- **Write auth** (`federation/write_auth.mjs`): folds the local key history chain; if no chain, bootstraps genesis via recovery-signed `social_meta` / gen0 `entity_key_rotate.senderPubKey`, or EVFS `profile.json` (`activePubKeyHex`) attestation. Genesis `ensureSocialMeta` signs `social_meta` with the recovery key.
+- **Push admission** (`federation/push_admission.mjs`): `part_timeline_put` only accepts posts from "local entity follows union ∪ shared group members"; pull (`syncFollowingTimelines`) already filters by follow and bypasses this gate. Denylist/reputation still apply in the ingest chain.
+- **Follow list**: materialized per entity timeline (`loadFollowingForActor`); HTTP always uses the operator entity via `SocialClient` (`src/api/`). Agents use in-process `getSocialClient(username, agentEntityHash)` — no webapi identity switch. Reverse follower index: `{dataPath}/p2p/node/social/follower_index/buckets/{2hex}.json` (`listKnownFollowersOf` for profile followers; `listLocalFollowersOf` for locally-hosted-only, used for notification delivery).
+- **Personal block/hide**: public `block`/`unblock` → `personal_block.json` + reputation; private `hide` → `personal_hide.json` only. API: chat `GET …/personal-lists` (operator). Group kick/ban = node `denylist.json` (separate).
 - **HTTP routes**: thin wrappers → `getSocialClient(username)`; writes at `POST …/posts` (incl. poll / contentWarning / sensitiveMedia / mediaRefs.alt), `…/edit`, `…/poll-vote`, `…/notes`, `…/notes/:id/vote`, `…/like|dislike|repost`, `DELETE …/posts`; `GET|PUT /taste`, `GET|PUT /profile/muted-keywords`, `POST /signals/dwell`; relationships likewise. Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 - **Protected concepts**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Visibility tiers: `public` / `unlisted` (readable, not discoverable) / `followers`+`followers_since` (GSH) / `selected`+`private` (pkw per-recipient wraps) / optional `except` (filter-only). `follow_approve` issues vault H, not locked-account approval. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses media/poll/body; `sensitiveMedia` blurs media only.
 - **Profile cabinets tab**: lists published personal/shared cabinet metadata via Cabinet remote APIs (`renderProfileCabinets`); full visibility tiers (`followers_since` / `selected`) go through Cabinet `publish.mjs`. Reading files still requires cabinet keys / EVFS access.
@@ -21,10 +21,10 @@ alwaysApply: false
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`); ingress rejects unlisted types.
 - **Reputation**: feed/search/trending filter/demote by `pickNodeScore(authorNodeHash)`; mentions skip authors below `SOCIAL_REP_HIDE_THRESHOLD`.
 - **Notifications**: `reply|mention|like|repost|follow|care_post|poll_closed|post_note|live_started` (`inbox.mjs`).
-- **Cross-shell chat HTTP**：viewer / personal-lists / entities/search / translation-prefs 一律走 `/api/parts/shells:chat/…`（前端 `chatApi`）；Social 不再注册重复路由。live/integration 节点需 `loadParts: ['shells/social', 'shells/chat']`。
-- **part_query**：`src/federation/partQuery.mjs` 的 `registerSocialQueryKinds` / `unregisterSocialQueryKinds`；Load/Unload 各一次。KIND+handler 留在 `trending|search|discover|live/network.mjs`。
-- **联邦帖行**：`src/federation/postQueryRow.mjs`（`federatedPostQueryRow` / `sanitizeFederatedPostQueryRow`）供 discover/search 共用。
-- **Share URL**：chat `wrapProtocolHttpsUrl`（Social 经 `shared/protocolUrl.mjs` re-export）→ GitHub Pages protocol relay to the reader's local instance。`public/shared/runUri.mjs` 保持 Deno 纯测可 import（无 `/parts/` URL）。
+- **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs all go through `/api/parts/shells:chat/…` (frontend `chatApi`); Social does not register duplicate routes. Live/integration nodes need `loadParts: ['shells/social', 'shells/chat']`.
+- **part_query**: `src/federation/partQuery.mjs` `registerSocialQueryKinds` / `unregisterSocialQueryKinds`; called once each in Load/Unload. KIND + handler live in `trending|search|discover|live/network.mjs`.
+- **Federated post rows**: `src/federation/postQueryRow.mjs` (`federatedPostQueryRow` / `sanitizeFederatedPostQueryRow`) shared by discover/search.
+- **Share URL**: chat `wrapProtocolHttpsUrl` (Social re-exports via `shared/protocolUrl.mjs`) → GitHub Pages protocol relay to the reader's local instance. `public/shared/runUri.mjs` must remain Deno-pure-test importable (no `/parts/` URL imports).
 - **Trending**: `scope=local|nearby`; nearby uses `part_query` `trending_hashtags`.
 - **Dwell**: frontend `dwellTracker.mjs` uses local IntersectionObserver; short videos may report `watchMs`/`watchRatio`; local-only ranking signal, not federated.
 - **Topics / search / videos / live**: `tag_follow` topic pages; `GET /search` with filters and `scope=nearby` (`post_search`); `GET /videos/feed` + vertical snap + cursor pagination/replay; `/live/*` (broadcast auto-posts `liveRef`, end `post_edit` stats, dual-host co-stream, lobby `scope=nearby` + viewer proxy) + `av-relay` preview/full (`joinAvRelayRoom` ← `chat/public/shared/avRelayClient.mjs`; WS URL ← `social/public/shared/liveAvWsUrl.mjs`); scheduled posts `publishAt` + `scheduledPostWatcher` (modeled on poll deadline).
@@ -34,22 +34,22 @@ alwaysApply: false
 ## UI conventions
 
 - Prefer `data-i18n` / `setElementI18n(el, key, params)` for UI copy (params via `data-*` → `dataset`). `geti18n` only for non-DOM (`prompt`/`confirm`/`Error`) or embedding prebuilt HTML/DOM into a string. MutationObserver watches only `data-i18n` — same-key param updates need `setElementI18n`.
-- **Input / textarea placeholders**：`data-i18n` 必须指向带 `placeholder` 子键的对象（如 `social.composer`）；字符串键会走 `innerHTML` 路径，textarea 会丢掉用户输入。勿用 i18n 文案驱动禁用/隐藏态——composer 仅在 `#feed` 可见（`activateView` 切 `hidden`），其它视图不塞 placeholder。
+- **Input / textarea placeholders**: `data-i18n` must point to an object with a `placeholder` sub-key (e.g. `social.composer`); a string key takes the `innerHTML` path and textarea loses user input. Do not use i18n copy to drive disabled/hidden states — composer is only visible in `#feed` (`activateView` toggles `hidden`), other views should not inject placeholders.
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
-- Post card engagement: like / **dislike**（图标均为大拇指 thumb-up / thumb-down）；互斥；帖卡与回复行共用 `templates/engagement_bar.html`（`lib/engagementBar.mjs`）；`reaction_index` 投影联邦 like/dislike（受 `privacy.publishReactions` 控制）；`for_you` 用本地 `taste/*`。Preference UI：`#settings`（不再有一级 `#taste` 导航）。
-- **模板插值**：Social HTML 模板一律 `${...}`（`template.mjs`）；禁止 Mustache `{{...}}`。
-- **资料关系统计**：stats 行显示动态 / 关注 / 粉丝；点击关注或粉丝打开列表对话框，**不要**再做「正在关注」资料 Tab。
-- **相册封面**：`coverMediaRef` 取最新可见、无 contentWarning / sensitiveMedia 的图片；不得用剧透图当缩略图。
-- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…/`#drafts`/`#settings`；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + `#search:query`（单一搜索面）。刷新可恢复当前 tab。
-- **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
-- **回复**：`listReplies` 返回完整 feed item；面板行与帖卡共用 `engagement_bar`（回复/转发/赞/踩/收藏/分享）；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
-- **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。
-- **实体头像**：统一走 chat `shared/entityAvatar.mjs`（`renderAvatarHtml` / `entityAvatarUrl`）+ `hashAvatar.mjs`（`customProfileAvatar`）；无显式头像画 hash 字母，勿盲请求 `files/profile/avatar`，勿各处手写 `charAt(0)`。Composer / 回复框须传 `socialState.viewerProfile`（含 `avatar` + `infoDefaults`），与帖卡 `authorProfile` 同源。
-- **`activateView(name)`** → `#${name}View`（`data-view` 与 section id 必须同词干：`videos`→`#videosView`，勿写成 `#videoView`；否则主导航高亮后主栏整块空白）。
-- 短视频 slide 字段取自 `buildPostFeedItem`：`post.content.text` / `post.content.mediaRefs` / `authorProfile`（经 `authorLabel`），不是扁平的 `item.text` / `item.authorName`。
-- 短视频 UI：右侧操作栏含赞 / 评论 / 分享 / 静音；静音偏好写 `localStorage`（`fount.social.video.muted`）并同步全部 slide；评论抽屉盖住操作栏时靠关闭钮、点空白或 Esc 关掉（勿指望再点评论钮）；有回复时右下角固定高度轮播（`syncVideoCommentTicker`，含头像），点击条目打开抽屉并 `focusReplyInPanel` 滚到对应 `.reply[data-reply-id]`。分享复用 `shareOrCopyPostLink`。发评 / 查回复面板时 `cardRoot` 须为 `.post-card, .reply, .video-slide`（feed 与短视频可共享同一 actionKey，勿用裸 `document`）。
+- Post card engagement: like / **dislike** (both use thumb-up / thumb-down icons); mutually exclusive; post cards and reply rows share `templates/engagement_bar.html` (`lib/engagementBar.mjs`); `reaction_index` projects federated like/dislike (gated by `privacy.publishReactions`); `for_you` uses local `taste/*`. Preference UI: `#settings` (no longer a top-level `#taste` nav entry).
+- **Template interpolation**: Social HTML templates always use `${...}` (`template.mjs`); Mustache `{{...}}` is forbidden.
+- **Profile relationship stats**: stats row shows posts / following / followers; clicking following or followers opens a list dialog — do not add a "following" profile tab.
+- **Album cover**: `coverMediaRef` picks the latest visible image without contentWarning / sensitiveMedia; do not use spoiler images as thumbnails.
+- **Hash routing**: `switchView` writes `#feed`/`#explore`/…/`#drafts`/`#settings`; `applyIncomingNavigation` handles main nav + `#post;entity;postId` detail + `#search:query` (single search view). Refreshing restores the current tab.
+- **Post detail**: `#post;<entityHash>;<postId>` → `views/postDetail.mjs`; `GET …/posts/:entityHash/:postId`. Share links use `formatSocialPostRunUri`.
+- **Replies**: `listReplies` returns full feed items; panel rows and post cards share `engagement_bar` (reply/repost/like/dislike/save/share); same-page self-reply chains are merged into ascending `.post-thread` by `feedThreads.mjs`; cards display `replyContext`.
+- **Profile banner**: `paintEntityProfileBanner` (chat `entityProfileCard.mjs`) — uses `profile.banner` if present, otherwise `entityProfilePattern` hash texture (`entityProfileBanner.css`).
+- **Entity avatars**: always use chat `shared/entityAvatar.mjs` (`renderAvatarHtml` / `entityAvatarUrl`) + `hashAvatar.mjs` (`customProfileAvatar`); without explicit avatar, draw hash initial letter; do not blindly fetch `files/profile/avatar` or hand-write `charAt(0)`. Composer / reply box must pass `socialState.viewerProfile` (containing `avatar` + `infoDefaults`), same source as post card `authorProfile`.
+- **`activateView(name)`** → `#${name}View` (`data-view` and section id must share the same stem: `videos`→`#videosView`, not `#videoView`; mismatch causes the main column to go blank after nav highlight).
+- Short video slide fields come from `buildPostFeedItem`: `post.content.text` / `post.content.mediaRefs` / `authorProfile` (via `authorLabel`), not the flat `item.text` / `item.authorName`.
+- Short video UI: right-side action bar has like / comment / share / mute; mute preference saved to `localStorage` (`fount.social.video.muted`) and synced to all slides; when the comment drawer covers the action bar, close it with the close button, click-outside, or Esc (do not rely on clicking the comment button again). When replies exist, fixed-height ticker in the bottom-right (`syncVideoCommentTicker`, with avatar); clicking an entry opens the drawer and `focusReplyInPanel` scrolls to `.reply[data-reply-id]`. Share reuses `shareOrCopyPostLink`. For comment/reply panels, `cardRoot` must be `.post-card, .reply, .video-slide` (feed and short video can share the same actionKey; do not use bare `document`).
 - **Cross-shell chat imports**: browser modules must use absolute `/parts/shells:chat/...` URLs (filesystem relatives resolve under the page origin and 404, breaking the whole module graph). Modules imported by Deno pure tests must not contain `/parts/...` URL imports — keep token helpers in chat (`inlineTokenSyntax.mjs`) and leave social shared pure modules dependency-free.
 
 ## Feed / profile pagination
@@ -68,19 +68,19 @@ alwaysApply: false
 ## Agent integration
 
 - New posts (local commit or federated ingest) flow through `dispatchSocialMessage`: every visible local agent gets `interfaces.social.OnMessage` (boolean intent); without `OnMessage`, @mention defaults to intent true and text via `lib/replyViaChat.mjs` → `chat.GetReply`. Operator care (chat `care` module) on author → `care_post` inbox row + `notifyUser`. Cross-node @ of non-local entities uses `social_post_notify` RPC. `OnFollow` retained (follow is not a message).
-- Integration: `test/integration/timeline_ingress.test.mjs`（远端 agent recovery 创世引导 + 陌生钥拒绝）、`social_on_message.test.mjs`、`entity_parity.test.mjs`。
-- **Testing trap**: `commitTimelineEvent` / ingest `post` 会触发 `dispatchSocialMessage` → `loadPart`；`dispatch` 对缺 `main.mjs` 的 char 目录已 `.catch` 跳过。集成测仍优先用真实 fixture char，或 `appendTimelineEvent`（跳过 dispatch）。
+- Integration: `test/integration/timeline_ingress.test.mjs` (remote agent recovery genesis bootstrap + unknown key rejection), `social_on_message.test.mjs`, `entity_parity.test.mjs`.
+- **Testing trap**: `commitTimelineEvent` / ingest `post` triggers `dispatchSocialMessage` → `loadPart`; `dispatch` already `.catch`-skips char directories without `main.mjs`. Integration tests still prefer real fixture chars, or use `appendTimelineEvent` (skips dispatch).
 
 ## Identity
 
 - Human and agent are both self-signed entities; `ownerEntityHash` is a belonging field (humans may also set it). Axioms: [human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md).
-- **Profile header**: bio / 帖文 Markdown 走共享 `renderMarkdownAsString` 两档；`isTrustedMarkdownAuthor` 对本人、本机 agent（nodeHash 前缀）、`ownerEntityHash === viewer`、以及信任表走可信档。勿信对端 HTML、勿 `escapeHtml` 源文本。
-- **@id 表述**：帖卡 / 回复 / 资料 / 搜索副行统一 `entityHandle(entityHash, profile)` → chat `formatEntityAtId`；有 `profile.handle` 时 `@handle (@hash…)`，否则 `@hash…`。Feed `authorProfile` 摘要须带 `handle`（`authorProfileSummary`）。资料页先 `rememberEntityHandle` 再渲染帖列表，避免瘦摘要丢 handle 时帖卡仍只显示 `@hash`。
+- **Profile header**: bio / post Markdown uses shared `renderMarkdownAsString` two-tier model; `isTrustedMarkdownAuthor` for self, local agents (nodeHash prefix), `ownerEntityHash === viewer`, and trust list → trusted tier. Do not trust remote HTML; do not `escapeHtml` the markdown source.
+- **@id display**: post cards / replies / profile / search subtitles all use `entityHandle(entityHash, profile)` → chat `formatEntityAtId`; produces `@handle (@hash…)` when `profile.handle` exists, otherwise `@hash…`. Feed `authorProfile` summary must include `handle` (`authorProfileSummary`). Profile page must call `rememberEntityHandle` before rendering the post list, to avoid thin summaries that drop the handle and show only `@hash`.
 - Webapi identity is always the operator (`GET /api/parts/shells:chat/viewer` → `viewerEntityHash` + `profile`); no frontend identity switch, no `actingEntityHash`. Frontend shows edit/delete based on `ownerEntityHash === viewer`.
-- Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash`（operator；前端模块直接 import，无 appContext）。
+- Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash` (operator; directly imported by frontend modules, no appContext bag).
 - Agent private read/write only via `getSocialClient(username, agentEntityHash)` (entry: `src/api/client/index.mjs`).
 - **Saved posts**: `shells/social/entities/{entityHash}/savedPosts.json`; HTTP `…/saved-posts*` (incl. `/search`) fixed to operator; agent CRUD/search is structurally identical (`client.saved.*`). Missing file must return a **new** empty structure (do not shallow-copy a shared `DEFAULT`).
-- **Composer drafts**: `shells/social/entities/{entityHash}/drafts.json`; HTTP `…/drafts*` fixed to operator; agent via `client.drafts.*`. Body mirrors `POST /posts` (sanitized; no File blobs). Cap 100. UI: `#drafts` + composer「存草稿」; publish deletes `activeDraftId`.
+- **Composer drafts**: `shells/social/entities/{entityHash}/drafts.json`; HTTP `…/drafts*` fixed to operator; agent via `client.drafts.*`. Body mirrors `POST /posts` (sanitized; no File blobs). Cap 100. UI: `#drafts` + composer "Save Draft" button; publish deletes `activeDraftId`.
 - **Entity search**: chat `GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork` (`part_query` kind `entity_search`). Search page user section: follow / pin alias; Hub `#friends` sidebar has separate search → create DM.
 
 ## Notifications inbox

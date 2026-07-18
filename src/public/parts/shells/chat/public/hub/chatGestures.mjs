@@ -94,7 +94,7 @@ async function attachDesktopTimelineArrows(lastChar) {
 	lastChar.appendChild(right)
 }
 
-/** @type {WeakMap<HTMLElement, { startX: number, startY: number, dragging: boolean, handled: boolean }>} */
+/** @type {WeakMap<HTMLElement, { startX: number, startY: number, dragging: boolean, handled: boolean, timeline?: boolean }>} */
 const swipeStateByElement = new WeakMap()
 
 /**

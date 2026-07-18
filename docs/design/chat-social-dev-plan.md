@@ -15,8 +15,9 @@
 输入为缺口审阅（审阅只陈述现状；设计决策与未排期方向以本文为准）：
 
 - [human-agent-operational-parity-review.md](../review/human-agent-operational-parity-review.md)：操作平权（统一实体 / 双入口 / owner 改删已收口；开放缺陷见该档）
-- [social-platform-gap-analysis.md](../review/social-platform-gap-analysis.md)：social 产品差距
-- [chat-vs-industrial-im-gap.md](../review/chat-vs-industrial-im-gap.md)：chat 工业 IM 差距
+- [social-platform-gap-analysis.md](../review/social-platform-gap-analysis.md)：social 主路径残差
+- [chat-vs-industrial-im-gap.md](../review/chat-vs-industrial-im-gap.md)：chat 主路径残差
+- [chat-social-cabinet-tech-stack.md](../review/chat-social-cabinet-tech-stack.md)：三壳实现债（丑陋点 / 死代码 / 可合并架构）
 
 一句话总纲：**一种实体、一处收件人、一处 trigger、一层名字、一套 token、一套对象模型**——人类与 agent 同为持独立密钥对的实体（agent 仅多 `ownerEntityHash` 所属字段）；通知与触发以 entityHash 为一等收件人拉平人类与 agent；chat 与 social 的 char 入站事件面统一为 `OnMessage`；chat / social 的操作面以 `ChatClient` / `SocialClient` 统一（agent、agent 开发者、桥接平台三方共用一套鸭子类型契约）；平台 bot 壳退化为该契约的翻译层，触发决策收归 chat 管线；hash 之上铺具名层；entity @ / 角色组 @ / emoji 收敛为一套 inline token 语法。
 
@@ -63,7 +64,7 @@
 
 - **parts 联邦对称**：persona 跨节点从 `extension.otherPersona` 特判升级为正式 remote persona proxy；plugin 联邦参与 prompt 贡献侧。
 - **远端托管 agent 的 ChatClient**：跨节点 agent 的读方法天然可用（联邦群各节点持物化 state 副本）；写方法即实体自签，剩余问题收窄为远端实体的身份接纳与投递，随「远端 agent 接纳」一并设计。
-- **远端 agent 接纳**：跨节点 `nodeHash → operator` 身份链（p2p 信任图扩展），解锁远端托管 agent 的 **owner 跨节点运营写** 与桥接群参与（timeline ingress 引导已部分收口，见平权审阅 §2）。规格尚未落入 `p2p_server/AGENTS.md`，以本条与平权审阅为准。
+- **远端 agent 接纳（边缘）**：补跨节点可验证的「节点上的 operator 身份」后，才能让 **主人在自己机器上改删住在别机的所属 agent 的帖**（及桥接群参与）。timeline 读/ingress 与同机主人改删已部分收口，见平权审阅 §2。**不是**关注/看帖缺口。规格尚未落入 `p2p_server/AGENTS.md`。写作：[docs/AGENTS.md](../AGENTS.md)。
 - **social ↔ chat 结构化桥深化**：mention 升级为专用 channel 的结构化 ingress、chat 会话产出「发帖草稿」经确认走 social `POST /posts`。
 - **可观测性**：联邦同步失败率、DAG 追补延迟、WS 连接数、生成耗时分布，以 debugLog / 内部计数起步。
 - **live / Playwright 补测残项**：DC 历史回填跨重启幂等（需真实 discord.js client）；social poll 双节点联邦与 feed WS prepend（避免整页重拉）。
