@@ -189,19 +189,20 @@ export async function mountStickerPicker(anchor, onInsert, pickerContext = {}) {
 		empty.dataset.i18n = 'chat.hub.stickersEmpty'
 		panel.appendChild(empty)
 	}
-	else {
-		for (const item of items)
-			panel.appendChild(createStickerButton(item.raw, {
-				className: 'btn btn-ghost p-1',
-				imgClass: 'w-16 h-16 object-contain',
-				labelFallback: true,
-				onClick: () => {
-					const token = item.provider.tokenForSelection(item.raw, pickerContext)
-					if (token) onInsert(token)
-					panel.remove()
-				},
-			}))
-	}
+	else for (const item of items)
+		panel.appendChild(createStickerButton(item.raw, {
+			className: 'btn btn-ghost p-1',
+			imgClass: 'w-16 h-16 object-contain',
+			labelFallback: true,
+			/**
+			 * 点击回调
+			 */
+			onClick: () => {
+				const token = item.provider.tokenForSelection(item.raw, pickerContext)
+				if (token) onInsert(token)
+				panel.remove()
+			},
+		}))
 
 	document.body.appendChild(panel)
 	setTimeout(() => {

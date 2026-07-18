@@ -349,7 +349,7 @@ export async function installVideoFixtureRoute(page) {
 /**
  * 绝对 URL，写入 mediaRefs 后由浏览器加载（需先 installVideoFixtureRoute）。
  * @param {string} baseUrl 测试根 URL
- * @returns {string}
+ * @returns {string} 视频 fixture 的绝对 URL
  */
 export function videoFixtureUrl(baseUrl) {
 	return new URL(VIDEO_FIXTURE_PATH, baseUrl).href
@@ -372,7 +372,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
 	try {
 		const url = `${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`
 		let lastErr
-		for (let attempt = 0; attempt < 3; attempt++) {
+		for (let attempt = 0; attempt < 3; attempt++)
 			try {
 				const res = await req.get(url)
 				if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
@@ -385,7 +385,7 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
 				if (!/ECONNRESET|ECONNREFUSED|socket hang up/i.test(String(err))) throw err
 				await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
 			}
-		}
+
 		throw lastErr
 	}
 	finally {
