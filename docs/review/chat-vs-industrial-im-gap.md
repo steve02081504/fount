@@ -1,10 +1,10 @@
 # fount Chat 与工业化 IM 差距审阅
 
-最后核对：`2026-07-15`（对照仓库代码；已落地能力不复述，只列差距）
+最后核对：`2026-07-18`（对照仓库代码；已落地能力不复述，只列差距）
 
 ## 范围
 
-对照：Signal、Discord、Tox、QQ、微信、Line。对象：`shells:chat` + 联邦/P2P（`src/server/p2p_server/`、`fount-p2p`）。方法：以代码、`public/llms.txt`、`AGENTS.md` 与集成测试为准；**不引用开发规划文档**。
+对照：Signal、Discord、Tox、QQ、微信、Line。对象：`shells:chat` + 联邦/P2P（`src/server/p2p_server/`、`fount-p2p`）。方法：以代码、`public/llms.txt`、`AGENTS.md` 与集成测试为准；**不引用开发规划文档**（未排期方向见关联档）。
 
 关联：[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)、[human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md)。
 
@@ -14,7 +14,7 @@
 
 ## 结论摘要
 
-社群 IM 主路径（频道/权限/反应/置顶/投票/子线程、mute/care、搜索、Web Push、转发/草稿/离线队列/投递态、群组通话含屏幕共享、联邦 Mailbox/EVFS、桥接 bot）已齐。与工业化 IM 的残差集中在四类：
+社群 IM 主路径（频道/权限/反应/置顶/投票/子线程、mute/care、搜索、Web Push、转发、草稿 localStorage、离线发送队列、投递态、群组通话含屏幕共享、联邦 Mailbox/EVFS、桥接 bot）已齐。与工业化 IM 的残差集中在四类：
 
 1. **载体与触达**：仅 Web Hub / PWA；无 APNs/FCM、无 QR 关联设备、无中心化账号恢复；节点离线收信弱于常驻代理。
 2. **消息手感残差**：语音为录音附件；无定时/阅后即焚；无线程外工业式 quote-reply；无 GIF 商店 / Slash·Bot UX；无频道级 NSFW 门控。
@@ -29,35 +29,38 @@
 | --- | --- | --- |
 | 客户端 | iOS / Android / 桌面原生 | **Web Hub** + PWA；需自跑 fount |
 | 账号恢复 | 手机/邮箱/OAuth | operator 密钥；**无**中心化「忘密码」 |
-| 联系人发现 | 通讯录、扫码、推荐 | mDNS/Nostr、邀请码/深链、本地 discovery |
+| 联系人发现 | 通讯录、扫码、推荐 | mDNS/Nostr、邀请码/深链、本地 discovery、`entities/search`（handle） |
 | 后台通知 | APNs / FCM / 系统推送 | **部分**：Web Push；APNs/FCM **无** |
-| 多设备 | QR 关联设备、会话同步 | 多端 `read_marker` WS 有；**无** QR link-device / 设备管理 |
-| 常驻收信 | 云端/手机代理 | 本机在线；离线靠 Mailbox |
+| 多设备 | QR 关联设备、会话同步 | 多端 `read_marker` WS 有；**无** QR link-device / 设备管理 UI |
+| 常驻收信 | 云端/手机代理 | 本机在线；离线靠 Mailbox（节点级，非手机代理） |
 | 云备份 | 聊天记录上云 | 本地 DAG；list UI 本机 import/export（非托管） |
+
+产品边界「明确不做」原生 App / APNs / FCM——残差是刻意的。
 
 ---
 
 ## 二、消息体验
 
-| 功能 | 说明 |
+| 功能 | 现状 vs 目标 |
 | --- | --- |
-| **语音消息（工业 UX）** | Hub 录音 → `.wav` 附件（`composerFiles.mjs`）；无按住说话 / 波形 / 转写 |
-| **定时发送** | **无**（social 有 `publishAt`，chat 无） |
-| **阅后即焚** | **无** ephemeral TTL |
-| **单条已读回执** | 频道 `read-marker` + 已读人数；**无** Signal 式 per-message receipt |
-| **内联 quote-reply** | 回复入口为子线程（`threadDrawer.mjs`）；DAG 父边引用条 ≠ 工业主频道引用 |
-| **GIF / 贴纸商店** | 本地 sticker pack + import；**无** Tenor/Giphy 级 picker |
-| **Slash / Bot 交互 UI** | Hub **无** slash commands / reply keyboard；桥接 bot 是平台翻译层 |
+| **语音消息（工业 UX）** | Hub 录音 → `.wav` 附件（`composerFiles.mjs`）；**无**按住说话 / 波形预览 / 转写。目标若对齐需专用 bubble + 媒体类型，而非通用附件 |
+| **定时发送** | **无**（social 有 `publishAt` + watcher；chat 发信路径无对等队列） |
+| **阅后即焚** | **无** ephemeral TTL / 阅后删事件 |
+| **单条已读回执** | 频道 `read-marker` + 已读人数角标（`member-read-markers` 侧车）；**无** Signal 式 per-message receipt |
+| **内联 quote-reply** | 回复入口为子线程（`threadDrawer.mjs` → 独立子频道）；DAG 父边引用条 ≠ 工业主频道内嵌引用气泡 |
+| **GIF / 贴纸商店** | 本地 sticker pack + import；**无** Tenor/Giphy 级远程 picker |
+| **Slash / Bot 交互 UI** | Hub **无** slash commands / reply keyboard；桥接 bot 是平台翻译层（`bridgeOperations`），不是 Discord 式 slash 注册面 |
 | **富链接预览** | 前端 markdown 裸链水合（`/api/no-cors` + OG）；非结构化入库 |
-| **频道 NSFW / age gate** | 消息级 CW / `sensitive_media` 有；**无**频道旗标 + 确认门 |
+| **频道 NSFW / age gate** | 消息级 CW / `sensitive_media` 有；**无**频道旗标 + 进房确认门 |
 
 形态不同、不算缺失但对标时勿当「已对齐」：
 
 | 功能 | 工业常见 | fount |
 | --- | --- | --- |
-| 线程 | 主频道内 quote-reply | 独立子频道 |
-| presence | 集群级实时 | profile status + heartbeat（轻量） |
-| 慢速模式 | 倒计时条 UX | `messageRateLimitPerMin` 数字设置 |
+| 线程 | 主频道内 quote-reply | 独立子频道（thread drawer） |
+| presence | 集群级实时 | profile status + heartbeat（轻量；非成员实时订阅总线） |
+| 慢速模式 | 倒计时条 UX | `messageRateLimitPerMin` 数字设置（治理层有，UI 非 Discord 式倒计时） |
+| 草稿 / 离线发 | 成熟 | **已有**：`composerDraft.mjs`（localStorage）；`sendQueue.mjs`（离线排队 + online drain）；投递态 pending→sent→delivered——**勿再当缺口** |
 
 ---
 
@@ -69,10 +72,10 @@
 | 拓扑 | 媒体服务器 | 稀疏 WebRTC，`rtcConnectionBudgetMax` |
 | 规模 | 数百～数千人语音房 | 小社区量级 |
 | QoS | simulcast、降噪、拥塞控制 | 基础 relay |
-| 1:1 通话 | 独立语音/视频入口 | **无**；仅频道通话 / streaming 房间（`call.mjs`） |
-| Stage | Discord Stage | **无** |
-| 通话历史 | 专用历史 UI | **无**（频道内 `call` 卡片 ≠ 通话历史） |
-| 投递 SLA | 中心化队列 | DAG gossip；**无** SLA |
+| 1:1 通话 | 独立语音/视频入口 | **无**；仅频道通话（`call.mjs` → `/ws/.../call/:groupId/:channelId`）与 streaming 房间 |
+| Stage | Discord Stage | **无**（无观众/上台角色模型） |
+| 通话历史 | 专用历史 UI | **无**（频道内 `content.type:'call'` 卡片 ≠ 通话历史列表） |
+| 投递 SLA | 中心化队列 | DAG gossip；**无** SLA / 送达证明服务 |
 
 屏幕共享：群组通话 / 流媒体已接 `getDisplayMedia`（`codecsAv.mjs` / `call.mjs`）——**勿再当缺口**。
 
@@ -99,12 +102,12 @@
 | --- | --- |
 | **举报闭环** | chat / social **均无** report 工单（本机自理 mute/block/ban） |
 | **自动审核** | **无** |
-| **企业** | **无** SSO、eDiscovery、合规导出（list JSON 导出 ≠ eDiscovery） |
+| **企业** | **无** SSO、eDiscovery、合规导出（频道 archive JSON 导出 ≠ eDiscovery） |
 | **Bot 生态** | parts / bridge 可编程；**无** OAuth 托管与商店 |
 | **商业运营** | **无**官方表情/主题商店、付费增值 |
-| **公告频道** | pins 有；**无** announcement channel 专用类型 |
+| **公告频道** | pins 有；**无** announcement channel 专用类型（只读广播语义） |
 | **超级 App** | 支付、小程序、公众号、游戏、直播电商、短信/通讯录集成——**无** |
-| **social↔chat** | 深链 + agent `replyViaChat`；**无** mention→channel 结构化桥、chat→social 发帖 |
+| **social↔chat** | 深链（含 `?contact=`）+ agent `replyViaChat`；**无** mention→channel 结构化 ingress、chat→social 发帖草稿确认 |
 
 桥接 bot（TG/DC/WeChat）：平台翻译层，不能抵消「无原生 IM App」与「Hub 无 Bot 商店 UX」。
 
@@ -114,12 +117,12 @@
 
 ## 六、联邦对称与异构互通
 
-| 缺口 | 说明 |
+| 缺口 | 现状 vs 目标 |
 | --- | --- |
-| persona 跨节点 | **无**正式 remote persona proxy（`personaForOther` RPC 特判 ≠ 对称代理） |
-| plugin 跨节点 | 插件仅本机 `session.plugins[replica]` |
-| 异构互通 | **无** ActivityPub / Matrix / XMPP；仅 fount↔fount + 自有 bridge |
-| 远端托管 agent | 跨节点写路径 / 时间线授权未闭合（见 human-agent 审阅） |
+| persona 跨节点 | **现状**：`personaForOther` 经 serializable RPC 把 `{ ownerUsername, personaname }` 带给远端 `getChatRequest`（`chatRequest.mjs` / `serializableRequest.mjs`）——仅 GetReply 上下文特判。**目标**：正式 remote persona proxy（对称读写），而非一次性 RPC 字段 |
+| plugin 跨节点 | **现状**：`session.plugins[replica]` 仅本机名单；远端节点不自动加载他机 plugin 贡献 prompt。**目标**：plugin 联邦参与 prompt 贡献侧 |
+| 异构互通 | **无** ActivityPub / Matrix / XMPP；仅 fount↔fount + 自有 bridge（产品边界不做 AP） |
+| 远端托管 agent | 跨节点写路径 / 时间线授权未闭合；Chat `remoteProxy` 可读调 ≠ Social ingress 平权（见 [平权审阅 §3](./human-agent-operational-parity-review.md)） |
 
 ---
 
@@ -145,7 +148,7 @@
 | Bot 商店 / OAuth | **无** |
 | 支付/小程序 | **无** |
 | social↔chat 结构化桥 | **无**（深链 + replyViaChat） |
-| persona/plugin 联邦对称 | **无** |
+| persona/plugin 联邦对称 | **无**（仅 personaForOther 特判） |
 | 元数据最小化（对标 Signal） | **弱** |
 | 明文展示侧车（对标 Signal） | **有**（差距项） |
 
@@ -158,11 +161,12 @@
 | Hub / Session / P2P | `hub/AGENTS.md`；`session/AGENTS.md`；`src/server/p2p_server/AGENTS.md` |
 | 未读 / inbox / care | `lib/readMarkers.mjs`；`hub/unread.mjs`；`lib/inbox.mjs`；`care.mjs` |
 | Web Push | `src/server/web_server/notify/webPush.mjs`；`service_worker.mjs` |
+| 草稿 / 离线队列 / 投递 | `hub/composerDraft.mjs`；`hub/sendQueue.mjs`；`hub/messages/messageSend.mjs` |
 | 语音附件 | `hub/composerFiles.mjs` |
 | 通话 / 屏幕共享 | `hub/call.mjs`；`hub/codecsAv.mjs`；`ws/avRelay.mjs` |
 | 深链 | `chat/public/shared/runUri.mjs`；`social/public/shared/runUri.mjs`；`deepLinkConsume.mjs` |
 | Bridge | `chat/src/chat/bridge/` |
-| 联邦 parts 边界 | `llms.txt`（plugin 本机）；`session/chatRequest.mjs`（persona 特判） |
+| 联邦 parts 边界 | `llms.txt`（plugin 本机）；`session/chatRequest.mjs`（`personaForOther`）；`federation/remoteProxy.mjs` |
 
 </details>
 
