@@ -249,6 +249,10 @@ Body：`followerPubKeyHex` — 为关注者签发 GSH vault H（解密 followers
 | POST | `/saved-posts/folders` | body: `{ name }` |
 | POST | `/saved-posts/folders/rename` | body: `{ folderId, name }` |
 | POST | `/saved-posts/folders/delete` | body: `{ folderId }` |
+| GET | `/drafts` | operator 草稿箱 `{ drafts[] }`（`entities/{entityHash}/drafts.json`；含 `preview`） |
+| GET | `/drafts/:draftId` | 单条草稿（完整 `body`） |
+| POST | `/drafts` | 创建/更新草稿；body 同发帖字段，可选 `draftId` 更新 |
+| DELETE | `/drafts/:draftId` | 删除草稿，返回更新后列表 |
 | POST | `/files` | 注册 vault 文件并写入 `file_share` 事件 |
 | GET | `/files/:shareId?owner=` | 文件元数据 |
 

@@ -6,6 +6,7 @@ import { authenticate } from '../../../../../server/auth/index.mjs'
 
 import { registerAlbumsRoutes } from './endpoints/albums.mjs'
 import { registerDiscoverRoutes } from './endpoints/discover.mjs'
+import { registerDraftsRoutes } from './endpoints/drafts.mjs'
 import { registerExploreRoutes } from './endpoints/explore.mjs'
 import { registerFeedRoutes } from './endpoints/feed.mjs'
 import { registerLiveRoutes } from './endpoints/live.mjs'
@@ -43,6 +44,7 @@ export function setEndpoints(router) {
 	registerAlbumsRoutes(router)
 	registerRelationshipsRoutes(router)
 	registerSavedRoutes(router)
+	registerDraftsRoutes(router)
 	registerTasteRoutes(router)
 	registerSignalsRoutes(router)
 	registerVaultRoutes(router)

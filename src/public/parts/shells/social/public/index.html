@@ -39,6 +39,10 @@
 					<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.saved"></span>
 				</button>
+				<button type="button" data-view="drafts" class="nav-btn btn btn-ghost justify-start">
+					<span class="s-ic s-ic-draft" aria-hidden="true"></span>
+					<span class="nav-label" data-i18n="social.nav.drafts"></span>
+				</button>
 				<button type="button" data-view="profile" class="nav-btn btn btn-ghost justify-start">
 					<span class="s-ic s-ic-user" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.profile"></span>
@@ -149,6 +153,7 @@
 								</button>
 								<input id="postLocale" type="hidden" value="zh-CN" />
 							</div>
+							<button id="saveDraftButton" type="button" class="composer-draft-btn btn btn-ghost btn-sm" data-i18n="social.composer.saveDraft"></button>
 							<button id="postButton" type="button" class="composer-post-btn btn btn-primary btn-sm" data-i18n="social.composer.publish"></button>
 						</div>
 					</div>
@@ -184,6 +189,10 @@
 					<button type="button" class="btn btn-ghost btn-sm" data-view="live" data-i18n="social.nav.live">
 						<span class="s-ic s-ic-live" aria-hidden="true"></span>
 						<span data-i18n="social.nav.live"></span>
+					</button>
+					<button type="button" class="btn btn-ghost btn-sm" data-view="drafts" data-i18n="social.nav.drafts">
+						<span class="s-ic s-ic-draft" aria-hidden="true"></span>
+						<span data-i18n="social.nav.drafts"></span>
 					</button>
 				</div>
 				<aside id="exploreTrending" class="feed-trending card bg-base-200 shadow-sm explore-mobile-aside"></aside>
@@ -235,6 +244,13 @@
 					</button>
 				</header>
 				<div id="savedPanel" class="saved-panel"></div>
+			</section>
+
+			<section id="draftsView" class="view hidden">
+				<header class="view-header">
+					<h2 class="view-title" data-i18n="social.nav.drafts"></h2>
+				</header>
+				<div id="draftsPanel" class="drafts-panel"></div>
 			</section>
 
 			<section id="settingsView" class="view hidden">

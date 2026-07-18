@@ -221,3 +221,19 @@ Deno.test('agent saved posts CRUD+search isolated from operator', async () => {
 	assert((await operatorClient.saved.list()).unfiled.some(row => row.postId === post.postId))
 	assertEquals((await agentClient.saved.search('agent-saved-only')).posts.length, 1)
 })
+
+Deno.test('agent drafts isolated from operator', async () => {
+	const { username } = await getSession()
+	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const { getSocialClient } = await import('../../src/api/client/index.mjs')
+	const agentClient = await getSocialClient(username, agentHash)
+	const operatorClient = await getSocialClient(username)
+
+	const agentDraft = await agentClient.drafts.upsert({ text: 'agent-only-draft', visibility: 'public' })
+	assert((await agentClient.drafts.list()).drafts.some(row => row.draftId === agentDraft.draftId))
+	assert(!(await operatorClient.drafts.list()).drafts.some(row => row.draftId === agentDraft.draftId))
+
+	const operatorDraft = await operatorClient.drafts.upsert({ text: 'operator-only-draft', visibility: 'public' })
+	assert((await operatorClient.drafts.list()).drafts.some(row => row.draftId === operatorDraft.draftId))
+	assert(!(await agentClient.drafts.list()).drafts.some(row => row.draftId === operatorDraft.draftId))
+})

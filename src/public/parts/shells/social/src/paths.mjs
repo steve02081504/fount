@@ -54,6 +54,17 @@ export function savedPostsPath(username, entityHash) {
 }
 
 /**
+ * 返回实体私有草稿箱 drafts.json 文件路径。
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @returns {string} drafts.json
+ */
+export function draftsPath(username, entityHash) {
+	const hash = String(entityHash || '').trim().toLowerCase()
+	return `${getUserDictionary(username)}/shells/social/entities/${hash}/drafts.json`
+}
+
+/**
  * 实体本地关键词/标签屏蔽表路径。
  * @param {string} username 用户
  * @param {string} entityHash 实体

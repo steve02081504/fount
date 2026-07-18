@@ -7,10 +7,18 @@ import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { uploadSocialMedia } from './media.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
 import { socialState } from './state.mjs'
-import { bindVisibilityPicker, readVisibilityPicker } from './visibilityPicker.mjs'
+import { bindVisibilityPicker, readVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
+
+/**
+ * @param {number} n 数值
+ * @returns {string} 两位补零
+ */
+function pad2(n) {
+	return String(n).padStart(2, '0')
+}
 
 /** @type {number} */
 let quotePreviewGeneration = 0
@@ -347,17 +355,11 @@ async function ensureUploadedMediaRefs(refs) {
 }
 
 /**
- * 提交发帖请求并清空 composer 状态。
+ * 清空 composer 表单与 pending 状态。
+ * @param {{ keepDraftId?: boolean }} [options] 是否保留 activeDraftId
  * @returns {Promise<void>}
  */
-export async function publishPost() {
-	if (!document.getElementById('postText').value.trim()
-		&& !socialState.pendingMediaRefs.length
-		&& !socialState.pendingPoll) return
-	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
-	const body = buildPostBody(uploadedRefs)
-	const isScheduled = !!body.publishAt
-	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
+export async function clearComposer(options = {}) {
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
 		postText.value = ''
@@ -368,13 +370,28 @@ export async function publishPost() {
 	const publishAtEl = document.getElementById('postPublishAt')
 	if (publishAtEl instanceof HTMLInputElement)
 		publishAtEl.value = ''
+	const replyPolicy = document.getElementById('postReplyPolicy')
+	if (replyPolicy instanceof HTMLSelectElement)
+		replyPolicy.value = 'everyone'
+	const replyDisplay = document.getElementById('postReplyDisplay')
+	if (replyDisplay instanceof HTMLSelectElement)
+		replyDisplay.value = 'all'
+	applyVisibilityPicker(document.getElementById('composer'), { visibility: 'public' })
+	const albumSelect = document.getElementById('postAlbumSelect')
+	if (albumSelect instanceof HTMLSelectElement)
+		for (const opt of albumSelect.options) opt.selected = false
 	for (const ref of socialState.pendingMediaRefs)
 		if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
 	socialState.pendingMediaRefs = []
 	socialState.pendingQuoteRef = null
 	socialState.pendingGroupRef = null
 	socialState.pendingPoll = null
+	if (!options.keepDraftId)
+		socialState.activeDraftId = null
 	document.getElementById('pollComposerToggle')?.classList.remove('active')
+	document.getElementById('pollComposerPanel')?.classList.add('hidden')
+	const pollOptions = document.getElementById('pollComposerOptions')
+	if (pollOptions instanceof HTMLTextAreaElement) pollOptions.value = ''
 	refreshMediaPreview()
 	await refreshQuotePreview()
 	void refreshGroupRefPreview()
@@ -382,6 +399,152 @@ export async function publishPost() {
 	const groupSelect = document.getElementById('linkGroupSelect')
 	if (groupSelect instanceof HTMLSelectElement)
 		groupSelect.value = ''
+	setComposerAdvancedOpen(false)
+}
+
+/**
+ * 将草稿 body 填入 composer。
+ * @param {object} row 草稿行（含 draftId / body）
+ * @returns {Promise<void>}
+ */
+export async function loadDraftIntoComposer(row) {
+	const body = row?.body || row || {}
+	await clearComposer({ keepDraftId: true })
+	socialState.activeDraftId = row?.draftId || null
+
+	const postText = document.getElementById('postText')
+	if (postText instanceof HTMLTextAreaElement)
+		postText.value = String(body.text || '')
+
+	if (body.contentWarning) {
+		setComposerContentWarningOpen(true)
+		const cw = document.getElementById('postContentWarning')
+		if (cw instanceof HTMLInputElement) cw.value = String(body.contentWarning)
+	}
+	const sensitiveEl = document.getElementById('postSensitiveMedia')
+	if (sensitiveEl instanceof HTMLInputElement)
+		sensitiveEl.checked = Boolean(body.sensitiveMedia)
+
+	applyVisibilityPicker(document.getElementById('composer'), body)
+	if (body.visibility === 'selected' || body.allow?.length || body.except?.length
+		|| body.replyPolicy && body.replyPolicy !== 'everyone'
+		|| body.replyDisplay && body.replyDisplay !== 'all'
+		|| body.publishAt || body.groupRef || body.albumIds?.length || body.sensitiveMedia)
+		setComposerAdvancedOpen(true)
+
+	const replyPolicy = document.getElementById('postReplyPolicy')
+	if (replyPolicy instanceof HTMLSelectElement && body.replyPolicy)
+		replyPolicy.value = body.replyPolicy
+	const replyDisplay = document.getElementById('postReplyDisplay')
+	if (replyDisplay instanceof HTMLSelectElement && body.replyDisplay)
+		replyDisplay.value = body.replyDisplay
+
+	if (body.locale) {
+		const localeEl = document.getElementById('postLocale')
+		if (localeEl instanceof HTMLInputElement) localeEl.value = String(body.locale)
+	}
+
+	if (body.publishAt) {
+		const publishAtEl = document.getElementById('postPublishAt')
+		if (publishAtEl instanceof HTMLInputElement) {
+			const d = new Date(Number(body.publishAt))
+			if (!Number.isNaN(d.getTime()))
+				publishAtEl.value = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+		}
+	}
+
+	if (Array.isArray(body.albumIds) && body.albumIds.length) {
+		await loadAlbumPickerOptions()
+		const albumSelect = document.getElementById('postAlbumSelect')
+		if (albumSelect instanceof HTMLSelectElement) {
+			const wanted = new Set(body.albumIds.map(String))
+			for (const opt of albumSelect.options)
+				opt.selected = wanted.has(opt.value)
+		}
+	}
+
+	if (body.quoteRef?.entityHash && body.quoteRef?.postId) {
+		socialState.pendingQuoteRef = {
+			entityHash: String(body.quoteRef.entityHash).toLowerCase(),
+			postId: String(body.quoteRef.postId),
+		}
+		await refreshQuotePreview()
+	}
+
+	if (body.groupRef?.groupId) {
+		await loadGroupPickerOptions()
+		const groupId = String(body.groupRef.groupId)
+		const channelId = String(body.groupRef.channelId || 'default')
+		setPendingGroupRef(groupId, channelId, groupRefLabel({ groupId, channelId }))
+		const groupSelect = document.getElementById('linkGroupSelect')
+		if (groupSelect instanceof HTMLSelectElement) {
+			const value = `${groupId}\t${channelId}`
+			if ([...groupSelect.options].some(opt => opt.value === value))
+				groupSelect.value = value
+		}
+	}
+
+	if (body.poll && Array.isArray(body.poll.options) && body.poll.options.length >= 2) {
+		socialState.pendingPoll = structuredClone(body.poll)
+		document.getElementById('pollComposerToggle')?.classList.add('active')
+		const pollOptions = document.getElementById('pollComposerOptions')
+		if (pollOptions instanceof HTMLTextAreaElement)
+			pollOptions.value = body.poll.options.join('\n')
+		const multi = document.getElementById('pollComposerMulti')
+		if (multi instanceof HTMLInputElement)
+			multi.checked = Boolean(body.poll.multi)
+		if (body.poll.deadline) {
+			const deadline = document.getElementById('pollComposerDeadline')
+			if (deadline instanceof HTMLInputElement) {
+				const d = new Date(body.poll.deadline)
+				if (!Number.isNaN(d.getTime()))
+					deadline.value = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}`
+			}
+		}
+	}
+
+	if (Array.isArray(body.mediaRefs) && body.mediaRefs.length)
+		socialState.pendingMediaRefs = body.mediaRefs.map(ref => ({ ...ref }))
+	refreshMediaPreview()
+}
+
+/**
+ * 将当前 composer 存入草稿箱（有 activeDraftId 则更新）。
+ * @returns {Promise<object>} 写入后的草稿行
+ */
+export async function saveComposerDraft() {
+	if (!document.getElementById('postText')?.value?.trim()
+		&& !socialState.pendingMediaRefs.length
+		&& !socialState.pendingPoll)
+		throw new Error(geti18n('social.drafts.empty'))
+	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
+	socialState.pendingMediaRefs = uploadedRefs.map(ref => ({ ...ref }))
+	refreshMediaPreview()
+	const body = buildPostBody(uploadedRefs)
+	if (socialState.activeDraftId)
+		body.draftId = socialState.activeDraftId
+	const row = await socialApi('/drafts', { method: 'POST', body: JSON.stringify(body) })
+	socialState.activeDraftId = row.draftId
+	showToastI18n('success', 'social.drafts.saved')
+	return row
+}
+
+/**
+ * 提交发帖请求并清空 composer 状态。
+ * @returns {Promise<void>}
+ */
+export async function publishPost() {
+	if (!document.getElementById('postText').value.trim()
+		&& !socialState.pendingMediaRefs.length
+		&& !socialState.pendingPoll) return
+	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
+	const body = buildPostBody(uploadedRefs)
+	const isScheduled = !!body.publishAt
+	const draftId = socialState.activeDraftId
+	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
+	if (draftId)
+		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' }).catch(() => {})
+	await clearComposer()
 	if (isScheduled)
 		showToastI18n('success', 'social.composer.scheduleSuccess')
 }

@@ -121,3 +121,29 @@ export function bindVisibilityPicker(root) {
 	select.addEventListener('change', sync)
 	sync()
 }
+
+/**
+ * 将可见性草稿写回 picker DOM。
+ * @param {HTMLElement | Document} root 根节点
+ * @param {object} [draft] 可见性字段
+ * @returns {void}
+ */
+export function applyVisibilityPicker(root = document, draft = {}) {
+	const select = root.querySelector('[data-visibility-select]')
+	if (!(select instanceof HTMLSelectElement)) return
+	let value = String(draft.visibility || 'public')
+	if (value === 'followers_since') {
+		const day = 24 * 60 * 60 * 1000
+		const ms = Number(draft.minFollowMs) || 0
+		value = ms >= 30 * day ? 'followers_30d' : 'followers_7d'
+	}
+	const known = new Set(VISIBILITY_OPTIONS.map(opt => opt.value))
+	select.value = known.has(value) ? value : 'public'
+	const allow = root.querySelector('[data-visibility-allow]')
+	if (allow instanceof HTMLInputElement)
+		allow.value = Array.isArray(draft.allow) ? draft.allow.join(' ') : ''
+	const except = root.querySelector('[data-visibility-except]')
+	if (except instanceof HTMLInputElement)
+		except.value = Array.isArray(draft.except) ? draft.except.join(' ') : ''
+	select.dispatchEvent(new Event('change', { bubbles: true }))
+}

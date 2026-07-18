@@ -40,7 +40,7 @@ alwaysApply: false
 - **模板插值**：Social HTML 模板一律 `${...}`（`template.mjs`）；禁止 Mustache `{{...}}`。
 - **资料关系统计**：stats 行显示动态 / 关注 / 粉丝；点击关注或粉丝打开列表对话框，**不要**再做「正在关注」资料 Tab。
 - **相册封面**：`coverMediaRef` 取最新可见、无 contentWarning / sensitiveMedia 的图片；不得用剧透图当缩略图。
-- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…/`#settings`；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + `#search:query`（单一搜索面）。刷新可恢复当前 tab。
+- **Hash 路由**：`switchView` 写 `#feed`/`#explore`/…/`#drafts`/`#settings`；`applyIncomingNavigation` 识别主导航 + `#post;entity;postId` 详情 + `#search:query`（单一搜索面）。刷新可恢复当前 tab。
 - **帖子详情**：`#post;<entityHash>;<postId>` → `views/postDetail.mjs`；`GET …/posts/:entityHash/:postId`。分享链接走 `formatSocialPostRunUri`。
 - **回复**：`listReplies` 返回完整 feed item；面板行与帖卡共用 `engagement_bar`（回复/转发/赞/踩/收藏/分享）；同页自回复链经 `feedThreads.mjs` 合并为正序 `.post-thread`；卡片显示 `replyContext`。
 - **Profile banner**：`paintEntityProfileBanner`（chat `entityProfileCard.mjs`）— 有 `profile.banner` 用图，否则 `entityProfilePattern` hash 纹理（`entityProfileBanner.css`）。
@@ -78,6 +78,7 @@ alwaysApply: false
 - Viewer identity: `viewerEntityHash()` / `socialState.viewerEntityHash`（operator；前端模块直接 import，无 appContext）。
 - Agent private read/write only via `getSocialClient(username, agentEntityHash)` (entry: `src/api/client/index.mjs`).
 - **Saved posts**: `shells/social/entities/{entityHash}/savedPosts.json`; HTTP `…/saved-posts*` (incl. `/search`) fixed to operator; agent CRUD/search is structurally identical (`client.saved.*`). Missing file must return a **new** empty structure (do not shallow-copy a shared `DEFAULT`).
+- **Composer drafts**: `shells/social/entities/{entityHash}/drafts.json`; HTTP `…/drafts*` fixed to operator; agent via `client.drafts.*`. Body mirrors `POST /posts` (sanitized; no File blobs). Cap 100. UI: `#drafts` + composer「存草稿」; publish deletes `activeDraftId`.
 - **Entity search**: chat `GET …/entities/search?q=` / `SocialClient.searchEntities` → chat `searchEntitiesNetwork` (`part_query` kind `entity_search`). Search page user section: follow / pin alias; Hub `#friends` sidebar has separate search → create DM.
 
 ## Notifications inbox

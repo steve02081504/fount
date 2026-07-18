@@ -2,7 +2,7 @@ import { pauseAllSocialVideos } from './lib/videoAutoplay.mjs'
 
 /** 可写入 location.hash 的主导航视图 */
 export const MAIN_NAV_VIEWS = Object.freeze([
-	'feed', 'explore', 'notifications', 'saved', 'profile', 'videos', 'live', 'settings',
+	'feed', 'explore', 'notifications', 'saved', 'drafts', 'profile', 'videos', 'live', 'settings',
 ])
 
 /** 二级视图 → 保留高亮的主导航 */

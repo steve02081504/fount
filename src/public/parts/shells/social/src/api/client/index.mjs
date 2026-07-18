@@ -3,6 +3,7 @@ import { resolveOperatorEntityHashForUser } from '../../../../chat/src/entity/id
 import { resolveSocialEntity } from '../../federation/hosting.mjs'
 
 import { createAlbumsMethods } from './albums.mjs'
+import { createDraftsMethods } from './drafts.mjs'
 import { createFeedMethods } from './feed.mjs'
 import { createFollowMethods } from './follow.mjs'
 import { createLiveMethods } from './live.mjs'
@@ -49,6 +50,7 @@ export function createSocialClient(apiContext) {
 		...createNotificationsMethods(apiContext),
 		...createLiveMethods(apiContext),
 		...createSavedMethods(apiContext),
+		...createDraftsMethods(apiContext),
 		...createVaultMethods(apiContext),
 		...createTasteMethods(apiContext),
 		...createProfileMethods(apiContext),

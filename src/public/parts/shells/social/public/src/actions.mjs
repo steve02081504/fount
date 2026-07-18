@@ -1,4 +1,5 @@
 import { handleComposerFeedClick } from './actions/composerFeed.mjs'
+import { handleDraftsClick } from './actions/drafts.mjs'
 import { handlePostEngagementClick } from './actions/postEngagementActions.mjs'
 import { handlePostProfileActionsClick } from './actions/postProfileActions.mjs'
 import { handleProfileNavClick } from './actions/profileNavActions.mjs'
@@ -18,6 +19,7 @@ export async function handleMainClick(event) {
 		closePostMoreMenus()
 
 	await handleComposerFeedClick(target)
+	if (await handleDraftsClick(target)) return
 	await handleSavedClick(target)
 	await handleProfileNavClick(target)
 	if (await handlePostProfileActionsClick(target)) return

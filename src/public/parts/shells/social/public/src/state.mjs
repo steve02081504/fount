@@ -24,6 +24,8 @@ export const socialState = {
 	pendingQuoteRef: null,
 	pendingGroupRef: null,
 	pendingPoll: null,
+	/** @type {string | null} 正在编辑的草稿 id */
+	activeDraftId: null,
 	feedRanking: 'latest',
 	exploreMediaOnly: false,
 	savedFoldersCache: {},

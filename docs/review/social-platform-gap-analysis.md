@@ -19,7 +19,7 @@
 微博客主路径（发帖互动、关注、通知、搜索、投票、编辑、Community Notes、关键词屏蔽、媒体 alt/CW、`for_you`+dwell、话题订阅、短视频流、直播、`replyPolicy`、定时发布、可见性档 + 相册）已齐。与工业化社交的残差集中在六类：
 
 1. **发现与排序**：启发式 `for_you`；无全局 ML、无广告、无 LBS；热搜为本地 + 邻居聚合（非全球）；帖文搜索限于已知时间线 + 邻居 `post_search`。
-2. **内容形态**：无 Stories/Highlights；无 Spaces（纯音频房）；无用户草稿箱；无滤镜贴纸库 / 独立 Article；thread / quote 产品工作流简陋；富链接仅前端水合。
+2. **内容形态**：无 Stories/Highlights；无 Spaces（纯音频房）；无滤镜贴纸库 / 独立 Article；thread / quote 产品工作流简陋；富链接仅前端水合。
 3. **产品与图谱**：无内置 DM（跳 chat）；可见性档已齐但无独立密友列表产品；无 Lists/社区/Page；无认证与创作者分析；**无举报工单**（本机 mute/block/hide/denylist 自理）。
 4. **安全与反垃圾**：**无人帖 rate-limit / CAPTCHA / 新号限制**；无 NSFW 自动检测、无作者按时长 mute。
 5. **商业化 / 合规**：广告/订阅/打赏/付费/商店空白；无 GDPR/Archive 导出、无社交删号打包、无跨平台导入。
@@ -49,7 +49,7 @@
 | **Stories / 限时动态** | **无** ephemeral 类型与 UI；目标若做需独立事件类型 + TTL 折叠，与永久帖时间线分轨 |
 | **Highlights** | **无** |
 | **Spaces / 纯音频房** | social 直播（`/live/*` + av-relay）有；**无** Twitter Spaces 式纯音频房（无视频轨、无单独 lobby UX） |
-| **草稿箱** | `draftContent` 仅为 commit 前内存对象（`api/client/posts.mjs`）；**无**用户草稿持久化。对照：chat Hub 有 `composerDraft.mjs`（localStorage），social **没有**对等物 |
+| **草稿箱** | **已齐**：per-entity `drafts.json` + `GET\|POST\|DELETE /drafts*` + `#drafts` UI；对照 chat Hub `composerDraft.mjs`（localStorage 频道草稿）形态不同——social 是多草稿服务端草稿箱 |
 | **滤镜 / 贴纸创作库** | 发图前有裁剪/打码/画笔；无滤镜贴纸库 |
 | **Collections（策展合集）** | 收藏夹 folders（`saved-posts*`）= 私有整理；≠ 对外策展集合 / 可分享清单 |
 | **长文 Article** | Markdown 帖文，无独立文章类型 / 阅读页 |
@@ -192,7 +192,7 @@ Agent 自动回复节流（`dispatch.mjs` `SOCIAL_THROTTLE_*`）、信誉 demote
 | unlisted / direct | 部分 | 有 | **部分**（unlisted/selected/private 自研语义，非 AP） |
 | 远端 agent 联邦 ingress | — | 部分（bot） | **无**（有意拒绝） |
 | 全球热搜 / LBS | 有 | 弱 | **部分** / **无** |
-| 草稿箱 | 有 | 部分 | **无** |
+| 草稿箱 | 有 | 部分 | **已有**（per-entity 服务端草稿箱） |
 | 多 emoji 反应 / 浏览量 | 有 | 部分 | **无**（仅 like/dislike） |
 | 置顶帖 / Article / Collections | 有 | 部分 | **无** |
 
@@ -214,6 +214,7 @@ Agent 自动回复节流（`dispatch.mjs` `SOCIAL_THROTTLE_*`）、信誉 demote
 | Community Notes | `federation/note/index.mjs` |
 | 远端 agent ingress | `test/integration/timeline_ingress.test.mjs`；`federation/write_auth.mjs` |
 | 资料编辑跳转 | `public/src/actions/profileNavActions.mjs` → `/parts/shells:chat/profile/` |
+| 草稿箱 | `src/drafts.mjs`；HTTP `…/drafts*`；UI `#drafts` + composer「存草稿」 |
 | 平权外链 | [human-agent-operational-parity-review.md](./human-agent-operational-parity-review.md) |
 
 </details>

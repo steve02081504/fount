@@ -12,6 +12,7 @@ test.describe('Social navigation', () => {
 			{ name: 'explore', selector: '#exploreView' },
 			{ name: 'notifications', selector: '#notificationsView' },
 			{ name: 'saved', selector: '#savedView' },
+			{ name: 'drafts', selector: '#draftsView' },
 			{ name: 'profile', selector: '#profileView' },
 			{ name: 'feed', selector: '#feedView' },
 		]

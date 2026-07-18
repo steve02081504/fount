@@ -405,6 +405,40 @@ export interface SavedPostsStore {
 	unfiled: Array<{ entityHash: string, postId: string }>
 }
 
+/** 发帖草稿 body（与 POST /posts 字段对齐，本机私有）。 */
+export interface SocialComposerDraftBody {
+	text?: string
+	mediaRefs?: SocialMediaRef[]
+	visibility?: SocialVisibility | string
+	allow?: string[]
+	except?: string[]
+	albumIds?: string[]
+	locale?: string
+	contentWarning?: string
+	sensitiveMedia?: boolean
+	quoteRef?: SocialPostRef
+	groupRef?: SocialGroupRef
+	poll?: SocialPollDraft
+	replyPolicy?: SocialReplyPolicy
+	replyDisplay?: SocialReplyDisplay
+	publishAt?: number
+	tags?: string[]
+}
+
+/** 草稿箱单行。 */
+export interface SocialComposerDraft {
+	draftId: string
+	createdAt: number
+	updatedAt: number
+	preview: string
+	body: SocialComposerDraftBody
+}
+
+/** 草稿箱列表响应。 */
+export interface SocialDraftsList {
+	drafts: SocialComposerDraft[]
+}
+
 /** 探索页账号摘要。 */
 export interface SocialDiscoverAccount {
 	entityHash: string

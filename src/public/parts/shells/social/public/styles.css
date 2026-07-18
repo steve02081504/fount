@@ -62,6 +62,7 @@ body {
 .s-ic-bell { mask-image: url("https://api.iconify.design/mdi/bell-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bell-outline.svg"); }
 .s-ic-bookmark { mask-image: url("https://api.iconify.design/mdi/bookmark-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bookmark-outline.svg"); }
 .s-ic-bookmark-off { mask-image: url("https://api.iconify.design/mdi/bookmark-remove-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bookmark-remove-outline.svg"); }
+.s-ic-draft { mask-image: url("https://api.iconify.design/mdi/file-document-edit-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/file-document-edit-outline.svg"); }
 .s-ic-folder { mask-image: url("https://api.iconify.design/mdi/folder-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/folder-outline.svg"); }
 .s-ic-folder-plus { mask-image: url("https://api.iconify.design/mdi/folder-plus-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/folder-plus-outline.svg"); }
 .s-ic-user { mask-image: url("https://api.iconify.design/mdi/account-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/account-outline.svg"); }
@@ -508,6 +509,24 @@ body {
 	padding: 0.45rem 1.1rem;
 	cursor: pointer;
 	transition: background var(--social-transition);
+}
+
+.composer-draft-btn {
+	border: none;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--social-muted);
+	font: inherit;
+	font-size: 0.9rem;
+	font-weight: 600;
+	padding: 0.45rem 0.85rem;
+	cursor: pointer;
+	transition: background var(--social-transition), color var(--social-transition);
+}
+
+.composer-draft-btn:hover {
+	background: var(--social-surface-hover);
+	color: var(--social-text);
 }
 
 .composer-post-btn:disabled {
@@ -2449,6 +2468,90 @@ body {
 }
 
 .saved-row-action:hover {
+	background: color-mix(in srgb, var(--color-error) 12%, transparent);
+	color: var(--color-error);
+}
+
+/* Drafts */
+.drafts-panel {
+	display: flex;
+	flex-direction: column;
+	min-height: calc(100vh - 53px);
+}
+
+.drafts-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.draft-row {
+	display: flex;
+	align-items: stretch;
+	gap: 0.25rem;
+	border-bottom: 1px solid var(--social-border);
+	transition: background var(--social-transition);
+}
+
+.draft-row:hover {
+	background: color-mix(in srgb, var(--color-base-content) 3%, transparent);
+}
+
+.draft-row-main {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.25rem;
+	flex: 1;
+	min-width: 0;
+	padding: 0.85rem 0.35rem 0.85rem 1rem;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.draft-row-preview {
+	margin: 0;
+	font-size: 0.95rem;
+	line-height: 1.4;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.draft-row-meta {
+	color: var(--social-muted);
+	font-size: 0.8rem;
+}
+
+.draft-row-action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	align-self: center;
+	width: 2.25rem;
+	height: 2.25rem;
+	margin-right: 0.55rem;
+	border: none;
+	border-radius: 999px;
+	background: transparent;
+	color: var(--social-muted);
+	cursor: pointer;
+	opacity: 0.55;
+	transition: background var(--social-transition), color var(--social-transition), opacity var(--social-transition);
+}
+
+.draft-row:hover .draft-row-action,
+.draft-row-action:focus-visible {
+	opacity: 1;
+}
+
+.draft-row-action:hover {
 	background: color-mix(in srgb, var(--color-error) 12%, transparent);
 	color: var(--color-error);
 }

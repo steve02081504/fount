@@ -190,6 +190,36 @@ await testCase('POST /saved-posts/folders/delete', async () => {
 	return r.status === 200
 })
 
+writeLiveSection('D2. Composer drafts')
+
+let draftId = ''
+await testCase('POST /drafts', async () => {
+	const r = await shellApi('POST', '/drafts', { text: 'E2E draft body', visibility: 'public' })
+	if (r.status !== 200) throw new Error(`status ${r.status}`)
+	draftId = r.json.draftId
+	return Boolean(draftId)
+})
+
+await testCase('GET /drafts', async () => {
+	const r = await shellApi('GET', '/drafts')
+	return r.status === 200 && (r.json.drafts || []).some(row => row.draftId === draftId)
+})
+
+await testCase('GET /drafts/:draftId', async () => {
+	const r = await shellApi('GET', `/drafts/${draftId}`)
+	return r.status === 200 && r.json.body?.text === 'E2E draft body'
+})
+
+await testCase('POST /drafts update', async () => {
+	const r = await shellApi('POST', '/drafts', { draftId, text: 'E2E draft edited', visibility: 'unlisted' })
+	return r.status === 200 && r.json.body?.text === 'E2E draft edited'
+})
+
+await testCase('DELETE /drafts/:draftId', async () => {
+	const r = await shellApi('DELETE', `/drafts/${draftId}`)
+	return r.status === 200 && !(r.json.drafts || []).some(row => row.draftId === draftId)
+})
+
 writeLiveSection('E. Vault & translate')
 
 await testCase('POST /translate', async () => {

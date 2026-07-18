@@ -6,6 +6,7 @@ import { parseSocialRunUri } from '../shared/runUri.mjs'
 import { publishPost } from './composer.mjs'
 import { socialState } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
+import { loadDrafts } from './views/drafts.mjs'
 import { loadExplore } from './views/explore.mjs'
 import { loadFeed, updateFeedSearchChrome } from './views/feed.mjs'
 import { loadLiveView } from './views/live.mjs'
@@ -109,6 +110,7 @@ export async function switchView(view, options = {}) {
 	}
 	if (view === 'explore') await loadExplore()
 	if (view === 'saved') await loadSaved()
+	if (view === 'drafts') await loadDrafts()
 	if (view === 'settings') await loadSettings()
 	if (view === 'profile') await loadProfile()
 	if (view === 'videos')

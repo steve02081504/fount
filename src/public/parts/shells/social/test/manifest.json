@@ -202,6 +202,17 @@
 					]
 				},
 				{
+					"name": "drafts",
+					"triggers": [
+						"src/public/parts/shells/social/test/frontend/drafts.spec.mjs",
+						"src/public/parts/shells/social/public/src/views/drafts.mjs",
+						"src/public/parts/shells/social/public/src/actions/drafts.mjs",
+						"src/public/parts/shells/social/src/drafts.mjs",
+						"src/public/parts/shells/social/src/endpoints/drafts.mjs",
+						"src/public/parts/shells/social/src/api/client/drafts.mjs"
+					]
+				},
+				{
 					"name": "videos",
 					"triggers": [
 						"src/public/parts/shells/social/test/frontend/videos.spec.mjs",

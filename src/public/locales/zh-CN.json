@@ -1158,6 +1158,7 @@
 			"explore": "探索",
 			"notifications": "收件箱",
 			"saved": "收藏",
+			"drafts": "草稿箱",
 			"profile": "我的",
 			"videos": "短视频",
 			"live": "直播"
@@ -1191,6 +1192,7 @@
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
+			"saveDraft": "存草稿",
 			"fab": {
 				"title": "写动态",
 				"aria-label": "写动态"
@@ -1540,6 +1542,17 @@
 			"folderEmpty": "此文件夹为空",
 			"emptyHint": "浏览动态时点书签即可收藏到这里"
 		},
+		"drafts": {
+			"untitled": "（无文字草稿）",
+			"emptyHint": "在发帖框写点内容后点「存草稿」，下次可继续编辑",
+			"saved": "草稿已保存",
+			"deleted": "草稿已删除",
+			"delete": "删除草稿",
+			"empty": "草稿为空",
+			"saveFailed": "保存草稿失败：${error}",
+			"loadFailed": "打开草稿失败：${error}",
+			"deleteFailed": "删除草稿失败：${error}"
+		},
 		"time": {
 			"justNow": "刚刚",
 			"minutesAgo": "${n} 分钟前",
@@ -1552,6 +1565,7 @@
 			"followers": "还没有粉丝",
 			"notifications": "暂无通知",
 			"saved": "暂无收藏",
+			"drafts": "暂无草稿",
 			"exploreAccounts": "暂无可推荐的账户",
 			"explorePosts": "暂无探索帖子",
 			"likedPosts": "暂无点赞",
