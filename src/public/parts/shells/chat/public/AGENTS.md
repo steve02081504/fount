@@ -8,26 +8,25 @@ alwaysApply: false
 
 ## Entity model
 
-- Human and local agent are the same kind of thing: an **entity** with its own keypair. Operator = the unique entity with `charPartName === null`; `ownerEntityHash` is an optional belonging field on **any** entity (human or agent).
-- Identity / profile / EVFS HTTP live under `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P stays on `/api/p2p/*`. Set/clear belonging: `PUT …/entities/owner` (operator self) / `ChatClient.setOwner` / `updateProfile({ ownerEntityHash })` → all funnel through `setEntityOwner` (identity + profile + DAG `member_owner_update` fanout). Do not write `ownerEntityHash` to profile alone.
-- Profile top-level `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) is published in the signed public `profile.json` with `activePubKeyHex` / `keyGeneration`. Network search: `GET …/entities/search?q=` / `ChatClient.entities.search(q)` via fount-p2p `part_query` kind `entity_search` (TTL multi-hop + reverse-path merge + relay cache); **handler registered in chat `Load`** (`registerChatEntitySearchHandler`, after `registerShellPartpath` — not `initP2PServer`). Initiator verifies rows with EVFS `readPublicFile` then ranks by alias / handle exact / interactions / `pickNodeScore`. Local agent rows also match `charPartName` and surface it on verified hits (Hub friend search uses this to route to char DM, not user DM).
-- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate / acting path. `memberKind` is `agent` iff join carries `charname`. **Signer `pubKeyHash` (DAG `sender` / `memberKey`) ≠ entityHash**: `getGroupMemberEntityHash` / `GET …/groups/:id/state` `viewer.entityHash` must be the operator (or DAG `member.entityHash`); do not construct a fake entity from the ephemeral signing pubkey (causes Hub user column avatar and message thread to diverge).
-- **Webapi identity is always the operator entity.** Agents operate in-process via `getChatClient(username, agentEntityHash)`. There is no HTTP parameter to act or view as another entity.
-- Owner cross-entity power: declared owner may edit/delete that entity’s messages/posts **and** update its profile (local write when keys are on this node; otherwise publish to owner EVFS `owned/{target}/profile_update/*` for home to pull). Attribution for content edits stays the owner’s signature. Hub never switches to agent view — agent masters exercise power via `ChatClient` (`updateEntityProfile` / message ops).
-- Local profile write gate: `isWritableLocalEntityForUser` = node-writable **and** (target is operator **or** local identity `ownerEntityHash === operator`). Agent ensure backfills null owner to operator. Do not gate on `charPartName` alone.
-- **Agent master recognition**: `entity/master.mjs` → `resolveDeclaredOwnerEntityHash` / `resolveTrustedOwnerContext`. Trusted owner message requires cryptographic author === declared `ownerEntityHash` **and** no attribution mismatch (`importedFrom` / import resign). Care lists are UX-only, not mastership.
-- **Agent-only groups**: `createInvite` → `activateGroupFederation` must include `entityHash`; omitting it uses the operator signer, causing `group_settings_update` to be rejected (`requires active member sender`).
-- **Entity avatars (cross-shell)**: `public/shared/hashAvatar.mjs` (`customProfileAvatar` = trim `profile.avatar`) + `entityAvatar.mjs` + Hub `avatarCover.mjs`. Show whatever avatar the profile carries; empty → hash letter. Part `info.avatar` is synced into the signed profile via `syncAgentProfileFromCharPart` (ensure agent + profile-edit「从角色部件重置」) so remote peers can see it — do not invent EVFS URLs when unset. `/parts/<part>/…` 头像路径与静态路由一致，落在 part 的 `public/`（如 Gentian `avatar: \`${charurl}/imgs/anime.avif\`` → `public/imgs/anime.avif`）；缺头像的已有 profile 会在下次 ensure 时补传，不覆盖已有文案。
-- **Load reentrancy**: char `Load` → `ensureLocalAgentEntityHash` → `syncAgentProfileFromCharPart` must not `loadPart` the same char (in-flight `parts_set` Promise → deadlock). `baseloadPart` only reuses resolved instances; mid-load peeks the module via `baseMjsPartLoader`. Prefer `part.info` over re-running `UpdateInfo`.
+- Human and local agent are the same kind of thing: an **entity** with its own keypair. Operator = unique entity with `charPartName === null`; `ownerEntityHash` is optional belonging on any entity.
+- Identity / profile / EVFS HTTP: `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P: `/api/p2p/*`. Set/clear belonging via `PUT …/entities/owner` / `ChatClient.setOwner` / `updateProfile({ ownerEntityHash })` → all through `setEntityOwner`. Do not write `ownerEntityHash` to profile alone.
+- Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) is in signed public `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search`. **Handler registered in chat `Load`** (`registerChatEntitySearchHandler`, after `registerShellPartpath` — not `initP2PServer`). Local agent hits also match `charPartName` (Hub friend search → char DM, not user DM).
+- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate path. `memberKind` is `agent` iff join carries `charname`. **Signer `pubKeyHash` ≠ entityHash**: `viewer.entityHash` / `getGroupMemberEntityHash` must be the operator (or DAG `member.entityHash`); never invent an entity from the ephemeral signing pubkey.
+- **Webapi identity is always the operator.** Agents use in-process `getChatClient(username, agentEntityHash)`. No HTTP act-as parameter.
+- Owner power: edit/delete that entity's messages/posts **and** update its profile (local keys → local write; else EVFS `owned/{target}/profile_update/*`). Attribution stays the owner's signature. Hub never switches to agent view.
+- Local profile write gate: `isWritableLocalEntityForUser` = node-writable **and** (operator **or** `ownerEntityHash === operator`). Do not gate on `charPartName` alone.
+- **Agent master**: `entity/master.mjs`. Trusted owner message requires cryptographic author === declared `ownerEntityHash` and no attribution mismatch. Care lists are UX-only.
+- **Agent-only groups**: `createInvite` → `activateGroupFederation` must include `entityHash` or `group_settings_update` is rejected.
+- **Avatars**: `shared/hashAvatar.mjs` + `entityAvatar.mjs` + Hub `avatarCover.mjs`. Empty → hash letter. Part `info.avatar` syncs into signed profile via `syncAgentProfileFromCharPart` (ensure + profile-edit "reset from char part"). `/parts/<part>/…` avatar URLs map to that part's `public/` (e.g. Gentian `avatar: \`${charurl}/imgs/anime.avif\`` → `public/imgs/anime.avif`). Missing avatars backfill on next ensure; do not overwrite existing copy.
+- **Load reentrancy**: char `Load` → `ensureLocalAgentEntityHash` → `syncAgentProfileFromCharPart` must not `loadPart` the same char (deadlock). Prefer `part.info` over re-running `UpdateInfo`.
 
 ## ChatClient
 
-- Entry: `src/api/client/index.mjs` → domain factory composition → `getChatClient(username, entityHash?)` (default = operator).
-- Surface: groups / DM / join, channel send (+ files), reactions / pins / votes, member+role+channel governance, fork / reputation / denylist, federation catchup+tuning, session slots (persona / world / **node-local plugin list** / char / frequency), `triggerReply`, `streamingAuth`, `updateProfile` / `updateEntityProfile` / `setOwner`, `entities.search`, bridge bot lifecycle, private-state namespaces.
-- **Plugins**: per-group `local_plugins.json` on this node only (not DAG). World may inject live plugins via `GetChatPlugins` (merged in `getChatRequest`; local name wins). hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
-- `OnMessage` may hydrate via `client.messageFrom(event)` and operate immediately; returning false skips `GetReply` without blocking those ops.
-- Bridge groups: duck-typed `bridgeOperations` registered per bot; `group.bridgeBot().stop()` / `client.bridgeBots()`.
-- Integration: `test/integration/chat_client_api.test.mjs`, `entity_private_state.test.mjs`, `entity_search.test.mjs`.
+- Entry: `src/api/client/index.mjs` → `getChatClient(username, entityHash?)` (default = operator).
+- Surface: groups/DM/join, channel send (+ files), reactions/pins/votes, governance, fork/reputation/denylist, federation, session slots (persona/world/**node-local plugins**/char/frequency), `triggerReply`, `streamingAuth`, profile/owner/search, bridge bots, private-state namespaces.
+- **Plugins**: per-group `local_plugins.json` (node-only, not DAG). World may inject via `GetChatPlugins` (local name wins). Hosted world plugins apply only on the host; `TweakPrompt` mutations do not survive RPC.
+- `OnMessage` may hydrate via `client.messageFrom(event)`; returning false skips `GetReply` without blocking ops.
+- Bridge groups: duck-typed `bridgeOperations`; `group.bridgeBot().stop()` / `client.bridgeBots()`.
 
 ## Private state (per-entity)
 
@@ -37,22 +36,22 @@ Root: `{userDict}/shells/chat/entities/{entityHash}/`.
 | --- | --- |
 | bookmarks / groupFolders / aliases | JSON via `ChatClient.*` + `endpoints/preferences.mjs` |
 | readMarkers | `lib/readMarkers.mjs` |
-| notificationPreferences | `lib/notificationPreferences.mjs` (HTTP path still `/notify-prefs`) |
-| custom emojis / emoji_usage / stickers | `client.emojis` / `client.stickers` |
-| care | `client.care` (body: `targetEntityHash` only) |
+| notificationPreferences | `lib/notificationPreferences.mjs` (HTTP still `/notify-prefs`) |
+| custom emojis / stickers | `client.emojis` / `client.stickers` |
+| care | `client.care` (`targetEntityHash` only) |
 
-Inbox storage remains `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only (no `recipientEntityHash` query).
+Inbox: `{userDict}/shells/chat/inbox/{recipientEntityHash}/…`; HTTP `/inbox` is operator-only.
 
 ## Files
 
-- **Message attachments**: chat DAG `file_upload` + `fileMasterKey` / chunk store (unchanged).
-- **Shared group cabinets**: Cabinet shell op-log; chat only distributes keys via DAG `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind` (`src/chat/cabinets/keys.mjs`). Hub lists binds; management UI is Cabinet `#shared:{id}`.
+- Message attachments: DAG `file_upload` + `fileMasterKey` / chunk store.
+- Shared group cabinets: Cabinet op-log; chat only distributes keys via `cabinet_bind` / `cabinet_key_update` / `cabinet_unbind`. Hub lists binds; manage at Cabinet `#shared:{id}`.
 
 ## HTTP
 
-Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator client. API shapes: `public/llms.txt`.
+Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator client. Shapes: `public/llms.txt`.
 
-`GET …/groups/:id/state` returns `{ meta, viewer, federation }`. Frontend `getGroupState` flattens them but **must not** let `viewer.roles` (array of role IDs the member already holds) overwrite `meta.roles` (role definition map); write held roles into `myRoles`.
+`GET …/groups/:id/state` → `{ meta, viewer, federation }`. Frontend flatten must **not** let `viewer.roles` (held role IDs) overwrite `meta.roles` (role definition map) — write held roles into `myRoles`.
 
 ## Specialized guides
 
@@ -62,4 +61,4 @@ Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator clien
 | Session / viewer / WorldChatHost | [../src/chat/session/AGENTS.md](../src/chat/session/AGENTS.md) |
 | Cold archive | [../src/chat/archive/AGENTS.md](../src/chat/archive/AGENTS.md) |
 | Operational parity | [docs/review/human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md) |
-| Topology / roadmap | [docs/design/chat-social-dev-plan.md](../../../../../../docs/design/chat-social-dev-plan.md) |
+| Topology baseline | [docs/design/chat-social-dev-plan.md](../../../../../../docs/design/chat-social-dev-plan.md) |

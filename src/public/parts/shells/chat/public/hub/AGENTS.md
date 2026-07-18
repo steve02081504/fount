@@ -6,92 +6,40 @@ alwaysApply: false
 
 # Chat Hub Frontend Guide
 
+Deeper UI (profile card modes, module layout, unread/inbox/aliases): [ui-details.md](ui-details.md).
+
 ## Trust model
 
-- **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation-style hex/array validation on local API calls or UI state.
-- **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress, remote social payloads. Validate only at gates: `npm:@steve02081504/fount-p2p/wire/ingress`, `src/public/parts/shells/chat/src/chat/dag/remoteIngest.mjs`, `npm:@steve02081504/fount-p2p/schemas/*`.
-- **Untrusted remote Markdown**: Hub `messages/render/markdown.mjs` uses `renderMarkdownAsString(..., { allowDangerousHtml })`; local messages and self / local-char entities (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`) take the trusted tier. Remote self-declared `ownerEntityHash` does **not** elevate trust. First frame renders immediately; untrusted oversized text shows a preview + expand button. Untrusted tier also hides unsafe code executors (js/py/…) and HTML preview; safe executors (sql / brainfuck / Godbolt) remain.
-- **`message_edit` delta**: when WS carries `content.newContent`, apply directly via `applyMessageEditToRow` into source (do not drop `is_generating` on streaming error final frame); when backfilling by eventId, `linesIncludingOverlaysForTargets` must include edits/deletes/feedback pointing to that id, otherwise the merge misses the final content and the placeholder stays in generating. Pending source is `registerPendingMessageMarkdown` (in-memory Map) + `data-md-pending` — **never** put raw markdown into `data-md-raw` attributes (HTML quotes break attribute parsing → blank bubbles).
-- **Profile bio Markdown**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry point as Social's `mountMarkdown` / `renderTrustedPostMarkdown`); self / own agent / declared master / trust list. Reused by Cabinet / Social.
+- **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation hex/array validation on local API/UI state.
+- **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress. Validate only at gates (`wire/ingress`, `remoteIngest.mjs`, `schemas/*`).
+- **Untrusted remote Markdown**: `messages/render/markdown.mjs` → `renderMarkdownAsString(..., { allowDangerousHtml })`. Trusted tier: local messages, self / local-char (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`). Remote self-declared `ownerEntityHash` does **not** elevate. Untrusted: preview+expand for oversized text; hide unsafe executors (js/py/…); safe executors (sql / brainfuck / Godbolt) remain.
+- **`message_edit` delta**: WS with `content.newContent` → `applyMessageEditToRow` (do not drop `is_generating` on streaming error final). Backfill by eventId must include overlays via `linesIncludingOverlaysForTargets`. Pending MD: `registerPendingMessageMarkdown` + `data-md-pending` — **never** raw markdown in `data-md-raw` attributes.
+- **Profile bio**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry as Social).
 
 ## Streaming AV
 
-- **Default (no `streamingSfuWss`)**: WebCodecs + server **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). Roster / `hello` / `frame_type=2` screen share; `subscribe mode=preview|full` (preview = keyframes only, throttled, no audio).
-- **Group call**: text channel header → `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; dock template `hub/call/dock`; card `content.type:'call'` + `message_edit` updates participants/end. Shift+click = audio-only (`voiceRing.mjs` voice wave ring).
-- **Session lifecycle traps**: `session.close()` must be idempotent on an internal `closed` flag — never gate on `activeSession === session` after `leaveCodecsAvRoom` has already nulled the global (that made hangup a no-op and stacked duplicate sender tiles). Use `onClosed` so `call.mjs` / `streamingAv.mjs` facades reset UI when the shared singleton dies. Abort in-flight joins with a generation counter; do not `await joinInFlight` from inside the join itself (deadlock). Prune remote tiles on `publish_meta_revoke` / roster sender disappearance.
-- **Shared lean client** (reused by Social live): `/parts/shells:chat/shared/avRelayClient.mjs` — `buildChatAvRelayWsUrl` / `buildChatCallWsUrl` / `joinAvRelayRoom` (`mode` / `setMode`); frame protocol constants and `packAvFrame` / `unpackAvFrame` / `bytesToHex` exported from here. Quality presets: `shared/avRelayPresets.mjs` `CODECS_PRESETS` (do not import via `codecsAv` barrel). Social live AV WS URL: `/parts/shells:social/shared/liveAvWsUrl.mjs`.
-- **With external SFU URL**: iframe/embed via `renderStreamingChannel`.
-- Hub default: av-relay via `renderCodecsAvStreamingChannel` → `joinHubAvSession` unless SFU configured.
-- **Message direction prefetch**: `MessagePipeline` prefetches `loadMoreTop` when scrolling up and within 2 screens of the top; `loadOlderMessages` deduplicates in-flight requests.
+- Default (no `streamingSfuWss`): WebCodecs + **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). `subscribe mode=preview|full`.
+- Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `content.type:'call'`. Shift+click = audio-only.
+- **Lifecycle**: `session.close()` idempotent on internal `closed` flag — never gate on `activeSession === session` after leave nulls the global. Use `onClosed` for facade reset. Abort joins with a generation counter; do not `await joinInFlight` from inside join. Shared client: `/parts/shells:chat/shared/avRelayClient.mjs` + `avRelayPresets.mjs`.
+- Prefetch: `MessagePipeline` prefetches `loadMoreTop` within 2 screens of top; `loadOlderMessages` dedupes in-flight.
 
 ## UI conventions
 
-- **CSS class names**: page-local — path already scopes chat/hub, so do not prefix with `hub-` (e.g. `info-tag`). Prefer full words over opaque abbreviations (`app`/`c-`/`s-`). High-frequency widgets may use short semantic classes (`icon-button`, `status-dot`). Ready-gate ids/events stay global (`HUB_GATE` / `fount:hub-*`). Layout attrs: `body[data-layout-pane]` / `body[data-surface]`.
-- **Mobile single-pane** (`≤768px`): `body[data-layout-pane=nav|main]` — nav shows server bar + channel list; main shows full-width session + `#top-back-button`. Written by `hubPane.mjs` (`showHubMainPane` / `showHubNavPane`); `selectChannel` → main, `setMode` / back button → nav. Desktop CSS ignores this attribute. Inbox/discovery surface rules force the main pane visible and hide the channel bar.
-- **Entity profile card**: Single paint path — `hub/profile_popup` + `shared/entityProfileCard.mjs` (`paintEntityProfileCard` / `configureEntityProfileCard` / `createEntityProfileCardElement`). Modes: `popup` (click modal + actions), `hover` (fixed float via `shared/entityProfileHoverCard.mjs`, no action buttons; **one card + one serial paint chain** — `showGeneration` invalidates superseded work; never concurrent `paintEntityProfileCard` on the hover DOM), `embedded` / `preview`. Hub avatar/author hover → document-delegated `wireEntityProfileHover` only (do not also `bindHoverCardAnchor` on the same message nodes). Friends list / search rows → `bindEntityProfileHoverAnchor` (no native `title` tip). Click → `profilePopup.mjs` (Hub buttons). Cross-shell lightweight click card → `shared/entityProfilePopup.mjs`. Do not hand-write a second visual shell for hover. Agent profile edit modal shows「从角色部件重置」(`#profile-edit-reset-from-part` → `POST …/entities/:hash/rebuild-from-part`) only when `profile.charPartName` is set; humans hide the button. Default avatar and stable hash background texture generated by `shared/hashAvatar.mjs`; top-level `banner` (EVFS `profile/banner`) overrides the banner when present, empty string falls back to texture. Locale versions use GitHub-topics-style chips: click unselected to switch, click selected to inline-edit the code, Enter at line end to add (copies current slice). Tag/link editing uses chip + dynamic row (`profileLocaleEditor.mjs`) writing directly to `localized[locale].tags/links` — do not add plain-text `|` syntax. Ownership box / attribution warning also in `shared/entityProfileCard.mjs` (`--color-warning`). Import-history attribution mismatch ≠ Ed25519 signature failure.
-- **Errors**: use `handleUIError` from `public/src/ui/errors.mjs` — toast + `console.error` + Sentry (all three). Do not catch with only `showToastI18n` alone. Background paths: `toError` + `console.error` + Sentry without toast.
-- **Relative imports**: from `public/hub/*.mjs` use `../src/...` for `public/src` helpers (`../../src` resolves to `/parts/src` in the browser and hard-fails). One nesting deeper (`hub/wiring/`, `hub/messages/`, `hub/federation/`, `hub/sidebar/`, `hub/stream/`) needs `../../src/...` and `../../../../../scripts/...`. Two levels (`hub/messages/render/`, `hub/messages/actions/`, `hub/stream/handlers/`) need `../../../src/...` and `../../../../../../scripts/...`. DOM event wiring lives in `hub/wiring/` (`index.mjs` = `wireEvents`, `bootstrap.mjs` = `wireBootstrap`; filenames drop the `wire` prefix, export names keep it). Sidebar nav: `hub/sidebar/` (`index.mjs` coordinates `selectGroup` / `renderHubChannelSidebar`). Group WS: `hub/stream/` (`connection.mjs` lifecycle; `outbound.mjs` typing/stop/send; `handlers/` by wire type; `index.mjs` external facade). Channel reload: `messages/messageContext.reloadChannel` (do not thread `loadMessages` through every layer).
-- **Message modules**: render coordination in `messages/render/` (`index.mjs` aggregates; body/MD/attachments etc. split by responsibility, direct imports not barrel); shared message surface `messages/messageSurface.mjs` (main virtual list + thread drawer MessagePipeline / bind); reaction click delegation `messages/reactionWire.mjs` (HTML in `render/reactions.mjs`); action delegation in `messages/actions/handlers.mjs`, each `data-action` in a separate file in the same dir.
-- **Optimistic send (`pending:…`)**: composer inserts a temporary row before the DAG id exists. Never expose pin/reaction/edit/delete (or other chain writes) until `isDagEventId` is true. When WS confirms the real message while `composerPendingId` is set, `applyIncomingMessage*` must `pipeline.refresh()` — a bare `appendItem` leaves the stale pending DOM (wrong `data-event-id` → `targetId must be 64 hex`, and `findContextMessage` misses the row).
-- **Message shortcuts**: hold Shift → action bar switches to download/delete (`wireShiftKeyHint` + `shiftHtml`); drag from non-body area of a message row → `messageDragExport.mjs` saves standalone HTML (`DownloadURL`) plus `text/markdown`. Char timeline page navigation uses bubble swipe/arrow (`chatGestures.mjs`, keep arrows inside `.messages` — not `left:-36px`), not the «more» menu. Message «more» dropdown flips top/bottom via `wireMessageMoreDropdownFlip` when near the scroll top.
-- No hardcoded user-visible strings; use `data-i18n` / `setElementI18n` (params via `data-*`) and `zh-CN.json`. `geti18n` only for non-DOM contexts or embedding pre-built HTML/DOM fragments.
-- **Composer disable**: set only `disabled`; do not inject explanatory text when the input area is hidden by surface CSS (inbox / discovery / idle friends / groups without session). For visible disabled states (read-only channel / suspected removal), use only a `{ placeholder }` object key — a string-type `data-i18n` writes `innerHTML` and contaminates `textarea.value`, leaving leftover text after re-enabling.
-- Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
-- **CSS vs atomic classes**: 可复用组件（inbox row / discovery card / vote / char-list / member 等）保留短语义 class + CSS；不要把整段布局搬进模板 Tailwind。原子类只留给 DaisyUI 组件类与真正一次性的局部排版。伪元素、`:has()`、sticky hover、`color-mix` 主题 token、data-status 着色留在 CSS。上下文菜单定位统一走 `hub/core/positionContextMenu.mjs`。
-- Cross-shell shared modules (e.g. `shared/entityProfileCard.mjs`) must not call `usingTemplates` — it is a process-level singleton that redirects Social/Cabinet template requests to the chat path; use `withTemplates`, `createEntityProfileCardElement`, or direct DOM + `data-i18n` instead.
-- Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`. Template body = `modal-box` + optional `modal-backdrop` only (do not wrap another `<dialog>`; self-managed lifecycle modals like `profile_edit_modal` are exempt).
-- Hub prefs (translation / P2P federation): single gear `#prefs-button` in server bar → `openHubPrefsModal` (`hub/hubPrefs.mjs`), left nav switches sections, content mounts into `#settings-modal`.
-- State: `store` / `setState` / `getState` / `watchState` in `core/state.mjs`; banner visibility via `core/bindings.mjs`.
-- Context menus / top-bar toggle panels: `bindDismissOnDocumentInteraction` from `core/contextMenuDismiss.mjs` (bind on open; supports `ignoreSelectors`; do not hand-write persistent document click handlers).
-- **No setter-injected callbacks / appContext bags**: page state and cross-module functions are exported mjs bindings and imported directly. ESM circular imports are fine for runtime calls; heavy modules (`messages/messages.mjs` etc.) use call-site `await import()`. Do not invent `setXHandler` / `initX({ deps })` just to break import cycles. Exceptions: polymorphic runtime switch (`channelActionsContext` main/`thread` slots, resolved by DOM container; not a global mutual override), shared-component params (`getPickerContext`), and per-call event callbacks (`onSaved`).
+- CSS: page-local, no `hub-` prefix. Full words. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`.
+- Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`.
+- Errors: `handleUIError` (toast + `console.error` + Sentry). Background: `toError` + console + Sentry, no toast.
+- Prefer `renderTemplate` / `mountTemplate`. Modals: `openDialogFromTemplate` (`modal-box` only). Cross-shell shared modules: `withTemplates`, never bare `usingTemplates`.
+- Reusable widgets: short semantic class + CSS; atomic/Tailwind only for DaisyUI and one-off layout. Context menus: `hub/core/positionContextMenu.mjs` + `bindDismissOnDocumentInteraction`.
+- State: `core/state.mjs`. No setter-injected appContext bags — import exported bindings; heavy modules use call-site `await import()`.
+- No hardcoded user-visible strings; `data-i18n` / `setElementI18n` + `zh-CN.json`.
 
-## Files panel (shared cabinets)
+## Files / messages / archive
 
-- Hub files drawer lists `state.cabinets` filtered by the viewer's role (`rw`/`ro`); click opens Cabinet shell `#shared:{cabinetId}`.
-- Managers (`MANAGE_ROLES`) bind via `POST …/groups/:id/cabinets/bind` (DAG `cabinet_bind` + ECIES key wraps). Message attachments stay on chat DAG (`file_upload` / `fileMasterKey`); there is no group folder tree in chat.
+- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind: `POST …/groups/:id/cabinets/bind`. Attachments stay on chat DAG.
+- Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
+- Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
+- Portable archive export/import: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).
 
-## Message storage & APIs
+## Search
 
-Backend storage model (hot / cold archive / DAG, federation sync): [archive guide](../../src/chat/archive/AGENTS.md).
-
-Hub-facing API shapes:
-
-- **Main text channel read**: `GET …/view-log` via `getChannelViewLog` (viewer-filtered row DTOs; same shape as raw `/messages`). Response includes `hasMore` + `oldestRawEventId` for filtered empty pages. Navigation/edit backfill: `POST …/view-log/batch-get` via `getChannelViewLogByEventIds` / `ensureMessageLoaded`. Raw `GET …/messages` and `POST …/messages/batch-get` are only for moderation/debugging.
-- **Decrypt failure**: merged rows use top-level `decryptView: { failed: true, pendingGeneration? }` with `content: null`.
-- **Reactions**: both view-log and messages return `{ messages, reactions }` — per-page emoji aggregation keyed by target event id.
-- **Group state**: `GET …/groups/:id/state` → `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }`.
-- **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
-- **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded` → viewer batch-get); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
-
-## Channel archive (JSON)
-
-- **Export**: channel context menu → `GET …/channels/:id/export` → download (`public/src/api/channelArchive.mjs`). Full cold+hot portable snapshot (`fount-channel-archive`).
-- **Import**: group settings → Storage & Archive → multipart `POST …/channels/import` → new text channel in the same group; Hub navigates to `#group:{groupId}:{newChannelId}`. Requires `MANAGE_CHANNELS` (`canImportChannel`).
-- Backend semantics: [archive AGENTS](../../src/chat/archive/AGENTS.md) § Portable channel archive.
-
-## Unread
-
-- **Model**: `channel.messageSeq` (materialized on group state) minus per-entity `shells/chat/entities/{entityHash}/readMarkers.json` seq → O(1) unread per channel. Backend: `src/chat/lib/readMarkers.mjs`; HTTP fixed to operator; `PUT …/channels/:id/read-marker`; WS `read_marker` for multi-device sync (filter by `viewer.username` on client).
-- **Hub**: `hub/unread.mjs` — badge HTML, `putChannelReadMarker`; sidebar group list sorts by `lastMessageTime`, unread as badge only; earliest-unread divider in `messages/messageShared.mjs` (renders only when at least one read message precedes it). Group list API returns `unreadCount` / `channelUnread` from `enumerateJoinedFederatedGroups`.
-- **Open = read**: `loadMessages` calls `markCurrentChannelRead` immediately on opening a text channel (no wait for scroll bottom); `firstUnreadEventId` is retained this session as the divider anchor and recalculated from the new marker on next load.
-- **selectGroup hash**: after each long await (`loadGroups` / membership / sync / paint), re-read same-group channel from `parseHash()` so a mid-flight hash change is not overwritten by the initial `updateHash(preset)`.
-- **Frontend E2E**: `test/frontend/unread.spec.mjs` (badge + divider + clear-on-read).
-
-## @mention Inbox
-
-- **Storage**: `{userDictionary}/shells/chat/inbox/{recipientEntityHash}/events.jsonl` + `read.json` (per-recipient read watermark). Incremental write: `src/chat/lib/inbox.mjs` + `dag/messageFanout.mjs` (`eventPersist` called after `message`/`message_edit` persisted). **Skip**: `content.type === 'call'` (call cards trigger multiple `message_edit` events for create/roster/end; must not be treated as inbox signals).
-- **Syntax**: `@[entity:<128hex>]` in message body (see `shared/inlineTokenSyntax.mjs`); Hub renderer/composer displays displayName (`shared/expandMentions.mjs`, `hub/mentionAutocomplete.mjs`).
-- **API**: `GET /inbox`, `GET|PUT /inbox/seen` fixed to operator entity (no recipient parameter); agent inbox only via `getChatClient(username, agentHash).inbox`. Group autocomplete: `GET …/groups/:id/mentions/suggest`.
-- **Hub**: server bar `@` button + `#inbox` list (`hub/inboxView.mjs` + `hub/inboxClient.mjs`); badge driven by WS `channel_message.mentions.entityHashes`.
-- **Mention rendering**: `shared/expandMentions.mjs` expands before markdown processing; entity links via `formatSocialProfileHref` from `/parts/shells:social/shared/runUri.mjs`.
-
-## Aliases / petnames
-
-- **Local aliases** (entity-private, not in DAG — canonical key is hash only): via `ChatClient.aliases` / `GET|PUT …/aliases` (HTTP fixed to operator).
-- **Shared client** `shared/aliases.mjs` (Social reuses via `/parts/shells:chat/shared/aliases.mjs`): `loadAliases()` warms in-memory cache; `aliasForEntity`/`aliasForGroup`/`groupIdForAlias` are synchronous hot-path getters; `setEntityAlias`/`setGroupAlias` (empty string = delete) do a whole-file PUT then update cache. **Cache must be warm before rendering**: Hub calls `await loadAliases()` in `initCore` (before `loadGroups`); Social calls it at `bootstrap` start.
-- **Set-alias UI**: use `shared/promptText.mjs` (in-page `<dialog>`), never `window.prompt` under profile popup / menus — native prompt is often swallowed or invisible over the custom backdrop. After save, call `hub/aliasUi.mjs` `refreshAliasDependentUi` so messages / members / friends column pick up the new label.
-- **Name resolution** `shared/nameResolve.mjs`: `resolveDisplayName({ alias, profileName, fallbackLabel, entityHash })` (alias → profile → short hash); `disambiguateLabels` appends `·${hash.slice(64,68)}` for collisions. Hub hot paths — `authorDisplayLabel`, `hydrateAuthorLabels`, hover cards — all go through `resolveDisplayName` (do not access `profile.name` directly); sidebar and settings member lists use `disambiguateLabels` in batch. Every new hash-display point must use these helpers, not bare `.slice()`.
-- **@id display** `shared/entityHash.mjs` → `formatEntityAtId(entityHash, { handle })`: produces `@handle (@hash…)` when a named handle exists, otherwise `@hash…`. Profile card handle row, Hub friend search subtitle, Social `entityHandle` / post card reply `@id`, Cabinet stamps all go through this function; do not hand-write `` `@${handle}` `` or bare `hash.slice`.
-- **Deep links**: `#group:@{alias}:{channelId}` resolved by `parseHash` via `groupIdForAlias`; optional `;{eventId}` message anchor; `updateHash` still writes canonical groupId. Standalone share: `fount://run/shells:chat/message;…` wrapped via `wrapProtocolHttpsUrl` → GitHub Pages protocol hop.
-- **Message extras**: content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `replyTo` (inline quote bubble: `{ eventId, senderName?, preview? }`, parallel to sub-thread `thread`) / `fileAlts` (see `shared/messageFields.mjs`). Composer: `hub/composerReply.mjs`; render: `messages/render/blocks.mjs` `quote_block` (only when semantic `replyTo` is present — do not draw DAG `prev_event_ids` as a quote bar). Bare link embeds are hydrated by the frontend markdown renderer (`data-fount-embed`) via `/api/no-cors`, not stored.
-- **Network handle search**: profile top-level `handle` (signed public); Hub `#friends` search box + Social feed search call `GET …/entities/search` (multi-hop `part_query` kind `entity_search`). Hub friend search also scans local `chars/` (part name / cached display name); hits go to `dispatchFriendChat({ type: 'char' })`; entity search hits for local agents return `charPartName` — do not treat as a remote-user DM.
+Hub `#friends` search: local `chars/` → `dispatchFriendChat({ type: 'char' })`; entity search hits with `charPartName` are local agents — not remote-user DMs. Network handle search: `GET …/entities/search`.

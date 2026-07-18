@@ -27,27 +27,28 @@
 - **Restart**: `fount reboot` for backend/code/config changes. Frontend edits take effect on browser refresh.
 - **Debug dumps**: `debugLog(name, data)` → `debug_logs/`.
 - **API test**: `curl "http://localhost:8931/api/whoami?fount-apikey=$env:FOUNT_API_KEY"` (PS: `$env:FOUNT_API_KEY`, bash: `$FOUNT_API_KEY`).
-- **Subagent context handoff**: subagents do not inherit the parent chat's full reasoning or implicit context. Before delegating, provide task definition, target paths, constraints, verified findings, and expected output.
-- **No planning IDs in code**: roadmap milestone codes (`M1`/`M7a`/`G4`/`D6` etc.) belong only in design/review docs while a batch is open — never in source, test names, fixture paths, comments, or `llms.txt`. Name files/symbols by domain semantics (e.g. `gentian_shell_contract`, `poll_edit_feed`), not milestone codes. When auditing, avoid bare `[mg]\d+` (collides with `groupId:'g1'` / `memberId:'m1'` / `m4a`); prefer filename pattern `^[mgd]\d+[ab]?_`, `M\d+[ab]?` inside `Deno.test`/comments, and compound suffixes like `m\d+_features`.
+- **Subagent context handoff**: subagents do not inherit the parent chat's full reasoning. Before delegating, provide task definition, target paths, constraints, verified findings, and expected output.
+- **No planning IDs in code**: milestone codes (`M1`/`G4`/…) belong only in design/review docs — never in source, test names, fixtures, comments, or `llms.txt`. Name by domain semantics (`poll_edit_feed`, not `m7a_features`).
 
 ## Specialized Guides
 
 | Task | Guide |
 | --- | --- |
-| P2P / federation / trust graph / Mailbox / Chat crypto / EVFS | [src/server/p2p_server/AGENTS.md](src/server/p2p_server/AGENTS.md) |
-| P2P package source / sim / package tests | [fount-p2p](https://github.com/steve02081504/fount-p2p) (npm `@steve02081504/fount-p2p`) |
-| Frontend page logic (shared scripts, i18n, theming, templates) | [src/public/pages/AGENTS.md](src/public/pages/AGENTS.md) |
-| Shell (URL mapping, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
-| Chat session viewer / member_roles | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |
-| Chat/Social roadmap / interaction topology baseline (reply generation belongs to char; persona = human I/O middleware; `ChatClient` / `SocialClient` = entity operation surface, bridges implement `bridgeOperations`) | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
-| docs writing guide (design / review style, user-visible impact, edge-debt demotion) | [docs/AGENTS.md](docs/AGENTS.md) |
-| Human / agent operational parity (unified entity model) | [docs/review/human-agent-operational-parity-review.md](docs/review/human-agent-operational-parity-review.md) |
-| Chat / Social / Cabinet implementation debt (ugly / dead / merge) | [docs/review/chat-social-cabinet-tech-stack.md](docs/review/chat-social-cabinet-tech-stack.md) |
-| World distribution model (local/replicated/hosted, WorldChatHost, world_state) | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
-| Plugin (`GetPrompt` / `TweakPrompt` / `ReplyHandler`) | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |
-| Chat shell (entity model / ChatClient / private state) | [src/public/parts/shells/chat/public/AGENTS.md](src/public/parts/shells/chat/public/AGENTS.md) |
+| P2P / federation / Mailbox / EVFS | [src/server/p2p_server/AGENTS.md](src/server/p2p_server/AGENTS.md) |
+| P2P package / sim tests | [fount-p2p](https://github.com/steve02081504/fount-p2p) (`@steve02081504/fount-p2p`) |
+| Frontend shared scripts | [src/public/pages/AGENTS.md](src/public/pages/AGENTS.md) |
+| Shell (URL, `Load`, endpoints) | [src/public/parts/shells/AGENTS.md](src/public/parts/shells/AGENTS.md) |
+| Chat entity / ChatClient | [src/public/parts/shells/chat/public/AGENTS.md](src/public/parts/shells/chat/public/AGENTS.md) |
 | Chat Hub frontend | [src/public/parts/shells/chat/public/hub/AGENTS.md](src/public/parts/shells/chat/public/hub/AGENTS.md) |
-| Cabinet (P2P file cabinet) | [src/public/parts/shells/cabinet/AGENTS.md](src/public/parts/shells/cabinet/AGENTS.md) |
+| Chat session / viewer / WorldChatHost | [src/public/parts/shells/chat/src/chat/session/AGENTS.md](src/public/parts/shells/chat/src/chat/session/AGENTS.md) |
 | Chat cold archive | [src/public/parts/shells/chat/src/chat/archive/AGENTS.md](src/public/parts/shells/chat/src/chat/archive/AGENTS.md) |
-| Social Shell frontend | [src/public/parts/shells/social/public/AGENTS.md](src/public/parts/shells/social/public/AGENTS.md) |
+| Social frontend | [src/public/parts/shells/social/public/AGENTS.md](src/public/parts/shells/social/public/AGENTS.md) |
+| Cabinet | [src/public/parts/shells/cabinet/AGENTS.md](src/public/parts/shells/cabinet/AGENTS.md) |
+| Plugin API | [src/public/parts/plugins/AGENTS.md](src/public/parts/plugins/AGENTS.md) |
 | Test framework | [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md) |
+| Local search index | [src/scripts/search/AGENTS.md](src/scripts/search/AGENTS.md) |
+| Docs writing (design / review) | [docs/AGENTS.md](docs/AGENTS.md) |
+| Chat/Social topology baseline | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
+| World distribution | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
+| Human/agent operational parity | [docs/review/human-agent-operational-parity-review.md](docs/review/human-agent-operational-parity-review.md) |
+| Chat/Social/Cabinet debt inventory | [docs/review/chat-social-cabinet-tech-stack.md](docs/review/chat-social-cabinet-tech-stack.md) |

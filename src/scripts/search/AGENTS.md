@@ -8,9 +8,9 @@ alwaysApply: false
 
 ## Engine (`src/scripts/search/`)
 
-- **`tokenize.mjs`**: CJK → bigram(2-gram); latin/digits → lowercased word tokens; `#hashtag` kept whole. Export `TOKENIZER_VERSION` — bump when tokenization changes (triggers rebuild).
-- **`invertedIndex.mjs`**: Per-shard dir `{indexDir}/{shardKey}/` with `postings.json`, append-only `docs.jsonl`, `meta.json` (`coverage`, `docCount`, `watermark`). Writes use `withAsyncMutex` per shard.
-- **Query path**: token intersection → candidate doc ids → **`verify` callback** substring truth check (eliminates bigram false positives).
+- **`tokenize.mjs`**: CJK → bigram; latin/digits → lowercased words; `#hashtag` kept whole. Bump `TOKENIZER_VERSION` on tokenization changes (triggers rebuild).
+- **`invertedIndex.mjs`**: Per-shard `{indexDir}/{shardKey}/` — `postings.json`, append-only `docs.jsonl`, `meta.json`. Writes use `withAsyncMutex` per shard.
+- **Query**: token intersection → candidates → **`verify` callback** substring check (kills bigram false positives).
 
 ## Hook points
 
@@ -19,11 +19,6 @@ alwaysApply: false
 | Chat | `eventPersist.mjs` after `messages.jsonl` append | `channelId` |
 | Social | `timeline/append.mjs` + `sync.mjs` ingest | `entityHash` |
 
-Chat cold archive: lazy scan in `chat/search/index.mjs` `ensureArchiveIndexed()` on first query touching uncovered months.
+Chat cold archive: lazy `ensureArchiveIndexed()` on first query touching uncovered months.
 
-Social extras: `searchIndex.mjs` maintains `replies.json` reverse index + `trending.json` hashtag counts.
-
-## Tests
-
-- Pure: `shells/social/test/pure/search_engine.test.mjs`
-- Integration: `shells/chat/test/integration/search_index.test.mjs`, `shells/social/test/integration/governance.test.mjs` (indirect)
+Social extras: `replies.json` reverse index + `trending.json` hashtag counts.

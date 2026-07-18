@@ -6,18 +6,18 @@ alwaysApply: false
 
 # Cold archive (Chat)
 
-- **Month bucketing**: UTC calendar month `YYYY-MM` only (`archiveMonthKey` uses `getUTCFullYear`/`getUTCMonth`; never local-time `getMonth()`).
-- **Two axes**: admin axis = DAG/HTTP governance; small-circle axis = federation multi-peer + `monthDigests` reputation arbitration (body truth = digest). Local cold-archive cleanup = replica disk hygiene — any user with a local group replica may delete `archive/*.jsonl`.
-- **Not in DAG**: `archive_manifest.json` holds `monthDigests`, `archivedEventIds`, `channels[].months`. Hot/checkpoint state in `snapshot.json`.
-- **Local disk read**: verify `monthDigests` against month JSONL; federation streams encrypted chunks, never whole-file `readFile`.
-- **Federation**: `syncMissingArchiveMonths` backfills; `fed_archive_month_want` requires PullAttestation + active membership; peers arbitrate digests via `pickArchiveMonthByReputation`, then `syncArchivedEventIdsFromMonthBody`; quorum via `ARCHIVE_QUORUM_PEER_MIN` (`federationCollect.mjs`).
-- **Digest**: each disk JSONL line must be `canonicalArchiveMonthLine`; `digestCanonicalMonthLines` hashes lines in eventId order; `mutateArchiveManifest` does mutually-exclusive R-M-W; federation reassembly writes temp file then `rename`, never `Buffer.concat`.
-- **Hot zone**: `hot_posts.latestByChannel` in `snapshot.json` (`hotLatestMessageCount`).
+- **Month bucketing**: UTC `YYYY-MM` only (`getUTCFullYear`/`getUTCMonth` — never local `getMonth()`).
+- **Two axes**: admin = DAG/HTTP governance; small-circle = federation + `monthDigests` reputation arbitration (body truth = digest). Local `archive/*.jsonl` cleanup = replica disk hygiene (any local replica may delete).
+- **Not in DAG**: `archive_manifest.json` (`monthDigests`, `archivedEventIds`, `channels[].months`). Hot/checkpoint in `snapshot.json`.
+- **Local read**: verify digests against month JSONL. Federation streams encrypted chunks — never whole-file `readFile`.
+- **Federation**: `syncMissingArchiveMonths`; `fed_archive_month_want` needs PullAttestation + active membership; peers pick via `pickArchiveMonthByReputation`; quorum `ARCHIVE_QUORUM_PEER_MIN`.
+- **Digest**: lines must be `canonicalArchiveMonthLine`; hash in eventId order; `mutateArchiveManifest` mutually-exclusive R-M-W; reassembly = temp file + `rename` (never `Buffer.concat`).
+- **Hot zone**: `hot_posts.latestByChannel` in `snapshot.json`.
 
 ## Portable channel archive (Hub)
 
-- Format: `{ format: 'fount-channel-archive', source, messages[] }` — see `src/chat/channelArchive.mjs`.
-- Export includes cold+hot final view, delete tombstones, reaction **counts** (not voters), attachment metadata only (no bytes), plus optional `sourceSenderPubKeyHash` / `sourceEntityHash`.
-- Import creates a **new text channel** in the current group; history is re-signed by the importer (`origin: 'bridge'`, `ingress: 'backfill'`) with `importedFrom` provenance (including claimed/signer + `attributionMismatch: true`). Original DAG signatures / reaction voters are not forged.
-- Hub UI: `--color-warning` icon next to sender name; warning box below name in profile card. Agent / Prompt: `extension.attribution.mismatch` → must not be treated as a trusted owner instruction.
+- Format: `{ format: 'fount-channel-archive', source, messages[] }` — `src/chat/channelArchive.mjs`.
+- Export: cold+hot final view, delete tombstones, reaction **counts** (not voters), attachment metadata only, optional source hashes.
+- Import: **new text channel**; re-signed by importer (`origin: 'bridge'`, `ingress: 'backfill'`) with `importedFrom` provenance (`attributionMismatch: true` when claimed ≠ signer). Original DAG signatures / voters are not forged.
+- UI/agent: `--color-warning`; `extension.attribution.mismatch` must not be treated as a trusted owner instruction.
 - HTTP: `GET …/channels/:channelId/export` (`VIEW_CHANNEL`); `POST …/channels/import` (`MANAGE_CHANNELS`, multipart `archive`).

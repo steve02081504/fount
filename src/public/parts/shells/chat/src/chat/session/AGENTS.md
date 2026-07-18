@@ -6,98 +6,54 @@ alwaysApply: false
 
 # Chat Session Viewer Guide
 
+World distribution product model: [docs/design/world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
+
 ## Viewer symmetry
 
-- Formal interfaces:
-  - `WorldAPI.chat.GetChatLogForViewer(arg, viewer)` (`chatViewer_t` in `src/decl/chatLog.ts`)
-  - `UserAPI.chat.GetChatLogForViewer(arg, viewer)` (persona's subjective filter)
-- Shell dispatch: `session/viewerLog.mjs`
-  - `applyWorldChatLogView` / `applyPersonaChatLogView`
-- **Fixed order**: base → world (objective) → persona (subjective).
-- Agent: `getChatRequest` builds the viewer, then runs the two steps above.
-- Human: `materializeViewerLog.mjs` → `GET …/view-log`; projects back to row DTOs (hides discarded entries, applies rewrite overrides, `viewerRewritten`); raw `GET …/messages` is preserved separately.
-- **visibility ACL parity**: `lib/visibility.mjs` `entryVisibleToViewer` (per-entry `visibility` roles/members + `charVisibility` char whitelist) runs in **both** final views — prompt assembly (`prompt_struct` `entryVisibleForPrompt`) and view-log base layer (`materializeViewerChatLog`, before the world hook). Raw `/messages` deliberately does not filter (moderation/audit surface).
-- **view-log pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` means the raw DAG page hit `limit` (before persona/world filtering). When filtering yields an empty page but `hasMore`, Hub advances with `oldestRawEventId` — do not peer-inject raw rows from the client (`dag/queries` already backfills on before-miss).
-- Hub: `loadMessages` / incremental refresh go through `getChannelViewLog`; navigation/edit backfill goes through `getChannelViewLogByEventIds` (`POST …/view-log/batch-get`). Raw `GET …/messages` / `POST …/messages/batch-get` remain for moderation/audit.
-- Federation: `federation/remoteWorldProxy.mjs` + `federation/remoteProxy.mjs` (`createRemotePersonaProxy`) + `federation/rpcDispatcher.mjs`; world exposes `GetChatLogForViewer`, `GetPrompt`/`TweakPrompt`/`GetGroupPrompt`, `GetCharReply`; persona exposes `GetPromptForOther`/`TweakPromptForOther`/`GetChatLogForViewer` (memberId `owner:persona:name`).
-- **other_chars / other_personas**: `getChatRequest` reads the latest 500 channel lines first and runs `aggregateChannelActivity`; other_chars = (`charFrequencies > 0`) ∪ active Top-N (`groupSettings.otherCharsActiveLimit`, default 8); other_personas = active humans in-window mapped to `session.personas` (excluding the local `user` slot). `buildPromptStruct` fills `is_active` / `last_active`.
-- **Optional-hook degradation across RPC**: the proxy defines every method, so "remote didn't implement it" surfaces as a `METHOD_NOT_FOUND` RPC error — `invokeRemote` catches it and returns `undefined`, making a missing remote hook indistinguishable from a locally-undefined one. Callers therefore uniformly use `hook?.(…) ?? fallback`. The dispatcher throws `METHOD_NOT_FOUND` for local parts lacking the method instead of falling through to network RPC.
+- Interfaces: `WorldAPI.chat.GetChatLogForViewer` / `UserAPI.chat.GetChatLogForViewer` (`chatViewer_t` in `src/decl/chatLog.ts`).
+- Dispatch: `session/viewerLog.mjs` — **order** base → world (objective) → persona (subjective).
+- Agent: `getChatRequest` builds viewer then runs both steps. Human: `materializeViewerLog.mjs` → `GET …/view-log` (row DTOs; raw `GET …/messages` separate for moderation).
+- **Visibility ACL**: `lib/visibility.mjs` `entryVisibleToViewer` runs in prompt assembly **and** view-log base (before world hook). Raw `/messages` does not filter.
+- **Pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` = raw page hit `limit` before filtering. Empty filtered page with `hasMore` → advance with `oldestRawEventId` (do not peer-inject raw rows).
+- Hub: `getChannelViewLog` / `getChannelViewLogByEventIds`. Federation proxies: `remoteWorldProxy.mjs` / `remoteProxy.mjs` / `rpcDispatcher.mjs`.
+- **other_chars / other_personas**: from latest 500 lines + `aggregateChannelActivity`; other_chars = (`charFrequencies > 0`) ∪ Top-N (`otherCharsActiveLimit`, default 8); other_personas = active humans mapped to `session.personas` (exclude local `user`).
+- **Optional hooks over RPC**: missing remote method → `METHOD_NOT_FOUND` → `invokeRemote` returns `undefined`. Callers use `hook?.(…) ?? fallback`.
 
-## Built-in minimal world / persona
+## Built-in world / persona
 
-- `session/builtinParts.mjs`: `BUILTIN_WORLD` (`distribution: 'local'`), `BUILTIN_PERSONA`.
-- `resolveWorld` / `loadPlayerFields` / `buildTimeSliceFromSession` return these singletons when nothing is bound or nothing is installed locally — **never `null`**.
-- Their hooks either pass everything through or contribute nothing; they deliberately **do not implement** `GetSpeakingOrder` / `GetCharReply` / `GetGreeting` / `MessageEdit`(`Delete`) (implementing any of these would replace the default path).
-- The pipeline can assume `world` / `user`/`player` are always objects, except in federation `rpcDispatcher`'s `not_local` branch.
+- `session/builtinParts.mjs`: `BUILTIN_WORLD` (`distribution: 'local'`), `BUILTIN_PERSONA`. Returned when unbound / not installed — **never `null`**.
+- They pass through or no-op; they deliberately omit `GetSpeakingOrder` / `GetCharReply` / `GetGreeting` / `MessageEdit`/`MessageDelete` (implementing any would replace defaults).
 
 ## World distribution
 
-- `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'` (default `hosted`); on bind, read from the binder's locally installed world part and written into `session_world_bind*`'s `content.distribution`.
-- `resolveWorld` three branches (on `distribution` from `session.channelWorlds[channelId] || session.world`, default `hosted`):
-  - **`local`**: `loadPart(replicaUsername, worlds/…)`; not installed → `BUILTIN_WORLD` (never RPC).
-  - **`replicated`**: locally installed → `loadPart(replicaUsername, …)`; not installed → `createRemoteWorldProxy(homeNodeHash)` (seed-host fallback).
-  - **`hosted`** (current default): `isLocalNode(homeNodeHash)` → `loadPart(ownerUsername, …)`; otherwise RPC.
-- Inbound validation (`sessionEventValidate.mjs`): `hosted`/`replicated` require `homeNodeHash`; `local` may omit it.
-- Default fount world is marked `distribution: 'local'`.
-- **`GetChatPlugins`**: world returns live `PluginAPI_t` objects; `getChatRequest` merges with local plugins (**local same-name wins**). local/replicated: each node with the world installed; hosted: host-side only (remote proxy does **not** expose this hook — live objects cannot RPC). Channel scope comes from `resolveWorld(channelId)`.
-- **`TweakPrompt` hosted RPC**: in-place mutation is lost across the JSON boundary; no hook-proxy workaround.
+- `WorldAPI_t.distribution?: 'local' | 'replicated' | 'hosted'` (default `hosted`); written into `session_world_bind*` on bind.
+- `resolveWorld` (`session.channelWorlds[channelId] || session.world`):
+  - **`local`**: local `loadPart` or `BUILTIN_WORLD` (never RPC)
+  - **`replicated`**: local install or `createRemoteWorldProxy(homeNodeHash)`
+  - **`hosted`**: local host node → `loadPart(ownerUsername)`; else RPC
+- Inbound: `hosted`/`replicated` require `homeNodeHash`; `local` may omit.
+- **`GetChatPlugins`**: live objects; local same-name wins; hosted host-only (no RPC). **`TweakPrompt` hosted RPC**: in-place mutation lost across JSON.
 
-## Local plugins (node-private)
+## Local plugins
 
-- Path: `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs`.
-- `addplugin` / `removeplugin` / `getPluginListOfGroup` / group defaults in `newMetadata` all write this file.
-- Does not leak plugin names over federation; does not apply to remote agents.
+`groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs` — node-private; not federated.
 
 ## World shared state + WorldChatHost
 
-- DAG event `world_state`: `content { worldname, action: 'set'|'delete', key, value? }`; materialized to `state.worldStates[worldname][key]` (shell-level LWW reducer, `dag/reducers/worldState.mjs`). **State is group-scoped** with no channel dimension — use key conventions for channel scope (e.g. `chan/{channelId}/...`).
-- **Layered semantics**: shell LWW reducer is world-agnostic and performs no ACL — unauthorized ops are still folded into `state.get`; ignoring unauthorized ops is the world's fold layer (`state.log()` custom fold) responsibility.
-- `WorldChatHost` (`session/worldHost.mjs`): `state` (DAG shared), `localData` (`worlds/{worldname}/chat_data/{groupId}.json` node-private), `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`.
-- `WorldAPI.chat.ChatHostConnected(host)`: wired lazily once when `resolveWorld` loads the part locally (`ensureWorldHostConnected`); `BUILTIN_WORLD` and `remoteWorldProxy` do not wire.
-- Federation inbound `world_state`: `aclGated` (active member) + `remoteIngest` 64KB content limit; local writes are unrestricted. ACL enforcement is the world's fold layer responsibility, not the shell reducer.
-- Tests: `test/pure/world_state_*.test.mjs`; `test/integration/world_state.test.mjs`; fixture `test/fixtures/worlds/replicated_world`.
+- DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
+- Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.
+- `WorldChatHost` (`session/worldHost.mjs`): `state`, `localData`, `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`. Wired once on local `resolveWorld` via `ChatHostConnected` (not for builtin/remote proxy).
+- Federation inbound: `aclGated` + 64KB content limit.
 
-## member_roles
+## member_roles / greeting
 
-- `getChatRequest` / materialize inject `state.members[*].roles` from the materialized state, both at the top level and into `extension.member_roles`.
-- Char: `resolveActiveAgentMemberKeyByCharname`; local user: `resolveActiveMemberKeyForLocalUser` (`local_signer_seed` → `pubKeyHash`).
-- Do not use `extension.memberId` (the operator's entity hash) to look up a user's key in `state.members` directly.
+- Inject `state.members[*].roles` into top-level and `extension.member_roles`. Resolve char via `resolveActiveAgentMemberKeyByCharname`; local user via `resolveActiveMemberKeyForLocalUser`. Do not look up `state.members` by `extension.memberId` (operator entity hash).
+- Skip greeting when hooks are missing. Keep `timeSlice.greeting_type` (and mirrors) — deleting breaks re-roll / `greetingLog`. `bindWorld` greeting uses `resolveWorld(channelId)`, not only `LastTimeSlice.world`.
 
-## Greeting
+## Write / edit path
 
-- `insertCharGreeting` / world greeting: skip outright when `GetGreeting` / `GetGroupGreeting` is missing — don't assume the hook always exists.
-- Keep `timeSlice.greeting_type` on greeting entries (also mirror to `extension.greetingType` / `isGreeting`). Deleting it breaks `modifyTimeLine` re-roll and `greetingLog` persistence.
-- When the group already has other entries, `greeting_type=group` prefers `GetGroupGreeting`, falling back to `GetGreeting`.
-- `bindWorld` greeting resolves the world per `channelId` via `resolveWorld`; don't just read `LastTimeSlice.world` (that only reflects the default channel).
-- Integration test fixtures may skip implementing greeting; reuse `test/fixtures/chars|worlds/*` when one is needed.
-
-## Write path (DAG-first)
-
-- **Sole human entry point**: `postChannelMessage` (Hub HTTP + CLI `actions.send`). Persona `BeforeUserSend` rewrites/rejects before persisting.
-- **`BeforeUserSend` resolution**: resolve the persona for the **sender's** `username` via `getMaterializedSession` + `loadPlayerForReplica` — **do not** use `getActiveGroupRuntime` (in federation simulations a group slot may belong to a different replica and lack `LastTimeSlice`).
-- **Persistence facade**: `channel/messageCommit.mjs` → world `AddChatLogEntry` (pre-DAG transform/reject) → canonical content → `appendSignedLocalEvent`.
-- **Sole `After` trigger point**: `broadcastAndPersist` awaits `AfterAddChatLogEntry` for `message` and finalized `message_edit`; char/greeting flow through the same pipeline via `syncChatLogEntryToDag` / `finalizeDagGeneratingMessage`.
-- Canonical content: everyone gets `displayName`/`displayAvatar`; generated entries also attach `sessionSnapshot`/`chatLogEntryId`.
-- **Char display snapshot**: `resolveDisplaySnapshot` with `charId` resolves agent part info (not `sender` persona). Streaming finalize (`finalizeDagGeneratingMessage`) and `mergeChannelMessagesForDisplay` must preserve `displayName`/`displayAvatar` through `message_edit` — placeholder-only snapshots are wrong for final bubbles.
-- Fixture hook counters: module-level singletons under `test/fixtures/probes/` imported via `fount/public/parts/shells/chat/test/fixtures/probes/*.mjs` (fixtures copied to a user directory still resolve back to the repo source). **Do not use** `globalThis.__fount*`.
-- Fixtures use `fount/.../probes/...` absolute imports — do not `import '../writePathHookState.mjs'` relatively from a fixture `main.mjs`.
-- Pure-test projection: only import `viewerLogProject.mjs` (don't pull in the session I/O graph via `materializeViewerLog`).
-
-## Regression tests
-
-- Pure: `test/pure/viewer_log_dispatch.test.mjs`
-- Integration: `test/integration/viewer_chatlog_parity.test.mjs` (agent-path world filtering)
-- Integration: `test/integration/viewer_human_viewlog.test.mjs` (view-log, persona, ordering, builtins)
-- Integration: `test/integration/write_path_unification.test.mjs` (single point for `BeforeUserSend` + Add/After; `triggerCharReply` is fire-and-forget, so wait for `After` before asserting)
-
-## Edit/delete hooks (channel-native)
-
-- **Sole Hub path**: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` (persona `BeforeUserEdit`/`BeforeUserDelete` → world `MessageEdit`/`MessageDelete`) → `messageMutations.appendChannelMessage*`.
-- Persona resolution is the same as `BeforeUserSend` (the sender's replica via `loadPlayerForReplica`).
-- `session/messages.mjs`'s `editMessage` has been removed; `deleteMessage` only does abort-placeholder cleanup.
-- `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)` — nullish result (missing hook, remote METHOD_NOT_FOUND, or explicit null) falls through to the char itself.
-- Fixture counters: `test/fixtures/probes/editPathHookState.mjs` (same absolute-import pattern as write-path).
-- Integration: `test/integration/edit_path_hooks.test.mjs`.
-- Pure: `test/pure/world_state_reducer.test.mjs`, `test/pure/world_state_validate.test.mjs`
-- Integration: `test/integration/world_state.test.mjs`, `test/integration/world_distribution.test.mjs`
-- HTTP route integration (`launchNode` + scenario bootstrap): `test/integration/routes_http.test.mjs`, env `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`.
+- Human entry: `postChannelMessage`. Persona `BeforeUserSend` before persist — resolve persona for **sender's** `username` via `getMaterializedSession` + `loadPlayerForReplica` (**not** `getActiveGroupRuntime`).
+- Persist: `channel/messageCommit.mjs` → world `AddChatLogEntry` → `appendSignedLocalEvent`. Sole `After` point: `broadcastAndPersist` for `message` and finalized `message_edit`.
+- Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `displayName`/`displayAvatar` through streaming finalize / `message_edit`.
+- Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
+- Fixture probes: module-level under `test/fixtures/probes/` via `fount/…/probes/*.mjs` — not `globalThis.__fount*`. Pure projection tests: import `viewerLogProject.mjs` only.
