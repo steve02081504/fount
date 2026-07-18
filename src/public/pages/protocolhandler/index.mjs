@@ -168,7 +168,25 @@ function handlePage(parts) {
 		return
 	}
 	parts.shift()
-	window.location.href = `/${parts.join('/')}`
+	const raw = parts.join('/')
+	// 拒绝协议相对 / 绝对 URL / 反斜杠混淆，仅允许同源相对路径。
+	if (!raw || raw.startsWith('//') || raw.includes('\\') || /^[a-z][a-z0-9+.-]*:/iu.test(raw)) {
+		document.getElementById('message').dataset.i18n = 'protocolhandler.invalidProtocol'
+		return
+	}
+	let target
+	try {
+		target = new URL(raw.replace(/^\/+/u, ''), `${window.location.origin}/`)
+	}
+	catch {
+		document.getElementById('message').dataset.i18n = 'protocolhandler.invalidProtocol'
+		return
+	}
+	if (target.origin !== window.location.origin) {
+		document.getElementById('message').dataset.i18n = 'protocolhandler.invalidProtocol'
+		return
+	}
+	window.location.href = `${target.pathname}${target.search}${target.hash}`
 }
 
 applyTheme()

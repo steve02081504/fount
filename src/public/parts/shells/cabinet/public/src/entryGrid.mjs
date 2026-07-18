@@ -4,6 +4,7 @@
 import { setElementI18n } from '/scripts/i18n/index.mjs'
 import { renderTemplate } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { isSafeHtmlUrl } from '/scripts/lib/sanitizeHtml.mjs'
 import { formatEntityAtId } from '/parts/shells:chat/shared/entityHash.mjs'
 
 import { showContextMenu } from './contextMenu.mjs'
@@ -71,8 +72,9 @@ export async function renderEntries() {
 	const host = document.getElementById('entryGrid')
 	host.replaceChildren()
 	for (const entry of entries) {
-		const thumbHtml = entry.preview?.url
-			? `<img class="entry-thumb" src="${escapeHtml(entry.preview.url)}" alt="" />`
+		const previewUrl = entry.preview?.url
+		const thumbHtml = previewUrl && isSafeHtmlUrl(previewUrl)
+			? `<img class="entry-thumb" src="${escapeHtml(previewUrl)}" alt="" />`
 			: `<div class="entry-thumb flex items-center justify-center text-2xl">${iconFor(entry)}</div>`
 		const card = await renderTemplate('entry_card', {
 			id: escapeHtml(entry.id),

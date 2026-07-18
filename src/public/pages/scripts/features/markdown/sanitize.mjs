@@ -6,7 +6,7 @@
  */
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { BLOCKED_HTML_TAGS, isSafeHtmlUrl } from '../../lib/sanitizeHtml.mjs'
+import { BLOCKED_HTML_TAGS, isSafeHtmlUrl, URL_HTML_ATTRIBUTES } from '../../lib/sanitizeHtml.mjs'
 
 /**
  * @returns {(tree: import('npm:@types/hast').Root) => void} rehype 插件
@@ -26,10 +26,14 @@ export function rehypeSanitizeUntrustedContent() {
 					delete properties[propertyName]
 					continue
 				}
-				if (lowerName === 'src' || lowerName === 'href' || lowerName === 'xlink:href') {
-					if (!isSafeHtmlUrl(properties[propertyName]))
-						delete properties[propertyName]
+				if (!URL_HTML_ATTRIBUTES.has(lowerName)) continue
+				// srcset 含多 URL，未信任档直接剥掉
+				if (lowerName === 'srcset') {
+					delete properties[propertyName]
+					continue
 				}
+				if (!isSafeHtmlUrl(properties[propertyName]))
+					delete properties[propertyName]
 			}
 		})
 	}

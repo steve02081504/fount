@@ -12,7 +12,7 @@ import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import { governanceChannelId } from '../../group/access.mjs'
 import { isVoteBallotClosed } from '../lib/voteBallots.mjs'
 
-import { verifyMemberJoinBinding } from './entityBinding.mjs'
+import { verifyEntityActivePubKeyBelongs, verifyMemberJoinBinding } from './entityBinding.mjs'
 import { FEDERATION_ACL_GATED_EVENT_TYPES } from './eventTypes.mjs'
 import { manageAdminsPubKeyHashes, memberChannelPermissions } from './groupMaterializedState.mjs'
 import { resolveTargetMemberKey } from './reducers/members.mjs'
@@ -98,10 +98,10 @@ function permissionsExceedGrantor(govPerms, targetPerms) {
  * @returns {{ ok: true } | { ok: false, reason: string }} 校验结果
  */
 function checkRolePermissionsMutation(govPerms, existingPerms, nextPerms) {
-	if (permissionsGrantSuperuser(existingPerms) || permissionsGrantSuperuser(nextPerms)) {
+	if (permissionsGrantSuperuser(existingPerms) || permissionsGrantSuperuser(nextPerms)) 
 		if (!govPerms[PERMISSIONS.MANAGE_ADMINS])
 			return { ok: false, reason: 'ADMIN/MANAGE_ADMINS role mutation requires MANAGE_ADMINS' }
-	}
+	
 	if (permissionsExceedGrantor(govPerms, nextPerms))
 		return { ok: false, reason: 'role permissions exceed grantor' }
 	return { ok: true }
@@ -112,9 +112,10 @@ function checkRolePermissionsMutation(govPerms, existingPerms, nextPerms) {
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} senderHash 发送方 pubKeyHash（小写）
+ * @param {{ username?: string }} [options] replica 用户名（member_join 验实体活跃钥归属）
  * @returns {Promise<{ ok: boolean, reason?: string, deferrable?: boolean }>} 是否允许
  */
-export async function checkEventPermission(state, event, senderHash) {
+export async function checkEventPermission(state, event, senderHash, options = {}) {
 	const { type } = event
 	if (!type) return { ok: false, reason: 'missing event type' }
 	if (!FEDERATION_ACL_GATED_EVENT_TYPES.has(type)) return { ok: true }
@@ -123,30 +124,44 @@ export async function checkEventPermission(state, event, senderHash) {
 	if (!['member_join', 'member_leave'].includes(type) && state.members[sender]?.status !== 'active')
 		return { ok: false, reason: 'requires active member sender', deferrable: true }
 
+	// member_join / leave 不依赖频道权限位；先处理以免空 state.channels 炸 governanceChannelId
+	if (type === 'member_join') {
+		const content = event.content || {}
+		const entityHash = String(content.entityHash || '').trim().toLowerCase()
+		const entityActivePubKeyHex = String(content.entityActivePubKeyHex || '').trim().toLowerCase()
+		const bindingSig = String(content.bindingSig || '').trim().toLowerCase()
+		if (!isEntityHash128(entityHash) || !isHex64(entityActivePubKeyHex) || !/^[\da-f]{128}$/u.test(bindingSig))
+			return { ok: false, reason: 'invalid member_join binding' }
+		const bindOk = await verifyMemberJoinBinding({
+			entityHash,
+			memberPubKeyHash: sender,
+			bindingSig,
+			entityActivePubKeyHex,
+		})
+		if (!bindOk)
+			return { ok: false, reason: 'member_join bindingSig invalid' }
+		const ownership = await verifyEntityActivePubKeyBelongs(
+			options.username,
+			entityHash,
+			entityActivePubKeyHex,
+		)
+		if (!ownership.ok) 
+			return {
+				ok: false,
+				reason: ownership.reason || 'member_join active key not owned by entity',
+				deferrable: ownership.deferrable,
+			}
+		
+		return { ok: true }
+	}
+	if (type === 'member_leave')
+		return { ok: true }
+
 	const channelId = eventChannelId(event)
 	const channelPerms = memberChannelPermissions(state, sender, channelId)
 	const govPerms = memberChannelPermissions(state, sender, governanceChannelId(state))
 
 	switch (type) {
-		case 'member_join': {
-			const content = event.content || {}
-			const entityHash = String(content.entityHash || '').trim().toLowerCase()
-			const entityActivePubKeyHex = String(content.entityActivePubKeyHex || '').trim().toLowerCase()
-			const bindingSig = String(content.bindingSig || '').trim().toLowerCase()
-			if (!isEntityHash128(entityHash) || !isHex64(entityActivePubKeyHex) || !/^[\da-f]{128}$/u.test(bindingSig))
-				return { ok: false, reason: 'invalid member_join binding' }
-			const bindOk = await verifyMemberJoinBinding({
-				entityHash,
-				memberPubKeyHash: sender,
-				bindingSig,
-				entityActivePubKeyHex,
-			})
-			if (!bindOk)
-				return { ok: false, reason: 'member_join bindingSig invalid' }
-			return { ok: true }
-		}
-		case 'member_leave':
-			return { ok: true }
 		case 'member_owner_update':
 			// 仅成员本人可改自己的所属声明；活跃成员门控已在上方完成
 			return { ok: true }
@@ -272,11 +287,11 @@ export async function checkEventPermission(state, event, senderHash) {
 		case 'cabinet_key_update': {
 			const touchesAccess = event.content?.role_access
 				&& typeof event.content.role_access === 'object'
-			if (touchesAccess) {
+			if (touchesAccess) 
 				return govPerms[PERMISSIONS.ADMIN] || govPerms[PERMISSIONS.MANAGE_ADMINS]
 					? { ok: true }
 					: { ok: false, reason: 'cabinet role_access change requires ADMIN or MANAGE_ADMINS' }
-			}
+			
 			return govPerms[PERMISSIONS.MANAGE_ROLES]
 				? { ok: true }
 				: { ok: false, reason: 'MANAGE_ROLES required' }
@@ -362,10 +377,11 @@ export async function checkEventPermission(state, event, senderHash) {
  * @param {object} state 物化群状态
  * @param {{ type?: string, content?: object }} event DAG 事件
  * @param {string} senderHash 发送方 pubKeyHash
+ * @param {{ username?: string }} [options] replica 用户名（member_join 验实体活跃钥归属）
  * @returns {Promise<void>}
  */
-export async function assertEventPermission(state, event, senderHash) {
-	const { ok, reason, deferrable } = await checkEventPermission(state, event, senderHash)
+export async function assertEventPermission(state, event, senderHash, options = {}) {
+	const { ok, reason, deferrable } = await checkEventPermission(state, event, senderHash, options)
 	if (ok) return
 	const error = new Error(reason || 'permission denied')
 	if (deferrable) error.deferrable = true

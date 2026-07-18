@@ -3,9 +3,9 @@
  */
 import { PERMISSIONS } from 'fount/public/parts/shells/chat/src/permissions/chat.mjs'
 
+import { applySafeContentHeaders } from '../../../../../../../scripts/http_content.mjs'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { getUserByReq } from '../../../../../../../server/auth/index.mjs'
-import { betterSendFile } from '../../../../../../../server/web_server/resources.mjs'
 import { replicateGroupEmojiManifestToUserRoom } from '../../chat/federation/groupEmojiFederation.mjs'
 import { ensureFederationRoom } from '../../chat/federation/room.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../upload/fromRequest.mjs'
@@ -15,7 +15,6 @@ import {
 	bufferToDataUrl,
 	deleteGroupEmoji,
 	loadGroupEmojiManifest,
-	resolveGroupEmojiBinaryPath,
 	uploadGroupEmoji,
 } from '../groupEmojis.mjs'
 
@@ -44,13 +43,12 @@ async function sendEmojiContentResponse(req, res, username, groupId, emojiId) {
 			contentHash: local.entry?.contentHash || null,
 		})
 
-	const filePath = await resolveGroupEmojiBinaryPath(username, groupId, emojiId)
-	if (!filePath) {
-		res.setHeader('Content-Type', local.mimeType || 'image/png')
-		res.setHeader('Cache-Control', 'private, max-age=86400')
-		return res.status(200).send(local.buffer)
-	}
-	betterSendFile(res, filePath, { cacheControl: 'private, max-age=86400' })
+	applySafeContentHeaders(res, {
+		mimeType: local.mimeType || 'image/png',
+		filename: `${emojiId}.bin`,
+	})
+	res.setHeader('Cache-Control', 'private, max-age=86400')
+	return res.status(200).send(local.buffer)
 }
 
 /**

@@ -1,7 +1,7 @@
 /**
  * 【文件】`dag/entityBinding.mjs` — member_join 实体声明绑定签名。
- * 【职责】用实体 active 钥对（entityHash, 群成员 pubKeyHash）签发 / 校验 bindingSig。
- * 【原理】消息域 `fount-chat-member-bind\0${entityHash}\0${memberPubKeyHash}`；远端凭 content.entityActivePubKeyHex 验签。
+ * 【职责】用实体 active 钥对（entityHash, 群成员 pubKeyHash）签发 / 校验 bindingSig；并证明 active 钥确属该 entityHash（本机 identity 或 EVFS profile）。
+ * 【原理】消息域 `fount-chat-member-bind\0${entityHash}\0${memberPubKeyHash}`；远端凭 content.entityActivePubKeyHex 验签后再对归属做二次证明。
  */
 import { Buffer } from 'node:buffer'
 
@@ -50,6 +50,57 @@ export async function verifyMemberJoinBinding({ entityHash, memberPubKeyHash, bi
 		memberBindMessage(eh, mh),
 		new Uint8Array(Buffer.from(pub, 'hex')),
 	)
+}
+
+/**
+ * 证明 `entityActivePubKeyHex` 确为 `entityHash` 当前活跃钥（本机 identity 或 EVFS 公开 profile）。
+ * 仅验 bindingSig 不够——攻击者可用自备钥签任意 entityHash 声明。
+ * @param {string} username replica（读本机 identity / EVFS 缓存）
+ * @param {string} entityHash 128-hex
+ * @param {string} entityActivePubKeyHex 64-hex 声明活跃公钥
+ * @returns {Promise<{ ok: boolean, deferrable?: boolean, reason?: string }>} 归属结果
+ */
+export async function verifyEntityActivePubKeyBelongs(username, entityHash, entityActivePubKeyHex) {
+	const eh = String(entityHash || '').trim().toLowerCase()
+	const pub = normalizeHex64(entityActivePubKeyHex || '')
+	const user = String(username || '').trim()
+	if (!user || !isEntityHash128(eh) || !isHex64(pub))
+		return { ok: false, reason: 'invalid entity active key ownership args' }
+
+	try {
+		const { getEntityActivePubKey } = await import('../../entity/identity.mjs')
+		const localActive = normalizeHex64(await getEntityActivePubKey(user, eh))
+		if (localActive === pub) return { ok: true }
+		return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
+	}
+	catch {
+		/* 非本机托管实体 → EVFS */
+	}
+
+	const { readPublicFile } = await import('npm:@steve02081504/fount-p2p/files/evfs')
+	let plain
+	try {
+		plain = await readPublicFile(user, eh, 'profile.json')
+	}
+	catch {
+		return { ok: false, deferrable: true, reason: 'entity profile fetch failed' }
+	}
+	if (!plain)
+		return { ok: false, deferrable: true, reason: 'entity profile unavailable for active key check' }
+
+	let payload
+	try {
+		payload = JSON.parse(plain.toString('utf8'))
+	}
+	catch {
+		return { ok: false, reason: 'entity profile unreadable' }
+	}
+	if (String(payload?.entityHash || '').toLowerCase() !== eh)
+		return { ok: false, reason: 'entity profile entityHash mismatch' }
+	const active = normalizeHex64(payload.activePubKeyHex || '')
+	if (!isHex64(active) || active !== pub)
+		return { ok: false, reason: 'entityActivePubKeyHex mismatch EVFS profile' }
+	return { ok: true }
 }
 
 /**

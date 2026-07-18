@@ -3,6 +3,7 @@ import { assertSafeEvfsLogicalPath } from 'npm:@steve02081504/fount-p2p/core/evf
 import { canReadManifest, canWriteManifestPath } from 'npm:@steve02081504/fount-p2p/files/acl'
 import { loadFileManifest, putFileManifestFromStream, readManifestPlaintextStream } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
+import { applySafeContentHeaders } from '../../../../../../scripts/http_content.mjs'
 import { isAllowedImageUpload, pickUploadedFile } from '../../../../../../server/web_server/multipart_upload.mjs'
 
 import { entityFileUrl } from './filesUrl.mjs'
@@ -64,7 +65,10 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 
 		const plain = await readManifestPlaintextStream(username, manifest, { username })
 		if (!plain) return res.status(404).json({ error: 'chunk unavailable' })
-		res.setHeader('Content-Type', manifest.mimeType || 'application/octet-stream')
+		applySafeContentHeaders(res, {
+			mimeType: manifest.mimeType,
+			filename: logicalPath.split('/').pop() || 'file',
+		})
 		res.setHeader('Content-Length', String(manifest.size || 0))
 		plain.pipe(res.status(200))
 	})
@@ -78,6 +82,10 @@ export function registerEntityFileEndpoints(router, authenticate, getUserByReq) 
 		const manifest = await loadFileManifest(entityHash, logicalPath)
 		if (!manifest || !await canReadManifest(username, entityHash, manifest))
 			return res.status(404).end()
+		applySafeContentHeaders(res, {
+			mimeType: manifest.mimeType,
+			filename: logicalPath.split('/').pop() || 'file',
+		})
 		res.setHeader('Content-Length', String(manifest.size || 0))
 		return res.status(200).end()
 	})

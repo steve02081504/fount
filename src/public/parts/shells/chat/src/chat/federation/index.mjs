@@ -113,7 +113,7 @@ export async function publishSignedEventToFederation(username, groupId, signPayl
 	const eventType = String(signPayload.type).trim().toLowerCase()
 	const channelId = eventChannelId(signPayload)
 	const targetPartition = partitionForOutboundEvent(eventType, channelId, groupSettings)
-	if (!await canRelayFederatedEvent(materializedState, signPayload)) return
+	if (!await canRelayFederatedEvent(materializedState, signPayload, { username })) return
 	if (shouldDeferFederatedRelay(materializedState, signPayload)) {
 		await enqueuePendingRelay(username, groupId, signPayload)
 		return

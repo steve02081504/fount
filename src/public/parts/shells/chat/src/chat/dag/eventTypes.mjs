@@ -138,7 +138,7 @@ export const CHANNEL_GC_EXCLUDED_EVENT_TYPES = typesWithFlag('gcExclude')
 /** 裁剪时不得早于最早一条权限锚点事件（§7.1）。 */
 export const PERMISSION_ANCHOR_TYPES = typesWithFlag('permissionAnchor')
 
-/** 纯本地会话/元数据事件（不经联邦 HLC 硬拒，联邦入站仍拒）。 */
+/** 纯本地会话/元数据事件（联邦入站在 ingest 硬拒）。 */
 export const SESSION_EVENT_TYPES = new Set(
 	Object.keys(CHAT_EVENT_TYPE_DEFS).filter(type => type.startsWith('session_')),
 )

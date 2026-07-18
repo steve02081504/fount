@@ -16,6 +16,22 @@ export const BLOCKED_HTML_TAGS = new Set([
 	'meta',
 	'base',
 	'form',
+	'svg',
+	'math',
+])
+
+/** 未信任档会校验或剥离的 URL 类属性。 */
+export const URL_HTML_ATTRIBUTES = new Set([
+	'src',
+	'href',
+	'xlink:href',
+	'srcset',
+	'poster',
+	'formaction',
+	'action',
+	'cite',
+	'background',
+	'data',
 ])
 
 /**
@@ -66,10 +82,13 @@ export function sanitizeHtmlTree(root) {
 				el.removeAttribute(attr.name)
 				continue
 			}
-			if (lowerName === 'src' || lowerName === 'href' || lowerName === 'xlink:href') {
-				if (!isSafeHtmlUrl(attr.value))
-					el.removeAttribute(attr.name)
+			if (!URL_HTML_ATTRIBUTES.has(lowerName)) continue
+			if (lowerName === 'srcset') {
+				el.removeAttribute(attr.name)
+				continue
 			}
+			if (!isSafeHtmlUrl(attr.value))
+				el.removeAttribute(attr.name)
 		}
 	}
 }

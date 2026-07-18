@@ -59,9 +59,10 @@ export function shouldDeferInboundIngest(state, event) {
  * 低功耗 / 无物化快照时：授权类事件拒绝权限门控路径；有快照则按权限门控（§2.1）。
  * @param {object | null | undefined} state 物化群状态
  * @param {{ type?: string, sender?: string }} event DAG 事件
+ * @param {{ username?: string }} [options] replica（member_join 活跃钥归属）
  * @returns {boolean} 通过权限检查则为 true
  */
-export async function canRelayFederatedEvent(state, event) {
+export async function canRelayFederatedEvent(state, event, options = {}) {
 	const type = event?.type
 	if (!type || !isAuthzGatedEventType(type)) return true
 	if (state?.groupSettings?.batterySaver && !hasMaterializedAclSnapshot(state))
@@ -71,5 +72,5 @@ export async function canRelayFederatedEvent(state, event) {
 	const sender = String(event.sender || '').trim().toLowerCase()
 	if (!PUB_KEY_HASH_HEX.test(sender)) return false
 
-	return (await checkEventPermission(state, event, sender)).ok
+	return (await checkEventPermission(state, event, sender, { username: options.username })).ok
 }

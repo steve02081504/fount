@@ -40,3 +40,9 @@ Deno.test('isSafeHtmlUrl rejects // and javascript:', () => {
 	assertEquals(isSafeHtmlUrl('https://example.com'), true)
 	assertEquals(isSafeHtmlUrl('/api/x'), true)
 })
+
+Deno.test('sanitizePermissiveHtml strips svg and srcset', () => {
+	const html = sanitizePermissiveHtml('<svg onload=alert(1)></svg><img srcset="javascript:alert(1)">')
+	assertFalse(/<svg/i.test(html))
+	assertFalse(/srcset/i.test(html))
+})

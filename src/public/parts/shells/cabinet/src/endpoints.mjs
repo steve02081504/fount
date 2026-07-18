@@ -2,6 +2,7 @@ import { Buffer } from 'node:buffer'
 
 import { loadFileManifest, readManifestPlaintext } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
+import { applySafeContentHeaders } from '../../../../../scripts/http_content.mjs'
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { resolveOperatorEntityHashForUser } from '../../chat/src/entity/identity.mjs'
@@ -129,6 +130,7 @@ export function setEndpoints(router) {
 		if (personal) 
 			try {
 				const plain = await readPersonalEntryBytes(username, entityHash, cabinetId, req.params.entryId)
+				applySafeContentHeaders(res, { forceAttachment: true, filename: req.params.entryId })
 				return res.status(200).send(Buffer.from(plain))
 			}
 			catch (error) {
@@ -138,7 +140,9 @@ export function setEndpoints(router) {
 				throw error
 			}
 		
+
 		const bytes = await downloadSharedEntry(username, cabinetId, req.params.entryId)
+		applySafeContentHeaders(res, { forceAttachment: true, filename: req.params.entryId })
 		res.status(200).send(Buffer.from(bytes))
 	})
 

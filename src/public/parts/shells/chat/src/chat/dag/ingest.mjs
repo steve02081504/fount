@@ -18,6 +18,7 @@ import { validateJoinPolicy } from '../governance/joinPolicy.mjs'
 import { eventsPath } from '../lib/paths.mjs'
 
 import { assertEventPermission } from './authorizeEvent.mjs'
+import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
 import { getState } from './materialize.mjs'
 import { validateSessionEventContent } from './sessionEventValidate.mjs'
 import { PUB_KEY_HASH_HEX } from './validator.mjs'
@@ -54,7 +55,10 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 		throw error
 	}
 
-	if (event.type?.startsWith('session_') || event.type === 'agent_reply_frequency_set') {
+	if (SESSION_EVENT_TYPES.has(event.type)) {
+		// session_* / agent_reply_frequency_set 为节点本地会话元数据，联邦入站一律拒绝。
+		if (options.source === 'federation')
+			throw new Error('session events are local-only')
 		validateSessionEventContent(event)
 		return
 	}
@@ -72,7 +76,7 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 		assertHex64(event.content?.targetId, 'targetId')
 		const senderHash = event.sender.trim().toLowerCase()
 		if (!PUB_KEY_HASH_HEX.test(senderHash)) throw new Error(`${event.type} requires pubKeyHash sender`)
-		await assertEventPermission(state, event, senderHash)
+		await assertEventPermission(state, event, senderHash, { username: replicaUsername })
 		return
 	}
 
@@ -107,11 +111,12 @@ export async function validateIngestAuthz(replicaUsername, groupId, event, optio
 	const bootstrapTypes = new Set(['group_meta_update', 'channel_create', 'group_settings_update', 'role_create', 'member_join'])
 	const emptyAcl = !Object.values(state.members).some(member => member?.status === 'active')
 	// 创世路径跳过 RBAC，但 member_join 仍须验实体绑定。
+	const authzOptions = { username: replicaUsername }
 	if (emptyAcl && bootstrapTypes.has(event.type)) {
 		if (event.type === 'member_join')
-			await assertEventPermission(state, event, senderHash)
+			await assertEventPermission(state, event, senderHash, authzOptions)
 		return
 	}
 
-	await assertEventPermission(state, event, senderHash)
+	await assertEventPermission(state, event, senderHash, authzOptions)
 }

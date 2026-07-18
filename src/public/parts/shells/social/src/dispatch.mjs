@@ -223,6 +223,10 @@ export async function processSocialPostNotifyRpc(hostingUsername, rpc) {
 	const authorEntityHash = String(rpc.authorEntityHash || '').trim().toLowerCase()
 	if (post?.type !== 'post' || !authorEntityHash) return { ok: false }
 
+	const { isRemoteTimelinePushAdmitted } = await import('./federation/push_admission.mjs')
+	if (!await isRemoteTimelinePushAdmitted(hostingUsername, authorEntityHash))
+		return { ok: false }
+
 	const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
 	const { validateRemoteTimelineEvent } = await import('./federation/ingest/remote.mjs')
 	const { timelineEventsPath } = await import('./paths.mjs')
