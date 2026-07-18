@@ -53,12 +53,12 @@ Backend storage model (hot / cold archive / DAG, federation sync): [archive guid
 
 Hub-facing API shapes:
 
-- **Main text channel read**: `GET …/view-log` via `getChannelViewLog` (viewer-filtered row DTOs; same shape as raw `/messages`). Response includes `hasMore` + `oldestRawEventId` for filtered empty pages. Raw `GET …/messages` is only for moderation/debugging/navigation backfill.
+- **Main text channel read**: `GET …/view-log` via `getChannelViewLog` (viewer-filtered row DTOs; same shape as raw `/messages`). Response includes `hasMore` + `oldestRawEventId` for filtered empty pages. Navigation/edit backfill: `POST …/view-log/batch-get` via `getChannelViewLogByEventIds` / `ensureMessageLoaded`. Raw `GET …/messages` and `POST …/messages/batch-get` are only for moderation/debugging.
 - **Decrypt failure**: merged rows use top-level `decryptView: { failed: true, pendingGeneration? }` with `content: null`.
 - **Reactions**: both view-log and messages return `{ messages, reactions }` — per-page emoji aggregation keyed by target event id.
 - **Group state**: `GET …/groups/:id/state` → `{ meta, viewer, federation }`; members use `{ memberKey, kind, ownerPubKeyHash? }`.
 - **Display**: prefers `content.displayName`/`content.displayAvatar` on archived/folded posts, then live profile.
-- **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded`); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
+- **Navigation**: `messages/channelMessageStore.mjs` owns fetch/merge by `eventId` (`ensureMessageLoaded` → viewer batch-get); `messages.mjs` handles scroll/highlight (`scrollToMessageEventId`).
 
 ## Channel archive (JSON)
 

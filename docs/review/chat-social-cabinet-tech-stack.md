@@ -4,7 +4,7 @@
 
 写法：[docs/AGENTS.md](../AGENTS.md)。
 
-近期已落地、不再占篇幅：死符号清理（`fountMessageMarkdown*` / `mailboxApi` / `groupWsClient`）、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`。
+近期已落地、不再占篇幅：死符号清理（`fountMessageMarkdown*` / `mailboxApi` / `groupWsClient`）、可信 Markdown + 敏感媒体 + 展示名对齐、Hub `reloadChannel`、WS 出站 `hub/stream/outbound.mjs`、`jsonlInboxStore`；**本波**：Hub 导航补拉改 `POST …/view-log/batch-get`、Social `composerState`/`composerPublish` + `chatApi`、`friendsList` dismiss、`hub/gestures/`。
 
 ---
 
@@ -12,11 +12,11 @@
 
 | 优先级 | 动作 | 状态 |
 | --- | --- | --- |
-| P3 | 拆 Cabinet `public/index.mjs`（**1359** 行）、Social `composer.mjs`（**567** 行） | 待做 |
+| P3 | 拆 Cabinet `public/index.mjs`（**1359** 行）；Social composer 已拆 | Cabinet 待做 |
 | P4 | ChatClient 按域拆方法工厂（对齐 SocialClient；现 `client.mjs` **494** 行单 duck） | 待做 |
-| P5 | 收敛 view-log / raw 双读；导航补拉勿绕过 viewer 滤镜 | 待做 |
+| P5 | 收敛 view-log / raw 双读；导航补拉勿绕过 viewer 滤镜 | **已落地** |
 | P6 | 拆 `channelActionsContext` 可变单例；`threadDrawer` 与主区渲染路径合并 | 待做 |
-| 小 | Hub 菜单手写 dismiss → `contextMenuDismiss`；composer 裸 `fetch` → `chatApi`；gesture 目录归并 | 待做 |
+| 小 | `friendsList` dismiss、composer `chatApi`、gesture → `hub/gestures/` 已落地；`search` / `pinsBookmarks` 常驻 click-outside 仍手写 | 部分待做 |
 | 慎做 | Chat DAG ↔ Social Timeline 事件内核合并 | 大工程；联邦规则要统一改时再动 |
 
 ---
@@ -33,13 +33,9 @@
 
 ---
 
-### 2. view-log vs raw 双读路径
+### 2. view-log vs raw 双读路径 — 已落地
 
-**位置**：`GET …/view-log` vs `POST …/messages/batch-get`；Hub 主读 view-log，导航补拉走 raw（`channelMessageStore.ensureMessageLoaded` → `getChannelMessages`）。
-
-**为何丑**：可见性过滤 / world·persona 钩子 / `hasMore` 只在 view-log 完整。跳转到被滤掉的父消息时，引用条更易显示 `…`。两条语义并存，bug 常出在「用错 API」。
-
-**改进**：前端 `groupChannel.mjs` 只暴露 `getChannelViewLog`；raw 仅治理/审计内部使用；类型上区分 `ViewLogRow` / `RawDagRow`。导航补拉也应走 viewer 投影（或明确标注「可能越权于 viewer」）。
+Hub 主读 `GET …/view-log`；导航/编辑补拉 `POST …/view-log/batch-get`（`getChannelViewLogByEventIds` / `ensureMessageLoaded`）。Raw `GET …/messages` / `POST …/messages/batch-get` / `pin-context` 仅治理/审计。
 
 ---
 
@@ -53,13 +49,9 @@
 
 ---
 
-### 4. Social composer 职责过载
+### 4. Social composer — 已拆
 
-**位置**：`social/public/src/composer.mjs`（**567** 行）
-
-**为何丑**：发帖 UI、媒体、poll、群引用、定时、草稿入口、`uploadSocialMedia`、`visibilityPicker`、甚至裸 `fetch('/api/parts/shells:chat/groups/')` 全堆一处；同壳已有 `chatApi()`。
-
-**改进**：抽出 `composerState.mjs` / `composerPublish.mjs`；群列表统一走 `chatApi`。对照 Chat 已拆的 `composerFiles` / `composerExtras` / `composerReply` / `messageSend`。
+`composerState.mjs`（预览/picker/草稿载入）+ `composerPublish.mjs`（`buildPostBody` / 发帖/存草稿）+ 薄 `composer.mjs` barrel；群列表走 `chatApi('/groups/')`。
 
 ---
 
@@ -99,10 +91,9 @@
 
 | 项 | 说明 |
 | --- | --- |
-| Social composer 裸 `fetch` chat groups | 同壳已有 `chatApi()`（`composer.mjs` ~L172） |
-| Hub 部分菜单手写 dismiss | `search` / `friendsList` / `presence` / `pinsBookmarks` 仍手写 `document.addEventListener('click')`；AGENTS 已要求用 `contextMenuDismiss.mjs` |
+| Hub `search` / `pinsBookmarks` 常驻 dismiss | 仍手写 bubble `click`；与 `bindDismissOnDocumentInteraction`（打开时绑定）模型不完全同构 |
 | DAG `session_plugin_*` | legacy 事件 replay 为 no-op；`local_plugins.json` 已取代 |
-| `stream/volatileSlots.mjs` ↔ gesture | 出站已进 `outbound.mjs`，volatile 仍耦合 `chatGestures.mjs` |
+| `stream/volatileSlots.mjs` ↔ gesture | 出站已进 `outbound.mjs`，volatile 仍耦合 `gestures/chatGestures.mjs`（目录已归并，耦合仍在） |
 
 ### 命名误导（非死代码）
 
@@ -133,8 +124,6 @@
 
 **G. Composer 附加字段 UI（中）** — `contentWarning` / `sensitiveMedia` / `replyTo` 的 DOM 读写可共享薄层（Chat 已有拆分模板可作蓝本）。
 
-**H. Gesture 目录（小）** — `chatGestures.mjs` 与 `emojiPickerGestures.mjs` → `hub/gestures/`。
-
 ### 故意不合
 
 | 面 | 原因 |
@@ -148,8 +137,8 @@
 
 | 壳 | 强 | 弱 |
 | --- | --- | --- |
-| **Chat** | 实体模型统一；Hub 已拆 `stream/`（含 outbound）+ `reloadChannel`；`shared/*` 跨壳复用；测试面大 | ChatClient 单文件膨胀；路由多处注册；view-log/raw 双读；threadDrawer 平行渲染 |
-| **Social** | SocialClient 组合式 API；`chatApi` 避免重复路由；展示名/Markdown/敏感媒体已对齐 chat shared | `composer.mjs` 上帝模块；裸 fetch 群列表 |
+| **Chat** | 实体模型统一；Hub 已拆 `stream/` + `gestures/` + `reloadChannel`；view-log 主读+补拉一致；`shared/*` 跨壳复用；测试面大 | ChatClient 单文件膨胀；路由多处注册；threadDrawer 平行渲染 |
+| **Social** | SocialClient 组合式 API；`chatApi` 统一跨壳；composer 已拆 state/publish；展示名/Markdown/敏感媒体已对齐 chat shared | （本波无新增大债） |
 | **Cabinet** | 后端 `shared/oplog.mjs` 清晰；与 Chat `cabinet_bind` 边界清楚；测试精简 | 前端 `index.mjs` 单文件承载几乎全部 UI |
 
 ---

@@ -217,6 +217,35 @@ export function registerChannelMessageRoutes(router, authenticate) {
 		res.status(200).json({ messages, reactions, readMarker, hasMore, oldestRawEventId })
 	})
 
+	router.post(`${GROUPS_PREFIX}/:groupId/channels/:channelId/view-log/batch-get`, authenticate, async (req, res) => {
+		const { groupId, channelId } = req.params
+		const rawIds = req.body?.eventIds
+
+		const membership = await resolveGroupMember(req, res, groupId)
+		const { username, state, member } = membership
+		ensureChannel(state, channelId)
+		ensureCanInChannel(state, member, PERMISSIONS.VIEW_CHANNEL, channelId, 'No permission to view channel')
+
+		if (!Array.isArray(rawIds) || !rawIds.length)
+			throw httpError(400, 'eventIds array required')
+		if (rawIds.length > 500)
+			throw httpError(400, 'eventIds limit 500')
+
+		/** @type {string[]} */
+		const eventIds = []
+		for (const raw of rawIds) {
+			const id = normalizeHex64(raw)
+			if (!isHex64(id)) throw httpError(400, 'invalid eventId')
+			eventIds.push(id)
+		}
+
+		const { messages, visibleEventIds } = await readViewerChannelMessages(
+			username, groupId, channelId, { eventIds }, { kind: 'user' },
+		)
+		const reactions = await readChannelReactionsForMessages(username, groupId, channelId, visibleEventIds)
+		res.status(200).json({ messages, reactions })
+	})
+
 	router.put(`${GROUPS_PREFIX}/:groupId/channels/:channelId/read-marker`, authenticate, async (req, res) => {
 		const { groupId, channelId } = req.params
 		const { eventId: rawEventId, seq: rawSeq } = req.body || {}

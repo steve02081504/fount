@@ -1,13 +1,12 @@
 /**
- * 【文件】public/hub/chatGestures.mjs
+ * 【文件】public/hub/gestures/chatGestures.mjs
  * 【职责】移动端/触控聊天手势：末条角色消息左右滑动切换时间轴分支，桌面端显示箭头按钮。
  * 【原理】在 `#hub-messages` 上事件委托 touch；桌面箭头仍挂末条角色消息。群/频道 ID 直接读 hubStore。
- * 【关联】../../../../scripts/template、../src/api/groupChannel、core/state
+ * 【关联】scripts/template、src/api/groupChannel、core/state
  */
-import { renderTemplate } from '../../../../scripts/features/template.mjs'
-import { modifyBranch } from '../src/api/groupChannel.mjs'
-
-import { hubStore } from './core/state.mjs'
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
+import { modifyBranch } from '../../src/api/groupChannel.mjs'
+import { hubStore } from '../core/state.mjs'
 
 const CHAT_SWIPE_THRESHOLD = 50
 
@@ -26,7 +25,7 @@ function currentChannelId() {
 
 /** @returns {Promise<void>} 刷新频道消息 */
 async function reloadMessages() {
-	const { reloadChannel } = await import('./messages/messageContext.mjs')
+	const { reloadChannel } = await import('../messages/messageContext.mjs')
 	await reloadChannel()
 }
 
@@ -168,8 +167,8 @@ function ensureSwipeDelegation(container) {
 		if (deltaX <= 0) return
 		const eventId = String(target.getAttribute('data-message-id') || '').trim().toLowerCase()
 		if (!/^[0-9a-f]{64}$/.test(eventId)) return
-		const { setReplyTarget } = await import('./composerReply.mjs')
-		const { authorPresentationKeys } = await import('./core/domUtils.mjs')
+		const { setReplyTarget } = await import('../composerReply.mjs')
+		const { authorPresentationKeys } = await import('../core/domUtils.mjs')
 		const authorKey = target.getAttribute('data-char-id')
 			|| target.getAttribute('data-author-key')
 			|| '?'

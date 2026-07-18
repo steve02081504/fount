@@ -199,7 +199,8 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | PUT | `/read-marker` | body `{ eventId, seq }`；写入实体 readMarkers + 群成员侧车；WS `read_marker`（含 `entityHash`） |
 | GET | `/messages` | raw 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（治理/调试；不含 world/persona 视图滤镜） |
 | GET | `/view-log` | viewer 视图（本机 user）：同 query；物化后 world→persona 滤镜再投影回行 DTO；Hub 主读口；`{ messages, reactions }` |
-| POST | `/messages/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 raw 行 + reactions |
+| POST | `/view-log/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 **viewer 投影**行 + reactions（导航/编辑补拉；被滤 id 不返回） |
+| POST | `/messages/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 raw 行 + reactions（治理/审计） |
 | PUT | `/messages/:eventId` | DAG `message_edit`；先 persona `BeforeUserEdit` + world `MessageEdit`；body `{ content: object }` |
 | DELETE | `/messages/:eventId` | DAG `message_delete`；先 persona `BeforeUserDelete` + world `MessageDelete` |
 | PUT | `/messages/:eventId/feedback` | DAG `message_feedback`（`up`/`down`） |

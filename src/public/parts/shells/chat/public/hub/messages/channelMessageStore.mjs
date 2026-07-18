@@ -4,7 +4,7 @@
 import { compareHex64Asc } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
 import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
-import { getChannelMessages, getPinContextMessages } from '../../src/api/groupChannel.mjs'
+import { getChannelViewLogByEventIds } from '../../src/api/groupChannel.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
 import { hubStore } from '../core/state.mjs'
@@ -107,14 +107,12 @@ export function mergeRowsIntoSource(fetched) {
 export async function fetchRowsForMessageEvent(groupId, channelId, eventId) {
 	const norm = String(eventId || '').trim()
 	if (!norm || !groupId || !channelId) return []
-	let rows = (await getPinContextMessages(groupId, channelId, norm)).messages || []
-	if (!rows.some(row => String(row.eventId) === norm))
-		rows = (await getChannelMessages(groupId, channelId, { eventIds: [norm] })).messages || []
-	return rows
+	const { messages } = await getChannelViewLogByEventIds(groupId, channelId, [norm])
+	return Array.isArray(messages) ? messages : []
 }
 
 /**
- * 确保目标消息已载入 hubStore（必要时走 pin 邻域 / eventIds 补拉）。
+ * 确保目标消息已载入 hubStore（必要时走 viewer eventIds 补拉）。
  * @param {string} eventId 消息 event id
  * @returns {Promise<{ ok: boolean, viewIndex: number, source: 'cache' | 'fetched' | 'missing' | 'no-channel' | 'fetch-error' | 'invalid' }>} 加载结果
  */

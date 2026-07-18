@@ -106,6 +106,31 @@ Deno.test({
 			assert(Array.isArray(pageBody.messages))
 			assert(typeof pageBody.hasMore === 'boolean')
 		}
+
+		assert(setup.visibleEventId)
+		assert(setup.hiddenEventId)
+		const batchRes = await chatFetch(
+			node,
+			'POST',
+			`/groups/${setup.groupId}/channels/${setup.channelId}/view-log/batch-get`,
+			{ eventIds: [setup.visibleEventId, setup.hiddenEventId] },
+		)
+		assertEquals(batchRes.status, 200)
+		const batchBody = await batchRes.json()
+		const batchTexts = messageTexts(batchBody.messages)
+		assert(batchTexts.some(text => text.includes('hello visible')), 'viewer batch keeps visible')
+		assert(!batchTexts.some(text => text.includes('hidden-marker')), 'viewer batch drops world-hidden')
+		assert(batchBody.messages.every(row => String(row.eventId) !== setup.hiddenEventId))
+
+		const rawBatchRes = await chatFetch(
+			node,
+			'POST',
+			`/groups/${setup.groupId}/channels/${setup.channelId}/messages/batch-get`,
+			{ eventIds: [setup.hiddenEventId] },
+		)
+		assertEquals(rawBatchRes.status, 200)
+		const rawBatchBody = await rawBatchRes.json()
+		assert(messageTexts(rawBatchBody.messages).some(text => text.includes('hidden-marker')), 'raw batch still returns hidden')
 	}
 	finally {
 		await stopNode(node)

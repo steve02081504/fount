@@ -2,17 +2,17 @@
  * 【文件】public/hub/stream/volatileSlots.mjs
  * 【职责】VOLATILE stream_chunk 预览槽：建槽、重排 flush、DOM 绑定、补拉缓冲；停止生成按钮可见性。
  */
-import { stopGeneration } from './outbound.mjs'
 import { streamDisplayText } from '../../src/streamDisplay.mjs'
 import { applySlices } from '../../src/streamSlices.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
-import { attachLastCharMessageSwipe } from '../chatGestures.mjs'
 import { hubStore } from '../core/state.mjs'
+import { attachLastCharMessageSwipe } from '../gestures/chatGestures.mjs'
 import { scrollToBottom } from '../messages/messageScroll.mjs'
 import { messageIdSelector } from '../messages/messageShared.mjs'
 
 import { dispatchChannelIncrementalRefresh } from './channelRefresh.mjs'
 import { activeChannelId } from './connectionState.mjs'
+import { stopGeneration } from './outbound.mjs'
 
 /**
  * @typedef {{

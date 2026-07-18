@@ -122,7 +122,7 @@ export async function requestChannelHistoryFromPeers(groupId, channelId, options
 }
 
 /**
- * 分页拉取频道消息与反应事件。
+ * 分页拉取频道消息与反应事件（raw；治理/审计用，Hub 主视图请用 getChannelViewLog）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {{ since?: string, before?: string, limit?: number, eventIds?: string[] }} [options] 游标与条数限制
@@ -181,6 +181,24 @@ export async function getChannelViewLog(groupId, channelId, options = {}) {
 }
 
 /**
+ * 按 eventId 批量拉取 viewer 投影行（导航/编辑补拉；被滤消息不返回）。
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string[]} eventIds 目标 eventId 列表（≤500）
+ * @returns {Promise<{ messages: object[], reactions: Record<string, Record<string, { voters: string[] } >> }>} 可见行与反应
+ */
+export async function getChannelViewLogByEventIds(groupId, channelId, eventIds) {
+	const data = await groupFetch(
+		groupPath(groupId, 'channels', channelId, 'view-log', 'batch-get'),
+		{ method: 'POST', json: { eventIds }},
+	)
+	return {
+		messages: data.messages || [],
+		reactions: data.reactions || {},
+	}
+}
+
+/**
  * 更新频道已读水位。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
@@ -195,7 +213,7 @@ export async function putChannelReadMarker(groupId, channelId, marker) {
 }
 
 /**
- * 拉取置顶消息 ±N 邻域（冷归档 + 热区）。
+ * 拉取置顶消息 ±N 邻域（冷归档 + 热区；raw，非 viewer 投影）。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} pinEventId 置顶 eventId

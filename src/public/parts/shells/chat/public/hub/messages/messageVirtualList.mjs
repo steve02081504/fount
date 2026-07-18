@@ -5,8 +5,8 @@ import {
 import { getChannelViewLog } from '../../src/api/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
-import { attachLastCharMessageSwipe, updateHideCharNames } from '../chatGestures.mjs'
 import { hubStore } from '../core/state.mjs'
+import { attachLastCharMessageSwipe, updateHideCharNames } from '../gestures/chatGestures.mjs'
 import { applyAvatarsTo } from '../presence.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 

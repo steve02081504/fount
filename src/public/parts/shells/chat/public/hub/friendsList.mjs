@@ -18,6 +18,7 @@ import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { promptText } from '../shared/promptText.mjs'
 
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { hubStore } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
@@ -196,20 +197,17 @@ function showFriendContextMenu(event, friend) {
 	/** @returns {void} */
 	const dismiss = () => {
 		menu.remove()
-		document.removeEventListener('click', dismiss, true)
 		document.removeEventListener('keydown', onKey, true)
 	}
 	/** @param {KeyboardEvent} e 键盘事件 */
 	const onKey = (e) => {
-		if (e.key === 'Escape') dismiss()
+		if (e.key === 'Escape') closeOnce()
 	}
-	setTimeout(() => {
-		document.addEventListener('click', dismiss, true)
-		document.addEventListener('keydown', onKey, true)
-	}, 0)
+	const closeOnce = bindDismissOnDocumentInteraction(dismiss)
+	document.addEventListener('keydown', onKey, true)
 
 	menu.querySelector('[data-action="new-chat"]')?.addEventListener('click', () => {
-		dismiss()
+		closeOnce()
 		void (async () => {
 			if (!confirmI18n('chat.hub.friendsRestartConfirm', { name: friend.charname }))
 				return
@@ -224,7 +222,7 @@ function showFriendContextMenu(event, friend) {
 	})
 
 	menu.querySelector('[data-action="delete-session"]')?.addEventListener('click', () => {
-		dismiss()
+		closeOnce()
 		void deleteFriendSession(friend)
 	})
 }

@@ -63,6 +63,8 @@ async function setupViewlog(username) {
 		groupId,
 		channelId,
 		oldestEventId: rows[0]?.eventId ? String(rows[0].eventId) : null,
+		visibleEventId: findEventId(rows, 'hello visible'),
+		hiddenEventId: findEventId(rows, 'hidden-marker'),
 	}
 }
 
