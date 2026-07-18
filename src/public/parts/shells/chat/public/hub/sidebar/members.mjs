@@ -87,7 +87,7 @@ export async function renderMemberList(state) {
 	await loadHubPersonalFilter()
 	const viewerHash = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 	const members = (state.members || []).filter(member => {
-		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
+		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
 		const entityHash = member.entityHash
 			|| (viewerHash === memberKey.toLowerCase() ? hubStore.viewer.viewerEntityHash : '')
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
@@ -98,7 +98,7 @@ export async function renderMemberList(state) {
 	}
 	const roleDefs = state.roles || {}
 	const prepared = members.map((member) => {
-		const memberKey = String(member.memberKey || member.agentEntityHash || member.pubKeyHash || '').trim()
+		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
 		const isAgent = member.memberKind === 'agent'
 		const entityHash = member.entityHash
 			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')

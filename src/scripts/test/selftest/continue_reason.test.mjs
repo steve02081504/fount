@@ -42,6 +42,16 @@ Deno.test('resolveSelector accepts colon and slash forms with optional subtest',
 		suiteSelectors: ['frontend'],
 		subtestSelectors: { frontend: ['feed'] },
 	})
+	assertEquals(resolveSelector('shells/chat:pure:a,b,c', known), {
+		manifestId: 'shells/chat',
+		suiteSelectors: ['pure'],
+		subtestSelectors: { pure: ['a', 'b', 'c'] },
+	})
+	assertEquals(resolveSelector('shells/chat:pure,e2e_single', known), {
+		manifestId: 'shells/chat',
+		suiteSelectors: ['pure', 'e2e_single'],
+		subtestSelectors: {},
+	})
 })
 
 Deno.test('goalImperfectKeys skips stale passed suites', () => {

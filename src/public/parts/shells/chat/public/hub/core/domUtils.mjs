@@ -60,7 +60,7 @@ export function activeCharPartNames() {
  */
 export async function warmCharEntityHashCache(charNames = activeCharPartNames()) {
 	const members = hubStore.context.currentState?.members || []
-	/** @type {Map<string, { agentEntityHash?: string, entityHash?: string }>} */
+	/** @type {Map<string, { entityHash?: string }>} */
 	const agentByChar = new Map()
 	for (const member of members) {
 		if (member?.kind !== 'agent' && member?.memberKind !== 'agent') continue
@@ -72,7 +72,7 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 		const name = String(raw || '').trim()
 		if (!name || charEntityHashCache.has(name)) continue
 		const member = agentByChar.get(name.toLowerCase())
-		const cachedHash = member?.entityHash || member?.agentEntityHash
+		const cachedHash = member?.entityHash
 		if (cachedHash && isEntityHash128(String(cachedHash)))
 			charEntityHashCache.set(name, String(cachedHash).toLowerCase())
 	}
@@ -105,8 +105,6 @@ export function resolveEntityHashForAuthorKey(key) {
 			&& String(member.charname || '').toLowerCase() === raw.toLowerCase())
 		if (agent?.entityHash && isEntityHash128(agent.entityHash))
 			return String(agent.entityHash).toLowerCase()
-		if (agent?.agentEntityHash && isEntityHash128(agent.agentEntityHash))
-			return String(agent.agentEntityHash).toLowerCase()
 		const charHash = charEntityHashFromCache(raw)
 		if (charHash) return charHash
 		return null

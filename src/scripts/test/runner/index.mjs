@@ -26,6 +26,10 @@ import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { formatExpectedDuration, formatParallelRatePct } from '../core/run_timing.mjs'
 import {
+	resolveSerialOnlyFiles,
+	validateSubtestFilters,
+} from '../core/serial_files.mjs'
+import {
 	readState,
 	refreshEntryFingerprint,
 	suiteKey,
@@ -103,6 +107,30 @@ function filterFromGroups(allSuites, groups) {
 			seen.set(`${suite.manifestId}\0${suite.name}`, suite)
 
 	return [...seen.values()]
+}
+
+/**
+ * 收集分组中未命中任何 suite 的指名。
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {ResolvedGroup[]} groups 已解析分组
+ * @returns {string[]} 如 `testkit:serial_files`
+ */
+function unmatchedSuiteSelectors(allSuites, groups) {
+	/** @type {string[]} */
+	const missing = []
+	for (const group of groups) {
+		if (!group.suiteSelectors.length) continue
+		const manifestLabel = group.manifestIds.join('|')
+		for (const sel of group.suiteSelectors) {
+			const hits = filterSuites(allSuites, {
+				manifestIds: group.manifestIds,
+				suiteSelectors: [sel],
+			})
+			if (!hits.length)
+				missing.push(`${manifestLabel}:${sel}`)
+		}
+	}
+	return missing
 }
 
 /**
@@ -406,6 +434,12 @@ async function executeWave(context) {
 		}
 
 		const subtests = slot.subtestsToRun
+		/** @type {string[] | undefined} */
+		let onlyFiles
+		if (slot.fileFilters?.length) {
+			const resolved = resolveSerialOnlyFiles(suite, slot.fileFilters, REPO_ROOT)
+			onlyFiles = resolved.files
+		}
 		const baselineDurationMs = expectedRunDurationMs(suite, prev, subtests)
 		const expected = formatExpectedDuration(baselineDurationMs)
 		console.log(formatRunningSuiteMessage({
@@ -418,7 +452,7 @@ async function executeWave(context) {
 
 		const firstMap = failedFirstByManifest.get(suite.manifestId)
 		const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
-		const result = await runSuite(suite, { firstFiles, subtests }, globalBudget, streamLive, {
+		const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
 			label,
 			baselineDurationMs,
 		})
@@ -516,8 +550,33 @@ export async function runTests(options = {}) {
 		}
 		manifestIds = [...new Set(resolved.flatMap(group => group.manifestIds))]
 		explicitSuites = resolved.some(group => group.suiteSelectors.length)
+		const unknownSuites = unmatchedSuiteSelectors(allSuites, resolved)
+		if (unknownSuites.length) {
+			console.errorI18n('fountConsole.test.unknownSuiteSelector', { ids: unknownSuites.join(', ') })
+			const scope = manifestIds?.length
+				? allSuites.filter(s => manifestIds.includes(s.manifestId))
+				: allSuites
+			console.errorI18n('fountConsole.test.available', {
+				ids: topoSortSuites(scope, allSuites).map(s => s.id).join(', '),
+			})
+			return 2
+		}
 		filtered = filterFromGroups(allSuites, resolved)
 		subtestFilterByKey = collectSubtestFilterByKey(resolved, filtered)
+
+		const filterErrors = validateSubtestFilters(subtestFilterByKey, byKey, REPO_ROOT)
+		if (filterErrors.length) {
+			for (const err of filterErrors) {
+				const names = err.missing.join(', ')
+				if (err.kind === 'subtest')
+					console.errorI18n('fountConsole.test.unknownSubtestFilter', { suite: err.suiteId, names })
+				else if (err.kind === 'file')
+					console.errorI18n('fountConsole.test.unknownFileFilter', { suite: err.suiteId, names })
+				else
+					console.errorI18n('fountConsole.test.unsupportedSubtestFilter', { suite: err.suiteId, names })
+			}
+			return 2
+		}
 
 		if (options.groups.some(group => {
 			const sel = group.manifestSelectors[0]

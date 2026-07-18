@@ -41,7 +41,7 @@ Deno.test('deriveChatInboxMentionRow matches viewer and skips self mention', () 
 			[VIEWER]: {
 				status: 'active',
 				memberKind: 'agent',
-				agentEntityHash: VIEWER,
+				entityHash: VIEWER,
 				charname: 'self-agent',
 			},
 		},

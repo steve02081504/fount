@@ -1,4 +1,4 @@
-import { getChatClient } from 'fount/public/parts/shells/chat/src/api/client.mjs'
+import { getChatClient } from 'fount/public/parts/shells/chat/src/api/client/index.mjs'
 import { resolveTrustedOwnerContext } from 'fount/public/parts/shells/chat/src/entity/master.mjs'
 
 /**

@@ -1,10 +1,5 @@
 import { withGroupId, createEmptySessionState } from './state.mjs'
 
-/**
- *
- */
-export { createEmptySessionState } from './state.mjs'
-
 /** @type {Record<string, (state: object, event: object) => object>} */
 export const sessionReducers = {
 	/**
@@ -78,24 +73,6 @@ export const sessionReducers = {
 			else
 				state.session.personas[ownerUsername] = String(personaname).trim()
 		}
-		return state
-	},
-
-	/**
-	 * 遗留 `session_plugin_add`：插件名单已迁节点本地存储，忽略。
-	 * @param {object} state 物化群状态
-	 * @returns {object} 原 state
-	 */
-	session_plugin_add(state) {
-		return state
-	},
-
-	/**
-	 * 遗留 `session_plugin_remove`：忽略。
-	 * @param {object} state 物化群状态
-	 * @returns {object} 原 state
-	 */
-	session_plugin_remove(state) {
 		return state
 	},
 }

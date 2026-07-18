@@ -23,7 +23,7 @@ function remarkSocialDialect() {
 			let value = expandChannelLinksInText(node.value)
 			value = value
 				.replace(/@\[([\da-f]{128})\]/giu, '[$1](/parts/shells:social/#profile;$1)')
-				.replace(/social:post:([\da-f]{128}):([\da-f]{64})/gi, '[$2](/parts/shells:social/#profile;$1;$2)')
+				.replace(/social:post:([\da-f]{128}):([\da-f]{64})/gi, '[$2](/parts/shells:social/#post;$1;$2)')
 
 			/** @type {import('npm:@types/mdast').RootContent[]} */
 			const parts = []

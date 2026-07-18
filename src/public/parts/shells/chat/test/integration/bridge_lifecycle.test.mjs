@@ -113,7 +113,7 @@ Deno.test('group.bridgeBot().stop() invokes stopSelf op', async () => {
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	let stopSelfCalled = false
 	registerBridgeOperations(username, 'mock', 'self-stop-bot', {
@@ -156,7 +156,7 @@ Deno.test('client.bridgeBots() lists running per-bot instances', async () => {
 	await ensureServer()
 
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	registerBridgeOperations(username, 'telegram', 'list-a', { /**
 	 *
@@ -214,7 +214,7 @@ Deno.test('bridge group members() uses listMembers op', async () => {
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { appendSignedLocalEvent } = await import('../../src/chat/dag/append.mjs')
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	const platformUserId = 4242
 	const expectedHash = bridgeEntityHash('mock', platformUserId)

@@ -3,7 +3,6 @@ import { assertEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert
 
 import {
 	CHANNEL_ARCHIVE_FORMAT,
-	CHANNEL_ARCHIVE_VERSION,
 	portableMessageFromSnapshot,
 	reactionCountsFromList,
 	validateChannelArchive,
@@ -13,30 +12,20 @@ import {
 	isTrustedOwnerAttribution,
 } from '../../src/chat/lib/attribution.mjs'
 
-Deno.test('validateChannelArchive accepts v1 and v2 portable shape', () => {
-	for (const version of [1, 2]) {
-		const archive = validateChannelArchive({
-			format: CHANNEL_ARCHIVE_FORMAT,
-			version,
-			exportedAt: '2026-01-01T00:00:00.000Z',
-			source: { groupId: 'g', channelId: 'c', channelName: 'general' },
-			messages: [],
-		})
-		assertEquals(archive.format, CHANNEL_ARCHIVE_FORMAT)
-	}
-	assertEquals(CHANNEL_ARCHIVE_VERSION, 2)
+Deno.test('validateChannelArchive accepts portable shape', () => {
+	const archive = validateChannelArchive({
+		format: CHANNEL_ARCHIVE_FORMAT,
+		exportedAt: '2026-01-01T00:00:00.000Z',
+		source: { groupId: 'g', channelId: 'c', channelName: 'general' },
+		messages: [],
+	})
+	assertEquals(archive.format, CHANNEL_ARCHIVE_FORMAT)
 })
 
-Deno.test('validateChannelArchive rejects wrong format/version', () => {
-	assertThrows(() => validateChannelArchive({ format: 'other', version: 1, messages: [] }))
+Deno.test('validateChannelArchive rejects wrong format/messages', () => {
+	assertThrows(() => validateChannelArchive({ format: 'other', messages: [] }))
 	assertThrows(() => validateChannelArchive({
 		format: CHANNEL_ARCHIVE_FORMAT,
-		version: 99,
-		messages: [],
-	}))
-	assertThrows(() => validateChannelArchive({
-		format: CHANNEL_ARCHIVE_FORMAT,
-		version: 1,
 		messages: null,
 	}))
 })

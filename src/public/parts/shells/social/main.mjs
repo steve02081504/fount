@@ -151,7 +151,7 @@ export default {
 				if (subcommand === 'post' && entityHash && postId)
 					return { redirect: formatSocialPostHref(entityHash, postId, sharerNodeHash) }
 				if (subcommand === 'profile' && entityHash)
-					return { redirect: formatSocialProfileHref(entityHash, postId) }
+					return { redirect: formatSocialProfileHref(entityHash) }
 				return { redirect: '/parts/shells:social/' }
 			},
 			/**

@@ -5,7 +5,7 @@
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { wrapProtocolHttpsUrl } from 'fount/public/parts/shells/chat/public/shared/runUri.mjs'
-import { formatSocialProfileRunUri } from '../../public/shared/runUri.mjs'
+import { formatSocialPostRunUri } from '../../public/shared/runUri.mjs'
 import { normalizeDwellEntry, AUTHOR_BOOST_PER_DWELL } from '../../src/lib/dwellSignal.mjs'
 import { resolveSensitiveMedia, sanitizeMediaRefs } from '../../src/lib/mediaRefs.mjs'
 import { noteHelpfulScore } from '../../src/lib/noteScore.mjs'
@@ -48,7 +48,7 @@ Deno.test('normalizeDwellEntry rejects short dwells', () => {
 })
 
 Deno.test('formatSocialShareHttpsUrl wraps pages protocol', () => {
-	const url = wrapProtocolHttpsUrl(formatSocialProfileRunUri('abc', 'def'))
+	const url = wrapProtocolHttpsUrl(formatSocialPostRunUri('abc', 'def'))
 	assertEquals(url.startsWith('https://steve02081504.github.io/fount/protocol?url='), true)
-	assertEquals(decodeURIComponent(new URL(url).searchParams.get('url') || '').includes('shells:social/profile'), true)
+	assertEquals(decodeURIComponent(new URL(url).searchParams.get('url') || '').includes('shells:social/post'), true)
 })

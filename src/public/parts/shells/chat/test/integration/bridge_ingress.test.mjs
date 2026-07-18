@@ -171,7 +171,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	const platformChatId = 800002
 	const { groupId } = await ensureBridgeGroup(username, {
@@ -209,7 +209,7 @@ Deno.test('mock bridgeOperations: typing and createInvite on bridge group', asyn
 
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	/** @type {string[]} */
 	const calls = []

@@ -11,7 +11,7 @@
  */
 
 /**
- * 解析 suite/subtest 片段列表（`suite` 或 `suite:subtest`）。
+ * 解析 suite/subtest 片段列表（`suite`、`suite:subtest`，或 `suite:a,b` 经外层逗号拆开后的续段）。
  * @param {string[]} parts 逗号/空白切分后的片段
  * @returns {{ suiteSelectors: string[], subtestSelectors: Record<string, string[]> }} 解析结果
  */
@@ -20,10 +20,20 @@ function parseSuiteSubtestParts(parts) {
 	const suiteSelectors = []
 	/** @type {Record<string, string[]>} */
 	const subtestSelectors = {}
+	/** @type {string | null} */
+	let suiteAwaitingMoreSubs = null
 	for (const part of parts) {
 		const colon = part.indexOf(':')
 		if (colon < 0) {
-			suiteSelectors.push(part)
+			if (suiteAwaitingMoreSubs) {
+				const list = subtestSelectors[suiteAwaitingMoreSubs] ?? []
+				if (!list.includes(part)) list.push(part)
+				subtestSelectors[suiteAwaitingMoreSubs] = list
+			}
+			else {
+				suiteSelectors.push(part)
+				suiteAwaitingMoreSubs = null
+			}
 			continue
 		}
 		const suite = part.slice(0, colon).trim()
@@ -35,7 +45,10 @@ function parseSuiteSubtestParts(parts) {
 			const list = subtestSelectors[suite] ?? []
 			if (!list.includes(subtest)) list.push(subtest)
 			subtestSelectors[suite] = list
+			suiteAwaitingMoreSubs = suite
 		}
+		else
+			suiteAwaitingMoreSubs = null
 	}
 	return { suiteSelectors, subtestSelectors }
 }

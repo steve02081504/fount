@@ -148,7 +148,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 | POST | `/attachments` | multipart 聊天附件入库，响应 `{ hashes: string[] }` |
 | GET | `/attachments/:hash` | 按 BLAKE2b hash 取附件字节 |
 
-**深链（§16）**：canonical `fount://run/shells:chat/dm;<pubKeyHex>;<nonce>;<introSignatureHex>[;nodeUrl]` 与 `…/join;<groupId>;<inviteCode>[;<roomSecret>[;<introducerPubKeyHash>]]`。`member_join.content.introducerPubKeyHash` 物化进 `inviteEdges` 供信誉连坐。`peer_invite.fileKeyWraps` 入群后导入群文件主密钥代际。`public/src/lib/runUri.mjs`（服务端 re-export）+ `dmLinkSignature.mjs`。站外分享：`https://steve02081504.github.io/fount/protocol?url=` + encodeURIComponent(runUri)。
+**深链（§16）**：canonical `fount://run/shells:chat/dm;<pubKeyHex>;<nonce>;<introSignatureHex>[;nodeUrl]` 与 `…/join;<groupId>;<inviteCode>[;<roomSecret>[;<introducerPubKeyHash>]]`。`member_join.content.introducerPubKeyHash` 物化进 `inviteEdges` 供信誉连坐。`peer_invite.fileKeyWraps` 入群后导入群文件主密钥代际。`public/shared/runUri.mjs`。站外分享：`https://steve02081504.github.io/fount/protocol?url=` + encodeURIComponent(runUri)。
 
 ---
 
@@ -278,7 +278,7 @@ body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分
 
 ## ChatClient 对象模型（进程内 API）
 
-import 入口：`src/public/parts/shells/chat/src/api/client.mjs` → `getChatClient(username, entityHash?)`。
+import 入口：`src/public/parts/shells/chat/src/api/client/index.mjs` → `getChatClient(username, entityHash?)`。
 
 - **统一实体模型**：人类与本机 agent 同为实体；缺省 entityHash = operator。HTTP 路由薄封装恒为 operator；agent 只经本入口绑定自身实体。无私有状态换身份参数。
 - **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。

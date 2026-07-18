@@ -15,16 +15,15 @@ import {
 import { customProfileAvatar } from '../shared/hashAvatar.mjs'
 import { updateEntityProfileApi } from '../src/entityProfileApi.mjs'
 import {
-	ensureLocaleEntry,
 	normalizeProfileLinks,
 	normalizeProfileTag,
 	normalizeProfileTags,
 	readLinksEditor,
-	renameLocaleEntry,
 	renderLinksEditor,
 	renderLocaleTabs,
 	renderTagsEditor,
 } from '../src/profileLocaleEditor.mjs'
+import { ensureLocaleEntry, renameLocaleEntry } from '../src/profileLocaleState.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'

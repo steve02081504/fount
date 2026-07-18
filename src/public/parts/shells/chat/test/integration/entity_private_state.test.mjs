@@ -33,7 +33,7 @@ Deno.test('agent bookmarks isolated from operator ChatClient', async () => {
 	await ensureServer()
 
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 	const agentHash = await ensureLocalAgentEntityHash(username, CHAR)
 	const operatorClient = await getChatClient(username)
 	const agentClient = await getChatClient(username, agentHash)
@@ -67,7 +67,7 @@ Deno.test('agent notification preferences and read markers isolated from operato
 	await ensureServer()
 
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
 	const { getDefaultChannelId } = await import('../../src/chat/dag/queries.mjs')
 	const { postChannelMessage } = await import('../../src/chat/channel/postMessage.mjs')
@@ -110,7 +110,7 @@ Deno.test('care and inbox namespaces stay bound to client entityHash', async () 
 	await ensureServer()
 
 	const { ensureLocalAgentEntityHash } = await import('../../src/entity/member.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 	const { listCared } = await import('../../src/chat/lib/care.mjs')
 	const { appendChatInbox } = await import('../../src/chat/lib/inbox.mjs')
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')

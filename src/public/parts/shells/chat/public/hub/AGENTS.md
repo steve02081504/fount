@@ -62,7 +62,7 @@ Hub-facing API shapes:
 
 ## Channel archive (JSON)
 
-- **Export**: channel context menu → `GET …/channels/:id/export` → download (`public/src/api/channelArchive.mjs`). Full cold+hot portable snapshot (`fount-channel-archive` v1).
+- **Export**: channel context menu → `GET …/channels/:id/export` → download (`public/src/api/channelArchive.mjs`). Full cold+hot portable snapshot (`fount-channel-archive`).
 - **Import**: group settings → Storage & Archive → multipart `POST …/channels/import` → new text channel in the same group; Hub navigates to `#group:{groupId}:{newChannelId}`. Requires `MANAGE_CHANNELS` (`canImportChannel`).
 - Backend semantics: [archive AGENTS](../../src/chat/archive/AGENTS.md) § Portable channel archive.
 

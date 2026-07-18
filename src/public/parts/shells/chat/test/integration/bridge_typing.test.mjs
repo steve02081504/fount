@@ -17,7 +17,7 @@ Deno.test('postBridgeTyping and channel.typingUsers', async () => {
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
 	const { postBridgeTyping, listTypingEntities } = await import('../../src/chat/bridge/typing.mjs')
 	const { bindBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
-	const { getChatClient } = await import('../../src/api/client.mjs')
+	const { getChatClient } = await import('../../src/api/client/index.mjs')
 
 	const platformChatId = 770000 + Math.floor(Math.random() * 1000)
 	const { groupId } = await ensureBridgeGroup(username, {

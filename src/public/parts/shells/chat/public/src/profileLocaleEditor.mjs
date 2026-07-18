@@ -8,11 +8,6 @@
 import { geti18n } from '../../../../scripts/i18n/index.mjs'
 
 /**
- *
- */
-export { ensureLocaleEntry, renameLocaleEntry } from './profileLocaleState.mjs'
-
-/**
  * @typedef {object} ProfileLink
  * @property {string} [icon]
  * @property {string} [name]

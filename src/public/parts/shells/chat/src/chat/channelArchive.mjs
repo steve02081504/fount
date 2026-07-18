@@ -27,7 +27,6 @@ import { appendChannelMessageDelete } from './channel/messageMutations.mjs'
 import { decryptEventContent } from './channel_keys/content.mjs'
 import {
 	CHANNEL_ARCHIVE_FORMAT,
-	CHANNEL_ARCHIVE_VERSION,
 	portableMessageFromSnapshot,
 	reactionCountsFromList,
 	validateChannelArchive,
@@ -43,7 +42,6 @@ import { getOperatorEntityHash } from './lib/replica.mjs'
  */
 export {
 	CHANNEL_ARCHIVE_FORMAT,
-	CHANNEL_ARCHIVE_VERSION,
 	portableMessageFromSnapshot,
 	reactionCountsFromList,
 	validateChannelArchive,
@@ -212,7 +210,6 @@ export async function exportChannelArchive(username, groupId, channelId) {
 	const messages = [...byId.values()].sort(compareArchiveMessages)
 	return {
 		format: CHANNEL_ARCHIVE_FORMAT,
-		version: CHANNEL_ARCHIVE_VERSION,
 		exportedAt: new Date().toISOString(),
 		source: {
 			groupId,

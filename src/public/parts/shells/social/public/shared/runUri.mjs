@@ -7,12 +7,10 @@ const RUN_PREFIX = `fount://run/${SOCIAL_RUN_PART}/`
 /**
  * Social shell 实体资料页 hash 链接。
  * @param {string} entityHash 128 位 entityHash
- * @param {string} [postId] 帖子 id（兼容旧深链；新入口优先用 formatSocialPostHref）
  * @returns {string} 浏览器路径（含 hash）
  */
-export function formatSocialProfileHref(entityHash, postId) {
-	const hash = postId ? `profile;${entityHash};${postId}` : `profile;${entityHash}`
-	return `${SOCIAL_SHELL_PATH}#${hash}`
+export function formatSocialProfileHref(entityHash) {
+	return `${SOCIAL_SHELL_PATH}#profile;${entityHash}`
 }
 
 /**
@@ -68,11 +66,9 @@ function buildRunUri(subcommand, segments) {
 
 /**
  * @param {string} entityHash 128 位 entityHash
- * @param {string} [postId] 帖子 id
  * @returns {string} profile runUri
  */
-export function formatSocialProfileRunUri(entityHash, postId) {
-	if (postId) return buildRunUri('profile', [entityHash, postId])
+export function formatSocialProfileRunUri(entityHash) {
 	return buildRunUri('profile', [entityHash])
 }
 
@@ -100,15 +96,10 @@ export function formatSocialPostPageUri(entityHash, postId, sharerNodeHash) {
 
 /**
  * @param {string} entityHash 128 位 entityHash
- * @param {string} [postId] 帖子 id
- * @param {string} [sharerNodeHash] 分享者 nodeHash
  * @returns {string} profile page URI
  */
-export function formatSocialProfilePageUri(entityHash, postId, sharerNodeHash) {
-	const href = formatSocialProfileHref(entityHash, postId)
-	// profile 第 3 段是 postId；分享者 nodeHash 仅挂在 post 分享上
-	void sharerNodeHash
-	return `fount://page${href}`
+export function formatSocialProfilePageUri(entityHash) {
+	return `fount://page${formatSocialProfileHref(entityHash)}`
 }
 
 /**

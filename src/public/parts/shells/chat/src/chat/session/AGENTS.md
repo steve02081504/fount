@@ -45,7 +45,7 @@ alwaysApply: false
 ## Local plugins (node-private)
 
 - Path: `groups/{groupId}/local_plugins.json` via `session/localPlugins.mjs`.
-- `addplugin` / `removeplugin` / `getPluginListOfGroup` / group defaults in `newMetadata` all write this file — **not** DAG `session_plugin_*` (legacy events are no-op on replay).
+- `addplugin` / `removeplugin` / `getPluginListOfGroup` / group defaults in `newMetadata` all write this file.
 - Does not leak plugin names over federation; does not apply to remote agents.
 
 ## World shared state + WorldChatHost

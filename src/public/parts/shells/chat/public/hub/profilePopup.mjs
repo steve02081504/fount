@@ -110,7 +110,6 @@ export async function resolveEntityFromAnchor(anchor) {
 	const memberRow = members.find(m =>
 		m.entityHash === displayKey
 		|| m.memberKey === displayKey
-		|| m.agentEntityHash === displayKey
 		|| m.pubKeyHash === displayKey
 		|| m.pubKeyHash === memberKey
 		|| m.pubKeyHash === authorHash,

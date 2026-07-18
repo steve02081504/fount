@@ -52,7 +52,6 @@ Deno.test('channel archive export/import round-trip preserves final view and pro
 
 	const archive = await exportChannelArchive(username, groupId, channelId)
 	assertEquals(archive.format, 'fount-channel-archive')
-	assertEquals(archive.version, 2)
 	assert(archive.messages.some(m => m.content?.content === 'after-edit' && m.wasEdited))
 	assert(archive.messages.some(m => m.deleted))
 	const kept = archive.messages.find(m => m.sourceEventId === keep.event.id)

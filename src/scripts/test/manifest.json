@@ -62,6 +62,22 @@
 			]
 		},
 		{
+			"name": "serial_files",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/serial_files.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/serial_files.test.mjs",
+				"src/scripts/test/core/serial_files.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/test/core/protocol.mjs",
+				"src/scripts/test/core/resources.mjs",
+				"src/scripts/test/runner/index.mjs"
+			]
+		},
+		{
 			"name": "selection",
 			"run": [
 				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",

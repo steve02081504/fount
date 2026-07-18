@@ -7,7 +7,7 @@ import { getUserByReq } from '../../../../../../server/auth/index.mjs'
  */
 export async function chatClientFromReq(req) {
 	const { username } = getUserByReq(req)
-	const { getChatClient } = await import('../api/client.mjs')
+	const { getChatClient } = await import('../api/client/index.mjs')
 	return { username, client: await getChatClient(username) }
 }
 

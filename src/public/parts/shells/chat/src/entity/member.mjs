@@ -5,11 +5,10 @@ import {
 /**
  * @param {object} member 物化成员行
  * @param {string} [member.entityHash] 实体声明
- * @param {string} [member.agentEntityHash] 旧字段（过渡读）
  * @returns {string | null} entityHash；无法派生时为 null
  */
 export function memberEntityHash(member) {
-	const declared = String(member?.entityHash || member?.agentEntityHash || '').trim().toLowerCase()
+	const declared = String(member?.entityHash || '').trim().toLowerCase()
 	return isEntityHash128(declared) ? declared : null
 }
 

@@ -25,6 +25,7 @@ import { verdictAllowsDownstream, verdictReusable } from './verdict.mjs'
  * @property {boolean} goal 是否为用户目标
  * @property {GoalEvidence} [goalEvidence] 目标证据
  * @property {string[]} [subtestsToRun] 本次需跑的子测试名（省略 = 全部）
+ * @property {string[]} [fileFilters] serial suite 的 CLI 文件 stem 过滤（无注册 subtests 时）
  */
 
 /**
@@ -70,11 +71,13 @@ function listBlockingDeps(key, planned, verdicts, byKey) {
  * @param {boolean} isGoal 是否目标
  * @param {Verdict | undefined} verdict 裁决
  * @param {boolean} force 强制
+ * @param {boolean} [hasExplicitSubtestFilter] CLI 显式子测试/文件过滤
  * @returns {boolean} 必须真跑
  */
-function goalMustRun(isGoal, verdict, force) {
+function goalMustRun(isGoal, verdict, force, hasExplicitSubtestFilter = false) {
 	if (!isGoal) return false
 	if (force) return true
+	if (hasExplicitSubtestFilter) return true
 	if (!verdict) return true
 	if (verdict.kind === 'unknown' || verdict.kind === 'red' || verdict.kind === 'noisy')
 		return true
@@ -131,17 +134,21 @@ export function buildPlan(
 		const isGoal = goalKeys.has(key)
 		/** @type {string[] | undefined} */
 		let subtestsToRun
+		const filter = subtestFilterByKey.get(key)
+		const hasExplicitFilter = !!filter?.length
 		if (suite.subtests?.length) {
-			const filter = subtestFilterByKey.get(key)
 			const allNames = suite.subtests.map(st => st.name)
-			const neededSubs = force && isGoal
+			// 显式 CLI 过滤：目标 suite 直接按过滤名跑（不依赖 freshness）
+			const neededSubs = hasExplicitFilter && isGoal
 				? allNames
-				: verdict?.subtestsToRun?.length
-					? verdict.subtestsToRun
-					: verdict?.kind === 'unknown' || verdict?.kind === 'red' || verdict?.kind === 'noisy'
-						? allNames
-						: []
-			subtestsToRun = filter?.length
+				: force && isGoal
+					? allNames
+					: verdict?.subtestsToRun?.length
+						? verdict.subtestsToRun
+						: verdict?.kind === 'unknown' || verdict?.kind === 'red' || verdict?.kind === 'noisy'
+							? allNames
+							: []
+			subtestsToRun = hasExplicitFilter
 				? neededSubs.filter(name => filter.includes(name))
 				: neededSubs
 		}
@@ -153,6 +160,7 @@ export function buildPlan(
 			goalEvidence: goalEvidenceByKey.get(key),
 			requiredBy: provenance.get(key) ?? null,
 			subtestsToRun,
+			...hasExplicitFilter && !suite.subtests?.length ? { fileFilters: filter } : {},
 		}
 
 		const blockedBy = listBlockingDeps(key, planned, verdicts, byKey)
@@ -167,7 +175,7 @@ export function buildPlan(
 			continue
 		}
 
-		if (!goalMustRun(isGoal, verdict, force) && verdictReusable(verdict, false)) {
+		if (!goalMustRun(isGoal, verdict, force, hasExplicitFilter) && verdictReusable(verdict, false)) {
 			planned.set(key, { ...base, action: 'reuse' })
 			continue
 		}
