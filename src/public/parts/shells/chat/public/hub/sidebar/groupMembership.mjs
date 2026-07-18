@@ -89,7 +89,7 @@ async function showGroupJoinRequiredState() {
 	const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
 	setHubState('context.currentChannelId', null)
 	updateHash(hubStore.context.currentGroupId, null)
-	disableComposer('chat.hub.noChannel')
+	disableComposer()
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
 		i18nKey: 'chat.hub.groupJoinRequired',
 		errorMessage: '',

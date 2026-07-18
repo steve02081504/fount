@@ -250,8 +250,3 @@ export async function loadSettings() {
 	await renderSafetySection(panel)
 	await initTranslations()
 }
-
-/** @deprecated 偏好已并入 settings；保留导出避免旧引用瞬时崩 */
-export async function loadTaste() {
-	await loadSettings()
-}

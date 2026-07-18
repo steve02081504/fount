@@ -46,7 +46,7 @@ test.describe('Social feed', () => {
 	test('short search shows too-short hint', async ({ page }) => {
 		await page.locator('#feedSearchInput').fill('a')
 		await page.locator('#feedSearchInput').press('Enter')
-		await expect(page.locator('#feedList .empty[data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 20_000 })
+		await expect(page.locator('#searchViewResults [data-i18n="social.search.tooShort"]')).toBeVisible({ timeout: 20_000 })
 	})
 
 	test('trending hashtag link opens topic view', async ({ page, publishPost }) => {
@@ -76,13 +76,13 @@ test.describe('Social feed', () => {
 		await expectPostInFeed(page, postId)
 	})
 
-	test('feed refresh clears active search', async ({ page, publishPost }) => {
+	test('navigating to feed clears active search', async ({ page, publishPost }) => {
 		const tag = `refreshclr${Date.now()}`
 		const { postId } = await publishPost(`refresh-clear #${tag}`)
 		await searchAndExpectPost(page, `#${tag}`, postId)
 		await Promise.all([
 			waitForFeedLoad(page),
-			page.locator('#feedRefreshButton').click(),
+			page.locator('.side-nav .nav-btn[data-view="feed"]').click(),
 		])
 		await expect(page.locator('#feedSearchInput')).toHaveValue('')
 		await expect(page.locator('#feedSearchClearButton')).toBeHidden()
@@ -132,11 +132,16 @@ test.describe('Social feed', () => {
 			await page.waitForTimeout(250)
 		}
 		await expect(page.locator('.feed-replay-divider')).toBeVisible({ timeout: 15_000 })
-		const afterReplay = await page.locator('#feedList [data-post-id]').count()
-		expect(afterReplay).toBeGreaterThan(before)
-		// 重放完成后计数应稳定，不再因 observer 重绑而死循环膨胀
+		// 分隔线先于卡片追加出现；等本轮重放追加完成后再取稳定计数
 		await expect(async () => {
-			expect(await page.locator('#feedList [data-post-id]').count()).toBe(afterReplay)
-		}).toPass({ timeout: 2000 })
+			const n = await page.locator('#feedList [data-post-id]').count()
+			expect(n).toBeGreaterThan(before)
+			await page.waitForTimeout(400)
+			expect(await page.locator('#feedList [data-post-id]').count()).toBe(n)
+		}).toPass({ timeout: 15_000 })
+		const afterReplay = await page.locator('#feedList [data-post-id]').count()
+		// 重放完成后计数应稳定，不再因 observer 重绑而死循环膨胀
+		await page.waitForTimeout(1500)
+		expect(await page.locator('#feedList [data-post-id]').count()).toBe(afterReplay)
 	})
 })

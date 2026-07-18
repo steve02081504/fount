@@ -101,7 +101,7 @@ async function activateGroupChannel(state, presetChannelId) {
 		setHubState('context.currentChannelId', null)
 		updateHash(hubStore.context.currentGroupId, null)
 		const { disableComposer } = await import('../messages/composerController.mjs')
-		disableComposer('chat.hub.noChannel')
+		disableComposer()
 		updateStatusBanners()
 		void refreshPinsBookmarks()
 	}

@@ -108,7 +108,7 @@ export async function activateDiscoveryView() {
 	})
 
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
-	disableComposer('chat.hub.composerDisabled')
+	disableComposer()
 	refreshHubHeaderButtons()
 	await loadDiscoveryEntries(root)
 }

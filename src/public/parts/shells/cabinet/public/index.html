@@ -26,7 +26,7 @@
 						<input id="showHidden" type="checkbox" class="checkbox checkbox-xs" />
 						<span class="label-text text-xs" data-i18n="cabinet.showHidden"></span>
 					</label>
-					<button id="btnNewCabinet" type="button" class="btn btn-primary btn-sm btn-circle md:hidden" title="+">+</button>
+					<button id="btnNewCabinet" type="button" class="btn btn-primary btn-sm btn-circle cabinet-local-only md:hidden" title="+">+</button>
 				</div>
 				<input id="fileInput" type="file" multiple class="hidden" />
 				<input id="folderInput" type="file" webkitdirectory multiple class="hidden" />
@@ -35,11 +35,11 @@
 			</section>
 		</div>
 		<div class="drawer-side z-40">
-			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden" data-i18n="cabinet.closeCabinets"></label>
+			<label for="cabinet-drawer-toggle" class="drawer-overlay md:hidden"></label>
 			<aside class="w-64 min-h-full bg-base-100 border-r border-base-300 p-3 flex flex-col gap-2">
 				<div class="flex items-center justify-between gap-2">
 					<h1 class="text-lg font-semibold" data-i18n="cabinet.title"></h1>
-					<button id="btnNewCabinetDesktop" type="button" class="btn btn-primary btn-sm btn-circle hidden md:inline-flex" title="+">+</button>
+					<button id="btnNewCabinetDesktop" type="button" class="btn btn-primary btn-sm btn-circle cabinet-local-only hidden md:inline-flex" title="+">+</button>
 					<label for="cabinet-drawer-toggle" class="btn btn-ghost btn-sm btn-circle md:hidden" data-i18n="cabinet.closeCabinets">×</label>
 				</div>
 				<ul id="cabinetList" class="menu menu-sm flex-1 overflow-y-auto"></ul>
@@ -54,32 +54,32 @@
 			<h3 class="font-bold text-lg" data-i18n="cabinet.properties"></h3>
 			<label class="form-control">
 				<span class="label-text" data-i18n="cabinet.name"></span>
-				<input id="propName" class="input input-bordered input-sm" />
+				<input id="propName" class="input input-bordered input-sm" data-prop-field />
 			</label>
 			<label class="form-control">
 				<span class="label-text" data-i18n="cabinet.descriptionField"></span>
-				<textarea id="propDescription" class="textarea textarea-bordered textarea-sm" rows="3"></textarea>
+				<textarea id="propDescription" class="textarea textarea-bordered textarea-sm" rows="3" data-prop-field></textarea>
 			</label>
 			<label class="label cursor-pointer justify-start gap-2">
-				<input id="propHidden" type="checkbox" class="checkbox checkbox-sm" />
+				<input id="propHidden" type="checkbox" class="checkbox checkbox-sm" data-prop-field />
 				<span data-i18n="cabinet.attrHidden"></span>
 			</label>
 			<label class="label cursor-pointer justify-start gap-2">
-				<input id="propSystem" type="checkbox" class="checkbox checkbox-sm" />
+				<input id="propSystem" type="checkbox" class="checkbox checkbox-sm" data-prop-field />
 				<span data-i18n="cabinet.attrSystem"></span>
 			</label>
 			<label class="form-control">
 				<span class="label-text" data-i18n="cabinet.previewUrl"></span>
-				<input id="propPreviewUrl" class="input input-bordered input-sm" />
+				<input id="propPreviewUrl" class="input input-bordered input-sm" data-prop-field />
 			</label>
 			<label class="label cursor-pointer justify-start gap-2">
-				<input id="propDeletePreview" type="checkbox" class="checkbox checkbox-sm" checked />
+				<input id="propDeletePreview" type="checkbox" class="checkbox checkbox-sm" checked data-prop-field />
 				<span data-i18n="cabinet.deletePreviewWithFile"></span>
 			</label>
 			<div id="propFolderPasswordWrap" class="hidden space-y-2">
 				<label class="form-control">
 					<span class="label-text" data-i18n="cabinet.folderPassword"></span>
-					<input id="propFolderPassword" type="password" class="input input-bordered input-sm" />
+					<input id="propFolderPassword" type="password" class="input input-bordered input-sm" data-prop-field />
 				</label>
 			</div>
 			<div class="text-xs opacity-70 space-y-1">
@@ -89,7 +89,7 @@
 			</div>
 			<div class="modal-action">
 				<form method="dialog"><button class="btn" data-i18n="cabinet.cancel"></button></form>
-				<button id="propSave" type="button" class="btn btn-primary" data-i18n="cabinet.save"></button>
+				<button id="propSave" type="button" class="btn btn-primary" data-i18n="cabinet.save" data-prop-field></button>
 			</div>
 		</div>
 		<form method="dialog" class="modal-backdrop"><button>close</button></form>

@@ -260,12 +260,6 @@ export async function bootstrapSocialApp() {
 			}
 		})
 
-		document.getElementById('feedSearchButton')?.addEventListener('click', () => {
-			const input = document.getElementById('feedSearchInput')
-			const q = input instanceof HTMLInputElement ? input.value.trim() : ''
-			void loadSearchView(q)
-		})
-
 		document.getElementById('feedSearchClearButton')?.addEventListener('click', () => {
 			const input = document.getElementById('feedSearchInput')
 			if (input instanceof HTMLInputElement) input.value = ''

@@ -63,10 +63,18 @@ function currentUnlockToken() {
  * @returns {boolean} 当前柜是否可写
  */
 function canWrite() {
+	if (remoteEntityHash) return false
 	if (!currentCabinet) return false
 	if (currentCabinet.type === 'shared') return Boolean(currentCabinet.can_write)
 	if (currentCabinet.type === 'group') return Boolean(currentCabinet.permissions?.can_write)
 	return true
+}
+
+/**
+ * @returns {void}
+ */
+function syncRemoteChrome() {
+	document.body.classList.toggle('cabinet-remote', Boolean(remoteEntityHash))
 }
 
 /**
@@ -75,10 +83,53 @@ function canWrite() {
  * @returns {string} hash
  */
 function locationHashFor(cabinetId, parentId = null) {
+	if (remoteEntityHash) {
+		const base = `user:${remoteEntityHash}/${cabinetId}`
+		return parentId ? `${base}/${parentId}` : base
+	}
 	const cabinet = cabinets.find(row => row.cabinet_id === cabinetId) || currentCabinet
 	const shared = cabinet?.type === 'shared' || (/^[0-9a-f]{64}$/i.test(cabinetId) && !cabinetId.includes(':'))
 	const base = shared ? `shared:${cabinetId}` : `cabinet:${cabinetId}`
 	return parentId ? `${base}/${parentId}` : base
+}
+
+/**
+ * 远端索引本地过滤子目录（服务端返回整柜）。
+ * @param {object[]} all 全部条目
+ * @param {string | null} parentId 父
+ * @param {boolean} showHidden 显示隐藏
+ * @returns {object[]} 子条目
+ */
+function filterRemoteChildren(all, parentId, showHidden) {
+	const parent = parentId == null || parentId === '' ? null : String(parentId)
+	return all
+		.filter(entry => (entry.parent_id ?? null) === parent)
+		.filter(entry => showHidden || !entry.attrs?.hidden)
+		.sort((a, b) => {
+			if (a.kind === 'folder' && b.kind !== 'folder') return -1
+			if (a.kind !== 'folder' && b.kind === 'folder') return 1
+			return String(a.name).localeCompare(String(b.name))
+		})
+}
+
+/**
+ * @param {object[]} all 全部条目
+ * @param {string | null} folderId 当前文件夹
+ * @returns {{ id: string, name: string }[]} trail
+ */
+function buildRemoteTrail(all, folderId) {
+	const byId = new Map(all.map(entry => [entry.id, entry]))
+	const trail = []
+	let cur = folderId
+	const seen = new Set()
+	while (cur && !seen.has(cur)) {
+		seen.add(cur)
+		const entry = byId.get(cur)
+		if (!entry) break
+		trail.unshift({ id: entry.id, name: entry.name })
+		cur = entry.parent_id
+	}
+	return trail
 }
 
 /**
@@ -166,7 +217,7 @@ function renderCabinetList() {
  * @returns {Promise<void>}
  */
 async function cabinetContext(cabinet) {
-	if (cabinet.type === 'shared') {
+	if (remoteEntityHash || cabinet.type === 'shared') {
 		navStack.length = 0
 		await openCabinet(cabinet.cabinet_id)
 		return
@@ -213,9 +264,24 @@ async function openCabinet(cabinetId, parentId = null) {
  */
 async function refreshEntries() {
 	if (!currentCabinetId) return
+	const showHidden = document.getElementById('showHidden').checked
+	if (remoteEntityHash) {
+		const data = await api(
+			'GET',
+			`/remote/${encodeURIComponent(remoteEntityHash)}/cabinets/${encodeURIComponent(currentCabinetId)}/index`,
+		)
+		currentCabinet = data.cabinet
+		const all = data.entries || []
+		folderTrail = buildRemoteTrail(all, currentParentId)
+		await renderBreadcrumb()
+		entries = filterRemoteChildren(all, currentParentId, showHidden)
+		await renderEntries()
+		renderStatus()
+		return
+	}
 	const query = new URLSearchParams()
 	if (currentParentId) query.set('parent_id', currentParentId)
-	if (document.getElementById('showHidden').checked) query.set('show_hidden', '1')
+	if (showHidden) query.set('show_hidden', '1')
 	const data = await api(
 		'GET',
 		`/cabinets/${encodeURIComponent(currentCabinetId)}/index?${query}`,
@@ -400,13 +466,15 @@ function onEntryClick(event, entry) {
  */
 async function onEntryOpen(entry) {
 	if (entry.kind === 'folder') {
-		if (entry.encryption && !unlockTokens.has(entry.id))
+		if (entry.encryption && !unlockTokens.has(entry.id)) {
+			if (remoteEntityHash) return
 			await promptUnlock(entry.id)
-
+		}
 		await openCabinet(currentCabinetId, entry.id)
 		return
 	}
 	if (entry.kind === 'link') {
+		if (remoteEntityHash) return
 		const resolved = await api('GET', `/cabinets/${encodeURIComponent(currentCabinetId)}/entries/${encodeURIComponent(entry.id)}/resolve`)
 		if (!resolved.ok) {
 			showToastI18n('warning', 'cabinet.brokenLink', { reason: resolved.reason })
@@ -426,7 +494,7 @@ async function onEntryOpen(entry) {
 		await downloadEntry(resolved.target.entry, resolved.target.cabinet_id, resolved.target.owner_entity_hash)
 		return
 	}
-	await downloadEntry(entry)
+	await downloadEntry(entry, currentCabinetId, remoteEntityHash || undefined)
 }
 
 /**
@@ -869,43 +937,66 @@ function showContextMenu(event, entry) {
 	const writable = canWrite()
 	const hasClip = Boolean((clipboard || readClipboard())?.entry_ids?.length)
 	/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-returns -- context menu action callbacks */
+	/** 不可用项直接省略，不用 disabled + 文案解释 */
 	const actions = entry
 		? [
 			one ? { label: menuLabel('cabinet.open'), run: () => onEntryOpen(rows[0]) } : null,
-			{ label: menuLabel('cabinet.download'), disabled: !rows.some(row => row.kind === 'file' || row.kind === 'folder'), run: downloadSelection },
+			rows.some(row => row.kind === 'file' || row.kind === 'folder')
+				? { label: menuLabel('cabinet.download'), run: downloadSelection }
+				: null,
 			false,
-			{ label: menuLabel('cabinet.rename', hotkeys.rename), disabled: !writable || !one, run: renameSelection },
+			writable && one ? { label: menuLabel('cabinet.rename', hotkeys.rename), run: renameSelection } : null,
 			{ label: menuLabel('cabinet.copy', hotkeys.copy), run: () => copySelection('copy') },
-			{ label: menuLabel('cabinet.cut', hotkeys.cut), disabled: !writable, run: () => copySelection('cut') },
+			writable ? { label: menuLabel('cabinet.cut', hotkeys.cut), run: () => copySelection('cut') } : null,
 			false,
-			{ label: menuLabel('cabinet.undo', hotkeys.undo), disabled: !history.canUndo(), run: () => history.undo().then(() => refreshEntries()) },
-			{ label: menuLabel('cabinet.redo', hotkeys.redo), disabled: !history.canRedo(), run: () => history.redo().then(() => refreshEntries()) },
+			!remoteEntityHash && history.canUndo()
+				? { label: menuLabel('cabinet.undo', hotkeys.undo), run: () => history.undo().then(() => refreshEntries()) }
+				: null,
+			!remoteEntityHash && history.canRedo()
+				? { label: menuLabel('cabinet.redo', hotkeys.redo), run: () => history.redo().then(() => refreshEntries()) }
+				: null,
 			false,
-			{ label: menuLabel('cabinet.properties'), disabled: !one, run: openProps },
-			{ label: menuLabel('cabinet.delete', hotkeys.delete), disabled: !writable, danger: true, run: deleteSelection },
+			one ? { label: menuLabel('cabinet.properties'), run: openProps } : null,
+			writable ? { label: menuLabel('cabinet.delete', hotkeys.delete), danger: true, run: deleteSelection } : null,
 		]
 		: [
-			{ label: menuLabel('cabinet.upload'), disabled: !writable, run: () => document.getElementById('fileInput').click() },
-			{ label: menuLabel('cabinet.uploadFolder'), disabled: !writable, run: () => document.getElementById('folderInput').click() },
-			{ label: menuLabel('cabinet.newFolder'), disabled: !writable, run: createFolder },
+			writable ? { label: menuLabel('cabinet.upload'), run: () => document.getElementById('fileInput').click() } : null,
+			writable ? { label: menuLabel('cabinet.uploadFolder'), run: () => document.getElementById('folderInput').click() } : null,
+			writable ? { label: menuLabel('cabinet.newFolder'), run: createFolder } : null,
 			{ label: menuLabel('cabinet.newWindow', hotkeys.newWindow), run: openCurrentInNewWindow },
 			false,
-			{ label: menuLabel('cabinet.paste', hotkeys.paste), disabled: !writable || !hasClip, run: () => pasteClipboard() },
-			{ label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), disabled: !writable || !hasClip, run: () => pasteClipboard(true) },
+			writable && hasClip ? { label: menuLabel('cabinet.paste', hotkeys.paste), run: () => pasteClipboard() } : null,
+			writable && hasClip ? { label: menuLabel('cabinet.pasteLink', hotkeys.pasteLink), run: () => pasteClipboard(true) } : null,
 			false,
-			{ label: menuLabel('cabinet.undo', hotkeys.undo), disabled: !history.canUndo(), run: () => history.undo().then(() => refreshEntries()) },
-			{ label: menuLabel('cabinet.redo', hotkeys.redo), disabled: !history.canRedo(), run: () => history.redo().then(() => refreshEntries()) },
+			!remoteEntityHash && history.canUndo()
+				? { label: menuLabel('cabinet.undo', hotkeys.undo), run: () => history.undo().then(() => refreshEntries()) }
+				: null,
+			!remoteEntityHash && history.canRedo()
+				? { label: menuLabel('cabinet.redo', hotkeys.redo), run: () => history.redo().then(() => refreshEntries()) }
+				: null,
 			false,
-			{ label: menuLabel('cabinet.selectAll', hotkeys.selectAll), disabled: !entries.length, run: selectAllEntries },
-			{ label: menuLabel('cabinet.invert'), disabled: !entries.length, run: invertSelection },
-			{ label: menuLabel('cabinet.goUp', hotkeys.goUp), disabled: !currentParentId, run: goUp },
-			{ label: menuLabel('cabinet.downloadZip'), run: () => downloadFolder(currentParentId, currentCabinet?.name) },
+			entries.length ? { label: menuLabel('cabinet.selectAll', hotkeys.selectAll), run: selectAllEntries } : null,
+			entries.length ? { label: menuLabel('cabinet.invert'), run: invertSelection } : null,
+			currentParentId ? { label: menuLabel('cabinet.goUp', hotkeys.goUp), run: goUp } : null,
+			!remoteEntityHash
+				? { label: menuLabel('cabinet.downloadZip'), run: () => downloadFolder(currentParentId, currentCabinet?.name) }
+				: null,
 		]
 	/* eslint-enable jsdoc/require-jsdoc, jsdoc/require-returns */
 	const menu = document.querySelector('#contextMenu ul')
 	menu.replaceChildren()
+	const items = []
 	for (const action of actions) {
 		if (action === null) continue
+		if (action === false) {
+			if (items.length && items[items.length - 1] !== false) items.push(false)
+			continue
+		}
+		items.push(action)
+	}
+	while (items[0] === false) items.shift()
+	while (items.at(-1) === false) items.pop()
+	for (const action of items) {
 		if (action === false) {
 			const separator = document.createElement('li')
 			separator.className = 'menu-separator'
@@ -916,7 +1007,6 @@ function showContextMenu(event, entry) {
 		const button = document.createElement('button')
 		button.type = 'button'
 		button.textContent = action.label
-		button.disabled = action.disabled
 		if (action.danger) button.classList.add('text-error')
 		/**
 		 *
@@ -1112,21 +1202,27 @@ function wireToolbar() {
 function openProps() {
 	const [entry] = selectedEntries()
 	if (!entry) return
+	const writable = canWrite()
 	document.getElementById('propName').value = entry.name || ''
 	document.getElementById('propDescription').value = entry.description || ''
 	document.getElementById('propHidden').checked = Boolean(entry.attrs?.hidden)
 	document.getElementById('propSystem').checked = Boolean(entry.attrs?.system)
 	document.getElementById('propPreviewUrl').value = entry.preview?.url || ''
 	document.getElementById('propDeletePreview').checked = entry.preview?.delete_with_file !== false
-	document.getElementById('propFolderPasswordWrap').classList.toggle('hidden', entry.kind !== 'folder' || currentCabinet?.type === 'shared')
+	document.getElementById('propFolderPasswordWrap').classList.toggle(
+		'hidden',
+		!writable || entry.kind !== 'folder' || currentCabinet?.type === 'shared',
+	)
 	document.getElementById('propFolderPassword').value = ''
+	for (const el of document.querySelectorAll('[data-prop-field]'))
+		el.disabled = !writable
 	setElementI18n(document.getElementById('propCreated'), 'cabinet.created', {
 		stamp: formatStamp(entry.created),
 	})
 	setElementI18n(document.getElementById('propModified'), 'cabinet.modified', {
 		stamp: formatStamp(entry.modified),
 	})
-	document.getElementById('propMime').textContent = `MIME: ${entry.mime_type || ''}`
+	document.getElementById('propMime').textContent = entry.mime_type || ''
 	for (const id of ['propCreated', 'propModified']) {
 		const el = document.getElementById(id)
 		const stamp = id === 'propCreated' ? entry.created : entry.modified
@@ -1212,6 +1308,7 @@ async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
 	if (hash.startsWith('shared:')) {
 		remoteEntityHash = null
+		syncRemoteChrome()
 		void renderRemoteEntityBar()
 		const rest = hash.slice(7)
 		const [cabinetId, folderId] = rest.split('/')
@@ -1221,6 +1318,7 @@ async function bootFromHash() {
 	}
 	if (hash.startsWith('cabinet:')) {
 		remoteEntityHash = null
+		syncRemoteChrome()
 		void renderRemoteEntityBar()
 		const rest = hash.slice(8)
 		const [cabinetId, folderId] = rest.split('/')
@@ -1228,16 +1326,21 @@ async function bootFromHash() {
 		return
 	}
 	if (hash.startsWith('user:')) {
-		const entityHash = hash.slice(5)
+		const parts = hash.slice(5).split('/')
+		const entityHash = parts[0]
 		remoteEntityHash = entityHash.toLowerCase()
+		syncRemoteChrome()
 		void renderRemoteEntityBar()
 		const data = await api('GET', `/remote/${encodeURIComponent(entityHash)}/cabinets`)
 		cabinets = data.cabinets || []
 		renderCabinetList()
-		if (cabinets[0]) await openCabinet(cabinets[0].cabinet_id)
+		const cabinetId = parts[1] || cabinets[0]?.cabinet_id
+		const folderId = parts[2] || null
+		if (cabinetId) await openCabinet(cabinetId, folderId)
 		return
 	}
 	remoteEntityHash = null
+	syncRemoteChrome()
 	void renderRemoteEntityBar()
 	await openCabinet('default')
 }

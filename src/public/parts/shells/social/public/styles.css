@@ -556,8 +556,7 @@ body {
 	box-shadow: 0 0 0 1px var(--social-accent);
 }
 
-.search-clear-btn,
-.search-submit-btn {
+.search-clear-btn {
 	position: absolute;
 	right: 0.5rem;
 	border: none;

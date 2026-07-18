@@ -1160,8 +1160,7 @@
 			"saved": "收藏",
 			"profile": "我的",
 			"videos": "短视频",
-			"live": "直播",
-			"settings": "设置"
+			"live": "直播"
 		},
 		"settings": {
 			"title": "社交设置",
@@ -1189,20 +1188,16 @@
 			"safetyTitle": "安全与屏蔽",
 			"safetyHint": "管理拉黑与隐藏列表。"
 		},
-		"actor": {
-			"label": "当前身份",
-			"operator": "我（操作者）",
-			"agent": "Agent：${name}"
-		},
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
 			"publish": "发布",
-			"composeButton": "发布",
 			"fab": {
 				"title": "写动态",
 				"aria-label": "写动态"
 			},
-			"contentWarning": "内容警告（可选）",
+			"contentWarning": {
+				"placeholder": "内容警告（可选）"
+			},
 			"sensitiveMedia": "媒体敏感遮罩",
 			"mediaAlt": "图片描述（alt）",
 			"editImage": "编辑",
@@ -1251,9 +1246,13 @@
 			"selected": "指定人员可见",
 			"private": "仅自己可见",
 			"allowLabel": "可见人员",
-			"allowPlaceholder": "可见人员 entityHash，空格或逗号分隔",
 			"exceptLabel": "排除人员",
-			"exceptPlaceholder": "不给谁看（可选）"
+			"allow": {
+				"placeholder": "可见人员 entityHash，空格或逗号分隔"
+			},
+			"except": {
+				"placeholder": "不给谁看（可选）"
+			}
 		},
 		"albums": {
 			"create": "新建相册",
@@ -1271,7 +1270,6 @@
 			"defaultName": "默认相册"
 		},
 		"feed": {
-			"loadMore": "加载更多",
 			"refresh": "刷新动态",
 			"newPosts": "有新动态，点击查看",
 			"tabLatest": "最新",
@@ -1283,7 +1281,6 @@
 			"replayDivider": "已看完，重新浏览"
 		},
 		"taste": {
-			"title": "口味偏好",
 			"rebuild": "重建偏好",
 			"privacyPublishPreferences": "公开标签命名与合并发现",
 			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
@@ -1294,18 +1291,7 @@
 			},
 			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
 			"weight": "权重 ${weight}",
-			"mutedKeywordsTitle": "屏蔽词与标签",
-			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
-			"mutedKeywordsPlaceholder": {
-				"placeholder": "输入关键词或 #标签"
-			},
-			"mutedKeywordsMatchTags": "同时匹配标签",
-			"mutedKeywordsAdd": "添加",
-			"mutedKeywordsRemove": "移除屏蔽词",
-			"mutedKeywordsEmpty": "尚未添加屏蔽词",
-			"autoTranslateTitle": "自动翻译",
-			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
-			"autoTranslateEnable": "自动翻译非本语言帖子"
+			"save": "保存"
 		},
 		"trending": {
 			"title": "热门话题",
@@ -1323,38 +1309,35 @@
 			},
 			"submit": "搜索",
 			"clear": "清除",
-			"hint": "用户与动态均经信任网络搜索；以 # 开头仅匹配话题标签",
 			"empty": "没有匹配的帖子",
 			"tooShort": "请输入至少 2 个字符",
 			"usersTitle": "用户",
 			"postsTitle": "动态",
 			"usersEmpty": "没有匹配的用户",
 			"pinAlias": "设为别名",
-			"dm": "发私信",
 			"trustScore": "信任 ${score}",
 			"viewTitle": "搜索",
 			"loading": "搜索中…",
-			"filterAuthor": "作者",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
 			"filterMediaAll": "所有媒体",
 			"filterMediaImage": "图片",
 			"filterMediaVideo": "视频",
-			"filterTag": "标签",
+			"filterTag": {
+				"placeholder": "#标签"
+			},
 			"sortRecent": "最新",
 			"sortPopular": "热门",
 			"scopeLocal": "本机",
 			"scopeNearby": "附近"
 		},
 		"profile": {
-			"viewPosts": "查看动态",
 			"edit": "编辑资料",
-			"editInChat": "编辑资料",
-			"settings": "社交设置",
 			"settingsBtn": {
 				"aria-label": "社交设置"
 			},
 			"mediaOnly": "[媒体]",
-			"postCount": "${n} 条动态",
-			"following": "正在关注",
 			"hideFromExplore": "从探索页隐藏账户",
 			"tabPosts": "动态",
 			"tabAlbums": "相册",
@@ -1447,11 +1430,13 @@
 			"empty": "暂无补充信息"
 		},
 		"poll": {
-			"optionsPlaceholder": "每行一个选项（至少 2 项）",
 			"multi": "允许多选",
 			"apply": "应用投票",
 			"closed": "投票已结束",
-			"deadline": "截止：${deadline}"
+			"deadline": "截止：${deadline}",
+			"options": {
+				"placeholder": "每行一个选项（至少 2 项）"
+			}
 		},
 		"aside": {
 			"suggested": "推荐关注"
@@ -1535,7 +1520,6 @@
 			"label": "译文："
 		},
 		"saved": {
-			"folders": "文件夹",
 			"all": "全部",
 			"unfiled": "未归档",
 			"createFolder": {
@@ -1543,8 +1527,6 @@
 				"aria-label": "新建文件夹"
 			},
 			"createFolderPrompt": "文件夹名称",
-			"newFolderPlaceholder": "文件夹名称",
-			"pickFolder": "输入序号选择文件夹（0=未归档）",
 			"pickFolderTitle": "收藏到",
 			"confirm": "确认",
 			"cancel": "取消",
@@ -1620,15 +1602,19 @@
 			"postEndedStats": "${viewers} 人看过 · ${likes} 赞 · ${duration}",
 			"link": {
 				"invite": "邀请连线",
-				"peerPlaceholder": "对端 entityHash:liveId",
 				"needPeer": "请填写对端 entityHash:liveId",
 				"invited": "连线邀请已发出",
-				"linked": "已连线"
+				"linked": "已连线",
+				"peer": {
+					"placeholder": "对端 entityHash:liveId"
+				}
 			},
 			"broadcast": {
 				"title": "开播",
 				"open": "去开播",
-				"titlePlaceholder": "直播标题（可选）",
+				"titlePlaceholder": {
+					"placeholder": "直播标题（可选）"
+				},
 				"mediaAv": "音视频",
 				"mediaAudio": "纯音频",
 				"mediaVideo": "纯画面",
@@ -2243,7 +2229,6 @@
 					"aria-label": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}"
 				},
 				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
-				"composerDisabled": "在收件箱中无法发送消息",
 				"badgeFetchFailed": "未读徽章刷新失败：${error}",
 				"loadFailed": "收件箱加载失败：${error}",
 				"markSeenFailed": "收件箱已读状态更新失败：${error}",
@@ -2548,8 +2533,7 @@
 				"blockOpposing": "对立分支不可接触",
 				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 个认识的节点求证，均被拒之门外。可留念本地历史，或删除本群副本。",
 				"suspectedRemovedKeep": "留念",
-				"suspectedRemovedLeave": "删除群",
-				"suspectedRemovedComposer": "你大概已被移出本群，无法继续发送"
+				"suspectedRemovedLeave": "删除群"
 			},
 			"blockOpposingConfirm": "将非当前选支上的治理签发者加入拉黑表，并拒绝本群联邦中继。继续？",
 			"blockOpposingOk": "已标记 ${count} 个主体为不可接触",
@@ -2575,17 +2559,14 @@
 			"composer": {
 				"placeholder": "发送到 #${channel}"
 			},
-			"composerDisabled": {
-				"placeholder": "无法发送"
+			"composerSuspectedRemoved": {
+				"placeholder": "你大概已被移出本群，无法继续发送"
 			},
 			"channelReadonlyList": {
 				"placeholder": "列表频道只读"
 			},
 			"channelReadonlyStream": {
 				"placeholder": "流媒体频道只读"
-			},
-			"noChannel": {
-				"placeholder": "暂无可用对话"
 			},
 			"noChannels": "暂无对话",
 			"noMembers": "暂无成员",

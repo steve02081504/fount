@@ -94,6 +94,11 @@
 	padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0));
 }
 
+/* 远端浏览：隐藏新建柜（会冲掉远端列表） */
+body.cabinet-remote .cabinet-local-only {
+	display: none !important;
+}
+
 @media (max-width: 480px) {
 	.cabinet-breadcrumb button,
 	.cabinet-breadcrumb .breadcrumb-current {

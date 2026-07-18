@@ -7,7 +7,7 @@ import {
 } from '../composer.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { socialState } from '../state.mjs'
-import { clearFeedSearch, loadFeed, runFeedSearch, setFeedRanking, updateFeedSearchChrome } from '../views/feed.mjs'
+import { loadFeed, setFeedRanking, updateFeedSearchChrome } from '../views/feed.mjs'
 import { markNotificationsSeen, setNotificationFilter } from '../views/notifications.mjs'
 
 /**
@@ -37,10 +37,6 @@ export async function handleComposerFeedClick(target) {
 		await loadFeed(false)
 		updateFeedSearchChrome()
 	}
-	if (target.closest('#feedSearchButton'))
-		await runFeedSearch()
-	if (target.closest('#feedSearchClearButton'))
-		await clearFeedSearch()
 	const rankingTab = target.closest('[data-feed-ranking]')
 	if (rankingTab instanceof HTMLElement && rankingTab.dataset.feedRanking)
 		await setFeedRanking(rankingTab.dataset.feedRanking)

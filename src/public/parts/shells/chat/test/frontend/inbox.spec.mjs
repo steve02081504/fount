@@ -34,6 +34,7 @@ test.describe('Inbox', () => {
 		await expect(page.locator('.hub-inbox-tabs')).toBeVisible()
 		await expect(page.locator('#channel-bar')).toBeHidden()
 		await expect(page.locator('.hub-main-header')).toBeHidden()
+		await expect(page.locator('.hub-input-area')).toBeHidden()
 		const mentionTab = page.locator('#hub-inbox-tab-mention')
 		const messageTab = page.locator('#hub-inbox-tab-message')
 		await expect(mentionTab).toHaveAttribute('aria-selected', 'true')
@@ -47,7 +48,9 @@ test.describe('Inbox', () => {
 
 		await page.locator('#hub-inbox-list .hub-inbox-row').first().click()
 		await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`), { timeout: ms('2m') })
-		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: ms('2m') })
+		const messageInput = page.locator('#hub-message-input')
+		await expect(messageInput).toBeEnabled({ timeout: ms('2m') })
+		await expect(messageInput).toHaveValue('')
 		const messageRow = page.locator(`#hub-messages .hub-message[data-message-id="${eventId}"]`)
 		await expect(messageRow).toBeVisible({ timeout: ms('2m') })
 		await expect(messageRow).toContainText(marker)

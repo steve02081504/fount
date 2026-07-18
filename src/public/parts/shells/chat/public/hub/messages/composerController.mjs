@@ -1,5 +1,9 @@
 /**
  * Hub 消息输入区与顶栏按钮控制。
+ *
+ * 禁用时绝不要用字符串型 data-i18n（会写 innerHTML → 污染 textarea.value）。
+ * 仅在输入区可见的禁用态（只读频道 / 疑似移出）传 `{ placeholder }` 对象键。
+ * inbox / discovery / friends idle 等 surface 会隐藏 `.hub-input-area`，无需解释文案。
  */
 import { hubStore } from '../core/state.mjs'
 
@@ -50,8 +54,7 @@ export function enableComposer() {
 	const channelName = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.name || hubStore.context.currentChannelId || ''
 	input.disabled = false
 	input.dataset.channel = channelName
-	input.removeAttribute('data-i18n')
-	input.setAttribute('data-i18n', 'chat.hub.composer')
+	input.dataset.i18n = 'chat.hub.composer'
 	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
 		if (el) el.disabled = false
@@ -60,14 +63,20 @@ export function enableComposer() {
 }
 
 /**
- * @param {string} [i18nKey] placeholder 的 i18n 键
+ * 禁用输入区。不改动 textarea.value（草稿 / 草稿污染均由此避免）。
+ * @param {string} [placeholderI18nKey] 可见禁用态的 `{ placeholder }` i18n 键；隐藏 surface 勿传
  * @returns {void}
  */
-export function disableComposer(i18nKey = 'chat.hub.composerDisabled') {
+export function disableComposer(placeholderI18nKey) {
 	const input = document.getElementById('hub-message-input')
 	input.disabled = true
-	input.dataset.i18n = i18nKey
 	delete input.dataset.channel
+	if (placeholderI18nKey)
+		input.dataset.i18n = placeholderI18nKey
+	else {
+		input.removeAttribute('data-i18n')
+		input.removeAttribute('placeholder')
+	}
 	for (const id of COMPOSER_TOOL_IDS) {
 		const el = document.getElementById(id)
 		if (el) el.disabled = true

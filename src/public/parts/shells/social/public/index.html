@@ -53,7 +53,7 @@
 				</button>
 			</nav>
 			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
-				<span class="nav-label" data-i18n="social.composer.composeButton"></span>
+				<span class="nav-label" data-i18n="social.composer.publish"></span>
 				<span class="s-ic s-ic-compose compose-nav-icon" aria-hidden="true"></span>
 			</button>
 		</aside>
@@ -68,7 +68,7 @@
 						<textarea id="postText" rows="3" data-i18n="social.composer" placeholder=""></textarea>
 						<input id="postContentWarning" type="text" class="input input-bordered input-sm composer-cw hidden" maxlength="200" data-i18n="social.composer.contentWarning" placeholder="" />
 						<div id="pollComposerPanel" class="composer-panel poll-composer hidden">
-							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.optionsPlaceholder" placeholder=""></textarea>
+							<textarea id="pollComposerOptions" rows="3" class="textarea textarea-bordered textarea-sm poll-composer-options" data-i18n="social.poll.options" placeholder=""></textarea>
 							<div class="poll-composer-row">
 								<label class="composer-check">
 									<input id="pollComposerMulti" type="checkbox" class="checkbox checkbox-sm" />
@@ -82,11 +82,11 @@
 						<div id="composerAdvancedPanel" class="composer-panel composer-advanced hidden">
 							<label class="composer-field hidden" data-visibility-field>
 								<span class="composer-field-label" data-i18n="social.visibility.allowLabel"></span>
-								<input data-visibility-allow type="text" class="input input-bordered input-sm" data-i18n="social.visibility.allowPlaceholder" placeholder="" />
+								<input data-visibility-allow type="text" class="input input-bordered input-sm" data-i18n="social.visibility.allow" placeholder="" />
 							</label>
 							<label class="composer-field" data-visibility-field>
 								<span class="composer-field-label" data-i18n="social.visibility.exceptLabel"></span>
-								<input data-visibility-except type="text" class="input input-bordered input-sm" data-i18n="social.visibility.exceptPlaceholder" placeholder="" />
+								<input data-visibility-except type="text" class="input input-bordered input-sm" data-i18n="social.visibility.except" placeholder="" />
 							</label>
 							<label class="composer-field">
 								<span class="composer-field-label" data-i18n="social.composer.replyPolicyLabel"></span>
@@ -265,7 +265,7 @@
 							<option value="image" data-i18n="social.search.filterMediaImage"></option>
 							<option value="video" data-i18n="social.search.filterMediaVideo"></option>
 						</select>
-						<input type="text" id="searchViewTag" class="input input-bordered input-sm" data-i18n="social.search.filterTag" placeholder="#tag" />
+						<input type="text" id="searchViewTag" class="input input-bordered input-sm" data-i18n="social.search.filterTag" placeholder="" />
 						<select id="searchViewSort" class="select select-bordered select-sm">
 							<option value="recent" data-i18n="social.search.sortRecent"></option>
 							<option value="popular" data-i18n="social.search.sortPopular"></option>
@@ -315,7 +315,7 @@
 					<button type="button" id="liveStartButton" class="btn btn-error" data-i18n="social.live.broadcast.start"></button>
 					<button type="button" id="liveStopButton" class="btn btn-ghost hidden" data-i18n="social.live.broadcast.stop"></button>
 					<div class="live-link-row hidden" id="liveLinkRow">
-						<input id="liveLinkPeerInput" type="text" class="input input-bordered input-sm flex-1" data-i18n="social.live.link.peerPlaceholder" placeholder="" />
+						<input id="liveLinkPeerInput" type="text" class="input input-bordered input-sm flex-1" data-i18n="social.live.link.peer" placeholder="" />
 						<button type="button" id="liveLinkInviteButton" class="btn btn-primary btn-sm" data-i18n="social.live.link.invite"></button>
 					</div>
 					<p id="liveBroadcastStatus" class="live-broadcast-status"></p>
@@ -349,7 +349,6 @@
 				<div class="feed-search-wrap">
 					<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
 					<input type="search" id="feedSearchInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" />
-					<button type="button" id="feedSearchButton" class="search-submit-btn hidden" data-i18n="social.search.submit"></button>
 					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear" aria-label=""></button>
 				</div>
 			</div>

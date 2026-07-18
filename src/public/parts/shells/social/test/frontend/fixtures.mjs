@@ -244,23 +244,18 @@ export async function expectPostInFeed(page, postId) {
  * @param {'button' | 'enter'} trigger - 触发搜索的方式。
  * @returns {Promise<void>}
  */
-async function pollSearchForPost(page, query, postId, trigger) {
+async function pollSearchForPost(page, query, postId) {
 	for (let attempt = 0; attempt < 2; attempt++) {
 		await page.locator('#feedSearchInput').fill(query)
 		const searchWait = page.waitForResponse(res => {
 			if (res.request().method() !== 'GET' || res.status() !== 200) return false
 			return new URL(res.url()).pathname === '/api/parts/shells:social/search'
 		}, { timeout: ms('1m') })
-		if (trigger === 'enter')
-			await page.locator('#feedSearchInput').press('Enter')
-		else if (await page.locator('#feedSearchButton').isVisible())
-			await page.locator('#feedSearchButton').click()
-		else
-			await page.locator('#feedSearchInput').press('Enter')
+		await page.locator('#feedSearchInput').press('Enter')
 		const searchRes = await searchWait
 		const data = await searchRes.json()
 		if ((data.items || []).some(item => item.postId === postId)) {
-			await expect(page.locator(`#feedList [data-post-id="${postId}"]`).first()).toBeVisible({
+			await expect(page.locator(`#searchViewResults [data-post-id="${postId}"]`).first()).toBeVisible({
 				timeout: ms('10s'),
 			})
 			return
@@ -279,7 +274,7 @@ async function pollSearchForPost(page, query, postId, trigger) {
  * @returns {Promise<void>} 无返回值。
  */
 export async function searchAndExpectPost(page, query, postId) {
-	await pollSearchForPost(page, query, postId, 'button')
+	await pollSearchForPost(page, query, postId)
 }
 
 /**
@@ -290,7 +285,7 @@ export async function searchAndExpectPost(page, query, postId) {
  * @returns {Promise<void>}
  */
 export async function searchViaEnterAndExpectPost(page, query, postId) {
-	await pollSearchForPost(page, query, postId, 'enter')
+	await pollSearchForPost(page, query, postId)
 }
 
 /**

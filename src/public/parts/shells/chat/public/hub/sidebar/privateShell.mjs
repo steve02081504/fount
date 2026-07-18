@@ -42,7 +42,7 @@ export async function backToFriendsList() {
 	setHubState('context.currentChannelId', null)
 	setHubState('context.currentState', null)
 	updateFriendsHash()
-	disableComposer('chat.hub.composerDisabled')
+	disableComposer()
 	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
 		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
 	})

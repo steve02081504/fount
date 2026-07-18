@@ -81,10 +81,10 @@ export function renderVisibilityPickerHtml(options = {}) {
 				${optionHtml}
 			</select>
 			<input data-visibility-allow type="text" class="input input-bordered input-sm visibility-allow${showAllow}"
-				placeholder="${escapeHtml(geti18n('social.visibility.allowPlaceholder'))}"
+				placeholder="${escapeHtml(geti18n('social.visibility.allow.placeholder'))}"
 				value="${escapeHtml(options.allow || '')}" />
 			<input data-visibility-except type="text" class="input input-bordered input-sm visibility-except${showExcept}"
-				placeholder="${escapeHtml(geti18n('social.visibility.exceptPlaceholder'))}"
+				placeholder="${escapeHtml(geti18n('social.visibility.except.placeholder'))}"
 				value="${escapeHtml(options.except || '')}" />
 		</div>
 	`

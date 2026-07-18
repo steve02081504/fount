@@ -94,11 +94,13 @@ export function updateOverlayModalBody(html) {
 }
 
 /**
- * 关闭通用设置浮层。
+ * 关闭通用设置浮层并清空正文，避免下次打开前残留旧壳。
  * @returns {void}
  */
 export function closeOverlayModal() {
-	try { overlayModal.close() } catch { }
+	try { overlayModal.close() } catch { /* already closed */ }
+	document.getElementById('hub-overlay-body')?.replaceChildren()
+	document.getElementById('hub-overlay-footer')?.replaceChildren()
 }
 
 /**

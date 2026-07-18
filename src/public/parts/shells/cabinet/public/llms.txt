@@ -34,7 +34,7 @@ P2P 文件柜：个人 EVFS 柜 + 无托管共享柜（签名 op-log）。
 
 - `#cabinet:{id}` / `#cabinet:{id}/{folderId}`
 - `#shared:{cabinetId}` / `#shared:{cabinetId}/{folderId}`（共享柜）
-- `#user:{entityHash}`（远端浏览）
+- `#user:{entityHash}` / `#user:{entityHash}/{cabinetId}` / `#user:{entityHash}/{cabinetId}/{folderId}`（远端只读浏览）
 
 ## 快捷键（页面会话）
 

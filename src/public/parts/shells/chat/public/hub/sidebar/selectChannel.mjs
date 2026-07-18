@@ -28,7 +28,7 @@ export async function selectChannel(channelId) {
 	if (!channel) {
 		setHubState('context.currentChannelId', null)
 		updateHash(hubStore.context.currentGroupId, null)
-		disableComposer('chat.hub.noChannel')
+		disableComposer()
 		const { renderHubChannelSidebar } = await import('./index.mjs')
 		await renderHubChannelSidebar(hubStore.context.currentState)
 		const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
@@ -57,7 +57,7 @@ export async function selectChannel(channelId) {
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
 	else if (hubStore.context.currentState?.suspectedRemoved)
-		disableComposer('chat.hub.banners.suspectedRemovedComposer')
+		disableComposer('chat.hub.composerSuspectedRemoved')
 	else
 		enableComposer()
 	const { loadMessages } = await import('../messages/messages.mjs')

@@ -33,6 +33,7 @@ alwaysApply: false
 - **Message modules**: render coordination in `messages/render/` (`index.mjs` aggregates; body/MD/attachments etc. split by responsibility, direct imports not barrel); action delegation in `messages/actions/handlers.mjs`, each `data-action` in a separate file in the same dir.
 - **Message shortcuts**: 按住 Shift → 操作栏切到下载/删除（`wireShiftKeyHint` + `shiftHtml`）；从消息行非正文区拖出 → `messageDragExport.mjs` 落盘独立 HTML（`DownloadURL`），并附带 `text/markdown`。角色时间线切页用气泡侧滑/箭头，不进「更多」菜单。
 - No hardcoded user-visible strings; use `data-i18n` / `setElementI18n`（参数写在 `data-*`）and `zh-CN.json`. `geti18n` 仅用于无 DOM 或 HTML 插值片段。
+- **Composer disable**：只设 `disabled`；输入区被 surface CSS 隐藏（inbox / discovery / friends idle / groups 无会话）时勿塞解释文案。可见禁用态（只读频道 / 疑似移出）只用 `{ placeholder }` 对象键——字符串型 `data-i18n` 会写 `innerHTML` 污染 `textarea.value`，取消禁用后残留文案。
 - Prefer `renderTemplate` / `mountTemplate` over inline `innerHTML`.
 - 跨壳共享模块（如 `shared/entityProfileCard.mjs`）勿调用 `usingTemplates`——它是进程级单例，会把 Social/Cabinet 的模板请求指到 chat 路径；需要时用 `withTemplates`，或直接 DOM + `data-i18n`。
 - Modals: `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`. Template body = `modal-box` + optional `modal-backdrop` only（勿再包 `<dialog>`；自管生命周期的如 `profile_edit_modal` 除外）。

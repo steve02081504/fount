@@ -85,7 +85,7 @@ export async function setMode(mode) {
 		setHubState('context.currentChannelId', null)
 		setHubState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
-		disableComposer('chat.hub.composerDisabled')
+		disableComposer()
 		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/friends')
 		document.getElementById('hub-friends-empty-search-button')?.addEventListener('click', () => {
 			document.getElementById('hub-friends-search-input')?.focus()

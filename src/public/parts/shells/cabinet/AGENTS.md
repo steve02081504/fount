@@ -15,5 +15,6 @@ alwaysApply: false
 - **Recoverable delete**: `DELETE …/entries` with `recoverable:true` → `{ deleted, recovery_token }` (blobs kept). Restore via `POST …/entries/restore`; hard-delete via `POST …/entries/finalize-delete`. UI undo stack must finalize discarded tokens.
 - **Shortcuts**: Ctrl/Cmd+C/X/V/A/D/Z/Y/N, F2 rename, Delete = go up. Clipboard is app-level (`sessionStorage` + `BroadcastChannel`), not OS clipboard.
 - **Default cabinet**: `cabinet_id: default` seeded from `default/templates/cabinet/`.
-- **Entity profile**: `#user:{entityHash}` 远端浏览条与属性面板创建/修改者戳记可打开共享人物卡（`/parts/shells:chat/shared/entityProfilePopup.mjs`）；bio 由共享卡本机 markdown 安全渲染。戳记 / 远端条短码用 chat `formatEntityAtId` / `formatHashShort`，勿裸 `hash.slice`。勿与柜条目的 `owner_entity_hash`（文件归属）混淆实体所属 `ownerEntityHash`。
-- **Tests**: `fount test shells/cabinet --no-parallel`.
+- **Entity profile**: `#user:{entityHash}`（可带 `/{cabinetId}`/`/{folderId}`）远端只读浏览条与属性面板创建/修改者戳记可打开共享人物卡（`/parts/shells:chat/shared/entityProfilePopup.mjs`）；bio 由共享卡本机 markdown 安全渲染。戳记 / 远端条短码用 chat `formatEntityAtId` / `formatHashShort`，勿裸 `hash.slice`。勿与柜条目的 `owner_entity_hash`（文件归属）混淆实体所属 `ownerEntityHash`。
+- **UI**: 不可见控件（drawer overlay、hidden input）不要挂解释性 `data-i18n`。只读/禁用用 `disabled`/`hidden`/`classList`，勿用 i18n 文案驱动；右键菜单不可用项直接省略。
+- **Tests**: `fount test shells/cabinet --no-parallel`。

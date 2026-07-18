@@ -25,7 +25,6 @@ export const socialState = {
 	pendingGroupRef: null,
 	pendingPoll: null,
 	feedRanking: 'latest',
-	feedSearchCursor: null,
 	exploreMediaOnly: false,
 	savedFoldersCache: {},
 	pendingSave: null,

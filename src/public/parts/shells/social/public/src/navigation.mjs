@@ -94,10 +94,13 @@ export async function switchView(view, options = {}) {
 	if (!options.skipHash)
 		syncHashForMainView(view)
 	if (view === 'feed') {
-		if (!socialState.activeFeedSearchQuery) {
-			socialState.feedCursor = null
-			await loadFeed(false)
+		if (socialState.activeFeedSearchQuery) {
+			socialState.activeFeedSearchQuery = null
+			const searchInput = document.getElementById('feedSearchInput')
+			if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 		}
+		socialState.feedCursor = null
+		await loadFeed(false)
 		updateFeedSearchChrome()
 	}
 	if (view === 'notifications') {

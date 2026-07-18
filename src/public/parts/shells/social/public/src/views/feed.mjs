@@ -2,7 +2,7 @@ import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { bindDwellTracker } from '../dwellTracker.mjs'
-import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { socialApi } from '../lib/apiClient.mjs'
 import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
@@ -13,8 +13,7 @@ import { socialState } from '../state.mjs'
 let unbindDwell = null
 
 /**
- * 加载并渲染 Feed 页。
- * 更新 feed 搜索栏与加载更多的 UI 状态。
+ * 更新 feed 侧栏搜索清除按钮可见性。
  * @returns {void}
  */
 export function updateFeedSearchChrome() {
@@ -335,90 +334,6 @@ export async function loadFeed(append = false) {
 }
 
 /**
- * 执行 feed 关键词/话题搜索并渲染结果。
- * @returns {Promise<void>}
- */
-export async function runFeedSearch() {
-	const input = document.getElementById('feedSearchInput')
-	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
-	if (q.length < 2) {
-		disconnectInfiniteScroll()
-		const list = document.getElementById('feedList')
-		const emptyElement = list ? await renderTemplate('feed_empty', { emptyKey: 'social.search.tooShort' }) : null
-		if (list && emptyElement) list.replaceChildren(emptyElement)
-		socialState.activeFeedSearchQuery = null
-		updateFeedSearchChrome()
-		return
-	}
-	socialState.activeFeedSearchQuery = q
-	socialState.feedSearchCursor = null
-	disconnectInfiniteScroll()
-	const [data, entityData] = await Promise.all([
-		socialApi(`/search?q=${encodeURIComponent(q)}&limit=30`),
-		chatApi(`/entities/search?q=${encodeURIComponent(q)}&limit=20`).catch(() => ({ entities: [] })),
-	])
-	if (socialState.activeFeedSearchQuery !== q) return
-	const list = document.getElementById('feedList')
-	if (!list) return
-	const items = data.items || []
-	const entities = entityData.entities || []
-	const hintElement = await renderTemplate('feed_search_hint', {})
-	const frag = document.createDocumentFragment()
-	frag.appendChild(hintElement)
-
-	const usersSection = document.createElement('section')
-	usersSection.className = 'feed-search-users mb-4'
-	const usersTitle = document.createElement('h3')
-	usersTitle.className = 'text-sm font-semibold opacity-70 mb-2'
-	usersTitle.dataset.i18n = 'social.search.usersTitle'
-	usersSection.appendChild(usersTitle)
-	if (!entities.length) {
-		const empty = document.createElement('p')
-		empty.className = 'text-sm opacity-50'
-		empty.dataset.i18n = 'social.search.usersEmpty'
-		usersSection.appendChild(empty)
-	}
-	else 
-		for (const entity of entities)
-			usersSection.appendChild(await buildEntitySearchCard(entity))
-	
-	frag.appendChild(usersSection)
-
-	const postsTitle = document.createElement('h3')
-	postsTitle.className = 'text-sm font-semibold opacity-70 mb-2'
-	postsTitle.dataset.i18n = 'social.search.postsTitle'
-	frag.appendChild(postsTitle)
-
-	if (!items.length) {
-		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.search.empty' })
-		frag.appendChild(emptyElement)
-		list.replaceChildren(frag)
-	}
-	else {
-		const container = document.createElement('div')
-		container.id = 'feedSearchResults'
-		const cardEls = await Promise.all(items.map(item => buildPostCard(item).catch(() => null)))
-		for (const card of cardEls) if (card) container.appendChild(card)
-		frag.appendChild(container)
-		list.replaceChildren(frag)
-		socialState.feedSearchCursor = data.nextCursor || null
-		const sentinel = ensureScrollSentinel(list, 'feedSearchScrollSentinel')
-		bindInfiniteScroll({
-			sentinel,
-			/**
-			 * @returns {boolean} 是否还有下一页
-			 */
-			hasMore: () => !!socialState.feedSearchCursor,
-			/**
-			 * @returns {Promise<void>} 追加下一页
-			 */
-			onLoad: () => appendFeedSearch(),
-		})
-	}
-	updateFeedSearchChrome()
-}
-
-/**
  * @param {object} entity 搜索命中实体
  * @returns {Promise<HTMLElement>} 卡片
  */
@@ -434,51 +349,4 @@ export async function buildEntitySearchCard(entity) {
 		isFollowing: entity.following ? 'true' : 'false',
 		followI18n: entity.following ? 'social.actions.following' : 'social.actions.follow',
 	})
-}
-
-/**
- * 搜索分页追加。
- * @returns {Promise<void>}
- */
-export async function appendFeedSearch() {
-	const q = socialState.activeFeedSearchQuery
-	if (!q || !socialState.feedSearchCursor) return
-	const data = await socialApi(
-		`/search?q=${encodeURIComponent(q)}&limit=30&cursor=${encodeURIComponent(socialState.feedSearchCursor)}`,
-	)
-	if (socialState.activeFeedSearchQuery !== q) return
-	const container = document.getElementById('feedSearchResults')
-	if (!container) return
-	const items = data.items || []
-	for (const item of items) {
-		const card = await buildPostCard(item).catch(() => null)
-		if (card) container.appendChild(card)
-	}
-	socialState.feedSearchCursor = data.nextCursor || null
-}
-
-/**
- * 清除搜索状态并恢复默认 feed。
- * @returns {Promise<void>}
- */
-export async function clearFeedSearch() {
-	socialState.activeFeedSearchQuery = null
-	disconnectInfiniteScroll()
-	const input = document.getElementById('feedSearchInput')
-	if (input instanceof HTMLInputElement) input.value = ''
-	socialState.feedCursor = null
-	socialState.feedShownItems = null
-	socialState.feedPrefetch = null
-	await loadFeed(false)
-	updateFeedSearchChrome()
-}
-
-/**
- * 切换到搜索视图并执行指定搜索。
- * @param {string} query 搜索词
- * @returns {Promise<void>}
- */
-export async function openSearchView(query) {
-	const { loadSearchView } = await import('./search.mjs')
-	await loadSearchView(String(query || '').trim())
 }

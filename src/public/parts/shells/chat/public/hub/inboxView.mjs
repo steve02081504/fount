@@ -257,7 +257,7 @@ export async function activateInboxView() {
 	await mountTemplate(messagesHost, 'hub/inbox/panel')
 	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.inbox.title'
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
-	disableComposer('chat.hub.inbox.composerDisabled')
+	disableComposer()
 	refreshHubHeaderButtons()
 
 	const listHost = document.getElementById('hub-inbox-list')

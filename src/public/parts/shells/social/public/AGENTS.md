@@ -32,6 +32,7 @@ alwaysApply: false
 ## UI conventions
 
 - Prefer `data-i18n` / `setElementI18n(el, key, params)` for UI copy (params via `data-*` → `dataset`). `geti18n` only for non-DOM (`prompt`/`confirm`/`Error`) or embedding prebuilt HTML/DOM into a string. MutationObserver watches only `data-i18n` — same-key param updates need `setElementI18n`.
+- **Input / textarea placeholders**：`data-i18n` 必须指向带 `placeholder` 子键的对象（如 `social.composer`）；字符串键会走 `innerHTML` 路径，textarea 会丢掉用户输入。勿用 i18n 文案驱动禁用/隐藏态——composer 仅在 `#feed` 可见（`activateView` 切 `hidden`），其它视图不塞 placeholder。
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
