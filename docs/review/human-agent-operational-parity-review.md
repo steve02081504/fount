@@ -8,13 +8,13 @@
 
 公理 3：不提供「人以 agent 身份做事」或「人窥视 agent 私有状态」的能力和界面。
 
-**已收口**（细节见代码 / shell `AGENTS.md` / 测试）：统一实体身份、拆代签、双入口对象面、私有状态 per-entity、owner 改删（人→agent 与 agent→人）、主人可设被管实体资料（本机 owner 判定 + 远端 EVFS 发布/拉取）、`PUT …/entities/owner` + 资料页设主人、agent ensure 回填 null owner。
+**已收口**（细节见代码 / shell `AGENTS.md` / 测试）：统一实体身份、拆代签、双入口对象面、私有状态 per-entity、owner 改删（人→agent 与 agent→人）、主人可设被管实体资料（本机 owner 判定 + 远端 EVFS 发布/拉取）、`PUT …/entities/owner` + 资料页设主人、agent ensure 回填 null owner、本机 owner 对所属 agent 帖的 `post_edit` / `post_delete`。
 
 ---
 
-## 开放缺陷
+## 澄清（非待修缺陷）
 
-### 1. 「设 agent 为我的主人」后她能删改我的消息吗？
+### 「设 agent 为我的主人」后她能删改我的消息吗？
 
 **能——经 `ChatClient`，不是经 Hub。**
 
@@ -28,7 +28,11 @@
 
 常见误会：在 Hub 上把 agent 设成主人后，界面仍是你自己——不会出现「她」的删改菜单。要行使主人权，agent 须在同群经工具 / `OnMessage` 调 `ChatClient`。Agent 未入该群则无法 append，内容权无从落地。
 
-### 2. owner 声明仍是单向的
+---
+
+## 开放缺陷
+
+### 1. owner 声明仍是单向的
 
 | | |
 | --- | --- |
@@ -37,45 +41,49 @@
 | **风险** | 对方若在同群且能签写，即可改删，无需明文同意。误设 / 被诱骗设主人 = 立刻交出内容权。`bridge_identity_claim` 是桥接运营商认领，**无关** entity owner。 |
 | **证据** | 唯一写入路径 `setEntityOwner`（`entity/identity.mjs`）。 |
 
-### 3. 远端托管 agent（跨节点写路径未对称）
+### 2. 远端托管 agent（跨节点写路径未对称）
 
-本机平权收口 ≠ 跨节点对称。主人远程设资料已通；帖文 / timeline 远端 agent 写路径仍断。
+本机平权收口 ≠ 跨节点对称。主人远程设资料已通；帖文 / timeline 远端 agent **ingress 部分收口**；本机 owner 代管写（改删）已通；跨节点运营写仍断。
 
 | 子项 | 现状 |
 | --- | --- |
 | 主人远程设被管实体资料 | ✅ EVFS `owned/{target}/profile_update/*` + mailbox poke/ack（`ownerProfileUpdate.mjs`） |
-| 非本机 agent 时间线入站 | **拒绝**（`timeline_ingress`：「remote (non-local) agent timeline event cannot be authorized」） |
-| 写授权 | `isTimelineWriteAuthorized`（`write_auth.mjs`）：需 priorEvents 折叠出的实体密钥链，或 `sender === subjectHash`；远端 agent 无本机先验链且 sender≠subjectHash → false。owner 对所属实体的 `post_edit`/`post_delete` 另走 owner 密钥链复核（本机 agent 已测通） |
-| Chat `remoteProxy` | 群内 RPC 读/调远端 char；**不等于**远端 agent 的 Social timeline 写路径平权 |
+| 远端 agent 时间线引导入账 | **部分** ✅：`social_meta` + gen0 `entity_key_rotate` + 活跃钥 `post` 可引导密钥链并入账（`timeline_ingress`「remote agent timeline bootstraps…」）；`write_auth.mjs` 的 `bootstrapKeyChainFromEvent` + EVFS profile attestation 兜底 |
+| 陌生钥注入远端 agent 时间线 | ❌ 拒绝（`foreign-key injection into a bootstrapped remote agent timeline is rejected`） |
+| 本机 owner 签 `post_edit` / `post_delete` 管本机 agent 帖 | ✅（`timeline_ingress` + `manifest_write_auth`；`append.mjs` 允许 foreign signer 仅此二类，不含代发 `post`） |
+| **跨节点** owner 对远端托管 agent 的内容写 | ❌ 未测通、无集成测；`isOwnerContentEventAuthorized` 依赖本机 owner 时间线密钥链，无跨节点 owner 身份链 |
+| SocialClient 绑定远端 entityHash | ❌ `resolveSocialEntity` → `local: false` → `getSocialClient` 403（`social_client`「rejects foreign entityHash」） |
+| 写授权（一般路径） | `isTimelineWriteAuthorized`：priorEvents 折叠密钥链，或 `sender === subjectHash`；无先验且非引导事件 → false |
+| Chat `remoteProxy` | 群内 RPC 读/调远端 char；**不等于**远端 agent 的 Social timeline 运营写路径平权 |
 
 | | |
 | --- | --- |
-| **阻塞依赖** | 跨节点 `nodeHash → operator` 身份链（信任图扩展）→ 解锁远端托管 agent 的 timeline ingress 与桥接群参与。见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)「后续方向」；`p2p_server/AGENTS.md` 仅有身份/信任边界，**未**单独开接纳规格。 |
-| **半成品边界** | 本机 agent 用自身活跃钥写入本机时间线 ✅；陌生钥注入本机 agent 时间线 ❌；远端节点上的 agent 实体整条写路径 ❌。 |
+| **阻塞依赖** | 跨节点 `nodeHash → operator` 身份链（信任图扩展）→ 解锁远端托管 agent 的 owner 跨节点写与桥接群参与。见 [chat-social-dev-plan.md](../design/chat-social-dev-plan.md)「后续方向」。`p2p_server/AGENTS.md` 仅有身份/信任边界，**未**单独开接纳规格（dev-plan 旧交叉引用勿当真）。 |
+| **边界小结** | 本机 agent 用自身活跃钥写本机时间线 ✅；陌生钥注入 ❌；远端 agent 被动 ingress（创世链引导）✅；本机 owner 改删本机 agent 帖 ✅；跨节点 owner 运营写 / 本机 SocialClient 代远端 agent 发帖 ❌。 |
 
-### 4. 私有入站有意分流（非代签残留，但不对称）
+### 3. 私有入站有意分流（非代签残留，但不对称）
 
 | 通道 | 人类（operator） | 本机 agent |
 | --- | --- | --- |
 | Chat mention → per-entity inbox | ✅ | ✅（`messageFanout` 对全部 local recipients） |
-| Chat care / 普通 message 行 / WebPush | ✅（仅 operator 分支） | ❌ 不写、不推 |
+| Chat care / 普通 message 行 / WebPush | ✅（仅 operator 分支；`recipientHash !== operator` 跳过） | ❌ 不写、不推 |
 | Social `care_post`（`dispatchCarePostIfNeeded`） | ✅ 只查 operator care 列表 | ❌ agent 自有 care 不驱动 care 类触达 |
 | `OnMessage` 触发 | — | ✅ 一律送达；care 仅 `isCaredBy` 可查询事实（与设计基线一致） |
 
 实体模型同构，**触达**仍人类偏向。设计基线已规定「care 穿透 mute 只服务人类通知；agent 不因 care 改触发」——缺口是若要把「触达面」也拉平（agent care → 其 inbox / 专用通道），需另开设计，不是补 acting。
 
-### 5. Feed / 推送通道按 login，不按实体
+### 4. Feed / 推送通道按 login，不按实体
 
 | 层 | 现状 |
 | --- | --- |
 | Inbox / 私有状态存储 | per-entityHash（chat / social 均是） |
 | Social Feed WS | `registerFeedSocket(username)` / `pushFeedUpdate(username, …)` — login 粒度 |
 | WebPush | `notifyUser(username)` — login 粒度 |
-| HTTP 读模型 | inbox / notifications / feed / following **无**「换实体」参数；恒 operator |
+| HTTP 读模型 | inbox / notifications / feed / following **无**「换实体」参数；恒 operator（`socialClientFromReq`） |
 
 公理 3：不向人类暴露 agent 私有推送通道。多实体同节点时，agent 侧实时面弱于 operator（靠 in-process Client + mention / `OnMessage`）。若要做 agent 级实时，须独立通道且永不挂到人类 UI——与当前 login 绑定的 WS/Push 正交。
 
-### 6. 产品宽度（非平权债，外链）
+### 5. 产品宽度（非平权债，外链）
 
 工业 IM / 社交差距另档：[chat-vs-industrial-im-gap.md](./chat-vs-industrial-im-gap.md)、[social-platform-gap-analysis.md](./social-platform-gap-analysis.md)。ActivityPub / 原生 App 为产品边界「明确不做」。
 
@@ -96,6 +104,6 @@
 
 | 文档 | 关系 |
 | --- | --- |
-| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 拓扑基线与未排期方向（含远端 agent 接纳） |
+| [chat-social-dev-plan.md](../design/chat-social-dev-plan.md) | 拓扑基线与未排期方向（含远端 agent 接纳；规格尚未落入 `p2p_server/AGENTS.md`） |
 | [chat/public/AGENTS.md](../../src/public/parts/shells/chat/public/AGENTS.md) | Chat 实体 / Client / 设主人 |
 | [social/public/AGENTS.md](../../src/public/parts/shells/social/public/AGENTS.md) | SocialClient / owner 改删 |

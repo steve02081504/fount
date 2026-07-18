@@ -63,7 +63,7 @@
 
 - **parts 联邦对称**：persona 跨节点从 `extension.otherPersona` 特判升级为正式 remote persona proxy；plugin 联邦参与 prompt 贡献侧。
 - **远端托管 agent 的 ChatClient**：跨节点 agent 的读方法天然可用（联邦群各节点持物化 state 副本）；写方法即实体自签，剩余问题收窄为远端实体的身份接纳与投递，随「远端 agent 接纳」一并设计。
-- **远端 agent 接纳**：跨节点 `nodeHash → operator` 身份链（p2p 信任图扩展），解锁远端托管 agent 的 timeline ingress 与桥接群参与；见 `src/server/p2p_server/AGENTS.md`。
+- **远端 agent 接纳**：跨节点 `nodeHash → operator` 身份链（p2p 信任图扩展），解锁远端托管 agent 的 **owner 跨节点运营写** 与桥接群参与（timeline ingress 引导已部分收口，见平权审阅 §2）。规格尚未落入 `p2p_server/AGENTS.md`，以本条与平权审阅为准。
 - **social ↔ chat 结构化桥深化**：mention 升级为专用 channel 的结构化 ingress、chat 会话产出「发帖草稿」经确认走 social `POST /posts`。
 - **可观测性**：联邦同步失败率、DAG 追补延迟、WS 连接数、生成耗时分布，以 debugLog / 内部计数起步。
 - **live / Playwright 补测残项**：DC 历史回填跨重启幂等（需真实 discord.js client）；social poll 双节点联邦与 feed WS prepend（避免整页重拉）。
