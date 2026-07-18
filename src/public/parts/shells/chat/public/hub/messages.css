@@ -269,7 +269,7 @@
 	display: none;
 }
 
-/* 角色消息时间线箭头 */
+/* 角色消息时间线箭头：挂在气泡两侧内侧，避免被 .messages overflow-x 裁切 */
 .chat.message-row[data-char-id] {
 	position: relative;
 }
@@ -285,22 +285,23 @@
 	border: none;
 	background: var(--color-base-300);
 	color: var(--color-base-content);
-	opacity: 0;
+	opacity: 0.35;
 	cursor: pointer;
 	transition: opacity 0.15s;
 }
 
 .char-entry:hover .char-timeline-arrow,
-.chat.message-row[data-char-id]:hover .char-timeline-arrow {
-	opacity: 0.85;
+.chat.message-row[data-char-id]:hover .char-timeline-arrow,
+.chat.message-row[data-char-id].timeline-arrows-active .char-timeline-arrow {
+	opacity: 0.9;
 }
 
 .char-timeline-arrow.left {
-	left: -36px;
+	left: 4px;
 }
 
 .char-timeline-arrow.right {
-	right: -36px;
+	right: 4px;
 }
 
 #messages .chat-start.message-row[data-char-id] .chat-header .font-semibold {

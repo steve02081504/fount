@@ -18,6 +18,9 @@ export function wireEvents() {
 	wireComposerEvents()
 	wireFileEvents()
 	wireVoteEvents()
+	void import('../messages/messageActionsUi.mjs').then(({ wireMessageMoreDropdownFlip }) => {
+		wireMessageMoreDropdownFlip()
+	})
 
 	document.getElementById('messages').addEventListener('click', async (event) => {
 		if (event.target.closest('#friends-empty-search-button')) {

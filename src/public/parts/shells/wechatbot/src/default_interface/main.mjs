@@ -1,13 +1,13 @@
-import { console } from '../../../../../scripts/i18n/bare.mjs'
-import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
-import { dispatchBridgeBotStarted } from '../../chat/src/chat/bridge/groupEvents.mjs'
-import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
+import { console } from '../../../../../../scripts/i18n/bare.mjs'
+import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted } from '../../../chat/src/chat/bridge/groupEvents.mjs'
+import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
-} from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+} from '../../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
 import {
 	buildWechatMediaMessageItem,
 	convertFileToWechatCompatible,

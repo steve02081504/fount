@@ -86,14 +86,20 @@ export function isAvatarImageUrl(value) {
 }
 
 /**
- * 返回用户显式设置的头像；部件元数据继承来的默认图标不算个人头像。
- * @param {{ avatar?: string, infoDefaults?: { avatar?: string } } | null | undefined} profile 资料
- * @returns {string} 自定义头像；没有则为空
+ * 资料头像字段（有什么显示什么；空则调用方画 hash 字母）。
+ * @param {{ avatar?: string } | null | undefined} profile 资料
+ * @returns {string} 头像 URL / emoji；无则为空
  */
 export function customProfileAvatar(profile) {
-	const avatar = String(profile?.avatar || '').trim()
-	const inheritedDefault = String(profile?.infoDefaults?.avatar || '').trim()
-	return avatar && avatar !== inheritedDefault ? avatar : ''
+	return String(profile?.avatar || '').trim()
+}
+
+/**
+ * @param {{ avatar?: string } | null | undefined} profile 资料
+ * @returns {string} 同 {@link customProfileAvatar}
+ */
+export function displayProfileAvatar(profile) {
+	return customProfileAvatar(profile)
 }
 
 /**

@@ -325,6 +325,46 @@
 	font-weight: 650;
 }
 
+.entity-profile-card--hover {
+	position: fixed;
+	z-index: 1000;
+	width: min(320px, calc(100vw - 24px));
+	max-height: min(420px, calc(100dvh - 24px));
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.12s ease;
+	box-shadow: 0 12px 36px rgb(0 0 0 / 32%);
+}
+
+.entity-profile-card--hover.show {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.entity-profile-card--hover .profile-popup-banner {
+	height: 72px;
+}
+
+.entity-profile-card--hover .profile-popup-body {
+	margin-top: -36px;
+	padding: 0 16px 16px;
+}
+
+.entity-profile-card--hover .profile-popup-avatar {
+	width: 72px;
+	height: 72px;
+	font-size: 26px;
+	border-width: 5px;
+}
+
+.entity-profile-card--hover .profile-popup-name {
+	font-size: 18px;
+}
+
+.entity-profile-card--hover .profile-popup-bio {
+	max-height: 80px;
+}
+
 .entity-profile-card--embedded,
 .entity-profile-card--preview {
 	width: 100%;

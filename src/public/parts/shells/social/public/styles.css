@@ -104,6 +104,11 @@ body {
 .icon-close { --icon: url("https://api.iconify.design/mdi/close.svg"); }
 .icon-video { --icon: url("https://api.iconify.design/mdi/play-circle-outline.svg"); }
 .icon-live { --icon: url("https://api.iconify.design/mdi/broadcast.svg"); }
+.icon-globe { --icon: url("https://api.iconify.design/mdi/earth.svg"); }
+.icon-unlisted { --icon: url("https://api.iconify.design/mdi/link-variant.svg"); }
+.icon-lock { --icon: url("https://api.iconify.design/mdi/lock-outline.svg"); }
+.icon-selected { --icon: url("https://api.iconify.design/mdi/account-multiple-outline.svg"); }
+.icon-private { --icon: url("https://api.iconify.design/mdi/eye-off-outline.svg"); }
 
 /* Social shell layout */
 .shell {

@@ -1,23 +1,23 @@
 import { Events, ChannelType, GatewayIntentBits, Partials } from 'npm:discord.js'
 
-import { console } from '../../../../../scripts/i18n/bare.mjs'
-import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
-import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../chat/src/chat/bridge/groupEvents.mjs'
-import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../chat/src/chat/bridge/ingress.mjs'
+import { console } from '../../../../../../scripts/i18n/bare.mjs'
+import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
+import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
+import { postBridgeDelete, postBridgeEdit, postBridgeMessage } from '../../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
 	tryFewTimes,
-} from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
+} from '../../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
 import {
 	isBridgeGroupBackfilled,
 	lookupBridgePlatformChannel,
 	markBridgeGroupBackfilled,
-} from '../../chat/src/chat/bridge/registry.mjs'
-import { postBridgeTyping } from '../../chat/src/chat/bridge/typing.mjs'
+} from '../../../chat/src/chat/bridge/registry.mjs'
+import { postBridgeTyping } from '../../../chat/src/chat/bridge/typing.mjs'
 import {
 	discordMessageToBridgeDto,
 	restoreFountMentionsForDiscord,

@@ -47,17 +47,6 @@ function displayParentEventId(message, messagesByEventId) {
 	return latestParent
 }
 
-/**
- * 从已建好的 eventId→行 Map 解析展示父边（页级预计算，避免 O(n²)）。
- * @param {object} message 消息行
- * @param {Map<string, object>} messagesByEventId eventId → 行
- * @returns {string | null} 父 event id（小写 hex）
- */
-export function resolveDisplayParentEventIdFromMap(message, messagesByEventId) {
-	if (!message?.eventId || !(messagesByEventId instanceof Map) || !messagesByEventId.size) return null
-	return displayParentEventId(message, messagesByEventId)
-}
-
 /** @type {WeakMap<object[], { length: number, map: Map<string, object> }>} */
 const messagesByEventIdCache = new WeakMap()
 
@@ -78,17 +67,6 @@ export function buildMessagesByEventId(allMessages) {
 	}
 	messagesByEventIdCache.set(allMessages, { length: allMessages.length, map })
 	return map
-}
-
-/**
- * 解析消息在展示链上的父 event id（供引用条等 UI 使用）。
- * @param {object} message 消息行
- * @param {object[]} allMessages 频道内全部展示行
- * @returns {string | null} 父 event id（小写 hex）
- */
-export function resolveDisplayParentEventId(message, allMessages) {
-	if (!message?.eventId || !Array.isArray(allMessages) || !allMessages.length) return null
-	return resolveDisplayParentEventIdFromMap(message, buildMessagesByEventId(allMessages))
 }
 
 /**

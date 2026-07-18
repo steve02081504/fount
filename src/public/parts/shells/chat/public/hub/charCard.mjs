@@ -11,6 +11,7 @@ import {
 	usingTemplates,
 } from '../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { store } from './core/state.mjs'
@@ -66,7 +67,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
-	const avatarUrl = profile?.avatar || info.avatar || details?.avatar || ''
+	const avatarUrl = displayProfileAvatar(profile)
 	const viewerDisplayName = store.viewer.viewerDisplayName
 	const { viewerEntityHash } = store.viewer
 	const memberList = document.getElementById('member-list')

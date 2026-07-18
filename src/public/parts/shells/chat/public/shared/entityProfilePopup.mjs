@@ -2,15 +2,15 @@
  * 【文件】public/shared/entityProfilePopup.mjs
  * 【职责】跨壳轻量人物卡弹层：仅依赖 entityHash + profile API，不依赖 Hub store。
  * 【原理】Chat Hub / Cabinet / Social 均可调用；Hub 专属按钮（DM/care）仍走 hub/profilePopup。
+ * 模板经 `createEntityProfileCardElement` 加载，不污染全局 `usingTemplates`。
  */
-import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { isEntityHash128 } from './entityHash.mjs'
 import {
-	ensureEntityProfileCardStyles,
+	createEntityProfileCardElement,
 	paintEntityProfileCard,
 	paintEntityProfileExtras,
 } from './entityProfileCard.mjs'
@@ -78,8 +78,6 @@ async function paintSharedPopup(popup, entity) {
 export async function showEntityProfilePopup(entity) {
 	if (!entity?.entityHash && !entity?.displayName) return
 	dismissEntityProfilePopup()
-	ensureEntityProfileCardStyles()
-	usingTemplates('/parts/shells:chat/src/templates')
 
 	const layer = document.createElement('div')
 	layer.id = LAYER_ID
@@ -88,7 +86,7 @@ export async function showEntityProfilePopup(entity) {
 		if (event.target === layer) dismissEntityProfilePopup()
 	})
 
-	const popup = await renderTemplate('hub/profile_popup', {})
+	const popup = await createEntityProfileCardElement('popup')
 	layer.appendChild(popup)
 	document.body.appendChild(layer)
 

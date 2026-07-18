@@ -1,7 +1,7 @@
 <div class="char-list-header" data-i18n="${countI18nKey || 'chat.hub.charCount'}" data-count="${count}"></div>
 <div class="char-list">
 	${items.map(item => `
-	<button type="button" class="char-list-item list-item-char${item.activeClass}" data-friend-kind="${escapeHtml(item.kind || 'char')}" data-char="${escapeHtml(item.name)}" data-group-id="${escapeHtml(item.groupId || '')}" title="${escapeHtml(item.displayName)}">
+	<button type="button" class="char-list-item list-item-char${item.activeClass}" data-friend-kind="${escapeHtml(item.kind || 'char')}" data-char="${escapeHtml(item.name)}" data-group-id="${escapeHtml(item.groupId || '')}"${item.entityHash ? ` data-entity-hash="${escapeHtml(item.entityHash)}"` : ''}>
 		<div class="char-list-avatar" style="background:${item.avatarBg};color:${item.avatarTextColor || ''};">${item.avatarInner}</div>
 		<div class="char-list-meta">
 			<span class="char-list-name">${escapeHtml(item.displayName)}</span>

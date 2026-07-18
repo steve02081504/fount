@@ -563,7 +563,10 @@ export async function baseloadPart(username, partpath, {
 	pathGetter = () => GetPartPath(username, partpath),
 	Loader = baseMjsPartLoader,
 } = {}) {
-	if (isPartLoaded(username, partpath)) return parts_set[username][partpath]
+	const existing = parts_set?.[username]?.[partpath]
+	// 仅复用已解析实例；in-flight Promise 不可 await（Load 内再 baseload/loadPart 会死锁）
+	if (existing && !(existing instanceof Promise)) return existing
+	if (existing instanceof Promise) return await baseMjsPartLoader(pathGetter())
 	const path = pathGetter()
 
 	if (fs.existsSync(path + '/.git')) try {

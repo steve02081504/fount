@@ -56,6 +56,23 @@ export async function updateProfile(entityHash, updates, groupId) {
 
 /**
  * @param {string} entityHash 128 位 entityHash
+ * @param {string} [groupId] 群 ID
+ * @returns {Promise<object>} 重建后的资料 JSON
+ */
+export async function rebuildProfileFromPart(entityHash, groupId) {
+	const qs = localeQueryString(groupId)
+	const response = await fetch(
+		`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/rebuild-from-part${qs ? `?${qs}` : ''}`,
+		{ method: 'POST', credentials: 'include' },
+	)
+	const data = await response.json().catch(() => ({}))
+	if (!response.ok)
+		throw Object.assign(new Error(data.error || response.statusText), data, { response })
+	return data
+}
+
+/**
+ * @param {string} entityHash 128 位 entityHash
  * @param {File} file 头像文件
  * @returns {Promise<object>} 上传结果 JSON
  */

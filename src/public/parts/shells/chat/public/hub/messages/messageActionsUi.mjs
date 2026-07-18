@@ -87,6 +87,41 @@ export function menuSubmenu(labelI18nKey, icon, innerItemsHtml) {
 }
 
 /**
+ * 消息「更多」菜单按视口空间自动向上/下展开，避免贴顶时被 `.messages` 裁切。
+ * @param {HTMLElement} dropdown `.message-more-dropdown`
+ * @returns {void}
+ */
+function flipMessageMoreDropdown(dropdown) {
+	const menu = dropdown.querySelector(':scope > .dropdown-content')
+	if (!(menu instanceof HTMLElement)) return
+	dropdown.classList.remove('dropdown-top', 'dropdown-bottom')
+	const anchor = dropdown.getBoundingClientRect()
+	const menuHeight = Math.max(menu.scrollHeight, 160)
+	const spaceAbove = anchor.top
+	const spaceBelow = window.innerHeight - anchor.bottom
+	dropdown.classList.add(spaceAbove >= menuHeight || spaceAbove >= spaceBelow ? 'dropdown-top' : 'dropdown-bottom')
+}
+
+let messageMoreFlipBound = false
+
+/**
+ * 委托：打开消息更多菜单时按剩余空间翻转方向。
+ * @returns {void}
+ */
+export function wireMessageMoreDropdownFlip() {
+	if (messageMoreFlipBound) return
+	messageMoreFlipBound = true
+	document.addEventListener('focusin', (event) => {
+		const label = event.target instanceof Element
+			? event.target.closest('.message-more-dropdown > .message-action-menu')
+			: null
+		if (!label) return
+		const dropdown = label.closest('.message-more-dropdown')
+		if (dropdown instanceof HTMLElement) flipMessageMoreDropdown(dropdown)
+	})
+}
+
+/**
  * @param {string} inlineHtml 行内主操作按钮
  * @param {string} menuItemsHtml `<li>` 菜单项
  * @param {string} [shiftHtml] Shift 层按钮 HTML

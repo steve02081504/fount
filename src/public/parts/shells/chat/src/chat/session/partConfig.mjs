@@ -209,8 +209,7 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 			isGreeting: true,
 			greetingType: timeSlice.greeting_type || greetingEntry.extension?.timeSlice?.greeting_type,
 		}
-		if (greetingEntry.extension.timeSlice?.greeting_type)
-			delete greetingEntry.extension.timeSlice.greeting_type
+		// 保留 timeSlice.greeting_type：modifyTimeLine 靠它重 roll 开场；greetingLog 也按此过滤
 		await addChatLogEntry(groupId, greetingEntry)
 		return greetingEntry
 	}

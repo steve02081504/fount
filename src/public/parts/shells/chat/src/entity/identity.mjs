@@ -432,7 +432,13 @@ export async function ensureAgentEntityIdentity(username, charPartName) {
 	const name = String(charPartName || '').trim()
 	if (!name) throw new Error('charPartName required')
 	const ownerEntityHash = await getOperatorEntityHash(username)
-	return ensureEntityIdentity(username, { charPartName: name, ownerEntityHash })
+	const row = await ensureEntityIdentity(username, { charPartName: name, ownerEntityHash })
+	try {
+		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')
+		await syncAgentProfileFromCharPart(username, row.entityHash, { force: false })
+	}
+	catch { /* part 未装好或头像拉取失败时不阻断身份创建 */ }
+	return row
 }
 
 /**

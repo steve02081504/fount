@@ -29,23 +29,22 @@ async function resolveCharDisplaySnapshot(state, charId, username, groupId) {
 	let avatar = null
 
 	const owner = String(agent?.ownerUsername || username).trim()
-	try {
-		const { info } = await getPartDetails(owner, `chars/${charname}`) || {}
-		if (info?.name) name = String(info.name).trim()
-		if (info?.avatar) avatar = String(info.avatar).trim() || null
-	}
-	catch { /* part miss */ }
+	const entityHash = agent ? memberEntityHash(agent) : null
+	if (entityHash)
+		try {
+			const profile = await getProfile(entityHash, username, { groupId })
+			if (profile?.name) name = String(profile.name).trim()
+			const { displayProfileAvatar } = await import('../../../public/shared/hashAvatar.mjs')
+			avatar = displayProfileAvatar(profile) || null
+		}
+		catch { /* profile miss */ }
 
-	if (!name || !avatar) {
-		const entityHash = agent ? memberEntityHash(agent) : null
-		if (entityHash)
-			try {
-				const profile = await getProfile(entityHash, username, { groupId })
-				if (!name && profile?.name) name = String(profile.name).trim()
-				if (!avatar && profile?.avatar) avatar = String(profile.avatar).trim() || null
-			}
-			catch { /* profile miss */ }
-	}
+	if (!name)
+		try {
+			const { info } = await getPartDetails(owner, `chars/${charname}`) || {}
+			if (info?.name) name = String(info.name).trim()
+		}
+		catch { /* part miss */ }
 
 	if (!name) name = charname
 	return { name, avatar }
@@ -72,7 +71,8 @@ export async function resolveDisplaySnapshot(state, row, username, groupId) {
 		try {
 			const profile = await getProfile(entityHash, username, { groupId })
 			if (profile?.name) name = String(profile.name).trim()
-			if (profile?.avatar) avatar = String(profile.avatar).trim() || null
+			const { displayProfileAvatar } = await import('../../../public/shared/hashAvatar.mjs')
+			avatar = displayProfileAvatar(profile) || null
 		}
 		catch { /* profile miss */ }
 

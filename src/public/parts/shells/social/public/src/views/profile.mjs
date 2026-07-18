@@ -2,13 +2,12 @@ import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { createDOMFromHtmlString, appendTemplate, mountTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { appendTemplate, mountTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
 import {
-	configureEntityProfileCard,
-	ensureEntityProfileCardStyles,
+	createEntityProfileCardElement,
 	paintEntityProfileCard,
 	paintEntityProfileExtras,
 } from '/parts/shells:chat/shared/entityProfileCard.mjs'
@@ -277,17 +276,8 @@ export async function activateProfileTab(tab, options = {}) {
  * @returns {Promise<void>}
  */
 async function mountProfileEntityCard(host, entityHash, profile) {
-	ensureEntityProfileCardStyles()
-	const response = await fetch('/parts/shells:chat/src/templates/hub/profile_popup.html')
-	const card = createDOMFromHtmlString(await response.text())
-	if (!(card instanceof HTMLElement)) return
-	configureEntityProfileCard(card, 'embedded')
+	const card = await createEntityProfileCardElement('embedded')
 	card.classList.add('profile-entity-card')
-	if (!card.querySelector('[data-entity-owned-by-host]')) {
-		const ownedHost = document.createElement('div')
-		ownedHost.dataset.entityOwnedByHost = ''
-		card.querySelector('.profile-popup-body')?.appendChild(ownedHost)
-	}
 	await paintEntityProfileCard(card, profile, {
 		entityHash,
 		selfEntityHash: viewerEntityHash(),

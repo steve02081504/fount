@@ -189,8 +189,11 @@
 						"src/public/parts/shells/social/public/src/views/albums.mjs",
 						"src/public/parts/shells/social/public/src/actions.mjs",
 						"src/public/parts/shells/social/public/src/lib/replies.mjs",
+						"src/public/parts/shells/social/public/src/lib/profileHover.mjs",
 						"src/public/parts/shells/social/public/src/actions/postProfileActions.mjs",
-						"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs"
+						"src/public/parts/shells/social/public/src/actions/profileNavActions.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfileCard.*"
 					]
 				},
 				{

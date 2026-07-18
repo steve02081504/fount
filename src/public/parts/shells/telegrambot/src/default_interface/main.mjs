@@ -1,16 +1,16 @@
-import { console } from '../../../../../scripts/i18n/bare.mjs'
-import { channelMessageAgentText } from '../../chat/public/shared/channelContent.mjs'
-import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../chat/src/chat/bridge/groupEvents.mjs'
-import { claimOperatorBridgeIdentity } from '../../chat/src/chat/bridge/identity.mjs'
-import { postBridgeEdit } from '../../chat/src/chat/bridge/ingress.mjs'
+import { console } from '../../../../../../scripts/i18n/bare.mjs'
+import { channelMessageAgentText } from '../../../chat/public/shared/channelContent.mjs'
+import { dispatchBridgeBotStarted, postBridgeGroupEvent } from '../../../chat/src/chat/bridge/groupEvents.mjs'
+import { claimOperatorBridgeIdentity } from '../../../chat/src/chat/bridge/identity.mjs'
+import { postBridgeEdit } from '../../../chat/src/chat/bridge/ingress.mjs'
 import {
 	bridgeIngestDto,
 	messageLineToReplyEntry,
 	tryFewTimes,
-} from '../../chat/src/chat/bridge/interfaceKit.mjs'
-import { registerBridgeOperations } from '../../chat/src/chat/bridge/operations.mjs'
-import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../chat/src/chat/bridge/outbound.mjs'
-import { lookupBridgePlatformChannel } from '../../chat/src/chat/bridge/registry.mjs'
+} from '../../../chat/src/chat/bridge/interfaceKit.mjs'
+import { registerBridgeOperations } from '../../../chat/src/chat/bridge/operations.mjs'
+import { registerBridgeOutbound, unregisterBridgeOutbound } from '../../../chat/src/chat/bridge/outbound.mjs'
+import { lookupBridgePlatformChannel } from '../../../chat/src/chat/bridge/registry.mjs'
 import {
 	aiMarkdownToTelegramHtml,
 	buildTelegramTextAndEntities,

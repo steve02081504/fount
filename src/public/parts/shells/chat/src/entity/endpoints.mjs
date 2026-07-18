@@ -193,6 +193,26 @@ export function registerEntityEndpoints(router) {
 		}
 	})
 
+	router.post(entityPathRegex('/rebuild-from-part$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
+		if (!isWritableLocalEntityForUser(replicaUsername, entityHash))
+			return res.status(403).json({ error: 'entity not writable on this replica' })
+		const { resolveAgentCharPartNameForUser } = await import('./agentHost.mjs')
+		if (!resolveAgentCharPartNameForUser(replicaUsername, entityHash))
+			return res.status(400).json({ error: 'rebuild-from-part is only for local agents' })
+		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')
+		const stored = await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true })
+		if (!stored)
+			return res.status(400).json({ error: 'rebuild failed' })
+		const locales = localesFromRequest(req, replicaUsername)
+		const groupId = String(req.query?.groupId || '').trim() || undefined
+		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales })
+		res.status(200).json({ profile })
+	})
+
 	router.put(`${CHAT_PREFIX}/entities/owner`, authenticate, async (req, res) => {
 		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
 		if (!operatorEntityHash)

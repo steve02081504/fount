@@ -2915,7 +2915,11 @@
 				"linkUrlPlaceholder": "https://…",
 				"handleLabel": "自定义 ID",
 				"handlePlaceholder": "例如 steve（2–32 位小写字母数字._-）",
-				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。"
+				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。",
+				"resetFromPart": "从角色部件重置",
+				"resetFromPartConfirm": "将用角色 part 的 info 覆盖当前资料，确定？",
+				"resetFromPartDone": "已从角色部件重建资料",
+				"resetFromPartFailed": "重建失败：${error}"
 			},
 			"profilePopup": {
 				"close": {

@@ -3,7 +3,9 @@
  * 【职责】跨壳实体资料归一化与人物卡附属区块（所属方 / 归因警告）绘制。
  * 【原理】API profile → 统一字段；owner / attribution 用 data-* 宿主节点填充；链接走 Social profile hash。
  * bio 只吃 markdown 源，本机安全/可信两档渲染后挂载，不信任对端 HTML、也不对源做 escapeHtml。
+ * 悬停 / 点击弹层 / 嵌入页共用 `hub/profile_popup` 模板与 `paintEntityProfileCard`，勿另起视觉壳。
  */
+import { createDOMFromHtmlString } from '/scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
@@ -11,8 +13,12 @@ import { applyProfileAvatarToHost } from '../hub/core/avatarCover.mjs'
 
 import { aliasForEntity } from './aliases.mjs'
 import { entityHashLabel, formatEntityAtId, isEntityHash128 } from './entityHash.mjs'
-import { customProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
+import { displayProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './hashAvatar.mjs'
 import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
+
+const PROFILE_POPUP_TEMPLATE_URL = '/parts/shells:chat/src/templates/hub/profile_popup.html'
+/** @type {string | null} */
+let cachedProfilePopupTemplateHtml = null
 
 /**
  * 清扫远端资料链接，只允许浏览器安全的网页协议。
@@ -90,7 +96,7 @@ export function normalizeEntityProfile(profile, entityHash) {
 	const key = String(entityHash || '').toLowerCase()
 	return {
 		entityHash: key,
-		avatar: customProfileAvatar(profile) || null,
+		avatar: displayProfileAvatar(profile) || null,
 		name: profile?.name || (key ? entityHashLabel(key) : '?'),
 		handle: profile?.handle || null,
 		themeColor: profile?.themeColor || '',
@@ -110,15 +116,34 @@ export function normalizeEntityProfile(profile, entityHash) {
 }
 
 /**
- * 设置共享人物卡的嵌入模式；资料弹窗、资料页和编辑预览使用同一份结构。
+ * 克隆共享人物卡 DOM（`hub/profile_popup`）；不经 `usingTemplates`，跨壳安全。
+ * @param {'popup'|'embedded'|'preview'|'hover'} [mode='popup'] 使用场景
+ * @returns {Promise<HTMLElement>} 人物卡根节点
+ */
+export async function createEntityProfileCardElement(mode = 'popup') {
+	ensureEntityProfileCardStyles()
+	if (!cachedProfilePopupTemplateHtml) {
+		const response = await fetch(PROFILE_POPUP_TEMPLATE_URL)
+		if (!response.ok) throw new Error(`profile_popup template HTTP ${response.status}`)
+		cachedProfilePopupTemplateHtml = await response.text()
+	}
+	const root = createDOMFromHtmlString(cachedProfilePopupTemplateHtml)
+	if (!(root instanceof HTMLElement)) throw new Error('profile_popup template root missing')
+	configureEntityProfileCard(root, mode)
+	return root
+}
+
+/**
+ * 设置共享人物卡的嵌入模式；悬停、弹窗、资料页和编辑预览使用同一份结构。
  * @param {HTMLElement} root 人物卡根节点
- * @param {'popup'|'embedded'|'preview'} mode 使用场景
+ * @param {'popup'|'embedded'|'preview'|'hover'} mode 使用场景
  * @returns {void}
  */
 export function configureEntityProfileCard(root, mode = 'popup') {
 	if (!(root instanceof HTMLElement)) return
 	root.classList.toggle('entity-profile-card--embedded', mode === 'embedded')
 	root.classList.toggle('entity-profile-card--preview', mode === 'preview')
+	root.classList.toggle('entity-profile-card--hover', mode === 'hover')
 	if (mode === 'popup') return
 	root.querySelector('[data-profile-popup-close]')?.remove()
 	for (const button of root.querySelectorAll('[data-profile-popup-edit], [data-profile-popup-care], [data-profile-popup-alias], [data-profile-popup-dm], [data-profile-popup-social]'))

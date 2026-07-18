@@ -1,22 +1,29 @@
 /**
  * 【文件】public/hub/presence.mjs
  * 【职责】成员/作者 presence 与资料浮层：头像 hydration、悬停资料卡、状态点与资料 API 缓存。
- * 【原理】`applyAvatarsTo`、`bindHoverCardAnchor`、`showHoverCardFor` 驱动消息行与成员列表头像/卡片。`hydrateAuthorLabels` 在消息重绘后补齐作者展示名；不生成气泡主体结构。
+ * 【原理】`applyAvatarsTo`、`bindHoverCardAnchor`、`showHoverCardFor` 驱动消息行与成员列表头像/卡片。
+ * 悬停卡走共享 `entityProfileHoverCard`（与点击弹层同一 `paintEntityProfileCard`）；消息区仅文档委托 `wireEntityProfileHover`，避免头像与作者名双重 bind 叠卡。`hydrateAuthorLabels` 在消息重绘后补齐作者展示名。
  * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
- * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup
+ * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup、shared/entityProfileHoverCard
  */
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
 import { aliasForEntity } from '../shared/aliases.mjs'
 import { deriveMessageAttribution } from '../shared/attribution.mjs'
 import { isEntityHash128 } from '../shared/entityHash.mjs'
-import { customProfileAvatar } from '../shared/hashAvatar.mjs'
+import {
+	bindEntityProfileHoverAnchor,
+	hideEntityProfileHoverCard,
+	showEntityProfileHoverCard,
+	wireEntityProfileHover,
+} from '../shared/entityProfileHoverCard.mjs'
+import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import {
 	cachedProfileFromApi,
 	fetchEntityProfileApi,
 } from '../src/entityProfileApi.mjs'
 
-import { applyProfileAvatarToHost, paintHashAvatarHost } from './core/avatarCover.mjs'
+import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import {
 	authorDisplayLabel,
 	authorPresentationKeys,
@@ -66,12 +73,12 @@ export function applyStatusDot(el, status) {
 export async function applyBioElement(bioElement, bio, entityHash = '', options = {}) {
 	if (!bioElement) return
 	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
-	const { store } = await import('./core/state.mjs')
+	const { store: hubStore } = await import('./core/state.mjs')
 	await paintEntityProfileBio(bioElement, bio, entityHash, {
-		selfEntityHash: store.viewer?.viewerEntityHash,
-		nodeHash: store.viewer?.nodeHash,
+		selfEntityHash: hubStore.viewer?.viewerEntityHash,
+		nodeHash: hubStore.viewer?.nodeHash,
 		authorOwnerEntityHash: options.ownerEntityHash,
-		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
+		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
 	})
 }
 
@@ -99,7 +106,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
 	if (!entityHash || !isEntityHash128(entityHash)) return null
 	const key = String(entityHash).toLowerCase()
 	const cacheKey = options.groupId ? `${key}:${options.groupId}` : key
-	if (options.bypassCache) 
+	if (options.bypassCache)
 		try {
 			const data = await fetchEntityProfileApi(key, options.groupId)
 			return cachedProfileFromApi(data?.profile, key)
@@ -107,7 +114,7 @@ export async function fetchUserProfile(entityHash, options = {}) {
 		catch {
 			return null
 		}
-	
+
 	return loadProfileCached(cacheKey)
 }
 
@@ -161,21 +168,56 @@ export function invalidateUserProfileCache(entityHash) {
 }
 
 /**
+ * @param {string} authorKey 发送者键
+ * @param {HTMLElement} [anchorElement] 锚点（优先走 resolveEntityFromAnchor）
+ * @returns {Promise<object | null>} hover 卡选项
+ */
+async function hoverOptionsForAuthor(authorKey, anchorElement) {
+	const entity = anchorElement instanceof HTMLElement
+		? await resolveEntityFromAnchor(anchorElement)
+		: null
+	const profileKey = entity?.entityHash
+		|| authorPresentationKeys(authorKey).profileKey
+		|| String(authorKey || '').trim()
+	if (!profileKey) return null
+	const groupId = store.context.currentGroupId || undefined
+	const fallbackName = entity?.displayName
+		|| authorPresentationKeys(authorKey).displayName
+		|| profileKey
+	const resolvedEntityHash = entity?.entityHash || null
+	/**
+	 * @returns {Promise<object|null>} 缓存资料
+	 */
+	function loadProfile() {
+		return resolvedEntityHash
+			? fetchUserProfile(resolvedEntityHash, { groupId })
+			: fetchAuthorProfile(profileKey, { groupId })
+	}
+	return {
+		cacheKey: resolvedEntityHash || authorKey || profileKey,
+		entityHash: resolvedEntityHash || (isEntityHash128(profileKey) ? profileKey : null),
+		displayName: fallbackName,
+		groupId,
+		loadProfile,
+		paintOptions: {
+			selfEntityHash: store.viewer?.viewerEntityHash,
+			nodeHash: store.viewer?.nodeHash,
+			viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
+		},
+		attribution: entity?.attribution || null,
+	}
+}
+
+/**
  * 为元素绑定悬停显示资料卡的行为。
  * @param {HTMLElement} el 锚点元素
  * @param {() => string|null|undefined} getUname 返回当前关联用户名的函数
  * @returns {void}
  */
 export function bindHoverCardAnchor(el, getUname) {
-	if (!el || el.dataset.hoverBound) return
-	el.dataset.hoverBound = '1'
-	el.addEventListener('mouseenter', () => {
+	bindEntityProfileHoverAnchor(el, async () => {
 		const uname = getUname()
-		if (uname) showHoverCardFor(uname, el)
-	})
-	el.addEventListener('mouseleave', (e) => {
-		if (hoverCard?.contains(e.relatedTarget)) return
-		hideHoverCard()
+		return uname ? hoverOptionsForAuthor(uname, el) : null
 	})
 }
 
@@ -185,11 +227,11 @@ export function bindHoverCardAnchor(el, getUname) {
  * @returns {void}
  */
 export function applyAvatarsTo(rootElement) {
+	// 悬停卡由 wirePresenceInteractions → wireEntityProfileHover 文档委托，勿再 per-element bind（头像↔名字切换会叠卡）
 	rootElement.querySelectorAll('[data-avatar-for]').forEach((av) => {
 		const authorKey = av.dataset.avatarFor
 		if (!authorKey) return
 		const { profileKey } = authorPresentationKeys(authorKey)
-		bindHoverCardAnchor(av, () => av.dataset.avatarFor)
 		if (av.dataset.avatarLoaded) return
 		av.dataset.avatarLoaded = '1'
 		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then((profile) => {
@@ -203,14 +245,11 @@ export function applyAvatarsTo(rootElement) {
 					profileName: profile.name,
 					fallbackLabel: authorDisplayLabel(authorKey),
 				}),
-				avatar: customProfileAvatar(profile),
+				avatar: displayProfileAvatar(profile),
 			})
 			const dot = av.closest('.member-avatar-wrap, .avatar-wrap')?.querySelector('.status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})
-	})
-	rootElement.querySelectorAll('.message-author, .system-author').forEach((au) => {
-		bindHoverCardAnchor(au, () => au.dataset.authorKey || au.textContent.trim())
 	})
 	void hydrateAuthorLabels(rootElement)
 }
@@ -242,11 +281,6 @@ export async function hydrateAuthorLabels(rootElement) {
 	await Promise.all(tasks)
 }
 
-// ============ Profile hover card ============
-
-const hoverCard = document.getElementById('profile-hover-card')
-let hoverCardHideTimer = null
-
 /**
  * 在鼠标锚点附近展示用户资料悬浮卡并异步加载信息。
  * @param {string} authorKey 发送者键（pubKeyHash / entityHash / 角色名）
@@ -254,81 +288,12 @@ let hoverCardHideTimer = null
  * @returns {Promise<void>}
  */
 export async function showHoverCardFor(authorKey, anchorElement) {
-	if (!authorKey || !hoverCard) return
-	clearTimeout(hoverCardHideTimer)
-	if (hoverCard.classList.contains('show') && hoverCard.dataset.uname === authorKey) return
-	hoverCard.dataset.uname = authorKey
-	const rect = anchorElement.getBoundingClientRect()
-	let left = rect.right + 8
-	let {top} = rect
-	if (left + 280 > window.innerWidth) left = rect.left - 288
-	if (top + 320 > window.innerHeight) top = window.innerHeight - 330
-	if (top < 8) top = 8
-	hoverCard.style.left = left + 'px'
-	hoverCard.style.top = top + 'px'
-
-	const { displayName, profileKey } = authorPresentationKeys(authorKey)
-	const hoverCardName = document.getElementById('hover-card-name')
-	const hoverCardStatusText = document.getElementById('hover-card-status-text')
-	const hoverCardStatusDot = document.getElementById('hover-card-status-dot')
-	const hoverCardAvatar = document.getElementById('hover-card-avatar')
-	const hoverCardBio = document.getElementById('hover-card-bio')
-	if (hoverCardAvatar instanceof HTMLElement)
-		paintHashAvatarHost(hoverCardAvatar, {
-			seed: profileKey,
-			label: displayName,
-			letterId: 'hover-card-avatar-letter',
-		})
-	if (hoverCardAvatar instanceof HTMLElement)
-		hoverCardAvatar.dataset.uname = authorKey
-	if (hoverCardName) hoverCardName.textContent = displayName
-	if (hoverCardStatusText) hoverCardStatusText.textContent = ''
-	applyStatusDot(hoverCardStatusDot, 'offline')
-	if (hoverCardBio) hoverCardBio.dataset.i18n = 'chat.hub.loading'
-	hoverCard.classList.add('show')
-
-	const profile = await fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined })
-	if (hoverCardAvatar?.dataset.uname !== authorKey) return
-	if (profile) {
-		const resolvedName = resolveDisplayName({
-			entityHash: profileKey,
-			alias: aliasForEntity(profileKey),
-			profileName: profile.name,
-			fallbackLabel: displayName,
-		})
-		if (hoverCardName) hoverCardName.textContent = resolvedName
-		if (hoverCardAvatar instanceof HTMLElement)
-			await applyProfileAvatarToHost(hoverCardAvatar, {
-				seed: profileKey,
-				label: resolvedName,
-				avatar: customProfileAvatar(profile),
-				emojiFontSize: '32px',
-				letterId: 'hover-card-avatar-letter',
-			})
-		applyStatusDot(hoverCardStatusDot, profile.status)
-		if (hoverCardStatusText)
-			hoverCardStatusText.textContent = await formatStatusLabel(profile.status, profile.customStatus)
-		const { profileDescriptionText } = await import('./entityProfile.mjs')
-		await applyBioElement(hoverCardBio, profileDescriptionText(profile), profileKey, {
-			ownerEntityHash: profile.ownerEntityHash,
-		})
-	}
-	else
-		await applyBioElement(hoverCardBio, '')
+	const options = await hoverOptionsForAuthor(authorKey, anchorElement)
+	if (options) await showEntityProfileHoverCard(anchorElement, options)
 }
 
-/**
- * 延迟隐藏 hover 资料卡。
- * @returns {void}
- */
-export function hideHoverCard() {
-	if (!hoverCard) return
-	clearTimeout(hoverCardHideTimer)
-	hoverCardHideTimer = setTimeout(() => {
-		hoverCard.classList.remove('show')
-		delete hoverCard.dataset.uname
-	}, 220)
-}
+/** @type {typeof hideEntityProfileHoverCard} */
+export const hideHoverCard = hideEntityProfileHoverCard
 
 /**
  * 从事件目标元素解析应关联的用户名。
@@ -336,17 +301,12 @@ export function hideHoverCard() {
  * @returns {string|null} 有效用户名；无法解析则为 null
  */
 function getAnchorUsername(target) {
-	if (!target) return null
+	if (!(target instanceof HTMLElement)) return null
 	let uname = target.dataset?.avatarFor
 	if (!uname)
 		if (target.classList?.contains('message-author') || target.classList?.contains('system-author'))
 			uname = target.dataset.authorKey || target.textContent?.trim()
 	return uname && uname !== '?' ? uname : null
-}
-
-if (hoverCard) {
-	hoverCard.addEventListener('mouseenter', () => clearTimeout(hoverCardHideTimer))
-	hoverCard.addEventListener('mouseleave', hideHoverCard)
 }
 
 const PROFILE_CLICK_SKIP = '.message-actions, .trust-author-button, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
@@ -356,18 +316,13 @@ const PROFILE_CLICK_SKIP = '.message-actions, .trust-author-button, .block-autho
  * @returns {void}
  */
 export function wirePresenceInteractions() {
-	document.addEventListener('mouseover', (event) => {
-		const target = event.target.closest('[data-avatar-for], .message-author, .system-author')
-		if (!target || target.contains(event.relatedTarget)) return
-		const uname = getAnchorUsername(target)
-		if (uname) showHoverCardFor(uname, target)
-	})
-	document.addEventListener('mouseout', (event) => {
-		const target = event.target.closest('[data-avatar-for], .message-author, .system-author')
-		if (!target || target.contains(event.relatedTarget)) return
-		if (hoverCard?.contains(event.relatedTarget)) return
-		hideHoverCard()
-	})
+	wireEntityProfileHover(
+		'[data-avatar-for], .message-author, .system-author',
+		(target) => {
+			const uname = getAnchorUsername(target)
+			return uname ? hoverOptionsForAuthor(uname, target) : null
+		},
+	)
 
 	document.addEventListener('click', event => {
 		if (event.target.closest(PROFILE_CLICK_SKIP)) return

@@ -30,8 +30,8 @@ export function visibilityDisplay(visibility, minFollowMs = 0) {
 		followers: { icon: 'lock', labelKey: 'social.visibility.followers' },
 		followers_7d: { icon: 'lock', labelKey: 'social.visibility.followers7d' },
 		followers_30d: { icon: 'lock', labelKey: 'social.visibility.followers30d' },
-		selected: { icon: 'lock', labelKey: 'social.visibility.selected' },
-		private: { icon: 'lock', labelKey: 'social.visibility.private' },
+		selected: { icon: 'selected', labelKey: 'social.visibility.selected' },
+		private: { icon: 'private', labelKey: 'social.visibility.private' },
 	}
 	const row = map[code] || map.public
 	return { code, ...row }

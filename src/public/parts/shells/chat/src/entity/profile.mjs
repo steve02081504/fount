@@ -5,6 +5,7 @@ import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_man
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
+import { resolveAgentCharPartNameForUser } from './agentHost.mjs'
 import { profileAvatarFileUrl, profileBannerFileUrl } from './filesUrl.mjs'
 import {
 	applyAvatarToAllLocales,
@@ -276,11 +277,15 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 		infoDefaults = { name: `${parsed.subjectHash.slice(0, 8)}…${parsed.subjectHash.slice(-4)}`, avatar: '', description: '', description_markdown: '', version: '', author: '', home_page: '', issue_page: '', tags: [], links: [] }
 
 	const resolved = resolveProfilePresentation(merged, locales, infoDefaults)
+	const charPartName = replicaUsername
+		? resolveAgentCharPartNameForUser(replicaUsername, parsed.entityHash)
+		: null
 	return {
 		...merged,
 		...resolved,
 		infoDefaults,
 		localeKeys: Object.keys(merged.localized),
+		charPartName: charPartName || null,
 	}
 }
 

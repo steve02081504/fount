@@ -15,7 +15,7 @@ import { applyTheme } from '../../../scripts/theme/index.mjs'
 import { openHubProfileEdit } from '../hub/profileEdit.mjs'
 import { formatEntityAtId } from '../shared/entityHash.mjs'
 import {
-	configureEntityProfileCard,
+	createEntityProfileCardElement,
 	paintEntityProfileCard,
 } from '../shared/entityProfileCard.mjs'
 import { avatarInitial } from '../shared/hashAvatar.mjs'
@@ -76,9 +76,8 @@ async function init() {
 	applyTheme()
 	await initTranslations('profile')
 	const profileCardHost = document.getElementById('profile-card-host')
-	const profileCard = await renderTemplate('hub/profile_popup', {})
-	if (profileCard instanceof HTMLElement && profileCardHost) {
-		configureEntityProfileCard(profileCard, 'embedded')
+	const profileCard = await createEntityProfileCardElement('embedded')
+	if (profileCardHost) {
 		profileCardHost.appendChild(profileCard)
 		currentProfileCard = profileCard
 	}

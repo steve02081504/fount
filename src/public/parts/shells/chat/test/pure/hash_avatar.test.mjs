@@ -39,10 +39,18 @@ Deno.test('hashAvatar: avatarInitial uses first letter', () => {
 	assertEquals(avatarInitial(''), '?')
 })
 
-Deno.test('customProfileAvatar ignores inherited part avatar', () => {
+Deno.test('customProfileAvatar returns trimmed avatar as-is', () => {
 	const inherited = 'https://example.test/default.svg'
-	assertEquals(customProfileAvatar({ avatar: inherited, infoDefaults: { avatar: inherited } }), '')
+	assertEquals(customProfileAvatar({ avatar: inherited, infoDefaults: { avatar: inherited } }), inherited)
 	assertEquals(customProfileAvatar({ avatar: '/profile/avatar', infoDefaults: { avatar: inherited } }), '/profile/avatar')
+	assertEquals(customProfileAvatar({ avatar: '  🧪  ' }), '🧪')
+	assertEquals(customProfileAvatar({ avatar: '' }), '')
+})
+
+Deno.test('displayProfileAvatar matches customProfileAvatar', async () => {
+	const { displayProfileAvatar } = await import('fount/public/parts/shells/chat/public/shared/hashAvatar.mjs')
+	assertEquals(displayProfileAvatar({ avatar: 'https://example.test/a.png' }), 'https://example.test/a.png')
+	assertEquals(displayProfileAvatar({}), '')
 })
 
 Deno.test('entityProfilePattern is stable and varies by identity', () => {
@@ -77,19 +85,20 @@ Deno.test('isAvatarImageUrl distinguishes URL from emoji avatar', async () => {
 	assertEquals(isAvatarImageUrl('🤖'), false)
 })
 
-Deno.test('entityAvatarUrl only returns custom avatars', async () => {
+Deno.test('entityAvatarUrl returns profile.avatar as-is', async () => {
 	const { entityAvatarUrl } = await import('fount/public/parts/shells/chat/public/shared/entityAvatar.mjs')
 	const hash = 'c'.repeat(128)
 	assertEquals(entityAvatarUrl(hash, { avatar: '', infoDefaults: { avatar: 'https://example.test/d.svg' } }), '')
 	assertEquals(entityAvatarUrl(hash, {
 		avatar: 'https://example.test/d.svg',
 		infoDefaults: { avatar: 'https://example.test/d.svg' },
-	}), '')
+	}), 'https://example.test/d.svg')
+	assertEquals(entityAvatarUrl(hash, { avatar: '🧪' }), '🧪')
 	assertEquals(entityAvatarUrl(hash, { avatar: '/api/parts/shells:chat/entities/x/files/profile/avatar' }),
 		'/api/parts/shells:chat/entities/x/files/profile/avatar')
 })
 
-Deno.test('renderAvatarHtml uses letter when no custom avatar', async () => {
+Deno.test('renderAvatarHtml uses letter when avatar empty', async () => {
 	const { renderAvatarHtml } = await import('fount/public/parts/shells/chat/public/shared/entityAvatar.mjs')
 	const hash = 'd'.repeat(128)
 	const html = renderAvatarHtml(hash, { name: 'steve' })

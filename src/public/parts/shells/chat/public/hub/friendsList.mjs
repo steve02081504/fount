@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/friendsList.mjs
  * 【职责】好友模式侧栏：拉取好友列表 API、渲染好友列与角色/用户会话入口。
- * 【原理】`renderFriendsColumn` 填充 `#friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。
+ * 【原理】`renderFriendsColumn` 填充 `#friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。悬停走共享 `entityProfileHoverCard`（与消息一致），不用 native `title` tip / 主栏 `renderCharInfoCard` 预览。
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
  */
@@ -13,17 +13,21 @@ import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { confirmI18n, geti18n } from '../../../../scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
-import { formatEntityAtId } from '../shared/entityHash.mjs'
+import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
+import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
+import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { promptText } from '../shared/promptText.mjs'
 
-import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
+import { getCharDetails } from './charCard.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { positionContextMenu } from './core/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
+import { charAgentEntityHash } from './entityResolve.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
 import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
+import { fetchAuthorProfile } from './presence.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
 import { loadGroups } from './serverBar.mjs'
 
@@ -48,7 +52,57 @@ import { loadGroups } from './serverBar.mjs'
  * @property {string} [alias]
  * @property {string} [name]
  * @property {string} [activePubKeyHex]
+ * @property {string} [avatar]
  */
+
+/**
+ * @returns {object} 悬停卡 paintOptions
+ */
+function friendHoverPaintOptions() {
+	return {
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
+	}
+}
+
+/**
+ * @param {HTMLElement} el 锚点
+ * @param {{ entityHash?: string, displayName: string, groupId?: string, charname?: string }} target 目标
+ * @returns {void}
+ */
+function bindFriendProfileHover(el, target) {
+	bindEntityProfileHoverAnchor(el, async () => {
+		let entityHash = String(target.entityHash || '').trim().toLowerCase()
+		if (!isEntityHash128(entityHash) && target.charname)
+			entityHash = String(await charAgentEntityHash(target.charname) || '').toLowerCase()
+		if (!isEntityHash128(entityHash)) return null
+		return {
+			cacheKey: entityHash,
+			entityHash,
+			displayName: target.displayName,
+			groupId: target.groupId || undefined,
+			paintOptions: friendHoverPaintOptions(),
+		}
+	})
+}
+
+/**
+ * @param {string} seed 头像色种子
+ * @param {string} label 展示名
+ * @param {string} [avatarUrl] 头像 URL
+ * @returns {{ avatarBg: string, avatarTextColor: string, avatarInner: string }} 头像模板字段
+ */
+function avatarTemplateFields(seed, label, avatarUrl = '') {
+	const url = String(avatarUrl || '').trim()
+	return {
+		avatarBg: avatarColor(seed),
+		avatarTextColor: avatarTextColor(seed),
+		avatarInner: url
+			? `<img src="${escapeHtml(url)}" alt="" class="char-list-avatar-img" />`
+			: escapeHtml(avatarInitial(label)),
+	}
+}
 
 /**
  * @returns {Promise<FriendRow[]>} 已绑定好友私聊的侧栏行
@@ -109,33 +163,39 @@ async function friendRowTemplateData(friend, details) {
 			: friend.displayName,
 		fallbackLabel: friend.charname || friend.groupId,
 	})
-	if (!friend.charname)
+	if (!friend.charname) {
+		const seed = friend.key || friend.groupId
 		return {
 			kind: 'dm',
 			name: friend.groupId,
 			groupId: friend.groupId,
+			entityHash: isEntityHash128(friend.key) ? friend.key : '',
 			displayName,
 			subtitle,
 			activeClass: active ? ' active' : '',
-			avatarBg: avatarColor(friend.key),
-			avatarTextColor: avatarTextColor(friend.key),
-			avatarInner: escapeHtml(avatarInitial(displayName)),
+			...avatarTemplateFields(seed, displayName),
 		}
+	}
 
-	const info = details?.info || {}
-	const avatarUrl = info.avatar || details?.avatar || ''
+	const entityHash = friend.key || await charAgentEntityHash(friend.charname)
+	const profile = entityHash
+		? await fetchAuthorProfile(entityHash)
+		: null
+	const resolvedName = resolveDisplayName({
+		entityHash: entityHash || friend.key,
+		alias: aliasForEntity(entityHash || friend.key),
+		profileName: profile?.name || details?.info?.name || friend.displayName,
+		fallbackLabel: friend.charname || friend.groupId,
+	})
 	return {
 		kind: 'char',
 		name: friend.charname,
 		groupId: friend.groupId,
-		displayName,
+		entityHash: entityHash || '',
+		displayName: resolvedName,
 		subtitle,
 		activeClass: active ? ' active' : '',
-		avatarBg: avatarColor(friend.key),
-		avatarTextColor: avatarTextColor(friend.key),
-		avatarInner: avatarUrl
-			? `<img src="${escapeHtml(avatarUrl)}" alt="" class="char-list-avatar-img" />`
-			: escapeHtml(avatarInitial(displayName)),
+		...avatarTemplateFields(entityHash || friend.key, resolvedName, displayProfileAvatar(profile)),
 	}
 }
 
@@ -275,12 +335,12 @@ export async function renderFriendsColumn(friends) {
 		if (!row) return
 		el.addEventListener('click', () => void enterFriendChat({ groupId: row.groupId, binding: row.binding }))
 		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
-		if (row.charname)
-			el.addEventListener('mouseenter', async () => {
-				if (store.privateGroup.groupId) return
-				const details = await getCharDetails(row.charname)
-				await renderCharInfoCard(row.charname, details)
-			})
+		bindFriendProfileHover(el, {
+			entityHash: row.key,
+			displayName: row.displayName,
+			groupId: row.groupId,
+			charname: row.charname,
+		})
 	})
 }
 
@@ -310,10 +370,27 @@ async function searchLocalChars(q) {
 			charname: name,
 			label: displayName || name,
 			subtitle: displayName && displayName !== name ? name : geti18n('chat.hub.friendsSearchLocalChar'),
+			avatar: String(details?.info?.avatar || '').trim() || undefined,
 		})
 		if (hits.length >= 20) break
 	}
 	return hits
+}
+
+/**
+ * 为搜索命中补齐 entityHash / 头像（char 优先拉 profile）。
+ * @param {FriendsSearchHit} hit 命中
+ * @returns {Promise<FriendsSearchHit>} 补齐后的命中
+ */
+async function enrichFriendsSearchHit(hit) {
+	if (hit.kind === 'char' && hit.charname && !isEntityHash128(hit.entityHash))
+		hit.entityHash = await charAgentEntityHash(hit.charname) || hit.entityHash
+	if (hit.kind === 'char' && isEntityHash128(hit.entityHash) && !hit.avatar) {
+		const profile = await fetchAuthorProfile(hit.entityHash)
+		hit.avatar = displayProfileAvatar(profile) || hit.avatar
+		if (profile?.name && !hit.name) hit.name = profile.name
+	}
+	return hit
 }
 
 /**
@@ -323,12 +400,20 @@ async function searchLocalChars(q) {
  */
 async function appendFriendsSearchHit(hit, resultsHost) {
 	const isChar = hit.kind === 'char'
+	const seed = hit.entityHash || hit.charname || hit.label
 	const row = await renderTemplate('hub/friends/search_row', {
 		label: escapeHtml(hit.label),
 		handle: escapeHtml(hit.subtitle),
 		showPin: isChar ? '' : '1',
 		actionI18n: isChar ? 'chat.hub.friendsSearchChat' : 'chat.hub.friendsSearchDm',
+		...avatarTemplateFields(seed, hit.label, isChar ? hit.avatar : ''),
 	})
+	if (isChar || isEntityHash128(hit.entityHash))
+		bindFriendProfileHover(row, {
+			entityHash: hit.entityHash,
+			displayName: hit.label,
+			charname: hit.charname,
+		})
 	if (!isChar)
 		row.querySelector('[data-pin]')?.addEventListener('click', () => {
 			void (async () => {
@@ -452,6 +537,7 @@ async function runFriendsEntitySearch(input, resultsHost) {
 		}))
 		return
 	}
+	await Promise.all(hits.map(enrichFriendsSearchHit))
 	for (const hit of hits)
 		await appendFriendsSearchHit(hit, resultsHost)
 }

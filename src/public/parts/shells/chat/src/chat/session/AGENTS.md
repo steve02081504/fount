@@ -66,6 +66,7 @@ alwaysApply: false
 ## Greeting
 
 - `insertCharGreeting` / world greeting: skip outright when `GetGreeting` / `GetGroupGreeting` is missing — don't assume the hook always exists.
+- Keep `timeSlice.greeting_type` on greeting entries (also mirror to `extension.greetingType` / `isGreeting`). Deleting it breaks `modifyTimeLine` re-roll and `greetingLog` persistence.
 - When the group already has other entries, `greeting_type=group` prefers `GetGroupGreeting`, falling back to `GetGreeting`.
 - `bindWorld` greeting resolves the world per `channelId` via `resolveWorld`; don't just read `LastTimeSlice.world` (that only reflects the default channel).
 - Integration test fixtures may skip implementing greeting; reuse `test/fixtures/chars|worlds/*` when one is needed.

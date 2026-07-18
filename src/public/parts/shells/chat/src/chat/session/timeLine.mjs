@@ -65,13 +65,20 @@ export async function modifyTimeLine(groupId, channelId, delta) {
 	if (newTimeLineIndex >= chatMetadata.timeLines.length) {
 		const previousEntry = chatMetadata.chatLog[chatMetadata.chatLog.length - 1]
 		const timeSlice = previousEntry.extension.timeSlice
-		const { greeting_type } = timeSlice
+		const greeting_type = timeSlice.greeting_type
+			|| previousEntry.extension?.greetingType
+			|| (previousEntry.extension?.isGreeting ? 'single' : undefined)
 
 		const newEntry = new chatLogEntry_t()
 		newEntry.id = crypto.randomUUID()
 		newEntry.extension.timeSlice = timeSlice.copy()
-		newEntry.extension.timeSlice.greeting_type = greeting_type
+		if (greeting_type)
+			newEntry.extension.timeSlice.greeting_type = greeting_type
 		newEntry.extension.timeSlice.charname = timeSlice.charname
+		if (previousEntry.extension?.isGreeting || greeting_type) {
+			newEntry.extension.isGreeting = true
+			newEntry.extension.greetingType = greeting_type
+		}
 
 		newEntry.role = previousEntry.role
 		newEntry.name = previousEntry.name

@@ -739,6 +739,47 @@ body[data-surface="discovery"] .main-header {
 	background: var(--bg-main);
 }
 
+.friends-search-hit {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 6px 8px;
+	border-radius: var(--radius-md);
+	background: var(--overlay-subtle);
+}
+
+.friends-search-hit .char-list-avatar {
+	width: 32px;
+	height: 32px;
+	font-size: 13px;
+}
+
+.friends-search-hit-meta {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.friends-search-hit-label {
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.3;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.friends-search-hit-sub {
+	font-size: 11px;
+	line-height: 1.3;
+	color: var(--text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .friends-list-body .side-muted {
 	padding: 14px 12px;
 	text-align: center;

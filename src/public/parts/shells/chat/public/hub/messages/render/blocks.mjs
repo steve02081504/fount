@@ -1,14 +1,11 @@
 /**
  * 【文件】public/hub/messages/render/blocks.mjs
- * 【职责】特殊内容块：解密占位、贴纸、群邀请、引用条。
+ * 【职责】特殊内容块：解密占位、贴纸、群邀请、语义引用气泡。
  */
 import { renderTemplateAsHtmlString } from '../../../../../../scripts/features/template.mjs'
 import { resolveEmojiUrlBestEffort } from '../../../src/emojiCache.mjs'
 import { buildInviteJoinShareUrl } from '../../../src/inviteQr.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import {
-	resolveDisplayParentEventIdFromMap,
-} from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys } from '../../core/domUtils.mjs'
 import { store } from '../../core/state.mjs'
 
@@ -88,42 +85,30 @@ export async function renderGroupInviteBlock(message) {
 }
 
 /**
+ * 仅在语义 `content.replyTo` 存在时渲染引用气泡；不把 DAG `prev_event_ids` 画成引用条。
  * @param {object} message 消息行
  * @param {Map<string, object>} messagesByEventId 页级 eventId→行
- * @returns {Promise<string>} 引用条 / quote 气泡 HTML
+ * @returns {Promise<string>} quote 气泡 HTML
  */
 export async function renderMessageRefBlockHtml(message, messagesByEventId) {
 	const replyTo = message?.content?.replyTo
-	if (replyTo?.eventId) {
-		const eventId = String(replyTo.eventId).trim().toLowerCase()
-		const parent = messagesByEventId?.get(eventId)
-		let author = String(replyTo.senderName || '').trim()
-		let previewText = String(replyTo.preview || '').trim()
-		if (parent) {
-			if (!author) {
-				const keys = authorPresentationKeys(parent.charId ?? parent.sender ?? '?')
-				author = parent.content?.displayName || keys.displayName
-			}
-			if (!previewText)
-				previewText = getMessageText(parent).replace(/\s+/g, ' ').trim().slice(0, 120)
+	if (!replyTo?.eventId) return ''
+	const eventId = String(replyTo.eventId).trim().toLowerCase()
+	const parent = messagesByEventId?.get(eventId)
+	let author = String(replyTo.senderName || '').trim()
+	let previewText = String(replyTo.preview || '').trim()
+	if (parent) {
+		if (!author) {
+			const keys = authorPresentationKeys(parent.charId ?? parent.sender ?? '?')
+			author = parent.content?.displayName || keys.displayName
 		}
-		return renderTemplateAsHtmlString('hub/messages/quote_block', {
-			parentEventId: escapeHtml(eventId),
-			author: escapeHtml(author || '…'),
-			preview: escapeHtml(previewText || '…'),
-		})
+		if (!previewText)
+			previewText = getMessageText(parent).replace(/\s+/g, ' ').trim().slice(0, 120)
 	}
-
-	const parentId = resolveDisplayParentEventIdFromMap(message, messagesByEventId)
-	if (!parentId) return ''
-	const parent = messagesByEventId.get(String(parentId).toLowerCase())
-	if (!parent) return ''
-	const { displayName } = authorPresentationKeys(parent.charId ?? parent.sender ?? '?')
-	const preview = escapeHtml(getMessageText(parent).replace(/\s+/g, ' ').trim().slice(0, 120) || '…')
-	return renderTemplateAsHtmlString('hub/messages/ref_block', {
-		parentEventId: escapeHtml(String(parentId)),
-		author: escapeHtml(displayName),
-		preview,
+	return renderTemplateAsHtmlString('hub/messages/quote_block', {
+		parentEventId: escapeHtml(eventId),
+		author: escapeHtml(author || '…'),
+		preview: escapeHtml(previewText || '…'),
 	})
 }
 
@@ -135,7 +120,7 @@ export function wireMessageRefBlocks(container) {
 	if (container.dataset.refBlocksWired === '1') return
 	container.dataset.refBlocksWired = '1'
 	container.addEventListener('click', event => {
-		const ref = event.target.closest('.message-ref[data-parent-event-id], .message-quote[data-parent-event-id]')
+		const ref = event.target.closest('.message-quote[data-parent-event-id]')
 		if (!ref) return
 		const parentId = ref.getAttribute('data-parent-event-id')
 		if (!parentId) return

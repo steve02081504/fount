@@ -282,6 +282,8 @@
 						"src/public/parts/shells/chat/public/hub/profileEdit.mjs",
 						"src/public/parts/shells/chat/public/hub/entityProfile.mjs",
 						"src/public/parts/shells/chat/public/shared/entityProfileCard.*",
+						"src/public/parts/shells/chat/public/shared/entityProfileHoverCard.mjs",
+						"src/public/parts/shells/chat/public/shared/entityProfilePopup.mjs",
 						"src/public/parts/shells/chat/public/shared/profileEdit.css",
 						"src/public/parts/shells/chat/public/src/entityProfileApi.mjs",
 						"src/public/parts/shells/chat/public/src/profileLocaleEditor.mjs",

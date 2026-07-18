@@ -17,6 +17,7 @@ import {
 import { SOCIAL_GATE } from './gate.mjs'
 import { chatApi } from './lib/apiClient.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
+import { wireSocialProfileHover } from './lib/profileHover.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
@@ -234,6 +235,7 @@ export async function bootstrap() {
 		initSearchView()
 		initTopicView()
 		initLiveBroadcastView()
+		wireSocialProfileHover()
 
 		// 视频视图键盘导航
 		document.getElementById('videosView')?.addEventListener('keydown', handleVideoKeydown)

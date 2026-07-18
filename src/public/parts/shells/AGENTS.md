@@ -33,3 +33,8 @@ alwaysApply: false
 **Example**: `src/public/parts/shells/shellassist/`.
 **Chat**: [entity model / ChatClient](chat/public/AGENTS.md), [Hub UI](chat/public/hub/AGENTS.md).
 **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
+
+## Relative import depth traps
+
+- Files under `shells/<bot>/src/*.mjs` reach `src/scripts` / `src/server` / sibling `shells/chat` with **5** `../` (e.g. `../../../../../scripts/i18n/bare.mjs`, `../../chat/...`).
+- Files under `shells/<bot>/src/default_interface/*.mjs` are one level deeper — need **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to the chat shell. Copy-pasting bot.mjs import paths into `default_interface/` silently resolves to `src/public/scripts/...` or `shells/<bot>/chat/...` and breaks char Load.

@@ -7,7 +7,8 @@
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { uploadAvatar, uploadBanner } from '../profile/src/endpoints.mjs'
+import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { rebuildProfileFromPart, uploadAvatar, uploadBanner } from '../profile/src/endpoints.mjs'
 import {
 	configureEntityProfileCard,
 	paintEntityProfileCard,
@@ -79,6 +80,9 @@ async function ensureEditDialog() {
 	editDialog.querySelector('#profile-edit-cancel')?.addEventListener('click', () => editDialog?.close())
 	editDialog.querySelector('#profile-edit-close')?.addEventListener('click', () => editDialog?.close())
 	editDialog.querySelector('#profile-edit-save')?.addEventListener('click', () => { void handleSaveProfile() })
+	editDialog.querySelector('#profile-edit-reset-from-part')?.addEventListener('click', () => {
+		void handleResetFromPart()
+	})
 	editDialog.querySelector('#profile-edit-avatar-upload')?.addEventListener('change', (event) => {
 		const file = event.target?.files?.[0]
 		if (!file) return
@@ -378,9 +382,33 @@ function initEditState(entityHash, profile) {
 	const theme = editDialog?.querySelector('#profile-edit-theme-color')
 	if (theme instanceof HTMLInputElement)
 		theme.value = profile.themeColor || '#5865f2'
+	const resetButton = editDialog?.querySelector('#profile-edit-reset-from-part')
+	if (resetButton instanceof HTMLButtonElement)
+		resetButton.hidden = !profile.charPartName
 	loadActiveLocaleForm()
 	refreshLocaleTabs()
 	renderEditPreview()
+}
+
+/**
+ * 从角色 part info 强制重建当前编辑中的 agent 资料。
+ * @returns {Promise<void>}
+ */
+async function handleResetFromPart() {
+	if (!editingEntityHash || !editingBaseProfile?.charPartName || !editDialog) return
+	if (!confirmI18n('chat.hub.profileEdit.resetFromPartConfirm')) return
+	const groupId = store.context.currentGroupId || undefined
+	try {
+		const data = await rebuildProfileFromPart(editingEntityHash, groupId)
+		if (!data?.profile) throw new Error(data?.error || 'rebuild failed')
+		invalidateUserProfileCache(editingEntityHash)
+		initEditState(editingEntityHash, data.profile)
+		showToastI18n('success', 'chat.hub.profileEdit.resetFromPartDone')
+		await onSavedCallback?.()
+	}
+	catch (error) {
+		handleUIError(error, 'chat.hub.profileEdit.resetFromPartFailed')
+	}
 }
 
 /** @returns {Promise<void>} */

@@ -60,7 +60,6 @@ function findLastCharMessage(container) {
  * @returns {void}
  */
 async function attachDesktopTimelineArrows(lastChar) {
-	lastChar.querySelectorAll('.char-timeline-arrow').forEach(arrow => arrow.remove())
 	const groupId = currentGroupId()
 	const channelId = currentChannelId()
 	if (!groupId || !channelId) return
@@ -91,6 +90,7 @@ async function attachDesktopTimelineArrows(lastChar) {
 	})
 	lastChar.appendChild(left)
 	lastChar.appendChild(right)
+	lastChar.classList.add('timeline-arrows-active')
 }
 
 /** @type {WeakMap<HTMLElement, { startX: number, startY: number, dragging: boolean, handled: boolean, timeline?: boolean }>} */
@@ -202,6 +202,8 @@ function ensureSwipeDelegation(container) {
 export function attachLastCharMessageSwipe(container) {
 	if (!(container instanceof HTMLElement)) return
 	ensureSwipeDelegation(container)
+	container.querySelectorAll('.char-timeline-arrow').forEach(arrow => arrow.remove())
+	container.querySelectorAll('.timeline-arrows-active').forEach(el => el.classList.remove('timeline-arrows-active'))
 	const lastChar = findLastCharMessage(container)
 	if (!lastChar) return
 	void attachDesktopTimelineArrows(lastChar)

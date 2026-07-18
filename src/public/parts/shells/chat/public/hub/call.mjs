@@ -6,7 +6,7 @@ import { mountTemplate } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { geti18n, setElementI18n } from '../../../../scripts/i18n/index.mjs'
 import { buildChatCallWsUrl } from '../shared/avRelayClient.mjs'
-import { customProfileAvatar } from '../shared/hashAvatar.mjs'
+import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
 
@@ -283,7 +283,7 @@ async function applyVoiceRingAvatar(voiceHost, options) {
 	if (!(voiceHost instanceof HTMLElement)) return
 	const avatarEl = voiceHost.querySelector('.voice-ring-avatar')
 	if (!(avatarEl instanceof HTMLElement)) return
-	const avatar = customProfileAvatar(options.profile)
+	const avatar = displayProfileAvatar(options.profile)
 	if (!avatar) return
 	if (avatarEl.tagName === 'IMG') {
 		avatarEl.src = avatar

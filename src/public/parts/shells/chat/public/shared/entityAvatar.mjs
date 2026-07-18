@@ -1,11 +1,11 @@
 /**
- * 跨壳实体头像 HTML / URL：hash 字母占位 + 仅用户显式头像可叠图。
+ * 跨壳实体头像 HTML / URL：hash 字母占位 + profile.avatar 叠图。
  * Chat / Social / Cabinet 共用；勿再各写一套 charAt / 虚构 files/profile/avatar。
  * 本模块保持 Deno-pure（无 `/scripts` / `/parts` URL import）。
  */
 import {
 	avatarInitial,
-	customProfileAvatar,
+	displayProfileAvatar,
 	hashAvatarStyle,
 	isAvatarImageUrl,
 } from './hashAvatar.mjs'
@@ -23,19 +23,19 @@ function escapeHtml(text) {
 }
 
 /**
- * 仅返回用户显式设置的头像 URL；无则空串（前端应画 hash 字母，勿盲请求 EVFS）。
+ * 返回 profile.avatar；无则空串。
  * @param {string} _entityHash 实体 hash（保留参数便于调用方统一签名）
  * @param {object} [profile] 资料
  * @returns {string} 头像 URL 或空
  */
 export function entityAvatarUrl(_entityHash, profile) {
-	return customProfileAvatar(profile) || ''
+	return displayProfileAvatar(profile) || ''
 }
 
 /**
  * 渲染实体头像 HTML（图片优先，失败或无图时用 hash 文字头像）。
  * @param {string} entityHash 实体 hash
- * @param {object} [profile] 可选资料（需含 name / avatar / infoDefaults 才可正确区分继承默认）
+ * @param {object} [profile] 可选资料
  * @param {string} [sizeClass=''] 尺寸 class
  * @returns {string} 头像 HTML
  */
@@ -45,7 +45,7 @@ export function renderAvatarHtml(entityHash, profile, sizeClass = '') {
 	const { background, color } = hashAvatarStyle(seed)
 	const initial = escapeHtml(avatarInitial(label))
 	const cls = `author-avatar hash-avatar ${sizeClass}`.trim()
-	const avatar = customProfileAvatar(profile)
+	const avatar = displayProfileAvatar(profile)
 	if (!avatar)
 		return `<div class="${cls}" style="background:${background};color:${color}">${initial}</div>`
 
