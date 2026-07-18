@@ -6,14 +6,14 @@ alwaysApply: false
 
 # Chat Hub Frontend Guide
 
-Deeper UI (profile card modes, module layout, unread/inbox/aliases): [ui-details.md](ui-details.md).
+Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](ui-details.md).
 
 ## Trust model
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation hex/array validation on local API/UI state.
 - **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress. Validate only at gates (`wire/ingress`, `remoteIngest.mjs`, `schemas/*`).
-- **Untrusted remote Markdown**: `messages/render/markdown.mjs` → `renderMarkdownAsString(..., { allowDangerousHtml })`. Trusted tier: local messages, self / local-char (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`). Remote self-declared `ownerEntityHash` does **not** elevate. Untrusted: preview+expand for oversized text; hide unsafe executors (js/py/…); safe executors (sql / brainfuck / Godbolt) remain.
-- **Stream preview**: `StreamRenderer` **always** uses `allowDangerousHtml: false`. Federated `stream_chunk` is signature-checked but **not** bound to the generating message's author; trusting the preview would be XSS → local code exec. Final hydrate (non-`data-streaming`) applies the normal trust gate.
+- **Untrusted remote Markdown**: `messages/render/markdown.mjs` → `renderMarkdownAsString(..., { allowDangerousHtml })`. Trusted: local messages, self / local-char (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`). Remote self-declared `ownerEntityHash` does **not** elevate. Untrusted: preview+expand for oversized text; hide unsafe executors (js/py/…); safe executors (sql / brainfuck / Godbolt) remain.
+- **Stream preview**: `StreamRenderer` **always** uses `allowDangerousHtml: false`. Federated `stream_chunk` is signature-checked but **not** bound to the generating message's author. Final hydrate (non-`data-streaming`) applies the normal trust gate.
 - **`message_edit` delta**: WS with `content.newContent` → `applyMessageEditToRow` (do not drop `is_generating` on streaming error final). Backfill by eventId must include overlays via `linesIncludingOverlaysForTargets`. Pending MD: `registerPendingMessageMarkdown` + `data-md-pending` — **never** raw markdown in `data-md-raw` attributes.
 - **Profile bio**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry as Social).
 
@@ -36,10 +36,10 @@ Deeper UI (profile card modes, module layout, unread/inbox/aliases): [ui-details
 
 ## Files / messages / archive
 
-- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind/unbind: `ADMIN`/`MANAGE_ADMINS`（`POST …/cabinets/bind`）；`cabinet_key_update` 仅改 wraps 仍要 `MANAGE_ROLES`，改 `role_access` 要超管。Attachments stay on chat DAG.
+- Files drawer: `state.cabinets` by role; open Cabinet `#shared:{cabinetId}`. Bind/unbind and `role_access` changes require `ADMIN`/`MANAGE_ADMINS` (`POST …/cabinets/bind`); wrap-only `cabinet_key_update` still needs `MANAGE_ROLES`. Attachments stay on chat DAG.
 - Main read: `GET …/view-log` (`getChannelViewLog`); backfill `POST …/view-log/batch-get`. Raw `/messages` = moderation only. Decrypt failure: `decryptView: { failed: true }` with `content: null`.
 - Navigation: `messages/channelMessageStore.mjs` + `scrollToMessageEventId`.
-- Portable archive export/import: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).
+- Portable archive: [archive AGENTS](../../src/chat/archive/AGENTS.md). HTTP: `GET …/channels/:id/export`, `POST …/channels/import` (`MANAGE_CHANNELS`).
 
 ## Search
 

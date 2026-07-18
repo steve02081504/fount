@@ -32,7 +32,7 @@ alwaysApply: false
 
 **Example**: `shells/shellassist/`. **Chat**: [entity / ChatClient](chat/public/AGENTS.md), [Hub](chat/public/hub/AGENTS.md). **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
 
-## Relative import depth traps
+## Relative imports
 
 - `shells/<bot>/src/*.mjs` → `src/scripts` / `src/server` / sibling `shells/chat`: **5** `../`.
-- `shells/<bot>/src/default_interface/*.mjs`: **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat. Copy-pasting bot.mjs paths into `default_interface/` silently resolves wrong and breaks char Load.
+- `shells/<bot>/src/default_interface/*.mjs`: **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat. Copy-pasting bot.mjs paths into `default_interface/` resolves wrong and breaks char Load.

@@ -21,7 +21,7 @@
 - **New parts**: mimic `@src/public/parts/` or `@data/users/.../chars/`.
 - **I18n**: only edit `src/public/locales/zh-CN.json`; `update-locales.py` syncs other langs (runs on `master` / GitHub Actions only; feature branches skip — PR CI will sync).
 - **Lint**: `eslint --fix --quiet` (no `npx`). No logging unless error/warning.
-- **Testing**: `fount test` — self-contained, no running server needed. Default loops imperfect → outdated until green or a wave fails (exit 1); never full-repo unless `--all`. Group syntax: `manifest` / `manifest:suite` / `manifest:suite:subtest`. Suite-internal failure-first + optional `subtests` (frontend). **Windows / local verification: prefer `fount test --no-parallel`** — parallel Deno children contend on `node_modules` (`nodeModulesDir: auto`, `lock: false`) and can corrupt the tree or flake ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
+- **Testing**: `fount test` — self-contained, no running server needed. Default loops imperfect → outdated until green or a wave fails (exit 1); never full-repo unless `--all`. Group syntax: `manifest` / `manifest:suite` / `manifest:suite:subtest`. **Windows / local verification: prefer `fount test --no-parallel`** ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
 - **Logs**: `fount log` — streams main-process console (check before guessing from browser 404s).
 - **Server**: `fount server` (fg) / `fount background` (detached). Bare `fount` = `fount background; fount log`. `Test-FountRunning` before start/reboot, **not** before `fount test`.
 - **Restart**: `fount reboot` for backend/code/config changes. Frontend edits take effect on browser refresh.
@@ -48,7 +48,5 @@
 | Test framework | [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md) |
 | Local search index | [src/scripts/search/AGENTS.md](src/scripts/search/AGENTS.md) |
 | Docs writing (design / review) | [docs/AGENTS.md](docs/AGENTS.md) |
-| Chat/Social topology baseline | [docs/design/chat-social-dev-plan.md](docs/design/chat-social-dev-plan.md) |
-| World distribution | [docs/design/world-distribution-spec.md](docs/design/world-distribution-spec.md) |
-| Human/agent operational parity | [docs/review/human-agent-operational-parity-review.md](docs/review/human-agent-operational-parity-review.md) |
-| Chat/Social/Cabinet debt inventory | [docs/review/chat-social-cabinet-tech-stack.md](docs/review/chat-social-cabinet-tech-stack.md) |
+
+Baselines / reviews (read when needed, not day-to-day): [chat-social-dev-plan](docs/design/chat-social-dev-plan.md) · [world-distribution-spec](docs/design/world-distribution-spec.md) · [human-agent-operational-parity](docs/review/human-agent-operational-parity-review.md) · [chat-social-cabinet-tech-stack](docs/review/chat-social-cabinet-tech-stack.md).

@@ -14,7 +14,7 @@ World distribution product model: [docs/design/world-distribution-spec.md](../..
 - Dispatch: `session/viewerLog.mjs` — **order** base → world (objective) → persona (subjective).
 - Agent: `getChatRequest` builds viewer then runs both steps. Human: `materializeViewerLog.mjs` → `GET …/view-log` (row DTOs; raw `GET …/messages` separate for moderation).
 - **Visibility ACL**: `lib/visibility.mjs` `entryVisibleToViewer` runs in prompt assembly **and** view-log base (before world hook). Raw `/messages` does not filter.
-- **Pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` = raw page hit `limit` before filtering. Empty filtered page with `hasMore` → advance with `oldestRawEventId` (do not peer-inject raw rows).
+- **Pagination**: `readViewerChannelMessages` → `{ messages, visibleEventIds, hasMore, oldestRawEventId }`. `hasMore` = raw page hit `limit` before filtering. Empty filtered page with `hasMore` → advance with `oldestRawEventId`.
 - Hub: `getChannelViewLog` / `getChannelViewLogByEventIds`. Federation proxies: `remoteWorldProxy.mjs` / `remoteProxy.mjs` / `rpcDispatcher.mjs`.
 - **other_chars / other_personas**: from latest 500 lines + `aggregateChannelActivity`; other_chars = (`charFrequencies > 0`) ∪ Top-N (`otherCharsActiveLimit`, default 8); other_personas = active humans mapped to `session.personas` (exclude local `user`).
 - **Optional hooks over RPC**: missing remote method → `METHOD_NOT_FOUND` → `invokeRemote` returns `undefined`. Callers use `hook?.(…) ?? fallback`.

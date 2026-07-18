@@ -7,7 +7,7 @@ alwaysApply: false
 # Cold archive (Chat)
 
 - **Month bucketing**: UTC `YYYY-MM` only (`getUTCFullYear`/`getUTCMonth` — never local `getMonth()`).
-- **Two axes**: admin = DAG/HTTP governance; small-circle = federation + `monthDigests` reputation arbitration (body truth = digest). Local `archive/*.jsonl` cleanup = replica disk hygiene (any local replica may delete).
+- **Two axes**: admin = DAG/HTTP governance; small-circle = federation + `monthDigests` reputation arbitration (body truth = digest). Local `archive/*.jsonl` cleanup = replica disk hygiene.
 - **Not in DAG**: `archive_manifest.json` (`monthDigests`, `archivedEventIds`, `channels[].months`). Hot/checkpoint in `snapshot.json`.
 - **Local read**: verify digests against month JSONL. Federation streams encrypted chunks — never whole-file `readFile`.
 - **Federation**: `syncMissingArchiveMonths`; `fed_archive_month_want` needs PullAttestation + active membership; peers pick via `pickArchiveMonthByReputation`; quorum `ARCHIVE_QUORUM_PEER_MIN`.

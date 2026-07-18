@@ -16,8 +16,8 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 - **Identity**: HTTP always operator via `SocialClient`. Agents: in-process `getSocialClient(username, agentEntityHash)`. No webapi identity switch.
 - **Personal block/hide**: public block → `personal_block.json` + reputation; private hide → `personal_hide.json`. Group kick/ban = node `denylist.json` (separate). Chat personal-lists HTTP: `GET …/personal-lists`.
 - **Visibility**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Tiers: `public` / `unlisted` / `followers`+`followers_since` / `selected`+`private` / optional `except`. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses body+media+poll; `sensitiveMedia` blurs media only.
-- **mediaRefs.url**: `sanitizeMediaRefs` (ingress/write) + `mediaRefUrl` (render) use the same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`); drop `javascript:` / `data:` etc., keep EVFS `entityHash`+`path` when present.
-- **EVFS / file GET**: `applySafeContentHeaders` (`src/scripts/http_content.mjs`) — `nosniff`; only image/audio/video whitelist may inline; html/svg/etc. → `attachment` + `application/octet-stream`.
+- **mediaRefs.url**: `sanitizeMediaRefs` + `mediaRefUrl` use the same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`).
+- **EVFS / file GET**: `applySafeContentHeaders` (`src/scripts/http_content.mjs`) — `nosniff`; only image/audio/video may inline; html/svg/etc. → `attachment` + `application/octet-stream`.
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`).
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
@@ -30,7 +30,7 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
 - Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.
 - **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
-- Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card (do not invent a Social-only DOM).
+- Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.
 - Bio/post Markdown: chat `shared/trustedMarkdown.mjs`. Trusted: self / local-char / declared master / trust list. Remote self-declared `ownerEntityHash` does not elevate.
 - Browser imports of chat: absolute `/parts/shells:chat/...` URLs. Modules used by Deno pure tests must not contain `/parts/` imports.
 - Preference UI: `#settings` (taste is not a top-level nav entry).

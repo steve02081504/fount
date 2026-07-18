@@ -9,17 +9,17 @@ alwaysApply: false
 ## Entity model
 
 - Human and local agent are the same kind of thing: an **entity** with its own keypair. Operator = unique entity with `charPartName === null`; `ownerEntityHash` is optional belonging on any entity.
-- Identity / profile / EVFS HTTP: `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P: `/api/p2p/*`. Set/clear belonging via `PUT …/entities/owner` / `ChatClient.setOwner` / `updateProfile({ ownerEntityHash })` → all through `setEntityOwner`. Do not write `ownerEntityHash` to profile alone.
-- Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) is in signed public `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search`. **Handler registered in chat `Load`** (`registerChatEntitySearchHandler`, after `registerShellPartpath` — not `initP2PServer`). Local agent hits also match `charPartName` (Hub friend search → char DM, not user DM).
-- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate path. `memberKind` is `agent` iff join carries `charname`. **Signer `pubKeyHash` ≠ entityHash**: `viewer.entityHash` / `getGroupMemberEntityHash` must be the operator (or DAG `member.entityHash`); never invent an entity from the ephemeral signing pubkey.
-- **`member_join` binding**: `bindingSig` + `verifyEntityActivePubKeyBelongs` (local identity or EVFS signed `profile.json`) — cannot spoof another entityHash with a self-made active key.
-- **Webapi identity is always the operator.** Agents use in-process `getChatClient(username, agentEntityHash)`. No HTTP act-as parameter.
+- Identity / profile / EVFS HTTP: `src/entity/` and `/api/parts/shells:chat/{viewer,entities…}`. Network-only P2P: `/api/p2p/*`. Belonging: `PUT …/entities/owner` / `ChatClient.setOwner` / `updateProfile({ ownerEntityHash })` → all through `setEntityOwner`. Do not write `ownerEntityHash` to profile alone.
+- Profile `handle` (`[a-z0-9_.-]{2,32}`, optional, not unique) lives in signed `profile.json`. Network search: `GET …/entities/search` / `ChatClient.entities.search` via `part_query` kind `entity_search`. **Handler registered in chat `Load`** (`registerChatEntitySearchHandler`, after `registerShellPartpath` — not `initP2PServer`). Local agent hits also match `charPartName` (Hub friend search → char DM).
+- Group writes use per-(group, entity) `signers/{entityHash}/local_signer_seed` — self-signed; no delegate path. `memberKind` is `agent` iff join carries `charname`. **Signer `pubKeyHash` ≠ entityHash**: use operator / DAG `member.entityHash`; never invent an entity from the ephemeral signing pubkey.
+- **`member_join`**: `bindingSig` + `verifyEntityActivePubKeyBelongs` — cannot spoof another entityHash with a self-made active key.
+- **Webapi identity is always the operator.** Agents: in-process `getChatClient(username, agentEntityHash)`. No HTTP act-as.
 - Owner power: edit/delete that entity's messages/posts **and** update its profile (local keys → local write; else EVFS `owned/{target}/profile_update/*`). Attribution stays the owner's signature. Hub never switches to agent view.
 - Local profile write gate: `isWritableLocalEntityForUser` = node-writable **and** (operator **or** `ownerEntityHash === operator`). Do not gate on `charPartName` alone.
-- **Agent master**: `entity/master.mjs`. Trusted owner message requires cryptographic author === declared `ownerEntityHash` and no attribution mismatch. Care lists are UX-only.
+- **Agent master**: `entity/master.mjs` — trusted owner message requires cryptographic author === declared `ownerEntityHash` and no attribution mismatch. Care lists are UX-only.
 - **Agent-only groups**: `createInvite` → `activateGroupFederation` must include `entityHash` or `group_settings_update` is rejected.
-- **Avatars**: `shared/hashAvatar.mjs` + `entityAvatar.mjs` + Hub `avatarCover.mjs`. Empty → hash letter. Part `info.avatar` syncs into signed profile via `syncAgentProfileFromCharPart` (ensure + profile-edit "reset from char part"). `/parts/<part>/…` avatar URLs map to that part's `public/` (e.g. Gentian `avatar: \`${charurl}/imgs/anime.avif\`` → `public/imgs/anime.avif`). Missing avatars backfill on next ensure; do not overwrite existing copy.
-- **Load reentrancy**: char `Load` → `ensureLocalAgentEntityHash` → `syncAgentProfileFromCharPart` must not `loadPart` the same char (deadlock). Prefer `part.info` over re-running `UpdateInfo`.
+- **Avatars**: `shared/hashAvatar.mjs` + `entityAvatar.mjs` + Hub `avatarCover.mjs`. Empty → hash letter. Part `info.avatar` syncs via `syncAgentProfileFromCharPart`. `/parts/<part>/…` avatar URLs map to that part's `public/`. Backfill missing on ensure; do not overwrite existing.
+- **Load reentrancy**: char `Load` → `ensureLocalAgentEntityHash` → `syncAgentProfileFromCharPart` must not `loadPart` the same char. Prefer `part.info` over re-running `UpdateInfo`.
 
 ## ChatClient
 
@@ -61,5 +61,3 @@ Thin wrappers: `endpoints/shared.mjs` → `chatClientFromReq` → operator clien
 | Hub frontend | [hub/AGENTS.md](hub/AGENTS.md) |
 | Session / viewer / WorldChatHost | [../src/chat/session/AGENTS.md](../src/chat/session/AGENTS.md) |
 | Cold archive | [../src/chat/archive/AGENTS.md](../src/chat/archive/AGENTS.md) |
-| Operational parity | [docs/review/human-agent-operational-parity-review.md](../../../../../../docs/review/human-agent-operational-parity-review.md) |
-| Topology baseline | [docs/design/chat-social-dev-plan.md](../../../../../../docs/design/chat-social-dev-plan.md) |

@@ -8,6 +8,8 @@ alwaysApply: false
 
 **Location**: `@src/public/pages/scripts/` — consult before implementing new frontend logic.
 
+Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes.md](markdown-notes.md).
+
 ## API & Communication
 
 - **`endpoints.mjs`**: Core auth/system APIs (`login`, `register`, `whoami`, `getUserSetting`, etc.).
@@ -18,7 +20,7 @@ alwaysApply: false
 ## UI & Theming
 
 - **`theme.mjs`**: DaisyUI theme management. Call `applyTheme()` first.
-- **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` (process-level singleton redirects template root) — use `withTemplates` or direct DOM.
+- **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
 - **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang`.
@@ -28,21 +30,17 @@ alwaysApply: false
 
 ## Rendering & Content
 
-- **`lib/escapeHtml.mjs`**: escape `& < > " '` via string replace. Do **not** use `textContent`/`innerHTML` round-trip — it leaves `"` unescaped and breaks attributes.
-- **`markdown.mjs`**: Markdown → HTML (KaTeX, Mermaid, Shiki). Extensions via `markdown_extensions` registry into `GetMarkdownConvertor`. Shells use only `getConvertor` / `renderMarkdownAsString` with `allowDangerousHtml`:
-  - **trusted**: full HTML; `languageExecutors` may override `safeLanguageExecutors`
-  - **safe**: early sanitize + Mermaid strict + `safeLanguageExecutors` only
-  Both executor maps live in `convertor.mjs` (same language may have both implementations). Do not wrap another shell-specific convertor on top.
-- **Code block UI**: copy/download/execute as a rehype plugin **after** `rehype-pretty-code` (only `figure[data-rehype-pretty-code-figure] > pre`). Do not use Shiki `transformers.root` wrapping — breaks inline `{:lang}` (`root>pre` expected). Plain `` `code` `` stays bare `<code>`; `` `code{:js}` `` → `span>code`. HTML `document.write` preview is trusted-only.
-- **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `on*` / dangerous URLs. `isSafeHtmlUrl` (Markdown sanitize + mediaRefs) rejects `javascript:` / `data:` and protocol-relative `//…`.
+- **`lib/escapeHtml.mjs`**: escape `& < > " '` via string replace. Do **not** use `textContent`/`innerHTML` round-trip — leaves `"` unescaped.
+- **`markdown.mjs`**: Markdown → HTML (KaTeX, Mermaid, Shiki). Shells use `getConvertor` / `renderMarkdownAsString` with `allowDangerousHtml`. Details: [markdown-notes.md](markdown-notes.md).
+- **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `on*` / dangerous URLs. `isSafeHtmlUrl` rejects `javascript:` / `data:` / protocol-relative `//…`.
 - **`embedCard.mjs`**: `ALL /api/no-cors?url=` + OG parse; `MutationObserver` hydration; session LRU.
 - **`/api/no-cors`**: authenticated streaming proxy. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry.
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
-- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: `pickerElement`, `gridElement`, `triggerButton`, … (full words). Leave DaisyUI class names alone.
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, `triggerButton`, …). Leave DaisyUI class names alone.
 - **`svgInliner.mjs`**: Inline SVGs for `currentColor`.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, preferred langs.
-- **`data-i18n` params**: full `element.dataset` is the interpolation map. Templates: `data-i18n="foo.bar" data-n="3"`. JS: `setElementI18n(el, 'foo.bar', { n: 3 })` — MutationObserver watches **only** `data-i18n`. Nested keys: `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input. Do not use i18n key switching for disabled states.
+- **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested keys: `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input.
 - **`i18n_base.mjs`**: Internal — `userPreferredLanguages` vs `fountUserPreferredLanguages` (GitHub Pages).
 
 ## Components & Utilities
