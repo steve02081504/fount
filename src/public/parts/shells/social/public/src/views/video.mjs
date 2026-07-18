@@ -1,9 +1,10 @@
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
-import { shareOrCopyPostLink } from '../actions/shared.mjs'
+import { flashCopiedLabel, shareOrCopyPostLink } from '../actions/shared.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
+import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
@@ -15,15 +16,42 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 /** @type {{ disconnect: () => void, observe: (el: HTMLElement) => void } | null} */
 let snapBind = null
 let currentVideoIndex = -1
-/** @type {string | null} */
-let videoCursor = null
-/** @type {object[]} */
-let videoShownItems = []
-let videoPageLoading = false
 /** @type {WeakMap<HTMLElement, object[]>} */
 const slideRepliesCache = new WeakMap()
 
 const VIDEO_MUTE_KEY = 'fount.social.video.muted'
+
+/** @type {ReturnType<typeof createSnapCursorFeed>} */
+const videoFeed = createSnapCursorFeed({
+	/**
+ * @param {string | null} cursor 游标
+ * @returns {Promise<object | null>} 分页结果
+ */
+	fetchPage: cursor => socialApi(
+		`/videos/feed?limit=20&cursor=${encodeURIComponent(cursor || '')}`,
+	).catch(() => null),
+	/**
+	 * @param {HTMLElement} container 容器
+	 * @param {object[]} items 条目
+	 * @returns {void} 无返回
+	 */
+	appendSlides: (container, items) => {
+		for (const item of items) {
+			const slide = buildVideoSlide(item)
+			container.appendChild(slide)
+			snapBind?.observe(slide)
+		}
+	},
+	/**
+	 * @param {HTMLElement} container 容器
+	 * @param {number} index 索引
+	 * @returns {boolean} 是否允许重放
+	 */
+	canReplay: (container, index) => {
+		if (index < 1 && container.scrollTop <= 0) return false
+		return container.scrollHeight > container.clientHeight
+	},
+})
 
 /**
  * @returns {boolean} 是否偏好静音
@@ -54,16 +82,13 @@ export async function loadVideoView(options = {}) {
 	snapBind = null
 	container.replaceChildren()
 	currentVideoIndex = -1
-	videoCursor = null
-	videoShownItems = []
-	videoPageLoading = false
+	videoFeed.reset()
 
 	const focusEntityHash = String(options.focusEntityHash || '').toLowerCase()
 	const focusPostId = String(options.focusPostId || '')
 
 	const data = await socialApi('/videos/feed?limit=20').catch(() => ({ items: [], nextCursor: null }))
 	let items = [...data.items || []]
-	videoCursor = data.nextCursor || null
 
 	if (focusEntityHash && focusPostId) {
 		const focusKey = `${focusEntityHash}:${focusPostId}`
@@ -87,8 +112,8 @@ export async function loadVideoView(options = {}) {
 		return
 	}
 
-	appendVideoSlides(container, items)
-	videoShownItems = [...items]
+	videoFeed.seed(items, data.nextCursor || null)
+	videoFeed.append(container, items)
 	view?.focus({ preventScroll: true })
 
 	snapBind = bindVerticalSnap(container, {
@@ -111,7 +136,7 @@ export async function loadVideoView(options = {}) {
 				if (nv) nv.preload = 'auto'
 			}
 			void ensureCommentTicker(el)
-			void maybeLoadMoreVideos(container, index)
+			void videoFeed.maybeLoadMore(container, index)
 		},
 		/**
 		 * @param {number} _index 离开索引
@@ -146,62 +171,6 @@ async function buildVideoEmptySlide() {
 		await focusComposer({ switchToFeed: true })
 	})
 	return slide
-}
-
-/**
- * @param {HTMLElement} container snap 容器
- * @param {object[]} items 条目
- * @returns {void}
- */
-function appendVideoSlides(container, items) {
-	for (const item of items) {
-		const slide = buildVideoSlide(item)
-		container.appendChild(slide)
-		snapBind?.observe(slide)
-	}
-}
-
-/**
- * @param {HTMLElement} container 容器
- * @param {number} index 当前索引
- * @returns {Promise<void>}
- */
-async function maybeLoadMoreVideos(container, index) {
-	if (videoPageLoading) return
-	const remaining = container.children.length - index - 1
-	if (remaining > 2) return
-
-	if (videoCursor) {
-		videoPageLoading = true
-		try {
-			const data = await socialApi(
-				`/videos/feed?limit=20&cursor=${encodeURIComponent(videoCursor)}`,
-			).catch(() => null)
-			if (!data) return
-			const items = data.items || []
-			videoCursor = data.nextCursor || null
-			if (items.length) {
-				videoShownItems.push(...items)
-				appendVideoSlides(container, items)
-			}
-		}
-		finally {
-			videoPageLoading = false
-		}
-		return
-	}
-
-	// 循环重放：需用户已滑到末尾附近且容器真的可滚，避免单条首屏自动复制
-	if (!videoShownItems.length) return
-	if (index < 1 && container.scrollTop <= 0) return
-	if (container.scrollHeight <= container.clientHeight) return
-	videoPageLoading = true
-	try {
-		appendVideoSlides(container, videoShownItems)
-	}
-	finally {
-		videoPageLoading = false
-	}
 }
 
 /**
@@ -577,12 +546,7 @@ function buildVideoSlide(item) {
 		const result = await shareOrCopyPostLink(entityHash, postId, caption || label)
 		if (result !== 'copied') return
 		const labelEl = slide.querySelector('.video-share-btn .action-count')
-		if (!(labelEl instanceof HTMLElement)) return
-		const prev = labelEl.dataset.i18n
-		labelEl.dataset.i18n = 'social.actions.copied'
-		setTimeout(() => {
-			if (prev) labelEl.dataset.i18n = prev
-		}, 1500)
+		flashCopiedLabel(labelEl, labelEl instanceof HTMLElement ? labelEl.dataset.i18n : undefined)
 	})
 
 	slide.querySelector('.video-comment-btn')?.addEventListener('click', async event => {
@@ -668,7 +632,7 @@ export function handleVideoKeydown(event) {
 		case 'ArrowDown':
 			event.preventDefault()
 			container.children[currentVideoIndex + 1]?.scrollIntoView({ behavior: 'smooth' })
-			void maybeLoadMoreVideos(container, currentVideoIndex + 1)
+			void videoFeed.maybeLoadMore(container, currentVideoIndex + 1)
 			break
 		case ' ':
 			event.preventDefault()

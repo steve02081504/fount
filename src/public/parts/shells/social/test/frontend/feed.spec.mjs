@@ -4,7 +4,6 @@ import {
 	openHome,
 	expectPostInFeed,
 	searchAndExpectPost,
-	searchViaEnterAndExpectPost,
 	waitForFeedLoad,
 	findPostCard,
 	seedPostsViaApi,
@@ -34,12 +33,6 @@ test.describe('Social feed', () => {
 		const tag = `pw${Date.now()}`
 		const { postId } = await publishPost(`search-me #${tag}`)
 		await searchAndExpectPost(page, `#${tag}`, postId)
-	})
-
-	test('search via Enter key', async ({ page, publishPost }) => {
-		const tag = `enter${Date.now()}`
-		const { postId } = await publishPost(`enter-search #${tag}`)
-		await searchViaEnterAndExpectPost(page, `#${tag}`, postId)
 		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
 	})
 

@@ -3,9 +3,20 @@ import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
+
+import { appendTemplate, mountTemplate } from '/scripts/features/template.mjs'
 import { updateFeedSearchChrome } from './feed.mjs'
 
 let searchGeneration = 0
+
+/**
+ * @param {HTMLElement} list 容器
+ * @param {string} i18nKey 文案键
+ * @returns {Promise<void>}
+ */
+async function showSearchHint(list, i18nKey) {
+	await mountTemplate(list, 'empty_hint', { i18nKey })
+}
 
 /**
  * 同步搜索 hash。
@@ -68,8 +79,7 @@ export async function runSearchView() {
 	const q = input instanceof HTMLInputElement ? input.value.trim() : ''
 	if (q.length < 2) {
 		const list = view.querySelector('#searchViewResults')
-		if (list)
-			list.innerHTML = '<p class="empty-hint" data-i18n="social.search.tooShort"></p>'
+		if (list) await showSearchHint(list, 'social.search.tooShort')
 		return
 	}
 
@@ -90,7 +100,7 @@ export async function runSearchView() {
 	if (asideInput instanceof HTMLInputElement) asideInput.value = q
 
 	disconnectInfiniteScroll()
-	list.innerHTML = '<p class="empty-hint" data-i18n="social.search.loading"></p>'
+	await showSearchHint(list, 'social.search.loading')
 
 	const baseParams = new URLSearchParams({ q, sort, scope, limit: '30' })
 	if (author) baseParams.set('author', author)
@@ -111,12 +121,8 @@ export async function runSearchView() {
 	usersTitle.className = 'section-title'
 	usersTitle.dataset.i18n = 'social.search.usersTitle'
 	list.appendChild(usersTitle)
-	if (!entities.length) {
-		const empty = document.createElement('p')
-		empty.className = 'empty-hint'
-		empty.dataset.i18n = 'social.search.usersEmpty'
-		list.appendChild(empty)
-	}
+	if (!entities.length)
+		await appendTemplate(list, 'empty_hint', { i18nKey: 'social.search.usersEmpty' })
 	else {
 		const { buildEntitySearchCard } = await import('./feed.mjs')
 		for (const entity of entities)
@@ -129,10 +135,7 @@ export async function runSearchView() {
 	list.appendChild(postsTitle)
 
 	if (!items.length) {
-		const empty = document.createElement('p')
-		empty.className = 'empty-hint'
-		empty.dataset.i18n = 'social.search.empty'
-		list.appendChild(empty)
+		await appendTemplate(list, 'empty_hint', { i18nKey: 'social.search.empty' })
 		return
 	}
 

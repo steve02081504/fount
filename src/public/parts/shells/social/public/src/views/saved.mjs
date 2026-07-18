@@ -3,6 +3,7 @@ import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
+import { buildEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -197,7 +198,7 @@ function bindSavedSearch() {
 		const input = event.target
 		if (!(input instanceof HTMLInputElement) || input.id !== 'savedSearchInput') return
 		savedQuery = input.value.trim()
-		renderSavedPanel()
+		void renderSavedPanel()
 	})
 }
 
@@ -208,14 +209,14 @@ function bindSavedSearch() {
  */
 export function setSavedFilter(filter) {
 	savedFilter = filter
-	renderSavedPanel()
+	void renderSavedPanel()
 }
 
 /**
  * 用缓存数据重绘收藏面板。
- * @returns {void}
+ * @returns {Promise<void>}
  */
-export function renderSavedPanel() {
+export async function renderSavedPanel() {
 	const data = savedCache
 	const panel = document.getElementById('savedPanel')
 	if (!data || !panel) return
@@ -233,13 +234,12 @@ export function renderSavedPanel() {
 	panel.replaceChildren()
 
 	if (!total && !hasFolders) {
-		panel.innerHTML = `
-			<div class="saved-empty">
-				<span class="icon icon-bookmark saved-empty-icon" aria-hidden="true"></span>
-				<p class="saved-empty-title">${escapeHtml(geti18n('social.empty.saved'))}</p>
-				<p class="saved-empty-hint">${escapeHtml(geti18n('social.saved.emptyHint'))}</p>
-			</div>
-		`
+		panel.replaceChildren(await buildEmptyState({
+			modClass: ' empty-state--saved',
+			iconClass: 'icon-bookmark',
+			titleKey: 'social.empty.saved',
+			hintKey: 'social.saved.emptyHint',
+		}))
 		return
 	}
 
@@ -313,12 +313,11 @@ export function renderSavedPanel() {
 			hits.push(...filterRefs(folder.posts, folderId, folder.name || folderId))
 		}
 		if (!hits.length) {
-			listHost.innerHTML = `
-				<div class="saved-empty saved-empty-compact">
-					<span class="icon icon-search saved-empty-icon" aria-hidden="true"></span>
-					<p>${escapeHtml(geti18n('social.saved.searchEmpty'))}</p>
-				</div>
-			`
+			listHost.replaceChildren(await buildEmptyState({
+				modClass: ' empty-state--saved empty-state--compact',
+				iconClass: 'icon-search',
+				titleKey: 'social.saved.searchEmpty',
+			}))
 			return
 		}
 		for (const hit of hits)
@@ -374,5 +373,5 @@ export async function loadSaved() {
 	const data = await socialApi('/saved-posts')
 	savedCache = data
 	state.savedFoldersCache = data.folders || {}
-	renderSavedPanel()
+	await renderSavedPanel()
 }

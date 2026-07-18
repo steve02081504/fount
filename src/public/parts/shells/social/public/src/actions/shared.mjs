@@ -1,5 +1,6 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
 import { state } from '../state.mjs'
+import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
  * 关闭所有帖子溢出菜单（可选排除某一菜单）。
@@ -51,4 +52,21 @@ export async function shareOrCopyPostLink(entityHash, postId, title) {
 
 	await copyTextToClipboard(url)
 	return 'copied'
+}
+
+/**
+ * 短暂把标签文案切成「已复制」再还原。
+ * @param {HTMLElement | null | undefined} label 文案节点
+ * @param {string} [restoreKey] 还原用 i18n 键；缺省时还原 textContent
+ * @returns {void}
+ */
+export function flashCopiedLabel(label, restoreKey) {
+	if (!(label instanceof HTMLElement)) return
+	const prev = restoreKey ? null : label.textContent
+	if (restoreKey) label.dataset.i18n = 'social.actions.copied'
+	else label.textContent = geti18n('social.actions.copied')
+	setTimeout(() => {
+		if (restoreKey) label.dataset.i18n = restoreKey
+		else if (prev != null) label.textContent = prev
+	}, 1500)
 }

@@ -232,16 +232,13 @@ export async function findPostCard(page, postId, options = {}) {
  * @param {string} postId - 帖子 id。
  * @returns {Promise<import('npm:@playwright/test').Locator>} 帖子卡片定位器。
  */
-export async function expectPostInFeed(page, postId) {
-	return findPostCard(page, postId)
-}
+export const expectPostInFeed = findPostCard
 
 /**
  * 轮询 feed 搜索直到目标帖出现在 API 结果与 DOM 中。
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} query - 搜索词。
  * @param {string} postId - 期望帖子 id。
- * @param {'button' | 'enter'} trigger - 触发搜索的方式。
  * @returns {Promise<void>}
  */
 async function pollSearchForPost(page, query, postId) {
@@ -274,17 +271,6 @@ async function pollSearchForPost(page, query, postId) {
  * @returns {Promise<void>} 无返回值。
  */
 export async function searchAndExpectPost(page, query, postId) {
-	await pollSearchForPost(page, query, postId)
-}
-
-/**
- * 通过 Enter 触发搜索并断言目标帖可见。
- * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
- * @param {string} query - 搜索词。
- * @param {string} postId - 期望出现的帖子 id。
- * @returns {Promise<void>}
- */
-export async function searchViaEnterAndExpectPost(page, query, postId) {
 	await pollSearchForPost(page, query, postId)
 }
 
@@ -479,12 +465,10 @@ export async function injectForeignLike(baseUrl, apiKey, targetEntityHash, targe
  * @returns {Promise<void>}
  */
 export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
+	const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
 	try {
-		const viewerRes = await req.get(`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${key}`)
-		if (!viewerRes.ok()) throw new Error(`viewer failed: ${viewerRes.status()}`)
-		const { viewerEntityHash } = await viewerRes.json()
 		for (let index = 0; index < count; index++) {
 			const parentRes = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
@@ -500,14 +484,6 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 	}
 }
 
-/**
- *
- * @param baseUrl
- * @param apiKey
- * @param targetEntityHash
- * @param targetPostId
- * @param count
- */
 /**
  * 直接写入 like 收件箱行（聚合烟测加速路径）。
  * @param {string} baseUrl - 测试根 URL。

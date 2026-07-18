@@ -48,6 +48,8 @@ body {
 	width: 1.35rem;
 	height: 1.35rem;
 	background: currentColor;
+	mask-image: var(--icon);
+	-webkit-mask-image: var(--icon);
 	mask-size: contain;
 	mask-repeat: no-repeat;
 	mask-position: center;
@@ -57,53 +59,51 @@ body {
 	flex-shrink: 0;
 }
 
-.icon-home { mask-image: url("https://api.iconify.design/mdi/home-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/home-outline.svg"); }
-.icon-explore { mask-image: url("https://api.iconify.design/mdi/compass-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/compass-outline.svg"); }
-.icon-bell { mask-image: url("https://api.iconify.design/mdi/bell-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bell-outline.svg"); }
-.icon-bookmark { mask-image: url("https://api.iconify.design/mdi/bookmark-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bookmark-outline.svg"); }
-.icon-bookmark-off { mask-image: url("https://api.iconify.design/mdi/bookmark-remove-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/bookmark-remove-outline.svg"); }
-.icon-draft { mask-image: url("https://api.iconify.design/mdi/file-document-edit-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/file-document-edit-outline.svg"); }
-.icon-folder { mask-image: url("https://api.iconify.design/mdi/folder-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/folder-outline.svg"); }
-.icon-folder-plus { mask-image: url("https://api.iconify.design/mdi/folder-plus-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/folder-plus-outline.svg"); }
-.icon-user { mask-image: url("https://api.iconify.design/mdi/account-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/account-outline.svg"); }
-.icon-compose { mask-image: url("https://api.iconify.design/mdi/feather.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/feather.svg"); }
-.icon-emoji { mask-image: url("https://api.iconify.design/mdi/emoticon-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/emoticon-outline.svg"); }
-.icon-media { mask-image: url("https://api.iconify.design/mdi/image-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/image-outline.svg"); }
-.icon-search { mask-image: url("https://api.iconify.design/mdi/magnify.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/magnify.svg"); }
-.icon-refresh { mask-image: url("https://api.iconify.design/mdi/refresh.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/refresh.svg"); }
-.icon-reply { mask-image: url("https://api.iconify.design/mdi/message-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/message-outline.svg"); }
-.icon-repost { mask-image: url("https://api.iconify.design/mdi/repeat.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/repeat.svg"); }
-.icon-like { mask-image: url("https://api.iconify.design/mdi/thumb-up-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/thumb-up-outline.svg"); }
-.icon-like-filled { mask-image: url("https://api.iconify.design/mdi/thumb-up.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/thumb-up.svg"); }
-.icon-dislike { mask-image: url("https://api.iconify.design/mdi/thumb-down-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/thumb-down-outline.svg"); }
-.icon-taste { mask-image: url("https://api.iconify.design/mdi/tune.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/tune.svg"); }
-.icon-settings { mask-image: url("https://api.iconify.design/mdi/cog-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/cog-outline.svg"); }
-.icon-share { mask-image: url("https://api.iconify.design/mdi/share-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/share-outline.svg"); }
-.icon-more { mask-image: url("https://api.iconify.design/mdi/dots-horizontal.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/dots-horizontal.svg"); }
-.icon-quote { mask-image: url("https://api.iconify.design/mdi/format-quote-close.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/format-quote-close.svg"); }
-.icon-link { mask-image: url("https://api.iconify.design/mdi/link-variant.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/link-variant.svg"); }
-.icon-translate { mask-image: url("https://api.iconify.design/mdi/translate.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/translate.svg"); }
-.icon-note { mask-image: url("https://api.iconify.design/mdi/note-text-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/note-text-outline.svg"); }
-.icon-history { mask-image: url("https://api.iconify.design/mdi/history.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/history.svg"); }
-.icon-direct-message { mask-image: url("https://api.iconify.design/mdi/email-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/email-outline.svg"); }
-.icon-block { mask-image: url("https://api.iconify.design/mdi/block-helper.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/block-helper.svg"); }
-.icon-hide { mask-image: url("https://api.iconify.design/mdi/eye-off-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/eye-off-outline.svg"); }
-.icon-delete { mask-image: url("https://api.iconify.design/mdi/delete-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/delete-outline.svg"); }
-.icon-globe { mask-image: url("https://api.iconify.design/mdi/earth.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/earth.svg"); }
-.icon-lock { mask-image: url("https://api.iconify.design/mdi/lock-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/lock-outline.svg"); }
-.icon-notification-reply { mask-image: url("https://api.iconify.design/mdi/message-reply-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/message-reply-outline.svg"); }
-.icon-notification-mention { mask-image: url("https://api.iconify.design/mdi/at.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/at.svg"); }
-.icon-notification-like { mask-image: url("https://api.iconify.design/mdi/heart.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg"); }
-.icon-notification-follow { mask-image: url("https://api.iconify.design/mdi/account-plus-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/account-plus-outline.svg"); }
-.icon-notification-repost { mask-image: url("https://api.iconify.design/mdi/repeat.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/repeat.svg"); }
-.icon-vote { mask-image: url("https://api.iconify.design/mdi/poll.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/poll.svg"); }
-.icon-edit { mask-image: url("https://api.iconify.design/mdi/pencil-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/pencil-outline.svg"); }
-.icon-mute { mask-image: url("https://api.iconify.design/mdi/volume-off.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/volume-off.svg"); }
-.icon-volume { mask-image: url("https://api.iconify.design/mdi/volume-high.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/volume-high.svg"); }
-.icon-play { mask-image: url("https://api.iconify.design/mdi/play.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/play.svg"); }
-.icon-content-warning { mask-image: url("https://api.iconify.design/mdi/alert-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/alert-outline.svg"); }
-.icon-options { mask-image: url("https://api.iconify.design/mdi/tune-variant.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/tune-variant.svg"); }
-.icon-close { mask-image: url("https://api.iconify.design/mdi/close.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/close.svg"); }
+.icon-home { --icon: url("https://api.iconify.design/mdi/home-outline.svg"); }
+.icon-explore { --icon: url("https://api.iconify.design/mdi/compass-outline.svg"); }
+.icon-bell { --icon: url("https://api.iconify.design/mdi/bell-outline.svg"); }
+.icon-bookmark { --icon: url("https://api.iconify.design/mdi/bookmark-outline.svg"); }
+.icon-bookmark-off { --icon: url("https://api.iconify.design/mdi/bookmark-remove-outline.svg"); }
+.icon-draft { --icon: url("https://api.iconify.design/mdi/file-document-edit-outline.svg"); }
+.icon-folder { --icon: url("https://api.iconify.design/mdi/folder-outline.svg"); }
+.icon-folder-plus { --icon: url("https://api.iconify.design/mdi/folder-plus-outline.svg"); }
+.icon-user { --icon: url("https://api.iconify.design/mdi/account-outline.svg"); }
+.icon-compose { --icon: url("https://api.iconify.design/mdi/feather.svg"); }
+.icon-emoji { --icon: url("https://api.iconify.design/mdi/emoticon-outline.svg"); }
+.icon-media { --icon: url("https://api.iconify.design/mdi/image-outline.svg"); }
+.icon-search { --icon: url("https://api.iconify.design/mdi/magnify.svg"); }
+.icon-refresh { --icon: url("https://api.iconify.design/mdi/refresh.svg"); }
+.icon-reply { --icon: url("https://api.iconify.design/mdi/message-outline.svg"); }
+.icon-repost { --icon: url("https://api.iconify.design/mdi/repeat.svg"); }
+.icon-like { --icon: url("https://api.iconify.design/mdi/thumb-up-outline.svg"); }
+.icon-dislike { --icon: url("https://api.iconify.design/mdi/thumb-down-outline.svg"); }
+.icon-settings { --icon: url("https://api.iconify.design/mdi/cog-outline.svg"); }
+.icon-share { --icon: url("https://api.iconify.design/mdi/share-outline.svg"); }
+.icon-more { --icon: url("https://api.iconify.design/mdi/dots-horizontal.svg"); }
+.icon-quote { --icon: url("https://api.iconify.design/mdi/format-quote-close.svg"); }
+.icon-link { --icon: url("https://api.iconify.design/mdi/link-variant.svg"); }
+.icon-translate { --icon: url("https://api.iconify.design/mdi/translate.svg"); }
+.icon-note { --icon: url("https://api.iconify.design/mdi/note-text-outline.svg"); }
+.icon-history { --icon: url("https://api.iconify.design/mdi/history.svg"); }
+.icon-direct-message { --icon: url("https://api.iconify.design/mdi/email-outline.svg"); }
+.icon-block { --icon: url("https://api.iconify.design/mdi/block-helper.svg"); }
+.icon-hide { --icon: url("https://api.iconify.design/mdi/eye-off-outline.svg"); }
+.icon-delete { --icon: url("https://api.iconify.design/mdi/delete-outline.svg"); }
+.icon-notification-reply { --icon: url("https://api.iconify.design/mdi/message-reply-outline.svg"); }
+.icon-notification-mention { --icon: url("https://api.iconify.design/mdi/at.svg"); }
+.icon-notification-like { --icon: url("https://api.iconify.design/mdi/heart.svg"); }
+.icon-notification-follow { --icon: url("https://api.iconify.design/mdi/account-plus-outline.svg"); }
+.icon-notification-repost { --icon: url("https://api.iconify.design/mdi/repeat.svg"); }
+.icon-vote { --icon: url("https://api.iconify.design/mdi/poll.svg"); }
+.icon-edit { --icon: url("https://api.iconify.design/mdi/pencil-outline.svg"); }
+.icon-mute { --icon: url("https://api.iconify.design/mdi/volume-off.svg"); }
+.icon-volume { --icon: url("https://api.iconify.design/mdi/volume-high.svg"); }
+.icon-play { --icon: url("https://api.iconify.design/mdi/play.svg"); }
+.icon-content-warning { --icon: url("https://api.iconify.design/mdi/alert-outline.svg"); }
+.icon-options { --icon: url("https://api.iconify.design/mdi/tune-variant.svg"); }
+.icon-close { --icon: url("https://api.iconify.design/mdi/close.svg"); }
+.icon-video { --icon: url("https://api.iconify.design/mdi/play-circle-outline.svg"); }
+.icon-live { --icon: url("https://api.iconify.design/mdi/broadcast.svg"); }
 
 /* Social shell layout */
 .shell {
@@ -693,31 +693,6 @@ body {
 	flex-direction: column;
 }
 
-.load-more {
-	display: block;
-	width: calc(100% - 2rem);
-	margin: 0.75rem 1rem 1rem;
-	padding: 0.75rem;
-	border: 1px solid var(--border);
-	border-radius: 999px;
-	background: transparent;
-	color: var(--accent);
-	font: inherit;
-	font-weight: 600;
-	cursor: pointer;
-	transition: background var(--transition);
-}
-
-.load-more:hover {
-	background: color-mix(in srgb, var(--color-primary) 10%, transparent);
-}
-
-.search-hint {
-	font-size: 0.85rem;
-	color: var(--muted);
-	margin: 0.75rem 1rem;
-}
-
 /* Post card */
 .post-card {
 	padding: 0.85rem 1rem;
@@ -903,20 +878,14 @@ body {
 	color: var(--like);
 }
 
-.action-btn-like.liked .icon-like {
-	mask-image: url("https://api.iconify.design/mdi/thumb-up.svg");
-	-webkit-mask-image: url("https://api.iconify.design/mdi/thumb-up.svg");
-}
+.action-btn-like.liked .icon-like { --icon: url("https://api.iconify.design/mdi/thumb-up.svg"); }
 
 .action-btn-dislike:hover,
 .action-btn-dislike.disliked {
 	color: var(--muted);
 }
 
-.action-btn-dislike.disliked .icon-dislike {
-	mask-image: url("https://api.iconify.design/mdi/thumb-down.svg");
-	-webkit-mask-image: url("https://api.iconify.design/mdi/thumb-down.svg");
-}
+.action-btn-dislike.disliked .icon-dislike { --icon: url("https://api.iconify.design/mdi/thumb-down.svg"); }
 
 .action-btn-save:hover {
 	color: var(--accent);
@@ -1171,32 +1140,6 @@ body {
 	cursor: pointer;
 }
 
-.image-editor-box {
-	max-width: min(96vw, 980px);
-	width: 100%;
-}
-
-.image-editor-toolbar {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	align-items: center;
-	margin: 0.75rem 0;
-}
-
-.image-editor-canvas-wrap {
-	overflow: auto;
-	max-height: 70vh;
-	border: 1px solid var(--border);
-	border-radius: 8px;
-}
-
-.image-editor-canvas-wrap canvas {
-	display: block;
-	max-width: 100%;
-	cursor: crosshair;
-}
-
 .post-media:has(.post-media-item:nth-child(2)) {
 	grid-template-columns: unset;
 }
@@ -1325,37 +1268,117 @@ body {
 	border: none;
 }
 
-.replies-empty {
+/* Unified empty states */
+.empty-state {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	gap: 0.3rem;
-	padding: 1.5rem 1rem;
+	gap: 0.45rem;
 	text-align: center;
 	color: var(--muted);
 }
 
-.replies-empty-icon {
-	width: 1.85rem;
-	height: 1.85rem;
+.empty-state-icon {
 	opacity: 0.4;
 	margin-bottom: 0.15rem;
 }
 
-.replies-empty-title {
+.empty-state-title {
 	margin: 0;
-	font-size: 0.95rem;
 	font-weight: 700;
 	color: var(--text);
-	opacity: 0.82;
-	font-style: normal;
 }
 
-.replies-empty-hint {
+.empty-state-hint,
+.empty-state p {
 	margin: 0;
+	line-height: 1.45;
+}
+
+.empty-state--replies {
+	gap: 0.3rem;
+	padding: 1.5rem 1rem;
+}
+
+.empty-state--replies .empty-state-icon {
+	width: 1.85rem;
+	height: 1.85rem;
+}
+
+.empty-state--replies .empty-state-title {
+	font-size: 0.95rem;
+	opacity: 0.82;
+}
+
+.empty-state--replies .empty-state-hint {
 	font-size: 0.84rem;
-	line-height: 1.4;
+}
+
+.empty-state--explore {
+	width: 100%;
+	box-sizing: border-box;
+	gap: 0.55rem;
+	padding: 1.75rem 1.5rem 2rem;
+	font-size: 0.9rem;
+}
+
+.empty-state--explore .empty-state-icon {
+	width: 2rem;
+	height: 2rem;
+	opacity: 0.45;
+}
+
+.empty-state--saved {
+	flex: 1;
+	padding: 4rem 1.5rem;
+}
+
+.empty-state--compact {
+	padding: 2.5rem 1.5rem;
+}
+
+.empty-state--saved .empty-state-icon {
+	width: 2.5rem;
+	height: 2.5rem;
+	margin-bottom: 0.25rem;
+}
+
+.empty-state--saved .empty-state-title {
+	font-size: 1.05rem;
+}
+
+.empty-state--saved .empty-state-hint {
+	font-size: 0.88rem;
+	max-width: 16rem;
+}
+
+.empty-state--video {
+	width: min(22rem, 86vw);
+	padding: 2rem 1.25rem;
+	gap: 0.85rem;
+	color: #fff;
+}
+
+.empty-state--video .empty-state-icon {
+	width: 3.25rem;
+	height: 3.25rem;
+	background: rgba(255, 255, 255, 0.85);
+	opacity: 1;
+}
+
+.empty-state--video .empty-state-title {
+	font-size: 1.2rem;
+	color: #fff;
+}
+
+.empty-state--video .empty-state-hint {
+	color: rgba(255, 255, 255, 0.72);
+	font-size: 0.92rem;
+}
+
+.empty-state-action {
+	margin-top: 0.35rem;
 }
 
 .reply-composer {
@@ -1371,7 +1394,7 @@ body {
 	padding-top: 0.15rem;
 }
 
-.replies-list.is-empty .replies-empty {
+.replies-list.is-empty .empty-state--replies {
 	padding-bottom: 0.35rem;
 }
 
@@ -1555,7 +1578,7 @@ body {
 	padding-top: 0.15rem;
 }
 
-.post-detail-replies .replies-empty {
+.post-detail-replies .empty-state--replies {
 	padding: 2rem 1rem 1.25rem;
 }
 
@@ -1646,23 +1669,6 @@ body {
 	color: var(--muted);
 }
 
-.entity-owned-by-box {
-	display: flex;
-	align-items: center;
-	flex-wrap: wrap;
-	gap: 0.25rem;
-	margin: 0.5rem 0 0;
-	padding: 0.5rem 0.75rem;
-	border-radius: 0.5rem;
-	border: 1px solid color-mix(in srgb, var(--color-base-content, currentColor) 18%, transparent);
-	font-size: 0.85rem;
-	opacity: 0.9;
-}
-
-.entity-owned-by-link {
-	font-weight: 600;
-}
-
 .profile-stat span {
 	color: var(--muted);
 }
@@ -1733,25 +1739,6 @@ body {
 
 .profile-action-btn:hover {
 	opacity: 0.92;
-}
-
-.profile-settings-dialog {
-	max-width: 28rem;
-}
-
-.profile-settings-toggle {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	margin: 1rem 0;
-	font-size: 0.95rem;
-}
-
-.profile-settings-links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin-bottom: 1rem;
 }
 
 .profile-settings-blocklist {
@@ -2010,7 +1997,7 @@ body {
 	scroll-snap-type: x proximity;
 }
 
-.explore-account-list:has(.explore-empty) {
+.explore-account-list:has(.empty-state--explore) {
 	display: block;
 	overflow: visible;
 	padding: 0;
@@ -2191,30 +2178,6 @@ body {
 	align-items: center;
 	justify-content: center;
 	color: var(--muted);
-}
-
-.explore-empty {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 0.55rem;
-	width: 100%;
-	box-sizing: border-box;
-	color: var(--muted);
-	text-align: center;
-	padding: 1.75rem 1.5rem 2rem;
-	font-size: 0.9rem;
-}
-
-.explore-empty p {
-	margin: 0;
-}
-
-.explore-empty-icon {
-	width: 2rem;
-	height: 2rem;
-	opacity: 0.45;
 }
 
 /* Saved */
@@ -2555,47 +2518,6 @@ body {
 	color: var(--color-error);
 }
 
-.saved-empty {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 0.45rem;
-	flex: 1;
-	padding: 4rem 1.5rem;
-	text-align: center;
-	color: var(--muted);
-}
-
-.saved-empty-compact {
-	padding: 2.5rem 1.5rem;
-}
-
-.saved-empty-icon {
-	width: 2.5rem;
-	height: 2.5rem;
-	opacity: 0.4;
-	margin-bottom: 0.25rem;
-}
-
-.saved-empty-title {
-	margin: 0;
-	font-size: 1.05rem;
-	font-weight: 700;
-	color: var(--text);
-}
-
-.saved-empty-hint {
-	margin: 0;
-	font-size: 0.88rem;
-	max-width: 16rem;
-	line-height: 1.45;
-}
-
-.saved-empty p {
-	margin: 0;
-}
-
 /* Mention autocomplete */
 .mention-panel {
 	position: absolute;
@@ -2857,36 +2779,6 @@ body {
 	margin: 0.35rem 0 0.5rem;
 }
 
-.taste-panel {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75rem;
-	padding: 0 1rem 1rem;
-}
-
-.taste-toolbar {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	justify-content: space-between;
-	gap: 0.75rem;
-	padding: 0.75rem 1rem;
-}
-
-.taste-privacy {
-	display: flex;
-	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.9rem;
-}
-
-.taste-privacy-hint {
-	margin: 0;
-	width: 100%;
-	font-size: 0.82rem;
-	color: var(--muted);
-}
-
 .taste-list {
 	display: flex;
 	flex-direction: column;
@@ -2927,10 +2819,6 @@ body {
 	background: transparent;
 	color: inherit;
 }
-
-/* === New icon types === */
-.icon-video { mask-image: url("https://api.iconify.design/mdi/play-circle-outline.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/play-circle-outline.svg"); }
-.icon-live { mask-image: url("https://api.iconify.design/mdi/broadcast.svg"); -webkit-mask-image: url("https://api.iconify.design/mdi/broadcast.svg"); }
 
 /* === Search view === */
 .search-view-filters {
@@ -3174,8 +3062,7 @@ body {
 }
 
 .video-action-btn.is-active .icon-like {
-	mask-image: url("https://api.iconify.design/mdi/heart.svg");
-	-webkit-mask-image: url("https://api.iconify.design/mdi/heart.svg");
+	--icon: url("https://api.iconify.design/mdi/heart.svg");
 	background: var(--like);
 }
 
@@ -3244,41 +3131,6 @@ body {
 	font-size: 1rem;
 	padding: 2rem;
 	text-align: center;
-}
-
-.video-empty-state {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 0.85rem;
-	width: min(22rem, 86vw);
-	padding: 2rem 1.25rem;
-	text-align: center;
-	color: #fff;
-}
-
-.video-empty-icon {
-	width: 3.25rem;
-	height: 3.25rem;
-	background: rgba(255, 255, 255, 0.85);
-}
-
-.video-empty-title {
-	margin: 0;
-	font-size: 1.2rem;
-	font-weight: 700;
-}
-
-.video-empty-hint {
-	margin: 0;
-	color: rgba(255, 255, 255, 0.72);
-	font-size: 0.92rem;
-	line-height: 1.45;
-}
-
-.video-empty-compose {
-	margin-top: 0.35rem;
 }
 
 /* Heart animation */

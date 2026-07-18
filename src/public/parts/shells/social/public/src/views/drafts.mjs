@@ -2,6 +2,7 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { escapeHtml } from '../../../../../scripts/lib/escapeHtml.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { formatTimeHtml } from '../lib/display.mjs'
+import { buildEmptyState } from '../lib/emptyState.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
@@ -14,12 +15,11 @@ export async function loadDrafts() {
 	const data = await socialApi('/drafts')
 	const drafts = Array.isArray(data.drafts) ? data.drafts : []
 	if (!drafts.length) {
-		panel.innerHTML = `
-			<div class="empty-state">
-				<p>${escapeHtml(geti18n('social.empty.drafts'))}</p>
-				<p class="saved-empty-hint">${escapeHtml(geti18n('social.drafts.emptyHint'))}</p>
-			</div>
-		`
+		panel.replaceChildren(await buildEmptyState({
+			modClass: ' empty-state--saved empty-state--compact',
+			titleKey: 'social.empty.drafts',
+			hintKey: 'social.drafts.emptyHint',
+		}))
 		return
 	}
 	panel.innerHTML = `<div class="drafts-list">${drafts.map(row => {

@@ -1,13 +1,14 @@
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { bindDwellTracker } from '../dwellTracker.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
-import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { entityHandle } from '../lib/display.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
+import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null
@@ -118,20 +119,7 @@ export async function loadSuggestedAccounts() {
 		return
 	}
 	aside.classList.remove('hidden')
-	list.replaceChildren()
-	for (const account of accounts) {
-		const row = document.createElement('div')
-		row.className = 'suggested-account'
-		row.innerHTML = `
-			${renderAvatarHtml(account.entityHash, { name: account.name })}
-			<div class="suggested-account-info">
-				<a href="${escapeHtml(formatSocialProfileHref(account.entityHash))}" class="suggested-account-name">${escapeHtml(account.name)}</a>
-				<span class="suggested-account-handle">${escapeHtml(entityHandle(account.entityHash, account))}</span>
-			</div>
-			<button type="button" class="suggested-follow-btn" data-follow="${escapeHtml(account.entityHash)}" data-i18n="social.actions.follow"></button>
-		`
-		list.appendChild(row)
-	}
+	await renderSuggestedAccountRows(list, accounts)
 }
 
 /**
@@ -156,7 +144,7 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 	const list = document.createElement('div')
 	list.className = 'trending-tags'
 	if (!tags.length)
-		list.innerHTML = '<p class="empty-hint" data-i18n="social.trending.empty"></p>'
+		await mountTemplate(list, 'empty_hint', { i18nKey: 'social.trending.empty' })
 	else
 		for (const row of tags) {
 			const link = document.createElement('a')
@@ -297,8 +285,6 @@ export async function loadFeed(append = false) {
 		items = data.items || []
 		nextCursor = data.nextCursor || null
 	}
-	if (feedGeneration !== gen) return
-
 	if (feedGeneration !== gen) return
 
 	state.feedCursor = nextCursor || null

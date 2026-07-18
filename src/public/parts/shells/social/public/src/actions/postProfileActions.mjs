@@ -7,7 +7,7 @@ import { purgeFeedShownPost, restoreFeedShownItems, runWrite } from '../lib/soci
 import { refreshVisiblePosts } from '../navigation.mjs'
 import { state } from '../state.mjs'
 
-import { closePostMoreMenus, copyTextToClipboard, shareOrCopyPostLink } from './shared.mjs'
+import { closePostMoreMenus, copyTextToClipboard, flashCopiedLabel, shareOrCopyPostLink } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 /**
@@ -103,11 +103,7 @@ export async function handlePostProfileActionsClick(target) {
 		if (parsed) {
 			const { entityHash, postId } = parsed
 			await copyTextToClipboard(formatSocialShareHttpsUrl(entityHash, postId))
-			const label = copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]')
-			if (label) label.textContent = geti18n('social.actions.copied')
-			setTimeout(() => {
-				if (label) label.textContent = geti18n('social.actions.copyLink')
-			}, 1500)
+			flashCopiedLabel(copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]'))
 			closePostMoreMenus()
 		}
 		return true
@@ -118,15 +114,11 @@ export async function handlePostProfileActionsClick(target) {
 		const parsed = parseActionKey(shareButton.dataset.share)
 		if (parsed) {
 			const result = await shareOrCopyPostLink(parsed.entityHash, parsed.postId)
-			if (result === 'copied') {
-				const label = shareButton.querySelector('[data-i18n="social.actions.share"]')
-					|| shareButton.querySelector('.action-count')
-				const prev = label?.textContent
-				if (label) label.textContent = geti18n('social.actions.copied')
-				setTimeout(() => {
-					if (label && prev != null) label.textContent = prev
-				}, 1500)
-			}
+			if (result === 'copied')
+				flashCopiedLabel(
+					shareButton.querySelector('[data-i18n="social.actions.share"]')
+						|| shareButton.querySelector('.action-count'),
+				)
 			closePostMoreMenus()
 		}
 		return true

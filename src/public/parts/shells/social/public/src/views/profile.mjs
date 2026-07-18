@@ -44,40 +44,28 @@ export async function renderBlocklist(container) {
 	if (!(container instanceof HTMLElement)) return
 	const data = await chatApi('/personal-lists')
 	const entries = data.entries || []
-	const blocked = entries.filter(entry => entry.kind === 'block')
-	const hidden = entries.filter(entry => entry.kind === 'hide')
-	if (!blocked.length && !hidden.length) {
+	const sections = [
+		{ kind: 'block', titleKey: 'social.blocklist.title', action: 'unblock', labelKey: 'social.blocklist.unblock' },
+		{ kind: 'hide', titleKey: 'social.blocklist.hiddenTitle', action: 'unhide', labelKey: 'social.blocklist.unhide' },
+	]
+	const grouped = sections.map(section => ({
+		...section,
+		rows: entries.filter(entry => entry.kind === section.kind),
+	}))
+	if (grouped.every(section => !section.rows.length)) {
 		await mountTemplate(container, 'blocklist_empty', {})
 		return
 	}
 	container.replaceChildren()
-	if (blocked.length) {
-		await appendTemplate(container, 'blocklist_heading', { titleKey: 'social.blocklist.title' })
-		for (const entry of blocked) {
+	for (const section of grouped) {
+		if (!section.rows.length) continue
+		await appendTemplate(container, 'blocklist_heading', { titleKey: section.titleKey })
+		for (const entry of section.rows) {
 			const actionHtml = entry.scope === 'entity'
 				? await renderTemplateAsHtmlString('blocklist_action', {
-					action: 'unblock',
+					action: section.action,
 					value: escapeHtml(entry.value),
-					labelKey: 'social.blocklist.unblock',
-				})
-				: ''
-			await appendTemplate(container, 'blocklist_row', {
-				scopeKey: entry.scope === 'subject'
-					? 'social.blocklist.scopeSubject'
-					: 'social.blocklist.scopeEntity',
-				value: escapeHtml(entry.value),
-				actionHtml,
-			})
-		}
-	}
-	if (hidden.length) {
-		await appendTemplate(container, 'blocklist_heading', { titleKey: 'social.blocklist.hiddenTitle' })
-		for (const entry of hidden) {
-			const actionHtml = entry.scope === 'entity'
-				? await renderTemplateAsHtmlString('blocklist_action', {
-					action: 'unhide',
-					value: escapeHtml(entry.value),
-					labelKey: 'social.blocklist.unhide',
+					labelKey: section.labelKey,
 				})
 				: ''
 			await appendTemplate(container, 'blocklist_row', {

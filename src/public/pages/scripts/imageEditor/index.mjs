@@ -2,12 +2,26 @@
  * 浏览器端图片编辑器：裁剪 / 马赛克 / 画笔。纯 canvas，无第三方依赖。
  */
 
+const IMAGE_EDITOR_CSS = '/scripts/imageEditor/imageEditor.css'
+
+/**
+ * @returns {void}
+ */
+function ensureImageEditorStyles() {
+	if (document.querySelector(`link[href="${IMAGE_EDITOR_CSS}"]`)) return
+	const link = document.createElement('link')
+	link.rel = 'stylesheet'
+	link.href = IMAGE_EDITOR_CSS
+	document.head.appendChild(link)
+}
+
 /**
  * @param {File | Blob} file 源图片
  * @param {{ title?: string, cropLabel?: string, mosaicLabel?: string, brushLabel?: string, applyLabel?: string, cancelLabel?: string }} [labels] 文案
  * @returns {Promise<File | null>} 编辑后的文件；取消为 null
  */
 export function openImageEditor(file, labels = {}) {
+	ensureImageEditorStyles()
 	return new Promise((resolve, reject) => {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')

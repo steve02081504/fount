@@ -3,6 +3,7 @@ import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, formatTimeAttrs, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
+import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { state } from '../state.mjs'
 
@@ -140,15 +141,7 @@ export async function loadExplore() {
 		}
 		else {
 			exploreSuggestedHost.classList.remove('hidden')
-			exploreSuggestedList.replaceChildren()
-			for (const account of suggested)
-				await appendTemplate(exploreSuggestedList, 'explore_suggested', {
-					profileHref: escapeHtml(formatSocialProfileHref(account.entityHash)),
-					entityHash: escapeHtml(account.entityHash),
-					name: escapeHtml(account.name),
-					handle: escapeHtml(entityHandle(account.entityHash, account)),
-					avatarHtml: renderAvatarHtml(account.entityHash, { name: account.name }),
-				})
+			await renderSuggestedAccountRows(exploreSuggestedList, suggested)
 		}
 	}
 

@@ -1,8 +1,8 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { activateView } from '../viewChrome.mjs'
+import { mountTemplate } from '/scripts/features/template.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
 let topicGeneration = 0
@@ -94,7 +94,7 @@ async function loadTopicPosts(tag, append = false) {
 
 	const items = data.items || []
 	if (!append && !items.length) {
-		list.innerHTML = `<p class="empty-hint">${escapeHtml(geti18n('social.topic.empty'))}</p>`
+		await mountTemplate(list, 'empty_hint', { i18nKey: 'social.topic.empty' })
 		return
 	}
 

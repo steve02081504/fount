@@ -37,6 +37,9 @@ alwaysApply: false
 - Prefer `data-i18n` / `setElementI18n(el, key, params)` for UI copy (params via `data-*` → `dataset`). `geti18n` only for non-DOM (`prompt`/`confirm`/`Error`) or embedding prebuilt HTML/DOM into a string. MutationObserver watches only `data-i18n` — same-key param updates need `setElementI18n`.
 - **Input / textarea placeholders**: `data-i18n` must point to an object with a `placeholder` sub-key (e.g. `social.composer`); a string key takes the `innerHTML` path and textarea loses user input. Do not use i18n copy to drive disabled/hidden states — composer is only visible in `#feed` (`activateView` toggles `hidden`), other views should not inject placeholders.
 - Prefer `renderTemplate` / `mountTemplate` over large `innerHTML` blocks.
+- Empty states: prefer `templates/empty_state.html` via `lib/emptyState.mjs` (`buildEmptyState`) or thin wrappers (`replies_empty` / `video_empty` / `explore_empty` / `empty_hint`); shared CSS is `.empty-state` + modifiers (`--replies` / `--explore` / `--saved` / `--video` / `--compact`).
+- Vertical snap pagination: `lib/snapCursorFeed.mjs` (`createSnapCursorFeed`) shared by video / live.
+- Suggested accounts: `lib/suggestedAccounts.mjs` (`renderSuggestedAccountRows`) for feed / explore sidebars.
 - Modals: reuse `openDialogFromTemplate` from `@src/public/pages/scripts/features/dialog.mjs`.
 - Explore posts (`discoverPosts`) are newest-first (not random).
 - Post card engagement: like / **dislike** (both use thumb-up / thumb-down icons); mutually exclusive; post cards and reply rows share `templates/engagement_bar.html` (`lib/engagementBar.mjs`); `reaction_index` projects federated like/dislike (gated by `privacy.publishReactions`); `for_you` uses local `taste/*`. Preference UI: `#settings` (no longer a top-level `#taste` nav entry).

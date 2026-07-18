@@ -143,31 +143,17 @@ export async function handleProfileNavClick(target) {
 		}
 	}
 
-	const blockButton = target.closest('[data-block]')
-	if (blockButton instanceof HTMLElement && blockButton.dataset.block) {
-		const entityHash = blockButton.dataset.block
-		await optimisticAuthorFilter(entityHash, () => socialApi('/relationships/block', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, block: true }),
-		}), 'block')
-	}
-
-	const hideButton = target.closest('[data-hide]')
-	if (hideButton instanceof HTMLElement && hideButton.dataset.hide) {
-		const entityHash = hideButton.dataset.hide
-		await optimisticAuthorFilter(entityHash, () => socialApi('/relationships/hide', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, hide: true }),
-		}), 'hide')
-	}
-
-	const muteButton = target.closest('[data-mute]')
-	if (muteButton instanceof HTMLElement && muteButton.dataset.mute) {
-		const entityHash = muteButton.dataset.mute
-		await optimisticAuthorFilter(entityHash, () => socialApi('/relationships/mute', {
-			method: 'POST',
-			body: JSON.stringify({ entityHash, mute: true }),
-		}), 'mute')
+	const blockButton = target.closest('[data-block], [data-hide], [data-mute]')
+	if (blockButton instanceof HTMLElement) {
+		const kind = blockButton.dataset.block ? 'block'
+			: blockButton.dataset.hide ? 'hide'
+				: 'mute'
+		const entityHash = blockButton.dataset[kind]
+		if (entityHash)
+			await optimisticAuthorFilter(entityHash, () => socialApi(`/relationships/${kind}`, {
+				method: 'POST',
+				body: JSON.stringify({ entityHash, [kind]: true }),
+			}), kind)
 	}
 
 	const unblockButton = target.closest('[data-unblock]')

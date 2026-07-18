@@ -1,6 +1,7 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { entityAvatarUrl, renderAvatarHtml } from '../lib/display.mjs'
+import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -13,13 +14,33 @@ import { setElementI18n } from '/scripts/i18n/index.mjs'
 let snapBind = null
 /** @type {string} */
 let liveScope = 'local'
-/** @type {string | null} */
-let liveCursor = null
-/** @type {object[]} */
-let liveShownItems = []
-let livePageLoading = false
 /** @type {number} */
 let currentLiveIndex = -1
+
+/** @type {ReturnType<typeof createSnapCursorFeed>} */
+const liveFeed = createSnapCursorFeed({
+	/**
+	 * @param {string | null} cursor 游标
+	 * @returns {Promise<object | null>} 分页结果
+	 */
+	fetchPage: cursor => socialApi(
+		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}&cursor=${encodeURIComponent(cursor || '')}`,
+	).catch(() => null),
+	/**
+	 * @param {HTMLElement} container 容器
+	 * @param {object[]} items 条目
+	 * @returns {void} 无返回
+	 */
+	appendSlides: (container, items) => {
+		for (const item of items) {
+			const slide = buildLiveSlide(item)
+			container.appendChild(slide)
+			snapBind?.observe(slide)
+		}
+	},
+	/** @returns {boolean} nearby 大厅时跳过竖滑分页 */
+	shouldSkip: () => liveScope === 'nearby',
+})
 
 /**
  * 每个 slide 的连接态：信令 WS + AV session。
@@ -105,9 +126,7 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 	snapBind?.disconnect()
 	snapBind = null
 	container.replaceChildren()
-	liveCursor = null
-	liveShownItems = []
-	livePageLoading = false
+	liveFeed.reset()
 	currentLiveIndex = -1
 
 	ensureLiveScopeTabs()
@@ -116,7 +135,6 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 		`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}`,
 	).catch(() => ({ items: [], nextCursor: null }))
 	const items = data.items || []
-	liveCursor = data.nextCursor || null
 
 	if (!items.length) {
 		container.innerHTML = '<div class="live-slide"><p class="live-empty" data-i18n="social.live.empty"></p></div>'
@@ -128,8 +146,8 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 		return
 	}
 
-	liveShownItems = [...items]
-	appendLiveSlides(container, items)
+	liveFeed.seed(items, data.nextCursor || null)
+	liveFeed.append(container, items)
 
 	snapBind = bindVerticalSnap(container, {
 		/**
@@ -140,7 +158,7 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 		onEnter: (index, el) => {
 			currentLiveIndex = index
 			activateLiveSlide(container, index)
-			void maybeLoadMoreLives(container, index)
+			void liveFeed.maybeLoadMore(container, index)
 		},
 		/**
 		 * @param {number} _index 离开索引
@@ -158,59 +176,6 @@ export async function loadLiveView(targetEntityHash, targetLiveId) {
 				slide.scrollIntoView()
 				break
 			}
-}
-
-/**
- * @param {HTMLElement} container 容器
- * @param {object[]} items 条目
- * @returns {void}
- */
-function appendLiveSlides(container, items) {
-	for (const item of items) {
-		const slide = buildLiveSlide(item)
-		container.appendChild(slide)
-		snapBind?.observe(slide)
-	}
-}
-
-/**
- * @param {HTMLElement} container 容器
- * @param {number} index 当前索引
- * @returns {Promise<void>}
- */
-async function maybeLoadMoreLives(container, index) {
-	if (livePageLoading || liveScope === 'nearby') return
-	const remaining = container.children.length - index - 1
-	if (remaining > 2) return
-
-	if (liveCursor) {
-		livePageLoading = true
-		try {
-			const data = await socialApi(
-				`/live/feed?limit=20&scope=${encodeURIComponent(liveScope)}&cursor=${encodeURIComponent(liveCursor)}`,
-			).catch(() => null)
-			if (!data) return
-			const items = data.items || []
-			liveCursor = data.nextCursor || null
-			if (items.length) {
-				liveShownItems.push(...items)
-				appendLiveSlides(container, items)
-			}
-		}
-		finally {
-			livePageLoading = false
-		}
-		return
-	}
-
-	if (!liveShownItems.length) return
-	livePageLoading = true
-	try {
-		appendLiveSlides(container, liveShownItems)
-	}
-	finally {
-		livePageLoading = false
-	}
 }
 
 /**

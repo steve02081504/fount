@@ -36,8 +36,8 @@ export async function loadPostDetail(entityHash, postId) {
 	}
 	catch (error) {
 		const msg = String(error?.message || '')
-		const notFound = /post not found/i.test(msg)
-		container.innerHTML = `<div class="empty">${escapeHtml(geti18n(notFound ? 'social.post.notFound' : 'social.post.loadFailed'))}</div>`
+		const key = /post not found/i.test(msg) ? 'social.post.notFound' : 'social.post.loadFailed'
+		container.innerHTML = `<div class="empty">${escapeHtml(geti18n(key))}</div>`
 		return
 	}
 	if (!data?.item) {
