@@ -19,12 +19,12 @@ test.describe('Chat hub integration', () => {
 		expect(postJson.event?.type).toBe('message')
 		expect(messageTextFromPostResponse(postJson)).toBe(text)
 
-		await page.locator('.hub-server-item[data-mode="friends"]').click()
-		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: 30_000 })
+		await page.locator('.server-item[data-mode="friends"]').click()
+		await expect(page.locator('#message-input')).toBeDisabled({ timeout: 30_000 })
 		await navigateGroupChannelHash(page, groupId, channelId)
 
-		await page.locator('#hub-toggle-members-button').click()
-		await expect(page.locator('#hub-member-bar')).toHaveClass(/hub-member-bar--open/)
+		await page.locator('#toggle-members-button').click()
+		await expect(page.locator('#member-bar')).toHaveClass(/member-bar--open/)
 
 		const searchText = `search-target ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, searchText)

@@ -1,9 +1,9 @@
-import { test, expect, openSocialHome, findPostCard, submitReplyViaPanel } from './fixtures.mjs'
+import { test, expect, openHome, findPostCard, submitReplyViaPanel } from './fixtures.mjs'
 
 test.describe('Social replies', () => {
 
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('replies panel loads and accepts a reply', async ({ page, publishPost }) => {

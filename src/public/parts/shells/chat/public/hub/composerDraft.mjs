@@ -57,19 +57,19 @@ export function loadDraft(groupId, channelId) {
 		const raw = localStorage.getItem(draftKey(groupId, channelId))
 		if (!raw) return
 		const draft = JSON.parse(raw)
-		const input = document.getElementById('hub-message-input')
+		const input = document.getElementById('message-input')
 		if (input instanceof HTMLTextAreaElement && draft.text) {
 			input.value = draft.text
 			input.dispatchEvent(new Event('input', { bubbles: true }))
 		}
-		const cw = document.getElementById('hub-content-warning')
+		const cw = document.getElementById('content-warning')
 		if (cw instanceof HTMLInputElement && draft.content_warning)
 			cw.value = draft.content_warning
-		const sm = document.getElementById('hub-sensitive-media')
+		const sm = document.getElementById('sensitive-media')
 		if (sm instanceof HTMLInputElement && draft.sensitive_media)
 			sm.checked = true
 		if (draft.content_warning || draft.sensitive_media) {
-			const extras = document.getElementById('hub-composer-extras')
+			const extras = document.getElementById('composer-extras')
 			if (extras) extras.hidden = false
 		}
 	}
@@ -104,9 +104,9 @@ export function wireDraftAutoSave(getCtx) {
 	 * @returns {{ text: string, content_warning: string, sensitive_media: boolean }} 草稿字段快照
 	 */
 	const readFields = () => {
-		const input = document.getElementById('hub-message-input')
-		const cw = document.getElementById('hub-content-warning')
-		const sm = document.getElementById('hub-sensitive-media')
+		const input = document.getElementById('message-input')
+		const cw = document.getElementById('content-warning')
+		const sm = document.getElementById('sensitive-media')
 		return {
 			text: input instanceof HTMLTextAreaElement ? input.value : '',
 			content_warning: cw instanceof HTMLInputElement ? cw.value.trim() : '',
@@ -122,7 +122,7 @@ export function wireDraftAutoSave(getCtx) {
 		if (groupId && channelId) saveDraft(groupId, channelId, readFields())
 	}
 
-	document.getElementById('hub-message-input')?.addEventListener('input', onDraftChange)
-	document.getElementById('hub-content-warning')?.addEventListener('input', onDraftChange)
-	document.getElementById('hub-sensitive-media')?.addEventListener('change', onDraftChange)
+	document.getElementById('message-input')?.addEventListener('input', onDraftChange)
+	document.getElementById('content-warning')?.addEventListener('input', onDraftChange)
+	document.getElementById('sensitive-media')?.addEventListener('change', onDraftChange)
 }

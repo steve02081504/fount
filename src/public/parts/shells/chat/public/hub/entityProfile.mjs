@@ -2,7 +2,7 @@
  * 【文件】public/hub/entityProfile.mjs
  * 【职责】实体（用户/角色）资料数据到 Hub UI 的绘制：简介 Markdown、编辑按钮绑定。
  * 【原理】`paintEntityProfileUi`、`paintBioMarkdown`、`wireProfileEditButton` 更新资料卡 DOM。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../src/entityProfileApi、core/state、entityResolve、presence、profileEdit。
  */
 import { aliasForEntity } from '../shared/aliases.mjs'
@@ -15,7 +15,7 @@ import {
 } from '../shared/entityProfileCard.mjs'
 import { fetchEntityProfileApi, cachedProfileFromApi } from '../src/entityProfileApi.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { canEditEntityProfile } from './entityResolve.mjs'
 import {
 	fetchUserProfile,
@@ -41,7 +41,7 @@ export async function loadEntityProfile(entityHash, options = {}) {
 		const cached = await fetchUserProfile(entityHash, { groupId: options.groupId })
 		if (cached) return cached
 	}
-	const data = await fetchEntityProfileApi(entityHash, options.groupId || hubStore.context.currentGroupId)
+	const data = await fetchEntityProfileApi(entityHash, options.groupId || store.context.currentGroupId)
 	if (!data?.profile) return null
 	return cachedProfileFromApi(data.profile, entityHash)
 }
@@ -57,9 +57,9 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 	const avatarSeed = root.dataset?.entityHash || root.dataset?.entityProfileHash || profile.entityHash || profile.name
 	await paintEntityProfileCard(root, profile, {
 		entityHash: avatarSeed,
-		selfEntityHash: hubStore.viewer?.viewerEntityHash,
-		nodeHash: hubStore.viewer?.nodeHash,
-		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})
 
 	const ownerEntityHash = profile.ownerEntityHash || null
@@ -89,12 +89,12 @@ export async function paintEntityProfileUi(root, profile, extras = {}) {
 export async function paintBioMarkdown(descriptionElement, bio, entityHash = '') {
 	await paintEntityProfileBio(descriptionElement, bio, entityHash, {
 		emptyI18n: 'chat.hub.charDescriptionEmpty',
-		selfEntityHash: hubStore.viewer?.viewerEntityHash,
-		nodeHash: hubStore.viewer?.nodeHash,
-		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})
 	if (descriptionElement instanceof HTMLElement && String(bio || '').trim())
-		descriptionElement.classList.add('hub-char-description-md')
+		descriptionElement.classList.add('char-description-md')
 }
 
 /**

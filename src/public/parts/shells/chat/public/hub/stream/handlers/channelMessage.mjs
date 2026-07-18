@@ -2,7 +2,7 @@
  * 【文件】public/hub/stream/handlers/channelMessage.mjs
  * 【职责】WS `channel_message` / `read_marker` / `vote_closed`。
  */
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 import { maybeBumpInboxBadgeFromWire } from '../../inboxClient.mjs'
 import {
 	bumpChannelUnread,
@@ -42,8 +42,8 @@ export function handleChannelMessageWire(wireMessage, channelId) {
 	maybeBumpInboxBadgeFromWire(wireMessage)
 	const { main, thread } = hubChannelMatch(incomingChannelId, channelId)
 	if (!main && !thread) {
-		if (hubStore.context.currentGroupId)
-			bumpChannelUnread(hubStore.context.currentGroupId, incomingChannelId)
+		if (store.context.currentGroupId)
+			bumpChannelUnread(store.context.currentGroupId, incomingChannelId)
 		return true
 	}
 	if (channelMessage?.type === 'message_edit') {

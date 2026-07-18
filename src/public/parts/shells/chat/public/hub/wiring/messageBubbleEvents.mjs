@@ -4,26 +4,26 @@ import { saveCustomEmojiFromRef } from '../../src/customEmojis.mjs'
 import { saveStickerFromMessage } from '../../src/saveStickerFromMessage.mjs'
 import { showTrustAuthorDialog } from '../../src/trustAuthorDialog.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 /**
  * @param {Event} event 点击事件
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handleMessageBubbleClick(event) {
-	const trustAuthorButton = event.target.closest('.hub-trust-author-button')
+	const trustAuthorButton = event.target.closest('.trust-author-button')
 	if (trustAuthorButton?.dataset?.authorPubKeyHash) {
-		const authorDisplayName = trustAuthorButton.closest('.hub-message')
-			?.querySelector('.hub-message-author')?.textContent
+		const authorDisplayName = trustAuthorButton.closest('.message')
+			?.querySelector('.message-author')?.textContent
 		const trusted = await showTrustAuthorDialog(
 			trustAuthorButton.dataset.authorPubKeyHash,
 			authorDisplayName,
 		)
 		if (trusted) {
 			showToastI18n('success', 'chat.hub.trustOk')
-			const messageRow = trustAuthorButton.closest('.hub-message[data-message-id]')
+			const messageRow = trustAuthorButton.closest('.message[data-message-id]')
 			const messageId = messageRow?.getAttribute('data-message-id')
-			const container = document.getElementById('hub-messages')
+			const container = document.getElementById('messages')
 			if (messageId) {
 				const { hydrateMessageMarkdown } = await import('../messages/render/markdown.mjs')
 				await hydrateMessageMarkdown(container, messageId)
@@ -31,17 +31,17 @@ export async function handleMessageBubbleClick(event) {
 		}
 		return true
 	}
-	const saveEmojiButton = event.target.closest('.hub-save-emoji-button')
+	const saveEmojiButton = event.target.closest('.save-emoji-button')
 	if (saveEmojiButton?.dataset?.emojiGroup && saveEmojiButton?.dataset?.emojiId) {
 		await saveCustomEmojiFromRef(saveEmojiButton.dataset.emojiGroup, saveEmojiButton.dataset.emojiId)
 		showToastI18n('success', 'chat.hub.saveEmojiOk')
 		return true
 	}
-	const saveStickerButton = event.target.closest('.hub-save-sticker-button')
+	const saveStickerButton = event.target.closest('.save-sticker-button')
 	if (saveStickerButton) {
-		const messageRow = saveStickerButton.closest('.hub-message[data-message-id]')
+		const messageRow = saveStickerButton.closest('.message[data-message-id]')
 		const messageId = messageRow?.getAttribute('data-message-id')
-		const channelMessage = hubStore.messages.channelMessages.find(entry => String(entry.eventId) === messageId)
+		const channelMessage = store.messages.channelMessages.find(entry => String(entry.eventId) === messageId)
 		if (!channelMessage?.content) return true
 		try {
 			await saveStickerFromMessage(channelMessage.content)
@@ -52,8 +52,8 @@ export async function handleMessageBubbleClick(event) {
 		}
 		return true
 	}
-	const blockAuthorButton = event.target.closest('.hub-block-author-button')
-	if (blockAuthorButton?.dataset?.blockPub && hubStore.context.currentGroupId) {
+	const blockAuthorButton = event.target.closest('.block-author-button')
+	if (blockAuthorButton?.dataset?.blockPub && store.context.currentGroupId) {
 		if (!confirmI18n('chat.hub.blockConfirm')) return true
 		const response = await fetch('/api/p2p/denylist', {
 			method: 'POST',
@@ -62,7 +62,7 @@ export async function handleMessageBubbleClick(event) {
 			body: JSON.stringify({
 				scope: 'subject',
 				value: blockAuthorButton.dataset.blockPub,
-				groupId: hubStore.context.currentGroupId,
+				groupId: store.context.currentGroupId,
 			}),
 		})
 		if (!response.ok) {

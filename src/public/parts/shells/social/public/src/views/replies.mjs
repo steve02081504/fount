@@ -3,7 +3,7 @@ import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runU
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderTrustedPostMarkdown } from '../lib/display.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 /**
@@ -11,9 +11,9 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
  * @returns {Promise<HTMLElement>} 回复 composer
  */
 async function buildReplyComposer(actionKey) {
-	const avatarHtml = socialState.viewerEntityHash
-		? renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile || {
-			name: socialState.viewerDisplayName,
+	const avatarHtml = state.viewerEntityHash
+		? renderAvatarHtml(state.viewerEntityHash, state.viewerProfile || {
+			name: state.viewerDisplayName,
 		}, 'reply-composer-avatar')
 		: ''
 	const composer = await renderTemplate('reply_composer', {

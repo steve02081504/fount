@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/friendChat.mjs
  * 【职责】好友私聊入口：查找或创建 DM 群、绑定角色/用户、切换 Hub 到私聊布局并连接群组 WS。
- * 【原理】`enterFriendChat` 渲染活跃角色卡、调整侧栏高亮与 composer；`dispatchFriendChat` 处理列表点击；设置 `hubStore.privateGroup` 后加载默认频道消息，与群聊共用 `messages` 管道。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【原理】`enterFriendChat` 渲染活跃角色卡、调整侧栏高亮与 composer；`dispatchFriendChat` 处理列表点击；设置 `store.privateGroup` 后加载默认频道消息，与群聊共用 `messages` 管道。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】由 `hashNav.navigateFromHash` 在解析到好友绑定 groupId 时调用本模块；../../../../scripts/template、../../../../scripts/toast、groupCore/Dm/federationSettings、groupFriendBinding、fount-p2p/core/hexIds、charCard。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -19,7 +19,7 @@ import { setGroupFriendBinding } from '../src/api/groupFriendBinding.mjs'
 import { handleUIError, toError } from '../src/ui/errors.mjs'
 
 import { getCharDetails, renderCharInfoCardActive } from './charCard.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { parseHash, updateFriendsHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
@@ -97,7 +97,7 @@ function enqueueResolveFriendGroup(fn, signal) {
  */
 async function findExistingFriendGroup(binding) {
 	await loadGroups()
-	const matches = hubStore.sidebar.groups.filter(g => g.friendBinding?.entityHash === binding.entityHash)
+	const matches = store.sidebar.groups.filter(g => g.friendBinding?.entityHash === binding.entityHash)
 	if (!matches.length) return null
 	matches.sort((a, b) => new Date(b.lastMessageTime || 0) - new Date(a.lastMessageTime || 0))
 	return matches[0].groupId ?? null
@@ -188,14 +188,14 @@ export function onEnterFriendChat(peer) {
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	if (!peer?.entityHash) {
-		hubStore.context.currentGroupId = null
-		hubStore.context.currentChannelId = null
-		hubStore.context.currentState = null
+		store.context.currentGroupId = null
+		store.context.currentChannelId = null
+		store.context.currentState = null
 		updateFriendsHash()
 		void setMode('friends')
 		return
 	}
-	hubStore.context.currentMode = 'friends'
+	store.context.currentMode = 'friends'
 	setActiveModeTab('friends')
 }
 
@@ -217,11 +217,11 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	const displayName = aliasForEntity(binding.entityHash)
 		|| binding.displayName || binding.charname || state.groupMeta?.name || groupId
 
-	hubStore.privateGroup.peerEntityHash = binding.entityHash
-	hubStore.privateGroup.charname = binding.charname || null
-	hubStore.privateGroup.groupId = groupId
-	hubStore.context.currentGroupId = groupId
-	hubStore.context.currentState = state
+	store.privateGroup.peerEntityHash = binding.entityHash
+	store.privateGroup.charname = binding.charname || null
+	store.privateGroup.groupId = groupId
+	store.context.currentGroupId = groupId
+	store.context.currentState = state
 
 	onEnterFriendChat({
 		entityHash: binding.entityHash,
@@ -229,7 +229,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		displayName,
 	})
 
-	const groupNameElement = document.getElementById('hub-group-name-display')
+	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
 	groupNameElement.textContent = displayName
 	if (binding.charname) {
@@ -238,7 +238,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 		renderCharInfoCardActive(binding.charname, details)
 	}
 	else
-		document.getElementById('hub-info-card-host').innerHTML = ''
+		document.getElementById('info-card-host').innerHTML = ''
 
 	const existingBinding = friendBindingForGroup(groupId)
 	if (!friendBindingsEqual(existingBinding, binding))
@@ -246,7 +246,7 @@ async function openFriendGroupChat(groupId, binding, signal, channelIdOpt) {
 	throwIfAborted(signal)
 	await loadGroups()
 
-	const input = document.getElementById('hub-message-input')
+	const input = document.getElementById('message-input')
 	if (binding.charname) {
 		input.dataset.name = binding.charname
 		input.setAttribute('data-i18n', 'chat.hub.charChatComposer')
@@ -277,14 +277,14 @@ export async function enterFriendChat(options = {}) {
 	enterFriendChatAbort = ac
 	const { signal } = ac
 
-	hubStore.friendChatEntering = true
+	store.friendChatEntering = true
 	try {
 		throwIfAborted(signal)
 		const { clearPrivateGroupState } = await import('./privateGroup.mjs')
 		const { setActiveModeTab } = await import('./mode.mjs')
 		clearPrivateGroupState()
 		setActiveModeTab('friends')
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/loading', {})
+		await mountTemplate(document.getElementById('messages'), 'hub/empty/loading', {})
 
 		throwIfAborted(signal)
 		const groupId = await enqueueResolveFriendGroup(
@@ -299,7 +299,7 @@ export async function enterFriendChat(options = {}) {
 	catch (error) {
 		if (signal.aborted) return
 		const err = handleUIError(error, 'chat.hub.createChatFailed')
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
+		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.createChatFailed',
 			errorMessage: err.message,
 		})
@@ -307,7 +307,7 @@ export async function enterFriendChat(options = {}) {
 	finally {
 		if (enterFriendChatAbort === ac) {
 			enterFriendChatAbort = null
-			hubStore.friendChatEntering = false
+			store.friendChatEntering = false
 		}
 	}
 }

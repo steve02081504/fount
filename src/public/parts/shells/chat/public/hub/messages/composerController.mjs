@@ -3,42 +3,42 @@
  *
  * 禁用时绝不要用字符串型 data-i18n（会写 innerHTML → 污染 textarea.value）。
  * 仅在输入区可见的禁用态（只读频道 / 疑似移出）传 `{ placeholder }` 对象键。
- * inbox / discovery / friends idle 等 surface 会隐藏 `.hub-input-area`，无需解释文案。
+ * inbox / discovery / friends idle 等 surface 会隐藏 `.input-area`，无需解释文案。
  */
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 const COMPOSER_TOOL_IDS = [
-	'hub-emoji-button',
-	'hub-upload-button',
-	'hub-voice-button',
-	'hub-photo-button',
-	'hub-sticker-button',
-	'hub-vote-button',
-	'hub-send-button',
-	'hub-composer-more-button',
+	'emoji-button',
+	'upload-button',
+	'voice-button',
+	'photo-button',
+	'sticker-button',
+	'vote-button',
+	'send-button',
+	'composer-more-button',
 ]
 
 /** @returns {void} */
 export function refreshHubHeaderButtons() {
-	const hasConversation = !!(hubStore.context.currentGroupId && hubStore.context.currentChannelId)
-	document.body.dataset.hubSurface = hasConversation ? 'conversation' : hubStore.context.currentMode
+	const hasConversation = !!(store.context.currentGroupId && store.context.currentChannelId)
+	document.body.dataset.surface = hasConversation ? 'conversation' : store.context.currentMode
 
-	const filesVisible = hubStore.context.currentMode === 'groups' && hubStore.context.currentGroupId && hubStore.context.currentState?.isMember
+	const filesVisible = store.context.currentMode === 'groups' && store.context.currentGroupId && store.context.currentState?.isMember
 
-	const filesButton = document.getElementById('hub-header-files-button')
+	const filesButton = document.getElementById('header-files-button')
 	if (filesButton)
 		if (filesVisible) filesButton.removeAttribute('hidden')
 		else filesButton.setAttribute('hidden', '')
 
-	document.getElementById('hub-overflow-files')?.toggleAttribute('hidden', !filesVisible)
+	document.getElementById('overflow-files')?.toggleAttribute('hidden', !filesVisible)
 
-	const callButton = document.getElementById('hub-header-call-button')
+	const callButton = document.getElementById('header-call-button')
 	if (callButton) {
-		const channelType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
-		const show = hubStore.context.currentMode === 'groups'
-			&& hubStore.context.currentGroupId
-			&& hubStore.context.currentChannelId
-			&& hubStore.context.currentState?.isMember
+		const channelType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
+		const show = store.context.currentMode === 'groups'
+			&& store.context.currentGroupId
+			&& store.context.currentChannelId
+			&& store.context.currentState?.isMember
 			&& (channelType === 'text' || channelType === 'streaming')
 		if (show) {
 			callButton.removeAttribute('hidden')
@@ -50,8 +50,8 @@ export function refreshHubHeaderButtons() {
 
 /** @returns {void} */
 export function enableComposer() {
-	const input = document.getElementById('hub-message-input')
-	const channelName = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.name || hubStore.context.currentChannelId || ''
+	const input = document.getElementById('message-input')
+	const channelName = store.context.currentState?.channels?.[store.context.currentChannelId]?.name || store.context.currentChannelId || ''
 	input.disabled = false
 	input.dataset.channel = channelName
 	input.dataset.i18n = 'chat.hub.composer'
@@ -68,7 +68,7 @@ export function enableComposer() {
  * @returns {void}
  */
 export function disableComposer(placeholderI18nKey) {
-	const input = document.getElementById('hub-message-input')
+	const input = document.getElementById('message-input')
 	input.disabled = true
 	delete input.dataset.channel
 	if (placeholderI18nKey)

@@ -22,13 +22,13 @@ export async function handleEdit(button, actions) {
 	const { groupId, channelId, reload } = actions
 	const eventId = button.dataset.eventId
 	if (!eventId || !groupId || !channelId) return false
-	const messageRow = button.closest('.hub-message')
-	if (messageRow?.querySelector('.hub-message-edit-area')) return true
+	const messageRow = button.closest('.message')
+	if (messageRow?.querySelector('.message-edit-area')) return true
 	const contextMessage = findContextMessage(messageRow, actions) || {}
 	const originalText = String(
 		contextMessage.content_for_edit
 		?? getMessageEditText(contextMessage)
-		?? messageRow?.querySelector('.hub-message-content')?.textContent
+		?? messageRow?.querySelector('.message-content')?.textContent
 		?? '',
 	)
 	const initialFiles = Array.isArray(contextMessage.files)
@@ -41,7 +41,7 @@ export async function handleEdit(button, actions) {
 	/** @returns {Promise<void>} */
 	const saveCharEdit = async () => {
 		if (!charEditor) return
-		const saveButton = editWrap?.querySelector('.hub-message-edit-save')
+		const saveButton = editWrap?.querySelector('.message-edit-save')
 		if (saveButton instanceof HTMLButtonElement) saveButton.disabled = true
 		try {
 			await editChannelMessage(groupId, channelId, eventId, charEditor.getText())

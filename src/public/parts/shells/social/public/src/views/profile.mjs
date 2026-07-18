@@ -15,7 +15,7 @@ import {
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 import { renderProfileAlbums } from './albums.mjs'
 
@@ -97,7 +97,7 @@ export async function renderBlocklist(container) {
  * @returns {Promise<void>}
  */
 export async function openProfileSettingsDialog(socialMeta = {}) {
-	socialState.profileSocialMeta = socialMeta || socialState.profileSocialMeta
+	state.profileSocialMeta = socialMeta || state.profileSocialMeta
 	const { switchView } = await import('../navigation.mjs')
 	await switchView('settings')
 }
@@ -113,7 +113,7 @@ function bindProfilePostsInfiniteScroll(entityHash, container) {
 	bindInfiniteScroll({
 		sentinel,
 		/** @returns {boolean} 个人帖列表是否仍有下一页 */
-		hasMore: () => !!socialState.profilePostsCursor,
+		hasMore: () => !!state.profilePostsCursor,
 		/** @returns {Promise<void>} 追加渲染下一页帖子 */
 		onLoad: () => renderProfilePosts(entityHash, container, null, true),
 	})
@@ -128,13 +128,13 @@ function bindProfilePostsInfiniteScroll(entityHash, container) {
  * @returns {Promise<void>}
  */
 export async function renderProfilePosts(entityHash, container, highlightPostId = null, append = false) {
-	const cursorQuery = append && socialState.profilePostsCursor
-		? `&cursor=${encodeURIComponent(socialState.profilePostsCursor)}`
+	const cursorQuery = append && state.profilePostsCursor
+		? `&cursor=${encodeURIComponent(state.profilePostsCursor)}`
 		: ''
 	const data = await socialApi(`/profile/${entityHash}/posts?limit=30${cursorQuery}`)
 	if (!append) container.replaceChildren()
 	const items = data.items || []
-	socialState.profilePostsCursor = data.nextCursor || null
+	state.profilePostsCursor = data.nextCursor || null
 	if (!items.length && !append) {
 		await mountTemplate(container, 'feed_empty', { emptyKey: 'social.empty.profilePosts' })
 		disconnectInfiniteScroll()
@@ -230,11 +230,11 @@ export async function openProfileRelationshipList(entityHash, kind) {
  * @returns {Promise<void>}
  */
 export async function refreshProfilePosts(highlightPostId = null) {
-	if (!socialState.profileEntityHash) return
-	socialState.profilePostsCursor = null
+	if (!state.profileEntityHash) return
+	state.profilePostsCursor = null
 	const panel = document.getElementById('profilePostsPanel')
 	if (panel)
-		await renderProfilePosts(socialState.profileEntityHash, panel, highlightPostId)
+		await renderProfilePosts(state.profileEntityHash, panel, highlightPostId)
 }
 
 /**
@@ -244,7 +244,7 @@ export async function refreshProfilePosts(highlightPostId = null) {
  * @returns {Promise<void>}
  */
 export async function activateProfileTab(tab, options = {}) {
-	const entityHash = socialState.profileEntityHash
+	const entityHash = state.profileEntityHash
 	if (!entityHash) return
 	for (const button of document.querySelectorAll('[data-profile-tab]')) {
 		const active = button.dataset.profileTab === tab
@@ -294,17 +294,17 @@ async function mountProfileEntityCard(host, entityHash, profile) {
 	const card = createDOMFromHtmlString(await response.text())
 	if (!(card instanceof HTMLElement)) return
 	configureEntityProfileCard(card, 'embedded')
-	card.classList.add('social-profile-entity-card')
+	card.classList.add('profile-entity-card')
 	if (!card.querySelector('[data-entity-owned-by-host]')) {
 		const ownedHost = document.createElement('div')
 		ownedHost.dataset.entityOwnedByHost = ''
-		card.querySelector('.hub-profile-popup-body')?.appendChild(ownedHost)
+		card.querySelector('.profile-popup-body')?.appendChild(ownedHost)
 	}
 	await paintEntityProfileCard(card, profile, {
 		entityHash,
 		selfEntityHash: viewerEntityHash(),
-		nodeHash: socialState.viewerNodeHash,
-		viewerOwnerEntityHash: socialState.viewerProfile?.ownerEntityHash,
+		nodeHash: state.viewerNodeHash,
+		viewerOwnerEntityHash: state.viewerProfile?.ownerEntityHash,
 	})
 	const ownerEntityHash = profile?.ownerEntityHash
 		? String(profile.ownerEntityHash).toLowerCase()
@@ -328,18 +328,18 @@ async function mountProfileEntityCard(host, entityHash, profile) {
  * @returns {Promise<void>}
  */
 export async function loadProfileFor(entityHash, highlightPostId = null) {
-	socialState.profileEntityHash = entityHash
-	socialState.profilePostsCursor = null
+	state.profileEntityHash = entityHash
+	state.profilePostsCursor = null
 	profileLoadedTabs.delete(entityHash)
 	const data = await socialApi(`/profile/${entityHash}`)
 	const viewer = viewerEntityHash()
 	const isSelf = viewer && entityHash === viewer
 	const container = document.getElementById('profileView')
 	rememberEntityHandle(entityHash, data.profile)
-	socialState.profileSocialMeta = data.socialMeta || {}
+	state.profileSocialMeta = data.socialMeta || {}
 
-	const cared = socialState.viewerEntityHash
-		? await isCared(socialState.viewerEntityHash, entityHash)
+	const cared = state.viewerEntityHash
+		? await isCared(state.viewerEntityHash, entityHash)
 		: false
 	const headerActions = isSelf
 		? await renderTemplateAsHtmlString('profile_header_actions_self', {})

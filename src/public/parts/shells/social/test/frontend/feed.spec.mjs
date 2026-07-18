@@ -1,7 +1,7 @@
 import {
 	test,
 	expect,
-	openSocialHome,
+	openHome,
 	expectPostInFeed,
 	searchAndExpectPost,
 	searchViaEnterAndExpectPost,
@@ -12,7 +12,7 @@ import {
 
 test.describe('Social feed', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('feed refresh reloads posts', async ({ page, publishPost }) => {
@@ -107,7 +107,7 @@ test.describe('Social feed', () => {
 			const url = new URL(res.url())
 			return url.pathname === '/api/parts/shells:social/feed' && url.searchParams.has('cursor')
 		}, { timeout: 60_000 })
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 		await expect(page.locator('#feedScrollSentinel')).toBeAttached({ timeout: 60_000 })
 		const initialCount = await page.locator('#feedList [data-post-id]').count()
 		const feedResponse = await cursorWait
@@ -120,7 +120,7 @@ test.describe('Social feed', () => {
 
 	test('feed loops replay when cursor exhausted', async ({ page, baseUrl, apiKey }) => {
 		await seedPostsViaApi(baseUrl, apiKey, 3, 'replay')
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 		await expect(page.locator('#feedList [data-post-id]').first()).toBeVisible({ timeout: 60_000 })
 		const before = await page.locator('#feedList [data-post-id]').count()
 		expect(before).toBeGreaterThan(0)

@@ -14,11 +14,11 @@ test.describe('Chat secondary pages', () => {
 	test('channel context menu exports JSON archive', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await openFreshGroupChannel(page, baseUrl, apiKey)
 		await sendMessageViaComposer(page, groupId, channelId, `archive-export ${Date.now()}`)
-		const channelRow = page.locator(`.hub-channel-item[data-channel-id="${channelId}"]`)
+		const channelRow = page.locator(`.channel-item[data-channel-id="${channelId}"]`)
 		await expect(channelRow).toBeVisible({ timeout: 60_000 })
 		const downloadPromise = page.waitForEvent('download', { timeout: 60_000 })
 		await channelRow.click({ button: 'right' })
-		await page.locator('.hub-channel-menu-export').click()
+		await page.locator('.channel-menu-export').click()
 		const download = await downloadPromise
 		expect(download.suggestedFilename()).toMatch(/\.json$/i)
 	})

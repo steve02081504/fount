@@ -7,7 +7,7 @@
  */
 import { sendGroupMessage } from '../src/api/groupChannel.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 const QUEUE_KEY = 'fount.chat.sendQueue'
 
@@ -86,8 +86,8 @@ export async function drainSendQueue() {
 				await sendGroupMessage(groupId, channelId, content)
 				dequeueOfflineMessage(tempId)
 				// 若当前还在同一频道，触发增量刷新
-				if (hubStore.context.currentGroupId === groupId
-					&& hubStore.context.currentChannelId === channelId) 
+				if (store.context.currentGroupId === groupId
+					&& store.context.currentChannelId === channelId) 
 					void import('./messages/messages.mjs').then(m => m.scheduleChannelIncrementalRefresh({ immediate: true }))
 				
 			}

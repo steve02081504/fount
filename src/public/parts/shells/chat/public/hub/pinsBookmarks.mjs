@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/pinsBookmarks.mjs
  * 【职责】置顶消息与聊天书签：拉取列表、取消置顶/删除书签，渲染到顶栏搜索框左侧的两个弹出面板。
- * 【原理】`refreshPinsBookmarks` 更新 `#hub-pins-wrap`/`#hub-bookmarks-wrap` 面板内条目与按钮计数徽标，配合 `banners.setPinsBookmarksWrapVisible` 控制按钮可见性；`wirePinsBookmarksPanels` 负责按钮的展开/收起交互。条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【原理】`refreshPinsBookmarks` 更新 `#pins-wrap`/`#bookmarks-wrap` 面板内条目与按钮计数徽标，配合 `banners.setPinsBookmarksWrapVisible` 控制按钮可见性；`wirePinsBookmarksPanels` 负责按钮的展开/收起交互。条目摘要依赖 `pinPreview`；点击可跳转到对应消息事件。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、../src/api/groupBookmarks、banners、core/domUtils、core/state、sidebar、messages/messages、messages/pinPreview。
  */
 import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
@@ -13,7 +13,7 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, refreshChannelPinsBar } from './banners.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
 import { selectChannel, selectGroup } from './sidebar/index.mjs'
@@ -65,19 +65,19 @@ function compactSidebarText(value, max = SIDEBAR_LABEL_MAX) {
  * @returns {Promise<void>}
  */
 export async function refreshPinsBookmarks() {
-	const pinsHost = document.getElementById('hub-pins-wrap')
-	const bookmarksHost = document.getElementById('hub-bookmarks-wrap')
+	const pinsHost = document.getElementById('pins-wrap')
+	const bookmarksHost = document.getElementById('bookmarks-wrap')
 	if (!pinsHost || !bookmarksHost) return
-	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentState?.isMember) {
+	if (store.context.currentMode !== 'groups' || !store.context.currentGroupId || !store.context.currentState?.isMember) {
 		setPinsBookmarksWrapVisible(false)
 		return
 	}
 	setPinsBookmarksWrapVisible(true)
-	const pinsBy = hubStore.context.currentState.pinsByChannel || {}
+	const pinsBy = store.context.currentState.pinsByChannel || {}
 	const pinEntries = []
 	for (const [channelId, ids] of Object.entries(pinsBy)) {
 		if (!Array.isArray(ids) || !ids.length) continue
-		const channelName = hubStore.context.currentState.channels?.[channelId]?.name || channelId
+		const channelName = store.context.currentState.channels?.[channelId]?.name || channelId
 		for (const eventId of ids) {
 			if (!eventId) continue
 			pinEntries.push({ channelId, channelName, eventId })
@@ -85,7 +85,7 @@ export async function refreshPinsBookmarks() {
 	}
 	const previews = await Promise.all(
 		pinEntries.map(({ channelId, eventId }) =>
-			resolvePinMessagePreview(hubStore.context.currentGroupId, channelId, eventId)),
+			resolvePinMessagePreview(store.context.currentGroupId, channelId, eventId)),
 	)
 	pinsHost.replaceChildren()
 	if (pinEntries.length)
@@ -101,26 +101,26 @@ export async function refreshPinsBookmarks() {
 			}))
 		}
 	else await mountTemplate(pinsHost, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noPins' })
-	setPopCount('hub-pins-count', pinEntries.length)
+	setPopCount('pins-count', pinEntries.length)
 
-	pinsHost.querySelectorAll('.hub-pinned-message-row').forEach(pinRow => {
+	pinsHost.querySelectorAll('.pinned-message-row').forEach(pinRow => {
 		pinRow.addEventListener('click', async () => {
 			const channelId = pinRow.getAttribute('data-pinned-message-channel')
 			const eventId = pinRow.getAttribute('data-pinned-message-event')
 			if (!channelId || !eventId) return
-			if (channelId !== hubStore.context.currentChannelId) await selectChannel(channelId)
+			if (channelId !== store.context.currentChannelId) await selectChannel(channelId)
 			await scrollToMessageEventId(eventId)
 		})
 	})
-	pinsHost.querySelectorAll('.hub-pinned-message-unpin-button').forEach(unpinButton => {
+	pinsHost.querySelectorAll('.pinned-message-unpin-button').forEach(unpinButton => {
 		unpinButton.addEventListener('click', async (clickEvent) => {
 			clickEvent.stopPropagation()
 			const channelId = unpinButton.getAttribute('data-pinned-message-channel')
 			const eventId = unpinButton.getAttribute('data-pinned-message-event')
-			if (!channelId || !eventId || !hubStore.context.currentGroupId) return
+			if (!channelId || !eventId || !store.context.currentGroupId) return
 			unpinButton.disabled = true
-			await unpinMessage(hubStore.context.currentGroupId, channelId, eventId)
-			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+			await unpinMessage(store.context.currentGroupId, channelId, eventId)
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			refreshPinsBookmarks()
 			refreshChannelPinsBar()
 			unpinButton.disabled = false
@@ -129,7 +129,7 @@ export async function refreshPinsBookmarks() {
 
 	const bookmarks = await getChatBookmarks().catch(() => [])
 	const valid = bookmarks.filter(b => b && (b.groupId || b.href))
-	setPopCount('hub-bookmarks-count', valid.length)
+	setPopCount('bookmarks-count', valid.length)
 	bookmarksHost.replaceChildren()
 	if (!valid.length) {
 		if (pinEntries.length)
@@ -138,16 +138,16 @@ export async function refreshPinsBookmarks() {
 	}
 
 	// 仅收录可解析的真实群名（name 与 groupId 不同），避免侧栏出现裸 UUID。
-	const realGroupNames = new Map(hubStore.sidebar.groups
+	const realGroupNames = new Map(store.sidebar.groups
 		.filter(g => g?.groupId && g.name && g.name !== g.groupId)
 		.map(g => [normGroupId(g.groupId), g.name]))
-	const currentKey = normGroupId(hubStore.context.currentGroupId)
+	const currentKey = normGroupId(store.context.currentGroupId)
 
 	const rows = valid.map(bookmark => ({
 		bookmark,
 		eventId: String(bookmark.eventId || '').trim(),
 		channelId: String(bookmark.channelId || '').trim(),
-		targetGroup: bookmark.groupId || hubStore.context.currentGroupId,
+		targetGroup: bookmark.groupId || store.context.currentGroupId,
 	}))
 	const labels = await Promise.all(rows.map(async ({ bookmark, eventId, channelId, targetGroup }) => {
 		if (eventId && channelId && targetGroup) {
@@ -167,7 +167,7 @@ export async function refreshPinsBookmarks() {
 		const isOtherGroup = !!targetGroup && normGroupId(targetGroup) !== currentKey
 		const groupName = isOtherGroup ? realGroupNames.get(normGroupId(targetGroup)) || '' : ''
 		const channelName = channelId
-			? hubStore.context.currentState?.channels?.[channelId]?.name || (isOtherGroup ? '' : channelId)
+			? store.context.currentState?.channels?.[channelId]?.name || (isOtherGroup ? '' : channelId)
 			: ''
 		const meta = escapeHtml(compactSidebarText([groupName, channelName].filter(Boolean).join(' · '), 40))
 		if (eventId || channelId) {
@@ -177,14 +177,14 @@ export async function refreshPinsBookmarks() {
 				targetGroup ? ` data-bookmark-group="${escapeHtml(targetGroup)}"` : '',
 			].join('')
 			const line = await renderTemplate('hub/bookmarks/row_button', { title, titleI18nAttr, meta, dataAttrs })
-			line.querySelector('.hub-bookmark-row')?.addEventListener('click', async () => {
-				if (targetGroup && targetGroup !== hubStore.context.currentGroupId)
+			line.querySelector('.bookmark-row')?.addEventListener('click', async () => {
+				if (targetGroup && targetGroup !== store.context.currentGroupId)
 					await selectGroup(targetGroup, channelId || undefined)
-				else if (channelId && channelId !== hubStore.context.currentChannelId)
+				else if (channelId && channelId !== store.context.currentChannelId)
 					await selectChannel(channelId)
 				if (eventId) await scrollToMessageEventId(eventId)
 			})
-			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
+			line.querySelector('.bookmark-remove')?.addEventListener('click', async clickEvent => {
 				clickEvent.stopPropagation()
 				await removeChatBookmark({ groupId: targetGroup, eventId })
 				await refreshPinsBookmarks()
@@ -193,9 +193,9 @@ export async function refreshPinsBookmarks() {
 		}
 		else {
 			const href = bookmark.href?.trim()
-				|| `#group:${encodeURIComponent(targetGroup || hubStore.context.currentGroupId)}:${encodeURIComponent(hubStore.context.currentChannelId || 'default')}`
+				|| `#group:${encodeURIComponent(targetGroup || store.context.currentGroupId)}:${encodeURIComponent(store.context.currentChannelId || 'default')}`
 			const line = await renderTemplate('hub/bookmarks/row_link', { href, title, titleI18nAttr, meta })
-			line.querySelector('.hub-bookmark-remove')?.addEventListener('click', async clickEvent => {
+			line.querySelector('.bookmark-remove')?.addEventListener('click', async clickEvent => {
 				clickEvent.stopPropagation()
 				clickEvent.preventDefault()
 				await removeChatBookmark({ href })
@@ -208,8 +208,8 @@ export async function refreshPinsBookmarks() {
 
 /** @type {Array<{ button: string, panel: string }>} 顶栏弹出按钮与其面板的对应 */
 const POP_DEFS = [
-	{ button: 'hub-pins-button', panel: 'hub-pins-panel' },
-	{ button: 'hub-bookmarks-button', panel: 'hub-bookmarks-panel' },
+	{ button: 'pins-button', panel: 'pins-panel' },
+	{ button: 'bookmarks-button', panel: 'bookmarks-panel' },
 ]
 
 /** 关闭所有顶栏置顶/书签弹出面板。 @returns {void} */
@@ -237,7 +237,7 @@ function armPinsBookmarksDismiss() {
 			buttonElement?.classList.remove('is-open')
 			buttonElement?.setAttribute('aria-expanded', 'false')
 		}
-	}, { contextMenu: false, ignoreSelectors: ['.hub-header-pop'] })
+	}, { contextMenu: false, ignoreSelectors: ['.header-pop'] })
 }
 
 /**

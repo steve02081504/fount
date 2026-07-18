@@ -1,4 +1,4 @@
-import { test, expect, openSocialHome, expectPostInFeed, fetchViewerEntityHash } from './fixtures.mjs'
+import { test, expect, openHome, expectPostInFeed, fetchViewerEntityHash } from './fixtures.mjs'
 
 /**
  * 通过顶栏按钮 + prompt 对话框新建收藏文件夹。
@@ -30,7 +30,7 @@ async function createSavedFolder(page, folderName) {
 
 test.describe('Social saved posts', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('saved view lists bookmarked post', async ({ page, baseUrl, apiKey, publishPost }) => {

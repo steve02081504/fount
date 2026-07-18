@@ -86,7 +86,7 @@ export class StreamRenderer {
 		this.#bodyElement.innerHTML = await renderMarkdownAsString(text, this.#markdownCache)
 		if (text.trim())
 			this.#bodyElement.parentElement
-				?.querySelector('.hub-streaming-skeleton')
+				?.querySelector('.streaming-skeleton')
 				?.classList.add('hidden')
 
 	}

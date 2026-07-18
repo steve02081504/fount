@@ -10,7 +10,7 @@ import {
 	updateStatusBanners,
 } from '../banners.mjs'
 import { groupDisplayName } from '../core/domUtils.mjs'
-import { hubStore, setHubState } from '../core/state.mjs'
+import { store, setState } from '../core/state.mjs'
 import { parseHash, updateHash } from '../core/urlHash.mjs'
 import { resetFilesDrawerWire } from '../files.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
@@ -55,9 +55,9 @@ export { saveListChannelItems, selectChannel } from './selectChannel.mjs'
  */
 export async function renderHubChannelSidebar(state) {
 	if (isPrivateChatActive()) {
-		const root = document.getElementById('hub-channel-list')
+		const root = document.getElementById('channel-list')
 		await mountTemplate(root, 'hub/nav/private_chat_sidebar_shell', {})
-		root.querySelector('#hub-private-chat-back')?.addEventListener('click', () => {
+		root.querySelector('#private-chat-back')?.addEventListener('click', () => {
 			void backToFriendsList()
 		})
 	}
@@ -70,14 +70,14 @@ export async function renderHubChannelSidebar(state) {
  * @returns {Promise<void>}
  */
 async function paintGroupHubChrome(state) {
-	const groupNameElement = document.getElementById('hub-group-name-display')
+	const groupNameElement = document.getElementById('group-name-display')
 	delete groupNameElement.dataset.i18n
-	groupNameElement.textContent = await groupDisplayName(hubStore.context.currentGroupId, state.groupMeta.name)
+	groupNameElement.textContent = await groupDisplayName(store.context.currentGroupId, state.groupMeta.name)
 	await renderChannelList(state)
 	await renderMemberList(state)
-	hubStore.context.currentMode = 'groups'
-	document.body.dataset.hubSurface = 'groups'
-	document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
+	store.context.currentMode = 'groups'
+	document.body.dataset.surface = 'groups'
+	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 	})
 	await renderGroupInfoCard(state)
@@ -98,8 +98,8 @@ async function activateGroupChannel(state, presetChannelId) {
 		: state.groupSettings?.defaultChannelId || channelIds[0] || null
 	if (targetChannelId) await selectChannel(targetChannelId)
 	else {
-		setHubState('context.currentChannelId', null)
-		updateHash(hubStore.context.currentGroupId, null)
+		setState('context.currentChannelId', null)
+		updateHash(store.context.currentGroupId, null)
 		const { disableComposer } = await import('../messages/composerController.mjs')
 		disableComposer()
 		updateStatusBanners()
@@ -132,8 +132,8 @@ export async function selectGroup(groupId, presetChannelId = null) {
 	resetFilesDrawerWire()
 	closeGroupWebSocket()
 	cancelScheduledChannelRefresh()
-	setHubState('context.currentGroupId', groupId)
-	setHubState('context.currentState', null)
+	setState('context.currentGroupId', groupId)
+	setState('context.currentState', null)
 	updateHash(groupId, channelId)
 	const { setMode } = await import('../mode.mjs')
 	await setMode('groups')
@@ -151,7 +151,7 @@ export async function selectGroup(groupId, presetChannelId = null) {
 		setPinsBookmarksWrapVisible(false)
 		updateStatusBanners()
 		const err = handleUIError(error, 'chat.hub.loadGroupFailed')
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
+		await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
 			i18nKey: 'chat.hub.loadGroupFailed',
 			errorMessage: err.message,
 		})

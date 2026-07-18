@@ -2,7 +2,7 @@
  * 【文件】public/hub/profilePopup.mjs
  * 【职责】点击头像/作者链接触发的轻量资料弹层：解析锚点实体并展示只读资料摘要。
  * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；从消息行 `data-author` 等属性解析实体；不修改频道列表 HTML 结构。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -20,7 +20,7 @@ import { promptText } from '../shared/promptText.mjs'
 import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
 
 import { refreshAliasDependentUi } from './aliasUi.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import {
 	loadEntityProfile,
 	paintEntityProfileUi,
@@ -30,7 +30,7 @@ import { charAgentEntityHash, isViewerEntityHash } from './entityResolve.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
 import { hideHoverCard } from './presence.mjs'
 
-const LAYER_ID = 'hub-profile-popup-layer'
+const LAYER_ID = 'profile-popup-layer'
 
 /** @returns {void} */
 export function dismissProfilePopup() {
@@ -83,19 +83,19 @@ async function charEntityFromName(charname, label) {
 export async function resolveEntityFromAnchor(anchor) {
 	if (!(anchor instanceof HTMLElement)) return null
 
-	const charRow = anchor.closest('.hub-list-item-char')
+	const charRow = anchor.closest('.list-item-char')
 	if (charRow?.dataset.char)
 		return charEntityFromName(charRow.dataset.char, charRow.dataset.char)
 
-	const messageRow = anchor.closest('.hub-message[data-message-id]')
+	const messageRow = anchor.closest('.message[data-message-id]')
 	const charId = messageRow?.dataset.charId?.trim()
 	if (charId)
 		return charEntityFromName(charId, charId)
 
-	const memberItem = anchor.closest('.hub-member-item')
+	const memberItem = anchor.closest('.member-item')
 	const memberCharId = memberItem?.dataset.charId?.trim()
 	if (memberCharId) {
-		const label = memberItem?.querySelector('.hub-member-name')?.textContent?.trim()
+		const label = memberItem?.querySelector('.member-name')?.textContent?.trim()
 		return charEntityFromName(memberCharId, label || memberCharId)
 	}
 	const memberKey = memberItem?.dataset.memberKey?.trim()
@@ -106,7 +106,7 @@ export async function resolveEntityFromAnchor(anchor) {
 	const displayKey = String(avatarFor || memberKey || authorHash || '').trim().toLowerCase()
 	if (!displayKey || displayKey === '?') return null
 
-	const members = hubStore.context.currentState?.members || []
+	const members = store.context.currentState?.members || []
 	const memberRow = members.find(m =>
 		m.entityHash === displayKey
 		|| m.memberKey === displayKey
@@ -119,7 +119,7 @@ export async function resolveEntityFromAnchor(anchor) {
 		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
 	if (memberRow) return userEntityFromMember(memberRow)
 	if (isEntityHash128(displayKey)) {
-		const bound = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
+		const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
 		if (bound?.charname)
 			return await charEntityFromName(bound.charname, bound.displayName || bound.charname)
 		return {
@@ -148,7 +148,7 @@ export async function resolveEntityFromAnchor(anchor) {
  */
 async function paintProfilePopup(popup, entity) {
 	const { entityHash } = entity
-	const groupId = hubStore.context.currentGroupId || undefined
+	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash
 		? await loadEntityProfile(entityHash, { bypassCache: true, groupId })
 		: null
@@ -231,7 +231,7 @@ async function paintProfilePopup(popup, entity) {
 	const careButton = popup.querySelector('[data-profile-popup-care]')
 	if (careButton instanceof HTMLButtonElement) {
 		const isSelf = isViewerEntityHash(entityHash)
-		const canCare = !isSelf && isEntityHash128(entityHash) && !!hubStore.viewer?.operatorEntityHash
+		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
 		careButton.hidden = !canCare
 		if (canCare) {
 			const cared = await isCared(entityHash)
@@ -273,7 +273,7 @@ export async function showProfilePopup(entity) {
 
 	const layer = document.createElement('div')
 	layer.id = LAYER_ID
-	layer.className = 'hub-profile-popup-backdrop show'
+	layer.className = 'profile-popup-backdrop show'
 	layer.addEventListener('click', (event) => {
 		if (event.target === layer) dismissProfilePopup()
 	})

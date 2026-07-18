@@ -67,20 +67,20 @@ test.describe('Unread badge & divider', () => {
 		const second = `unread-second ${Date.now()}`
 		await postMessageViaApi(baseUrl, apiKey, groupId, otherChannelId, second)
 
-		const groupBadge = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"] .hub-unread-badge`)
+		const groupBadge = page.locator(`#server-list .server-item[data-group-id="${groupId}"] .unread-badge`)
 		// WS bump 或全量刷新皆可让 badge 出现；reload 走 loadGroups 的服务端 unreadCount，行为确定
 		await page.reload({ waitUntil: 'domcontentloaded' })
 		// 等默认频道 boot 完成后再切未读频道，避免与 selectGroup 的 await 竞态互相踩 hash
-		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: 60_000 })
-		await expect(page.locator(`.hub-channel-item.active[data-channel-id="${defaultChannelId}"]`)).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
+		await expect(page.locator(`.channel-item.active[data-channel-id="${defaultChannelId}"]`)).toBeVisible({ timeout: 60_000 })
 		await expect(groupBadge).toBeVisible({ timeout: 60_000 })
 		await expect(groupBadge).toHaveText('1')
 
 		// 切到未读频道：最早未读分割线渲染在第二条消息之前，已读后 badge 清零
 		await withReadMarkerSettled(page, otherChannelId, () => navigateGroupChannelHash(page, groupId, otherChannelId))
-		await expect(page.locator(`.hub-channel-item.active[data-channel-id="${otherChannelId}"]`)).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator(`.channel-item.active[data-channel-id="${otherChannelId}"]`)).toBeVisible({ timeout: 60_000 })
 		await expectMessageInChat(page, second)
-		await expect(page.locator('#hub-messages .hub-unread-divider')).toBeVisible({ timeout: 60_000 })
+		await expect(page.locator('#messages .unread-divider')).toBeVisible({ timeout: 60_000 })
 		await expect(groupBadge).toHaveCount(0, { timeout: 60_000 })
 	})
 })

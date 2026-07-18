@@ -11,10 +11,10 @@ import {
 	clearLikeOnCard,
 	rollbackDislikeButton,
 	rollbackLikeButton,
-	runSocialWrite,
+	runWrite,
 } from '../lib/socialWrite.mjs'
 import { focusComposer } from '../navigation.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { renderRepliesPanel } from '../views/replies.mjs'
 import { syncVideoCommentTicker } from '../views/video.mjs'
 
@@ -38,7 +38,7 @@ export async function handlePostEngagementClick(target) {
 			const card = dislikeButton.closest('.post-card, .reply')
 			if (!disliked && card instanceof HTMLElement) clearLikeOnCard(card)
 			try {
-				await runSocialWrite('dislike', () => socialApi(`/posts/${entityHash}/${postId}/dislike`, {
+				await runWrite('dislike', () => socialApi(`/posts/${entityHash}/${postId}/dislike`, {
 					method: 'POST',
 					body: JSON.stringify({ dislike: !disliked }),
 				}))
@@ -59,7 +59,7 @@ export async function handlePostEngagementClick(target) {
 			const card = likeButton.closest('.post-card, .reply')
 			if (!liked && card instanceof HTMLElement) clearDislikeOnCard(card)
 			try {
-				await runSocialWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
+				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
 					method: 'POST',
 					body: JSON.stringify({ like: !liked }),
 				}))
@@ -86,7 +86,7 @@ export async function handlePostEngagementClick(target) {
 			const card = submitRepostButton.closest('.post-card, .reply')
 			const prevRepost = card ? bumpRepostCount(card, 1) : 0
 			try {
-				await runSocialWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
+				await runWrite('repost', () => socialApi(`/posts/${entityHash}/${postId}/repost`, {
 					method: 'POST',
 					body: JSON.stringify({ comment }),
 				}))
@@ -106,7 +106,7 @@ export async function handlePostEngagementClick(target) {
 			const { entityHash, postId } = parsed
 			const card = quoteButton.closest('.post-card')
 			const text = decodeURIComponent(card?.dataset.postText || '')
-			socialState.pendingQuoteRef = { entityHash, postId, text }
+			state.pendingQuoteRef = { entityHash, postId, text }
 			await refreshQuotePreview()
 			await focusComposer({ switchToFeed: true })
 			closePostMoreMenus()
@@ -140,7 +140,7 @@ export async function handlePostEngagementClick(target) {
 			const text = textarea?.value.trim()
 			if (!text) return false
 			try {
-				await runSocialWrite('reply', () => submitReply(entityHash, postId, text))
+				await runWrite('reply', () => submitReply(entityHash, postId, text))
 				textarea.value = ''
 				const data = await socialApi(`/profile/${entityHash}/replies/${postId}`)
 				const replies = data.replies || []

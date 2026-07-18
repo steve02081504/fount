@@ -2,7 +2,7 @@
  * 【文件】public/hub/charCard.mjs
  * 【职责】角色（char part）资料卡渲染：拉取角色详情、展示简介与进入私聊/编辑资料入口。
  * 【原理】`renderCharInfoCard` / `renderCharInfoCardActive` 填充主栏角色信息区模板。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence、privateGroup
  */
 import {
@@ -13,7 +13,7 @@ import {
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import {
 	loadEntityProfile,
 	paintBioMarkdown,
@@ -62,14 +62,14 @@ async function charAvatarHtml(name, avatarUrl) {
 async function renderCharInfoCardInner(name, details, { active }) {
 	usingTemplates('/parts/shells:chat/src/templates')
 	const entityHash = await charAgentEntityHash(name)
-	const groupId = hubStore.context.currentGroupId || undefined
+	const groupId = store.context.currentGroupId || undefined
 	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
 	const info = details?.info || {}
 	const charDisplayName = profile?.name || info.name || name
 	const avatarUrl = profile?.avatar || info.avatar || details?.avatar || ''
-	const viewerDisplayName = hubStore.viewer.viewerDisplayName
-	const { viewerEntityHash } = hubStore.viewer
-	const memberList = document.getElementById('hub-member-list')
+	const viewerDisplayName = store.viewer.viewerDisplayName
+	const { viewerEntityHash } = store.viewer
+	const memberList = document.getElementById('member-list')
 	const charName = escapeHtml(charDisplayName)
 	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
 	const charAvatarSeed = entityHash || name
@@ -87,7 +87,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
 	})
 
-	const descriptionElement = memberList.querySelector('.hub-char-description-md')
+	const descriptionElement = memberList.querySelector('.char-description-md')
 	if (descriptionElement instanceof HTMLElement)
 		await paintBioMarkdown(
 			descriptionElement,
@@ -97,7 +97,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 			entityHash || '',
 		)
 
-	const infoCardHost = document.getElementById('hub-info-card-host')
+	const infoCardHost = document.getElementById('info-card-host')
 	const infoTpl = active ? 'hub/char/info_card_active' : 'hub/char/info_card_preview'
 	await mountTemplate(infoCardHost, infoTpl, {
 		charName,
@@ -109,7 +109,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 		descriptionPreview: '',
 	})
 
-	const card = infoCardHost?.querySelector('.hub-info-card')
+	const card = infoCardHost?.querySelector('.info-card')
 	if (card instanceof HTMLElement && profile) {
 		await paintEntityProfileUi(card, profile)
 		if (entityHash)
@@ -128,7 +128,7 @@ async function renderCharInfoCardInner(name, details, { active }) {
 	if (active)
 		applyAvatarsTo(memberList)
 	else
-		infoCardHost?.querySelector('.hub-info-cta')?.addEventListener('click', () => {
+		infoCardHost?.querySelector('.info-cta')?.addEventListener('click', () => {
 			void enterPrivateGroup(name)
 		})
 }

@@ -1,5 +1,5 @@
 /** Hub 页面共享可变状态（各子模块读写此对象字段）。 */
-export const hubStore = {
+export const store = {
 	sidebar: {
 		groups: [],
 		/** 侧栏 Ctrl/Shift 多选中的群 ID */
@@ -84,16 +84,16 @@ export const hubStore = {
 }
 
 /** @type {Map<string, Set<(value: unknown) => void>>} */
-const hubWatchers = new Map()
+const watchers = new Map()
 
 /**
  * @param {string} path 点分路径，如 `context.currentGroupId`
  * @returns {{ parent: object, key: string } | null} 父对象与末段键，或解析失败时 null
  */
-function resolveHubPath(path) {
+function resolvePath(path) {
 	const parts = String(path).split('.')
 	if (!parts.length) return null
-	let parent = hubStore
+	let parent = store
 	for (const segment of parts.slice(0, -1)) {
 		if (!(segment in parent)) return null
 		parent = parent[segment]
@@ -107,8 +107,8 @@ function resolveHubPath(path) {
  * @param {string} path 点分路径
  * @returns {unknown} 当前字段值
  */
-function getHubPathValue(path) {
-	const resolved = resolveHubPath(path)
+function getPathValue(path) {
+	const resolved = resolvePath(path)
 	if (!resolved) return undefined
 	return resolved.parent[resolved.key]
 }
@@ -118,12 +118,12 @@ function getHubPathValue(path) {
  * @param {unknown} value 新值
  * @returns {void}
  */
-function setHubPathValue(path, value) {
-	const resolved = resolveHubPath(path)
+function setPathValue(path, value) {
+	const resolved = resolvePath(path)
 	if (!resolved) return
 	if (resolved.parent[resolved.key] === value) return
 	resolved.parent[resolved.key] = value
-	const bucket = hubWatchers.get(path)
+	const bucket = watchers.get(path)
 	if (bucket?.size)
 		for (const listener of bucket) listener(value)
 }
@@ -139,7 +139,7 @@ for (const path of [
 	'messages.lastMessageId',
 	'federation.syncBanner',
 ])
-	hubWatchers.set(path, new Set())
+	watchers.set(path, new Set())
 
 
 /**
@@ -148,10 +148,10 @@ for (const path of [
  * @param {(value: unknown) => void} listener 变更回调
  * @returns {() => void} 取消订阅函数
  */
-export function watchHubState(path, listener) {
-	const bucket = hubWatchers.get(path) ?? (() => {
+export function watchState(path, listener) {
+	const bucket = watchers.get(path) ?? (() => {
 		const created = new Set()
-		hubWatchers.set(path, created)
+		watchers.set(path, created)
 		return created
 	})()
 	bucket.add(listener)
@@ -164,8 +164,8 @@ export function watchHubState(path, listener) {
  * @param {unknown} value 新值
  * @returns {void}
  */
-export function setHubState(path, value) {
-	setHubPathValue(path, value)
+export function setState(path, value) {
+	setPathValue(path, value)
 }
 
 /**
@@ -173,6 +173,6 @@ export function setHubState(path, value) {
  * @param {string} path 点分路径
  * @returns {unknown} 当前字段值
  */
-export function getHubState(path) {
-	return getHubPathValue(path)
+export function getState(path) {
+	return getPathValue(path)
 }

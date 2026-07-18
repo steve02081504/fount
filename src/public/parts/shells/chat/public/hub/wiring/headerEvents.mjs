@@ -1,5 +1,5 @@
 import { wireCallHeaderButton } from '../call.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { wireForkActions } from '../federation/forkActions.mjs'
 import { showGroupHeaderMenu } from '../groupContextMenu.mjs'
 import { wirePinsBookmarksPanels } from '../pinsBookmarks.mjs'
@@ -14,47 +14,47 @@ export function wireHeaderEvents() {
 	wirePinsBookmarksPanels()
 	wireCallHeaderButton()
 
-	document.getElementById('hub-prefs-button')?.addEventListener('click', () => {
+	document.getElementById('prefs-button')?.addEventListener('click', () => {
 		void import('../hubPrefs.mjs').then(({ openHubPrefsModal }) => openHubPrefsModal({
 			/** @returns {string | null | undefined} 当前 Hub 所选群组 id。 */
-			getGroupId: () => hubStore.context.currentGroupId,
+			getGroupId: () => store.context.currentGroupId,
 		}))
 	})
 
-	document.getElementById('hub-header-search').addEventListener('input', (event) => {
+	document.getElementById('header-search').addEventListener('input', (event) => {
 		const query = event.target.value.trim()
 		const queryLower = query.toLowerCase()
-		const chType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
-		if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && chType === 'text') {
+		const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
+		if (store.context.currentGroupId && store.context.currentChannelId && chType === 'text') {
 			if (query.length >= 2) scheduleHubMessageSearch(query)
-			hubStore.messages.channelSearchQuery = queryLower || null
+			store.messages.channelSearchQuery = queryLower || null
 			void (async () => {
 				const { refreshChannelViewDom } = await import('../messages/messages.mjs')
-				const container = document.getElementById('hub-messages')
+				const container = document.getElementById('messages')
 				await refreshChannelViewDom(container, false)
 			})()
 			return
 		}
-		document.querySelectorAll('#hub-messages .hub-message, #hub-messages .hub-char-entry, #hub-messages .hub-system-message').forEach((element) => {
+		document.querySelectorAll('#messages .message, #messages .char-entry, #messages .system-message').forEach((element) => {
 			element.style.display = !queryLower || (element.textContent || '').toLowerCase().includes(queryLower) ? '' : 'none'
 		})
 	})
-	document.getElementById('hub-header-search').addEventListener('focus', (event) => {
-		event.target.style.borderColor = 'var(--hub-accent)'
+	document.getElementById('header-search').addEventListener('focus', (event) => {
+		event.target.style.borderColor = 'var(--accent)'
 	})
-	document.getElementById('hub-header-search').addEventListener('blur', (event) => {
+	document.getElementById('header-search').addEventListener('blur', (event) => {
 		event.target.style.borderColor = 'transparent'
 	})
 
-	document.getElementById('hub-group-header').addEventListener('click', (event) => {
-		if (!hubStore.context.currentGroupId) return
-		void showGroupHeaderMenu(event.currentTarget instanceof HTMLElement ? event.currentTarget : document.getElementById('hub-group-header'))
+	document.getElementById('group-header').addEventListener('click', (event) => {
+		if (!store.context.currentGroupId) return
+		void showGroupHeaderMenu(event.currentTarget instanceof HTMLElement ? event.currentTarget : document.getElementById('group-header'))
 	})
 
-	document.getElementById('hub-user-bar').addEventListener('click', (event) => {
+	document.getElementById('user-bar').addEventListener('click', (event) => {
 		if (event.target.closest('a[href]')) return
 		void import('../hubStatus.mjs').then(({ showStatusMenu }) =>
-			showStatusMenu(document.getElementById('hub-user-bar')),
+			showStatusMenu(document.getElementById('user-bar')),
 		)
 	})
 

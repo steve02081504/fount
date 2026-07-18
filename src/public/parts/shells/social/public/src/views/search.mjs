@@ -1,8 +1,9 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
+import { updateFeedSearchChrome } from './feed.mjs'
 
 let searchGeneration = 0
 
@@ -48,7 +49,8 @@ export async function loadSearchView(initialQuery = '') {
 		input.value = q
 	if (asideInput instanceof HTMLInputElement)
 		asideInput.value = q
-	socialState.activeFeedSearchQuery = q || null
+	state.activeFeedSearchQuery = q || null
+	updateFeedSearchChrome()
 	if (q)
 		await runSearchView()
 	else
@@ -82,7 +84,8 @@ export async function runSearchView() {
 	if (!list) return
 
 	syncSearchHash(q)
-	socialState.activeFeedSearchQuery = q
+	state.activeFeedSearchQuery = q
+	updateFeedSearchChrome()
 	const asideInput = document.getElementById('feedSearchInput')
 	if (asideInput instanceof HTMLInputElement) asideInput.value = q
 

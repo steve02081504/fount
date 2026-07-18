@@ -18,7 +18,7 @@ export async function handleBookmark(button, actions) {
 	if (!eventId || !groupId || !channelId) return false
 	button.disabled = true
 	try {
-		const rowMessageId = button.closest('.hub-message')?.getAttribute('data-message-id')
+		const rowMessageId = button.closest('.message')?.getAttribute('data-message-id')
 		const bookmarkedMessage = actions.messages?.find(message => String(message.eventId) === rowMessageId)
 		const preview = bookmarkedMessage ? getMessageText(bookmarkedMessage).slice(0, 40) : eventId.slice(0, 12)
 		await addChatBookmark({

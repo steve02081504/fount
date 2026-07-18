@@ -1,13 +1,13 @@
 <div class="relative group/thumb" data-pending-id="${pendingId}">
 	${isImage ? `
-	<img class="hub-pending-thumb-img w-16 h-16 object-cover rounded border border-base-300" alt="${escapeHtml(fileName)}" />
+	<img class="pending-thumb-img w-16 h-16 object-cover rounded border border-base-300" alt="${escapeHtml(fileName)}" />
 	` : `
 	<div class="w-16 h-16 flex flex-col items-center justify-center rounded border border-base-300 bg-base-200 text-xs text-center p-1 gap-0.5">
 		<img class="w-8 h-8 shrink-0" src="https://api.iconify.design/line-md/attachment.svg" alt="" aria-hidden="true" />
 		<span class="truncate w-full text-center">${escapeHtml(fileNameShort)}</span>
 	</div>
 	`}
-	<button type="button" class="hub-pending-remove absolute -top-1 -right-1 btn btn-circle btn-xs btn-error opacity-0 group-hover/thumb:opacity-100 transition-opacity">
+	<button type="button" class="pending-remove absolute -top-1 -right-1 btn btn-circle btn-xs btn-error opacity-0 group-hover/thumb:opacity-100 transition-opacity">
 		<img class="w-3 h-3" src="https://api.iconify.design/line-md/close.svg" alt="" aria-hidden="true" />
 	</button>
 </div>

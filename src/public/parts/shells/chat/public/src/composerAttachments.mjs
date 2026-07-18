@@ -129,7 +129,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		// alt 文本输入
 		const altInput = document.createElement('input')
 		altInput.type = 'text'
-		altInput.className = 'input input-bordered input-xs w-full mt-1 hub-attachment-alt-input'
+		altInput.className = 'input input-bordered input-xs w-full mt-1 attachment-alt-input'
 		altInput.placeholder = String(
 			await import('/scripts/i18n/index.mjs').then(m => {
 				const v = m.geti18n('chat.hub.altImagePlaceholder')
@@ -143,7 +143,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		// 编辑按钮
 		const editBtn = document.createElement('button')
 		editBtn.type = 'button'
-		editBtn.className = 'btn btn-ghost btn-xs hub-attachment-edit-button mt-1'
+		editBtn.className = 'btn btn-ghost btn-xs attachment-edit-button mt-1'
 		editBtn.dataset.i18n = 'chat.hub.editImage'
 		editBtn.textContent = '✎'
 		editBtn.addEventListener('click', async () => {

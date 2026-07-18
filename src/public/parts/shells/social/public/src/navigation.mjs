@@ -4,7 +4,7 @@ import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 import { parseSocialRunUri } from '../shared/runUri.mjs'
 
 import { publishPost } from './composer.mjs'
-import { socialState } from './state.mjs'
+import { state } from './state.mjs'
 import { activateView, currentMainView, MAIN_NAV_VIEWS } from './viewChrome.mjs'
 import { loadDrafts } from './views/drafts.mjs'
 import { loadExplore } from './views/explore.mjs'
@@ -30,7 +30,7 @@ function connectNodesFromShare(entityHash, sharerNodeHash) {
 	if (isHex64(sharerNodeHash)) targets.add(String(sharerNodeHash).toLowerCase())
 	const parsed = parseEntityHash(entityHash)
 	if (parsed?.nodeHash) targets.add(String(parsed.nodeHash).toLowerCase())
-	const self = String(socialState.viewerNodeHash || '').toLowerCase()
+	const self = String(state.viewerNodeHash || '').toLowerCase()
 	for (const targetNodeHash of targets) {
 		if (!targetNodeHash || targetNodeHash === self) continue
 		void fetch('/api/p2p/federation/connect-node', {
@@ -63,25 +63,25 @@ export async function refreshVisiblePosts() {
 	const profileVisible = !document.getElementById('profileView')?.classList.contains('hidden')
 	const postVisible = !document.getElementById('postDetailView')?.classList.contains('hidden')
 	if (feedVisible)
-		if (socialState.activeFeedSearchQuery) {
+		if (state.activeFeedSearchQuery) {
 			const { loadSearchView } = await import('./views/search.mjs')
-			await loadSearchView(socialState.activeFeedSearchQuery)
+			await loadSearchView(state.activeFeedSearchQuery)
 		}
 		else {
-			socialState.feedCursor = null
+			state.feedCursor = null
 			await loadFeed(false)
 		}
 
-	if (profileVisible && socialState.profileEntityHash) {
+	if (profileVisible && state.profileEntityHash) {
 		await refreshProfilePosts()
 		const albumsPanel = document.getElementById('profileAlbumsPanel')
 		if (albumsPanel && !albumsPanel.classList.contains('hidden')) {
 			const { renderProfileAlbums } = await import('./views/albums.mjs')
-			await renderProfileAlbums(socialState.profileEntityHash, albumsPanel)
+			await renderProfileAlbums(state.profileEntityHash, albumsPanel)
 		}
 	}
-	if (postVisible && socialState.postDetailEntityHash && socialState.postDetailPostId)
-		await loadPostDetail(socialState.postDetailEntityHash, socialState.postDetailPostId)
+	if (postVisible && state.postDetailEntityHash && state.postDetailPostId)
+		await loadPostDetail(state.postDetailEntityHash, state.postDetailPostId)
 }
 
 /**
@@ -95,17 +95,17 @@ export async function switchView(view, options = {}) {
 	if (!options.skipHash)
 		syncHashForMainView(view)
 	if (view === 'feed') {
-		if (socialState.activeFeedSearchQuery) {
-			socialState.activeFeedSearchQuery = null
+		if (state.activeFeedSearchQuery) {
+			state.activeFeedSearchQuery = null
 			const searchInput = document.getElementById('feedSearchInput')
 			if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 		}
-		socialState.feedCursor = null
+		state.feedCursor = null
 		await loadFeed(false)
 		updateFeedSearchChrome()
 	}
 	if (view === 'notifications') {
-		socialState.notificationsCursor = null
+		state.notificationsCursor = null
 		await loadNotifications(false)
 	}
 	if (view === 'explore') await loadExplore()
@@ -209,10 +209,10 @@ export async function focusComposer({ switchToFeed = false } = {}) {
  */
 export async function afterPublishPost() {
 	await publishPost()
-	socialState.activeFeedSearchQuery = null
+	state.activeFeedSearchQuery = null
 	const searchInput = document.getElementById('feedSearchInput')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
-	socialState.feedCursor = null
+	state.feedCursor = null
 	await loadFeed(false)
 	updateFeedSearchChrome()
 }

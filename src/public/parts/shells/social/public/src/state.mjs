@@ -1,5 +1,5 @@
 /** Social 前端共享可变状态。 */
-export const socialState = {
+export const state = {
 	viewerEntityHash: null,
 	/** 本机 P2P nodeHash（分享链附带） */
 	viewerNodeHash: null,

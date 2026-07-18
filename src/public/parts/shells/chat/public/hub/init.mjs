@@ -2,7 +2,7 @@
  * 【文件】public/hub/init.mjs
  * 【职责】Hub 主入口 bootstrap：i18n/模板/可信作者/deep link、挂载消息与导航、顶栏 persona 展示。
  * 【原理】bindChannelMessageActions；导航由 initCore 完成。刷新顶栏与停止生成按钮直接调用模块导出。
- * 【数据结构】hubStore（core/state）持有 currentGroupId、viewerEntityHash、频道上下文。
+ * 【数据结构】store（core/state）持有 currentGroupId、viewerEntityHash、频道上下文。
  * 【关联】hub 页面加载时调用；串联 messages、stream、hashNav、chat、presence、wireEvents。
  */
 import { mountDockedEmojiPicker } from '../../../../scripts/components/emojiPicker.mjs'
@@ -17,7 +17,7 @@ import { syncTrustedAuthorsFromShell } from '../src/trustedAuthors.mjs'
 
 import { applyProfileAvatarToHost } from './core/avatarCover.mjs'
 import { wireHubBannerBindings } from './core/bindings.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { wireHubGroupEmojiStickerGestures } from './gestures/emojiPickerGestures.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { setupMisc } from './misc.mjs'
@@ -35,10 +35,10 @@ const messagesApi = () => import('./messages/messages.mjs')
  * @returns {Promise<void>}
  */
 export async function refreshViewerHubPresentation() {
-	const entityHash = hubStore.viewer.viewerEntityHash
+	const entityHash = store.viewer.viewerEntityHash
 	if (!entityHash) return
 	const profile = await fetchUserProfile(entityHash, {
-		groupId: hubStore.context.currentGroupId || undefined,
+		groupId: store.context.currentGroupId || undefined,
 		bypassCache: true,
 	})
 	const label = resolveDisplayName({
@@ -46,9 +46,9 @@ export async function refreshViewerHubPresentation() {
 		alias: aliasForEntity(entityHash),
 		profileName: profile?.name,
 	})
-	hubStore.viewer.viewerDisplayName = label
-	const myAvatar = document.getElementById('hub-my-avatar')
-	const myName = document.getElementById('hub-my-name')
+	store.viewer.viewerDisplayName = label
+	const myAvatar = document.getElementById('my-avatar')
+	const myName = document.getElementById('my-name')
 	myName.textContent = label
 	await applyProfileAvatarToHost(myAvatar, {
 		seed: entityHash,
@@ -58,33 +58,33 @@ export async function refreshViewerHubPresentation() {
 	})
 }
 
-/** @returns {Promise<void>} 顶栏展示与在线状态（viewer 身份由 initCore 写入 hubStore） */
+/** @returns {Promise<void>} 顶栏展示与在线状态（viewer 身份由 initCore 写入 store） */
 async function loadMe() {
-	if (!hubStore.viewer.viewerEntityHash) return
+	if (!store.viewer.viewerEntityHash) return
 	await refreshViewerHubPresentation()
 	const { syncViewerPresence, startIdleWatcher } = await import('./hubStatus.mjs')
-	await syncViewerPresence(hubStore.viewer.viewerEntityHash)
+	await syncViewerPresence(store.viewer.viewerEntityHash)
 	startIdleWatcher()
 }
 
 /** @returns {string|null} 当前 operator entityHash */
 function emojiViewerEntityHash() {
-	return hubStore.viewer.viewerEntityHash
+	return store.viewer.viewerEntityHash
 }
 
 /** @returns {{ groupId: string|null, channelId: string|null, privateGroupId: string|null }} 当前群/私聊上下文 */
 function emojiGetContext() {
-	const privateGroupId = hubStore.privateGroup.groupId
-	const groupId = hubStore.context.currentGroupId || privateGroupId
-	const channelId = hubStore.context.currentChannelId || hubStore.privateGroup.channelId
+	const privateGroupId = store.privateGroup.groupId
+	const groupId = store.context.currentGroupId || privateGroupId
+	const channelId = store.context.currentChannelId || store.privateGroup.channelId
 	return { groupId, channelId, privateGroupId }
 }
 
 /**
- * @returns {typeof hubStore.sidebar.groups} 已加入群列表
+ * @returns {typeof store.sidebar.groups} 已加入群列表
  */
 function hubPickerGetGroups() {
-	return hubStore.sidebar.groups
+	return store.sidebar.groups
 }
 
 /**
@@ -167,12 +167,12 @@ async function wireHubHeavyFeatures() {
 	// 触达 messages 模块图，确保频道消息管道已就绪
 	await messagesApi()
 
-	document.getElementById('hub-stop-generation-button')?.addEventListener('click', () => {
+	document.getElementById('stop-generation-button')?.addEventListener('click', () => {
 		resetVolatileStreamState({ abortBackend: true })
 	})
 	refreshStopGenerationButton()
 
-	const messagesRoot = document.getElementById('hub-messages')
+	const messagesRoot = document.getElementById('messages')
 	bindChannelMessageActions(messagesRoot)
 	bindMessageDragExport(messagesRoot)
 	await wireHubPickers()
@@ -185,14 +185,14 @@ async function wireHubHeavyFeatures() {
  * @returns {Promise<void>}
  */
 async function wireHubPickers() {
-	const emojiPickerElement = document.getElementById('hub-emoji-picker')
-	const emojiTabsElement = document.getElementById('hub-emoji-tabs')
-	const emojiGridElement = document.getElementById('hub-emoji-grid')
-	const emojiButton = document.getElementById('hub-emoji-button')
-	const stickerPickerElement = document.getElementById('hub-sticker-picker')
-	const stickerGridElement = document.getElementById('hub-sticker-grid')
-	const stickerButton = document.getElementById('hub-sticker-button')
-	const messageInput = document.getElementById('hub-message-input')
+	const emojiPickerElement = document.getElementById('emoji-picker')
+	const emojiTabsElement = document.getElementById('emoji-tabs')
+	const emojiGridElement = document.getElementById('emoji-grid')
+	const emojiButton = document.getElementById('emoji-button')
+	const stickerPickerElement = document.getElementById('sticker-picker')
+	const stickerGridElement = document.getElementById('sticker-grid')
+	const stickerButton = document.getElementById('sticker-button')
+	const messageInput = document.getElementById('message-input')
 
 	if (emojiPickerElement && emojiTabsElement && emojiGridElement && emojiButton) {
 		await mountDockedEmojiPicker({

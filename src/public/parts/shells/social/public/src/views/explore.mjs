@@ -4,7 +4,7 @@ import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runU
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, formatTimeAttrs, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
 import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 let exploreToolbarBound = false
 
@@ -18,7 +18,7 @@ function bindExploreToolbar() {
 	if (!(input instanceof HTMLInputElement)) return
 	exploreToolbarBound = true
 	input.addEventListener('change', () => {
-		socialState.exploreMediaOnly = input.checked
+		state.exploreMediaOnly = input.checked
 		void loadExplore()
 	})
 }
@@ -38,7 +38,7 @@ function renderExploreThumbs(mediaThumbs) {
 		const mimeType = ref.mimeType || ''
 		const isVideo = (ref.kind || '').startsWith('video') || mimeType.startsWith('video/')
 		cells.push(isVideo
-			? '<div class="explore-thumb explore-thumb-video" aria-hidden="true"><span class="s-ic s-ic-media"></span></div>'
+			? '<div class="explore-thumb explore-thumb-video" aria-hidden="true"><span class="icon icon-media"></span></div>'
 			: `<div class="explore-thumb"><img src="${escapeHtml(url)}" alt="" loading="lazy" /></div>`)
 	}
 	if (!cells.length) return ''
@@ -53,9 +53,9 @@ export async function loadExplore() {
 	bindExploreToolbar()
 	const mediaInput = document.getElementById('exploreMediaOnly')
 	if (mediaInput instanceof HTMLInputElement)
-		mediaInput.checked = socialState.exploreMediaOnly
+		mediaInput.checked = state.exploreMediaOnly
 
-	const mediaQuery = socialState.exploreMediaOnly ? '&mediaOnly=true' : ''
+	const mediaQuery = state.exploreMediaOnly ? '&mediaOnly=true' : ''
 	const [accounts, posts] = await Promise.all([
 		socialApi('/explore?limit=20'),
 		socialApi(`/explore/posts?limit=20${mediaQuery}`),
@@ -66,12 +66,12 @@ export async function loadExplore() {
 	if (!accountList || !postList) return
 
 	const accountRows = (accounts.accounts || []).filter(
-		row => row.entityHash !== socialState.viewerEntityHash,
+		row => row.entityHash !== state.viewerEntityHash,
 	)
 	accountList.replaceChildren()
 	if (!accountRows.length)
 		await mountTemplate(accountList, 'explore_empty', {
-			iconClass: 's-ic-user',
+			iconClass: 'icon-user',
 			i18nKey: 'social.empty.exploreAccounts',
 		})
 	else
@@ -95,7 +95,7 @@ export async function loadExplore() {
 	postList.replaceChildren()
 	if (!postRows.length) {
 		await mountTemplate(postList, 'explore_empty', {
-			iconClass: 's-ic-explore',
+			iconClass: 'icon-explore',
 			i18nKey: 'social.empty.explorePosts',
 		})
 		return

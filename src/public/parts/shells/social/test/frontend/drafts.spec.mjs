@@ -1,8 +1,8 @@
-import { test, expect, openSocialHome } from './fixtures.mjs'
+import { test, expect, openHome } from './fixtures.mjs'
 
 test.describe('Social composer drafts', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('save draft from composer and open from drafts view', async ({ page }) => {

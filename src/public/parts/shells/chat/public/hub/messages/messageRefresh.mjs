@@ -8,7 +8,7 @@ import { hubEmptyWaveIcon } from '../../src/lib/emojiSvg.mjs'
 import { eventIdsEqual } from '../../src/lib/eventId.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import {
 	dismissVolatileStreamPreview,
 	getActiveVolatileStreamIds,
@@ -63,14 +63,14 @@ function channelCacheKey(groupId, channelId) {
 
 /** @returns {void} */
 function saveChannelViewCache() {
-	const key = channelCacheKey(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
-	if (!key || !hubStore.messages.channelMessagesSource.length) return
+	const key = channelCacheKey(store.context.currentGroupId, store.context.currentChannelId)
+	if (!key || !store.messages.channelMessagesSource.length) return
 	channelViewCache.set(key, {
-		messages: hubStore.messages.channelMessagesSource,
-		reactions: hubStore.messages.channelReactions,
-		reactionsEtag: hubStore.messages.reactionsEtag,
-		readMarker: hubStore.messages.readMarker,
-		firstUnreadEventId: hubStore.messages.firstUnreadEventId,
+		messages: store.messages.channelMessagesSource,
+		reactions: store.messages.channelReactions,
+		reactionsEtag: store.messages.reactionsEtag,
+		readMarker: store.messages.readMarker,
+		firstUnreadEventId: store.messages.firstUnreadEventId,
 	})
 }
 
@@ -83,11 +83,11 @@ function restoreChannelViewCache(groupId, channelId) {
 	const key = channelCacheKey(groupId, channelId)
 	const cached = key ? channelViewCache.get(key) : null
 	if (!cached?.messages?.length) return false
-	hubStore.messages.channelReactions = cached.reactions
-	hubStore.messages.reactionsEtag = cached.reactionsEtag
-	hubStore.messages.channelMessagesSource = cached.messages
-	hubStore.messages.readMarker = cached.readMarker
-	hubStore.messages.firstUnreadEventId = cached.firstUnreadEventId
+	store.messages.channelReactions = cached.reactions
+	store.messages.reactionsEtag = cached.reactionsEtag
+	store.messages.channelMessagesSource = cached.messages
+	store.messages.readMarker = cached.readMarker
+	store.messages.firstUnreadEventId = cached.firstUnreadEventId
 	return true
 }
 
@@ -97,9 +97,9 @@ function restoreChannelViewCache(groupId, channelId) {
  * @returns {Promise<void>}
  */
 async function patchReactionRows(container, reactions) {
-	hubStore.messages.channelReactions = reactions
+	store.messages.channelReactions = reactions
 	const options = messageRenderOpts()
-	for (const message of hubStore.messages.channelMessages) {
+	for (const message of store.messages.channelMessages) {
 		if (message.type !== 'message' || !message.eventId) continue
 		const eventId = String(message.eventId)
 		const row = container.querySelector(messageIdSelector(eventId))
@@ -110,7 +110,7 @@ async function patchReactionRows(container, reactions) {
 			options.viewerMemberId,
 			{ canAddReactions: options.canAddReactions },
 		)
-		const existing = row.querySelector('.hub-reactions')
+		const existing = row.querySelector('.reactions')
 		if (!html) {
 			existing?.remove()
 			continue
@@ -138,22 +138,22 @@ async function applyIncomingMessage(message, { scroll = false } = {}) {
 	if (getActiveVolatileStreamIds().some(streamId => eventIdsEqual(streamId, eventId)) && !isChannelMessageGenerating(message))
 		dismissVolatileStreamPreview(eventId, { notifyEnd: false })
 
-	const hadInSource = hubStore.messages.channelMessagesSource.some(m => String(m.eventId) === eventId)
-	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, [message])
+	const hadInSource = store.messages.channelMessagesSource.some(m => String(m.eventId) === eventId)
+	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, [message])
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
+	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
 
-	const viewIdx = hubStore.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
-	const row = viewIdx >= 0 ? hubStore.messages.channelMessages[viewIdx] : null
+	const viewIdx = store.messages.channelMessages.findIndex(m => String(m.eventId) === eventId)
+	const row = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
 	if (row)
 		if (hadInSource)
-			await hubStore.messages.channelMessagePipeline.replaceItem(viewIdx, row)
+			await store.messages.channelMessagePipeline.replaceItem(viewIdx, row)
 		else
-			await hubStore.messages.channelMessagePipeline.appendItem(row, scroll)
+			await store.messages.channelMessagePipeline.appendItem(row, scroll)
 	else
-		await hubStore.messages.channelMessagePipeline.refresh()
+		await store.messages.channelMessagePipeline.refresh()
 
 	syncChannelActionsContext()
 	updateLastMessageId()
@@ -172,21 +172,21 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 		return
 	}
 
-	const oldIds = new Set(hubStore.messages.channelMessagesSource.map(row => String(row.eventId || '')))
-	hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, batch)
+	const oldIds = new Set(store.messages.channelMessagesSource.map(row => String(row.eventId || '')))
+	store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, batch)
 	refreshChannelView()
 
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
+	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
 
 	const replaceRows = []
 	const appendRows = []
 	for (const message of batch) {
 		const eventId = String(message?.eventId || '')
 		if (!eventId) continue
-		const viewIndex = hubStore.messages.channelMessages.findIndex(row => String(row.eventId) === eventId)
+		const viewIndex = store.messages.channelMessages.findIndex(row => String(row.eventId) === eventId)
 		if (viewIndex < 0) continue
-		const row = hubStore.messages.channelMessages[viewIndex]
+		const row = store.messages.channelMessages[viewIndex]
 		if (oldIds.has(eventId))
 			replaceRows.push({ index: viewIndex, row })
 		else
@@ -194,11 +194,11 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
 	}
 
 	for (const { index, row } of replaceRows)
-		await hubStore.messages.channelMessagePipeline.replaceItem(index, row)
+		await store.messages.channelMessagePipeline.replaceItem(index, row)
 	if (appendRows.length)
-		await hubStore.messages.channelMessagePipeline.appendItemsBatch(appendRows, scroll)
+		await store.messages.channelMessagePipeline.appendItemsBatch(appendRows, scroll)
 	if (!replaceRows.length && !appendRows.length)
-		await hubStore.messages.channelMessagePipeline.refresh()
+		await store.messages.channelMessagePipeline.refresh()
 
 	syncChannelActionsContext()
 	updateLastMessageId()
@@ -212,27 +212,27 @@ async function applyIncomingMessageBatch(batch, { scroll = false } = {}) {
  */
 async function replaceChannelMessageRow(eventId, row) {
 	const id = String(eventId).trim()
-	const sourceIdx = hubStore.messages.channelMessagesSource.findIndex(
+	const sourceIdx = store.messages.channelMessagesSource.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
 	if (sourceIdx >= 0)
-		hubStore.messages.channelMessagesSource[sourceIdx] = row
+		store.messages.channelMessagesSource[sourceIdx] = row
 	else
-		hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(hubStore.messages.channelMessagesSource, [row])
+		store.messages.channelMessagesSource = mergeIncrementalChannelBatch(store.messages.channelMessagesSource, [row])
 	refreshChannelView()
 
 	const container = getMessagesContainer()
 	if (!container) return
 	clearHubEmptyPlaceholder(container)
-	if (!hubStore.messages.channelMessagePipeline) initChannelVirtualList(container)
-	const viewIdx = hubStore.messages.channelMessages.findIndex(
+	if (!store.messages.channelMessagePipeline) initChannelVirtualList(container)
+	const viewIdx = store.messages.channelMessages.findIndex(
 		message => eventIdsEqual(message?.eventId, id),
 	)
-	const viewRow = viewIdx >= 0 ? hubStore.messages.channelMessages[viewIdx] : null
-	if (viewRow && hubStore.messages.channelMessagePipeline)
-		await hubStore.messages.channelMessagePipeline.replaceItem(viewIdx, viewRow)
-	else if (hubStore.messages.channelMessagePipeline)
-		await hubStore.messages.channelMessagePipeline.refresh()
+	const viewRow = viewIdx >= 0 ? store.messages.channelMessages[viewIdx] : null
+	if (viewRow && store.messages.channelMessagePipeline)
+		await store.messages.channelMessagePipeline.replaceItem(viewIdx, viewRow)
+	else if (store.messages.channelMessagePipeline)
+		await store.messages.channelMessagePipeline.refresh()
 	syncChannelActionsContext()
 	updateLastMessageId()
 	decorateRenderedMessages(container, false)
@@ -246,16 +246,16 @@ async function replaceChannelMessageRow(eventId, row) {
 export async function refreshChannelViewDom(container, scrollBottom = false) {
 	refreshChannelView()
 	syncChannelActionsContext()
-	if (!hubStore.messages.channelMessages.length) {
+	if (!store.messages.channelMessages.length) {
 		destroyChannelVirtualList()
 		await mountTemplate(container, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
-		hubStore.messages.lastMessageId = null
+		store.messages.lastMessageId = null
 		return
 	}
-	if (!hubStore.messages.channelMessagePipeline)
+	if (!store.messages.channelMessagePipeline)
 		initChannelVirtualList(container)
 	else
-		await hubStore.messages.channelMessagePipeline.refresh()
+		await store.messages.channelMessagePipeline.refresh()
 	updateLastMessageId()
 	if (scrollBottom) scrollToBottom()
 }
@@ -264,21 +264,21 @@ export async function refreshChannelViewDom(container, scrollBottom = false) {
  * @returns {Promise<void>}
  */
 export async function loadMessages() {
-	hubStore.messages.channelSearchQuery = null
-	const searchInput = document.getElementById('hub-header-search')
+	store.messages.channelSearchQuery = null
+	const searchInput = document.getElementById('header-search')
 	if (searchInput instanceof HTMLInputElement) searchInput.value = ''
 	const container = getMessagesContainer()
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
-	const channel = hubStore.context.currentState?.channels?.[channelId]
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
+	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channelId || !channel) {
 		destroyChannelVirtualList()
 		await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.noChannels' })
 		return
 	}
 	const pipelineKey = `${groupId}:${channelId}`
-	const softReload = hubStore.messages.channelMessagePipeline
-		&& hubStore.messages.channelPipelineKey === pipelineKey
+	const softReload = store.messages.channelMessagePipeline
+		&& store.messages.channelPipelineKey === pipelineKey
 	if (!softReload) {
 		destroyChannelVirtualList()
 		const hadStale = restoreChannelViewCache(groupId, channelId)
@@ -286,53 +286,53 @@ export async function loadMessages() {
 			refreshChannelView()
 			await refreshReactionPerms()
 			initChannelVirtualList(container)
-			hubStore.messages.channelPipelineKey = pipelineKey
+			store.messages.channelPipelineKey = pipelineKey
 		}
 		else
 			await mountTemplate(container, 'hub/empty/loading', {})
 	}
 	if (await loadNonTextChannel(container, channel)) return
 	try {
-		hubStore.messages.composerPendingId = null
-		hubStore.messages.channelOlderExhausted = false
+		store.messages.composerPendingId = null
+		store.messages.channelOlderExhausted = false
 		const { messages, reactions, readMarker } = await getChannelViewLog(
 			groupId,
 			channelId,
 			{ limit: 50 },
 		)
-		hubStore.messages.channelReactions = reactions || {}
-		hubStore.messages.reactionsEtag = reactionsSignature(reactions)
-		hubStore.messages.channelMessagesSource = messages
-		hubStore.messages.readMarker = readMarker || null
-		hubStore.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
+		store.messages.channelReactions = reactions || {}
+		store.messages.reactionsEtag = reactionsSignature(reactions)
+		store.messages.channelMessagesSource = messages
+		store.messages.readMarker = readMarker || null
+		store.messages.firstUnreadEventId = firstUnreadEventId(readMarker, messages)
 		refreshChannelView()
 		await refreshReactionPerms()
 		syncChannelActionsContext()
 		if (!messages.length) {
 			destroyChannelVirtualList()
-			hubStore.messages.channelPipelineKey = null
+			store.messages.channelPipelineKey = null
 			channelViewCache.delete(channelCacheKey(groupId, channelId) || '')
 			await mountTemplate(container, 'hub/empty/idle', { iconHtml: hubEmptyWaveIcon })
-			hubStore.messages.lastMessageId = null
+			store.messages.lastMessageId = null
 			return
 		}
 		if (!softReload) 
-			if (hubStore.messages.firstUnreadEventId)
-				setPendingScrollTarget(hubStore.messages.firstUnreadEventId)
+			if (store.messages.firstUnreadEventId)
+				setPendingScrollTarget(store.messages.firstUnreadEventId)
 			else
 				consumePendingScrollTarget()
 		
-		if (hubStore.messages.channelMessagePipeline)
-			await hubStore.messages.channelMessagePipeline.refresh()
+		if (store.messages.channelMessagePipeline)
+			await store.messages.channelMessagePipeline.refresh()
 		else {
 			initChannelVirtualList(container)
-			hubStore.messages.channelPipelineKey = pipelineKey
+			store.messages.channelPipelineKey = pipelineKey
 		}
 		if (softReload)
-			hubStore.messages.channelPipelineKey = pipelineKey
+			store.messages.channelPipelineKey = pipelineKey
 		updateLastMessageId()
 		// 有未读时滚到分割线；打开频道即标已读（badge 清零），分割线锚点保留到下次 load
-		if (!softReload && !hubStore.messages.firstUnreadEventId) scrollToBottom()
+		if (!softReload && !store.messages.firstUnreadEventId) scrollToBottom()
 		await markCurrentChannelRead().catch(() => {})
 		refreshChannelPinsBar()
 		saveChannelViewCache()
@@ -353,34 +353,34 @@ export async function loadMessages() {
  * @returns {Promise<void>}
  */
 export async function refreshChannelMessagesIncremental() {
-	const searchActive = !!hubStore.messages.channelSearchQuery
-	if (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
-	const chType = hubStore.context.currentState?.channels?.[hubStore.context.currentChannelId]?.type || 'text'
+	const searchActive = !!store.messages.channelSearchQuery
+	if (!store.context.currentGroupId || !store.context.currentChannelId) return
+	const chType = store.context.currentState?.channels?.[store.context.currentChannelId]?.type || 'text'
 	if (chType === 'list' || chType === 'streaming') return
 
 	const container = getMessagesContainer()
 	if (!container) return
 
 	const options = { limit: 50 }
-	if (hubStore.messages.lastMessageId)
-		options.since = hubStore.messages.lastMessageId
+	if (store.messages.lastMessageId)
+		options.since = store.messages.lastMessageId
 
 	const { messages, reactions } = await getChannelViewLog(
-		hubStore.context.currentGroupId,
-		hubStore.context.currentChannelId,
+		store.context.currentGroupId,
+		store.context.currentChannelId,
 		options,
 	)
 	const reactionSig = reactionsSignature(reactions)
 	if (!messages.length && !reactionSig) return
 
 	if (searchActive) {
-		if (reactionSig !== hubStore.messages.reactionsEtag) {
-			hubStore.messages.reactionsEtag = reactionSig
-			hubStore.messages.channelReactions = reactions || {}
+		if (reactionSig !== store.messages.reactionsEtag) {
+			store.messages.reactionsEtag = reactionSig
+			store.messages.channelReactions = reactions || {}
 		}
 		if (messages.length) {
-			hubStore.messages.channelMessagesSource = mergeIncrementalChannelBatch(
-				hubStore.messages.channelMessagesSource,
+			store.messages.channelMessagesSource = mergeIncrementalChannelBatch(
+				store.messages.channelMessagesSource,
 				messages,
 			)
 			updateLastMessageId()
@@ -391,12 +391,12 @@ export async function refreshChannelMessagesIncremental() {
 	clearHubEmptyPlaceholder(container)
 
 	const nearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100
-	if (reactionSig !== hubStore.messages.reactionsEtag) {
-		hubStore.messages.reactionsEtag = reactionSig
+	if (reactionSig !== store.messages.reactionsEtag) {
+		store.messages.reactionsEtag = reactionSig
 		await patchReactionRows(container, reactions || {})
 		if (!messages.length) return
 	}
-	hubStore.messages.channelReactions = reactions || {}
+	store.messages.channelReactions = reactions || {}
 	await applyIncomingMessageBatch(messages, { scroll: nearBottom })
 }
 
@@ -419,21 +419,21 @@ export function scheduleChannelIncrementalRefresh({ immediate = false } = {}) {
  */
 export async function applyChannelMessageEdit(targetId, editContent = null) {
 	const id = String(targetId || '').trim()
-	if (!id || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
+	if (!id || !store.context.currentGroupId || !store.context.currentChannelId) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
 
 	if (editContent?.newContent) {
-		const sourceIdx = hubStore.messages.channelMessagesSource.findIndex(
+		const sourceIdx = store.messages.channelMessagesSource.findIndex(
 			message => eventIdsEqual(message?.eventId, id),
 		)
 		if (sourceIdx >= 0) {
-			const patched = applyMessageEditToRow(hubStore.messages.channelMessagesSource[sourceIdx], editContent)
+			const patched = applyMessageEditToRow(store.messages.channelMessagesSource[sourceIdx], editContent)
 			await replaceChannelMessageRow(id, patched)
 			return
 		}
 	}
 
-	const rows = await fetchRowsForMessageEvent(hubStore.context.currentGroupId, hubStore.context.currentChannelId, id)
+	const rows = await fetchRowsForMessageEvent(store.context.currentGroupId, store.context.currentChannelId, id)
 	const row = rows.find(m => eventIdsEqual(m.eventId, id))
 	if (!row) {
 		scheduleChannelIncrementalRefresh({ immediate: true })
@@ -450,13 +450,13 @@ export async function applyChannelMessageDelete(targetId) {
 	const id = String(targetId || '').trim()
 	if (!id) return
 	dismissVolatileStreamPreview(id, { notifyEnd: false })
-	const idx = hubStore.messages.channelMessages.findIndex(m => String(m.eventId) === id)
+	const idx = store.messages.channelMessages.findIndex(m => String(m.eventId) === id)
 	if (idx < 0) return
-	hubStore.messages.channelMessagesSource = hubStore.messages.channelMessagesSource.filter(m => String(m.eventId) !== id)
+	store.messages.channelMessagesSource = store.messages.channelMessagesSource.filter(m => String(m.eventId) !== id)
 	const container = getMessagesContainer()
 	refreshChannelView()
-	if (hubStore.messages.channelMessagePipeline)
-		await hubStore.messages.channelMessagePipeline.deleteItem(idx)
+	if (store.messages.channelMessagePipeline)
+		await store.messages.channelMessagePipeline.deleteItem(idx)
 	syncChannelActionsContext()
 	updateLastMessageId()
 	if (container) decorateRenderedMessages(container, false)

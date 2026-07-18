@@ -1,18 +1,18 @@
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { isFilesDrawerOpen, refreshFilesDrawer, setFilesDrawerOpen, wireFilesDrawerToggle } from '../files.mjs'
 
 /** @returns {void} */
 export function wireFileEvents() {
-	document.getElementById('hub-image-upload-input').addEventListener('change', async (event) => {
+	document.getElementById('image-upload-input').addEventListener('change', async (event) => {
 		const { files } = event.target
 		if (!files?.length) return
-		if (!hubStore.privateGroup.groupId && (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId)) return
+		if (!store.privateGroup.groupId && (!store.context.currentGroupId || !store.context.currentChannelId)) return
 		event.target.value = ''
 		try {
 			const { addFilesFromEvent } = await import('../composerFiles.mjs')
-			if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && hubStore.context.fileHandlers && files.length === 1) {
-				await hubStore.context.fileHandlers.uploadGroupFile(files[0])
+			if (store.context.currentGroupId && store.context.currentChannelId && store.context.fileHandlers && files.length === 1) {
+				await store.context.fileHandlers.uploadGroupFile(files[0])
 				return
 			}
 			await addFilesFromEvent({ target: { files } })
@@ -23,8 +23,8 @@ export function wireFileEvents() {
 		}
 	})
 
-	document.getElementById('hub-header-files-button').addEventListener('click', () => {
-		if (!hubStore.context.currentGroupId) {
+	document.getElementById('header-files-button').addEventListener('click', () => {
+		if (!store.context.currentGroupId) {
 			showToastI18n('warning', 'chat.hub.filesNoGroup')
 			return
 		}
@@ -32,9 +32,9 @@ export function wireFileEvents() {
 		setFilesDrawerOpen(open)
 		if (open)
 			void refreshFilesDrawer({
-				groupId: hubStore.context.currentGroupId,
-				state: hubStore.context.currentState,
-				viewer: hubStore.context.currentState?.viewer,
+				groupId: store.context.currentGroupId,
+				state: store.context.currentState,
+				viewer: store.context.currentState?.viewer,
 			}).catch(err => {
 				void import('../../src/ui/errors.mjs').then(({ handleUIError }) => handleUIError(err))
 			})
@@ -48,11 +48,11 @@ export function wireFileEvents() {
  * @returns {Promise<boolean>} 是否已处理
  */
 export async function handleMessageFileDownloadClick(event) {
-	const fileDownloadButton = event.target.closest('.hub-message-file-download')
-	if (!fileDownloadButton?.dataset?.groupFileId || !hubStore.context.currentGroupId || !hubStore.context.fileHandlers?.downloadGroupFile)
+	const fileDownloadButton = event.target.closest('.message-file-download')
+	if (!fileDownloadButton?.dataset?.groupFileId || !store.context.currentGroupId || !store.context.fileHandlers?.downloadGroupFile)
 		return false
 	const fileId = fileDownloadButton.dataset.groupFileId
-	const fileRow = hubStore.context.currentState?.files?.find(file => file.fileId === fileId)
-	await hubStore.context.fileHandlers.downloadGroupFile(fileId, fileRow?.name || fileId)
+	const fileRow = store.context.currentState?.files?.find(file => file.fileId === fileId)
+	await store.context.fileHandlers.downloadGroupFile(fileId, fileRow?.name || fileId)
 	return true
 }

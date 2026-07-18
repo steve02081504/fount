@@ -1,12 +1,12 @@
 /**
  * 【文件】public/hub/gestures/chatGestures.mjs
  * 【职责】移动端/触控聊天手势：末条角色消息左右滑动切换时间轴分支，桌面端显示箭头按钮。
- * 【原理】在 `#hub-messages` 上事件委托 touch；桌面箭头仍挂末条角色消息。群/频道 ID 直接读 hubStore。
+ * 【原理】在 `#messages` 上事件委托 touch；桌面箭头仍挂末条角色消息。群/频道 ID 直接读 store。
  * 【关联】scripts/template、src/api/groupChannel、core/state
  */
 import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { modifyBranch } from '../../src/api/groupChannel.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 const CHAT_SWIPE_THRESHOLD = 50
 
@@ -15,12 +15,12 @@ const swipeDelegationBound = new WeakSet()
 
 /** @returns {string|null} 当前群 ID */
 function currentGroupId() {
-	return hubStore.context.currentGroupId || hubStore.privateGroup.groupId
+	return store.context.currentGroupId || store.privateGroup.groupId
 }
 
 /** @returns {string|null} 当前频道 ID */
 function currentChannelId() {
-	return hubStore.context.currentChannelId || hubStore.privateGroup.channelId
+	return store.context.currentChannelId || store.privateGroup.channelId
 }
 
 /** @returns {Promise<void>} 刷新频道消息 */
@@ -40,7 +40,7 @@ export function updateHideCharNames(entries) {
 			.map(entry => entry.charId || (entry.role === 'char' ? entry.name : null))
 			.filter(Boolean),
 	)
-	document.getElementById('hub-messages')
+	document.getElementById('messages')
 		?.classList.toggle('hide-char-names', uniqueChars.size <= 2)
 }
 
@@ -49,7 +49,7 @@ export function updateHideCharNames(entries) {
  * @returns {HTMLElement|null} 末条角色消息元素
  */
 function findLastCharMessage(container) {
-	const charEls = container.querySelectorAll('.hub-message[data-char-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+	const charEls = container.querySelectorAll('.message[data-char-id], .chat-entry[data-role="char"], .char-entry[data-role="char"]')
 	const lastChar = charEls.length ? charEls[charEls.length - 1] : null
 	return lastChar instanceof HTMLElement && !lastChar.hasAttribute('data-streaming') ? lastChar : null
 }
@@ -60,7 +60,7 @@ function findLastCharMessage(container) {
  * @returns {void}
  */
 async function attachDesktopTimelineArrows(lastChar) {
-	lastChar.querySelectorAll('.hub-char-timeline-arrow').forEach(arrow => arrow.remove())
+	lastChar.querySelectorAll('.char-timeline-arrow').forEach(arrow => arrow.remove())
 	const groupId = currentGroupId()
 	const channelId = currentChannelId()
 	if (!groupId || !channelId) return
@@ -107,7 +107,7 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchStart = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.message[data-message-id], .chat-entry[data-role="char"], .char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement) || target.hasAttribute('data-streaming')) return
 		if (event.touches.length !== 1) return
@@ -124,7 +124,7 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchMove = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.message[data-message-id], .chat-entry[data-role="char"], .char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement)) return
 		const state = swipeStateByElement.get(target)
@@ -137,7 +137,7 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchEnd = async event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.message[data-message-id], .chat-entry[data-role="char"], .char-entry[data-role="char"]')
 			: null
 		if (!(target instanceof HTMLElement)) return
 		const state = swipeStateByElement.get(target)
@@ -173,7 +173,7 @@ function ensureSwipeDelegation(container) {
 			|| target.getAttribute('data-author-key')
 			|| '?'
 		const { displayName } = authorPresentationKeys(authorKey)
-		const preview = (target.querySelector('.hub-message-content')?.textContent || '')
+		const preview = (target.querySelector('.message-content')?.textContent || '')
 			.replace(/\s+/g, ' ').trim().slice(0, 120) || '…'
 		setReplyTarget({ eventId, senderName: displayName, preview })
 	}
@@ -181,7 +181,7 @@ function ensureSwipeDelegation(container) {
 	/** @param {TouchEvent} event 触摸事件 */
 	const onTouchCancel = event => {
 		const target = event.target instanceof Element
-			? event.target.closest('.hub-message[data-message-id], .hub-chat-entry[data-role="char"], .hub-char-entry[data-role="char"]')
+			? event.target.closest('.message[data-message-id], .chat-entry[data-role="char"], .char-entry[data-role="char"]')
 			: null
 		if (target instanceof HTMLElement) {
 			const state = swipeStateByElement.get(target)

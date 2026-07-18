@@ -1,4 +1,4 @@
-import { pauseAllSocialVideos } from './lib/videoAutoplay.mjs'
+import { pauseAllVideos } from './lib/videoAutoplay.mjs'
 
 /** 可写入 location.hash 的主导航视图 */
 export const MAIN_NAV_VIEWS = Object.freeze([
@@ -37,7 +37,7 @@ export function activateView(view) {
 	for (const section of document.querySelectorAll('.view')) {
 		const show = section.id === `${view}View`
 		section.classList.toggle('hidden', !show)
-		if (!show) pauseAllSocialVideos(section)
+		if (!show) pauseAllVideos(section)
 	}
 	document.getElementById('composer')?.classList.toggle('hidden', view !== 'feed')
 }

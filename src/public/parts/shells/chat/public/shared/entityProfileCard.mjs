@@ -66,7 +66,7 @@ export function paintEntityProfileBanner(host, bannerEl, options) {
 	const bannerUrl = isAvatarImageUrl(options.banner) ? String(options.banner).trim() : ''
 	bannerEl.classList.add('entity-profile-banner')
 	bannerEl.classList.toggle('entity-profile-banner--image', !!bannerUrl)
-	bannerEl.classList.toggle('hub-profile-popup-banner--image', !!bannerUrl)
+	bannerEl.classList.toggle('profile-popup-banner--image', !!bannerUrl)
 	if (bannerUrl) {
 		bannerEl.style.backgroundImage = `linear-gradient(rgb(0 0 0 / 18%), rgb(0 0 0 / 28%)), url(${JSON.stringify(bannerUrl)})`
 		bannerEl.style.backgroundSize = 'cover, cover'
@@ -149,7 +149,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	root.style.setProperty('--entity-card-pattern-x', `${pattern.offsetX}px`)
 	root.style.setProperty('--entity-card-pattern-y', `${pattern.offsetY}px`)
 
-	const bannerElement = root.querySelector('.hub-profile-popup-banner')
+	const bannerElement = root.querySelector('.profile-popup-banner')
 	if (bannerElement instanceof HTMLElement)
 		paintEntityProfileBanner(root, bannerElement, {
 			entityHash: entityHash || name,
@@ -171,7 +171,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			label: name,
 			avatar,
 			emojiFontSize: '30px',
-			letterClass: 'hub-avatar-letter',
+			letterClass: 'avatar-letter',
 		})
 
 	const status = normalized.status === 'away'
@@ -206,7 +206,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	if (tagsHost instanceof HTMLElement) {
 		tagsHost.replaceChildren(...normalized.tags.filter(Boolean).map(tag => {
 			const chip = document.createElement('span')
-			chip.className = 'hub-profile-tag'
+			chip.className = 'profile-tag'
 			chip.textContent = `#${String(tag).replace(/^#+/, '')}`
 			return chip
 		}))

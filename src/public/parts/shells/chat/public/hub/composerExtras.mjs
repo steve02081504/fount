@@ -8,7 +8,7 @@ import {
 	readCwSensitive,
 } from '../shared/composerAttachmentFields.mjs'
 
-const HUB_CW_IDS = { cwId: 'hub-content-warning', sensitiveId: 'hub-sensitive-media' }
+const HUB_CW_IDS = { cwId: 'content-warning', sensitiveId: 'sensitive-media' }
 
 /**
  * 读取当前内容警告文本（空字符串 = 无）。
@@ -41,6 +41,6 @@ export function clearComposerExtras() {
  * @returns {void}
  */
 export function setComposerExtrasVisible(visible) {
-	const el = document.getElementById('hub-composer-extras')
+	const el = document.getElementById('composer-extras')
 	if (el) el.hidden = !visible
 }

@@ -35,57 +35,57 @@ export function iconifyImg(icon, options = {}) {
 }
 
 /** Hub empty-state icons */
-export const hubEmptyChatIcon = iconifyImg('line-md/chat-round', { class: 'hub-empty-icon-img', width: 48, height: 48 })
+export const hubEmptyChatIcon = iconifyImg('line-md/chat-round', { class: 'empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：挥手图标 HTML */
-export const hubEmptyWaveIcon = iconifyImg('mdi/hand-wave-outline', { class: 'hub-empty-icon-img', width: 48, height: 48 })
+export const hubEmptyWaveIcon = iconifyImg('mdi/hand-wave-outline', { class: 'empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：角色列表图标 HTML */
-export const hubEmptyCharsIcon = iconifyImg('mdi/robot-outline', { class: 'hub-empty-icon-img', width: 48, height: 48 })
+export const hubEmptyCharsIcon = iconifyImg('mdi/robot-outline', { class: 'empty-icon-img', width: 48, height: 48 })
 /** Hub 空状态：频道/列表图标 HTML */
-export const hubEmptyListIcon = iconifyImg('line-md/list-indented', { class: 'hub-empty-icon-img', width: 48, height: 48 })
+export const hubEmptyListIcon = iconifyImg('line-md/list-indented', { class: 'empty-icon-img', width: 48, height: 48 })
 
 /** Message action bar icons */
-export const hubActionBookmarkIcon = iconifyImg('mdi/bookmark-outline', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionBookmarkIcon = iconifyImg('mdi/bookmark-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：置顶图标 */
-export const hubActionPinIcon = iconifyImg('mdi/pin', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionPinIcon = iconifyImg('mdi/pin', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：取消置顶图标 */
-export const hubActionUnpinIcon = iconifyImg('mdi/pin-off-outline', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionUnpinIcon = iconifyImg('mdi/pin-off-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：点赞图标 */
-export const hubActionThumbUpIcon = iconifyImg('mdi/thumb-up-outline', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionThumbUpIcon = iconifyImg('mdi/thumb-up-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：点踩图标 */
-export const hubActionThumbDownIcon = iconifyImg('mdi/thumb-down-outline', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionThumbDownIcon = iconifyImg('mdi/thumb-down-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：删除图标 */
-export const hubActionDeleteIcon = iconifyImg('line-md/remove', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionDeleteIcon = iconifyImg('line-md/remove', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：编辑图标 */
-export const hubActionEditIcon = iconifyImg('line-md/edit', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionEditIcon = iconifyImg('line-md/edit', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：重新生成图标 */
-export const hubActionRegenIcon = iconifyImg('line-md/rotate-270', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionRegenIcon = iconifyImg('line-md/rotate-270', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：内联回复图标 */
-export const hubActionReplyIcon = iconifyImg('mdi/reply', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionReplyIcon = iconifyImg('mdi/reply', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：子线程图标 */
-export const hubActionThreadIcon = iconifyImg('mdi/forum-outline', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionThreadIcon = iconifyImg('mdi/forum-outline', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：复制链接/引用图标 */
-export const hubActionCopyIcon = iconifyImg('line-md/document-list', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionCopyIcon = iconifyImg('line-md/document-list', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：复制纯文本图标 */
-export const hubActionCopyTextIcon = iconifyImg('line-md/document', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionCopyTextIcon = iconifyImg('line-md/document', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：复制 HTML 图标 */
-export const hubActionCopyHtmlIcon = iconifyImg('line-md/document-code', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionCopyHtmlIcon = iconifyImg('line-md/document-code', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：下载附件图标 */
-export const hubActionDownloadIcon = iconifyImg('line-md/download', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionDownloadIcon = iconifyImg('line-md/download', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：分享图标 */
-export const hubActionShareIcon = iconifyImg('line-md/external-link', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionShareIcon = iconifyImg('line-md/external-link', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：更多菜单图标 */
-export const hubActionMenuIcon = iconifyImg('mdi/dots-horizontal', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionMenuIcon = iconifyImg('mdi/dots-horizontal', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：时间线上一版图标 */
-export const hubActionTimelinePrevIcon = iconifyImg('mdi/chevron-left', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionTimelinePrevIcon = iconifyImg('mdi/chevron-left', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：时间线下一版图标 */
-export const hubActionTimelineNextIcon = iconifyImg('mdi/chevron-right', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionTimelineNextIcon = iconifyImg('mdi/chevron-right', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：翻译图标 */
-export const hubActionTranslateIcon = iconifyImg('mdi/translate', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionTranslateIcon = iconifyImg('mdi/translate', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：转发图标 */
-export const hubActionForwardIcon = iconifyImg('mdi/share', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionForwardIcon = iconifyImg('mdi/share', { width: 16, height: 16, class: 'action-icon' })
 /** 消息操作栏：复制分享链接图标 */
-export const hubActionCopyLinkIcon = iconifyImg('mdi/link-variant', { width: 16, height: 16, class: 'hub-action-icon' })
+export const hubActionCopyLinkIcon = iconifyImg('mdi/link-variant', { width: 16, height: 16, class: 'action-icon' })
 /** 己方消息投递：已发送单勾 */
-export const hubDeliverySentIcon = iconifyImg('mdi/check', { width: 14, height: 14, class: 'hub-delivery-icon' })
+export const hubDeliverySentIcon = iconifyImg('mdi/check', { width: 14, height: 14, class: 'delivery-icon' })
 /** 己方消息投递：别人已读重叠双勾 */
-export const hubDeliveryReadIcon = iconifyImg('mdi/check-all', { width: 14, height: 14, class: 'hub-delivery-icon' })
+export const hubDeliveryReadIcon = iconifyImg('mdi/check-all', { width: 14, height: 14, class: 'delivery-icon' })

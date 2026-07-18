@@ -27,8 +27,8 @@ export async function mountTranslationPrefsPanel(panel, footer) {
 
 	footer.querySelector('[data-action="close"]')?.addEventListener('click', () => closeOverlayModal())
 	footer.querySelector('[data-action="save"]')?.addEventListener('click', () => {
-		const checked = panel.querySelector('#hub-auto-translate') instanceof HTMLInputElement
-			&& /** @type {HTMLInputElement} */ panel.querySelector('#hub-auto-translate').checked
+		const checked = panel.querySelector('#auto-translate') instanceof HTMLInputElement
+			&& /** @type {HTMLInputElement} */ panel.querySelector('#auto-translate').checked
 		void fetch('/api/parts/shells:chat/translation-prefs', {
 			method: 'PUT',
 			credentials: 'include',

@@ -1,11 +1,11 @@
 /**
  * 【文件】public/hub/core/overlayModal.mjs
- * 【职责】Hub 通用设置浮层（`#hub-settings-modal`）的打开、正文更新、关闭与顶部通知条。
+ * 【职责】Hub 通用设置浮层（`#settings-modal`）的打开、正文更新、关闭与顶部通知条。
  * 【原理】`openOverlayModal` / `closeOverlayModal` 管理标题、副标题与 body HTML；供聊天设置、联邦设置等复用。
- * 【数据结构】模块级 `#hub-settings-modal` 元素引用与打开时的标题/正文快照。
+ * 【数据结构】模块级 `#settings-modal` 元素引用与打开时的标题/正文快照。
  * 【关联】chat、chatConfig、profileEdit 等设置面板调用方。
  */
-const overlayModal = document.getElementById('hub-settings-modal')
+const overlayModal = document.getElementById('settings-modal')
 
 /**
  * @param {HTMLElement} el 标题或副标题元素
@@ -50,18 +50,18 @@ export function openOverlayModal({
 	footer,
 }) {
 	setOverlayHeading(
-		document.getElementById('hub-overlay-title'),
+		document.getElementById('overlay-title'),
 		title,
 		titleKey || (title ? undefined : 'chat.hub.settingsModalTitle'),
 	)
 	setOverlayHeading(
-		document.getElementById('hub-overlay-subtitle'),
+		document.getElementById('overlay-subtitle'),
 		subtitle || '',
 		subtitleKey,
 		subtitleParams,
 	)
-	setOverlayContent(document.getElementById('hub-overlay-body'), body)
-	setOverlayContent(document.getElementById('hub-overlay-footer'), footer)
+	setOverlayContent(document.getElementById('overlay-body'), body)
+	setOverlayContent(document.getElementById('overlay-footer'), footer)
 	if (!overlayModal.open) overlayModal.showModal()
 }
 
@@ -90,7 +90,7 @@ function setOverlayContent(host, content) {
  * @returns {void}
  */
 export function updateOverlayModalBody(html) {
-	document.getElementById('hub-overlay-body').innerHTML = html
+	document.getElementById('overlay-body').innerHTML = html
 }
 
 /**
@@ -99,8 +99,8 @@ export function updateOverlayModalBody(html) {
  */
 export function closeOverlayModal() {
 	try { overlayModal.close() } catch { /* already closed */ }
-	document.getElementById('hub-overlay-body')?.replaceChildren()
-	document.getElementById('hub-overlay-footer')?.replaceChildren()
+	document.getElementById('overlay-body')?.replaceChildren()
+	document.getElementById('overlay-footer')?.replaceChildren()
 }
 
 /**
@@ -111,9 +111,9 @@ export function closeOverlayModal() {
  * @returns {void}
  */
 export function showOverlayNotice(type, text, i18nKey) {
-	const body = document.getElementById('hub-overlay-body')
-	const cls = type === 'error' ? 'hub-overlay-error alert alert-error' : 'hub-overlay-success alert alert-success'
-	const keyClass = type === 'error' ? 'hub-overlay-error' : 'hub-overlay-success'
+	const body = document.getElementById('overlay-body')
+	const cls = type === 'error' ? 'overlay-error alert alert-error' : 'overlay-success alert alert-success'
+	const keyClass = type === 'error' ? 'overlay-error' : 'overlay-success'
 	let host = body.querySelector(`.${keyClass}`)
 	if (!host) {
 		host = document.createElement('div')

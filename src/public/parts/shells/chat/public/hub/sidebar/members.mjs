@@ -12,7 +12,7 @@ import { disambiguateLabels, resolveDisplayName } from '../../shared/nameResolve
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { memberDisplaysAsAdmin } from '../../src/memberDisplay.mjs'
 import { authorDisplayLabel, avatarColor, avatarInitial, avatarTextColor } from '../core/domUtils.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { showMemberContextMenu } from '../memberContextMenu.mjs'
 import { collectActiveMemberHashes, computeMembersMerkleRoot } from '../membersDigest.mjs'
 import { isHubMemberPersonallyFiltered, loadHubPersonalFilter } from '../personalFilter.mjs'
@@ -24,8 +24,8 @@ import { applyAvatarsTo } from '../presence.mjs'
  * @returns {Promise<void>}
  */
 async function refreshMemberDigestBar(state) {
-	const el = document.getElementById('hub-member-digest')
-	if (!hubStore.context.currentGroupId) return
+	const el = document.getElementById('member-digest')
+	if (!store.context.currentGroupId) return
 	const expected = state?.membersRoot ?? null
 	if (!expected) {
 		el.innerHTML = ''
@@ -33,7 +33,7 @@ async function refreshMemberDigestBar(state) {
 		return
 	}
 	el.removeAttribute('hidden')
-	el.className = 'hub-member-digest'
+	el.className = 'member-digest'
 	el.replaceChildren()
 	const pending = document.createElement('span')
 	pending.dataset.i18n = 'chat.hub.membersDigestPending'
@@ -43,7 +43,7 @@ async function refreshMemberDigestBar(state) {
 	const ok = local === expected
 	const short = `${expected.slice(0, 8)}…${expected.slice(-8)}`
 	const pages = Math.max(1, Number(state.membersPagesCount) || 1)
-	el.className = ok ? 'hub-member-digest is-ok' : 'hub-member-digest is-warn'
+	el.className = ok ? 'member-digest is-ok' : 'member-digest is-warn'
 	if (pages > 1) {
 		const { setElementI18n } = await import('../../../../../scripts/i18n/index.mjs')
 		setElementI18n(el, 'chat.hub.membersDigestPagesTitle', { expected, pages: String(pages) })
@@ -51,12 +51,12 @@ async function refreshMemberDigestBar(state) {
 	else el.title = expected
 	el.replaceChildren()
 	const row = document.createElement('div')
-	row.className = 'hub-member-digest-row'
-	const viewerEh = hubStore.viewer.viewerEntityHash
+	row.className = 'member-digest-row'
+	const viewerEh = store.viewer.viewerEntityHash
 	if (viewerEh) {
 		const copyButton = document.createElement('button')
 		copyButton.type = 'button'
-		copyButton.className = 'hub-member-digest-copy'
+		copyButton.className = 'member-digest-copy'
 		copyButton.dataset.i18n = 'chat.hub.copyEntityId'
 		copyButton.title = viewerEh
 		copyButton.addEventListener('click', async (clickEvent) => {
@@ -67,7 +67,7 @@ async function refreshMemberDigestBar(state) {
 		row.appendChild(copyButton)
 	}
 	const label = document.createElement('span')
-	label.className = 'hub-member-digest-label'
+	label.className = 'member-digest-label'
 	label.dataset.root = short
 	label.dataset.pages = String(pages)
 	label.dataset.i18n = ok
@@ -83,13 +83,13 @@ async function refreshMemberDigestBar(state) {
  * @returns {Promise<void>}
  */
 export async function renderMemberList(state) {
-	const container = document.getElementById('hub-member-list')
+	const container = document.getElementById('member-list')
 	await loadHubPersonalFilter()
-	const viewerHash = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const viewerHash = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 	const members = (state.members || []).filter(member => {
 		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
 		const entityHash = member.entityHash
-			|| (viewerHash === memberKey.toLowerCase() ? hubStore.viewer.viewerEntityHash : '')
+			|| (viewerHash === memberKey.toLowerCase() ? store.viewer.viewerEntityHash : '')
 		return !isHubMemberPersonallyFiltered(entityHash, memberKey)
 	})
 	if (!members.length) {
@@ -101,7 +101,7 @@ export async function renderMemberList(state) {
 		const memberKey = String(member.memberKey || member.pubKeyHash || '').trim()
 		const isAgent = member.memberKind === 'agent'
 		const entityHash = member.entityHash
-			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? hubStore.viewer.viewerEntityHash : '')
+			|| (viewerHash && member.pubKeyHash?.toLowerCase() === viewerHash ? store.viewer.viewerEntityHash : '')
 			|| ''
 		const label = entityHash
 			? resolveDisplayName({
@@ -130,7 +130,7 @@ export async function renderMemberList(state) {
 			titleKey,
 			count: String(list.length),
 		}))
-		const listHost = container.querySelector('.hub-member-group-list:last-of-type')
+		const listHost = container.querySelector('.member-group-list:last-of-type')
 		for (const member of list) {
 			const row = rowsByMember.get(member)
 			const { memberKey, isAgent, entityHash, displayName } = row
@@ -142,7 +142,7 @@ export async function renderMemberList(state) {
 			const avatarSeed = entityHash || memberKey || (isAgent ? member.charname : '') || displayName
 			listHost.appendChild(await renderTemplate('hub/nav/member_item', {
 				adminClass: isAdmin ? ' is-admin' : '',
-				charClass: isAgent ? ' hub-member-item-char' : '',
+				charClass: isAgent ? ' member-item-char' : '',
 				charIdAttr: '',
 				memberKindAttr: ` data-member-kind="${isAgent ? 'agent' : 'user'}"${ownerAttr}`,
 				username: escapeHtml(displayName),
@@ -158,7 +158,7 @@ export async function renderMemberList(state) {
 	container.replaceChildren()
 	await appendMemberGroup('chat.hub.adminSection', admins)
 	await appendMemberGroup('chat.hub.memberSection', others)
-	container.querySelectorAll('.hub-member-item').forEach(el => {
+	container.querySelectorAll('.member-item').forEach(el => {
 		el.addEventListener('contextmenu', (event) => {
 			void showMemberContextMenu(event, el)
 		})

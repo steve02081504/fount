@@ -2,7 +2,7 @@ import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { rememberEntityHandle } from '../lib/display.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -18,8 +18,8 @@ import { renderRepliesPanel } from './replies.mjs'
 export async function loadPostDetail(entityHash, postId) {
 	const owner = String(entityHash || '').toLowerCase()
 	const id = String(postId || '')
-	socialState.postDetailEntityHash = owner
-	socialState.postDetailPostId = id
+	state.postDetailEntityHash = owner
+	state.postDetailPostId = id
 	activateView('postDetail')
 	document.getElementById('composer')?.classList.add('hidden')
 	const hash = `post;${owner};${id}`

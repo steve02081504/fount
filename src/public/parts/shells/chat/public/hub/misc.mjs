@@ -2,14 +2,14 @@
  * 【文件】public/hub/misc.mjs
  * 【职责】Hub 杂项初始化：浏览器通知权限、成就钩子，以及将 char/world part 拖入群组的导入逻辑。
  * 【原理】`setupMisc` 在 `init` 末尾注册拖放区与通知按钮；`setupPartDragDrop` 高亮可放置区域；拖入 part 可能触发群状态变更后刷新消息。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/toast、../src/achievements、../src/api/groupClient、core/state。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { initializeAchievements } from '../src/achievements.mjs'
 import { groupRequest } from '../src/api/groupClient.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /**
  * 全局拖放 `x-fount-part` 到 Hub，向当前会话添加部件。
@@ -23,7 +23,7 @@ export function setupPartDragDrop() {
 		event.preventDefault()
 		const partData = event?.dataTransfer?.getData?.('x-fount-part')
 		if (!partData) return
-		const groupId = hubStore.privateGroup.groupId || hubStore.context.currentGroupId
+		const groupId = store.privateGroup.groupId || store.context.currentGroupId
 		if (!groupId) {
 			showToastI18n('warning', 'chat.hub.noActiveChat')
 			return
@@ -32,7 +32,7 @@ export function setupPartDragDrop() {
 		if (!partType || !partName)
 			return showToastI18n('error', 'chat.dragAndDrop.invalidPartData')
 
-		const channelId = hubStore.context.currentChannelId || 'default'
+		const channelId = store.context.currentChannelId || 'default'
 		try {
 			switch (partType) {
 				case 'chars':

@@ -11,7 +11,7 @@ import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { iconifyImg, iconifyUrl } from '../src/lib/emojiSvg.mjs'
 
 import { joinCodecsAvRoom, leaveCodecsAvRoom } from './codecsAv.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { fetchUserProfile } from './presence.mjs'
 
 /** @type {import('./codecsAv.mjs').CodecsAvSession | null} */
@@ -80,7 +80,7 @@ function resetCallUi() {
 	setCallDockVisible(false)
 	setCallButtonActive(false)
 	updateCallBadge(0)
-	setPeerCountLabel(document.getElementById('hub-call-peer-label'), 0)
+	setPeerCountLabel(document.getElementById('call-peer-label'), 0)
 	void refreshCallStatusBadge()
 }
 
@@ -140,11 +140,11 @@ async function doJoinChannelCall(groupId, channelId, options = {}) {
 
 	const dock = await ensureCallDock()
 	if (gen !== joinGeneration) return
-	const avGrid = dock.querySelector('#hub-call-av-grid')
-	const videoLocal = dock.querySelector('#hub-call-local-video')
-	const voiceLocal = dock.querySelector('#hub-call-local-voice')
-	const peerLabel = dock.querySelector('#hub-call-peer-label')
-	const channelName = hubStore.context.currentState?.channels?.[channelId]?.name || channelId
+	const avGrid = dock.querySelector('#call-av-grid')
+	const videoLocal = dock.querySelector('#call-local-video')
+	const voiceLocal = dock.querySelector('#call-local-voice')
+	const peerLabel = dock.querySelector('#call-peer-label')
+	const channelName = store.context.currentState?.channels?.[channelId]?.name || channelId
 	updateDockChannelLabel(dock, channelName)
 	setCallDockVisible(true)
 
@@ -241,14 +241,14 @@ async function hydratePeerTile(tile, entityHash) {
 	if (!entityHash) return
 	tile.dataset.entityHash = entityHash
 	const profile = await fetchUserProfile(entityHash).catch(() => null)
-	const labelEl = tile.querySelector('[data-av-label], .hub-streaming-av-peer-label-inner')
+	const labelEl = tile.querySelector('[data-av-label], .streaming-av-peer-label-inner')
 	const displayName = resolveDisplayName({
 		entityHash,
 		profileName: profile?.name,
 		fallbackLabel: entityHash.slice(0, 8),
 	})
 	if (labelEl) labelEl.textContent = displayName
-	await applyVoiceRingAvatar(tile.querySelector('.hub-streaming-av-voice-host'), {
+	await applyVoiceRingAvatar(tile.querySelector('.streaming-av-voice-host'), {
 		entityHash,
 		profile,
 		label: displayName,
@@ -260,7 +260,7 @@ async function hydratePeerTile(tile, entityHash) {
  * @returns {Promise<void>}
  */
 async function hydrateLocalVoiceAvatar(voiceLocal) {
-	const entityHash = hubStore.viewer.viewerEntityHash || ''
+	const entityHash = store.viewer.viewerEntityHash || ''
 	if (!entityHash || !(voiceLocal instanceof HTMLElement)) return
 	const profile = await fetchUserProfile(entityHash).catch(() => null)
 	await applyVoiceRingAvatar(voiceLocal, {
@@ -312,10 +312,10 @@ function updateDockChannelLabel(dock, channelName) {
  */
 function syncDockJumpVisibility(dock) {
 	const jump = dock.querySelector('[data-call-role="jump"]')
-	const staticTitle = dock.querySelector('.hub-call-dock-title-static')
+	const staticTitle = dock.querySelector('.call-dock-title-static')
 	const away = !!(callGroupId && callChannelId && (
-		hubStore.context.currentGroupId !== callGroupId
-		|| hubStore.context.currentChannelId !== callChannelId
+		store.context.currentGroupId !== callGroupId
+		|| store.context.currentChannelId !== callChannelId
 	))
 	if (jump instanceof HTMLElement) jump.hidden = !away
 	if (staticTitle instanceof HTMLElement) staticTitle.hidden = away
@@ -325,11 +325,11 @@ function syncDockJumpVisibility(dock) {
  * @returns {Promise<HTMLElement>} dock
  */
 async function ensureCallDock() {
-	let dock = document.getElementById('hub-call-dock')
+	let dock = document.getElementById('call-dock')
 	if (dock) return dock
 	dock = document.createElement('div')
-	dock.id = 'hub-call-dock'
-	dock.className = 'hub-call-dock'
+	dock.id = 'call-dock'
+	dock.className = 'call-dock'
 	dock.hidden = true
 	await mountTemplate(dock, 'hub/call/dock', {
 		muteIconHtml: iconifyImg(CALL_ICONS.mute, { width: 20, height: 20 }),
@@ -337,8 +337,8 @@ async function ensureCallDock() {
 		screenIconHtml: iconifyImg(CALL_ICONS.screen, { width: 20, height: 20 }),
 		hangupIconHtml: iconifyImg(CALL_ICONS.hangup, { width: 20, height: 20 }),
 	})
-	const main = document.querySelector('.hub-main') || document.body
-	const header = main.querySelector('.hub-main-header')
+	const main = document.querySelector('.main') || document.body
+	const header = main.querySelector('.main-header')
 	if (header) header.after(dock)
 	else main.prepend(dock)
 	return dock
@@ -443,11 +443,11 @@ function wireCallDockControls(dock) {
 async function jumpToCallChannel() {
 	if (!callGroupId || !callChannelId) return
 	const { selectGroup, selectChannel } = await import('./sidebar/index.mjs')
-	if (hubStore.context.currentGroupId !== callGroupId)
+	if (store.context.currentGroupId !== callGroupId)
 		await selectGroup(callGroupId)
-	if (hubStore.context.currentChannelId !== callChannelId)
+	if (store.context.currentChannelId !== callChannelId)
 		await selectChannel(callChannelId)
-	const dock = document.getElementById('hub-call-dock')
+	const dock = document.getElementById('call-dock')
 	if (dock) syncDockJumpVisibility(dock)
 	refreshCallButtonActiveForCurrentChannel()
 }
@@ -457,7 +457,7 @@ async function jumpToCallChannel() {
  * @returns {void}
  */
 function setCallDockVisible(visible) {
-	const dock = document.getElementById('hub-call-dock')
+	const dock = document.getElementById('call-dock')
 	if (dock) dock.hidden = !visible
 }
 
@@ -466,7 +466,7 @@ function setCallDockVisible(visible) {
  * @returns {void}
  */
 function setCallButtonActive(active) {
-	document.getElementById('hub-header-call-button')?.classList.toggle('is-active', active)
+	document.getElementById('header-call-button')?.classList.toggle('is-active', active)
 }
 
 /**
@@ -478,11 +478,11 @@ export function refreshCallButtonActiveForCurrentChannel() {
 		callSession
 		&& callGroupId
 		&& callChannelId
-		&& hubStore.context.currentGroupId === callGroupId
-		&& hubStore.context.currentChannelId === callChannelId
+		&& store.context.currentGroupId === callGroupId
+		&& store.context.currentChannelId === callChannelId
 	)
 	setCallButtonActive(onCallChannel)
-	const dock = document.getElementById('hub-call-dock')
+	const dock = document.getElementById('call-dock')
 	if (dock && callSession) syncDockJumpVisibility(dock)
 }
 
@@ -491,7 +491,7 @@ export function refreshCallButtonActiveForCurrentChannel() {
  * @returns {void}
  */
 function updateCallBadge(count) {
-	const badge = document.getElementById('hub-call-count')
+	const badge = document.getElementById('call-count')
 	if (!badge) return
 	if (count > 0) {
 		badge.hidden = false
@@ -506,10 +506,10 @@ function updateCallBadge(count) {
  */
 export async function refreshCallStatusBadge() {
 	refreshCallButtonActiveForCurrentChannel()
-	if (callSession && callChannelKey === `${hubStore.context.currentGroupId}:${hubStore.context.currentChannelId}`)
+	if (callSession && callChannelKey === `${store.context.currentGroupId}:${store.context.currentChannelId}`)
 		return
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
 	if (!groupId || !channelId) {
 		if (!callSession) updateCallBadge(0)
 		return
@@ -531,12 +531,12 @@ export async function refreshCallStatusBadge() {
  * @returns {void}
  */
 export function wireCallHeaderButton() {
-	const callButton = document.getElementById('hub-header-call-button')
+	const callButton = document.getElementById('header-call-button')
 	if (!callButton || callButton.dataset.wired) return
 	callButton.dataset.wired = '1'
 	callButton.addEventListener('click', event => {
-		const groupId = hubStore.context.currentGroupId
-		const channelId = hubStore.context.currentChannelId
+		const groupId = store.context.currentGroupId
+		const channelId = store.context.currentChannelId
 		if (!groupId || !channelId) return
 		if (callSession && callChannelKey === `${groupId}:${channelId}`) {
 			void leaveChannelCall()

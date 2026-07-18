@@ -5,7 +5,7 @@
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { pinMessage, unpinMessage } from '../../../src/api/groupChannel.mjs'
 import { getGroupState } from '../../../src/api/groupCore.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 
 /**
  * @param {HTMLElement} button 被点击按钮
@@ -21,7 +21,7 @@ export async function handlePin(button, actions) {
 	try {
 		if (unpin) await unpinMessage(groupId, channelId, eventId)
 		else await pinMessage(groupId, channelId, eventId)
-		hubStore.context.currentState = await getGroupState(groupId)
+		store.context.currentState = await getGroupState(groupId)
 		await reload?.()
 	}
 	catch (error) {

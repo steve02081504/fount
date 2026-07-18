@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/composerFiles.mjs
  * 【职责】Hub 消息输入区附件与语音：待发送文件列表、预览条、选图与录音按钮状态切换。
- * 【原理】更新 `#hub-attachment-preview`、`#hub-voice-button` 图标，并对接 `handleFilesSelect` 拖拽/粘贴。发送时附件随 `sendCurrentMessage` 提交；不渲染历史消息行。
+ * 【原理】更新 `#attachment-preview`、`#voice-button` 图标，并对接 `handleFilesSelect` 拖拽/粘贴。发送时附件随 `sendCurrentMessage` 提交；不渲染历史消息行。
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../../../scripts/template、../../../../scripts/toast、../src/composerAttachments
  */
@@ -19,7 +19,7 @@ export const selectedFiles = []
  * @returns {Promise<void>}
  */
 async function setVoiceBtnIcon(recording) {
-	const voiceButton = document.getElementById('hub-voice-button')
+	const voiceButton = document.getElementById('voice-button')
 	if (!voiceButton) return
 	voiceButton.replaceChildren()
 	voiceButton.appendChild(await renderTemplate(
@@ -38,7 +38,7 @@ let audioChunks = []
  * @returns {HTMLElement|null} 附件预览容器
  */
 function previewContainer() {
-	return document.getElementById('hub-attachment-preview')
+	return document.getElementById('attachment-preview')
 }
 
 /**
@@ -83,7 +83,7 @@ export function pickPhoto() {
  * @returns {Promise<void>}
  */
 export async function toggleVoiceRecording() {
-	const voiceButton = document.getElementById('hub-voice-button')
+	const voiceButton = document.getElementById('voice-button')
 	if (!voiceButton) return
 
 	if (isRecording) {

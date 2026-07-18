@@ -1,5 +1,5 @@
 /**
- * Hub 偏好设置壳：左侧导航切换翻译 / 联邦 P2P，共用 `#hub-settings-modal`。
+ * Hub 偏好设置壳：左侧导航切换翻译 / 联邦 P2P，共用 `#settings-modal`。
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 
@@ -20,7 +20,7 @@ let mountGeneration = 0
 function markActiveNav(nav, section) {
 	for (const button of nav.querySelectorAll('[data-prefs-section]')) {
 		const active = button.getAttribute('data-prefs-section') === section
-		button.classList.toggle('hub-prefs-nav-item--active', active)
+		button.classList.toggle('prefs-nav-item--active', active)
 		button.setAttribute('aria-selected', active ? 'true' : 'false')
 	}
 }
@@ -66,8 +66,8 @@ export async function openHubPrefsModal(options = {}) {
 		footer: '',
 	})
 
-	const body = document.getElementById('hub-overlay-body')
-	const nav = body?.querySelector('.hub-prefs-nav')
+	const body = document.getElementById('overlay-body')
+	const nav = body?.querySelector('.prefs-nav')
 	const panel = body?.querySelector('[data-prefs-panel]')
 	const footer = body?.querySelector('[data-prefs-footer]')
 	if (!(nav instanceof HTMLElement) || !(panel instanceof HTMLElement) || !(footer instanceof HTMLElement))

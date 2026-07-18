@@ -3,7 +3,7 @@ import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } fr
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, formatTimeHtml, renderAvatarHtml } from '../lib/display.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 /** @type {number | null} */
 let badgeUnreadCount = null
@@ -16,11 +16,11 @@ let notificationsLoading = false
  * @returns {Promise<number>} 已读水位
  */
 export async function ensureNotificationsSeenAt() {
-	if (Number.isFinite(socialState.notificationsSeenAt))
-		return socialState.notificationsSeenAt
+	if (Number.isFinite(state.notificationsSeenAt))
+		return state.notificationsSeenAt
 	const data = await socialApi('/notifications/seen').catch(() => ({ seenAt: 0 }))
-	socialState.notificationsSeenAt = Number(data.seenAt) || 0
-	return socialState.notificationsSeenAt
+	state.notificationsSeenAt = Number(data.seenAt) || 0
+	return state.notificationsSeenAt
 }
 
 /**
@@ -28,7 +28,7 @@ export async function ensureNotificationsSeenAt() {
  * @returns {number} 已读水位
  */
 export function getNotificationsSeenAt() {
-	return Number(socialState.notificationsSeenAt) || 0
+	return Number(state.notificationsSeenAt) || 0
 }
 
 /**
@@ -41,7 +41,7 @@ export async function markNotificationsSeen(at = Date.now()) {
 		method: 'PUT',
 		body: JSON.stringify({ at }),
 	})
-	socialState.notificationsSeenAt = at
+	state.notificationsSeenAt = at
 	badgeUnreadCount = 0
 	await updateNotificationBadge()
 }
@@ -51,23 +51,23 @@ export async function markNotificationsSeen(at = Date.now()) {
  * @returns {string} 图标 class
  */
 function notificationIconClass(type) {
-	if (type === 'reply') return 's-ic-notif-reply'
-	if (type === 'mention') return 's-ic-notif-mention'
-	if (type === 'like') return 's-ic-notif-like'
-	if (type === 'repost') return 's-ic-notif-repost'
-	if (type === 'follow') return 's-ic-notif-follow'
-	if (type === 'care_post') return 's-ic-notif-like'
-	if (type === 'poll_closed') return 's-ic-vote'
-	if (type === 'post_note') return 's-ic-note'
-	if (type === 'live_started') return 's-ic-live'
-	return 's-ic-bell'
+	if (type === 'reply') return 'icon-notification-reply'
+	if (type === 'mention') return 'icon-notification-mention'
+	if (type === 'like') return 'icon-notification-like'
+	if (type === 'repost') return 'icon-notification-repost'
+	if (type === 'follow') return 'icon-notification-follow'
+	if (type === 'care_post') return 'icon-notification-like'
+	if (type === 'poll_closed') return 'icon-vote'
+	if (type === 'post_note') return 'icon-note'
+	if (type === 'live_started') return 'icon-live'
+	return 'icon-bell'
 }
 
 /**
  * @returns {string} types 查询参数
  */
 function notificationsTypesQuery() {
-	const filter = socialState.notificationsFilter
+	const filter = state.notificationsFilter
 	if (!filter || filter === 'all') return ''
 	return `&types=${encodeURIComponent(filter)}`
 }
@@ -148,9 +148,9 @@ export async function updateNotificationBadge() {
  * @returns {void}
  */
 export function bumpNotificationBadge() {
-	const current = badgeUnreadCount ?? socialState.lastNotificationUnreadCount ?? 0
+	const current = badgeUnreadCount ?? state.lastNotificationUnreadCount ?? 0
 	badgeUnreadCount = current + 1
-	socialState.lastNotificationUnreadCount = badgeUnreadCount
+	state.lastNotificationUnreadCount = badgeUnreadCount
 	void updateNotificationBadge()
 }
 
@@ -163,8 +163,8 @@ function notificationHref(row) {
 	if (row.type === 'reply' || row.type === 'mention')
 		return formatSocialPostHref(row.actorEntityHash, row.postId)
 	if ((row.type === 'like' || row.type === 'repost' || row.type === 'post_note' || row.type === 'poll_closed' || row.type === 'care_post')
-		&& row.targetPostId && (row.targetEntityHash || socialState.viewerEntityHash))
-		return formatSocialPostHref(row.targetEntityHash || socialState.viewerEntityHash, row.targetPostId)
+		&& row.targetPostId && (row.targetEntityHash || state.viewerEntityHash))
+		return formatSocialPostHref(row.targetEntityHash || state.viewerEntityHash, row.targetPostId)
 	if (row.type === 'live_started')
 		return formatSocialProfileHref(row.actorEntityHash)
 	return formatSocialProfileHref(row.actorEntityHash)
@@ -192,7 +192,7 @@ function renderNotificationCard(row, seenAt) {
 		? `<p class="notification-snippet">${escapeHtml(row.snippet)}</p>`
 		: ''
 	card.innerHTML = `
-		<span class="notification-icon s-ic ${notificationIconClass(row.type)}" aria-hidden="true"></span>
+		<span class="notification-icon icon ${notificationIconClass(row.type)}" aria-hidden="true"></span>
 		<div class="notification-body">
 			<div class="post-header-row">
 				${notificationAvatarsHtml(row)}
@@ -220,7 +220,7 @@ function notificationsViewActive() {
  * @returns {boolean} 是否应被当前 Tab 过滤掉
  */
 function notificationFilteredOut(row) {
-	const filter = socialState.notificationsFilter
+	const filter = state.notificationsFilter
 	return !!(filter && filter !== 'all' && row.type !== filter)
 }
 
@@ -283,7 +283,7 @@ export function mergeIncomingNotification(notification) {
  * @returns {void}
  */
 export function syncNotificationFilterTabs() {
-	const filter = socialState.notificationsFilter || 'all'
+	const filter = state.notificationsFilter || 'all'
 	for (const button of document.querySelectorAll('[data-notif-filter]')) {
 		if (!(button instanceof HTMLButtonElement)) continue
 		const active = button.dataset.notifFilter === filter
@@ -299,8 +299,8 @@ export function syncNotificationFilterTabs() {
  * @returns {Promise<void>}
  */
 export async function setNotificationFilter(filter) {
-	socialState.notificationsFilter = filter
-	socialState.notificationsCursor = null
+	state.notificationsFilter = filter
+	state.notificationsCursor = null
 	syncNotificationFilterTabs()
 	await loadNotifications(false)
 }
@@ -319,7 +319,7 @@ export function bindNotificationsInfiniteScroll() {
 	bindInfiniteScroll({
 		sentinel,
 		/** @returns {boolean} 通知列表是否仍有下一页 */
-		hasMore: () => !!socialState.notificationsCursor,
+		hasMore: () => !!state.notificationsCursor,
 		/** @returns {Promise<void>} 追加加载下一页通知 */
 		onLoad: () => loadNotifications(true),
 	})
@@ -337,16 +337,16 @@ export async function loadNotifications(append = false) {
 	try {
 		await ensureNotificationsSeenAt()
 		syncNotificationFilterTabs()
-		const cursorQuery = append && socialState.notificationsCursor
-			? `&cursor=${encodeURIComponent(socialState.notificationsCursor)}`
+		const cursorQuery = append && state.notificationsCursor
+			? `&cursor=${encodeURIComponent(state.notificationsCursor)}`
 			: ''
 		const data = await socialApi(`/notifications?limit=40${cursorQuery}${notificationsTypesQuery()}`)
 		const container = document.getElementById('notificationsView')
 		const toolbar = document.getElementById('notificationsToolbar')
 		const seenAt = getNotificationsSeenAt()
 		const rows = data.notifications || []
-		socialState.notificationsCursor = data.nextCursor || null
-		socialState.lastNotificationUnreadCount = Number(data.unreadCount) || 0
+		state.notificationsCursor = data.nextCursor || null
+		state.lastNotificationUnreadCount = Number(data.unreadCount) || 0
 
 		if (!append) {
 			container.querySelectorAll('.notification-card, .empty').forEach(node => node.remove())

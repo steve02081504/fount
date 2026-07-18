@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/folderContextMenu.mjs
  * 【职责】左侧服务器栏「群组文件夹」的右键菜单：重命名、折叠/展开、解散文件夹。
- * 【原理】`showFolderContextMenu` 在点击位置挂一个单例菜单层，操作后改写 `hubStore.sidebar.groupFoldersState.folders`，
+ * 【原理】`showFolderContextMenu` 在点击位置挂一个单例菜单层，操作后改写 `store.sidebar.groupFoldersState.folders`，
  *   再 `persistGroupFolders` + `renderServerBar`（动态 import 规避与 serverBar 的循环依赖）。解散即把成员群移出文件夹。
  * 【数据结构】folder：{ id, name, nameIsDefault, groupIds[], collapsed }。
  * 【关联】../../../../scripts/i18n、serverBar、core/state。
@@ -9,7 +9,8 @@
 import { geti18n, promptI18n } from '../../../../scripts/i18n/index.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { store } from './core/state.mjs'
 
 /** @type {HTMLElement | null} */
 let openMenuElement = null
@@ -60,15 +61,11 @@ export function showFolderContextMenu(event, folderIndex) {
 	event.stopPropagation()
 	dismissFolderContextMenu()
 
-	const folder = hubStore.sidebar.groupFoldersState.folders?.[folderIndex]
+	const folder = store.sidebar.groupFoldersState.folders?.[folderIndex]
 	if (!folder) return
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	const menuWidth = 200
-	const left = Math.min(event.clientX, window.innerWidth - menuWidth - 8)
-	const top = Math.min(event.clientY, window.innerHeight - 8)
-	menu.style.cssText = `position:fixed;left:${Math.max(8, left)}px;top:${Math.max(8, top)}px;min-width:9rem;max-width:${menuWidth}px;`
 
 	menu.appendChild(menuItem(geti18n('chat.hub.folderRename'), async () => {
 		dismissFolderContextMenu()
@@ -90,12 +87,13 @@ export function showFolderContextMenu(event, folderIndex) {
 
 	menu.appendChild(menuItem(geti18n('chat.hub.folderDissolve'), async () => {
 		dismissFolderContextMenu()
-		hubStore.sidebar.groupFoldersState.folders = (hubStore.sidebar.groupFoldersState.folders || [])
+		store.sidebar.groupFoldersState.folders = (store.sidebar.groupFoldersState.folders || [])
 			.filter(item => item !== folder)
 		await commit()
 	}, 'text-error'))
 
 	document.body.appendChild(menu)
+	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: '9rem', maxWidth: 200 })
 	openMenuElement = menu
 
 	bindDismissOnDocumentInteraction(dismissFolderContextMenu)

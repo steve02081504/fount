@@ -2,7 +2,7 @@
  * 【文件】public/hub/groupContextMenu.mjs
  * 【职责】群组侧栏项与顶栏群组菜单：离开群、邀请、联邦入口、文件夹操作等上下文动作。
  * 【原理】`showGroupContextMenu` / `showGroupHeaderMenu` 弹出单例菜单层并处理 dismiss；离开或删除群后清空消息区；本模块不渲染气泡。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/parts、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupClient、../src/inviteQr、chat、core/domUtils。
  */
 import { getPartList } from '../../../../scripts/api/parts.mjs'
@@ -23,7 +23,8 @@ import { handleUIError } from '../src/ui/errors.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { groupDisplayName } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { store } from './core/state.mjs'
 import { clearGroupSelection, contextMenuTargetGroupIds } from './groupSelection.mjs'
 import { openGroupNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -46,7 +47,7 @@ export function dismissGroupActionMenu() {
  * @returns {void}
  */
 function pruneGroupFoldersAfterLeave(leaving) {
-	for (const folder of hubStore.sidebar.groupFoldersState.folders || [])
+	for (const folder of store.sidebar.groupFoldersState.folders || [])
 		folder.groupIds = (folder.groupIds || []).filter(id => !leaving.has(id))
 }
 
@@ -56,7 +57,7 @@ function pruneGroupFoldersAfterLeave(leaving) {
  */
 function markGroupsLeaving(groupIds) {
 	const leaving = new Set(groupIds)
-	for (const group of hubStore.sidebar.groups)
+	for (const group of store.sidebar.groups)
 		if (leaving.has(group.groupId))
 			group.isLeaving = true
 }
@@ -67,7 +68,7 @@ function markGroupsLeaving(groupIds) {
  */
 function clearGroupsLeaving(groupIds) {
 	const leaving = new Set(groupIds)
-	for (const group of hubStore.sidebar.groups)
+	for (const group of store.sidebar.groups)
 		if (leaving.has(group.groupId))
 			delete group.isLeaving
 }
@@ -78,7 +79,7 @@ function clearGroupsLeaving(groupIds) {
  */
 function removeGroupsFromStore(groupIds) {
 	const leaving = new Set(groupIds)
-	hubStore.sidebar.groups = hubStore.sidebar.groups.filter(g => !leaving.has(g.groupId))
+	store.sidebar.groups = store.sidebar.groups.filter(g => !leaving.has(g.groupId))
 }
 
 /**
@@ -90,18 +91,18 @@ async function applyLeaveGroupsLocal(groupIds) {
 	const leaving = new Set(groupIds)
 	markGroupsLeaving(groupIds)
 	const touchesCurrent = [...leaving].some(
-		id => id === hubStore.context.currentGroupId || id === hubStore.privateGroup.groupId,
+		id => id === store.context.currentGroupId || id === store.privateGroup.groupId,
 	)
 	if (touchesCurrent) closeGroupWebSocket()
 	if (touchesCurrent) {
-		if (hubStore.privateGroup.groupId && leaving.has(hubStore.privateGroup.groupId))
+		if (store.privateGroup.groupId && leaving.has(store.privateGroup.groupId))
 			clearPrivateGroupState()
-		const next = hubStore.sidebar.groups.find(g => !leaving.has(g.groupId))?.groupId
+		const next = store.sidebar.groups.find(g => !leaving.has(g.groupId))?.groupId
 		if (next) await selectGroup(next)
 		else {
-			hubStore.context.currentGroupId = null
-			hubStore.context.currentChannelId = null
-			hubStore.context.currentState = null
+			store.context.currentGroupId = null
+			store.context.currentChannelId = null
+			store.context.currentState = null
 			const { setMode } = await import('./mode.mjs')
 			await setMode('friends')
 		}
@@ -175,42 +176,39 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 
 	const targets = targetGroupIds?.length ? targetGroupIds : [groupId]
 	const batch = targets.length > 1
-	const group = hubStore.sidebar.groups.find(g => g.groupId === groupId)
+	const group = store.sidebar.groups.find(g => g.groupId === groupId)
 	const groupName = group?.name || groupId
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	const menuWidth = 200
-	const clampedLeft = Math.min(left, window.innerWidth - menuWidth - 8)
-	const clampedTop = Math.min(top, window.innerHeight - 8)
-	menu.style.cssText = `position:fixed;left:${Math.max(8, clampedLeft)}px;top:${Math.max(8, clampedTop)}px;min-width:10rem;max-width:${menuWidth}px;`
 	if (batch) {
 		const { setElementI18n } = await import('../../../../scripts/i18n/index.mjs')
 		const li = document.createElement('li')
 		const button = document.createElement('button')
 		button.type = 'button'
-		button.className = 'hub-group-menu-leave-batch text-error'
+		button.className = 'group-menu-leave-batch text-error'
 		setElementI18n(button, 'chat.hub.groupContext.leaveBatch', { count: targets.length })
 		li.appendChild(button)
 		menu.appendChild(li)
 	}
 	else menu.appendChild(await renderTemplate('hub/modals/group_context_menu', { groupId }))
 	document.body.appendChild(menu)
+	positionContextMenu(menu, { x: left, y: top, maxWidth: 200 })
 	openMenuElement = menu
 
 	bindDismissOnDocumentInteraction(dismissGroupActionMenu)
 
-	menu.querySelector('.hub-group-menu-manage')?.addEventListener('click', () => {
+	menu.querySelector('.group-menu-manage')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
 		navigateToGroupSettings(groupId)
 	})
 
-	menu.querySelector('.hub-group-menu-notify')?.addEventListener('click', () => {
+	menu.querySelector('.group-menu-notify')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
 		void openGroupNotifyPrefsDialog(groupId)
 	})
 
-	menu.querySelector('.hub-group-menu-invite')?.addEventListener('click', async () => {
+	menu.querySelector('.group-menu-invite')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
 		try {
 			const ticket = await createGroupInvite(groupId)
@@ -229,12 +227,12 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 		}
 	})
 
-	menu.querySelector('.hub-group-menu-add-char')?.addEventListener('click', async () => {
+	menu.querySelector('.group-menu-add-char')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
 		await showAddCharDialog(groupId)
 	})
 
-	menu.querySelector('.hub-group-menu-alias')?.addEventListener('click', () => {
+	menu.querySelector('.group-menu-alias')?.addEventListener('click', () => {
 		dismissGroupActionMenu()
 		void (async () => {
 			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
@@ -246,8 +244,8 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 			await setGroupAlias(groupId, next)
 			showToastI18n('success', 'chat.hub.groupContext.aliasSaved')
 			await renderServerBar()
-			if (hubStore.context.currentGroupId === groupId) {
-				const nameElement = document.getElementById('hub-group-name-display')
+			if (store.context.currentGroupId === groupId) {
+				const nameElement = document.getElementById('group-name-display')
 				if (nameElement) {
 					delete nameElement.dataset.i18n
 					nameElement.textContent = await groupDisplayName(groupId, group?.name)
@@ -258,14 +256,14 @@ async function mountGroupActionMenuAt(groupId, left, top, targetGroupIds = null)
 		})
 	})
 
-	menu.querySelector('.hub-group-menu-leave-batch')?.addEventListener('click', async () => {
+	menu.querySelector('.group-menu-leave-batch')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
 		if (!confirmI18n('chat.hub.groupContext.leaveConfirmBatch', { count: targets.length }))
 			return
 		await leaveGroupsOptimistic(targets)
 	})
 
-	menu.querySelector('.hub-group-menu-leave')?.addEventListener('click', async () => {
+	menu.querySelector('.group-menu-leave')?.addEventListener('click', async () => {
 		dismissGroupActionMenu()
 		if (!confirmI18n('chat.hub.groupContext.leaveConfirm', { name: groupName }))
 			return
@@ -287,11 +285,11 @@ export async function showGroupContextMenu(event, groupId) {
 
 /**
  * 在群名标题下方显示群操作下拉菜单。
- * @param {HTMLElement} anchorElement `#hub-group-header`
+ * @param {HTMLElement} anchorElement `#group-header`
  * @returns {Promise<void>}
  */
 export async function showGroupHeaderMenu(anchorElement) {
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	if (!groupId || !(anchorElement instanceof HTMLElement)) return
 	const rect = anchorElement.getBoundingClientRect()
 	await mountGroupActionMenuAt(groupId, rect.left, rect.bottom + 4)
@@ -321,14 +319,14 @@ async function showAddCharDialog(groupId) {
 		 * @returns {Promise<void>}
 		 */
 		onReady: async dialog => {
-			const select = dialog.querySelector('#hub-add-char-select')
+			const select = dialog.querySelector('#add-char-select')
 			if (select instanceof HTMLSelectElement)
 				select.innerHTML = await renderTemplateAsHtmlString('hub/modals/char_select_options', { chars })
 			/** @returns {void} */
 			const closeModal = () => dialog.close()
-			dialog.querySelector('.hub-add-char-cancel')?.addEventListener('click', closeModal)
-			dialog.querySelector('.hub-add-char-submit')?.addEventListener('click', async () => {
-				const sel = dialog.querySelector('#hub-add-char-select')
+			dialog.querySelector('.add-char-cancel')?.addEventListener('click', closeModal)
+			dialog.querySelector('.add-char-submit')?.addEventListener('click', async () => {
+				const sel = dialog.querySelector('#add-char-select')
 				const charname = sel instanceof HTMLSelectElement ? sel.value.trim() : ''
 				if (!charname) return
 				try {

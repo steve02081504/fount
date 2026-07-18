@@ -1,15 +1,15 @@
 /**
  * 侧栏群图标多选（Shift 范围 / Ctrl 切换）与选中样式同步。
  */
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /**
  * @returns {string[]} 侧栏可见群 ID（内存顺序，与 serverBar 渲染一致）
  */
 export function orderedSidebarGroupIds() {
-	if (hubStore.sidebar.sidebarGroupOrder.length)
-		return [...hubStore.sidebar.sidebarGroupOrder]
-	return hubStore.sidebar.groups
+	if (store.sidebar.sidebarGroupOrder.length)
+		return [...store.sidebar.sidebarGroupOrder]
+	return store.sidebar.groups
 		.filter(g => !g.friendBinding?.entityHash)
 		.map(g => g.groupId)
 }
@@ -18,7 +18,7 @@ export function orderedSidebarGroupIds() {
  * @returns {string[]} 当前选中的群 ID 列表
  */
 export function getSelectedGroupIds() {
-	return [...hubStore.sidebar.selectedGroupIds]
+	return [...store.sidebar.selectedGroupIds]
 }
 
 /**
@@ -26,21 +26,21 @@ export function getSelectedGroupIds() {
  * @returns {boolean} 是否在多选集中
  */
 export function isGroupSelected(groupId) {
-	return hubStore.sidebar.selectedGroupIds.has(groupId)
+	return store.sidebar.selectedGroupIds.has(groupId)
 }
 
 /** @returns {void} */
 export function clearGroupSelection() {
-	hubStore.sidebar.selectedGroupIds.clear()
-	hubStore.sidebar.selectionAnchorGroupId = null
+	store.sidebar.selectedGroupIds.clear()
+	store.sidebar.selectionAnchorGroupId = null
 	syncGroupSelectionStyles()
 }
 
 /** @returns {void} */
 export function syncGroupSelectionStyles() {
-	document.querySelectorAll('#hub-server-list .hub-server-item[data-group-id]').forEach(el => {
+	document.querySelectorAll('#server-list .server-item[data-group-id]').forEach(el => {
 		const id = String(el.dataset.groupId || '').trim()
-		el.classList.toggle('is-multi-selected', hubStore.sidebar.selectedGroupIds.has(id))
+		el.classList.toggle('is-multi-selected', store.sidebar.selectedGroupIds.has(id))
 	})
 }
 
@@ -54,35 +54,35 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
 	if (!ids.includes(groupId)) return
 
 	if (mod.ctrl) {
-		if (hubStore.sidebar.selectedGroupIds.has(groupId))
-			hubStore.sidebar.selectedGroupIds.delete(groupId)
-		else hubStore.sidebar.selectedGroupIds.add(groupId)
-		hubStore.sidebar.selectionAnchorGroupId = groupId
+		if (store.sidebar.selectedGroupIds.has(groupId))
+			store.sidebar.selectedGroupIds.delete(groupId)
+		else store.sidebar.selectedGroupIds.add(groupId)
+		store.sidebar.selectionAnchorGroupId = groupId
 		syncGroupSelectionStyles()
 		return
 	}
 
 	if (mod.shift) {
-		const anchor = hubStore.sidebar.selectionAnchorGroupId
+		const anchor = store.sidebar.selectionAnchorGroupId
 		if (!anchor || !ids.includes(anchor)) {
-			hubStore.sidebar.selectedGroupIds.clear()
-			hubStore.sidebar.selectedGroupIds.add(groupId)
-			hubStore.sidebar.selectionAnchorGroupId = groupId
+			store.sidebar.selectedGroupIds.clear()
+			store.sidebar.selectedGroupIds.add(groupId)
+			store.sidebar.selectionAnchorGroupId = groupId
 			syncGroupSelectionStyles()
 			return
 		}
 		const a = ids.indexOf(anchor)
 		const b = ids.indexOf(groupId)
 		const [lo, hi] = a <= b ? [a, b] : [b, a]
-		hubStore.sidebar.selectedGroupIds.clear()
-		for (let i = lo; i <= hi; i++) hubStore.sidebar.selectedGroupIds.add(ids[i])
+		store.sidebar.selectedGroupIds.clear()
+		for (let i = lo; i <= hi; i++) store.sidebar.selectedGroupIds.add(ids[i])
 		syncGroupSelectionStyles()
 		return
 	}
 
-	hubStore.sidebar.selectedGroupIds.clear()
-	hubStore.sidebar.selectedGroupIds.add(groupId)
-	hubStore.sidebar.selectionAnchorGroupId = groupId
+	store.sidebar.selectedGroupIds.clear()
+	store.sidebar.selectedGroupIds.add(groupId)
+	store.sidebar.selectionAnchorGroupId = groupId
 	syncGroupSelectionStyles()
 }
 
@@ -93,7 +93,7 @@ export function handleGroupItemModifierClick(groupId, mod = {}) {
  */
 export function contextMenuTargetGroupIds(groupId) {
 	const id = String(groupId || '').trim()
-	if (hubStore.sidebar.selectedGroupIds.size > 1 && hubStore.sidebar.selectedGroupIds.has(id))
+	if (store.sidebar.selectedGroupIds.size > 1 && store.sidebar.selectedGroupIds.has(id))
 		return getSelectedGroupIds()
 	if (id) return [id]
 	return []
@@ -107,9 +107,9 @@ export function contextMenuTargetGroupIds(groupId) {
 export function primeContextMenuSelection(groupId) {
 	const id = String(groupId || '').trim()
 	if (!id) return
-	if (hubStore.sidebar.selectedGroupIds.has(id)) return
+	if (store.sidebar.selectedGroupIds.has(id)) return
 	clearGroupSelection()
-	hubStore.sidebar.selectedGroupIds.add(id)
-	hubStore.sidebar.selectionAnchorGroupId = id
+	store.sidebar.selectedGroupIds.add(id)
+	store.sidebar.selectionAnchorGroupId = id
 	syncGroupSelectionStyles()
 }

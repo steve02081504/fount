@@ -1,4 +1,4 @@
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 import { ensureMessageLoaded, findMessageViewIndex } from './channelMessageStore.mjs'
 import { syncChannelActionsContext } from './messageContext.mjs'
@@ -14,7 +14,7 @@ let pendingHighlightEventId = null
 /** @returns {HTMLElement | null} 消息列表容器元素 */
 export function getMessagesContainer() {
 	if (cachedMessagesContainer?.isConnected) return cachedMessagesContainer
-	const el = document.getElementById('hub-messages')
+	const el = document.getElementById('messages')
 	cachedMessagesContainer = el instanceof HTMLElement ? el : null
 	return cachedMessagesContainer
 }
@@ -82,19 +82,19 @@ export async function scrollToMessageEventId(eventId) {
 		return
 	}
 
-	if (!hubStore.messages.channelMessages.length) return
+	if (!store.messages.channelMessages.length) return
 
 	clearHubEmptyPlaceholder(container)
 
 	setPendingHighlightEventId(norm)
 
-	if (findMessageViewIndex(norm) >= 0 && hubStore.messages.channelMessagePipeline) 
-		await hubStore.messages.channelMessagePipeline.refresh()
+	if (findMessageViewIndex(norm) >= 0 && store.messages.channelMessagePipeline) 
+		await store.messages.channelMessagePipeline.refresh()
 	
 	else {
 		rebuildVirtualListAtEvent(container, norm)
-		if (hubStore.messages.channelMessagePipeline)
-			await hubStore.messages.channelMessagePipeline.refresh()
+		if (store.messages.channelMessagePipeline)
+			await store.messages.channelMessagePipeline.refresh()
 	}
 
 	row = sel ? container.querySelector(sel) : null

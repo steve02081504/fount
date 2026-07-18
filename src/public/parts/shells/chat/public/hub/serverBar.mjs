@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/serverBar.mjs
- * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `hubStore.sidebar.groups`。
- * 【原理】`renderServerBar` 填充 `#hub-server-list`；支持拖拽排序与群组入口点击（委托给 `sidebar.selectGroup`）。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【职责】左侧服务器栏：渲染用户群组列表、文件夹分组，并从 API 加载/缓存 `store.sidebar.groups`。
+ * 【原理】`renderServerBar` 填充 `#server-list`；支持拖拽排序与群组入口点击（委托给 `sidebar.selectGroup`）。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、../src/api/groupBookmarks、groupCore、core/domUtils、core/state、friendBindings、groupContextMenu、sidebar
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
@@ -13,7 +13,7 @@ import { getGroupList } from '../src/api/groupCore.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { avatarColor, avatarInitial, groupDisplayName } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { showFolderContextMenu } from './folderContextMenu.mjs'
 import { getSidebarGroups } from './friendBindings.mjs'
 import { showGroupContextMenu } from './groupContextMenu.mjs'
@@ -37,7 +37,7 @@ export async function persistGroupFolders() {
 		method: 'PUT',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ folders: hubStore.sidebar.groupFoldersState.folders }),
+		body: JSON.stringify({ folders: store.sidebar.groupFoldersState.folders }),
 	}).catch(() => {})
 }
 
@@ -53,7 +53,7 @@ export function computeOrderedSidebarGroupIds() {
 	const used = new Set()
 	/** @type {string[]} */
 	const order = []
-	const folders = hubStore.sidebar.groupFoldersState.folders || []
+	const folders = store.sidebar.groupFoldersState.folders || []
 
 	if (folders.length) {
 		for (const folder of folders) {
@@ -88,11 +88,11 @@ function folderMiniIconsHtml(folder, byId) {
 		.filter(Boolean)
 		.slice(0, 4)
 	if (!groups.length)
-		return { html: '<span class="hub-folder-mini-icon hub-folder-mini-empty"></span>', modifier: ' hub-folder-mini--single' }
+		return { html: '<span class="folder-mini-icon folder-mini-empty"></span>', modifier: ' folder-mini--single' }
 	const html = groups.map(group =>
-		`<span class="hub-folder-mini-icon" style="background:${avatarColor(group.groupId)};">${escapeHtml(avatarInitial(aliasForGroup(group.groupId) || group.name))}</span>`,
+		`<span class="folder-mini-icon" style="background:${avatarColor(group.groupId)};">${escapeHtml(avatarInitial(aliasForGroup(group.groupId) || group.name))}</span>`,
 	).join('')
-	return { html, modifier: groups.length === 1 ? ' hub-folder-mini--single' : '' }
+	return { html, modifier: groups.length === 1 ? ' folder-mini--single' : '' }
 }
 
 /**
@@ -103,7 +103,7 @@ function folderMiniIconsHtml(folder, byId) {
  * @returns {Promise<void>} 无
  */
 async function appendHubServerItem(parent, group, notifyPrefs = {}) {
-	const active = group.groupId === hubStore.context.currentGroupId
+	const active = group.groupId === store.context.currentGroupId
 	const mutedClass = isGroupMutedInSidebar(notifyPrefs, group.groupId, group) ? ' is-muted' : ''
 	const displayName = await groupDisplayName(group.groupId, group.name)
 	const el = await renderTemplate('hub/server/item', {
@@ -122,9 +122,9 @@ async function appendHubServerItem(parent, group, notifyPrefs = {}) {
 
 /** 渲染左侧服务器/群组列表。 @returns {Promise<void>} */
 export async function renderServerBar() {
-	hubStore.sidebar.sidebarGroupOrder = computeOrderedSidebarGroupIds()
+	store.sidebar.sidebarGroupOrder = computeOrderedSidebarGroupIds()
 
-	const list = document.getElementById('hub-server-list')
+	const list = document.getElementById('server-list')
 	list.replaceChildren()
 	const sidebarGroups = getSidebarGroups()
 	if (!sidebarGroups.length) {
@@ -136,7 +136,7 @@ export async function renderServerBar() {
 
 	const byId = new Map(sidebarGroups.map(g => [g.groupId, g]))
 	const used = new Set()
-	const folders = hubStore.sidebar.groupFoldersState.folders || []
+	const folders = store.sidebar.groupFoldersState.folders || []
 	const notifyPrefs = await loadNotificationPreferences().catch(() => ({}))
 
 	if (folders.length) {
@@ -154,7 +154,7 @@ export async function renderServerBar() {
 			})
 			list.appendChild(folderElement)
 			if (!collapsed) {
-				const itemsHost = list.querySelector(`.hub-folder-wrap[data-folder-idx="${folderIndex}"] .hub-folder-items`)
+				const itemsHost = list.querySelector(`.folder-wrap[data-folder-idx="${folderIndex}"] .folder-items`)
 				for (const groupId of folder.groupIds) {
 					const group = byId.get(groupId)
 					if (!group) continue
@@ -175,7 +175,7 @@ export async function renderServerBar() {
 			await appendHubServerItem(list, group, notifyPrefs)
 
 
-	list.querySelectorAll('.hub-server-item[data-group-id]').forEach(el => {
+	list.querySelectorAll('.server-item[data-group-id]').forEach(el => {
 		el.addEventListener('click', (event) => {
 			const groupId = String(el.dataset.groupId || '').trim()
 			if (!groupId) return
@@ -198,18 +198,18 @@ export async function renderServerBar() {
 		})
 	})
 	syncGroupSelectionStyles()
-	list.querySelectorAll('.hub-folder-tile[data-folder-idx]').forEach(head => {
+	list.querySelectorAll('.folder-tile[data-folder-idx]').forEach(head => {
 		head.addEventListener('click', (event) => {
 			event.stopPropagation()
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
-			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.sidebar.groupFoldersState.folders.length) return
-			hubStore.sidebar.groupFoldersState.folders[folderIndex].collapsed = !hubStore.sidebar.groupFoldersState.folders[folderIndex].collapsed
+			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= store.sidebar.groupFoldersState.folders.length) return
+			store.sidebar.groupFoldersState.folders[folderIndex].collapsed = !store.sidebar.groupFoldersState.folders[folderIndex].collapsed
 			void persistGroupFolders()
 			void renderServerBar()
 		})
 		head.addEventListener('contextmenu', (event) => {
 			const folderIndex = Number(head.getAttribute('data-folder-idx'))
-			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= hubStore.sidebar.groupFoldersState.folders.length) return
+			if (!Number.isFinite(folderIndex) || folderIndex < 0 || folderIndex >= store.sidebar.groupFoldersState.folders.length) return
 			showFolderContextMenu(event, folderIndex)
 		})
 	})
@@ -221,7 +221,7 @@ export async function loadGroups() {
 	const groupListPromise = getGroupList()
 	const foldersResponse = await fetch('/api/parts/shells:chat/group-folders', { credentials: 'include' })
 	const groupList = await groupListPromise
-	hubStore.sidebar.groups = groupList.sort(
+	store.sidebar.groups = groupList.sort(
 		(left, right) => new Date(right.lastMessageTime || 0) - new Date(left.lastMessageTime || 0),
 	)
 	const knownGroupIds = new Set(groupList.map(g => String(g.groupId || '').trim().toLowerCase()).filter(Boolean))
@@ -235,7 +235,7 @@ export async function loadGroups() {
 	if (foldersResponse.ok) {
 		const payload = await foldersResponse.json()
 		const rawFolders = Array.isArray(payload.folders) ? payload.folders : []
-		hubStore.sidebar.groupFoldersState = {
+		store.sidebar.groupFoldersState = {
 			folders: rawFolders.map((folder, folderIndex) => ({
 				id: String(folder.id || '').trim() || `folder-${folderIndex}`,
 				name: String(folder.name || '').trim(),
@@ -245,6 +245,6 @@ export async function loadGroups() {
 			})),
 		}
 	}
-	else hubStore.sidebar.groupFoldersState = { folders: [] }
+	else store.sidebar.groupFoldersState = { folders: [] }
 	await renderServerBar()
 }

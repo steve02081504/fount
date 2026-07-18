@@ -8,10 +8,10 @@ import { initTranslations } from '../../../../scripts/i18n/index.mjs'
 import { loadAliases } from '../shared/aliases.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { parseHash } from './core/urlHash.mjs'
 
-/** @returns {Promise<void>} 拉取 viewer 到 hubStore（顶栏详情由 init.mjs 补全） */
+/** @returns {Promise<void>} 拉取 viewer 到 store（顶栏详情由 init.mjs 补全） */
 async function loadViewerIdentity() {
 	const [viewerResp, whoamiResp] = await Promise.all([
 		fetch('/api/parts/shells:chat/viewer', { credentials: 'include' }),
@@ -19,17 +19,17 @@ async function loadViewerIdentity() {
 	])
 	if (whoamiResp.ok) {
 		const whoami = await whoamiResp.json()
-		hubStore.viewer.username = whoami.username || null
+		store.viewer.username = whoami.username || null
 	}
 	if (!viewerResp.ok) return
 	const data = await viewerResp.json()
-	hubStore.viewer.nodeHash = data.nodeHash || null
-	hubStore.viewer.operatorEntityHash = data.viewerEntityHash || null
-	hubStore.viewer.viewerEntityHash = data.viewerEntityHash || null
-	hubStore.viewer.ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase() || null
-	hubStore.viewer.agents = data.agents || []
+	store.viewer.nodeHash = data.nodeHash || null
+	store.viewer.operatorEntityHash = data.viewerEntityHash || null
+	store.viewer.viewerEntityHash = data.viewerEntityHash || null
+	store.viewer.ownerEntityHash = String(data.profile?.ownerEntityHash || '').trim().toLowerCase() || null
+	store.viewer.agents = data.agents || []
 	const { ingestAgentEntityHashList } = await import('./core/domUtils.mjs')
-	ingestAgentEntityHashList(hubStore.viewer.agents)
+	ingestAgentEntityHashList(store.viewer.agents)
 }
 
 /** @returns {Promise<void>} 按 URL 进入好友/群频道视图 */
@@ -103,7 +103,7 @@ export async function initCore() {
 		await loadGroups()
 	}
 	catch (error) {
-		hubStore.sidebar.groups = []
+		store.sidebar.groups = []
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 	}
 	await navigateHubFromLocation()

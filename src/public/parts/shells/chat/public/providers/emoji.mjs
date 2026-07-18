@@ -183,10 +183,10 @@ function tokenForSelection(item) {
  */
 function groupTabInnerHtml(group, isCurrent) {
 	if (isCurrent)
-		return `<span class="hub-emoji-tab-glyph" aria-hidden="true">${CURRENT_GROUP_EMOJI_TAB_GLYPH}</span>`
+		return `<span class="emoji-tab-glyph" aria-hidden="true">${CURRENT_GROUP_EMOJI_TAB_GLYPH}</span>`
 	if (group.avatar)
-		return `<img src="${escapeHtml(group.avatar)}" class="hub-emoji-tab-icon hub-emoji-tab-avatar" width="20" height="20" alt="" aria-hidden="true" />`
-	return `<span class="hub-emoji-tab-glyph" aria-hidden="true">${GROUP_EMOJI_TAB_GLYPH}</span>`
+		return `<img src="${escapeHtml(group.avatar)}" class="emoji-tab-icon emoji-tab-avatar" width="20" height="20" alt="" aria-hidden="true" />`
+	return `<span class="emoji-tab-glyph" aria-hidden="true">${GROUP_EMOJI_TAB_GLYPH}</span>`
 }
 
 /** Chat emoji registry 提供商 */

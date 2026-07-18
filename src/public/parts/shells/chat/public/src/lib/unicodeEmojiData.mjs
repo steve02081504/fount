@@ -122,7 +122,7 @@ export const GROUP_EMOJI_TAB_PREFIX = '__g__:'
  * @returns {string} HTML
  */
 export function emojiTabGlyphHtml(glyph) {
-	return `<span class="hub-emoji-tab-glyph" aria-hidden="true">${glyph}</span>`
+	return `<span class="emoji-tab-glyph" aria-hidden="true">${glyph}</span>`
 }
 
 /**

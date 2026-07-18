@@ -4,7 +4,7 @@ import { shareOrCopyPostLink } from '../actions/shared.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
-import { runSocialWrite } from '../lib/socialWrite.mjs'
+import { runWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -234,8 +234,8 @@ function syncMuteButton(slide, video) {
 	const btn = slide.querySelector('.video-mute-btn')
 	if (!(btn instanceof HTMLElement)) return
 	btn.dataset.i18n = video.muted ? 'social.video.unmute' : 'social.video.mute'
-	btn.querySelector('.s-ic')?.classList.toggle('s-ic-mute', video.muted)
-	btn.querySelector('.s-ic')?.classList.toggle('s-ic-volume', !video.muted)
+	btn.querySelector('.icon')?.classList.toggle('icon-mute', video.muted)
+	btn.querySelector('.icon')?.classList.toggle('icon-volume', !video.muted)
 }
 
 /**
@@ -410,13 +410,13 @@ function buildVideoSlide(item) {
 	slide.innerHTML = videoSrc
 		? `<video class="video-player" src="${escapeHtml(videoSrc)}" loop playsinline preload="metadata"></video>`
 		: `<div class="video-media-fallback">
-			<span class="s-ic s-ic-video" aria-hidden="true"></span>
+			<span class="icon icon-video" aria-hidden="true"></span>
 			<p data-i18n="social.video.unavailable"></p>
 		</div>`
 
 	slide.insertAdjacentHTML('beforeend', `
 		<div class="video-pause-hint" aria-hidden="true">
-			<span class="s-ic s-ic-play"></span>
+			<span class="icon icon-play"></span>
 		</div>
 		<div class="video-overlay">
 			<div class="video-info">
@@ -430,19 +430,19 @@ function buildVideoSlide(item) {
 			<div class="video-comment-ticker hidden" data-comment-ticker aria-hidden="true"></div>
 			<div class="video-actions">
 				<button type="button" class="video-action-btn video-like-btn${liked ? ' is-active' : ''}" data-action="like" aria-label="${escapeHtml(geti18n('social.actions.like'))}">
-					<span class="s-ic s-ic-like" aria-hidden="true"></span>
+					<span class="icon icon-like" aria-hidden="true"></span>
 					<span class="video-like-count">${likeCount}</span>
 				</button>
 				<button type="button" class="video-action-btn video-comment-btn" data-action="comment" data-replies="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.replies'))}">
-					<span class="s-ic s-ic-reply" aria-hidden="true"></span>
+					<span class="icon icon-reply" aria-hidden="true"></span>
 					<span class="action-count">${replyCount}</span>
 				</button>
 				<button type="button" class="video-action-btn video-share-btn" data-action="share" data-share="${escapeHtml(actionKey)}" aria-label="${escapeHtml(geti18n('social.actions.share'))}">
-					<span class="s-ic s-ic-share" aria-hidden="true"></span>
+					<span class="icon icon-share" aria-hidden="true"></span>
 					<span class="action-count" data-i18n="social.actions.share"></span>
 				</button>
 				<button type="button" class="video-action-btn video-mute-btn" data-action="mute" data-i18n="social.video.mute">
-					<span class="s-ic s-ic-volume" aria-hidden="true"></span>
+					<span class="icon icon-volume" aria-hidden="true"></span>
 				</button>
 			</div>
 		</div>
@@ -625,7 +625,7 @@ async function doVideoLike(slide) {
 	if (!entityHash || !postId) return
 	const btn = slide.querySelector('.video-like-btn')
 	if (btn?.classList.contains('is-active')) return
-	await runSocialWrite('like', () =>
+	await runWrite('like', () =>
 		socialApi(`/posts/${entityHash}/${postId}/like`, { method: 'POST' }),
 	)
 	btn?.classList.add('is-active')

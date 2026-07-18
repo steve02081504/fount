@@ -1,15 +1,15 @@
 /**
  * 【文件】public/hub/hubStatus.mjs
  * 【职责】当前用户在线状态：心跳、idle 检测、状态菜单与顶栏状态点/自定义状态文案同步。
- * 【原理】`applyMyStatusUI`、`showStatusMenu` 更新 `#hub-my-status` 等区域；`startHeartbeat` 维持 presence。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【原理】`applyMyStatusUI`、`showStatusMenu` 更新 `#my-status` 等区域；`startHeartbeat` 维持 presence。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/i18n、../../../../scripts/toast、core/state、presence
  */
 import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import {
 	applySelfStatusToMemberList,
 	applyStatusDot,
@@ -35,8 +35,8 @@ const MANUAL_STATUSES = ['online', 'idle', 'dnd', 'invisible']
  * @returns {Promise<void>}
  */
 export async function applyMyStatusUI(status, customStatus = '') {
-	const dot = document.getElementById('hub-my-status-dot')
-	const text = document.getElementById('hub-my-status-text')
+	const dot = document.getElementById('my-status-dot')
+	const text = document.getElementById('my-status-text')
 	applyStatusDot(dot, status)
 	if (text)
 		text.textContent = await formatStatusLabel(status, customStatus)
@@ -60,7 +60,7 @@ export async function sendHeartbeat(entityHash) {
  * @returns {Promise<void>}
  */
 export async function setMyStatus(status, options = {}) {
-	const entityHash = hubStore.viewer.viewerEntityHash
+	const entityHash = store.viewer.viewerEntityHash
 	if (!entityHash) return
 	const resp = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/status`, {
 		method: 'POST',
@@ -80,7 +80,7 @@ export async function setMyStatus(status, options = {}) {
 	invalidateUserProfileCache(entityHash)
 	const profile = await fetchUserProfile(entityHash, {
 		bypassCache: true,
-		groupId: hubStore.context.currentGroupId || undefined,
+		groupId: store.context.currentGroupId || undefined,
 	})
 	await applyMyStatusUI(status, profile?.customStatus || '')
 	applySelfStatusToMemberList(status)
@@ -93,7 +93,7 @@ export async function setMyStatus(status, options = {}) {
 export async function refreshMyStatusFromProfile(entityHash) {
 	const profile = await fetchUserProfile(entityHash, {
 		bypassCache: true,
-		groupId: hubStore.context.currentGroupId || undefined,
+		groupId: store.context.currentGroupId || undefined,
 	})
 	if (!profile) return
 	const stored = profile.status === 'offline' && MANUAL_STATUSES.includes(lastManualStatus)
@@ -144,7 +144,7 @@ export function startIdleWatcher() {
 			idleTimer = null
 			const restore = lastManualStatus === 'invisible' ? 'invisible' : lastManualStatus || 'online'
 			void setMyStatus(restore, { silent: true })
-			void sendHeartbeat(hubStore.viewer.viewerEntityHash)
+			void sendHeartbeat(store.viewer.viewerEntityHash)
 		}
 	})
 }

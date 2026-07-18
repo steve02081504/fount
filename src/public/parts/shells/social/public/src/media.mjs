@@ -10,7 +10,7 @@ const SOCIAL_ATTACHMENT_PREFIX = 'shells/social/attachments'
  * @param {FileList | File[]} files 本地文件
  * @returns {Promise<object[]>} mediaRefs 条目
  */
-export async function uploadSocialMedia(files) {
+export async function uploadMedia(files) {
 	/** @type {object[]} */
 	const refs = []
 	for (const file of files) {

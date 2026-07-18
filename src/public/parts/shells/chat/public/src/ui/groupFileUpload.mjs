@@ -29,7 +29,7 @@ export const CHUNK_UPLOAD_MAX_BYTES = FEDERATION_CHUNK_MAX_BYTES
  */
 async function createUploadProgress(fileName) {
 	usingTemplates('/parts/shells:chat/src/templates')
-	const host = document.querySelector('.hub-input-area') || document.body
+	const host = document.querySelector('.input-area') || document.body
 	let root = document.getElementById('group-file-upload-progress')
 	if (!root) {
 		root = await renderTemplate('hub/composer/upload_progress', {})
@@ -259,7 +259,7 @@ export function createFileHandlers(hub) {
 		})
 
 		if (isImage) {
-			const img = wrap.querySelector('.hub-pending-thumb-img')
+			const img = wrap.querySelector('.pending-thumb-img')
 			const reader = new FileReader()
 			reader.addEventListener('load', () => {
 				if (img instanceof HTMLImageElement) img.src = String(reader.result || '')
@@ -267,7 +267,7 @@ export function createFileHandlers(hub) {
 			reader.readAsDataURL(file)
 		}
 
-		wrap.querySelector('.hub-pending-remove')?.addEventListener('click', () => {
+		wrap.querySelector('.pending-remove')?.addEventListener('click', () => {
 			const pendingIndex = pendingFiles.findIndex(entry => entry.id === id)
 			if (pendingIndex !== -1) pendingFiles.splice(pendingIndex, 1)
 			wrap.remove()

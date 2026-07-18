@@ -7,6 +7,7 @@ import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import {
 	formatSocialPostHref,
 	formatSocialPostPageUri,
+	formatSocialProfileHref,
 	formatSocialSearchHref,
 	parseSocialRunUri,
 } from '../../public/shared/runUri.mjs'
@@ -41,6 +42,11 @@ Deno.test('parseSocialRunUri reads post with sharerNodeHash', () => {
 Deno.test('formatSocialPostHref builds detail hash', () => {
 	assertEquals(formatSocialPostHref('eh', 'pid'), '/parts/shells:social/#post;eh;pid')
 	assertEquals(formatSocialPostHref('eh', 'pid', 'nh'), '/parts/shells:social/#post;eh;pid;nh')
+})
+
+Deno.test('formatSocialProfileHref optional focus post', () => {
+	assertEquals(formatSocialProfileHref('eh'), '/parts/shells:social/#profile;eh')
+	assertEquals(formatSocialProfileHref('eh', 'pid'), '/parts/shells:social/#profile;eh;pid')
 })
 
 Deno.test('formatSocialPostPageUri for external share', () => {

@@ -9,9 +9,9 @@ import {
 	removePostsByAuthor,
 	restoreFeedShownItems,
 	restoreRemovedPosts,
-	runSocialWrite,
+	runWrite,
 } from '../lib/socialWrite.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { loadExplore } from '../views/explore.mjs'
 import {
 	activateProfileTab,
@@ -32,14 +32,14 @@ import { geti18n } from '/scripts/i18n/index.mjs'
  * @returns {Promise<void>}
  */
 async function optimisticAuthorFilter(entityHash, write, failKey) {
-	const purged = purgeFeedShownAuthor(socialState, entityHash)
+	const purged = purgeFeedShownAuthor(state, entityHash)
 	const removed = removePostsByAuthor(entityHash)
 	closePostMoreMenus()
 	try {
-		await runSocialWrite(failKey, write)
+		await runWrite(failKey, write)
 	}
 	catch {
-		restoreFeedShownItems(socialState, purged)
+		restoreFeedShownItems(state, purged)
 		restoreRemovedPosts(removed)
 	}
 }
@@ -56,7 +56,7 @@ export async function handleProfileNavClick(target) {
 	}
 
 	if (target.closest('[data-profile-settings]')) {
-		await openProfileSettingsDialog(socialState.profileSocialMeta || {})
+		await openProfileSettingsDialog(state.profileSocialMeta || {})
 		return
 	}
 
@@ -77,7 +77,7 @@ export async function handleProfileNavClick(target) {
 	const statButton = target.closest('[data-profile-stat]')
 	if (statButton instanceof HTMLElement && statButton.dataset.profileStat) {
 		const kind = statButton.dataset.profileStat
-		const entityHash = statButton.dataset.entityHash || socialState.profileEntityHash
+		const entityHash = statButton.dataset.entityHash || state.profileEntityHash
 		if (kind === 'posts') {
 			await activateProfileTab('posts')
 			document.getElementById('profilePostsPanel')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -97,11 +97,11 @@ export async function handleProfileNavClick(target) {
 		followButton.dataset.i18n = wasFollowing ? 'social.actions.follow' : 'social.actions.following'
 		followButton.dataset.isFollowing = wasFollowing ? '0' : '1'
 		try {
-			await runSocialWrite('follow', () => socialApi('/relationships/follow', {
+			await runWrite('follow', () => socialApi('/relationships/follow', {
 				method: 'POST',
 				body: JSON.stringify({ entityHash, follow: !wasFollowing }),
 			}))
-			if (socialState.profileEntityHash === entityHash)
+			if (state.profileEntityHash === entityHash)
 				await loadProfileFor(entityHash)
 			else
 				await loadExplore()
@@ -115,7 +115,7 @@ export async function handleProfileNavClick(target) {
 	const careButton = target.closest('[data-care]')
 	if (careButton instanceof HTMLElement && careButton.dataset.care) {
 		const entityHash = careButton.dataset.care
-		const owner = socialState.viewerEntityHash
+		const owner = state.viewerEntityHash
 		if (!owner) return
 		const wasCared = careButton.dataset.isCared === '1'
 		const prevKey = careButton.dataset.i18n
@@ -138,7 +138,7 @@ export async function handleProfileNavClick(target) {
 		if (next != null) {
 			await setEntityAlias(entityHash, next)
 			showToastI18n('success', 'social.actions.aliasSaved')
-			if (socialState.profileEntityHash === entityHash)
+			if (state.profileEntityHash === entityHash)
 				await loadProfileFor(entityHash)
 		}
 	}

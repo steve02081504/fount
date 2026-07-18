@@ -49,7 +49,7 @@ export function wireBubbleOffscreenGuards(bubble, trusted, onUntrustedReveal) {
  */
 export function wireMessageEmbedGuards(container) {
 	if (!(container instanceof HTMLElement)) return
-	for (const bubble of container.querySelectorAll('.hub-message-content')) {
+	for (const bubble of container.querySelectorAll('.message-content')) {
 		if (!(bubble instanceof HTMLElement)) continue
 		disposeEmbedGuard(bubble)
 		embedGuardDisposers.set(bubble, attachOffscreenEmbedGuard(bubble))

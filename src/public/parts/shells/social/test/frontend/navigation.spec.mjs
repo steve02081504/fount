@@ -1,10 +1,10 @@
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-import { test, expect, openSocialHome, expectPostInFeed } from './fixtures.mjs'
+import { test, expect, openHome, expectPostInFeed } from './fixtures.mjs'
 
 test.describe('Social navigation', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('switches between main views', async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe('Social navigation', () => {
 		await expect(page.locator('#exploreView')).toBeVisible()
 		await expect(page).toHaveURL(/#explore$/)
 		await page.reload()
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await expect(page.locator('#exploreView')).toBeVisible({ timeout: 60_000 })
 		await expect(page).toHaveURL(/#explore$/)
 	})
@@ -62,15 +62,18 @@ test.describe('Social navigation', () => {
 		const input = page.locator('#feedSearchInput')
 		await input.fill(`#${tag}`)
 		await input.press('Enter')
+		await expect(page.locator('#searchView')).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('#feedSearchClearButton')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator(`#feedList [data-post-id="${postId}"]`).first()).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator(`#searchViewResults [data-post-id="${postId}"]`).first()).toBeVisible({ timeout: 30_000 })
 
 		await input.fill(`__no-match-${Date.now()}__`)
 		await input.press('Enter')
-		await expect(page.locator(`#feedList [data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 30_000 })
+		await expect(page.locator(`#searchViewResults [data-post-id="${postId}"]`)).toHaveCount(0, { timeout: 30_000 })
 
 		await page.locator('#feedSearchClearButton').click()
 		await expect(input).toHaveValue('')
+		await expect(page.locator('#feedView')).toBeVisible({ timeout: 20_000 })
 		await expectPostInFeed(page, postId)
 	})
-})
+}
+)

@@ -10,7 +10,7 @@ export const phases = [
 	{ name: 'shell', testMatch: ['smoke.spec.mjs'] },
 	{ name: 'deeplink', testMatch: ['deepLink.spec.mjs'] },
 	{
-		name: 'hub-ui',
+		name: 'ui',
 		testMatch: [
 			'composer.spec.mjs',
 			'navigation.spec.mjs',

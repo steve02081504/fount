@@ -2,13 +2,13 @@
  * 【文件】public/hub/mode.mjs
  * 【职责】Hub 左侧主模式切换：「群组」「好友」「收件箱」「群发现」布局的激活、数据加载与 composer 状态清理。
  * 【原理】`setActiveModeTab` 高亮模式按钮；`setMode` 统一驱动 friends / groups / inbox。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】进入好友列表时 `updateFriendsHash` 写入 `#friends`；stream、friendsList、sidebar、inboxView。
  */
 import { mountTemplate } from '../../../../scripts/features/template.mjs'
 
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
-import { hubStore, setHubState } from './core/state.mjs'
+import { store, setState } from './core/state.mjs'
 import { updateFriendsHash } from './core/urlHash.mjs'
 import { loadFriendsList, renderFriendsColumn } from './friendsList.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
@@ -30,7 +30,7 @@ import { closeGroupWebSocket } from './stream/index.mjs'
  * @returns {void}
  */
 export function setActiveModeTab(mode) {
-	document.querySelectorAll('.hub-server-item[data-mode]').forEach((el) => {
+	document.querySelectorAll('.server-item[data-mode]').forEach((el) => {
 		el.classList.toggle('mode-active', el.dataset.mode === mode)
 	})
 }
@@ -46,8 +46,8 @@ export async function setMode(mode) {
 		closeInboxView()
 	}
 
-	hubStore.context.currentMode = mode
-	document.body.dataset.hubSurface = mode
+	store.context.currentMode = mode
+	document.body.dataset.surface = mode
 	setActiveModeTab(mode)
 	const { showHubNavPane } = await import('./hubPane.mjs')
 	showHubNavPane()
@@ -63,16 +63,16 @@ export async function setMode(mode) {
 		return
 	}
 
-	const container = document.getElementById('hub-channel-list')
+	const container = document.getElementById('channel-list')
 	await mountTemplate(container, 'hub/nav/side_muted', { i18nKey: 'chat.hub.loading' })
-	document.getElementById('hub-member-list').innerHTML = ''
-	document.getElementById('hub-info-card-host').innerHTML = ''
+	document.getElementById('member-list').innerHTML = ''
+	document.getElementById('info-card-host').innerHTML = ''
 
 	if (mode === 'friends')
 		setPinsBookmarksWrapVisible(false)
 
 	const keepPrivateGroupSession = mode === 'friends'
-		&& (hubStore.privateGroup.groupId || hubStore.friendChatEntering)
+		&& (store.privateGroup.groupId || store.friendChatEntering)
 	if (!keepPrivateGroupSession) {
 		cancelScheduledChannelRefresh()
 		closeGroupWebSocket()
@@ -81,36 +81,36 @@ export async function setMode(mode) {
 
 	if (mode === 'friends' && !keepPrivateGroupSession) {
 		updateFriendsHash()
-		setHubState('context.currentGroupId', null)
-		setHubState('context.currentChannelId', null)
-		setHubState('context.currentState', null)
+		setState('context.currentGroupId', null)
+		setState('context.currentChannelId', null)
+		setState('context.currentState', null)
 		const { disableComposer } = await import('./messages/composerController.mjs')
 		disableComposer()
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/friends')
-		document.getElementById('hub-friends-empty-search-button')?.addEventListener('click', () => {
-			document.getElementById('hub-friends-search-input')?.focus()
+		await mountTemplate(document.getElementById('messages'), 'hub/empty/friends')
+		document.getElementById('friends-empty-search-button')?.addEventListener('click', () => {
+			document.getElementById('friends-search-input')?.focus()
 		})
-		document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
+		document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
 	}
 
 	const { refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	refreshHubHeaderButtons()
 	if (mode === 'friends')
-		if (isPrivateChatActive() && hubStore.context.currentState)
-			await renderHubChannelSidebar(hubStore.context.currentState)
+		if (isPrivateChatActive() && store.context.currentState)
+			await renderHubChannelSidebar(store.context.currentState)
 		else
 			await renderFriendsColumn(await loadFriendsList())
 
 	else if (mode === 'groups')
-		if (!hubStore.context.currentGroupId || !hubStore.context.currentState) {
+		if (!store.context.currentGroupId || !store.context.currentState) {
 			setPinsBookmarksWrapVisible(false)
 			updateStatusBanners()
 			container.innerHTML = ''
 		}
 		else {
-			await renderChannelList(hubStore.context.currentState)
-			await renderMemberList(hubStore.context.currentState)
-			await renderGroupInfoCard(hubStore.context.currentState)
+			await renderChannelList(store.context.currentState)
+			await renderMemberList(store.context.currentState)
+			await renderGroupInfoCard(store.context.currentState)
 		}
 
 }

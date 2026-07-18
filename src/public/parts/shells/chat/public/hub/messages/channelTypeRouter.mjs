@@ -4,7 +4,7 @@
 import { getStreamingChannelAuth } from '../../src/api/groupCore.mjs'
 import { refreshChannelPinsBar } from '../banners.mjs'
 import { renderListChannel, renderStreamingChannel, renderCodecsAvStreamingChannel } from '../channels.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { selectChannel, saveListChannelItems } from '../sidebar/index.mjs'
 import { leaveHubAvSession } from '../streamingAv.mjs'
 
@@ -17,22 +17,22 @@ import { leaveHubAvSession } from '../streamingAv.mjs'
 export async function loadNonTextChannel(container, channel) {
 	const channelType = channel?.type || 'text'
 	if (channelType === 'list')
-		await renderListChannel(container, hubStore.context.currentGroupId, hubStore.context.currentChannelId, channel, selectChannel, {
-			canEdit: !!hubStore.context.currentState?.channelCaps?.[hubStore.context.currentChannelId]?.canEditList,
+		await renderListChannel(container, store.context.currentGroupId, store.context.currentChannelId, channel, selectChannel, {
+			canEdit: !!store.context.currentState?.channelCaps?.[store.context.currentChannelId]?.canEditList,
 			onSave: saveListChannelItems,
 		})
 	else if (channelType === 'streaming') {
 		await leaveHubAvSession()
-		const groupSettings = hubStore.context.currentState?.groupSettings || {}
+		const groupSettings = store.context.currentState?.groupSettings || {}
 		if (!groupSettings.streamingSfuWss?.trim())
 			await renderCodecsAvStreamingChannel(container, channel, {
-				groupId: hubStore.context.currentGroupId,
-				channelId: hubStore.context.currentChannelId,
-				clientId: hubStore.context.currentState?.viewerMemberPubKeyHash || 'local',
+				groupId: store.context.currentGroupId,
+				channelId: store.context.currentChannelId,
+				clientId: store.context.currentState?.viewerMemberPubKeyHash || 'local',
 			})
 		else {
-			const groupId = hubStore.context.currentGroupId
-			const channelId = hubStore.context.currentChannelId
+			const groupId = store.context.currentGroupId
+			const channelId = store.context.currentChannelId
 			const streamingViewPageUrl =
 				`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/streaming-view`
 			await renderStreamingChannel(container, channel, {
@@ -43,7 +43,7 @@ export async function loadNonTextChannel(container, channel) {
 				 * @returns {Promise<void>}
 				 */
 				onRefreshAuth: async () => {
-					const iframe = document.getElementById('hub-stream-iframe')
+					const iframe = document.getElementById('stream-iframe')
 					if (!(iframe instanceof HTMLIFrameElement)) return
 					try {
 						const auth = await getStreamingChannelAuth(groupId, channelId)
@@ -58,7 +58,7 @@ export async function loadNonTextChannel(container, channel) {
 	}
 	else return false
 
-	hubStore.messages.lastMessageId = null
+	store.messages.lastMessageId = null
 	refreshChannelPinsBar()
 	return true
 }

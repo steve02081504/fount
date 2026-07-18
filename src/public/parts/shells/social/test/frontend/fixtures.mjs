@@ -4,7 +4,7 @@ import { request as playwrightRequest } from '@playwright/test'
 import { ms } from 'fount/scripts/ms.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	FOREIGN_FE_AUTHOR_HASH,
@@ -73,9 +73,9 @@ baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
  * @param {string} baseUrl - 测试根 URL。
  * @returns {Promise<void>}
  */
-export async function openSocialHome(page, baseUrl) {
+export async function openHome(page, baseUrl) {
 	await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
-	await waitForSocialAppReady(page)
+	await waitForSocialReady(page)
 	await expect(page.locator('#feedView')).toBeVisible({ timeout: ms('30s') })
 	await expect(page.locator('#postButton[data-i18n="social.composer.publish"]')).toBeVisible()
 	await expect(page.locator('#postButton')).not.toHaveText('', { timeout: ms('30s') })

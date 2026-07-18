@@ -2,7 +2,7 @@
  * 【文件】public/hub/channelContextMenu.mjs
  * 【职责】侧栏频道项右键菜单：重命名、删除、类型切换与打开线程等频道级操作入口。
  * 【原理】`showChannelContextMenu` 在频道行旁弹出定位菜单并绑定一次性点击处理；删除/切换频道后由 `selectChannel`/`loadMessages` 重建主栏消息视图。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】打开频道时可能触发 `updateHash`（由 `sidebar.selectChannel` 完成）；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、../src/api/groupCore、groupChannel、core/state、sidebar。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
@@ -21,7 +21,8 @@ import { getGroupState } from '../src/api/groupCore.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { store } from './core/state.mjs'
 import { openChannelNotifyPrefsDialog } from './notifyPrefsDialog.mjs'
 import { renderHubChannelSidebar, selectChannel } from './sidebar/index.mjs'
 
@@ -40,13 +41,13 @@ function dismissChannelContextMenu() {
  * @returns {Promise<void>}
  */
 async function refreshChannelsAfterManage(channelId) {
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	if (!groupId) return
-	hubStore.context.currentState = await getGroupState(groupId)
-	await renderHubChannelSidebar(hubStore.context.currentState)
-	const stillExists = hubStore.context.currentState?.channels?.[channelId]
-	if (hubStore.context.currentChannelId === channelId && !stillExists) {
-		const fallback = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
+	store.context.currentState = await getGroupState(groupId)
+	await renderHubChannelSidebar(store.context.currentState)
+	const stillExists = store.context.currentState?.channels?.[channelId]
+	if (store.context.currentChannelId === channelId && !stillExists) {
+		const fallback = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 		await selectChannel(fallback)
 	}
 }
@@ -61,20 +62,19 @@ export async function showChannelContextMenu(event, channelId) {
 	event.stopPropagation()
 	dismissChannelContextMenu()
 
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	if (!groupId || !channelId) return
 
-	const channel = hubStore.context.currentState?.channels?.[channelId]
+	const channel = store.context.currentState?.channels?.[channelId]
 	const channelName = channel?.name || channelId
-	const caps = hubStore.context.currentState?.channelCaps?.[channelId]
-	const defaultChannelId = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
+	const caps = store.context.currentState?.channelCaps?.[channelId]
+	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const showRename = !!caps?.canEditList
 	const showSetDefault = showRename && channelId !== defaultChannelId
 	const showDelete = showRename
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
 	menu.appendChild(await renderTemplate('hub/nav/channel_context_menu', {
 		channelId,
 		showRename,
@@ -82,23 +82,24 @@ export async function showChannelContextMenu(event, channelId) {
 		showDelete,
 	}))
 	document.body.appendChild(menu)
+	positionContextMenu(menu, { x: event.clientX, y: event.clientY })
 	openMenuElement = menu
 
 	const closeOnce = bindDismissOnDocumentInteraction(dismissChannelContextMenu)
 
-	menu.querySelector('.hub-channel-menu-notify')?.addEventListener('click', () => {
+	menu.querySelector('.channel-menu-notify')?.addEventListener('click', () => {
 		closeOnce()
 		void openChannelNotifyPrefsDialog(groupId, channelId)
 	})
 
-	menu.querySelector('.hub-channel-menu-copy-link')?.addEventListener('click', async () => {
+	menu.querySelector('.channel-menu-copy-link')?.addEventListener('click', async () => {
 		const url = `${window.location.origin}/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:${encodeURIComponent(channelId)}`
 		await navigator.clipboard.writeText(url)
 		showToastI18n('success', 'chat.hub.channelContext.copyLinkDone')
 		closeOnce()
 	})
 
-	menu.querySelector('.hub-channel-menu-rename')?.addEventListener('click', async () => {
+	menu.querySelector('.channel-menu-rename')?.addEventListener('click', async () => {
 		const next = window.prompt('', channelName)
 		if (next == null) return
 		const trimmed = next.trim()
@@ -117,7 +118,7 @@ export async function showChannelContextMenu(event, channelId) {
 		closeOnce()
 	})
 
-	menu.querySelector('.hub-channel-menu-set-default')?.addEventListener('click', async () => {
+	menu.querySelector('.channel-menu-set-default')?.addEventListener('click', async () => {
 		try {
 			await setDefaultChannel(groupId, channelId)
 			showToastI18n('success', 'chat.hub.channelContext.setDefaultOk')
@@ -129,7 +130,7 @@ export async function showChannelContextMenu(event, channelId) {
 		closeOnce()
 	})
 
-	menu.querySelector('.hub-channel-menu-export')?.addEventListener('click', async () => {
+	menu.querySelector('.channel-menu-export')?.addEventListener('click', async () => {
 		closeOnce()
 		try {
 			const archive = await exportChannelArchiveJson(groupId, channelId)
@@ -142,7 +143,7 @@ export async function showChannelContextMenu(event, channelId) {
 		}
 	})
 
-	menu.querySelector('.hub-channel-menu-delete')?.addEventListener('click', async () => {
+	menu.querySelector('.channel-menu-delete')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.channelContext.deleteConfirm', { name: channelName })) return
 		try {
 			await deleteChannel(groupId, channelId)

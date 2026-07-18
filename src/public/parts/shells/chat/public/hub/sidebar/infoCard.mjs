@@ -5,7 +5,7 @@
 import { mountTemplate } from '../../../../../scripts/features/template.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { avatarColor, avatarInitial, avatarTextColor, groupDisplayName } from '../core/domUtils.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 /**
  * 渲染右侧群组信息卡。
@@ -13,9 +13,9 @@ import { hubStore } from '../core/state.mjs'
  * @returns {Promise<void>}
  */
 export async function renderGroupInfoCard(state) {
-	const host = document.getElementById('hub-info-card-host')
+	const host = document.getElementById('info-card-host')
 	const meta = state?.groupMeta || {}
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	const displayName = await groupDisplayName(groupId, meta.name)
 	const description = meta.description ?? ''
 	await mountTemplate(host, 'hub/nav/info_card', {

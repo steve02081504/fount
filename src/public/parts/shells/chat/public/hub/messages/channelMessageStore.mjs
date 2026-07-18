@@ -7,7 +7,7 @@ import { mergeChannelMessagesForDisplay } from '../../shared/messageMerge.mjs'
 import { getChannelViewLogByEventIds } from '../../src/api/groupChannel.mjs'
 import { normalizeEventId } from '../../src/lib/eventId.mjs'
 import { applyChannelDisplayChain } from '../../src/ui/channelDisplay.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'
 
 /**
@@ -16,12 +16,12 @@ import { isHubMemberPersonallyFiltered } from '../personalFilter.mjs'
  * @param {string | null} [channelId] 频道 ID（默认当前频道）
  * @returns {void}
  */
-export function setPendingScrollTarget(eventId, groupId = hubStore.context.currentGroupId, channelId = hubStore.context.currentChannelId) {
+export function setPendingScrollTarget(eventId, groupId = store.context.currentGroupId, channelId = store.context.currentChannelId) {
 	if (!eventId) {
-		hubStore.messages.pendingScrollTarget = null
+		store.messages.pendingScrollTarget = null
 		return
 	}
-	hubStore.messages.pendingScrollTarget = {
+	store.messages.pendingScrollTarget = {
 		groupId,
 		channelId,
 		eventId: String(eventId).trim(),
@@ -32,11 +32,11 @@ export function setPendingScrollTarget(eventId, groupId = hubStore.context.curre
  * @returns {string | null} 消费并清除待滚动锚点（群/频道不匹配则丢弃）
  */
 export function consumePendingScrollTarget() {
-	const target = hubStore.messages.pendingScrollTarget
-	hubStore.messages.pendingScrollTarget = null
+	const target = store.messages.pendingScrollTarget
+	store.messages.pendingScrollTarget = null
 	if (!target?.eventId) return null
-	if (target.groupId !== hubStore.context.currentGroupId) return null
-	if (target.channelId !== hubStore.context.currentChannelId) return null
+	if (target.groupId !== store.context.currentGroupId) return null
+	if (target.channelId !== store.context.currentChannelId) return null
 	return target.eventId
 }
 
@@ -59,12 +59,12 @@ export function sortChannelRows(rows) {
  * @returns {void}
  */
 export function refreshChannelMessagesView(messageTextFn = null) {
-	let work = applyChannelDisplayChain(hubStore.messages.channelMessagesSource)
+	let work = applyChannelDisplayChain(store.messages.channelMessagesSource)
 	work = work.filter(row => !isHubMemberPersonallyFiltered('', row.authorPubKeyHash || row.sender))
-	const q = hubStore.messages.channelSearchQuery
+	const q = store.messages.channelSearchQuery
 	if (q && messageTextFn)
 		work = work.filter(row => messageTextFn(row).toLowerCase().includes(q))
-	hubStore.messages.channelMessages = mergeChannelMessagesForDisplay(work)
+	store.messages.channelMessages = mergeChannelMessagesForDisplay(work)
 }
 
 /**
@@ -74,7 +74,7 @@ export function refreshChannelMessagesView(messageTextFn = null) {
 export function findMessageViewIndex(eventId) {
 	const norm = normalizeEventId(eventId)
 	if (!norm) return -1
-	return hubStore.messages.channelMessages.findIndex(
+	return store.messages.channelMessages.findIndex(
 		row => normalizeEventId(row.eventId) === norm,
 	)
 }
@@ -87,14 +87,14 @@ export function findMessageViewIndex(eventId) {
 export function mergeRowsIntoSource(fetched) {
 	if (!Array.isArray(fetched) || !fetched.length) return { added: 0 }
 	const known = new Set(
-		hubStore.messages.channelMessagesSource.map(row => String(row.eventId)).filter(Boolean),
+		store.messages.channelMessagesSource.map(row => String(row.eventId)).filter(Boolean),
 	)
 	const fresh = fetched.filter(row => {
 		const id = String(row.eventId)
 		return id && !known.has(id)
 	})
 	if (!fresh.length) return { added: 0 }
-	hubStore.messages.channelMessagesSource = sortChannelRows([...fresh, ...hubStore.messages.channelMessagesSource])
+	store.messages.channelMessagesSource = sortChannelRows([...fresh, ...store.messages.channelMessagesSource])
 	return { added: fresh.length }
 }
 
@@ -112,7 +112,7 @@ export async function fetchRowsForMessageEvent(groupId, channelId, eventId) {
 }
 
 /**
- * 确保目标消息已载入 hubStore（必要时走 viewer eventIds 补拉）。
+ * 确保目标消息已载入 store（必要时走 viewer eventIds 补拉）。
  * @param {string} eventId 消息 event id
  * @returns {Promise<{ ok: boolean, viewIndex: number, source: 'cache' | 'fetched' | 'missing' | 'no-channel' | 'fetch-error' | 'invalid' }>} 加载结果
  */
@@ -123,8 +123,8 @@ export async function ensureMessageLoaded(eventId) {
 	const viewIndex = findMessageViewIndex(norm)
 	if (viewIndex >= 0) return { ok: true, viewIndex, source: 'cache' }
 
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
 	if (!groupId || !channelId) return { ok: false, viewIndex: -1, source: 'no-channel' }
 
 	let rows = []

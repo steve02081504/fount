@@ -1,10 +1,10 @@
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
-import { test, expect, openSocialHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
+import { test, expect, openHome, findPostCard, fetchViewerEntityHash } from './fixtures.mjs'
 
 test.describe('Social post detail', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('opens post detail from time link and deep hash', async ({ page, baseUrl, publishPost, apiKey }) => {
@@ -17,7 +17,7 @@ test.describe('Social post detail', () => {
 
 		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await expect(page.locator('#postDetailView')).toBeVisible({ timeout: 30_000 })
 		await expect(page.locator(`#postDetailView [data-post-id="${postId}"]`)).toBeVisible()
 		await expect(page.locator('#postDetailView .post-detail-replies .reply-composer')).toBeVisible()

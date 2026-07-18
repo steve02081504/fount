@@ -2,7 +2,7 @@
  * 【文件】public/hub/stream/channelRefresh.mjs
  * 【职责】主频道 / 子线程命中判定与增量刷新分发。
  */
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { getActiveThreadChannelId, refreshActiveThreadIfOpen } from '../threadDrawer.mjs'
 
 /**
@@ -25,7 +25,7 @@ export function hubChannelMatch(eventChannelId, mainChannelId) {
  * @returns {Promise<void>}
  */
 async function refreshMainChannel(options = {}) {
-	if (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
+	if (!store.context.currentGroupId || !store.context.currentChannelId) return
 	const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
 	scheduleChannelIncrementalRefresh(options)
 }
@@ -59,7 +59,7 @@ export function dispatchChannelOverlayRefresh(eventChannelId, mainChannelId) {
  * @returns {Promise<void>}
  */
 export async function dispatchChannelMessageEdit(targetId, editContent = null) {
-	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+	if (store.context.currentGroupId && store.context.currentChannelId) {
 		const { applyChannelMessageEdit } = await import('../messages/messages.mjs')
 		await applyChannelMessageEdit(targetId, editContent)
 	}
@@ -71,7 +71,7 @@ export async function dispatchChannelMessageEdit(targetId, editContent = null) {
  * @returns {Promise<void>}
  */
 export async function dispatchChannelMessageDelete(targetId) {
-	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+	if (store.context.currentGroupId && store.context.currentChannelId) {
 		const { applyChannelMessageDelete } = await import('../messages/messages.mjs')
 		await applyChannelMessageDelete(targetId)
 	}

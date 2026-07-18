@@ -18,7 +18,7 @@ import { removeWithFade } from '../messageActionsUi.mjs'
 export async function handleFeedbackSubmitCancel(button, actions) {
 	const { groupId, channelId, reload } = actions
 	const { action } = button.dataset
-	const area = button.closest('.hub-message-feedback-reason-area')
+	const area = button.closest('.message-feedback-reason-area')
 	const eventId = button.dataset.eventId || area?.dataset.eventId
 	if (!eventId || !area) return true
 	if (action === 'feedback-cancel') {
@@ -48,7 +48,7 @@ export async function handleFeedbackSubmitCancel(button, actions) {
  * @returns {boolean} 是否已处理
  */
 export function handleFeedbackPrompt(button, type) {
-	const messageRow = /** @type {HTMLElement | null} */ button.closest('.hub-message, .hub-char-entry')
+	const messageRow = /** @type {HTMLElement | null} */ button.closest('.message, .char-entry')
 	const eventId = button.dataset.eventId
 	if (!eventId) return false
 	void showFeedbackReasonInput(messageRow, eventId, type)

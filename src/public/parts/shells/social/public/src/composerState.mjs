@@ -5,7 +5,7 @@ import { clearCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFi
 import { chatApi, socialApi } from './lib/apiClient.mjs'
 import { renderQuoteBlockHtml } from './lib/display.mjs'
 import { renderMediaPreview } from './mediaRender.mjs'
-import { socialState } from './state.mjs'
+import { state } from './state.mjs'
 import { bindVisibilityPicker, applyVisibilityPicker } from './visibilityPicker.mjs'
 import { formatChannelToken, stripChannelTokens } from '/parts/shells:chat/shared/inlineTokenSyntax.mjs'
 import { openImageEditor } from '/scripts/imageEditor/index.mjs'
@@ -32,7 +32,7 @@ export async function refreshQuotePreview() {
 	const panel = document.getElementById('quotePreview')
 	if (!panel) return
 	const generation = ++quotePreviewGeneration
-	if (!socialState.pendingQuoteRef) {
+	if (!state.pendingQuoteRef) {
 		panel.classList.add('hidden')
 		panel.replaceChildren()
 		return
@@ -41,9 +41,9 @@ export async function refreshQuotePreview() {
 	await mountTemplate(panel, 'quote_preview', {})
 	if (generation !== quotePreviewGeneration) return
 	const body = panel.querySelector('.quote-preview-body')
-	if (body) body.innerHTML = await renderQuoteBlockHtml(socialState.pendingQuoteRef)
+	if (body) body.innerHTML = await renderQuoteBlockHtml(state.pendingQuoteRef)
 	panel.querySelector('.clear-quote-btn')?.addEventListener('click', () => {
-		socialState.pendingQuoteRef = null
+		state.pendingQuoteRef = null
 		void refreshQuotePreview()
 	})
 }
@@ -55,7 +55,7 @@ export async function refreshQuotePreview() {
 export async function refreshGroupRefPreview() {
 	const panel = document.getElementById('groupRefPreview')
 	if (!panel) return
-	if (!socialState.pendingGroupRef) {
+	if (!state.pendingGroupRef) {
 		panel.classList.add('hidden')
 		panel.replaceChildren()
 		return
@@ -63,9 +63,9 @@ export async function refreshGroupRefPreview() {
 	panel.classList.remove('hidden')
 	await mountTemplate(panel, 'group_ref_preview', {})
 	const body = panel.querySelector('.group-ref-preview-body')
-	if (body) body.innerHTML = renderGroupRefBlockHtml(socialState.pendingGroupRef)
+	if (body) body.innerHTML = renderGroupRefBlockHtml(state.pendingGroupRef)
 	panel.querySelector('.clear-group-ref-btn')?.addEventListener('click', () => {
-		socialState.pendingGroupRef = null
+		state.pendingGroupRef = null
 		syncGroupRefInComposer(null)
 		void refreshGroupRefPreview()
 	})
@@ -200,7 +200,7 @@ export async function loadGroupPickerOptions() {
 export function refreshMediaPreview() {
 	renderMediaPreview(
 		document.getElementById('mediaPreview'),
-		socialState.pendingMediaRefs,
+		state.pendingMediaRefs,
 		() => refreshMediaPreview(),
 		{
 			altPlaceholder: geti18n('social.composer.mediaAlt'),
@@ -222,7 +222,7 @@ export function refreshMediaPreview() {
 				})
 				if (!edited) return
 				if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
-				socialState.pendingMediaRefs[index] = {
+				state.pendingMediaRefs[index] = {
 					...ref,
 					file: edited,
 					objectUrl: URL.createObjectURL(edited),
@@ -249,7 +249,7 @@ export async function addComposerMedia(files) {
 			: file.type.startsWith('video/')
 				? 'video'
 				: 'file'
-		socialState.pendingMediaRefs.push({
+		state.pendingMediaRefs.push({
 			kind,
 			name: file.name,
 			mimeType: file.type || 'application/octet-stream',
@@ -286,14 +286,14 @@ export async function clearComposer(options = {}) {
 	const albumSelect = document.getElementById('postAlbumSelect')
 	if (albumSelect instanceof HTMLSelectElement)
 		for (const opt of albumSelect.options) opt.selected = false
-	for (const ref of socialState.pendingMediaRefs)
+	for (const ref of state.pendingMediaRefs)
 		if (ref.objectUrl) URL.revokeObjectURL(ref.objectUrl)
-	socialState.pendingMediaRefs = []
-	socialState.pendingQuoteRef = null
-	socialState.pendingGroupRef = null
-	socialState.pendingPoll = null
+	state.pendingMediaRefs = []
+	state.pendingQuoteRef = null
+	state.pendingGroupRef = null
+	state.pendingPoll = null
 	if (!options.keepDraftId)
-		socialState.activeDraftId = null
+		state.activeDraftId = null
 	document.getElementById('pollComposerToggle')?.classList.remove('active')
 	document.getElementById('pollComposerPanel')?.classList.add('hidden')
 	const pollOptions = document.getElementById('pollComposerOptions')
@@ -316,7 +316,7 @@ export async function clearComposer(options = {}) {
 export async function loadDraftIntoComposer(row) {
 	const body = row?.body || row || {}
 	await clearComposer({ keepDraftId: true })
-	socialState.activeDraftId = row?.draftId || null
+	state.activeDraftId = row?.draftId || null
 
 	const postText = document.getElementById('postText')
 	if (postText instanceof HTMLTextAreaElement)
@@ -370,7 +370,7 @@ export async function loadDraftIntoComposer(row) {
 	}
 
 	if (body.quoteRef?.entityHash && body.quoteRef?.postId) {
-		socialState.pendingQuoteRef = {
+		state.pendingQuoteRef = {
 			entityHash: String(body.quoteRef.entityHash).toLowerCase(),
 			postId: String(body.quoteRef.postId),
 		}
@@ -391,7 +391,7 @@ export async function loadDraftIntoComposer(row) {
 	}
 
 	if (body.poll && Array.isArray(body.poll.options) && body.poll.options.length >= 2) {
-		socialState.pendingPoll = structuredClone(body.poll)
+		state.pendingPoll = structuredClone(body.poll)
 		document.getElementById('pollComposerToggle')?.classList.add('active')
 		const pollOptions = document.getElementById('pollComposerOptions')
 		if (pollOptions instanceof HTMLTextAreaElement)
@@ -410,7 +410,7 @@ export async function loadDraftIntoComposer(row) {
 	}
 
 	if (Array.isArray(body.mediaRefs) && body.mediaRefs.length)
-		socialState.pendingMediaRefs = body.mediaRefs.map(ref => ({ ...ref }))
+		state.pendingMediaRefs = body.mediaRefs.map(ref => ({ ...ref }))
 	refreshMediaPreview()
 }
 
@@ -422,11 +422,11 @@ export async function loadDraftIntoComposer(row) {
  * @returns {void}
  */
 export function setPendingGroupRef(groupId, channelId, label) {
-	socialState.pendingGroupRef = {
+	state.pendingGroupRef = {
 		groupId,
 		channelId: channelId || 'default',
 		label: label || groupRefLabel({ groupId, channelId }),
 	}
-	syncGroupRefInComposer(socialState.pendingGroupRef)
+	syncGroupRefInComposer(state.pendingGroupRef)
 	refreshGroupRefPreview()
 }

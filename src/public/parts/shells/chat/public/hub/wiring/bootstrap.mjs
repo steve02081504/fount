@@ -9,7 +9,7 @@ import { usingTemplates } from '../../../../../scripts/features/template.mjs'
 import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
 /** @returns {Promise<void>} 惰性加载 messages 图并提交 composer */
@@ -29,15 +29,15 @@ function resizeMessageInput(textarea) {
 
 /** 注册 composer 发送与快捷键（同步，供 E2E 与首屏导航使用）。 @returns {void} */
 function wireComposerControls() {
-	const messageInput = /** @type {HTMLTextAreaElement | null} */ document.getElementById('hub-message-input')
+	const messageInput = /** @type {HTMLTextAreaElement | null} */ document.getElementById('message-input')
 	if (!messageInput) return
 	bindComposerSubmit(messageInput, () => { void submitComposerLazy() })
 	messageInput.addEventListener('input', () => {
 		resizeMessageInput(messageInput)
 		if (messageInput.value.trim())
-			reportTyping(hubStore.context?.currentChannelId || 'default')
+			reportTyping(store.context?.currentChannelId || 'default')
 	})
-	document.getElementById('hub-send-button')?.addEventListener('click', () => {
+	document.getElementById('send-button')?.addEventListener('click', () => {
 		void submitComposerLazy()
 		messageInput.focus()
 	})
@@ -46,7 +46,7 @@ function wireComposerControls() {
 
 /** 注册左侧群组/好友/提及模式切换（统一走 setMode）。 @returns {void} */
 function wireModeTabsEarly() {
-	document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
+	document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 		el.addEventListener('click', () => {
 			const mode = el.dataset.mode
 			if (mode) void import('../mode.mjs').then(({ setMode }) => setMode(mode))
@@ -127,14 +127,14 @@ export function wireBootstrap() {
 	wireModeTabsEarly()
 	wireHashNavigation()
 	wireExternalJoinRefresh()
-	document.getElementById('hub-add-server-button')?.addEventListener('click', showServerActionPicker)
-	document.getElementById('hub-toggle-members-button')?.addEventListener('click', () => {
-		document.getElementById('hub-member-bar')?.classList.toggle('hub-member-bar--open')
+	document.getElementById('add-server-button')?.addEventListener('click', showServerActionPicker)
+	document.getElementById('toggle-members-button')?.addEventListener('click', () => {
+		document.getElementById('member-bar')?.classList.toggle('member-bar--open')
 	})
-	document.getElementById('hub-member-backdrop')?.addEventListener('click', () => {
-		document.getElementById('hub-member-bar')?.classList.remove('hub-member-bar--open')
+	document.getElementById('member-backdrop')?.addEventListener('click', () => {
+		document.getElementById('member-bar')?.classList.remove('member-bar--open')
 	})
-	document.getElementById('hub-top-back-button')?.addEventListener('click', () => {
+	document.getElementById('top-back-button')?.addEventListener('click', () => {
 		void import('../hubPane.mjs').then(({ showHubNavPane }) => showHubNavPane())
 	})
 	wireMobileHeaderOverflow()
@@ -142,8 +142,8 @@ export function wireBootstrap() {
 	// 草稿自动保存接线
 	void import('../composerDraft.mjs').then(({ wireDraftAutoSave }) => {
 		wireDraftAutoSave(() => ({
-			groupId: hubStore.context.currentGroupId,
-			channelId: hubStore.context.currentChannelId,
+			groupId: store.context.currentGroupId,
+			channelId: store.context.currentChannelId,
 		}))
 	})
 	// 离线队列接线
@@ -163,26 +163,26 @@ function wireMobileHeaderOverflow() {
 			document.activeElement instanceof HTMLElement && document.activeElement.blur()
 		})
 	}
-	clickThrough('hub-overflow-pins', 'hub-pins-button')
-	clickThrough('hub-overflow-bookmarks', 'hub-bookmarks-button')
-	clickThrough('hub-overflow-files', 'hub-header-files-button')
+	clickThrough('overflow-pins', 'pins-button')
+	clickThrough('overflow-bookmarks', 'bookmarks-button')
+	clickThrough('overflow-files', 'header-files-button')
 
-	const mobileBar = document.getElementById('hub-mobile-search-bar')
-	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-mobile-search-input')
-	const desktopInput = /** @type {HTMLInputElement | null} */ document.getElementById('hub-header-search')
+	const mobileBar = document.getElementById('mobile-search-bar')
+	const mobileInput = /** @type {HTMLInputElement | null} */ document.getElementById('mobile-search-input')
+	const desktopInput = /** @type {HTMLInputElement | null} */ document.getElementById('header-search')
 
-	document.getElementById('hub-overflow-search')?.addEventListener('click', () => {
-		const moreBtn = document.getElementById('hub-header-more-button')
+	document.getElementById('overflow-search')?.addEventListener('click', () => {
+		const moreBtn = document.getElementById('header-more-button')
 		if (moreBtn instanceof HTMLElement) moreBtn.blur()
-		mobileBar?.classList.add('hub-mobile-search-bar--open')
+		mobileBar?.classList.add('mobile-search-bar--open')
 		if (mobileInput && desktopInput) mobileInput.value = desktopInput.value
-		const desktopScope = document.getElementById('hub-search-scope')?.dataset?.value
+		const desktopScope = document.getElementById('search-scope')?.dataset?.value
 		if (desktopScope)
 			void import('../search.mjs').then(({ setHubSearchScope }) => setHubSearchScope(desktopScope))
 		mobileInput?.focus()
 	})
-	document.getElementById('hub-mobile-search-close')?.addEventListener('click', () => {
-		mobileBar?.classList.remove('hub-mobile-search-bar--open')
+	document.getElementById('mobile-search-close')?.addEventListener('click', () => {
+		mobileBar?.classList.remove('mobile-search-bar--open')
 	})
 	mobileInput?.addEventListener('input', () => {
 		if (!desktopInput) return
@@ -194,11 +194,11 @@ function wireMobileHeaderOverflow() {
 /** 移动端 composer「+」菜单：转发到桌面工具按钮。 @returns {void} */
 function wireComposerMoreMenu() {
 	const map = [
-		['hub-composer-more-voice', 'hub-voice-button'],
-		['hub-composer-more-photo', 'hub-photo-button'],
-		['hub-composer-more-upload', 'hub-upload-button'],
-		['hub-composer-more-vote', 'hub-vote-button'],
-		['hub-composer-more-sticker', 'hub-sticker-button'],
+		['composer-more-voice', 'voice-button'],
+		['composer-more-photo', 'photo-button'],
+		['composer-more-upload', 'upload-button'],
+		['composer-more-vote', 'vote-button'],
+		['composer-more-sticker', 'sticker-button'],
 	]
 	for (const [moreId, desktopId] of map)
 		document.getElementById(moreId)?.addEventListener('click', () => {

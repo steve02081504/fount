@@ -2,7 +2,7 @@ import {
 	getChannelViewLog,
 } from '../../src/api/groupChannel.mjs'
 import { eventIdsEqual, normalizeEventId } from '../../src/lib/eventId.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { attachLastCharMessageSwipe, updateHideCharNames } from '../gestures/chatGestures.mjs'
 import { syncStreamingSlotsFromDom } from '../stream/index.mjs'
 
@@ -27,9 +27,9 @@ import {
 
 /** @returns {void} */
 export function destroyChannelVirtualList() {
-	hubStore.messages.channelMessagePipeline?.destroy()
-	hubStore.messages.channelMessagePipeline = null
-	hubStore.messages.channelPipelineKey = null
+	store.messages.channelMessagePipeline?.destroy()
+	store.messages.channelMessagePipeline = null
+	store.messages.channelPipelineKey = null
 }
 
 /** @type {Promise<number> | null} */
@@ -46,16 +46,16 @@ export async function loadOlderMessages() {
 
 /** @returns {Promise<number>} 新载入的更早消息条数 */
 async function doLoadOlderMessages() {
-	if (hubStore.messages.channelOlderExhausted || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return 0
-	const oldest = hubStore.messages.channelMessages[0]
+	if (store.messages.channelOlderExhausted || !store.context.currentGroupId || !store.context.currentChannelId) return 0
+	const oldest = store.messages.channelMessages[0]
 	const oldestId = oldest?.eventId
 	if (!oldestId || String(oldestId).startsWith('pending:')) {
-		hubStore.messages.channelOlderExhausted = true
+		store.messages.channelOlderExhausted = true
 		return 0
 	}
-	const limit = Math.max(1, Math.ceil(hubStore.messages.channelMessages.length / 2))
+	const limit = Math.max(1, Math.ceil(store.messages.channelMessages.length / 2))
 	const known = new Set(
-		hubStore.messages.channelMessagesSource.map(m => String(m.eventId)).filter(Boolean),
+		store.messages.channelMessagesSource.map(m => String(m.eventId)).filter(Boolean),
 	)
 	let before = oldestId
 	let hasMore = true
@@ -64,7 +64,7 @@ async function doLoadOlderMessages() {
 		let batch = []
 		let oldestRawEventId = null
 		try {
-			const page = await getChannelViewLog(hubStore.context.currentGroupId, hubStore.context.currentChannelId, {
+			const page = await getChannelViewLog(store.context.currentGroupId, store.context.currentChannelId, {
 				before,
 				limit,
 			})
@@ -73,7 +73,7 @@ async function doLoadOlderMessages() {
 			oldestRawEventId = page.oldestRawEventId
 		}
 		catch {
-			hubStore.messages.channelOlderExhausted = true
+			store.messages.channelOlderExhausted = true
 			return 0
 		}
 		fresh = batch.filter(m => {
@@ -86,12 +86,12 @@ async function doLoadOlderMessages() {
 			break
 	}
 	if (!hasMore && !fresh.length) {
-		hubStore.messages.channelOlderExhausted = true
+		store.messages.channelOlderExhausted = true
 		return 0
 	}
 	if (!fresh.length)
 		return 0
-	hubStore.messages.channelMessagesSource = [...fresh, ...hubStore.messages.channelMessagesSource]
+	store.messages.channelMessagesSource = [...fresh, ...store.messages.channelMessagesSource]
 	refreshChannelView()
 	const { syncChannelActionsContext } = await import('./messageContext.mjs')
 	syncChannelActionsContext()
@@ -104,11 +104,11 @@ async function doLoadOlderMessages() {
  */
 export function initChannelVirtualList(container) {
 	destroyChannelVirtualList()
-	hubStore.messages.channelMessagePipeline = createMessageSurfacePipeline({
+	store.messages.channelMessagePipeline = createMessageSurfacePipeline({
 		container,
 		loadMoreTop: loadOlderMessages,
 		/** @returns {object[]} 当前频道消息 */
-		getMessages: () => hubStore.messages.channelMessages,
+		getMessages: () => store.messages.channelMessages,
 		getRenderOpts: messageRenderOpts,
 		/** @returns {void} */
 		onDecorate: () => {
@@ -116,12 +116,12 @@ export function initChannelVirtualList(container) {
 		},
 		initialIndex: (() => {
 			const targetId = consumePendingScrollTarget()
-			if (!targetId) return Math.max(0, hubStore.messages.channelMessages.length - 1)
+			if (!targetId) return Math.max(0, store.messages.channelMessages.length - 1)
 			const norm = normalizeEventId(targetId)
-			const idx = hubStore.messages.channelMessages.findIndex(
+			const idx = store.messages.channelMessages.findIndex(
 				m => eventIdsEqual(m.eventId, norm),
 			)
-			return idx >= 0 ? idx : Math.max(0, hubStore.messages.channelMessages.length - 1)
+			return idx >= 0 ? idx : Math.max(0, store.messages.channelMessages.length - 1)
 		})(),
 	})
 }
@@ -133,15 +133,15 @@ export function initChannelVirtualList(container) {
  */
 export function decorateRenderedMessages(container, shouldScroll = false) {
 	bindMessageSurface(container, {
-		groupId: hubStore.context.currentGroupId,
-		channelId: hubStore.context.currentChannelId,
-		messages: hubStore.messages.channelMessages,
-		reactions: hubStore.messages.channelReactions,
+		groupId: store.context.currentGroupId,
+		channelId: store.context.currentChannelId,
+		messages: store.messages.channelMessages,
+		reactions: store.messages.channelReactions,
 		reload: reloadChannel,
 	})
 	syncStreamingSlotsFromDom(container)
 	if (isTwoPartyCharDialogue()) {
-		updateHideCharNames(hubStore.messages.channelMessages)
+		updateHideCharNames(store.messages.channelMessages)
 		attachLastCharMessageSwipe(container)
 	}
 	if (shouldScroll) scrollToBottom()

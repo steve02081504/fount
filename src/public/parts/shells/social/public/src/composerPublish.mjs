@@ -6,8 +6,8 @@ import {
 	refreshMediaPreview,
 } from './composerState.mjs'
 import { socialApi } from './lib/apiClient.mjs'
-import { uploadSocialMedia } from './media.mjs'
-import { socialState } from './state.mjs'
+import { uploadMedia } from './media.mjs'
+import { state } from './state.mjs'
 import { readVisibilityPicker } from './visibilityPicker.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
@@ -18,7 +18,7 @@ const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveM
  * @param {object[]} mediaRefs 已上传 refs
  * @returns {object} 发帖 body
  */
-export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
+export function buildPostBody(mediaRefs = state.pendingMediaRefs) {
 	const { contentWarning, sensitiveMedia } = readCwSensitive(SOCIAL_CW_IDS)
 	const visibilityDraft = readVisibilityPicker(document.getElementById('composer'))
 	const albumSelect = document.getElementById('postAlbumSelect')
@@ -37,18 +37,18 @@ export function buildPostBody(mediaRefs = socialState.pendingMediaRefs) {
 		...contentWarning ? { contentWarning } : {},
 		...sensitiveMedia ? { sensitiveMedia: true } : {},
 	}
-	if (socialState.pendingQuoteRef)
+	if (state.pendingQuoteRef)
 		body.quoteRef = {
-			entityHash: socialState.pendingQuoteRef.entityHash,
-			postId: socialState.pendingQuoteRef.postId,
+			entityHash: state.pendingQuoteRef.entityHash,
+			postId: state.pendingQuoteRef.postId,
 		}
-	if (socialState.pendingGroupRef)
+	if (state.pendingGroupRef)
 		body.groupRef = {
-			groupId: socialState.pendingGroupRef.groupId,
-			channelId: socialState.pendingGroupRef.channelId,
+			groupId: state.pendingGroupRef.groupId,
+			channelId: state.pendingGroupRef.channelId,
 		}
-	if (socialState.pendingPoll)
-		body.poll = socialState.pendingPoll
+	if (state.pendingPoll)
+		body.poll = state.pendingPoll
 
 	const replyPolicy = document.getElementById('postReplyPolicy')?.value
 	if (replyPolicy && replyPolicy !== 'everyone') body.replyPolicy = replyPolicy
@@ -85,7 +85,7 @@ async function ensureUploadedMediaRefs(refs) {
 		}
 
 	if (pendingFiles.length) {
-		const uploaded = await uploadSocialMedia(pendingFiles)
+		const uploaded = await uploadMedia(pendingFiles)
 		for (const [i, uploadedRef] of uploaded.entries()) {
 			const original = refs[pendingIndexes[i]]
 			out[pendingIndexes[i]] = {
@@ -103,17 +103,17 @@ async function ensureUploadedMediaRefs(refs) {
  */
 export async function saveComposerDraft() {
 	if (!document.getElementById('postText')?.value?.trim()
-		&& !socialState.pendingMediaRefs.length
-		&& !socialState.pendingPoll)
+		&& !state.pendingMediaRefs.length
+		&& !state.pendingPoll)
 		throw new Error(geti18n('social.drafts.empty'))
-	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
-	socialState.pendingMediaRefs = uploadedRefs.map(ref => ({ ...ref }))
+	const uploadedRefs = await ensureUploadedMediaRefs(state.pendingMediaRefs)
+	state.pendingMediaRefs = uploadedRefs.map(ref => ({ ...ref }))
 	refreshMediaPreview()
 	const body = buildPostBody(uploadedRefs)
-	if (socialState.activeDraftId)
-		body.draftId = socialState.activeDraftId
+	if (state.activeDraftId)
+		body.draftId = state.activeDraftId
 	const row = await socialApi('/drafts', { method: 'POST', body: JSON.stringify(body) })
-	socialState.activeDraftId = row.draftId
+	state.activeDraftId = row.draftId
 	showToastI18n('success', 'social.drafts.saved')
 	return row
 }
@@ -124,12 +124,12 @@ export async function saveComposerDraft() {
  */
 export async function publishPost() {
 	if (!document.getElementById('postText').value.trim()
-		&& !socialState.pendingMediaRefs.length
-		&& !socialState.pendingPoll) return
-	const uploadedRefs = await ensureUploadedMediaRefs(socialState.pendingMediaRefs)
+		&& !state.pendingMediaRefs.length
+		&& !state.pendingPoll) return
+	const uploadedRefs = await ensureUploadedMediaRefs(state.pendingMediaRefs)
 	const body = buildPostBody(uploadedRefs)
 	const isScheduled = !!body.publishAt
-	const draftId = socialState.activeDraftId
+	const draftId = state.activeDraftId
 	await socialApi('/posts', { method: 'POST', body: JSON.stringify(body) })
 	if (draftId)
 		await socialApi(`/drafts/${encodeURIComponent(draftId)}`, { method: 'DELETE' }).catch(() => {})

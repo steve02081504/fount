@@ -7,7 +7,7 @@
  */
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { DISCOVERY_HASH, FRIENDS_HASH, INBOX_HASH, isFriendsHash, parseHash } from './core/urlHash.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { enterFriendChat } from './friendChat.mjs'
@@ -43,10 +43,10 @@ async function navigateFromHashInner() {
 		}
 
 		if (
-			hubStore.context.currentGroupId === groupId
+			store.context.currentGroupId === groupId
 			&& channelId
-			&& channelId !== hubStore.context.currentChannelId
-			&& hubStore.context.currentState?.channels?.[channelId]
+			&& channelId !== store.context.currentChannelId
+			&& store.context.currentState?.channels?.[channelId]
 		) {
 			await selectChannel(channelId)
 			if (eventId) await scrollToAndHighlightEventId(eventId)
@@ -80,11 +80,11 @@ async function scrollToAndHighlightEventId(eventId) {
 		const { scrollToMessageEventId } = await import('./messages/messages.mjs')
 		await scrollToMessageEventId(eventId)
 		// 短暂高亮
-		const container = document.getElementById('hub-messages')
+		const container = document.getElementById('messages')
 		const row = container?.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
 		if (row instanceof HTMLElement) {
-			row.classList.add('hub-message--highlight')
-			setTimeout(() => row.classList.remove('hub-message--highlight'), 2000)
+			row.classList.add('message--highlight')
+			setTimeout(() => row.classList.remove('message--highlight'), 2000)
 		}
 	}
 	catch { /* best-effort */ }

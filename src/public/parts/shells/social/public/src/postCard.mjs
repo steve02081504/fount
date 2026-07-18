@@ -164,21 +164,21 @@ export async function buildPostCard(item, options = {}) {
 	const treatAsOwn = canManage
 	const blockButton = treatAsOwn
 		? ''
-		: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="s-ic s-ic-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
+		: `<button type="button" class="danger-item" data-block="${item.entityHash}"><span class="icon icon-block" aria-hidden="true"></span><span data-i18n="social.actions.block"></span></button>`
 	const hideButton = treatAsOwn
 		? ''
-		: `<button type="button" data-hide="${item.entityHash}"><span class="s-ic s-ic-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
+		: `<button type="button" data-hide="${item.entityHash}"><span class="icon icon-hide" aria-hidden="true"></span><span data-i18n="social.actions.hide"></span></button>`
 	const muteButton = treatAsOwn
 		? ''
-		: `<button type="button" data-mute="${item.entityHash}"><span class="s-ic s-ic-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
+		: `<button type="button" data-mute="${item.entityHash}"><span class="icon icon-mute" aria-hidden="true"></span><span data-i18n="social.actions.mute"></span></button>`
 	const deleteButton = canDelete
-		? `<button type="button" class="danger-item" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="s-ic s-ic-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
+		? `<button type="button" class="danger-item" data-delete="${item.postId}" data-delete-entity="${item.entityHash}"><span class="icon icon-delete" aria-hidden="true"></span><span data-i18n="social.actions.delete"></span></button>`
 		: ''
 	const editButton = canManage
-		? `<button type="button" data-edit="${actionKey}"><span class="s-ic s-ic-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`
+		? `<button type="button" data-edit="${actionKey}"><span class="icon icon-edit" aria-hidden="true"></span><span data-i18n="social.actions.edit"></span></button>`
 		: ''
 	const editHistoryButton = canManage && item.post?.revisions?.length
-		? `<button type="button" data-edit-history="${actionKey}"><span class="s-ic s-ic-history" aria-hidden="true"></span><span data-i18n="social.post.editHistory"></span></button>`
+		? `<button type="button" data-edit-history="${actionKey}"><span class="icon icon-history" aria-hidden="true"></span><span data-i18n="social.post.editHistory"></span></button>`
 		: ''
 
 	const topNote = item.communityNote?.topNote
@@ -215,7 +215,7 @@ export async function buildPostCard(item, options = {}) {
 		postTimeAttrs,
 		postTimeText,
 		editedBadge,
-		visibilityIcon: `<span class="s-ic s-ic-${vis.icon === 'globe' ? 'globe' : 'lock'} post-visibility-icon" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
+		visibilityIcon: `<span class="icon icon-${vis.icon === 'globe' ? 'globe' : 'lock'} post-visibility-icon" title="${escapeHtml(visLabel)}" aria-label="${escapeHtml(visLabel)}"></span>`,
 		quoteHtml,
 		replyContextHtml,
 		groupRefHtml,
@@ -281,12 +281,12 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
 				showPostMediaHeart(media)
 				return
 			}
-			const { applyLikeButtonOptimistic, rollbackLikeButton, runSocialWrite } = await import('./lib/socialWrite.mjs')
+			const { applyLikeButtonOptimistic, rollbackLikeButton, runWrite } = await import('./lib/socialWrite.mjs')
 			const { socialApi } = await import('./lib/apiClient.mjs')
 			const snapshot = applyLikeButtonOptimistic(likeButton, true)
 			showPostMediaHeart(media)
 			try {
-				await runSocialWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
+				await runWrite('like', () => socialApi(`/posts/${entityHash}/${postId}/like`, {
 					method: 'POST',
 					body: JSON.stringify({ like: true }),
 				}))

@@ -8,7 +8,7 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { createChannel } from '../../src/api/groupChannel.mjs'
 import { getGroupState } from '../../src/api/groupCore.mjs'
 import { handleUIError } from '../../src/ui/errors.mjs'
-import { hubStore, setHubState } from '../core/state.mjs'
+import { store, setState } from '../core/state.mjs'
 
 import { selectChannel } from './selectChannel.mjs'
 
@@ -17,7 +17,7 @@ import { selectChannel } from './selectChannel.mjs'
  * @returns {Promise<void>}
  */
 export async function showCreateChannelModal() {
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	if (!groupId) return
 	usingTemplates('/parts/shells:chat/src/templates')
 	await openDialogFromTemplate('channel_create_modal', {}, {
@@ -37,9 +37,9 @@ export async function showCreateChannelModal() {
 				try {
 					const channelId = await createChannel(groupId, name, type)
 					close()
-					setHubState('context.currentState', await getGroupState(groupId))
+					setState('context.currentState', await getGroupState(groupId))
 					const { renderHubChannelSidebar } = await import('./index.mjs')
-					await renderHubChannelSidebar(hubStore.context.currentState)
+					await renderHubChannelSidebar(store.context.currentState)
 					await selectChannel(channelId)
 					showToastI18n('success', 'chat.hub.newChannelSuccess')
 				}

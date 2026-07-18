@@ -65,7 +65,7 @@ export function playRevealedPostVideos(wrap) {
  * @param {ParentNode | null | undefined} [scope=document] 作用域
  * @returns {void}
  */
-export function pauseAllSocialVideos(scope = document) {
+export function pauseAllVideos(scope = document) {
 	if (!scope) return
 	for (const video of scope.querySelectorAll('video.post-media-video, video.video-player')) 
 		if (video instanceof HTMLVideoElement)

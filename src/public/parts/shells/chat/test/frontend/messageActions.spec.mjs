@@ -17,14 +17,14 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, original)
 		const row = await expectMessageInChat(page, original)
 		await row.hover()
-		await row.locator('.hub-message-action[data-action="edit"]').click()
-		const textarea = row.locator('.hub-message-edit-textarea')
+		await row.locator('.message-action[data-action="edit"]').click()
+		const textarea = row.locator('.message-edit-textarea')
 		await expect(textarea).toBeVisible({ timeout: 20_000 })
-		await expect(row.locator('.hub-message-content')).toBeHidden({ timeout: 5_000 })
+		await expect(row.locator('.message-content')).toBeHidden({ timeout: 5_000 })
 		await textarea.fill(updated)
-		await row.locator('.hub-message-edit-save').click()
+		await row.locator('.message-edit-save').click()
 		await expectMessageInChat(page, updated)
-		await expect(page.locator('#hub-messages .hub-message').filter({ hasText: original })).toHaveCount(0, { timeout: 60_000 })
+		await expect(page.locator('#messages .message').filter({ hasText: original })).toHaveCount(0, { timeout: 60_000 })
 	})
 
 	test('deletes an own message from context menu', async ({ page, groupChannel }) => {
@@ -47,7 +47,7 @@ test.describe('Chat message actions', () => {
 		await expectMessageInChat(page, keep)
 		await expectMessageInChat(page, drop)
 		const needle = keep.split(' ')[0]
-		await page.locator('#hub-header-search').fill(needle)
+		await page.locator('#header-search').fill(needle)
 		await expect(messageRowByText(page, keep)).toBeVisible({ timeout: 30_000 })
 		await expect(messageRowByText(page, drop)).toBeHidden({ timeout: 30_000 })
 	})
@@ -62,8 +62,8 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, drop)
 		await expectMessageInChat(page, keep)
 
-		const searchInput = page.locator('#hub-header-search')
-		const resultRow = page.locator('#hub-search-results .hub-search-result').filter({ hasText: needle })
+		const searchInput = page.locator('#header-search')
+		const resultRow = page.locator('#search-results .search-result').filter({ hasText: needle })
 		// 索引增量更新可能滞后于落盘：重填输入框重发后端查询直到命中
 		await expect(async () => {
 			await searchInput.fill('')
@@ -78,11 +78,11 @@ test.describe('Chat message actions', () => {
 		}).toPass({ timeout: 120_000 })
 
 		await expect(resultRow.first()).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#hub-search-results .hub-search-result').filter({ hasText: 'backend miss' }))
+		await expect(page.locator('#search-results .search-result').filter({ hasText: 'backend miss' }))
 			.toHaveCount(0)
 
 		await resultRow.first().click()
-		await expect(page.locator('#hub-search-results')).toBeHidden({ timeout: 30_000 })
+		await expect(page.locator('#search-results')).toBeHidden({ timeout: 30_000 })
 		await expect(messageRowByText(page, keep)).toBeVisible({ timeout: 30_000 })
 	})
 
@@ -92,8 +92,8 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
 		await row.hover()
-		await row.locator('.hub-message-action[data-action="pin"]').click()
-		await expect(page.locator('#hub-channel-pins-bar:not([hidden]) .hub-pinned-message-chip'))
+		await row.locator('.message-action[data-action="pin"]').click()
+		await expect(page.locator('#channel-pins-bar:not([hidden]) .pinned-message-chip'))
 			.toBeVisible({ timeout: 60_000 })
 	})
 
@@ -103,11 +103,11 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
 		await row.hover()
-		await row.locator('.hub-message-action[data-action="bookmark"]').click()
-		await expect(page.locator('#hub-bookmarks-button')).toBeVisible({ timeout: 30_000 })
-		await page.locator('#hub-bookmarks-button').click()
-		await expect(page.locator('#hub-bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
-		await expect(page.locator('#hub-bookmarks-panel .hub-bookmark-row').filter({ hasText: text.slice(0, 20) }))
+		await row.locator('.message-action[data-action="bookmark"]').click()
+		await expect(page.locator('#bookmarks-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#bookmarks-button').click()
+		await expect(page.locator('#bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
+		await expect(page.locator('#bookmarks-panel .bookmark-row').filter({ hasText: text.slice(0, 20) }))
 			.toBeVisible({ timeout: 30_000 })
 	})
 
@@ -116,9 +116,9 @@ test.describe('Chat message actions', () => {
 		const text = `react-target ${Date.now()}`
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
-		await row.locator('.hub-reactions [data-action="addReaction"]').click()
+		await row.locator('.reactions [data-action="addReaction"]').click()
 		await pickEmojiFromPicker(page, '👍')
-		await expect(row.locator('.hub-reactions [data-action="reaction"]')).toBeVisible({ timeout: 60_000 })
+		await expect(row.locator('.reactions [data-action="reaction"]')).toBeVisible({ timeout: 60_000 })
 	})
 
 	test('opens thread drawer and replies', async ({ page, groupChannel }) => {
@@ -127,13 +127,13 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, text)
 		const row = await expectMessageInChat(page, text)
 		await row.hover()
-		await row.locator('.hub-message-action[data-action="thread"]').click()
-		await expect(page.locator('#hub-thread-drawer-wrap:not([hidden]) [data-thread-input]'))
+		await row.locator('.message-action[data-action="thread"]').click()
+		await expect(page.locator('#thread-drawer-wrap:not([hidden]) [data-thread-input]'))
 			.toBeVisible({ timeout: 30_000 })
 		const reply = `thread-reply ${Date.now()}`
 		await page.locator('[data-thread-input]').fill(reply)
 		await page.locator('[data-thread-send]').click()
-		await expect(page.locator('[data-thread-msgbox] .hub-message').filter({ hasText: reply }))
+		await expect(page.locator('[data-thread-msgbox] .message').filter({ hasText: reply }))
 			.toBeVisible({ timeout: 60_000 })
 	})
 
@@ -165,11 +165,11 @@ test.describe('Chat message actions', () => {
 		await sendMessageViaComposer(page, groupId, channelId, anchor)
 		const row = await expectMessageInChat(page, anchor)
 		await row.hover()
-		await row.locator('.hub-message-action[data-action="bookmark"]').click()
-		await expect(page.locator('#hub-bookmarks-button')).toBeVisible({ timeout: 30_000 })
-		await page.locator('#hub-bookmarks-button').click()
-		await expect(page.locator('#hub-bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
-		const bookmarkRow = page.locator('#hub-bookmarks-panel .hub-bookmark-row').filter({ hasText: anchor.slice(0, 20) })
+		await row.locator('.message-action[data-action="bookmark"]').click()
+		await expect(page.locator('#bookmarks-button')).toBeVisible({ timeout: 30_000 })
+		await page.locator('#bookmarks-button').click()
+		await expect(page.locator('#bookmarks-panel:not([hidden])')).toBeVisible({ timeout: 30_000 })
+		const bookmarkRow = page.locator('#bookmarks-panel .bookmark-row').filter({ hasText: anchor.slice(0, 20) })
 		await expect(bookmarkRow).toBeVisible({ timeout: 30_000 })
 		await bookmarkRow.click()
 		await expect(row).toHaveClass(/ring-primary/, { timeout: 30_000 })

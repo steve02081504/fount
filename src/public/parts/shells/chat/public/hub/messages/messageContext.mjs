@@ -3,7 +3,7 @@
  * 【职责】主区消息操作上下文：重载、反应权限、渲染选项、反应绑定。
  */
 import { viewerCanAddReactions, viewerCanManageMessages, viewerCanPinMessages } from '../../src/groupViewerPermissions.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 import { setChannelMessageActionsContext } from './messageActionsState.mjs'
 import { isTwoPartyCharDialogue } from './messageShared.mjs'
@@ -20,27 +20,27 @@ export async function reloadChannel() {
 
 /** @returns {Promise<void>} 刷新当前频道反应权限 */
 export async function refreshReactionPerms() {
-	if (!hubStore.context.currentState || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) {
-		hubStore.messages.reactionRenderOpts = { viewerMemberId: 'local', canAddReactions: false, canManageMessages: false, canPinMessages: false }
+	if (!store.context.currentState || !store.context.currentGroupId || !store.context.currentChannelId) {
+		store.messages.reactionRenderOpts = { viewerMemberId: 'local', canAddReactions: false, canManageMessages: false, canPinMessages: false }
 		return
 	}
-	const viewerMemberId = hubStore.context.currentState.viewerMemberPubKeyHash || 'local'
+	const viewerMemberId = store.context.currentState.viewerMemberPubKeyHash || 'local'
 	const [canAddReactions, canManageMessages, canPinMessages] = await Promise.all([
-		viewerCanAddReactions(hubStore.context.currentState, hubStore.context.currentGroupId, hubStore.context.currentChannelId),
-		viewerCanManageMessages(hubStore.context.currentState, hubStore.context.currentGroupId, hubStore.context.currentChannelId),
-		viewerCanPinMessages(hubStore.context.currentState, hubStore.context.currentGroupId, hubStore.context.currentChannelId),
+		viewerCanAddReactions(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
+		viewerCanManageMessages(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
+		viewerCanPinMessages(store.context.currentState, store.context.currentGroupId, store.context.currentChannelId),
 	])
-	hubStore.messages.reactionRenderOpts = { viewerMemberId, canAddReactions, canManageMessages, canPinMessages }
+	store.messages.reactionRenderOpts = { viewerMemberId, canAddReactions, canManageMessages, canPinMessages }
 }
 
 /** @returns {object} 消息渲染选项 */
 export function messageRenderOpts() {
 	return buildChannelRenderOpts({
-		channelId: hubStore.context.currentChannelId,
-		reactions: hubStore.messages.channelReactions,
+		channelId: store.context.currentChannelId,
+		reactions: store.messages.channelReactions,
 		overrides: {
 			alwaysVisibleActions: isTwoPartyCharDialogue(),
-			canCreateThreads: !!hubStore.context.currentState?.channelCaps?.[hubStore.context.currentChannelId]?.canCreateThreads,
+			canCreateThreads: !!store.context.currentState?.channelCaps?.[store.context.currentChannelId]?.canCreateThreads,
 		},
 	})
 }
@@ -48,9 +48,9 @@ export function messageRenderOpts() {
 /** @returns {void} */
 export function syncChannelActionsContext() {
 	setChannelMessageActionsContext({
-		groupId: hubStore.context.currentGroupId,
-		channelId: hubStore.context.currentChannelId,
-		messages: hubStore.messages.channelMessages,
+		groupId: store.context.currentGroupId,
+		channelId: store.context.currentChannelId,
+		messages: store.messages.channelMessages,
 		reload: reloadChannel,
 	}, 'main')
 }
@@ -61,12 +61,12 @@ export function syncChannelActionsContext() {
  */
 export function bindReactions(container) {
 	wireMessageReactions(container, {
-		groupId: hubStore.context.currentGroupId,
-		channelId: hubStore.context.currentChannelId,
-		messages: hubStore.messages.channelMessages,
-		reactions: hubStore.messages.channelReactions,
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
+		groupId: store.context.currentGroupId,
+		channelId: store.context.currentChannelId,
+		messages: store.messages.channelMessages,
+		reactions: store.messages.channelReactions,
+		viewerMemberId: store.messages.reactionRenderOpts.viewerMemberId,
+		canManageMessages: store.messages.reactionRenderOpts.canManageMessages,
 		reload: reloadChannel,
 	})
 }

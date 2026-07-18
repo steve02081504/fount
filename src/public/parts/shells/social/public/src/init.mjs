@@ -14,15 +14,15 @@ import {
 	setPendingGroupRef,
 	syncGroupRefInComposer,
 } from './composer.mjs'
-import { SOCIAL_APP_GATE } from './gate.mjs'
+import { SOCIAL_GATE } from './gate.mjs'
 import { chatApi } from './lib/apiClient.mjs'
 import { renderAvatarHtml, rememberEntityHandle } from './lib/display.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
 import { applyIncomingNavigation, afterPublishPost, focusComposer, switchView } from './navigation.mjs'
-import { socialState } from './state.mjs'
-import { prependFeedItem, showFeedNewPostsBanner } from './views/feed.mjs'
+import { state } from './state.mjs'
+import { prependFeedItem, showFeedNewPostsBanner, updateFeedSearchChrome } from './views/feed.mjs'
 import { initLiveBroadcastView } from './views/live.mjs'
 import { bumpNotificationBadge, mergeIncomingNotification, updateNotificationBadge } from './views/notifications.mjs'
 import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
@@ -31,7 +31,7 @@ import { initTopicView } from './views/topic.mjs'
 import { handleVideoKeydown } from './views/video.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
 
-const socialGate = createReadyGate(SOCIAL_APP_GATE)
+const socialGate = createReadyGate(SOCIAL_GATE)
 
 const FEED_WS_TIMEOUT_MS = 30_000
 const FEED_WS_RECONNECT_MAX_MS = 30_000
@@ -58,7 +58,7 @@ function handleFeedWebSocketMessage(message) {
 	}
 	else {
 		const feedVisible = !document.getElementById('feedView')?.classList.contains('hidden')
-		if (feedVisible && !socialState.activeFeedSearchQuery)
+		if (feedVisible && !state.activeFeedSearchQuery)
 			showFeedNewPostsBanner()
 	}
 }
@@ -71,13 +71,13 @@ function handleFeedWebSocketMessage(message) {
 function connectFeedWebSocket(attempt = 0) {
 	const url = `${location.protocol === 'https:' ? 'wss' : 'ws'}://${location.host}/ws/parts/shells:social/feed`
 	const ws = new WebSocket(url)
-	socialState.feedWs = ws
+	state.feedWs = ws
 	const timer = setTimeout(() => {
 		ws.close()
 	}, FEED_WS_TIMEOUT_MS)
 	ws.addEventListener('open', () => {
 		clearTimeout(timer)
-		socialState.feedWsAttempt = 0
+		state.feedWsAttempt = 0
 	}, { once: true })
 	ws.addEventListener('error', () => {
 		clearTimeout(timer)
@@ -88,10 +88,10 @@ function connectFeedWebSocket(attempt = 0) {
 		handleFeedWebSocketMessage(message)
 	})
 	ws.addEventListener('close', () => {
-		if (socialState.feedWs !== ws) return
-		socialState.feedWs = null
-		const nextAttempt = (socialState.feedWsAttempt ?? attempt) + 1
-		socialState.feedWsAttempt = nextAttempt
+		if (state.feedWs !== ws) return
+		state.feedWs = null
+		const nextAttempt = (state.feedWsAttempt ?? attempt) + 1
+		state.feedWsAttempt = nextAttempt
 		const delay = Math.min(FEED_WS_RECONNECT_MAX_MS, 1000 * 2 ** Math.min(nextAttempt, 5))
 		setTimeout(() => connectFeedWebSocket(nextAttempt), delay)
 	})
@@ -101,7 +101,7 @@ function connectFeedWebSocket(attempt = 0) {
  * 初始化 Social 前端：绑定事件、加载选项并建立 WebSocket feed 连接。
  * @returns {Promise<void>}
  */
-export async function bootstrapSocialApp() {
+export async function bootstrap() {
 	socialGate.markPending()
 	try {
 		await loadAliases().catch(() => {})
@@ -131,11 +131,11 @@ export async function bootstrapSocialApp() {
 			await addComposerMedia(input.files)
 			input.value = ''
 		})
-		const appRoot = document.getElementById('app')
-		appRoot?.addEventListener('click', event => { void handleMainClick(event) })
-		bindContentReveal(appRoot)
-		bindMediaCarousel(appRoot)
-		appRoot?.addEventListener('click', event => {
+		const shellRoot = document.getElementById('shell')
+		shellRoot?.addEventListener('click', event => { void handleMainClick(event) })
+		bindContentReveal(shellRoot)
+		bindMediaCarousel(shellRoot)
+		shellRoot?.addEventListener('click', event => {
 			const { target } = event
 			if (!(target instanceof HTMLElement)) return
 			const cwReveal = target.closest('.content-warning-reveal')
@@ -177,10 +177,10 @@ export async function bootstrapSocialApp() {
 		await updateNotificationBadge()
 
 		const viewer = await chatApi('/viewer')
-		socialState.viewerEntityHash = viewer.viewerEntityHash ?? null
-		socialState.viewerNodeHash = viewer.nodeHash ?? null
-		socialState.viewerDisplayName = viewer.profile?.name || null
-		socialState.viewerProfile = viewer.profile
+		state.viewerEntityHash = viewer.viewerEntityHash ?? null
+		state.viewerNodeHash = viewer.nodeHash ?? null
+		state.viewerDisplayName = viewer.profile?.name || null
+		state.viewerProfile = viewer.profile
 			? {
 				name: viewer.profile.name || null,
 				handle: viewer.profile.handle || null,
@@ -189,12 +189,12 @@ export async function bootstrapSocialApp() {
 					? { avatar: viewer.profile.infoDefaults.avatar || '' }
 					: null,
 			}
-			: { name: socialState.viewerDisplayName }
-		if (socialState.viewerEntityHash)
-			rememberEntityHandle(socialState.viewerEntityHash, socialState.viewerProfile)
+			: { name: state.viewerDisplayName }
+		if (state.viewerEntityHash)
+			rememberEntityHandle(state.viewerEntityHash, state.viewerProfile)
 		const avatarSlot = document.getElementById('viewerComposerAvatar')
-		if (avatarSlot && socialState.viewerEntityHash)
-			avatarSlot.innerHTML = renderAvatarHtml(socialState.viewerEntityHash, socialState.viewerProfile)
+		if (avatarSlot && state.viewerEntityHash)
+			avatarSlot.innerHTML = renderAvatarHtml(state.viewerEntityHash, state.viewerProfile)
 
 		for (const [id, key] of Object.entries({
 			linkGroupSelect: 'social.a11y.linkGroupSelect',
@@ -218,7 +218,7 @@ export async function bootstrapSocialApp() {
 		document.getElementById('linkGroupSelect')?.addEventListener('change', event => {
 			const select = event.target
 			if (!(select instanceof HTMLSelectElement) || !select.value) {
-				socialState.pendingGroupRef = null
+				state.pendingGroupRef = null
 				syncGroupRefInComposer(null)
 				refreshGroupRefPreview()
 				return
@@ -263,8 +263,10 @@ export async function bootstrapSocialApp() {
 		document.getElementById('feedSearchClearButton')?.addEventListener('click', () => {
 			const input = document.getElementById('feedSearchInput')
 			if (input instanceof HTMLInputElement) input.value = ''
-			document.getElementById('feedSearchClearButton')?.classList.add('hidden')
-			socialState.activeFeedSearchQuery = null
+			const searchInput = document.querySelector('#searchView #searchViewInput')
+			if (searchInput instanceof HTMLInputElement) searchInput.value = ''
+			state.activeFeedSearchQuery = null
+			updateFeedSearchChrome()
 			void switchView('feed')
 		})
 

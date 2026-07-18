@@ -12,7 +12,7 @@ import { createChannelThread, getChannelViewLog, sendGroupMessage } from '../src
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { applyChannelDisplayChain } from '../src/ui/channelDisplay.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { setChannelMessageActionsContext } from './messages/messageActionsState.mjs'
 import {
 	bindMessageSurface,
@@ -87,7 +87,7 @@ export async function refreshActiveThreadIfOpen() {
  * @returns {void}
  */
 export function closeThreadDrawer() {
-	const wrap = document.getElementById('hub-thread-drawer-wrap')
+	const wrap = document.getElementById('thread-drawer-wrap')
 	if (!wrap) return
 	wrap.setAttribute('hidden', '')
 	wrap.replaceChildren()
@@ -243,11 +243,11 @@ function wireThreadComposer(drawer, messageContainer) {
  * @returns {Promise<void>}
  */
 export async function openThread(groupId, parentChannelId, parentEventId, title = '') {
-	const wrap = document.getElementById('hub-thread-drawer-wrap')
+	const wrap = document.getElementById('thread-drawer-wrap')
 	if (!wrap) return
 	usingTemplates('/parts/shells:chat/src/templates')
 	try {
-		const channels = hubStore.context.currentState?.channels || {}
+		const channels = store.context.currentState?.channels || {}
 		let threadChannelId = findThreadChannelId(channels, parentChannelId, parentEventId)
 		const createdNew = !threadChannelId
 		if (!threadChannelId)
@@ -262,7 +262,7 @@ export async function openThread(groupId, parentChannelId, parentEventId, title 
 			messages: [],
 			reactions: {},
 		}
-		hubStore.context.currentState = await getGroupState(groupId)
+		store.context.currentState = await getGroupState(groupId)
 
 		wrap.removeAttribute('hidden')
 		wrap.replaceChildren()

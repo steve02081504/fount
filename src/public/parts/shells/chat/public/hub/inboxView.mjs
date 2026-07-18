@@ -9,7 +9,7 @@ import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { groupDisplayName } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { INBOX_HASH, updateInboxHash } from './core/urlHash.mjs'
 import { fetchInboxPage, markInboxSeen } from './inboxClient.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
@@ -124,7 +124,7 @@ async function loadInboxPage(generation = loadGeneration) {
 	if (loading) return
 	loading = true
 	const requestedCursor = nextCursor
-	const host = document.getElementById('hub-inbox-list')
+	const host = document.getElementById('inbox-list')
 	if (host && !requestedCursor) host.setAttribute('aria-busy', 'true')
 	try {
 		const data = await fetchInboxPage({
@@ -133,25 +133,25 @@ async function loadInboxPage(generation = loadGeneration) {
 			kinds: [activeKind],
 		})
 		if (generation !== loadGeneration) return
-		const currentHost = document.getElementById('hub-inbox-list')
+		const currentHost = document.getElementById('inbox-list')
 		if (!currentHost) return
 		await paintInboxRows(currentHost, data.items || [], !requestedCursor)
 		nextCursor = data.nextCursor
 		bindInfiniteScroll({
-			root: currentHost.closest('.hub-inbox-scroll') || null,
+			root: currentHost.closest('.inbox-scroll') || null,
 			sentinel: ensureScrollSentinel(currentHost, 'hubInboxScrollSentinel'),
 			/** @returns {boolean} 是否还有下一页 */
 			hasMore: () => !!nextCursor,
 			/** @returns {Promise<void>} 加载下一页 */
 			onLoad: () => loadInboxPage(),
 		})
-		if (!currentHost.querySelector('.hub-inbox-row') && !nextCursor)
+		if (!currentHost.querySelector('.inbox-row') && !nextCursor)
 			await paintInboxEmpty(currentHost)
 	}
 	catch (error) {
 		if (generation !== loadGeneration) return
 		handleUIError(error, 'chat.hub.inbox.loadFailed')
-		if (host && !host.querySelector('.hub-inbox-row')) await mountTemplate(host, 'hub/empty/error', {
+		if (host && !host.querySelector('.inbox-row')) await mountTemplate(host, 'hub/empty/error', {
 			i18nKey: 'chat.hub.inbox.loadFailed',
 			errorMessage: error.message,
 		})
@@ -159,7 +159,7 @@ async function loadInboxPage(generation = loadGeneration) {
 	finally {
 		if (generation === loadGeneration) {
 			loading = false
-			document.getElementById('hub-inbox-list')?.removeAttribute('aria-busy')
+			document.getElementById('inbox-list')?.removeAttribute('aria-busy')
 		}
 	}
 }
@@ -170,7 +170,7 @@ async function loadInboxPage(generation = loadGeneration) {
  */
 function wireInboxRowClicks(host) {
 	host.addEventListener('click', event => {
-		const row = event.target instanceof HTMLElement ? event.target.closest('.hub-inbox-row') : null
+		const row = event.target instanceof HTMLElement ? event.target.closest('.inbox-row') : null
 		if (!row) return
 		const { groupId, channelId, eventId } = row.dataset
 		if (!groupId || !channelId || !eventId) return
@@ -195,14 +195,14 @@ async function switchInboxKind(kind) {
 	loadGeneration++
 	loading = false
 	disconnectInfiniteScroll()
-	for (const tab of document.querySelectorAll('.hub-inbox-tab')) {
+	for (const tab of document.querySelectorAll('.inbox-tab')) {
 		const active = tab.dataset.kind === kind
-		tab.classList.toggle('hub-inbox-tab-active', active)
+		tab.classList.toggle('inbox-tab-active', active)
 		tab.setAttribute('aria-selected', String(active))
 		tab.tabIndex = active ? 0 : -1
 	}
-	const list = document.getElementById('hub-inbox-list')
-	list?.setAttribute('aria-labelledby', `hub-inbox-tab-${kind.replace('_', '-')}`)
+	const list = document.getElementById('inbox-list')
+	list?.setAttribute('aria-labelledby', `inbox-tab-${kind.replace('_', '-')}`)
 	await loadInboxPage()
 }
 
@@ -211,7 +211,7 @@ async function switchInboxKind(kind) {
  * @returns {void}
  */
 function wireInboxTabs(tablist) {
-	const tabs = Array.from(tablist.querySelectorAll('.hub-inbox-tab'))
+	const tabs = Array.from(tablist.querySelectorAll('.inbox-tab'))
 	for (const tab of tabs)
 		tab.addEventListener('click', () => void switchInboxKind(tab.dataset.kind || 'mention'))
 	tablist.addEventListener('keydown', event => {
@@ -238,34 +238,34 @@ export async function activateInboxView() {
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	hubStore.context.currentGroupId = null
-	hubStore.context.currentChannelId = null
-	hubStore.context.currentState = null
+	store.context.currentGroupId = null
+	store.context.currentChannelId = null
+	store.context.currentState = null
 	activeKind = 'mention'
 	nextCursor = null
 	loadGeneration++
 	loading = false
 
-	const channelList = document.getElementById('hub-channel-list')
+	const channelList = document.getElementById('channel-list')
 	if (channelList)
 		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.inbox.sidebarHint' })
-	document.getElementById('hub-member-list').replaceChildren()
-	document.getElementById('hub-info-card-host').replaceChildren()
-	document.getElementById('hub-group-name-display').dataset.i18n = 'chat.hub.inbox.title'
+	document.getElementById('member-list').replaceChildren()
+	document.getElementById('info-card-host').replaceChildren()
+	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.inbox.title'
 
-	const messagesHost = document.getElementById('hub-messages')
+	const messagesHost = document.getElementById('messages')
 	await mountTemplate(messagesHost, 'hub/inbox/panel')
-	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.inbox.title'
+	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.inbox.title'
 	const { disableComposer, refreshHubHeaderButtons } = await import('./messages/composerController.mjs')
 	disableComposer()
 	refreshHubHeaderButtons()
 
-	const listHost = document.getElementById('hub-inbox-list')
+	const listHost = document.getElementById('inbox-list')
 	if (listHost && !listHost.dataset.wired) {
 		listHost.dataset.wired = '1'
 		wireInboxRowClicks(listHost)
 	}
-	const tablist = messagesHost.querySelector('.hub-inbox-tabs')
+	const tablist = messagesHost.querySelector('.inbox-tabs')
 	if (tablist) wireInboxTabs(tablist)
 	await loadInboxPage()
 	try {
@@ -278,7 +278,7 @@ export async function activateInboxView() {
 
 /** @returns {boolean} 当前是否为 inbox 模式 */
 export function isInboxModeActive() {
-	return hubStore.context.currentMode === 'inbox' || window.location.hash.slice(1) === INBOX_HASH
+	return store.context.currentMode === 'inbox' || window.location.hash.slice(1) === INBOX_HASH
 }
 
 /** @returns {void} */

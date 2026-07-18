@@ -3,7 +3,7 @@
  * 【职责】WS `dag_event`（频道结构 / 编辑删除 / overlay）。
  */
 import { getGroupState } from '../../../src/api/groupCore.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 import {
 	dispatchChannelMessageDelete,
 	dispatchChannelMessageEdit,
@@ -38,12 +38,12 @@ export function handleDagEventWire(wireMessage, channelId) {
 	const { main, thread } = hubChannelMatch(eventChannelId, channelId)
 	if (eventChannelId && !main && !thread) return true
 
-	if (CHANNEL_STRUCTURE_DAG_TYPES.has(dagEvent?.type) && hubStore.context.currentGroupId) {
+	if (CHANNEL_STRUCTURE_DAG_TYPES.has(dagEvent?.type) && store.context.currentGroupId) {
 		void (async () => {
 			try {
-				hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+				store.context.currentState = await getGroupState(store.context.currentGroupId)
 				const { renderHubChannelSidebar } = await import('../../sidebar/index.mjs')
-				await renderHubChannelSidebar(hubStore.context.currentState)
+				await renderHubChannelSidebar(store.context.currentState)
 			}
 			catch { /* empty */ }
 		})()

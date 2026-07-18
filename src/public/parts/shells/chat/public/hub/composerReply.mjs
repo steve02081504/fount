@@ -19,7 +19,7 @@ export function getReplyTarget() {
  */
 export function clearReplyTarget() {
 	replyTarget = null
-	const banner = document.getElementById('hub-reply-banner')
+	const banner = document.getElementById('reply-banner')
 	if (banner) banner.hidden = true
 }
 
@@ -37,7 +37,7 @@ export function setReplyTarget(target) {
 		preview: String(target.preview || '').replace(/\s+/g, ' ').trim().slice(0, 120) || '…',
 	}
 	renderReplyBanner()
-	const input = document.getElementById('hub-message-input')
+	const input = document.getElementById('message-input')
 	if (input instanceof HTMLTextAreaElement) 
 		input.focus()
 	
@@ -45,7 +45,7 @@ export function setReplyTarget(target) {
 
 /** @returns {void} */
 function renderReplyBanner() {
-	const banner = document.getElementById('hub-reply-banner')
+	const banner = document.getElementById('reply-banner')
 	if (!banner || !replyTarget) return
 	const authorEl = banner.querySelector('[data-reply-author]')
 	const previewEl = banner.querySelector('[data-reply-preview]')
@@ -59,7 +59,7 @@ function renderReplyBanner() {
  * @returns {void}
  */
 export function wireReplyBanner() {
-	const banner = document.getElementById('hub-reply-banner')
+	const banner = document.getElementById('reply-banner')
 	if (!(banner instanceof HTMLElement) || banner.dataset.wired === '1') return
 	banner.dataset.wired = '1'
 	banner.querySelector('[data-reply-clear]')?.addEventListener('click', () => clearReplyTarget())

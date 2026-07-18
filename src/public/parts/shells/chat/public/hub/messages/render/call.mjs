@@ -21,7 +21,7 @@ export async function renderCallBlock(message) {
 		const letter = escapeHtml(avatarInitial(hash.slice(0, 8)))
 		const bg = escapeHtml(avatarColor(hash))
 		const fg = escapeHtml(avatarTextColor(hash))
-		return `<span class="hub-call-avatar hub-avatar-wrap" data-avatar-for="${escapeHtml(hash)}" title="${escapeHtml(hash.slice(0, 8))}" style="background:${bg};color:${fg}"><span class="hub-avatar-letter">${letter}</span></span>`
+		return `<span class="call-avatar avatar-wrap" data-avatar-for="${escapeHtml(hash)}" title="${escapeHtml(hash.slice(0, 8))}" style="background:${bg};color:${fg}"><span class="avatar-letter">${letter}</span></span>`
 	}).join('')
 	let metaHtml = ''
 	if (status === 'ongoing') {
@@ -39,14 +39,14 @@ export async function renderCallBlock(message) {
 			+ ` · <span data-i18n="chat.hub.callParticipants" data-n="${hashes.length}"></span>`
 	}
 	const joinButtonHtml = status === 'ongoing'
-		? '<button type="button" class="btn btn-sm btn-primary hub-call-join-btn" data-i18n="chat.hub.callJoin"></button>'
+		? '<button type="button" class="btn btn-sm btn-primary call-join-btn" data-i18n="chat.hub.callJoin"></button>'
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/call_block', {
 		callId: escapeHtml(String(content.callId || message.eventId || '')),
 		status,
 		titleI18n: status === 'ended' ? 'chat.hub.callEnded' : 'chat.hub.callInProgress',
 		metaHtml,
-		avatarsHtml: avatarsHtml || '<span class="hub-call-avatars-empty" data-i18n="chat.hub.callNoParticipants"></span>',
+		avatarsHtml: avatarsHtml || '<span class="call-avatars-empty" data-i18n="chat.hub.callNoParticipants"></span>',
 		joinButtonHtml,
 	})
 }

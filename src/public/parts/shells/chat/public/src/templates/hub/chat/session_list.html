@@ -1,14 +1,14 @@
 <div style="padding:24px 16px;max-width:640px;margin:0 auto;width:100%;">
-	<div style="color:var(--hub-text-muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;" data-i18n="chat.hub.charChatsTitle" data-name="${escapeHtml(charname)}"></div>
+	<div style="color:var(--text-muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;" data-i18n="chat.hub.charChatsTitle" data-name="${escapeHtml(charname)}"></div>
 	${chats.map(chat => `
-	<div class="hub-chat-history-item" data-group-id="${escapeHtml(chat.groupId)}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .12s;margin-bottom:4px;">
+	<div class="chat-history-item" data-group-id="${escapeHtml(chat.groupId)}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background .12s;margin-bottom:4px;">
 		<div style="width:36px;height:36px;border-radius:50%;background:${avatarColor(charname)};display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:15px;flex-shrink:0;">${escapeHtml(avatarInitial(charname))}</div>
 		<div style="flex:1;min-width:0;">
-			<div style="color:var(--hub-text-bright);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(charname)}</div>
-			<div style="color:var(--hub-text-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(chat.lastMessageContent || '')}</div>
+			<div style="color:var(--text-bright);font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(charname)}</div>
+			<div style="color:var(--text-muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(chat.lastMessageContent || '')}</div>
 		</div>
-		<div style="color:var(--hub-text-muted);font-size:12px;white-space:nowrap;flex-shrink:0;">${escapeHtml(fmtChatTime(chat.lastMessageTime))}</div>
+		<div style="color:var(--text-muted);font-size:12px;white-space:nowrap;flex-shrink:0;">${escapeHtml(fmtChatTime(chat.lastMessageTime))}</div>
 	</div>
 	`).join('')}
-	<button type="button" id="hub-new-character-chat-button" class="btn btn-primary w-full mt-4" data-i18n="chat.hub.newGroupWith" data-name="${escapeHtml(charname)}"></button>
+	<button type="button" id="new-character-chat-button" class="btn btn-primary w-full mt-4" data-i18n="chat.hub.newGroupWith" data-name="${escapeHtml(charname)}"></button>
 </div>

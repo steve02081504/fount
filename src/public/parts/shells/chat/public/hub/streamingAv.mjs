@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/streamingAv.mjs
  * 【职责】Hub 顶栏音视频会话门面：封装加入/离开通话、`wireHubAvToolbar` 与 in-call 按钮态。
- * 【原理】管理 `#hub-av-toolbar` 等控件可见性与图标切换（`setHubAvToolbarInCall`）。委托 `codecsAv` 的 relay WebSocket；离开频道时 `leaveHubAvSession` 清理会话。
+ * 【原理】管理 `#av-toolbar` 等控件可见性与图标切换（`setHubAvToolbarInCall`）。委托 `codecsAv` 的 relay WebSocket；离开频道时 `leaveHubAvSession` 清理会话。
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】codecsAv
  */
@@ -26,7 +26,7 @@ export function getHubAvSession() {
 function onStreamingSessionClosed() {
 	activeAvSession = null
 	activeChannelId = null
-	const toolbar = document.getElementById('hub-streaming-av-toolbar')
+	const toolbar = document.getElementById('streaming-av-toolbar')
 	if (toolbar) setHubAvToolbarInCall(toolbar, false)
 }
 
@@ -39,7 +39,7 @@ export async function leaveHubAvSession() {
 	activeAvSession = null
 	activeChannelId = null
 	await leaveCodecsAvRoom()
-	const toolbar = document.getElementById('hub-streaming-av-toolbar')
+	const toolbar = document.getElementById('streaming-av-toolbar')
 	if (toolbar) setHubAvToolbarInCall(toolbar, false)
 }
 

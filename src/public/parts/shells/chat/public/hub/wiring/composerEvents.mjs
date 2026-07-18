@@ -8,19 +8,19 @@ import { attachHubMentionAutocomplete } from '../mentionAutocomplete.mjs'
 
 /** @returns {void} */
 export function wireComposerEvents() {
-	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('hub-message-input')
-	addDragAndDropSupport(messageInput, selectedFiles, document.getElementById('hub-attachment-preview'))
+	const messageInput = /** @type {HTMLTextAreaElement} */ document.getElementById('message-input')
+	addDragAndDropSupport(messageInput, selectedFiles, document.getElementById('attachment-preview'))
 	attachHubMentionAutocomplete(messageInput)
 
-	document.getElementById('hub-voice-button').addEventListener('click', () => {
+	document.getElementById('voice-button').addEventListener('click', () => {
 		void toggleVoiceRecording()
 	})
 
-	document.getElementById('hub-photo-button').addEventListener('click', () => {
+	document.getElementById('photo-button').addEventListener('click', () => {
 		pickPhoto()
 	})
 
-	document.getElementById('hub-upload-button').addEventListener('click', () => {
-		document.getElementById('hub-image-upload-input').click()
+	document.getElementById('upload-button').addEventListener('click', () => {
+		document.getElementById('image-upload-input').click()
 	})
 }

@@ -2,7 +2,7 @@
  * 【文件】public/hub/messages/messageActionsUi.mjs
  * 【职责】消息内联编辑与操作条的 UI 原语：按钮模板、编辑区挂载、淡出删除与删除确认阈值。
  * 【原理】`renderActionsBar`、`bindMessageEditArea`、`appendEditArea` 等构建可聚焦的编辑浮层与工具条；提供编辑区 HTML 与动画常量（`EDIT_FADE_MS`），不负责整页消息列表管道。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/template、../../src/composerAttachments、../../src/lib/emojiSvg、../../src/ui/composerKeys、../../src/ui/dragAndDrop、../core/domUtils。
  */
 import {
@@ -58,7 +58,7 @@ export function actionButton({ action, attrs = '', icon = '', i18nKey = '', clas
 		i18nAttr = ` data-i18n="${i18nKey}"`
 	
 	const content = icon || escapeHtml(label)
-	return `<button type="button" class="btn btn-ghost btn-xs hub-message-action ${classes}" data-action="${action}"${titleAttr}${i18nAttr} ${attrs}>${content}</button>`
+	return `<button type="button" class="btn btn-ghost btn-xs message-action ${classes}" data-action="${action}"${titleAttr}${i18nAttr} ${attrs}>${content}</button>`
 }
 
 /**
@@ -71,8 +71,8 @@ export function actionButton({ action, attrs = '', icon = '', i18nKey = '', clas
  * @returns {string} 菜单项 HTML
  */
 export function menuActionItem(action, attrs, icon, i18nKey = '', classes = '') {
-	const labelSpan = i18nKey ? `<span class="hub-menu-label" data-i18n="${i18nKey}"></span>` : ''
-	return `<li><button type="button" class="btn btn-ghost btn-xs hub-message-action w-full justify-start gap-2 ${classes}" data-action="${action}" ${attrs}>${icon}${labelSpan}</button></li>`
+	const labelSpan = i18nKey ? `<span class="menu-label" data-i18n="${i18nKey}"></span>` : ''
+	return `<li><button type="button" class="btn btn-ghost btn-xs message-action w-full justify-start gap-2 ${classes}" data-action="${action}" ${attrs}>${icon}${labelSpan}</button></li>`
 }
 
 /**
@@ -83,7 +83,7 @@ export function menuActionItem(action, attrs, icon, i18nKey = '', classes = '') 
  * @returns {string} 二级菜单 HTML
  */
 export function menuSubmenu(labelI18nKey, icon, innerItemsHtml) {
-	return `<li class="hub-menu-submenu"><details><summary class="hub-menu-submenu-summary gap-2">${icon}<span class="hub-menu-label" data-i18n="${labelI18nKey}"></span></summary><ul class="p-1">${innerItemsHtml}</ul></details></li>`
+	return `<li class="menu-submenu"><details><summary class="menu-submenu-summary gap-2">${icon}<span class="menu-label" data-i18n="${labelI18nKey}"></span></summary><ul class="p-1">${innerItemsHtml}</ul></details></li>`
 }
 
 /**
@@ -102,10 +102,10 @@ export async function renderActionsBar(inlineHtml, menuItemsHtml, shiftHtml = ''
 		})
 		: ''
 	const visClass = options.alwaysVisible
-		? 'hub-message-actions--always'
-		: 'hub-message-actions--anim'
+		? 'message-actions--always'
+		: 'message-actions--anim'
 	const shiftLayerHtml = shiftHtml
-		? `<div class="hub-message-actions-shift-buttons flex flex-wrap items-center gap-1">${shiftHtml}</div>`
+		? `<div class="message-actions-shift-buttons flex flex-wrap items-center gap-1">${shiftHtml}</div>`
 		: ''
 	return renderTemplateAsHtmlString('hub/messages/actions_bar', {
 		visClass,
@@ -143,9 +143,9 @@ export async function editChannelBodyHtml(originalText, eventId) {
  */
 export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles = [] }) {
 	const selectedFiles = [...initialFiles]
-	const preview = editWrap?.querySelector('.hub-message-edit-attach-preview')
-	const textarea = editWrap?.querySelector('.hub-message-edit-textarea')
-	const fileInput = editWrap?.querySelector('.hub-message-edit-file-input')
+	const preview = editWrap?.querySelector('.message-edit-attach-preview')
+	const textarea = editWrap?.querySelector('.message-edit-textarea')
+	const fileInput = editWrap?.querySelector('.message-edit-file-input')
 
 	/** @returns {Promise<void>} */
 	const refreshPreviews = async () => {
@@ -158,7 +158,7 @@ export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles =
 	}
 	void refreshPreviews()
 
-	editWrap?.querySelector('.hub-message-edit-upload-button')?.addEventListener('click', () => {
+	editWrap?.querySelector('.message-edit-upload-button')?.addEventListener('click', () => {
 		if (fileInput instanceof HTMLInputElement) fileInput.click()
 	})
 	fileInput?.addEventListener('change', async event => {
@@ -170,11 +170,11 @@ export function bindMessageEditArea(editWrap, { onSave, onCancel, initialFiles =
 		bindComposerEditKeys(textarea, { onSave, onCancel })
 	}
 
-	editWrap?.querySelector('.hub-message-edit-save')?.addEventListener('click', event => {
+	editWrap?.querySelector('.message-edit-save')?.addEventListener('click', event => {
 		event.stopPropagation()
 		void onSave()
 	})
-	editWrap?.querySelector('.hub-message-edit-cancel')?.addEventListener('click', event => {
+	editWrap?.querySelector('.message-edit-cancel')?.addEventListener('click', event => {
 		event.stopPropagation()
 		void onCancel()
 	})
@@ -211,7 +211,7 @@ export async function appendEditArea(rowElement, innerHtml) {
  */
 export async function removeWithFade(el) {
 	if (!el) return
-	if (el.classList.contains('hub-message-feedback-reason-area')) {
+	if (el.classList.contains('message-feedback-reason-area')) {
 		el.classList.remove('visible')
 		await new Promise(resolve => setTimeout(resolve, FEEDBACK_COLLAPSE_MS))
 		el.remove()

@@ -8,7 +8,7 @@ import { searchAllChatGroups, searchGroupChannelMessages } from '../src/api/grou
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { selectChannel } from './sidebar/index.mjs'
 
@@ -18,7 +18,7 @@ let searchDebounce = null
 /** @type {(ReturnType<typeof bindDismissOnDocumentInteraction>) | null} */
 let searchDismissClose = null
 
-const SEARCH_DISMISS_IGNORE = ['#hub-header-search', '#hub-search-results', '#hub-mobile-search']
+const SEARCH_DISMISS_IGNORE = ['#header-search', '#search-results', '#mobile-search']
 
 const SCOPE_I18N = {
 	group: 'chat.hub.search.scopeGroup',
@@ -29,7 +29,7 @@ const SCOPE_I18N = {
  * @returns {HTMLElement | null} 搜索结果容器
  */
 function searchResultsHost() {
-	return document.getElementById('hub-search-results')
+	return document.getElementById('search-results')
 }
 
 /**
@@ -72,25 +72,25 @@ function renderSearchResults(items, scope = 'group') {
 	const host = searchResultsHost()
 	if (!host) return
 	if (!items.length) {
-		host.innerHTML = '<div class="hub-search-empty" data-i18n="chat.hub.search.noResults">无结果</div>'
+		host.innerHTML = '<div class="search-empty" data-i18n="chat.hub.search.noResults">无结果</div>'
 		host.removeAttribute('hidden')
 		armSearchDismiss()
 		return
 	}
-	const channels = hubStore.context.currentState?.channels || {}
+	const channels = store.context.currentState?.channels || {}
 	host.innerHTML = items.map(item => {
 		const channelName = scope === 'all'
 			? escapeHtml(String(item.groupId || ''))
 			: escapeHtml(channels[item.channelId]?.name || item.channelId || '')
 		const text = escapeHtml(String(item.text || '').slice(0, 160))
-		return `<button type="button" class="hub-search-result" data-group-id="${escapeHtml(item.groupId || hubStore.context.currentGroupId || '')}" data-channel-id="${escapeHtml(item.channelId)}" data-event-id="${escapeHtml(item.eventId)}">
-			<div class="hub-search-result-meta">${channelName}</div>
-			<div class="hub-search-result-text">${text}</div>
+		return `<button type="button" class="search-result" data-group-id="${escapeHtml(item.groupId || store.context.currentGroupId || '')}" data-channel-id="${escapeHtml(item.channelId)}" data-event-id="${escapeHtml(item.eventId)}">
+			<div class="search-result-meta">${channelName}</div>
+			<div class="search-result-text">${text}</div>
 		</button>`
 	}).join('')
 	host.removeAttribute('hidden')
 	armSearchDismiss()
-	host.querySelectorAll('.hub-search-result').forEach(button => {
+	host.querySelectorAll('.search-result').forEach(button => {
 		button.addEventListener('click', () => {
 			const groupId = button.getAttribute('data-group-id')
 			const channelId = button.getAttribute('data-channel-id')
@@ -98,7 +98,7 @@ function renderSearchResults(items, scope = 'group') {
 			if (!channelId || !eventId) return
 			hideSearchResults()
 			void (async () => {
-				if (groupId && groupId !== hubStore.context.currentGroupId)
+				if (groupId && groupId !== store.context.currentGroupId)
 					await import('./sidebar/index.mjs').then(m => m.selectGroup(groupId))
 				await selectChannel(channelId)
 				await scrollToMessageEventId(eventId)
@@ -123,7 +123,7 @@ function normalizeSearchScope(value) {
 function paintSearchScopeTrigger(trigger, value) {
 	if (!trigger) return
 	trigger.dataset.value = value
-	const label = trigger.querySelector('.hub-search-scope-label')
+	const label = trigger.querySelector('.search-scope-label')
 	if (label instanceof HTMLElement) setElementI18n(label, SCOPE_I18N[value])
 }
 
@@ -133,7 +133,7 @@ function paintSearchScopeTrigger(trigger, value) {
  */
 export function setHubSearchScope(value) {
 	const scope = normalizeSearchScope(value)
-	for (const id of ['hub-search-scope', 'hub-mobile-search-scope'])
+	for (const id of ['search-scope', 'mobile-search-scope'])
 		paintSearchScopeTrigger(document.getElementById(id), scope)
 }
 
@@ -141,7 +141,7 @@ export function setHubSearchScope(value) {
  * @returns {'group' | 'all'} 当前作用域
  */
 function hubSearchScope() {
-	return normalizeSearchScope(document.getElementById('hub-search-scope')?.dataset?.value)
+	return normalizeSearchScope(document.getElementById('search-scope')?.dataset?.value)
 }
 
 /**
@@ -160,13 +160,13 @@ export async function runHubMessageSearch(query) {
 			renderSearchResults(items, 'all')
 			return
 		}
-		const groupId = hubStore.context.currentGroupId
+		const groupId = store.context.currentGroupId
 		if (!groupId) {
 			hideSearchResults()
 			return
 		}
 		const { items } = await searchGroupChannelMessages(groupId, query, {
-			channelId: hubStore.context.currentChannelId || undefined,
+			channelId: store.context.currentChannelId || undefined,
 			limit: 40,
 		})
 		renderSearchResults(items, 'group')
@@ -197,7 +197,7 @@ export function scheduleHubMessageSearch(query) {
  * @returns {void} 无
  */
 export function wireHubSearchPanel() {
-	document.querySelectorAll('.hub-search-scope-menu [data-value]').forEach(option => {
+	document.querySelectorAll('.search-scope-menu [data-value]').forEach(option => {
 		option.addEventListener('click', () => {
 			const value = normalizeSearchScope(option.getAttribute('data-value'))
 			setHubSearchScope(value)

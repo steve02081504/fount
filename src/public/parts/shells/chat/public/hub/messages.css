@@ -1,38 +1,38 @@
 /* Hub 消息区：布局由 DaisyUI chat 组件承担，此处仅保留无法用工具类表达的规则 */
 
-.hub-messages {
+.messages {
 	overflow-y: auto;
 	overflow-x: hidden;
 }
 
-.hub-messages::-webkit-scrollbar {
+.messages::-webkit-scrollbar {
 	width: 8px;
 }
 
-.hub-messages::-webkit-scrollbar-thumb {
-	background: var(--hub-bg-server);
+.messages::-webkit-scrollbar-thumb {
+	background: var(--bg-server);
 	border-radius: 4px;
 }
 
 /* 连续同作者：隐藏重复头像（chat-image）与头部 */
-.chat.hub-message-row:not(.first-in-group) .chat-image {
+.chat.message-row:not(.first-in-group) .chat-image {
 	visibility: hidden;
 	height: 0;
 	margin: 0;
 }
 
-.chat.hub-message-row:not(.first-in-group) .chat-header {
+.chat.message-row:not(.first-in-group) .chat-header {
 	display: none;
 }
 
-.chat.hub-message-row.first-in-group {
+.chat.message-row.first-in-group {
 	margin-top: 1.25rem;
 }
 
 /* 系统消息 */
-.hub-system-message {
+.system-message {
 	padding: 6px 16px 6px 72px;
-	color: var(--hub-text-muted);
+	color: var(--text-muted);
 	font-size: 14px;
 	display: flex;
 	align-items: center;
@@ -40,30 +40,30 @@
 }
 
 @media (max-width: 768px) {
-	.hub-system-message {
+	.system-message {
 		padding-left: 16px;
 	}
 
-	.hub-char-timeline-arrow.left {
+	.char-timeline-arrow.left {
 		left: 4px;
 	}
 
-	.hub-char-timeline-arrow.right {
+	.char-timeline-arrow.right {
 		right: 4px;
 	}
 }
 
 /* 投票块 */
-.hub-vote-block {
+.vote-block {
 	margin-top: 4px;
 	padding: 10px 12px;
 	border-radius: 8px;
 	background: var(--color-base-300);
-	border: 1px solid var(--hub-border);
+	border: 1px solid var(--border);
 	max-width: 420px;
 }
 
-.hub-vote-option {
+.vote-option {
 	position: relative;
 	display: flex;
 	flex-direction: column;
@@ -77,7 +77,7 @@
 	overflow: hidden;
 }
 
-.hub-vote-option-bar {
+.vote-option-bar {
 	position: absolute;
 	left: 0;
 	bottom: 0;
@@ -87,22 +87,22 @@
 }
 
 /* 消息行 hover 过渡 */
-.chat.hub-message-row {
+.chat.message-row {
 	transition: background 0.12s ease;
 }
 
 /* 内容列：承接 header/bubble/footer，让悬浮栏相对定位 */
-.hub-message-stack {
+.message-stack {
 	min-width: 0;
 	width: 100%;
 	justify-self: stretch;
 }
 
-.chat-start .hub-message-stack {
+.chat-start .message-stack {
 	grid-column-start: 2;
 }
 
-.chat-end .hub-message-stack {
+.chat-end .message-stack {
 	grid-column-start: 1;
 }
 
@@ -110,16 +110,16 @@
  * start：inner 拉满整列 → float:right 落在列右侧留白（短气泡不挡字）
  * end：inner 随内容收缩并靠右 → 同样 float:right，贴在气泡外侧
  */
-.hub-message-stack-inner {
+.message-stack-inner {
 	display: flow-root;
 	max-width: 100%;
 }
 
-.chat-start .hub-message-stack-inner {
+.chat-start .message-stack-inner {
 	width: 100%;
 }
 
-.chat-end .hub-message-stack-inner {
+.chat-end .message-stack-inner {
 	width: fit-content;
 	margin-left: auto;
 }
@@ -128,7 +128,7 @@
    悬停浮动操作栏（sticky：长消息下滑时仍贴在滚动视口顶部）
    放在 stack 顶层而非 bubble 内：顶边与昵称行平齐
    ========================================================= */
-.hub-message-hover-bar {
+.message-hover-bar {
 	position: sticky;
 	top: 0.35rem;
 	float: right;
@@ -144,32 +144,32 @@
 	transition: opacity 0.12s ease;
 }
 
-.hub-message-hover-bar > .hub-message-actions {
-	background: var(--hub-bg-main);
-	border: 1px solid var(--hub-border-subtle);
+.message-hover-bar > .message-actions {
+	background: var(--bg-main);
+	border: 1px solid var(--border-subtle);
 	border-radius: 8px;
-	box-shadow: 0 2px 8px var(--hub-shadow);
+	box-shadow: 0 2px 8px var(--shadow);
 	padding: 2px;
 }
 
-.hub-message-row:hover .hub-message-hover-bar,
-.hub-message-row:focus-within .hub-message-hover-bar,
-.shift-active .hub-message-row .hub-message-hover-bar {
+.message-row:hover .message-hover-bar,
+.message-row:focus-within .message-hover-bar,
+.shift-active .message-row .message-hover-bar {
 	opacity: 1;
 	pointer-events: auto;
 }
 
 /* 浮动栏内部：始终可见、不换行 */
-.hub-message-hover-bar .hub-message-actions--anim,
-.hub-message-hover-bar .hub-message-actions--always {
+.message-hover-bar .message-actions--anim,
+.message-hover-bar .message-actions--always {
 	opacity: 1;
 	pointer-events: auto;
 	margin-top: 0;
 }
 
-.hub-message-hover-bar .hub-message-actions,
-.hub-message-hover-bar .hub-message-actions-normal-buttons,
-.hub-message-hover-bar .hub-message-actions-shift-buttons {
+.message-hover-bar .message-actions,
+.message-hover-bar .message-actions-normal-buttons,
+.message-hover-bar .message-actions-shift-buttons {
 	flex-wrap: nowrap;
 	margin-top: 0;
 	gap: 0;
@@ -178,18 +178,18 @@
 /* =========================================================
    常驻内联反馈栏（重新生成 + 👍/👎，仅角色消息）
    ========================================================= */
-.hub-message-inline-feedback {
+.message-inline-feedback {
 	margin-top: 2px;
 	opacity: 0.65;
 	transition: opacity 0.15s;
 }
 
-.hub-message-row:hover .hub-message-inline-feedback {
+.message-row:hover .message-inline-feedback {
 	opacity: 1;
 }
 
 /* 操作栏按钮尺寸与图标（仅图标按钮为 28px 方形） */
-.hub-message-action {
+.message-action {
 	width: 28px;
 	height: 28px;
 	padding: 0;
@@ -198,18 +198,18 @@
 	justify-content: center;
 }
 
-.hub-message-action .hub-action-icon {
+.message-action .action-icon {
 	width: 16px;
 	height: 16px;
 	opacity: 0.8;
 }
 
-.hub-message-action-menu {
+.message-action-menu {
 	min-width: 28px;
 }
 
 /* 下拉菜单项：带文字标签，需撑满整行、自适应高度并左对齐（覆盖 28px 方形约束） */
-.dropdown-content .hub-message-action {
+.dropdown-content .message-action {
 	width: 100%;
 	height: auto;
 	min-height: 1.85rem;
@@ -218,13 +218,13 @@
 }
 
 /* 菜单项标签 */
-.hub-menu-label {
+.menu-label {
 	font-size: 13px;
 	white-space: nowrap;
 }
 
 /* 二级菜单（复制 / 分享） */
-.hub-menu-submenu-summary {
+.menu-submenu-summary {
 	display: flex;
 	align-items: center;
 	min-height: 1.85rem;
@@ -232,21 +232,21 @@
 	font-size: 13px;
 }
 
-.hub-menu-submenu-summary .hub-action-icon {
+.menu-submenu-summary .action-icon {
 	width: 16px;
 	height: 16px;
 	opacity: 0.8;
 }
 
-.hub-menu-submenu > details > ul {
+.menu-submenu > details > ul {
 	min-width: 9rem;
 }
 
-.hub-message-pending {
+.message-pending {
 	opacity: 0.55;
 }
 
-.hub-delivery-status {
+.delivery-status {
 	display: inline-flex;
 	align-items: center;
 	margin-inline-start: 0.25rem;
@@ -254,27 +254,27 @@
 	vertical-align: middle;
 }
 
-.hub-delivery-status .hub-delivery-icon {
+.delivery-status .delivery-icon {
 	width: 0.85rem;
 	height: 0.85rem;
 	display: block;
 }
 
-.hub-delivery-status--pending .loading {
+.delivery-status--pending .loading {
 	width: 0.7rem;
 	height: 0.7rem;
 }
 
-.hub-streaming-body:not(:empty)~.hub-streaming-skeleton {
+.streaming-body:not(:empty)~.streaming-skeleton {
 	display: none;
 }
 
 /* 角色消息时间线箭头 */
-.chat.hub-message-row[data-char-id] {
+.chat.message-row[data-char-id] {
 	position: relative;
 }
 
-.hub-char-timeline-arrow {
+.char-timeline-arrow {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
@@ -290,34 +290,34 @@
 	transition: opacity 0.15s;
 }
 
-.hub-char-entry:hover .hub-char-timeline-arrow,
-.chat.hub-message-row[data-char-id]:hover .hub-char-timeline-arrow {
+.char-entry:hover .char-timeline-arrow,
+.chat.message-row[data-char-id]:hover .char-timeline-arrow {
 	opacity: 0.85;
 }
 
-.hub-char-timeline-arrow.left {
+.char-timeline-arrow.left {
 	left: -36px;
 }
 
-.hub-char-timeline-arrow.right {
+.char-timeline-arrow.right {
 	right: -36px;
 }
 
-#hub-messages .chat-start.hub-message-row[data-char-id] .chat-header .font-semibold {
+#messages .chat-start.message-row[data-char-id] .chat-header .font-semibold {
 	transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, transform 0.3s ease;
 	transform-origin: top;
 	max-height: 3rem;
 	overflow: hidden;
 }
 
-#hub-messages.hide-char-names .chat-start.hub-message-row[data-char-id] .chat-header .font-semibold {
+#messages.hide-char-names .chat-start.message-row[data-char-id] .chat-header .font-semibold {
 	opacity: 0;
 	max-height: 0;
 	margin: 0 !important;
 	transform: scaleY(0);
 }
 
-.hub-empty {
+.empty {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -325,10 +325,10 @@
 	flex: 1;
 	padding: 48px 24px;
 	text-align: center;
-	color: var(--hub-text-muted);
+	color: var(--text-muted);
 }
 
-.hub-empty-icon {
+.empty-icon {
 	font-size: 48px;
 	margin-bottom: 16px;
 	opacity: 0.5;

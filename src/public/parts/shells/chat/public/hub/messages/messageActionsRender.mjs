@@ -246,7 +246,7 @@ export async function renderMessageActionsHtml(message, options) {
 			feedbackType === 'down' ? 'text-error' : '',
 			!!options.isLastMessage,
 		)
-		inlineHtml = `<div class="hub-message-inline-feedback flex items-center gap-0.5">${feedbackHtml}</div>`
+		inlineHtml = `<div class="message-inline-feedback flex items-center gap-0.5">${feedbackHtml}</div>`
 	}
 
 	// ===== 悬停浮动栏 =====

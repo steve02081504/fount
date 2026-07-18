@@ -5,7 +5,7 @@
 import { streamDisplayText } from '../../src/streamDisplay.mjs'
 import { applySlices } from '../../src/streamSlices.mjs'
 import { StreamRenderer } from '../../src/ui/StreamRenderer.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { scrollToBottom } from '../messages/messageScroll.mjs'
 import { messageIdSelector } from '../messages/messageShared.mjs'
 
@@ -38,8 +38,8 @@ export function getActiveVolatileStreamIds() {
  * @returns {void}
  */
 export function refreshStopGenerationButton() {
-	const stopButton = document.getElementById('hub-stop-generation-button')
-	const sendButton = document.getElementById('hub-send-button')
+	const stopButton = document.getElementById('stop-generation-button')
+	const sendButton = document.getElementById('send-button')
 	if (!(stopButton instanceof HTMLElement) || !(sendButton instanceof HTMLElement)) return
 	const active = volatileStreams.size > 0
 	stopButton.toggleAttribute('hidden', !active)
@@ -138,7 +138,7 @@ export function resetVolatileStreamState({ abortBackend = false } = {}) {
 		slot.streamRenderer = null
 	volatileStreams.clear()
 	streamIdsFetchingRow.clear()
-	hubStore.messages.composerPendingId = null
+	store.messages.composerPendingId = null
 	refreshStopGenerationButton()
 }
 
@@ -147,7 +147,7 @@ export function resetVolatileStreamState({ abortBackend = false } = {}) {
  * @returns {Promise<void>}
  */
 async function afterStreamEnd() {
-	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId) {
+	if (store.context.currentGroupId && store.context.currentChannelId) {
 		const { scheduleChannelIncrementalRefresh } = await import('../messages/messages.mjs')
 		await scheduleChannelIncrementalRefresh({ immediate: true })
 	}
@@ -197,9 +197,9 @@ export async function appendStreamSlices(streamId, sequence, slices, eventChanne
 	flushReorderToRenderer(slot)
 
 	document.querySelector(streamingMessageRowSelector(streamId))
-		?.querySelector('.hub-streaming-typing')?.remove()
+		?.querySelector('.streaming-typing')?.remove()
 
-	const container = document.getElementById('hub-messages')
+	const container = document.getElementById('messages')
 	if (container) container.scrollTop = container.scrollHeight
 }
 
@@ -208,7 +208,7 @@ export async function appendStreamSlices(streamId, sequence, slices, eventChanne
  * @returns {void}
  */
 export function syncStreamingSlotsFromDom(container) {
-	const root = container instanceof HTMLElement ? container : document.getElementById('hub-messages')
+	const root = container instanceof HTMLElement ? container : document.getElementById('messages')
 	if (!root) return
 	for (const row of root.querySelectorAll('[data-streaming][data-message-id]')) {
 		const streamId = row.getAttribute('data-message-id')
@@ -225,8 +225,8 @@ export function syncStreamingSlotsFromDom(container) {
 
 /** 重进频道时补拉服务端已缓冲的 stream_chunk（切走期间错过的 diff）。 */
 export function resumeActiveStreamBuffers() {
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
 	if (!groupId || !channelId || !volatileStreams.size) return
 	for (const streamId of [...volatileStreams.keys()])
 		void (async () => {

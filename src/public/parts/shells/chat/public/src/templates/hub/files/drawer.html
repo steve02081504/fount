@@ -5,9 +5,9 @@
 		<li class="flex items-center justify-between gap-2 py-1">
 			<span class="truncate">${escapeHtml(f?.name || id)}</span>
 			<span class="flex gap-1 shrink-0">
-				<button type="button" class="btn btn-ghost btn-xs hub-files-folder-open" data-folder-id="${escapeHtml(id)}">→</button>
-				<button type="button" class="btn btn-ghost btn-xs hub-files-folder-rename" data-folder-id="${escapeHtml(id)}" data-i18n="chat.hub.filesRename"></button>
-				<button type="button" class="btn btn-ghost btn-xs btn-error hub-files-folder-delete-button" data-folder-id="${escapeHtml(id)}" data-i18n="chat.hub.filesDelete"></button>
+				<button type="button" class="btn btn-ghost btn-xs files-folder-open" data-folder-id="${escapeHtml(id)}">→</button>
+				<button type="button" class="btn btn-ghost btn-xs files-folder-rename" data-folder-id="${escapeHtml(id)}" data-i18n="chat.hub.filesRename"></button>
+				<button type="button" class="btn btn-ghost btn-xs btn-error files-folder-delete-button" data-folder-id="${escapeHtml(id)}" data-i18n="chat.hub.filesDelete"></button>
 			</span>
 		</li>
 		`).join('') : '<li class="text-sm opacity-60" data-i18n="chat.hub.filesNoFolders"></li>'}
@@ -22,8 +22,8 @@
 		<li class="flex items-center gap-2 py-1 border-b border-base-300">
 			<span class="flex-1 truncate text-sm" title="${escapeHtml(f.fileId)}">${escapeHtml(f.name || f.fileId)}</span>
 			<span class="text-xs opacity-60">${escapeHtml(sizeKb)}</span>
-			<button type="button" class="btn btn-ghost btn-xs hub-files-download-button" data-file-id="${escapeHtml(f.fileId)}" data-i18n="chat.hub.filesDownload"></button>
-			<button type="button" class="btn btn-ghost btn-xs btn-error hub-files-delete-button" data-file-id="${escapeHtml(f.fileId)}" data-i18n="chat.hub.filesDelete"></button>
+			<button type="button" class="btn btn-ghost btn-xs files-download-button" data-file-id="${escapeHtml(f.fileId)}" data-i18n="chat.hub.filesDownload"></button>
+			<button type="button" class="btn btn-ghost btn-xs btn-error files-delete-button" data-file-id="${escapeHtml(f.fileId)}" data-i18n="chat.hub.filesDelete"></button>
 		</li>`
 		}).join('') : '<li class="text-sm opacity-60 py-2" data-i18n="chat.hub.filesEmpty"></li>'}
 	</ul>

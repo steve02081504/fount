@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { stopVoiceIfRecording } from '../composerFiles.mjs'
-import { hubStore, setHubState, watchHubState } from '../core/state.mjs'
+import { store, setState, watchState } from '../core/state.mjs'
 
 import { bindReactions, messageRenderOpts, refreshReactionPerms, syncChannelActionsContext } from './messageContext.mjs'
 import {
@@ -20,13 +20,13 @@ import { retryFailedPendingMessage, sendCurrentMessage } from './messageSend.mjs
 
 /** @returns {Promise<void>} */
 export async function submitComposer() {
-	const input = document.getElementById('hub-message-input')
+	const input = document.getElementById('message-input')
 	if (input.disabled) return
 	await stopVoiceIfRecording()
 	const content = input.value.trim()
 	const { selectedFiles } = await import('../composerFiles.mjs')
 	if (!content && !selectedFiles.length) return
-	if (!hubStore.context.currentGroupId || !hubStore.context.currentChannelId) return
+	if (!store.context.currentGroupId || !store.context.currentChannelId) return
 	input.value = ''
 	if (input instanceof HTMLTextAreaElement)
 		input.style.height = 'auto'
@@ -41,14 +41,14 @@ export async function submitComposer() {
 	}
 }
 
-watchHubState('messages.focusedMessageEventId', eventId => {
+watchState('messages.focusedMessageEventId', eventId => {
 	if (!eventId) return
-	void scrollToMessageEventId(String(eventId)).finally(() => setHubState('messages.focusedMessageEventId', null))
+	void scrollToMessageEventId(String(eventId)).finally(() => setState('messages.focusedMessageEventId', null))
 })
 
 /** @param {string | null} eventId @returns {void} */
 export function focusMessageEventId(eventId) {
-	setHubState('messages.focusedMessageEventId', eventId ? String(eventId).trim() : null)
+	setState('messages.focusedMessageEventId', eventId ? String(eventId).trim() : null)
 }
 
 /**

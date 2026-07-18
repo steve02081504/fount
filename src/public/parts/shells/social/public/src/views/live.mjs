@@ -418,7 +418,7 @@ function buildLiveSlide(item) {
 		</div>
 		<div class="live-actions">
 			<button type="button" class="live-action-btn live-like-btn">
-				<span class="s-ic s-ic-like" aria-hidden="true"></span>
+				<span class="icon icon-like" aria-hidden="true"></span>
 			</button>
 		</div>
 	`

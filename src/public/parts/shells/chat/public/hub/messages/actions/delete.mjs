@@ -21,7 +21,7 @@ export async function handleDelete(button, row, channelMessage, actions) {
 	const eventId = button.dataset.eventId
 	if (!eventId || !groupId || !channelId) return false
 	const text = getMessageText(channelMessage)
-		|| row?.querySelector('.hub-message-content')?.textContent?.trim()
+		|| row?.querySelector('.message-content')?.textContent?.trim()
 		|| ''
 	if (shouldConfirmDelete(text) && !confirmI18n('chat.hub.confirmDeleteLong'))
 		return true

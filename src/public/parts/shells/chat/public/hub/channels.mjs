@@ -2,7 +2,7 @@
  * 【文件】public/hub/channels.mjs
  * 【职责】非标准文本频道的主栏渲染：列表频道、流媒体频道与 WebRTC 流媒体壳层模板挂载。
  * 【原理】`renderListChannel`、`renderStreamingChannel`、`renderCodecsAvStreamingChannel` 替换主消息区布局；列表频道内嵌项由 `messages` 管道渲染；流媒体频道展示直播占位而非聊天气泡。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../scripts/template、core/domUtils、streamingAv。
  */
 import {
@@ -99,7 +99,7 @@ async function renderListItems(container, channelId, channel, onOpenChannel, ite
 		return
 	}
 	await mountTemplate(container, 'hub/channels/list_cards', { items })
-	container.querySelectorAll('.hub-list-jump').forEach(jumpButton => {
+	container.querySelectorAll('.list-jump').forEach(jumpButton => {
 		jumpButton.addEventListener('click', () => {
 			const targetChannelId = jumpButton.getAttribute('data-target-channel')
 			if (targetChannelId) void onOpenChannel(targetChannelId)
@@ -146,18 +146,18 @@ export async function renderListChannel(container, groupId, channelId, channel, 
 	void groupId
 	const items = Array.isArray(channel?.manualItems) ? channel.manualItems : []
 	await mountTemplate(container, 'hub/channels/list_shell', {})
-	const listHost = container.querySelector('.hub-list-body')
+	const listHost = container.querySelector('.list-body')
 	if (!listHost) return
 	await renderListItems(listHost, channelId, channel, onOpenChannel, items)
 
 	if (!options.canEdit) return
 
 	const editor = await renderTemplateNoScriptActivation('hub/channels/list_editor', {})
-	editor.className = 'hub-list-editor'
-	const ta = /** @type {HTMLTextAreaElement} */ editor.querySelector('.hub-list-editor-input')
-	const hint = editor.querySelector('.hub-list-editor-hint')
+	editor.className = 'list-editor'
+	const ta = /** @type {HTMLTextAreaElement} */ editor.querySelector('.list-editor-input')
+	const hint = editor.querySelector('.list-editor-hint')
 	ta.value = JSON.stringify(items, null, 2)
-	editor.querySelector('.hub-list-save')?.addEventListener('click', async () => {
+	editor.querySelector('.list-save')?.addEventListener('click', async () => {
 		if (hint instanceof HTMLElement) {
 			delete hint.dataset.i18n
 			hint.textContent = ''
@@ -210,7 +210,7 @@ export async function renderStreamingChannel(container, channel, options = {}) {
 			src,
 			streamError: options.streamError ? escapeHtml(options.streamError) : '',
 		})
-		container.querySelector('.hub-stream-refresh-button')?.addEventListener('click', () => {
+		container.querySelector('.stream-refresh-button')?.addEventListener('click', () => {
 			void options.onRefreshAuth?.()
 		})
 		return
@@ -243,11 +243,11 @@ export async function renderCodecsAvStreamingChannel(container, channel, options
 		presets: AV_PRESETS,
 	})
 
-	const presetSelect = /** @type {HTMLSelectElement | null} */ document.getElementById('hub-streaming-av-preset')
-	const peerLabel = document.getElementById('hub-streaming-av-peer-label')
-	const toolbar = document.getElementById('hub-streaming-av-toolbar')
-	const avGrid = document.getElementById('hub-streaming-av-grid')
-	const localVideo = /** @type {HTMLVideoElement | null} */ document.getElementById('hub-streaming-av-local-video')
+	const presetSelect = /** @type {HTMLSelectElement | null} */ document.getElementById('streaming-av-preset')
+	const peerLabel = document.getElementById('streaming-av-peer-label')
+	const toolbar = document.getElementById('streaming-av-toolbar')
+	const avGrid = document.getElementById('streaming-av-grid')
+	const localVideo = /** @type {HTMLVideoElement | null} */ document.getElementById('streaming-av-local-video')
 	if (!presetSelect || !peerLabel || !toolbar || !avGrid || !localVideo) return
 
 	void wireHubAvToolbar(toolbar, {

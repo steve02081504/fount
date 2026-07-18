@@ -10,7 +10,7 @@ import {
 	resolveDisplayParentEventIdFromMap,
 } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys } from '../../core/domUtils.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 
 import { getMessageText } from './text.mjs'
 
@@ -67,8 +67,8 @@ export async function renderGroupInviteBlock(message) {
 	const countHtml = memberCount != null && Number.isFinite(memberCount)
 		? await renderTemplateAsHtmlString('hub/messages/invite_member_count', { count: memberCount })
 		: ''
-	const settings = hubStore.context.currentState?.groupSettings
-	const roomSecret = content.groupId === hubStore.context.currentGroupId
+	const settings = store.context.currentState?.groupSettings
+	const roomSecret = content.groupId === store.context.currentGroupId
 		? settings?.roomSecret?.trim()
 		: ''
 	const joinUrl = roomSecret
@@ -135,7 +135,7 @@ export function wireMessageRefBlocks(container) {
 	if (container.dataset.refBlocksWired === '1') return
 	container.dataset.refBlocksWired = '1'
 	container.addEventListener('click', event => {
-		const ref = event.target.closest('.hub-message-ref[data-parent-event-id], .hub-message-quote[data-parent-event-id]')
+		const ref = event.target.closest('.message-ref[data-parent-event-id], .message-quote[data-parent-event-id]')
 		if (!ref) return
 		const parentId = ref.getAttribute('data-parent-event-id')
 		if (!parentId) return

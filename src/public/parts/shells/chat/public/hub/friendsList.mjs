@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/friendsList.mjs
  * 【职责】好友模式侧栏：拉取好友列表 API、渲染好友列与角色/用户会话入口。
- * 【原理】`renderFriendsColumn` 填充 `#hub-friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。
- * 【数据结构】hubStore（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【原理】`renderFriendsColumn` 填充 `#friends-list`；支持删除好友、重启私聊等行内操作；点击好友后由 `friendChat`/`chat.enterPrivateGroup` 加载消息。搜索同时覆盖本地角色 part 与网络实体。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】好友模式对应 `#friends`，由 `mode.setMode('friends')` 写入；../../../../scripts/i18n、../../../../scripts/template、../../../../scripts/toast、chat、core/domUtils、core/state、friendBindings、friendChat。
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -20,7 +20,8 @@ import { promptText } from '../shared/promptText.mjs'
 import { getCharDetails, renderCharInfoCard } from './charCard.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
 import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { store } from './core/state.mjs'
 import { resolveFriendBinding } from './friendBindings.mjs'
 import { dispatchFriendChat, enterFriendChat, onEnterFriendChat } from './friendChat.mjs'
 import { restartPrivateGroup } from './privateGroup.mjs'
@@ -56,7 +57,7 @@ export async function loadFriendsList() {
 	await loadGroups()
 	/** @type {Map<string, FriendRow>} */
 	const byEntityHash = new Map()
-	for (const group of hubStore.sidebar.groups) {
+	for (const group of store.sidebar.groups) {
 		const binding = resolveFriendBinding(group)
 		if (!binding) continue
 		const row = {
@@ -99,7 +100,7 @@ export async function loadFriendsList() {
 async function friendRowTemplateData(friend, details) {
 	const rawDesc = String(friend.session.lastMessageContent || '').trim()
 	const subtitle = rawDesc.length > 52 ? `${rawDesc.slice(0, 52)}…` : rawDesc
-	const active = hubStore.privateGroup.groupId === friend.groupId
+	const active = store.privateGroup.groupId === friend.groupId
 	const displayName = resolveDisplayName({
 		entityHash: friend.key,
 		alias: aliasForEntity(friend.key),
@@ -133,7 +134,7 @@ async function friendRowTemplateData(friend, details) {
 		avatarBg: avatarColor(friend.key),
 		avatarTextColor: avatarTextColor(friend.key),
 		avatarInner: avatarUrl
-			? `<img src="${escapeHtml(avatarUrl)}" alt="" class="hub-char-list-avatar-img" />`
+			? `<img src="${escapeHtml(avatarUrl)}" alt="" class="char-list-avatar-img" />`
 			: escapeHtml(avatarInitial(displayName)),
 	}
 }
@@ -156,7 +157,7 @@ async function deleteFriendSession(friend) {
 			throw new Error(data.error || `HTTP ${r.status}`)
 		}
 		showToastI18n('success', 'chat.hub.sessionDeleted')
-		if (hubStore.privateGroup.groupId === friend.groupId) {
+		if (store.privateGroup.groupId === friend.groupId) {
 			const { clearPrivateGroupState } = await import('./privateGroup.mjs')
 			clearPrivateGroupState()
 			onEnterFriendChat(null)
@@ -177,15 +178,11 @@ async function deleteFriendSession(friend) {
  */
 function showFriendContextMenu(event, friend) {
 	event.preventDefault()
-	document.getElementById('hub-friend-context-menu')?.remove()
+	document.getElementById('friend-context-menu')?.remove()
 
 	const menu = document.createElement('ul')
-	menu.id = 'hub-friend-context-menu'
+	menu.id = 'friend-context-menu'
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	const menuWidth = 192
-	const left = Math.min(event.clientX, window.innerWidth - menuWidth - 8)
-	const top = Math.min(event.clientY, window.innerHeight - 80)
-	menu.style.cssText = `position:fixed;left:${Math.max(8, left)}px;top:${Math.max(8, top)}px;min-width:${menuWidth}px;`
 
 	const items = []
 	if (friend.charname)
@@ -193,6 +190,7 @@ function showFriendContextMenu(event, friend) {
 	items.push('<li><button type="button" class="w-full text-left text-error" data-action="delete-session" data-i18n="chat.hub.deleteSession"></button></li>')
 	menu.innerHTML = items.join('')
 	document.body.appendChild(menu)
+	positionContextMenu(menu, { x: event.clientX, y: event.clientY, minWidth: 192 })
 
 	/** @returns {void} */
 	const dismiss = () => {
@@ -232,17 +230,17 @@ function showFriendContextMenu(event, friend) {
  * @returns {Promise<void>}
  */
 export async function renderFriendsColumn(friends) {
-	const header = document.getElementById('hub-group-name-display')
-	const container = document.getElementById('hub-channel-list')
+	const header = document.getElementById('group-name-display')
+	const container = document.getElementById('channel-list')
 	header.dataset.i18n = 'chat.hub.friendsTag'
 
 	const wrap = document.createElement('div')
-	wrap.className = 'hub-friends-wrap flex flex-col gap-2 h-full min-h-0'
+	wrap.className = 'friends-wrap flex flex-col gap-2 h-full min-h-0'
 	wrap.appendChild(await renderTemplate('hub/friends/search_wrap', {}))
 	container.replaceChildren(wrap)
-	const body = wrap.querySelector('#hub-friends-list-body')
-	const searchInput = wrap.querySelector('#hub-friends-search-input')
-	const searchResults = wrap.querySelector('#hub-friends-search-results')
+	const body = wrap.querySelector('#friends-list-body')
+	const searchInput = wrap.querySelector('#friends-search-input')
+	const searchResults = wrap.querySelector('#friends-search-results')
 
 	let searchTimer = 0
 	searchInput?.addEventListener('input', () => {
@@ -271,7 +269,7 @@ export async function renderFriendsColumn(friends) {
 		countI18nKey: 'chat.hub.friendsCount',
 		items: rows,
 	})
-	body.querySelectorAll('.hub-char-list-item').forEach((el) => {
+	body.querySelectorAll('.char-list-item').forEach((el) => {
 		const { groupId } = el.dataset
 		const row = friends.find(f => f.groupId === groupId)
 		if (!row) return
@@ -279,7 +277,7 @@ export async function renderFriendsColumn(friends) {
 		el.addEventListener('contextmenu', (event) => showFriendContextMenu(event, row))
 		if (row.charname)
 			el.addEventListener('mouseenter', async () => {
-				if (hubStore.privateGroup.groupId) return
+				if (store.privateGroup.groupId) return
 				const details = await getCharDetails(row.charname)
 				await renderCharInfoCard(row.charname, details)
 			})

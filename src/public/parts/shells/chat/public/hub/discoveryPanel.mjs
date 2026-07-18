@@ -5,7 +5,7 @@ import { handleUIError } from '../src/ui/errors.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { setPinsBookmarksWrapVisible, updateStatusBanners } from './banners.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { updateDiscoveryHash } from './core/urlHash.mjs'
 import { cancelScheduledChannelRefresh } from './messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from './privateGroup.mjs'
@@ -24,7 +24,7 @@ async function paintDiscoveryEntries(grid, entries) {
 		await mountTemplate(grid, 'hub/discovery/empty')
 		return
 	}
-	const joinedIds = new Set(hubStore.sidebar.groups.map(group => String(group.id || group.groupId || '')))
+	const joinedIds = new Set(store.sidebar.groups.map(group => String(group.id || group.groupId || '')))
 	grid.replaceChildren(...await Promise.all(entries.map(async entry => {
 		const title = String(entry.title || entry.groupId)
 		return renderTemplate('hub/discovery/card', {
@@ -79,23 +79,23 @@ export async function activateDiscoveryView() {
 	cancelScheduledChannelRefresh()
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	hubStore.context.currentGroupId = null
-	hubStore.context.currentChannelId = null
-	hubStore.context.currentState = null
+	store.context.currentGroupId = null
+	store.context.currentChannelId = null
+	store.context.currentState = null
 	setPinsBookmarksWrapVisible(false)
 	updateStatusBanners()
 
-	const channelList = document.getElementById('hub-channel-list')
+	const channelList = document.getElementById('channel-list')
 	if (channelList)
 		await mountTemplate(channelList, 'hub/nav/side_muted', { i18nKey: 'chat.hub.discoverySidebarHint' })
-	document.getElementById('hub-member-list').replaceChildren()
-	document.getElementById('hub-info-card-host').replaceChildren()
-	document.getElementById('hub-group-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
-	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
+	document.getElementById('member-list').replaceChildren()
+	document.getElementById('info-card-host').replaceChildren()
+	document.getElementById('group-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
+	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.discoveryTitle'
 
-	const messagesHost = document.getElementById('hub-messages')
+	const messagesHost = document.getElementById('messages')
 	await mountTemplate(messagesHost, 'hub/discovery/panel')
-	const root = messagesHost.querySelector('.hub-discovery-page')
+	const root = messagesHost.querySelector('.discovery-page')
 	if (!(root instanceof HTMLElement)) return
 	root.querySelector('[data-discovery-refresh]')?.addEventListener('click', () => {
 		void loadDiscoveryEntries(root)

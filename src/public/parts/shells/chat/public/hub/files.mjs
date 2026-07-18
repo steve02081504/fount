@@ -4,7 +4,7 @@
 import { getGroupState } from '../src/api/groupCore.mjs'
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 let filesDrawerWired = false
 
@@ -18,7 +18,7 @@ export function resetFilesDrawerWire() {
  * @returns {boolean} 侧栏是否打开
  */
 export function isFilesDrawerOpen() {
-	const toggle = document.getElementById('hub-files-drawer-toggle')
+	const toggle = document.getElementById('files-drawer-toggle')
 	return toggle instanceof HTMLInputElement && toggle.checked
 }
 
@@ -26,25 +26,25 @@ export function isFilesDrawerOpen() {
  * @param {boolean} open 是否显示
  */
 export function setFilesDrawerOpen(open) {
-	const toggle = document.getElementById('hub-files-drawer-toggle')
+	const toggle = document.getElementById('files-drawer-toggle')
 	if (toggle instanceof HTMLInputElement)
 		toggle.checked = open
-	document.getElementById('hub-header-files-button')?.classList.toggle('is-active', open)
+	document.getElementById('header-files-button')?.classList.toggle('is-active', open)
 }
 
 /** @returns {void} */
 export function wireFilesDrawerToggle() {
-	const toggle = document.getElementById('hub-files-drawer-toggle')
+	const toggle = document.getElementById('files-drawer-toggle')
 	if (!toggle || toggle.dataset.wired) return
 	toggle.dataset.wired = '1'
 	toggle.addEventListener('change', () => {
 		const open = toggle instanceof HTMLInputElement && toggle.checked
 		setFilesDrawerOpen(open)
-		if (open && hubStore.context.currentGroupId)
+		if (open && store.context.currentGroupId)
 			void refreshFilesDrawer({
-				groupId: hubStore.context.currentGroupId,
-				state: hubStore.context.currentState,
-				viewer: hubStore.context.currentState?.viewer,
+				groupId: store.context.currentGroupId,
+				state: store.context.currentState,
+				viewer: store.context.currentState?.viewer,
 			}).catch(handleUIError)
 	})
 }
@@ -81,7 +81,7 @@ function cabinetsForViewer(state, viewerKey) {
  * @returns {Promise<void>}
  */
 export async function refreshFilesDrawer(drawer) {
-	const host = document.getElementById('hub-files-list')
+	const host = document.getElementById('files-list')
 	if (!host || !drawer.groupId) return
 	const state = drawer.state || await getGroupState(drawer.groupId)
 	const viewerKey = drawer.viewer?.memberKey || state.viewer?.memberKey || state.viewer?.pubKeyHash
@@ -110,7 +110,7 @@ export async function refreshFilesDrawer(drawer) {
 	}
 	host.appendChild(list)
 
-	const actions = document.getElementById('hub-files-actions')
+	const actions = document.getElementById('files-actions')
 	if (actions) {
 		actions.replaceChildren()
 		if (canManage) {
@@ -159,7 +159,7 @@ async function bindCabinetFlow(groupId, state) {
 export function wireFilesDrawer(drawer) {
 	if (filesDrawerWired) return
 	filesDrawerWired = true
-	const toggle = document.getElementById('hub-files-drawer-toggle')
+	const toggle = document.getElementById('files-drawer-toggle')
 	toggle?.addEventListener('change', () => {
 		if (isFilesDrawerOpen())
 			void refreshFilesDrawer(drawer).catch(handleUIError)

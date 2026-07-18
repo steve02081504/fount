@@ -7,10 +7,12 @@ const RUN_PREFIX = `fount://run/${SOCIAL_RUN_PART}/`
 /**
  * Social shell 实体资料页 hash 链接。
  * @param {string} entityHash 128 位 entityHash
+ * @param {string} [postId] 可选焦点帖 id（高亮定位）
  * @returns {string} 浏览器路径（含 hash）
  */
-export function formatSocialProfileHref(entityHash) {
-	return `${SOCIAL_SHELL_PATH}#profile;${entityHash}`
+export function formatSocialProfileHref(entityHash, postId) {
+	const base = `${SOCIAL_SHELL_PATH}#profile;${entityHash}`
+	return postId ? `${base};${postId}` : base
 }
 
 /**

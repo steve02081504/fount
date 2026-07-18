@@ -6,7 +6,7 @@ import {
 	syncGroupRefInComposer,
 } from '../composer.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { loadFeed, setFeedRanking, updateFeedSearchChrome } from '../views/feed.mjs'
 import { markNotificationsSeen, setNotificationFilter } from '../views/notifications.mjs'
 
@@ -17,11 +17,11 @@ import { markNotificationsSeen, setNotificationFilter } from '../views/notificat
  */
 export async function handleComposerFeedClick(target) {
 	if (target.closest('.clear-quote-btn')) {
-		socialState.pendingQuoteRef = null
+		state.pendingQuoteRef = null
 		await refreshQuotePreview()
 	}
 	if (target.closest('.clear-group-ref-btn')) {
-		socialState.pendingGroupRef = null
+		state.pendingGroupRef = null
 		syncGroupRefInComposer(null)
 		await refreshGroupRefPreview()
 		const groupSelect = document.getElementById('linkGroupSelect')
@@ -29,10 +29,10 @@ export async function handleComposerFeedClick(target) {
 			groupSelect.value = ''
 	}
 	if (target.closest('#feedRefreshButton')) {
-		socialState.activeFeedSearchQuery = null
+		state.activeFeedSearchQuery = null
 		const searchInput = document.getElementById('feedSearchInput')
 		if (searchInput instanceof HTMLInputElement) searchInput.value = ''
-		socialState.feedCursor = null
+		state.feedCursor = null
 		await socialApi('/feed/sync', { method: 'POST' })
 		await loadFeed(false)
 		updateFeedSearchChrome()
@@ -54,11 +54,11 @@ export async function handleComposerFeedClick(target) {
 		const options = optionsRaw.split('\n').map(line => line.trim()).filter(Boolean)
 		const multi = document.getElementById('pollComposerMulti')?.checked === true
 		const deadlineRaw = document.getElementById('pollComposerDeadline')?.value?.trim()
-		socialState.pendingPoll = options.length >= 2
+		state.pendingPoll = options.length >= 2
 			? { options, multi, deadline: deadlineRaw ? new Date(deadlineRaw).toISOString() : null }
 			: null
 		document.getElementById('pollComposerPanel')?.classList.add('hidden')
-		document.getElementById('pollComposerToggle')?.classList.toggle('active', Boolean(socialState.pendingPoll))
+		document.getElementById('pollComposerToggle')?.classList.toggle('active', Boolean(state.pendingPoll))
 	}
 	if (target.closest('#notificationsMarkAllButton'))
 		void markNotificationsSeen()

@@ -9,7 +9,7 @@ import {
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { showChannelContextMenu } from '../channelContextMenu.mjs'
 import { buildChannelTree, channelTypeIconHtml } from '../channels.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { isThreadChannel } from '../threadDrawer.mjs'
 import { formatUnreadBadgeHtml, getChannelUnreadCount } from '../unread.mjs'
 
@@ -44,7 +44,7 @@ export async function renderChannelList(state) {
 	container.replaceChildren()
 	for (const catKey of Object.keys(groupsByCat)) {
 		const { category, categoryI18n, channels } = groupsByCat[catKey]
-		const isCollapsed = hubStore.sidebar.collapsedCategories.has(catKey)
+		const isCollapsed = store.sidebar.collapsedCategories.has(catKey)
 		container.appendChild(await renderTemplate('hub/nav/channel_category', {
 			collapsedClass: isCollapsed ? 'collapsed' : '',
 			category: escapeHtml(catKey),
@@ -52,16 +52,16 @@ export async function renderChannelList(state) {
 			categoryI18nAttr: categoryI18n ? ` data-i18n="${categoryI18n}"` : '',
 		}))
 		if (!isCollapsed) {
-			const listHost = container.querySelector(`.hub-category[data-cat="${CSS.escape(catKey)}"] + .hub-category-channels`)
+			const listHost = container.querySelector(`.category[data-cat="${CSS.escape(catKey)}"] + .category-channels`)
 			const sortedChannels = [...channels].sort((left, right) => {
 				const leftSeq = Number(state.channels?.[left.id]?.messageSeq) || 0
 				const rightSeq = Number(state.channels?.[right.id]?.messageSeq) || 0
 				return rightSeq - leftSeq
 			})
 			for (const channel of sortedChannels) {
-				const active = channel.id === hubStore.context.currentChannelId ? 'active' : ''
-				const nested = channel.depth > 0 ? ' hub-channel-nested' : ''
-				const groupId = hubStore.context.currentGroupId
+				const active = channel.id === store.context.currentChannelId ? 'active' : ''
+				const nested = channel.depth > 0 ? ' channel-nested' : ''
+				const groupId = store.context.currentGroupId
 				listHost.appendChild(await renderTemplate('hub/nav/channel_item', {
 					activeClass: active ? 'active' : '',
 					nestedClass: nested,
@@ -76,17 +76,17 @@ export async function renderChannelList(state) {
 			}
 		}
 	}
-	container.querySelectorAll('.hub-category').forEach(el => {
+	container.querySelectorAll('.category').forEach(el => {
 		el.addEventListener('click', () => {
 			const category = el.dataset.cat
-			if (hubStore.sidebar.collapsedCategories.has(category)) hubStore.sidebar.collapsedCategories.delete(category)
-			else hubStore.sidebar.collapsedCategories.add(category)
+			if (store.sidebar.collapsedCategories.has(category)) store.sidebar.collapsedCategories.delete(category)
+			else store.sidebar.collapsedCategories.add(category)
 			void import('./index.mjs').then(({ renderHubChannelSidebar }) =>
-				renderHubChannelSidebar(hubStore.context.currentState),
+				renderHubChannelSidebar(store.context.currentState),
 			)
 		})
 	})
-	container.querySelectorAll('.hub-channel-item').forEach(el => {
+	container.querySelectorAll('.channel-item').forEach(el => {
 		el.addEventListener('click', () => selectChannel(el.dataset.channelId))
 		el.addEventListener('contextmenu', (event) => {
 			const { channelId } = el.dataset
@@ -94,12 +94,12 @@ export async function renderChannelList(state) {
 		})
 	})
 
-	const canManageChannels = Object.values(hubStore.context.currentState?.channelCaps || {})
+	const canManageChannels = Object.values(store.context.currentState?.channelCaps || {})
 		.some(cap => cap?.canEditList)
-	if (canManageChannels && hubStore.context.currentGroupId) {
+	if (canManageChannels && store.context.currentGroupId) {
 		const addChannelButton = document.createElement('button')
 		addChannelButton.type = 'button'
-		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 hub-channel-create-button'
+		addChannelButton.className = 'btn btn-ghost btn-sm w-[calc(100%-8px)] mx-1 mt-1 channel-create-button'
 		addChannelButton.dataset.i18n = 'chat.hub.newChannelButton'
 		addChannelButton.addEventListener('click', () => void showCreateChannelModal())
 		container.appendChild(addChannelButton)

@@ -6,7 +6,7 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
  * @param {() => Promise<void>} fn 写操作
  * @returns {Promise<void>}
  */
-export async function runSocialWrite(actionKey, fn) {
+export async function runWrite(actionKey, fn) {
 	try {
 		await fn()
 	}

@@ -13,7 +13,7 @@ import {
 	updateStatusBanners,
 } from '../banners.mjs'
 import { warmCharEntityHashCache } from '../core/domUtils.mjs'
-import { hubStore, setHubState } from '../core/state.mjs'
+import { store, setState } from '../core/state.mjs'
 import { consumePendingJoin, inviteCodeFromUrl, updateHash } from '../core/urlHash.mjs'
 import { loadGroups } from '../serverBar.mjs'
 
@@ -41,8 +41,8 @@ export async function syncGroupFromNetwork(groupId, options = {}) {
 		return
 	}
 
-	if (hubStore.context.currentGroupId === groupId && hubStore.context.currentChannelId) {
-		setHubState('context.currentState', await getGroupState(groupId))
+	if (store.context.currentGroupId === groupId && store.context.currentChannelId) {
+		setState('context.currentState', await getGroupState(groupId))
 		const { loadMessages } = await import('../messages/messages.mjs')
 		await loadMessages()
 	}
@@ -87,10 +87,10 @@ function canAutoJoinGroup(state, pendingJoin, inviteCode) {
 async function showGroupJoinRequiredState() {
 	const { disableComposer } = await import('../messages/composerController.mjs')
 	const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
-	setHubState('context.currentChannelId', null)
-	updateHash(hubStore.context.currentGroupId, null)
+	setState('context.currentChannelId', null)
+	updateHash(store.context.currentGroupId, null)
 	disableComposer()
-	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/error', {
+	await mountTemplate(document.getElementById('messages'), 'hub/empty/error', {
 		i18nKey: 'chat.hub.groupJoinRequired',
 		errorMessage: '',
 	})
@@ -109,13 +109,13 @@ export async function ensureGroupMembership(groupId, state) {
 	const pendingJoin = consumePendingJoin(groupId)
 	const inviteCode = pendingJoin.inviteCode || inviteCodeFromUrl()
 	if (!canAutoJoinGroup(state, pendingJoin, inviteCode)) {
-		setHubState('context.currentState', state)
-		hubStore.context.currentMode = 'groups'
-		document.body.dataset.hubSurface = 'groups'
-		document.querySelectorAll('.hub-server-item[data-mode]').forEach(el => {
+		setState('context.currentState', state)
+		store.context.currentMode = 'groups'
+		document.body.dataset.surface = 'groups'
+		document.querySelectorAll('.server-item[data-mode]').forEach(el => {
 			el.classList.toggle('mode-active', el.dataset.mode === 'groups')
 		})
-		const groupNameElement = document.getElementById('hub-group-name-display')
+		const groupNameElement = document.getElementById('group-name-display')
 		groupNameElement.textContent = ''
 		groupNameElement.dataset.i18n = 'chat.hub.groupTag'
 		await renderChannelList(state)
@@ -124,7 +124,7 @@ export async function ensureGroupMembership(groupId, state) {
 		await showGroupJoinRequiredState()
 		return null
 	}
-	const pow = await resolvePowForJoin(groupId, state, hubStore.viewer.nodeHash || '')
+	const pow = await resolvePowForJoin(groupId, state, store.viewer.nodeHash || '')
 	await joinGroup(groupId, inviteCode, null, pow, pendingJoin.fedBootstrap)
 	const joined = await getGroupState(groupId)
 	broadcastHubGroupJoined(groupId)
@@ -140,13 +140,13 @@ export async function ensureGroupMembership(groupId, state) {
  * @returns {Promise<object>} 同步后的 state
  */
 export async function syncGroupStateForHub(groupId, state, presetChannelId) {
-	setHubState('context.currentState', state)
+	setState('context.currentState', state)
 	rebindFederationRoomQuiet(groupId, {
 		channelId: presetChannelId || state.groupSettings?.defaultChannelId || null,
 	})
 	void warmCharEntityHashCache()
 	if (state.viewerEntityHash)
-		hubStore.viewer.viewerEntityHash = state.viewerEntityHash
+		store.viewer.viewerEntityHash = state.viewerEntityHash
 	const { refreshViewerHubPresentation } = await import('../init.mjs')
 	await refreshViewerHubPresentation()
 	if (state.viewerEntityHash) {
@@ -162,7 +162,7 @@ export async function syncGroupStateForHub(groupId, state, presetChannelId) {
 		setSyncBanner(false)
 	if (needsHeavySync) {
 		state = await getGroupState(groupId)
-		setHubState('context.currentState', state)
+		setState('context.currentState', state)
 	}
 	return state
 }

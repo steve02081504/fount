@@ -4,7 +4,7 @@
 import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
 import { buildCharFriendBinding, buildUserFriendBinding } from '../shared/friendBinding.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
 import { enterFriendChat } from './friendChat.mjs'
 import { loadFriendsList } from './friendsList.mjs'
@@ -21,14 +21,14 @@ export async function applyHubContactQuery(contactRaw) {
 	if (!isEntityHash128(entityHash)) return false
 
 	await loadGroups()
-	const bound = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === entityHash)?.friendBinding
+	const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === entityHash)?.friendBinding
 	if (bound) {
 		await setMode('friends')
 		await enterFriendChat({ binding: bound })
 		return true
 	}
 
-	const { nodeHash } = hubStore
+	const { nodeHash } = store
 	if (nodeHash) {
 		const friends = await loadFriendsList()
 		for (const friend of friends) {
@@ -45,7 +45,7 @@ export async function applyHubContactQuery(contactRaw) {
 
 	try {
 		const binding = await buildUserFriendBinding({ entityHash })
-		const existing = hubStore.sidebar.groups.find(g => g.friendBinding?.entityHash === binding.entityHash)
+		const existing = store.sidebar.groups.find(g => g.friendBinding?.entityHash === binding.entityHash)
 		if (existing?.groupId) {
 			await setMode('friends')
 			await enterFriendChat({ groupId: existing.groupId, binding: existing.friendBinding || binding })

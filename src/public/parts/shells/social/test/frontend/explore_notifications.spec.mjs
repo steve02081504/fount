@@ -1,9 +1,9 @@
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	test,
 	expect,
-	openSocialHome,
+	openHome,
 	fetchViewerEntityHash,
 	injectForeignLike,
 	seedInboxLikes,
@@ -12,7 +12,7 @@ import {
 
 test.describe('Social secondary views', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('explore view loads accounts and posts sections', async ({ page }) => {
@@ -109,7 +109,7 @@ test.describe('Social secondary views', () => {
 		const { postId } = await publishPost(`badge-parent ${Date.now()}`)
 		await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/`, { waitUntil: 'domcontentloaded' })
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await expect(page.locator('#notificationsBadge:not(.hidden)')).toBeVisible({ timeout: 10_000 })
 	})
 
@@ -120,7 +120,7 @@ test.describe('Social secondary views', () => {
 		await seedInboxMentions(baseUrl, apiKey, 1)
 		await page.locator('.side-nav .nav-btn[data-view="notifications"]').click()
 		await expect(page.locator('#notificationsView .notification-card').first()).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-mention').first()).toBeVisible()
+		await expect(page.locator('#notificationsView .notification-card .icon-notification-mention').first()).toBeVisible()
 		await Promise.all([
 			page.waitForResponse(res => {
 				const url = new URL(res.url())
@@ -130,8 +130,8 @@ test.describe('Social secondary views', () => {
 			}),
 			page.locator('.inbox-filter-tabs [data-notif-filter="like"]').click(),
 		])
-		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-mention')).toHaveCount(0)
-		await expect(page.locator('#notificationsView .notification-card .s-ic-notif-like').first()).toBeVisible()
+		await expect(page.locator('#notificationsView .notification-card .icon-notification-mention')).toHaveCount(0)
+		await expect(page.locator('#notificationsView .notification-card .icon-notification-like').first()).toBeVisible()
 		await expect(page.locator('#notificationsView .notification-card', {
 			has: page.locator(`a.notification-view-link[href*="${postId}"]`),
 		}).first()).toBeVisible()
@@ -240,6 +240,6 @@ test.describe('Social secondary views', () => {
 		await expect(postCard).toBeVisible({ timeout: 30_000 })
 		await postCard.locator('a.author-name').click()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileEntityCardHost .hub-profile-popup')).toBeVisible()
+		await expect(page.locator('#profileEntityCardHost .profile-popup')).toBeVisible()
 	})
 })

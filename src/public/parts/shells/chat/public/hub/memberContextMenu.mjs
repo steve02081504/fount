@@ -14,7 +14,8 @@ import { fetchViewerChannelPermissions } from '../src/groupViewerPermissions.mjs
 import { refreshAliasDependentUi } from './aliasUi.mjs'
 import { pickBanScope } from './banScopePicker.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { hubStore } from './core/state.mjs'
+import { positionContextMenu } from './core/positionContextMenu.mjs'
+import { store } from './core/state.mjs'
 import { dispatchFriendChat } from './friendChat.mjs'
 import { insertComposerMention } from './mentionAutocomplete.mjs'
 import { resolveEntityFromAnchor } from './profilePopup.mjs'
@@ -32,7 +33,7 @@ function dismissMemberContextMenu() {
 
 /**
  * @param {MouseEvent} event 右键事件
- * @param {HTMLElement} memberElement `.hub-member-item` 行
+ * @param {HTMLElement} memberElement `.member-item` 行
  * @returns {Promise<void>}
  */
 export async function showMemberContextMenu(event, memberElement) {
@@ -41,15 +42,15 @@ export async function showMemberContextMenu(event, memberElement) {
 	dismissMemberContextMenu()
 
 	const memberKey = memberElement.dataset.memberKey?.trim()
-	if (!memberKey || !hubStore.context.currentGroupId) return
-	const displayName = memberElement.querySelector('.hub-member-name')?.textContent?.trim() || memberKey
-	const viewer = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	const defaultChannelId = hubStore.context.currentState?.groupSettings?.defaultChannelId || 'default'
+	if (!memberKey || !store.context.currentGroupId) return
+	const displayName = memberElement.querySelector('.member-name')?.textContent?.trim() || memberKey
+	const viewer = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const defaultChannelId = store.context.currentState?.groupSettings?.defaultChannelId || 'default'
 	const isAgent = memberElement.dataset.memberKind === 'agent'
 	const ownerPubKeyHash = memberElement.dataset.ownerPubKeyHash?.trim().toLowerCase() || ''
 	const isOwnerOwnAgent = isAgent && ownerPubKeyHash === viewer
 	const perms = viewer && memberKey.toLowerCase() !== viewer
-		? await fetchViewerChannelPermissions(hubStore.context.currentState, hubStore.context.currentGroupId, defaultChannelId)
+		? await fetchViewerChannelPermissions(store.context.currentState, store.context.currentGroupId, defaultChannelId)
 		: {}
 	const showKick = memberKey.toLowerCase() !== viewer && (
 		isAgent ? isOwnerOwnAgent || perms.ADMIN === true : perms.KICK_MEMBERS === true
@@ -62,31 +63,31 @@ export async function showMemberContextMenu(event, memberElement) {
 
 	const menu = document.createElement('ul')
 	menu.className = 'menu menu-sm bg-base-100 rounded-box shadow-lg border border-base-300 p-1 z-50'
-	menu.style.cssText = `position:fixed;left:${event.clientX}px;top:${event.clientY}px;min-width:10rem;`
 	menu.appendChild(await renderTemplate('hub/nav/member_context_menu', { showKick, showBan, showCopyEntity, showPersonalBlock, showMention }))
 	document.body.appendChild(menu)
+	positionContextMenu(menu, { x: event.clientX, y: event.clientY })
 	openMenuElement = menu
 
 	const closeOnce = bindDismissOnDocumentInteraction(dismissMemberContextMenu)
 
-	menu.querySelector('.hub-member-menu-copy-name')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-copy-name')?.addEventListener('click', async () => {
 		await navigator.clipboard.writeText(displayName)
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-copy-pubkey')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-copy-pubkey')?.addEventListener('click', async () => {
 		await navigator.clipboard.writeText(memberKey)
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-copy-entity')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-copy-entity')?.addEventListener('click', async () => {
 		await navigator.clipboard.writeText(entityHash)
 		showToastI18n('success', 'chat.hub.copyEntityIdOk')
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-mention')?.addEventListener('click', () => {
+	menu.querySelector('.member-menu-mention')?.addEventListener('click', () => {
 		insertComposerMention(entityHash)
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-care')?.addEventListener('click', () => {
+	menu.querySelector('.member-menu-care')?.addEventListener('click', () => {
 		void (async () => {
 			if (!entityHash) return
 			const cared = await isCared(entityHash)
@@ -97,7 +98,7 @@ export async function showMemberContextMenu(event, memberElement) {
 		})
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-alias')?.addEventListener('click', () => {
+	menu.querySelector('.member-menu-alias')?.addEventListener('click', () => {
 		void (async () => {
 			if (!entityHash) return
 			const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
@@ -108,14 +109,14 @@ export async function showMemberContextMenu(event, memberElement) {
 			if (next == null) return
 			await setEntityAlias(entityHash, next)
 			showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
-			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
 			await refreshAliasDependentUi()
 		})().catch(error => {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		})
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-dm')?.addEventListener('click', () => {
+	menu.querySelector('.member-menu-dm')?.addEventListener('click', () => {
 		void (async () => {
 			const entity = await resolveEntityFromAnchor(memberElement)
 			if (entity) {
@@ -127,12 +128,12 @@ export async function showMemberContextMenu(event, memberElement) {
 		})
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-kick')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-kick')?.addEventListener('click', async () => {
 		if (memberKey.toLowerCase() === viewer.toLowerCase())
 			if (!confirmI18n('chat.hub.memberContext.kickSelfNodeWarning', { name: displayName })) return
 
 		if (!confirmI18n('chat.group.settingsPage.kickConfirm', { name: displayName })) return
-		const groupId = hubStore.context.currentGroupId
+		const groupId = store.context.currentGroupId
 		const resp = await fetch(
 			`/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(memberKey)}/kick`,
 			{ method: 'POST', credentials: 'include' },
@@ -143,34 +144,34 @@ export async function showMemberContextMenu(event, memberElement) {
 			return
 		}
 		showToastI18n('success', 'chat.group.settingsPage.kickSuccess')
-		hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
-		void renderMemberList(hubStore.context.currentState)
+		store.context.currentState = await getGroupState(store.context.currentGroupId)
+		void renderMemberList(store.context.currentState)
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-ban')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-ban')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.group.settingsPage.banConfirm', { name: displayName })) return
 		const picked = await pickBanScope({ displayName })
 		if (!picked) return
 		const { banMemberWithScope } = await import('../src/api/groupBan.mjs')
 		try {
-			await banMemberWithScope(hubStore.context.currentGroupId, memberKey, picked)
+			await banMemberWithScope(store.context.currentGroupId, memberKey, picked)
 			showToastI18n('success', 'chat.group.settingsPage.banSuccess')
-			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
-			void renderMemberList(hubStore.context.currentState)
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
+			void renderMemberList(store.context.currentState)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 		}
 		closeOnce()
 	})
-	menu.querySelector('.hub-member-menu-personal-block')?.addEventListener('click', async () => {
+	menu.querySelector('.member-menu-personal-block')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.memberContext.personalBlockConfirm', { name: displayName })) return
 		const { postPersonalBlock } = await import('./personalFilter.mjs')
 		try {
 			await postPersonalBlock(entityHash, true)
 			showToastI18n('success', 'chat.hub.memberContext.personalBlockSuccess')
-			hubStore.context.currentState = await getGroupState(hubStore.context.currentGroupId)
-			void renderMemberList(hubStore.context.currentState)
+			store.context.currentState = await getGroupState(store.context.currentGroupId)
+			void renderMemberList(store.context.currentState)
 		}
 		catch (error) {
 			showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })

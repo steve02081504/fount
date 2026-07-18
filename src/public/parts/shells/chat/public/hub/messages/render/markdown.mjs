@@ -11,7 +11,7 @@ import { buildMentionLabelMapFromHubState, expandMentionsInMarkdown } from '../.
 import { isTrustedMarkdownAuthor } from '../../../src/trustedAuthors.mjs'
 import { mountMdRevealButton } from '../../../src/ui/mdRevealButton.mjs'
 import { resolveEntityHashForAuthorKey } from '../../core/domUtils.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 
 import { disposeEmbedGuard, wireBubbleOffscreenGuards } from './embed.mjs'
 
@@ -48,7 +48,7 @@ export function registerPendingMessageMarkdown(messageId, raw, authorPubKeyHash 
 function resolveAuthorOwnerEntityHash(authorKey) {
 	const authorEntity = resolveEntityHashForAuthorKey(authorKey)
 	const sender = String(authorKey || '').trim().toLowerCase()
-	for (const member of hubStore.context.currentState?.members || []) {
+	for (const member of store.context.currentState?.members || []) {
 		const memberEntity = String(member?.entityHash || '').trim().toLowerCase()
 		const memberKey = String(member?.memberKey || member?.pubKeyHash || '').trim().toLowerCase()
 		if ((authorEntity && memberEntity === authorEntity) || (sender && memberKey === sender)) {
@@ -67,11 +67,11 @@ function resolveAuthorOwnerEntityHash(authorKey) {
 async function isMessageMarkdownTrusted(authorPubKeyHash, isRemote) {
 	if (!isRemote) return true
 	return isTrustedMarkdownAuthor(authorPubKeyHash, {
-		selfEntityHash: hubStore.viewer?.viewerEntityHash,
-		nodeHash: hubStore.viewer?.nodeHash,
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
 		authorOwnerEntityHash: resolveAuthorOwnerEntityHash(authorPubKeyHash),
 		authorEntityHash: resolveEntityHashForAuthorKey(authorPubKeyHash),
-		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})
 }
 
@@ -90,7 +90,7 @@ export async function renderMessageMarkdownForPaint(messageId, markdown, {
 	const raw = String(markdown || '')
 	const author = String(authorPubKeyHash || '')
 	const authorAttr = escapeHtml(author)
-	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
+	const labelMap = buildMentionLabelMapFromHubState(store.context.currentState, store.viewer)
 	const expanded = expandMentionsInMarkdown(raw, labelMap)
 	const trusted = await isMessageMarkdownTrusted(author, isRemote)
 
@@ -202,7 +202,7 @@ async function hydrateOneMarkdown(container, messageId, row, bubble) {
 	const isRemote = row.hasAttribute('data-is-remote')
 	const authorPubKeyHash = pending?.authorPubKeyHash || bubble.dataset.mdAuthor || ''
 	const trusted = await isMessageMarkdownTrusted(authorPubKeyHash, isRemote)
-	const labelMap = buildMentionLabelMapFromHubState(hubStore.context.currentState, hubStore.viewer)
+	const labelMap = buildMentionLabelMapFromHubState(store.context.currentState, store.viewer)
 
 	try {
 		const expanded = expandMentionsInMarkdown(raw, labelMap)
@@ -267,7 +267,7 @@ export async function hydrateMessageMarkdown(container, onlyMessageId) {
 		const messageId = row.getAttribute('data-message-id')
 		if (!messageId) continue
 		if (row.hasAttribute('data-streaming')) continue
-		const bubble = row.querySelector('.hub-message-content')
+		const bubble = row.querySelector('.message-content')
 		if (!(bubble instanceof HTMLElement)) continue
 		const hasPending = pendingMarkdownByMessageId.has(messageId)
 			|| bubble.dataset.mdPending === '1'

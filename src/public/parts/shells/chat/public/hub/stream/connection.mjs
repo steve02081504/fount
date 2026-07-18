@@ -4,7 +4,7 @@
  */
 import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { buildChatGroupWebSocketUrl } from '../../src/wsUrl.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 import * as conn from './connectionState.mjs'
 import { handleChannelMessageWire } from './handlers/channelMessage.mjs'
@@ -87,7 +87,7 @@ export function connectGroupWebSocket(groupId, channelId) {
 			return
 	}
 	closeGroupWebSocket()
-	const ownerNodeHash = hubStore.viewer.nodeHash
+	const ownerNodeHash = store.viewer.nodeHash
 	if (!ownerNodeHash) {
 		showToastI18n('warning', 'chat.hub.profilePopup.noFedIdentity')
 		return
@@ -96,10 +96,10 @@ export function connectGroupWebSocket(groupId, channelId) {
 	conn.setConnectionHandles(socket, groupId, channelId)
 	attachGroupWebSocketErrorHandlers(socket)
 	socket.addEventListener('open', () => {
-		if (hubStore.viewer.nodeHash && socket.readyState === WebSocket.OPEN)
+		if (store.viewer.nodeHash && socket.readyState === WebSocket.OPEN)
 			socket.send(JSON.stringify({
 				type: 'group_ws_rpc_identity',
-				clientNodeId: hubStore.viewer.nodeHash,
+				clientNodeId: store.viewer.nodeHash,
 			}))
 	})
 	socket.addEventListener('message', event => {

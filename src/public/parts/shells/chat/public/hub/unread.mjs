@@ -3,7 +3,7 @@
  */
 import { groupFetch, groupPath } from '../src/api/groupClient.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /**
  * @param {Record<string, number>} channelUnread 频道未读映射
@@ -34,7 +34,7 @@ export function formatUnreadBadgeHtml(count) {
 	const n = Number(count) || 0
 	if (n <= 0) return ''
 	const label = n > 99 ? '99+' : String(n)
-	return `<span class="hub-unread-badge" aria-label="${label}">${label}</span>`
+	return `<span class="unread-badge" aria-label="${label}">${label}</span>`
 }
 
 /**
@@ -42,7 +42,7 @@ export function formatUnreadBadgeHtml(count) {
  * @returns {number} 群未读总数
  */
 export function getGroupUnreadCount(groupId) {
-	const group = hubStore.sidebar.groups.find(row => row.groupId === groupId)
+	const group = store.sidebar.groups.find(row => row.groupId === groupId)
 	return Number(group?.unreadCount) || 0
 }
 
@@ -52,7 +52,7 @@ export function getGroupUnreadCount(groupId) {
  * @returns {number} 频道未读数
  */
 export function getChannelUnreadCount(groupId, channelId) {
-	const group = hubStore.sidebar.groups.find(row => row.groupId === groupId)
+	const group = store.sidebar.groups.find(row => row.groupId === groupId)
 	return Number(group?.channelUnread?.[channelId]) || 0
 }
 
@@ -77,7 +77,7 @@ export function firstUnreadEventId(readMarker, messages) {
  * @returns {{ eventId: string, seq: number } | null} 末条可读消息的 marker；无消息时为 null
  */
 export function latestReadableMarker() {
-	const rows = hubStore.messages.channelMessagesSource.filter(row => row.type === 'message' && row.eventId)
+	const rows = store.messages.channelMessagesSource.filter(row => row.type === 'message' && row.eventId)
 	const last = rows.at(-1)
 	if (!last?.eventId || !Number.isFinite(Number(last.seq))) return null
 	return { eventId: last.eventId, seq: Number(last.seq) }
@@ -89,20 +89,20 @@ export function latestReadableMarker() {
  * @returns {Promise<void>}
  */
 export async function markCurrentChannelRead() {
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
 	const marker = latestReadableMarker()
 	if (!groupId || !channelId || !marker) return
 	await putChannelReadMarker(groupId, channelId, marker)
-	hubStore.messages.readMarker = marker
-	const group = hubStore.sidebar.groups.find(row => row.groupId === groupId)
+	store.messages.readMarker = marker
+	const group = store.sidebar.groups.find(row => row.groupId === groupId)
 	if (group?.channelUnread) {
 		delete group.channelUnread[channelId]
 		group.unreadCount = sumChannelUnread(group.channelUnread)
 	}
 	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
 	void import('./sidebar/index.mjs').then(({ renderHubChannelSidebar }) => {
-		if (hubStore.context.currentState) void renderHubChannelSidebar(hubStore.context.currentState)
+		if (store.context.currentState) void renderHubChannelSidebar(store.context.currentState)
 	})
 }
 
@@ -115,12 +115,12 @@ export function handleReadMarkerWire(wireMessage) {
 	void import('./memberReadMarkers.mjs').then(({ applyMemberReadMarkerWire }) => {
 		applyMemberReadMarkerWire(wireMessage)
 	})
-	const viewerName = hubStore.viewer.username
+	const viewerName = store.viewer.username
 	if (!wireMessage?.readMarker || wireMessage.username !== viewerName) return
 	const { groupId, channelId, readMarker } = wireMessage
-	const group = hubStore.sidebar.groups.find(row => row.groupId === groupId)
+	const group = store.sidebar.groups.find(row => row.groupId === groupId)
 	if (!group) return
-	const channelState = hubStore.context.currentState?.channels?.[channelId]
+	const channelState = store.context.currentState?.channels?.[channelId]
 	const messageSeq = Number(channelState?.messageSeq) || 0
 	const readSeq = Number(readMarker?.seq) || 0
 	const unread = Math.max(0, messageSeq - readSeq)
@@ -128,9 +128,9 @@ export function handleReadMarkerWire(wireMessage) {
 	if (unread > 0) group.channelUnread[channelId] = unread
 	else delete group.channelUnread[channelId]
 	group.unreadCount = sumChannelUnread(group.channelUnread)
-	if (groupId === hubStore.context.currentGroupId && channelId === hubStore.context.currentChannelId) {
-		hubStore.messages.readMarker = readMarker
-		hubStore.messages.firstUnreadEventId = null
+	if (groupId === store.context.currentGroupId && channelId === store.context.currentChannelId) {
+		store.messages.readMarker = readMarker
+		store.messages.firstUnreadEventId = null
 	}
 	void import('./serverBar.mjs').then(({ renderServerBar }) => renderServerBar())
 }
@@ -142,8 +142,8 @@ export function handleReadMarkerWire(wireMessage) {
  * @returns {void}
  */
 export function bumpChannelUnread(groupId, channelId) {
-	if (groupId === hubStore.context.currentGroupId && channelId === hubStore.context.currentChannelId) return
-	const group = hubStore.sidebar.groups.find(row => row.groupId === groupId)
+	if (groupId === store.context.currentGroupId && channelId === store.context.currentChannelId) return
+	const group = store.sidebar.groups.find(row => row.groupId === groupId)
 	if (!group) return
 	group.channelUnread ??= {}
 	group.channelUnread[channelId] = (Number(group.channelUnread[channelId]) || 0) + 1

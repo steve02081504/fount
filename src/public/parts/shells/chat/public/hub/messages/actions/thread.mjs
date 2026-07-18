@@ -17,7 +17,7 @@ export function handleThread(button, row, channelMessage, actions) {
 	const eventId = button.dataset.eventId
 	if (!eventId || !groupId || !channelId) return false
 	const title = getMessageText(channelMessage).slice(0, 40)
-		|| row?.querySelector('.hub-message-content')?.textContent?.trim().slice(0, 40)
+		|| row?.querySelector('.message-content')?.textContent?.trim().slice(0, 40)
 		|| ''
 	void openThread(groupId, channelId, eventId, title)
 	return true

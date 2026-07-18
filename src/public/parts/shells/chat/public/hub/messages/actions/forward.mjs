@@ -6,7 +6,7 @@ import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { geti18n } from '../../../../../../scripts/i18n/index.mjs'
 import { sendGroupMessage } from '../../../src/api/groupChannel.mjs'
 import { getGroupState } from '../../../src/api/groupCore.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 import { getMessageText } from '../render/text.mjs'
 
 /**
@@ -21,7 +21,7 @@ export async function handleForward(button, channelMessage, actions) {
 	const eventId = button.dataset.eventId?.trim()
 	if (!eventId) return true
 
-	const sidebarGroups = hubStore.sidebar.groups || []
+	const sidebarGroups = store.sidebar.groups || []
 	if (!sidebarGroups.length) {
 		showToastI18n('info', 'chat.hub.forwardDialog.selectGroup')
 		return true

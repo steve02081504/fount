@@ -1,13 +1,13 @@
 /**
  * 【文件】public/hub/serverBarDnd.mjs
  * 【职责】左侧服务器栏的群组拖拽：将群拖入/拖出文件夹、把两个群拖到一起创建文件夹（Discord 风格）。
- * 【原理】对 `renderServerBar` 渲染出的 `.hub-server-item[data-group-id]` 与 `.hub-folder-tile[data-folder-idx]`
- *   绑定 HTML5 拖放；落点判定后改写 `hubStore.sidebar.groupFoldersState.folders`，归一化（移除空文件夹、解散单群文件夹），
+ * 【原理】对 `renderServerBar` 渲染出的 `.server-item[data-group-id]` 与 `.folder-tile[data-folder-idx]`
+ *   绑定 HTML5 拖放；落点判定后改写 `store.sidebar.groupFoldersState.folders`，归一化（移除空文件夹、解散单群文件夹），
  *   再 `persistGroupFolders` + `renderServerBar` 重绘。
  * 【数据结构】folder：{ id, name, nameIsDefault, groupIds[], collapsed }。
  * 【关联】serverBar（persistGroupFolders / renderServerBar）、core/state。
  */
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /** @type {string|null} 当前正在拖拽的群 ID（dragover 时 dataTransfer 不可读，用模块变量兜底） */
 let draggedGroupId = null
@@ -16,7 +16,7 @@ let draggedGroupId = null
  * @returns {Array<{ id: string, name: string, nameIsDefault?: boolean, groupIds: string[], collapsed?: boolean }>} 文件夹数组（按需初始化）
  */
 function folders() {
-	return hubStore.sidebar.groupFoldersState.folders || (hubStore.sidebar.groupFoldersState.folders = [])
+	return store.sidebar.groupFoldersState.folders || (store.sidebar.groupFoldersState.folders = [])
 }
 
 /**
@@ -42,7 +42,7 @@ function detachFromFolders(groupId) {
  * @returns {void}
  */
 function normalizeFolders() {
-	hubStore.sidebar.groupFoldersState.folders = folders().filter(folder => (folder.groupIds || []).length >= 2)
+	store.sidebar.groupFoldersState.folders = folders().filter(folder => (folder.groupIds || []).length >= 2)
 }
 
 /**
@@ -114,33 +114,33 @@ async function commit() {
  * @returns {void}
  */
 function clearDropHints() {
-	document.querySelectorAll('.hub-drop-into, .hub-drop-before, .hub-drop-after')
-		.forEach(el => el.classList.remove('hub-drop-into', 'hub-drop-before', 'hub-drop-after'))
+	document.querySelectorAll('.drop-into, .drop-before, .drop-after')
+		.forEach(el => el.classList.remove('drop-into', 'drop-before', 'drop-after'))
 }
 
 /**
  * 绑定服务器栏拖放交互（每次 `renderServerBar` 后调用）。
- * @param {HTMLElement} list `#hub-server-list`
+ * @param {HTMLElement} list `#server-list`
  * @returns {void}
  */
 export function attachServerBarDnd(list) {
 	if (!(list instanceof HTMLElement)) return
 
-	const items = list.querySelectorAll('.hub-server-item[data-group-id]')
+	const items = list.querySelectorAll('.server-item[data-group-id]')
 	for (const item of items) {
 		if (!(item instanceof HTMLElement)) continue
 		item.setAttribute('draggable', 'true')
 
 		item.addEventListener('dragstart', event => {
 			draggedGroupId = String(item.dataset.groupId || '').trim()
-			item.classList.add('hub-dragging')
+			item.classList.add('dragging')
 			if (event.dataTransfer) {
 				event.dataTransfer.effectAllowed = 'move'
 				event.dataTransfer.setData('text/plain', draggedGroupId)
 			}
 		})
 		item.addEventListener('dragend', () => {
-			item.classList.remove('hub-dragging')
+			item.classList.remove('dragging')
 			draggedGroupId = null
 			clearDropHints()
 		})
@@ -151,9 +151,9 @@ export function attachServerBarDnd(list) {
 			event.stopPropagation()
 			if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
 			clearDropHints()
-			item.classList.add('hub-drop-into')
+			item.classList.add('drop-into')
 		})
-		item.addEventListener('dragleave', () => item.classList.remove('hub-drop-into'))
+		item.addEventListener('dragleave', () => item.classList.remove('drop-into'))
 
 		item.addEventListener('drop', async event => {
 			const targetGroupId = String(item.dataset.groupId || '').trim()
@@ -169,10 +169,10 @@ export function attachServerBarDnd(list) {
 		})
 	}
 
-	const tiles = list.querySelectorAll('.hub-folder-tile[data-folder-idx]')
+	const tiles = list.querySelectorAll('.folder-tile[data-folder-idx]')
 	for (const tile of tiles) {
 		if (!(tile instanceof HTMLElement)) continue
-		const wrap = tile.closest('.hub-folder-wrap[data-folder-idx]')
+		const wrap = tile.closest('.folder-wrap[data-folder-idx]')
 		const folderIndex = Number(tile.dataset.folderIdx)
 		const folder = folders()[folderIndex]
 		if (!folder) continue
@@ -183,9 +183,9 @@ export function attachServerBarDnd(list) {
 			event.stopPropagation()
 			if (event.dataTransfer) event.dataTransfer.dropEffect = 'move'
 			clearDropHints()
-			wrap?.classList.add('hub-drop-into')
+			wrap?.classList.add('drop-into')
 		})
-		tile.addEventListener('dragleave', () => wrap?.classList.remove('hub-drop-into'))
+		tile.addEventListener('dragleave', () => wrap?.classList.remove('drop-into'))
 		tile.addEventListener('drop', async event => {
 			const sourceGroupId = draggedGroupId || event.dataTransfer?.getData('text/plain') || ''
 			event.preventDefault()

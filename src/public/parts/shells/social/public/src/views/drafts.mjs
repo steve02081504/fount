@@ -31,7 +31,7 @@ export async function loadDrafts() {
 					${formatTimeHtml(row.updatedAt, 'draft-row-meta')}
 				</button>
 				<button type="button" class="draft-row-action" data-delete-draft="${escapeHtml(row.draftId)}" aria-label="${escapeHtml(geti18n('social.drafts.delete'))}">
-					<span class="s-ic s-ic-delete" aria-hidden="true"></span>
+					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</article>
 		`

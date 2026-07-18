@@ -9,18 +9,18 @@ import { renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/fea
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { getMessageText } from './render/text.mjs'
 
-const ROW_SELECTOR = '.hub-message[data-message-id], .hub-message-row[data-message-id]'
+const ROW_SELECTOR = '.message[data-message-id], .message-row[data-message-id]'
 const NO_DRAG_SELECTOR = [
-	'.hub-message-content',
+	'.message-content',
 	'textarea',
 	'button',
 	'a',
 	'input',
 	'select',
-	'.hub-message-hover-bar',
-	'.hub-message-actions',
+	'.message-hover-bar',
+	'.message-actions',
 	'.chat-footer',
-	'.hub-message-reaction',
+	'.message-reaction',
 ].join(', ')
 
 /**
@@ -51,7 +51,7 @@ function clearDragPayload(row) {
 async function prepareDragPayload(row) {
 	const actions = getChannelMessageActionsContext(row)
 	const message = actions ? findContextMessage(row, actions) : null
-	const contentEl = row.querySelector('.hub-message-content')
+	const contentEl = row.querySelector('.message-content')
 	const markdown = getMessageText(message) || contentEl?.textContent?.trim() || ''
 	if (!markdown) return
 
@@ -107,13 +107,13 @@ function armRowDragCleanup(row) {
 
 /**
  * 为消息列表绑定拖出导出（仅绑定一次）。
- * @param {HTMLElement} container `#hub-messages` 或线程消息容器
+ * @param {HTMLElement} container `#messages` 或线程消息容器
  * @returns {void}
  */
 export function bindMessageDragExport(container) {
 	if (!(container instanceof HTMLElement)) return
-	if (container.dataset.hubMessageDragBound === '1') return
-	container.dataset.hubMessageDragBound = '1'
+	if (container.dataset.messageDragBound === '1') return
+	container.dataset.messageDragBound = '1'
 
 	container.addEventListener('mousedown', event => {
 		if (event.button !== 0) return
@@ -136,7 +136,7 @@ export function bindMessageDragExport(container) {
 		const actions = getChannelMessageActionsContext(row)
 		const message = actions ? findContextMessage(row, actions) : null
 		const eventId = String(message?.eventId || row.getAttribute('data-message-id') || 'export')
-		const contentEl = row.querySelector('.hub-message-content')
+		const contentEl = row.querySelector('.message-content')
 		const markdown = payload?.markdown || getMessageText(message) || contentEl?.textContent?.trim() || ''
 		if (!markdown && !payload?.url) {
 			event.preventDefault()

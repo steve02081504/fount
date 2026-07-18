@@ -8,10 +8,10 @@
 import { createReadyGate } from '/scripts/test/ready_gate.mjs'
 import { applyTheme } from '../../../../scripts/theme/index.mjs'
 
-import { HUB_SHELL_GATE } from './gate.mjs'
+import { HUB_GATE } from './gate.mjs'
 import { wireBootstrap } from './wiring/bootstrap.mjs'
 
-const hubShellGate = createReadyGate(HUB_SHELL_GATE)
+const hubGate = createReadyGate(HUB_GATE)
 
 applyTheme()
 wireBootstrap()
@@ -21,7 +21,7 @@ wireBootstrap()
  * @returns {Promise<void>}
  */
 export async function bootHub() {
-	hubShellGate.markPending()
+	hubGate.markPending()
 	try {
 		const { initCore } = await import('./initCore.mjs')
 		await initCore()
@@ -29,10 +29,10 @@ export async function bootHub() {
 		wireEvents()
 		const { init } = await import('./init.mjs')
 		await init()
-		hubShellGate.markReady()
+		hubGate.markReady()
 	}
 	catch (error) {
-		hubShellGate.markFailed(error)
+		hubGate.markFailed(error)
 		const { handleUIError } = await import('../src/ui/errors.mjs')
 		handleUIError(error, 'chat.hub.loadGroupFailed')
 		throw error

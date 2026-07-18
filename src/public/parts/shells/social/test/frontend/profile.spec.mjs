@@ -1,9 +1,9 @@
-import { waitForSocialAppReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
 	test,
 	expect,
-	openSocialHome,
+	openHome,
 	postIdFromResponse,
 	fetchViewerEntityHash,
 	waitForPostMaterialized,
@@ -12,7 +12,7 @@ import {
 
 test.describe('Social profile', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('profile view shows own posts', async ({ page, publishPost }) => {
@@ -20,8 +20,8 @@ test.describe('Social profile', () => {
 		await page.locator('.side-nav .nav-btn[data-view="profile"]').click()
 		await expect(page.locator('#profileView')).toBeVisible()
 		await expect(page.locator('#profileView .profile-header')).toBeVisible({ timeout: 20_000 })
-		await expect(page.locator('#profileView #profileEntityCardHost .hub-profile-popup')).toBeVisible()
-		await expect(page.locator('#profileView .hub-profile-popup-banner.entity-profile-banner')).toBeVisible()
+		await expect(page.locator('#profileView #profileEntityCardHost .profile-popup')).toBeVisible()
+		await expect(page.locator('#profileView .profile-popup-banner.entity-profile-banner')).toBeVisible()
 		await expect(page.locator(`#profilePostsPanel [data-post-id="${postId}"]`)).toBeVisible({ timeout: 20_000 })
 		await expect(page.locator('[data-profile-stat="following"]')).toBeVisible()
 		await expect(page.locator('[data-profile-stat="followers"]')).toBeVisible()
@@ -75,7 +75,7 @@ test.describe('Social profile', () => {
 				&& res.status() === 200,
 			),
 		])
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await expect(page.locator('#profileView')).toBeVisible({ timeout: 30_000 })
 		const highlighted = page.locator(`#profileView [data-post-id="${postId}"].highlight-post`)
 		await expect(highlighted).toBeVisible({ timeout: 30_000 })
@@ -85,7 +85,7 @@ test.describe('Social profile', () => {
 	test('follow and unfollow seeded target smoke', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		const followButton = page.locator(`[data-follow="${dummy}"]`)
 		await expect(followButton).toBeVisible({ timeout: 20_000 })
 		await Promise.all([
@@ -102,7 +102,7 @@ test.describe('Social profile', () => {
 		await page.locator('[data-profile-stat="following"]').click()
 		await expect(page.locator('#profileRelationshipList .following-link')).toContainText(dummy.slice(0, 8), { timeout: 20_000 })
 		await page.goto(`${baseUrl}/parts/shells:social/`)
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await page.evaluate(eh => { window.location.hash = `profile;${eh}` }, dummy)
 		const unfollowButton = page.locator(`[data-follow="${dummy}"]`)
 		await expect(unfollowButton).toBeVisible({ timeout: 30_000 })
@@ -121,7 +121,7 @@ test.describe('Social profile', () => {
 	test('dm button navigates to chat contact link smoke', async ({ page, baseUrl }) => {
 		const dummy = DUMMY_ENTITY_HASH
 		await page.goto(`${baseUrl}/parts/shells:social/#profile;${dummy}`)
-		await waitForSocialAppReady(page)
+		await waitForSocialReady(page)
 		await page.locator(`[data-dm="${dummy}"]`).click()
 		await expect(page).toHaveURL(
 			new RegExp(`/parts/shells:chat/hub/\\?contact=${dummy}`),

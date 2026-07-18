@@ -1,8 +1,8 @@
-import { test, expect, openSocialHome, findPostCard, openPostMoreMenu, findForeignAuthorPostCard, FOREIGN_FE_AUTHOR_HASH } from './fixtures.mjs'
+import { test, expect, openHome, findPostCard, openPostMoreMenu, findForeignAuthorPostCard, FOREIGN_FE_AUTHOR_HASH } from './fixtures.mjs'
 
 test.describe('Social post actions', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('dm from post card navigates to chat', async ({ page, baseUrl, apiKey }) => {

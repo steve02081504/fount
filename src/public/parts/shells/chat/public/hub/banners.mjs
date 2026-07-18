@@ -1,8 +1,8 @@
 /**
  * 【文件】public/hub/banners.mjs
  * 【职责】Hub 顶栏与主区横幅：置顶/书签侧栏显隐、明文模式提示、DAG 分叉横幅与频道置顶条刷新。
- * 【原理】操作 `#hub-pins-bookmarks-wrap`、`#hub-plaintext-main-banner`、`#hub-dag-fork-banner` 等固定占位元素。`refreshChannelPinsBar` 根据置顶事件更新顶栏摘要，与 `pinPreview` 协作展示引用预览。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【原理】操作 `#pins-bookmarks-wrap`、`#plaintext-main-banner`、`#dag-fork-banner` 等固定占位元素。`refreshChannelPinsBar` 根据置顶事件更新顶栏摘要，与 `pinPreview` 协作展示引用预览。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../../../../scripts/template、fount-p2p/core/hexIds、core/domUtils、core/state
  */
 import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
@@ -11,7 +11,7 @@ import { renderTemplateAsHtmlString } from '../../../../scripts/features/templat
 
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { refreshBoundBanners } from './core/bindings.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /**
  * 显示或隐藏顶栏的置顶/书签弹出按钮（搜索栏左侧）。
@@ -19,14 +19,14 @@ import { hubStore } from './core/state.mjs'
  * @returns {void} 无
  */
 export function setPinsBookmarksWrapVisible(on) {
-	for (const id of ['hub-pins-pop', 'hub-bookmarks-pop']) {
+	for (const id of ['pins-pop', 'bookmarks-pop']) {
 		const pop = document.getElementById(id)
 		if (!pop) continue
 		if (on) pop.removeAttribute('hidden')
 		else {
 			pop.setAttribute('hidden', '')
-			pop.querySelector('.hub-header-panel')?.setAttribute('hidden', '')
-			const button = pop.querySelector('.hub-header-pop-button')
+			pop.querySelector('.header-panel')?.setAttribute('hidden', '')
+			const button = pop.querySelector('.header-pop-button')
 			button?.classList.remove('is-open')
 			button?.setAttribute('aria-expanded', 'false')
 		}
@@ -45,24 +45,24 @@ export function refreshQuarantineBanner() {
 
 /** @returns {Promise<void>} */
 export async function refreshDagForkBanner() {
-	const banner = document.getElementById('hub-fork-banner')
-	const textElement = document.getElementById('hub-fork-banner-text')
-	const mergeButton = document.getElementById('hub-fork-merge-button')
-	const tipSelect = document.getElementById('hub-fork-tip-select')
+	const banner = document.getElementById('fork-banner')
+	const textElement = document.getElementById('fork-banner-text')
+	const mergeButton = document.getElementById('fork-merge-button')
+	const tipSelect = document.getElementById('fork-tip-select')
 	if (!banner || !textElement) return
-	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentState?.isMember) {
+	if (store.context.currentMode !== 'groups' || !store.context.currentGroupId || !store.context.currentState?.isMember) {
 		banner.setAttribute('hidden', '')
-		hubStore.federation.dagTips = []
+		store.federation.dagTips = []
 		return
 	}
 	const response = await fetch(
-		`/api/parts/shells:chat/groups/${encodeURIComponent(hubStore.context.currentGroupId)}/dag/tips`,
+		`/api/parts/shells:chat/groups/${encodeURIComponent(store.context.currentGroupId)}/dag/tips`,
 		{ credentials: 'include' },
 	)
 	const data = await response.json()
 	const tips = Array.isArray(data.tips) ? data.tips : []
-	hubStore.federation.dagTips = tips
-	const governanceFork = !!data.governanceFork || !!hubStore.context.currentState?.governanceFork
+	store.federation.dagTips = tips
+	const governanceFork = !!data.governanceFork || !!store.context.currentState?.governanceFork
 	if (tips.length < 2 && !governanceFork) {
 		banner.setAttribute('hidden', '')
 		return
@@ -75,7 +75,7 @@ export async function refreshDagForkBanner() {
 	if (mergeButton) mergeButton.disabled = tips.length < 2
 	refreshLocalViewBanner()
 	if (tipSelect) {
-		const preferred = data.consensusBranchTip || hubStore.context.currentState?.consensusBranchTip || ''
+		const preferred = data.consensusBranchTip || store.context.currentState?.consensusBranchTip || ''
 		const tipConsensusScores = data.tipConsensusScores || {}
 		if (!tips.length)
 			tipSelect.innerHTML = ''
@@ -105,7 +105,7 @@ export async function refreshDagForkBanner() {
  * @returns {void}
  */
 export function setSyncBanner(on, options) {
-	hubStore.federation.syncBanner = {
+	store.federation.syncBanner = {
 		visible: on,
 		i18nKey: options?.i18nKey || 'chat.hub.banners.syncing',
 		params: options?.params || {},
@@ -118,21 +118,21 @@ export function setSyncBanner(on, options) {
  * @returns {string | undefined} 选中的 DAG tip id
  */
 export function selectedForkTipId() {
-	const value = document.getElementById('hub-fork-tip-select')?.value?.trim().toLowerCase()
+	const value = document.getElementById('fork-tip-select')?.value?.trim().toLowerCase()
 	if (isHex64(value)) return value
-	return hubStore.federation.dagTips[0]
+	return store.federation.dagTips[0]
 }
 
 /** @returns {Promise<void>} */
 export async function refreshChannelPinsBar() {
-	const bar = document.getElementById('hub-channel-pins-bar')
+	const bar = document.getElementById('channel-pins-bar')
 	if (!bar) return
-	if (hubStore.context.currentMode !== 'groups' || !hubStore.context.currentGroupId || !hubStore.context.currentChannelId) {
+	if (store.context.currentMode !== 'groups' || !store.context.currentGroupId || !store.context.currentChannelId) {
 		bar.setAttribute('hidden', '')
 		bar.innerHTML = ''
 		return
 	}
-	const ids = hubStore.context.currentState?.pinsByChannel?.[hubStore.context.currentChannelId]
+	const ids = store.context.currentState?.pinsByChannel?.[store.context.currentChannelId]
 	if (!Array.isArray(ids) || !ids.length) {
 		bar.setAttribute('hidden', '')
 		bar.innerHTML = ''
@@ -144,9 +144,9 @@ export async function refreshChannelPinsBar() {
 		return { eventId: escapeHtml(eventId), short: escapeHtml(short) }
 	})
 	bar.innerHTML = await renderTemplateAsHtmlString('hub/banners/pins_chips', { pins })
-	bar.querySelectorAll('.hub-pinned-message-chip').forEach(pinChip => {
+	bar.querySelectorAll('.pinned-message-chip').forEach(pinChip => {
 		pinChip.addEventListener('click', () => {
-			document.querySelector(`#hub-messages [data-message-id="${pinChip.getAttribute('data-pinned-message-event')}"]`)
+			document.querySelector(`#messages [data-message-id="${pinChip.getAttribute('data-pinned-message-event')}"]`)
 				?.scrollIntoView({ block: 'center', behavior: 'smooth' })
 		})
 	})

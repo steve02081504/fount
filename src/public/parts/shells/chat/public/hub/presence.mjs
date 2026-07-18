@@ -2,7 +2,7 @@
  * 【文件】public/hub/presence.mjs
  * 【职责】成员/作者 presence 与资料浮层：头像 hydration、悬停资料卡、状态点与资料 API 缓存。
  * 【原理】`applyAvatarsTo`、`bindHoverCardAnchor`、`showHoverCardFor` 驱动消息行与成员列表头像/卡片。`hydrateAuthorLabels` 在消息重绘后补齐作者展示名；不生成气泡主体结构。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】../src/entityProfileApi、../src/lib/entityHash、core/avatarCover、core/domUtils、core/state、profilePopup
  */
 import { memoizePromise } from '../../../../scripts/lib/memo.mjs'
@@ -24,7 +24,7 @@ import {
 	resolveEntityHashForAuthorKey,
 	warmCharEntityHashCache,
 } from './core/domUtils.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { dismissProfilePopup, resolveEntityFromAnchor, showProfilePopup } from './profilePopup.mjs'
 
 /** @typedef {{ avatar: string|null, name: string, description: string, description_markdown: string, tags: string[], links: object[], status: string, customStatus: string }} CachedProfile */
@@ -66,12 +66,12 @@ export function applyStatusDot(el, status) {
 export async function applyBioElement(bioElement, bio, entityHash = '', options = {}) {
 	if (!bioElement) return
 	const { paintEntityProfileBio } = await import('../shared/entityProfileCard.mjs')
-	const { hubStore } = await import('./core/state.mjs')
+	const { store } = await import('./core/state.mjs')
 	await paintEntityProfileBio(bioElement, bio, entityHash, {
-		selfEntityHash: hubStore.viewer?.viewerEntityHash,
-		nodeHash: hubStore.viewer?.nodeHash,
+		selfEntityHash: store.viewer?.viewerEntityHash,
+		nodeHash: store.viewer?.nodeHash,
 		authorOwnerEntityHash: options.ownerEntityHash,
-		viewerOwnerEntityHash: hubStore.viewer?.ownerEntityHash,
+		viewerOwnerEntityHash: store.viewer?.ownerEntityHash,
 	})
 }
 
@@ -135,14 +135,14 @@ export async function fetchAuthorProfile(authorKey, options = {}) {
  * @returns {void}
  */
 export function applySelfStatusToMemberList(status) {
-	const viewerEh = hubStore.viewer.viewerEntityHash
+	const viewerEh = store.viewer.viewerEntityHash
 	if (!viewerEh) return
-	const root = document.getElementById('hub-member-list')
+	const root = document.getElementById('member-list')
 	if (!root) return
 	const key = viewerEh.toLowerCase()
-	root.querySelectorAll('.hub-member-avatar[data-avatar-for]').forEach((av) => {
+	root.querySelectorAll('.member-avatar[data-avatar-for]').forEach((av) => {
 		if (av.dataset.avatarFor?.toLowerCase() !== key) return
-		const dot = av.closest('.hub-member-avatar-wrap')?.querySelector('.hub-status-dot')
+		const dot = av.closest('.member-avatar-wrap')?.querySelector('.status-dot')
 		applyStatusDot(dot, status)
 	})
 }
@@ -192,7 +192,7 @@ export function applyAvatarsTo(rootElement) {
 		bindHoverCardAnchor(av, () => av.dataset.avatarFor)
 		if (av.dataset.avatarLoaded) return
 		av.dataset.avatarLoaded = '1'
-		void fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined }).then((profile) => {
+		void fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined }).then((profile) => {
 			if (!profile) return
 			const entityHash = resolveEntityHashForAuthorKey(authorKey) || profileKey
 			void applyProfileAvatarToHost(av, {
@@ -205,11 +205,11 @@ export function applyAvatarsTo(rootElement) {
 				}),
 				avatar: customProfileAvatar(profile),
 			})
-			const dot = av.closest('.hub-member-avatar-wrap, .hub-avatar-wrap')?.querySelector('.hub-status-dot')
+			const dot = av.closest('.member-avatar-wrap, .avatar-wrap')?.querySelector('.status-dot')
 			if (dot) applyStatusDot(dot, profile.status)
 		})
 	})
-	rootElement.querySelectorAll('.hub-message-author, .hub-system-author').forEach((au) => {
+	rootElement.querySelectorAll('.message-author, .system-author').forEach((au) => {
 		bindHoverCardAnchor(au, () => au.dataset.authorKey || au.textContent.trim())
 	})
 	void hydrateAuthorLabels(rootElement)
@@ -222,11 +222,11 @@ export function applyAvatarsTo(rootElement) {
  */
 export async function hydrateAuthorLabels(rootElement) {
 	const tasks = []
-	rootElement.querySelectorAll('.hub-message-author[data-author-key]').forEach((au) => {
+	rootElement.querySelectorAll('.message-author[data-author-key]').forEach((au) => {
 		const key = au.dataset.authorKey?.trim()
 		if (!key || key === '?') return
 		tasks.push((async () => {
-			const profile = await fetchAuthorProfile(key, { groupId: hubStore.context.currentGroupId || undefined })
+			const profile = await fetchAuthorProfile(key, { groupId: store.context.currentGroupId || undefined })
 			if (au.dataset.authorKey !== key) return
 			const entityHash = resolveEntityHashForAuthorKey(key)
 			au.textContent = resolveDisplayName({
@@ -244,7 +244,7 @@ export async function hydrateAuthorLabels(rootElement) {
 
 // ============ Profile hover card ============
 
-const hoverCard = document.getElementById('hub-profile-hover-card')
+const hoverCard = document.getElementById('profile-hover-card')
 let hoverCardHideTimer = null
 
 /**
@@ -287,7 +287,7 @@ export async function showHoverCardFor(authorKey, anchorElement) {
 	if (hoverCardBio) hoverCardBio.dataset.i18n = 'chat.hub.loading'
 	hoverCard.classList.add('show')
 
-	const profile = await fetchAuthorProfile(profileKey, { groupId: hubStore.context.currentGroupId || undefined })
+	const profile = await fetchAuthorProfile(profileKey, { groupId: store.context.currentGroupId || undefined })
 	if (hoverCardAvatar?.dataset.uname !== authorKey) return
 	if (profile) {
 		const resolvedName = resolveDisplayName({
@@ -339,7 +339,7 @@ function getAnchorUsername(target) {
 	if (!target) return null
 	let uname = target.dataset?.avatarFor
 	if (!uname)
-		if (target.classList?.contains('hub-message-author') || target.classList?.contains('hub-system-author'))
+		if (target.classList?.contains('message-author') || target.classList?.contains('system-author'))
 			uname = target.dataset.authorKey || target.textContent?.trim()
 	return uname && uname !== '?' ? uname : null
 }
@@ -349,7 +349,7 @@ if (hoverCard) {
 	hoverCard.addEventListener('mouseleave', hideHoverCard)
 }
 
-const PROFILE_CLICK_SKIP = '.hub-message-actions, .hub-trust-author-button, .hub-block-author-button, .hub-save-emoji-button, .hub-save-sticker-button, .hub-vote-option, .hub-reactions, #hub-profile-popup-layer, .hub-profile-popup, .hub-profile-popup-dm-button, .hub-profile-popup-close, button, a, input, textarea, select'
+const PROFILE_CLICK_SKIP = '.message-actions, .trust-author-button, .block-author-button, .save-emoji-button, .save-sticker-button, .vote-option, .reactions, #profile-popup-layer, .profile-popup, .profile-popup-dm-button, .profile-popup-close, button, a, input, textarea, select'
 
 /**
  * 注册头像悬停卡与点击资料弹层（由 wireEvents 显式调用）。
@@ -357,13 +357,13 @@ const PROFILE_CLICK_SKIP = '.hub-message-actions, .hub-trust-author-button, .hub
  */
 export function wirePresenceInteractions() {
 	document.addEventListener('mouseover', (event) => {
-		const target = event.target.closest('[data-avatar-for], .hub-message-author, .hub-system-author')
+		const target = event.target.closest('[data-avatar-for], .message-author, .system-author')
 		if (!target || target.contains(event.relatedTarget)) return
 		const uname = getAnchorUsername(target)
 		if (uname) showHoverCardFor(uname, target)
 	})
 	document.addEventListener('mouseout', (event) => {
-		const target = event.target.closest('[data-avatar-for], .hub-message-author, .hub-system-author')
+		const target = event.target.closest('[data-avatar-for], .message-author, .system-author')
 		if (!target || target.contains(event.relatedTarget)) return
 		if (hoverCard?.contains(event.relatedTarget)) return
 		hideHoverCard()
@@ -372,16 +372,16 @@ export function wirePresenceInteractions() {
 	document.addEventListener('click', event => {
 		if (event.target.closest(PROFILE_CLICK_SKIP)) return
 		const target = event.target.closest(
-			'[data-avatar-for], .hub-message-author, .hub-member-avatar, .hub-member-name, .hub-system-author',
+			'[data-avatar-for], .message-author, .member-avatar, .member-name, .system-author',
 		)
 		if (!target) return
 		void (async () => {
 			const entity = await resolveEntityFromAnchor(target)
 			if (!entity) return
-			const messageRow = target.closest('.hub-message[data-message-id]')
+			const messageRow = target.closest('.message[data-message-id]')
 			if (messageRow?.dataset.attributionMismatch === '1') {
 				const eventId = messageRow.dataset.messageId
-				const channelMessages = hubStore.messages?.channelMessages || []
+				const channelMessages = store.messages?.channelMessages || []
 				const msg = channelMessages.find(row => String(row.eventId) === String(eventId))
 				if (msg)
 					entity.attribution = deriveMessageAttribution(msg.content, {

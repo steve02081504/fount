@@ -1,12 +1,12 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-import { formatSocialPostHref } from '../../shared/runUri.mjs'
+import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { renderAvatarHtml } from '../lib/display.mjs'
-import { runSocialWrite } from '../lib/socialWrite.mjs'
+import { runWrite } from '../lib/socialWrite.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 /** @type {'all' | 'unfiled' | string} */
 let savedFilter = 'all'
@@ -20,7 +20,7 @@ let savedCache = null
  * @returns {void}
  */
 export function closeSaveModal() {
-	socialState.pendingSave = null
+	state.pendingSave = null
 	document.getElementById('saveModal')?.classList.add('hidden')
 }
 
@@ -32,15 +32,15 @@ export function closeSaveModal() {
  * @returns {Promise<void>}
  */
 export async function openSaveModal(entityHash, postId, button) {
-	socialState.pendingSave = { entityHash, postId, button }
+	state.pendingSave = { entityHash, postId, button }
 	const modal = document.getElementById('saveModal')
 	const select = document.getElementById('saveFolderSelect')
 	if (!modal || !select) return
 	select.innerHTML = `<option value="">${escapeHtml(geti18n('social.saved.unfiled'))}</option>`
 	modal.classList.remove('hidden')
 	const savedData = await socialApi('/saved-posts').catch(() => ({ folders: {} }))
-	socialState.savedFoldersCache = savedData.folders || {}
-	for (const [folderId, folder] of Object.entries(socialState.savedFoldersCache)) {
+	state.savedFoldersCache = savedData.folders || {}
+	for (const [folderId, folder] of Object.entries(state.savedFoldersCache)) {
 		const option = document.createElement('option')
 		option.value = folderId
 		option.textContent = folder.name || folderId
@@ -53,17 +53,17 @@ export async function openSaveModal(entityHash, postId, button) {
  * @returns {Promise<void>}
  */
 export async function confirmSaveModal() {
-	if (!socialState.pendingSave) return
+	if (!state.pendingSave) return
 	const folderId = document.getElementById('saveFolderSelect')?.value || undefined
-	const { button } = socialState.pendingSave
+	const { button } = state.pendingSave
 	const prevText = button.textContent
 	button.textContent = geti18n('social.actions.saved')
 	try {
-		await runSocialWrite('save', () => socialApi('/saved-posts/add', {
+		await runWrite('save', () => socialApi('/saved-posts/add', {
 			method: 'POST',
 			body: JSON.stringify({
-				entityHash: socialState.pendingSave.entityHash,
-				postId: socialState.pendingSave.postId,
+				entityHash: state.pendingSave.entityHash,
+				postId: state.pendingSave.postId,
 				folderId: folderId || undefined,
 			}),
 		}))
@@ -104,7 +104,7 @@ function buildSavedRow(ref, folderId, folderName) {
 	const row = document.createElement('article')
 	row.className = 'saved-row'
 	row.innerHTML = `
-		<a href="${escapeHtml(formatSocialPostHref(ref.entityHash, ref.postId))}" class="saved-link">
+		<a href="${escapeHtml(formatSocialProfileHref(ref.entityHash, ref.postId))}" class="saved-link">
 			${renderAvatarHtml(ref.entityHash, { name: author }, 'saved-row-avatar')}
 			<span class="saved-link-body">
 				<strong class="saved-author">${escapeHtml(author)}</strong>
@@ -113,7 +113,7 @@ function buildSavedRow(ref, folderId, folderName) {
 			</span>
 		</a>
 		<button type="button" class="saved-row-action" data-remove-saved="${escapeHtml(actionKey)}"${folderId ? ` data-saved-folder="${escapeHtml(folderId)}"` : ''} aria-label="${escapeHtml(geti18n('social.saved.remove'))}">
-			<span class="s-ic s-ic-bookmark-off" aria-hidden="true"></span>
+			<span class="icon icon-bookmark-off" aria-hidden="true"></span>
 		</button>
 	`
 	return row
@@ -132,10 +132,10 @@ function buildSavedSection(title, count, opts = {}) {
 		? `
 			<div class="saved-folder-actions">
 				<button type="button" class="saved-icon-btn" data-rename-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.renameFolder'))}" title="${escapeHtml(geti18n('social.saved.renameFolder'))}">
-					<span class="s-ic s-ic-edit" aria-hidden="true"></span>
+					<span class="icon icon-edit" aria-hidden="true"></span>
 				</button>
 				<button type="button" class="saved-icon-btn saved-icon-btn-danger" data-delete-folder="${escapeHtml(opts.folderId)}" aria-label="${escapeHtml(geti18n('social.saved.deleteFolder'))}" title="${escapeHtml(geti18n('social.saved.deleteFolder'))}">
-					<span class="s-ic s-ic-delete" aria-hidden="true"></span>
+					<span class="icon icon-delete" aria-hidden="true"></span>
 				</button>
 			</div>
 		`
@@ -143,7 +143,7 @@ function buildSavedSection(title, count, opts = {}) {
 	section.innerHTML = `
 		<div class="saved-section-header">
 			<div class="saved-section-title-wrap">
-				<span class="s-ic ${opts.folderId ? 's-ic-folder' : 's-ic-bookmark'} saved-section-icon" aria-hidden="true"></span>
+				<span class="icon ${opts.folderId ? 'icon-folder' : 'icon-bookmark'} saved-section-icon" aria-hidden="true"></span>
 				<h3 class="saved-section-title">${escapeHtml(title)}</h3>
 				<span class="saved-count">${count}</span>
 			</div>
@@ -235,7 +235,7 @@ export function renderSavedPanel() {
 	if (!total && !hasFolders) {
 		panel.innerHTML = `
 			<div class="saved-empty">
-				<span class="s-ic s-ic-bookmark saved-empty-icon" aria-hidden="true"></span>
+				<span class="icon icon-bookmark saved-empty-icon" aria-hidden="true"></span>
 				<p class="saved-empty-title">${escapeHtml(geti18n('social.empty.saved'))}</p>
 				<p class="saved-empty-hint">${escapeHtml(geti18n('social.saved.emptyHint'))}</p>
 			</div>
@@ -250,7 +250,7 @@ export function renderSavedPanel() {
 		toolbar.className = 'saved-toolbar'
 		toolbar.innerHTML = `
 			<div class="feed-search-wrap saved-search-wrap">
-				<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
+				<span class="icon icon-search search-icon" aria-hidden="true"></span>
 				<input type="search" id="savedSearchInput" class="feed-search-input" value="${escapeHtml(savedQuery)}" placeholder="${escapeHtml(geti18n('social.saved.searchPlaceholder'))}" autocomplete="off" />
 			</div>
 		`
@@ -315,7 +315,7 @@ export function renderSavedPanel() {
 		if (!hits.length) {
 			listHost.innerHTML = `
 				<div class="saved-empty saved-empty-compact">
-					<span class="s-ic s-ic-search saved-empty-icon" aria-hidden="true"></span>
+					<span class="icon icon-search saved-empty-icon" aria-hidden="true"></span>
 					<p>${escapeHtml(geti18n('social.saved.searchEmpty'))}</p>
 				</div>
 			`
@@ -373,6 +373,6 @@ export async function loadSaved() {
 	}
 	const data = await socialApi('/saved-posts')
 	savedCache = data
-	socialState.savedFoldersCache = data.folders || {}
+	state.savedFoldersCache = data.folders || {}
 	renderSavedPanel()
 }

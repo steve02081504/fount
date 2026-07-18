@@ -7,7 +7,7 @@ import { entityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { buildPostCard } from '../postCard.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 /** @type {(() => void) | null} */
 let unbindDwell = null
@@ -18,7 +18,7 @@ let unbindDwell = null
  */
 export function updateFeedSearchChrome() {
 	const clearButton = document.getElementById('feedSearchClearButton')
-	const hasSearch = !!socialState.activeFeedSearchQuery
+	const hasSearch = !!state.activeFeedSearchQuery
 	clearButton?.classList.toggle('hidden', !hasSearch)
 }
 
@@ -40,7 +40,7 @@ function canReplayFeed() {
  */
 export function bindFeedInfiniteScroll() {
 	const list = document.getElementById('feedList')
-	if (!list || socialState.activeFeedSearchQuery) {
+	if (!list || state.activeFeedSearchQuery) {
 		disconnectInfiniteScroll()
 		return
 	}
@@ -49,8 +49,8 @@ export function bindFeedInfiniteScroll() {
 		sentinel,
 		rootMargin: '480px 0px',
 		/** @returns {boolean} 有下一页或可循环重放 */
-		hasMore: () => !!socialState.feedCursor
-			|| (!!socialState.feedShownItems?.length && canReplayFeed()),
+		hasMore: () => !!state.feedCursor
+			|| (!!state.feedShownItems?.length && canReplayFeed()),
 		/** @returns {Promise<void>} 追加下一页或循环重放 */
 		onLoad: () => loadFeed(true),
 	})
@@ -61,24 +61,24 @@ export function bindFeedInfiniteScroll() {
  * @returns {void}
  */
 function scheduleFeedPrefetch() {
-	const cursor = socialState.feedCursor
-	if (!cursor || socialState.activeFeedSearchQuery) return
-	if (socialState.feedPrefetch?.cursor === cursor) return
-	if (socialState.feedPrefetchInFlight) return
+	const cursor = state.feedCursor
+	if (!cursor || state.activeFeedSearchQuery) return
+	if (state.feedPrefetch?.cursor === cursor) return
+	if (state.feedPrefetchInFlight) return
 	const gen = feedGeneration
-	socialState.feedPrefetchInFlight = (async () => {
+	state.feedPrefetchInFlight = (async () => {
 		const data = await socialApi(
 			`/feed?limit=30${feedRankingQuery()}&cursor=${encodeURIComponent(cursor)}`,
 		).catch(() => null)
 		if (feedGeneration !== gen) return
-		if (!data || socialState.feedCursor !== cursor) return
-		socialState.feedPrefetch = {
+		if (!data || state.feedCursor !== cursor) return
+		state.feedPrefetch = {
 			cursor,
 			items: data.items || [],
 			nextCursor: data.nextCursor || null,
 		}
 	})().finally(() => {
-		socialState.feedPrefetchInFlight = null
+		state.feedPrefetchInFlight = null
 	})
 }
 
@@ -87,7 +87,7 @@ function scheduleFeedPrefetch() {
  * @returns {Promise<void>}
  */
 async function replayFeedItems() {
-	const items = socialState.feedShownItems
+	const items = state.feedShownItems
 	if (!items?.length) return
 	const list = document.getElementById('feedList')
 	if (!list) return
@@ -110,7 +110,7 @@ export async function loadSuggestedAccounts() {
 	if (!aside || !list) return
 	const data = await socialApi('/explore?limit=5').catch(() => ({ accounts: [] }))
 	const accounts = (data.accounts || []).filter(
-		row => row.entityHash !== socialState.viewerEntityHash,
+		row => row.entityHash !== state.viewerEntityHash,
 	)
 	if (!accounts.length) {
 		aside.classList.add('hidden')
@@ -187,8 +187,8 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
  * @returns {Promise<boolean>} 是否成功插入
  */
 export async function prependFeedItem(item) {
-	if (socialState.activeFeedSearchQuery) return false
-	if (socialState.feedCursor) return false
+	if (state.activeFeedSearchQuery) return false
+	if (state.feedCursor) return false
 	const feedView = document.getElementById('feedView')
 	if (!feedView || feedView.classList.contains('hidden')) return false
 	const list = document.getElementById('feedList')
@@ -206,7 +206,7 @@ export async function prependFeedItem(item) {
  * @returns {string} feed ranking query 片段
  */
 function feedRankingQuery() {
-	return socialState.feedRanking === 'for_you' ? '&ranking=for_you' : ''
+	return state.feedRanking === 'for_you' ? '&ranking=for_you' : ''
 }
 
 /**
@@ -216,7 +216,7 @@ function feedRankingQuery() {
 export function updateFeedRankingTabs() {
 	for (const tab of document.querySelectorAll('[data-feed-ranking]')) {
 		if (!(tab instanceof HTMLElement)) continue
-		const active = tab.dataset.feedRanking === socialState.feedRanking
+		const active = tab.dataset.feedRanking === state.feedRanking
 		tab.classList.toggle('active', active)
 		tab.setAttribute('aria-selected', active ? 'true' : 'false')
 		tab.setAttribute('role', 'tab')
@@ -229,10 +229,10 @@ export function updateFeedRankingTabs() {
  * @returns {Promise<void>}
  */
 export async function setFeedRanking(ranking) {
-	socialState.feedRanking = ranking === 'for_you' ? 'for_you' : 'latest'
-	socialState.feedCursor = null
-	socialState.feedPrefetch = null
-	socialState.feedShownItems = null
+	state.feedRanking = ranking === 'for_you' ? 'for_you' : 'latest'
+	state.feedCursor = null
+	state.feedPrefetch = null
+	state.feedShownItems = null
 	updateFeedRankingTabs()
 	await loadFeed(false)
 }
@@ -244,7 +244,7 @@ export async function setFeedRanking(ranking) {
 export function showFeedNewPostsBanner() {
 	const feedView = document.getElementById('feedView')
 	if (!feedView || feedView.classList.contains('hidden')) return
-	if (socialState.activeFeedSearchQuery) return
+	if (state.activeFeedSearchQuery) return
 	if (document.getElementById('feedNewPostsBanner')) return
 	const banner = document.createElement('button')
 	banner.type = 'button'
@@ -266,11 +266,11 @@ let feedGeneration = 0
  * @returns {Promise<void>}
  */
 export async function loadFeed(append = false) {
-	if (socialState.activeFeedSearchQuery) return
+	if (state.activeFeedSearchQuery) return
 	const list = document.getElementById('feedList')
 	if (!list) return
 
-	if (append && !socialState.feedCursor) {
+	if (append && !state.feedCursor) {
 		await replayFeedItems()
 		return
 	}
@@ -279,18 +279,18 @@ export async function loadFeed(append = false) {
 	let items
 	let nextCursor
 
-	const cached = append && socialState.feedPrefetch
-		&& socialState.feedPrefetch.cursor === socialState.feedCursor
-		? socialState.feedPrefetch
+	const cached = append && state.feedPrefetch
+		&& state.feedPrefetch.cursor === state.feedCursor
+		? state.feedPrefetch
 		: null
 	if (cached) {
 		items = cached.items
 		nextCursor = cached.nextCursor
-		socialState.feedPrefetch = null
+		state.feedPrefetch = null
 	}
 	else {
-		const cursorQuery = append && socialState.feedCursor
-			? `&cursor=${encodeURIComponent(socialState.feedCursor)}`
+		const cursorQuery = append && state.feedCursor
+			? `&cursor=${encodeURIComponent(state.feedCursor)}`
 			: ''
 		const data = await socialApi(`/feed?limit=30${feedRankingQuery()}${cursorQuery}`)
 		if (feedGeneration !== gen) return
@@ -301,18 +301,18 @@ export async function loadFeed(append = false) {
 
 	if (feedGeneration !== gen) return
 
-	socialState.feedCursor = nextCursor || null
+	state.feedCursor = nextCursor || null
 	if (!append) {
-		socialState.feedShownItems = [...items]
-		socialState.feedPrefetch = null
+		state.feedShownItems = [...items]
+		state.feedPrefetch = null
 	}
 	else if (items.length)
-		socialState.feedShownItems = [...socialState.feedShownItems || [], ...items]
+		state.feedShownItems = [...state.feedShownItems || [], ...items]
 
 	if (!append && !items.length) {
 		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
 		list.replaceChildren(emptyElement)
-		socialState.feedShownItems = null
+		state.feedShownItems = null
 	}
 	else if (!append) {
 		list.replaceChildren()

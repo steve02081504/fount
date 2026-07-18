@@ -8,7 +8,7 @@ import {
 } from '../../../../../../scripts/features/template.mjs'
 import { fetchGroupFileAsBlobUrl } from '../../../src/groupFileBlob.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 
 import { getMessageText } from './text.mjs'
 
@@ -56,7 +56,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 			fileName,
 			mimeType: escapeHtml(mime || 'application/octet-stream'),
 		})
-	return `<button type="button" class="btn btn-xs btn-ghost hub-message-file-download" data-group-file-id="${escapeHtml(id)}">${fileName}</button>`
+	return `<button type="button" class="btn btn-xs btn-ghost message-file-download" data-group-file-id="${escapeHtml(id)}">${fileName}</button>`
 }
 
 /**
@@ -67,7 +67,7 @@ async function renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt) {
 export async function renderMessageFileIdsHtml(message) {
 	const fileIds = message.content?.fileIds
 	const fileAlts = message.content?.fileAlts || {}
-	const groupId = hubStore.context.currentGroupId
+	const groupId = store.context.currentGroupId
 	if (!groupId || !Array.isArray(fileIds) || !fileIds.length) return ''
 
 	const text = getMessageText(message)
@@ -90,7 +90,7 @@ export async function renderMessageFileIdsHtml(message) {
 		rows.push(await renderSingleFileAttachmentHtml(groupId, id, meta, mime, alt))
 	}
 	if (!rows.length) return ''
-	return `<div class="hub-message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
+	return `<div class="message-files flex flex-col gap-1 mt-1">${rows.join('')}</div>`
 }
 
 /**
@@ -104,7 +104,7 @@ export function wireMessageMediaPlaceholders(container) {
 		const placeholder = event.target.closest('[data-media-placeholder]')
 		if (!placeholder || placeholder.dataset.mediaLoaded === '1') return
 		const fileId = placeholder.getAttribute('data-group-file-id')
-		const groupId = hubStore.context.currentGroupId
+		const groupId = store.context.currentGroupId
 		if (!fileId || !groupId) return
 		event.preventDefault()
 		event.stopPropagation()

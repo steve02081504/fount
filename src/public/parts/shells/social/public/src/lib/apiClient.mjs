@@ -1,5 +1,5 @@
 /** Social shell HTTP 客户端。 */
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 /**
  *
@@ -47,5 +47,5 @@ export async function chatApi(path, options = {}) {
  * @returns {string | null} 当前观看者（operator）entityHash
  */
 export function viewerEntityHash() {
-	return socialState.viewerEntityHash
+	return state.viewerEntityHash
 }

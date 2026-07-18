@@ -10,7 +10,7 @@ import {
 } from '../../../../../scripts/features/template.mjs'
 import { createMessagePipeline } from '../../src/MessagePipeline.mjs'
 import { activeCharPartNames } from '../core/domUtils.mjs'
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 import { applyAvatarsTo } from '../presence.mjs'
 
 import { bindChannelMessageActions } from './actions/handlers.mjs'
@@ -31,19 +31,19 @@ import {
  * @returns {object} 渲染选项
  */
 export function buildChannelRenderOpts({ channelId, reactions = {}, overrides = {} }) {
-	const pinnedEventIds = channelId && hubStore.context.currentState?.pinsByChannel?.[channelId]
-		? [...hubStore.context.currentState.pinsByChannel[channelId]]
+	const pinnedEventIds = channelId && store.context.currentState?.pinsByChannel?.[channelId]
+		? [...store.context.currentState.pinsByChannel[channelId]]
 		: []
 	return {
 		reactions: reactions || {},
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canAddReactions: hubStore.messages.reactionRenderOpts.canAddReactions,
-		viewerPubKeyHash: hubStore.context.currentState?.viewerMemberPubKeyHash || null,
-		viewerEntityHash: hubStore.viewer.viewerEntityHash || hubStore.viewer.operatorEntityHash || null,
-		groupMembers: hubStore.context.currentState?.members || [],
+		viewerMemberId: store.messages.reactionRenderOpts.viewerMemberId,
+		canAddReactions: store.messages.reactionRenderOpts.canAddReactions,
+		viewerPubKeyHash: store.context.currentState?.viewerMemberPubKeyHash || null,
+		viewerEntityHash: store.viewer.viewerEntityHash || store.viewer.operatorEntityHash || null,
+		groupMembers: store.context.currentState?.members || [],
 		localCharIds: activeCharPartNames(),
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
-		canPinMessages: hubStore.messages.reactionRenderOpts.canPinMessages,
+		canManageMessages: store.messages.reactionRenderOpts.canManageMessages,
+		canPinMessages: store.messages.reactionRenderOpts.canPinMessages,
 		pinnedEventIds,
 		alwaysVisibleActions: false,
 		canCreateThreads: false,
@@ -106,8 +106,8 @@ export function bindMessageSurface(container, {
 		channelId,
 		messages,
 		reactions,
-		viewerMemberId: hubStore.messages.reactionRenderOpts.viewerMemberId,
-		canManageMessages: hubStore.messages.reactionRenderOpts.canManageMessages,
+		viewerMemberId: store.messages.reactionRenderOpts.viewerMemberId,
+		canManageMessages: store.messages.reactionRenderOpts.canManageMessages,
 		reload,
 	})
 	localizeRenderedMessages(container)

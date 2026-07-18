@@ -4,7 +4,7 @@
 import { formatHashShort, formatEntityAtId } from '../shared/entityHash.mjs'
 import { formatEntityMentionToken, formatRoleMentionToken } from '../shared/inlineTokenSyntax.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /**
  * @param {HTMLTextAreaElement} textarea 消息输入框
@@ -65,7 +65,7 @@ export function attachHubMentionAutocomplete(textarea) {
 	 * @returns {Promise<void>}
 	 */
 	async function fetchSuggestions(query) {
-		const groupId = hubStore.context.currentGroupId
+		const groupId = store.context.currentGroupId
 		if (!groupId) {
 			hide()
 			return
@@ -190,7 +190,7 @@ export function attachHubMentionAutocomplete(textarea) {
  * @returns {void}
  */
 export function insertComposerMention(entityHash) {
-	const textarea = /** @type {HTMLTextAreaElement | null} */ document.getElementById('hub-message-input')
+	const textarea = /** @type {HTMLTextAreaElement | null} */ document.getElementById('message-input')
 	if (!textarea || textarea.disabled) return
 	const hash = String(entityHash || '').trim().toLowerCase()
 	if (!hash) return

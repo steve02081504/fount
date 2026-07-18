@@ -19,7 +19,7 @@ export { isAvatarImageUrl }
  * @param {{ seed?: string, label?: string, letterId?: string, letterClass?: string }} options 绘制选项
  * @returns {HTMLSpanElement} 字母节点
  */
-export function paintHashAvatarHost(host, { seed, label, letterId, letterClass = 'hub-avatar-letter' }) {
+export function paintHashAvatarHost(host, { seed, label, letterId, letterClass = 'avatar-letter' }) {
 	const avatarSeed = String(seed || label || '?')
 	const displayLabel = String(label || avatarSeed)
 	host.dataset.avatarSeed = avatarSeed

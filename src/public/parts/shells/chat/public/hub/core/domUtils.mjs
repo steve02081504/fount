@@ -2,7 +2,7 @@
  * 【文件】public/hub/core/domUtils.mjs
  * 【职责】Hub 消息与成员展示用的 DOM/文本工具：作者键解析、头像色、HTML 转义与时间 i18n 属性片段。
  * 【原理】为气泡头像、昵称与时间戳提供一致的视觉辅助函数；预热角色 entityHash 缓存。`authorPresentationKeys`、`escapeHtml`、`formatTimeAttrs` 等被 `messages/render` 与频道列表复用。
- * 【数据结构】hubStore 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
  * 【关联】shared/entityHash、shared/nameResolve、fount-p2p/core/hexIds、state
  */
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -18,7 +18,7 @@ import { aliasForEntity, aliasForGroup } from '../../shared/aliases.mjs'
 import { isEntityHash128 } from '../../shared/entityHash.mjs'
 import { resolveDisplayName } from '../../shared/nameResolve.mjs'
 
-import { hubStore } from './state.mjs'
+import { store } from './state.mjs'
 
 /**
  *
@@ -47,9 +47,9 @@ export function ingestAgentEntityHashList(agents) {
  * @returns {string[]} 角色 part 名列表
  */
 export function activeCharPartNames() {
-	const names = new Set(hubStore.context.currentState?.charPartNames || [])
-	if (hubStore.privateGroup.charname)
-		names.add(String(hubStore.privateGroup.charname))
+	const names = new Set(store.context.currentState?.charPartNames || [])
+	if (store.privateGroup.charname)
+		names.add(String(store.privateGroup.charname))
 	return [...names]
 }
 
@@ -59,7 +59,7 @@ export function activeCharPartNames() {
  * @returns {Promise<void>}
  */
 export async function warmCharEntityHashCache(charNames = activeCharPartNames()) {
-	const members = hubStore.context.currentState?.members || []
+	const members = store.context.currentState?.members || []
 	/** @type {Map<string, { entityHash?: string }>} */
 	const agentByChar = new Map()
 	for (const member of members) {
@@ -67,7 +67,7 @@ export async function warmCharEntityHashCache(charNames = activeCharPartNames())
 		const charname = String(member.charname || '').trim().toLowerCase()
 		if (charname) agentByChar.set(charname, member)
 	}
-	ingestAgentEntityHashList(hubStore.viewer.agents || [])
+	ingestAgentEntityHashList(store.viewer.agents || [])
 	for (const raw of charNames) {
 		const name = String(raw || '').trim()
 		if (!name || charEntityHashCache.has(name)) continue
@@ -97,7 +97,7 @@ export function charEntityHashFromCache(charname) {
 export function resolveEntityHashForAuthorKey(key) {
 	const raw = String(key ?? '').trim().toLowerCase()
 	if (!raw) return null
-	const members = hubStore.context.currentState?.members || []
+	const members = store.context.currentState?.members || []
 	if (isEntityHash128(raw)) return raw
 	if (!isHex64(raw)) {
 		const agent = members.find(member =>
@@ -112,9 +112,9 @@ export function resolveEntityHashForAuthorKey(key) {
 	const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw)
 	if (member?.entityHash && isEntityHash128(member.entityHash))
 		return String(member.entityHash).toLowerCase()
-	const viewerPub = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
-	if (viewerPub === raw && hubStore.viewer.viewerEntityHash)
-		return String(hubStore.viewer.viewerEntityHash).toLowerCase()
+	const viewerPub = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	if (viewerPub === raw && store.viewer.viewerEntityHash)
+		return String(store.viewer.viewerEntityHash).toLowerCase()
 	return null
 }
 
@@ -126,7 +126,7 @@ export function resolveEntityHashForAuthorKey(key) {
 export function memberDisplayNameForAuthorKey(key) {
 	const raw = String(key ?? '').trim()
 	if (!raw) return null
-	const members = hubStore.context.currentState?.members || []
+	const members = store.context.currentState?.members || []
 	if (isHex64(raw)) {
 		const member = members.find(m => String(m.memberKey || '').toLowerCase() === raw.toLowerCase())
 		if (member?.displayName) return String(member.displayName).trim()

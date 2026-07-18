@@ -83,7 +83,7 @@ export async function showEntityProfilePopup(entity) {
 
 	const layer = document.createElement('div')
 	layer.id = LAYER_ID
-	layer.className = 'hub-profile-popup-backdrop show'
+	layer.className = 'profile-popup-backdrop show'
 	layer.addEventListener('click', event => {
 		if (event.target === layer) dismissEntityProfilePopup()
 	})

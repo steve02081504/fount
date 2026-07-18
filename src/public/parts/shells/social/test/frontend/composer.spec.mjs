@@ -1,7 +1,7 @@
 import {
 	test,
 	expect,
-	openSocialHome,
+	openHome,
 	expectPostInFeed,
 	findPostCard,
 	createTestGroup,
@@ -13,7 +13,7 @@ import {
 
 test.describe('Social composer', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 	})
 
 	test('publishes a post via composer', async ({ publishPost }) => {
@@ -148,10 +148,10 @@ test.describe('Social composer', () => {
 		const picker = page.locator('#fount-shared-emoji-picker')
 		await expect(picker).toBeVisible({ timeout: 20_000 })
 		// Recent tab may be empty; switch to first non-recent tab (unicode emoji group)
-		const firstNonRecentTab = picker.locator('.hub-emoji-tab:not([data-tab="__recent__"])').first()
+		const firstNonRecentTab = picker.locator('.emoji-tab:not([data-tab="__recent__"])').first()
 		await expect(firstNonRecentTab).toBeVisible({ timeout: 30_000 })
 		await firstNonRecentTab.click()
-		const gridButton = picker.locator('.hub-emoji-grid-button').first()
+		const gridButton = picker.locator('.emoji-grid-button').first()
 		await expect(gridButton).toBeVisible({ timeout: 30_000 })
 		await gridButton.click()
 		await expect(page.locator('#postText')).not.toHaveValue('hello ')
@@ -173,7 +173,7 @@ test.describe('Social composer', () => {
 
 	test('group ref picker links chat group in post', async ({ page, baseUrl, apiKey }) => {
 		const { groupId, channelId } = await createTestGroup(baseUrl, apiKey)
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 		await page.locator('#composerAdvancedToggle').click()
 		const groupSelect = page.locator('#linkGroupSelect')
 		await expect(groupSelect).toBeVisible({ timeout: 30_000 })

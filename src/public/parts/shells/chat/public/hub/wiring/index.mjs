@@ -18,14 +18,14 @@ export function wireEvents() {
 	wireFileEvents()
 	wireVoteEvents()
 
-	document.getElementById('hub-messages').addEventListener('click', async (event) => {
+	document.getElementById('messages').addEventListener('click', async (event) => {
 		if (await handleMessageBubbleClick(event)) return
 		if (await handleMessageFileDownloadClick(event)) return
 		if (await handleVoteOptionClick(event)) return
 	})
 
-	document.getElementById('hub-messages').addEventListener('contextmenu', (event) => {
-		const row = event.target.closest('.hub-message[data-message-id]')
+	document.getElementById('messages').addEventListener('contextmenu', (event) => {
+		const row = event.target.closest('.message[data-message-id]')
 		if (!row) return
 		void import('../messages/messageContextMenu.mjs').then(({ showMessageContextMenu }) =>
 			showMessageContextMenu(event, row),

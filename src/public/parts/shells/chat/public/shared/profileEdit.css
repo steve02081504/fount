@@ -1,15 +1,15 @@
-.hub-profile-edit-box {
+.profile-edit-box {
 	width: min(1040px, calc(100vw - 32px));
 	max-width: 1040px;
 	max-height: min(860px, calc(100dvh - 32px));
 	padding: 0;
 	overflow: hidden;
-	border: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 12%, transparent);
-	background: var(--hub-bg-primary, var(--color-base-200));
+	border: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 12%, transparent);
+	background: var(--bg-primary, var(--color-base-200));
 }
 
-.hub-profile-edit-header,
-.hub-profile-edit-actions {
+.profile-edit-header,
+.profile-edit-actions {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -17,141 +17,141 @@
 	padding: 18px 22px;
 }
 
-.hub-profile-edit-header {
-	border-bottom: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 10%, transparent);
+.profile-edit-header {
+	border-bottom: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 10%, transparent);
 }
 
-.hub-profile-edit-title {
+.profile-edit-title {
 	margin: 0;
 	font-size: 20px;
 	font-weight: 750;
 }
 
-.hub-profile-edit-subtitle {
+.profile-edit-subtitle {
 	margin-top: 3px;
-	color: var(--hub-text-muted, color-mix(in srgb, var(--color-base-content) 58%, transparent));
+	color: var(--text-muted, color-mix(in srgb, var(--color-base-content) 58%, transparent));
 	font-size: 12px;
 }
 
-.hub-profile-edit-scroll {
+.profile-edit-scroll {
 	max-height: calc(min(860px, 100dvh - 32px) - 136px);
 	overflow: auto;
 	padding: 22px;
 }
 
-.hub-profile-edit-layout {
+.profile-edit-layout {
 	display: grid;
 	grid-template-columns: minmax(240px, 0.82fr) minmax(320px, 1.2fr);
 	gap: 24px;
 	align-items: start;
 }
 
-.hub-profile-edit-preview-panel {
+.profile-edit-preview-panel {
 	position: sticky;
 	top: 0;
 	min-width: 0;
 }
 
-.hub-profile-edit-section-label {
+.profile-edit-section-label {
 	margin: 0 0 9px;
-	color: var(--hub-text-muted, color-mix(in srgb, var(--color-base-content) 58%, transparent));
+	color: var(--text-muted, color-mix(in srgb, var(--color-base-content) 58%, transparent));
 	font-size: 11px;
 	font-weight: 700;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
 
-.hub-profile-edit-form {
+.profile-edit-form {
 	display: grid;
 	gap: 12px;
 	min-width: 0;
 }
 
-.hub-profile-edit-field-grid {
+.profile-edit-field-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 10px;
 }
 
-.hub-profile-edit-field {
+.profile-edit-field {
 	min-width: 0;
 	padding: 12px;
-	border: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 9%, transparent);
+	border: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 9%, transparent);
 	border-radius: 12px;
-	background: color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 3%, transparent);
+	background: color-mix(in srgb, var(--text-normal, var(--color-base-content)) 3%, transparent);
 }
 
-.hub-profile-edit-field .label {
+.profile-edit-field .label {
 	padding-top: 0;
 }
 
-.hub-profile-edit-field .input,
-.hub-profile-edit-field .textarea,
-.hub-profile-edit-field .select,
-.hub-profile-edit-field .file-input {
+.profile-edit-field .input,
+.profile-edit-field .textarea,
+.profile-edit-field .select,
+.profile-edit-field .file-input {
 	width: 100%;
-	border-color: color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 13%, transparent);
+	border-color: color-mix(in srgb, var(--text-normal, var(--color-base-content)) 13%, transparent);
 	border-radius: 9px;
-	background: color-mix(in srgb, var(--hub-bg-primary, var(--color-base-200)) 82%, transparent);
+	background: color-mix(in srgb, var(--bg-primary, var(--color-base-200)) 82%, transparent);
 }
 
-.hub-profile-edit-field .input:focus,
-.hub-profile-edit-field .textarea:focus,
-.hub-profile-edit-field .select:focus {
-	border-color: var(--hub-accent, var(--color-primary));
-	outline: 2px solid color-mix(in srgb, var(--hub-accent, var(--color-primary)) 18%, transparent);
+.profile-edit-field .input:focus,
+.profile-edit-field .textarea:focus,
+.profile-edit-field .select:focus {
+	border-color: var(--accent, var(--color-primary));
+	outline: 2px solid color-mix(in srgb, var(--accent, var(--color-primary)) 18%, transparent);
 }
 
-.hub-profile-edit-locales {
+.profile-edit-locales {
 	margin-bottom: 18px;
 	padding-bottom: 16px;
-	border-bottom: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 9%, transparent);
+	border-bottom: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 9%, transparent);
 }
 
-.hub-profile-locale-tabs {
+.profile-locale-tabs {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 7px;
 }
 
-.hub-profile-locale-tab {
+.profile-locale-tab {
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
 	min-height: 28px;
 	padding: 4px 8px 4px 10px;
-	border: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 15%, transparent);
+	border: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 15%, transparent);
 	border-radius: 999px;
 	background: transparent;
-	color: var(--hub-text-normal, var(--color-base-content));
+	color: var(--text-normal, var(--color-base-content));
 	font-size: 12px;
 	font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 	cursor: pointer;
 }
 
-.hub-profile-locale-tab:hover {
-	background: color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 7%, transparent);
+.profile-locale-tab:hover {
+	background: color-mix(in srgb, var(--text-normal, var(--color-base-content)) 7%, transparent);
 }
 
-.hub-profile-locale-tab.active {
-	border-color: var(--hub-accent, var(--color-primary));
-	background: color-mix(in srgb, var(--hub-accent, var(--color-primary)) 15%, transparent);
+.profile-locale-tab.active {
+	border-color: var(--accent, var(--color-primary));
+	background: color-mix(in srgb, var(--accent, var(--color-primary)) 15%, transparent);
 }
 
-.hub-profile-locale-tab-close {
+.profile-locale-tab-close {
 	padding: 0 2px;
 	opacity: 0.55;
 	font-size: 14px;
 	line-height: 1;
 }
 
-.hub-profile-locale-tab-close:hover {
+.profile-locale-tab-close:hover {
 	opacity: 1;
 }
 
-.hub-profile-locale-tab-edit,
-.hub-profile-locale-add-input {
+.profile-locale-tab-edit,
+.profile-locale-add-input {
 	width: auto;
 	min-width: 7rem;
 	max-width: 12rem;
@@ -162,42 +162,42 @@
 	font-size: 12px;
 }
 
-.hub-profile-locale-tab-edit {
+.profile-locale-tab-edit {
 	min-width: 4.5rem;
 	max-width: 10rem;
 }
 
-.hub-profile-edit-avatar-row {
+.profile-edit-avatar-row {
 	display: grid;
 	grid-template-columns: 48px minmax(0, 1fr);
 	gap: 12px;
 	align-items: center;
 }
 
-.hub-profile-edit-banner-row {
+.profile-edit-banner-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	gap: 8px;
 	align-items: center;
 }
 
-.hub-profile-edit-banner-row .input {
+.profile-edit-banner-row .input {
 	grid-column: 1 / -1;
 }
 
-.hub-profile-edit-banner-row .file-input,
-.hub-profile-edit-media-inputs .file-input {
+.profile-edit-banner-row .file-input,
+.profile-edit-media-inputs .file-input {
 	width: 100%;
 	min-width: 0;
 }
 
-.hub-profile-edit-media-inputs {
+.profile-edit-media-inputs {
 	display: grid;
 	gap: 8px;
 	min-width: 0;
 }
 
-.hub-profile-edit-avatar-swatch {
+.profile-edit-avatar-swatch {
 	display: grid;
 	place-items: center;
 	width: 48px;
@@ -208,13 +208,13 @@
 	font-weight: 800;
 }
 
-.hub-profile-edit-avatar-swatch img {
+.profile-edit-avatar-swatch img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
 }
 
-.hub-profile-edit-tags {
+.profile-edit-tags {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 6px;
@@ -222,18 +222,18 @@
 	margin-bottom: 8px;
 }
 
-.hub-profile-edit-tag-chip {
+.profile-edit-tag-chip {
 	display: inline-flex;
 	align-items: center;
 	gap: 4px;
 	padding: 4px 8px;
-	border: 1px solid color-mix(in srgb, var(--hub-accent, var(--color-primary)) 38%, transparent);
+	border: 1px solid color-mix(in srgb, var(--accent, var(--color-primary)) 38%, transparent);
 	border-radius: 999px;
-	background: color-mix(in srgb, var(--hub-accent, var(--color-primary)) 10%, transparent);
+	background: color-mix(in srgb, var(--accent, var(--color-primary)) 10%, transparent);
 	font-size: 12px;
 }
 
-.hub-profile-edit-tag-remove {
+.profile-edit-tag-remove {
 	padding: 0;
 	border: 0;
 	background: transparent;
@@ -244,88 +244,88 @@
 	cursor: pointer;
 }
 
-.hub-profile-edit-tag-remove:hover {
+.profile-edit-tag-remove:hover {
 	opacity: 1;
 }
 
-.hub-profile-edit-tags-add {
+.profile-edit-tags-add {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	gap: 8px;
 	align-items: center;
 }
 
-.hub-profile-edit-links {
+.profile-edit-links {
 	display: grid;
 	gap: 8px;
 }
 
-.hub-profile-edit-link-row {
+.profile-edit-link-row {
 	display: grid;
 	grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr) auto;
 	gap: 8px;
 	align-items: center;
 }
 
-.hub-profile-edit-color-row {
+.profile-edit-color-row {
 	display: grid;
 	grid-template-columns: 48px minmax(0, 1fr);
 	gap: 12px;
 	align-items: center;
 }
 
-.hub-profile-edit-color-input {
+.profile-edit-color-input {
 	width: 48px;
 	height: 40px;
 	padding: 3px;
-	border: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 16%, transparent);
+	border: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 16%, transparent);
 	border-radius: 9px;
 	background: transparent;
 	cursor: pointer;
 }
 
-.hub-profile-edit-actions {
+.profile-edit-actions {
 	margin: 0;
-	border-top: 1px solid color-mix(in srgb, var(--hub-text-normal, var(--color-base-content)) 10%, transparent);
-	background: color-mix(in srgb, var(--hub-bg-primary, var(--color-base-200)) 94%, black);
+	border-top: 1px solid color-mix(in srgb, var(--text-normal, var(--color-base-content)) 10%, transparent);
+	background: color-mix(in srgb, var(--bg-primary, var(--color-base-200)) 94%, black);
 }
 
 @media (max-width: 640px) {
-	.hub-profile-edit-box {
+	.profile-edit-box {
 		width: calc(100vw - 16px);
 		max-height: calc(100dvh - 16px);
 	}
 
-	.hub-profile-edit-scroll {
+	.profile-edit-scroll {
 		max-height: calc(100dvh - 152px);
 		padding: 16px;
 	}
 
-	.hub-profile-edit-layout {
+	.profile-edit-layout {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.hub-profile-edit-preview-panel {
+	.profile-edit-preview-panel {
 		position: static;
 	}
 
-	.hub-profile-edit-header,
-	.hub-profile-edit-actions {
+	.profile-edit-header,
+	.profile-edit-actions {
 		padding: 15px 16px;
 	}
 
 }
 
 @media (max-width: 480px) {
-	.hub-profile-edit-field-grid {
+	.profile-edit-field-grid {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.hub-profile-edit-link-row {
+	.profile-edit-link-row {
 		grid-template-columns: minmax(0, 1fr);
 	}
 
-	.hub-profile-edit-tags-add {
+	.profile-edit-tags-add {
 		grid-template-columns: minmax(0, 1fr);
 	}
 }

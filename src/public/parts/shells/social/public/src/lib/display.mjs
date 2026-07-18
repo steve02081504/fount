@@ -19,7 +19,7 @@ import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 import { viewerEntityHash } from './apiClient.mjs'
 
@@ -83,9 +83,9 @@ export function authorLabel(entityHash, profile) {
 function socialTrustCtx({ ownerEntityHash } = {}) {
 	return {
 		selfEntityHash: viewerEntityHash(),
-		nodeHash: socialState.viewerNodeHash,
+		nodeHash: state.viewerNodeHash,
 		authorOwnerEntityHash: ownerEntityHash,
-		viewerOwnerEntityHash: socialState.viewerProfile?.ownerEntityHash,
+		viewerOwnerEntityHash: state.viewerProfile?.ownerEntityHash,
 	}
 }
 

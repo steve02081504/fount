@@ -70,7 +70,7 @@ export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
 	 * @returns {void}
 	 */
 	const showRevealButton = () => {
-		if (bubble.querySelector('.hub-markdown-reveal-button')) return
+		if (bubble.querySelector('.markdown-reveal-button')) return
 		void mountMdRevealButton(bubble, onReveal)
 	}
 
@@ -79,7 +79,7 @@ export function attachUntrustedMarkdownOffscreenGuard(bubble, { onReveal }) {
 			for (const intersectionEntry of entries) {
 				if (!(intersectionEntry.target instanceof HTMLElement) || intersectionEntry.target !== bubble) continue
 				if (intersectionEntry.isIntersecting) continue
-				if (bubble.dataset.mdHydrated === '1' && !bubble.querySelector('.hub-markdown-reveal-button')) {
+				if (bubble.dataset.mdHydrated === '1' && !bubble.querySelector('.markdown-reveal-button')) {
 					bubble.dataset.mdStash = bubble.innerHTML
 					bubble.replaceChildren()
 					showRevealButton()

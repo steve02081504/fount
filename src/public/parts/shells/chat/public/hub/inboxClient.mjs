@@ -3,7 +3,7 @@
  */
 import { handleUIError } from '../src/ui/errors.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 const INBOX_API = '/api/parts/shells:chat/inbox'
 
@@ -57,9 +57,9 @@ export async function updateInboxBadge() {
 		return
 	}
 	badgeUnreadCount = null
-	hubStore.inbox.unreadCount = unread
+	store.inbox.unreadCount = unread
 	const label = unread > 99 ? '99+' : String(unread)
-	const badge = document.getElementById('hub-inbox-badge')
+	const badge = document.getElementById('inbox-badge')
 	if (!badge) return
 	if (unread > 0) {
 		badge.textContent = label
@@ -72,7 +72,7 @@ export async function updateInboxBadge() {
  * @returns {void}
  */
 export function bumpInboxBadge() {
-	const current = badgeUnreadCount ?? hubStore.inbox.unreadCount ?? 0
+	const current = badgeUnreadCount ?? store.inbox.unreadCount ?? 0
 	badgeUnreadCount = current + 1
 	void updateInboxBadge()
 }
@@ -83,12 +83,12 @@ export function bumpInboxBadge() {
  * @returns {boolean} 是否 @ 本机 viewer
  */
 export function wireMessageMentionsViewer(wireMessage) {
-	const viewerHash = String(hubStore.viewer.viewerEntityHash || hubStore.viewer.operatorEntityHash || '').toLowerCase()
+	const viewerHash = String(store.viewer.viewerEntityHash || store.viewer.operatorEntityHash || '').toLowerCase()
 	if (!viewerHash || !wireMessage) return false
 	const hashes = wireMessage.mentions?.entityHashes
 	if (!Array.isArray(hashes) || !hashes.map(hash => String(hash).toLowerCase()).includes(viewerHash)) return false
 	const sender = String(wireMessage.message?.sender || '').toLowerCase()
-	const viewerMember = String(hubStore.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
+	const viewerMember = String(store.context.currentState?.viewerMemberPubKeyHash || '').toLowerCase()
 	return !(sender && viewerMember && sender === viewerMember)
 }
 

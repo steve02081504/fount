@@ -16,49 +16,49 @@
 </head>
 
 <body class="bg-base-100 text-base-content min-h-screen">
-	<div id="app" class="app-shell">
+	<div id="shell" class="shell">
 		<aside class="side-nav" aria-label="Social navigation">
 			<div class="side-nav-brand">
 				<h1 class="brand-title" data-i18n="social.title"></h1>
 			</div>
 			<nav class="side-nav-links">
 				<button type="button" data-view="feed" class="nav-btn btn btn-ghost justify-start active">
-					<span class="s-ic s-ic-home" aria-hidden="true"></span>
+					<span class="icon icon-home" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.feed"></span>
 				</button>
 				<button type="button" data-view="explore" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-explore" aria-hidden="true"></span>
+					<span class="icon icon-explore" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.explore"></span>
 				</button>
 				<button type="button" data-view="notifications" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-bell" aria-hidden="true"></span>
+					<span class="icon icon-bell" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.notifications"></span>
 					<span id="notificationsBadge" class="nav-badge badge badge-primary badge-sm hidden"></span>
 				</button>
 				<button type="button" data-view="saved" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+					<span class="icon icon-bookmark" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.saved"></span>
 				</button>
 				<button type="button" data-view="drafts" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-draft" aria-hidden="true"></span>
+					<span class="icon icon-draft" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.drafts"></span>
 				</button>
 				<button type="button" data-view="profile" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-user" aria-hidden="true"></span>
+					<span class="icon icon-user" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.profile"></span>
 				</button>
 				<button type="button" data-view="videos" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-video" aria-hidden="true"></span>
+					<span class="icon icon-video" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.videos"></span>
 				</button>
 				<button type="button" data-view="live" class="nav-btn btn btn-ghost justify-start">
-					<span class="s-ic s-ic-live" aria-hidden="true"></span>
+					<span class="icon icon-live" aria-hidden="true"></span>
 					<span class="nav-label" data-i18n="social.nav.live"></span>
 				</button>
 			</nav>
 			<button type="button" id="composeNavButton" class="compose-nav-btn btn btn-primary">
 				<span class="nav-label" data-i18n="social.composer.publish"></span>
-				<span class="s-ic s-ic-compose compose-nav-icon" aria-hidden="true"></span>
+				<span class="icon icon-compose compose-nav-icon" aria-hidden="true"></span>
 			</button>
 		</aside>
 
@@ -127,17 +127,17 @@
 						<div class="composer-toolbar">
 							<div class="composer-tools">
 								<button id="emojiPickButton" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.emojiButton">
-									<span class="s-ic s-ic-emoji" aria-hidden="true"></span>
+									<span class="icon icon-emoji" aria-hidden="true"></span>
 								</button>
 								<label class="composer-tool-btn btn btn-ghost btn-sm btn-circle media-upload-btn" data-i18n="social.composer.mediaButton">
-									<span class="s-ic s-ic-media" aria-hidden="true"></span>
+									<span class="icon icon-media" aria-hidden="true"></span>
 									<input id="mediaInput" type="file" accept="image/*,video/*" multiple hidden />
 								</label>
 								<button id="pollComposerToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.pollButton">
-									<span class="s-ic s-ic-vote" aria-hidden="true"></span>
+									<span class="icon icon-vote" aria-hidden="true"></span>
 								</button>
 								<button id="composerCwToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.cwToggle">
-									<span class="s-ic s-ic-cw" aria-hidden="true"></span>
+									<span class="icon icon-content-warning" aria-hidden="true"></span>
 								</button>
 								<select id="postVisibility" data-visibility-select class="select select-bordered select-sm composer-select composer-visibility">
 									<option value="public" data-i18n="social.visibility.public"></option>
@@ -149,7 +149,7 @@
 									<option value="private" data-i18n="social.visibility.private"></option>
 								</select>
 								<button id="composerAdvancedToggle" type="button" class="composer-tool-btn btn btn-ghost btn-sm btn-circle" data-i18n="social.composer.advancedToggle">
-									<span class="s-ic s-ic-options" aria-hidden="true"></span>
+									<span class="icon icon-options" aria-hidden="true"></span>
 								</button>
 								<input id="postLocale" type="hidden" value="zh-CN" />
 							</div>
@@ -168,10 +168,10 @@
 						<button type="button" class="btn btn-ghost btn-xs" data-feed-ranking="for_you" data-i18n="social.feed.tabForYou"></button>
 					</div>
 					<button type="button" id="feedSearchOpenButton" class="view-header-btn btn btn-ghost btn-sm btn-circle mobile-only-btn" data-i18n="social.search.open">
-						<span class="s-ic s-ic-search" aria-hidden="true"></span>
+						<span class="icon icon-search" aria-hidden="true"></span>
 					</button>
 					<button type="button" id="feedRefreshButton" class="view-header-btn btn btn-ghost btn-sm btn-circle tooltip" data-tip="">
-						<span class="s-ic s-ic-refresh" aria-hidden="true"></span>
+						<span class="icon icon-refresh" aria-hidden="true"></span>
 					</button>
 				</header>
 				<div id="feedList" class="feed-list"></div>
@@ -183,15 +183,15 @@
 				</header>
 				<div class="explore-shortcuts">
 					<button type="button" class="btn btn-ghost btn-sm" data-view="videos" data-i18n="social.nav.videos">
-						<span class="s-ic s-ic-video" aria-hidden="true"></span>
+						<span class="icon icon-video" aria-hidden="true"></span>
 						<span data-i18n="social.nav.videos"></span>
 					</button>
 					<button type="button" class="btn btn-ghost btn-sm" data-view="live" data-i18n="social.nav.live">
-						<span class="s-ic s-ic-live" aria-hidden="true"></span>
+						<span class="icon icon-live" aria-hidden="true"></span>
 						<span data-i18n="social.nav.live"></span>
 					</button>
 					<button type="button" class="btn btn-ghost btn-sm" data-view="drafts" data-i18n="social.nav.drafts">
-						<span class="s-ic s-ic-draft" aria-hidden="true"></span>
+						<span class="icon icon-draft" aria-hidden="true"></span>
 						<span data-i18n="social.nav.drafts"></span>
 					</button>
 				</div>
@@ -211,7 +211,7 @@
 						<h3 id="explorePostsTitle" class="section-title" data-i18n="social.explore.posts"></h3>
 						<label class="explore-media-toggle">
 							<input type="checkbox" id="exploreMediaOnly" />
-							<span class="s-ic s-ic-media" aria-hidden="true"></span>
+							<span class="icon icon-media" aria-hidden="true"></span>
 							<span data-i18n="social.explore.mediaOnly"></span>
 						</label>
 					</div>
@@ -240,7 +240,7 @@
 				<header class="view-header">
 					<h2 class="view-title" data-i18n="social.nav.saved"></h2>
 					<button type="button" id="createFolderButton" class="view-header-btn" data-i18n="social.saved.createFolder">
-						<span class="s-ic s-ic-folder-plus" aria-hidden="true"></span>
+						<span class="icon icon-folder-plus" aria-hidden="true"></span>
 					</button>
 				</header>
 				<div id="savedPanel" class="saved-panel"></div>
@@ -256,7 +256,7 @@
 			<section id="settingsView" class="view hidden">
 				<header class="view-header">
 					<button type="button" class="view-header-btn btn btn-ghost btn-sm btn-circle" data-view="profile" data-i18n="social.settings.back">
-						<span class="s-ic s-ic-home" aria-hidden="true"></span>
+						<span class="icon icon-home" aria-hidden="true"></span>
 					</button>
 					<h2 class="view-title" data-i18n="social.settings.title"></h2>
 				</header>
@@ -271,7 +271,7 @@
 				</header>
 				<div class="search-view-filters">
 					<div class="feed-search-wrap">
-						<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
+						<span class="icon icon-search search-icon" aria-hidden="true"></span>
 						<input type="search" id="searchViewInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" placeholder="" />
 					</div>
 					<div class="search-filters">
@@ -341,7 +341,7 @@
 
 		<section id="videosView" class="view hidden" tabindex="-1" data-i18n="social.video.view">
 			<button type="button" class="view-back-btn" id="videosViewBackButton" data-i18n="social.video.back">
-				<span class="s-ic s-ic-home" aria-hidden="true"></span>
+				<span class="icon icon-home" aria-hidden="true"></span>
 			</button>
 			<div class="vertical-snap-view" id="videoSnapContainer"></div>
 		</section>
@@ -349,7 +349,7 @@
 		<section id="liveView" class="view hidden" aria-label="Live streams">
 			<div class="live-top-bar">
 				<button type="button" class="view-back-btn" id="liveViewBackButton" data-i18n="social.live.back">
-					<span class="s-ic s-ic-home" aria-hidden="true"></span>
+					<span class="icon icon-home" aria-hidden="true"></span>
 				</button>
 				<div id="liveScopeTabs" class="live-scope-tabs" role="tablist">
 					<button type="button" data-scope="local" class="live-scope-btn is-active" role="tab" aria-selected="true"></button>
@@ -363,7 +363,7 @@
 		<aside class="aside-col" aria-label="Social sidebar">
 			<div class="aside-search card bg-base-200 shadow-sm">
 				<div class="feed-search-wrap">
-					<span class="s-ic s-ic-search search-icon" aria-hidden="true"></span>
+					<span class="icon icon-search search-icon" aria-hidden="true"></span>
 					<input type="search" id="feedSearchInput" class="feed-search-input input input-bordered input-sm w-full" autocomplete="off" data-i18n="social.search" />
 					<button type="button" id="feedSearchClearButton" class="search-clear-btn hidden" data-i18n="social.search.clear" aria-label=""></button>
 				</div>
@@ -377,25 +377,25 @@
 
 		<nav class="mobile-tabbar bg-base-100 border-t border-base-300" aria-label="Social mobile navigation">
 			<button type="button" data-view="feed" class="nav-btn btn btn-ghost btn-sm active" data-i18n="social.nav.feed">
-				<span class="s-ic s-ic-home" aria-hidden="true"></span>
+				<span class="icon icon-home" aria-hidden="true"></span>
 			</button>
 			<button type="button" data-view="explore" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.explore">
-				<span class="s-ic s-ic-explore" aria-hidden="true"></span>
+				<span class="icon icon-explore" aria-hidden="true"></span>
 			</button>
 			<button type="button" data-view="notifications" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.notifications">
-				<span class="s-ic s-ic-bell" aria-hidden="true"></span>
+				<span class="icon icon-bell" aria-hidden="true"></span>
 				<span id="mobileNotificationsBadge" class="nav-badge badge badge-primary badge-xs hidden"></span>
 			</button>
 			<button type="button" data-view="saved" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.saved">
-				<span class="s-ic s-ic-bookmark" aria-hidden="true"></span>
+				<span class="icon icon-bookmark" aria-hidden="true"></span>
 			</button>
 			<button type="button" data-view="profile" class="nav-btn btn btn-ghost btn-sm" data-i18n="social.nav.profile">
-				<span class="s-ic s-ic-user" aria-hidden="true"></span>
+				<span class="icon icon-user" aria-hidden="true"></span>
 			</button>
 		</nav>
 
 		<button type="button" id="composeFab" class="compose-fab btn btn-primary btn-circle" data-i18n="social.composer.fab">
-			<span class="s-ic s-ic-compose" aria-hidden="true"></span>
+			<span class="icon icon-compose" aria-hidden="true"></span>
 		</button>
 
 		<div id="saveModal" class="save-modal hidden" role="dialog" aria-modal="true">
@@ -409,7 +409,7 @@
 			</div>
 		</div>
 	</div>
-	<script type="module" src="/parts/shells:social/app.mjs"></script>
+	<script type="module" src="/parts/shells:social/index.mjs"></script>
 </body>
 
 </html>

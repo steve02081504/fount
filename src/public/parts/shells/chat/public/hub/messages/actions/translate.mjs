@@ -20,7 +20,7 @@ export async function handleTranslate(button, row, channelMessage) {
 		const { mountTranslationBlock, requestTranslation, resolveTargetLang } = await import('/scripts/features/translate.mjs')
 		const targetLang = resolveTargetLang()
 		const translated = await requestTranslation('/api/parts/shells:chat/translate', text, targetLang)
-		const bubble = row?.querySelector('.hub-message-content')
+		const bubble = row?.querySelector('.message-content')
 		if (bubble instanceof HTMLElement) 
 			mountTranslationBlock(bubble, {
 				originalText: text,

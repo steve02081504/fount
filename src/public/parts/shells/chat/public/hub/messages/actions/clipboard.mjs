@@ -39,7 +39,7 @@ export async function handleCopyShareLink(button, actions) {
  */
 export async function handleClipboardAction(button, row, channelMessage, action) {
 	if (action === 'copy-md') {
-		const text = getMessageText(channelMessage) || row?.querySelector('.hub-message-content')?.textContent?.trim() || ''
+		const text = getMessageText(channelMessage) || row?.querySelector('.message-content')?.textContent?.trim() || ''
 		try {
 			await navigator.clipboard.writeText(text)
 		}
@@ -49,7 +49,7 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 		return true
 	}
 	if (action === 'copy-text') {
-		const contentElement = row?.querySelector('.hub-message-content')
+		const contentElement = row?.querySelector('.message-content')
 		try {
 			await navigator.clipboard.writeText(contentElement?.textContent?.trim() || getMessageText(channelMessage))
 		}
@@ -60,7 +60,7 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	}
 	if (action === 'copy-html') {
 		try {
-			const markdown = getMessageText(channelMessage) || row?.querySelector('.hub-message-content')?.textContent?.trim() || ''
+			const markdown = getMessageText(channelMessage) || row?.querySelector('.message-content')?.textContent?.trim() || ''
 			const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
 			const blob = new Blob([html], { type: 'text/html' })
 			await navigator.clipboard.write([

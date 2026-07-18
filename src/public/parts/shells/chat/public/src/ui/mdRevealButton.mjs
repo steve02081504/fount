@@ -24,7 +24,7 @@ function ensureTemplates() {
  */
 export async function mountMdRevealButton(parent, onClick) {
 	ensureTemplates()
-	const existing = parent.querySelector('.hub-markdown-reveal-button')
+	const existing = parent.querySelector('.markdown-reveal-button')
 	if (existing instanceof HTMLElement) {
 		if (!existing.dataset.revealWired) {
 			existing.dataset.revealWired = '1'
@@ -36,7 +36,7 @@ export async function mountMdRevealButton(parent, onClick) {
 		return existing
 	}
 	await appendTemplate(parent, 'hub/messages/md_reveal_button', {})
-	const button = parent.querySelector('.hub-markdown-reveal-button')
+	const button = parent.querySelector('.markdown-reveal-button')
 	if (!(button instanceof HTMLElement))
 		throw new Error('md reveal button missing')
 	button.dataset.revealWired = '1'

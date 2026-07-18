@@ -2,7 +2,7 @@
  * 【文件】public/hub/privateGroup.mjs
  * 【职责】角色好友私聊 Hub 流程：进入/重启私聊、清空状态与聊天设置浮层入口。
  * 【原理】`enterPrivateGroup` 委托 `enterFriendChat`；`openGroupSettingsModal` 挂载聊天配置浮层。
- * 【数据结构】hubStore.privateGroup 当前私聊 charname / groupId。
+ * 【数据结构】store.privateGroup 当前私聊 charname / groupId。
  * 【关联】charCard、chatConfig、friendBindings、messages/loadMessages、hashNav、friendChat。
  */
 import { renderTemplate } from '../../../../scripts/features/template.mjs'
@@ -13,7 +13,7 @@ import { setGroupFriendBinding, unbindFriendGroup } from '../src/api/groupFriend
 
 import { mountChatConfigPanel } from './chatConfig.mjs'
 import { openOverlayModal, closeOverlayModal } from './core/overlayModal.mjs'
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 import { friendBindingForGroup } from './friendBindings.mjs'
 import { refreshStopGenerationButton } from './stream/index.mjs'
 
@@ -22,7 +22,7 @@ import { refreshStopGenerationButton } from './stream/index.mjs'
  * @returns {void}
  */
 export function clearPrivateGroupState() {
-	const { privateGroup } = hubStore
+	const { privateGroup } = store
 	privateGroup.groupId = null
 	privateGroup.charname = null
 	privateGroup.peerEntityHash = null
@@ -42,7 +42,7 @@ export async function restartPrivateGroup(charname, previousGroupId) {
 		const { loadGroups } = await import('./serverBar.mjs')
 		await loadGroups()
 	}
-	if (hubStore.privateGroup.groupId === previousGroupId)
+	if (store.privateGroup.groupId === previousGroupId)
 		clearPrivateGroupState()
 	const { charAgentEntityHash } = await import('./entityResolve.mjs')
 	const entityHash = await charAgentEntityHash(charname)
@@ -89,12 +89,12 @@ export async function enterPrivateGroup(charname, options = {}) {
  * @returns {Promise<void>}
  */
 export async function openGroupSettingsModal(groupId) {
-	const charname = hubStore.privateGroup.charname || '?'
+	const charname = store.privateGroup.charname || '?'
 	const friendBound = !!friendBindingForGroup(groupId)
 	const settingsRoot = await renderTemplate('hub/chat/char_settings', {
 		charname,
 		groupId,
-		logLength: hubStore.messages.channelMessages.length,
+		logLength: store.messages.channelMessages.length,
 		friendBound,
 	})
 	openOverlayModal({
@@ -104,15 +104,15 @@ export async function openGroupSettingsModal(groupId) {
 		body: settingsRoot.querySelector('.char-settings-body'),
 		footer: settingsRoot.querySelector('.char-settings-footer'),
 	})
-	document.getElementById('hub-character-chat-close').addEventListener('click', closeOverlayModal)
-	document.getElementById('hub-character-chat-advanced').addEventListener('click', () => {
+	document.getElementById('character-chat-close').addEventListener('click', closeOverlayModal)
+	document.getElementById('character-chat-advanced').addEventListener('click', () => {
 		window.open(
 			`/parts/shells:chat/hub/#group:${encodeURIComponent(groupId)}:default`,
 			'_blank',
 			'noopener',
 		)
 	})
-	document.getElementById('hub-character-chat-unbind')?.addEventListener('click', async () => {
+	document.getElementById('character-chat-unbind')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.unbindFriendConfirm', { name: charname })) return
 		try {
 			const binding = friendBindingForGroup(groupId)
@@ -129,7 +129,7 @@ export async function openGroupSettingsModal(groupId) {
 			showToastI18n('error', 'chat.hub.unbindFriendFailed', { error: error.message })
 		}
 	})
-	document.getElementById('hub-character-chat-delete')?.addEventListener('click', async () => {
+	document.getElementById('character-chat-delete')?.addEventListener('click', async () => {
 		if (!confirmI18n('chat.hub.deleteSessionConfirm', { name: charname })) return
 		try {
 			const response = await fetch(
@@ -153,5 +153,5 @@ export async function openGroupSettingsModal(groupId) {
 			showToastI18n('error', 'chat.hub.sessionDeleteFailed', { error: error.message })
 		}
 	})
-	void mountChatConfigPanel(groupId, hubStore.privateGroup.channelId, { canEditWorldPlugins: true })
+	void mountChatConfigPanel(groupId, store.privateGroup.channelId, { canEditWorldPlugins: true })
 }

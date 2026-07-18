@@ -9,7 +9,7 @@ import {
 	normalizePersonalFilterResponse,
 } from '../src/lib/personalFilterClient.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /** @type {ReturnType<typeof normalizePersonalFilterResponse> | null} */
 let cachedFilter = null
@@ -51,7 +51,7 @@ export function invalidateHubPersonalFilter() {
  * @returns {Promise<void>}
  */
 export async function postPersonalBlock(targetEntityHash, block) {
-	if (!hubStore.viewer.operatorEntityHash) throw new Error('viewer entity required')
+	if (!store.viewer.operatorEntityHash) throw new Error('viewer entity required')
 	const resp = await fetch('/api/parts/shells:social/relationships/block', {
 		method: 'POST',
 		credentials: 'include',

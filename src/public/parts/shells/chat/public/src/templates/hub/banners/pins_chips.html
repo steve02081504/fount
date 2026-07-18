@@ -1,3 +1,3 @@
 ${pins.map(pin => `
-<button type="button" class="hub-pinned-message-chip inline-flex items-center gap-1" data-pinned-message-event="${pin.eventId}"><img src="https://api.iconify.design/mdi/pin.svg" class="w-3.5 h-3.5 shrink-0" alt="" aria-hidden="true" /> ${pin.short}</button>
+<button type="button" class="pinned-message-chip inline-flex items-center gap-1" data-pinned-message-event="${pin.eventId}"><img src="https://api.iconify.design/mdi/pin.svg" class="w-3.5 h-3.5 shrink-0" alt="" aria-hidden="true" /> ${pin.short}</button>
 `).join('')}

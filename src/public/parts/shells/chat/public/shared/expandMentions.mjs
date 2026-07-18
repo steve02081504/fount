@@ -43,8 +43,8 @@ export function buildMentionLabelMap(members = [], viewer = {}) {
 }
 
 /**
- * @param {object | null | undefined} hubState hubStore.context.currentState
- * @param {{ viewerEntityHash?: string, viewerDisplayName?: string }} [viewer] hubStore.viewer
+ * @param {object | null | undefined} hubState store.context.currentState
+ * @param {{ viewerEntityHash?: string, viewerDisplayName?: string }} [viewer] store.viewer
  * @returns {Map<string, string>} entityHash → 展示名
  */
 export function buildMentionLabelMapFromHubState(hubState, viewer = {}) {

@@ -9,7 +9,7 @@ import { createFileHandlers } from '../../src/ui/groupFileUpload.mjs'
 import { updateStatusBanners } from '../banners.mjs'
 import { channelTypeIconHtml } from '../channels.mjs'
 import { warmCharEntityHashCache } from '../core/domUtils.mjs'
-import { hubStore, setHubState } from '../core/state.mjs'
+import { store, setState } from '../core/state.mjs'
 import { updateHash } from '../core/urlHash.mjs'
 import { refreshPinsBookmarks } from '../pinsBookmarks.mjs'
 import { connectGroupWebSocket } from '../stream/index.mjs'
@@ -24,60 +24,60 @@ import { isPrivateChatActive } from './privateShell.mjs'
  */
 export async function selectChannel(channelId) {
 	const { disableComposer, enableComposer } = await import('../messages/composerController.mjs')
-	const channel = hubStore.context.currentState?.channels?.[channelId]
+	const channel = store.context.currentState?.channels?.[channelId]
 	if (!channel) {
-		setHubState('context.currentChannelId', null)
-		updateHash(hubStore.context.currentGroupId, null)
+		setState('context.currentChannelId', null)
+		updateHash(store.context.currentGroupId, null)
 		disableComposer()
 		const { renderHubChannelSidebar } = await import('./index.mjs')
-		await renderHubChannelSidebar(hubStore.context.currentState)
+		await renderHubChannelSidebar(store.context.currentState)
 		const { mountTemplate } = await import('../../../../../scripts/features/template.mjs')
-		await mountTemplate(document.getElementById('hub-messages'), 'hub/nav/side_muted', {
+		await mountTemplate(document.getElementById('messages'), 'hub/nav/side_muted', {
 			i18nKey: 'chat.hub.noChannels',
 		})
 		updateStatusBanners()
 		return
 	}
-	setHubState('context.currentChannelId', channelId)
+	setState('context.currentChannelId', channelId)
 	if (isPrivateChatActive())
-		hubStore.privateGroup.channelId = channelId
-	updateHash(hubStore.context.currentGroupId, channelId)
+		store.privateGroup.channelId = channelId
+	updateHash(store.context.currentGroupId, channelId)
 	void import('../composerReply.mjs').then(({ clearReplyTarget }) => clearReplyTarget())
 	const { showHubMainPane } = await import('../hubPane.mjs')
 	showHubMainPane()
 	void warmCharEntityHashCache()
 	const { renderHubChannelSidebar } = await import('./index.mjs')
-	await renderHubChannelSidebar(hubStore.context.currentState)
-	if (hubStore.context.currentGroupId)
-		rebindFederationRoomQuiet(hubStore.context.currentGroupId, { channelId })
+	await renderHubChannelSidebar(store.context.currentState)
+	if (store.context.currentGroupId)
+		rebindFederationRoomQuiet(store.context.currentGroupId, { channelId })
 	const channelType = channel.type || 'text'
-	document.getElementById('hub-channel-name-display').textContent = channel.name || channelId
-	const headerIcon = document.querySelector('.hub-main-header-icon')
+	document.getElementById('channel-name-display').textContent = channel.name || channelId
+	const headerIcon = document.querySelector('.main-header-icon')
 	headerIcon.innerHTML = await channelTypeIconHtml(channelType)
 
 	if (channelType === 'list' || channelType === 'streaming')
 		disableComposer(channelType === 'list' ? 'chat.hub.channelReadonlyList' : 'chat.hub.channelReadonlyStream')
-	else if (hubStore.context.currentState?.suspectedRemoved)
+	else if (store.context.currentState?.suspectedRemoved)
 		disableComposer('chat.hub.composerSuspectedRemoved')
 	else
 		enableComposer()
 	const { loadMessages } = await import('../messages/messages.mjs')
-	hubStore.context.fileHandlers = createFileHandlers({
-		groupId: hubStore.context.currentGroupId,
+	store.context.fileHandlers = createFileHandlers({
+		groupId: store.context.currentGroupId,
 		showToastI18n,
 		/** @returns {Promise<void>} */
 		loadMessages: () => loadMessages(),
 		/** @returns {string | null} 当前频道 ID（文件上传权限） */
-		getUploadChannelId: () => hubStore.context.currentChannelId,
+		getUploadChannelId: () => store.context.currentChannelId,
 		/** @returns {object | null} 当前群 state（读取文件加密模式） */
-		getCurrentState: () => hubStore.context.currentState,
+		getCurrentState: () => store.context.currentState,
 	})
 	void import('../composerDraft.mjs').then(({ loadDraft }) => {
-		loadDraft(hubStore.context.currentGroupId, channelId)
+		loadDraft(store.context.currentGroupId, channelId)
 	})
 	await loadMessages()
-	if (hubStore.context.currentGroupId && hubStore.context.currentChannelId && channelType === 'text')
-		connectGroupWebSocket(hubStore.context.currentGroupId, hubStore.context.currentChannelId)
+	if (store.context.currentGroupId && store.context.currentChannelId && channelType === 'text')
+		connectGroupWebSocket(store.context.currentGroupId, store.context.currentChannelId)
 	updateStatusBanners()
 	void refreshPinsBookmarks()
 	void import('../call.mjs').then(m => {
@@ -92,6 +92,6 @@ export async function selectChannel(channelId) {
  * @returns {Promise<void>}
  */
 export async function saveListChannelItems(items) {
-	await updateChannelListItems(hubStore.context.currentGroupId, hubStore.context.currentChannelId, items)
-	setHubState('context.currentState', await getGroupState(hubStore.context.currentGroupId))
+	await updateChannelListItems(store.context.currentGroupId, store.context.currentChannelId, items)
+	setState('context.currentState', await getGroupState(store.context.currentGroupId))
 }

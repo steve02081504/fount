@@ -3,9 +3,9 @@ import { parseActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
 import { handlePollVoteClick } from '../lib/pollUi.mjs'
-import { purgeFeedShownPost, restoreFeedShownItems, runSocialWrite } from '../lib/socialWrite.mjs'
+import { purgeFeedShownPost, restoreFeedShownItems, runWrite } from '../lib/socialWrite.mjs'
 import { refreshVisiblePosts } from '../navigation.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 
 import { closePostMoreMenus, copyTextToClipboard, shareOrCopyPostLink } from './shared.mjs'
 import { geti18n } from '/scripts/i18n/index.mjs'
@@ -26,7 +26,7 @@ export async function handlePostProfileActionsClick(target) {
 			const current = decodeURIComponent(card?.dataset.postText || '')
 			const next = await promptText(geti18n('social.post.editPrompt'), current)
 			if (next == null || next === current) return true
-			await runSocialWrite('edit', () => socialApi(
+			await runWrite('edit', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/edit`,
 				{ method: 'POST', body: JSON.stringify({ text: next }) },
 			))
@@ -59,7 +59,7 @@ export async function handlePostProfileActionsClick(target) {
 			closePostMoreMenus()
 			const text = await promptTextArea(geti18n('social.notes.prompt'))
 			if (!text?.trim()) return true
-			await runSocialWrite('addNote', () => socialApi(
+			await runWrite('addNote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes`,
 				{ method: 'POST', body: JSON.stringify({ text: text.trim() }) },
 			))
@@ -74,7 +74,7 @@ export async function handlePostProfileActionsClick(target) {
 		const noteId = noteVoteButton.dataset.noteId
 		if (parsed && noteId) {
 			const helpful = noteVoteButton.dataset.helpful !== '0'
-			await runSocialWrite('noteVote', () => socialApi(
+			await runWrite('noteVote', () => socialApi(
 				`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}/notes/${encodeURIComponent(noteId)}/vote`,
 				{ method: 'POST', body: JSON.stringify({ helpful }) },
 			))
@@ -151,19 +151,19 @@ export async function handlePostProfileActionsClick(target) {
 		const parent = card?.parentElement
 		const next = card?.nextSibling
 		const postId = deleteButton.dataset.delete
-		const purged = purgeFeedShownPost(socialState, postId)
+		const purged = purgeFeedShownPost(state, postId)
 		card?.remove()
 		closePostMoreMenus()
 		const entityHash = deleteButton.dataset.deleteEntity
-			|| socialState.viewerEntityHash
+			|| state.viewerEntityHash
 		try {
-			await runSocialWrite('delete', () => socialApi('/posts', {
+			await runWrite('delete', () => socialApi('/posts', {
 				method: 'DELETE',
 				body: JSON.stringify({ postId, entityHash }),
 			}))
 		}
 		catch {
-			restoreFeedShownItems(socialState, purged)
+			restoreFeedShownItems(state, purged)
 			if (card && parent)
 				parent.insertBefore(card, next)
 		}

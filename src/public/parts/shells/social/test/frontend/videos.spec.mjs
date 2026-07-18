@@ -3,7 +3,7 @@ import { request as playwrightRequest } from '@playwright/test'
 import {
 	test,
 	expect,
-	openSocialHome,
+	openHome,
 	postIdFromResponse,
 	waitForPostMaterialized,
 	fetchViewerEntityHash,
@@ -47,7 +47,7 @@ async function openVideoSlide(page, postId) {
 
 test.describe('Social short videos', () => {
 	test.beforeEach(async ({ page, baseUrl }) => {
-		await openSocialHome(page, baseUrl)
+		await openHome(page, baseUrl)
 		await page.evaluate(() => localStorage.removeItem('fount.social.video.muted'))
 	})
 
@@ -262,7 +262,7 @@ test.describe('Social short videos', () => {
 		await expect(page.locator('#videosView')).toHaveClass(/hidden/)
 		const slideAgain = await openVideoSlide(page, postId)
 		await expect(slideAgain.locator('video.video-player')).toHaveJSProperty('muted', true)
-		await expect(slideAgain.locator('.video-mute-btn .s-ic')).toHaveClass(/s-ic-mute/)
+		await expect(slideAgain.locator('.video-mute-btn .icon')).toHaveClass(/icon-mute/)
 	})
 
 	test('comment ticker opens replies panel at that reply', async ({ page, baseUrl, apiKey }) => {

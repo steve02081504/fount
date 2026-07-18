@@ -15,7 +15,7 @@ import { renderAttributionWarningIconHtml } from '/parts/shells:chat/shared/enti
 import { hubDeliveryReadIcon, hubDeliverySentIcon } from '../../../src/lib/emojiSvg.mjs'
 import { buildMessagesByEventId } from '../../../src/ui/channelDisplay.mjs'
 import { authorPresentationKeys, avatarColor, avatarInitial, avatarTextColor, formatTimeAttrs, timeI18nAttrFragment } from '../../core/domUtils.mjs'
-import { hubStore } from '../../core/state.mjs'
+import { store } from '../../core/state.mjs'
 import { renderMessageActionsHtml } from '../messageActionsRender.mjs'
 
 
@@ -102,15 +102,15 @@ async function renderMessageRowShell({
 export function renderDeliveryStatusHtml(status, peerRead = false) {
 	if (status === 'pending') {
 		const title = escapeHtml(geti18n('chat.hub.deliverySending') || '')
-		return `<span class="hub-delivery-status hub-delivery-status--pending text-xs opacity-40" title="${title}" aria-hidden="true"><span class="loading loading-spinner loading-xs"></span></span>`
+		return `<span class="delivery-status delivery-status--pending inline-flex items-center ms-1 leading-none align-middle text-xs opacity-40" title="${title}" aria-hidden="true"><span class="loading loading-spinner loading-xs"></span></span>`
 	}
 	if (peerRead) {
 		const title = escapeHtml(geti18n('chat.hub.deliveryRead') || '')
-		return `<span class="hub-delivery-status hub-delivery-status--read text-xs opacity-70" title="${title}" aria-hidden="true">${hubDeliveryReadIcon}</span>`
+		return `<span class="delivery-status delivery-status--read inline-flex items-center ms-1 leading-none align-middle text-xs opacity-70" title="${title}" aria-hidden="true">${hubDeliveryReadIcon}</span>`
 	}
 	if (status === 'sent') {
 		const title = escapeHtml(geti18n('chat.hub.deliverySent') || '')
-		return `<span class="hub-delivery-status hub-delivery-status--sent text-xs opacity-40" title="${title}" aria-hidden="true">${hubDeliverySentIcon}</span>`
+		return `<span class="delivery-status delivery-status--sent inline-flex items-center ms-1 leading-none align-middle text-xs opacity-40" title="${title}" aria-hidden="true">${hubDeliverySentIcon}</span>`
 	}
 	return ''
 }
@@ -129,9 +129,9 @@ function renderForwardedFromHtml(forwardedFrom) {
 	else if (forwardedFrom.groupId && forwardedFrom.channelId && forwardedFrom.eventId)
 		href = `#group:${encodeURIComponent(forwardedFrom.groupId)}:${encodeURIComponent(forwardedFrom.channelId)};${encodeURIComponent(forwardedFrom.eventId)}`
 	const nameHtml = href
-		? `<a class="hub-forwarded-from-link" href="${href}">${name}</a>`
+		? `<a class="forwarded-from-link" href="${href}">${name}</a>`
 		: `<span>${name}</span>`
-	return `<div class="hub-forwarded-from text-xs opacity-60 mb-1">${escapeHtml(label)} ${nameHtml}</div>`
+	return `<div class="forwarded-from text-xs opacity-60 mb-1">${escapeHtml(label)} ${nameHtml}</div>`
 }
 
 /**
@@ -174,7 +174,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	const timeAttrs = formatTimeAttrs(time)
 	const typingLabelHtml = generating
-		? '<span class="hub-streaming-typing inline-flex items-center gap-1 text-base-content/60 text-xs"><span class="loading loading-dots loading-xs"></span><span data-i18n="chat.hub.charTyping"></span></span>'
+		? '<span class="streaming-typing inline-flex items-center gap-1 text-base-content/60 text-xs"><span class="loading loading-dots loading-xs"></span><span data-i18n="chat.hub.charTyping"></span></span>'
 		: ''
 
 	const emojiRef = firstCustomEmojiRef(getMessageText(message))
@@ -300,8 +300,8 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	let deliveryStatusHtml = ''
 	if (!generating && isOwn && !message.sendFailed) {
-		const groupId = hubStore.context.currentGroupId
-		const channelId = hubStore.context.currentChannelId
+		const groupId = store.context.currentGroupId
+		const channelId = store.context.currentChannelId
 		const msgSeq = Number(message.seq)
 		let peerRead = false
 		if (groupId && channelId && Number.isFinite(msgSeq) && msgSeq > 0) {
@@ -314,7 +314,7 @@ export async function renderChannelMessageBlock(message, prevAuthorKey, prevTime
 
 	return {
 		html: await renderMessageRowShell({
-			rowClass: `hub-message ${isFirst ? 'first-in-group' : ''}${message.pending ? ' hub-message-pending' : ''}${message.sendFailed ? ' hub-message-send-failed' : ''}`.trim(),
+			rowClass: `message ${isFirst ? 'first-in-group' : ''}${message.pending ? ' message-pending' : ''}${message.sendFailed ? ' message-send-failed' : ''}`.trim(),
 			align,
 			bubbleClass,
 			rowAttrs,

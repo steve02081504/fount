@@ -2,7 +2,7 @@ import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { loadDraftIntoComposer, saveComposerDraft } from '../composer.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { focusComposer, switchView } from '../navigation.mjs'
-import { socialState } from '../state.mjs'
+import { state } from '../state.mjs'
 import { removeDraft } from '../views/drafts.mjs'
 
 /**
@@ -41,8 +41,8 @@ export async function handleDraftsClick(target) {
 	const deleteBtn = target.closest('[data-delete-draft]')
 	if (deleteBtn instanceof HTMLElement && deleteBtn.dataset.deleteDraft) {
 		const draftId = deleteBtn.dataset.deleteDraft
-		if (socialState.activeDraftId === draftId)
-			socialState.activeDraftId = null
+		if (state.activeDraftId === draftId)
+			state.activeDraftId = null
 		await removeDraft(draftId)
 		return true
 	}

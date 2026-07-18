@@ -1,4 +1,4 @@
-import { hubStore } from '../core/state.mjs'
+import { store } from '../core/state.mjs'
 
 import {
 	mergeIncrementalSourceBatch,
@@ -18,13 +18,13 @@ export function reactionsSignature(reactions) {
 /** @returns {void} */
 export function refreshChannelView() {
 	refreshChannelMessagesView(getMessageText)
-	const dividerId = hubStore.messages.firstUnreadEventId
+	const dividerId = store.messages.firstUnreadEventId
 	if (!dividerId) return
-	const channelMessages = hubStore.messages.channelMessages
+	const channelMessages = store.messages.channelMessages
 	const idx = channelMessages.findIndex(row => row.eventId === dividerId)
 	if (idx <= 0) return
 	if (channelMessages[idx - 1]?.type === 'unread_divider') return
-	hubStore.messages.channelMessages = [
+	store.messages.channelMessages = [
 		...channelMessages.slice(0, idx),
 		{ type: 'unread_divider', eventId: `unread:${dividerId}` },
 		...channelMessages.slice(idx),
@@ -36,13 +36,13 @@ export function refreshChannelView() {
  * @returns {void}
  */
 export function clearHubEmptyPlaceholder(container) {
-	if (container?.querySelector('.hub-empty')) container.innerHTML = ''
+	if (container?.querySelector('.empty')) container.innerHTML = ''
 }
 
 /** @returns {void} */
 export function updateLastMessageId() {
-	const last = hubStore.messages.channelMessagesSource.at(-1)
-	hubStore.messages.lastMessageId = last?.eventId || null
+	const last = store.messages.channelMessagesSource.at(-1)
+	store.messages.lastMessageId = last?.eventId || null
 }
 
 /**
@@ -51,17 +51,17 @@ export function updateLastMessageId() {
  * @returns {import('./channelMessageStore.mjs').ChannelMessageSource} 合并后的源列表
  */
 export function mergeIncrementalChannelBatch(source, batch) {
-	const pendingId = hubStore.messages.composerPendingId
+	const pendingId = store.messages.composerPendingId
 	const merged = mergeIncrementalSourceBatch(source, batch, pendingId)
 	if (pendingId && batch.some(row => String(row.eventId) !== pendingId))
-		hubStore.messages.composerPendingId = null
+		store.messages.composerPendingId = null
 	return merged
 }
 
 /** @returns {boolean} 是否为双方角色对话 */
 export function isTwoPartyCharDialogue() {
-	if (hubStore.privateGroup.charname) return true
-	const state = hubStore.context.currentState
+	if (store.privateGroup.charname) return true
+	const state = store.context.currentState
 	if (!state) return false
 	const charCount = state.charPartNames?.length ?? 0
 	const activeMembers = Object.values(state.members).filter(member => member?.status === 'active').length
@@ -85,5 +85,5 @@ export function messageIdSelector(messageId) {
  */
 export function hubMessageRowSelector(messageId) {
 	const idSel = messageIdSelector(messageId)
-	return idSel ? `.hub-message${idSel}` : ''
+	return idSel ? `.message${idSel}` : ''
 }

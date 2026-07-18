@@ -43,14 +43,14 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 	for (const key of keys) {
 		const tabButton = document.createElement('button')
 		tabButton.type = 'button'
-		tabButton.className = `hub-profile-locale-tab${key === activeKey ? ' active' : ''}`
+		tabButton.className = `profile-locale-tab${key === activeKey ? ' active' : ''}`
 		tabButton.dataset.locale = key
 		const label = document.createElement('span')
-		label.className = 'hub-profile-locale-tab-label'
+		label.className = 'profile-locale-tab-label'
 		label.textContent = key
 		tabButton.append(label)
 		const close = document.createElement('span')
-		close.className = 'hub-profile-locale-tab-close'
+		close.className = 'profile-locale-tab-close'
 		close.textContent = '×'
 		close.setAttribute('role', 'button')
 		close.setAttribute('aria-label', 'remove')
@@ -72,7 +72,7 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 
 	const addInput = document.createElement('input')
 	addInput.type = 'text'
-	addInput.className = 'hub-profile-locale-add-input input input-bordered input-sm font-mono'
+	addInput.className = 'profile-locale-add-input input input-bordered input-sm font-mono'
 	addInput.autocomplete = 'off'
 	addInput.placeholder = geti18n('chat.hub.profileEdit.newLocalePlaceholder') || ''
 	addInput.dataset.i18n = 'chat.hub.profileEdit.newLocalePlaceholder'
@@ -96,10 +96,10 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
  * @returns {void}
  */
 function beginLocaleRename(tabButton, label, key, onRename) {
-	if (tabButton.querySelector('.hub-profile-locale-tab-edit')) return
+	if (tabButton.querySelector('.profile-locale-tab-edit')) return
 	const input = document.createElement('input')
 	input.type = 'text'
-	input.className = 'hub-profile-locale-tab-edit input input-bordered input-sm font-mono'
+	input.className = 'profile-locale-tab-edit input input-bordered input-sm font-mono'
 	input.value = key
 	input.size = Math.max(key.length, 4)
 	label.replaceWith(input)
@@ -188,12 +188,12 @@ export function renderTagsEditor(host, tags, onChange) {
 	host.replaceChildren()
 	for (const tag of list) {
 		const chip = document.createElement('span')
-		chip.className = 'hub-profile-edit-tag-chip'
+		chip.className = 'profile-edit-tag-chip'
 		const label = document.createElement('span')
 		label.textContent = `#${tag}`
 		const remove = document.createElement('button')
 		remove.type = 'button'
-		remove.className = 'hub-profile-edit-tag-remove'
+		remove.className = 'profile-edit-tag-remove'
 		remove.textContent = '×'
 		remove.setAttribute('aria-label', geti18n('chat.hub.profileEdit.tagRemove') || 'remove')
 		remove.addEventListener('click', () => {
@@ -223,7 +223,7 @@ export function renderLinksEditor(host, links, onChange) {
 	host.replaceChildren()
 	draft.forEach((link, index) => {
 		const row = document.createElement('div')
-		row.className = 'hub-profile-edit-link-row'
+		row.className = 'profile-edit-link-row'
 		const nameInput = document.createElement('input')
 		nameInput.type = 'text'
 		nameInput.className = 'input input-bordered input-sm'
@@ -267,7 +267,7 @@ export function renderLinksEditor(host, links, onChange) {
  */
 export function readLinksEditor(host, options = {}) {
 	if (!(host instanceof HTMLElement)) return []
-	const rows = [...host.querySelectorAll('.hub-profile-edit-link-row')].map(row => {
+	const rows = [...host.querySelectorAll('.profile-edit-link-row')].map(row => {
 		const inputs = row.querySelectorAll('input')
 		return {
 			name: String(inputs[0]?.value || '').trim(),

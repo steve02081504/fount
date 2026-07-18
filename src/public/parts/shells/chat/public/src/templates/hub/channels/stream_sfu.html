@@ -1,10 +1,10 @@
-<div class="hub-stream-wrap">
-	<div class="hub-stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
+<div class="stream-wrap">
+	<div class="stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
 	${mode === 'iframe' ? `
-	<div class="hub-stream-toolbar">
-		<button type="button" class="hub-stream-refresh-button" data-i18n="chat.hub.streamRefreshToken"></button>
+	<div class="stream-toolbar">
+		<button type="button" class="stream-refresh-button" data-i18n="chat.hub.streamRefreshToken"></button>
 	</div>
-	<iframe class="hub-stream-frame" id="hub-stream-iframe" src="${escapeHtml(src)}" referrerpolicy="no-referrer" allow="autoplay; fullscreen; picture-in-picture"></iframe>
-	${streamError ? `<p class="hub-stream-empty">${escapeHtml(streamError)}</p>` : ''}
-	` : `<p class="hub-stream-empty" ${streamError ? '' : ` data-i18n="${emptyI18nKey}" `}>${streamError ? escapeHtml(streamError) : ''}</p>`}
+	<iframe class="stream-frame" id="stream-iframe" src="${escapeHtml(src)}" referrerpolicy="no-referrer" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+	${streamError ? `<p class="stream-empty">${escapeHtml(streamError)}</p>` : ''}
+	` : `<p class="stream-empty" ${streamError ? '' : ` data-i18n="${emptyI18nKey}" `}>${streamError ? escapeHtml(streamError) : ''}</p>`}
 </div>

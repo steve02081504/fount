@@ -1,9 +1,9 @@
 /**
  * Playwright 等待 shell 前端 bootstrap 就绪（轮询 `globalThis.fount.test.getState`）。
  */
-import { HUB_SHELL_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
+import { HUB_GATE } from 'fount/public/parts/shells/chat/public/hub/gate.mjs'
 import { STICKERS_PAGE_GATE } from 'fount/public/parts/shells/chat/public/stickers/gate.mjs'
-import { SOCIAL_APP_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
+import { SOCIAL_GATE } from 'fount/public/parts/shells/social/public/src/gate.mjs'
 import { ms } from 'fount/scripts/ms.mjs'
 
 /**
@@ -34,21 +34,21 @@ export async function waitForReadyGate(page, { id, label, timeout = ms('90s') })
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @returns {Promise<void>}
  */
-export function waitForHubShellReady(page) {
+export function waitForHubReady(page) {
 	return waitForReadyGate(page, {
-		...HUB_SHELL_GATE,
+		...HUB_GATE,
 		label: 'Hub',
 	})
 }
 
 /**
- * 等待 Social 应用 bootstrap 就绪。
+ * 等待 Social shell bootstrap 就绪。
  * @param {import('npm:@playwright/test').Page} page Playwright 页面
  * @returns {Promise<void>}
  */
-export function waitForSocialAppReady(page) {
+export function waitForSocialReady(page) {
 	return waitForReadyGate(page, {
-		...SOCIAL_APP_GATE,
+		...SOCIAL_GATE,
 		label: 'Social',
 		timeout: ms('90s'),
 	})

@@ -1,13 +1,13 @@
-<div class="hub-group-invite-card" data-group-id="${groupId}" data-invite-code="${inviteCode}">
-	<div class="hub-invite-icon"><img src="https://api.iconify.design/mdi/home-outline.svg" width="32" height="32" alt="" aria-hidden="true" /></div>
-	<div class="hub-invite-body">
-		<div class="hub-invite-name">${groupName}</div>
+<div class="group-invite-card" data-group-id="${groupId}" data-invite-code="${inviteCode}">
+	<div class="invite-icon"><img src="https://api.iconify.design/mdi/home-outline.svg" width="32" height="32" alt="" aria-hidden="true" /></div>
+	<div class="invite-body">
+		<div class="invite-name">${groupName}</div>
 		${descriptionHtml}
 		${countHtml}
 	</div>
 	${inviteLinkUnavailable ? `
 	<p class="text-sm opacity-70" data-i18n="chat.hub.inviteLinkNeedsRoomSecret"></p>
 	` : `
-	<a href="${joinUrl}" class="hub-invite-join-button" data-i18n="chat.hub.inviteJoinButton"></a>
+	<a href="${joinUrl}" class="invite-join-button" data-i18n="chat.hub.inviteJoinButton"></a>
 	`}
 </div>

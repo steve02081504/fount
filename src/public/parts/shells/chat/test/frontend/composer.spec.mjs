@@ -17,16 +17,16 @@ test.describe('Chat composer', () => {
 	})
 
 	test('does not submit empty composer', async ({ page, groupChannel: _ }) => {
-		await page.locator('#hub-message-input').fill('')
+		await page.locator('#message-input').fill('')
 		const postPromise = page.waitForResponse(
 			res => res.request().method() === 'POST'
 				&& res.url().includes('/channels/')
 				&& res.url().includes('/messages'),
 			{ timeout: 2_000 },
 		).catch(() => null)
-		await page.locator('#hub-send-button').click()
+		await page.locator('#send-button').click()
 		expect(await postPromise).toBeNull()
-		await expect(page.locator('#hub-message-input')).toHaveValue('')
+		await expect(page.locator('#message-input')).toHaveValue('')
 	})
 
 	test('published message appears in channel', async ({ page, groupChannel }) => {
@@ -43,29 +43,29 @@ test.describe('Chat composer', () => {
 			res => isChannelMessagePost(res, groupId, channelId),
 			{ timeout: 20_000 },
 		)
-		await page.locator('#hub-message-input').fill(text)
-		await page.locator('#hub-message-input').press('Control+Enter')
+		await page.locator('#message-input').fill(text)
+		await page.locator('#message-input').press('Control+Enter')
 		const postJson = await (await postPromise).json()
 		expect(postJson.event?.type).toBe('message')
 		await expectMessageInChat(page, text)
 	})
 
 	test('emoji picker opens from composer', async ({ page, groupChannel: _ }) => {
-		await page.locator('#hub-emoji-button').click()
-		await expect(page.locator('#hub-emoji-picker')).toHaveClass(/show/)
-		await expect(page.locator('#hub-emoji-tabs .hub-emoji-tab').first()).toBeVisible({ timeout: 30_000 })
+		await page.locator('#emoji-button').click()
+		await expect(page.locator('#emoji-picker')).toHaveClass(/show/)
+		await expect(page.locator('#emoji-tabs .emoji-tab').first()).toBeVisible({ timeout: 30_000 })
 	})
 
 	test('sticker picker opens from composer', async ({ page, groupChannel: _ }) => {
-		await page.locator('#hub-sticker-button').click()
-		await expect(page.locator('#hub-sticker-picker')).toHaveClass(/show/)
-		await expect(page.locator('#hub-sticker-grid')).toBeVisible()
+		await page.locator('#sticker-button').click()
+		await expect(page.locator('#sticker-picker')).toHaveClass(/show/)
+		await expect(page.locator('#sticker-grid')).toBeVisible()
 	})
 
 	test('vote modal opens and cancels', async ({ page, groupChannel: _ }) => {
-		await page.locator('#hub-vote-button').click()
-		await expect(page.locator('#hub-vote-modal')).toBeVisible({ timeout: 10_000 })
-		await page.locator('#hub-vote-cancel-button').click()
-		await expect(page.locator('#hub-vote-modal')).toBeHidden({ timeout: 10_000 })
+		await page.locator('#vote-button').click()
+		await expect(page.locator('#vote-modal')).toBeVisible({ timeout: 10_000 })
+		await page.locator('#vote-cancel-button').click()
+		await expect(page.locator('#vote-modal')).toBeHidden({ timeout: 10_000 })
 	})
 })

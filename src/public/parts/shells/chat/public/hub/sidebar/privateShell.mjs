@@ -4,7 +4,7 @@
  */
 import { mountTemplate } from '../../../../../scripts/features/template.mjs'
 import { updateStatusBanners } from '../banners.mjs'
-import { hubStore, setHubState } from '../core/state.mjs'
+import { store, setState } from '../core/state.mjs'
 import { updateFriendsHash } from '../core/urlHash.mjs'
 import { cancelScheduledChannelRefresh } from '../messages/channelRefreshScheduler.mjs'
 import { clearPrivateGroupState } from '../privateGroup.mjs'
@@ -14,7 +14,7 @@ import { closeGroupWebSocket } from '../stream/index.mjs'
  * @returns {boolean} 好友模式下是否处于活跃私聊会话
  */
 export function isPrivateChatActive() {
-	return hubStore.context.currentMode === 'friends' && !!hubStore.privateGroup.groupId
+	return store.context.currentMode === 'friends' && !!store.privateGroup.groupId
 }
 
 /**
@@ -22,10 +22,10 @@ export function isPrivateChatActive() {
  */
 export function getChannelListContainer() {
 	if (isPrivateChatActive()) {
-		const host = document.getElementById('hub-private-channel-list-host')
+		const host = document.getElementById('private-channel-list-host')
 		if (host) return host
 	}
-	return document.getElementById('hub-channel-list')
+	return document.getElementById('channel-list')
 }
 
 /**
@@ -38,16 +38,16 @@ export async function backToFriendsList() {
 	const { loadFriendsList, renderFriendsColumn } = await import('../friendsList.mjs')
 	closeGroupWebSocket()
 	clearPrivateGroupState()
-	setHubState('context.currentGroupId', null)
-	setHubState('context.currentChannelId', null)
-	setHubState('context.currentState', null)
+	setState('context.currentGroupId', null)
+	setState('context.currentChannelId', null)
+	setState('context.currentState', null)
 	updateFriendsHash()
 	disableComposer()
-	await mountTemplate(document.getElementById('hub-messages'), 'hub/empty/idle', {
-		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="hub-empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
+	await mountTemplate(document.getElementById('messages'), 'hub/empty/idle', {
+		iconHtml: '<img src="https://api.iconify.design/mdi/account-group-outline.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" />',
 	})
-	document.getElementById('hub-channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
-	document.getElementById('hub-info-card-host').innerHTML = ''
+	document.getElementById('channel-name-display').dataset.i18n = 'chat.hub.friendsHeader'
+	document.getElementById('info-card-host').innerHTML = ''
 	await renderFriendsColumn(await loadFriendsList())
 	refreshHubHeaderButtons()
 	updateStatusBanners()

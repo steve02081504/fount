@@ -82,7 +82,7 @@ async function openNotifyPrefsDialog({ titleKey, current, onSave }) {
 		onReady: dialog => {
 			const title = dialog.querySelector('h3')
 			if (title) title.dataset.i18n = titleKey
-			dialog.querySelector('.hub-notify-prefs-save')?.addEventListener('click', () => {
+			dialog.querySelector('.notify-prefs-save')?.addEventListener('click', () => {
 				void onSave(dialog).catch(error => {
 					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
 				})

@@ -252,8 +252,8 @@ async function doJoinCodecsAvRoom(options) {
 				label,
 			})
 			if (entityHash) tile.dataset.entityHash = entityHash
-			const canvasHost = tile.querySelector('.hub-streaming-av-canvas-host')
-			const voiceHost = tile.querySelector('.hub-streaming-av-voice-host')
+			const canvasHost = tile.querySelector('.streaming-av-canvas-host')
+			const voiceHost = tile.querySelector('.streaming-av-voice-host')
 			const peerMeta = remoteMeta.get(senderIdHex)
 			const peerAudioOnly = !isScreen && (audioOnlyUi || (peerMeta && !peerMeta.video))
 

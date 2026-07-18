@@ -2,7 +2,7 @@ import { request as playwrightRequest } from '@playwright/test'
 import { ms } from 'fount/scripts/ms.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
 import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
-import { waitForHubShellReady } from 'fount/scripts/test/playwright/ready.mjs'
+import { waitForHubReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 const HUB_INIT_TIMEOUT = ms('3m')
 
@@ -26,7 +26,7 @@ baseTest.beforeEach(async ({ baseUrl, apiKey }) => {
 })
 
 /**
- * 等待 Hub 壳层可见并完成 bootHub（`fount:hub-shell-ready`）。
+ * 等待 Hub 壳层可见并完成 bootHub（`fount:hub-ready`）。
  *
  * `waitUntil: 'domcontentloaded'` 已保证入口模块（index.mjs）同步执行完毕，
  * `wireBootstrap()` 的建群/成员侧栏点击监听随之挂载。
@@ -35,18 +35,18 @@ baseTest.beforeEach(async ({ baseUrl, apiKey }) => {
  * @param {{ waitUntil?: 'domcontentloaded' | 'load', friendsMode?: boolean }} [options] - 导航选项。
  * @returns {Promise<void>} 无返回值。
  */
-export async function waitForHubShell(page, baseUrl, options = {}) {
+export async function waitForHub(page, baseUrl, options = {}) {
 	const waitUntil = options.waitUntil ?? 'domcontentloaded'
 	const friendsMode = options.friendsMode !== false
 	await page.goto(`${baseUrl}/parts/shells:chat/hub/`, {
 		waitUntil,
 		timeout: HUB_INIT_TIMEOUT,
 	})
-	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
-	await expect(page.locator('#hub-add-server-button')).toBeVisible()
-	await waitForHubShellReady(page)
+	await expect(page.locator('#server-bar')).toBeVisible({ timeout: ms('1m') })
+	await expect(page.locator('#add-server-button')).toBeVisible()
+	await waitForHubReady(page)
 	if (friendsMode && !page.url().includes('#group:'))
-		await expect(page.locator('#hub-message-input')).toBeDisabled({ timeout: ms('90s') })
+		await expect(page.locator('#message-input')).toBeDisabled({ timeout: ms('90s') })
 }
 
 /**
@@ -56,8 +56,8 @@ export async function waitForHubShell(page, baseUrl, options = {}) {
  * @returns {Promise<void>} 无返回值。
  */
 export async function openChatHub(page, baseUrl) {
-	await waitForHubShell(page, baseUrl)
-	await expect(page.locator('#hub-message-input')).toBeVisible()
+	await waitForHub(page, baseUrl)
+	await expect(page.locator('#message-input')).toBeVisible()
 }
 
 /**
@@ -95,12 +95,12 @@ export function parseGroupHashFromUrl(url) {
 export async function createGroupViaHubUi(page, baseUrl, options = {}) {
 	const name = options.name ?? `pw-ui-${Date.now()}`
 	if (!page.url().includes('/parts/shells:chat/hub/'))
-		await waitForHubShell(page, baseUrl)
+		await waitForHub(page, baseUrl)
 	else {
-		await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
-		await expect(page.locator('#hub-add-server-button')).toBeVisible()
+		await expect(page.locator('#server-bar')).toBeVisible({ timeout: ms('1m') })
+		await expect(page.locator('#add-server-button')).toBeVisible()
 	}
-	await page.locator('#hub-add-server-button').click()
+	await page.locator('#add-server-button').click()
 	const createCard = page.locator('.server-action-picker-card[data-action="create"]')
 	await expect(createCard).toBeVisible({ timeout: ms('30s') })
 	await createCard.click()
@@ -115,7 +115,7 @@ export async function createGroupViaHubUi(page, baseUrl, options = {}) {
 	const parsed = parseGroupHashFromUrl(page.url())
 	if (!parsed) throw new Error(`group hash missing after create: ${page.url()}`)
 	if (options.waitForComposer !== false)
-		await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
+		await expect(page.locator('#message-input')).toBeEnabled({ timeout: HUB_INIT_TIMEOUT })
 	return parsed
 }
 
@@ -169,7 +169,7 @@ function hubUrlWithHash(baseUrl, hash) {
  * @returns {Promise<void>} 无返回值。
  */
 async function waitForGroupComposerReady(page, groupId) {
-	const input = page.locator('#hub-message-input')
+	const input = page.locator('#message-input')
 	for (let attempt = 0; attempt < 2; attempt++)
 		try {
 			await expect(input).toBeEnabled({ timeout: ms('30s') })
@@ -177,7 +177,7 @@ async function waitForGroupComposerReady(page, groupId) {
 		}
 		catch {
 			if (attempt === 0) {
-				const serverItem = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)
+				const serverItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
 				if (await serverItem.isVisible().catch(() => false)) {
 					await serverItem.click()
 					continue
@@ -186,7 +186,7 @@ async function waitForGroupComposerReady(page, groupId) {
 			}
 		}
 
-	const serverItem = page.locator(`#hub-server-list .hub-server-item[data-group-id="${groupId}"]`)
+	const serverItem = page.locator(`#server-list .server-item[data-group-id="${groupId}"]`)
 	await expect(serverItem).toBeVisible({ timeout: ms('1m') })
 	await serverItem.click()
 	await expect(input).toBeEnabled({ timeout: ms('1m') })
@@ -206,8 +206,8 @@ export async function openGroupChannel(page, baseUrl, groupId, channelId) {
 		hubUrlWithHash(baseUrl, `group:${encodedGroup}:${channelId}`),
 		{ waitUntil: 'domcontentloaded', timeout: HUB_INIT_TIMEOUT },
 	)
-	await expect(page.locator('#hub-server-bar')).toBeVisible({ timeout: ms('1m') })
-	await waitForHubShellReady(page)
+	await expect(page.locator('#server-bar')).toBeVisible({ timeout: ms('1m') })
+	await waitForHubReady(page)
 	await waitForGroupComposerReady(page, groupId)
 }
 
@@ -224,7 +224,7 @@ export async function navigateGroupChannelHash(page, groupId, channelId) {
 		{ gid: groupId, cid: channelId },
 	)
 	await expect(page).toHaveURL(new RegExp(`#group:${encodeURIComponent(groupId)}`))
-	await expect(page.locator('#hub-message-input')).toBeEnabled({ timeout: 60_000 })
+	await expect(page.locator('#message-input')).toBeEnabled({ timeout: 60_000 })
 }
 
 /**
@@ -254,7 +254,7 @@ export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {
 	const hashFrag = `group:${encodeURIComponent(groupId)}:${defaultChannelId}`
 	if (page.url().includes('/parts/shells:chat/hub/')) {
 		if (page.url().includes(`#${hashFrag}`)) {
-			const input = page.locator('#hub-message-input')
+			const input = page.locator('#message-input')
 			try {
 				await expect(input).toBeEnabled({ timeout: ms('15s') })
 				return { groupId, channelId: defaultChannelId }
@@ -284,10 +284,10 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
 		res => isChannelMessagePost(res, groupId, channelId),
 		{ timeout: MESSAGE_POST_TIMEOUT },
 	)
-	await page.locator('#hub-message-input').fill(text)
-	await page.locator('#hub-send-button').click()
+	await page.locator('#message-input').fill(text)
+	await page.locator('#send-button').click()
 	const postJson = await (await postPromise).json()
-	await expect(page.locator('#hub-message-input')).toHaveValue('')
+	await expect(page.locator('#message-input')).toHaveValue('')
 	return postJson
 }
 
@@ -298,7 +298,7 @@ export async function sendMessageViaComposer(page, groupId, channelId, text) {
  * @returns {Promise<import('npm:@playwright/test').Locator>} 消息行定位器。
  */
 export async function expectMessageInChat(page, text) {
-	const row = page.locator('#hub-messages .hub-message').filter({ hasText: text })
+	const row = page.locator('#messages .message').filter({ hasText: text })
 	await expect(row.first()).toBeVisible({ timeout: ms('1m') })
 	return row.first()
 }
@@ -348,7 +348,7 @@ export async function createTestChannel(baseUrl, apiKey, groupId, options = {}) 
  * @returns {import('npm:@playwright/test').Locator} 消息行定位器。
  */
 export function messageRowByText(page, text) {
-	return page.locator('#hub-messages .hub-message').filter({ hasText: text }).first()
+	return page.locator('#messages .message').filter({ hasText: text }).first()
 }
 
 /**

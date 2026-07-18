@@ -42,7 +42,7 @@ export async function renderVoteBlock(message, allMessages) {
 		deadlineHtml,
 		voteOptions,
 		total,
-		closedClass: closed ? ' hub-vote-block--closed' : '',
-		closedLabel: closed ? '<div class="hub-vote-closed-label" data-i18n="chat.hub.voteClosed"></div>' : '',
+		closedClass: closed ? ' vote-block--closed' : '',
+		closedLabel: closed ? '<div class="vote-closed-label" data-i18n="chat.hub.voteClosed"></div>' : '',
 	})
 }

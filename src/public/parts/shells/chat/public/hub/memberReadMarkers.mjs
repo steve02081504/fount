@@ -6,7 +6,7 @@
 import { geti18n } from '../../../../scripts/i18n/index.mjs'
 import { hubDeliveryReadIcon } from '../src/lib/emojiSvg.mjs'
 
-import { hubStore } from './core/state.mjs'
+import { store } from './core/state.mjs'
 
 /** @type {Map<string, Record<string, { seq: number, eventId: string }>>} channelKey → markers */
 const markersCache = new Map()
@@ -70,7 +70,7 @@ export function applyMemberReadMarkerWire(wireMessage) {
 	if (prev && Number(prev.seq) >= seq) return
 	markers[entityHash] = { seq, eventId }
 	markersCache.set(key, markers)
-	if (groupId === hubStore.context.currentGroupId && channelId === hubStore.context.currentChannelId)
+	if (groupId === store.context.currentGroupId && channelId === store.context.currentChannelId)
 		paintOwnDeliveryStatuses()
 }
 
@@ -83,8 +83,8 @@ export function applyMemberReadMarkerWire(wireMessage) {
  */
 export function isMessageReadByPeer(groupId, channelId, msgSeq) {
 	const markers = getCachedReadMarkers(groupId, channelId)
-	const viewerKey = String(hubStore.context.currentState?.viewerMemberPubKeyHash
-		|| hubStore.context.currentState?.viewerEntityHash
+	const viewerKey = String(store.context.currentState?.viewerMemberPubKeyHash
+		|| store.context.currentState?.viewerEntityHash
 		|| '').trim().toLowerCase()
 	for (const [entityHash, marker] of Object.entries(markers)) {
 		if (entityHash.toLowerCase() === viewerKey) continue
@@ -98,13 +98,13 @@ export function isMessageReadByPeer(groupId, channelId, msgSeq) {
  * @returns {void}
  */
 export function paintOwnDeliveryStatuses() {
-	const groupId = hubStore.context.currentGroupId
-	const channelId = hubStore.context.currentChannelId
+	const groupId = store.context.currentGroupId
+	const channelId = store.context.currentChannelId
 	if (!groupId || !channelId) return
-	const container = document.getElementById('hub-messages')
+	const container = document.getElementById('messages')
 	if (!(container instanceof HTMLElement)) return
 	const readTitle = geti18n('chat.hub.deliveryRead') || ''
-	for (const msg of hubStore.messages.channelMessagesSource) {
+	for (const msg of store.messages.channelMessagesSource) {
 		if (msg.isRemote || msg.pending || msg.sendFailed) continue
 		const seq = Number(msg.seq)
 		if (!Number.isFinite(seq) || seq <= 0) continue
@@ -112,10 +112,10 @@ export function paintOwnDeliveryStatuses() {
 		const eventId = String(msg.eventId || '')
 		if (!eventId) continue
 		const domRow = container.querySelector(`[data-message-id="${CSS.escape(eventId)}"]`)
-		const existing = domRow?.querySelector('.hub-delivery-status')
+		const existing = domRow?.querySelector('.delivery-status')
 		if (!(existing instanceof HTMLElement)) continue
-		if (existing.classList.contains('hub-delivery-status--read')) continue
-		existing.className = 'hub-delivery-status hub-delivery-status--read text-xs opacity-70'
+		if (existing.classList.contains('delivery-status--read')) continue
+		existing.className = 'delivery-status delivery-status--read inline-flex items-center ms-1 leading-none align-middle text-xs opacity-70'
 		existing.title = readTitle
 		existing.innerHTML = hubDeliveryReadIcon
 		if (domRow instanceof HTMLElement) domRow.dataset.deliveryStatus = 'read'
