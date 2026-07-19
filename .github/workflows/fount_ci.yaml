@@ -18,6 +18,10 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      gh_token:
+        description: 'PAT for gh (fount test Deno panic auto-issue to denoland/deno); falls back to GITHUB_TOKEN'
+        required: false
 
 jobs:
   ci:
@@ -53,6 +57,8 @@ jobs:
         env:
           GITHUB_EVENT_BEFORE: ${{ github.event.before }}
           GITHUB_SHA: ${{ github.sha }}
+          # fount test → deno_panic.mjs 用 gh 开 issue；跨仓（denoland/deno）需 PAT
+          GH_TOKEN: ${{ secrets.gh_token || secrets.GITHUB_TOKEN }}
         run: ${{ inputs.run-command }}
       - name: Delete Previous Cache
         continue-on-error: true

@@ -1,6 +1,7 @@
 /**
  * Chat emoji 内容提供商（registries.emoji）：最近 / 群自定义 / Unicode 分组。
  */
+import { escapeHtml } from '../shared/escapeHtml.mjs'
 import { formatEmojiToken } from '../shared/inlineTokenSyntax.mjs'
 import { fetchFrequentEmojis } from '../src/emojiUsageApi.mjs'
 import { groupEmojiDataApiPath } from '../src/groupEmojiApi.mjs'
@@ -18,7 +19,6 @@ import {
 	unicodeEmojiGroupTabGlyph,
 	unicodeEmojiTabKey,
 } from '../src/lib/unicodeEmojiData.mjs'
-import { escapeHtml } from '../shared/escapeHtml.mjs'
 
 const FREQUENT_EMOJI_LIMIT = 32
 

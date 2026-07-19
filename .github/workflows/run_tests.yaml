@@ -11,6 +11,8 @@ on:
 jobs:
   run-tests:
     uses: ./.github/workflows/fount_ci.yaml
+    secrets:
+      gh_token: ${{ secrets.GH_TOKEN }}
     with:
       run-step-name: Run tests
       run-command: deno run --allow-scripts --allow-all -c "./deno.json" ./src/scripts/test/cli.mjs

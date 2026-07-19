@@ -1,6 +1,9 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
 import { isNotifyMuted } from 'fount/public/parts/shells/chat/public/shared/notificationPreferences.mjs'
 
+/**
+ *
+ */
 export { isNotifyMuted }
 
 import { assignEntityShellData, loadEntityShellData } from '../../../../../../../server/setting_loader.mjs'

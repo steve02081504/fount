@@ -12,6 +12,9 @@ import { createAudioGate } from './audioGate.mjs'
 import { CODECS_PRESETS } from './avRelayPresets.mjs'
 import { bytesToHex } from './digest.mjs'
 
+/**
+ *
+ */
 export { bytesToHex }
 
 const PRESET = CODECS_PRESETS.med
