@@ -104,10 +104,20 @@ export function sharedCabinetDir(username, cabinetId) {
 /**
  * @param {string} username 用户
  * @param {string} cabinetId 柜 id
+ * @param {string} file 文件名
+ * @returns {string} 共享柜内文件路径
+ */
+function sharedCabinetFile(username, cabinetId, file) {
+	return `${sharedCabinetDir(username, cabinetId)}/${file}`
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} cabinetId 柜 id
  * @returns {string} keys.json
  */
 export function sharedCabinetKeysPath(username, cabinetId) {
-	return `${sharedCabinetDir(username, cabinetId)}/keys.json`
+	return sharedCabinetFile(username, cabinetId, 'keys.json')
 }
 
 /**
@@ -116,7 +126,7 @@ export function sharedCabinetKeysPath(username, cabinetId) {
  * @returns {string} ops.jsonl
  */
 export function sharedCabinetOpsPath(username, cabinetId) {
-	return `${sharedCabinetDir(username, cabinetId)}/ops.jsonl`
+	return sharedCabinetFile(username, cabinetId, 'ops.jsonl')
 }
 
 /**
@@ -125,7 +135,7 @@ export function sharedCabinetOpsPath(username, cabinetId) {
  * @returns {string} 物化快照
  */
 export function sharedCabinetSnapshotPath(username, cabinetId) {
-	return `${sharedCabinetDir(username, cabinetId)}/snapshot.json`
+	return sharedCabinetFile(username, cabinetId, 'snapshot.json')
 }
 
 /**

@@ -15,7 +15,6 @@ import {
 } from '/parts/shells:chat/shared/trustedMarkdown.mjs'
 import { isTrustedMarkdownAuthor } from '/parts/shells:chat/src/trustedAuthors.mjs'
 import { renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { formatSocialPostHref } from '../../shared/runUri.mjs'
@@ -152,18 +151,6 @@ export function formatTimeHtml(ts, className = 'post-meta', tag = 'span', extraA
 		return `<${tag}${classAttr}${extra}>${escapeHtml(attrs.text)}</${tag}>`
 	const nAttr = attrs.n != null ? ` data-n="${attrs.n}"` : ''
 	return `<${tag}${classAttr}${extra} data-i18n="${attrs.i18n}"${nAttr}></${tag}>`
-}
-
-/**
- * 无 DOM 场景的相对时间字符串（优先用 formatTimeHtml）。
- * @param {number} [ts] 毫秒时间戳
- * @returns {string} 相对时间
- */
-export function formatTime(ts) {
-	const attrs = formatTimeAttrs(ts)
-	if (attrs.text) return attrs.text
-	if (attrs.n != null) return geti18n(attrs.i18n, { n: attrs.n })
-	return geti18n(attrs.i18n)
 }
 
 /**

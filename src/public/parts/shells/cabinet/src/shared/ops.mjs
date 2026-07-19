@@ -9,6 +9,7 @@ import {
 	normalizeParentId,
 	patchEntry,
 } from '../entryModel.mjs'
+import { clearRecovery, loadRecovery, storeRecovery } from '../recovery.mjs'
 
 import { getSharedCabinetBlob, putSharedCabinetBlob } from './blobs.mjs'
 import { encryptOpPayload, signOp } from './crypto.mjs'
@@ -140,7 +141,6 @@ export async function deleteSharedEntries(username, entityHash, cabinetId, entry
 		}
 	}
 	if (!options.recoverable) return { deleted }
-	const { storeRecovery } = await import('../recovery.mjs')
 	const recovery_token = await storeRecovery(username, entityHash, cabinetId, {
 		shared: true,
 		entries: stashed,
@@ -156,7 +156,6 @@ export async function deleteSharedEntries(username, entityHash, cabinetId, entry
  * @returns {Promise<{ restored: string[] }>} 结果
  */
 export async function restoreSharedEntries(username, entityHash, cabinetId, recoveryToken) {
-	const { loadRecovery, clearRecovery } = await import('../recovery.mjs')
 	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, true)
 	if (!record) throw new Error('recovery token invalid')
 	/** @type {string[]} */
@@ -177,7 +176,6 @@ export async function restoreSharedEntries(username, entityHash, cabinetId, reco
  * @returns {Promise<{ finalized: string[] }>} 结果
  */
 export async function finalizeSharedDelete(username, cabinetId, recoveryToken) {
-	const { loadRecovery, clearRecovery } = await import('../recovery.mjs')
 	const record = await loadRecovery(username, '', cabinetId, recoveryToken, true)
 	if (!record) return { finalized: [] }
 	await clearRecovery(username, '', cabinetId, recoveryToken, true)

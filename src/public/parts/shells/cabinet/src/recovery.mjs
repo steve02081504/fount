@@ -9,19 +9,13 @@ const TTL_MS = 2 * 60 * 60 * 1000
  * @param {string} username 用户
  * @param {string} entityHash 实体
  * @param {string} cabinetId 柜
- * @returns {string} 个人柜 recovery 目录
+ * @param {boolean} shared 是否共享柜
+ * @returns {string} recovery 目录
  */
-function personalRecoveryDir(username, entityHash, cabinetId) {
-	return `${cabinetDir(username, entityHash, cabinetId)}/recovery`
-}
-
-/**
- * @param {string} username 用户
- * @param {string} cabinetId 共享柜
- * @returns {string} 共享柜 recovery 目录
- */
-function sharedRecoveryDir(username, cabinetId) {
-	return `${sharedCabinetDir(username, cabinetId)}/recovery`
+function recoveryDir(username, entityHash, cabinetId, shared) {
+	return shared
+		? `${sharedCabinetDir(username, cabinetId)}/recovery`
+		: `${cabinetDir(username, entityHash, cabinetId)}/recovery`
 }
 
 /**
@@ -67,9 +61,7 @@ async function purgeExpiredInDir(dir) {
  * @returns {Promise<string>} recovery 目录
  */
 async function ensureRecoveryDir(username, entityHash, cabinetId, shared) {
-	const dir = shared
-		? sharedRecoveryDir(username, cabinetId)
-		: personalRecoveryDir(username, entityHash, cabinetId)
+	const dir = recoveryDir(username, entityHash, cabinetId, shared)
 	await mkdir(dir, { recursive: true })
 	await purgeExpiredInDir(dir)
 	return dir
@@ -89,15 +81,14 @@ async function ensureRecoveryDir(username, entityHash, cabinetId, shared) {
 export async function storeRecovery(username, entityHash, cabinetId, payload) {
 	const dir = await ensureRecoveryDir(username, entityHash, cabinetId, Boolean(payload.shared))
 	const recovery_token = randomUUID()
-	const record = {
+	await writeFile(tokenPath(dir, recovery_token), JSON.stringify({
 		recovery_token,
 		cabinet_id: cabinetId,
 		created_at: Date.now(),
 		expires_at: Date.now() + TTL_MS,
 		entries: payload.entries || [],
 		encrypted_indexes: payload.encrypted_indexes || {},
-	}
-	await writeFile(tokenPath(dir, recovery_token), JSON.stringify(record), 'utf8')
+	}), 'utf8')
 	return recovery_token
 }
 
@@ -110,9 +101,7 @@ export async function storeRecovery(username, entityHash, cabinetId, payload) {
  * @returns {Promise<object | null>} 记录
  */
 export async function loadRecovery(username, entityHash, cabinetId, recoveryToken, shared = false) {
-	const dir = shared
-		? sharedRecoveryDir(username, cabinetId)
-		: personalRecoveryDir(username, entityHash, cabinetId)
+	const dir = recoveryDir(username, entityHash, cabinetId, shared)
 	await purgeExpiredInDir(dir)
 	try {
 		const raw = JSON.parse(await readFile(tokenPath(dir, recoveryToken), 'utf8'))
@@ -137,8 +126,5 @@ export async function loadRecovery(username, entityHash, cabinetId, recoveryToke
  * @returns {Promise<void>}
  */
 export async function clearRecovery(username, entityHash, cabinetId, recoveryToken, shared = false) {
-	const dir = shared
-		? sharedRecoveryDir(username, cabinetId)
-		: personalRecoveryDir(username, entityHash, cabinetId)
-	await unlink(tokenPath(dir, recoveryToken)).catch(() => { })
+	await unlink(tokenPath(recoveryDir(username, entityHash, cabinetId, shared), recoveryToken)).catch(() => { })
 }

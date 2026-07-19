@@ -23,3 +23,25 @@ export async function buildEmptyState({ titleKey, iconClass = '', hintKey = '', 
 		actionHtml,
 	})
 }
+
+/**
+ * @param {HTMLElement} container 容器
+ * @param {Parameters<typeof buildEmptyState>[0]} options 选项
+ * @returns {Promise<HTMLElement>} 空态节点
+ */
+export async function mountEmptyState(container, options) {
+	const node = await buildEmptyState(options)
+	container.replaceChildren(node)
+	return node
+}
+
+/**
+ * @param {HTMLElement} container 容器
+ * @param {Parameters<typeof buildEmptyState>[0]} options 选项
+ * @returns {Promise<HTMLElement>} 空态节点
+ */
+export async function appendEmptyState(container, options) {
+	const node = await buildEmptyState(options)
+	container.appendChild(node)
+	return node
+}

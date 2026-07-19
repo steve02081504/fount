@@ -1,7 +1,7 @@
 import { loadPersonalFilterSets, matchesPersonalListEntries } from 'npm:@steve02081504/fount-p2p/node/personal_block'
 
 import { indexDocument, patchShardMeta, queryIndex, removeDocument } from '../../../../../../../scripts/search/invertedIndex.mjs'
-import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
+import { channelMessageShowText, messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import { loadArchiveManifest } from '../archive/index.mjs'
 import { readArchiveAsMessageLines } from '../archive/reader.mjs'
 import { groupSearchIndexPath } from '../lib/paths.mjs'
@@ -11,12 +11,7 @@ import { groupSearchIndexPath } from '../lib/paths.mjs'
  * @returns {string} 可索引正文
  */
 export function searchTextFromMessageLine(messageLine) {
-	if (messageLine?.decryptView?.failed) return ''
-	const content = messageLine?.content
-	if (messageLine?.type === 'message_edit')
-		return channelMessageShowText(content?.newContent ?? content)
-	if (messageLine?.type === 'message_delete') return ''
-	return channelMessageShowText(content)
+	return messageLineShowText(messageLine)
 }
 
 /**

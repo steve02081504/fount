@@ -1,7 +1,7 @@
 /**
  * 【文件】public/hub/codecsAv.mjs
  * 【职责】Codecs 音视频中继：构建 relay 房间 ID/WebSocket URL，加入/离开 AV 房间与编解码预设。
- * 【原理】与 `streamingAv` 配合更新通话工具栏；本文件侧重 MediaStream/Encoder 与 relay 信令 UI 片段。使用独立 AV relay WebSocket（`buildAvRelayWebSocketUrl`），与群组消息 WS 分离。
+ * 【原理】与 `streamingAv` 配合更新通话工具栏；本文件侧重 MediaStream/Encoder 与 relay 信令 UI 片段。使用独立 AV relay WebSocket（`buildChatAvRelayWsUrl`），与群组消息 WS 分离。
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../shared/avRelayClient（帧协议 / URL）、../shared/avRelayPresets、../../../../scripts/template、core/domUtils
  */

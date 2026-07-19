@@ -15,6 +15,17 @@ function gc() {
 }
 
 /**
+ * @param {string} token token
+ * @returns {{ folder_key: Buffer, cabinet_id: string, folder_id: string, entity_hash: string, expires_at: number } | null} 载荷
+ */
+function getLiveToken(token) {
+	gc()
+	const row = tokens.get(String(token || ''))
+	if (!row || row.expires_at <= Date.now()) return null
+	return row
+}
+
+/**
  * @param {{ folder_key: Buffer, cabinet_id: string, folder_id: string, entity_hash: string }} payload 载荷
  * @returns {string} unlock token
  */
@@ -33,10 +44,7 @@ export function issueUnlockToken(payload) {
  * @returns {{ folder_key: Buffer, cabinet_id: string, folder_id: string, entity_hash: string, expires_at: number } | null} 载荷
  */
 export function peekUnlockToken(token) {
-	gc()
-	const row = tokens.get(String(token || ''))
-	if (!row || row.expires_at <= Date.now()) return null
-	return row
+	return getLiveToken(token)
 }
 
 /**
@@ -45,8 +53,7 @@ export function peekUnlockToken(token) {
  * @returns {Buffer | null} folder key
  */
 export function resolveUnlockToken(token, expect) {
-	gc()
-	const row = tokens.get(String(token || ''))
+	const row = getLiveToken(token)
 	if (!row) return null
 	if (row.cabinet_id !== expect.cabinet_id) return null
 	if (row.folder_id !== expect.folder_id) return null
@@ -62,15 +69,10 @@ export function resolveUnlockToken(token, expect) {
  * @returns {{ folder_id: string, folder_key: Buffer } | null} 解密上下文
  */
 export function resolveFolderUnlock(token, cabinetId, entityHash) {
-	const meta = peekUnlockToken(token)
-	if (!meta || meta.cabinet_id !== cabinetId) return null
-	const folderKey = resolveUnlockToken(token, {
-		cabinet_id: cabinetId,
-		folder_id: meta.folder_id,
-		entity_hash: entityHash,
-	})
-	if (!folderKey) return null
-	return { folder_id: meta.folder_id, folder_key: folderKey }
+	const row = getLiveToken(token)
+	if (!row || row.cabinet_id !== cabinetId || row.entity_hash !== entityHash) return null
+	row.expires_at = Date.now() + TTL_MS
+	return { folder_id: row.folder_id, folder_key: row.folder_key }
 }
 
 /**

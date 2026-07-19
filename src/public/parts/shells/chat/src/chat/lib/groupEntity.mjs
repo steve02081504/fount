@@ -1,24 +1,18 @@
-import {
-	isLogicalEntityHash,
-	logicalEntityHash,
-} from 'npm:@steve02081504/fount-p2p/core/logical_entity'
+/**
+ * 【文件】groupEntity.mjs
+ * 【职责】群逻辑实体：哈希推导复用 shared；本文件保留 manifest/目录反查。
+ */
+import { isLogicalEntityHash } from 'npm:@steve02081504/fount-p2p/core/logical_entity'
 
 import { resolveLogicalEntityId } from '../../entity/logicalId.mjs'
 
 /**
  *
  */
-export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
-
-/**
- * @param {string} groupId 群 ID
- * @returns {string} 128 位 groupEntityHash
- */
-export function groupEntityHash(groupId) {
-	const id = String(groupId || '').trim()
-	if (!id) throw new Error('groupId required')
-	return logicalEntityHash(`${GROUP_SUBJECT_PREFIX}${id}`)
-}
+export {
+	GROUP_SUBJECT_PREFIX,
+	groupEntityHash,
+} from '../../../public/shared/groupEntityHash.mjs'
 
 /**
  * @param {unknown} entityHash 128 hex

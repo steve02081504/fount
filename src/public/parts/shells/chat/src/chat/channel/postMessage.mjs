@@ -15,11 +15,12 @@ import { parseEvfsRef } from 'npm:@steve02081504/fount-p2p/files/evfs_ref'
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
 import { unlockAchievement } from '../../../../achievements/src/api.mjs'
 import {
-	channelMessageAgentText,
 	channelMessageContentObject,
-	channelMessageShowText,
+	inlineImageMarker,
+	mergeInlineImageMarkersIntoContent,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
+import { sanitizeAlt } from '../../../public/shared/messageFields.mjs'
 import { entityFileUrl } from '../../entity/filesUrl.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
@@ -69,7 +70,7 @@ async function uploadPlainFileToGroup(username, groupId, buffer, file) {
 		})
 	}
 
-	const description = String(file.description || '').trim().slice(0, 1500)
+	const description = sanitizeAlt(file.description)
 
 	/** @type {object} */
 	const uploadMeta = {
@@ -221,23 +222,13 @@ async function attachFilesToContent(username, groupId, content, files, maxBytes)
 		if (!buffer.byteLength) continue
 		const { fileId, inlineImageUrl } = await uploadPlainFileToGroup(username, groupId, buffer, file)
 		fileIds.push(fileId)
-		const alt = String(file.description || '').trim().slice(0, 1500)
+		const alt = sanitizeAlt(file.description)
 		if (alt) fileAlts[fileId] = alt
-		if (inlineImageUrl) {
-			const fileName = String(file.name || 'image').replace(/\|/g, '_')
-			inlineMarkers.push(`[image:${fileName}|${inlineImageUrl}]`)
-		}
+		if (inlineImageUrl)
+			inlineMarkers.push(inlineImageMarker(file.name, inlineImageUrl))
 	}
 
-	if (inlineMarkers.length) {
-		const isText = content.type === 'text'
-		const baseText = isText ? channelMessageAgentText(content) : channelMessageShowText(content)
-		const { type, content: previousText, content_for_show, content_for_edit, ...extra } = channelMessageContentObject(content)
-		content = textChannelContent([baseText, ...inlineMarkers].filter(Boolean).join('\n'), {
-			...extra,
-			...isText && { content_for_show, content_for_edit },
-		})
-	}
+	content = mergeInlineImageMarkersIntoContent(content, inlineMarkers, { preserveShowEdit: true })
 
 	if (fileIds.length) 
 		content = {

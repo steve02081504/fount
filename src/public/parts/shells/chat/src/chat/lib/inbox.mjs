@@ -5,7 +5,7 @@ import { join } from 'node:path'
 
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 
-import { channelMessageShowText } from '../../../public/shared/channelContent.mjs'
+import { messageLineShowText } from '../../../public/shared/channelContent.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
 import { createJsonlInboxStore } from './jsonlInboxStore.mjs'
@@ -81,12 +81,7 @@ export function setChatInboxSeenAt(username, recipientEntityHash, at) {
  * @returns {string} 可索引正文
  */
 export function mentionTextFromMessageLine(messageLine) {
-	if (messageLine?.decryptView?.failed) return ''
-	const content = messageLine?.content
-	if (messageLine?.type === 'message_edit')
-		return channelMessageShowText(content?.newContent ?? content)
-	if (messageLine?.type !== 'message') return ''
-	return channelMessageShowText(content)
+	return messageLineShowText(messageLine, { onlyMessageTypes: true })
 }
 
 /**

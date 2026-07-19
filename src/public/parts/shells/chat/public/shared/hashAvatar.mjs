@@ -43,6 +43,8 @@ export function invertRgb(rgb) {
 	return { r: 255 - rgb.r, g: 255 - rgb.g, b: 255 - rgb.b }
 }
 
+import { escapeHtml } from './escapeHtml.mjs'
+
 /**
  * @param {string} seed 身份键
  * @returns {string} 背景色 CSS
@@ -74,6 +76,25 @@ export function hashAvatarStyle(seed) {
  */
 export function avatarInitial(name) {
 	return (String(name || '?').trim() || '?').charAt(0).toUpperCase()
+}
+
+/**
+ * 列表行头像模板字段（friends / sidebar 等）。
+ * @param {string} seed 色种子
+ * @param {string} label 展示名
+ * @param {string} [avatarUrl] 头像 URL
+ * @param {string} [imgClass='char-list-avatar-img'] img class
+ * @returns {{ avatarBg: string, avatarTextColor: string, avatarInner: string }} 模板字段
+ */
+export function listAvatarTemplateFields(seed, label, avatarUrl = '', imgClass = 'char-list-avatar-img') {
+	const url = String(avatarUrl || '').trim()
+	return {
+		avatarBg: avatarColor(seed),
+		avatarTextColor: avatarTextColor(seed),
+		avatarInner: url
+			? `<img src="${escapeHtml(url)}" alt="" class="${imgClass}" />`
+			: escapeHtml(avatarInitial(label)),
+	}
 }
 
 /**

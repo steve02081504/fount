@@ -2,10 +2,11 @@
  * 实体私有发帖草稿箱（本机 JSON，不联邦）。
  */
 import { randomUUID } from 'node:crypto'
-import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 
+import { loadEntityJson, saveEntityJson } from './lib/entityJson.mjs'
+import { stripTransientMediaFields } from './lib/mediaRefs.mjs'
 import { draftsPath } from './paths.mjs'
 
 const MAX_DRAFTS = 100
@@ -18,20 +19,6 @@ function emptyDrafts() {
 }
 
 /**
- * 清洗媒体引用（去掉本地 File / objectUrl / pending）。
- * @param {unknown} refs 原始 mediaRefs
- * @returns {object[]} 可持久化 refs
- */
-function sanitizeMediaRefs(refs) {
-	if (!Array.isArray(refs)) return []
-	return refs.map(ref => {
-		if (!ref || typeof ref !== 'object') return null
-		const { file: _f, objectUrl: _o, pending: _p, ...rest } = /** @type {object} */ ref
-		return rest
-	}).filter(Boolean)
-}
-
-/**
  * 清洗发帖草稿 body（与 POST /posts 字段对齐）。
  * @param {object} raw 原始 body
  * @returns {object} 可持久化 body
@@ -40,7 +27,7 @@ export function sanitizeDraftBody(raw = {}) {
 	const body = {}
 	const text = String(raw.text ?? '').trim()
 	if (text) body.text = text
-	const mediaRefs = sanitizeMediaRefs(raw.mediaRefs)
+	const mediaRefs = stripTransientMediaFields(raw.mediaRefs)
 	if (mediaRefs.length) body.mediaRefs = mediaRefs
 	if (raw.visibility) body.visibility = String(raw.visibility)
 	if (Array.isArray(raw.allow) && raw.allow.length)
@@ -119,9 +106,9 @@ function withPreview(row) {
  */
 export async function loadDrafts(username, entityHash) {
 	try {
-		const data = JSON.parse(await readFile(draftsPath(username, entityHash), 'utf8'))
-		const drafts = Array.isArray(data?.drafts) ? data.drafts.filter(row => row?.draftId && row?.body) : []
-		return { drafts }
+		return await loadEntityJson(draftsPath(username, entityHash), emptyDrafts, raw => ({
+			drafts: Array.isArray(raw?.drafts) ? raw.drafts.filter(row => row?.draftId && row?.body) : [],
+		}))
 	}
 	catch {
 		return emptyDrafts()
@@ -136,10 +123,7 @@ export async function loadDrafts(username, entityHash) {
  * @returns {Promise<{ drafts: object[] }>} 写入后结构
  */
 async function saveDrafts(username, entityHash, data) {
-	const path = draftsPath(username, entityHash)
-	await mkdir(`${path.replace(/[/\\][^/\\]+$/u, '')}`, { recursive: true })
-	await writeFile(path, JSON.stringify(data, null, '\t'), 'utf8')
-	return data
+	return saveEntityJson(draftsPath(username, entityHash), data)
 }
 
 /**

@@ -1,9 +1,21 @@
 /**
- * @param {Uint8Array|ArrayBufferView} bytes 字节
+ * @param {Uint8Array|ArrayBufferView|Iterable<number>} bytes 字节
  * @returns {string} 小写 hex
  */
-function bytesToHex(bytes) {
+export function bytesToHex(bytes) {
 	return [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
+}
+
+/**
+ * @param {string} hex 十六进制（可含空白）
+ * @returns {Uint8Array} 字节
+ */
+export function hexToBytes(hex) {
+	const clean = String(hex || '').replace(/\s/g, '')
+	const out = new Uint8Array(clean.length / 2)
+	for (let i = 0; i < out.length; i++)
+		out[i] = Number.parseInt(clean.slice(i * 2, i * 2 + 2), 16)
+	return out
 }
 
 const SHA256 = await (async () => {

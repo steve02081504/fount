@@ -18,21 +18,58 @@ export async function runWrite(actionKey, fn) {
 }
 
 /**
+ * @param {HTMLElement} button 按钮
+ * @param {string} key dataset 键 liked|disliked
+ * @param {string} className 激活 class
+ * @param {boolean} next 目标状态
+ * @returns {{ [key: string]: string | number }} 回滚快照
+ */
+function applyReactionOptimistic(button, key, className, next) {
+	const countEl = button.querySelector('.action-count')
+	const snapshot = { [key]: button.dataset[key] || '0', count: Number(countEl?.textContent) || 0 }
+	button.dataset[key] = next ? '1' : '0'
+	button.classList.toggle(className, next)
+	if (countEl) countEl.textContent = String(Math.max(0, /** @type {number} */ snapshot.count + (next ? 1 : -1)))
+	return snapshot
+}
+
+/**
+ * @param {HTMLElement} button 按钮
+ * @param {string} key dataset 键
+ * @param {string} className 激活 class
+ * @param {{ [key: string]: string | number }} snapshot 回滚快照
+ * @returns {void}
+ */
+function rollbackReaction(button, key, className, snapshot) {
+	const countEl = button.querySelector('.action-count')
+	button.dataset[key] = String(snapshot[key])
+	button.classList.toggle(className, snapshot[key] === '1')
+	if (countEl) countEl.textContent = String(snapshot.count)
+}
+
+/**
+ * @param {HTMLElement} cardRoot 帖卡
+ * @param {string} selector 按钮选择器
+ * @param {string} key dataset 键
+ * @param {string} className 激活 class
+ * @returns {void}
+ */
+function clearReactionOnCard(cardRoot, selector, key, className) {
+	const button = cardRoot.querySelector(selector)
+	if (!(button instanceof HTMLElement) || button.dataset[key] !== '1') return
+	const countEl = button.querySelector('.action-count')
+	button.dataset[key] = '0'
+	button.classList.remove(className)
+	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
+}
+
+/**
  * @param {HTMLElement} button like 按钮
  * @param {boolean} liked 目标 liked 状态
  * @returns {{ liked: string, count: number }} 回滚快照
  */
 export function applyLikeButtonOptimistic(button, liked) {
-	const countEl = button.querySelector('.action-count')
-	const snapshot = {
-		liked: button.dataset.liked || '0',
-		count: Number(countEl?.textContent) || 0,
-	}
-	button.dataset.liked = liked ? '1' : '0'
-	button.classList.toggle('liked', liked)
-	if (countEl)
-		countEl.textContent = String(Math.max(0, snapshot.count + (liked ? 1 : -1)))
-	return snapshot
+	return /** @type {{ liked: string, count: number }} */ applyReactionOptimistic(button, 'liked', 'liked', liked)
 }
 
 /**
@@ -41,10 +78,7 @@ export function applyLikeButtonOptimistic(button, liked) {
  * @returns {void}
  */
 export function rollbackLikeButton(button, snapshot) {
-	const countEl = button.querySelector('.action-count')
-	button.dataset.liked = snapshot.liked
-	button.classList.toggle('liked', snapshot.liked === '1')
-	if (countEl) countEl.textContent = String(snapshot.count)
+	rollbackReaction(button, 'liked', 'liked', snapshot)
 }
 
 /**
@@ -53,16 +87,7 @@ export function rollbackLikeButton(button, snapshot) {
  * @returns {{ disliked: string, count: number }} 回滚快照
  */
 export function applyDislikeButtonOptimistic(button, disliked) {
-	const countEl = button.querySelector('.action-count')
-	const snapshot = {
-		disliked: button.dataset.disliked || '0',
-		count: Number(countEl?.textContent) || 0,
-	}
-	button.dataset.disliked = disliked ? '1' : '0'
-	button.classList.toggle('disliked', disliked)
-	if (countEl)
-		countEl.textContent = String(Math.max(0, snapshot.count + (disliked ? 1 : -1)))
-	return snapshot
+	return /** @type {{ disliked: string, count: number }} */ applyReactionOptimistic(button, 'disliked', 'disliked', disliked)
 }
 
 /**
@@ -71,40 +96,23 @@ export function applyDislikeButtonOptimistic(button, disliked) {
  * @returns {void}
  */
 export function rollbackDislikeButton(button, snapshot) {
-	const countEl = button.querySelector('.action-count')
-	button.dataset.disliked = snapshot.disliked
-	button.classList.toggle('disliked', snapshot.disliked === '1')
-	if (countEl) countEl.textContent = String(snapshot.count)
+	rollbackReaction(button, 'disliked', 'disliked', snapshot)
 }
 
 /**
- * 踩/取消踩时清除同卡 like 状态（与 reducer 互斥一致）。
- * @param {HTMLElement} cardRoot 帖子卡
+ * @param {HTMLElement} cardRoot 帖卡
  * @returns {void}
  */
 export function clearLikeOnCard(cardRoot) {
-	const likeButton = cardRoot.querySelector('[data-like]')
-	if (!(likeButton instanceof HTMLElement)) return
-	if (likeButton.dataset.liked !== '1') return
-	const countEl = likeButton.querySelector('.action-count')
-	likeButton.dataset.liked = '0'
-	likeButton.classList.remove('liked')
-	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
+	clearReactionOnCard(cardRoot, '[data-like]', 'liked', 'liked')
 }
 
 /**
- * 赞/取消赞时清除同卡 dislike 状态（与 reducer 互斥一致）。
- * @param {HTMLElement} cardRoot 帖子卡
+ * @param {HTMLElement} cardRoot 帖卡
  * @returns {void}
  */
 export function clearDislikeOnCard(cardRoot) {
-	const dislikeButton = cardRoot.querySelector('[data-dislike]')
-	if (!(dislikeButton instanceof HTMLElement)) return
-	if (dislikeButton.dataset.disliked !== '1') return
-	const countEl = dislikeButton.querySelector('.action-count')
-	dislikeButton.dataset.disliked = '0'
-	dislikeButton.classList.remove('disliked')
-	if (countEl) countEl.textContent = String(Math.max(0, (Number(countEl.textContent) || 0) - 1))
+	clearReactionOnCard(cardRoot, '[data-dislike]', 'disliked', 'disliked')
 }
 
 /**

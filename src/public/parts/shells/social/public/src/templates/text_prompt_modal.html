@@ -1,8 +1,7 @@
-<div class="modal-box">
+<div class="modal-box${boxClass}">
 	<h3 class="font-bold text-lg mb-4">${escapeHtml(title)}</h3>
-	<input type="text" class="input input-bordered w-full" id="promptInput" value="${escapeHtml(value)}" />
+	${bodyHtml}
 	<div class="modal-action">
-		<button type="button" class="btn" data-dialog-cancel data-i18n="social.saved.cancel"></button>
-		<button type="button" class="btn btn-primary" data-dialog-resolve="ok" data-i18n="social.saved.confirm"></button>
+		${actionsHtml}
 	</div>
 </div>

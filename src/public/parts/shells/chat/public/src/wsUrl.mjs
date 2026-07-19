@@ -30,11 +30,3 @@ export function buildChatGroupWebSocketUrl(ownerNodeHash, groupId) {
 		`/ws/parts/shells:chat/groups/${encodeURIComponent(ownerNodeHash)}/${encodeURIComponent(groupId)}`,
 	)
 }
-
-/**
- * @param {string} roomId AV relay 房间 ID
- * @returns {string} 音视频中继 WS URL
- */
-export function buildAvRelayWebSocketUrl(roomId) {
-	return buildWebSocketUrl(`/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}`)
-}

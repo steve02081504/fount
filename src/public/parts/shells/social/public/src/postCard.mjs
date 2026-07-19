@@ -16,6 +16,7 @@ import {
 	renderQuoteBlockHtml,
 } from './lib/display.mjs'
 import { renderEngagementBarHtml } from './lib/engagementBar.mjs'
+import { playHeartAnim } from './lib/heartAnim.mjs'
 import { renderPollHtml } from './lib/pollUi.mjs'
 import { renderMediaHtml } from './mediaRender.mjs'
 
@@ -36,15 +37,21 @@ async function renderLiveRefHtml(liveRef) {
 		const secs = Math.max(0, Math.round(durationMs / 1000))
 		const mm = String(Math.floor(secs / 60)).padStart(2, '0')
 		const ss = String(secs % 60).padStart(2, '0')
-		return renderTemplateAsHtmlString('live_ref_ended', {
+		return renderTemplateAsHtmlString('live_ref', {
 			href,
 			avatarHtml,
-			viewers,
-			likes,
-			duration: `${mm}:${ss}`,
+			endedClass: ' live-ref-card--ended',
+			badgeHtml: '<span class="live-ref-badge" data-i18n="social.live.postEnded"></span>',
+			footerHtml: `<span class="live-ref-stats" data-i18n="social.live.postEndedStats" data-viewers="${viewers}" data-likes="${likes}" data-duration="${mm}:${ss}"></span>`,
 		})
 	}
-	return renderTemplateAsHtmlString('live_ref_live', { href, avatarHtml })
+	return renderTemplateAsHtmlString('live_ref', {
+		href,
+		avatarHtml,
+		endedClass: '',
+		badgeHtml: '<span class="live-ref-badge">LIVE</span>',
+		footerHtml: '<span class="live-ref-cta" data-i18n="social.live.postWatch"></span>',
+	})
 }
 
 /**
@@ -377,19 +384,13 @@ function bindPostDetailMediaLike(card, entityHash, postId) {
  * @returns {void}
  */
 function showPostMediaHeart(media) {
-	let anim = media.querySelector('.post-media-heart')
-	if (!(anim instanceof HTMLElement)) {
-		anim = document.createElement('div')
-		anim.className = 'post-media-heart heart-anim'
-		anim.setAttribute('aria-hidden', 'true')
-		media.appendChild(anim)
-	}
-	anim.classList.remove('hidden')
-	anim.textContent = '👍'
-	anim.style.animation = 'none'
-	void anim.offsetWidth
-	anim.style.animation = 'heartFloat 0.8s ease-out forwards'
-	setTimeout(() => anim.classList.add('hidden'), 900)
+	playHeartAnim(media, {
+		emoji: '👍',
+		durationMs: 800,
+		selector: '.post-media-heart',
+		createIfMissing: true,
+		createClass: 'post-media-heart heart-anim',
+	})
 }
 
 /**

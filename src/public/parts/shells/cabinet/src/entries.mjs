@@ -1,4 +1,6 @@
+import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
+import { readFile, writeFile } from 'node:fs/promises'
 
 import { loadFileManifest, readManifestPlaintext } from 'npm:@steve02081504/fount-p2p/files/evfs'
 
@@ -28,7 +30,41 @@ import { evfsBlobPath, evfsPreviewPath, encryptedFolderIndexPath } from './paths
 import { putCabinetEvfsFile } from './publish.mjs'
 import { clearRecovery, loadRecovery, storeRecovery } from './recovery.mjs'
 import { countLocalInboundLinks, gcOrphanAfterUnlink } from './refcount.mjs'
+import {
+	deleteSharedEntries,
+	finalizeSharedDelete,
+	listSharedEntries,
+	registerSharedEntry,
+	restoreSharedEntries,
+	updateSharedEntry,
+	uploadSharedAndRegister,
+} from './shared/ops.mjs'
 import { issueUnlockToken, resolveFolderUnlock, resolveUnlockToken } from './unlockTokens.mjs'
+
+/**
+ * @param {string} username 用户
+ * @param {string} entityHash 实体
+ * @param {string} cabinetId 柜
+ * @returns {Promise<object>} 柜
+ */
+async function requireCabinet(username, entityHash, cabinetId) {
+	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
+	if (!cabinet) throw new Error('cabinet not found')
+	return cabinet
+}
+
+/**
+ * @param {object[]} entries 条目
+ * @param {string[]} entryIds 根 ids
+ * @returns {Set<string>} 子树 id
+ */
+function collectDeleteSet(entries, entryIds) {
+	const toDelete = new Set()
+	for (const id of entryIds)
+		for (const childId of collectSubtreeIds(entries, id))
+			toDelete.add(childId)
+	return toDelete
+}
 
 /**
  * @param {string} username 用户
@@ -56,15 +92,12 @@ export async function readPersonalEntryBytes(username, entityHash, cabinetId, en
  * @returns {Promise<{ cabinet: object, parent_id: string | null, folder_trail: object[], entries: object[], locked?: boolean }>} 列表
  */
 export async function listEntries(username, entityHash, cabinetId, options = {}) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { listSharedEntries } = await import('./shared/ops.mjs')
-		return listSharedEntries(username, cabinetId, options)
-	}
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared') return listSharedEntries(username, cabinetId, options)
 
 	const index = await loadPersonalIndex(username, entityHash, cabinetId)
 	const parentId = normalizeParentId(options.parent_id)
+	const trail = buildFolderTrail(index.entries, parentId)
 	if (parentId) {
 		const folder = index.entries.find(entry => entry.id === parentId && entry.kind === 'folder')
 		if (folder?.encryption) {
@@ -74,18 +107,12 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
 				entity_hash: entityHash,
 			})
 			if (!folderKey)
-				return {
-					cabinet,
-					parent_id: parentId,
-					folder_trail: buildFolderTrail(index.entries, parentId),
-					entries: [],
-					locked: true,
-				}
+				return { cabinet, parent_id: parentId, folder_trail: trail, entries: [], locked: true }
 			const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, parentId, folderKey)
 			return {
 				cabinet,
 				parent_id: parentId,
-				folder_trail: buildFolderTrail(index.entries, parentId),
+				folder_trail: trail,
 				entries: listChildren(encIndex.entries, null, options),
 				locked: false,
 			}
@@ -94,7 +121,7 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
 	return {
 		cabinet,
 		parent_id: parentId,
-		folder_trail: buildFolderTrail(index.entries, parentId),
+		folder_trail: trail,
 		entries: listChildren(index.entries, parentId, options),
 	}
 }
@@ -107,12 +134,8 @@ export async function listEntries(username, entityHash, cabinetId, options = {})
  * @returns {Promise<object>} 新条目
  */
 export async function registerEntry(username, entityHash, cabinetId, draft) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { registerSharedEntry } = await import('./shared/ops.mjs')
-		return registerSharedEntry(username, entityHash, cabinetId, draft)
-	}
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared') return registerSharedEntry(username, entityHash, cabinetId, draft)
 
 	const index = await loadPersonalIndex(username, entityHash, cabinetId)
 	const entry = normalizeEntry(draft, entityHash)
@@ -151,12 +174,8 @@ export async function registerEntry(username, entityHash, cabinetId, draft) {
  * @returns {Promise<object>} 更新后的条目
  */
 export async function updateEntry(username, entityHash, cabinetId, entryId, patch) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { updateSharedEntry } = await import('./shared/ops.mjs')
-		return updateSharedEntry(username, entityHash, cabinetId, entryId, patch)
-	}
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared') return updateSharedEntry(username, entityHash, cabinetId, entryId, patch)
 
 	const unlockMeta = resolveFolderUnlock(patch.unlock_token, cabinetId, entityHash)
 	if (unlockMeta) {
@@ -224,25 +243,20 @@ async function partitionPersonalDeletes(username, entityHash, cabinetId, entries
 		}
 		stashed.push(entry)
 		removed.push(entry.id)
-
 		if (recoverable) continue
-
 		if (entry.kind === 'link') {
 			deferredLinks.push(entry)
 			continue
 		}
-
 		const inbound = await countLocalInboundLinks(username, entityHash, {
 			owner_entity_hash: entityHash,
 			cabinet_id: cabinetId,
 			entry_id: entry.id,
 		}, { exclude_cabinet_id: cabinetId, exclude_entry_ids: toDelete })
-
 		if (inbound > 0) {
 			kept.push({ ...entry, orphaned: true })
 			continue
 		}
-
 		await hardDeleteEntryBlobs(username, entityHash, entry)
 	}
 
@@ -258,21 +272,15 @@ async function partitionPersonalDeletes(username, entityHash, cabinetId, entries
  * @returns {Promise<{ deleted: string[], recovery_token?: string }>} 结果
  */
 export async function deleteEntries(username, entityHash, cabinetId, entryIds, options = {}) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
 	const recoverable = Boolean(options.recoverable)
-	if (cabinet.type === 'shared') {
-		const { deleteSharedEntries } = await import('./shared/ops.mjs')
+	if (cabinet.type === 'shared')
 		return deleteSharedEntries(username, entityHash, cabinetId, entryIds, { recoverable })
-	}
 
 	const unlockMeta = resolveFolderUnlock(options.unlock_token, cabinetId, entityHash)
 	if (unlockMeta) {
 		const encIndex = await loadEncryptedFolderIndex(username, entityHash, cabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
-		const toDelete = new Set()
-		for (const id of entryIds)
-			for (const childId of collectSubtreeIds(encIndex.entries, id))
-				toDelete.add(childId)
+		const toDelete = collectDeleteSet(encIndex.entries, entryIds)
 		const { removed, kept, deferredLinks, stashed } = await partitionPersonalDeletes(
 			username, entityHash, cabinetId, encIndex.entries, toDelete, recoverable,
 		)
@@ -290,19 +298,14 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds, o
 	}
 
 	const index = await loadPersonalIndex(username, entityHash, cabinetId)
-	const toDelete = new Set()
-	for (const id of entryIds)
-		for (const childId of collectSubtreeIds(index.entries, id))
-			toDelete.add(childId)
+	const toDelete = collectDeleteSet(index.entries, entryIds)
 
 	/** @type {Record<string, string>} */
 	const encrypted_indexes = {}
-	if (recoverable) 
+	if (recoverable)
 		for (const entry of index.entries) {
 			if (!toDelete.has(entry.id) || entry.kind !== 'folder' || !entry.encryption) continue
 			try {
-				const { readFile } = await import('node:fs/promises')
-				const { encryptedFolderIndexPath } = await import('./paths.mjs')
 				encrypted_indexes[entry.id] = await readFile(
 					encryptedFolderIndexPath(username, entityHash, cabinetId, entry.id),
 					'utf8',
@@ -310,7 +313,6 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds, o
 			}
 			catch { /* 无密文索引则跳过 */ }
 		}
-	
 
 	const { removed, kept, deferredLinks, stashed } = await partitionPersonalDeletes(
 		username, entityHash, cabinetId, index.entries, toDelete, recoverable,
@@ -337,12 +339,9 @@ export async function deleteEntries(username, entityHash, cabinetId, entryIds, o
  * @returns {Promise<{ restored: string[] }>} 结果
  */
 export async function restoreEntries(username, entityHash, cabinetId, recoveryToken, options = {}) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { restoreSharedEntries } = await import('./shared/ops.mjs')
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared')
 		return restoreSharedEntries(username, entityHash, cabinetId, recoveryToken)
-	}
 
 	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, false)
 	if (!record) throw new Error('recovery token invalid')
@@ -370,7 +369,6 @@ export async function restoreEntries(username, entityHash, cabinetId, recoveryTo
 		for (const entry of mainEntries)
 			if (!existing.has(entry.id)) index.entries.push(entry)
 		await savePersonalIndex(username, entityHash, cabinetId, index)
-		const { writeFile } = await import('node:fs/promises')
 		for (const [folderId, raw] of Object.entries(record.encrypted_indexes || {})) {
 			const path = encryptedFolderIndexPath(username, entityHash, cabinetId, folderId)
 			await ensureParentDir(path)
@@ -390,12 +388,8 @@ export async function restoreEntries(username, entityHash, cabinetId, recoveryTo
  * @returns {Promise<{ finalized: string[] }>} 结果
  */
 export async function finalizeDelete(username, entityHash, cabinetId, recoveryToken) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { finalizeSharedDelete } = await import('./shared/ops.mjs')
-		return finalizeSharedDelete(username, cabinetId, recoveryToken)
-	}
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared') return finalizeSharedDelete(username, cabinetId, recoveryToken)
 
 	const record = await loadRecovery(username, entityHash, cabinetId, recoveryToken, false)
 	if (!record) return { finalized: [] }
@@ -428,11 +422,11 @@ export async function finalizeDelete(username, entityHash, cabinetId, recoveryTo
  * @returns {Promise<object[]>} 新条目
  */
 export async function copyEntries(username, entityHash, cabinetId, body) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
 	const targetCabinetId = body.target_cabinet_id || cabinetId
-	const targetCabinet = await resolveCabinet(username, entityHash, targetCabinetId)
-	if (!targetCabinet) throw new Error('target cabinet not found')
+	const targetCabinet = targetCabinetId === cabinetId
+		? cabinet
+		: await requireCabinet(username, entityHash, targetCabinetId)
 
 	let sourceEntries = (await loadCabinetIndex(username, entityHash, cabinetId, cabinet)).entries
 
@@ -450,10 +444,8 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 	 * @returns {Promise<object>} 已写入条目
 	 */
 	async function writeTarget(entry) {
-		if (targetCabinet.type === 'shared') {
-			const { registerSharedEntry } = await import('./shared/ops.mjs')
+		if (targetCabinet.type === 'shared')
 			return registerSharedEntry(username, entityHash, targetCabinetId, entry)
-		}
 		const unlockMeta = resolveFolderUnlock(body.unlock_token, targetCabinetId, entityHash)
 		if (unlockMeta?.folder_id === targetParent) {
 			const encIndex = await loadEncryptedFolderIndex(username, entityHash, targetCabinetId, unlockMeta.folder_id, unlockMeta.folder_key)
@@ -472,7 +464,7 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 		const source = sourceEntries.find(row => row.id === id)
 		if (!source) continue
 		if (body.as_links) {
-			const link = normalizeEntry({
+			created.push(await writeTarget(normalizeEntry({
 				kind: 'link',
 				name: source.name,
 				parent_id: targetParent,
@@ -484,18 +476,16 @@ export async function copyEntries(username, entityHash, cabinetId, body) {
 						? source.id
 						: source.link?.entry_id,
 				},
-			}, entityHash)
-			created.push(await writeTarget(link))
+			}, entityHash)))
 			continue
 		}
-		const copy = normalizeEntry({
+		created.push(await writeTarget(normalizeEntry({
 			...source,
 			id: randomUUID(),
 			parent_id: targetParent,
 			name: `${source.name} (copy)`,
 			orphaned: false,
-		}, entityHash)
-		created.push(await writeTarget(copy))
+		}, entityHash)))
 	}
 	return created
 }
@@ -513,13 +503,14 @@ export async function unlockFolder(username, entityHash, cabinetId, folderId, pa
 	const folder = index.entries.find(row => row.id === folderId && row.kind === 'folder')
 	if (!folder?.encryption) throw new Error('not encrypted')
 	const folderKey = unlockFolderKey(password, folder.encryption)
-	const unlockToken = issueUnlockToken({
-		folder_key: folderKey,
-		cabinet_id: cabinetId,
-		folder_id: folderId,
-		entity_hash: entityHash,
-	})
-	return { unlock_token: unlockToken }
+	return {
+		unlock_token: issueUnlockToken({
+			folder_key: folderKey,
+			cabinet_id: cabinetId,
+			folder_id: folderId,
+			entity_hash: entityHash,
+		}),
+	}
 }
 
 /**
@@ -530,14 +521,10 @@ export async function unlockFolder(username, entityHash, cabinetId, folderId, pa
  * @returns {Promise<object>} 条目
  */
 export async function uploadAndRegister(username, entityHash, cabinetId, options) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
-	if (cabinet.type === 'shared') {
-		const { uploadSharedAndRegister } = await import('./shared/ops.mjs')
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
+	if (cabinet.type === 'shared')
 		return uploadSharedAndRegister(username, entityHash, cabinetId, options)
-	}
 
-	const { Buffer } = await import('node:buffer')
 	const blobId = randomUUID()
 	const logicalPath = evfsBlobPath(cabinetId, blobId)
 	await putCabinetEvfsFile(username, entityHash, {
@@ -569,8 +556,7 @@ export async function uploadAndRegister(username, entityHash, cabinetId, options
  * @returns {Promise<{ url: string, path: string }>} 预览信息
  */
 export async function uploadPreview(username, entityHash, cabinetId, options) {
-	const cabinet = await resolveCabinet(username, entityHash, cabinetId)
-	if (!cabinet) throw new Error('cabinet not found')
+	const cabinet = await requireCabinet(username, entityHash, cabinetId)
 	const previewId = randomUUID()
 	const logicalPath = evfsPreviewPath(cabinetId, previewId)
 	await putCabinetEvfsFile(username, entityHash, {

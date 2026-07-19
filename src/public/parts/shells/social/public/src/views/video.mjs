@@ -1,9 +1,10 @@
-import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { flashCopiedLabel, shareOrCopyPostLink } from '../actions/shared.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, renderAvatarHtml } from '../lib/display.mjs'
+import { buildEmptyState } from '../lib/emptyState.mjs'
+import { playHeartAnim } from '../lib/heartAnim.mjs'
 import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
@@ -164,7 +165,13 @@ export async function loadVideoView(options = {}) {
 async function buildVideoEmptySlide() {
 	const slide = document.createElement('div')
 	slide.className = 'video-slide'
-	const empty = await renderTemplate('video_empty', {})
+	const empty = await buildEmptyState({
+		titleKey: 'social.video.empty',
+		iconClass: 'icon-video',
+		hintKey: 'social.video.emptyHint',
+		modClass: ' empty-state--video',
+		actionHtml: '<button type="button" class="btn btn-primary empty-state-action" data-video-compose data-i18n="social.video.compose"></button>',
+	})
 	slide.appendChild(empty)
 	slide.querySelector('[data-video-compose]')?.addEventListener('click', async () => {
 		const { focusComposer } = await import('../navigation.mjs')
@@ -603,14 +610,7 @@ async function doVideoLike(slide) {
  * @returns {void}
  */
 function showHeartAnim(slide) {
-	const anim = slide.querySelector('.heart-anim')
-	if (!anim) return
-	anim.classList.remove('hidden')
-	anim.textContent = '👍'
-	anim.style.animation = 'none'
-	void anim.offsetWidth
-	anim.style.animation = 'heartFloat 0.8s ease-out forwards'
-	setTimeout(() => anim.classList.add('hidden'), 900)
+	playHeartAnim(slide, { emoji: '👍', durationMs: 800 })
 }
 
 /**

@@ -2,7 +2,6 @@
  * Composer 内容警告 / 敏感媒体 DOM 读写薄层（Chat Hub 与 Social 共用）。
  * 元素 ID 由调用方传入；不含 replyTo（两壳产品模型不同）。
  */
-import { resolveSensitiveMedia } from './messageFields.mjs'
 
 /**
  * @typedef {{ cwId: string, sensitiveId: string }} CwSensitiveIds
@@ -21,7 +20,8 @@ export function readCwSensitive({ cwId, sensitiveId }) {
 	return {
 		contentWarning,
 		sensitiveChecked,
-		sensitiveMedia: applySensitiveDefault(sensitiveChecked, contentWarning),
+		// 勾选或 CW 任一成立即敏感
+		sensitiveMedia: Boolean(sensitiveChecked) || Boolean(contentWarning),
 	}
 }
 
@@ -35,24 +35,4 @@ export function clearCwSensitive({ cwId, sensitiveId }) {
 	if (cw instanceof HTMLInputElement) cw.value = ''
 	const sm = document.getElementById(sensitiveId)
 	if (sm instanceof HTMLInputElement) sm.checked = false
-}
-
-/**
- * 勾选或内容警告任一成立则视为敏感媒体。
- * @param {boolean} checked 勾选态
- * @param {string} [contentWarning] CW 文本
- * @returns {boolean} 是否敏感
- */
-export function applySensitiveDefault(checked, contentWarning) {
-	return Boolean(checked) || Boolean(String(contentWarning || '').trim())
-}
-
-/**
- * 与后端 `resolveSensitiveMedia` 对齐的别名（显式 true/false 优先）。
- * @param {unknown} value 原始 sensitive 标记
- * @param {string} [contentWarning] CW
- * @returns {boolean} 是否敏感
- */
-export function resolveComposerSensitive(value, contentWarning) {
-	return resolveSensitiveMedia(value, contentWarning)
 }

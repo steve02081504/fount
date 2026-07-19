@@ -8,28 +8,13 @@ import { readJsonFile, writeJsonFile } from './io.mjs'
 import { evfsBlobPath, syncStatePath } from './paths.mjs'
 import { putCabinetEvfsFile } from './publish.mjs'
 
-/** @type {ReturnType<typeof setInterval> | null} */
-let timer = null
 /** @type {Set<string>} */
 const busy = new Set()
 
-/**
- * @returns {void}
- */
-export function startFolderSyncScheduler() {
-	if (timer) return
-	timer = setInterval(() => {
-		// 绑定同步由显式 API / 测试触发；定时器占位避免 Load/Unload 空转
-	}, 60_000)
-}
-
-/**
- * @returns {void}
- */
-export function stopFolderSyncScheduler() {
-	if (timer) clearInterval(timer)
-	timer = null
-}
+/** 绑定同步由显式 API / 测试触发；占位供 Load/Unload 对称调用。 */
+export function startFolderSyncScheduler() { }
+/** @returns {void} */
+export function stopFolderSyncScheduler() { }
 
 /**
  * @param {string} username 用户
@@ -150,39 +135,29 @@ async function pushDiskToCabinet(username, entityHash, cabinet, index, localRoot
 			? index.entries.find(row => row.id === prev.entry_id)
 			: index.entries.find(row => entryRelPath(index.entries, row) === file.rel && row.kind === 'file')
 		const parentId = ensureFolderPath(index, path.dirname(file.rel).replace(/\\/g, '/'), entityHash)
+		const name = path.basename(file.rel)
 		if (!entry) {
-			const blobId = randomUUID()
-			const logicalPath = evfsBlobPath(cabinet.cabinet_id, blobId)
-			await putCabinetEvfsFile(username, entityHash, {
-				logical_path: logicalPath,
-				plaintext,
-				name: path.basename(file.rel),
-				mime_type: 'application/octet-stream',
-				visibility: cabinet.visibility,
-			})
 			entry = normalizeEntry({
 				kind: 'file',
-				name: path.basename(file.rel),
+				name,
 				parent_id: parentId,
 				size: plaintext.length,
 				mime_type: 'application/octet-stream',
-				evfs_path: logicalPath,
+				evfs_path: evfsBlobPath(cabinet.cabinet_id, randomUUID()),
 				attrs: { hidden: false, system: true },
 			}, entityHash)
 			index.entries.push(entry)
 		}
-		else {
-			await putCabinetEvfsFile(username, entityHash, {
-				logical_path: entry.evfs_path,
-				plaintext,
-				name: entry.name,
-				mime_type: entry.mime_type,
-				visibility: cabinet.visibility,
-			})
-			const pos = index.entries.findIndex(row => row.id === entry.id)
-			index.entries[pos] = patchEntry(entry, { size: plaintext.length }, entityHash)
-			entry = index.entries[pos]
-		}
+		await putCabinetEvfsFile(username, entityHash, {
+			logical_path: entry.evfs_path,
+			plaintext,
+			name: entry.name,
+			mime_type: entry.mime_type,
+			visibility: cabinet.visibility,
+		})
+		const pos = index.entries.findIndex(row => row.id === entry.id)
+		index.entries[pos] = patchEntry(entry, { size: plaintext.length }, entityHash)
+		entry = index.entries[pos]
 		snapshot.files[file.rel] = {
 			size: plaintext.length,
 			mtime: file.mtime,

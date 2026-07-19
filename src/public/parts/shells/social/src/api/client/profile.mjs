@@ -27,6 +27,26 @@ function countFollowing(following, entityHash) {
 }
 
 /**
+ * @param {string} username replica
+ * @param {Iterable<string>} hashes 实体列表
+ * @param {string} [skip] 跳过的 hash（通常是资料主体）
+ * @returns {Promise<object[]>} { entityHash, profile }[]
+ */
+async function entitiesWithProfiles(username, hashes, skip = '') {
+	const loadProfile = createAuthorProfileLoader(username)
+	const self = String(skip || '').toLowerCase()
+	const seen = new Set()
+	const rows = []
+	for (const hash of hashes) {
+		const id = String(hash || '').toLowerCase()
+		if (!id || id === self || seen.has(id)) continue
+		seen.add(id)
+		rows.push({ entityHash: id, profile: await loadProfile(id) })
+	}
+	return rows
+}
+
+/**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} 资料 / 列表 / 屏蔽词方法
  */
@@ -83,17 +103,7 @@ export function createProfileMethods(apiContext) {
 		async profileFollowing(entityHash) {
 			const owner = String(entityHash).toLowerCase()
 			const view = await getTimelineMaterialized(apiContext.username, owner)
-			const loadProfile = createAuthorProfileLoader(apiContext.username)
-			const following = []
-			for (const hash of view.following || []) {
-				const id = String(hash).toLowerCase()
-				if (id === owner) continue
-				following.push({
-					entityHash: id,
-					profile: await loadProfile(id),
-				})
-			}
-			return { following }
+			return { following: await entitiesWithProfiles(apiContext.username, view.following || [], owner) }
 		},
 		/**
 		 * @param {string} entityHash 目标实体
@@ -102,19 +112,13 @@ export function createProfileMethods(apiContext) {
 		async profileFollowers(entityHash) {
 			const owner = String(entityHash).toLowerCase()
 			const known = await listKnownFollowersOf(owner)
-			const loadProfile = createAuthorProfileLoader(apiContext.username)
-			const seen = new Set()
-			const followers = []
-			for (const row of known) {
-				const id = String(row.entityHash || '').toLowerCase()
-				if (!id || id === owner || seen.has(id)) continue
-				seen.add(id)
-				followers.push({
-					entityHash: id,
-					profile: await loadProfile(id),
-				})
+			return {
+				followers: await entitiesWithProfiles(
+					apiContext.username,
+					known.map(row => row.entityHash),
+					owner,
+				),
 			}
-			return { followers }
 		},
 		/**
 		 * @param {string} entityHash 作者

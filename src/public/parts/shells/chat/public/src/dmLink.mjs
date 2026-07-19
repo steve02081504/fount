@@ -8,6 +8,7 @@
 
 import { normalizeHex64, HEX_ID_64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
 
+import { bytesToHex } from '../shared/digest.mjs'
 import { formatDmRunUri } from '../shared/runUri.mjs'
 
 import { putFederationSettings } from './api/federationSettings.mjs'
@@ -60,23 +61,6 @@ export function getDmLinkNonce() {
 	const stored = localStorage.getItem(LS_KEY_DM_NONCE)
 	if (stored && stored.length >= 16) return stored
 	return rotateDmLink({ persist: true })
-}
-
-/**
- * @param {object} options 参数
- * @param {string} options.pubKeyHex 介绍者公钥 hex
- * @param {string} options.nonceBase64Url nonce
- * @param {string} [options.introSignatureHex] 128 hex 签名
- * @param {string} [options.node] 可选节点 URL
- * @returns {string} URI
- */
-export function formatDmLinkUrl({ pubKeyHex, nonceBase64Url, introSignatureHex, node }) {
-	return formatDmRunUri({
-		pubKeyHex,
-		nonceBase64Url,
-		introSignatureHex,
-		nodeUrl: node,
-	})
 }
 
 /**
@@ -137,6 +121,6 @@ export async function createDmLink({ pubKeyHex, secretKey32, signFn, nodeUrl, no
 	const signatureBytes = await signFn(dmLinkSignableBytes(pubKey, nonceBase64Url), secretKey)
 	if (!(signatureBytes instanceof Uint8Array) || signatureBytes.length !== 64) throw new Error('invalid signature length')
 
-	const introSignatureHex = [...signatureBytes].map(byte => byte.toString(16).padStart(2, '0')).join('')
-	return formatDmLinkUrl({ pubKeyHex: pubKey, nonceBase64Url, introSignatureHex, node: nodeUrl })
+	const introSignatureHex = bytesToHex(signatureBytes)
+	return formatDmRunUri({ pubKeyHex: pubKey, nonceBase64Url, introSignatureHex, nodeUrl })
 }

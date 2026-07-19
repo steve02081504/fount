@@ -1,9 +1,15 @@
 import { mentionsEntity } from 'fount/public/parts/shells/chat/public/shared/mentions.mjs'
+import { isNotifyMuted } from 'fount/public/parts/shells/chat/public/shared/notificationPreferences.mjs'
 
 import { assignEntityShellData, loadEntityShellData } from '../../../../../../../server/setting_loader.mjs'
 import { memberEntityHash } from '../../entity/member.mjs'
 
 import { isCaredBy } from './care.mjs'
+
+/**
+ *
+ */
+export { isNotifyMuted }
 
 const DATANAME = 'notificationPreferences'
 
@@ -56,15 +62,6 @@ export function resolveEffectiveNotificationPreferences(username, entityHash, gr
 		suppressRoles: channelPrefs.suppressRoles ?? groupPrefs.suppressRoles ?? defaults.suppressRoles,
 		mutedUntil: channelPrefs.mutedUntil ?? groupPrefs.mutedUntil,
 	}
-}
-
-/**
- * @param {object} prefs 生效偏好
- * @returns {boolean} 是否处于 mute
- */
-export function isNotifyMuted(prefs) {
-	if (prefs.mutedUntil === true) return true
-	return prefs.mutedUntil > Date.now()
 }
 
 /**

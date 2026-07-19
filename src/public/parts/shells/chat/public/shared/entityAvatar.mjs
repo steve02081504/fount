@@ -3,24 +3,13 @@
  * Chat / Social / Cabinet 共用；勿再各写一套 charAt / 虚构 files/profile/avatar。
  * 本模块保持 Deno-pure（无 `/scripts` / `/parts` URL import）。
  */
+import { escapeHtml } from './escapeHtml.mjs'
 import {
 	avatarInitial,
 	displayProfileAvatar,
 	hashAvatarStyle,
 	isAvatarImageUrl,
 } from './hashAvatar.mjs'
-
-/**
- * @param {string} text 原文
- * @returns {string} HTML 转义
- */
-function escapeHtml(text) {
-	return String(text ?? '')
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;')
-}
 
 /**
  * 返回 profile.avatar；无则空串。

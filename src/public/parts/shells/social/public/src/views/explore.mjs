@@ -2,9 +2,10 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { mediaRefUrl } from '/parts/shells:chat/shared/evfsMedia.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
-import { authorLabel, entityHandle, formatTimeAttrs, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
+import { authorLabel, entityHandle, formatTimeHtml, mountMarkdown, renderAvatarHtml } from '../lib/display.mjs'
+import { mountEmptyState } from '../lib/emptyState.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
-import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { state } from '../state.mjs'
 
 let exploreToolbarBound = false
@@ -71,9 +72,10 @@ export async function loadExplore() {
 	)
 	accountList.replaceChildren()
 	if (!accountRows.length)
-		await mountTemplate(accountList, 'explore_empty', {
+		await mountEmptyState(accountList, {
+			titleKey: 'social.empty.exploreAccounts',
 			iconClass: 'icon-user',
-			i18nKey: 'social.empty.exploreAccounts',
+			modClass: ' empty-state--explore',
 		})
 	else
 		for (const account of accountRows) {
@@ -95,9 +97,10 @@ export async function loadExplore() {
 	const postRows = posts.posts || []
 	postList.replaceChildren()
 	if (!postRows.length) {
-		await mountTemplate(postList, 'explore_empty', {
+		await mountEmptyState(postList, {
+			titleKey: 'social.empty.explorePosts',
 			iconClass: 'icon-explore',
-			i18nKey: 'social.empty.explorePosts',
+			modClass: ' empty-state--explore',
 		})
 		return
 	}
@@ -110,10 +113,7 @@ export async function loadExplore() {
 			: '')
 		const name = authorLabel(post.entityHash, post.authorProfile)
 		const handle = entityHandle(post.entityHash, post.authorProfile)
-		const timeAttrs = formatTimeAttrs(post.hlc?.wall)
-		const timeHtml = timeAttrs.i18n
-			? `<span class="post-meta" data-i18n="${timeAttrs.i18n}"${timeAttrs.n != null ? ` data-n="${timeAttrs.n}"` : ''}></span>`
-			: `<span class="post-meta">${escapeHtml(timeAttrs.text || '')}</span>`
+		const timeHtml = formatTimeHtml(post.hlc?.wall)
 		const snippetHtml = post.textSnippet
 			? `<p class="explore-snippet">${escapeHtml(post.textSnippet)}</p>`
 			: post.mediaThumbs?.length

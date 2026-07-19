@@ -1,9 +1,10 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
-import { appendTemplate, mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
 import { initTranslations } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { mountEmptyState } from '../lib/emptyState.mjs'
 import { runWrite } from '../lib/socialWrite.mjs'
 import { state } from '../state.mjs'
 
@@ -36,7 +37,7 @@ async function renderMutedKeywordsSection(panel, entries) {
 	async function paintChips(list) {
 		chips.replaceChildren()
 		if (!list.length) {
-			await mountTemplate(chips, 'empty_hint', { i18nKey: 'social.settings.mutedKeywordsEmpty' })
+			await mountEmptyState(chips, { titleKey: 'social.settings.mutedKeywordsEmpty', modClass: ' empty-state--hint' })
 			return
 		}
 		for (const entry of list) {
@@ -102,7 +103,11 @@ async function renderMutedKeywordsSection(panel, entries) {
 async function renderTranslationPrefsSection(panel) {
 	const data = await chatApi('/translation-prefs').catch(() => ({ prefs: { autoTranslate: false } }))
 	const prefs = data?.prefs || { autoTranslate: false }
-	const section = await renderTemplate('settings_auto_translate', {
+	const section = await renderTemplate('settings_toggle_card', {
+		titleKey: 'social.settings.autoTranslateTitle',
+		hintKey: 'social.settings.autoTranslateHint',
+		inputId: 'socialAutoTranslate',
+		labelKey: 'social.settings.autoTranslateEnable',
 		checkedAttr: prefs.autoTranslate ? 'checked' : '',
 	})
 	panel.appendChild(section)
@@ -121,7 +126,11 @@ async function renderTranslationPrefsSection(panel) {
  * @returns {Promise<void>}
  */
 async function renderPrivacySection(panel, socialMeta) {
-	const section = await renderTemplate('settings_privacy', {
+	const section = await renderTemplate('settings_toggle_card', {
+		titleKey: 'social.settings.privacyTitle',
+		hintKey: 'social.settings.privacyHint',
+		inputId: 'exploreProtectedInput',
+		labelKey: 'social.profile.hideFromExplore',
 		checkedAttr: socialMeta?.hideFromDiscovery ? 'checked' : '',
 	})
 	panel.appendChild(section)
@@ -181,7 +190,7 @@ async function renderTasteSection(panel, data) {
 	const list = section.querySelector('[data-taste-list]')
 	if (!(list instanceof HTMLElement)) return
 	if (!tags.length)
-		await mountTemplate(list, 'empty_hint', { i18nKey: 'social.taste.empty' })
+		await mountEmptyState(list, { titleKey: 'social.taste.empty', modClass: ' empty-state--hint' })
 	else
 		for (const tag of tags) {
 			const label = tag.label || formatHashShort(tag.tagHash, { headLen: 8, tailLen: 4 })

@@ -1,6 +1,7 @@
 import { buildSocialLiveAvWsUrl } from '../../shared/liveAvWsUrl.mjs'
-import { socialApi } from '../lib/apiClient.mjs'
+import { chatApi, socialApi } from '../lib/apiClient.mjs'
 import { entityAvatarUrl, renderAvatarHtml } from '../lib/display.mjs'
+import { playHeartAnim } from '../lib/heartAnim.mjs'
 import { createSnapCursorFeed } from '../lib/snapCursorFeed.mjs'
 import { bindVerticalSnap } from '../lib/verticalSnap.mjs'
 import { activateView } from '../viewChrome.mjs'
@@ -55,9 +56,7 @@ const voiceRingMounts = new WeakMap()
  */
 async function fetchEntityProfile(entityHash) {
 	try {
-		const res = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}`, { credentials: 'include' })
-		if (!res.ok) return null
-		const data = await res.json()
+		const data = await chatApi(`/entities/${encodeURIComponent(entityHash)}`)
 		return data?.profile || data || null
 	}
 	catch { return null }
@@ -444,12 +443,7 @@ async function sendLiveLike(slide) {
  * @returns {void}
  */
 function showHeartFloat(slide) {
-	const heart = document.createElement('div')
-	heart.className = 'heart-anim'
-	heart.textContent = '❤️'
-	heart.style.cssText = 'position:absolute;left:50%;bottom:2rem;animation:heartFloat 1s ease-out forwards;pointer-events:none;'
-	slide.appendChild(heart)
-	setTimeout(() => heart.remove(), 1100)
+	playHeartAnim(slide, { emoji: '❤️', durationMs: 1000, mode: 'spawn' })
 }
 
 /**

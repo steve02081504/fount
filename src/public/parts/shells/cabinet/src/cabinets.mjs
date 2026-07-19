@@ -5,7 +5,7 @@ import { normalizeVisibilitySpec } from '../../social/src/lib/visibilitySpec.mjs
 import { normalizeIndex } from './entryModel.mjs'
 import { readJsonFile, writeJsonFile } from './io.mjs'
 import { cabinetIndexPath, cabinetsListPath } from './paths.mjs'
-import { publishCabinetLists } from './publish.mjs'
+import { publishCabinetIndex, publishCabinetLists } from './publish.mjs'
 
 /**
  * @param {string} username 用户
@@ -161,8 +161,6 @@ export async function savePersonalIndex(username, entityHash, cabinetId, index) 
 	const normalized = normalizeIndex(index)
 	await writeJsonFile(cabinetIndexPath(username, entityHash, cabinetId), normalized)
 	const cabinet = await getCabinet(username, entityHash, cabinetId)
-	if (cabinet?.type === 'personal') {
-		const { publishCabinetIndex } = await import('./publish.mjs')
+	if (cabinet?.type === 'personal')
 		await publishCabinetIndex(username, entityHash, cabinet, normalized).catch(() => { })
-	}
 }

@@ -2,7 +2,7 @@
  * 【文件】public/hub/membersDigest.mjs
  * 【职责】成员列表 Merkle 摘要：为联邦成员同步计算活跃成员键根。
  */
-import { sha256Hex } from '../shared/digest.mjs'
+import { bytesToHex, hexToBytes, sha256Hex } from '../shared/digest.mjs'
 
 const MEMBER_KEY_RE = /^[\da-f]{64}$/u
 
@@ -23,19 +23,7 @@ async function sha256Pair(left, right) {
 	const buf = new Uint8Array(left.length + right.length)
 	buf.set(left, 0)
 	buf.set(right, left.length)
-	const hex = await sha256Hex(buf)
-	const out = new Uint8Array(32)
-	for (let byteIndex = 0; byteIndex < 32; byteIndex++)
-		out[byteIndex] = Number.parseInt(hex.slice(byteIndex * 2, byteIndex * 2 + 2), 16)
-	return out
-}
-
-/**
- * @param {Uint8Array} digest 摘要字节
- * @returns {string} 小写 hex
- */
-function digestHex(digest) {
-	return [...digest].map(byte => byte.toString(16).padStart(2, '0')).join('')
+	return hexToBytes(await sha256Hex(buf))
 }
 
 /**
@@ -50,13 +38,7 @@ export async function computeMembersMerkleRoot(ids) {
 	if (!sorted.length)
 		return sha256Hex(new Uint8Array())
 	/** @type {Uint8Array[]} */
-	let level = await Promise.all(sorted.map(async id => {
-		const hex = await sha256Hex(new TextEncoder().encode(id))
-		const out = new Uint8Array(32)
-		for (let byteIndex = 0; byteIndex < 32; byteIndex++)
-			out[byteIndex] = Number.parseInt(hex.slice(byteIndex * 2, byteIndex * 2 + 2), 16)
-		return out
-	}))
+	let level = await Promise.all(sorted.map(async id => hexToBytes(await sha256Hex(new TextEncoder().encode(id)))))
 	while (level.length > 1) {
 		/** @type {Uint8Array[]} */
 		const next = []
@@ -67,7 +49,7 @@ export async function computeMembersMerkleRoot(ids) {
 		}
 		level = next
 	}
-	return digestHex(level[0])
+	return bytesToHex(level[0])
 }
 
 /**

@@ -1,9 +1,23 @@
 /**
  * 【文件】hub/unread.mjs — 未读 badge 与 read-marker 同步。
  */
-import { groupFetch, groupPath } from '../src/api/groupClient.mjs'
+import { putChannelReadMarker } from '../src/api/groupChannel.mjs'
 
 import { store } from './core/state.mjs'
+
+/**
+ *
+ */
+export { putChannelReadMarker }
+
+/**
+ * @param {number} count 未读数
+ * @returns {string} 封顶展示（99+）
+ */
+export function formatCap99(count) {
+	const n = Number(count) || 0
+	return n > 99 ? '99+' : String(n)
+}
 
 /**
  * @param {Record<string, number>} channelUnread 频道未读映射
@@ -14,26 +28,13 @@ function sumChannelUnread(channelUnread) {
 }
 
 /**
- * @param {string} groupId 群 ID
- * @param {string} channelId 频道 ID
- * @param {{ eventId: string, seq: number }} marker 已读水位
- * @returns {Promise<{ readMarker: { eventId: string, seq: number } }>} 服务端确认后的已读水位
- */
-export async function putChannelReadMarker(groupId, channelId, marker) {
-	return groupFetch(groupPath(groupId, 'channels', channelId, 'read-marker'), {
-		method: 'PUT',
-		json: marker,
-	})
-}
-
-/**
  * @param {number} count 未读数
  * @returns {string} badge HTML；0 时为空
  */
 export function formatUnreadBadgeHtml(count) {
 	const n = Number(count) || 0
 	if (n <= 0) return ''
-	const label = n > 99 ? '99+' : String(n)
+	const label = formatCap99(n)
 	return `<span class="unread-badge" aria-label="${label}">${label}</span>`
 }
 

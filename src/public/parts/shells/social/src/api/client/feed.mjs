@@ -10,6 +10,35 @@ import { buildTrendingHashtags } from '../../trending/hashtags.mjs'
 import { makeViewerOptions } from './helpers.mjs'
 
 /**
+ * 首页/短视频：首屏不足时触发联邦 backfill 再重读。
+ * @param {string} username replica
+ * @param {object} options 含 viewerEntityHash / cursor / limit
+ * @param {() => Promise<{ items: object[] }>} build 构建本页
+ * @param {{ defaultLimit: number, maxLimit: number, mediaOnly?: boolean }} caps 上限
+ * @returns {Promise<object>} feed 页
+ */
+async function withThinFeedBackfill(username, options, build, { defaultLimit, maxLimit, mediaOnly = false }) {
+	let result = await build()
+	const limit = Math.min(Math.max(Number(options.limit) || defaultLimit, 1), maxLimit)
+	if (!options.cursor && result.items.length < limit) {
+		const { backfillPosts } = await import('../../federation/backfill.mjs')
+		await backfillPosts(username, {
+			viewerEntityHash: options.viewerEntityHash,
+			...mediaOnly ? { mediaOnly: true } : {},
+			/**
+			 * @returns {Promise<boolean>} 本地是否已足够
+			 */
+			enough: async () => {
+				result = await build()
+				return result.items.length >= limit
+			},
+		})
+		result = await build()
+	}
+	return result
+}
+
+/**
  * @param {import('./helpers.mjs').SocialApiContext} apiContext API 上下文
  * @returns {object} feed / 搜索 / 探索 / 话题方法
  */
@@ -23,29 +52,14 @@ export function createFeedMethods(apiContext) {
 		async feed(options = {}) {
 			const mode = options.mode || (options.ranking === 'for_you' ? 'forYou' : 'home')
 			options = { ...options, ...viewerOptions() }
-			/**
-			 * @returns {Promise<object>} 本页 feed
-			 */
-			const build = () => mode === 'forYou'
-				? buildForYouFeed(apiContext.username, options)
-				: buildHomeFeed(apiContext.username, options)
-			let result = await build()
-			const limit = Math.min(Math.max(Number(options.limit) || 50, 1), 200)
-			if (!options.cursor && result.items.length < limit) {
-				const { backfillPosts } = await import('../../federation/backfill.mjs')
-				await backfillPosts(apiContext.username, {
-					viewerEntityHash: options.viewerEntityHash,
-					/**
-					 * @returns {Promise<boolean>} 本地是否已足够
-					 */
-					enough: async () => {
-						result = await build()
-						return result.items.length >= limit
-					},
-				})
-				result = await build()
-			}
-			return result
+			return withThinFeedBackfill(
+				apiContext.username,
+				options,
+				() => mode === 'forYou'
+					? buildForYouFeed(apiContext.username, options)
+					: buildHomeFeed(apiContext.username, options),
+				{ defaultLimit: 50, maxLimit: 200 },
+			)
 		},
 		/**
 		 * @returns {Promise<{ synced: true }>} 同步结果
@@ -98,24 +112,12 @@ export function createFeedMethods(apiContext) {
 		async videosFeed(options = {}) {
 			const { buildVideosFeed } = await import('../../videosFeed.mjs')
 			options = { ...options, ...viewerOptions() }
-			let result = await buildVideosFeed(apiContext.username, options)
-			const limit = Math.min(Math.max(Number(options.limit) || 20, 1), 50)
-			if (!options.cursor && result.items.length < limit) {
-				const { backfillPosts } = await import('../../federation/backfill.mjs')
-				await backfillPosts(apiContext.username, {
-					viewerEntityHash: options.viewerEntityHash,
-					mediaOnly: true,
-					/**
-					 * @returns {Promise<boolean>} 本地是否已足够
-					 */
-					enough: async () => {
-						result = await buildVideosFeed(apiContext.username, options)
-						return result.items.length >= limit
-					},
-				})
-				result = await buildVideosFeed(apiContext.username, options)
-			}
-			return result
+			return withThinFeedBackfill(
+				apiContext.username,
+				options,
+				() => buildVideosFeed(apiContext.username, options),
+				{ defaultLimit: 20, maxLimit: 50, mediaOnly: true },
+			)
 		},
 		/**
 		 * @param {string} query 搜索词

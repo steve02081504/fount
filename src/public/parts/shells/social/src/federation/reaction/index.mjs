@@ -2,38 +2,36 @@
  * 逐帖反应投影：like/dislike 签名事件按 (author, postId, reactor) 索引。
  * 聚合物 = 签名事件集合，能隐瞒不能伪造。
  */
-import path from 'node:path'
-
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
-import { isHex64, normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
-import { writeJsonAtomic } from 'npm:@steve02081504/fount-p2p/dag/storage'
-import { withAsyncMutex } from 'npm:@steve02081504/fount-p2p/utils/async_mutex'
-import { createLruMap } from 'npm:@steve02081504/fount-p2p/utils/lru'
 
-import { getUserDictionary } from '../../../../../../../server/auth/index.mjs'
-import { socialPostKey } from '../post_key.mjs'
+import { createPostScopedJsonStore, normalizePostTarget } from '../postScopedJsonStore.mjs'
 
-/**
- * @param {string} targetEntityHash 帖作者
- * @param {string} postId 帖 id
- * @returns {{ target: string, postId: string } | null} 规范化键，非法则 null
- */
-export function normalizeReactionTarget(targetEntityHash, postId) {
-	const target = String(targetEntityHash || '').trim().toLowerCase()
-	const id = normalizeHex64(String(postId || '').trim())
-	if (!parseEntityHash(target) || !isHex64(id)) return null
-	return { target, postId: id }
-}
-
-const REACTION_CACHE_MAX = 512
 /** 联邦 RPC 单批反应上限 */
 export const REACTION_PULL_BATCH = 200
 
 /** @typedef {{ kind: 'like' | 'dislike', event: object }} ReactionEntry */
 /** @typedef {{ reactors: Record<string, ReactionEntry> }} ReactionIndex */
 
-/** @type {ReturnType<typeof createLruMap<string, ReactionIndex>>} */
-const reactionCache = createLruMap(REACTION_CACHE_MAX)
+/**
+ * @param {string} targetEntityHash 帖作者
+ * @param {string} postId 帖 id
+ * @returns {{ target: string, postId: string } | null} 规范化键，非法则 null
+ */
+export const normalizeReactionTarget = normalizePostTarget
+
+const store = createPostScopedJsonStore({
+	dirName: 'reaction_index',
+	mutexPrefix: 'reaction-index',
+	/**
+	 * @returns {ReactionIndex} 空投影
+	 */
+	empty: () => ({ reactors: {} }),
+	/**
+	 * @param {object | null | undefined} raw 磁盘数据
+	 * @returns {ReactionIndex} 规范化投影
+	 */
+	normalize: raw => ({ reactors: raw?.reactors && typeof raw.reactors === 'object' ? raw.reactors : {} }),
+})
 
 /**
  * @param {string} username replica
@@ -42,31 +40,7 @@ const reactionCache = createLruMap(REACTION_CACHE_MAX)
  * @returns {string} 投影文件路径
  */
 export function reactionIndexPath(username, targetEntityHash, postId) {
-	const normalized = normalizeReactionTarget(targetEntityHash, postId)
-	if (!normalized) throw new Error('invalid reaction target')
-	return path.join(
-		getUserDictionary(username),
-		'shells/social/reaction_index',
-		normalized.target,
-		`${normalized.postId}.json`,
-	)
-}
-
-/**
- * @param {string} targetEntityHash 帖作者
- * @param {string} postId 帖 id
- * @returns {string} 缓存键
- */
-function reactionCacheKey(targetEntityHash, postId) {
-	return socialPostKey(targetEntityHash, postId)
-}
-
-/**
- * @param {object | null | undefined} raw 磁盘数据
- * @returns {ReactionIndex} 规范化投影
- */
-function normalizeReactionIndex(raw) {
-	return { reactors: raw?.reactors && typeof raw.reactors === 'object' ? raw.reactors : {} }
+	return store.filePath(username, targetEntityHash, postId)
 }
 
 /**
@@ -76,43 +50,7 @@ function normalizeReactionIndex(raw) {
  * @returns {Promise<ReactionIndex>} 反应投影
  */
 export async function readReactionIndex(username, targetEntityHash, postId) {
-	const ids = normalizeReactionTarget(targetEntityHash, postId)
-	if (!ids) return { reactors: {} }
-	const key = reactionCacheKey(ids.target, ids.postId)
-	const cached = reactionCache.get(key)
-	if (cached) {
-		reactionCache.touch(key, cached)
-		return cached
-	}
-	const { readFile } = await import('node:fs/promises')
-	try {
-		const raw = JSON.parse(await readFile(reactionIndexPath(username, ids.target, ids.postId), 'utf8'))
-		const normalized = normalizeReactionIndex(raw)
-		reactionCache.touch(key, normalized)
-		return normalized
-	}
-	catch (err) {
-		if (err?.code !== 'ENOENT') throw err
-		const empty = { reactors: {} }
-		reactionCache.touch(key, empty)
-		return empty
-	}
-}
-
-/**
- * @param {string} username replica
- * @param {string} targetEntityHash 帖作者
- * @param {string} postId 帖 id
- * @param {Record<string, ReactionEntry>} reactors reactor → 条目
- * @returns {Promise<void>}
- */
-async function writeReactionIndex(username, targetEntityHash, postId, reactors) {
-	const key = reactionCacheKey(targetEntityHash, postId)
-	const payload = { reactors }
-	const { mkdir } = await import('node:fs/promises')
-	await mkdir(path.dirname(reactionIndexPath(username, targetEntityHash, postId)), { recursive: true })
-	await writeJsonAtomic(reactionIndexPath(username, targetEntityHash, postId), payload)
-	reactionCache.touch(key, payload)
+	return store.read(username, targetEntityHash, postId)
 }
 
 /**
@@ -125,17 +63,16 @@ async function writeReactionIndex(username, targetEntityHash, postId, reactors) 
  * @returns {Promise<void>}
  */
 export async function upsertReaction(username, targetEntityHash, postId, reactorEntityHash, entry) {
-	const ids = normalizeReactionTarget(targetEntityHash, postId)
+	const ids = normalizePostTarget(targetEntityHash, postId)
 	if (!ids) return
 	const reactor = String(reactorEntityHash || '').trim().toLowerCase()
 	if (!parseEntityHash(reactor)) return
-	const mutexKey = socialPostKey(ids.target, ids.postId)
-	await withAsyncMutex(`reaction-index:${mutexKey}`, async () => {
-		const current = await readReactionIndex(username, ids.target, ids.postId)
+	await store.withMutex(ids.target, ids.postId, async () => {
+		const current = await store.read(username, ids.target, ids.postId)
 		const reactors = { ...current.reactors }
 		if (entry) reactors[reactor] = entry
 		else delete reactors[reactor]
-		await writeReactionIndex(username, ids.target, ids.postId, reactors)
+		await store.write(username, ids.target, ids.postId, { reactors })
 	})
 }
 
@@ -149,16 +86,14 @@ export async function upsertReaction(username, targetEntityHash, postId, reactor
 export async function projectReactionFromTimelineEvent(replicaUsername, timelineOwnerEntityHash, event) {
 	const type = event?.type
 	if (!['like', 'unlike', 'dislike', 'undislike'].includes(type)) return
-	const ids = normalizeReactionTarget(event.content?.targetEntityHash, event.content?.targetPostId)
+	const ids = normalizePostTarget(event.content?.targetEntityHash, event.content?.targetPostId)
 	if (!ids) return
 	const reactor = String(timelineOwnerEntityHash || '').trim().toLowerCase()
 	if (!parseEntityHash(reactor)) return
 	const { loadTaste } = await import('../../taste/store.mjs')
 	const taste = await loadTaste(replicaUsername, reactor)
 	if (taste.privacy.publishReactions === false) {
-		// 私密反应：确保不残留公开投影
-		if (type === 'unlike' || type === 'undislike' || type === 'like' || type === 'dislike')
-			await upsertReaction(replicaUsername, ids.target, ids.postId, reactor, null)
+		await upsertReaction(replicaUsername, ids.target, ids.postId, reactor, null)
 		return
 	}
 	if (type === 'like')
@@ -179,7 +114,7 @@ export async function projectReactionFromTimelineEvent(replicaUsername, timeline
  * @returns {Promise<object[]>} 签名事件列表
  */
 export async function listReactionEvents(username, targetEntityHash, postId, afterReactor, limit = REACTION_PULL_BATCH) {
-	const ids = normalizeReactionTarget(targetEntityHash, postId)
+	const ids = normalizePostTarget(targetEntityHash, postId)
 	if (!ids) return []
 	const { reactors } = await readReactionIndex(username, ids.target, ids.postId)
 	const keys = Object.keys(reactors).sort()
@@ -201,7 +136,7 @@ export async function listReactionEvents(username, targetEntityHash, postId, aft
  * @returns {Promise<{ likes: string[], dislikes: string[] }>} 反应者 entityHash 列表
  */
 export async function summarizeReactions(username, targetEntityHash, postId) {
-	const ids = normalizeReactionTarget(targetEntityHash, postId)
+	const ids = normalizePostTarget(targetEntityHash, postId)
 	if (!ids) return { likes: [], dislikes: [] }
 	const { reactors } = await readReactionIndex(username, ids.target, ids.postId)
 	/** @type {string[]} */

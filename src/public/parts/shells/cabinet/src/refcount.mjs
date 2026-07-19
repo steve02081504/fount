@@ -3,6 +3,39 @@ import { listLocalSharedCabinets } from './shared/keys.mjs'
 import { loadSharedIndex } from './shared/materialize.mjs'
 
 /**
+ * @param {object} link 链接
+ * @param {string} owner 目标 owner
+ * @param {string} cabinetId 目标柜
+ * @param {string | null} entryId 目标条目
+ * @returns {boolean} 是否匹配
+ */
+function matchLink(link, owner, cabinetId, entryId) {
+	const linkOwner = String(link.owner_entity_hash || '').toLowerCase()
+	if (linkOwner && linkOwner !== owner) return false
+	if (String(link.cabinet_id || '') !== cabinetId) return false
+	const linkEntry = link.entry_id == null || link.entry_id === '' ? null : String(link.entry_id)
+	return linkEntry === entryId
+}
+
+/**
+ * @param {object[]} entries 条目
+ * @param {string} owner 目标 owner
+ * @param {string} cabinetId 目标柜
+ * @param {string | null} entryId 目标条目
+ * @param {Set<string>} [excludeIds] 排除的条目
+ * @returns {number} 命中数
+ */
+function countMatchingLinks(entries, owner, cabinetId, entryId, excludeIds) {
+	let count = 0
+	for (const entry of entries) {
+		if (excludeIds?.has(entry.id)) continue
+		if (entry.kind !== 'link' || !entry.link) continue
+		if (matchLink(entry.link, owner, cabinetId, entryId)) count++
+	}
+	return count
+}
+
+/**
  * 统计本实体范围内指向某条目的链接数（不含自身）。
  * @param {string} username 用户
  * @param {string} entityHash 实体
@@ -18,51 +51,19 @@ export async function countLocalInboundLinks(username, entityHash, target, opts 
 	const excludeIds = opts.exclude_entry_ids || new Set()
 
 	let count = 0
-	const personal = await loadCabinets(username, entityHash)
-	for (const cabinet of personal) {
+	for (const cabinet of await loadCabinets(username, entityHash)) {
 		if (cabinet.type === 'shared' || cabinet.type === 'group') continue
-		if (excludeCabinet && cabinet.cabinet_id === excludeCabinet) {
-			const index = await loadPersonalIndex(username, entityHash, cabinet.cabinet_id)
-			for (const entry of index.entries) {
-				if (excludeIds.has(entry.id)) continue
-				if (entry.kind !== 'link' || !entry.link) continue
-				if (matchLink(entry.link, targetOwner, targetCabinet, targetEntry)) count++
-			}
-			continue
-		}
 		const index = await loadPersonalIndex(username, entityHash, cabinet.cabinet_id)
-		for (const entry of index.entries) {
-			if (entry.kind !== 'link' || !entry.link) continue
-			if (matchLink(entry.link, targetOwner, targetCabinet, targetEntry)) count++
-		}
+		const skip = excludeCabinet && cabinet.cabinet_id === excludeCabinet ? excludeIds : undefined
+		count += countMatchingLinks(index.entries, targetOwner, targetCabinet, targetEntry, skip)
 	}
 
-	const shared = await listLocalSharedCabinets(username)
-	for (const cabinet of shared) {
+	for (const cabinet of await listLocalSharedCabinets(username)) {
 		if (excludeCabinet && cabinet.cabinet_id === excludeCabinet) continue
 		const index = await loadSharedIndex(username, cabinet.cabinet_id)
-		for (const entry of index.entries) {
-			if (excludeIds.has(entry.id)) continue
-			if (entry.kind !== 'link' || !entry.link) continue
-			if (matchLink(entry.link, targetOwner, targetCabinet, targetEntry)) count++
-		}
+		count += countMatchingLinks(index.entries, targetOwner, targetCabinet, targetEntry, excludeIds)
 	}
 	return count
-}
-
-/**
- * @param {object} link 链接
- * @param {string} owner 目标 owner
- * @param {string} cabinetId 目标柜
- * @param {string | null} entryId 目标条目
- * @returns {boolean} 是否匹配
- */
-function matchLink(link, owner, cabinetId, entryId) {
-	const linkOwner = String(link.owner_entity_hash || '').toLowerCase()
-	if (linkOwner && linkOwner !== owner) return false
-	if (String(link.cabinet_id || '') !== cabinetId) return false
-	const linkEntry = link.entry_id == null || link.entry_id === '' ? null : String(link.entry_id)
-	return linkEntry === entryId
 }
 
 /**
@@ -93,18 +94,19 @@ export async function gcOrphanAfterUnlink(username, entityHash, linkEntry) {
 		const index = await loadPersonalIndex(username, entityHash, cabinetId)
 		const target = index.entries.find(row => row.id === entryId)
 		if (target?.orphaned) {
-			const kept = index.entries.filter(row => row.id !== entryId)
-			await savePersonalIndex(username, entityHash, cabinetId, { version: index.version, entries: kept })
+			await savePersonalIndex(username, entityHash, cabinetId, {
+				version: index.version,
+				entries: index.entries.filter(row => row.id !== entryId),
+			})
 			const { hardDeleteEntryBlobs } = await import('./blobGc.mjs')
 			await hardDeleteEntryBlobs(username, entityHash, target)
 		}
 		return
 	}
 
-	const { updateSharedEntry, deleteSharedEntries } = await import('./shared/ops.mjs')
+	const { deleteSharedEntries } = await import('./shared/ops.mjs')
 	const sharedIndex = await loadSharedIndex(username, cabinetId)
 	const target = sharedIndex.entries.find(row => row.id === entryId)
 	if (target?.orphaned)
 		await deleteSharedEntries(username, entityHash, cabinetId, [entryId])
-	void updateSharedEntry
 }

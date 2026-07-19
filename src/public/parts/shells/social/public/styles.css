@@ -268,6 +268,27 @@ body {
 	font-size: 0.95rem;
 }
 
+.empty-state--plain {
+	padding: 3rem 1.5rem;
+}
+
+.empty-state--plain .empty-state-title {
+	font-weight: 400;
+	color: var(--muted);
+	font-size: 0.95rem;
+}
+
+.empty-state--hint {
+	padding: 0.75rem 0;
+	gap: 0;
+}
+
+.empty-state--hint .empty-state-title {
+	font-weight: 400;
+	color: var(--muted);
+	font-size: 0.9rem;
+}
+
 .link-btn {
 	background: transparent;
 	border: none;
@@ -2370,7 +2391,8 @@ body {
 	padding: 0.5rem 1rem 1rem;
 }
 
-.saved-row {
+.saved-row,
+.draft-row {
 	display: flex;
 	align-items: stretch;
 	gap: 0.25rem;
@@ -2378,7 +2400,8 @@ body {
 	transition: background var(--transition);
 }
 
-.saved-row:hover {
+.saved-row:hover,
+.draft-row:hover {
 	background: color-mix(in srgb, var(--color-base-content) 3%, transparent);
 }
 
@@ -2436,7 +2459,8 @@ body {
 	font-weight: 600;
 }
 
-.saved-row-action {
+.saved-row-action,
+.draft-row-action {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -2454,11 +2478,14 @@ body {
 }
 
 .saved-row:hover .saved-row-action,
-.saved-row-action:focus-visible {
+.draft-row:hover .draft-row-action,
+.saved-row-action:focus-visible,
+.draft-row-action:focus-visible {
 	opacity: 1;
 }
 
-.saved-row-action:hover {
+.saved-row-action:hover,
+.draft-row-action:hover {
 	background: color-mix(in srgb, var(--color-error) 12%, transparent);
 	color: var(--color-error);
 }
@@ -2473,18 +2500,6 @@ body {
 .drafts-list {
 	display: flex;
 	flex-direction: column;
-}
-
-.draft-row {
-	display: flex;
-	align-items: stretch;
-	gap: 0.25rem;
-	border-bottom: 1px solid var(--border);
-	transition: background var(--transition);
-}
-
-.draft-row:hover {
-	background: color-mix(in srgb, var(--color-base-content) 3%, transparent);
 }
 
 .draft-row-main {
@@ -2518,33 +2533,6 @@ body {
 .draft-row-meta {
 	color: var(--muted);
 	font-size: 0.8rem;
-}
-
-.draft-row-action {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	align-self: center;
-	width: 2.25rem;
-	height: 2.25rem;
-	margin-right: 0.55rem;
-	border: none;
-	border-radius: 999px;
-	background: transparent;
-	color: var(--muted);
-	cursor: pointer;
-	opacity: 0.55;
-	transition: background var(--transition), color var(--transition), opacity var(--transition);
-}
-
-.draft-row:hover .draft-row-action,
-.draft-row-action:focus-visible {
-	opacity: 1;
-}
-
-.draft-row-action:hover {
-	background: color-mix(in srgb, var(--color-error) 12%, transparent);
-	color: var(--color-error);
 }
 
 /* Mention autocomplete */

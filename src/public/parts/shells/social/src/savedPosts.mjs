@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import { readFile, writeFile, mkdir } from 'node:fs/promises'
 
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 
+import { loadEntityJson, saveEntityJson } from './lib/entityJson.mjs'
 import { getEntityProfile } from './lib/entityProfile.mjs'
 import { savedPostsPath } from './paths.mjs'
 import { getTimelineMaterialized } from './timeline/materialize.mjs'
@@ -72,7 +72,7 @@ export async function enrichSavedPosts(username, data) {
  */
 export async function loadSavedPosts(username, entityHash) {
 	try {
-		return JSON.parse(await readFile(savedPostsPath(username, entityHash), 'utf8'))
+		return await loadEntityJson(savedPostsPath(username, entityHash), emptySaved)
 	}
 	catch {
 		return emptySaved()
@@ -87,10 +87,7 @@ export async function loadSavedPosts(username, entityHash) {
  * @returns {Promise<object>} 写入后的收藏结构
  */
 export async function saveSavedPosts(username, entityHash, data) {
-	const path = savedPostsPath(username, entityHash)
-	await mkdir(`${path.replace(/[/\\][^/\\]+$/, '')}`, { recursive: true })
-	await writeFile(path, JSON.stringify(data, null, '\t'), 'utf8')
-	return data
+	return saveEntityJson(savedPostsPath(username, entityHash), data)
 }
 
 /**

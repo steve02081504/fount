@@ -17,6 +17,18 @@ export function stampActor(entityHash) {
 }
 
 /**
+ * @param {{ at?: number, entity_hash?: string } | null | undefined} stamp 戳
+ * @param {string} entityHash 默认实体
+ * @param {{ at: number, entity_hash: string }} fallback 回退
+ * @returns {{ at: number, entity_hash: string }} 规范化戳
+ */
+function normalizeStamp(stamp, entityHash, fallback) {
+	return stamp?.at
+		? { at: Number(stamp.at), entity_hash: String(stamp.entity_hash || entityHash).toLowerCase() }
+		: fallback
+}
+
+/**
  * @param {Partial<object>} draft 草稿
  * @param {string} entityHash 操作者
  * @returns {object} 规范化条目
@@ -32,14 +44,8 @@ export function normalizeEntry(draft, entityHash) {
 		size: Number(draft?.size) || 0,
 		mime_type: String(draft?.mime_type || (kind === 'folder' ? 'inode/directory' : 'application/octet-stream')),
 		description: String(draft?.description || '').slice(0, 4000),
-		created: draft?.created?.at ? {
-			at: Number(draft.created.at),
-			entity_hash: String(draft.created.entity_hash || entityHash).toLowerCase(),
-		} : now,
-		modified: draft?.modified?.at ? {
-			at: Number(draft.modified.at),
-			entity_hash: String(draft.modified.entity_hash || entityHash).toLowerCase(),
-		} : now,
+		created: normalizeStamp(draft?.created, entityHash, now),
+		modified: normalizeStamp(draft?.modified, entityHash, now),
 		evfs_path: draft?.evfs_path ? String(draft.evfs_path) : null,
 		attrs: {
 			hidden: Boolean(draft?.attrs?.hidden),

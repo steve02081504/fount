@@ -15,13 +15,12 @@ import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
 import { formatEntityAtId, isEntityHash128 } from '../shared/entityHash.mjs'
 import { bindEntityProfileHoverAnchor } from '../shared/entityProfileHoverCard.mjs'
-import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
+import { displayProfileAvatar, listAvatarTemplateFields } from '../shared/hashAvatar.mjs'
 import { resolveDisplayName } from '../shared/nameResolve.mjs'
 import { promptText } from '../shared/promptText.mjs'
 
 import { getCharDetails } from './charCard.mjs'
 import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
-import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
 import { positionContextMenu } from './core/positionContextMenu.mjs'
 import { store } from './core/state.mjs'
 import { charAgentEntityHash } from './entityResolve.mjs'
@@ -85,23 +84,6 @@ function bindFriendProfileHover(el, target) {
 			paintOptions: friendHoverPaintOptions(),
 		}
 	})
-}
-
-/**
- * @param {string} seed 头像色种子
- * @param {string} label 展示名
- * @param {string} [avatarUrl] 头像 URL
- * @returns {{ avatarBg: string, avatarTextColor: string, avatarInner: string }} 头像模板字段
- */
-function avatarTemplateFields(seed, label, avatarUrl = '') {
-	const url = String(avatarUrl || '').trim()
-	return {
-		avatarBg: avatarColor(seed),
-		avatarTextColor: avatarTextColor(seed),
-		avatarInner: url
-			? `<img src="${escapeHtml(url)}" alt="" class="char-list-avatar-img" />`
-			: escapeHtml(avatarInitial(label)),
-	}
 }
 
 /**
@@ -173,7 +155,7 @@ async function friendRowTemplateData(friend, details) {
 			displayName,
 			subtitle,
 			activeClass: active ? ' active' : '',
-			...avatarTemplateFields(seed, displayName),
+			...listAvatarTemplateFields(seed, displayName),
 		}
 	}
 
@@ -195,7 +177,7 @@ async function friendRowTemplateData(friend, details) {
 		displayName: resolvedName,
 		subtitle,
 		activeClass: active ? ' active' : '',
-		...avatarTemplateFields(entityHash || friend.key, resolvedName, displayProfileAvatar(profile)),
+		...listAvatarTemplateFields(entityHash || friend.key, resolvedName, displayProfileAvatar(profile)),
 	}
 }
 
@@ -406,7 +388,7 @@ async function appendFriendsSearchHit(hit, resultsHost) {
 		handle: escapeHtml(hit.subtitle),
 		showPin: isChar ? '' : '1',
 		actionI18n: isChar ? 'chat.hub.friendsSearchChat' : 'chat.hub.friendsSearchDm',
-		...avatarTemplateFields(seed, hit.label, isChar ? hit.avatar : ''),
+		...listAvatarTemplateFields(seed, hit.label, isChar ? hit.avatar : ''),
 	})
 	if (isChar || isEntityHash128(hit.entityHash))
 		bindFriendProfileHover(row, {

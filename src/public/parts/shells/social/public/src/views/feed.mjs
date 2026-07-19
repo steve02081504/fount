@@ -2,11 +2,12 @@ import { formatSocialTopicHref, formatSocialProfileHref } from '../../shared/run
 import { bindDwellTracker } from '../dwellTracker.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { entityHandle } from '../lib/display.mjs'
+import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { renderSuggestedAccountRows } from '../lib/suggestedAccounts.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
-import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
+import { renderTemplate } from '/scripts/features/template.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
@@ -144,7 +145,7 @@ export async function loadTrendingHashtags(scope = 'local', containerId = 'feedT
 	const list = document.createElement('div')
 	list.className = 'trending-tags'
 	if (!tags.length)
-		await mountTemplate(list, 'empty_hint', { i18nKey: 'social.trending.empty' })
+		await mountEmptyState(list, { titleKey: 'social.trending.empty', modClass: ' empty-state--hint' })
 	else
 		for (const row of tags) {
 			const link = document.createElement('a')
@@ -296,8 +297,7 @@ export async function loadFeed(append = false) {
 		state.feedShownItems = [...state.feedShownItems || [], ...items]
 
 	if (!append && !items.length) {
-		const emptyElement = await renderTemplate('feed_empty', { emptyKey: 'social.empty.feed' })
-		list.replaceChildren(emptyElement)
+		await mountEmptyState(list, { titleKey: 'social.empty.feed', modClass: ' empty-state--plain' })
 		state.feedShownItems = null
 	}
 	else if (!append) {

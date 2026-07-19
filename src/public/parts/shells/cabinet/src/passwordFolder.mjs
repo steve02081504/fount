@@ -4,7 +4,6 @@ import {
 	createDecipheriv,
 	randomBytes,
 	scryptSync,
-	timingSafeEqual,
 } from 'node:crypto'
 import { readFile, writeFile } from 'node:fs/promises'
 
@@ -123,15 +122,4 @@ export async function loadEncryptedFolderIndex(username, entityHash, cabinetId, 
 	catch {
 		return { version: 1, entries: [] }
 	}
-}
-
-/**
- * 常量时间比较两个 buffer（同长时）。
- * @param {Buffer} a a
- * @param {Buffer} b b
- * @returns {boolean} 是否相等
- */
-export function safeEqualBuffer(a, b) {
-	if (a.length !== b.length) return false
-	return timingSafeEqual(a, b)
 }

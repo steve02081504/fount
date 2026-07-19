@@ -10,6 +10,7 @@ import { buildWebSocketUrl } from '../src/wsUrl.mjs'
 
 import { createAudioGate } from './audioGate.mjs'
 import { CODECS_PRESETS } from './avRelayPresets.mjs'
+import { bytesToHex } from './digest.mjs'
 
 const PRESET = CODECS_PRESETS.med
 /** 帧类型：摄像头视频 */
@@ -82,11 +83,8 @@ export function buildChatCallWsUrl(groupId, channelId) {
 
 /**
  *
- * @param bytes
  */
-export function bytesToHex(bytes) {
-	return [...bytes].map(b => b.toString(16).padStart(2, '0')).join('')
-}
+export { bytesToHex } from './digest.mjs'
 
 /**
  *

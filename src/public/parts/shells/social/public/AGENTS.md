@@ -28,6 +28,9 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
+- Empty states: `lib/emptyState.mjs` (`buildEmptyState` / `mountEmptyState` / `appendEmptyState`) + `templates/empty_state.html`.
+- Heart anim: `lib/heartAnim.mjs` `playHeartAnim`（video / live / post media 共用）。
+- HTTP 路由：`endpoints/shared.mjs` `socialJson(handler)`；逐帖 JSON 投影：`federation/postScopedJsonStore.mjs`。
 - Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.
 - **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.

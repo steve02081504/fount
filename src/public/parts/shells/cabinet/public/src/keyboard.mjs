@@ -25,21 +25,23 @@ export function matchCabinetShortcut(event) {
 	if (isEditableTarget(event.target)) return null
 	const key = event.key.length === 1 ? event.key.toLowerCase() : event.key
 	const mod = event.ctrlKey || event.metaKey
-
-	if (mod && key === 'c' && !event.shiftKey && !event.altKey) return 'copy'
-	if (mod && key === 'x' && !event.shiftKey && !event.altKey) return 'cut'
-	if (mod && key === 'v' && event.shiftKey && !event.altKey) return 'pasteLink'
-	if (mod && key === 'v' && !event.shiftKey && !event.altKey) return 'paste'
-	if (mod && key === 'a' && !event.shiftKey && !event.altKey) return 'selectAll'
-	if (mod && key === 'd' && !event.shiftKey && !event.altKey) return 'delete'
-	if (mod && key === 'z' && event.shiftKey && !event.altKey) return 'redo'
-	if (mod && key === 'z' && !event.shiftKey && !event.altKey) return 'undo'
-	if (mod && key === 'y' && !event.shiftKey && !event.altKey) return 'redo'
-	if (mod && key === 'n' && !event.shiftKey && !event.altKey) return 'newWindow'
-	if (!mod && !event.altKey && !event.shiftKey && key === 'F2') return 'rename'
-	if (!mod && !event.altKey && !event.shiftKey && key === 'Delete') return 'goUp'
-	if (!mod && !event.altKey && !event.shiftKey && key === 'Enter') return 'open'
-	if (!mod && !event.altKey && !event.shiftKey && key === 'Escape') return 'escape'
+	if (event.altKey) return null
+	if (mod) {
+		if (key === 'c' && !event.shiftKey) return 'copy'
+		if (key === 'x' && !event.shiftKey) return 'cut'
+		if (key === 'v') return event.shiftKey ? 'pasteLink' : 'paste'
+		if (key === 'a' && !event.shiftKey) return 'selectAll'
+		if (key === 'd' && !event.shiftKey) return 'delete'
+		if (key === 'z') return event.shiftKey ? 'redo' : 'undo'
+		if (key === 'y' && !event.shiftKey) return 'redo'
+		if (key === 'n' && !event.shiftKey) return 'newWindow'
+		return null
+	}
+	if (event.shiftKey) return null
+	if (key === 'F2') return 'rename'
+	if (key === 'Delete') return 'goUp'
+	if (key === 'Enter') return 'open'
+	if (key === 'Escape') return 'escape'
 	return null
 }
 

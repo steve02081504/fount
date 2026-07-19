@@ -1,9 +1,11 @@
 /**
  * 【文件】public/src/powJoin.mjs
  * 【职责】入群 Proof-of-Work：无状态自验证，绑定群近期 DAG tip/checkpoint root。
- * 【原理】浏览器端实现；下列纯函数/常量与后端 `npm:@steve02081504/fount-p2p/governance/join_pow`、
- *   `src/chat/governance/joinPowAnchors.mjs` 保持一致（后端依赖 node:crypto，不可直接 import 到浏览器）。
+ * 【原理】浏览器端实现；纯函数/常量与后端 `npm:@steve02081504/fount-p2p/governance/join_pow` 对齐
+ *   （后端依赖 node:crypto，不可直接 import 到浏览器）。anchor 提取复用 shared/joinPowAnchors。
  */
+import { bytesToHex } from '../shared/digest.mjs'
+import { collectJoinPowAnchors } from '../shared/joinPowAnchors.mjs'
 
 /** 默认 epoch 窗口（1 小时），与 `npm:@steve02081504/fount-p2p/governance/join_pow` 一致。 */
 const JOIN_POW_DEFAULT_EPOCH_MS = 3_600_000
@@ -28,26 +30,6 @@ function countAchievedLeadingZeroBits(hexHash) {
 
 	}
 	return bits
-}
-
-/**
- * 从物化群 state 提取近期 DAG tip / checkpoint root，与 `src/chat/governance/joinPowAnchors.mjs` 一致。
- * @param {object} state 物化群 state
- * @returns {string[]} anchor 候选
- */
-function collectJoinPowAnchors(state) {
-	/** @type {string[]} */
-	const anchors = []
-	if (Array.isArray(state.dagTips))
-		for (const tip of state.dagTips) {
-			const id = String(tip || '').trim()
-			if (id) anchors.push(id)
-		}
-	for (const key of ['consensusBranchTip', 'membersRoot', 'checkpoint_event_id']) {
-		const v = state[key]
-		if (v) anchors.push(String(v).trim())
-	}
-	return [...new Set(anchors.filter(Boolean))]
 }
 
 /**
@@ -77,7 +59,7 @@ export async function solveJoinPow(fields, floorBits, targetBits) {
 		const nonceStr = String(nonce)
 		const preimage = `${fields.groupId}:${fields.anchorRef}:${fields.joinerNodeHash}:${epoch}:${nonceStr}`
 		const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(preimage))
-		const hex = [...new Uint8Array(hashBuffer)].map(b => b.toString(16).padStart(2, '0')).join('')
+		const hex = bytesToHex(new Uint8Array(hashBuffer))
 		const achieved = countAchievedLeadingZeroBits(hex)
 		if (hashMeetsFloor(hex, floor)) {
 			const solution = { anchorRef: fields.anchorRef, joinerNodeHash: fields.joinerNodeHash, epoch, nonce: nonceStr, achievedBits: achieved }

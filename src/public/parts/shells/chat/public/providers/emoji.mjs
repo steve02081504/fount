@@ -18,16 +18,9 @@ import {
 	unicodeEmojiGroupTabGlyph,
 	unicodeEmojiTabKey,
 } from '../src/lib/unicodeEmojiData.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 const FREQUENT_EMOJI_LIMIT = 32
-
-/**
- * @param {string} s 原始文本
- * @returns {string} HTML 转义结果
- */
-function escapeHtml(s) {
-	return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;')
-}
 
 /**
  * @param {object} context picker 上下文

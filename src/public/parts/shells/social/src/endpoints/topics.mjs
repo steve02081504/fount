@@ -1,7 +1,7 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 
-import { socialClientFromReq } from './shared.mjs'
+import { socialJson } from './shared.mjs'
 
 /**
  * 话题订阅与话题帖流。
@@ -9,25 +9,21 @@ import { socialClientFromReq } from './shared.mjs'
  * @returns {void}
  */
 export function registerTopicsRoutes(router) {
-	router.post('/api/parts/shells\\:social/topics/follow', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
+	router.post('/api/parts/shells\\:social/topics/follow', authenticate, socialJson(async (req, { client }) => {
 		const tag = String(req.body?.tag || '').trim()
 		if (!tag) throw httpError(400, 'tag required')
-		res.status(200).json(await client.followTopic(tag, req.body?.follow !== false))
-	})
+		return client.followTopic(tag, req.body?.follow !== false)
+	}))
 
-	router.get('/api/parts/shells\\:social/topics/followed', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
-		res.status(200).json(await client.followedTopics())
-	})
+	router.get('/api/parts/shells\\:social/topics/followed', authenticate, socialJson((_req, { client }) =>
+		client.followedTopics()))
 
-	router.get('/api/parts/shells\\:social/topics/:tag/posts', authenticate, async (req, res) => {
-		const { client } = await socialClientFromReq(req)
+	router.get('/api/parts/shells\\:social/topics/:tag/posts', authenticate, socialJson(async (req, { client }) => {
 		const tag = String(req.params.tag || '').trim()
 		if (!tag) throw httpError(400, 'tag required')
-		res.status(200).json(await client.topicPosts(tag, {
+		return client.topicPosts(tag, {
 			limit: Number(req.query.limit) || 30,
 			cursor: req.query.cursor ? String(req.query.cursor) : undefined,
-		}))
-	})
+		})
+	}))
 }

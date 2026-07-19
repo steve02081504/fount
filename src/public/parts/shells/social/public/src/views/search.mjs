@@ -1,10 +1,10 @@
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
+import { appendEmptyState, mountEmptyState } from '../lib/emptyState.mjs'
 import { buildPostCard } from '../postCard.mjs'
 import { state } from '../state.mjs'
 import { activateView } from '../viewChrome.mjs'
 
-import { appendTemplate, mountTemplate } from '/scripts/features/template.mjs'
 import { updateFeedSearchChrome } from './feed.mjs'
 
 let searchGeneration = 0
@@ -15,7 +15,7 @@ let searchGeneration = 0
  * @returns {Promise<void>}
  */
 async function showSearchHint(list, i18nKey) {
-	await mountTemplate(list, 'empty_hint', { i18nKey })
+	await mountEmptyState(list, { titleKey: i18nKey, modClass: ' empty-state--hint' })
 }
 
 /**
@@ -122,7 +122,7 @@ export async function runSearchView() {
 	usersTitle.dataset.i18n = 'social.search.usersTitle'
 	list.appendChild(usersTitle)
 	if (!entities.length)
-		await appendTemplate(list, 'empty_hint', { i18nKey: 'social.search.usersEmpty' })
+		await appendEmptyState(list, { titleKey: 'social.search.usersEmpty', modClass: ' empty-state--hint' })
 	else {
 		const { buildEntitySearchCard } = await import('./feed.mjs')
 		for (const entity of entities)
@@ -135,7 +135,7 @@ export async function runSearchView() {
 	list.appendChild(postsTitle)
 
 	if (!items.length) {
-		await appendTemplate(list, 'empty_hint', { i18nKey: 'social.search.empty' })
+		await appendEmptyState(list, { titleKey: 'social.search.empty', modClass: ' empty-state--hint' })
 		return
 	}
 

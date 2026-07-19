@@ -10,7 +10,7 @@ export const GROUP_SUBJECT_PREFIX = 'fount:chat:group:'
  * @returns {string} 128 位 groupEntityHash
  */
 export function groupEntityHash(groupId) {
-	const id = String(groupId).trim()
+	const id = String(groupId || '').trim()
 	if (!id) throw new Error('groupId required')
 	return logicalEntityHash(`${GROUP_SUBJECT_PREFIX}${id}`)
 }

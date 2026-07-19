@@ -37,16 +37,15 @@ export function openProps() {
 		stamp: formatStamp(entry.modified),
 	})
 	document.getElementById('propMime').textContent = entry.mime_type || ''
-	for (const id of ['propCreated', 'propModified']) {
+	for (const [id, stamp] of [['propCreated', entry.created], ['propModified', entry.modified]]) {
 		const el = document.getElementById(id)
-		const stamp = id === 'propCreated' ? entry.created : entry.modified
 		const fresh = el.cloneNode(true)
 		el.replaceWith(fresh)
-		if (stamp?.entity_hash && /^[0-9a-f]{128}$/i.test(stamp.entity_hash)) {
-			fresh.classList.add('link', 'link-hover', 'cursor-pointer')
-			fresh.addEventListener('click', () => void openEntityProfileCard(stamp.entity_hash))
-		}
-		else fresh.classList.remove('link', 'link-hover', 'cursor-pointer')
+		const clickable = stamp?.entity_hash && /^[0-9a-f]{128}$/i.test(stamp.entity_hash)
+		fresh.classList.toggle('link', clickable)
+		fresh.classList.toggle('link-hover', clickable)
+		fresh.classList.toggle('cursor-pointer', clickable)
+		if (clickable) fresh.addEventListener('click', () => void openEntityProfileCard(stamp.entity_hash))
 	}
 	document.getElementById('propsDialog').showModal()
 }

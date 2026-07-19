@@ -1,7 +1,8 @@
-import { renderTemplate, renderTemplateAsHtmlString } from '../../../../../scripts/features/template.mjs'
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { formatSocialPostHref, formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { formatActionKey } from '../lib/actionKey.mjs'
 import { authorLabel, entityHandle, formatTimeHtml, rememberEntityHandle, renderAvatarHtml, renderTrustedPostMarkdown } from '../lib/display.mjs'
+import { buildEmptyState } from '../lib/emptyState.mjs'
 import { renderEngagementBarHtml } from '../lib/engagementBar.mjs'
 import { state } from '../state.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
@@ -81,7 +82,12 @@ export async function renderRepliesPanel(panel, replies) {
 	list.className = 'replies-list'
 	if (!replies.length) {
 		list.classList.add('is-empty')
-		list.innerHTML = await renderTemplateAsHtmlString('replies_empty', {})
+		list.replaceChildren(await buildEmptyState({
+			titleKey: 'social.replies.empty',
+			iconClass: 'icon-reply',
+			hintKey: 'social.replies.emptyHint',
+			modClass: ' empty-state--replies',
+		}))
 	}
 	else
 		for (const reply of replies)

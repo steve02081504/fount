@@ -5,6 +5,8 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】`hashNav` 通过 `friendBindingForGroup` 将 hash 中的 groupId 导向 `enterFriendChat`；core/state。
  */
+import { normalizeFriendBinding } from '../shared/friendBinding.mjs'
+
 import { store } from './core/state.mjs'
 
 /**
@@ -16,13 +18,7 @@ import { store } from './core/state.mjs'
  * @returns {FriendBinding | null} 规范化绑定；无 `entityHash` 时为 null
  */
 export function resolveFriendBinding(group) {
-	const raw = group?.friendBinding
-	if (!raw?.entityHash) return null
-	return {
-		entityHash: String(raw.entityHash).trim().toLowerCase(),
-		...raw.displayName ? { displayName: raw.displayName } : {},
-		...raw.charname ? { charname: String(raw.charname).trim() } : {},
-	}
+	return normalizeFriendBinding(group?.friendBinding)
 }
 
 /**

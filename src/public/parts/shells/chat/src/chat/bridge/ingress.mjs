@@ -7,6 +7,8 @@ import { putFileManifest } from 'npm:@steve02081504/fount-p2p/files/evfs'
 import {
 	channelMessageAgentText,
 	channelMessageContentObject,
+	inlineImageMarker,
+	mergeInlineImageMarkersIntoContent,
 	textChannelContent,
 } from '../../../public/shared/channelContent.mjs'
 import { entityFileUrl } from '../../entity/filesUrl.mjs'
@@ -124,15 +126,10 @@ async function buildBridgeMessageContent(username, groupId, text, files) {
 		if (!buffer.byteLength) continue
 		const { fileId, inlineImageUrl } = await uploadBridgeFile(username, groupId, buffer, file)
 		fileIds.push(fileId)
-		if (inlineImageUrl) {
-			const fileName = String(file.name || 'image').replace(/\|/g, '_')
-			inlineMarkers.push(`[image:${fileName}|${inlineImageUrl}]`)
-		}
+		if (inlineImageUrl)
+			inlineMarkers.push(inlineImageMarker(file.name, inlineImageUrl))
 	}
-	if (inlineMarkers.length) {
-		const baseText = channelMessageAgentText(content)
-		content = textChannelContent([baseText, ...inlineMarkers].filter(Boolean).join('\n'))
-	}
+	content = mergeInlineImageMarkersIntoContent(content, inlineMarkers)
 	if (fileIds.length)
 		content = { ...content, fileIds, fileCount: fileIds.length }
 	return channelMessageContentObject(content)

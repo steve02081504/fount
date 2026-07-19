@@ -9,6 +9,24 @@ import { getEntityRecoverySecretKey, getRecoveryPubKeyHex } from '../../chat/src
 import { vaultGroupId } from '../../social/src/federation/namespace.mjs'
 import { loadVaultMasterKey } from '../../social/src/vault_crypto/vault.mjs'
 
+import { evfsCabinetIndexPath } from './paths.mjs'
+
+/**
+ * @param {object[]} cabinets 柜列表
+ * @param {(visibility: string) => boolean} match 可见性谓词
+ * @returns {object[]} 发布行
+ */
+function mapListRows(cabinets, match) {
+	return cabinets
+		.filter(row => row.type === 'personal' && match(row.visibility?.visibility))
+		.map(row => ({
+			cabinet_id: row.cabinet_id,
+			name: row.name,
+			visibility: row.visibility,
+			created_at: row.created_at,
+		}))
+}
+
 /**
  * @param {string} username 用户
  * @param {string} entityHash 实体
@@ -16,22 +34,8 @@ import { loadVaultMasterKey } from '../../social/src/vault_crypto/vault.mjs'
  * @returns {Promise<void>}
  */
 export async function publishCabinetLists(username, entityHash, cabinets) {
-	const publicRows = cabinets
-		.filter(row => row.type === 'personal' && row.visibility?.visibility === 'public')
-		.map(row => ({
-			cabinet_id: row.cabinet_id,
-			name: row.name,
-			visibility: row.visibility,
-			created_at: row.created_at,
-		}))
-	const followersRows = cabinets
-		.filter(row => row.type === 'personal' && ['followers', 'followers_since', 'selected'].includes(row.visibility?.visibility))
-		.map(row => ({
-			cabinet_id: row.cabinet_id,
-			name: row.name,
-			visibility: row.visibility,
-			created_at: row.created_at,
-		}))
+	const publicRows = mapListRows(cabinets, v => v === 'public')
+	const followersRows = mapListRows(cabinets, v => ['followers', 'followers_since', 'selected'].includes(v))
 
 	const recoverySecretKeyHex = await getEntityRecoverySecretKey(username, entityHash)
 	const recoveryPubKeyHex = await getRecoveryPubKeyHex(username, entityHash)
@@ -46,30 +50,28 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
 			mimeType: 'application/json',
 		})
 
-
-	if (followersRows.length) {
-		const { masterKey } = await loadVaultMasterKey(username, entityHash)
-		const plaintext = Buffer.from(JSON.stringify({ cabinets: followersRows }), 'utf8')
-		const enc = encryptPlaintextToParts(plaintext, 'random')
-		const fileId = 'cabinets-followers'
-		const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
-		const manifest = buildFileManifestFromEnc({
-			ownerEntityHash: entityHash,
-			logicalPath: 'shells/cabinet/cabinets.followers.json',
-			plaintext,
-			name: 'cabinets.followers.json',
-			mimeType: 'application/json',
-			ceMode: 'random',
-			transferKeyDescriptor: descriptor,
-			meta: {
-				fileId,
-				visibility: 'followers',
-				vaultGroupId: vaultGroupId(entityHash),
-			},
-		}, enc)
-		await storeManifestParts(manifest, enc.parts.map(part => part.raw))
-		await saveFileManifest(manifest)
-	}
+	if (!followersRows.length) return
+	const { masterKey } = await loadVaultMasterKey(username, entityHash)
+	const plaintext = Buffer.from(JSON.stringify({ cabinets: followersRows }), 'utf8')
+	const enc = encryptPlaintextToParts(plaintext, 'random')
+	const fileId = 'cabinets-followers'
+	const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
+	const manifest = buildFileManifestFromEnc({
+		ownerEntityHash: entityHash,
+		logicalPath: 'shells/cabinet/cabinets.followers.json',
+		plaintext,
+		name: 'cabinets.followers.json',
+		mimeType: 'application/json',
+		ceMode: 'random',
+		transferKeyDescriptor: descriptor,
+		meta: {
+			fileId,
+			visibility: 'followers',
+			vaultGroupId: vaultGroupId(entityHash),
+		},
+	}, enc)
+	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
+	await saveFileManifest(manifest)
 }
 
 /**
@@ -81,8 +83,6 @@ export async function publishCabinetLists(username, entityHash, cabinets) {
  * @returns {Promise<object | null>} manifest
  */
 export async function publishCabinetIndex(username, entityHash, cabinet, index) {
-	const { evfsCabinetIndexPath } = await import('./paths.mjs')
-	const logicalPath = evfsCabinetIndexPath(cabinet.cabinet_id)
 	const publicEntries = (index.entries || []).filter(entry => !entry.orphaned).map(entry => ({
 		id: entry.id,
 		name: entry.name,
@@ -99,12 +99,44 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 		link: entry.link,
 	}))
 	return putCabinetEvfsFile(username, entityHash, {
-		logical_path: logicalPath,
+		logical_path: evfsCabinetIndexPath(cabinet.cabinet_id),
 		plaintext: Buffer.from(JSON.stringify({ version: index.version || 1, entries: publicEntries }), 'utf8'),
 		name: 'index.json',
 		mime_type: 'application/json',
 		visibility: cabinet.visibility,
 	})
+}
+
+/**
+ * @param {string} entityHash 实体
+ * @param {string} logicalPath 路径
+ * @param {Buffer} plaintext 明文
+ * @param {string} name 名
+ * @param {string} mimeType MIME
+ * @param {string} visibility 可见性
+ * @param {object | ((enc: { contentKey: Buffer }) => object)} transferKeyDescriptor 传输钥或工厂
+ * @param {'convergent' | 'random'} ceMode 加密模式
+ * @param {object} [meta] 额外 meta
+ * @returns {Promise<object>} manifest
+ */
+async function storeEvfsManifest(entityHash, logicalPath, plaintext, name, mimeType, visibility, transferKeyDescriptor, ceMode, meta = {}) {
+	const enc = encryptPlaintextToParts(plaintext, ceMode)
+	const descriptor = typeof transferKeyDescriptor === 'function'
+		? transferKeyDescriptor(enc)
+		: transferKeyDescriptor
+	const manifest = buildFileManifestFromEnc({
+		ownerEntityHash: entityHash,
+		logicalPath,
+		plaintext,
+		name,
+		mimeType,
+		ceMode,
+		transferKeyDescriptor: descriptor,
+		meta: { visibility, ...meta },
+	}, enc)
+	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
+	await saveFileManifest(manifest)
+	return manifest
 }
 
 /**
@@ -121,78 +153,24 @@ export async function putCabinetEvfsFile(username, entityHash, options) {
 	const name = options.name || logicalPath.split('/').pop()
 	const mimeType = options.mime_type || 'application/octet-stream'
 
-	if (visibility === 'public' || visibility === 'unlisted') {
-		const enc = encryptPlaintextToParts(plaintext, 'convergent')
-		const manifest = buildFileManifestFromEnc({
-			ownerEntityHash: entityHash,
-			logicalPath,
-			plaintext,
-			name,
-			mimeType,
-			ceMode: 'convergent',
-			transferKeyDescriptor: publicTransferKeyDescriptor(),
-			meta: { visibility },
-		}, enc)
-		await storeManifestParts(manifest, enc.parts.map(part => part.raw))
-		await saveFileManifest(manifest)
-		return manifest
-	}
+	if (visibility === 'public' || visibility === 'unlisted')
+		return storeEvfsManifest(
+			entityHash, logicalPath, plaintext, name, mimeType, visibility,
+			publicTransferKeyDescriptor(), 'convergent',
+		)
 
-	if (visibility === 'followers' || visibility === 'followers_since') {
-		const { masterKey } = await loadVaultMasterKey(username, entityHash)
-		const enc = encryptPlaintextToParts(plaintext, 'random')
-		const fileId = logicalPath.replace(/\W+/g, '_').slice(-48) || randomish()
-		const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
-		const manifest = buildFileManifestFromEnc({
-			ownerEntityHash: entityHash,
-			logicalPath,
-			plaintext,
-			name,
-			mimeType,
-			ceMode: 'random',
-			transferKeyDescriptor: descriptor,
-			meta: {
-				fileId,
-				visibility,
-				minFollowMs: options.visibility?.minFollowMs,
-				except: options.visibility?.except,
-				vaultGroupId: vaultGroupId(entityHash),
-			},
-		}, enc)
-		await storeManifestParts(manifest, enc.parts.map(part => part.raw))
-		await saveFileManifest(manifest)
-		return manifest
-	}
-
-	// selected / private → identity-local random + vault-wrap (owner only via H)
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
-	const enc = encryptPlaintextToParts(plaintext, 'random')
-	const fileId = logicalPath.replace(/\W+/g, '_').slice(-48) || randomish()
-	const descriptor = vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
-	const manifest = buildFileManifestFromEnc({
-		ownerEntityHash: entityHash,
-		logicalPath,
-		plaintext,
-		name,
-		mimeType,
-		ceMode: 'random',
-		transferKeyDescriptor: descriptor,
-		meta: {
+	const fileId = logicalPath.replace(/\W+/g, '_').slice(-48) || `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+	return storeEvfsManifest(
+		entityHash, logicalPath, plaintext, name, mimeType, visibility,
+		enc => vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey),
+		'random',
+		{
 			fileId,
-			visibility,
+			vaultGroupId: vaultGroupId(entityHash),
+			minFollowMs: options.visibility?.minFollowMs,
 			allow: options.visibility?.allow,
 			except: options.visibility?.except,
-			vaultGroupId: vaultGroupId(entityHash),
 		},
-	}, enc)
-	await storeManifestParts(manifest, enc.parts.map(part => part.raw))
-	await saveFileManifest(manifest)
-	return manifest
-}
-
-/**
- * @returns {string} 短 id
- */
-function randomish() {
-	return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
+	)
 }

@@ -45,8 +45,7 @@ export async function zipCabinetFolder(username, entityHash, cabinetId, options 
 					await addTree(enc.entries, `${name}/`)
 					continue
 				}
-				const children = index.entries.filter(row => (row.parent_id || null) === entry.id)
-				await addTree(children, `${name}/`)
+				await addTree(index.entries.filter(row => (row.parent_id || null) === entry.id), `${name}/`)
 				continue
 			}
 			if (entry.kind === 'link') {
@@ -66,13 +65,8 @@ export async function zipCabinetFolder(username, entityHash, cabinetId, options 
 		}
 	}
 
-	const roots = folderId
-		? index.entries.filter(row => (row.parent_id || null) === folderId || row.id === folderId)
-		: index.entries.filter(row => (row.parent_id || null) === null)
-
 	if (folderId) {
 		const folder = index.entries.find(row => row.id === folderId)
-		const children = index.entries.filter(row => (row.parent_id || null) === folderId)
 		if (folder?.encryption) {
 			const folderKey = resolveUnlockToken(options.unlock_token, {
 				cabinet_id: cabinetId,
@@ -84,12 +78,14 @@ export async function zipCabinetFolder(username, entityHash, cabinetId, options 
 			await addTree(enc.entries, '')
 		}
 		else
-			await addTree(children, '')
+			await addTree(index.entries.filter(row => (row.parent_id || null) === folderId), '')
 	}
 	else
-		await addTree(roots, '')
+		await addTree(index.entries.filter(row => (row.parent_id || null) === null), '')
 
 	const bytes = zipSync(files, { level: 1 })
-	const filename = `${cabinet.name || cabinetId}.zip`
-	return { filename, bytes: bytes instanceof Uint8Array ? bytes : new Uint8Array(Buffer.from(bytes)) }
+	return {
+		filename: `${cabinet.name || cabinetId}.zip`,
+		bytes: bytes instanceof Uint8Array ? bytes : new Uint8Array(Buffer.from(bytes)),
+	}
 }

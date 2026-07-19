@@ -2,7 +2,7 @@ import { formatSocialProfileHref } from '../../shared/runUri.mjs'
 import { chatApi, socialApi, viewerEntityHash } from '../lib/apiClient.mjs'
 import { authorLabel, entityHandle, rememberEntityHandle, renderAvatarHtml } from '../lib/display.mjs'
 import { bindInfiniteScroll, disconnectInfiniteScroll, ensureScrollSentinel } from '/scripts/infiniteScroll.mjs'
-import { appendTemplate, mountTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
+import { appendTemplate, renderTemplate, renderTemplateAsHtmlString } from '/scripts/features/template.mjs'
 import { openDialogFromTemplate } from '/scripts/features/dialog.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 import { isCared } from '/parts/shells:chat/shared/care.mjs'
@@ -11,6 +11,7 @@ import {
 	paintEntityProfileCard,
 	paintEntityProfileExtras,
 } from '/parts/shells:chat/shared/entityProfileCard.mjs'
+import { mountEmptyState } from '../lib/emptyState.mjs'
 import { appendFeedItemsWithThreads } from '../lib/feedThreads.mjs'
 import { bindFeedVideoAutoplay } from '../lib/videoAutoplay.mjs'
 import { buildPostCard } from '../postCard.mjs'
@@ -52,7 +53,7 @@ export async function renderBlocklist(container) {
 		rows: entries.filter(entry => entry.kind === section.kind),
 	}))
 	if (grouped.every(section => !section.rows.length)) {
-		await mountTemplate(container, 'blocklist_empty', {})
+		await mountEmptyState(container, { titleKey: 'social.blocklist.empty', modClass: ' empty-state--hint' })
 		return
 	}
 	container.replaceChildren()
@@ -123,7 +124,7 @@ export async function renderProfilePosts(entityHash, container, highlightPostId 
 	const items = data.items || []
 	state.profilePostsCursor = data.nextCursor || null
 	if (!items.length && !append) {
-		await mountTemplate(container, 'feed_empty', { emptyKey: 'social.empty.profilePosts' })
+		await mountEmptyState(container, { titleKey: 'social.empty.profilePosts', modClass: ' empty-state--plain' })
 		disconnectInfiniteScroll()
 		return
 	}
@@ -150,7 +151,7 @@ export async function renderProfileLikes(entityHash, container) {
 	container.replaceChildren()
 	const items = data.items || []
 	if (!items.length) {
-		await mountTemplate(container, 'feed_empty', { emptyKey: 'social.empty.likedPosts' })
+		await mountEmptyState(container, { titleKey: 'social.empty.likedPosts', modClass: ' empty-state--plain' })
 		return
 	}
 	for (const item of items)
@@ -168,7 +169,7 @@ export async function renderProfileLikes(entityHash, container) {
 async function fillRelationshipRows(container, rows, emptyKey) {
 	container.replaceChildren()
 	if (!rows.length) {
-		await mountTemplate(container, 'feed_empty', { emptyKey })
+		await mountEmptyState(container, { titleKey: emptyKey, modClass: ' empty-state--plain' })
 		return
 	}
 	for (const row of rows) {
@@ -198,7 +199,7 @@ export async function openProfileRelationshipList(entityHash, kind) {
 	})
 	const list = dialog.querySelector('#profileRelationshipList')
 	if (!(list instanceof HTMLElement)) return
-	await mountTemplate(list, 'feed_empty', { emptyKey: 'social.post.loading' })
+	await mountEmptyState(list, { titleKey: 'social.post.loading', modClass: ' empty-state--plain' })
 	const path = kind === 'followers'
 		? `/profile/${entityHash}/followers`
 		: `/profile/${entityHash}/following`
@@ -366,7 +367,7 @@ async function renderProfileCabinets(entityHash, container) {
 		const data = await response.json()
 		const cabinets = data.cabinets || []
 		if (!cabinets.length) {
-			await mountTemplate(container, 'feed_empty', { emptyKey: 'social.profile.cabinetsEmpty' })
+			await mountEmptyState(container, { titleKey: 'social.profile.cabinetsEmpty', modClass: ' empty-state--plain' })
 			return
 		}
 		const list = document.createElement('div')
@@ -398,7 +399,7 @@ async function renderProfileCabinets(entityHash, container) {
 export async function loadProfile() {
 	const profileHash = viewerEntityHash()
 	if (!profileHash) {
-		await mountTemplate(document.getElementById('profileView'), 'feed_empty', { emptyKey: 'social.empty.noIdentity' })
+		await mountEmptyState(document.getElementById('profileView'), { titleKey: 'social.empty.noIdentity', modClass: ' empty-state--plain' })
 		return
 	}
 	await loadProfileFor(profileHash)

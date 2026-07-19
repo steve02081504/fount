@@ -255,19 +255,19 @@ async function clearCabinetView({ clearHash = true } = {}) {
  */
 export async function bootFromHash() {
 	const hash = decodeURIComponent(location.hash.replace(/^#/, ''))
-	if (hash.startsWith('shared:')) {
+	/**
+	 * @param {number} slice 前缀长度
+	 * @param {{ refresh?: boolean }} [opts] 选项
+	 * @returns {Promise<void>}
+	 */
+	async function openHashCabinet(slice, { refresh = false } = {}) {
 		setBrowseMode(null)
-		const [cabinetId, folderId] = hash.slice(7).split('/')
-		await refreshCabinets()
+		const [cabinetId, folderId] = hash.slice(slice).split('/')
+		if (refresh) await refreshCabinets()
 		await openCabinet(cabinetId, folderId || null)
-		return
 	}
-	if (hash.startsWith('cabinet:')) {
-		setBrowseMode(null)
-		const [cabinetId, folderId] = hash.slice(8).split('/')
-		await openCabinet(cabinetId, folderId || null)
-		return
-	}
+	if (hash.startsWith('shared:')) return openHashCabinet(7, { refresh: true })
+	if (hash.startsWith('cabinet:')) return openHashCabinet(8)
 	if (hash.startsWith('user:')) {
 		const parts = hash.slice(5).split('/')
 		setBrowseMode(parts[0].toLowerCase())
