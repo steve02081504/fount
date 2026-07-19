@@ -9,6 +9,13 @@ alwaysApply: false
 World distribution product model: [docs/design/world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
 Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../src/scripts/test/docs/domain-harness.md).
 
+## Speaker identity (`Uid`)
+
+- Request: `UserUid` / `CharUid` / `ReplyToUid?`（与 `*Charname` 对称）。日志行：`chatLogEntry_t.uid`。
+- 不透明可比较字符串（`===` / JSON）；fount chat 用 entityHash；bridge 用 `authorEntityHash`。**不是** RFC UUID。
+- `name` / `*Charname` 只表示显示名；身份比对走 `uid` / `*Uid`。
+- 水合：`hydration.resolveSpeakerUid`；`getChatRequest` 填顶层 Uid，并从最近 `extension.replyTo.senderEntityHash` 填 `ReplyTo*`。
+
 ## Viewer symmetry
 
 - Interfaces: `WorldAPI.chat.GetChatLogForViewer` / `UserAPI.chat.GetChatLogForViewer` (`chatViewer_t` in `src/decl/chatLog.ts`).

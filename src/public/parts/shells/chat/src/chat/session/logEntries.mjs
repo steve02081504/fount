@@ -12,7 +12,9 @@
 /** @typedef {import('../../../../../../../decl/basedefs.ts').locale_t} locale_t */
 
 import { getPartDetails } from '../../../../../../../server/parts_loader.mjs'
+import { ensureLocalAgentEntityHash } from '../../entity/member.mjs'
 import { resolveChannelId } from '../lib/channelId.mjs'
+import { getOperatorEntityHash } from '../lib/replica.mjs'
 
 import { chatLogEntry_t } from './models.mjs'
 
@@ -53,6 +55,9 @@ export async function buildChatLogEntryFromCharReply(result, timeSlice, char, ch
 
 	Object.assign(entry, {
 		name: result.name || info?.name || charname || 'Unknown',
+		...charname
+			? { uid: await ensureLocalAgentEntityHash(username, charname) }
+			: {},
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		content_for_show: result.content_for_show,
@@ -87,6 +92,7 @@ export async function buildChatLogEntryFromUserMessage(result, timeSlice, user, 
 	const entry = new chatLogEntry_t()
 	Object.assign(entry, {
 		name: result.name || info?.name || timeSlice.player_id || username,
+		uid: result.uid || await getOperatorEntityHash(username) || undefined,
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		role: 'user',

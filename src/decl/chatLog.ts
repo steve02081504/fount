@@ -162,6 +162,12 @@ export class chatReplyRequest_t {
 	Charname: string
 	UserCharname: string
 	ReplyToCharname?: string
+	/** 本机用户说话人身份（宿主自定义；fount chat 为 entityHash） */
+	UserUid: string
+	/** 当前角色说话人身份（宿主自定义；fount chat 为 agent entityHash） */
+	CharUid: string
+	/** 当前回复对象说话人身份（可选） */
+	ReplyToUid?: string
 	locales: locale_t[]
 	time: timeStamp_t
 	chat_log: chatLogEntry_t[]
@@ -190,6 +196,8 @@ export class chatReplyRequest_t {
 export class chatLogEntry_t {
 	id: string
 	name: string
+	/** 说话人身份（宿主自定义；与消息 id 无关） */
+	uid?: string
 	avatar: string
 	time_stamp: timeStamp_t
 	role: role_t

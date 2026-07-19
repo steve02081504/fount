@@ -18,6 +18,8 @@ import {
 	channelMessageShowText,
 	isTextChannelContent,
 } from '../../../public/shared/channelContent.mjs'
+import { memberEntityHash } from '../../entity/member.mjs'
+import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
 import { readChannelMessagesForUser } from '../../group/queries.mjs'
 import { isCkgEncryptedContent } from '../channel_keys/content.mjs'
 import { deriveMessageAttribution } from '../lib/attribution.mjs'
@@ -26,6 +28,30 @@ import { gcLogContextSidecars } from '../lib/contextSidecar.mjs'
 import { chatLogEntry_t } from '../session/models.mjs'
 import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
 
+
+/**
+ * 解析频道消息说话人 uid（entityHash 优先）。
+ * @param {object} line 频道消息行
+ * @param {object} content 消息 content
+ * @param {object | null} [state] 物化群状态
+ * @returns {string | undefined} 说话人 uid
+ */
+export function resolveSpeakerUid(line, content, state = null) {
+	const bridgeHash = String(content?.extension?.bridge?.authorEntityHash || '').trim().toLowerCase()
+	if (bridgeHash) return bridgeHash
+	const charId = line?.charId ? String(line.charId).trim() : ''
+	if (charId && state) {
+		const agentKey = resolveActiveAgentMemberKeyByCharname(state, charId)
+		const hash = agentKey ? memberEntityHash(state.members[agentKey]) : null
+		if (hash) return hash
+	}
+	const sender = String(line?.sender || '').trim().toLowerCase()
+	if (sender && state?.members?.[sender]) {
+		const hash = memberEntityHash(state.members[sender])
+		if (hash) return hash
+	}
+	return sender || undefined
+}
 
 /**
  * @param {string} username 所有者
@@ -49,9 +75,10 @@ export async function loadDagHydrationI18n(username) {
  * @param {string} [sourceChannelId] 来源频道（写入 `extension.groupChannelId`）
  * @param {string} [replicaUsername] 用于 sessionSnapshot 水合
  * @param {string} [groupId] 群 ID
+ * @param {object | null} [state] 物化群状态（解析说话人 uid）
  * @returns {Promise<chatLogEntry_t[]>} 由 DAG 频道行构造的日志条目
  */
-export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n, sourceChannelId = null, replicaUsername = null, groupId = null) {
+export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n, sourceChannelId = null, replicaUsername = null, groupId = null, state = null) {
 	const { decryptUnavailableText, contentRefPlaceholder, contentRefMismatchText, streamFailedNote } = i18n
 	const deleted = new Set()
 	/** @type {Map<string, { content?: string, content_for_show?: string, content_for_edit?: string, fileCount?: number, editedAt: number }>} */
@@ -89,6 +116,7 @@ export async function buildChatLogEntriesFromChannelLines(lines, baseSlice, i18n
 			replicaUsername,
 			groupId,
 			sourceChannelId,
+			state,
 		)
 		const groupChannelId = resolveChannelId(sourceChannelId, resolveChannelId(line.channelId))
 		entry.extension = { ...entry.extension || {}, groupChannelId }
@@ -145,6 +173,7 @@ function resolveDagMessageText(content, decryptUnavailableText, contentRefPlaceh
  * @param {string} [replicaUsername] session 快照水合
  * @param {string} [groupId] 群 ID
  * @param {string} [sourceChannelId] 频道 ID
+ * @param {object | null} [state] 物化群状态（解析说话人 uid）
  * @returns {Promise<chatLogEntry_t>} 新构造的日志条目
  */
 async function buildChatLogEntryFromDagMessage(
@@ -157,6 +186,7 @@ async function buildChatLogEntryFromDagMessage(
 	replicaUsername = null,
 	groupId = null,
 	sourceChannelId = null,
+	state = null,
 ) {
 	// 解密失败且无其它字段的消息，messageMerge.attachDecryptView 会把 content 置为 null 并附带 decryptView，
 	// 这是合法的展示状态，水合侧必须容忍，否则单条坏消息会拖垮整页水合。
@@ -184,24 +214,28 @@ async function buildChatLogEntryFromDagMessage(
 	if (snapshot && replicaUsername && groupId)
 		slice = await buildTimeSliceFromSessionSnapshot(snapshot, replicaUsername, groupId, channelForSnapshot)
 
+	const displayName = content.displayName ? String(content.displayName).trim() : ''
 	if (entry.role === 'char') {
-		entry.name = charId || 'char'
+		entry.name = displayName || charId || 'char'
 		entry.extension.timeSlice = slice.copy()
 		entry.extension.timeSlice.charname = charId
 	}
 	else if (entry.role === 'user') {
-		entry.name = 'user'
+		entry.name = displayName || 'user'
 		entry.extension.timeSlice = slice.copy()
 	}
 	else {
-		entry.name = line.sender || entry.role || 'system'
+		entry.name = displayName || line.sender || entry.role || 'system'
 		entry.extension.timeSlice = slice.copy()
 	}
+	entry.uid = resolveSpeakerUid(line, content, state)
 	entry.time_stamp = new Date(line.hlc?.wall ?? Date.now()).toISOString()
 	const fileCount = editOverride?.fileCount != null ? editOverride.fileCount : content.fileCount
 	if (fileCount != null) entry.extension = { ...entry.extension, dagFileCount: fileCount }
 	if (content.extension?.bridge)
 		entry.extension = { ...entry.extension || {}, bridge: { ...content.extension.bridge } }
+	if (content.replyTo)
+		entry.extension = { ...entry.extension || {}, replyTo: { ...content.replyTo } }
 	const attribution = deriveMessageAttribution(content, {
 		sender: line.sender,
 		signerEntityHash: content.importedFrom?.signerEntityHash || null,
@@ -218,8 +252,6 @@ async function buildChatLogEntryFromDagMessage(
 			}
 			: {},
 	}
-	if (attribution.mismatch && content.displayName)
-		entry.name = String(content.displayName)
 	if (content.visibility) entry.visibility = content.visibility
 	if (content.charVisibility?.length) entry.charVisibility = content.charVisibility
 	return entry
@@ -236,6 +268,8 @@ export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 	const defaultChannelId = await resolveGroupChannelId(username, groupId, null)
 	const lines = await readChannelMessagesForUser(username, groupId, defaultChannelId, { limit: 500 })
 	const i18n = await loadDagHydrationI18n(username)
+	const { getState } = await import('./materialize.mjs')
+	const { state } = await getState(username, groupId)
 	const prelude = chatMetadata.chatLog.filter(entry => entry.extension.timeSlice?.greeting_type)
 	const dagEntries = await buildChatLogEntriesFromChannelLines(
 		lines,
@@ -244,6 +278,7 @@ export async function hydrateChatLogFromDag(username, groupId, chatMetadata) {
 		defaultChannelId,
 		username,
 		groupId,
+		state,
 	)
 
 	chatMetadata.chatLog = [...prelude, ...dagEntries].sort((left, right) =>

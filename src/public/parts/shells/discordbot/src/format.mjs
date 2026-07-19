@@ -182,13 +182,7 @@ function extractTextFromComponents(components) {
  */
 function formatMessageContent(message) {
 	let content = message.content || ''
-	for (const [_, value] of message.mentions?.users || new Map()) {
-		const mentionTag = `<@${value.id}>`
-		if (content.includes(mentionTag))
-			content = content.replaceAll(mentionTag, `@${value.username}`)
-		else
-			content = `@${value.username} ${content}`
-	}
+	// 保留 <@id> 给 rewriteDiscordMentionsToFount；不预换成平台 username
 	for (const embed of message.embeds || []) {
 		const embedText = formatEmbed(embed)
 		if (embedText) {
@@ -241,7 +235,7 @@ async function buildDiscordReplyQuoteBlock(message, client) {
 		const refContent = formatMessageContent(refMsg)
 		const preview = refContent.slice(0, 80) + (refContent.length > 80 ? '...' : '')
 		if (!preview) return ''
-		const authorName = refMsg.author?.username || refMsg.author?.globalName || '未知用户'
+		const authorName = refMsg.author?.globalName || refMsg.author?.username || '未知用户'
 		return `${preview.split('\n').map(line => `> ${line}`).join('\n')}\n(回复 ${authorName})\n\n`
 	}
 	catch { return '' }
@@ -257,7 +251,7 @@ export async function getMessageFullContent(message, client) {
 	let fullContent = formatMessageContent(message)
 	for (const referencedMessage of message.messageSnapshots.map(t => t)) {
 		const refContent = formatMessageContent(referencedMessage, client)
-		const authorName = referencedMessage.author?.username || '未知用户'
+		const authorName = referencedMessage.author?.globalName || referencedMessage.author?.username || '未知用户'
 		if (fullContent) fullContent += '\n\n'
 		fullContent += `（转发消息）\n${authorName}：${refContent}`
 	}

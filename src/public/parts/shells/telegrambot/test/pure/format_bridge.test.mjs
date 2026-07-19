@@ -163,7 +163,7 @@ Deno.test('telegramMessageToBridgeDto maps mock Telegraf message with mention re
 	assertEquals(dto.chatKind, 'group')
 	assertEquals(dto.chatName, 'Bridge Group')
 	assertEquals(dto.author.platformUserId, 11)
-	assertEquals(dto.author.displayName, 'Bob Builder (@bob)')
+	assertEquals(dto.author.displayName, 'Bob Builder')
 	assertEquals(dto.replyToPlatformMessageId, 66)
 	assertEquals(dto.timestamp, 1_700_000_000_000)
 	assert(dto.text.includes(`@[entity:${expectedHash}]`))

@@ -89,6 +89,7 @@ export async function buildPromptStruct(
 	const {
 		char_id, char, user, world, other_chars, other_personas = {}, plugins,
 		chat_log, UserCharname, ReplyToCharname, Charname, timelines, locales,
+		UserUid, CharUid, ReplyToUid,
 	} = args
 	const charActivity = args.extension?.channelActivity?.chars || {}
 	const humanActivityByOwner = args.extension?.channelActivity?.personas || {}
@@ -97,6 +98,9 @@ export async function buildPromptStruct(
 		char_id,
 		UserCharname,
 		ReplyToCharname,
+		UserUid,
+		CharUid,
+		ReplyToUid,
 		Charname,
 		char_prompt: getSinglePartPrompt(),
 		user_prompt: getSinglePartPrompt(),

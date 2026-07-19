@@ -141,17 +141,32 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		effectiveChannelId,
 		replicaUsername,
 		groupId,
+		state,
 	)
 	const chatLogForRequest = [...prelude, ...channelEntries].sort((a, b) =>
 		new Date(a.time_stamp).getTime() - new Date(b.time_stamp).getTime())
 
+	const UserUid = await getOperatorEntityHash(replicaUsername)
 	const memberId = charname
 		? await ensureLocalAgentEntityHash(replicaUsername, charname)
-		: await getOperatorEntityHash(replicaUsername)
+		: UserUid
+	const CharUid = charname ? memberId : ''
 
 	const declaredOwnerEntityHash = charname && memberId
 		? await resolveDeclaredOwnerEntityHash(replicaUsername, memberId)
 		: null
+
+	let ReplyToCharname = options.ReplyToCharname
+	let ReplyToUid = options.ReplyToUid
+	if (ReplyToCharname == null && ReplyToUid == null) 
+		for (let index = chatLogForRequest.length - 1; index >= 0; index--) {
+			const replyTo = chatLogForRequest[index]?.extension?.replyTo
+			if (!replyTo) continue
+			ReplyToCharname = replyTo.senderName || undefined
+			ReplyToUid = replyTo.senderEntityHash || undefined
+			break
+		}
+	
 
 	/** @type {import('../../../../../../../decl/chatLog.ts').chatReplyRequest_t} */
 	const chatReplyRequest = {
@@ -170,7 +185,11 @@ export async function getChatRequest(groupId, charname, channelId = null, option
 		char_id: charname,
 		username: replicaUsername,
 		UserCharname,
+		UserUid: UserUid || '',
 		Charname: charname ? charinfo.name || charname : '',
+		CharUid,
+		...ReplyToCharname != null ? { ReplyToCharname } : {},
+		...ReplyToUid != null ? { ReplyToUid } : {},
 		locales,
 		chat_log: chatLogForRequest,
 		timelines: chatMetadata.timeLines,

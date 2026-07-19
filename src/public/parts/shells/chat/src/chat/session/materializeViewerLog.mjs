@@ -75,6 +75,7 @@ export async function materializeViewerChatLog(username, groupId, channelId, vie
 		channelId,
 		username,
 		groupId,
+		state,
 	)
 
 	for (const logEntry of channelEntries)

@@ -92,6 +92,8 @@ export async function buildOnMessageEvent(username, groupId, channelId, charname
 	if (options.messageLine) {
 		const chatMetadata = await getGroupRuntime(groupId, username)
 		const i18n = await loadDagHydrationI18n(username)
+		const { getState } = await import('../dag/materialize.mjs')
+		const { state } = await getState(username, groupId)
 		const entries = await buildChatLogEntriesFromChannelLines(
 			[options.messageLine],
 			chatMetadata.LastTimeSlice,
@@ -99,6 +101,7 @@ export async function buildOnMessageEvent(username, groupId, channelId, charname
 			channelId,
 			username,
 			groupId,
+			state,
 		)
 		if (entries.length) message = entries[entries.length - 1]
 	}

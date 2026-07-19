@@ -644,9 +644,7 @@ export async function telegramMessageToBridgeDto(context, message, botInfo, owne
 	].filter(Boolean).join(' ').trim()
 		|| message.from.username
 		|| `User_${message.from.id}`
-	const displayName = message.from.username && !baseName.includes(`@${message.from.username}`)
-		? `${baseName} (@${message.from.username})`
-		: baseName
+	const displayName = baseName
 
 	return {
 		platform: 'telegram',
@@ -699,9 +697,7 @@ export async function telegramMediaGroupToBridgeDto(context, messages, ownerUser
 	].filter(Boolean).join(' ').trim()
 		|| from.username
 		|| `User_${from.id}`
-	const displayName = from.username && !baseName.includes(`@${from.username}`)
-		? `${baseName} (@${from.username})`
-		: baseName
+	const displayName = baseName
 	return {
 		platform: 'telegram',
 		platformChatId: primary.chat.id,

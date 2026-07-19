@@ -1,6 +1,8 @@
 import { localhostLocales } from '../../../../../../../src/scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/server/parts_loader.mjs'
+import { getOperatorEntityHash } from '../../../chat/src/chat/lib/replica.mjs'
+import { ensureLocalAgentEntityHash } from '../../../chat/src/entity/member.mjs'
 
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { GetShellWorld } from './world.mjs'
@@ -108,6 +110,8 @@ ${args.screen}
 			extension: {}
 		})
 		const Charname = (await getPartInfo(char_API, localhostLocales)).name
+		const UserUid = await getOperatorEntityHash(username) || ''
+		const CharUid = await ensureLocalAgentEntityHash(username, char_name)
 		const AIsuggestion = await char_API.interfaces.chat.GetReply({
 			supported_functions: {
 				markdown: false,
@@ -120,7 +124,9 @@ ${args.screen}
 			chat_name: 'shell-assist-' + new Date().getTime(),
 			char_id: char_name,
 			Charname,
+			CharUid,
 			UserCharname: args.UserCharname,
+			UserUid,
 			locales: localhostLocales,
 			time: new Date(),
 			world: GetShellWorld(args.shelltype),

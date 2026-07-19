@@ -16,6 +16,8 @@ import { getProfile } from '../../entity/profile.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { appendChannelMessageDelete, appendChannelMessageEdit, findChannelMessageRow } from '../channel/messageMutations.mjs'
 import { appendFileUploadEvent } from '../dag/channelOperations.mjs'
+import { resolveSpeakerUid } from '../dag/hydration.mjs'
+import { getState } from '../dag/materialize.mjs'
 import { getCurrentFileMasterKey } from '../file_keys/store.mjs'
 import { putEncryptedChunk, syncGroupFileManifest } from '../files/groupFiles.mjs'
 import { resolveOperatorEntityHash } from '../lib/replica.mjs'
@@ -200,16 +202,22 @@ export async function postBridgeMessage(username, dto) {
 		? lookupBridgeEventId(username, groupId, dto.replyToPlatformMessageId)
 		: null
 	const authorDisplayName = String(dto.author.displayName || '').trim() || `User_${dto.author.platformUserId}`
-	/** @type {{ eventId: string, senderName?: string, preview?: string } | undefined} */
+	/** @type {{ eventId: string, senderName?: string, preview?: string, senderEntityHash?: string } | undefined} */
 	let replyTo
 	if (replyToEventId) {
 		const parent = await findChannelMessageRow(username, groupId, channelId, replyToEventId)
 		const parentText = channelMessageAgentText(parent?.content) || String(parent?.content?.content || '')
+		let senderEntityHash = String(parent?.content?.extension?.bridge?.authorEntityHash || '').trim().toLowerCase()
+		if (!senderEntityHash && parent?.sender) {
+			const { state } = await getState(username, groupId)
+			senderEntityHash = resolveSpeakerUid(parent, parent.content || {}, state) || ''
+		}
 		replyTo = {
 			eventId: replyToEventId,
 			...parent?.content?.displayName
 				? { senderName: String(parent.content.displayName).trim().slice(0, 100) }
 				: {},
+			...senderEntityHash ? { senderEntityHash } : {},
 			...parentText
 				? { preview: parentText.replace(/\s+/g, ' ').trim().slice(0, 120) }
 				: {},
