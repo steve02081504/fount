@@ -25,6 +25,7 @@ import { penalizeChunkStorageFailure } from 'npm:@steve02081504/fount-p2p/node/r
 import { createLocalStoragePlugin } from 'npm:@steve02081504/fount-p2p/node/storage_plugins'
 
 import { debugLog } from '../../../../../../../scripts/debug_log.mjs'
+import { groupEntityHash } from '../../../public/shared/groupEntityHash.mjs'
 import { getState } from '../dag/materialize.mjs'
 import {
 	fetchChunksFromRoster,
@@ -34,7 +35,6 @@ import {
 import { ensureFederationRoom } from '../federation/room.mjs'
 import { getCurrentFileMasterKey, getFileMasterKeyByGeneration } from '../file_keys/store.mjs'
 import { updateGroupEntityIndex } from '../groupEntityIndex.mjs'
-import { groupEntityHash } from '../lib/groupEntity.mjs'
 import { shellChatRoot } from '../lib/paths.mjs'
 import { getFederatedChunkStorage, getStorageForGroup } from '../storage.mjs'
 

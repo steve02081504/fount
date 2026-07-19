@@ -2,17 +2,12 @@
  * social OnMessage 分发：GetReply 回退、意愿裁决、去重、care 通知。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
 import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, seedAgentChar } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const GETREPLY_CHAR = 'mention_getreply_agent'
 const PROBE_CHAR = 'social_on_message_probe'
 
@@ -21,24 +16,10 @@ const append = await import('../../src/timeline/append.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const inbox = await import('../../src/inbox.mjs')
 const following = await import('../../src/following.mjs')
-const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/entity/member.mjs')
-const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
 const { setCared } = await import('fount/public/parts/shells/chat/src/chat/lib/care.mjs')
 const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
-
-/**
- * @param {string} username replica
- * @param {string} charName fixture 目录名
- * @returns {Promise<string>} agent entityHash
- */
-async function seedAgentChar(username, charName) {
-	const to = join(getUserDictionary(username), 'chars', charName)
-	await mkdir(to, { recursive: true })
-	await cp(join(fixturesRoot, 'chars', charName), to, { recursive: true })
-	return ensureLocalAgentEntityHash(username, charName)
-}
 
 Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage missing and mentioned', async () => {
 	dispatch.resetSocialDispatchDedupForTests()

@@ -2,16 +2,11 @@
  * 通知与 dispatch 主流程。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, seedAgentChar } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const GETREPLY_CHAR = 'mention_getreply_agent'
 
 const getSession = createTestSession()
@@ -20,21 +15,8 @@ const append = await import('../../src/timeline/append.mjs')
 const notifications = await import('../../src/notifications.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
 const following = await import('../../src/following.mjs')
-const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/entity/member.mjs')
-const { getUserDictionary } = await import('fount/server/auth/index.mjs')
 const { pubKeyHash, publicKeyFromSeed } = await import('npm:@steve02081504/fount-p2p/crypto')
 const { encodeEntityHash } = await import('npm:@steve02081504/fount-p2p/core/entity_id')
-
-/**
- * @param {string} username replica
- * @returns {Promise<string>} agent entityHash
- */
-async function seedMentionAgentChar(username) {
-	const to = join(getUserDictionary(username), 'chars', GETREPLY_CHAR)
-	await mkdir(to, { recursive: true })
-	await cp(join(fixturesRoot, 'chars', GETREPLY_CHAR), to, { recursive: true })
-	return ensureLocalAgentEntityHash(username, GETREPLY_CHAR)
-}
 
 Deno.test('buildNotifications includes like repost follow reply mention', async () => {
 	const { username, operator } = await getSession()
@@ -82,7 +64,7 @@ Deno.test('buildNotifications respects viewerEntityHash / SocialClient agent', a
 		content: { text: 'viewer notify target', visibility: 'public' },
 	}, { fanout: false })
 
-	const agentHash = await seedMentionAgentChar(username)
+	const agentHash = await seedAgentChar(username, GETREPLY_CHAR)
 	const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 	await ensureEntitySocialReady(username, agentHash)
 	await append.commitTimelineEvent(username, operator, {
@@ -109,7 +91,7 @@ Deno.test('buildNotifications respects viewerEntityHash / SocialClient agent', a
 Deno.test('dispatchSocialMessage does not publish agent reply without mention when no OnMessage', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
 	const { username, operator } = await getSession()
-	const agentHash = await seedMentionAgentChar(username)
+	const agentHash = await seedAgentChar(username, GETREPLY_CHAR)
 	const beforeCount = (await append.readTimelineEvents(username, agentHash)).length
 	await append.commitTimelineEvent(username, operator, {
 		type: 'post',

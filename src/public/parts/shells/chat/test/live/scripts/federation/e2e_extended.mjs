@@ -7,7 +7,7 @@ import {
 	completeLiveScript,
 	FedA,
 	FedB,
-	PollUntil,
+	pollUntil,
 	TestFedHasChannel,
 	TestFedHasMessage,
 	TestFedHasReaction,
@@ -15,7 +15,6 @@ import {
 	TestFedMessageDeleted,
 	testCase,
 	WaitFedConverged,
-	WaitFedLive,
 	WaitFedMembers,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -59,16 +58,16 @@ const bMsg = (await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messages`,
 	content: { type: 'text', content: 'from-B' },
 })).json.event?.id
 await testCase('A sees B message (live)', async () =>
-	WaitFedLive(() => TestFedHasMessage(FedA, gid, cid, bMsg), 60, 3),
+	pollUntil(() => TestFedHasMessage(FedA, gid, cid, bMsg), 60, 3),
 )
 
 console.log('\n=== 4. Reaction propagation A->B ===')
-const seenOnA = await WaitFedLive(() => TestFedHasMessage(FedA, gid, cid, bMsg), 60, 3)
+const seenOnA = await pollUntil(() => TestFedHasMessage(FedA, gid, cid, bMsg), 60, 3)
 if (!seenOnA) throw new Error('A must see B message before reaction (live push prerequisite)')
 const reactResp = await Api(FedA, 'POST', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: bMsg, emoji: THUMBS_UP })
 await testCase('A POST reaction succeeds', async () => reactResp.status === 200)
 await testCase('B sees reaction on B-message', async () =>
-	WaitFedLive(() => TestFedHasReaction(FedB, gid, cid, bMsg), 60, 3),
+	pollUntil(() => TestFedHasReaction(FedB, gid, cid, bMsg), 60, 3),
 )
 
 console.log('\n=== 5. Edit propagation A->B ===')
@@ -79,13 +78,13 @@ await Api(FedA, 'PUT', `/groups/${gid}/channels/${cid}/messages/${aMsg}`, {
 	content: { type: 'text', content: 'edited-A' },
 })
 await testCase('B sees edited content', async () =>
-	WaitFedLive(() => TestFedMessageContent(FedB, gid, cid, aMsg, 'edited-A'), 60, 3),
+	pollUntil(() => TestFedMessageContent(FedB, gid, cid, aMsg, 'edited-A'), 60, 3),
 )
 
 console.log('\n=== 6. Delete propagation A->B ===')
 await Api(FedA, 'DELETE', `/groups/${gid}/channels/${cid}/messages/${aMsg}`)
 await testCase('B sees message deleted/redacted', async () =>
-	WaitFedLive(() => TestFedMessageDeleted(FedB, gid, cid, aMsg), 60, 3),
+	pollUntil(() => TestFedMessageDeleted(FedB, gid, cid, aMsg), 60, 3),
 )
 
 console.log('\n=== 7. Cross-node file transfer A->B ===')
@@ -123,13 +122,13 @@ await testCase('B sees file meta (DAG sync)', async () =>
 await testCase('B downloads file content via federation', async () => {
 	const rs = await Api(FedB, 'POST', `/groups/${gid}/files/${fileId}/download-resume`, {})
 	if (rs.status !== 200) throw new Error(`resume ${rs.status}: ${rs.raw}`)
-	const done = await PollUntil(150, 4, async () => {
+	const done = await pollUntil(async () => {
 		const st = await Api(FedB, 'GET', `/groups/${gid}/files/${fileId}/download-status`)
 		if (st.status !== 200) return false
 		const s = st.json.status
 		if (s?.status === 'failed' || s?.error) throw new Error(`download failed: ${st.raw}`)
 		return s?.status === 'done' || s?.percent === 100 || (s?.done >= s?.total && s?.total > 0)
-	})
+	}, 150, 4)
 	return Boolean(done)
 })
 

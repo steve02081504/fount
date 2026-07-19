@@ -9,7 +9,7 @@ import {
 	FedB,
 	FedPngBytes,
 	P2pApi,
-	PollUntil,
+	pollUntil,
 	ShellApi,
 	testCase,
 	WarmupFedNodeLinks,
@@ -71,20 +71,20 @@ await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') 
 await testCase('B GET /emoji-content without membership', async () => {
 	if (!emojiContentHash) throw new Error('upload must yield contentHash for non-member CAS path')
 	const hashQ = `?json=1&contentHash=${emojiContentHash}`
-	const ok = await PollUntil(120, 5, async () => {
+	const ok = await pollUntil(async () => {
 		await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		const r = await Api(FedB, 'GET', `/emoji-content/${gid}/${emojiId}${hashQ}`)
 		return r.status === 200 && Boolean(r.json.dataUrl)
-	})
+	}, 120, 5)
 	if (!ok) throw new Error('non-member B must resolve /emoji-content on B node (not A-side fallback)')
 	return true
 })
 
 await testCase('B GET groups/:id/preview (non-member)', async () => {
-	const ok = await PollUntil(30, 3, async () => {
+	const ok = await pollUntil(async () => {
 		const r = await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		return r.status === 200 && r.json.isMember === false
-	})
+	}, 30, 3)
 	return Boolean(ok)
 })
 

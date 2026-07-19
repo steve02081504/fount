@@ -3,6 +3,59 @@
  */
 import { console, geti18n } from '../../i18n/bare.mjs'
 
+import { requireLiveApiKey, requireLiveBaseUrl } from './env.mjs'
+import { invokeRequest, okStatus } from './http.mjs'
+
+/**
+ * live WS/HTTP 探针：shell + root API 客户端。
+ * `okStatus` 随返回对象提供（定义在 `http.mjs`）；勿在本模块再 re-export。
+ * @param {object} [options] 选项
+ * @param {string} [options.shell='chat'] shell 名
+ * @param {string} [options.base] 基址
+ * @param {string} [options.key] API key
+ * @param {number} [options.timeoutSec=60] 默认超时秒
+ * @returns {{ base: string, key: string, shellApi: Function, chatApi: Function, rootApi: Function, okStatus: typeof okStatus }} HTTP 客户端
+ */
+export function createLiveShellHttp(options = {}) {
+	const base = (options.base ?? requireLiveBaseUrl()).trim().replace(/\/+$/, '')
+	const key = (options.key ?? requireLiveApiKey()).trim()
+	const shell = options.shell ?? 'chat'
+	const timeoutSec = options.timeoutSec ?? 60
+	const node = { base, key }
+
+	/**
+	 * @param {string} method HTTP 方法
+	 * @param {string} path shell 相对路径
+	 * @param {unknown} [body] JSON 体
+	 * @param {string} [keyOverride] 覆盖 API key
+	 * @returns {Promise<import('./http.mjs').LiveHttpResponse>} 响应
+	 */
+	function shellApi(method, path, body, keyOverride) {
+		const handle = keyOverride != null ? { base, key: keyOverride } : node
+		return invokeRequest(handle, method, path, body, { timeoutSec, shell })
+	}
+
+	/**
+	 * @param {string} method HTTP 方法
+	 * @param {string} path 绝对路径
+	 * @param {unknown} [body] JSON 体
+	 * @returns {Promise<import('./http.mjs').LiveHttpResponse>} 响应
+	 */
+	function rootApi(method, path, body) {
+		return invokeRequest(node, method, path, body, { timeoutSec })
+	}
+
+	return {
+		base,
+		key,
+		shellApi,
+		/** chat 脚本别名 */
+		chatApi: shellApi,
+		rootApi,
+		okStatus,
+	}
+}
+
 /**
  * 以通过/失败状态结束进程。
  * @param {boolean} ok 是否通过

@@ -236,6 +236,18 @@
 				"src/scripts/test/playwright/fixtures.mjs",
 				"src/scripts/test/core/output_filter.mjs"
 			]
+		},
+		{
+			"name": "fatal_exit",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/fatal_exit.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/fatal_exit.test.mjs",
+				"src/scripts/test/env.mjs",
+				"src/scripts/test/live/runner.mjs"
+			]
 		}
 	]
 }

@@ -1,4 +1,4 @@
-import { request as playwrightRequest } from '@playwright/test'
+import { withApiRequest } from 'fount/scripts/test/playwright/api.mjs'
 
 import {
 	test,
@@ -14,19 +14,38 @@ import {
 
 /**
  * 经 Social HTTP API 发帖。
- * @param {import('@playwright/test').APIRequestContext} req 请求上下文
  * @param {string} baseUrl 根 URL
  * @param {string} apiKey API 密钥
  * @param {object} body 发帖体
  * @returns {Promise<string>} postId
  */
-async function publishViaApi(req, baseUrl, apiKey, body) {
-	const res = await req.post(
-		`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${encodeURIComponent(apiKey)}`,
-		{ data: body },
-	)
-	expect(res.ok(), `publish failed: ${res.status()}`).toBeTruthy()
-	return postIdFromResponse(await res.json())
+async function publishViaApi(baseUrl, apiKey, body) {
+	return withApiRequest(async req => {
+		const res = await req.post(
+			`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${encodeURIComponent(apiKey)}`,
+			{ data: body },
+		)
+		expect(res.ok(), `publish failed: ${res.status()}`).toBeTruthy()
+		return postIdFromResponse(await res.json())
+	})
+}
+
+/**
+ * 短视频帖 body（本地 fixture mp4）。
+ * @param {string} baseUrl 根 URL
+ * @param {string} text 正文
+ * @returns {object} 发帖体
+ */
+function videoPostBody(baseUrl, text) {
+	return {
+		text,
+		visibility: 'public',
+		locale: 'zh-CN',
+		mediaRefs: [{
+			kind: 'video',
+			url: videoFixtureUrl(baseUrl),
+		}],
+	}
 }
 
 /**
@@ -56,22 +75,7 @@ test.describe('Social short videos', () => {
 
 	test('renders own video post in vertical snap feed', async ({ page, baseUrl, apiKey }) => {
 		const text = `short-video ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 
 		const slide = await openVideoSlide(page, postId)
@@ -85,22 +89,7 @@ test.describe('Social short videos', () => {
 
 	test('empty replies panel can be closed', async ({ page, baseUrl, apiKey }) => {
 		const text = `video-replies-close ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 
 		const slide = await openVideoSlide(page, postId)
@@ -129,22 +118,7 @@ test.describe('Social short videos', () => {
 
 	test('share button copies link fallback', async ({ page, baseUrl, apiKey }) => {
 		const text = `video-share ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 
 		const slide = await openVideoSlide(page, postId)
@@ -158,32 +132,15 @@ test.describe('Social short videos', () => {
 	test('comment ticker shows existing replies', async ({ page, baseUrl, apiKey }) => {
 		const text = `video-ticker ${Date.now()}`
 		const replyText = `ticker-reply ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		let replyId
-		let entityHash
-		try {
-			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-			await waitForPostMaterialized(baseUrl, apiKey, postId)
-			replyId = await publishViaApi(req, baseUrl, apiKey, {
-				text: replyText,
-				replyTo: { entityHash, postId },
-				visibility: 'public',
-				locale: 'zh-CN',
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+		const replyId = await publishViaApi(baseUrl, apiKey, {
+			text: replyText,
+			replyTo: { entityHash, postId },
+			visibility: 'public',
+			locale: 'zh-CN',
+		})
 		await waitForPostMaterialized(baseUrl, apiKey, replyId)
 
 		const slide = await openVideoSlide(page, postId)
@@ -195,22 +152,7 @@ test.describe('Social short videos', () => {
 	test('video replies panel accepts a reply while feed card exists', async ({ page, baseUrl, apiKey }) => {
 		const text = `video-reply-send ${Date.now()}`
 		const replyText = `from-video ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 
 		// feed 里需有同帖卡片（含 data-replies-for）；发评必须落到当前 slide 面板而非 feed 空面板
@@ -235,22 +177,7 @@ test.describe('Social short videos', () => {
 
 	test('mute preference persists after leaving videos view', async ({ page, baseUrl, apiKey }) => {
 		const text = `video-mute-pref ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 
 		const slide = await openVideoSlide(page, postId)
@@ -272,38 +199,21 @@ test.describe('Social short videos', () => {
 		const text = `video-ticker-jump ${Date.now()}`
 		const replyA = `ticker-a ${Date.now()}`
 		const replyB = `ticker-b ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		let replyIdB
-		let entityHash
-		try {
-			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-			await waitForPostMaterialized(baseUrl, apiKey, postId)
-			await publishViaApi(req, baseUrl, apiKey, {
-				text: replyA,
-				replyTo: { entityHash, postId },
-				visibility: 'public',
-				locale: 'zh-CN',
-			})
-			replyIdB = await publishViaApi(req, baseUrl, apiKey, {
-				text: replyB,
-				replyTo: { entityHash, postId },
-				visibility: 'public',
-				locale: 'zh-CN',
-			})
-		}
-		finally {
-			await req.dispose()
-		}
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
+		await waitForPostMaterialized(baseUrl, apiKey, postId)
+		await publishViaApi(baseUrl, apiKey, {
+			text: replyA,
+			replyTo: { entityHash, postId },
+			visibility: 'public',
+			locale: 'zh-CN',
+		})
+		const replyIdB = await publishViaApi(baseUrl, apiKey, {
+			text: replyB,
+			replyTo: { entityHash, postId },
+			visibility: 'public',
+			locale: 'zh-CN',
+		})
 		await waitForPostMaterialized(baseUrl, apiKey, replyIdB)
 
 		const slide = await openVideoSlide(page, postId)
@@ -326,24 +236,8 @@ test.describe('Social short videos', () => {
 
 	test('feed video is muted loop without controls and click opens videos view', async ({ page, baseUrl, apiKey }) => {
 		const text = `feed-video-click ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		let entityHash
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 		await page.locator('.side-nav .nav-btn[data-view="feed"]').click()
 		const card = page.locator(`#feedList [data-post-id="${postId}"]`)
@@ -361,24 +255,8 @@ test.describe('Social short videos', () => {
 
 	test('post detail double-tap media likes', async ({ page, baseUrl, apiKey }) => {
 		const text = `detail-dbl-like ${Date.now()}`
-		const req = await playwrightRequest.newContext()
-		let postId
-		let entityHash
-		try {
-			postId = await publishViaApi(req, baseUrl, apiKey, {
-				text,
-				visibility: 'public',
-				locale: 'zh-CN',
-				mediaRefs: [{
-					kind: 'video',
-					url: videoFixtureUrl(baseUrl),
-				}],
-			})
-			entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		}
-		finally {
-			await req.dispose()
-		}
+		const postId = await publishViaApi(baseUrl, apiKey, videoPostBody(baseUrl, text))
+		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
 		await waitForPostMaterialized(baseUrl, apiKey, postId)
 		await page.goto(`${baseUrl}/parts/shells:social/#post;${entityHash};${postId}`)
 		const card = page.locator('#postDetailView .post-detail-card')
@@ -399,4 +277,3 @@ test.describe('Social short videos', () => {
 		await expect(likeBtn).toHaveAttribute('data-liked', '1', { timeout: 10_000 })
 	})
 })
-

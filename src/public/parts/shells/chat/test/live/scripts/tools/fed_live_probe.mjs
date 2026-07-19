@@ -3,7 +3,7 @@ import {
 	ClearFedGroup,
 	FedA,
 	FedB,
-	PollUntil,
+	pollUntil,
 	TestFedHasReaction,
 } from 'fount/scripts/test/live/federation/common.mjs'
 import { sleep } from 'fount/scripts/test/live/http.mjs'
@@ -34,25 +34,25 @@ const eventIdB = (await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messag
 	content: { type: 'text', content: 'live-message-b' },
 })).json.event?.id
 
-const r1 = await PollUntil(40, 3, async () => {
+const r1 = await pollUntil(async () => {
 	const listResponse = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return (listResponse.json.messages?.filter(row => row.eventId === eventIdA).length ?? 0) >= 1
-})
+}, 40, 3)
 console.log(`B sees A-message (live push): ${Boolean(r1)}`)
 
-const r2 = await PollUntil(40, 3, async () => {
+const r2 = await pollUntil(async () => {
 	const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
 	return s.json.meta?.channels?.[chanExtra] != null
-})
+}, 40, 3)
 console.log(`B sees A-channel (live push): ${Boolean(r2)}`)
 
-const r3 = await PollUntil(40, 3, () => TestFedHasReaction(FedB, gid, cid, eventIdA))
+const r3 = await pollUntil(() => TestFedHasReaction(FedB, gid, cid, eventIdA), 40, 3)
 console.log(`B sees A-reaction (live push): ${Boolean(r3)}`)
 
-const r4 = await PollUntil(40, 3, async () => {
+const r4 = await pollUntil(async () => {
 	const listResponse = await Api(FedA, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return (listResponse.json.messages?.filter(row => row.eventId === eventIdB).length ?? 0) >= 1
-})
+}, 40, 3)
 console.log(`A sees B-message (live push): ${Boolean(r4)}`)
 
 console.log('\n--- peers snapshot ---')

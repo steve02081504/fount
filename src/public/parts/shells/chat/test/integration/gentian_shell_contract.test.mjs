@@ -2,56 +2,31 @@
  * 壳层契约验收（复诵 / 自裁 / OnError / 主人识别）。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createIntegrationBoot } from '../harness.mjs'
+import {
+	createCharBoot,
+	createIntegrationBoot,
+	seedCharFixture,
+	waitUntil,
+} from '../harness.mjs'
 
 const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR = 'gentian_shell_contract'
 
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @returns {Promise<void>}
- */
-async function seedGentianFixture(dataDir, username) {
-	const userRoot = join(dataDir, 'users', username)
-	const from = join(fixturesRoot, 'chars', CHAR)
-	const to = join(userRoot, 'chars', CHAR)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
-}
-
-/**
- * @param {() => Promise<boolean>} predicate 条件
- * @param {number} [timeoutMs] 超时
- */
-async function waitUntil(predicate, timeoutMs = 15000) {
-	const deadline = Date.now() + timeoutMs
-	while (Date.now() < deadline) {
-		if (await predicate()) return
-		await new Promise(resolve => setTimeout(resolve, 100))
-	}
-	throw new Error('waitUntil timeout')
-}
-
 Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => {
 	const username = `gentian-repeat-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createIntegrationBoot({
+	const boot = createCharBoot({
 		username,
-		minP2pNode: true,
+		chars: CHAR,
 		/**
 		 * @param {string} user fount 用户名
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
 			const char = await loadPart(user, `chars/${CHAR}`)
 			await char.Load?.({ username: user, router: {} })
@@ -93,7 +68,7 @@ Deno.test('Gentian OnMessage: owner repeat command replies inline', async () => 
 	await waitUntil(async () => {
 		const messages = await readChannelMessagesForUser(username, groupId, channelId, { limit: 30 })
 		return messages.some(row => String(row.content?.content || '').includes('hello gentian'))
-	})
+	}, 15000)
 })
 
 Deno.test('Gentian OnMessage: self-destruct calls bridge stopSelf', async () => {
@@ -112,9 +87,7 @@ Deno.test('Gentian OnMessage: self-destruct calls bridge stopSelf', async () => 
 	const botname = 'gentian-stop-bot'
 	let stopCalled = false
 	registerBridgeOperations(username, 'telegram', botname, {
-		/**
-		 *
-		 */
+		/** 记录自裁是否被调用。 */
 		stopSelf: async () => { stopCalled = true },
 	}, { charname: CHAR })
 
@@ -155,7 +128,7 @@ Deno.test('Gentian fixture: OnError routed via dispatchCharError', async () => {
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			await seedGentianFixture(boot.dataDir, user)
+			await seedCharFixture(boot.dataDir, user, CHAR)
 		},
 	})
 	await boot.ensureServer()
@@ -174,17 +147,14 @@ Deno.test('Gentian fixture: OnError routed via dispatchCharError', async () => {
 
 Deno.test('Gentian OnMessage: isCaredBy recognizes bound owner not stranger', async () => {
 	const username = `gentian-care-${crypto.randomUUID().slice(0, 8)}`
-	const boot = createIntegrationBoot({
+	const boot = createCharBoot({
 		username,
-		minP2pNode: true,
+		chars: CHAR,
 		/**
 		 * @param {string} user fount 用户名
 		 * @returns {Promise<void>}
 		 */
 		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedGentianFixture(boot.dataDir, user)
 			const { loadPart } = await import('fount/server/parts_loader.mjs')
 			const char = await loadPart(user, `chars/${CHAR}`)
 			await char.Load?.({ username: user, router: {} })

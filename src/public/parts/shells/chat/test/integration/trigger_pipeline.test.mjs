@@ -2,48 +2,18 @@
  * 触发管线专项（token bucket + backfill 不触发）。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
-import { createIntegrationBoot } from '../harness.mjs'
+import { createCharBoot } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_YES = 'on_message_yes'
-
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @returns {Promise<void>}
- */
-async function seedCharFixture(dataDir, username) {
-	const userRoot = join(dataDir, 'users', username)
-	const from = join(fixturesRoot, 'chars', CHAR_YES)
-	const to = join(userRoot, 'chars', CHAR_YES)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
-}
 
 Deno.test('token bucket suppresses generation not OnMessage when exhausted', async () => {
 	const username = `tb-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-	 * @param {string} user fount 用户名
-	 * @returns {Promise<void>}
-	 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -87,19 +57,7 @@ Deno.test('backfill ingress skips trigger pipeline', async () => {
 	const username = `bf-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-	 * @param {string} user fount 用户名
-	 * @returns {Promise<void>}
-	 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')

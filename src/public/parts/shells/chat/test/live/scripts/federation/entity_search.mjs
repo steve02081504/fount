@@ -7,7 +7,7 @@ import {
 	completeLiveScript,
 	FedA,
 	FedB,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WarmupFedNodeLinks,
 	WriteFedSummary,
@@ -35,7 +35,7 @@ if (pubHandle !== handle)
 
 console.log('=== NodeB: search by handle ===')
 await testCase('B finds A by handle with verified activePubKeyHex', async () => {
-	const found = await PollUntil(90, 3, async () => {
+	const found = await pollUntil(async () => {
 		const search = await Api(FedB, 'GET', `/entities/search?q=${encodeURIComponent(handle)}&limit=20`)
 		if (search.status !== 200) {
 			console.log(`  search status=${search.status}`)
@@ -50,7 +50,7 @@ await testCase('B finds A by handle with verified activePubKeyHex', async () => 
 		console.log(`  hit handle=${hit.handle} name=${hit.name} pub=${String(hit.activePubKeyHex || '').slice(0, 8)}…`)
 		return String(hit.handle || '').toLowerCase() === handle
 			&& /^[\da-f]{64}$/i.test(String(hit.activePubKeyHex || ''))
-	})
+	}, 90, 3)
 	return found
 })
 

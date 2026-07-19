@@ -2,15 +2,9 @@
  * 通知偏好矩阵、@here 时序、care 穿透、vote_closed inbox。
  */
 /* global Deno */
-
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createIntegrationBoot } from '../harness.mjs'
-
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
+import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 
 /**
  * @param {string} username 用户
@@ -141,24 +135,7 @@ Deno.test('call card message/edit skips inbox fanout even in mode all', async ()
 Deno.test('care pierces mute for care inbox row', async () => {
 	const username = `nf-care-${crypto.randomUUID().slice(0, 8)}`
 	const CHAR_YES = 'on_message_yes'
-	const { cp, mkdir } = await import('node:fs/promises')
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			const from = join(fixturesRoot, 'chars', CHAR_YES)
-			const to = join(dataDir, 'users', user, 'chars', CHAR_YES)
-			await mkdir(dirname(to), { recursive: true })
-			await cp(from, to, { recursive: true })
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -227,9 +204,9 @@ Deno.test('@[here] live hits everyone mention; backfill does not', async () => {
 	assertEquals(backMentions.everyone, false)
 
 	/**
-	 *
-	 * @param {object} extra 附加字段
- * @returns {void} 无
+	 * 构造 messageMentionsEntity 探测参数。
+	 * @param {object} extra mentions 字段
+	 * @returns {object} probe 载荷
 	 */
 	const probe = extra => ({
 		mentions: extra,

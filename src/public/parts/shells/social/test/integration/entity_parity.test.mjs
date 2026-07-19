@@ -3,16 +3,12 @@
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, seedAgentChar } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const PROBE_CHAR = 'social_on_message_probe'
 const AUTHOR_CHAR = 'mention_getreply_agent'
 
@@ -21,28 +17,18 @@ const append = await import('../../src/timeline/append.mjs')
 const following = await import('../../src/following.mjs')
 const followerIndex = await import('../../src/federation/follower/index.mjs')
 const dispatch = await import('../../src/dispatch.mjs')
-const { ensureLocalAgentEntityHash } = await import('fount/public/parts/shells/chat/src/entity/member.mjs')
-const { getUserDictionary } = await import('fount/server/auth/index.mjs')
-const { ensureEntitySocialReady } = await import('../../src/lib/bootstrap.mjs')
 
 /**
  * @param {string} username replica
  * @param {string} charName fixture 目录名
  * @returns {Promise<string>} agent entityHash
  */
-async function seedAgentChar(username, charName) {
-	const to = join(getUserDictionary(username), 'chars', charName)
-	await mkdir(to, { recursive: true })
-	await cp(join(fixturesRoot, 'chars', charName), to, { recursive: true })
-	const hash = await ensureLocalAgentEntityHash(username, charName)
-	await ensureEntitySocialReady(username, hash)
-	return hash
-}
+const seedReadyAgent = (username, charName) => seedAgentChar(username, charName, { ensureSocialReady: true })
 
 Deno.test('agent following feeds home feed; operator feed excludes agent-only follow', async () => {
 	const { username } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
-	const authorHash = await seedAgentChar(username, AUTHOR_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
+	const authorHash = await seedReadyAgent(username, AUTHOR_CHAR)
 	await following.setFollow(username, agentHash, authorHash, true)
 
 	const authorPost = await append.commitTimelineEvent(username, authorHash, {
@@ -66,7 +52,7 @@ Deno.test('agent following feeds home feed; operator feed excludes agent-only fo
 
 Deno.test('buildNotifications reads agent entity inbox via SocialClient', async () => {
 	const { username, operator } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 
 	await append.commitTimelineEvent(username, operator, {
 		type: 'post',
@@ -87,7 +73,7 @@ Deno.test('buildNotifications reads agent entity inbox via SocialClient', async 
 
 Deno.test('agent follow projects entity-granular follower index', async () => {
 	const { username, operator } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	await following.setFollow(username, agentHash, operator, true)
 
 	const followers = await followerIndex.listLocalFollowersOf(operator)
@@ -108,7 +94,7 @@ Deno.test('agent follow projects entity-granular follower index', async () => {
 
 Deno.test('operator SocialClient may delete owned agent post', async () => {
 	const { username } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const post = await agentClient.post({ text: 'agent post owner may delete', visibility: 'public' })
@@ -129,7 +115,7 @@ Deno.test('operator SocialClient may delete owned agent post', async () => {
 
 Deno.test('operator SocialClient may edit owned agent post', async () => {
 	const { username } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const post = await agentClient.post({ text: 'agent post owner may edit', visibility: 'public' })
@@ -144,7 +130,7 @@ Deno.test('operator SocialClient may edit owned agent post', async () => {
 
 Deno.test('setEntityOwner lets declared master manage human posts; operator lookup survives', async () => {
 	const { username, operator } = await getSession()
-	const masterHash = await seedAgentChar(username, AUTHOR_CHAR)
+	const masterHash = await seedReadyAgent(username, AUTHOR_CHAR)
 	const {
 		setEntityOwner,
 		resolveOperatorEntityHashForUser,
@@ -173,8 +159,8 @@ Deno.test('followed author post triggers agent OnMessage via timeline dispatch',
 	socialOnMessageProbe.reset()
 	socialOnMessageProbe.returnValue = false
 	const { username } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
-	const authorHash = await seedAgentChar(username, AUTHOR_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
+	const authorHash = await seedReadyAgent(username, AUTHOR_CHAR)
 	await following.setFollow(username, agentHash, authorHash, true)
 
 	await append.commitTimelineEvent(username, authorHash, {
@@ -189,7 +175,7 @@ Deno.test('followed author post triggers agent OnMessage via timeline dispatch',
 
 Deno.test('rebuildFollowerIndex restores agent follows', async () => {
 	const { username, operator } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	await following.setFollow(username, agentHash, operator, true)
 
 	await followerIndex.rebuildFollowerIndex()
@@ -200,7 +186,7 @@ Deno.test('rebuildFollowerIndex restores agent follows', async () => {
 
 Deno.test('agent saved posts CRUD+search isolated from operator', async () => {
 	const { username, operator } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const operatorClient = await getSocialClient(username)
@@ -224,7 +210,7 @@ Deno.test('agent saved posts CRUD+search isolated from operator', async () => {
 
 Deno.test('agent drafts isolated from operator', async () => {
 	const { username } = await getSession()
-	const agentHash = await seedAgentChar(username, PROBE_CHAR)
+	const agentHash = await seedReadyAgent(username, PROBE_CHAR)
 	const { getSocialClient } = await import('../../src/api/client/index.mjs')
 	const agentClient = await getSocialClient(username, agentHash)
 	const operatorClient = await getSocialClient(username)

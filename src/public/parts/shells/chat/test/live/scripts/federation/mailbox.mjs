@@ -6,7 +6,7 @@ import {
 	FedB,
 	InitializeOpenGroupJoin,
 	P2pApi,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -66,10 +66,10 @@ await testCase('A sends while B room warm', async () => {
 	return Boolean(liveId)
 })
 
-await testCase('B receives via federation (not mailbox)', async () => PollUntil(60, 3, async () => {
+await testCase('B receives via federation (not mailbox)', async () => pollUntil(async () => {
 	const m = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return (m.json.messages?.filter(row => row.eventId === liveId).length ?? 0) >= 1
-}))
+}, 60, 3))
 
 await ClearFedGroup(gid)
 WriteFedSummary('FED-MAILBOX', gid)

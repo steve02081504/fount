@@ -3,34 +3,14 @@
  */
 /* global Deno */
 import { Buffer } from 'node:buffer'
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 
 import { assert, assertEquals, assertNotEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { onMessageProbe } from '../fixtures/probes/onMessageProbe.mjs'
-import { createIntegrationBoot } from '../harness.mjs'
+import { createCharBoot, waitUntil } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_YES = 'on_message_yes'
 const CHAR_NO = 'on_message_no'
-
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @param {string[]} chars 角色 fixture 名
- * @returns {Promise<void>} 无
- */
-async function seedCharFixtures(dataDir, username, chars) {
-	const userRoot = join(dataDir, 'users', username)
-	for (const name of chars) {
-		const from = join(fixturesRoot, 'chars', name)
-		const to = join(userRoot, 'chars', name)
-		await mkdir(dirname(to), { recursive: true })
-		await cp(from, to, { recursive: true })
-	}
-}
 
 /**
  * @param {string} username 用户
@@ -43,38 +23,11 @@ async function listMessages(username, groupId, channelId) {
 	return readChannelMessagesForUser(username, groupId, channelId, { limit: 100 })
 }
 
-/**
- * @param {() => Promise<boolean>} predicate 条件
- * @param {number} [timeoutMs] 超时
- * @returns {Promise<void>} 等待 predicate 成立或超时抛错
- */
-async function waitUntil(predicate, timeoutMs = 8000) {
-	const deadline = Date.now() + timeoutMs
-	while (Date.now() < deadline) {
-		if (await predicate()) return
-		await new Promise(resolve => setTimeout(resolve, 80))
-	}
-	throw new Error('waitUntil timeout')
-}
-
 Deno.test('per-recipient inbox: @operator and @agent', async () => {
 	const username = `inbox-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixtures(dataDir, user, [CHAR_YES])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -117,20 +70,7 @@ Deno.test('@Charname plain text does not trigger char reply', async () => {
 	const username = `inbox-char-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixtures(dataDir, user, [CHAR_YES])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -154,20 +94,7 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 	const username = `trig-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixtures(dataDir, user, [CHAR_YES, CHAR_NO])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: [CHAR_YES, CHAR_NO] })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -182,11 +109,11 @@ Deno.test('trigger pipeline: OnMessage true speaks without mention; false stays 
 	probe.returnValue = true
 
 	await postChannelMessage(username, groupId, channelId, { text: 'no mention ping' })
-	await waitUntil(async () => probe.events.length > 0, 5000)
+	await waitUntil(async () => probe.events.length > 0, 5000, 80)
 	await waitUntil(async () => {
 		const messages = await listMessages(username, groupId, channelId)
 		return messages.some(row => String(row.content?.content || '').includes('on_message_yes reply'))
-	}, 15000)
+	}, 15000, 80)
 
 	const event = probe.events.at(-1)
 	assert(event)
@@ -208,20 +135,7 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 	const username = `trig-dm-${crypto.randomUUID().slice(0, 8)}`
 	const probe = onMessageProbe
 	probe.reset()
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixtures(dataDir, user, [CHAR_YES])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
@@ -238,7 +152,7 @@ Deno.test('ECDH DM group projects kind=dm and boundPeerEntityHash in OnMessage',
 	probe.returnValue = false
 
 	await postChannelMessage(username, dm.groupId, dm.defaultChannelId, { text: 'dm ping' })
-	await waitUntil(async () => probe.events.length > 0, 10000)
+	await waitUntil(async () => probe.events.length > 0, 10000, 80)
 
 	const event = probe.events.at(-1)
 	assertEquals(event.group.kind, 'dm')

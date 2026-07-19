@@ -9,7 +9,7 @@ import {
 	FedB,
 	FedPngBytes,
 	P2pApi,
-	PollUntil,
+	pollUntil,
 	RootApi,
 	ShellApi,
 	testCase,
@@ -113,12 +113,12 @@ await testCase('B GET /emoji-content without group membership', async () => {
 	if (!hash) hash = emojiContentHash
 	if (!hash) throw new Error('post or upload must yield contentHash for non-member CAS path')
 	const hashQ = `?json=1&contentHash=${hash}`
-	const ok = await PollUntil(120, 5, async () => {
+	const ok = await pollUntil(async () => {
 		await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		await Api(FedB, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 		const r = await Api(FedB, 'GET', `/emoji-content/${gid}/${emojiId}${hashQ}`)
 		return r.status === 200 && Boolean(r.json.dataUrl)
-	})
+	}, 120, 5)
 	if (!ok) {
 		const hash = postMediaRefs[0]?.contentHash ?? emojiContentHash
 		const last = await Api(FedB, 'GET', `/emoji-content/${gid}/${emojiId}?json=1&contentHash=${hash}`)
@@ -128,19 +128,19 @@ await testCase('B GET /emoji-content without group membership', async () => {
 })
 
 await testCase('B GET /groups/:id/preview as non-member', async () => {
-	const ok = await PollUntil(120, 4, async () => {
+	const ok = await pollUntil(async () => {
 		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 		const r = await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		return r.status === 200 && r.json.isMember === false
-	})
+	}, 120, 4)
 	return Boolean(ok)
 })
 
 await testCase('B preview hides join for invite-only private group', async () => {
-	const ok = await PollUntil(30, 3, async () => {
+	const ok = await pollUntil(async () => {
 		const r = await Api(FedB, 'GET', `/groups/${gid}/preview`)
 		return r.status === 200 && r.json.canJoin === false
-	})
+	}, 30, 3)
 	return Boolean(ok)
 })
 

@@ -2,46 +2,15 @@
  * ChatClient 对象模型集成测试。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals, assertRejects, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createIntegrationBoot } from '../harness.mjs'
+import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_FIXTURE = 'on_message_yes'
-
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @returns {Promise<void>} 无
- */
-async function seedCharFixture(dataDir, username) {
-	const userRoot = join(dataDir, 'users', username)
-	const from = join(fixturesRoot, 'chars', CHAR_FIXTURE)
-	const to = join(userRoot, 'chars', CHAR_FIXTURE)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
-}
 
 Deno.test('agent ChatClient channel.send attributes char in view-log', async () => {
 	const username = `cc-send-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -74,20 +43,7 @@ Deno.test('agent ChatClient channel.send attributes char in view-log', async () 
 
 Deno.test('agent ChatClient react/pin require permissions', async () => {
 	const username = `cc-pin-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -130,20 +86,7 @@ Deno.test('agent ChatClient react/pin require permissions', async () => {
 
 Deno.test('agent createGroup is allowed', async () => {
 	const username = `cc-agroup-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -180,15 +123,15 @@ Deno.test('bridgeOperations mock: typing and leave dispatch', async () => {
 	const calls = []
 	registerBridgeOperations(username, 'mock', 'bridge-bot', {
 		/**
-		 *
+		 * 记录 typing 调用。
 		 * @param {object} payload 载荷
- * @returns {Promise<void>} 无
+		 * @returns {Promise<void>}
 		 */
 		sendTyping: async payload => { calls.push(['typing', payload]) },
 		/**
-		 *
+		 * 记录 leave 调用。
 		 * @param {object} payload 载荷
- * @returns {Promise<void>} 无
+		 * @returns {Promise<void>}
 		 */
 		leaveChat: async payload => { calls.push(['leave', payload]) },
 	})
@@ -223,20 +166,7 @@ Deno.test('unregistered bridge operation throws', async () => {
 
 Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', async () => {
 	const username = `cc-e3-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { getChatClient } = await import('../../src/api/client/index.mjs')
@@ -272,20 +202,7 @@ Deno.test('ChatClient session/profile/denylist/send-with-files/fork surface', as
 
 Deno.test('fount_chat code_execution context exposes chat objects', async () => {
 	const username = `cc-code-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')
@@ -312,20 +229,7 @@ Deno.test('fount_chat code_execution context exposes chat objects', async () => 
 
 Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () => {
 	const username = `cc-agent-life-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 *
-		 * @param {string} user 用户名
- * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { addchar } = await import('../../src/chat/session/partConfig.mjs')
@@ -363,19 +267,7 @@ Deno.test('agent ChatClient leave/fork/createInvite use agent entity', async () 
 
 Deno.test('agent ChatClient may edit/delete owned human messages after setEntityOwner', async () => {
 	const username = `cc-master-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 * @param {string} user 用户名
-		 * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_FIXTURE })
 	await ensureServer()
 
 	const { newGroup } = await import('../../src/chat/session/groupLifecycle.mjs')

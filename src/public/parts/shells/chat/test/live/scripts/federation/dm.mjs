@@ -12,7 +12,7 @@ import {
 	FedA,
 	FedB,
 	P2pApi,
-	PollUntil,
+	pollUntil,
 	RootApi,
 	testCase,
 	WaitFedMembers,
@@ -72,7 +72,7 @@ async function buildDmIntro(node) {
  */
 async function resolveUsableChannelId(node, gid, currentCid) {
 	if (currentCid) return currentCid
-	return PollUntil(120, 3, async () => {
+	return pollUntil(async () => {
 		const st = await Api(node, 'GET', `/groups/${gid}/state`)
 		if (st.status !== 200) return null
 		const defaultCid = st.json.meta?.groupSettings?.defaultChannelId
@@ -83,7 +83,7 @@ async function resolveUsableChannelId(node, gid, currentCid) {
 			if (chNames.length >= 1) return chNames[0]
 		}
 		return null
-	})
+	}, 120, 3)
 }
 
 console.log('=== Setup: identities + DM intro ===')
@@ -122,10 +122,10 @@ for (const node of [creator, joiner]) {
 
 
 }
-const dmReady = await PollUntil(10, 0.5, async () => {
+const dmReady = await pollUntil(async () => {
 	const list = await Api(creator, 'GET', '/groups/')
 	return list.status === 200 && (list.json?.filter(row => String(row.name ?? '').startsWith('DM ·')).length ?? 0) === 0
-})
+}, 10, 0.5)
 if (!dmReady) throw new Error('stale DM groups not cleaned up before test')
 
 const intro = await buildDmIntro(creator)
@@ -157,7 +157,7 @@ await testCase('invite-ticket room creds on creator', async () => {
 })
 
 await testCase('peer join with dmIntro proof', async () => {
-	const joined = await PollUntil(120, 4, async () => {
+	const joined = await pollUntil(async () => {
 		const jr = await Api(joiner, 'POST', `/groups/${gid}/join`, {
 			roomSecret: dmInv.roomSecret,
 			signalingAppId: dmInv.signalingAppId,
@@ -170,10 +170,10 @@ await testCase('peer join with dmIntro proof', async () => {
 		if (jr.status === 200) return jr
 		console.log(`    join retry status=${jr.status} body=${jr.raw}`)
 		return false
-	})
+	}, 120, 4)
 	if (!joined) throw new Error('join did not return 200')
 	if (joined.json?.defaultChannelId) cid = joined.json.defaultChannelId
-	return PollUntil(180, 4, async () => {
+	return pollUntil(async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('6s') })
 		await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
@@ -186,7 +186,7 @@ await testCase('peer join with dmIntro proof', async () => {
 			if (chNames.length >= 1) cid = chNames[0]
 		}
 		return Object.keys(st.json.meta?.channels ?? {}).length >= 1
-	})
+	}, 180, 4)
 })
 
 console.log('\n=== 3. Federation health gate ===')
@@ -207,18 +207,18 @@ await testCase('creator join-snapshot + catchup sees joiner', async () => {
 	await Api(creator, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('12s') })
 	await Api(joiner, 'POST', `/groups/${gid}/dag/merge-tips`, {})
-	return PollUntil(120, 3, async () => {
+	return pollUntil(async () => {
 		await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('8s') })
 		await Api(creator, 'POST', `/groups/${gid}/dag/merge-tips`, {})
 		const s = await Api(creator, 'GET', `/groups/${gid}/state`)
 		if (s.status !== 200) return false
 		return (s.json.meta?.members?.filter(m => m.memberKey === joinerHash).length ?? 0) >= 1
-	})
+	}, 120, 3)
 })
 
 await testCase('creator members>=2 after DM join', async () => WaitFedMembers(creator, gid, 2, 120))
 
-await testCase('joiner state has default channel', async () => PollUntil(90, 3, async () => {
+await testCase('joiner state has default channel', async () => pollUntil(async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 	const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
 	if (s.json.meta?.groupSettings?.defaultChannelId)
@@ -229,7 +229,7 @@ await testCase('joiner state has default channel', async () => PollUntil(90, 3, 
 		if (chNames.length >= 1) cid = chNames[0]
 	}
 	return s.status === 200 && Object.keys(s.json.meta?.channels ?? {}).length >= 1
-}))
+}, 90, 3))
 
 console.log('\n=== 4. Bidirectional messages ===')
 let aMsg = null
@@ -246,14 +246,14 @@ await testCase('creator sends DM-A', async () => {
 	return Boolean(aMsg)
 })
 
-await testCase('joiner sees dm-A (catchup/live)', async () => PollUntil(90, 3, async () => {
+await testCase('joiner sees dm-A (catchup/live)', async () => pollUntil(async () => {
 	await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 	const m = await Api(joiner, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return m.status === 200 && (m.json.messages?.filter(row => row.eventId === aMsg).length ?? 0) >= 1
-}))
+}, 90, 3))
 
 await testCase('joiner sends DM-B', async () => {
-	const ready = await PollUntil(90, 3, async () => {
+	const ready = await pollUntil(async () => {
 		await Api(joiner, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const s = await Api(joiner, 'GET', `/groups/${gid}/state`)
 		if (s.json.meta?.groupSettings?.defaultChannelId)
@@ -264,7 +264,7 @@ await testCase('joiner sends DM-B', async () => {
 			if (chNames.length >= 1) cid = chNames[0]
 		}
 		return s.status === 200 && Object.keys(s.json.meta?.channels ?? {}).length >= 1
-	})
+	}, 90, 3)
 	if (!ready) throw new Error('joiner channels not materialized')
 	const r = await Api(joiner, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
 		content: { type: 'text', content: 'dm-B-to-A' },
@@ -274,11 +274,11 @@ await testCase('joiner sends DM-B', async () => {
 	return Boolean(bMsg)
 })
 
-await testCase('creator sees dm-B', async () => PollUntil(90, 3, async () => {
+await testCase('creator sees dm-B', async () => pollUntil(async () => {
 	await Api(creator, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('3s') })
 	const m = await Api(creator, 'GET', `/groups/${gid}/channels/${cid}/messages`)
 	return m.status === 200 && (m.json.messages?.filter(row => row.eventId === bMsg).length ?? 0) >= 1
-}))
+}, 90, 3))
 
 await ClearFedGroup(gid)
 WriteFedSummary('FED-DM', gid)

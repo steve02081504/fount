@@ -9,7 +9,7 @@ import {
 	FedB,
 	InitializeOpenGroupJoin,
 	WaitFedConverged,
-	WaitFedLive,
+	pollUntil,
 } from 'fount/scripts/test/live/federation/common.mjs'
 
 await ClearFedTestGroups()
@@ -35,7 +35,7 @@ const b1 = await Api(FedB, 'POST', `/groups/${groupId}/channels/${channelId}/mes
 if (b1.status !== 201) throw new Error(`B1 send failed: ${b1.status} ${b1.raw}`)
 
 console.log('\n=== 4. NodeA: live push (GET-only, no catchup) ===')
-const gotB1Live = await WaitFedLive(async () => {
+const gotB1Live = await pollUntil(async () => {
 	const listResponse = await Api(FedA, 'GET', `/groups/${groupId}/channels/${channelId}/messages?limit=50`)
 	if (listResponse.status !== 200) return false
 	const texts = listResponse.json.messages?.map(row => row.content?.content) ?? []

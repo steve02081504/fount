@@ -2,28 +2,10 @@
 import process from 'node:process'
 
 import { ms } from 'fount/scripts/ms.mjs'
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { liveWsBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { createLiveShellHttp } from 'fount/scripts/test/live/wsHarness.mjs'
 
-const baseUrl = requireLiveBaseUrl()
-const apiKey = requireLiveApiKey()
-
-/**
- * 调用 Chat shell HTTP API。
- * @param {string} method - HTTP 方法。
- * @param {string} path - 相对路径。
- * @param {object} [body] - JSON 请求体。
- * @param {string} [key] - API key。
- * @returns {Promise<{ status: number, json: object | null }>} 状态码与解析后的 JSON。
- */
-async function chatApi(method, path, body, key = apiKey) {
-	const separator = path.includes('?') ? '&' : '?'
-	const response = await fetch(`${baseUrl}/api/parts/shells:chat${path}${separator}fount-apikey=${key}`, {
-		method,
-		headers: body ? { 'content-type': 'application/json' } : {},
-		body: body ? JSON.stringify(body) : undefined,
-	})
-	return { status: response.status, json: await response.json().catch(() => null) }
-}
+const { chatApi, key: apiKey } = createLiveShellHttp()
 
 const createdGroup = await chatApi('POST', '/groups/', { name: 'WSTest' })
 const groupId = createdGroup.json.groupId

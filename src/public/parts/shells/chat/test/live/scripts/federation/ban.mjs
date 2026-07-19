@@ -7,7 +7,7 @@ import {
 	FedB,
 	FedC,
 	InitializeOpenGroupJoinMulti,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -44,16 +44,16 @@ await testCase('A POST members/:hash/ban entity', async () => {
 })
 
 await testCase('A state lists B in bannedMembers', async () => {
-	const ok = await PollUntil(30, 2, async () => {
+	const ok = await pollUntil(async () => {
 		const s = await Api(FedA, 'GET', `/groups/${gid}/state`)
 		return (s.json.meta?.bannedMembers?.filter(m => m.memberKey === bPub).length ?? 0) >= 1
-	})
+	}, 30, 2)
 	return Boolean(ok)
 })
 
 console.log('\n=== 3. C receives ban via federation ===')
 await testCase('C catchup receives ban (third-party sync)', async () => {
-	const ok = await PollUntil(180, 4, async () => {
+	const ok = await pollUntil(async () => {
 		for (const node of [FedA, FedC]) 
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
 		
@@ -72,14 +72,14 @@ await testCase('C catchup receives ban (third-party sync)', async () => {
 		const s = await Api(FedC, 'GET', `/groups/${gid}/state`)
 		if (s.status !== 200) return false
 		return (s.json.meta?.bannedMembers?.filter(m => m.memberKey === bPub).length ?? 0) >= 1
-	})
+	}, 180, 4)
 	if (!ok) throw new Error('C must receive member_ban via normal federation catchup')
 	return true
 })
 
 console.log('\n=== 4. B probes peers and self-judges removed ===')
 await testCase('B catchup probes shunned by A and C -> suspectedRemoved', async () => {
-	const ok = await PollUntil(180, 4, async () => {
+	const ok = await pollUntil(async () => {
 		for (const node of [FedB, FedA, FedC]) 
 			await Api(node, 'POST', `/groups/${gid}/federation/rebind`, {})
 		
@@ -88,7 +88,7 @@ await testCase('B catchup probes shunned by A and C -> suspectedRemoved', async 
 		if (r.json.suspectedRemoved === true) return true
 		const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
 		return s.status === 200 && s.json.viewer?.suspectedRemoved === true
-	})
+	}, 180, 4)
 	if (!ok) throw new Error('B must suspect removal after shuns from known member nodes')
 	return true
 })
@@ -100,25 +100,25 @@ await testCase('B state does not materialize ban event locally', async () => {
 
 console.log('\n=== 5. B cannot send; A roster clean ===')
 await testCase('B POST message rejected after suspectedRemoved (403)', async () => {
-	const ok = await PollUntil(30, 2, async () => {
+	const ok = await pollUntil(async () => {
 		const s = await Api(FedB, 'GET', `/groups/${gid}/state`)
 		if (s.status !== 200 || s.json.viewer?.suspectedRemoved !== true) return false
 		const r = await Api(FedB, 'POST', `/groups/${gid}/channels/${cid}/messages`, {
 			content: { type: 'text', content: 'banned-attempt' },
 		})
 		return r.status === 403
-	})
+	}, 30, 2)
 	if (!ok) throw new Error('B must be suspectedRemoved and get 403 on POST message')
 	return true
 })
 
 await testCase('A channel has no banned-attempt message', async () => {
-	const ok = await PollUntil(30, 3, async () => {
+	const ok = await pollUntil(async () => {
 		await Api(FedA, 'POST', `/groups/${gid}/federation/catchup`, { waitMs: ms('4s') })
 		const m = await Api(FedA, 'GET', `/groups/${gid}/channels/${cid}/messages?limit=80`)
 		if (m.status !== 200) return false
 		return (m.json.messages?.filter(row => String(row.content?.content).includes('banned-attempt')).length ?? 0) === 0
-	})
+	}, 30, 3)
 	return Boolean(ok)
 })
 

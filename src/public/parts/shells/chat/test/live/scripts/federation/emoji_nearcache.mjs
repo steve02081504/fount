@@ -7,7 +7,7 @@ import {
 	FedB,
 	FedPngBytes,
 	InitializeOpenGroupJoin,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -29,20 +29,20 @@ await testCase('A POST /groups/:id/emojis', async () => {
 })
 
 console.log('\n=== B near-cache via /emoji-content ===')
-await testCase('B manifest lists contentHash after federation sync', async () => PollUntil(90, 3, async () => {
+await testCase('B manifest lists contentHash after federation sync', async () => pollUntil(async () => {
 	const r = await Api(FedB, 'GET', `/groups/${gid}/emojis`)
 	if (r.status !== 200) return false
 	const e = r.json.entries?.find(row => row.emojiId === emojiId)
 	return Boolean(e && e.contentHash === contentHash)
-}))
+}, 90, 3))
 
 await testCase('B GET /emoji-content resolves image (first hit)', async () => {
-	const ok = await PollUntil(90, 4, async () => {
+	const ok = await pollUntil(async () => {
 		const r = await Api(FedB, 'GET', `/emoji-content/${gid}/${emojiId}?json=1`)
 		if (r.status !== 200) return false
 		firstHitDataUrlLen = r.json.dataUrl?.length ?? 0
 		return r.json.contentHash === contentHash && firstHitDataUrlLen > 20
-	})
+	}, 90, 4)
 	return Boolean(ok)
 })
 

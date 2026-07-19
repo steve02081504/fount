@@ -2,23 +2,9 @@
  * Chat 全文搜索索引与 API（落盘 eventPersist 异步索引钩子回归）。
  */
 /* global Deno */
-import { createTestSession } from '../harness.mjs'
+import { createTestSession, waitUntil } from '../harness.mjs'
 
 const getSession = createTestSession({ minP2pNode: true })
-
-/**
- * @param {() => Promise<boolean>} probe 条件
- * @param {number} [timeoutMs=5000] 超时
- * @returns {Promise<void>}
- */
-async function waitUntil(probe, timeoutMs = 5000) {
-	const start = Date.now()
-	while (Date.now() - start < timeoutMs) {
-		if (await probe()) return
-		await new Promise(resolve => setTimeout(resolve, 40))
-	}
-	throw new Error('waitUntil timeout')
-}
 
 Deno.test('searchGroupMessages finds posted text via eventPersist auto-index and removes on delete', async () => {
 	const { username } = await getSession()
@@ -39,11 +25,11 @@ Deno.test('searchGroupMessages finds posted text via eventPersist auto-index and
 	await waitUntil(async () => {
 		const found = await searchGroupMessages(username, groupId, { q: token, limit: 10 })
 		return found.items.some(item => item.eventId === eventId && item.text.includes(token))
-	})
+	}, 5000, 40)
 
 	await appendChannelMessageDelete(username, groupId, channelId, eventId)
 	await waitUntil(async () => {
 		const afterDelete = await searchGroupMessages(username, groupId, { q: token, limit: 10 })
 		return !afterDelete.items.some(item => item.eventId === eventId)
-	})
+	}, 5000, 40)
 })

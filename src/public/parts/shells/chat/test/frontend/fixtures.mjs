@@ -1,7 +1,9 @@
-import { request as playwrightRequest } from '@playwright/test'
 import { ms } from 'fount/scripts/ms.mjs'
+import {
+	withApiRequest,
+	createChatTestGroup,
+} from 'fount/scripts/test/playwright/api.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
-import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForHubReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 const HUB_INIT_TIMEOUT = ms('3m')
@@ -9,20 +11,10 @@ const HUB_INIT_TIMEOUT = ms('3m')
 /** 隔离节点专用测试用户名（由 run.mjs 注入 FOUNT_TEST_USERNAME） */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
-/**
- * Chat 前端 E2E 通用 fixture（扩展 groupChannel）。
- */
-export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
-
-baseTest.beforeEach(async ({ baseUrl, apiKey }) => {
-	if (!TEST_USERNAME)
-		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	await assertIsolatedFrontendTest({
-		baseUrl,
-		apiKey,
-		expectedUsername: TEST_USERNAME,
-		shellLabel: 'Chat',
-	})
+/** Chat 前端 E2E 通用 fixture（扩展 groupChannel）。 */
+export const { test: baseTest, expect } = createFountFixtures({
+	locale: 'zh-CN',
+	isolated: { shellLabel: 'Chat' },
 })
 
 /**
@@ -120,39 +112,6 @@ export async function createGroupViaHubUi(page, baseUrl, options = {}) {
 }
 
 /**
- * 通过 API 创建测试群组。
- * @param {string} baseUrl - 测试根 URL。
- * @param {string} apiKey - API 密钥。
- * @param {object} [options] - 可选项。
- * @returns {Promise<{ groupId: string, defaultChannelId: string }>} 新建群信息。
- */
-export async function createTestGroup(baseUrl, apiKey, options = {}) {
-	const name = options.name ?? `pw-group-${Date.now()}`
-	const body = {
-		name,
-		description: options.description ?? 'playwright frontend test',
-		...options.defaultChannelName ? { defaultChannelName: options.defaultChannelName } : {},
-	}
-	const req = await playwrightRequest.newContext()
-	try {
-		const res = await req.post(
-			`${baseUrl}/api/parts/shells:chat/groups/?fount-apikey=${encodeURIComponent(apiKey)}`,
-			{ data: body },
-		)
-		if (!res.ok()) throw new Error(`createGroup failed: ${res.status()}`)
-		const data = await res.json()
-		if (!data.groupId) throw new Error('groupId missing')
-		return {
-			groupId: data.groupId,
-			defaultChannelId: data.defaultChannelId || 'default',
-		}
-	}
-	finally {
-		await req.dispose()
-	}
-}
-
-/**
  * 拼接带 hash 的 Hub URL。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} hash - 不含 `#` 的 hash 片段。
@@ -246,11 +205,11 @@ export function isChannelMessagePost(response, groupId, channelId) {
  * @param {import('npm:@playwright/test').Page} page - Playwright 页面。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {object} [groupOpts] - createTestGroup 选项。
+ * @param {object} [groupOpts] - createChatTestGroup 选项。
  * @returns {Promise<{ groupId: string, channelId: string }>} 群与频道 ID。
  */
 export async function openFreshGroupChannel(page, baseUrl, apiKey, groupOpts = {}) {
-	const { groupId, defaultChannelId } = await createTestGroup(baseUrl, apiKey, groupOpts)
+	const { groupId, defaultChannelId } = await createChatTestGroup(baseUrl, apiKey, groupOpts)
 	const hashFrag = `group:${encodeURIComponent(groupId)}:${defaultChannelId}`
 	if (page.url().includes('/parts/shells:chat/hub/')) {
 		if (page.url().includes(`#${hashFrag}`)) {
@@ -326,8 +285,7 @@ export function messageTextFromPostResponse(postJson) {
  */
 export async function createTestChannel(baseUrl, apiKey, groupId, options = {}) {
 	const name = options.name ?? `pw-ch-${Date.now()}`
-	const req = await playwrightRequest.newContext()
-	try {
+	return withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { name, type: options.type ?? 'text' } },
@@ -336,10 +294,7 @@ export async function createTestChannel(baseUrl, apiKey, groupId, options = {}) 
 		const data = await res.json()
 		if (!data.channelId) throw new Error('channelId missing')
 		return { channelId: data.channelId, name }
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -382,28 +337,6 @@ export async function pickEmojiFromPicker(page, emoji = '👍') {
 }
 
 /**
- * 拉取本机 operator entityHash。
- * @param {string} baseUrl - 测试根 URL。
- * @param {string} apiKey - API 密钥。
- * @returns {Promise<string>} viewer entityHash。
- */
-export async function fetchViewerEntityHash(baseUrl, apiKey) {
-	const req = await playwrightRequest.newContext()
-	try {
-		const res = await req.get(
-			`${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`,
-		)
-		if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
-		const data = await res.json()
-		if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
-		return data.viewerEntityHash
-	}
-	finally {
-		await req.dispose()
-	}
-}
-
-/**
  * 注入一条 @viewer 的 mention inbox 条目及对应频道消息（FOUNT_TEST 专用）。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
@@ -411,9 +344,8 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
  * @returns {Promise<{ eventId: string, text: string, groupId: string, channelId: string }>} 种子数据。
  */
 export async function seedMentionInbox(baseUrl, apiKey, options) {
-	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
-	try {
+	return withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:chat/test/mention-inbox?fount-apikey=${key}`,
 			{
@@ -426,10 +358,7 @@ export async function seedMentionInbox(baseUrl, apiKey, options) {
 		)
 		if (!res.ok()) throw new Error(`mention-inbox seed failed: ${res.status()}`)
 		return res.json()
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**

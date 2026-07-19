@@ -160,6 +160,11 @@ export async function runLiveSuite({
 
 		return result.code
 	}
+	catch (error) {
+		// launch / ping 失败等：必须返回非 0，禁止变成 unhandledRejection 后 exit 0
+		console.error(error)
+		return 1
+	}
 	finally {
 		for (const node of nodes.reverse())
 			await stopNode(node)

@@ -1,4 +1,4 @@
-import { request as playwrightRequest } from '@playwright/test'
+import { withApiRequest } from 'fount/scripts/test/playwright/api.mjs'
 
 import {
 	test,
@@ -18,17 +18,13 @@ import {
  * @returns {Promise<void>} 无返回值
  */
 async function postMessageViaApi(baseUrl, apiKey, groupId, channelId, text) {
-	const req = await playwrightRequest.newContext()
-	try {
+	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:chat/groups/${encodeURIComponent(groupId)}/channels/${encodeURIComponent(channelId)}/messages?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { content: { type: 'text', content: text } } },
 		)
 		if (!res.ok()) throw new Error(`postMessage failed: ${res.status()}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**

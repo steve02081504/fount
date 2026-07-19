@@ -2,29 +2,11 @@
  * operator 平台身份认领集成测试。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createIntegrationBoot } from '../harness.mjs'
+import { createCharBoot, createIntegrationBoot } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_YES = 'on_message_yes'
-
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @returns {Promise<void>} 无
- */
-async function seedCharFixture(dataDir, username) {
-	const userRoot = join(dataDir, 'users', username)
-	const from = join(fixturesRoot, 'chars', CHAR_YES)
-	const to = join(userRoot, 'chars', CHAR_YES)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
-}
 
 /**
  * @param {string} username replica
@@ -150,19 +132,7 @@ Deno.test('bound owner message uses operator profile displayName', async () => {
 
 Deno.test('isCaredBy recognizes bound owner and not unbound stranger', async () => {
 	const username = `bridge-care-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/**
-		 * @param {string} user 用户名
-		 * @returns {Promise<void>} 无
-		 */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { claimOperatorBridgeIdentity, bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')

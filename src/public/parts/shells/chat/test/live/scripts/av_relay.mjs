@@ -1,64 +1,11 @@
 // AV relay WebSocket: two clients in same room, 26-byte header + payload relay (avRelay.mjs)
 import { ms } from 'fount/scripts/ms.mjs'
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { liveWsBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { createLiveShellHttp, finishLiveWs } from 'fount/scripts/test/live/wsHarness.mjs'
 
-const BASE = requireLiveBaseUrl()
-const KEY = requireLiveApiKey()
+const { chatApi, rootApi, okStatus, key } = createLiveShellHttp()
 const HEADER_SIZE = 26
 const TIMEOUT_MS = ms('20s')
-
-/**
- * 调用 Chat shell HTTP API。
- * @param {string} method HTTP 方法
- * @param {string} path chat API 路径
- * @param {object} [body] JSON 请求体
- * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
- */
-async function chatApi(method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const r = await fetch(`${BASE}/api/parts/shells:chat${path}${sep}fount-apikey=${KEY}`, {
-		method,
-		headers: body ? { 'content-type': 'application/json' } : {},
-		body: body ? JSON.stringify(body) : undefined,
-	})
-	let json = null
-	try { json = await r.json() } catch { /* ignore */ }
-	return { status: r.status, json }
-}
-
-/**
- * 调用根 API。
- * @param {string} method HTTP 方法
- * @param {string} path 根 API 路径
- * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
- */
-async function rootApi(method, path) {
-	const sep = path.includes('?') ? '&' : '?'
-	const r = await fetch(`${BASE}${path}${sep}fount-apikey=${KEY}`, { method })
-	let json = null
-	try { json = await r.json() } catch { /* ignore */ }
-	return { status: r.status, json }
-}
-
-/**
- * 判断 HTTP 状态是否为成功。
- * @param {number} status HTTP 状态码
- * @returns {boolean} 是否为 2xx 成功
- */
-function okStatus(status) {
-	return status === 200 || status === 201
-}
-
-/**
- * 以通过/失败状态结束进程。
- * @param {boolean} ok 是否通过
- * @param {string} detail 结果说明
- * @returns {never} 以 0/1 退出
- */
-function finish(ok, detail) {
-	console.log(`\n${ok ? 'PASS' : 'FAIL'}: ${detail}`)
-	process.exit(ok ? 0 : 1)
-}
 
 /**
  * 构造 AV relay 二进制帧（26 字节头 + 载荷）。
@@ -84,7 +31,7 @@ function buildAvFrame(payload, options = {}) {
  * @returns {Promise<WebSocket>} 已 open 的 WebSocket
  */
 function connectAv(roomId) {
-	const url = `${liveWsBaseUrl()}/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}?fount-apikey=${KEY}`
+	const url = `${liveWsBaseUrl()}/ws/parts/shells:chat/av-relay/${encodeURIComponent(roomId)}?fount-apikey=${key}`
 	return new Promise((resolve, reject) => {
 		const ws = new WebSocket(url)
 		const timer = setTimeout(() => {
@@ -165,10 +112,10 @@ function waitBinaryPayload(ws, expectPayload) {
 }
 
 const who = await rootApi('GET', '/api/whoami')
-if (who.status !== 200) finish(false, `server unreachable (whoami ${who.status})`)
+if (who.status !== 200) finishLiveWs(false, `server unreachable (whoami ${who.status})`)
 
 const g = await chatApi('POST', '/groups/', { name: 'AvRelayTest' })
-if (!okStatus(g.status) || !g.json?.groupId) finish(false, `create group failed (${g.status})`)
+if (!okStatus(g.status) || !g.json?.groupId) finishLiveWs(false, `create group failed (${g.status})`)
 
 const gid = g.json.groupId
 const cid = g.json.defaultChannelId
@@ -192,11 +139,11 @@ try {
 	try { wsA.close() } catch { /* ignore */ }
 	try { wsB.close() } catch { /* ignore */ }
 	await chatApi('DELETE', `/groups/${gid}`)
-	finish(true, '26-byte header frame relayed to peer')
+	finishLiveWs(true, '26-byte header frame relayed to peer')
 }
 catch (error) {
 	try { wsA?.close() } catch { /* ignore */ }
 	try { wsB?.close() } catch { /* ignore */ }
 	await chatApi('DELETE', `/groups/${gid}`)
-	finish(false, String(error?.message || error))
+	finishLiveWs(false, String(error?.message || error))
 }

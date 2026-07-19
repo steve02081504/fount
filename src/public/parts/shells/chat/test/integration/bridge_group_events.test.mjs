@@ -2,42 +2,16 @@
  * 桥接群生命周期事件 → char OnGroupEvent 分发。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { groupEventProbe } from '../fixtures/probes/groupEventProbe.mjs'
-import { createIntegrationBoot } from '../harness.mjs'
+import { createCharBoot } from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR = 'on_message_yes'
-
-/**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @returns {Promise<void>}
- */
-async function seedCharFixture(dataDir, username) {
-	const from = join(fixturesRoot, 'chars', CHAR)
-	const to = join(dataDir, 'users', username, 'chars', CHAR)
-	await mkdir(dirname(to), { recursive: true })
-	await cp(from, to, { recursive: true })
-}
 
 Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member identity', async () => {
 	const username = `bridge-gev-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR })
 	await ensureServer()
 
 	const { postBridgeGroupEvent } = await import('../../src/chat/bridge/groupEvents.mjs')
@@ -84,16 +58,7 @@ Deno.test('postBridgeGroupEvent dispatches to char OnGroupEvent with member iden
 
 Deno.test('dispatchBridgeBotStarted hits only mapped groups of matching bot', async () => {
 	const username = `bridge-bst-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR })
 	await ensureServer()
 
 	const { dispatchBridgeBotStarted } = await import('../../src/chat/bridge/groupEvents.mjs')

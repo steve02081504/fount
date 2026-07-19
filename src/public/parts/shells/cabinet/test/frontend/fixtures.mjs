@@ -1,6 +1,5 @@
 import { ms } from 'fount/scripts/ms.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
-import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForReadyGate } from 'fount/scripts/test/playwright/ready.mjs'
 
 import { CABINET_APP_GATE } from '../../public/src/gate.mjs'
@@ -8,21 +7,10 @@ import { CABINET_APP_GATE } from '../../public/src/gate.mjs'
 /** @type {string} */
 export const TEST_USERNAME = process.env.FOUNT_TEST_USERNAME
 
-/**
- *
- */
-export const { test, expect } = createFountFixtures({ locale: 'zh-CN' })
-
-test.beforeEach(async ({ baseUrl, apiKey }) => {
-	if (!TEST_USERNAME)
-		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	test.setTimeout(ms('3m'))
-	await assertIsolatedFrontendTest({
-		baseUrl,
-		apiKey,
-		expectedUsername: TEST_USERNAME,
-		shellLabel: 'Cabinet',
-	})
+/** Cabinet 前端 E2E fixture（隔离节点 + 3m timeout）。 */
+export const { test, expect } = createFountFixtures({
+	locale: 'zh-CN',
+	isolated: { shellLabel: 'Cabinet', timeout: ms('3m') },
 })
 
 /**

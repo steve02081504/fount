@@ -7,6 +7,7 @@ import { createSingleNodeProbe } from 'fount/scripts/test/live/singleNode/helper
 const {
 	chatApi,
 	chatApiMultipart,
+	okStatus,
 	pollUntil,
 	testCase,
 	writeLiveSection,
@@ -26,18 +27,7 @@ const pngDataUrl = testPngDataUrl()
  * @param {object | undefined} body 请求体
  * @returns {Promise<import('fount/scripts/test/live/http.mjs').LiveHttpResponse>} Chat API 响应
  */
-async function api(method, path, body) {
-	return chatApi(method, path, body, 120)
-}
-
-/**
- * @param {number} status HTTP 状态码
- * @param {number[]} [allowed] 允许的状态码
- * @returns {boolean} 是否在允许范围内
- */
-function okStatus(status, allowed = [200, 201]) {
-	return allowed.includes(status)
-}
+const api = (method, path, body) => chatApi(method, path, body, 120)
 
 /**
  * @param {string} groupId 群 ID
@@ -62,7 +52,7 @@ async function requireTestChar(groupId) {
 }
 
 /**
- *
+ * 触发角色回复。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名
@@ -75,7 +65,7 @@ async function triggerCharReply(groupId, channelId, charname) {
 }
 
 /**
- *
+ * 取频道内最新一条角色消息的 eventId。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @returns {Promise<string | null>} 最新角色消息 eventId
@@ -89,7 +79,7 @@ async function getLatestCharMessageId(groupId, channelId) {
 }
 
 /**
- *
+ * 触发回复并轮询直到出现角色消息。
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} charname 角色名

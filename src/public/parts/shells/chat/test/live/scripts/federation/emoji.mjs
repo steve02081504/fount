@@ -7,7 +7,7 @@ import {
 	FedB,
 	FedPngBytes,
 	InitializeOpenGroupJoin,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -31,16 +31,16 @@ await testCase('A GET emoji data locally', async () => {
 })
 
 console.log('\n=== 2. B federation pull ===')
-await testCase('B sees emoji in manifest', async () => PollUntil(60, 3, async () => {
+await testCase('B sees emoji in manifest', async () => pollUntil(async () => {
 	const r = await Api(FedB, 'GET', `/groups/${gid}/emojis`)
 	return r.status === 200 && (r.json.entries?.filter(e => e.emojiId === emojiId).length ?? 0) >= 1
-}))
+}, 60, 3))
 
 await testCase('B GET emojis/:id/data (federation fetch)', async () => {
-	const ok = await PollUntil(90, 4, async () => {
+	const ok = await pollUntil(async () => {
 		const r = await Api(FedB, 'GET', `/groups/${gid}/emojis/${emojiId}/data?json=1`)
 		return r.status === 200 && String(r.json.dataUrl ?? '').startsWith('data:image/')
-	})
+	}, 90, 4)
 	return Boolean(ok)
 })
 

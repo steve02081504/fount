@@ -5,7 +5,7 @@ import {
 	FedA,
 	FedB,
 	InitializeOpenGroupJoin,
-	PollUntil,
+	pollUntil,
 	testCase,
 	WriteFedSummary,
 } from 'fount/scripts/test/live/federation/common.mjs'
@@ -41,11 +41,11 @@ await testCase('A POST compact triggers archive fold', async () => {
 })
 
 await testCase('A archive/summary has month file', async () => {
-	const found = await PollUntil(45, 3, async () => {
+	const found = await pollUntil(async () => {
 		const s = await Api(FedA, 'GET', `/groups/${gid}/archive/summary`)
 		if (s.status !== 200) return false
 		return (s.json.files?.filter(f => f.month === targetMonth && f.bytes > 0).length ?? 0) >= 1
-	})
+	}, 45, 3)
 	return Boolean(found)
 })
 
@@ -62,20 +62,20 @@ await testCase('B POST archive/sync', async () => {
 })
 
 await testCase('B archive/summary has target month', async () => {
-	const found = await PollUntil(90, 4, async () => {
+	const found = await pollUntil(async () => {
 		const s = await Api(FedB, 'GET', `/groups/${gid}/archive/summary`)
 		if (s.status !== 200) return false
 		return (s.json.files?.filter(f => f.month === targetMonth && f.bytes > 0).length ?? 0) >= 1
-	})
+	}, 90, 4)
 	return Boolean(found)
 })
 
 await testCase('B can read archived message via GET messages', async () => {
-	const found = await PollUntil(60, 3, async () => {
+	const found = await pollUntil(async () => {
 		const listResponse = await Api(FedB, 'GET', `/groups/${gid}/channels/${cid}/messages?limit=50`)
 		if (listResponse.status !== 200) return false
 		return (listResponse.json.messages?.filter(row => /archive-message-/.test(String(row.content?.content))).length ?? 0) >= 1
-	})
+	}, 60, 3)
 	return Boolean(found)
 })
 

@@ -2,56 +2,32 @@
  * bridge ingress 集成测试。
  */
 /* global Deno */
-import { cp, mkdir } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { createIntegrationBoot } from '../harness.mjs'
+import {
+	createCharBoot,
+	createIntegrationBoot,
+	waitUntil,
+} from '../harness.mjs'
 
-const fixturesRoot = join(dirname(fileURLToPath(import.meta.url)), '../fixtures')
 const CHAR_YES = 'on_message_yes'
 const CHAR_PLAIN_A = 'write_path_agent'
 const CHAR_PLAIN_B = 'plain_reply_b'
 
 /**
- * @param {string} dataDir 数据根
- * @param {string} username 用户
- * @param {string | string[]} charNames 角色 fixture 名
- * @returns {Promise<void>}
+ * @param {string} prefix 用户名前缀
+ * @param {object} [bootOpts] createIntegrationBoot 额外选项
+ * @returns {Promise<{ username: string } & ReturnType<typeof createIntegrationBoot>>} 已启动的 boot
  */
-async function seedCharFixture(dataDir, username, charNames = CHAR_YES) {
-	const userRoot = join(dataDir, 'users', username)
-	for (const name of [charNames].flat()) {
-		const from = join(fixturesRoot, 'chars', name)
-		const to = join(userRoot, 'chars', name)
-		await mkdir(dirname(to), { recursive: true })
-		await cp(from, to, { recursive: true })
-	}
-}
-
-/**
- * @param {() => Promise<boolean>} predicate 条件
- * @param {number} [timeoutMs] 超时
- * @returns {Promise<void>}
- */
-async function waitUntil(predicate, timeoutMs = 10000) {
-	const deadline = Date.now() + timeoutMs
-	while (Date.now() < deadline) {
-		if (await predicate()) return
-		await new Promise(resolve => setTimeout(resolve, 100))
-	}
-	throw new Error('waitUntil timeout')
+async function bootBridge(prefix, bootOpts = {}) {
+	const username = `${prefix}-${crypto.randomUUID().slice(0, 8)}`
+	const boot = createIntegrationBoot({ username, minP2pNode: true, ...bootOpts })
+	await boot.ensureServer()
+	return { username, ...boot }
 }
 
 Deno.test('postBridgeMessage persists message and mention inbox', async () => {
-	const username = `bridge-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge')
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
@@ -89,12 +65,7 @@ Deno.test('postBridgeMessage persists message and mention inbox', async () => {
 })
 
 Deno.test('bridge identity: stable hash and bind overrides', async () => {
-	const username = `bridge-id-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-id')
 
 	const {
 		bridgeEntityHash,
@@ -124,12 +95,7 @@ Deno.test('bridge identity: stable hash and bind overrides', async () => {
 })
 
 Deno.test('rewriteTelegramMentionsToFount and outbound entity restore', async () => {
-	const username = `bridge-fmt-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-fmt')
 
 	const { bridgeEntityHash, resolveBridgeIdentity } = await import('../../src/chat/bridge/identity.mjs')
 	const { rewriteTelegramMentionsToFount, buildTelegramTextAndEntities } = await import('../../../telegrambot/src/format.mjs')
@@ -154,16 +120,7 @@ Deno.test('rewriteTelegramMentionsToFount and outbound entity restore', async ()
 
 Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 	const username = `bridge-out-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_YES })
 	await ensureServer()
 
 	const { registerBridgeOutbound } = await import('../../src/chat/bridge/outbound.mjs')
@@ -200,12 +157,7 @@ Deno.test('notifyBridgeOutbound on char channel.send', async () => {
 })
 
 Deno.test('mock bridgeOperations: typing and createInvite on bridge group', async () => {
-	const username = `bridge-ops-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-ops')
 
 	const { registerBridgeOperations } = await import('../../src/chat/bridge/operations.mjs')
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
@@ -249,12 +201,7 @@ Deno.test('mock bridgeOperations: typing and createInvite on bridge group', asyn
 })
 
 Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolves thread', async () => {
-	const username = `bridge-dc-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-dc')
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
 	const { lookupBridgePlatformChannel, resolveBridgeChannel } = await import('../../src/chat/bridge/registry.mjs')
@@ -298,12 +245,7 @@ Deno.test('discord synthetic DTO persists and lookupBridgePlatformChannel resolv
 })
 
 Deno.test('wechat synthetic DTO persists to DAG', async () => {
-	const username = `bridge-wx-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-wx')
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
 	const { readChannelMessagesForUser } = await import('../../src/group/queries.mjs')
@@ -333,12 +275,7 @@ Deno.test('wechat synthetic DTO persists to DAG', async () => {
 })
 
 Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () => {
-	const username = `bridge-dcfmt-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-dcfmt')
 
 	const { bridgeEntityHash } = await import('../../src/chat/bridge/identity.mjs')
 	const { rewriteDiscordMentionsToFount } = await import('../../../discordbot/src/format.mjs')
@@ -349,16 +286,7 @@ Deno.test('rewriteDiscordMentionsToFount in discordbot format module', async () 
 
 Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1', async () => {
 	const username = `bridge-dm-trig-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: [CHAR_PLAIN_A, CHAR_PLAIN_B] })
 	await ensureServer()
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
@@ -397,16 +325,7 @@ Deno.test('bridge DM fallback triggers char without OnMessage when charCount > 1
 
 Deno.test('bridge group without DM does not fallback-trigger chars without OnMessage', async () => {
 	const username = `bridge-grp-trig-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user, [CHAR_PLAIN_A, CHAR_PLAIN_B])
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: [CHAR_PLAIN_A, CHAR_PLAIN_B] })
 	await ensureServer()
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
@@ -443,12 +362,7 @@ Deno.test('bridge group without DM does not fallback-trigger chars without OnMes
 })
 
 Deno.test('postBridgeEdit updates content and mention inbox', async () => {
-	const username = `bridge-edit-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-edit')
 
 	const { postBridgeMessage, postBridgeEdit } = await import('../../src/chat/bridge/ingress.mjs')
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
@@ -502,12 +416,7 @@ Deno.test('postBridgeEdit updates content and mention inbox', async () => {
 })
 
 Deno.test('postBridgeDelete removes message from channel display', async () => {
-	const username = `bridge-del-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-	})
-	await ensureServer()
+	const { username } = await bootBridge('bridge-del')
 
 	const { postBridgeMessage, postBridgeDelete } = await import('../../src/chat/bridge/ingress.mjs')
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')
@@ -543,16 +452,7 @@ Deno.test('postBridgeDelete removes message from channel display', async () => {
 
 Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridgeOutbound', async () => {
 	const username = `bridge-chain-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
 	const { bridgeIngestDto } = await import('../../src/chat/bridge/interfaceKit.mjs')
@@ -597,16 +497,7 @@ Deno.test('full chain: bridgeIngestDto auto addchar → GetReply → notifyBridg
 
 Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId; codeBridgeContext reads hydrated meta', async () => {
 	const username = `bridge-reply-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
 	const { postBridgeMessage } = await import('../../src/chat/bridge/ingress.mjs')
@@ -672,16 +563,7 @@ Deno.test('replyToPlatformMessageId resolves to extension.bridge.replyToEventId;
 
 Deno.test('getChatRequest exposes extension.bridge on bridge groups', async () => {
 	const username = `bridge-ext-${crypto.randomUUID().slice(0, 8)}`
-	const { ensureServer, dataDir } = createIntegrationBoot({
-		username,
-		minP2pNode: true,
-		/** @param {string} user replica */
-		afterInit: async user => {
-			const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
-			await ensureOperatorPubKey(user)
-			await seedCharFixture(dataDir, user, CHAR_PLAIN_B)
-		},
-	})
+	const { ensureServer } = createCharBoot({ username, chars: CHAR_PLAIN_B })
 	await ensureServer()
 
 	const { ensureBridgeGroup } = await import('../../src/chat/bridge/registry.mjs')

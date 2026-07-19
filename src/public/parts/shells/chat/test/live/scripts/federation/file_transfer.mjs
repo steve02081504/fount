@@ -7,7 +7,7 @@ import {
 	FedA,
 	FedB,
 	InitializeOpenGroupJoin,
-	PollUntil,
+	pollUntil,
 	testCase,
 } from 'fount/scripts/test/live/federation/common.mjs'
 
@@ -43,21 +43,21 @@ await testCase('A uploads + registers file', async () => {
 })
 
 console.log('\n=== B federation file sync ===')
-await testCase('B sees file meta (DAG sync)', async () => PollUntil(60, 3, async () => {
+await testCase('B sees file meta (DAG sync)', async () => pollUntil(async () => {
 	const m = await Api(FedB, 'GET', `/groups/${gid}/files/${fileId}/meta`)
 	return m.status === 200 && m.json.fileId === fileId
-}))
+}, 60, 3))
 
 await testCase('B downloads file content via federation', async () => {
 	const rs = await Api(FedB, 'POST', `/groups/${gid}/files/${fileId}/download-resume`, {})
 	if (rs.status !== 200) throw new Error(`resume ${rs.status}: ${rs.raw}`)
-	const done = await PollUntil(150, 4, async () => {
+	const done = await pollUntil(async () => {
 		const st = await Api(FedB, 'GET', `/groups/${gid}/files/${fileId}/download-status`)
 		if (st.status !== 200) return false
 		const s = st.json.status
 		if (s?.status === 'failed' || s?.error) throw new Error(`download failed: ${st.raw}`)
 		return s?.status === 'done' || s?.percent === 100 || (s?.done >= s?.total && s?.total > 0)
-	})
+	}, 150, 4)
 	return Boolean(done)
 })
 

@@ -18,23 +18,13 @@ const {
 /** @type {string[]} */
 const createdGroups = []
 
-/**
- * @param {string} method HTTP 方法
- * @param {string} path 路径
- * @param {object | undefined} body 请求体
- * @returns {Promise<import('fount/scripts/test/live/http.mjs').LiveHttpResponse>} Chat API 响应
- */
-async function api(method, path, body) {
-	return chatApi(method, path, body)
-}
-
 // ---------------------------------------------------------------------------
 writeLiveSection('A. Group lifecycle')
 let gid = null
 let cid = null
 
 await testCase('POST /groups create', async () => {
-	const r = await api('POST', '/groups/', { name: 'E2E-main', description: 'e2e' })
+	const r = await chatApi('POST', '/groups/', { name: 'E2E-main', description: 'e2e' })
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	gid = r.json.groupId
 	cid = r.json.defaultChannelId
@@ -43,31 +33,31 @@ await testCase('POST /groups create', async () => {
 })
 
 await testCase('GET /groups list contains new group', async () => {
-	const r = await api('GET', '/groups/')
+	const r = await chatApi('GET', '/groups/')
 	if (r.status !== 200) throw new Error(`status ${r.status}`)
 	return r.json?.filter(row => row.groupId === gid).length === 1
 })
 
 await testCase('GET /groups/:id/state isMember+channels', async () => {
-	const r = await api('GET', `/groups/${gid}/state`)
+	const r = await chatApi('GET', `/groups/${gid}/state`)
 	if (r.status !== 200) throw new Error(`status ${r.status}`)
 	return r.json.viewer?.isMember === true && r.json.meta?.channels?.[cid] != null
 })
 
 await testCase('GET /groups/:id/snapshot', async () => {
-	const r = await api('GET', `/groups/${gid}/snapshot`)
+	const r = await chatApi('GET', `/groups/${gid}/snapshot`)
 	return r.status === 200 && r.json.snapshot != null
 })
 
 await testCase('PUT /groups/:id/meta', async () => {
-	const r = await api('PUT', `/groups/${gid}/meta`, { name: 'E2E-renamed', description: 'd2' })
+	const r = await chatApi('PUT', `/groups/${gid}/meta`, { name: 'E2E-renamed', description: 'd2' })
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
-	const s = await api('GET', `/groups/${gid}/state`)
+	const s = await chatApi('GET', `/groups/${gid}/state`)
 	return s.json.meta?.groupMeta?.name === 'E2E-renamed'
 })
 
 await testCase('PUT /groups/:id/settings joinPolicy+rate', async () => {
-	const r = await api('PUT', `/groups/${gid}/settings`, {
+	const r = await chatApi('PUT', `/groups/${gid}/settings`, {
 		joinPolicy: 'open',
 		messageRateLimitPerMin: 120,
 		hotLatestMessageCount: 40,
@@ -81,24 +71,24 @@ let chid = null
 let msgId = null
 
 await testCase('POST /channels create', async () => {
-	const r = await api('POST', `/groups/${gid}/channels`, { name: 'e2e-chan', type: 'text', description: 'c' })
+	const r = await chatApi('POST', `/groups/${gid}/channels`, { name: 'e2e-chan', type: 'text', description: 'c' })
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	chid = r.json.channelId
 	return Boolean(chid)
 })
 
 await testCase('PUT /channels/:id update', async () => {
-	const r = await api('PUT', `/groups/${gid}/channels/${chid}`, { name: 'e2e-chan-2', description: 'updated' })
+	const r = await chatApi('PUT', `/groups/${gid}/channels/${chid}`, { name: 'e2e-chan-2', description: 'updated' })
 	return r.status === 200
 })
 
 await testCase('PUT /default-channel', async () => {
-	const r = await api('PUT', `/groups/${gid}/default-channel`, { channelId: chid })
+	const r = await chatApi('PUT', `/groups/${gid}/default-channel`, { channelId: chid })
 	return r.status === 200
 })
 
 await testCase('POST message', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/messages`, {
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages`, {
 		content: { type: 'text', content: 'hello e2e' },
 	})
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
@@ -107,18 +97,18 @@ await testCase('POST message', async () => {
 })
 
 await testCase('GET messages reads back', async () => {
-	const r = await api('GET', `/groups/${gid}/channels/${cid}/messages`)
+	const r = await chatApi('GET', `/groups/${gid}/channels/${cid}/messages`)
 	if (r.status !== 200) throw new Error(`status ${r.status}`)
 	return r.json.messages?.filter(row => row.eventId === msgId).length === 1
 })
 
 await testCase('POST messages/batch-get', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/messages/batch-get`, { eventIds: [msgId] })
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/messages/batch-get`, { eventIds: [msgId] })
 	return r.status === 200 && (r.json.messages?.length ?? 0) >= 1
 })
 
 await testCase('PUT edit message', async () => {
-	const r = await api('PUT', `/groups/${gid}/channels/${cid}/messages/${msgId}`, {
+	const r = await chatApi('PUT', `/groups/${gid}/channels/${cid}/messages/${msgId}`, {
 		content: { type: 'text', content: 'edited e2e' },
 	})
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
@@ -126,57 +116,57 @@ await testCase('PUT edit message', async () => {
 })
 
 await testCase('POST reaction add', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: msgId, emoji: THUMBS_UP })
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: msgId, emoji: THUMBS_UP })
 	return r.status === 200 || r.status === 201
 })
 
 await testCase('DELETE reaction', async () => {
-	const r = await api('DELETE', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: msgId, emoji: THUMBS_UP })
+	const r = await chatApi('DELETE', `/groups/${gid}/channels/${cid}/reactions`, { targetEventId: msgId, emoji: THUMBS_UP })
 	return r.status === 200 || r.status === 204
 })
 
 await testCase('POST pin', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/pins`, { targetEventId: msgId })
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/pins`, { targetEventId: msgId })
 	return r.status === 200 || r.status === 201
 })
 
 await testCase('GET pin-context', async () => {
-	const r = await api('GET', `/groups/${gid}/channels/${cid}/pin-context/${msgId}`)
+	const r = await chatApi('GET', `/groups/${gid}/channels/${cid}/pin-context/${msgId}`)
 	return r.status === 200
 })
 
 await testCase('DELETE pin', async () => {
-	const r = await api('DELETE', `/groups/${gid}/channels/${cid}/pins/${msgId}`)
+	const r = await chatApi('DELETE', `/groups/${gid}/channels/${cid}/pins/${msgId}`)
 	return r.status === 200 || r.status === 204
 })
 
 await testCase('POST vote create + cast', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/votes`, {
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/votes`, {
 		question: 'q?',
 		options: ['A', 'B'],
 		deadlineMs: 3_600_000,
 	})
 	if (r.status !== 201) throw new Error(`create status ${r.status}: ${r.raw}`)
 	const ballot = r.json.ballotId
-	const c = await api('POST', `/groups/${gid}/channels/${cid}/votes/${ballot}/cast`, { choice: 'A' })
+	const c = await chatApi('POST', `/groups/${gid}/channels/${cid}/votes/${ballot}/cast`, { choice: 'A' })
 	return c.status === 200 || c.status === 201
 })
 
 await testCase('POST thread create', async () => {
-	const r = await api('POST', `/groups/${gid}/channels/${cid}/threads`, { parentEventId: msgId })
+	const r = await chatApi('POST', `/groups/${gid}/channels/${cid}/threads`, { parentEventId: msgId })
 	return r.status === 201 && Boolean(r.json.channelId)
 })
 
 await testCase('DELETE message', async () => {
-	const r = await api('DELETE', `/groups/${gid}/channels/${cid}/messages/${msgId}`)
+	const r = await chatApi('DELETE', `/groups/${gid}/channels/${cid}/messages/${msgId}`)
 	return r.status === 200 && Boolean(r.json.event)
 })
 
 await testCase('list channel + list-items', async () => {
-	const lc = await api('POST', `/groups/${gid}/channels`, { name: 'e2e-list', type: 'list' })
+	const lc = await chatApi('POST', `/groups/${gid}/channels`, { name: 'e2e-list', type: 'list' })
 	if (lc.status !== 201) throw new Error(`list channel create ${lc.status}`)
 	const lcid = lc.json.channelId
-	const r = await api('POST', `/groups/${gid}/channels/${lcid}/list-items`, {
+	const r = await chatApi('POST', `/groups/${gid}/channels/${lcid}/list-items`, {
 		items: [{ title: 'item1', description: 'd' }],
 	})
 	return r.status === 200 || r.status === 201
@@ -186,49 +176,49 @@ await testCase('list channel + list-items', async () => {
 writeLiveSection('C. Members & governance')
 
 await testCase('GET members/page/0', async () => {
-	const r = await api('GET', `/groups/${gid}/members/page/0`)
+	const r = await chatApi('GET', `/groups/${gid}/members/page/0`)
 	return r.status === 200 && (r.json.members?.length ?? 0) >= 1
 })
 
 skipCase('POST join rejects invalid pow on pow-policy group', 'covered by pure join_policy_pow.test.mjs')
 
 await testCase('POST invite-ticket', async () => {
-	const r = await api('POST', `/groups/${gid}/invite-ticket`, { ttlMs: 3_600_000 })
+	const r = await chatApi('POST', `/groups/${gid}/invite-ticket`, { ttlMs: 3_600_000 })
 	if (r.status !== 201 && r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	return Boolean(r.json.code)
 })
 
 await testCase('GET permissions (self)', async () => {
-	const r = await api('GET', `/groups/${gid}/permissions`)
+	const r = await chatApi('GET', `/groups/${gid}/permissions`)
 	return r.status === 200 && r.json.ADMIN === true
 })
 
 await testCase('GET channel permissions', async () => {
-	const r = await api('GET', `/groups/${gid}/channels/${cid}/permissions`)
+	const r = await chatApi('GET', `/groups/${gid}/channels/${cid}/permissions`)
 	return r.status === 200
 })
 
 let roleId = null
 
 await testCase('POST role create', async () => {
-	const r = await api('POST', `/groups/${gid}/roles`, { name: 'e2erole', color: '#ff0000' })
+	const r = await chatApi('POST', `/groups/${gid}/roles`, { name: 'e2erole', color: '#ff0000' })
 	if (r.status !== 201 && r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	roleId = r.json.roleId
 	return Boolean(roleId)
 })
 
 await testCase('PUT role update', async () => {
-	const r = await api('PUT', `/groups/${gid}/roles/${roleId}`, { name: 'e2erole2', isHoisted: true })
+	const r = await chatApi('PUT', `/groups/${gid}/roles/${roleId}`, { name: 'e2erole2', isHoisted: true })
 	return r.status === 200
 })
 
 await testCase('PUT role permission', async () => {
-	const r = await api('PUT', `/groups/${gid}/roles/${roleId}/permissions`, { permission: 'SEND_MESSAGES', enabled: true })
+	const r = await chatApi('PUT', `/groups/${gid}/roles/${roleId}/permissions`, { permission: 'SEND_MESSAGES', enabled: true })
 	return r.status === 200
 })
 
 await testCase('PUT channel permissions', async () => {
-	const r = await api('PUT', `/groups/${gid}/channels/${cid}/permissions`, {
+	const r = await chatApi('PUT', `/groups/${gid}/channels/${cid}/permissions`, {
 		roleId,
 		allow: { SEND_MESSAGES: true },
 		deny: {},
@@ -237,7 +227,7 @@ await testCase('PUT channel permissions', async () => {
 })
 
 await testCase('DELETE role', async () => {
-	const r = await api('DELETE', `/groups/${gid}/roles/${roleId}`)
+	const r = await chatApi('DELETE', `/groups/${gid}/roles/${roleId}`)
 	return r.status === 200
 })
 
@@ -245,29 +235,29 @@ await testCase('DELETE role', async () => {
 writeLiveSection('D. DAG')
 
 await testCase('GET dag/tips', async () => {
-	const r = await api('GET', `/groups/${gid}/dag/tips`)
+	const r = await chatApi('GET', `/groups/${gid}/dag/tips`)
 	return r.status === 200 && (r.json.tips?.length ?? 0) >= 1
 })
 
 await testCase('GET events', async () => {
-	const r = await api('GET', `/groups/${gid}/events`)
+	const r = await chatApi('GET', `/groups/${gid}/events`)
 	return r.status === 200 && (r.json.events?.length ?? 0) >= 1
 })
 
 await testCase('POST dag/merge-tips', async () => {
-	const r = await api('POST', `/groups/${gid}/dag/merge-tips`, {})
+	const r = await chatApi('POST', `/groups/${gid}/dag/merge-tips`, {})
 	return r.status === 200 || r.status === 409 || r.status === 400
 })
 
 await testCase('PUT governance-branch', async () => {
-	const r = await api('PUT', `/groups/${gid}/governance-branch`, { tipId: null })
+	const r = await chatApi('PUT', `/groups/${gid}/governance-branch`, { tipId: null })
 	return r.status === 200
 })
 
 await testCase('POST fork', async () => {
-	const tips = await api('GET', `/groups/${gid}/dag/tips`)
+	const tips = await chatApi('GET', `/groups/${gid}/dag/tips`)
 	const tip = tips.json.tips?.[0]
-	const r = await api('POST', `/groups/${gid}/fork`, { tipId: tip, name: 'E2E-fork', copyReputation: true })
+	const r = await chatApi('POST', `/groups/${gid}/fork`, { tipId: tip, name: 'E2E-fork', copyReputation: true })
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	if (r.json.groupId) createdGroups.push(r.json.groupId)
 	return Boolean(r.json.groupId)
@@ -277,7 +267,7 @@ await testCase('POST fork', async () => {
 writeLiveSection('E. Channel key rotate')
 
 await testCase('POST file-key-rotate', async () => {
-	const r = await api('POST', `/groups/${gid}/file-key-rotate`, {})
+	const r = await chatApi('POST', `/groups/${gid}/file-key-rotate`, {})
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	return r.json.generation >= 1
 })
@@ -288,7 +278,7 @@ const fileId = randomUUID()
 let chunkInfo = null
 
 await testCase('POST chunks/have (absent)', async () => {
-	const r = await api('POST', `/groups/${gid}/chunks/have`, {
+	const r = await chatApi('POST', `/groups/${gid}/chunks/have`, {
 		ciphertextHash: '0'.repeat(64),
 		size: 10,
 		ceMode: 'convergent',
@@ -298,7 +288,7 @@ await testCase('POST chunks/have (absent)', async () => {
 
 await testCase('POST chunks upload', async () => {
 	const data = Buffer.from('hello-file-content').toString('base64')
-	const r = await api('POST', `/groups/${gid}/chunks`, { fileId, data, channelId: cid, ceMode: 'convergent' })
+	const r = await chatApi('POST', `/groups/${gid}/chunks`, { fileId, data, channelId: cid, ceMode: 'convergent' })
 	if (r.status !== 200 && r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	chunkInfo = r.json
 	return Boolean(r.json.ciphertextHash)
@@ -320,18 +310,18 @@ await testCase('POST files register', async () => {
 		key_generation: ci.key_generation,
 		channelId: cid,
 	}
-	const r = await api('POST', `/groups/${gid}/files`, body)
+	const r = await chatApi('POST', `/groups/${gid}/files`, body)
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	return Boolean(r.json.event)
 })
 
 await testCase('GET files/:id/meta', async () => {
-	const r = await api('GET', `/groups/${gid}/files/${fileId}/meta`)
+	const r = await chatApi('GET', `/groups/${gid}/files/${fileId}/meta`)
 	return r.status === 200 && r.json.fileId === fileId
 })
 
 await testCase('GET files/:id/download-status', async () => {
-	const r = await api('GET', `/groups/${gid}/files/${fileId}/download-status`)
+	const r = await chatApi('GET', `/groups/${gid}/files/${fileId}/download-status`)
 	return r.status === 200
 })
 
@@ -341,7 +331,7 @@ await testCase('POST cabinets/bind shared cabinet', async () => {
 	const cabinetId = createRes.json?.cabinet?.cabinet_id
 	if (createRes.status !== 200 || !cabinetId)
 		throw new Error(`create shared cabinet failed: ${createRes.status} ${createRes.raw}`)
-	const r = await api('POST', `/groups/${gid}/cabinets/bind`, {
+	const r = await chatApi('POST', `/groups/${gid}/cabinets/bind`, {
 		cabinet_id: cabinetId,
 		role_access: { '@everyone': 'rw' },
 	})
@@ -350,7 +340,7 @@ await testCase('POST cabinets/bind shared cabinet', async () => {
 })
 
 await testCase('DELETE file', async () => {
-	const r = await api('DELETE', `/groups/${gid}/files/${fileId}`)
+	const r = await chatApi('DELETE', `/groups/${gid}/files/${fileId}`)
 	return r.status === 200 && Boolean(r.json.event)
 })
 
@@ -358,7 +348,7 @@ await testCase('DELETE file', async () => {
 writeLiveSection('G. Archive')
 
 await testCase('GET archive/summary', async () => {
-	const r = await api('GET', `/groups/${gid}/archive/summary`)
+	const r = await chatApi('GET', `/groups/${gid}/archive/summary`)
 	return r.status === 200
 })
 
@@ -366,17 +356,17 @@ await testCase('GET archive/summary', async () => {
 writeLiveSection('H. Federation (local-observable)')
 
 await testCase('GET peers', async () => {
-	const r = await api('GET', `/groups/${gid}/peers`)
+	const r = await chatApi('GET', `/groups/${gid}/peers`)
 	return r.status === 200 && Boolean(r.json.selfNodeHash)
 })
 
 await testCase('GET reputation', async () => {
-	const r = await api('GET', '/reputation')
+	const r = await chatApi('GET', '/reputation')
 	return r.status === 200
 })
 
 await testCase('POST federation/tuning', async () => {
-	const r = await api('POST', `/groups/${gid}/federation/tuning`, {
+	const r = await chatApi('POST', `/groups/${gid}/federation/tuning`, {
 		federationPartitionCount: 8,
 		rtcConnectionBudgetMax: 32,
 	})
@@ -384,17 +374,17 @@ await testCase('POST federation/tuning', async () => {
 })
 
 await testCase('POST federation/offline-mark', async () => {
-	const r = await api('POST', `/groups/${gid}/federation/offline-mark`, {
+	const r = await chatApi('POST', `/groups/${gid}/federation/offline-mark`, {
 		wallMs: Date.now(),
 	})
 	return r.status === 200 || r.status === 204
 })
 
 await testCase('POST reputation/slash verified (DAG)', async () => {
-	const members = await api('GET', `/groups/${gid}/members/page/0`)
+	const members = await chatApi('GET', `/groups/${gid}/members/page/0`)
 	const self = members.json.members?.[0]?.memberKey
-	const tip = (await api('GET', `/groups/${gid}/dag/tips`)).json.tips?.[0]
-	const r = await api('POST', `/groups/${gid}/reputation/slash`, {
+	const tip = (await chatApi('GET', `/groups/${gid}/dag/tips`)).json.tips?.[0]
+	const r = await chatApi('POST', `/groups/${gid}/reputation/slash`, {
 		targetPubKeyHash: self,
 		claim: 0.1,
 		verified: true,
@@ -405,9 +395,9 @@ await testCase('POST reputation/slash verified (DAG)', async () => {
 })
 
 await testCase('POST reputation/reset (DAG)', async () => {
-	const members = await api('GET', `/groups/${gid}/members/page/0`)
+	const members = await chatApi('GET', `/groups/${gid}/members/page/0`)
 	const self = members.json.members?.[0]?.memberKey
-	const r = await api('POST', `/groups/${gid}/reputation/reset`, { targetPubKeyHash: self })
+	const r = await chatApi('POST', `/groups/${gid}/reputation/reset`, { targetPubKeyHash: self })
 	if (r.status !== 200) throw new Error(`reset ${r.status}: ${r.raw}`)
 	return true
 })
@@ -418,20 +408,20 @@ let availChar = null
 let charAddStatus = null
 
 await testCase('GET initial-data', async () => {
-	const r = await api('GET', `/groups/${gid}/initial-data`)
+	const r = await chatApi('GET', `/groups/${gid}/initial-data`)
 	return r.status === 200
 })
 
 await testCase('GET chars/plugins/persona/world', async () => {
-	const a = await api('GET', `/groups/${gid}/chars`)
-	const b = await api('GET', `/groups/${gid}/plugins`)
-	const c = await api('GET', `/groups/${gid}/persona`)
-	const d = await api('GET', `/groups/${gid}/world?channelId=${cid}`)
+	const a = await chatApi('GET', `/groups/${gid}/chars`)
+	const b = await chatApi('GET', `/groups/${gid}/plugins`)
+	const c = await chatApi('GET', `/groups/${gid}/persona`)
+	const d = await chatApi('GET', `/groups/${gid}/world?channelId=${cid}`)
 	return a.status === 200 && b.status === 200 && c.status === 200 && d.status === 200
 })
 
 for (const cc of ['test_streamer', 'test_char', 'TestChar']) {
-	const r = await api('POST', `/groups/${gid}/char`, { charname: cc, deferGreeting: true })
+	const r = await chatApi('POST', `/groups/${gid}/char`, { charname: cc, deferGreeting: true })
 	if (r.status === 200 || r.status === 201) {
 		availChar = cc
 		charAddStatus = r.status
@@ -442,11 +432,11 @@ for (const cc of ['test_streamer', 'test_char', 'TestChar']) {
 if (availChar) {
 	await testCase(`POST char add (${availChar})`, async () => charAddStatus === 200 || charAddStatus === 201)
 	await testCase('PUT char frequency', async () => {
-		const r = await api('PUT', `/groups/${gid}/char/${availChar}/frequency`, { frequency: 0.5 })
+		const r = await chatApi('PUT', `/groups/${gid}/char/${availChar}/frequency`, { frequency: 0.5 })
 		return r.status === 200
 	})
 	await testCase('DELETE char', async () => {
-		const r = await api('DELETE', `/groups/${gid}/char/${availChar}`)
+		const r = await chatApi('DELETE', `/groups/${gid}/char/${availChar}`)
 		return r.status === 200
 	})
 }
@@ -458,71 +448,71 @@ else
 writeLiveSection('J. Sessions & misc (non-group prefix)')
 
 await testCase('GET sessions/list removed', async () => {
-	const r = await api('GET', '/sessions/list')
+	const r = await chatApi('GET', '/sessions/list')
 	return r.status === 404
 })
 
 await testCase('GET/PUT bookmarks', async () => {
-	const g = await api('GET', '/bookmarks')
+	const g = await chatApi('GET', '/bookmarks')
 	if (g.status !== 200 || g.json.entries == null) throw new Error(`get ${g.status}`)
-	const p = await api('PUT', '/bookmarks', {
+	const p = await chatApi('PUT', '/bookmarks', {
 		entries: [{ groupId: gid, channelId: cid, eventId: 'a'.repeat(64), title: 'bm' }],
 	})
 	return p.status === 200
 })
 
 await testCase('GET/PUT group-folders', async () => {
-	const g = await api('GET', '/group-folders')
-	const p = await api('PUT', '/group-folders', { folders: [{ id: 'f1', name: 'Folder1', groupIds: [gid] }] })
+	const g = await chatApi('GET', '/group-folders')
+	const p = await chatApi('PUT', '/group-folders', { folders: [{ id: 'f1', name: 'Folder1', groupIds: [gid] }] })
 	return g.status === 200 && p.status === 200
 })
 
 await testCase('GET/PUT custom-emojis', async () => {
-	const g = await api('GET', '/custom-emojis')
+	const g = await chatApi('GET', '/custom-emojis')
 	return g.status === 200
 })
 
 await testCase('GET emoji-usage/frequent', async () => {
-	const r = await api('GET', '/emoji-usage/frequent?limit=16')
+	const r = await chatApi('GET', '/emoji-usage/frequent?limit=16')
 	return r.status === 200
 })
 
 await testCase('GET discovery', async () => {
-	const r = await api('GET', '/discovery?limit=20')
+	const r = await chatApi('GET', '/discovery?limit=20')
 	return r.status === 200
 })
 
 await testCase('GET mailbox/summary', async () => {
-	const r = await api('GET', '/mailbox/summary')
+	const r = await chatApi('GET', '/mailbox/summary')
 	return r.status === 200
 })
 
 await testCase('GET group emojis', async () => {
-	const r = await api('GET', `/groups/${gid}/emojis`)
+	const r = await chatApi('GET', `/groups/${gid}/emojis`)
 	return r.status === 200
 })
 
 await testCase('GET audit-log', async () => {
-	const r = await api('GET', `/groups/${gid}/audit-log?limit=20`)
+	const r = await chatApi('GET', `/groups/${gid}/audit-log?limit=20`)
 	return r.status === 200
 })
 
 await testCase('GET stickers/packs + collection', async () => {
-	const a = await api('GET', '/stickers/packs')
-	const b = await api('GET', '/stickers/collection')
+	const a = await chatApi('GET', '/stickers/packs')
+	const b = await chatApi('GET', '/stickers/collection')
 	return a.status === 200 && b.status === 200
 })
 
 await testCase('GET channel export', async () => {
-	const r = await api('GET', `/groups/${gid}/channels/${cid}/export`)
+	const r = await chatApi('GET', `/groups/${gid}/channels/${cid}/export`)
 	if (r.status !== 200) throw new Error(`status ${r.status}: ${r.raw}`)
 	return r.json?.format === 'fount-channel-archive' && Array.isArray(r.json.messages)
 })
 
 await testCase('POST channel import', async () => {
-	const exp = await api('GET', `/groups/${gid}/channels/${cid}/export`)
+	const exp = await chatApi('GET', `/groups/${gid}/channels/${cid}/export`)
 	if (exp.status !== 200) throw new Error(`export ${exp.status}`)
-	const r = await api('POST', `/groups/${gid}/channels/import`, exp.json)
+	const r = await chatApi('POST', `/groups/${gid}/channels/import`, exp.json)
 	if (r.status !== 201) throw new Error(`status ${r.status}: ${r.raw}`)
 	return Boolean(r.json?.channelId)
 })
@@ -530,7 +520,7 @@ await testCase('POST channel import', async () => {
 // ---------------------------------------------------------------------------
 writeLiveSection('Cleanup')
 for (const g of [...new Set(createdGroups)]) {
-	const r = await api('DELETE', `/groups/${g}`)
+	const r = await chatApi('DELETE', `/groups/${g}`)
 	if (r.status === 200) console.log(`  deleted ${g}`)
 	else console.log(`  cleanup FAIL ${g} status ${r.status}`)
 }

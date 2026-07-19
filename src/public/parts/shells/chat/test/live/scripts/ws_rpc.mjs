@@ -1,53 +1,15 @@
 // Group WebSocket RPC: rpc_call → rpc_end / rpc_error (wire 见 groupWsRpc.mjs)
 import { ms } from 'fount/scripts/ms.mjs'
-import { liveWsBaseUrl, requireLiveApiKey, requireLiveBaseUrl } from 'fount/scripts/test/live/env.mjs'
-import { failLiveWsPrecondition, finishLiveWs, pickPreferredChar } from 'fount/scripts/test/live/wsHarness.mjs'
+import { liveWsBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import {
+	createLiveShellHttp,
+	failLiveWsPrecondition,
+	finishLiveWs,
+	pickPreferredChar,
+} from 'fount/scripts/test/live/wsHarness.mjs'
 
-const BASE = requireLiveBaseUrl()
-const KEY = requireLiveApiKey()
+const { chatApi, rootApi, okStatus, key } = createLiveShellHttp()
 const PREFERRED_CHARS = ['test_streamer', 'TestStreamer']
-
-/**
- * 调用 Chat shell HTTP API。
- * @param {string} method HTTP 方法
- * @param {string} path chat API 路径
- * @param {object} [body] JSON 请求体
- * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
- */
-async function chatApi(method, path, body) {
-	const sep = path.includes('?') ? '&' : '?'
-	const r = await fetch(`${BASE}/api/parts/shells:chat${path}${sep}fount-apikey=${KEY}`, {
-		method,
-		headers: body ? { 'content-type': 'application/json' } : {},
-		body: body ? JSON.stringify(body) : undefined,
-	})
-	let json = null
-	try { json = await r.json() } catch { /* ignore */ }
-	return { status: r.status, json }
-}
-
-/**
- * 调用根 API。
- * @param {string} method HTTP 方法
- * @param {string} path 根 API 路径
- * @returns {Promise<{ status: number, json: any }>} 响应状态与 JSON
- */
-async function rootApi(method, path) {
-	const sep = path.includes('?') ? '&' : '?'
-	const r = await fetch(`${BASE}${path}${sep}fount-apikey=${KEY}`, { method })
-	let json = null
-	try { json = await r.json() } catch { /* ignore */ }
-	return { status: r.status, json }
-}
-
-/**
- * 判断 HTTP 状态是否为成功。
- * @param {number} status HTTP 状态码
- * @returns {boolean} 是否为 2xx 成功
- */
-function okStatus(status) {
-	return status === 200 || status === 201
-}
 
 const who = await rootApi('GET', '/api/whoami')
 if (who.status !== 200 || !who.json?.username)
@@ -78,7 +40,7 @@ if (!nodeHash) {
 
 const requestId = crypto.randomUUID()
 const memberId = `${username}:${charname}`
-const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${KEY}`
+const wsUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${gid}?fount-apikey=${key}`
 const ws = new WebSocket(wsUrl)
 
 const received = []

@@ -2,9 +2,6 @@
  * 跨 shell 集成测试共用 fixture。
  */
 
-/** 无需真实 node 时的 128 字符占位 entityHash。 */
-export const PLACEHOLDER_ENTITY_HASH = 'x'.repeat(128)
-
 /**
  * @param {string} [letter='x'] 重复字符
  * @returns {string} 128 字符占位 entityHash

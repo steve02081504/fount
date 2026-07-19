@@ -112,6 +112,52 @@ export function sleep(ms) {
 	return new Promise(resolve => { setTimeout(resolve, ms) })
 }
 
+/**
+ * 判断 HTTP 状态是否成功（默认 200/201）。
+ * @param {number} status HTTP 状态码
+ * @param {number[]} [allowed=[200, 201]] 允许的状态码
+ * @returns {boolean} 是否在允许范围内
+ */
+export function okStatus(status, allowed = [200, 201]) {
+	return allowed.includes(status)
+}
+
+/**
+ * live/fed 软轮询：单位为秒；超时返回末次结果（常为 false），不抛错。
+ * 集成测试要硬失败请用 `waitUntil`（毫秒、超时抛错）。
+ * @param {() => unknown | Promise<unknown>} predicate 探测函数
+ * @param {number} [timeoutSec=30] 超时秒
+ * @param {number} [intervalSec=0.4] 间隔秒
+ * @returns {Promise<unknown>} 首次真值，或超时后的末次结果
+ */
+export async function pollUntil(predicate, timeoutSec = 30, intervalSec = 0.4) {
+	const deadline = Date.now() + timeoutSec * 1000
+	let last = false
+	while (Date.now() < deadline) {
+		last = await predicate()
+		if (last) return last
+		await sleep(intervalSec * 1000)
+	}
+	return last
+}
+
+/**
+ * 集成测试硬轮询：单位为毫秒；超时抛 `waitUntil timeout`。
+ * live/fed 软等待请用 `pollUntil`（秒、超时返回 false）。
+ * @param {() => unknown | Promise<unknown>} predicate 条件
+ * @param {number} [timeoutMs=10000] 超时毫秒
+ * @param {number} [intervalMs=100] 间隔毫秒
+ * @returns {Promise<void>}
+ */
+export async function waitUntil(predicate, timeoutMs = 10000, intervalMs = 100) {
+	const deadline = Date.now() + timeoutMs
+	while (Date.now() < deadline) {
+		if (await predicate()) return
+		await sleep(intervalMs)
+	}
+	throw new Error('waitUntil timeout')
+}
+
 /** 1×1 PNG（与 federation/common.mjs 一致）。 */
 export const TEST_PNG_BYTES = Uint8Array.from(atob(
 	'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',

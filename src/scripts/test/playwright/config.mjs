@@ -1,3 +1,6 @@
+import { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import { defineConfig } from '@playwright/test'
 
 import { ms } from '../../ms.mjs'
@@ -37,5 +40,23 @@ export async function createPlaywrightConfig({ testDir, overrides = {} }) {
 			...browserUse,
 		},
 		...overrides,
+	})
+}
+
+/**
+ * 多阶段 shell 前端 Playwright 配置（chat/social/cabinet 共用）。
+ * @param {string} importMetaUrl 调用方 `import.meta.url`
+ * @param {{ name: string, testMatch: string | string[] }[]} phases 阶段列表
+ * @param {object} [options] 选项
+ * @param {number} [options.timeout=300000] 用例超时毫秒
+ * @returns {Promise<import('@playwright/test').PlaywrightTestConfig>} Playwright 配置
+ */
+export function createPhasedPlaywrightConfig(importMetaUrl, phases, options = {}) {
+	return createPlaywrightConfig({
+		testDir: dirname(fileURLToPath(importMetaUrl)),
+		overrides: {
+			timeout: options.timeout ?? 300_000,
+			projects: phases.map(p => ({ name: p.name, testMatch: p.testMatch })),
+		},
 	})
 }

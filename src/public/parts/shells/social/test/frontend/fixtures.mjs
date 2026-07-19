@@ -1,9 +1,12 @@
 import { Buffer } from 'node:buffer'
 
-import { request as playwrightRequest } from '@playwright/test'
 import { ms } from 'fount/scripts/ms.mjs'
+import {
+	withApiRequest,
+	createChatTestGroup,
+	fetchViewerEntityHash as fetchViewerEntityHashShared,
+} from 'fount/scripts/test/playwright/api.mjs'
 import { createFountFixtures } from 'fount/scripts/test/playwright/fixtures.mjs'
-import { assertIsolatedFrontendTest } from 'fount/scripts/test/playwright/guards.mjs'
 import { waitForSocialReady } from 'fount/scripts/test/playwright/ready.mjs'
 
 import {
@@ -21,9 +24,40 @@ export const DUMMY_ENTITY_HASH = SEEDED_TEST_TARGET_HASH
 export { FOREIGN_FE_AUTHOR_HASH }
 
 /**
+ * 安装 clipboard stub（share/copy 烟测避免缺 API）。
+ * @param {object} args fixture 参数
+ * @param {import('npm:@playwright/test').Page} args.page Playwright 页面
+ * @returns {Promise<void>}
+ */
+async function installClipboardStub({ page }) {
+	await page.addInitScript(() => {
+		if (!navigator.clipboard)
+			Object.defineProperty(navigator, 'clipboard', {
+				value: {
+					/* eslint-disable-next-line jsdoc/require-jsdoc -- stub */
+					writeText: async () => { },
+				},
+				configurable: true,
+			})
+		else
+			/**
+			 *
+			 */
+			navigator.clipboard.writeText = async () => { }
+	})
+}
+
+/**
  * Social 前端 E2E 测试套件（扩展 publishPost fixture）。
  */
-export const { test: baseTest, expect } = createFountFixtures({ locale: 'zh-CN' })
+export const { test: baseTest, expect } = createFountFixtures({
+	locale: 'zh-CN',
+	isolated: {
+		shellLabel: 'Social',
+		timeout: ms('3m'),
+		beforeEach: installClipboardStub,
+	},
+})
 
 /**
  * 扩展 publishPost 的 Social 测试套件。
@@ -41,30 +75,6 @@ export const test = baseTest.extend({
 			return { postJson, postId, text }
 		})
 	},
-})
-
-baseTest.beforeEach(async ({ page, baseUrl, apiKey }) => {
-	if (!TEST_USERNAME)
-		throw new Error('FOUNT_TEST_USERNAME is required; run via test/frontend/run.mjs')
-	baseTest.setTimeout(ms('3m'))
-	await page.addInitScript(() => {
-		if (!navigator.clipboard)
-			Object.defineProperty(navigator, 'clipboard', {
-				value: { /** @returns {Promise<void>} */
-					writeText: async () => { }
-				},
-				configurable: true,
-			})
-		else
-			/** @returns {Promise<void>} */
-			navigator.clipboard.writeText = async () => { }
-	})
-	await assertIsolatedFrontendTest({
-		baseUrl,
-		apiKey,
-		expectedUsername: TEST_USERNAME,
-		shellLabel: 'Social',
-	})
 })
 
 /**
@@ -112,10 +122,9 @@ export async function waitForFeedLoad(page, timeout = ms('1m')) {
  * @returns {Promise<string>} entityHash。
  */
 export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
-	const req = await playwrightRequest.newContext()
-	try {
-		const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-		const key = encodeURIComponent(apiKey)
+	const entityHash = await fetchViewerEntityHash(baseUrl, apiKey)
+	const key = encodeURIComponent(apiKey)
+	return withApiRequest(async req => {
 		for (let attempt = 0; attempt < 15; attempt++) {
 			const profileRes = await req.get(
 				`${baseUrl}/api/parts/shells:social/profile/${entityHash}/posts?fount-apikey=${key}`,
@@ -129,10 +138,7 @@ export async function waitForPostMaterialized(baseUrl, apiKey, postId) {
 			await new Promise(resolve => setTimeout(resolve, 200))
 		}
 		throw new Error(`post not materialized in profile+feed: ${postId}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -283,9 +289,8 @@ export async function searchAndExpectPost(page, query, postId) {
  * @returns {Promise<void>}
  */
 export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed') {
-	const req = await playwrightRequest.newContext()
-	try {
-		const key = encodeURIComponent(apiKey)
+	const key = encodeURIComponent(apiKey)
+	await withApiRequest(async req => {
 		for (let index = 0; index < count; index++) {
 			const res = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
@@ -293,35 +298,22 @@ export async function seedPostsViaApi(baseUrl, apiKey, count, textPrefix = 'seed
 			)
 			if (!res.ok()) throw new Error(`seed post failed: ${res.status()}`)
 		}
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
- * 通过 Chat API 创建测试群（供 Social 群关联 composer 烟测）。
+ * Social 前端建群：包装 `createChatTestGroup`，默认 name/description 带 social 前缀。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
- * @param {{ name?: string }} [options] - 可选项。
- * @returns {Promise<{ groupId: string, channelId: string }>} 群与默认频道 id。
+ * @param {{ name?: string, description?: string }} [options] - 可选项。
+ * @returns {Promise<{ groupId: string, channelId: string, defaultChannelId: string }>} 群与默认频道 id。
  */
-export async function createTestGroup(baseUrl, apiKey, options = {}) {
-	const name = options.name ?? `social-fe-group-${Date.now()}`
-	const req = await playwrightRequest.newContext()
-	try {
-		const res = await req.post(
-			`${baseUrl}/api/parts/shells:chat/groups/?fount-apikey=${encodeURIComponent(apiKey)}`,
-			{ data: { name, description: 'social frontend test' } },
-		)
-		if (!res.ok()) throw new Error(`createTestGroup failed: ${res.status()}`)
-		const data = await res.json()
-		if (!data.groupId) throw new Error('groupId missing')
-		return { groupId: data.groupId, channelId: data.defaultChannelId || 'default' }
-	}
-	finally {
-		await req.dispose()
-	}
+export function createTestGroup(baseUrl, apiKey, options = {}) {
+	return createChatTestGroup(baseUrl, apiKey, {
+		description: 'social frontend test',
+		...options,
+		name: options.name ?? `social-fe-group-${Date.now()}`,
+	})
 }
 
 /** 极短黑帧 mp4，供 videos 前端测；经 page.route 本地 fulfill，不打外网。 */
@@ -362,35 +354,13 @@ export const TINY_PNG_BUFFER = Buffer.from(
 )
 
 /**
- * 读取当前测试用户的 viewer entityHash。
+ * 读取当前测试用户的 viewer entityHash（含 ECONNRESET 重试）。
  * @param {string} baseUrl - 测试根 URL。
  * @param {string} apiKey - API 密钥。
  * @returns {Promise<string>} entityHash
  */
-export async function fetchViewerEntityHash(baseUrl, apiKey) {
-	const req = await playwrightRequest.newContext()
-	try {
-		const url = `${baseUrl}/api/parts/shells:chat/viewer?fount-apikey=${encodeURIComponent(apiKey)}`
-		let lastErr
-		for (let attempt = 0; attempt < 3; attempt++)
-			try {
-				const res = await req.get(url)
-				if (!res.ok()) throw new Error(`viewer failed: ${res.status()}`)
-				const data = await res.json()
-				if (!data.viewerEntityHash) throw new Error('viewerEntityHash missing')
-				return data.viewerEntityHash
-			}
-			catch (err) {
-				lastErr = err
-				if (!/ECONNRESET|ECONNREFUSED|socket hang up/i.test(String(err))) throw err
-				await new Promise(resolve => setTimeout(resolve, 200 * (attempt + 1)))
-			}
-
-		throw lastErr
-	}
-	finally {
-		await req.dispose()
-	}
+export function fetchViewerEntityHash(baseUrl, apiKey) {
+	return fetchViewerEntityHashShared(baseUrl, apiKey, { retries: 2 })
 }
 
 /**
@@ -401,17 +371,13 @@ export async function fetchViewerEntityHash(baseUrl, apiKey) {
  * @returns {Promise<void>}
  */
 export async function followEntityViaApi(baseUrl, apiKey, entityHash) {
-	const req = await playwrightRequest.newContext()
-	try {
+	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:social/relationships/follow?fount-apikey=${encodeURIComponent(apiKey)}`,
 			{ data: { entityHash, follow: true } },
 		)
 		if (!res.ok()) throw new Error(`follow failed: ${res.status()}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -442,19 +408,15 @@ export async function findForeignAuthorPostCard(page, baseUrl, apiKey) {
  * @returns {Promise<void>}
  */
 export async function injectForeignLike(baseUrl, apiKey, targetEntityHash, targetPostId) {
-	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
-	try {
-		await followEntityViaApi(baseUrl, apiKey, FOREIGN_FE_AUTHOR_HASH)
+	await followEntityViaApi(baseUrl, apiKey, FOREIGN_FE_AUTHOR_HASH)
+	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:social/test/foreign-like?fount-apikey=${key}`,
 			{ data: { targetEntityHash, targetPostId } },
 		)
 		if (!res.ok()) throw new Error(`foreign-like failed: ${res.status()}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -466,9 +428,8 @@ export async function injectForeignLike(baseUrl, apiKey, targetEntityHash, targe
  */
 export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 	const viewerEntityHash = await fetchViewerEntityHash(baseUrl, apiKey)
-	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
-	try {
+	await withApiRequest(async req => {
 		for (let index = 0; index < count; index++) {
 			const parentRes = await req.post(
 				`${baseUrl}/api/parts/shells:social/posts?fount-apikey=${key}`,
@@ -478,10 +439,7 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
 			const postId = postIdFromResponse(await parentRes.json())
 			await injectForeignLike(baseUrl, apiKey, viewerEntityHash, postId)
 		}
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -494,18 +452,14 @@ export async function seedNotificationsViaReplies(baseUrl, apiKey, count = 41) {
  * @returns {Promise<void>}
  */
 export async function seedInboxLikes(baseUrl, apiKey, targetEntityHash, targetPostId, count = 2) {
-	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
-	try {
+	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:social/test/inbox-likes?fount-apikey=${key}`,
 			{ data: { targetEntityHash, targetPostId, count } },
 		)
 		if (!res.ok()) throw new Error(`inbox-likes failed: ${res.status()}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }
 
 /**
@@ -516,16 +470,12 @@ export async function seedInboxLikes(baseUrl, apiKey, targetEntityHash, targetPo
  * @returns {Promise<void>}
  */
 export async function seedInboxMentions(baseUrl, apiKey, count = 41) {
-	const req = await playwrightRequest.newContext()
 	const key = encodeURIComponent(apiKey)
-	try {
+	await withApiRequest(async req => {
 		const res = await req.post(
 			`${baseUrl}/api/parts/shells:social/test/inbox-mentions?fount-apikey=${key}`,
 			{ data: { count } },
 		)
 		if (!res.ok()) throw new Error(`inbox-mentions failed: ${res.status()}`)
-	}
-	finally {
-		await req.dispose()
-	}
+	})
 }

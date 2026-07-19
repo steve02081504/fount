@@ -1,14 +1,22 @@
 import { test as base, expect, request } from '@playwright/test'
 
+import { ms } from '../../ms.mjs'
+
 import { loginWithApiKey } from './auth.mjs'
 import { createBrowserDiagnostics } from './browser_diagnostics.mjs'
 import { requireTestBaseUrl } from './env.mjs'
+import { assertIsolatedFrontendTest } from './guards.mjs'
 
 /**
  * fount 前端 E2E 通用 fixture：`baseUrl` / `apiKey` / 已登录 `context` + `page`。
  * page 自动挂载网络诊断（HTTP ≥400 / requestfailed → `[browser:network]`）与 pageerror 硬断言。
  * @param {object} [options] fixture 选项
  * @param {string} [options.locale='zh-CN'] 浏览器与 localStorage 首选语言
+ * @param {object} [options.isolated] 隔离节点断言（run.mjs 注入）
+ * @param {string} [options.isolated.usernameEnv='FOUNT_TEST_USERNAME'] 用户名环境变量
+ * @param {string} options.isolated.shellLabel 错误提示用 shell 名
+ * @param {number|string} [options.isolated.timeout] beforeEach 内 setTimeout
+ * @param {(args: { page: import('npm:@playwright/test').Page, baseUrl: string, apiKey: string }) => Promise<void>} [options.isolated.beforeEach] 额外钩子
  * @returns {{ test: typeof base, expect: typeof expect }} 扩展后的 test 与 expect
  */
 export function createFountFixtures(options = {}) {
@@ -73,6 +81,28 @@ export function createFountFixtures(options = {}) {
 			expect(diagnostics.pageErrors, 'unexpected browser page errors').toEqual([])
 		},
 	})
+
+	if (options.isolated) {
+		const {
+			usernameEnv = 'FOUNT_TEST_USERNAME',
+			shellLabel,
+			timeout,
+			beforeEach: extraBeforeEach,
+		} = options.isolated
+		test.beforeEach(async ({ page, baseUrl, apiKey }) => {
+			const expectedUsername = process.env[usernameEnv]
+			if (!expectedUsername)
+				throw new Error(`${usernameEnv} is required; run via test/frontend/run.mjs`)
+			if (timeout != null) test.setTimeout(typeof timeout === 'number' ? timeout : ms(timeout))
+			if (extraBeforeEach) await extraBeforeEach({ page, baseUrl, apiKey })
+			await assertIsolatedFrontendTest({
+				baseUrl,
+				apiKey,
+				expectedUsername,
+				shellLabel,
+			})
+		})
+	}
 
 	return { test, expect }
 }
