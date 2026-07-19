@@ -35,3 +35,11 @@ Share state via module-level singletons under `…/test/fixtures/probes/*.mjs` (
 
 - Missing-file `loadX` defaults must be freshly created (`structuredClone` / new object) — never `{ ...DEFAULT }` sharing nested arrays across entities.
 - From `shells/social/src/endpoints/` to chat backend use `../../../chat/...` (`../../../../chat` resolves to `parts/chat` and breaks `Load`).
+
+## Session / world bind (multi-node)
+
+`session_*` is node-local (federation ingest rejects). Multi-node sim/tests must `appendSessionWorldBind` on **each** replica that needs the bind — do not expect gossip to copy session. Nodes without the world part pass `{ distribution, ownerUsername, homeNodeHash }` from a peer that already bound (`mirrorSessionWorldBind` in `world_distribution.test.mjs`); otherwise uninstalled nodes default `distribution` to `hosted` and point home at themselves.
+
+## Social OnMessage / timeline commits
+
+`commitTimelineEvent` / ingest `post` triggers `dispatchSocialMessage` → `loadPart`. Prefer real fixture chars, or `appendTimelineEvent` (skips dispatch).

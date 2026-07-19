@@ -7,6 +7,7 @@ alwaysApply: false
 # Chat Session Viewer Guide
 
 World distribution product model: [docs/design/world-distribution-spec.md](../../../../../../../../docs/design/world-distribution-spec.md).
+Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../src/scripts/test/docs/domain-harness.md).
 
 ## Viewer symmetry
 
@@ -43,8 +44,7 @@ World distribution product model: [docs/design/world-distribution-spec.md](../..
 - DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
 - Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.
 - `WorldChatHost` (`session/worldHost.mjs`): `state`, `localData`, `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`. Wired once on local `resolveWorld` via `ChatHostConnected` (not for builtin/remote proxy).
-- `session_*` is node-local (federation ingest rejects). Multi-node sim/tests must `appendSessionWorldBind` on **each** replica that needs the bind — do not expect gossip to copy session. Nodes without the world part pass `{ distribution, ownerUsername, homeNodeHash }` from a peer that already bound (see `mirrorSessionWorldBind` in `world_distribution.test.mjs`); otherwise uninstalled nodes default `distribution` to `hosted` and point home at themselves.
-- Federation inbound: `aclGated` + 64KB content limit.
+- `session_*` is node-local (federation ingest rejects). Federation inbound: `aclGated` + 64KB content limit.
 
 ## member_roles / greeting
 
@@ -57,4 +57,4 @@ World distribution product model: [docs/design/world-distribution-spec.md](../..
 - Persist: `channel/messageCommit.mjs` → world `AddChatLogEntry` → `appendSignedLocalEvent`. Sole `After` point: `broadcastAndPersist` for `message` and finalized `message_edit`.
 - Char display: `resolveDisplaySnapshot` with `charId` (not sender persona). Preserve `displayName`/`displayAvatar` through streaming finalize / `message_edit`.
 - Edit/delete Hub path: `PUT/DELETE …/messages/:eventId` → `channel/channelUserHooks.mjs` → `messageMutations`. `triggerReply`: `world.GetCharReply?.(…) ?? char.GetReply(…)`.
-- Fixture probes: module-level under `test/fixtures/probes/` via `fount/…/probes/*.mjs` — not `globalThis.__fount*`. Pure projection tests: import `viewerLogProject.mjs` only.
+- Pure projection tests: import `viewerLogProject.mjs` only (not the full session I/O graph).

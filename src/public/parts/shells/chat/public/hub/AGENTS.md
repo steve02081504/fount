@@ -22,7 +22,6 @@ Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](u
 - Default (no `streamingSfuWss`): WebCodecs + **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). `subscribe mode=preview|full`.
 - Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `content.type:'call'`. Shift+click = audio-only.
 - **Lifecycle**: `session.close()` idempotent on internal `closed` flag — never gate on `activeSession === session` after leave nulls the global. Use `onClosed` for facade reset. Abort joins with a generation counter; do not `await joinInFlight` from inside join. Shared client: `/parts/shells:chat/shared/avRelayClient.mjs` + `avRelayPresets.mjs`.
-- Prefetch: `MessagePipeline` prefetches `loadMoreTop` within 2 screens of top; `loadOlderMessages` dedupes in-flight.
 
 ## UI conventions
 

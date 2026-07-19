@@ -7,6 +7,7 @@ alwaysApply: false
 # Social Shell Frontend Guide
 
 Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
+Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../src/scripts/test/docs/domain-harness.md).
 
 ## Trust & backend surface
 
@@ -16,8 +17,8 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 - **Identity**: HTTP always operator via `SocialClient`. Agents: in-process `getSocialClient(username, agentEntityHash)`. No webapi identity switch.
 - **Personal block/hide**: public block → `personal_block.json` + reputation; private hide → `personal_hide.json`. Group kick/ban = node `denylist.json` (separate). Chat personal-lists HTTP: `GET …/personal-lists`.
 - **Visibility**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Tiers: `public` / `unlisted` / `followers`+`followers_since` / `selected`+`private` / optional `except`. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses body+media+poll; `sensitiveMedia` blurs media only.
-- **mediaRefs.url**: `sanitizeMediaRefs` + `mediaRefUrl` use the same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`).
-- **EVFS / file GET**: `applySafeContentHeaders` (`src/scripts/http_content.mjs`) — `nosniff`; only image/audio/video may inline; html/svg/etc. → `attachment` + `application/octet-stream`.
+- **mediaRefs.url**: same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`).
+- **EVFS / file GET**: `applySafeContentHeaders` — `nosniff`; only image/audio/video may inline; html/svg/etc. → `attachment` + `application/octet-stream`.
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`).
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
@@ -28,9 +29,8 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
 - Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
-- Empty states: `lib/emptyState.mjs` (`buildEmptyState` / `mountEmptyState` / `appendEmptyState`) + `templates/empty_state.html`.
-- Heart anim: `lib/heartAnim.mjs` `playHeartAnim` (shared by video / live / post media).
-- HTTP routes: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON projection: `federation/postScopedJsonStore.mjs`.
+- Empty states: `lib/emptyState.mjs` + `templates/empty_state.html`. Heart anim: `lib/heartAnim.mjs` `playHeartAnim`.
+- HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.
 - **`activateView(name)`** → `#${name}View` — `data-view` and section id must share the stem (`videos` → `#videosView`).
 - Avatars/names/@id: chat `entityAvatar.mjs` / `resolveDisplayName` / `formatEntityAtId` (`entityHandle`). Profile page: `rememberEntityHandle` before rendering posts. Hover: `lib/profileHover.mjs` → chat hover card.
@@ -47,8 +47,7 @@ Deeper UI (video/live, body fold, feed replay): [ui-details.md](ui-details.md).
 
 ## Agent integration
 
-- New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply`. Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC.
-- Tests: prefer real fixture chars, or `appendTimelineEvent` (skips dispatch). `commitTimelineEvent` / ingest triggers `loadPart`.
+New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply`. Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC.
 
 ## Notifications
 

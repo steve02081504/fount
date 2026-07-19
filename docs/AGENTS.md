@@ -24,12 +24,4 @@ Keep icons (✗ / △ / partial). Partial items with no daily impact → "partia
 - Unweighted feature-museum lists in the conclusion — edge debt gets one line + link to detail.
 - Framing in-process API limits or multi-node edges as core product failures.
 
-Domain-specific misreads (owner power vs "post as agent", follow feed vs cross-node edit, etc.): [human-agent-operational-parity-review.md](./review/human-agent-operational-parity-review.md).
-
-## Self-check
-
-- [ ] Every summary item rephrases as "the user will ___"?
-- [ ] Edge debt demoted from the headline?
-- [ ] Landed capability deleted or marked "not a gap"?
-
-Related: [root AGENTS.md](../AGENTS.md); [chat-social-cabinet-tech-stack.md](./review/chat-social-cabinet-tech-stack.md).
+Domain-specific misreads: [human-agent-operational-parity-review.md](./review/human-agent-operational-parity-review.md). Related: [root AGENTS.md](../AGENTS.md); [chat-social-cabinet-tech-stack.md](./review/chat-social-cabinet-tech-stack.md).

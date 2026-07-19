@@ -22,17 +22,17 @@ Domain harness (federation join, CKG asserts, `launchNode`, fixtures, disposable
 - **Verdict + plan**: `core/verdict.mjs` → `green`/`noisy`/`red`/`unknown`; `core/plan.mjs` → `reuse`/`run`/`blocked` + `subtestsToRun`. Fresh green/noisy/red → `reuse`. Goal red/noisy/unknown always **run**. `--force` forces goals. Failed transitive dep with unchanged triggers stays `reuse(red)` and still **blocks**.
 - **`dependsOn`**: downstream `blocked(by)` when a dependency's plan action is not green-capable. Selector: `manifest:suite` / `manifest:suite:subtest` (`core/selector.mjs`, longest manifest prefix).
 - **Suite selectors**: exact suite name wins (`shells/chat:fed_emoji` ≠ `fed_emoji_*`). Prefix expansion only when no exact match. Explicit `*`/`?` always globs.
-- **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after. Launch/ping failures **return exit 1** (never rely on unhandledRejection). `env.mjs` (non-worker) sets `process.exitCode = 1` on `unhandledRejection`/`uncaughtException` and unsets on-shutdown's `beforeExit` — otherwise a logged rejection still exits 0 and the orchestrator marks the suite **passed with noise**.
+- **Live driver**: `live/runner.mjs` — ephemeral nodes, `FOUNT_TEST_NODE_*` env, teardown after. Launch/ping failures **return exit 1** (never rely on unhandledRejection). Non-worker `env.mjs` sets `process.exitCode = 1` on `unhandledRejection`/`uncaughtException` (and clears on-shutdown's `beforeExit`) — otherwise a logged rejection still exits 0 and the suite is marked **passed with noise**.
 
 ## Framework libs
 
 | Module | Role |
 | --- | --- |
 | `live/deno_run.mjs` | `denoLiveRun()` argv builder |
-| `live/http.mjs` | fetch, multipart, `okStatus` / `pollUntil`（秒·软） / `waitUntil`（毫秒·抛） / `sleep` |
+| `live/http.mjs` | fetch, multipart, `okStatus` / `pollUntil` (sec, soft) / `waitUntil` (ms, throws) / `sleep` |
 | `live/env.mjs` | `FOUNT_TEST_BASE_URL` / `FOUNT_API_KEY` |
 | `live/wsHarness.mjs` | `createLiveShellHttp` / `finishLiveWs` / `waitForWsFrame` — live WS probes |
-| `live/singleNode/helpers.mjs` | `createSingleNodeProbe` / `createShellProbe`（后者包装 `createLiveShellHttp`）+ `testCase` / summary |
+| `live/singleNode/helpers.mjs` | `createSingleNodeProbe` / `createShellProbe` (wraps `createLiveShellHttp`) + `testCase` / summary |
 | `playwright/config.mjs` | `createPlaywrightConfig` / `createPhasedPlaywrightConfig` |
 | `core/state.mjs` | state DB read/write/upsert, fingerprint refresh |
 | `core/verdict.mjs` | suite verdicts |
@@ -54,7 +54,7 @@ Domain harness (federation join, CKG asserts, `launchNode`, fixtures, disposable
 | `frontend/` | Playwright (`playwright/`) |
 | `sim/` | In-process simulation harness |
 
-**Frontend Playwright shared** (`playwright/`): `createFountFixtures({ locale, isolated? })` — `isolated: { shellLabel, timeout?, beforeEach? }` registers FOUNT_TEST_USERNAME + `assertIsolatedFrontendTest` (Chat/Social/Cabinet). API helpers in `playwright/api.mjs`: `withApiRequest` (newContext + dispose), `fetchViewerEntityHash(baseUrl, apiKey, { retries? })`, `createChatTestGroup` → `{ groupId, defaultChannelId, channelId }`. Prefer these over local `request.newContext` loops. **Browser diagnostics** (`browser_diagnostics.mjs`): `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave. `pageerror` hard-fails. Prefer local `page.route` over external media. Fix broken Iconify names; do not allowlist 404s.
+**Frontend** (`playwright/`): `createFountFixtures({ locale, isolated? })` — `isolated` registers `FOUNT_TEST_USERNAME` + `assertIsolatedFrontendTest` (Chat/Social/Cabinet). API helpers in `playwright/api.mjs`: `withApiRequest`, `fetchViewerEntityHash`, `createChatTestGroup`. Prefer these over local `request.newContext` loops. **Browser** (`browser.mjs`): reuse PATH Chrome/Edge locally (no download); on `GITHUB_ACTIONS=true` without a system browser, `playwright install --with-deps chrome` then `channel: 'chrome'`. **Diagnostics** (`browser_diagnostics.mjs`): `response ≥ 400` / `requestfailed` → `[browser:network]` noise → imperfect wave; `pageerror` hard-fails. Prefer local `page.route` over external media. Fix broken Iconify names; do not allowlist 404s.
 
 **pure/ boundary**: tested modules must not statically `import` `src/server/**` (P2P/native graph; Windows Deno child exit can hang). Use dynamic import or promote to `integration/`.
 
@@ -72,13 +72,12 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 ## Writing new tests
 
 - Deno `.mjs` via `denoLiveRun(path)` or part-local `run.mjs` — no PowerShell probes.
-- **Live WS probes**: use `createLiveShellHttp({ shell? })` from `wsHarness.mjs` (`{ base, key, shellApi, chatApi, rootApi, okStatus }`) — do not re-declare local HTTP helpers. Dual-shell (Social + Chat): call twice. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`. Keep `liveWsBaseUrl()` for WS URLs. `okStatus` / `pollUntil` / `waitUntil` 的定义只在 `live/http.mjs`（探针返回值可带 `okStatus`；联邦脚本可从 `federation/common.mjs` 一并 import `pollUntil`）。
-- **轮询二选一**：`pollUntil(pred, timeoutSec, intervalSec)` — live/fed，秒，超时返回末次结果；`waitUntil(pred, timeoutMs, intervalMs)` — 集成测试，毫秒，超时抛错（chat harness re-export）。
-- **Chat integration**: prefer `createCharBoot({ username, chars })` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs` over local cp + poll loops. Social agent fixtures: `seedAgentChar` in `shells/social/test/harness.mjs`.
+- **Live WS probes**: `createLiveShellHttp({ shell? })` from `wsHarness.mjs` — do not re-declare local HTTP helpers. Dual-shell: call twice. End with `finishLiveWs` / `failLiveWsPrecondition`; frames via `waitForWsFrame`. Keep `liveWsBaseUrl()` for WS URLs.
+- **Polling**: `pollUntil(pred, timeoutSec, intervalSec)` — live/fed, seconds, soft timeout (returns last value); `waitUntil(pred, timeoutMs, intervalMs)` — integration, ms, throws (chat harness re-exports). Definitions live only in `live/http.mjs` (probes may return `okStatus`; fed scripts may also import `pollUntil` from `federation/common.mjs`).
+- **Chat / Social fixtures**: `createCharBoot` / `seedCharFixture` / `waitUntil` from `shells/chat/test/harness.mjs`; Social agents: `seedAgentChar` in `shells/social/test/harness.mjs`.
 - Every `deno run`/`test`/`install` carries `--allow-scripts --allow-all` (in that order). Sole exception: `deno cache` takes `--allow-scripts` alone.
 - Native-addon / WebRTC: one `.test.mjs` per Deno child when the addon panics under reuse. Federation live needs `node-datachannel`; `--allow-scripts` builds it on first run.
-- Single-node: `{ p2p: false, minP2pNode: true }`. Signaling: [p2p/docs/signaling.md](../p2p/docs/signaling.md).
-- Domain traps: [domain-harness.md](docs/domain-harness.md).
+- Single-node: `{ p2p: false, minP2pNode: true }`. Signaling: [p2p/docs/signaling.md](../p2p/docs/signaling.md). Domain traps: [domain-harness.md](docs/domain-harness.md).
 - **`--no-parallel` + `serial.mjs`**: prints `[serial] ok …` so idle watchdog stays alive. On `node_modules` lock / flaky `ERR_MODULE_NOT_FOUND`, rerun `--no-parallel`; mid-suite corruption → `deno cache --reload` then re-run **only** the failed file.
 
 ## Operator tools
@@ -87,4 +86,4 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **OOM / heap**: [heap-snapshots.md](docs/heap-snapshots.md).
 - **Deno panic auto-report**: `core/deno_panic.mjs` → GitHub issue on `denoland/deno` (if `gh` installed); dedup `data/test/deno_panics.json`. Override via `FOUNT_DENO_PANIC_REPO`. `testkit` excluded.
 - **Selftests**: `fount test testkit`. Fixtures: `selftest/fixtures.mjs` (`makeSuite` / `makeStateEntry`). Keep manifest id `testkit`.
-- **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes. Re-export 用一行语义注释（或 `export { x } from '…'`），禁止空 `/** * */` 糊弄 `require-jsdoc`。
+- **Naming**: readable identifiers (`context` not `ctx`). Suite/file/`Deno.test` names use domain semantics — never planning milestone codes. Re-exports: one semantic line comment (or `export { x } from '…'`); no empty `/** */` to pacify `require-jsdoc`.

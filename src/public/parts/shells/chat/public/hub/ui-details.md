@@ -32,3 +32,7 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 ## Message extras
 
 Content may include `locale` / `content_warning` / `sensitive_media` / `forwardedFrom` / `replyTo` / `fileAlts` (`shared/messageFields.mjs`). Quote bubble only when semantic `replyTo` is present. Link embeds hydrate via `data-fount-embed` + `/api/no-cors`, not stored.
+
+## Message prefetch
+
+`MessagePipeline` prefetches `loadMoreTop` within 2 screens of top; `loadOlderMessages` dedupes in-flight.
