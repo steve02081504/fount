@@ -33,13 +33,12 @@ else {
 	// 编排器把 worker 启动失败等当成「通过但有噪声」。
 	// 同时拆掉 beforeExit 监听：on-shutdown 以 undefined code 注册时会 TypeError 且默认 exit 0。
 	unset_shutdown_listener('uncaughtException', 'unhandledRejection', 'error', 'beforeExit')
-	for (const event of ['uncaughtException', 'unhandledRejection', 'error']) 
+	for (const event of ['uncaughtException', 'unhandledRejection', 'error'])
 		process.on(event, err => {
 			console.error(`${event}:`, err)
-			if (process.exitCode == null || process.exitCode === 0)
-				process.exitCode = 1
+			process.exitCode ||= 1
 		})
-	
+
 	installNearOomHeapSnapshot({
 		destDir: heapSnapshotDir(REPO_ROOT),
 		label: 'orchestrator',
