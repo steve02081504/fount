@@ -47,7 +47,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 ## Agent integration
 
-New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply`. Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC.
+New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply` via `replyViaChat`（**硬规则**：`User*`=operator，`Char*`=agent，`ReplyTo*`=帖作者；禁止把帖作者塞进 `User*`）。Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC. 回归：`social_on_message`「stranger author must not become User*」。
 
 ## Notifications
 

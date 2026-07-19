@@ -5,6 +5,7 @@
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { randomSeed, seedRemoteTimeline } from '../federation/remote_timeline.mjs'
+import { getReplyIdentityProbe } from '../fixtures/probes/getReplyIdentityProbe.mjs'
 import { socialOnMessageProbe } from '../fixtures/probes/socialOnMessageProbe.mjs'
 import { createTestSession, seedAgentChar } from '../harness.mjs'
 
@@ -23,6 +24,7 @@ const { readJsonl } = await import('npm:@steve02081504/fount-p2p/dag/storage')
 
 Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage missing and mentioned', async () => {
 	dispatch.resetSocialDispatchDedupForTests()
+	getReplyIdentityProbe.reset()
 	const { username, operator } = await getSession()
 	const agentHash = await seedAgentChar(username, GETREPLY_CHAR)
 	await append.commitTimelineEvent(username, operator, {
@@ -35,6 +37,35 @@ Deno.test('dispatchSocialMessage falls back to chat.GetReply when OnMessage miss
 		ev.type === 'post' && String(ev.content?.text || '').includes('mention-getreply-fallback'))
 	assert(reply, 'agent should publish GetReply reply when mentioned without OnMessage')
 	assertEquals(reply.content.replyTo?.entityHash, operator)
+
+	const identity = getReplyIdentityProbe.last
+	assert(identity, 'GetReply should capture identity fields')
+	assertEquals(identity.UserUid, operator)
+	assertEquals(identity.CharUid, agentHash)
+	assertEquals(identity.ReplyToUid, operator)
+	assertEquals(identity.chatLogUids?.[0], operator)
+})
+
+Deno.test('GetReply identity: stranger author must not become User*', async () => {
+	dispatch.resetSocialDispatchDedupForTests()
+	getReplyIdentityProbe.reset()
+	const { username, operator } = await getSession()
+	const agentHash = await seedAgentChar(username, GETREPLY_CHAR)
+	const seed = randomSeed()
+	const subject = pubKeyHash(publicKeyFromSeed(seed))
+	const stranger = encodeEntityHash('5'.repeat(64), subject)
+	await seedRemoteTimeline(username, seed, stranger, [
+		{ type: 'social_meta', content: { hideFromDiscovery: false, createdAt: 1 } },
+		{ type: 'post', content: { text: `hey @[entity:${agentHash}]`, visibility: 'public' } },
+	])
+
+	const identity = getReplyIdentityProbe.last
+	assert(identity, 'GetReply should run for stranger @mention')
+	assertEquals(identity.UserUid, operator, 'UserUid must stay local operator')
+	assertEquals(identity.CharUid, agentHash)
+	assertEquals(identity.ReplyToUid, stranger, 'ReplyToUid is the post author')
+	assertEquals(identity.chatLogUids?.[0], stranger)
+	assert(identity.UserUid !== stranger, 'never treat stranger as User*')
 })
 
 Deno.test('OnMessage returns false → no reply published', async () => {

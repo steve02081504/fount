@@ -162,11 +162,11 @@ export class chatReplyRequest_t {
 	Charname: string
 	UserCharname: string
 	ReplyToCharname?: string
-	/** 本机用户说话人身份（宿主自定义；fount chat 为 entityHash） */
+	/** 本机主人说话人身份（operator entityHash 等）。禁止填消息作者 / 陌生人。 */
 	UserUid: string
-	/** 当前角色说话人身份（宿主自定义；fount chat 为 agent entityHash） */
+	/** 当前角色说话人身份（agent entityHash 等） */
 	CharUid: string
-	/** 当前回复对象说话人身份（可选） */
+	/** 当前回复对象说话人身份（可选；可为陌生人） */
 	ReplyToUid?: string
 	locales: locale_t[]
 	time: timeStamp_t

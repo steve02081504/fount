@@ -12,9 +12,10 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 ## Speaker identity (`Uid`)
 
 - Request: `UserUid` / `CharUid` / `ReplyToUid?`（与 `*Charname` 对称）。日志行：`chatLogEntry_t.uid`（必填；序列化始终写出）。
+- **安全硬规则**：`User*` = 本机 operator/主人；`Char*` = 正在生成的 agent；`ReplyTo*` = 回复对象（可为外人）；`chat_log[].uid` = 该行说话人（可为外人）。**禁止**把 Discord/Telegram/Social 消息作者塞进 `User*`——角色可操作本机，认错主人极危险。
 - 不透明可比较字符串（`===` / JSON）；fount chat 用 entityHash；bridge 用 `authorEntityHash`。**不是** RFC UUID。简化双人壳（shellassist / ide）可用 `'user'` / `'char'`。
-- `name` / `*Charname` 只表示显示名；身份比对走 `uid` / `*Uid`。
-- 水合：`hydration.resolveSpeakerUid`；`getChatRequest` 填顶层 Uid，并从最近 `extension.replyTo.senderEntityHash` 填 `ReplyTo*`。
+- `name` / `*Charname` 只表示显示名；身份比对**只**走 `uid` / `*Uid`（勿按显示名回退）。
+- 水合：`hydration.resolveSpeakerUid`；`getChatRequest` 填顶层 Uid，并从最近 `extension.replyTo.senderEntityHash` 填 `ReplyTo*`。Discord/Telegram/WeChat 经 bridge → `getChatRequest`，勿自建 request。
 - `AddLongTimeLog` 若未带 `uid`，按 `role` 从请求的 `CharUid` / `UserUid` 补全（其余为 `'system'`）。
 
 ## Viewer symmetry
