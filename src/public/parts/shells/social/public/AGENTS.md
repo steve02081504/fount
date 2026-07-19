@@ -17,8 +17,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **Identity**: HTTP always operator via `SocialClient`. Agents: in-process `getSocialClient(username, agentEntityHash)`. No webapi identity switch.
 - **Personal block/hide**: public block → `personal_block.json` + reputation; private hide → `personal_hide.json`. Group kick/ban = node `denylist.json` (separate). Chat personal-lists HTTP: `GET …/personal-lists`.
 - **Visibility**: `socialMeta.hideFromDiscovery` ≠ post `content.visibility`. Tiers: `public` / `unlisted` / `followers`+`followers_since` / `selected`+`private` / optional `except`. Feed decrypt failure: `post.decryptView.failed`. `contentWarning` collapses body+media+poll; `sensitiveMedia` blurs media only.
-- **mediaRefs.url**: same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`).
-- **EVFS / file GET**: `applySafeContentHeaders` — `nosniff`; only image/audio/video may inline; html/svg/etc. → `attachment` + `application/octet-stream`.
+- **mediaRefs.url**: same scheme whitelist as Markdown untrusted sanitize (`isSafeHtmlUrl`). EVFS/file GET: `applySafeContentHeaders` (`nosniff`; only image/audio/video may inline).
 - **New timeline event types**: register in both `SOCIAL_TIMELINE_REDUCERS` and `SOCIAL_TIMELINE_EVENT_TYPES` (`federation/namespace.mjs`).
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
@@ -47,7 +46,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 
 ## Agent integration
 
-New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply` via `replyViaChat`（**硬规则**：`User*`=operator，`Char*`=agent，`ReplyTo*`=帖作者；禁止把帖作者塞进 `User*`）。Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC. 回归：`social_on_message`「stranger author must not become User*」。
+New posts → `dispatchSocialMessage` → local agents `interfaces.social.OnMessage`; without it, @mention defaults to chat `GetReply` via `replyViaChat`. **Hard rule**: `User*` = operator, `Char*` = agent, `ReplyTo*` = post author — never put the post author in `User*`. Operator care → `care_post` inbox. Cross-node @ of non-local: `social_post_notify` RPC. Regression: `social_on_message` ("stranger author must not become User*").
 
 ## Notifications
 

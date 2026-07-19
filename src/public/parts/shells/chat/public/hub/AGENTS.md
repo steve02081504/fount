@@ -12,7 +12,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](u
 
 - **Local trust domain**: Hub UI, `/api/parts/shells:chat/...`, and in-process server logic are mutually trusted. Do not duplicate federation hex/array validation on local API/UI state.
 - **External untrusted**: P2P wire, `remoteIngest`, federation discovery/mailbox ingress. Validate only at gates (`wire/ingress`, `remoteIngest.mjs`, `schemas/*`).
-- **Untrusted remote Markdown**: `messages/render/markdown.mjs` → `renderMarkdownAsString(..., { allowDangerousHtml })`. Trusted: local messages, self / local-char (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`). Remote self-declared `ownerEntityHash` does **not** elevate. Untrusted: preview+expand for oversized text; hide unsafe executors (js/py/…); safe executors (sql / brainfuck / Godbolt) remain.
+- **Untrusted remote Markdown**: `messages/render/markdown.mjs` → `renderMarkdownAsString(..., { allowDangerousHtml })`. Trusted: local / self / local-char (`nodeHash` prefix) / viewer-declared master / trust-list (`isTrustedMarkdownAuthor`). Remote self-declared `ownerEntityHash` does **not** elevate. Untrusted: preview+expand for oversized text; hide unsafe executors (js/py/…); safe executors (sql / brainfuck / Godbolt) remain.
 - **Stream preview**: `StreamRenderer` **always** uses `allowDangerousHtml: false`. Federated `stream_chunk` is signature-checked but **not** bound to the generating message's author. Final hydrate (non-`data-streaming`) applies the normal trust gate.
 - **`message_edit` delta**: WS with `content.newContent` → `applyMessageEditToRow` (do not drop `is_generating` on streaming error final). Backfill by eventId must include overlays via `linesIncludingOverlaysForTargets`. Pending MD: `registerPendingMessageMarkdown` + `data-md-pending` — **never** raw markdown in `data-md-raw` attributes.
 - **Profile bio**: `paintEntityProfileBio` → `shared/trustedMarkdown.mjs` (same entry as Social).
@@ -21,7 +21,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](u
 
 - Default (no `streamingSfuWss`): WebCodecs + **av-relay** (`codecsAv.mjs`, `/ws/.../av-relay/:roomId`). `subscribe mode=preview|full`.
 - Group call: `hub/call.mjs` → `/ws/.../call/:groupId/:channelId`; card `content.type:'call'`. Shift+click = audio-only.
-- **Lifecycle**: `session.close()` idempotent on internal `closed` flag — never gate on `activeSession === session` after leave nulls the global. Use `onClosed` for facade reset. Abort joins with a generation counter; do not `await joinInFlight` from inside join. Shared client: `/parts/shells:chat/shared/avRelayClient.mjs` + `avRelayPresets.mjs`.
+- Session lifecycle traps + shared client: [ui-details.md](ui-details.md#streaming-av-lifecycle).
 
 ## UI conventions
 

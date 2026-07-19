@@ -28,8 +28,8 @@ alwaysApply: false
 1. Backend: `main.mjs` + `src/endpoints.mjs` + `authenticate` from `@src/server/auth/index.mjs`.
 2. Frontend: `public/index.html` — `/preload.mjs`, `/base.css`, `/base.mjs`.
 3. Shared scripts: `@src/public/pages/scripts/`.
-4. **GetReply 身份**：自建 `chatReplyRequest` 时 `User*` 必须是本机 operator，消息作者只能进 `ReplyTo*` / `chat_log[].uid`。细则见 [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity。
-4. Add `public/llms.txt`.
+4. **GetReply identity**: when building `chatReplyRequest` yourself, `User*` must be the local operator; message authors go only in `ReplyTo*` / `chat_log[].uid`. Details: [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity.
+5. Add `public/llms.txt`.
 
 **Example**: `shells/shellassist/`. **Chat**: [entity / ChatClient](chat/public/AGENTS.md), [Hub](chat/public/hub/AGENTS.md). **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
 

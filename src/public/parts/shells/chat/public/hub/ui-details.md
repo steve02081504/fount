@@ -2,6 +2,12 @@
 
 Day-to-day rules: [AGENTS.md](AGENTS.md).
 
+## Streaming AV lifecycle
+
+- `session.close()` must be idempotent on an internal `closed` flag — never gate on `activeSession === session` after leave nulls the global.
+- Use `onClosed` for facade reset. Abort joins with a generation counter; do not `await joinInFlight` from inside join.
+- Shared client: `/parts/shells:chat/shared/avRelayClient.mjs` + `avRelayPresets.mjs`. Social live WS URL: `/parts/shells:social/shared/liveAvWsUrl.mjs`.
+
 ## Entity profile card
 
 - Single paint path: `hub/profile_popup` + `shared/entityProfileCard.mjs` (`paintEntityProfileCard` / `configureEntityProfileCard`).

@@ -37,7 +37,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`/api/no-cors`**: authenticated streaming proxy. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.
 - **`markdownExtensions.mjs`**: Loads `markdown_extensions` registry.
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
-- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, `triggerButton`, …). Leave DaisyUI class names alone.
+- **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, …). Leave DaisyUI class names alone.
 - **`svgInliner.mjs`**: Inline SVGs for `currentColor`.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, preferred langs.
 - **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested keys: `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input.
