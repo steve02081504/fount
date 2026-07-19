@@ -129,7 +129,7 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		const altInput = document.createElement('input')
 		altInput.type = 'text'
 		altInput.className = 'input input-bordered input-xs w-full mt-1 attachment-alt-input'
-		altInput.dataset.i18n = 'chat.hub.altImagePlaceholder'
+		altInput.dataset.i18n = 'chat.hub.altImage'
 		altInput.value = file.description || ''
 		altInput.addEventListener('input', () => { file.description = altInput.value })
 		attachmentElement.appendChild(altInput)

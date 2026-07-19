@@ -168,7 +168,7 @@ export async function loadGroupPickerOptions() {
 	const select = document.getElementById('linkGroupSelect')
 	const field = document.getElementById('linkGroupField')
 	if (!select) return
-	select.innerHTML = `<option value="">${geti18n('social.groupRef.pickPlaceholder')}</option>`
+	select.innerHTML = `<option value="">${geti18n('social.groupRef.pick')}</option>`
 	try {
 		const rows = await chatApi('/groups/')
 		const groups = Array.isArray(rows) ? rows : []
@@ -203,7 +203,6 @@ export function refreshMediaPreview() {
 		state.pendingMediaRefs,
 		() => refreshMediaPreview(),
 		{
-			altPlaceholder: geti18n('social.composer.mediaAlt'),
 			editLabel: geti18n('social.composer.editImage'),
 			/**
 			 * @param {number} index 媒体下标

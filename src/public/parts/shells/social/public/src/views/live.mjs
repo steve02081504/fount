@@ -375,7 +375,7 @@ function buildLiveSlide(item) {
 					<span class="live-like-count" data-like-count data-i18n="social.live.likes" data-n="${item.likeCount || 0}"></span>
 				</div>
 				<div class="live-danmaku-input">
-					<input type="text" class="live-danmaku-field" maxlength="100" data-i18n="social.live.danmakuPlaceholder" />
+					<input type="text" class="live-danmaku-field" maxlength="100" data-i18n="social.live.danmaku" />
 					<button type="button" class="live-danmaku-send-btn" data-i18n="social.live.danmakuSend"></button>
 				</div>
 			</div>

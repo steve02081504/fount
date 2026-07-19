@@ -69,7 +69,7 @@ function updateSubfountSelect(subfounts) {
 
 	const placeholderOption = document.createElement('option')
 	placeholderOption.value = ''
-	placeholderOption.dataset.i18n = 'subfounts.codeExecution.selectSubfountPlaceholder'
+	placeholderOption.dataset.i18n = 'subfounts.codeExecution.selectSubfount'
 	subfountSelect.appendChild(placeholderOption)
 
 	for (const subfount of subfounts) {

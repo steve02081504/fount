@@ -189,7 +189,7 @@ export function openMediaLightbox(mediaRoot, startIndex = 0) {
  * @param {HTMLElement} container 预览区
  * @param {object[]} refs 待发布媒体
  * @param {() => void} onChange 变更回调
- * @param {{ onEditImage?: (index: number, ref: object) => void | Promise<void>, altPlaceholder?: string, editLabel?: string }} [options] 选项
+ * @param {{ onEditImage?: (index: number, ref: object) => void | Promise<void>, editLabel?: string }} [options] 选项
  * @returns {void}
  */
 export function renderMediaPreview(container, refs, onChange, options = {}) {
@@ -232,7 +232,7 @@ export function renderMediaPreview(container, refs, onChange, options = {}) {
 		altInput.type = 'text'
 		altInput.className = 'media-chip-alt input input-bordered input-xs'
 		altInput.maxLength = 1500
-		altInput.placeholder = options.altPlaceholder || 'alt'
+		altInput.dataset.i18n = 'social.composer.media'
 		altInput.value = ref.alt || ''
 		altInput.addEventListener('input', () => {
 			ref.alt = altInput.value.trim()

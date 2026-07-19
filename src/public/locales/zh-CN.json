@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "页面未找到",
+		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页"
+	},
 	"lang": "zh-CN",
 	"name": "简体中文",
 	"channels": {
@@ -64,7 +70,6 @@
 		"ownerSummary": "代管设置",
 		"ownerDescription": "设置后，主人可以代为编辑或删除你的聊天消息、社交帖与个人资料；其内容也会在本机按不安全 Markdown 渲染（可含脚本）。可填任意实体哈希，并随时清除。",
 		"ownerEntityHashLabel": "主人实体哈希（128 hex）",
-		"ownerEntityHashPlaceholder": "输入主人的实体哈希",
 		"ownerSave": "保存主人",
 		"ownerClear": "清除主人",
 		"ownerSaved": "主人已更新",
@@ -172,6 +177,9 @@
 		"success": {
 			"saved": "资料保存成功",
 			"avatarUploaded": "头像上传成功"
+		},
+		"ownerEntityHash": {
+			"placeholder": "输入主人的实体哈希"
 		}
 	},
 	"stickers": {
@@ -1190,9 +1198,6 @@
 			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
 			"mutedKeywordsTitle": "屏蔽词与标签",
 			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
-			"mutedKeywordsPlaceholder": {
-				"placeholder": "输入关键词或 #标签"
-			},
 			"mutedKeywordsMatchTags": "同时匹配标签",
 			"mutedKeywordsAdd": "添加",
 			"mutedKeywordsRemove": {
@@ -1203,7 +1208,10 @@
 			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
 			"autoTranslateEnable": "自动翻译非本语言帖子",
 			"safetyTitle": "安全与屏蔽",
-			"safetyHint": "管理拉黑与隐藏列表。"
+			"safetyHint": "管理拉黑与隐藏列表。",
+			"mutedKeywords": {
+				"placeholder": "输入关键词或 #标签"
+			}
 		},
 		"composer": {
 			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
@@ -1217,7 +1225,6 @@
 				"placeholder": "内容警告（可选）"
 			},
 			"sensitiveMedia": "媒体敏感遮罩",
-			"mediaAlt": "图片描述（alt）",
 			"editImage": "编辑",
 			"editCrop": "裁剪",
 			"editMosaic": "打码",
@@ -1252,6 +1259,9 @@
 			"advancedToggle": {
 				"title": "更多选项",
 				"aria-label": "更多选项"
+			},
+			"media": {
+				"placeholder": "图片描述（alt）"
 			}
 		},
 		"visibility": {
@@ -1306,12 +1316,12 @@
 			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
 			"privacyPublishReactions": "公开点赞与点踩",
 			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
-			"namePlaceholder": {
-				"placeholder": "本地显示名"
-			},
 			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
 			"weight": "权重 ${weight}",
-			"save": "保存"
+			"save": "保存",
+			"name": {
+				"placeholder": "本地显示名"
+			}
 		},
 		"trending": {
 			"title": "热门话题",
@@ -1469,7 +1479,7 @@
 		"groupRef": {
 			"linking": "关联 Chat 群",
 			"clear": "取消关联",
-			"pickPlaceholder": "关联 Chat 群/频道…"
+			"pick": "关联 Chat 群/频道…"
 		},
 		"notifications": {
 			"reply": "${author} 回复了你的帖子",
@@ -1555,10 +1565,12 @@
 			"renameFolderPrompt": "新文件夹名称",
 			"deleteFolder": "删除文件夹",
 			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
-			"searchPlaceholder": "搜索收藏…",
 			"searchEmpty": "没有匹配的收藏",
 			"folderEmpty": "此文件夹为空",
-			"emptyHint": "浏览动态时点书签即可收藏到这里"
+			"emptyHint": "浏览动态时点书签即可收藏到这里",
+			"search": {
+				"placeholder": "搜索收藏…"
+			}
 		},
 		"drafts": {
 			"untitled": "（无文字草稿）",
@@ -1625,9 +1637,6 @@
 				"title": "返回动态",
 				"aria-label": "返回动态"
 			},
-			"danmakuPlaceholder": {
-				"placeholder": "说点什么…"
-			},
 			"danmakuSend": "发送",
 			"postWatch": "进入直播",
 			"postEnded": "直播已结束",
@@ -1644,9 +1653,6 @@
 			"broadcast": {
 				"title": "开播",
 				"open": "去开播",
-				"titlePlaceholder": {
-					"placeholder": "直播标题（可选）"
-				},
 				"mediaAv": "音视频",
 				"mediaAudio": "纯音频",
 				"mediaVideo": "纯画面",
@@ -1657,7 +1663,13 @@
 				"start": "开始直播",
 				"stop": "停止直播",
 				"started": "直播已开始",
-				"stopped": "直播已停止"
+				"stopped": "直播已停止",
+				"titleInput": {
+					"placeholder": "直播标题（可选）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "说点什么…"
 			}
 		}
 	},
@@ -2686,9 +2698,6 @@
 			"friendsEmptyTitle": "开始一段新对话",
 			"friendsEmptyDescription": "搜索本机角色或其他节点上的用户，也可在群聊中打开成员资料卡发起私信。",
 			"friendsEmptyAction": "搜索角色或用户",
-			"friendsSearchPlaceholder": {
-				"placeholder": "搜本机角色 / 自定义 ID / 名称…"
-			},
 			"friendsSearchEmpty": "没有匹配的角色或用户",
 			"friendsSearchTooShort": "请输入至少 2 个字符",
 			"friendsSearchDm": "发私信",
@@ -2894,38 +2903,51 @@
 			"threadClose": {
 				"title": "关闭子线程"
 			},
-			"threadComposerPlaceholder": "在子线程中回复…",
 			"reputationSlashAlert": "成员 ${target}… 的声誉受到扣减提醒",
 			"profileEdit": {
 				"previewHint": "修改会立即显示在预览中，保存后同步用于 Chat 与 Social。",
 				"livePreview": "实时预览",
 				"languageVersion": "语言版本",
 				"localeHint": "点击标签切换或编辑代码；在末尾输入框回车可复制为新语言。",
-				"newLocalePlaceholder": "新语言代码，如 en-UK",
 				"themeColorHint": "无自定义横幅时用于生成纹理，也用于直播声波环",
-				"avatarUrlPlaceholder": "头像图片 URL，或在下方上传文件",
 				"bannerLabel": "横幅背景",
-				"bannerUrlPlaceholder": "横幅图片 URL，或在下方上传文件",
 				"bannerHint": "可填写图片 URL 或上传文件；也可随时恢复生成纹理",
 				"bannerClear": "恢复生成横幅",
 				"linksPreview": "${count} 个公开链接",
 				"unsavedHint": "关闭窗口将放弃未保存的更改",
 				"tagsLabel": "标签",
-				"tagPlaceholder": "输入标签后添加",
 				"tagAdd": "添加",
 				"tagRemove": "删除标签",
 				"linksLabel": "链接",
 				"linkAdd": "添加链接",
 				"linkRemove": "删除链接",
-				"linkNamePlaceholder": "显示文字",
-				"linkUrlPlaceholder": "https://… 或 fount://…",
 				"handleLabel": "自定义 ID",
-				"handlePlaceholder": "例如 steve（2–32 位小写字母数字._-）",
 				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。",
 				"resetFromPart": "从角色部件重置",
 				"resetFromPartConfirm": "将用角色 part 的 info 覆盖当前资料，确定？",
 				"resetFromPartDone": "已从角色部件重建资料",
-				"resetFromPartFailed": "重建失败：${error}"
+				"resetFromPartFailed": "重建失败：${error}",
+				"newLocale": {
+					"placeholder": "新语言代码，如 en-UK"
+				},
+				"avatarUrl": {
+					"placeholder": "头像图片 URL，或在下方上传文件"
+				},
+				"bannerUrl": {
+					"placeholder": "横幅图片 URL，或在下方上传文件"
+				},
+				"tag": {
+					"placeholder": "输入标签后添加"
+				},
+				"linkName": {
+					"placeholder": "显示文字"
+				},
+				"linkUrl": {
+					"placeholder": "https://… 或 fount://…"
+				},
+				"handle": {
+					"placeholder": "例如 steve（2–32 位小写字母数字._-）"
+				}
 			},
 			"profilePopup": {
 				"close": {
@@ -3082,10 +3104,6 @@
 			"translateShowTranslation": "显示译文",
 			"translateLabel": "译文",
 			"translateFailed": "翻译失败",
-			"altImageLabel": "图片说明（alt）",
-			"altImagePlaceholder": {
-				"placeholder": "为图片添加描述…"
-			},
 			"editImage": "编辑图片",
 			"draftRestored": "已恢复草稿",
 			"queuedOffline": "等待发送（离线）",
@@ -3097,6 +3115,16 @@
 				"save": "保存",
 				"saved": "翻译设置已保存",
 				"saveFailed": "保存失败：${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "搜本机角色 / 自定义 ID / 名称…"
+			},
+			"threadComposer": {
+				"placeholder": "在子线程中回复…"
+			},
+			"altImage": {
+				"placeholder": "为图片添加描述…",
+				"label": "图片说明（alt）"
 			}
 		},
 		"sidebar": {
@@ -3958,7 +3986,6 @@
 			"title": "代码执行",
 			"description": "在选定的Subfount上执行JavaScript代码",
 			"selectSubfountLabel": "选择Subfount",
-			"selectSubfountPlaceholder": "请选择要执行代码的Subfount...",
 			"hostOption": "主机 (ID: ${id})",
 			"subfountOption": "分机 ${id}${deviceId}",
 			"scriptLabel": "JavaScript代码",
@@ -3967,7 +3994,8 @@
 			"noSubfountSelected": "请先选择一个Subfount",
 			"noScriptProvided": "请输入要执行的代码",
 			"executionSuccess": "代码执行成功",
-			"executionFailed": "代码执行失败: ${message}"
+			"executionFailed": "代码执行失败: ${message}",
+			"selectSubfount": "请选择要执行代码的Subfount..."
 		},
 		"downloadClient": {
 			"title": "下载子fount客户端",
@@ -4234,9 +4262,6 @@
 			"copyModelIdTooltip": "点击以复制模型 ID",
 			"loadModelsFailed": "加载模型失败：${message}",
 			"modelSearchTitle": "浏览模型目录",
-			"modelSearchPlaceholder": {
-				"placeholder": "搜索模型名、厂商、能力…"
-			},
 			"modelSearchHint": "点击候选项将自动填入 URL 与模型名",
 			"modelsDevLoading": "正在加载目录…",
 			"modelsDevLoadFailed": "加载目录失败：${message}",
@@ -4255,7 +4280,10 @@
 			"metaOpenWeights": "开放权重",
 			"metaKnowledge": "知识截止：${knowledge}",
 			"metaReleaseDate": "发布日期：${date}",
-			"providerDocLink": "[查看厂商文档](${url})"
+			"providerDocLink": "[查看厂商文档](${url})",
+			"modelSearch": {
+				"placeholder": "搜索模型名、厂商、能力…"
+			}
 		},
 		"prompts": {
 			"newFileName": "请输入新的服务源文件名 (请勿包含后缀名):"
@@ -4332,7 +4360,6 @@
 				"botToken": "Telegram Bot Token",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"botTokenInput": {
 				"placeholder": "请输入 Telegram Bot Token"
 			},
@@ -4346,6 +4373,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -4409,7 +4439,6 @@
 				"botToken": "iLink Bot Token",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"apiBaseUrlInput": {
 				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
 			},
@@ -4426,6 +4455,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -4497,7 +4529,6 @@
 				"apiKey": "Discord API 密钥",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"apiKeyInput": {
 				"placeholder": "请输入 API 密钥"
 			},
@@ -4511,6 +4542,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -4797,10 +4831,8 @@
 		"acpTitle": "配置 fount ACP 脚本",
 		"acpDesc": "参考以下示例配置 fount ACP 脚本：",
 		"acpCharLabel": "角色",
-		"acpCharPlaceholder": "选择角色",
 		"charListError": "获取角色列表失败",
 		"acpScriptLabel": "ACP 脚本 URL",
-		"acpConfigPlaceholder": "请先选择角色并生成 API 密钥",
 		"acpConfigSample": "配置示例：",
 		"acpConfigHint": "角色 ID 可在页面上方的角色下拉菜单中查看，API 密钥可在用户设置中管理。",
 		"copyButton": "复制",
@@ -4825,7 +4857,9 @@
 				"description": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色辅助编程。",
 				"locked_description": "在外部 IDE 中连接 fount 角色并完成一次对话。"
 			}
-		}
+		},
+		"acpChar": "选择角色",
+		"acpConfig": "请先选择角色并生成 API 密钥"
 	},
 	"achievements": {
 		"title": "成就",
@@ -5097,12 +5131,6 @@
 			"showOriginal": "显示原文",
 			"showTranslation": "显示译文"
 		}
-	},
-	"404": {
-		"title": "页面未找到",
-		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
-		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
-		"homepageButton": "返回首页"
 	},
 	"cabinet": {
 		"title": "文件柜",

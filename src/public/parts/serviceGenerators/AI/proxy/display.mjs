@@ -202,7 +202,7 @@ function ensureSearchUi(container) {
 	searchInput.type = 'search'
 	searchInput.className = 'input input-bordered w-full'
 	searchInput.dataset.searchInput = '1'
-	searchInput.dataset.i18n = 'serviceSource_manager.common_config_interface.modelSearchPlaceholder'
+	searchInput.dataset.i18n = 'serviceSource_manager.common_config_interface.modelSearch'
 
 	const searchHint = document.createElement('p')
 	searchHint.className = 'text-sm opacity-70'

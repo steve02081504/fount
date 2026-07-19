@@ -3,6 +3,9 @@
  */
 import { getReplyIdentityProbe } from 'fount/public/parts/shells/social/test/fixtures/probes/getReplyIdentityProbe.mjs'
 
+/**
+ *
+ */
 export default {
 	info: {
 		'zh-CN': { name: 'Mention fallback agent', avatar: '🤖', description: '', version: '1', author: 'fount', tags: ['test'] },

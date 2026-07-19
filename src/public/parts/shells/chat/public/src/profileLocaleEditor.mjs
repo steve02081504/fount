@@ -74,8 +74,7 @@ export function renderLocaleTabs(tabsHost, localized, activeKey, callbacks) {
 	addInput.type = 'text'
 	addInput.className = 'profile-locale-add-input input input-bordered input-sm font-mono'
 	addInput.autocomplete = 'off'
-	addInput.placeholder = geti18n('chat.hub.profileEdit.newLocalePlaceholder') || ''
-	addInput.dataset.i18n = 'chat.hub.profileEdit.newLocalePlaceholder'
+	addInput.dataset.i18n = 'chat.hub.profileEdit.newLocale'
 	addInput.addEventListener('keydown', (event) => {
 		if (event.key !== 'Enter') return
 		event.preventDefault()
@@ -228,14 +227,12 @@ export function renderLinksEditor(host, links, onChange) {
 		nameInput.type = 'text'
 		nameInput.className = 'input input-bordered input-sm'
 		nameInput.value = link.name || ''
-		nameInput.placeholder = geti18n('chat.hub.profileEdit.linkNamePlaceholder') || ''
-		nameInput.dataset.i18n = 'chat.hub.profileEdit.linkNamePlaceholder'
+		nameInput.dataset.i18n = 'chat.hub.profileEdit.linkName'
 		const urlInput = document.createElement('input')
 		urlInput.type = 'url'
 		urlInput.className = 'input input-bordered input-sm'
 		urlInput.value = link.url || ''
-		urlInput.placeholder = geti18n('chat.hub.profileEdit.linkUrlPlaceholder') || ''
-		urlInput.dataset.i18n = 'chat.hub.profileEdit.linkUrlPlaceholder'
+		urlInput.dataset.i18n = 'chat.hub.profileEdit.linkUrl'
 		const remove = document.createElement('button')
 		remove.type = 'button'
 		remove.className = 'btn btn-ghost btn-sm'

@@ -134,7 +134,7 @@ async function updateZedConfig() {
 
 	if (!scriptUrl) {
 		const placeholder = document.createElement('span')
-		placeholder.dataset.i18n = 'ide_integration.acpConfigPlaceholder'
+		placeholder.dataset.i18n = 'ide_integration.acpConfig'
 		configContainer.appendChild(placeholder)
 		return
 	}
@@ -171,7 +171,7 @@ async function loadCharList() {
 	acpCharSelect.innerHTML = ''
 	const empty = document.createElement('option')
 	empty.value = ''
-	empty.dataset.i18n = 'ide_integration.acpCharPlaceholder'
+	empty.dataset.i18n = 'ide_integration.acpChar'
 	acpCharSelect.appendChild(empty)
 	for (const id of list) {
 		const opt = document.createElement('option')
@@ -189,7 +189,7 @@ async function loadCharList() {
 document.getElementById('copy-script-url').addEventListener('click', () => {
 	const url = scriptUrlInput.value
 	if (!url) {
-		showToastI18n('warning', 'ide_integration.acpConfigPlaceholder')
+		showToastI18n('warning', 'ide_integration.acpConfig')
 		return
 	}
 	navigator.clipboard.writeText(url)

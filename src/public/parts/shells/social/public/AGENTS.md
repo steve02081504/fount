@@ -27,7 +27,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 ## UI conventions
 
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
-- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
+- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`（勿用 `fooPlaceholder` 键名）. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
 - Empty states: `lib/emptyState.mjs` + `templates/empty_state.html`. Heart anim: `lib/heartAnim.mjs` `playHeartAnim`.
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.

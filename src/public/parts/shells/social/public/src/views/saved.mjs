@@ -251,7 +251,7 @@ export async function renderSavedPanel() {
 		toolbar.innerHTML = `
 			<div class="feed-search-wrap saved-search-wrap">
 				<span class="icon icon-search search-icon" aria-hidden="true"></span>
-				<input type="search" id="savedSearchInput" class="feed-search-input" value="${escapeHtml(savedQuery)}" placeholder="${escapeHtml(geti18n('social.saved.searchPlaceholder'))}" autocomplete="off" />
+				<input type="search" id="savedSearchInput" class="feed-search-input" value="${escapeHtml(savedQuery)}" data-i18n="social.saved.search" autocomplete="off" />
 			</div>
 		`
 		panel.appendChild(toolbar)

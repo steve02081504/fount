@@ -40,7 +40,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, …). Leave DaisyUI class names alone.
 - **`svgInliner.mjs`**: Inline SVGs for `currentColor`.
 - **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, `primaryLocale()`（preferredLangs[0] → `main_locale`，默认 `en-UK`）。内容 locale / 翻译目标用它，勿硬编码 `zh-CN` 或裸 `navigator.language`。
-- **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested keys: `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input.
+- **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested attribute keys: `placeholder` / `title` / `label` / `value` / `alt` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input. Do **not** name keys `fooPlaceholder` / `fooAlt` — use `foo: { placeholder|alt: "…" }` and point `data-i18n` at `foo`. No `data-i18n-attr`.
 - **`i18n_base.mjs`**: Internal — `userPreferredLanguages` vs `fountUserPreferredLanguages` (GitHub Pages).
 
 ## Components & Utilities

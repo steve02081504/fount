@@ -6,8 +6,272 @@
  * 表示所有可能的语言环境数据类型。
  */
 export type LocaleData = {
+	'404': {
+		title: string
+		description: string
+		pageNotFoundText: string
+		homepageButton: string
+	}
 	lang: string
 	name: string
+	channels: {
+		title: string
+		description: string
+		create: string
+		subscribe: string
+		unsubscribe: string
+		settings: string
+		list: string
+		members: string
+		messages: string
+		permissions: string
+		type: {
+			announcement: string
+			news: string
+			updates: string
+		}
+		role: {
+			owner: string
+			admin: string
+			moderator: string
+			member: string
+			subscriber: string
+		}
+		errors: {
+			notFound: string
+			noPermission: string
+			alreadySubscribed: string
+			notSubscribed: string
+		}
+		success: {
+			created: string
+			updated: string
+			deleted: string
+			subscribed: string
+			unsubscribed: string
+			posted: string
+		}
+	}
+	profile: {
+		title: string
+		description: string
+		settingsEyebrow: string
+		accountAtGlance: string
+		advancedKicker: string
+		advancedSettings: string
+		advancedDescription: string
+		edit: string
+		save: string
+		cancel: string
+		displayName: string
+		name: string
+		bio: string
+		descriptionLabel: string
+		email: string
+		status: string
+		customStatusLabel: string
+		avatarLabel: string
+		themeColorLabel: string
+		uploadAvatar: string
+		ownerTitle: string
+		ownerSummary: string
+		ownerDescription: string
+		ownerEntityHashLabel: string
+		ownerSave: string
+		ownerClear: string
+		ownerSaved: string
+		ownerCleared: string
+		ownerSaveFailed: string
+		ownerConfirmTitle: string
+		ownerConfirmWarningTitle: string
+		ownerConfirmEditBody: string
+		ownerConfirmRenderBody: string
+		ownerConfirmCooldown: string
+		ownerConfirmFirst: string
+		ownerConfirmSecond: string
+		ownerConfirmCancel: string
+		federationTitle: string
+		federationSummary: string
+		federationDescription: string
+		federationAdvanced: string
+		federationRelayUrlsLabel: string
+		federationBatterySaverLabel: string
+		federationSave: string
+		federationResetDefault: string
+		federationSaved: string
+		federationResetOk: string
+		federationSaveFailed: string
+		preferences: string
+		language: string
+		theme: string
+		notifications: string
+		emailNotifications: string
+		pushNotifications: string
+		soundNotifications: string
+		social: string
+		website: string
+		github: string
+		twitter: string
+		stats: string
+		joinedAt: string
+		messageCount: string
+		groupCount: string
+		channelCount: string
+		privacy: string
+		showEmail: string
+		showStats: string
+		allowDirectMessages: string
+		statusOptions: {
+			online: string
+			away: string
+			busy: string
+			offline: string
+		}
+		themeOptions: {
+			auto: string
+			light: string
+			dark: string
+		}
+		languageOptions: {
+			'zh-CN': string
+			'en-US': string
+		}
+		notifEmail: string
+		notifPush: string
+		notifSound: string
+		notifsAllOff: string
+		bioEmpty: string
+		noSocialLinks: string
+		emailVisible: string
+		emailHidden: string
+		customStatus: {
+			placeholder: string
+		}
+		avatar: {
+			alt: string
+		}
+		avatarPreview: {
+			alt: string
+		}
+		myGroups: string
+		myChannels: string
+		noGroups: string
+		noChannels: string
+		overview: string
+		summaryUserId: string
+		summaryAccountStatus: string
+		summaryEmailVisibility: string
+		summaryThemePref: string
+		summaryLanguagePref: string
+		summarySocialCount: string
+		summaryLinksCount: string
+		groupDescriptionEmpty: string
+		groupMembers: string
+		channelPrivate: string
+		channelTypeText: string
+		channelTypeList: string
+		channelTypeVoice: string
+		channelTypeStreaming: string
+		errors: {
+			loadFailed: string
+			saveFailed: string
+			uploadFailed: string
+			invalidUserData: string
+			identityRequired: string
+			fetchUserFailed: string
+			operationFailed: string
+		}
+		success: {
+			saved: string
+			avatarUploaded: string
+		}
+		ownerEntityHash: {
+			placeholder: string
+		}
+	}
+	stickers: {
+		title: string
+		description: string
+		back: {
+			title: string
+		}
+		packs: string
+		create: string
+		upload: string
+		install: string
+		uninstall: string
+		close: string
+		cancel: string
+		installed: string
+		myPacks: string
+		tabAll: string
+		store: string
+		favorites: string
+		recent: string
+		search: {
+			placeholder: string
+		}
+		emptyPacks: string
+		packNameLabel: string
+		packName: {
+			placeholder: string
+		}
+		packDescriptionLabel: string
+		packDescription: {
+			placeholder: string
+		}
+		stickerNameLabel: string
+		stickerName: {
+			placeholder: string
+		}
+		selectPack: string
+		selectPackOption: {
+			textContent: string
+		}
+		selectImage: string
+		tagsLabel: string
+		tags: {
+			placeholder: string
+		}
+		author: string
+		authorLabel: string
+		stickerCount: string
+		badgeMine: string
+		noDescription: string
+		noStickersInPack: string
+		deletePack: string
+		public: string
+		private: string
+		animated: string
+		static: string
+		addTag: string
+		defaultPackName: string
+		defaultPackDescription: string
+		unnamedPack: string
+		importPackName: string
+		importPackDescription: string
+		nameRequired: string
+		stickerNameRequired: string
+		selectPackRequired: string
+		fileRequired: string
+		loadDetailFailed: string
+		deleteConfirm: string
+		errors: {
+			loadFailed: string
+			uploadFailed: string
+			installFailed: string
+			uninstallFailed: string
+			createFailed: string
+			deleteFailed: string
+		}
+		success: {
+			uploaded: string
+			installed: string
+			uninstalled: string
+			created: string
+			deleted: string
+		}
+	}
 	fountConsole: {
 		server: {
 			start: string
@@ -128,36 +392,70 @@ export type LocaleData = {
 			passed: string
 			passedWithNoise: string
 			failed: string
+			failedWithCode: string
 			passedLabel: string
 			failedLabel: string
 			noiseHits: string
 			unknownManifestId: string
+			unknownSuiteSelector: string
+			unknownSubtestFilter: string
+			unknownFileFilter: string
+			unsupportedSubtestFilter: string
 			available: string
 			manifestMatched: string
 			selectedSuites: string
+			planSlotSummary: string
 			noMatchingSuites: string
 			reportPath: string
 			reportPathFinal: string
-			runningSuite: string
-			runningSuiteHeavy: string
+			statePathFinal: string
+			blocked: string
+			continueImperfect: string
+			outdatedSelected: string
+			runningSuite: {
+				base: string
+				heavy: string
+				expected: string
+			}
+			reusedSuite: string
+			noisyOnlyRemain: string
+			estimatedRun: string
+			estimatedRunSerial: string
+			estimatedRunSkipped: string
+			noRealRunPlanned: string
+			allReusedHint: string
+			estimatedRemaining: string
+			estimatedRunSerialHint: string
 			failuresSaved: string
 			failuresCleared: string
-			failureRetry: string
-			hashStaleAppendDiff: string
-			diffMode: string
-			noChangesHint: string
-			tip: string
-			manifestNoDiffRunAll: string
+			terminated: string
+			terminateIdle: string
+			terminateDuration: string
+			terminateDurationDefault: string
+			terminateMarker: string
+			terminateUnknown: string
+			nothingToContinue: string
+			triggerNoMatch: string
+			triggerNoMatchSummary: string
 			unknownSuite: string
 			federationCleanupPre: string
 			federationCleanupPost: string
 			suiteHeader: string
+			heapSnapshotSaved: string
 			liveUsage: string
 			serialUsage: string
 			silentPassedOne: string
 			silentPassedMany: string
 			ciNoDiffFallback: string
 			noFrontendPhasesMatched: string
+			denoPanic: {
+				detected: string
+				alreadyReported: string
+				ghUnavailable: string
+				published: string
+				duplicate: string
+				publishFailed: string
+			}
 			nodeWorker: {
 				dataPathRequired: string
 				portRequired: string
@@ -180,6 +478,17 @@ export type LocaleData = {
 				fieldSuites: string
 				fieldFailed: string
 				fieldNoisyPassed: string
+				fieldReused: string
+				fieldSuiteSumDuration: string
+				fieldWallClock: string
+				fieldParallelRate: string
+				fieldEstimatedRemaining: string
+				fieldEstimatedParallelRate: string
+				estimatePoint: string
+				pendingEstimate: string
+				pendingParallelEstimate: string
+				pendingSavings: string
+				pendingItemExpected: string
 				fieldDuration: string
 				commandDefault: string
 				exitPassed: string
@@ -192,16 +501,67 @@ export type LocaleData = {
 				sectionNoisyPassed: string
 				sectionSilentPassed: string
 				sectionPending: string
+				sectionContinue: string
+				sectionReplay: string
+				sectionReplayImperfect: string
 				columnSuite: string
 				columnDuration: string
+				labelReused: string
+				labelExpectedBlocked: string
 				labelDuration: string
 				labelLog: string
 				labelNoise: string
 				labelFailedFiles: string
+				labelTerminateReason: string
+				sectionContinueReasons: string
+				continueReasonsLink: string
+				labelContinueReason: string
+				reasonImperfectFailed: string
+				reasonImperfectNoisy: string
+				reasonImperfectBlocked: string
+				reasonImperfectDependent: string
+				reasonMissingRecord: string
+				reasonStaleContent: string
+				reasonTriggerHashDrift: string
+				reasonExplicitSelected: string
+				reasonDependencyRequired: string
+				labelRootCause: string
+				labelDirectRequiredBy: string
+				labelInclusionPath: string
+				labelPullUpstream: string
+				labelPullDownstream: string
+				labelGateReason: string
+				labelCommitRange: string
+				labelUncommittedHashRange: string
+				labelMatchedTriggers: string
+				labelMatchedTriggerSets: string
+				labelMatchedPaths: string
+				labelTriggerHashDrift: string
+				sectionDeadTriggers: string
+				deadTriggersHint: string
 				durationMs: string
-				durationSec: string
-				durationMin: string
-				durationMinSec: string
+				durationUnitSec: string
+				durationUnitMin: string
+				durationUnitMinute: string
+				durationUnitHour: string
+				durationUnitDay: string
+			}
+			state: {
+				title: string
+				artifacts: string
+				sectionDependencyTree: string
+				sectionOverview: string
+				sectionBlocked: string
+				columnSuite: string
+				columnStatus: string
+				columnCommit: string
+				columnRanAt: string
+				columnDuration: string
+				columnLog: string
+				columnBlocked: string
+				labelBlockedBy: string
+				statusUnknown: string
+				statusOutdated: string
 			}
 		}
 		path: {
@@ -797,6 +1157,511 @@ export type LocaleData = {
 			}
 		}
 	}
+	social: {
+		title: string
+		description: string
+		bootstrapFailed: string
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
+		nav: {
+			feed: string
+			explore: string
+			notifications: string
+			saved: string
+			drafts: string
+			profile: string
+			videos: string
+			live: string
+		}
+		settings: {
+			title: string
+			back: {
+				'aria-label': string
+			}
+			privacyTitle: string
+			privacyHint: string
+			tasteTitle: string
+			tasteHint: string
+			mutedKeywordsTitle: string
+			mutedKeywordsHint: string
+			mutedKeywordsMatchTags: string
+			mutedKeywordsAdd: string
+			mutedKeywordsRemove: {
+				title: string
+			}
+			mutedKeywordsEmpty: string
+			autoTranslateTitle: string
+			autoTranslateHint: string
+			autoTranslateEnable: string
+			safetyTitle: string
+			safetyHint: string
+			mutedKeywords: {
+				placeholder: string
+			}
+		}
+		composer: {
+			placeholder: string
+			publish: string
+			saveDraft: string
+			fab: {
+				title: string
+				'aria-label': string
+			}
+			contentWarning: {
+				placeholder: string
+			}
+			sensitiveMedia: string
+			editImage: string
+			editCrop: string
+			editMosaic: string
+			editBrush: string
+			editApply: string
+			editCancel: string
+			replyPolicyEveryone: string
+			replyPolicyFollowers7d: string
+			replyPolicyAuthorFollows: string
+			replyPolicyLabel: string
+			replyDisplayAll: string
+			replyDisplayFeaturedOnly: string
+			replyDisplayLabel: string
+			scheduleLabel: string
+			scheduleSuccess: string
+			emojiButton: {
+				title: string
+				'aria-label': string
+			}
+			mediaButton: {
+				title: string
+				'aria-label': string
+			}
+			pollButton: {
+				title: string
+				'aria-label': string
+			}
+			cwToggle: {
+				title: string
+				'aria-label': string
+			}
+			advancedToggle: {
+				title: string
+				'aria-label': string
+			}
+			media: {
+				placeholder: string
+			}
+		}
+		visibility: {
+			label: string
+			public: string
+			unlisted: string
+			followers: string
+			followers7d: string
+			followers30d: string
+			selected: string
+			private: string
+			allowLabel: string
+			exceptLabel: string
+			allow: {
+				placeholder: string
+			}
+			except: {
+				placeholder: string
+			}
+		}
+		albums: {
+			create: string
+			edit: string
+			save: string
+			cancel: string
+			back: string
+			empty: string
+			emptyPosts: string
+			name: string
+			description: string
+			deleteLinks: string
+			deleteWithPosts: string
+			pickerLabel: string
+			defaultName: string
+		}
+		feed: {
+			refresh: string
+			newPosts: string
+			tabLatest: string
+			tabForYou: string
+			repostedBy: string
+			decryptFailed: string
+			revealContent: string
+			sensitiveMedia: string
+			showMore: string
+			showLess: string
+			replayDivider: string
+		}
+		taste: {
+			rebuild: string
+			privacyPublishPreferences: string
+			privacyPublishPreferencesHint: string
+			privacyPublishReactions: string
+			privacyPublishReactionsHint: string
+			empty: string
+			weight: string
+			save: string
+			name: {
+				placeholder: string
+			}
+		}
+		trending: {
+			title: string
+			postCount: {
+				title: string
+			}
+			scopeLocal: string
+			scopeNearby: string
+			empty: string
+		}
+		search: {
+			placeholder: string
+			open: {
+				'aria-label': string
+			}
+			submit: string
+			clear: string
+			empty: string
+			tooShort: string
+			usersTitle: string
+			postsTitle: string
+			usersEmpty: string
+			pinAlias: string
+			trustScore: string
+			viewTitle: string
+			loading: string
+			filterAuthor: {
+				placeholder: string
+			}
+			filterMediaAll: string
+			filterMediaImage: string
+			filterMediaVideo: string
+			filterTag: {
+				placeholder: string
+			}
+			sortRecent: string
+			sortPopular: string
+			scopeLocal: string
+			scopeNearby: string
+		}
+		profile: {
+			edit: string
+			settingsBtn: {
+				'aria-label': string
+			}
+			mediaOnly: string
+			hideFromExplore: string
+			tabPosts: string
+			tabAlbums: string
+			tabLikes: string
+			tabCabinets: string
+			tabsLabel: {
+				'aria-label': string
+			}
+			cabinetsEmpty: string
+			cabinetsFailed: string
+			statsGroup: {
+				'aria-label': string
+			}
+			statsPosts: string
+			statsFollowing: string
+			statsFollowers: string
+			followingTitle: string
+			followersTitle: string
+		}
+		dialog: {
+			close: {
+				'aria-label': string
+			}
+		}
+		actions: {
+			like: string
+			unlike: string
+			dislike: string
+			undislike: string
+			repost: string
+			quote: string
+			delete: string
+			edit: string
+			save: string
+			saved: string
+			translate: string
+			dm: string
+			block: string
+			hide: string
+			mute: string
+			follow: string
+			following: string
+			care: string
+			careRemove: string
+			careAdded: string
+			careRemoved: string
+			setAlias: string
+			setAliasPrompt: string
+			aliasSaved: string
+			replies: string
+			copyLink: string
+			copied: string
+			more: {
+				'aria-label': string
+			}
+			share: string
+			likeFailed: string
+			dislikeFailed: string
+			repostFailed: string
+			replyFailed: string
+			followFailed: string
+			saveFailed: string
+			blockFailed: string
+			hideFailed: string
+			muteFailed: string
+			deleteFailed: string
+		}
+		post: {
+			edited: string
+			editPrompt: string
+			editHistory: string
+			editHistoryEmpty: string
+			loading: string
+			notFound: string
+			loadFailed: string
+			detailTitle: string
+			back: string
+		}
+		reply: {
+			context: string
+		}
+		notes: {
+			label: string
+			add: string
+			prompt: string
+			listTitle: string
+			helpful: string
+			unhelpful: string
+			more: string
+			empty: string
+		}
+		poll: {
+			multi: string
+			apply: string
+			closed: string
+			deadline: string
+			options: {
+				placeholder: string
+			}
+		}
+		aside: {
+			suggested: string
+		}
+		explore: {
+			accounts: string
+			posts: string
+			mediaOnly: string
+		}
+		groupRef: {
+			linking: string
+			clear: string
+			pick: string
+		}
+		notifications: {
+			reply: string
+			mention: string
+			like: string
+			repost: string
+			follow: string
+			care_post: string
+			poll_closed: string
+			post_note: string
+			live_started: string
+			view: string
+			markAllRead: string
+		}
+		inbox: {
+			filtersLabel: {
+				'aria-label': string
+			}
+			tabs: {
+				all: string
+				mention: string
+				reply: string
+				like: string
+				follow: string
+				repost: string
+			}
+			aggregated: {
+				like: string
+				likeTwo: string
+				repost: string
+				repostTwo: string
+				follow: string
+				followTwo: string
+			}
+		}
+		replies: {
+			placeholder: string
+			submit: string
+			empty: string
+			emptyHint: string
+		}
+		repost: {
+			placeholder: string
+			submit: string
+		}
+		quote: {
+			quoting: string
+			clear: string
+			viewOriginal: string
+		}
+		a11y: {
+			linkGroupSelect: string
+			postVisibility: string
+			postLang: string
+			trendingHashtags: string
+			saveFolderSelect: string
+		}
+		blocklist: {
+			title: string
+			hiddenTitle: string
+			empty: string
+			unblock: string
+			unhide: string
+			scopeEntity: string
+			scopeSubject: string
+		}
+		translate: {
+			label: string
+		}
+		saved: {
+			all: string
+			unfiled: string
+			createFolder: {
+				title: string
+				'aria-label': string
+			}
+			createFolderPrompt: string
+			pickFolderTitle: string
+			confirm: string
+			cancel: string
+			remove: string
+			renameFolder: string
+			renameFolderPrompt: string
+			deleteFolder: string
+			deleteFolderConfirm: string
+			searchEmpty: string
+			folderEmpty: string
+			emptyHint: string
+			search: {
+				placeholder: string
+			}
+		}
+		drafts: {
+			untitled: string
+			emptyHint: string
+			saved: string
+			deleted: string
+			delete: string
+			empty: string
+			saveFailed: string
+			loadFailed: string
+			deleteFailed: string
+		}
+		time: {
+			justNow: string
+			minutesAgo: string
+			hoursAgo: string
+		}
+		empty: {
+			feed: string
+			profilePosts: string
+			following: string
+			followers: string
+			notifications: string
+			saved: string
+			drafts: string
+			exploreAccounts: string
+			explorePosts: string
+			likedPosts: string
+			noIdentity: string
+		}
+		topic: {
+			follow: string
+			unfollow: string
+			empty: string
+		}
+		video: {
+			view: {
+				'aria-label': string
+			}
+			empty: string
+			emptyHint: string
+			compose: string
+			back: {
+				'aria-label': string
+			}
+			mute: {
+				'aria-label': string
+			}
+			unmute: {
+				'aria-label': string
+			}
+			unavailable: string
+			closeReplies: {
+				'aria-label': string
+			}
+		}
+		live: {
+			empty: string
+			viewers: string
+			likes: string
+			local: string
+			hall: string
+			back: {
+				title: string
+				'aria-label': string
+			}
+			danmakuSend: string
+			postWatch: string
+			postEnded: string
+			postEndedStats: string
+			link: {
+				invite: string
+				needPeer: string
+				invited: string
+				linked: string
+				peer: {
+					placeholder: string
+				}
+			}
+			broadcast: {
+				title: string
+				open: string
+				mediaAv: string
+				mediaAudio: string
+				mediaVideo: string
+				mediaWhip: string
+				whipUrl: string
+				whipToken: string
+				whipWaiting: string
+				start: string
+				stop: string
+				started: string
+				stopped: string
+				titleInput: {
+					placeholder: string
+				}
+			}
+			danmaku: {
+				placeholder: string
+			}
+		}
+	}
 	chat: {
 		title: string
 		description: string
@@ -808,7 +1673,1453 @@ export type LocaleData = {
 			isTyping: string
 			multipleMembers: string
 		}
+		emoji: {
+			pickerTitle: string
+			categoryFace: string
+			categoryGesture: string
+			categoryHeart: string
+			categoryAnimal: string
+			categoryFood: string
+			categoryObject: string
+		}
+		unicodeEmojiGroups: {
+			Smileys_and_Emotion: {
+				title: string
+			}
+			People_and_Body: {
+				title: string
+			}
+			Animals_and_Nature: {
+				title: string
+			}
+			Food_and_Drink: {
+				title: string
+			}
+			Travel_and_Places: {
+				title: string
+			}
+			Activities: {
+				title: string
+			}
+			Objects: {
+				title: string
+			}
+			Symbols: {
+				title: string
+			}
+			Flags: {
+				title: string
+			}
+			Component: {
+				title: string
+			}
+		}
+		sessionSettings: {
+			unnamedTitle: string
+			modeGroup: string
+			modeSingle: string
+			modeEmpty: string
+			subtitleRoles: string
+			statusSaved: string
+			statusSaving: string
+			statusDirty: string
+			statusSaveFailed: string
+			saveSuccess: string
+			saveFailed: string
+		}
+		group: {
+			defaults: {
+				groupMetaName: string
+				defaultChannelName: string
+				dmChatName: string
+				dmDmName: string
+				threadName: string
+			}
+			settingsPage: {
+				title: string
+				kicker: string
+				subtitle: string
+				backToChat: string
+				navigationLabel: string
+				advancedNavigationLabel: string
+				tabGeneral: string
+				tabPermissions: string
+				tabMembers: string
+				tabAudit: string
+				tabEmojis: string
+				tabAdvanced: string
+				tabStorage: string
+				tabChannelPermissions: string
+				advancedHubTitle: string
+				advancedHubDescription: string
+				channelPermsHint: string
+				channelPermsSelectChannel: string
+				channelPermsAddRole: string
+				channelPermsRemoveRole: string
+				channelPermsStateNeutral: string
+				channelPermsStateAllow: string
+				channelPermsStateDeny: string
+				channelPermsUpdated: string
+				channelPermsUpdateFailed: string
+				channelPermsNoChannels: string
+				emojisTitle: string
+				emojisHint: string
+				emojisUpload: string
+				emojisDelete: string
+				emojisEmpty: string
+				emojisUploadOk: string
+				emojisUploadFailed: string
+				emojisDeleteConfirm: string
+				emojisDeleteOk: string
+				emojisDeleteFailed: string
+				membersTitle: string
+				overviewTitle: string
+				overviewHint: string
+				channelArchiveTitle: string
+				channelArchiveHint: string
+				channelArchiveImport: string
+				channelArchiveImportOk: string
+				channelArchiveImportFailed: string
+				governanceHint: string
+				governanceDenied: string
+				rolesDenied: string
+				channelPermsDenied: string
+				notMember: string
+				basicTitle: string
+				profileSectionTitle: string
+				profileSectionHint: string
+				behaviorSectionTitle: string
+				networkSectionTitle: string
+				retentionSectionTitle: string
+				mediaSectionTitle: string
+				nameLabel: string
+				descriptionLabel: string
+				joinPolicyLabel: string
+				joinInviteOnly: string
+				joinPow: string
+				powDifficultyLabel: string
+				advancedTitle: string
+				advancedDescription: string
+				securityAdvancedTitle: string
+				securityAdvancedDescription: string
+				powDifficultyTip: string
+				maxDagPayloadTip: string
+				trustedPeersTip: string
+				gossipTtlTip: string
+				hlcTip: string
+				sfuTip: string
+				iceTip: string
+				fileEncryptionTip: string
+				keyManagementTitle: string
+				keyManagementTip: string
+				allowDangerousHtml: string
+				deleteGroup: string
+				save: string
+				inviteTitle: string
+				inviteHint: string
+				inviteMint: string
+				inviteGroupId: string
+				inviteCode: string
+				inviteExpires: string
+				inviteCopy: string
+				inviteCopied: string
+				inviteCopyFailed: string
+				inviteClipboard: string
+				loadFailed: string
+				saveSuccess: string
+				saveFailed: string
+				deleteConfirm: string
+				deleteSuccess: string
+				deleteFailed: string
+				rolesTitle: string
+				createRole: string
+				roleDefault: string
+				deleteRole: string
+				deleteRoleConfirm: string
+				deleteRoleSuccess: string
+				deleteRoleFailed: string
+				createRolePrompt: string
+				createRoleSuccess: string
+				createRoleFailed: string
+				permissionUpdated: string
+				permissionUpdateFailed: string
+				noMembers: string
+				memberRoles: string
+				kick: string
+				ban: string
+				kickConfirm: string
+				kickSelfNodeWarning: string
+				kickSuccess: string
+				kickFailed: string
+				banConfirm: string
+				banSuccess: string
+				banFailed: string
+				bannedTitle: string
+				unban: string
+				unbanConfirm: string
+				unbanSuccess: string
+				unbanFailed: string
+				keyRotate: string
+				keyRotateConfirm: string
+				keyRotateOk: string
+				keyRotateFailed: string
+				gshGenerationRetentionHint: string
+				gshGenerationNearLimit: string
+				ownerSuccession: string
+				ownerSuccessionOk: string
+				ownerSuccessionFailed: string
+				permVIEW_CHANNEL: string
+				permSEND_MESSAGES: string
+				permSEND_STICKERS: string
+				permADD_REACTIONS: string
+				permMANAGE_MESSAGES: string
+				permMANAGE_CHANNELS: string
+				permKICK_MEMBERS: string
+				permBAN_MEMBERS: string
+				permMANAGE_ROLES: string
+				permINVITE_MEMBERS: string
+				permSTREAM: string
+				permCREATE_THREADS: string
+				permUPLOAD_FILES: string
+				permMANAGE_FILES: string
+				permPIN_MESSAGES: string
+				permADMIN: string
+				permBYPASS_RATE_LIMIT: string
+			}
+			auditLog: {
+				title: string
+				hint: string
+				filterLabel: string
+				refresh: string
+				filterAll: string
+				loadMore: string
+				empty: string
+				loadFailed: string
+				colTime: string
+				colType: string
+				colActor: string
+				colSummary: string
+				type: {
+					member_join: string
+					member_leave: string
+					member_kick: string
+					member_ban: string
+					member_unban: string
+					role_create: string
+					role_update: string
+					role_delete: string
+					role_assign: string
+					role_revoke: string
+					channel_create: string
+					channel_update: string
+					channel_delete: string
+					channel_permissions_update: string
+					group_meta_update: string
+					group_settings_update: string
+					reputation_slash: string
+					reputation_reset: string
+					file_master_key_rotate: string
+					peer_invite: string
+					dag_tip_merge: string
+					message_delete: string
+					pin_message: string
+					unpin_message: string
+					file_upload: string
+					file_delete: string
+				}
+				event: {
+					member_join: string
+					member_leave: string
+					member_kick: string
+					member_ban: string
+					member_unban: string
+					role_create: string
+					role_update: string
+					role_delete: string
+					role_assign: string
+					role_revoke: string
+					channel_create: string
+					channel_update: string
+					channel_delete: string
+					channel_permissions_update: string
+					group_meta_update: string
+					group_settings_update: string
+					reputation_slash: string
+					reputation_reset: string
+					file_master_key_rotate: string
+					channel_key_rotate: string
+					peer_invite: string
+					dag_tip_merge: string
+					message_delete: string
+					pin_message: string
+					unpin_message: string
+					file_upload: string
+					file_delete: string
+				}
+			}
+			messagePrefixSticker: string
+			membersEmpty: string
+			channelEncryptionGsh: string
+			ownerSuccession: string
+			ownerSuccessionDescription: string
+			ownerSuccessionAutoSignHint: string
+			ownerSuccessionCandidateLabel: string
+			ownerSuccessionSelfButton: string
+			ownerSuccessionSubmitted: string
+			ownerSuccessionNeedHash: string
+			ownerSuccessionFailed: string
+			e2eDecryptUnavailable: string
+			contentRefBodyPending: string
+			contentRefHashMismatch: string
+			streamGenerationFailed: string
+			convergentEncryptWarn: string
+			settingsStreamGeneratingIdle: string
+			settingsAutoReplyFrequency: string
+			settingsAutoReplyFrequencyHint: string
+			settingsMaxDagPayload: string
+			settingsBatterySaver: string
+			settingsDiscoveryPublic: string
+			settingsDiscoveryTitle: string
+			settingsDiscoveryBlurb: string
+			settingsTrustedPeers: string
+			settingsExplorePeers: string
+			settingsMaxPeers: string
+			settingsGossipTtl: string
+			settingsWantIdsBudget: string
+			settingsHlcMaxSkew: string
+			dagForkDetected: string
+			mergeDagTips: string
+			mergeDagTipsOk: string
+			mergeDagTipsFailed: string
+			settingsStreamingSfu: string
+			settingsMessageRetention: string
+			settingsMessageRetentionForever: string
+			settingsMessageRetention30d: string
+			settingsMessageRetention90d: string
+			settingsMessageRetention1y: string
+			settingsMessageRetentionHint: string
+			settingsHotLatest: string
+			settingsPinContext: string
+			settingsHotWindowHint: string
+			settingsArchiveTitle: string
+			settingsArchiveHint: string
+			settingsArchiveFilesTitle: string
+			settingsArchiveEmpty: string
+			settingsArchiveColChannel: string
+			settingsArchiveColMonth: string
+			settingsArchiveColSize: string
+			settingsArchiveDeleteBefore: string
+			settingsArchiveDeleteButton: string
+			settingsArchiveDeleteHint: string
+			settingsArchiveAdminOnly: string
+			settingsArchiveDeleteInvalidMonth: string
+			settingsArchiveDeleteConfirm: string
+			settingsArchiveDeleteOk: string
+			settingsArchiveDeleteFailed: string
+			settingsEventRetentionDepth: string
+			settingsEventRetentionMs: string
+			settingsCompactTriggerDepth: string
+			settingsMessageRateLimit: string
+			settingsAutoReplyTokenBucket: string
+			settingsAutoReplyTokenBucketHint: string
+			settingsIceServers: string
+			settingsIceServersAdd: string
+			settingsIceServersHint: string
+			settingsFileCeMode: string
+			settingsFileCeModeConvergent: string
+			settingsFileCeModeRandom: string
+			settingsFileCeModeHint: string
+			channelsTitle: string
+			createGroup: string
+			members: string
+			membersHint: string
+			send: string
+			streamTest: string
+			messageInput: {
+				placeholder: string
+			}
+			loadError: string
+			remoteNodeTimeout: string
+			remoteUnavailable: string
+			messagesLoadFailed: string
+			sendFailed: string
+			chatNotLoaded: string
+			createFailed: string
+			newGroupName: string
+			streamOk: string
+			remoteUnsafe: string
+			trustAuthor: {
+				textContent: string
+				title: string
+			}
+			trustAuthorOk: string
+			voteCast: string
+			listEmpty: string
+			listChannelReadonly: {
+				placeholder: string
+			}
+			streamNoEmbed: {
+				textContent: string
+			}
+			streamNoSfu: {
+				textContent: string
+			}
+			messageDeleted: string
+			messageDeletedBracket: string
+			messageWithAttachments: string
+			voteBlockHeading: string
+			voteBlockHeadingTagged: string
+			voteCastLine: string
+			voteCastLineTagged: string
+			voteOptionsPreview: string
+			voteOptionsPreviewTagged: string
+			voteDeadlineLineOpen: string
+			voteDeadlineLineClosed: string
+			pinMessageLine: string
+			unpinMessageLine: string
+			stickerPrefixLine: string
+			stickerPrefixLineTagged: string
+			feedbackDagLine: string
+			feedbackDagLineWithNote: string
+			feedbackPreviewLine: string
+			feedbackPreviewTaggedNote: string
+			mentionHandle: string
+			mentionInsert: string
+			feedbackUp: string
+			feedbackDown: string
+			attachmentsHint: string
+			pinMessage: string
+			unpinMessage: string
+			pinThisMessage: string
+			pinAction: {
+				textContent: string
+				title: string
+			}
+			unpinAction: {
+				textContent: string
+				title: string
+			}
+			pinOk: string
+			unpinOk: string
+			pinFailed: string
+			menuCopyText: string
+			menuExportHtml: string
+			menuCopyId: string
+			copied: string
+			addBookmark: {
+				title: string
+			}
+			bookmarkExists: string
+			bookmarkAdded: string
+			bookmarkSaveFailed: string
+			remoteTyping: string
+			remoteTypingTwo: string
+			remoteTypingMany: string
+			mentionEmpty: string
+			localAiLabel: string
+			forceTriggerOne: {
+				title: string
+			}
+			forceTriggerAllLocal: string
+			forceTriggerAllLocalTitle: {
+				title: string
+			}
+			messageRefAnchor: string
+			settingsFedPartition: string
+			settingsRtcBudget: string
+			settingsRtcJoinRate: string
+			settingsFedTuningHint: string
+			settingsAutoChannelGc: string
+			settingsAutoChannelGcHint: string
+			quoteHeader: string
+			quoteHeaderWithTime: string
+			quoteHeaderWithoutTime: string
+			stopGenerating: string
+			messageAborted: string
+			avStart: string
+			avMute: string
+			avSwap: string
+			avStop: string
+			avNeedStreamChannel: string
+			reactionAdd: {
+				title: string
+			}
+			reactionRemove: {
+				title: string
+			}
+			addReaction: {
+				title: string
+			}
+			reactionPrompt: string
+			channelTypeLabel: string
+			channelTypeText: string
+			channelTypeList: string
+			channelTypeStreaming: string
+			convertToText: string
+			convertToList: string
+			setAsDefault: string
+			isDefault: string
+			defaultChannelSet: string
+			defaultChannelSetFailed: string
+			channelUpdateFailed: string
+			voteCreate: string
+			votePromptDeadline: string
+			voteTooFewOptions: string
+			voteCreateFailed: string
+			voteFor: string
+			voteDeadline: string
+			voteEnded: string
+			voteTotal: string
+			record: string
+			fileDownload: {
+				title: string
+			}
+			clickToLoad: string
+			unknownFile: string
+			blockSender: {
+				title: string
+			}
+			blockConfirm: string
+			blockAdded: string
+			saveSticker: {
+				title: string
+			}
+			stickerSaved: string
+			stickerDefaultName: string
+			deleteMessage: {
+				title: string
+			}
+			deleteConfirm: string
+			editMessage: {
+				title: string
+			}
+			saveEdit: string
+			cancelEdit: string
+			editingMessage: string
+			editConfirm: string
+			editCancel: string
+			editHint: string
+			editedLabel: string
+			editEmptyText: string
+			createGroupTitle: string
+			groupNameLabel: string
+			groupName: {
+				placeholder: string
+			}
+			defaultChannelLabel: string
+			defaultChannel: {
+				placeholder: string
+			}
+			createGroupFailed: string
+			createChannelFailed: string
+			moreActions: {
+				title: string
+			}
+			thread: string
+			threadBack: string
+			threadBreadcrumbRootTitle: string
+			threadBreadcrumbMiddleTitle: string
+			threadBreadcrumbMiddleSummary: string
+			menuShareExternal: string
+			shareExternalOk: string
+			shareExternalFailed: string
+		}
+		hub: {
+			title: string
+			redirectToHub: string
+			homeTooltip: {
+				title: string
+				tip: string
+			}
+			charsTooltip: {
+				title: string
+				tip: string
+			}
+			friendsTooltip: {
+				title: string
+				tip: string
+			}
+			inboxTooltip: {
+				title: string
+				tip: string
+			}
+			inbox: {
+				title: string
+				filtersLabel: string
+				tabMention: string
+				tabMessage: string
+				tabCare: string
+				tabVoteClosed: string
+				emptyMentionTitle: string
+				emptyMentionDescription: string
+				emptyMessageTitle: string
+				emptyMessageDescription: string
+				emptyCareTitle: string
+				emptyCareDescription: string
+				emptyVoteTitle: string
+				emptyVoteDescription: string
+				rowLabel: {
+					'aria-label': string
+				}
+				sidebarHint: string
+				badgeFetchFailed: string
+				loadFailed: string
+				markSeenFailed: string
+				jumpFailed: string
+			}
+			notifyPrefs: {
+				title: string
+				mode: string
+				modeAll: string
+				modeMentions: string
+				modeNothing: string
+				suppressEveryone: string
+				suppressRoles: string
+				mute: string
+				muteOff: string
+				mute1h: string
+				mute8h: string
+				muteForever: string
+				saved: string
+			}
+			voteClosed: string
+			discoveryTooltip: {
+				title: string
+				tip: string
+			}
+			prefsTooltip: {
+				title: string
+				tip: string
+			}
+			prefsSubtitle: string
+			federationTooltip: {
+				title: string
+				tip: string
+			}
+			federationTitle: string
+			federationSubtitle: string
+			federationLoadFailed: string
+			fedConnectionTitle: string
+			discoveryRefresh: string
+			fedRelayUrlsLabel: string
+			fedRelayUrlsTip: string
+			fedBatterySaverLabel: string
+			fedBatterySaverTip: string
+			fedAdvancedTitle: string
+			fedAdvancedDescription: string
+			fedGroupRecoveryTitle: string
+			fedGroupRecoveryTip: string
+			fedRotateRoomSecret: string
+			fedRotateRoomSecretConfirm: string
+			fedRotateRoomSecretOk: string
+			fedRepairJoinSnapshot: string
+			fedRepairJoinSnapshotOk: string
+			fedRepairJoinSnapshotFailed: string
+			fedRepTitle: string
+			fedRepTip: string
+			fedRepEmpty: string
+			fedSlashTitle: string
+			fedSlashTip: string
+			fedSlashTargetLabel: string
+			fedSlashTarget: {
+				placeholder: string
+			}
+			fedSlashClaimLabel: string
+			fedSlashVerifiedLabel: string
+			fedSlashProofLabel: string
+			fedSlashProof: {
+				placeholder: string
+			}
+			fedSlashSubmitLabel: string
+			fedResetSubmitLabel: string
+			fedSlashNeedHash: string
+			fedSlashOk: string
+			fedResetOk: string
+			fedDmLinkTitle: string
+			fedDmLinkTip: string
+			fedDmLinkDescription: string
+			fedDmPubKeyLabel: string
+			fedDmSecretLabel: string
+			fedDmNodeLabel: string
+			fedDmInvalidateTitle: string
+			fedDmInvalidateDescription: string
+			fedDmRotateLabel: string
+			fedDmRotateConfirm: string
+			fedDmIssueLabel: string
+			fedDmNeedPubKey: string
+			fedDmNeedSecretKey: string
+			fedDmIssued: string
+			fedNonceRotated: string
+			fedSaved: string
+			addServerTooltip: {
+				title: string
+				tip: string
+			}
+			pinsTitle: string
+			bookmarksTitle: string
+			pinsButton: {
+				title: string
+			}
+			bookmarksButton: {
+				title: string
+			}
+			search: {
+				placeholder: string
+				noResults: string
+				failed: string
+				scopeGroup: string
+				scopeAll: string
+			}
+			membersTitle: {
+				title: string
+			}
+			backToNav: {
+				title: string
+				'aria-label': string
+			}
+			moreActions: {
+				title: string
+				'aria-label': string
+			}
+			composerMore: {
+				title: string
+				'aria-label': string
+			}
+			settingsTitle: {
+				title: string
+			}
+			filesTitle: {
+				title: string
+			}
+			filesDrawerTitle: string
+			filesLoading: string
+			filesLoadFailed: string
+			filesNoGroup: string
+			filesNoCabinets: string
+			filesBindCabinet: string
+			filesNoChannel: string
+			filesUploadTo: string
+			filesRootFolder: string
+			filesNewFolder: string
+			filesNewFolderPrompt: string
+			filesRename: string
+			filesRenameFolderPrompt: string
+			filesDeleteFolderConfirm: string
+			filesUpload: string
+			filesDownload: string
+			filesDelete: string
+			filesDeleteConfirm: string
+			filesFoldersTitle: string
+			filesListTitle: string
+			filesEmpty: string
+			filesNoFolders: string
+			uploadTitle: {
+				title: string
+			}
+			emojiTitle: {
+				title: string
+			}
+			voteTitle: {
+				title: string
+			}
+			shareGroupTitle: {
+				title: string
+			}
+			shareGroupOk: string
+			messageActionFailed: string
+			inviteJoinButton: string
+			inviteLinkNeedsRoomSecret: string
+			inviteCardMembers: string
+			syncFailed: string
+			syncRateLimited: string
+			syncIncomplete: string
+			syncNoPeers: string
+			attachmentLoadFailed: string
+			messageEditUpload: string
+			timeToday: string
+			timeYesterday: string
+			stickerTitle: {
+				title: string
+			}
+			sendTitle: {
+				title: string
+			}
+			stopGenerateTitle: {
+				title: string
+			}
+			charTyping: string
+			messageActionPrev: {
+				title: string
+			}
+			messageActionNext: {
+				title: string
+			}
+			messageActionRegen: {
+				title: string
+			}
+			messageActionEdit: {
+				title: string
+			}
+			messageActionFeedbackUp: {
+				title: string
+			}
+			messageActionFeedbackDown: {
+				title: string
+			}
+			messageActionDelete: {
+				title: string
+			}
+			confirmDeleteLong: string
+			messageActionCopyHtml: {
+				title: string
+			}
+			forceReply: string
+			removeChar: string
+			loadMore: string
+			charChatsTitle: string
+			newGroupWith: string
+			messageActionBookmark: {
+				title: string
+			}
+			messageActionPin: {
+				title: string
+			}
+			messageActionUnpin: {
+				title: string
+			}
+			blockAuthor: {
+				title: string
+			}
+			pinUnpinSidebar: {
+				title: string
+			}
+			meAuthor: string
+			messageEditSave: string
+			messageEditCancel: string
+			feedbackReasonPrompt: string
+			feedbackReasonInput: {
+				placeholder: string
+			}
+			messageFeedbackSubmit: string
+			stickersPanelTitle: string
+			stickersManage: string
+			stickersLoading: string
+			recentEmojiTab: {
+				title: string
+			}
+			recentEmojisEmpty: string
+			currentGroupEmojiTab: {
+				title: string
+			}
+			groupEmojiTab: {
+				title: string
+			}
+			groupEmojisEmpty: string
+			groupEmojisLoadFailed: string
+			profileLinkTitle: {
+				title: string
+				textContent: string
+			}
+			userLoading: string
+			status: {
+				online: string
+				idle: string
+				dnd: string
+				invisible: string
+				offline: string
+			}
+			changeStatusTitle: string
+			aboutSection: string
+			bioEmpty: string
+			statusOffline: {
+				title: string
+				textContent: string
+			}
+			statusOnline: {
+				title: string
+				textContent: string
+			}
+			statusIdle: {
+				title: string
+				textContent: string
+			}
+			statusDnd: {
+				title: string
+				textContent: string
+			}
+			banners: {
+				gshBuffer: string
+				plaintextSidecar: string
+				quarantine: string
+				mailboxPending: string
+				syncing: string
+				archiveCoverageIncomplete: string
+				archiveSyncButton: string
+				forkGovernance: string
+				forkTips: string
+				forkTipLabel: string
+				forkTipScore: string
+				applyBranch: string
+				autoBranch: string
+				mergeDag: string
+				splitFork: string
+				blockOpposing: string
+				suspectedRemoved: string
+				suspectedRemovedKeep: string
+				suspectedRemovedLeave: string
+			}
+			blockOpposingConfirm: string
+			blockOpposingOk: string
+			blockOpposingFailed: string
+			applyBranchOk: string
+			applyBranchFailed: string
+			autoBranchOk: string
+			autoBranchFailed: string
+			saveEmoji: {
+				title: string
+			}
+			saveEmojiOk: string
+			saveEmojiFailed: string
+			saveSticker: {
+				title: string
+			}
+			saveStickerOk: string
+			saveStickerFailed: string
+			revealRemoteMd: string
+			voteModalTitle: string
+			voteModalSubmit: string
+			voteCreateFailed: string
+			composer: {
+				placeholder: string
+			}
+			composerSuspectedRemoved: {
+				placeholder: string
+			}
+			channelReadonlyList: {
+				placeholder: string
+			}
+			channelReadonlyStream: {
+				placeholder: string
+			}
+			noChannels: string
+			noMembers: string
+			noPins: string
+			noBookmarks: string
+			adminSection: string
+			memberSection: string
+			membersDigestOk: string
+			membersDigestOkPaged: string
+			membersDigestMismatch: string
+			membersDigestPending: string
+			membersDigestFetchFailed: string
+			copyEntityId: string
+			copyEntityIdOk: string
+			memberJoined: string
+			remoteBadge: {
+				textContent: string
+				title: string
+			}
+			trustAuthor: {
+				textContent: string
+				title: string
+			}
+			stickerInline: string
+			voteDeadline: string
+			voteNoOptions: string
+			voteTotal: string
+			voteCount: string
+			loadGroupFailed: string
+			groupJoinRequired: string
+			sendFailed: string
+			sendFailedPending: string
+			markdownRenderFailed: string
+			retrySend: string
+			sendImageFailed: string
+			sendStickerFailed: string
+			voteMinOptions: string
+			mergeDagOk: string
+			mergeDagFailed: string
+			forkSplitFailed: string
+			forkSplitPrompt: string
+			forkSplitModalTitle: string
+			forkSplitModalSubmit: string
+			typing: string
+			charsHeader: string
+			friendsHeader: string
+			settingsModalTitle: string
+			modalClose: string
+			groupTag: string
+			groupUnnamed: string
+			groupHeaderMenu: {
+				title: string
+			}
+			groupDescriptionEmpty: string
+			serverActionPickerTitle: string
+			serverActionPickerSubtitle: string
+			serverActionPickerCreate: string
+			serverActionPickerCreateDescription: string
+			serverActionPickerJoin: string
+			serverActionPickerJoinDescription: string
+			cancel: string
+			folderDefault: string
+			folderRename: string
+			folderRenamePrompt: string
+			folderCollapse: string
+			folderExpand: string
+			folderDissolve: string
+			bookmarkLocal: string
+			groupsSection: string
+			ungrouped: string
+			defaultCategory: string
+			bookmarkFallback: string
+			bookmarkRemove: {
+				title: string
+				'aria-label': string
+			}
+			loadMessagesFailed: string
+			unreadDivider: string
+			noUsername: string
+			stickersEmpty: string
+			stickersMarketLink: string
+			stickersLoadFailed: string
+			noChars: string
+			noFriends: string
+			friendsEmptyTitle: string
+			friendsEmptyDescription: string
+			friendsEmptyAction: string
+			friendsSearchEmpty: string
+			friendsSearchTooShort: string
+			friendsSearchDm: string
+			friendsSearchChat: string
+			friendsSearchLocalChar: string
+			friendsSearchPin: string
+			charCount: string
+			friendsCount: string
+			charTag: string
+			friendsTag: string
+			backToFriends: string
+			dmTopicsTitle: string
+			friendsContextNewChat: string
+			friendsRestartConfirm: string
+			friendsRestartOk: string
+			friendsRestartFailed: string
+			charDescriptionEmpty: string
+			charIntro: string
+			participants: string
+			charTagSolo: string
+			startChatWith: string
+			loading: string
+			charChatStart: string
+			charChatEmpty: string
+			loadCharChatFailed: string
+			createChatFailed: string
+			charChatComposer: {
+				placeholder: string
+			}
+			friendChatComposer: {
+				placeholder: string
+			}
+			trustOk: string
+			trustAuthorDialog: {
+				title: string
+				subtitle: string
+				warningTitle: string
+				warningBody: string
+				durationLabel: string
+				duration3h: string
+				duration7d: string
+				duration1Month: string
+				durationForever: string
+				confirmCooldown: string
+				confirmFirst: string
+				confirmSecond: string
+				cancel: string
+			}
+			blockConfirm: string
+			blockOk: string
+			charChatSettings: string
+			charChatSubtitle: string
+			sessionInfo: string
+			sessionRole: string
+			sessionId: string
+			sessionMessages: string
+			quickActions: string
+			advancedSettings: string
+			advancedSettingsDescription: string
+			dangerZone: string
+			unbindFriendDescription: string
+			unbindFriend: string
+			unbindFriendConfirm: string
+			unbindFriendOk: string
+			unbindFriendFailed: string
+			deleteSessionDescription: string
+			deleteSession: string
+			deleteSessionConfirm: string
+			sessionDeleted: string
+			sessionDeleteFailed: string
+			streamTokenFailed: string
+			streamAvJoin: string
+			streamAvLeave: string
+			streamAvMute: string
+			streamAvUnmute: string
+			streamAvVideo: string
+			streamAvVideoOn: string
+			streamAvYou: string
+			streamAvJoinFailed: string
+			streamAvNoCodecs: string
+			streamAvPeers: string
+			streamAvPresetThumb: string
+			streamAvPresetLow: string
+			streamAvPresetMed: string
+			streamAvPresetHigh: string
+			callButton: {
+				title: string
+				'aria-label': string
+			}
+			callInProgress: string
+			callEnded: string
+			callJoin: string
+			callHangup: string
+			callScreenShare: string
+			callScreenStop: string
+			callJumpBack: string
+			callJoinFailed: string
+			callScreenFailed: string
+			callStartedAt: string
+			callDuration: string
+			callParticipants: string
+			callPeerCount: string
+			callNoParticipants: string
+			listChannelEmpty: string
+			listItemUntitled: string
+			listEditorTitle: string
+			listSaveToDag: string
+			listJsonInvalid: string
+			listSaved: string
+			listSaveFailed: string
+			streamDefaultName: string
+			streamRefreshToken: string
+			streamEmbedHttpsRequired: string
+			streamWebRtcHint: string
+			pinPreviewSticker: string
+			pinPreviewVote: string
+			pinPreviewInvite: string
+			reactionRemovePrompt: string
+			ariaDagTip: {
+				'aria-label': string
+			}
+			ariaClose: {
+				'aria-label': string
+			}
+			membersDigestPagesTitle: {
+				title: string
+			}
+			discoveryTitle: string
+			discoveryEyebrow: string
+			discoveryDescription: string
+			discoverySidebarHint: string
+			discoveryEmptyTitle: string
+			discoveryEmpty: string
+			discoveryNoDescription: string
+			discoverySourceCount: string
+			discoveryJoin: string
+			discoveryOpen: string
+			discoveryLoadFailed: string
+			operationFailed: string
+			shareGroupFailed: string
+			blockAuthorTitle: string
+			configTitle: string
+			configSaved: string
+			configSaveFailed: string
+			configLoadFailed: string
+			noActiveChat: string
+			groupContext: {
+				manage: string
+				notifyPrefs: string
+				invite: string
+				inviteCopied: string
+				addChar: string
+				addCharLabel: string
+				addCharSubmit: string
+				noChars: string
+				setAlias: string
+				setAliasPrompt: string
+				aliasSaved: string
+				leave: string
+				leaveConfirm: string
+				leaveOk: string
+				leaveBatch: string
+				leaveConfirmBatch: string
+				leaveBatchPending: string
+				leaveBatchOk: string
+				leaveBatchPartial: string
+			}
+			replyInline: {
+				title: string
+			}
+			replyClear: {
+				title: string
+			}
+			replyInThread: {
+				title: string
+			}
+			syncTruncated: string
+			syncTruncatedHint: string
+			newChannelButton: string
+			newChannelSuccess: string
+			newChannelFailed: string
+			newChannelTitle: string
+			channelName: string
+			channelType: string
+			channelTypeText: string
+			channelTypeList: string
+			channelTypeStreaming: string
+			channelNameInput: {
+				placeholder: string
+			}
+			localMaterializedView: string
+			convergentEncryptWarn: string
+			votePromptQuestion: string
+			votePromptOptions: string
+			voteOptionDefault: string
+			votePromptDeadlineHours: string
+			messagePrefixVote: string
+			threadCreated: string
+			threadCreateFailed: string
+			threadDrawer: {
+				'aria-label': string
+			}
+			threadClose: {
+				title: string
+			}
+			reputationSlashAlert: string
+			profileEdit: {
+				previewHint: string
+				livePreview: string
+				languageVersion: string
+				localeHint: string
+				themeColorHint: string
+				bannerLabel: string
+				bannerHint: string
+				bannerClear: string
+				linksPreview: string
+				unsavedHint: string
+				tagsLabel: string
+				tagAdd: string
+				tagRemove: string
+				linksLabel: string
+				linkAdd: string
+				linkRemove: string
+				handleLabel: string
+				handleHint: string
+				resetFromPart: string
+				resetFromPartConfirm: string
+				resetFromPartDone: string
+				resetFromPartFailed: string
+				newLocale: {
+					placeholder: string
+				}
+				avatarUrl: {
+					placeholder: string
+				}
+				bannerUrl: {
+					placeholder: string
+				}
+				tag: {
+					placeholder: string
+				}
+				linkName: {
+					placeholder: string
+				}
+				linkUrl: {
+					placeholder: string
+				}
+				handle: {
+					placeholder: string
+				}
+			}
+			profilePopup: {
+				close: {
+					title: string
+				}
+				editSaved: string
+				editQueued: string
+				dmChar: string
+				dmUser: string
+				dmFed: string
+				noFedIdentity: string
+				peerNoIdentity: string
+				dmFailed: string
+				care: string
+				careRemove: string
+				setAlias: string
+				setAliasPrompt: string
+			}
+			channelContext: {
+				copyLinkDone: string
+				notifyPrefs: string
+				rename: string
+				renameOk: string
+				delete: string
+				deleteOk: string
+				deleteConfirm: string
+				setDefault: string
+				setDefaultOk: string
+				copyLink: string
+				exportJson: string
+				exportOk: string
+				exportFailed: string
+			}
+			memberContext: {
+				copyName: string
+				mention: string
+				care: string
+				careAdded: string
+				careRemoved: string
+				setAlias: string
+				setAliasPrompt: string
+				aliasSaved: string
+				copyPubKey: string
+				copyEntityId: string
+				dm: string
+				kick: string
+				kickSelfNodeWarning: string
+				ban: string
+				personalBlock: string
+				personalBlockConfirm: string
+				personalBlockSuccess: string
+				banTitle: string
+				banEntity: string
+				banNode: string
+			}
+			messageContext: {
+				edit: string
+				delete: string
+			}
+			charStreaming: string
+			gshDecryptPending: string
+			gshDecryptFailed: string
+			fileDecryptFailed: string
+			reactionFailed: string
+			fileUploadChecking: string
+			fileUploadingChunk: string
+			fileUploadRegistering: string
+			fileUploaded: string
+			fileUploadFailed: string
+			fileSkippedDedup: string
+			fileDownloadFailed: string
+			fileNoKey: string
+			fileLoadFailed: string
+			createModal: {
+				title: string
+				subtitle: string
+				basicSection: string
+				nameLabel: string
+				name: {
+					placeholder: string
+				}
+				descriptionLabel: string
+				description: {
+					placeholder: string
+				}
+				joinSection: string
+				joinInviteOnly: string
+				joinInviteOnlyDescription: string
+				joinPow: string
+				joinPowDescription: string
+				cancel: string
+				submit: string
+				failed: string
+			}
+			joinModal: {
+				title: string
+				subtitle: string
+				groupIdLabel: string
+				groupId: {
+					placeholder: string
+				}
+				inviteLabel: string
+				invite: {
+					placeholder: string
+				}
+				hint: string
+				cancel: string
+				submit: string
+			}
+			menuCopy: string
+			menuMD: string
+			menuTXT: string
+			menuHTML: string
+			menuDownload: string
+			menuDelete: string
+			menuShareGroup: string
+			menuPrev: string
+			menuNext: string
+			menuShare: {
+				'1h': string
+				'12h': string
+				'24h': string
+				'72h': string
+			}
+			noGroups: string
+			myGroups: string
+			joinGroup: string
+			createGroup: string
+			noDescription: string
+			memberCountLabel: string
+			loadListFailed: string
+			contentWarning: string
+			sensitiveMedia: string
+			revealContent: string
+			revealMedia: string
+			copyShareLink: string
+			forward: string
+			forwardedFrom: string
+			forwardDialog: {
+				title: string
+				selectGroup: string
+				selectChannel: string
+				confirm: string
+				cancel: string
+				success: string
+				failed: string
+			}
+			deliverySending: string
+			deliverySent: string
+			deliveryRead: string
+			translate: string
+			translating: string
+			translateShowOriginal: string
+			translateShowTranslation: string
+			translateLabel: string
+			translateFailed: string
+			editImage: string
+			draftRestored: string
+			queuedOffline: string
+			translationPrefs: {
+				title: string
+				textContent: string
+				autoTranslate: string
+				hint: string
+				save: string
+				saved: string
+				saveFailed: string
+			}
+			friendsSearch: {
+				placeholder: string
+			}
+			threadComposer: {
+				placeholder: string
+			}
+			altImage: {
+				placeholder: string
+				label: string
+			}
+		}
 		sidebar: {
+			settings: {
+				title: string
+			}
 			noSelection: string
 			noDescription: string
 			world: {
@@ -850,6 +3161,16 @@ export type LocaleData = {
 						alt: string
 					}
 				}
+			}
+			dataMgmt: {
+				title: string
+				compact: string
+				prune: string
+				compactSuccess: string
+				compactError: string
+				pruneSuccess: string
+				pruneError: string
+				invalidN: string
 			}
 		}
 		rightSidebar: {
@@ -1021,7 +3342,11 @@ export type LocaleData = {
 			}
 		}
 		messageGenerating: {
-			stop: string
+			tips: string
+			stop: {
+				textContent: string
+				title: string
+			}
 			stopIcon: {
 				alt: string
 			}
@@ -1441,10 +3766,10 @@ export type LocaleData = {
 			creationDateLabel: string
 			folderSizeLabel: string
 			folderPathLabel: string
-			copyPathBtn: {
+			copyPathButton: {
 				title: string
 			}
-			copyPathBtnIcon: {
+			copyPathButtonIcon: {
 				alt: string
 			}
 			copiedAlert: string
@@ -1650,7 +3975,6 @@ export type LocaleData = {
 			title: string
 			description: string
 			selectSubfountLabel: string
-			selectSubfountPlaceholder: string
 			hostOption: string
 			subfountOption: string
 			scriptLabel: string
@@ -1660,6 +3984,7 @@ export type LocaleData = {
 			noScriptProvided: string
 			executionSuccess: string
 			executionFailed: string
+			selectSubfount: string
 		}
 		downloadClient: {
 			title: string
@@ -1926,9 +4251,6 @@ export type LocaleData = {
 			copyModelIdTooltip: string
 			loadModelsFailed: string
 			modelSearchTitle: string
-			modelSearchPlaceholder: {
-				placeholder: string
-			}
 			modelSearchHint: string
 			modelsDevLoading: string
 			modelsDevLoadFailed: string
@@ -1948,6 +4270,9 @@ export type LocaleData = {
 			metaKnowledge: string
 			metaReleaseDate: string
 			providerDocLink: string
+			modelSearch: {
+				placeholder: string
+			}
 		}
 		prompts: {
 			newFileName: string
@@ -2024,7 +4349,6 @@ export type LocaleData = {
 				botToken: string
 				config: string
 			}
-			charSelectPlaceholder: string
 			botTokenInput: {
 				placeholder: string
 			}
@@ -2038,6 +4362,9 @@ export type LocaleData = {
 				saveConfig: string
 				startBot: string
 				stopBot: string
+			}
+			charSelect: {
+				placeholder: string
 			}
 		}
 		prompts: {
@@ -2101,7 +4428,6 @@ export type LocaleData = {
 				botToken: string
 				config: string
 			}
-			charSelectPlaceholder: string
 			apiBaseUrlInput: {
 				placeholder: string
 			}
@@ -2118,6 +4444,9 @@ export type LocaleData = {
 				saveConfig: string
 				startBot: string
 				stopBot: string
+			}
+			charSelect: {
+				placeholder: string
 			}
 		}
 		prompts: {
@@ -2189,7 +4518,6 @@ export type LocaleData = {
 				apiKey: string
 				config: string
 			}
-			charSelectPlaceholder: string
 			apiKeyInput: {
 				placeholder: string
 			}
@@ -2203,6 +4531,9 @@ export type LocaleData = {
 				saveConfig: string
 				startBot: string
 				stopBot: string
+			}
+			charSelect: {
+				placeholder: string
 			}
 		}
 		prompts: {
@@ -2489,10 +4820,8 @@ export type LocaleData = {
 		acpTitle: string
 		acpDesc: string
 		acpCharLabel: string
-		acpCharPlaceholder: string
 		charListError: string
 		acpScriptLabel: string
-		acpConfigPlaceholder: string
 		acpConfigSample: string
 		acpConfigHint: string
 		copyButton: string
@@ -2518,6 +4847,8 @@ export type LocaleData = {
 				locked_description: string
 			}
 		}
+		acpChar: string
+		acpConfig: string
 	}
 	achievements: {
 		title: string
@@ -2638,12 +4969,6 @@ export type LocaleData = {
 		copy_error: string
 		copy_fail_alert: string
 	}
-	'404': {
-		title: string
-		description: string
-		pageNotFoundText: string
-		homepageButton: string
-	}
 	tips: {
 		title: string
 	}
@@ -2759,6 +5084,97 @@ export type LocaleData = {
 			placeholder: string
 		}
 	}
+	common: {
+		cancel: string
+		create: string
+		save: string
+		delete: string
+		confirm: string
+		close: string
+		translate: {
+			showOriginal: string
+			showTranslation: string
+		}
+	}
+	cabinet: {
+		title: string
+		description: string
+		openCabinets: {
+			title: string
+			'aria-label': string
+		}
+		closeCabinets: {
+			title: string
+			'aria-label': string
+		}
+		bootstrapFailed: string
+		home_function_buttons: {
+			main: {
+				title: string
+			}
+		}
+		upload: string
+		uploadFolder: string
+		newFolder: string
+		open: string
+		download: string
+		downloadZip: string
+		rename: string
+		copy: string
+		cut: string
+		paste: string
+		pasteLink: string
+		selectAll: string
+		invert: string
+		properties: string
+		delete: string
+		back: {
+			title: string
+			'aria-label': string
+		}
+		cancel: string
+		save: string
+		showHidden: string
+		name: string
+		descriptionField: string
+		attrHidden: string
+		attrSystem: string
+		previewUrl: string
+		deletePreviewWithFile: string
+		folderPassword: string
+		unlockFolder: string
+		unlock: string
+		unlockFailed: string
+		created: string
+		modified: string
+		statusCount: string
+		newCabinetPrompt: string
+		newFolderPrompt: string
+		renamePrompt: string
+		visibilityPrompt: string
+		cabinetActionPrompt: string
+		confirmDeleteCabinet: string
+		confirmDelete: string
+		confirmDeleteSystem: string
+		copied: string
+		cutDone: string
+		undo: string
+		redo: string
+		newWindow: string
+		goUp: string
+		brokenLink: string
+		noDownload: string
+		groupDownloadHint: string
+		remoteEntity: string
+	}
+	entityProfile: {
+		attributionMismatch: string
+		attributionMismatchShort: {
+			title: string
+			'aria-label': string
+		}
+		ownedBy: string
+	}
 }
 // 用于从嵌套对象生成点表示法键的实用类型。
 type Prev = [never, 0, 1, 2, 3, 4, 5, ...0[]]
@@ -2805,12 +5221,200 @@ export type LocaleKeyParams = {
 	'browser_integration_script.hostChange.message': { newHost: string | number; origin: string | number }
 	'browser_integration_script.hostChange.uuidMismatchError': { newHost: string | number }
 	'browser_integration_script.hostChange.verificationError': { newHost: string | number }
+	'cabinet.bootstrapFailed': { error: string | number }
+	'cabinet.brokenLink': { reason: string | number }
+	'cabinet.created': { stamp: string | number }
+	'cabinet.modified': { stamp: string | number }
+	'cabinet.statusCount': { count: string | number; selected: string | number }
+	'cabinet.unlockFailed': { error: string | number }
 	'chat.dragAndDrop.charAdded': { partName: string | number }
 	'chat.dragAndDrop.errorAddingPart': { error: string | number; partName: string | number }
 	'chat.dragAndDrop.personaSet': { partName: string | number }
 	'chat.dragAndDrop.pluginAdded': { partName: string | number }
 	'chat.dragAndDrop.unsupportedPartType': { partType: string | number }
 	'chat.dragAndDrop.worldSet': { partName: string | number }
+	'chat.group.attachmentsHint': { n: string | number }
+	'chat.group.auditLog.event.channel_create': { channelName: string | number }
+	'chat.group.auditLog.event.channel_delete': { channelName: string | number }
+	'chat.group.auditLog.event.channel_key_rotate': { channelName: string | number }
+	'chat.group.auditLog.event.channel_permissions_update': { channelName: string | number }
+	'chat.group.auditLog.event.channel_update': { channelName: string | number }
+	'chat.group.auditLog.event.file_delete': { fileName: string | number }
+	'chat.group.auditLog.event.file_upload': { fileName: string | number }
+	'chat.group.auditLog.event.group_meta_update': { name: string | number }
+	'chat.group.auditLog.event.member_ban': { target: string | number }
+	'chat.group.auditLog.event.member_join': { target: string | number }
+	'chat.group.auditLog.event.member_kick': { target: string | number }
+	'chat.group.auditLog.event.member_unban': { target: string | number }
+	'chat.group.auditLog.event.message_delete': { targetEventId: string | number }
+	'chat.group.auditLog.event.peer_invite': { target: string | number }
+	'chat.group.auditLog.event.pin_message': { channelName: string | number; targetEventId: string | number }
+	'chat.group.auditLog.event.reputation_reset': { target: string | number }
+	'chat.group.auditLog.event.reputation_slash': { claim: string | number; target: string | number }
+	'chat.group.auditLog.event.role_assign': { roleName: string | number; target: string | number }
+	'chat.group.auditLog.event.role_create': { roleName: string | number }
+	'chat.group.auditLog.event.role_delete': { roleName: string | number }
+	'chat.group.auditLog.event.role_revoke': { roleName: string | number; target: string | number }
+	'chat.group.auditLog.event.role_update': { roleName: string | number }
+	'chat.group.auditLog.event.unpin_message': { channelName: string | number; targetEventId: string | number }
+	'chat.group.auditLog.loadFailed': { error: string | number }
+	'chat.group.blockConfirm': { sender: string | number }
+	'chat.group.feedbackDagLine': { label: string | number }
+	'chat.group.feedbackDagLineWithNote': { label: string | number; note: string | number }
+	'chat.group.feedbackPreviewLine': { note: string | number; sep: string | number; tag: string | number }
+	'chat.group.feedbackPreviewTaggedNote': { note: string | number; tag: string | number }
+	'chat.group.forceTriggerOne.title': { name: string | number }
+	'chat.group.mentionHandle': { name: string | number }
+	'chat.group.mentionInsert': { name: string | number }
+	'chat.group.messageRefAnchor': { id: string | number }
+	'chat.group.messageWithAttachments': { n: string | number; text: string | number }
+	'chat.group.pinMessageLine': { targetId: string | number }
+	'chat.group.quoteHeader': { sender: string | number; sep: string | number; time: string | number }
+	'chat.group.quoteHeaderWithTime': { sender: string | number; time: string | number }
+	'chat.group.quoteHeaderWithoutTime': { sender: string | number }
+	'chat.group.remoteTyping': { name: string | number }
+	'chat.group.remoteTypingMany': { count: string | number; name: string | number }
+	'chat.group.remoteTypingTwo': { name1: string | number; name2: string | number }
+	'chat.group.settingsPage.banConfirm': { name: string | number }
+	'chat.group.settingsPage.banFailed': { error: string | number }
+	'chat.group.settingsPage.channelArchiveImportFailed': { error: string | number }
+	'chat.group.settingsPage.channelArchiveImportOk': { count: string | number }
+	'chat.group.settingsPage.channelPermsUpdateFailed': { error: string | number }
+	'chat.group.settingsPage.createRoleFailed': { error: string | number }
+	'chat.group.settingsPage.deleteFailed': { error: string | number }
+	'chat.group.settingsPage.deleteRoleFailed': { error: string | number }
+	'chat.group.settingsPage.emojisDeleteFailed': { error: string | number }
+	'chat.group.settingsPage.emojisUploadFailed': { error: string | number }
+	'chat.group.settingsPage.gshGenerationNearLimit': { generation: string | number; maxGenerations: string | number }
+	'chat.group.settingsPage.inviteClipboard': { code: string | number; groupId: string | number; url: string | number }
+	'chat.group.settingsPage.inviteExpires': { date: string | number }
+	'chat.group.settingsPage.keyRotateFailed': { error: string | number }
+	'chat.group.settingsPage.kickConfirm': { name: string | number }
+	'chat.group.settingsPage.kickFailed': { error: string | number }
+	'chat.group.settingsPage.loadFailed': { error: string | number }
+	'chat.group.settingsPage.ownerSuccessionFailed': { error: string | number }
+	'chat.group.settingsPage.permissionUpdateFailed': { error: string | number }
+	'chat.group.settingsPage.saveFailed': { error: string | number }
+	'chat.group.settingsPage.unbanConfirm': { name: string | number }
+	'chat.group.settingsPage.unbanFailed': { error: string | number }
+	'chat.group.stickerPrefixLine': { label: string | number }
+	'chat.group.threadBreadcrumbMiddleSummary': { count: string | number }
+	'chat.group.unpinMessageLine': { targetId: string | number }
+	'chat.group.voteBlockHeading': { prefix: string | number; question: string | number }
+	'chat.group.voteBlockHeadingTagged': { question: string | number }
+	'chat.group.voteCastLine': { choice: string | number; prefix: string | number }
+	'chat.group.voteCastLineTagged': { choice: string | number }
+	'chat.group.voteDeadlineLineClosed': { date: string | number }
+	'chat.group.voteDeadlineLineOpen': { date: string | number }
+	'chat.group.voteFor': { option: string | number }
+	'chat.group.voteOptionsPreview': { options: string | number; prefix: string | number }
+	'chat.group.voteOptionsPreviewTagged': { options: string | number }
+	'chat.group.voteTotal': { n: string | number }
+	'chat.hub.applyBranchFailed': { error: string | number }
+	'chat.hub.autoBranchFailed': { error: string | number }
+	'chat.hub.banners.forkTipScore': { score: string | number; short: string | number }
+	'chat.hub.banners.forkTips': { count: string | number }
+	'chat.hub.banners.gshBuffer': { total: string | number }
+	'chat.hub.banners.mailboxPending': { count: string | number }
+	'chat.hub.banners.quarantine': { count: string | number }
+	'chat.hub.banners.suspectedRemoved': { count: string | number }
+	'chat.hub.blockOpposingFailed': { error: string | number }
+	'chat.hub.blockOpposingOk': { count: string | number }
+	'chat.hub.callDuration': { duration: string | number }
+	'chat.hub.callJoinFailed': { error: string | number }
+	'chat.hub.callParticipants': { n: string | number }
+	'chat.hub.callPeerCount': { n: string | number }
+	'chat.hub.callScreenFailed': { error: string | number }
+	'chat.hub.callStartedAt': { time: string | number }
+	'chat.hub.channelContext.deleteConfirm': { name: string | number }
+	'chat.hub.channelContext.exportFailed': { error: string | number }
+	'chat.hub.charChatComposer.placeholder': { name: string | number }
+	'chat.hub.charChatStart': { name: string | number }
+	'chat.hub.charChatSubtitle': { name: string | number }
+	'chat.hub.charChatsTitle': { name: string | number }
+	'chat.hub.charCount': { count: string | number }
+	'chat.hub.composer.placeholder': { channel: string | number }
+	'chat.hub.configLoadFailed': { error: string | number }
+	'chat.hub.configSaveFailed': { error: string | number }
+	'chat.hub.createChatFailed': { error: string | number }
+	'chat.hub.createModal.failed': { error: string | number }
+	'chat.hub.deleteSessionConfirm': { name: string | number }
+	'chat.hub.discoveryLoadFailed': { message: string | number }
+	'chat.hub.discoverySourceCount': { count: string | number }
+	'chat.hub.fedNonceRotated': { nonce: string | number }
+	'chat.hub.fedRepairJoinSnapshotFailed': { error: string | number }
+	'chat.hub.fedRepairJoinSnapshotOk': { channels: string | number }
+	'chat.hub.federationLoadFailed': { error: string | number }
+	'chat.hub.filesLoadFailed': { error: string | number }
+	'chat.hub.filesRenameFolderPrompt': { name: string | number }
+	'chat.hub.folderRenamePrompt': { name: string | number }
+	'chat.hub.forkSplitFailed': { error: string | number }
+	'chat.hub.friendsCount': { count: string | number }
+	'chat.hub.friendsRestartConfirm': { name: string | number }
+	'chat.hub.friendsRestartFailed': { error: string | number }
+	'chat.hub.groupContext.leaveBatch': { count: string | number }
+	'chat.hub.groupContext.leaveBatchOk': { count: string | number }
+	'chat.hub.groupContext.leaveBatchPartial': { failed: string | number; total: string | number }
+	'chat.hub.groupContext.leaveBatchPending': { count: string | number }
+	'chat.hub.groupContext.leaveConfirm': { name: string | number }
+	'chat.hub.groupContext.leaveConfirmBatch': { count: string | number }
+	'chat.hub.groupContext.setAliasPrompt': { name: string | number }
+	'chat.hub.groupUnnamed': { suffix: string | number }
+	'chat.hub.gshDecryptPending': { gen: string | number }
+	'chat.hub.inbox.badgeFetchFailed': { error: string | number }
+	'chat.hub.inbox.jumpFailed': { error: string | number }
+	'chat.hub.inbox.loadFailed': { error: string | number }
+	'chat.hub.inbox.markSeenFailed': { error: string | number }
+	'chat.hub.inbox.rowLabel.aria-label': { author: string | number; channel: string | number; group: string | number; preview: string | number }
+	'chat.hub.inviteCardMembers': { count: string | number }
+	'chat.hub.listJsonInvalid': { message: string | number }
+	'chat.hub.loadGroupFailed': { error: string | number }
+	'chat.hub.loadListFailed': { error: string | number }
+	'chat.hub.loadMessagesFailed': { error: string | number }
+	'chat.hub.memberContext.personalBlockConfirm': { name: string | number }
+	'chat.hub.memberContext.setAliasPrompt': { name: string | number }
+	'chat.hub.memberCountLabel': { count: string | number }
+	'chat.hub.membersDigestMismatch': { root: string | number }
+	'chat.hub.membersDigestOk': { root: string | number }
+	'chat.hub.membersDigestOkPaged': { pages: string | number; root: string | number }
+	'chat.hub.membersDigestPagesTitle.title': { expected: string | number; pages: string | number }
+	'chat.hub.mergeDagFailed': { error: string | number }
+	'chat.hub.messageActionFailed': { error: string | number }
+	'chat.hub.newGroupWith': { name: string | number }
+	'chat.hub.operationFailed': { error: string | number }
+	'chat.hub.pinPreviewInvite': { groupName: string | number }
+	'chat.hub.pinPreviewVote': { question: string | number }
+	'chat.hub.profileEdit.linksPreview': { count: string | number }
+	'chat.hub.profileEdit.resetFromPartFailed': { error: string | number }
+	'chat.hub.profilePopup.dmFailed': { error: string | number }
+	'chat.hub.profilePopup.setAliasPrompt': { name: string | number }
+	'chat.hub.reactionRemovePrompt': { candidates: string | number; emoji: string | number }
+	'chat.hub.reputationSlashAlert': { target: string | number }
+	'chat.hub.saveEmojiFailed': { error: string | number }
+	'chat.hub.saveStickerFailed': { error: string | number }
+	'chat.hub.sendFailed': { error: string | number }
+	'chat.hub.sendImageFailed': { error: string | number }
+	'chat.hub.sendStickerFailed': { error: string | number }
+	'chat.hub.sessionDeleteFailed': { error: string | number }
+	'chat.hub.shareGroupFailed': { error: string | number }
+	'chat.hub.startChatWith': { name: string | number }
+	'chat.hub.stickersLoadFailed': { error: string | number }
+	'chat.hub.streamAvJoinFailed': { error: string | number }
+	'chat.hub.streamAvPeers': { count: string | number }
+	'chat.hub.syncFailed': { error: string | number }
+	'chat.hub.syncIncomplete': { missing: string | number; total: string | number }
+	'chat.hub.timeToday': { time: string | number }
+	'chat.hub.timeYesterday': { time: string | number }
+	'chat.hub.translationPrefs.saveFailed': { error: string | number }
+	'chat.hub.trustAuthorDialog.confirmCooldown': { seconds: string | number }
+	'chat.hub.trustAuthorDialog.subtitle': { author: string | number }
+	'chat.hub.typing': { names: string | number }
+	'chat.hub.unbindFriendConfirm': { name: string | number }
+	'chat.hub.unbindFriendFailed': { error: string | number }
+	'chat.hub.voteCount': { count: string | number; pct: string | number }
+	'chat.hub.voteCreateFailed': { error: string | number }
+	'chat.hub.voteDeadline': { date: string | number }
+	'chat.hub.voteTotal': { total: string | number }
 	'chat.messageView.logprobsMetricsFooter': { speed: string | number; time: string | number; tokens: string | number; ttft: string | number }
 	'chat.messageView.logprobsTopLogprobsMeta': { token: string | number }
 	'chat.messageView.share.success': { provider: string | number; sponsorLink: string | number }
@@ -2819,10 +5423,8 @@ export type LocaleKeyParams = {
 	'chat.messageView.toolReplacingFilepath': { filepath: string | number }
 	'chat.messageView.toolRunningLang': { lang: string | number }
 	'chat.messageView.toolSearchingContent': { content: string | number }
+	'chat.sessionSettings.subtitleRoles': { count: string | number }
 	'chat.typingIndicator.isTyping': { names: string | number }
-	'chat.hub.channelContext.exportFailed': { error: string | number }
-	'chat.group.settingsPage.channelArchiveImportOk': { count: string | number }
-	'chat.group.settingsPage.channelArchiveImportFailed': { error: string | number }
 	'code_block.copy_failed': { error: string | number }
 	'deskpet.toasts.start_failed': { charname: string | number; message: string | number }
 	'deskpet.toasts.started': { charname: string | number }
@@ -2832,6 +5434,7 @@ export type LocaleKeyParams = {
 	'discord_bots.alerts.botExists': { botname: string | number }
 	'easynew.alerts.error': { message: string | number }
 	'easynew.alerts.success': { partName: string | number }
+	'entityProfile.ownedBy': { owner: string | number }
 	'export.alerts.exportFailed': { message: string | number }
 	'export.alerts.loadPartDetailsFailed': { message: string | number }
 	'export.alerts.shareFailed': { message: string | number }
@@ -2856,7 +5459,7 @@ export type LocaleKeyParams = {
 	'fountConsole.partManager.partLoaded': { partpath: string | number }
 	'fountConsole.path.deno.patchUnsupportedArch': { arch: string | number }
 	'fountConsole.path.git.backupSavedTo': { path: string | number }
-	'fountConsole.path.git.noUpstreamBranch': { branch: string | number, remote: string | number }
+	'fountConsole.path.git.noUpstreamBranch': { branch: string | number; remote: string | number }
 	'fountConsole.path.git.remoteRefUnavailable': { ref: string | number }
 	'fountConsole.path.install.packageFailed': { package: string | number }
 	'fountConsole.path.install.permissionDeniedAsRoot': { path: string | number }
@@ -2881,36 +5484,76 @@ export type LocaleKeyParams = {
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
 	'fountConsole.test.available': { ids: string | number }
-	'fountConsole.test.diffMode': { fileCount: string | number; files: string | number }
+	'fountConsole.test.blocked': { deps: string | number; label: string | number }
+	'fountConsole.test.continueImperfect': { count: string | number }
+	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
+	'fountConsole.test.denoPanic.detected': { label: string | number; signature: string | number }
+	'fountConsole.test.denoPanic.duplicate': { upstream: string | number }
+	'fountConsole.test.denoPanic.ghUnavailable': { signature: string | number }
+	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
+	'fountConsole.test.denoPanic.published': { url: string | number }
+	'fountConsole.test.estimatedRemaining': { completed: string | number; eta: string | number; total: string | number }
+	'fountConsole.test.estimatedRun': { eta: string | number; rate: string | number }
+	'fountConsole.test.estimatedRunSerial': { eta: string | number }
+	'fountConsole.test.estimatedRunSerialHint': { eta: string | number; rate: string | number; savings: string | number }
+	'fountConsole.test.estimatedRunSkipped': { blocked: string | number; reused: string | number }
+	'fountConsole.test.failed': { label: string | number }
+	'fountConsole.test.failedWithCode': { code: string | number; label: string | number }
 	'fountConsole.test.failuresCleared': { manifestId: string | number }
 	'fountConsole.test.failuresSaved': { count: string | number; path: string | number }
-	'fountConsole.test.failed': { label: string | number }
-	'fountConsole.test.failureRetry': { count: string | number; manifests: string | number }
 	'fountConsole.test.federationCleanupPost': { output: string | number }
 	'fountConsole.test.federationCleanupPre': { output: string | number }
-	'fountConsole.test.hashStaleAppendDiff': { count: string | number }
+	'fountConsole.test.heapSnapshotSaved': { path: string | number }
 	'fountConsole.test.manifestMatched': { ids: string | number }
-	'fountConsole.test.manifestNoDiffRunAll': { manifestIds: string | number }
-	'fountConsole.test.noiseHits': { hits: string | number }
+	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number }
 	'fountConsole.test.nodeWorker.error': { error: string | number }
+	'fountConsole.test.noiseHits': { hits: string | number }
+	'fountConsole.test.noisyOnlyRemain': { count: string | number; suites: string | number }
+	'fountConsole.test.outdatedSelected': { count: string | number }
 	'fountConsole.test.passed': { label: string | number }
 	'fountConsole.test.passedWithNoise': { label: string | number }
+	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number }
 	'fountConsole.test.report.artifacts': { path: string | number }
-	'fountConsole.test.report.durationMin': { min: string | number }
-	'fountConsole.test.report.durationMinSec': { min: string | number; sec: string | number }
+	'fountConsole.test.report.continueReasonsLink': { path: string | number }
 	'fountConsole.test.report.durationMs': { ms: string | number }
-	'fountConsole.test.report.durationSec': { sec: string | number }
+	'fountConsole.test.report.durationUnitDay': { n: string | number }
+	'fountConsole.test.report.durationUnitHour': { n: string | number }
+	'fountConsole.test.report.durationUnitMin': { n: string | number }
+	'fountConsole.test.report.durationUnitMinute': { n: string | number }
+	'fountConsole.test.report.durationUnitSec': { n: string | number }
+	'fountConsole.test.report.estimatePoint': { eta: string | number }
+	'fountConsole.test.report.labelPullDownstream': { requiredBy: string | number }
+	'fountConsole.test.report.labelPullUpstream': { requiredBy: string | number }
+	'fountConsole.test.report.pendingEstimate': { eta: string | number }
+	'fountConsole.test.report.pendingItemExpected': { expected: string | number }
+	'fountConsole.test.report.pendingParallelEstimate': { eta: string | number; rate: string | number }
+	'fountConsole.test.report.pendingSavings': { savings: string | number }
 	'fountConsole.test.report.progressFormat': { completed: string | number; total: string | number }
 	'fountConsole.test.report.suitesFormat': { completed: string | number; passed: string | number }
 	'fountConsole.test.reportPath': { path: string | number }
 	'fountConsole.test.reportPathFinal': { path: string | number }
-	'fountConsole.test.runningSuite': { manifestId: string | number; name: string | number }
-	'fountConsole.test.runningSuiteHeavy': { manifestId: string | number; name: string | number }
+	'fountConsole.test.reusedSuite': { manifestId: string | number; name: string | number; status: string | number }
+	'fountConsole.test.runningSuite.base': { manifestId: string | number; name: string | number }
+	'fountConsole.test.runningSuite.expected': { expected: string | number }
 	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
 	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.state.artifacts': { path: string | number }
+	'fountConsole.test.statePathFinal': { path: string | number }
 	'fountConsole.test.suiteHeader': { name: string | number }
+	'fountConsole.test.terminateDuration': { baseline: string | number; elapsed: string | number; label: string | number; limit: string | number }
+	'fountConsole.test.terminateDurationDefault': { elapsed: string | number; label: string | number; limit: string | number }
+	'fountConsole.test.terminateIdle': { elapsed: string | number; idleSec: string | number; label: string | number; minutes: string | number }
+	'fountConsole.test.terminateMarker': { reason: string | number }
+	'fountConsole.test.terminateUnknown': { label: string | number }
+	'fountConsole.test.terminated': { label: string | number; reason: string | number }
+	'fountConsole.test.triggerNoMatch': { pattern: string | number; scope: string | number }
+	'fountConsole.test.triggerNoMatchSummary': { count: string | number }
+	'fountConsole.test.unknownFileFilter': { names: string | number; suite: string | number }
 	'fountConsole.test.unknownManifestId': { ids: string | number }
+	'fountConsole.test.unknownSubtestFilter': { names: string | number; suite: string | number }
 	'fountConsole.test.unknownSuite': { name: string | number }
+	'fountConsole.test.unknownSuiteSelector': { ids: string | number }
+	'fountConsole.test.unsupportedSubtestFilter': { names: string | number; suite: string | number }
 	'fountConsole.test.ws.fail': { detail: string | number }
 	'fountConsole.test.ws.pass': { detail: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }
@@ -2934,6 +5577,11 @@ export type LocaleKeyParams = {
 	'part_config.alerts.loadEditorFailed': { message: string | number }
 	'part_config.alerts.saveConfigFailed': { message: string | number }
 	'pow_captcha.errorMessage': { error: string | number }
+	'profile.errors.operationFailed': { error: string | number }
+	'profile.federationSaveFailed': { error: string | number }
+	'profile.groupMembers': { channels: string | number; members: string | number }
+	'profile.ownerConfirmCooldown': { seconds: string | number }
+	'profile.ownerSaveFailed': { error: string | number }
 	'protocolhandler.offline_dialog.message': { hostUrl: string | number }
 	'protocolhandler.runPart.commandError': { error: string | number }
 	'protocolhandler.runPart.confirm.message': { partpath: string | number }
@@ -2962,6 +5610,50 @@ export type LocaleKeyParams = {
 	'serviceSource_manager.common_config_interface.modelsDevLoadFailed': { message: string | number }
 	'serviceSource_manager.common_config_interface.providerDocLink': { url: string | number }
 	'serviceSource_manager.common_config_interface.providerLabel': { provider: string | number }
+	'social.actions.blockFailed': { error: string | number }
+	'social.actions.deleteFailed': { error: string | number }
+	'social.actions.dislikeFailed': { error: string | number }
+	'social.actions.followFailed': { error: string | number }
+	'social.actions.hideFailed': { error: string | number }
+	'social.actions.likeFailed': { error: string | number }
+	'social.actions.muteFailed': { error: string | number }
+	'social.actions.replyFailed': { error: string | number }
+	'social.actions.repostFailed': { error: string | number }
+	'social.actions.saveFailed': { error: string | number }
+	'social.bootstrapFailed': { error: string | number }
+	'social.drafts.deleteFailed': { error: string | number }
+	'social.drafts.loadFailed': { error: string | number }
+	'social.drafts.saveFailed': { error: string | number }
+	'social.feed.repostedBy': { author: string | number }
+	'social.inbox.aggregated.follow': { author1: string | number; author2: string | number; count: string | number }
+	'social.inbox.aggregated.followTwo': { author1: string | number; author2: string | number }
+	'social.inbox.aggregated.like': { author1: string | number; author2: string | number; count: string | number }
+	'social.inbox.aggregated.likeTwo': { author1: string | number; author2: string | number }
+	'social.inbox.aggregated.repost': { author1: string | number; author2: string | number; count: string | number }
+	'social.inbox.aggregated.repostTwo': { author1: string | number; author2: string | number }
+	'social.live.likes': { n: string | number }
+	'social.live.postEndedStats': { duration: string | number; likes: string | number; viewers: string | number }
+	'social.live.viewers': { n: string | number }
+	'social.notes.more': { n: string | number }
+	'social.notifications.care_post': { author: string | number }
+	'social.notifications.follow': { author: string | number }
+	'social.notifications.like': { author: string | number }
+	'social.notifications.live_started': { author: string | number }
+	'social.notifications.mention': { author: string | number }
+	'social.notifications.poll_closed': { author: string | number }
+	'social.notifications.post_note': { author: string | number }
+	'social.notifications.reply': { author: string | number }
+	'social.notifications.repost': { author: string | number }
+	'social.poll.deadline': { deadline: string | number }
+	'social.profile.cabinetsFailed': { error: string | number }
+	'social.reply.context': { author: string | number }
+	'social.search.trustScore': { score: string | number }
+	'social.taste.weight': { weight: string | number }
+	'social.time.hoursAgo': { n: string | number }
+	'social.time.minutesAgo': { n: string | number }
+	'social.trending.postCount.title': { n: string | number }
+	'stickers.authorLabel': { author: string | number }
+	'stickers.stickerCount': { count: string | number }
 	'subfounts.codeExecution.executionFailed': { message: string | number }
 	'subfounts.codeExecution.hostOption': { id: string | number }
 	'subfounts.codeExecution.subfountOption': { deviceId: string | number; id: string | number }
