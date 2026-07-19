@@ -360,6 +360,19 @@ async function injectFixtures(dataPath, username, copies) {
 	}
 }
 
+/** hold→release→spawn 窗口内端口被抢时的最大重试次数。 */
+const LAUNCH_PORT_RACE_RETRIES = 5
+
+/**
+ * @param {unknown} error 启动失败
+ * @returns {boolean} 是否像端口争用（可换口重试）
+ */
+function isLaunchPortRaceError(error) {
+	if (error instanceof PortCollisionError) return true
+	const text = String(error?.message ?? error ?? '')
+	return /EADDRINUSE|address already in use/i.test(text)
+}
+
 /**
  * 启动一个 headless fount 测试节点子进程。
  * @param {object} [options={}] 启动选项
@@ -381,6 +394,29 @@ async function injectFixtures(dataPath, username, copies) {
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(options = {}) {
+	let lastError
+	/** @type {object} */
+	let attemptOptions = options
+	for (let attempt = 0; attempt < LAUNCH_PORT_RACE_RETRIES; attempt++) 
+		try {
+			return await launchNodeOnce(attemptOptions)
+		}
+		catch (error) {
+			lastError = error
+			if (!isLaunchPortRaceError(error) || attempt === LAUNCH_PORT_RACE_RETRIES - 1) throw error
+			// 换口重试：丢掉已 release 的显式端口，重新 hold（fed 节点 env 以返回的 port 为准）。
+			attemptOptions = { ...options, port: undefined, releasePort: undefined }
+		}
+	
+	throw lastError
+}
+
+/**
+ * 单次启动尝试（无端口争用重试）。
+ * @param {object} [options={}] 同 {@link launchNode}
+ * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
+ */
+async function launchNodeOnce(options = {}) {
 	/** @type {(() => Promise<void>) | undefined} */
 	let releasePort = options.releasePort
 	let port = options.port
@@ -389,6 +425,9 @@ export async function launchNode(options = {}) {
 		const held = await allocateTestPortBlock({ count: 1, step: 1 })
 		port = held.base
 		const outerRelease = releasePort
+		/**
+		 *
+		 */
 		releasePort = async () => {
 			await held.releasePort(port)
 			await outerRelease?.()
@@ -446,13 +485,19 @@ export async function launchNode(options = {}) {
 	 */
 	const onOutput = chunk => {
 		const text = String(chunk)
-		if (captureEnabled) capturedOutput = appendBoundedTail(capturedOutput, text)
-		else startupOutput = appendBoundedTail(startupOutput, text)
+		if (captureEnabled) {
+			if (options.captureOutput) capturedOutput = appendBoundedTail(capturedOutput, text)
+			else process.stderr.write(chunk)
+			return
+		}
+		startupOutput = appendBoundedTail(startupOutput, text)
+		if (!options.captureOutput) process.stderr.write(chunk)
 	}
 
+	// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
 	const child = spawn(denoBin, workerArgs, {
 		cwd: REPO_ROOT,
-		stdio: ['ignore', 'pipe', options.captureOutput ? 'pipe' : 'inherit'],
+		stdio: ['ignore', 'pipe', 'pipe'],
 		env: {
 			...process.env,
 			FOUNT_TEST: '1',
@@ -462,10 +507,7 @@ export async function launchNode(options = {}) {
 			...extraEnv,
 		},
 	})
-	if (options.captureOutput) {
-		child.stdout.on('data', onOutput)
-		child.stderr?.on('data', onOutput)
-	}
+	child.stderr.on('data', onOutput)
 
 	/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
 	const childExited = new Promise(resolve => {
@@ -494,8 +536,9 @@ export async function launchNode(options = {}) {
 	}
 	readline.close()
 	// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。
+	if (options.captureOutput) child.stdout.on('data', onOutput)
 	child.stdout.resume()
-	child.stderr?.resume?.()
+	child.stderr.resume()
 
 	if (!readyInfo?.baseUrl)
 		await failOnEarlyExit()
@@ -508,6 +551,7 @@ export async function launchNode(options = {}) {
 	}
 	catch (error) {
 		if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`
+		try { child.kill('SIGKILL') } catch { /* already dead */ }
 		throw error
 	}
 	captureEnabled = true

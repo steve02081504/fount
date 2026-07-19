@@ -53,14 +53,15 @@ function collectTestFiles(directory) {
 /**
  * 在子进程中执行 deno test 并捕获 stdall；实时转发 stdall 以免 orchestrator idle watchdog 误杀。
  * @param {string[]} command 可执行文件与参数
+ * @param {Record<string, string>} [extraEnv] 额外注入子进程的环境变量
  * @returns {Promise<{ code: number, output: string, signal: string | null }>} 退出码与合并输出
  */
-async function runCaptured(command) {
+async function runCaptured(command, extraEnv = {}) {
 	const [executable, ...rest] = command
 	let output = ''
 	const result = await execFile(executable, rest, {
 		cwd: REPO_ROOT,
-		env: childEnv(),
+		env: childEnv(extraEnv),
 		no_output_record: true,
 		/**
 		 * @param {string | Uint8Array} data stdout 片段
@@ -132,7 +133,7 @@ const { first: firstFiles, rest: restFiles } = orderFailedFirst(
  * @returns {boolean} 是否记为失败
  */
 function recordResult(file, code, output, signal = null) {
-	const teardownCrash = isDenoTeardownCrashAfterGreenTests(code, output)
+	const teardownCrash = isDenoTeardownCrashAfterGreenTests(code, output, signal)
 	const noisy = outputHasNoise(output)
 	const rel = toRepoRelative(REPO_ROOT, file)
 	if (code !== 0 && !teardownCrash) {
@@ -174,7 +175,10 @@ async function runPool(files, { stopOnFailure }) {
 			const index = cursor++
 			if (index >= files.length) break
 			const file = files[index]
-			const { code, output, signal } = await runCaptured(['deno', ...denoBase, file])
+			// DENO_JOBS=1：单文件内 Deno.test 默认并行会叠多个 launchNode，与 hold→release→spawn TOCTOU 互抢端口。
+			const { code, output, signal } = await runCaptured(['deno', ...denoBase, file], {
+				DENO_JOBS: '1',
+			})
 			const isFail = recordResult(file, code, output, signal)
 			if (isFail && stopOnFailure) {
 				stopped = true

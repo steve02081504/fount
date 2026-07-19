@@ -153,6 +153,14 @@ Deno.test('isDenoTeardownCrashAfterGreenTests treats Deno panic after green summ
 	assertEquals(isDenoTeardownCrashAfterGreenTests(1, MULTILINE_SAMPLE), true)
 })
 
+Deno.test('isDenoTeardownCrashAfterGreenTests treats Linux SIGSEGV after green summary as pass', () => {
+	const output = 'ok | 15 passed | 0 failed (24s)\n'
+	assertEquals(isDenoTeardownCrashAfterGreenTests(1, output, 'SIGSEGV'), true)
+	assertEquals(isDenoTeardownCrashAfterGreenTests(1, output, 'SIGABRT'), true)
+	assertEquals(isDenoTeardownCrashAfterGreenTests(1, output, 'SIGTERM'), false)
+	assertEquals(isDenoTeardownCrashAfterGreenTests(1, 'ok | 14 passed | 1 failed (1s)\n', 'SIGSEGV'), false)
+})
+
 Deno.test('readPanicRecord returns empty record when file is missing', async () => {
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-panic-rec-'))
 	const record = await readPanicRecord(repoRoot, '2.9.1')

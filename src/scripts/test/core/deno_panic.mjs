@@ -122,6 +122,9 @@ const WINDOWS_DENO_TEARDOWN_EXIT = -1073740940
 /** Windows STATUS_ACCESS_VIOLATION：teardown 阶段 native 析构偶发，测试本身可能已全部通过。 */
 const WINDOWS_DENO_ACCESS_VIOLATION_EXIT = -1073741819
 
+/** Linux/macOS：测试已绿后 native 析构偶发的致命信号（serial.mjs 从子进程 signal 传入）。 */
+const POSIX_TEARDOWN_SIGNALS = new Set(['SIGSEGV', 'SIGABRT', 'SIGBUS', 'SIGILL'])
+
 /**
  * 从 deno test 输出取最后一次 `N passed | M failed` 摘要里的 failed 数；无摘要时 null。
  * @param {string} output 子进程 stdall
@@ -135,19 +138,22 @@ export function denoTestSummaryFailedCount(output) {
 }
 
 /**
- * 子进程非零退出但 deno test 摘要为 0 failed，且为 Deno panic / Windows 析构崩溃。
+ * 子进程非零退出但 deno test 摘要为 0 failed，且为 Deno panic / OS 析构崩溃。
  * @param {number} code 退出码
  * @param {string} output 子进程 stdall
+ * @param {string | null} [signal] 终止信号（如 SIGSEGV）；Linux CI 上 green 后 napi 析构常见
  * @returns {boolean} 是否视为 teardown 噪声
  */
-export function isDenoTeardownCrashAfterGreenTests(code, output) {
+export function isDenoTeardownCrashAfterGreenTests(code, output, signal = null) {
 	if (code === 0) return false
 	const failedCount = denoTestSummaryFailedCount(output)
 	if (failedCount !== null && failedCount !== 0) return false
 	if (parseDenoPanic(output)) return true
-	if (code !== WINDOWS_DENO_TEARDOWN_EXIT && code !== WINDOWS_DENO_ACCESS_VIOLATION_EXIT) return false
+	const posixTeardown = signal != null && POSIX_TEARDOWN_SIGNALS.has(String(signal).toUpperCase())
+	const windowsTeardown = code === WINDOWS_DENO_TEARDOWN_EXIT || code === WINDOWS_DENO_ACCESS_VIOLATION_EXIT
+	if (!posixTeardown && !windowsTeardown) return false
 	if (failedCount === 0) return true
-	// Deno 可能在打印 `ok | N passed | 0 failed` 摘要前即 Windows 堆损坏退出。
+	// Deno 可能在打印 `ok | N passed | 0 failed` 摘要前即析构崩溃退出。
 	const text = removeTerminalSequences(output)
 	return !/\bFAILED\b/.test(text)
 }
