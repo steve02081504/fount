@@ -398,11 +398,12 @@
 			"continueImperfect": "失败/未完成波次：${count} 个套件",
 			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
 			"runningSuite": {
-				"base": "\n>>> 正在运行 ${manifestId}/${name}",
+				"base": "\n>>> 正在运行 ${manifestId}:${name}",
 				"heavy": "高负载",
 				"expected": "预期 ${expected}"
 			},
-			"reusedSuite": "\n>>> 复用 ${manifestId}/${name}（trigger 未变，沿用上次 ${status}）",
+			"reusedSuite": "\n>>> 复用 ${manifestId}:${name}（trigger 未变，沿用上次 ${status}）",
+			"noisyOnlyRemain": "仍有 ${count} 个套件通过但含噪声，未自动重跑：${suites}",
 			"estimatedRun": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
 			"estimatedRunSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
 			"estimatedRunSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）",

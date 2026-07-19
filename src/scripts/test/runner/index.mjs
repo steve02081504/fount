@@ -46,7 +46,7 @@ import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildCommittedChangedByKey,
-	scopeHasFreshNoisy,
+	listFreshNoisyKeys,
 	selectExplicitOrAll,
 	selectImperfectWave,
 	selectOutdatedWave,
@@ -237,8 +237,8 @@ function logTriggerWarnings(warnings) {
 	if (!warnings.length) return
 	for (const warning of warnings) {
 		const scope = warning.subtestName
-			? `${warning.manifestId}/${warning.suiteName}/${warning.subtestName}`
-			: `${warning.manifestId}/${warning.suiteName}`
+			? `${warning.manifestId}:${warning.suiteName}:${warning.subtestName}`
+			: `${warning.manifestId}:${warning.suiteName}`
 		console.warnI18n('fountConsole.test.triggerNoMatch', { scope, pattern: warning.pattern })
 	}
 	console.warnI18n('fountConsole.test.triggerNoMatchSummary', { count: warnings.length })
@@ -408,7 +408,7 @@ async function executeWave(context) {
 	try {
 		await coordinator.runAll(async slot => {
 			const { suite } = slot
-			const label = `${suite.manifestId}/${suite.name}`
+			const label = `${suite.manifestId}:${suite.name}`
 			const key = slot.key
 			const index = reportIndexByKey.get(key)
 			const prev = state.suites[key]
@@ -566,7 +566,7 @@ function alignFreshFingerprints(state, allSuites, verdicts, commitHash, uncommit
  * 测试运行主入口：选择 suite、调度执行、写报告与 state。
  *
  * 默认循环：imperfect 波次 → hard fail 即退 1；否则 outdated 波次 → 再回到 imperfect；
- * 两波皆空则按是否仍有 fresh noisy 退 1/0。失败不会在同一次调用内自动重试。
+ * 两波皆空：仍有 fresh noisy → 1；真正全绿 → 0。失败不会在同一次调用内自动重试。
  * @param {RunTestsOptions} [options={}] 运行选项
  * @returns {Promise<number>} 进程退出码
  */
@@ -762,7 +762,15 @@ export async function runTests(options = {}) {
 			continue
 		}
 
+		const noisyKeys = listFreshNoisyKeys(verdicts, filtered)
+		if (noisyKeys.length) {
+			console.logI18n('fountConsole.test.noisyOnlyRemain', {
+				count: noisyKeys.length,
+				suites: noisyKeys.join(', '),
+			})
+			return 1
+		}
 		console.logI18n('fountConsole.test.nothingToContinue')
-		return scopeHasFreshNoisy(verdicts, filtered) ? 1 : 0
+		return 0
 	}
 }

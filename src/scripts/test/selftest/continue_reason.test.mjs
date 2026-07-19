@@ -89,15 +89,15 @@ Deno.test('goalContinue expands one imperfect downstream level', () => {
 	]
 	const state = {
 		suites: {
-			'shells/chat/parent': makeStateEntry({ status: 'failed' }),
-			'shells/chat/child': makeStateEntry({ status: 'passed' }),
+			'shells/chat:parent': makeStateEntry({ status: 'failed' }),
+			'shells/chat:child': makeStateEntry({ status: 'passed' }),
 		},
 	}
 	const verdicts = new Map([
-		['shells/chat/parent', { kind: 'red', fresh: true, triggerHash: null }],
-		['shells/chat/child', { kind: 'green', fresh: true, triggerHash: null }],
+		['shells/chat:parent', { kind: 'red', fresh: true, triggerHash: null }],
+		['shells/chat:child', { kind: 'green', fresh: true, triggerHash: null }],
 	])
-	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat/child', 'shells/chat/parent'])
+	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat:child', 'shells/chat:parent'])
 })
 
 Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {
@@ -107,9 +107,9 @@ Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {
 	]
 	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const verdicts = buildVerdicts(all, { suites: {} }, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
-	const evidence = new Map([['shells/chat/frontend', { kind: 'explicit_selected' }]])
-	const plan = buildPlan(new Set(['shells/chat/frontend']), verdicts, byKey, all, evidence)
+	const evidence = new Map([['shells/chat:frontend', { kind: 'explicit_selected' }]])
+	const plan = buildPlan(new Set(['shells/chat:frontend']), verdicts, byKey, all, evidence)
 	const reasons = buildReasonsFromPlan(plan)
-	assertEquals(reasons.get('shells/chat/frontend')?.kind, 'explicit_selected')
-	assertEquals(reasons.get('server/live')?.kind, 'dependency_required')
+	assertEquals(reasons.get('shells/chat:frontend')?.kind, 'explicit_selected')
+	assertEquals(reasons.get('server:live')?.kind, 'dependency_required')
 })

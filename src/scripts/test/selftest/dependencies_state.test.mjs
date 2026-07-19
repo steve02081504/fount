@@ -39,7 +39,7 @@ Deno.test('topoSortSuites orders dependencies first', () => {
 	]
 	assertEquals(
 		topoSortSuites(all).map(s => suiteKey(s.manifestId, s.name)),
-		['server/live', 'shells/chat/integration'],
+		['server:live', 'shells/chat:integration'],
 	)
 })
 
@@ -58,15 +58,14 @@ Deno.test('sortManifestIds orders dependency before dependent', () => {
 Deno.test('detectDependencyCycle reports cycle', () => {
 	const a = makeSuite('a', 'one', { dependsOn: ['b:two'] })
 	const b = makeSuite('b', 'two', { dependsOn: ['a:one'] })
-	assertEquals(detectDependencyCycle([a, b]), 'a/one -> b/two -> a/one')
+	assertEquals(detectDependencyCycle([a, b]), 'a:one -> b:two -> a:one')
 })
 
 Deno.test('listManifestIds uses dependency-aware order', async () => {
 	const all = await loadAllSuites(REPO_ROOT)
 	const ids = listManifestIds(all)
 	assertEquals(ids.includes('server') && ids.includes('shells/chat'), true)
-	if (ids.includes('shells/chat/integration'))
-		assertEquals(ids.indexOf('server') < ids.indexOf('shells/chat'), true)
+	assertEquals(ids.indexOf('server') < ids.indexOf('shells/chat'), true)
 })
 
 Deno.test('isContentFresh ignores non-trigger paths', () => {
@@ -98,12 +97,12 @@ Deno.test('buildPlan reuses fresh upstream and does not block downstream', () =>
 		makeSuite('shells/chat', 'frontend', { dependsOn: ['server:live'] }),
 	]
 	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
-	const state = { suites: { 'server/live': makeStateEntry() } }
+	const state = { suites: { 'server:live': makeStateEntry() } }
 	const committed = new Map(all.map(s => [suiteKey(s.manifestId, s.name), []]))
 	const verdicts = buildVerdicts(all, state, committed, new Map())
-	const plan = buildPlan(new Set(['shells/chat/frontend']), verdicts, byKey, all)
+	const plan = buildPlan(new Set(['shells/chat:frontend']), verdicts, byKey, all)
 	assertEquals(plan.slots.map(s => [s.key, s.action]), [
-		['shells/chat/frontend', 'run'],
+		['shells/chat:frontend', 'run'],
 	])
 })
 
@@ -113,10 +112,10 @@ Deno.test('buildPlan blocks downstream when reused upstream failed', () => {
 		makeSuite('shells/chat', 'frontend', { dependsOn: ['server:live'] }),
 	]
 	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
-	const state = { suites: { 'server/live': { ...makeStateEntry(), status: 'failed' } } }
+	const state = { suites: { 'server:live': { ...makeStateEntry(), status: 'failed' } } }
 	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
-	const plan = buildPlan(new Set(['shells/chat/frontend']), verdicts, byKey, all)
-	assertEquals(plan.slots.find(s => s.key === 'shells/chat/frontend')?.action, 'blocked')
+	const plan = buildPlan(new Set(['shells/chat:frontend']), verdicts, byKey, all)
+	assertEquals(plan.slots.find(s => s.key === 'shells/chat:frontend')?.action, 'blocked')
 })
 
 Deno.test('buildPlan pulls unsatisfied upstream into plan', () => {
@@ -126,8 +125,8 @@ Deno.test('buildPlan pulls unsatisfied upstream into plan', () => {
 	]
 	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const verdicts = buildVerdicts(all, { suites: {} }, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
-	const plan = buildPlan(new Set(['shells/social/cross_shell_emoji']), verdicts, byKey, all)
-	assertEquals(plan.slots.map(s => s.key), ['shells/chat/pure', 'shells/social/cross_shell_emoji'])
+	const plan = buildPlan(new Set(['shells/social:cross_shell_emoji']), verdicts, byKey, all)
+	assertEquals(plan.slots.map(s => s.key), ['shells/chat:pure', 'shells/social:cross_shell_emoji'])
 	assertEquals(plan.slots.map(s => s.action), ['run', 'run'])
 })
 
@@ -137,9 +136,9 @@ Deno.test('expandImperfectDependents adds one downstream level', () => {
 		makeSuite('shells/chat', 'child', { dependsOn: ['parent'] }),
 		makeSuite('shells/chat', 'grandchild', { dependsOn: ['child'] }),
 	]
-	const imperfect = new Set(['shells/chat/parent'])
+	const imperfect = new Set(['shells/chat:parent'])
 	const expanded = expandImperfectDependents(imperfect, all)
-	assertEquals([...expanded].sort(), ['shells/chat/child', 'shells/chat/parent'])
+	assertEquals([...expanded].sort(), ['shells/chat:child', 'shells/chat:parent'])
 })
 
 Deno.test('serial.mjs change stales pure but not live when triggers partitioned', () => {
@@ -179,7 +178,7 @@ Deno.test('isTriggerHashStale ignores dirty-to-clean drift', () => {
 Deno.test('refreshEntryFingerprint aligns subtest fingerprints', () => {
 	const state = {
 		suites: {
-			'shells/chat/frontend': makeStateEntry({
+			'shells/chat:frontend': makeStateEntry({
 				commitHash: 'old',
 				triggerHash: 'suite-old',
 				subtests: {
@@ -197,8 +196,8 @@ Deno.test('refreshEntryFingerprint aligns subtest fingerprints', () => {
 			}),
 		},
 	}
-	refreshEntryFingerprint(state, 'shells/chat/frontend', 'head', null, 'suite-new', { smoke: 'sub-new' })
-	const entry = state.suites['shells/chat/frontend']
+	refreshEntryFingerprint(state, 'shells/chat:frontend', 'head', null, 'suite-new', { smoke: 'sub-new' })
+	const entry = state.suites['shells/chat:frontend']
 	assertEquals(entry.commitHash, 'head')
 	assertEquals(entry.triggerHash, 'suite-new')
 	assertEquals(entry.uncommittedHash, null)

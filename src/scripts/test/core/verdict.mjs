@@ -175,7 +175,13 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 				uncommittedHashes,
 			)
 		}
-		return aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
+		const aggregate = aggregateSubtestVerdicts(subVerdicts, sharedTriggerHash)
+		// suite 级失败（如 watchdog 终止）无法归因到任何子测试时，聚合会得出 green/noisy
+		// 而掩盖失败；此时整套判 red（subtestsToRun 留空 → plan 全量重跑）。
+		if (aggregate.fresh && entry.status === 'failed'
+			&& (aggregate.kind === 'green' || aggregate.kind === 'noisy'))
+			return { ...aggregate, kind: 'red', subtestsToRun: [] }
+		return aggregate
 	}
 
 	const fresh = isContentFresh(suite, entry, committedChanged, uncommittedHashes)

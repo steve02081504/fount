@@ -308,7 +308,7 @@ function buildRunMarkdown(summary, completed) {
 			const expectedMark = expected
 				? ` — ${geti18n('fountConsole.test.report.pendingItemExpected', { expected })}`
 				: ''
-			lines.push(`- ${slot.manifestId}/${slot.name}${mark}${expectedMark}`)
+			lines.push(`- ${slot.manifestId}:${slot.name}${mark}${expectedMark}`)
 		}
 		lines.push('')
 		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', summary.command || 'fount test', '```', '')
@@ -422,8 +422,8 @@ function appendDependencyReasonDetail(lines, reason) {
  * @returns {string} suite 展示名
  */
 function formatTriggerWarningScope(warning) {
-	const base = `${warning.manifestId}/${warning.suiteName}`
-	return warning.subtestName ? `${base}/${warning.subtestName}` : base
+	const base = `${warning.manifestId}:${warning.suiteName}`
+	return warning.subtestName ? `${base}:${warning.subtestName}` : base
 }
 
 /**
@@ -471,7 +471,7 @@ function buildContinueReasonsMarkdown(summary) {
 
 	const lines = [`# ${geti18n('fountConsole.test.report.sectionContinueReasons')}`, '']
 	for (const slot of slots) {
-		lines.push(`## ${slot.manifestId}/${slot.name}`, '')
+		lines.push(`## ${slot.manifestId}:${slot.name}`, '')
 		if (slot.continueReason.kind === 'dependency_required')
 			appendDependencyReasonDetail(lines, slot.continueReason)
 		else {
@@ -493,7 +493,7 @@ function appendSection(lines, title, entries) {
 	lines.push(`## ${title}`, '')
 	for (const entry of entries) {
 		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
-		lines.push(`### ${entry.manifestId}/${entry.name}${reusedMark}`, '')
+		lines.push(`### ${entry.manifestId}:${entry.name}${reusedMark}`, '')
 		if (entry.status !== 'blocked')
 			lines.push(`- ${geti18n('fountConsole.test.report.labelDuration')}: ${formatDuration(entry.durationMs)}`)
 		if (entry.blockedBy?.length)
@@ -525,7 +525,7 @@ function appendSilentPassed(lines, entries) {
 	lines.push('| --- | --- |')
 	for (const entry of entries) {
 		const reusedMark = entry.reused ? ` ${geti18n('fountConsole.test.report.labelReused')}` : ''
-		lines.push(`| ${entry.manifestId}/${entry.name}${reusedMark} | ${formatDuration(entry.durationMs)} |`)
+		lines.push(`| ${entry.manifestId}:${entry.name}${reusedMark} | ${formatDuration(entry.durationMs)} |`)
 	}
 	lines.push('')
 }

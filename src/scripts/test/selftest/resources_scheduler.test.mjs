@@ -201,8 +201,8 @@ Deno.test('PlanRunCoordinator throws on dependency deadlock', async () => {
 	const gate = new ResourceRunGate(8000 * MiB)
 	const coordinator = new PlanRunCoordinator({
 		slots: [
-			{ key: 'shells/chat/a', suite: a, action: 'run', goal: true },
-			{ key: 'shells/chat/b', suite: b, action: 'run', goal: true },
+			{ key: 'shells/chat:a', suite: a, action: 'run', goal: true },
+			{ key: 'shells/chat:b', suite: b, action: 'run', goal: true },
 		],
 		state: { suites: {} },
 		gate,

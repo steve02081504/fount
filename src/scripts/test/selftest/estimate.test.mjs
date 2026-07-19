@@ -24,7 +24,7 @@ import { makeStateEntry, makeSuite } from './fixtures.mjs'
  */
 function task(overrides) {
 	return {
-		key: 'shells/chat/a',
+		key: 'shells/chat:a',
 		manifestId: 'shells/chat',
 		name: 'a',
 		durationMs: 1000,
@@ -41,8 +41,8 @@ function task(overrides) {
 Deno.test('serialSumMs sums non-reused durations', () => {
 	assertEquals(serialSumMs([
 		task({ durationMs: 1000 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 2000, reused: true }),
-		task({ key: 'shells/chat/c', name: 'c', durationMs: 500 }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 2000, reused: true }),
+		task({ key: 'shells/chat:c', name: 'c', durationMs: 500 }),
 	]), 1500)
 })
 
@@ -54,16 +54,16 @@ Deno.test('buildEstimateTasksFromPlan mirrors plan actions', () => {
 	const byKey = new Map(all.map(s => [suiteKey(s.manifestId, s.name), s]))
 	const state = {
 		suites: {
-			'server/live': makeStateEntry({ status: 'failed' }),
-			'shells/chat/smoke': makeStateEntry({ status: 'passed', baselineDurationMs: 2000 }),
+			'server:live': makeStateEntry({ status: 'failed' }),
+			'shells/chat:smoke': makeStateEntry({ status: 'passed', baselineDurationMs: 2000 }),
 		},
 	}
 	const verdicts = buildVerdicts(all, state, new Map(all.map(s => [suiteKey(s.manifestId, s.name), []])), new Map())
-	const plan = buildPlan(new Set(['shells/chat/smoke']), verdicts, byKey, all)
+	const plan = buildPlan(new Set(['shells/chat:smoke']), verdicts, byKey, all)
 	const tasks = buildEstimateTasksFromPlan(plan.slots, state)
 	assertEquals(tasks.map(t => [t.key, t.reused, t.blocked, t.durationMs]), [
-		['server/live', true, false, 0],
-		['shells/chat/smoke', false, true, 2000],
+		['server:live', true, false, 0],
+		['shells/chat:smoke', false, true, 2000],
 	])
 	assertEquals(serialSumMs(tasks), 0)
 })
@@ -130,8 +130,8 @@ Deno.test('estimateEtaMs adds gap overhead per critical path slot', () => {
 Deno.test('simulateParallelMakespanMs packs independent light suites', () => {
 	const memBudget = 3000 * MiB
 	const result = simulateParallelMakespanMs([
-		task({ key: 'shells/chat/a', name: 'a', durationMs: 1000, memMb: 100, cpuPct: 10 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 10 }),
+		task({ key: 'shells/chat:a', name: 'a', durationMs: 1000, memMb: 100, cpuPct: 10 }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 1000, memMb: 100, cpuPct: 10 }),
 	], { memBudgetBytes: memBudget, cpuBudgetPct: 85 })
 	assertEquals(result.makespanMs, 1000)
 })
@@ -152,8 +152,8 @@ Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', ()
 Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 	const tasks = [
 		task({ durationMs: 1000 }),
-		task({ key: 'shells/chat/b', name: 'b', durationMs: 2000, reused: true }),
-		task({ key: 'shells/chat/c', name: 'c', durationMs: 3000, blocked: true }),
+		task({ key: 'shells/chat:b', name: 'b', durationMs: 2000, reused: true }),
+		task({ key: 'shells/chat:c', name: 'c', durationMs: 3000, blocked: true }),
 	]
 	const summary = summarizeEstimate(tasks, {
 		serial: true,

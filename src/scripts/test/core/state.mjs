@@ -69,12 +69,41 @@ import { filterTriggerRelevantFiles } from './trigger_filter.mjs'
  */
 
 /**
+ * suite 键与展示名统一为 CLI 选择器写法 `manifest:suite`（manifest id 可含 `/`，suite 名不含）。
  * @param {string} manifestId manifest id
  * @param {string} name suite 名
  * @returns {string} suite 键
  */
 export function suiteKey(manifestId, name) {
-	return `${manifestId}/${name}`
+	return `${manifestId}:${name}`
+}
+
+/**
+ * 迁移旧版 `manifest/suite` 键为 `manifest:suite`（suite 名不含 `/`，故取最后一个 `/`）。
+ * @param {string} key suite 键
+ * @returns {string} 现行格式键
+ */
+export function migrateLegacySuiteKey(key) {
+	if (key.includes(':')) return key
+	const slash = key.lastIndexOf('/')
+	if (slash < 0) return key
+	return `${key.slice(0, slash)}:${key.slice(slash + 1)}`
+}
+
+/**
+ * 迁移整个现状库的旧版键（含 blockedBy 引用）。
+ * @param {Record<string, SuiteStateEntry>} suites 原始 suites 表
+ * @returns {Record<string, SuiteStateEntry>} 迁移后的 suites 表
+ */
+export function migrateLegacyStateSuites(suites) {
+	/** @type {Record<string, SuiteStateEntry>} */
+	const migrated = {}
+	for (const [key, entry] of Object.entries(suites)) {
+		if (entry.blockedBy?.length)
+			entry.blockedBy = entry.blockedBy.map(migrateLegacySuiteKey)
+		migrated[migrateLegacySuiteKey(key)] = entry
+	}
+	return migrated
 }
 
 /**
@@ -85,7 +114,13 @@ export async function readState(repoRoot) {
 	try {
 		const raw = await readFile(stateFilePath(repoRoot), 'utf8')
 		const data = JSON.parse(raw)
-		return { suites: data.suites ?? {} }
+		const before = data.suites ?? {}
+		const suites = migrateLegacyStateSuites(before)
+		const state = { suites }
+		// 一次性落盘，避免外部工具仍读到旧 `manifest/suite` 键
+		if (Object.keys(before).some(key => migrateLegacySuiteKey(key) !== key))
+			await writeState(repoRoot, state)
+		return state
 	}
 	catch (error) {
 		if (error?.code === 'ENOENT') return { suites: {} }

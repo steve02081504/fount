@@ -135,7 +135,7 @@ Deno.test('state baseline timing via upsertSuiteRun', async () => {
 		assertEquals(getSuiteBaselineDurationMs(state.suites[suiteKey('shells/chat', 'pure')]), ms('42s'))
 		await writeState(repoRoot, state)
 		const reloaded = await readState(repoRoot)
-		assertEquals(getSuiteBaselineDurationMs(reloaded.suites['shells/chat/pure']), ms('42s'))
+		assertEquals(getSuiteBaselineDurationMs(reloaded.suites['shells/chat:pure']), ms('42s'))
 	}
 	finally {
 		await rm(repoRoot, { recursive: true, force: true })
@@ -204,7 +204,7 @@ Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 	const repoRoot = await mkdtemp(join(tmpdir(), 'fount-report-test-'))
 	try {
 		const planSlots = [{
-			key: 'testkit/selftest',
+			key: 'testkit:selftest',
 			suite: {
 				manifestId: 'testkit',
 				name: 'selftest',

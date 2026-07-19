@@ -30,10 +30,11 @@ export function buildFailedFirstByManifest(state, manifestIds) {
 	const byManifest = new Map()
 	for (const [key, entry] of Object.entries(state.suites)) {
 		if (!['failed', 'noisy'].includes(entry.status)) continue
-		const slash = key.indexOf('/')
-		const manifestId = key.slice(0, slash)
+		const colon = key.indexOf(':')
+		if (colon < 0) continue
+		const manifestId = key.slice(0, colon)
 		if (manifestIds?.length && !manifestIds.includes(manifestId)) continue
-		const name = key.slice(slash + 1)
+		const name = key.slice(colon + 1)
 		const map = byManifest.get(manifestId) ?? new Map()
 		map.set(name, entry.failedFiles?.length ? entry.failedFiles : undefined)
 		byManifest.set(manifestId, map)
@@ -72,42 +73,41 @@ export function goalImperfectKeys(verdicts, state) {
 	/** @type {Set<string>} */
 	const keys = new Set()
 	for (const [key, verdict] of verdicts) {
-		if (verdict.kind === 'green') continue
 		const entry = state.suites[key]
 		if (!entry) {
 			keys.add(key)
 			continue
 		}
-		// 内容过期 → outdated 波；failed/blocked 仍走 imperfect
-		if (verdict.kind === 'unknown') {
-			if (entry.status === 'failed' || entry.status === 'blocked')
-				keys.add(key)
+		// hard fail 一律进 imperfect（即使裁决误判 green/noisy 也不能漏）
+		if (entry.status === 'failed' || entry.status === 'blocked') {
+			keys.add(key)
 			continue
 		}
+		if (verdict.kind === 'green') continue
+		// 内容过期 → outdated 波
+		if (verdict.kind === 'unknown') continue
 		// fresh noisy 不进 imperfect（否则同调用空转）；两波皆空后由主循环最终 exit 1
-		if (verdict.kind === 'noisy' && verdict.fresh)
-			continue
-		if (verdict.kind === 'red')
-			keys.add(key)
-		else if (entry.status === 'failed' || entry.status === 'blocked')
-			keys.add(key)
+		if (verdict.kind === 'noisy' && verdict.fresh) continue
+		if (verdict.kind === 'red') keys.add(key)
 	}
 	return keys
 }
 
 /**
- * scope 内是否仍有 fresh noisy（两波皆空时用于最终退出码）。
+ * scope 内仍为 fresh noisy 的 suite 键（两波皆空时用于最终退出码与提示）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 范围
- * @returns {boolean} 有 fresh noisy
+ * @returns {string[]} fresh noisy suite 键
  */
-export function scopeHasFreshNoisy(verdicts, scope) {
+export function listFreshNoisyKeys(verdicts, scope) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	/** @type {string[]} */
+	const keys = []
 	for (const [key, verdict] of verdicts) {
 		if (!scopeKeys.has(key)) continue
-		if (verdict.kind === 'noisy' && verdict.fresh) return true
+		if (verdict.kind === 'noisy' && verdict.fresh) keys.push(key)
 	}
-	return false
+	return keys.sort()
 }
 
 /**

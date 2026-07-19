@@ -28,7 +28,7 @@ export function resolveSuiteDependencies(suite, allSuites) {
 			suiteSelectors: parsed.suiteSelectors.length ? parsed.suiteSelectors : undefined,
 		}, { prefixExpand: false })
 		if (!matched.length)
-			throw new Error(`dependsOn "${raw}" in ${suite.manifestId}/${suite.name} matched no suites`)
+			throw new Error(`dependsOn "${raw}" in ${suite.manifestId}:${suite.name} matched no suites`)
 		for (const dep of matched)
 			refs.set(suiteKey(dep.manifestId, dep.name), { manifestId: dep.manifestId, name: dep.name })
 	}
