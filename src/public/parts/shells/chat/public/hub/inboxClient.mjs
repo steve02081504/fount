@@ -4,7 +4,7 @@
 import { handleUIError } from '../src/ui/errors.mjs'
 
 import { store } from './core/state.mjs'
-import { formatCap99 } from './unread.mjs'
+import { formatUnreadLabel } from './unread.mjs'
 
 const INBOX_API = '/api/parts/shells:chat/inbox'
 
@@ -59,7 +59,7 @@ export async function updateInboxBadge() {
 	}
 	badgeUnreadCount = null
 	store.inbox.unreadCount = unread
-	const label = formatCap99(unread)
+	const label = formatUnreadLabel(unread)
 	const badge = document.getElementById('inbox-badge')
 	if (!badge) return
 	if (unread > 0) {

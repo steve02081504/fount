@@ -17,8 +17,6 @@ import { displayProfileAvatar, entityProfilePattern, isAvatarImageUrl } from './
 import { safeProfileLink } from './safeProfileLink.mjs'
 import { mountTrustedMarkdown } from './trustedMarkdown.mjs'
 
-export { safeProfileLink } from './safeProfileLink.mjs'
-
 const PROFILE_POPUP_TEMPLATE_URL = '/parts/shells:chat/src/templates/hub/profile_popup.html'
 /** @type {string | null} */
 let cachedProfilePopupTemplateHtml = null
@@ -195,7 +193,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 	const statusDot = root.querySelector('[data-entity-profile-status-dot]')
 	if (statusDot instanceof HTMLElement) statusDot.dataset.status = status
 	const statusText = root.querySelector('[data-entity-profile-status-text]')
-	if (statusText instanceof HTMLElement) 
+	if (statusText instanceof HTMLElement)
 		if (normalized.customStatus) {
 			delete statusText.dataset.i18n
 			statusText.textContent = normalized.customStatus
@@ -204,7 +202,7 @@ export async function paintEntityProfileCard(root, profile, options = {}) {
 			statusText.textContent = ''
 			statusText.dataset.i18n = `profile.statusOptions.${normalized.status}`
 		}
-	
+
 
 	const bioElement = root.querySelector('[data-entity-profile-bio]')
 	if (bioElement instanceof HTMLElement)
@@ -359,7 +357,7 @@ export function paintEntityProfileExtras(root, options = {}) {
 		ownerHost.hidden = !box
 	}
 	const warnHost = root.querySelector('[data-entity-attribution-warning-host]')
-	if (warnHost instanceof HTMLElement) 
+	if (warnHost instanceof HTMLElement)
 		if (options.attribution?.mismatch) {
 			const box = document.createElement('div')
 			box.className = 'entity-attribution-warning-box'
@@ -380,5 +378,5 @@ export function paintEntityProfileExtras(root, options = {}) {
 			warnHost.replaceChildren()
 			warnHost.hidden = true
 		}
-	
+
 }

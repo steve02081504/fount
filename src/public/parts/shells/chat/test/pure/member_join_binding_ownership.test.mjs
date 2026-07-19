@@ -2,11 +2,11 @@
  * member_join：bindingSig 合法但 active 钥不属于 entityHash 时拒绝。
  */
 /* global Deno */
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { Buffer } from 'node:buffer'
 
-import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
+import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 import { normalizeHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { keyPairFromSeed } from 'npm:@steve02081504/fount-p2p/crypto'
 
 import { checkEventPermission } from '../../src/chat/dag/authorizeEvent.mjs'
 import {

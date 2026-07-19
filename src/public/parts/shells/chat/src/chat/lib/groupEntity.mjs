@@ -7,14 +7,6 @@ import { isLogicalEntityHash } from 'npm:@steve02081504/fount-p2p/core/logical_e
 import { resolveLogicalEntityId } from '../../entity/logicalId.mjs'
 
 /**
- *
- */
-export {
-	GROUP_SUBJECT_PREFIX,
-	groupEntityHash,
-} from '../../../public/shared/groupEntityHash.mjs'
-
-/**
  * @param {unknown} entityHash 128 hex
  * @returns {boolean} 是否为 group entity
  */

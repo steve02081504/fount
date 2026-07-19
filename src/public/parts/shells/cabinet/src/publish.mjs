@@ -109,17 +109,38 @@ export async function publishCabinetIndex(username, entityHash, cabinet, index) 
 
 /**
  * @param {string} entityHash 实体
- * @param {string} logicalPath 路径
- * @param {Buffer} plaintext 明文
- * @param {string} name 名
- * @param {string} mimeType MIME
- * @param {string} visibility 可见性
- * @param {object | ((enc: { contentKey: Buffer }) => object)} transferKeyDescriptor 传输钥或工厂
- * @param {'convergent' | 'random'} ceMode 加密模式
- * @param {object} [meta] 额外 meta
+ * @param {string} fileId 文件 id
+ * @param {Buffer} masterKey vault 主钥
+ * @returns {(enc: { contentKey: Buffer }) => object} transferKey 工厂
+ */
+function vaultTransferKeyFactory(entityHash, fileId, masterKey) {
+	return enc => vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey)
+}
+
+/**
+ * @param {string} entityHash 实体
+ * @param {{
+ *   logicalPath: string,
+ *   plaintext: Buffer,
+ *   name: string,
+ *   mimeType: string,
+ *   visibility: string,
+ *   transferKeyDescriptor: object | ((enc: { contentKey: Buffer }) => object),
+ *   ceMode: 'convergent' | 'random',
+ *   meta?: object,
+ * }} options 写入参数
  * @returns {Promise<object>} manifest
  */
-async function storeEvfsManifest(entityHash, logicalPath, plaintext, name, mimeType, visibility, transferKeyDescriptor, ceMode, meta = {}) {
+async function storeEvfsManifest(entityHash, {
+	logicalPath,
+	plaintext,
+	name,
+	mimeType,
+	visibility,
+	transferKeyDescriptor,
+	ceMode,
+	meta = {},
+}) {
 	const enc = encryptPlaintextToParts(plaintext, ceMode)
 	const descriptor = typeof transferKeyDescriptor === 'function'
 		? transferKeyDescriptor(enc)
@@ -154,23 +175,24 @@ export async function putCabinetEvfsFile(username, entityHash, options) {
 	const mimeType = options.mime_type || 'application/octet-stream'
 
 	if (visibility === 'public' || visibility === 'unlisted')
-		return storeEvfsManifest(
-			entityHash, logicalPath, plaintext, name, mimeType, visibility,
-			publicTransferKeyDescriptor(), 'convergent',
-		)
+		return storeEvfsManifest(entityHash, {
+			logicalPath, plaintext, name, mimeType, visibility,
+			transferKeyDescriptor: publicTransferKeyDescriptor(),
+			ceMode: 'convergent',
+		})
 
 	const { masterKey } = await loadVaultMasterKey(username, entityHash)
 	const fileId = logicalPath.replace(/\W+/g, '_').slice(-48) || `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`
-	return storeEvfsManifest(
-		entityHash, logicalPath, plaintext, name, mimeType, visibility,
-		enc => vaultWrapDescriptor(entityHash, fileId, enc.contentKey, masterKey),
-		'random',
-		{
+	return storeEvfsManifest(entityHash, {
+		logicalPath, plaintext, name, mimeType, visibility,
+		transferKeyDescriptor: vaultTransferKeyFactory(entityHash, fileId, masterKey),
+		ceMode: 'random',
+		meta: {
 			fileId,
 			vaultGroupId: vaultGroupId(entityHash),
 			minFollowMs: options.visibility?.minFollowMs,
 			allow: options.visibility?.allow,
 			except: options.visibility?.except,
 		},
-	)
+	})
 }

@@ -4,8 +4,8 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { safeProfileLink } from '../../public/shared/safeProfileLink.mjs'
 import { wrapProtocolHttpsUrl } from '../../public/shared/runUri.mjs'
+import { safeProfileLink } from '../../public/shared/safeProfileLink.mjs'
 
 Deno.test('safeProfileLink keeps http(s)', () => {
 	assertEquals(safeProfileLink('https://example.com/a'), 'https://example.com/a')

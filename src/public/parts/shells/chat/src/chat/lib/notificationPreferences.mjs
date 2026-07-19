@@ -6,11 +6,6 @@ import { memberEntityHash } from '../../entity/member.mjs'
 
 import { isCaredBy } from './care.mjs'
 
-/**
- *
- */
-export { isNotifyMuted }
-
 const DATANAME = 'notificationPreferences'
 
 /**

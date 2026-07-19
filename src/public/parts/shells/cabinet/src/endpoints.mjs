@@ -48,9 +48,9 @@ function unlockToken(req, body) {
 
 /**
  * @param {import('npm:express').Request} req 请求
- * @returns {Promise<{ username: string, entityHash: string }>} 上下文
+ * @returns {Promise<{ username: string, entityHash: string }>} 操作者身份
  */
-async function ctxFromReq(req) {
+async function operatorFromReq(req) {
 	const { username } = getUserByReq(req)
 	const entityHash = await resolveOperatorEntityHashForUser(username)
 	if (!entityHash) throw httpError(400, 'operator identity required')
@@ -62,7 +62,7 @@ async function ctxFromReq(req) {
  * @param {string} entityHash 实体
  * @returns {Promise<object>} 远端可见性上下文
  */
-async function remoteViewerCtx(username, entityHash) {
+async function remoteViewerContext(username, entityHash) {
 	/** @type {{ following: Set<string>, followSince: Map<string, number> }} */
 	let follow = { following: new Set(), followSince: new Map() }
 	try {
@@ -105,12 +105,12 @@ function requireRecoveryToken(req) {
  */
 export function setEndpoints(router) {
 	router.get(`${PREFIX}/viewer`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({ username, viewer_entity_hash: entityHash })
 	})
 
 	router.get(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const personal = await loadCabinets(username, entityHash)
 		const shared = await listLocalSharedCabinets(username).catch(() => [])
 		const byId = new Map()
@@ -119,7 +119,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post(`${PREFIX}/cabinets`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		if (req.body?.type === 'shared') {
 			const { cabinet } = await createSharedCabinet(username, { name: req.body.name })
 			return res.status(200).json({ cabinet })
@@ -128,18 +128,18 @@ export function setEndpoints(router) {
 	})
 
 	router.patch(`${PREFIX}/cabinets/:cabinetId`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({ cabinet: await updateCabinet(username, entityHash, req.params.cabinetId, req.body || {}) })
 	})
 
 	router.delete(`${PREFIX}/cabinets/:cabinetId`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		await deleteCabinet(username, entityHash, req.params.cabinetId)
 		res.status(200).json({ ok: true })
 	})
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/index`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await listEntries(username, entityHash, req.params.cabinetId, {
 			parent_id: req.query.parent_id,
 			show_hidden: req.query.show_hidden === '1' || req.query.show_hidden === 'true',
@@ -148,7 +148,7 @@ export function setEndpoints(router) {
 	})
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/entries/:entryId/download`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const { cabinetId, entryId } = req.params
 		if (await getCabinet(username, entityHash, cabinetId)) 
 			try {
@@ -165,7 +165,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/unlock`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const folderId = String(req.body?.folder_id || '')
 		const password = String(req.body?.password || '')
 		if (!folderId || !password) throw httpError(400, 'folder_id and password required')
@@ -173,7 +173,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const body = req.body || {}
 		const unlock = unlockToken(req, body)
 		if (body.plaintext_base64) 
@@ -196,7 +196,7 @@ export function setEndpoints(router) {
 	})
 
 	router.patch(`${PREFIX}/cabinets/:cabinetId/entries/:entryId`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entry: await updateEntry(username, entityHash, req.params.cabinetId, req.params.entryId, {
 				...req.body || {},
@@ -206,7 +206,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries/copy`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({
 			entries: await copyEntries(username, entityHash, req.params.cabinetId, {
 				...req.body || {},
@@ -216,7 +216,7 @@ export function setEndpoints(router) {
 	})
 
 	router.delete(`${PREFIX}/cabinets/:cabinetId/entries`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await deleteEntries(
 			username, entityHash, req.params.cabinetId,
 			Array.isArray(req.body?.entry_ids) ? req.body.entry_ids : [],
@@ -225,24 +225,24 @@ export function setEndpoints(router) {
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries/restore`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await restoreEntries(username, entityHash, req.params.cabinetId, requireRecoveryToken(req), {
 			unlock_token: unlockToken(req, req.body),
 		}))
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/entries/finalize-delete`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await finalizeDelete(username, entityHash, req.params.cabinetId, requireRecoveryToken(req)))
 	})
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/entries/:entryId/resolve`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await resolveLink(username, entityHash, req.params.cabinetId, req.params.entryId))
 	})
 
 	router.get(`${PREFIX}/cabinets/:cabinetId/zip`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const cabinetId = req.params.cabinetId
 		const result = await zipCabinetFolder(username, entityHash, cabinetId, {
 			folder_id: req.query.parent_id || req.query.folder_id,
@@ -267,17 +267,17 @@ export function setEndpoints(router) {
 	})
 
 	router.put(`${PREFIX}/cabinets/:cabinetId/sync-binding`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json({ cabinet: await setSyncBinding(username, entityHash, req.params.cabinetId, req.body || {}) })
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/sync`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		res.status(200).json(await runCabinetSync(username, entityHash, req.params.cabinetId))
 	})
 
 	router.post(`${PREFIX}/cabinets/:cabinetId/preview`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const plaintext = Buffer.from(String(req.body?.plaintext_base64 || ''), 'base64')
 		if (!plaintext.length) throw httpError(400, 'plaintext_base64 required')
 		res.status(200).json(await uploadPreview(username, entityHash, req.params.cabinetId, {
@@ -288,22 +288,22 @@ export function setEndpoints(router) {
 	})
 
 	router.get(`${PREFIX}/remote/:entityHash/cabinets`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const owner = String(req.params.entityHash).toLowerCase()
 		res.status(200).json({
-			cabinets: await fetchRemoteCabinets(username, owner, await remoteViewerCtx(username, entityHash)),
+			cabinets: await fetchRemoteCabinets(username, owner, await remoteViewerContext(username, entityHash)),
 		})
 	})
 
 	router.get(`${PREFIX}/remote/:entityHash/cabinets/:cabinetId/index`, authenticate, async (req, res) => {
-		const { username, entityHash } = await ctxFromReq(req)
+		const { username, entityHash } = await operatorFromReq(req)
 		const owner = String(req.params.entityHash).toLowerCase()
-		const ctx = await remoteViewerCtx(username, entityHash)
-		const cabinets = await fetchRemoteCabinets(username, owner, ctx)
+		const viewerContext = await remoteViewerContext(username, entityHash)
+		const cabinets = await fetchRemoteCabinets(username, owner, viewerContext)
 		const meta = cabinets.find(row => row.cabinet_id === req.params.cabinetId) || {
 			visibility: { visibility: 'public' },
 		}
-		const index = await fetchRemoteCabinetIndex(username, owner, req.params.cabinetId, ctx, meta)
+		const index = await fetchRemoteCabinetIndex(username, owner, req.params.cabinetId, viewerContext, meta)
 		const parentId = req.query.parent_id || null
 		res.status(200).json({
 			cabinet: meta,

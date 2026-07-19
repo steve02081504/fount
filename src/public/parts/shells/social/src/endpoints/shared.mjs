@@ -27,12 +27,11 @@ export async function socialClientFromReq(req) {
 
 /**
  * SocialClient JSON 路由薄包装：解析 client → 跑 handler → 200 JSON。
- * @param {(req: import('npm:express').Request, ctx: { username: string, client: object }) => Promise<unknown>} handler 业务
+ * @param {(req: import('npm:express').Request, session: { username: string, client: object }) => Promise<unknown>} handler 业务
  * @returns {import('npm:express').RequestHandler} Express 处理器
  */
 export function socialJson(handler) {
 	return async (req, res) => {
-		const ctx = await socialClientFromReq(req)
-		res.status(200).json(await handler(req, ctx))
+		res.status(200).json(await handler(req, await socialClientFromReq(req)))
 	}
 }

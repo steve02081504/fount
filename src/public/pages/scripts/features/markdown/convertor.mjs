@@ -666,7 +666,7 @@ $stderr = StringIO.new
  * 按可信档解析执行器：可信 = `languageExecutors` 覆盖 `safeLanguageExecutors`；不可信只用后者。
  * @param {string} langOrExt 语言名或扩展名
  * @param {boolean} allowUnsafeExecutors 是否允许可信执行器
- * @returns {LanguageExecutor | undefined}
+ * @returns {LanguageExecutor | undefined} 匹配到的语言执行器；未命中时为 `undefined`。
  */
 function resolveLanguageExecutor(langOrExt, allowUnsafeExecutors) {
 	const key = String(langOrExt || '').toLowerCase()

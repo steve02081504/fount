@@ -16,6 +16,10 @@ function mockRes() {
 	const headers = new Map()
 	return {
 		headers,
+		/**
+		 * @param {string} key HTTP 响应头名
+		 * @param {string} value HTTP 响应头值
+		 */
 		setHeader(key, value) {
 			headers.set(String(key).toLowerCase(), String(value))
 		},

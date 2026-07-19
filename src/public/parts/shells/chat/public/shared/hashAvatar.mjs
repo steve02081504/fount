@@ -1,6 +1,7 @@
 /**
  * 默认文字头像：身份 seed 哈希 → RGB 背景，RGB 反色作文字色。Chat / Social 共用。
  */
+import { escapeHtml } from './escapeHtml.mjs'
 
 /**
  * @param {string} seed 身份键（entityHash / memberKey / charname 等）
@@ -42,8 +43,6 @@ export function rgbCss(rgb) {
 export function invertRgb(rgb) {
 	return { r: 255 - rgb.r, g: 255 - rgb.g, b: 255 - rgb.b }
 }
-
-import { escapeHtml } from './escapeHtml.mjs'
 
 /**
  * @param {string} seed 身份键

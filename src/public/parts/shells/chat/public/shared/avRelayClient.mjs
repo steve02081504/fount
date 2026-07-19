@@ -83,11 +83,6 @@ export function buildChatCallWsUrl(groupId, channelId) {
 
 /**
  *
- */
-export { bytesToHex } from './digest.mjs'
-
-/**
- *
  * @param frameType
  * @param isKey
  * @param data

@@ -6,15 +6,10 @@ import { putChannelReadMarker } from '../src/api/groupChannel.mjs'
 import { store } from './core/state.mjs'
 
 /**
- *
- */
-export { putChannelReadMarker }
-
-/**
  * @param {number} count 未读数
  * @returns {string} 封顶展示（99+）
  */
-export function formatCap99(count) {
+export function formatUnreadLabel(count) {
 	const n = Number(count) || 0
 	return n > 99 ? '99+' : String(n)
 }
@@ -34,7 +29,7 @@ function sumChannelUnread(channelUnread) {
 export function formatUnreadBadgeHtml(count) {
 	const n = Number(count) || 0
 	if (n <= 0) return ''
-	const label = formatCap99(n)
+	const label = formatUnreadLabel(n)
 	return `<span class="unread-badge" aria-label="${label}">${label}</span>`
 }
 

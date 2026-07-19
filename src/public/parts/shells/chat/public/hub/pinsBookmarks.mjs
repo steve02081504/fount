@@ -17,7 +17,7 @@ import { store } from './core/state.mjs'
 import { scrollToMessageEventId } from './messages/messages.mjs'
 import { pinPreviewTemplateFields, resolvePinMessagePreview } from './messages/pinPreview.mjs'
 import { selectChannel, selectGroup } from './sidebar/index.mjs'
-import { formatCap99 } from './unread.mjs'
+import { formatUnreadLabel } from './unread.mjs'
 
 const SIDEBAR_LABEL_MAX = 56
 
@@ -34,7 +34,7 @@ function setPopCount(countElId, count) {
 	const el = document.getElementById(countElId)
 	if (!el) return
 	if (count > 0) {
-		el.textContent = formatCap99(count)
+		el.textContent = formatUnreadLabel(count)
 		el.removeAttribute('hidden')
 	}
 	else el.setAttribute('hidden', '')
