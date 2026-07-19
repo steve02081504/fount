@@ -1,4 +1,5 @@
 import { socialApi } from './apiClient.mjs'
+import { primaryLocale } from '/scripts/i18n/index.mjs'
 
 /**
  * 提交对指定帖子的公开回复。
@@ -14,7 +15,7 @@ export async function submitReply(entityHash, postId, text) {
 			text,
 			replyTo: { entityHash, postId },
 			visibility: 'public',
-			locale: document.getElementById('postLocale')?.value.trim() || 'zh-CN',
+			locale: document.getElementById('postLocale')?.value.trim() || primaryLocale(),
 		}),
 	})
 }

@@ -247,3 +247,20 @@ Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 		await rm(repoRoot, { recursive: true, force: true })
 	}
 })
+
+Deno.test('exitCodeFromSlots ignores noisy; fails on pending/failed/blocked', () => {
+	assertEquals(exitCodeFromSlots([
+		{ state: 'done', status: 'passed' },
+		{ state: 'done', status: 'noisy' },
+	]), 0)
+	assertEquals(exitCodeFromSlots([
+		{ state: 'done', status: 'failed' },
+	]), 1)
+	assertEquals(exitCodeFromSlots([
+		{ state: 'done', status: 'blocked' },
+	]), 1)
+	assertEquals(exitCodeFromSlots([
+		{ state: 'done', status: 'passed' },
+		{ state: 'pending', status: null },
+	]), 1)
+})

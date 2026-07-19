@@ -1,3 +1,4 @@
+import { primaryLocaleForUser } from '../../../../../../../scripts/locale.mjs'
 import { rebuildTaste } from '../../taste/cluster.mjs'
 import { revokeTasteAlias } from '../../taste/mergeClaims.mjs'
 import { listTasteTags, publishTagName } from '../../taste/nameClaims.mjs'
@@ -15,7 +16,7 @@ export function createTasteMethods(apiContext) {
 			 * @returns {Promise<object>} 偏好与标签列表
 			 */
 			async get(options = {}) {
-				const locale = String(options.locale || 'zh-CN')
+				const locale = String(options.locale || primaryLocaleForUser(apiContext.username))
 				const store = await loadTaste(apiContext.username, apiContext.entityHash)
 				const tags = await listTasteTags(apiContext.username, apiContext.entityHash, locale)
 				return {

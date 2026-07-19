@@ -1,7 +1,7 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { getNodeHash } from 'npm:@steve02081504/fount-p2p/node/identity'
 
-import { getLocalizedInfo } from '../../../../../../scripts/locale.mjs'
+import { getLocalizedInfo, localesForUser } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyDefaultPart, getPartDetails } from '../../../../../../server/parts_loader.mjs'
 
@@ -33,9 +33,7 @@ export function localesFromRequest(req, replicaUsername) {
 	else if (localeQuery)
 		fromQuery = String(localeQuery).split(',').map(s => s.trim()).filter(Boolean)
 	if (fromQuery.length) return fromQuery
-	const userLocales = getUserByUsername(replicaUsername)?.locales
-	if (Array.isArray(userLocales) && userLocales.length) return userLocales
-	return ['zh-CN', 'en-UK']
+	return localesForUser(replicaUsername)
 }
 
 /**

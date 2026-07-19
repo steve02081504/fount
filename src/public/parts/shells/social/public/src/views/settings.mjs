@@ -1,6 +1,6 @@
 import { formatHashShort } from '/parts/shells:chat/shared/entityHash.mjs'
 import { appendTemplate, renderTemplate } from '/scripts/features/template.mjs'
-import { initTranslations } from '/scripts/i18n/index.mjs'
+import { initTranslations, primaryLocale } from '/scripts/i18n/index.mjs'
 import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 import { chatApi, socialApi } from '../lib/apiClient.mjs'
@@ -212,7 +212,7 @@ async function renderTasteSection(panel, data) {
 			if (!tagHash || !label) return
 			void runWrite('tasteName', () => socialApi('/taste/names', {
 				method: 'POST',
-				body: JSON.stringify({ tagHash, label, locale: navigator.language || 'zh-CN' }),
+				body: JSON.stringify({ tagHash, label, locale: primaryLocale() }),
 			})).then(() => loadSettings())
 		})
 }

@@ -46,6 +46,7 @@ import { exitCodeFromSlots, RunReportWriter } from './report.mjs'
 import { ResourceRunGate } from './scheduler.mjs'
 import {
 	buildCommittedChangedByKey,
+	scopeHasFreshNoisy,
 	selectExplicitOrAll,
 	selectImperfectWave,
 	selectOutdatedWave,
@@ -308,6 +309,14 @@ async function executeWave(context) {
 		subtestFilterByKey,
 	)
 	const continueReasons = buildReasonsFromPlan(plan)
+	const runSlotCount = plan.slots.filter(slot => slot.action === 'run').length
+	const reuseSlotCount = plan.slots.filter(slot => slot.action === 'reuse').length
+	if (selection.mode === 'imperfect' || selection.mode === 'outdated' || selection.mode === 'explicit' || selection.mode === 'all')
+		console.logI18n('fountConsole.test.planSlotSummary', {
+			run: runSlotCount,
+			reuse: reuseSlotCount,
+			blocked: plan.slots.filter(slot => slot.action === 'blocked').length,
+		})
 
 	const reportWriter = new RunReportWriter({
 		repoRoot: REPO_ROOT,
@@ -394,121 +403,170 @@ async function executeWave(context) {
 	const failedFirstByManifest = selection.failedFirstByManifest ?? new Map()
 	const streamLive = options.noParallel === true
 
-	await coordinator.runAll(async slot => {
-		const { suite } = slot
-		const label = `${suite.manifestId}/${suite.name}`
-		const key = slot.key
-		const index = reportIndexByKey.get(key)
-		const prev = state.suites[key]
-		const verdict = verdicts.get(key)
+	/** @type {number} */
+	let exitCode = 1
+	try {
+		await coordinator.runAll(async slot => {
+			const { suite } = slot
+			const label = `${suite.manifestId}/${suite.name}`
+			const key = slot.key
+			const index = reportIndexByKey.get(key)
+			const prev = state.suites[key]
+			const verdict = verdicts.get(key)
 
-		if (slot.action === 'reuse') {
-			console.logI18n('fountConsole.test.reusedSuite', {
+			if (slot.action === 'reuse') {
+				console.logI18n('fountConsole.test.reusedSuite', {
+					manifestId: suite.manifestId,
+					name: suite.name,
+					status: prev.status,
+				})
+				const subtestTriggerHashes = verdict?.subtests
+					? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
+					: null
+				refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict?.triggerHash ?? null, subtestTriggerHashes)
+				await writeState(REPO_ROOT, state)
+				if (index != null) await recordSuiteResult(index, prev, { reused: true, logEstimate: false })
+				return { passed: prev.status !== 'failed' }
+			}
+
+			if (slot.action === 'blocked') {
+				console.errorI18n('fountConsole.test.blocked', {
+					label,
+					deps: slot.blockedBy.join(', '),
+				})
+				const entry = await upsertSuiteRun({
+					repoRoot: REPO_ROOT,
+					state,
+					suite,
+					result: { passed: false, failedFiles: [], output: '', durationMs: 0 },
+					blockedBy: slot.blockedBy,
+					commitHash,
+					uncommittedHash,
+				})
+				await writeState(REPO_ROOT, state)
+				if (index != null) await recordSuiteResult(index, entry, { logEstimate: false })
+				return { passed: false }
+			}
+
+			const subtests = slot.subtestsToRun
+			/** @type {string[] | undefined} */
+			let onlyFiles
+			if (slot.fileFilters?.length) {
+				const resolved = resolveSerialOnlyFiles(suite, slot.fileFilters, REPO_ROOT)
+				onlyFiles = resolved.files
+			}
+			const baselineDurationMs = expectedRunDurationMs(suite, prev, subtests)
+			const expected = formatExpectedDuration(baselineDurationMs)
+			console.log(formatRunningSuiteMessage({
 				manifestId: suite.manifestId,
 				name: suite.name,
-				status: prev.status,
-			})
-			refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict?.triggerHash ?? null)
-			await writeState(REPO_ROOT, state)
-			if (index != null) await recordSuiteResult(index, prev, { reused: true, logEstimate: false })
-			return { passed: prev.status !== 'failed' }
-		}
+				heavy: !!suite.heavy,
+				expected,
+			}))
+			console.log('>>', suite.run.join(' '))
 
-		if (slot.action === 'blocked') {
-			console.errorI18n('fountConsole.test.blocked', {
+			const firstMap = failedFirstByManifest.get(suite.manifestId)
+			const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
+			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
 				label,
-				deps: slot.blockedBy.join(', '),
+				baselineDurationMs,
 			})
+			printSuiteSummary(label, result, streamLive)
+
+			if (suite.manifestId !== 'testkit')
+				await reportDenoPanic({ repoRoot: REPO_ROOT, output: result.output, label, commitHash })
+					.catch(error => console.error(error))
+
+			/** @type {Record<string, string | null>} */
+			const subtestTriggerHashes = {}
+			if (suite.subtests?.length && verdict?.subtests)
+				for (const st of suite.subtests)
+					subtestTriggerHashes[st.name] = verdict.subtests[st.name]?.triggerHash ?? null
+
 			const entry = await upsertSuiteRun({
 				repoRoot: REPO_ROOT,
 				state,
 				suite,
-				result: { passed: false, failedFiles: [], output: '', durationMs: 0 },
-				blockedBy: slot.blockedBy,
+				result,
 				commitHash,
 				uncommittedHash,
+				triggerHash: verdict?.triggerHash ?? null,
+				ranSubtests: subtests,
+				subtestTriggerHashes,
 			})
 			await writeState(REPO_ROOT, state)
-			if (index != null) await recordSuiteResult(index, entry, { logEstimate: false })
-			return { passed: false }
-		}
+			if (index != null) await recordSuiteResult(index, entry)
 
-		const subtests = slot.subtestsToRun
-		/** @type {string[] | undefined} */
-		let onlyFiles
-		if (slot.fileFilters?.length) {
-			const resolved = resolveSerialOnlyFiles(suite, slot.fileFilters, REPO_ROOT)
-			onlyFiles = resolved.files
-		}
-		const baselineDurationMs = expectedRunDurationMs(suite, prev, subtests)
-		const expected = formatExpectedDuration(baselineDurationMs)
-		console.log(formatRunningSuiteMessage({
-			manifestId: suite.manifestId,
-			name: suite.name,
-			heavy: !!suite.heavy,
-			expected,
-		}))
-		console.log('>>', suite.run.join(' '))
-
-		const firstMap = failedFirstByManifest.get(suite.manifestId)
-		const firstFiles = firstMap?.has(suite.name) ? firstMap.get(suite.name) : undefined
-		const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
-			label,
-			baselineDurationMs,
+			return { passed: result.passed }
 		})
-		printSuiteSummary(label, result, streamLive)
+		exitCode = exitCodeFromSlots(reportWriter.slots)
+	}
+	finally {
+		const finalReportPath = await reportWriter.finalize(exitCode)
+		await writeStateMarkdown(REPO_ROOT, allSuites, state, buildStaleKeys(allSuites, verdicts, state))
 
-		if (suite.manifestId !== 'testkit')
-			await reportDenoPanic({ repoRoot: REPO_ROOT, output: result.output, label, commitHash })
-				.catch(error => console.error(error))
+		const completedSlots = reportWriter.slots.filter(slot => slot.state === 'done')
+		if (exitCode !== 0 && completedSlots.length
+			&& completedSlots.every(slot => slot.reused || slot.status === 'blocked'))
+			console.logI18n('fountConsole.test.allReusedHint')
 
-		/** @type {Record<string, string | null>} */
-		const subtestTriggerHashes = {}
-		if (suite.subtests?.length && verdict?.subtests)
-			for (const st of suite.subtests)
-				subtestTriggerHashes[st.name] = verdict.subtests[st.name]?.triggerHash ?? null
-
-		const entry = await upsertSuiteRun({
-			repoRoot: REPO_ROOT,
-			state,
-			suite,
-			result,
-			commitHash,
-			uncommittedHash,
-			triggerHash: verdict?.triggerHash ?? null,
-			ranSubtests: subtests,
-			subtestTriggerHashes,
+		console.logI18n('fountConsole.test.reportPathFinal', {
+			path: finalReportPath.replace(/\\/g, '/'),
 		})
-		await writeState(REPO_ROOT, state)
-		if (index != null) await recordSuiteResult(index, entry)
-
-		return { passed: result.passed }
-	})
-
-	const exitCode = exitCodeFromSlots(reportWriter.slots)
-	const finalReportPath = await reportWriter.finalize(exitCode)
-	await writeStateMarkdown(REPO_ROOT, allSuites, state, buildStaleKeys(allSuites, verdicts, state))
-
-	const completedSlots = reportWriter.slots.filter(slot => slot.state === 'done')
-	if (exitCode !== 0 && completedSlots.length
-		&& completedSlots.every(slot => slot.reused || slot.status === 'blocked'))
-		console.logI18n('fountConsole.test.allReusedHint')
-
-	console.logI18n('fountConsole.test.reportPathFinal', {
-		path: finalReportPath.replace(/\\/g, '/'),
-	})
-	console.logI18n('fountConsole.test.statePathFinal', {
-		path: 'data/test/state/main.md',
-	})
+		console.logI18n('fountConsole.test.statePathFinal', {
+			path: 'data/test/state/main.md',
+		})
+	}
 
 	return exitCode
 }
 
 /**
+ * 将 fresh green/noisy 的条目指纹对齐到当前 HEAD（含脏→净 triggerHash）。
+ * @param {import('../core/state.mjs').TestState} state 现状库
+ * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
+ * @param {Map<string, import('../core/verdict.mjs').Verdict>} verdicts 裁决表
+ * @param {string} commitHash HEAD
+ * @param {string | null} uncommittedHash 未提交 digest
+ * @returns {boolean} 是否有写入
+ */
+function alignFreshFingerprints(state, allSuites, verdicts, commitHash, uncommittedHash) {
+	let changed = false
+	for (const suite of allSuites) {
+		const key = suiteKey(suite.manifestId, suite.name)
+		const verdict = verdicts.get(key)
+		const entry = state.suites[key]
+		if (!entry || !verdict?.fresh) continue
+		if (verdict.kind !== 'green' && verdict.kind !== 'noisy') continue
+		const needSuite = entry.commitHash !== commitHash
+			|| (entry.uncommittedHash ?? null) !== uncommittedHash
+			|| (entry.triggerHash ?? null) !== (verdict.triggerHash ?? null)
+		let needSub = false
+		const subtestTriggerHashes = verdict.subtests
+			? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
+			: null
+		if (entry.subtests && subtestTriggerHashes) 
+			for (const [name, sub] of Object.entries(entry.subtests)) 
+				if (sub.commitHash !== commitHash
+					|| (sub.uncommittedHash ?? null) !== uncommittedHash
+					|| (sub.triggerHash ?? null) !== (subtestTriggerHashes[name] ?? null)) {
+					needSub = true
+					break
+				}
+			
+		
+		if (!needSuite && !needSub) continue
+		refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict.triggerHash ?? null, subtestTriggerHashes)
+		changed = true
+	}
+	return changed
+}
+
+/**
  * 测试运行主入口：选择 suite、调度执行、写报告与 state。
  *
- * 默认循环：imperfect 波次 → 有失败即退 1；全绿后 outdated 波次 → 再回到 imperfect；
- * 两波皆空则退 0。失败不会在同一次调用内自动重试。
+ * 默认循环：imperfect 波次 → hard fail 即退 1；否则 outdated 波次 → 再回到 imperfect；
+ * 两波皆空则按是否仍有 fresh noisy 退 1/0。失败不会在同一次调用内自动重试。
  * @param {RunTestsOptions} [options={}] 运行选项
  * @returns {Promise<number>} 进程退出码
  */
@@ -630,10 +688,12 @@ export async function runTests(options = {}) {
 		})
 	}
 
-	// 默认：imperfect → outdated 循环；失败即退 1，两波皆空退 0
+	// 默认：imperfect → outdated 循环；hard fail 即退 1，两波皆空按 noisy 退
 	for (; ;) {
 		const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
 		const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
+		if (alignFreshFingerprints(state, allSuites, verdicts, commitHash, uncommittedHash))
+			await writeState(REPO_ROOT, state)
 
 		const imperfect = selectImperfectWave({
 			verdicts,
@@ -703,6 +763,6 @@ export async function runTests(options = {}) {
 		}
 
 		console.logI18n('fountConsole.test.nothingToContinue')
-		return 0
+		return scopeHasFreshNoisy(verdicts, filtered) ? 1 : 0
 	}
 }

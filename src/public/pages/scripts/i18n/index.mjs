@@ -97,6 +97,14 @@ export function loadPreferredLangs() {
 }
 
 /**
+ * 当前用户主区域：preferredLangs[0] → main_locale（默认 en-UK）。
+ * @returns {string} BCP 47
+ */
+export function primaryLocale() {
+	return loadPreferredLangs()[0] || main_locale
+}
+
+/**
  * 保存首选语言。
  * @param {string[]} langs - 首选语言列表。
  * @returns {Promise<void>}

@@ -1,6 +1,7 @@
 /**
  * 群 persona 变更后同步 entity profile（Chat 专用）。
  */
+import { localesForUser } from '../../../../../../scripts/locale.mjs'
 import { getGroupMemberEntityHash, isWritableLocalEntity } from '../chat/lib/replica.mjs'
 import {
 	getInfoDefaultsForEntity,
@@ -22,7 +23,7 @@ export async function syncEntityProfileFromPersona(replicaUsername, groupId) {
 	const entityHash = await getGroupMemberEntityHash(replicaUsername, groupId)
 	if (!isWritableLocalEntity(entityHash)) return
 	try {
-		const locales = ['zh-CN', 'en-UK']
+		const locales = localesForUser(replicaUsername)
 		const presentation = await resolvePersonaPresentation(replicaUsername, groupId)
 		const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
 		const profile = await getProfile(entityHash, replicaUsername, { groupId, skipPresentation: true })

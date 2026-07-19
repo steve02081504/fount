@@ -11,10 +11,11 @@ import {
 import { listManifestIds, loadAllSuites } from '../core/manifest.mjs'
 import { buildPlan } from '../core/plan.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
-import { suiteKey } from '../core/state.mjs'
+import { refreshEntryFingerprint, suiteKey } from '../core/state.mjs'
 import {
 	buildVerdicts,
 	isContentFresh,
+	isTriggerHashStale,
 	judgeSuite,
 	verdictAllowsDownstream,
 	verdictReusable,
@@ -165,4 +166,43 @@ Deno.test('verdictAllowsDownstream accepts green and noisy only', () => {
 	assertEquals(verdictAllowsDownstream({ kind: 'noisy', fresh: true, triggerHash: null }), true)
 	assertEquals(verdictAllowsDownstream({ kind: 'red', fresh: true, triggerHash: null }), false)
 	assertEquals(verdictAllowsDownstream({ kind: 'unknown', fresh: false, triggerHash: null }), false)
+})
+
+Deno.test('isTriggerHashStale ignores dirty-to-clean drift', () => {
+	assertEquals(isTriggerHashStale('old', null), false)
+	assertEquals(isTriggerHashStale(null, null), false)
+	assertEquals(isTriggerHashStale('a', 'a'), false)
+	assertEquals(isTriggerHashStale(null, 'new'), true)
+	assertEquals(isTriggerHashStale('a', 'b'), true)
+})
+
+Deno.test('refreshEntryFingerprint aligns subtest fingerprints', () => {
+	const state = {
+		suites: {
+			'shells/chat/frontend': makeStateEntry({
+				commitHash: 'old',
+				triggerHash: 'suite-old',
+				subtests: {
+					smoke: {
+						status: 'passed',
+						commitHash: 'old',
+						uncommittedHash: 'dirty',
+						triggerHash: 'sub-old',
+						durationMs: 1,
+						baselineDurationMs: 1,
+						failedFiles: [],
+						noiseHits: [],
+					},
+				},
+			}),
+		},
+	}
+	refreshEntryFingerprint(state, 'shells/chat/frontend', 'head', null, 'suite-new', { smoke: 'sub-new' })
+	const entry = state.suites['shells/chat/frontend']
+	assertEquals(entry.commitHash, 'head')
+	assertEquals(entry.triggerHash, 'suite-new')
+	assertEquals(entry.uncommittedHash, null)
+	assertEquals(entry.subtests.smoke.commitHash, 'head')
+	assertEquals(entry.subtests.smoke.triggerHash, 'sub-new')
+	assertEquals(entry.subtests.smoke.uncommittedHash, null)
 })

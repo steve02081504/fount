@@ -8,6 +8,7 @@ import path from 'node:path'
 
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 
+import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { baseloadPart, GetPartPath } from '../../../../../../server/parts_loader.mjs'
 import { isAvatarImageUrl } from '../../public/shared/hashAvatar.mjs'
 import { resolveAgentCharPartNameForUser } from '../entity/agentHost.mjs'
@@ -267,7 +268,7 @@ export async function syncAgentProfileFromCharPart(username, entityHash, options
 
 	const localized = localizedSlicesFromPartInfo(info)
 	if (!Object.keys(localized).length)
-		localized['zh-CN'] = { name: charname }
+		localized[primaryLocaleForUser(username)] = { name: charname }
 
 	if (materialized)
 		await applyMaterializedAvatar(localized, materialized, username, hash)

@@ -4,6 +4,7 @@
  * 【原理】string / chatLogEntry_t → 频道 content + files，再走 messageSend 乐观发送路径。
  */
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { primaryLocale } from '../../../../scripts/i18n/index.mjs'
 import { normalizeUserSendPayload } from '../shared/fountUserSend.mjs'
 
 /**
@@ -18,7 +19,7 @@ export { normalizeUserSendPayload } from '../shared/fountUserSend.mjs'
  */
 export async function sendAsUser(input) {
 	const { content, files } = normalizeUserSendPayload(input, {
-		locale: globalThis.navigator?.language || 'zh-CN',
+		locale: primaryLocale(),
 	})
 	const { sendMessagePayload } = await import('./messages/messageSend.mjs')
 	return sendMessagePayload(content, files)

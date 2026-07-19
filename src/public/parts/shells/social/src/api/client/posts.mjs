@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 
 import { httpError } from '../../../../../../../scripts/http_error.mjs'
+import { primaryLocaleForUser } from '../../../../../../../scripts/locale.mjs'
 import { resolveSocialEntity } from '../../federation/hosting.mjs'
 import { buildPostFeedItem } from '../../feed/buildItem.mjs'
 import { createFeedItemBuildContext } from '../../feed/iterate.mjs'
@@ -143,7 +144,7 @@ async function createTimelinePost(apiContext, draft) {
 		replyTo: draft.replyTo,
 		quoteRef: draft.quoteRef,
 		groupRef: draft.groupRef,
-		locale: draft.locale || 'zh-CN',
+		locale: draft.locale || primaryLocaleForUser(apiContext.username),
 		...visibilitySpecToContentFields(visibilitySpec),
 		...replyPolicy !== 'everyone' ? { replyPolicy } : {},
 		...replyDisplay !== 'all' ? { replyDisplay } : {},

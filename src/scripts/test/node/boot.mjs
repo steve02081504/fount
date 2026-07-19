@@ -20,7 +20,7 @@ import { HEADLESS_CONFIG_PORT, pickAvailableIpcPort } from '../core/ports.mjs'
 
 import { assignIpcPort, defaultTestStarts, ipcPortFromStarts, ipcStartsEnabled } from './starts.mjs'
 
-/** 测试节点用户默认 locale（与 `localesFromRequest` 无用户偏好时的回退一致）。 */
+/** 测试节点用户默认 locale（显式偏好，非空兜底；空兜底见 `localesForUser` → en-UK）。 */
 const DEFAULT_TEST_USER_LOCALES = ['zh-CN', 'en-UK']
 
 /** @typedef {import('./starts.mjs').TestStarts} TestStarts */

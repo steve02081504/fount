@@ -7,7 +7,7 @@
  */
 import { renderTemplate, usingTemplates } from '../../../../scripts/features/template.mjs'
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
-import { confirmI18n } from '../../../../scripts/i18n/index.mjs'
+import { confirmI18n, primaryLocale } from '../../../../scripts/i18n/index.mjs'
 import { rebuildProfileFromPart, uploadAvatar, uploadBanner } from '../profile/src/endpoints.mjs'
 import {
 	configureEntityProfileCard,
@@ -355,12 +355,12 @@ function initEditState(entityHash, profile) {
 	editingLocalized = { ...profile.localized || {} }
 	let keys = Object.keys(editingLocalized)
 	if (!keys.length)
-		editingLocalized[navigator.language || 'zh-CN'] = {}
+		editingLocalized[primaryLocale()] = {}
 	keys = Object.keys(editingLocalized)
 
-	const navLang = String(navigator.language || '').trim()
-	activeLocaleKey = keys.find(k => k === navLang)
-		|| keys.find(k => navLang && k.split('-')[0] === navLang.split('-')[0])
+	const preferred = primaryLocale()
+	activeLocaleKey = keys.find(k => k === preferred)
+		|| keys.find(k => preferred && k.split('-')[0] === preferred.split('-')[0])
 		|| keys[0]
 	const avatarUpload = editDialog?.querySelector('#profile-edit-avatar-upload')
 	if (avatarUpload instanceof HTMLInputElement) avatarUpload.value = ''

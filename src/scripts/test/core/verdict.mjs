@@ -52,6 +52,20 @@ function triggerHashFor(triggers, uncommittedHashes, triggerFilter) {
 }
 
 /**
+ * 脏工作区 → 干净时旧 triggerHash 残留不算过期（由 reuse/refresh 对齐）。
+ * @param {string | null | undefined} entryHash 记录指纹
+ * @param {string | null | undefined} currentHash 当前指纹
+ * @returns {boolean} 是否因指纹不一致而过期
+ */
+export function isTriggerHashStale(entryHash, currentHash) {
+	const from = entryHash ?? null
+	const to = currentHash ?? null
+	if (from === to) return false
+	if (from != null && to == null) return false
+	return true
+}
+
+/**
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
@@ -65,7 +79,7 @@ export function isContentFresh(suite, entry, committedChanged, uncommittedHashes
 		uncommittedHashes,
 		collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths,
 	)
-	return (entry.triggerHash ?? null) === (triggerHash ?? null)
+	return !isTriggerHashStale(entry.triggerHash, triggerHash)
 }
 
 /**
@@ -85,7 +99,7 @@ export function judgeSubtest(suite, subtest, entry, sharedStale, committedChange
 		|| !entry
 		|| entry.status === 'blocked'
 		|| triggersHit(combined, committedChanged, suite.triggerFilter)
-		|| (entry.triggerHash ?? null) !== (triggerHash ?? null)
+		|| isTriggerHashStale(entry.triggerHash, triggerHash)
 	if (stale)
 		return { kind: 'unknown', fresh: false, triggerHash }
 	if (entry.status === 'passed') return { kind: 'green', fresh: true, triggerHash }
@@ -146,7 +160,7 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 		const sharedStale = !entry
 			|| entry.status === 'blocked'
 			|| suiteTriggersHit(suite, committedChanged)
-			|| (entry.triggerHash ?? null) !== (sharedTriggerHash ?? null)
+			|| isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 		/** @type {Record<string, Verdict>} */
 		const subVerdicts = {}
 		const key = suiteKey(suite.manifestId, suite.name)

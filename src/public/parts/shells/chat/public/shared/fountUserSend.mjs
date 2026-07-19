@@ -34,11 +34,11 @@ function normalizeSendFiles(files) {
 /**
  * 将 `fount.user.send` 入参规范为频道发送载荷。
  * @param {string | object} input 纯文本或近似 `chatLogEntry_t` 的对象
- * @param {{ locale?: string }} [defaults] 缺省 locale（浏览器侧传 navigator.language）
+ * @param {{ locale?: string }} [defaults] 缺省 locale（Hub 传 primaryLocale）
  * @returns {{ content: object, files: object[] }} content + files
  */
 export function normalizeUserSendPayload(input, defaults = {}) {
-	const fallbackLocale = defaults.locale || 'zh-CN'
+	const fallbackLocale = defaults.locale || 'en-UK'
 	if (typeof input === 'string') 
 		return {
 			content: {

@@ -36,6 +36,29 @@ Deno.test('collectStaleTriggerEvidence maps paths to trigger sets', () => {
 	const evidence = collectStaleTriggerEvidence(suite, ['src/scripts/test/deno/serial.mjs'])
 	assertEquals(evidence.matchedTriggerSets, ['testFramework'])
 	assertEquals(evidence.matchedPaths, ['src/scripts/test/deno/serial.mjs'])
+	assertEquals(evidence.triggerHashDrift, false)
+})
+
+Deno.test('collectStaleTriggerEvidence includes subtest triggers and hash drift', () => {
+	const suite = makeSuite('shells/chat', 'frontend', {
+		triggers: ['src/public/parts/shells/chat/test/frontend/fixtures.mjs'],
+		subtests: [{
+			name: 'smoke',
+			triggers: ['src/public/parts/shells/chat/test/frontend/smoke.spec.mjs'],
+		}],
+	})
+	const withPaths = collectStaleTriggerEvidence(suite, [
+		'src/public/parts/shells/chat/test/frontend/smoke.spec.mjs',
+	])
+	assertEquals(withPaths.matchedPaths, ['src/public/parts/shells/chat/test/frontend/smoke.spec.mjs'])
+	assertEquals(withPaths.triggerHashDrift, false)
+
+	const drift = collectStaleTriggerEvidence(suite, [], {
+		entry: makeStateEntry({ triggerHash: 'old' }),
+		currentTriggerHash: null,
+	})
+	assertEquals(drift.triggerHashDrift, true)
+	assertEquals(drift.matchedPaths, [])
 })
 
 Deno.test('selectImperfectWave exits when nothing imperfect in scope', () => {

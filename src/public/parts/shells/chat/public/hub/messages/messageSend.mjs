@@ -1,3 +1,4 @@
+import { primaryLocale } from '../../../../../scripts/i18n/index.mjs'
 import { sendGroupMessage } from '../../src/api/groupChannel.mjs'
 import { clearComposerExtras, getContentWarning, getSensitiveMedia } from '../composerExtras.mjs'
 import { clearSelectedFiles, selectedFiles } from '../composerFiles.mjs'
@@ -154,7 +155,7 @@ export async function retryFailedPendingMessage(tempId) {
  * @returns {object} content object
  */
 function buildComposerContent(text) {
-	const contentObj = { type: 'text', content: text, locale: navigator.language || 'zh-CN' }
+	const contentObj = { type: 'text', content: text, locale: primaryLocale() }
 	const cw = getContentWarning()
 	if (cw) contentObj.content_warning = cw
 	if (getSensitiveMedia()) contentObj.sensitive_media = true

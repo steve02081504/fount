@@ -66,7 +66,7 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 /**
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
- * @returns {Set<string>} imperfect 目标键（不含 stale passed）
+ * @returns {Set<string>} imperfect 目标键（不含 stale passed / fresh noisy）
  */
 export function goalImperfectKeys(verdicts, state) {
 	/** @type {Set<string>} */
@@ -78,15 +78,36 @@ export function goalImperfectKeys(verdicts, state) {
 			keys.add(key)
 			continue
 		}
-		// 内容过期的 passed 留给 outdated 波次
-		if (verdict.kind === 'unknown' && entry.status === 'passed')
+		// 内容过期 → outdated 波；failed/blocked 仍走 imperfect
+		if (verdict.kind === 'unknown') {
+			if (entry.status === 'failed' || entry.status === 'blocked')
+				keys.add(key)
 			continue
-		if (verdict.kind === 'red' || verdict.kind === 'noisy')
+		}
+		// fresh noisy 不进 imperfect（否则同调用空转）；两波皆空后由主循环最终 exit 1
+		if (verdict.kind === 'noisy' && verdict.fresh)
+			continue
+		if (verdict.kind === 'red')
 			keys.add(key)
-		else if (entry.status === 'failed' || entry.status === 'noisy' || entry.status === 'blocked')
+		else if (entry.status === 'failed' || entry.status === 'blocked')
 			keys.add(key)
 	}
 	return keys
+}
+
+/**
+ * scope 内是否仍有 fresh noisy（两波皆空时用于最终退出码）。
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {SuiteDef[]} scope 范围
+ * @returns {boolean} 有 fresh noisy
+ */
+export function scopeHasFreshNoisy(verdicts, scope) {
+	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
+	for (const [key, verdict] of verdicts) {
+		if (!scopeKeys.has(key)) continue
+		if (verdict.kind === 'noisy' && verdict.fresh) return true
+	}
+	return false
 }
 
 /**
@@ -225,7 +246,12 @@ export function selectOutdatedWave({
 		const suite = byKey.get(key)
 		const entry = state?.suites[key]
 		const changed = committedChangedByKey.get(key) ?? []
-		const triggerEvidence = suite ? collectStaleTriggerEvidence(suite, changed) : {}
+		const triggerEvidence = suite
+			? collectStaleTriggerEvidence(suite, changed, {
+				entry,
+				currentTriggerHash: verdicts.get(key)?.triggerHash ?? null,
+			})
+			: {}
 		const drift = entry ? {
 			fromCommit: entry.commitHash,
 			toCommit: commitHash,
@@ -236,7 +262,7 @@ export function selectOutdatedWave({
 			toUncommittedHash: uncommittedHash,
 		}
 		evidenceByKey.set(key, {
-			kind: 'stale_content',
+			kind: triggerEvidence.triggerHashDrift ? 'trigger_hash_drift' : 'stale_content',
 			...triggerEvidence,
 			...drift,
 		})

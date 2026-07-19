@@ -68,6 +68,20 @@ Deno.test('goalImperfectKeys skips stale passed suites', () => {
 	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['b/y'])
 })
 
+Deno.test('goalImperfectKeys skips fresh noisy', () => {
+	const state = {
+		suites: {
+			'a/x': makeStateEntry({ status: 'noisy' }),
+			'b/y': makeStateEntry({ status: 'failed' }),
+		},
+	}
+	const verdicts = new Map([
+		['a/x', { kind: 'noisy', fresh: true, triggerHash: null }],
+		['b/y', { kind: 'red', fresh: true, triggerHash: null }],
+	])
+	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['b/y'])
+})
+
 Deno.test('goalContinue expands one imperfect downstream level', () => {
 	const all = [
 		makeSuite('shells/chat', 'parent'),

@@ -41,7 +41,12 @@ export class PlanRunCoordinator {
 			const ready = this.#listReady(inFlight)
 			if (!ready.length) {
 				const pending = Object.values(inFlight)
-				if (!pending.length) break
+				if (!pending.length) {
+					const unresolved = this.slots
+						.filter(slot => !this.resolvedKeys.has(slot.key))
+						.map(slot => slot.key)
+					throw new Error(`scheduler deadlock: unresolved ${unresolved.join(', ')}`)
+				}
 				await Promise.race(pending)
 				continue
 			}
@@ -72,7 +77,9 @@ export class PlanRunCoordinator {
 				void task.finally(() => { delete inFlight[slot.key] })
 			}
 
-			await Promise.race(Object.values(inFlight))
+			const flying = Object.values(inFlight)
+			if (flying.length)
+				await Promise.race(flying)
 		}
 
 		await Promise.all(Object.values(inFlight))

@@ -21,6 +21,7 @@ import { wireSocialProfileHover } from './lib/profileHover.mjs'
 import { bindMediaCarousel } from './mediaRender.mjs'
 import { attachMentionAutocomplete } from './mentionAutocomplete.mjs'
 import { bindContentReveal } from '/scripts/features/contentReveal/index.mjs'
+import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 import { applyIncomingNavigation, afterPublishPost, focusComposer, switchView } from './navigation.mjs'
 import { state } from './state.mjs'
 import { prependFeedItem, showFeedNewPostsBanner, updateFeedSearchChrome } from './views/feed.mjs'
@@ -30,7 +31,6 @@ import { confirmSaveModal, closeSaveModal } from './views/saved.mjs'
 import { initSearchView, loadSearchView } from './views/search.mjs'
 import { initTopicView } from './views/topic.mjs'
 import { handleVideoKeydown } from './views/video.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 const socialGate = createReadyGate(SOCIAL_GATE)
 
@@ -170,7 +170,7 @@ export async function bootstrap() {
 
 		const postLocale = document.getElementById('postLocale')
 		if (postLocale instanceof HTMLInputElement)
-			postLocale.value = navigator.language || 'zh-CN'
+			postLocale.value = primaryLocale()
 
 		initComposerVisibilityPicker()
 		await loadGroupPickerOptions()

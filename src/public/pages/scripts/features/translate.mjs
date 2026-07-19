@@ -1,12 +1,11 @@
-import { loadPreferredLangs, main_locale } from '../i18n/index.mjs'
+import { primaryLocale } from '../i18n/index.mjs'
 
 /**
- * 解析翻译目标语言：UI 首选语言 → 主区域 → 浏览器 locale。
+ * 解析翻译目标语言：用户首选主区域。
  * @returns {string} BCP 47 语言标签
  */
 export function resolveTargetLang() {
-	const preferred = loadPreferredLangs()
-	return preferred[0] || main_locale || navigator.language || 'zh-CN'
+	return primaryLocale()
 }
 
 /**

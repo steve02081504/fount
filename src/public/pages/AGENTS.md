@@ -23,7 +23,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`template.mjs`**: `renderTemplate` / `mountTemplate` / `renderTemplateAsHtmlString` / `withTemplates(path, fn)`. Cross-shell shared modules must **not** call bare `usingTemplates` — use `withTemplates` or direct DOM.
 - **`dialog.mjs`**: `openDialogFromTemplate` / `pickFromDialog`. Templates supply `modal-box` (+ optional `modal-backdrop`) only — do not nest another `<dialog>`.
 - **`contentReveal/`**: `wrapSensitiveMediaHtml`, `wrapContentWarningHtml`, `bindContentReveal`.
-- **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang`.
+- **`translate.mjs`**: `mountTranslationBlock`, `requestTranslation`, `resolveTargetLang`（→ `primaryLocale()`）。
 - **`memo.mjs`**: `memoizePromise` / `createLruMap`.
 - **`toast.mjs`**: `showToast`, `showToastI18n`.
 - **`cssValues.mjs`**: Dynamic CSS variable manipulation.
@@ -39,7 +39,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 - **`registries.mjs`**: `GET /api/registries/:name` + dynamic `import()`.
 - **`emojiPicker.mjs`** / **`stickerPicker.mjs`**: Shared pickers; Hub mounts via `mountDockedEmojiPicker` / `mountDockedStickerPicker`. Option names: full words (`pickerElement`, `gridElement`, …). Leave DaisyUI class names alone.
 - **`svgInliner.mjs`**: Inline SVGs for `currentColor`.
-- **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, preferred langs.
+- **`i18n.mjs`**: Sole public entry. Call `initTranslations()` early. `data-i18n`, `geti18n`, `setElementI18n`, `primaryLocale()`（preferredLangs[0] → `main_locale`，默认 `en-UK`）。内容 locale / 翻译目标用它，勿硬编码 `zh-CN` 或裸 `navigator.language`。
 - **`data-i18n` params**: full `element.dataset` is the interpolation map. MutationObserver watches **only** `data-i18n`. Nested keys: `placeholder` / `title` / `aria-label` / `textContent` / `innerHTML` / `dataset`. **`input`/`textarea` placeholders must use an object key** (`{ "placeholder": "…" }`); a string key writes `innerHTML` and wipes textarea input.
 - **`i18n_base.mjs`**: Internal — `userPreferredLanguages` vs `fountUserPreferredLanguages` (GitHub Pages).
 

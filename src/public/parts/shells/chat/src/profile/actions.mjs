@@ -1,6 +1,7 @@
 /**
  * Chat profile CLI actions（委托 scripts/p2p/entity）。
  */
+import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { getOperatorEntityHash } from '../entity/identity.mjs'
 import { normalizeLocalizedMap } from '../entity/presentation.mjs'
 import {
@@ -31,7 +32,8 @@ export const actions = {
 	 * @param {string} [params.locale] locale 键
 	 * @returns {Promise<string>} 结果消息
 	 */
-	async updateDisplayName({ user, name, locale = 'zh-CN' }) {
+	async updateDisplayName({ user, name, locale }) {
+		locale ??= primaryLocaleForUser(user)
 		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)
@@ -47,7 +49,8 @@ export const actions = {
 	 * @param {string} [params.locale] locale 键
 	 * @returns {Promise<string>} 结果消息
 	 */
-	async updateBio({ user, description, locale = 'zh-CN' }) {
+	async updateBio({ user, description, locale }) {
+		locale ??= primaryLocaleForUser(user)
 		const entityHash = await getOperatorEntityHash(user)
 		const profile = await getProfile(entityHash, user, { skipPresentation: true })
 		const localized = normalizeLocalizedMap(profile.localized)

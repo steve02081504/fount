@@ -5,6 +5,8 @@ import { publishPublicFile } from 'npm:@steve02081504/fount-p2p/files/public_man
 import { isWritableLocalEntity } from 'npm:@steve02081504/fount-p2p/node/identity'
 import { getEntityStore } from 'npm:@steve02081504/fount-p2p/node/instance'
 
+import { localesForUser } from '../../../../../../scripts/locale.mjs'
+
 import { resolveAgentCharPartNameForUser } from './agentHost.mjs'
 import { profileAvatarFileUrl, profileBannerFileUrl } from './filesUrl.mjs'
 import {
@@ -260,7 +262,7 @@ export async function getProfile(entityHash, replicaUsername = null, options = {
 		if (remote) stored = remote
 	}
 
-	const locales = options.locales || ['zh-CN', 'en-UK']
+	const locales = options.locales || localesForUser(replicaUsername)
 	const merged = {
 		...stored,
 		entityHash: parsed.entityHash,
@@ -322,7 +324,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		if (!Object.keys(updates).length) {
 			if (options.skipPresentation)
 				return getProfile(entityHash, replicaUsername, { groupId: options.groupId, skipPresentation: true })
-			const locales = options.locales || ['zh-CN', 'en-UK']
+			const locales = options.locales || localesForUser(replicaUsername)
 			const profile = await getProfile(entityHash, replicaUsername, { groupId: options.groupId, skipPresentation: true })
 			const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
 			const resolved = resolveProfilePresentation(profile, locales, infoDefaults)
@@ -392,7 +394,7 @@ export async function updateProfile(replicaUsername, entityHash, updates, option
 		await publishStaticProfile(replicaUsername, entityHash, updatedProfile).catch(() => {})
 
 	if (options.skipPresentation) return updatedProfile
-	const locales = options.locales || ['zh-CN', 'en-UK']
+	const locales = options.locales || localesForUser(replicaUsername)
 	const infoDefaults = await getInfoDefaultsForEntity(replicaUsername, entityHash, locales)
 	const resolved = resolveProfilePresentation(updatedProfile, locales, infoDefaults)
 	return { ...updatedProfile, ...resolved, infoDefaults, localeKeys: Object.keys(updatedProfile.localized) }

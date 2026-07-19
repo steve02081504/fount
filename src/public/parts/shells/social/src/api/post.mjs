@@ -1,4 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
+import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { getEntityProfile } from '../lib/entityProfile.mjs'
 import { isKnownSocialTarget } from '../lib/entityTarget.mjs'
 import { sanitizeMediaRefs, resolveSensitiveMedia } from '../lib/mediaRefs.mjs'
@@ -105,7 +106,7 @@ export function createPost(apiContext, entityHash, postId, snapshot = null) {
 				targetPostId: id,
 				text: String(patch.text ?? decrypted.text ?? ''),
 				mediaRefs: sanitizeMediaRefs(patch.mediaRefs ?? decrypted.mediaRefs),
-				locale: patch.locale || decrypted.locale || 'zh-CN',
+				locale: patch.locale || decrypted.locale || primaryLocaleForUser(apiContext.username),
 				...patch.contentWarning !== undefined
 					? { contentWarning: String(patch.contentWarning).trim().slice(0, 200) }
 					: decrypted.contentWarning ? { contentWarning: decrypted.contentWarning } : {},

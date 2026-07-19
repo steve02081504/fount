@@ -4,6 +4,7 @@
 import { parseEntityHash } from 'npm:@steve02081504/fount-p2p/core/entity_id'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { FALLBACK_LOCALE } from '../../../../../../scripts/locale.mjs'
 import { loadFollowingForActor } from '../following.mjs'
 import { commitTimelineEvent } from '../timeline/append.mjs'
 import { getTimelineMaterialized } from '../timeline/materialize.mjs'
@@ -19,7 +20,7 @@ import { collapseTasteWeights, loadTaste, resolveTasteAlias } from './store.mjs'
  */
 export async function publishTagName(username, entityHash, input) {
 	const tagHash = String(input.tagHash || '').trim().toLowerCase()
-	const locale = String(input.locale || 'zh-CN').trim()
+	const locale = String(input.locale || '').trim()
 	const label = String(input.label || '').trim().slice(0, 64)
 	const actor = String(entityHash).toLowerCase()
 	if (!tagHash || !locale || !label || !parseEntityHash(actor))
@@ -37,10 +38,10 @@ export async function publishTagName(username, entityHash, input) {
  * @param {string} username replica
  * @param {string} viewerEntityHash 观看者
  * @param {string} tagHash tag
- * @param {string} [locale='zh-CN'] locale
+ * @param {string} [locale] locale；缺省 en-UK
  * @returns {Promise<string | null>} 显示名
  */
-export async function resolveTagDisplayName(username, viewerEntityHash, tagHash, locale = 'zh-CN') {
+export async function resolveTagDisplayName(username, viewerEntityHash, tagHash, locale = FALLBACK_LOCALE) {
 	const viewer = String(viewerEntityHash).toLowerCase()
 	const taste = await loadTaste(username, viewer)
 	const canon = resolveTasteAlias(tagHash, taste.aliases)
@@ -73,10 +74,10 @@ export async function resolveTagDisplayName(username, viewerEntityHash, tagHash,
  * 列出观看者偏好 tags（含解析名）。
  * @param {string} username replica
  * @param {string} entityHash acting
- * @param {string} [locale='zh-CN'] locale
+ * @param {string} [locale] locale；缺省 en-UK
  * @returns {Promise<{ tagHash: string, weight: number, label: string | null }[]>} 标签列表
  */
-export async function listTasteTags(username, entityHash, locale = 'zh-CN') {
+export async function listTasteTags(username, entityHash, locale = FALLBACK_LOCALE) {
 	const taste = await loadTaste(username, entityHash)
 	const collapsed = collapseTasteWeights(taste)
 	const rows = []

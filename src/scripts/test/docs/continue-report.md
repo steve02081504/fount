@@ -4,11 +4,11 @@ Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-re
 
 ## Decision model
 
-1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`.
-2. **Goals** — imperfect (failed/noisy/blocked/missing + one-level dependents), outdated (`unknown`), or explicit / `--all`.
+1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (fingerprints align on reuse / loop start).
+2. **Goals** — imperfect (`failed`/`blocked`/missing + one-level dependents; **fresh noisy excluded**), outdated (`unknown`), or explicit / `--all`.
 3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` with provenance.
 
-Default `fount test` loops imperfect → (on green) outdated → imperfect until both empty or a wave fails (exit 1).
+Default `fount test` loops imperfect → outdated until both empty or a wave hard-fails (`failed`/`blocked`/pending → exit 1). `noisy` does not abort the wave loop; when both waves are empty, remaining fresh noisy still yields final exit 1.
 
 ## Reason kinds
 
@@ -17,7 +17,8 @@ Default `fount test` loops imperfect → (on green) outdated → imperfect until
 | `imperfect_failed` / `_noisy` / `_blocked` | Last state entry |
 | `imperfect_dependent` | One-level downstream of an imperfect parent |
 | `missing_state_record` | No entry in `state/main.json` |
-| `stale_content` | Content changed since last run |
+| `stale_content` | Content changed since last run (path hits) |
+| `trigger_hash_drift` | Fingerprint mismatch without path hits |
 | `explicit_selected` | User named this suite / `--all` |
 | `dependency_required` | Pulled in by plan expansion (`requiredBy`) |
 

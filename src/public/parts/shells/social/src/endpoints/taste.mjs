@@ -1,4 +1,5 @@
 import { httpError } from '../../../../../../scripts/http_error.mjs'
+import { primaryLocaleForUser } from '../../../../../../scripts/locale.mjs'
 import { authenticate } from '../../../../../../server/auth/index.mjs'
 
 import { socialJson } from './shared.mjs'
@@ -9,8 +10,8 @@ import { socialJson } from './shared.mjs'
  * @returns {void}
  */
 export function registerTasteRoutes(router) {
-	router.get('/api/parts/shells\\:social/taste', authenticate, socialJson((req, { client }) =>
-		client.taste.get({ locale: String(req.query.locale || 'zh-CN') })))
+	router.get('/api/parts/shells\\:social/taste', authenticate, socialJson((req, { username, client }) =>
+		client.taste.get({ locale: String(req.query.locale || primaryLocaleForUser(username)) })))
 
 	router.put('/api/parts/shells\\:social/taste', authenticate, socialJson((req, { client }) =>
 		client.taste.update(req.body || {})))
@@ -18,10 +19,10 @@ export function registerTasteRoutes(router) {
 	router.post('/api/parts/shells\\:social/taste/rebuild', authenticate, socialJson((_req, { client }) =>
 		client.taste.rebuild()))
 
-	router.post('/api/parts/shells\\:social/taste/names', authenticate, socialJson(async (req, { client }) => {
+	router.post('/api/parts/shells\\:social/taste/names', authenticate, socialJson(async (req, { username, client }) => {
 		const tagHash = String(req.body?.tagHash || '').trim()
 		const label = String(req.body?.label || '').trim()
-		const locale = String(req.body?.locale || 'zh-CN').trim()
+		const locale = String(req.body?.locale || primaryLocaleForUser(username)).trim()
 		if (!tagHash || !label) throw httpError(400, 'tagHash and label required')
 		return client.taste.setName({ tagHash, label, locale })
 	}))

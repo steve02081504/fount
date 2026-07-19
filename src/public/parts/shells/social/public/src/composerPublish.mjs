@@ -1,5 +1,6 @@
 import { showToastI18n } from '../../../../scripts/features/toast.mjs'
 import { readCwSensitive } from '/parts/shells:chat/shared/composerAttachmentFields.mjs'
+import { geti18n, primaryLocale } from '/scripts/i18n/index.mjs'
 
 import {
 	clearComposer,
@@ -9,7 +10,6 @@ import { socialApi } from './lib/apiClient.mjs'
 import { uploadMedia } from './media.mjs'
 import { state } from './state.mjs'
 import { readVisibilityPicker } from './visibilityPicker.mjs'
-import { geti18n } from '/scripts/i18n/index.mjs'
 
 const SOCIAL_CW_IDS = { cwId: 'postContentWarning', sensitiveId: 'postSensitiveMedia' }
 
@@ -33,7 +33,7 @@ export function buildPostBody(mediaRefs = state.pendingMediaRefs) {
 		}),
 		...visibilityDraft,
 		...albumIds.length ? { albumIds } : {},
-		locale: document.getElementById('postLocale').value.trim() || 'zh-CN',
+		locale: document.getElementById('postLocale').value.trim() || primaryLocale(),
 		...contentWarning ? { contentWarning } : {},
 		...sensitiveMedia ? { sensitiveMedia: true } : {},
 	}

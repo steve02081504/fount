@@ -130,33 +130,60 @@ export function collectTriggerEvidence(suite, changedFiles) {
 /**
  * @param {SuiteDef} suite suite
  * @param {string[]} changedFiles 变更文件
- * @returns {{ matchedTriggerSets: string[], matchedTriggers: string[], matchedPaths: string[] }} trigger set 命中证据
+ * @param {{ entry?: SuiteStateEntry, currentTriggerHash?: string | null }} [opts] 可选指纹对照
+ * @returns {{ matchedTriggerSets: string[], matchedTriggers: string[], matchedPaths: string[], triggerHashDrift: boolean }} trigger 命中证据
  */
-export function collectStaleTriggerEvidence(suite, changedFiles) {
+export function collectStaleTriggerEvidence(suite, changedFiles, opts = {}) {
 	const globEvidence = collectTriggerEvidence(suite, changedFiles)
-	if (!suite.triggerSetPatterns)
-		return { matchedTriggerSets: [], ...globEvidence }
+	/** @type {string[]} */
+	const matchedTriggers = [...globEvidence.matchedTriggers]
+	/** @type {string[]} */
+	const matchedPaths = [...globEvidence.matchedPaths]
 
-	const relevant = filterTriggerRelevantFiles(changedFiles, suite.triggerFilter)
+	if (suite.subtests?.length) 
+		for (const subtest of suite.subtests) {
+			const relevant = filterTriggerRelevantFiles(changedFiles, suite.triggerFilter)
+			for (const pat of subtest.triggers ?? []) {
+				const hits = relevant.filter(file => matchGlob(pat, file))
+				if (!hits.length) continue
+				matchedTriggers.push(pat)
+				matchedPaths.push(...hits)
+			}
+		}
+	
+
 	/** @type {string[]} */
 	const matchedTriggerSets = []
-	/** @type {string[]} */
-	const setPaths = []
-	for (const [ref, patterns] of Object.entries(suite.triggerSetPatterns)) {
-		/** @type {string[]} */
-		const hits = []
-		for (const pat of patterns)
-			hits.push(...relevant.filter(file => matchGlob(pat, file)))
-		const unique = [...new Set(hits)]
-		if (unique.length) {
-			matchedTriggerSets.push(ref)
-			setPaths.push(...unique)
+	if (suite.triggerSetPatterns) {
+		const relevant = filterTriggerRelevantFiles(changedFiles, suite.triggerFilter)
+		for (const [ref, patterns] of Object.entries(suite.triggerSetPatterns)) {
+			/** @type {string[]} */
+			const hits = []
+			for (const pat of patterns)
+				hits.push(...relevant.filter(file => matchGlob(pat, file)))
+			const unique = [...new Set(hits)]
+			if (unique.length) {
+				matchedTriggerSets.push(ref)
+				matchedPaths.push(...unique)
+			}
 		}
 	}
+
+	const uniquePaths = [...new Set(matchedPaths)]
+	const uniqueTriggers = [...new Set(matchedTriggers)]
+	const entryHash = opts.entry?.triggerHash ?? null
+	const currentHash = opts.currentTriggerHash !== undefined
+		? opts.currentTriggerHash
+		: null
+	const triggerHashDrift = opts.entry != null
+		&& entryHash !== currentHash
+		&& !uniquePaths.length
+
 	return {
 		matchedTriggerSets,
-		matchedTriggers: globEvidence.matchedTriggers,
-		matchedPaths: [...new Set([...setPaths, ...globEvidence.matchedPaths])],
+		matchedTriggers: uniqueTriggers,
+		matchedPaths: uniquePaths,
+		triggerHashDrift,
 	}
 }
 
@@ -188,13 +215,21 @@ export function computeSuiteTriggerHash(suite, uncommittedHashes) {
  * @param {string} commitHash HEAD
  * @param {string | null} uncommittedHash 未提交 digest
  * @param {string | null} triggerHash trigger 内容指纹
+ * @param {Record<string, string | null> | null} [subtestTriggerHashes] 子测试 triggerHash
  */
-export function refreshEntryFingerprint(state, key, commitHash, uncommittedHash, triggerHash) {
+export function refreshEntryFingerprint(state, key, commitHash, uncommittedHash, triggerHash, subtestTriggerHashes = null) {
 	const entry = state.suites[key]
 	if (!entry) return
 	entry.commitHash = commitHash
 	entry.uncommittedHash = uncommittedHash
 	entry.triggerHash = triggerHash
+	if (!entry.subtests) return
+	for (const [name, sub] of Object.entries(entry.subtests)) {
+		sub.commitHash = commitHash
+		sub.uncommittedHash = uncommittedHash
+		if (subtestTriggerHashes && Object.hasOwn(subtestTriggerHashes, name))
+			sub.triggerHash = subtestTriggerHashes[name]
+	}
 }
 
 /**

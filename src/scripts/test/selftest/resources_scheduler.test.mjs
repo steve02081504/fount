@@ -18,6 +18,7 @@ import {
 	resourcesMemBytes,
 	suiteSchedulePriority,
 } from '../core/resources.mjs'
+import { PlanRunCoordinator } from '../runner/dependency_scheduler.mjs'
 import { ResourceRunGate } from '../runner/scheduler.mjs'
 
 import { makeSuite } from './fixtures.mjs'
@@ -190,4 +191,29 @@ Deno.test('ResourceRunGate serial mode admits waiters FIFO, not by footprint', a
 	releaseSmall()
 	await waitBig
 	assertEquals(admitted, ['small', 'big'])
+})
+
+Deno.test('PlanRunCoordinator throws on dependency deadlock', async () => {
+	const a = makeSuite('shells/chat', 'a', { dependsOn: ['b'] })
+	const b = makeSuite('shells/chat', 'b', { dependsOn: ['a'] })
+	a.dependencies = [{ manifestId: 'shells/chat', name: 'b' }]
+	b.dependencies = [{ manifestId: 'shells/chat', name: 'a' }]
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'shells/chat/a', suite: a, action: 'run', goal: true },
+			{ key: 'shells/chat/b', suite: b, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+	let threw = false
+	try {
+		await coordinator.runAll(async () => ({ passed: true }))
+	}
+	catch (error) {
+		threw = true
+		assert(String(error.message).includes('scheduler deadlock'))
+	}
+	assert(threw)
 })

@@ -6,6 +6,7 @@ import { mentionsEntity, extractMentionEntityHashes } from 'fount/public/parts/s
 import { isCaredBy } from 'fount/public/parts/shells/chat/src/chat/lib/care.mjs'
 import { pickNodeScore } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
 
+import { primaryLocaleForUser } from '../../../../../scripts/locale.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { resolveOperatorEntityHashForUser as resolveOperatorEntityHash } from '../../chat/src/entity/identity.mjs'
 
@@ -207,7 +208,7 @@ export async function dispatchSocialMessage(username, authorEntityHash, post) {
 	const authorLabel = await displayNameForEntity(author, username)
 
 	await dispatchCarePostIfNeeded(username, author, post, authorLabel)
-	await dispatchLocalAgents(username, author, post, mentions, authorLabel, post.content?.locale || 'zh-CN')
+	await dispatchLocalAgents(username, author, post, mentions, authorLabel, post.content?.locale || primaryLocaleForUser(username))
 	if (mentionHashes.length)
 		await dispatchRemoteMentionPush(username, author, post, mentionHashes)
 }

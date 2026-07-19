@@ -14,7 +14,7 @@ Domain harness (federation join, CKG asserts, `launchNode`, fixtures, disposable
 - **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
 - **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. **CI** caches `data/test` as `fount-test-data` across pushes (strips logs/tmp/playwright/heapsnapshots/report).
 - **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`. Details: [continue-report.md](docs/continue-report.md).
-- **Default loop** (bare `fount test`): imperfect wave (failed/noisy/blocked/missing + one-level dependents) → fail exits 1; all-green → outdated wave (`unknown`) → back to imperfect; both empty → exit 0. Never full-repo unless `--all`. No auto-retry within one invocation.
+- **Default loop** (bare `fount test`): imperfect wave (`failed`/`blocked`/missing + one-level dependents; **not** fresh `noisy`) → hard fail (`failed`/`blocked`/pending) exits 1; else outdated wave (`unknown`) → back to imperfect; both empty → exit 1 if scope still has fresh noisy, else 0. Never full-repo unless `--all`. No auto-retry of failures within one invocation.
 - **Failure-first inside suite**: `FOUNT_TEST_FIRST` = last `failedFiles`; those run first; any still failing → exit without the rest.
 - **Subtests**: `subtests: [{ name, triggers|trigger, spec? }]`. Selector: `manifest:suite:subtest`. Runtime filter: `FOUNT_TEST_SUBTESTS`. Suite-level `noisy` only marks subtests when **no** file failed.
 - **File filter (serial suites)**: third CLI segment is a `*.test.mjs` stem → `FOUNT_TEST_ONLY`. Unknown stem → exit 2.
@@ -63,9 +63,9 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 ## Manifest fields
 
 - **`triggers`**: glob match on changed files. Default ignores docs/metadata; override via **`triggerFilter`**: [trigger-filter.md](docs/trigger-filter.md). Watch scope = code the suite runs — not shared runners (`serial.mjs`/`boot.mjs` only on `pure`/`integration`/`testkit`). Federation: only `fed_core` watches `federation/**`.
-- **`dependsOn`**: plan pulls transitive deps. **Imperfect wave** = failed/noisy/blocked/missing + one-level dependents — **not** stale `unknown` (outdated wave).
+- **`dependsOn`**: plan pulls transitive deps. **Imperfect wave** = `failed`/`blocked`/missing + one-level dependents — **not** fresh `noisy` or stale `unknown` (outdated wave).
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`.
-- **Live layering**: Chat `server:live` → `smoke_chat` → `e2e_single` → `e2e_single_extended` / `frontend`; Social similar via `smoke_social`; WS `ws` → `ws_rpc` → `ws_stream`; federation `fed_core` → feature suites. Cross-shell fed probes depend on `fed_core` + `fed_emoji` + `smoke_social`, not full social e2e.
+- **Live layering**: Chat `server:live` → `smoke_chat` → `e2e_single` → `e2e_single_extended` / `frontend`; Social similar via `smoke_social`; WS `ws` → `ws_rpc` → `ws_stream`; federation `fed_core` → feature suites. Cross-shell fed probes depend on `fed_core` + `fed_emoji` + `smoke_social`, not full social e2e. **Triggers follow the same gate**: `shellBackend` only on `pure` / `integration` / `smoke_*`; deeper live suites watch infra + their own script (like fed suites).
 - **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/`. Chat/Social shared: `shells/chat/public/shared/` or `/parts/shells:chat/shared/*`. Do not import `/scripts/test/*` from Deno-only trees.
 - **`heavy`** / **`resources`**: [resource-scheduling.md](docs/resource-scheduling.md). Invariant: waiters + idle machine → admit ≥1 (budget packs extras, never leaves the queue empty).
 

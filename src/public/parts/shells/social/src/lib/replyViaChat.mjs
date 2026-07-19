@@ -9,6 +9,7 @@
  */
 import { formatHashShort } from 'fount/public/parts/shells/chat/public/shared/entityHash.mjs'
 
+import { getLocalizedInfo, localesForUser } from '../../../../../../scripts/locale.mjs'
 import { BUILTIN_PERSONA, BUILTIN_WORLD } from '../../../chat/src/chat/session/builtinParts.mjs'
 import { resolveOperatorEntityHashForUser } from '../../../chat/src/entity/identity.mjs'
 
@@ -55,7 +56,11 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 			authorEntityHash: authorUid,
 		},
 	}
-	const charInfo = char.info?.['zh-CN'] || char.info?.['en-US'] || {}
+	const locales = [...new Set([
+		messageEvent.locale,
+		...localesForUser(username),
+	].filter(Boolean))]
+	const charInfo = getLocalizedInfo(char.info, locales) || {}
 	const request = {
 		supported_functions: {
 			markdown: true,
@@ -77,7 +82,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 		UserUid: operatorUid,
 		ReplyToCharname: authorName,
 		ReplyToUid: authorUid,
-		locales: [{ code: messageEvent.locale || 'zh-CN' }],
+		locales,
 		time: now,
 		world: BUILTIN_WORLD,
 		user: BUILTIN_PERSONA,

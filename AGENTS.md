@@ -19,7 +19,7 @@
 ## Dev Guidelines
 
 - **New parts**: mimic `@src/public/parts/` or `@data/users/.../chars/`.
-- **I18n**: only edit `src/public/locales/zh-CN.json`; `update-locales.py` syncs other langs (runs on `master` / GitHub Actions only; feature branches skip — PR CI will sync).
+- **I18n**: only edit `src/public/locales/zh-CN.json`; `update-locales.py` syncs other langs (runs on `master` / GitHub Actions only; feature branches skip — PR CI will sync). Backend content locale: `localesForUser` / `primaryLocaleForUser`（`@src/scripts/locale.mjs`）；无用户偏好时兜底 `en-UK`。Frontend: `primaryLocale()`（`@src/public/pages/scripts/i18n`）。
 - **Lint**: `eslint --fix --quiet` (no `npx`). No logging unless error/warning.
 - **Testing**: `fount test` — self-contained, no running server needed. Default loops imperfect → outdated until green or a wave fails (exit 1); never full-repo unless `--all`. Group syntax: `manifest` / `manifest:suite` / `manifest:suite:subtest`. **Windows / local verification: prefer `fount test --no-parallel`** ([denoland/deno#35804](https://github.com/denoland/deno/issues/35804)). See [src/scripts/test/AGENTS.md](src/scripts/test/AGENTS.md).
 - **Logs**: `fount log` — streams main-process console (check before guessing from browser 404s).

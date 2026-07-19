@@ -13,6 +13,7 @@ import { suiteKey } from '../core/state.mjs'
 
 /**
  * @typedef {import('./continue_reason.mjs').ContinueReason} ContinueReason
+ * @typedef {import('./continue_reason.mjs').GoalEvidenceKind} ContinueReasonKind
  * @typedef {import('../core/estimate.mjs').EstimateTask} EstimateTask
  * @typedef {import('../core/plan.mjs').PlanSlot} PlanSlot
  * @typedef {import('../core/trigger_audit.mjs').TriggerWarning} TriggerWarning
@@ -310,7 +311,7 @@ function buildRunMarkdown(summary, completed) {
 			lines.push(`- ${slot.manifestId}/${slot.name}${mark}${expectedMark}`)
 		}
 		lines.push('')
-		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', 'fount test', '```', '')
+		lines.push(`## ${geti18n('fountConsole.test.report.sectionContinue')}`, '', '```shell', summary.command || 'fount test', '```', '')
 	}
 
 	return lines.join('\n')
@@ -354,6 +355,8 @@ function formatReasonKindLabel(kind, { strict = false } = {}) {
 			return geti18n('fountConsole.test.report.reasonMissingRecord')
 		case 'stale_content':
 			return geti18n('fountConsole.test.report.reasonStaleContent')
+		case 'trigger_hash_drift':
+			return geti18n('fountConsole.test.report.reasonTriggerHashDrift')
 		case 'explicit_selected':
 			return geti18n('fountConsole.test.report.reasonExplicitSelected')
 		case 'dependency_required':
@@ -401,6 +404,8 @@ function appendContinueReasonEvidence(lines, reason, depth = 0) {
 		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelMatchedPaths')}:`)
 		for (const path of reason.matchedPaths) lines.push(`${indent}  - \`${path}\``)
 	}
+	if (reason.triggerHashDrift || reason.kind === 'trigger_hash_drift')
+		lines.push(`${indent}- ${geti18n('fountConsole.test.report.labelTriggerHashDrift')}`)
 }
 
 /**
@@ -527,9 +532,10 @@ function appendSilentPassed(lines, entries) {
 
 /**
  * @param {ReportSlot[]} slots 槽位
- * @returns {number} 进程退出码
+ * @returns {number} 进程退出码（noisy 不算波次失败；pending / failed / blocked 算）
  */
 export function exitCodeFromSlots(slots) {
+	if (slots.some(slot => slot.state === 'pending')) return 1
 	const completed = slots.filter(slot => slot.state === 'done')
-	return completed.some(slot => slot.status !== 'passed') ? 1 : 0
+	return completed.some(slot => slot.status === 'failed' || slot.status === 'blocked') ? 1 : 0
 }

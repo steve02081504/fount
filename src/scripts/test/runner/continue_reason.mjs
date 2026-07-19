@@ -3,7 +3,7 @@
  */
 
 /**
- * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'imperfect_dependent' | 'stale_content' | 'explicit_selected' | 'dependency_required'} GoalEvidenceKind
+ * @typedef {'missing_state_record' | 'imperfect_failed' | 'imperfect_noisy' | 'imperfect_blocked' | 'imperfect_dependent' | 'stale_content' | 'trigger_hash_drift' | 'explicit_selected' | 'dependency_required'} GoalEvidenceKind
  */
 
 /**
@@ -16,6 +16,7 @@
  * @property {string[]} [matchedTriggers]
  * @property {string[]} [matchedTriggerSets]
  * @property {string[]} [matchedPaths]
+ * @property {boolean} [triggerHashDrift]
  * @property {string[]} [blockedBy]
  * @property {string | null} [parentKey] imperfect 一层下游的父键
  * @property {string} [requiredBy] 依赖拉入的直接纳入方
