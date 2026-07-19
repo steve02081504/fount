@@ -145,6 +145,10 @@ graph TD;
 
 以及无过滤 HTML（可使用 <script>alert('JS Executed')</script>、<div class="bg-red-500">TailwindCSS</div>、<button class="button bg-primary" onclick="alert('daisyUI!')">daisyUI</button>）。
 
+前端在 \`window\` 上提供 \`fount.user.send(string | {content: string, content_for_show?: string, files: {name: string, description: string, buffer: ArrayBuffer, mime_type: string}[]})\`：把用户选项发到当前频道。可用 HTML 做选项 UI，例如：
+<button class="btn btn-primary m-1" onclick="void fount.user.send('选择A')">选择A</button>
+<button class="btn btn-secondary m-1" onclick="void fount.user.send({content:'选择B',content_for_show:'<b>选择B</b>'})">选择B</button>
+
 **代码块增强特性：**
 - 内联高亮：用 \`代码{:js}\` 指定内联代码块的高亮语言。
 \`int a = 0; // 注释{:c}\`

@@ -168,38 +168,46 @@ function buildComposerContent(text) {
 	return contentObj
 }
 
-/** @param {string} text @returns {Promise<void>} */
-export async function sendCurrentMessage(text) {
+/**
+ * 向当前频道发送已构建好的 content（乐观 pending → POST → confirm/fail）。
+ * @param {object} contentObj 富内容对象
+ * @param {object[]} [files] 附件（name、mime_type、buffer base64）
+ * @param {{ clearComposer?: boolean }} [options] clearComposer 时成功后清空附件/CW/草稿
+ * @returns {Promise<object>} 落盘后的 DAG `message` 事件
+ */
+export async function sendMessagePayload(contentObj, files = [], { clearComposer = false } = {}) {
 	const sendGroupId = store.context.currentGroupId
 	const sendChannelId = store.context.currentChannelId
 	if (!sendGroupId || !sendChannelId)
 		throw new Error('no channel selected')
 	await waitForGroupWebSocketOpen(sendGroupId, sendChannelId)
-	const files = [...selectedFiles]
-	const contentObj = buildComposerContent(text)
 	const tempId = `pending:${crypto.randomUUID()}`
 	await insertPendingRow(contentObj, tempId)
-	clearReplyTarget()
 	try {
 		const event = await sendGroupMessage(sendGroupId, sendChannelId, contentObj, files)
 		if (store.context.currentGroupId !== sendGroupId || store.context.currentChannelId !== sendChannelId) {
 			store.messages.composerPendingId = null
 			store.messages.channelMessagesSource = store.messages.channelMessagesSource.filter(m => String(m.eventId) !== tempId)
+			store.messages.failedPendingPayloads.delete(tempId)
+			if (clearComposer) {
+				clearSelectedFiles()
+				clearComposerExtras()
+			}
+			return event
+		}
+		if (clearComposer) {
 			clearSelectedFiles()
 			clearComposerExtras()
-			store.messages.failedPendingPayloads.delete(tempId)
-			return
+			void import('../composerDraft.mjs').then(({ clearDraft }) => {
+				clearDraft(sendGroupId, sendChannelId)
+			})
 		}
-		clearSelectedFiles()
-		clearComposerExtras()
 		store.messages.failedPendingPayloads.delete(tempId)
-		void import('../composerDraft.mjs').then(({ clearDraft }) => {
-			clearDraft(sendGroupId, sendChannelId)
-		})
 		void import('../sendQueue.mjs').then(({ dequeueOfflineMessage }) => {
 			dequeueOfflineMessage(tempId)
 		})
 		await confirmPendingRow(tempId, event)
+		return event
 	}
 	catch (error) {
 		if (store.context.currentGroupId === sendGroupId && store.context.currentChannelId === sendChannelId) {
@@ -214,4 +222,16 @@ export async function sendCurrentMessage(text) {
 		}
 		throw error
 	}
+}
+
+/**
+ * 从 composer 发当前输入文本（含 CW/引用/附件，成功后清空 composer）。
+ * @param {string} text 文本内容
+ * @returns {Promise<object>} 落盘后的 DAG `message` 事件
+ */
+export async function sendCurrentMessage(text) {
+	const files = [...selectedFiles]
+	const contentObj = buildComposerContent(text)
+	clearReplyTarget()
+	return sendMessagePayload(contentObj, files, { clearComposer: true })
 }

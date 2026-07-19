@@ -10,6 +10,7 @@ import { iconifyImg } from '../../src/lib/emojiSvg.mjs'
 import { bindComposerSubmit } from '../../src/ui/composerKeys.mjs'
 import { joinGroupById, showCreateGroupModal } from '../../src/ui/groupModals.mjs'
 import { store } from '../core/state.mjs'
+import { registerFountUserApi } from '../fountUser.mjs'
 import { reportTyping } from '../stream/outbound.mjs'
 
 /** @returns {Promise<void>} 惰性加载 messages 图并提交 composer */
@@ -123,6 +124,7 @@ async function showServerActionPicker() {
 
 /** 注册 Hub 壳层关键点击（建群、成员侧栏等），供 index 同步调用。 @returns {void} */
 export function wireBootstrap() {
+	registerFountUserApi()
 	wireComposerControls()
 	wireModeTabsEarly()
 	wireHashNavigation()
