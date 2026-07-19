@@ -1,22 +1,24 @@
 /**
- * `fount.user.send` 入参 → 频道发送载荷（纯函数，Hub / 测试共用）。
+ * `fount.user.send` 入参 → 频道发送载荷（纯函数，Hub / Deno pure 共用）。
+ * 勿 import `/scripts/*` 或 `pages/scripts/*`：浏览器 URL 与磁盘布局不一致。
+ *
+ * `files[].buffer` 约定为 ArrayBuffer（见 world 模板文档）；出口转成 base64 供 `sendMessagePayload`。
  */
-import { arrayBufferToBase64 } from '../../../../../pages/scripts/lib/base64.mjs'
 
 /**
- * @param {unknown} buffer 附件缓冲
+ * @param {ArrayBuffer | ArrayBufferView} buffer 附件缓冲
  * @returns {string} base64
  */
-function fileBufferToBase64(buffer) {
-	if (typeof buffer === 'string') return buffer
-	if (buffer instanceof ArrayBuffer || ArrayBuffer.isView(buffer))
-		return arrayBufferToBase64(/** @type {ArrayBuffer | ArrayBufferView} */ buffer)
-	throw new Error('file.buffer must be base64 string or ArrayBuffer')
+function arrayBufferToBase64(buffer) {
+	const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer)
+	let binary = ''
+	for (const byte of bytes) binary += String.fromCharCode(byte)
+	return btoa(binary)
 }
 
 /**
  * @param {unknown} files chatLogEntry.files
- * @returns {object[]} 上传用附件列表
+ * @returns {object[]} 上传用附件列表（buffer 已是 base64）
  */
 function normalizeSendFiles(files) {
 	if (!Array.isArray(files) || !files.length) return []
@@ -25,7 +27,7 @@ function normalizeSendFiles(files) {
 		return {
 			name: String(row.name || 'file'),
 			mime_type: String(row.mime_type || 'application/octet-stream'),
-			buffer: fileBufferToBase64(row.buffer),
+			buffer: arrayBufferToBase64(/** @type {ArrayBuffer | ArrayBufferView} */ row.buffer),
 			description: String(row.description || ''),
 		}
 	})
@@ -39,7 +41,7 @@ function normalizeSendFiles(files) {
  */
 export function normalizeUserSendPayload(input, defaults = {}) {
 	const fallbackLocale = defaults.locale || 'en-UK'
-	if (typeof input === 'string') 
+	if (typeof input === 'string')
 		return {
 			content: {
 				type: 'text',
@@ -48,7 +50,7 @@ export function normalizeUserSendPayload(input, defaults = {}) {
 			},
 			files: [],
 		}
-	
+
 	if (!input || typeof input !== 'object')
 		throw new Error('fount.user.send expects string or chatLogEntry')
 

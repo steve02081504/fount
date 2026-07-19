@@ -67,7 +67,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - **`dependsOn`**: plan pulls transitive deps. **Imperfect wave** = `failed`/`blocked`/missing + one-level dependents — **not** fresh `noisy` or stale `unknown` (outdated wave).
 - **`subtests`**: `{ name, triggers|trigger, spec? }`. When splitting a frontend god-file, update that subtest's `triggers`.
 - **Live layering**: Chat `server:live` → `smoke_chat` → `e2e_single` → `e2e_single_extended` / `frontend`; Social similar via `smoke_social`; WS `ws` → `ws_rpc` → `ws_stream`; federation `fed_core` → feature suites. Cross-shell fed probes depend on `fed_core` + `fed_emoji` + `smoke_social`, not full social e2e. **Triggers follow the same gate**: `shellBackend` only on `pure` / `integration` / `smoke_*`; deeper live suites watch infra + their own script (like fed suites).
-- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/`. Chat/Social shared: `shells/chat/public/shared/` or `/parts/shells:chat/shared/*`. Do not import `/scripts/test/*` from Deno-only trees.
+- **Browser scripts**: `/scripts/*` → `src/public/pages/scripts/`. Chat/Social shared: `shells/chat/public/shared/` or `/parts/shells:chat/shared/*`. Do not import `/scripts/test/*` from Deno-only trees. **Trap**: part `public/` 里相对爬到 `pages/scripts` 在浏览器会变成 `/pages/scripts/…` 404；浏览器专用模块用绝对 `/scripts/…`，同时被 Deno pure 测的模块则勿依赖该路径（内联或测侧相对 import）。
 - **`heavy`** / **`resources`**: [resource-scheduling.md](docs/resource-scheduling.md). Invariant: waiters + idle machine → admit ≥1 (budget packs extras, never leaves the queue empty).
 
 ## Writing new tests

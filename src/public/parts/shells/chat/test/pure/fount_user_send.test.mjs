@@ -13,6 +13,7 @@ Deno.test('normalizeUserSendPayload: string', () => {
 })
 
 Deno.test('normalizeUserSendPayload: chatLogEntry fields', () => {
+	const bytes = new Uint8Array([116, 101, 115, 116]) // 'test'
 	const { content, files } = normalizeUserSendPayload({
 		content: 'pick A',
 		content_for_show: '<b>A</b>',
@@ -23,7 +24,7 @@ Deno.test('normalizeUserSendPayload: chatLogEntry fields', () => {
 		files: [{
 			name: 'a.txt',
 			mime_type: 'text/plain',
-			buffer: 'dGVzdA==',
+			buffer: bytes,
 			description: 'note',
 		}],
 	})
@@ -39,18 +40,9 @@ Deno.test('normalizeUserSendPayload: chatLogEntry fields', () => {
 	assertEquals(files, [{
 		name: 'a.txt',
 		mime_type: 'text/plain',
-		buffer: 'dGVzdA==',
+		buffer: btoa('test'),
 		description: 'note',
 	}])
-})
-
-Deno.test('normalizeUserSendPayload: ArrayBuffer file buffer', () => {
-	const bytes = new Uint8Array([116, 101, 115, 116])
-	const { files } = normalizeUserSendPayload({
-		content: 'x',
-		files: [{ name: 'b.bin', mime_type: 'application/octet-stream', buffer: bytes }],
-	}, { locale: 'zh-CN' })
-	assertEquals(files[0].buffer, btoa('test'))
 })
 
 Deno.test('normalizeUserSendPayload: rejects garbage', () => {
