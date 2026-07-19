@@ -1364,6 +1364,7 @@
 		},
 		"profile": {
 			"edit": "编辑资料",
+			"viewPosts": "查看社交主页",
 			"settingsBtn": {
 				"aria-label": "社交设置"
 			},
