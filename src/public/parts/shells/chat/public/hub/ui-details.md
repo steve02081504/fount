@@ -26,6 +26,7 @@ Day-to-day rules: [AGENTS.md](AGENTS.md).
 ## Message shortcuts / composer
 
 - Shift → action bar download/delete. Drag non-body → `messageDragExport.mjs`. Char timeline: bubble swipe/arrow (`chatGestures.mjs`).
+- HTML 导出（下载/分享/复制 HTML/拖拽）：`messages/exportHtml.mjs` → `scripts/features/markdown/standaloneDocument.mjs`（完整离线文档 + 群附件 data URL）；勿再只吐裸 Markdown 片段。
 - Composer disable: `disabled` only when surface CSS hides the input. Visible disabled: object-key `{ placeholder }` i18n — string keys write `innerHTML` into textarea.
 - Optimistic `pending:…`: no chain writes until `isDagEventId`. On WS confirm with `composerPendingId`, `applyIncomingMessage*` must `pipeline.refresh()`.
 

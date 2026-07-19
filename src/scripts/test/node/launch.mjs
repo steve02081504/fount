@@ -6,7 +6,6 @@ import 'fount/scripts/test/env.mjs'
 
 import { spawn } from 'node:child_process'
 import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises'
-import net from 'node:net'
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -15,7 +14,7 @@ import { fileURLToPath } from 'node:url'
 
 import { console } from '../../i18n/bare.mjs'
 import { ms } from '../../ms.mjs'
-import { resolveListenBind } from '../../net_listen.mjs'
+import { closeHeldServers, holdListenPort, isListenPortFree } from '../../net_listen.mjs'
 import { assertDisposableDataPath } from '../core/disposable_path.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
@@ -83,45 +82,30 @@ async function collectNodeHeapSnapshots(pid) {
  */
 
 /**
- * 检测本机端口是否可监听。
+ * 检测本机端口是否可监听（默认双栈）。
  * @param {number} port 待检测端口
- * @returns {Promise<boolean>} 127.0.0.1 上是否可监听
+ * @returns {Promise<boolean>} 是否可监听
  */
 function isPortFree(port) {
-	return new Promise(resolve => {
-		const server = net.createServer()
-		server.unref()
-		server.on('error', () => resolve(false))
-		server.listen(resolveListenBind(null, port), () => {
-			server.close(() => resolve(true))
-		})
-	})
+	return isListenPortFree(port)
 }
 
 /**
  * 绑定端口并保持监听，直到调用方显式 close（消除并行测试 TOCTOU 竞态）。
  * @param {number} port 待持有端口
- * @returns {Promise<import('node:net').Server>} 已监听的 server
+ * @returns {Promise<import('node:net').Server[]>} 已监听的 server 列表
  */
 function holdPort(port) {
-	return new Promise((resolve, reject) => {
-		const server = net.createServer()
-		server.unref()
-		server.on('error', reject)
-		server.listen(resolveListenBind(null, port), () => resolve(server))
-	})
+	return holdListenPort(port)
 }
 
 /**
- * 关闭 holdPort 返回的 server。
- * @param {import('node:net').Server | undefined} server 待关闭 server
+ * 关闭 holdPort 返回的 server 列表。
+ * @param {import('node:net').Server[] | undefined} servers 待关闭 server
  * @returns {Promise<void>}
  */
-async function closeHeldServer(server) {
-	if (!server) return
-	await new Promise((resolve, reject) => {
-		server.close(err => err ? reject(err) : resolve())
-	})
+function closeHeldServer(servers) {
+	return closeHeldServers(servers)
 }
 
 /**
@@ -161,7 +145,7 @@ const noopReleasePort = async () => {}
 /**
  * 由已持有的 server 映射构造端口块句柄。
  * @param {number} base 首端口
- * @param {Map<number, import('node:net').Server>} servers 端口 → 持有 server
+ * @param {Map<number, import('node:net').Server[]>} servers 端口 → 持有 server 列表
  * @returns {TestPortBlock} 释放句柄
  */
 function createHeldPortBlock(base, servers) {
@@ -171,10 +155,10 @@ function createHeldPortBlock(base, servers) {
 	 * @returns {Promise<void>}
 	 */
 	async function releasePort(port) {
-		const server = servers.get(port)
-		if (!server) return
+		const serversForPort = servers.get(port)
+		if (!serversForPort) return
 		servers.delete(port)
-		await closeHeldServer(server)
+		await closeHeldServer(serversForPort)
 	}
 
 	/**
@@ -201,7 +185,7 @@ function createHeldPortBlock(base, servers) {
 export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_PORT_BASE }) {
 	for (let base = preferred; base < preferred + 200; base++) {
 		const ports = Array.from({ length: count }, (_, index) => base + index * step)
-		/** @type {Map<number, import('node:net').Server>} */
+		/** @type {Map<number, import('node:net').Server[]>} */
 		const servers = new Map()
 		let failed = false
 		for (const port of ports) try {

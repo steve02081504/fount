@@ -5,7 +5,6 @@
  * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
  * 【关联】../../../../../scripts/i18n、../../../../../scripts/markdown、../../../../../scripts/template、../../../../../scripts/toast、../../src/share、../core/state、../threadDrawer、messageActionsState。
  */
-import { renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/features/markdown/index.mjs'
 import {
 	renderTemplate,
 	usingTemplates,
@@ -21,7 +20,7 @@ import { positionContextMenu } from '../core/positionContextMenu.mjs'
 import { store } from '../core/state.mjs'
 import { openThread } from '../threadDrawer.mjs'
 
-
+import { downloadMessageHtml, generateMessageStandaloneHtml } from './exportHtml.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { shouldConfirmDelete } from './messageActionsUi.mjs'
 import { getMessageText } from './render/text.mjs'
@@ -53,15 +52,7 @@ async function copyMessageText(message, row) {
  * @returns {Promise<void>}
  */
 async function exportMessageHtml(message, row) {
-	const markdown = getMessageText(message) || row?.querySelector('.message-content')?.textContent?.trim() || ''
-	const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
-	const blob = new Blob([html], { type: 'text/html' })
-	const url = URL.createObjectURL(blob)
-	const anchor = document.createElement('a')
-	anchor.href = url
-	anchor.download = `message-${message.eventId || 'export'}.html`
-	anchor.click()
-	URL.revokeObjectURL(url)
+	await downloadMessageHtml(message, row, `message-${message.eventId || 'export'}.html`)
 }
 
 /**
@@ -114,8 +105,7 @@ export async function showMessageContextMenu(event, row) {
 	menu.querySelector('[data-action="shareExternal"]')?.addEventListener('click', () => {
 		void (async () => {
 			showToastI18n('info', 'chat.messageView.share.uploading')
-			const markdown = getMessageText(message) || ''
-			const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
+			const html = await generateMessageStandaloneHtml(message, row)
 			const blob = new Blob([html], { type: 'text/html' })
 			const link = await createShareLink(blob, `message-${eventId || 'export'}.html`, '24h')
 			await navigator.clipboard.writeText(link)

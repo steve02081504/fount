@@ -32,6 +32,7 @@ Markdown convertor traps (rehype order, `{:lang}`, trust tiers): [markdown-notes
 
 - **`lib/escapeHtml.mjs`**: escape `& < > " '` via string replace. Do **not** use `textContent`/`innerHTML` round-trip — leaves `"` unescaped.
 - **`markdown.mjs`**: Markdown → HTML (KaTeX, Mermaid, Shiki). Shells use `getConvertor` / `renderMarkdownAsString` with `allowDangerousHtml`. Details: [markdown-notes.md](markdown-notes.md).
+- **`markdown/standaloneDocument.mjs`**: `renderMarkdownAsStandaloneDocument` / `wrapStandaloneMarkdownDocument` — 离线完整 HTML（OG、DaisyUI、github-markdown-css、附件 data URL）。Chat 消息下载/分享/拖拽与 Social 帖子「下载 HTML」共用；勿再只导出裸 Markdown 片段。
 - **`sanitizeHtml.mjs`**: `sanitizePermissiveHtml` — rich displayName HTML minus script / `on*` / dangerous URLs. `isSafeHtmlUrl` rejects `javascript:` / `data:` / protocol-relative `//…`.
 - **`embedCard.mjs`**: `ALL /api/no-cors?url=` + OG parse; `MutationObserver` hydration; session LRU.
 - **`/api/no-cors`**: authenticated streaming proxy. Forwards Range / conditional / Content-Type; inject upstream Cookie/Authorization via `No-Cors-*` prefix. `X-No-Cors-Final-Url` after redirects.

@@ -1,4 +1,5 @@
 import { formatSocialShareHttpsUrl } from '../../shared/protocolUrl.mjs'
+import { downloadPostHtml } from '../exportHtml.mjs'
 import { parseActionKey } from '../lib/actionKey.mjs'
 import { socialApi } from '../lib/apiClient.mjs'
 import { promptText, promptTextArea, showText } from '../lib/dialog.mjs'
@@ -105,6 +106,29 @@ export async function handlePostProfileActionsClick(target) {
 			await copyTextToClipboard(formatSocialShareHttpsUrl(entityHash, postId))
 			flashCopiedLabel(copyLinkButton.querySelector('[data-i18n="social.actions.copyLink"]'))
 			closePostMoreMenus()
+		}
+		return true
+	}
+
+	const downloadHtmlButton = target.closest('[data-download-html]')
+	if (downloadHtmlButton instanceof HTMLElement && downloadHtmlButton.dataset.downloadHtml) {
+		const parsed = parseActionKey(downloadHtmlButton.dataset.downloadHtml)
+		if (parsed) {
+			closePostMoreMenus()
+			const card = downloadHtmlButton.closest('.post-card')
+			const fallbackText = decodeURIComponent(card?.dataset.postText || '')
+			try {
+				const data = await socialApi(
+					`/posts/${encodeURIComponent(parsed.entityHash)}/${encodeURIComponent(parsed.postId)}`,
+				)
+				const content = data?.item?.post?.content || data?.post?.content || {
+					text: fallbackText,
+				}
+				await downloadPostHtml(content, `post-${parsed.postId}.html`)
+			}
+			catch {
+				await downloadPostHtml({ text: fallbackText }, `post-${parsed.postId}.html`)
+			}
 		}
 		return true
 	}

@@ -51,7 +51,7 @@ import {
  * @returns {InteractiveViewer} 日志与 REPL 控件。
  */
 export function createInteractiveViewer({ port, generateLogo, onFatal, fountDir, onClearComplete }) {
-	const EVAL_WS_URL = `ws://127.0.0.1:${port}/ws/eval`
+	const EVAL_WS_URL = `ws://localhost:${port}/ws/eval`
 	const historyStore = createHistoryStore(fountDir ?? path.resolve(import.meta.dirname + '/../../'))
 	const replHint = geti18nForTerminal('fountConsole.logViewer.replHint')
 

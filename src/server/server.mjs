@@ -11,7 +11,7 @@ import { getMemoryUsage } from '../scripts/gc.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
-import { resolveListenBind } from '../scripts/net_listen.mjs'
+import { isLoopbackListen, resolveListenBinds } from '../scripts/net_listen.mjs'
 import { notify } from '../scripts/notify.mjs'
 import { get_hosturl_in_local_ip } from '../scripts/ratelimit.mjs'
 import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
@@ -185,10 +185,11 @@ export async function init(start_config) {
 		SetTaskbarProgress(75)
 		const { port, https: httpsConfig, trust_proxy, mdns: mdnsConfig } = config // 获取 HTTPS 配置
 		hosturl = (httpsConfig?.enabled ? 'https' : 'http') + '://localhost:' + port
-		let server
 
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		let appPromise
+		/** @type {import('node:http').Server[]} */
+		let servers = []
 		/**
 		 * 懒加载地获取 Express 应用程序实例。
 		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。
@@ -196,10 +197,12 @@ export async function init(start_config) {
 		const getApp = () => appPromise ??= import('./web_server/index.mjs').then(async ({ app }) => {
 			app.set('trust proxy', trust_proxy ?? 'loopback')
 			await authPromise
-			server.removeListener('request', requestListener)
-			server.on('request', app)
-			server.removeListener('upgrade', upgradeListener)
-			server.on('upgrade', app.ws_on_upgrade)
+			for (const server of servers) {
+				server.removeListener('request', requestListener)
+				server.on('request', app)
+				server.removeListener('upgrade', upgradeListener)
+				server.on('upgrade', app.ws_on_upgrade)
+			}
 			return app
 		})
 		/**
@@ -238,53 +241,58 @@ export async function init(start_config) {
 		}
 
 		SetTaskbarProgress(78)
-		/**
-		 * 监听特定地址
-		 * @param {String} listenAddress 要监听的地址
-		 * @returns {Promise<Boolean>} 是否本地
-		 */
-		const listen = (listenAddress) => bindServer(resolveListenBind(listenAddress, port)).catch(error => {
-			if (error.code === 'EADDRNOTAVAIL' && listenAddress == null)
-				return bindServer({ port })
-			throw error
-		})
 
 		/**
-		 * @param {import('node:net').ListenOptions} bind listen 绑定
-		 * @returns {Promise<boolean>} 是否仅 localhost 范围绑定
+		 * 创建并绑定单个 HTTP(S) 服务器；族不支持时返回 null。
+		 * @param {import('node:net').ListenOptions} bind 绑定选项
+		 * @returns {Promise<import('node:http').Server | null>} 已监听的 server，或族不支持时为 null
 		 */
-		const bindServer = (bind) => new Promise((resolve, reject) => {
-			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
-
-			/**
-			 * 监听回调
-			 * @returns {void}
-			 */
-			const onListening = () => {
-				SetTaskbarProgress(80)
-				const scheme = httpsConfig?.enabled ? 'https' : 'http'
-				console.logI18n(`fountConsole.server.showUrl.${scheme}`, { url: ansi_hosturl })
-				if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, scheme, mdnsConfig))
-				resolve(bind.host === 'localhost')
-			}
-
-			if (httpsConfig?.enabled)
-				server = https.createServer({
-					key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
-					cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
-				}, requestListener).listen(bind, onListening)
-			else
-				server = http.createServer(requestListener).listen(bind, onListening)
-
+		const listenOne = (bind) => new Promise((resolve, reject) => {
+			const server = httpsConfig?.enabled ? https.createServer({
+				key: fs.readFileSync(path.resolve(httpsConfig.keyFile, __dirname)),
+				cert: fs.readFileSync(path.resolve(httpsConfig.certFile, __dirname)),
+			}, requestListener) : http.createServer(requestListener)
 			server.on('upgrade', upgradeListener)
-			server.on('error', (err) => {
-				console.error(err)
+			server.once('error', (err) => {
 				server.close(() => {
-					server = null
-					reject(err)
+					if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(null)
+					else reject(err)
 				})
 			})
+			server.listen(bind, () => resolve(server))
 		})
+
+		/**
+		 * 按 resolveListenBinds 双绑（Windows/Deno 上单绑 :: 无法吃到 127.0.0.1）。
+		 * @param {string | null | undefined} listenAddress config.listen
+		 * @returns {Promise<boolean>} 是否仅 localhost 范围绑定
+		 */
+		const listen = async (listenAddress) => {
+			const binds = resolveListenBinds(listenAddress, port)
+			servers.length = 0
+			try {
+				for (const bind of binds) {
+					const server = await listenOne(bind)
+					if (server) servers.push(server)
+				}
+				if (!servers.length) {
+					const server = await listenOne({ port })
+					if (!server) throw Object.assign(new Error('no supported listen family'), { code: 'EADDRNOTAVAIL' })
+					servers.push(server)
+				}
+			}
+			catch (err) {
+				await Promise.all(servers.map(server => new Promise(done => server.close(done))))
+				throw err
+			}
+			SetTaskbarProgress(80)
+			const ansi_hosturl = supportsAnsi ? `\x1b]8;;${hosturl}\x1b\\${hosturl}\x1b]8;;\x1b\\` : hosturl
+			const scheme = httpsConfig?.enabled ? 'https' : 'http'
+			console.logI18n(`fountConsole.server.showUrl.${scheme}`, { url: ansi_hosturl })
+			if (starts.Web?.mDNS) mdnsModulePromise.then(({ initMdns }) => initMdns(port, scheme, mdnsConfig))
+			return isLoopbackListen(listenAddress)
+		}
+
 		let is_localhost
 		try {
 			is_localhost = await listen(config.listen)

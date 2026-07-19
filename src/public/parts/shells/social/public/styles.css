@@ -82,6 +82,7 @@ body {
 .icon-more { --icon: url("https://api.iconify.design/mdi/dots-horizontal.svg"); }
 .icon-quote { --icon: url("https://api.iconify.design/mdi/format-quote-close.svg"); }
 .icon-link { --icon: url("https://api.iconify.design/mdi/link-variant.svg"); }
+.icon-download { --icon: url("https://api.iconify.design/mdi/download-outline.svg"); }
 .icon-translate { --icon: url("https://api.iconify.design/mdi/translate.svg"); }
 .icon-note { --icon: url("https://api.iconify.design/mdi/note-text-outline.svg"); }
 .icon-history { --icon: url("https://api.iconify.design/mdi/history.svg"); }

@@ -4,8 +4,7 @@
  * 【原理】对齐旧 chat：非正文区 mousedown 才 draggable；mousedown 预生成 HTML Blob；
  *   mouseup / mouseleave / dragend 取消 draggable；Blob 在拖拽结束或未拖拽松开时回收。
  */
-import { renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/features/markdown/index.mjs'
-
+import { generateMessageStandaloneHtml } from './exportHtml.mjs'
 import { findContextMessage, getChannelMessageActionsContext } from './messageActionsState.mjs'
 import { getMessageText } from './render/text.mjs'
 
@@ -53,14 +52,15 @@ async function prepareDragPayload(row) {
 	const message = actions ? findContextMessage(row, actions) : null
 	const contentEl = row.querySelector('.message-content')
 	const markdown = getMessageText(message) || contentEl?.textContent?.trim() || ''
-	if (!markdown) return
+	const hasFiles = Array.isArray(message?.content?.fileIds) && message.content.fileIds.length
+	if (!markdown && !hasFiles) return
 
-	const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
+	const html = await generateMessageStandaloneHtml(message, row)
 	if (!row.isConnected || !row.draggable) return
 
 	clearDragPayload(row)
 	dragPayloads.set(row, {
-		url: URL.createObjectURL(new Blob([html], { type: 'text/html' })),
+		url: URL.createObjectURL(new Blob([html], { type: 'text/html;charset=utf-8' })),
 		markdown,
 		htmlSnippet: contentEl?.innerHTML || '',
 	})

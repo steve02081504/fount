@@ -22,6 +22,7 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
 - **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/runUri.mjs` must stay Deno-pure-importable (no `/parts/` URL imports).
+- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs`（完整离线文档，含 mediaRefs data URL）；与 Chat 消息导出同源。
 - Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 
 ## UI conventions

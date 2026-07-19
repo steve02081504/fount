@@ -1,6 +1,4 @@
-import net from 'node:net'
-
-import { resolveListenBind } from '../../net_listen.mjs'
+import { isListenPortFree } from '../../net_listen.mjs'
 
 /** 测试节点首选 TCP 端口（自该值向上扫描空闲口；故意避开生产默认口 8931）。 */
 export const TEST_PORT_BASE = 28931
@@ -12,19 +10,12 @@ export const HEADLESS_CONFIG_PORT = TEST_PORT_BASE + 10_000
 export const TEST_IPC_PORT_BASE = 36_698
 
 /**
- * 检测本机端口是否可监听。
+ * 检测本机端口是否可监听（默认双栈）。
  * @param {number} port 待检测端口
- * @returns {Promise<boolean>} 127.0.0.1 上是否可监听
+ * @returns {Promise<boolean>} 是否可监听
  */
 function isTcpPortFree(port) {
-	return new Promise(resolve => {
-		const server = net.createServer()
-		server.unref()
-		server.on('error', () => resolve(false))
-		server.listen(resolveListenBind(null, port), () => {
-			server.close(() => resolve(true))
-		})
-	})
+	return isListenPortFree(port)
 }
 
 /**

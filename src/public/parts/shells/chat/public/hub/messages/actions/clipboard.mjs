@@ -2,9 +2,9 @@
  * 【文件】public/hub/messages/actions/clipboard.mjs
  * 【职责】复制 / 下载 / 分享类消息操作。
  */
-import { renderMarkdownAsStandAloneHtmlString } from '../../../../../../scripts/features/markdown/index.mjs'
 import { showToastI18n } from '../../../../../../scripts/features/toast.mjs'
 import { createShareLink } from '../../../src/share.mjs'
+import { downloadMessageHtml, generateMessageStandaloneHtml } from '../exportHtml.mjs'
 import { getMessageText } from '../render/text.mjs'
 
 /**
@@ -60,12 +60,8 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	}
 	if (action === 'copy-html') {
 		try {
-			const markdown = getMessageText(channelMessage) || row?.querySelector('.message-content')?.textContent?.trim() || ''
-			const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
-			const blob = new Blob([html], { type: 'text/html' })
-			await navigator.clipboard.write([
-				new ClipboardItem({ 'text/html': blob, 'text/plain': new Blob([markdown], { type: 'text/plain' }) }),
-			])
+			const html = await generateMessageStandaloneHtml(channelMessage, row)
+			await navigator.clipboard.writeText(html)
 		}
 		catch (error) {
 			console.error(error)
@@ -74,15 +70,7 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	}
 	if (action === 'download') {
 		try {
-			const markdown = getMessageText(channelMessage) || ''
-			const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
-			const blob = new Blob([html], { type: 'text/html' })
-			const url = URL.createObjectURL(blob)
-			const anchor = document.createElement('a')
-			anchor.href = url
-			anchor.download = `message-${button.dataset.eventId || 'export'}.html`
-			anchor.click()
-			URL.revokeObjectURL(url)
+			await downloadMessageHtml(channelMessage, row, `message-${button.dataset.eventId || 'export'}.html`)
 		}
 		catch (error) {
 			console.error(error)
@@ -92,8 +80,7 @@ export async function handleClipboardAction(button, row, channelMessage, action)
 	if (action === 'share') {
 		try {
 			showToastI18n('info', 'chat.messageView.share.uploading')
-			const markdown = getMessageText(channelMessage) || ''
-			const html = await renderMarkdownAsStandAloneHtmlString(markdown, {})
+			const html = await generateMessageStandaloneHtml(channelMessage, row)
 			const blob = new Blob([html], { type: 'text/html' })
 			const link = await createShareLink(blob, `message-${button.dataset.eventId || 'export'}.html`, button.dataset.time || '24h')
 			await navigator.clipboard.writeText(link)
