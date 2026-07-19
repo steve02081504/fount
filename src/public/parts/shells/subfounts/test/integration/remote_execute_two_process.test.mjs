@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
-import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { subfountFetch } from './helpers/subfount_http.mjs'
@@ -122,10 +122,8 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const port = await pickAvailablePort(29531)
 	const apiKey = `fount-subfounts-remote-${Date.now().toString(36)}`
 	const host = await launchNode({
-		port,
 		username: 'subfounts-remote-host',
 		apiKey,
 		loadParts: ['shells/subfounts'],

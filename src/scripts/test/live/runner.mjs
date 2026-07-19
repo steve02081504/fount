@@ -132,14 +132,18 @@ export async function runLiveSuite({
 	}
 
 	const fedNodeCount = spec.fedNodes ?? (spec.fed ? 2 : 1)
-	const { ports, releasePort, releaseAll } = await resolveLiveNodeFleet(fedNodeCount)
+	/** @type {import('../node/launch.mjs').LaunchedNode[]} */
 	const nodes = []
+	/** @type {(() => Promise<void>) | undefined} */
+	let releaseAll
 	const federationCleanup = join(repoRoot, FEDERATION_CLEANUP)
 	try {
+		const { ports, releasePort: releaseHeldPort, releaseAll: releaseHeldAll } = await resolveLiveNodeFleet(fedNodeCount)
+		releaseAll = releaseHeldAll
 		for (let i = 0; i < fedNodeCount; i++) {
 			const port = ports[i]
 			nodes.push(await launchNode({
-				...buildNode(i, { port, releasePort: () => releasePort(port) }),
+				...buildNode(i, { port, releasePort: releaseHeldPort.bind(null, port) }),
 				...spec.node,
 			}))
 		}
@@ -165,14 +169,14 @@ export async function runLiveSuite({
 		return result.code
 	}
 	catch (error) {
-		// launch / ping 失败等：必须返回非 0，禁止变成 unhandledRejection 后 exit 0
+		// fleet / launch / ping 失败：必须返回非 0，禁止变成 unhandledRejection 后 exit 0
 		console.error(error)
 		return 1
 	}
 	finally {
 		for (const node of nodes.reverse())
 			await stopNode(node)
-		await releaseAll()
+		await releaseAll?.()
 	}
 }
 

@@ -2,7 +2,7 @@
  * 文件柜 HTTP：柜 CRUD、条目、密码文件夹、链接。
  */
 /* global Deno */
-import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 
@@ -11,10 +11,8 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const port = await pickAvailablePort(29131)
 	const apiKey = `fount-cabinet-${Date.now().toString(36)}`
 	const node = await launchNode({
-		port,
 		username: 'cabinet-http-user',
 		apiKey,
 		loadParts: ['shells/chat', 'shells/social', 'shells/cabinet'],

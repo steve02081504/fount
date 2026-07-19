@@ -17,7 +17,7 @@ Framework-agnostic traps that only matter when writing those suites. Prefer sema
 
 ## HTTP route integration (`launchNode`)
 
-Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`. Prefer omitting `port` so `launchNode` holds an free port until spawn (avoids parallel `pickAvailablePort` TOCTOU). Live suite drivers use `runLiveSuiteCli({ buildNode })` — ports are allocated **per suite `fedNodes`**, never pre-hold a max fleet at module load.
+Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`. **Do not** call `pickAvailablePort` then pass `port:` — omit `port` so `launchNode` holds until spawn (avoids parallel TOCTOU; a bad dual-bind list once exhausted a 2000-port scan and killed the live wave on CI). Live suite drivers use `runLiveSuiteCli({ buildNode })` — ports are allocated **per suite `fedNodes`**, never pre-hold a max fleet at module load.
 
 ## Bluetooth / BLE
 

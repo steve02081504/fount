@@ -189,7 +189,7 @@ export async function init(start_config) {
 		console.freshLineI18n('server start', 'fountConsole.server.starting')
 		let appPromise
 		/** @type {import('node:http').Server[]} */
-		let servers = []
+		const servers = []
 		/**
 		 * 懒加载地获取 Express 应用程序实例。
 		 * @returns {Promise<import('npm:express').Application>} Express 应用程序实例。

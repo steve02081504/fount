@@ -5,7 +5,7 @@
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const bootstrapPath = join(dirname(fileURLToPath(import.meta.url)), '../node_bootstrap.mjs')
@@ -15,10 +15,8 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const port = await pickAvailablePort(28941)
 	const apiKey = `fount-social-taste-http-${Date.now().toString(36)}`
 	const node = await launchNode({
-		port,
 		username: 'social-taste-http-user',
 		apiKey,
 		loadParts: ['shells/social'],

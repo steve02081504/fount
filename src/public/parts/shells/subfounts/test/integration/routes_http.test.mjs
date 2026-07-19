@@ -2,7 +2,7 @@
  * Subfounts HTTP 路由集成测：连接码、本机分机列表、本机代码执行。
  */
 /* global Deno */
-import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 import { subfountFetch } from './helpers/subfount_http.mjs'
@@ -11,10 +11,8 @@ import { subfountFetch } from './helpers/subfount_http.mjs'
  * @returns {Promise<object>} 已启动的测试节点
  */
 async function launchSubfountNode() {
-	const port = await pickAvailablePort(29431)
 	const apiKey = `fount-subfounts-http-${Date.now().toString(36)}`
 	return await launchNode({
-		port,
 		username: 'subfounts-http-user',
 		apiKey,
 		loadParts: ['shells/subfounts'],

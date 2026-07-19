@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { launchNode, pickAvailablePort, stopNode } from 'fount/scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from 'fount/scripts/test/node/launch.mjs'
 import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
 const testDir = dirname(fileURLToPath(import.meta.url))
@@ -38,11 +38,9 @@ function chatFetch(node, method, path, body) {
  * @returns {Promise<{ node: object, setup: object }>} 已启动节点与 bootstrap 写入的 setup
  */
 async function launchScenario(scenario, fixtureCopies) {
-	const port = await pickAvailablePort(29331)
 	const dataPath = await mkdtemp(join(tmpdir(), `fount_chat_http_${scenario}_`))
-	const apiKey = `fount-chat-http-${scenario}-${port}`
+	const apiKey = `fount-chat-http-${scenario}-${Date.now().toString(36)}`
 	const node = await launchNode({
-		port,
 		dataPath,
 		username: `http-${scenario}`,
 		apiKey,

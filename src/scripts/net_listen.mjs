@@ -2,9 +2,14 @@
  * HTTP/TCP listen 绑定选项。
  *
  * Deno 在 Windows 上对 `ipv6Only: false` 的双栈 `::` 无效（与 Node 不同），
- * 因此默认改为显式双绑：`0.0.0.0` + `::`（或 localhost → `127.0.0.1` + `::1`）。
+ * 须显式双绑 `0.0.0.0` + `::`（ipv6Only）。
+ * Linux/macOS 上 `::` + ipv6Only:false 一口吃 IPv4-mapped；若再绑 `0.0.0.0` 会 EADDRINUSE。
  */
 import net from 'node:net'
+import process from 'node:process'
+
+/** Windows Deno 无法靠单绑 `::` 覆盖 IPv4。 */
+const explicitDualStack = process.platform === 'win32'
 
 /**
  * @param {string | null | undefined} host config.listen
@@ -12,10 +17,13 @@ import net from 'node:net'
  * @returns {import('node:net').ListenOptions[]} 需全部尝试的绑定（某族不可用则跳过）
  */
 export function resolveListenBinds(host, port) {
-	if (host == null) return [
-		{ port, host: '0.0.0.0' },
-		{ port, host: '::', ipv6Only: true },
-	]
+	if (host == null) {
+		if (explicitDualStack) return [
+			{ port, host: '0.0.0.0' },
+			{ port, host: '::', ipv6Only: true },
+		]
+		return [{ port, host: '::', ipv6Only: false }]
+	}
 	if (host === 'localhost') return [
 		{ port, host: '127.0.0.1' },
 		{ port, host: '::1', ipv6Only: true },
@@ -62,6 +70,23 @@ function probeBind(bind) {
 }
 
 /**
+ * 监听一次；族不支持返回 null。
+ * @param {import('node:net').ListenOptions} bind 绑定选项
+ * @returns {Promise<import('node:net').Server | null>} 已监听 server，或不支持时 null
+ */
+function listenOne(bind) {
+	return new Promise((resolve, reject) => {
+		const server = net.createServer()
+		server.unref()
+		server.once('error', err => {
+			if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(null)
+			else reject(err)
+		})
+		server.listen(bind, () => resolve(server))
+	})
+}
+
+/**
  * 检测默认双栈（或指定 host）下该端口是否可完整占用。
  * 任一所需族 EADDRINUSE → false；全部族不支持 → false；至少一族 ok 且无 busy → true。
  * @param {number} port 待检测端口
@@ -89,15 +114,7 @@ export async function holdListenPort(port, host = null) {
 	const held = []
 	try {
 		for (const bind of resolveListenBinds(host, port)) {
-			const server = await new Promise((resolve, reject) => {
-				const s = net.createServer()
-				s.unref()
-				s.once('error', err => {
-					if (['EAFNOSUPPORT', 'EADDRNOTAVAIL'].includes(err.code)) resolve(null)
-					else reject(err)
-				})
-				s.listen(bind, () => resolve(s))
-			})
+			const server = await listenOne(bind)
 			if (server) held.push(server)
 		}
 		if (!held.length) throw new Error(`no supported listen family for port ${port}`)
