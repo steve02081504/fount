@@ -43,6 +43,7 @@ World distribution product model: [docs/design/world-distribution-spec.md](../..
 - DAG `world_state`: `{ worldname, action: 'set'|'delete', key, value? }` → `state.worldStates[worldname][key]` (LWW, group-scoped — use key prefixes for channel scope).
 - Shell reducer is ACL-agnostic; world's fold layer ignores unauthorized ops.
 - `WorldChatHost` (`session/worldHost.mjs`): `state`, `localData`, `triggerCharReply`, `postSystemMessage`, `listMembers`/`listChannels`. Wired once on local `resolveWorld` via `ChatHostConnected` (not for builtin/remote proxy).
+- `session_*` is node-local (federation ingest rejects). Multi-node sim/tests must `appendSessionWorldBind` on **each** replica that needs the bind — do not expect gossip to copy session. Nodes without the world part pass `{ distribution, ownerUsername, homeNodeHash }` from a peer that already bound (see `mirrorSessionWorldBind` in `world_distribution.test.mjs`); otherwise uninstalled nodes default `distribution` to `hosted` and point home at themselves.
 - Federation inbound: `aclGated` + 64KB content limit.
 
 ## member_roles / greeting

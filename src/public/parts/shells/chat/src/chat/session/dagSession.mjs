@@ -118,10 +118,14 @@ export async function appendAgentReplyFrequencySet(replicaUsername, groupId, cha
  * @param {string} replicaUsername replica 所有者
  * @param {string} groupId 群 ID
  * @param {string | null} worldname 世界名；null 清除群级世界
- * @param {object} [appendOptions] appendSignedLocalEvent 选项
+ * @param {object} [options] bind 覆盖 + appendSignedLocalEvent 选项
+ * @param {'local' | 'replicated' | 'hosted'} [options.distribution] 覆盖本机 part 读出的 distribution（未装节点常用）
+ * @param {string} [options.ownerUsername] 覆盖归属用户（hosted / replicated 未装节点指向主机）
+ * @param {string} [options.homeNodeHash] 覆盖 home 节点
  * @returns {Promise<void>}
  */
-export async function appendSessionWorldBind(replicaUsername, groupId, worldname, appendOptions = {}) {
+export async function appendSessionWorldBind(replicaUsername, groupId, worldname, options = {}) {
+	const { distribution: distributionOverride, ownerUsername, homeNodeHash, ...appendOptions } = options
 	if (!worldname) {
 		await appendSignedLocalEvent(replicaUsername, groupId, {
 			type: 'session_world_clear',
@@ -131,8 +135,12 @@ export async function appendSessionWorldBind(replicaUsername, groupId, worldname
 		}, appendOptions)
 		return
 	}
-	const bind = sessionOwnerBinding(replicaUsername)
-	const distribution = await readWorldDistribution(replicaUsername, worldname)
+	const bind = {
+		ownerUsername: ownerUsername ?? replicaUsername,
+		homeNodeHash: homeNodeHash ?? getLocalNodeHash(),
+	}
+	const distribution = distributionOverride
+		?? await readWorldDistribution(replicaUsername, worldname)
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_world_bind',
 		sender: replicaUsername,
@@ -146,26 +154,32 @@ export async function appendSessionWorldBind(replicaUsername, groupId, worldname
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string | null} worldname 世界名；null 清除该频道世界
+ * @param {object} [options] 同 appendSessionWorldBind
  * @returns {Promise<void>}
  */
-export async function appendSessionChannelWorldBind(replicaUsername, groupId, channelId, worldname) {
+export async function appendSessionChannelWorldBind(replicaUsername, groupId, channelId, worldname, options = {}) {
+	const { distribution: distributionOverride, ownerUsername, homeNodeHash, ...appendOptions } = options
 	if (!worldname) {
 		await appendSignedLocalEvent(replicaUsername, groupId, {
 			type: 'session_world_clear',
 			sender: replicaUsername,
 			timestamp: Date.now(),
 			content: { channelId },
-		})
+		}, appendOptions)
 		return
 	}
-	const bind = sessionOwnerBinding(replicaUsername)
-	const distribution = await readWorldDistribution(replicaUsername, worldname)
+	const bind = {
+		ownerUsername: ownerUsername ?? replicaUsername,
+		homeNodeHash: homeNodeHash ?? getLocalNodeHash(),
+	}
+	const distribution = distributionOverride
+		?? await readWorldDistribution(replicaUsername, worldname)
 	await appendSignedLocalEvent(replicaUsername, groupId, {
 		type: 'session_world_bind_channel',
 		sender: replicaUsername,
 		timestamp: Date.now(),
 		content: { channelId, worldname, distribution, ...bind },
-	})
+	}, appendOptions)
 }
 
 /**

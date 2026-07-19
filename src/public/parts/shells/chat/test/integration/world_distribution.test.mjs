@@ -31,6 +31,24 @@ async function seedWorldFixture(dataRoot, username, worldname) {
 }
 
 /**
+ * session_* 不联邦：未装 world 的节点把已装节点的 bind（distribution / owner / home）写到本机 session。
+ * @param {(node: string, groupId?: string) => Promise<object>} stateOf sim.stateOf
+ * @param {typeof import('../../src/chat/session/dagSession.mjs').appendSessionWorldBind} appendSessionWorldBind bind API
+ * @param {string} fromNode 已装节点
+ * @param {string} toNode 未装节点
+ * @param {string} groupId 群 ID
+ * @returns {Promise<void>}
+ */
+async function mirrorSessionWorldBind(stateOf, appendSessionWorldBind, fromNode, toNode, groupId) {
+	const world = (await stateOf(fromNode, groupId)).session.world
+	await appendSessionWorldBind(toNode, groupId, world.worldname, {
+		distribution: world.distribution,
+		ownerUsername: world.ownerUsername,
+		homeNodeHash: world.homeNodeHash,
+	})
+}
+
+/**
  * @param {object} world resolveWorld 返回值
  * @returns {Promise<boolean>} GetPrompt 是否含 local marker
  */
@@ -71,8 +89,9 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 
 	await t.step('local world bind 写入 distribution: local', async () => {
 		localWorldHookState.reset()
+		// session_* 为本机元数据：A 从 part 读 distribution；B 未装则镜像 A 的 bind
 		await appendSessionWorldBind(NODE_A, groupId, LOCAL_WORLD)
-		await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+		await mirrorSessionWorldBind(stateOf, appendSessionWorldBind, NODE_A, NODE_B, groupId)
 
 		for (const node of [NODE_A, NODE_B]) {
 			const session = (await stateOf(node, groupId)).session
@@ -97,7 +116,6 @@ Deno.test('world distribution: local 本机执行 + 未装回退 BUILTIN + hoste
 
 	await t.step('hosted 回归：未声明 distribution 的 world 折叠为 hosted', async () => {
 		await appendSessionWorldBind(NODE_A, groupId, HOSTED_WORLD)
-		await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
 
 		const session = (await stateOf(NODE_A, groupId)).session
 		assertEquals(session.world.distribution, 'hosted')
@@ -147,7 +165,7 @@ Deno.test('world distribution replicated: 本机执行 + 未装节点走 remoteW
 	const { REMOTE_WORLD_PROXY_SYMBOL } = await import('../../src/chat/federation/remoteWorldProxy.mjs')
 
 	await appendSessionWorldBind(NODE_A, groupId, REPLICATED_WORLD)
-	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+	await mirrorSessionWorldBind(stateOf, appendSessionWorldBind, NODE_A, NODE_B, groupId)
 
 	await t.step('replicated bind 写入 distribution', async () => {
 		const session = (await stateOf(NODE_A, groupId)).session
@@ -230,7 +248,7 @@ Deno.test('world distribution hosted: 未装 world 的 replica 不加载 hosted 
 	const { REMOTE_WORLD_PROXY_SYMBOL } = await import('../../src/chat/federation/remoteWorldProxy.mjs')
 
 	await appendSessionWorldBind(NODE_A, groupId, HOSTED_WORLD)
-	await gossipAll([NODE_A, NODE_B], groupId, { assertConverged: true })
+	await mirrorSessionWorldBind(stateOf, appendSessionWorldBind, NODE_A, NODE_B, groupId)
 
 	const worldA = await resolveWorld(groupId, channelId, NODE_A)
 	assert(typeof worldA.interfaces.chat.GetChatLogForViewer === 'function')

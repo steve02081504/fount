@@ -68,10 +68,20 @@ export async function verifyEntityActivePubKeyBelongs(username, entityHash, enti
 		return { ok: false, reason: 'invalid entity active key ownership args' }
 
 	try {
-		const { getEntityActivePubKey } = await import('../../entity/identity.mjs')
-		const localActive = normalizeHex64(await getEntityActivePubKey(user, eh))
-		if (localActive === pub) return { ok: true }
-		return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
+		const { findLocalEntityActivePubKey, getEntityActivePubKey } = await import('../../entity/identity.mjs')
+		try {
+			const localActive = normalizeHex64(await getEntityActivePubKey(user, eh))
+			if (localActive === pub) return { ok: true }
+			return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
+		}
+		catch {
+			// 同进程其他 replica 已托管该实体（联邦仿真 / 单机多用户）
+			const hosted = findLocalEntityActivePubKey(eh)
+			if (hosted) {
+				if (hosted === pub) return { ok: true }
+				return { ok: false, reason: 'entityActivePubKeyHex mismatch local identity' }
+			}
+		}
 	}
 	catch {
 		/* 非本机托管实体 → EVFS */

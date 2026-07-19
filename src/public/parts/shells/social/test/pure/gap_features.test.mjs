@@ -36,6 +36,17 @@ Deno.test('sanitizeMediaRefs strips javascript: and other unsafe urls', () => {
 	assertEquals(refs[1].path, 'profile/avatar')
 })
 
+Deno.test('sanitizeMediaRefs keeps groupEmoji refs with contentHash', () => {
+	const refs = sanitizeMediaRefs([
+		{ kind: 'groupEmoji', groupId: 'g1', emojiId: 'e1', contentHash: 'a'.repeat(64) },
+		{ kind: 'groupEmoji', groupId: 'g1', emojiId: 'e2' },
+		{ kind: 'groupEmoji', emojiId: 'e3', contentHash: 'b'.repeat(64) },
+	])
+	assertEquals(refs.length, 1)
+	assertEquals(refs[0].kind, 'groupEmoji')
+	assertEquals(refs[0].emojiId, 'e1')
+})
+
 Deno.test('resolveSensitiveMedia defaults from contentWarning', () => {
 	assertEquals(resolveSensitiveMedia(undefined, 'cw'), true)
 	assertEquals(resolveSensitiveMedia(false, 'cw'), false)

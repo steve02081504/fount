@@ -303,6 +303,19 @@ export async function loadEntityIdentity(username, entityHash) {
 }
 
 /**
+ * 在本机任意 replica 的 identity 缓存中查找实体活跃公钥（同进程多用户 / 联邦仿真）。
+ * @param {string} entityHash 128 hex
+ * @returns {string | null} 64 hex 活跃公钥，未托管则为 null
+ */
+export function findLocalEntityActivePubKey(entityHash) {
+	const eh = String(entityHash || '').trim().toLowerCase()
+	if (!isEntityHash128(eh)) return null
+	for (const cached of identityCache.values())
+		if (cached.entityHash === eh) return cached.activePub
+	return null
+}
+
+/**
  * @param {string} username fount 登录名
  * @param {string} entityHash 128 hex
  * @returns {Promise<string>} 64 hex 活跃公钥

@@ -47,6 +47,7 @@ import { safeReadJson } from '../lib/fsSafe.mjs'
 import { eventsOrderCachePath, groupDir, eventsPath, messagesPath, snapshotPath } from '../lib/paths.mjs'
 
 import { buildCheckpointPayload, isAdoptedBaseAuthoritative, isSignedBaseCheckpoint } from './checkpointPayload.mjs'
+import { SESSION_EVENT_TYPES } from './eventTypes.mjs'
 import { withGroupWriteLock } from './groupLock.mjs'
 import {
 	applyEvent,
@@ -57,6 +58,15 @@ import {
 	serializeVotesOverlay,
 } from './groupMaterializedState.mjs'
 import { verifyEventsSnapshotWAL } from './wal.mjs'
+
+/**
+ * session_* 为本机元数据：不参与联邦 tip / 共识折叠，避免与 world_state 等并列成叉。
+ * @param {object} event DAG 事件
+ * @returns {boolean} 是否参与联邦 tip 与共识折叠
+ */
+function isFederatableDagEvent(event) {
+	return !SESSION_EVENT_TYPES.has(event?.type)
+}
 
 /** @type {AsyncLocalStorage<boolean>} 当前异步上下文中是否正在执行 WAL 修复，防止 rebuild 内嵌 getState 无限递归 OOM。 */
 const walRepairContext = new AsyncLocalStorage()
@@ -106,6 +116,8 @@ function coveredIdsFromAnchor(byId, anchorId) {
  */
 export async function getState(username, groupId, options = {}) {
 	const events = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
+	const federatableEvents = events.filter(isFederatableDagEvent)
+	const sessionEvents = events.filter(event => SESSION_EVENT_TYPES.has(event?.type))
 	const checkpoint = await safeReadJson(snapshotPath(username, groupId))
 
 	let wal = { ok: true }
@@ -121,10 +133,10 @@ export async function getState(username, groupId, options = {}) {
 	const forceReplay = options.forceFullReplay || wal.forceFullReplay === true
 
 	const eventsFile = eventsPath(username, groupId)
-	let fingerprint = `0:0:${events.length}`
+	let fingerprint = `0:0:${federatableEvents.length}`
 	try {
 		const st = await stat(eventsFile)
-		fingerprint = `${st.mtimeMs}:${st.size}:${events.length}`
+		fingerprint = `${st.mtimeMs}:${st.size}:${federatableEvents.length}`
 	}
 	catch { /* empty or missing */ }
 	const memoKey = `${username}:${groupId}`
@@ -137,14 +149,14 @@ export async function getState(username, groupId, options = {}) {
 	const order = resolveTopologicalOrderMemoCached(
 		memoKey,
 		fingerprint,
-		() => resolveEventTopologicalOrder(events, orderCache, { forceFull: forceReplay }),
+		() => resolveEventTopologicalOrder(federatableEvents, orderCache, { forceFull: forceReplay }),
 		{ force: forceReplay },
 	)
-	if (events.length && !forceReplay)
-		await writeOrderCache(orderCachePath, buildOrderCachePayload(order, events))
-	const byId = new Map(events.map(event => [event.id, event]))
+	if (federatableEvents.length && !forceReplay)
+		await writeOrderCache(orderCachePath, buildOrderCachePayload(order, federatableEvents))
+	const byId = new Map(federatableEvents.map(event => [event.id, event]))
 
-	const dagTips = computeDagTipIdsFromEvents(events)
+	const dagTips = computeDagTipIdsFromEvents(federatableEvents)
 	const [reputationFile, preferredBranchTip] = await Promise.all([
 		loadReputation(),
 		loadGovernanceBranchTip(username, groupId),
@@ -171,7 +183,7 @@ export async function getState(username, groupId, options = {}) {
 	const baseAuthoritative = hasBase && isAdoptedBaseAuthoritative(checkpoint, dagTips)
 	const canIncrement = !forceReplay && hasBase
 
-	if (hasBase && !events.length)
+	if (hasBase && !federatableEvents.length)
 		state = materializeFromCheckpoint(checkpoint)
 	else if (baseAuthoritative) {
 		state = materializeFromCheckpoint(checkpoint)
@@ -198,6 +210,10 @@ export async function getState(username, groupId, options = {}) {
 			const event = byId.get(eventId)
 			if (event) state = applyEvent(state, event)
 		}
+
+	// 本机 session 元数据：不进联邦 tip，在共识折叠后再按落盘顺序叠加。
+	for (const event of sessionEvents)
+		state = applyEvent(state, event)
 
 	state.dagTips = dagTips
 	state.consensusBranchTip = consensusBranchTip
@@ -266,11 +282,12 @@ async function canUseSecretKeyForCheckpointSignature(state, secretKey) {
 export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 	const previousCheckpoint = await safeReadJson(snapshotPath(username, groupId))
 	const eventsForReplay = await readJsonl(eventsPath(username, groupId), { sanitize: stripDagEventLocalExtensions })
+	const federatableForReplay = eventsForReplay.filter(isFederatableDagEvent)
 	// 采纳的 owner 签名基态在本地真正追平前保持权威（与 WAL / getState 同口径 isAdoptedBaseAuthoritative）：
 	// 锚点未拉回 / 悬挂父 / 锚点非当前叶 / dag_tip_ids 未对齐均属 catch-up 中间态，禁止 forceFullReplay
 	// （否则缺 pre-checkpoint 治理链 → 滤没基态成员）；物化以 checkpoint 为基态叠加本地增量。
-	const baseAuthoritative = isAdoptedBaseAuthoritative(previousCheckpoint, computeDagTipIdsFromEvents(eventsForReplay))
-		|| (isSignedBaseCheckpoint(previousCheckpoint) && hasDanglingParents(eventsForReplay))
+	const baseAuthoritative = isAdoptedBaseAuthoritative(previousCheckpoint, computeDagTipIdsFromEvents(federatableForReplay))
+		|| (isSignedBaseCheckpoint(previousCheckpoint) && hasDanglingParents(federatableForReplay))
 	const { events, state, order } = await getState(username, groupId, { forceFullReplay: !baseAuthoritative })
 	if (!events.length) return null
 
@@ -286,7 +303,7 @@ export async function buildAndSaveCheckpoint(username, groupId, options = {}) {
 	if (!canSign && baseAuthoritative && isSignedBaseCheckpoint(previousCheckpoint))
 		return previousCheckpoint
 
-	const dagTipIds = computeDagTipIdsFromEvents(events)
+	const dagTipIds = computeDagTipIdsFromEvents(events.filter(isFederatableDagEvent))
 	const checkpointEventId = resolveCheckpointEventId(state, dagTipIds, order)
 	if (!checkpointEventId) return null
 

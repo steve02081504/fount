@@ -39,11 +39,13 @@ export function sanitizeMediaRefs(raw) {
 			if (alt) cleaned.alt = alt
 			else delete cleaned.alt
 		}
-		if (cleaned.url != null) 
+		if (cleaned.url != null)
 			if (isSafeHtmlUrl(cleaned.url)) cleaned.url = String(cleaned.url).trim()
 			else delete cleaned.url
-		
-		if (!cleaned.url && !(cleaned.entityHash && cleaned.path)) continue
+
+		const isGroupEmoji = cleaned.kind === 'groupEmoji'
+			&& cleaned.groupId && cleaned.emojiId && cleaned.contentHash
+		if (!cleaned.url && !(cleaned.entityHash && cleaned.path) && !isGroupEmoji) continue
 		out.push(cleaned)
 	}
 	return out
