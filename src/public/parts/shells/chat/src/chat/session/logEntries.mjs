@@ -55,9 +55,9 @@ export async function buildChatLogEntryFromCharReply(result, timeSlice, char, ch
 
 	Object.assign(entry, {
 		name: result.name || info?.name || charname || 'Unknown',
-		...charname
-			? { uid: await ensureLocalAgentEntityHash(username, charname) }
-			: {},
+		uid: charname
+			? await ensureLocalAgentEntityHash(username, charname)
+			: 'char',
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		content_for_show: result.content_for_show,
@@ -92,7 +92,7 @@ export async function buildChatLogEntryFromUserMessage(result, timeSlice, user, 
 	const entry = new chatLogEntry_t()
 	Object.assign(entry, {
 		name: result.name || info?.name || timeSlice.player_id || username,
-		uid: result.uid || await getOperatorEntityHash(username) || undefined,
+		uid: result.uid || await getOperatorEntityHash(username) || 'user',
 		avatar: result.avatar || info?.avatar,
 		content: result.content,
 		role: 'user',

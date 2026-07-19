@@ -316,6 +316,9 @@ const charAPI_definition = {
 				 * @param {any} entry 条目
 				 */
 				function AddLongTimeLog(entry) {
+					entry.uid ??= entry.role === 'char' ? args.CharUid
+						: entry.role === 'user' ? args.UserUid
+						: 'system'
 					entry.charVisibility = [args.char_id] // char_id 来自 fount 的参数
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)

@@ -8,8 +8,6 @@ import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
-import { getOperatorEntityHash } from '../../../chat/src/chat/lib/replica.mjs'
-import { ensureLocalAgentEntityHash } from '../../../chat/src/entity/member.mjs'
 import { createBufferedLineBasedStream } from '../../../chat/src/streaming/index.mjs'
 import { sessionUpdate } from '../acp_agent.mjs'
 
@@ -25,6 +23,7 @@ function buildChatLogFromMessages(messages) {
 	return messages.map((m) => ({
 		id: crypto.randomUUID(),
 		name: m.name ?? (m.role === 'user' ? 'User' : 'Assistant'),
+		uid: m.role === 'user' ? 'user' : m.role === 'char' ? 'char' : 'system',
 		avatar: '',
 		time_stamp: Date.now(),
 		role: m.role,
@@ -99,8 +98,6 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 			: null
 
 		const locales = [...getUserByUsername(username)?.locales ?? [], ...localhostLocales]
-		const UserUid = await getOperatorEntityHash(username) || ''
-		const CharUid = await ensureLocalAgentEntityHash(username, charname)
 
 		const request = {
 			supported_functions: {
@@ -115,9 +112,9 @@ export async function createDefaultIDEInterface(charAPI, username, charname) {
 			char_id: charname,
 			username,
 			Charname,
-			CharUid,
+			CharUid: 'char',
 			UserCharname: (await getPartInfo(user, locales))?.name ?? username,
-			UserUid,
+			UserUid: 'user',
 			locales,
 			time: new Date(),
 			world: null,

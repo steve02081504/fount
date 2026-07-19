@@ -34,7 +34,7 @@ import { buildTimeSliceFromSessionSnapshot } from '../session/runtime.mjs'
  * @param {object} line 频道消息行
  * @param {object} content 消息 content
  * @param {object | null} [state] 物化群状态
- * @returns {string | undefined} 说话人 uid
+ * @returns {string} 说话人 uid
  */
 export function resolveSpeakerUid(line, content, state = null) {
 	const bridgeHash = String(content?.extension?.bridge?.authorEntityHash || '').trim().toLowerCase()
@@ -50,7 +50,9 @@ export function resolveSpeakerUid(line, content, state = null) {
 		const hash = memberEntityHash(state.members[sender])
 		if (hash) return hash
 	}
-	return sender || undefined
+	if (sender) return sender
+	if (charId) return charId
+	return String(content?.role || line?.type || 'system')
 }
 
 /**

@@ -20,7 +20,9 @@ Deno.test('buildPromptStruct injects attribution mismatch warnings', async () =>
 	const prompt = await buildPromptStruct({
 		char_id: 'char',
 		Charname: 'Char',
+		CharUid: 'char',
 		UserCharname: 'User',
+		UserUid: 'user',
 		char: stubPart,
 		user: stubPart,
 		world: stubPart,
@@ -30,6 +32,7 @@ Deno.test('buildPromptStruct injects attribution mismatch warnings', async () =>
 		chat_log: [{
 			id: '1',
 			name: 'Ada',
+			uid: 'user',
 			role: 'user',
 			content: 'hi',
 			extension: {

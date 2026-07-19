@@ -16,6 +16,7 @@ import { triggerCharReply } from './chat/session/triggerReply.mjs'
 export function makeTimerSystemEntry(reason, chatLogSnip, char_id) {
 	return {
 		name: 'system',
+		uid: 'system',
 		role: 'system',
 		content: `\
 定时器"${reason}"到期。

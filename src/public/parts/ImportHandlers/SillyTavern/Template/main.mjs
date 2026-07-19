@@ -220,6 +220,9 @@ export default {
 				 * @param {import("../../../../../src/public/parts/shells/chat/decl/chatLog.ts").chatEntry_t} entry 条目
 				 */
 				function AddLongTimeLog(entry) {
+					entry.uid ??= entry.role === 'char' ? args.CharUid
+						: entry.role === 'user' ? args.UserUid
+						: 'system'
 					entry.charVisibility = [args.char_id]
 					result?.logContextBefore?.push?.(entry)
 					prompt_struct.char_prompt.additional_chat_log.push(entry)

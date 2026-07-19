@@ -197,7 +197,7 @@ export class chatLogEntry_t {
 	id: string
 	name: string
 	/** 说话人身份（宿主自定义；与消息 id 无关） */
-	uid?: string
+	uid: string
 	avatar: string
 	time_stamp: timeStamp_t
 	role: role_t

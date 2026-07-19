@@ -1,8 +1,6 @@
 import { localhostLocales } from '../../../../../../../src/scripts/i18n/bare.mjs'
 import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/server/parts_loader.mjs'
-import { getOperatorEntityHash } from '../../../chat/src/chat/lib/replica.mjs'
-import { ensureLocalAgentEntityHash } from '../../../chat/src/entity/member.mjs'
 
 import { recommend_command_plugin } from './recommend_command.mjs'
 import { GetShellWorld } from './world.mjs'
@@ -62,6 +60,7 @@ export function GetDefaultShellAssistInterface(char_API, username, char_name) {
 				chat_log.push({
 					role: 'system',
 					name: args.shelltype || '终端',
+					uid: 'system',
 					content: `\
 用户执行了命令: \`${entry.command}\`
 
@@ -75,6 +74,7 @@ stderr: ${entry.error.includes('\n') ? '\n```\n' + entry.error + '\n```' : '`' +
 			else
 				chat_log.push({
 					...entry,
+					uid: entry.uid || (entry.role === 'char' ? 'char' : entry.role === 'user' ? 'user' : 'system'),
 					extension: entry.extension ??= {},
 					files: [],
 				})
@@ -105,13 +105,12 @@ ${args.screen}
 		chat_log.push({
 			role: 'system',
 			name: args.shelltype || '终端',
+			uid: 'system',
 			content: user_doing_now,
 			files: [],
 			extension: {}
 		})
 		const Charname = (await getPartInfo(char_API, localhostLocales)).name
-		const UserUid = await getOperatorEntityHash(username) || ''
-		const CharUid = await ensureLocalAgentEntityHash(username, char_name)
 		const AIsuggestion = await char_API.interfaces.chat.GetReply({
 			supported_functions: {
 				markdown: false,
@@ -124,9 +123,9 @@ ${args.screen}
 			chat_name: 'shell-assist-' + new Date().getTime(),
 			char_id: char_name,
 			Charname,
-			CharUid,
+			CharUid: 'char',
 			UserCharname: args.UserCharname,
-			UserUid,
+			UserUid: 'user',
 			locales: localhostLocales,
 			time: new Date(),
 			world: GetShellWorld(args.shelltype),

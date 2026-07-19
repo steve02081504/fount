@@ -69,7 +69,7 @@ export interface chatLogEntry_t {
 	/**
 	 * 说话人身份（宿主自定义；与消息 id 无关）。
 	 */
-	uid?: string
+	uid: string
 	/**
 	 * 时间戳。
 	 */
@@ -141,11 +141,11 @@ export interface prompt_struct_t {
 	/**
 	 * 本机用户说话人身份。
 	 */
-	UserUid?: string
+	UserUid: string
 	/**
 	 * 当前角色说话人身份。
 	 */
-	CharUid?: string
+	CharUid: string
 	/**
 	 * 回复对象说话人身份。
 	 */

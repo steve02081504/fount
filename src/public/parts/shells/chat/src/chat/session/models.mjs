@@ -152,7 +152,7 @@ export class chatLogEntry_t {
 		return {
 			id: this.id,
 			name: this.name,
-			...this.uid ? { uid: this.uid } : {},
+			uid: this.uid,
 			avatar: this.avatar,
 			time_stamp: this.time_stamp,
 			role: this.role,
@@ -184,7 +184,7 @@ export class chatLogEntry_t {
 		return {
 			id: this.id,
 			name: this.name,
-			...this.uid ? { uid: this.uid } : {},
+			uid: this.uid,
 			avatar: this.avatar,
 			time_stamp: this.time_stamp,
 			role: this.role,
@@ -234,7 +234,7 @@ export class chatLogEntry_t {
 		const instance = Object.assign(new chatLogEntry_t(), {
 			id: json.id,
 			name: json.name,
-			...json.uid ? { uid: json.uid } : {},
+			uid: json.uid,
 			avatar: json.avatar,
 			time_stamp: json.time_stamp,
 			role: json.role,

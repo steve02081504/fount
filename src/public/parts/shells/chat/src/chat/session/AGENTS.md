@@ -11,10 +11,11 @@ Multi-node bind / fixture probes: [test domain-harness](../../../../../../../../
 
 ## Speaker identity (`Uid`)
 
-- Request: `UserUid` / `CharUid` / `ReplyToUid?`（与 `*Charname` 对称）。日志行：`chatLogEntry_t.uid`。
-- 不透明可比较字符串（`===` / JSON）；fount chat 用 entityHash；bridge 用 `authorEntityHash`。**不是** RFC UUID。
+- Request: `UserUid` / `CharUid` / `ReplyToUid?`（与 `*Charname` 对称）。日志行：`chatLogEntry_t.uid`（必填；序列化始终写出）。
+- 不透明可比较字符串（`===` / JSON）；fount chat 用 entityHash；bridge 用 `authorEntityHash`。**不是** RFC UUID。简化双人壳（shellassist / ide）可用 `'user'` / `'char'`。
 - `name` / `*Charname` 只表示显示名；身份比对走 `uid` / `*Uid`。
 - 水合：`hydration.resolveSpeakerUid`；`getChatRequest` 填顶层 Uid，并从最近 `extension.replyTo.senderEntityHash` 填 `ReplyTo*`。
+- `AddLongTimeLog` 若未带 `uid`，按 `role` 从请求的 `CharUid` / `UserUid` 补全（其余为 `'system'`）。
 
 ## Viewer symmetry
 

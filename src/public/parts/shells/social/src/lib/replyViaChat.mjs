@@ -17,7 +17,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 	const now = new Date()
 	const entry = {
 		name: messageEvent.authorDisplayName || 'user',
-		uid: messageEvent.authorEntityHash || undefined,
+		uid: messageEvent.authorEntityHash || 'user',
 		time_stamp: now,
 		role: 'user',
 		content: messageEvent.postText || '',
@@ -29,7 +29,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 		},
 	}
 	const charInfo = char.info?.['zh-CN'] || char.info?.['en-US'] || {}
-	const authorUid = messageEvent.authorEntityHash || ''
+	const authorUid = messageEvent.authorEntityHash || 'user'
 	const request = {
 		supported_functions: {
 			markdown: true,
@@ -46,7 +46,7 @@ export async function replyViaChat(username, charPartName, char, messageEvent) {
 		char_id: charPartName,
 		username,
 		Charname: charInfo.name || charPartName,
-		CharUid: '',
+		CharUid: 'char',
 		UserCharname: messageEvent.authorDisplayName || 'user',
 		UserUid: authorUid,
 		ReplyToCharname: messageEvent.authorDisplayName,

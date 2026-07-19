@@ -45,6 +45,7 @@ function injectAttributionWarnings(promptStruct, args) {
 	promptStruct.world_prompt.additional_chat_log ??= []
 	promptStruct.world_prompt.additional_chat_log.push({
 		name: 'system',
+		uid: 'system',
 		role: 'system',
 		content: `身份归因警告：以下聊天记录的展示名不可信，实际由导入者或其他签名者重签：\n${lines.join('\n')}`,
 	})
@@ -263,6 +264,7 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 			mergedChatLog.push({
 				role: 'system',
 				name: 'feedback',
+				uid: 'system',
 				content: `User ${label} this message. Note: ${feedback.content || '(none)'}`,
 			})
 		}
@@ -275,6 +277,7 @@ export function mergeStructPromptChatLog(/** @type {prompt_struct_t} */ prompt) 
 		mergedChatLog.push({
 			role: 'system',
 			name: 'feedback',
+			uid: 'system',
 			content: `User ${label} an alternate-timeline reply. Reason: ${feedback.content}.`,
 		})
 	}
