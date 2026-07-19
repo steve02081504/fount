@@ -21,8 +21,9 @@ function deriveMeta(html) {
 	tempDiv.innerHTML = html
 	const rawText = tempDiv.textContent || ''
 	const cleanText = rawText.replace(/\s+/g, ' ').trim()
-	const h1 = tempDiv.querySelector('h1')
-	const title = h1?.textContent?.trim()
+	// 帖子/长文常用 ## 作标题 → h2；旧导出认任意标题，不能只认 h1
+	const heading = tempDiv.querySelector('h1, h2, h3, h4, h5, h6')
+	const title = heading?.textContent?.trim()
 		|| (cleanText ? `${cleanText.slice(0, 30)}${cleanText.length > 30 ? '...' : ''}` : 'Chat Message')
 	const description = cleanText ? `${cleanText.slice(0, 150)}${cleanText.length > 150 ? '...' : ''}` : ''
 	return { title, description }
