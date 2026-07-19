@@ -4,7 +4,7 @@
 /* global Deno */
 import { assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.ts'
 
-import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from '../../../scripts/test/node/launch.mjs'
 
 /** @type {string[]} */
 const BROWSER_SCRIPTS = [
@@ -23,9 +23,7 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async () => {
-	const port = await pickAvailablePort(28931)
 	const node = await launchNode({
-		port,
 		username: 'static-scripts-user',
 		apiKey: `fount-static-scripts-${Date.now().toString(36)}`,
 	})

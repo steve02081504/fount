@@ -29,10 +29,9 @@ if (process.env.FOUNT_TEST_NODE_WORKER)
 	installNearOomHeapSnapshot({})
 else {
 	// 拆掉 on-shutdown 对 fatal 事件的 async exit(1)：Deno 下易与顶层 await/管道交错。
-	// 只打日志不够——须置 exitCode=1，否则 beforeExit→shutdown(undefined) 会以 0 退出，
+	// 只打日志不够——须置 exitCode=1，否则 beforeExit→shutdown 会以 0 退出，
 	// 编排器把 worker 启动失败等当成「通过但有噪声」。
-	// 同时拆掉 beforeExit 监听：on-shutdown 以 undefined code 注册时会 TypeError 且默认 exit 0。
-	unset_shutdown_listener('uncaughtException', 'unhandledRejection', 'error', 'beforeExit')
+	unset_shutdown_listener('uncaughtException', 'unhandledRejection', 'error')
 	for (const event of ['uncaughtException', 'unhandledRejection', 'error'])
 		process.on(event, err => {
 			console.error(`${event}:`, err)

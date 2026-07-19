@@ -27,7 +27,7 @@ Deeper UI (profile card, module layout, unread/inbox/aliases): [ui-details.md](u
 
 - CSS: page-local, no `hub-` prefix. Full words. Ready-gate: `HUB_GATE` / `fount:hub-*`. Layout: `body[data-layout-pane]` / `body[data-surface]`.
 - Mobile (`≤768px`): `body[data-layout-pane=nav|main]` via `hubPane.mjs`.
-- **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel (optimistic path via `sendMessagePayload`). For HTML option buttons in trusted messages; payload normalize in `shared/fountUserSend.mjs`（Deno pure 亦测 → 勿 `import` `/scripts/*` 或相对 `pages/scripts/*`，后者浏览器会解析成 `/pages/scripts/…` 404）。
+- **`fount.user.send`**: Hub bootstrap registers `globalThis.fount.user.send(string | chatLogEntry)` → current channel (optimistic path via `sendMessagePayload`). For HTML option buttons in trusted messages; payload normalize in `shared/fountUserSend.mjs` (also covered by Deno pure tests → do not `import` `/scripts/*` or relative `pages/scripts/*`; the latter resolves in the browser as `/pages/scripts/…` 404).
 - Errors: `handleUIError` (toast + `console.error` + Sentry). Background: `toError` + console + Sentry, no toast.
 - Prefer `renderTemplate` / `mountTemplate`. Modals: `openDialogFromTemplate` (`modal-box` only). Cross-shell shared modules: `withTemplates`, never bare `usingTemplates`.
 - Reusable widgets: short semantic class + CSS; atomic/Tailwind only for DaisyUI and one-off layout. Context menus: `hub/core/positionContextMenu.mjs` + `bindDismissOnDocumentInteraction`.

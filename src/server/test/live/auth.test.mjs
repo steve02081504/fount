@@ -11,7 +11,7 @@ import { assert, assertEquals } from 'https://deno.land/std@0.224.0/assert/mod.t
 import { allowNoise } from '../../../scripts/test/core/allowNoise.mjs'
 import { wsBaseUrl } from '../../../scripts/test/core/url.mjs'
 import { bootInProcess } from '../../../scripts/test/node/boot.mjs'
-import { launchNode, pickAvailablePort, stopNode } from '../../../scripts/test/node/launch.mjs'
+import { launchNode, stopNode } from '../../../scripts/test/node/launch.mjs'
 
 /**
  * 从 Set-Cookie 响应头取出指定 cookie 的 name=value。
@@ -57,9 +57,7 @@ Deno.test({
 	sanitizeOps: false,
 	sanitizeResources: false,
 }, async t => {
-	const port = await pickAvailablePort(28931)
 	const node = await launchNode({
-		port,
 		username: 'auth-http-user',
 		apiKey: `fount-auth-http-${Date.now().toString(36)}`,
 	})

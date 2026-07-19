@@ -8,7 +8,6 @@ import { fileURLToPath } from 'node:url'
 import { REPO_ROOT } from 'fount/scripts/test/core/repo_root.mjs'
 import { denoLiveRun } from 'fount/scripts/test/live/deno_run.mjs'
 import { runLiveSuiteCli } from 'fount/scripts/test/live/runner.mjs'
-import { resolveLiveNodeFleet } from 'fount/scripts/test/node/launch.mjs'
 
 const liveDir = dirname(fileURLToPath(import.meta.url))
 const chatBootstrap = join(liveDir, '../node_bootstrap.mjs')
@@ -20,23 +19,14 @@ const fedScripts = join(scriptsDir, 'federation')
 /** 单节点 live 套件：不启 WebRTC/P2P 栈，仅离线 node 身份（避免 node-datachannel 与 p2p:live 叠加 OOM）。 */
 const SINGLE_NODE_LIVE = { p2p: false, minP2pNode: true }
 
-/** 联邦 live 套件默认双节点；个别套件可声明更大 fedNodes。 */
-const FED_LIVE_MAX_NODES = 6
-const { ports, releasePort } = await resolveLiveNodeFleet(FED_LIVE_MAX_NODES)
-
 /**
  * @param {number} index 0-based 节点序号
- * @returns {() => Promise<void>} 释放该节点端口
- */
-const releaseHeldPort = index => () => releasePort(ports[index])
-
-/**
- * @param {number} index 0-based 节点序号
+ * @param {{ port: number, releasePort: () => Promise<void> }} context 已分配端口
  * @param {object} [extra] 覆盖项
  * @returns {object} launchNode 选项
  */
-function chatFedNodeConfig(index, extra = {}) {
-	const port = ports[index]
+function chatFedNodeConfig(index, context, extra = {}) {
+	const { port, releasePort } = context
 	const nodeIndex = index + 1
 	const username = index === 0 ? 'CI-user' : index === 1 ? 'nodeb' : `node${nodeIndex}`
 	const envKeySuffix = nodeIndex === 1 ? 'A' : nodeIndex === 2 ? 'B' : String(nodeIndex)
@@ -51,7 +41,7 @@ function chatFedNodeConfig(index, extra = {}) {
 		loadParts: ['shells/chat'],
 		p2p: true,
 		bootstrap: chatBootstrap,
-		releasePort: releaseHeldPort(index),
+		releasePort,
 		...index === 0
 			? {
 				fixtureCopies: [
@@ -66,7 +56,7 @@ function chatFedNodeConfig(index, extra = {}) {
 }
 
 /** Chat live 测试 suite 表。 */
-/** @type {Record<string, { fed?: boolean, run: string[], node?: object }>} */
+/** @type {Record<string, { fed?: boolean, fedNodes?: number, run: string[], node?: object }>} */
 const suites = {
 	e2e_single: { run: denoLiveRun(join(scriptsDir, 'e2e_single.mjs')), node: SINGLE_NODE_LIVE },
 	e2e_single_extended: { run: denoLiveRun(join(scriptsDir, 'e2e_single_extended.mjs')), node: SINGLE_NODE_LIVE },
@@ -102,12 +92,5 @@ const suites = {
 await runLiveSuiteCli({
 	suites,
 	repoRoot: REPO_ROOT,
-	nodeA: chatFedNodeConfig(0),
-	nodeB: chatFedNodeConfig(1),
-	/**
-	 * 第 index 个联邦节点的 launch 配置（index ≥ 2）。
-	 * @param {number} index 0-based 节点序号
-	 * @returns {object} launchNode 选项
-	 */
-	nodeFleet: index => chatFedNodeConfig(index),
+	buildNode: chatFedNodeConfig,
 })

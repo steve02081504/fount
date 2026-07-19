@@ -22,13 +22,13 @@ Timeline commit / OnMessage test traps: [test domain-harness](../../../../../../
 - **part_query**: register/unregister in Load/Unload (`federation/partQuery.mjs`); handlers in `trending|search|discover|live/network.mjs`.
 - **Cross-shell chat HTTP**: viewer / personal-lists / entities/search / translation-prefs via `/api/parts/shells:chat/…`. Live nodes need `loadParts: ['shells/social', 'shells/chat']`.
 - **Share URL**: chat `wrapProtocolHttpsUrl`. `public/shared/runUri.mjs` must stay Deno-pure-importable (no `/parts/` URL imports).
-- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs`（完整离线文档，含 mediaRefs data URL）；与 Chat 消息导出同源。
+- **Download HTML**: post more menu → `exportHtml.mjs` → shared `markdown/standaloneDocument.mjs` (full offline document, including mediaRefs data URLs); same source as Chat message export.
 - Types: `src/decl/socialAPI.ts`; overview: `public/llms.txt`.
 
 ## UI conventions
 
 - CSS: page-local, no `social-` prefix. Icons `.icon` + `.icon-*`. Ready-gate: `SOCIAL_GATE` / `fount:social-*`.
-- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder`（勿用 `fooPlaceholder` 键名）. Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
+- Prefer `data-i18n` / `setElementI18n`; placeholders must be object keys with `placeholder` (do not use `fooPlaceholder` key names). Templates: `${...}` only (no Mustache `{{...}}`). Prefer `renderTemplate` / `mountTemplate`.
 - Empty states: `lib/emptyState.mjs` + `templates/empty_state.html`. Heart anim: `lib/heartAnim.mjs` `playHeartAnim`.
 - HTTP: `endpoints/shared.mjs` `socialJson(handler)`; per-post JSON: `federation/postScopedJsonStore.mjs`.
 - Hash routing: `switchView` → `#feed`/`#explore`/…/`#drafts`/`#settings`; detail `#post;<entityHash>;<postId>`; search `#search;q` / `#search:q` / `?q=` → `#searchView`.

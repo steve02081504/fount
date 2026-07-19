@@ -174,8 +174,12 @@ function createHeldPortBlock(base, servers) {
 	return { base, releasePort, releaseAll }
 }
 
+/** 端口块扫描宽度（并行 live 套件争用同一段时 200 偏紧）。 */
+const PORT_BLOCK_SCAN = 2000
+
 /**
  * 分配连续空闲端口块的首端口，并持有至 releasePort / releaseAll。
+ * 中途失败时从失败口的下一格继续，避免刚 close 的口立刻重绑。
  * @param {object} options 选项
  * @param {number} options.count 需要的端口数
  * @param {number} [options.step=2] 步长
@@ -183,21 +187,23 @@ function createHeldPortBlock(base, servers) {
  * @returns {Promise<TestPortBlock>} 首端口与释放句柄
  */
 export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_PORT_BASE }) {
-	for (let base = preferred; base < preferred + 200; base++) {
+	const scanEnd = preferred + PORT_BLOCK_SCAN
+	for (let base = preferred; base < scanEnd;) {
 		const ports = Array.from({ length: count }, (_, index) => base + index * step)
 		/** @type {Map<number, import('node:net').Server[]>} */
 		const servers = new Map()
-		let failed = false
-		for (const port of ports) try {
-			servers.set(port, await holdPort(port))
+		let failedAt = -1
+		for (let i = 0; i < ports.length; i++) try {
+			servers.set(ports[i], await holdPort(ports[i]))
 		}
 		catch {
-			failed = true
+			failedAt = i
 			break
 		}
 
-		if (failed) {
+		if (failedAt >= 0) {
 			await Promise.all([...servers.values()].map(closeHeldServer))
+			base = ports[failedAt] + 1
 			continue
 		}
 		return createHeldPortBlock(base, servers)
@@ -221,22 +227,30 @@ export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {})
  * @typedef {object} LiveNodeFleet
  * @property {number[]} ports 各节点端口（长度 = count）
  * @property {(port: number) => Promise<void>} releasePort 释放指定端口持有
+ * @property {() => Promise<void>} releaseAll 释放整块持有
  */
+
+/** env 指定端口时无持有句柄。 */
+/** @type {() => Promise<void>} */
+const noopReleaseAll = async () => {}
 
 /**
  * 为 live 联邦套件分配连续 N 个端口（或读 env）。
+ * 分配时以参数 `count` 为准；仅当 env 已指定 `FOUNT_TEST_NODE_1_PORT` 时读端口表（可选 `FOUNT_TEST_NODE_COUNT`）。
  * @param {number} [count=2] 节点数
  * @param {NodeJS.ProcessEnv} [env=process.env] 环境变量
  * @returns {Promise<LiveNodeFleet>} 端口列表与释放句柄
  */
 export async function resolveLiveNodeFleet(count = 2, env = process.env) {
-	const rawCount = env.FOUNT_TEST_NODE_COUNT?.trim()
-	const nodeCount = rawCount ? Number(rawCount) : count
-	if (!Number.isFinite(nodeCount) || nodeCount < 1)
-		throw new Error(`invalid FOUNT_TEST_NODE_COUNT: ${rawCount}`)
+	if (!Number.isFinite(count) || count < 1)
+		throw new Error(`invalid live node count: ${count}`)
 
 	const rawFirst = env.FOUNT_TEST_NODE_1_PORT?.trim()
 	if (rawFirst) {
+		const rawCount = env.FOUNT_TEST_NODE_COUNT?.trim()
+		const nodeCount = rawCount ? Number(rawCount) : count
+		if (!Number.isFinite(nodeCount) || nodeCount < 1)
+			throw new Error(`invalid FOUNT_TEST_NODE_COUNT: ${rawCount}`)
 		/** @type {number[]} */
 		const ports = []
 		for (let i = 0; i < nodeCount; i++) {
@@ -246,13 +260,14 @@ export async function resolveLiveNodeFleet(count = 2, env = process.env) {
 			else if (i === 0) ports.push(Number(rawFirst))
 			else ports.push(await pickAvailablePort(ports[i - 1] + 1))
 		}
-		return { ports, releasePort: noopReleasePort }
+		return { ports, releasePort: noopReleasePort, releaseAll: noopReleaseAll }
 	}
 
-	const { base, releasePort } = await allocateTestPortBlock({ count: nodeCount, step: 1 })
+	const { base, releasePort, releaseAll } = await allocateTestPortBlock({ count, step: 1 })
 	return {
-		ports: Array.from({ length: nodeCount }, (_, index) => base + index),
+		ports: Array.from({ length: count }, (_, index) => base + index),
 		releasePort,
+		releaseAll,
 	}
 }
 
@@ -366,7 +381,19 @@ async function injectFixtures(dataPath, username, copies) {
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
 export async function launchNode(options = {}) {
-	const port = options.port ?? await pickAvailablePort(TEST_PORT_BASE)
+	/** @type {(() => Promise<void>) | undefined} */
+	let releasePort = options.releasePort
+	let port = options.port
+	if (port == null) {
+		// hold 至 spawn，消掉 pickAvailablePort 的 TOCTOU（并行 deno test 互抢 28931）。
+		const held = await allocateTestPortBlock({ count: 1, step: 1 })
+		port = held.base
+		const outerRelease = releasePort
+		releasePort = async () => {
+			await held.releasePort(port)
+			await outerRelease?.()
+		}
+	}
 	const username = options.username ?? 'CI-user'
 	const apiKey = options.apiKey ?? `fount-test-key-${port}`
 	const keepData = options.keepData ?? false
@@ -407,7 +434,7 @@ export async function launchNode(options = {}) {
 	if (p2pRelayUrl)
 		workerArgs.push('--p2p-relay-url', p2pRelayUrl)
 
-	await options.releasePort?.()
+	await releasePort?.()
 
 	const denoBin = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
 	let captureEnabled = false

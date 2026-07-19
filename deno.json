@@ -4,7 +4,8 @@
 	"minimumDependencyAge": {
 		"exclude": [
 			"npm:@steve02081504/*",
-			"npm:eslint-plugin-remove-duplicates"
+			"npm:eslint-plugin-remove-duplicates",
+			"npm:on-shutdown"
 		]
 	},
 	"unstable": [
@@ -40,10 +41,10 @@
 		"npm:cookie-parser": "npm:cookie-parser@^1.4.0",
 		"npm:@steve02081504/virtual-console": "npm:@steve02081504/virtual-console@^0.2.13",
 		"npm:@steve02081504/exec": "npm:@steve02081504/exec@^0.0.6",
-		"npm:on-shutdown": "npm:on-shutdown@^0.0.4",
+		"npm:on-shutdown": "npm:on-shutdown@^0.0.5",
 		"npm:fs-extra": "npm:fs-extra@^11.3.2",
 		"npm:file-type": "npm:file-type@^21.0.0",
-		"npm:@steve02081504/fount-p2p": "npm:@steve02081504/fount-p2p@^0.0.9",
+		"npm:@steve02081504/fount-p2p": "npm:@steve02081504/fount-p2p@^0.0.10",
 		"npm:web-push": "npm:web-push@^3.6.7"
 	},
 	"lint": {

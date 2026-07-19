@@ -8,7 +8,7 @@ import { execFile } from 'npm:@steve02081504/exec'
 
 import { console } from '../../i18n/bare.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
-import { launchNode, stopNode } from '../node/launch.mjs'
+import { launchNode, resolveLiveNodeFleet, stopNode } from '../node/launch.mjs'
 import { appendBoundedTail } from '../runner/run_command.mjs'
 
 import { denoLiveRun } from './deno_run.mjs'
@@ -102,23 +102,27 @@ async function waitForFedNodesPing(nodes, timeoutMs = 30_000) {
 }
 
 /**
+ * 节点 launch 配置工厂上下文。
+ * @typedef {object} LiveNodeBuildContext
+ * @property {number} port 已分配并持有的端口
+ * @property {() => Promise<void>} releasePort spawn 前释放该端口持有
+ */
+
+/**
  * 启动节点、运行指定 live suite 并 teardown。
+ * 端口按 suite 的 `fedNodes`（或 fed→2 / 单节点→1）即时分配，避免顶层预占 6 口与并行套件互抢。
  * @param {object} options 运行选项
  * @param {string} options.suiteName manifest / suites 中的名称
  * @param {Record<string, { fed?: boolean, fedNodes?: number, run: string[], node?: object }>} options.suites suite 表
  * @param {string} options.repoRoot 仓库根目录
- * @param {object} options.nodeA 节点 A 基础 launchNode 选项
- * @param {object} options.nodeB 节点 B 基础 launchNode 选项（联邦）
- * @param {(index: number) => object} [options.nodeFleet] 第 index 个联邦节点（0-based）的 launch 选项
+ * @param {(index: number, context: LiveNodeBuildContext) => object} options.buildNode 按节点序号构造 launchNode 选项
  * @returns {Promise<number>} 进程退出码（0 为通过）
  */
 export async function runLiveSuite({
 	suiteName,
 	suites,
 	repoRoot,
-	nodeA,
-	nodeB,
-	nodeFleet,
+	buildNode,
 }) {
 	const spec = suites[suiteName]
 	if (!spec) {
@@ -128,16 +132,16 @@ export async function runLiveSuite({
 	}
 
 	const fedNodeCount = spec.fedNodes ?? (spec.fed ? 2 : 1)
+	const { ports, releasePort, releaseAll } = await resolveLiveNodeFleet(fedNodeCount)
 	const nodes = []
 	const federationCleanup = join(repoRoot, FEDERATION_CLEANUP)
 	try {
 		for (let i = 0; i < fedNodeCount; i++) {
-			const base = i === 0
-				? nodeA
-				: i === 1
-					? nodeB
-					: nodeFleet?.(i) ?? nodeB
-			nodes.push(await launchNode({ ...base, ...spec.node }))
+			const port = ports[i]
+			nodes.push(await launchNode({
+				...buildNode(i, { port, releasePort: () => releasePort(port) }),
+				...spec.node,
+			}))
 		}
 
 		if (fedNodeCount > 1)
@@ -168,6 +172,7 @@ export async function runLiveSuite({
 	finally {
 		for (const node of nodes.reverse())
 			await stopNode(node)
+		await releaseAll()
 	}
 }
 
@@ -176,13 +181,11 @@ export async function runLiveSuite({
  * @param {object} options CLI 配置
  * @param {Record<string, { fed?: boolean, fedNodes?: number, run: string[], node?: object }>} options.suites suite 表
  * @param {string} options.repoRoot 仓库根目录
- * @param {object} options.nodeA 节点 A 基础选项
- * @param {object} options.nodeB 节点 B 基础选项
- * @param {(index: number) => object} [options.nodeFleet] 额外联邦节点配置
+ * @param {(index: number, context: LiveNodeBuildContext) => object} options.buildNode 节点配置工厂
  * @param {string} [options.defaultSuite] 默认 suite 名
  * @returns {Promise<void>}
  */
-export async function runLiveSuiteCli({ suites, repoRoot, nodeA, nodeB, nodeFleet, defaultSuite }) {
+export async function runLiveSuiteCli({ suites, repoRoot, buildNode, defaultSuite }) {
 	const { values } = parseArgsOrExit({
 		options: {
 			suite: { type: 'string', default: defaultSuite },
@@ -204,8 +207,6 @@ export async function runLiveSuiteCli({ suites, repoRoot, nodeA, nodeB, nodeFlee
 		suiteName: values.suite,
 		suites,
 		repoRoot,
-		nodeA,
-		nodeB,
-		nodeFleet,
+		buildNode,
 	}))
 }

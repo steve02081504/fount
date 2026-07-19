@@ -17,7 +17,11 @@ Framework-agnostic traps that only matter when writing those suites. Prefer sema
 
 ## HTTP route integration (`launchNode`)
 
-Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`.
+Spawn via `fount/scripts/test/node/launch.mjs`, seed with env scenario + bootstrap worker, then `fetch` `http://127.0.0.1:{port}/api/parts/shells:…?fount-apikey=…`. Example: chat `routes_http.test.mjs` + `FOUNT_TEST_HTTP_SCENARIO` → `routes_http_bootstrap.mjs`. Prefer omitting `port` so `launchNode` holds an free port until spawn (avoids parallel `pickAvailablePort` TOCTOU). Live suite drivers use `runLiveSuiteCli({ buildNode })` — ports are allocated **per suite `fedNodes`**, never pre-hold a max fleet at module load.
+
+## Bluetooth / BLE
+
+fount-p2p treats BLE as optional: `canUseBluetoothRuntime` probes cheap hardware hints then load+poweredOn; any failure → unavailable and other discovery/link providers take over. Do not add env kill-switches for tests — degrade is the contract.
 
 ## Disposable data paths
 
