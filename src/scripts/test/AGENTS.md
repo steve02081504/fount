@@ -12,7 +12,7 @@ Domain harness (federation join, CKG asserts, `launchNode`, fixtures, disposable
 
 - **Entry**: `fount test` → `cli.mjs` → `runner/index.mjs`.
 - **i18n**: `fount/scripts/i18n/bare.mjs` only — never pull in the server module graph.
-- **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid.
+- **State DB**: `data/test/state/main.json` — per-suite status, fingerprint, baselines, log paths. `state/main.md` renders a dependency-tree mermaid. **CI** (`run_tests` → `fount_ci` `cache-test-data`): restore/save `data/test` as `fount-test-data` (even on failure; strips logs/tmp/playwright/heapsnapshots/report before save) so later pushes continue imperfect/outdated waves instead of cold-starting.
 - **Run report**: `data/test/report.md` + `report.json` — last run only. Trigger reasons: `data/test/triggered-reasons.md`. Details: [continue-report.md](docs/continue-report.md).
 - **Default loop** (bare `fount test`): imperfect wave (failed/noisy/blocked/missing + one-level dependents) → fail exits 1; all-green → outdated wave (`unknown`) → back to imperfect; both empty → exit 0. Never full-repo unless `--all`. No auto-retry within one invocation.
 - **Failure-first inside suite**: `FOUNT_TEST_FIRST` = last `failedFiles`; those run first; any still failing → exit without the rest.

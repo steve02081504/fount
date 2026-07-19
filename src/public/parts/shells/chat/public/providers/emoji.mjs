@@ -18,7 +18,7 @@ import {
 	unicodeEmojiGroupTabGlyph,
 	unicodeEmojiTabKey,
 } from '../src/lib/unicodeEmojiData.mjs'
-import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { escapeHtml } from '../shared/escapeHtml.mjs'
 
 const FREQUENT_EMOJI_LIMIT = 32
 

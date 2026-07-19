@@ -10,7 +10,15 @@
 			},
 			"label": "dev env setup",
 			"type": "shell",
-			"command": "deno run -A ./src/runner/dev_env_setup.mjs",
+			"windows": {
+				"command": "pwsh -NoProfile -File ./src/runner/dev_env_setup/main.ps1"
+			},
+			"linux": {
+				"command": "bash ./src/runner/dev_env_setup/main.sh"
+			},
+			"osx": {
+				"command": "bash ./src/runner/dev_env_setup/main.sh"
+			},
 			"runOptions": {
 				"runOn": "folderOpen"
 			},

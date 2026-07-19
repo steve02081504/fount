@@ -13,6 +13,11 @@ on:
         required: false
         type: string
         default: ''
+      cache-test-data:
+        description: 'Restore/save data/test (suite state DB) across runs'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   ci:
@@ -31,6 +36,12 @@ jobs:
         with:
           path: ./node_modules
           key: fount-node-modules
+      - name: Restore test data cache
+        if: inputs.cache-test-data
+        uses: actions/cache/restore@v5
+        with:
+          path: ./data/test
+          key: fount-test-data
       - name: Install dependencies
         run: |
           for i in $(seq 1 13); do
@@ -79,3 +90,28 @@ jobs:
         with:
           path: ${{ env.DENO_DIR }}
           key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount
+      # 失败/取消也要落盘：imperfect wave 依赖 state；与 node_modules 的「仅成功更新」不同
+      - name: Delete Previous test data Cache
+        if: ${{ always() && inputs.cache-test-data }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          gh extension install actions/gh-actions-cache || true
+          gh actions-cache delete "fount-test-data" --confirm || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: clean test data before cache save
+        if: ${{ always() && inputs.cache-test-data }}
+        continue-on-error: true
+        shell: bash
+        run: |
+          # 只保留增量所需的 state / panic 去重；丢弃日志与临时产物以控制缓存体积
+          rm -rf data/test/tmp data/test/playwright data/test/heapsnapshots data/test/state/logs
+          rm -f data/test/report.md data/test/report.json data/test/triggered-reasons.md
+      - name: Save test data Cache
+        if: ${{ always() && inputs.cache-test-data }}
+        continue-on-error: true
+        uses: actions/cache/save@v5
+        with:
+          path: ./data/test
+          key: fount-test-data

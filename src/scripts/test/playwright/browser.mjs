@@ -1,8 +1,8 @@
 import { createRequire } from 'node:module'
 import process from 'node:process'
 
-import { execFile, where_command } from 'npm:@steve02081504/exec'
-import 'npm:@playwright/test'
+// 本文件由 Node（Playwright CLI）与 Deno（phases 预读 config）双端加载，不可用 `npm:` 前缀。
+import { execFile, where_command } from '@steve02081504/exec'
 
 const require = createRequire(import.meta.url)
 const playwrightCli = require.resolve('@playwright/test/cli')
