@@ -2,6 +2,7 @@
 
 Suite parallelism is governed by `ResourceRunGate` (`runner/scheduler.mjs`):
 
+- **No idle work** — if any suite is waiting and the machine is empty, admit at least one immediately. Budget never blocks starting work; it only limits packing more alongside running suites. Same invariant in `simulateParallelMakespanMs` (otherwise ETA→0 and the gate deadlocks).
 - **`heavy: true`** — machine-exclusive (today: `p2p/sim` only).
 - **All other suites** — 2D bin packing on free memory (`freemem × 0.7`) and CPU budget (85% cap). Ready suites acquire in BFD order; waiters wake by fill score `min(memUtil, cpuUtil)`.
 - **`--no-parallel`** — serial gate: one non-heavy suite at a time; also forces `FOUNT_TEST_BUDGET_CORES=1` so `serial.mjs` inner file parallelism collapses to 1.
@@ -14,7 +15,7 @@ No CLI concurrency knob: suite packing and `serial.mjs` inner file parallelism b
 
 ## Per-suite footprint
 
-Effective demand = max of: manifest `resources: { memMb, cpuPct }`, naming heuristics (`core/resources.mjs`), EMA baselines in `data/test/state/main.json`.
+Effective demand = max(manifest `resources`, measured baseline if present else naming heuristic). CPU baselines `< 1%` are treated as sampling noise and ignored.
 
 `run_command.mjs` samples the subprocess tree every 30s via `proc_sample.mjs` (RSS peak → `baselineMemMb`; avg CPU → `baselineCpuPct`). Baselines update on pass or non-watchdog failure.
 

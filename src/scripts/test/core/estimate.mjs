@@ -252,31 +252,45 @@ export function simulateParallelMakespanMs(tasks, { memBudgetBytes, cpuBudgetPct
 		})
 	}
 
-	/** 在余量内尽可能多地按填缝分数 admit 就绪任务。 */
+	/**
+	 * @param {EstimateTask[]} candidates light 候选
+	 * @param {boolean} requireFit 是否要求能装进当前余量
+	 * @returns {EstimateTask | null} 选中的任务
+	 */
+	function pickLight(candidates, requireFit) {
+		let best = null
+		let bestScore = -1
+		for (const task of candidates) {
+			if (requireFit && !canFit(task)) continue
+			if (!requireFit) return task
+			const score = fillScore(task)
+			if (score > bestScore) {
+				bestScore = score
+				best = task
+			}
+		}
+		return best
+	}
+
+	/** 先保证非空转，再在余量内填缝（与 ResourceRunGate 同不变量）。 */
 	function tryAdmit() {
 		if (exclusiveRunning) return
 
-		const ready = listReady()
-		if (usedMemBytes === 0 && usedCpuPct === 0) {
+		const idle = usedMemBytes === 0 && usedCpuPct === 0
+		if (idle) {
+			const ready = listReady()
 			const heavy = ready.find(task => task.heavy)
 			if (heavy) {
 				admit(heavy)
 				return
 			}
+			const lights = ready.filter(task => !task.heavy)
+			const start = pickLight(lights, true) ?? pickLight(lights, false)
+			if (start) admit(start)
 		}
 
 		for (;;) {
-			const candidates = listReady().filter(task => !task.heavy)
-			let best = null
-			let bestScore = -1
-			for (const task of candidates) {
-				if (!canFit(task)) continue
-				const score = fillScore(task)
-				if (score > bestScore) {
-					bestScore = score
-					best = task
-				}
-			}
+			const best = pickLight(listReady().filter(task => !task.heavy), true)
 			if (!best) break
 			admit(best)
 		}

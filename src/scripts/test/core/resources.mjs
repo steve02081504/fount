@@ -54,16 +54,21 @@ export function inferDefaultResources(suite) {
 
 /**
  * 合并 manifest 声明、命名默认值与 state 采样基线。
+ * 有可信采样时用采样（可被 manifest 声明抬高）；无采样才回退命名默认。
+ * CPU 基线 < 1% 视为噪声（pidusage 空闲采样），忽略。
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @returns {SuiteResources} 调度用资源
  */
 export function resolveSuiteResources(suite, entry) {
-	const declared = suite.resources ?? {}
+	const declared = parseManifestResources(suite.resources)
 	const defaults = inferDefaultResources(suite)
-	const memMb = Math.max(defaults.memMb, declared.memMb ?? 0, entry?.baselineMemMb ?? 0)
-	const cpuPct = Math.max(defaults.cpuPct, declared.cpuPct ?? 0, entry?.baselineCpuPct ?? 0)
-	return { memMb, cpuPct }
+	const baselineMem = entry?.baselineMemMb > 0 ? entry.baselineMemMb : null
+	const baselineCpu = entry?.baselineCpuPct >= 1 ? entry.baselineCpuPct : null
+	return {
+		memMb: Math.max(declared.memMb ?? 0, baselineMem ?? defaults.memMb),
+		cpuPct: Math.max(declared.cpuPct ?? 0, baselineCpu ?? defaults.cpuPct),
+	}
 }
 
 /**

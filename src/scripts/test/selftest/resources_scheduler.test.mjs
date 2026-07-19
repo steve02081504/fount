@@ -54,6 +54,23 @@ Deno.test('resolveSuiteResources merges manifest, defaults, and sampled baseline
 		resolveSuiteResources(suite, { baselineMemMb: 2200, baselineCpuPct: 55 }),
 		{ memMb: 2200, cpuPct: 55 },
 	)
+	// 有采样时不再被命名默认顶高；亚 1% CPU 基线当噪声忽略
+	assertEquals(
+		resolveSuiteResources(suite, { baselineMemMb: 68, baselineCpuPct: 8e-6 }),
+		{ memMb: 1000, cpuPct: 35 },
+	)
+})
+
+Deno.test('ResourceRunGate never idles when a waiter exceeds budget', async () => {
+	// 不变量：有活干时机器不能空转——预算不够装也要开工。
+	const gate = new ResourceRunGate(500 * MiB)
+	const huge = makeSuite('shells/chat', 'integration', { resources: { memMb: 1800, cpuPct: 25 } })
+	const release = await Promise.race([
+		gate.acquire(huge),
+		new Promise((_, reject) => setTimeout(() => reject(new Error('gate left machine idle')), 200)),
+	])
+	assertEquals(gate.usedMemBytes, 1800 * MiB)
+	release()
 })
 
 Deno.test('suiteSchedulePriority prefers larger footprint', () => {

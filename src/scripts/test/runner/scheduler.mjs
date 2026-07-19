@@ -21,6 +21,9 @@ import {
 
 /**
  * 资源预算闸门：heavy 独占；light suite 按 mem/cpu 与机器余量并行，填缝择优唤醒。
+ *
+ * 不变量：有 waiter 且机器空闲时必须放行至少一个——预算只约束「还能不能再塞」，
+ * 从不约束「能不能开工」。否则 oversized suite 会永久挂死。
  */
 export class ResourceRunGate {
 	/**
@@ -86,7 +89,30 @@ export class ResourceRunGate {
 		w.resolve(() => this.#releaseSlot(need))
 	}
 
-	/** 在余量内尽可能多地按填缝分数唤醒 waiter。 */
+	/**
+	 * 在 light waiter 中挑一个：能装下的按填缝分数，否则（仅空闲开工）任意一个。
+	 * @param {boolean} requireFit 是否要求能装进当前余量
+	 * @returns {number} waiter 下标；无候选 -1
+	 */
+	#pickLightWaiterIndex(requireFit) {
+		let bestIdx = -1
+		let bestScore = -1
+		for (let i = 0; i < this.waiters.length; i++) {
+			const w = this.waiters[i]
+			if (w.suite.heavy) continue
+			const need = this.#needs(w.suite)
+			if (requireFit && !this.#canFit(need)) continue
+			if (!requireFit) return i
+			const score = this.#fillScore(need)
+			if (score > bestScore) {
+				bestScore = score
+				bestIdx = i
+			}
+		}
+		return bestIdx
+	}
+
+	/** 先保证非空转，再在余量内填缝。 */
 	#tryAdmit() {
 		if (this.exclusiveRunning) return
 
@@ -98,30 +124,21 @@ export class ResourceRunGate {
 			return
 		}
 
-		if (this.usedMemBytes === 0 && this.usedCpuPct === 0) {
+		const idle = this.usedMemBytes === 0 && this.usedCpuPct === 0
+		if (idle && this.waiters.length) {
 			const heavyIdx = this.waiters.findIndex(w => w.suite.heavy)
 			if (heavyIdx >= 0) {
 				this.#admit(this.waiters.splice(heavyIdx, 1)[0])
 				return
 			}
+			const startIdx = this.#pickLightWaiterIndex(true)
+			const idx = startIdx >= 0 ? startIdx : this.#pickLightWaiterIndex(false)
+			if (idx >= 0) this.#admit(this.waiters.splice(idx, 1)[0])
 		}
 
 		for (;;) {
-			let bestIdx = -1
-			let bestScore = -1
-			for (let i = 0; i < this.waiters.length; i++) {
-				const w = this.waiters[i]
-				if (w.suite.heavy) continue
-				const need = this.#needs(w.suite)
-				if (!this.#canFit(need)) continue
-				const score = this.#fillScore(need)
-				if (score > bestScore) {
-					bestScore = score
-					bestIdx = i
-				}
-			}
+			const bestIdx = this.#pickLightWaiterIndex(true)
 			if (bestIdx < 0) break
-
 			this.#admit(this.waiters.splice(bestIdx, 1)[0])
 		}
 	}

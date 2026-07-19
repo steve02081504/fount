@@ -136,6 +136,19 @@ Deno.test('simulateParallelMakespanMs packs independent light suites', () => {
 	assertEquals(result.makespanMs, 1000)
 })
 
+Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', () => {
+	// 与闸门同不变量：空闲 + 有活 → 必须开工，否则 ETA 塌成 0。
+	const result = simulateParallelMakespanMs([
+		task({ durationMs: 12_000, memMb: 1800, cpuPct: 25 }),
+	], { memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
+	assertEquals(result.makespanMs, 12_000)
+	const summary = summarizeEstimate([
+		task({ durationMs: 12_000, memMb: 1800, cpuPct: 25 }),
+	], { serial: false, memBudgetBytes: 500 * MiB, cpuBudgetPct: 85 })
+	assertEquals(summary.etaMs > 0, true)
+	assertEquals(summary.runCount, 1)
+})
+
 Deno.test('summarizeEstimate reports run/reused/blocked breakdown', () => {
 	const tasks = [
 		task({ durationMs: 1000 }),
