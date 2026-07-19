@@ -8,7 +8,7 @@
 import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 
-import { channelMessageAgentText, textChannelContent } from '../../../public/shared/channelContent.mjs'
+import { textChannelContent } from '../../../public/shared/channelContent.mjs'
 import { commitChannelMessageEvent } from '../channel/messageCommit.mjs'
 import { replicateChunkToFederation } from '../federation/chunks.mjs'
 import { resolveGroupChannelId } from '../lib/channelId.mjs'
@@ -20,16 +20,6 @@ import { appendSignedLocalEvent } from './append.mjs'
 import { ensureGroup } from './lifecycle.mjs'
 import { resolveLocalEventSigner } from './localSigner.mjs'
 import { getState } from './materialize.mjs'
-
-/**
- * @param {object} entry 聊天条目（chatLog 行：顶层 `content` 字符串）
- * @returns {string} 写入 DAG 的 agent 正文
- */
-function entryContentToMirrorText(entry) {
-	const { content } = entry
-	if (typeof content === 'string') return content
-	return channelMessageAgentText(content) || ''
-}
 
 /**
  * @param {string} username 所有者
@@ -130,7 +120,7 @@ async function buildFinalMessageContent(username, groupId, entry, text) {
 		role: entry.role,
 		is_generating: false,
 	}
-	const agent = String(text ?? entryContentToMirrorText(entry))
+	const agent = String(text ?? entry.content)
 	const show = entry.content_for_show ?? agent
 	const edit = entry.content_for_edit ?? agent
 	if (Buffer.byteLength(agent, 'utf8') > maxBytes)
@@ -203,7 +193,7 @@ export async function finalizeDagGeneratingMessage(groupId, entry, username, dag
 		if (entry.extension?.isGreeting || entry.extension.timeSlice?.greeting_type) return
 		const targetId = dagEventId ?? entry.extension?.dagEventId
 		if (!targetId) return
-		const text = entryContentToMirrorText(entry)
+		const text = entry.content
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles && !entry.extension?.aborted) {
 			await cancelGeneratingPlaceholder(groupId, entry, username, targetId)
@@ -263,7 +253,7 @@ export async function syncChatLogEntryToDag(groupId, entry, username) {
 	try {
 		if (entry.is_generating) return
 		if (!username) return
-		const text = entryContentToMirrorText(entry)
+		const text = entry.content
 		const hasFiles = Array.isArray(entry.files) && entry.files.length > 0
 		if (!text.trim() && !hasFiles) return
 		const { channelIdForDag, sender, timestamp, charId } = await resolveMirrorContext(entry, username, groupId)
@@ -330,7 +320,7 @@ export async function mirrorEditToDag(groupId, originalEntryId, entry, username)
 		const targetId = entry.extension?.dagEventId
 		if (!targetId) return
 		const { channelIdForDag, sender, charId } = await resolveMirrorContext(entry, username, groupId)
-		let newContent = await buildFinalMessageContent(username, groupId, entry, entryContentToMirrorText(entry))
+		let newContent = await buildFinalMessageContent(username, groupId, entry, entry.content)
 		const { buildCanonicalMessageContent } = await import('../channel/messageCommit.mjs')
 		newContent = await buildCanonicalMessageContent(
 			username,

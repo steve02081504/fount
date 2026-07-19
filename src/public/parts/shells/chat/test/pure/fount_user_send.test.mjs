@@ -48,4 +48,8 @@ Deno.test('normalizeUserSendPayload: chatLogEntry fields', () => {
 Deno.test('normalizeUserSendPayload: rejects garbage', () => {
 	assertThrows(() => normalizeUserSendPayload(null), Error, 'expects string or chatLogEntry')
 	assertThrows(() => normalizeUserSendPayload(42), Error, 'expects string or chatLogEntry')
+	assertThrows(() => normalizeUserSendPayload({
+		content: 'x',
+		files: [{ name: 'a', buffer: 'not-array-buffer' }],
+	}), Error, 'file.buffer must be ArrayBuffer')
 })

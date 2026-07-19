@@ -126,44 +126,34 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 		})
 		previewContainer.appendChild(previewImg)
 
-		// alt 文本输入
 		const altInput = document.createElement('input')
 		altInput.type = 'text'
 		altInput.className = 'input input-bordered input-xs w-full mt-1 attachment-alt-input'
-		altInput.placeholder = String(
-			await import('/scripts/i18n/index.mjs').then(m => {
-				const v = m.geti18n('chat.hub.altImagePlaceholder')
-				return typeof v === 'string' ? v : v?.title || ''
-			}).catch(() => ''),
-		) || 'Alt text…'
+		altInput.dataset.i18n = 'chat.hub.altImagePlaceholder'
 		altInput.value = file.description || ''
 		altInput.addEventListener('input', () => { file.description = altInput.value })
 		attachmentElement.appendChild(altInput)
 
-		// 编辑按钮
-		const editBtn = document.createElement('button')
-		editBtn.type = 'button'
-		editBtn.className = 'btn btn-ghost btn-xs attachment-edit-button mt-1'
-		editBtn.dataset.i18n = 'chat.hub.editImage'
-		editBtn.textContent = '✎'
-		editBtn.addEventListener('click', async () => {
+		const editButton = document.createElement('button')
+		editButton.type = 'button'
+		editButton.className = 'btn btn-ghost btn-xs attachment-edit-button mt-1'
+		editButton.dataset.i18n = 'chat.hub.editImage'
+		editButton.textContent = '✎'
+		editButton.addEventListener('click', async () => {
 			try {
 				const { openImageEditor } = await import('/scripts/imageEditor/index.mjs')
 				const blob = base64ToBlob(file.buffer, file.mime_type)
 				const edited = await openImageEditor(new File([blob], file.name, { type: file.mime_type }))
 				if (!edited) return
-				const buf = await edited.arrayBuffer()
-				file.buffer = arrayBufferToBase64(buf)
+				file.buffer = arrayBufferToBase64(await edited.arrayBuffer())
 				file.name = edited.name
 				file.mime_type = edited.type || file.mime_type
-				// 刷新预览图
-				const newSrc = `data:${file.mime_type};base64,${file.buffer}`
 				const img = previewContainer.querySelector('img')
-				if (img) img.src = newSrc
+				if (img) img.src = `data:${file.mime_type};base64,${file.buffer}`
 			}
 			catch (err) { console.error('image edit failed:', err) }
 		})
-		attachmentElement.appendChild(editBtn)
+		attachmentElement.appendChild(editButton)
 	}
 	else if (file.mime_type.startsWith('video/')) {
 		const videoSrc = `data:${file.mime_type};base64,${file.buffer}`
@@ -208,18 +198,20 @@ export async function renderAttachmentPreview(file, index, selectedFiles) {
 }
 
 /**
- * 下载文件。
- * @param {object} file - 文件。
+ * 下载附件（EVFS ref / base64 字符串 / 原始 buffer）。
+ * @param {object} file 文件描述
  */
 export function downloadFile(file) {
 	const link = document.createElement('a')
 	if (file.url) link.href = file.url
 	else if (typeof file.buffer === 'string') {
 		const parsed = parseEvfsRef(file.buffer)
-		if (parsed) link.href = entityFileUrl(parsed.entityHash, parsed.logicalPath)
+		link.href = parsed
+			? entityFileUrl(parsed.entityHash, parsed.logicalPath)
+			: `data:${file.mime_type};base64,${file.buffer}`
 	}
 	else
-		link.href = `data:${file.mime_type};base64,${file.buffer}`
+		link.href = `data:${file.mime_type};base64,${arrayBufferToBase64(file.buffer)}`
 
 	link.download = file.name
 	link.click()

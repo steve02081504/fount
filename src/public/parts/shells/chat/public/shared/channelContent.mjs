@@ -144,12 +144,3 @@ export function channelMessageEditText(content) {
 	if (content?.type !== 'text') return ''
 	return String(content.content_for_edit ?? content.content)
 }
-
-/**
- * @param {object} content 消息 content
- * @returns {string} 展示/搜索用正文
- */
-export function channelMessageText(content) {
-	if (typeof content === 'string') return content
-	return channelMessageShowText(content)
-}

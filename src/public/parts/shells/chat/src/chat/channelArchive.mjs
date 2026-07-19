@@ -230,9 +230,9 @@ export async function exportChannelArchive(username, groupId, channelId) {
 function buildImportContent(msg, source, signer = {}) {
 	const displayName = String(msg.display?.name || '').trim() || '?'
 	const displayAvatar = msg.display?.avatar ? String(msg.display.avatar).trim() : null
-	const base = msg.content && typeof msg.content === 'object' && msg.content.type
+	const base = msg.content?.type
 		? channelMessageContentObject(msg.content)
-		: textChannelContent(typeof msg.content === 'string' ? msg.content : '')
+		: textChannelContent(msg.content)
 
 	const {
 		fileIds: _dropIds,

@@ -7,7 +7,7 @@
  * 【数据结构】见函数入参与返回值 JSDoc。
  * 【关联】../../src/lib/channelContent、../../src/lib/emojiSvg、../core/domUtils、messageActionsUi、render/text
  */
-import { channelMessageText } from '../../shared/channelContent.mjs'
+import { channelMessageShowText } from '../../shared/channelContent.mjs'
 import {
 	hubActionBookmarkIcon,
 	hubActionCopyHtmlIcon,
@@ -291,7 +291,7 @@ export async function renderMessageActionsHtml(message, options) {
 
 	const canEdit = dagReady && (ownChar || isManagedByViewer(message, options)
 		|| (!message.isRemote && canDelete && !message.charId))
-		&& !!channelMessageText(message.content)
+		&& !!channelMessageShowText(message.content)
 	if (canEdit)
 		hoverInlineParts.push(actionButton({
 			action: 'edit',
@@ -301,7 +301,7 @@ export async function renderMessageActionsHtml(message, options) {
 		}))
 
 	// 翻译按钮（仅有文本内容时显示；不依赖 DAG id）
-	if (channelMessageText(message.content))
+	if (channelMessageShowText(message.content))
 		hoverInlineParts.push(actionButton({
 			action: 'translate',
 			attrs: `data-event-id="${escapedEventId}"`,

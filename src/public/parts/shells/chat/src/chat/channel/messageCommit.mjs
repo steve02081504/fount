@@ -23,7 +23,7 @@ import { exportSessionSnapshot } from '../session/sessionSnapshot.mjs'
  * @returns {object} 轻量 hook 用条目
  */
 function entryForWorldHook(content) {
-	const text = channelMessageAgentText(content) || String(content?.content || '')
+	const text = channelMessageAgentText(content)
 	return {
 		id: '',
 		name: content.displayName || '',
@@ -44,9 +44,7 @@ function entryForWorldHook(content) {
  * @returns {object} 合并正文后的 content
  */
 function applyEntryRewriteToContent(content, entry) {
-	const text = typeof entry.content === 'string'
-		? entry.content
-		: channelMessageAgentText(entry.content) || ''
+	const text = entry.content
 	const base = channelMessageContentObject(content)
 	if (base.type !== 'text' && !text) return base
 	const extra = { ...base }

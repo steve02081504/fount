@@ -329,16 +329,13 @@ export async function triggerChannelReply(groupId, channelId, charname) {
  * @param {string} groupId 群 ID
  * @param {string} channelId 频道 ID
  * @param {string} eventId 消息事件 ID
- * @param {string|object} content 富内容对象（与 POST 对称）
+ * @param {string} content 新正文
  * @returns {Promise<void>} 无
  */
 export async function editChannelMessage(groupId, channelId, eventId, content) {
-	const bodyContent = channelMessageContentObject(
-		typeof content === 'string' ? textChannelContent(content) : content,
-	)
 	await groupFetch(groupPath(groupId, 'channels', channelId, 'messages', eventId), {
 		method: 'PUT',
-		json: { content: bodyContent },
+		json: { content: channelMessageContentObject(textChannelContent(content)) },
 	})
 }
 

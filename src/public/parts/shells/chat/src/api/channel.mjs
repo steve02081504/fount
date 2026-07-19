@@ -38,14 +38,14 @@ export function createChannel(apiContext, groupId, channelId, projection = {}) {
 		name: projection.name || channelId,
 		kind: projection.kind || 'text',
 		/**
-		 * @param {string | { text?: string, content?: string, type?: string, files?: Array<{ name?: string, mime_type?: string, buffer: Buffer | string }> }} reply 消息正文或带附件载荷
+		 * @param {string | { text?: string, content?: string, type?: string, files?: Array<{ name?: string, mime_type?: string, buffer: Buffer | Uint8Array | ArrayBuffer }> }} reply 消息正文或带附件载荷
 		 * @returns {Promise<object>} Message
 		 */
 		async send(reply) {
 			const charId = apiContext.charname || null
 			const origin = charId ? 'char' : 'human'
 			/**
-			 * @param {Array<{ buffer: Buffer | string }> | undefined} files 附件
+			 * @param {Array<{ buffer: Buffer | Uint8Array | ArrayBuffer }> | undefined} files 附件
 			 * @returns {Array<{ buffer: Buffer }> | undefined} 规范化缓冲
 			 */
 			const mapFiles = files => files?.map(file => ({

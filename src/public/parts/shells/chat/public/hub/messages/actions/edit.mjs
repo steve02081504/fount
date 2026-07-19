@@ -24,13 +24,11 @@ export async function handleEdit(button, actions) {
 	if (!eventId || !groupId || !channelId) return false
 	const messageRow = button.closest('.message')
 	if (messageRow?.querySelector('.message-edit-area')) return true
-	const contextMessage = findContextMessage(messageRow, actions) || {}
-	const originalText = String(
-		contextMessage.content_for_edit
+	const contextMessage = findContextMessage(messageRow, actions)
+	if (!contextMessage) throw new Error('message not found for edit')
+	const originalText = contextMessage.content_for_edit
 		?? getMessageEditText(contextMessage)
-		?? messageRow?.querySelector('.message-content')?.textContent
-		?? '',
-	)
+		?? ''
 	const initialFiles = Array.isArray(contextMessage.files)
 		? contextMessage.files
 		: Array.isArray(contextMessage.content?.files)

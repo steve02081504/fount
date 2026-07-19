@@ -3083,7 +3083,9 @@
 			"translateLabel": "译文",
 			"translateFailed": "翻译失败",
 			"altImageLabel": "图片说明（alt）",
-			"altImagePlaceholder": "为图片添加描述…",
+			"altImagePlaceholder": {
+				"placeholder": "为图片添加描述…"
+			},
 			"editImage": "编辑图片",
 			"draftRestored": "已恢复草稿",
 			"queuedOffline": "等待发送（离线）",

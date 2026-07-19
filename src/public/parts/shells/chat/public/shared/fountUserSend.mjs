@@ -21,14 +21,15 @@ function arrayBufferToBase64(buffer) {
  * @returns {object[]} 上传用附件列表（buffer 已是 base64）
  */
 function normalizeSendFiles(files) {
-	if (!Array.isArray(files) || !files.length) return []
-	return files.map(file => {
-		const row = /** @type {Record<string, unknown>} */ file || {}
+	if (!files?.length) return []
+	return files.map(({ name, mime_type, buffer, description }) => {
+		if (!(buffer instanceof ArrayBuffer || ArrayBuffer.isView(buffer)))
+			throw new Error('file.buffer must be ArrayBuffer')
 		return {
-			name: String(row.name || 'file'),
-			mime_type: String(row.mime_type || 'application/octet-stream'),
-			buffer: arrayBufferToBase64(/** @type {ArrayBuffer | ArrayBufferView} */ row.buffer),
-			description: String(row.description || ''),
+			name: String(name || 'file'),
+			mime_type: String(mime_type || 'application/octet-stream'),
+			buffer: arrayBufferToBase64(buffer),
+			description: String(description || ''),
 		}
 	})
 }
@@ -54,17 +55,15 @@ export function normalizeUserSendPayload(input, defaults = {}) {
 	if (!input || typeof input !== 'object')
 		throw new Error('fount.user.send expects string or chatLogEntry')
 
-	const entry = /** @type {Record<string, unknown>} */ input
-	/** @type {Record<string, unknown>} */
 	const content = {
 		type: 'text',
-		content: String(entry.content ?? ''),
-		locale: entry.locale != null ? String(entry.locale) : fallbackLocale,
+		content: String(input.content ?? ''),
+		locale: input.locale != null ? String(input.locale) : fallbackLocale,
 	}
-	if (entry.content_for_show != null) content.content_for_show = String(entry.content_for_show)
-	if (entry.content_for_edit != null) content.content_for_edit = String(entry.content_for_edit)
-	if (entry.content_warning != null) content.content_warning = String(entry.content_warning)
-	if (entry.sensitive_media) content.sensitive_media = true
+	if (input.content_for_show != null) content.content_for_show = String(input.content_for_show)
+	if (input.content_for_edit != null) content.content_for_edit = String(input.content_for_edit)
+	if (input.content_warning != null) content.content_warning = String(input.content_warning)
+	if (input.sensitive_media) content.sensitive_media = true
 
-	return { content, files: normalizeSendFiles(entry.files) }
+	return { content, files: normalizeSendFiles(input.files) }
 }
