@@ -47,8 +47,8 @@ test.describe('Social navigation', () => {
 		await feedPromise
 		await expect(page.locator('#videosView')).toBeVisible()
 		await expect(page.locator('#composer')).toBeHidden()
-		await expect(page.locator('#videosView .video-empty-state')).toBeVisible()
-		await expect(page.locator('#videosView .video-empty-title')).toHaveText('暂无短视频')
+		await expect(page.locator('#videosView .empty-state--video')).toBeVisible()
+		await expect(page.locator('#videosView .empty-state-title')).toHaveText('暂无短视频')
 		await page.locator('#videosView [data-video-compose]').click()
 		await expect(page.locator('#feedView')).toBeVisible()
 		await expect(page.locator('#composer')).toBeVisible()

@@ -24,7 +24,7 @@ let emojiContentHash = null
 
 console.log('\n=== Setup: B follows A (TrustGraph CAS fanout for non-member emoji) ===')
 await testCase('B follows A operator entity', async () => {
-	const viewerA = (await ShellApi(FedA, 'social', 'GET', '/viewer')).json.viewerEntityHash
+	const viewerA = (await ShellApi(FedA, 'chat', 'GET', '/viewer')).json.viewerEntityHash
 	if (!viewerA) throw new Error('no viewerEntityHash on A')
 	const r = await ShellApi(FedB, 'social', 'POST', '/relationships/follow', { entityHash: viewerA, follow: true })
 	return r.status === 200
