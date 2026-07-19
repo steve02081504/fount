@@ -135,6 +135,40 @@ Deno.test('secure render keeps Mermaid theme CSS (converter-owned)', async () =>
 	assertMatch(html, /flowchart|mermaid-/i)
 })
 
+Deno.test('same Mermaid source twice gets distinct svg ids and non-empty graphs', async () => {
+	const md = '```mermaid\nflowchart TD\n  A-->B\n```'
+	const cache = { common: {}, specific: {} }
+	const processor = await GetMarkdownConvertor({
+		allowDangerousHtml: false,
+		isStandalone: true,
+	})
+	const html1 = String(await processor.process({ value: md, data: { cache } }))
+	const html2 = String(await processor.process({ value: md, data: { cache } }))
+	assertFalse(html1.includes('mermaid-error-fallback'))
+	assertFalse(html2.includes('mermaid-error-fallback'))
+
+	const id1 = html1.match(/<svg\b[^>]*\bid="(mermaid-[^"]+)"/i)?.[1]
+	const id2 = html2.match(/<svg\b[^>]*\bid="(mermaid-[^"]+)"/i)?.[1]
+	assertEquals(typeof id1, 'string')
+	assertEquals(typeof id2, 'string')
+	assertFalse(id1 === id2)
+
+	// 图节点文案应在；撞 id 时二次结果常只剩 style + 空壳
+	assertStringIncludes(html1, 'nodeLabel')
+	assertStringIncludes(html2, 'nodeLabel')
+	assertStringIncludes(html1, '>A<')
+	assertStringIncludes(html2, '>A<')
+
+	// 模拟 social：两份 HTML 同时挂进 DOM，id 不得冲突
+	const host = document.createElement('div')
+	host.innerHTML = html1 + html2
+	document.body.appendChild(host)
+	assertEquals(host.querySelectorAll(`svg[id="${id1}"]`).length, 1)
+	assertEquals(host.querySelectorAll(`svg[id="${id2}"]`).length, 1)
+	assertEquals(host.querySelectorAll('svg[id^="mermaid-"]').length, 2)
+	host.remove()
+})
+
 Deno.test('secure render ignores raw HTML script from input', async () => {
 	const html = await renderSecure('<script>alert(1)</script>\n\nok')
 	assertFalse(/<script[\s>]/i.test(html))

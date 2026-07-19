@@ -297,6 +297,41 @@ const MERMAID_SECURE_KEYS = [
 ]
 
 /**
+ * 分配文档内唯一的 Mermaid SVG id。
+ * mermaid.render(id) 会复用/拆掉已有同 id 节点；同图多处展示（feed+详情）必须每次新 id。
+ * @param {string} [seed=''] 内容种子（仅影响可读前缀，不保证唯一）
+ * @returns {string} 唯一 id
+ */
+function allocMermaidSvgId(seed = '') {
+	const prefix = `mermaid-${md5(seed || Math.random().toString()).slice(0, 16)}`
+	let id
+	do id = `${prefix}-${Math.random().toString(36).slice(2, 9)}`
+	while (document.getElementById(id))
+	return id
+}
+
+/**
+ * 从已渲染 Mermaid HTML 提取图级 id（svg[id] 或 style 里的 #id 作用域）。
+ * @param {string} html SVG/片段 HTML
+ * @returns {string | undefined} 图级 id
+ */
+function extractMermaidDiagramId(html) {
+	return html.match(/<svg\b[^>]*\bid="(mermaid-[^"]+)"/i)?.[1]
+		?? html.match(/#((?:mermaid-)[a-zA-Z0-9-]+)\s*[{.]/)?.[1]
+}
+
+/**
+ * 将缓存/已渲染 SVG 内的 mermaid id（含 marker / style 引用）改写成新的唯一 id。
+ * @param {string} html SVG HTML
+ * @returns {string} 改写后的 HTML
+ */
+function uniquifyMermaidSvgHtml(html) {
+	const oldId = extractMermaidDiagramId(html)
+	if (!oldId) return html
+	return html.replaceAll(oldId, allocMermaidSvgId(oldId))
+}
+
+/**
  * 渲染 Mermaid 图表为 SVG。
  * @param {object} [options] 选项
  * @param {'strict' | 'loose' | 'antiscript' | 'sandbox'} [options.securityLevel='loose'] 信任级别
@@ -341,11 +376,9 @@ function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 			if (!mermaidCode.trim()) continue
 
 			try {
-				const id = `mermaid-${md5(mermaidCode)}`
+				const id = allocMermaidSvgId(mermaidCode)
 				const renderResult = await mermaid.render(id, mermaidCode, container)
-				const svgString = renderResult.svg
-
-				const svgHast = fromHtml(svgString, { fragment: true }).children
+				const svgHast = fromHtml(renderResult.svg, { fragment: true }).children
 
 				parent.children.splice(index, 1, ...svgHast)
 			} catch (error) {
@@ -1024,8 +1057,9 @@ function rehypeCacheRead() {
 				const cacheKey = isMermaid ? `mermaid-${hash}` : `code-${hash}`
 
 				if (cacheStore && cacheStore[cacheKey]) {
-					// HIT: 使用缓存替换当前节点
-					const cachedHast = fromHtml(cacheStore[cacheKey], { fragment: true }).children
+					// HIT: Mermaid SVG 含文档级 id（style/marker 引用），多实例必须改写后再插入
+					const html = isMermaid ? uniquifyMermaidSvgHtml(cacheStore[cacheKey]) : cacheStore[cacheKey]
+					const cachedHast = fromHtml(html, { fragment: true }).children
 					parent.children.splice(index, 1, ...cachedHast)
 					// 跳过刚插入的节点，避免重复访问
 					return index + cachedHast.length

@@ -9,6 +9,10 @@ Day-to-day API: [AGENTS.md](AGENTS.md) (`markdown.mjs` / `getConvertor` / `rende
 
 Both executor maps live in `convertor.mjs`. Do not wrap another shell-specific convertor on top.
 
+## Mermaid IDs
+
+`mermaid.render(id)` reuses/destroys any existing `#id` in the document. Never use a content-hash-only id: feed + post detail (or cache hits) will collide and leave an empty SVG shell. Always `allocMermaidSvgId` on render, and `uniquifyMermaidSvgHtml` on cache hit before insert. If `render` returns a fragment without a root `<svg>` (seen under happy-dom), wrap with `ensureMermaidSvgRoot`.
+
 ## Code block UI
 
 Copy / download / execute must be a rehype plugin **after** `rehype-pretty-code`, touching only `figure[data-rehype-pretty-code-figure] > pre`.
