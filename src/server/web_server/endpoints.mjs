@@ -11,6 +11,7 @@ import { login, register, logout, authenticate, getUserByReq, getUserDictionary,
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
+import { handleNoCors } from '../no_cors.mjs'
 import {
 	getLoadedPartList,
 	getPartList,
@@ -133,6 +134,9 @@ export function registerEndpoints(router) {
 			hosturl_in_local_ip,
 		})
 	})
+
+	/** 已认证用户通用 no-CORS 中转：双向流式；见 src/server/no_cors.mjs */
+	router.all('/api/no-cors', authenticate, handleNoCors)
 
 	router.post('/api/pow/challenge', async (req, res) => {
 		const { pow } = await import('../../scripts/pow.mjs')

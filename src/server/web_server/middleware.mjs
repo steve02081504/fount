@@ -6,6 +6,7 @@ import fileUpload from 'npm:express-fileupload'
 import { console } from '../../scripts/i18n.mjs'
 import { auth_request } from '../auth.mjs'
 import { info } from '../info.mjs'
+import { isNoCorsPath } from '../no_cors.mjs'
 import { webRequestHappened } from '../server.mjs'
 
 /**
@@ -18,6 +19,19 @@ export function diff_if_auth(if_auth, if_not_auth) {
 	return async (req, res, next) => {
 		if (await auth_request(req, res)) return if_auth(req, res, next)
 		return if_not_auth(req, res, next)
+	}
+}
+
+/**
+ * 对指定路径跳过中间件（保持原始请求流）。
+ * @param {(path: string) => boolean} skip 是否跳过
+ * @param {import('npm:express').RequestHandler} mw 实际中间件
+ * @returns {import('npm:express').RequestHandler} 包装后的中间件
+ */
+function skipWhen(skip, mw) {
+	return (req, res, next) => {
+		if (skip(req.path)) return next()
+		return mw(req, res, next)
 	}
 }
 
@@ -38,25 +52,25 @@ export function registerMiddleware(router) {
 		return next()
 	})
 
-	router.use(diff_if_auth(
+	router.use(skipWhen(isNoCorsPath, diff_if_auth(
 		express.json({ limit: Infinity }),
 		express.json({ limit: 5 * 1024 * 1024 })
-	))
+	)))
 
 	router.use(diff_if_auth(
 		cors(),
 		(req, res, next) => next()
 	))
 
-	router.use(diff_if_auth(
+	router.use(skipWhen(isNoCorsPath, diff_if_auth(
 		express.urlencoded({ limit: Infinity, extended: true }),
 		express.urlencoded({ limit: 5 * 1024 * 1024, extended: true })
-	))
+	)))
 
-	router.use(diff_if_auth(
+	router.use(skipWhen(isNoCorsPath, diff_if_auth(
 		fileUpload({ limits: { fileSize: Infinity } }),
 		fileUpload({ limits: { fileSize: 5 * 1024 * 1024 } })
-	))
+	)))
 
 	router.use(cookieParser())
 }
