@@ -221,22 +221,16 @@ function applyBranchSegments(branches, segments) {
 }
 
 /**
- * 将 fount.json 的内容合并到部件分支对象中。
+ * 将已解析的 fount.json 内容合并到部件分支对象中。
  * @param {object} branches - 当前的分支对象。
- * @param {string} filePath - fount.json 路径。
+ * @param {object} info - 已解析的 fount.json 对象。
  */
-function mergeFountJsonIntoBranches(branches, filePath) {
-	try {
-		const info = loadJsonFile(filePath)
-		const type = info.type?.trim?.() || ''
-		const dirname = info.dirname?.trim?.() || ''
-		if (!dirname) return
-		const segments = [...type.split('/').filter(Boolean), dirname]
-		applyBranchSegments(branches, segments)
-	}
-	catch (error) {
-		console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
-	}
+function mergeFountJsonIntoBranches(branches, info) {
+	const type = info.type?.trim?.() || ''
+	const dirname = info.dirname?.trim?.() || ''
+	if (!dirname) return
+	const segments = [...type.split('/').filter(Boolean), dirname]
+	applyBranchSegments(branches, segments)
 }
 
 /**
@@ -268,14 +262,14 @@ function normalizeRegistryEntry(entry, partpath) {
 }
 
 /**
- * 将 fount.json 的 registries 字段合并到聚合对象。
+ * 将已解析的 fount.json 的 registries 字段合并到聚合对象。
  * @param {Record<string, RegistryEntryRaw[]>} registries - 聚合对象。
- * @param {string} filePath - fount.json 路径。
+ * @param {object} info - 已解析的 fount.json 对象。
+ * @param {string} filePath - fount.json 路径（用于推导 partpath）。
  * @param {string} rootPath - 扫描根目录。
  */
-function mergeFountJsonIntoRegistries(registries, filePath, rootPath) {
+function mergeFountJsonIntoRegistries(registries, info, filePath, rootPath) {
 	try {
-		const info = loadJsonFile(filePath)
 		const reg = info.registries
 		if (!reg || typeof reg !== 'object') return
 		const partpath = partpathFromFountJsonFile(filePath, rootPath)
@@ -307,8 +301,16 @@ function scanPartTrees(username) {
 
 	for (const root of roots)
 		for (const filePath of walkFountJsonFiles(root)) {
-			mergeFountJsonIntoBranches(branches, filePath)
-			mergeFountJsonIntoRegistries(registries, filePath, root)
+			let info
+			try {
+				info = loadJsonFile(filePath)
+			}
+			catch (error) {
+				console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
+				continue
+			}
+			mergeFountJsonIntoBranches(branches, info)
+			mergeFountJsonIntoRegistries(registries, info, filePath, root)
 		}
 
 	return { branches, registries }
