@@ -28,6 +28,7 @@ import {
 } from '../parts_loader.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
+import { getRegistry } from '../registries.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -279,6 +280,14 @@ export function registerEndpoints(router) {
 	router.get('/api/whoami', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		res.status(200).json({ username })
+	})
+
+	router.get('/api/registries/:name', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		const name = String(req.params.name ?? '').trim()
+		if (!name) return res.status(400).json({ error: 'registry name required' })
+		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
 	})
 
 	router.post('/api/authenticate', authenticate, (req, res) => {
