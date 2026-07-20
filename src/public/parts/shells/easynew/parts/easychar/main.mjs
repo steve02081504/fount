@@ -4,7 +4,7 @@ import fs from 'npm:fs-extra'
 import sanitizeFilename from 'npm:sanitize-filename'
 
 import { saveJsonFile } from '../../../../../../scripts/json_loader.mjs'
-import { getUserDictionary } from '../../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../../server/auth/index.mjs'
 
 /**
  * 获取一个可用的部件路径。

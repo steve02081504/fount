@@ -7,7 +7,7 @@ import { on_shutdown } from 'npm:on-shutdown'
 
 import { ms } from '../../../../../scripts/ms.mjs'
 import { nicerWriteFileSync } from '../../../../../scripts/nicerWriteFile.mjs'
-import { getAllUserNames, getUserDictionary } from '../../../../../server/auth.mjs'
+import { getAllUserNames, getUserDictionary } from '../../../../../server/auth/index.mjs'
 /**
  * 获取buffer的hash值。
  * @param {Buffer} buffer - 输入的buffer。

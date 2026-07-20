@@ -9,7 +9,8 @@ import {
 } from 'npm:@simplewebauthn/server'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { ms, msstr } from '../scripts/ms.mjs'
+import { ms, msstr } from '../../scripts/ms.mjs'
+import { save_config } from '../server.mjs'
 
 import {
 	authMutationFail,
@@ -18,8 +19,7 @@ import {
 	getAllUserNames,
 	getUserByUsername,
 	verifyPassword,
-} from './auth.mjs'
-import { save_config } from './server.mjs'
+} from './index.mjs'
 
 const CHALLENGE_TTL_MS = ms('5m')
 
@@ -213,7 +213,7 @@ export async function webauthnLoginBegin(req) {
  * @param {string} authSessionToken - begin 返回的会话令牌。
  * @param {string} deviceId - 客户端设备 ID。
  * @param {import('npm:express').Request} req - HTTP 请求。
- * @returns {Promise<object>} 成功时与 {@link ./auth.mjs} `completeSuccessfulLogin` 同类字段；失败时含 `status`、`i18nKey`（及可选 `i18nParams`）。
+ * @returns {Promise<object>} 成功时与 {@link ./auth/index.mjs} `completeSuccessfulLogin` 同类字段；失败时含 `status`、`i18nKey`（及可选 `i18nParams`）。
  */
 export async function webauthnLoginComplete(credentialResponse, authSessionToken, deviceId, req) {
 	const pending = takeWebAuthnChallengeEntry(`authentication_discoverable:${authSessionToken || ''}`)

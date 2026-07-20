@@ -1,4 +1,4 @@
-import { getUserByUsername } from '../server/auth.mjs'
+import { getUserByUsername } from '../server/auth/index.mjs'
 
 /** 无用户偏好时的最终兜底（产品默认英文）。 */
 export const FALLBACK_LOCALE = 'en-UK'

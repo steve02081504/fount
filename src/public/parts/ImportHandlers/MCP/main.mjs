@@ -5,7 +5,7 @@ import url from 'node:url'
 import { copy } from 'npm:fs-extra'
 
 import { saveJsonFile } from '../../../../scripts/json_loader.mjs'
-import { getUserDictionary } from '../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../server/auth/index.mjs'
 import { isPartLoaded, reloadPart } from '../../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default

@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 
 import { getPartData, setPartData, getPartDisplayContent } from './manager.mjs'
 
@@ -8,7 +8,7 @@ import { getPartData, setPartData, getPartDisplayContent } from './manager.mjs'
  */
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:config/getdata', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		const data = await getPartData(username, partpath)
@@ -16,7 +16,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:config/setdata', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.body.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		await setPartData(username, partpath, req.body.data)
@@ -24,7 +24,7 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:config/getPartDisplay', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		const content = await getPartDisplayContent(username, partpath)

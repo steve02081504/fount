@@ -8,7 +8,7 @@
  */
 
 import { getPartInfo } from '../../../../../scripts/locale.mjs'
-import { getUserByUsername } from '../../../../../server/auth.mjs'
+import { getUserByUsername } from '../../../../../server/auth/index.mjs'
 import { loadAIsourceFromNameOrConfigData } from '../../../serviceSources/AI/main.mjs'
 
 const { info, product_info } = (await import('./locales.json', { with: { type: 'json' } })).default

@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { __dirname } from '../../../../../server/base.mjs'
 import { GetPartPath, getPartList } from '../../../../../server/parts_loader.mjs'
 import { loadTempData } from '../../../../../server/setting_loader.mjs'

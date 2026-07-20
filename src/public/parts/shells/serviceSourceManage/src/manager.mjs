@@ -4,7 +4,7 @@ import path from 'node:path'
 import sanitize from 'npm:sanitize-filename'
 
 import { saveJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'
 import { loadData, saveData } from '../../../../../server/setting_loader.mjs'
 

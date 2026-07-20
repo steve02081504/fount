@@ -7,7 +7,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { getUserDictionary } from '../auth.mjs'
+import { getUserDictionary } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 import { events } from '../events.mjs'
 

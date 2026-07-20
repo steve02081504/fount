@@ -3,7 +3,7 @@ import { setInterval, clearInterval } from 'node:timers'
 import { async_eval } from 'npm:@steve02081504/async-eval'
 import { getAllContextData, runWithContexts } from 'npm:als-registry'
 
-import { getUserByUsername, getAllUserNames } from './auth.mjs'
+import { getUserByUsername, getAllUserNames } from './auth/index.mjs'
 import { loadPart } from './parts_loader.mjs'
 import { save_config } from './server.mjs'
 

@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKeyByJti } from '../../../../server/auth.mjs'
+import { changeUserPassword, revokeUserDeviceByJti, getUserDictionary, getUserByUsername as getUserConfig, renameUser, deleteUserAccount, generateApiKey, revokeApiKeyByJti } from '../../../../server/auth/index.mjs'
 
 import { getEditorCommandConfig, openEditor, setEditorCommandConfig } from './editorCommand.mjs'
 

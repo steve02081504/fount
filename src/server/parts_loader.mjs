@@ -10,7 +10,7 @@ import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'
 import { doProfile } from '../scripts/profiler.mjs'
 
-import { getAllUsers, getUserByUsername, getUserDictionary } from './auth.mjs'
+import { getAllUsers, getUserByUsername, getUserDictionary } from './auth/index.mjs'
 import { __dirname } from './base.mjs'
 import { events } from './events.mjs'
 import { restartor, save_config, setDefaultStuff, skip_report } from './server.mjs'

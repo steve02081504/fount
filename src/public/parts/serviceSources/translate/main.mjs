@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { getUserDictionary } from '../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../server/auth/index.mjs'
 import { loadPartBase, unloadPartBase } from '../../../../server/parts_loader.mjs'
 
 const { info } = (await import('./locales.json', { with: { type: 'json' } })).default

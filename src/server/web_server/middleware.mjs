@@ -4,7 +4,7 @@ import express from 'npm:express'
 import fileUpload from 'npm:express-fileupload'
 
 import { console } from '../../scripts/i18n/index.mjs'
-import { auth_request } from '../auth.mjs'
+import { auth_request } from '../auth/index.mjs'
 import { info } from '../info.mjs'
 import { isNoCorsPath } from '../no_cors.mjs'
 import { webRequestHappened } from '../server.mjs'
