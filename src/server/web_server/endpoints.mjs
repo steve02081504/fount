@@ -7,7 +7,8 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
+import { login, loginWithApiKey, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
+import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -26,14 +27,14 @@ import {
 	getAllCachedPartDetails,
 	getPartBranches
 } from '../parts_loader.mjs'
-import { skip_report, config, save_config } from '../server.mjs'
-import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 import { getRegistry } from '../registries.mjs'
-import { addPushSubscription, getVapidPublicKey, removePushSubscription } from './notify/webPush.mjs'
+import { skip_report, config, save_config } from '../server.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
 import { evalServiceWebSocketHandler, logServiceWebSocketHandler } from './log_service/index.mjs'
+import { addPushSubscription, getVapidPublicKey, removePushSubscription } from './notify/webPush.mjs'
+import { registerP2pEndpoints } from './p2p_endpoints.mjs'
 import { betterSendFile } from './resources.mjs'
 import { watchFrontendChanges } from './watcher.mjs'
 
@@ -65,6 +66,8 @@ async function ensurePowTokenOr401(req, res) {
  * @returns {void}
  */
 export function registerEndpoints(router) {
+	registerP2pEndpoints(router)
+
 	router.ws('/ws/test/echo', (ws, req) => {
 		console.log('WebSocket test connection established.')
 		ws.on('message', message => {
@@ -140,6 +143,20 @@ export function registerEndpoints(router) {
 	/** 已认证用户通用 no-CORS 中转：双向流式；见 src/server/no_cors.mjs */
 	router.all('/api/no-cors', authenticate, handleNoCors)
 
+	router.get('/api/notify/vapid-public-key', cors(), async (_req, res) => {
+		res.status(200).json({ publicKey: await getVapidPublicKey() })
+	})
+	router.post('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await addPushSubscription(username, req.body)
+		res.status(204).end()
+	})
+	router.delete('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await removePushSubscription(username, req.body?.endpoint)
+		res.status(204).end()
+	})
+
 	router.post('/api/pow/challenge', async (req, res) => {
 		const { pow } = await import('../../scripts/pow.mjs')
 		res.json(await pow.createChallenge())
@@ -177,9 +194,11 @@ export function registerEndpoints(router) {
 	})
 
 	router.post('/api/login', rateLimit({ maxRequests: 5, windowMs: ms('1m') }), async (req, res) => {
-		if (!await ensurePowTokenOr401(req, res)) return
-		const { username, password, deviceid } = req.body
-		const result = await login(username, password, deviceid, req)
+		const { username, password, deviceid, apiKey } = req.body
+		if (!apiKey && !await ensurePowTokenOr401(req, res)) return
+		const result = apiKey
+			? await loginWithApiKey(apiKey, deviceid, req)
+			: await login(username, password, deviceid, req)
 		const { status, accessToken, refreshToken, ...json } = result
 		if (status === 200 && accessToken) {
 			const cookieOptions = getSecureCookieOptions(req)
@@ -283,28 +302,6 @@ export function registerEndpoints(router) {
 		res.status(200).json({ username })
 	})
 
-	router.get('/api/registries/:name', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
-		const name = String(req.params.name ?? '').trim()
-		if (!name) return res.status(400).json({ error: 'registry name required' })
-		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
-	})
-
-	router.get('/api/notify/vapid-public-key', cors(), async (_req, res) => {
-		res.status(200).json({ publicKey: await getVapidPublicKey() })
-	})
-	router.post('/api/notify/push-subscribe', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		await addPushSubscription(username, req.body)
-		res.status(204).end()
-	})
-	router.delete('/api/notify/push-subscribe', authenticate, async (req, res) => {
-		const { username } = getUserByReq(req)
-		await removePushSubscription(username, req.body?.endpoint)
-		res.status(204).end()
-	})
-
 	router.post('/api/authenticate', authenticate, (req, res) => {
 		res.status(200).json({ message: 'Authenticated' })
 	})
@@ -312,17 +309,21 @@ export function registerEndpoints(router) {
 	router.post('/api/runpart', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { partpath, args } = req.body
-		await processIPCCommand('runpart', { username, partpath, args })
-		res.status(200).json({ message: 'Shell command sent successfully.' })
+		const ipc = await processIPCCommand('runpart', { username, partpath, args })
+		const result = ipc?.data?.result
+		res.status(200).json(
+			result && typeof result === 'object' && !Array.isArray(result)
+				? { message: 'Shell command sent successfully.', ...result }
+				: { message: 'Shell command sent successfully.', result },
+		)
 	})
 
 	router.post('/api/loadpart', authenticate, async (req, res) => {
 		const { username } = getUserByReq(req)
 		const { partpath } = req.body
-		const normalized = partpath?.replace?.(/:/g, '/')
-		if (!normalized) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
-		await loadPart(username, normalized)
-		res.status(200).json({ message: `Part ${normalized} loaded successfully.` })
+		if (!partpath) return res.status(400).json({ i18nKey: 'fountConsole.ipc.partPathRequired' })
+		await loadPart(username, String(partpath).replace(/:/g, '/'))
+		res.status(200).json({ message: `Part ${partpath} loaded successfully.` })
 	})
 
 	// Generic path handlers
@@ -359,6 +360,14 @@ export function registerEndpoints(router) {
 		const { username } = getUserByReq(req)
 		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
 		res.status(200).json(getPartBranches(username, { nocache }))
+	})
+
+	router.get('/api/registries/:name', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const nocache = req.query.nocache === 'true' || req.query.nocache === '1'
+		const name = String(req.params.name ?? '').trim()
+		if (!name) return res.status(400).json({ error: 'registry name required' })
+		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
 	})
 
 	// Static files handler: /parts/partpath/filepath (partpath may contain colons)
