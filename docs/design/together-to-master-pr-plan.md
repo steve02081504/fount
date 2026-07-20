@@ -99,6 +99,6 @@ flowchart TB
 | 1 | D | **已合并**（gate 内联至 H/I） | https://github.com/steve02081504/fount/pull/237 |
 | 1 | F | **已合并**（含 floatingPanel/catbox 等后续修） | https://github.com/steve02081504/fount/pull/238 |
 | 2 | C2 | **已合并** | https://github.com/steve02081504/fount/pull/239 |
-| 2 | H | 已开 PR | Chat 重写（含 cabinet shared 最小依赖；解锁 G） |
+| 2 | H | 已开 PR | https://github.com/steve02081504/fount/pull/240 |
 | 3 | G | 阻于 H | P2P 胶水 |
 | 3+ | I–K | 阻于 H（及 G） | |
