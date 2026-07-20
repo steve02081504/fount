@@ -68,7 +68,7 @@ export function projectViewerEntriesToRows(rawLines, entries) {
 			...line,
 			content: nextContent,
 			extension: {
-				...line.extension || {},
+				...line.extension,
 				viewerRewritten: true,
 			},
 		})

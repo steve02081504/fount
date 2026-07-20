@@ -195,7 +195,7 @@ export async function commitChannelMessageEvent(args) {
 	}, { entityHash, ...ingress ? { ingress } : {} })
 
 	if (event?.id && entry)
-		entry.extension = { ...entry.extension || {}, dagEventId: event.id }
+		entry.extension = { ...entry.extension, dagEventId: event.id }
 
 	return event
 }

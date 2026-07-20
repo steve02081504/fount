@@ -229,7 +229,7 @@ export class chatLogEntry_t {
 	 * @returns {Promise<chatLogEntry_t>} 条目实例
 	 */
 	static async fromJSON(json, username) {
-		const extension = { ...json.extension || {} }
+		const extension = { ...json.extension }
 		extension.timeSlice = await timeSlice_t.fromJSON(extension.timeSlice || {}, username)
 		const instance = Object.assign(new chatLogEntry_t(), {
 			id: json.id,

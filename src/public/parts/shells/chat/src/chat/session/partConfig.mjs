@@ -205,7 +205,7 @@ async function insertCharGreeting(groupId, charname, username, chatMetadata, tim
 		if (!result) return null
 		const greetingEntry = await buildChatLogEntryFromCharReply(result, timeSlice, char, charname, username)
 		greetingEntry.extension = {
-			...greetingEntry.extension || {},
+			...greetingEntry.extension,
 			isGreeting: true,
 			greetingType: timeSlice.greeting_type || greetingEntry.extension?.timeSlice?.greeting_type,
 		}
@@ -241,7 +241,7 @@ export async function addchar(groupId, charname, replicaUsername, options = {}) 
 	const isCharFriendChat = !!groupState.groupMeta?.friendBinding?.charname
 	await appendAgentMemberJoin(username, groupId, charname, {
 		roles: isCharFriendChat ? ['admin'] : undefined,
-		...options.appendOptions || {},
+		...options.appendOptions,
 	})
 	const chatMetadata = await rebuildGroupRuntime(groupId, username)
 	const timeSlice = chatMetadata.LastTimeSlice.copy()

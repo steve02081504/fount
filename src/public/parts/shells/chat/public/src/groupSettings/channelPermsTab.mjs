@@ -154,8 +154,8 @@ export async function renderChannelPermissionsPanel(context) {
 		const nextState = channelPermStateButton.getAttribute('data-state')
 		if (!roleId || !perm || !nextState) return
 		const current = await fetchChannelPermissions(context, context.selectedChannelPermsId)
-		const allow = { ...current[roleId]?.allow || {} }
-		const deny = { ...current[roleId]?.deny || {} }
+		const allow = { ...current[roleId]?.allow }
+		const deny = { ...current[roleId]?.deny }
 		delete allow[perm]
 		delete deny[perm]
 		if (nextState === 'allow') allow[perm] = true
