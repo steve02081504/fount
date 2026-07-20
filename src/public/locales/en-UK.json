@@ -1,4 +1,10 @@
 {
+	"404": {
+		"title": "Page Not Found",
+		"description": "The path you sought has dissolved into mist. Was it a misstep, a forgotten turn? Allow us to guide you back to shore, or perhaps, pause for a game amidst the quiet void.",
+		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
+		"homepageButton": "Back to Homepage"
+	},
 	"lang": "en-UK",
 	"name": "English (UK)",
 	"fountConsole": {
@@ -234,6 +240,87 @@
 				"uninstallingWinget": "Uninstalling Winget...",
 				"removingBackgroundRunner": "Removing background programs...",
 				"removeBackgroundRunnerFailed": "Failed to remove background running program: ${message}"
+			}
+		},
+		"test": {
+			"help": "usage: fount test [--all] [--gen-report] [-j <n>] [--since <commit>] [<manifest-ids> [<suite-selectors>]]\n\nmanifest id comes from the top-level \"id\" field in each test/manifest.json.\nMultiple manifest ids are comma-separated (no spaces): shells/chat,shells/social\nWhen there is no exact match, expands as \"<name>/*\" (e.g. shells → shells/chat,shells/social);\nglobs (*, ?, **) are also supported, e.g. shells/*, **.\n\nsuite selectors match each suite's id or name, also comma-separated.\n\nWith uncommitted changes, only diff-triggered tests run; with a clean tree, use --since to compare a commit.\nWhen manifest ids are specified, failure records are enabled (data/test/failures/); without explicit suite selectors, failed suites are retried; explicit suite selectors run as named (no intersection with failure records).\n\n--gen-report  Write failure/noisy suite output to disk and generate data/test/report/report.md + report.json (refreshed after each suite).\n-j, --jobs    Global concurrency limit (defaults to CPU thread count).\n\nexamples:\n  fount test\n  fount test --all\n  fount test --all --gen-report\n  fount test p2p,shells/chat,shells/social --all --gen-report -j 16\n  fount test shells/chat\n  fount test shells\n  fount test shells/*\n  fount test shells/chat,shells/social\n  fount test shells/chat frontend\n  fount test shells/chat unit,fed_test\n  fount test p2p\n  fount test --since abc1234",
+			"passed": "PASSED: ${label}",
+			"passedWithNoise": "PASSED: ${label} (with noise)",
+			"failed": "FAILED: ${label}",
+			"passedLabel": "PASSED",
+			"failedLabel": "FAILED",
+			"noiseHits": "(noise: ${hits})",
+			"unknownManifestId": "unknown manifest id: ${ids}",
+			"available": "available: ${ids}",
+			"manifestMatched": "manifest matched: ${ids}",
+			"selectedSuites": "selected ${selected}/${total} test suites",
+			"noMatchingSuites": "no matching test suites.",
+			"reportPath": "report: ${path}",
+			"reportPathFinal": "\nreport: ${path}",
+			"runningSuite": "\n>>> running ${manifestId}/${name}",
+			"runningSuiteHeavy": "\n>>> running ${manifestId}/${name} (heavy)",
+			"failuresSaved": "saved failure list: ${path} (${count} suites)",
+			"failuresCleared": "manifest ${manifestId} all passed; failure list cleared.",
+			"failureRetry": "failure retry: ${manifests} (${count} suites)",
+			"hashStaleAppendDiff": "uncommitted hash changed, appending diff: +${count} suites",
+			"diffMode": "diff mode: ${fileCount} files — ${files}",
+			"noChangesHint": "no uncommitted changes and no --since: only retrying suites with failure records.",
+			"tip": "tip: fount test --all | fount test --since <commit> | fount test shells/chat",
+			"manifestNoDiffRunAll": "manifest ${manifestIds} has no diff triggers; running all its suites.",
+			"unknownSuite": "unknown suite: ${name}",
+			"federationCleanupPre": "federation cleanup pre: ${output}",
+			"federationCleanupPost": "federation cleanup post: ${output}",
+			"suiteHeader": "\n=== SUITE ${name} ===",
+			"liveUsage": "usage: --suite <name> | --list",
+			"serialUsage": "usage: serial.mjs <deno-test-path> [...]",
+			"silentPassedOne": "1 test file passed (no output).",
+			"silentPassedMany": "${count} test files passed (no output).",
+			"ciNoDiffFallback": "CI: no diff detected, running all suites (fallback)",
+			"noFrontendPhasesMatched": "no frontend phases matched FOUNT_TEST_ONLY",
+			"nodeWorker": {
+				"dataPathRequired": "node worker: --data-path required",
+				"portRequired": "node worker: --port required (launch via launch.mjs)",
+				"keyRequired": "node worker: --key required (launch via launch.mjs)",
+				"userRequired": "node worker: --user required",
+				"error": "node worker: ${error}"
+			},
+			"ws": {
+				"pass": "\nPASS: ${detail}",
+				"fail": "\nFAIL: ${detail}"
+			},
+			"report": {
+				"title": "fount test report",
+				"tableHeaderItem": "item",
+				"tableHeaderValue": "value",
+				"fieldRunId": "runId",
+				"fieldCommand": "command",
+				"fieldExit": "exit",
+				"fieldProgress": "progress",
+				"fieldSuites": "suites",
+				"fieldFailed": "failed",
+				"fieldNoisyPassed": "noisy (passed)",
+				"fieldDuration": "duration",
+				"commandDefault": "(default)",
+				"exitPassed": "PASSED",
+				"exitFailed": "FAILED",
+				"exitInProgress": "IN PROGRESS",
+				"progressFormat": "${completed}/${total} suites",
+				"suitesFormat": "${passed}/${completed} passed",
+				"artifacts": "Artifacts: `${path}`",
+				"sectionFailed": "Failed suites",
+				"sectionNoisyPassed": "Passed with noise",
+				"sectionSilentPassed": "Passed (silent)",
+				"sectionPending": "Pending",
+				"columnSuite": "suite",
+				"columnDuration": "duration",
+				"labelDuration": "duration",
+				"labelLog": "log",
+				"labelNoise": "noise",
+				"labelFailedFiles": "failed files",
+				"durationMs": "${ms}ms",
+				"durationSec": "${sec}s",
+				"durationMin": "${min}m",
+				"durationMinSec": "${min}m ${sec}s"
 			}
 		}
 	},
@@ -2611,12 +2698,6 @@
 		},
 		"copy_error": "Unable to copy text: ${error}",
 		"copy_fail_alert": "Copy failed!"
-	},
-	"404": {
-		"title": "Page Not Found",
-		"description": "The path you sought has dissolved into mist. Was it a misstep, a forgotten turn? Allow us to guide you back to shore, or perhaps, pause for a game amidst the quiet void.",
-		"pageNotFoundText": "Oops! It seems you've stumbled upon a page that doesn't exist.",
-		"homepageButton": "Back to Homepage"
 	},
 	"tips": {
 		"title": "Did you know?",

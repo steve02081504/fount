@@ -3,68 +3,26 @@ name: Verify Shells
 on:
   push:
     paths:
-      - 'src/public/parts/shells/**/*.mjs'
+      - 'src/public/parts/shells/**'
+      - 'deno.json'
+      - 'src/server/p2p_server/**'
+      - '.github/workflows/verify_shells.yaml'
+      - '.github/workflows/verify_shells.mjs'
+      - '.github/workflows/fount_ci.yaml'
     tags-ignore:
       - '*'
     branches:
       - '*'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   verify-shells:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-      - uses: denoland/setup-deno@v2
-        id: deno
-        with:
-          deno-version: latest
-          cache-hash: fount
-      - uses: actions/cache@v5
-        with:
-          path: ./node_modules
-          key: fount-node-modules
-      - name: Install dependencies
-        run: |
-          for i in $(seq 1 13); do
-            deno install --prod --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
-            echo "Attempt $i/13 failed, retrying..."
-          done
-      - name: test each shell
-        run: |
-          deno run --allow-scripts --allow-all -c "./deno.json" ./.github/workflows/verify_shells.mjs
-      - name: Delete Previous Cache # 删除之前的缓存确保缓存随着项目运行而更新
-        continue-on-error: true
-        shell: bash
-        run: |
-          gh extension install actions/gh-actions-cache || true
-          gh actions-cache delete "fount-node-modules" --confirm || true
-          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount" --confirm || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: clean before cache save
-        continue-on-error: true
-        shell: bash
-        run: |
-          ENTRYPOINTS=()
-          add_entry() { [ -f "$1" ] && ENTRYPOINTS+=("$1"); }
-          add_entry "./src/server/index.mjs"
-          add_entry "./.github/workflows/verify_shells.mjs"
-          [ ${#ENTRYPOINTS[@]} -eq 0 ] && exit 0
-          deno clean --except "${ENTRYPOINTS[@]}"
-      - name: Save node_modules Cache
-        continue-on-error: true
-        uses: actions/cache/save@v5
-        with:
-          path: ./node_modules
-          key: fount-node-modules
-      - name: get deno dir
-        shell: bash
-        run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
-      - name: Save deno Cache
-        continue-on-error: true
-        uses: actions/cache/save@v5
-        with:
-          path: ${{ env.DENO_DIR }}
-          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount
+    uses: ./.github/workflows/fount_ci.yaml
+    with:
+      run-step-name: Load all shells
+      run-command: deno run --allow-scripts --allow-all -c "./deno.json" ./.github/workflows/verify_shells.mjs
+      deno-clean-entrypoints: ./.github/workflows/verify_shells.mjs
