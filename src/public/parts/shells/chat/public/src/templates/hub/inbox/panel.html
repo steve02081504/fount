@@ -1,0 +1,23 @@
+<section class="inbox-panel" aria-label="${geti18n('chat.hub.inbox.title')}">
+	<div class="inbox-tabs" role="tablist" aria-label="${geti18n('chat.hub.inbox.filtersLabel')}">
+		<button type="button" id="inbox-tab-mention" class="inbox-tab inbox-tab-active" role="tab" aria-selected="true" aria-controls="inbox-list" data-kind="mention">
+			<img src="https://api.iconify.design/line-md/at.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabMention"></span>
+		</button>
+		<button type="button" id="inbox-tab-message" class="inbox-tab" role="tab" aria-selected="false" aria-controls="inbox-list" tabindex="-1" data-kind="message">
+			<img src="https://api.iconify.design/line-md/chat.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabMessage"></span>
+		</button>
+		<button type="button" id="inbox-tab-care" class="inbox-tab" role="tab" aria-selected="false" aria-controls="inbox-list" tabindex="-1" data-kind="care">
+			<img src="https://api.iconify.design/line-md/heart.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabCare"></span>
+		</button>
+		<button type="button" id="inbox-tab-vote-closed" class="inbox-tab" role="tab" aria-selected="false" aria-controls="inbox-list" tabindex="-1" data-kind="vote_closed">
+			<img src="https://api.iconify.design/line-md/confirm-circle.svg" width="17" height="17" alt="" aria-hidden="true" />
+			<span data-i18n="chat.hub.inbox.tabVoteClosed"></span>
+		</button>
+	</div>
+	<div class="inbox-scroll">
+		<div id="inbox-list" class="inbox-list" role="tabpanel" aria-labelledby="inbox-tab-mention" aria-live="polite"></div>
+	</div>
+</section>

@@ -1,0 +1,2 @@
+<option value="" data-i18n="chat.sidebar.noSelection"></option>
+${options.map(opt => `<option value="${escapeHtml(opt.value)}" ${opt.selected ? ' selected' : '' }>${escapeHtml(opt.label)}</option>`).join('')}

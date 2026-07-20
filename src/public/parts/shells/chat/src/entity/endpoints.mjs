@@ -1,0 +1,230 @@
+import { isEntityHash128 } from 'npm:@steve02081504/fount-p2p/core/entity_id'
+import {
+	loadPersonalBlockEntries,
+	loadPersonalHideEntries,
+} from 'npm:@steve02081504/fount-p2p/node/personal_block'
+
+import { authenticate, getUserByReq } from '../../../../../../server/auth/index.mjs'
+
+import { registerEntityFileEndpoints } from './filesEndpoints.mjs'
+import { canReadEntityStats, getReplicaFromReq, isWritableLocalEntityForUser } from './http.mjs'
+import {
+	listLocalAgentIdentities,
+	resolveOperatorEntityHashForUser,
+	setEntityOwner,
+} from './identity.mjs'
+import { revokeEntityActiveKey, rotateEntityActiveKey } from './keyAdmin.mjs'
+import { pollOwnedEntityProfileUpdates, updateEntityProfileAsActor } from './ownerProfileUpdate.mjs'
+import { localesFromRequest } from './presentation.mjs'
+import {
+	computeEffectiveStatus,
+	ensureLocalEntityProfile,
+	getProfile,
+	getStats,
+	recordHeartbeat,
+	updateStatus,
+} from './profile.mjs'
+import { resolveGroupMemberEntityHash } from './viewerResolve.mjs'
+
+const CHAT_PREFIX = '/api/parts/shells:chat'
+const ENTITY_HASH_SEGMENT = '[\\da-f]{128}'
+
+/**
+ * @param {string} tail 路径尾部
+ * @returns {RegExp} entity 路径正则
+ */
+function entityPathRegex(tail) {
+	return new RegExp(`^${CHAT_PREFIX}/entities/(${ENTITY_HASH_SEGMENT})${tail}`, 'i')
+}
+
+/**
+ * @param {import('npm:express').Router} router Express 路由
+ * @returns {void}
+ */
+export function registerEntityEndpoints(router) {
+	router.get(`${CHAT_PREFIX}/viewer`, authenticate, async (req, res) => {
+		const { replicaUsername, nodeHash } = await getReplicaFromReq(req)
+		const operatorEntityHash = await resolveOperatorEntityHashForUser(replicaUsername)
+		if (!operatorEntityHash)
+			return res.status(200).json({
+				nodeHash,
+				viewerEntityHash: null,
+				profile: null,
+				agents: [],
+				identityRequired: true,
+			})
+
+		const groupId = String(req.query?.groupId || '').trim() || undefined
+		const locales = localesFromRequest(req, replicaUsername)
+		let viewerEntityHash = operatorEntityHash
+		if (groupId)
+			try {
+				viewerEntityHash = await resolveGroupMemberEntityHash(replicaUsername, groupId) || operatorEntityHash
+			}
+			catch {
+				viewerEntityHash = operatorEntityHash
+			}
+
+		await ensureLocalEntityProfile(replicaUsername, viewerEntityHash)
+		const profile = await getProfile(viewerEntityHash, replicaUsername, { groupId, locales })
+		const agents = await listLocalAgentIdentities(replicaUsername)
+		res.status(200).json({ nodeHash, viewerEntityHash, profile, agents })
+	})
+
+	router.get(`${CHAT_PREFIX}/personal-lists`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		const operator = await resolveOperatorEntityHashForUser(username)
+		if (!operator)
+			return res.status(200).json({ entries: [] })
+		const [blockedEntries, hiddenEntries] = await Promise.all([
+			loadPersonalBlockEntries(operator),
+			loadPersonalHideEntries(operator),
+		])
+		const entries = [
+			...blockedEntries.map(entry => ({ ...entry, kind: 'block' })),
+			...hiddenEntries.map(entry => ({ ...entry, kind: 'hide' })),
+		]
+		res.status(200).json({ entries })
+	})
+
+	router.post(`${CHAT_PREFIX}/federation/rotate`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await rotateEntityActiveKey(username))
+	})
+
+	router.post(`${CHAT_PREFIX}/federation/revoke`, authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		res.status(200).json(await revokeEntityActiveKey(username, req.body || {}))
+	})
+
+	registerEntityFileEndpoints(router, authenticate, getUserByReq)
+
+	router.get(`${CHAT_PREFIX}/entities/search`, authenticate, async (req, res) => {
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		const { searchEntitiesNetwork } = await import('./entitySearch.mjs')
+		const result = await searchEntitiesNetwork(replicaUsername, String(req.query?.q || ''), {
+			viewerEntityHash: operatorEntityHash || undefined,
+			maxHits: Number(req.query?.limit) || 20,
+		})
+		res.status(200).json(result)
+	})
+
+	router.get(entityPathRegex('/stats$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!isEntityHash128(entityHash))
+			return res.status(400).json({ error: 'invalid entityHash' })
+		const groupId = String(req.query?.groupId || '').trim() || undefined
+		if (!await canReadEntityStats(replicaUsername, operatorEntityHash, entityHash, groupId))
+			return res.status(403).json({ error: 'Permission denied' })
+		res.status(200).json({ stats: await getStats(entityHash) })
+	})
+
+	router.post(entityPathRegex('/heartbeat$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
+			return res.status(403).json({ error: 'Permission denied' })
+		const { lastSeenAt } = await recordHeartbeat(replicaUsername, entityHash)
+		void pollOwnedEntityProfileUpdates(replicaUsername).catch(() => {})
+		const profile = await getProfile(entityHash, replicaUsername, { skipPresentation: true })
+		res.status(200).json({
+			lastSeenAt,
+			effectiveStatus: computeEffectiveStatus(profile, operatorEntityHash, { isSelf: true }),
+		})
+	})
+
+	router.post(entityPathRegex('/status$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!await isWritableLocalEntityForUser(replicaUsername, entityHash))
+			return res.status(403).json({ error: 'Permission denied' })
+		const updated = await updateStatus(replicaUsername, entityHash, req.body.status, req.body.customStatus)
+		res.status(200).json({
+			status: updated.status,
+			customStatus: updated.customStatus,
+			lastSeenAt: updated.lastSeenAt,
+			effectiveStatus: computeEffectiveStatus(updated, operatorEntityHash, { isSelf: true }),
+		})
+	})
+
+	router.get(entityPathRegex('$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		const groupId = String(req.query?.groupId || '').trim() || undefined
+		const locales = localesFromRequest(req, replicaUsername)
+		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales, fetchRemote: true })
+		let groupMemberEntityHash = null
+		if (groupId)
+			try {
+				groupMemberEntityHash = await resolveGroupMemberEntityHash(replicaUsername, groupId)
+			}
+			catch { /* 非成员或未物化 */ }
+
+		const isSelf = entityHash === operatorEntityHash
+			|| (groupMemberEntityHash && entityHash === groupMemberEntityHash)
+		profile.effectiveStatus = computeEffectiveStatus(profile, operatorEntityHash, { isSelf })
+		res.status(200).json({ profile })
+	})
+
+	router.put(entityPathRegex('$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
+		const groupId = String(req.body?.groupId || req.query?.groupId || '').trim() || undefined
+		const locales = localesFromRequest(req, replicaUsername)
+		try {
+			const result = await updateEntityProfileAsActor(
+				replicaUsername,
+				operatorEntityHash,
+				entityHash,
+				req.body || {},
+				{ groupId, locales },
+			)
+			if (result.queued)
+				return res.status(202).json(result)
+			return res.status(200).json(result)
+		}
+		catch (error) {
+			if (error?.status === 403 || /Permission denied|not declared owner/i.test(String(error?.message || '')))
+				return res.status(403).json({ error: error.message || 'Permission denied' })
+			throw error
+		}
+	})
+
+	router.post(entityPathRegex('/rebuild-from-part$'), authenticate, async (req, res) => {
+		const entityHash = req.params[0].toLowerCase()
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
+		if (!isWritableLocalEntityForUser(replicaUsername, entityHash))
+			return res.status(403).json({ error: 'entity not writable on this replica' })
+		const { resolveAgentCharPartNameForUser } = await import('./agentHost.mjs')
+		if (!resolveAgentCharPartNameForUser(replicaUsername, entityHash))
+			return res.status(400).json({ error: 'rebuild-from-part is only for local agents' })
+		const { syncAgentProfileFromCharPart } = await import('../profile/syncFromCharPart.mjs')
+		const stored = await syncAgentProfileFromCharPart(replicaUsername, entityHash, { force: true })
+		if (!stored)
+			return res.status(400).json({ error: 'rebuild failed' })
+		const locales = localesFromRequest(req, replicaUsername)
+		const groupId = String(req.query?.groupId || '').trim() || undefined
+		const profile = await getProfile(entityHash, replicaUsername, { groupId, locales })
+		res.status(200).json({ profile })
+	})
+
+	router.put(`${CHAT_PREFIX}/entities/owner`, authenticate, async (req, res) => {
+		const { replicaUsername, operatorEntityHash } = await getReplicaFromReq(req)
+		if (!operatorEntityHash)
+			return res.status(400).json({ error: 'operator identity not configured' })
+		const raw = req.body?.ownerEntityHash
+		const ownerEntityHash = raw == null || raw === '' ? null : String(raw).trim().toLowerCase()
+		if (ownerEntityHash && !isEntityHash128(ownerEntityHash))
+			return res.status(400).json({ error: 'invalid ownerEntityHash' })
+		const row = await setEntityOwner(replicaUsername, operatorEntityHash, ownerEntityHash)
+		res.status(200).json({
+			entityHash: operatorEntityHash,
+			ownerEntityHash: row.ownerEntityHash ?? null,
+		})
+	})
+}

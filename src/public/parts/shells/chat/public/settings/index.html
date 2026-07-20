@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="chat.group.settingsPage.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link href="./settings.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body class="bg-base-100 min-h-screen">
+	<div class="settings-page">
+		<header class="settings-header">
+			<a class="btn btn-ghost btn-sm settings-back" href="/parts/shells:chat/hub/">
+				<span aria-hidden="true">←</span>
+				<span data-i18n="chat.group.settingsPage.backToChat"></span>
+			</a>
+			<div>
+				<p class="settings-kicker" data-i18n="chat.group.settingsPage.kicker"></p>
+				<h1 class="text-3xl font-bold" data-i18n="chat.group.settingsPage.title"></h1>
+				<p class="settings-subtitle" data-i18n="chat.group.settingsPage.subtitle"></p>
+			</div>
+		</header>
+
+		<div class="settings-layout">
+			<nav class="settings-nav" role="tablist" aria-orientation="vertical" data-i18n-aria-label="chat.group.settingsPage.navigationLabel">
+				<button type="button" role="tab" class="settings-nav-item settings-nav-item-active" id="nav-general" data-section="general" aria-controls="panel-general" aria-selected="true" tabindex="0" data-i18n="chat.group.settingsPage.tabGeneral"></button>
+				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-members" data-section="members" aria-controls="panel-members" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabMembers"></button>
+				<button type="button" role="tab" class="settings-nav-item hidden" id="nav-emojis" data-section="emojis" aria-controls="panel-emojis" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabEmojis"></button>
+
+				<div class="settings-nav-group hidden" data-nav-group="advanced">
+					<p class="settings-nav-group-label" data-i18n="chat.group.settingsPage.advancedHubTitle"></p>
+					<button type="button" role="tab" class="settings-nav-item hidden" id="nav-permissions" data-section="permissions" aria-controls="panel-permissions" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabPermissions"></button>
+					<button type="button" role="tab" class="settings-nav-item hidden" id="nav-channel-perms" data-section="channel-perms" aria-controls="panel-channel-perms" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabChannelPermissions"></button>
+					<button type="button" role="tab" class="settings-nav-item hidden" id="nav-storage" data-section="storage" aria-controls="panel-storage" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabStorage"></button>
+					<button type="button" role="tab" class="settings-nav-item hidden" id="nav-audit" data-section="audit" aria-controls="panel-audit" aria-selected="false" tabindex="-1" data-i18n="chat.group.settingsPage.tabAudit"></button>
+				</div>
+			</nav>
+
+			<div class="settings-content">
+				<div id="panel-general" class="settings-panel" role="tabpanel" aria-labelledby="nav-general">
+					<div id="group-settings-container"></div>
+				</div>
+
+				<div id="panel-members" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-members" hidden>
+					<div class="card bg-base-200 settings-card">
+						<div class="card-body">
+							<h2 class="card-title mb-4" data-i18n="chat.group.settingsPage.membersTitle"></h2>
+							<div id="members-list" class="space-y-2"></div>
+						</div>
+					</div>
+				</div>
+
+				<div id="panel-emojis" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-emojis" hidden>
+					<div id="group-emojis-container"></div>
+				</div>
+
+				<div id="panel-permissions" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-permissions" hidden>
+					<div id="permission-settings-container"></div>
+				</div>
+
+				<div id="panel-channel-perms" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-channel-perms" hidden>
+					<div id="channel-perms-container"></div>
+				</div>
+
+				<div id="panel-storage" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-storage" hidden>
+					<div id="group-archive-container"></div>
+				</div>
+
+				<div id="panel-audit" class="settings-panel hidden" role="tabpanel" aria-labelledby="nav-audit" hidden>
+					<div class="card bg-base-200 settings-card">
+						<div class="card-body">
+							<div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+								<div>
+									<h2 class="card-title" data-i18n="chat.group.auditLog.title"></h2>
+									<p class="text-sm opacity-70 mt-1" data-i18n="chat.group.auditLog.hint"></p>
+								</div>
+								<div class="flex flex-wrap items-center gap-2">
+									<label class="sr-only" for="audit-log-type-filter" data-i18n="chat.group.auditLog.filterLabel"></label>
+									<select id="audit-log-type-filter" class="select select-bordered select-sm"></select>
+									<button type="button" id="audit-log-refresh" class="btn btn-outline btn-sm" data-i18n="chat.group.auditLog.refresh"></button>
+								</div>
+							</div>
+							<div id="audit-log-container" class="hidden">
+								<div class="grid grid-cols-[minmax(7rem,auto)_minmax(5rem,8rem)_minmax(6rem,9rem)_1fr] gap-2 px-2 py-2 text-xs font-semibold opacity-70 border-b border-base-300">
+									<span data-i18n="chat.group.auditLog.colTime"></span>
+									<span data-i18n="chat.group.auditLog.colType"></span>
+									<span data-i18n="chat.group.auditLog.colActor"></span>
+									<span data-i18n="chat.group.auditLog.colSummary"></span>
+								</div>
+								<div id="audit-log-scroll" class="overflow-y-auto max-h-[min(60vh,32rem)]"></div>
+							</div>
+							<p id="audit-log-empty" class="hidden text-sm opacity-60 py-6 text-center" data-i18n="chat.group.auditLog.empty"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

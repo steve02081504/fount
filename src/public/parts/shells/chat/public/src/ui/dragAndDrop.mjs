@@ -1,4 +1,11 @@
-import { handleFilesSelect, handlePaste } from '../fileHandling.mjs'
+/**
+ * 【文件】public/src/ui/dragAndDrop.mjs
+ * 【职责】为编写器区域添加拖拽与粘贴上传附件支持。
+ * 【原理】dragenter/drop 委托 handleFilesSelect；paste 委托 handlePaste。
+ * 【数据结构】selectedFiles 数组、attachmentPreviewContainer。
+ * 【关联】composerAttachments.mjs；Hub 输入区 DOM。
+ */
+import { handleFilesSelect, handlePaste } from '../composerAttachments.mjs'
 
 /**
  * 添加拖拽上传支持函数

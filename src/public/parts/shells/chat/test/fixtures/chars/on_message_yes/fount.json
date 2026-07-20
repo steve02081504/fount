@@ -1,0 +1,7 @@
+{
+	"name": "on_message_yes",
+	"description": "onMessage probe — returns configurable boolean",
+	"author": "fount",
+	"version": "1.0.0",
+	"tags": ["test"]
+}

@@ -1,0 +1,59 @@
+:root {
+	--bg-server: var(--color-base-300);
+	--bg-channel: var(--color-base-200);
+	--bg-main: var(--color-base-100);
+	--bg-input: var(--color-base-200);
+	--bg-member: var(--color-base-200);
+	--bg-secondary: var(--color-base-200);
+	--bg-tertiary: var(--color-neutral);
+
+	--text-muted: color-mix(in srgb, var(--color-base-content), transparent 50%);
+	--text-normal: color-mix(in srgb, var(--color-base-content), transparent 12%);
+	--text-bright: var(--color-base-content);
+
+	--accent: var(--color-primary);
+	--accent-hover: color-mix(in srgb, var(--color-primary), var(--color-neutral) 22%);
+	--accent-soft: color-mix(in srgb, var(--color-primary), transparent 80%);
+	--accent-soft-strong: color-mix(in srgb, var(--color-primary), transparent 65%);
+
+	--hover: color-mix(in srgb, var(--color-base-content), transparent 96%);
+	--active: color-mix(in srgb, var(--color-base-content), transparent 92%);
+	--border: var(--color-base-300);
+	--border-subtle: color-mix(in srgb, var(--color-base-content), transparent 94%);
+	--message-hover: color-mix(in srgb, var(--color-base-content), transparent 93%);
+
+	--success: var(--color-success);
+	--success-soft: color-mix(in srgb, var(--color-success), transparent 85%);
+	--success-soft-strong: color-mix(in srgb, var(--color-success), transparent 78%);
+	--error: var(--color-error);
+	--error-soft: color-mix(in srgb, var(--color-error), transparent 90%);
+	--error-soft-medium: color-mix(in srgb, var(--color-error), transparent 80%);
+	--error-soft-strong: color-mix(in srgb, var(--color-error), transparent 70%);
+	--error-muted: color-mix(in srgb, var(--color-error), var(--color-base-content) 35%);
+	--warning: var(--color-warning);
+	--warning-soft: color-mix(in srgb, var(--color-warning), transparent 88%);
+	--warning-border: color-mix(in srgb, var(--color-warning), transparent 65%);
+	--info-soft: color-mix(in srgb, var(--color-info), transparent 88%);
+	--info-text: color-mix(in srgb, var(--color-info), var(--color-base-content) 25%);
+	--link: var(--color-info);
+
+	--char-accent: var(--color-secondary);
+	--on-accent: var(--color-primary-content);
+	--popover-bg: var(--color-neutral);
+	--tooltip-bg: var(--color-neutral);
+	--tooltip-fg: var(--color-neutral-content);
+
+	--overlay: color-mix(in srgb, var(--color-neutral), transparent 55%);
+	--overlay-light: color-mix(in srgb, var(--color-neutral), transparent 82%);
+	--overlay-subtle: color-mix(in srgb, var(--color-base-content), transparent 94%);
+	--shadow: color-mix(in srgb, var(--color-neutral), transparent 60%);
+	--shadow-strong: color-mix(in srgb, var(--color-neutral), transparent 40%);
+
+	--gradient: linear-gradient(135deg, var(--color-primary) 0%, var(--accent-hover) 100%);
+	--media-bg: var(--color-neutral);
+
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 12px;
+	--message-max-width: 52rem;
+}

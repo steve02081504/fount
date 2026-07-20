@@ -1,0 +1,18 @@
+<div class="vote-block${closedClass}" data-ballot-id="${ballotId}"${closedClass ? ' data-closed="1"' : ''}>
+	${closedLabel}
+	<div class="vote-q"><img src="https://api.iconify.design/mdi/chart-bar.svg" class="inline w-5 h-5 align-middle mr-1" width="20" height="20" alt="" aria-hidden="true" /> ${questionHtml}</div>
+	${deadlineHtml}
+	<div class="vote-options">${
+		voteOptions.length
+		? voteOptions.map(opt => `
+		<button type="button" class="vote-option" data-ballot-id="${ballotId}" data-choice="${opt.choice}" ${opt.disabled}>
+			<span class="vote-option-label">${opt.label}</span>
+			<span class="vote-option-meta" data-i18n="chat.hub.voteCount" data-count="${opt.count}" data-pct="${opt.percent}"></span>
+			<span class="vote-option-bar" style="width:${opt.percent}%"></span>
+		</button>
+		`).join('')
+		: '<span class="vote-empty" data-i18n="chat.hub.voteNoOptions"></span>'
+		}
+	</div>
+	<div class="vote-total" data-i18n="chat.hub.voteTotal" data-total="${total}"></div>
+</div>

@@ -1,4 +1,4 @@
-import { chatReplyRequest_t, chatReply_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReplyRequest_t, type chatViewer_t, file_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
@@ -88,46 +88,73 @@ export class UserAPI_t {
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
-			 * 获取聊天记录。
+			 * 为其他角色获取人格侧提示贡献（群聊他者槽）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @returns {Promise<single_part_prompt_t>} - 单部分提示。
+			 */
+			GetPromptForOther?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
+			/**
+			 * 为其他角色调整人格侧提示贡献。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {prompt_struct_t} prompt_struct - 提示结构。
+			 * @param {single_part_prompt_t} my_prompt - 我的提示。
+			 * @param {number} detail_level - 详细程度。
+			 * @returns {Promise<void>} - 无返回值。
+			 */
+			TweakPromptForOther?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
+			/**
+			 * 真人发送前拦截：可改写 input/files，或通过 reject 拒绝（服务端语义）。
+			 * @param {object} ctx - 发送上下文。
+			 * @returns {Promise<{ input?: channelMessageContent_t, files?: file_t[], reject?: string } | undefined>} - 改写/拒绝；undefined 透传。
+			 */
+			BeforeUserSend?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				input: channelMessageContent_t
+				files?: file_t[]
+			}) => Promise<{
+				input?: channelMessageContent_t
+				files?: file_t[]
+				reject?: string
+			} | undefined>
+			/**
+			 * 按观察者返回人格主观滤镜下的聊天记录（正式主接口；不篡改 DAG 真相）。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @param {chatViewer_t} viewer - 统一观察者身份。
 			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
 			 */
-			GetChatLog?: (arg: chatReplyRequest_t) => Promise<chatLogEntry_t[]>
+			GetChatLogForViewer?: (arg: chatReplyRequest_t, viewer: chatViewer_t) => Promise<chatLogEntry_t[]>
 			/**
-			 * 编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<chatReply_t>} - 编辑后的聊天回复。
+			 * 真人编辑前拦截：可改写 edited，或通过 reject 拒绝（服务端语义）。
 			 */
-			MessageEdit?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<chatReply_t>
+			BeforeUserEdit?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				eventId: string
+				original: object
+				edited: channelMessageContent_t
+			}) => Promise<{
+				edited?: channelMessageContent_t
+				reject?: string
+			} | undefined>
 			/**
-			 * 正在编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
+			 * 真人删除前拦截：reject 拒绝删除。
 			 */
-			MessageEditing?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<void>
-			/**
-			 * 删除消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
-			 */
-			MessageDelete?: (arg: {
-				index: number
-				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
-				extension?: any
-			}) => Promise<void>
+			BeforeUserDelete?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				personaname?: string
+				memberId: string
+				eventId: string
+				original: object
+			}) => Promise<{ reject?: string } | undefined>
 		}
 	}
 }
