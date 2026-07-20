@@ -18,6 +18,7 @@ import { closeHeldServers, holdListenPort, isListenPortFree } from '../../net_li
 import { assertDisposableDataPath } from '../core/disposable_path.mjs'
 import { parseArgsOrExit } from '../core/parse_args_or_exit.mjs'
 import { heapSnapshotDir } from '../core/paths.mjs'
+import { releasePortLease, tryAcquirePortLease } from '../core/port_lease.mjs'
 import { TEST_PORT_BASE } from '../core/ports.mjs'
 import { REPO_ROOT } from '../core/repo_root.mjs'
 import { buildV8FlagsArg, collectHeapSnapshots } from '../heap_snapshot.mjs'
@@ -126,8 +127,9 @@ export async function pickAvailablePort(preferred, scan = 50) {
  * 已分配并持有的测试端口块。
  * @typedef {object} TestPortBlock
  * @property {number} base 首端口
- * @property {(port: number) => Promise<void>} releasePort 释放单个端口的持有
- * @property {() => Promise<void>} releaseAll 释放整块持有
+ * @property {(port: number) => Promise<void>} releasePort 仅释放 listen hold（租约保留至 {@link commitPort} / {@link releaseAll}）
+ * @property {(port: number) => Promise<void>} commitPort 子进程已占用端口后释放跨进程租约
+ * @property {() => Promise<void>} releaseAll 释放剩余 listen hold 与租约
  */
 
 /**
@@ -146,11 +148,12 @@ const noopReleasePort = async () => {}
  * 由已持有的 server 映射构造端口块句柄。
  * @param {number} base 首端口
  * @param {Map<number, import('node:net').Server[]>} servers 端口 → 持有 server 列表
+ * @param {Set<number>} leasedPorts 已取得跨进程租约的端口
  * @returns {TestPortBlock} 释放句柄
  */
-function createHeldPortBlock(base, servers) {
+function createHeldPortBlock(base, servers, leasedPorts) {
 	/**
-	 * 释放单个端口的持有。
+	 * 释放单个端口的 listen hold（spawn 前调用；租约仍占着空隙）。
 	 * @param {number} port 待释放端口
 	 * @returns {Promise<void>}
 	 */
@@ -162,16 +165,31 @@ function createHeldPortBlock(base, servers) {
 	}
 
 	/**
-	 * 释放整块端口持有。
+	 * 子进程已 listen 后放下跨进程租约。
+	 * @param {number} port 端口
+	 * @returns {Promise<void>}
+	 */
+	async function commitPort(port) {
+		if (!leasedPorts.delete(port)) return
+		await releasePortLease(port)
+	}
+
+	/**
+	 * 释放整块剩余 listen hold 与租约。
 	 * @returns {Promise<void>}
 	 */
 	async function releaseAll() {
 		const closing = [...servers.values()]
 		servers.clear()
-		await Promise.all(closing.map(closeHeldServer))
+		const ports = [...leasedPorts]
+		leasedPorts.clear()
+		await Promise.all([
+			...closing.map(closeHeldServer),
+			...ports.map(releasePortLease),
+		])
 	}
 
-	return { base, releasePort, releaseAll }
+	return { base, releasePort, commitPort, releaseAll }
 }
 
 /** 端口块扫描宽度（并行 live 套件争用同一段时 200 偏紧）。 */
@@ -192,21 +210,35 @@ export async function allocateTestPortBlock({ count, step = 2, preferred = TEST_
 		const ports = Array.from({ length: count }, (_, index) => base + index * step)
 		/** @type {Map<number, import('node:net').Server[]>} */
 		const servers = new Map()
+		/** @type {Set<number>} */
+		const leasedPorts = new Set()
 		let failedAt = -1
-		for (let i = 0; i < ports.length; i++) try {
-			servers.set(ports[i], await holdPort(ports[i]))
-		}
-		catch {
-			failedAt = i
-			break
+		for (let i = 0; i < ports.length; i++) {
+			const port = ports[i]
+			const lease = await tryAcquirePortLease(port)
+			if (!lease) {
+				failedAt = i
+				break
+			}
+			leasedPorts.add(port)
+			try {
+				servers.set(port, await holdPort(port))
+			}
+			catch {
+				failedAt = i
+				break
+			}
 		}
 
 		if (failedAt >= 0) {
-			await Promise.all([...servers.values()].map(closeHeldServer))
+			await Promise.all([
+				...[...servers.values()].map(closeHeldServer),
+				...[...leasedPorts].map(releasePortLease),
+			])
 			base = ports[failedAt] + 1
 			continue
 		}
-		return createHeldPortBlock(base, servers)
+		return createHeldPortBlock(base, servers, leasedPorts)
 	}
 	throw new Error(`no free ${count}-port block from ${preferred} step ${step}`)
 }
@@ -226,7 +258,8 @@ export async function allocateLiveNodePorts({ preferred = TEST_PORT_BASE } = {})
  * live 多节点端口解析结果。
  * @typedef {object} LiveNodeFleet
  * @property {number[]} ports 各节点端口（长度 = count）
- * @property {(port: number) => Promise<void>} releasePort 释放指定端口持有
+ * @property {(port: number) => Promise<void>} releasePort 释放指定端口 listen hold
+ * @property {(port: number) => Promise<void>} commitPort 子进程就绪后释放租约
  * @property {() => Promise<void>} releaseAll 释放整块持有
  */
 
@@ -260,13 +293,19 @@ export async function resolveLiveNodeFleet(count = 2, env = process.env) {
 			else if (i === 0) ports.push(Number(rawFirst))
 			else ports.push(await pickAvailablePort(ports[i - 1] + 1))
 		}
-		return { ports, releasePort: noopReleasePort, releaseAll: noopReleaseAll }
+		return {
+			ports,
+			releasePort: noopReleasePort,
+			commitPort: noopReleasePort,
+			releaseAll: noopReleaseAll,
+		}
 	}
 
-	const { base, releasePort, releaseAll } = await allocateTestPortBlock({ count, step: 1 })
+	const { base, releasePort, commitPort, releaseAll } = await allocateTestPortBlock({ count, step: 1 })
 	return {
 		ports: Array.from({ length: count }, (_, index) => base + index),
 		releasePort,
+		commitPort,
 		releaseAll,
 	}
 }
@@ -389,7 +428,8 @@ function isLaunchPortRaceError(error) {
  * @param {string} [options.bootstrap] bootstrap 模块绝对路径（default export async (username) => void）
  * @param {boolean} [options.keepData=false] stop 时是否保留 data 目录
  * @param {boolean} [options.captureOutput=false] ready 后是否缓存 stdout/stderr 供断言
- * @param {(port: number) => Promise<void>} [options.releasePort] spawn 前释放该端口的持有 server
+ * @param {() => Promise<void>} [options.releasePort] spawn 前释放该端口的 listen hold
+ * @param {() => Promise<void>} [options.commitPort] 子进程就绪后释放跨进程租约
  * @param {Record<string, string>} [options.extraEnv] 额外注入子进程的环境变量（不影响父进程 process.env）
  * @returns {Promise<LaunchedNode & { keepData: boolean }>} 已就绪节点句柄
  */
@@ -405,7 +445,7 @@ export async function launchNode(options = {}) {
 			lastError = error
 			if (!isLaunchPortRaceError(error) || attempt === LAUNCH_PORT_RACE_RETRIES - 1) throw error
 			// 换口重试：丢掉已 release 的显式端口，重新 hold（fed 节点 env 以返回的 port 为准）。
-			attemptOptions = { ...options, port: undefined, releasePort: undefined }
+			attemptOptions = { ...options, port: undefined, releasePort: undefined, commitPort: undefined }
 		}
 	
 	throw lastError
@@ -419,166 +459,210 @@ export async function launchNode(options = {}) {
 async function launchNodeOnce(options = {}) {
 	/** @type {(() => Promise<void>) | undefined} */
 	let releasePort = options.releasePort
+	/** @type {(() => Promise<void>) | undefined} */
+	let commitPort = options.commitPort
 	let port = options.port
+	/** @type {TestPortBlock | undefined} */
+	let selfHeld
 	if (port == null) {
-		// hold 至 spawn，消掉 pickAvailablePort 的 TOCTOU（并行 deno test 互抢 28931）。
-		const held = await allocateTestPortBlock({ count: 1, step: 1 })
-		port = held.base
+		// hold 至 spawn，消掉 pickAvailablePort 的 TOCTOU；租约盖住 release→listen 空隙。
+		selfHeld = await allocateTestPortBlock({ count: 1, step: 1 })
+		port = selfHeld.base
 		const outerRelease = releasePort
+		const outerCommit = commitPort
 		/**
 		 *
 		 */
 		releasePort = async () => {
-			await held.releasePort(port)
+			await selfHeld.releasePort(port)
 			await outerRelease?.()
 		}
-	}
-	const username = options.username ?? 'CI-user'
-	const apiKey = options.apiKey ?? `fount-test-key-${port}`
-	const keepData = options.keepData ?? false
-	const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
-	const starts = options.starts ?? defaultTestStarts({ web: true, p2p: options.p2p === true })
-	/** @type {Record<string, string>} */
-	const extraEnv = { ...options.extraEnv }
-	let usedTestRelay = false
-	let p2pRelayUrl
-	if (starts.P2P === true) {
-		const { relayUrl } = await startTestNostrRelay()
-		p2pRelayUrl = relayUrl
-		usedTestRelay = true
-	}
-
-	await injectFixtures(dataPath, username, options.fixtureCopies ?? [])
-
-	const v8FlagsArg = buildTestNodeV8FlagsArg()
-	const workerArgs = [
-		'run', '--allow-scripts', '--allow-all',
-		...v8FlagsArg ? [v8FlagsArg] : [],
-		'-c', join(REPO_ROOT, 'deno.json'),
-		workerPath,
-		'--data-path', dataPath,
-		'--port', String(port),
-		'--user', username,
-		'--key', apiKey,
-		'--starts', JSON.stringify(starts),
-	]
-	if (options.needsOutput)
-		workerArgs.push('--needs-output')
-	for (const part of options.loadParts ?? [])
-		workerArgs.push('--load-part', part)
-	if (options.bootstrap)
-		workerArgs.push('--bootstrap', resolve(options.bootstrap))
-	if (options.minP2pNode)
-		workerArgs.push('--min-p2p-node')
-	if (p2pRelayUrl)
-		workerArgs.push('--p2p-relay-url', p2pRelayUrl)
-
-	await releasePort?.()
-
-	const denoBin = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
-	let captureEnabled = false
-	let startupOutput = ''
-	let capturedOutput = ''
-	/**
-	 * @param {string | Uint8Array} chunk stdout/stderr 数据块
-	 * @returns {void}
-	 */
-	const onOutput = chunk => {
-		const text = String(chunk)
-		if (captureEnabled) {
-			if (options.captureOutput) capturedOutput = appendBoundedTail(capturedOutput, text)
-			else process.stderr.write(chunk)
-			return
+		/**
+		 *
+		 */
+		commitPort = async () => {
+			await selfHeld.commitPort(port)
+			await outerCommit?.()
 		}
-		startupOutput = appendBoundedTail(startupOutput, text)
-		if (!options.captureOutput) process.stderr.write(chunk)
 	}
 
-	// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
-	const child = spawn(denoBin, workerArgs, {
-		cwd: REPO_ROOT,
-		stdio: ['ignore', 'pipe', 'pipe'],
-		env: {
-			...process.env,
-			FOUNT_TEST: '1',
-			FOUNT_TEST_NODE_WORKER: '1',
-			FOUNT_DENO_START_TIME: new Date().toISOString(),
-			RUST_BACKTRACE: 'full',
-			...extraEnv,
-		},
-	})
-	child.stderr.on('data', onOutput)
-
-	/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
-	const childExited = new Promise(resolve => {
-		child.once('exit', code => resolve(code ?? -1))
-	})
+	let listenReleased = false
+	let leaseCommitted = false
+	/** @type {import('node:child_process').ChildProcess | undefined} */
+	let child
 	/**
-	 * @returns {Promise<never>} worker 在就绪前退出即抛错（fail-fast，免等 ping 超时）
+	 * 释放 listen hold（若尚未释放）。
+	 * @returns {Promise<void>}
 	 */
-	const failOnEarlyExit = async () => {
-		const code = await childExited
-		throw new Error(`node worker exited with code ${code} before ready (port ${port})\n${startupOutput}`.trimEnd())
+	const finishListenHold = async () => {
+		if (listenReleased) return
+		listenReleased = true
+		await releasePort?.()
 	}
-
-	let readyInfo = null
-	const readline = createInterface({ input: child.stdout })
-	for await (const line of readline) {
-		if (!line.trim()) continue
-		try {
-			const parsed = JSON.parse(line)
-			if (parsed?.ready && parsed.baseUrl) {
-				readyInfo = parsed
-				break
-			}
-		}
-		catch { /* not json yet */ }
+	/**
+	 * 释放本轮端口租约。
+	 * @returns {Promise<void>}
+	 */
+	const finishPortLease = async () => {
+		if (leaseCommitted) return
+		leaseCommitted = true
+		await commitPort?.()
 	}
-	readline.close()
-	// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。
-	if (options.captureOutput) child.stdout.on('data', onOutput)
-	child.stdout.resume()
-	child.stderr.resume()
-
-	if (!readyInfo?.baseUrl)
-		await failOnEarlyExit()
 
 	try {
-		await Promise.race([
-			waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username),
-			failOnEarlyExit(),
-		])
+		const username = options.username ?? 'CI-user'
+		const apiKey = options.apiKey ?? `fount-test-key-${port}`
+		const keepData = options.keepData ?? false
+		const dataPath = options.dataPath ?? await mkdtemp(join(tmpdir(), `fount_node_${port}_`))
+		const starts = options.starts ?? defaultTestStarts({ web: true, p2p: options.p2p === true })
+		/** @type {Record<string, string>} */
+		const extraEnv = { ...options.extraEnv }
+		let usedTestRelay = false
+		let p2pRelayUrl
+		if (starts.P2P === true) {
+			const { relayUrl } = await startTestNostrRelay()
+			p2pRelayUrl = relayUrl
+			usedTestRelay = true
+		}
+
+		await injectFixtures(dataPath, username, options.fixtureCopies ?? [])
+
+		const v8FlagsArg = buildTestNodeV8FlagsArg()
+		const workerArgs = [
+			'run', '--allow-scripts', '--allow-all',
+			...v8FlagsArg ? [v8FlagsArg] : [],
+			'-c', join(REPO_ROOT, 'deno.json'),
+			workerPath,
+			'--data-path', dataPath,
+			'--port', String(port),
+			'--user', username,
+			'--key', apiKey,
+			'--starts', JSON.stringify(starts),
+		]
+		if (options.needsOutput)
+			workerArgs.push('--needs-output')
+		for (const part of options.loadParts ?? [])
+			workerArgs.push('--load-part', part)
+		if (options.bootstrap)
+			workerArgs.push('--bootstrap', resolve(options.bootstrap))
+		if (options.minP2pNode)
+			workerArgs.push('--min-p2p-node')
+		if (p2pRelayUrl)
+			workerArgs.push('--p2p-relay-url', p2pRelayUrl)
+
+		await finishListenHold()
+
+		const denoBin = typeof Deno !== 'undefined' ? Deno.execPath() : 'deno'
+		let captureEnabled = false
+		let startupOutput = ''
+		let capturedOutput = ''
+		/**
+		 * @param {string | Uint8Array} chunk stdout/stderr 数据块
+		 * @returns {void}
+		 */
+		const onOutput = chunk => {
+			const text = String(chunk)
+			if (captureEnabled) {
+				if (options.captureOutput) capturedOutput = appendBoundedTail(capturedOutput, text)
+				else process.stderr.write(chunk)
+				return
+			}
+			// 就绪前不转发：换口重试时的 EADDRINUSE 不应污染 suite 噪声判定。
+			startupOutput = appendBoundedTail(startupOutput, text)
+		}
+
+		// stderr 始终 pipe：否则 EADDRINUSE 走 inherit 进不了 startupOutput，换口重试无法识别。
+		child = spawn(denoBin, workerArgs, {
+			cwd: REPO_ROOT,
+			stdio: ['ignore', 'pipe', 'pipe'],
+			env: {
+				...process.env,
+				FOUNT_TEST: '1',
+				FOUNT_TEST_NODE_WORKER: '1',
+				FOUNT_DENO_START_TIME: new Date().toISOString(),
+				RUST_BACKTRACE: 'full',
+				...extraEnv,
+			},
+		})
+		child.stderr.on('data', onOutput)
+
+		/** worker 提前退出时 resolve 退出码（就绪后仍挂着也无害：仅用于 race，不 reject）。 */
+		const childExited = new Promise(resolve => {
+			child.once('exit', code => resolve(code ?? -1))
+		})
+		/**
+		 * @returns {Promise<never>} worker 在就绪前退出即抛错（fail-fast，免等 ping 超时）
+		 */
+		const failOnEarlyExit = async () => {
+			const code = await childExited
+			throw new Error(`node worker exited with code ${code} before ready (port ${port})\n${startupOutput}`.trimEnd())
+		}
+
+		let readyInfo = null
+		const readline = createInterface({ input: child.stdout })
+		for await (const line of readline) {
+			if (!line.trim()) continue
+			try {
+				const parsed = JSON.parse(line)
+				if (parsed?.ready && parsed.baseUrl) {
+					readyInfo = parsed
+					break
+				}
+			}
+			catch { /* not json yet */ }
+		}
+		readline.close()
+		// 读完 ready JSON 后继续排空 stdout，防止管道缓冲区满导致服务器 event loop 阻塞。
+		if (options.captureOutput) child.stdout.on('data', onOutput)
+		child.stdout.resume()
+		child.stderr.resume()
+
+		if (!readyInfo?.baseUrl)
+			await failOnEarlyExit()
+
+		try {
+			await Promise.race([
+				waitForPing(readyInfo.baseUrl, apiKey, ms('2m'), username),
+				failOnEarlyExit(),
+			])
+		}
+		catch (error) {
+			if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`
+			throw error
+		}
+		await finishPortLease()
+		captureEnabled = true
+
+		return {
+			baseUrl: readyInfo.baseUrl,
+			apiKey,
+			username,
+			port,
+			dataPath,
+			process: child,
+			pid: child.pid,
+			keepData,
+			usedTestRelay,
+			p2pRelayUrl,
+			/**
+			 * @returns {string} 查看当前已捕获输出但不清空
+			 */
+			peekOutput: () => capturedOutput,
+			/**
+			 * @returns {string} 取出当前已捕获输出并清空缓冲
+			 */
+			takeOutput: () => {
+				const out = capturedOutput
+				capturedOutput = ''
+				return out
+			},
+		}
 	}
 	catch (error) {
-		if (startupOutput.trim()) error.message += `\n${startupOutput.trimEnd()}`
-		try { child.kill('SIGKILL') } catch { /* already dead */ }
+		if (child) try { child.kill('SIGKILL') } catch { /* already dead */ }
+		await finishListenHold()
+		await finishPortLease()
 		throw error
-	}
-	captureEnabled = true
-
-	return {
-		baseUrl: readyInfo.baseUrl,
-		apiKey,
-		username,
-		port,
-		dataPath,
-		process: child,
-		pid: child.pid,
-		keepData,
-		usedTestRelay,
-		p2pRelayUrl,
-		/**
-		 * @returns {string} 查看当前已捕获输出但不清空
-		 */
-		peekOutput: () => capturedOutput,
-		/**
-		 * @returns {string} 取出当前已捕获输出并清空缓冲
-		 */
-		takeOutput: () => {
-			const out = capturedOutput
-			capturedOutput = ''
-			return out
-		},
 	}
 }
 

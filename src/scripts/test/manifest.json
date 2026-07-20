@@ -248,6 +248,18 @@
 				"src/scripts/test/env.mjs",
 				"src/scripts/test/live/runner.mjs"
 			]
+		},
+		{
+			"name": "port_lease",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/port_lease.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/port_lease.test.mjs",
+				"src/scripts/test/core/port_lease.mjs",
+				"src/scripts/test/node/launch.mjs"
+			]
 		}
 	]
 }

@@ -81,7 +81,7 @@ Manifest id = domain (`server`, `testkit`, `p2p`, `shells/chat`, …).
 - Single-node: `{ p2p: false, minP2pNode: true }`. Signaling: [p2p/docs/signaling.md](../p2p/docs/signaling.md). Domain traps: [domain-harness.md](docs/domain-harness.md).
 - **`--no-parallel` + `serial.mjs`**: prints `[serial] ok …` so idle watchdog stays alive. On `node_modules` lock / flaky `ERR_MODULE_NOT_FOUND`, rerun `--no-parallel`; mid-suite corruption → `deno cache --reload` then re-run **only** the failed file.
 - **Teardown crashes after green**: Windows napi exit codes and Linux `SIGSEGV`/`SIGABRT`/`SIGBUS`/`SIGILL` with `N passed | 0 failed` → `[serial] ok … (deno teardown crash after pass)`, not suite red.
-- **`launchNode` port races**: hold→release→spawn TOCTOU under parallel suites → `EADDRINUSE`; `launchNode` retries with a fresh hold (up to 5). `serial.mjs` sets `DENO_JOBS=1` so within-file `Deno.test` cannot stack multiple nodes.
+- **`launchNode` port races**: hold→release→spawn TOCTOU under parallel suites → `EADDRINUSE`; mitigated by cross-process port leases (`core/port_lease.mjs`, kept until child ready) plus up to 5 re-holds. Startup stderr is buffered until ready so a recovered race does not mark the suite `noisy`. `serial.mjs` sets `DENO_JOBS=1` so within-file `Deno.test` cannot stack multiple nodes.
 
 ## Operator tools
 

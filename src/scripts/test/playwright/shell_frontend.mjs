@@ -33,6 +33,8 @@ export async function runShellFrontendTests({
 	let basePort
 	/** @type {((port: number) => Promise<void>) | null} */
 	let releasePortForPhase = null
+	/** @type {((port: number) => Promise<void>) | null} */
+	let commitPortForPhase = null
 	const { env: { FOUNT_TEST_FRONTEND_PORT: rawFrontendPort, FOUNT_TEST_FRONTEND_KEY: frontendApiKey } } = process
 	if (rawFrontendPort != null && rawFrontendPort !== '') 
 		basePort = await resolveFrontendPort(rawFrontendPort, async () => {
@@ -40,9 +42,10 @@ export async function runShellFrontendTests({
 		})
 	
 	else {
-		const { base, releasePort } = await allocateTestPortBlock({ count: phases.length, step: portStep })
+		const { base, releasePort, commitPort } = await allocateTestPortBlock({ count: phases.length, step: portStep })
 		basePort = base
 		releasePortForPhase = releasePort
+		commitPortForPhase = commitPort
 	}
 
 	/**
@@ -61,13 +64,21 @@ export async function runShellFrontendTests({
 		}
 		if (releasePortForPhase) {
 			/**
-			 * spawn 前释放该阶段端口的持有 server。
+			 * spawn 前释放该阶段端口的 listen hold。
 			 * @returns {Promise<void>}
 			 */
 			function releaseHeldPort() {
 				return releasePortForPhase(port)
 			}
+			/**
+			 * 子进程就绪后释放跨进程租约。
+			 * @returns {Promise<void>}
+			 */
+			function commitHeldPort() {
+				return commitPortForPhase(port)
+			}
 			opts.releasePort = releaseHeldPort
+			opts.commitPort = commitHeldPort
 		}
 		return opts
 	}

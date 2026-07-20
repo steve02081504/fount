@@ -105,7 +105,8 @@ async function waitForFedNodesPing(nodes, timeoutMs = 30_000) {
  * 节点 launch 配置工厂上下文。
  * @typedef {object} LiveNodeBuildContext
  * @property {number} port 已分配并持有的端口
- * @property {() => Promise<void>} releasePort spawn 前释放该端口持有
+ * @property {() => Promise<void>} releasePort spawn 前释放该端口 listen hold
+ * @property {() => Promise<void>} commitPort 子进程就绪后释放跨进程租约
  */
 
 /**
@@ -138,13 +139,23 @@ export async function runLiveSuite({
 	let releaseAll
 	const federationCleanup = join(repoRoot, FEDERATION_CLEANUP)
 	try {
-		const { ports, releasePort: releaseHeldPort, releaseAll: releaseHeldAll } = await resolveLiveNodeFleet(fedNodeCount)
+		const {
+			ports,
+			releasePort: releaseHeldPort,
+			commitPort: commitHeldPort,
+			releaseAll: releaseHeldAll,
+		} = await resolveLiveNodeFleet(fedNodeCount)
 		releaseAll = releaseHeldAll
 		for (let i = 0; i < fedNodeCount; i++) {
 			const port = ports[i]
+			const releasePort = releaseHeldPort.bind(null, port)
+			const commitPort = commitHeldPort.bind(null, port)
 			nodes.push(await launchNode({
-				...buildNode(i, { port, releasePort: releaseHeldPort.bind(null, port) }),
+				...buildNode(i, { port, releasePort, commitPort }),
 				...spec.node,
+				// 端口生命周期由 runner 托管，避免各 shell buildNode 漏传 commitPort
+				releasePort,
+				commitPort,
 			}))
 		}
 
