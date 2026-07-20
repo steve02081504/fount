@@ -16,7 +16,7 @@ import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { geti18n } from './i18n.mjs'
+import { geti18n } from './i18n/index.mjs'
 import { onThemeChange } from './theme.mjs'
 
 // --- 辅助函数 ---

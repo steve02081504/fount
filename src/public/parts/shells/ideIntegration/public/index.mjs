@@ -4,7 +4,7 @@
 import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
 import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations } from '/scripts/i18n.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
 import { renderMarkdown } from '/scripts/markdown.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 

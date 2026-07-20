@@ -1,4 +1,4 @@
-import { geti18n, setLocalizeLogic } from './i18n.mjs'
+import { geti18n, setLocalizeLogic } from './i18n/index.mjs'
 import { showToastI18n } from './toast.mjs'
 
 /**

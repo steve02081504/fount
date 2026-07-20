@@ -4,9 +4,10 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { initTranslations, preferredLangsStorageKey } from './i18n_base.mjs'
-import { onElementRemoved } from './onElementRemoved.mjs'
-import { escapeRegExp } from './regex.mjs'
+import { onElementRemoved } from '../onElementRemoved.mjs'
+import { escapeRegExp } from '../regex.mjs'
+
+import { initTranslations, preferredLangsStorageKey } from './base.mjs'
 
 /**
  * 本地化键
@@ -93,6 +94,14 @@ export function loadPreferredLangs() {
 	} catch {
 		return []
 	}
+}
+
+/**
+ * 当前用户主区域：preferredLangs[0] → main_locale（默认 en-UK）。
+ * @returns {string} BCP 47
+ */
+export function primaryLocale() {
+	return loadPreferredLangs()[0] || main_locale
 }
 
 /**
@@ -330,8 +339,11 @@ export function geti18n(key, params = {}) {
 	return key
 }
 
-/** 导出全局 console，供下方本地化 console 包装使用。 */
-export const {console} = globalThis
+/**
+ * 重导出全局 `console`，并挂载 i18n 日志方法（`infoI18n` 等）。
+ * @type {Console}
+ */
+export const { console } = globalThis
 
 /**
  * 将值转换为字符串。
@@ -564,11 +576,6 @@ export function confirmI18n(key, params = {}) {
 	return confirm(toString(geti18n(key, params)))
 }
 /**
- * 导出的控制台对象。
- * @type {Console}
- */
-
-/**
  * 翻译单个元素。
  * @param {HTMLElement} element - 要翻译的元素。
  * @returns {boolean} 如果元素已更新，则返回 true。
@@ -676,6 +683,22 @@ export function i18nElement(element, {
 	return element
 }
 
+/**
+ * 写入 `data-i18n` 键与插值参数（其余 `data-*` → `dataset`），并立即翻译。
+ * MutationObserver 只监听 `data-i18n`；同键仅改参时不会触发观察器，必须走本函数或 `i18nElement`。
+ * @param {HTMLElement} element - 目标元素。
+ * @param {LocaleKey} key - 翻译键。
+ * @param {Record<string, string | number | boolean | null | undefined>} [params] - 插值参数（写入 dataset）。
+ * @returns {HTMLElement} 原元素。
+ */
+export function setElementI18n(element, key, params = {}) {
+	for (const [name, value] of Object.entries(params))
+		element.dataset[name] = value
+	element.dataset.i18n = key
+	translateSingularElement(element)
+	return element
+}
+
 
 // Watch for changes in the DOM
 const i18nObserver = new MutationObserver((mutationsList) => {
@@ -701,13 +724,15 @@ function observeBody() {
 if (document.body) observeBody()
 else window.addEventListener('DOMContentLoaded', observeBody)
 
-/** 从 i18n_base 再导出公共 API。 */
+/**
+ * 重导出 i18n 初始化与 locale 工具（`initTranslations` 等）。
+ */
 export {
 	preferredLangsStorageKey,
 	initTranslations,
 	getAvailableLocales,
 	getLocaleNames,
-} from './i18n_base.mjs'
+} from './base.mjs'
 
 window.addEventListener('languagechange', () => initTranslations())
 window.addEventListener('visibilitychange', async () => {

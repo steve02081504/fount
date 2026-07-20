@@ -1,7 +1,7 @@
 /**
  * 语言设置 shell 的客户端逻辑。
  */
-import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n.mjs'
+import { initTranslations, i18nElement, loadPreferredLangs, savePreferredLangs, getAvailableLocales } from '/scripts/i18n/index.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'

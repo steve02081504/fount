@@ -1,5 +1,5 @@
 import { setUserSetting } from '../../../scripts/endpoints.mjs'
-import { confirmI18n, onLanguageChange } from '../../../scripts/i18n.mjs'
+import { confirmI18n, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { unlockAchievement } from '../../../scripts/parts.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
 import { showToastI18n } from '../../../scripts/toast.mjs'

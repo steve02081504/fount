@@ -1,7 +1,7 @@
 /**
  * Telegram 机器人 shell 的客户端 API 端点。
  */
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 
 /**
  * 使用错误处理获取数据。

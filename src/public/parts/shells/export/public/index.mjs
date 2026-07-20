@@ -1,7 +1,7 @@
 /**
  * 导出 shell 的客户端逻辑。
  */
-import { initTranslations } from '/scripts/i18n.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { createPartpathPicker } from '/scripts/partpath_picker.mjs'

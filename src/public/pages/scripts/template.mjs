@@ -2,7 +2,7 @@ import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { base_dir } from '../base.mjs'
 
-import { geti18n, i18nElement } from './i18n.mjs'
+import { geti18n, i18nElement } from './i18n/index.mjs'
 import { svgInliner } from './svgInliner.mjs'
 
 const template_cache = {}

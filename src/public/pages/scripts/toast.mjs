@@ -4,7 +4,7 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { geti18n, setLocalizeLogic } from './i18n.mjs'
+import { geti18n, setLocalizeLogic } from './i18n/index.mjs'
 
 /** 显式设置的 toast 容器；为 null 时使用默认的 #toast-container。 */
 let toastContainer = null

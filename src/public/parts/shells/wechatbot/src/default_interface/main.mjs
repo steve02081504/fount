@@ -7,7 +7,7 @@ import { where_command } from 'npm:@steve02081504/exec'
 import ffmpeg from 'npm:fluent-ffmpeg'
 import mimetype from 'npm:mime-types'
 
-import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 import {
 	DEFAULT_LONG_POLL_TIMEOUT_MS,

@@ -9,7 +9,7 @@ import {
 	generateLoginInfoUrl,
 } from '../../scripts/credentialManager.mjs'
 import { hosturl_in_local_ip, ping } from '../../scripts/endpoints.mjs'
-import { initTranslations } from '../../scripts/i18n.mjs'
+import { initTranslations } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 import { showToast, showToastI18n } from '../../scripts/toast.mjs'
 

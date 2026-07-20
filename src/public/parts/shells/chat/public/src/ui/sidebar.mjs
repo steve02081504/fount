@@ -1,4 +1,4 @@
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
 import {
 	getPartList,

@@ -7,7 +7,7 @@ import {
 	webauthnLoginBegin,
 	webauthnLoginComplete,
 } from '../scripts/endpoints.mjs'
-import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n.mjs'
+import { initTranslations, console, savePreferredLangs, onLanguageChange } from '../scripts/i18n/index.mjs'
 import { getAnyDefaultPart } from '../scripts/parts.mjs'
 import { initPasswordStrengthMeter } from '../scripts/passwordStrength.mjs'
 import { createPOWCaptcha } from '../scripts/POWcaptcha.mjs'

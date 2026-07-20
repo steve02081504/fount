@@ -8,7 +8,7 @@ import { on_shutdown, unset_shutdown_listener } from 'npm:on-shutdown'
 import supportsAnsi from 'npm:supports-ansi'
 
 import { getMemoryUsage } from '../scripts/gc.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile, saveJsonFile } from '../scripts/json_loader.mjs'
 import { ms } from '../scripts/ms.mjs'
 import { notify } from '../scripts/notify.mjs'

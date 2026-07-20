@@ -1,4 +1,4 @@
-import { initTranslations, console } from '../scripts/i18n.mjs'
+import { initTranslations, console } from '../scripts/i18n/index.mjs'
 import { showToastI18n } from '../scripts/toast.mjs'
 
 // 获取 DOM 元素

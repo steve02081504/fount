@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import { exec } from 'npm:@steve02081504/exec'
 
 import { git } from '../scripts/git.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 
 import { __dirname } from './base.mjs'
 import { onIdle, offIdle } from './idle.mjs'
