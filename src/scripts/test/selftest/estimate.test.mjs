@@ -136,6 +136,54 @@ Deno.test('simulateParallelMakespanMs packs independent light suites', () => {
 	assertEquals(result.makespanMs, 1000)
 })
 
+Deno.test('simulateParallelMakespanMs overlaps dependent with running dep', () => {
+	const result = simulateParallelMakespanMs([
+		task({ key: 'server:live', name: 'live', durationMs: 30_000, memMb: 400, cpuPct: 20 }),
+		task({
+			key: 'shells/chat:ws_rpc',
+			name: 'ws_rpc',
+			durationMs: 20_000,
+			memMb: 400,
+			cpuPct: 20,
+			deps: ['server:live'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// 一层乐观并行：下游与硬跑依赖重叠，墙钟 ≈ max(30s, 20s) 而非 50s
+	assertEquals(result.makespanMs, 30_000)
+})
+
+Deno.test('simulateParallelMakespanMs does not stack speculative chain', () => {
+	const result = simulateParallelMakespanMs([
+		task({ key: 'server:a', name: 'a', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
+		task({
+			key: 'server:b', name: 'b', durationMs: 20_000, memMb: 100, cpuPct: 10,
+			deps: ['server:a'],
+		}),
+		task({
+			key: 'server:c', name: 'c', durationMs: 20_000, memMb: 100, cpuPct: 10,
+			deps: ['server:b'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// A||B 后 B 完成即 C 硬就绪（B 已落盘），墙钟 40s；禁止 A||B||C 三层叠成 30s
+	assertEquals(result.makespanMs, 40_000)
+})
+
+Deno.test('simulateParallelMakespanMs promotes speculative so next layer can overlap', () => {
+	const result = simulateParallelMakespanMs([
+		task({ key: 'server:a', name: 'a', durationMs: 30_000, memMb: 100, cpuPct: 10 }),
+		task({
+			key: 'server:b', name: 'b', durationMs: 50_000, memMb: 100, cpuPct: 10,
+			deps: ['server:a'],
+		}),
+		task({
+			key: 'server:c', name: 'c', durationMs: 20_000, memMb: 100, cpuPct: 10,
+			deps: ['server:b'],
+		}),
+	], { memBudgetBytes: 8000 * MiB, cpuBudgetPct: 85 })
+	// t=30 A 完、B 升级硬锚 → C 与 B 剩余重叠；墙钟 50s 而非等 B 完再跑 C 的 70s
+	assertEquals(result.makespanMs, 50_000)
+})
+
 Deno.test('simulateParallelMakespanMs never leaves ready work at makespan 0', () => {
 	// 与闸门同不变量：空闲 + 有活 → 必须开工，否则 ETA 塌成 0。
 	const result = simulateParallelMakespanMs([

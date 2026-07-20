@@ -8,6 +8,8 @@ import { ms } from '../../ms.mjs'
 import { formatDuration } from '../core/format_duration.mjs'
 import { ProcessUsageTracker } from '../core/proc_sample.mjs'
 
+import { SPECULATIVE_ABORT_REASON } from './dependency_scheduler.mjs'
+
 /** 无 stdall 输出时终止 suite 的阈值（毫秒）。 */
 export const IDLE_TIMEOUT_MS = ms('10m')
 
@@ -36,6 +38,7 @@ export const OUTPUT_TAIL_BYTES = 2 * 1024 * 1024
  * @property {boolean} [stream=false] 是否实时转发 stdout/stderr
  * @property {string} [label] suite 标签（用于终止日志）
  * @property {number} [baselineDurationMs] 最近一次可用基线耗时（毫秒）
+ * @property {AbortSignal} [signal] 外部取消（投机依赖失败早停）
  */
 
 /**
@@ -146,7 +149,7 @@ export function buildTerminateReason(trigger, { label, startedAt, lastActivityAt
  * @returns {Promise<RunCommandResult>} 子进程结果
  */
 export async function runCommand(command, extraEnv = {}, options) {
-	const { stream = false, label = '', baselineDurationMs, cwd } = options
+	const { stream = false, label = '', baselineDurationMs, cwd, signal: externalSignal } = options
 	const [executable, ...args] = command
 	const abortController = new AbortController()
 	const startedAt = Date.now()
@@ -157,6 +160,22 @@ export async function runCommand(command, extraEnv = {}, options) {
 	/** @type {string | null} */
 	let terminateReason = null
 	let terminated = false
+
+	/** @param {unknown} [reason] abort 原因 */
+	const abortFromExternal = reason => {
+		if (terminated || abortController.signal.aborted) return
+		terminated = true
+		terminateReason = reason === SPECULATIVE_ABORT_REASON
+			? geti18n('fountConsole.test.terminateSpeculative', { label })
+			: typeof reason === 'string' && reason
+				? reason
+				: geti18n('fountConsole.test.terminateUnknown', { label })
+		abortController.abort()
+	}
+	if (externalSignal) {
+		if (externalSignal.aborted) abortFromExternal(externalSignal.reason)
+		else externalSignal.addEventListener('abort', () => abortFromExternal(externalSignal.reason), { once: true })
+	}
 
 	/**
 	 * @param {string} text 输出片段

@@ -217,12 +217,14 @@ function printSuiteSummary(label, result, streamed = false) {
  * @param {string} root0.name suite 名
  * @param {boolean} [root0.heavy] 是否 heavy
  * @param {string} [root0.expected] 预期耗时展示串
+ * @param {boolean} [root0.speculative] 是否乐观并行（依赖仍在跑）
  * @returns {string} 本地化运行提示
  */
-function formatRunningSuiteMessage({ manifestId, name, heavy, expected }) {
+function formatRunningSuiteMessage({ manifestId, name, heavy, expected, speculative }) {
 	let msg = geti18nForTerminal('fountConsole.test.runningSuite.base', { manifestId, name })
 	/** @type {string[]} */
 	const parts = []
+	if (speculative) parts.push(geti18nForTerminal('fountConsole.test.runningSuite.speculative'))
 	if (heavy) parts.push(geti18nForTerminal('fountConsole.test.runningSuite.heavy'))
 	if (expected) parts.push(geti18nForTerminal('fountConsole.test.runningSuite.expected', { expected }))
 	if (parts.length) msg += `（${parts.join('，')}）`
@@ -406,7 +408,7 @@ async function executeWave(context) {
 	/** @type {number} */
 	let exitCode = 1
 	try {
-		await coordinator.runAll(async slot => {
+		await coordinator.runAll(async (slot, ctx) => {
 			const { suite } = slot
 			const label = `${suite.manifestId}:${suite.name}`
 			const key = slot.key
@@ -430,17 +432,18 @@ async function executeWave(context) {
 				return { passed: prev.status !== 'failed' }
 			}
 
-			if (slot.action === 'blocked') {
+			const blockedBy = ctx.blockedBy ?? slot.blockedBy
+			if (slot.action === 'blocked' || ctx.discardWithoutRun) {
 				console.errorI18n('fountConsole.test.blocked', {
 					label,
-					deps: slot.blockedBy.join(', '),
+					deps: (blockedBy ?? []).join(', '),
 				})
 				const entry = await upsertSuiteRun({
 					repoRoot: REPO_ROOT,
 					state,
 					suite,
 					result: { passed: false, failedFiles: [], output: '', durationMs: 0 },
-					blockedBy: slot.blockedBy,
+					blockedBy: blockedBy ?? [],
 					commitHash,
 					uncommittedHash,
 				})
@@ -463,6 +466,7 @@ async function executeWave(context) {
 				name: suite.name,
 				heavy: !!suite.heavy,
 				expected,
+				speculative: ctx.speculative,
 			}))
 			console.log('>>', suite.run.join(' '))
 
@@ -471,7 +475,39 @@ async function executeWave(context) {
 			const result = await runSuite(suite, { firstFiles, subtests, onlyFiles }, globalBudget, streamLive, {
 				label,
 				baselineDurationMs,
+				signal: ctx.signal,
 			})
+
+			const commit = await ctx.awaitCommitGate()
+			if (!commit.ok) {
+				console.errorI18n('fountConsole.test.speculativeDiscard', {
+					label,
+					deps: commit.failedDeps.join(', '),
+				})
+				const entry = await upsertSuiteRun({
+					repoRoot: REPO_ROOT,
+					state,
+					suite,
+					// 保留真跑证据（日志/耗时/终止原因）；status 仍为 blocked，不提交成败
+					result: {
+						passed: false,
+						failedFiles: result.failedFiles,
+						output: result.output,
+						durationMs: result.durationMs,
+						terminated: result.terminated,
+						terminateReason: result.terminateReason,
+						peakMemMb: result.peakMemMb,
+						avgCpuPct: result.avgCpuPct,
+					},
+					blockedBy: commit.failedDeps,
+					commitHash,
+					uncommittedHash,
+				})
+				await writeState(REPO_ROOT, state)
+				if (index != null) await recordSuiteResult(index, entry)
+				return { passed: false }
+			}
+
 			printSuiteSummary(label, result, streamLive)
 
 			if (suite.manifestId !== 'testkit')

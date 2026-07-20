@@ -217,3 +217,348 @@ Deno.test('PlanRunCoordinator throws on dependency deadlock', async () => {
 	}
 	assert(threw)
 })
+
+Deno.test('PlanRunCoordinator speculatively overlaps dependent while dep runs', async () => {
+	const root = makeSuite('server', 'live', { resources: { memMb: 200, cpuPct: 10 } })
+	const child = makeSuite('shells/chat', 'ws_rpc', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'shells/chat:ws_rpc', suite: child, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {string[]} */
+	const started = []
+	/** @type {(() => void) | undefined} */
+	let releaseRoot
+	const rootHold = new Promise(resolve => { releaseRoot = resolve })
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		started.push(`${slot.key}:${ctx.speculative ? 'spec' : 'hard'}`)
+		if (slot.key === 'server:live') {
+			await rootHold
+			return { passed: true }
+		}
+		const gateResult = await ctx.awaitCommitGate()
+		assertEquals(gateResult.ok, true)
+		return { passed: true }
+	})
+
+	for (let i = 0; i < 50 && started.length < 2; i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assert(started.includes('server:live:hard'))
+	assert(started.includes('shells/chat:ws_rpc:spec'))
+	assertEquals(started.indexOf('server:live:hard') < started.indexOf('shells/chat:ws_rpc:spec'), true)
+	releaseRoot()
+	await done
+})
+
+Deno.test('PlanRunCoordinator discards speculative result when dependency fails', async () => {
+	const root = makeSuite('server', 'live', { resources: { memMb: 200, cpuPct: 10 } })
+	const child = makeSuite('shells/cabinet', 'integration', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'shells/cabinet:integration', suite: child, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {Record<string, { speculative: boolean, commitOk?: boolean }>} */
+	const outcomes = {}
+	/** @type {(() => void) | undefined} */
+	let releaseRoot
+	const rootHold = new Promise(resolve => { releaseRoot = resolve })
+	let childWaiting = false
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		if (slot.key === 'server:live') {
+			outcomes[slot.key] = { speculative: ctx.speculative }
+			await rootHold
+			return { passed: false }
+		}
+		childWaiting = true
+		const gateResult = await ctx.awaitCommitGate()
+		outcomes[slot.key] = { speculative: ctx.speculative, commitOk: gateResult.ok }
+		return { passed: false }
+	})
+
+	for (let i = 0; i < 100 && !childWaiting; i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assert(childWaiting)
+	releaseRoot()
+	await done
+
+	assertEquals(outcomes['server:live']?.speculative, false)
+	assertEquals(outcomes['shells/cabinet:integration']?.speculative, true)
+	assertEquals(outcomes['shells/cabinet:integration']?.commitOk, false)
+})
+
+Deno.test('PlanRunCoordinator blocks dependent without run when dep already failed', async () => {
+	const root = makeSuite('server', 'live', { resources: { memMb: 2000, cpuPct: 80 } })
+	const child = makeSuite('shells/chat', 'ws_rpc', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 2000, cpuPct: 80 },
+	})
+	// 内存只够一个：子无法乐观并行，等根失败后走 discardWithoutRun
+	const gate = new ResourceRunGate(2200 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'shells/chat:ws_rpc', suite: child, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {string[]} */
+	const events = []
+	await coordinator.runAll(async (slot, ctx) => {
+		if (ctx.discardWithoutRun) {
+			events.push(`block:${slot.key}`)
+			return { passed: false }
+		}
+		events.push(`run:${slot.key}`)
+		return { passed: slot.key !== 'server:live' }
+	})
+
+	assertEquals(events, ['run:server:live', 'block:shells/chat:ws_rpc'])
+})
+
+Deno.test('PlanRunCoordinator prefers nearer cheaper speculative over far heavy', async () => {
+	// 根 + 任一子都装得下，但装不下两个子：排序决定先投机谁
+	// server:live 默认 500MB；near/far 默认 400MB → 预算 1000 只够根+一子
+	const gate = new ResourceRunGate(1000 * MiB)
+	const root = makeSuite('server', 'live', { resources: { memMb: 200, cpuPct: 10 } })
+	const near = makeSuite('server', 'near_child', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const far = makeSuite('shells/chat', 'far_child', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'shells/chat:far_child', suite: far, action: 'run', goal: true },
+			{ key: 'server:near_child', suite: near, action: 'run', goal: true },
+		],
+		state: {
+			suites: {
+				'server:near_child': { baselineDurationMs: 5_000 },
+				'shells/chat:far_child': { baselineDurationMs: 120_000 },
+			},
+		},
+		gate,
+	})
+
+	/** @type {string[]} */
+	const speculativeStarted = []
+	/** @type {(() => void) | undefined} */
+	let releaseRoot
+	const rootHold = new Promise(resolve => { releaseRoot = resolve })
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		if (slot.key === 'server:live') {
+			await rootHold
+			return { passed: true }
+		}
+		if (ctx.speculative) speculativeStarted.push(slot.key)
+		await ctx.awaitCommitGate()
+		return { passed: true }
+	})
+
+	for (let i = 0; i < 100 && !speculativeStarted.length; i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assertEquals(speculativeStarted[0], 'server:near_child')
+	releaseRoot()
+	await done
+})
+
+Deno.test('PlanRunCoordinator does not stack on speculative parent until promoted', async () => {
+	const a = makeSuite('server', 'a', { resources: { memMb: 100, cpuPct: 5 } })
+	const b = makeSuite('server', 'b', {
+		dependsOn: ['server:a'],
+		resources: { memMb: 100, cpuPct: 5 },
+	})
+	const c = makeSuite('server', 'c', {
+		dependsOn: ['server:b'],
+		resources: { memMb: 100, cpuPct: 5 },
+	})
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:a', suite: a, action: 'run', goal: true },
+			{ key: 'server:b', suite: b, action: 'run', goal: true },
+			{ key: 'server:c', suite: c, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {string[]} */
+	const speculativeKeys = []
+	/** @type {(() => void) | undefined} */
+	let releaseA
+	const aHold = new Promise(resolve => { releaseA = resolve })
+	/** @type {(() => void) | undefined} */
+	let releaseB
+	const bHold = new Promise(resolve => { releaseB = resolve })
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		if (ctx.speculative) speculativeKeys.push(slot.key)
+		if (slot.key === 'server:a') {
+			await aHold
+			return { passed: true }
+		}
+		if (slot.key === 'server:b') {
+			await bHold
+			const gateResult = await ctx.awaitCommitGate()
+			assertEquals(gateResult.ok, true)
+			return { passed: true }
+		}
+		await ctx.awaitCommitGate()
+		return { passed: true }
+	})
+
+	for (let i = 0; i < 100 && !speculativeKeys.includes('server:b'); i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	// A 硬跑、B 仍投机：C 不得叠
+	assertEquals(speculativeKeys.includes('server:c'), false)
+	releaseA()
+	// A 通过 → B 升级硬锚 → C 可投机挂靠 B 剩余
+	for (let i = 0; i < 100 && !speculativeKeys.includes('server:c'); i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assert(speculativeKeys.includes('server:c'))
+	releaseB()
+	await done
+})
+
+Deno.test('PlanRunCoordinator aborts speculative signal when dependency fails', async () => {
+	const root = makeSuite('server', 'live', { resources: { memMb: 200, cpuPct: 10 } })
+	const child = makeSuite('shells/chat', 'ws_rpc', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'shells/chat:ws_rpc', suite: child, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {(() => void) | undefined} */
+	let releaseRoot
+	const rootHold = new Promise(resolve => { releaseRoot = resolve })
+	/** @type {AbortSignal | undefined} */
+	let childSignal
+	let childSawAbort = false
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		if (slot.key === 'server:live') {
+			await rootHold
+			return { passed: false }
+		}
+		childSignal = ctx.signal
+		assert(childSignal)
+		const aborted = new Promise(resolve => {
+			childSignal.addEventListener('abort', () => {
+				childSawAbort = true
+				resolve(undefined)
+			}, { once: true })
+		})
+		await aborted
+		const gateResult = await ctx.awaitCommitGate()
+		assertEquals(gateResult.ok, false)
+		return { passed: false }
+	})
+
+	for (let i = 0; i < 100 && !childSignal; i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assert(childSignal)
+	assertEquals(childSignal.aborted, false)
+	releaseRoot()
+	await done
+	assert(childSawAbort)
+})
+
+Deno.test('PlanRunCoordinator speculates into spare while other hard suite runs', async () => {
+	// 独立硬跑占一部分预算；依赖链旁仍有余量 → 子应投机
+	const root = makeSuite('server', 'live', { resources: { memMb: 200, cpuPct: 10 } })
+	const other = makeSuite('server', 'other', { resources: { memMb: 200, cpuPct: 10 } })
+	const child = makeSuite('shells/chat', 'ws_rpc', {
+		dependsOn: ['server:live'],
+		resources: { memMb: 200, cpuPct: 10 },
+	})
+	const gate = new ResourceRunGate(8000 * MiB)
+	const coordinator = new PlanRunCoordinator({
+		slots: [
+			{ key: 'server:live', suite: root, action: 'run', goal: true },
+			{ key: 'server:other', suite: other, action: 'run', goal: true },
+			{ key: 'shells/chat:ws_rpc', suite: child, action: 'run', goal: true },
+		],
+		state: { suites: {} },
+		gate,
+	})
+
+	/** @type {string[]} */
+	const started = []
+	/** @type {(() => void) | undefined} */
+	let releaseRoot
+	const rootHold = new Promise(resolve => { releaseRoot = resolve })
+	/** @type {(() => void) | undefined} */
+	let releaseOther
+	const otherHold = new Promise(resolve => { releaseOther = resolve })
+
+	const done = coordinator.runAll(async (slot, ctx) => {
+		started.push(`${slot.key}:${ctx.speculative ? 'spec' : 'hard'}`)
+		if (slot.key === 'server:live') {
+			await rootHold
+			return { passed: true }
+		}
+		if (slot.key === 'server:other') {
+			await otherHold
+			return { passed: true }
+		}
+		await ctx.awaitCommitGate()
+		return { passed: true }
+	})
+
+	for (let i = 0; i < 100 && started.length < 3; i++)
+		await new Promise(resolve => setTimeout(resolve, 1))
+	assert(started.includes('server:live:hard'))
+	assert(started.includes('server:other:hard'))
+	assert(started.includes('shells/chat:ws_rpc:spec'))
+	releaseRoot()
+	releaseOther()
+	await done
+})
+
+Deno.test('ResourceRunGate tryAcquire returns null when over budget', () => {
+	const gate = new ResourceRunGate(1000 * MiB)
+	const held = makeSuite('testkit', 'hold_mem', { resources: { memMb: 800, cpuPct: 25 } })
+	const extra = makeSuite('testkit', 'extra_mem', { resources: { memMb: 400, cpuPct: 5 } })
+	const releaseHeld = gate.tryAcquire(held)
+	assert(releaseHeld)
+	assertEquals(gate.tryAcquire(extra), null)
+	releaseHeld()
+	const releaseExtra = gate.tryAcquire(extra)
+	assert(releaseExtra)
+	releaseExtra()
+})

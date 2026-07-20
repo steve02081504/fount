@@ -144,6 +144,28 @@ export class ResourceRunGate {
 	}
 
 	/**
+	 * 若当前余量能装下则立即占用；否则返回 null（不排队）。
+	 * 供 dependsOn 乐观并行：硬跑已占坑后的余量可投机填入。
+	 * 装不下的硬就绪会走 acquire 排队；不因此禁止更小的投机包吃掉剩余碎屑。
+	 * @param {SuiteDef} suite 待运行 suite
+	 * @returns {(() => void) | null} 释放函数；装不下则为 null
+	 */
+	tryAcquire(suite) {
+		if (this.serial) return null
+		if (this.exclusiveRunning) return null
+		if (suite.heavy) {
+			if (this.usedMemBytes !== 0 || this.usedCpuPct !== 0) return null
+			this.exclusiveRunning = true
+			return () => this.#releaseExclusive()
+		}
+		const need = this.#needs(suite)
+		if (!this.#canFit(need)) return null
+		this.usedMemBytes += resourcesMemBytes(need)
+		this.usedCpuPct += need.cpuPct
+		return () => this.#releaseSlot(need)
+	}
+
+	/**
 	 * 等待并获取运行槽位。
 	 * @param {SuiteDef} suite 待运行 suite
 	 * @returns {Promise<() => void>} 释放函数

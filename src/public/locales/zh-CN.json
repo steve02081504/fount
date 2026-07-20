@@ -403,10 +403,12 @@
 			"reportPathFinal": "\n报告：${path}",
 			"statePathFinal": "现状：${path}",
 			"blocked": "阻塞：${label}（依赖未过：${deps}）",
+			"speculativeDiscard": "丢弃预测结果：${label}（依赖未过：${deps}）",
 			"continueImperfect": "失败/噪声/未完成波次：${count} 个套件",
 			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
 			"runningSuite": {
 				"base": "\n>>> 正在运行 ${manifestId}:${name}",
+				"speculative": "乐观并行",
 				"heavy": "高负载",
 				"expected": "预期 ${expected}"
 			},
@@ -427,6 +429,7 @@
 			"terminateDurationDefault": "已终止 ${label}：耗时超过默认 watchdog 时长上限（已运行 ${elapsed}，上限 ${limit}）",
 			"terminateMarker": "[终止原因: ${reason}]",
 			"terminateUnknown": "已终止 ${label}：测试被中断",
+			"terminateSpeculative": "已终止 ${label}：投机依赖未过，取消早停",
 			"nothingToContinue": "全部绿且无过期项，无需再跑。",
 			"triggerNoMatch": "trigger 未匹配任何文件：${scope} — ${pattern}",
 			"triggerNoMatchSummary": "共 ${count} 条 trigger 未匹配任何仓库文件（详见 report.md）",

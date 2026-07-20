@@ -449,20 +449,26 @@ export async function upsertSuiteRun({
 	const noisy = noiseHits.length > 0
 
 	if (blockedBy?.length) {
+		// 投机丢弃也可能带真跑 output——落盘便于对照，不推进 baseline / fingerprint
+		let logPath = prev?.logPath ?? null
+		if (result?.output)
+			logPath = await persistFailureLog(repoRoot, suite, result.output)
 		state.suites[key] = {
 			status: 'blocked',
 			commitHash: prev?.commitHash ?? null,
 			uncommittedHash: prev?.uncommittedHash ?? null,
 			ranAt: new Date().toISOString(),
-			durationMs: null,
+			durationMs: result?.durationMs ?? null,
 			triggerHash: prev?.triggerHash ?? null,
 			baselineDurationMs: prev?.baselineDurationMs ?? null,
 			baselineOverheadMs: prev?.baselineOverheadMs ?? null,
 			baselineMemMb: prev?.baselineMemMb ?? null,
 			baselineCpuPct: prev?.baselineCpuPct ?? null,
-			failedFiles: [],
-			noiseHits: [],
-			logPath: prev?.logPath ?? null,
+			failedFiles: result?.failedFiles ?? [],
+			noiseHits: detectNoiseHits(result?.output ?? ''),
+			logPath,
+			terminated: result?.terminated ?? false,
+			terminateReason: result?.terminateReason ?? null,
 			blockedBy,
 			subtests: prev?.subtests,
 		}

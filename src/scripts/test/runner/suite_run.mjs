@@ -112,6 +112,9 @@ export function mapTimingsToSubtests(suite, timings, ranSubtests) {
  * @param {import('../core/concurrency.mjs').GlobalBudget | undefined} globalBudget 全局预算
  * @param {boolean} [stream] 是否实时转发 stdout/stderr
  * @param {object} [watchdog] watchdog 选项
+ * @param {string} [watchdog.label] suite 标签
+ * @param {number} [watchdog.baselineDurationMs] 基线耗时
+ * @param {AbortSignal} [watchdog.signal] 外部取消
  * @returns {Promise<SuiteRunResult>} 运行结果
  */
 export async function runSuite(suite, options, globalBudget, stream = false, watchdog = {}) {
@@ -126,6 +129,7 @@ export async function runSuite(suite, options, globalBudget, stream = false, wat
 			cwd: REPO_ROOT,
 			label: watchdog.label,
 			baselineDurationMs: watchdog.baselineDurationMs,
+			signal: watchdog.signal,
 		})
 		const timings = await readTimingsOutFile(timingsOut)
 		return {
