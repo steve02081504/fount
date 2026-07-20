@@ -14,13 +14,13 @@ import {
 export function setEndpoints(router) {
 	// 获取列表
 	router.get('/api/parts/shells\\:themeManage/list', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.json(getCustomThemes(username))
 	})
 
 	// 获取单个主题
 	router.get('/api/parts/shells\\:themeManage/theme/:id', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const theme = getTheme(username, req.params.id)
 		if (theme) res.json(theme)
 		else res.status(404).json({ error: 'Not found' })
@@ -28,14 +28,14 @@ export function setEndpoints(router) {
 
 	// 保存主题
 	router.post('/api/parts/shells\\:themeManage/save', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const id = saveTheme(username, req.body)
 		res.json({ id })
 	})
 
 	// 删除主题
 	router.delete('/api/parts/shells\\:themeManage/theme/:id', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		deleteTheme(username, req.params.id)
 		res.status(200).json({})
 	})

@@ -61,7 +61,7 @@ export function setEndpoints(router) {
 
 	router.get('/api/parts/shells\\:chat/:chatid/log', authenticate, async (req, res) => {
 		const { params: { chatid }, query: { start, end } } = req
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const log = await GetChatLog(chatid, Number(start), Number(end))
 		res.status(200).json(await Promise.all(log.map(entry => entry.toData(username))))
 	})
@@ -84,7 +84,7 @@ export function setEndpoints(router) {
 	router.put('/api/parts/shells\\:chat/:chatid/timeline', authenticate, async (req, res) => {
 		const { params: { chatid }, body: { delta } } = req
 		const entry = await modifyTimeLine(chatid, delta)
-		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+		res.status(200).json({ success: true, entry: await entry.toData(getUserByReq(req).username) })
 	})
 
 	router.delete('/api/parts/shells\\:chat/:chatid/message/:index', authenticate, async (req, res) => {
@@ -100,13 +100,13 @@ export function setEndpoints(router) {
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
 		const entry = await editMessage(chatid, Number(index), content)
-		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+		res.status(200).json({ success: true, entry: await entry.toData(getUserByReq(req).username) })
 	})
 
 	router.put('/api/parts/shells\\:chat/:chatid/message/:index/feedback', authenticate, async (req, res) => {
 		const { params: { chatid, index }, body: feedback } = req
 		const entry = await setMessageFeedback(chatid, Number(index), feedback)
-		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+		res.status(200).json({ success: true, entry: await entry.toData(getUserByReq(req).username) })
 	})
 
 	router.post('/api/parts/shells\\:chat/:chatid/message', authenticate, async (req, res) => {
@@ -116,7 +116,7 @@ export function setEndpoints(router) {
 			buffer: Buffer.from(file.buffer, 'base64')
 		}))
 		const entry = await addUserReply(chatid, reply)
-		res.status(200).json({ success: true, entry: await entry.toData((await getUserByReq(req)).username) })
+		res.status(200).json({ success: true, entry: await entry.toData(getUserByReq(req).username) })
 	})
 
 	router.post('/api/parts/shells\\:chat/:chatid/trigger-reply', authenticate, async (req, res) => {
@@ -168,21 +168,21 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:chat/new', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.status(200).json({ chatid: await newChat(username) })
 	})
 
 	router.get('/api/parts/shells\\:chat/getchatlist', authenticate, async (req, res) => {
-		res.status(200).json(await getChatList((await getUserByReq(req)).username))
+		res.status(200).json(await getChatList(getUserByReq(req).username))
 	})
 
 	router.delete('/api/parts/shells\\:chat/delete', authenticate, async (req, res) => {
-		const result = await deleteChat(req.body.chatids, (await getUserByReq(req)).username)
+		const result = await deleteChat(req.body.chatids, getUserByReq(req).username)
 		res.status(200).json(result)
 	})
 
 	router.post('/api/parts/shells\\:chat/copy', authenticate, async (req, res) => {
-		const result = await copyChat(req.body.chatids, (await getUserByReq(req)).username)
+		const result = await copyChat(req.body.chatids, getUserByReq(req).username)
 		res.status(200).json(result)
 	})
 
@@ -192,13 +192,13 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:chat/import', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const result = await importChat(req.body, username)
 		res.status(result.success ? 200 : 400).json(result)
 	})
 
 	router.post('/api/parts/shells\\:chat/addfile', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const data = req.files
 		for (const file of Object.values(data))
 			await addfile(username, file.data)
@@ -206,7 +206,7 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:chat/getfile', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { hash } = req.query
 		const data = await getfile(username, hash)
 		res.status(200).send(data)

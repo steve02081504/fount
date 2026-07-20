@@ -8,7 +8,7 @@ import { exportPart, getFountJson, createShareLink } from './manager.mjs'
  */
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:export/export', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		const { buffer, format } = await exportPart(username, partpath, req.query.withData === 'true')
@@ -20,14 +20,14 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:export/fountjson', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.query.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		res.json(await getFountJson(username, partpath))
 	})
 
 	router.post('/api/parts/shells\\:export/share', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.body.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 		const link = await createShareLink(username, partpath, req.body.expiration, req.body.withData)
@@ -35,7 +35,7 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/virtual_files/parts/shells\\:export/download/*partpath', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const partpath = (req.params.partpath || '').replace(/^\/+|\/+$/g, '')
 		if (!partpath) return res.status(400).json({ message: 'partpath is required' })
 

@@ -19,7 +19,7 @@ PartsRouter.use(async (req, res, next) => {
 	if (!match) return next()
 	if (!await auth_request(req, res))
 		return respondUnauthorized(req, res)
-	const { username } = await getUserByReq(req)
+	const { username } = getUserByReq(req)
 	if (!username) return next()
 
 	const partpath = match[2].replace(/:/g, '/')

@@ -51,23 +51,23 @@ export function setEndpoints(router) {
 	})
 
 	router.ws('/ws/parts/shells\\:browserIntegration/page', authenticate, async (ws, req) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		handleConnection(ws, username)
 	})
 
 	router.ws('/ws/parts/shells\\:browserIntegration/ui', authenticate, async (ws, req) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const manager = getUserManager(username)
 		manager.registerUi(ws)
 	})
 
 	router.get('/api/parts/shells\\:browserIntegration/history', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		res.json(getBrowseHistory(username))
 	})
 
 	router.post('/api/parts/shells\\:browserIntegration/callback', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { partpath, data, pageId, script } = req.body
 
 		if (!partpath) return res.status(400).json({ error: 'partpath is required.' })
@@ -86,13 +86,13 @@ export function setEndpoints(router) {
 
 	// New endpoints for auto-run scripts
 	router.get('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const scripts = listAutoRunScripts(username)
 		res.json({ scripts })
 	})
 
 	router.post('/api/parts/shells\\:browserIntegration/autorun-scripts', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { urlRegex, script, comment } = req.body || {}
 		if (!urlRegex || !script)
 			return res.status(400).json({ message: 'Missing required fields for auto-run script.' })
@@ -101,7 +101,7 @@ export function setEndpoints(router) {
 	})
 
 	router.delete('/api/parts/shells\\:browserIntegration/autorun-scripts/:id', authenticate, async (req, res) => {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const { id } = req.params
 		removeAutoRunScript(username, id)
 		res.status(200).json({})

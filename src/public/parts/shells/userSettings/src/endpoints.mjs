@@ -77,7 +77,7 @@ function formatBytes(bytes, decimals = 2) {
  */
 export function setEndpoints(router) {
 	router.get('/api/parts/shells\\:userSettings/stats', authenticate, async (req, res) => {
-		const userReqData = await getUserByReq(req)
+		const userReqData = getUserByReq(req)
 		if (!userReqData) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
@@ -100,7 +100,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/change_password', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { currentPassword, newPassword } = req.body
 		if (!currentPassword || !newPassword)
@@ -111,7 +111,7 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:userSettings/devices', authenticate, async (req, res) => {
-		const userReqData = await getUserByReq(req)
+		const userReqData = getUserByReq(req)
 		if (!userReqData) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 
 		const userFullConfig = getUserConfig(userReqData.username)
@@ -136,7 +136,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/revoke_device', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { tokenJti, password } = req.body
 		if (!tokenJti || !password)
@@ -147,7 +147,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/rename_user', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { newUsername, password } = req.body
 		if (!newUsername || !password)
@@ -160,7 +160,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/delete_account', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
 		if (!password) return res.status(400).json({ i18nKey: 'userSettings.deleteAccount.missingPassword' })
@@ -172,20 +172,20 @@ export function setEndpoints(router) {
 	})
 
 	router.get('/api/parts/shells\\:userSettings/webauthn_credentials', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		res.json({ credentials: listWebAuthnCredentials(user.username) })
 	})
 
 	router.get('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const config = await getEditorCommandConfig(user.username)
 		res.json({ config })
 	})
 
 	router.post('/api/parts/shells\\:userSettings/editor_command', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const { editorId, command, argsTemplate } = req.body || {}
 		const editorPreset = getAvailableEditorById(editorId)
@@ -199,7 +199,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/open_editor', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ message: 'Unauthorized' })
 		const { filePath, line, column } = req.body || {}
 		await openEditor(user.username, filePath, line, column)
@@ -207,7 +207,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_begin', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
@@ -216,7 +216,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_register_complete', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { credential, nickname, password } = req.body
 		if (!await verifyPassword(password, user.auth.password))
@@ -227,7 +227,7 @@ export function setEndpoints(router) {
 	})
 
 	router.post('/api/parts/shells\\:userSettings/webauthn_remove', authenticate, async (req, res) => {
-		const user = await getUserByReq(req)
+		const user = getUserByReq(req)
 		if (!user) return res.status(401).json({ i18nKey: 'userSettings.shell.unauthorized' })
 		const { credentialId, password } = req.body
 		if (!credentialId || !password)
