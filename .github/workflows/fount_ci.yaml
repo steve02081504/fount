@@ -13,16 +13,6 @@ on:
         required: false
         type: string
         default: ''
-      cache-test-data:
-        description: 'Restore/save data/test (suite state DB) across runs'
-        required: false
-        type: boolean
-        default: false
-      parallel:
-        description: 'When false, append --no-parallel to run-command (fount test suite dispatch)'
-        required: false
-        type: boolean
-        default: true
     secrets:
       gh_token:
         description: 'PAT for gh (fount test Deno panic auto-issue to denoland/deno); falls back to GITHUB_TOKEN'
@@ -41,93 +31,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-      - uses: denoland/setup-deno@v2
-        id: deno
+      - uses: ./.github/actions/fount-ci
         with:
-          deno-version: canary
-          cache-hash: fount
-      - uses: actions/cache@v5
-        with:
-          path: ./node_modules
-          key: fount-node-modules
-      - name: Restore test data cache
-        if: inputs.cache-test-data
-        uses: actions/cache/restore@v5
-        with:
-          path: ./data/test
-          key: fount-test-data
-      - name: Install dependencies
-        run: |
-          for i in $(seq 1 13); do
-            deno install --prod --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
-            echo "Attempt $i/13 failed, retrying..."
-          done
-          [ -d ./node_modules ] || exit 1
-      - name: ${{ inputs.run-step-name }}
+          run-step-name: ${{ inputs.run-step-name }}
+          run-command: ${{ inputs.run-command }}
+          deno-clean-entrypoints: ${{ inputs.deno-clean-entrypoints }}
         env:
-          GITHUB_EVENT_BEFORE: ${{ github.event.before }}
-          GITHUB_SHA: ${{ github.sha }}
-          # fount test → deno_panic.mjs 用 gh 开 issue；跨仓（denoland/deno）需 PAT
           GH_TOKEN: ${{ secrets.gh_token || secrets.GITHUB_TOKEN }}
-        run: ${{ inputs.run-command }}
-      - name: Delete Previous Cache
-        continue-on-error: true
-        shell: bash
-        run: |
-          gh extension install actions/gh-actions-cache || true
-          gh actions-cache delete "fount-node-modules" --confirm || true
-          gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount" --confirm || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: clean before cache save
-        continue-on-error: true
-        shell: bash
-        run: |
-          ENTRYPOINTS=()
-          add_entry() { [ -f "$1" ] && ENTRYPOINTS+=("$1"); }
-          add_entry "./src/server/index.mjs"
-          while IFS= read -r entry; do
-            [ -n "$entry" ] && add_entry "$entry"
-          done <<< "${{ inputs.deno-clean-entrypoints }}"
-          [ ${#ENTRYPOINTS[@]} -eq 0 ] && exit 0
-          deno clean --except "${ENTRYPOINTS[@]}"
-      - name: Save node_modules Cache
-        continue-on-error: true
-        uses: actions/cache/save@v5
-        with:
-          path: ./node_modules
-          key: fount-node-modules
-      - name: get deno dir
-        shell: bash
-        run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
-      - name: Save deno Cache
-        continue-on-error: true
-        uses: actions/cache/save@v5
-        with:
-          path: ${{ env.DENO_DIR }}
-          key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount
-      # 失败/取消也要落盘：imperfect wave 依赖 state；与 node_modules 的「仅成功更新」不同
-      - name: Delete Previous test data Cache
-        if: ${{ always() && inputs.cache-test-data }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          gh extension install actions/gh-actions-cache || true
-          gh actions-cache delete "fount-test-data" --confirm || true
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: clean test data before cache save
-        if: ${{ always() && inputs.cache-test-data }}
-        continue-on-error: true
-        shell: bash
-        run: |
-          # 只保留增量所需的 state / panic 去重；丢弃日志与临时产物以控制缓存体积
-          rm -rf data/test/tmp data/test/playwright data/test/heapsnapshots data/test/state/logs
-          rm -f data/test/report.md data/test/report.json data/test/triggered-reasons.md
-      - name: Save test data Cache
-        if: ${{ always() && inputs.cache-test-data }}
-        continue-on-error: true
-        uses: actions/cache/save@v5
-        with:
-          path: ./data/test
-          key: fount-test-data

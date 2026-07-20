@@ -815,7 +815,7 @@ if ($args[0] -eq 'nop') {
 	exit 0
 }
 elseif ($args[0] -eq 'open') {
-	if (Test-Path -Path "$FOUNT_DIR/data") {
+	if (Test-Path -Path "$FOUNT_DIR/data/config.json") {
 		Invoke-DockerPassthrough -CurrentArgs $args
 		Test-Browser
 		Start-Process 'https://steve02081504.github.io/fount/wait?cold_bootting=true'

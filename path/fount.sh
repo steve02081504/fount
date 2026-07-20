@@ -1606,8 +1606,8 @@ if [[ $# -gt 0 ]]; then
 		;;
 	open)
 		handle_docker_passthrough "$@"
-		# 若 $FOUNT_DIR/data 是目录
-		if [ -d "$FOUNT_DIR/data" ]; then
+		# 若 $FOUNT_DIR/data/config.json 存在
+		if [ -f "$FOUNT_DIR/data/config.json" ]; then
 			TARGET_URL='https://steve02081504.github.io/fount/wait?cold_bootting=true'
 			open_url_in_browser "$TARGET_URL"
 			"$0" "${@:2}"
