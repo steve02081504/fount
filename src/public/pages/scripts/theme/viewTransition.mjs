@@ -2,8 +2,8 @@
  * 主题切换的 View Transition 动画逻辑（圆圈扩散）与主题选择器「自动」预览创建。
  */
 
-import { renderTemplate } from './template.mjs'
-import { viewTransition } from './viewTransition.mjs'
+import { renderTemplate } from '../features/template.mjs'
+import { viewTransition } from '../lib/viewTransition.mjs'
 
 {
 	const vt_style = document.createElement('style')

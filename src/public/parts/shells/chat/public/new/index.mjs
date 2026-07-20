@@ -2,8 +2,8 @@
  * 创建新聊天的页面逻辑。
  */
 import { initTranslations, console } from '../../../scripts/i18n/index.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
+import { showToast } from '../../../scripts/features/toast.mjs'
 import { currentChatId, createNewChat, addCharacter } from '../src/endpoints.mjs'
 
 /**

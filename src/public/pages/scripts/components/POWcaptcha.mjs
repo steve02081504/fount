@@ -1,5 +1,5 @@
-import { geti18n, setLocalizeLogic } from './i18n/index.mjs'
-import { showToastI18n } from './toast.mjs'
+import { showToastI18n } from '../features/toast.mjs'
+import { geti18n, setLocalizeLogic } from '../i18n/index.mjs'
 
 /**
  * 注入主题适应的样式。

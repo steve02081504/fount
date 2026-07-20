@@ -1,4 +1,4 @@
-import { getPartDetails } from '../../../../../scripts/parts.mjs'
+import { getPartDetails } from '../../../../../scripts/api/parts.mjs'
 
 const typingIndicatorElement = document.getElementById('typing-indicator')
 let typingChars = new Set()

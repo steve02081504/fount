@@ -1,4 +1,4 @@
-import { showToastI18n } from '../../../../../scripts/toast.mjs'
+import { showToastI18n } from '../../../../../scripts/features/toast.mjs'
 
 
 import { initializeAchievements } from './achievements.mjs'

@@ -2,11 +2,11 @@
  * 卸载 shell 的客户端逻辑。
  */
 import { initTranslations, geti18n } from '/scripts/i18n/index.mjs'
-import { onServerEvent } from '/scripts/server_events.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n, setToastContainer, getToastContainer, setDefaultToastDuration } from '/scripts/toast.mjs'
+import { onServerEvent } from '/scripts/api/server_events.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n, setToastContainer, getToastContainer, setDefaultToastDuration } from '/scripts/features/toast.mjs'
 import { uninstallPart as uninstallPartEndpoint } from '../src/endpoints.mjs'
-import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
+import { createPartpathPicker } from '/scripts/components/partpath_picker.mjs'
 
 applyTheme()
 

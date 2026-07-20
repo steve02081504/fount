@@ -4,8 +4,8 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { onElementRemoved } from '../onElementRemoved.mjs'
-import { escapeRegExp } from '../regex.mjs'
+import { onElementRemoved } from '../lib/onElementRemoved.mjs'
+import { escapeRegExp } from '../lib/regex.mjs'
 
 import { initTranslations, preferredLangsStorageKey } from './base.mjs'
 

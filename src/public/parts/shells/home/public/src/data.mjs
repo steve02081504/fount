@@ -1,4 +1,4 @@
-import { getAllCachedPartDetails, getPartDetails } from '../../../../../scripts/parts.mjs'
+import { getAllCachedPartDetails, getPartDetails } from '../../../../../scripts/api/parts.mjs'
 
 /**
  * 部件详细信息缓存，以便其他模块可以访问。

@@ -1,10 +1,10 @@
 /**
  * Subfounts UI 主要逻辑 - 仅限 WebSocket 更新
- * 所有 Trystero 连接都在服务器端处理
+ * 所有 P2P 连接都在服务器端处理
  */
 import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 import * as api from './src/endpoints.mjs'
 
 const connectionCodeInput = document.getElementById('connection-code-input'),
@@ -69,7 +69,7 @@ function updateSubfountSelect(subfounts) {
 
 	const placeholderOption = document.createElement('option')
 	placeholderOption.value = ''
-	placeholderOption.dataset.i18n = 'subfounts.codeExecution.selectSubfountPlaceholder'
+	placeholderOption.dataset.i18n = 'subfounts.codeExecution.selectSubfount'
 	subfountSelect.appendChild(placeholderOption)
 
 	for (const subfount of subfounts) {

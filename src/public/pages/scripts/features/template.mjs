@@ -1,9 +1,9 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { base_dir } from '../base.mjs'
-
-import { geti18n, i18nElement } from './i18n/index.mjs'
-import { svgInliner } from './svgInliner.mjs'
+import { base_dir } from '../../base.mjs'
+import { geti18n, i18nElement } from '../i18n/index.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
+import { svgInliner } from '../lib/svgInliner.mjs'
 
 const template_cache = {}
 
@@ -177,6 +177,24 @@ export function usingTemplates(path) {
 }
 
 /**
+ * 在指定模板根下执行回调，结束后恢复先前路径（跨壳共享模块勿裸调 usingTemplates）。
+ * @template T
+ * @param {string} path 模板根（同 usingTemplates）
+ * @param {() => T | Promise<T>} fn 回调
+ * @returns {Promise<T>} 回调结果
+ */
+export async function withTemplates(path, fn) {
+	const previous = templatePath
+	usingTemplates(path)
+	try {
+		return await fn()
+	}
+	finally {
+		templatePath = previous
+	}
+}
+
+/**
  * 渲染模板(不激活脚本)。
  * @param {string} template - 模板名称。
  * @param {object} [data={}] - 模板数据。
@@ -193,6 +211,7 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
 	 * @returns {T} - 设置的值。
 	 */
 	data.setValue ??= (name, value) => data[name] = value
+	data.escapeHtml ??= escapeHtml
 	template_cache[template] ??= fetch(templatePath + '/' + template + '.html').then(response => {
 		if (!response.ok) throw new Error(`HTTP error, status: ${response.status}`)
 		return response.text()
@@ -207,6 +226,7 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
 		result += html.slice(0, length)
 		html = html.slice(length + 2)
 		let end_index = 0
+		let matched = false
 		find: while (html.indexOf('}', end_index) != -1) { // 我们需要遍历所有的结束符直到表达式跑通
 			end_index = html.indexOf('}', end_index) + 1
 			const expression = html.slice(0, end_index - 1)
@@ -216,13 +236,19 @@ export async function renderTemplateNoScriptActivation(template, data = {}) {
 				result += escapeUnclosedTags(String(eval_result.result))
 				html = html.slice(end_index)
 				errors.length = 0
+				matched = true
 				break find
 			} catch (error) {
 				errors.push(error)
 			}
 		}
+		if (!matched) {
+			errors.forEach(console.error)
+			errors.length = 0
+			result += `\${${html.slice(0, end_index || html.length)}`
+			html = html.slice(end_index || html.length)
+		}
 	}
-	if (errors.length) errors.map(console.error)
 	result += html
 	return i18nElement(await svgInliner(createDOMFromHtmlStringNoScriptActivation(result)), { skip_report: true })
 }
@@ -289,6 +315,19 @@ function mountRenderedNode(parent, node) {
 export async function mountTemplate(parent, template, data = {}) {
 	const node = await renderTemplate(template, data)
 	parent.replaceChildren()
+	mountRenderedNode(parent, node)
+	return parent
+}
+
+/**
+ * 渲染模板并追加到父节点（不清空已有内容）。
+ * @param {Element} parent 父节点
+ * @param {string} template 模板路径（相对 templates 根）
+ * @param {object} [data] 模板数据
+ * @returns {Promise<Element>} 父节点
+ */
+export async function appendTemplate(parent, template, data = {}) {
+	const node = await renderTemplate(template, data)
 	mountRenderedNode(parent, node)
 	return parent
 }

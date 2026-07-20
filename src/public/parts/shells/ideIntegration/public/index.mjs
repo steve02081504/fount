@@ -1,12 +1,12 @@
 /**
  * IDE 集成配置页：API 密钥、角色选择、一站式 Agent 脚本 URL（Zed 用 deno 跑远端脚本）。
  */
-import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
-import { getPartList } from '/scripts/parts.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
+import { verifyApiKey, createApiKey } from '/scripts/api/base.mjs'
+import { getPartList } from '/scripts/api/parts.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
 import { initTranslations } from '/scripts/i18n/index.mjs'
-import { renderMarkdown } from '/scripts/markdown.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
+import { renderMarkdown } from '/scripts/features/markdown/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 applyTheme()
 await initTranslations('ide_integration')
@@ -134,7 +134,7 @@ async function updateZedConfig() {
 
 	if (!scriptUrl) {
 		const placeholder = document.createElement('span')
-		placeholder.dataset.i18n = 'ide_integration.acpConfigPlaceholder'
+		placeholder.dataset.i18n = 'ide_integration.acpConfig'
 		configContainer.appendChild(placeholder)
 		return
 	}
@@ -171,7 +171,7 @@ async function loadCharList() {
 	acpCharSelect.innerHTML = ''
 	const empty = document.createElement('option')
 	empty.value = ''
-	empty.dataset.i18n = 'ide_integration.acpCharPlaceholder'
+	empty.dataset.i18n = 'ide_integration.acpChar'
 	acpCharSelect.appendChild(empty)
 	for (const id of list) {
 		const opt = document.createElement('option')
@@ -189,7 +189,7 @@ async function loadCharList() {
 document.getElementById('copy-script-url').addEventListener('click', () => {
 	const url = scriptUrlInput.value
 	if (!url) {
-		showToastI18n('warning', 'ide_integration.acpConfigPlaceholder')
+		showToastI18n('warning', 'ide_integration.acpConfig')
 		return
 	}
 	navigator.clipboard.writeText(url)
@@ -256,12 +256,12 @@ function renderApiKey() {
 			showToastI18n('success', 'ide_integration.apiKeyCopied')
 		})
 	} else {
-		const btn = document.createElement('button')
-		btn.type = 'button'
-		btn.className = 'btn btn-primary'
-		btn.dataset.i18n = 'ide_integration.generateApiKeyButton'
-		btn.addEventListener('click', generateApiKey)
-		section.appendChild(btn)
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = 'btn btn-primary'
+		button.dataset.i18n = 'ide_integration.generateApiKeyButton'
+		button.addEventListener('click', generateApiKey)
+		section.appendChild(button)
 	}
 }
 

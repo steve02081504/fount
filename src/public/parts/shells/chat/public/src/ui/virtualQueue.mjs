@@ -1,6 +1,6 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { createVirtualList } from '../../../../../scripts/virtualList.mjs'
+import { createVirtualList } from '../../../../../scripts/lib/virtualList.mjs'
 import { getChatLog, getChatLogLength } from '../../src/endpoints.mjs'
 import { modifyTimeLine } from '../endpoints.mjs'
 import { applySlice } from '../stream.mjs'

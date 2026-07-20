@@ -1,8 +1,8 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { geti18n } from '../../../../../scripts/i18n/index.mjs'
-import { svgInliner } from '../../../../../scripts/svgInliner.mjs'
-import { renderTemplate } from '../../../../../scripts/template.mjs'
+import { svgInliner } from '../../../../../scripts/lib/svgInliner.mjs'
 import { defaultIcons, genericDefaultIcon } from '../constants.mjs'
 
 const itemModal = document.getElementById('item-modal')
@@ -44,7 +44,6 @@ export function createActionButtons(part, interfacesRegistry) {
 						{ geti18n }
 					)
 				})
-
 			else {
 				button.href = interfaceItem.url
 					.replaceAll('${name}', partname)
@@ -81,15 +80,15 @@ export async function showItemModal(part) {
 	})
 
 	itemModal.addEventListener('close', () => {
-		const tiltEl = itemModalContent.querySelector('.modal-image-wrapper')
-		if (tiltEl && tiltEl.vanillaTilt)
-			tiltEl.vanillaTilt.destroy()
+		const tiltElement = itemModalContent.querySelector('.modal-image-wrapper')
+		if (tiltElement && tiltElement.vanillaTilt)
+			tiltElement.vanillaTilt.destroy()
 	}, { once: true })
 
 	const actionsContainer = modalView.querySelector('.modal-actions-container')
 	const buttons = createActionButtons(part, part.interfaces || []) // Pass the part object
 
-	buttons.forEach(btn => actionsContainer.appendChild(btn))
+	buttons.forEach(button => actionsContainer.appendChild(button))
 
 	setTimeout(() => {
 		const containerRect = actionsContainer.getBoundingClientRect()

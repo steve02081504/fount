@@ -1,4 +1,4 @@
-import { onServerEvent } from '../server_events.mjs'
+import { onServerEvent } from '../api/server_events.mjs'
 
 import {
 	loadPreferredLangs,

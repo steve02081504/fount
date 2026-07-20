@@ -6,30 +6,32 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { onServerEvent } from './scripts/server_events.mjs'
+import { onServerEvent } from './scripts/api/server_events.mjs'
 
 let skipBreadcrumb = false
-try { Sentry.init({
-	dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
-	/**
-	 * 在 Sentry 捕获面包屑事件之前进行处理。
-	 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
-	 * @param {object} hint - 包含原始事件等信息的辅助对象。
-	 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
-	 */
-	beforeBreadcrumb: (breadcrumb, hint) => {
-		if (skipBreadcrumb) return null
-		return breadcrumb
-	},
-	sendDefaultPii: true,
-	tunnel: '/api/sentrytunnel',
-	integrations: [
-		Sentry.browserTracingIntegration()
-	],
-	// Performance Monitoring
-	tracesSampleRate: 1.0,
-	tracePropagationTargets: [window.location.origin || 'localhost'],
-}) } catch (error) { console.error(error) }
+if (!globalThis.fount?.test?.enabled) try {
+	Sentry.init({
+		dsn: 'https://17e29e61e45e4da826ba5552a734781d@o4509258848403456.ingest.de.sentry.io/4509258936090704',
+		/**
+		 * 在 Sentry 捕获面包屑事件之前进行处理。
+		 * @param {object} breadcrumb - Sentry捕获到的面包屑事件对象。
+		 * @param {object} hint - 包含原始事件等信息的辅助对象。
+		 * @returns {object | null} 返回修改后的面包屑对象，或 null 以忽略此面包屑。
+		 */
+		beforeBreadcrumb: (breadcrumb, hint) => {
+			if (skipBreadcrumb) return null
+			return breadcrumb
+		},
+		sendDefaultPii: true,
+		tunnel: '/api/sentrytunnel',
+		integrations: [
+			Sentry.browserTracingIntegration()
+		],
+		// Performance Monitoring
+		tracesSampleRate: 1.0,
+		tracePropagationTargets: [window.location.origin || 'localhost'],
+	})
+} catch (error) { console.error(error) }
 console.noBreadcrumb = {
 	/**
 	 * 写入日志并跳过面包屑记录
@@ -47,9 +49,47 @@ await import('https://cdn.jsdelivr.net/gh/steve02081504/js-polyfill/index.mjs').
 // register service worker
 if (navigator.serviceWorker)
 	navigator.serviceWorker.register('/service_worker.mjs', { scope: '/', module: true })
+		.then(() => ensureWebPushSubscription())
 		.catch(error => {
 			console.error('Service Worker registration failed: ', error)
 		})
+
+/**
+ * @param {string} base64String URL-safe base64
+ * @returns {Uint8Array} applicationServerKey
+ */
+function urlBase64ToUint8Array(base64String) {
+	const padding = '='.repeat((4 - base64String.length % 4) % 4)
+	const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
+	const raw = atob(base64)
+	const output = new Uint8Array(raw.length)
+	for (let index = 0; index < raw.length; index++)
+		output[index] = raw.charCodeAt(index)
+	return output
+}
+
+/**
+ * 注册 Web Push 订阅并上报服务端。
+ * @returns {Promise<void>}
+ */
+async function ensureWebPushSubscription() {
+	if (!('PushManager' in window) || !navigator.serviceWorker) return
+	const registration = await navigator.serviceWorker.ready
+	const keyResponse = await fetch('/api/notify/vapid-public-key', { credentials: 'include' })
+	if (!keyResponse.ok) return
+	const { publicKey } = await keyResponse.json()
+	if (!publicKey) return
+	const applicationServerKey = urlBase64ToUint8Array(publicKey)
+	let subscription = await registration.pushManager.getSubscription()
+	if (!subscription)
+		subscription = await registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey })
+	await fetch('/api/notify/push-subscribe', {
+		method: 'POST',
+		credentials: 'include',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(subscription.toJSON()),
+	})
+}
 
 const is_hidden_page = !window.innerHeight || !window.innerWidth
 
@@ -131,7 +171,7 @@ onServerEvent('page-modified', ({ path }) => {
  * @returns {void}
  */
 if (!is_hidden_page) onServerEvent('show-toast', async ({ type, message, duration }) => {
-	const { showToast } = await import('./scripts/toast.mjs')
+	const { showToast } = await import('./scripts/features/toast.mjs')
 	showToast(type, message, duration)
 })
 

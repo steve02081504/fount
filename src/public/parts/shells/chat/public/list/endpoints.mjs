@@ -16,7 +16,7 @@ export async function getChatList() {
 	}
 }
 
-import { getPartDetails } from '../../../../../scripts/parts.mjs'
+import { getPartDetails } from '../../../../../scripts/api/parts.mjs'
 
 const char_details_cache = {}
 

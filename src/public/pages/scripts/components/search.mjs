@@ -1,5 +1,5 @@
-import { onElementRemoved } from './onElementRemoved.mjs'
-import { parseRegexFromString, escapeRegExp } from './regex.mjs'
+import { onElementRemoved } from '../lib/onElementRemoved.mjs'
+import { parseRegexFromString, escapeRegExp } from '../lib/regex.mjs'
 
 /**
  * Symbol 用于在输入元素上存储清理函数。

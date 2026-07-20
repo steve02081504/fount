@@ -4,7 +4,7 @@ import { WebLinksAddon } from 'https://esm.sh/@xterm/addon-web-links'
 import chroma from 'https://esm.sh/chroma-js'
 import { Terminal } from 'https://esm.sh/xterm'
 
-import { onThemeChange } from './theme.mjs'
+import { onThemeChange } from '../theme/index.mjs'
 
 /**
  * 设置终端。

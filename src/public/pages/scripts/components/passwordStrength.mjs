@@ -1,7 +1,7 @@
 import { ZxcvbnFactory } from 'https://esm.sh/@zxcvbn-ts/core'
 import * as zxcvbnCommonPackage from 'https://esm.sh/@zxcvbn-ts/language-common'
 
-import { geti18n, i18nElement, setLocalizeLogic } from './i18n/index.mjs'
+import { geti18n, setLocalizeLogic } from '../i18n/index.mjs'
 
 const zxcvbnInstance = new ZxcvbnFactory({
 	graphs: zxcvbnCommonPackage.adjacencyGraphs,
@@ -9,6 +9,17 @@ const zxcvbnInstance = new ZxcvbnFactory({
 		...zxcvbnCommonPackage.dictionary,
 	}
 })
+
+const PASSWORD_STRENGTH_BY_SCORE = [
+	{ borderClass: 'border-red-500', textClass: 'text-red-500', i18nKey: 'auth.passwordStrength.veryWeak' },
+	{ borderClass: 'border-orange-500', textClass: 'text-orange-500', i18nKey: 'auth.passwordStrength.weak' },
+	{ borderClass: 'border-yellow-500', textClass: 'text-yellow-500', i18nKey: 'auth.passwordStrength.normal' },
+	{ borderClass: 'border-lime-500', textClass: 'text-lime-500', i18nKey: 'auth.passwordStrength.strong' },
+	{ borderClass: 'border-green-500', textClass: 'text-green-500', i18nKey: 'auth.passwordStrength.veryStrong' },
+]
+
+const PASSWORD_BORDER_CLASSES = PASSWORD_STRENGTH_BY_SCORE.map(({ borderClass }) => borderClass)
+const PASSWORD_TEXT_CLASSES = PASSWORD_STRENGTH_BY_SCORE.map(({ textClass }) => textClass)
 
 /**
  * 更新 zxcvbn 的翻译。
@@ -21,40 +32,16 @@ function updateZxcvbnTranslations() {
 /**
  * 评估密码强度。
  * @param {string} password - 要评估的密码。
- * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
+ * @returns {{score: number, borderColorClass: string, textClass: string, fullFeedback: string}} - 密码强度评估结果。
  */
 function evaluatePasswordStrength(password) {
 	const result = zxcvbnInstance.check(password)
-	let feedbackText = ''
-	let borderColorClass = ''
-
-	switch (result.score) {
-		case 0:
-			borderColorClass = 'border-red-500'
-			feedbackText = 'auth.passwordStrength.veryWeak'
-			break
-		case 1:
-			borderColorClass = 'border-orange-500'
-			feedbackText = 'auth.passwordStrength.weak'
-			break
-		case 2:
-			borderColorClass = 'border-yellow-500'
-			feedbackText = 'auth.passwordStrength.normal'
-			break
-		case 3:
-			borderColorClass = 'border-lime-500'
-			feedbackText = 'auth.passwordStrength.strong'
-			break
-		case 4:
-			borderColorClass = 'border-green-500'
-			feedbackText = 'auth.passwordStrength.veryStrong'
-			break
-	}
-	let fullFeedback = /* html */ `<strong data-i18n="${feedbackText}"></strong><br/>`
+	const { borderClass, textClass, i18nKey } = PASSWORD_STRENGTH_BY_SCORE[result.score]
+	let fullFeedback = /* html */ `<strong data-i18n="${i18nKey}"></strong><br/>`
 	if (result.feedback.warning) fullFeedback += result.feedback.warning + '<br/>'
 	if (result.feedback.suggestions) fullFeedback += result.feedback.suggestions.join('<br/>')
 
-	return { score: result.score, borderColorClass, fullFeedback }
+	return { score: result.score, borderColorClass: borderClass, textClass, fullFeedback }
 }
 
 /**
@@ -67,28 +54,25 @@ function evaluatePasswordStrength(password) {
 function updatePasswordStrengthUI(password, passwordInput, passwordStrengthFeedback) {
 	if (!password) {
 		passwordStrengthFeedback.innerHTML = ''
-		passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
+		passwordInput.classList.remove(...PASSWORD_BORDER_CLASSES)
 		return
 	}
 
-	const { borderColorClass, fullFeedback } = evaluatePasswordStrength(password)
+	const { borderColorClass, textClass, fullFeedback } = evaluatePasswordStrength(password)
 
-	// Update border color
-	passwordInput.classList.remove('border-red-500', 'border-orange-500', 'border-yellow-500', 'border-lime-500', 'border-green-500')
+	passwordInput.classList.remove(...PASSWORD_BORDER_CLASSES)
 	passwordInput.classList.add(borderColorClass)
 
-	// Update password strength feedback text
 	passwordStrengthFeedback.innerHTML = fullFeedback
-	i18nElement(passwordStrengthFeedback)
-	passwordStrengthFeedback.classList.remove('text-red-500', 'text-orange-500', 'text-yellow-500', 'text-lime-500', 'text-green-500')
-	passwordStrengthFeedback.classList.add(borderColorClass.replace('border-', 'text-'))
+	passwordStrengthFeedback.classList.remove(...PASSWORD_TEXT_CLASSES)
+	passwordStrengthFeedback.classList.add(textClass)
 }
 
 /**
  * 在密码输入字段上初始化密码强度计。
  * @param {HTMLInputElement} passwordInput - 密码输入元素。
  * @param {HTMLElement} passwordStrengthFeedback - 用于显示反馈的元素。
- * @returns {{ evaluate: () => { score: number, borderColorClass: string, fullFeedback: string } }} - 用于与强度计交互的对象。
+ * @returns {{ evaluate: () => { score: number, borderColorClass: string, textClass: string, fullFeedback: string } }} - 用于与强度计交互的对象。
  */
 export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedback) {
 	/**
@@ -106,7 +90,7 @@ export function initPasswordStrengthMeter(passwordInput, passwordStrengthFeedbac
 	return {
 		/**
 		 * 评估密码强度。
-		 * @returns {{score: number, borderColorClass: string, fullFeedback: string}} - 密码强度评估结果。
+		 * @returns {{score: number, borderColorClass: string, textClass: string, fullFeedback: string}} - 密码强度评估结果。
 		 */
 		evaluate: () => evaluatePasswordStrength(passwordInput.value)
 	}

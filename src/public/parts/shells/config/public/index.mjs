@@ -4,14 +4,14 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
 import { initTranslations, i18nElement, geti18n, confirmI18n, console } from '/scripts/i18n/index.mjs'
-import { createJsonEditor } from '/scripts/jsonEditor.mjs'
-import { getPartDetails } from '/scripts/parts.mjs'
-import { svgInliner } from '/scripts/svgInliner.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
+import { createJsonEditor } from '/scripts/components/jsonEditor.mjs'
+import { getPartDetails } from '/scripts/api/parts.mjs'
+import { svgInliner } from '/scripts/lib/svgInliner.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 import { saveConfigData, getConfigData, getPartDisplay } from './src/endpoints.mjs' // 导入 API 模块
-import { createPartpathPicker } from '/scripts/partpath_picker.mjs'
+import { createPartpathPicker } from '/scripts/components/partpath_picker.mjs'
 
 const jsonEditorContainer = document.getElementById('jsonEditor')
 const partDisplayContainer = document.getElementById('partDisplay')
