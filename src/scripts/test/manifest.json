@@ -1,0 +1,265 @@
+{
+	"id": "testkit",
+	"suites": [
+		{
+			"name": "manifest_selectors",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/manifest_selectors.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/manifest_selectors.test.mjs",
+				"src/scripts/test/core/manifest.mjs"
+			]
+		},
+		{
+			"name": "trigger_filter",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/trigger_filter.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/trigger_filter.test.mjs",
+				"src/scripts/test/core/trigger_filter.mjs",
+				"src/scripts/test/core/manifest.mjs",
+				"src/scripts/test/core/state.mjs"
+			]
+		},
+		{
+			"name": "dependencies_state",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/dependencies_state.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/dependencies_state.test.mjs",
+				"src/scripts/test/core/dependencies.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/manifest.mjs",
+				"src/scripts/test/core/concurrency.mjs",
+				"src/scripts/test/core/repo_root.mjs",
+				"src/scripts/test/runner/dependency_scheduler.mjs",
+				"src/scripts/test/runner/scheduler.mjs"
+			]
+		},
+		{
+			"name": "continue_reason",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/continue_reason.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/continue_reason.test.mjs",
+				"src/scripts/test/runner/continue_reason.mjs",
+				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/runner/selection.mjs",
+				"src/scripts/test/core/estimate.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/test/core/verdict.mjs"
+			]
+		},
+		{
+			"name": "serial_files",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/serial_files.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/serial_files.test.mjs",
+				"src/scripts/test/core/serial_files.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/core/selector.mjs",
+				"src/scripts/test/core/protocol.mjs",
+				"src/scripts/test/core/resources.mjs",
+				"src/scripts/test/runner/index.mjs"
+			]
+		},
+		{
+			"name": "selection",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/selection.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/selection.test.mjs",
+				"src/scripts/test/runner/selection.mjs",
+				"src/scripts/test/runner/continue_reason.mjs",
+				"src/scripts/test/core/dependencies.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/manifest.mjs",
+				"src/scripts/test/core/selector.mjs"
+			]
+		},
+		{
+			"name": "protocol_order",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/protocol_order.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/protocol_order.test.mjs",
+				"src/scripts/test/core/protocol.mjs",
+				"src/scripts/test/core/verdict.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/playwright/phases.mjs",
+				"src/scripts/test/runner/suite_run.mjs"
+			]
+		},
+		{
+			"name": "runner_watchdog",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/runner_watchdog.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/runner_watchdog.test.mjs",
+				"src/scripts/test/runner/run_command.mjs",
+				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/ms.mjs"
+			]
+		},
+		{
+			"name": "resources_scheduler",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/resources_scheduler.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/resources_scheduler.test.mjs",
+				"src/scripts/test/runner/scheduler.mjs",
+				"src/scripts/test/core/resources.mjs",
+				"src/scripts/test/core/baseline.mjs",
+				"src/scripts/test/core/concurrency.mjs"
+			]
+		},
+		{
+			"name": "proc_sample",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/proc_sample.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/proc_sample.test.mjs",
+				"src/scripts/test/core/proc_sample.mjs"
+			]
+		},
+		{
+			"name": "deno_panic",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/deno_panic.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/deno_panic.test.mjs",
+				"src/scripts/test/core/deno_panic.mjs",
+				"src/scripts/test/core/paths.mjs"
+			]
+		},
+		{
+			"name": "run_timing",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/run_timing.test.mjs",
+				"./src/scripts/test/selftest/format_duration.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/run_timing.test.mjs",
+				"src/scripts/test/selftest/format_duration.test.mjs",
+				"src/scripts/test/core/run_timing.mjs",
+				"src/scripts/test/core/format_duration.mjs",
+				"src/scripts/test/core/estimate.mjs",
+				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/runner/index.mjs"
+			]
+		},
+		{
+			"name": "estimate",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/estimate.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/estimate.test.mjs",
+				"src/scripts/test/core/estimate.mjs",
+				"src/scripts/test/core/state.mjs",
+				"src/scripts/test/core/plan.mjs",
+				"src/scripts/test/core/verdict.mjs",
+				"src/scripts/test/runner/scheduler.mjs",
+				"src/scripts/test/core/resources.mjs",
+				"src/scripts/test/core/baseline.mjs",
+				"src/scripts/test/core/run_timing.mjs"
+			]
+		},
+		{
+			"name": "trigger_audit",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/trigger_audit.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/trigger_audit.test.mjs",
+				"src/scripts/test/core/trigger_audit.mjs",
+				"src/scripts/test/core/glob.mjs",
+				"src/scripts/test/runner/report.mjs",
+				"src/scripts/test/runner/index.mjs"
+			]
+		},
+		{
+			"name": "disposable_path",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/disposable_path.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/disposable_path.test.mjs",
+				"src/scripts/test/core/disposable_path.mjs",
+				"src/scripts/test/core/paths.mjs",
+				"src/scripts/test/core/repo_root.mjs",
+				"src/scripts/test/node/boot.mjs",
+				"src/scripts/test/node/launch.mjs"
+			]
+		},
+		{
+			"name": "browser_diagnostics",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/browser_diagnostics.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/browser_diagnostics.test.mjs",
+				"src/scripts/test/playwright/browser_diagnostics.mjs",
+				"src/scripts/test/playwright/fixtures.mjs",
+				"src/scripts/test/core/output_filter.mjs"
+			]
+		},
+		{
+			"name": "fatal_exit",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/fatal_exit.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/fatal_exit.test.mjs",
+				"src/scripts/test/env.mjs",
+				"src/scripts/test/live/runner.mjs"
+			]
+		},
+		{
+			"name": "port_lease",
+			"run": [
+				"deno", "test", "--no-check", "--allow-scripts", "--allow-all", "-c", "./deno.json",
+				"./src/scripts/test/selftest/port_lease.test.mjs"
+			],
+			"triggers": [
+				"src/scripts/test/selftest/port_lease.test.mjs",
+				"src/scripts/test/core/port_lease.mjs",
+				"src/scripts/test/node/launch.mjs"
+			]
+		}
+	]
+}
