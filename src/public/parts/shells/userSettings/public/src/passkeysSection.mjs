@@ -1,8 +1,8 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { confirmI18n } from '/scripts/i18n/index.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { mountTemplate, renderTemplate } from '/scripts/template.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { mountTemplate, renderTemplate } from '/scripts/features/template.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,
@@ -24,7 +24,7 @@ import { escapeAttr, escapeHtmlText } from './uiEscape.mjs'
 
 const passkeyList = document.getElementById('passkeyList')
 const noPasskeysText = document.getElementById('noPasskeysText')
-const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
+const refreshPasskeysButton = document.getElementById('refreshPasskeysButton')
 const addPasskeyForm = document.getElementById('addPasskeyForm')
 const newPasskeyNameInput = document.getElementById('newPasskeyName')
 
@@ -154,6 +154,6 @@ async function onAddPasskeySubmit(event) {
  * @returns {void}
  */
 export function installPasskeysSection() {
-	refreshPasskeysBtn.addEventListener('click', () => loadPasskeysList())
+	refreshPasskeysButton.addEventListener('click', () => loadPasskeysList())
 	addPasskeyForm.addEventListener('submit', onAddPasskeySubmit)
 }

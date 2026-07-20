@@ -1,28 +1,73 @@
-#!/usr/bin/env -S deno run -A
+#!/usr/bin/env -S deno run --allow-scripts --allow-all
 
 /**
  * 独立 Subfount 客户端
  *
- * 此脚本通过 Trystero 连接到主 fount 实例
+ * 此脚本通过 fount 自带 P2P link scope 连接到主 fount 实例
  * 并执行主机发送的 JavaScript 代码。
  *
- * 用法:
- *   deno run -A subfount.mjs <host-room-id> <password>
+ * 首次使用:
+ *   1. 将此文件放入一个空文件夹
+ *   2. 在该文件夹中运行: deno install --allow-scripts --allow-all --entrypoint subfount.mjs
+ *   3. 然后运行: deno run --allow-scripts --allow-all subfount.mjs <host-room-id> <password>
  *
  * 或交互式运行:
- *   deno run -A subfount.mjs
+ *   deno run --allow-scripts --allow-all subfount.mjs
  */
 
+import fs from 'node:fs'
 import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
 import { setInterval, clearInterval, setTimeout } from 'node:timers'
-import { serialize } from 'node:v8'
+import { fileURLToPath } from 'node:url'
+process.on('uncaughtException', (err) => {
+	if (err?.code === 'ECONNRESET' || err?.code === 'ECONNREFUSED' || err?.message?.includes('socket hang up'))
+		return
+	console.error('Uncaught exception:', err)
+	process.exit(1)
+})
 
-import { exec } from 'npm:@steve02081504/exec'
-import inquirer from 'npm:inquirer'
-import { RTCPeerConnection } from 'npm:node-datachannel/polyfill'
-import { on_shutdown } from 'npm:on-shutdown'
-import { joinRoom } from 'npm:trystero/mqtt'
+// --- 自动引导：确保 deno.json 和 node_modules 存在 ---
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const denoJsonPath = path.join(__dirname, 'deno.json')
+
+if (!fs.existsSync(denoJsonPath)) {
+	fs.writeFileSync(denoJsonPath, JSON.stringify({ nodeModulesDir: 'auto' }, null, '\t') + '\n')
+	console.log('Created deno.json')
+}
+else 
+	// 确保已有 deno.json 包含 nodeModulesDir
+	try {
+		const existing = JSON.parse(fs.readFileSync(denoJsonPath, 'utf-8'))
+		if (!existing.nodeModulesDir) {
+			existing.nodeModulesDir = 'auto'
+			fs.writeFileSync(denoJsonPath, JSON.stringify(existing, null, '\t') + '\n')
+			console.log('Updated deno.json (added nodeModulesDir)')
+		}
+	}
+	catch { }
+
+
+// --- 动态加载 npm 依赖 ---
+let exec, inquirer, on_shutdown, createScopedLinkRoom
+try {
+	;({ exec } = await import('npm:@steve02081504/exec'))
+	;({ default: inquirer } = await import('npm:inquirer'))
+	;({ on_shutdown } = await import('npm:on-shutdown'))
+	const subfountP2p = await import('npm:@steve02081504/fount-p2p/index')
+	await subfountP2p.startNode({ nodeDir: path.join(__dirname, '.fount-p2p-node') })
+	createScopedLinkRoom = subfountP2p.createScopedLinkRoom
+}
+catch (error) {
+	console.error('\nFailed to load dependencies:', error.message)
+	console.log('\nTo fix:')
+	console.log('  1. Ensure deno.json exists in this directory (auto-created on first run)')
+	console.log('  2. Run: deno install --allow-scripts --allow-all --entrypoint subfount.mjs')
+	console.log('  3. Re-run this script\n')
+	process.exit(1)
+}
 
 const args = process.argv.slice(2)
 
@@ -258,10 +303,8 @@ async function handleRunCode(message, peerId) {
 	await sendDeviceInfoToHost()
 
 	try {
-		// 导入 async_eval
 		const { async_eval } = await import('npm:@steve02081504/async-eval')
 
-		// 为通过 Trystero 的远程调用创建回调函数
 		let callback = null
 		if (callbackInfo && actions.sendCallback)
 			/**
@@ -271,17 +314,15 @@ async function handleRunCode(message, peerId) {
 			callback = async (data) => {
 				await actions.sendCallback({
 					partpath: callbackInfo.partpath,
-					data: serialize(data),
+					data,
 				}, hostPeerId)
 			}
 
-		// 执行代码
 		const evalResult = await async_eval(script, { callback })
 
-		// 通过 Trystero 发送结果回传
 		await actions.sendResponse({
 			requestId,
-			payload: serialize(evalResult),
+			payload: evalResult,
 		}, hostPeerId)
 
 		// 执行代码后更新设备信息
@@ -319,7 +360,7 @@ async function handleShellExec(message, peerId) {
 			const result = await shell_exec_map[shell](command, options || {})
 			await actions.sendResponse({
 				requestId,
-				payload: serialize(result),
+				payload: result,
 			}, hostPeerId)
 			return
 		}
@@ -328,7 +369,7 @@ async function handleShellExec(message, peerId) {
 		const result = await exec(command, options || {})
 		await actions.sendResponse({
 			requestId,
-			payload: serialize(result),
+			payload: result,
 		}, hostPeerId)
 	}
 	catch (error) {
@@ -342,22 +383,19 @@ async function handleShellExec(message, peerId) {
 }
 
 /**
- * 通过 Trystero 连接到主机。
+ * 通过 scope room 连接到主机。
  */
-async function connectViaTrystero() {
+async function connectViaP2P() {
 	try {
 		console.log('Connecting to host...')
-		// 生成机器 ID（用于分配数字 ID）
 		deviceId = await generateDeviceId()
 
-		const config = {
-			appId: 'fount-subfounts',
-			rtcPolyfill: RTCPeerConnection,
-			password, // 使用连接密码进行加密
-		}
-		room = joinRoom(config, hostRoomId)
+		room = createScopedLinkRoom({
+			scope: `subfount:${hostRoomId}`,
+			roomSecret: password,
+		})
+		await room.start()
 
-		// 设置操作处理程序
 		const actionMap = {
 			authenticate: ['sendAuth', 'getAuth'],
 			device_info: ['sendDeviceInfo', 'getDeviceInfo'],
@@ -373,7 +411,6 @@ async function connectViaTrystero() {
 			if (getName) actions[getName] = get
 		}
 
-		// 处理身份验证响应
 		actions.getAuth((data, peerId) => {
 			if (data.type === 'authenticated') {
 				authenticated = true
@@ -385,13 +422,12 @@ async function connectViaTrystero() {
 			else if (data.type === 'auth_error') {
 				console.log('✗ Authentication failed, retrying in 5 seconds...')
 				setTimeout(() => {
-					if (room) room.leave()
-					setTimeout(connectViaTrystero, 1000)
+					if (room) void room.leave()
+					setTimeout(connectViaP2P, 1000)
 				}, 5000)
 			}
 		})
 
-		// 处理运行代码和 shell 执行请求
 		/**
 		 * 创建已验证请求的处理函数。
 		 * @param {Function} handler - 请求处理函数。
@@ -403,7 +439,6 @@ async function connectViaTrystero() {
 		actions.getRunCode(handleAuthenticatedRequest(handleRunCode))
 		actions.getShellExec(handleAuthenticatedRequest(handleShellExec))
 
-		// 处理对等端加入（寻找主机并发送身份验证）
 		room.onPeerJoin((peerId) => {
 			if (!authenticated && actions.sendAuth && !hostPeerId) {
 				console.log('Host discovered, sending authentication...')
@@ -412,7 +447,6 @@ async function connectViaTrystero() {
 			}
 		})
 
-		// 处理对等端离开
 		room.onPeerLeave((peerId) => {
 			if (peerId === hostPeerId) {
 				console.log('✗ Disconnected from host')
@@ -426,16 +460,15 @@ async function connectViaTrystero() {
 	catch (error) {
 		console.error('Connection failed:', error.message)
 		console.log('Retrying in 5 seconds...')
-		setTimeout(connectViaTrystero, 5000)
+		setTimeout(connectViaP2P, 5000)
 	}
 }
 
-// 开始通过 Trystero 连接
-connectViaTrystero()
+connectViaP2P()
 
 // 处理优雅关闭
 on_shutdown(() => {
 	console.log('\nShutting down...')
 	clearInterval(deviceInfoUpdateInterval)
-	if (room) room.leave()
+	if (room) void room.leave()
 })

@@ -1,11 +1,11 @@
 /**
  * 用户设置 shell 的客户端逻辑。
  */
-import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/endpoints.mjs'
+import { getApiKeys, createApiKey, revokeApiKey, logout } from '../../scripts/api/base.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, geti18n, promptI18n, confirmI18n, console } from '../../scripts/i18n/index.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { showToastI18n } from '../../scripts/toast.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
+import { mountTemplate, renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
 
 import {
 	isPasswordConfirmationDialogDismissed,
@@ -39,25 +39,25 @@ const userInfoUsername = document.getElementById('userInfoUsername')
 const userInfoCreationDate = document.getElementById('userInfoCreationDate')
 const userInfoFolderSize = document.getElementById('userInfoFolderSize')
 const userInfoFolderPath = document.getElementById('userInfoFolderPath')
-const copyFolderPathBtn = document.getElementById('copyFolderPathBtn')
+const copyFolderPathButton = document.getElementById('copyFolderPathButton')
 const changePasswordForm = document.getElementById('changePasswordForm')
 const renameUserForm = document.getElementById('renameUserForm')
 const deviceList = document.getElementById('deviceList')
 const noDevicesText = document.getElementById('noDevicesText')
-const refreshDevicesBtn = document.getElementById('refreshDevicesBtn')
-const logoutBtn = document.getElementById('logoutBtn')
-const deleteAccountBtn = document.getElementById('deleteAccountBtn')
+const refreshDevicesButton = document.getElementById('refreshDevicesButton')
+const logoutButton = document.getElementById('logoutButton')
+const deleteAccountButton = document.getElementById('deleteAccountButton')
 // API Key elements
 const createApiKeyForm = document.getElementById('createApiKeyForm')
 const apiKeyList = document.getElementById('apiKeyList')
 const noApiKeysText = document.getElementById('noApiKeysText')
-const refreshApiKeysBtn = document.getElementById('refreshApiKeysBtn')
+const refreshApiKeysButton = document.getElementById('refreshApiKeysButton')
 const newApiKeyModal = document.getElementById('newApiKeyModal')
 const newApiKeyInput = document.getElementById('newApiKeyInput')
-const copyNewApiKeyBtn = document.getElementById('copyNewApiKeyBtn')
+const copyNewApiKeyButton = document.getElementById('copyNewApiKeyButton')
 const passkeyList = document.getElementById('passkeyList')
 const noPasskeysText = document.getElementById('noPasskeysText')
-const refreshPasskeysBtn = document.getElementById('refreshPasskeysBtn')
+const refreshPasskeysButton = document.getElementById('refreshPasskeysButton')
 const addPasskeyForm = document.getElementById('addPasskeyForm')
 const newPasskeyNameInput = document.getElementById('newPasskeyName')
 const editorCommandForm = document.getElementById('editorCommandForm')
@@ -67,7 +67,7 @@ const editorArgsTemplateInput = document.getElementById('editorArgsTemplateInput
 const editorTestPath = document.getElementById('editorTestPath')
 const editorTestLine = document.getElementById('editorTestLine')
 const editorTestColumn = document.getElementById('editorTestColumn')
-const testEditorCommandBtn = document.getElementById('testEditorCommandBtn')
+const testEditorCommandButton = document.getElementById('testEditorCommandButton')
 
 /**
  * 加载用户信息。
@@ -87,7 +87,7 @@ async function loadUserInfo() {
 	}
 }
 
-copyFolderPathBtn.addEventListener('click', async () => {
+copyFolderPathButton.addEventListener('click', async () => {
 	try {
 		await navigator.clipboard.writeText(userInfoFolderPath.textContent)
 		showToastI18n('success', 'userSettings.userInfo.copiedAlert')
@@ -201,10 +201,10 @@ async function loadAndDisplayDevices() {
 	}
 }
 
-refreshDevicesBtn.addEventListener('click', loadAndDisplayDevices)
+refreshDevicesButton.addEventListener('click', loadAndDisplayDevices)
 
 // 登出处理函数
-logoutBtn.addEventListener('click', async () => {
+logoutButton.addEventListener('click', async () => {
 	if (!confirmI18n('userSettings.logout.confirmMessage')) return
 	try {
 		await logout()
@@ -221,7 +221,7 @@ logoutBtn.addEventListener('click', async () => {
 })
 
 
-deleteAccountBtn.addEventListener('click', async () => {
+deleteAccountButton.addEventListener('click', async () => {
 	if (!confirmI18n('userSettings.deleteAccount.confirmMessage1')) return
 
 	const usernameToConfirm = userInfoUsername.textContent
@@ -300,7 +300,7 @@ async function loadAndDisplayApiKeys() {
 	}
 }
 
-refreshApiKeysBtn.addEventListener('click', loadAndDisplayApiKeys)
+refreshApiKeysButton.addEventListener('click', loadAndDisplayApiKeys)
 
 createApiKeyForm.addEventListener('submit', async (event) => {
 	event.preventDefault()
@@ -322,7 +322,7 @@ createApiKeyForm.addEventListener('submit', async (event) => {
 	}
 })
 
-copyNewApiKeyBtn.addEventListener('click', async () => {
+copyNewApiKeyButton.addEventListener('click', async () => {
 	try {
 		await navigator.clipboard.writeText(newApiKeyInput.value)
 		showToastI18n('success', 'userSettings.newApiKey.copiedAlert')
@@ -386,7 +386,7 @@ editorCommandForm.addEventListener('submit', async event => {
 	}
 })
 
-testEditorCommandBtn.addEventListener('click', async () => {
+testEditorCommandButton.addEventListener('click', async () => {
 	const filePath = editorTestPath.value.trim()
 	if (!filePath)
 		return showToastI18n('error', 'userSettings.editorCommand.testPathRequired')

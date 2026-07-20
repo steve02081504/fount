@@ -4,46 +4,9 @@
  * 当 URL 过长时自动使用备选方案
  */
 
-const CATBOX_API_URL = 'https://litterbox.catbox.moe/resources/internals/api.php'
+import { downloadFromCatbox, uploadToCatbox } from './catbox.mjs'
+
 const MAX_URL_LENGTH = 65536
-
-/**
- * 将数据上传到 Catbox 并返回文件 ID。
- * @param {string} content 要上传的内容。
- * @param {string} expiration 文件的过期时间（例如，"1h"、"24h"）。
- * @returns {Promise<string>} 文件 ID（即 catbox 上的文件名）。
- */
-async function uploadToCatbox(content, expiration = '1h') {
-	const formData = new FormData()
-	formData.append('reqtype', 'fileupload')
-	formData.append('time', expiration)
-	formData.append('fileToUpload', new Blob([content]), 'fount_params.json')
-
-	const response = await fetch(CATBOX_API_URL, {
-		method: 'POST',
-		body: formData,
-	})
-
-	if (!response.ok)
-		throw new Error(`Failed to upload to Catbox: ${await response.text()}`)
-
-	const fileUrl = await response.text()
-	// The response is the full URL, e.g., https://litter.catbox.moe/abcdef
-	// The fileId is the part after the last slash.
-	return new URL(fileUrl).pathname.substring(1)
-}
-
-/**
- * 从 Catbox 下载数据。
- * @param {string} fileId 文件 ID。
- * @returns {Promise<string>} 数据内容。
- */
-async function downloadFromCatbox(fileId) {
-	const resp = await fetch(`https://litter.catbox.moe/${fileId}`)
-	if (!resp.ok)
-		throw new Error(`Failed to fetch data from Catbox: ${resp.statusText}`)
-	return await resp.text()
-}
 
 /**
  * 为 URL 参数执行传输策略并修改目标 URL。
@@ -62,10 +25,18 @@ export async function applyUrlParamsTransferStrategy(targetUrl, params) {
 	// URL 太长，将参数序列化为 JSON
 	const paramsJson = JSON.stringify(Object.fromEntries(params))
 
-	// 1. 尝试使用剪贴板
+	// 1. 尝试使用剪贴板；成功时顺带上传 Catbox 作为读失败时的持久回退
 	try {
 		await navigator.clipboard.writeText(paramsJson)
-		targetUrl.search = new URLSearchParams({ paramsFrom: 'clipboard' }).toString()
+		const handoff = new URLSearchParams({ paramsFrom: 'clipboard' })
+		try {
+			const fileId = await uploadToCatbox(paramsJson, '1h', 'fount_params.json')
+			handoff.set('paramsFileId', fileId)
+		}
+		catch (catboxErr) {
+			console.warn('Catbox backup upload failed after clipboard write.', catboxErr)
+		}
+		targetUrl.search = handoff.toString()
 		console.log('URL parameters copied to clipboard for transfer.')
 		return targetUrl
 	}
@@ -75,7 +46,7 @@ export async function applyUrlParamsTransferStrategy(targetUrl, params) {
 
 	// 2. 回退到 Catbox
 	try {
-		const fileId = await uploadToCatbox(paramsJson, '1h')
+		const fileId = await uploadToCatbox(paramsJson, '1h', 'fount_params.json')
 		targetUrl.search = new URLSearchParams({ paramsFileId: fileId }).toString()
 		console.log(`URL parameters uploaded to Catbox with fileId: ${fileId}`)
 		return targetUrl
@@ -101,24 +72,26 @@ export async function retrieveUrlParams(currentParams) {
 
 	let paramsJson = null
 
-	// 1. 从 Catbox 文件读取
-	if (fileId) try {
+	// 1. 剪贴板优先（成功路径不变）；非 JSON 内容走 catch，不阻断 Catbox 回退
+	if (from === 'clipboard')
+		try {
+			const text = await navigator.clipboard.readText()
+			JSON.parse(text)
+			paramsJson = text
+			console.log('URL parameters retrieved from clipboard.')
+		}
+		catch (e) {
+			console.warn('Clipboard read failed, trying persisted handoff.', e)
+		}
+
+	// 2. Catbox（含剪贴板失败后的备份，或仅 Catbox 传输）
+	if (!paramsJson && fileId) try {
 		paramsJson = await downloadFromCatbox(fileId)
 		console.log('URL parameters retrieved from Catbox.')
 	}
 	catch (e) {
 		console.warn('Failed to retrieve parameters from Catbox:', e)
 	}
-
-	// 2. 从剪贴板读取
-	if (!paramsJson && from === 'clipboard')
-		try {
-			paramsJson = await navigator.clipboard.readText()
-			if (paramsJson) console.log('URL parameters retrieved from clipboard.')
-		}
-		catch (e) {
-			console.warn('Clipboard read failed.', e)
-		}
 
 	// 3. 如果成功检索到参数，解析并返回
 	if (paramsJson) try {

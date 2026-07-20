@@ -1,11 +1,11 @@
 /**
  * 代理 shell 的客户端逻辑。
  */
-import { verifyApiKey, createApiKey } from '/scripts/endpoints.mjs'
+import { verifyApiKey, createApiKey } from '/scripts/api/base.mjs'
 import { initTranslations, console } from '/scripts/i18n/index.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
-import { showToast, showToastI18n } from '/scripts/toast.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { showToast, showToastI18n } from '/scripts/features/toast.mjs'
 
 applyTheme()
 usingTemplates('/parts/shells:proxy/templates')

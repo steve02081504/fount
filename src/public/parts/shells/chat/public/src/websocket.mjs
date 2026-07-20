@@ -1,4 +1,4 @@
-import { onServerEvent } from '../../../../../scripts/server_events.mjs'
+import { onServerEvent } from '../../../../../scripts/api/server_events.mjs'
 
 import { currentChatId } from './endpoints.mjs'
 import {

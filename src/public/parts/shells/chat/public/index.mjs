@@ -2,8 +2,8 @@
  * 聊天页面的入口点。
  */
 import { initTranslations } from '../../scripts/i18n/index.mjs'
-import { usingTemplates } from '../../scripts/template.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
+import { usingTemplates } from '../../scripts/features/template.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
 
 import { initializeChat } from './src/chat.mjs'
 
