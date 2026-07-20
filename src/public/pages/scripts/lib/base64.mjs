@@ -4,8 +4,10 @@
  */
 export function arrayBufferToBase64(buffer) {
 	const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer)
+	const chunkSize = 0x8000
 	let binary = ''
-	for (const byte of bytes) binary += String.fromCharCode(byte)
+	for (let i = 0; i < bytes.length; i += chunkSize)
+		binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize))
 	return btoa(binary)
 }
 

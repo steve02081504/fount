@@ -2,6 +2,8 @@
  * 浏览器端图片编辑器：裁剪 / 马赛克 / 画笔。纯 canvas，无第三方依赖。
  */
 
+import { escapeHtml } from '../lib/escapeHtml.mjs'
+
 const IMAGE_EDITOR_CSS = '/scripts/imageEditor/imageEditor.css'
 
 /**
@@ -26,13 +28,19 @@ export function openImageEditor(file, labels = {}) {
 		const objectUrl = URL.createObjectURL(file)
 		const dialog = document.createElement('dialog')
 		dialog.className = 'modal image-editor-modal'
+		const title = escapeHtml(labels.title || 'Edit image')
+		const cropLabel = escapeHtml(labels.cropLabel || 'Crop')
+		const mosaicLabel = escapeHtml(labels.mosaicLabel || 'Mosaic')
+		const brushLabel = escapeHtml(labels.brushLabel || 'Brush')
+		const cancelLabel = escapeHtml(labels.cancelLabel || 'Cancel')
+		const applyLabel = escapeHtml(labels.applyLabel || 'Apply')
 		dialog.innerHTML = `
 			<div class="modal-box image-editor-box">
-				<h3 class="font-bold text-lg">${labels.title || 'Edit image'}</h3>
+				<h3 class="font-bold text-lg">${title}</h3>
 				<div class="image-editor-toolbar">
-					<button type="button" class="btn btn-sm" data-tool="crop">${labels.cropLabel || 'Crop'}</button>
-					<button type="button" class="btn btn-sm" data-tool="mosaic">${labels.mosaicLabel || 'Mosaic'}</button>
-					<button type="button" class="btn btn-sm" data-tool="brush">${labels.brushLabel || 'Brush'}</button>
+					<button type="button" class="btn btn-sm" data-tool="crop">${cropLabel}</button>
+					<button type="button" class="btn btn-sm" data-tool="mosaic">${mosaicLabel}</button>
+					<button type="button" class="btn btn-sm" data-tool="brush">${brushLabel}</button>
 					<input type="color" data-brush-color value="#ff0000" title="brush color" />
 					<input type="range" min="2" max="48" value="12" data-brush-size title="brush size" />
 				</div>
@@ -40,8 +48,8 @@ export function openImageEditor(file, labels = {}) {
 					<canvas></canvas>
 				</div>
 				<div class="modal-action">
-					<button type="button" class="btn" data-cancel>${labels.cancelLabel || 'Cancel'}</button>
-					<button type="button" class="btn btn-primary" data-apply>${labels.applyLabel || 'Apply'}</button>
+					<button type="button" class="btn" data-cancel>${cancelLabel}</button>
+					<button type="button" class="btn btn-primary" data-apply>${applyLabel}</button>
 				</div>
 			</div>
 			<form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -63,14 +71,17 @@ export function openImageEditor(file, labels = {}) {
 		let drawing = false
 		let cropStart = null
 		let cropRect = null
+		let settled = false
 
 		/**
 		 * @param {File | null} result 编辑结果；取消或加载失败为 null
 		 * @returns {void}
 		 */
 		function finish(result) {
+			if (settled) return
+			settled = true
 			URL.revokeObjectURL(objectUrl)
-			dialog.close()
+			if (dialog.open) dialog.close()
 			dialog.remove()
 			resolve(result)
 		}
@@ -104,6 +115,7 @@ export function openImageEditor(file, labels = {}) {
 		})
 		dialog.querySelector('[data-cancel]')?.addEventListener('click', () => finish(null))
 		dialog.querySelector('[data-apply]')?.addEventListener('click', () => {
+			const outputType = file.type || 'image/png'
 			if (tool === 'crop' && cropRect && cropRect.w > 4 && cropRect.h > 4) {
 				const tmp = document.createElement('canvas')
 				tmp.width = Math.round(cropRect.w)
@@ -119,8 +131,8 @@ export function openImageEditor(file, labels = {}) {
 						return
 					}
 					const name = file instanceof File ? file.name : 'edited.png'
-					finish(new File([blob], name, { type: blob.type || 'image/png' }))
-				}, 'image/png')
+					finish(new File([blob], name, { type: blob.type || outputType }))
+				}, outputType)
 				return
 			}
 			canvas.toBlob(blob => {
@@ -129,10 +141,11 @@ export function openImageEditor(file, labels = {}) {
 					return
 				}
 				const name = file instanceof File ? file.name : 'edited.png'
-				finish(new File([blob], name, { type: blob.type || file.type || 'image/png' }))
-			}, file.type || 'image/png')
+				finish(new File([blob], name, { type: blob.type || outputType }))
+			}, outputType)
 		})
 		dialog.addEventListener('cancel', () => finish(null), { once: true })
+		dialog.addEventListener('close', () => finish(null), { once: true })
 
 		/**
 		 * @param {PointerEvent} event 事件
@@ -192,14 +205,14 @@ export function openImageEditor(file, labels = {}) {
 		canvas.addEventListener('pointermove', event => {
 			if (!drawing) return
 			const p = point(event)
-			if (tool === 'crop' && cropStart) 
+			if (tool === 'crop' && cropStart)
 				cropRect = {
 					x: Math.min(cropStart.x, p.x),
 					y: Math.min(cropStart.y, p.y),
 					w: Math.abs(p.x - cropStart.x),
 					h: Math.abs(p.y - cropStart.y),
 				}
-			
+
 			else if (tool === 'mosaic') stampMosaic(p.x, p.y)
 			else if (tool === 'brush') {
 				ctx.lineTo(p.x, p.y)

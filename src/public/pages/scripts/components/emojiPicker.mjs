@@ -2,6 +2,9 @@
  * 共享 emoji picker：消费 registries.emoji 提供商（停靠 / 浮动两种模式）。
  */
 import { importRegistryModules } from '../api/registries.mjs'
+import { escapeHtml } from '../lib/escapeHtml.mjs'
+
+import { positionFloatingPanel, wireOutsideClickClose } from './floatingPanel.mjs'
 
 /**
  * @returns {Promise<object | null>} 首个可用 emoji 提供商
@@ -28,39 +31,6 @@ function insertAtCursor(inputElement, token) {
 }
 
 /**
- * @param {HTMLElement} panel 浮动面板
- * @param {HTMLElement} anchor 定位锚点
- * @param {{ panelWidth?: number, heightOffset?: number }} [options] 尺寸选项
- * @returns {void}
- */
-function positionFloatingPanel(panel, anchor, { panelWidth = 320, heightOffset = 280 } = {}) {
-	const rect = anchor.getBoundingClientRect()
-	panel.style.left = `${Math.min(rect.left, window.innerWidth - panelWidth - 10)}px`
-	panel.style.top = `${Math.max(8, rect.top - heightOffset)}px`
-}
-
-/**
- * @param {HTMLElement} panel 浮动面板
- * @param {() => void} onClose 关闭回调
- * @param {HTMLElement} [alsoInside] 点击其内部时不关闭
- * @returns {void}
- */
-function wireOutsideClickClose(panel, onClose, alsoInside) {
-	setTimeout(() => {
-		/**
-		 * @param {Event} event 文档点击
-		 * @returns {void}
-		 */
-		const close = event => {
-			if (panel.contains(event.target) || alsoInside?.contains(event.target)) return
-			onClose()
-			document.removeEventListener('click', close, true)
-		}
-		document.addEventListener('click', close, true)
-	}, 0)
-}
-
-/**
  * @param {object} tab 标签页描述
  * @param {object} provider emoji 提供商
  * @param {string | null} activeTabId 当前激活标签 id
@@ -81,7 +51,7 @@ function renderTabButton(tab, provider, activeTabId) {
 			!!tab.isCurrent,
 		)
 	else if (tab.glyph)
-		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${tab.glyph}</span>`
+		tabButton.innerHTML = `<span class="emoji-tab-glyph" aria-hidden="true">${escapeHtml(tab.glyph)}</span>`
 
 	return tabButton
 }
