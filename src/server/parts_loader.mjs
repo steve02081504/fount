@@ -3,6 +3,8 @@ import path from 'node:path'
 import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
+import { mapDelete, mapGet, mapSet } from 'npm:@steve02081504/fount-p2p/core/composite_key'
+
 import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
 import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
@@ -121,7 +123,8 @@ export async function loadAnyPreferredDefaultPart(user, parent) {
 export function notifyPartInstall(username, partpath) {
 	events.emit('part-installed', { username, partpath })
 	sendEventToUser(username, 'part-installed', { partpath })
-	invalidatePartBranchesCache(username)
+	invalidatePartTreeCache(username)
+	invalidatePartMainCache(username, partpath)
 }
 /**
  * 部件信息
@@ -169,6 +172,11 @@ export function notifyPartInstall(username, partpath) {
 export const parts_set = {}
 
 const PARTS_BRANCH_CACHE_NAME = 'parts_branch_cache'
+const PARTS_REGISTRIES_CACHE_NAME = 'parts_registries_cache'
+
+/**
+ * @typedef {{ id: string, level: number, path: string, partpath: string }} RegistryEntryRaw
+ */
 
 /**
  * 遍历指定目录下的所有 fount.json。
@@ -191,7 +199,6 @@ function walkFountJsonFiles(rootPath) {
 			const fullPath = path.join(current, dirent.name)
 			if (dirent.isDirectory())
 				stack.push(fullPath)
-
 			else if (dirent.isFile() && dirent.name === 'fount.json')
 				files.push(fullPath)
 		}
@@ -214,52 +221,134 @@ function applyBranchSegments(branches, segments) {
 }
 
 /**
- * 将 fount.json 的内容合并到部件分支对象中。
+ * 将已解析的 fount.json 内容合并到部件分支对象中。
  * @param {object} branches - 当前的分支对象。
- * @param {string} filePath - fount.json 路径。
+ * @param {object} info - 已解析的 fount.json 对象。
  */
-function mergeFountJsonIntoBranches(branches, filePath) {
-	try {
-		const info = loadJsonFile(filePath)
-		const type = info.type?.trim?.() || ''
-		const dirname = info.dirname?.trim?.() || ''
-		if (!dirname) return
-		const segments = [...type.split('/').filter(Boolean), dirname]
-		applyBranchSegments(branches, segments)
-	}
-	catch (error) {
-		console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
+function mergeFountJsonIntoBranches(branches, info) {
+	const type = info.type?.trim?.() || ''
+	const dirname = info.dirname?.trim?.() || ''
+	if (!dirname) return
+	const segments = [...type.split('/').filter(Boolean), dirname]
+	applyBranchSegments(branches, segments)
+}
+
+/**
+ * 从 fount.json 文件路径推导 partpath。
+ * @param {string} filePath - fount.json 完整路径。
+ * @param {string} rootPath - 扫描根目录（public 或用户目录）。
+ * @returns {string} partpath（斜杠分隔）。
+ */
+function partpathFromFountJsonFile(filePath, rootPath) {
+	return path.relative(rootPath, path.dirname(filePath)).replace(/\\/g, '/')
+}
+
+/**
+ * 校验并规范化单条 registry 条目。
+ * @param {unknown} entry - 原始条目。
+ * @param {string} partpath - 所属 partpath。
+ * @returns {RegistryEntryRaw | null} 规范化条目，无效时返回 null。
+ */
+function normalizeRegistryEntry(entry, partpath) {
+	const { id, level, path: entryPath, format, dataField } = entry
+	return {
+		id: id.trim(),
+		level: Number(level) || 0,
+		path: entryPath.trim().replace(/^\/+/, ''),
+		partpath,
+		...format?.trim() && { format: format.trim() },
+		...dataField?.trim() && { dataField: dataField.trim() },
 	}
 }
 
 /**
- * 扫描公共与用户目录，构建部件分支对象。
- * @param {string} username - 用户名。
- * @returns {object} - 部件分支对象。
+ * 将已解析的 fount.json 的 registries 字段合并到聚合对象。
+ * @param {Record<string, RegistryEntryRaw[]>} registries - 聚合对象。
+ * @param {object} info - 已解析的 fount.json 对象。
+ * @param {string} filePath - fount.json 路径（用于推导 partpath）。
+ * @param {string} rootPath - 扫描根目录。
  */
-function buildPartBranches(username) {
+function mergeFountJsonIntoRegistries(registries, info, filePath, rootPath) {
+	try {
+		const reg = info.registries
+		if (!reg || typeof reg !== 'object') return
+		const partpath = partpathFromFountJsonFile(filePath, rootPath)
+		for (const [name, entries] of Object.entries(reg)) {
+			if (!Array.isArray(entries)) continue
+			registries[name] ??= []
+			for (const entry of entries)
+				registries[name].push(normalizeRegistryEntry(entry, partpath))
+		}
+	}
+	catch (error) {
+		console.warn(`Failed to parse registries in fount.json at ${filePath}: ${error.message}`)
+	}
+}
+
+/**
+ * 单次 walk 产出 branches 与 registries。
+ * @param {string} username - 用户名。
+ * @returns {{ branches: object, registries: Record<string, RegistryEntryRaw[]> }} branches 与 registries 聚合。
+ */
+function scanPartTrees(username) {
 	const branches = {}
+	/** @type {Record<string, RegistryEntryRaw[]>} */
+	const registries = {}
 	const roots = [
 		path.join(__dirname, 'src/public/parts'),
 		getUserDictionary(username),
 	]
 
 	for (const root of roots)
-		for (const filePath of walkFountJsonFiles(root))
-			mergeFountJsonIntoBranches(branches, filePath)
+		for (const filePath of walkFountJsonFiles(root)) {
+			let info
+			try {
+				info = loadJsonFile(filePath)
+			}
+			catch (error) {
+				console.warn(`Failed to parse fount.json at ${filePath}: ${error.message}`)
+				continue
+			}
+			mergeFountJsonIntoBranches(branches, info)
+			mergeFountJsonIntoRegistries(registries, info, filePath, root)
+		}
 
-	return branches
+	return { branches, registries }
 }
 
 /**
- * 使部件分支缓存失效。
  * @param {string} username - 用户名。
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {void}
  */
-function invalidatePartBranchesCache(username) {
-	const cache = loadData(username, PARTS_BRANCH_CACHE_NAME)
-	delete cache.branches
-	delete cache.updatedAt
+function ensurePartTreeCache(username, { nocache = false } = {}) {
+	const branchCache = loadData(username, PARTS_BRANCH_CACHE_NAME)
+	const registryCache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
+	if (!nocache && branchCache.branches && registryCache.registries) return
+
+	const { branches, registries } = scanPartTrees(username)
+	branchCache.branches = branches
+	branchCache.updatedAt = Date.now()
 	saveData(username, PARTS_BRANCH_CACHE_NAME)
+	registryCache.registries = registries
+	registryCache.updatedAt = Date.now()
+	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
+}
+
+/**
+ * 使部件分支与 registries 缓存同时失效。
+ * @param {string} username - 用户名。
+ * @returns {void}
+ */
+function invalidatePartTreeCache(username) {
+	const branchCache = loadData(username, PARTS_BRANCH_CACHE_NAME)
+	delete branchCache.branches
+	delete branchCache.updatedAt
+	saveData(username, PARTS_BRANCH_CACHE_NAME)
+	const registryCache = loadData(username, PARTS_REGISTRIES_CACHE_NAME)
+	delete registryCache.registries
+	delete registryCache.updatedAt
+	saveData(username, PARTS_REGISTRIES_CACHE_NAME)
 }
 
 /**
@@ -269,14 +358,19 @@ function invalidatePartBranchesCache(username) {
  * @returns {object} - 部件分支对象。
  */
 export function getPartBranches(username, { nocache = false } = {}) {
-	const cache = loadData(username, PARTS_BRANCH_CACHE_NAME)
-	if (!nocache && cache.branches) return cache.branches
+	ensurePartTreeCache(username, { nocache })
+	return loadData(username, PARTS_BRANCH_CACHE_NAME).branches
+}
 
-	const branches = buildPartBranches(username)
-	cache.branches = branches
-	cache.updatedAt = Date.now()
-	saveData(username, PARTS_BRANCH_CACHE_NAME)
-	return branches
+/**
+ * 获取（并在需要时刷新）用户的 registries 聚合（原始条目，含 partpath）。
+ * @param {string} username - 用户名。
+ * @param {{ nocache?: boolean }} [options] - 可选项。
+ * @returns {Record<string, RegistryEntryRaw[]>} registries 聚合对象。
+ */
+export function getPartRegistriesRaw(username, { nocache = false } = {}) {
+	ensurePartTreeCache(username, { nocache })
+	return loadData(username, PARTS_REGISTRIES_CACHE_NAME).registries
 }
 
 /**
@@ -284,7 +378,7 @@ export function getPartBranches(username, { nocache = false } = {}) {
  * 它首先检查用户特定的部件，然后回退到公共部件。
  *
  * @param {string} username - 用户的用户名。
- * @param {string} partpath - 部件的路径（例如，'shells:chat'）。
+ * @param {string} partpath - 部件路径（例如 `shells/chat`；斜杠分隔，非 URL 中的冒号形式）。
  * @returns {string} 部件目录的路径。
  */
 export function GetPartPath(username, partpath) {
@@ -292,6 +386,32 @@ export function GetPartPath(username, partpath) {
 	if (fs.existsSync(userPath + '/main.mjs'))
 		return userPath
 	return __dirname + '/src/public/parts/' + partpath
+}
+
+/** @type {Map<string, Map<string, boolean>>} */
+const partMainExistsCache = new Map()
+
+/**
+ * 缓存 part 目录是否存在 main.mjs（供 part_invoke 等高频路径使用）。
+ * @param {string} username 用户
+ * @param {string} partpath 部件路径
+ * @returns {boolean} 是否存在 main.mjs
+ */
+export function hasPartMain(username, partpath) {
+	const cached = mapGet(partMainExistsCache, username, partpath)
+	if (cached !== undefined) return cached
+	const exists = fs.existsSync(GetPartPath(username, partpath) + '/main.mjs')
+	mapSet(partMainExistsCache, username, partpath, exists)
+	return exists
+}
+
+/**
+ * @param {string} username 用户
+ * @param {string} partpath 部件路径
+ * @returns {void}
+ */
+export function invalidatePartMainCache(username, partpath) {
+	mapDelete(partMainExistsCache, username, partpath)
 }
 
 /**
@@ -445,7 +565,10 @@ export async function baseloadPart(username, partpath, {
 	pathGetter = () => GetPartPath(username, partpath),
 	Loader = baseMjsPartLoader,
 } = {}) {
-	if (isPartLoaded(username, partpath)) return parts_set[username][partpath]
+	const existing = parts_set?.[username]?.[partpath]
+	// 仅复用已解析实例；in-flight Promise 不可 await（Load 内再 baseload/loadPart 会死锁）
+	if (existing && !(existing instanceof Promise)) return existing
+	if (existing instanceof Promise) return await baseMjsPartLoader(pathGetter())
 	const path = pathGetter()
 
 	if (fs.existsSync(path + '/.git')) try {
@@ -679,10 +802,12 @@ export async function loadPartBase(username, partpath, Initargs, {
 				parts_init[partpath] = initPart(username, partpath, Initargs, { pathGetter, Initer, afterInit })
 				parts_init[partpath] = await parts_init[partpath]
 			})
-			console.logI18n('fountConsole.partManager.partInited', {
-				partpath
-			})
-			console.log(profile)
+			if (!process.env.FOUNT_TEST) {
+				console.logI18n('fountConsole.partManager.partInited', {
+					partpath
+				})
+				console.log(profile)
+			}
 			parts_init[partpath] = true
 			saveData(username, 'parts_init')
 		}
@@ -691,10 +816,7 @@ export async function loadPartBase(username, partpath, Initargs, {
 		if (!parts_set[username][partpath]) {
 			const profile = await doProfile(`part:${partpath}:load`, async () => {
 				parts_set[username][partpath] = (async () => {
-					/**
-					 * 已加载的部件实例。
-					 * @type {T}
-					 */
+					/** @type {T} */
 					const part = await baseloadPart(username, partpath, {
 						pathGetter,
 						/**
@@ -715,10 +837,12 @@ export async function loadPartBase(username, partpath, Initargs, {
 				})()
 				parts_set[username][partpath] = await parts_set[username][partpath]
 			})
-			console.logI18n('fountConsole.partManager.partLoaded', {
-				partpath
-			})
-			console.log(profile)
+			if (!process.env.FOUNT_TEST) {
+				console.logI18n('fountConsole.partManager.partLoaded', {
+					partpath
+				})
+				console.log(profile)
+			}
 			events.emit('part-loaded', { username, partpath })
 		}
 		if (parts_set[username][partpath] instanceof Promise)
@@ -784,10 +908,7 @@ export async function unloadPartBase(username, partpath, unLoadargs, {
 	unLoader = part => part.Unload?.(unLoadargs),
 	afterUnload = baseMjsPartUnloader
 } = {}) {
-	/**
-	 * 待卸载的部件实例。
-	 * @type {T}
-	 */
+	/** @type {T} */
 	const part = parts_set[username]?.[partpath]
 	if (!part) return
 	try {
@@ -840,10 +961,7 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	}
 } = {}) {
 	parts_set[username] ??= {}
-	/**
-	 * 当前或待重载的部件实例。
-	 * @type {T | undefined}
-	 */
+	/** @type {T | undefined} */
 	let part = parts_set[username][partpath]
 	const parent = path.dirname(partpath)
 	const partname = path.basename(partpath)
@@ -868,7 +986,8 @@ export async function uninstallPartBase(username, partpath, unLoadargs, uninstal
 	const parts_init = loadData(username, 'parts_init')
 	delete parts_init[partpath]
 	saveData(username, 'parts_init')
-	invalidatePartBranchesCache(username)
+	invalidatePartTreeCache(username)
+	invalidatePartMainCache(username, partpath)
 }
 
 /**
@@ -973,10 +1092,7 @@ function getSfwInfo(info) {
  * @returns {Promise<PartDetails>} 一个解析为详细部件信息的承诺。
  */
 export async function getPartDetails(username, partpath, nocache = false) {
-	/**
-	 * 部件详情（缓存或新加载）。
-	 * @type {PartDetails | undefined}
-	 */
+	/** @type {PartDetails | undefined} */
 	let details = nocache ? undefined : loadData(username, 'parts_details_cache')?.[partpath]
 	const user = getUserByUsername(username)
 	if (!details) details = await nocacheGetPartBaseDetails(username, partpath)

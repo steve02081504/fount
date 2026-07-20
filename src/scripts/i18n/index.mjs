@@ -1,8 +1,13 @@
 export * from './bare.mjs'
 
+import fs from 'node:fs'
+import path from 'node:path'
+
 import { events } from '../../server/events.mjs'
-import { loadData, loadTempData, saveData } from '../../server/setting_loader.mjs'
+import { getRegistry } from '../../server/registries.mjs'
+import { loadData, saveData } from '../../server/setting_loader.mjs'
 import { sendEventToAll } from '../../server/web_server/event_dispatcher.mjs'
+import { loadJsonFile } from '../json_loader.mjs'
 import { localesForUser } from '../locale.mjs'
 
 import {
@@ -35,17 +40,23 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 	const result = {
 		...getLocaleData(effectivePreferred)
 	}
-	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
-	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	const partpaths = Object.keys(partsLocaleLists)
-	const partdataList = await Promise.all(partpaths.map(async partpath => {
-		const resultLocale = getbestlocale(effectivePreferred, partsLocaleLists[partpath])
-		partsLocaleCache[partpath] ??= {}
-		return partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
-	}))
-	for (const partdata of partdataList)
+	for (const entry of getRegistry(username, 'locales', { resolve: 'fs' }).sort((a, b) => (a.level ?? 0) - (b.level ?? 0))) {
+		const fsPath = entry.path
+		if (!fs.existsSync(fsPath)) continue
+		/** @type {LocaleData} */
+		let partdata
+		if (fs.statSync(fsPath).isDirectory()) {
+			const localeFiles = fs.readdirSync(fsPath).filter(f => f.endsWith('.json'))
+			const resultLocale = getbestlocale(effectivePreferred, localeFiles.map(f => f.slice(0, -5)))
+			partsLocaleCache[entry.partpath] ??= {}
+			partdata = partsLocaleCache[entry.partpath][resultLocale]
+				??= loadJsonFile(path.join(fsPath, `${resultLocale}.json`))
+		}
+		else
+			partdata = loadJsonFile(fsPath)
 		Object.assign(result, partdata)
+	}
 	saveData(username, 'parts_locales_cache')
 	return result
 }
@@ -56,30 +67,11 @@ events.on('part-loaded', ({ username, partpath }) => {
 events.on('part-uninstalled', ({ username, partpath }) => {
 	delete loadData(username, 'parts_locales_cache')?.[partpath]
 	saveData(username, 'parts_locales_cache')
-	delete loadData(username, 'parts_locale_lists_cache')?.[partpath]
-	saveData(username, 'parts_locale_lists_cache')
-	delete loadTempData(username, 'parts_locale_loaders')?.[partpath]
 })
 
 onLocaleFileChanged(() => {
 	sendEventToAll('locale-updated', null)
 })
-
-/**
- * 为部件添加区域设置数据。
- * @param {string} username - 用户的用户名。
- * @param {string} partpath - 部件的路径（例如 'chars/GentianAphrodite'）。
- * @param {string[]} localeList - 部件的可用区域设置列表。
- * @param {Function} loader - 加载部件区域设置数据的函数。
- * @returns {void}
- */
-export function addPartLocaleData(username, partpath, localeList, loader) {
-	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
-	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	partsLocaleLists[partpath] = localeList
-	partsLocaleLoaders[partpath] = loader
-	saveData(username, 'parts_locale_lists_cache')
-}
 
 /**
  * 根据用户名和翻译键获取翻译后的文本。
