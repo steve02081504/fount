@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import express from 'npm:express'
 
-import { auth_request } from '../auth.mjs'
+import { auth_request } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 
 import { handleLlmsTxt } from './llms.txt.mjs'

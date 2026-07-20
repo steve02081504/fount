@@ -6,14 +6,13 @@ import { setInterval, setTimeout } from 'node:timers'
 import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
-import { httpError } from '../scripts/http_error.mjs'
-import { console } from '../scripts/i18n/index.mjs'
-import { loadJsonFile } from '../scripts/json_loader.mjs'
-import { ms, msstr } from '../scripts/ms.mjs'
-
-import { __dirname } from './base.mjs'
-import { events } from './events.mjs'
-import { config, save_config, data_path } from './server.mjs'
+import { httpError } from '../../scripts/http_error.mjs'
+import { console } from '../../scripts/i18n/bare.mjs'
+import { loadJsonFile } from '../../scripts/json_loader.mjs'
+import { ms, msstr } from '../../scripts/ms.mjs'
+import { __dirname } from '../base.mjs'
+import { events } from '../events.mjs'
+import { config, save_config, data_path } from '../server.mjs'
 
 let hash, verify, Algorithm
 const argon2Loaded = import('npm:@node-rs/argon2').catch(async error => {
@@ -81,6 +80,13 @@ const loginFailures = {}
  * @type {Map<string, object>}
  */
 const jwtCache = new Map()
+/**
+ * 刷新令牌 single-flight：同一旧 refreshToken 的并发/迟到请求复用同一结果。
+ * 成功后保留约 1 分钟宽限，避免 Set-Cookie 生效前的迟到请求踩到已轮换的 jti。
+ * @type {Map<string, Promise<object>>}
+ */
+const refreshInFlight = new Map()
+const REFRESH_GRACE_MS = ms('1m')
 
 // --- 辅助函数 ---
 
@@ -211,6 +217,13 @@ export async function initAuth() {
 
 	cleanupRevokedTokens()
 	cleanupRefreshTokens()
+
+	// 设置定时任务
+	setInterval(() => {
+		cleanupRevokedTokens()
+		cleanupRefreshTokens()
+		cleanupLoginFailures()
+	}, ms('1h')).unref()
 }
 
 /**
@@ -315,6 +328,7 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 			userAgent: req?.headers?.['user-agent'],
 			lastSeen: Date.now(),
 		})
+		save_config()
 
 		return {
 			status: 200,
@@ -328,13 +342,16 @@ async function handleTokenRefresh(refreshTokenValue, req, options) {
 }
 
 /**
- * 刷新访问令牌。
+ * 刷新访问令牌（同一旧 refreshToken 并发/迟到请求 single-flight + 宽限复用）。
  * @param {string} refreshTokenValue - 客户端提供的刷新令牌。
  * @param {import('npm:express').Request} req - Express 请求对象。
  * @returns {Promise<object>} 包含刷新结果的对象。
  */
 async function refresh(refreshTokenValue, req) {
-	return handleTokenRefresh(refreshTokenValue, req, {
+	const existing = refreshInFlight.get(refreshTokenValue)
+	if (existing) return existing
+
+	const promise = handleTokenRefresh(refreshTokenValue, req, {
 		tokenName: 'standard',
 		expectedType: undefined,
 		userTokenArrayKey: 'refreshTokens',
@@ -373,7 +390,20 @@ async function refresh(refreshTokenValue, req) {
 		accessTokenKey: 'accessToken',
 		refreshTokenKey: 'refreshToken',
 		errorI18nKey: 'fountConsole.auth.refreshTokenError',
+	}).then(result => {
+		if (result.status === 200) setTimeout(() => {
+			if (refreshInFlight.get(refreshTokenValue) === promise)
+				refreshInFlight.delete(refreshTokenValue)
+		}, REFRESH_GRACE_MS).unref()
+		else refreshInFlight.delete(refreshTokenValue)
+		return result
+	}, error => {
+		refreshInFlight.delete(refreshTokenValue)
+		throw error
 	})
+
+	refreshInFlight.set(refreshTokenValue, promise)
+	return promise
 }
 
 /**
@@ -384,7 +414,7 @@ async function refresh(refreshTokenValue, req) {
  */
 export async function logout(req, res) {
 	const { cookies: { accessToken, refreshToken } } = req
-	const user = await getUserByReq(req)
+	const user = getUserByReq(req)
 
 	if (accessToken) await revokeToken(accessToken, 'access-logout')
 
@@ -732,7 +762,7 @@ function deleteApiKeyHash(hash) {
  * 按明文 API Key 撤销（调用方负责鉴权；无 key 时入口可用 jti 查 hash 后调 deleteApiKeyHash）。
  * @param {string} apiKey - API 密钥明文。
  * @returns {void}
- * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ * @throws {import('../../scripts/http_error.mjs').HttpError} 密钥不存在时。
  */
 export function revokeApiKey(apiKey) {
 	if (!apiKey) return
@@ -746,7 +776,7 @@ export function revokeApiKey(apiKey) {
  * @param {string} username - 密钥所有者用户名。
  * @param {string} jti - API 密钥 JTI。
  * @returns {void}
- * @throws {import('../scripts/http_error.mjs').HttpError} 密钥不存在时。
+ * @throws {import('../../scripts/http_error.mjs').HttpError} 密钥不存在时。
  */
 export function revokeApiKeyByJti(username, jti) {
 	const hash = Object.keys(config.data.apiKeys).find(h =>
@@ -877,11 +907,10 @@ export async function renameUser(currentUsername, newUsername, password) {
 /**
  * 从请求中获取用户信息。依赖于 authenticate 中间件已填充 req.user。
  * @param {import('npm:express').Request} req - Express 请求对象。
- * @returns {Promise<object>} 用户对象。
- * @throws {Error} 如果请求未经过身份验证。
+ * @returns {object} 用户对象。
  */
-export async function getUserByReq(req) {
-	if (!req.user) throw new Error('Request is not authenticated. Use authenticate middleware first.')
+export function getUserByReq(req) {
+	if (!req.user) throw httpError(401, 'Unauthorized')
 	return req.user
 }
 
@@ -923,6 +952,23 @@ export function bumpUserFailedLoginAttempts(user) {
 	}
 	save_config()
 	return { locked: false }
+}
+
+/**
+ * 使用 API Key 登录并签发会话 Cookie（供自动化 / 前端 E2E 测试使用）。
+ * @param {string} apiKey - API Key 明文。
+ * @param {string} [deviceId='unknown'] - 设备标识符。
+ * @param {import('npm:express').Request} [req] - Express 请求对象。
+ * @returns {Promise<object>} 包含状态码、消息和令牌的对象。
+ */
+export async function loginWithApiKey(apiKey, deviceId = 'unknown', req) {
+	const key = String(apiKey ?? '').trim()
+	if (!key) return { status: 400, i18nKey: 'userSettings.apiKeys.verifyMissingApiKey' }
+
+	const user = await verifyApiKey(key)
+	if (!user) return { status: 401, i18nKey: 'auth.error.invalidCredentials' }
+
+	return await completeSuccessfulLogin(user, deviceId, req ?? {})
 }
 
 /**
@@ -1087,10 +1133,3 @@ function cleanupLoginFailures() {
 		if (loginFailures[ip] < MAX_LOGIN_ATTEMPTS) delete loginFailures[ip]
 		else loginFailures[ip] -= MAX_LOGIN_ATTEMPTS
 }
-
-// 设置定时任务
-setInterval(() => {
-	cleanupRevokedTokens()
-	cleanupRefreshTokens()
-	cleanupLoginFailures()
-}, ms('1h')).unref()

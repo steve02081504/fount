@@ -5,7 +5,7 @@ import { where_command } from 'npm:@steve02081504/exec'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { launchDetachedProgram } from '../../../../../scripts/launch_external.mjs'
-import { getUserDictionary } from '../../../../../server/auth.mjs'
+import { getUserDictionary } from '../../../../../server/auth/index.mjs'
 
 const EDITOR_CONFIG_RELATIVE_PATH = path.join('settings', 'editor-command.json')
 

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { auth_request, getUserByReq } from '../auth.mjs'
+import { auth_request, getUserByReq } from '../auth/index.mjs'
 import { __dirname } from '../base.mjs'
 import { getPartList } from '../parts_loader.mjs'
 
@@ -19,7 +19,7 @@ export async function handleLlmsTxt(req, res) {
 ## Shell 列表与使用指南
 `
 	if (await auth_request(req, res)) {
-		const { username } = await getUserByReq(req)
+		const { username } = getUserByReq(req)
 		const shellList = getPartList(username, 'shells')
 		if (shellList.length) content += `\
 当前可用的 shell 如下。针对每个 shell 的详细 API 使用说明，请请求对应路径下的 llms.txt：

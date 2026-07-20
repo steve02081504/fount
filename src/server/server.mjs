@@ -18,7 +18,7 @@ import { ClearTaskbarProgress, SetTaskbarProgress } from '../scripts/taskbar_pro
 import { setWindowTitle, getWindowTitle } from '../scripts/title.mjs'
 import { runSimpleWorker } from '../workers/index.mjs'
 
-import { initAuth } from './auth.mjs'
+import { initAuth } from './auth/index.mjs'
 import { __dirname, baseScriptLoadedTime, startTime } from './base.mjs'
 import { info } from './info.mjs'
 import { shallowLoadAllDefaultParts } from './parts_loader.mjs'
