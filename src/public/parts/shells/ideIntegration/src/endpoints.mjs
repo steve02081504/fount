@@ -1,7 +1,7 @@
 /**
  * IDE 集成 Shell：仅注册 ACP WebSocket 服务（客户端通过 fount_ide_agent.mjs stdio 连接）。
  */
-import { authenticate } from '../../../../../server/auth.mjs'
+import { authenticate } from '../../../../../server/auth/index.mjs'
 
 import { handleAcpWs } from './acp_ws.mjs'
 

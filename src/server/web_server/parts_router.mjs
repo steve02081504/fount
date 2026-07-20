@@ -1,7 +1,7 @@
 import express from 'npm:express'
 
 import { WsAbleRouter } from '../../scripts/WsAbleRouter.mjs'
-import { auth_request, getUserByReq, respondUnauthorized } from '../auth.mjs'
+import { auth_request, getUserByReq, respondUnauthorized } from '../auth/index.mjs'
 import { events } from '../events.mjs'
 import { loadPart } from '../parts_loader.mjs'
 

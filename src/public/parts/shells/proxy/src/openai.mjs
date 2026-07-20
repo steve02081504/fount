@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'npm:uuid'
 
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getPartList, loadPart } from '../../../../../server/parts_loader.mjs'
 
 /**

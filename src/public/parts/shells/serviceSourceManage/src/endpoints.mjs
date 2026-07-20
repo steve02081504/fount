@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { getAnyPreferredDefaultPart } from '../../../../../server/parts_loader.mjs'
 
 import { getServiceSourceFile, saveServiceSourceFile, addServiceSourceFile, deleteServiceSourceFile, getConfigTemplate, getConfigDisplay, serviceSourceExists } from './manager.mjs'

@@ -2,7 +2,7 @@ import { on_shutdown } from 'npm:on-shutdown' // 用于注册进程关闭时的�
 import { Telegraf } from 'npm:telegraf@^4.16.3' // 引入 Telegraf
 
 import { console } from '../../../../../scripts/i18n/index.mjs' // 国际化
-import { getAllUserNames } from '../../../../../server/auth.mjs' // 获取所有用户名
+import { getAllUserNames } from '../../../../../server/auth/index.mjs' // 获取所有用户名
 import { events } from '../../../../../server/events.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs' // fount 的任务管理
 import { loadPart } from '../../../../../server/parts_loader.mjs'

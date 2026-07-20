@@ -2,7 +2,7 @@
  * fount API 插件 ReplyHandler：自动申请 API key 并保存到角色配置中。
  */
 
-import { generateApiKey } from '../../../../server/auth.mjs'
+import { generateApiKey } from '../../../../server/auth/index.mjs'
 import { loadData, saveData } from '../../../../server/setting_loader.mjs'
 
 const PLUGIN_PARTPATH = 'plugins/fount-api'

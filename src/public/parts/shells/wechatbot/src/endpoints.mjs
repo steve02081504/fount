@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 
 import { getBotList, runBot, getBotConfig, setBotConfig, deleteBotConfig, getRunningBotList, stopBot, getBotConfigTemplate } from './bot.mjs'
 import { DEFAULT_WECHAT_ILINK_BASE } from './wechat_api.mjs'

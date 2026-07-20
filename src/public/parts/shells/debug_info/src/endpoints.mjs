@@ -1,7 +1,7 @@
 import os from 'node:os'
 
 import { is_local_ip_from_req } from '../../../../../scripts/ratelimit.mjs'
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { autoUpdateEnabled } from '../../../../../server/autoupdate.mjs'
 import { restartor } from '../../../../../server/server.mjs'
 import { openEditor } from '../../userSettings/src/editorCommand.mjs'

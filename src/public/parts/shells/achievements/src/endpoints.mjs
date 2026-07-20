@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 
 import { getAllAchievements, lockAchievement, unlockAchievement } from './api.mjs'
 

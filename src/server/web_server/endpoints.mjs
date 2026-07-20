@@ -7,7 +7,7 @@ import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i1
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'
-import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth.mjs'
+import { login, register, logout, authenticate, getUserByReq, getUserDictionary, auth_request, generateApiKey, revokeApiKeyByJti, verifyApiKey, verifyPassword, ACCESS_TOKEN_EXPIRY_DURATION, REFRESH_TOKEN_EXPIRY_DURATION, getSecureCookieOptions, respondAuthResult } from '../auth/index.mjs'
 import { currentGitBranch, currentGitCommit } from '../autoupdate.mjs'
 import { __dirname } from '../base.mjs'
 import { processIPCCommand } from '../ipc_server/index.mjs'
@@ -27,7 +27,7 @@ import {
 	getPartBranches
 } from '../parts_loader.mjs'
 import { skip_report, config, save_config } from '../server.mjs'
-import { webauthnLoginBegin, webauthnLoginComplete } from '../webauthn.mjs'
+import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'

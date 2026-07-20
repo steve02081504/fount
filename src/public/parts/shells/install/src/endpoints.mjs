@@ -1,4 +1,4 @@
-import { authenticate, getUserByReq } from '../../../../../server/auth.mjs'
+import { authenticate, getUserByReq } from '../../../../../server/auth/index.mjs'
 import { uninstallPartBase } from '../../../../../server/parts_loader.mjs'
 
 import { importPart, importPartByText } from './Installer_handler.mjs'
