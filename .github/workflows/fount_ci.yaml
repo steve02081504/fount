@@ -18,10 +18,20 @@ on:
         required: false
         type: boolean
         default: false
+      parallel:
+        description: 'When false, append --no-parallel to run-command (fount test suite dispatch)'
+        required: false
+        type: boolean
+        default: true
     secrets:
       gh_token:
         description: 'PAT for gh (fount test Deno panic auto-issue to denoland/deno); falls back to GITHUB_TOKEN'
         required: false
+
+permissions:
+  contents: read
+  # gh cache delete / actions-cache 需要；缺省 GITHUB_TOKEN 只有 contents:read 会 403「Resource not accessible by integration」
+  actions: write
 
 jobs:
   ci:
@@ -34,7 +44,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         id: deno
         with:
-          deno-version: latest
+          deno-version: canary
           cache-hash: fount
       - uses: actions/cache@v5
         with:

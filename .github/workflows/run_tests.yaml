@@ -7,6 +7,15 @@ on:
     branches:
       - '*'
   workflow_dispatch:
+    inputs:
+      parallel:
+        description: 'Parallel suite dispatch (uncheck → --no-parallel)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   run-tests:
@@ -18,3 +27,5 @@ jobs:
       run-command: deno run --allow-scripts --allow-all -c "./deno.json" ./src/scripts/test/cli.mjs
       deno-clean-entrypoints: ./src/scripts/test/cli.mjs
       cache-test-data: true
+      # push 无 inputs → 默认并行；手动跑可关
+      parallel: ${{ github.event_name != 'workflow_dispatch' || inputs.parallel }}

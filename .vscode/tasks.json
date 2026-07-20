@@ -11,7 +11,7 @@
 			"label": "dev env setup",
 			"type": "shell",
 			"windows": {
-				"command": "pwsh -NoProfile -File ./src/runner/dev_env_setup/main.ps1"
+				"command": "powershell -NoProfile -File ./src/runner/dev_env_setup/main.ps1"
 			},
 			"linux": {
 				"command": "bash ./src/runner/dev_env_setup/main.sh"

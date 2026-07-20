@@ -15,6 +15,10 @@ on:
       - '*'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   verify-shells:
     uses: ./.github/workflows/fount_ci.yaml

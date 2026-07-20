@@ -1,4 +1,4 @@
-#!pwsh
+﻿#!pwsh
 # fount 开发环境检查（Windows）
 
 $RepoRoot = (Resolve-Path "$PSScriptRoot/../../..").Path
