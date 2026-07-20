@@ -44,11 +44,11 @@ export function formatDuration(ms) {
 	const parts = []
 	if (day > 0) parts.push(unit(day, 'durationUnitDay'))
 	if (hour > 0) parts.push(unit(hour, 'durationUnitHour'))
-	if (min > 0) 
+	if (min > 0)
 		parts.push(remSec > 0
 			? unit(min, 'durationUnitMin')
 			: unit(min, 'durationUnitMinute'))
-	
+
 	if (remSec > 0 || parts.length === 0)
 		parts.push(unit(remSec, 'durationUnitSec'))
 

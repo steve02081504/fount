@@ -243,6 +243,186 @@ export type LocaleData = {
 				removeBackgroundRunnerFailed: string
 			}
 		}
+		test: {
+			help: string
+			passed: string
+			passedWithNoise: string
+			failed: string
+			failedWithCode: string
+			passedLabel: string
+			failedLabel: string
+			noiseHits: string
+			unknownManifestId: string
+			unknownSuiteSelector: string
+			unknownSubtestFilter: string
+			unknownFileFilter: string
+			unsupportedSubtestFilter: string
+			available: string
+			manifestMatched: string
+			selectedSuites: string
+			planSlotSummary: string
+			noMatchingSuites: string
+			reportPath: string
+			reportPathFinal: string
+			statePathFinal: string
+			blocked: string
+			speculativeDiscard: string
+			continueImperfect: string
+			outdatedSelected: string
+			runningSuite: {
+				base: string
+				speculative: string
+				heavy: string
+				expected: string
+			}
+			reusedSuite: string
+			noisyOnlyRemain: string
+			estimatedRun: string
+			estimatedRunSerial: string
+			estimatedRunSkipped: string
+			noRealRunPlanned: string
+			allReusedHint: string
+			estimatedRemaining: string
+			estimatedRunSerialHint: string
+			failuresSaved: string
+			failuresCleared: string
+			terminated: string
+			terminateIdle: string
+			terminateDuration: string
+			terminateDurationDefault: string
+			terminateMarker: string
+			terminateUnknown: string
+			terminateSpeculative: string
+			nothingToContinue: string
+			triggerNoMatch: string
+			triggerNoMatchSummary: string
+			unknownSuite: string
+			federationCleanupPre: string
+			federationCleanupPost: string
+			suiteHeader: string
+			heapSnapshotSaved: string
+			liveUsage: string
+			serialUsage: string
+			silentPassedOne: string
+			silentPassedMany: string
+			ciNoDiffFallback: string
+			noFrontendPhasesMatched: string
+			denoPanic: {
+				detected: string
+				alreadyReported: string
+				ghUnavailable: string
+				published: string
+				duplicate: string
+				publishFailed: string
+			}
+			nodeWorker: {
+				dataPathRequired: string
+				portRequired: string
+				keyRequired: string
+				userRequired: string
+				error: string
+			}
+			ws: {
+				pass: string
+				fail: string
+			}
+			report: {
+				title: string
+				tableHeaderItem: string
+				tableHeaderValue: string
+				fieldRunId: string
+				fieldCommand: string
+				fieldExit: string
+				fieldProgress: string
+				fieldSuites: string
+				fieldFailed: string
+				fieldNoisyPassed: string
+				fieldReused: string
+				fieldSuiteSumDuration: string
+				fieldWallClock: string
+				fieldParallelRate: string
+				fieldEstimatedRemaining: string
+				fieldEstimatedParallelRate: string
+				estimatePoint: string
+				pendingEstimate: string
+				pendingParallelEstimate: string
+				pendingSavings: string
+				pendingItemExpected: string
+				fieldDuration: string
+				commandDefault: string
+				exitPassed: string
+				exitFailed: string
+				exitInProgress: string
+				progressFormat: string
+				suitesFormat: string
+				artifacts: string
+				sectionFailed: string
+				sectionNoisyPassed: string
+				sectionSilentPassed: string
+				sectionPending: string
+				sectionContinue: string
+				sectionReplay: string
+				sectionReplayImperfect: string
+				columnSuite: string
+				columnDuration: string
+				labelReused: string
+				labelExpectedBlocked: string
+				labelDuration: string
+				labelLog: string
+				labelNoise: string
+				labelFailedFiles: string
+				labelTerminateReason: string
+				sectionContinueReasons: string
+				continueReasonsLink: string
+				labelContinueReason: string
+				reasonImperfectFailed: string
+				reasonImperfectNoisy: string
+				reasonImperfectBlocked: string
+				reasonImperfectDependent: string
+				reasonMissingRecord: string
+				reasonStaleContent: string
+				reasonTriggerHashDrift: string
+				reasonExplicitSelected: string
+				reasonDependencyRequired: string
+				labelRootCause: string
+				labelDirectRequiredBy: string
+				labelInclusionPath: string
+				labelPullUpstream: string
+				labelPullDownstream: string
+				labelGateReason: string
+				labelCommitRange: string
+				labelUncommittedHashRange: string
+				labelMatchedTriggers: string
+				labelMatchedTriggerSets: string
+				labelMatchedPaths: string
+				labelTriggerHashDrift: string
+				sectionDeadTriggers: string
+				deadTriggersHint: string
+				durationMs: string
+				durationUnitSec: string
+				durationUnitMin: string
+				durationUnitMinute: string
+				durationUnitHour: string
+				durationUnitDay: string
+			}
+			state: {
+				title: string
+				artifacts: string
+				sectionDependencyTree: string
+				sectionOverview: string
+				sectionBlocked: string
+				columnSuite: string
+				columnStatus: string
+				columnCommit: string
+				columnRanAt: string
+				columnDuration: string
+				columnLog: string
+				columnBlocked: string
+				labelBlockedBy: string
+				statusUnknown: string
+				statusOutdated: string
+			}
+		}
 	}
 	installer_wait_screen: {
 		title: string
@@ -2843,6 +3023,81 @@ export type LocaleKeyParams = {
 	'fountConsole.server.mdns.failed': { error: string | number }
 	'fountConsole.server.showUrl.http': { url: string | number }
 	'fountConsole.server.showUrl.https': { url: string | number }
+	'fountConsole.test.available': { ids: string | number }
+	'fountConsole.test.blocked': { deps: string | number; label: string | number }
+	'fountConsole.test.continueImperfect': { count: string | number }
+	'fountConsole.test.denoPanic.alreadyReported': { signature: string | number }
+	'fountConsole.test.denoPanic.detected': { label: string | number; signature: string | number }
+	'fountConsole.test.denoPanic.duplicate': { upstream: string | number }
+	'fountConsole.test.denoPanic.ghUnavailable': { signature: string | number }
+	'fountConsole.test.denoPanic.publishFailed': { signature: string | number }
+	'fountConsole.test.denoPanic.published': { url: string | number }
+	'fountConsole.test.estimatedRemaining': { completed: string | number; eta: string | number; total: string | number }
+	'fountConsole.test.estimatedRun': { eta: string | number; rate: string | number }
+	'fountConsole.test.estimatedRunSerial': { eta: string | number }
+	'fountConsole.test.estimatedRunSerialHint': { eta: string | number; rate: string | number; savings: string | number }
+	'fountConsole.test.estimatedRunSkipped': { blocked: string | number; reused: string | number }
+	'fountConsole.test.failed': { label: string | number }
+	'fountConsole.test.failedWithCode': { code: string | number; label: string | number }
+	'fountConsole.test.failuresCleared': { manifestId: string | number }
+	'fountConsole.test.failuresSaved': { count: string | number; path: string | number }
+	'fountConsole.test.federationCleanupPost': { output: string | number }
+	'fountConsole.test.federationCleanupPre': { output: string | number }
+	'fountConsole.test.heapSnapshotSaved': { path: string | number }
+	'fountConsole.test.manifestMatched': { ids: string | number }
+	'fountConsole.test.noRealRunPlanned': { blocked: string | number; reused: string | number }
+	'fountConsole.test.nodeWorker.error': { error: string | number }
+	'fountConsole.test.noiseHits': { hits: string | number }
+	'fountConsole.test.noisyOnlyRemain': { count: string | number; suites: string | number }
+	'fountConsole.test.outdatedSelected': { count: string | number }
+	'fountConsole.test.passed': { label: string | number }
+	'fountConsole.test.passedWithNoise': { label: string | number }
+	'fountConsole.test.planSlotSummary': { blocked: string | number; reuse: string | number; run: string | number }
+	'fountConsole.test.report.artifacts': { path: string | number }
+	'fountConsole.test.report.continueReasonsLink': { path: string | number }
+	'fountConsole.test.report.durationMs': { ms: string | number }
+	'fountConsole.test.report.durationUnitDay': { n: string | number }
+	'fountConsole.test.report.durationUnitHour': { n: string | number }
+	'fountConsole.test.report.durationUnitMin': { n: string | number }
+	'fountConsole.test.report.durationUnitMinute': { n: string | number }
+	'fountConsole.test.report.durationUnitSec': { n: string | number }
+	'fountConsole.test.report.estimatePoint': { eta: string | number }
+	'fountConsole.test.report.labelPullDownstream': { requiredBy: string | number }
+	'fountConsole.test.report.labelPullUpstream': { requiredBy: string | number }
+	'fountConsole.test.report.pendingEstimate': { eta: string | number }
+	'fountConsole.test.report.pendingItemExpected': { expected: string | number }
+	'fountConsole.test.report.pendingParallelEstimate': { eta: string | number; rate: string | number }
+	'fountConsole.test.report.pendingSavings': { savings: string | number }
+	'fountConsole.test.report.progressFormat': { completed: string | number; total: string | number }
+	'fountConsole.test.report.suitesFormat': { completed: string | number; passed: string | number }
+	'fountConsole.test.reportPath': { path: string | number }
+	'fountConsole.test.reportPathFinal': { path: string | number }
+	'fountConsole.test.reusedSuite': { manifestId: string | number; name: string | number; status: string | number }
+	'fountConsole.test.runningSuite.base': { manifestId: string | number; name: string | number }
+	'fountConsole.test.runningSuite.expected': { expected: string | number }
+	'fountConsole.test.selectedSuites': { selected: string | number; total: string | number }
+	'fountConsole.test.silentPassedMany': { count: string | number }
+	'fountConsole.test.speculativeDiscard': { deps: string | number; label: string | number }
+	'fountConsole.test.state.artifacts': { path: string | number }
+	'fountConsole.test.statePathFinal': { path: string | number }
+	'fountConsole.test.suiteHeader': { name: string | number }
+	'fountConsole.test.terminateDuration': { baseline: string | number; elapsed: string | number; label: string | number; limit: string | number }
+	'fountConsole.test.terminateDurationDefault': { elapsed: string | number; label: string | number; limit: string | number }
+	'fountConsole.test.terminateIdle': { elapsed: string | number; idleSec: string | number; label: string | number; minutes: string | number }
+	'fountConsole.test.terminateMarker': { reason: string | number }
+	'fountConsole.test.terminateSpeculative': { label: string | number }
+	'fountConsole.test.terminateUnknown': { label: string | number }
+	'fountConsole.test.terminated': { label: string | number; reason: string | number }
+	'fountConsole.test.triggerNoMatch': { pattern: string | number; scope: string | number }
+	'fountConsole.test.triggerNoMatchSummary': { count: string | number }
+	'fountConsole.test.unknownFileFilter': { names: string | number; suite: string | number }
+	'fountConsole.test.unknownManifestId': { ids: string | number }
+	'fountConsole.test.unknownSubtestFilter': { names: string | number; suite: string | number }
+	'fountConsole.test.unknownSuite': { name: string | number }
+	'fountConsole.test.unknownSuiteSelector': { ids: string | number }
+	'fountConsole.test.unsupportedSubtestFilter': { names: string | number; suite: string | number }
+	'fountConsole.test.ws.fail': { detail: string | number }
+	'fountConsole.test.ws.pass': { detail: string | number }
 	'fountConsole.tray.createTrayFailed': { error: string | number }
 	'fountConsole.tray.readIconFailed': { error: string | number }
 	'fountConsole.verification.codeGeneratedLog': { code: string | number }

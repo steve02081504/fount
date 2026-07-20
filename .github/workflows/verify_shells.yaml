@@ -10,9 +10,9 @@ on:
       - '.github/workflows/verify_shells.mjs'
       - '.github/workflows/fount_ci.yaml'
     tags-ignore:
-      - '*'
+      - '**'
     branches:
-      - '*'
+      - '**'
   workflow_dispatch:
 
 permissions:

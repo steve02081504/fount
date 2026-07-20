@@ -94,5 +94,6 @@ export async function runShellFrontendTests({
 		},
 		nodeOpts: nodeLaunchOptions,
 		extraArgs: process.argv.slice(2).join(' '),
+		failFastProjects: ['shell', 'smoke'],
 	})
 }

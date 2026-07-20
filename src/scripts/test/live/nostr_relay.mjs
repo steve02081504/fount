@@ -91,10 +91,11 @@ function handleClientMessage(ws, raw) {
 	if (type === 'REQ') {
 		const subId = String(rest[0] || '')
 		const filters = rest.slice(1).filter(item => item && typeof item === 'object')
+		const normalized = filters.length ? filters : [{}]
 		if (!ws.subscriptions) ws.subscriptions = []
-		ws.subscriptions.push({ id: subId, filters: filters.length ? filters : [{}] })
+		ws.subscriptions.push({ id: subId, filters: normalized })
 		for (const event of storedEvents)
-			if (filters.some(filter => eventMatchesFilter(event, filter)))
+			if (normalized.some(filter => eventMatchesFilter(event, filter)))
 				broadcastEvent(ws, subId, event)
 		ws.send(JSON.stringify(['EOSE', subId]))
 		return

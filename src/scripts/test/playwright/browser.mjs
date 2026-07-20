@@ -25,7 +25,7 @@ function inGitHubActions() {
  * @returns {Promise<void>}
  */
 function ensurePlaywrightChrome() {
-	if (!playwrightChromeInstall) 
+	if (!playwrightChromeInstall)
 		playwrightChromeInstall = (async () => {
 			const result = await execFile('node', [playwrightCli, 'install', '--with-deps', 'chrome'], {
 				no_output_record: true,
@@ -43,7 +43,7 @@ function ensurePlaywrightChrome() {
 			if ((result.code ?? 1) !== 0)
 				throw new Error(`Playwright: chrome install failed (exit ${result.code}).`)
 		})()
-	
+
 	return playwrightChromeInstall
 }
 

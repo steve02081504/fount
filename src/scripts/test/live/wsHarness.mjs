@@ -74,6 +74,7 @@ export function finishLiveWs(ok, detail) {
  * @returns {string|null} 匹配到的角色名
  */
 export function pickPreferredChar(list, preferred) {
+	if (!list?.length) return null
 	for (const name of preferred)
 		if (list.includes(name)) return name
 	return list[0] ?? null

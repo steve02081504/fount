@@ -71,9 +71,9 @@ Deno.test('listManifestIds uses dependency-aware order', async () => {
 Deno.test('isContentFresh ignores non-trigger paths', () => {
 	const s = makeSuite('server', 'live')
 	const entry = makeStateEntry()
-	assertEquals(isContentFresh(s, entry, ['README.md'], new Map()), true)
-	assertEquals(isContentFresh(s, entry, ['src/server/foo.mjs'], new Map()), false)
-	assertEquals(isContentFresh(s, undefined, [], new Map()), false)
+	assertEquals(isContentFresh(s, entry, ['README.md'], null), true)
+	assertEquals(isContentFresh(s, entry, ['src/server/foo.mjs'], null), false)
+	assertEquals(isContentFresh(s, undefined, [], null), false)
 })
 
 Deno.test('judgeSuite maps fresh results to green/noisy/red', () => {
@@ -156,8 +156,8 @@ Deno.test('serial.mjs change stales pure but not live when triggers partitioned'
 	})
 	const entry = makeStateEntry()
 	const changed = ['src/scripts/test/deno/serial.mjs']
-	assertEquals(isContentFresh(pure, entry, changed, new Map()), false)
-	assertEquals(isContentFresh(live, entry, changed, new Map()), true)
+	assertEquals(isContentFresh(pure, entry, changed, null), false)
+	assertEquals(isContentFresh(live, entry, changed, null), true)
 })
 
 Deno.test('verdictAllowsDownstream accepts green and noisy only', () => {

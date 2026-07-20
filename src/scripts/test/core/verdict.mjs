@@ -69,17 +69,13 @@ export function isTriggerHashStale(entryHash, currentHash) {
  * @param {SuiteDef} suite suite
  * @param {SuiteStateEntry | undefined} entry 现状条目
  * @param {string[]} committedChanged 自 entry.commitHash 的 commit 变更
- * @param {Map<string, string>} uncommittedHashes 未提交内容 digest 表
+ * @param {string | null} sharedTriggerHash 预计算的 suite 共享 triggerHash
  * @returns {boolean} 内容是否新鲜
  */
-export function isContentFresh(suite, entry, committedChanged, uncommittedHashes) {
+export function isContentFresh(suite, entry, committedChanged, sharedTriggerHash) {
 	if (!entry || entry.status === 'blocked') return false
 	if (suiteTriggersHit(suite, committedChanged)) return false
-	const triggerHash = digestFileHashes(
-		uncommittedHashes,
-		collectTriggerEvidence(suite, [...uncommittedHashes.keys()]).matchedPaths,
-	)
-	return !isTriggerHashStale(entry.triggerHash, triggerHash)
+	return !isTriggerHashStale(entry.triggerHash, sharedTriggerHash)
 }
 
 /**
@@ -184,7 +180,7 @@ export function judgeSuite(suite, entry, committedChanged, uncommittedHashes, co
 		return aggregate
 	}
 
-	const fresh = isContentFresh(suite, entry, committedChanged, uncommittedHashes)
+	const fresh = isContentFresh(suite, entry, committedChanged, sharedTriggerHash)
 	if (!entry || entry.status === 'blocked' || !fresh)
 		return { kind: 'unknown', fresh: false, triggerHash: sharedTriggerHash }
 	if (entry.status === 'passed') return { kind: 'green', fresh: true, triggerHash: sharedTriggerHash }

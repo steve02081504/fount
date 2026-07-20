@@ -22,14 +22,17 @@ export function rankHeapSnapshotNodes(snapPath, { topN = 40, needle = '' } = {})
 	const typeNames = meta.node_types[0]
 	const nodes = snap.nodes
 	const strings = snap.strings
+	const typeOffset = meta.node_fields.indexOf('type')
+	const nameOffset = meta.node_fields.indexOf('name')
+	const selfSizeOffset = meta.node_fields.indexOf('self_size')
 
 	/** @type {Map<string, HeapNodeRank>} */
 	const byKey = new Map()
 
 	for (let i = 0; i < nodes.length; i += fieldCount) {
-		const typeIdx = nodes[i]
-		const nameIdx = nodes[i + 1]
-		const selfSize = nodes[i + 3] || 0
+		const typeIdx = nodes[i + typeOffset]
+		const nameIdx = nodes[i + nameOffset]
+		const selfSize = nodes[i + selfSizeOffset] || 0
 		const type = typeNames[typeIdx] || `type${typeIdx}`
 		const name = typeof nameIdx === 'number' && nameIdx >= 0 ? strings[nameIdx] || '' : ''
 		if (needle && !name.includes(needle)) continue
