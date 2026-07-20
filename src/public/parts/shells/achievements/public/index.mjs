@@ -1,7 +1,7 @@
 /**
  * 成就页面的主要客户端逻辑。
  */
-import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n.mjs'
+import { geti18n, geti18n_nowarn, initTranslations } from '../../../scripts/i18n/index.mjs'
 import { unlockAchievement, loadPart } from '../../../scripts/parts.mjs'
 import { onServerEvent } from '../../../scripts/server_events.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'

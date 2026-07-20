@@ -1,5 +1,5 @@
 import { applyTheme } from '/scripts/theme.mjs'
-import { initTranslations, setLocalizeLogic } from '/scripts/i18n.mjs'
+import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
 
 /**
  * 转义 HTML 字符串。

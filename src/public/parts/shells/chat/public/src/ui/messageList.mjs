@@ -1,6 +1,6 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n.mjs'
+import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
 import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'

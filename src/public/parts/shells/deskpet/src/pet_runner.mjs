@@ -1,6 +1,6 @@
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console } from '../../../../../scripts/i18n.mjs'
+import { console } from '../../../../../scripts/i18n/index.mjs'
 import { generateApiKey, revokeApiKey } from '../../../../../server/auth.mjs'
 import { StartJob, EndJob } from '../../../../../server/jobs.mjs'
 import { loadPart } from '../../../../../server/parts_loader.mjs'

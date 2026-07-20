@@ -1,11 +1,11 @@
-import { base_dir } from '../base.mjs'
+import { base_dir } from '../../base.mjs'
 
 import {
 	getBestLocale,
 	loadPreferredLangs,
 	runInitTranslations,
 	saved_pageid,
-} from './i18n.mjs'
+} from './index.mjs'
 
 /** localStorage 中保存首选语言的键名（静态 Pages） */
 export const preferredLangsStorageKey = 'fountUserPreferredLanguages'

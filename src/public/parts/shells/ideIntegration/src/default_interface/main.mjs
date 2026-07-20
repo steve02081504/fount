@@ -4,7 +4,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n/index.mjs'
 import { getPartInfo } from '../../../../../../scripts/locale.mjs'
 import { getUserByUsername } from '../../../../../../server/auth.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'

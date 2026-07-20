@@ -1,7 +1,7 @@
 /**
  * Telegram 机器人 shell 的客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement, promptI18n, confirmI18n } from '/scripts/i18n/index.mjs'
 import { createJsonEditor } from '/scripts/jsonEditor.mjs'
 import { getPartList } from '/scripts/parts.mjs'
 import { applyTheme } from '/scripts/theme.mjs'

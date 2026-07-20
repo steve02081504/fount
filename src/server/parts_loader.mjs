@@ -4,7 +4,7 @@ import { setTimeout } from 'node:timers'
 import url from 'node:url'
 
 import { backupGitUncommittedChanges, run_git } from '../scripts/git.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { getLocalizedInfo } from '../scripts/locale.mjs'
 import { nicerWriteFileSync } from '../scripts/nicerWriteFile.mjs'

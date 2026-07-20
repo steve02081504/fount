@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, Partials } from 'npm:discord.js@^14.25.0'
 import { on_shutdown } from 'npm:on-shutdown'
 
-import { console } from '../../../../../scripts/i18n.mjs'
+import { console } from '../../../../../scripts/i18n/index.mjs'
 import { getAllUserNames } from '../../../../../server/auth.mjs'
 import { events } from '../../../../../server/events.mjs'
 import { EndJob, StartJob } from '../../../../../server/jobs.mjs'

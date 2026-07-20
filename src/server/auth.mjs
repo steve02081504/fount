@@ -7,7 +7,7 @@ import fse from 'npm:fs-extra'
 import * as jose from 'npm:jose'
 
 import { httpError } from '../scripts/http_error.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 import { loadJsonFile } from '../scripts/json_loader.mjs'
 import { ms, msstr } from '../scripts/ms.mjs'
 

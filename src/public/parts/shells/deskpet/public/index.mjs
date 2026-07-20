@@ -1,7 +1,7 @@
 /**
  * 桌面宠物 shell 的客户端逻辑。
  */
-import { initTranslations, i18nElement } from '/scripts/i18n.mjs'
+import { initTranslations, i18nElement } from '/scripts/i18n/index.mjs'
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { createSearchableDropdown } from '/scripts/search.mjs'

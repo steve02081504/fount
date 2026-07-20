@@ -1,3 +1,28 @@
+import { getUserByUsername } from '../server/auth.mjs'
+
+/** 无用户偏好时的最终兜底（产品默认英文）。 */
+export const FALLBACK_LOCALE = 'en-UK'
+
+/**
+ * 用户首选 locale 列表；无偏好时仅 `[en-UK]`。
+ * @param {string} [username] 登录名
+ * @returns {string[]} locale 优先级
+ */
+export function localesForUser(username) {
+	const userLocales = username ? getUserByUsername(username)?.locales : undefined
+	if (Array.isArray(userLocales) && userLocales.length) return userLocales
+	return [FALLBACK_LOCALE]
+}
+
+/**
+ * 用户主 locale。
+ * @param {string} [username] 登录名
+ * @returns {string} BCP 47
+ */
+export function primaryLocaleForUser(username) {
+	return localesForUser(username)[0]
+}
+
 /**
  * 根据提供的区域设置从部件的信息对象中获取本地化信息。
  *

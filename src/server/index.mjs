@@ -7,7 +7,7 @@ import fs from 'node:fs'
 import os from 'node:os'
 import process from 'node:process'
 
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 import { SetTaskbarProgress } from '../scripts/taskbar_progress.mjs'
 import { setWindowTitle } from '../scripts/title.mjs'
 

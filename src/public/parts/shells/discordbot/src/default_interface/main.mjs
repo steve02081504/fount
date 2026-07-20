@@ -3,7 +3,7 @@ import { setInterval, clearInterval, setTimeout } from 'node:timers'
 
 import { Events, ChannelType, GatewayIntentBits, Partials, escapeMarkdown } from 'npm:discord.js'
 
-import { localhostLocales, console } from '../../../../../../scripts/i18n.mjs'
+import { localhostLocales, console } from '../../../../../../scripts/i18n/index.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../server/parts_loader.mjs'
 
 import { getMessageFullContent, splitDiscordReply } from './tools.mjs'

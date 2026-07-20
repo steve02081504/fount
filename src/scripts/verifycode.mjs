@@ -1,6 +1,6 @@
 import cryptoRandomString from 'npm:crypto-random-string'
 
-import { console, geti18n } from '../scripts/i18n.mjs'
+import { console, geti18n } from '../scripts/i18n/index.mjs'
 
 import { ms } from './ms.mjs'
 import { notify } from './notify.mjs'

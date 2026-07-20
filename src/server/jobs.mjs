@@ -1,5 +1,5 @@
 import { gc } from '../scripts/gc.mjs'
-import { console } from '../scripts/i18n.mjs'
+import { console } from '../scripts/i18n/index.mjs'
 
 import { getUserByUsername, getAllUserNames } from './auth.mjs'
 import { events } from './events.mjs'

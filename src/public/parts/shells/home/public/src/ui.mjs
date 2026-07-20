@@ -1,6 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { geti18n, console } from '../../../scripts/i18n.mjs'
+import { geti18n, console } from '../../../scripts/i18n/index.mjs'
 import { renderMarkdown } from '../../../scripts/markdown.mjs'
 import { onElementRemoved } from '../../../scripts/onElementRemoved.mjs'
 import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAllDefaultParts } from '../../../scripts/parts.mjs'

@@ -1,4 +1,4 @@
-import { localhostLocales } from '../../../../../../../src/scripts/i18n.mjs'
+import { localhostLocales } from '../../../../../../../src/scripts/i18n/index.mjs'
 import { getPartInfo } from '../../../../../../../src/scripts/locale.mjs'
 import { getAnyPreferredDefaultPart, loadPart } from '../../../../../../../src/server/parts_loader.mjs'
 

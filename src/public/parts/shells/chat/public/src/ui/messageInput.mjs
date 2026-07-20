@@ -1,4 +1,4 @@
-import { console } from '../../../../../scripts/i18n.mjs'
+import { console } from '../../../../../scripts/i18n/index.mjs'
 import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
 import { addUserReply } from '../endpoints.mjs'
 import { handleFilesSelect } from '../fileHandling.mjs'

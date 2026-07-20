@@ -1,6 +1,6 @@
 import languageMap from 'https://esm.sh/lang-map'
 
-import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n.mjs'
+import { geti18nForLocales, localhostLocales } from '../../../../../scripts/i18n/index.mjs'
 import { escapeRegExp } from '../../../../../scripts/regex.mjs'
 import { handleError } from '../../../../../server/server.mjs'
 
