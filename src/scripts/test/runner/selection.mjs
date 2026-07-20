@@ -65,9 +65,22 @@ export async function buildCommittedChangedByKey(repoRoot, allSuites, state) {
 }
 
 /**
+ * 是否可作为「下游一层展开」的根：失败/阻塞/缺失/red。
+ * fresh noisy 进 imperfect 真跑，但不拖下游（noisy 已放行下游且下游多半已绿）。
+ * @param {Verdict | undefined} verdict 裁决
+ * @param {import('../core/state.mjs').SuiteStateEntry | undefined} entry 现状
+ * @returns {boolean} 是否展开下游
+ */
+function isHardImperfectRoot(verdict, entry) {
+	if (!entry) return true
+	if (entry.status === 'failed' || entry.status === 'blocked') return true
+	return verdict?.kind === 'red'
+}
+
+/**
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
- * @returns {Set<string>} imperfect 目标键（不含 stale passed / fresh noisy）
+ * @returns {Set<string>} imperfect 目标键（含 fresh noisy；不含 stale passed / outdated unknown）
  */
 export function goalImperfectKeys(verdicts, state) {
 	/** @type {Set<string>} */
@@ -86,15 +99,28 @@ export function goalImperfectKeys(verdicts, state) {
 		if (verdict.kind === 'green') continue
 		// 内容过期 → outdated 波
 		if (verdict.kind === 'unknown') continue
-		// fresh noisy 不进 imperfect（否则同调用空转）；两波皆空后由主循环最终 exit 1
-		if (verdict.kind === 'noisy' && verdict.fresh) continue
-		if (verdict.kind === 'red') keys.add(key)
+		if (verdict.kind === 'noisy' && verdict.fresh) keys.add(key)
+		else if (verdict.kind === 'red') keys.add(key)
 	}
 	return keys
 }
 
 /**
- * scope 内仍为 fresh noisy 的 suite 键（两波皆空时用于最终退出码与提示）。
+ * imperfect 目标 + hard-fail 根的一层下游（noisy 不拖下游）。
+ * @param {Map<string, Verdict>} verdicts 裁决表
+ * @param {TestState} state 现状库
+ * @param {SuiteDef[]} allSuites 全部 suite
+ * @returns {Set<string>} 扩展后的目标键
+ */
+export function expandImperfectGoals(verdicts, state, allSuites) {
+	const imperfectKeys = goalImperfectKeys(verdicts, state)
+	const expandRoots = new Set([...imperfectKeys].filter(key =>
+		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
+	return new Set([...imperfectKeys, ...expandImperfectDependents(expandRoots, allSuites)])
+}
+
+/**
+ * scope 内仍为 fresh noisy 的 suite 键（安全网：两波皆空时用于最终退出码与提示）。
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {SuiteDef[]} scope 范围
  * @returns {string[]} fresh noisy suite 键
@@ -114,10 +140,10 @@ export function listFreshNoisyKeys(verdicts, scope) {
  * @param {Map<string, Verdict>} verdicts 裁决表
  * @param {TestState} state 现状库
  * @param {SuiteDef[]} allSuites 全部 suite
- * @returns {Set<string>} imperfect + 一层下游
+ * @returns {Set<string>} imperfect + hard-fail 一层下游
  */
 export function goalContinue(verdicts, state, allSuites) {
-	return expandImperfectDependents(goalImperfectKeys(verdicts, state), allSuites)
+	return expandImperfectGoals(verdicts, state, allSuites)
 }
 
 /**
@@ -163,8 +189,13 @@ export function selectImperfectWave({
 }) {
 	const scopeKeys = new Set(scope.map(s => suiteKey(s.manifestId, s.name)))
 	const imperfectKeys = new Set([...goalImperfectKeys(verdicts, state)].filter(k => scopeKeys.has(k)))
-	const goalKeys = expandImperfectDependents(imperfectKeys, allSuites)
-	// 下游可能超出 scope；仍纳入（依赖需要）
+	// hard-fail 拖一层下游（可超 scope）；noisy 只重跑自身
+	const expandRoots = new Set([...imperfectKeys].filter(key =>
+		isHardImperfectRoot(verdicts.get(key), state.suites[key])))
+	const goalKeys = new Set([
+		...imperfectKeys,
+		...expandImperfectDependents(expandRoots, allSuites),
+	])
 	if (!goalKeys.size)
 		return { action: 'exit', code: 0, mode: 'imperfect' }
 

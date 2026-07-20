@@ -94,7 +94,7 @@ export function registerChatFederationRoomProvider() {
 				 * @returns {Promise<string[]>} fallback peer ids
 				 */
 				pickFallbackPeerIds: async selfNodeHash => {
-					const peers = loadPeerPoolView( groupId)
+					const peers = loadPeerPoolView(groupId)
 					const reputation = loadReputation()
 					const groupSettings = await loadFederationGroupSettings(username, groupId)
 					return selectPeerIdsFromPool({

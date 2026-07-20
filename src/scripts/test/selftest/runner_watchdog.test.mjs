@@ -248,11 +248,11 @@ Deno.test('RunReportWriter tracks pending slots until finalize', async () => {
 	}
 })
 
-Deno.test('exitCodeFromSlots ignores noisy; fails on pending/failed/blocked', () => {
+Deno.test('exitCodeFromSlots fails on noisy/pending/failed/blocked', () => {
 	assertEquals(exitCodeFromSlots([
 		{ state: 'done', status: 'passed' },
 		{ state: 'done', status: 'noisy' },
-	]), 0)
+	]), 1)
 	assertEquals(exitCodeFromSlots([
 		{ state: 'done', status: 'failed' },
 	]), 1)
@@ -263,4 +263,7 @@ Deno.test('exitCodeFromSlots ignores noisy; fails on pending/failed/blocked', ()
 		{ state: 'done', status: 'passed' },
 		{ state: 'pending', status: null },
 	]), 1)
+	assertEquals(exitCodeFromSlots([
+		{ state: 'done', status: 'passed' },
+	]), 0)
 })

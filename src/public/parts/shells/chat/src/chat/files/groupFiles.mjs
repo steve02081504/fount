@@ -7,7 +7,7 @@
  */
 import { Buffer } from 'node:buffer'
 
-import { b64ToU8 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
+import { base64ToBytes } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { BLOB_STORAGE_LOCATOR_RE, isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
 import {
 	decryptConvergentCiphertext,
@@ -81,7 +81,7 @@ export function parseChunkBody(body) {
 	const fileId = body.fileId?.trim()
 	if (!fileId) throw new Error('fileId required')
 	if (!body.data?.trim()) throw new Error('data (base64) required')
-	return { fileId, data: b64ToU8(body.data) }
+	return { fileId, data: base64ToBytes(body.data) }
 }
 
 /**

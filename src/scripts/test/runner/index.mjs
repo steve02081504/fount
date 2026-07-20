@@ -525,8 +525,9 @@ async function executeWave(context) {
 /**
  * 测试运行主入口：选择 suite、调度执行、写报告与 state。
  *
- * 默认循环：imperfect 波次 → hard fail 即退 1；否则 outdated 波次 → 再回到 imperfect；
- * 两波皆空：仍有 fresh noisy → 1；真正全绿 → 0。失败不会在同一次调用内自动重试。
+ * 默认循环：imperfect 波次（含 fresh noisy）→ failed/blocked/noisy/pending 即退 1；
+ * 否则 outdated 波次 → 再回到 imperfect；两波皆空且无 noisy → 0。
+ * 失败/噪声不会在同一次调用内自动重试（noisy 进波次真跑一次后若仍 noisy 则 exit 1）。
  * @param {RunTestsOptions} [options={}] 运行选项
  * @returns {Promise<number>} 进程退出码
  */
@@ -648,7 +649,7 @@ export async function runTests(options = {}) {
 		})
 	}
 
-	// 默认：imperfect → outdated 循环；hard fail 即退 1，两波皆空按 noisy 退
+	// 默认：imperfect（含 fresh noisy）→ outdated 循环；failed/blocked/noisy/pending 即退 1
 	// commit / trigger 指纹只在套件 slot 处理完后写入（run → upsertSuiteRun；reuse → refreshEntryFingerprint），
 	// 禁止波次开始前批量对齐——否则 Ctrl+C 会把未跑套件标成已在当前 HEAD 验证过。
 	for (; ;) {

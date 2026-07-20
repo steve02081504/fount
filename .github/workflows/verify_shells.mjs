@@ -34,3 +34,4 @@ if (failed.length) {
 	process.exit(1)
 }
 console.log(`all ${shells.length} shells OK`)
+process.exit(0)

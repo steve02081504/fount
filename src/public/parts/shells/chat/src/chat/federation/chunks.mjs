@@ -5,7 +5,7 @@
  * 【数据结构】载荷 { chunkHash, dataB64? }；swarmApis Map 键 username\0groupId；pending 等待见 chunk_fetch_pending.mjs。
  * 【关联】federation/chunks.mjs、chunkRefcount.mjs、groupFiles.mjs、room.mjs；npm:@steve02081504/fount-p2p/node/reputation_store.mjs；npm:@steve02081504/fount-p2p/node/storage_plugins。
  */
-import { b64ToU8, u8ToB64 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
+import { base64ToBytes, bytesToBase64 } from 'npm:@steve02081504/fount-p2p/core/bytes_codec'
 import { compositeKey } from 'npm:@steve02081504/fount-p2p/core/composite_key'
 import { FEDERATION_CHUNK_MAX_BYTES } from 'npm:@steve02081504/fount-p2p/core/constants'
 import { HEX_ID_64, LOCAL_CHUNK_FILE_RE } from 'npm:@steve02081504/fount-p2p/core/hexIds'
@@ -206,7 +206,7 @@ export function createFederationSwarmStoragePlugin(baseDir, username, groupId) {
 function replicateChunkToRoster(slot, chunkHash, data, bucketKey, options = {}) {
 	if (data.byteLength > FEDERATION_CHUNK_MAX_BYTES) return []
 	if (!consumeChunkRate(bucketKey, data.byteLength)) return []
-	const payload = { chunkHash, dataB64: u8ToB64(data) }
+	const payload = { chunkHash, dataB64: bytesToBase64(data) }
 	const roster = slot.getRoster()
 	const targets = roster.slice(0, 1)
 	/** @type {string[]} */
@@ -394,7 +394,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (!CHUNK_HASH_RE.test(hash)) return
 			const b64 = String(data.dataB64 || '')
 			if (!b64) return
-			const bytes = b64ToU8(b64)
+			const bytes = base64ToBytes(b64)
 			if (bytes.byteLength > FEDERATION_CHUNK_MAX_BYTES) return
 			const verified = verifiedChunkBytes(hash, bytes)
 			if (!verified) return
@@ -405,7 +405,7 @@ export function attachFedChunkHandlers(fedRoom) {
 				await bumpChunkStorageReputation(remoteNode)
 			try {
 				sendChunkAck({ chunkHash: hash }, peerId)
-				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(verified) }, peerId)
+				sendChunkData({ chunkHash: hash, dataB64: bytesToBase64(verified) }, peerId)
 			}
 			catch (error) {
 				console.warn('federation: fed_chunk_put response failed', error)
@@ -449,7 +449,7 @@ export function attachFedChunkHandlers(fedRoom) {
 			if (remoteNode)
 				await bumpChunkStorageReputation(remoteNode)
 			try {
-				sendChunkData({ chunkHash: hash, dataB64: u8ToB64(bytes) }, peerId)
+				sendChunkData({ chunkHash: hash, dataB64: bytesToBase64(bytes) }, peerId)
 			}
 			catch (error) {
 				console.warn('federation: fed_chunk_get send data failed', error)
@@ -470,7 +470,7 @@ export function attachFedChunkHandlers(fedRoom) {
 		const waitKey = compositeKey(username, groupId, hash)
 		let verified
 		try {
-			verified = verifiedChunkBytes(hash, b64ToU8(b64))
+			verified = verifiedChunkBytes(hash, base64ToBytes(b64))
 		}
 		catch {
 			return

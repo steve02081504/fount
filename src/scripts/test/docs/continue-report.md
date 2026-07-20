@@ -5,10 +5,10 @@ Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-re
 ## Decision model
 
 1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (`isTriggerHashStale`); fingerprints advance only after a suite slot finishes (`upsertSuiteRun` / reuse `refreshEntryFingerprint`), never before the wave.
-2. **Goals** — imperfect (`failed`/`blocked`/missing + one-level dependents; **fresh noisy excluded**), outdated (`unknown`), or explicit / `--all`.
+2. **Goals** — imperfect (`failed`/`blocked`/missing/fresh `noisy` + one-level dependents of hard fails only), outdated (`unknown`), or explicit / `--all`.
 3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` with provenance.
 
-Default `fount test` loops imperfect → outdated until both empty or a wave hard-fails (`failed`/`blocked`/pending → exit 1). `noisy` does not abort the wave loop; when both waves are empty, remaining fresh noisy still yields final exit 1.
+Default `fount test` loops imperfect → outdated until both empty or a wave exits non-zero (`failed`/`blocked`/`noisy`/pending → exit 1). Fresh noisy is re-run in the imperfect wave; if still noisy after that wave, exit 1 (no same-invocation retry). Report `sectionNoisyPassed` lists them with log paths.
 
 ## Reason kinds
 

@@ -83,6 +83,34 @@ Deno.test('selectImperfectWave exits when nothing imperfect in scope', () => {
 	assertEquals(selection.action, 'exit')
 })
 
+Deno.test('selectImperfectWave includes fresh noisy without expanding dependents', () => {
+	const all = [
+		makeSuite('shells/chat', 'smoke_chat'),
+		makeSuite('shells/chat', 'ws', { dependsOn: ['smoke_chat'] }),
+	]
+	const state = {
+		suites: {
+			'shells/chat:smoke_chat': makeStateEntry({ status: 'noisy' }),
+			'shells/chat:ws': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const verdicts = new Map([
+		['shells/chat:smoke_chat', { kind: 'noisy', fresh: true, triggerHash: null }],
+		['shells/chat:ws', { kind: 'green', fresh: true, triggerHash: null }],
+	])
+	const selection = selectImperfectWave({
+		verdicts,
+		state,
+		allSuites: all,
+		scope: all,
+		commitHash: 'abc',
+		uncommittedHash: null,
+	})
+	assertEquals(selection.action, 'run')
+	assertEquals([...selection.goalKeys].sort(), ['shells/chat:smoke_chat'])
+	assertEquals(selection.goalEvidenceByKey.get('shells/chat:smoke_chat')?.kind, 'imperfect_noisy')
+})
+
 Deno.test('goalOutdated picks unknown in scope', () => {
 	const scope = [makeSuite('shells/chat', 'pure'), makeSuite('shells/chat', 'live')]
 	const verdicts = new Map([

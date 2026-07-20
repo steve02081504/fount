@@ -532,10 +532,12 @@ function appendSilentPassed(lines, entries) {
 
 /**
  * @param {ReportSlot[]} slots 槽位
- * @returns {number} 进程退出码（noisy 不算波次失败；pending / failed / blocked 算）
+ * @returns {number} 进程退出码（noisy / failed / blocked / pending 均非 0，避免 imperfect 含 noisy 时死循环）
  */
 export function exitCodeFromSlots(slots) {
 	if (slots.some(slot => slot.state === 'pending')) return 1
 	const completed = slots.filter(slot => slot.state === 'done')
-	return completed.some(slot => slot.status === 'failed' || slot.status === 'blocked') ? 1 : 0
+	return completed.some(slot =>
+		slot.status === 'failed' || slot.status === 'blocked' || slot.status === 'noisy'
+	) ? 1 : 0
 }

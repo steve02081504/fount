@@ -68,7 +68,7 @@ Deno.test('goalImperfectKeys skips stale passed suites', () => {
 	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['b/y'])
 })
 
-Deno.test('goalImperfectKeys skips fresh noisy', () => {
+Deno.test('goalImperfectKeys includes fresh noisy', () => {
 	const state = {
 		suites: {
 			'a/x': makeStateEntry({ status: 'noisy' }),
@@ -79,7 +79,7 @@ Deno.test('goalImperfectKeys skips fresh noisy', () => {
 		['a/x', { kind: 'noisy', fresh: true, triggerHash: null }],
 		['b/y', { kind: 'red', fresh: true, triggerHash: null }],
 	])
-	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['b/y'])
+	assertEquals([...goalImperfectKeys(verdicts, state)].sort(), ['a/x', 'b/y'])
 })
 
 Deno.test('goalContinue expands one imperfect downstream level', () => {
@@ -98,6 +98,24 @@ Deno.test('goalContinue expands one imperfect downstream level', () => {
 		['shells/chat:child', { kind: 'green', fresh: true, triggerHash: null }],
 	])
 	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat:child', 'shells/chat:parent'])
+})
+
+Deno.test('goalContinue does not expand dependents of fresh noisy', () => {
+	const all = [
+		makeSuite('shells/chat', 'parent'),
+		makeSuite('shells/chat', 'child', { dependsOn: ['parent'] }),
+	]
+	const state = {
+		suites: {
+			'shells/chat:parent': makeStateEntry({ status: 'noisy' }),
+			'shells/chat:child': makeStateEntry({ status: 'passed' }),
+		},
+	}
+	const verdicts = new Map([
+		['shells/chat:parent', { kind: 'noisy', fresh: true, triggerHash: null }],
+		['shells/chat:child', { kind: 'green', fresh: true, triggerHash: null }],
+	])
+	assertEquals([...goalContinue(verdicts, state, all)].sort(), ['shells/chat:parent'])
 })
 
 Deno.test('buildReasonsFromPlan stamps goal and dependency reasons', () => {
