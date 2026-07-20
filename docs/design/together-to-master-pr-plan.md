@@ -85,8 +85,8 @@ flowchart TB
 ## 本轮（第 0 层）执行顺序
 
 1. **A**、**L** — 基于 `master`，互不依赖，可并行。
-2. **C** — 基于 `master`（或 A 已合后的 master）；优先落地独立新模块 + pure 测；与大改文件的接线能最小则最小。
-3. **B** — 基于 **C**（需要 `registries`）；auth 仍走 `auth.mjs` 直到 E。
+2. **C** — 基于 `master`；本轮落地 `net_listen` + `no_cors`（含接线与 pure 测）。**registries / parts_loader 扫描延期**到后续 PR。
+3. **B** — 基于 `master` 并行开出：`i18n` 拆分后 part locales **暂留** master 的 `parts_locale_*` cache（不依赖 registries）；auth 仍走 `auth.mjs` 直到 E。
 
 ## 操作约定
 
@@ -98,8 +98,8 @@ flowchart TB
 
 | 层 | 组 | 状态 | PR |
 | --- | --- | --- | --- |
-| 0 | A | 进行中 | |
-| 0 | C | 待开 | |
-| 0 | L | 待开 | |
-| 1 | B | 待开（等 C） | |
+| 0 | A | 已开 PR | https://github.com/steve02081504/fount/pull/233 |
+| 0 | C | 已开 PR（net_listen + no_cors；registries 延期） | https://github.com/steve02081504/fount/pull/234 |
+| 0 | L | 已开 PR | https://github.com/steve02081504/fount/pull/232 |
+| 0 | B | 已开 PR（part locales 仍用旧 cache） | https://github.com/steve02081504/fount/pull/235 |
 | 1+ | D–K | 未开始 | |
