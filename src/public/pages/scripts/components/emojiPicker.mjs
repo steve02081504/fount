@@ -25,8 +25,9 @@ async function resolveEmojiProvider() {
  * @returns {void}
  */
 function insertAtCursor(inputElement, token) {
-	const cursorPos = inputElement.selectionStart ?? inputElement.value.length
-	inputElement.value = inputElement.value.substring(0, cursorPos) + token + inputElement.value.substring(cursorPos)
+	const start = inputElement.selectionStart ?? inputElement.value.length
+	const end = inputElement.selectionEnd ?? start
+	inputElement.setRangeText(token, start, end, 'end')
 	inputElement.focus()
 }
 
@@ -114,6 +115,9 @@ function setActiveTabButton(tabsElement, tabId) {
 		tabButton.classList.toggle('active', tabButton.dataset.tab === tabId)
 }
 
+/** @type {WeakMap<HTMLElement, number>} */
+const emojiGridRenderIds = new WeakMap()
+
 /**
  * @param {object} provider emoji 提供商
  * @param {object} tab 标签页
@@ -122,8 +126,11 @@ function setActiveTabButton(tabsElement, tabId) {
  * @returns {Promise<void>}
  */
 async function renderEmojiTabGrid(provider, tab, grid, pickerContext) {
+	const renderId = (emojiGridRenderIds.get(grid) ?? 0) + 1
+	emojiGridRenderIds.set(grid, renderId)
 	grid.replaceChildren()
 	const { items, emptyI18n, errorI18n } = await provider.loadTabItems(tab, pickerContext)
+	if (emojiGridRenderIds.get(grid) !== renderId) return
 	if (errorI18n) {
 		renderGridMessage(grid, errorI18n)
 		return

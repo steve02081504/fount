@@ -72,11 +72,13 @@ export async function retrieveUrlParams(currentParams) {
 
 	let paramsJson = null
 
-	// 1. 剪贴板优先（成功路径不变）；失败时保留 paramsFrom/paramsFileId 并继续走持久回退
+	// 1. 剪贴板优先（成功路径不变）；非 JSON 内容走 catch，不阻断 Catbox 回退
 	if (from === 'clipboard')
 		try {
-			paramsJson = await navigator.clipboard.readText()
-			if (paramsJson) console.log('URL parameters retrieved from clipboard.')
+			const text = await navigator.clipboard.readText()
+			JSON.parse(text)
+			paramsJson = text
+			console.log('URL parameters retrieved from clipboard.')
 		}
 		catch (e) {
 			console.warn('Clipboard read failed, trying persisted handoff.', e)

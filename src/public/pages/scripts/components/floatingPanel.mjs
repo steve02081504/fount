@@ -10,7 +10,7 @@
  */
 export function positionFloatingPanel(panel, anchor, { panelWidth = 320, heightOffset = 280 } = {}) {
 	const rect = anchor.getBoundingClientRect()
-	panel.style.left = `${Math.min(rect.left, window.innerWidth - panelWidth - 10)}px`
+	panel.style.left = `${Math.max(8, Math.min(rect.left, window.innerWidth - panelWidth - 10))}px`
 	panel.style.top = `${Math.max(8, rect.top - heightOffset)}px`
 }
 
