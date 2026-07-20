@@ -84,6 +84,7 @@ flowchart TB
 ## 操作约定
 
 - 从 `master`（或声明的 base）建 `pr/together-<id>-…` 分支；只 `git checkout together -- <paths>` / 具名 stage，禁止 `git add .`。
+- `git checkout together -- <paths>` **不会删除** master 上 together 已移除的文件；重写类 PR 必须对照 `git ls-tree` 做显式 `git rm`。
 - 每层合并后：soft-reset 工作树到新 `master`，**不回退** master 上已合修复；together 仍需要的文件则 **port** 修复 hunk。
 - 全部合并后比对 `master` vs `together`。
 
@@ -100,5 +101,5 @@ flowchart TB
 | 1 | F | **已合并**（含 floatingPanel/catbox 等后续修） | https://github.com/steve02081504/fount/pull/238 |
 | 2 | C2 | **已合并** | https://github.com/steve02081504/fount/pull/239 |
 | 2 | H | **已合并** | https://github.com/steve02081504/fount/pull/240 |
-| 3 | G | 已开 PR | P2P 胶水 + H 遗留旧 chat 文件清理 |
+| 3 | G | 已开 PR | https://github.com/steve02081504/fount/pull/241 |
 | 3+ | I–K | 阻于 H（及 G） | |
