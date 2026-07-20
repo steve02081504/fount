@@ -1,0 +1,63 @@
+// Single-node WebSocket E2E: valid key receives live push on group channel.
+import process from 'node:process'
+
+import { ms } from 'fount/scripts/ms.mjs'
+import { liveWsBaseUrl } from 'fount/scripts/test/live/env.mjs'
+import { createLiveShellHttp } from 'fount/scripts/test/live/wsHarness.mjs'
+
+const { chatApi, key: apiKey } = createLiveShellHttp()
+
+const createdGroup = await chatApi('POST', '/groups/', { name: 'WSTest' })
+const groupId = createdGroup.json.groupId
+const channelId = createdGroup.json.defaultChannelId
+const peers = await chatApi('GET', `/groups/${groupId}/peers`)
+const nodeHash = peers.json.selfNodeHash
+console.log(`group=${groupId} node=${nodeHash}`)
+
+const websocketUrl = `${liveWsBaseUrl()}/ws/parts/shells:chat/groups/${nodeHash}/${groupId}?fount-apikey=${encodeURIComponent(apiKey)}`
+const websocket = new WebSocket(websocketUrl)
+const receivedTypes = []
+let finish
+const done = new Promise(resolve => { finish = resolve })
+const timeout = setTimeout(() => finish('timeout'), ms('20s'))
+
+/** WebSocket 连接建立后发送测试消息。 */
+websocket.onopen = async () => {
+	console.log('WS open; posting message...')
+	const post = await chatApi('POST', `/groups/${groupId}/channels/${channelId}/messages`, {
+		content: { type: 'text', content: 'ws-hello' },
+	})
+	console.log(`post -> ${post.status}`)
+}
+/**
+ * 处理群 WebSocket 推送消息。
+ * @param {MessageEvent} event - WebSocket 消息事件。
+ * @returns {void}
+ */
+websocket.onmessage = event => {
+	const frame = JSON.parse(event.data)
+	receivedTypes.push(frame.type)
+	if (['channel_message', 'dag_event', 'message_replaced'].includes(frame.type)) {
+		console.log(`WS received: ${frame.type}`)
+		clearTimeout(timeout)
+		finish('ok')
+	}
+}
+/**
+ * 记录 WebSocket 错误。
+ * @param {Event} error - WebSocket 错误事件。
+ * @returns {void}
+ */
+websocket.onerror = error => console.log(`WS error: ${error.message || error.type}`)
+/**
+ * 记录 WebSocket 关闭信息。
+ * @param {CloseEvent} closeEvent - WebSocket 关闭事件。
+ * @returns {void}
+ */
+websocket.onclose = closeEvent => console.log(`WS close code=${closeEvent.code} reason=${closeEvent.reason}`)
+
+const result = await done
+websocket.close()
+await chatApi('DELETE', `/groups/${groupId}`)
+console.log(`\nWS result=${result} types=[${[...new Set(receivedTypes)].join(', ')}]`)
+process.exit(result === 'ok' ? 0 : 1)

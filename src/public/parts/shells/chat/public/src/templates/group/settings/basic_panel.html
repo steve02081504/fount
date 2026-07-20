@@ -1,0 +1,293 @@
+<div class="card bg-base-200 settings-card">
+	<div class="card-body">
+		<h2 class="card-title" data-i18n="chat.group.settingsPage.basicTitle"></h2>
+		<p class="text-sm opacity-70" data-i18n="chat.group.settingsPage.governanceHint"></p>
+
+		${showFullSettings ? `
+		<section class="settings-section">
+			<h3 class="settings-section-title" data-i18n="chat.group.settingsPage.profileSectionTitle"></h3>
+			<p class="settings-section-hint" data-i18n="chat.group.settingsPage.profileSectionHint"></p>
+			<div class="settings-fields">
+				<div class="form-control">
+					<label class="label" for="group-name">
+						<span class="label-text" data-i18n="chat.group.settingsPage.nameLabel"></span>
+					</label>
+					<input type="text" id="group-name" class="input input-bordered" value="${escapeHtml(currentState.groupMeta?.name ?? '')}">
+				</div>
+
+				<div class="form-control">
+					<label class="label" for="group-description">
+						<span class="label-text" data-i18n="chat.group.settingsPage.descriptionLabel"></span>
+					</label>
+					<textarea id="group-description" class="textarea textarea-bordered" rows="3">${escapeHtml(currentState.groupMeta?.description ?? '')}</textarea>
+				</div>
+
+				<div class="form-control">
+					<label class="label" for="join-policy">
+						<span class="label-text" data-i18n="chat.group.settingsPage.joinPolicyLabel"></span>
+					</label>
+					<select id="join-policy" class="select select-bordered">
+						<option value="invite-only" ${currentState.groupSettings.joinPolicy==='invite-only' ? 'selected' : '' } data-i18n="chat.group.settingsPage.joinInviteOnly"></option>
+						<option value="pow" ${currentState.groupSettings.joinPolicy==='pow' ? 'selected' : '' } data-i18n="chat.group.settingsPage.joinPow"></option>
+					</select>
+				</div>
+			</div>
+		</section>
+
+		<details class="settings-advanced">
+			<summary>
+				<span class="settings-advanced-summary">
+					<strong data-i18n="chat.group.settingsPage.advancedTitle"></strong>
+					<small data-i18n="chat.group.settingsPage.advancedDescription"></small>
+				</span>
+			</summary>
+			<div class="settings-advanced-body">
+				<section class="settings-section">
+					<h3 class="settings-section-title" data-i18n="chat.group.settingsPage.behaviorSectionTitle"></h3>
+					<div class="settings-fields settings-fields-wide">
+						<div class="form-control">
+							<label class="label" for="pow-difficulty">
+								<span class="label-text settings-label-with-info">
+									<span data-i18n="chat.group.settingsPage.powDifficultyLabel"></span>
+									<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.powDifficultyTip">i</span>
+								</span>
+							</label>
+							<input type="number" id="pow-difficulty" class="input input-bordered" value="${currentState.groupSettings.powDifficulty}" min="1" max="10">
+						</div>
+
+						<div class="form-control">
+							<label class="label" for="stream-generating-idle-ms">
+								<span class="label-text" data-i18n="chat.group.settingsStreamGeneratingIdle"></span>
+							</label>
+							<input type="number" id="stream-generating-idle-ms" class="input input-bordered" min="5000" max="600000" step="1000" value="${Number(currentState.groupSettings.streamGeneratingIdleMs) || 150000}">
+						</div>
+
+						<div class="form-control">
+							<label class="label" for="auto-reply-frequency">
+								<span class="label-text" data-i18n="chat.group.settingsAutoReplyFrequency"></span>
+							</label>
+							<input type="number" id="auto-reply-frequency" class="input input-bordered" min="0" max="100" step="1" value="${Number(currentState.groupSettings.autoReplyFrequency) || 0}">
+							<label class="label" for="auto-reply-frequency"><span class="label-text-alt" data-i18n="chat.group.settingsAutoReplyFrequencyHint"></span></label>
+						</div>
+
+						<div class="form-control">
+							<label class="label" for="max-dag-payload-bytes">
+								<span class="label-text settings-label-with-info">
+									<span data-i18n="chat.group.settingsMaxDagPayload"></span>
+									<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.maxDagPayloadTip">i</span>
+								</span>
+							</label>
+							<input type="number" id="max-dag-payload-bytes" class="input input-bordered" min="4096" max="8388608" step="1024" value="${Number(currentState.groupSettings.maxDagPayloadBytes) || 262144}">
+						</div>
+
+						<label class="label cursor-pointer justify-start gap-3">
+							<input type="checkbox" id="battery-saver" class="checkbox" ${currentState.groupSettings.batterySaver ? 'checked' : '' } />
+							<span class="label-text" data-i18n="chat.group.settingsBatterySaver"></span>
+						</label>
+
+						<label class="label cursor-pointer justify-start gap-3">
+							<input type="checkbox" id="discovery-public" class="checkbox" ${currentState.groupSettings.discoveryPublic ? 'checked' : '' } />
+							<span class="label-text" data-i18n="chat.group.settingsDiscoveryPublic"></span>
+						</label>
+
+						<div class="form-control">
+							<label class="label" for="discovery-title"><span class="label-text" data-i18n="chat.group.settingsDiscoveryTitle"></span></label>
+							<input type="text" id="discovery-title" class="input input-bordered" maxlength="200" value="${escapeHtml(String(currentState.groupSettings.discoveryTitle || ''))}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="discovery-blurb"><span class="label-text" data-i18n="chat.group.settingsDiscoveryBlurb"></span></label>
+							<textarea id="discovery-blurb" class="textarea textarea-bordered" maxlength="500">${escapeHtml(String(currentState.groupSettings.discoveryBlurb || ''))}</textarea>
+						</div>
+					</div>
+				</section>
+
+				<section class="settings-section">
+					<h3 class="settings-section-title" data-i18n="chat.group.settingsPage.networkSectionTitle"></h3>
+					<div class="settings-field-grid">
+						<div class="form-control">
+							<label class="label" for="trusted-peer-slots"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsTrustedPeers"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.trustedPeersTip">i</span></span></label>
+							<input type="number" id="trusted-peer-slots" class="input input-bordered" min="1" max="32" value="${Number(currentState.groupSettings.trustedPeerSlots) || 8}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="explore-peer-slots"><span class="label-text" data-i18n="chat.group.settingsExplorePeers"></span></label>
+							<input type="number" id="explore-peer-slots" class="input input-bordered" min="0" max="16" value="${Number(currentState.groupSettings.explorePeerSlots) || 4}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="max-peers"><span class="label-text" data-i18n="chat.group.settingsMaxPeers"></span></label>
+							<input type="number" id="max-peers" class="input input-bordered" min="4" max="64" value="${Number(currentState.groupSettings.maxPeers) || 24}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="gossip-ttl"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsGossipTtl"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.gossipTtlTip">i</span></span></label>
+							<input type="number" id="gossip-ttl" class="input input-bordered" min="0" max="8" value="${Number(currentState.groupSettings.gossipTtl) ?? 2}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="want-ids-budget"><span class="label-text" data-i18n="chat.group.settingsWantIdsBudget"></span></label>
+							<input type="number" id="want-ids-budget" class="input input-bordered" min="4" max="128" value="${Number(currentState.groupSettings.wantIdsBudget) || 16}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="hlc-max-skew-ms"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsHlcMaxSkew"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.hlcTip">i</span></span></label>
+							<input type="number" id="hlc-max-skew-ms" class="input input-bordered" min="60000" max="86400000" step="1000" value="${Number(currentState.groupSettings.hlcMaxSkewMs) || 3600000}">
+						</div>
+					</div>
+
+					${showFedTuning ? `
+					<div class="settings-field-grid mt-2">
+						<div class="form-control">
+							<label class="label" for="federation-partition-count"><span class="label-text" data-i18n="chat.group.settingsFedPartition"></span></label>
+							<input type="number" id="federation-partition-count" class="input input-bordered" min="2" max="64" value="${Number(currentState.groupSettings.federationPartitionCount) || 8}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="rtc-connection-budget-max"><span class="label-text" data-i18n="chat.group.settingsRtcBudget"></span></label>
+							<input type="number" id="rtc-connection-budget-max" class="input input-bordered" min="8" max="128" value="${Number(currentState.groupSettings.rtcConnectionBudgetMax) || 32}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="rtc-join-rate-per-min"><span class="label-text" data-i18n="chat.group.settingsRtcJoinRate"></span></label>
+							<input type="number" id="rtc-join-rate-per-min" class="input input-bordered" min="4" max="60" value="${Number(currentState.groupSettings.rtcJoinRatePerMin) || 12}">
+						</div>
+					</div>
+					<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsFedTuningHint"></p>
+					` : ''}
+				</section>
+
+				<section class="settings-section">
+					<h3 class="settings-section-title" data-i18n="chat.group.settingsPage.retentionSectionTitle"></h3>
+					<label class="label cursor-pointer justify-start gap-2">
+						<input type="checkbox" id="auto-channel-gc" class="checkbox checkbox-sm" ${currentState.groupSettings.autoChannelGc !==false ? 'checked' : '' } />
+						<span class="label-text" data-i18n="chat.group.settingsAutoChannelGc"></span>
+					</label>
+					<p class="text-xs opacity-60" data-i18n="chat.group.settingsAutoChannelGcHint"></p>
+
+					<div class="form-control">
+						<label class="label" for="message-content-retention-ms">
+							<span class="label-text" data-i18n="chat.group.settingsMessageRetention"></span>
+						</label>
+						<select id="message-content-retention-ms" class="select select-bordered">
+							<option value="0" ${!Number(currentState.groupSettings.messageContentRetentionMs) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
+							<option value="2592000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
+							<option value="7776000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
+							<option value="31536000000" ${Number(currentState.groupSettings.messageContentRetentionMs)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
+						</select>
+						<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsMessageRetentionHint"></p>
+					</div>
+
+					<div class="settings-field-grid">
+						<div class="form-control">
+							<label class="label" for="hot-latest-message-count"><span class="label-text" data-i18n="chat.group.settingsHotLatest"></span></label>
+							<input type="number" id="hot-latest-message-count" class="input input-bordered" min="0" max="500" value="${Number(currentState.groupSettings.hotLatestMessageCount) || 50}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="pin-context-message-count"><span class="label-text" data-i18n="chat.group.settingsPinContext"></span></label>
+							<input type="number" id="pin-context-message-count" class="input input-bordered" min="0" max="200" value="${Number(currentState.groupSettings.pinContextMessageCount) || 30}">
+						</div>
+					</div>
+					<p class="text-xs opacity-60" data-i18n="chat.group.settingsHotWindowHint"></p>
+
+					<div class="settings-field-grid">
+						<div class="form-control">
+							<label class="label" for="event-retention-depth"><span class="label-text" data-i18n="chat.group.settingsEventRetentionDepth"></span></label>
+							<input type="number" id="event-retention-depth" class="input input-bordered" min="1000" max="500000" step="1000" value="${Number(currentState.groupSettings.eventRetentionDepth) || 200000}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="event-retention-ms"><span class="label-text" data-i18n="chat.group.settingsEventRetentionMs"></span></label>
+							<select id="event-retention-ms" class="select select-bordered">
+								<option value="0" ${!Number(currentState.groupSettings.eventRetentionMs) ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetentionForever"></option>
+								<option value="2592000000" ${Number(currentState.groupSettings.eventRetentionMs)===2592000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention30d"></option>
+								<option value="7776000000" ${Number(currentState.groupSettings.eventRetentionMs)===7776000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention90d"></option>
+								<option value="31536000000" ${Number(currentState.groupSettings.eventRetentionMs)===31536000000 ? 'selected' : '' } data-i18n="chat.group.settingsMessageRetention1y"></option>
+							</select>
+						</div>
+						<div class="form-control">
+							<label class="label" for="compact-trigger-event-depth"><span class="label-text" data-i18n="chat.group.settingsCompactTriggerDepth"></span></label>
+							<input type="number" id="compact-trigger-event-depth" class="input input-bordered" min="10000" max="500000" step="5000" value="${Number(currentState.groupSettings.compactTriggerEventDepth) || 100000}">
+						</div>
+						<div class="form-control">
+							<label class="label" for="message-rate-limit-per-min"><span class="label-text" data-i18n="chat.group.settingsMessageRateLimit"></span></label>
+							<input type="number" id="message-rate-limit-per-min" class="input input-bordered" min="1" max="120" value="${Number(currentState.groupSettings.messageRateLimitPerMin) || 10}">
+						</div>
+						<div class="form-control">
+							<label class="label cursor-pointer justify-start gap-2">
+								<input id="auto-reply-token-bucket-enabled" type="checkbox" class="toggle toggle-sm" ${currentState.groupSettings.autoReplyTokenBucketEnabled ? 'checked' : '' }>
+								<span class="label-text" data-i18n="chat.group.settingsAutoReplyTokenBucket"></span>
+							</label>
+							<div class="grid grid-cols-2 gap-2 mt-2">
+								<input id="auto-reply-token-burst" type="number" class="input input-bordered" min="1" max="12" value="${Number(currentState.groupSettings.autoReplyTokenBurst) || 2}" placeholder="burst">
+								<input id="auto-reply-token-refill" type="number" class="input input-bordered" min="0.1" step="0.1" max="5" value="${Number(currentState.groupSettings.autoReplyTokenRefillPerMessage) || 0.5}" placeholder="refill/message">
+							</div>
+							<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsAutoReplyTokenBucketHint"></p>
+						</div>
+					</div>
+				</section>
+
+				<section class="settings-section">
+					<h3 class="settings-section-title" data-i18n="chat.group.settingsPage.mediaSectionTitle"></h3>
+					<div class="form-control">
+						<label class="label" for="streaming-sfu-wss">
+							<span class="label-text settings-label-with-info">
+								<span data-i18n="chat.group.settingsStreamingSfu"></span>
+								<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.sfuTip">i</span>
+							</span>
+						</label>
+						<input type="text" id="streaming-sfu-wss" class="input input-bordered" placeholder="wss://..." value="${escapeHtml(currentState.groupSettings.streamingSfuWss || '')}">
+					</div>
+
+					<div class="form-control">
+						<label class="label"><span class="label-text settings-label-with-info"><span data-i18n="chat.group.settingsIceServers"></span><span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.iceTip">i</span></span></label>
+						<div id="ice-servers-host" class="space-y-2"></div>
+						<button type="button" id="ice-servers-add" class="btn btn-outline btn-sm mt-2" data-i18n="chat.group.settingsIceServersAdd"></button>
+						<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsIceServersHint"></p>
+					</div>
+					<div class="form-control">
+						<label class="label" for="file-ce-mode">
+							<span class="label-text settings-label-with-info">
+								<span data-i18n="chat.group.settingsFileCeMode"></span>
+								<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.fileEncryptionTip">i</span>
+							</span>
+						</label>
+						<select id="file-ce-mode" class="select select-bordered">
+							<option value="convergent" ${String(currentState.groupSettings.fileCeMode || 'convergent' ) !=='random' ? 'selected' : '' } data-i18n="chat.group.settingsFileCeModeConvergent"></option>
+							<option value="random" ${String(currentState.groupSettings.fileCeMode || '' )==='random' ? 'selected' : '' } data-i18n="chat.group.settingsFileCeModeRandom"></option>
+						</select>
+						<p class="text-xs opacity-60 mt-1" data-i18n="chat.group.settingsFileCeModeHint"></p>
+					</div>
+					<p class="text-xs opacity-70 leading-relaxed" data-i18n="chat.group.convergentEncryptWarn"></p>
+				</section>
+			</div>
+		</details>
+		` : ''}
+
+		${showKeyRotate || showOwnerSuccession ? `
+		<details class="settings-advanced">
+			<summary>
+				<span class="settings-advanced-summary">
+					<strong data-i18n="chat.group.settingsPage.securityAdvancedTitle"></strong>
+					<small data-i18n="chat.group.settingsPage.securityAdvancedDescription"></small>
+				</span>
+			</summary>
+			<div class="settings-advanced-body">
+		${showKeyRotate ? `
+		<div>
+			<div class="settings-label-with-info mb-2">
+				<strong class="text-sm" data-i18n="chat.group.settingsPage.keyManagementTitle"></strong>
+				<span class="settings-info" tabindex="0" data-i18n-title="chat.group.settingsPage.keyManagementTip">i</span>
+			</div>
+			<button type="button" id="group-settings-key-rotate-button" class="btn btn-warning btn-outline btn-sm" data-i18n="chat.group.settingsPage.keyRotate"></button>
+			<p class="text-xs opacity-70 mt-2" data-i18n="chat.group.settingsPage.gshGenerationRetentionHint"></p>
+		</div>
+		` : ''}
+		${showOwnerSuccession ? `
+		<div>
+			<button type="button" id="group-settings-owner-succession-button" class="btn btn-outline btn-sm" data-i18n="chat.group.settingsPage.ownerSuccession"></button>
+		</div>
+		` : ''}
+			</div>
+		</details>
+		` : ''}
+
+		${showFullSettings ? `
+		<div class="settings-actions">
+			${showDeleteGroup ? `<button type="button" id="group-settings-delete-group-button" class="btn btn-error" data-i18n="chat.group.settingsPage.deleteGroup"></button>` : '<span></span>'}
+			<button type="button" id="save-group-settings" class="btn btn-primary" data-i18n="chat.group.settingsPage.save"></button>
+		</div>
+		` : ''}
+	</div>
+</div>

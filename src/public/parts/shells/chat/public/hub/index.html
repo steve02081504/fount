@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="chat.hub.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link href="./index.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+</head>
+
+<body class="m-0 h-screen w-screen overflow-hidden bg-[var(--bg-main)] text-[var(--text-normal)] font-['gg_sans','Noto_Sans',system-ui,sans-serif]">
+	<div class="drawer drawer-end">
+		<input id="files-drawer-toggle" type="checkbox" class="drawer-toggle" />
+		<div class="drawer-content flex h-screen w-screen bg-[var(--bg-main)] text-[var(--text-normal)]">
+		<aside class="server-bar w-[72px] shrink-0 overflow-y-auto bg-[var(--bg-server)] py-3 flex flex-col items-center gap-2" id="server-bar">
+			<button type="button" class="server-item" data-mode="friends" data-i18n="chat.hub.friendsTooltip">
+				<img src="https://api.iconify.design/line-md/person.svg" width="24" height="24" alt="" aria-hidden="true" />
+				<span class="server-tooltip" data-i18n="chat.hub.charsTooltip.tip"></span>
+			</button>
+			<button type="button" class="server-item server-inbox" data-mode="inbox" data-i18n="chat.hub.inboxTooltip">
+				<img src="https://api.iconify.design/line-md/at.svg" width="24" height="24" alt="" aria-hidden="true" />
+				<span class="unread-badge hidden" id="inbox-badge" aria-hidden="true"></span>
+				<span class="server-tooltip" data-i18n="chat.hub.inboxTooltip.tip"></span>
+			</button>
+			<div class="server-divider"></div>
+			<div id="server-list"></div>
+			<button type="button" class="server-item" id="discovery-button" data-mode="discovery" data-i18n="chat.hub.discoveryTooltip">
+				<img src="https://api.iconify.design/mdi/compass-outline.svg" width="24" height="24" alt="" aria-hidden="true" />
+				<span class="server-tooltip" data-i18n="chat.hub.discoveryTooltip.tip"></span>
+			</button>
+			<button type="button" class="server-item" id="prefs-button" data-i18n="chat.hub.prefsTooltip">
+				<img src="https://api.iconify.design/line-md/cog.svg" width="24" height="24" alt="" aria-hidden="true" />
+				<span class="server-tooltip" data-i18n="chat.hub.prefsTooltip.tip"></span>
+			</button>
+			<button type="button" class="server-item server-add" id="add-server-button" data-i18n="chat.hub.addServerTooltip">
+				<img src="https://api.iconify.design/line-md/plus.svg" width="24" height="24" alt="" aria-hidden="true" />
+				<span class="server-tooltip" data-i18n="chat.hub.addServerTooltip.tip"></span>
+			</button>
+		</aside>
+
+		<aside class="channel-bar w-60 shrink-0 bg-[var(--bg-channel)] flex flex-col" id="channel-bar">
+			<header class="channel-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center justify-between font-bold text-base text-[var(--text-bright)] cursor-pointer" id="group-header" data-i18n="chat.hub.groupHeaderMenu" aria-haspopup="menu">
+				<span id="group-name-display"></span>
+				<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+			</header>
+			<div class="channel-list flex-1 overflow-y-auto py-2" id="channel-list"></div>
+			<div class="user-bar" id="user-bar">
+				<div class="avatar-wrap user-avatar-wrap">
+					<div class="avatar" id="my-avatar">?</div>
+					<span class="status-dot user-status-dot" id="my-status-dot" data-status="offline"></span>
+				</div>
+				<div class="user-meta">
+					<div id="my-name" class="user-name" data-i18n="chat.hub.userLoading"></div>
+					<div id="my-status-row" class="user-status-row">
+						<span id="my-status-text"></span>
+					</div>
+				</div>
+			</div>
+		</aside>
+
+		<main class="main flex-1 min-w-0 flex flex-col bg-[var(--bg-main)]">
+			<header class="main-header h-12 min-h-12 px-4 border-b border-[var(--border)] shadow-sm flex items-center gap-2 z-30 relative">
+				<button type="button" class="top-back icon-button" id="top-back-button" data-i18n="chat.hub.backToNav">
+					<img src="https://api.iconify.design/mdi/arrow-left.svg" width="18" height="18" alt="" aria-hidden="true" />
+				</button>
+				<span class="main-header-icon">#</span>
+				<span class="main-header-title" id="channel-name-display"></span>
+				<div class="flex-1"></div>
+				<div class="header-pop header-desktop-only" id="pins-pop" hidden>
+					<button type="button" class="icon-button header-pop-button" id="pins-button" data-i18n="chat.hub.pinsButton" aria-haspopup="dialog" aria-expanded="false">
+						<img src="https://api.iconify.design/mdi/pin.svg" alt="" aria-hidden="true" />
+						<span class="header-pop-count" id="pins-count" hidden></span>
+					</button>
+					<div class="header-panel" id="pins-panel" hidden role="dialog">
+						<div class="header-panel-title" data-i18n="chat.hub.pinsTitle"></div>
+						<div id="pins-wrap" class="header-panel-body"></div>
+					</div>
+				</div>
+				<div class="header-pop header-desktop-only" id="bookmarks-pop" hidden>
+					<button type="button" class="icon-button header-pop-button" id="bookmarks-button" data-i18n="chat.hub.bookmarksButton" aria-haspopup="dialog" aria-expanded="false">
+						<img src="https://api.iconify.design/mdi/bookmark-outline.svg" alt="" aria-hidden="true" />
+						<span class="header-pop-count" id="bookmarks-count" hidden></span>
+					</button>
+					<div class="header-panel" id="bookmarks-panel" hidden role="dialog">
+						<div class="header-panel-title" data-i18n="chat.hub.bookmarksTitle"></div>
+						<div id="bookmarks-wrap" class="header-panel-body"></div>
+					</div>
+				</div>
+				<div id="header-search-wrap" class="search-wrap header-desktop-only">
+					<div class="dropdown search-scope-dropdown">
+						<button type="button" tabindex="0" id="search-scope" class="search-scope" data-value="group" aria-haspopup="listbox">
+							<span class="search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
+							<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+						</button>
+						<ul tabindex="0" class="dropdown-content menu search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
+							<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
+							<li><button type="button" role="option" data-value="all" data-i18n="chat.hub.search.scopeAll"></button></li>
+						</ul>
+					</div>
+					<input id="header-search" class="search-input" type="search" data-i18n="chat.hub.search" />
+					<img src="https://api.iconify.design/line-md/search.svg" class="search-icon" width="14" height="14" alt="" aria-hidden="true" />
+					<div id="search-results" class="search-results" hidden></div>
+				</div>
+				<button type="button" class="icon-button" id="header-call-button" data-i18n="chat.hub.callButton" hidden>
+					<img src="https://api.iconify.design/mdi/phone.svg" alt="" aria-hidden="true" />
+					<span class="header-pop-count" id="call-count" hidden></span>
+				</button>
+				<button type="button" class="icon-button" id="toggle-members-button" data-i18n="chat.hub.membersTitle">
+					<img src="https://api.iconify.design/line-md/account.svg" alt="" aria-hidden="true" />
+				</button>
+				<button type="button" class="icon-button header-desktop-only" id="header-files-button" data-i18n="chat.hub.filesTitle" hidden>
+					<img src="https://api.iconify.design/line-md/document.svg" alt="" aria-hidden="true" />
+				</button>
+				<div class="dropdown dropdown-end header-overflow">
+					<button type="button" tabindex="0" class="icon-button" id="header-more-button" data-i18n="chat.hub.moreActions" aria-haspopup="menu">
+						<img src="https://api.iconify.design/mdi/dots-vertical.svg" alt="" aria-hidden="true" />
+					</button>
+					<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300" role="menu">
+						<li><button type="button" id="overflow-pins" data-i18n="chat.hub.pinsButton"></button></li>
+						<li><button type="button" id="overflow-bookmarks" data-i18n="chat.hub.bookmarksButton"></button></li>
+						<li><button type="button" id="overflow-search" data-i18n="chat.hub.search"></button></li>
+						<li><button type="button" id="overflow-files" data-i18n="chat.hub.filesTitle"></button></li>
+					</ul>
+				</div>
+				<div class="mobile-search-bar" id="mobile-search-bar">
+					<button type="button" class="icon-button" id="mobile-search-close" data-i18n="chat.hub.ariaClose">×</button>
+					<div class="dropdown search-scope-dropdown shrink-0">
+						<button type="button" tabindex="0" id="mobile-search-scope" class="search-scope" data-value="group" aria-haspopup="listbox">
+							<span class="search-scope-label" data-i18n="chat.hub.search.scopeGroup"></span>
+							<img src="https://api.iconify.design/mdi/chevron-down.svg" width="14" height="14" alt="" aria-hidden="true" />
+						</button>
+						<ul tabindex="0" class="dropdown-content menu search-scope-menu bg-base-100 rounded-box z-50 p-1 shadow border border-base-300" role="listbox">
+							<li><button type="button" role="option" data-value="group" data-i18n="chat.hub.search.scopeGroup"></button></li>
+							<li><button type="button" role="option" data-value="all" data-i18n="chat.hub.search.scopeAll"></button></li>
+						</ul>
+					</div>
+					<input id="mobile-search-input" class="search-input flex-1 min-w-0" type="search" data-i18n="chat.hub.search" />
+				</div>
+			</header>
+			<div id="group-state-host-buffer-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
+				<span id="group-state-host-buffer-banner-text" data-i18n="chat.hub.banners.gshBuffer"></span>
+			</div>
+			<div id="plaintext-main-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
+				<span id="plaintext-main-banner-text" data-i18n="chat.hub.banners.plaintextSidecar"></span>
+			</div>
+			<div id="archive-coverage-banner" class="alert alert-warning rounded-none py-2 text-sm" hidden>
+				<span id="archive-coverage-banner-text" data-i18n="chat.hub.banners.archiveCoverageIncomplete"></span>
+				<button type="button" id="archive-sync-button" class="btn btn-xs btn-outline ml-2" data-i18n="chat.hub.banners.archiveSyncButton"></button>
+			</div>
+			<div id="quarantine-banner" class="alert alert-warning rounded-none py-2 text-sm" hidden>
+				<span id="quarantine-banner-text" data-i18n="chat.hub.banners.quarantine"></span>
+			</div>
+			<div id="local-view-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
+				<span data-i18n="chat.hub.localMaterializedView"></span>
+			</div>
+			<div id="sync-banner" class="alert alert-info rounded-none py-2 text-sm" hidden>
+				<span id="sync-banner-text" data-i18n="chat.hub.banners.syncing"></span>
+			</div>
+			<div id="shun-removed-banner" class="alert alert-warning rounded-none py-2 text-sm flex flex-wrap items-center gap-2" hidden>
+				<span id="shun-removed-banner-text" data-i18n="chat.hub.banners.suspectedRemoved"></span>
+				<button type="button" id="shun-keep-history-button" class="btn btn-xs btn-outline" data-i18n="chat.hub.banners.suspectedRemovedKeep"></button>
+				<button type="button" id="shun-leave-button" class="btn btn-xs btn-error btn-outline" data-i18n="chat.hub.banners.suspectedRemovedLeave"></button>
+			</div>
+			<div id="fork-banner" class="alert alert-warning rounded-none py-2 text-sm flex-col items-stretch gap-2" hidden>
+				<span id="fork-banner-text"></span>
+				<div class="fork-actions">
+					<label class="fork-label" for="fork-tip-select" data-i18n="chat.hub.banners.forkTipLabel"></label>
+					<select id="fork-tip-select" class="fork-select" data-i18n="chat.hub.ariaDagTip"></select>
+					<button type="button" id="fork-branch-button" class="btn btn-xs btn-ghost" data-i18n="chat.hub.banners.applyBranch"></button>
+					<button type="button" id="fork-auto-branch-button" class="btn btn-xs btn-ghost" data-i18n="chat.hub.banners.autoBranch"></button>
+					<button type="button" id="fork-merge-button" class="btn btn-xs btn-ghost" data-i18n="chat.hub.banners.mergeDag"></button>
+					<button type="button" id="fork-block-opposing-button" class="btn btn-xs btn-error btn-outline" data-i18n="chat.hub.banners.blockOpposing"></button>
+					<button type="button" id="fork-split-button" class="btn btn-xs btn-ghost" data-i18n="chat.hub.banners.splitFork"></button>
+				</div>
+			</div>
+			<div id="channel-pins-bar" class="channel-pins-bar" hidden></div>
+			<div class="main-body flex flex-1 min-h-0 min-w-0 relative">
+			<div class="messages flex-1 overflow-y-auto flex flex-col min-w-0" id="messages">
+				<div class="empty empty--idle" aria-hidden="true">
+					<div class="empty-icon"><img src="https://api.iconify.design/line-md/chat-round.svg" class="empty-icon-img" width="48" height="48" alt="" aria-hidden="true" /></div>
+				</div>
+			</div>
+			<div id="thread-drawer-wrap" class="thread-drawer-wrap" hidden></div>
+			</div>
+
+			<div id="attachment-preview" class="attachment-preview"></div>
+			<div id="reply-banner" class="reply-banner flex items-center gap-2 px-4 py-1.5 text-sm border-t border-base-300/40 bg-base-200/30" hidden>
+				<div class="flex-1 min-w-0 border-l-2 border-primary pl-2">
+					<div class="text-xs font-semibold text-primary truncate" data-reply-author></div>
+					<div class="text-xs opacity-70 truncate" data-reply-preview></div>
+				</div>
+				<button type="button" class="icon-button !h-7 !w-7" data-reply-clear data-i18n="chat.hub.replyClear" title>
+					<img src="https://api.iconify.design/mdi/close.svg" width="14" height="14" alt="" aria-hidden="true" />
+				</button>
+			</div>
+			<div id="composer-extras" class="composer-extras flex flex-wrap items-center gap-2 px-4 py-1 text-sm hidden">
+				<label class="flex items-center gap-1 cursor-pointer" title data-i18n-title="chat.hub.contentWarning">
+					<span class="opacity-70 text-xs" data-i18n="chat.hub.contentWarning"></span>
+					<input type="text" id="content-warning" class="input input-bordered input-xs w-40 min-w-0" data-i18n="chat.hub.contentWarning" />
+				</label>
+				<label class="flex items-center gap-1 cursor-pointer">
+					<input type="checkbox" id="sensitive-media" class="checkbox checkbox-xs" />
+					<span class="opacity-70 text-xs" data-i18n="chat.hub.sensitiveMedia"></span>
+				</label>
+			</div>
+			<div class="input-area">
+				<div class="input-wrapper bg-[var(--bg-input)] rounded-lg px-4 min-h-11 flex items-end gap-3 relative">
+					<div class="dropdown dropdown-top composer-more">
+						<button type="button" tabindex="0" class="icon-button" id="composer-more-button" data-i18n="chat.hub.composerMore" disabled>
+							<img src="https://api.iconify.design/mdi/plus.svg" alt="" aria-hidden="true" />
+						</button>
+						<ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-50 w-44 p-2 shadow border border-base-300 mb-2" role="menu">
+							<li><button type="button" id="composer-more-voice" data-i18n="chat.chatArea.voiceButton"></button></li>
+							<li><button type="button" id="composer-more-photo" data-i18n="chat.chatArea.photoButton"></button></li>
+							<li><button type="button" id="composer-more-upload" data-i18n="chat.hub.uploadTitle"></button></li>
+							<li><button type="button" id="composer-more-vote" data-i18n="chat.hub.voteTitle"></button></li>
+							<li><button type="button" id="composer-more-sticker" data-i18n="chat.hub.stickerTitle"></button></li>
+						</ul>
+					</div>
+					<button type="button" class="icon-button composer-desktop-tool" id="voice-button" data-i18n="chat.chatArea.voiceButton" disabled>
+						<img src="https://api.iconify.design/material-symbols/mic.svg" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="icon-button composer-desktop-tool" id="photo-button" data-i18n="chat.chatArea.photoButton" disabled>
+						<img src="https://api.iconify.design/proicons/photo.svg" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="icon-button composer-desktop-tool" id="upload-button" data-i18n="chat.hub.uploadTitle" disabled>
+						<img src="https://api.iconify.design/mdi/paperclip.svg" alt="" aria-hidden="true" />
+					</button>
+					<input type="file" id="image-upload-input" multiple hidden />
+					<textarea id="message-input" class="input flex-1 bg-transparent border-none outline-none text-base py-[11px] text-[var(--text-normal)] resize-none min-h-11 max-h-40 leading-normal" rows="1" disabled></textarea>
+					<button type="button" class="icon-button" id="emoji-button" data-i18n="chat.hub.emojiTitle" disabled>
+						<img src="https://api.iconify.design/line-md/emoji-smile.svg" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="icon-button composer-desktop-tool" id="vote-button" data-i18n="chat.hub.voteTitle" disabled>
+						<img src="https://api.iconify.design/line-md/confirm.svg" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="icon-button composer-desktop-tool" id="sticker-button" data-i18n="chat.hub.stickerTitle" disabled>
+						<img src="https://api.iconify.design/mdi/sticker-plus-outline.svg" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="composer-stop-button btn btn-error btn-sm !h-9 !w-9 !min-h-0 rounded-lg" id="stop-generation-button" data-i18n="chat.hub.stopGenerateTitle" hidden>
+						<img src="https://api.iconify.design/mdi/stop.svg" width="14" height="14" alt="" aria-hidden="true" />
+					</button>
+					<button type="button" class="composer-send-button btn btn-primary btn-sm !h-8 !w-9 !min-h-0 rounded-md" id="send-button" data-i18n="chat.hub.sendTitle" disabled>
+						<img src="https://api.iconify.design/line-md/telegram.svg" alt="" aria-hidden="true" />
+					</button>
+					<div class="sticker-picker" id="sticker-picker">
+						<div class="flex justify-between items-center mb-2">
+							<span class="font-semibold text-sm text-[var(--text-bright)]" data-i18n="chat.hub.stickersPanelTitle"></span>
+							<a href="/parts/shells:chat/stickers" target="_blank" rel="noopener" class="text-xs text-[var(--accent)] no-underline" data-i18n="chat.hub.stickersManage"></a>
+						</div>
+						<div class="sticker-grid" id="sticker-grid">
+							<div class="col-span-full text-center text-[var(--text-muted)] p-5 text-[13px]" data-i18n="chat.hub.stickersLoading"></div>
+						</div>
+					</div>
+					<div class="emoji-picker" id="emoji-picker">
+						<div class="emoji-tabs" id="emoji-tabs"></div>
+						<div class="emoji-grid" id="emoji-grid"></div>
+					</div>
+				</div>
+			</div>
+		</main>
+
+		<aside class="member-bar w-60 shrink-0 overflow-y-auto bg-[var(--bg-member)] py-4" id="member-bar">
+			<div id="info-card-host"></div>
+			<div id="member-list"></div>
+			<div id="member-digest" class="member-digest" hidden></div>
+		</aside>
+		<button type="button" class="member-backdrop" id="member-backdrop" data-i18n="chat.hub.ariaClose"></button>
+		</div>
+
+		<div class="drawer-side z-50">
+			<label for="files-drawer-toggle" class="drawer-overlay" data-i18n="chat.hub.ariaClose"></label>
+			<aside class="files-panel w-80 min-h-full bg-[var(--bg-channel)] border-l border-[var(--border)] p-4 flex flex-col gap-3 text-[var(--text-normal)]" role="dialog" aria-labelledby="files-title">
+				<header class="flex items-center justify-between gap-2">
+					<h2 id="files-title" class="font-bold text-lg" data-i18n="chat.hub.filesDrawerTitle"></h2>
+					<label for="files-drawer-toggle" class="btn btn-ghost btn-sm btn-circle" data-i18n="chat.hub.ariaClose">×</label>
+				</header>
+				<p id="files-convergent-warn" class="text-warning text-sm" data-i18n="chat.hub.convergentEncryptWarn"></p>
+				<div class="flex flex-wrap gap-2 items-center">
+					<label class="text-sm opacity-70" data-i18n="chat.hub.filesUploadTo"></label>
+					<select id="files-folder-select" class="select select-bordered select-sm flex-1 min-w-0"></select>
+					<button type="button" id="files-new-folder" class="btn btn-ghost btn-sm" data-i18n="chat.hub.filesNewFolder"></button>
+					<button type="button" id="files-upload-button" class="btn btn-primary btn-sm" data-i18n="chat.hub.filesUpload"></button>
+					<input type="file" id="files-upload-input" hidden />
+				</div>
+				<div id="files-list" class="flex-1 overflow-y-auto min-h-0"></div>
+			</aside>
+		</div>
+	</div>
+
+	<dialog id="fork-split-modal" class="modal">
+		<div class="modal-box overlay-box">
+			<h3 class="font-bold text-lg mb-3" data-i18n="chat.hub.forkSplitModalTitle"></h3>
+			<label class="form-control w-full mb-4">
+				<span class="label-text" data-i18n="chat.hub.forkSplitPrompt"></span>
+				<input type="text" id="fork-split-name" class="input input-bordered w-full" autocomplete="off" />
+			</label>
+			<div class="flex justify-end gap-2">
+				<button type="button" id="fork-split-cancel-button" class="btn btn-ghost" data-i18n="chat.hub.messageEditCancel"></button>
+				<button type="button" id="fork-split-submit-button" class="btn btn-primary" data-i18n="chat.hub.forkSplitModalSubmit"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button data-i18n="chat.hub.modalClose"></button></form>
+	</dialog>
+
+	<dialog id="vote-modal" class="modal">
+		<div class="modal-box overlay-box vote-modal-box">
+			<h3 class="font-bold text-lg mb-3" data-i18n="chat.hub.voteModalTitle"></h3>
+			<label class="form-control w-full mb-3">
+				<span class="label-text" data-i18n="chat.hub.votePromptQuestion"></span>
+				<input type="text" id="vote-question" class="input input-bordered w-full" autocomplete="off" />
+			</label>
+			<label class="form-control w-full mb-3">
+				<span class="label-text" data-i18n="chat.hub.votePromptOptions"></span>
+				<textarea id="vote-options" class="textarea textarea-bordered w-full" rows="4" data-i18n="chat.hub.voteOptionDefault"></textarea>
+			</label>
+			<label class="form-control w-full mb-4">
+				<span class="label-text" data-i18n="chat.hub.votePromptDeadlineHours"></span>
+				<input type="number" id="vote-hours" class="input input-bordered w-full" min="0" step="1" value="24" />
+			</label>
+			<div class="flex justify-end gap-2">
+				<button type="button" id="vote-cancel-button" class="btn btn-ghost" data-i18n="chat.hub.messageEditCancel"></button>
+				<button type="button" id="vote-submit-button" class="btn btn-primary" data-i18n="chat.hub.voteModalSubmit"></button>
+			</div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button data-i18n="chat.hub.modalClose"></button></form>
+	</dialog>
+
+	<dialog id="settings-modal" class="modal">
+		<div class="modal-box overlay-box" id="overlay-box">
+			<div class="overlay-header p-4 bg-gradient-to-br from-primary/90 to-primary text-primary-content">
+				<h3 id="overlay-title" data-i18n="chat.hub.settingsModalTitle"></h3>
+				<p id="overlay-subtitle"></p>
+			</div>
+			<div class="overlay-body p-4 space-y-3 max-h-[65vh] overflow-y-auto" id="overlay-body"></div>
+			<div class="overlay-footer p-4 border-t border-base-300 flex justify-end gap-2" id="overlay-footer"></div>
+		</div>
+		<form method="dialog" class="modal-backdrop"><button data-i18n="chat.hub.modalClose"></button></form>
+	</dialog>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

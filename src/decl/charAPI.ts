@@ -4,7 +4,9 @@ import { Telegraf } from 'npm:telegraf'
 import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { info_t, locale_t, role_t, timeStamp_t } from './basedefs.ts'
+import { chatLogEntry_t as chatLogEntry_full_t } from './chatLog.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
+import { SocialCharInterface } from './socialAPI.ts'
 
 
 /**
@@ -82,6 +84,17 @@ export class CharAPI_t {
 	 * @returns {Promise<void>}
 	 */
 	Uninstall?: (reason: string, from: string) => Promise<void>
+	/**
+	 * 角色级错误处理；返回 true 或 void 表示已处理，false 表示未处理（由 shell 落默认路径）。
+	 */
+	OnError?: (error: Error, context: {
+		username: string
+		source: 'OnMessage' | 'OnGroupEvent' | 'GetReply' | string
+		groupId?: string
+		channelId?: string
+		charname?: string
+		event?: object
+	}) => Promise<boolean | void>
 
 	/**
 	 * 与外壳（如聊天 WebUI、Live2D 模型等）的接口。
@@ -169,11 +182,70 @@ export class CharAPI_t {
 			 */
 			GetReply: (arg: chatReplyRequest_t) => Promise<chatReply_t | null>
 			/**
-			 * 获取回复频率。
-			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @returns {Promise<number>} - 回复频率。
+			 * 新消息到达时触发，角色决定是否主动发言。
+			 * 返回 true 表示发言，false 表示不发言。
+			 * @param {object} event - 事件上下文（可序列化事实：message / mentions / group / channel）
+			 * @returns {Promise<boolean>}
 			 */
-			GetReplyFrequency?: (arg: chatReplyRequest_t) => Promise<number>
+			OnMessage?: (event: {
+				chatReplyRequest: chatReplyRequest_t
+				message: chatLogEntry_t
+				mentions: {
+					entityHashes: string[]
+					roleIds: string[]
+					everyone: boolean
+				}
+				group: {
+					groupId: string
+					name: string
+					kind: 'group' | 'dm'
+					boundPeerEntityHash?: string
+					/** settings.bridge 整对象投影（含 chatKind / botname 等） */
+					bridge?: {
+						platform: string
+						platformChatId: string
+						chatKind?: 'group' | 'dm'
+						botname?: string
+						[key: string]: unknown
+					}
+					memberCount: number
+				}
+				channel: {
+					channelId: string
+					name: string
+					kind: 'text' | 'thread'
+				}
+			}) => Promise<boolean>
+			/**
+			 * 群生命周期事件（bot 启动 / 入群 / 成员离群等）。
+			 */
+			OnGroupEvent?: (event: {
+				type: 'bot_started' | 'bot_joined_group' | 'member_left'
+				group: {
+					groupId: string
+					name: string
+					kind: 'group' | 'dm'
+					boundPeerEntityHash?: string
+					bridge?: {
+						platform: string
+						platformChatId: string
+						chatKind?: 'group' | 'dm'
+						botname?: string
+						[key: string]: unknown
+					}
+					memberCount: number
+				}
+				channel: {
+					channelId: string
+					name: string
+					kind: 'text' | 'thread'
+				}
+				member?: {
+					entityHash: string
+					platformUserId?: string
+					displayName?: string
+				}
+			}) => Promise<void>
 			/**
 			 * 编辑消息。
 			 * @param {object} arg - 参数对象。
@@ -211,58 +283,61 @@ export class CharAPI_t {
 			}) => Promise<void>
 		},
 		/**
-		 * Telegram 机器人接口。
+		 * Telegram 机器人接口（壳层 bridge 模式：BotSetup 注册 ops 与 outbound）。
 		 */
 		telegram?: {
-			/**
-			 * 设置 Telegram 机器人。
-			 * @param {Telegraf} bot - Telegraf 机器人实例。
-			 * @param {any} config - 配置。
-			 * @returns {Promise<void>}
-			 */
+			/** Telegraf 启动时注册 bridge ops 与 outbound handler。 */
 			BotSetup?: (bot: Telegraf, config: any) => Promise<void>;
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
+			/** 返回默认 bot JSON 配置模板。 */
 			GetBotConfigTemplate?: () => Promise<any>;
+			/**
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
+			 */
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
+			TweakInboundDto?: (dto: any) => Promise<void>
+			/** 出站文件名 → Telegram 原生贴纸 file_id。 */
+			stickers?: Record<string, { fileId: string }>
 		},
 		/**
-		 * Discord 机器人接口。
+		 * Discord 机器人接口（壳层 bridge 模式：OnceClientReady 注册 ops 与 outbound）。
 		 */
 		discord?: {
-			/**
-			 * Discord 网关意图（Gateway Intents）配置。
-			 */
+			/** Discord Gateway Intents。 */
 			Intents?: DiscordGatewayIntentBits[]
-			/**
-			 * Discord 部分对象（Partials）配置。
-			 */
+			/** Discord Partials。 */
 			Partials?: DiscordPartials[]
+			/** Client ready 后注册 bridge ops 与事件监听。 */
+			OnceClientReady?: (client: DiscordClient, config: any) => Promise<void>
+			/** 返回默认 bot JSON 配置模板。 */
+			GetBotConfigTemplate?: () => Promise<any>
 			/**
-			 * 在 Discord 客户端准备好后调用一次。
-			 * @param {DiscordClient} client - Discord 客户端。
-			 * @param {any} config - 配置。
-			 * @returns {Promise<void>}
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
 			 */
-			OnceClientReady: (client: DiscordClient, config: any) => Promise<void>
-			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
-			 */
-			GetBotConfigTemplate: () => Promise<any>
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
+			TweakInboundDto?: (dto: any) => Promise<void>
+			/** 出站文件名 → Discord application emoji 名。 */
+			stickers?: Record<string, { emojiName: string }>
 		},
 		/**
-		 * 微信机器人（iLink Bot HTTP 长轮询等，用于将角色接入微信侧对话）。
+		 * 微信机器人（iLink Bot HTTP 长轮询，壳层 bridge 模式）。
 		 */
 		wechat?: {
 			/**
-			 * 启动长轮询会话：ctx 含 getUpdates、sendMessage、signal 等。
-			 * @param {object} ctx - 网关 API 与中止信号。
-			 * @param {any} config - 机器人 JSON 配置（OwnerWeChatId 等）。
-			 * @returns {Promise<void>}
+			 * 长轮询主循环：ctx 含 getUpdates、sendMessage、uploadMedia、signal 等。
 			 */
-			OnceClientReady: (ctx: {
+			OnceClientReady?: (ctx: {
 				getUpdates: (params: { get_updates_buf?: string, timeoutMs?: number }) => Promise<any>
 				sendMessage: (body: object) => Promise<void>
 				getConfig: (params: { ilinkUserId: string, contextToken?: string }) => Promise<any>
@@ -281,11 +356,19 @@ export class CharAPI_t {
 				}>
 				signal: AbortSignal
 			}, config: any) => Promise<void>
+			/** 返回默认 bot JSON 配置模板。 */
+			GetBotConfigTemplate?: () => Promise<any>
 			/**
-			 * 获取机器人配置模板。
-			 * @returns {Promise<any>} - 配置模板。
+			 * 自定义出站格式化；返回 true 表示 char 已自行 send，壳层跳过默认实现。
 			 */
-			GetBotConfigTemplate: () => Promise<any>
+			FormatOutboundReply?: (reply: chatLogEntry_full_t, ctx: {
+				platform: string
+				send: (payload: any) => Promise<{ platformMessageId?: string | number }>
+				chatId: string | number
+				threadId?: string | number
+			}) => Promise<boolean>
+			/** 入站 DTO 写入 bridge 前可选就地修饰。 */
+			TweakInboundDto?: (dto: any) => Promise<void>
 		},
 		/**
 		 * 浏览器集成接口。
@@ -334,6 +417,13 @@ export class CharAPI_t {
 				chat_scoped_char_memory: object
 			}>
 		},
+		/**
+		 * Social 动态接口（fount Social shell）。
+		 * 账号即 P2P entityHash，与 Chat 联邦身份 / agent 实体同一套，无需单独注册。
+		 * 跨节点调用走 P2P `social_rpc`（如 `social_post_notify`），不经 `char_rpc` / remoteProxy。
+		 * 未实现 OnMessage 时，被 @ 的 agent 默认经 chat.GetReply 生成公开回复。
+		 */
+		social?: SocialCharInterface,
 		/**
 		 * 桌面宠物接口。
 		 */

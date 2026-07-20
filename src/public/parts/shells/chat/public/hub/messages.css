@@ -1,0 +1,336 @@
+/* Hub 消息区：布局由 DaisyUI chat 组件承担，此处仅保留无法用工具类表达的规则 */
+
+.messages {
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.messages::-webkit-scrollbar {
+	width: 8px;
+}
+
+.messages::-webkit-scrollbar-thumb {
+	background: var(--bg-server);
+	border-radius: 4px;
+}
+
+/* 连续同作者：隐藏重复头像（chat-image）与头部 */
+.chat.message-row:not(.first-in-group) .chat-image {
+	visibility: hidden;
+	height: 0;
+	margin: 0;
+}
+
+.chat.message-row:not(.first-in-group) .chat-header {
+	display: none;
+}
+
+.chat.message-row.first-in-group {
+	margin-top: 1.25rem;
+}
+
+/* 系统消息 */
+.system-message {
+	padding: 6px 16px 6px 72px;
+	color: var(--text-muted);
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+@media (max-width: 768px) {
+	.system-message {
+		padding-left: 16px;
+	}
+
+	.char-timeline-arrow.left {
+		left: 4px;
+	}
+
+	.char-timeline-arrow.right {
+		right: 4px;
+	}
+}
+
+/* 投票块 */
+.vote-block {
+	margin-top: 4px;
+	padding: 10px 12px;
+	border-radius: 8px;
+	background: var(--color-base-300);
+	border: 1px solid var(--border);
+	max-width: 420px;
+}
+
+.vote-option {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 8px 10px;
+	border-radius: 6px;
+	background: var(--color-base-200);
+	border: none;
+	cursor: pointer;
+	text-align: left;
+	overflow: hidden;
+}
+
+.vote-option-bar {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 3px;
+	background: var(--color-primary);
+	opacity: 0.5;
+}
+
+/* 消息行 hover 过渡 */
+.chat.message-row {
+	transition: background 0.12s ease;
+}
+
+/* 内容列：承接 header/bubble/footer，让悬浮栏相对定位 */
+.message-stack {
+	min-width: 0;
+	width: 100%;
+	justify-self: stretch;
+}
+
+.chat-start .message-stack {
+	grid-column-start: 2;
+}
+
+.chat-end .message-stack {
+	grid-column-start: 1;
+}
+
+/*
+ * start：inner 拉满整列 → float:right 落在列右侧留白（短气泡不挡字）
+ * end：inner 随内容收缩并靠右 → 同样 float:right，贴在气泡外侧
+ */
+.message-stack-inner {
+	display: flow-root;
+	max-width: 100%;
+}
+
+.chat-start .message-stack-inner {
+	width: 100%;
+}
+
+.chat-end .message-stack-inner {
+	width: fit-content;
+	margin-left: auto;
+}
+
+/* =========================================================
+   悬停浮动操作栏（sticky：长消息下滑时仍贴在滚动视口顶部）
+   放在 stack 顶层而非 bubble 内：顶边与昵称行平齐
+   ========================================================= */
+.message-hover-bar {
+	position: sticky;
+	top: 0.35rem;
+	float: right;
+	z-index: 20;
+	height: 0;
+	overflow: visible;
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-end;
+	gap: 1px;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.12s ease;
+}
+
+.message-hover-bar > .message-actions {
+	background: var(--bg-main);
+	border: 1px solid var(--border-subtle);
+	border-radius: 8px;
+	box-shadow: 0 2px 8px var(--shadow);
+	padding: 2px;
+}
+
+.message-row:hover .message-hover-bar,
+.message-row:focus-within .message-hover-bar,
+.shift-active .message-row .message-hover-bar {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+/* 浮动栏内部：始终可见、不换行 */
+.message-hover-bar .message-actions--anim,
+.message-hover-bar .message-actions--always {
+	opacity: 1;
+	pointer-events: auto;
+	margin-top: 0;
+}
+
+.message-hover-bar .message-actions,
+.message-hover-bar .message-actions-normal-buttons,
+.message-hover-bar .message-actions-shift-buttons {
+	flex-wrap: nowrap;
+	margin-top: 0;
+	gap: 0;
+}
+
+/* =========================================================
+   常驻内联反馈栏（重新生成 + 👍/👎，仅角色消息）
+   ========================================================= */
+.message-inline-feedback {
+	margin-top: 2px;
+	opacity: 0.65;
+	transition: opacity 0.15s;
+}
+
+.message-row:hover .message-inline-feedback {
+	opacity: 1;
+}
+
+/* 操作栏按钮尺寸与图标（仅图标按钮为 28px 方形） */
+.message-action {
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.message-action .action-icon {
+	width: 16px;
+	height: 16px;
+	opacity: 0.8;
+}
+
+.message-action-menu {
+	min-width: 28px;
+}
+
+/* 下拉菜单项：带文字标签，需撑满整行、自适应高度并左对齐（覆盖 28px 方形约束） */
+.dropdown-content .message-action {
+	width: 100%;
+	height: auto;
+	min-height: 1.85rem;
+	padding: 0.25rem 0.5rem;
+	justify-content: flex-start;
+}
+
+/* 菜单项标签 */
+.menu-label {
+	font-size: 13px;
+	white-space: nowrap;
+}
+
+/* 二级菜单（复制 / 分享） */
+.menu-submenu-summary {
+	display: flex;
+	align-items: center;
+	min-height: 1.85rem;
+	padding: 0.25rem 0.5rem;
+	font-size: 13px;
+}
+
+.menu-submenu-summary .action-icon {
+	width: 16px;
+	height: 16px;
+	opacity: 0.8;
+}
+
+.menu-submenu > details > ul {
+	min-width: 9rem;
+}
+
+.message-pending {
+	opacity: 0.55;
+}
+
+.delivery-status {
+	display: inline-flex;
+	align-items: center;
+	margin-inline-start: 0.25rem;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.delivery-status .delivery-icon {
+	width: 0.85rem;
+	height: 0.85rem;
+	display: block;
+}
+
+.delivery-status--pending .loading {
+	width: 0.7rem;
+	height: 0.7rem;
+}
+
+.streaming-body:not(:empty)~.streaming-skeleton {
+	display: none;
+}
+
+/* 角色消息时间线箭头：挂在气泡两侧内侧，避免被 .messages overflow-x 裁切 */
+.chat.message-row[data-char-id] {
+	position: relative;
+}
+
+.char-timeline-arrow {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	z-index: 2;
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: none;
+	background: var(--color-base-300);
+	color: var(--color-base-content);
+	opacity: 0.35;
+	cursor: pointer;
+	transition: opacity 0.15s;
+}
+
+.char-entry:hover .char-timeline-arrow,
+.chat.message-row[data-char-id]:hover .char-timeline-arrow,
+.chat.message-row[data-char-id].timeline-arrows-active .char-timeline-arrow {
+	opacity: 0.9;
+}
+
+.char-timeline-arrow.left {
+	left: 4px;
+}
+
+.char-timeline-arrow.right {
+	right: 4px;
+}
+
+#messages .chat-start.message-row[data-char-id] .chat-header .font-semibold {
+	transition: opacity 0.3s ease, max-height 0.3s ease, margin 0.3s ease, transform 0.3s ease;
+	transform-origin: top;
+	max-height: 3rem;
+	overflow: hidden;
+}
+
+#messages.hide-char-names .chat-start.message-row[data-char-id] .chat-header .font-semibold {
+	opacity: 0;
+	max-height: 0;
+	margin: 0 !important;
+	transform: scaleY(0);
+}
+
+.empty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	flex: 1;
+	padding: 48px 24px;
+	text-align: center;
+	color: var(--text-muted);
+}
+
+.empty-icon {
+	font-size: 48px;
+	margin-bottom: 16px;
+	opacity: 0.5;
+}

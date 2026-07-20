@@ -1,6 +1,270 @@
 {
+	"404": {
+		"title": "页面未找到",
+		"description": "你所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
+		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
+		"homepageButton": "返回首页"
+	},
 	"lang": "zh-CN",
 	"name": "简体中文",
+	"channels": {
+		"title": "频道",
+		"description": "频道管理系统",
+		"create": "创建频道",
+		"subscribe": "订阅",
+		"unsubscribe": "取消订阅",
+		"settings": "频道设置",
+		"list": "频道列表",
+		"members": "成员",
+		"messages": "消息",
+		"permissions": "权限设置",
+		"type": {
+			"announcement": "公告",
+			"news": "新闻",
+			"updates": "更新"
+		},
+		"role": {
+			"owner": "所有者",
+			"admin": "管理员",
+			"moderator": "版主",
+			"member": "成员",
+			"subscriber": "订阅者"
+		},
+		"errors": {
+			"notFound": "频道不存在",
+			"noPermission": "权限不足",
+			"alreadySubscribed": "已订阅该频道",
+			"notSubscribed": "未订阅该频道"
+		},
+		"success": {
+			"created": "频道创建成功",
+			"updated": "频道更新成功",
+			"deleted": "频道删除成功",
+			"subscribed": "订阅成功",
+			"unsubscribed": "取消订阅成功",
+			"posted": "消息发布成功"
+		}
+	},
+	"profile": {
+		"title": "个人资料",
+		"description": "管理你在聊天与社交中的公开形象。",
+		"settingsEyebrow": "账户设置",
+		"accountAtGlance": "账户概览",
+		"advancedKicker": "按需配置",
+		"advancedSettings": "高级设置",
+		"advancedDescription": "日常使用无需调整。",
+		"edit": "编辑资料",
+		"save": "保存",
+		"cancel": "取消",
+		"displayName": "显示名称",
+		"name": "名称",
+		"bio": "个人简介",
+		"descriptionLabel": "简介（Markdown）",
+		"email": "邮箱",
+		"status": "状态",
+		"customStatusLabel": "自定义状态",
+		"avatarLabel": "头像",
+		"themeColorLabel": "主题色",
+		"uploadAvatar": "上传头像",
+		"ownerTitle": "我的主人",
+		"ownerSummary": "代管设置",
+		"ownerDescription": "设置后，主人可以代为编辑或删除你的聊天消息、社交帖与个人资料；其内容也会在本机按不安全 Markdown 渲染（可含脚本）。可填任意实体哈希，并随时清除。",
+		"ownerEntityHashLabel": "主人实体哈希（128 hex）",
+		"ownerSave": "保存主人",
+		"ownerClear": "清除主人",
+		"ownerSaved": "主人已更新",
+		"ownerCleared": "主人已清除",
+		"ownerSaveFailed": "保存失败：${error}",
+		"ownerConfirmTitle": "确认设置主人？",
+		"ownerConfirmWarningTitle": "高风险操作，请仔细阅读",
+		"ownerConfirmEditBody": "设置后，对方无需再征得你同意，即可代为编辑或删除你的聊天消息、社交帖与个人资料。误设或被诱骗设主人 = 立刻交出内容控制权。",
+		"ownerConfirmRenderBody": "对方发来的聊天消息与社交帖会在你的浏览器中按完整 Markdown 渲染（含 HTML/脚本）。这等于允许对方在无需你再次同意的情况下，在你的电脑上运行任意代码。仅当你完全信任对方时再继续。",
+		"ownerConfirmCooldown": "我已阅读风险（${seconds}）",
+		"ownerConfirmFirst": "我了解风险，继续",
+		"ownerConfirmSecond": "再次点击以最终确认",
+		"ownerConfirmCancel": "取消",
+		"federationTitle": "联邦与同步",
+		"federationSummary": "中继服务器与低功耗模式",
+		"federationDescription": "配置 Nostr relay URL 与省电模式。群的联邦同步在首次邀请他人或创建联邦私信时自动启用。",
+		"federationAdvanced": "高级选项",
+		"federationRelayUrlsLabel": "中继服务器（每行一个，留空使用默认）",
+		"federationBatterySaverLabel": "低功耗模式",
+		"federationSave": "保存网络设置",
+		"federationResetDefault": "恢复默认推荐配置",
+		"federationSaved": "已保存",
+		"federationResetOk": "已恢复默认推荐配置",
+		"federationSaveFailed": "保存失败：${error}",
+		"preferences": "偏好设置",
+		"language": "语言",
+		"theme": "主题",
+		"notifications": "通知设置",
+		"emailNotifications": "邮件通知",
+		"pushNotifications": "推送通知",
+		"soundNotifications": "声音通知",
+		"social": "社交链接",
+		"website": "网站",
+		"github": "GitHub",
+		"twitter": "Twitter",
+		"stats": "统计信息",
+		"joinedAt": "加入时间",
+		"messageCount": "消息数",
+		"groupCount": "群组数",
+		"channelCount": "频道数",
+		"privacy": "隐私设置",
+		"showEmail": "显示邮箱",
+		"showStats": "显示统计",
+		"allowDirectMessages": "允许私信",
+		"statusOptions": {
+			"online": "在线",
+			"away": "离开",
+			"busy": "忙碌",
+			"offline": "离线"
+		},
+		"themeOptions": {
+			"auto": "自动",
+			"light": "浅色",
+			"dark": "深色"
+		},
+		"languageOptions": {
+			"zh-CN": "简体中文",
+			"en-US": "English"
+		},
+		"notifEmail": "邮件",
+		"notifPush": "推送",
+		"notifSound": "声音",
+		"notifsAllOff": "全部关闭",
+		"bioEmpty": "这个人很懒，什么都没写…",
+		"noSocialLinks": "暂无社交链接",
+		"emailVisible": "可见",
+		"emailHidden": "隐藏",
+		"customStatus": {
+			"placeholder": "正在做什么…"
+		},
+		"avatar": {
+			"alt": "头像"
+		},
+		"avatarPreview": {
+			"alt": "头像预览"
+		},
+		"myGroups": "我的群组",
+		"myChannels": "我的频道",
+		"noGroups": "暂未加入任何群组",
+		"noChannels": "暂无频道",
+		"overview": "用户信息概览",
+		"summaryUserId": "用户 ID",
+		"summaryAccountStatus": "账号状态",
+		"summaryEmailVisibility": "邮箱可见性",
+		"summaryThemePref": "主题偏好",
+		"summaryLanguagePref": "语言偏好",
+		"summarySocialCount": "社交链接数量",
+		"summaryLinksCount": "外链数",
+		"groupDescriptionEmpty": "暂无描述",
+		"groupMembers": "${members} 位成员 · ${channels} 个频道",
+		"channelPrivate": " · 私密",
+		"channelTypeText": "文字频道",
+		"channelTypeList": "列表频道",
+		"channelTypeVoice": "语音频道",
+		"channelTypeStreaming": "流媒体频道",
+		"errors": {
+			"loadFailed": "加载资料失败",
+			"saveFailed": "保存资料失败",
+			"uploadFailed": "上传头像失败",
+			"invalidUserData": "用户数据格式错误",
+			"identityRequired": "节点身份尚未就绪，请刷新页面；若仍失败，请在下方 P2P 设置中保存联邦配置",
+			"fetchUserFailed": "获取用户信息失败",
+			"operationFailed": "操作失败：${error}"
+		},
+		"success": {
+			"saved": "资料保存成功",
+			"avatarUploaded": "头像上传成功"
+		},
+		"ownerEntityHash": {
+			"placeholder": "输入主人的实体哈希"
+		}
+	},
+	"stickers": {
+		"title": "贴纸广场",
+		"description": "贴纸和表情包管理系统",
+		"back": {
+			"title": "返回"
+		},
+		"packs": "贴纸包",
+		"create": "创建贴纸包",
+		"upload": "上传贴纸",
+		"install": "安装",
+		"uninstall": "卸载",
+		"close": "关闭",
+		"cancel": "取消",
+		"installed": "已安装",
+		"myPacks": "我的贴纸包",
+		"tabAll": "全部",
+		"store": "贴纸广场",
+		"favorites": "收藏",
+		"recent": "最近使用",
+		"search": {
+			"placeholder": "搜索贴纸包…"
+		},
+		"emptyPacks": "暂无贴纸包",
+		"packNameLabel": "贴纸包名称",
+		"packName": {
+			"placeholder": "输入贴纸包名称"
+		},
+		"packDescriptionLabel": "描述",
+		"packDescription": {
+			"placeholder": "输入描述"
+		},
+		"stickerNameLabel": "贴纸名称",
+		"stickerName": {
+			"placeholder": "输入贴纸名称"
+		},
+		"selectPack": "选择贴纸包",
+		"selectPackOption": {
+			"textContent": "请选择贴纸包"
+		},
+		"selectImage": "选择图片",
+		"tagsLabel": "标签（用逗号分隔）",
+		"tags": {
+			"placeholder": "例如: 可爱, 表情, 动物"
+		},
+		"author": "作者",
+		"authorLabel": "作者: ${author}",
+		"stickerCount": "${count} 个贴纸",
+		"badgeMine": "我的",
+		"noDescription": "暂无描述",
+		"noStickersInPack": "暂无贴纸",
+		"deletePack": "删除贴纸包",
+		"public": "公开",
+		"private": "私有",
+		"animated": "动态",
+		"static": "静态",
+		"addTag": "添加标签",
+		"defaultPackName": "默认表情包",
+		"defaultPackDescription": "系统默认提供的表情贴纸",
+		"unnamedPack": "未命名贴纸包",
+		"importPackName": "我的收藏",
+		"importPackDescription": "从消息保存的贴纸",
+		"nameRequired": "请输入贴纸包名称",
+		"stickerNameRequired": "请输入贴纸名称",
+		"selectPackRequired": "请选择贴纸包",
+		"fileRequired": "请选择图片文件",
+		"loadDetailFailed": "加载贴纸包详情失败",
+		"deleteConfirm": "确定要永久删除此贴纸包吗？所有贴纸将被删除，此操作不可撤销。",
+		"errors": {
+			"loadFailed": "加载贴纸包失败",
+			"uploadFailed": "上传贴纸失败",
+			"installFailed": "安装失败",
+			"uninstallFailed": "卸载失败",
+			"createFailed": "创建贴纸包失败",
+			"deleteFailed": "删除失败"
+		},
+		"success": {
+			"uploaded": "贴纸上传成功",
+			"installed": "安装成功",
+			"uninstalled": "卸载成功",
+			"created": "贴纸包创建成功",
+			"deleted": "删除成功"
+		}
+	},
 	"fountConsole": {
 		"server": {
 			"start": "正在启动服务器",
@@ -116,6 +380,186 @@
 		"logViewer": {
 			"replHint": "enter 运行 · shift+enter 换行"
 		},
+		"test": {
+			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（frontend 等已注册 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 文件 stem 过滤\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\npure/integration 未注册 subtests 时，第三段按目录内 *.test.mjs 的 stem 过滤（如 shells/chat:pure:channel_archive）。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
+			"passed": "通过：${label}",
+			"passedWithNoise": "通过：${label}（含有噪声）",
+			"failed": "失败：${label}",
+			"failedWithCode": "失败：${label}（退出码 ${code}）",
+			"passedLabel": "通过",
+			"failedLabel": "失败",
+			"noiseHits": "（噪声：${hits}）",
+			"unknownManifestId": "未知的 manifest id：${ids}",
+			"unknownSuiteSelector": "未知的 suite 指名：${ids}",
+			"unknownSubtestFilter": "未知的子测试过滤：${suite} → ${names}",
+			"unknownFileFilter": "未知的测试文件过滤：${suite} → ${names}",
+			"unsupportedSubtestFilter": "套件不支持子测试/文件过滤：${suite}（${names}）",
+			"available": "可用项：${ids}",
+			"manifestMatched": "manifest 匹配结果：${ids}",
+			"selectedSuites": "已选择 ${selected}/${total} 个测试套件",
+			"planSlotSummary": "计划槽位：真跑 ${run}、复用 ${reuse}、阻塞 ${blocked}",
+			"noMatchingSuites": "没有匹配的测试套件。",
+			"reportPath": "报告：${path}",
+			"reportPathFinal": "\n报告：${path}",
+			"statePathFinal": "现状：${path}",
+			"blocked": "阻塞：${label}（依赖未过：${deps}）",
+			"speculativeDiscard": "丢弃预测结果：${label}（依赖未过：${deps}）",
+			"continueImperfect": "失败/噪声/未完成波次：${count} 个套件",
+			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
+			"runningSuite": {
+				"base": "\n>>> 正在运行 ${manifestId}:${name}",
+				"speculative": "乐观并行",
+				"heavy": "高负载",
+				"expected": "预期 ${expected}"
+			},
+			"reusedSuite": "\n>>> 复用 ${manifestId}:${name}（trigger 未变，沿用上次 ${status}）",
+			"noisyOnlyRemain": "仍有 ${count} 个套件通过但含噪声：${suites}",
+			"estimatedRun": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
+			"estimatedRunSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
+			"estimatedRunSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）",
+			"noRealRunPlanned": "本次无需真跑：复用 ${reused} 个、预计阻塞 ${blocked} 个（trigger 未变）",
+			"allReusedHint": "本次未真跑任何套件：失败为沿用的上次结果，阻塞随之未解（相关文件未变）。修复相关文件后重跑，或用 fount test --force 强制真跑。",
+			"estimatedRemaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
+			"estimatedRunSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}（去掉 --no-parallel）",
+			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
+			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
+			"terminated": "超时终止：${label} — ${reason}",
+			"terminateIdle": "已终止 ${label}：超过 ${minutes} 分钟无 stdall 输出（空闲 ${idleSec} 秒，已运行 ${elapsed}）",
+			"terminateDuration": "已终止 ${label}：耗时超过 watchdog 基线时长（已运行 ${elapsed}，基线 ${baseline}，上限 ${limit}）",
+			"terminateDurationDefault": "已终止 ${label}：耗时超过默认 watchdog 时长上限（已运行 ${elapsed}，上限 ${limit}）",
+			"terminateMarker": "[终止原因: ${reason}]",
+			"terminateUnknown": "已终止 ${label}：测试被中断",
+			"terminateSpeculative": "已终止 ${label}：投机依赖未过，取消早停",
+			"nothingToContinue": "全部绿且无过期项，无需再跑。",
+			"triggerNoMatch": "trigger 未匹配任何文件：${scope} — ${pattern}",
+			"triggerNoMatchSummary": "共 ${count} 条 trigger 未匹配任何仓库文件（详见 report.md）",
+			"unknownSuite": "未知的套件：${name}",
+			"federationCleanupPre": "联邦测试清理（运行前）失败：${output}",
+			"federationCleanupPost": "联邦测试清理（运行后）失败：${output}",
+			"suiteHeader": "\n=== 套件 ${name} ===",
+			"heapSnapshotSaved": "测试节点近 OOM 堆快照：${path}",
+			"liveUsage": "用法：--suite <名称> | --list",
+			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
+			"silentPassedOne": "1 个测试文件通过。",
+			"silentPassedMany": "${count} 个测试文件通过。",
+			"ciNoDiffFallback": "CI：未检测到 diff，回退为运行全部套件",
+			"noFrontendPhasesMatched": "没有匹配 FOUNT_TEST_ONLY 的前端测试阶段",
+			"denoPanic": {
+				"detected": "检测到 Deno 崩溃：${label}（位置 ${signature}）",
+				"alreadyReported": "该 Deno 崩溃已上报过，跳过：${signature}",
+				"ghUnavailable": "gh 不可用或未登录，仅本地记录 Deno 崩溃：${signature}",
+				"published": "已向 Deno 提交崩溃 issue：${url}",
+				"duplicate": "上游已存在重复崩溃，跳过上报：${upstream}",
+				"publishFailed": "Deno 崩溃 issue 发布失败：${signature}"
+			},
+			"nodeWorker": {
+				"dataPathRequired": "测试节点 worker：缺少 --data-path",
+				"portRequired": "测试节点 worker：缺少 --port（请通过 launch.mjs 启动）",
+				"keyRequired": "测试节点 worker：缺少 --key（请通过 launch.mjs 启动）",
+				"userRequired": "测试节点 worker：缺少 --user",
+				"error": "测试节点 worker 出错：${error}"
+			},
+			"ws": {
+				"pass": "\n通过：${detail}",
+				"fail": "\n失败：${detail}"
+			},
+			"report": {
+				"title": "fount 测试报告",
+				"tableHeaderItem": "项",
+				"tableHeaderValue": "值",
+				"fieldRunId": "运行 ID",
+				"fieldCommand": "命令",
+				"fieldExit": "退出状态",
+				"fieldProgress": "进度",
+				"fieldSuites": "套件",
+				"fieldFailed": "失败数",
+				"fieldNoisyPassed": "通过但有噪声",
+				"fieldReused": "复用数",
+				"fieldSuiteSumDuration": "套件累计耗时",
+				"fieldWallClock": "总耗时",
+				"fieldParallelRate": "并行率",
+				"fieldEstimatedRemaining": "预估剩余耗时",
+				"fieldEstimatedParallelRate": "预估并行率",
+				"estimatePoint": "≈ ${eta}",
+				"pendingEstimate": "预估剩余耗时 ≈ ${eta}",
+				"pendingParallelEstimate": "并行预估耗时 ≈ ${eta}（预估并行率 ${rate}）",
+				"pendingSavings": "预计可节省 ≈ ${savings}",
+				"pendingItemExpected": "预期 ${expected}",
+				"fieldDuration": "耗时",
+				"commandDefault": "（默认）",
+				"exitPassed": "通过",
+				"exitFailed": "失败",
+				"exitInProgress": "进行中",
+				"progressFormat": "${completed}/${total} 个套件",
+				"suitesFormat": "${passed}/${completed} 通过",
+				"artifacts": "产物目录：`${path}`",
+				"sectionFailed": "失败的套件",
+				"sectionNoisyPassed": "通过但有噪声",
+				"sectionSilentPassed": "通过",
+				"sectionPending": "待运行",
+				"sectionContinue": "继续未完成项",
+				"sectionReplay": "重跑失败项",
+				"sectionReplayImperfect": "重跑不完美项",
+				"columnSuite": "套件",
+				"columnDuration": "耗时",
+				"labelReused": "（复用）",
+				"labelExpectedBlocked": "（预计阻塞）",
+				"labelDuration": "耗时",
+				"labelLog": "日志",
+				"labelNoise": "噪声",
+				"labelFailedFiles": "失败文件",
+				"labelTerminateReason": "终止原因",
+				"sectionContinueReasons": "触发原因",
+				"continueReasonsLink": "触发原因：详见 [${path}](${path})",
+				"labelContinueReason": "原因",
+				"reasonImperfectFailed": "历史失败",
+				"reasonImperfectNoisy": "历史通过但有噪声",
+				"reasonImperfectBlocked": "历史被阻塞",
+				"reasonImperfectDependent": "上游失败一层下游",
+				"reasonMissingRecord": "state 无记录，自动补跑",
+				"reasonStaleContent": "内容已变，需重跑",
+				"reasonTriggerHashDrift": "触发指纹漂移（无路径命中）",
+				"reasonExplicitSelected": "显式指名",
+				"reasonDependencyRequired": "依赖拉入",
+				"labelRootCause": "根因",
+				"labelDirectRequiredBy": "直接纳入方",
+				"labelInclusionPath": "纳入链",
+				"labelPullUpstream": "上游拉取：${requiredBy} 的依赖未绿",
+				"labelPullDownstream": "下游拉取：${requiredBy} 不完美，连带纳入",
+				"labelGateReason": "需跑原因",
+				"labelCommitRange": "commit 范围",
+				"labelUncommittedHashRange": "未提交 digest",
+				"labelMatchedTriggers": "命中 trigger",
+				"labelMatchedTriggerSets": "命中 trigger set",
+				"labelMatchedPaths": "命中路径",
+				"labelTriggerHashDrift": "触发指纹与当前工作区不一致（脏→净已忽略）",
+				"sectionDeadTriggers": "无效 trigger",
+				"deadTriggersHint": "以下 glob 在仓库内（git 已跟踪 + 未忽略未跟踪）未匹配任何文件：",
+				"durationMs": "${ms} 毫秒",
+				"durationUnitSec": "${n} 秒",
+				"durationUnitMin": "${n} 分",
+				"durationUnitMinute": "${n} 分钟",
+				"durationUnitHour": "${n} 小时",
+				"durationUnitDay": "${n} 天"
+			},
+			"state": {
+				"title": "fount 测试现状",
+				"artifacts": "现状目录：`${path}`",
+				"sectionDependencyTree": "依赖树",
+				"sectionOverview": "各套件现状",
+				"sectionBlocked": "被阻塞的套件",
+				"columnSuite": "套件",
+				"columnStatus": "状态",
+				"columnCommit": "commit",
+				"columnRanAt": "上次运行",
+				"columnDuration": "耗时",
+				"columnLog": "日志",
+				"columnBlocked": "阻塞数",
+				"labelBlockedBy": "阻塞于",
+				"statusUnknown": "未运行",
+				"statusOutdated": "陈旧"
+			}
+		},
 		"path": {
 			"protocol": {
 				"description": "URL:fount 协议",
@@ -144,7 +588,7 @@
 				"localBranchAhead": "本地分支领先于远程分支。无需更新。",
 				"branchesDiverged": "本地和远程分支已分叉。强制更新中...",
 				"notOnBranch": "不在分支上，切换到 'master'...",
-				"noUpstreamBranch": "警告：没有为分支 '${branch}' 配置上游分支。正在将上游设置为 'origin/master'。",
+				"noUpstreamBranch": "警告：没有为分支 '${branch}' 配置上游分支，使用 '${remote}'。",
 				"dirtyWorkingDirectory": "警告：工作目录存在未提交的更改。请在更新前暂存或提交。",
 				"notInstalled": "未安装 Git，正在尝试安装...",
 				"notInstalledSkippingPull": "未安装 Git，跳过 `git pull`",
@@ -234,186 +678,6 @@
 				"uninstallingWinget": "正在卸载 Winget...",
 				"removingBackgroundRunner": "正在移除后台运行程序...",
 				"removeBackgroundRunnerFailed": "移除后台运行程序失败：${message}"
-			}
-		},
-		"test": {
-			"help": "用法：fount test [--all] [--no-parallel] [--force] [<groups>...]\n\n分组语法（空格分隔多组）：\n  manifest                    该 manifest 全部 suite\n  manifest:suite              指定 suite（逗号分隔多个；亦可用 manifest/suite）\n  manifest:suite:subtest      指定子测试（frontend 等已注册 subtests；亦可用 manifest/suite/subtest）\n  manifest:suite:file         pure/integration（serial.mjs）下按 *.test.mjs 文件 stem 过滤\n  PowerShell 拆散时后续 token 自动归并到当前组\n\nmanifest id 取自各 test/manifest.json 顶层的 \"id\" 字段。\n无精确匹配时自动按「<指名>/*」展开（如 shells → shells/chat,shells/social）；亦支持 glob（*、?、**）。\nsuite 指名匹配各 suite 的 id 或 name；无精确匹配时按「<指名>*」「<指名>_*」展开；亦支持 glob。\n\n默认（裸 fount test）：先跑失败/未完成项（suite 内失败文件优先；失败组有复现则跑完失败组即退），全绿后再跑内容过期项；任一轮失败即以 1 退出，不会在同一次调用内反复重试。永不全量（用 --all）。\n测试现状持久化于 data/test/state/main.json；失败 log 保留至转绿。每次运行更新 data/test/report.md 与 report.json。\nfrontend 等套件可注册 subtests（各带独立 trigger）；改一个视图文件只会使对应子测试过期。\npure/integration 未注册 subtests 时，第三段按目录内 *.test.mjs 的 stem 过滤（如 shells/chat:pure:channel_archive）。\n依赖项（manifest.json dependsOn）未通过时高层自动 blocked。\n\n--all         范围内全部 suite 作为目标（绿的仍可复用，除非 --force）\n--no-parallel 串行运行 suite 并流式输出 stdout/stderr；默认由资源闸门按内存与 CPU 自动并行。\n--force       禁用复用：默认沿用上次真实结果，--force 强制真跑目标。\n\n示例：\n  fount test\n  fount test --all\n  fount test --no-parallel\n  fount test p2p:sim shells/chat:pure,e2e_single shells/social:e2e_single\n  fount test server/live\n  fount test shells/chat\n  fount test shells/social:frontend\n  fount test shells/social:frontend:feed\n  fount test shells/chat:pure:channel_archive\n  fount test --force shells/social:frontend",
-			"passed": "通过：${label}",
-			"passedWithNoise": "通过：${label}（含噪声）",
-			"failed": "失败：${label}",
-			"failedWithCode": "失败：${label}（退出码 ${code}）",
-			"passedLabel": "通过",
-			"failedLabel": "失败",
-			"noiseHits": "（噪声：${hits}）",
-			"unknownManifestId": "未知的 manifest id：${ids}",
-			"unknownSuiteSelector": "未知的 suite 指名：${ids}",
-			"unknownSubtestFilter": "未知的子测试过滤：${suite} → ${names}",
-			"unknownFileFilter": "未知的测试文件过滤：${suite} → ${names}",
-			"unsupportedSubtestFilter": "套件不支持子测试/文件过滤：${suite}（${names}）",
-			"available": "可用项：${ids}",
-			"manifestMatched": "manifest 匹配结果：${ids}",
-			"selectedSuites": "已选择 ${selected}/${total} 个测试套件",
-			"planSlotSummary": "计划槽位：真跑 ${run}、复用 ${reuse}、阻塞 ${blocked}",
-			"noMatchingSuites": "没有匹配的测试套件。",
-			"reportPath": "报告：${path}",
-			"reportPathFinal": "\n报告：${path}",
-			"statePathFinal": "现状：${path}",
-			"blocked": "阻塞：${label}（依赖未过：${deps}）",
-			"speculativeDiscard": "丢弃投机结果：${label}（依赖未过：${deps}）",
-			"continueImperfect": "失败/噪声/未完成波次：${count} 个套件",
-			"outdatedSelected": "过期波次：${count} 个陈旧/未跑过的套件",
-			"runningSuite": {
-				"base": "\n>>> 正在运行 ${manifestId}:${name}",
-				"speculative": "乐观并行",
-				"heavy": "高负载",
-				"expected": "预期 ${expected}"
-			},
-			"reusedSuite": "\n>>> 复用 ${manifestId}:${name}（trigger 未变，沿用上次 ${status}）",
-			"noisyOnlyRemain": "仍有 ${count} 个套件通过但含噪声：${suites}",
-			"estimatedRun": "预计本次运行耗时 ≈ ${eta}（预估并行率 ${rate}）",
-			"estimatedRunSerial": "预计本次运行耗时 ≈ ${eta}（串行）",
-			"estimatedRunSkipped": "另有复用 ${reused} 个、预计阻塞 ${blocked} 个（不计入预估）",
-			"noRealRunPlanned": "本次无需真跑：复用 ${reused} 个、预计阻塞 ${blocked} 个（trigger 未变）",
-			"allReusedHint": "本次未真跑任何套件：失败为沿用的上次结果，阻塞随之未解（相关文件未变）。修复相关文件后重跑，或用 fount test --force 强制真跑。",
-			"estimatedRemaining": "预估剩余耗时 ≈ ${eta}（${completed}/${total} 个套件）",
-			"estimatedRunSerialHint": "若并行预期 ≈ ${eta}（并行率 ${rate}），节省 ≈ ${savings}（去掉 --no-parallel）",
-			"failuresSaved": "已保存失败列表：${path}（${count} 个套件）",
-			"failuresCleared": "manifest ${manifestId} 已全部通过，失败列表已清除。",
-			"terminated": "超时终止：${label} — ${reason}",
-			"terminateIdle": "已终止 ${label}：超过 ${minutes} 分钟无 stdall 输出（空闲 ${idleSec} 秒，已运行 ${elapsed}）",
-			"terminateDuration": "已终止 ${label}：耗时超过 watchdog 基线时长（已运行 ${elapsed}，基线 ${baseline}，上限 ${limit}）",
-			"terminateDurationDefault": "已终止 ${label}：耗时超过默认 watchdog 时长上限（已运行 ${elapsed}，上限 ${limit}）",
-			"terminateMarker": "[终止原因: ${reason}]",
-			"terminateUnknown": "已终止 ${label}：测试被中断",
-			"terminateSpeculative": "已终止 ${label}：投机依赖未过，提早终止",
-			"nothingToContinue": "全部绿且无过期项，无需再跑。",
-			"triggerNoMatch": "trigger 未匹配任何文件：${scope} — ${pattern}",
-			"triggerNoMatchSummary": "共 ${count} 条 trigger 未匹配任何仓库文件（详见 report.md）",
-			"unknownSuite": "未知的套件：${name}",
-			"federationCleanupPre": "联邦测试清理（运行前）失败：${output}",
-			"federationCleanupPost": "联邦测试清理（运行后）失败：${output}",
-			"suiteHeader": "\n=== 套件 ${name} ===",
-			"heapSnapshotSaved": "测试节点近 OOM 堆快照：${path}",
-			"liveUsage": "用法：--suite <名称> | --list",
-			"serialUsage": "用法：serial.mjs <deno-test-path> [...]",
-			"silentPassedOne": "1 个测试文件通过。",
-			"silentPassedMany": "${count} 个测试文件通过。",
-			"ciNoDiffFallback": "CI：未检测到 diff，回退为运行全部套件",
-			"noFrontendPhasesMatched": "没有匹配 FOUNT_TEST_ONLY 的前端测试阶段",
-			"denoPanic": {
-				"detected": "检测到 Deno 崩溃：${label}（位置 ${signature}）",
-				"alreadyReported": "该 Deno 崩溃已上报过，跳过：${signature}",
-				"ghUnavailable": "gh 不可用或未登录，仅本地记录 Deno 崩溃：${signature}",
-				"published": "已向 Deno 提交崩溃 issue：${url}",
-				"duplicate": "上游已存在重复崩溃，跳过上报：${upstream}",
-				"publishFailed": "Deno 崩溃 issue 发布失败：${signature}"
-			},
-			"nodeWorker": {
-				"dataPathRequired": "测试节点 worker：缺少 --data-path",
-				"portRequired": "测试节点 worker：缺少 --port（请通过 launch.mjs 启动）",
-				"keyRequired": "测试节点 worker：缺少 --key（请通过 launch.mjs 启动）",
-				"userRequired": "测试节点 worker：缺少 --user",
-				"error": "测试节点 worker 出错：${error}"
-			},
-			"ws": {
-				"pass": "\n通过：${detail}",
-				"fail": "\n失败：${detail}"
-			},
-			"report": {
-				"title": "fount 测试报告",
-				"tableHeaderItem": "项",
-				"tableHeaderValue": "值",
-				"fieldRunId": "运行 ID",
-				"fieldCommand": "命令",
-				"fieldExit": "退出状态",
-				"fieldProgress": "进度",
-				"fieldSuites": "套件",
-				"fieldFailed": "失败数",
-				"fieldNoisyPassed": "通过但有噪声",
-				"fieldReused": "复用数",
-				"fieldSuiteSumDuration": "套件累计耗时",
-				"fieldWallClock": "总耗时",
-				"fieldParallelRate": "并行率",
-				"fieldEstimatedRemaining": "预估剩余耗时",
-				"fieldEstimatedParallelRate": "预估并行率",
-				"estimatePoint": "≈ ${eta}",
-				"pendingEstimate": "预估剩余耗时 ≈ ${eta}",
-				"pendingParallelEstimate": "并行预估耗时 ≈ ${eta}（预估并行率 ${rate}）",
-				"pendingSavings": "预计可节省 ≈ ${savings}",
-				"pendingItemExpected": "预期 ${expected}",
-				"fieldDuration": "耗时",
-				"commandDefault": "（默认）",
-				"exitPassed": "通过",
-				"exitFailed": "失败",
-				"exitInProgress": "进行中",
-				"progressFormat": "${completed}/${total} 个套件",
-				"suitesFormat": "${passed}/${completed} 通过",
-				"artifacts": "产物目录：`${path}`",
-				"sectionFailed": "失败的套件",
-				"sectionNoisyPassed": "通过但有噪声",
-				"sectionSilentPassed": "通过",
-				"sectionPending": "待运行",
-				"sectionContinue": "继续未完成项",
-				"sectionReplay": "重跑失败项",
-				"sectionReplayImperfect": "重跑不完美项",
-				"columnSuite": "套件",
-				"columnDuration": "耗时",
-				"labelReused": "（复用）",
-				"labelExpectedBlocked": "（预计阻塞）",
-				"labelDuration": "耗时",
-				"labelLog": "日志",
-				"labelNoise": "噪声",
-				"labelFailedFiles": "失败文件",
-				"labelTerminateReason": "终止原因",
-				"sectionContinueReasons": "触发原因",
-				"continueReasonsLink": "触发原因：详见 [${path}](${path})",
-				"labelContinueReason": "原因",
-				"reasonImperfectFailed": "历史失败",
-				"reasonImperfectNoisy": "历史通过但有噪声",
-				"reasonImperfectBlocked": "历史被阻塞",
-				"reasonImperfectDependent": "上游失败的一层下游",
-				"reasonMissingRecord": "state 无记录，自动补跑",
-				"reasonStaleContent": "内容已变，需重跑",
-				"reasonTriggerHashDrift": "触发指纹漂移（无路径命中）",
-				"reasonExplicitSelected": "显式指名",
-				"reasonDependencyRequired": "依赖拉入",
-				"labelRootCause": "根因",
-				"labelDirectRequiredBy": "直接纳入方",
-				"labelInclusionPath": "纳入链",
-				"labelPullUpstream": "上游拉取：${requiredBy} 的依赖未绿",
-				"labelPullDownstream": "下游拉取：${requiredBy} 不完美，连带纳入",
-				"labelGateReason": "需跑原因",
-				"labelCommitRange": "commit 范围",
-				"labelUncommittedHashRange": "未提交 digest",
-				"labelMatchedTriggers": "命中 trigger",
-				"labelMatchedTriggerSets": "命中 trigger set",
-				"labelMatchedPaths": "命中路径",
-				"labelTriggerHashDrift": "触发指纹与当前工作区不一致（脏→净已忽略）",
-				"sectionDeadTriggers": "无效 trigger",
-				"deadTriggersHint": "以下 glob 在仓库内（git 已跟踪 + 未忽略未跟踪）未匹配任何文件：",
-				"durationMs": "${ms} 毫秒",
-				"durationUnitSec": "${n} 秒",
-				"durationUnitMin": "${n} 分",
-				"durationUnitMinute": "${n} 分钟",
-				"durationUnitHour": "${n} 小时",
-				"durationUnitDay": "${n} 天"
-			},
-			"state": {
-				"title": "fount 测试现状",
-				"artifacts": "现状目录：`${path}`",
-				"sectionDependencyTree": "依赖树",
-				"sectionOverview": "各套件现状",
-				"sectionBlocked": "被阻塞的套件",
-				"columnSuite": "套件",
-				"columnStatus": "状态",
-				"columnCommit": "commit",
-				"columnRanAt": "上次运行",
-				"columnDuration": "耗时",
-				"columnLog": "日志",
-				"columnBlocked": "阻塞数",
-				"labelBlockedBy": "阻塞于",
-				"statusUnknown": "未运行",
-				"statusOutdated": "陈旧"
 			}
 		}
 	},
@@ -907,6 +1171,513 @@
 			}
 		}
 	},
+	"social": {
+		"title": "广场",
+		"description": "P2P 开放社交动态、关注与文件分享",
+		"bootstrapFailed": "社交界面初始化失败：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "广场"
+			}
+		},
+		"nav": {
+			"feed": "首页",
+			"explore": "探索",
+			"notifications": "收件箱",
+			"saved": "收藏",
+			"drafts": "草稿箱",
+			"profile": "我的",
+			"videos": "短视频",
+			"live": "直播"
+		},
+		"settings": {
+			"title": "社交设置",
+			"back": {
+				"aria-label": "返回资料"
+			},
+			"privacyTitle": "隐私与发现",
+			"privacyHint": "控制账户是否出现在探索与推荐中。",
+			"tasteTitle": "推荐与偏好",
+			"tasteHint": "调节「为你推荐」的隐私边界与标签命名。",
+			"mutedKeywordsTitle": "屏蔽词与标签",
+			"mutedKeywordsHint": "命中正文、内容警告或标签的帖子将从信息流、探索、搜索与通知中隐藏。仅保存在本机。",
+			"mutedKeywordsMatchTags": "同时匹配标签",
+			"mutedKeywordsAdd": "添加",
+			"mutedKeywordsRemove": {
+				"title": "移除屏蔽词"
+			},
+			"mutedKeywordsEmpty": "尚未添加屏蔽词",
+			"autoTranslateTitle": "自动翻译",
+			"autoTranslateHint": "开启后，外语帖子将自动请求译文并可用原文切换。",
+			"autoTranslateEnable": "自动翻译非本语言帖子",
+			"safetyTitle": "安全与屏蔽",
+			"safetyHint": "管理拉黑与隐藏列表。",
+			"mutedKeywords": {
+				"placeholder": "输入关键词或 #标签"
+			}
+		},
+		"composer": {
+			"placeholder": "在想什么？支持 Markdown（fount 方言），输入 @ 可提及",
+			"publish": "发布",
+			"saveDraft": "存草稿",
+			"fab": {
+				"title": "写动态",
+				"aria-label": "写动态"
+			},
+			"contentWarning": {
+				"placeholder": "内容警告（可选）"
+			},
+			"sensitiveMedia": "媒体敏感遮罩",
+			"editImage": "编辑",
+			"editCrop": "裁剪",
+			"editMosaic": "打码",
+			"editBrush": "画笔",
+			"editApply": "应用",
+			"editCancel": "取消",
+			"replyPolicyEveryone": "所有人可回复",
+			"replyPolicyFollowers7d": "7天以上关注者",
+			"replyPolicyAuthorFollows": "我关注的人",
+			"replyPolicyLabel": "谁可以回复",
+			"replyDisplayAll": "显示全部回复",
+			"replyDisplayFeaturedOnly": "仅精选回复",
+			"replyDisplayLabel": "回复展示",
+			"scheduleLabel": "定时发布",
+			"scheduleSuccess": "帖子已加入定时队列",
+			"emojiButton": {
+				"title": "表情",
+				"aria-label": "表情"
+			},
+			"mediaButton": {
+				"title": "添加媒体",
+				"aria-label": "添加媒体"
+			},
+			"pollButton": {
+				"title": "发起投票",
+				"aria-label": "发起投票"
+			},
+			"cwToggle": {
+				"title": "内容警告",
+				"aria-label": "内容警告"
+			},
+			"advancedToggle": {
+				"title": "更多选项",
+				"aria-label": "更多选项"
+			},
+			"media": {
+				"placeholder": "图片描述（alt）"
+			}
+		},
+		"visibility": {
+			"label": "可见范围",
+			"public": "公开",
+			"unlisted": "不公开列出",
+			"followers": "仅关注者",
+			"followers7d": "关注满 7 天可见",
+			"followers30d": "关注满 30 天可见",
+			"selected": "指定人员可见",
+			"private": "仅自己可见",
+			"allowLabel": "可见人员",
+			"exceptLabel": "排除人员",
+			"allow": {
+				"placeholder": "可见人员 entityHash，空格或逗号分隔"
+			},
+			"except": {
+				"placeholder": "不给谁看（可选）"
+			}
+		},
+		"albums": {
+			"create": "新建相册",
+			"edit": "编辑相册",
+			"save": "保存",
+			"cancel": "取消",
+			"back": "返回相册",
+			"empty": "还没有相册",
+			"emptyPosts": "相册里还没有帖子",
+			"name": "相册名称",
+			"description": "相册描述",
+			"deleteLinks": "删除相册（保留帖子）",
+			"deleteWithPosts": "删除相册并删除帖子",
+			"pickerLabel": "加入相册",
+			"defaultName": "默认相册"
+		},
+		"feed": {
+			"refresh": "刷新动态",
+			"newPosts": "有新动态，点击查看",
+			"tabLatest": "最新",
+			"tabForYou": "推荐",
+			"repostedBy": "${author} 转发了",
+			"decryptFailed": "无法解密此帖",
+			"revealContent": "显示内容",
+			"sensitiveMedia": "敏感媒体",
+			"showMore": "展开",
+			"showLess": "收起",
+			"replayDivider": "已看完，重新浏览"
+		},
+		"taste": {
+			"rebuild": "重建偏好",
+			"privacyPublishPreferences": "公开标签命名与合并发现",
+			"privacyPublishPreferencesHint": "关闭后好友看不到你的标签命名与合并声明，也无法贡献共识。",
+			"privacyPublishReactions": "公开点赞与点踩",
+			"privacyPublishReactionsHint": "关闭后贴主收不到你的赞/踩、你的反应不参与他人推荐，你也不再推动帖子二度扩散。",
+			"empty": "尚无偏好标签，多点赞/踩后会自动聚类",
+			"weight": "权重 ${weight}",
+			"save": "保存",
+			"name": {
+				"placeholder": "本地显示名"
+			}
+		},
+		"trending": {
+			"title": "热门话题",
+			"postCount": {
+				"title": "${n} 条帖子"
+			},
+			"scopeLocal": "本机",
+			"scopeNearby": "附近",
+			"empty": "暂无热门话题"
+		},
+		"search": {
+			"placeholder": "搜索动态、用户或 #话题（至少 2 字）",
+			"open": {
+				"aria-label": "搜索"
+			},
+			"submit": "搜索",
+			"clear": "清除",
+			"empty": "没有匹配的帖子",
+			"tooShort": "请输入至少 2 个字符",
+			"usersTitle": "用户",
+			"postsTitle": "动态",
+			"usersEmpty": "没有匹配的用户",
+			"pinAlias": "设为别名",
+			"trustScore": "信任 ${score}",
+			"viewTitle": "搜索",
+			"loading": "搜索中…",
+			"filterAuthor": {
+				"placeholder": "作者"
+			},
+			"filterMediaAll": "所有媒体",
+			"filterMediaImage": "图片",
+			"filterMediaVideo": "视频",
+			"filterTag": {
+				"placeholder": "#标签"
+			},
+			"sortRecent": "最新",
+			"sortPopular": "热门",
+			"scopeLocal": "本机",
+			"scopeNearby": "附近"
+		},
+		"profile": {
+			"edit": "编辑资料",
+			"viewPosts": "查看社交主页",
+			"settingsBtn": {
+				"aria-label": "社交设置"
+			},
+			"mediaOnly": "[媒体]",
+			"hideFromExplore": "从探索页隐藏账户",
+			"tabPosts": "动态",
+			"tabAlbums": "相册",
+			"tabLikes": "点赞",
+			"tabCabinets": "文件柜",
+			"tabsLabel": {
+				"aria-label": "资料分区"
+			},
+			"cabinetsEmpty": "暂无公开文件柜",
+			"cabinetsFailed": "文件柜加载失败：${error}",
+			"statsGroup": {
+				"aria-label": "资料统计"
+			},
+			"statsPosts": "动态",
+			"statsFollowing": "关注",
+			"statsFollowers": "粉丝",
+			"followingTitle": "关注",
+			"followersTitle": "粉丝"
+		},
+		"dialog": {
+			"close": {
+				"aria-label": "关闭"
+			}
+		},
+		"actions": {
+			"like": "点赞",
+			"unlike": "取消赞",
+			"dislike": "踩",
+			"undislike": "取消踩",
+			"repost": "转发",
+			"quote": "引用",
+			"delete": "删除",
+			"edit": "编辑",
+			"save": "收藏",
+			"saved": "已收藏",
+			"translate": "翻译",
+			"dm": "发私信",
+			"block": "拉黑",
+			"hide": "隐藏",
+			"mute": "静音",
+			"follow": "关注",
+			"following": "已关注",
+			"care": "特别关心",
+			"careRemove": "取消特别关心",
+			"careAdded": "已加入特别关心",
+			"careRemoved": "已取消特别关心",
+			"setAlias": "设置别名",
+			"setAliasPrompt": "设置本地别名（留空清除）：",
+			"aliasSaved": "别名已更新",
+			"replies": "评论",
+			"copyLink": "复制链接",
+			"downloadHtml": "下载 HTML",
+			"copied": "已复制",
+			"more": {
+				"aria-label": "更多"
+			},
+			"share": "分享",
+			"likeFailed": "点赞失败：${error}",
+			"dislikeFailed": "踩失败：${error}",
+			"repostFailed": "转发失败：${error}",
+			"replyFailed": "回复失败：${error}",
+			"followFailed": "关注失败：${error}",
+			"saveFailed": "收藏失败：${error}",
+			"blockFailed": "拉黑失败：${error}",
+			"hideFailed": "隐藏失败：${error}",
+			"muteFailed": "静音失败：${error}",
+			"deleteFailed": "删除失败：${error}"
+		},
+		"post": {
+			"edited": "已编辑",
+			"editPrompt": "编辑帖子正文",
+			"editHistory": "编辑历史",
+			"editHistoryEmpty": "无更早版本",
+			"loading": "加载中…",
+			"notFound": "帖子不存在或不可见",
+			"loadFailed": "加载失败，请稍后重试",
+			"detailTitle": "帖子",
+			"back": "返回"
+		},
+		"reply": {
+			"context": "回复 ${author}"
+		},
+		"notes": {
+			"label": "读者补充",
+			"add": "补充信息",
+			"prompt": "写一条读者补充（社区笔记）",
+			"listTitle": "全部补充信息",
+			"helpful": "有用",
+			"unhelpful": "无用",
+			"more": "全部 ${n} 条",
+			"empty": "暂无补充信息"
+		},
+		"poll": {
+			"multi": "允许多选",
+			"apply": "应用投票",
+			"closed": "投票已结束",
+			"deadline": "截止：${deadline}",
+			"options": {
+				"placeholder": "每行一个选项（至少 2 项）"
+			}
+		},
+		"aside": {
+			"suggested": "推荐关注"
+		},
+		"explore": {
+			"accounts": "推荐账户",
+			"posts": "最新帖子",
+			"mediaOnly": "仅含媒体"
+		},
+		"groupRef": {
+			"linking": "关联 Chat 群",
+			"clear": "取消关联",
+			"pick": "关联 Chat 群/频道…"
+		},
+		"notifications": {
+			"reply": "${author} 回复了你的帖子",
+			"mention": "${author} 在动态中 @ 了你",
+			"like": "${author} 赞了你的帖子",
+			"repost": "${author} 转发了你的帖子",
+			"follow": "${author} 关注了你",
+			"care_post": "${author} 发了新动态（特别关心）",
+			"poll_closed": "${author} 的投票已结束",
+			"post_note": "${author} 为你的帖子补充了信息",
+			"live_started": "${author} 开始直播了",
+			"view": "查看",
+			"markAllRead": "全部标为已读"
+		},
+		"inbox": {
+			"filtersLabel": {
+				"aria-label": "收件箱筛选"
+			},
+			"tabs": {
+				"all": "全部",
+				"mention": "提及",
+				"reply": "回复",
+				"like": "赞",
+				"follow": "关注",
+				"repost": "转发"
+			},
+			"aggregated": {
+				"like": "${author1}、${author2} 等 ${count} 人赞了你的帖子",
+				"likeTwo": "${author1} 和 ${author2} 赞了你的帖子",
+				"repost": "${author1}、${author2} 等 ${count} 人转发了你的帖子",
+				"repostTwo": "${author1} 和 ${author2} 转发了你的帖子",
+				"follow": "${author1}、${author2} 等 ${count} 人关注了你",
+				"followTwo": "${author1} 和 ${author2} 关注了你"
+			}
+		},
+		"replies": {
+			"placeholder": "写一条回复…",
+			"submit": "回复",
+			"empty": "还没有回复",
+			"emptyHint": "来写第一条，开启讨论"
+		},
+		"repost": {
+			"placeholder": "添加转发评论（可选）…",
+			"submit": "确认转发"
+		},
+		"quote": {
+			"quoting": "正在引用",
+			"clear": "取消引用",
+			"viewOriginal": "查看原帖"
+		},
+		"a11y": {
+			"linkGroupSelect": "关联 Chat 群或频道",
+			"postVisibility": "可见范围",
+			"postLang": "内容语言",
+			"trendingHashtags": "热门话题",
+			"saveFolderSelect": "收藏文件夹"
+		},
+		"blocklist": {
+			"title": "拉黑列表",
+			"hiddenTitle": "隐藏列表",
+			"empty": "暂无拉黑或隐藏条目",
+			"unblock": "解除拉黑",
+			"unhide": "取消隐藏",
+			"scopeEntity": "实体",
+			"scopeSubject": "主体"
+		},
+		"translate": {
+			"label": "译文："
+		},
+		"saved": {
+			"all": "全部",
+			"unfiled": "未归档",
+			"createFolder": {
+				"title": "新建文件夹",
+				"aria-label": "新建文件夹"
+			},
+			"createFolderPrompt": "文件夹名称",
+			"pickFolderTitle": "收藏到",
+			"confirm": "确认",
+			"cancel": "取消",
+			"remove": "移除收藏",
+			"renameFolder": "重命名",
+			"renameFolderPrompt": "新文件夹名称",
+			"deleteFolder": "删除文件夹",
+			"deleteFolderConfirm": "删除文件夹？其中的帖子将移到「未归档」。",
+			"searchEmpty": "没有匹配的收藏",
+			"folderEmpty": "此文件夹为空",
+			"emptyHint": "浏览动态时点书签即可收藏到这里",
+			"search": {
+				"placeholder": "搜索收藏…"
+			}
+		},
+		"drafts": {
+			"untitled": "（无文字草稿）",
+			"emptyHint": "在发帖框写点内容后点「存草稿」，下次可继续编辑",
+			"saved": "草稿已保存",
+			"deleted": "草稿已删除",
+			"delete": "删除草稿",
+			"empty": "草稿为空",
+			"saveFailed": "保存草稿失败：${error}",
+			"loadFailed": "打开草稿失败：${error}",
+			"deleteFailed": "删除草稿失败：${error}"
+		},
+		"time": {
+			"justNow": "刚刚",
+			"minutesAgo": "${n} 分钟前",
+			"hoursAgo": "${n} 小时前"
+		},
+		"empty": {
+			"feed": "暂无动态，去关注一些人吧",
+			"profilePosts": "暂无动态",
+			"following": "暂未关注任何人",
+			"followers": "还没有粉丝",
+			"notifications": "暂无通知",
+			"saved": "暂无收藏",
+			"drafts": "暂无草稿",
+			"exploreAccounts": "暂无可推荐的账户",
+			"explorePosts": "暂无探索帖子",
+			"likedPosts": "暂无点赞",
+			"noIdentity": "请先在 Chat 配置联邦 identity 后再使用 Social"
+		},
+		"topic": {
+			"follow": "订阅",
+			"unfollow": "取消订阅",
+			"empty": "该话题暂无帖子"
+		},
+		"video": {
+			"view": {
+				"aria-label": "短视频"
+			},
+			"empty": "暂无短视频",
+			"emptyHint": "关注的人或公开广场里还没有带视频的帖子。发一条视频动态试试？",
+			"compose": "去发视频",
+			"back": {
+				"aria-label": "返回动态"
+			},
+			"mute": {
+				"aria-label": "静音"
+			},
+			"unmute": {
+				"aria-label": "取消静音"
+			},
+			"unavailable": "视频无法播放",
+			"closeReplies": {
+				"aria-label": "关闭评论"
+			}
+		},
+		"live": {
+			"empty": "暂无直播",
+			"viewers": "${n} 人观看",
+			"likes": "${n} 赞",
+			"local": "本机",
+			"hall": "直播大厅",
+			"back": {
+				"title": "返回动态",
+				"aria-label": "返回动态"
+			},
+			"danmakuSend": "发送",
+			"postWatch": "进入直播",
+			"postEnded": "直播已结束",
+			"postEndedStats": "${viewers} 人看过 · ${likes} 赞 · ${duration}",
+			"link": {
+				"invite": "邀请连线",
+				"needPeer": "请填写对端 entityHash:liveId",
+				"invited": "连线邀请已发出",
+				"linked": "已连线",
+				"peer": {
+					"placeholder": "对端 entityHash:liveId"
+				}
+			},
+			"broadcast": {
+				"title": "开播",
+				"open": "去开播",
+				"mediaAv": "音视频",
+				"mediaAudio": "纯音频",
+				"mediaVideo": "纯画面",
+				"mediaWhip": "WHIP 推流（如 OBS）",
+				"whipUrl": "WHIP 地址",
+				"whipToken": "Bearer Token",
+				"whipWaiting": "等待 WHIP 推流连接（可用 OBS 等推流软件）…",
+				"start": "开始直播",
+				"stop": "停止直播",
+				"started": "直播已开始",
+				"stopped": "直播已停止",
+				"titleInput": {
+					"placeholder": "直播标题（可选）"
+				}
+			},
+			"danmaku": {
+				"placeholder": "说点什么…"
+			}
+		}
+	},
 	"chat": {
 		"title": "聊天",
 		"description": "言语飞扬，故事在此展开。与您的 AI 伙伴互动，共同塑造叙事，沉浸在数字对话的潮起潮落中。fount 的心跳，于此间回响。",
@@ -918,7 +1689,1453 @@
 			"isTyping": "${names} 正在输入...",
 			"multipleMembers": "多个成员正在输入..."
 		},
+		"emoji": {
+			"pickerTitle": "选择表情",
+			"categoryFace": "表情",
+			"categoryGesture": "手势",
+			"categoryHeart": "心",
+			"categoryAnimal": "动物",
+			"categoryFood": "食物",
+			"categoryObject": "物品"
+		},
+		"unicodeEmojiGroups": {
+			"Smileys_and_Emotion": {
+				"title": "笑脸与情绪"
+			},
+			"People_and_Body": {
+				"title": "人物与身体"
+			},
+			"Animals_and_Nature": {
+				"title": "动物与自然"
+			},
+			"Food_and_Drink": {
+				"title": "食物与饮料"
+			},
+			"Travel_and_Places": {
+				"title": "旅行与地点"
+			},
+			"Activities": {
+				"title": "活动"
+			},
+			"Objects": {
+				"title": "物品"
+			},
+			"Symbols": {
+				"title": "符号"
+			},
+			"Flags": {
+				"title": "旗帜"
+			},
+			"Component": {
+				"title": "组件"
+			}
+		},
+		"sessionSettings": {
+			"unnamedTitle": "未命名群聊",
+			"modeGroup": "群聊",
+			"modeSingle": "单角色",
+			"modeEmpty": "空群组",
+			"subtitleRoles": "${count} 个角色在此聊天中",
+			"statusSaved": "已保存",
+			"statusSaving": "正在保存…",
+			"statusDirty": "有未保存的更改",
+			"statusSaveFailed": "保存失败",
+			"saveSuccess": "群聊设置已保存",
+			"saveFailed": "无法保存群聊设置"
+		},
+		"group": {
+			"defaults": {
+				"groupMetaName": "未命名群组",
+				"defaultChannelName": "综合",
+				"dmChatName": "聊天",
+				"dmDmName": "私聊",
+				"threadName": "子线程"
+			},
+			"settingsPage": {
+				"title": "群组设置",
+				"kicker": "群组管理",
+				"subtitle": "管理群资料、成员和常用功能。低频的权限、存储与审计工具集中在高级设置中。",
+				"backToChat": "返回聊天",
+				"navigationLabel": "群组设置分类",
+				"advancedNavigationLabel": "高级设置分类",
+				"tabGeneral": "基本",
+				"tabPermissions": "角色权限",
+				"tabMembers": "成员",
+				"tabAudit": "审计日志",
+				"tabEmojis": "表情",
+				"tabAdvanced": "高级",
+				"tabStorage": "存储与归档",
+				"tabChannelPermissions": "频道权限",
+				"advancedHubTitle": "高级设置",
+				"advancedHubDescription": "这些功能会改变群组的权限结构、历史数据或治理记录；仅在明确需要时调整。",
+				"channelPermsHint": "为特定频道设置角色权限覆盖。未覆盖项继承群组角色权限。",
+				"channelPermsSelectChannel": "频道",
+				"channelPermsAddRole": "添加角色覆盖",
+				"channelPermsRemoveRole": "移除该角色覆盖",
+				"channelPermsStateNeutral": "继承",
+				"channelPermsStateAllow": "允许",
+				"channelPermsStateDeny": "拒绝",
+				"channelPermsUpdated": "频道权限已更新",
+				"channelPermsUpdateFailed": "更新频道权限失败：${error}",
+				"channelPermsNoChannels": "暂无可配置频道",
+				"emojisTitle": "群自定义表情",
+				"emojisHint": "成员可在聊天中插入或发送这些表情；未安装的图片会通过联邦节点按需拉取。",
+				"emojisUpload": "上传表情",
+				"emojisDelete": "删除表情",
+				"emojisEmpty": "暂无群表情",
+				"emojisUploadOk": "表情已上传",
+				"emojisUploadFailed": "上传失败：${error}",
+				"emojisDeleteConfirm": "确定删除该群表情？",
+				"emojisDeleteOk": "表情已删除",
+				"emojisDeleteFailed": "删除失败：${error}",
+				"membersTitle": "成员列表",
+				"overviewTitle": "群组概览",
+				"overviewHint": "只读信息。具备治理权限时可在「基本」中编辑群资料与策略。",
+				"channelArchiveTitle": "频道归档",
+				"channelArchiveHint": "导入完整频道 JSON 归档，将在本群新建一个普通文字频道并恢复历史（由你重新签名；附件仅保留元数据）。",
+				"channelArchiveImport": "导入频道 JSON",
+				"channelArchiveImportOk": "已导入 ${count} 条消息，正在打开新频道…",
+				"channelArchiveImportFailed": "导入失败：${error}",
+				"governanceHint": "写入 DAG 的群级策略；需管理员或 MANAGE_ADMINS 等权限。",
+				"governanceDenied": "你没有权限修改群治理设置。",
+				"rolesDenied": "你没有 MANAGE_ROLES 权限，无法编辑角色。",
+				"channelPermsDenied": "你没有 MANAGE_CHANNELS 权限，无法编辑频道权限覆盖。",
+				"notMember": "你已不是本群成员；本机群数据已在离群后自动清理。",
+				"basicTitle": "群治理",
+				"profileSectionTitle": "群资料",
+				"profileSectionHint": "名称、简介与入群方式会写入群元数据。",
+				"behaviorSectionTitle": "运行行为",
+				"networkSectionTitle": "联邦与连接",
+				"retentionSectionTitle": "保留与限速",
+				"mediaSectionTitle": "通话与文件",
+				"nameLabel": "群组名称",
+				"descriptionLabel": "群组描述",
+				"joinPolicyLabel": "入群策略",
+				"joinInviteOnly": "仅邀请",
+				"joinPow": "需要 PoW",
+				"powDifficultyLabel": "PoW 难度",
+				"advancedTitle": "高级设置",
+				"advancedDescription": "网络、存储、限速和加密参数；不确定时请保持默认",
+				"securityAdvancedTitle": "安全与群主操作",
+				"securityAdvancedDescription": "密钥轮换和群主继任；错误操作可能影响成员访问",
+				"powDifficultyTip": "工作量证明难度。数值越高，陌生人加入公开群时需要的计算时间越长。",
+				"maxDagPayloadTip": "单个群事件允许携带的数据上限。过大会增加同步内存和网络开销。",
+				"trustedPeersTip": "优先保持连接的高信誉联邦邻居数量。",
+				"gossipTtlTip": "消息最多经多少个联邦节点继续转发。增大可扩大覆盖，也会增加流量。",
+				"hlcTip": "允许远端节点时钟比本机快出的最大时间，用于拒绝异常未来事件。",
+				"sfuTip": "可选的外部音视频转发服务地址。留空使用内置点对点/中继通话。",
+				"iceTip": "帮助 WebRTC 穿透路由器；直连失败时 TURN 会代为转发音视频和联邦流量。",
+				"fileEncryptionTip": "收敛加密可去重但会暴露相同文件这一事实；随机密钥隐私更高但占用更多空间。",
+				"keyManagementTitle": "密钥管理",
+				"keyManagementTip": "轮换后需要重新向成员分发新密钥。只有怀疑密钥泄露时才应手动操作。",
+				"allowDangerousHtml": "可信作者消息允许内联 HTML",
+				"deleteGroup": "删除群组",
+				"save": "保存设置",
+				"inviteTitle": "邀请",
+				"inviteHint": "生成短时邀请码（默认 1 小时）。对方在「加入群组」中填写群组 ID 与邀请码。",
+				"inviteMint": "生成邀请码",
+				"inviteGroupId": "群组 ID",
+				"inviteCode": "邀请码",
+				"inviteExpires": "过期：${date}",
+				"inviteCopy": "复制入群信息",
+				"inviteCopied": "已复制入群信息",
+				"inviteCopyFailed": "复制失败",
+				"inviteClipboard": "群组 ID：${groupId}\n邀请码：${code}\n加入：${url}",
+				"loadFailed": "加载群组设置失败: ${error}",
+				"saveSuccess": "群组设置已保存",
+				"saveFailed": "保存设置失败: ${error}",
+				"deleteConfirm": "确定要删除此群组吗？此操作不可撤销，所有消息和成员数据将被永久删除。",
+				"deleteSuccess": "群组已删除",
+				"deleteFailed": "删除群组失败: ${error}",
+				"rolesTitle": "角色与权限",
+				"createRole": "创建角色",
+				"roleDefault": "默认",
+				"deleteRole": "删除角色",
+				"deleteRoleConfirm": "确定要删除此角色吗？",
+				"deleteRoleSuccess": "角色已删除",
+				"deleteRoleFailed": "删除角色失败: ${error}",
+				"createRolePrompt": "输入角色名称:",
+				"createRoleSuccess": "角色已创建",
+				"createRoleFailed": "创建角色失败: ${error}",
+				"permissionUpdated": "权限已更新",
+				"permissionUpdateFailed": "更新权限失败: ${error}",
+				"noMembers": "暂无成员",
+				"memberRoles": "角色:",
+				"kick": "踢出",
+				"ban": "封禁",
+				"kickConfirm": "确定踢出成员 ${name} 吗？",
+				"kickSelfNodeWarning": "警告：该成员与你使用同一节点身份，踢出后你也将被移出群组。确定继续吗？",
+				"kickSuccess": "成员已踢出",
+				"kickFailed": "踢出成员失败: ${error}",
+				"banConfirm": "确定封禁成员 ${name} 吗？",
+				"banSuccess": "成员已封禁",
+				"banFailed": "封禁成员失败: ${error}",
+				"bannedTitle": "已封禁成员",
+				"unban": "解封",
+				"unbanConfirm": "确定解封成员 ${name} 吗？",
+				"unbanSuccess": "成员已解封",
+				"unbanFailed": "解封失败：${error}",
+				"keyRotate": "轮换群文件主密钥",
+				"keyRotateConfirm": "确定手动轮换本群文件主密钥？新成员需重新同步历史文件密钥。",
+				"keyRotateOk": "密钥已轮换",
+				"keyRotateFailed": "密钥轮换失败：${error}",
+				"gshGenerationRetentionHint": "当前仅保留最近 64 代文件主密钥历史。超出后最早历史文件可能无法解密，建议定期归档重要数据。",
+				"gshGenerationNearLimit": "当前已轮换到第 ${generation} 代文件主密钥（上限 ${maxGenerations} 代）。继续频繁轮换将导致最早历史密钥被淘汰。",
+				"ownerSuccession": "群主继任",
+				"ownerSuccessionOk": "群主继任已生效",
+				"ownerSuccessionFailed": "群主继任失败：${error}",
+				"permVIEW_CHANNEL": "查看频道",
+				"permSEND_MESSAGES": "发送消息",
+				"permSEND_STICKERS": "发送贴纸",
+				"permADD_REACTIONS": "添加反应",
+				"permMANAGE_MESSAGES": "管理消息",
+				"permMANAGE_CHANNELS": "管理频道",
+				"permKICK_MEMBERS": "踢出成员",
+				"permBAN_MEMBERS": "封禁成员",
+				"permMANAGE_ROLES": "管理角色",
+				"permINVITE_MEMBERS": "邀请成员",
+				"permSTREAM": "语音",
+				"permCREATE_THREADS": "创建子频道",
+				"permUPLOAD_FILES": "上传文件",
+				"permMANAGE_FILES": "管理文件",
+				"permPIN_MESSAGES": "置顶消息",
+				"permADMIN": "管理员",
+				"permBYPASS_RATE_LIMIT": "绕过消息限速"
+			},
+			"auditLog": {
+				"title": "群审计日志",
+				"hint": "展示当前采纳治理分支上的成员、角色、频道与 moderation 事件；仅管理员可见。",
+				"filterLabel": "事件类型",
+				"refresh": "刷新",
+				"filterAll": "全部类型",
+				"loadMore": "加载更早记录",
+				"empty": "暂无审计记录",
+				"loadFailed": "加载审计日志失败: ${error}",
+				"colTime": "时间",
+				"colType": "类型",
+				"colActor": "操作者",
+				"colSummary": "摘要",
+				"type": {
+					"member_join": "成员加入",
+					"member_leave": "成员离开",
+					"member_kick": "踢出成员",
+					"member_ban": "封禁成员",
+					"member_unban": "解除封禁",
+					"role_create": "创建角色",
+					"role_update": "更新角色",
+					"role_delete": "删除角色",
+					"role_assign": "分配角色",
+					"role_revoke": "撤销角色",
+					"channel_create": "创建频道",
+					"channel_update": "更新频道",
+					"channel_delete": "删除频道",
+					"channel_permissions_update": "频道权限",
+					"group_meta_update": "群资料",
+					"group_settings_update": "群设置",
+					"reputation_slash": "声誉扣减",
+					"reputation_reset": "声誉重置",
+					"file_master_key_rotate": "群文件主密钥轮换",
+					"peer_invite": "对等邀请",
+					"dag_tip_merge": "合并 DAG 分叉",
+					"message_delete": "删除消息",
+					"pin_message": "置顶消息",
+					"unpin_message": "取消置顶",
+					"file_upload": "上传文件",
+					"file_delete": "删除文件"
+				},
+				"event": {
+					"member_join": "成员 ${target} 加入群组",
+					"member_leave": "成员离开群组",
+					"member_kick": "踢出成员 ${target}",
+					"member_ban": "封禁成员 ${target}",
+					"member_unban": "解除封禁 ${target}",
+					"role_create": "创建角色 ${roleName}",
+					"role_update": "更新角色 ${roleName}",
+					"role_delete": "删除角色 ${roleName}",
+					"role_assign": "为 ${target} 分配角色 ${roleName}",
+					"role_revoke": "撤销 ${target} 的角色 ${roleName}",
+					"channel_create": "创建频道 ${channelName}",
+					"channel_update": "更新频道 ${channelName}",
+					"channel_delete": "删除频道 ${channelName}",
+					"channel_permissions_update": "更新频道 ${channelName} 的权限",
+					"group_meta_update": "更新群资料：${name}",
+					"group_settings_update": "更新群设置",
+					"reputation_slash": "对 ${target} 扣减声誉（${claim}）",
+					"reputation_reset": "重置 ${target} 的声誉",
+					"file_master_key_rotate": "轮换群文件主密钥",
+					"channel_key_rotate": "频道 ${channelName} E2E 密钥轮换",
+					"peer_invite": "邀请对等节点 ${target}",
+					"dag_tip_merge": "合并 DAG 治理分叉",
+					"message_delete": "删除消息 ${targetEventId}",
+					"pin_message": "在 ${channelName} 置顶 ${targetEventId}",
+					"unpin_message": "在 ${channelName} 取消置顶 ${targetEventId}",
+					"file_upload": "上传文件 ${fileName}",
+					"file_delete": "删除文件 ${fileName}"
+				}
+			},
+			"messagePrefixSticker": "贴纸",
+			"membersEmpty": "（暂无成员）",
+			"channelEncryptionGsh": "频道密钥端对端加密（CKG）",
+			"ownerSuccession": "发起继任投票",
+			"ownerSuccessionDescription": "将群最高管理权限（MANAGE_ADMINS）转移给指定成员。仅管理员可操作。",
+			"ownerSuccessionAutoSignHint": "提交后由本机在该群的签名种子自动联署，无需输入私钥。多管理员群需过半管理员各自在本机提交同一选票（相同 ballotId 与候选人）。",
+			"ownerSuccessionCandidateLabel": "继任者公钥哈希",
+			"ownerSuccessionSelfButton": "提名自己",
+			"ownerSuccessionSubmitted": "继任选票已记录你的联署。",
+			"ownerSuccessionNeedHash": "请填写继任者的公钥哈希",
+			"ownerSuccessionFailed": "继任投票提交失败",
+			"e2eDecryptUnavailable": "消息已加密，当前设备无法解密",
+			"contentRefBodyPending": "外链正文（content_ref，尚未拉取校验）",
+			"contentRefHashMismatch": "外链正文与存储校验不一致（哈希不匹配）",
+			"streamGenerationFailed": "AI 生成超时未完成，已停止更新",
+			"convergentEncryptWarn": "群文件使用收敛加密：若攻击者已知某文件明文，可推导密钥并解密对应密文块。请勿将高度敏感且唯一的私密文档仅依赖群加密保护。",
+			"settingsStreamGeneratingIdle": "AI 生成占位空闲超时（毫秒）",
+			"settingsAutoReplyFrequency": "自动触发角色回复（每 N 条用户消息后，0 为关闭）",
+			"settingsAutoReplyFrequencyHint": "0 表示关闭；@提及 仍会立即触发",
+			"settingsMaxDagPayload": "DAG 单事件最大字节数",
+			"settingsBatterySaver": "低功耗模式（缩小联邦连接池与中继）",
+			"settingsDiscoveryPublic": "在联邦发现中公开此群（不含入群密钥）",
+			"settingsDiscoveryTitle": "发现列表标题（可选）",
+			"settingsDiscoveryBlurb": "发现简介（可选）",
+			"settingsTrustedPeers": "信任邻居槽位（Top-K）",
+			"settingsExplorePeers": "探索邻居槽位",
+			"settingsMaxPeers": "联邦连接上限",
+			"settingsGossipTtl": "Gossip 转发 TTL（跳数）",
+			"settingsWantIdsBudget": "单次 wantIds 预算",
+			"settingsHlcMaxSkew": "HLC 未来偏移上限（毫秒）",
+			"dagForkDetected": "检测到未合并的 DAG 分叉",
+			"mergeDagTips": "合并 DAG 分叉",
+			"mergeDagTipsOk": "分叉已合并",
+			"mergeDagTipsFailed": "合并分叉失败",
+			"settingsStreamingSfu": "流媒体 SFU WebSocket 地址（可选）",
+			"settingsMessageRetention": "消息正文自动删除",
+			"settingsMessageRetentionForever": "永久保留（仅压缩 DAG 事件）",
+			"settingsMessageRetention30d": "30 天以前",
+			"settingsMessageRetention90d": "90 天以前",
+			"settingsMessageRetention1y": "1 年以前",
+			"settingsMessageRetentionHint": "默认不自动删除可见历史。开启后仅裁本地 messages 热缓存；终态帖在冷归档与 checkpoint 中保留。",
+			"settingsHotLatest": "热区保留（每频道最新帖数）",
+			"settingsPinContext": "置顶邻域（±N 邻帖）",
+			"settingsHotWindowHint": "热区帖保留在 checkpoint 与 messages 缓存；其余帖在物化后写入按月冷归档，再从 DAG 折叠过程事件。",
+			"settingsArchiveTitle": "存储与冷归档",
+			"settingsArchiveHint": "冷归档为本机明文帖子终态（按月分文件）。删除归档不会改动 DAG；缺历史时可向联邦邻居拉取。",
+			"settingsArchiveFilesTitle": "已归档文件",
+			"settingsArchiveEmpty": "尚无冷归档文件。",
+			"settingsArchiveColChannel": "频道",
+			"settingsArchiveColMonth": "月份",
+			"settingsArchiveColSize": "大小",
+			"settingsArchiveDeleteBefore": "删除此月之前",
+			"settingsArchiveDeleteButton": "删除冷归档",
+			"settingsArchiveDeleteHint": "仅删除本地 archive/*.jsonl；热区与 DAG 锚点不受影响。",
+			"settingsArchiveAdminOnly": "本机尚无该群的冷归档数据。",
+			"settingsArchiveDeleteInvalidMonth": "请选择有效的 YYYY-MM 月份。",
+			"settingsArchiveDeleteConfirm": "确定删除 {month} 之前的所有冷归档文件？此操作不可恢复。",
+			"settingsArchiveDeleteOk": "已删除 {files} 个归档文件。",
+			"settingsArchiveDeleteFailed": "删除归档失败：{error}",
+			"settingsEventRetentionDepth": "DAG 事件保留深度",
+			"settingsEventRetentionMs": "DAG 事件保留时间",
+			"settingsCompactTriggerDepth": "物化压缩触发深度",
+			"settingsMessageRateLimit": "消息限速（条/分钟/实体）",
+			"settingsAutoReplyTokenBucket": "自动回复压力调度（Token Bucket）",
+			"settingsAutoReplyTokenBucketHint": "开启后，每个角色按频道维护令牌桶；桶空时暂不触发 onMessage，可抑制高峰期连续刷屏。",
+			"settingsIceServers": "ICE / TURN 服务器",
+			"settingsIceServersAdd": "添加服务器",
+			"settingsIceServersHint": "用于 WebRTC 与联邦 P2P 穿透；TURN 凭据仅存本机物化设置，不经联邦广播。",
+			"settingsFileCeMode": "文件加密模式",
+			"settingsFileCeModeConvergent": "收敛加密（可去重）",
+			"settingsFileCeModeRandom": "高隐私模式（随机密钥，不去重）",
+			"settingsFileCeModeHint": "高隐私模式会为每个分块使用随机 contentKey，并标记 ceMode=random；可降低明文可猜测风险，但会增加存储与带宽占用。",
+			"channelsTitle": "频道",
+			"createGroup": "新建群组",
+			"members": "成员",
+			"membersHint": "成员列表由 Checkpoint 同步（占位）",
+			"send": "发送",
+			"streamTest": "测试媒体设备",
+			"messageInput": {
+				"placeholder": "群组消息… Ctrl+Enter 发送"
+			},
+			"loadError": "加载群组失败",
+			"remoteNodeTimeout": "远端节点无响应，请稍后重试",
+			"remoteUnavailable": "远端部件不可用或无法路由 RPC",
+			"messagesLoadFailed": "加载消息失败",
+			"sendFailed": "发送失败",
+			"chatNotLoaded": "主聊天未加载：请先在主界面打开与该群组同 ID 的会话后再试",
+			"createFailed": "创建群组失败",
+			"newGroupName": "新群组",
+			"streamOk": "已获取媒体流（已停止，未广播）",
+			"remoteUnsafe": "此消息来自远程且作者未在本地信任列表中，已禁用富文本渲染。",
+			"trustAuthor": {
+				"textContent": "信任",
+				"title": "信任此作者（允许危险 HTML）"
+			},
+			"trustAuthorOk": "已信任此作者并渲染富文本",
+			"voteCast": "投票",
+			"listEmpty": "（暂无导航条目，管理员可通过 API 更新 list-items）",
+			"listChannelReadonly": {
+				"placeholder": "列表频道仅展示导航卡片，不发消息"
+			},
+			"streamNoEmbed": {
+				"textContent": "流媒体地址须为可嵌入的 https:// 页面，或先配置群设置并刷新以获取观看令牌。"
+			},
+			"streamNoSfu": {
+				"textContent": "未配置 streamingSfuWss；管理员可在群设置中填写 LiveKit/mediasoup 观看地址。"
+			},
+			"messageDeleted": "消息已删除",
+			"messageDeletedBracket": "[消息已删除]",
+			"messageWithAttachments": "${text} （${n} 个附件）",
+			"voteBlockHeading": "[${prefix}] ${question}",
+			"voteBlockHeadingTagged": "[投票] ${question}",
+			"voteCastLine": "[${prefix}] 投票：${choice}",
+			"voteCastLineTagged": "[投票] 投票：${choice}",
+			"voteOptionsPreview": "[${prefix}] ${options}",
+			"voteOptionsPreviewTagged": "[投票] ${options}",
+			"voteDeadlineLineOpen": "截止：${date}",
+			"voteDeadlineLineClosed": "截止：${date} [已结束]",
+			"pinMessageLine": "[置顶] ${targetId}",
+			"unpinMessageLine": "[取消置顶] ${targetId}",
+			"stickerPrefixLine": "[${label}]",
+			"stickerPrefixLineTagged": "[贴纸]",
+			"feedbackDagLine": "[${label}]",
+			"feedbackDagLineWithNote": "[${label}] ${note}",
+			"feedbackPreviewLine": "${tag}${sep}${note}",
+			"feedbackPreviewTaggedNote": "${tag} ${note}",
+			"mentionHandle": "@${name}",
+			"mentionInsert": "@${name} ",
+			"feedbackUp": "赞",
+			"feedbackDown": "踩",
+			"attachmentsHint": "（${n} 个附件）",
+			"pinMessage": "置顶",
+			"unpinMessage": "取消置顶",
+			"pinThisMessage": "将本条写入 DAG 置顶",
+			"pinAction": {
+				"textContent": "置顶",
+				"title": "将本条写入 DAG 置顶"
+			},
+			"unpinAction": {
+				"textContent": "取消置顶",
+				"title": "取消置顶"
+			},
+			"pinOk": "已记录置顶",
+			"unpinOk": "已取消置顶",
+			"pinFailed": "置顶失败",
+			"menuCopyText": "复制文本",
+			"menuExportHtml": "导出为 HTML",
+			"menuCopyId": "复制消息 ID",
+			"copied": "已复制",
+			"addBookmark": {
+				"title": "将当前频道加入书签"
+			},
+			"bookmarkExists": "该书签已存在",
+			"bookmarkAdded": "已加入书签",
+			"bookmarkSaveFailed": "保存书签失败",
+			"remoteTyping": "${name} 正在输入…",
+			"remoteTypingTwo": "${name1}、${name2} 正在输入…",
+			"remoteTypingMany": "${name} 和另外 ${count} 人正在输入…",
+			"mentionEmpty": "（无匹配成员）",
+			"localAiLabel": "本机角色：",
+			"forceTriggerOne": {
+				"title": "强制触发 ${name} 发言"
+			},
+			"forceTriggerAllLocal": "全部触发",
+			"forceTriggerAllLocalTitle": {
+				"title": "强制触发全部本机角色发言"
+			},
+			"messageRefAnchor": "引用消息：${id}",
+			"settingsFedPartition": "联邦分区数",
+			"settingsRtcBudget": "RTC 连接预算",
+			"settingsRtcJoinRate": "RTC 每分钟加入上限",
+			"settingsFedTuningHint": "写入 DAG 群设置；修改后建议重新绑定联邦房间。",
+			"settingsAutoChannelGc": "自动清理沉寂频道",
+			"settingsAutoChannelGcHint": "物化时最多删除 2 个沉寂 ≥30 天且不可达的孤岛频道。",
+			"quoteHeader": "> **${sender}**${sep}${time}\n\n",
+			"quoteHeaderWithTime": "> **${sender}** · ${time}\n\n",
+			"quoteHeaderWithoutTime": "> **${sender}**\n\n",
+			"stopGenerating": "停止生成",
+			"messageAborted": "已中断",
+			"avStart": "开始媒体",
+			"avMute": "静音",
+			"avSwap": "主画面",
+			"avStop": "停止",
+			"avNeedStreamChannel": "请在「流媒体」类型频道使用音视频",
+			"reactionAdd": {
+				"title": "添加回应"
+			},
+			"reactionRemove": {
+				"title": "撤销回应"
+			},
+			"addReaction": {
+				"title": "添加表情反应"
+			},
+			"reactionPrompt": "输入表情符号（Unicode）",
+			"channelTypeLabel": "频道类型",
+			"channelTypeText": "聊天频道",
+			"channelTypeList": "列表/论坛频道",
+			"channelTypeStreaming": "流媒体频道",
+			"convertToText": "转换为聊天频道",
+			"convertToList": "转换为列表/论坛频道",
+			"setAsDefault": "设为群默认频道",
+			"isDefault": "当前默认",
+			"defaultChannelSet": "已设置为默认频道",
+			"defaultChannelSetFailed": "设置默认频道失败",
+			"channelUpdateFailed": "频道更新失败",
+			"voteCreate": "发起投票",
+			"votePromptDeadline": "截止时间（留空不限时，格式 2026-01-01 23:59）",
+			"voteTooFewOptions": "至少需要两个选项",
+			"voteCreateFailed": "创建投票失败",
+			"voteFor": "投 ${option}",
+			"voteDeadline": "截止",
+			"voteEnded": "已结束",
+			"voteTotal": "共 ${n} 票",
+			"record": "录音",
+			"fileDownload": {
+				"title": "下载文件"
+			},
+			"clickToLoad": "点击加载",
+			"unknownFile": "未知文件",
+			"blockSender": {
+				"title": "拉黑该发送者"
+			},
+			"blockConfirm": "确认拉黑「${sender}」？",
+			"blockAdded": "已拉黑",
+			"saveSticker": {
+				"title": "保存贴纸/表情到我的收藏"
+			},
+			"stickerSaved": "已保存到贴纸库",
+			"stickerDefaultName": "贴纸",
+			"deleteMessage": {
+				"title": "删除消息"
+			},
+			"deleteConfirm": "确认删除此消息？",
+			"editMessage": {
+				"title": "编辑消息"
+			},
+			"saveEdit": "保存",
+			"cancelEdit": "取消",
+			"editingMessage": "正在编辑",
+			"editConfirm": "确认 (Ctrl+Enter)",
+			"editCancel": "取消 (Esc)",
+			"editHint": "Ctrl+Enter 确认 · Esc 取消",
+			"editedLabel": "(已编辑)",
+			"editEmptyText": "消息内容不能为空",
+			"createGroupTitle": "新建群组",
+			"groupNameLabel": "群组名称",
+			"groupName": {
+				"placeholder": "我的群组"
+			},
+			"defaultChannelLabel": "默认频道",
+			"defaultChannel": {
+				"placeholder": "general"
+			},
+			"createGroupFailed": "创建群组失败",
+			"createChannelFailed": "创建频道失败",
+			"moreActions": {
+				"title": "更多操作"
+			},
+			"thread": "子线程",
+			"threadBack": "返回",
+			"threadBreadcrumbRootTitle": "跳转到路径起点（第一层）",
+			"threadBreadcrumbMiddleTitle": "展开中间层，选择要跳转的层级",
+			"threadBreadcrumbMiddleSummary": "中间 ${count} 层",
+			"menuShareExternal": "分享到外部链接",
+			"shareExternalOk": "已上传并复制链接",
+			"shareExternalFailed": "上传失败，请检查网络"
+		},
+		"hub": {
+			"title": "聊天",
+			"redirectToHub": "正在进入聊天 Hub…",
+			"homeTooltip": {
+				"title": "返回主页",
+				"tip": "返回主页"
+			},
+			"charsTooltip": {
+				"title": "角色",
+				"tip": "角色"
+			},
+			"friendsTooltip": {
+				"title": "好友",
+				"tip": "好友"
+			},
+			"inboxTooltip": {
+				"title": "收件箱",
+				"tip": "跨群收件箱"
+			},
+			"inbox": {
+				"title": "收件箱",
+				"filtersLabel": "筛选收件箱消息",
+				"tabMention": "提及",
+				"tabMessage": "全部消息",
+				"tabCare": "特别关心",
+				"tabVoteClosed": "投票结束",
+				"emptyMentionTitle": "暂时没有人提及你",
+				"emptyMentionDescription": "其他成员在群聊中 @ 你后，消息会集中显示在这里。",
+				"emptyMessageTitle": "收件箱空空如也",
+				"emptyMessageDescription": "来自各个群聊和频道的消息动态会显示在这里。",
+				"emptyCareTitle": "特别关心尚无动态",
+				"emptyCareDescription": "你特别关心的成员发来新消息时，可以第一时间在这里看到。",
+				"emptyVoteTitle": "没有已结束的投票",
+				"emptyVoteDescription": "参与的投票结束后，结果会汇总到这里。",
+				"rowLabel": {
+					"aria-label": "${author} 在 ${group} 的 ${channel} 频道中说：${preview}"
+				},
+				"sidebarHint": "所有群中 @ 你的消息会出现在右侧列表",
+				"badgeFetchFailed": "未读徽章刷新失败：${error}",
+				"loadFailed": "收件箱加载失败：${error}",
+				"markSeenFailed": "收件箱已读状态更新失败：${error}",
+				"jumpFailed": "无法打开这条消息：${error}"
+			},
+			"notifyPrefs": {
+				"title": "通知设置",
+				"mode": "通知模式",
+				"modeAll": "全部消息",
+				"modeMentions": "仅 @ 与提及",
+				"modeNothing": "不通知",
+				"suppressEveryone": "忽略 @everyone 与 @here",
+				"suppressRoles": "忽略角色组 @",
+				"mute": "静音",
+				"muteOff": "关闭",
+				"mute1h": "1 小时",
+				"mute8h": "8 小时",
+				"muteForever": "直到手动开启",
+				"saved": "通知设置已保存"
+			},
+			"voteClosed": "已结束",
+			"discoveryTooltip": {
+				"title": "群发现",
+				"tip": "群发现"
+			},
+			"prefsTooltip": {
+				"title": "设置",
+				"tip": "翻译与联邦 P2P 设置"
+			},
+			"prefsSubtitle": "翻译与联邦连接",
+			"federationTooltip": {
+				"title": "联邦 P2P 设置",
+				"tip": "联邦 P2P 设置"
+			},
+			"federationTitle": "联邦 P2P 设置",
+			"federationSubtitle": "控制跨设备连接；大多数情况下保持默认即可",
+			"federationLoadFailed": "加载失败：${error}",
+			"fedConnectionTitle": "连接与发现",
+			"discoveryRefresh": "刷新发现列表",
+			"fedRelayUrlsLabel": "网络中继地址",
+			"fedRelayUrlsTip": "帮助设备在互联网中互相发现。每行填写一个 wss:// 地址；留空使用默认中继。",
+			"fedBatterySaverLabel": "低功耗模式",
+			"fedBatterySaverTip": "减少后台连接数量和网络活动，可能让消息同步稍慢。",
+			"fedAdvancedTitle": "高级设置",
+			"fedAdvancedDescription": "故障修复、信誉管理和手动链接签发",
+			"fedGroupRecoveryTitle": "群连接修复",
+			"fedGroupRecoveryTip": "仅在邀请泄露或新设备无法同步历史时使用。",
+			"fedRotateRoomSecret": "轮换群房间口令",
+			"fedRotateRoomSecretConfirm": "轮换后，使用旧房间口令的邀请将无法连接。确定继续吗？",
+			"fedRotateRoomSecretOk": "已轮换房间口令",
+			"fedRepairJoinSnapshot": "向邻居请求入群快照修复",
+			"fedRepairJoinSnapshotOk": "已应用入群快照（${channels} 个频道历史）",
+			"fedRepairJoinSnapshotFailed": "入群快照修复失败：${error}",
+			"fedRepTitle": "本群主观信誉",
+			"fedRepTip": "本机根据联邦节点行为计算的连接偏好分数，不是群成员的公开评价。",
+			"fedRepEmpty": "（空）",
+			"fedSlashTitle": "信誉惩戒",
+			"fedSlashTip": "向群事件图写入对某个节点的负面信誉声明。仅供理解联邦协议的管理员使用。",
+			"fedSlashTargetLabel": "目标 pubKeyHash（64 hex）",
+			"fedSlashTarget": {
+				"placeholder": "成员公钥哈希"
+			},
+			"fedSlashClaimLabel": "主张强度 claim（0–1）",
+			"fedSlashVerifiedLabel": "可验证（须填 proof event id）",
+			"fedSlashProofLabel": "proof.eventId（可选）",
+			"fedSlashProof": {
+				"placeholder": "64 hex event id"
+			},
+			"fedSlashSubmitLabel": "投递 reputation_slash",
+			"fedResetSubmitLabel": "重置目标信誉",
+			"fedSlashNeedHash": "需要 64 位 hex pubKeyHash",
+			"fedSlashOk": "reputation_slash 已写入 DAG",
+			"fedResetOk": "reputation_reset 已写入",
+			"fedDmLinkTitle": "手动签发加好友链接",
+			"fedDmLinkTip": "需要使用本机身份密钥签发。私钥只在本页面提交给本机服务，不会发送给其他节点。",
+			"fedDmLinkDescription": "适用于调试或手动迁移身份；日常加好友无需填写这些字段。",
+			"fedDmPubKeyLabel": "公钥 hex（64）",
+			"fedDmSecretLabel": "私钥种子 hex（64）",
+			"fedDmNodeLabel": "可选节点 URL",
+			"fedDmInvalidateTitle": "让旧介绍链接失效",
+			"fedDmInvalidateDescription": "执行后，此前签发的所有加好友链接都会立即失效，无法撤销。",
+			"fedDmRotateLabel": "使旧链接失效",
+			"fedDmRotateConfirm": "此前签发的所有加好友链接都会立即失效，且无法恢复。确定继续吗？",
+			"fedDmIssueLabel": "签发 DM 链接",
+			"fedDmNeedPubKey": "需要 64 hex 公钥",
+			"fedDmNeedSecretKey": "需要 64 hex 私钥种子",
+			"fedDmIssued": "DM 链接已签发并复制到剪贴板",
+			"fedNonceRotated": "nonce 已旋转（${nonce}…）",
+			"fedSaved": "已保存",
+			"addServerTooltip": {
+				"title": "新建或加入群组",
+				"tip": "新建或加入群组"
+			},
+			"pinsTitle": "置顶",
+			"bookmarksTitle": "书签",
+			"pinsButton": {
+				"title": "置顶消息"
+			},
+			"bookmarksButton": {
+				"title": "书签"
+			},
+			"search": {
+				"placeholder": "搜索消息…",
+				"noResults": "无结果",
+				"failed": "搜索失败",
+				"scopeGroup": "本群",
+				"scopeAll": "全部群"
+			},
+			"membersTitle": {
+				"title": "成员"
+			},
+			"backToNav": {
+				"title": "返回列表",
+				"aria-label": "返回列表"
+			},
+			"moreActions": {
+				"title": "更多",
+				"aria-label": "更多操作"
+			},
+			"composerMore": {
+				"title": "更多附件",
+				"aria-label": "更多附件"
+			},
+			"settingsTitle": {
+				"title": "设置"
+			},
+			"filesTitle": {
+				"title": "群文件"
+			},
+			"filesDrawerTitle": "群文件",
+			"filesLoading": "加载群文件中…",
+			"filesLoadFailed": "加载群文件失败：${error}",
+			"filesNoGroup": "请先选择群组",
+			"filesNoCabinets": "当前角色没有可访问的文件柜",
+			"filesBindCabinet": "添加文件柜",
+			"filesNoChannel": "请先进入可发消息的文本频道",
+			"filesUploadTo": "上传到",
+			"filesRootFolder": "根目录",
+			"filesNewFolder": "新建文件夹",
+			"filesNewFolderPrompt": "文件夹名称",
+			"filesRename": "重命名",
+			"filesRenameFolderPrompt": "重命名文件夹「${name}」为：",
+			"filesDeleteFolderConfirm": "确定删除此文件夹？文件夹内文件不会自动删除。",
+			"filesUpload": "上传",
+			"filesDownload": "下载",
+			"filesDelete": "删除",
+			"filesDeleteConfirm": "确定删除此文件？",
+			"filesFoldersTitle": "文件夹",
+			"filesListTitle": "文件",
+			"filesEmpty": "此目录暂无文件",
+			"filesNoFolders": "暂无子文件夹",
+			"uploadTitle": {
+				"title": "上传文件"
+			},
+			"emojiTitle": {
+				"title": "表情"
+			},
+			"voteTitle": {
+				"title": "发起投票"
+			},
+			"shareGroupTitle": {
+				"title": "分享群组链接"
+			},
+			"shareGroupOk": "已分享群组邀请卡片",
+			"messageActionFailed": "操作失败：${error}",
+			"inviteJoinButton": "加入群组",
+			"inviteLinkNeedsRoomSecret": "本群尚未启用联邦同步，请重新生成邀请链接后再分享。",
+			"inviteCardMembers": "${count} 名成员",
+			"syncFailed": "联邦同步失败：${error}",
+			"syncRateLimited": "联邦同步限速中，请稍后再试",
+			"syncIncomplete": "尚有 ${missing}/${total} 个事件未同步",
+			"syncNoPeers": "未连接到联邦邻居，历史消息暂无法同步；请使用完整邀请链接并稍后重试",
+			"attachmentLoadFailed": "附件加载失败",
+			"messageEditUpload": "上传附件",
+			"timeToday": "今天 ${time}",
+			"timeYesterday": "昨天 ${time}",
+			"stickerTitle": {
+				"title": "贴纸"
+			},
+			"sendTitle": {
+				"title": "发送 (Ctrl+Enter)"
+			},
+			"stopGenerateTitle": {
+				"title": "停止生成"
+			},
+			"charTyping": "正在输入…",
+			"messageActionPrev": {
+				"title": "上一条时间线"
+			},
+			"messageActionNext": {
+				"title": "下一条时间线"
+			},
+			"messageActionRegen": {
+				"title": "重新生成"
+			},
+			"messageActionEdit": {
+				"title": "编辑消息"
+			},
+			"messageActionFeedbackUp": {
+				"title": "点赞"
+			},
+			"messageActionFeedbackDown": {
+				"title": "点踩"
+			},
+			"messageActionDelete": {
+				"title": "删除消息"
+			},
+			"confirmDeleteLong": "此消息较长，确认删除？",
+			"messageActionCopyHtml": {
+				"title": "复制 HTML"
+			},
+			"forceReply": "强制回复",
+			"removeChar": "移除角色",
+			"loadMore": "加载更早消息…",
+			"charChatsTitle": "与 ${name} 的历史对话",
+			"newGroupWith": "＋ 与 ${name} 新建对话",
+			"messageActionBookmark": {
+				"title": "加入书签"
+			},
+			"messageActionPin": {
+				"title": "置顶"
+			},
+			"messageActionUnpin": {
+				"title": "取消置顶"
+			},
+			"blockAuthor": {
+				"title": "拉黑此作者"
+			},
+			"pinUnpinSidebar": {
+				"title": "取消置顶"
+			},
+			"meAuthor": "我",
+			"messageEditSave": "保存",
+			"messageEditCancel": "取消",
+			"feedbackReasonPrompt": "点踩原因（可选）",
+			"feedbackReasonInput": {
+				"placeholder": "点踩原因（可选）"
+			},
+			"messageFeedbackSubmit": "提交反馈",
+			"stickersPanelTitle": "贴纸",
+			"stickersManage": "管理贴纸 →",
+			"stickersLoading": "加载中…",
+			"recentEmojiTab": {
+				"title": "常用"
+			},
+			"recentEmojisEmpty": "发送过的表情会按使用次数显示在这里",
+			"currentGroupEmojiTab": {
+				"title": "当前群表情"
+			},
+			"groupEmojiTab": {
+				"title": "群"
+			},
+			"groupEmojisEmpty": "暂无群表情，可在群设置中上传",
+			"groupEmojisLoadFailed": "加载群表情失败",
+			"profileLinkTitle": {
+				"title": "个人资料",
+				"textContent": "个人资料"
+			},
+			"userLoading": "加载中…",
+			"status": {
+				"online": "在线",
+				"idle": "休息中",
+				"dnd": "请勿打扰",
+				"invisible": "隐身",
+				"offline": "离线"
+			},
+			"changeStatusTitle": "切换状态",
+			"aboutSection": "关于",
+			"bioEmpty": "这位用户还没有简介。",
+			"statusOffline": {
+				"title": "离线",
+				"textContent": "离线"
+			},
+			"statusOnline": {
+				"title": "在线",
+				"textContent": "在线"
+			},
+			"statusIdle": {
+				"title": "离开",
+				"textContent": "离开"
+			},
+			"statusDnd": {
+				"title": "勿扰",
+				"textContent": "勿扰"
+			},
+			"banners": {
+				"gshBuffer": "有 ${total} 条消息等待密钥轮换后解密",
+				"plaintextSidecar": "此频道为按需同步；本地 messages sidecar 以明文缓存展示内容。",
+				"quarantine": "有 ${count} 条联邦事件因时钟偏差暂存于隔离区，待系统时间恢复后自动重放。",
+				"mailboxPending": "离线 mailbox 中有 ${count} 条待投递消息。",
+				"syncing": "正在与联邦邻居同步…",
+				"archiveCoverageIncomplete": "部分月份冷归档尚未从联邦同步完成。",
+				"archiveSyncButton": "同步归档",
+				"forkGovernance": "权限记录存在分叉，当前为本地视图。",
+				"forkTips": "检测到 ${count} 个未合并分支，消息顺序可能不一致。",
+				"forkTipLabel": "DAG 叶",
+				"forkTipScore": "${short} · 信誉 ${score}",
+				"applyBranch": "应用治理分支",
+				"autoBranch": "信誉自动选支",
+				"mergeDag": "合并分叉",
+				"splitFork": "分裂为新群",
+				"blockOpposing": "对立分支不可接触",
+				"suspectedRemoved": "你大概已被移出本群：已向 ${count} 个认识的节点求证，均被拒之门外。可留念本地历史，或删除本群副本。",
+				"suspectedRemovedKeep": "留念",
+				"suspectedRemovedLeave": "删除群"
+			},
+			"blockOpposingConfirm": "将非当前选支上的治理签发者加入拉黑表，并拒绝本群联邦中继。继续？",
+			"blockOpposingOk": "已标记 ${count} 个主体为不可接触",
+			"blockOpposingFailed": "标记失败：${error}",
+			"applyBranchOk": "已应用治理分支",
+			"applyBranchFailed": "应用分支失败：${error}",
+			"autoBranchOk": "已恢复信誉自动选支",
+			"autoBranchFailed": "自动选支失败：${error}",
+			"saveEmoji": {
+				"title": "存表情"
+			},
+			"saveEmojiOk": "表情已保存到资料库",
+			"saveEmojiFailed": "保存表情失败：${error}",
+			"saveSticker": {
+				"title": "存贴纸"
+			},
+			"saveStickerOk": "贴纸已加入你的贴纸库",
+			"saveStickerFailed": "保存贴纸失败：${error}",
+			"revealRemoteMd": "展开全文",
+			"voteModalTitle": "发起投票",
+			"voteModalSubmit": "创建投票",
+			"voteCreateFailed": "创建投票失败：${error}",
+			"composer": {
+				"placeholder": "发送到 #${channel}"
+			},
+			"composerSuspectedRemoved": {
+				"placeholder": "你大概已被移出本群，无法继续发送"
+			},
+			"channelReadonlyList": {
+				"placeholder": "列表频道只读"
+			},
+			"channelReadonlyStream": {
+				"placeholder": "流媒体频道只读"
+			},
+			"noChannels": "暂无对话",
+			"noMembers": "暂无成员",
+			"noPins": "暂无置顶",
+			"noBookmarks": "暂无书签",
+			"adminSection": "管理员",
+			"memberSection": "成员",
+			"membersDigestOk": "成员 Merkle 一致 · ${root}",
+			"membersDigestOkPaged": "成员 Merkle 一致（${pages} 页）· ${root}",
+			"membersDigestMismatch": "成员摘要不一致 · ${root}",
+			"membersDigestPending": "校验成员摘要…",
+			"membersDigestFetchFailed": "成员分页拉取失败",
+			"copyEntityId": "复制实体 ID",
+			"copyEntityIdOk": "已复制实体 ID",
+			"memberJoined": "加入了对话",
+			"remoteBadge": {
+				"textContent": "远端",
+				"title": "联邦远端作者"
+			},
+			"trustAuthor": {
+				"textContent": "信任",
+				"title": "信任此作者（允许危险 HTML）"
+			},
+			"stickerInline": "贴纸",
+			"voteDeadline": "截止：${date}",
+			"voteNoOptions": "无选项",
+			"voteTotal": "共 ${total} 票",
+			"voteCount": "${count} 票 · ${pct}%",
+			"loadGroupFailed": "加载群组失败：${error}",
+			"groupJoinRequired": "无法打开该群组，请使用邀请链接或邀请码加入",
+			"sendFailed": "发送失败：${error}",
+			"sendFailedPending": "发送失败",
+			"markdownRenderFailed": "消息渲染失败",
+			"retrySend": "重试",
+			"sendImageFailed": "发送图片失败：${error}",
+			"sendStickerFailed": "发送贴纸失败：${error}",
+			"voteMinOptions": "至少需要 2 个选项",
+			"mergeDagOk": "分叉已合并",
+			"mergeDagFailed": "合并失败：${error}",
+			"forkSplitFailed": "分裂失败：${error}",
+			"forkSplitPrompt": "新群名称（可留空）",
+			"forkSplitModalTitle": "分裂为新群",
+			"forkSplitModalSubmit": "创建",
+			"typing": "${names} 正在输入…",
+			"charsHeader": "角色",
+			"friendsHeader": "好友",
+			"settingsModalTitle": "设置",
+			"modalClose": "关闭",
+			"groupTag": "群组",
+			"groupUnnamed": "未命名群 ·${suffix}",
+			"groupHeaderMenu": {
+				"title": "群菜单：设置、邀请等"
+			},
+			"groupDescriptionEmpty": "这个群组还没有简介。",
+			"serverActionPickerTitle": "群组",
+			"serverActionPickerSubtitle": "创建新群组，或通过 ID 加入已有群组",
+			"serverActionPickerCreate": "创建群组",
+			"serverActionPickerCreateDescription": "从零开始，邀请好友",
+			"serverActionPickerJoin": "加入群组",
+			"serverActionPickerJoinDescription": "使用群组 ID",
+			"cancel": "取消",
+			"folderDefault": "文件夹",
+			"folderRename": "重命名文件夹",
+			"folderRenamePrompt": "重命名文件夹「${name}」为：",
+			"folderCollapse": "折叠文件夹",
+			"folderExpand": "展开文件夹",
+			"folderDissolve": "解散文件夹",
+			"bookmarkLocal": "本地",
+			"groupsSection": "群组",
+			"ungrouped": "未分组",
+			"defaultCategory": "对话",
+			"bookmarkFallback": "书签",
+			"bookmarkRemove": {
+				"title": "移除书签",
+				"aria-label": "移除书签"
+			},
+			"loadMessagesFailed": "加载消息失败：${error}",
+			"unreadDivider": "新消息",
+			"noUsername": "未获取用户名",
+			"stickersEmpty": "暂无贴纸",
+			"stickersMarketLink": "前往贴纸广场安装",
+			"stickersLoadFailed": "加载失败：${error}",
+			"noChars": "暂无角色，先去安装一些吧",
+			"noFriends": "暂无私聊",
+			"friendsEmptyTitle": "开始一段新对话",
+			"friendsEmptyDescription": "搜索本机角色或其他节点上的用户，也可在群聊中打开成员资料卡发起私信。",
+			"friendsEmptyAction": "搜索角色或用户",
+			"friendsSearchEmpty": "没有匹配的角色或用户",
+			"friendsSearchTooShort": "请输入至少 2 个字符",
+			"friendsSearchDm": "发私信",
+			"friendsSearchChat": "开始对话",
+			"friendsSearchLocalChar": "本地角色",
+			"friendsSearchPin": "设为别名",
+			"charCount": "${count} 个角色",
+			"friendsCount": "${count} 个好友",
+			"charTag": "角色",
+			"friendsTag": "好友",
+			"backToFriends": "返回好友",
+			"dmTopicsTitle": "话题",
+			"friendsContextNewChat": "新建聊天",
+			"friendsRestartConfirm": "将解除与「${name}」的私聊绑定并新建会话，确定吗？",
+			"friendsRestartOk": "已开启新的私聊",
+			"friendsRestartFailed": "新建私聊失败：${error}",
+			"charDescriptionEmpty": "这个角色还没有自我介绍。",
+			"charIntro": "介绍",
+			"participants": "参与者",
+			"charTagSolo": "角色 · 1:1 对话",
+			"startChatWith": "💬 开始与 ${name} 聊天",
+			"loading": "加载中…",
+			"charChatStart": "和 ${name} 开始对话",
+			"charChatEmpty": "暂无消息，开始你的第一条聊天吧！",
+			"loadCharChatFailed": "加载消息失败",
+			"createChatFailed": "创建会话失败：${error}",
+			"charChatComposer": {
+				"placeholder": "给 ${name} 发送消息（Ctrl+Enter 发送）"
+			},
+			"friendChatComposer": {
+				"placeholder": "发送消息（Ctrl+Enter 发送）"
+			},
+			"trustOk": "已信任该作者",
+			"trustAuthorDialog": {
+				"title": "信任此作者",
+				"subtitle": "作者：${author}",
+				"warningTitle": "高风险操作",
+				"warningBody": "信任后，该作者发送的消息将在你的浏览器中按完整 Markdown 渲染（含 HTML/脚本能力）。若对方在其运行的 fount 实例上恶意构造内容，可能在你查看消息时对你的本机造成危害。请仅信任你明确认识且愿意承担风险的联邦节点。",
+				"durationLabel": "信任时长",
+				"duration3h": "3 小时",
+				"duration7d": "7 天",
+				"duration1Month": "1 个月",
+				"durationForever": "永久",
+				"confirmCooldown": "我已阅读风险（${seconds}）",
+				"confirmFirst": "我了解风险，继续",
+				"confirmSecond": "再次点击以最终确认",
+				"cancel": "取消"
+			},
+			"blockConfirm": "将此人加入拉黑列表？本群联邦将拒绝其中继。",
+			"blockOk": "已拉黑",
+			"charChatSettings": "角色聊天设置",
+			"charChatSubtitle": "与 ${name} 的会话",
+			"sessionInfo": "会话信息",
+			"sessionRole": "角色",
+			"sessionId": "会话 ID",
+			"sessionMessages": "消息数",
+			"quickActions": "快捷操作",
+			"advancedSettings": "高级设置（角色 / 世界 / 插件）",
+			"advancedSettingsDescription": "在新标签页打开 Hub 中该群的完整设置",
+			"dangerZone": "危险区域",
+			"unbindFriendDescription": "解除绑定后，该会话将回到左侧群列表，消息记录保留。",
+			"unbindFriend": "解除绑定",
+			"unbindFriendConfirm": "确认解除与 ${name} 的私聊绑定？会话将移回群列表。",
+			"unbindFriendOk": "已解除绑定",
+			"unbindFriendFailed": "解除绑定失败：${error}",
+			"deleteSessionDescription": "删除此会话将永久移除所有消息，此操作不可恢复。",
+			"deleteSession": "删除会话",
+			"deleteSessionConfirm": "确认删除与 ${name} 的会话？此操作不可恢复。",
+			"sessionDeleted": "会话已删除",
+			"sessionDeleteFailed": "删除失败：${error}",
+			"streamTokenFailed": "无法签发观看令牌",
+			"streamAvJoin": "加入语音/视频",
+			"streamAvLeave": "离开",
+			"streamAvMute": "静音",
+			"streamAvUnmute": "取消静音",
+			"streamAvVideo": "关闭摄像头",
+			"streamAvVideoOn": "开启摄像头",
+			"streamAvYou": "你",
+			"streamAvJoinFailed": "无法启动通话：${error}",
+			"streamAvNoCodecs": "此浏览器不支持 WebCodecs（需 Chrome 94+ / Edge 94+ / Firefox 130+）",
+			"streamAvPeers": "在线 ${count} 人",
+			"streamAvPresetThumb": "缩略 64kbps",
+			"streamAvPresetLow": "低质 200kbps",
+			"streamAvPresetMed": "中质 600kbps",
+			"streamAvPresetHigh": "高质 1.5Mbps",
+			"callButton": {
+				"title": "发起或加入通话",
+				"aria-label": "发起或加入通话"
+			},
+			"callInProgress": "通话进行中",
+			"callEnded": "通话已结束",
+			"callJoin": "加入通话",
+			"callHangup": "挂断",
+			"callScreenShare": "共享屏幕",
+			"callScreenStop": "停止共享",
+			"callJumpBack": "返回通话频道",
+			"callJoinFailed": "无法加入通话：${error}",
+			"callScreenFailed": "屏幕共享失败：${error}",
+			"callStartedAt": "开始于 ${time}",
+			"callDuration": "时长 ${duration}",
+			"callParticipants": "${n} 人",
+			"callPeerCount": "${n}",
+			"callNoParticipants": "暂无参与者",
+			"listChannelEmpty": "列表为空。",
+			"listItemUntitled": "未命名",
+			"listEditorTitle": "编辑列表条目（JSON 数组）",
+			"listSaveToDag": "保存到 DAG",
+			"listJsonInvalid": "JSON 无效：${message}",
+			"listSaved": "已保存",
+			"listSaveFailed": "保存失败",
+			"streamDefaultName": "流媒体",
+			"streamRefreshToken": "刷新观看令牌",
+			"streamEmbedHttpsRequired": "流媒体地址须为可嵌入的 https:// 页面，或先配置群设置并刷新以获取观看令牌。",
+			"streamWebRtcHint": "未配置外部 SFU；本频道将使用群内 WebRTC（无需 streamingSfuWss）。",
+			"pinPreviewSticker": "[贴纸]",
+			"pinPreviewVote": "[投票] ${question}",
+			"pinPreviewInvite": "[邀请] ${groupName}",
+			"reactionRemovePrompt": "移除谁的 ${emoji}？\n${candidates}",
+			"ariaDagTip": {
+				"aria-label": "DAG 分叉 tip"
+			},
+			"ariaClose": {
+				"aria-label": "关闭"
+			},
+			"membersDigestPagesTitle": {
+				"title": "${expected}\n${pages} 页"
+			},
+			"discoveryTitle": "群发现",
+			"discoveryEyebrow": "探索社区",
+			"discoveryDescription": "浏览来自联邦网络的公开群组，挑选感兴趣的社区并加入。",
+			"discoverySidebarHint": "在右侧浏览和加入公开群组",
+			"discoveryEmptyTitle": "还没有发现公开群组",
+			"discoveryEmpty": "暂无推荐群；打开联邦同步后会从邻居同步发现列表",
+			"discoveryNoDescription": "群主还没有填写简介。",
+			"discoverySourceCount": "${count} 个联邦来源",
+			"discoveryJoin": "加入群组",
+			"discoveryOpen": "打开群组",
+			"discoveryLoadFailed": "加载发现列表失败：${message}",
+			"operationFailed": "操作失败：${error}",
+			"shareGroupFailed": "分享群链接失败：${error}",
+			"blockAuthorTitle": "拉黑此作者",
+			"configTitle": "对话配置",
+			"configSaved": "已保存",
+			"configSaveFailed": "保存失败：${error}",
+			"configLoadFailed": "加载配置失败：${error}",
+			"noActiveChat": "请先打开一个会话再拖入部件",
+			"groupContext": {
+				"manage": "管理群",
+				"notifyPrefs": "通知设置",
+				"invite": "邀请他人",
+				"inviteCopied": "邀请链接已复制到剪贴板",
+				"addChar": "添加角色",
+				"addCharLabel": "选择角色",
+				"addCharSubmit": "添加",
+				"noChars": "没有可用的角色",
+				"setAlias": "设置群别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）：",
+				"aliasSaved": "群别名已更新",
+				"leave": "退出群",
+				"leaveConfirm": "确定要退出群「${name}」吗？你将无法再查看此群消息。",
+				"leaveOk": "已退出群组",
+				"leaveBatch": "退出所选群（${count}）",
+				"leaveConfirmBatch": "确定要退出所选的 ${count} 个群吗？本机将不再保留这些群的数据。",
+				"leaveBatchPending": "已从列表移除 ${count} 个群，正在后台退出…",
+				"leaveBatchOk": "已退出 ${count} 个群",
+				"leaveBatchPartial": "${failed} / ${total} 个群退出失败，列表已刷新"
+			},
+			"replyInline": {
+				"title": "回复"
+			},
+			"replyClear": {
+				"title": "取消引用"
+			},
+			"replyInThread": {
+				"title": "在子线程中回复"
+			},
+			"syncTruncated": "DAG 增量未拉全，可稍后重试或提高 limit",
+			"syncTruncatedHint": "DAG 历史过长，可稍后重试或提高 limit",
+			"newChannelButton": "新建频道",
+			"newChannelSuccess": "频道已创建",
+			"newChannelFailed": "创建频道失败",
+			"newChannelTitle": "新建频道",
+			"channelName": "频道名称",
+			"channelType": "频道类型",
+			"channelTypeText": "聊天频道",
+			"channelTypeList": "列表/论坛频道",
+			"channelTypeStreaming": "流媒体频道",
+			"channelNameInput": {
+				"placeholder": "general"
+			},
+			"localMaterializedView": "当前为本地物化视图，权限与历史可能与其他节点不一致。",
+			"convergentEncryptWarn": "群文件使用收敛加密：若攻击者已知某文件明文，可推导密钥并解密对应密文块。请勿将高度敏感且唯一的私密文档仅依赖群加密保护。",
+			"votePromptQuestion": "投票标题",
+			"votePromptOptions": "选项（用逗号分隔，至少两项）",
+			"voteOptionDefault": "赞成,反对",
+			"votePromptDeadlineHours": "截止（小时，留空=无截止）",
+			"messagePrefixVote": "投票",
+			"threadCreated": "子线程已创建",
+			"threadCreateFailed": "创建子线程失败，请稍后重试",
+			"threadDrawer": {
+				"aria-label": "子线程"
+			},
+			"threadClose": {
+				"title": "关闭子线程"
+			},
+			"reputationSlashAlert": "成员 ${target}… 的声誉受到扣减提醒",
+			"profileEdit": {
+				"previewHint": "修改会立即显示在预览中，保存后同步用于 Chat 与 Social。",
+				"livePreview": "实时预览",
+				"languageVersion": "语言版本",
+				"localeHint": "点击标签切换或编辑代码；在末尾输入框回车可复制为新语言。",
+				"themeColorHint": "无自定义横幅时用于生成纹理，也用于直播声波环",
+				"bannerLabel": "横幅背景",
+				"bannerHint": "可填写图片 URL 或上传文件；也可随时恢复生成纹理",
+				"bannerClear": "恢复生成横幅",
+				"linksPreview": "${count} 个公开链接",
+				"unsavedHint": "关闭窗口将放弃未保存的更改",
+				"tagsLabel": "标签",
+				"tagAdd": "添加",
+				"tagRemove": "删除标签",
+				"linksLabel": "链接",
+				"linkAdd": "添加链接",
+				"linkRemove": "删除链接",
+				"handleLabel": "自定义 ID",
+				"handleHint": "可被网络内他节点搜索；不保证唯一，冲突时按信任度列表消歧。",
+				"resetFromPart": "从角色部件重置",
+				"resetFromPartConfirm": "将用角色 part 的 info 覆盖当前资料，确定？",
+				"resetFromPartDone": "已从角色部件重建资料",
+				"resetFromPartFailed": "重建失败：${error}",
+				"newLocale": {
+					"placeholder": "新语言代码，如 en-UK"
+				},
+				"avatarUrl": {
+					"placeholder": "头像图片 URL，或在下方上传文件"
+				},
+				"bannerUrl": {
+					"placeholder": "横幅图片 URL，或在下方上传文件"
+				},
+				"tag": {
+					"placeholder": "输入标签后添加"
+				},
+				"linkName": {
+					"placeholder": "显示文字"
+				},
+				"linkUrl": {
+					"placeholder": "https://… 或 fount://…"
+				},
+				"handle": {
+					"placeholder": "例如 steve（2–32 位小写字母数字._-）"
+				}
+			},
+			"profilePopup": {
+				"close": {
+					"title": "关闭资料卡"
+				},
+				"editSaved": "资料已保存",
+				"editQueued": "已发布，等待对方节点拉取",
+				"dmChar": "与角色私聊",
+				"dmUser": "发送私信",
+				"dmFed": "联邦私信",
+				"noFedIdentity": "请先在联邦设置中配置本机 activePubKeyHex",
+				"peerNoIdentity": "对方无联邦身份，无法发起联邦私信",
+				"dmFailed": "无法打开私信：${error}",
+				"care": "特别关心",
+				"careRemove": "取消特别关心",
+				"setAlias": "设置别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）："
+			},
+			"channelContext": {
+				"copyLinkDone": "频道链接已复制",
+				"notifyPrefs": "频道通知设置",
+				"rename": "重命名频道",
+				"renameOk": "频道已重命名",
+				"delete": "删除频道",
+				"deleteOk": "频道已删除",
+				"deleteConfirm": "确定删除频道「${name}」吗？此操作不可撤销。",
+				"setDefault": "设为默认频道",
+				"setDefaultOk": "已设为默认频道",
+				"copyLink": "复制频道链接",
+				"exportJson": "导出 JSON",
+				"exportOk": "频道归档已下载",
+				"exportFailed": "导出失败：${error}"
+			},
+			"memberContext": {
+				"copyName": "复制显示名",
+				"mention": "提及",
+				"care": "特别关心",
+				"careAdded": "已加入特别关心",
+				"careRemoved": "已取消特别关心",
+				"setAlias": "设置别名",
+				"setAliasPrompt": "为「${name}」设置本地别名（留空清除）：",
+				"aliasSaved": "别名已更新",
+				"copyPubKey": "复制公钥哈希",
+				"copyEntityId": "复制实体 ID",
+				"dm": "发送私信",
+				"kick": "踢出成员",
+				"kickSelfNodeWarning": "警告：该成员与你使用同一节点身份，踢出后你也将被移出群组。确定继续吗？",
+				"ban": "封禁…",
+				"personalBlock": "个人拉黑",
+				"personalBlockConfirm": "将 ${name} 加入你的拉黑列表？关注你的人会收到该信号并可能降低对其的信任值。",
+				"personalBlockSuccess": "已加入拉黑列表",
+				"banTitle": "选择封禁范围",
+				"banEntity": "封禁实体（128 位 entityHash）",
+				"banNode": "封禁节点（homeNodeHash）"
+			},
+			"messageContext": {
+				"edit": "编辑消息",
+				"delete": "删除消息"
+			},
+			"charStreaming": "生成中…",
+			"gshDecryptPending": "等待频道密钥（generation ${gen}）",
+			"gshDecryptFailed": "无频道密钥，无法解密此消息",
+			"fileDecryptFailed": "无文件密钥，无法访问此文件",
+			"reactionFailed": "回应操作失败",
+			"fileUploadChecking": "正在检查是否已有相同内容…",
+			"fileUploadingChunk": "正在上传加密块…",
+			"fileUploadRegistering": "正在登记文件…",
+			"fileUploaded": "文件上传成功",
+			"fileUploadFailed": "文件上传失败",
+			"fileSkippedDedup": "已跳过重复块传输",
+			"fileDownloadFailed": "文件下载失败",
+			"fileNoKey": "无法解密（缺少密钥）",
+			"fileLoadFailed": "文件加载失败",
+			"createModal": {
+				"title": "创建群组",
+				"subtitle": "群组是你和朋友一起聊天的私密空间",
+				"basicSection": "基本信息",
+				"nameLabel": "群组名称",
+				"name": {
+					"placeholder": "为你的群组起个名字"
+				},
+				"descriptionLabel": "群组描述",
+				"description": {
+					"placeholder": "（选填）介绍一下这个群组"
+				},
+				"joinSection": "谁可以加入",
+				"joinInviteOnly": "仅邀请",
+				"joinInviteOnlyDescription": "需要邀请码才能加入",
+				"joinPow": "工作量证明",
+				"joinPowDescription": "加入前需完成 PoW 挑战",
+				"cancel": "返回",
+				"submit": "创建群组",
+				"failed": "创建群组失败：${error}"
+			},
+			"joinModal": {
+				"title": "加入群组",
+				"subtitle": "输入群组 ID 即可加入对应的聊天",
+				"groupIdLabel": "群组 ID",
+				"groupId": {
+					"placeholder": "group_1776941580949_xxxx"
+				},
+				"inviteLabel": "邀请码（可选）",
+				"invite": {
+					"placeholder": "由群主生成的短时邀请码"
+				},
+				"hint": "群组 ID 由群主分享。邀请制群需填写有效邀请码（设置页可生成）。",
+				"cancel": "返回",
+				"submit": "加入群组"
+			},
+			"menuCopy": "复制",
+			"menuMD": "Markdown",
+			"menuTXT": "纯文本",
+			"menuHTML": "HTML",
+			"menuDownload": "下载 HTML",
+			"menuDelete": "删除",
+			"menuShareGroup": "分享链接",
+			"menuPrev": "上一条",
+			"menuNext": "下一条",
+			"menuShare": {
+				"1h": "分享 1 小时链接",
+				"12h": "分享 12 小时链接",
+				"24h": "分享 24 小时链接",
+				"72h": "分享 72 小时链接"
+			},
+			"noGroups": "暂无群组",
+			"myGroups": "我的群组",
+			"joinGroup": "加入群组",
+			"createGroup": "新建群组",
+			"noDescription": "暂无描述",
+			"memberCountLabel": "${count} 成员",
+			"loadListFailed": "加载群组列表失败: ${error}",
+			"contentWarning": "内容警告",
+			"sensitiveMedia": "敏感媒体",
+			"revealContent": "显示内容",
+			"revealMedia": "显示媒体",
+			"copyShareLink": "复制分享链接",
+			"forward": "转发",
+			"forwardedFrom": "转发自",
+			"forwardDialog": {
+				"title": "转发消息",
+				"selectGroup": "选择目标群组",
+				"selectChannel": "选择目标频道",
+				"confirm": "转发",
+				"cancel": "取消",
+				"success": "已转发",
+				"failed": "转发失败"
+			},
+			"deliverySending": "正在发送",
+			"deliverySent": "已发送",
+			"deliveryRead": "已读",
+			"translate": "翻译",
+			"translating": "翻译中…",
+			"translateShowOriginal": "显示原文",
+			"translateShowTranslation": "显示译文",
+			"translateLabel": "译文",
+			"translateFailed": "翻译失败",
+			"editImage": "编辑图片",
+			"draftRestored": "已恢复草稿",
+			"queuedOffline": "等待发送（离线）",
+			"translationPrefs": {
+				"title": "翻译设置",
+				"textContent": "翻译设置",
+				"autoTranslate": "自动翻译外语消息",
+				"hint": "开启后，语言与界面不同的消息会自动请求译文。",
+				"save": "保存",
+				"saved": "翻译设置已保存",
+				"saveFailed": "保存失败：${error}"
+			},
+			"friendsSearch": {
+				"placeholder": "搜本机角色 / 自定义 ID / 名称…"
+			},
+			"threadComposer": {
+				"placeholder": "在子线程中回复…"
+			},
+			"altImage": {
+				"placeholder": "为图片添加描述…",
+				"label": "图片说明（alt）"
+			}
+		},
 		"sidebar": {
+			"settings": {
+				"title": "群组设置"
+			},
 			"noSelection": "无",
 			"noDescription": "无描述信息",
 			"world": {
@@ -960,6 +3177,16 @@
 						"alt": "添加插件图标"
 					}
 				}
+			},
+			"dataMgmt": {
+				"title": "数据管理",
+				"compact": "生成检查点",
+				"prune": "裁剪历史",
+				"compactSuccess": "检查点生成成功",
+				"compactError": "检查点生成失败",
+				"pruneSuccess": "历史消息裁剪完成",
+				"pruneError": "裁剪失败",
+				"invalidN": "保留条数无效（最少10条）"
 			}
 		},
 		"rightSidebar": {
@@ -1131,7 +3358,11 @@
 			}
 		},
 		"messageGenerating": {
-			"stop": "停止",
+			"tips": "角色正在生成回复，请稍候…",
+			"stop": {
+				"textContent": "停止",
+				"title": "停止生成"
+			},
 			"stopIcon": {
 				"alt": "停止图标"
 			}
@@ -1216,53 +3447,9 @@
 			}
 		},
 		"home_function_buttons": {
-			"viewHistory": {
-				"title": "浏览历史记录"
+			"chatHub": {
+				"title": "聊天"
 			}
-		}
-	},
-	"chat_history": {
-		"title": "聊天记录",
-		"pageTitle": "聊天记录",
-		"description": "穿越过去的对话之旅。在这里，对话的记忆挥之不去——排序、过滤并重新审视你与人工智能伙伴编织的故事。一个安静的数字回声图书馆。",
-		"filterInput": {
-			"placeholder": "搜索..."
-		},
-		"sortOptions": {
-			"time_desc": "时间降序",
-			"time_asc": "时间升序"
-		},
-		"sortBy": {
-			"aria-label": "排序方式"
-		},
-		"selectAll": "全选",
-		"buttons": {
-			"reverseSelect": "反选",
-			"deleteSelected": "删除选中",
-			"exportSelected": "导出选中",
-			"import": "导入"
-		},
-		"chatItemButtons": {
-			"continue": "继续",
-			"copy": "复制",
-			"export": "导出",
-			"delete": "删除"
-		},
-		"confirmDeleteChat": "确定要删除与 ${chars} 的聊天记录吗？",
-		"confirmDeleteMultiChats": "确定要删除选中的 ${count} 条聊天记录吗？",
-		"alerts": {
-			"noChatSelectedForDeletion": "请选择要删除的聊天记录",
-			"noChatSelectedForExport": "请选择要导出的聊天记录",
-			"copyError": "复制失败",
-			"deleteError": "删除失败",
-			"exportError": "导出失败",
-			"dragExportError": "拖拽导出时出错",
-			"importSuccess": "导入成功",
-			"importError": "导入失败",
-			"invalidImportFile": "无效的导入文件"
-		},
-		"select_checkbox": {
-			"aria-label": "选择与 ${chars} 的聊天"
 		}
 	},
 	"easynew": {
@@ -1595,10 +3782,10 @@
 			"creationDateLabel": "账户创建日期:",
 			"folderSizeLabel": "用户数据大小:",
 			"folderPathLabel": "用户数据路径:",
-			"copyPathBtn": {
+			"copyPathButton": {
 				"title": "复制路径"
 			},
-			"copyPathBtnIcon": {
+			"copyPathButtonIcon": {
 				"alt": "复制图标"
 			},
 			"copiedAlert": "路径已复制到剪贴板！",
@@ -1804,7 +3991,6 @@
 			"title": "代码执行",
 			"description": "在选定的Subfount上执行JavaScript代码",
 			"selectSubfountLabel": "选择Subfount",
-			"selectSubfountPlaceholder": "请选择要执行代码的Subfount...",
 			"hostOption": "主机 (ID: ${id})",
 			"subfountOption": "分机 ${id}${deviceId}",
 			"scriptLabel": "JavaScript代码",
@@ -1813,7 +3999,8 @@
 			"noSubfountSelected": "请先选择一个Subfount",
 			"noScriptProvided": "请输入要执行的代码",
 			"executionSuccess": "代码执行成功",
-			"executionFailed": "代码执行失败: ${message}"
+			"executionFailed": "代码执行失败: ${message}",
+			"selectSubfount": "请选择要执行代码的Subfount..."
 		},
 		"downloadClient": {
 			"title": "下载子fount客户端",
@@ -2080,9 +4267,6 @@
 			"copyModelIdTooltip": "点击以复制模型 ID",
 			"loadModelsFailed": "加载模型失败：${message}",
 			"modelSearchTitle": "浏览模型目录",
-			"modelSearchPlaceholder": {
-				"placeholder": "搜索模型名、厂商、能力…"
-			},
 			"modelSearchHint": "点击候选项将自动填入 URL 与模型名",
 			"modelsDevLoading": "正在加载目录…",
 			"modelsDevLoadFailed": "加载目录失败：${message}",
@@ -2101,7 +4285,10 @@
 			"metaOpenWeights": "开放权重",
 			"metaKnowledge": "知识截止：${knowledge}",
 			"metaReleaseDate": "发布日期：${date}",
-			"providerDocLink": "[查看厂商文档](${url})"
+			"providerDocLink": "[查看厂商文档](${url})",
+			"modelSearch": {
+				"placeholder": "搜索模型名、厂商、能力…"
+			}
 		},
 		"prompts": {
 			"newFileName": "请输入新的服务源文件名 (请勿包含后缀名):"
@@ -2178,7 +4365,6 @@
 				"botToken": "Telegram Bot Token",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"botTokenInput": {
 				"placeholder": "请输入 Telegram Bot Token"
 			},
@@ -2192,6 +4378,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -2255,7 +4444,6 @@
 				"botToken": "iLink Bot Token",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"apiBaseUrlInput": {
 				"placeholder": "留空则使用默认 https://ilinkai.weixin.qq.com"
 			},
@@ -2272,6 +4460,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -2343,7 +4534,6 @@
 				"apiKey": "Discord API 密钥",
 				"config": "配置"
 			},
-			"charSelectPlaceholder": "选择角色",
 			"apiKeyInput": {
 				"placeholder": "请输入 API 密钥"
 			},
@@ -2357,6 +4547,9 @@
 				"saveConfig": "保存配置",
 				"startBot": "启动",
 				"stopBot": "停止"
+			},
+			"charSelect": {
+				"placeholder": "选择角色"
 			}
 		},
 		"prompts": {
@@ -2643,10 +4836,8 @@
 		"acpTitle": "配置 fount ACP 脚本",
 		"acpDesc": "参考以下示例配置 fount ACP 脚本：",
 		"acpCharLabel": "角色",
-		"acpCharPlaceholder": "选择角色",
 		"charListError": "获取角色列表失败",
 		"acpScriptLabel": "ACP 脚本 URL",
-		"acpConfigPlaceholder": "请先选择角色并生成 API 密钥",
 		"acpConfigSample": "配置示例：",
 		"acpConfigHint": "角色 ID 可在页面上方的角色下拉菜单中查看，API 密钥可在用户设置中管理。",
 		"copyButton": "复制",
@@ -2671,7 +4862,9 @@
 				"description": "在支持 ACP 的编辑器（如 Zed、JetBrains、Neovim 等）中首次使用 fount 角色辅助编程。",
 				"locked_description": "在外部 IDE 中连接 fount 角色并完成一次对话。"
 			}
-		}
+		},
+		"acpChar": "选择角色",
+		"acpConfig": "请先选择角色并生成 API 密钥"
 	},
 	"achievements": {
 		"title": "成就",
@@ -2791,12 +4984,6 @@
 		},
 		"copy_error": "无法复制文本: ${error}",
 		"copy_fail_alert": "复制失败！"
-	},
-	"404": {
-		"title": "页面未找到",
-		"description": "您所寻找的道路已消散在迷雾之中。这是一个失误，一个被遗忘的转弯吗？让我们带您回到岸边，或者在安静的虚空中停下来玩一场游戏。",
-		"pageNotFoundText": "糟糕！您似乎来到了一个不存在的页面。",
-		"homepageButton": "返回首页"
 	},
 	"tips": {
 		"title": "你知道吗？",
@@ -2937,5 +5124,96 @@
 		"search": {
 			"placeholder": "搜索..."
 		}
+	},
+	"common": {
+		"cancel": "取消",
+		"create": "创建",
+		"save": "保存",
+		"delete": "删除",
+		"confirm": "确认",
+		"close": "关闭",
+		"translate": {
+			"showOriginal": "显示原文",
+			"showTranslation": "显示译文"
+		}
+	},
+	"cabinet": {
+		"title": "文件柜",
+		"description": "P2P 个人与共享文件柜",
+		"openCabinets": {
+			"title": "打开文件柜列表",
+			"aria-label": "打开文件柜列表"
+		},
+		"closeCabinets": {
+			"title": "关闭",
+			"aria-label": "关闭"
+		},
+		"bootstrapFailed": "文件柜初始化失败：${error}",
+		"home_function_buttons": {
+			"main": {
+				"title": "文件柜"
+			}
+		},
+		"upload": "上传",
+		"uploadFolder": "上传文件夹",
+		"newFolder": "新建文件夹",
+		"open": "打开",
+		"download": "下载",
+		"downloadZip": "下载文件夹",
+		"rename": "重命名",
+		"copy": "复制",
+		"cut": "剪切",
+		"paste": "粘贴",
+		"pasteLink": "粘贴为链接",
+		"selectAll": "全选",
+		"invert": "反选",
+		"properties": "属性",
+		"delete": "删除",
+		"back": {
+			"title": "返回之前的位置",
+			"aria-label": "返回之前的位置"
+		},
+		"cancel": "取消",
+		"save": "保存",
+		"showHidden": "显示隐藏",
+		"name": "名称",
+		"descriptionField": "描述",
+		"attrHidden": "隐藏",
+		"attrSystem": "系统（删除需确认）",
+		"previewUrl": "预览图 URL",
+		"deletePreviewWithFile": "删除文件时删除预览图",
+		"folderPassword": "文件夹密码（留空不变，填写则启用加密）",
+		"unlockFolder": "解锁加密文件夹",
+		"unlock": "解锁",
+		"unlockFailed": "解锁失败：${error}",
+		"created": "创建：${stamp}",
+		"modified": "修改：${stamp}",
+		"statusCount": "${count} 项，已选 ${selected}",
+		"newCabinetPrompt": "新文件柜名称",
+		"newFolderPrompt": "新文件夹名称",
+		"renamePrompt": "新名称",
+		"visibilityPrompt": "可见性（public/unlisted/followers/private/selected）",
+		"cabinetActionPrompt": "操作：rename / delete / visibility",
+		"confirmDeleteCabinet": "确认删除此文件柜？",
+		"confirmDelete": "确认删除所选项目？",
+		"confirmDeleteSystem": "所选含系统文件，确认删除？",
+		"copied": "已复制",
+		"cutDone": "已剪切",
+		"undo": "撤销",
+		"redo": "重做",
+		"newWindow": "新窗口打开当前位置",
+		"goUp": "返回上一级",
+		"brokenLink": "链接失效：${reason}",
+		"noDownload": "无可下载内容",
+		"groupDownloadHint": "群文件请通过消息附件或后续下载链获取",
+		"remoteEntity": "远端实体"
+	},
+	"entityProfile": {
+		"attributionMismatch": "显示身份与消息签名者不匹配（例如导入历史经导入者重新签名）。请勿将该显示名视为密码学身份。",
+		"attributionMismatchShort": {
+			"title": "签名归因不匹配",
+			"aria-label": "签名归因不匹配"
+		},
+		"ownedBy": "此实体为 ${owner} 所有"
 	}
 }

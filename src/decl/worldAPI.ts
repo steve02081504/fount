@@ -1,7 +1,65 @@
-import { chatReply_t, chatReplyRequest_t } from '../public/parts/shells/chat/decl/chatLog.ts'
+import { channelMessageContent_t, chatReply_t, chatReplyRequest_t, type chatViewer_t } from '../public/parts/shells/chat/decl/chatLog.ts'
 
 import { locale_t, info_t } from './basedefs.ts'
+import type { GroupPrompt_t, MemberTurn_t, SpeakingOrderContext_t } from './memberProfile.ts'
+import type { PluginAPI_t } from './pluginAPI.ts'
 import { chatLogEntry_t, prompt_struct_t, single_part_prompt_t } from './prompt_struct.ts'
+
+/** world_state 事件 content 形状（DAG 权威共享状态，群级；频道作用域用键约定如 `chan/{channelId}/...`）。 */
+export type worldStateEvent_t = {
+	eventId: string
+	hlc: { wall: number, logical: number }
+	sender: string
+	content: {
+		worldname: string
+		action: 'set' | 'delete'
+		key: string
+		value?: unknown
+	}
+}
+
+/**
+ *
+ */
+export type memberSummary_t = {
+	memberKey: string
+	memberKind?: string
+	charname?: string
+	ownerUsername?: string
+	homeNodeHash?: string
+	roles?: string[]
+}
+
+/**
+ *
+ */
+export type channelSummary_t = {
+	channelId: string
+	name?: string
+	type?: string
+}
+
+/** world 对 chat 存储 / p2p 层的正式调用面。 */
+export type WorldChatHost_t = {
+	groupId: string
+	replicaUsername: string
+	worldname: string
+	state: {
+		get(key: string): Promise<unknown>
+		entries(): Promise<Record<string, unknown>>
+		set(key: string, value: unknown): Promise<void>
+		del(key: string): Promise<void>
+		log(sinceEventId?: string): Promise<worldStateEvent_t[]>
+	}
+	localData: {
+		get(key: string): Promise<unknown>
+		set(key: string, value: unknown): Promise<void>
+	}
+	triggerCharReply(channelId: string, charname: string): Promise<void>
+	postSystemMessage(channelId: string, content: channelMessageContent_t): Promise<void>
+	listMembers(): Promise<memberSummary_t[]>
+	listChannels(): Promise<channelSummary_t[]>
+}
 
 /**
  * 世界API接口
@@ -13,6 +71,10 @@ export class WorldAPI_t {
 	 * 世界 API 的详细信息。
 	 */
 	info: info_t
+	/**
+	 * 分布形态；缺省 'hosted'。由 world part 自行声明。
+	 */
+	distribution?: 'local' | 'replicated' | 'hosted'
 	/**
 	 * 仅在安装时调用，如果失败，将删除此世界文件夹下的所有文件。
 	 * @param {object} stat - 状态对象。
@@ -105,30 +167,57 @@ export class WorldAPI_t {
 			 */
 			GetPrompt?: (arg: chatReplyRequest_t) => Promise<single_part_prompt_t>;
 			/**
+			 * 多人场景：返回公用 prompt + 按 memberId 的专属 prompt（可选；与 GetPrompt 并存时由 shell 合并）。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
+			 * @returns {Promise<GroupPrompt_t | null>} - 无则 null
+			 */
+			GetGroupPrompt?: (arg: chatReplyRequest_t) => Promise<GroupPrompt_t | null>
+			/**
+			 * 可选：由世界决定发言顺序（yield char 则触发该成员回复；yield user 则提示用户回合）。
+			 * @param {SpeakingOrderContext_t & { chatReplyRequest?: chatReplyRequest_t }} ctx - 群/频道与可选完整请求
+			 * @returns {AsyncIterable<MemberTurn_t>} - 异步迭代器
+			 */
+			GetSpeakingOrder?: (ctx: SpeakingOrderContext_t & { chatReplyRequest?: chatReplyRequest_t }) => AsyncIterable<MemberTurn_t>
+			/**
 			 * 调整提示。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @param {prompt_struct_t} prompt_struct - 提示结构。
 			 * @param {single_part_prompt_t} my_prompt - 我的提示。
 			 * @param {number} detail_level - 详细程度。
 			 * @returns {Promise<void>} - 无返回值。
+			 *
+			 * **hosted 边界**：跨 RPC 时就地 mutation 会丢失（JSON 边界无法带回引用侧改写）；
+			 * 不做钩子代理修补——hosted world 的 TweakPrompt 仅在主机进程内对本地 char 生效。
 			 */
 			TweakPrompt?: (arg: chatReplyRequest_t, prompt_struct: prompt_struct_t, my_prompt: single_part_prompt_t, detail_level: number) => Promise<void>
 			/**
-			 * 获取指定角色名称的聊天记录。
+			 * 返回本 world 向当前频道 char 注入的插件活对象（仿 codeContextPlugin；不可 JSON/RPC）。
+			 *
+			 * 生效范围随 distribution：
+			 * - **local / replicated**：各节点在本机加载该 world 时本地生效（未安装则无）。
+			 * - **hosted**：仅主机侧 resolveWorld 拿到真 part 时生效；远端代理不挂此钩子。
+			 *
+			 * shell 与本机插件名单 merge 时，**本机同名优先**。
+			 * @param {chatReplyRequest_t} arg - 聊天回复请求（含 groupId/channelId 等）。
+			 * @returns {Promise<Record<string, PluginAPI_t>> | Record<string, PluginAPI_t>} 插件名 → 活对象
+			 */
+			GetChatPlugins?: (arg: chatReplyRequest_t) => Promise<Record<string, PluginAPI_t>> | Record<string, PluginAPI_t>
+			/**
+			 * 按观察者返回世界视图下的聊天记录（正式主接口）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {string} charname - 角色名称。
+			 * @param {chatViewer_t} viewer - 统一观察者身份。
 			 * @returns {Promise<chatLogEntry_t[]>} - 聊天记录条目数组。
 			 */
-			GetChatLogForCharname?: (arg: chatReplyRequest_t, charname: string) => Promise<chatLogEntry_t[]>
+			GetChatLogForViewer?: (arg: chatReplyRequest_t, viewer: chatViewer_t) => Promise<chatLogEntry_t[]>
 			/**
-			 * 添加聊天记录条目。
+			 * 消息落 DAG 前：可改写 entry 内容，或抛错/返回含 reject 语义拒绝（与 BeforeUserSend 对称的 world 侧）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
-			 * @param {chatLogEntry_t} entry - 聊天记录条目。
-			 * @returns {Promise<void>}
+			 * @param {chatLogEntry_t} entry - 拟落盘的聊天记录条目（可就地/返回改写）。
+			 * @returns {Promise<chatLogEntry_t | void>} - 改写后的条目；void 表示使用入参 entry。
 			 */
-			AddChatLogEntry?: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => Promise<void>
+			AddChatLogEntry?: (arg: chatReplyRequest_t, entry: chatLogEntry_t) => Promise<chatLogEntry_t | void>
 			/**
-			 * 添加聊天记录条目后调用。
+			 * 消息落 DAG 并 persist 之后调用（唯一触发点在 broadcastAndPersist）。
 			 * @param {chatReplyRequest_t} arg - 聊天回复请求。
 			 * @param {object[]} freq_data - 频率数据。
 			 * @returns {Promise<void>}
@@ -145,40 +234,37 @@ export class WorldAPI_t {
 			 */
 			GetCharReply?: (arg: chatReplyRequest_t, charname: string) => Promise<chatReply_t | null>
 			/**
-			 * 编辑消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<chatReply_t>} - 编辑后的聊天回复。
+			 * 频道消息编辑前：可改写 edited 或 reject（DAG 写路径唯一语义）。
 			 */
-			MessageEdit?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<chatReply_t>
+			MessageEdit?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				eventId: string
+				original: object
+				edited: channelMessageContent_t
+				memberId?: string
+			}) => Promise<{
+				edited?: channelMessageContent_t
+				reject?: string
+			} | channelMessageContent_t | undefined>
 			/**
-			 * 正在编辑消息。
-			 * @param {object} arg - 参数对象。
+			 * 频道消息删除前：reject 拒绝删除。
+			 */
+			MessageDelete?: (ctx: {
+				groupId: string
+				channelId: string
+				username: string
+				eventId: string
+				original: object
+				memberId?: string
+			}) => Promise<{ reject?: string } | undefined>
+			/**
+			 * 绑定/加载时调用一次；world 自行持有 host 引用（计时器、任意钩子内可用）。
+			 * @param {WorldChatHost_t} host chat 存储与 p2p 正式调用面
 			 * @returns {Promise<void>}
 			 */
-			MessageEditing?: (arg: {
-				index: number
-				original: chatLogEntry_t
-				edited: chatReply_t
-				chat_log: chatLogEntry_t[]
-				extension?: any
-			}) => Promise<void>
-			/**
-			 * 删除消息。
-			 * @param {object} arg - 参数对象。
-			 * @returns {Promise<void>}
-			 */
-			MessageDelete?: (arg: {
-				index: number
-				chat_log: chatLogEntry_t[]
-				chat_entry: chatLogEntry_t
-				extension?: any
-			}) => Promise<void>
+			ChatHostConnected?: (host: WorldChatHost_t) => Promise<void>
 		}
 	}
 }

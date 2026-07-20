@@ -1,0 +1,15 @@
+<button type="button" class="inbox-row" data-group-id="${escapeHtml(groupId)}" data-channel-id="${escapeHtml(channelId)}" data-event-id="${escapeHtml(eventId)}" data-i18n="chat.hub.inbox.rowLabel" data-author="${author}" data-group="${groupName}" data-channel="${channelName}" data-preview="${preview}">
+	<span class="inbox-row-avatar" aria-hidden="true">${initial}</span>
+	<span class="inbox-row-content">
+		<span class="inbox-row-head">
+			<strong class="inbox-row-author">${author}</strong>
+			<time class="inbox-row-time" datetime="${escapeHtml(dateTime)}" title="${escapeHtml(fullTime)}">${time}</time>
+		</span>
+		<span class="inbox-row-meta">
+			<span>${groupName}</span>
+			<span class="inbox-row-channel">#${channelName}</span>
+		</span>
+		<span class="inbox-row-preview">${preview}</span>
+	</span>
+	<span class="inbox-row-chevron" aria-hidden="true">›</span>
+</button>

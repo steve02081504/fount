@@ -1,0 +1,155 @@
+/**
+ * 【文件】public/hub/charCard.mjs
+ * 【职责】角色（char part）资料卡渲染：拉取角色详情、展示简介与进入私聊/编辑资料入口。
+ * 【原理】`renderCharInfoCard` / `renderCharInfoCardActive` 填充主栏角色信息区模板。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【关联】../../../../scripts/template、core/domUtils、core/state、entityProfile、entityResolve、presence、privateGroup
+ */
+import {
+	mountTemplate,
+	renderTemplateAsHtmlString,
+	usingTemplates,
+} from '../../../../scripts/features/template.mjs'
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
+import { displayProfileAvatar } from '../shared/hashAvatar.mjs'
+
+import { avatarColor, avatarInitial, avatarTextColor } from './core/domUtils.mjs'
+import { store } from './core/state.mjs'
+import {
+	loadEntityProfile,
+	paintBioMarkdown,
+	paintEntityProfileUi,
+	profileDescriptionText,
+	wireProfileEditButton,
+} from './entityProfile.mjs'
+import { charAgentEntityHash } from './entityResolve.mjs'
+import { applyAvatarsTo } from './presence.mjs'
+import { enterPrivateGroup } from './privateGroup.mjs'
+
+/**
+ * 从 API 拉取角色详情。
+ * @param {string} name - 角色 part 名称
+ * @returns {Promise<object|null>} 详情 JSON，失败时为 null
+ */
+export async function getCharDetails(name) {
+	try {
+		const resp = await fetch(`/api/getdetails/chars/${encodeURIComponent(name)}`, { credentials: 'include' })
+		if (!resp.ok) return null
+		return await resp.json()
+	}
+	catch {
+		return null
+	}
+}
+
+/**
+ * 生成成员头像 HTML（图片或首字母）。
+ * @param {string} name - 角色名
+ * @param {string} avatarUrl - 头像 URL，空则显示首字母
+ * @returns {string} 头像区域 HTML
+ */
+async function charAvatarHtml(name, avatarUrl) {
+	return avatarUrl
+		? renderTemplateAsHtmlString('hub/chat/entry_avatar_img', { src: escapeHtml(avatarUrl), alt: escapeHtml(name) })
+		: escapeHtml(avatarInitial(name))
+}
+
+/**
+ * @param {string} name 角色名
+ * @param {object|null} [details] 预取的角色详情
+ * @param {{ active: boolean }} mode 是否已进入私聊
+ * @returns {Promise<void>}
+ */
+async function renderCharInfoCardInner(name, details, { active }) {
+	usingTemplates('/parts/shells:chat/src/templates')
+	const entityHash = await charAgentEntityHash(name)
+	const groupId = store.context.currentGroupId || undefined
+	const profile = entityHash ? await loadEntityProfile(entityHash, { groupId }) : null
+	const info = details?.info || {}
+	const charDisplayName = profile?.name || info.name || name
+	const avatarUrl = displayProfileAvatar(profile)
+	const viewerDisplayName = store.viewer.viewerDisplayName
+	const { viewerEntityHash } = store.viewer
+	const memberList = document.getElementById('member-list')
+	const charName = escapeHtml(charDisplayName)
+	const charAvatarInner = await charAvatarHtml(charDisplayName, avatarUrl)
+	const charAvatarSeed = entityHash || name
+	const sidebarTpl = active ? 'hub/char/member_sidebar_active' : 'hub/char/member_sidebar_preview'
+
+	await mountTemplate(memberList, sidebarTpl, {
+		charName,
+		charAvatarHtml: charAvatarInner,
+		avatarBg: avatarColor(charAvatarSeed),
+		avatarTextColor: avatarTextColor(charAvatarSeed),
+		viewerDisplayName: viewerDisplayName ? escapeHtml(viewerDisplayName) : '',
+		viewerEntityHash: viewerEntityHash ? escapeHtml(viewerEntityHash) : '',
+		myAvatarBg: viewerEntityHash ? avatarColor(viewerEntityHash) : '',
+		myAvatarTextColor: viewerEntityHash ? avatarTextColor(viewerEntityHash) : '',
+		myAvatarInitial: viewerDisplayName ? escapeHtml(avatarInitial(viewerDisplayName)) : '',
+	})
+
+	const descriptionElement = memberList.querySelector('.char-description-md')
+	if (descriptionElement instanceof HTMLElement)
+		await paintBioMarkdown(
+			descriptionElement,
+			profile
+				? profileDescriptionText(profile)
+				: info.description_markdown || info.description || info.summary || details?.description || '',
+			entityHash || '',
+		)
+
+	const infoCardHost = document.getElementById('info-card-host')
+	const infoTpl = active ? 'hub/char/info_card_active' : 'hub/char/info_card_preview'
+	await mountTemplate(infoCardHost, infoTpl, {
+		charName,
+		charNameRaw: escapeHtml(name),
+		entityHash: escapeHtml(entityHash || ''),
+		charAvatarHtml: charAvatarInner,
+		avatarBg: avatarColor(charAvatarSeed),
+		avatarTextColor: avatarTextColor(charAvatarSeed),
+		descriptionPreview: '',
+	})
+
+	const card = infoCardHost?.querySelector('.info-card')
+	if (card instanceof HTMLElement && profile) {
+		await paintEntityProfileUi(card, profile)
+		if (entityHash)
+			wireProfileEditButton(card, entityHash, {
+				profile,
+				/**
+				 * 资料保存后重绘角色信息卡。
+				 * @returns {Promise<void>}
+				 */
+				onSaved: async () => {
+					await renderCharInfoCardInner(name, await getCharDetails(name), { active })
+				},
+			})
+	}
+
+	if (active)
+		applyAvatarsTo(memberList)
+	else
+		infoCardHost?.querySelector('.info-cta')?.addEventListener('click', () => {
+			void enterPrivateGroup(name)
+		})
+}
+
+/**
+ * 渲染已进入私聊的角色信息卡（含参与者列表）。
+ * @param {string} name - 角色名
+ * @param {object|null} [details] - 预取的角色详情，可省略字段
+ * @returns {Promise<void>}
+ */
+export async function renderCharInfoCardActive(name, details) {
+	return renderCharInfoCardInner(name, details, { active: true })
+}
+
+/**
+ * 渲染角色预览信息卡（含「开始聊天」按钮）。
+ * @param {string} name - 角色名
+ * @param {object|null} [details] - 预取的角色详情，可省略字段
+ * @returns {Promise<void>}
+ */
+export async function renderCharInfoCard(name, details) {
+	return renderCharInfoCardInner(name, details, { active: false })
+}

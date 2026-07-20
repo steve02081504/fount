@@ -1,0 +1,10 @@
+${items.map(item => {
+const title = item.title ? escapeHtml(item.title) : '<span data-i18n="chat.hub.listItemUntitled"></span>'
+const target = String(item.targetChannelId || '').trim()
+const externalUrl = String(item.url || '').trim()
+const linkHtml = externalUrl && !target
+? `<a class="list-link" href="${escapeHtml(externalUrl)}" target="_blank" rel="noopener noreferrer">${title}</a>`
+: `<button type="button" class="list-link list-jump" data-target-channel="${escapeHtml(target)}">${title}</button>`
+const descriptionHtml = item.description ? `<p class="list-description">${escapeHtml(item.description)}</p>` : ''
+return `<div class="list-card">${linkHtml}${descriptionHtml}</div>`
+}).join('')}

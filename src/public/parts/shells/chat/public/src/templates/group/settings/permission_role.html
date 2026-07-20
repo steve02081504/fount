@@ -1,0 +1,13 @@
+<details class="settings-role">
+	<summary>
+		<span class="settings-role-swatch" style="background-color: ${escapeHtml(role.color)}" aria-hidden="true"></span>
+		<span>${escapeHtml(role.name)}</span>
+		${role.isDefault ? '<span class="badge badge-sm" data-i18n="chat.group.settingsPage.roleDefault"></span>' : ''}
+	</summary>
+	<div class="settings-role-body">
+		<div class="settings-role-perms">
+			${permissionsHtml}
+		</div>
+		${deleteRoleHtml}
+	</div>
+</details>

@@ -32,7 +32,9 @@ export function loadData(username, dataname) {
  * @returns {void}
  */
 export function saveData(username, dataname) {
-	saveJsonFile(getUserDictionary(username) + '/settings/' + dataname + '.json', userDataSet[username][dataname])
+	const settingsDir = getUserDictionary(username) + '/settings'
+	fs.mkdirSync(settingsDir, { recursive: true })
+	saveJsonFile(settingsDir + '/' + dataname + '.json', userDataSet[username][dataname])
 }
 on_shutdown(() => {
 	for (const username in userDataSet)
@@ -97,6 +99,94 @@ on_shutdown(() => {
 })
 
 /**
+ * 实体私有 shelldata：`shells/{shell}/entities/{entityHash}/{dataname}.json`
+ * @type {object}
+ */
+const userEntityShellDataSet = {}
+
+/**
+ * @param {string} entityHash 实体 hash
+ * @returns {string} 规范化小写 hash
+ */
+function normalizeEntityHashKey(entityHash) {
+	return String(entityHash || '').trim().toLowerCase()
+}
+
+/**
+ * 实体私有 shell 数据路径（不含文件名）。
+ * @param {string} username 用户
+ * @param {string} shellname shell 名
+ * @param {string} entityHash 实体 hash
+ * @returns {string} 目录路径
+ */
+function entityShellDir(username, shellname, entityHash) {
+	return `${getUserDictionary(username)}/shells/${shellname}/entities/${normalizeEntityHashKey(entityHash)}`
+}
+
+/**
+ * 从 JSON 加载实体私有 shell 数据。
+ * @param {string} username 用户
+ * @param {string} shellname shell 名
+ * @param {string} entityHash 实体 hash
+ * @param {string} dataname 数据名（不含 `.json`）
+ * @returns {object} 加载的数据
+ */
+export function loadEntityShellData(username, shellname, entityHash, dataname) {
+	const hash = normalizeEntityHashKey(entityHash)
+	userEntityShellDataSet[username] ??= {}
+	userEntityShellDataSet[username][shellname] ??= {}
+	userEntityShellDataSet[username][shellname][hash] ??= {}
+	try {
+		return userEntityShellDataSet[username][shellname][hash][dataname]
+			??= loadJsonFileIfExists(`${entityShellDir(username, shellname, hash)}/${dataname}.json`)
+	}
+	catch (error) {
+		console.error(error)
+		return userEntityShellDataSet[username][shellname][hash][dataname] = {}
+	}
+}
+
+/**
+ * 将实体私有 shell 数据落盘。
+ * @param {string} username 用户
+ * @param {string} shellname shell 名
+ * @param {string} entityHash 实体 hash
+ * @param {string} dataname 数据名（不含 `.json`）
+ * @returns {void}
+ */
+export function saveEntityShellData(username, shellname, entityHash, dataname) {
+	const hash = normalizeEntityHashKey(entityHash)
+	const dir = entityShellDir(username, shellname, hash)
+	fs.mkdirSync(dir, { recursive: true })
+	saveJsonFile(`${dir}/${dataname}.json`, userEntityShellDataSet[username][shellname][hash][dataname])
+}
+
+/**
+ * 覆盖内存中的实体私有 shell 数据块并立即落盘。
+ * @param {string} username 用户
+ * @param {string} shellname shell 名
+ * @param {string} entityHash 实体 hash
+ * @param {string} dataname 数据名（不含 `.json`）
+ * @param {unknown} value 可 JSON 序列化的值
+ * @returns {void}
+ */
+export function assignEntityShellData(username, shellname, entityHash, dataname, value) {
+	const hash = normalizeEntityHashKey(entityHash)
+	userEntityShellDataSet[username] ??= {}
+	userEntityShellDataSet[username][shellname] ??= {}
+	userEntityShellDataSet[username][shellname][hash] ??= {}
+	userEntityShellDataSet[username][shellname][hash][dataname] = value
+	saveEntityShellData(username, shellname, hash, dataname)
+}
+on_shutdown(() => {
+	for (const username in userEntityShellDataSet)
+		for (const shellname in userEntityShellDataSet[username])
+			for (const entityHash in userEntityShellDataSet[username][shellname])
+				for (const dataname in userEntityShellDataSet[username][shellname][entityHash])
+					saveEntityShellData(username, shellname, entityHash, dataname)
+})
+
+/**
  * tempdata 用于临时数据存储。
  * @type {object}
  */
@@ -117,6 +207,7 @@ export function loadTempData(username, dataname) {
 events.on('AfterUserDeleted', ({ username }) => {
 	delete userDataSet[username]
 	delete userShellDataSet[username]
+	delete userEntityShellDataSet[username]
 	delete userTempDataSet[username]
 })
 
@@ -125,6 +216,8 @@ events.on('AfterUserRenamed', ({ oldUsername, newUsername }) => {
 	delete userDataSet[oldUsername]
 	userShellDataSet[newUsername] = userShellDataSet[oldUsername] ?? {}
 	delete userShellDataSet[oldUsername]
+	userEntityShellDataSet[newUsername] = userEntityShellDataSet[oldUsername] ?? {}
+	delete userEntityShellDataSet[oldUsername]
 	userTempDataSet[newUsername] = userTempDataSet[oldUsername] ?? {}
 	delete userTempDataSet[oldUsername]
 })

@@ -1,0 +1,26 @@
+/**
+ * 跨壳 protocol URL：定义在 chat，Social 组合 page 深链（浏览器模块；勿被 Deno 纯测 import）。
+ */
+import { wrapProtocolHttpsUrl } from '/parts/shells:chat/shared/runUri.mjs'
+
+import {
+	formatSocialPostPageUri,
+	formatSocialProfilePageUri,
+} from './runUri.mjs'
+
+/**
+ *
+ */
+export { wrapProtocolHttpsUrl }
+
+/**
+ * @param {string} entityHash 作者 entityHash
+ * @param {string} [postId] 帖子 id
+ * @param {string} [sharerNodeHash] 分享者本机 nodeHash（类比 Twitter s=N）
+ * @returns {string} 外部分享用 https 链接
+ */
+export function formatSocialShareHttpsUrl(entityHash, postId, sharerNodeHash) {
+	if (postId)
+		return wrapProtocolHttpsUrl(formatSocialPostPageUri(entityHash, postId, sharerNodeHash))
+	return wrapProtocolHttpsUrl(formatSocialProfilePageUri(entityHash))
+}
