@@ -1,6 +1,6 @@
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
-import { geti18n } from '../../../../../scripts/i18n.mjs'
+import { geti18n } from '../../../../../scripts/i18n/index.mjs'
 import { svgInliner } from '../../../../../scripts/svgInliner.mjs'
 import { renderTemplate } from '../../../../../scripts/template.mjs'
 import { defaultIcons, genericDefaultIcon } from '../constants.mjs'

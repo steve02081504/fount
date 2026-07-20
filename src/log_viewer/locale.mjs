@@ -1,6 +1,6 @@
 /**
  * log viewer 专用的轻量 i18n：按宿主 locale 读取 `src/public/locales/*.json`。
- * 不可复用 `src/scripts/i18n.mjs`——那会把整个服务器栈拖进这个轻量前台进程。
+ * 不可复用 `src/scripts/i18n/index.mjs`——那会把整个服务器栈拖进这个轻量前台进程。
  */
 import fs from 'node:fs'
 import path from 'node:path'

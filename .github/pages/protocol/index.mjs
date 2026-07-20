@@ -3,7 +3,7 @@ import '../base.mjs'
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { getFountHostUrl, pingFount } from '../scripts/fountHostGetter.mjs'
-import { initTranslations, geti18n } from '../scripts/i18n.mjs'
+import { initTranslations, geti18n } from '../scripts/i18n/index.mjs'
 import { showToastI18n } from '../scripts/toast.mjs'
 
 const fountProtocolUrl = urlParams.get('url') || 'fount://page/'

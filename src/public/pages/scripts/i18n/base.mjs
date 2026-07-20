@@ -1,9 +1,10 @@
+import { onServerEvent } from '../server_events.mjs'
+
 import {
 	loadPreferredLangs,
 	runInitTranslations,
 	saved_pageid,
-} from './i18n.mjs'
-import { onServerEvent } from './server_events.mjs'
+} from './index.mjs'
 
 /** localStorage 中保存首选语言的键名（本机 fount） */
 export const preferredLangsStorageKey = 'userPreferredLanguages'

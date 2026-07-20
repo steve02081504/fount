@@ -3,7 +3,7 @@
  */
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
-import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n.mjs'
+import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n/index.mjs'
 import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
 import { makeSearchable } from '../../../scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'

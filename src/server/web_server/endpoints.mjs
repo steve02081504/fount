@@ -3,7 +3,7 @@ import fs from 'node:fs'
 import cors from 'npm:cors'
 
 import { debugLog } from '../../scripts/debug_log.mjs'
-import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n.mjs'
+import { console, getLocaleDataForUser, fountLocaleList } from '../../scripts/i18n/index.mjs'
 import { ms } from '../../scripts/ms.mjs'
 import { get_hosturl_in_local_ip, is_local_ip, is_local_ip_from_req, rateLimit } from '../../scripts/ratelimit.mjs'
 import { generateVerificationCode, verifyVerificationCode } from '../../scripts/verifycode.mjs'

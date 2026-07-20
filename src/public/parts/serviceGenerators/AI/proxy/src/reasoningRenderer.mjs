@@ -1,4 +1,4 @@
-import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n.mjs'
+import { geti18nForLocales, localhostLocales } from '../../../../../../scripts/i18n/index.mjs'
 
 /**
  * HTML 转义，防止 XSS。

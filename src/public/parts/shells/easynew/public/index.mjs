@@ -1,7 +1,7 @@
 /**
  * “轻松新建” shell 的客户端逻辑。
  */
-import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n.mjs'
+import { initTranslations, geti18n, i18nElement } from '../../scripts/i18n/index.mjs'
 import { applyTheme } from '../../scripts/theme.mjs'
 
 import { getTemplates, getTemplateHtml, createPart } from './src/endpoints.mjs'

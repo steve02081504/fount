@@ -1,6 +1,6 @@
 import { applyTheme } from '/scripts/theme.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
-import { geti18n, initTranslations } from '/scripts/i18n.mjs'
+import { geti18n, initTranslations } from '/scripts/i18n/index.mjs'
 import { createVirtualList } from '/scripts/virtualList.mjs'
 import { attachLogWire } from 'https://esm.sh/@steve02081504/virtual-console/wire/client'
 

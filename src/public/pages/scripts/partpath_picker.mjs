@@ -1,4 +1,4 @@
-import { geti18n } from './i18n.mjs'
+import { geti18n } from './i18n/index.mjs'
 import { getPartBranches, getPartDetails } from './parts.mjs'
 import { onServerEvent } from './server_events.mjs'
 

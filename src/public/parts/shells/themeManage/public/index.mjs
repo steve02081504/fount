@@ -1,4 +1,4 @@
-import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n.mjs'
+import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n/index.mjs'
 import { showToastI18n } from '/scripts/toast.mjs'
 import { makeSearchable } from '/scripts/search.mjs'
 import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
