@@ -11,7 +11,7 @@ Both executor maps live in `convertor.mjs`. Do not wrap another shell-specific c
 
 ## Mermaid IDs
 
-`mermaid.render(id)` reuses/destroys any existing `#id` in the document. Never use a content-hash-only id: feed + post detail (or cache hits) will collide and leave an empty SVG shell. Always `allocMermaidSvgId` on render, and `uniquifyMermaidSvgHtml` on cache hit before insert. If `render` returns a fragment without a root `<svg>` (seen under happy-dom), wrap with `ensureMermaidSvgRoot`.
+`mermaid.render(id)` reuses/destroys any existing `#id` in the document. Never use a content-hash-only id: feed + post detail (or cache hits) will collide and leave an empty SVG shell. Always `allocMermaidSvgId` on render, and `uniquifyMermaidSvgHtml` on cache hit before insert. If `render` returns a fragment without a root `<svg>` (happy-dom + mermaid `securityLevel: 'strict'` → DOMPurify drops the svg wrapper; [happy-dom#2182](https://github.com/capricorn86/happy-dom/issues/2182)), wrap with `ensureMermaidSvgRoot` before `fromHtml`.
 
 ## Code block UI
 

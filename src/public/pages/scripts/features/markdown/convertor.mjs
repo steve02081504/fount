@@ -321,6 +321,22 @@ function extractMermaidDiagramId(html) {
 }
 
 /**
+ * happy-dom + mermaid(strict)/DOMPurify 下 render 可能只返回 style/g/defs 片段、无根 svg。
+ * 补回带 id 的根节点，否则图挂不上、缓存 uniquify 也找不到图级 id。
+ * @see https://github.com/capricorn86/happy-dom/issues/2182
+ * @param {string} html mermaid.render 返回的 svg 字段
+ * @param {string} id 本次分配的图级 id
+ * @returns {string} 保证含根 svg[id] 的 HTML
+ */
+function ensureMermaidSvgRoot(html, id) {
+	if (/<svg\b/i.test(html)) {
+		if (extractMermaidDiagramId(html)) return html
+		return html.replace(/<svg\b/i, `<svg id="${id}"`)
+	}
+	return `<svg id="${id}" xmlns="http://www.w3.org/2000/svg" width="100%">${html}</svg>`
+}
+
+/**
  * 将缓存/已渲染 SVG 内的 mermaid id（含 marker / style 引用）改写成新的唯一 id。
  * @param {string} html SVG HTML
  * @returns {string} 改写后的 HTML
@@ -378,7 +394,7 @@ function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 			try {
 				const id = allocMermaidSvgId(mermaidCode)
 				const renderResult = await mermaid.render(id, mermaidCode, container)
-				const svgHast = fromHtml(renderResult.svg, { fragment: true }).children
+				const svgHast = fromHtml(ensureMermaidSvgRoot(renderResult.svg, id), { fragment: true }).children
 
 				parent.children.splice(index, 1, ...svgHast)
 			} catch (error) {
