@@ -693,7 +693,8 @@ export function i18nElement(element, {
  */
 export function setElementI18n(element, key, params = {}) {
 	for (const [name, value] of Object.entries(params))
-		element.dataset[name] = value
+		if (value == null) delete element.dataset[name]
+		else element.dataset[name] = value
 	element.dataset.i18n = key
 	translateSingularElement(element)
 	return element

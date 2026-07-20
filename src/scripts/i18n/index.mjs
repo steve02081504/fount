@@ -1,9 +1,9 @@
 export * from './bare.mjs'
 
-import { getUserByUsername } from '../../server/auth.mjs'
 import { events } from '../../server/events.mjs'
 import { loadData, loadTempData, saveData } from '../../server/setting_loader.mjs'
 import { sendEventToAll } from '../../server/web_server/event_dispatcher.mjs'
+import { localesForUser } from '../locale.mjs'
 
 import {
 	getbestlocale,
@@ -29,7 +29,7 @@ import {
 export async function getLocaleDataForUser(username, preferredlocaleList) {
 	if (!username) return getLocaleData(preferredlocaleList)
 	const effectivePreferred = [
-		...getUserByUsername(username)?.locales ?? [],
+		...localesForUser(username),
 		...preferredlocaleList ?? [],
 	]
 	const result = {
@@ -38,12 +38,14 @@ export async function getLocaleDataForUser(username, preferredlocaleList) {
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleCache = loadData(username, 'parts_locales_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	for (const partpath in partsLocaleLists) {
+	const partpaths = Object.keys(partsLocaleLists)
+	const partdataList = await Promise.all(partpaths.map(async partpath => {
 		const resultLocale = getbestlocale(effectivePreferred, partsLocaleLists[partpath])
 		partsLocaleCache[partpath] ??= {}
-		const partdata = partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
+		return partsLocaleCache[partpath][resultLocale] ??= await partsLocaleLoaders[partpath]?.(resultLocale)
+	}))
+	for (const partdata of partdataList)
 		Object.assign(result, partdata)
-	}
 	saveData(username, 'parts_locales_cache')
 	return result
 }
@@ -72,11 +74,10 @@ onLocaleFileChanged(() => {
  * @returns {void}
  */
 export function addPartLocaleData(username, partpath, localeList, loader) {
-	const normalizedPartpath = partpath.replace(/^\/+|\/+$/g, '')
 	const partsLocaleLists = loadData(username, 'parts_locale_lists_cache')
 	const partsLocaleLoaders = loadTempData(username, 'parts_locale_loaders')
-	partsLocaleLists[normalizedPartpath] = localeList
-	partsLocaleLoaders[normalizedPartpath] = loader
+	partsLocaleLists[partpath] = localeList
+	partsLocaleLoaders[partpath] = loader
 	saveData(username, 'parts_locale_lists_cache')
 }
 
