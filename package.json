@@ -11,6 +11,9 @@
 	"bin": {
 		"fount": "path/fount.mjs"
 	},
+	"exports": {
+		"./*": "./src/*"
+	},
 	"scripts": {
 		"run": "node path/fount.mjs run",
 		"init": "node path/fount.mjs init",
