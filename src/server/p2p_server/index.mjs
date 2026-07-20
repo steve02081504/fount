@@ -25,6 +25,5 @@ export async function initP2PServer({ dataPath, signaling }) {
 	const primary = pickPrimaryReplica()
 	// 测试节点也须在启动时先 join user room 并落定，再让联邦 join 群 room（串行 + 落定窗口）。
 	// 若跳过启动 join、改在联邦 mid-flight lazy ensureUserRoom，会与已连 peer 的群 room 争抢 offerPool 并断链。
-	if (primary)
-		await ensureUserRoom({ replicaUsername: primary })
+	if (primary) await ensureUserRoom({ replicaUsername: primary })
 }
