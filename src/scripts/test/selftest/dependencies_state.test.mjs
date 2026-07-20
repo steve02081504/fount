@@ -205,3 +205,15 @@ Deno.test('refreshEntryFingerprint aligns subtest fingerprints', () => {
 	assertEquals(entry.subtests.smoke.triggerHash, 'sub-new')
 	assertEquals(entry.subtests.smoke.uncommittedHash, null)
 })
+
+Deno.test('fresh green stays reusable with old commitHash without pre-align', () => {
+	// HEAD 已前进但 trigger 未命中时，不必在波次开始前批量推进 commitHash；
+	// Ctrl+C 不应把未处理套件写成「已在当前 HEAD 验证」。
+	const suite = makeSuite('shells/chat', 'pure', { triggers: ['src/public/parts/shells/chat/test/pure/**'] })
+	const entry = makeStateEntry({ commitHash: 'old', triggerHash: null })
+	const verdict = judgeSuite(suite, entry, [], new Map())
+	assertEquals(verdict.kind, 'green')
+	assertEquals(verdict.fresh, true)
+	assertEquals(verdictReusable(verdict, false), true)
+	assertEquals(entry.commitHash, 'old')
+})

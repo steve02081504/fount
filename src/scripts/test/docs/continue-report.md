@@ -4,7 +4,7 @@ Per-slot `continueReason` in `data/test/report.json` and `data/test/triggered-re
 
 ## Decision model
 
-1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (fingerprints align on reuse / loop start).
+1. **`buildVerdicts`** — `green` / `noisy` / `red` / `unknown` from state + git freshness. Suites with `subtests` aggregate and expose `subtestsToRun`. Dirty→clean `triggerHash` alone is not stale (`isTriggerHashStale`); fingerprints advance only after a suite slot finishes (`upsertSuiteRun` / reuse `refreshEntryFingerprint`), never before the wave.
 2. **Goals** — imperfect (`failed`/`blocked`/missing + one-level dependents; **fresh noisy excluded**), outdated (`unknown`), or explicit / `--all`.
 3. **`buildPlan`** — topo scan → each slot `reuse` | `run` | `blocked` with provenance.
 

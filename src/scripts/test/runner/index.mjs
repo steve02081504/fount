@@ -423,6 +423,7 @@ async function executeWave(context) {
 				const subtestTriggerHashes = verdict?.subtests
 					? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
 					: null
+				// 仅在本 slot 处理完后推进指纹（与 upsertSuiteRun 同理）
 				refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict?.triggerHash ?? null, subtestTriggerHashes)
 				await writeState(REPO_ROOT, state)
 				if (index != null) await recordSuiteResult(index, prev, { reused: true, logEstimate: false })
@@ -519,47 +520,6 @@ async function executeWave(context) {
 	}
 
 	return exitCode
-}
-
-/**
- * 将 fresh green/noisy 的条目指纹对齐到当前 HEAD（含脏→净 triggerHash）。
- * @param {import('../core/state.mjs').TestState} state 现状库
- * @param {import('../core/manifest.mjs').SuiteDef[]} allSuites 全部 suite
- * @param {Map<string, import('../core/verdict.mjs').Verdict>} verdicts 裁决表
- * @param {string} commitHash HEAD
- * @param {string | null} uncommittedHash 未提交 digest
- * @returns {boolean} 是否有写入
- */
-function alignFreshFingerprints(state, allSuites, verdicts, commitHash, uncommittedHash) {
-	let changed = false
-	for (const suite of allSuites) {
-		const key = suiteKey(suite.manifestId, suite.name)
-		const verdict = verdicts.get(key)
-		const entry = state.suites[key]
-		if (!entry || !verdict?.fresh) continue
-		if (verdict.kind !== 'green' && verdict.kind !== 'noisy') continue
-		const needSuite = entry.commitHash !== commitHash
-			|| (entry.uncommittedHash ?? null) !== uncommittedHash
-			|| (entry.triggerHash ?? null) !== (verdict.triggerHash ?? null)
-		let needSub = false
-		const subtestTriggerHashes = verdict.subtests
-			? Object.fromEntries(Object.entries(verdict.subtests).map(([name, sub]) => [name, sub.triggerHash ?? null]))
-			: null
-		if (entry.subtests && subtestTriggerHashes) 
-			for (const [name, sub] of Object.entries(entry.subtests)) 
-				if (sub.commitHash !== commitHash
-					|| (sub.uncommittedHash ?? null) !== uncommittedHash
-					|| (sub.triggerHash ?? null) !== (subtestTriggerHashes[name] ?? null)) {
-					needSub = true
-					break
-				}
-			
-		
-		if (!needSuite && !needSub) continue
-		refreshEntryFingerprint(state, key, commitHash, uncommittedHash, verdict.triggerHash ?? null, subtestTriggerHashes)
-		changed = true
-	}
-	return changed
 }
 
 /**
@@ -689,11 +649,11 @@ export async function runTests(options = {}) {
 	}
 
 	// 默认：imperfect → outdated 循环；hard fail 即退 1，两波皆空按 noisy 退
+	// commit / trigger 指纹只在套件 slot 处理完后写入（run → upsertSuiteRun；reuse → refreshEntryFingerprint），
+	// 禁止波次开始前批量对齐——否则 Ctrl+C 会把未跑套件标成已在当前 HEAD 验证过。
 	for (; ;) {
 		const committedChangedByKey = await buildCommittedChangedByKey(REPO_ROOT, allSuites, state)
 		const verdicts = buildVerdicts(allSuites, state, committedChangedByKey, uncommittedHashes)
-		if (alignFreshFingerprints(state, allSuites, verdicts, commitHash, uncommittedHash))
-			await writeState(REPO_ROOT, state)
 
 		const imperfect = selectImperfectWave({
 			verdicts,

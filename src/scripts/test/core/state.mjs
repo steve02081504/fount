@@ -244,7 +244,8 @@ export function computeSuiteTriggerHash(suite, uncommittedHashes) {
 }
 
 /**
- * 复用后把条目指纹对齐到当前 HEAD / 工作区（内容已验证一致）。
+ * 复用 slot 处理完后把条目指纹对齐到当前 HEAD / 工作区（内容已验证一致）。
+ * 勿在波次开始前批量调用——中断会导致未跑套件被标成当前 commit 已验证。
  * @param {TestState} state 现状库
  * @param {string} key suite 键
  * @param {string} commitHash HEAD

@@ -52,7 +52,7 @@ function triggerHashFor(triggers, uncommittedHashes, triggerFilter) {
 }
 
 /**
- * 脏工作区 → 干净时旧 triggerHash 残留不算过期（由 reuse/refresh 对齐）。
+ * 脏工作区 → 干净时旧 triggerHash 残留不算过期（由套件 slot 结束后的 reuse/upsert 对齐）。
  * @param {string | null | undefined} entryHash 记录指纹
  * @param {string | null | undefined} currentHash 当前指纹
  * @returns {boolean} 是否因指纹不一致而过期
