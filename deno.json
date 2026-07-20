@@ -23,6 +23,7 @@
 		"remove": "deno run -A path/fount.mjs remove",
 		"nop": "deno run -A path/fount.mjs nop",
 		"log": "deno run -A path/fount.mjs log",
+		"test": "deno run -A path/fount.mjs test",
 
 		"start": "deno run -A path/fount.mjs",
 		"stop": "deno run -A path/fount.mjs shutdown",

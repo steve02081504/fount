@@ -1,0 +1,75 @@
+name: fount CI
+description: Deno setup, dependency install, run-command, and deno/node_modules cache (no checkout, no test-data cache)
+inputs:
+  run-step-name:
+    description: Display name for the main run step
+    required: true
+  run-command:
+    description: Shell command to run after install
+    required: true
+  deno-clean-entrypoints:
+    description: Newline-separated extra entrypoints for deno clean --except
+    required: false
+    default: ''
+runs:
+  using: composite
+  steps:
+    - uses: denoland/setup-deno@v2
+      with:
+        deno-version: canary
+        cache-hash: fount
+    - uses: actions/cache@v5
+      with:
+        path: ./node_modules
+        key: fount-node-modules
+    - name: Install dependencies
+      shell: bash
+      run: |
+        for i in $(seq 1 13); do
+          deno install --prod --allow-scripts --allow-all -c "./deno.json" --entrypoint "./src/server/index.mjs" && break
+          echo "Attempt $i/13 failed, retrying..."
+        done
+        [ -d ./node_modules ] || exit 1
+    - name: ${{ inputs.run-step-name }}
+      shell: bash
+      env:
+        GITHUB_EVENT_BEFORE: ${{ github.event.before }}
+        GITHUB_SHA: ${{ github.sha }}
+        GH_TOKEN: ${{ env.GH_TOKEN }}
+      run: ${{ inputs.run-command }}
+    - name: Delete Previous Cache
+      continue-on-error: true
+      shell: bash
+      run: |
+        gh extension install actions/gh-actions-cache || true
+        gh actions-cache delete "fount-node-modules" --confirm || true
+        gh actions-cache delete "deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount" --confirm || true
+      env:
+        GH_TOKEN: ${{ github.token }}
+    - name: clean before cache save
+      continue-on-error: true
+      shell: bash
+      run: |
+        ENTRYPOINTS=()
+        add_entry() { [ -f "$1" ] && ENTRYPOINTS+=("$1"); }
+        add_entry "./src/server/index.mjs"
+        while IFS= read -r entry; do
+          [ -n "$entry" ] && add_entry "$entry"
+        done <<< "${{ inputs.deno-clean-entrypoints }}"
+        [ ${#ENTRYPOINTS[@]} -eq 0 ] && exit 0
+        deno clean --except "${ENTRYPOINTS[@]}"
+    - name: Save node_modules Cache
+      continue-on-error: true
+      uses: actions/cache/save@v5
+      with:
+        path: ./node_modules
+        key: fount-node-modules
+    - name: get deno dir
+      shell: bash
+      run: echo "DENO_DIR=$(deno info --json | jq -r '.denoDir')" >> $GITHUB_ENV
+    - name: Save deno Cache
+      continue-on-error: true
+      uses: actions/cache/save@v5
+      with:
+        path: ${{ env.DENO_DIR }}
+        key: deno-cache-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-fount

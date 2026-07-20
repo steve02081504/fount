@@ -1,0 +1,40 @@
+name: fount CI
+
+on:
+  workflow_call:
+    inputs:
+      run-step-name:
+        required: true
+        type: string
+      run-command:
+        required: true
+        type: string
+      deno-clean-entrypoints:
+        required: false
+        type: string
+        default: ''
+    secrets:
+      gh_token:
+        description: 'PAT for gh (fount test Deno panic auto-issue to denoland/deno); falls back to GITHUB_TOKEN'
+        required: false
+
+permissions:
+  contents: read
+  # gh cache delete / actions-cache 需要；缺省 GITHUB_TOKEN 只有 contents:read 会 403「Resource not accessible by integration」
+  actions: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/fount-ci
+        with:
+          run-step-name: ${{ inputs.run-step-name }}
+          run-command: ${{ inputs.run-command }}
+          deno-clean-entrypoints: ${{ inputs.deno-clean-entrypoints }}
+        env:
+          GH_TOKEN: ${{ secrets.gh_token || secrets.GITHUB_TOKEN }}

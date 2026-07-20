@@ -2128,6 +2128,7 @@ clean)
 			find "$FOUNT_DIR" -name "*_cache.json" -type f -delete
 		fi
 	fi
+	rm -rf "$FOUNT_DIR/data/test"
 	get_i18n 'clean.cleaningDenoCaches'
 	run_deno clean -e "$FOUNT_DIR/src/server/index.mjs"
 	write_taskbar_progress_clear
@@ -2270,6 +2271,11 @@ remove)
 	;;
 log)
 	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/log_viewer/index.mjs"
+	exit $?
+	;;
+test)
+	shift
+	run_deno run --allow-scripts --allow-all -c "$FOUNT_DIR/deno.json" "$FOUNT_DIR/src/scripts/test/cli.mjs" "$@"
 	exit $?
 	;;
 debug)
