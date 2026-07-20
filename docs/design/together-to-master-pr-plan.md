@@ -26,13 +26,13 @@
 | **I** | Social | `shells/social/**` | 大 |
 | **J** | Cabinet | `shells/cabinet/**` | 中 |
 | **K** | 其它 shells / bots / parts | discord/tg/wechat、home、plugins、serviceGenerators 等 | 中 |
-| **L** | Docs | `docs/design|review`、本规划档；locales/AGENTS 大改可跟功能组或收口 | 小 |
+| **L** | Docs | `docs/design\|review`、本规划档；locales/AGENTS 大改可跟功能组或收口 | 小 |
 
 ## 依赖（实测修正）
 
 - **B** 的 `i18n/index.mjs` 依赖 **C** 的 `registries`；完整 `auth/index` 属 **E**。在 E 合并前，B 可暂对 `auth.mjs` 接线，E 再改路径。
 - **D** 的 playwright gate 引用 chat/social → 框架主体可先合，gate 跟 H/I。
-- **I/J/K** 依赖 **H**（及 G 的实体/P2P 面）。
+- **I/J/K** 依赖 **H**；**I/J/K** 均依赖 **G** 的实体/P2P 面。
 
 ```mermaid
 flowchart TB
@@ -60,7 +60,6 @@ flowchart TB
     K["K 其它 shells/parts"]
   end
 
-  A --> C
   A --> B
   C --> B
   B --> D
@@ -80,12 +79,13 @@ flowchart TB
   H --> K
   G --> I
   G --> J
+  G --> K
 ```
 
 ## 本轮（第 0 层）执行顺序
 
 1. **A**、**L** — 基于 `master`，互不依赖，可并行。
-2. **C** — 基于 `master`；本轮落地 `net_listen` + `no_cors`（含接线与 pure 测）。**registries / parts_loader 扫描延期**到后续 PR。
+2. **C** — 基于 `master`（与 A 无边；不依赖 `fount/` 别名本轮落地）；本轮落地 `net_listen` + `no_cors`（含接线与 pure 测）。**registries / parts_loader 扫描延期**到后续 PR。
 3. **B** — 基于 `master` 并行开出：`i18n` 拆分后 part locales **暂留** master 的 `parts_locale_*` cache（不依赖 registries）；auth 仍走 `auth.mjs` 直到 E。
 
 ## 操作约定
