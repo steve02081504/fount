@@ -1,0 +1,192 @@
+/**
+ * 【文件】public/hub/hubStatus.mjs
+ * 【职责】当前用户在线状态：心跳、idle 检测、状态菜单与顶栏状态点/自定义状态文案同步。
+ * 【原理】`applyMyStatusUI`、`showStatusMenu` 更新 `#my-status` 等区域；`startHeartbeat` 维持 presence。
+ * 【数据结构】store 及模块内 Map/Set 字段；见 core/state 与各函数 JSDoc。
+ * 【关联】../../../../scripts/i18n、../../../../scripts/toast、core/state、presence
+ */
+import { renderTemplate, renderTemplateAsHtmlString, usingTemplates } from '../../../../scripts/features/template.mjs'
+import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+
+import { bindDismissOnDocumentInteraction } from './core/contextMenuDismiss.mjs'
+import { store } from './core/state.mjs'
+import {
+	applySelfStatusToMemberList,
+	applyStatusDot,
+	fetchUserProfile,
+	formatStatusLabel,
+	invalidateUserProfileCache,
+} from './presence.mjs'
+
+/** @type {ReturnType<typeof setInterval> | null} */
+let heartbeatTimer = null
+/** @type {ReturnType<typeof setTimeout> | null} */
+let idleTimer = null
+/** @type {string} */
+let lastManualStatus = 'online'
+/** @type {HTMLElement | null} */
+let openStatusMenuElement = null
+
+const MANUAL_STATUSES = ['online', 'idle', 'dnd', 'invisible']
+
+/**
+ * @param {string} status 状态键
+ * @param {string} [customStatus] 自定义状态文案
+ * @returns {Promise<void>}
+ */
+export async function applyMyStatusUI(status, customStatus = '') {
+	const dot = document.getElementById('my-status-dot')
+	const text = document.getElementById('my-status-text')
+	applyStatusDot(dot, status)
+	if (text)
+		text.textContent = await formatStatusLabel(status, customStatus)
+}
+
+/**
+ * @param {string} entityHash 当前 viewer 的 128 位 entityHash
+ * @returns {Promise<void>}
+ */
+export async function sendHeartbeat(entityHash) {
+	if (!entityHash) return
+	await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/heartbeat`, {
+		method: 'POST',
+		credentials: 'include',
+	})
+}
+
+/**
+ * @param {string} status 要设置的状态
+ * @param {{ silent?: boolean }} [options] silent 为 true 时不 toast 错误
+ * @returns {Promise<void>}
+ */
+export async function setMyStatus(status, options = {}) {
+	const entityHash = store.viewer.viewerEntityHash
+	if (!entityHash) return
+	const resp = await fetch(`/api/parts/shells:chat/entities/${encodeURIComponent(entityHash)}/status`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		credentials: 'include',
+		body: JSON.stringify({ status }),
+	})
+	if (!resp.ok) {
+		if (!options.silent) {
+			const data = await resp.json().catch(() => ({}))
+			showToastI18n('error', 'chat.hub.operationFailed', { error: data.error || resp.statusText })
+		}
+		return
+	}
+	if (MANUAL_STATUSES.includes(status))
+		lastManualStatus = status
+	invalidateUserProfileCache(entityHash)
+	const profile = await fetchUserProfile(entityHash, {
+		bypassCache: true,
+		groupId: store.context.currentGroupId || undefined,
+	})
+	await applyMyStatusUI(status, profile?.customStatus || '')
+	applySelfStatusToMemberList(status)
+}
+
+/**
+ * @param {string} entityHash 当前 viewer 的 128 位 entityHash
+ * @returns {Promise<void>}
+ */
+export async function refreshMyStatusFromProfile(entityHash) {
+	const profile = await fetchUserProfile(entityHash, {
+		bypassCache: true,
+		groupId: store.context.currentGroupId || undefined,
+	})
+	if (!profile) return
+	const stored = profile.status === 'offline' && MANUAL_STATUSES.includes(lastManualStatus)
+		? lastManualStatus
+		: profile.status
+	if (MANUAL_STATUSES.includes(stored))
+		lastManualStatus = stored
+	await applyMyStatusUI(profile.status, profile.customStatus)
+	applySelfStatusToMemberList(profile.status)
+}
+
+/**
+ * 进群或切换 viewer 后：刷新心跳与成员列表中的自身状态。
+ * @param {string} entityHash 当前 viewer 的 128 位 entityHash
+ * @returns {Promise<void>}
+ */
+export async function syncViewerPresence(entityHash) {
+	if (!entityHash) return
+	invalidateUserProfileCache(entityHash)
+	await sendHeartbeat(entityHash)
+	await refreshMyStatusFromProfile(entityHash)
+	startHeartbeat(entityHash)
+}
+
+/**
+ * @param {string} entityHash 当前 viewer 的 128 位 entityHash
+ * @returns {void}
+ */
+export function startHeartbeat(entityHash) {
+	if (heartbeatTimer) clearInterval(heartbeatTimer)
+	void sendHeartbeat(entityHash)
+	heartbeatTimer = setInterval(() => {
+		void sendHeartbeat(entityHash)
+	}, 60_000)
+}
+
+/**
+ * @returns {void}
+ */
+export function startIdleWatcher() {
+	document.addEventListener('visibilitychange', () => {
+		if (document.hidden)
+			idleTimer = setTimeout(() => {
+				void setMyStatus('idle', { silent: true })
+			}, 5 * 60 * 1000)
+		else {
+			if (idleTimer) clearTimeout(idleTimer)
+			idleTimer = null
+			const restore = lastManualStatus === 'invisible' ? 'invisible' : lastManualStatus || 'online'
+			void setMyStatus(restore, { silent: true })
+			void sendHeartbeat(store.viewer.viewerEntityHash)
+		}
+	})
+}
+
+/** @returns {void} */
+function dismissStatusMenu() {
+	if (!openStatusMenuElement) return
+	openStatusMenuElement.remove()
+	openStatusMenuElement = null
+}
+
+/**
+ * @param {HTMLElement} anchorElement user bar 或状态行
+ * @returns {Promise<void>}
+ */
+export async function showStatusMenu(anchorElement) {
+	dismissStatusMenu()
+	const rect = anchorElement.getBoundingClientRect()
+	usingTemplates('/parts/shells:chat/src/templates')
+	const statusesHtml = (await Promise.all(MANUAL_STATUSES.map(status =>
+		renderTemplateAsHtmlString('hub/status/menu_option', { status }),
+	))).join('')
+	const menu = await renderTemplate('hub/status/menu', {
+		style: `position:fixed;left:${rect.left}px;top:${rect.top - 4}px;transform:translateY(-100%);min-width:11rem;`,
+		statusesHtml,
+	})
+	for (const button of menu.querySelectorAll('[data-status]')) {
+		if (!(button instanceof HTMLButtonElement)) continue
+		const { status } = button.dataset
+		button.addEventListener('click', () => {
+			dismissStatusMenu()
+			void setMyStatus(status)
+		})
+	}
+	menu.querySelector('[data-profile-link]')?.addEventListener('click', (clickEvent) => clickEvent.stopPropagation())
+
+	document.body.append(menu)
+	openStatusMenuElement = menu
+
+	bindDismissOnDocumentInteraction(dismissStatusMenu, {
+		contextMenu: false,
+		// capture 关闭若先拆掉菜单，`<a data-profile-link>` 的导航/点击会丢
+		ignoreSelectors: ['.menu'],
+	})
+}

@@ -1,151 +1,293 @@
-# chat shell 支持的 Web 端点说明
+# chat shell Web API
 
-本 shell 提供聊天界面及会话管理相关 API，便于 AI Agent 操作聊天、角色、插件与消息。
+HTTP 前缀：`/api/parts/shells:chat/`。群集合：`GET`/`POST` `/api/parts/shells:chat/groups/`（须在 `:groupId` 动态段之前注册）。本地会话：`/api/parts/shells:chat/sessions/`。
 
----
-
-## 提供的页面
-
-### GET /parts/shells:chat/
-- 用途：主聊天界面页面，用于进行 AI 角色对话。支持多角色聊天、插件集成、消息编辑等功能。
-
-### GET /parts/shells:chat/list
-- 用途：聊天历史列表页面，显示所有聊天会话。支持搜索、排序、批量操作（删除、复制、导出、导入）等功能。
-
-### GET /parts/shells:chat/new
-- 用途：新建聊天页面，用于创建新的聊天会话。可通过 URL 参数指定初始角色（`?char=${name}`）。
+WebSocket：`/ws/parts/shells:chat/groups/:ownerNodeHash/:groupId`（Hub、群壳、RPC 共用；须为 replica 活跃成员）；通话 `/ws/parts/shells:chat/call/:groupId/:channelId`；流媒体 `/ws/parts/shells:chat/av-relay/:roomId`。
 
 ---
 
-## WebSocket
+## 页面
 
-### GET /ws/parts/shells:chat/ui/:chatid
-- 路径：chatid 为会话 ID（字符串）。
-- 用途：连接指定聊天的 UI 实时通道，用于推送消息与状态更新。
-
----
-
-## 会话与列表
-
-### POST /api/parts/shells:chat/new
-- Body：可选。当前实现仅根据当前用户创建新会话，不解析 body；返回 `{ chatid }`。
-- 用途：创建新聊天会话，返回新 chatid。
-
-### GET /api/parts/shells:chat/getchatlist
-- 用途：获取当前用户聊天列表。
-
-### DELETE /api/parts/shells:chat/delete
-- Body：JSON。`chatids`（数组，必填），要删除的会话 ID 列表。
-- 用途：批量删除聊天。
-
-### POST /api/parts/shells:chat/copy
-- Body：JSON。`chatids`（数组，必填），要复制的会话 ID 列表。每项会复制为新会话，返回含 newChatId 等。
-- 用途：复制聊天。
-
-### POST /api/parts/shells:chat/export
-- Body：JSON。`chatids`（数组，必填），要导出的会话 ID 列表。
-- 用途：导出聊天。
-
-### POST /api/parts/shells:chat/import
-- Body：JSON，为完整聊天导入数据（与单会话导出结构兼容）。
-- 用途：导入聊天，服务端会创建新 chatid 并写入数据。
-
-### POST /api/parts/shells:chat/addfile
-- Body：multipart 表单，字段名为上传文件的 key，值为文件。服务端从 req.files 读取。
-- 用途：向当前用户聊天文件库添加附件；返回后可通过 getfile 的 hash 引用。
-
-### GET /api/parts/shells:chat/getfile
-- 查询：`hash`（字符串，必填），由 addfile 或聊天消息中文件产生的哈希标识。
-- 用途：获取或下载该 hash 对应的文件内容（二进制流）。
-
-### GET /virtual_files/parts/shells:chat/:chatid
-- 路径：chatid 为会话 ID；其后可跟虚拟文件路径。
-- 用途：访问该聊天下的虚拟文件（如导出该会话的 JSON 等）。
+| 路径 | 说明 |
+|------|------|
+| `GET /parts/shells:chat/` | 重定向至 `/parts/shells:chat/hub/`，保留 `location.hash` |
+| `GET /parts/shells:chat/hub/` | 主壳：会话列表、频道、消息；`#group:{groupId}:{channelId}`；`?char=` 角色直达 |
 
 ---
 
-## 单会话：上下文与配置
+## 群会话
 
-### GET /api/parts/shells:chat/:chatid/initial-data
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天的初始数据（角色、persona、world、插件、日志摘要等）。
+### `GET /api/parts/shells:chat/groups/`
+当前用户已加入的联邦群 / DM 摘要，按 DAG 消息活动时间排序。
 
-### GET /api/parts/shells:chat/:chatid/chars
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天中的角色列表。
+### `POST /api/parts/shells:chat/groups/`
+- **普通群**：`name`、`description`、`defaultChannelName`、`defaultChannelId` 等 → `201` + `groupId`、`defaultChannelId`。
+- **DM**：`{ "template": "dm", "myPubKeyHex": "…", "peerPubKeyHex": "…" }`（各 64 hex，均走 ECDH，§14）。
+  - 可选 `dmIntroNonce` + `dmIntroSignatureHex`（DM Link proof，成对出现）
+  - 响应可含 `dmSessionTag`、`dmRoomLabelPrefix`
 
-### GET /api/parts/shells:chat/:chatid/plugins
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天已加载的插件列表。
+### `DELETE /api/parts/shells:chat/groups/:groupId`
+删除整群本地 DAG 数据；需当前成员具备 `ADMIN` 或 `MANAGE_ADMINS`。普通成员退群用 `POST …/groups/leave`（body `groupIds` 数组，单群亦传一项）。
 
-### GET /api/parts/shells:chat/:chatid/log
-- 路径：chatid 为会话 ID。查询：`start`、`end`（可选，整数，消息索引范围）。
-- 用途：获取该聊天的消息日志。
+### `DELETE /api/parts/shells:chat/sessions/:groupId`
+删除本机会话数据（角色私聊 / 本地 chat 目录），无群管理员权限要求。Hub 私聊删除应使用此路由。
 
-### GET /api/parts/shells:chat/:chatid/log/length
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天消息条数。
+### `GET /api/parts/shells:chat/groups/:groupId/channels/:channelId/export`
+导出频道完整归档 JSON（`format: fount-channel-archive`）：冷热历史终态、删除墓碑、反应计数、附件元数据。需 `VIEW_CHANNEL`。
 
-### GET /api/parts/shells:chat/:chatid/persona
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天当前用户 persona 名称等信息。
+### `POST /api/parts/shells:chat/groups/:groupId/channels/import`
+将频道归档导入为**当前群的新 text 频道**（multipart 字段 `archive`，或 JSON body）。需 `MANAGE_CHANNELS`。历史由导入者重新签名，附 `importedFrom`；不嵌入附件二进制。响应 `{ channelId, messageCount }`。
 
-### GET /api/parts/shells:chat/:chatid/world
-- 路径：chatid 为会话 ID。
-- 用途：获取该聊天当前 world 名称等信息。
+### `GET /api/parts/shells:chat/groups/:groupId/state`
+分层 DTO：`{ meta, viewer, federation }`。
+- **meta**：`channels`、`groupSettings`、`roles`、`pinsByChannel`、`members`（`{ memberKey, kind, ownerPubKeyHash?, … }`）、`bannedMembers`（`{ memberKey }`）、`memberCount`、`consensusBranchTip`、`localViewBranchTip` 等物化字段。
+- **viewer**：`isMember`、`memberKey`、`entityHash`、`roles`、`suspectedRemoved` 等当前用户视角。
+- **federation**：联邦同步/隔离相关字段。
 
-### PUT /api/parts/shells:chat/:chatid/timeline
-- 路径：chatid 为会话 ID。Body：JSON。`delta`（时间线/上下文切片变更结构）。
-- 用途：修改该聊天的时间线/上下文切片。
+### `GET /api/parts/shells:chat/reputation`
+全局主观信誉表（`loadReputation()`，非群 scoped）。
 
-### PUT /api/parts/shells:chat/:chatid/persona
-- 路径：chatid 为会话 ID。Body：JSON。`personaname`（字符串），personas 下的 part 名称。
-- 用途：设置该聊天的用户 persona。
+### `GET /api/parts/shells:chat/groups/:groupId/events`
+查询：`since`、`limit`、`channelId`（可选）。`syncScope === 'channel'` 时仅返回该频道懒加载切片。
 
-### PUT /api/parts/shells:chat/:chatid/world
-- 路径：chatid 为会话 ID。Body：JSON。`worldname`（字符串），worlds 下的 part 名称。
-- 用途：设置该聊天的 world。
+### `POST /api/parts/shells:chat/groups/:groupId/events/signed`
+批量追加远程已签名联邦 DAG 事件行（完整 signed event 体）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/events/local`
+批量追加本地未签名授权类 DAG 事件（简体形，经 `localAuthz` 校验）。
+
+### `GET /api/parts/shells:chat/groups/:groupId/snapshot`
+本地 checkpoint 快照 JSON。
+
+### `GET /api/parts/shells:chat/groups/:groupId/search`
+Query：`q`（≥2 字符）、`channelId?`、`limit`（默认 30，最大 100）。跨频道全文搜索（bigram+词元倒排索引，子串真值校验）；过滤成员资格与 personal block；响应 `{ query, items[] }`（含 `eventId`、`channelId` 定位字段）。
+
+### `GET /api/parts/shells:chat/groups/:groupId/members/page/:idx`
+活跃成员分页（每页 ≤500）；成员行 `{ memberKey, kind, ownerPubKeyHash?, … }`；含 `membersRoot`、`membersPagesCount`。
+
+### `GET /api/parts/shells:chat/groups/:groupId/dag/tips`
+当前 DAG 叶 id；≥2 表示分叉。响应含 `tipScores`（主观分）与 `tipConsensusScores`（客观治理事件计数）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/dag/merge-tips`
+写入 `dag_tip_merge` 合并全部叶；需 `MANAGE_CHANNELS`。
+
+### `GET /api/parts/shells:chat/groups/:groupId/peers`
+P2P roster + 用户级 `network.json`（`trustedPeers`、`explorePeers`）与 `denylist.json`（`blockedPeers` 视图）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/federation/catchup`
+向邻居补洞同步。响应含 `tipsCollected`、`wantIds`、`eventsFilled`、`wantIdsStillMissing`、`wantIdsRateLimited`（出站 wantIds 退避时为 true）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/federation/join-snapshot`
+入群后向邻居请求 `fed_join_snapshot_*`：校验通过后写入本地 `snapshot.json` 并触发物化；附带明文 `channelHistories`（每频道最多 500 行）。DAG 事件仍须 gossip/catchup 补齐。
+
+### `POST /api/parts/shells:chat/groups/:groupId/federation/rotate-room-secret`
+写入或轮换群级 `roomSecret`（`group_settings_update`）；需 `ADMIN` 或 `MANAGE_ADMINS`。
+
+### `POST /api/parts/shells:chat/groups/:groupId/federation/rebind`
+按当前活跃频道触发联邦分区重绑（确保 `sync + ch-xx` 已 join）。body: `{ channelId? }`。
+
+### `POST /api/parts/shells:chat/groups/:groupId/federation/tuning`
+更新联邦调优参数（写 DAG `group_settings_update`）：`federationPartitionCount`（2-64）、`rtcConnectionBudgetMax`（8-128）、`rtcJoinRatePerMin`（4-60）；需 `ADMIN` 或 `MANAGE_ADMINS`。
+
+### `POST /api/parts/shells:chat/groups/:groupId/invite-ticket`
+签发短时群邀请码（默认 TTL 1h）；响应含 `signalingAppId`、`roomSecret`、`introducerPubKeyHash` 与 `clipboardText` 深链；需 `INVITE_MEMBERS` 或 `ADMIN`/`MANAGE_ADMINS`。无 `roomSecret` 时 `409`。
+
+### `POST /api/parts/shells:chat/groups/:groupId/join`
+Body：`inviteCode?`、`signalingAppId?`、`roomSecret?`（首次联邦 bootstrap）、`pow?`、`introducerPubKeyHash?`、`reputationEdge?`、`dmIntroNonce?`、`dmIntroSignatureHex?`（DM 引荐时 `introducerPubKeyHash` 与 nonce/签名配套）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/fork/block-opposing`
+body: `{ "acceptedTipId": "<64 hex DAG tip>" }` — 将**非**该叶的其他分支上治理类事件签发者写入用户 `denylist.json`（§0.5）。
+
+### `POST /api/parts/shells:chat/groups/:groupId/fork`
+治理分叉：复制分支为新 `groupId`。
+
+### `PUT /api/parts/shells:chat/groups/:groupId/governance-branch`
+选定本地治理分支 tip。
+
+### 无状态入群 PoW（`joinPolicy=pow`）
+
+`member_join.content.powSolution` 为 `{ anchorRef, epoch, nonce, joinerNodeHash? }`：`anchorRef` 须为群近期 DAG tip 或 checkpoint root；`sha256(groupId:anchorRef:joinerNodeHash:epoch:nonce)` 前导零 bit ≥ `groupSettings.powDifficulty`。邀请票响应含 `powAnchors` / `powAnchorRef` 供新人离线求解；checkpoint 已收录的历史 join replay 豁免 PoW。
 
 ---
 
-## 单会话：消息与角色
+## 实体私有偏好与发现（HTTP 恒 operator；与 `groups/` 并列）
 
-### POST /api/parts/shells:chat/:chatid/message
-- 路径：chatid 为会话 ID。Body：JSON。`reply`（对象），含消息内容及可选 `files`（文件中 buffer 为 base64 等，见后端约定）。
-- 用途：向该聊天追加一条用户消息。
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET/PUT | `/trusted-authors` | 不安全渲染可信作者 `pubKeyHash[]` |
+| GET/PUT | `/bookmarks` | operator 实体私有 `{ entries: [{ groupId, channelId, eventId, title?, href? }] }`（存 `entities/{entityHash}/bookmarks.json`） |
+| GET | `/inbox?kinds=&limit=&cursor=` | operator inbox `{ items[], nextCursor, unreadCount }`（newest-first；无换收件人参数） |
+| GET/PUT | `/inbox/seen` | operator 已读水位 `{ seenAt }` |
+| GET | `/groups/:groupId/mentions/suggest?q=&limit=` | 群内 @ autocomplete `{ suggestions: [{ entityHash, displayName, memberKey, kind }] }` |
+| GET/PUT | `/group-folders` | Hub 侧栏文件夹 `{ folders: [...] }`（operator 实体私有） |
+| GET/PUT | `/aliases` | `{ entities, groups }` petnames（operator 实体私有） |
+| GET/PUT | `/notify-prefs` | 通知偏好（存储名 `notificationPreferences`；operator 实体私有） |
+| GET/PUT | `/translation-prefs` | `{ prefs: { autoTranslate, targetLocale?, excludeLocales? } }`（实体私有） |
+| POST | `/translate` | body `{ text, targetLang }` → `{ translated, cached }` |
+| GET/PUT | `/care` | 特别关心列表；PUT body `{ targetEntityHash, cared? }` |
+| GET/PUT | `/custom-emojis` | 自定义表情（operator 实体私有） |
+| POST | `/custom-emojis/save` | 保存他人表情到库 |
+| GET | `/groups/:groupId/emojis` | 群自定义表情 manifest |
+| POST | `/groups/:groupId/emojis` | 上传群表情（multipart `emoji`） |
+| DELETE | `/groups/:groupId/emojis/:emojiId` | 删除群表情 |
+| GET | `/groups/:groupId/emojis/:emojiId/data` | 表情二进制；按 contentHash CAS 就近复用；`?json=1` 返回 dataUrl + contentHash |
+| GET | `/emoji-content/:groupId/:emojiId` | 非成员可读表情内容（同上解析路径） |
+| GET | `/groups/:groupId/preview` | 群卡片预览（公开信息；私密群隐藏加入入口） |
+| GET | `/discovery` | 本地群发现索引（`?limit=`）；条目含 `sources[]` 来源 node |
+| POST | `/discovery/refresh` | 向已加入群联邦邻居广播 `discovery_announce` |
 
-### PUT /api/parts/shells:chat/:chatid/message/:index
-- 路径：chatid、index（消息索引，整数）。Body：JSON。`content`（与 reply 结构类似）。
-- 用途：编辑指定索引的消息。
+**用户级 P2P**：网络传输 `GET/PUT /api/p2p/federation`（identity、relayUrls、batterySaver）；实体面 `GET /api/parts/shells:chat/viewer`（operator entity + profile + `agents[]`）；`GET/PUT /api/parts/shells:chat/entities/:entityHash` 及 avatar/status/heartbeat/rotate/revoke（本机可写直写；声明主人对远端实体时 `PUT`/avatar/banner 经主人 EVFS `owned/{target}/profile_update/*` 发布，HTTP 202 `{ queued, contentHash, ts }`）；`GET /api/parts/shells:chat/entities/search?q=`（≥2 字符）按 handle 精确 / 展示名模糊在信任图多跳搜实体，响应 `{ query, entities[] }`（含 `handle`、`name`、`activePubKeyHex`、`nodeScore`、交互标志）；`PUT /api/parts/shells:chat/entities/owner` body `{ ownerEntityHash: string|null }` 设置/清除当前 operator 的所属主人（identity + profile + 群内 `member_owner_update`）。群传输密钥仍在 DAG `groupSettings.roomSecret`。Profile 公开负载含顶层 `handle`（`[a-z0-9_.-]{2,32}`，不唯一）与 `activePubKeyHex`/`keyGeneration`。
 
-### DELETE /api/parts/shells:chat/:chatid/message/:index
-- 路径：chatid、index（消息索引）。
-- 用途：删除指定索引的消息。
+**群设置（发现）**：`group_settings_update` 可写 `discoveryPublic`、`discoveryTitle`、`discoveryBlurb`（不含 `roomSecret`）。另含 `eventRetentionDepth`、`eventRetentionMs`、`compactTriggerEventDepth`、`messageRateLimitPerMin`、`iceServers`（WebRTC；TURN 凭据仅本机物化）、`autoChannelGc`（默认 true：物化时自动删除沉寂孤岛频道，每次最多 2 个）。联邦调优三字段经 `POST …/federation/tuning` 写入：`federationPartitionCount`、`rtcConnectionBudgetMax`、`rtcJoinRatePerMin`。本地 `messages/{channelId}.jsonl` 为明文展示侧车；DAG `events.jsonl` 仍为 GSH 密文。
 
-### PUT /api/parts/shells:chat/:chatid/message/:index/feedback
-- 路径：chatid、index（消息索引，整数）。Body：JSON。`type`（`'up'` 或 `'down'`，必填）和可选的 `content`（字符串，反馈原因说明）。
-- 用途：为指定索引的消息设置用户反馈（赞/踩及可选说明）。反馈会被注入到 LLM 上下文中，引导模型在后续对话中自我修正。
+**联邦 action（除既有 dag/gossip/chunk 外）**：`fed_bootstrap_request` / `fed_bootstrap_response`（房间口令轮换后恢复）；`discovery_announce` / `discovery_query` / `discovery_query_response`（`advertisements`）；`mailbox_put` / `mailbox_want` / `mailbox_give`（离线 DM 存转：按收件人×发送者桶配额淘汰，入站按来源节点限速，开放转发 + 信任优先路由）；`fed_partition_bridge`（跨分区桥接，TTL 与去重限制，过载时按优先级丢弃）。线协议无版本字段，破坏性变更靠 action 名与字段形状区分。
 
-### POST /api/parts/shells:chat/:chatid/trigger-reply
-- 路径：chatid 为会话 ID。Body：JSON。`charname`（字符串，可选），指定要回复的角色；不传则按会话逻辑触发回复。
-- 用途：触发角色在该聊天中生成回复。
+**HLC 入站**：联邦相关类型若未来 skew 超 `hlcMaxSkewMs`，消息类写入 `quarantine.jsonl` 待时钟恢复后重放，其余 aclGated 类型硬拒；`session_*` 仅本地 append 允许，联邦入站拒收。
 
-### POST /api/parts/shells:chat/:chatid/char
-- 路径：chatid 为会话 ID。Body：JSON。`charname`（字符串，必填），chars 下的 part 名称。
-- 用途：向该聊天添加角色。
+**贴纸**（前缀 `/api/parts/shells:chat/stickers/`）：`POST /import` body `{ dataUrl: "data:image/…;base64,…", name? }` — 写入用户「我的收藏」包并加入收藏（§6）。
+| POST | `/attachments` | multipart 聊天附件入库，响应 `{ hashes: string[] }` |
+| GET | `/attachments/:hash` | 按 BLAKE2b hash 取附件字节 |
 
-### DELETE /api/parts/shells:chat/:chatid/char/:charname
-- 路径：chatid、charname（角色名）。
-- 用途：从该聊天移除指定角色。
+**深链（§16）**：canonical `fount://run/shells:chat/dm;<pubKeyHex>;<nonce>;<introSignatureHex>[;nodeUrl]` 与 `…/join;<groupId>;<inviteCode>[;<roomSecret>[;<introducerPubKeyHash>]]`。`member_join.content.introducerPubKeyHash` 物化进 `inviteEdges` 供信誉连坐。`peer_invite.fileKeyWraps` 入群后导入群文件主密钥代际。`public/shared/runUri.mjs`。站外分享：`https://steve02081504.github.io/fount/protocol?url=` + encodeURIComponent(runUri)。
 
-### PUT /api/parts/shells:chat/:chatid/char/:charname/frequency
-- 路径：chatid、charname。Body：JSON。`frequency`（数字等，发言频率配置）。
-- 用途：设置该角色在此聊天中的发言频率。
+---
 
-### POST /api/parts/shells:chat/:chatid/plugin
-- 路径：chatid 为会话 ID。Body：JSON。`pluginname`（字符串，必填），plugins 下的 part 名称。
-- 用途：为该聊天添加插件。
+## DAG session 事件（AI 编排真源）
 
-### DELETE /api/parts/shells:chat/:chatid/plugin/:pluginname
-- 路径：chatid、pluginname。
-- 用途：从该聊天移除指定插件。
+写入 `events.jsonl` 并物化为 `state.session`：`session_char_bind` / `session_char_unbind` / `session_world_bind` / `session_world_bind_channel` / `session_world_clear` / `session_persona_set` / `session_char_frequency_set`。插件名单为节点本地 `local_plugins.json`（不入 DAG）。频道 `message` 可含 `content.sessionSnapshot` 供历史水合。
+
+`world_state`：共享世界状态（`content`: `worldname`, `action` (`set`|`delete`), `key`, `value?`）；物化到 `state.worldStates[worldname]`（HLC LWW）。replicated/hosted world 经 `WorldChatHost.state` 读写；`localData` 为本机私有 JSON。联邦入站 content 上限 64KB。
+
+`session_world_bind` / `session_world_bind_channel` 的 `content` 含 `worldname`、`ownerUsername`、`homeNodeHash`（`local` 分布可缺省）、`distribution`（`'local' | 'replicated' | 'hosted'`，绑定者从本机 world part 读出，缺省 `hosted`）。`resolveWorld` 按 `distribution` 决定本机执行或 RPC；未绑定/未安装时回退内置 `BUILTIN_WORLD`（`distribution: 'local'`）。
+
+**写路径（DAG-first）**：human（Hub `POST …/messages` 与 CLI `send`）→ persona `BeforeUserSend` → `commitChannelMessageEvent`；char / greeting 同进该门面。world `AddChatLogEntry` 为落盘前改写/拒绝；`AfterAddChatLogEntry` 仅在 `broadcastAndPersist` 对 `message`（及流式终稿 `message_edit`）触发一次。canonical `message` content：全员 `displayName`/`displayAvatar`；生成类另附 `sessionSnapshot`/`chatLogEntryId`。内存 `chatLog` 仅为 hydration 缓存。
+
+**Chat 日志类型**：权威定义在 `src/decl/chatLog.ts`（`timeSlice` 存于 `extension.timeSlice`；含 `channelMessageContent_t` / `file_t` / `chatViewer_t`）；shell `decl/chatLog.ts` 仅 re-export。persona `BeforeUserSend` / `GetChatLogForViewer` 见 `src/decl/userAPI.ts`。未绑定 world/persona 时 shell 用内置极小实现（`BUILTIN_WORLD` / `BUILTIN_PERSONA`）。
+
+**跨节点 RPC**：群 WS `group_ws_rpc_identity`（`clientNodeId` = 本机 node UUID）+ `rpc_call`（`targetNodeId` 定向）。**RPC 线协议** `memberId`：`owner:charname`（角色）、`owner:world:worldname`（世界）、`owner:persona:name`（人格）。**会话/viewer 层**另用 entity hash 作主键（`chatViewer_t.memberId`、`GetSpeakingOrder` turn 等）。`GetReply` 参数为 `SerializableRequest` `{ groupId, channelId, charname, replicaUsername }`；执行端本地 `getChatRequest`（含 `other_personas` 远程 persona proxy）后生成并 mirror DAG。`other_chars` 为常驻频率∪频道活跃 Top-N（`groupSettings.otherCharsActiveLimit`，默认 8）。本机插件名单仅 `local_plugins.json`；world `GetChatPlugins` 在本机 merge（同名本机优先），hosted 仅主机侧生效。
+
+---
+
+## 单群：chatLog 会话层
+
+路径前缀：`/api/parts/shells:chat/groups/:groupId/`
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/initial-data` | 角色、persona、world、插件、日志摘要 |
+| GET | `/chars` | 角色列表 |
+| GET | `/plugins` | 插件列表 |
+| GET | `/persona` / `/world` | 当前 persona / world |
+| PUT | `/persona` | Body：`personaname` |
+| GET | `/branch` | 当前 RPG 分支索引与条目摘要 |
+| PUT | `/world` | Body：`worldname` |
+| PUT | `/branch` | Body：`delta` 或 `{ latest: true, channelId? }`；RPG 分支导航 |
+| POST/DELETE | `/char`、`/char/:charname` | 增删角色 |
+| PUT | `/char/:charname/frequency` | 发言频率 |
+| POST/DELETE | `/plugin`、`/plugin/:pluginname` | 增删插件 |
+
+---
+
+## 频道与联邦消息
+
+前缀：`/api/parts/shells:chat/groups/:groupId/channels/:channelId/`
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| POST | `/messages` | 发 DAG `message`（human 唯一入口；先 persona `BeforeUserSend`）；需 `SEND_MESSAGES`。content 可带 `locale`、`content_warning`、`sensitive_media`、`forwardedFrom`、`replyTo`（内联引用：`{ eventId, senderName?, preview? }`）、`fileAlts`。agent 自动触发替代载荷字段名为 `generated`（非 quote-reply） |
+| GET | `/member-read-markers` | 本机侧车视角各成员水位 `{ markers: { [entityHash]: { eventId, seq } } }` |
+| PUT | `/read-marker` | body `{ eventId, seq }`；写入实体 readMarkers + 群成员侧车；WS `read_marker`（含 `entityHash`） |
+| GET | `/messages` | raw 查询 `since`、`before`、`limit`；合并 overlay；返回 `{ messages, reactions }`（治理/调试；不含 world/persona 视图滤镜） |
+| GET | `/view-log` | viewer 视图（本机 user）：同 query；物化后 world→persona 滤镜再投影回行 DTO；Hub 主读口；`{ messages, reactions }` |
+| POST | `/view-log/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 **viewer 投影**行 + reactions（导航/编辑补拉；被滤 id 不返回） |
+| POST | `/messages/batch-get` | body `{ eventIds: string[] }`（≤500）；按 id 批量取 raw 行 + reactions（治理/审计） |
+| PUT | `/messages/:eventId` | DAG `message_edit`；先 persona `BeforeUserEdit` + world `MessageEdit`；body `{ content: object }` |
+| DELETE | `/messages/:eventId` | DAG `message_delete`；先 persona `BeforeUserDelete` + world `MessageDelete` |
+| PUT | `/messages/:eventId/feedback` | DAG `message_feedback`（`up`/`down`） |
+| POST | `/reactions` | `{ targetEventId, emoji }` — 添加反应 |
+| DELETE | `/reactions` | body `{ targetEventId, emoji, targetPubKeyHash? }` — 移除反应 |
+| POST | `/pins` | `{ targetEventId }`；需 `PIN_MESSAGES` |
+| DELETE | `/pins/:eventId` | 取消置顶；需 `PIN_MESSAGES` |
+| POST | `/votes` | 创建投票 `message`（`content.type: 'vote'`） |
+| POST | `/votes/:ballotId/cast` | `vote_cast` |
+| POST | `/trigger-reply` | 频道内触发角色回复 |
+| POST | `/threads` | 建子频道；需 `CREATE_THREADS` |
+| POST | `/streaming-auth` | 流媒体观看 token；频道 `type: streaming` 且配置 `streamingSfuWss` |
+| GET | `/call-status` | 群组通话状态 `{ active, peerCount, callId?, participants? }` |
+| POST | `/list-items` | 列表频道条目更新 |
+
+**群组通话**：文本频道顶栏「通话」→ WS `/ws/parts/shells:chat/call/:groupId/:channelId`（room=`groupId:channelId:call`，av-relay + roster）。首人入房发 `content.type:'call'` 卡片，参与者变化 `message_edit`，空房定稿 `status:'ended'`。屏幕共享用 `frame_type=2`。
+
+**流式（§6.4）**：DAG `message`（`is_generating: true`）→ VOLATILE `stream_chunk`（`pendingStreamId` = 占位 event id，`channelId` 必填，`chunkSeq` + `slices` diff 数组，Ed25519 签名）→ DAG `message_edit` 终稿。超时未终稿由 `streamGeneratingIdleMs`（默认 150000ms）标记失败。
+
+---
+
+## 角色与权限
+
+| 方法 | 路径 |
+|------|------|
+| POST | `…/groups/:groupId/roles` |
+| PUT | `…/groups/:groupId/roles/:roleId` |
+| PUT | `…/groups/:groupId/roles/:roleId/permissions` |
+| DELETE | `…/groups/:groupId/roles/:roleId` |
+
+---
+
+## 成员治理
+
+| 方法 | 路径 |
+|------|------|
+| POST | `…/groups/:groupId/members/:pubKeyHash/kick` |
+| POST | `…/groups/:groupId/members/:pubKeyHash/ban` |
+| POST | `…/groups/leave` | 退群（body `{ groupIds }`；`member_leave` + 删除本机群数据，服务端有限并发） |
+| POST | `…/groups/:groupId/members/:pubKeyHash/unban` |
+| POST | `…/groups/:groupId/file-key-rotate` | 轮换群文件主密钥 GSH |
+| POST | `…/groups/:groupId/owner-succession` | 多管理员联署接替群主（MANAGE_ADMINS 转移）；body: `{ proposedOwnerPubKeyHash, ballotId, adminSignatures: [{ pubKeyHex, signature }], thresholdRatio? }` |
+
+---
+
+## 群文件（§10.3 收敛加密）
+
+| 方法 | 路径 |
+|------|------|
+| POST | `…/groups/:groupId/chunks/have` | 预检 `{ data }` 或 `{ ciphertextHash, size }`；`have: true` 时客户端 `registerOnly` 跳传 |
+| POST | `…/groups/:groupId/chunks` | 上传块；body 可加 `registerOnly: true`（密文已存在时仅登记 wrappedKey） |
+| POST | `…/groups/:groupId/files` | 登记消息附件元数据 → DAG `file_upload` |
+| DELETE | `…/groups/:groupId/files/:fileId` | DAG `file_delete` |
+| GET | `…/groups/:groupId/files/:fileId/meta` | 含 `uploaderPubKeyHash`（物化自 `file_upload.sender`） |
+| GET | `…/groups/:groupId/files/:fileId/download-status` | 分片下载任务摘要（`done/total/percent/status/seededAt`） |
+| POST | `…/groups/:groupId/files/:fileId/download-resume` | 触发断点续传并返回当前下载任务状态 |
+| POST | `…/groups/:groupId/cabinets/bind` | 绑定共享柜 `{ cabinet_id, name?, write_pubkey?, role_access }` → DAG `cabinet_bind`（须 `ADMIN`/`MANAGE_ADMINS`） |
+| POST | `…/groups/:groupId/cabinets/unbind` | 解绑 `{ cabinet_id }` → DAG `cabinet_unbind`（须 `ADMIN`/`MANAGE_ADMINS`） |
+
+消息附件字节：`GET /api/parts/shells:chat/entities/{groupEntityHash}/files/chat/{fileId}`。
+
+`GET …/state` 响应含 `cabinets`（role→rw/ro）、`files[]`（消息附件摘要）。目录管理在 Cabinet 共享柜。
+
+不可验证 `reputation_slash`（无 `verified`/`proof`）经联邦 VOLATILE `reputation_slash_alert` 传播（TTL=`slashAlertTtl`），不入 DAG；可验证类仍 `POST …/events/signed` 或本地 `POST …/events/local`。
+
+---
+
+## VOLATILE（WebSocket，不入 DAG）
+
+- `typing`、`stream_chunk`（`slices` diff + 签名；结束 = `message_edit`，无 `stream_end`）
+- `stop_generation`（控制帧）
+- `channel_message`、`dag_event`、`message_replaced` 等由服务端推送
+
+---
+
+## ChatClient 对象模型（进程内 API）
+
+import 入口：`src/public/parts/shells/chat/src/api/client/index.mjs` → `getChatClient(username, entityHash?)`。
+
+- **统一实体模型**：人类与本机 agent 同为实体；缺省 entityHash = operator。HTTP 路由薄封装恒为 operator；agent 只经本入口绑定自身实体。无私有状态换身份参数。
+- **写事件**：该实体 per-group `local_signer_seed` 自签；权限主体恒为 `sender`。无代签 / `acting*` 归因字段。
+- **对象**：`ChatClient` → `Group` → `Channel` / `Member` / `Role`；`Message` 由 `channel.send` 或 `client.messageFrom(onMessageEvent)` 水合。
+- **生命周期**：`createGroup` / `openDm` / `join` 均以绑定实体签名（DM 对端须为可解析用户 pubKeyHash）。
+- **私有状态**：`bookmarks` / `groupFolders` / `aliases` / `readMarkers` / `notifications` / `inbox` / `emojis` / `stickers` / `care` 均挂在绑定实体目录下。
+- **会话 / 联邦 / 节点**：`Group.session.*`、`Group.federation.catchup/setTuning`、`Group.fork/blockOpposingFork`、`Group.reputation`、`ChatClient.reputation`、`ChatClient.nodeDenylist`、`Channel.triggerReply` / `streamingAuth`、`updateProfile` / `updateEntityProfile` / `setOwner`。
+- **写路径**：消息发送走 `commitChannelMessageEvent`；其余写操作走 `appendSignedLocalEvent(..., { entityHash })`。
+- **桥接群**：`group.bridge` 含 `platform` / `platformChatId` / `chatKind` / `botname`；平台操作经 `requireBridgeOperation`；`group.bridgeBot().stop()` / `client.bridgeBots()`。无 char 级杀进程。
+- **code_execution**：`getChatRequest` 注入 `fount_chat` → `{ fount: { chat, group, channel, message? } }`；平台插件另注入原生命名空间。沙箱不暴露 `bridgeOperations`。
+
+壳级说明见 `public/AGENTS.md`；操作平权见 `docs/review/human-agent-operational-parity-review.md`。

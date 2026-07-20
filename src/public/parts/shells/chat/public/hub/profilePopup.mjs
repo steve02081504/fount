@@ -1,0 +1,313 @@
+/**
+ * 【文件】public/hub/profilePopup.mjs
+ * 【职责】点击头像/作者链接触发的轻量资料弹层：解析锚点实体并展示只读资料摘要。
+ * 【原理】`showProfilePopup` / `dismissProfilePopup` 管理单例 popup DOM 定位与关闭；从消息行 `data-author` 等属性解析实体；不修改频道列表 HTML 结构。
+ * 【数据结构】store（core/state）及本模块函数入参/返回值；详见 JSDoc。
+ * 【关联】../../../../scripts/template、../../../../scripts/toast、shared/entityHash、fount-p2p/core/hexIds、core/state、entityProfile、entityResolve、friendChat。
+ */
+import { isHex64 } from 'https://esm.sh/@steve02081504/fount-p2p/core/hexIds'
+
+import {
+	renderTemplate,
+	usingTemplates,
+} from '../../../../scripts/features/template.mjs'
+import { showToastI18n } from '../../../../scripts/features/toast.mjs'
+import { aliasForEntity, setEntityAlias } from '../shared/aliases.mjs'
+import { isCared, setCared } from '../shared/care.mjs'
+import { entityHashLabel, isEntityHash128 } from '../shared/entityHash.mjs'
+import { resolveDisplayName } from '../shared/nameResolve.mjs'
+import { promptText } from '../shared/promptText.mjs'
+import { formatSocialProfileHref } from '/parts/shells:social/shared/runUri.mjs'
+
+import { refreshAliasDependentUi } from './aliasUi.mjs'
+import { store } from './core/state.mjs'
+import {
+	loadEntityProfile,
+	paintEntityProfileUi,
+	wireProfileEditButton,
+} from './entityProfile.mjs'
+import { charAgentEntityHash, isViewerEntityHash } from './entityResolve.mjs'
+import { dispatchFriendChat } from './friendChat.mjs'
+import { hideHoverCard } from './presence.mjs'
+
+const LAYER_ID = 'profile-popup-layer'
+
+/** @returns {void} */
+export function dismissProfilePopup() {
+	document.getElementById(LAYER_ID)?.remove()
+}
+
+/**
+ * @param {object} member 群成员行
+ * @returns {object} 统一实体描述
+ */
+function userEntityFromMember(member) {
+	const entityHash = String(member?.entityHash || '').trim().toLowerCase()
+	const pubKeyHash = String(member?.pubKeyHash || '').trim().toLowerCase()
+	const displayName = aliasForEntity(entityHash)
+		|| String(member?.displayName || '').trim()
+		|| (entityHash ? entityHashLabel(entityHash) : '')
+		|| (pubKeyHash ? `${pubKeyHash.slice(0, 8)}…${pubKeyHash.slice(-4)}` : '?')
+	return {
+		entityHash: isEntityHash128(entityHash) ? entityHash : null,
+		charname: null,
+		pubKeyHash: isHex64(pubKeyHash) ? pubKeyHash : null,
+		pubKeyHex: member?.pubKeyHex || null,
+		displayName,
+	}
+}
+
+/**
+ * @param {string} charname 角色 part 名
+ * @param {string} [label] 展示名
+ * @returns {object | null} 实体描述
+ */
+async function charEntityFromName(charname, label) {
+	const name = String(charname || '').trim()
+	if (!name) return null
+	const entityHash = await charAgentEntityHash(name)
+	if (!entityHash) return null
+	return {
+		entityHash,
+		charname: name,
+		pubKeyHash: null,
+		pubKeyHex: null,
+		displayName: String(label || '').trim() || name,
+	}
+}
+
+/**
+ * @param {HTMLElement} anchor 点击锚点
+ * @returns {object | null} 实体描述（含 `entityHash`）
+ */
+export async function resolveEntityFromAnchor(anchor) {
+	if (!(anchor instanceof HTMLElement)) return null
+
+	const charRow = anchor.closest('.list-item-char')
+	if (charRow?.dataset.char)
+		return charEntityFromName(charRow.dataset.char, charRow.dataset.char)
+
+	const messageRow = anchor.closest('.message[data-message-id]')
+	const charId = messageRow?.dataset.charId?.trim()
+	if (charId)
+		return charEntityFromName(charId, charId)
+
+	const memberItem = anchor.closest('.member-item')
+	const memberCharId = memberItem?.dataset.charId?.trim()
+	if (memberCharId) {
+		const label = memberItem?.querySelector('.member-name')?.textContent?.trim()
+		return charEntityFromName(memberCharId, label || memberCharId)
+	}
+	const memberKey = memberItem?.dataset.memberKey?.trim()
+	const avatarFor = anchor.dataset.avatarFor
+		|| anchor.closest('[data-avatar-for]')?.dataset.avatarFor
+		|| memberItem?.querySelector('[data-avatar-for]')?.dataset.avatarFor
+	const authorHash = messageRow?.dataset.authorPubkeyHash?.trim()
+	const displayKey = String(avatarFor || memberKey || authorHash || '').trim().toLowerCase()
+	if (!displayKey || displayKey === '?') return null
+
+	const members = store.context.currentState?.members || []
+	const memberRow = members.find(m =>
+		m.entityHash === displayKey
+		|| m.memberKey === displayKey
+		|| m.pubKeyHash === displayKey
+		|| m.pubKeyHash === memberKey
+		|| m.pubKeyHash === authorHash,
+	)
+
+	if (memberRow?.charname)
+		return charEntityFromName(memberRow.charname, memberRow.displayName || memberRow.charname)
+	if (memberRow) return userEntityFromMember(memberRow)
+	if (isEntityHash128(displayKey)) {
+		const bound = store.sidebar.groups.find(g => g.friendBinding?.entityHash === displayKey)?.friendBinding
+		if (bound?.charname)
+			return await charEntityFromName(bound.charname, bound.displayName || bound.charname)
+		return {
+			entityHash: displayKey,
+			charname: null,
+			pubKeyHash: null,
+			pubKeyHex: null,
+			displayName: resolveDisplayName({ entityHash: displayKey, alias: aliasForEntity(displayKey) }),
+		}
+	}
+	if (isHex64(displayKey))
+		return {
+			entityHash: null,
+			charname: null,
+			pubKeyHash: displayKey,
+			pubKeyHex: null,
+			displayName: `${displayKey.slice(0, 8)}…${displayKey.slice(-4)}`,
+		}
+	return null
+}
+
+/**
+ * @param {HTMLElement} popup 弹层根节点
+ * @param {object} entity 实体
+ * @returns {Promise<void>}
+ */
+async function paintProfilePopup(popup, entity) {
+	const { entityHash } = entity
+	const groupId = store.context.currentGroupId || undefined
+	const profile = entityHash
+		? await loadEntityProfile(entityHash, { bypassCache: true, groupId })
+		: null
+
+	if (profile)
+		await paintEntityProfileUi(popup, profile, { attribution: entity.attribution || null })
+	else {
+		const nameElement = popup.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = entity.displayName || '?'
+		const { paintEntityProfileExtras } = await import('../shared/entityProfileCard.mjs')
+		paintEntityProfileExtras(popup, { attribution: entity.attribution || null })
+	}
+
+	const alias = aliasForEntity(entityHash)
+	if (alias) {
+		const nameElement = popup.querySelector('[data-entity-profile-name]')
+		if (nameElement) nameElement.textContent = alias
+	}
+
+	const editButton = popup.querySelector('[data-profile-popup-edit]')
+	const dmButton = popup.querySelector('[data-profile-popup-dm]')
+	const socialButton = popup.querySelector('[data-profile-popup-social]')
+
+	if (editButton instanceof HTMLButtonElement && entityHash)
+		wireProfileEditButton(popup, entityHash, {
+			profile,
+			/**
+			 * 资料保存后刷新弹窗与侧栏角色卡。
+			 * @returns {Promise<void>}
+			 */
+			onSaved: async () => {
+				await paintProfilePopup(popup, entity)
+				if (entity.charname) {
+					const { renderCharInfoCardActive, getCharDetails } = await import('./charCard.mjs')
+					await renderCharInfoCardActive(entity.charname, await getCharDetails(entity.charname))
+				}
+				if (isViewerEntityHash(entityHash))
+					void import('./init.mjs').then(({ refreshViewerHubPresentation }) => refreshViewerHubPresentation())
+			},
+		})
+
+	if (dmButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const canDm = !isSelf && (entity.charname || isHex64(entity.pubKeyHex))
+		dmButton.hidden = !canDm
+		dmButton.dataset.i18n = entity.charname
+			? 'chat.hub.profilePopup.dmChar'
+			: 'chat.hub.profilePopup.dmFed'
+	}
+
+	if (socialButton instanceof HTMLButtonElement)
+		socialButton.hidden = !isEntityHash128(entityHash)
+
+	const aliasButton = popup.querySelector('[data-profile-popup-alias]')
+	if (aliasButton instanceof HTMLButtonElement) {
+		aliasButton.hidden = !isEntityHash128(entityHash)
+		if (!aliasButton.hidden)
+			/**
+			 *
+			 */
+			aliasButton.onclick = () => {
+				void (async () => {
+					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+					const current = popup.querySelector('[data-entity-profile-name]')?.textContent?.trim() || ''
+					const next = await promptText(
+						geti18n('chat.hub.profilePopup.setAliasPrompt', { name: current }),
+						aliasForEntity(entityHash),
+					)
+					if (next == null) return
+					await setEntityAlias(entityHash, next)
+					showToastI18n('success', 'chat.hub.memberContext.aliasSaved')
+					await paintProfilePopup(popup, entity)
+					await refreshAliasDependentUi()
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
+	}
+
+	const careButton = popup.querySelector('[data-profile-popup-care]')
+	if (careButton instanceof HTMLButtonElement) {
+		const isSelf = isViewerEntityHash(entityHash)
+		const canCare = !isSelf && isEntityHash128(entityHash) && !!store.viewer?.operatorEntityHash
+		careButton.hidden = !canCare
+		if (canCare) {
+			const cared = await isCared(entityHash)
+			careButton.dataset.i18n = cared
+				? 'chat.hub.profilePopup.careRemove'
+				: 'chat.hub.profilePopup.care'
+			/**
+			 *
+			 */
+			careButton.onclick = () => {
+				void (async () => {
+					const next = !await isCared(entityHash)
+					await setCared(entityHash, next)
+					showToastI18n('success', next ? 'chat.hub.memberContext.careAdded' : 'chat.hub.memberContext.careRemoved')
+					careButton.dataset.i18n = next
+						? 'chat.hub.profilePopup.careRemove'
+						: 'chat.hub.profilePopup.care'
+					const { geti18n } = await import('../../../../scripts/i18n/index.mjs')
+					careButton.textContent = geti18n(careButton.dataset.i18n)
+				})().catch(error => {
+					showToastI18n('error', 'chat.hub.operationFailed', { error: error.message })
+				})
+			}
+		}
+	}
+
+}
+
+/**
+ * 在屏幕中央展示资料卡（点击触发，带遮罩与关闭按钮）。
+ * @param {object} entity 实体（含 `entityHash`）
+ * @returns {Promise<void>}
+ */
+export async function showProfilePopup(entity) {
+	if (!entity?.entityHash && !entity?.displayName) return
+	dismissProfilePopup()
+	hideHoverCard()
+	usingTemplates('/parts/shells:chat/src/templates')
+
+	const layer = document.createElement('div')
+	layer.id = LAYER_ID
+	layer.className = 'profile-popup-backdrop show'
+	layer.addEventListener('click', (event) => {
+		if (event.target === layer) dismissProfilePopup()
+	})
+
+	const popup = await renderTemplate('hub/profile_popup', {})
+	layer.appendChild(popup)
+	document.body.appendChild(layer)
+
+	popup.querySelector('[data-profile-popup-close]')?.addEventListener('click', () => dismissProfilePopup())
+
+	popup.querySelector('[data-profile-popup-dm]')?.addEventListener('click', () => {
+		dismissProfilePopup()
+		const dmEntity = entity.charname
+			? { type: 'char', id: entity.charname, displayName: entity.displayName, entityHash: entity.entityHash }
+			: { type: 'user', displayName: entity.displayName, pubKeyHex: entity.pubKeyHex, entityHash: entity.entityHash }
+		void dispatchFriendChat(dmEntity).catch(error => {
+			showToastI18n('error', 'chat.hub.profilePopup.dmFailed', { error: error.message })
+		})
+	})
+
+	popup.querySelector('[data-profile-popup-social]')?.addEventListener('click', () => {
+		if (!isEntityHash128(entity.entityHash)) return
+		window.location.href = formatSocialProfileHref(entity.entityHash)
+	})
+
+	await paintProfilePopup(popup, entity)
+}
+
+/**
+ * 注册资料弹层 Esc 关闭（由 wireEvents 显式调用）。
+ * @returns {void}
+ */
+export function wireProfilePopupDismiss() {
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape') dismissProfilePopup()
+	})
+}

@@ -1,0 +1,7 @@
+{
+	"name": "gentian_shell_contract",
+	"description": "龙胆 onMessage 壳层契约验收 fixture",
+	"author": "fount",
+	"version": "1.0.0",
+	"tags": ["test", "shell-contract"]
+}

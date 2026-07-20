@@ -1,106 +1,27 @@
 import fs from 'node:fs'
-import { join } from 'node:path'
+import path from 'node:path'
 
 import { httpError } from '../../../../../scripts/http_error.mjs'
 import { loadJsonFile } from '../../../../../scripts/json_loader.mjs'
-import { getPartBranches, getPartDetails, GetPartPath } from '../../../../../server/parts_loader.mjs'
+import { getPartDetails } from '../../../../../server/parts_loader.mjs'
+import { getRegistry, loadRegistryJsonEntries } from '../../../../../server/registries.mjs'
 import { loadShellData, saveShellData, loadTempData } from '../../../../../server/setting_loader.mjs'
 import { sendEventToUser } from '../../../../../server/web_server/event_dispatcher.mjs'
 
-const watchedDirs = new Set()
-
 /**
- * 更新指定用户缓存的成就注册表中的单个部件。
- * @param {string} username - 用户的名称。
- * @param {string} partpath - 部件的路径。
+ * 重建指定用户的成就注册表。
+ * @param {string} username - 用户名。
+ * @returns {Promise<void>} 无返回值。
  */
-function updatePartInRegistry(username, partpath) {
-	const registry = loadTempData(username, 'achievements_registry')
-	const dirPath = GetPartPath(username, partpath)
-	const registryPath = join(dirPath, 'achievements_registry.json')
-
-	const partExistsInRegistry = !!registry[partpath]
-	if (fs.existsSync(registryPath)) {
-		const partRegistry = loadJsonFile(registryPath)
-		if (partRegistry.achievements)
-			registry[partpath] = partRegistry.achievements
-		else if (partExistsInRegistry)
-			delete registry[partpath]
-		else return
-	}
-	else if (partExistsInRegistry)
-		delete registry[partpath]
-	else return
-
-	sendEventToUser(username, 'achievements-registry-updated', null)
-}
-
-/**
- * 监视指定部件的成就注册表文件的更改。
- * @param {string} username - 用户的名称。
- * @param {string} partpath - 部件的路径。
- */
-function watchRegistryFile(username, partpath) {
-	const dirPath = GetPartPath(username, partpath)
-	if (!fs.existsSync(dirPath)) {
-		console.log('watchRegistryFile', dirPath, 'does not exist')
-		console.trace()
-	}
-	if (!watchedDirs.has(dirPath)) try {
-		fs.watch(dirPath, (eventType, filename) => {
-			if (filename !== 'achievements_registry.json') return
-			console.log(`Achievements registry file changed in dir: ${dirPath}. Reloading.`)
-			updatePartInRegistry(username, partpath)
-		})
-		watchedDirs.add(dirPath)
-	} catch (e) {
-		console.error(`Failed to set up watch on ${dirPath}:`, e)
-	}
-}
-
-/**
- * 为指定用户首次构建完整的成就注册表。
- * @param {string} username - 用户的名称。
- * @returns {Promise<void>}
- */
-function buildRegistry(username) {
+async function buildRegistry(username) {
 	const registry = loadTempData(username, 'achievements_registry')
 	for (const key in registry) delete registry[key]
 
-	/**
-	 * 将部件分支树展开为路径数组。
-	 * @param {object} node - 当前分支节点。
-	 * @param {string[]} parents - 已有路径片段。
-	 * @returns {string[]} - 展开的部件路径。
-	 */
-	function flattenBranches(node, parents = []) {
-		const results = []
-		for (const key of Object.keys(node)) {
-			const nextParents = [...parents, key]
-			const path = nextParents.join('/')
-			results.push(path)
-			if (Object.keys(node[key]).length)
-				results.push(...flattenBranches(node[key], nextParents))
-		}
-		return results
-	}
-
-	const branches = getPartBranches(username)
-	const partpaths = flattenBranches(branches)
-
-	for (const partpath of partpaths) try {
-		const dirPath = GetPartPath(username, partpath)
-		const registryPath = join(dirPath, 'achievements_registry.json')
-
-		if (fs.existsSync(registryPath)) {
-			const partRegistry = loadJsonFile(registryPath)
-			if (partRegistry.achievements)
-				registry[partpath] = partRegistry.achievements
-		}
-		watchRegistryFile(username, partpath)
-	} catch (e) {
-		console.error(`Error loading achievement registry from ${partpath}:`, e)
-	}
+	const loaded = await loadRegistryJsonEntries(username, 'achievements')
+	for (const { entry, data } of loaded) 
+		if (entry.partpath && data && typeof data === 'object')
+			registry[entry.partpath] = data
+	
 }
 
 /**
@@ -243,6 +164,75 @@ export async function lockAchievement(username, partpath, achievementId, reason)
 		await unlockAchievement(username, 'shells/achievements', 'relock_by_clicking')
 
 	return {}
+}
+
+/** @type {Map<string, import('node:fs').FSWatcher>} */
+const achievementsRegistryWatchers = new Map()
+
+/**
+ * 从 registry JSON 解析成就定义。
+ * @param {unknown} raw - 原始 JSON。
+ * @returns {object | null} 成就定义对象，无法解析时返回 null。
+ */
+function parseAchievementsRegistryData(raw) {
+	if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+	if ('achievements' in raw && raw.achievements) {
+		const achievements = raw.achievements
+		return /** @type {object} */ achievements
+	}
+	if (!('achievements' in raw)) {
+		const obj = raw
+		return /** @type {object} */ obj
+	}
+	return null
+}
+
+/**
+ * 将单个部件的成就定义写入内存注册表并通知客户端。
+ * @param {string} username - 用户名。
+ * @param {string} partpath - 部件路径。
+ * @returns {void}
+ */
+function updatePartInRegistry(username, partpath) {
+	const registry = loadTempData(username, 'achievements_registry')
+	const entries = getRegistry(username, 'achievements', { nocache: true, resolve: 'fs' })
+		.filter(e => e.partpath === partpath)
+	let updated = false
+	for (const entry of entries)
+		try {
+			if (!fs.existsSync(entry.path) || fs.statSync(entry.path).isDirectory()) continue
+			const data = parseAchievementsRegistryData(loadJsonFile(entry.path))
+			if (data) {
+				registry[partpath] = data
+				updated = true
+			}
+		}
+		catch { /* skip */ }
+	if (updated)
+		sendEventToUser(username, 'achievements-registry-updated', null)
+}
+
+/**
+ * 监听部件成就 registry 文件变更并热更新。
+ * @param {string} username - 用户名。
+ * @param {string} partpath - 部件路径。
+ * @returns {void}
+ */
+function watchRegistryFile(username, partpath) {
+	const key = `${username}\0${partpath}`
+	if (achievementsRegistryWatchers.has(key)) return
+	const dirs = new Set(
+		getRegistry(username, 'achievements', { nocache: true, resolve: 'fs' })
+			.filter(e => e.partpath === partpath)
+			.map(e => path.dirname(e.path)),
+	)
+	if (!dirs.size) return
+	for (const dir of dirs)
+		if (fs.existsSync(dir)) {
+			const watcher = fs.watch(dir, () => { updatePartInRegistry(username, partpath) })
+			achievementsRegistryWatchers.set(key, watcher)
+			break
+		}
 }
 
 /**

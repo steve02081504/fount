@@ -1,0 +1,12 @@
+<a href="/parts/shells:chat/hub/#group:${groupId}:${channelId}" class="flex items-center gap-3 bg-base-300/50 rounded-xl px-4 py-3 hover:bg-base-300 transition-colors cursor-pointer">
+	<div class="w-10 h-10 rounded-full bg-secondary/20 flex items-center justify-center text-secondary shrink-0">${iconHtml}</div>
+	<div class="flex-1 min-w-0">
+		<div class="font-medium text-sm truncate">${escapeHtml(name)}</div>
+		<div class="text-xs opacity-50 inline-flex flex-wrap items-center gap-1">
+			<span>${escapeHtml(groupName)}</span>
+			<span aria-hidden="true">·</span>
+			<span data-i18n="${typeI18nKey}"></span>
+			${privateSpan}
+		</div>
+	</div>
+</a>

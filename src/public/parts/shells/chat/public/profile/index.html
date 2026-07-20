@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title data-i18n="profile.title"></title>
+	<link rel="icon" href="/favicon.ico" />
+	<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+	<script blocking="render" type="module" src="/preload.mjs"></script>
+	<link href="https://cdn.jsdelivr.net/npm/daisyui/daisyui.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<link href="/base.css" rel="stylesheet" type="text/css" crossorigin="anonymous" />
+	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
+	<script type="module" src="/base.mjs"></script>
+	<link rel="stylesheet" href="./index.css" type="text/css" />
+</head>
+
+<body class="profile-page min-h-screen">
+	<main class="profile-shell">
+		<header class="profile-topbar">
+			<div>
+				<p class="profile-eyebrow" data-i18n="profile.settingsEyebrow"></p>
+				<h1 data-i18n="profile.title"></h1>
+				<p class="profile-topbar-description" data-i18n="profile.description"></p>
+			</div>
+			<button id="profile-edit-button" class="btn btn-primary gap-2">
+				<img src="https://api.iconify.design/line-md/edit.svg" class="h-4 w-4" alt="" aria-hidden="true" />
+				<span data-i18n="profile.edit"></span>
+			</button>
+		</header>
+
+		<div class="profile-layout">
+			<aside id="profile-card-host" class="profile-card-host"></aside>
+
+			<div class="profile-content">
+				<section class="profile-section profile-overview">
+					<div class="profile-section-heading">
+						<div>
+							<p class="profile-section-kicker" data-i18n="profile.accountAtGlance"></p>
+							<h2 data-i18n="profile.overview"></h2>
+						</div>
+					</div>
+					<div class="profile-stats">
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryUserId"></span>
+							<strong id="summary-username">-</strong>
+						</div>
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryAccountStatus"></span>
+							<strong id="summary-status">-</strong>
+						</div>
+						<div class="profile-stat">
+							<span data-i18n="profile.summaryLinksCount"></span>
+							<strong id="summary-links-count">0</strong>
+						</div>
+					</div>
+				</section>
+
+				<section class="profile-section">
+					<div class="profile-section-heading">
+						<h2 data-i18n="profile.myGroups"></h2>
+					</div>
+					<div id="profile-groups" class="profile-item-grid">
+						<div class="profile-empty" id="no-groups">
+							<img src="https://api.iconify.design/line-md/account.svg" alt="" aria-hidden="true" />
+							<p data-i18n="profile.noGroups"></p>
+						</div>
+					</div>
+				</section>
+
+				<section class="profile-section">
+					<div class="profile-section-heading">
+						<h2 data-i18n="profile.myChannels"></h2>
+					</div>
+					<div id="profile-channels" class="profile-item-grid">
+						<div class="profile-empty" id="no-channels">
+							<img src="https://api.iconify.design/mdi/pound.svg" alt="" aria-hidden="true" />
+							<p data-i18n="profile.noChannels"></p>
+						</div>
+					</div>
+				</section>
+
+				<section class="profile-section profile-advanced">
+					<div class="profile-section-heading">
+						<div>
+							<p class="profile-section-kicker" data-i18n="profile.advancedKicker"></p>
+							<h2 data-i18n="profile.advancedSettings"></h2>
+							<p data-i18n="profile.advancedDescription"></p>
+						</div>
+					</div>
+					<details class="profile-settings-details profile-owner-details">
+						<summary>
+							<img src="https://api.iconify.design/mdi/account-key.svg" alt="" aria-hidden="true" />
+							<span>
+								<strong data-i18n="profile.ownerTitle"></strong>
+								<small data-i18n="profile.ownerSummary"></small>
+							</span>
+						</summary>
+						<div id="profile-owner-settings" class="profile-settings-content"></div>
+					</details>
+				</section>
+			</div>
+		</div>
+	</main>
+
+	<script type="module" src="./index.mjs"></script>
+</body>
+
+</html>

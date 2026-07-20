@@ -1,0 +1,208 @@
+/**
+ * 【文件】dagSession.mjs — DAG 物化 session 读取与 session_* / 成员 agent 事件追加
+ */
+import { loadPart } from '../../../../../../../server/parts_loader.mjs'
+import { resolveActiveAgentMemberKeyByCharname } from '../../group/access.mjs'
+import { appendSignedLocalEvent } from '../dag/append.mjs'
+import { getState } from '../dag/materialize.mjs'
+import { getLocalNodeHash } from '../lib/replica.mjs'
+
+import { ignoreMissingPartLoadError } from './timeSliceParts.mjs'
+
+/**
+ * @param {string} replicaUsername 本地 replica 所有者
+ * @param {string} groupId 群 ID
+ * @returns {Promise<object>} 物化 state
+ */
+export async function getMaterializedSession(replicaUsername, groupId) {
+	const { state } = await getState(replicaUsername, groupId)
+	return state.session || {
+		chars: {},
+		world: null,
+		channelWorlds: {},
+		personas: {},
+		charFrequencies: {},
+	}
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @returns {{ ownerUsername: string, homeNodeHash: string }} 本机 replica 的部件归属绑定
+ */
+export function sessionOwnerBinding(replicaUsername) {
+	return {
+		ownerUsername: replicaUsername,
+		homeNodeHash: getLocalNodeHash(),
+	}
+}
+
+/**
+ * 从本机已安装的 world part 读出 distribution（缺省 hosted）。
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} worldname 世界名
+ * @returns {Promise<'local' | 'replicated' | 'hosted'>} 分布形态
+ */
+async function readWorldDistribution(replicaUsername, worldname) {
+	const world = await loadPart(replicaUsername, `worlds/${worldname}`).catch(ignoreMissingPartLoadError)
+	return world?.distribution || 'hosted'
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} charname 角色名
+ * @param {{ roles?: string[] }} [appendOptions] 追加选项
+ * @returns {Promise<void>}
+ */
+export async function appendAgentMemberJoin(replicaUsername, groupId, charname, appendOptions = {}) {
+	const { ensureLocalAgentEntityHash } = await import('../../entity/member.mjs')
+	const { getOperatorEntityHash } = await import('../../entity/identity.mjs')
+	const { mintGroupInviteTicket } = await import('../lib/inviteTickets.mjs')
+	const bind = sessionOwnerBinding(replicaUsername)
+	const entityHash = await ensureLocalAgentEntityHash(replicaUsername, charname)
+	const ownerEntityHash = await getOperatorEntityHash(replicaUsername)
+	const { code: inviteCode } = await mintGroupInviteTicket(replicaUsername, groupId)
+	const content = {
+		charname,
+		homeNodeHash: bind.homeNodeHash,
+		ownerEntityHash,
+		ownerUsername: bind.ownerUsername,
+		inviteCode,
+	}
+	if (Array.isArray(appendOptions.roles) && appendOptions.roles.length)
+		content.roles = appendOptions.roles
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'member_join',
+		timestamp: Date.now(),
+		content,
+	}, { ...appendOptions, entityHash })
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} charname 角色名
+ * @returns {Promise<void>}
+ */
+export async function appendAgentMemberKick(replicaUsername, groupId, charname) {
+	const { state } = await getState(replicaUsername, groupId)
+	const targetMemberKey = resolveActiveAgentMemberKeyByCharname(state, charname)
+	if (!targetMemberKey) throw new Error(`agent member not found: ${charname}`)
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'member_kick',
+		timestamp: Date.now(),
+		content: { targetMemberKey },
+	})
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} charname 角色名
+ * @param {number} frequency 发言频率
+ * @returns {Promise<void>}
+ */
+export async function appendAgentReplyFrequencySet(replicaUsername, groupId, charname, frequency) {
+	const { state } = await getState(replicaUsername, groupId)
+	const targetMemberKey = resolveActiveAgentMemberKeyByCharname(state, charname)
+	if (!targetMemberKey) throw new Error(`agent member not found: ${charname}`)
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'agent_reply_frequency_set',
+		sender: replicaUsername,
+		timestamp: Date.now(),
+		content: { targetMemberKey, frequency },
+	})
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string | null} worldname 世界名；null 清除群级世界
+ * @param {object} [options] bind 覆盖 + appendSignedLocalEvent 选项
+ * @param {'local' | 'replicated' | 'hosted'} [options.distribution] 覆盖本机 part 读出的 distribution（未装节点常用）
+ * @param {string} [options.ownerUsername] 覆盖归属用户（hosted / replicated 未装节点指向主机）
+ * @param {string} [options.homeNodeHash] 覆盖 home 节点
+ * @returns {Promise<void>}
+ */
+export async function appendSessionWorldBind(replicaUsername, groupId, worldname, options = {}) {
+	const { distribution: distributionOverride, ownerUsername, homeNodeHash, ...appendOptions } = options
+	if (!worldname) {
+		await appendSignedLocalEvent(replicaUsername, groupId, {
+			type: 'session_world_clear',
+			sender: replicaUsername,
+			timestamp: Date.now(),
+			content: {},
+		}, appendOptions)
+		return
+	}
+	const bind = {
+		ownerUsername: ownerUsername ?? replicaUsername,
+		homeNodeHash: homeNodeHash ?? getLocalNodeHash(),
+	}
+	const distribution = distributionOverride
+		?? await readWorldDistribution(replicaUsername, worldname)
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'session_world_bind',
+		sender: replicaUsername,
+		timestamp: Date.now(),
+		content: { worldname, scope: 'group', distribution, ...bind },
+	}, appendOptions)
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string} channelId 频道 ID
+ * @param {string | null} worldname 世界名；null 清除该频道世界
+ * @param {object} [options] 同 appendSessionWorldBind
+ * @returns {Promise<void>}
+ */
+export async function appendSessionChannelWorldBind(replicaUsername, groupId, channelId, worldname, options = {}) {
+	const { distribution: distributionOverride, ownerUsername, homeNodeHash, ...appendOptions } = options
+	if (!worldname) {
+		await appendSignedLocalEvent(replicaUsername, groupId, {
+			type: 'session_world_clear',
+			sender: replicaUsername,
+			timestamp: Date.now(),
+			content: { channelId },
+		}, appendOptions)
+		return
+	}
+	const bind = {
+		ownerUsername: ownerUsername ?? replicaUsername,
+		homeNodeHash: homeNodeHash ?? getLocalNodeHash(),
+	}
+	const distribution = distributionOverride
+		?? await readWorldDistribution(replicaUsername, worldname)
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'session_world_bind_channel',
+		sender: replicaUsername,
+		timestamp: Date.now(),
+		content: { channelId, worldname, distribution, ...bind },
+	}, appendOptions)
+}
+
+/**
+ * @param {string} replicaUsername replica 所有者
+ * @param {string} groupId 群 ID
+ * @param {string | null} personaname 人格名
+ * @param {object} [appendOptions] appendSignedLocalEvent 选项
+ * @returns {Promise<void>}
+ */
+export async function appendSessionPersonaSet(replicaUsername, groupId, personaname, appendOptions = {}) {
+	await appendSignedLocalEvent(replicaUsername, groupId, {
+		type: 'session_persona_set',
+		sender: replicaUsername,
+		timestamp: Date.now(),
+		content: { ownerUsername: replicaUsername, personaname: personaname || null },
+	}, appendOptions)
+}
+
+/**
+ * @param {object} session 物化 session
+ * @param {string} charname 角色名
+ * @returns {boolean} 物化 session 是否已绑定该角色
+ */
+export function sessionHasChar(session, charname) {
+	return !!session?.chars?.[charname]
+}

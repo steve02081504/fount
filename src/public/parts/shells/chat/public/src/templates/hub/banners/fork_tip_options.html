@@ -1,0 +1,3 @@
+${tips.map(tip => `
+<option value="${tip.id}" ${tip.selected ? ' selected' : '' }${tip.i18nKey ? ` data-i18n="${tip.i18nKey}" data-short="${tip.short}" data-score="${tip.score}" ` : '' }>${tip.i18nKey ? '' : tip.short}</option>
+`).join('')}

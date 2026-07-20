@@ -1,9 +1,24 @@
 /**
- * 获取文件。
- * @param {string} hash - 文件哈希。
- * @returns {Promise<ArrayBuffer>} - 文件内容。
+ * 聊天附件经 EVFS 上传与下载。
  */
-export async function getfile(hash) {
-	if (hash.startsWith('file:')) hash = hash.slice(5)
-	return fetch('/api/parts/shells:chat/getfile?hash=' + hash).then(res => res.arrayBuffer())
+import { fetchEvfsFile, uploadEvfsAttachment } from '/parts/shells:chat/shared/evfsMedia.mjs'
+
+const CHAT_ATTACHMENT_PREFIX = 'shells/chat/attachments'
+
+/**
+ * 上传聊天附件到 EVFS。
+ * @param {File | Blob} file 文件
+ * @returns {Promise<{ entityHash: string, path: string, url: string }>} 上传结果
+ */
+export async function uploadChatAttachment(file) {
+	return uploadEvfsAttachment(file, CHAT_ATTACHMENT_PREFIX)
+}
+
+/**
+ * 获取 EVFS 文件。
+ * @param {{ entityHash: string, path: string }} ref 引用
+ * @returns {Promise<ArrayBuffer>} 文件字节
+ */
+export async function getFile(ref) {
+	return fetchEvfsFile(ref.entityHash, ref.path)
 }

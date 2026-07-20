@@ -1,0 +1,10 @@
+<div class="member-item member-item-char" data-char="${charName}" title="${charName}">
+	<div class="member-avatar" style="background:${avatarBg};color:${avatarTextColor};">${charAvatarHtml}</div>
+	<div class="member-name">${charName}</div>
+</div>
+${viewerEntityHash ? /* html */`
+<div class="member-item" title="${viewerDisplayName}">
+	<div class="member-avatar" data-avatar-for="${viewerEntityHash}" style="background:${myAvatarBg};color:${myAvatarTextColor};">${myAvatarInitial}</div>
+	<div class="member-name">${viewerDisplayName}</div>
+</div>
+` : ''}

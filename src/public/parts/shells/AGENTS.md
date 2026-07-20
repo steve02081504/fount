@@ -1,27 +1,39 @@
+---
+description: Creating or modifying Shell parts (URL mapping, Load, endpoints, registries)
+globs: src/public/parts/shells/**, src/decl/shellAPI.ts
+alwaysApply: false
+---
+
 # Shell Architecture & Creation Guide
 
-## 1. URL & Filesystem Mapping
+## URL & Filesystem Mapping
 
-- **URL Pattern**: `/parts/<partpath>/<filepath_within_public>`
-  - Example: `/parts/shells:chat/chat.css` -> `src/public/parts/shells/chat/public/chat.css`
-  - Default: `/parts/shells:chat` -> `.../public/index.html`
+- `/parts/<partpath>/<filepath_within_public>` → `src/public/parts/<partpath>/public/<filepath_within_public>`
+  - `/parts/shells:chat/hub/messages.css` → `.../shells/chat/public/hub/messages.css`
+  - `/parts/shells:chat` → `.../public/index.html` (default)
 
-## 2. Standard Structure
+## Standard Structure
 
-- `main.mjs`: Backend entry. Must export `Load({ router })` to register routes.
-- `public/`: Frontend assets (HTML, JS, CSS).
-  - `llms.txt`: AI-readable API documentation.
-- `src/`: Backend logic.
-  - `endpoints.mjs`: Define routes using `router.get/post/ws`. Path format: `/api/parts/shells\\:<name>/...`.
-  - **HTTP API**: Success = 2xx JSON body without a `success` wrapper; expected failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs` (global `errorHandler` uses `err.code` / `err.json`). Avoid route-level try/catch that only maps errors to 500.
-- `home_registry.json`: Registers the shell on the Home page.
+- `main.mjs`: Backend entry. Default export must include `Load({ router })`.
+- `public/`: Frontend assets. `public/llms.txt`: AI-readable API docs.
+- `src/endpoints.mjs`: Routes via `router.get/post/ws`. Path: `/api/parts/shells\:<name>/...`.
+- **HTTP API**: Success = 2xx JSON (no `success` wrapper); failures = `throw httpError(code, message, { json?, skip_report? })` from `@src/scripts/http_error.mjs`.
+- **`fount.json` → `registries`**: `[{ id, level, path }]` for `markdown_extensions`, `emoji`, `sticker`, `locales`, `home_*`, `achievements`.
+- **`home_function_buttons.info`**: locale **object** with `title` (e.g. `achievements.home_function_buttons.main`), not a page-level string. Home reads `geti18n(info).title`.
+- **`home_function_buttons.level`** (ascending): `1` components/service sources/chat · `2` social · `3` bots · `4` cabinet · `5` integration · `90` settings · `99` access · `100+` misc. Same level → load-order unstable.
+- **Iconify `button` HTML**: verify the URL returns SVG (404 body `"Not found"` is injected as icon text).
 
-## 3. Implementation Checklist
+## Implementation
 
-1. **Backend**: Implement `main.mjs` and `src/endpoints.mjs`. Use `authenticate` middleware from `@src/server/auth.mjs`.
-2. **Frontend**: Create `public/index.html`. Include `/preload.mjs`, `/base.css`, and `/base.mjs`.
-3. **Logic**: Use shared scripts from `@src/public/pages/scripts/` (theming, i18n, terminal, etc.).
-4. **Docs**: Add `public/llms.txt` for AI discovery.
+1. Backend: `main.mjs` + `src/endpoints.mjs` + `authenticate` from `@src/server/auth/index.mjs`.
+2. Frontend: `public/index.html` — `/preload.mjs`, `/base.css`, `/base.mjs`.
+3. Shared scripts: `@src/public/pages/scripts/`.
+4. **GetReply identity**: when building `chatReplyRequest` yourself, `User*` must be the local operator; message authors go only in `ReplyTo*` / `chat_log[].uid`. Details: [chat/session/AGENTS.md](chat/src/chat/session/AGENTS.md) Speaker identity.
+5. Add `public/llms.txt`.
 
-**Example**: See `src/public/parts/shells/shellassist/` for a complete reference.
-**See also**: [Root AGENTS.md](../../../../AGENTS.md)
+**Example**: `shells/shellassist/`. **Chat**: [entity / ChatClient](chat/public/AGENTS.md), [Hub](chat/public/hub/AGENTS.md). **Social**: [social/public/AGENTS.md](social/public/AGENTS.md).
+
+## Relative imports
+
+- `shells/<bot>/src/*.mjs` → `src/scripts` / `src/server` / sibling `shells/chat`: **5** `../`.
+- `shells/<bot>/src/default_interface/*.mjs`: **6** `../` to `src/*`, and **`../../../chat/...`** (not `../../chat`) to chat. Copy-pasting bot.mjs paths into `default_interface/` resolves wrong and breaks char Load.

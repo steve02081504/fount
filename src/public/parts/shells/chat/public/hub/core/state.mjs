@@ -1,0 +1,178 @@
+/** Hub 页面共享可变状态（各子模块读写此对象字段）。 */
+export const store = {
+	sidebar: {
+		groups: [],
+		/** 侧栏 Ctrl/Shift 多选中的群 ID */
+		selectedGroupIds: new Set(),
+		/** Shift 范围选择锚点群 ID */
+		selectionAnchorGroupId: null,
+		groupFoldersState: { folders: [] },
+		/** 侧栏可见群 ID 顺序（与 `renderServerBar` 一致，供 Shift 多选） */
+		sidebarGroupOrder: [],
+		collapsedCategories: new Set(),
+	},
+	federation: {
+		dagTips: [],
+		/** 联邦同步横幅（由 setSyncBanner 写入，bindings 订阅） */
+		syncBanner: { visible: false, i18nKey: 'chat.hub.banners.syncing', params: {} },
+	},
+	context: {
+		currentMode: 'groups',
+		currentGroupId: null,
+		currentChannelId: null,
+		currentState: null,
+		fileHandlers: null,
+	},
+	messages: {
+		channelReactions: {},
+		channelMessagesSource: [],
+		channelMessages: [],
+		reactionsEtag: '',
+		reactionRenderOpts: {
+			viewerMemberId: 'local',
+			canAddReactions: false,
+			canManageMessages: false,
+			canPinMessages: false,
+		},
+		channelMessagePipeline: null,
+		/** 当前 pipeline 对应的 `groupId:channelId`，用于同频道软重载 */
+		channelPipelineKey: null,
+		channelOlderExhausted: false,
+		/** 乐观发送中的 `pending:*` eventId；同时最多一条 */
+		composerPendingId: null,
+		/** @type {Map<string, { content: string, files?: File[] }>} 发送失败待重试载荷 */
+		failedPendingPayloads: new Map(),
+		/** 当前文本频道消息搜索关键词（小写）；null 表示未过滤 */
+		channelSearchQuery: null,
+		lastMessageId: null,
+		/** 订阅后 Hub 消息列表滚动/高亮目标 eventId */
+		focusedMessageEventId: null,
+		/** 虚拟列表重建时的 scoped 滚动锚点 */
+		pendingScrollTarget: null,
+		/** 服务端已读水位 */
+		readMarker: null,
+		/** 首条未读 message eventId（展示分割线） */
+		firstUnreadEventId: null,
+	},
+	viewer: {
+		/** replica 登录名（read-marker 多端同步过滤） */
+		username: null,
+		/** 顶栏/侧栏展示名（非身份键） */
+		viewerDisplayName: null,
+		nodeHash: null,
+		/** 登录用户 operator 实体（个人拉黑/隐藏列表归属；入群后不随 viewer 切换） */
+		operatorEntityHash: null,
+		viewerEntityHash: null,
+		/** 观看者声明的主人 entityHash（其内容走不安全 Markdown） */
+		ownerEntityHash: null,
+		/** @type {{ entityHash: string, charPartName: string }[]} 本机 agent 映射（来自 chat viewer API） */
+		agents: [],
+	},
+	inbox: {
+		unreadCount: 0,
+	},
+	/** `enterFriendChat` 进行中；`setMode('friends')` 时保留私聊会话 */
+	friendChatEntering: false,
+	/** 角色私聊或用户 DM；用户 DM 复用 `context.currentGroupId` 拉频道消息。 */
+	privateGroup: {
+		groupId: null,
+		charname: null,
+		/** 对端 128 位 entityHash（角色 agent / 用户统一） */
+		peerEntityHash: null,
+		channelId: 'default',
+	},
+}
+
+/** @type {Map<string, Set<(value: unknown) => void>>} */
+const watchers = new Map()
+
+/**
+ * @param {string} path 点分路径，如 `context.currentGroupId`
+ * @returns {{ parent: object, key: string } | null} 父对象与末段键，或解析失败时 null
+ */
+function resolvePath(path) {
+	const parts = String(path).split('.')
+	if (!parts.length) return null
+	let parent = store
+	for (const segment of parts.slice(0, -1)) {
+		if (!(segment in parent)) return null
+		parent = parent[segment]
+	}
+	const key = parts.at(-1)
+	if (!(key in parent)) return null
+	return { parent, key }
+}
+
+/**
+ * @param {string} path 点分路径
+ * @returns {unknown} 当前字段值
+ */
+function getPathValue(path) {
+	const resolved = resolvePath(path)
+	if (!resolved) return undefined
+	return resolved.parent[resolved.key]
+}
+
+/**
+ * @param {string} path 点分路径
+ * @param {unknown} value 新值
+ * @returns {void}
+ */
+function setPathValue(path, value) {
+	const resolved = resolvePath(path)
+	if (!resolved) return
+	if (resolved.parent[resolved.key] === value) return
+	resolved.parent[resolved.key] = value
+	const bucket = watchers.get(path)
+	if (bucket?.size)
+		for (const listener of bucket) listener(value)
+}
+
+/** 预注册常用字段订阅桶。 */
+for (const path of [
+	'context.currentGroupId',
+	'context.currentChannelId',
+	'context.currentState',
+	'messages.focusedMessageEventId',
+	'context.currentMode',
+	'messages.channelSearchQuery',
+	'messages.lastMessageId',
+	'federation.syncBanner',
+])
+	watchers.set(path, new Set())
+
+
+/**
+ * 订阅 Hub 嵌套字段（点分路径）。
+ * @param {string} path 点分路径
+ * @param {(value: unknown) => void} listener 变更回调
+ * @returns {() => void} 取消订阅函数
+ */
+export function watchState(path, listener) {
+	const bucket = watchers.get(path) ?? (() => {
+		const created = new Set()
+		watchers.set(path, created)
+		return created
+	})()
+	bucket.add(listener)
+	return () => bucket.delete(listener)
+}
+
+/**
+ * 设置 Hub 字段并触发订阅回调（值未变化时不触发）。
+ * @param {string} path 点分路径
+ * @param {unknown} value 新值
+ * @returns {void}
+ */
+export function setState(path, value) {
+	setPathValue(path, value)
+}
+
+/**
+ * 读取 Hub 嵌套字段。
+ * @param {string} path 点分路径
+ * @returns {unknown} 当前字段值
+ */
+export function getState(path) {
+	return getPathValue(path)
+}

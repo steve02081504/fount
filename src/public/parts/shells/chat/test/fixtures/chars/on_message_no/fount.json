@@ -1,0 +1,7 @@
+{
+	"name": "on_message_no",
+	"description": "onMessage probe — always false",
+	"author": "fount",
+	"version": "1.0.0",
+	"tags": ["test"]
+}

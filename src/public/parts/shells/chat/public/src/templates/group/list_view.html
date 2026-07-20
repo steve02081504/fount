@@ -1,0 +1,37 @@
+${view === 'loading' ? `
+<div class="loading loading-spinner loading-lg"></div>
+` : view === 'empty' ? `
+<div class="text-center py-8">
+	<p class="text-lg mb-4" data-i18n="chat.hub.noGroups"></p>
+	<div class="flex gap-2 justify-center">
+		<button type="button" class="btn btn-outline" data-action="join" data-i18n="chat.hub.joinGroup"></button>
+		<button type="button" class="btn btn-primary" data-action="create" data-i18n="chat.hub.createGroup"></button>
+	</div>
+</div>
+` : view === 'error' ? `
+<div class="alert alert-error">
+	<span data-i18n="chat.hub.loadListFailed" data-error="${escapeHtml(errorMessage)}"></span>
+</div>
+` : `
+<div class="flex justify-between items-center mb-4">
+	<h2 class="text-2xl font-bold" data-i18n="chat.hub.myGroups"></h2>
+	<div class="flex gap-2">
+		<button type="button" class="btn btn-outline" data-action="join" data-i18n="chat.hub.joinGroup"></button>
+		<button type="button" class="btn btn-primary" data-action="create" data-i18n="chat.hub.createGroup"></button>
+	</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+	${groups.map(group => `
+	<div class="card bg-base-200 shadow-xl hover:shadow-2xl transition-shadow cursor-pointer" data-action="open" data-group-id="${escapeHtml(group.groupId)}">
+		<div class="card-body">
+			<h3 class="card-title">${escapeHtml(group.name)}</h3>
+			<p class="text-sm opacity-70">${group.description ? escapeHtml(group.description) : '<span data-i18n="chat.hub.noDescription"></span>'}</p>
+			<div class="flex items-center gap-2 mt-2">
+				<img src="https://api.iconify.design/line-md/account.svg" class="w-4 h-4" alt="" aria-hidden="true" />
+				<span class="text-sm" data-i18n="chat.hub.memberCountLabel" data-count="${group.memberCount || 0}"></span>
+			</div>
+		</div>
+	</div>
+	`).join('')}
+</div>
+`}

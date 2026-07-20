@@ -1,0 +1,13 @@
+<div class="chat ${align} message-row ${rowClass} relative group" ${rowAttrs}>
+	${avatarBlock}
+	<div class="message-stack">
+		<div class="message-stack-inner">
+			${hoverBarHtml ? `<div class="message-hover-bar">${hoverBarHtml}</div>` : ''}
+			<div class="chat-header text-sm">${headerHtml}</div>
+			<div class="chat-bubble ${bubbleClass}">
+				<div class="message-content markdown-body"${bubbleAttrs}>${contentHtml}</div>
+			</div>
+			${footerHtml ? `<div class="chat-footer">${footerHtml}</div>` : ''}
+		</div>
+	</div>
+</div>

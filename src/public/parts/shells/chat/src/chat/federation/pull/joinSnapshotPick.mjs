@@ -1,0 +1,130 @@
+/**
+ * 入群 checkpoint 多 peer 信誉仲裁（与冷归档月拉同构）。
+ */
+import { isHex64 } from 'npm:@steve02081504/fount-p2p/core/hexIds'
+import { penalizeArchiveServeMismatch, loadReputation } from 'npm:@steve02081504/fount-p2p/node/reputation_store'
+import { pickNodeScoreFromReputation } from 'npm:@steve02081504/fount-p2p/reputation/pick_score'
+import { resolveArchiveQuorumPeerMin } from 'npm:@steve02081504/fount-p2p/trust_graph/resolve'
+
+import { verifyRemoteCheckpoint } from '../../dag/checkpointPayload.mjs'
+import archiveTunables from '../../lib/archive.tunables.json' with { type: 'json' }
+import { localNodeHash } from '../dagDependencies.mjs'
+import { joinSnapshotQuorumSatisfied, tryFinishFederationCollect } from '../federationCollect.mjs'
+import { unwrapPullEnvelopeForLocalMember } from '../pullEnvelope.mjs'
+
+/**
+ * @param {string} username 用户
+ * @param {string} groupId 群 ID
+ * @param {string} requestId 请求 id
+ * @returns {string} 等待键
+ */
+export function joinSnapshotWaitKey(username, groupId, requestId) {
+	return `${username}\0${groupId}\0${requestId}`
+}
+
+/** @type {Map<string, { candidates: object[], finish: (list: object[]) => void, expectedCount: number }>} */
+export const pendingSnapshotPulls = new Map()
+
+/**
+ * @param {object} envelope HPKE 响应
+ * @param {object | null} inner 解密 inner
+ * @returns {string} 分桶键
+ */
+function snapshotBucketKey(envelope, inner) {
+	const tips = String(inner?.checkpoint?.local_tips_hash || '').trim().toLowerCase()
+	if (isHex64(tips)) return `tips:${tips}`
+	const root = String(inner?.checkpoint?.epoch_root_hash || '').trim().toLowerCase()
+	if (isHex64(root)) return `root:${root}`
+	return ''
+}
+
+/**
+ * @param {string} username replica
+ * @param {string} groupId 群 ID
+ * @param {object} envelope 解析后的 HPKE envelope
+ * @param {string} peerNodeHash 对端 nodeHash
+ * @returns {Promise<void>}
+ */
+export async function noteJoinSnapshotResponse(username, groupId, envelope, peerNodeHash) {
+	if (envelope.requesterNodeHash !== localNodeHash()) return
+	const pending = pendingSnapshotPulls.get(joinSnapshotWaitKey(username, groupId, envelope.requestId))
+	if (!pending) return
+	const inner = await unwrapPullEnvelopeForLocalMember(username, groupId, envelope)
+	if (!inner?.checkpoint) return
+	const bucketKey = snapshotBucketKey(envelope, inner)
+	if (!bucketKey) return
+	const checkpointResult = await verifyRemoteCheckpoint(inner.checkpoint)
+	if (!checkpointResult.valid) return
+	pending.candidates.push({
+		peerNodeHash: String(peerNodeHash).trim(),
+		envelope,
+		inner,
+		bucketKey,
+		tipsHash: String(inner.checkpoint.local_tips_hash || '').trim().toLowerCase(),
+		epochRootHash: String(inner.checkpoint.epoch_root_hash || '').trim().toLowerCase(),
+		epochId: Number(inner.checkpoint.epoch_id) || 0,
+	})
+	tryFinishFederationCollect(pending, joinSnapshotQuorumSatisfied)
+}
+
+/**
+ * @param {Array<object>} candidates 各 peer 应答
+ * @param {{ pickScore?: (peerNodeHash: string) => number, allowSinglePeerBootstrap?: boolean, activeMemberCount?: number }} [options] 测试可注入信誉分；allowSinglePeerBootstrap：本机尚无 checkpoint 的首次自举允许接受单个已验证快照（信任邀请者，见调用方）
+ * @returns {{ winner: object | null, bucketKey: string, reason: string }} 仲裁结果
+ */
+export function pickJoinSnapshotByReputation(candidates, options = {}) {
+	/** @type {(peer: string) => number} */
+	let scorePeer = options.pickScore
+	if (!scorePeer) {
+		const rep = loadReputation()
+		scorePeer = pickNodeScoreFromReputation.bind(null, rep)
+	}
+	/** @type {Map<string, { peers: string[], envelope: object }>} */
+	const byBucket = new Map()
+	for (const row of candidates) {
+		const peer = String(row.peerNodeHash || '').trim()
+		const key = String(row.bucketKey || '').trim()
+		if (!peer || !key) continue
+		const bucket = byBucket.get(key) || { peers: [], envelope: row.envelope }
+		bucket.peers.push(peer)
+		byBucket.set(key, bucket)
+	}
+	if (!byBucket.size) return { winner: null, bucketKey: '', reason: 'no_valid_candidate' }
+
+	const ranked = [...byBucket.entries()].map(([bucketKey, bucket]) => ({
+		bucketKey,
+		score: bucket.peers.reduce((best, peer) => Math.max(best, scorePeer(peer)), 0),
+		bucket,
+	}))
+	ranked.sort((left, right) => {
+		if (right.score !== left.score) return right.score - left.score
+		if (right.bucket.peers.length !== left.bucket.peers.length)
+			return right.bucket.peers.length - left.bucket.peers.length
+		return left.bucketKey.localeCompare(right.bucketKey, 'en')
+	})
+
+	const best = ranked[0]
+	if (options.allowSinglePeerBootstrap)
+		return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'bootstrap' }
+	const quorumN = Math.max(
+		Number(options.activeMemberCount) || 0,
+		best.bucket.peers.length,
+		candidates.length,
+	)
+	const peerMin = resolveArchiveQuorumPeerMin(quorumN, archiveTunables)
+	if (!(best.score > 0 || best.bucket.peers.length >= peerMin))
+		return { winner: null, bucketKey: '', reason: 'quorum_failed' }
+	return { winner: best.bucket.envelope, bucketKey: best.bucketKey, reason: 'ok' }
+}
+
+/**
+ * @param {Array<object>} candidates 原始候选
+ * @param {string} winnerBucketKey 赢家分桶键
+ * @returns {void}
+ */
+export function penalizeJoinSnapshotMismatches(candidates, winnerBucketKey) {
+	for (const row of candidates) {
+		if (!row.peerNodeHash || row.bucketKey === winnerBucketKey) continue
+		penalizeArchiveServeMismatch(row.peerNodeHash)
+	}
+}

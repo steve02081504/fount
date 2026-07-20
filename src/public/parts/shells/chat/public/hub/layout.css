@@ -1,0 +1,362 @@
+/* 仅保留：伪元素、滚动条与状态交互 */
+.server-bar {
+	overflow-x: hidden;
+}
+
+.server-bar::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+}
+
+.server-item.is-muted {
+	opacity: 0.45;
+}
+
+.server-item {
+	position: relative;
+	width: 48px;
+	height: 48px;
+	overflow: hidden;
+	border-radius: 24px;
+	background: var(--bg-channel);
+	color: var(--text-normal);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 700;
+	font-size: 18px;
+	cursor: pointer;
+	transition: border-radius 0.15s ease, background 0.15s ease;
+	user-select: none;
+	flex-shrink: 0;
+}
+
+.server-item:hover {
+	border-radius: 16px;
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+.server-item.active {
+	border-radius: 16px;
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+/* 选中指示器 */
+.server-item::before {
+	content: '';
+	position: absolute;
+	left: -16px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 4px;
+	height: 0;
+	background: var(--on-accent);
+	border-radius: 0 4px 4px 0;
+	transition: height 0.15s ease;
+}
+
+.server-item:hover::before {
+	height: 20px;
+}
+
+.server-item.active::before {
+	height: 40px;
+}
+
+.server-item.is-multi-selected {
+	box-shadow:
+		0 0 0 2px var(--bg-server),
+		0 0 0 4px var(--accent),
+		0 0 12px 2px color-mix(in srgb, var(--accent) 55%, transparent);
+	border-radius: 16px;
+}
+
+.server-item.is-multi-selected.active {
+	box-shadow:
+		0 0 0 2px var(--bg-server),
+		0 0 0 4px var(--on-accent),
+		0 0 14px 3px color-mix(in srgb, var(--accent) 65%, transparent);
+}
+
+.server-item.is-leaving {
+	opacity: 0.45;
+	pointer-events: none;
+	cursor: wait;
+}
+
+/* —— 群组拖拽 —— */
+.server-item.dragging {
+	opacity: 0.4;
+}
+
+.server-item.drop-into {
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 2px var(--bg-server),
+		0 0 0 4px var(--accent);
+}
+
+.folder-wrap.drop-into {
+	background: color-mix(in srgb, var(--accent) 28%, transparent);
+	box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.server-item.is-leaving::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	border: 2px solid transparent;
+	border-top-color: var(--on-accent);
+	animation: server-leaving-spin 0.75s linear infinite;
+}
+
+@keyframes server-leaving-spin {
+	to { transform: rotate(360deg); }
+}
+
+.server-tooltip {
+	position: absolute;
+	left: 60px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: var(--tooltip-bg);
+	color: var(--tooltip-fg);
+	padding: 6px 10px;
+	border-radius: 4px;
+	font-size: 14px;
+	font-weight: 600;
+	white-space: nowrap;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.15s ease;
+	z-index: 100;
+}
+
+.server-item:hover .server-tooltip {
+	opacity: 1;
+}
+
+.unread-badge,
+.header-pop-count {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 18px;
+	height: 18px;
+	padding: 0 4px;
+	border-radius: 999px;
+	background: hsl(var(--er));
+	color: hsl(var(--erc));
+	font-size: 11px;
+	font-weight: 700;
+	line-height: 18px;
+	text-align: center;
+	pointer-events: none;
+	z-index: 2;
+}
+
+.header-pop-count {
+	top: -2px;
+	right: -2px;
+	min-width: 15px;
+	height: 15px;
+	background: var(--accent);
+	color: var(--on-accent);
+	font-size: 10px;
+	line-height: 15px;
+	box-shadow: 0 0 0 2px var(--bg-main);
+}
+
+.channel-item .unread-badge {
+	position: static;
+	min-width: 16px;
+	height: 16px;
+	line-height: 16px;
+	font-size: 10px;
+	flex-shrink: 0;
+}
+
+.unread-divider {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin: 12px 0;
+	color: hsl(var(--er));
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.unread-divider::before,
+.unread-divider::after {
+	content: '';
+	flex: 1;
+	height: 1px;
+	background: hsl(var(--er) / 0.45);
+}
+
+.server-divider {
+	width: 32px;
+	height: 2px;
+	background: var(--bg-channel);
+	border-radius: 1px;
+	margin: 4px 0;
+	flex-shrink: 0;
+}
+
+/* —— 群组文件夹 —— */
+.folder-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 6px;
+	width: 56px;
+	margin: 0 auto;
+	padding: 4px 0;
+	border-radius: 18px;
+	transition: background 0.15s ease;
+}
+
+.folder-wrap.is-open {
+	background: color-mix(in srgb, var(--accent) 16%, transparent);
+	padding-bottom: 8px;
+}
+
+.folder-tile {
+	position: relative;
+	width: 48px;
+	height: 48px;
+	flex-shrink: 0;
+	border: none;
+	padding: 6px;
+	box-sizing: border-box;
+	border-radius: 24px;
+	background: var(--bg-channel);
+	cursor: pointer;
+	transition: border-radius 0.15s ease, background 0.15s ease;
+}
+
+.folder-tile:hover {
+	border-radius: 16px;
+	background: var(--bg-floating);
+}
+
+.folder-wrap.is-open .folder-tile {
+	border-radius: 16px;
+	background: color-mix(in srgb, var(--accent) 28%, var(--bg-channel));
+}
+
+.folder-mini {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+	gap: 3px;
+}
+
+.folder-mini--single {
+	grid-template-columns: 1fr;
+	grid-template-rows: 1fr;
+}
+
+.folder-mini-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 0;
+	border-radius: 6px;
+	font-size: 9px;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	overflow: hidden;
+}
+
+.folder-mini--single .folder-mini-icon {
+	font-size: 16px;
+	border-radius: 10px;
+}
+
+.folder-mini-empty {
+	background: var(--bg-floating);
+}
+
+.folder-items {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+}
+
+.folder-items:empty {
+	display: none;
+}
+
+.server-add {
+	color: var(--success);
+}
+
+.server-add:hover {
+	background: var(--success);
+	color: var(--color-success-content);
+}
+
+.channel-list {
+	overflow-y: auto;
+}
+
+.channel-list::-webkit-scrollbar {
+	width: 8px;
+}
+
+.channel-list::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+.channel-list::-webkit-scrollbar-thumb {
+	background: var(--bg-server);
+	border-radius: 4px;
+}
+
+.category {
+	padding: 18px 12px 6px 16px;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	color: var(--text-muted);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	user-select: none;
+}
+
+.category:hover {
+	color: var(--text-bright);
+}
+
+.category.collapsed .category-arrow {
+	transform: rotate(-90deg);
+}
+
+.category-arrow {
+	width: 12px;
+	height: 12px;
+	transition: transform 0.15s ease;
+}
+
+/* .channel-item 交互样式见 components.css */
+
+.channel-icon {
+	width: 18px;
+	height: 18px;
+	color: var(--text-muted);
+	flex-shrink: 0;
+}

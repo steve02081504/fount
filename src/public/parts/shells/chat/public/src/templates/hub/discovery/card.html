@@ -1,0 +1,16 @@
+<article class="discovery-card">
+	<div class="discovery-card-cover" aria-hidden="true">
+		<span>${initial}</span>
+	</div>
+	<div class="discovery-card-body">
+		<h2>${title}</h2>
+		${blurb
+		? `<p>${blurb}</p>`
+		: '<p data-i18n="chat.hub.discoveryNoDescription"></p>'}
+		<div class="discovery-card-meta">
+			<span data-i18n="chat.hub.discoverySourceCount" data-count="${sourceCount}"></span>
+			<code>${groupId}</code>
+		</div>
+		<button type="button" class="btn btn-primary btn-sm w-full" data-group-id="${groupId}" data-i18n="${actionKey}"></button>
+	</div>
+</article>

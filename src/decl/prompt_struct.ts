@@ -1,8 +1,8 @@
 import { Buffer } from 'node:buffer'
 
-import { ReplyPreviewUpdater_t } from '../public/parts/shells/chat/decl/chatLog.ts'
-
 import { role_t, timeStamp_t } from './basedefs.ts'
+import { ReplyPreviewUpdater_t } from './chatLog.ts'
+
 
 /**
  * 单部分提示
@@ -66,6 +66,10 @@ export interface chatLogEntry_t {
 	 * 名称。
 	 */
 	name: string
+	/**
+	 * 说话人身份（宿主自定义；与消息 id 无关）。
+	 */
+	uid: string
 	/**
 	 * 时间戳。
 	 */
@@ -131,6 +135,22 @@ export interface prompt_struct_t {
 	 */
 	UserCharname: string
 	/**
+	 * 回复对象显示名。
+	 */
+	ReplyToCharname?: string
+	/**
+	 * 本机用户说话人身份。
+	 */
+	UserUid: string
+	/**
+	 * 当前角色说话人身份。
+	 */
+	CharUid: string
+	/**
+	 * 回复对象说话人身份。
+	 */
+	ReplyToUid?: string
+	/**
 	 * 用户提示。
 	 */
 	user_prompt: single_part_prompt_t
@@ -142,6 +162,10 @@ export interface prompt_struct_t {
 	 * 其他角色提示。
 	 */
 	other_chars_prompts: Record<string, other_chars_prompts_t>
+	/**
+	 * 其他人格提示（群聊他者贡献；不含本机 user_prompt 槽）。
+	 */
+	other_personas_prompts: Record<string, other_chars_prompts_t>
 	/**
 	 * 世界提示。
 	 */

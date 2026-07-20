@@ -1,0 +1,10 @@
+<div class="stream-wrap">
+	<div class="stream-title" ${useChannelName ? '' : ' data-i18n="chat.hub.streamDefaultName"' }>${channelName}</div>
+	${mode === 'iframe' ? `
+	<div class="stream-toolbar">
+		<button type="button" class="stream-refresh-button" data-i18n="chat.hub.streamRefreshToken"></button>
+	</div>
+	<iframe class="stream-frame" id="stream-iframe" src="${escapeHtml(src)}" referrerpolicy="no-referrer" allow="autoplay; fullscreen; picture-in-picture"></iframe>
+	${streamError ? `<p class="stream-empty">${escapeHtml(streamError)}</p>` : ''}
+	` : `<p class="stream-empty" ${streamError ? '' : ` data-i18n="${emptyI18nKey}" `}>${streamError ? escapeHtml(streamError) : ''}</p>`}
+</div>

@@ -1,0 +1,48 @@
+/**
+ * sanitizePermissiveHtml：保留排版，剥 script / on* / 危险 URL。
+ */
+/* global Deno */
+import { assertEquals, assertFalse, assertStringIncludes } from 'https://deno.land/std@0.224.0/assert/mod.ts'
+
+import { installMarkdownTestDom } from './markdown_test_dom.mjs'
+
+installMarkdownTestDom()
+
+const { isSafeHtmlUrl, sanitizePermissiveHtml } = await import('../../../../../pages/scripts/lib/sanitizeHtml.mjs')
+
+Deno.test('sanitizePermissiveHtml keeps bold, strips script and onclick', () => {
+	const html = sanitizePermissiveHtml('<b>hi</b><script>alert(1)</script><img src=x onerror=alert(1)>')
+	assertStringIncludes(html, '<b>hi</b>')
+	assertFalse(/<script/i.test(html))
+	assertFalse(/onerror/i.test(html))
+	assertStringIncludes(html, '<img')
+})
+
+Deno.test('sanitizePermissiveHtml strips javascript: href', () => {
+	const html = sanitizePermissiveHtml('<a href="javascript:alert(1)">x</a>')
+	assertFalse(/javascript:/i.test(html))
+	assertStringIncludes(html, '<a')
+})
+
+Deno.test('sanitizePermissiveHtml keeps https link', () => {
+	const html = sanitizePermissiveHtml('<a href="https://example.com">ok</a>')
+	assertStringIncludes(html, 'href="https://example.com"')
+})
+
+Deno.test('sanitizePermissiveHtml strips protocol-relative // urls', () => {
+	const html = sanitizePermissiveHtml('<a href="//evil.example/x">x</a><img src="//evil.example/t.gif">')
+	assertFalse(/\/\/evil\.example/i.test(html))
+})
+
+Deno.test('isSafeHtmlUrl rejects // and javascript:', () => {
+	assertEquals(isSafeHtmlUrl('//evil.example/x'), false)
+	assertEquals(isSafeHtmlUrl('javascript:alert(1)'), false)
+	assertEquals(isSafeHtmlUrl('https://example.com'), true)
+	assertEquals(isSafeHtmlUrl('/api/x'), true)
+})
+
+Deno.test('sanitizePermissiveHtml strips svg and srcset', () => {
+	const html = sanitizePermissiveHtml('<svg onload=alert(1)></svg><img srcset="javascript:alert(1)">')
+	assertFalse(/<svg/i.test(html))
+	assertFalse(/srcset/i.test(html))
+})

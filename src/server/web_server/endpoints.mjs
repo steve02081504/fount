@@ -29,6 +29,7 @@ import {
 import { skip_report, config, save_config } from '../server.mjs'
 import { webauthnLoginBegin, webauthnLoginComplete } from '../auth/webauthn.mjs'
 import { getRegistry } from '../registries.mjs'
+import { addPushSubscription, getVapidPublicKey, removePushSubscription } from './notify/webPush.mjs'
 
 import { renderDirectoryListingHtml } from './directory_listing.mjs'
 import { register as registerNotifier } from './event_dispatcher.mjs'
@@ -288,6 +289,20 @@ export function registerEndpoints(router) {
 		const name = String(req.params.name ?? '').trim()
 		if (!name) return res.status(400).json({ error: 'registry name required' })
 		res.status(200).json(getRegistry(username, name, { nocache, resolve: 'url' }))
+	})
+
+	router.get('/api/notify/vapid-public-key', cors(), async (_req, res) => {
+		res.status(200).json({ publicKey: await getVapidPublicKey() })
+	})
+	router.post('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await addPushSubscription(username, req.body)
+		res.status(204).end()
+	})
+	router.delete('/api/notify/push-subscribe', authenticate, async (req, res) => {
+		const { username } = getUserByReq(req)
+		await removePushSubscription(username, req.body?.endpoint)
+		res.status(204).end()
 	})
 
 	router.post('/api/authenticate', authenticate, (req, res) => {

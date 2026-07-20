@@ -2,6 +2,11 @@ import { Router } from 'npm:websocket-express'
 
 import { locale_t, info_t } from './basedefs.ts'
 
+/** part_invoke 响应体（与 `part_invoke.mjs` 一致） */
+export type PartInvokeResponse =
+	| { result: unknown }
+	| { error: { message: string, code: string } }
+
 /**
  * Shell API 接口
  * @class shellAPI_t
@@ -88,6 +93,14 @@ export class shellAPI_t {
 			 * @returns {Promise<any>} - 调用结果。
 			 */
 			IPCInvokeHandler?: (user: string, data: any) => Promise<any>;
+			/**
+			 * 本 Part 处理 P2P part_invoke 入站（wire 载荷里的 partpath 决定 loadPart 目标；各 shell 各自实现）。
+			 * @param {string} user - 用户名。
+			 * @param {Record<string, unknown>} data - invoke 体。
+			 * @param {{ requesterNodeHash?: string | null }} [ingress] - 联邦入站元数据。
+			 * @returns {Promise<PartInvokeResponse | null>} - `{ result }` 成功；`{ error }` 或 throw 为失败；null 表示无 handler/不处理。
+			 */
+			P2PInvokeHandler?: (user: string, data: Record<string, unknown>, ingress?: { requesterNodeHash?: string | null }) => Promise<PartInvokeResponse | null>;
 		}
 	}
 }

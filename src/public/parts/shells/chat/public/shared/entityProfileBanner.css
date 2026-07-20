@@ -1,0 +1,59 @@
+/**
+ * 跨壳实体资料 banner 纹理（hash pattern + 自定义图）。
+ * 宿主设 data-profile-pattern 与 --entity-card-* CSS 变量；banner 节点用 .entity-profile-banner。
+ */
+.entity-profile-banner {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--entity-card-accent, #5865f2);
+	background-position:
+		var(--entity-card-pattern-x, 0) var(--entity-card-pattern-y, 0),
+		center;
+}
+
+[data-profile-pattern="dots"] .entity-profile-banner {
+	background-image:
+		radial-gradient(circle, rgb(255 255 255 / 24%) 0 2px, transparent 2.5px),
+		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
+	background-size: var(--entity-card-pattern-size) var(--entity-card-pattern-size), auto;
+}
+
+[data-profile-pattern="grid"] .entity-profile-banner {
+	background-image:
+		linear-gradient(rgb(255 255 255 / 12%) 1px, transparent 1px),
+		linear-gradient(90deg, rgb(255 255 255 / 12%) 1px, transparent 1px),
+		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
+	background-size:
+		var(--entity-card-pattern-size) var(--entity-card-pattern-size),
+		var(--entity-card-pattern-size) var(--entity-card-pattern-size),
+		auto;
+}
+
+[data-profile-pattern="diagonal"] .entity-profile-banner {
+	background-image:
+		repeating-linear-gradient(var(--entity-card-pattern-angle), transparent 0 11px, rgb(255 255 255 / 13%) 12px 14px),
+		linear-gradient(120deg, var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
+}
+
+[data-profile-pattern="rings"] .entity-profile-banner {
+	background-image:
+		repeating-radial-gradient(circle at var(--entity-card-pattern-x) var(--entity-card-pattern-y), transparent 0 12px, rgb(255 255 255 / 13%) 13px 15px),
+		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
+}
+
+[data-profile-pattern="stars"] .entity-profile-banner {
+	background-image:
+		radial-gradient(circle at 20% 28%, rgb(255 255 255 / 44%) 0 1px, transparent 2px),
+		radial-gradient(circle at 73% 62%, rgb(255 255 255 / 30%) 0 1.5px, transparent 2.5px),
+		radial-gradient(circle at 48% 18%, rgb(255 255 255 / 24%) 0 1px, transparent 2px),
+		linear-gradient(var(--entity-card-pattern-angle), var(--entity-card-accent), color-mix(in srgb, var(--entity-card-accent) 42%, #0d1020));
+	background-size: 67px 59px, 83px 71px, 47px 43px, auto;
+}
+
+.entity-profile-banner.entity-profile-banner--image,
+[data-profile-pattern] .entity-profile-banner.entity-profile-banner--image {
+	background-image: none;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}

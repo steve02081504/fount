@@ -1,0 +1,8 @@
+/**
+ * Chat live / 联邦测试节点 bootstrap（由 test node worker 调用）。
+ * @param {string} username 测试用户名
+ */
+export default async function bootstrap(username) {
+	const { ensureOperatorPubKey } = await import('fount/public/parts/shells/chat/src/entity/identity.mjs')
+	await ensureOperatorPubKey(username)
+}
