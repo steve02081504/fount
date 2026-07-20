@@ -1,4 +1,4 @@
-import { createDocumentFragmentFromHtmlString } from './template.mjs'
+import { createDocumentFragmentFromHtmlString } from '../features/template.mjs'
 
 const IconCache = {}
 

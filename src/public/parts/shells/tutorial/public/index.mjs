@@ -4,15 +4,15 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 /* global confetti */
 
+import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAnyDefaultPart } from '../../scripts/api/parts.mjs'
 import { initTranslations, geti18n } from '../../scripts/i18n/index.mjs'
-import { unlockAchievement, setDefaultPart, unsetDefaultPart, getAnyDefaultPart } from '../../scripts/parts.mjs'
-import { svgInliner } from '../../scripts/svgInliner.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
+import { svgInliner } from '../../scripts/lib/svgInliner.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
 
 applyTheme()
 
 const tutorialModal = document.getElementById('tutorialModal')
-const startTutorialBtn = document.getElementById('startTutorial')
+const startTutorialButton = document.getElementById('startTutorial')
 const progressBar = document.getElementById('progressBar')
 const progressText = document.getElementById('progressText')
 const tutorialEnd = document.getElementById('tutorialEnd')
@@ -190,7 +190,7 @@ function handleMobileClick() {
 
 await initTranslations('tutorial')
 
-startTutorialBtn.addEventListener('click', () => {
+startTutorialButton.addEventListener('click', () => {
 	tutorialModal.classList.add('hidden')
 	hideTutorialEnd()
 

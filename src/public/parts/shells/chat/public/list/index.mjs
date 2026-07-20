@@ -4,12 +4,12 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { initTranslations, confirmI18n, console, i18nElement, onLanguageChange } from '../../../scripts/i18n/index.mjs'
-import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/markdown.mjs'
-import { makeSearchable } from '../../../scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '../../../scripts/template.mjs'
-import { applyTheme } from '../../../scripts/theme.mjs'
-import { showToast, showToastI18n } from '../../../scripts/toast.mjs'
-import { createVirtualList } from '../../../scripts/virtualList.mjs'
+import { renderMarkdown, renderMarkdownAsString } from '../../../scripts/features/markdown/index.mjs'
+import { makeSearchable } from '../../../scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '../../../scripts/features/template.mjs'
+import { applyTheme } from '../../../scripts/theme/index.mjs'
+import { showToast, showToastI18n } from '../../../scripts/features/toast.mjs'
+import { createVirtualList } from '../../../scripts/lib/virtualList.mjs'
 import { processTimeStampForId } from '../src/utils.mjs'
 
 import { getChatList, getCharDetails, copyChats, exportChats, deleteChats, importChat } from './endpoints.mjs'

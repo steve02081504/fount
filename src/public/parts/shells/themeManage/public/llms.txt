@@ -15,7 +15,7 @@
 
 - **API 能做什么**：主题的列出、获取、保存、删除均通过下述 HTTP 接口完成；主题数据存储在服务端，可跨设备同步。
 - **API 不能做什么**：当前页面的「应用/切换主题」由前端负责，没有对应 API。即：用户希望「把当前看到的界面换成某个主题」时，仅靠调用 themeManage 的 API 无法生效。
-- **若用户希望设置/切换当前页面的主题**：必须在**前端**执行 JavaScript。方式：在已加载 fount 前端的页面中，从共享脚本 `/scripts/theme.mjs` 调用：
+- **若用户希望设置/切换当前页面的主题**：必须在**前端**执行 JavaScript。方式：在已加载 fount 前端的页面中，从共享脚本 `/scripts/theme/index.mjs` 调用：
   - `setTheme(theme)`：切换并应用主题。参数 `theme` 为字符串，可为内置值 `'light'`、`'dark'`、`'auto'`，或 themeManage 中保存的自定义主题 ID/名称（与 GET theme/:id 返回的 `id` 或 `name` 一致）。需先通过 themeManage API 或 localStorage 确保该主题已存在。
   - `applyTheme()`：根据当前存储的 theme 重新应用主题（例如页面加载时或跨标签同步后）。
   因此，若 AI Agent 需要帮用户「切换当前看到的主题」，应引导用户在前端执行上述 JS（例如通过支持执行前端脚本的 shell，如 browserIntegration 的 runJsOnPage），或让用户打开 themeManage 页面手动选择主题。

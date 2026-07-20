@@ -1,13 +1,13 @@
 /**
  * 桌面宠物 shell 的客户端逻辑。
  */
-import { initTranslations, i18nElement } from '/scripts/i18n/index.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { createSearchableDropdown } from '/scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { onServerEvent } from '/scripts/server_events.mjs'
-import { getPartList } from '/scripts/parts.mjs'
+import { initTranslations } from '/scripts/i18n/index.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { createSearchableDropdown } from '/scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { onServerEvent } from '/scripts/api/server_events.mjs'
+import { getPartList } from '/scripts/api/parts.mjs'
 
 import {
 	getRunningPetList,
@@ -16,7 +16,7 @@ import {
 } from './src/endpoints.mjs'
 
 const charSelectDropdown = document.getElementById('char-select-dropdown')
-const startPetButton = document.getElementById('start-pet-btn')
+const startPetButton = document.getElementById('start-pet-button')
 const runningPetsList = document.getElementById('running-pets-list')
 
 let charList = []
@@ -28,7 +28,6 @@ let runningPets = []
  * @returns {Promise<void>}
  */
 async function renderCharDropdown() {
-	i18nElement(charSelectDropdown.parentElement)
 	const disabled = !charList || !charList.length
 	const dataList = disabled ? [] : charList.map(name => ({ name, value: name }))
 
@@ -68,10 +67,9 @@ async function renderRunningPets() {
 	runningPetsList.innerHTML = ''
 	if (runningPetItems.length)
 		runningPetItems.forEach(item => runningPetsList.appendChild(item))
-	else {
+	else 
 		runningPetsList.innerHTML = /* html */ '<p data-i18n="deskpet.runningCard.noPets">No pets are currently running.</p>'
-		i18nElement(runningPetsList)
-	}
+	
 }
 
 /**

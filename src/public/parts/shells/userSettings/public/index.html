@@ -40,8 +40,8 @@
 						<div class="flex items-center flex-wrap">
 							<strong data-i18n="userSettings.userInfo.folderPathLabel" class="mr-2"></strong>
 							<code id="userInfoFolderPath" class="p-1 bg-base-300 rounded text-sm break-all flex-grow min-w-[200px]"></code>
-							<button id="copyFolderPathBtn" class="btn btn-sm btn-ghost ml-2" data-i18n="userSettings.userInfo.copyPathBtn">
-								<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" data-i18n="userSettings.userInfo.copyPathBtnIcon" />
+							<button id="copyFolderPathButton" class="btn btn-sm btn-ghost ml-2" data-i18n="userSettings.userInfo.copyPathButton">
+								<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" data-i18n="userSettings.userInfo.copyPathButtonIcon" />
 							</button>
 						</div>
 					</div>
@@ -95,7 +95,7 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="card-title" data-i18n="userSettings.userDevices.title"></h2>
-						<button id="refreshDevicesBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.userDevices.refreshButton">
+						<button id="refreshDevicesButton" class="btn btn-sm btn-ghost" data-i18n="userSettings.userDevices.refreshButton">
 							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n="userSettings.userDevices.refreshButtonIcon" />
 						</button>
 					</div>
@@ -111,7 +111,7 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="card-title" data-i18n="userSettings.passkeys.title"></h2>
-						<button type="button" id="refreshPasskeysBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.passkeys.refreshButton">
+						<button type="button" id="refreshPasskeysButton" class="btn btn-sm btn-ghost" data-i18n="userSettings.passkeys.refreshButton">
 							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" aria-hidden="true" data-i18n="userSettings.passkeys.refreshButtonIcon" />
 						</button>
 					</div>
@@ -135,7 +135,7 @@
 				<div class="card-body">
 					<div class="flex justify-between items-center mb-4">
 						<h2 class="card-title" data-i18n="userSettings.apiKeys.title"></h2>
-						<button id="refreshApiKeysBtn" class="btn btn-sm btn-ghost" data-i18n="userSettings.apiKeys.refreshButton">
+						<button id="refreshApiKeysButton" class="btn btn-sm btn-ghost" data-i18n="userSettings.apiKeys.refreshButton">
 							<img src="https://api.iconify.design/line-md/rotate-270.svg" class="w-5 h-5" data-i18n="userSettings.apiKeys.refreshButtonIcon" />
 						</button>
 					</div>
@@ -181,7 +181,7 @@
 							</div>
 						</div>
 						<div class="card-actions justify-end">
-							<button id="testEditorCommandBtn" type="button" class="btn btn-ghost" data-i18n="userSettings.editorCommand.testButton"></button>
+							<button id="testEditorCommandButton" type="button" class="btn btn-ghost" data-i18n="userSettings.editorCommand.testButton"></button>
 							<button type="submit" class="btn btn-primary" data-i18n="userSettings.editorCommand.saveButton"></button>
 						</div>
 					</form>
@@ -194,7 +194,7 @@
 					<h2 class="card-title" data-i18n="userSettings.logout.title"></h2>
 					<p data-i18n="userSettings.logout.description"></p>
 					<div class="card-actions justify-end">
-						<button id="logoutBtn" class="btn btn-accent" data-i18n="userSettings.logout.buttonText"></button>
+						<button id="logoutButton" class="btn btn-accent" data-i18n="userSettings.logout.buttonText"></button>
 					</div>
 				</div>
 			</section>
@@ -205,7 +205,7 @@
 					<h2 class="card-title" data-i18n="userSettings.deleteAccount.title"></h2>
 					<p data-i18n="userSettings.deleteAccount.warning"></p>
 					<div class="card-actions justify-end">
-						<button id="deleteAccountBtn" class="btn btn-outline" data-i18n="userSettings.deleteAccount.submitButton"></button>
+						<button id="deleteAccountButton" class="btn btn-outline" data-i18n="userSettings.deleteAccount.submitButton"></button>
 					</div>
 				</div>
 			</section>
@@ -223,8 +223,8 @@
 				<input type="password" id="confirmationPassword" class="input input-bordered w-full" autocomplete="current-password" />
 			</div>
 			<div class="modal-action">
-				<button id="confirmPasswordBtn" class="btn btn-primary" data-i18n="userSettings.passwordConfirm.confirmButton"></button>
-				<button id="cancelPasswordBtn" class="btn" data-i18n="userSettings.passwordConfirm.cancelButton"></button>
+				<button id="confirmPasswordButton" class="btn btn-primary" data-i18n="userSettings.passwordConfirm.confirmButton"></button>
+				<button id="cancelPasswordButton" class="btn" data-i18n="userSettings.passwordConfirm.cancelButton"></button>
 			</div>
 		</div>
 		<form method="dialog" class="modal-backdrop"><button>close</button></form>
@@ -239,7 +239,7 @@
 			<div class="form-control">
 				<div class="relative">
 					<input type="text" id="newApiKeyInput" class="input input-bordered w-full pr-10" readonly />
-					<button id="copyNewApiKeyBtn" class="btn btn-sm btn-ghost absolute top-1/2 right-1 transform -translate-y-1/2" data-i18n="userSettings.newApiKey.copyButton">
+					<button id="copyNewApiKeyButton" class="btn btn-sm btn-ghost absolute top-1/2 right-1 transform -translate-y-1/2" data-i18n="userSettings.newApiKey.copyButton">
 						<img src="https://api.iconify.design/material-symbols/content-copy-outline.svg" class="w-4 h-4" />
 					</button>
 				</div>

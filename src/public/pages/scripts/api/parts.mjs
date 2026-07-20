@@ -1,10 +1,17 @@
 /**
  * 部件相关的 API 函数。
+ *
+ * **partpath 约定（勿在此文件做 colon→slash 转换）**
+ * - 本模块 POST body 与服务端 `loadPart` 只认斜杠路径：`shells/chat`、`chars/Foo`。
+ * - URL / `fount://run/` 里的 `shells:chat` 是另一套语法；调用方自行规整后再传入
+ *   （例：`protocolhandler/index.mjs` 在调 `runPart` 前 `replaceAll(':', '/')`）。
+ * - 不要在 `runPart` / `loadPart` 里偷偷 `replace(/:/g, '/')`：会掩盖调用方 bug，且与
+ *   「规整是调用者职责」不一致。
  */
 
 /**
  * 运行部件。
- * @param {string} partpath - 部件路径。
+ * @param {string} partpath - 斜杠 partpath（如 `shells/install`），非 URL colon 形式。
  * @param {object} args - 参数。
  * @returns {Promise<object>} - 服务器响应。
  */
@@ -22,7 +29,7 @@ export async function runPart(partpath, args) {
 
 /**
  * 加载部件。
- * @param {string} partpath - 部件路径。
+ * @param {string} partpath - 斜杠 partpath（如 `shells/chat`），非 URL colon 形式。
  * @returns {Promise<object>} - 服务器响应。
  */
 export async function loadPart(partpath) {

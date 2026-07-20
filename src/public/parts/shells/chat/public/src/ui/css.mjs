@@ -1,4 +1,4 @@
-import { registerCssUpdater, setCssVariable } from '../../../../../scripts/cssValues.mjs'
+import { registerCssUpdater, setCssVariable } from '../../../../../scripts/lib/cssValues.mjs'
 
 import { getQueue } from './virtualQueue.mjs'
 

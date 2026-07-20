@@ -20,10 +20,10 @@
 	<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" crossorigin="anonymous"></script>
 	<script type="module" src="/base.mjs"></script>
 	<script type="module">
-		import { redirectToLoginInfo } from './scripts/credentialManager.mjs'
+		import { getAnyDefaultPart } from './scripts/api/parts.mjs'
+		import { redirectToLoginInfo } from './scripts/host/credentialManager.mjs'
 		import { initTranslations } from './scripts/i18n/index.mjs'
-		import { getAnyDefaultPart } from './scripts/parts.mjs'
-		import { setTheme } from './scripts/theme.mjs'
+		import { setTheme } from './scripts/theme/index.mjs'
 		initTranslations('startPage')
 		const hostUrl = window.location.origin
 		const urlParams = new URLSearchParams(window.location.search)

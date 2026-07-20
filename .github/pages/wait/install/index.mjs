@@ -4,14 +4,14 @@ import * as Sentry from 'https://esm.sh/@sentry/browser'
 import { setPreRender, setTheme, theme_now } from '../../base.mjs'
 import { waitForFountService, saveFountHostUrl, getFountHostUrl, pingFount } from '../../scripts/fountHostGetter.mjs'
 import { initTranslations, geti18n, console, getAvailableLocales, getLocaleNames, setLocales, onLanguageChange } from '../../scripts/i18n/index.mjs'
-import { makeSearchable } from '../../scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
+import { makeSearchable } from '../../scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
-} from '../../scripts/themeViewTransition.mjs'
-import { showToastI18n } from '../../scripts/toast.mjs'
-import { viewTransition } from '../../scripts/viewTransition.mjs'
+} from '../../scripts/theme/viewTransition.mjs'
+import { showToastI18n } from '../../scripts/features/toast.mjs'
+import { viewTransition } from '../../scripts/lib/viewTransition.mjs'
 
 usingTemplates('wait/install/templates')
 const hostUrl = 'http://localhost:8931'

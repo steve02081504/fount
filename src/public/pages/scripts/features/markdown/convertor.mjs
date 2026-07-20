@@ -1,5 +1,6 @@
 import { fromHtml } from 'https://esm.sh/hast-util-from-html'
 import { toHtml } from 'https://esm.sh/hast-util-to-html'
+import { toString as hastToString } from 'https://esm.sh/hast-util-to-string'
 import { h } from 'https://esm.sh/hastscript'
 import languageMap from 'https://esm.sh/lang-map'
 import md5 from 'https://esm.sh/md5'
@@ -16,8 +17,11 @@ import { createHighlighter } from 'https://esm.sh/shiki'
 import { unified } from 'https://esm.sh/unified'
 import { visit } from 'https://esm.sh/unist-util-visit'
 
-import { geti18n } from './i18n/index.mjs'
-import { onThemeChange } from './theme.mjs'
+import { geti18n } from '../../i18n/index.mjs'
+import { onThemeChange } from '../../theme/index.mjs'
+
+import { ensureMarkdownExtensionAssets } from './extensions.mjs'
+import { rehypeSanitizeUntrustedContent } from './sanitize.mjs'
 
 // --- 辅助函数 ---
 
@@ -126,6 +130,48 @@ function rehypeSpoiler() {
 }
 
 /**
+ * @param {object} node hast 节点
+ * @returns {string} 拼接文本
+ */
+function hastTextContent(node) {
+	if (!node) return ''
+	if (node.type === 'text') return node.value || ''
+	if (!node.children) return ''
+	return node.children.map(hastTextContent).join('')
+}
+
+/**
+ * @param {object} parent 父节点
+ * @param {object} child 关注的子节点
+ * @returns {boolean} 父节点有效内容是否仅此子节点
+ */
+function isSoleMeaningfulChild(parent, child) {
+	return (parent.children || []).every(n =>
+		n === child
+		|| (n.type === 'text' && !String(n.value || '').trim()),
+	)
+}
+
+/**
+ * 裸 http(s) 链接打标：单段纯链接 → card；行文中裸链接 → chip；带文本的 md 链接忽略。
+ * @returns {Function} Unified.js 插件
+ */
+function rehypeFountEmbedLinks() {
+	return tree => {
+		visit(tree, 'element', (node, _index, parent) => {
+			if (node.tagName !== 'a') return
+			const href = String(node.properties?.href || '')
+			if (!href.startsWith('http://') && !href.startsWith('https://')) return
+			const text = hastTextContent(node).trim()
+			if (text !== href) return
+			node.properties ??= {}
+			node.properties['data-fount-embed'] =
+				parent?.tagName === 'p' && isSoleMeaningfulChild(parent, node) ? 'card' : 'chip'
+		})
+	}
+}
+
+/**
  * 为元素添加 DaisyUI 类。
  * @returns {Function} - Unified.js 插件。
  */
@@ -156,17 +202,8 @@ function rehypeAddDaisyuiClass() {
 	}
 }
 
-/**
- * 渲染 Mermaid 图表为 SVG。
- * @returns {Function} - Unified.js 插件。
- */
-function rehypeMermaid() {
-	mermaid.initialize({
-		startOnLoad: false,
-		theme: 'base',
-		securityLevel: 'loose',
-		suppressErrorRendering: true,
-		themeCSS: /* css */ `
+/** Mermaid 主题 CSS（转换器自带；不可被图源 frontmatter 覆盖）。 */
+const MERMAID_THEME_CSS = /* css */ `
 .node rect, .node circle, .node polygon, .node ellipse, .node path,
 .cluster rect, .cluster polygon,
 .section0 rect, .section1 rect, .section2 rect, .section3 rect,
@@ -247,14 +284,91 @@ g.stateGroup .alt-composit, .statediagram-state rect.divider {
 .statediagram-cluster rect.outer { rx: 5px !important; ry: 5px !important; }
 g.classGroup .title { font-weight: bolder !important; }
 .classTitle { font-weight: bolder !important; }
-`,
-	})
+`
+
+/** 图源 frontmatter / init 不可覆盖的 mermaid 配置键。 */
+const MERMAID_SECURE_KEYS = [
+	'secure',
+	'securityLevel',
+	'startOnLoad',
+	'maxTextSize',
+	'theme',
+	'themeCSS',
+]
+
+/**
+ * 分配文档内唯一的 Mermaid SVG id。
+ * mermaid.render(id) 会复用/拆掉已有同 id 节点；同图多处展示（feed+详情）必须每次新 id。
+ * @param {string} [seed=''] 内容种子（仅影响可读前缀，不保证唯一）
+ * @returns {string} 唯一 id
+ */
+function allocMermaidSvgId(seed = '') {
+	const prefix = `mermaid-${md5(seed || Math.random().toString()).slice(0, 16)}`
+	let id
+	do id = `${prefix}-${Math.random().toString(36).slice(2, 9)}`
+	while (document.getElementById(id))
+	return id
+}
+
+/**
+ * 从已渲染 Mermaid HTML 提取图级 id（svg[id] 或 style 里的 #id 作用域）。
+ * @param {string} html SVG/片段 HTML
+ * @returns {string | undefined} 图级 id
+ */
+function extractMermaidDiagramId(html) {
+	return html.match(/<svg\b[^>]*\bid="(mermaid-[^"]+)"/i)?.[1]
+		?? html.match(/#((?:mermaid-)[a-zA-Z0-9-]+)\s*[{.]/)?.[1]
+}
+
+/**
+ * happy-dom + mermaid(strict)/DOMPurify 下 render 可能只返回 style/g/defs 片段、无根 svg。
+ * 补回带 id 的根节点，否则图挂不上、缓存 uniquify 也找不到图级 id。
+ * @see https://github.com/capricorn86/happy-dom/issues/2182
+ * @param {string} html mermaid.render 返回的 svg 字段
+ * @param {string} id 本次分配的图级 id
+ * @returns {string} 保证含根 svg[id] 的 HTML
+ */
+function ensureMermaidSvgRoot(html, id) {
+	if (/<svg\b/i.test(html)) {
+		if (extractMermaidDiagramId(html)) return html
+		return html.replace(/<svg\b/i, `<svg id="${id}"`)
+	}
+	return `<svg id="${id}" xmlns="http://www.w3.org/2000/svg" width="100%">${html}</svg>`
+}
+
+/**
+ * 将缓存/已渲染 SVG 内的 mermaid id（含 marker / style 引用）改写成新的唯一 id。
+ * @param {string} html SVG HTML
+ * @returns {string} 改写后的 HTML
+ */
+function uniquifyMermaidSvgHtml(html) {
+	const oldId = extractMermaidDiagramId(html)
+	if (!oldId) return html
+	return html.replaceAll(oldId, allocMermaidSvgId(oldId))
+}
+
+/**
+ * 渲染 Mermaid 图表为 SVG。
+ * @param {object} [options] 选项
+ * @param {'strict' | 'loose' | 'antiscript' | 'sandbox'} [options.securityLevel='loose'] 信任级别
+ * @returns {Function} Unified.js 插件
+ */
+function rehypeMermaid({ securityLevel = 'loose' } = {}) {
 	const container = document.getElementById('mermaid-render-container') || document.body.appendChild(Object.assign(document.createElement('div'), {
 		id: 'mermaid-render-container',
 		style: 'position: absolute; top: 0; left: 0;'
 	}))
 
 	return async (tree) => {
+		mermaid.initialize({
+			startOnLoad: false,
+			theme: 'base',
+			securityLevel,
+			suppressErrorRendering: true,
+			themeCSS: MERMAID_THEME_CSS,
+			secure: MERMAID_SECURE_KEYS,
+		})
+
 		/**
 		 * 待替换的 Mermaid 代码块节点列表。
 		 * @type {{ node: any, index: number, parent: any }[]}
@@ -278,11 +392,9 @@ g.classGroup .title { font-weight: bolder !important; }
 			if (!mermaidCode.trim()) continue
 
 			try {
-				const id = `mermaid-${md5(mermaidCode)}`
+				const id = allocMermaidSvgId(mermaidCode)
 				const renderResult = await mermaid.render(id, mermaidCode, container)
-				const svgString = renderResult.svg
-
-				const svgHast = fromHtml(svgString, { fragment: true }).children
+				const svgHast = fromHtml(ensureMermaidSvgRoot(renderResult.svg, id), { fragment: true }).children
 
 				parent.children.splice(index, 1, ...svgHast)
 			} catch (error) {
@@ -367,8 +479,72 @@ return result
 }
 
 /**
- * 代码执行器集合
- * @type {Object.<string, (code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>>}
+ * @typedef {(code: string) => Promise<{result?: string, output?: string, error?: string, exitcode?: number, outputHtml?: string, errorHtml?: string}>} LanguageExecutor
+ */
+
+/**
+ * 不可信环境可用的执行器（内存解释器 / 远端沙箱等，不进页面同源任意脚本能力）。
+ * @type {Object.<string, LanguageExecutor>}
+ */
+const safeLanguageExecutors = {
+	/**
+	 * 执行 SQL 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
+	sql: async (code) => {
+		try {
+			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
+			const SQL = await initSqlJs({
+				/**
+				 * 定位 SQL.js 文件。
+				 * @param {string} file - 文件名。
+				 * @returns {string} - 文件路径。
+				 */
+				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}`
+			})
+			const db = new SQL.Database()
+			const results = db.exec(code)
+
+			let output = ''
+			if (results.length)
+				output = results.map(res => {
+					const header = `| ${res.columns.join(' | ')} |`
+					const separator = `|${'-'.repeat(header.length - 2)}|`
+					const rows = res.values.map(row => `| ${row.join(' | ')} |`).join('\n')
+					return `${header}\n${separator}\n${rows}`
+				}).join('\n\n')
+
+			return {
+				result: JSON.stringify(results),
+				output: output.trim(),
+			}
+		} catch (error) { return { error } }
+	},
+	cpp: createGodboltExecutor('gsnapshot', 'c++'),
+	c: createGodboltExecutor('cgsnapshot', 'c'),
+	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
+	go: createGodboltExecutor('gltip', 'go'),
+	rs: createGodboltExecutor('nightly', 'rust'),
+	/**
+	 * 执行 brainfuck 代码。
+	 * @param {string} code - 要执行的代码。
+	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
+	 */
+	b: async (code) => {
+		try {
+			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
+			const brainfuck = new Brainfuck()
+			const result = brainfuck.execute(code)
+			return { output: result.output }
+		} catch (error) { return { error } }
+	},
+}
+
+/**
+ * 可信环境执行器；与 `safeLanguageExecutors` 同 key 时覆盖后者。
+ * 可为同一语言在可信档提供更强能力，而不必为安全档牺牲功能。
+ * @type {Object.<string, LanguageExecutor>}
  */
 const languageExecutors = {
 	/**
@@ -533,104 +709,74 @@ $stderr = StringIO.new
 			}
 		} catch (error) { return { error } }
 	},
-	/**
-	 * 执行 SQL 代码。
-	 * @param {string} code - 要执行的代码。
-	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
-	 */
-	sql: async (code) => {
-		try {
-			const { default: initSqlJs } = await import('https://esm.sh/sql.js')
-			const SQL = await initSqlJs({
-				/**
-				 * 定位 SQL.js 文件。
-				 * @param {string} file - 文件名。
-				 * @returns {string} - 文件路径。
-				 */
-				locateFile: file => `https://cdn.jsdelivr.net/npm/sql.js/dist/${file}`
-			})
-			const db = new SQL.Database()
-			const results = db.exec(code)
-
-			let output = ''
-			if (results.length)
-				output = results.map(res => {
-					const header = `| ${res.columns.join(' | ')} |`
-					const separator = `|${'-'.repeat(header.length - 2)}|`
-					const rows = res.values.map(row => `| ${row.join(' | ')} |`).join('\n')
-					return `${header}\n${separator}\n${rows}`
-				}).join('\n\n')
-
-			return {
-				result: JSON.stringify(results),
-				output: output.trim(),
-			}
-		} catch (error) { return { error } }
-	},
-	cpp: createGodboltExecutor('gsnapshot', 'c++'),
-	c: createGodboltExecutor('cgsnapshot', 'c'),
-	csharp: createGodboltExecutor('dotnettrunkcsharpcoreclr', 'csharp'),
-	go: createGodboltExecutor('gltip', 'go'),
-	rs: createGodboltExecutor('nightly', 'rust'),
-	/**
-	 * 执行 brainfuck 代码。
-	 * @param {string} code - 要执行的代码。
-	 * @returns {Promise<{result?: string, output?: string, error?: string, exitcode?: number}>} - 执行结果。
-	 */
-	b: async (code) => {
-		try {
-			const { default: Brainfuck } = await import('https://esm.sh/brainfuck-node')
-			const brainfuck = new Brainfuck()
-			const result = brainfuck.execute(code)
-			return { output: result.output }
-		} catch (error) { return { error } }
-	},
 }
 
 /**
- * 创建代码块插件。
+ * 按可信档解析执行器：可信 = `languageExecutors` 覆盖 `safeLanguageExecutors`；不可信只用后者。
+ * @param {string} langOrExt 语言名或扩展名
+ * @param {boolean} allowUnsafeExecutors 是否允许可信执行器
+ * @returns {LanguageExecutor | undefined} 匹配到的语言执行器；未命中时为 `undefined`。
+ */
+function resolveLanguageExecutor(langOrExt, allowUnsafeExecutors) {
+	const key = String(langOrExt || '').toLowerCase()
+	if (allowUnsafeExecutors && languageExecutors[key]) return languageExecutors[key]
+	return safeLanguageExecutors[key]
+}
+
+/**
+ * 统计 shiki/rehype-pretty-code 产出的行数。
+ * @param {object} pre - `<pre>` hast 节点。
+ * @returns {number} 行数。
+ */
+function countCodeLines(pre) {
+	const code = pre.children?.find(child => child.type === 'element' && child.tagName === 'code')
+	const lines = code?.children?.filter(child =>
+		child.type === 'element' && child.tagName === 'span' && 'data-line' in (child.properties || {})
+	) || []
+	return lines.length || 1
+}
+
+/**
+ * 为块级代码添加复制/下载/执行等增强 UI。
+ * 必须在 rehype-pretty-code 之后以 rehype 插件运行：Shiki transformer 的 root 包装会破坏
+ * rehype-pretty-code 对内联 `{:lang}` 的假设（期望 root>pre，包装后 inline 路径会吐出块级 pre）。
+ * @param {object} pre - `<pre>` hast 节点。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
- * @returns {object} - 代码块插件。
+ * @param {boolean} [options.allowUnsafeExecutors=true] - 是否允许不安全执行器 / HTML 预览。
+ * @returns {object} - 包装后的 hast 节点。
  */
-function createCodeBlockPlugin({ isStandalone = false } = {}) {
-	return {
-		name: 'code-block-enhancements',
-		/**
-		 * 处理 hast 树。
-		 * @param {object} hast - hast 树。
-		 * @returns {object} - 处理后的 hast 树。
-		 */
-		root(hast) {
-			const rawCode = this.tokens.map(line => line.map(token => token.content).join('')).join('\n')
-			const lineCount = this.tokens.length
-			const collapseThreshold = 13
-			const lang = this.options.lang || 'txt'
-			const ext = getLanguageExtension(lang)
-			let uniqueId
-			do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
-			while (document.getElementById(uniqueId))
-			const executor = languageExecutors[ext] || languageExecutors[lang]
+function enhanceCodeBlockPre(pre, { isStandalone = false, allowUnsafeExecutors = true } = {}) {
+	const rawCode = hastToString(pre).replace(/\n$/, '')
+	const lineCount = countCodeLines(pre)
+	const collapseThreshold = 13
+	const lang = pre.properties?.['data-language'] || 'txt'
+	const ext = getLanguageExtension(lang)
+	let uniqueId
+	do uniqueId = `markdown-code-block-${md5(rawCode)}-${Math.random().toString(36).slice(2, 9)}`
+	while (document.getElementById(uniqueId))
+	const executor = resolveLanguageExecutor(ext, allowUnsafeExecutors)
+		|| resolveLanguageExecutor(lang, allowUnsafeExecutors)
 
-			/**
-			 * 创建工具提示。
-			 * @param {string} textKey - 文本键。
-			 * @param {any} children - 子元素。
-			 * @param {string} [position='left'] - 位置。
-			 * @returns {object} - 工具提示元素。
-			 */
-			const createTooltip = (textKey, children, position = 'left') => {
-				const props = isStandalone
-					? { 'data-tip': geti18n(textKey + '.dataset.tip') }
-					: { 'data-i18n': textKey }
-				return h('div', { class: `tooltip tooltip-${position}`, ...props }, children)
-			}
+	/**
+	 * 创建工具提示。
+	 * @param {string} textKey - 文本键。
+	 * @param {any} children - 子元素。
+	 * @param {string} [position='left'] - 位置。
+	 * @returns {object} - 工具提示元素。
+	 */
+	const createTooltip = (textKey, children, position = 'left') => {
+		const props = isStandalone
+			? { 'data-tip': geti18n(textKey + '.dataset.tip') }
+			: { 'data-i18n': textKey }
+		return h('div', { class: `tooltip tooltip-${position}`, ...props }, children)
+	}
 
-			// 复制按钮
-			const copyButtonCore = h('button', {
-				class: 'btn btn-ghost btn-square btn-sm text-icon',
-				...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
-				onclick: `\
+	// 复制按钮
+	const copyButtonCore = h('button', {
+		class: 'btn btn-ghost btn-square btn-sm text-icon',
+		...isStandalone ? { 'aria-label': geti18n('code_block.copy.aria-label') } : { 'data-i18n': 'code_block.copy' },
+		onclick: `\
 event.stopPropagation()
 const button = this
 ;(async () => {
@@ -638,32 +784,32 @@ const button = this
 	try {
 		await navigator.clipboard.writeText(document.querySelector('#${uniqueId} pre').innerText)
 		${isStandalone
-						? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
-						: 'tooltip.dataset.i18n = \'code_block.copied\''
+			? `tooltip.dataset.tip = '${geti18n('code_block.copied.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'code_block.copied\''
 }
 		button.innerHTML = ${JSON.stringify(successIconSized)}
 	} catch (e) {
 		${isStandalone
-						? 'alert(\'Failed to copy: \' + e.message)'
-						: 'const { showToastI18n } = await import(\'/scripts/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
+			? 'alert(\'Failed to copy: \' + e.message)'
+			: 'const { showToastI18n } = await import(\'/scripts/features/toast.mjs\'); showToastI18n(\'error\', \'code_block.copy_failed\', { error: e.message })'
 }
 	}
 	setTimeout(() => {
 		${isStandalone
-						? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
-						: 'tooltip.dataset.i18n = \'code_block.copy\''
+			? `tooltip.dataset.tip = '${geti18n('code_block.copy.dataset.tip')}'`
+			: 'tooltip.dataset.i18n = \'code_block.copy\''
 }
 		button.innerHTML = ${JSON.stringify(copyIconSized)}
 	}, 2000)
 })()
 `,
-			}, [fromHtml(copyIconSized, { fragment: true })])
+	}, fromHtml(copyIconSized, { fragment: true }).children)
 
-			// 下载按钮
-			const downloadButtonCore = h('button', {
-				class: 'btn btn-ghost btn-square btn-sm text-icon',
-				...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
-				onclick: `\
+	// 下载按钮
+	const downloadButtonCore = h('button', {
+		class: 'btn btn-ghost btn-square btn-sm text-icon',
+		...isStandalone ? { 'aria-label': geti18n('code_block.download.aria-label') } : { 'data-i18n': 'code_block.download' },
+		onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
 const a = document.createElement('a')
@@ -673,30 +819,30 @@ document.body.appendChild(a)
 a.click()
 document.body.removeChild(a)
 `,
-			}, [fromHtml(downloadIconSized, { fragment: true })])
+	}, fromHtml(downloadIconSized, { fragment: true }).children)
 
-			// 预览按钮
-			let previewButtonCore = null
-			if (ext === 'html')
-				previewButtonCore = h('button', {
-					class: 'btn btn-ghost btn-square btn-sm text-icon',
-					...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
-					onclick: `\
+	// 预览按钮（document.write → 等同页面执行面，仅可信档）
+	let previewButtonCore = null
+	if (ext === 'html' && allowUnsafeExecutors)
+		previewButtonCore = h('button', {
+			class: 'btn btn-ghost btn-square btn-sm text-icon',
+			...isStandalone ? { 'aria-label': geti18n('code_block.preview.aria-label') } : { 'data-i18n': 'code_block.preview' },
+			onclick: `\
 event.stopPropagation()
 const code = document.querySelector('#${uniqueId} pre').innerText
 const previewWindow = window.open('', '_blank')
 previewWindow.document.write(code)
 previewWindow.document.close()
 `,
-				}, [fromHtml(previewIconSized, { fragment: true })])
+		}, fromHtml(previewIconSized, { fragment: true }).children)
 
-			// 执行按钮
-			let executeButtonCore = null
-			if (executor)
-				executeButtonCore = h('button', {
-					class: 'btn btn-ghost btn-square btn-sm text-icon',
-					...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
-					onclick: `\
+	// 执行按钮
+	let executeButtonCore = null
+	if (executor)
+		executeButtonCore = h('button', {
+			class: 'btn btn-ghost btn-square btn-sm text-icon',
+			...isStandalone ? { 'aria-label': geti18n('code_block.execute.aria-label') } : { 'data-i18n': 'code_block.execute' },
+			onclick: `\
 event.stopPropagation()
 const codeBlockContainer = document.getElementById('${uniqueId}')
 const preExistingOutput = document.querySelectorAll('.${uniqueId}-execution-output')
@@ -714,22 +860,22 @@ codeBlockContainer.insertAdjacentElement('afterend', outputContainer)
 const copySvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(copyIconSized))})
 const successSvg = decodeURIComponent(${JSON.stringify(encodeURIComponent(successIconSized))})
 
-const createCopyBtn = (text) => {
+const createCopyButton = (text) => {
 	const encoded = encodeURIComponent(text).replace(/'/g, '%27')
 	const copyAction = \`\\
 event.stopPropagation()
-const btn = this
+const button = this
 navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
-	btn.innerHTML = \${JSON.stringify(successSvg)}
-	setTimeout(() => btn.innerHTML = \${JSON.stringify(copySvg)}, 2000)
+	button.innerHTML = \${JSON.stringify(successSvg)}
+	setTimeout(() => button.innerHTML = \${JSON.stringify(copySvg)}, 2000)
 	${isStandalone
-							? `btn.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
-							: 'btn.parentElement.dataset.i18n = \'code_block.copied\''
+				? `button.parentElement.dataset.tip = decodeURIComponent(${JSON.stringify(encodeURIComponent(geti18n('code_block.copied.dataset.tip')))})`
+				: 'button.parentElement.dataset.i18n = \'code_block.copied\''
 }
 }).catch(error => {
 	${isStandalone
-							? 'alert(\'Failed to copy: \' + error.message)'
-							: 'import(\'/scripts/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
+				? 'alert(\'Failed to copy: \' + error.message)'
+				: 'import(\'/scripts/features/toast.mjs\').then(({ showToastI18n }) => showToastI18n(\'error\', \'code_block.copy_failed\', { error: error.message }))'
 }
 })
 \`
@@ -752,7 +898,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.error)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-error bg-error/50 border-error/50 relative pr-10">
-	\${createCopyBtn(result.error)}
+	\${createCopyButton(result.error)}
 	<div>
 		<div class="font-bold">Error</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.errorHtml || '<code>'+escapeHtml(result.error)+'</code>'}</pre>
@@ -762,7 +908,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.output)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-info bg-info/40 border-info/40 relative pr-10">
-	\${createCopyBtn(result.output)}
+	\${createCopyButton(result.output)}
 	<div>
 		<div class="font-bold">Output</div>
 		<pre class="font-mono text-sm overflow-x-auto whitespace-pre-wrap">\${result.outputHtml || '<code>'+escapeHtml(result.output)+'</code>'}</pre>
@@ -774,7 +920,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 <details class="join-item collapse alert alert-warning bg-warning/40 border-warning/40">
 	<summary class="collapse-title font-bold text-sm">Assembly</summary>
 	<div class="collapse-content relative pr-10">
-		\${createCopyBtn(result.asm)}
+		\${createCopyButton(result.asm)}
 		<pre class="font-mono text-xs overflow-x-auto">\${result.asmHtml || '<code>'+escapeHtml(result.asm)+'</code>'}</pre>
 	</div>
 </details>
@@ -782,7 +928,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	if (result.result)
 		alerts.push(/* html */ \`\\
 <div class="join-item alert alert-success bg-success/40 border-success/40 relative pr-10">
-	\${createCopyBtn(result.result)}
+	\${createCopyButton(result.result)}
 	<div>
 		<div class="font-bold">Result</div>
 		<pre class="font-mono text-sm font-bold overflow-x-auto whitespace-pre-wrap">\${result.resultHtml || '<code>'+escapeHtml(result.result)+'</code>'}</pre>
@@ -819,7 +965,7 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 }).catch(e => {
 	outputContainer.innerHTML = /* html */ \`\\
 <div class="join-item alert alert-error bg-error/70 border-error/70">
-	\${createCopyBtn(e.stack)}
+	\${createCopyButton(e.stack)}
 	<div>
 		<div class="font-bold">Execution Error</div>
 		<pre class="text-xs overflow-x-auto whitespace-pre-wrap"><code>\${e.stack}</code></pre>
@@ -839,44 +985,56 @@ navigator.clipboard.writeText(decodeURIComponent('\${encoded}')).then(() => {
 	outputContainer.remove()
 })
 `,
-				}, [fromHtml(playIconSized, { fragment: true })])
+		}, fromHtml(playIconSized, { fragment: true }).children)
 
-			/**
-			 * 获取按钮组。
-			 * @param {string} tooltipPosition - 工具提示位置。
-			 * @returns {object} - 按钮组元素。
-			 */
-			const getButtonGroup = (tooltipPosition) => {
-				const buttons = []
-				if (previewButtonCore)
-					buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
-				if (executeButtonCore)
-					buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
+	/**
+	 * 获取按钮组。
+	 * @param {string} tooltipPosition - 工具提示位置。
+	 * @returns {object} - 按钮组元素。
+	 */
+	const getButtonGroup = (tooltipPosition) => {
+		const buttons = []
+		if (previewButtonCore)
+			buttons.push(createTooltip('code_block.preview', [previewButtonCore], tooltipPosition))
+		if (executeButtonCore)
+			buttons.push(createTooltip('code_block.execute', [executeButtonCore], tooltipPosition))
 
-				buttons.push(
-					createTooltip('code_block.download', [downloadButtonCore], tooltipPosition),
-					createTooltip('code_block.copy', [copyButtonCore], tooltipPosition)
-				)
-				return h('div', { class: 'flex items-center' }, buttons)
-			}
+		buttons.push(
+			createTooltip('code_block.download', [downloadButtonCore], tooltipPosition),
+			createTooltip('code_block.copy', [copyButtonCore], tooltipPosition)
+		)
+		return h('div', { class: 'flex items-center' }, buttons)
+	}
 
-			if (lineCount > collapseThreshold) {
-				const buttonNode = getButtonGroup()
-				const summaryNode = h('summary', { class: 'bg-base-200 collapse-title' }, [h('div', {
-					class: 'font-mono text-xs font-bold flex items-center justify-between'
-				}, [
-					h('span', `${lang.toUpperCase()} - ${lineCount} lines`),
-					buttonNode
-				])])
-				return h('details', { id: uniqueId, class: 'markdown-code-block collapse collapse-arrow join-item', open: true }, [
-					summaryNode,
-					h('div', { class: 'collapse-content' }, [hast])
-				])
-			}
+	const hoverButtons = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
 
-			const buttonNode = h('div', { class: 'absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200' }, [getButtonGroup('left')])
-			return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [hast, buttonNode])
-		}
+	if (lineCount > collapseThreshold)
+		return h('details', { id: uniqueId, class: 'markdown-code-block join-item group', open: true }, [
+			h('summary', { class: 'bg-base-200 px-3 py-2 font-mono text-xs font-bold cursor-pointer' },
+				`${lang.toUpperCase()} - ${lineCount} lines`
+			),
+			h('div', { class: 'relative' }, [pre, hoverButtons])
+		])
+
+	return h('div', { id: uniqueId, class: 'markdown-code-block group join-item', style: 'position: relative' }, [pre, hoverButtons])
+}
+
+/**
+ * 仅增强块级高亮代码（figure>pre），不碰内联 span>code。
+ * @param {object} [options={}] - 选项。
+ * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {boolean} [options.allowUnsafeExecutors=true] - 是否允许不安全执行器。
+ * @returns {() => (tree: object) => void} - rehype 插件（attacher → transformer）。
+ */
+function rehypeCodeBlockEnhancements({ isStandalone = false, allowUnsafeExecutors = true } = {}) {
+	return () => tree => {
+		visit(tree, 'element', node => {
+			if (node.tagName !== 'figure' || !('data-rehype-pretty-code-figure' in (node.properties || {})))
+				return
+			const preIndex = node.children.findIndex(child => child.type === 'element' && child.tagName === 'pre')
+			if (preIndex < 0) return
+			node.children[preIndex] = enhanceCodeBlockPre(node.children[preIndex], { isStandalone, allowUnsafeExecutors })
+		})
 	}
 }
 
@@ -915,8 +1073,9 @@ function rehypeCacheRead() {
 				const cacheKey = isMermaid ? `mermaid-${hash}` : `code-${hash}`
 
 				if (cacheStore && cacheStore[cacheKey]) {
-					// HIT: 使用缓存替换当前节点
-					const cachedHast = fromHtml(cacheStore[cacheKey], { fragment: true }).children
+					// HIT: Mermaid SVG 含文档级 id（style/marker 引用），多实例必须改写后再插入
+					const html = isMermaid ? uniquifyMermaidSvgHtml(cacheStore[cacheKey]) : cacheStore[cacheKey]
+					const cachedHast = fromHtml(html, { fragment: true }).children
 					parent.children.splice(index, 1, ...cachedHast)
 					// 跳过刚插入的节点，避免重复访问
 					return index + cachedHast.length
@@ -1002,30 +1161,49 @@ function rehypeCacheWrite() {
 
 /**
  * 获取 Markdown 转换器。
+ * `allowDangerousHtml` 是唯一信任开关：false 时自动 early 净化 + Mermaid strict + 隐藏不安全代码执行器；
+ * true 时保留内联 HTML、Mermaid loose、全部执行/预览按钮。调用方不必再拼 mermaid/sanitize 细节。
  * @param {object} [options={}] - 选项。
  * @param {boolean} [options.isStandalone=false] - 是否为独立模式。
+ * @param {boolean} [options.allowDangerousHtml=true] - 是否信任内容（内联 HTML / 宽松 Mermaid / 不安全执行器）。
  * @param {Array<unknown>} [options.extraRemarkPlugins] - 插入 remarkRehype 之前的 remark 插件。
- * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件。
+ * @param {Array<unknown>} [options.extraRehypePlugins] - 插入 rehypeStringify 之前的 rehype 插件（勿把净化挂这里）。
  * @returns {Promise<import('npm:unified').Processor>} - Markdown 转换器。
  */
 export async function GetMarkdownConvertor({
 	isStandalone = false,
+	allowDangerousHtml = true,
 	extraRemarkPlugins = [],
 	extraRehypePlugins = [],
 } = {}) {
+	const registered = await ensureMarkdownExtensionAssets()
+	const mermaidSecurityLevel = allowDangerousHtml ? 'loose' : 'strict'
+	const earlyRehypePlugins = allowDangerousHtml ? [] : [rehypeSanitizeUntrustedContent()]
+	const allowUnsafeExecutors = allowDangerousHtml
+
+	if (!isStandalone) {
+		const { ensureEmbedHydrator } = await import('../embedCard.mjs')
+		ensureEmbedHydrator()
+	}
+
 	let processor = unified()
 		.use(remarkParse)
 		.use(remarkDisable, { disable: ['codeIndented'] })
 		.use(remarkBreaks)
 		.use(remarkMath)
-	for (const plugin of extraRemarkPlugins)
+		.use(remarkGfm, { singleTilde: false })
+	for (const plugin of [...registered.remarkPlugins, ...extraRemarkPlugins])
+		processor = processor.use(plugin)
+	processor = processor.use(remarkRehype, { allowDangerousHtml })
+	for (const plugin of earlyRehypePlugins)
 		processor = processor.use(plugin)
 	processor = processor
-		.use(remarkRehype, { allowDangerousHtml: true })
-		.use(remarkGfm, { singleTilde: false })
 		.use(rehypeCacheRead)
 		.use(rehypeSpoiler)
-		.use(rehypeMermaid)
+	if (!isStandalone)
+		processor = processor.use(rehypeFountEmbedLinks)
+	processor = processor
+		.use(rehypeMermaid, { securityLevel: mermaidSecurityLevel })
 		.use(rehypePrettyCode, {
 			theme: {
 				dark: 'github-dark-dimmed',
@@ -1048,9 +1226,6 @@ export async function GetMarkdownConvertor({
 					})
 				]
 			}),
-			transformers: [
-				await createCodeBlockPlugin({ isStandalone })
-			],
 			/**
 			 * 访问标题。
 			 * @param {object} caption - 标题。
@@ -1068,6 +1243,7 @@ export async function GetMarkdownConvertor({
 				title.properties.className = 'alert alert-info shadow-lg join-item'
 			}
 		})
+		.use(rehypeCodeBlockEnhancements({ isStandalone, allowUnsafeExecutors }))
 		.use(() => {
 			return tree => {
 				visit(tree, 'element', node => {
@@ -1079,11 +1255,11 @@ export async function GetMarkdownConvertor({
 		.use(rehypeKatex)
 		.use(rehypeCacheWrite)
 		.use(rehypeAddDaisyuiClass)
-	for (const plugin of extraRehypePlugins)
+	for (const plugin of [...registered.rehypePlugins, ...extraRehypePlugins])
 		processor = processor.use(plugin)
 	return processor.use(rehypeStringify, {
-		allowDangerousCharacters: true,
-		allowDangerousHtml: true,
+		allowDangerousCharacters: allowDangerousHtml,
+		allowDangerousHtml,
 	})
 }
 
@@ -1113,6 +1289,16 @@ export async function GetMarkdownConvertor({
 .markdown-body pre {
 	color: var(--color-base-content);
 	background-color: var(--color-base-100);
+}
+
+/* 内联 {:lang} 高亮：span>code，勿被块级 pre 样式带偏 */
+.markdown-body span[data-rehype-pretty-code-figure] {
+	display: inline;
+}
+.markdown-body span[data-rehype-pretty-code-figure] > code {
+	display: inline;
+	padding: 0.2em 0.4em;
+	border-radius: 6px;
 }
 
 [color-scheme*="light"] [style*="--shiki-light"][style*="--shiki-dark"] {

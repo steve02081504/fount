@@ -2,7 +2,7 @@
  * 将用户设置 shell 的 API 错误体（i18nKey）转为 toast；与 {@link ./endpoints.mjs} 分离，避免把 UI 绑在 fetch 层。
  */
 
-import { showToastI18n } from '/scripts/toast.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
 
 /**
  * 捕获到的错误。

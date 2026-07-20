@@ -1,6 +1,6 @@
-import { geti18n } from './i18n/index.mjs'
-import { getPartBranches, getPartDetails } from './parts.mjs'
-import { onServerEvent } from './server_events.mjs'
+import { getPartBranches, getPartDetails } from '../api/parts.mjs'
+import { onServerEvent } from '../api/server_events.mjs'
+import { geti18n } from '../i18n/index.mjs'
 
 /**
  * 去除首尾斜杠并返回标准化路径。

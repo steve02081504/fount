@@ -1,6 +1,6 @@
 import { createJSONEditor as base } from 'https://cdn.jsdelivr.net/npm/vanilla-jsoneditor@2/standalone.js'
 
-import { onThemeChange } from './theme.mjs'
+import { onThemeChange } from '../theme/index.mjs'
 
 /**
  * 创建一个 JSON 编辑器。

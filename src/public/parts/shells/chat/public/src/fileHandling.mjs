@@ -1,5 +1,5 @@
-import { svgInliner } from '../../../../../scripts/svgInliner.mjs'
-import { renderTemplate } from '../../../../../scripts/template.mjs'
+import { svgInliner } from '../../../../../scripts/lib/svgInliner.mjs'
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 
 import { getfile } from './files.mjs'
 import { openModal } from './ui/modal.mjs'

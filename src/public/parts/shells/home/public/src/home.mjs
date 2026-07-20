@@ -2,12 +2,12 @@
  * 主页 shell 的客户端逻辑。
  */
 
-import { getUserSetting } from '../../../scripts/endpoints.mjs'
+import { getUserSetting } from '../../../scripts/api/base.mjs'
+import { unlockAchievement, getAllDefaultParts, getPartBranches } from '../../../scripts/api/parts.mjs'
+import { showToast } from '../../../scripts/features/toast.mjs'
+import { applyUrlParamsTransferStrategy } from '../../../scripts/host/urlDataTransfer.mjs'
 import { initTranslations, console } from '../../../scripts/i18n/index.mjs'
-import { unlockAchievement, getAllDefaultParts, getPartBranches } from '../../../scripts/parts.mjs'
-import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme.mjs'
-import { showToast } from '../../../scripts/toast.mjs'
-import { applyUrlParamsTransferStrategy } from '../../../scripts/urlDataTransfer.mjs'
+import { applyTheme, serializeCurrentTheme } from '../../../scripts/theme/index.mjs'
 
 import { preloadAllPartTypeDetails } from './data.mjs'
 import { getHomeRegistry } from './endpoints.mjs'

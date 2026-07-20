@@ -3,13 +3,13 @@
  */
 import { async_eval } from 'https://esm.sh/@steve02081504/async-eval'
 
+import { unlockAchievement, getPartList, getPartBranches, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/api/parts.mjs'
+import { createJsonEditor } from '../../scripts/components/jsonEditor.mjs'
+import { renderTemplate, usingTemplates } from '../../scripts/features/template.mjs'
+import { showToast, showToastI18n } from '../../scripts/features/toast.mjs'
 import { initTranslations, i18nElement, console, geti18n, confirmI18n, promptI18n } from '../../scripts/i18n/index.mjs'
-import { createJsonEditor } from '../../scripts/jsonEditor.mjs'
-import { unlockAchievement, getPartList, getPartBranches, getAllDefaultParts, getAnyPreferredDefaultPart, setDefaultPart, unsetDefaultPart } from '../../scripts/parts.mjs'
-import { svgInliner } from '../../scripts/svgInliner.mjs'
-import { renderTemplate, usingTemplates } from '../../scripts/template.mjs'
-import { applyTheme } from '../../scripts/theme.mjs'
-import { showToast, showToastI18n } from '../../scripts/toast.mjs'
+import { svgInliner } from '../../scripts/lib/svgInliner.mjs'
+import { applyTheme } from '../../scripts/theme/index.mjs'
 
 import { getConfigTemplate, getServiceSourceFile, setServiceSourceFile, deleteServiceSourceFile, addServiceSourceFile, getConfigDisplay } from './src/endpoints.mjs'
 
@@ -169,7 +169,6 @@ function renderSubtypeSelect(selectedSubtype = currentSubtype) {
 
 	if (!generatorSubtypeSelect.value && subtypes.length)
 		generatorSubtypeSelect.value = resolveSubtype(selectedSubtype)
-	i18nElement(generatorSubtypeSelect, { skip_report: true })
 }
 
 /**

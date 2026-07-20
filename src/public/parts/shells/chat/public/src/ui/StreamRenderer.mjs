@@ -1,4 +1,4 @@
-import { renderMarkdownAsString } from '../../../../../scripts/markdown.mjs'
+import { renderMarkdownAsString } from '../../../../../scripts/features/markdown/index.mjs'
 
 /**
  * 用于实现流式渲染的类。

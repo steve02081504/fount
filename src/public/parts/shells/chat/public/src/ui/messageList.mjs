@@ -1,10 +1,10 @@
 import * as Sentry from 'https://esm.sh/@sentry/browser'
 
 import { confirmI18n, main_locale, geti18n } from '../../../../../scripts/i18n/index.mjs'
-import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/markdown.mjs'
-import { onElementRemoved } from '../../../../../scripts/onElementRemoved.mjs'
-import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/template.mjs'
-import { showToast, showToastI18n } from '../../../../../scripts/toast.mjs'
+import { renderMarkdownAsString, renderMarkdownAsStandAloneHtmlString } from '../../../../../scripts/features/markdown/index.mjs'
+import { onElementRemoved } from '../../../../../scripts/lib/onElementRemoved.mjs'
+import { renderTemplate, renderTemplateAsHtmlString, renderTemplateNoScriptActivation } from '../../../../../scripts/features/template.mjs'
+import { showToast, showToastI18n } from '../../../../../scripts/features/toast.mjs'
 import { stopGeneration } from '../chat.mjs'
 import {
 	modifyTimeLine,

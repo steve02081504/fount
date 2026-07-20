@@ -1,26 +1,16 @@
-import { applyTheme } from '/scripts/theme.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
 import { initTranslations, setLocalizeLogic } from '/scripts/i18n/index.mjs'
-
-/**
- * 转义 HTML 字符串。
- * @param {string} str - 要转义的字符串。
- * @returns {string} - 转义后的 HTML 字符串。
- */
-function escapeHtml(str) {
-	const div = document.createElement('div')
-	div.textContent = str
-	return div.innerHTML
-}
+import { escapeHtml } from '/scripts/lib/escapeHtml.mjs'
 
 applyTheme()
-const headingEl = document.getElementById('directory-listing-heading')
-headingEl.dataset.path = escapeHtml(headingEl.dataset.path)
+const headingElement = document.getElementById('directory-listing-heading')
+headingElement.dataset.path = escapeHtml(headingElement.dataset.path)
 await initTranslations('directoryListing')
 
 const data = JSON.parse(document.getElementById('directory-data').textContent)
 
 setLocalizeLogic(document.head, () => {
-	document.title = headingEl.textContent
+	document.title = headingElement.textContent
 })
 
 const tbody = document.getElementById('directory-listing-tbody')

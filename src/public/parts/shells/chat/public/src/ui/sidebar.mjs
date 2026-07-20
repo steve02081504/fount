@@ -1,10 +1,10 @@
 import { geti18n } from '../../../../../scripts/i18n/index.mjs'
-import { renderMarkdown } from '../../../../../scripts/markdown.mjs'
+import { renderMarkdown } from '../../../../../scripts/features/markdown/index.mjs'
 import {
 	getPartList,
 	getPartDetails,
-} from '../../../../../scripts/parts.mjs'
-import { renderTemplate } from '../../../../../scripts/template.mjs'
+} from '../../../../../scripts/api/parts.mjs'
+import { renderTemplate } from '../../../../../scripts/features/template.mjs'
 import { charList, worldName, personaName, setCharList, setWorldName, setPersonaName, pluginList, setPluginList } from '../chat.mjs'
 import { addCharacter, setPersona, setWorld, removeCharacter, triggerCharacterReply, setCharReplyFrequency, addPlugin, removePlugin } from '../endpoints.mjs'
 

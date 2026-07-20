@@ -2,9 +2,9 @@
  * 浏览器集成页面的主要客户端逻辑。
  */
 import { initTranslations, geti18n, i18nElement } from '/scripts/i18n/index.mjs'
-import { mountTemplate, usingTemplates } from '/scripts/template.mjs'
-import { applyTheme } from '/scripts/theme.mjs'
-import { showToast, showToastI18n } from '/scripts/toast.mjs'
+import { mountTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { applyTheme } from '/scripts/theme/index.mjs'
+import { showToast, showToastI18n } from '/scripts/features/toast.mjs'
 
 import * as api from './src/endpoints.mjs'
 
@@ -178,17 +178,17 @@ async function handleAddScript(e) {
 autorunScriptForm.addEventListener('submit', handleAddScript)
 
 autorunScriptList.addEventListener('click', e => {
-	const viewBtn = e.target.closest('.view-script-btn')
-	if (viewBtn) {
+	const viewButton = e.target.closest('.view-script-btn')
+	if (viewButton) {
 		e.preventDefault()
-		showViewScriptModal(viewBtn.dataset.scriptId)
+		showViewScriptModal(viewButton.dataset.scriptId)
 		return
 	}
 
-	const deleteBtn = e.target.closest('.delete-script-btn')
-	if (deleteBtn) {
+	const deleteButton = e.target.closest('.delete-script-btn')
+	if (deleteButton) {
 		e.preventDefault()
-		handleDeleteScript(deleteBtn.dataset.scriptId)
+		handleDeleteScript(deleteButton.dataset.scriptId)
 	}
 })
 

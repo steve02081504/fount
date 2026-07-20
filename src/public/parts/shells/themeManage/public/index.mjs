@@ -1,19 +1,19 @@
 import { confirmI18n, initTranslations, promptI18n } from '/scripts/i18n/index.mjs'
-import { showToastI18n } from '/scripts/toast.mjs'
-import { makeSearchable } from '/scripts/search.mjs'
-import { renderTemplate, usingTemplates } from '/scripts/template.mjs'
-import { unlockAchievement } from '/scripts/parts.mjs'
+import { showToastI18n } from '/scripts/features/toast.mjs'
+import { makeSearchable } from '/scripts/components/search.mjs'
+import { renderTemplate, usingTemplates } from '/scripts/features/template.mjs'
+import { unlockAchievement } from '/scripts/api/parts.mjs'
 import {
 	applyTheme,
 	builtin_themes,
 	getCurrentTheme,
 	setCustomTheme,
 	setTheme,
-} from '/scripts/theme.mjs'
+} from '/scripts/theme/index.mjs'
 import {
 	applyThemeWithViewTransition,
 	createAutoPreview,
-} from '/scripts/themeViewTransition.mjs'
+} from '/scripts/theme/viewTransition.mjs'
 
 import { extractColorsFromImage } from './colorUtils.mjs'
 import { deleteCustomTheme, getCustomTheme, listCustomThemes, saveCustomTheme } from './src/endpoints.mjs'
@@ -79,14 +79,14 @@ async function renderList() {
 	const grid = document.getElementById('theme-grid')
 
 	// Bind create button event (only once)
-	const createBtn = document.getElementById('create-theme-btn')
-	if (createBtn && !createBtn.hasAttribute('data-bound')) {
-		createBtn.dataset.bound = 'true'
+	const createButton = document.getElementById('create-theme-button')
+	if (createButton && !createButton.hasAttribute('data-bound')) {
+		createButton.dataset.bound = 'true'
 		/**
 		 * 创建一个新的主题。
 		 * @returns {void}
 		 */
-		createBtn.onclick = () => openEditor(null) // New theme
+		createButton.onclick = () => openEditor(null) // New theme
 	}
 
 	// Re-create search input to remove old listeners
@@ -254,10 +254,10 @@ async function handleClone(id, isCustom) {
 
 			try {
 				const roundedBox = getComputedStyle(container).getPropertyValue('--rounded-box').trim()
-				const borderBtn = getComputedStyle(container).getPropertyValue('--border-btn').trim()
+				const borderButton = getComputedStyle(container).getPropertyValue('--border-btn').trim()
 
 				if (roundedBox) vars.push(`--rounded-box: ${roundedBox};`)
-				if (borderBtn) vars.push(`--border-btn: ${borderBtn};`)
+				if (borderButton) vars.push(`--border-btn: ${borderButton};`)
 			} finally {
 				document.body.removeChild(container)
 			}
@@ -602,9 +602,9 @@ async function openEditor(themeData) {
 		}
 
 		// Show the instruction text
-		const instructionEl = listPanel.querySelector('#auto-palette-instruction')
+		const instructionElement = listPanel.querySelector('#auto-palette-instruction')
 		paletteResult.classList.remove('hidden')
-		instructionEl.classList.remove('hidden')
+		instructionElement.classList.remove('hidden')
 
 		const colors = await extractColorsFromImage(url)
 
@@ -697,8 +697,8 @@ function closeEditor() {
 	currentEditId = null
 
 	// Cleanup Editor DOM
-	const editorEl = listPanel.querySelector('.h-full.flex.flex-col') // Identify editor root
-	if (editorEl) editorEl.remove()
+	const editorElement = listPanel.querySelector('.h-full.flex.flex-col') // Identify editor root
+	if (editorElement) editorElement.remove()
 
 	// Restore List
 	themeListContainer.style.display = ''

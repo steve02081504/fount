@@ -3,6 +3,8 @@
  * @module preloadUrls
  */
 
+const PRELOAD_TIMEOUT_MS = 60_000
+
 /**
  * 在页面加载完成后，若未开启省流，则通过 0×0 iframe 打开 preloadrunner，由其内拉取列表并预取资源，完成后移除 iframe。
  * @returns {Promise<void>} - 预加载完成的 Promise。
@@ -13,6 +15,8 @@ export function runPreloadIfNotSaveData() {
 	iframe.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden'
 	iframe.src = '/preloadrunner/'
 	return new Promise((resolve) => {
+		/** @type {ReturnType<typeof setTimeout> | undefined} */
+		let timeoutId
 		/**
 		 * 处理消息事件。
 		 * @param {MessageEvent} e - 消息事件。
@@ -25,12 +29,15 @@ export function runPreloadIfNotSaveData() {
 		 * @returns {void}
 		 */
 		const cleanup = () => {
+			if (timeoutId !== undefined) clearTimeout(timeoutId)
+			timeoutId = undefined
 			try {
 				window.removeEventListener('message', onMessage)
 				iframe.remove()
 				resolve()
 			} catch (_) { }
 		}
+		timeoutId = setTimeout(cleanup, PRELOAD_TIMEOUT_MS)
 		window.addEventListener('message', onMessage)
 		document.body.appendChild(iframe)
 	})

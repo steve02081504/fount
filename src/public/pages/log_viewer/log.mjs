@@ -166,11 +166,9 @@ function buildChildren(node, depth, renderOpts = {}) {
 			const prop = makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-
 	else if (node.kind === 'Set')
 		for (let i = 0; i < (node.items || []).length; i++)
 			container.appendChild(makeProp(String(i), buildArgNode(node.items[i], depth, false, renderOpts)))
-
 	else if (node.kind === 'Map')
 		for (const item of node.items || []) {
 			const prop = document.createElement('div')
@@ -183,7 +181,6 @@ function buildChildren(node, depth, renderOpts = {}) {
 			prop.appendChild(buildArgNode(item.value, depth, false, renderOpts))
 			container.appendChild(prop)
 		}
-
 	else {
 		// object / Error / custom class
 		for (const entry of node.entries || [])
@@ -206,21 +203,21 @@ function buildChildren(node, depth, renderOpts = {}) {
 /**
  * 创建属性行（key: value）。
  * @param {string} key - 属性名或索引。
- * @param {HTMLElement} valueEl - 值所在的 DOM 节点。
+ * @param {HTMLElement} valueElement - 值所在的 DOM 节点。
  * @returns {HTMLDivElement} 一整行 prop。
  */
-function makeProp(key, valueEl) {
+function makeProp(key, valueElement) {
 	const prop = document.createElement('div')
 	prop.className = 'log-node-prop'
-	const keyEl = document.createElement('span')
-	keyEl.className = 'log-node-key'
-	keyEl.textContent = key
+	const keyElement = document.createElement('span')
+	keyElement.className = 'log-node-key'
+	keyElement.textContent = key
 	const colon = document.createElement('span')
 	colon.className = 'log-node-colon'
 	colon.textContent = ':\u00a0'
-	prop.appendChild(keyEl)
+	prop.appendChild(keyElement)
 	prop.appendChild(colon)
-	prop.appendChild(valueEl)
+	prop.appendChild(valueElement)
 	return prop
 }
 
@@ -262,7 +259,7 @@ function buildExpandableNode(node, depth, renderOpts = {}) {
 
 	if (hasChildren) {
 		let expanded = false
-		let childrenEl = null
+		let childrenElement = null
 		let loading = false
 
 		/**
@@ -273,11 +270,11 @@ function buildExpandableNode(node, depth, renderOpts = {}) {
 		const toggleExpand = async (e) => {
 			e?.stopPropagation()
 			if (loading) return
-			if (childrenEl) {
+			if (childrenElement) {
 				expanded = !expanded
 				toggle.classList.toggle('open', expanded)
-				if (expanded) el.appendChild(childrenEl)
-				else el.removeChild(childrenEl)
+				if (expanded) el.appendChild(childrenElement)
+				else el.removeChild(childrenElement)
 				return
 			}
 			expanded = true
@@ -285,19 +282,19 @@ function buildExpandableNode(node, depth, renderOpts = {}) {
 			const expandRef = renderOpts.requestExpandRef
 			if (typeof expandRef === 'function') {
 				loading = true
-				const loadingEl = document.createElement('span')
-				loadingEl.className = 'log-node-children'
-				loadingEl.textContent = '…'
-				el.appendChild(loadingEl)
+				const loadingElement = document.createElement('span')
+				loadingElement.className = 'log-node-children'
+				loadingElement.textContent = '…'
+				el.appendChild(loadingElement)
 				try {
 					await resolveAllTruncated(node, expandRef)
 				} finally {
 					loading = false
-					if (loadingEl.parentNode) el.removeChild(loadingEl)
+					if (loadingElement.parentNode) el.removeChild(loadingElement)
 				}
 			}
-			childrenEl = buildChildren(node, depth + 1, renderOpts)
-			el.appendChild(childrenEl)
+			childrenElement = buildChildren(node, depth + 1, renderOpts)
+			el.appendChild(childrenElement)
 		}
 
 		header.addEventListener('click', toggleExpand)
@@ -526,23 +523,23 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 		 * DOM 元素引用。
 		 * @type {HTMLElement}
 		 */
-		let sourceEl
+		let sourceElement
 		if (canClick) {
-			const btn = document.createElement('button')
-			btn.type = 'button'
-			btn.className = 'log-source-btn clickable'
-			btn.textContent = labelText
-			btn.title = titleText
-			btn.addEventListener('click', () => onOpenSource(callsite))
-			sourceEl = btn
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.className = 'log-source-btn clickable'
+			button.textContent = labelText
+			button.title = titleText
+			button.addEventListener('click', () => onOpenSource(callsite))
+			sourceElement = button
 		} else {
 			const span = document.createElement('span')
 			span.className = 'log-source-btn'
 			span.textContent = labelText
 			span.title = titleText
-			sourceEl = span
+			sourceElement = span
 		}
-		meta.appendChild(sourceEl)
+		meta.appendChild(sourceElement)
 		row.appendChild(meta)
 	}
 
@@ -551,20 +548,19 @@ export function renderLogItem(entry, { canOpenEditor = false, onOpenSource, requ
 
 /**
  * 创建日志工具栏并绑定过滤逻辑。
- * @param {object} opts - 工具栏配置。
- * @param {() => void} opts.onClear - 用户点击清空时调用。
- * @param {(filterText: string, levelFilter: string) => void} opts.onFilter - 文本或级别变更时调用。
+ * @param {object} options - 工具栏配置。
+ * @param {() => void} options.onClear - 用户点击清空时调用。
+ * @param {(filterText: string, levelFilter: string) => void} options.onFilter - 文本或级别变更时调用。
  * @returns {HTMLElement} 工具栏根元素。
  */
 export function createLogToolbar({ onClear, onFilter }) {
 	const toolbar = document.createElement('div')
 	toolbar.className = 'log-toolbar'
 
-	// 清空按钮
-	const clearBtn = document.createElement('button')
-	clearBtn.className = 'log-clear-btn'
-	clearBtn.dataset.i18n = 'log_viewer.logs.toolbar.clear'
-	clearBtn.addEventListener('click', () => onClear?.())
+	const clearButton = document.createElement('button')
+	clearButton.className = 'log-clear-btn'
+	clearButton.dataset.i18n = 'log_viewer.logs.toolbar.clear'
+	clearButton.addEventListener('click', () => onClear?.())
 
 	// 过滤输入框
 	const filterInput = document.createElement('input')
@@ -573,32 +569,32 @@ export function createLogToolbar({ onClear, onFilter }) {
 	filterInput.dataset.i18n = 'log_viewer.logs.toolbar.filter'
 
 	// 级别过滤按钮
-	const levelBtns = document.createElement('div')
-	levelBtns.className = 'log-level-btns'
+	const levelButtons = document.createElement('div')
+	levelButtons.className = 'log-level-btns'
 
 	let activeLevel = 'all'
 	const levelIds = ['all', 'log', 'info', 'warn', 'error', 'debug']
 
-	const btnEls = {}
+	const levelButtonById = {}
 	for (const id of levelIds) {
-		const btn = document.createElement('button')
-		btn.type = 'button'
-		btn.className = `log-level-btn${id === 'all' ? ' active' : ''}`
-		btn.dataset.lvl = id
-		btn.dataset.i18n = `log_viewer.logs.levels.${id}`
-		btn.addEventListener('click', () => {
+		const button = document.createElement('button')
+		button.type = 'button'
+		button.className = `log-level-btn${id === 'all' ? ' active' : ''}`
+		button.dataset.lvl = id
+		button.dataset.i18n = `log_viewer.logs.levels.${id}`
+		button.addEventListener('click', () => {
 			activeLevel = id
-			for (const [k, el] of Object.entries(btnEls))
-				el.classList.toggle('active', k === id)
+			for (const [k, levelButton] of Object.entries(levelButtonById))
+				levelButton.classList.toggle('active', k === id)
 			onFilter?.(filterInput.value, activeLevel)
 		})
-		btnEls[id] = btn
-		levelBtns.appendChild(btn)
+		levelButtonById[id] = button
+		levelButtons.appendChild(button)
 	}
 
-	toolbar.appendChild(clearBtn)
+	toolbar.appendChild(clearButton)
 	toolbar.appendChild(filterInput)
-	toolbar.appendChild(levelBtns)
+	toolbar.appendChild(levelButtons)
 
 	filterInput.addEventListener('input', () => onFilter?.(filterInput.value, activeLevel))
 

@@ -15,3 +15,8 @@
 
 ### GET /api/parts/shells:home/gethomeregistry
 - 用途：获取首页注册表，包含各 shell 的入口按钮与 part 界面配置，用于渲染首页。
+- 实现：服务端从各 part 的 `fount.json` → `registries.home_*` 聚合（`home_function_buttons`、`home_drag_in_handlers`、`home_drag_out_generators`、`home_interfaces`），读取各条目的 `path` JSON 后合并返回。
+
+### GET /api/registries/:name（底层）
+- 认证：需要
+- 用途：泛型 registry 聚合端点；home 相关 name 见上。条目为 `{ id, level, path }`（`path` 为前端 URL）。

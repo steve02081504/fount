@@ -23,8 +23,8 @@ const COMPLETION_DEBOUNCE_MS = 150
  */
 export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	if (!replUi) return
-	const { inputEl, completionsEl, syncInputView, setBusy } = replUi
-	if (!inputEl || !completionsEl) return
+	const { inputElement, completionsElement, syncInputView, setBusy } = replUi
+	if (!inputElement || !completionsElement) return
 
 	/** @type {ReturnType<typeof attachLogWire> | null} */
 	let evalWire = null
@@ -198,8 +198,8 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		completionItems = []
 		completionSuffixes = []
 		completionIndex = 0
-		completionsEl.classList.add('hidden')
-		completionsEl.replaceChildren()
+		completionsElement.classList.add('hidden')
+		completionsElement.replaceChildren()
 	}
 
 	/**
@@ -222,7 +222,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		completionRefreshTimer = setTimeout(() => {
 			completionRefreshTimer = null
 			if (completionSuppressed) return
-			if (!inputEl.value) {
+			if (!inputElement.value) {
 				hideCompletions()
 				return
 			}
@@ -235,12 +235,12 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	 * @returns {void}
 	 */
 	function scrollCompletionSelectionIntoView() {
-		const selected = completionsEl.children[completionIndex]
+		const selected = completionsElement.children[completionIndex]
 		if (!(selected instanceof HTMLElement)) return
-		const maxScroll = completionsEl.scrollHeight - completionsEl.clientHeight
+		const maxScroll = completionsElement.scrollHeight - completionsElement.clientHeight
 		if (maxScroll <= 0) return
-		const target = selected.offsetTop - (completionsEl.clientHeight - selected.offsetHeight) / 2
-		completionsEl.scrollTop = Math.max(0, Math.min(maxScroll, target))
+		const target = selected.offsetTop - (completionsElement.clientHeight - selected.offsetHeight) / 2
+		completionsElement.scrollTop = Math.max(0, Math.min(maxScroll, target))
 	}
 
 	/**
@@ -248,26 +248,26 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	 * @returns {void}
 	 */
 	function showCompletions() {
-		completionsEl.replaceChildren()
+		completionsElement.replaceChildren()
 		if (!completionItems.length) {
 			hideCompletions()
 			return
 		}
-		completionsEl.classList.remove('hidden')
+		completionsElement.classList.remove('hidden')
 		for (let i = 0; i < completionItems.length; i++) {
 			const li = document.createElement('li')
 			li.className = 'block w-full'
-			const btn = document.createElement('button')
-			btn.type = 'button'
-			btn.className = `block w-full text-left px-2 py-0.5 rounded${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
-			btn.textContent = completionItems[i]
-			btn.addEventListener('mousedown', (e) => {
+			const button = document.createElement('button')
+			button.type = 'button'
+			button.className = `block w-full text-left px-2 py-0.5 rounded${i === completionIndex ? ' bg-primary text-primary-content' : ''}`
+			button.textContent = completionItems[i]
+			button.addEventListener('mousedown', (e) => {
 				e.preventDefault()
 				completionIndex = i
 				acceptCompletion()
 			})
-			li.appendChild(btn)
-			completionsEl.appendChild(li)
+			li.appendChild(button)
+			completionsElement.appendChild(li)
 		}
 		scrollCompletionSelectionIntoView()
 	}
@@ -292,10 +292,10 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			return
 		}
 		const item = completionItems[completionIndex]
-		const { value } = inputEl
-		inputEl.value = value.slice(0, completionReplaceStart) + item + value.slice(completionReplaceEnd)
+		const { value } = inputElement
+		inputElement.value = value.slice(0, completionReplaceStart) + item + value.slice(completionReplaceEnd)
 		const pos = completionReplaceStart + item.length
-		inputEl.setSelectionRange(pos, pos)
+		inputElement.setSelectionRange(pos, pos)
 		hideCompletions()
 		syncInputView()
 		scheduleCompletionRefresh()
@@ -307,12 +307,12 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	 */
 	async function requestCompletion() {
 		const seq = ++completionRequestSeq
-		const code = inputEl.value
-		const cursor = inputEl.selectionStart ?? code.length
+		const code = inputElement.value
+		const cursor = inputElement.selectionStart ?? code.length
 		try {
 			const result = await sendWireRequest({ type: 'completion_request', code, cursor })
 			if (seq !== completionRequestSeq) return
-			if (code !== inputEl.value || cursor !== (inputEl.selectionStart ?? inputEl.value.length)) return
+			if (code !== inputElement.value || cursor !== (inputElement.selectionStart ?? inputElement.value.length)) return
 			completionItems = Array.isArray(result.items) ? result.items.map(String) : []
 			completionSuffixes = Array.isArray(result.suffixes)
 				? result.suffixes.map(String)
@@ -336,16 +336,16 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 	 * @returns {void}
 	 */
 	function moveCaretHorizontal(delta) {
-		const start = inputEl.selectionStart ?? 0
-		const end = inputEl.selectionEnd ?? start
+		const start = inputElement.selectionStart ?? 0
+		const end = inputElement.selectionEnd ?? start
 		if (start !== end) {
 			const pos = delta < 0 ? Math.min(start, end) : Math.max(start, end)
-			inputEl.setSelectionRange(pos, pos)
+			inputElement.setSelectionRange(pos, pos)
 			return
 		}
-		const pos = Math.max(0, Math.min(inputEl.value.length, start + delta))
+		const pos = Math.max(0, Math.min(inputElement.value.length, start + delta))
 		if (pos === start) return
-		inputEl.setSelectionRange(pos, pos)
+		inputElement.setSelectionRange(pos, pos)
 		scheduleCompletionRefresh()
 	}
 
@@ -358,7 +358,7 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		cancelCompletionRefresh()
 		completionSuppressed = false
 		hideCompletions()
-		const code = inputEl.value.trimEnd()
+		const code = inputElement.value.trimEnd()
 		if (!code.trim()) return
 		if (history[history.length - 1] !== code.trim()) {
 			history.push(code.trim())
@@ -390,43 +390,43 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		} finally {
 			evalInFlight = false
 			setBusy(false)
-			inputEl.value = ''
+			inputElement.value = ''
 			syncInputView()
 		}
 	}
 
-	inputEl.addEventListener('beforeinput', (e) => {
+	inputElement.addEventListener('beforeinput', (e) => {
 		if (!isPairInputEvent(e)) return
-		const start = inputEl.selectionStart ?? 0
-		const end = inputEl.selectionEnd ?? start
+		const start = inputElement.selectionStart ?? 0
+		const end = inputElement.selectionEnd ?? start
 		if (start !== end) return
 		if (e.inputType === 'insertText' && e.data?.length === 1) {
-			const next = editInsertChar(inputEl.value, start, e.data)
-			const plain = inputEl.value.slice(0, start) + e.data + inputEl.value.slice(start)
+			const next = editInsertChar(inputElement.value, start, e.data)
+			const plain = inputElement.value.slice(0, start) + e.data + inputElement.value.slice(start)
 			if (next.value === plain && next.caret === start + e.data.length) return
 			e.preventDefault()
-			inputEl.value = next.value
-			inputEl.setSelectionRange(next.caret, next.caret)
-			inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+			inputElement.value = next.value
+			inputElement.setSelectionRange(next.caret, next.caret)
+			inputElement.dispatchEvent(new Event('input', { bubbles: true }))
 			return
 		}
 		if (e.inputType === 'deleteContentBackward') {
-			const next = editBackspace(inputEl.value, start)
+			const next = editBackspace(inputElement.value, start)
 			if (!next) return
 			const plain = start > 0
-				? { value: inputEl.value.slice(0, start - 1) + inputEl.value.slice(start), caret: start - 1 }
+				? { value: inputElement.value.slice(0, start - 1) + inputElement.value.slice(start), caret: start - 1 }
 				: null
 			if (plain && next.value === plain.value && next.caret === plain.caret) return
 			e.preventDefault()
-			inputEl.value = next.value
-			inputEl.setSelectionRange(next.caret, next.caret)
-			inputEl.dispatchEvent(new Event('input', { bubbles: true }))
+			inputElement.value = next.value
+			inputElement.setSelectionRange(next.caret, next.caret)
+			inputElement.dispatchEvent(new Event('input', { bubbles: true }))
 		}
 	})
 
-	inputEl.addEventListener('input', (e) => {
+	inputElement.addEventListener('input', (e) => {
 		syncInputView()
-		if (inputEl.value) ensureEvalWire()
+		if (inputElement.value) ensureEvalWire()
 		historyIndex = -1
 		// 合成中（IME 未上屏）不请求补全，避免对半成品文本误补全。
 		if (e.isComposing) return
@@ -435,12 +435,12 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 
 	// 失焦时清理补全候选，避免下拉残留在面板上。
 	// 点击候选项靠 mousedown.preventDefault 保住焦点，不会误触此处。
-	inputEl.addEventListener('blur', () => {
+	inputElement.addEventListener('blur', () => {
 		cancelCompletionRefresh()
 		hideCompletions()
 	})
 
-	inputEl.addEventListener('keydown', (e) => {
+	inputElement.addEventListener('keydown', (e) => {
 		// 输入法合成期间（如中文选词）的 Enter/方向键应交还给 IME，
 		// 否则按 Enter 选词会被当成提交/拦截，导致「Enter 无法发送」。
 		if (e.isComposing || e.keyCode === 229) return
@@ -463,9 +463,9 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 			return
 		}
 		if (e.key === 'ArrowRight') {
-			const start = inputEl.selectionStart ?? 0
-			const end = inputEl.selectionEnd ?? start
-			if (start === end && start >= inputEl.value.length) {
+			const start = inputElement.selectionStart ?? 0
+			const end = inputElement.selectionEnd ?? start
+			if (start === end && start >= inputElement.value.length) {
 				if (completionItems.length && completionPendingSuffix()) {
 					e.preventDefault()
 					acceptCompletion()
@@ -494,27 +494,27 @@ export function initRepl({ replUi, onAppendEntry, onEvalExpandRef }) {
 		}
 		if (e.key === 'ArrowUp' && !completionItems.length) {
 			// 多行编辑：光标不在首行时交还文本框上移，仅首行才回溯历史。
-			if (inputEl.value.slice(0, inputEl.selectionStart ?? 0).includes('\n')) return
+			if (inputElement.value.slice(0, inputElement.selectionStart ?? 0).includes('\n')) return
 			if (!history.length) return
 			e.preventDefault()
-			if (historyIndex === -1) historyDraft = inputEl.value
+			if (historyIndex === -1) historyDraft = inputElement.value
 			historyIndex = historyIndex === -1 ? history.length - 1 : Math.max(0, historyIndex - 1)
-			inputEl.value = history[historyIndex]
+			inputElement.value = history[historyIndex]
 			syncInputView()
 			scheduleCompletionRefresh()
 			return
 		}
 		if (e.key === 'ArrowDown' && !completionItems.length) {
 			// 多行编辑：光标不在末行时交还文本框下移。
-			if (inputEl.value.slice(inputEl.selectionEnd ?? inputEl.value.length).includes('\n')) return
+			if (inputElement.value.slice(inputElement.selectionEnd ?? inputElement.value.length).includes('\n')) return
 			if (historyIndex === -1) return
 			e.preventDefault()
 			if (historyIndex >= history.length - 1) {
 				historyIndex = -1
-				inputEl.value = historyDraft
+				inputElement.value = historyDraft
 			} else {
 				historyIndex++
-				inputEl.value = history[historyIndex]
+				inputElement.value = history[historyIndex]
 			}
 			syncInputView()
 			scheduleCompletionRefresh()
