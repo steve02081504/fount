@@ -119,7 +119,7 @@ Deno.test('ResourceRunGate packs by mem and cpu pct', async () => {
 	assertEquals(cReady, true)
 
 	releaseB()
-	await await gate.acquire(makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } }))
+	await gate.acquire(makeSuite('shells/chat', 'pure', { resources: { memMb: 100, cpuPct: 5 } }))
 	assertEquals(resourcesMemBytes({ memMb: 100, cpuPct: 5 }), 100 * MiB)
 })
 
