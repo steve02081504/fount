@@ -26,7 +26,7 @@ import { socialClientFromReq } from './shared.mjs'
 export function registerLiveRoutes(router) {
 	router.post('/api/parts/shells\\:social/live/start', authenticate, async (req, res) => {
 		const { client } = await socialClientFromReq(req)
-		const body = { ...req.body || {} }
+		const body = { ...req.body }
 		if (!body.bridgeOrigin) {
 			const proto = req.headers['x-forwarded-proto'] || req.protocol || 'http'
 			const host = req.headers['x-forwarded-host'] || req.headers.host
