@@ -1,4 +1,3 @@
-import json5
 import json
 import os
 import copy
@@ -10,7 +9,10 @@ from collections import OrderedDict, Counter
 import sys
 import subprocess
 import concurrent.futures
+import threading
+import builtins
 import pathspec
+import json5
 
 # ----------- 配置 -----------
 # locales 文件夹相对于脚本的位置 (根据你的项目结构调整)
@@ -40,6 +42,8 @@ REFERENCE_LANG_CODES = [
 ]
 # 翻译API调用之间的最小延迟（秒）
 TRANSLATION_DELAY = 0.6
+# 连续 API 失败达到此次数后停止后续翻译，按当前结果收尾
+TRANSLATION_ABORT_AFTER = 13
 # 同步最大迭代次数
 MAX_SYNC_ITERATIONS = 10
 # 占位符名称相似度修复阈值
@@ -50,7 +54,73 @@ PLACEHOLDER_ABSOLUTE_DISTANCE_THRESHOLD = 3
 LOCALES_JSON_FILENAME = "locales.json"
 # 仅翻译这些字段，其他字段（如 version, author, home_page）直接复制
 TRANSLATABLE_INFO_FIELDS = {"name", "description", "description_markdown", "summary", "tags"}
+
+# GitHub Actions 下按语言并发翻译（一语言一线程）；本地串行以免打爆免费翻译接口
+IN_GITHUB_ACTIONS = os.environ.get("GITHUB_ACTIONS") == "true"
+_PRINT_LOCK = threading.Lock()
+_TRANSLATION_LOCK = threading.Lock()
+_consecutive_translation_failures = 0
+_translation_aborted = False
+_REAL_PRINT = builtins.print
+
+
+class TranslationAborted(Exception):
+	"""连续翻译失败已达上限，停止后续 API 调用。"""
+
+
+def print(*args, **kwargs):  # noqa: A001 — 并发时串行化日志，避免多线程日志交错
+	with _PRINT_LOCK:
+		_REAL_PRINT(*args, **kwargs)
+
+
+def is_translation_aborted():
+	with _TRANSLATION_LOCK:
+		return _translation_aborted
+
+
+def note_translation_success():
+	global _consecutive_translation_failures
+	with _TRANSLATION_LOCK:
+		_consecutive_translation_failures = 0
+
+
+def note_translation_failure():
+	"""记录一次 API 失败；达上限则熔断。返回是否已中止。"""
+	global _consecutive_translation_failures, _translation_aborted
+	with _TRANSLATION_LOCK:
+		_consecutive_translation_failures += 1
+		n = _consecutive_translation_failures
+		if n >= TRANSLATION_ABORT_AFTER and not _translation_aborted:
+			_translation_aborted = True
+			print(f"    ! 连续 {TRANSLATION_ABORT_AFTER} 次翻译失败，停止后续翻译，按当前结果收尾。")
+		return _translation_aborted
+
+
+def run_per_lang(fn, items):
+	"""对每个语言项执行 fn；CI 中一语言一线程，本地串行。"""
+	items = list(items)
+	if not items:
+		return []
+	if IN_GITHUB_ACTIONS and len(items) > 1:
+		with concurrent.futures.ThreadPoolExecutor(max_workers=len(items)) as executor:
+			return list(executor.map(fn, items))
+	return [fn(x) for x in items]
+
+
 # ----------- 配置结束 -----------
+
+
+def loads_locale_json(text: str):
+	"""
+	先走标准 json，失败再回落 json5。
+	原因：json5 解析大 locale 极慢（本仓库 ~20 个主文件可达数十秒），而正常文件由本脚本
+	json.dumps 写出，标准 json 毫秒级即可。json5 只兜底历史脏文件（注释、尾逗号、缺逗号等）。
+	勿改回「一律 json5」——那不是简化，是把加载重新拖成瓶颈。
+	"""
+	try:
+		return json.loads(text, object_pairs_hook=OrderedDict)
+	except json.JSONDecodeError:
+		return json5.loads(text, object_pairs_hook=OrderedDict)
 
 
 def load_gitignore_spec(fount_root_dir):
@@ -105,20 +175,28 @@ def get_lang_from_filename(filename):
 
 
 def get_value_at_path(data_dict, key_path):
-	"""根据点分隔的路径从嵌套 OrderedDict 获取值"""
+	"""根据点分隔的路径从嵌套 OrderedDict 获取值。键存在且值为 null 时返回 (None, True)。"""
 	keys = key_path.split(".")
 	current_level = data_dict
 	try:
 		for key in keys:
-			if isinstance(current_level, (OrderedDict, dict)):
-				current_level = current_level.get(key)
-				if current_level is None:
-					return None, False
-			else:
+			if not isinstance(current_level, (OrderedDict, dict)) or key not in current_level:
 				return None, False
+			current_level = current_level[key]
 		return current_level, True
 	except Exception:
 		return None, False
+
+
+def contains_null(value):
+	"""值本身或嵌套结构中是否含 JSON null（Python None）。空串不算。"""
+	if value is None:
+		return True
+	if isinstance(value, (dict, OrderedDict)):
+		return any(contains_null(v) for v in value.values())
+	if isinstance(value, list):
+		return any(contains_null(v) for v in value)
+	return False
 
 
 def update_translation_at_path_in_data(target_lang_data, key_path, new_text_content):
@@ -349,34 +427,38 @@ def translate_text(text: str, source_lang: str, target_lang: str) -> str | None:
 	"""
 	Translates text using GoogleTranslator with compatibility checks and retry logic.
 	Aligns placeholders after successful translation.
-	Returns the translated text or None if translation fails.
+	Returns: 译文；Google 不支持的语言回退原文；API 失败返回 None。
+	已熔断时抛 TranslationAborted（调用方勿写入，保持现状）。
 	"""
+	if is_translation_aborted():
+		raise TranslationAborted()
+
 	if not isinstance(text, str) or not text.strip() or source_lang == target_lang:
 		return text  # Return original text if empty, not a string, or langs are same
 
 	src_code_compat = get_compatible_code(source_lang)
 	tgt_code_compat = get_compatible_code(target_lang)
 
+	# Google 不支持的语言：直接留原文，方便后续人工/其它渠道翻译。API 失败才写 null。
 	if src_code_compat is None:
-		print(f"    - 错误: 源语言代码 '{source_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
-		return None  # Return None as per original behavior for failed translations
+		print(f"    - 源语言 '{source_lang}' 不被 Google 支持，回退原文。")
+		return text
 	if tgt_code_compat is None:
-		print(f"    - 错误: 目标语言代码 '{target_lang}' 不被 Google Translator 支持或无法找到兼容代码。")
-		if source_lang.startswith("zh"):
-			print(f"      - 警告: 目标语言不支持，但源语言为中文，回退使用原文。")
-			return text
-		return None  # Return None
+		print(f"    - 目标语言 '{target_lang}' 不被 Google 支持，回退原文。")
+		return text
 	if src_code_compat == tgt_code_compat:
-		return text  # Return original if, after compatibility, codes are the same
+		return text
 
 	translated_text_raw = perform_translation_with_retry(text, src_code_compat, tgt_code_compat, source_lang, target_lang)
 
 	if translated_text_raw is not None:
+		note_translation_success()
 		aligned_translated = align_placeholders_google_raw(text, translated_text_raw)
 		print(f"      - 翻译成功 (Google对齐后): '{aligned_translated[:50]}{'...' if len(aligned_translated) > 50 else ''}'")
 		return aligned_translated
-	else:
-		return None
+
+	note_translation_failure()
+	return None
 
 
 def translate_value(value, source_lang, target_lang):
@@ -430,33 +512,54 @@ def normalize_string_vs_object_with_textContent(parent_dict_a, parent_dict_b, ke
 
 def handle_missing_key_translation(target_dict, source_dict, key, target_lang, source_lang_for_trans, current_path):
 	"""
-	Handles translation for a key missing in target_dict but present in source_dict.
-	Returns True if a change was made (key added), False otherwise.
+	翻译并写入缺失（或不合法 null）的键。
+	翻译失败时写入 null（下次运行会重试）；空串是合法值，照常写入。
+	Returns True if a change was made, False otherwise.
 	"""
-	made_change = False
+	if is_translation_aborted():
+		return False
+
 	source_value_direct = source_dict[key]
-	translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
+	if source_value_direct is None:
+		print(f"  - 跳过: 键 '{current_path}' 在源语言 {source_lang_for_trans} 中也为 null。")
+		return False
 
-	if translated_val is not None:
-		is_empty_str = isinstance(translated_val, str) and translated_val.strip() == ""
-		is_empty_text_obj = isinstance(translated_val, OrderedDict) and "text" in translated_val and isinstance(translated_val["text"], str) and translated_val["text"].strip() == "" and len(translated_val) == 1
+	try:
+		translated_val = translate_value(copy.deepcopy(source_value_direct), source_lang_for_trans, target_lang)
+	except TranslationAborted:
+		return False
 
-		if is_empty_str:
-			print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为空字符串 (来自 {source_lang_for_trans} 到 {target_lang})。")
-		elif is_empty_text_obj:
-			print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为 {{'text': ''}} (来自 {source_lang_for_trans} 到 {target_lang})。")
-		else:
-			target_dict[key] = translated_val
-			made_change = True
-			print(f"  + 添加并翻译: 键 '{current_path}' 从 {source_lang_for_trans} 到 {target_lang}。")
+	if key in target_dict and target_dict[key] == translated_val:
+		return False
+
+	target_dict[key] = translated_val
+	if translated_val is None or contains_null(translated_val):
+		print(f"  + 写入 null（翻译失败，下次重试）: 键 '{current_path}' ({source_lang_for_trans} → {target_lang})。")
 	else:
-		print(f"  - 跳过添加: 键 '{current_path}' 的翻译结果为 None (来自 {source_lang_for_trans} 到 {target_lang})。")
-
-	return made_change
+		print(f"  + 添加并翻译: 键 '{current_path}' 从 {source_lang_for_trans} 到 {target_lang}。")
+	return True
 
 
 def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
-	"""处理在两个字典中都存在的键。"""
+	"""处理在两个字典中都存在的键。null 一侧从另一侧重翻；嵌套 dict 递归修叶子，list 含 null 则整段重翻。"""
+	val_a, val_b = dict_a[key], dict_b[key]
+
+	if val_a is None and val_b is not None:
+		return handle_missing_key_translation(dict_a, dict_b, key, lang_a, lang_b, path)
+	if val_b is None and val_a is not None:
+		return handle_missing_key_translation(dict_b, dict_a, key, lang_b, lang_a, path)
+	if val_a is None and val_b is None:
+		return False
+
+	# list 无逐项结构同步；任一侧含 null 则整段从完好侧重翻
+	if isinstance(val_a, list) or isinstance(val_b, list):
+		null_a, null_b = contains_null(val_a), contains_null(val_b)
+		if null_a and not null_b:
+			return handle_missing_key_translation(dict_a, dict_b, key, lang_a, lang_b, path)
+		if null_b and not null_a:
+			return handle_missing_key_translation(dict_b, dict_a, key, lang_b, lang_a, path)
+		return False
+
 	changed_here = False
 	val_a, val_b, normalized_changed = normalize_string_vs_object_with_textContent(dict_a, dict_b, key, lang_a, lang_b, path)
 	if normalized_changed:
@@ -466,7 +569,6 @@ def sync_common_key(dict_a, dict_b, key, lang_a, lang_b, reference_codes, path):
 		if normalize_and_sync_dicts(val_a, val_b, lang_a, lang_b, reference_codes, path):
 			changed_here = True
 	elif type(val_a) is not type(val_b):
-		# 仅在无法通过 normalize_string_or_text_obj 自动规范化时发出警告
 		is_val_a_text_like = isinstance(val_a, OrderedDict) and "text" in val_a and len(val_a) == 1
 		is_val_b_text_like = isinstance(val_b, OrderedDict) and "text" in val_b and len(val_b) == 1
 		if not ((isinstance(val_a, str) and is_val_b_text_like) or (isinstance(val_b, str) and is_val_a_text_like)):
@@ -526,9 +628,9 @@ def sync_localized_block(block_data, available_lang_codes):
 	"""
 	同步按语言分组的通用块（如 greeting、groupGreeting、noAISourceFeedback）。
 	结构为 { "zh-CN": value, "en-UK": value, "emoji": value, ... }，value 可为 str、list 或 dict。
-	缺失的 locale 会从参考语言翻译补充；emoji 作为目标时直接复制不翻译。
+	缺失或值为 null 的 locale 会从参考语言翻译补充（失败仍写 null，下次重试）；空串合法不重翻。
+	emoji 作为目标时直接复制不翻译。
 	"""
-	changed = False
 	source_lang = None
 	for ref in REFERENCE_LANG_CODES:
 		if ref in block_data:
@@ -540,19 +642,34 @@ def sync_localized_block(block_data, available_lang_codes):
 		return False
 
 	source_val = block_data[source_lang]
+	if source_val is None:
+		return False
+	# 缺失或含 null 的 locale 需要补齐；空串是合法值，不重翻
+	missing_langs = [
+		lang for lang in available_lang_codes
+		if lang != source_lang and (lang not in block_data or contains_null(block_data[lang]))
+	]
 
-	for target_lang in available_lang_codes:
-		if target_lang == source_lang or target_lang in block_data:
-			continue
+	def fill_lang(target_lang):
+		if is_translation_aborted():
+			return target_lang, block_data.get(target_lang)
 		print(f"      + 为 '{target_lang}' 补充内容 (基于 '{source_lang}')")
 		if target_lang == "emoji":
-			block_data[target_lang] = copy.deepcopy(source_val)
-		else:
+			return target_lang, copy.deepcopy(source_val)
+		try:
 			translated = translate_value(copy.deepcopy(source_val), source_lang, target_lang)
-			if translated is not None:
-				block_data[target_lang] = translated
-			else:
-				block_data[target_lang] = copy.deepcopy(source_val)
+		except TranslationAborted:
+			return target_lang, block_data.get(target_lang)
+		if translated is None or contains_null(translated):
+			print(f"        - 翻译失败，写入 null（下次重试）: {source_lang} → {target_lang}")
+		return target_lang, translated
+
+	filled = run_per_lang(fill_lang, missing_langs)
+	changed = False
+	for target_lang, value in filled:
+		if target_lang in block_data and block_data[target_lang] == value:
+			continue
+		block_data[target_lang] = value
 		changed = True
 
 	if changed:
@@ -611,38 +728,46 @@ def sync_info_content(info_data, available_lang_codes):
 	if not isinstance(source_obj, (dict, OrderedDict)):
 		return False
 
-	# 2. 遍历所有应该支持的语言
-	for target_lang in available_lang_codes:
-		if target_lang == source_lang:
-			continue
+	# 2. 按语言补齐缺失块/字段（CI 下一语言一线程）
+	target_langs = [lang for lang in available_lang_codes if lang != source_lang]
 
-		# 如果目标语言块不存在，创建它
-		if target_lang not in info_data:
+	def sync_one_info_lang(target_lang):
+		existed = target_lang in info_data
+		target_obj = copy.deepcopy(info_data[target_lang]) if existed else OrderedDict()
+		lang_changed = not existed
+		if not existed:
 			print(f"    + 为 '{target_lang}' 创建新块 (基于 '{source_lang}')")
-			info_data[target_lang] = OrderedDict()
-			changed = True
 
-		target_obj = info_data[target_lang]
-
-		# 3. 同步字段
 		for key, val in source_obj.items():
-			if key not in target_obj:
-				# 缺失键：决定是翻译还是复制
-				if key in TRANSLATABLE_INFO_FIELDS:
-					# 翻译
-					print(f"      + 翻译缺失字段 '{key}': {source_lang} -> {target_lang}")
+			# 已有且不含 null 则跳过；空串合法。null / 缺失则补。
+			if key in target_obj and not contains_null(target_obj[key]):
+				continue
+			if key in TRANSLATABLE_INFO_FIELDS:
+				if is_translation_aborted():
+					break
+				print(f"      + 翻译缺失/null 字段 '{key}': {source_lang} -> {target_lang}")
+				try:
 					translated = translate_value(copy.deepcopy(val), source_lang, target_lang)
-					if translated is not None:
-						target_obj[key] = translated
-						changed = True
-				else:
-					# 直接复制 (例如 version, author, provider)
-					# print(f"      + 复制字段 '{key}'")
-					target_obj[key] = copy.deepcopy(val)
-					changed = True
+				except TranslationAborted:
+					break
+				if key in target_obj and target_obj[key] == translated:
+					continue
+				target_obj[key] = translated  # 失败则为 null，下次重试
+				lang_changed = True
+			else:
+				target_obj[key] = copy.deepcopy(val)
+				lang_changed = True
 
-	# 4. 排序：让 info 块的语言顺序好看一点
-	# 这里简单对顶层 key (语言) 排序，把非语言的 key 留着
+		return (target_lang, target_obj, lang_changed) if lang_changed else None
+
+	for result in run_per_lang(sync_one_info_lang, target_langs):
+		if not result:
+			continue
+		target_lang, target_obj, _ = result
+		info_data[target_lang] = target_obj
+		changed = True
+
+	# 3. 排序：让 info 块的语言顺序好看一点
 	sorted_keys = sorted(info_data.keys(), key=lambda k: (0 if k in REFERENCE_LANG_CODES else 1, k))
 	if list(info_data.keys()) != sorted_keys:
 		new_ordered = OrderedDict((k, info_data[k]) for k in sorted_keys)
@@ -682,9 +807,9 @@ def process_locales_json_files(fount_dir, gitignore_spec, available_lang_codes):
 					original_content_str = f.read()
 
 				try:
-					data = json5.loads(original_content_str, object_pairs_hook=OrderedDict)
+					data = loads_locale_json(original_content_str)
 				except Exception as e:
-					print(f"    ! 解析 JSON5 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
+					print(f"    ! 解析 JSON 失败 {os.path.relpath(filepath, fount_dir)}: {e}")
 					continue
 
 				if not isinstance(data, (dict, OrderedDict)):
@@ -915,11 +1040,16 @@ def levenshtein_distance(s1, s2):
 
 def handle_placeholder_count_mismatch(lang_code, lang_info, key_path, current_ph_list_ordered_len, most_frequent_count, lang_file_data, source_text, source_lang_code) -> bool:
 	"""处理占位符数量不匹配的情况：重新翻译而不是清空。"""
+	if is_translation_aborted():
+		return False
 	reason = f"占位符数量不匹配 (当前: {current_ph_list_ordered_len}, 应为: {most_frequent_count})"
 	print(f"    - 重新翻译: 键 '{key_path}' 在 '{lang_code}'. 原因: {reason}.")
 
 	if source_text and source_lang_code:
-		translated = translate_text(source_text, source_lang_code, lang_code)
+		try:
+			translated = translate_text(source_text, source_lang_code, lang_code)
+		except TranslationAborted:
+			return False
 		if translated is not None:
 			return update_translation_at_path_in_data(lang_file_data, key_path, translated)
 		else:
@@ -941,9 +1071,14 @@ def handle_placeholder_name_mismatch(lang_code, lang_info, key_path, current_ph_
 	if repair_successful and fixed_text is not None:
 		return update_translation_at_path_in_data(lang_file_data, key_path, fixed_text)
 	else:
+		if is_translation_aborted():
+			return False
 		print(f"      - 无法自信地修复占位符名称。将重新翻译。键: '{key_path}', 语言: '{lang_code}'.")
 		if source_text and source_lang_code:
-			translated = translate_text(source_text, source_lang_code, lang_code)
+			try:
+				translated = translate_text(source_text, source_lang_code, lang_code)
+			except TranslationAborted:
+				return False
 			if translated is not None:
 				return update_translation_at_path_in_data(lang_file_data, key_path, translated)
 			else:
@@ -1115,17 +1250,19 @@ def perform_global_placeholder_alignment(all_data_files, languages_map, referenc
 
 		canonical_set = set(canonical_list)
 
-		for lang_code, lang_info in string_values_info.items():
+		targets = [(lang_code, lang_info) for lang_code, lang_info in string_values_info.items() if lang_code != source_lang_code]
+
+		def align_one(item):
+			lang_code, lang_info = item
 			lang_file_data = all_data_files.get(lang_info["file_path"])
 			if not lang_file_data:
-				continue
+				return False
+			return align_single_translation_placeholders(
+				lang_code, lang_info, key_path, canonical_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang, source_text, source_lang_code
+			)
 
-			# 如果当前语言就是源语言，跳过（不需要重新翻译自己）
-			if lang_code == source_lang_code:
-				continue
-
-			if align_single_translation_placeholders(lang_code, lang_info, key_path, canonical_count, canonical_list, canonical_set, lang_file_data, placeholders_by_lang, source_text, source_lang_code):
-				overall_changes_made = True
+		if any(run_per_lang(align_one, targets)):
+			overall_changes_made = True
 
 	print("--- 全局占位符验证和修复过程已完成 ---")
 	return overall_changes_made
@@ -1140,10 +1277,10 @@ def load_single_locale_file(filepath):
 		return None
 	try:
 		with open(filepath, "r", encoding="utf-8") as f:
-			data = json5.load(f, object_pairs_hook=OrderedDict)
-			if not isinstance(data, OrderedDict):
-				print(f"  - 警告: 文件 {os.path.basename(filepath)} 根部不是对象，跳过。")
-				return None
+			data = loads_locale_json(f.read())
+		if not isinstance(data, OrderedDict):
+			print(f"  - 警告: 文件 {os.path.basename(filepath)} 根部不是对象，跳过。")
+			return None
 		print(f"  - 已加载: {os.path.basename(filepath)} ({lang})")
 		return filepath, lang, data
 	except Exception as e:
@@ -1152,19 +1289,17 @@ def load_single_locale_file(filepath):
 
 
 def load_locale_files():
-	"""从 LOCALE_DIR 并行加载所有 .json 文件。"""
+	"""从 LOCALE_DIR 并行加载所有 .json 文件（一文件一线程）。"""
 	if not os.path.isdir(LOCALE_DIR):
 		print(f"错误: 目录 '{LOCALE_DIR}' 不存在。")
 		sys.exit(1)
 
 	all_data, languages, lang_to_path = OrderedDict(), {}, {}
-	print("加载本地化文件...")
-
 	filepaths = [os.path.join(LOCALE_DIR, filename) for filename in sorted(os.listdir(LOCALE_DIR)) if filename.endswith(".json")]
+	print(f"加载本地化文件 ({len(filepaths)} 个，并行)...")
 
-	# The results from map will be in the same order as the filepaths, which is sorted.
-	with concurrent.futures.ThreadPoolExecutor() as executor:
-		results = executor.map(load_single_locale_file, filepaths)
+	with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, len(filepaths))) as executor:
+		results = list(executor.map(load_single_locale_file, filepaths))
 
 	for result in results:
 		if result:
@@ -1196,27 +1331,41 @@ def find_reference_language(lang_to_path, all_data, languages):
 
 
 def run_synchronization_loop(all_data, languages, ref_path):
-	"""执行多轮同步，直到没有变化或达到最大迭代次数。"""
+	"""
+	将各语言与参考语言对齐；以参考语言为唯一真相源。
+	GitHub Actions 下按语言并发（一语言一线程）；本地串行。
+	"""
 	if len(all_data) < 2:
 		print("文件少于两个，跳过内容同步。")
 		return
 
-	print("\n--- 开始同步内容和结构 (locales) ---")
+	ref_lang = languages[ref_path]
+	other_paths = sorted(p for p in all_data if p != ref_path)
+	# 并发路径只改目标语言；参考语言根字段在此串行校正
+	if all_data[ref_path].get("lang") != ref_lang:
+		all_data[ref_path]["lang"] = ref_lang
+
+	mode = f"并发 ({len(other_paths)} 线程)" if IN_GITHUB_ACTIONS and len(other_paths) > 1 else "串行"
+	print(f"\n--- 开始同步内容和结构 (locales)，模式: {mode}，参考: {ref_lang} ---")
+
 	for i in range(1, MAX_SYNC_ITERATIONS + 1):
+		if is_translation_aborted():
+			print("\n翻译已中止，结束内容同步循环。")
+			break
 		print(f"\n--- 同步迭代轮次 {i}/{MAX_SYNC_ITERATIONS} ---")
-		changes_in_iter = False
-		paths = sorted(list(all_data.keys()))
-		# 优先与参考语言比较
-		other_paths = [p for p in paths if p != ref_path]
-		path_pairs = [(ref_path, p) for p in other_paths]
-		# 然后在其他语言之间比较
-		path_pairs.extend(itertools.combinations(other_paths, 2))
 
-		for p_a, p_b in path_pairs:
-			lang_a, lang_b = languages[p_a], languages[p_b]
-			if normalize_and_sync_dicts(all_data[p_a], all_data[p_b], lang_a, lang_b, REFERENCE_LANG_CODES):
-				changes_in_iter = True
+		def sync_one(other_path):
+			# 深拷贝参考数据：并发时各线程只改自己的目标语言树，避免竞态
+			ref_copy = copy.deepcopy(all_data[ref_path])
+			lang_b = languages[other_path]
+			print(f"  ↔ 同步 {ref_lang} → {lang_b}")
+			return normalize_and_sync_dicts(ref_copy, all_data[other_path], ref_lang, lang_b, REFERENCE_LANG_CODES)
 
+		changes_in_iter = any(run_per_lang(sync_one, other_paths))
+
+		if is_translation_aborted():
+			print("\n翻译已中止，结束内容同步循环。")
+			break
 		if not changes_in_iter:
 			print("\n内容同步完成，本轮无更改。")
 			break
@@ -1437,19 +1586,24 @@ def main():
 
 	run_synchronization_loop(all_data, languages, ref_path)
 
-	if perform_global_placeholder_alignment(all_data, languages, REFERENCE_LANG_CODES):
+	if is_translation_aborted():
+		print("\n翻译已中止：跳过占位符重译与 locales.json 同步中的翻译，保存当前结果。")
+	elif perform_global_placeholder_alignment(all_data, languages, REFERENCE_LANG_CODES):
 		print("  占位符对齐过程检测到更改。如果翻译被清空，可能需要重新同步。")
 
 	save_locale_files(all_data, ref_path)
 
-	process_locales_json_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
+	if not is_translation_aborted():
+		process_locales_json_files(FOUNT_DIR, gitignore_spec, available_lang_codes)
+	else:
+		print("已跳过 locales.json 翻译同步。")
 
 	ts_decl_path = os.path.join(LOCALE_DIR, "../../decl/locale_data.ts")
 	generate_locale_data_ts(all_data[ref_path], ts_decl_path)
 
 	generate_list_csv(all_data)
 
-	print("\n脚本执行完毕。")
+	print("\n脚本执行完毕。" + ("（翻译中途熔断）" if is_translation_aborted() else ""))
 
 
 if __name__ == "__main__":
