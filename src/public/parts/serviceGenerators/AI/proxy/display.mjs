@@ -52,7 +52,7 @@ function flattenCatalog(apiData) {
 	const entries = []
 	for (const provider of Object.values(apiData)) {
 		if (!provider?.models) continue
-		for (const model of Object.values(provider.models)) 
+		for (const model of Object.values(provider.models))
 			entries.push({
 				providerId: provider.id,
 				providerName: provider.name || provider.id,
@@ -72,7 +72,7 @@ function flattenCatalog(apiData) {
 				knowledge: model.knowledge || '',
 				releaseDate: model.release_date || model.last_updated || '',
 			})
-		
+
 	}
 	return entries
 }

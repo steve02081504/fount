@@ -89,9 +89,7 @@ export async function resolveBridgeChannel(username, { platform, platformChatId,
 	const mapping = doc.mappings[key]
 	if (!mapping?.groupId) throw new Error(`bridge group not mapped: ${key}`)
 
-	const threadKey = platformThreadId != null && String(platformThreadId).trim() !== ''
-		? String(platformThreadId)
-		: 'default'
+	const threadKey = platformThreadId && String(platformThreadId).trim() || 'default'
 
 	let channelId = mapping.channels?.[threadKey]
 	if (channelId) return { groupId: mapping.groupId, channelId }

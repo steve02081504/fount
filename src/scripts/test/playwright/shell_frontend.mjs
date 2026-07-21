@@ -36,7 +36,7 @@ export async function runShellFrontendTests({
 	/** @type {((port: number) => Promise<void>) | null} */
 	let commitPortForPhase = null
 	const { env: { FOUNT_TEST_FRONTEND_PORT: rawFrontendPort, FOUNT_TEST_FRONTEND_KEY: frontendApiKey } } = process
-	if (rawFrontendPort != null && rawFrontendPort !== '') 
+	if (rawFrontendPort) 
 		basePort = await resolveFrontendPort(rawFrontendPort, async () => {
 			throw new Error('FOUNT_TEST_FRONTEND_PORT fallback should not run')
 		})
